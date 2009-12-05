@@ -7,6 +7,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/AssociationVector.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
@@ -50,16 +51,6 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "diTauCandidates");
-
-  maxDPhi12collinearApprox_ = cfg.getParameter<double>("maxDPhi12collinearApprox");
-  
-  makeCollinearApproxMassDepHistograms_ = cfg.getParameter<bool>("makeCollinearApproxMassDepHistograms");
-  
-  collinearApproxMassDPhi12Incr_ = TMath::Pi()/18.;
-  numCollinearApproxMassDiTauPtBins_ = 25;
-  collinearApproxMassDiTauPtIncr_ = 2.;
-  numCollinearApproxMassMEtPtBins_ = 25;
-  collinearApproxMassMEtPtIncr_ = 2.;
 }
 
 template<typename T1, typename T2>
@@ -80,7 +71,11 @@ template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 {
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::bookHistogramsImp>:" << std::endl;
+
+  hGenDiTauCandidatePt_ = book1D("GenDiTauCandidatePt", "gen. Composite P_{T}", 75, 0., 150.);
   
+  hGenLeg1PtVsLeg2Pt_ = book2D("GenLeg1PtVsLeg2Pt", "gen. leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
+
   hDiTauCandidatePt_ = book1D("DiTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
   hDiTauCandidateEta_ = book1D("DiTauCandidateEta", "Composite #eta", 100, -5., +5.);
   hDiTauCandidatePhi_ = book1D("DiTauCandidatePhi", "Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
@@ -102,50 +97,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hVisMassZllCombinedHypothesis_ = ( visMassHypothesisSrc_.label() != "" ) ?
     book1D("VisMassZllCombinedHypothesis", "Visible Mass (combined Value of different Event Hypotheses)", 40, 0., 200.) : 0;
   
-  hCollinearApproxEffDPhi12dep_ = book1D("CollinearApproxEffDPhi12dep", "Eff. of collinear Approximation as function of #Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon);
-  hCollinearApproxEffDiTauPtDep_ = book1D("CollinearApproxEffDiTauPtDep", "Eff. of collinear Approximation as function of Visible P_{T}", 50, 0., 100.);
-  hCollinearApproxEffMEtDep_ = book1D("CollinearApproxEffMEtDep", "Eff. of collinear Approximation  as function of MEt", 75, 0., 150.);
-
   hCollinearApproxEta_ = book1D("CollinearApproxEta", "Collinear Approximation #eta", 100, -5., +5.);
   hCollinearApproxMass_ = book1D("CollinearApproxMass", "Collinear Approximation Mass", 50, 0., 250.);
-  hCollinearApproxMassVsPt_ = book2D("CollinearApproxMassVsPt", "Collinear Approximation Mass vs. P_{T}", 30, 0., 150., 25, 0., 250.);
-  hCollinearApproxMassVsDPhi12_ = book2D("CollinearApproxMassVsDPhi12", "Collinear Approximation Mass vs. #Delta#phi_{1,2}", 18, -epsilon, TMath::Pi() + epsilon, 25, 0., 250.);
-  hCollinearApproxX1_ = book1D("CollinearApproxX1", "Collinear Approximation X_{1}", 51, -0.01, 1.01);
-  hCollinearApproxX2_ = book1D("CollinearApproxX2", "Collinear Approximation X_{2}", 51, -0.01, 1.01);
-  hCollinearApproxX1vsX2_ = book2D("CollinearApproxX1vsX2", "Collinear Approximation X_{1} vs. X_{2}", 26, -0.02, 1.02, 26, -0.02, 1.02);
-  
-  if ( makeCollinearApproxMassDepHistograms_ ) {
-    int numDPhi12bins = TMath::CeilNint(TMath::Pi()/collinearApproxMassDPhi12Incr_);
-    for ( int iDPhi12bin = 0; iDPhi12bin < numDPhi12bins; ++iDPhi12bin ) {
-      std::ostringstream iDPhi12binString;
-      iDPhi12binString << std::setfill('0') << std::setw(2) << iDPhi12bin;
-    
-      std::string hCollinearApproxMassDPhi12depName_i 
-	= std::string("CollinearApproxMassDPhi12dep").append("_").append(iDPhi12binString.str());
-      hCollinearApproxMassDPhi12dep_.push_back(book1D(hCollinearApproxMassDPhi12depName_i,
-						      hCollinearApproxMassDPhi12depName_i, 50, 0., 250.));
-    }
-    
-    for ( unsigned iDiTauPtBin = 0; iDiTauPtBin < numCollinearApproxMassDiTauPtBins_; ++iDiTauPtBin ) {
-      std::ostringstream iDiTauPtBinString;
-      iDiTauPtBinString << std::setfill('0') << std::setw(2) << iDiTauPtBin;
-    
-      std::string hCollinearApproxMassDiTauPtDepName_i 
-	= std::string("CollinearApproxMassDiTauPtDep").append("_").append(iDiTauPtBinString.str());
-      hCollinearApproxMassDiTauPtDep_.push_back(book1D(hCollinearApproxMassDiTauPtDepName_i,
-						       hCollinearApproxMassDiTauPtDepName_i, 50, 0., 250.));
-    }
-
-    for ( unsigned iMEtPtBin = 0; iMEtPtBin < numCollinearApproxMassMEtPtBins_; ++iMEtPtBin ) {
-      std::ostringstream iMEtPtBinString;
-      iMEtPtBinString << std::setfill('0') << std::setw(2) << iMEtPtBin;
-    
-      std::string hCollinearApproxMassMEtPtDepName_i 
-	= std::string("CollinearApproxMassMEtPtDep").append("_").append(iMEtPtBinString.str());
-      hCollinearApproxMassMEtPtDep_.push_back(book1D(hCollinearApproxMassMEtPtDepName_i,
-						     hCollinearApproxMassMEtPtDepName_i, 50, 0., 250.));
-    }
-  }
+  hCollinearApproxX1_ = book1D("CollinearApproxX1", "Collinear Approximation X_{1}", 100, -2.5, +2.5);
+  hCollinearApproxX2_ = book1D("CollinearApproxX2", "Collinear Approximation X_{2}", 100, -2.5, +2.5);
 
   hCDFmethodMass_ = book1D("CDFmethodMass", "CDF Method Mass", 50, 0., 250.);
   
@@ -210,6 +165,13 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     double diTauCandidateWeight = getDiTauCandidateWeight(*diTauCandidate);
     double weight = getWeight(evtWeight, diTauCandidateWeight, diTauCandidateWeightSum);
 
+    if ( diTauCandidate->p4Leg1gen().energy() > epsilon && 
+	 diTauCandidate->p4Leg2gen().energy() > epsilon ) {
+      hGenDiTauCandidatePt_->Fill(diTauCandidate->p4VisGen().pt(), weight);
+
+      hGenLeg1PtVsLeg2Pt_->Fill(diTauCandidate->p4VisLeg1gen().pt(), diTauCandidate->p4VisLeg2gen().pt(), weight);
+    }
+
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
     hDiTauCandidateEta_->Fill(diTauCandidate->eta(), weight);
     hDiTauCandidatePhi_->Fill(diTauCandidate->phi(), weight);
@@ -262,33 +224,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     }
 
     if ( diTauCandidate->collinearApproxIsValid() ) {  
-      hCollinearApproxEffDPhi12dep_->Fill(diTauCandidate->dPhi12(), weight);
-      hCollinearApproxEffDiTauPtDep_->Fill(diTauCandidate->p4Vis().pt(), weight);
-      hCollinearApproxEffMEtDep_->Fill(diTauCandidate->met()->pt(), weight);
-
-      if ( (diTauCandidate->dPhi12()*180./TMath::Pi()) < maxDPhi12collinearApprox_ ) { 
-	hCollinearApproxEta_->Fill(diTauCandidate->p4CollinearApprox().eta(), weight);
-	hCollinearApproxMass_->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
-	hCollinearApproxMassVsPt_->Fill(diTauCandidate->p4Vis().pt(), diTauCandidate->p4CollinearApprox().mass(), weight);
-	hCollinearApproxMassVsDPhi12_->Fill(diTauCandidate->dPhi12(), diTauCandidate->p4CollinearApprox().mass(), weight);
-	hCollinearApproxX1_->Fill(diTauCandidate->x1CollinearApprox(), weight);
-	hCollinearApproxX2_->Fill(diTauCandidate->x2CollinearApprox(), weight);
-	hCollinearApproxX1vsX2_->Fill(diTauCandidate->x1CollinearApprox(), diTauCandidate->x2CollinearApprox(), weight);
-      }
-
-      if ( makeCollinearApproxMassDepHistograms_  ) {
-	int iDPhi12bin = TMath::FloorNint(diTauCandidate->dPhi12()/collinearApproxMassDPhi12Incr_);
-	if ( iDPhi12bin >= 0 && iDPhi12bin < (int)hCollinearApproxMassDPhi12dep_.size() )
-	  hCollinearApproxMassDPhi12dep_[iDPhi12bin]->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
-	
-	int iDiTauPtBin = TMath::FloorNint(diTauCandidate->p4Vis().pt()/collinearApproxMassDiTauPtIncr_);
-	if ( iDiTauPtBin >= 0 && iDiTauPtBin < (int)hCollinearApproxMassDiTauPtDep_.size() )
-	  hCollinearApproxMassDiTauPtDep_[iDiTauPtBin]->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
-	
-	int iMEtPtBin = TMath::FloorNint(diTauCandidate->met()->pt()/collinearApproxMassMEtPtIncr_);
-	if ( iMEtPtBin >= 0 && iMEtPtBin < (int)hCollinearApproxMassMEtPtDep_.size() )
-	  hCollinearApproxMassMEtPtDep_[iMEtPtBin]->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
-      }
+      hCollinearApproxEta_->Fill(diTauCandidate->p4CollinearApprox().eta(), weight);
+      hCollinearApproxMass_->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
+      hCollinearApproxX1_->Fill(diTauCandidate->x1CollinearApprox(), weight);
+      hCollinearApproxX2_->Fill(diTauCandidate->x2CollinearApprox(), weight);
     }
 
     hCDFmethodMass_->Fill(diTauCandidate->p4CDFmethod().mass(), weight);
