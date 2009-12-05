@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: HistManagerBase.h,v 1.5 2009/10/23 14:03:59 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.6 2009/10/27 16:14:46 veelken Exp $
  *
  */
 
@@ -47,6 +47,13 @@ class HistManagerBase : public AnalyzerPluginBase
   virtual MonitorElement* book1D(const std::string&, const std::string&, int, float*);
   virtual MonitorElement* book2D(const std::string&, const std::string&, int, double, double, int, double, double);
   virtual MonitorElement* book2D(const std::string&, const std::string&, int, float*, int, float*);
+  virtual MonitorElement* bookProfile1D(const std::string&, const std::string&, int, double, double);
+/*
+  
+  CV: CMSSW_3_3_x only
+
+  virtual MonitorElement* bookProfile1D(const std::string&, const std::string&, int, float*);
+ */
   DQMStore* dqmStore_;
   std::string dqmDirectory_store_;
   int dqmError_;
