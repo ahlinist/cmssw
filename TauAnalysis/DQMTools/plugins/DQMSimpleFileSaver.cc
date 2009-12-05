@@ -56,7 +56,7 @@ DQMSimpleFileSaver::DQMSimpleFileSaver(const edm::ParameterSet& cfg)
 	int errorFlag = 0;
 	std::string dqmDirectory_regexp = replace_string(dqmDirectory, "*", "[a-zA-Z0-9/]*", 0, 1000, errorFlag);
 //--- match the names of all DQM subdirectories also
-	//dqmDirectory_regexp += "[a-zA-Z0-9/]*";
+	dqmDirectory_regexp += "[a-zA-Z0-9/]*";
 	std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp << std::endl;
 
 	if ( !outputCommands_ ) outputCommands_ = new std::vector<outputCommandEntry>();
