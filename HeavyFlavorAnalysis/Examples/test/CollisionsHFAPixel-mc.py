@@ -20,23 +20,14 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("RecoVertex.BeamSpotProducer.BeamSpot_cfi")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = "MC_31X_V5::All"
+process.GlobalTag.globaltag = "STARTUP3X_V8I::All"
 
 
 # ----------------------------------------------------------------------
 process.source = cms.Source(
     "PoolSource", 
     fileNames = cms.untracked.vstring(
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/00EEC933-8888-DE11-9954-00304865C456.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/0607B847-5388-DE11-A5C2-00238BBD7584.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/08A30884-4688-DE11-A66A-00163691DC02.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/226283DD-6688-DE11-9F66-00144FCAB064.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/30537D20-ED89-DE11-8AAE-00E081329E7A.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/3232AC9A-4B88-DE11-8D7E-00163691DBB2.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/365B610E-7888-DE11-802D-003048344C22.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/4A77E45D-5288-DE11-B1FE-001EC9AAA2B5.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/5C0C1706-7188-DE11-86C2-00304865C466.root", 
-    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/94D13C1B-4888-DE11-BE75-00163691D236.root"
+    REPLACEFILES
     )
     )
 
@@ -51,7 +42,7 @@ process.TrackRefitter.src = 'generalTracks'
 try:
     rootFileName = os.environ["JOB"] + "-pixel.root"
 except KeyError:
-    rootFileName = "collisions-pixel.root"
+    rootFileName = "collisions-pixel-XXXX.root"
 
 process.PixelTree = cms.EDAnalyzer(
     "PixelTree",
@@ -69,7 +60,7 @@ process.PixelTree = cms.EDAnalyzer(
 # ----------------------------------------------------------------------
 process.PixelFilter = cms.EDFilter(
     "SkimEvents",
-    verbose                      = cms.untracked.int32(10),
+    verbose                      = cms.untracked.int32(0),
     filterOnPrimaryVertex        = cms.untracked.int32(1),
     primaryVertexCollectionLabel = cms.untracked.InputTag('offlinePrimaryVertices'),
     filterOnTracks               = cms.untracked.int32(1),
@@ -105,7 +96,7 @@ process.genDump = cms.EDFilter(
 try:
     rootFileName = os.environ["JOB"] + "-hfa.root"
 except KeyError:
-    rootFileName = "collisions-hfa.root"
+    rootFileName = "collisions-hfa-XXXX.root"
 
 process.tree = cms.EDAnalyzer(
     "HFTree",
@@ -157,10 +148,10 @@ process.bmtDump = cms.EDFilter(
     verbose = cms.untracked.int32(0), 
     muonsLabel = cms.untracked.InputTag("muons"),
     tracksLabel = cms.untracked.string('generalTracks'),
-    muonPt = cms.untracked.double(3.0),
-    trackPt = cms.untracked.double(1.0),
+    muonPt = cms.untracked.double(1.0),
+    trackPt = cms.untracked.double(0.5),
     type = cms.untracked.int32(1300), 
-    massLow  = cms.untracked.double(2.5), 
+    massLow  = cms.untracked.double(1.5), 
     massHigh = cms.untracked.double(11.0)
     )
 
@@ -170,7 +161,7 @@ process.bmmDump = cms.EDFilter(
     verbose = cms.untracked.int32(0), 
     muonsLabel = cms.untracked.InputTag("muons"),
     tracksLabel = cms.untracked.string('generalTracks'),
-    muonPt = cms.untracked.double(3.0),
+    muonPt = cms.untracked.double(1.0),
     type = cms.untracked.int32(531), 
     massLow  = cms.untracked.double(4.0), 
     massHigh = cms.untracked.double(6.0)
@@ -182,7 +173,7 @@ process.bupsikpDump = cms.EDFilter(
     verbose = cms.untracked.int32(0), 
     muonsLabel = cms.untracked.InputTag("muons"),
     tracksLabel = cms.untracked.string('generalTracks'),
-    muonPt = cms.untracked.double(3.0),
+    muonPt = cms.untracked.double(1.0),
     trackPt = cms.untracked.double(0.1),
     type = cms.untracked.int32(100521) 
     )
@@ -193,7 +184,7 @@ process.bdpsikstarDump = cms.EDFilter(
     verbose = cms.untracked.int32(0), 
     muonsLabel = cms.untracked.InputTag("muons"),
     tracksLabel = cms.untracked.string('generalTracks'),
-    muonPt = cms.untracked.double(3.0),
+    muonPt = cms.untracked.double(1.0),
     kaonPt = cms.untracked.double(0.1),
     pionPt = cms.untracked.double(0.1),
     type = cms.untracked.int32(100511) 
@@ -205,7 +196,7 @@ process.bspsiphiDump = cms.EDFilter(
     verbose = cms.untracked.int32(0), 
     muonsLabel = cms.untracked.InputTag("muons"),
     tracksLabel = cms.untracked.string('generalTracks'),
-    muonPt = cms.untracked.double(3.0),
+    muonPt = cms.untracked.double(1.0),
     trackPt = cms.untracked.double(0.1),
     type = cms.untracked.int32(100531) 
     )
@@ -216,7 +207,7 @@ process.b2muD0Dump = cms.EDFilter(
     verbose = cms.untracked.int32(0), 
     muonsLabel = cms.untracked.InputTag("muons"),
     tracksLabel = cms.untracked.string('generalTracks'),
-    muonPt = cms.untracked.double(3.0),
+    muonPt = cms.untracked.double(1.0),
     trackPt = cms.untracked.double(0.1),
     deltaR =  cms.untracked.double(1.5),
     deltaMD0 = cms.untracked.double(0.3),
@@ -238,6 +229,7 @@ process.p = cms.Path(
     process.bupsikpDump*
     process.bdpsikstarDump*
     process.bspsiphiDump*
+    process.b2muD0Dump*
     process.tree
 )
 
