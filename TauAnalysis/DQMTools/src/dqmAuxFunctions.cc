@@ -99,8 +99,8 @@ void dqmRegisterHistogram(DQMStore& dqmStore, TH1* histogram, const std::string&
 void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, const std::string& outputDirectory, 
 			double scaleFactor, int mode, bool rmInputDirectory, std::vector<outputCommandEntry>* outputCommands)
 {
-  std::cout << "<copyRecursively>:" << std::endl;
-  std::cout << " inputDirectory = " << inputDirectory << std::endl;
+  //std::cout << "<dqmCopyRecursively>:" << std::endl;
+  //std::cout << " inputDirectory = " << inputDirectory << std::endl;
   //std::cout << " outputDirectory = " << outputDirectory << std::endl;
   //std::cout << " scaleFactor = " << scaleFactor << std::endl;
   //std::cout << " rmInputDirectory = " << rmInputDirectory << std::endl;
@@ -115,12 +115,12 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
     for ( std::vector<outputCommandEntry>::iterator outputCommand = outputCommands->begin();
 	  outputCommand != outputCommands->end(); ++outputCommand ) {
       int statement = outputCommand->first;
-      std::cout << " statement = " << statement << std::endl;
+      //std::cout << " statement = " << statement << std::endl;
 
       TPRegexp& dqmDirectory_regexp = outputCommand->second;
-      std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp.GetPattern() << std::endl;
+      //std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp.GetPattern() << std::endl;
 
-      std::cout << "--> dqmDirectory_regexp.Match(inputDirectory_tstring) = " << dqmDirectory_regexp.Match(inputDirectory_tstring) << std::endl;
+      //std::cout << "--> dqmDirectory_regexp.Match(inputDirectory_tstring) = " << dqmDirectory_regexp.Match(inputDirectory_tstring) << std::endl;
 
       if ( dqmDirectory_regexp.Match(inputDirectory_tstring) == 1 ) {
 	if ( statement == kKeep ) copyMonitorElements = true;

@@ -19,11 +19,13 @@
 
 #include <iostream>
 
+const std::string dqmDirectory_temp = "tempBACKUP";
+
 DQMSimpleFileSaver::DQMSimpleFileSaver(const edm::ParameterSet& cfg)
   : outputCommands_(0),
     cfgError_(0)
 {
-  std::cout << "<DQMSimpleFileSaver::DQMSimpleFileSaver>:" << std::endl;
+  //std::cout << "<DQMSimpleFileSaver::DQMSimpleFileSaver>:" << std::endl;
 
   if ( cfg.exists("outputCommands") ) {
     typedef std::vector<std::string> vstring;
@@ -50,14 +52,14 @@ DQMSimpleFileSaver::DQMSimpleFileSaver(const edm::ParameterSet& cfg)
 	if ( statement == "keep" ) statement_int = kKeep;
 	if ( statement == "drop" ) statement_int = kDrop;
 	assert(statement_int == kKeep || statement_int == kDrop);
-	std::cout << " statement_int = " << statement_int << std::endl;
+	//std::cout << " statement_int = " << statement_int << std::endl;
 	
 	std::string dqmDirectory = ((TObjString*)subStrings->At(2))->GetString().Data();
 	int errorFlag = 0;
 	std::string dqmDirectory_regexp = replace_string(dqmDirectory, "*", "[a-zA-Z0-9/]*", 0, 1000, errorFlag);
 //--- match the names of all DQM subdirectories also
 	dqmDirectory_regexp += "[a-zA-Z0-9/]*";
-	std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp << std::endl;
+	//std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp << std::endl;
 
 	if ( !outputCommands_ ) outputCommands_ = new std::vector<outputCommandEntry>();
 	outputCommands_->push_back(outputCommandEntry(statement_int, TPRegexp(dqmDirectory_regexp.data())));
@@ -111,18 +113,14 @@ void DQMSimpleFileSaver::endJob()
 //    and save MonitorElements contained in temporary directory into ROOT file only;
 //    else save all MonitorElements into ROOT file
   if ( outputCommands_ ) {
-    const std::string dqmDirectory_temp = "tempSAVE";
-    
-    dqmCopyRecursively(dqmStore, dqmRootDirectory, dqmDirectory_temp, 1.0, 1, false, outputCommands_);
+    dqmCopyRecursively(dqmStore, dqmRootDirectory, dqmDirectory_temp, 1.0, 1, true);
+    dqmCopyRecursively(dqmStore, dqmDirectory_temp, dqmRootDirectory, 1.0, 1, false, outputCommands_);
 
-    //dqmStore.showDirStructure();
-  
-    dqmStore.save(outputFileName_, dqmDirectory_temp);  
-
+    dqmStore.setCurrentFolder(dqmRootDirectory);
     dqmStore.rmdir(dqmDirectory_temp);
+
+    dqmStore.save(outputFileName_); 
   } else {
-    //dqmStore.showDirStructure();
-  
     dqmStore.save(outputFileName_);  
   }
 }
