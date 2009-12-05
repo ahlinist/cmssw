@@ -565,6 +565,20 @@ vector<TH1F*> vhBsVtxProb;
 vector<TH1F*> vhTime;
 vector<TH1F*> vhBsMass_NoTimeCut;
 
+vector<TH1F*> vhBdChi2;
+vector<TH1F*> vhBdChi2Ndof;
+vector<TH1F*> vhBdVtxProb;
+vector<TH1F*> vhBdK1Pt;
+vector<TH1F*> vhBdK2Pt;
+vector<TH1F*> vhKstarMass;
+vector<TH1F*> vhBdDistSign3D;
+vector<TH1F*> vhBdDistSign1D;
+vector<TH1F*> vhBdDist3D;
+vector<TH1F*> vhBdTime;
+vector<TH1F*> vhBdMass_NoTimeCut;
+vector<TH1F*> vhBdMassFinal;
+vector<TH1F*> vhBdMassFinalAfterFit;
+
 
  bool isGenBsJpsiPhiMuMuKKEvent_;
   bool isGenBsJpsiKKEvent_;
