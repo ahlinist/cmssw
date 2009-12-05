@@ -3,6 +3,8 @@
 
 #include "DQMServices/Core/interface/DQMStore.h"
 
+#include <TPRegexp.h>
+
 #include <string>
 
 const std::string parKeyword = "#PAR#";
@@ -10,9 +12,13 @@ const std::string plotKeyword = "#PLOT#";
 const std::string rangeKeyword = "#RANGE";
 const std::string processDirKeyword = "#PROCESSDIR#";
 
+enum { kKeep, kDrop };
+
+typedef std::pair<int, TPRegexp> outputCommandEntry;
+
 std::string dqmDirectoryName(const std::string&);
 std::string dqmSubDirectoryName(const std::string&, const std::string&);
-void dqmCopyRecursively(DQMStore&, const std::string&, const std::string&, double, int, bool);
+void dqmCopyRecursively(DQMStore&, const std::string&, const std::string&, double, int, bool, std::vector<outputCommandEntry>* = 0);
 
 const std::string dqmSeparator = "/";
 const std::string dqmSeparator2 = std::string(dqmSeparator).append(dqmSeparator);
