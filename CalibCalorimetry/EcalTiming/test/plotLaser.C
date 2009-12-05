@@ -66,8 +66,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   customizeTHist(SM_timingh);
   SM_timingh->Draw("p");
   char mytitle[100]; sprintf(mytitle,"%s %s to optimal;FED;Time (ns)",runChar,SM_timing->GetTitle()); 
-  SM_timingh->SetMinimum(-25.);
-  SM_timingh->SetMaximum(25.);
+  SM_timingh->SetMinimum(-30.);
+  SM_timingh->SetMaximum(50.);
   SM_timingh->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/%sAnalysis_SM_timingCorrected_%i.%s",dirName,mType,runNumber,fileType); c[1]->Print(name); }
 
@@ -87,8 +87,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   customizeTHist(LM_timingh);
   LM_timingh->Draw("p");
   char mytitle[100]; sprintf(mytitle,"%s %s to optimal;FED;Time (ns)",runChar,LM_timing->GetTitle()); 
-  LM_timingh->SetMinimum(-25.);
-  LM_timingh->SetMaximum(25.);
+  LM_timingh->SetMinimum(-30.);
+  LM_timingh->SetMaximum(50.);
   LM_timingh->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/%sAnalysis_LM_timingCorrected_%i.%s",dirName,mType,runNumber,fileType); c[3]->Print(name); }
  
@@ -234,8 +234,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   timeCHProfilep->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s in ns",timeCHProfile->GetTitle()); 
   timeCHProfilep->SetTitle(mytitle);
-  timeCHProfilep->SetMinimum(-25.);
-  timeCHProfilep->SetMaximum(25.);
+  timeCHProfilep->SetMinimum(-30.);
+  timeCHProfilep->SetMaximum(50.);
   //timeTTProfile->SetMinimum(5.85);
   //timeTTProfile->SetMinimum(4.8);
   //timeTTProfile->SetMaximum(6.45);
@@ -272,8 +272,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   timeTTProfilep->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s in ns",timeTTProfile->GetTitle()); 
   timeTTProfilep->SetTitle(mytitle);
-  timeTTProfilep->SetMinimum(-25.);
-  timeTTProfilep->SetMaximum(25.);
+  timeTTProfilep->SetMinimum(-30.);
+  timeTTProfilep->SetMaximum(50.);
   //timeTTProfile->SetMinimum(5.85);
   //timeTTProfile->SetMinimum(4.8);
   //timeTTProfile->SetMaximum(6.45);
@@ -309,8 +309,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   EEPtimeCHProfilep->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s in ns",EEPtimeCHProfilep->GetTitle()); 
   EEPtimeCHProfilep->SetTitle(mytitle);
-  EEPtimeCHProfilep->SetMinimum(-25.);
-  EEPtimeCHProfilep->SetMaximum(25.);
+  EEPtimeCHProfilep->SetMinimum(-30.);
+  EEPtimeCHProfilep->SetMaximum(50.);
   //EEPtimeCHProfile->SetMinimum(4.5);
   //EEPtimeCHProfile->SetMaximum(5.5);
   EEPtimeCHProfilep->GetXaxis()->SetNdivisions(18);
@@ -344,8 +344,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   EEMtimeCHProfilep->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s in ns",EEMtimeCHProfilep->GetTitle()); 
   EEMtimeCHProfilep->SetTitle(mytitle);
-  EEMtimeCHProfilep->SetMinimum(-25.);
-  EEMtimeCHProfilep->SetMaximum(25.);
+  EEMtimeCHProfilep->SetMinimum(-30.);
+  EEMtimeCHProfilep->SetMaximum(50.);
   //EEPtimeCHProfile->SetMinimum(4.5);
   //EEPtimeCHProfile->SetMaximum(5.5);
   EEMtimeCHProfilep->GetXaxis()->SetNdivisions(18);
@@ -379,8 +379,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   EEPtimeTTProfilep->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s in ns",EEPtimeTTProfile->GetTitle()); 
   EEPtimeTTProfilep->SetTitle(mytitle);
-  EEPtimeTTProfilep->SetMinimum(-25.);
-  EEPtimeTTProfilep->SetMaximum(25.);
+  EEPtimeTTProfilep->SetMinimum(-30.);
+  EEPtimeTTProfilep->SetMaximum(50.);
   //timeTTProfile->SetMinimum(5.85);
   //timeTTProfile->SetMinimum(4.8);
   //timeTTProfile->SetMaximum(6.45);
@@ -416,8 +416,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   EEMtimeTTProfilep->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s in ns",EEMtimeTTProfile->GetTitle()); 
   EEMtimeTTProfilep->SetTitle(mytitle);
-  EEMtimeTTProfilep->SetMinimum(-25.);
-  EEMtimeTTProfilep->SetMaximum(25.);
+  EEMtimeTTProfilep->SetMinimum(-30.);
+  EEMtimeTTProfilep->SetMaximum(50.);
   //timeTTProfile->SetMinimum(5.85);
   //timeTTProfile->SetMinimum(4.8);
   //timeTTProfile->SetMaximum(6.45);
@@ -439,7 +439,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,fullAmpProfileEB->GetTitle()); 
   fullAmpProfileEB->SetTitle(mytitle);
   if (fullAmpProfileEB->GetMaximum() > 0 ) {
-     fullAmpProfileEB->SetMinimum(1.0);
+     fullAmpProfileEB->SetMinimum(0.1);
      c[21]->SetLogy(0);
      c[21]->SetLogz(1);
   }
@@ -452,7 +452,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,fullAmpProfileEEP->GetTitle()); 
   fullAmpProfileEEP->SetTitle(mytitle);
   if (fullAmpProfileEEP->GetMaximum() > 0 ) {
-     fullAmpProfileEEP->SetMinimum(1.0);
+     fullAmpProfileEEP->SetMinimum(0.1);
      c[22]->SetLogy(0);
      c[22]->SetLogz(1);
   }
@@ -466,7 +466,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,fullAmpProfileEEM->GetTitle()); 
   fullAmpProfileEEM->SetTitle(mytitle);
   if (fullAmpProfileEEM->GetMaximum() > 0 ) {
-     fullAmpProfileEEM->SetMinimum(1.0);
+     fullAmpProfileEEM->SetMinimum(0.1);
      c[23]->SetLogy(0);
      c[23]->SetLogz(1);
   }
@@ -479,8 +479,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   TProfile *timeTTAllFEDsEtap =  TProfToRelProf(timeTTAllFEDsEta,"timeTTAllFEDsEtap",-5,25.);
   customizeTProfile(timeTTAllFEDsEtap);
   timeTTAllFEDsEtap->Draw("p");
-  timeTTAllFEDsEtap->SetMinimum(-25.);
-  timeTTAllFEDsEtap->SetMaximum(25.);
+  timeTTAllFEDsEtap->SetMinimum(-30.);
+  timeTTAllFEDsEtap->SetMaximum(50.);
   char mytitle[100]; sprintf(mytitle,"%s to optimal;i#eta;Time (ns)",timeTTAllFEDsEta->GetTitle()); 
   timeTTAllFEDsEtap->SetTitle(mytitle);
   gStyle->SetOptStat(100);
@@ -490,8 +490,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   TProfile *timeTTAllFEDsEtaEEPp =  TProfToRelProf(timeTTAllFEDsEtaEEP,"timeTTAllFEDsEtaEEPp",-5,25.);
   customizeTProfile(timeTTAllFEDsEtaEEPp);
   timeTTAllFEDsEtaEEPp->Draw("p");
-  timeTTAllFEDsEtaEEPp->SetMinimum(-25.);
-  timeTTAllFEDsEtaEEPp->SetMaximum(25.);
+  timeTTAllFEDsEtaEEPp->SetMinimum(-30.);
+  timeTTAllFEDsEtaEEPp->SetMaximum(50.);
   char mytitle[100]; sprintf(mytitle,"%s to optimal;i#eta;Time (ns)",timeTTAllFEDsEtaEEP->GetTitle()); 
   timeTTAllFEDsEtaEEPp->SetTitle(mytitle);
   gStyle->SetOptStat(100);
@@ -501,8 +501,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   TProfile *timeTTAllFEDsEtaEEMp =  TProfToRelProf(timeTTAllFEDsEtaEEM,"timeTTAllFEDsEtaEEMp",-5,25.);
   customizeTProfile(timeTTAllFEDsEtaEEMp);
   timeTTAllFEDsEtaEEMp->Draw("p");
-  timeTTAllFEDsEtaEEMp->SetMinimum(-25.);
-  timeTTAllFEDsEtaEEMp->SetMaximum(25.);
+  timeTTAllFEDsEtaEEMp->SetMinimum(-30.);
+  timeTTAllFEDsEtaEEMp->SetMaximum(50.);
   char mytitle[100]; sprintf(mytitle,"%s to optimal;i#eta;Time (ns)",timeTTAllFEDsEtaEEM->GetTitle()); 
   timeTTAllFEDsEtaEEMp->SetTitle(mytitle);
   gStyle->SetOptStat(100);
@@ -516,8 +516,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   TProfile *timeCHAllFEDsEtap =  TProfToRelProf(timeCHAllFEDsEta,"timeCHAllFEDsEtap",-5,25.);
   customizeTProfile(timeCHAllFEDsEtap);
   timeCHAllFEDsEtap->Draw("p");
-  timeCHAllFEDsEtap->SetMinimum(-25.);
-  timeCHAllFEDsEtap->SetMaximum(25.);
+  timeCHAllFEDsEtap->SetMinimum(-30.);
+  timeCHAllFEDsEtap->SetMaximum(50.);
   char mytitle[100]; sprintf(mytitle,"%s to optimal;i#eta;Time (ns)",timeCHAllFEDsEta->GetTitle()); 
   timeCHAllFEDsEtap->SetTitle(mytitle);
   gStyle->SetOptStat(100);
@@ -586,16 +586,16 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Amplitude to time
   c[34]->cd();
   gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalAmplitudesEE:(crystalTimesEE-5.)*25. >> hctEEtoAmp(52,-26.,26.,24,0.,150.)","","COLZ");
-  char mytitle[100]; sprintf(mytitle,"%s EE Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (ADC)",runChar); 
+  eventTimingInfoTree->Draw("crystalAmplitudesEE:(crystalTimesEE-5.)*25. >> hctEEtoAmp(52,-26.,26.,30,0.,30.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EE Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (GeV)",runChar); 
   hctEEtoAmp->SetTitle(mytitle);
   hctEEtoAmp->GetXaxis()->SetNdivisions(512);
   hctEEtoAmp->GetYaxis()->SetNdivisions(507);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[34]->Print(name); } 
   c[35]->cd();
   gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalAmplitudesEB:(crystalTimesEB-5.)*25. >> hctEBtoAmp(52,-26.,26.,24,0.,150.)","","COLZ");
-  char mytitle[100]; sprintf(mytitle,"%s EB Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (ADC)",runChar); 
+  eventTimingInfoTree->Draw("crystalAmplitudesEB:(crystalTimesEB-5.)*25. >> hctEBtoAmp(52,-26.,26.,30,0.,30.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EB Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (GeV)",runChar); 
   hctEBtoAmp->SetTitle(mytitle);
   hctEBtoAmp->GetXaxis()->SetNdivisions(512);
   hctEBtoAmp->GetYaxis()->SetNdivisions(507);
@@ -604,16 +604,16 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Amplitdue to ave event time
   c[36]->cd();
   gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalAmplitudesEB:(correctionToSampleEB-5.0)*25. >> hctEBtoAmpEvt(52,-26.,26.,24,0.,150.)","","COLZ");
-  char mytitle[100]; sprintf(mytitle,"%s EB Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (ADC)",runChar); 
+  eventTimingInfoTree->Draw("crystalAmplitudesEB:(correctionToSampleEB-5.0)*25. >> hctEBtoAmpEvt(52,-26.,26.,30,0.,30.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EB Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (GeV)",runChar); 
   hctEBtoAmpEvt->SetTitle(mytitle);
   hctEBtoAmpEvt->GetXaxis()->SetNdivisions(512);
   hctEBtoAmpEvt->GetYaxis()->SetNdivisions(507);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[36]->Print(name); } 
   c[37]->cd();
   gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalAmplitudesEE:(correctionToSampleEB-5.0)*25. >> hctEEtoAmpEvt(52,-26.,26.,24,0.,150.)","","COLZ");
-  char mytitle[100]; sprintf(mytitle,"%s EE Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (ADC)",runChar); 
+  eventTimingInfoTree->Draw("crystalAmplitudesEE:(correctionToSampleEB-5.0)*25. >> hctEEtoAmpEvt(52,-26.,26.,30,0.,30.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EE Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (GeV)",runChar); 
   hctEEtoAmpEvt->SetTitle(mytitle);
   hctEEtoAmpEvt->GetXaxis()->SetNdivisions(512);
   hctEEtoAmpEvt->GetYaxis()->SetNdivisions(507);
@@ -622,16 +622,16 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Amplitude to time error.
   c[38]->cd();
   gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimeErrorsEE)*25.:crystalAmplitudesEE >> hctEEtoAmpErr(24,0.,150.,26,0.,26.)","","COLZ");
-  char mytitle[100]; sprintf(mytitle,"%s EE Time Error to Crystal Amplitudes;Crystal Amplitude (ADC);Time Error (ns)",runChar); 
+  eventTimingInfoTree->Draw("(crystalTimeErrorsEE)*25.:crystalAmplitudesEE >> hctEEtoAmpErr(30,0.,30.,26,0.,26.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EE Time Error to Crystal Amplitudes;Crystal Amplitude (GeV);Time Error (ns)",runChar); 
   hctEEtoAmpErr->SetTitle(mytitle);
   hctEEtoAmpErr->GetXaxis()->SetNdivisions(512);
   hctEEtoAmpErr->GetYaxis()->SetNdivisions(507);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[38]->Print(name); } 
   c[39]->cd();
   gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimeErrorsEB)*25.:crystalAmplitudesEB >> hctEBtoAmpErr(24,0.,150.,26,0.,26.)","","COLZ");
-  char mytitle[100]; sprintf(mytitle,"%s EB Time Error to Crystal Amplitudes;Crystal Amplitude (ADC);Time Error (ns)",runChar); 
+  eventTimingInfoTree->Draw("(crystalTimeErrorsEB)*25.:crystalAmplitudesEB >> hctEBtoAmpErr(30,0.,30.,26,0.,26.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EB Time Error to Crystal Amplitudes;Crystal Amplitude (GeV);Time Error (ns)",runChar); 
   hctEBtoAmpErr->SetTitle(mytitle);
   hctEBtoAmpErr->GetXaxis()->SetNdivisions(512);
   hctEBtoAmpErr->GetYaxis()->SetNdivisions(507);
@@ -741,9 +741,12 @@ int nxbins = myprof->GetNbinsX();
 for (int i=1; i<(nxbins+1); i++ ) {   
        Double_t oldcont = myprof->GetBinContent(i);
        Double_t binents = myprof->GetBinEntries(i);
-       if (binents == 0 ) {binents =1.;myprof->SetBinEntries(i,1); }
+       if (binents == 0 ) { continue; /*binents =1.;myprof->SetBinEntries(i,1);*/ }
        myprof->SetBinContent(i,myscale*(oldcont+myfac)*binents);
 	   Double_t newentries = myprof->GetBinEntries(i);
+	   Double_t newcont = myprof->GetBinContent(i);
+
+	   if ( newentries == 1) { myprof->SetBinError(i,5+fabs(myprof->GetBinContent(i)-myprof->GetBinContent(i)/2.5));}
 	   //if (newentries != binents) {std::cout << "NONONO" << std::endl;}
 }
 }
