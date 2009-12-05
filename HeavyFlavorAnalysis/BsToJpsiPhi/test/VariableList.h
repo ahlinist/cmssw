@@ -321,6 +321,55 @@
 	int isGenJpsiEvent_;
 
 
+	// for the Bd->Kstar analysis
+	double chi2_Bd_  ; 
+	double ndof_Bd_  ;
+	double BdVtxProb_;
+
+	double BdfitM_Kpi_;
+
+	double BdVtx_x_ ;
+	double BdVtx_y_;
+	double BdVtx_z_;
+
+	double BdMass_after_ ;
+	double BdPt_after_    ;
+	double BdPz_after_    ;
+	double BdPhi_after_   ;
+	double BdEta_after_   ;
+
+	double KstarMass_after_ ;
+
+
+	double BdK1Pt_after_  ; 
+	double BdK1Pz_after_  ; 
+	double BdK1Eta_after_ ; 
+	double BdK1Phi_after_ ; 
+	double BdK2Pt_after_  ; 
+	double BdK2Pz_after_  ; 
+	double BdK2Eta_after_ ; 
+	double BdK2Phi_after_ ; 
+
+	double BdLxy_;
+	double BdLxy2_;
+	double BderrX_;
+	double BderrY_;
+	double BderrXY_;
+	double Bdsct1_;
+	double Bdsct2_;
+
+	double BdDist3d_;
+	double BddDist3d_;
+	double BdTime3d_;
+	double BddTime3d_;
+	double BdDist_;
+	double BddDist_;
+	double BdTime_;
+	double BddTime_;         
+
+
+
+
 //*************************
 // analysis code variables
 //*************************
@@ -512,6 +561,9 @@ vector<TH1F*> vhBsVtxProb;
  TH1F *hChi2_Other                        ;
  TH1F *hChi2Ndof_Other                    ;
  TH1F *hBsVtxProb_Other                   ;
+
+vector<TH1F*> vhTime;
+vector<TH1F*> vhBsMass_NoTimeCut;
 
 
  bool isGenBsJpsiPhiMuMuKKEvent_;

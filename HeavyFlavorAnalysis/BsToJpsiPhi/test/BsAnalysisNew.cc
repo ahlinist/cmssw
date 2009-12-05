@@ -32,8 +32,11 @@ const double minProbability = 0.02;
 const double KaonPtCut = 0.9;
 const double nominalPhiMass = 1.0195 ;
 const double phiMassWindow = 0.007;
+//const double phiMassWindow = 0.02;
 const double decayLengthCut = 3;
+//const double decayLengthCut = -9999;
 const double pointingCut = 0.8;
+//const double pointingCut = -9999;
 
 // maximum number of event to loop over. -1 means all events.
 const int maxNumEvents = -1;
@@ -43,15 +46,15 @@ const int iNumberOfCategories_ = 10;
 // ***************main function*****************************
 void BsAnalysisNew() {
   
-  //  TFile *f = new TFile("BtoJPsiMuMu_Nov30.root");
+     TFile *f = new TFile("BtoJPsiMuMu_Nov30.root");
   //    TFile *f = new TFile("ppmumuX.root");
   //  TFile *f = new TFile("ppmuX.root");
-    TFile *f = new TFile("JPsiMuMu_Nov30.root");
+  //    TFile *f = new TFile("JPsiMuMu_Nov30.root");
   
-    // TString outputhistofilename = "BtoJPsiMuMuHistoFile.root";
+    TString outputhistofilename = "BtoJPsiMuMuHistoFile.root";
   //    TString outputhistofilename = "ppmumuXHistoFile.root";
   //        TString outputhistofilename = "ppmuXHistoFile.root";
-  TString outputhistofilename = "JPsiMuMuHistoFile.root";
+  //    TString outputhistofilename = "JPsiMuMuHistoFile.root";
   
 
   // booking histograms
@@ -118,19 +121,16 @@ void BsAnalysisNew() {
     
   
     // successful fit, fill histograms
-    fillHistograms(JpsiMass_after_,     vhJPsiMass); 
-    fillHistograms(PhiMass_after_,      vhPhiMass); 
-    fillHistograms(Dist3d_,             vhDist3D); 
+ 
+ 
     fillHistograms(chi2_Bs_,            vhChi2);
     fillHistograms(chi2_Bs_ / ndof_Bs_ , vhChi2Ndof);
     fillHistograms(BsVtxProb_,          vhBsVtxProb );
+
     fillHistograms(K1Pt_after_,         vhK1Pt);
     fillHistograms(K2Pt_after_,         vhK2Pt);
-    fillHistograms(Dist3d_ / dDist3d_ , vhDistSign3D);
-    fillHistograms(Dist_ / dDist_    ,  vhDistSign1D);
-    fillHistograms(AngleBsDecayLength_, vhPointingAngle );
 
-
+ 
     if(BsVtxProb_ < minProbability) continue; // passed minimum vertex probability cut
     increaseCountersByOne(iBsJPsiPhiSignalEventsProbVertex, iBsJPsiKKSignalEventsProbVertex, iBdJPsiKstarSignalEventsProbVertex,
 			  iBsOtherEventsProbVertex, iBdOtherEventsProbVertex, iOtherEventsProbVertex,
@@ -140,11 +140,24 @@ void BsAnalysisNew() {
     increaseCountersByOne(iBsJPsiPhiSignalEventsKaonPtCut, iBsJPsiKKSignalEventsKaonPtCut, iBdJPsiKstarSignalEventsKaonPtCut, 
 			  iBsOtherEventsKaonPtCut, iBdOtherEventsKaonPtCut, iOtherEventsKaonPtCut,
 			  iBsJpsiEtaEventsKaonPtCut, iBdJpsiK10EventsKaonPtCut, iBdJpsiK0EventsKaonPtCut, iBpJpsiKpEventsKaonPtCut);
-    
+ 
+
+    fillHistograms(JpsiMass_after_,     vhJPsiMass); 
+    fillHistograms(PhiMass_after_,      vhPhiMass); 
+ 
+  
     if( fabs(PhiMass_after_ - nominalPhiMass) > phiMassWindow) continue;   // passed tight phi mass cut
     increaseCountersByOne(iBsJPsiPhiSignalEventsPhiMassCut, iBsJPsiKKSignalEventsPhiMassCut, iBdJPsiKstarSignalEventsPhiMassCut, 
 			  iBsOtherEventsPhiMassCut, iBdOtherEventsPhiMassCut, iOtherEventsPhiMassCut,
 			  iBsJpsiEtaEventsPhiMassCut, iBdJpsiK10EventsPhiMassCut, iBdJpsiK0EventsPhiMassCut, iBpJpsiKpEventsPhiMassCut);
+
+    
+    fillHistograms(Dist3d_ / dDist3d_ , vhDistSign3D);
+    fillHistograms(Dist_ / dDist_    ,  vhDistSign1D);
+    fillHistograms(AngleBsDecayLength_, vhPointingAngle );
+    fillHistograms(Dist3d_,             vhDist3D); 
+    fillHistograms(Time_,               vhTime);
+    fillHistograms(BfitM_KK_,           vhBsMass_NoTimeCut);
     
     if(Dist_/ dDist_ < decayLengthCut) continue;  // passed transverse decay length cut
     increaseCountersByOne(iBsJPsiPhiSignalEventsDecayLengthCut, iBsJPsiKKSignalEventsDecayLengthCut, iBdJPsiKstarSignalEventsDecayLengthCut, 
@@ -714,6 +727,51 @@ void setBranchAddresses(TTree *tree){
    tree->SetBranchAddress("isGenJpsiEvent_",                                    &isGenJpsiEvent_);                                                     
   
 
+  tree->SetBranchAddress("chi2_Bd"        ,   &chi2_Bd_          );
+  tree->SetBranchAddress("ndof_Bd"        ,   &ndof_Bd_        	 );
+  tree->SetBranchAddress("BdVtxProb"      ,   &BdVtxProb_      	 );
+  							
+  tree->SetBranchAddress("BdfitM_Kpi"     ,   &BdfitM_Kpi_     	 );
+  							
+  tree->SetBranchAddress("BdVtx_x"        ,   &BdVtx_x_        	 );
+  tree->SetBranchAddress("BdVtx_y"        ,   &BdVtx_y_        	 );
+  tree->SetBranchAddress("BdVtx_z"        ,   &BdVtx_z_        	 );
+  							
+  tree->SetBranchAddress("BdMass_after"   ,   &BdMass_after_   	 );
+  tree->SetBranchAddress("BdPt_after"     ,   &BdPt_after_     	 );
+  tree->SetBranchAddress("BdPz_after"     ,   &BdPz_after_     	 );
+  tree->SetBranchAddress("BdPhi_after"    ,   &BdPhi_after_    	 );
+  tree->SetBranchAddress("BdEta_after"    ,   &BdEta_after_    	 );
+  							
+  tree->SetBranchAddress("KstarMass_after",   &KstarMass_after_	 );
+							
+  tree->SetBranchAddress("BdK1Pt_after"   ,   &BdK1Pt_after_   	 );
+  tree->SetBranchAddress("BdK1Pz_after"   ,   &BdK1Pz_after_   	 );
+  tree->SetBranchAddress("BdK1Eta_after"  ,   &BdK1Eta_after_  	 );
+  tree->SetBranchAddress("BdK1Phi_after"  ,   &BdK1Phi_after_  	 );
+  tree->SetBranchAddress("BdK2Pt_after"   ,   &BdK2Pt_after_   	 );
+  tree->SetBranchAddress("BdK2Pz_after"   ,   &BdK2Pz_after_   	 );
+  tree->SetBranchAddress("BdK2Eta_after"  ,   &BdK2Eta_after_  	 );
+  tree->SetBranchAddress("BdK2Phi_after"  ,   &BdK2Phi_after_  	 );
+  						
+  tree->SetBranchAddress("BdLxy"          ,   &BdLxy_          	 );
+  tree->SetBranchAddress("BdLxy2"         ,   &BdLxy2_         	 );
+  tree->SetBranchAddress("BderrX"         ,   &BderrX_         	 );
+  tree->SetBranchAddress("BderrY"         ,   &BderrY_         	 );
+  tree->SetBranchAddress("BderrXY"        ,   &BderrXY_        	 );
+  tree->SetBranchAddress("Bdsct1"         ,   &Bdsct1_         	 );
+  tree->SetBranchAddress("Bdsct2"         ,   &Bdsct2_         	 );
+  							
+  tree->SetBranchAddress("BdDist3d"       ,   &BdDist3d_       	 );
+  tree->SetBranchAddress("BddDist3d"      ,   &BddDist3d_      	 );
+  tree->SetBranchAddress("BdTime3d"       ,   &BdTime3d_       	 );
+  tree->SetBranchAddress("BddTime3d"      ,   &BddTime3d_      	 );
+  tree->SetBranchAddress("BdDist"         ,   &BdDist_         	 );
+  tree->SetBranchAddress("BddDist"        ,   &BddDist_        	 );
+  tree->SetBranchAddress("BdTime"         ,   &BdTime_         	 );
+  tree->SetBranchAddress("BddTime"        ,   &BddTime_          );
+
+
 }
 
 
@@ -734,7 +792,9 @@ void writeHistos(TString outputfilename){
     vhPointingAngle[i]->Write();       
     vhChi2[i]->Write();                  
     vhChi2Ndof[i]->Write();            
-    vhBsVtxProb[i]->Write();           
+    vhBsVtxProb[i]->Write(); 
+    vhTime[i]->Write();
+    vhBsMass_NoTimeCut[i]->Write();
   }
  histofile->Write();
  histofile->Close();
@@ -899,6 +959,26 @@ vhBsVtxProb          .push_back( new TH1F ("hBsVtxProb_BsJpsiEta"               
 vhBsVtxProb          .push_back( new TH1F ("hBsVtxProb_BdJpsiK10"                  ,"hBsVtxProb_BdJpsiK10"        , 100, -0.5, 1.5                   ) );
 vhBsVtxProb          .push_back( new TH1F ("hBsVtxProb_BdJpsiK0"                   ,"hBsVtxProb_BdJpsiK0"         , 100, -0.5, 1.5                   ) );
 vhBsVtxProb          .push_back( new TH1F ("hBsVtxProb_BpJpsiKp"                   ,"hBsVtxProb_BpJpsiKp"         , 100, -0.5, 1.5                   ) );
+vhTime               .push_back( new TH1F ("hTime_BsJPsiPhiSignal"                 ,"hTime_BsJPsiPhiSignal"   , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_BsJPsiKKSignal"                  ,"hTime_BsJPsiKKSignal"    , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_BdJPsiKstarSignal"               ,"hTime_BdJPsiKstarSignal" , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_BsOther"                         ,"hTime_BsOther"           , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_BdOther"                         ,"hTime_BdOther"           , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_Other"                           ,"hTime_Other"             , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_BsJpsiEta"                       ,"hTime_BsJpsiEta"         , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_BdJpsiK10"                       ,"hTime_BdJpsiK10"         , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_BdJpsiK0"                        ,"hTime_BdJpsiK0"          , 100, 0,10                   ) );
+vhTime               .push_back( new TH1F ("hTime_BpJpsiKp"                        ,"hTime_BpJpsiKp"          , 100, 0,10                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BsJPsiPhiSignal"            ,"hBsMass_NoTimeCut_BsJPsiPhiSignal"  , 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BsJPsiKKSignal"             ,"hBsMass_NoTimeCut_BsJPsiKKSignal"   , 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BdJPsiKstarSignal"          ,"hBsMass_NoTimeCut_BdJPsiKstarSignal", 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BsOther"                    ,"hBsMass_NoTimeCut_BsOther"          , 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BdOther"                    ,"hBsMass_NoTimeCut_BdOther"          , 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_Other"                      ,"hBsMass_NoTimeCut_Other"            , 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BsJpsiEta"                  ,"hBsMass_NoTimeCut_BsJpsiEta"        , 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BdJpsiK10"                  ,"hBsMass_NoTimeCut_BdJpsiK10"        , 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BdJpsiK0"                   ,"hBsMass_NoTimeCut_BdJpsiK0"         , 100, 5.2, 5.7                   ) );
+vhBsMass_NoTimeCut          .push_back( new TH1F ("hBsMass_NoTimeCut_BpJpsiKp"                   ,"hBsMass_NoTimeCut_BpJpsiKp"         , 100, 5.2, 5.7                   ) );
 
 
 
