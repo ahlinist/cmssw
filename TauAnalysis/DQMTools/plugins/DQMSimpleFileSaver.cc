@@ -10,15 +10,63 @@
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+
+#include <TPRegexp.h>
+#include <TObjArray.h>
+#include <TObjString.h>
+#include <TString.h>
+
 #include <iostream>
 
 DQMSimpleFileSaver::DQMSimpleFileSaver(const edm::ParameterSet& cfg)
+  : outputCommands_(0),
+    cfgError_(0)
 {
-  //std::cout << "<DQMSimpleFileSaver::DQMSimpleFileSaver>:" << std::endl;
+  std::cout << "<DQMSimpleFileSaver::DQMSimpleFileSaver>:" << std::endl;
 
-  cfgError_ = 0;
+  if ( cfg.exists("outputCommands") ) {
+    typedef std::vector<std::string> vstring;
+    vstring outputCommands = cfg.getParameter<vstring>("outputCommands");
 
-  dqmDirectories_drop_ = cfg.exists("drop") ? cfg.getParameter<vstring>("drop") : vstring();
+    TPRegexp validOutputCommandPattern_line("keep|drop\\s+[a-zA-Z0-9\\*/]+");
+    TPRegexp validOutputCommandPattern_dqmDirectory("(keep|drop)\\s+([a-zA-Z0-9\\*/]+)");
+
+    for ( vstring::const_iterator outputCommand = outputCommands.begin();
+	  outputCommand != outputCommands.end(); ++outputCommand ) {
+
+//--- check if output command specified in configuration file
+//    matches the pattern "keep" or "drop" plus name of DQM directory
+      TString outputCommand_tstring = outputCommand->data();
+      if ( validOutputCommandPattern_line.Match(outputCommand_tstring) == 1 ) {
+
+//--- match individually "keep" or drop statement and name of DQM directory;
+//    require three matches (first match refers to entire line)
+	TObjArray* subStrings = validOutputCommandPattern_dqmDirectory.MatchS(outputCommand_tstring);
+	assert(subStrings->GetEntries() == 3);
+
+	std::string statement = ((TObjString*)subStrings->At(1))->GetString().Data();
+	int statement_int = -1;
+	if ( statement == "keep" ) statement_int = kKeep;
+	if ( statement == "drop" ) statement_int = kDrop;
+	assert(statement_int == kKeep || statement_int == kDrop);
+	std::cout << " statement_int = " << statement_int << std::endl;
+	
+	std::string dqmDirectory = ((TObjString*)subStrings->At(2))->GetString().Data();
+	int errorFlag = 0;
+	std::string dqmDirectory_regexp = replace_string(dqmDirectory, "*", "[a-zA-Z0-9/]*", 0, 1000, errorFlag);
+//--- match the names of all DQM subdirectories also
+	//dqmDirectory_regexp += "[a-zA-Z0-9/]*";
+	std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp << std::endl;
+
+	if ( !outputCommands_ ) outputCommands_ = new std::vector<outputCommandEntry>();
+	outputCommands_->push_back(outputCommandEntry(statement_int, TPRegexp(dqmDirectory_regexp.data())));
+      } else {
+	edm::LogError("DQMSimpleFileSaver") << " Invalid outputCommand = " << (*outputCommand) << " --> histograms will NOT be saved !!";
+	cfgError_ = 1;
+      }
+    }
+  }
 
   outputFileName_ = cfg.getParameter<std::string>("outputFileName");
   if ( outputFileName_ == "" ) {
@@ -32,7 +80,7 @@ DQMSimpleFileSaver::DQMSimpleFileSaver(const edm::ParameterSet& cfg)
 
 DQMSimpleFileSaver::~DQMSimpleFileSaver() 
 {
-// nothing to be done yet...
+  delete outputCommands_;
 }
 
 void DQMSimpleFileSaver::analyze(const edm::Event&, const edm::EventSetup&)
@@ -58,19 +106,25 @@ void DQMSimpleFileSaver::endJob()
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-//--- delete all MonitorElements in directories specified to be dropped 
-//    before saving MonitorElements (the ones that were not dropped) into ROOT file
-  for ( vstring::const_iterator dqmDirectory_drop = dqmDirectories_drop_.begin();
-	dqmDirectory_drop != dqmDirectories_drop_.end(); ++dqmDirectory_drop ) {
+//--- in case output commands have been specified in configuration file,
+//    copy subset of plots passing "keep" statements into temporary directory ("tempSAVE")
+//    and save MonitorElements contained in temporary directory into ROOT file only;
+//    else save all MonitorElements into ROOT file
+  if ( outputCommands_ ) {
+    const std::string dqmDirectory_temp = "tempSAVE";
     
-    std::cout << " dropping all MonitorElements in directory = " << (*dqmDirectory_drop) << std::endl;
+    dqmCopyRecursively(dqmStore, dqmRootDirectory, dqmDirectory_temp, 1.0, 1, false, outputCommands_);
 
-    dqmStore.rmdir(*dqmDirectory_drop);
-  }
-
-  //dqmStore.showDirStructure();
+    //dqmStore.showDirStructure();
   
-  dqmStore.save(outputFileName_);      
+    dqmStore.save(outputFileName_, dqmDirectory_temp);  
+
+    dqmStore.rmdir(dqmDirectory_temp);
+  } else {
+    //dqmStore.showDirStructure();
+  
+    dqmStore.save(outputFileName_);  
+  }
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

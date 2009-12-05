@@ -6,8 +6,8 @@
  *  Class to write all monitor elements registered in DQMStore into ROOT file
  *  (without any naming restrictions imposed by "regular" DQMFileSaver)
  *
- *  $Date: 2009/01/21 17:34:57 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/08/28 13:44:38 $
+ *  $Revision: 1.2 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -16,6 +16,8 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 
 #include <string>
 #include <vector>
@@ -29,8 +31,7 @@ class DQMSimpleFileSaver : public edm::EDAnalyzer
   virtual void endJob();  
 
 private:
-  typedef std::vector<std::string> vstring;
-  vstring dqmDirectories_drop_;
+  std::vector<outputCommandEntry>* outputCommands_;
 
   std::string outputFileName_;
 
