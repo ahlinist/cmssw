@@ -118,11 +118,11 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
       std::cout << " statement = " << statement << std::endl;
 
       TPRegexp& dqmDirectory_regexp = outputCommand->second;
-      //std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp.GetPattern() << std::endl;
+      std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp.GetPattern() << std::endl;
 
-      std::cout << "--> dqmDirectory_regexp.Match(inputDirectory) = " << dqmDirectory_regexp.Match(inputDirectory) << std::endl;
+      std::cout << "--> dqmDirectory_regexp.Match(inputDirectory_tstring) = " << dqmDirectory_regexp.Match(inputDirectory_tstring) << std::endl;
 
-      if ( dqmDirectory_regexp.Match(inputDirectory) == 1 ) {
+      if ( dqmDirectory_regexp.Match(inputDirectory_tstring) == 1 ) {
 	if ( statement == kKeep ) copyMonitorElements = true;
 	if ( statement == kDrop ) copyMonitorElements = false;
       }
@@ -275,7 +275,7 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
     std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);
     std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
 
-    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, scaleFactor, mode, rmInputDirectory);
+    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, scaleFactor, mode, rmInputDirectory, outputCommands);
   }
 
 //--- delete inputDirectory 
