@@ -61,14 +61,19 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    hitCollectionEE_      = iConfig.getParameter<std::string>("hitCollectionEE");
    hitProducer_        = iConfig.getParameter<std::string>("hitProducer");
    hitProducerEE_        = iConfig.getParameter<std::string>("hitProducerEE");
+   rhitCollection_      = iConfig.getUntrackedParameter<std::string>("rhitCollection","");
+   rhitCollectionEE_      = iConfig.getUntrackedParameter<std::string>("rhitCollectionEE","");
+   rhitProducer_        = iConfig.getUntrackedParameter<std::string>("rhitProducer","");
+   rhitProducerEE_        = iConfig.getUntrackedParameter<std::string>("rhitProducerEE","");
    txtFileName_        = iConfig.getUntrackedParameter<std::string>("TTPeakTime","TTPeakPositionFile.txt");
    txtFileForChGroups_ = iConfig.getUntrackedParameter<std::string>("ChPeakTime","ChPeakTime.txt");
    ampl_thr_           = (float)(iConfig.getUntrackedParameter<double>("amplThr", 500.)); 
    ampl_thrEE_         = (float)(iConfig.getUntrackedParameter<double>("amplThrEE", ampl_thr_)); 
-
+   timeerrthr_         =  iConfig.getUntrackedParameter<double>("TimeErrorThreshold",10000.);
    min_num_ev_         = (int) (iConfig.getUntrackedParameter<double>("minNumEvt", 100.)); 
+   max_num_ev_         = (int) (iConfig.getUntrackedParameter<double>("maxNumEvt", -1.));
    timerunstart_       = iConfig.getUntrackedParameter<double>("RunStart",1220192037.);
-   timerunlength_       = iConfig.getUntrackedParameter<double>("RunLength",2.);
+   timerunlength_       =iConfig.getUntrackedParameter<double>("RunLength",2.);
    EBradius_           = iConfig.getUntrackedParameter<double>("EBRadius",1.4);
    corrtimeEcal        = iConfig.getUntrackedParameter<bool>("CorrectEcalReadout",false);
    corrtimeBH          = iConfig.getUntrackedParameter<bool>("CorrectBH",false);
@@ -361,7 +366,7 @@ void EcalTimingAnalysis::endJob() {
 	
     for(int cry=1; cry < numXtals; cry++){
 	  double numents = absoluteTimingConv_[dcc-1][0]->GetBinEntries(cry);
-      if( numents  > min_num_ev_ ){
+      if( numents  > min_num_ev_ &&(max_num_ev_ == -1 || numents  < max_num_ev_)){
 	DetId mydet = (ebdcc ? DetId(EBDetId(dcc-9,cry,EBDetId::SMCRYSTALMODE)) : DetId(EEDetId::unhashIndex(cry)) );
 	EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(mydet);
 	TT = elecId.towerId();
@@ -388,7 +393,7 @@ void EcalTimingAnalysis::endJob() {
     TT = 0;
     for(int cry=1; cry < numXtals; cry++){
 	  double numents = absoluteTimingConv_[dcc-1][0]->GetBinEntries(cry);
-      if( numents > min_num_ev_ ){
+      if( numents > min_num_ev_ &&(max_num_ev_ == -1 || numents  < max_num_ev_) ){
 	    DetId mydet = (ebdcc ? DetId(EBDetId(dcc-9,cry,EBDetId::SMCRYSTALMODE)) : DetId(EEDetId::unhashIndex(cry)) );
 	    EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(mydet);
 	    TT = elecId.towerId();
@@ -736,6 +741,23 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    // loop over hits
    const EcalUncalibratedRecHitCollection* hits = phits.product(); // get a ptr to the product
    
+  Handle<EcalRecHitCollection> prhits;
+  bool validrh = true;
+
+  try {
+    iEvent.getByLabel( rhitProducer_, rhitCollection_,prhits);
+    if (!prhits.isValid()){
+      validrh = false;
+	  edm::LogError("EcalTimingAnalysis") << "can't get the product for " << rhitCollection_;
+     }
+   }
+   catch (cms::Exception& ex ) 
+   {
+       validrh = false;
+   }
+  const EcalRecHitCollection* rhits = (validrh) ?  prhits.product() : 0; // get a ptr to the product
+   
+   
    if(ievt_%100 ==0){LogInfo("EcalTimingAnalysis") <<"Event: "<<ievt_<< "# of EcalUncalibratedRecHits hits: " << hits->size();}
    //std::cout <<  "# of EcalUncalibratedRecHits hits: " << hits->size() << std::endl;
    //Add the ability to calculate the average for each event, _ONLY_ if desired as this takes time
@@ -748,8 +770,8 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(anid);
      //int DCCid = elecId.dccId();
      //int SMind = anid.ic();
-     
-     if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+     //std::cout << " chi 2 " << ithit->chi2() << " amp " << ithit->amplitude() << " time " << ithit->jitter() << std::endl;      
+     if(ithit->chi2()> -1. && ithit->chi2()<timeerrthr_ && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
 	   if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEB,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
@@ -773,25 +795,38 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(anid);
      int DCCid = elecId.dccId();
      int SMind = anid.ic();
-     
+     double damp = ithit->amplitude();
+
      LogInfo("EcalTimingAnalysis")<<"SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      if (DCCid == 644 || DCCid == 645) std::cout << "SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
-     if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+     if(ithit->chi2()> -1. && ithit->chi2()<timeerrthr_ && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
        if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEB,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
+	   if ( rhits ) {
+	      EcalRecHitCollection::const_iterator itt = rhits->find(anid);
+		  if(itt==rhits->end()) continue;
+          uint32_t rhFlag = (*itt).recoFlag();
+          if (!(
+	           rhFlag == EcalRecHit::kGood      ||
+	           rhFlag == EcalRecHit::kOutOfTime ||
+	           rhFlag == EcalRecHit::kPoorCalib
+	           )
+	          ) continue;
+		  damp = (*itt).energy();	  
+	   }
        if (correctAVE_) mytime += 5.0 - averagetimeEB;
        if (timingTree_)
 	 { 
 	   TTreeMembers_.cryHashesEB_[TTreeMembers_.numEBcrys_]=anid.hashedIndex();
 	   TTreeMembers_.cryTimesEB_[TTreeMembers_.numEBcrys_]=mytime;
 	   TTreeMembers_.cryTimeErrorsEB_[TTreeMembers_.numEBcrys_]=ithit->chi2();
-	   TTreeMembers_.cryAmpsEB_[TTreeMembers_.numEBcrys_]=ithit->amplitude();
+	   TTreeMembers_.cryAmpsEB_[TTreeMembers_.numEBcrys_]=damp;
 	   TTreeMembers_.numEBcrys_++;
 	 }
-       fullAmpProfileEB_->Fill(anid.iphi(),anid.ieta(),ithit->amplitude());
+       fullAmpProfileEB_->Fill(anid.iphi(),anid.ieta(),damp);
        lasersPerEvt->Fill(ievt_);
-       amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
+       amplProfileConv_[DCCid-1][lambda]->Fill(SMind,damp);
        absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,mytime);
        Chi2ProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->chi2());
        if(lambda == 0){
@@ -809,13 +844,13 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        else if(SMind == 653  ){timeCry1[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
      }
      
-     amplProfileAll_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
+     amplProfileAll_[DCCid-1][lambda]->Fill(SMind,damp);
      absoluteTimingAll_[DCCid-1][lambda]->Fill(SMind,ithit->jitter()+5.0);
      
      if(ithit->chi2()<0 && false)
        std::cout << "analytic fit failed! EcalUncalibratedRecHit  id: "
 		 << EBDetId(ithit->id()) << "\t"
-		 << "amplitude: " << ithit->amplitude() << ", jitter: " << ithit->jitter()+5.0
+		 << "amplitude: " << damp << ", jitter: " << ithit->jitter()+5.0
 		 << std::endl;
 
    }//end of loop over hits
@@ -830,6 +865,24 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    // loop over hits
    const EcalUncalibratedRecHitCollection* hitsEE = phitsEE.product(); // get a ptr to the product
    
+   
+   Handle<EcalRecHitCollection> prhitsEE;
+   bool validrhE = true;
+   try {
+      iEvent.getByLabel( rhitProducerEE_, rhitCollectionEE_,prhitsEE);
+      if (!prhitsEE.isValid()){
+       validrhE = false;
+	   edm::LogError("EcalTimingAnalysis") << "can't get the product for " << rhitCollectionEE_;
+      }
+   }
+   catch (cms::Exception& ex)
+   {
+      validrhE = false;
+   }
+   
+   // loop over hits
+   const EcalRecHitCollection* rhitsEE = (validrhE) ? prhitsEE.product() :   0 ; // get a ptr to the product
+   
    if(ievt_%100 ==0){LogInfo("EcalTimingAnalysis") <<"Event: "<<ievt_<< " # of EcalUncalibratedRecHits hits: " << hitsEE->size();}
 
    //Calcualte the average EE event timing first.
@@ -843,7 +896,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        //int DCCid = elecId.dccId();
        //int SMind = anid.hashedIndex();
 
-       if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thrEE_ ) { // make sure fit has converged 
+       if(ithit->chi2()> -1. && ithit->chi2()<timeerrthr_ && ithit->amplitude()> ampl_thrEE_ ) { // make sure fit has converged 
 	if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
 	 double extrajit = timecorr(geometry_pEE,anid);
 	 double mytime = ithit->jitter() + extrajit+5.0;
@@ -868,25 +921,37 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      //NEW WAY of indexing this fellow
      int SMind = anid.hashedIndex();
 	   
-     
+     double damp = ithit->amplitude();
      LogInfo("EcalTimingAnalysis")<<"SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      
-     if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thrEE_ ) { // make sure fit has converged 
+     if(ithit->chi2()> -1. && ithit->chi2()< timeerrthr_ && ithit->amplitude()> ampl_thrEE_ ) { // make sure fit has converged 
 	   if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEE,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
        //if (correctAVE_) mytime += 5.0 - averagetimeEE;
        if (correctAVE_) mytime += 5.0 - averagetimeEB; //ACK, a HACK by Jason to make things work 'his' way.
+	   if ( rhitsEE ) {
+	      EcalRecHitCollection::const_iterator itt = rhitsEE->find(anid);
+		  if(itt==rhitsEE->end()) continue;
+          uint32_t rhFlag = (*itt).recoFlag();
+          if (!(
+	           rhFlag == EcalRecHit::kGood      ||
+	           rhFlag == EcalRecHit::kOutOfTime ||
+	           rhFlag == EcalRecHit::kPoorCalib
+	           )
+	          ) continue;
+		  damp = (*itt).energy();	  
+	   }
        if (timingTree_)
 	 {
 	   TTreeMembers_.cryHashesEE_[TTreeMembers_.numEEcrys_]=SMind;
 	   TTreeMembers_.cryTimesEE_[TTreeMembers_.numEEcrys_]=mytime;
 	   TTreeMembers_.cryTimeErrorsEE_[TTreeMembers_.numEEcrys_]=ithit->chi2();
-	   TTreeMembers_.cryAmpsEE_[TTreeMembers_.numEEcrys_]=ithit->amplitude();
+	   TTreeMembers_.cryAmpsEE_[TTreeMembers_.numEEcrys_]=damp;
 	   TTreeMembers_.numEEcrys_++;
 	 }
        lasersPerEvt->Fill(ievt_);
-       amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
+       amplProfileConv_[DCCid-1][lambda]->Fill(SMind,damp);
        absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,mytime);
        Chi2ProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->chi2());
        if(lambda == 0){
@@ -898,7 +963,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 		   ttTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaEEP_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime);
 	       ttTimingEtaRelEEP_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime-sMAves_[DCCid-1]+5.0);  
-	       fullAmpProfileEEP_->Fill(anid.ix(),anid.iy(),ithit->amplitude());
+	       fullAmpProfileEEP_->Fill(anid.ix(),anid.iy(),damp);
 		   }
 		   else {
 		   chTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
@@ -907,7 +972,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 		   ttTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaEEM_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime);
 	       ttTimingEtaRelEEM_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime-sMAves_[DCCid-1]+5.0);
-	       fullAmpProfileEEM_->Fill(anid.ix(),anid.iy(),ithit->amplitude());
+	       fullAmpProfileEEM_->Fill(anid.ix(),anid.iy(),damp);
 		   }
 	   
 	   
@@ -916,13 +981,13 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        else if(SMind == 653  ){timeCry1[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
      }
      
-     amplProfileAll_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
+     amplProfileAll_[DCCid-1][lambda]->Fill(SMind,damp);
      absoluteTimingAll_[DCCid-1][lambda]->Fill(SMind,ithit->jitter()+5.0);
 
      if(ithit->chi2()<0 && false)
      std::cout << "analytic fit failed! EcalUncalibratedRecHit  id: "
                << EEDetId(ithit->id()) << "\t"
-               << "amplitude: " << ithit->amplitude() << ", jitter: " << ithit->jitter()+5.0
+               << "amplitude: " << damp << ", jitter: " << ithit->jitter()+5.0
                << std::endl;
 
    }//end of loop over hits

@@ -65,12 +65,17 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       std::string hitCollectionEE_;
       std::string hitProducer_;
       std::string hitProducerEE_;
+	  std::string rhitCollection_;
+      std::string rhitCollectionEE_;
+      std::string rhitProducer_;
+      std::string rhitProducerEE_;
       std::string digiProducer_;
       float ampl_thr_;
       float ampl_thrEE_;
 	  double mintime_;
 	  double maxtime_;
       int min_num_ev_;
+      int max_num_ev_;
       int sm_;
       std::string txtFileName_;
       std::string txtFileForChGroups_;
@@ -179,6 +184,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	  } TTreeMembers_; 
       double allave_;
       double allshift_;
+      double timeerrthr_; 
       int minxtals_;
       bool writetxtfiles_;
       bool timingTree_;	  
