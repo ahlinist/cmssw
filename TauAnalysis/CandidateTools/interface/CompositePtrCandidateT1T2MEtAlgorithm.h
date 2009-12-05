@@ -105,19 +105,17 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   void compGenQuantities(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate, const reco::GenParticleCollection* genParticles)
   {
     const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1);
+    //std::cout << "genLeg1 = " << genLeg1 << std::endl;
     if ( genLeg1 ) {
       compositePtrCandidate.setP4Leg1gen(genLeg1->p4());
-      std::vector<const reco::GenParticle*> stableDaughters;
-      findDaughters(genLeg1, stableDaughters, 1);
-      compositePtrCandidate.setP4VisLeg1gen(getVisMomentum(stableDaughters));
+      compositePtrCandidate.setP4VisLeg1gen(getVisMomentum(genLeg1, genParticles));
     }
-
+    
     const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1);
+    //std::cout << "genLeg2 = " << genLeg2 << std::endl;
     if ( genLeg2 ) {
       compositePtrCandidate.setP4Leg2gen(genLeg2->p4());
-      std::vector<const reco::GenParticle*> stableDaughters;
-      findDaughters(genLeg2, stableDaughters, 1);
-      compositePtrCandidate.setP4VisLeg2gen(getVisMomentum(stableDaughters));
+      compositePtrCandidate.setP4VisLeg2gen(getVisMomentum(genLeg2, genParticles));
     }
   }
   void compCollinearApprox(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate,
@@ -128,15 +126,20 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     double x1_numerator = leg1.px()*leg2.py() - leg2.px()*leg1.py();
     double x1_denominator = leg2.py()*(leg1.px() + metPx) - leg2.px()*(leg1.py() + metPy);
     double x1 = ( x1_denominator != 0. ) ? x1_numerator/x1_denominator : -1.;
+    //std::cout << "x1 = " << x1 << std::endl;
+    bool isX1withinPhysRange = true;
+    double x1phys = getPhysX(x1, isX1withinPhysRange);
 
     double x2_numerator = x1_numerator;
     double x2_denominator = leg1.px()*(leg2.py() + metPy) - leg1.py()*(leg2.px() + metPx);
     double x2 = ( x2_denominator != 0. ) ? x2_numerator/x2_denominator : -1.;
+    //std::cout << "x2 = " << x2 << std::endl;
+    bool isX2withinPhysRange = true;
+    double x2phys = getPhysX(x2, isX2withinPhysRange);
 
-    if ( (x1 > 0. && x1 < 1.) &&
-         (x2 > 0. && x2 < 1.) ) {
-      reco::Candidate::LorentzVector p4 = leg1/x1 + leg2/x2;
-      compositePtrCandidate.setCollinearApproxQuantities(p4, x1, x2, true);
+    if ( x1phys != 0. && x2phys != 0. ) {
+      reco::Candidate::LorentzVector p4 = leg1/x1phys + leg2/x2phys;
+      compositePtrCandidate.setCollinearApproxQuantities(p4, x1, x2, isX1withinPhysRange && isX2withinPhysRange);
     } else {
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), x1, x2, false);
     }
