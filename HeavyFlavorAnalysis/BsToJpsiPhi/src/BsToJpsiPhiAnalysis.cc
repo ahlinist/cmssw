@@ -121,6 +121,14 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
   PhiMassWindowBeforeFit_ = iConfig.getParameter<double>("PhiMassWindowBeforeFit");
   PhiMassWindowAfterFit_ = iConfig.getParameter<double>("PhiMassWindowAfterFit");
 
+  KstarMassWindowBeforeFit_ = iConfig.getParameter<double>("KstarMassWindowBeforeFit");
+  KstarMassWindowAfterFit_ = iConfig.getParameter<double>("KstarMassWindowAfterFit");
+  BdLowerMassCutBeforeFit_ = iConfig.getParameter<double>("BdLowerMassCutBeforeFit");
+  BdUpperMassCutBeforeFit_ = iConfig.getParameter<double>("BdUpperMassCutBeforeFit");
+
+  BdLowerMassCutAfterFit_ = iConfig.getParameter<double>("BdLowerMassCutAfterFit");
+  BdUpperMassCutAfterFit_ = iConfig.getParameter<double>("BdUpperMassCutAfterFit");
+
   outputFile_ = iConfig.getUntrackedParameter<std::string>("outputFile");
 
   edm::LogInfo("RecoVertex/BsToJpsiPhiAnalysis")<< "Initializing Bs to Jpsi Phi analyser  - Output file: " << outputFile_ <<"\n";
@@ -1089,10 +1097,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 				    -(track1.pz()+track2.pz())*(track1.pz()+track2.pz()));
 	        
 	    if(abs(Kstmass1-0.892) < abs(Kstmass2-0.892)){
-	      if(abs(Kstmass1-0.892)>0.12) continue;
+	      if(abs(Kstmass1-0.892) > KstarMassWindowBeforeFit_) continue;
 	      K1flag=1;
 	    } else{
-	      if(abs(Kstmass2-0.892)>0.12) continue;
+	      if(abs(Kstmass2-0.892)> KstarMassWindowBeforeFit_) continue;
 	      K2flag=1;
 	    }
 	    if(bsRootTree_->iPassedCutIdentBd_   < 5 ) bsRootTree_->iPassedCutIdentBd_ = 5 ;
@@ -1105,7 +1113,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    AddFourMomenta sum;
 	    sum.set(JpsiCand);
 	        
-	    if (abs(JpsiCand.mass()-3.097)>0.15) continue;
+	    if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowBeforeFit_) continue;
 	    if(bsRootTree_->iPassedCutIdentBd_   < 6 ) bsRootTree_->iPassedCutIdentBd_ = 6 ;
 	        
 	    // check on the overlap
@@ -1126,7 +1134,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    AddFourMomenta add4mom;
 	    add4mom.set(BdCand);
 	      
-	    if (BdCand.mass() < 4.5 || BdCand.mass() > 6.) continue;
+	    if (BdCand.mass() < BdLowerMassCutBeforeFit_ || BdCand.mass() > BdUpperMassCutBeforeFit_) continue;
 	        
 	    if(bsRootTree_->iPassedCutIdentBd_   < 8 ) bsRootTree_->iPassedCutIdentBd_ = 8 ;
 	        
@@ -1217,21 +1225,96 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 	    if(vtxProb>MinBVtx){
 	            
+	      MinBVtx = vtxProb;
+
 	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
 	      // passed jpsi mass window after fit
 	      if(bsRootTree_->iPassedCutIdentBd_   < 11 ) bsRootTree_->iPassedCutIdentBd_ = 11 ;
 	            
 	      if (K1flag == 1){
-		if(abs(Kstmass1-0.892)>0.12) continue;
+		if(abs(Kstmass1-0.892)> KstarMassWindowAfterFit_) continue;
 	      }
 	      if (K2flag == 1){
-		if(abs(Kstmass2-0.892)>0.12) continue;
+		if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
 	      }
 	      // passed jpsi kstar window after fit
 	      if(bsRootTree_->iPassedCutIdentBd_   < 12 ) bsRootTree_->iPassedCutIdentBd_ = 12 ;
-	      if (BdCand.mass() < BsLowerMassCutAfterFit_ || BdCand.mass() > BsUpperMassCutAfterFit_) continue;
+	      if (BdCand.mass() < BdLowerMassCutAfterFit_ || BdCand.mass() > BdUpperMassCutAfterFit_) continue;
 	      // passed Bd mass window after fit
 	      if(bsRootTree_->iPassedCutIdentBd_   < 13 ) bsRootTree_->iPassedCutIdentBd_ = 13 ;
+
+
+	      bsRootTree_->chi2_Bd_  = bmes->chiSquared();
+	      bsRootTree_->ndof_Bd_   =(int)bmes->degreesOfFreedom();
+	      bsRootTree_->BdVtxProb_ = vtxProb;
+	  
+	      bsRootTree_->BdfitM_Kpi_ = b_par[6];		
+	      
+	      //	      bsRootTree_->setFitParBdKstar(myTree);
+
+	      bsRootTree_->BdVtx_x_ = bVertex->position().x();
+	      bsRootTree_->BdVtx_y_ = bVertex->position().y();
+	      bsRootTree_->BdVtx_z_ = bVertex->position().z();
+
+	      bsRootTree_->BdMass_after_ = BdCand.mass();
+	      bsRootTree_->BdPt_after_ = BdCand.pt();
+	      bsRootTree_->BdPz_after_ = BdCand.pz();
+	      bsRootTree_->BdPhi_after_ = BdCand.phi();
+	      bsRootTree_->BdEta_after_ = BdCand.eta();
+	      
+	      if(K1flag == 1)  bsRootTree_->KstarMass_after_ = Kstmass1;
+	      if(K2flag == 1)  bsRootTree_->KstarMass_after_ = Kstmass2;
+	      
+	      bsRootTree_->BdK1Pt_after_   = track1.pt();
+	      bsRootTree_->BdK1Pz_after_   = track1.pz();
+	      bsRootTree_->BdK1Eta_after_  = track1.eta();
+	      bsRootTree_->BdK1Phi_after_  = track1.phi();
+	      bsRootTree_->BdK2Pt_after_   = track2.pt();
+	      bsRootTree_->BdK2Pz_after_   = track2.pz();
+	      bsRootTree_->BdK2Eta_after_  = track2.eta();
+	      bsRootTree_->BdK2Phi_after_  = track2.phi();
+	      
+
+	      double BdBLxy, BdBLxy2;
+	      if(BdCand.pt()!=0) {
+		BdBLxy=((bVertex->position().x()-BSx)*BdCand.px()+(bVertex->position().y()-BSy)*BdCand.py())/BdCand.pt();
+		BdBLxy2=((bVertex->position().x()-PVx)*BdCand.px()+(bVertex->position().y()-PVy)*BdCand.py())/BdCand.pt();
+	      }
+	      
+	      double BdBsct1 = BdBLxy*BdCand.mass()/BdCand.pt();
+	      double BdBsct2 = BdBLxy2*BdCand.mass()/BdCand.pt();
+	      
+	      double BdBerrX=bd_er(1,1);
+	      double BdBerrY=bd_er(2,2);
+	      double BdBerrXY=bd_er(1,2); 
+	      
+	      bsRootTree_->getBdLXY(BdBLxy,BdBLxy2,BdBerrX,BdBerrY,BdBerrXY,BdBsct1,BdBsct2);
+	      
+	      double Dist3d = -5;
+	      double dDist3d = -5;
+	      double Time3d = -5;
+	      double dTime3d = -5;
+	      VertexDistance3D vdist3d;
+	      Dist3d = vdist3d.distance(bVertex->vertexState(),RecVtx).value();
+	      dDist3d = vdist3d.distance(bVertex->vertexState(),RecVtx).error();
+	      Time3d = Dist3d * BdCand.mass()/BdCand.pt() *100. /3.;
+	      dTime3d = dDist3d * BdCand.mass()/BdCand.pt() * 100. /3.;
+	      
+	      bsRootTree_->getBd3d(Dist3d,dDist3d,Time3d,dTime3d);
+	      
+	      double Dist = -5;
+	      double dDist = -5;
+	      double Time = -5;
+	      double dTime = -5;
+	      VertexDistanceXY vdist;
+	      Dist = vdist.distance(bVertex->vertexState(),RecVtx).value();
+	      dDist = vdist.distance(bVertex->vertexState(),RecVtx).error();
+	      Time = Dist * BdCand.mass()/BdCand.pt() *100. /3.;
+	      dTime = dDist * BdCand.mass()/BdCand.pt() * 100. /3.;
+	      
+	      bsRootTree_->getBd1d(Dist,dDist,Time,dTime);
+	      
+
 	    }
 
 	    // deltaR matching!

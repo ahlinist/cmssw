@@ -328,6 +328,54 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("genBsVtx_y", &genBsVtx_y_, "genBsVtx_y/D");
   bsTree_->Branch("genBsVtx_z", &genBsVtx_z_, "genBsVtx_z/D");
 
+
+
+  bsTree_->Branch("chi2_Bd"        ,   &chi2_Bd_        ,  "chi2_Bd/D");         
+  bsTree_->Branch("ndof_Bd"        ,   &ndof_Bd_        ,  "ndof_Bd/D");         
+  bsTree_->Branch("BdVtxProb"      ,   &BdVtxProb_      ,  "BdVtxProb/D");      
+  
+  bsTree_->Branch("BdfitM_Kpi"     ,   &BdfitM_Kpi_     ,  "BdfitM_Kpi/D");     
+  
+  bsTree_->Branch("BdVtx_x"        ,   &BdVtx_x_        ,  "BdVtx_x/D");  
+  bsTree_->Branch("BdVtx_y"        ,   &BdVtx_y_        ,  "BdVtx_y/D");     
+  bsTree_->Branch("BdVtx_z"        ,   &BdVtx_z_        ,  "BdVtx_z/D");     
+  
+  bsTree_->Branch("BdMass_after"   ,   &BdMass_after_   ,  "BdMass_after/D");    
+  bsTree_->Branch("BdPt_after"     ,   &BdPt_after_     ,  "BdPt_after/D");
+  bsTree_->Branch("BdPz_after"     ,   &BdPz_after_     ,  "BdPz_after/D");  
+  bsTree_->Branch("BdPhi_after"    ,   &BdPhi_after_    ,  "BdPhi_after/D");  
+  bsTree_->Branch("BdEta_after"    ,   &BdEta_after_    ,  "BdEta_after/D"); 
+  
+  bsTree_->Branch("KstarMass_after",   &KstarMass_after_,  "KstarMass_after/D"); 
+
+  bsTree_->Branch("BdK1Pt_after"   ,   &BdK1Pt_after_   ,  "BdK1Pt_after/D");  
+  bsTree_->Branch("BdK1Pz_after"   ,   &BdK1Pz_after_   ,  "BdK1Pz_after/D");
+  bsTree_->Branch("BdK1Eta_after"  ,   &BdK1Eta_after_  ,  "BdK1Eta_after/D"); 
+  bsTree_->Branch("BdK1Phi_after"  ,   &BdK1Phi_after_  ,  "BdK1Phi_after/D");
+  bsTree_->Branch("BdK2Pt_after"   ,   &BdK2Pt_after_   ,  "BdK2Pt_after/D");
+  bsTree_->Branch("BdK2Pz_after"   ,   &BdK2Pz_after_   ,  "BdK2Pz_after/D");
+  bsTree_->Branch("BdK2Eta_after"  ,   &BdK2Eta_after_  ,  "BdK2Eta_after/D");
+  bsTree_->Branch("BdK2Phi_after"  ,   &BdK2Phi_after_  ,  "BdK2Phi_after/D");
+  
+  bsTree_->Branch("BdLxy"          ,   &BdLxy_          ,  "BdLxy/D");
+  bsTree_->Branch("BdLxy2"         ,   &BdLxy2_         ,  "BdLxy2/D");       
+  bsTree_->Branch("BderrX"         ,   &BderrX_         ,  "BderrX/D");      
+  bsTree_->Branch("BderrY"         ,   &BderrY_         ,  "BderrY/D");      
+  bsTree_->Branch("BderrXY"        ,   &BderrXY_        ,  "BderrXY/D");      
+  bsTree_->Branch("Bdsct1"         ,   &Bdsct1_         ,  "Bdsct1/D");     
+  bsTree_->Branch("Bdsct2"         ,   &Bdsct2_         ,  "Bdsct2/D");      
+  
+  bsTree_->Branch("BdDist3d"       ,   &BdDist3d_       ,  "BdDist3d/D");      
+  bsTree_->Branch("BddDist3d"      ,   &BddDist3d_      ,  "BddDist3d/D");    
+  bsTree_->Branch("BdTime3d"       ,   &BdTime3d_       ,  "BdTime3d/D");   
+  bsTree_->Branch("BddTime3d"      ,   &BddTime3d_      ,  "BddTime3d/D");    
+  bsTree_->Branch("BdDist"         ,   &BdDist_         ,  "BdDist/D");   
+  bsTree_->Branch("BddDist"        ,   &BddDist_        ,  "BddDist/D");      
+  bsTree_->Branch("BdTime"         ,   &BdTime_         ,  "BdTime/D");     
+  bsTree_->Branch("BddTime"        ,   &BddTime_        ,  "BddTime/D");      
+
+
+
 }
 
 BsToJpsiPhiRootTree::~BsToJpsiPhiRootTree()
@@ -665,6 +713,52 @@ void BsToJpsiPhiRootTree::resetEntries()
   genBsVtx_z_=-10;
 
 
+
+  chi2_Bd_  = -10;       
+  ndof_Bd_  = -10;       
+  BdVtxProb_= -10;       
+  
+  BdfitM_Kpi_= -10;      
+  
+  BdVtx_x_ = -10;        
+  BdVtx_y_= -10;         
+  BdVtx_z_= -10;         
+  
+  BdMass_after_ = -10;   
+  BdPt_after_    = -10;  
+  BdPz_after_    = -10;  
+  BdPhi_after_   = -10;  
+  BdEta_after_   = -10;  
+  
+  KstarMass_after_ = -10;
+
+                  
+  BdK1Pt_after_  = -10;  
+  BdK1Pz_after_  = -10;  
+  BdK1Eta_after_ = -10;  
+  BdK1Phi_after_ = -10;  
+  BdK2Pt_after_  = -10;  
+  BdK2Pz_after_  = -10;  
+  BdK2Eta_after_ = -10;  
+  BdK2Phi_after_ = -10;  
+  
+  BdLxy_= -10;           
+  BdLxy2_= -10;          
+  BderrX_= -10;          
+  BderrY_= -10;          
+  BderrXY_= -10;         
+  Bdsct1_= -10;          
+  Bdsct2_= -10;          
+  
+  BdDist3d_= -10;        
+  BddDist3d_= -10;       
+  BdTime3d_= -10;        
+  BddTime3d_= -10;       
+  BdDist_= -10;          
+  BddDist_= -10;         
+  BdTime_= -10;          
+  BddTime_= -10;         
+  
 } 
 
 void BsToJpsiPhiRootTree::getDeDx(const double f1, const double f2, const int f3)
@@ -728,6 +822,19 @@ void BsToJpsiPhiRootTree::getLXY(const double aa, const double bb, const double 
   Bsct2_ = ff;
 }
 
+void BsToJpsiPhiRootTree::getBdLXY(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg)
+{
+  BdLxy_ = aa;
+  BdLxy2_ = bb;
+  BderrX_ = cc;
+  BderrY_ = dd;
+  BderrXY_ = ee;
+  Bdsct1_ = ff;
+  Bdsct2_ = ff;
+}
+
+
+
 void BsToJpsiPhiRootTree::getInfoK1(const int aa, const int bb, const int cc, const int dd)
 {
   K1mcId_ = aa;
@@ -772,12 +879,28 @@ void BsToJpsiPhiRootTree::get3d(const double aa, const double bb, const double c
   dTime3d_ = dd;
 }
 
+void BsToJpsiPhiRootTree::getBd3d(const double aa, const double bb, const double cc, const double dd)
+{
+  BdDist3d_ = aa;
+  BddDist3d_ = bb;
+  BdTime3d_ = cc;
+  BddTime3d_ = dd;
+}
+
 void BsToJpsiPhiRootTree::get1d(const double aa, const double bb, const double cc, const double dd)
 {
   Dist_ = aa;
   dDist_ = bb;
   Time_ = cc;
   dTime_ = dd;
+}
+
+void BsToJpsiPhiRootTree::getBd1d(const double aa, const double bb, const double cc, const double dd)
+{
+  BdDist_ = aa;
+  BddDist_ = bb;
+  BdTime_ = cc;
+  BddTime_ = dd;
 }
 
 void BsToJpsiPhiRootTree::fill()
