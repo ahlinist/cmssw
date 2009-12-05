@@ -77,3 +77,7 @@ process.p = cms.Path(process.mix*process.allPiTracks*process.allKTracks*process.
 process.source = cms.Source("PoolSource",
                               fileNames = cms.untracked.vstring(
                         
+'file:/nfs/data5/cms/store/mc/Summer09/BtoJPsiMuMu/AODSIM/MC_31X_V3_AODSIM-v1/0021/465107F5-E988-DE11-BA12-003048C91B0E.root'
+
+                              )
+)
