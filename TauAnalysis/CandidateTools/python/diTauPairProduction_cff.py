@@ -11,6 +11,7 @@ allDiTauPairs = cms.EDProducer("PATDiTauPairProducer",
     srcLeg2 = cms.InputTag('cleanLayer1Taus'),
     dRmin12 = cms.double(0.3),
     srcMET = cms.InputTag('layer1METs'),
+    srcGenParticles = cms.InputTag('genParticles'),                                 
     recoMode = cms.string(""),
     verbosity = cms.untracked.int32(0)
 )
