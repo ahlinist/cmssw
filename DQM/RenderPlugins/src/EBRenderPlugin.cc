@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.127 2009/11/29 23:28:09 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.128 2009/12/03 17:25:58 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.127 $
-  \date $Date: 2009/11/29 23:28:09 $
+  \version $Revision: 1.128 $
+  \date $Date: 2009/12/03 17:25:58 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -66,19 +66,19 @@ public:
       for(int i=0; i<6; i++)
       {
         TColor* color = gROOT->GetColor( 301+i );
-        if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
+        if( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
         color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
       }
       for(int i=0; i<10; i++)
       {
         TColor* color = gROOT->GetColor( 401+i );
-        if ( ! color ) color = new TColor( 401+i, 0, 0, 0, "");
+        if( ! color ) color = new TColor( 401+i, 0, 0, 0, "");
         color->SetRGB( rgb2[i][0], rgb2[i][1], rgb2[i][2] );
       }
       for(int i=0; i<10; i++)
       {
         TColor* color = gROOT->GetColor( 501+i );
-        if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
+        if( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
         color->SetRGB( rgb2[i][1], 0, 0 );
       }
 
@@ -134,8 +134,8 @@ public:
         int x = 1 + i%18;
         int y = 2 - i/18;
         int z = x + 8;
-        if ( z > 18 ) z = z - 18;
-        if ( y == 1 )
+        if( z > 18 ) z = z - 18;
+        if( y == 1 )
         {
           text7->SetBinContent(x, y, -z);
         }
@@ -165,7 +165,7 @@ public:
       text10->SetMarkerSize( 2 );
     }
 
-  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &)
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
       if( o.name.find( "EcalBarrel/EB" ) != std::string::npos )
         return true;
@@ -215,25 +215,24 @@ public:
 
       if( dynamic_cast<TProfile2D*>( o.object ) )
       {
-        preDrawTProfile2D( c, o );
+        preDrawTProfile2D( c, o, r );
       }
       else if( dynamic_cast<TProfile*>( o.object ) )
       {
-        preDrawTProfile( c, o );
+        preDrawTProfile( c, o, r );
       }
       else if( dynamic_cast<TH3F*>( o.object ) )
       {
-        preDrawTH3F( c, o );
+        preDrawTH3F( c, o, r );
       }
       else if( dynamic_cast<TH2F*>( o.object ) || dynamic_cast<TH2D*>( o.object ) )
       {
-        preDrawTH2( c, o );
+        preDrawTH2( c, o, r );
       }
       else if( dynamic_cast<TH1F*>( o.object ) || dynamic_cast<TH1D*>( o.object ) )
       {
-        preDrawTH1( c, o );
+        preDrawTH1( c, o, r );
       }
-      r.drawOptions = "";
     }
 
   virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
@@ -259,7 +258,7 @@ public:
     }
 
 private:
-  void preDrawTProfile2D( TCanvas *c, const VisDQMObject &o )
+  void preDrawTProfile2D( TCanvas *c, const VisDQMObject &o, VisDQMRenderInfo &r )
     {
       TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
       assert( obj );
@@ -282,7 +281,7 @@ private:
         obj->GetXaxis()->SetTitleOffset(2.5);
         obj->GetYaxis()->SetTitleOffset(3.0);
         obj->GetZaxis()->SetTitleOffset(1.3);
-        obj->SetOption("lego");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "lego";
         return;
       }
 
@@ -293,7 +292,7 @@ private:
         obj->GetXaxis()->SetTitleOffset(2.5);
         obj->GetYaxis()->SetTitleOffset(3.0);
         obj->GetZaxis()->SetTitleOffset(1.3);
-        obj->SetOption("lego");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "lego";
         return;
       }
 
@@ -305,9 +304,9 @@ private:
         obj->GetYaxis()->SetNdivisions(170102, kFALSE);
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol4);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -319,9 +318,9 @@ private:
         obj->GetYaxis()->SetNdivisions(2, kFALSE);
         obj->SetMinimum(0.0);
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -329,19 +328,22 @@ private:
       {
         gPad->SetGridx();
         gPad->SetGridy();
-        if ( nbx == 72 && nby == 34 ) {
+        if( nbx == 72 && nby == 34 )
+        {
           obj->GetXaxis()->SetNdivisions(18, kFALSE);
           obj->GetYaxis()->SetNdivisions(2, kFALSE);
-        } else if ( nbx == 85 && nby == 20 ) {
+        }
+        else if( nbx == 85 && nby == 20 )
+        {
           obj->GetXaxis()->SetNdivisions(17);
           obj->GetYaxis()->SetNdivisions(4);
         }
         obj->SetMinimum(4.0);
         obj->SetMaximum(7.0);
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -371,11 +373,11 @@ private:
 
       obj->SetMinimum(0.0);
       gStyle->SetPalette(10, pCol4);
-      obj->SetOption("colz");
       gPad->SetRightMargin(0.15);
+      if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
     }
 
-  void preDrawTProfile( TCanvas *, const VisDQMObject &o )
+  void preDrawTProfile( TCanvas *, const VisDQMObject &o, VisDQMRenderInfo & )
     {
       TProfile* obj = dynamic_cast<TProfile*>( o.object );
       assert( obj );
@@ -423,7 +425,7 @@ private:
       }
     }
 
-  void preDrawTH3F( TCanvas *, const VisDQMObject &o )
+  void preDrawTH3F( TCanvas *, const VisDQMObject &o, VisDQMRenderInfo & )
     {
       TH3F* obj = dynamic_cast<TH3F*>( o.object );
       assert( obj );
@@ -437,7 +439,7 @@ private:
       gPad->SetLogy(kFALSE);
     }
 
-  void preDrawTH2( TCanvas *, const VisDQMObject &o )
+  void preDrawTH2( TCanvas *, const VisDQMObject &o, VisDQMRenderInfo &r )
     {
       TH2* obj = dynamic_cast<TH2*>( o.object );
       assert( obj );
@@ -462,7 +464,9 @@ private:
         {
           obj->GetXaxis()->SetNdivisions(16, kFALSE);
           obj->GetYaxis()->SetNdivisions(8, kFALSE);
-        }else{
+        }
+        else
+        {
           obj->GetXaxis()->SetNdivisions(18, kFALSE);
           obj->GetYaxis()->SetNdivisions(2, kFALSE);
         }
@@ -477,12 +481,12 @@ private:
 
         std::string zAxisTitle(obj->GetZaxis()->GetTitle());
 
-        if ( zAxisTitle.find("rate") != std::string::npos ) obj->SetMaximum(1.0);
+        if( zAxisTitle.find("rate") != std::string::npos ) obj->SetMaximum(1.0);
 
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -495,16 +499,16 @@ private:
         obj->GetYaxis()->SetNdivisions(7, kFALSE);
         obj->GetXaxis()->LabelsOption("v");
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
       if( name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos )
       {
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -516,19 +520,19 @@ private:
         obj->GetYaxis()->SetNdivisions(170102, kFALSE);
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol4);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
       if( name.find( "EBTMT timing vs amplitude" ) != std::string::npos )
       {
-        if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
+        if( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
         obj->SetMinimum(0.0);
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -625,9 +629,9 @@ private:
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol5);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -651,7 +655,7 @@ private:
             gStyle->SetPalette(7, pCol6);
             obj->SetContour(7);
           }
-          else if ( name.find( "EBTTT Trigger Primitives Non Single Timing" ) != std::string::npos )
+          else if( name.find( "EBTTT Trigger Primitives Non Single Timing" ) != std::string::npos )
           {
             gStyle->SetPalette(10, pCol5);
           }
@@ -665,9 +669,9 @@ private:
           gStyle->SetPalette(10, pCol5);
         }
 
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -676,9 +680,9 @@ private:
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol5);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -687,9 +691,9 @@ private:
         obj->SetMinimum(0.5);
         obj->SetMaximum(3.0);
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -697,9 +701,9 @@ private:
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol4);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -707,9 +711,9 @@ private:
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol4);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
 
@@ -719,8 +723,8 @@ private:
         obj->SetMinimum(-0.00000001);
         obj->SetMaximum(7.0);
         gStyle->SetPalette(7, pCol3);
-        obj->SetOption("col");
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "col";
         return;
       }
 
@@ -729,8 +733,8 @@ private:
         obj->SetMinimum(-0.00000001);
         obj->SetMaximum(7.0);
         gStyle->SetPalette(7, pCol3);
-        obj->SetOption("col");
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "col";
         return;
       }
 
@@ -738,14 +742,14 @@ private:
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol4);
-        obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
     }
 
-  void preDrawTH1( TCanvas *, const VisDQMObject &o )
+  void preDrawTH1( TCanvas *, const VisDQMObject &o, VisDQMRenderInfo & )
     {
       TH1* obj = dynamic_cast<TH1*>( o.object );
       assert( obj );
@@ -760,12 +764,12 @@ private:
       obj->SetStats(kTRUE);
       gPad->SetLogy(kFALSE);
 
-      if ( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
+      if( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
 
-      if ( name.find( "timing" ) != std::string::npos ||
-           name.find( "rec hit thr" ) != std::string::npos ) gPad->SetLogy(kFALSE);
+      if( name.find( "timing" ) != std::string::npos ||
+          name.find( "rec hit thr" ) != std::string::npos ) gPad->SetLogy(kFALSE);
 
-      if ( nbx == 10 || nbx == 1700 )
+      if( nbx == 10 || nbx == 1700 )
       {
         gPad->SetLogy(kFALSE);
         gStyle->SetOptStat("e");
@@ -873,7 +877,8 @@ private:
 
       if( nbx == 72 && nby == 34 )
       {
-        if( name.find( "EBTMT" ) == std::string::npos ) {
+        if( name.find( "EBTMT" ) == std::string::npos )
+        {
           int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
           int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
           int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -882,7 +887,9 @@ private:
           text8->GetYaxis()->SetRange(y1, y2);
           text8->Draw("text,same");
           return;
-        } else {
+        }
+        else
+        {
           int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
           int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
           int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
