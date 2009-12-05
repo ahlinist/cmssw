@@ -45,6 +45,12 @@ void PFMEtHistManager::bookHistogramsImp()
   
   hGenMEtPt_ = book1D("GenMEt_Pt", "GenMEt_Pt", 75, 0., 150.);
   hGenMEtPhi_ = book1D("GenMEt_Phi", "GenMEt_Phi", 36, -TMath::Pi(), +TMath::Pi());
+
+  hMEtPtDiffVsGenMEtPt_ = bookProfile1D("MEtPtDiffVsGenMEt_Pt", "MEtPtDiffVsGenMEt_Pt", 75, 0., 150.);
+  hMEtPhiDiffVsGenMEtPt_ = bookProfile1D("MEtPhiDiffVsGenMEt_Pt", "MEtPhiDiffVsGenMEt_Pt", 75, 0., 150.);
+
+  hMEtParallelDiffGen_ = book1D("MEtParallelDiffGen", "MEtParallelDiffGen", 100, -50., +50.);
+  hMEtPerpendicularDiffGen_ = book1D("MEtPerpendicularDiffGen", "MEtPerpendicularDiffGen", 100, 0., 50.);
 }
 
 void PFMEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
@@ -74,14 +80,46 @@ void PFMEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Event
     hMEtSignificance_->Fill(metSignificance, evtWeight);
 
     if ( theEventMET.genMET() ) {
-      hMEtPtDiffGen_->Fill(theEventMET.pt() - theEventMET.genMET()->pt(), evtWeight);
-      hMEtPtResGen_->Fill((theEventMET.pt() - theEventMET.genMET()->pt())/TMath::Sqrt(theEventMET.genMET()->pt()), evtWeight);
-      hMEtPtRecVsGen_->Fill(theEventMET.genMET()->pt(), theEventMET.pt(), evtWeight);
-      hMEtPhiDiffGen_->Fill(theEventMET.phi() - theEventMET.genMET()->phi(), evtWeight);
-      hMEtPhiRecVsGen_->Fill(theEventMET.genMET()->phi(), theEventMET.phi(), evtWeight);
+      double genMEtPt   = theEventMET.genMET()->pt();
+      double genMEtPx   = theEventMET.genMET()->px();
+      double genMEtPy   = theEventMET.genMET()->py();
+      double genMEtPhi  = theEventMET.genMET()->phi();
+
+      double recoMEtPt  = theEventMET.pt();
+      double recoMEtPx  = theEventMET.px();
+      double recoMEtPy  = theEventMET.py();
+      double recoMEtPhi = theEventMET.phi();
+
+      double metDiffPt  = recoMEtPt  - genMEtPt;
+      double metDiffPx  = recoMEtPx  - genMEtPx;
+      double metDiffPy  = recoMEtPy  - genMEtPy;
+      double metDiffPhi = recoMEtPhi - genMEtPhi;
+
+      hMEtPtDiffGen_->Fill(metDiffPt, evtWeight);
+      hMEtPtResGen_->Fill(metDiffPt/TMath::Sqrt(genMEtPt), evtWeight);
+      hMEtPtRecVsGen_->Fill(genMEtPt, recoMEtPt, evtWeight);
+      hMEtPhiDiffGen_->Fill(metDiffPhi, evtWeight);
+      hMEtPhiRecVsGen_->Fill(genMEtPhi, recoMEtPhi, evtWeight);
       
-      hGenMEtPt_->Fill(theEventMET.genMET()->pt(), evtWeight);
-      hGenMEtPhi_->Fill(theEventMET.genMET()->phi(), evtWeight);
+      hGenMEtPt_->Fill(genMEtPt, evtWeight);
+      hGenMEtPhi_->Fill(genMEtPhi, evtWeight);
+/*
+  
+  CV: temporary work-around until MonitorElement::Fill(double, double, double) is fixed for TProfiles
+
+      hMEtPtDiffVsGenMEtPt_->Fill(genMEtPt, metDiffPt, evtWeight);
+      hMEtPhiDiffVsGenMEtPt_->Fill(genMEtPt, metDiffPhi, evtWeight);
+ */
+      hMEtPtDiffVsGenMEtPt_->getTProfile()->Fill(genMEtPt, metDiffPt, evtWeight);
+      hMEtPhiDiffVsGenMEtPt_->getTProfile()->Fill(genMEtPt, metDiffPhi, evtWeight);
+
+      if ( genMEtPt > 0. ) {
+	double diffParallel = (metDiffPx*genMEtPx + metDiffPy*genMEtPy)/genMEtPt;	
+	double diffPerpendicular = TMath::Abs(metDiffPx*genMEtPy + metDiffPy*genMEtPx)/genMEtPt;
+	
+	hMEtParallelDiffGen_->Fill(diffParallel, evtWeight);
+	hMEtPerpendicularDiffGen_->Fill(diffPerpendicular, evtWeight);
+      }
     }
   } else {
     edm::LogError ("PFMEtHistManager::fillHistograms") << " Exactly one MET object expected per event --> skipping !!";

@@ -47,6 +47,12 @@ class PFMEtHistManager : public HistManagerBase
 
   MonitorElement* hGenMEtPt_;
   MonitorElement* hGenMEtPhi_;
+
+  MonitorElement* hMEtPtDiffVsGenMEtPt_;
+  MonitorElement* hMEtPhiDiffVsGenMEtPt_;
+
+  MonitorElement* hMEtParallelDiffGen_;
+  MonitorElement* hMEtPerpendicularDiffGen_; 
 };
 
 #endif
