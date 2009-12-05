@@ -16,12 +16,16 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETFwd.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
+#include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <iostream>
 #include <fstream>
@@ -46,6 +50,7 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
     cfg.getParameter<vstring>("hltPathsToPrint") : vstring();
 
   genParticleSource_ = getInputTag(cfg, "genParticleSource");
+  genJetSource_ = getInputTag(cfg, "genJetSource");
   genTauJetSource_ = getInputTag(cfg, "genTauJetSource");
 
   patElectronSource_ = getInputTag(cfg, "electronSource");
@@ -54,9 +59,14 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
 
   diTauCandidateSource_ = getInputTag(cfg, "diTauCandidateSource");
 
-  patMEtSource_ = getInputTag(cfg, "metSource");
+  patCaloMEtSource_ = getInputTag(cfg, "caloMEtSource");
+  patPFMEtSource_ = getInputTag(cfg, "pfMEtSource");
   genMEtSource_ = getInputTag(cfg, "genMEtSource");
 
+  skipPdgIdsGenParticleMatch_.push_back(12);
+  skipPdgIdsGenParticleMatch_.push_back(14);
+  skipPdgIdsGenParticleMatch_.push_back(16);
+  
   patJetSource_ = getInputTag(cfg, "jetSource");
 
   recoTrackSource_ = getInputTag(cfg, "recoTrackSource");
@@ -414,6 +424,9 @@ void GenericEventDump::printElectronInfo(const edm::Event& evt) const
     edm::Handle<pat::ElectronCollection> patElectrons;
     evt.getByLabel(patElectronSource_, patElectrons);
 
+    edm::Handle<reco::GenParticleCollection> genParticles;
+    evt.getByLabel(genParticleSource_, genParticles);
+
     unsigned iElectron = 0;
     for ( pat::ElectronCollection::const_iterator patElectron = patElectrons->begin(); 
 	  patElectron != patElectrons->end(); ++patElectron ) {
@@ -440,6 +453,8 @@ void GenericEventDump::printElectronInfo(const edm::Event& evt) const
       *outputStream_ << " hcalIso = " << patElectron->hcalIso() << std::endl;
       *outputStream_ << " vertex" << std::endl;
       printVertexInfo(patElectron->vertex(), outputStream_);
+      *outputStream_ << "* matching gen. pdgId = " 
+		     << getMatchingGenParticlePdgId(patElectron->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
       ++iElectron;
     }
     
@@ -465,6 +480,9 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
     //  const reco::Vertex& thePrimaryEventVertex = (*primaryEventVertexCollection->begin());
     //  thePrimaryEventVertexPosition = thePrimaryEventVertex.position();
     //}
+
+    edm::Handle<reco::GenParticleCollection> genParticles;
+    evt.getByLabel(genParticleSource_, genParticles);
 
     unsigned iMuon = 0;
     for ( pat::MuonCollection::const_iterator patMuon = patMuons->begin(); 
@@ -513,7 +531,9 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
       *outputStream_ << " hcalIso = " << patMuon->hcalIso() << std::endl;
       *outputStream_ << " vertex" << std::endl;
       printVertexInfo(patMuon->vertex(), outputStream_);
-      *outputStream_ << " dIP = " << patMuon->track()->dxy(patMuon->vertex()) << std::endl;
+      if ( patMuon->track().isAvailable() ) *outputStream_ << " dIP = " << patMuon->track()->dxy(patMuon->vertex()) << std::endl;
+      *outputStream_ << "* matching gen. pdgId = " 
+		     << getMatchingGenParticlePdgId(patMuon->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
       ++iMuon; 
     }
     
@@ -531,6 +551,9 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
   if ( patTauSource_.label() != "" ) {
     edm::Handle<pat::TauCollection> patTaus;
     evt.getByLabel(patTauSource_, patTaus);
+
+    edm::Handle<reco::GenParticleCollection> genParticles;
+    evt.getByLabel(genParticleSource_, genParticles);
 
     unsigned iTau = 0;
     for ( pat::TauCollection::const_iterator patTau = patTaus->begin(); 
@@ -598,6 +621,8 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
 		     << " byIsolation = " << patTau->efficiency("frByIsolationMuEnrichedQCDsim").value() << ","
 		     << " byEcalIsolation = " << patTau->efficiency("frByECALIsolationMuEnrichedQCDsim").value() << std::endl;
  */
+      *outputStream_ << "* matching gen. pdgId = " 
+		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
       ++iTau;
     }
 
@@ -647,6 +672,33 @@ void GenericEventDump::printJetInfo(const edm::Event& evt) const
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+void printMissingEtInfo_i(const edm::Event& evt, const edm::InputTag& src, std::ostream& stream, const char* label)
+{
+  if ( src.label() != "" ) {
+
+    edm::Handle<pat::METCollection> patMETs;
+    evt.getByLabel(src, patMETs);
+    
+    for ( pat::METCollection::const_iterator patMET = patMETs->begin(); 
+	  patMET != patMETs->end(); ++patMET ) {
+      
+      stream << label 
+	     << " Et = " << patMET->pt() << "," 
+	     << " phi = " <<  patMET->phi()*180./TMath::Pi() 
+	     << " (Px = " << patMET->px() << ", Py = " << patMET->py() << ")" << std::endl;
+      if ( patMET->genMET() != NULL ) {
+	const reco::GenMET* genMET = patMET->genMET();	
+	stream << " associated genMET:" 
+	       << "  Et = " << genMET->pt() << "," 
+	       << "  phi = " <<  genMET->phi()*180./TMath::Pi() 
+	       << " (Px = " << genMET->px() << ", Py = " << genMET->py() << ")" << std::endl;
+      } else {
+	stream << "no genMET associated to PAT MET !!" << std::endl;
+      }
+    }
+  }
+}
+
 void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
 {
 //--- print-out PAT/reco missing Et information
@@ -656,40 +708,52 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
     return;
   }
 
-  if ( patMEtSource_.label() != "" ) {
-    edm::Handle<pat::METCollection> patMETs;
-    evt.getByLabel(patMEtSource_, patMETs);
+  printMissingEtInfo_i(evt, patCaloMEtSource_, *outputStream_, "recoCaloMET:");
+  printMissingEtInfo_i(evt, patPFMEtSource_, *outputStream_, "recoPFMET:");
 
-    for ( pat::METCollection::const_iterator patMET = patMETs->begin(); 
-	  patMET != patMETs->end(); ++patMET ) {
-      
-      *outputStream_ << "PAT MET:" 
-		     << " Et = " << patMET->pt() << "," 
-		     << " phi = " <<  patMET->phi()*180./TMath::Pi() << std::endl;
-      *outputStream_ << " isCaloMET = " << patMET->isCaloMET() << std::endl;      
-      if ( patMET->genMET() != NULL ) {
-	const reco::GenMET* genMET = patMET->genMET();	
-	*outputStream_ << " associated genMET" 
-		       << "  Et = " << genMET->pt() << "," 
-		       << "  phi = " <<  genMET->phi()*180./TMath::Pi() << std::endl;
-      } else {
-	*outputStream_ << "no genMET associated to PAT MET !!" << std::endl;
-      }
-    }
-  }
+  edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
+  evt.getByLabel(genParticleSource_, genParticleCollection);
 
-  if ( genMEtSource_.label() != "" ) {
-    edm::Handle<reco::GenMETCollection> genMETs;
-    evt.getByLabel(genMEtSource_, genMETs);
+  reco::Candidate::LorentzVector genNeutrinos(0,0,0,0);
 
-    for ( reco::GenMETCollection::const_iterator genMET = genMETs->begin(); 
-	  genMET != genMETs->end(); ++genMET ) {
-      *outputStream_ << "genMET (incl. Muons):" 
-		     << " Et = " << genMET->pt() << "," 
-		     << " phi = " <<  genMET->phi()*180./TMath::Pi() << std::endl;
-    }
+  for ( edm::View<reco::GenParticle>::const_iterator genParticle = genParticleCollection->begin(); 
+	genParticle != genParticleCollection->end(); ++genParticle ) {
+
+    if ( genParticle->status() == 1 && isNeutrino(&(*genParticle)) )genNeutrinos += genParticle->p4();
   }
   
+  *outputStream_ << "sum(gen. Neutrinos):" 
+		 << " Et = " << genNeutrinos.pt() << "," 
+		 << " phi = " <<  genNeutrinos.phi()*180./TMath::Pi() 
+		 << " (Px = " << genNeutrinos.px() << ", Py = " << genNeutrinos.py() << ")" << std::endl;
+
+  reco::Candidate::LorentzVector invisibleHighEtaGenJets(0,0,0,0);
+
+  edm::Handle<reco::GenJetCollection> genJets;
+  evt.getByLabel(genJetSource_, genJets);
+  for ( reco::GenJetCollection::const_iterator genJet = genJets->begin();
+	genJet != genJets->end(); ++genJet ) {
+    if ( TMath::Abs(genJet->eta()) > 5.0 ) invisibleHighEtaGenJets += genJet->p4();
+  }
+
+  *outputStream_ << "sum(gen. Jets @ |eta| > 5.0):" 
+		 << " Et = " << invisibleHighEtaGenJets.pt() << "," 
+		 << " phi = " <<  invisibleHighEtaGenJets.phi()*180./TMath::Pi() 
+		 << " (Px = " << invisibleHighEtaGenJets.px() << ", Py = " << invisibleHighEtaGenJets.py() << ")" << std::endl;
+  
+  reco::Candidate::LorentzVector invisibleHighEtaGenParticles(0,0,0,0);
+  
+  for ( edm::View<reco::GenParticle>::const_iterator genParticle = genParticleCollection->begin(); 
+	genParticle != genParticleCollection->end(); ++genParticle ) {
+
+    if ( genParticle->status() == 1 && TMath::Abs(genParticle->eta()) > 5.0 ) invisibleHighEtaGenParticles += genParticle->p4();
+  }
+
+  *outputStream_ << "sum(gen. Particles @ |eta| > 5.0):" 
+		 << " Et = " << invisibleHighEtaGenParticles.pt() << "," 
+		 << " phi = " <<  invisibleHighEtaGenParticles.phi()*180./TMath::Pi() 
+		 << " (Px = " << invisibleHighEtaGenParticles.px() << ", Py = " << invisibleHighEtaGenParticles.py() << ")" << std::endl;
+
   *outputStream_ << std::endl;
 }
 
