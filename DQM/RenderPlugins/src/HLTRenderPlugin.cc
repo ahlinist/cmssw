@@ -241,6 +241,16 @@ private:
           gPad->SetLeftMargin(0.24);
         }
 
+	      // HLT couts vs Bunch Crossing
+	      if( o.name.find("HLT_bx") != std::string::npos)
+	      {
+	        gPad->SetRightMargin(0.14);
+	        gPad->SetLeftMargin(0.24);
+	        gStyle->SetOptStat(0);
+	        obj->SetTitle("HLT count");
+	        obj->GetXaxis()->SetTitle("Event Bunch Crossing");
+        }
+
 	      // rate histograms
 	      if( o.name.find("count_LS") != std::string::npos)
 	      {
