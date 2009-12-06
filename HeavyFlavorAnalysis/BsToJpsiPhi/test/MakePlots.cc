@@ -881,16 +881,16 @@ hBsMassFinal_BsJPsiPhiSignal    ->Draw("SAME");
 void ScaleHistograms(TH1F* BsJPsiPhiSignal,  TH1F* BsJPsiKKSignal, TH1F* BdJPsiKstarSignal, TH1F* BsOther,
 		     TH1F* BdOther, TH1F* BOther, TH1F* BsJpsiEta, TH1F* BdJpsiK10, TH1F* BdJpsiK0, TH1F* BpJpsiKp, TH1F* JpsiOther, TH1F *ppmumux){
 
-BsJPsiPhiSignal      ->Scale(100./ 63. ); 
-BsJPsiKKSignal       ->Scale(100./ 63. ); 
-BdJPsiKstarSignal    ->Scale(100./ 80.);  
-BsOther              ->Scale(100./ 63. ); 
-BdOther              ->Scale(100./ 80. ); 
-BOther               ->Scale(100./ 80.);  
-BsJpsiEta            ->Scale(100./ 63.);  
-BdJpsiK10            ->Scale(100./ 80. ); 
-BdJpsiK0             ->Scale(100./ 80. ); 
-BpJpsiKp             ->Scale(100./ 80.);  
+BsJPsiPhiSignal      ->Scale(100./ 48.); 
+BsJPsiKKSignal       ->Scale(100./ 38. ); 
+BdJPsiKstarSignal    ->Scale(100./ 83.);  
+BsOther              ->Scale(100./ 48. ); 
+BdOther              ->Scale(100./ 83. ); 
+BOther               ->Scale(100./ 69.);  
+BsJpsiEta            ->Scale(100./ 16.);  
+BdJpsiK10            ->Scale(100./ 93. ); 
+BdJpsiK0             ->Scale(100./ 52. ); 
+BpJpsiKp             ->Scale(100./ 69.);  
 JpsiOther            ->Scale(100./ 9.);   
  ppmumux              ->Scale(100./0.9);
 }
