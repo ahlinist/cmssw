@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.10 2009/12/03 19:13:11 puigh Exp $
+  $Id: HLTRenderPlugin.cc,v 1.11 2009/12/04 15:11:13 lorenzo Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.11  2009/12/04 15:11:13  lorenzo
+  commented log
+
   Revision 1.10  2009/12/03 19:13:11  puigh
   use log scale and make axes readable
 
@@ -94,11 +97,12 @@ private:
       assert (obj); // checks that object indeed exists
 
       // rate histograms
-      if ( o.name.find("rate_p") != std::string::npos)
+      if ( o.name.find("rate_p") != std::string::npos || o.name.find("count_per_LS") != std::string::npos)
       {
         gStyle->SetOptStat(11);
         obj->GetXaxis()->SetTitle("Luminosity Segment Number");
-        obj->GetYaxis()->SetTitle("Rate (Hz)");
+        if ( o.name.find("count_per_LS") == std::string::npos)
+          obj->GetYaxis()->SetTitle("Rate (Hz)");
         int nbins = obj->GetNbinsX();
 
         int maxRange = nbins;
@@ -106,7 +110,7 @@ private:
         {
           if ( obj->GetBinContent(i) != 0 )
           {
-            maxRange = i;
+            maxRange = i+1;
             break;
           }
         }
@@ -116,7 +120,7 @@ private:
         {
           if ( obj->GetBinContent(i) != 0 )
           {
-            minRange = i;
+            minRange = i-1;
             break;
           }
         }
@@ -149,22 +153,10 @@ private:
 
       if ( o.name.find("FourVector/PathsSummary") != std::string::npos)
       {
-	if ( (o.name.find("HLT_Egamma_Pass_Any") != std::string::npos ||
-	      o.name.find("HLT_JetMET_Pass_Any") != std::string::npos ||
-	      o.name.find("HLT_Muon_Pass_Any") != std::string::npos ||
-	      o.name.find("HLT_Rest_Pass_Any") != std::string::npos ||
-	      o.name.find("HLT_Special_Pass_Any") != std::string::npos)
-	     ) {
-	 // gPad->SetLogy(1);
-	  
-	  if ( (o.name.find("HLT_Egamma_Pass_Any") != std::string::npos ||
-		o.name.find("HLT_JetMET_Pass_Any") != std::string::npos ||
-		o.name.find("HLT_Muon_Pass_Any") != std::string::npos)
-	       ) {
-	    gPad->SetBottomMargin(0.16);
-	    gPad->SetRightMargin(0.14);
-	  }
-	}
+        if ( o.name.find("Pass_Any") != std::string::npos  ||  o.name.find("Normalized_Any") != std::string::npos  )
+        {
+          gPad->SetBottomMargin(0.16);
+        }
       }
 
       // Code used in SiStripRenderPlugin -- do we want similar defaults?
@@ -178,7 +170,7 @@ private:
     }
 
   void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
-    {
+  {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
 
@@ -240,9 +232,51 @@ private:
        obj->SetMaximum(1.2);
       }
 
-      return;
+      if ( o.name.find("FourVector/PathsSummary") != std::string::npos)
+      {
+        if (o.name.find("PassPass") != std::string::npos )
+        {
+          gPad->SetBottomMargin(0.16);
+          gPad->SetRightMargin(0.14);
+          gPad->SetLeftMargin(0.24);
+        }
 
-    }
+	      // rate histograms
+	      if( o.name.find("count_LS") != std::string::npos)
+	      {
+	        gPad->SetRightMargin(0.14);
+	        gPad->SetLeftMargin(0.24);
+	        gStyle->SetOptStat(11);
+	        obj->GetXaxis()->SetTitle("Luminosity Segment");
+	        int topBin = obj->GetNbinsY();
+	        int nbins = obj->GetNbinsX();
+	
+	        int maxRange = nbins;
+	        for ( int i = nbins; i > 0; --i )
+	        {
+	          if ( obj->GetBinContent(i,topBin) != 0 )
+	          {
+	            maxRange = i+1;
+	            break;
+	          }
+	        }
+	
+	        int minRange = 0;
+	        for ( int i = 0; i <= nbins; ++i )
+	        {
+	          if ( obj->GetBinContent(i,topBin) != 0 )
+	          {
+	            minRange = i-1;
+	            break;
+	          }
+	        }
+	
+	        obj->GetXaxis()->SetRange(minRange, maxRange);
+	      }
+      }
+
+
+  }
 
   void postDrawTH1F( TCanvas *, const VisDQMObject & )
     {
