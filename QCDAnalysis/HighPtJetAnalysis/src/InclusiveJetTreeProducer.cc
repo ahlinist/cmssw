@@ -23,6 +23,8 @@
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
+#include "L1Trigger/GlobalTriggerAnalyzer/interface/L1GtUtils.h"
+
 using namespace edm;
 using namespace reco;
 using namespace std;
@@ -130,6 +132,13 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
             hcalNoise.insert(pair<CaloTowerDetId, double>(noiseCTowers[itow]->id(),noiseCTowers[itow]->hadEnergy()));
         }
     }
+
+  Handle<HcalNoiseSummary> noiseSummary;
+  event.getByLabel("hcalnoise", noiseSummary);
+  const HcalNoiseSummary summary = *noiseSummary;
+  mLooseNoise->push_back( summary.passLooseNoiseFilter() );
+  mTightNoise->push_back( summary.passTightNoiseFilter() );
+
   ////////////// Jets //////
   Handle<CaloJetCollection> jets;
   event.getByLabel(mJetsName,jets);
@@ -207,24 +216,16 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
           cout << "\nL1GlobalTriggerReadoutRecord with \n \n not found"
           "\n  --> returning false by default!\n" << endl;
         }
-      if (!gtOMRec.isValid()) 
-        {
-          cout << "\nL1GlobalTriggerObjectMapRecord with \n \n not found"
-          "\n  --> returning false by default!\n" << endl;
-        }
+
       // L1 decision word
       const DecisionWord dWord = gtRecord->decisionWord();
-      map<string, int> l1map;
-      const vector<L1GlobalTriggerObjectMap>& objMapVec = gtOMRec->gtObjectMap();
-      for(vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();itMap != objMapVec.end(); ++itMap) 
-        l1map.insert( std::pair<std::string, int> ((*itMap).algoName(), (*itMap).algoBitNumber()) );
-      for(unsigned int i=0; i<mL1TriggerNames.size(); i++) 
-        {
-          map<string, int>::const_iterator itr = l1map.find(mL1TriggerNames[i]);
-          if (itr != l1map.end()) 
-            if (dWord[itr->second]) 
-              mL1Names->push_back( itr->first );
-        }
+      // std::map<std::string, int> l1map;
+      for(unsigned int i=0; i<mL1TriggerNames.size(); i++)
+	{
+	  //std::map<std::string, int>::const_iterator itr = l1map.find( mL1TriggerNames[i] );
+	  bool algResult = l1AlgorithmResult(event, iSetup, mL1TriggerNames[i] );
+	  if( algResult ) mL1Names->push_back( mL1TriggerNames[i] );
+	}
     }
   ////////////// MET //////
   Handle<CaloMETCollection> met;
@@ -283,6 +284,8 @@ void InclusiveJetTreeProducer::buildTree()
   mfHPD       = new std::vector<double>();
   mfRBX       = new std::vector<double>();
   mfHcalNoise = new std::vector<double>();
+  mLooseNoise = new std::vector<int>();
+  mTightNoise = new std::vector<int>();
   mPVx        = new std::vector<double>();
   mPVy        = new std::vector<double>();
   mPVz        = new std::vector<double>();
@@ -310,6 +313,8 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("fHPD"       ,"vector<double>"      ,&mfHPD);
   mTree->Branch("fRBX"       ,"vector<double>"      ,&mfRBX);  
   mTree->Branch("fHcalNoise" ,"vector<double>"      ,&mfHcalNoise);
+  mTree->Branch("passLooseHcalNoise", "vector<int>"     ,&mLooseNoise);
+  mTree->Branch("passTightHcalNoise", "vector<int>"     ,&mTightNoise);
   mTree->Branch("PVx"        ,"vector<double>"      ,&mPVx);
   mTree->Branch("PVy"        ,"vector<double>"      ,&mPVy);
   mTree->Branch("PVz"        ,"vector<double>"      ,&mPVz);
@@ -352,6 +357,8 @@ void InclusiveJetTreeProducer::clearTreeVectors()
   mfHPD      ->clear();
   mfRBX      ->clear();
   mfHcalNoise->clear();
+  mLooseNoise->clear();
+  mTightNoise->clear();
   mPVx       ->clear();
   mPVy       ->clear();
   mPVz       ->clear();

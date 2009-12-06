@@ -25,6 +25,7 @@
 //Hcal Noise Objects
 #include "RecoMET/METAlgorithms/interface/HcalNoiseRBXArray.h"
 #include "DataFormats/METReco/interface/HcalNoiseHPD.h"
+#include "DataFormats/METReco/interface/HcalNoiseSummary.h"
 
 //TFile Service 
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -73,6 +74,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<double> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
     std::vector<double> *mPVx,*mPVy,*mPVz;
     std::vector<double> *mfHcalNoise;
+    std::vector<int>    *mLooseNoise, *mTightNoise;
     std::vector<std::string> *mHLTNames;
     std::vector<std::string> *mL1Names;
 };
