@@ -4,7 +4,7 @@
   \brief Display Plugin for Quality Histograms
   \author E. Nesvold
   \version $Revision: 1.1 $
-  \date $Date: 2009/11/09 16:39:35 $
+  \date $Date: 2009/11/18 09:59:29 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -20,7 +20,6 @@ class DQMMessageLoggerRenderPlugin : public DQMRenderPlugin{
 public:
   virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &)
     {
-std::cout << "ERIK" << std::endl;
       if(o.name.find("MessageLogger") != std::string::npos){
         if(o.name.find ("Errors") != std::string::npos){
           if(o.name.find("categoriesErrorsFound")!=std::string::npos){
