@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.32 $
-  \date $Date: 2009/11/24 13:54:05 $
+  \version $Revision: 1.1 $
+  \date $Date: 2009/11/26 12:10:04 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -208,7 +208,9 @@ private:
     TH1* obj = dynamic_cast<TH1*>( o.object );
     assert (obj); // checks that object indeed exists
     
-    //if (o.name.find("RecHitMonitor_Hcal/") !=std::string::npos)
+    // For now, all 1D plots have stats on.  Disable in future?
+    gStyle->SetOptStat("iourmen");
+    obj->SetStats(kTRUE);
     
   } // void preDrawTH1(...)
 

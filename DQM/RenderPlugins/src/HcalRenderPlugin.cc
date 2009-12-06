@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.32 $
-  \date $Date: 2009/11/24 13:54:05 $
+  \version $Revision: 1.33 $
+  \date $Date: 2009/11/28 04:31:29 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -265,6 +265,10 @@ private:
     TH1* obj = dynamic_cast<TH1*>( o.object );
     assert (obj); // checks that object indeed exists
     
+    // For now, all 1D plots have stats on.  Disable in future?
+    gStyle->SetOptStat("iourmen");
+    obj->SetStats(kTRUE);
+
     // o.name is a std::string object
     // Add in list of names of histograms for which we want log plotting here.
 
@@ -380,8 +384,9 @@ private:
     c->SetRightMargin(2*c->GetRightMargin()); // double right margin
 
     if ((o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos) ||
-	(o.name.find("DataFormatMonitor/H")!= std::string::npos))
-      gStyle->SetFrameFillColor(16);
+	(o.name.find("DataFormatMonitor/H")!= std::string::npos) ||
+	(o.name.find("DataFormatMonitor/Corruption/") !=std::string::npos))
+      gStyle->SetFrameFillColor(18);
     
     // Set default color scheme
     
@@ -399,6 +404,19 @@ private:
 	obj->SetMinimum(-1.);
 	obj->SetMaximum(1.);
       }
+    else if (o.name.find("EventInfo/HB HE HF Depth 1 Summary Map") != std::string::npos ||
+	     o.name.find("EventInfo/HB HE HF Depth 2 Summary Map") != std::string::npos ||
+	     o.name.find("EventInfo/HE Depth 3 Summary Map") != std::string::npos ||
+	     o.name.find("EventInfo/HO Depth 4 Summary Map") != std::string::npos ||
+	     o.name.find("EventInfo/StatusVsLS") !=std::string::npos
+	     )
+      {
+	obj->SetContour(40);
+	setSummaryColor(obj);
+	obj->SetMinimum(-1.);
+	obj->SetMaximum(1.);
+      }
+    
     else if (o.name.find("advancedReportSummaryMap" ) != std::string::npos)
       {
 	obj->SetContour(40);
@@ -423,7 +441,7 @@ private:
 		
       {
 	//c->SetFrameFillColor(16);
-	gStyle->SetFrameFillColor(16);
+	gStyle->SetFrameFillColor(17);
         double scale = obj->GetBinContent(0,0);
         if (scale>1) // problem histograms don't have underflow bins filled any more
 	  obj->Scale(1./scale);
@@ -513,6 +531,7 @@ private:
     bool foundfirst=false;
     int firstnonzerobin=1;
     int lastnonzerobin=1;
+    double minvalue=9999999;
     for (int i=1;i<=obj->GetNbinsX();++i)
       {
 	if (foundfirst==false && obj->GetBinContent(i)!=0)
@@ -522,7 +541,11 @@ private:
 	  }
 	if (obj->GetBinContent(i)!=0)
 	  lastnonzerobin=i+1;
+	if (obj->GetBinContent(i)-obj->GetBinError(i)<minvalue)
+	  minvalue = obj->GetBinContent(i)-obj->GetBinError(i);
       }
+    if (minvalue>0)
+      obj->SetMinimum(0); // do this for all TProfiles?
     if (lastnonzerobin-firstnonzerobin>1)
       obj->GetXaxis()->SetRange(firstnonzerobin,lastnonzerobin-1);
     return;
@@ -807,7 +830,7 @@ private:
 	    gStyle->SetOptStat(1111);
 	    obj->SetStats(1111);
 	    TText t;
-	    t.DrawText(1,1,"No News is Good News."); 
+	    t.DrawText(1,1,"No entries found");
 	  }
         else
 	  {
