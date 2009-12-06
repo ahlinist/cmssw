@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.17 $
-  \date $Date: 2009/10/31 23:18:54 $
+  \version $Revision: 1.19 $
+  \date $Date: 2009/11/25 09:09:20 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -161,13 +161,6 @@ private:
         obj->SetOption("text");
         return;
       }
-      if( o.name.find( "TkHMap" )  != std::string::npos)
-      {
-        obj->SetStats( kFALSE );
-        obj->SetOption("colz");
-        return;
-      }
-      return;
     }
 
   void preDrawTH1F( TCanvas *, const VisDQMObject &o )
@@ -242,6 +235,7 @@ private:
       if( o.name.find( "TkHMap" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
+        gStyle->SetPalette(1,0);
         obj->SetOption("colz");
         return;
       }
