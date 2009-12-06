@@ -34,7 +34,7 @@ class HFLambdaB2JpsiLambda : public edm::EDAnalyzer {
   virtual void endJob() ;
 
   int           fVerbose; 
-  std::string   fTracksLabel, fPrimaryVertexLabel;
+  edm::InputTag fTracksLabel, fPrimaryVertexLabel;
   edm::InputTag fMuonsLabel;
 
   double        fMuonPt, fProtonPt, fPionPt, fDeltaR;
