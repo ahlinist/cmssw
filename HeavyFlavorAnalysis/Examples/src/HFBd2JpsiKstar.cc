@@ -56,8 +56,8 @@ using namespace edm;
 // ----------------------------------------------------------------------
 HFBd2JpsiKstar::HFBd2JpsiKstar(const edm::ParameterSet& iConfig) :
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
-  fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("goodTracks"))), 
-  fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVertices"))),
+  fTracksLabel(iConfig.getUntrackedParameter<InputTag>("tracksLabel", InputTag("goodTracks"))), 
+  fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexLabel", InputTag("offlinePrimaryVertices"))),
   fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fMuonPt(iConfig.getUntrackedParameter<double>("muonPt", 1.0)), 
   fKaonPt(iConfig.getUntrackedParameter<double>("kaonPt", 0.4)), 
@@ -67,7 +67,7 @@ HFBd2JpsiKstar::HFBd2JpsiKstar(const edm::ParameterSet& iConfig) :
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFBd2JpsiKstar constructor" << endl;
-  cout << "---  tracksLabel:              " << fTracksLabel.c_str() << endl;
+  cout << "---  tracksLabel:              " << fTracksLabel << endl;
   cout << "---  muonsLabel:               " << fMuonsLabel << endl;
   cout << "---  kaonPt:                   " << fKaonPt << endl;
   cout << "---  pionPt:                   " << fPionPt << endl;
@@ -89,7 +89,7 @@ void HFBd2JpsiKstar::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   // -- get the primary vertex
   edm::Handle<VertexCollection> recoPrimaryVertexCollection;
-  iEvent.getByLabel(fPrimaryVertexLabel.c_str(), recoPrimaryVertexCollection);
+  iEvent.getByLabel(fPrimaryVertexLabel, recoPrimaryVertexCollection);
   if(!recoPrimaryVertexCollection.isValid()) {
     cout << "==>HFBd2JpsiKstar> No primary vertex collection found, skipping" << endl;
     return;
@@ -111,9 +111,9 @@ void HFBd2JpsiKstar::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   
   // -- get the collection of tracks
   edm::Handle<edm::View<reco::Track> > hTracks;
-  iEvent.getByLabel(fTracksLabel.c_str(), hTracks);
+  iEvent.getByLabel(fTracksLabel, hTracks);
   if(!hTracks.isValid()) {
-    cout << "==>HFBd2JpsiKstar> No valid TrackCollection with label "<<fTracksLabel.c_str() <<" found, skipping" << endl;
+    cout << "==>HFBd2JpsiKstar> No valid TrackCollection with label "<<fTracksLabel <<" found, skipping" << endl;
     return;
   }
 

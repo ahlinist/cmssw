@@ -46,8 +46,8 @@ using namespace edm;
 // ----------------------------------------------------------------------
 HFLambdaB2JpsiLambda::HFLambdaB2JpsiLambda(const edm::ParameterSet& iConfig) :
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
-  fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("goodTracks"))), 
-  fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVertices"))),
+  fTracksLabel(iConfig.getUntrackedParameter<InputTag>("tracksLabel", InputTag("goodTracks"))), 
+  fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexLabel", InputTag("offlinePrimaryVertices"))),
   fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fMuonPt(iConfig.getUntrackedParameter<double>("muonPt", 1.0)), 
   fProtonPt(iConfig.getUntrackedParameter<double>("protonPt", 1.0)), 
@@ -56,7 +56,7 @@ HFLambdaB2JpsiLambda::HFLambdaB2JpsiLambda(const edm::ParameterSet& iConfig) :
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFLambdaB2JpsiLambda constructor" << endl;
-  cout << "---  tracksLabel:              " << fTracksLabel.c_str() << endl;
+  cout << "---  tracksLabel:              " << fTracksLabel << endl;
   cout << "---  muonsLabel:               " << fMuonsLabel << endl;
   cout << "---  muonPt:                   " << fMuonPt << endl;
   cout << "---  protonPt:                 " << fProtonPt << endl;
@@ -78,7 +78,7 @@ void HFLambdaB2JpsiLambda::analyze(const edm::Event& iEvent, const edm::EventSet
   // -- get the primary vertex
   
   edm::Handle<VertexCollection> recoPrimaryVertexCollection;
-  iEvent.getByLabel(fPrimaryVertexLabel.c_str(), recoPrimaryVertexCollection);
+  iEvent.getByLabel(fPrimaryVertexLabel, recoPrimaryVertexCollection);
   if(!recoPrimaryVertexCollection.isValid()) {
     cout << "==>HFLambdaB2JpsiLambda> No primary vertex found, skipping" << endl;
     return;
@@ -100,9 +100,9 @@ void HFLambdaB2JpsiLambda::analyze(const edm::Event& iEvent, const edm::EventSet
   
   // -- get the collection of tracks
   edm::Handle<edm::View<reco::Track> > hTracks;
-  iEvent.getByLabel(fTracksLabel.c_str(), hTracks);
+  iEvent.getByLabel(fTracksLabel, hTracks);
   if(!hTracks.isValid()) {
-    cout << "==>HFLambdaB2JpsiLambda> No valid TrackCollection with label "<<fTracksLabel.c_str() <<" found, skipping" << endl;
+    cout << "==>HFLambdaB2JpsiLambda> No valid TrackCollection with label "<<fTracksLabel <<" found, skipping" << endl;
     return;
   }
  

@@ -47,8 +47,8 @@ using namespace edm;
 // ----------------------------------------------------------------------
 HFDimuons::HFDimuons(const edm::ParameterSet& iConfig) :
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
-  fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("goodTracks"))), 
-  fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVertices"))),
+  fTracksLabel(iConfig.getUntrackedParameter<InputTag>("tracksLabel", InputTag("goodTracks"))), 
+  fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexLabel", InputTag("offlinePrimaryVertices"))),
   fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fMuonPt(iConfig.getUntrackedParameter<double>("muonPt", 1.0)), 
   fMassLow(iConfig.getUntrackedParameter<double>("massLow", 0.0)), 
@@ -57,7 +57,7 @@ HFDimuons::HFDimuons(const edm::ParameterSet& iConfig) :
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDimuons constructor" << endl;
-  cout << "---  tracksLabel:              " << fTracksLabel.c_str() << endl;
+  cout << "---  tracksLabel:              " << fTracksLabel << endl;
   cout << "---  muonsLabel:               " << fMuonsLabel << endl;
   cout << "---  muonPt:                   " << fMuonPt << endl;
   cout << "---  Type:                     " << fType << endl;
@@ -80,7 +80,7 @@ void HFDimuons::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // -- get the primary vertex
   edm::Handle<VertexCollection> recoPrimaryVertexCollection;
-  iEvent.getByLabel(fPrimaryVertexLabel.c_str(), recoPrimaryVertexCollection);
+  iEvent.getByLabel(fPrimaryVertexLabel, recoPrimaryVertexCollection);
   if(!recoPrimaryVertexCollection.isValid()) {
     cout << "==>HFDimuons> No primary vertex collection found, skipping" << endl;
     return;
@@ -102,9 +102,9 @@ void HFDimuons::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   // -- get the collection of tracks
   edm::Handle<edm::View<reco::Track> > hTracks;
-  iEvent.getByLabel(fTracksLabel.c_str(), hTracks);
+  iEvent.getByLabel(fTracksLabel, hTracks);
   if(!hTracks.isValid()) {
-    cout << "==>HFDimuons> No valid TrackCollection with label "<<fTracksLabel.c_str() <<" found, skipping" << endl;
+    cout << "==>HFDimuons> No valid TrackCollection with label "<<fTracksLabel <<" found, skipping" << endl;
     return;
   }
 
