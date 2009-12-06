@@ -47,8 +47,8 @@ using namespace edm;
 // ----------------------------------------------------------------------
 HFMuonAndTrack::HFMuonAndTrack(const edm::ParameterSet& iConfig) :
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
-  fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("goodTracks"))), 
-  fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVertices"))),
+  fTracksLabel(iConfig.getUntrackedParameter<InputTag>("tracksLabel", InputTag("goodTracks"))), 
+  fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexLabel", InputTag("offlinePrimaryVertices"))),
   fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fMuonPt(iConfig.getUntrackedParameter<double>("muonPt", 3.0)), 
   fTrackPt(iConfig.getUntrackedParameter<double>("trackPt", 1.0)), 
@@ -58,7 +58,7 @@ HFMuonAndTrack::HFMuonAndTrack(const edm::ParameterSet& iConfig) :
 
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFMuonAndTrack constructor" << endl;
-  cout << "---  tracksLabel:              " << fTracksLabel.c_str() << endl;
+  cout << "---  tracksLabel:              " << fTracksLabel << endl;
   cout << "---  muonsLabel:               " << fMuonsLabel << endl;
   cout << "---  muonPt:                   " << fMuonPt << endl;
   cout << "---  trackPt:                  " << fTrackPt << endl;
@@ -82,7 +82,7 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   // -- get the primary vertex
   edm::Handle<VertexCollection> recoPrimaryVertexCollection;
-  iEvent.getByLabel(fPrimaryVertexLabel.c_str(), recoPrimaryVertexCollection);
+  iEvent.getByLabel(fPrimaryVertexLabel, recoPrimaryVertexCollection);
   if(!recoPrimaryVertexCollection.isValid()) {
     cout << "==>HFMuonAndTrack> No primary vertex collection found, skipping" << endl;
     return;
@@ -104,9 +104,9 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   
   // -- get the collection of tracks
   edm::Handle<edm::View<reco::Track> > hTracks;
-  iEvent.getByLabel(fTracksLabel.c_str(), hTracks);
+  iEvent.getByLabel(fTracksLabel, hTracks);
   if(!hTracks.isValid()) {
-    cout << "==>HFMuonAndTrack> No valid TrackCollection with label "<<fTracksLabel.c_str() <<" found, skipping" << endl;
+    cout << "==>HFMuonAndTrack> No valid TrackCollection with label "<<fTracksLabel <<" found, skipping" << endl;
     return;
   }
 

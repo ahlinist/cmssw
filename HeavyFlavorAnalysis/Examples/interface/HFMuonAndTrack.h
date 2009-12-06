@@ -38,7 +38,7 @@ class HFMuonAndTrack : public edm::EDAnalyzer {
   void         doVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2, TAnaCand *pCand);
 
   int           fVerbose; 
-  std::string   fTracksLabel, fPrimaryVertexLabel;
+  edm::InputTag fTracksLabel, fPrimaryVertexLabel;
   edm::InputTag fMuonsLabel;
 
   double        fMuonPt, fTrackPt, fMassLow, fMassHigh;

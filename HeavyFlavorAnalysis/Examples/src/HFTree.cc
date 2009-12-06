@@ -28,13 +28,19 @@ using namespace::std;
 // ----------------------------------------------------------------------
 HFTree::HFTree(const edm::ParameterSet& iConfig) :
   fRequireCand(iConfig.getUntrackedParameter<bool>("requireCand", true)), 
+  fFileName(iConfig.getUntrackedParameter<string>("fileName", string("hfa.root"))), 
+  fTreeName(iConfig.getUntrackedParameter<string>("treeName", string("T1"))), 
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 1)) {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFTree constructor" << endl;
+  cout << "---  verbose:                         " << fVerbose << endl;
+  cout << "---  fileName:                        " << fFileName << endl; 
+  cout << "---  treeName:                        " << fTreeName << endl; 
+  cout << "---  requireCand:                     " << (fRequireCand?"true":"false") << endl; 
   cout << "----------------------------------------------------------------------" << endl;
-  fFile = new TFile(iConfig.getParameter<string>("fileName").c_str(), "RECREATE");
-  fTree = new TTree("T1","CMSSW HF tree");
+  fFile = new TFile(fFileName.c_str(), "RECREATE");
+  fTree = new TTree(fTreeName.c_str(), "CMSSW HF tree");
   fEvent = new TAna01Event(0);
   fTree->Branch("TAna01Event", "TAna01Event", &fEvent, 256000/8, 1);
 

@@ -29,7 +29,7 @@ class HFDumpTracks : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  std::string          fTracksLabel, 
+  edm::InputTag        fTracksLabel, 
                        fGenEventLabel, fSimTracksLabel,
                        fAssociatorLabel, fTrackingParticlesLabel;
   edm::InputTag        fMuonsLabel;

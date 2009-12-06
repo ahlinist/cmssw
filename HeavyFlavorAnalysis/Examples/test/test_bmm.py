@@ -54,9 +54,9 @@ process.genDump = cms.EDFilter("HFDumpGenerator",
 # ----------------------------------------------------------------------
 process.tree = cms.EDAnalyzer(
     "HFTree",
-    verbose  = cms.untracked.int32(0),
+    verbose  = cms.untracked.int32(1),
     requireCand =  cms.untracked.bool(True),
-    fileName = cms.string('test.root')
+    fileName = cms.untracked.string('test.root')
     )
 
 
