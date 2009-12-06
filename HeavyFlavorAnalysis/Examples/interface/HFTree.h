@@ -32,6 +32,10 @@ class HFTree : public edm::EDAnalyzer {
   TAna01Event  *fEvent;
 
   bool         fRequireCand; 
+
+  std::string  fFileName;
+  std::string  fTreeName;
+
   int          fVerbose; 
 
 };

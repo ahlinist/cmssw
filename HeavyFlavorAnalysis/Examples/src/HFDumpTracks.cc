@@ -52,22 +52,22 @@ using namespace reco;
 
 // ----------------------------------------------------------------------
 HFDumpTracks::HFDumpTracks(const edm::ParameterSet& iConfig):
-  fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("ctfWithMaterialTracks"))),
-  fGenEventLabel(iConfig.getUntrackedParameter<string>("generatorEventLabel", string("source"))),
-  fSimTracksLabel(iConfig.getUntrackedParameter<string>("simTracksLabel", string("famosSimHits"))),
-  fAssociatorLabel(iConfig.getUntrackedParameter<string>("associatorLabel", string("TrackAssociatorByChi2"))), 
-  fTrackingParticlesLabel(iConfig.getUntrackedParameter<string>("trackingParticlesLabel", string("trackingParticles"))),
+  fTracksLabel(iConfig.getUntrackedParameter<InputTag>("tracksLabel", InputTag("ctfWithMaterialTracks"))),
+  fGenEventLabel(iConfig.getUntrackedParameter<InputTag>("generatorEventLabel", InputTag("source"))),
+  fSimTracksLabel(iConfig.getUntrackedParameter<InputTag>("simTracksLabel", InputTag("famosSimHits"))),
+  fAssociatorLabel(iConfig.getUntrackedParameter<InputTag>("associatorLabel", InputTag("TrackAssociatorByChi2"))), 
+  fTrackingParticlesLabel(iConfig.getUntrackedParameter<InputTag>("trackingParticlesLabel", InputTag("trackingParticles"))),
   fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fDoTruthMatching(iConfig.getUntrackedParameter<int>("doTruthMatching", 1)) {
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpTracks constructor  " << endl;
-  cout << "---  tracksLabel:             " << fTracksLabel.c_str() << endl;
-  cout << "---  muonsLabel:              " << fMuonsLabel.encode() << endl;
-  cout << "---  generatorEventLabel:     " << fGenEventLabel.c_str() << endl;
-  cout << "---  simTracksLabel:          " << fSimTracksLabel.c_str() << endl;
-  cout << "---  associatorLabel:         " << fAssociatorLabel.c_str() << endl;
-  cout << "---  trackingParticlesLabel:  " << fTrackingParticlesLabel.c_str() << endl;
+  cout << "---  tracksLabel:             " << fTracksLabel << endl;
+  cout << "---  muonsLabel:              " << fMuonsLabel << endl;
+  cout << "---  generatorEventLabel:     " << fGenEventLabel << endl;
+  cout << "---  simTracksLabel:          " << fSimTracksLabel << endl;
+  cout << "---  associatorLabel:         " << fAssociatorLabel << endl;
+  cout << "---  trackingParticlesLabel:  " << fTrackingParticlesLabel << endl;
   cout << "---  doTruthMatching:         " << fDoTruthMatching << endl;  // 0 = nothing, 1 = TrackingParticles, 2 = FAMOS
   cout << "----------------------------------------------------------------------" << endl;
 }
@@ -85,7 +85,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  if (fVerbose > 0) cout << "==>HFDumpTracks> new event " << endl;
   // -- get the collection of RecoTracks 
   edm::Handle<edm::View<reco::Track> > tracksView;
-  iEvent.getByLabel(fTracksLabel.c_str(), tracksView);
+  iEvent.getByLabel(fTracksLabel, tracksView);
 
   // -- get the collection of muons and store their corresponding track indices
   vector<unsigned int> muonIndices, muonCollectionIndices;
@@ -109,7 +109,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   if (1 == fDoTruthMatching) {
     try {
       edm::Handle<TrackingParticleCollection> trackingParticles;
-      iEvent.getByLabel(fTrackingParticlesLabel.c_str(), trackingParticles);
+      iEvent.getByLabel(fTrackingParticlesLabel, trackingParticles);
       recSimColl = fAssociator->associateRecoToSim(tracksView, trackingParticles, &iEvent);
     } catch (cms::Exception &ex) {
       cout << ex.explainSelf() << endl;
@@ -122,9 +122,9 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   const HepMC::GenEvent *genEvent = 0;
   edm::Handle<std::vector<SimTrack> > simTracks;
   if (2 == fDoTruthMatching) {
-    iEvent.getByLabel(fGenEventLabel.c_str(), hepmc);
+    iEvent.getByLabel(fGenEventLabel, hepmc);
     genEvent = hepmc->GetEvent();
-    iEvent.getByLabel(fSimTracksLabel.c_str(), simTracks); 
+    iEvent.getByLabel(fSimTracksLabel, simTracks); 
   }      
 
 
@@ -269,7 +269,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 // ------------ method called once each job just before starting event loop  ------------
 void  HFDumpTracks::beginJob(const edm::EventSetup& setup) {
   edm::ESHandle<TrackAssociatorBase> theAssociator;
-  setup.get<TrackAssociatorRecord>().get(fAssociatorLabel.c_str(), theAssociator);
+  setup.get<TrackAssociatorRecord>().get(fAssociatorLabel.encode(), theAssociator);
   fAssociator = (TrackAssociatorBase*)theAssociator.product();
   cout << "fAssociator = " << fAssociator << endl;
 
