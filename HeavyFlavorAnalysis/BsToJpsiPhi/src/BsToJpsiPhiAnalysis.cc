@@ -172,7 +172,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   
   int VtxIndex=-99;
   double minVtxProb=-999.;
-  double MinBVtx=-999.;
+  double MinBVtxHyp1=-999.;
+  double MinBVtxHyp2=-999.;
   
   reco::BeamSpot vertexBeamSpot;
   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
@@ -1177,66 +1178,84 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    vector<RefCountedKinematicParticle> allMuons;
 	    allMuons.push_back(pFactory.particle (ttMuP,muon_mass,chi,ndf,muon_sigma));
 	    allMuons.push_back(pFactory.particle (ttMuM,muon_mass,chi,ndf,muon_sigma));
-	    vector<RefCountedKinematicParticle> KpiParticles;
-	    if(K1flag==1) {
-	      KpiParticles.push_back(pFactory.particle (ttK,kaon_mass,chi,ndf,kaon_sigma));
-	      KpiParticles.push_back(pFactory.particle (ttP,pi_mass,chi,ndf,pi_sigma));
-	    }
-	    else{
-	      KpiParticles.push_back(pFactory.particle (ttP,kaon_mass,chi,ndf,kaon_sigma));
-	      KpiParticles.push_back(pFactory.particle (ttK,pi_mass,chi,ndf,pi_sigma));
-	    }
-	        
-	    KinematicParticleVertexFitter Fitter;
-	    RefCountedKinematicTree JpsiTree = Fitter.fit(allMuons);
+	    vector<RefCountedKinematicParticle> KpiParticlesHyp1;
+	    vector<RefCountedKinematicParticle> KpiParticlesHyp2;
+	    KpiParticlesHyp1.push_back(pFactory.particle (ttK,kaon_mass,chi,ndf,kaon_sigma));
+	    KpiParticlesHyp1.push_back(pFactory.particle (ttP,pi_mass,chi,ndf,pi_sigma));
+	   	   
+	    KpiParticlesHyp2.push_back(pFactory.particle (ttP,kaon_mass,chi,ndf,kaon_sigma));
+	    KpiParticlesHyp2.push_back(pFactory.particle (ttK,pi_mass,chi,ndf,pi_sigma));
+	   	        
+	    KinematicParticleVertexFitter FitterHyp1;
+	    KinematicParticleVertexFitter FitterHyp2;
+
+	    RefCountedKinematicTree JpsiTreeHyp1 = FitterHyp1.fit(allMuons);
+	    RefCountedKinematicTree JpsiTreeHyp2 = FitterHyp2.fit(allMuons);
 
 	    // if the fit fails, do not consider this as candidate
-	    if(JpsiTree->isEmpty()) continue;
+	    if(JpsiTreeHyp1->isEmpty()) continue;
+	    if(JpsiTreeHyp2->isEmpty()) continue;
 	        
-	    KinematicParticleFitter constFitter;
+	    KinematicParticleFitter constFitterHyp2;
+	    KinematicParticleFitter constFitterHyp1;
 	        
 	    ParticleMass jpsiM = 3.09687;
 	    float jpsiMsigma = 0.00004;
-	    KinematicConstraint * jpsi_const = new MassKinematicConstraint(jpsiM,jpsiMsigma);
+	    KinematicConstraint * jpsi_constHyp1 = new MassKinematicConstraint(jpsiM,jpsiMsigma);
+	    KinematicConstraint * jpsi_constHyp2 = new MassKinematicConstraint(jpsiM,jpsiMsigma);
 	        
-	    JpsiTree = constFitter.fit(jpsi_const,JpsiTree);
-	        
-	    // if the fit fails, do not consider this as candidate
-	    if(JpsiTree->isEmpty()) continue;
-	        
-	    JpsiTree->movePointerToTheTop();
-	    RefCountedKinematicParticle Jpsi_branch = JpsiTree->currentParticle();
-	    KpiParticles.push_back(Jpsi_branch);
-	        
-	    RefCountedKinematicTree myTree = Fitter.fit(KpiParticles);
+	    JpsiTreeHyp1 = constFitterHyp1.fit(jpsi_constHyp1,JpsiTreeHyp1);
+	    JpsiTreeHyp2 = constFitterHyp2.fit(jpsi_constHyp2,JpsiTreeHyp2);
 	        
 	    // if the fit fails, do not consider this as candidate
-	    if(myTree->isEmpty())  continue;
-	    myTree->movePointerToTheTop();
-	    RefCountedKinematicParticle bmes = myTree->currentParticle();
-	    RefCountedKinematicVertex bVertex = myTree->currentDecayVertex();
+	    if(JpsiTreeHyp1->isEmpty()) continue;
+	    if(JpsiTreeHyp2->isEmpty()) continue;
 	        
-	    if (!bVertex->vertexIsValid()) continue;
+	    JpsiTreeHyp1->movePointerToTheTop();
+	    JpsiTreeHyp2->movePointerToTheTop();
+	    RefCountedKinematicParticle Jpsi_branchHyp1 = JpsiTreeHyp1->currentParticle();
+	    RefCountedKinematicParticle Jpsi_branchHyp2 = JpsiTreeHyp2->currentParticle();
+	    KpiParticlesHyp1.push_back(Jpsi_branchHyp1);
+	    KpiParticlesHyp2.push_back(Jpsi_branchHyp2);
+	        
+	    RefCountedKinematicTree myTreeHyp1 = FitterHyp1.fit(KpiParticlesHyp1);
+	    RefCountedKinematicTree myTreeHyp2 = FitterHyp2.fit(KpiParticlesHyp2);
+	        
+	    // if the fit fails, do not consider this as candidate
+	    if(myTreeHyp1->isEmpty())  continue;
+	    if(myTreeHyp2->isEmpty())  continue;
+	    myTreeHyp1->movePointerToTheTop();
+	    myTreeHyp2->movePointerToTheTop();
+	    RefCountedKinematicParticle bmesHyp1 = myTreeHyp1->currentParticle();
+	    RefCountedKinematicVertex bVertexHyp1 = myTreeHyp1->currentDecayVertex();
+
+	    RefCountedKinematicParticle bmesHyp2 = myTreeHyp2->currentParticle();
+	    RefCountedKinematicVertex bVertexHyp2 = myTreeHyp2->currentDecayVertex();
+	        
+	    if (!bVertexHyp1->vertexIsValid()) continue;
+	    if (!bVertexHyp2->vertexIsValid()) continue;
 	    if(bsRootTree_->iPassedCutIdentBd_   < 10 ) bsRootTree_->iPassedCutIdentBd_ = 10 ;
 	        
-	    AlgebraicVector7 b_par = bmes->currentState().kinematicParameters().vector();
-	    AlgebraicSymMatrix77 bd_er = bmes->currentState().kinematicParametersError().matrix();
-	    double vtxProb = TMath::Prob(bmes->chiSquared(),(int)bmes->degreesOfFreedom());
+	    AlgebraicVector7 b_parHyp1 = bmesHyp1->currentState().kinematicParameters().vector();
+	    AlgebraicSymMatrix77 bd_erHyp1 = bmesHyp1->currentState().kinematicParametersError().matrix();
+	    double vtxProbHyp1 = TMath::Prob(bmesHyp1->chiSquared(),(int)bmesHyp1->degreesOfFreedom());
 
-	    if(vtxProb>MinBVtx){
+	    AlgebraicVector7 b_parHyp2 = bmesHyp2->currentState().kinematicParameters().vector();
+	    AlgebraicSymMatrix77 bd_erHyp2 = bmesHyp2->currentState().kinematicParametersError().matrix();
+	    double vtxProbHyp2 = TMath::Prob(bmesHyp2->chiSquared(),(int)bmesHyp2->degreesOfFreedom());
+
+	
+	    if(vtxProbHyp1>MinBVtxHyp1){
 	            
-	      MinBVtx = vtxProb;
+	      MinBVtxHyp1 = vtxProbHyp1;
 
 	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
 	      // passed jpsi mass window after fit
 	      if(bsRootTree_->iPassedCutIdentBd_   < 11 ) bsRootTree_->iPassedCutIdentBd_ = 11 ;
 	            
-	      if (K1flag == 1){
-		if(abs(Kstmass1-0.892)> KstarMassWindowAfterFit_) continue;
-	      }
-	      if (K2flag == 1){
-		if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
-	      }
+	      if(abs(Kstmass1-0.892)> KstarMassWindowAfterFit_) continue;
+	      // if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
+	      
 	      // passed jpsi kstar window after fit
 	      if(bsRootTree_->iPassedCutIdentBd_   < 12 ) bsRootTree_->iPassedCutIdentBd_ = 12 ;
 	      if (BdCand.mass() < BdLowerMassCutAfterFit_ || BdCand.mass() > BdUpperMassCutAfterFit_) continue;
@@ -1244,17 +1263,18 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      if(bsRootTree_->iPassedCutIdentBd_   < 13 ) bsRootTree_->iPassedCutIdentBd_ = 13 ;
 
 
-	      bsRootTree_->chi2_Bd_  = bmes->chiSquared();
-	      bsRootTree_->ndof_Bd_   =(int)bmes->degreesOfFreedom();
-	      bsRootTree_->BdVtxProb_ = vtxProb;
+	      bsRootTree_->chi2_BdHyp1_  = bmesHyp1->chiSquared();
+	      bsRootTree_->ndof_BdHyp1_   =(int)bmesHyp1->degreesOfFreedom();
+	      bsRootTree_->BdVtxProbHyp1_ = vtxProbHyp1;
 	  
-	      bsRootTree_->BdfitM_Kpi_ = b_par[6];		
+	      bsRootTree_->BdfitM_KpiHyp1_ = b_parHyp1[6];		
 	      
+
 	      //	      bsRootTree_->setFitParBdKstar(myTree);
 
-	      bsRootTree_->BdVtx_x_ = bVertex->position().x();
-	      bsRootTree_->BdVtx_y_ = bVertex->position().y();
-	      bsRootTree_->BdVtx_z_ = bVertex->position().z();
+	      bsRootTree_->BdVtx_xHyp1_ = bVertexHyp1->position().x();
+	      bsRootTree_->BdVtx_yHyp1_ = bVertexHyp1->position().y();
+	      bsRootTree_->BdVtx_zHyp1_ = bVertexHyp1->position().z();
 
 	      bsRootTree_->BdMass_after_ = BdCand.mass();
 	      bsRootTree_->BdPt_after_ = BdCand.pt();
@@ -1262,8 +1282,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bsRootTree_->BdPhi_after_ = BdCand.phi();
 	      bsRootTree_->BdEta_after_ = BdCand.eta();
 	      
-	      if(K1flag == 1)  bsRootTree_->KstarMass_after_ = Kstmass1;
-	      if(K2flag == 1)  bsRootTree_->KstarMass_after_ = Kstmass2;
+	      bsRootTree_->KstarMass_after_Hyp1_ = Kstmass1;
 	      
 	      bsRootTree_->BdK1Pt_after_   = track1.pt();
 	      bsRootTree_->BdK1Pz_after_   = track1.pz();
@@ -1275,18 +1294,18 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bsRootTree_->BdK2Phi_after_  = track2.phi();
 	      
 
-	      double BdBLxy, BdBLxy2;
+	      double BdBLxy = 0; double BdBLxy2 = 0;
 	      if(BdCand.pt()!=0) {
-		BdBLxy=((bVertex->position().x()-BSx)*BdCand.px()+(bVertex->position().y()-BSy)*BdCand.py())/BdCand.pt();
-		BdBLxy2=((bVertex->position().x()-PVx)*BdCand.px()+(bVertex->position().y()-PVy)*BdCand.py())/BdCand.pt();
+		BdBLxy=((bVertexHyp1->position().x()-BSx)*BdCand.px()+(bVertexHyp1->position().y()-BSy)*BdCand.py())/BdCand.pt();
+		BdBLxy2=((bVertexHyp1->position().x()-PVx)*BdCand.px()+(bVertexHyp1->position().y()-PVy)*BdCand.py())/BdCand.pt();
 	      }
 	      
 	      double BdBsct1 = BdBLxy*BdCand.mass()/BdCand.pt();
 	      double BdBsct2 = BdBLxy2*BdCand.mass()/BdCand.pt();
 	      
-	      double BdBerrX=bd_er(1,1);
-	      double BdBerrY=bd_er(2,2);
-	      double BdBerrXY=bd_er(1,2); 
+	      double BdBerrX=bd_erHyp1(1,1);
+	      double BdBerrY=bd_erHyp1(2,2);
+	      double BdBerrXY=bd_erHyp1(1,2); 
 	      
 	      bsRootTree_->getBdLXY(BdBLxy,BdBLxy2,BdBerrX,BdBerrY,BdBerrXY,BdBsct1,BdBsct2);
 	      
@@ -1295,8 +1314,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      double Time3d = -5;
 	      double dTime3d = -5;
 	      VertexDistance3D vdist3d;
-	      Dist3d = vdist3d.distance(bVertex->vertexState(),RecVtx).value();
-	      dDist3d = vdist3d.distance(bVertex->vertexState(),RecVtx).error();
+	      Dist3d = vdist3d.distance(bVertexHyp1->vertexState(),RecVtx).value();
+	      dDist3d = vdist3d.distance(bVertexHyp1->vertexState(),RecVtx).error();
 	      Time3d = Dist3d * BdCand.mass()/BdCand.pt() *100. /3.;
 	      dTime3d = dDist3d * BdCand.mass()/BdCand.pt() * 100. /3.;
 	      
@@ -1307,14 +1326,51 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      double Time = -5;
 	      double dTime = -5;
 	      VertexDistanceXY vdist;
-	      Dist = vdist.distance(bVertex->vertexState(),RecVtx).value();
-	      dDist = vdist.distance(bVertex->vertexState(),RecVtx).error();
+	      Dist = vdist.distance(bVertexHyp1->vertexState(),RecVtx).value();
+	      dDist = vdist.distance(bVertexHyp1->vertexState(),RecVtx).error();
 	      Time = Dist * BdCand.mass()/BdCand.pt() *100. /3.;
 	      dTime = dDist * BdCand.mass()/BdCand.pt() * 100. /3.;
 	      
 	      bsRootTree_->getBd1d(Dist,dDist,Time,dTime);
 	      
 
+	    }
+
+	    if(vtxProbHyp2>MinBVtxHyp2){
+	            
+	      MinBVtxHyp2 = vtxProbHyp2;
+
+	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
+	      // passed jpsi mass window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 11 ) bsRootTree_->iPassedCutIdentBd_ = 11 ;
+	            
+	      if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
+	      // if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
+	      
+	      // passed jpsi kstar window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 12 ) bsRootTree_->iPassedCutIdentBd_ = 12 ;
+	      if (BdCand.mass() < BdLowerMassCutAfterFit_ || BdCand.mass() > BdUpperMassCutAfterFit_) continue;
+	      // passed Bd mass window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 13 ) bsRootTree_->iPassedCutIdentBd_ = 13 ;
+
+
+	      bsRootTree_->chi2_BdHyp2_  = bmesHyp2->chiSquared();
+	      bsRootTree_->ndof_BdHyp2_   =(int)bmesHyp2->degreesOfFreedom();
+	      bsRootTree_->BdVtxProbHyp2_ = vtxProbHyp2;
+	  
+	      bsRootTree_->BdfitM_KpiHyp2_ = b_parHyp2[6];		
+	      
+	      //	      bsRootTree_->setFitParBdKstar(myTree);
+
+	      bsRootTree_->BdVtx_xHyp2_ = bVertexHyp2->position().x();
+	      bsRootTree_->BdVtx_yHyp2_ = bVertexHyp2->position().y();
+	      bsRootTree_->BdVtx_zHyp2_ = bVertexHyp2->position().z();
+
+	
+	      
+	      bsRootTree_->KstarMass_after_Hyp2_ = Kstmass2;
+	      
+		      
 	    }
 
 	    // deltaR matching!

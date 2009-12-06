@@ -330,15 +330,29 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
 
 
 
-  bsTree_->Branch("chi2_Bd"        ,   &chi2_Bd_        ,  "chi2_Bd/D");         
-  bsTree_->Branch("ndof_Bd"        ,   &ndof_Bd_        ,  "ndof_Bd/D");         
-  bsTree_->Branch("BdVtxProb"      ,   &BdVtxProb_      ,  "BdVtxProb/D");      
+  bsTree_->Branch("chi2_BdHyp1"        ,   &chi2_BdHyp1_        ,  "chi2_BdHyp1/D");         
+  bsTree_->Branch("ndof_BdHyp1"        ,   &ndof_BdHyp1_        ,  "ndof_BdHyp1/D");         
+  bsTree_->Branch("BdVtxProbHyp1"      ,   &BdVtxProbHyp1_      ,  "BdVtxProbHyp1/D");      
   
-  bsTree_->Branch("BdfitM_Kpi"     ,   &BdfitM_Kpi_     ,  "BdfitM_Kpi/D");     
+  bsTree_->Branch("BdfitM_KpiHyp1"     ,   &BdfitM_KpiHyp1_     ,  "BdfitM_KpiHyp1/D");     
   
-  bsTree_->Branch("BdVtx_x"        ,   &BdVtx_x_        ,  "BdVtx_x/D");  
-  bsTree_->Branch("BdVtx_y"        ,   &BdVtx_y_        ,  "BdVtx_y/D");     
-  bsTree_->Branch("BdVtx_z"        ,   &BdVtx_z_        ,  "BdVtx_z/D");     
+  bsTree_->Branch("BdVtx_xHyp1"        ,   &BdVtx_xHyp1_        ,  "BdVtx_xHyp1/D");  
+  bsTree_->Branch("BdVtx_yHyp1"        ,   &BdVtx_yHyp1_        ,  "BdVtx_yHyp1/D");     
+  bsTree_->Branch("BdVtx_zHyp1"        ,   &BdVtx_zHyp1_        ,  "BdVtx_zHyp1/D");     
+
+  bsTree_->Branch("KstarMass_after_Hyp1",   &KstarMass_after_Hyp1_,  "KstarMass_after_Hyp1/D"); 
+
+  bsTree_->Branch("chi2_BdHyp2"        ,   &chi2_BdHyp2_        ,  "chi2_BdHyp2/D");         
+  bsTree_->Branch("ndof_BdHyp2"        ,   &ndof_BdHyp2_        ,  "ndof_BdHyp2/D");         
+  bsTree_->Branch("BdVtxProbHyp2"      ,   &BdVtxProbHyp2_      ,  "BdVtxProbHyp2/D");      
+  
+  bsTree_->Branch("BdfitM_KpiHyp2"     ,   &BdfitM_KpiHyp2_     ,  "BdfitM_KpiHyp2/D");     
+  
+  bsTree_->Branch("BdVtx_xHyp2"        ,   &BdVtx_xHyp2_        ,  "BdVtx_xHyp2/D");  
+  bsTree_->Branch("BdVtx_yHyp2"        ,   &BdVtx_yHyp2_        ,  "BdVtx_yHyp2/D");     
+  bsTree_->Branch("BdVtx_zHyp2"        ,   &BdVtx_zHyp2_        ,  "BdVtx_zHyp2/D");     
+
+  bsTree_->Branch("KstarMass_after_Hyp2",   &KstarMass_after_Hyp2_,  "KstarMass_after_Hyp2/D"); 
   
   bsTree_->Branch("BdMass_after"   ,   &BdMass_after_   ,  "BdMass_after/D");    
   bsTree_->Branch("BdPt_after"     ,   &BdPt_after_     ,  "BdPt_after/D");
@@ -346,7 +360,7 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("BdPhi_after"    ,   &BdPhi_after_    ,  "BdPhi_after/D");  
   bsTree_->Branch("BdEta_after"    ,   &BdEta_after_    ,  "BdEta_after/D"); 
   
-  bsTree_->Branch("KstarMass_after",   &KstarMass_after_,  "KstarMass_after/D"); 
+
 
   bsTree_->Branch("BdK1Pt_after"   ,   &BdK1Pt_after_   ,  "BdK1Pt_after/D");  
   bsTree_->Branch("BdK1Pz_after"   ,   &BdK1Pz_after_   ,  "BdK1Pz_after/D");
@@ -714,15 +728,30 @@ void BsToJpsiPhiRootTree::resetEntries()
 
 
 
-  chi2_Bd_  = -10;       
-  ndof_Bd_  = -10;       
-  BdVtxProb_= -10;       
+  chi2_BdHyp1_  = -10;       
+  ndof_BdHyp1_  = -10;       
+  BdVtxProbHyp1_= -10;       
   
-  BdfitM_Kpi_= -10;      
+  BdfitM_KpiHyp1_= -10;      
   
-  BdVtx_x_ = -10;        
-  BdVtx_y_= -10;         
-  BdVtx_z_= -10;         
+  BdVtx_xHyp1_ = -10;        
+  BdVtx_yHyp1_= -10;         
+  BdVtx_zHyp1_= -10;         
+
+  KstarMass_after_Hyp1_ = -10;
+
+  chi2_BdHyp2_  = -10;       
+  ndof_BdHyp2_  = -10;       
+  BdVtxProbHyp2_= -10;       
+  
+  BdfitM_KpiHyp2_= -10;      
+  
+  BdVtx_xHyp2_ = -10;        
+  BdVtx_yHyp2_= -10;         
+  BdVtx_zHyp2_= -10;         
+
+  KstarMass_after_Hyp2_ = -10;
+
   
   BdMass_after_ = -10;   
   BdPt_after_    = -10;  
@@ -730,7 +759,7 @@ void BsToJpsiPhiRootTree::resetEntries()
   BdPhi_after_   = -10;  
   BdEta_after_   = -10;  
   
-  KstarMass_after_ = -10;
+
 
                   
   BdK1Pt_after_  = -10;  

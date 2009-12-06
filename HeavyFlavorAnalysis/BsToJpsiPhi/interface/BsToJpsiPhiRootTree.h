@@ -375,15 +375,30 @@ public:
 
 
 	// for the Bd->Kstar analysis
-	double chi2_Bd_  ; 
-	double ndof_Bd_  ;
-	double BdVtxProb_;
+	double chi2_BdHyp1_  ; 
+	double ndof_BdHyp1_  ;
+	double BdVtxProbHyp1_;
 
-	double BdfitM_Kpi_;
+	double BdfitM_KpiHyp1_;
 
-	double BdVtx_x_ ;
-	double BdVtx_y_;
-	double BdVtx_z_;
+	double BdVtx_xHyp1_ ;
+	double BdVtx_yHyp1_;
+	double BdVtx_zHyp1_;
+
+	double KstarMass_after_Hyp1_ ;
+
+	double chi2_BdHyp2_  ; 
+	double ndof_BdHyp2_  ;
+	double BdVtxProbHyp2_;
+
+	double BdfitM_KpiHyp2_;
+
+	double BdVtx_xHyp2_ ;
+	double BdVtx_yHyp2_;
+	double BdVtx_zHyp2_;
+
+	double KstarMass_after_Hyp2_ ;
+
 
 	double BdMass_after_ ;
 	double BdPt_after_    ;
@@ -391,7 +406,6 @@ public:
 	double BdPhi_after_   ;
 	double BdEta_after_   ;
 
-	double KstarMass_after_ ;
 
 
 	double BdK1Pt_after_  ; 
