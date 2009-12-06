@@ -10,6 +10,55 @@ using namespace std;
 
 namespace
 {
+typedef struct 
+{
+  int   nTrkVtx;
+  int   nTrkCalo;
+  int   n90;
+  float rawPt;
+  float corPt;
+  float eta;
+  float etaD;
+  float y;
+  float phi;
+  float rawE;
+  float corE;
+  float trkVtxPt;
+  float trkCaloPt;
+  float fHPD;
+  float fRBX;
+  float shapeVar;
+  float sigmaEta;
+  float sigmaPhi;
+  float emf;
+  float chf;
+} JET_VAR;
+typedef struct 
+{
+  int   runNo;
+  int   evtNo;
+  int   lumi;
+  int   bunch;
+  int   njets;
+  int   passLooseHcalNoise;
+  int   passTightHcalNoise;
+  int   nPV;
+  float PVz;
+  float PVx;
+  float PVy;
+  float corMass;
+  float rawMass; 
+  float met;
+  float metNoHF;
+  float sumet;
+  float sumetNoHF;
+  float met_over_sumet; 
+  float met_over_sumet_NoHF;
+  float eemf;
+  float echf;
+  float pthat;
+  float weight;
+} EVENT_VAR;
 void fillHist(const TString& histName,map<TString, TH1*> HistNames, const double& x);
 void fillHist(const TString& histName,map<TString, TH2*> HistNames, const double& x, const double& y);
 void BinNormalization(TH1F *h);
