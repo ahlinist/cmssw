@@ -110,6 +110,11 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 	 << " found, skipping" << endl;
     return;
   }
+
+  if (hTracks->size() > 100) {
+    cout << "==>HFB2muD0> TrackCollection with label " << fTracksLabel.c_str()
+	 << " has " << hTracks->size() << " entries, skipping event!!" << endl;
+  }
  
   // -- Fill muons into muonTracks
   if (fVerbose > 1)
