@@ -27,11 +27,12 @@ process.add_( cms.Service( "TFileService",
                            fileName = cms.string( THISROOTFILE ),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
-    "/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/596/F82DED93-36E2-DE11-9316-000423D9870C.root"
+    '/store/data/BeamCommissioning09/MinimumBias/RECO/rereco_GR09_P_V7_v1/0099/DABD5D6D-D4E2-DE11-8FFD-00261894387A.root'
+    #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/596/F82DED93-36E2-DE11-9316-000423D9870C.root"
     #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/151/0E45A7CE-F5DD-DE11-9B2E-001617E30CC8.root"
         ),
     
@@ -41,7 +42,7 @@ process.source = cms.Source (
 
 process.MessageLogger = cms.Service("MessageLogger",
                                     default = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(1000)
+    reportEvery = cms.untracked.int32(100)
     )
                                     )
 
