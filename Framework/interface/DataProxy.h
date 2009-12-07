@@ -53,6 +53,8 @@ class DataProxy
          clearCacheIsValid();
          invalidateCache();
       }
+      
+      void resetIfTransient();
 
       void setProviderDescription(const ComponentDescription* iDesc) {
          description_ = iDesc;
@@ -63,9 +65,8 @@ class DataProxy
          */
       virtual void invalidateCache() = 0;
 
-      void setCacheIsValid() { cacheIsValid_ = true; }
-      void clearCacheIsValid() { cacheIsValid_ = false; }
-      
+      void setCacheIsValidAndAccessType(bool iTransientAccessOnly);
+      void clearCacheIsValid();      
    private:
       DataProxy(const DataProxy&); // stop default
 
@@ -73,6 +74,7 @@ class DataProxy
 
       // ---------- member data --------------------------------
       bool cacheIsValid_;
+      bool nonTransientAccessRequested_;
       const ComponentDescription* description_;
 };
    }

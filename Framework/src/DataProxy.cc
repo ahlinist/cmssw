@@ -38,6 +38,7 @@ dummyDescription()
 //
 DataProxy::DataProxy() :
    cacheIsValid_(false),
+   nonTransientAccessRequested_(false),
    description_(dummyDescription())
 {
 }
@@ -66,7 +67,26 @@ DataProxy::~DataProxy()
 //
 // member functions
 //
-
+void 
+DataProxy::setCacheIsValidAndAccessType(bool iTransientAccessOnly) { 
+   cacheIsValid_ = true;
+   if(!iTransientAccessOnly) {
+      nonTransientAccessRequested_ = true;
+   }
+}
+      
+void DataProxy::clearCacheIsValid() { 
+   cacheIsValid_ = false;
+   nonTransientAccessRequested_ = false;
+}
+      
+void 
+DataProxy::resetIfTransient() {
+   if (!nonTransientAccessRequested_) {
+      invalidate();
+   }
+}
+      
 //
 // const member functions
 //
