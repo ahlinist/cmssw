@@ -883,14 +883,14 @@ void ScaleHistograms(TH1F* BsJPsiPhiSignal,  TH1F* BsJPsiKKSignal, TH1F* BdJPsiK
 
 BsJPsiPhiSignal      ->Scale(100./ 48.); 
 BsJPsiKKSignal       ->Scale(100./ 38. ); 
-BdJPsiKstarSignal    ->Scale(100./ 83.);  
+BdJPsiKstarSignal    ->Scale(100./ 99.);  
 BsOther              ->Scale(100./ 48. ); 
 BdOther              ->Scale(100./ 83. ); 
 BOther               ->Scale(100./ 69.);  
 BsJpsiEta            ->Scale(100./ 16.);  
-BdJpsiK10            ->Scale(100./ 93. ); 
-BdJpsiK0             ->Scale(100./ 52. ); 
-BpJpsiKp             ->Scale(100./ 69.);  
+BdJpsiK10            ->Scale(100./ 95. ); 
+BdJpsiK0             ->Scale(100./ 33. ); 
+BpJpsiKp             ->Scale(100./ 17.);  
 JpsiOther            ->Scale(100./ 9.);   
  ppmumux              ->Scale(100./0.9);
 }
