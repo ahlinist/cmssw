@@ -232,32 +232,22 @@ EcalTimingAnalysis::beginJob( ) {
 	   }
     }
   
-  ttTimingEtaPhi_    = fromfile_ ? ((TH3F*) tf->Get("timeTTAllFEDs")) : (new TH3F("timeTTAllFEDs","(Phi,Eta,time) for all FEDs (SM,TT binning);i#phi;i#eta;Relative Time (1 clock = 25ns)",72,ttPhiBins,35,ttEtaBins,125,timingBins)); 
-  ttTimingEtaPhiRel_ = fromfile_ ? ((TH3F*) tf->Get("timeTTAllFEDsREL")) : (new TH3F("timeTTAllFEDsREL","(Phi,Eta,time corrected) for all FEDs (SM,TT binning);i#phi;i#eta;Relative Time (1 clock = 25ns)",72,ttPhiBins,35,ttEtaBins,125,timingBins)); 
-  chTimingEtaPhi_    = fromfile_ ? ((TH3F*) tf->Get("timeCHAllFEDs")) : (new TH3F("timeCHAllFEDs","(Phi,Eta,time) for all FEDs (SM,ch binning);i#phi;i#eta;Relative Time (1 clock = 25ns)",360,1.,361.,171,-85.,86.,700,3.5,8.5)); 
-  chTimingEtaPhiRel_ = fromfile_ ? ((TH3F*) tf->Get("timeCHAllFEDsREL")) : (new TH3F("timeCHAllFEDsREL","(Phi,Eta,time corrected) for all FEDs (SM,ch binning);i#phi;i#eta;Relative Time (1 clock = 25ns)",360,1.,361.,171,-85.,86.,500,3.5,6.5)); 
+  ttTimingEtaPhi_    = fromfile_ ? ((TProfile2D*) tf->Get("timeTTProfile")) : (new TProfile2D("timeTTProfile","(Phi,Eta,time) for all FEDs (SM,TT binning);i#phi;i#eta",72,ttPhiBins,35,ttEtaBins)); 
+  chTimingEtaPhi_    = fromfile_ ? ((TProfile2D*) tf->Get("timeCHProfile")) : (new TProfile2D("timeCHProfile","(Phi,Eta,time) for all FEDs (SM,ch binning);i#phi;i#eta;Relative Time (1 clock = 25ns)",360,1.,361.,171,-85.,86.)); 
 
-  chTimingEtaPhiEEP_    = fromfile_ ? ((TH3F*) tf->Get("EEPtimeCHAllFEDs")) : (new TH3F("EEPtimeCHAllFEDs","(ix,iy,time) for all FEDs EE+ (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.0,101.,700,3.5,8.5)); 
-  chTimingEtaPhiEEM_    = fromfile_ ? ((TH3F*) tf->Get("EEMtimeCHAllFEDs")) : (new TH3F("EEMtimeCHAllFEDs","(ix,iy,time) for all FEDs EE- (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.0,101.,700,3.5,8.5)); 
-  chTimingEtaPhiRelEEP_ = fromfile_ ? ((TH3F*) tf->Get("EEPtimeCHAllFEDsREL")) : (new TH3F("EEPtimeCHAllFEDsREL","(ix,iy,time corrected) for all FEDs EE+ (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.,101.,500,3.5,7.)); 
-  chTimingEtaPhiRelEEM_ = fromfile_ ? ((TH3F*) tf->Get("EEMtimeCHAllFEDsREL")) : (new TH3F("EEMtimeCHAllFEDsREL","(ix,iy,time corrected) for all FEDs EE- (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.,101.,500,3.5,7.)); 
+  chTimingEtaPhiEEP_    = fromfile_ ? ((TProfile2D*) tf->Get("EEPtimeCHProfile")) : (new TProfile2D("EEPtimeCHProfile","(ix,iy,time) for all FEDs EE+ (SM,ch binning);ix;iy",100,1.,101.,100,1.0,101.)); 
+  chTimingEtaPhiEEM_    = fromfile_ ? ((TProfile2D*) tf->Get("EEMtimeCHProfile")) : (new TProfile2D("EEMtimeCHProfile","(ix,iy,time) for all FEDs EE- (SM,ch binning);ix;iy",100,1.,101.,100,1.0,101.)); 
   
-  ttTimingEtaPhiEEP_    = fromfile_ ? ((TH3F*) tf->Get("EEPtimeTTAllFEDs")) : (new TH3F("EEPtimeTTAllFEDs","(ix,iy,time) for all FEDs EE+ (SM,tt binning);ix;iy;Relative Time (1 clock = 25ns)",100/5,1.,101.,100/5,1.0,101.,125,2.,8.)); 
-  ttTimingEtaPhiEEM_    = fromfile_ ? ((TH3F*) tf->Get("EEMtimeTTAllFEDs")) : (new TH3F("EEMtimeTTAllFEDs","(ix,iy,time) for all FEDs EE- (SM,tt binning);ix;iy;Relative Time (1 clock = 25ns)",100/5,1.,101.,100/5,1.0,101.,125,2.,8.)); 
-  ttTimingEtaPhiRelEEP_ = fromfile_ ? ((TH3F*) tf->Get("EEPtimeTTAllFEDsREL")) : (new TH3F("EEPtimeTTAllFEDsREL","(ix,iy,time corrected) for all FEDs EE+ (SM,tt binning);ix;iy;Relative Time (1 clock = 25ns)",100/5,1.,101.,100/5,1.,101.,125,2.,8.)); 
-  ttTimingEtaPhiRelEEM_ = fromfile_ ? ((TH3F*) tf->Get("EEMtimeTTAllFEDsREL")) : (new TH3F("EEMtimeTTAllFEDsREL","(ix,iy,time corrected) for all FEDs EE- (SM,tt binning);ix;iy;Relative Time (1 clock = 25ns)",100/5,1.,101.,100/5,1.,101.,125,2.,8.)); 
+  ttTimingEtaPhiEEP_    = fromfile_ ? ((TProfile2D*) tf->Get("EEPtimeTTProfile")) : (new TProfile2D("EEPtimeTTProfile","(ix,iy,time) for all FEDs EE+ (SM,tt binning);ix;iy",100/5,1.,101.,100/5,1.0,101.)); 
+  ttTimingEtaPhiEEM_    = fromfile_ ? ((TProfile2D*) tf->Get("EEMtimeTTProfile")) : (new TProfile2D("EEMtimeTTProfile","(ix,iy,time) for all FEDs EE- (SM,tt binning);ix;iy;",100/5,1.,101.,100/5,1.0,101.)); 
  
   //Now the eta profiles
   ttTimingEta_    = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEta")) : (new TProfile("timeTTAllFEDsEta","(Eta,time) for all FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",35,ttEtaBins,2.5,7.5)); 
-  ttTimingEtaRel_ = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaREL")) : (new TProfile("timeTTAllFEDsEtaREL","(Eta,time corrected) for all FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",35,ttEtaBins,2.5,7.5)); 
   chTimingEta_    = fromfile_ ? ((TProfile*) tf->Get("timeCHAllFEDsEta")) : (new TProfile("timeCHAllFEDsEta","(Eta,time) for all FEDs (SM,ch binning);i#eta;Relative Time (1 clock = 25ns)",171,-85.,86.,2.5,7.5)); 
-  chTimingEtaRel_ = fromfile_ ? ((TProfile*) tf->Get("timeCHAllFEDsEtaREL")) : (new TProfile("timeCHAllFEDsEtaREL","(Eta,time corrected) for all FEDs (SM,ch binning);i#eta;Relative Time (1 clock = 25ns)",171,-85.,86.,2.5,7.5)); 
 
   ttTimingEtaEEP_    = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaEEP")) : (new TProfile("timeTTAllFEDsEtaEEP","(Eta,time) for EEP FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",20,ttEtaEEBins,2.5,7.5)); 
-  ttTimingEtaRelEEP_ = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaEEPREL")) : (new TProfile("timeTTAllFEDsEtaEEPREL","(Eta,time corrected) for EEP FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",20,ttEtaEEBins,2.5,7.5)); 
 
   ttTimingEtaEEM_    = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaEEM")) : (new TProfile("timeTTAllFEDsEtaEEM","(Eta,time) for EEM FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",20,ttEtaEEBins,2.5,7.5)); 
-  ttTimingEtaRelEEM_ = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaEEMREL")) : (new TProfile("timeTTAllFEDsEtaEEMREL","(Eta,time corrected) for EEM FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",20,ttEtaEEBins,2.5,7.5)); 
   //Here is some info needed to convert DetId's to FEDIds's (DDCIds)
   //It is basically an electronics mapping service
 
@@ -486,67 +476,25 @@ void EcalTimingAnalysis::endJob() {
    
   }
   if(writetxtfiles_) smave_outfile.close();
-  TProfile2D* ttTimingProfile = (TProfile2D*) ttTimingEtaPhi_->Project3DProfile("yx");
-  ttTimingProfile->SetTitle("(Phi,Eta,time) for all FEDs (SM,TT binning);i#phi;i#eta");
-  ttTimingProfile->SetName("timeTTProfile");
-  ttTimingProfile->GetXaxis()->SetNdivisions(-18);
-  ttTimingProfile->GetYaxis()->SetNdivisions(2);
+
+  ttTimingEtaPhi_->GetXaxis()->SetNdivisions(-18);
+  ttTimingEtaPhi_->GetYaxis()->SetNdivisions(2);
   
-  TProfile2D* chTimingProfile = (TProfile2D*) chTimingEtaPhi_->Project3DProfile("yx");
-  chTimingProfile->SetTitle("(Phi,Eta,time) for all FEDs (SM,ch binning);i#phi;i#eta");
-  chTimingProfile->SetName("timeCHProfile");
-  chTimingProfile->GetXaxis()->SetNdivisions(-18);
-  chTimingProfile->GetYaxis()->SetNdivisions(2);
-  TProfile2D* ttTimingProfileRel = (TProfile2D*) ttTimingEtaPhiRel_->Project3DProfile("yx");
-  ttTimingProfileRel->SetTitle("(Phi,Eta,time corrected) for all FEDs (SM,TT binning);i#phi;i#eta");
-  ttTimingProfileRel->SetName("timeTTProfileRel");
-  ttTimingProfileRel->GetXaxis()->SetNdivisions(-18);
-  ttTimingProfileRel->GetYaxis()->SetNdivisions(2);
-  TProfile2D* chTimingProfileRel = (TProfile2D*) chTimingEtaPhiRel_->Project3DProfile("yx");
-  chTimingProfileRel->SetTitle("(Phi,Eta,time corrected) for all FEDs (SM,ch binning);i#phi;i#eta");
-  chTimingProfileRel->SetName("timeCHProfileRel");
-  chTimingProfileRel->GetXaxis()->SetNdivisions(-18);
-  chTimingProfileRel->GetYaxis()->SetNdivisions(2);
-  TProfile2D* chTimingProfileEEP = (TProfile2D*) chTimingEtaPhiEEP_->Project3DProfile("yx");
-  chTimingProfileEEP->SetTitle("(ix,iy,time) for all EE+ FEDs (SM,ch binning);ix;iy");
-  chTimingProfileEEP->SetName("EEPtimeCHProfile");
-  chTimingProfileEEP->GetXaxis()->SetNdivisions(-18);
-  chTimingProfileEEP->GetYaxis()->SetNdivisions(16);
-  TProfile2D* chTimingProfileRelEEP = (TProfile2D*) chTimingEtaPhiRelEEP_->Project3DProfile("yx");
-  chTimingProfileRelEEP->SetTitle("(ix,iy,time corrected) for all EE+ FEDs (SM,ch binning);ix;iy");
-  chTimingProfileRelEEP->SetName("EEPtimeCHProfileRel");
-  chTimingProfileRelEEP->GetXaxis()->SetNdivisions(-18);
-  chTimingProfileRelEEP->GetYaxis()->SetNdivisions(16);
-  TProfile2D* chTimingProfileEEM = (TProfile2D*) chTimingEtaPhiEEM_->Project3DProfile("yx");
-  chTimingProfileEEM->SetTitle("(ix,iy,time) for all EE- FEDs (SM,ch binning);ix;iy");
-  chTimingProfileEEM->SetName("EEMtimeCHProfile");
-  chTimingProfileEEM->GetXaxis()->SetNdivisions(-18);
-  chTimingProfileEEM->GetYaxis()->SetNdivisions(16);
-  TProfile2D* chTimingProfileRelEEM = (TProfile2D*) chTimingEtaPhiRelEEM_->Project3DProfile("yx");
-  chTimingProfileRelEEM->SetTitle("(ix,iy,time corrected) for all EE- FEDs (SM,ch binning);ix;iy");
-  chTimingProfileRelEEM->SetName("EEMtimeCHProfileRel");
-  chTimingProfileRelEEM->GetXaxis()->SetNdivisions(-18);
-  chTimingProfileRelEEM->GetYaxis()->SetNdivisions(16);
-  TProfile2D* ttTimingProfileEEP = (TProfile2D*) ttTimingEtaPhiEEP_->Project3DProfile("yx");
-  ttTimingProfileEEP->SetTitle("(ix,iy,time) for all EE+ FEDs (SM,tt binning);ix;iy");
-  ttTimingProfileEEP->SetName("EEPtimeTTProfile");
-  ttTimingProfileEEP->GetXaxis()->SetNdivisions(-18);
-  ttTimingProfileEEP->GetYaxis()->SetNdivisions(16);
-  //TProfile2D* ttTimingProfileRelEEP = (TProfile2D*) ttTimingEtaPhiRelEEP_->Project3DProfile("yx");
-  //ttTimingProfileRelEEP->SetTitle("(ix,iy,time corrected) for all EE+ FEDs (SM,tt binning);ix;iy");
-  //ttTimingProfileRelEEP->SetName("EEPtimeTTProfileRel");
-  //ttTimingProfileRelEEP->GetXaxis()->SetNdivisions(-18);
-  //ttTimingProfileRelEEP->GetYaxis()->SetNdivisions(16);
-  TProfile2D* ttTimingProfileEEM = (TProfile2D*) ttTimingEtaPhiEEM_->Project3DProfile("yx");
-  ttTimingProfileEEM->SetTitle("(ix,iy,time) for all EE- FEDs (SM,tt binning);ix;iy");
-  ttTimingProfileEEM->SetName("EEMtimeTTProfile");
-  ttTimingProfileEEM->GetXaxis()->SetNdivisions(-18);
-  ttTimingProfileEEM->GetYaxis()->SetNdivisions(16);
-  //TProfile2D* ttTimingProfileRelEEM = (TProfile2D*) ttTimingEtaPhiRelEEM_->Project3DProfile("yx");
-  //ttTimingProfileRelEEM->SetTitle("(ix,iy,time corrected) for all EE- FEDs (SM,tt binning);ix;iy");
-  //ttTimingProfileRelEEM->SetName("EEMtimeTTProfileRel");
-  //ttTimingProfileRelEEM->GetXaxis()->SetNdivisions(-18);
-  //ttTimingProfileRelEEM->GetYaxis()->SetNdivisions(16);
+  chTimingEtaPhi_->GetXaxis()->SetNdivisions(-18);
+  chTimingEtaPhi_->GetYaxis()->SetNdivisions(2);
+
+  chTimingEtaPhiEEP_->GetXaxis()->SetNdivisions(-18);
+  chTimingEtaPhiEEP_->GetYaxis()->SetNdivisions(16);
+
+  chTimingEtaPhiEEM_->GetXaxis()->SetNdivisions(-18);
+  chTimingEtaPhiEEM_->GetYaxis()->SetNdivisions(16);
+
+  ttTimingEtaPhiEEP_->GetXaxis()->SetNdivisions(-18);
+  ttTimingEtaPhiEEP_->GetYaxis()->SetNdivisions(16);
+
+  ttTimingEtaPhiEEM_->GetXaxis()->SetNdivisions(-18);
+  ttTimingEtaPhiEEM_->GetYaxis()->SetNdivisions(16);
+
   
   TFile *f = new TFile(rootfile_.c_str(),"RECREATE");
   
@@ -583,7 +531,6 @@ void EcalTimingAnalysis::endJob() {
   f->cd();
   lasersPerEvt->Write();
   ttTimingAll_->Write();
-  ttTimingAllRel_->Write();
   ttTimingAllSMChng_->Write();
   
   ttTimingEtaPhi_->Write();
@@ -592,31 +539,14 @@ void EcalTimingAnalysis::endJob() {
   chTimingEtaPhiEEM_->Write();
   ttTimingEtaPhiEEP_->Write();
   ttTimingEtaPhiEEM_->Write();
-  ttTimingEtaPhiRel_->Write(); //Taken out as not really needed yet
-  chTimingEtaPhiRel_->Write(); //Taken out as not really needed yet
-  ttTimingProfile->Write();
-  chTimingProfile->Write();
-  chTimingProfileEEP->Write();
-  chTimingProfileEEM->Write();
-  ttTimingProfileEEP->Write();
-  ttTimingProfileEEM->Write();
-  ttTimingProfileRel->Write();
-  chTimingProfileRel->Write();
-  chTimingProfileRelEEP->Write();
-  chTimingProfileRelEEM->Write();
-  chTimingEtaPhiRelEEP_->Write();
-  chTimingEtaPhiRelEEM_->Write();
+
   
   ttTimingEta_->Write();
   chTimingEta_->Write();
-  ttTimingEtaRel_->Write();
-  chTimingEtaRel_->Write();
   
   ttTimingEtaEEP_->Write();
-  ttTimingEtaRelEEP_->Write();
   
   ttTimingEtaEEM_->Write();
-  ttTimingEtaRelEEM_->Write();
   
   fullttTime->Write();
   fullttRTime->Write();
@@ -832,13 +762,9 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        if(lambda == 0){
 	 absTime[DCCid-1][SMind] = mytime;
 	 ttTimingEtaPhi_->Fill(anid.iphi(),anid.ieta(),mytime);
-	 ttTimingEtaPhiRel_->Fill(anid.iphi(),anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);
 	 chTimingEtaPhi_->Fill(anid.iphi(),anid.ieta(),mytime);
-	 chTimingEtaPhiRel_->Fill(anid.iphi(),anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);
 	 ttTimingEta_->Fill(anid.ieta(),mytime);
-	 ttTimingEtaRel_->Fill(anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);
 	 chTimingEta_->Fill(anid.ieta(),mytime);
-	 chTimingEtaRel_->Fill(anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);  
        }  
        if(SMind == 648  ){timeCry2[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
        else if(SMind == 653  ){timeCry1[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
@@ -958,20 +884,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
            absTime[DCCid-1][SMind] = mytime;
 		   if (anid.zside() == 1) {
 		   chTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
-		   chTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
-		   ttTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaEEP_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime);
-		   ttTimingEtaRelEEP_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime-sMAves_[DCCid-1]+5.0);  
 	       fullAmpProfileEEP_->Fill(anid.ix(),anid.iy(),damp);
 		   }
 		   else {
 		   chTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
-		   chTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
-		   ttTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaEEM_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime);
-	       ttTimingEtaRelEEM_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime-sMAves_[DCCid-1]+5.0);
 	       fullAmpProfileEEM_->Fill(anid.ix(),anid.iy(),damp);
 		   }
 	   

@@ -104,31 +104,21 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       TH1F* lasershiftLM_[54];
       TH1F* lasershift_;
       
-      TH3F* ttTimingEtaPhi_;
-      TH3F* ttTimingEtaPhiRel_;
-      TH3F* chTimingEtaPhi_;
-      TH3F* chTimingEtaPhiRel_;
+      TProfile2D* ttTimingEtaPhi_;
+      TProfile2D* chTimingEtaPhi_;
 	    
       TProfile* ttTimingEta_;
-      TProfile* ttTimingEtaRel_;
       TProfile* chTimingEta_;
-      TProfile* chTimingEtaRel_;
 	  
       TProfile* ttTimingEtaEEP_;
-      TProfile* ttTimingEtaRelEEP_;
 	  
       TProfile* ttTimingEtaEEM_;
-      TProfile* ttTimingEtaRelEEM_;
 	  
-      TH3F* chTimingEtaPhiEEP_;
-      TH3F* chTimingEtaPhiEEM_;
-      TH3F* chTimingEtaPhiRelEEP_;
-      TH3F* chTimingEtaPhiRelEEM_;
+      TProfile2D* chTimingEtaPhiEEP_;
+      TProfile2D* chTimingEtaPhiEEM_;
       
-      TH3F* ttTimingEtaPhiEEP_;
-      TH3F* ttTimingEtaPhiEEM_;
-      TH3F* ttTimingEtaPhiRelEEP_;
-      TH3F* ttTimingEtaPhiRelEEM_;
+      TProfile2D* ttTimingEtaPhiEEP_;
+      TProfile2D* ttTimingEtaPhiEEM_;
       
       TH1F* timeCry1[54]; 
       TH1F* timeCry2[54]; 
