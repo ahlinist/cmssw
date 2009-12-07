@@ -27,9 +27,12 @@ public:
 	(o.name.find( "BeamMonitor_PixelLess/" ) == std::string::npos))
       return false;
       
-    if( o.name.find( "/EventInfo/" ) != std::string::npos )
+    if (o.name.find( "/EventInfo/" ) != std::string::npos)
       return true;
       
+    if (o.name.find( "/Fit/" ) != std::string::npos)
+      return true;
+
     return false;
 
   }
@@ -37,8 +40,12 @@ public:
   virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) {
     c->cd();
 
-    if( dynamic_cast<TH2F*>( o.object ) ) {
+    if ( dynamic_cast<TH2F*>( o.object ) ) {
       preDrawTH2F( c, o );
+    }
+
+    if ( dynamic_cast<TH1F*>( o.object ) ) {
+      preDrawTH1F( c, o );
     }
 
   }
@@ -46,7 +53,7 @@ public:
   virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & ) {
     c->cd();
     
-    if( dynamic_cast<TH2F*>( o.object ) ) {
+    if ( dynamic_cast<TH2F*>( o.object ) ) {
       postDrawTH2F( c, o );
     }
 
@@ -54,7 +61,7 @@ public:
   
 private:
   
-  void preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
+  void preDrawTH2F( TCanvas *c, const VisDQMObject &o ) {
     
     TH2F* obj = dynamic_cast<TH2F*>( o.object );
     assert( obj );
@@ -75,15 +82,41 @@ private:
     ya->SetTitleSize(0.05);
     ya->SetLabelSize(0.04);
 
-    if( o.name.find( "reportSummaryMap" )  != std::string::npos) {
+    if ( o.name.find( "reportSummaryMap" )  != std::string::npos) {
       obj->SetStats( kFALSE );
       dqm::utils::reportSummaryMapPalette(obj);
       obj->SetOption("colz");
       return;
     }
 
+    if ( o.name.find( "trk_vx_vy" )  != std::string::npos) {
+      gStyle->SetOptStat(11);
+      obj->SetOption("colz");
+      return;
+    }
+
+    if ( o.name.find( "fitResults" )  != std::string::npos) {
+      c->SetGrid();
+      obj->SetStats( kFALSE );
+      return;
+    }
+
   }
 
+  void preDrawTH1F( TCanvas *, const VisDQMObject &o ) {
+    TH1F* obj = dynamic_cast<TH1F*>( o.object );
+    assert( obj );
+
+    TAxis* ya = obj->GetYaxis();
+    ya->SetTitleOffset(1.1);
+    ya->SetTitleSize(0.04);
+    ya->SetLabelSize(0.03);
+
+    if( o.name.find( "nTrk_lumi" )  != std::string::npos) {
+      gStyle->SetOptStat(11);
+      return;
+    }
+  }
 
   void postDrawTH2F( TCanvas *c, const VisDQMObject &o ) {
 
@@ -92,7 +125,7 @@ private:
 
     std::string name = o.name.substr(o.name.rfind("/")+1);
 
-    if( name.find( "reportSummaryMap" ) != std::string::npos ) {
+    if ( name.find( "reportSummaryMap" ) != std::string::npos ) {
       c->SetGridx();
       c->SetGridy();
       return;
