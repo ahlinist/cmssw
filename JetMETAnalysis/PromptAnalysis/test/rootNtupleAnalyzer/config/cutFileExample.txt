@@ -11,9 +11,9 @@
 # analysis. No cut is automatically evaluated on these variables and the cut level must be equal to -1. 
 # Variable names must be unique.
 #
-#VariableName                   value1		value2		value3		value4		level
-#------------			------------	-------------	------------	-------------	-----
-towerETcut			0.3		-		-		-		-1
+#VariableName                   value1 value2  value3  value4  level
+#------------  ------------    -------------   ------------    -------------   -----
+towerETcut     0.3     -       -       -       -1
 #
 #
 #--------------------------------- Cuts (level 0,1,2,3 ... n) below --------------------------------------------
@@ -31,9 +31,38 @@ towerETcut			0.3		-		-		-		-1
 # The level of the cut (0,1,2 ... n) is provided by the user and can be used in the code to easily determine if
 # groups of same-level cuts have passed or failed.
 #
-#VariableName	      minValue1(<) maxValue1(>=)	minValue2(<)	maxValue2(>=)	level	histoNbinsMinMax
-#------------	      ------------ -------------	------------	-------------	-----	----------------
-calometPt	      -inf	   +inf			-		-		0	100 0 2000
-calometPhi	      -inf	   +inf			-		-		0	50 -4 4
-my_calometPt	      -inf	   +inf			-		-		0	100 0 2000
-my_calometPhi	      -inf	   +inf			-		-		0	80 -4 4
+#VariableName        minValue1(<) maxValue1(>=)minValue2(<)    maxValue2(>=)   level   histoNbinsMinMax
+#------------        ------------ -------------------------    -------------   -----   ----------------
+calometPt                    -inf         +inf -       -       0       200 0 200
+calometPhi                   -inf         +inf -       -       0       50 -4 4
+calometPx                    -inf         +inf -       -       0       200 -100 100
+calometPy                    -inf         +inf -       -       0       200 -100 100    
+calometSig                   -inf       +inf -       -       0       50 0 10
+caloSumet                    -inf         +inf -              -     0  200 0 200
+my_calometPt                 -inf         +inf -       -       0       200 0 200
+my_calometPhi        -inf         +inf -       -       0       80 -4 4
+my_calometEMPt       -inf         +inf -       -       0       200 0 200
+my_calometEMPhi      -inf         +inf -       -       0       50 -4 4
+my_SumetEM                   -inf         +inf -       -       0       200 0 200
+my_calometXEM        -inf         +inf -       -       0       200 -100 100
+my_calometYEM        -inf         +inf -       -       0       200 -100 100    
+my_calometHADPt      -inf         +inf -       -       0       200 0 200
+my_calometHADPhi             -inf         +inf -       -       0       50 -4 4
+my_SumetHAD          -inf         +inf -       -       0       200 0 200
+my_calometXHAD       -inf         +inf -       -       0       200 -100 100
+my_calometYHAD       -inf         +inf -       -       0       200 -100 100    
+caloSumetEB          -inf         +inf -       -       0       200 0 200
+caloSumetEE          -inf         +inf -       -       0       200 0 200
+caloSumetHB          -inf         +inf -       -       0       200 0 200
+caloSumetHE          -inf         +inf -       -       0       200 0 200
+caloSumetHF          -inf         +inf -       -       0       200 0 200
+EEMF                      -inf    +inf -       -       0       80 0 2
+ECHF                      -inf    +inf -       -       0       80 0 2
+tcmetPt              -inf         +inf -       -       0       200 0 200
+tcmetPhi                     -inf         +inf -       -       0       50 -4 4
+tcmetPx                      -inf         +inf -       -       0       200 -100 100
+tcmetPy              -inf         +inf -       -       0       200 -100 100    
+tcmetSig                -inf      +inf -       -       0       50 0 10
+tcmetSumet           -inf         +inf -              -              0 200 0 200
+DPhiMET_J1           -inf         +inf -              -              0      64 0 3.2
+DPhiMET_J2           -inf         +inf -              -              0 64 0 3.2
