@@ -83,7 +83,7 @@ rm ${plots_dir}/plot.py
 
 ttreestuff=""
 
-if [ `ls ${plots_dir} |grep -c EBTIMES` > 0 ]; then 
+if [ "`ls ${plots_dir} |grep -c EBTIMES`" -gt "0" ]; then 
   ttreestuff="
  
 <h4><A name=\"TTree\">${analy_type} Tree Plots</h4>
