@@ -27,11 +27,12 @@ process.add_( cms.Service( "TFileService",
                            fileName = cms.string( THISROOTFILE ),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
-    "/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/151/0E45A7CE-F5DD-DE11-9B2E-001617E30CC8.root"
+    "/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/596/F82DED93-36E2-DE11-9316-000423D9870C.root"
+    #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/151/0E45A7CE-F5DD-DE11-9B2E-001617E30CC8.root"
         ),
     
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
@@ -40,14 +41,11 @@ process.source = cms.Source (
 
 process.MessageLogger = cms.Service("MessageLogger",
                                     default = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(100)
+    reportEvery = cms.untracked.int32(1000)
     )
                                     )
 
-process.halo = cms.Path( process.gtDigis
-                      * process.l1GtRecord
-                      * process.BeamHaloId
-                      )
+process.halo = cms.Path(process.BeamHaloId)
 
 process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     outputCommands = cms.untracked.vstring(
@@ -55,10 +53,12 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanaevent_*_*',
     'keep *_promptanamet_*_*',
     'keep *_promptanatcmet_*_*',
+    'keep *_promptanapfmet_*_*',
     'keep *_promptananohf_*_*',
     'keep *_promptanaic5calojet_*_*',
     'keep *_promptanasc5calojet_*_*',
     'keep *_promptanakt4calojet_*_*',
+    'keep *_promptanaak5calojet_*_*',
     'keep *_promptanahalo_*_*',
     'keep *_promptanacalotowers_*_*',
     'keep *_promptanatrigger_*_*',
@@ -71,10 +71,12 @@ process.theBigNtuple = cms.Path( (
     process.promptanaevent +
     process.promptanamet   +
     process.promptanatcmet   +
+    process.promptanapfmet   +
     process.promptananohf  +
     process.promptanaic5calojet +
     process.promptanasc5calojet +
     process.promptanakt4calojet +
+    process.promptanaak5calojet +
     process.promptanahalo +
     process.promptanacalotowers +
     process.promptanatrigger +
