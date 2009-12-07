@@ -27,6 +27,10 @@ int main(int argc,  char * argv[]){
  
   int pncorrection = 0;
   if (argc > 7) pncorrection = atoi(argv[7]);  
+  
+  int allFEDSHIFT = 0;
+  if (argc > 8) allFEDSHIFT = atoi(argv[8]);  
+
 
  ifstream FileXML(argv[1]);
   if( !(FileXML.is_open()) ){cout<<"Error: file"<<argv[1]<<" not found!!"<<endl;return -2;}
@@ -180,7 +184,7 @@ int main(int argc,  char * argv[]){
     xml_outfile<<"   <DELAY_OFFSET>\n";
     xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
     xml_outfile<<"             <TRIGGERTOWER>"<< i <<"</TRIGGERTOWER>\n";
-    xml_outfile<<"             <TIME_OFFSET>"<< FinalOffsets[i] <<"</TIME_OFFSET>\n";
+    xml_outfile<<"             <TIME_OFFSET>"<< FinalOffsets[i]+allFEDSHIFT <<"</TIME_OFFSET>\n";
     xml_outfile<<"    </DELAY_OFFSET>"<<endl;
   }
   xml_outfile<<" </DELAY_OFFSET_RELEASE>"<<endl;
