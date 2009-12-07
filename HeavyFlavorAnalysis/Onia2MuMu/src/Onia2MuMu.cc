@@ -739,7 +739,11 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if(theStorePriVtxFlag&&!theUsePrimaryNoMuons)   fillPrimaryVertex(iEvent);
   if(theStorePriVtxFlag&&theUsePrimaryNoMuons)    fillPrimaryVertex2m(iEvent);
   if(theStoreOniaFlag)     findOniaCategories(iEvent);
- 
+   
+  eventNb = iEvent.id().event();
+  runNb = iEvent.id().run(); 
+  lumiBlock = iEvent.luminosityBlock();
+    
   if(!theSkimOnOniaMaxCat || Reco_QQ_size > 0) fTree->Fill(); 
 
   // CLEAR ALL VECTORS
@@ -800,14 +804,7 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   HLT2Mu3_L3_4mom->Clear();
   // HLTJpsi2Mu_L2_4mom->Clear();
   HLTJpsi2Mu_L3_4mom->Clear();
-  // HLTUpsilon2Mu_L2_4mom->Clear();
-  HLTUpsilon2Mu_L3_4mom->Clear();
-
-  eventNb = iEvent.id().event();
-  runNb = iEvent.id().run();
-  lumiBlock = iEvent.luminosityBlock();
-
-  
+  HLTUpsilon2Mu_L3_4mom->Clear();  
 
 }
 
