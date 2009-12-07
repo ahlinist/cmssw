@@ -529,7 +529,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   if (!eventTimingInfoTree) { std::cout << " No TTree in the event, probalby expected" << std::endl; cout << name << endl; return;} 
   //Now, we will only do the below if there is a TTree in the event.
   c[28]->cd();
-  gStyle->SetOptStat(1110);
+  gStyle->SetOptStat(110);
   eventTimingInfoTree->Draw("(crystalTimesEB-5.)*25. >> hctEB(52,-26.,26.)");
   char mytitle[100]; sprintf(mytitle,"%s EB Crystal Times;Time (ns);Number of Crystals",runChar); 
   hctEB->SetTitle(mytitle);
@@ -741,13 +741,17 @@ int nxbins = myprof->GetNbinsX();
 for (int i=1; i<(nxbins+1); i++ ) {   
        Double_t oldcont = myprof->GetBinContent(i);
        Double_t binents = myprof->GetBinEntries(i);
+       Double_t binerrr = myprof->GetBinError(i);
+       
        if (binents == 0 ) { continue; /*binents =1.;myprof->SetBinEntries(i,1);*/ }
        myprof->SetBinContent(i,myscale*(oldcont+myfac)*binents);
 	   Double_t newentries = myprof->GetBinEntries(i);
 	   Double_t newcont = myprof->GetBinContent(i);
-
+	   //cout << " cont " << oldcont << " ent " << binents << " err " << binerrr << " new err " << myprof->GetBinError(i);
 	   if ( newentries == 1) { myprof->SetBinError(i,5+fabs(myprof->GetBinContent(i)-myprof->GetBinContent(i)/2.5));}
-	   //if (newentries != binents) {std::cout << "NONONO" << std::endl;}
+           //else {myprof->SetBinError(i,binerrr*myscale+1.0);}
+	   //cout << " newnew " << myprof->GetBinError(i) << std::endl;
+	   if (newentries != binents) {std::cout << "NONONO" << std::endl;}
 }
 }
 
