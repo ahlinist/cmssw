@@ -81,10 +81,11 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       //edm::InputTag Jetsrcakt7_; 
       edm::InputTag Jetsrcsis5_; 
       edm::InputTag Jetsrcsis7_; 
-      edm::InputTag JetJPTsrcak5_;
+      //edm::InputTag JetJPTsrcak5_;
       edm::InputTag JetPFsrcite_;
       edm::InputTag JetPFsrckt4_;
       edm::InputTag JetPFsrcakt5_;
+      edm::InputTag JetPFsrcakt7_;
       edm::InputTag JetPFsrcsis5_;
       edm::InputTag JetPFsrckt6_;
       edm::InputTag JetPFsrcsis7_;
@@ -92,7 +93,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       edm::InputTag JetGensrckt4_; 
       edm::InputTag JetGensrckt6_; 
       edm::InputTag JetGensrcakt5_; 
-      //edm::InputTag JetGensrcakt7_; 
+      edm::InputTag JetGensrcakt7_; 
       edm::InputTag JetGensrcsis5_; 
       edm::InputTag JetGensrcsis7_; 
       edm::InputTag METsrc_; 
@@ -306,12 +307,12 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t phiJet_sis7[100];
       Float_t emfJet_sis7[100];
 
-      Int_t nJet_jptak5;
-      Float_t ptJet_jptak5[100];
-      Float_t eJet_jptak5[100];
-      Float_t etaJet_jptak5[100];
-      Float_t phiJet_jptak5[100];
-      Float_t emfJet_jptak5[100];
+    //Int_t nJet_jptak5;
+    //Float_t ptJet_jptak5[100];
+    //Float_t eJet_jptak5[100];
+    //Float_t etaJet_jptak5[100];
+    //Float_t phiJet_jptak5[100];
+    //Float_t emfJet_jptak5[100];
 
       Int_t nJet_pfite;
       Float_t ptJet_pfite[100];
@@ -371,6 +372,12 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t etaNeutralHadrons_pfakt5[100];
       Float_t etaHFHadrons_pfakt5[100];
       Float_t etaHFEM_pfakt5[100];
+
+      Int_t nJet_pfakt7;
+      Float_t ptJet_pfakt7[100];
+      Float_t eJet_pfakt7[100];
+      Float_t etaJet_pfakt7[100];
+      Float_t phiJet_pfakt7[100];
 
       Int_t nJet_pfsis5;
       Float_t ptJet_pfsis5[100];
@@ -446,11 +453,11 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t etaMuonsGen_akt5[100];
       Float_t etaNeutralHadronsGen_akt5[100];
       
-      //Int_t nJetGen_akt7;
-      //Float_t ptJetGen_akt7[100];
-      //Float_t eJetGen_akt7[100];
-      //Float_t etaJetGen_akt7[100];
-      //Float_t phiJetGen_akt7[100];
+      Int_t nJetGen_akt7;
+      Float_t ptJetGen_akt7[100];
+      Float_t eJetGen_akt7[100];
+      Float_t etaJetGen_akt7[100];
+      Float_t phiJetGen_akt7[100];
 
       Int_t nJetGen_sis5;
       Float_t ptJetGen_sis5[100];

@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.15 2009/12/02 11:36:46 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.16 2009/12/02 11:52:36 pandolf Exp $
 //
 //
 
@@ -77,7 +77,7 @@
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
-#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+//#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "TrackingTools/MaterialEffects/interface/PropagatorWithMaterial.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
@@ -149,19 +149,20 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   //Jetsrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsakt7");
   Jetsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis5");
   Jetsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis7");
-  JetJPTsrcak5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsjptak5");
+  //JetJPTsrcak5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsjptak5");
   //Pfjetsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("pfjets");
   JetPFsrcite_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfite");
   JetPFsrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt4");
   JetPFsrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt6");
   JetPFsrcakt5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfakt5");
+  JetPFsrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfakt7");
   JetPFsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfsis5");
   JetPFsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfsis7");
   JetGensrcite_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenite");
   JetGensrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenkt4");
   JetGensrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenkt6");
   JetGensrcakt5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenakt5");
-//JetGensrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenakt7");
+  JetGensrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenakt7");
   JetGensrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgensis5");
   JetGensrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgensis7");
   METsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("met");
@@ -196,8 +197,9 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
 void
 GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   nMC = nPhot = nconvPhot = nJet_ite = nJet_kt4 = nJet_akt5 = nJet_sis5 = nJet_kt6 = nJet_sis7 = nJet_jptak5 = nJet_pfite = nJet_pfkt4 = nJet_pfakt5 = nJet_pfsis5 = nJet_pfkt6 = nJet_pfsis7 = nJetGen_ite = nJetGen_kt4 = nJetGen_akt5 = nJetGen_sis5 = nJetGen_kt6 = nJetGen_sis7 = 0;
-   //nJet_akt7 = nJetGen_akt7 = 0;
+   nMC = nPhot = nconvPhot = nJet_ite = nJet_kt4 = nJet_akt5 = nJet_sis5 = nJet_kt6 = nJet_sis7 = nJet_pfite = nJet_pfkt4 = nJet_pfakt5 = nJet_pfsis5 = nJet_pfkt6 = nJet_pfsis7 = nJetGen_ite = nJetGen_kt4 = nJetGen_akt5 = nJetGen_sis5 = nJetGen_kt6 = nJetGen_sis7 = 0;
+   //nJet_jptak5  = 0;
+   nJet_pfakt7 = nJetGen_akt7 = 0;
    nSIM = nPF = 0;
 
    using reco::TrackCollection;
@@ -275,8 +277,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel(Jetsrcsis7_, jetssis7);
 
    // get JPT collection
-   Handle<CaloJetCollection> jptjetsak5;
-   iEvent.getByLabel(JetJPTsrcak5_, jptjetsak5);
+   //Handle<CaloJetCollection> jptjetsak5;
+   //iEvent.getByLabel(JetJPTsrcak5_, jptjetsak5);
 
    // get PF jets collection
    Handle<PFJetCollection> pfjetsite;
@@ -285,6 +287,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel(JetPFsrckt4_, pfjetskt4);
    Handle<PFJetCollection> pfjetsakt5;
    iEvent.getByLabel(JetPFsrcakt5_, pfjetsakt5);
+   Handle<PFJetCollection> pfjetsakt7;
+   iEvent.getByLabel(JetPFsrcakt7_, pfjetsakt7);
    Handle<PFJetCollection> pfjetssis5;
    iEvent.getByLabel(JetPFsrcsis5_, pfjetssis5);
    Handle<PFJetCollection> pfjetskt6;
@@ -301,8 +305,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    if( isMC ) iEvent.getByLabel(JetGensrckt6_, jetsgenkt6);
    Handle<GenJetCollection> jetsgenakt5;
    if( isMC ) iEvent.getByLabel(JetGensrcakt5_, jetsgenakt5);
-   //Handle<GenJetCollection> jetsgenakt7;
-   //iEvent.getByLabel(JetGensrcakt7_, jetsgenakt7);
+   Handle<GenJetCollection> jetsgenakt7;
+   if( isMC ) iEvent.getByLabel(JetGensrcakt7_, jetsgenakt7);
    Handle<GenJetCollection> jetsgensis5;
    if( isMC ) iEvent.getByLabel(JetGensrcsis5_, jetsgensis5);
    Handle<GenJetCollection> jetsgensis7;
@@ -358,8 +362,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    topology_p = topoHandle->getSubdetectorTopology(DetId::Ecal, EcalBarrel);
 
    //   edm::ESHandle<TrackerGeometry> trackerHandle_;
-   edm::ESHandle<MagneticField> theMagField;
-   iSetup.get<IdealMagneticFieldRecord>().get(theMagField);
+   //edm::ESHandle<MagneticField> theMagField;
+   //iSetup.get<IdealMagneticFieldRecord>().get(theMagField);
    //   iSetup.get<TrackerDigiGeometryRecord>().get(trackerHandle_);
   
    ClusterShapeAlgo algo;
@@ -965,17 +969,17 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      } // if >genjetptthr
      } // gen_akt5
 
-     //for (GenJetCollection::const_iterator it = jetsgenakt7->begin(); 
-     //it != jetsgenakt7->end(); ++it) {
-
-     //if (nJetGen_akt7>=100) {cout << "number of gen jets kt 07 is larger than 100. Skipping" << endl; continue;}
-     //ptJetGen_akt7[nJetGen_akt7] = it->pt();	 
-     //eJetGen_akt7[nJetGen_akt7] = it->energy();	 
-     //etaJetGen_akt7[nJetGen_akt7] = it->eta();	 
-     //phiJetGen_akt7[nJetGen_akt7] = it->phi();	      
+     for (GenJetCollection::const_iterator it = jetsgenakt7->begin(); 
+       it != jetsgenakt7->end(); ++it) {
+     
+       if (nJetGen_akt7>=100) {cout << "number of gen jets antikt 07 is larger than 100. Skipping" << endl; continue;}
+       ptJetGen_akt7[nJetGen_akt7] = it->pt();	 
+       eJetGen_akt7[nJetGen_akt7] = it->energy();	 
+       etaJetGen_akt7[nJetGen_akt7] = it->eta();	 
+       phiJetGen_akt7[nJetGen_akt7] = it->phi();	      
        
-     //nJetGen_akt7++;
-     //}
+       nJetGen_akt7++;
+     }
 
      for (GenJetCollection::const_iterator it = jetsgensis5->begin(); 
         it != jetsgensis5->end(); ++it) {
@@ -1339,10 +1343,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    */
 
    const double calojetptthr = 3.;
-   const double jptjetptthr = 5.;
+   //const double jptjetptthr = 5.;
    const double pfjetptthr = 5.;//6.;
    //const int pfminconst = 1; // minimum constituents for low pT
-   const int jptjetnmin = 4;
+   //const int jptjetnmin = 4;
    const int pfjetnmin = 4;
 
    for (CaloJetCollection::const_iterator it = jetsite->begin(); 
@@ -1461,21 +1465,21 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      }
    }
    
-   for (CaloJetCollection::const_iterator it = jptjetsak5->begin(); 
-	 it != jptjetsak5->end(); ++it) {
-     
-     if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_jptak5 < jptjetnmin || it->pt() > jptjetptthr) {
-       
-       ptJet_jptak5[nJet_jptak5] = it->pt();	 
-       eJet_jptak5[nJet_jptak5] = it->energy();	 
-       etaJet_jptak5[nJet_jptak5] = it->eta();	 
-       phiJet_jptak5[nJet_jptak5] = it->phi();	      
-       emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
-       
-       nJet_jptak5++;
-     }
-   }
+// for (CaloJetCollection::const_iterator it = jptjetsak5->begin(); 
+//     it != jptjetsak5->end(); ++it) {
+//   
+//   if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
+//   if (nJet_jptak5 < jptjetnmin || it->pt() > jptjetptthr) {
+//     
+//     ptJet_jptak5[nJet_jptak5] = it->pt();	 
+//     eJet_jptak5[nJet_jptak5] = it->energy();	 
+//     etaJet_jptak5[nJet_jptak5] = it->eta();	 
+//     phiJet_jptak5[nJet_jptak5] = it->phi();	      
+//     emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
+//     
+//     nJet_jptak5++;
+//   }
+// }
 
    for (PFJetCollection::const_iterator it = pfjetsite->begin(); 
 	 it != pfjetsite->end(); ++it) {
@@ -1657,6 +1661,22 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    } // if >pfjetptthr     
    } // pfakt5
+
+   for (PFJetCollection::const_iterator it = pfjetsakt7->begin(); 
+	 it != pfjetsakt7->end(); ++it) {
+     
+     if (nJet_pfakt7>=100) {cout << "number of reco jets pfakt7 is larger than 100. Skipping" << endl; continue;}
+     if (nJet_pfakt7 < pfjetnmin || it->pt() > pfjetptthr) {
+
+       ptJet_pfakt7[nJet_pfakt7] = it->pt();
+       eJet_pfakt7[nJet_pfakt7] = it->energy();	 
+       etaJet_pfakt7[nJet_pfakt7] = it->eta();	 
+       phiJet_pfakt7[nJet_pfakt7] = it->phi();	      
+    
+       ++nJet_pfakt7;
+
+     } 
+   }
 
    for (PFJetCollection::const_iterator it = pfjetssis5->begin(); 
 	 it != pfjetssis5->end(); ++it) {
@@ -1982,12 +2002,12 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("phiJet_sis7",&phiJet_sis7,"phiJet_sis7[nJet_sis7]/F");
   m_tree->Branch("emfJet_sis7",&emfJet_sis7,"emfJet_kt4[nJet_sis7]/F");
 
-  m_tree->Branch("nJet_jptak5",&nJet_jptak5,"nJet_jptak5/I");
-  m_tree->Branch("ptJet_jptak5 ",&ptJet_jptak5 ,"ptJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("eJet_jptak5  ",&eJet_jptak5  ,"eJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("etaJet_jptak5",&etaJet_jptak5,"etaJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("phiJet_jptak5",&phiJet_jptak5,"phiJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("emfJet_jptak5",&emfJet_jptak5,"emfJet_jptak5[nJet_jptak5]/F");
+//m_tree->Branch("nJet_jptak5",&nJet_jptak5,"nJet_jptak5/I");
+//m_tree->Branch("ptJet_jptak5 ",&ptJet_jptak5 ,"ptJet_jptak5[nJet_jptak5]/F");
+//m_tree->Branch("eJet_jptak5  ",&eJet_jptak5  ,"eJet_jptak5[nJet_jptak5]/F");
+//m_tree->Branch("etaJet_jptak5",&etaJet_jptak5,"etaJet_jptak5[nJet_jptak5]/F");
+//m_tree->Branch("phiJet_jptak5",&phiJet_jptak5,"phiJet_jptak5[nJet_jptak5]/F");
+//m_tree->Branch("emfJet_jptak5",&emfJet_jptak5,"emfJet_jptak5[nJet_jptak5]/F");
 
   m_tree->Branch("nJet_pfite",&nJet_pfite,"nJet_pfite/I");
   m_tree->Branch("ptJet_pfite ",&ptJet_pfite ,"ptJet_pfite[nJet_pfite]/F");
@@ -2048,6 +2068,11 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("etaHFHadrons_pfakt5",     etaHFHadrons_pfakt5,     "etaHFHadrons_pfakt5[nJet_pfakt5]/F");
   m_tree->Branch("etaHFEM_pfakt5",     etaHFEM_pfakt5,     "etaHFEM_pfakt5[nJet_pfakt5]/F");
 
+  m_tree->Branch("nJet_pfakt7",&nJet_pfakt7,"nJet_pfakt7/I");
+  m_tree->Branch("ptJet_pfakt7 ",&ptJet_pfakt7 ,"ptJet_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("eJet_pfakt7  ",&eJet_pfakt7  ,"eJet_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("etaJet_pfakt7",&etaJet_pfakt7,"etaJet_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("phiJet_pfakt7",&phiJet_pfakt7,"phiJet_pfakt7[nJet_pfakt7]/F");
 
   m_tree->Branch("nJet_pfsis5",&nJet_pfsis5,"nJet_pfsis5/I");
   m_tree->Branch("ptJet_pfsis5 ",&ptJet_pfsis5 ,"ptJet_pfsis5[nJet_pfsis5]/F");
@@ -2138,6 +2163,12 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 		 "etaTracksGen_akt5[nJetGen_akt5]/F");
   m_tree->Branch("etaNeutralHadronsGen_akt5", etaNeutralHadronsGen_akt5,
 		 "etaNeutralHadronsGen_akt5[nJetGen_akt5]/F");
+
+  m_tree->Branch("nJetGen_akt7",&nJetGen_akt7,"nJetGen_akt7/I");
+  m_tree->Branch("ptJetGen_akt7 ",&ptJetGen_akt7 ,"ptJetGen_akt7[nJetGen_akt7]/F");
+  m_tree->Branch("eJetGen_akt7  ",&eJetGen_akt7  ,"eJetGen_akt7[nJetGen_akt7]/F");
+  m_tree->Branch("etaJetGen_akt7",&etaJetGen_akt7,"etaJetGen_akt7[nJetGen_akt7]/F");
+  m_tree->Branch("phiJetGen_akt7",&phiJetGen_akt7,"phiJetGen_akt7[nJetGen_akt7]/F");
 
   m_tree->Branch("nJetGen_kt4",&nJetGen_kt4,"nJetGen_kt4/I");
   m_tree->Branch("ptJetGen_kt4 ",&ptJetGen_kt4 ,"ptJetGen_kt4[nJetGen_kt4]/F");
