@@ -210,7 +210,7 @@ void analysisClass::Loop()
        fillVariableWithValue("tcmetPhi", tcmetPhi->at(0));
        fillVariableWithValue("tcmetPx", tcmetPx->at(0));
        fillVariableWithValue("tcmetPy", tcmetPx->at(0));
-       fillVariableWithValue("tcSumet", tcmetSumEt->at(0));
+       fillVariableWithValue("tcmetSumet", tcmetSumEt->at(0));
        fillVariableWithValue("tcmetSig", tcmetPt->at(0)/sqrt(tcmetSumEt->at(0)));
 
        fillVariableWithValue("my_calometPt", my_Met);
@@ -219,7 +219,7 @@ void analysisClass::Loop()
        if(ic5JetPhi->size()>0)
 	 fillVariableWithValue("DPhiMET_J1", acos(cos( ic5JetPhi->at(0) - calometPhi->at(0) )));
        if(ic5JetPhi->size()>1)
-	 fillVariableWithValue("DPhiMET_J1", acos(cos( ic5JetPhi->at(1) - calometPhi->at(0) )));
+	 fillVariableWithValue("DPhiMET_J2", acos(cos( ic5JetPhi->at(1) - calometPhi->at(0) )));
 
        fillVariableWithValue("my_calometEMPt", my_MetEM);
        fillVariableWithValue("my_calometEMPhi", my_MetEMPhi);
