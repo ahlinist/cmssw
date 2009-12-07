@@ -225,7 +225,7 @@ EcalTimingAnalysis::beginJob( ) {
       timingtBins[i]=2.5+double(i)*5./500.;
 	  
       if ( i < 126) {timingBins[i]=2.5+double(i)*5./125.;}
-      if ( i < 21) {ttEtaEEBins[i]=0.0+double(i)*100./20.;}
+      if ( i < 21) {ttEtaEEBins[i]=0.0+double(i)*60./20.;}
       if (i<73) 
 	   {
           ttPhiBins[i]=1+5*i;
@@ -961,8 +961,8 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 		   chTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
 		   ttTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
-		   ttTimingEtaEEP_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime);
-	       ttTimingEtaRelEEP_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime-sMAves_[DCCid-1]+5.0);  
+		   ttTimingEtaEEP_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime);
+		   ttTimingEtaRelEEP_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime-sMAves_[DCCid-1]+5.0);  
 	       fullAmpProfileEEP_->Fill(anid.ix(),anid.iy(),damp);
 		   }
 		   else {
@@ -970,8 +970,8 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 		   chTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
 		   ttTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
-		   ttTimingEtaEEM_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime);
-	       ttTimingEtaRelEEM_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime-sMAves_[DCCid-1]+5.0);
+		   ttTimingEtaEEM_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime);
+	       ttTimingEtaRelEEM_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime-sMAves_[DCCid-1]+5.0);
 	       fullAmpProfileEEM_->Fill(anid.ix(),anid.iy(),damp);
 		   }
 	   
