@@ -40,7 +40,7 @@ class DataProxy
       // ---------- const member functions ---------------------
       bool cacheIsValid() const { return cacheIsValid_; }
       
-      virtual void doGet(const EventSetupRecord& iRecord, const DataKey& iKey) const = 0;
+      virtual void doGet(const EventSetupRecord& iRecord, const DataKey& iKey, bool iTransiently) const = 0;
 
       ///returns the description of the DataProxyProvider which owns this Proxy
       const ComponentDescription* providerDescription() const {
