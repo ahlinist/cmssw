@@ -44,10 +44,7 @@ process.MessageLogger = cms.Service("MessageLogger",
     )
                                     )
 
-process.halo = cms.Path( process.gtDigis
-                      * process.l1GtRecord
-                      * process.BeamHaloId
-                      )
+process.halo = cms.Path(process.BeamHaloId)
 
 process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     outputCommands = cms.untracked.vstring(
