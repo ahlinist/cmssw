@@ -46,7 +46,6 @@ patMuonsWithoutTrigger = allLayer1Muons.clone(
 ### ==== Unpack trigger, and match ====
 from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi import patTrigger
 patTrigger.onlyStandAlone = True
-patTrigger.processName    = "HLT8E29"
 
 ### ==== Then perform a match for all HLT triggers of interest
 from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import muonTriggerMatchHLT1MuonIso
