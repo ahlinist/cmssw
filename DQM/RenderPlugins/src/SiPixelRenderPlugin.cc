@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.25 $
-  \date $Date: 2009/12/03 17:51:42 $
+  \version $Revision: 1.26 $
+  \date $Date: 2009/12/04 08:12:13 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -426,8 +426,48 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
 	if(obj->GetNbinsX()==40){
-	  TLine tl1; tl1.SetLineWidth(1); tl1.SetLineColor(1); tl1.DrawLine(32.,27.,32.,37.); 
-	  TLine tl2; tl2.SetLineWidth(1); tl2.SetLineColor(1); tl2.DrawLine(32.,27.,40.,27.); 
+	  TLine tl1; tl1.SetLineWidth(1); tl1.SetLineWidth(0.5); tl1.SetLineColor(4); tl1.DrawLine(32.,27.,32.,37.); //top right corner
+	  TLine tl2; tl2.SetLineWidth(1); tl2.SetLineWidth(0.5); tl2.SetLineColor(4); tl2.DrawLine(32.,25.,40.,25.); //top right corner
+	  //
+	  TLine tl3; tl3.SetLineWidth(1); tl3.SetLineWidth(0.5); tl3.SetLineColor(4); tl3.DrawLine(3.,29.,3.,31.); //little boxes
+	  TLine tl4; tl4.SetLineWidth(1); tl4.SetLineWidth(0.5); tl4.SetLineColor(4); tl4.DrawLine(5.,29.,5.,31.); //little boxes
+	  TLine tl5; tl5.SetLineWidth(1); tl5.SetLineWidth(0.5); tl5.SetLineColor(4); tl5.DrawLine(3.,29.,5.,29.); //little boxes
+	  TLine tl6; tl6.SetLineWidth(1); tl6.SetLineWidth(0.5); tl6.SetLineColor(4); tl6.DrawLine(3.,31.,5.,31.); //little boxes
+	  //
+	  TLine tl3; tl3.SetLineWidth(1); tl3.SetLineWidth(0.5); tl3.SetLineColor(4); tl3.DrawLine(11.,29.,11.,31.); //little boxes
+	  TLine tl4; tl4.SetLineWidth(1); tl4.SetLineWidth(0.5); tl4.SetLineColor(4); tl4.DrawLine(13.,29.,13.,31.); //little boxes
+	  TLine tl5; tl5.SetLineWidth(1); tl5.SetLineWidth(0.5); tl5.SetLineColor(4); tl5.DrawLine(11.,29.,13.,29.); //little boxes
+	  TLine tl6; tl6.SetLineWidth(1); tl6.SetLineWidth(0.5); tl6.SetLineColor(4); tl6.DrawLine(11.,31.,13.,31.); //little boxes
+	  //
+	  TLine tl3; tl3.SetLineWidth(1); tl3.SetLineWidth(0.5); tl3.SetLineColor(4); tl3.DrawLine(19.,29.,19.,31.); //little boxes
+	  TLine tl4; tl4.SetLineWidth(1); tl4.SetLineWidth(0.5); tl4.SetLineColor(4); tl4.DrawLine(21.,29.,21.,31.); //little boxes
+	  TLine tl5; tl5.SetLineWidth(1); tl5.SetLineWidth(0.5); tl5.SetLineColor(4); tl5.DrawLine(19.,29.,21.,29.); //little boxes
+	  TLine tl6; tl6.SetLineWidth(1); tl6.SetLineWidth(0.5); tl6.SetLineColor(4); tl6.DrawLine(19.,31.,21.,31.); //little boxes
+	  //
+	  TLine tl3; tl3.SetLineWidth(1); tl3.SetLineWidth(0.5); tl3.SetLineColor(4); tl3.DrawLine(27.,29.,27.,31.); //little boxes
+	  TLine tl4; tl4.SetLineWidth(1); tl4.SetLineWidth(0.5); tl4.SetLineColor(4); tl4.DrawLine(29.,29.,29.,31.); //little boxes
+	  TLine tl5; tl5.SetLineWidth(1); tl5.SetLineWidth(0.5); tl5.SetLineColor(4); tl5.DrawLine(27.,29.,29.,29.); //little boxes
+	  TLine tl6; tl6.SetLineWidth(1); tl6.SetLineWidth(0.5); tl6.SetLineColor(4); tl6.DrawLine(27.,31.,29.,31.); //little boxes
+	  //
+	  TLine tl3; tl3.SetLineWidth(1); tl3.SetLineWidth(0.5); tl3.SetLineColor(4); tl3.DrawLine(3.,25.,3.,27.); //little boxes
+	  TLine tl4; tl4.SetLineWidth(1); tl4.SetLineWidth(0.5); tl4.SetLineColor(4); tl4.DrawLine(5.,25.,5.,27.); //little boxes
+	  TLine tl5; tl5.SetLineWidth(1); tl5.SetLineWidth(0.5); tl5.SetLineColor(4); tl5.DrawLine(3.,25.,5.,25.); //little boxes
+	  TLine tl6; tl6.SetLineWidth(1); tl6.SetLineWidth(0.5); tl6.SetLineColor(4); tl6.DrawLine(3.,27.,5.,27.); //little boxes
+	  //
+	  TLine tl3; tl3.SetLineWidth(1); tl3.SetLineWidth(0.5); tl3.SetLineColor(4); tl3.DrawLine(11.,25.,11.,27.); //little boxes
+	  TLine tl4; tl4.SetLineWidth(1); tl4.SetLineWidth(0.5); tl4.SetLineColor(4); tl4.DrawLine(13.,25.,13.,27.); //little boxes
+	  TLine tl5; tl5.SetLineWidth(1); tl5.SetLineWidth(0.5); tl5.SetLineColor(4); tl5.DrawLine(11.,25.,13.,25.); //little boxes
+	  TLine tl6; tl6.SetLineWidth(1); tl6.SetLineWidth(0.5); tl6.SetLineColor(4); tl6.DrawLine(11.,27.,13.,27.); //little boxes
+	  //
+	  TLine tl3; tl3.SetLineWidth(1); tl3.SetLineWidth(0.5); tl3.SetLineColor(4); tl3.DrawLine(19.,25.,19.,27.); //little boxes
+	  TLine tl4; tl4.SetLineWidth(1); tl4.SetLineWidth(0.5); tl4.SetLineColor(4); tl4.DrawLine(21.,25.,21.,27.); //little boxes
+	  TLine tl5; tl5.SetLineWidth(1); tl5.SetLineWidth(0.5); tl5.SetLineColor(4); tl5.DrawLine(19.,25.,21.,25.); //little boxes
+	  TLine tl6; tl6.SetLineWidth(1); tl6.SetLineWidth(0.5); tl6.SetLineColor(4); tl6.DrawLine(19.,27.,21.,27.); //little boxes
+	  //
+	  TLine tl3; tl3.SetLineWidth(1); tl3.SetLineWidth(0.5); tl3.SetLineColor(4); tl3.DrawLine(27.,25.,27.,27.); //little boxes
+	  TLine tl4; tl4.SetLineWidth(1); tl4.SetLineWidth(0.5); tl4.SetLineColor(4); tl4.DrawLine(29.,25.,29.,27.); //little boxes
+	  TLine tl5; tl5.SetLineWidth(1); tl5.SetLineWidth(0.5); tl5.SetLineColor(4); tl5.DrawLine(27.,25.,29.,25.); //little boxes
+	  TLine tl6; tl6.SetLineWidth(1); tl6.SetLineWidth(0.5); tl6.SetLineColor(4); tl6.DrawLine(27.,27.,29.,27.); //little boxes
 	}  
       }
 
