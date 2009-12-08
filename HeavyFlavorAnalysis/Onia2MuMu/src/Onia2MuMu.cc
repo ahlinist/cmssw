@@ -82,16 +82,13 @@ Onia2MuMu::~Onia2MuMu()
 ////////////////////////////////////////////////////////////////////////
 // called at beginning
 ////////////////////////////////////////////////////////////////////////
-void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
+void Onia2MuMu::beginJob()
 {
-  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB); 
 
   outFile = new TFile(theOutFileName.c_str(), "RECREATE", "");
   outFile->cd();
   fTree = new TTree ("T1", "CMSSW Quarkonia tree");
 
-  // get TTRHBuilder
-  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB); 
   maxCatToStoreChic = 0;
   maxCatToStoreBp = 1;
 
@@ -669,6 +666,8 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
 void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   fNevt++;
+  // get TTRHBuilder 
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
 
   // BUILD USEFUL COLLECTIONS
   // -- 1 - get the collection of RecoTracks 
