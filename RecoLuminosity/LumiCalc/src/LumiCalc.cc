@@ -328,7 +328,8 @@ namespace HCAL_HLX {
       if( TotalNibbles > 0 ) CalcETSumNoiseError( localSection, ETSumNoiseError );
 
       // Recall active = filled BX, inactive = empty BX
-      uint32_t numGoodBX = numBXActive_+numBXInactive_+numBXOther_;
+      // uint32_t numGoodBX = numBXActive_+numBXInactive_+numBXOther_;
+      uint32_t numGoodBX = numBXActive_;
 
       // Calculate the Et sum per BX (if we have a non-zero number of towers)
       if( TotalActiveTowersEt_ > 0 ){
@@ -401,15 +402,16 @@ namespace HCAL_HLX {
 	       localSection.lumiDetail.ETLumiQlty[iBX] -= 211;
 	    }
 
-	    if( BXMask_[iBX] == kNoise ) continue;
+	    // if( BXMask_[iBX] == kNoise ) continue;
+	    if( BXMask_[iBX] != kActive ) continue;
 
 	    // If this is not a noise BX, and the quality is ok,
 	    // add it to the total Luminosity for this section.
 	    // Note that for the error calculation only the SumEt error^2
 	    // is accumulated, noise error has to be added at the end.
 	    if( localSection.lumiDetail.ETLumiQlty[iBX] > 0 ){ 
-		  localSection.lumiSummary.InstantETLumi += localSection.lumiDetail.ETLumi[iBX];
-		  localSection.lumiSummary.InstantETLumiErr += error;
+	       localSection.lumiSummary.InstantETLumi += localSection.lumiDetail.ETLumi[iBX];
+	       localSection.lumiSummary.InstantETLumiErr += error;
 	    }else{
 	       --numGoodBX;
 	    }
@@ -727,7 +729,8 @@ namespace HCAL_HLX {
       CalcOccNoiseError( localSection, 1, noiseError[1] );
 
       // Only use good BX's
-      uint32_t numGoodBX[2] = {numBXActive_+numBXInactive_+numBXOther_,numBXActive_+numBXInactive_+numBXOther_};
+      // uint32_t numGoodBX[2] = {numBXActive_+numBXInactive_+numBXOther_,numBXActive_+numBXInactive_+numBXOther_};
+      uint32_t numGoodBX[2] = {numBXActive_,numBXActive_};
 
       // Initialize luminosity and error to 0.0
       localSection.lumiSummary.InstantOccLumi[0] = 0.0;
@@ -857,7 +860,8 @@ namespace HCAL_HLX {
 	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 211;
 	 }
 
-	 if( BXMask_[iBX] == kNoise ) continue; 
+	 // if( BXMask_[iBX] == kNoise ) continue; 
+	 if( BXMask_[iBX] != kActive ) continue;
 
 	 // If we are the right type of BX, add to the total 
 	 // luminosity for the section. Again only accumulate
@@ -872,7 +876,6 @@ namespace HCAL_HLX {
 	    localSection.lumiSummary.InstantOccLumiErr[1] += occErrBX2[1];
 	 } else
 	    --numGoodBX[1];
-
       }
 
       if( numGoodBX[0] > 0 ){
