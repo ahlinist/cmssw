@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.16 2009/12/02 11:52:36 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.17 2009/12/07 20:14:09 pandolf Exp $
 //
 //
 
@@ -1672,6 +1672,141 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        eJet_pfakt7[nJet_pfakt7] = it->energy();	 
        etaJet_pfakt7[nJet_pfakt7] = it->eta();	 
        phiJet_pfakt7[nJet_pfakt7] = it->phi();	      
+     
+       // Extra variables for PFlow studies
+       Int_t nChargedHadrons = 0;
+       Int_t nPhotons = 0;
+       Int_t nNeutralHadrons = 0;
+       Int_t nElectrons = 0;
+       Int_t nMuons = 0;
+       Int_t nHFHadrons = 0;
+       Int_t nHFEM = 0;
+     
+       TLorentzVector p4ChargedHadrons;
+       TLorentzVector p4Photons;
+       TLorentzVector p4NeutralHadrons;
+       TLorentzVector p4Electrons;
+       TLorentzVector p4Muons;
+       TLorentzVector p4HFHadrons;
+       TLorentzVector p4HFEM;
+     
+       vector<const PFCandidate*> pfCandidates = it->getPFConstituents();
+     
+       for (vector<const PFCandidate*>::const_iterator jt = pfCandidates.begin();
+            jt != pfCandidates.end(); ++jt) {
+     
+         PFCandidate::ParticleType id = (*jt)->particleId();
+         // Convert particle momentum to normal TLorentzVector, wrong type :(
+         math::XYZTLorentzVectorD const& p4t = (*jt)->p4();
+         TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+     
+         // Store PFCandidates for two leading jets
+         int ijet = it - pfjetsakt7->begin();
+         if (ijet < 2 && nPF < nMaxPF) {
+     
+         int pdgId = (*jt)->translateTypeToPdgId(id);
+         // "antiparticlate" the dummy neutral HF particles
+         // to tell them apart from h and gamma elsewhere
+         if (id==PFCandidate::h_HF || id==PFCandidate::egamma_HF) pdgId *= -1;
+         pdgIdPF[nPF] = pdgId;
+         ptPF[nPF] = (*jt)->pt();
+         ePF[nPF] = (*jt)->energy();
+         etaPF[nPF] = (*jt)->eta();
+         phiPF[nPF] = (*jt)->phi();
+     
+         ++nPF;
+         }
+     
+         if (id==PFCandidate::h) { // charged hadrons
+           nChargedHadrons += 1;
+         p4ChargedHadrons += p4;
+         }
+         if (id==PFCandidate::e) { // electrons
+           nElectrons += 1;
+         p4Electrons += p4;
+         }
+         if (id==PFCandidate::mu) { // muons
+           nMuons += 1;
+         p4Muons += p4;
+         }
+         if (id==PFCandidate::gamma) { // photons
+           nPhotons += 1;
+         p4Photons += p4;
+         }
+         if (id==PFCandidate::h0) { // neutral hadrons
+           nNeutralHadrons += 1;
+         p4NeutralHadrons += p4;
+         }
+         if (id==PFCandidate::h_HF) { // HF hadrons
+           nHFHadrons += 1;
+         p4HFHadrons += p4;
+         }
+         if (id==PFCandidate::egamma_HF) { // HF EM clusters
+           nHFEM += 1;
+         p4HFEM += p4;
+         }
+     
+       } //for PFCandidates
+     
+       const TLorentzVector *p = 0;
+     
+       nChargedHadrons_pfakt7[nJet_pfakt7] =  nChargedHadrons;
+       p = &p4ChargedHadrons;
+       eChargedHadrons_pfakt7[nJet_pfakt7] = p->E() / it->energy();
+       ptChargedHadrons_pfakt7[nJet_pfakt7] = p->Pt() / it->pt();
+       phiChargedHadrons_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        				   delta_phi(p->Phi(), it->phi()) : 0);
+       etaChargedHadrons_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        				      p->Eta() - it->eta() : 0);
+     
+       nElectrons_pfakt7[nJet_pfakt7] =  nElectrons;
+       p = &p4Electrons;
+       eElectrons_pfakt7[nJet_pfakt7] = p->E() / it->energy();
+       ptElectrons_pfakt7[nJet_pfakt7] = p->Pt() / it->pt();
+       phiElectrons_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        				 delta_phi(p->Phi(), it->phi()) : 0);
+       etaElectrons_pfakt7[nJet_pfakt7] = (p->Pt() ? p->Eta() - it->eta() : 0);
+     
+       nMuons_pfakt7[nJet_pfakt7] =  nMuons;
+       p = &p4Muons;
+       eMuons_pfakt7[nJet_pfakt7] = p->E() / it->energy();
+       ptMuons_pfakt7[nJet_pfakt7] = p->Pt() / it->pt();
+       phiMuons_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        			     delta_phi(p->Phi(), it->phi()) : 0);
+       etaMuons_pfakt7[nJet_pfakt7] = (p->Pt() ? p->Eta() - it->eta() : 0);
+     
+       nPhotons_pfakt7[nJet_pfakt7] =  nPhotons;
+       p = &p4Photons;
+       ePhotons_pfakt7[nJet_pfakt7] = p->E() / it->energy();
+       ptPhotons_pfakt7[nJet_pfakt7] = p->Pt() / it->pt();
+       phiPhotons_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        			       delta_phi(p->Phi(), it->phi()) : 0);
+       etaPhotons_pfakt7[nJet_pfakt7] = (p->Pt() ? p->Eta() - it->eta() : 0);
+     
+       nNeutralHadrons_pfakt7[nJet_pfakt7] =  nNeutralHadrons;
+       p = &p4NeutralHadrons;
+       eNeutralHadrons_pfakt7[nJet_pfakt7] = p->E() / it->energy();
+       ptNeutralHadrons_pfakt7[nJet_pfakt7] = p->Pt() / it->pt();
+       phiNeutralHadrons_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        				   delta_phi(p->Phi(), it->phi()) : 0);
+       etaNeutralHadrons_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        				      p->Eta() - it->eta() : 0);
+     
+       nHFHadrons_pfakt7[nJet_pfakt7] =  nHFHadrons;
+       p = &p4HFHadrons;
+       eHFHadrons_pfakt7[nJet_pfakt7] = p->E() / it->energy();
+       ptHFHadrons_pfakt7[nJet_pfakt7] = p->Pt() / it->pt();
+       phiHFHadrons_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        				 delta_phi(p->Phi(), it->phi()) : 0);
+       etaHFHadrons_pfakt7[nJet_pfakt7] = (p->Pt() ? p->Eta() - it->eta() : 0);
+     
+       nHFEM_pfakt7[nJet_pfakt7] =  nHFEM;
+       p = &p4HFEM;
+       eHFEM_pfakt7[nJet_pfakt7] = p->E() / it->energy();
+       ptHFEM_pfakt7[nJet_pfakt7] = p->Pt() / it->pt();
+       phiHFEM_pfakt7[nJet_pfakt7] = (p->Pt() ?
+        			    delta_phi(p->Phi(), it->phi()) : 0);
+       etaHFEM_pfakt7[nJet_pfakt7] = (p->Pt() ? p->Eta() - it->eta() : 0);
     
        ++nJet_pfakt7;
 
@@ -2073,6 +2208,48 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("eJet_pfakt7  ",&eJet_pfakt7  ,"eJet_pfakt7[nJet_pfakt7]/F");
   m_tree->Branch("etaJet_pfakt7",&etaJet_pfakt7,"etaJet_pfakt7[nJet_pfakt7]/F");
   m_tree->Branch("phiJet_pfakt7",&phiJet_pfakt7,"phiJet_pfakt7[nJet_pfakt7]/F");
+//
+//   // Extra variables for PFlow studies
+  m_tree->Branch("nChargedHadrons_pfakt7",nChargedHadrons_pfakt7,"nChargedHadrons_pfakt7[nJet_pfakt7]/I");
+  m_tree->Branch("nPhotons_pfakt7",       nPhotons_pfakt7,       "nPhotons_pfakt7[nJet_pfakt7]/I");
+  m_tree->Branch("nMuons_pfakt7",         nMuons_pfakt7,         "nMuons_pfakt7[nJet_pfakt7]/I");
+  m_tree->Branch("nElectrons_pfakt7",     nElectrons_pfakt7,     "nElectrons_pfakt7[nJet_pfakt7]/I");
+  m_tree->Branch("nNeutralHadrons_pfakt7",nNeutralHadrons_pfakt7,"nNeutralHadrons_pfakt7[nJet_pfakt7]/I");
+  m_tree->Branch("nHFHadrons_pfakt7",     nHFHadrons_pfakt7,     "nHFHadrons_pfakt7[nJet_pfakt7]/I");
+  m_tree->Branch("nHFEM_pfakt7",     nHFEM_pfakt7,     "nHFEM_pfakt7[nJet_pfakt7]/I");
+
+  m_tree->Branch("eChargedHadrons_pfakt7",eChargedHadrons_pfakt7,"eChargedHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("ePhotons_pfakt7",ePhotons_pfakt7,"ePhotons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("eMuons_pfakt7",eMuons_pfakt7,"eMuons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("eElectrons_pfakt7",eElectrons_pfakt7,"eElectrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("eNeutralHadrons_pfakt7",eNeutralHadrons_pfakt7,"eNeutralHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("eHFHadrons_pfakt7",eHFHadrons_pfakt7,"eHFHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("eHFEM_pfakt7",eHFEM_pfakt7,"eHFEM_pfakt7[nJet_pfakt7]/F");
+
+  m_tree->Branch("ptChargedHadrons_pfakt7",ptChargedHadrons_pfakt7,"ptChargedHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("ptPhotons_pfakt7",       ptPhotons_pfakt7,       "ptPhotons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("ptMuons_pfakt7",         ptMuons_pfakt7,         "ptMuons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("ptElectrons_pfakt7",     ptElectrons_pfakt7,     "ptElectrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("ptNeutralHadrons_pfakt7",ptNeutralHadrons_pfakt7,"ptNeutralHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("ptHFHadrons_pfakt7",     ptHFHadrons_pfakt7,     "ptHFHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("ptHFEM_pfakt7",     ptHFEM_pfakt7,     "ptHFEM_pfakt7[nJet_pfakt7]/F");
+
+  m_tree->Branch("phiChargedHadrons_pfakt7",phiChargedHadrons_pfakt7,"phiChargedHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("phiPhotons_pfakt7",       phiPhotons_pfakt7,       "phiPhotons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("phiMuons_pfakt7",         phiMuons_pfakt7,         "phiMuons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("phiElectrons_pfakt7",     phiElectrons_pfakt7,     "phiElectrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("phiNeutralHadrons_pfakt7",phiNeutralHadrons_pfakt7,"phiNeutralHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("phiHFHadrons_pfakt7",     phiHFHadrons_pfakt7,     "phiHFHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("phiHFEM_pfakt7",     phiHFEM_pfakt7,     "phiHFEM_pfakt7[nJet_pfakt7]/F");
+
+  m_tree->Branch("etaChargedHadrons_pfakt7",etaChargedHadrons_pfakt7,"etaChargedHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("etaPhotons_pfakt7",       etaPhotons_pfakt7,       "etaPhotons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("etaMuons_pfakt7",         etaMuons_pfakt7,         "etaMuons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("etaElectrons_pfakt7",     etaElectrons_pfakt7,     "etaElectrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("etaNeutralHadrons_pfakt7",etaNeutralHadrons_pfakt7,"etaNeutralHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("etaHFHadrons_pfakt7",     etaHFHadrons_pfakt7,     "etaHFHadrons_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("etaHFEM_pfakt7",     etaHFEM_pfakt7,     "etaHFEM_pfakt7[nJet_pfakt7]/F");
+
 
   m_tree->Branch("nJet_pfsis5",&nJet_pfsis5,"nJet_pfsis5/I");
   m_tree->Branch("ptJet_pfsis5 ",&ptJet_pfsis5 ,"ptJet_pfsis5[nJet_pfsis5]/F");

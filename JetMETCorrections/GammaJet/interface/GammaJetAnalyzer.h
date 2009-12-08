@@ -458,6 +458,47 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t eJetGen_akt7[100];
       Float_t etaJetGen_akt7[100];
       Float_t phiJetGen_akt7[100];
+      
+      // Extra variables for PFlow studies
+      Int_t nChargedHadrons_pfakt7[100];
+      Int_t nPhotons_pfakt7[100];
+      Int_t nElectrons_pfakt7[100];
+      Int_t nMuons_pfakt7[100];
+      Int_t nNeutralHadrons_pfakt7[100];
+      Int_t nHFHadrons_pfakt7[100];
+      Int_t nHFEM_pfakt7[100];
+
+      Float_t eChargedHadrons_pfakt7[100];
+      Float_t ePhotons_pfakt7[100];
+      Float_t eElectrons_pfakt7[100];
+      Float_t eMuons_pfakt7[100];
+      Float_t eNeutralHadrons_pfakt7[100];
+      Float_t eHFHadrons_pfakt7[100];
+      Float_t eHFEM_pfakt7[100];
+
+      Float_t ptChargedHadrons_pfakt7[100];
+      Float_t ptPhotons_pfakt7[100];
+      Float_t ptElectrons_pfakt7[100];
+      Float_t ptMuons_pfakt7[100];
+      Float_t ptNeutralHadrons_pfakt7[100];
+      Float_t ptHFHadrons_pfakt7[100];
+      Float_t ptHFEM_pfakt7[100];
+
+      Float_t phiChargedHadrons_pfakt7[100];
+      Float_t phiPhotons_pfakt7[100];
+      Float_t phiElectrons_pfakt7[100];
+      Float_t phiMuons_pfakt7[100];
+      Float_t phiNeutralHadrons_pfakt7[100];
+      Float_t phiHFHadrons_pfakt7[100];
+      Float_t phiHFEM_pfakt7[100];
+
+      Float_t etaChargedHadrons_pfakt7[100];
+      Float_t etaPhotons_pfakt7[100];
+      Float_t etaElectrons_pfakt7[100];
+      Float_t etaMuons_pfakt7[100];
+      Float_t etaNeutralHadrons_pfakt7[100];
+      Float_t etaHFHadrons_pfakt7[100];
+      Float_t etaHFEM_pfakt7[100];
 
       Int_t nJetGen_sis5;
       Float_t ptJetGen_sis5[100];
