@@ -98,7 +98,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       explicit Onia2MuMu(const edm::ParameterSet&);
       ~Onia2MuMu();
  private:
-      virtual void beginJob(const edm::EventSetup&) ;
+      virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
       virtual void l1Report(const edm::Event &iEvent); 
