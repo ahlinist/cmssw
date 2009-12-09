@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.11 2009/12/04 15:11:13 lorenzo Exp $
+  $Id: HLTRenderPlugin.cc,v 1.13 2009/12/06 17:30:11 rekovic Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.13  2009/12/06 17:30:11  rekovic
+  Render for HLT_bx plot
+
   Revision 1.11  2009/12/04 15:11:13  lorenzo
   commented log
 
@@ -156,6 +159,23 @@ private:
         if ( o.name.find("Pass_Any") != std::string::npos  ||  o.name.find("Normalized_Any") != std::string::npos  )
         {
           gPad->SetBottomMargin(0.16);
+          gPad->SetLogy(1);
+        }
+      }
+      if ( o.name.find("FourVector/PathsSummary/Filters Counts") != std::string::npos)
+      {
+        if ( o.name.find("Filters") != std::string::npos    )
+        {
+          gPad->SetBottomMargin(0.16);
+          gPad->SetLogy(1);
+        }
+      }
+      if ( o.name.find("FourVector/PathsSummary/Filters Efficiencies") != std::string::npos)
+      {
+        if ( o.name.find("Filters") != std::string::npos    )
+        {
+          gPad->SetBottomMargin(0.16);
+          gPad->SetLogy(1);
         }
       }
 
