@@ -4,8 +4,8 @@ process = cms.Process('ANA')
 
 # import of standard configurations
 process.load('Configuration/StandardSequences/Services_cff')
-process.load('Configuration/StandardSequences/GeometryPilot2_cff')
-process.load('Configuration/StandardSequences/MagneticField_38T_cff')
+process.load('Configuration/StandardSequences/GeometryExtended_cff')
+process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load("PhysicsTools.HepMCCandAlgos.allMuonsGenParticlesMatch_cfi")
