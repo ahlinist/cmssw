@@ -43,7 +43,8 @@ using namespace edm;
 HFB2muD0::HFB2muD0(const edm::ParameterSet& iConfig) :
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fTracksLabel(iConfig.getUntrackedParameter<InputTag>("tracksLabel", string("goodTracks"))),
-  fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexLabel", string("offlinePrimaryVertices"))),
+  fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexLabel",
+							      string("offlinePrimaryVertices"))),
   fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fMuonPt(iConfig.getUntrackedParameter<double>("muonPt", 1.0)),
   fProtonPt(iConfig.getUntrackedParameter<double>("protonPt", 1.0)),
@@ -55,6 +56,8 @@ HFB2muD0::HFB2muD0(const edm::ParameterSet& iConfig) :
   fSlowPt(iConfig.getUntrackedParameter<double>("slowPt", 0.1)) {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
+  cout << "--- " << __FILE__ << endl;
+  cout << "--- $Revision: 101 $" << endl;
   cout << "--- HFB2muD0 constructor" << endl;
   cout << "---  tracksLabel:              " << fTracksLabel << endl;
   cout << "---  muonsLabel:               " << fMuonsLabel << endl;
@@ -107,13 +110,13 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   iEvent.getByLabel(fTracksLabel, hTracks);
   if(!hTracks.isValid()) {
     if (fVerbose > 0) cout << "==>HFB2muD0> No valid TrackCollection with label " << fTracksLabel
-	 << " found, skipping" << endl;
+			   << " found, skipping" << endl;
     return;
   }
 
   if (hTracks->size() > 100) {
-    cout << "==>HFB2muD0> TrackCollection with label " << fTracksLabel
-	 << " has " << hTracks->size() << " entries, skipping event!!" << endl;
+    if (fVerbose > 0) cout << "==>HFB2muD0> TrackCollection with label " << fTracksLabel
+			   << " has " << hTracks->size() << " entries, skipping event!!" << endl;
   }
  
   // -- Fill muons into muonTracks
@@ -136,11 +139,13 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
   // go through muon track list
   TLorentzVector vmuon, vtrack1, vtrack2, vd0, vkaon, vpion;
-  for (unsigned int imuon = 0; imuon < muonIndices.size(); imuon++) {
+  TLorentzVector vslow, vds;
+  for (unsigned int muon_idx = 0; muon_idx < muonIndices.size(); muon_idx++) {
+    unsigned int imuon = muonIndices[muon_idx];
     if (fVerbose > 1)
-      cout << "==>HFB2muD0> Checking Muon #" << imuon << endl;
+      cout << "==>HFB2muD0> Checking Muon #" << muon_idx + 1 << endl;
 
-    TrackBaseRef muTrackView(hTracks, muonIndices[imuon]); // <------------------------------------------- ???
+    TrackBaseRef muTrackView(hTracks, imuon); // <-------------------------------------------------------- ???
     Track muon(*muTrackView);
 
     vmuon.SetPtEtaPhiM(muon.pt(), muon.eta(), muon.phi(), MMUON);
@@ -187,18 +192,10 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     
     // D0 reconstruction #####################################################################################
 
-    // tracks (kaon + pion) which form a D0 candidate
-    // d0tracks[2n    ] is the kaon of the n'th D0
-    // d0tracks[2n + 1] is the pion of the n'th D0
-    vector<unsigned int> d0tracks;
-
+    TAnaTrack * k_track, * p_track, * m_track, * s_track;
     vector<unsigned int>::iterator ia, ib;
     for (ia = track_list.begin(); ia != track_list.end(); ++ia) {
-      if (*ia == imuon)
-	continue;
       for (ib = ia + 1; ib != track_list.end(); ++ib) {
-	if (*ib == imuon)
-	  continue;
 	TrackBaseRef tr1TrackView(hTracks, *ia);
 	Track a(*tr1TrackView);
 	TrackBaseRef tr2TrackView(hTracks, *ib);
@@ -230,9 +227,6 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 	    if (fVerbose > 2)
 	      cout << "==>HFB2muD0> D0 candidate found! Mass: " << vd0.M() << endl;
 
-	    d0tracks.push_back(ikaon);
-	    d0tracks.push_back(ipion);
-
 	    std::vector<reco::Track> fitTracks;
 	    fitTracks.clear();
 	    fitTracks.push_back(kaon);
@@ -248,119 +242,118 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
  	    //vkaon.SetXYZM(fitTracks[0].px(), fitTracks[0].py(), fitTracks[0].pz(), MKAON);
  	    //vpion.SetXYZM(fitTracks[1].px(), fitTracks[1].py(), fitTracks[1].pz(), MPION);
- 	    //vd0 = m1 + m2;
 
-	    TAnaCand *pCand;
-	    pCand        = gHFEvent->addCand();
-	    pCand->fPlab = vd0.Vect();
-	    pCand->fMass = vd0.M();
-	    pCand->fType = 421;
-	    pCand->fVtx  = D0Vtx;
-	    //pCand->fMom  = -1;
-	    pCand->fSig1 = gHFEvent->nSigTracks();
-	    pCand->fSig2 = pCand->fSig1 + 1;
+	    int id0 = gHFEvent->nCands();
+	    TAnaCand *d0_cand;
+	    d0_cand        = gHFEvent->addCand();
+	    d0_cand->fPlab = vd0.Vect();
+	    d0_cand->fMass = vd0.M();
+	    d0_cand->fType = 421;
+	    d0_cand->fVtx  = D0Vtx;
+	    d0_cand->fSig1 = gHFEvent->nSigTracks();
+	    d0_cand->fSig2 = d0_cand->fSig1 + 2;
 
-	    TAnaTrack *pTrack;
-	    pTrack            = gHFEvent->addSigTrack();
-	    pTrack->fMCID     = kaon.charge() * 321;
-	    pTrack->fGenIndex = -1;
-	    pTrack->fQ        = kaon.charge();
-	    pTrack->fPlab.SetPtEtaPhi(vkaon.Pt(), vkaon.Eta(), vkaon.Phi());
-	    pTrack->fIndex  = ikaon;
+	    m_track            = gHFEvent->addSigTrack();
+	    m_track->fMCID     = - muon.charge() * 13;
+	    m_track->fGenIndex = -1;
+	    m_track->fQ        = muon.charge();
+	    m_track->fPlab.SetPtEtaPhi(vmuon.Pt(), vmuon.Eta(), vmuon.Phi());
+	    m_track->fIndex    = imuon;
 
-	    pTrack            = gHFEvent->addSigTrack();
-	    pTrack->fMCID     = pion.charge() * 211;
-	    pTrack->fGenIndex = -1;
-	    pTrack->fQ        = pion.charge();
-	    pTrack->fPlab.SetPtEtaPhi(vpion.Pt(), vpion.Eta(), vpion.Phi());
-	    pTrack->fIndex  = ipion;
+	    k_track            = gHFEvent->addSigTrack();
+	    k_track->fMCID     = kaon.charge() * 321;
+	    k_track->fGenIndex = -1;
+	    k_track->fQ        = kaon.charge();
+	    k_track->fPlab.SetPtEtaPhi(vkaon.Pt(), vkaon.Eta(), vkaon.Phi());
+	    k_track->fIndex    = ikaon;
+
+	    p_track            = gHFEvent->addSigTrack();
+	    p_track->fMCID     = pion.charge() * 211;
+	    p_track->fGenIndex = -1;
+	    p_track->fQ        = pion.charge();
+	    p_track->fPlab.SetPtEtaPhi(vpion.Pt(), vpion.Eta(), vpion.Phi());
+	    p_track->fIndex    = ipion;
+
+	    // D* reconstruction #############################################################################
+	    vector<unsigned int>::iterator islow;
+	    for (islow = slow_list.begin(); islow != slow_list.end(); ++islow) {
+	      if (*islow == ikaon || *islow == ipion)
+		continue;
+	      TrackBaseRef tr1TrackView(hTracks, *islow);
+	      Track slow(*tr1TrackView);
+	      if (muon.charge() * slow.charge() < 0) {
+		vslow.SetPtEtaPhiM(slow.pt(), slow.eta(), slow.phi(), MPION);
+		vds = vslow + vkaon + vpion;
+
+		// D* mass cut
+		if (TMath::Abs(vds.M() - MD_S) < fDeltaMDs) {
+		  if (fVerbose > 2)
+		    cout << "==>HFB2muD0> D* candidate found! Mass: " << vds.M() << endl;
+		  
+		  // Fill TAnaCand
+		  std::vector<reco::Track> fitTracks;
+		  fitTracks.clear();
+		  fitTracks.push_back(muon);
+		  fitTracks.push_back(slow);
+		  // fitTracks.push_back(D0 candidate);  <------------------------------------------------ !!!
+		  
+		  //m1.SetXYZM(tMuon1.px(), tMuon1.py(), tMuon1.pz(), MMUON);
+		  //m2.SetXYZM(tMuon2.px(), tMuon2.py(), tMuon2.pz(), MMUON);
+		  
+		  TAnaVertex DsVtx;
+		  DsVtx = DoVertexFit(fitTracks);
+		  DsVtx.addTrack(*islow);
+		  DsVtx.addTrack(imuon);
+		  
+		  //vkaon.SetXYZM(fitTracks[0].px(), fitTracks[0].py(), fitTracks[0].pz(), MKAON);
+		  //vpion.SetXYZM(fitTracks[1].px(), fitTracks[1].py(), fitTracks[1].pz(), MPION);
+		  
+		  TAnaCand *ds_cand;
+		  ds_cand        = gHFEvent->addCand();
+		  ds_cand->fPlab = vds.Vect();
+		  ds_cand->fMass = vds.M();
+		  ds_cand->fType = 413;
+		  ds_cand->fVtx  = DsVtx;
+		  ds_cand->fDau1  = id0;
+		  ds_cand->fDau2  = ds_cand->fDau1;
+		  ds_cand->fSig1 = gHFEvent->nSigTracks();
+		  ds_cand->fSig2 = ds_cand->fSig1 + 3;
+
+		  m_track            = gHFEvent->addSigTrack();
+		  m_track->fMCID     = - muon.charge() * 13;
+		  m_track->fGenIndex = -1;
+		  m_track->fQ        = muon.charge();
+		  m_track->fPlab.SetPtEtaPhi(vmuon.Pt(), vmuon.Eta(), vmuon.Phi());
+		  m_track->fIndex    = imuon;
+
+		  k_track            = gHFEvent->addSigTrack();
+		  k_track->fMCID     = kaon.charge() * 321;
+		  k_track->fGenIndex = -1;
+		  k_track->fQ        = kaon.charge();
+		  k_track->fPlab.SetPtEtaPhi(vkaon.Pt(), vkaon.Eta(), vkaon.Phi());
+		  k_track->fIndex    = ikaon;
+		  
+		  p_track            = gHFEvent->addSigTrack();
+		  p_track->fMCID     = pion.charge() * 211;
+		  p_track->fGenIndex = -1;
+		  p_track->fQ        = pion.charge();
+		  p_track->fPlab.SetPtEtaPhi(vpion.Pt(), vpion.Eta(), vpion.Phi());
+		  p_track->fIndex    = ipion;
+
+		  s_track            = gHFEvent->addSigTrack();
+		  s_track->fMCID     = slow.charge() * 211;
+		  s_track->fGenIndex = -1;
+		  s_track->fQ        = slow.charge();
+		  s_track->fPlab.SetPtEtaPhi(vslow.Pt(), vslow.Eta(), vslow.Phi());
+		  s_track->fIndex    = *islow;
+
+		} // mass cut
+	      } // charge cut D*
+	    } // track c
 	  } // mass cut
-	} // charge cut
+	} // charge cut D0
       } // track b (D0 reco)
     } // track a (D0 reco)
-
-    // D* reconstruction #####################################################################################
-
-    // looking for (slow) pion which together with the D0 is a daughter of D*
-    TLorentzVector vslow, vds;
-    vector<unsigned int>::iterator islow;
-    for (islow = slow_list.begin(); islow != slow_list.end(); ++islow) {
-      TrackBaseRef tr1TrackView(hTracks, *islow);
-      Track slow(*tr1TrackView);
-
-      // pion has opposite muon charge
-      if (muon.charge() * slow.charge() < 0) {
-
-	// go through D0 candidates
-	vector<unsigned int>::iterator id0;
-	for (id0 = d0tracks.begin(); id0 != d0tracks.end(); id0 += 2) {
-	  unsigned int ikaon = *id0;
-	  unsigned int ipion = *(id0 + 1);
-	  // slow pion should not be the kaon
-	  if (ipion == *islow || ikaon == *islow)
-	    continue;
-
-	  TrackBaseRef tr1TrackView(hTracks, ikaon);
-	  Track kaon(*tr1TrackView);
-	  TrackBaseRef tr2TrackView(hTracks, ipion);
-	  Track pion(*tr2TrackView);
-
-	  // maybe take refitted tracks instead? <-------------------------------------------------------- !!!
-	  vkaon.SetPtEtaPhiM(kaon.pt(), kaon.eta(), kaon.phi(), MKAON);
-	  vpion.SetPtEtaPhiM(pion.pt(), pion.eta(), pion.phi(), MPION);
-
-	  // mass cut
-	  vslow.SetPtEtaPhiM(slow.pt(), slow.eta(), slow.phi(), MPION);
-	  vds = vslow + vkaon + vpion;
-	  if (TMath::Abs(vds.M() - MD_S) < fDeltaMDs) {
-	    if (fVerbose > 2)
-	      cout << "==>HFB2muD0> D* candidate found! Mass: " << vds.M() << endl;
-
-	    // Fill TAnaCand
-	    std::vector<reco::Track> fitTracks;
-	    fitTracks.clear();
-	    fitTracks.push_back(muon);
-	    fitTracks.push_back(slow);
-	    // fitTracks.push_back(D0 candidate);  <------------------------------------------------------ !!!
-
-	    //m1.SetXYZM(tMuon1.px(), tMuon1.py(), tMuon1.pz(), MMUON);
-	    //m2.SetXYZM(tMuon2.px(), tMuon2.py(), tMuon2.pz(), MMUON);
-
-	    TAnaVertex DsVtx;
-	    DsVtx = DoVertexFit(fitTracks);
-	    DsVtx.addTrack(*islow);
-	    DsVtx.addTrack(imuon);
-
- 	    //vkaon.SetXYZM(fitTracks[0].px(), fitTracks[0].py(), fitTracks[0].pz(), MKAON);
- 	    //vpion.SetXYZM(fitTracks[1].px(), fitTracks[1].py(), fitTracks[1].pz(), MPION);
- 	    //vd0 = m1 + m2;
-
-	    TAnaCand *pCand;
-	    pCand        = gHFEvent->addCand();
-	    pCand->fPlab = vds.Vect();
-	    pCand->fMass = vds.M();
-	    pCand->fType = 413;
-	    pCand->fVtx  = DsVtx;
-	    //pCand->fMom  = -1;
-	    pCand->fDau1  = (id0 - d0tracks.begin()) / 2;
-	    pCand->fDau2  = pCand->fDau1;
-	    pCand->fSig1 = gHFEvent->nSigTracks();
-	    pCand->fSig2 = pCand->fSig1 + 0; // <- change when adding D0 to fitTracks -------------------- !!!
-
-	    TAnaTrack *pTrack;
-	    pTrack            = gHFEvent->addSigTrack();
-	    pTrack->fMCID     = slow.charge() * 211;
-	    pTrack->fGenIndex = -1;
-	    pTrack->fQ        = slow.charge();
-	    pTrack->fPlab.SetPtEtaPhi(vslow.Pt(), vslow.Eta(), vslow.Phi());
-	    pTrack->fIndex  = *islow;
-
-	    // pTrack            = gHFEvent->addSigTrack(); // <- add one for D0 ------------------------- !!!
-
-	  } // mass cut
-	} // d0 candidates
-      } // charge cut
-    } // track (D* reco)
   } // muons
 
   if (fVerbose > 0) {
@@ -405,7 +398,7 @@ TAnaVertex HFB2muD0::DoVertexFit(std::vector<reco::Track> &Tracks){
   ChiSquared chi(TransSecVtx.totalChiSquared(), TransSecVtx.degreesOfFreedom());
 
   // -- Build vertex for ntuple
-  anaVt.setInfo(chi.value(), chi.degreesOfFreedom(), chi.probability(), 0, 0);
+  anaVt.setInfo(chi.value(), int(chi.degreesOfFreedom()), chi.probability(), 1, 0);
   anaVt.fPoint.SetXYZ(TransSecVtx.position().x(),
 		      TransSecVtx.position().y(),
 		      TransSecVtx.position().z());
