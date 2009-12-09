@@ -225,7 +225,7 @@ void HFMuonAndTrack::doVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, i
   // -- Build vertex for ntuple
   TAnaVertex anaVtx;
   ChiSquared chi(TransSecVtx.totalChiSquared(), TransSecVtx.degreesOfFreedom());
-  anaVtx.setInfo(chi.value(), int(chi.degreesOfFreedom()), chi.probability(), 1, 0);
+  anaVtx.setInfo(chi.value(), chi.degreesOfFreedom(), chi.probability(), 0, 0);
   anaVtx.fPoint.SetXYZ(TransSecVtx.position().x(), 
 		       TransSecVtx.position().y(), 
 		       TransSecVtx.position().z());

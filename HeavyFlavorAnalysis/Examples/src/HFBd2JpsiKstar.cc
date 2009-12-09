@@ -278,7 +278,7 @@ void HFBd2JpsiKstar::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	TAnaVertex anaVt;
 
 	ChiSquared chi(bd->chiSquared(), bd->degreesOfFreedom());
-	anaVt.setInfo(bd->chiSquared(), int(bd->degreesOfFreedom()), chi.probability(), 1, 0);
+	anaVt.setInfo(bd->chiSquared(), bd->degreesOfFreedom(), chi.probability(), 0, 0);
 	
 	anaVt.fPoint.SetXYZ(bdVertex->position().x(), 
 			    bdVertex->position().y(), 
@@ -419,7 +419,7 @@ void HFBd2JpsiKstar::doJpsiVertexFit(std::vector<reco::Track> &Tracks, int iMuon
   // -- Build vertex for ntuple
   TAnaVertex anaVtx;
   ChiSquared chi(TransSecVtx.totalChiSquared(), TransSecVtx.degreesOfFreedom());
-  anaVtx.setInfo(chi.value(), int(chi.degreesOfFreedom()), chi.probability(), 1, 0);
+  anaVtx.setInfo(chi.value(), chi.degreesOfFreedom(), chi.probability(), 0, 0);
   anaVtx.fPoint.SetXYZ(TransSecVtx.position().x(), 
 		       TransSecVtx.position().y(), 
 		       TransSecVtx.position().z());

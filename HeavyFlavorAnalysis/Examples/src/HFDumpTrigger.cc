@@ -103,42 +103,39 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   if (L1GTRR.isValid()) {
     gHFEvent->fL1Decision = (L1GTRR->decision()? 1: 0);
 
-    //////// ***** New code **** /////////
     const AlgorithmMap& algorithmMap = l1GtMenu->gtAlgorithmMap();
     for (CItAlgo itAlgo = algorithmMap.begin(); itAlgo != algorithmMap.end(); itAlgo++) {
       std::string aName = itAlgo->first;
       int algBitNumber = (itAlgo->second).algoBitNumber();
       if (fVerbose > 2) cout << "i = " << algBitNumber << " -> " << aName << endl;
-      //fL1Thist->GetXaxis()->SetBinLabel(algBitNumber+1, aName.c_str());
       gHFEvent->fL1TNames[algBitNumber] = TString(aName);
+    }
+
+    const AlgorithmMap& algorithmTTMap = l1GtMenu->gtTechnicalTriggerMap();
+    for (CItAlgo itAlgo = algorithmTTMap.begin(); itAlgo != algorithmTTMap.end(); itAlgo++) {
+      std::string aName = itAlgo->first;
+      int algBitNumber = (itAlgo->second).algoBitNumber();
+      if (fVerbose > 2) cout << "i = " << algBitNumber << " -> " << aName << endl;
+      gHFEvent->fL1TTNames[algBitNumber] = TString(aName);
     }
 
     int itrig(0);
     for (unsigned int iTrig = 0; iTrig < L1GTRR->decisionWord().size(); ++iTrig) {
       int l1flag = L1GTRR->decisionWord()[iTrig]; 
+      int t1flag = L1GTRR->technicalTriggerWord()[iTrig]; 
       itrig = iTrig%32;
-      if (iTrig < 32 && l1flag) {
-	gHFEvent->fL1TWords[0] |= (0x1 << itrig);//note: changin iTrig to itrig = iTrig%32
-      } else if (iTrig < 64 && l1flag) {
-	gHFEvent->fL1TWords[1] |= (0x1 << itrig);
-      } else if (iTrig < 96 && l1flag) {
-	gHFEvent->fL1TWords[2] |= (0x1 << itrig);
+      if (iTrig < 32) {
+	if (l1flag) gHFEvent->fL1TWords[0]  |= (0x1 << itrig);//note: changin iTrig to itrig = iTrig%32
+	if (t1flag) gHFEvent->fL1TTWords[0] |= (0x1 << itrig);
+      } else if (iTrig < 64) {
+	if (l1flag) gHFEvent->fL1TWords[1]  |= (0x1 << itrig);//note: changin iTrig to itrig = iTrig%32
+	if (t1flag) gHFEvent->fL1TTWords[2] |= (0x1 << itrig);
+      } else if (iTrig < 96) {
+	if (l1flag) gHFEvent->fL1TWords[2]  |= (0x1 << itrig);//note: changin iTrig to itrig = iTrig%32
       } else if (iTrig < 128 && l1flag) {
-	gHFEvent->fL1TWords[3] |= (0x1 << itrig);
+	if (l1flag) gHFEvent->fL1TWords[3]  |= (0x1 << itrig);//note: changin iTrig to itrig = iTrig%32
       }
     }
-
- //    if (hL1GTmap.isValid()) {
-//       int iq(0); 
-//       DecisionWord gtDecisionWord = L1GTRR->decisionWord();
-//       const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  hL1GTmap->gtObjectMap();
-//       for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin(); itMap != objMapVec.end(); ++itMap) {
-// 	int itrg = (*itMap).algoBitNumber();
-// 	if (fVerbose > 2) cout << iq << " " << (*itMap).algoName() << "  " << itrg << endl;
-// 	gHFEvent->fL1TNames[itrg] = TString((*itMap).algoName()); 
-// 	++iq;
-//       }     
-//     }
 
   } 
 

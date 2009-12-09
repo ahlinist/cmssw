@@ -241,7 +241,7 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     // -- Build vertex for ntuple
     TAnaVertex *pVtx = new TAnaVertex();
-    pVtx->setInfo(chi.value(), int(chi.degreesOfFreedom()), chi.probability(), 1, 0);
+    pVtx->setInfo(chi.value(), chi.degreesOfFreedom(), chi.probability(), 0, 0);
     pVtx->fPoint.SetXYZ(TransSecVtx.position().x(), 
 			TransSecVtx.position().y(), 
 			TransSecVtx.position().z());

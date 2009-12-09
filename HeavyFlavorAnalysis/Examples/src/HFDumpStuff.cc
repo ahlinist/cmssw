@@ -36,16 +36,17 @@ using namespace edm;
 // ----------------------------------------------------------------------
 HFDumpStuff::HFDumpStuff(const edm::ParameterSet& iConfig):
   fGenEventScaleLabel(iConfig.getUntrackedParameter<string>("GenEventScaleLabel", string("genEventScale"))),
-  fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVerticesFromCTFTracks"))),
-  //  fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVertices"))),
   fCandidates1Label(iConfig.getUntrackedParameter<string>("Candidates1Label", string("JPsiToMuMu"))),
   fCandidates2Label(iConfig.getUntrackedParameter<string>("Candidates2Label", string("JPsiToMuMu"))),
   fCandidates3Label(iConfig.getUntrackedParameter<string>("Candidates3Label", string("JPsiToMuMu"))),
   fMETLabel(iConfig.getUntrackedParameter<string>("METLabel", string("corMetType1Icone5"))),
-  fGenMETLabel(iConfig.getUntrackedParameter<string>("GenMETLabel", string("genMet")))
+  fGenMETLabel(iConfig.getUntrackedParameter<string>("GenMETLabel", string("genMet"))),
+  fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexLabel", InputTag("offlinePrimaryVertices"))),
+  fPrimaryVertexTracksLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexTracksLabel", InputTag("generalTracks")))
 {
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpStuff constructor" << endl;
+  cout << "--- " << fPrimaryVertexLabel << endl;
   cout << "--- " << fGenEventScaleLabel.c_str() << endl;
   cout << "--- " << fMETLabel.c_str() << endl;
   cout << "--- " << fGenMETLabel.c_str() << endl;
@@ -77,30 +78,62 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // -- Primary vertex
   try {
-    edm::Handle<reco::VertexCollection> recoPrimaryVertexCollection;
-    iEvent.getByLabel(fPrimaryVertexLabel.c_str(), recoPrimaryVertexCollection);
-    const reco::VertexCollection vertices = *(recoPrimaryVertexCollection.product());
-    const reco::Vertex pV = vertices[0]; // ???? 
-    ChiSquared chi2(pV.chi2(), pV.ndof());
- 
-    TAnaVertex *pVtx = gHFEvent->addPV();
-    pVtx->setInfo(chi2.value(), int(chi2.degreesOfFreedom()), chi2.probability(), 0, 0);
-    pVtx->fPoint.SetXYZ(pV.position().x(),
-                        pV.position().y(),
-                        pV.position().z());
+    // -- get the collection of RecoTracks 
+    edm::Handle<edm::View<reco::Track> > tracksView;
+    iEvent.getByLabel(fPrimaryVertexTracksLabel, tracksView);
 
+    edm::Handle<reco::VertexCollection> recoPrimaryVertexCollection;
+    iEvent.getByLabel(fPrimaryVertexLabel, recoPrimaryVertexCollection);
+    //    const reco::VertexCollection vertices = *(recoPrimaryVertexCollection.product());
+
+    int isFake(-1); 
+    double cov[9]; 
+    for (reco::VertexCollection::const_iterator iv = recoPrimaryVertexCollection->begin(); iv != recoPrimaryVertexCollection->end(); ++iv) {
+      TAnaVertex *pVtx = gHFEvent->addPV();
+      ChiSquared chi2(iv->chi2(), iv->ndof());
+      if (iv->isFake()) {
+	isFake = 1; 
+      } else {
+	isFake = 0; 
+      }
+      pVtx->setInfo(chi2.value(), iv->ndof(), chi2.probability(), isFake, 0);
+      pVtx->fPoint.SetXYZ(iv->x(),
+			  iv->y(),
+			  iv->z());
+
+      for (int i = 0; i < 3; ++i) {
+	for (int j = 0; j < 3; ++j) {
+	  cov[i*3+j] = iv->covariance(i,j);
+	}
+      }
+      pVtx->setCovXX(cov);
+
+      //       Vertex::trackRef_iterator v1TrackIter;
+      //       Vertex::trackRef_iterator v1TrackBegin = iv->tracks_begin();
+      //       Vertex::trackRef_iterator v1TrackEnd   = iv->tracks_end();
+      //       for (v1TrackIter = v1TrackBegin; v1TrackIter != v1TrackEnd; v1TrackIter++) {
+      
+      // 	for (unsigned int i = 0; i < tracksView->size(); ++i){    
+      // 	  TrackBaseRef rTrackView(tracksView,i);
+      // 	  if (rTrackView == v1TrackIter) {
+      // 	    cout << "Found a track from PV" << endl;
+      // 	    // 	    int it = v1TrackIter.index();
+      // 	    // 	    pVtx->addTrack(it); 
+      // 	  }
+      // 	}
+      //       }
+    }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpStuff> primaryVertex " << fPrimaryVertexLabel.c_str() << " not found " << endl;
+    cout << "==>HFDumpStuff> primaryVertex " << fPrimaryVertexLabel << " not found " << endl;
   } 
-
-
+  
   // -- Candidates list
   try {
     //    Handle<CandidateCollection> candidates1Handle;
     Handle<reco::CandidateView> candidates1Handle;
     iEvent.getByLabel(fCandidates1Label.c_str(), candidates1Handle);
-    for (int i = 0; i < candidates1Handle->size(); ++ i ) {
+    for (unsigned int i = 0; i < candidates1Handle->size(); ++ i ) {
       const Candidate &p = (*candidates1Handle)[i];
       cout << "==>HFDumpStuff>  candidates1 " << i << " id = " << p.pdgId() 
 	   << " mass = " << p.mass()
@@ -118,7 +151,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     //    Handle<CandidateCollection> candidates2Handle;
     Handle<reco::CandidateView> candidates2Handle;
     iEvent.getByLabel(fCandidates2Label.c_str(), candidates2Handle);
-    for (int i = 0; i < candidates2Handle->size(); ++ i ) {
+    for (unsigned int i = 0; i < candidates2Handle->size(); ++ i ) {
       const Candidate &p = (*candidates2Handle)[i];
       cout << "==> candidates2 " << i << " id = " << p.pdgId() 
 	   << " mass = " << p.mass()
@@ -136,7 +169,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     //    Handle<CandidateCollection> candidates3Handle;
     Handle<reco::CandidateView> candidates3Handle;
     iEvent.getByLabel(fCandidates3Label.c_str(), candidates3Handle);
-    for (int i = 0; i < candidates3Handle->size(); ++ i ) {
+    for (unsigned int i = 0; i < candidates3Handle->size(); ++ i ) {
       const Candidate &p = (*candidates3Handle)[i];
       cout << "==> candidates3 " << i << " id = " << p.pdgId() 
 	   << " mass = " << p.mass()
