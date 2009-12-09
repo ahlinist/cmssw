@@ -131,7 +131,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpStuff> primaryVertex " << fPrimaryVertexLabel << " not found " << endl;
+    if (fVerbose > 0) cout << "==>HFDumpStuff> primaryVertex " << fPrimaryVertexLabel << " not found " << endl;
   } 
   
   // -- Candidates list
@@ -141,16 +141,16 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     iEvent.getByLabel(fCandidates1Label.c_str(), candidates1Handle);
     for (unsigned int i = 0; i < candidates1Handle->size(); ++ i ) {
       const Candidate &p = (*candidates1Handle)[i];
-      cout << "==>HFDumpStuff>  candidates1 " << i << " id = " << p.pdgId() 
-	   << " mass = " << p.mass()
-	   << " pt = " << p.pt() 
-	   << " phi = " << p.phi() 
-	   << " eta = " << p.eta() 
-	   << endl;
+      if (fVerbose > 5) cout << "==>HFDumpStuff>  candidates1 " << i << " id = " << p.pdgId() 
+			     << " mass = " << p.mass()
+			     << " pt = " << p.pt() 
+			     << " phi = " << p.phi() 
+			     << " eta = " << p.eta() 
+			     << endl;
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpStuff> Candidate list " << fCandidates1Label.c_str() << " not found " << endl;
+    if (fVerbose > 5) cout << "==>HFDumpStuff> Candidate list " << fCandidates1Label.c_str() << " not found " << endl;
   }
 
   try {
@@ -159,16 +159,16 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     iEvent.getByLabel(fCandidates2Label.c_str(), candidates2Handle);
     for (unsigned int i = 0; i < candidates2Handle->size(); ++ i ) {
       const Candidate &p = (*candidates2Handle)[i];
-      cout << "==> candidates2 " << i << " id = " << p.pdgId() 
-	   << " mass = " << p.mass()
-	   << " pt = " << p.pt() 
-	   << " phi = " << p.phi() 
-	   << " eta = " << p.eta() 
-	   << endl;
+      if (fVerbose > 5) cout << "==> candidates2 " << i << " id = " << p.pdgId() 
+			     << " mass = " << p.mass()
+			     << " pt = " << p.pt() 
+			     << " phi = " << p.phi() 
+			     << " eta = " << p.eta() 
+			     << endl;
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpStuff> Candidate list " << fCandidates2Label.c_str() << " not found " << endl;
+    if (fVerbose > 5) cout << "==>HFDumpStuff> Candidate list " << fCandidates2Label.c_str() << " not found " << endl;
   }
 
   try {
@@ -177,16 +177,16 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     iEvent.getByLabel(fCandidates3Label.c_str(), candidates3Handle);
     for (unsigned int i = 0; i < candidates3Handle->size(); ++ i ) {
       const Candidate &p = (*candidates3Handle)[i];
-      cout << "==> candidates3 " << i << " id = " << p.pdgId() 
-	   << " mass = " << p.mass()
-	   << " pt = " << p.pt() 
-	   << " phi = " << p.phi() 
-	   << " eta = " << p.eta() 
-	   << endl;
+      if (fVerbose > 5) cout << "==> candidates3 " << i << " id = " << p.pdgId() 
+			     << " mass = " << p.mass()
+			     << " pt = " << p.pt() 
+			     << " phi = " << p.phi() 
+			     << " eta = " << p.eta() 
+			     << endl;
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpStuff> Candidate list " << fCandidates3Label.c_str() << " not found " << endl;
+    if (fVerbose > 5)  cout << "==>HFDumpStuff> Candidate list " << fCandidates3Label.c_str() << " not found " << endl;
   }
 
 
@@ -199,7 +199,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     gHFEvent->fMET0 = TVector3(met->p4().x(), met->p4().y(), 0.);  
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpStuff> MET " << fMETLabel.c_str() << " not found " << endl;
+    if (fVerbose > 5) cout << "==>HFDumpStuff> MET " << fMETLabel.c_str() << " not found " << endl;
   }
 
 
@@ -212,20 +212,22 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     gHFEvent->fGenMET = TVector3(genmet.px(), genmet.py(), 0.);  
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpStuff> GenMET " << fGenMETLabel.c_str() << " not found " << endl;
+    if (fVerbose > 5) cout << "==>HFDumpStuff> GenMET " << fGenMETLabel.c_str() << " not found " << endl;
   }
 
-  cout << "==HFDumpStuff> GenMET =  (" 
-       << gHFEvent->fGenMET.X() << "," 
-       << gHFEvent->fGenMET.Y() << "), mag = " 
-       << gHFEvent->fGenMET.Mag() 
-       << endl;
-
-  cout << "==HFDumpStuff> MET =  (" 
-       << gHFEvent->fMET0.X() << "," 
-       << gHFEvent->fMET0.Y() << "), mag = " 
-       << gHFEvent->fMET0.Mag() 
-       << endl;
+  if (fVerbose > 5) {
+    cout << "==HFDumpStuff> GenMET =  (" 
+	 << gHFEvent->fGenMET.X() << "," 
+	 << gHFEvent->fGenMET.Y() << "), mag = " 
+	 << gHFEvent->fGenMET.Mag() 
+	 << endl;
+    
+    cout << "==HFDumpStuff> MET =  (" 
+	 << gHFEvent->fMET0.X() << "," 
+	 << gHFEvent->fMET0.Y() << "), mag = " 
+	 << gHFEvent->fMET0.Mag() 
+	 << endl;
+  }
 }
 
 // ------------ method called once each job just before starting event loop  ------------
