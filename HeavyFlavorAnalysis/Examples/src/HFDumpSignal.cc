@@ -142,7 +142,7 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     cout << "J/psi mass = " << psi.M() << endl;
 
     int foundTrack(-1); 
-    for (unsigned int i = 0; i < hTracks->size(); ++i){    
+    for (int i = 0; i < static_cast<int>(hTracks->size()); ++i){    
       if (i == muonIndices[0] || i == muonIndices[1]) continue; // skip muons!
       reco::TrackRef rTrack(hTracks, i);
       reco::Track track(*rTrack);
