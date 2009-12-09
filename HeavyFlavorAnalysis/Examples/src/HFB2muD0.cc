@@ -405,7 +405,7 @@ TAnaVertex HFB2muD0::DoVertexFit(std::vector<reco::Track> &Tracks){
   ChiSquared chi(TransSecVtx.totalChiSquared(), TransSecVtx.degreesOfFreedom());
 
   // -- Build vertex for ntuple
-  anaVt.setInfo(chi.value(), int(chi.degreesOfFreedom()), chi.probability(), 1, 0);
+  anaVt.setInfo(chi.value(), chi.degreesOfFreedom(), chi.probability(), 0, 0);
   anaVt.fPoint.SetXYZ(TransSecVtx.position().x(),
 		      TransSecVtx.position().y(),
 		      TransSecVtx.position().z());
