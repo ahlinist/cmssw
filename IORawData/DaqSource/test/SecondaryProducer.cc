@@ -61,10 +61,11 @@ bool SecondaryProducer::fillRawData(edm::EventID& eID,
   
   EventPrincipal *p  =&**result.begin();
   unsigned int irun  =p->id().run();
+  unsigned int ilumi  =p->id().luminosityBlock();
   unsigned int ievent=p->id().event();
   //std::cout << "run "   << p->id().run()
   //          << " event "<< p->id().event()<<std::endl;
-  eID = EventID(irun, ievent);
+  eID = EventID(irun, ilumi, ievent);
   EDProduct const* ep = p->getByType(TypeID(typeid(TC))).wrapper();
   assert(ep);
   WTC const* wtp = dynamic_cast<WTC const*>(ep);
