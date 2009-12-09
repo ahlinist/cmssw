@@ -184,11 +184,11 @@ void Onia2MuMu::beginJob()
   // HLTUpsilon2Mu_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLTUpsilon2Mu_L3_4mom=new TClonesArray("TLorentzVector",10000);
 
+  fTree->Branch("eventNb",             &eventNb,             "eventNb/I");
+  fTree->Branch("runNb",               &runNb,               "runNb/I");
+  fTree->Branch("lumiBlock",           &lumiBlock,           "lumiBlock/I"); 
 
   if(theStoreGenFlag){
-    fTree->Branch("eventNb",             &eventNb,             "eventNb/I");
-    fTree->Branch("runNb",               &runNb,               "runNb/I");
-    fTree->Branch("lumiBlock",           &lumiBlock,           "lumiBlock/I"); 
     fTree->Branch("Mc_ProcessId",        &Mc_ProcessId,        "Mc_ProcessId/I");
     fTree->Branch("Mc_EventScale",       &Mc_EventScale,       "Mc_EventScale/D");
     fTree->Branch("Mc_EventWeight",      &Mc_EventWeight,      "Mc_EventWeight/D");
