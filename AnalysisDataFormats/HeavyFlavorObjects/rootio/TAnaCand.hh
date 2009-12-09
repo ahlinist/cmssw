@@ -23,6 +23,9 @@ public:
 
   int         fType;
   double      fMass;
+  double      fVar1;
+  double      fVar2;
+  double      fVar3;
 
   TAnaVertex  fVtx;
   TVector3    fPlab;
