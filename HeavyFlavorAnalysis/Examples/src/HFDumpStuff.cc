@@ -35,6 +35,7 @@ using namespace edm;
 
 // ----------------------------------------------------------------------
 HFDumpStuff::HFDumpStuff(const edm::ParameterSet& iConfig):
+  fVerbose(iConfig.getUntrackedParameter<int>("verbose", 1)),
   fGenEventScaleLabel(iConfig.getUntrackedParameter<string>("GenEventScaleLabel", string("genEventScale"))),
   fCandidates1Label(iConfig.getUntrackedParameter<string>("Candidates1Label", string("JPsiToMuMu"))),
   fCandidates2Label(iConfig.getUntrackedParameter<string>("Candidates2Label", string("JPsiToMuMu"))),
@@ -46,10 +47,12 @@ HFDumpStuff::HFDumpStuff(const edm::ParameterSet& iConfig):
 {
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpStuff constructor" << endl;
-  cout << "--- " << fPrimaryVertexLabel << endl;
-  cout << "--- " << fGenEventScaleLabel.c_str() << endl;
-  cout << "--- " << fMETLabel.c_str() << endl;
-  cout << "--- " << fGenMETLabel.c_str() << endl;
+  cout << "---  verbose:                    " << fVerbose << endl;
+  cout << "---  PrimaryVertexLabel:         " << fPrimaryVertexLabel << endl;
+  cout << "---  PrimaryVertexTracksLabel:   " << fPrimaryVertexTracksLabel << endl;
+  cout << "---  GenEventScaleLabel:         " << fGenEventScaleLabel.c_str() << endl;
+  cout << "---  METLabel:                   " << fMETLabel.c_str() << endl;
+  cout << "---  GenMETLabel:                " << fGenMETLabel.c_str() << endl;
   cout << "----------------------------------------------------------------------" << endl;
 }
 
@@ -69,10 +72,9 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     edm::Handle<double> genEventScaleHandle;
     iEvent.getByLabel(fGenEventScaleLabel.c_str(), genEventScaleHandle);
     gHFEvent->fPtHat = *genEventScaleHandle;
-    cout << "genEventScale " << fGenEventScaleLabel.c_str() << " found!!!!!!!!!!!!!!! " << endl;
   } catch (cms::Exception &ex) {
-    cout << ex.explainSelf() << endl;
-    cout << "genEventScale " << fGenEventScaleLabel.c_str() << " not found " << endl;
+    //    cout << ex.explainSelf() << endl;
+    if (fVerbose > 0) cout << "genEventScale " << fGenEventScaleLabel.c_str() << " not found " << endl;
   }
 
 
@@ -95,6 +97,10 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	isFake = 1; 
       } else {
 	isFake = 0; 
+      }
+
+      if (fVerbose > 0) {
+	cout << "PV found: isFake = " << isFake << endl;
       }
       pVtx->setInfo(chi2.value(), iv->ndof(), chi2.probability(), isFake, 0);
       pVtx->fPoint.SetXYZ(iv->x(),
