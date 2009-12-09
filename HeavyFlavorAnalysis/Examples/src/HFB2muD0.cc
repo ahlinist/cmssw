@@ -84,12 +84,12 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   edm::Handle<VertexCollection> recoPrimaryVertexCollection;
   iEvent.getByLabel(fPrimaryVertexLabel, recoPrimaryVertexCollection);
   if(!recoPrimaryVertexCollection.isValid()) {
-    cout << "==>HFB2muD0> No primary vertex found, skipping" << endl;
+    if (fVerbose > 0) cout << "==>HFB2muD0> No primary vertex found, skipping" << endl;
     return;
   }
   const reco::VertexCollection vertices = *(recoPrimaryVertexCollection.product());
   if (vertices.size() == 0) {
-    cout << "==>HFB2muD0> No primary vertex found, skipping" << endl;
+    if (fVerbose > 0) cout << "==>HFB2muD0> No primary vertex found, skipping" << endl;
     return;
   }
   fPV = vertices[0]; // ???
@@ -98,7 +98,7 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   Handle<MuonCollection> hMuons;
   iEvent.getByLabel(fMuonsLabel, hMuons);
   if (!hMuons.isValid()) {
-    cout << "==>HFB2muD0> No valid MuonCollection with label " << fMuonsLabel << " found, skipping" << endl;
+    if (fVerbose > 0) cout << "==>HFB2muD0> No valid MuonCollection with label " << fMuonsLabel << " found, skipping" << endl;
     return;
   }
   
@@ -106,7 +106,7 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   edm::Handle<edm::View<reco::Track> > hTracks;
   iEvent.getByLabel(fTracksLabel, hTracks);
   if(!hTracks.isValid()) {
-    cout << "==>HFB2muD0> No valid TrackCollection with label " << fTracksLabel
+    if (fVerbose > 0) cout << "==>HFB2muD0> No valid TrackCollection with label " << fTracksLabel
 	 << " found, skipping" << endl;
     return;
   }
@@ -181,7 +181,7 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     
     iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", fTTB);
     if (!fTTB.isValid()) {
-      cout << " -->HFB2muD0: Error: no TransientTrackBuilder found." << endl;
+      if (fVerbose > 0) cout << " -->HFB2muD0: Error: no TransientTrackBuilder found." << endl;
       return;
     }
     
@@ -384,12 +384,12 @@ TAnaVertex HFB2muD0::DoVertexFit(std::vector<reco::Track> &Tracks){
     if ( isnan(TransSecVtx.position().x())
 	 || isnan(TransSecVtx.position().y())
 	 || isnan(TransSecVtx.position().z()) ) {
-      cout << "==>HFB2muD0> Something went wrong! SecVtx nan - Aborting... !" << endl;
+      if (fVerbose > 0) cout << "==>HFB2muD0> Something went wrong! SecVtx nan - Aborting... !" << endl;
       anaVt.fPoint.SetXYZ(0,0,0);
       return anaVt;
     }
   } else {
-    cout << "==>HFB2muD0> KVF failed! Aborting... !" << endl;
+    if (fVerbose > 0) cout << "==>HFB2muD0> KVF failed! Aborting... !" << endl;
     anaVt.fPoint.SetXYZ(0,0,0);
     return anaVt;
   }
