@@ -47,10 +47,10 @@ using namespace edm;
 // ----------------------------------------------------------------------
 HFMuonAndTrack::HFMuonAndTrack(const edm::ParameterSet& iConfig) :
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
+  fVertexing(iConfig.getUntrackedParameter<int>("vertexing", 1)),
   fTracksLabel(iConfig.getUntrackedParameter<InputTag>("tracksLabel", InputTag("goodTracks"))), 
   fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("PrimaryVertexLabel", InputTag("offlinePrimaryVertices"))),
   fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
-  fVertexing(iConfig.getUntrackedParameter<int>("vertexing", 1)),
   fMuonPt(iConfig.getUntrackedParameter<double>("muonPt", 3.0)), 
   fTrackPt(iConfig.getUntrackedParameter<double>("trackPt", 1.0)), 
   fMassLow(iConfig.getUntrackedParameter<double>("massLow", 8.7)), 
@@ -188,10 +188,8 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       fitTracks.push_back(tMuon1); 
       fitTracks.push_back(tTrack2);
       if ( fVertexing > 0 ) {
-      	//doVertexFit(fitTracks, iMuon1, itrack2, pCand);
 	doVertexFit(fitTracks, iMuon1, itrack2);
       } else if ( fVertexing == 0 ) {
-        //fillCandAndSignal(fitTracks, iMuon1, itrack2, pCand);
 	fillCandAndSignal(fitTracks, iMuon1, itrack2);
       }
       found_candidate = false;
@@ -201,8 +199,7 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 }
 
 // ----------------------------------------------------------------------
-//void HFMuonAndTrack::fillCandAndSignal(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2, TAnaCand *pCand){
-void HFMuonAndTrack::fillCandAndSignal(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2){
+void HFMuonAndTrack::fillCandAndSignal(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2) {
 
   Track tMuon1 = Tracks[0]; 
   Track tMuon2 = Tracks[1]; 
@@ -247,7 +244,6 @@ void HFMuonAndTrack::fillCandAndSignal(std::vector<reco::Track> &Tracks, int iMu
 }
 
 // ----------------------------------------------------------------------
-//void HFMuonAndTrack::doVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2, TAnaCand *pCand){
 void HFMuonAndTrack::doVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2){
 
   Track tMuon1 = Tracks[0]; 
