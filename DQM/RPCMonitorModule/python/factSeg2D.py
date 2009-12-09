@@ -40,8 +40,8 @@ process.museg = cms.EDFilter("MuonSegmentEff",
 	
     rangestrips = cms.untracked.double(4.),
 
-##  cscSegments = cms.untracked.string('hltCscSegments'),
-##  dt4DSegments = cms.untracked.string('hltDt4DSegments'),
+##  cscSegments = cms.untracked.InputTag('hltCscSegments'),
+##  dt4DSegments = cms.untracked.InputTag('hltDt4DSegments'),
     cscSegments = cms.untracked.InputTag('cscSegments'),
     dt4DSegments = cms.untracked.InputTag('dt4DSegments'),
 
