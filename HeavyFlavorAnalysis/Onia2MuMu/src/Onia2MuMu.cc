@@ -1336,6 +1336,28 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
     }
     }*/
 
+  Handle<reco::VertexCollection> privtxs;
+  iEvent.getByLabel(thePrimaryVertexLabel, privtxs);
+  VertexCollection::const_iterator privtx;
+
+  edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+  iEvent.getByLabel(theBeamSpotLabel ,recoBeamSpotHandle);
+  reco::BeamSpot bs = *recoBeamSpotHandle;
+
+  math::XYZPoint RefVtx;
+  if ( theBeamSpotFlag ) {
+    RefVtx = bs.position();
+  }
+  else {
+    if ( privtxs->begin() != privtxs->end() ) {
+      privtx=privtxs->begin();
+      RefVtx = privtx->position();
+    }
+    else {
+      RefVtx.SetXYZ(0, 0, 0);
+    }
+  }
+
   /////////// Global Muons 
   if ( theStoreGLBMuonFlag ) {
     Reco_mu_glb_size=0;
@@ -1363,9 +1385,9 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       Reco_mu_glb_ptErr[Reco_mu_glb_size]=glbTrack->ptError();
       Reco_mu_glb_phiErr[Reco_mu_glb_size]=glbTrack->phiError();
       Reco_mu_glb_etaErr[Reco_mu_glb_size]=glbTrack->etaError();
-      Reco_mu_glb_d0[Reco_mu_glb_size]=glbTrack->d0();
+      Reco_mu_glb_d0[Reco_mu_glb_size]=-glbTrack->dxy(RefVtx);
       Reco_mu_glb_d0err[Reco_mu_glb_size]=glbTrack->d0Error();
-      Reco_mu_glb_dz[Reco_mu_glb_size]=glbTrack->dz();
+      Reco_mu_glb_dz[Reco_mu_glb_size]=glbTrack->dz(RefVtx);
       Reco_mu_glb_dzerr[Reco_mu_glb_size]=glbTrack->dzError();
       Reco_mu_glb_charge[Reco_mu_glb_size]=glbTrack->charge();
       Reco_mu_glb_normChi2[Reco_mu_glb_size]=glbTrack->chi2()/glbTrack->ndof();
@@ -1422,9 +1444,9 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       Reco_mu_trk_ptErr[Reco_mu_trk_size]=innTrack->ptError();
       Reco_mu_trk_phiErr[Reco_mu_trk_size]=innTrack->phiError();
       Reco_mu_trk_etaErr[Reco_mu_trk_size]=innTrack->etaError();
-      Reco_mu_trk_d0[Reco_mu_trk_size]=innTrack->d0();
+      Reco_mu_trk_d0[Reco_mu_trk_size]=-innTrack->dxy(RefVtx);
       Reco_mu_trk_d0err[Reco_mu_trk_size]=innTrack->d0Error();
-      Reco_mu_trk_dz[Reco_mu_trk_size]=innTrack->dz();
+      Reco_mu_trk_dz[Reco_mu_trk_size]=innTrack->dz(RefVtx);
       Reco_mu_trk_dzerr[Reco_mu_trk_size]=innTrack->dzError();
       Reco_mu_trk_charge[Reco_mu_trk_size]=innTrack->charge();
       Reco_mu_trk_normChi2[Reco_mu_trk_size]=innTrack->chi2()/innTrack->ndof();
@@ -1494,9 +1516,9 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       Reco_mu_cal_ptErr[Reco_mu_cal_size]=innTrack->ptError();
       Reco_mu_cal_phiErr[Reco_mu_cal_size]=innTrack->phiError();
       Reco_mu_cal_etaErr[Reco_mu_cal_size]=innTrack->etaError();
-      Reco_mu_cal_d0[Reco_mu_cal_size]=innTrack->d0();
+      Reco_mu_cal_d0[Reco_mu_cal_size]=-innTrack->dxy(RefVtx);
       Reco_mu_cal_d0err[Reco_mu_cal_size]=innTrack->d0Error();
-      Reco_mu_cal_dz[Reco_mu_cal_size]=innTrack->dz();
+      Reco_mu_cal_dz[Reco_mu_cal_size]=innTrack->dz(RefVtx);
       Reco_mu_cal_dzerr[Reco_mu_cal_size]=innTrack->dzError();
       Reco_mu_cal_charge[Reco_mu_cal_size]=innTrack->charge();
       Reco_mu_cal_normChi2[Reco_mu_cal_size]=innTrack->chi2()/innTrack->ndof();
