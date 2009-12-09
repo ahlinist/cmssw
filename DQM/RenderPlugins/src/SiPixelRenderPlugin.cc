@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.28 $
-  \date $Date: 2009/12/08 10:32:20 $
+  \version $Revision: 1.29 $
+  \date $Date: 2009/12/08 10:44:50 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -426,7 +426,7 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
 	if(obj->GetNbinsX()==40){
-	  TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(32.,27.,32.,37.); //top right corner
+	  TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(32.,25.,32.,37.); //top right corner
 	  TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(32.,25.,40.,25.); //top right corner
 	  //
 	  TLine tl3; tl3.SetLineColor(4); tl3.DrawLine(3.,29.,3.,31.); //little boxes
