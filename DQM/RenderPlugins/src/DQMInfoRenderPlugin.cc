@@ -28,7 +28,7 @@ public:
   virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an Info object
-      if(o.name.find( "Info/EventInfo/" ) != std::string::npos)  
+      if(o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos)  
         return true;
 
       return false;
@@ -45,7 +45,7 @@ public:
       {
         obj->SetStats( kFALSE );
         dqm::utils::reportSummaryMapPalette(obj);
-        obj->SetOption("colz");
+        obj->SetOption("colz text");
         obj->SetTitle("Info Report Summary Map");
 
         obj->GetXaxis()->SetNdivisions(1,true);
