@@ -1,5 +1,5 @@
-#ifndef __HFB2MUD0_H__
-#define __HFB2MUD0_H__
+#ifndef _HFB2MUD0_H_
+#define _HFB2MUD0_H_
 
 #include <memory>
 
