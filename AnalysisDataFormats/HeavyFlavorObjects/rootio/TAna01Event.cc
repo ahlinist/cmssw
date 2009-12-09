@@ -42,6 +42,9 @@ TAna01Event::TAna01Event(Int_t Option) {
 // ----------------------------------------------------------------------
 void TAna01Event::Clear(Option_t *option) {
 
+  fLumi = fLumiSection = fBx = fOrbit = -9999; 
+  fTimeLo = fTimeHi = 0; 
+  
   TAnaTrack *pTrack;
   for (int i = 0; i < fnRecTracks; i++) {
     pTrack = getRecTrack(i);
@@ -73,6 +76,15 @@ void TAna01Event::Clear(Option_t *option) {
     
     fL1TWords[i]  = 0; 
     fL1TWasRun[i] = 0; 
+  }
+
+  for (int i = 0; i < NL1TT; ++i) {
+    for (int j = 0; j < 32; ++j) {
+      fL1TTNames[i*32+j] = ""; 
+    }
+    
+    fL1TTWords[i]  = 0; 
+    fL1TTWasRun[i] = 0; 
   }
 
   for (int i = 0; i < NHLT; ++i) {
@@ -386,6 +398,11 @@ void TAna01Event::dump() {
   for (int j = 0; j < 32; ++j) {
     for (int i = 0; i < NL1T; ++i) {
       cout << Form("%15s %2d ", fL1TNames[32*i+j].Data(), (fL1TWords[i] & (0x1<<j)? 1: 0)); 
+    }
+    cout << endl;
+
+    for (int i = 0; i < NL1TT; ++i) {
+      cout << Form("%15s %2d ", fL1TTNames[32*i+j].Data(), (fL1TTWords[i] & (0x1<<j)? 1: 0)); 
     }
     cout << endl;
   }    

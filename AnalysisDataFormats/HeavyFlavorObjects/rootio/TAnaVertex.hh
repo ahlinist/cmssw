@@ -20,11 +20,11 @@ public:
   //  TAnaVertex& operator=(const TAnaVertex&);
 
   // ----------------------------------------------------------------------
-  void setInfo(double chi2, int ndof, double prob, int status, int type) {
+  void setInfo(double chi2, double ndof, double prob, int isFake, int type) {
     fChi2 = chi2;
     fNdof = ndof;
     fProb = prob; 
-    fStatus = status;
+    fStatus = isFake;
     fType = type;
   }
 
@@ -38,10 +38,10 @@ public:
 
   // ----------------------------------------------------------------------
   double fChi2;
-  int fNdof;
+  double fNdof;
   double fProb;
-  int fStatus;
-  int fType;
+  int    fStatus;
+  int    fType;
 
   // -- Distance to primary vertex
   double fDxy, fDxyE, fCxy;
