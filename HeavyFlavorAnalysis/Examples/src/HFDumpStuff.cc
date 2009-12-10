@@ -79,6 +79,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
   // -- Primary vertex
+  int bestPV(-1), bestN(-1), cnt(0); 
   try {
     // -- get the collection of RecoTracks 
     edm::Handle<edm::View<reco::Track> > tracksView;
@@ -98,11 +99,19 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       } else {
 	isFake = 0; 
       }
-
-      if (fVerbose > 0) {
-	cout << "PV found: isFake = " << isFake << endl;
+      
+      int ntracks = iv->tracksSize(); 
+      if (0 == isFake) {
+	if (ntracks > bestN) {
+	  bestN  = ntracks; 
+	  bestPV = cnt;
+	}
       }
-      pVtx->setInfo(chi2.value(), iv->ndof(), chi2.probability(), isFake, 0);
+
+      if (fVerbose > 1) {
+	cout << "PV found: isFake = " << isFake << " with " << ntracks << " tracks" << endl;
+      }
+      pVtx->setInfo(chi2.value(), iv->ndof(), chi2.probability(), isFake, ntracks);
       pVtx->fPoint.SetXYZ(iv->x(),
 			  iv->y(),
 			  iv->z());
@@ -128,11 +137,16 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       // 	  }
       // 	}
       //       }
+      ++cnt; 
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
     if (fVerbose > 0) cout << "==>HFDumpStuff> primaryVertex " << fPrimaryVertexLabel << " not found " << endl;
   } 
+
+  gHFEvent->fEventTag = bestPV;
+  if (fVerbose > 0) cout << "The best pV is at position: " << bestPV  << " and has " << bestN << " tracks" << endl;
+
   
   // -- Candidates list
   try {

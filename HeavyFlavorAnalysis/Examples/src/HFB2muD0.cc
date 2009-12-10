@@ -57,7 +57,7 @@ HFB2muD0::HFB2muD0(const edm::ParameterSet& iConfig) :
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- " << __FILE__ << endl;
-  cout << "--- $Revision: 1.8 $" << endl;
+  cout << "--- $Revision: 1.9 $" << endl;
   cout << "--- HFB2muD0 constructor" << endl;
   cout << "---  tracksLabel:              " << fTracksLabel << endl;
   cout << "---  muonsLabel:               " << fMuonsLabel << endl;
@@ -95,7 +95,10 @@ void HFB2muD0::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     if (fVerbose > 0) cout << "==>HFB2muD0> No primary vertex found, skipping" << endl;
     return;
   }
-  fPV = vertices[0]; // ???
+  fPV = vertices[gHFEvent->fEventTag]; 
+  if (fVerbose > 0) {
+    cout << "HFDimuons: Taking vertex " << gHFEvent->fEventTag << " with ntracks = " << fPV.tracksSize() << endl;
+  }
   
   // -- get the collection of muons
   Handle<MuonCollection> hMuons;
