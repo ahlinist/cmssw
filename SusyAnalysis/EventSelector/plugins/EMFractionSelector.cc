@@ -29,10 +29,10 @@ EMFractionSelector::select (const edm::Event& event) const
   // Get the jets
   edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
-  if ( !jetHandle.isValid() ) {
-    edm::LogWarning("EMFractionSelector") << "No Jet results for InputTag " << jetTag_;
-    return false;
-  }
+  if (!jetHandle.isValid()) 
+     edm::LogWarning("EMFractionSelector") << "No jet results for" <<
+        "InputTag " << jetTag_;
+  //Let it throw, in case !jets.isValid() 
 
   // Calculate sum of fractions
   float etSum  = 0.;
