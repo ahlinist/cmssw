@@ -94,7 +94,10 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     cout << "==>HFMuonAndTrack> No primary vertex found, skipping" << endl;
     return;
   }
-  fPV = vertices[0]; // ???
+  fPV = vertices[gHFEvent->fEventTag]; 
+  if (fVerbose > 0) {
+    cout << "HFDimuons: Taking vertex " << gHFEvent->fEventTag << " with ntracks = " << fPV.tracksSize() << endl;
+  }
   
   // -- get the collection of muons
   Handle<MuonCollection> hMuons;
@@ -116,7 +119,7 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   vector<int> muonIndices;
   for (MuonCollection::const_iterator muon = hMuons->begin(); muon != hMuons->end(); ++muon) {
     int im = muon->track().index();
-    cout << "muon->track().index() = "<< muon->track().index()<< endl; 
+    if (fVerbose > 2) cout << "muon->track().index() = "<< muon->track().index()<< endl; 
     if (im >= 0) muonIndices.push_back(im);
   }
   if (fVerbose > 0) {
@@ -169,30 +172,30 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       
       if (found_candidate) {
       	if (dimuon.M() < fMassLow || dimuon.M() > fMassHigh) {
-		if (fVerbose > 0) {
-		  cout << "==>HFMuonAndTrack> dimuon mass = " << dimuon.M() << ", skipping" << endl;
-		}
-		found_candidate = false;
-		continue; 
+	  if (fVerbose > 0) {
+	    cout << "==>HFMuonAndTrack> dimuon mass = " << dimuon.M() << ", skipping" << endl;
+	  }
+	  found_candidate = false;
+	  continue; 
       	}
-      
-      
-      if (fVerbose > 0) {
-	cout << "==>HFMuonAndTrack> dimuon mass = " << dimuon.M() << ", vertexing" << endl;
-	cout << "==>HFMuonAndTrack>  tMuon1.charge() = " << tMuon1.charge() << ", tTrack2.charge() " << tTrack2.charge() << endl;
-      }
-
-      // -- Vertex the two muons only
-      //TAnaCand *pCand = gHFEvent->addCand();
-      fitTracks.clear();
-      fitTracks.push_back(tMuon1); 
-      fitTracks.push_back(tTrack2);
-      if ( fVertexing > 0 ) {
-	doVertexFit(fitTracks, iMuon1, itrack2);
-      } else if ( fVertexing == 0 ) {
-	fillCandAndSignal(fitTracks, iMuon1, itrack2);
-      }
-      found_candidate = false;
+	
+	
+	if (fVerbose > 0) {
+	  cout << "==>HFMuonAndTrack> dimuon mass = " << dimuon.M() << ", vertexing" << endl;
+	  cout << "==>HFMuonAndTrack>  tMuon1.charge() = " << tMuon1.charge() << ", tTrack2.charge() " << tTrack2.charge() << endl;
+	}
+	
+	// -- Vertex the two muons only
+	//TAnaCand *pCand = gHFEvent->addCand();
+	fitTracks.clear();
+	fitTracks.push_back(tMuon1); 
+	fitTracks.push_back(tTrack2);
+	if ( fVertexing > 0 ) {
+	  doVertexFit(fitTracks, iMuon1, itrack2);
+	} else if ( fVertexing == 0 ) {
+	  fillCandAndSignal(fitTracks, iMuon1, itrack2);
+	}
+	found_candidate = false;
       } 
     }
   }
@@ -261,12 +264,12 @@ void HFMuonAndTrack::doVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, i
     if (isnan(TransSecVtx.position().x()) 
 	|| isnan(TransSecVtx.position().y()) 
 	|| isnan(TransSecVtx.position().z()) ) {
-      cout << "==>HFMuonAndTrack> Something went wrong! SecVtx nan - continue ... " << endl;
+      if (fVerbose > 0) cout << "==>HFMuonAndTrack> Something went wrong! SecVtx nan - continue ... " << endl;
       //pCand->fType = -1;
       return; 
     }
   } else {
-    cout << "==>HFMuonAndTrack> KVF failed! continue ..." << endl;
+    if (fVerbose > 0) cout << "==>HFMuonAndTrack> KVF failed! continue ..." << endl;
     //pCand->fType = -1;
     return; 
   }

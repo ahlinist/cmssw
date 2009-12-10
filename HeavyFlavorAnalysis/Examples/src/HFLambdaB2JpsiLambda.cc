@@ -88,7 +88,11 @@ void HFLambdaB2JpsiLambda::analyze(const edm::Event& iEvent, const edm::EventSet
     cout << "==>HFLambdaB2JpsiLambda> No primary vertex found, skipping" << endl;
     return;
   }
-  fPV = vertices[0]; // ???
+  fPV = vertices[gHFEvent->fEventTag]; 
+  if (fVerbose > 0) {
+    cout << "HFDimuons: Taking vertex " << gHFEvent->fEventTag << " with ntracks = " << fPV.tracksSize() << endl;
+  }
+
   
   // -- get the collection of muons
   Handle<MuonCollection> hMuons;
