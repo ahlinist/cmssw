@@ -34,10 +34,10 @@ ChargedFractionSelector::select (const edm::Event& event) const
   // Get the jets
   edm::Handle< edm::View<pat::Jet> > jets;
   event.getByLabel(jetTag_, jets );
-  if ( !jets.isValid() ) {
-    edm::LogWarning("ChargedFractionSelector") << "No Jet results for InputTag " << jetTag_;
-    return false;
-  }
+  if (!jets.isValid()) 
+     edm::LogWarning("ChargedFractionSelector") << "No jet results for" <<
+        "InputTag " << jetTag_;
+  //Let it throw, in case !jets.isValid() 
 
   // Calculate sum of fractions
   float etFrac = 0.;

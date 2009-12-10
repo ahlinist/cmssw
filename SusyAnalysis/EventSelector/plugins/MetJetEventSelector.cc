@@ -60,10 +60,10 @@ MetJetEventSelector::select (const edm::Event& event) const
   // Get the jets
   edm::Handle< edm::View<reco::Jet> > jets;
   event.getByLabel(jetTag_, jets);
-  if ( !jets.isValid() ) {
-    edm::LogWarning("MetJetEventSelector") << "No Jet results for InputTag " << jetTag_;
-    return false;
-  }
+  //if ( !jets.isValid() ) {
+  //  edm::LogWarning("MetJetEventSelector") << "No Jet results for InputTag " << jetTag_;
+  //  return false;
+  //}
 
   //
   // Preselection: number of jets (need at least 3(?) to make sense out of these variables)
