@@ -41,6 +41,8 @@ public:
   void        fillHist();
   void        readCuts(TString filename, int dump = 1);
 
+  int         fIsMC;
+
 };
 
 #endif

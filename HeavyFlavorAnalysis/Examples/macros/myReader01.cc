@@ -81,7 +81,7 @@ void myReader01::eventProcessing() {
     }
   }
 
-  if (0 == fGoodTrigger) {
+  if (0 == fGoodTrigger && fIsMC==0) {
     cout << "Skipping event with no good trigger"  << endl;
     return; 
   }
