@@ -37,8 +37,17 @@ void myReader01::eventProcessing() {
 
   int fL40(0), fL00(0), fL41(0), fGoodTrigger(0); 
 
-  if (fpEvt->nRecTracks() > 50) {
-    cout << "Skipping event with ntracks = " << fpEvt->nRecTracks() << endl;
+  TH1D *ht = (TH1D*)fpHistFile->Get("l1tt");
+  for (int i = 0; i < 2; ++i) {
+    for (int j = 0; j < 32; ++j) {
+      if (fpEvt->fL1TTWords[i] & 0x1<<j) ht->Fill(i*32+j);
+    }
+  }
+
+  int ntrk = fpEvt->nRecTracks();
+  ((TH1D*)fpHistFile->Get("ntrk"))->Fill(ntrk);
+  if (ntrk > 50) {
+    cout << "Skipping event with ntracks = " << ntrk << endl;
     return;
   }
 
@@ -72,22 +81,19 @@ void myReader01::eventProcessing() {
 //   }
 
   cout << "------------------------------" << endl;
+  double mass; 
   for (int it = 0; it < fpEvt->nCands(); ++it) {
     pCand = fpEvt->getCand(it);
-    cout << "C: " << pCand->fType << " "; pCand->dump(); 
-    ((TH1D*)fpHistFile->Get("c100"))->Fill(pCand->fMass); 
-    double sig = pCand->fVtx.fD3d/pCand->fVtx.fD3dE; 
-    ((TH1D*)fpHistFile->Get("c300"))->Fill(sig);
-    if (sig > 10) {
-      ((TH1D*)fpHistFile->Get("c101"))->Fill(pCand->fMass); 
+    mass = pCand->fMass; 
+    cout << "C: " << pCand->fType << " mass = " <<  mass << endl;
+    if (pCand->fType == 1300) {
+        ((TH1D*)fpHistFile->Get("m1300"))->Fill(mass);
+        ((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
+    }
+    if (pCand->fType == 100531) {
+        ((TH1D*)fpHistFile->Get("m100531"))->Fill(mass);
     }
   }
-
-//   cout << "------------------------------" << endl;
-//   for (int it = 0; it < fpEvt->nCaloJets(); ++it) {
-//     pJet = fpEvt->getCaloJet(it);
-//     cout << "J: " << " "; pJet->dump(); 
-//   }
 
 
   fpHistFile->cd();
@@ -108,6 +114,15 @@ void myReader01::bookHist() {
 
 TH1 *h;
 cout << "--> myReader01> bookHist> " << endl;
+
+ fpHistFile->cd(); 
+ h = new TH1D("l1tt", "L1 technical triggers", 64, 0., 64.); 
+ h = new TH1D("ntrk", "Ntrk", 100, 0., 100.); 
+
+ h = new TH1D("m1300", "mass", 100, 2.0, 12.0); 
+ h = new TH1D("m1301", "mass", 30, 2.8, 3.4); 
+
+ h = new TH1D("m100531", "mass", 40, 5.0, 5.6); 
 
 // -- Reduced Tree
 fTree = new TTree("events", "events");

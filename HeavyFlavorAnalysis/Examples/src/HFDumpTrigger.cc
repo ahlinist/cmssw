@@ -129,7 +129,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if (t1flag) gHFEvent->fL1TTWords[0] |= (0x1 << itrig);
       } else if (iTrig < 64) {
 	if (l1flag) gHFEvent->fL1TWords[1]  |= (0x1 << itrig);//note: changin iTrig to itrig = iTrig%32
-	if (t1flag) gHFEvent->fL1TTWords[2] |= (0x1 << itrig);
+	if (t1flag) gHFEvent->fL1TTWords[1] |= (0x1 << itrig);
       } else if (iTrig < 96) {
 	if (l1flag) gHFEvent->fL1TWords[2]  |= (0x1 << itrig);//note: changin iTrig to itrig = iTrig%32
       } else if (iTrig < 128 && l1flag) {
