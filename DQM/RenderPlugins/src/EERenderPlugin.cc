@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.148 2009/12/03 17:25:58 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.149 2009/12/05 13:30:35 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.148 $
-  \date $Date: 2009/12/03 17:25:58 $
+  \version $Revision: 1.149 $
+  \date $Date: 2009/12/05 13:30:35 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -26,6 +26,7 @@
 #include "TROOT.h"
 #include "TGraph.h"
 #include "TLine.h"
+#include "TPaletteAxis.h"
 #include <iostream>
 #include <math.h>
 
@@ -69,7 +70,9 @@ class EERenderPlugin : public DQMRenderPlugin
   int pCol4[10];
   int pCol5[10];
   int pCol6[10];
-
+  
+  TGaxis *timingAxis;
+ 
 public:
   virtual void initialise( int, char ** )
     {
@@ -83,6 +86,7 @@ public:
                            { 0.0000, 0.5011, 0.7821}, { 0.0000, 0.4636, 0.7277},
                            { 0.0000, 0.4261, 0.6732}, { 0.0000, 0.3887, 0.6187},
                            { 0.0000, 0.3512, 0.5643}, { 0.0000, 0.3137, 0.5098}};
+
 
       for(int i=0; i<6; i++)
       {
@@ -113,6 +117,8 @@ public:
       for(short i=2; i<9; i++) pCol6[i] = i+1;
       pCol6[9]=1;
 
+      timingAxis = 0;
+  
       text1 = new TH2S( "ee_text1", "text1", 100, -2., 98., 100, -2., 98.);
       text3 = new TH2C( "ee_text3", "text3", 10, 0,  10,  5,   0,  5 );
       text4 = new TH2C( "ee_text4", "text4",  2, 0,   2,  1,   0,  1 );
@@ -464,9 +470,12 @@ private:
         gPad->SetGridy();
         obj->GetXaxis()->SetNdivisions(10, kFALSE);
         obj->GetYaxis()->SetNdivisions(10, kFALSE);
-        obj->SetMinimum(4.0);
-        obj->SetMaximum(7.0);
+        obj->SetMinimum(25.);
+        obj->SetMaximum(75.);
+        
         gStyle->SetPalette(1);
+        obj->SetContour(255);
+
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
         if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
@@ -649,7 +658,8 @@ private:
         return;
       }
 
-      if( name.find( "EETMT timing vs amplitude" ) != std::string::npos )
+      if( name.find( "EETMT timing vs amplitude" ) != std::string::npos ||
+          name.find( "EETMT timing min vs Et min" ) != std::string::npos )
       {
         if( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
         obj->SetMinimum(0.0);
@@ -1252,6 +1262,34 @@ private:
         text1->Draw("text,same");
       }
       
+      if( name.find( "EETMT" ) != std::string::npos &&
+          (( nbx == 20 && nby == 20 ) || ( nbx == 50 && nby == 50 )) ) 
+        {
+          
+          obj->GetZaxis()->SetLabelOffset(999);
+          obj->GetZaxis()->SetTickLength(0);
+          
+          // Redraw the new axis (to center time at 0)
+          //          TPaletteAxis* palette = (TPaletteAxis*) obj->GetListOfFunctions()->FindObject("palette");
+          
+          // if ( palette ) {
+          // palette->SetLabelColor(2);
+          // palette->SetLabelColor(10);;
+            
+          // gPad->Update();
+
+          //  timingAxis = new TGaxis(gPad->GetUxmax(), gPad->GetUymin(),
+          //                          gPad->GetUxmax(), gPad->GetUymax(),
+          //                          obj->GetMinimum()-50., obj->GetMaximum()-50., 10,"-LB");
+
+          //  timingAxis->SetLabelOffset(-0.055);
+          //  timingAxis->SetLabelSize(0.03);
+          //  timingAxis->Draw();
+
+          // delete timingAxis;
+          // }
+        }
+
       if( nbx == 20 && nby == 20 && name.find( "EETMT" ) != std::string::npos )
         {
           if( name.find( "EE -" ) != std::string::npos )
@@ -1291,7 +1329,8 @@ private:
 
       std::string name = o.name.substr(o.name.rfind("/")+1);
 
-      if( name.find( "EETMT timing vs amplitude" ) != std::string::npos )
+      if( name.find( "EETMT timing vs amplitude" ) != std::string::npos ||
+          name.find( "EETMT timing min vs Et min") != std::string::npos )
         return;
 
       int nbx = obj->GetNbinsX();
@@ -1846,6 +1885,7 @@ private:
   void postDrawTH1( TCanvas *, const VisDQMObject & )
     {
     }
+
 };
 
 const int EERenderPlugin::ixSectorsEE[202] = {
