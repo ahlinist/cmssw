@@ -29,7 +29,7 @@ class HFDumpTrigger : public edm::EDAnalyzer {
   int           fVerbose;
   int           fNevt;
 
-  std::string   fL1GTReadoutRecordLabel; 
+  edm::InputTag fL1GTReadoutRecordLabel; 
   edm::InputTag fL1GTmapLabel;
   edm::InputTag fL1MuonsLabel;
   edm::InputTag fTriggerEventLabel;
