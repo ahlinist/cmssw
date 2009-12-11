@@ -28,15 +28,27 @@ public:
   virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an Info object
-      if(o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos)  
-        return true;
-
+      if(o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos) 
+         return true;
       return false;
     }
 
   virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
       c->cd();
+      gPad->SetLogy(0);
+
+      // object is TH2 histogram
+      if ( dynamic_cast<TH2F*>( o.object ) ) 
+      {
+         gPad->SetLogy(0);
+         preDrawTH2F( c, o );
+      }
+    }
+
+private:
+  void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
+    {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
 
@@ -45,23 +57,23 @@ public:
       {
         obj->SetStats( kFALSE );
         dqm::utils::reportSummaryMapPalette(obj);
-        obj->SetOption("colz text");
-        obj->SetTitle("Info Report Summary Map");
+        obj->SetOption("colz");
+        obj->SetTitle("Info Summary Map");
 
-        obj->GetXaxis()->SetNdivisions(1,true);
-        obj->GetYaxis()->SetNdivisions(1,true);
-//        obj->GetXaxis()->CenterLabels();
-//        obj->GetYaxis()->CenterLabels();
+      //  obj->GetXaxis()->SetNdivisions(1,true);
+      //  obj->GetYaxis()->SetNdivisions(7,true);
+      //  obj->GetXaxis()->CenterLabels();
+      //  obj->GetYaxis()->CenterLabels();
 
-//        gPad->SetGrid(1,1);
+        gPad->SetGrid(1,1);
+
+        return;
       }
 
-//      gStyle->SetCanvasBorderMode( 0 );
-//      gStyle->SetPadBorderMode( 0 );
-//      gStyle->SetPadBorderSize( 0 );
+      gStyle->SetCanvasBorderMode( 0 );
+      gStyle->SetPadBorderMode( 0 );
+      gStyle->SetPadBorderSize( 0 );
     }
-
-private:
 };
 
 static DQMInfoRenderPlugin instance;
