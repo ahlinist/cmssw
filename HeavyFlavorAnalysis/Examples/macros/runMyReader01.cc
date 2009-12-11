@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
   Int_t dirspec(0);
   Int_t nevents(-1), start(-1);
   Int_t randomSeed(processID);
+  int isMC(0); 
 
   // -- Some defaults
   TString dirBase("./");               // this could point to "/home/ursl/data/root/."
@@ -52,6 +53,7 @@ int main(int argc, char *argv[]) {
     if (!strcmp(argv[i],"-D"))  {dirName    = TString(argv[++i]);  dirspec = 1; } // where to put the output
     if (!strcmp(argv[i],"-f"))  {fileName   = TString(argv[++i]); file = 1; }     // single file instead of chain
     if (!strcmp(argv[i],"-n"))  {nevents    = atoi(argv[++i]); }                  // number of events to run 
+    if (!strcmp(argv[i],"-mc")) {isMC       = 1; }                                // number of events to run 
     if (!strcmp(argv[i],"-r"))  {randomSeed = atoi(argv[++i]); }                  // set seed for random gen.
   }
 
@@ -140,6 +142,7 @@ int main(int argc, char *argv[]) {
   a.openHistFile(histfile); 
   a.bookHist(); 
   a.readCuts(cutFile, 1);
+  a.fIsMC = isMC; 
 
   a.startAnalysis(); 
   a.loop(nevents, start);
