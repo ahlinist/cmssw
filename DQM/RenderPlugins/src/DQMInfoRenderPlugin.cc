@@ -28,10 +28,10 @@ public:
   virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an Info object
-      if( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos 
-         || o.name.find( "Info/Conditions/dcsVsLumi")  != std::string::npos )
-         return true;
-      return false;
+      if( o.name.find( "Info/EventInfo/reportSummary" ) == std::string::npos &&
+          o.name.find( "Info/Conditions/" ) == std::string::npos )
+        return false;
+      return true;
     }
 
   virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
@@ -56,8 +56,6 @@ private:
       obj->SetStats( kFALSE );
       dqm::utils::reportSummaryMapPalette(obj);
       obj->SetOption("colz");
-      if ( o.name.find ( "reportSummaryMap") ) 
-          obj->SetTitle("Info Summary Map");
 
       //  obj->GetXaxis()->SetNdivisions(1,true);
       //  obj->GetYaxis()->SetNdivisions(7,true);
