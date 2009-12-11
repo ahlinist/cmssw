@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.128 2009/12/03 17:25:58 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.129 2009/12/05 13:30:35 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.128 $
-  \date $Date: 2009/12/03 17:25:58 $
+  \version $Revision: 1.129 $
+  \date $Date: 2009/12/05 13:30:35 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -24,6 +24,7 @@
 #include "TCanvas.h"
 #include "TGaxis.h"
 #include "TColor.h"
+#include "TPaletteAxis.h"
 #include "TROOT.h"
 
 #include <iostream>
@@ -48,6 +49,8 @@ class EBRenderPlugin : public DQMRenderPlugin
   int pCol4[10];
   int pCol5[10];
   int pCol6[10];
+
+  TGaxis *timingAxis;
 
 public:
   virtual void initialise( int, char ** )
@@ -89,6 +92,8 @@ public:
       pCol6[1]=10;
       for(short i=2; i<9; i++) pCol6[i] = i+1;
       pCol6[9]=1;
+
+      timingAxis = 0;
 
       text1 = new TH2C( "eb_text1", "text1", 85, 0,  85, 20,   0, 20 );
       text2 = new TH2C( "eb_text2", "text2", 17, 0,  17,  4,   0,  4 );
@@ -338,9 +343,12 @@ private:
           obj->GetXaxis()->SetNdivisions(17);
           obj->GetYaxis()->SetNdivisions(4);
         }
-        obj->SetMinimum(4.0);
-        obj->SetMaximum(7.0);
+        obj->SetMinimum(25.);
+        obj->SetMaximum(75.);
+
         gStyle->SetPalette(1);
+        obj->SetContour(255);
+        
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
         if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
@@ -875,6 +883,33 @@ private:
         return;
       }
 
+      if( name.find( "EBTMT" ) != std::string::npos &&
+          (( nbx == 72 && nby == 34 ) || ( nbx == 85 && nby == 20 )) ) 
+        {
+          obj->GetZaxis()->SetLabelOffset(999);
+          obj->GetZaxis()->SetTickLength(0);
+          
+          // Redraw the new axis (to center time at 0)
+          //          TPaletteAxis* palette = (TPaletteAxis*) obj->GetListOfFunctions()->FindObject("palette");
+          
+          // if ( palette ) {
+          // palette->SetLabelColor(2);
+          // palette->SetLabelColor(10);;
+            
+          // gPad->Update();
+
+          //  timingAxis = new TGaxis(gPad->GetUxmax(), gPad->GetUymin(),
+          //                          gPad->GetUxmax(), gPad->GetUymax(),
+          //                          obj->GetMinimum()-50., obj->GetMaximum()-50., 10,"-LB");
+
+          //  timingAxis->SetLabelOffset(-0.055);
+          //  timingAxis->SetLabelSize(0.03);
+          //  timingAxis->Draw();
+
+          // delete timingAxis;
+          // }
+        }
+
       if( nbx == 72 && nby == 34 )
       {
         if( name.find( "EBTMT" ) == std::string::npos )
@@ -897,6 +932,7 @@ private:
           text6->GetXaxis()->SetRange(x1, x2);
           text6->GetYaxis()->SetRange(y1, y2);
           text6->Draw("text,same");
+
           return;          
         }
       }
@@ -924,7 +960,8 @@ private:
       int nbx = obj->GetNbinsX();
       int nby = obj->GetNbinsY();
 
-      if( name.find( "EBCLT" ) != std::string::npos )
+      if( name.find( "EBCLT" ) != std::string::npos && 
+          name.find( "seed" ) == std::string::npos )
       {
         int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
         int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
@@ -1093,17 +1130,29 @@ private:
         return;
       }
 
-      if( nbx == 72 && nby == 34 )
-      {
-        int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-        int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-        int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-        int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-        text8->GetXaxis()->SetRange(x1, x2);
-        text8->GetYaxis()->SetRange(y1, y2);
-        text8->Draw("text,same");
-        return;
-      }
+      if( nbx == 72 && nby == 34 ) 
+        {
+          if( name.find( "seed" ) != std::string::npos )
+            {
+              int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+              int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+              int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+              int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+              text6->GetXaxis()->SetRange(x1, x2);
+              text6->GetYaxis()->SetRange(y1, y2);
+              text6->Draw("text,same");
+              return;
+            } else {
+              int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+              int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+              int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+              int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+              text8->GetXaxis()->SetRange(x1, x2);
+              text8->GetYaxis()->SetRange(y1, y2);
+              text8->Draw("text,same");
+              return;
+            }
+        }
 
       if( nbx == 90 && nby == 20 )
       {
@@ -1146,6 +1195,7 @@ private:
       s << "Wrong SM id determination: iSM = " << ism;
       throw( std::runtime_error( s.str() ) );
     }
+
 };
 
 static EBRenderPlugin instance;
