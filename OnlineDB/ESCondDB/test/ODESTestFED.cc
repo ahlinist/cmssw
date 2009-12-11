@@ -77,12 +77,12 @@ void testWrite(const int nbP,const int nbM,const string tag,const int version,co
   run_info.setVersion(version);
   run_info.setIov_pl(nbP);
   run_info.setIov_mi(nbM);
-  // run_info.setUser_comment(comment);
+  run_info.setUser_comment(comment);
   
-  //cout << "Inserting in DB the ODRunConfigInfo..." << flush;
-  //  econn->insertConfigSet(&run_info);
-  //cout << "Done." << endl;
-  //  econn->fetchLastConfigSet(&run_info);
+  cout << "Inserting in DB the ODRunConfigInfo..." << flush;
+  econn->insertConfigSet(&run_info);
+  cout << "Done." << endl;
+  econn->fetchLastConfigSet(&run_info);
   //this->printInfo(run_info);
 
    vector<ODESFEPedestalOffsetsDat> dataset;
@@ -117,9 +117,10 @@ void writeDb(std::vector< ODESFEPedestalOffsetsDat > dataset,ODESFEPedestalOffse
      dataset[i].setZs(3*rms);
   }
 
+  /***
   std::vector< ODESFEPedestalOffsetsDat >::iterator it;
   int i=0;
-  /*  for(it=dataset.begin(); it< dataset.end() ; ++it)
+  for(it=dataset.begin(); it< dataset.end() ; ++it)
   {
     if(( it->getMasked()==1)||( it->getCmMasked()==1)) {
      cout << "Ped=" << it->getPedestal() << " Kchip= " << it->getKchipId() << " Fiber= " <<  it->getFiberId() << endl;
@@ -127,7 +128,9 @@ void writeDb(std::vector< ODESFEPedestalOffsetsDat > dataset,ODESFEPedestalOffse
      cout << " RMS= " <<  it->getRms() << " Gain=" << it->getGain() << " Zs=" << it->getZs() << endl;
      i++;
     }
-  } */
+  } 
+  ***/
+
   if ( econn ) {
     try {
       if ( dbg ) cout << "Inserting Config Pedestals Data ..." << endl;
