@@ -42,12 +42,23 @@ void myReader01::eventProcessing() {
     }
   }
 
+  double pvx = fpEvt->getPV(fpEvt->fEventTag)->fPoint.X(); 
+  double pvy = fpEvt->getPV(fpEvt->fEventTag)->fPoint.Y(); 
+  double pvz = fpEvt->getPV(fpEvt->fEventTag)->fPoint.Z(); 
+  
+  ((TH1D*)fpHistFile->Get("pvz0"))->Fill(pvz);
+
+  // -- skip large events
   int ntrk = fpEvt->nRecTracks();
   ((TH1D*)fpHistFile->Get("ntrk"))->Fill(ntrk);
-  if (ntrk > 50) {
+  if (ntrk > 100) {
     cout << "Skipping event with ntracks = " << ntrk << endl;
     return;
   }
+
+  int nmuon = fpEvt->nMuons();
+  ((TH1D*)fpHistFile->Get("nmuon"))->Fill(nmuon);
+  
 
   if (fpEvt->fL1TTWords[1] & 0x1<<8) {
     fL40 = 1; 
@@ -70,12 +81,22 @@ void myReader01::eventProcessing() {
     }
   }
 
-//   if (0 == fGoodTrigger) {
-//     cout << "Skipping event with no good trigger"  << endl;
-//     return; 
-//   }
+  if (0 == fGoodTrigger) {
+    cout << "Skipping event with no good trigger"  << endl;
+    return; 
+  }
 
   cout << "------------------------------" << endl;
+
+//   TAnaTrack *pT; 
+//   for (int it = 0; it < fpEvt->nRecTracks(); ++it) {
+//     pT = fpEvt->getRecTrack(it); 
+//   }
+
+  
+  ((TH1D*)fpHistFile->Get("pvz1"))->Fill(pvz);
+  ((TH2D*)fpHistFile->Get("pvxy"))->Fill(pvx, pvy);
+
   double mass, chi2; 
   for (int it = 0; it < fpEvt->nCands(); ++it) {
     pCand = fpEvt->getCand(it);
@@ -97,36 +118,43 @@ void myReader01::eventProcessing() {
 
 
     int globalMuon(0), trackerMuon(0), m1(0), m2(0); 
-    int muID1 = fpEvt->getRecTrack(pM1->fIndex)->fMuID; 
-    int muID2 = fpEvt->getRecTrack(pM2->fIndex)->fMuID; 
+    int muID1 = fpEvt->getRecTrack(pM1->fIndex)->fMuID; if (muID1 < 0) muID1 = 0; 
+    int muID2 = fpEvt->getRecTrack(pM2->fIndex)->fMuID; if (muID2 < 0) muID2 = 0; 
 
-    if (muID1 & 0x1<<1) {
+    int muv1 = pCand->fVtx.getTrack(0); 
+    int muv2 = pCand->fVtx.getTrack(1); 
+
+    if (muID1 & (0x1<<1)) {
       ++globalMuon;
       m1 += 1; 
     }
-    if (muID1 & 0x1<<2) {
+    if (muID1 & (0x1<<2)) {
       ++trackerMuon;
       m1 += 2; 
     }
     
-    if (muID2 & 0x1<<1) {
+    if (muID2 & (0x1<<1)) {
       m2 += 1; 
       ++globalMuon;
     }
 
-    if (muID2 & 0x1<<2) {
+    if (muID2 & (0x1<<2)) {
       m2 += 2; 
       ++trackerMuon;
     }
-
-    cout << "C: " << pCand->fType 
-	 << " mass = " <<  mass 
-	 << " pT = " <<  pCand->fPlab.Perp() 
-	 << Form(" 1: %2d %3.2f/%3.2f/%3.2f", m1, pM1->fPlab.Perp(), pM1->fPlab.Eta(), pM1->fPlab.Phi())
-	 << Form(" 2: %2d %3.2f/%3.2f/%3.2f", m2, pM2->fPlab.Perp(), pM2->fPlab.Eta(), pM2->fPlab.Phi())
-	 << Form(" chi2 = %4.3f", chi2)
-	 << endl;
-
+    
+    if (pCand->fType == 1300) {
+      
+      cout << Form("C: %5d", pCand->fType)
+	   << Form(" m = %5.2f", mass)
+	   << Form(" pT = %5.2f",  pCand->fPlab.Perp()) 
+	   << Form(" 1: %2d %3.2f/%+3.2f/%+3.2f", m1, pM1->fPlab.Perp(), pM1->fPlab.Eta(), pM1->fPlab.Phi())
+	   << Form(" 2: %2d %3.2f/%+3.2f/%+3.2f", m2, pM2->fPlab.Perp(), pM2->fPlab.Eta(), pM2->fPlab.Phi())
+	   << Form(" chi2 = %4.3f", chi2)
+	   << Form(" v/s/v/s = %3d %3d %3d %3d", muv1, pM1->fIndex, muv2, pM2->fIndex)
+	   << endl;
+      
+    }
 
     ((TH2D*)fpHistFile->Get("muonID"))->Fill(m1, m2);
 
@@ -173,7 +201,10 @@ cout << "--> myReader01> bookHist> " << endl;
  fpHistFile->cd(); 
  h = new TH1D("l1tt", "L1 technical triggers", 64, 0., 64.); 
  h = new TH1D("ntrk", "Ntrk", 100, 0., 100.); 
+ h = new TH1D("nmuon", "Nmuon", 20, 0., 20.); 
  h = new TH1D("chi2", "chi2", 100, 0., 20.); 
+ h = new TH1D("pvz0",  "pv z", 100, -20., 20.); 
+ h = new TH1D("pvz1",  "pv z", 100, -20., 20.); 
 
  h = new TH1D("m421", "mass", 40, 1.6, 2.0); 
  h = new TH1D("m413", "mass", 50, 1.8, 2.3); 
@@ -186,6 +217,7 @@ cout << "--> myReader01> bookHist> " << endl;
 
  TH2 *h2; 
  h2 = new TH2D("muonID", "muon ID", 10, 0., 10., 10, 0., 10.); 
+ h2 = new TH2D("pvxy",  "pv y:x", 100, -1., 1., 100, -1., 1.); 
 
 // -- Reduced Tree
 fTree = new TTree("events", "events");
