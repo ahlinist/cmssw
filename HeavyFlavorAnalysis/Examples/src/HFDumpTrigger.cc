@@ -52,20 +52,20 @@ using namespace trigger;
 // ----------------------------------------------------------------------
 HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
-  fL1GTReadoutRecordLabel(iConfig.getUntrackedParameter<std::string> ("L1GTReadoutRecordLabel")),
-  fL1GTmapLabel(iConfig.getUntrackedParameter<InputTag> ("hltL1GtObjectMap")),
-  fL1MuonsLabel(iConfig.getUntrackedParameter<InputTag> ("L1MuonsLabel")),
-  fTriggerEventLabel(iConfig.getUntrackedParameter<InputTag> ("TriggerEventLabel")),
-  fHLTResultsLabel(iConfig.getUntrackedParameter<InputTag> ("HLTResultsLabel"))
+  fL1GTReadoutRecordLabel(iConfig.getUntrackedParameter<InputTag>("L1GTReadoutRecordLabel", edm::InputTag("gtDigis"))),
+  fL1GTmapLabel(iConfig.getUntrackedParameter<InputTag>("hltL1GtObjectMap")),
+  fL1MuonsLabel(iConfig.getUntrackedParameter<InputTag>("L1MuonsLabel")),
+  fTriggerEventLabel(iConfig.getUntrackedParameter<InputTag>("TriggerEventLabel")),
+  fHLTResultsLabel(iConfig.getUntrackedParameter<InputTag>("HLTResultsLabel"))
 {
 
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpTrigger constructor" << endl;
   cout << "--- Verbose                     : " << fVerbose << endl;
-  cout << "--- L1 GT Readout Record Label  : " << fL1GTReadoutRecordLabel.c_str() << endl;
-  cout << "--- L1 GT Object Map Label      : " << fL1GTmapLabel.encode() << endl;
-  cout << "--- L1 Muons Label              : " << fL1MuonsLabel.encode() << endl;
-  cout << "--- HLTResultsLabel             : " << fHLTResultsLabel.encode() << endl;
+  cout << "--- L1 GT Readout Record Label  : " << fL1GTReadoutRecordLabel << endl;
+  cout << "--- L1 GT Object Map Label      : " << fL1GTmapLabel << endl;
+  cout << "--- L1 Muons Label              : " << fL1MuonsLabel << endl;
+  cout << "--- HLTResultsLabel             : " << fHLTResultsLabel << endl;
   cout << "----------------------------------------------------------------------" << endl;
 
   fNevt = 0; 
@@ -84,11 +84,11 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   fNevt++;
 
-  
   // -- L1 trigger bits
   gHFEvent->fL1Decision = 0; 
   gHFEvent->fL1TWords[0]=0; gHFEvent->fL1TWords[1]=0; gHFEvent->fL1TWords[2]=0; gHFEvent->fL1TWords[3]=0; 
   gHFEvent->fL1TWasRun[0]=0;gHFEvent->fL1TWasRun[1]=0;gHFEvent->fL1TWasRun[2]=0;gHFEvent->fL1TWasRun[3]=0; 
+  gHFEvent->fL1TTWords[0]=0;gHFEvent->fL1TTWords[1]=0;
 
   Handle<L1GlobalTriggerReadoutRecord> L1GTRR;
   iEvent.getByLabel(fL1GTReadoutRecordLabel,L1GTRR);
@@ -145,6 +145,9 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	 << std::bitset<32>(gHFEvent->fL1TWords[1]) << endl
 	 << std::bitset<32>(gHFEvent->fL1TWords[2]) << endl
 	 << std::bitset<32>(gHFEvent->fL1TWords[3]) << endl;
+    cout << "L1 technical trigger: " << endl
+	 << std::bitset<32>(gHFEvent->fL1TTWords[0]) << endl
+	 << std::bitset<32>(gHFEvent->fL1TTWords[1]) << endl;
   }
 
   // -- L1 muons

@@ -28,10 +28,8 @@ void myReader01::startAnalysis() {
 
 // ----------------------------------------------------------------------
 void myReader01::eventProcessing() {
-  TAnaTrack *pTrack;
+  TAnaTrack *pTrack, *pM1, *pM2;
   TAnaCand  *pCand;
-  TAnaJet   *pJet;
-  TGenCand  *g1, *g2, *mother, *grandmother, *daughter;
 
   fRun = fpEvt->fRunNumber;
 
@@ -52,17 +50,14 @@ void myReader01::eventProcessing() {
   }
 
   if (fpEvt->fL1TTWords[1] & 0x1<<8) {
-    cout << "Event with trigger 40" << endl;
     fL40 = 1; 
   }
 
   if (fpEvt->fL1TTWords[1] & 0x1<<9) {
-    cout << "Event with trigger 41" << endl;
     fL41 = 1; 
   }
 
   if (fpEvt->fL1TTWords[0] & 0x1) {
-    cout << "Event with trigger 0" << endl;
     fL00 = 1; 
   }
 
@@ -81,18 +76,78 @@ void myReader01::eventProcessing() {
 //   }
 
   cout << "------------------------------" << endl;
-  double mass; 
+  double mass, chi2; 
   for (int it = 0; it < fpEvt->nCands(); ++it) {
     pCand = fpEvt->getCand(it);
     mass = pCand->fMass; 
-    cout << "C: " << pCand->fType << " mass = " <<  mass << endl;
+    chi2 = pCand->fVtx.fChi2;
+    ((TH1D*)fpHistFile->Get("chi2"))->Fill(chi2);
+    if (chi2>5) {
+      continue;
+    }
+
+    pM1 = pM2 = 0; 
+    if (pCand->fSig1 > -1 && pCand->fSig1 < fpEvt->nSigTracks()) pM1 = fpEvt->getSigTrack(pCand->fSig1);
+    if (pCand->fSig2 > -1 && pCand->fSig2 < fpEvt->nSigTracks()) pM2 = fpEvt->getSigTrack(pCand->fSig2);
+
+    if (0 == pM1 || 0 == pM2) {
+      cout << "problem with one candidate! Skipping" << endl;
+      continue;
+    }
+
+
+    int globalMuon(0), trackerMuon(0), m1(0), m2(0); 
+    int muID1 = fpEvt->getRecTrack(pM1->fIndex)->fMuID; 
+    int muID2 = fpEvt->getRecTrack(pM2->fIndex)->fMuID; 
+
+    if (muID1 & 0x1<<1) {
+      ++globalMuon;
+      m1 += 1; 
+    }
+    if (muID1 & 0x1<<2) {
+      ++trackerMuon;
+      m1 += 2; 
+    }
+    
+    if (muID2 & 0x1<<1) {
+      m2 += 1; 
+      ++globalMuon;
+    }
+
+    if (muID2 & 0x1<<2) {
+      m2 += 2; 
+      ++trackerMuon;
+    }
+
+    cout << "C: " << pCand->fType 
+	 << " mass = " <<  mass 
+	 << " pT = " <<  pCand->fPlab.Perp() 
+	 << Form(" 1: %2d %3.2f/%3.2f/%3.2f", m1, pM1->fPlab.Perp(), pM1->fPlab.Eta(), pM1->fPlab.Phi())
+	 << Form(" 2: %2d %3.2f/%3.2f/%3.2f", m2, pM2->fPlab.Perp(), pM2->fPlab.Eta(), pM2->fPlab.Phi())
+	 << Form(" chi2 = %4.3f", chi2)
+	 << endl;
+
+
+    ((TH2D*)fpHistFile->Get("muonID"))->Fill(m1, m2);
+
     if (pCand->fType == 1300) {
         ((TH1D*)fpHistFile->Get("m1300"))->Fill(mass);
         ((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
     }
+
     if (pCand->fType == 100531) {
         ((TH1D*)fpHistFile->Get("m100531"))->Fill(mass);
     }
+
+    if (pCand->fType == 421) {
+        ((TH1D*)fpHistFile->Get("m421"))->Fill(mass);
+    }
+
+    if (pCand->fType == 413) {
+        ((TH1D*)fpHistFile->Get("m413"))->Fill(mass);
+    }
+
+
   }
 
 
@@ -118,11 +173,19 @@ cout << "--> myReader01> bookHist> " << endl;
  fpHistFile->cd(); 
  h = new TH1D("l1tt", "L1 technical triggers", 64, 0., 64.); 
  h = new TH1D("ntrk", "Ntrk", 100, 0., 100.); 
+ h = new TH1D("chi2", "chi2", 100, 0., 20.); 
 
- h = new TH1D("m1300", "mass", 100, 2.0, 12.0); 
+ h = new TH1D("m421", "mass", 40, 1.6, 2.0); 
+ h = new TH1D("m413", "mass", 50, 1.8, 2.3); 
+
+
+ h = new TH1D("m1300", "mass", 50, 2.0, 12.0); 
  h = new TH1D("m1301", "mass", 30, 2.8, 3.4); 
 
  h = new TH1D("m100531", "mass", 40, 5.0, 5.6); 
+
+ TH2 *h2; 
+ h2 = new TH2D("muonID", "muon ID", 10, 0., 10., 10, 0., 10.); 
 
 // -- Reduced Tree
 fTree = new TTree("events", "events");
