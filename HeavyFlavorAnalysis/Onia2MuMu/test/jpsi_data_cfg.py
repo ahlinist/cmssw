@@ -11,7 +11,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load("PhysicsTools.HepMCCandAlgos.allMuonsGenParticlesMatch_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(2000)
+    input = cms.untracked.int32(-1)
 )
 
 process.options = cms.untracked.PSet(
@@ -23,15 +23,7 @@ process.source = cms.Source("PoolSource",
                             
     fileNames = cms.untracked.vstring(
     # first data
-    'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/0A71AE7F-4DE2-DE11-8B2F-001D09F251CC.root',
-    'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/263E80C6-41E2-DE11-A194-001617C3B66C.root',
-    'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/26EC6965-4CE2-DE11-ABCF-003048D373AE.root',
-    'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/4693BF9A-40E2-DE11-BDBD-000423D944F8.root',
-    'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/54A3A373-4CE2-DE11-8658-000423D99AAA.root',
     'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/68ED95B5-50E2-DE11-B4C8-001D09F27003.root',
-    'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/7E34865F-45E2-DE11-896A-000423D98F98.root',
-    'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/E432BCD7-55E2-DE11-B670-001617C3B6CC.root',
-    'rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/123/596/F67BCF17-48E2-DE11-98B1-000423D94534.root'
     )
 )
 
@@ -125,7 +117,8 @@ process.es_prefer_firstCollBeamspot = cms.ESPrefer("PoolDBESSource","firstCollBe
 process.load('RecoVertex.BeamSpotProducer.BeamSpot_cfi')
 
 # filter on lumisections
-process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange('123592:2-123592:14','123596:2-123596:144','123615:33-123615:91')
+from HeavyFlavorAnalysis.Onia2MuMu.goodLumiSectionList_cfi import *
+process.source.lumisToProcess = goodLumisToProcess
 
 process.ana_step = cms.Path(process.hltLevel1GTSeed + process.hltPhysicsDeclared + process.offlineBeamSpot + process.MuonAnalysis)
 #process.ana_step = cms.EndPath(process.MuonAnalysis)
