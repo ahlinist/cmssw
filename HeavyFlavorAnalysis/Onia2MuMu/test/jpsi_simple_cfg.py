@@ -11,7 +11,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load("PhysicsTools.HepMCCandAlgos.allMuonsGenParticlesMatch_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 process.options = cms.untracked.PSet(
@@ -22,19 +22,18 @@ process.options = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
      
     fileNames = cms.untracked.vstring(
-
        ### test
-      '/store/relval/CMSSW_3_1_2/RelValZMM/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
+      #'/store/relval/CMSSW_3_1_2/RelValZMM/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
  #   #2.36 GeV files:
-    #'file:/tmp/hwoehri/0E8FD2DA-76DB-DE11-8657-001F296BC5BA.root',
-    #'file:/tmp/hwoehri/0CE5AD13-73DB-DE11-8B4F-00237DA15C96.root'
-      )
+    'file:/tmp/hwoehri/0E8FD2DA-76DB-DE11-8657-001F296BC5BA.root',
+    'file:/tmp/hwoehri/0CE5AD13-73DB-DE11-8B4F-00237DA15C96.root'
+    )
 )
 
-process.GlobalTag.globaltag = 'MC_31X_V3::All'
+process.GlobalTag.globaltag = 'DESIGN_3X_V8A::All'
 
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
-    OutputFileName       = cms.string('test.root'),
+    OutputFileName       = cms.string('jPsiMuMu-900GeV.root'),
     OniaType             = cms.int32(443),
     OniaMaxCat           = cms.int32(6),
     skimOnOniaMaxCat     = cms.bool(False),
@@ -45,14 +44,12 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     MuonsLabel           = cms.InputTag("muons"),
     CaloMuonsLabel       = cms.InputTag("calomuons"),
     BeamSpotLabel        = cms.InputTag("offlineBeamSpot"),
-    PrimaryVertexLabel   = cms.InputTag("offlinePrimaryVerticesWithBS"),
-    UsePrimaryNoMuons    = cms.bool(True),
+    PrimaryVertexLabel   = cms.InputTag("offlinePrimaryVertices"),
     TrackLabel           = cms.InputTag("generalTracks"),
     PhotonLabel          = cms.InputTag("particleFlow"),
     PhotonMinEnergy      = cms.double(2.0),
     triggerEventLabel    = cms.string("hltTriggerSummaryAOD"),
     triggerResultsLabel  = cms.string("TriggerResults"),
-    # HLTprocessName8e29   = cms.string("HLT8E29"),
     HLTprocessName8e29   = cms.string("HLT"),
     HLTprocessName1e31   = cms.string("HLT"),  
     L1GTReadoutRec       = cms.InputTag("gtDigis"),
@@ -76,7 +73,7 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     StoreBpFlag          = cms.bool(False),                     
     StoreWSOnia          = cms.bool(True),                                  
     StoreOniaRadiation   = cms.bool(False),
-    UsingBeamSpot        = cms.bool(False),
+    UsingBeamSpot        = cms.bool(True),
     minimumFlag          = cms.bool(False),
     UsingAOD             = cms.bool(False),
     StorePATFlag         = cms.bool(False)
