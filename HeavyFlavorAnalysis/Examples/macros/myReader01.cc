@@ -86,7 +86,7 @@ void myReader01::eventProcessing() {
     return; 
   }
 
-  cout << "------------------------------" << endl;
+  //  cout << "------------------------------" << endl;
 
 //   TAnaTrack *pT; 
 //   for (int it = 0; it < fpEvt->nRecTracks(); ++it) {
@@ -151,16 +151,19 @@ void myReader01::eventProcessing() {
       ++trackerMuon;
     }
     
+
+    if (pCand->fType == 443) pCand->fType = 1300; 
+
     if (pCand->fType == 1300) {
       
-      cout << Form("C: %5d", pCand->fType)
-	   << Form(" m = %5.2f", mass)
-	   << Form(" pT = %5.2f",  pCand->fPlab.Perp()) 
-	   << Form(" 1: %2d %3.2f/%+3.2f/%+3.2f", m1, pM1->fPlab.Perp(), pM1->fPlab.Eta(), pM1->fPlab.Phi())
-	   << Form(" 2: %2d %3.2f/%+3.2f/%+3.2f", m2, pM2->fPlab.Perp(), pM2->fPlab.Eta(), pM2->fPlab.Phi())
-	   << Form(" chi2 = %4.3f", chi2)
-	   << Form(" v/s/v/s = %3d %3d %3d %3d", muv1, pM1->fIndex, muv2, pM2->fIndex)
-	   << endl;
+//       cout << Form("C: %5d", pCand->fType)
+// 	   << Form(" m = %5.2f", mass)
+// 	   << Form(" pT = %5.2f",  pCand->fPlab.Perp()) 
+// 	   << Form(" 1: %2d %3.2f/%+3.2f/%+3.2f", m1, pM1->fPlab.Perp(), pM1->fPlab.Eta(), pM1->fPlab.Phi())
+// 	   << Form(" 2: %2d %3.2f/%+3.2f/%+3.2f", m2, pM2->fPlab.Perp(), pM2->fPlab.Eta(), pM2->fPlab.Phi())
+// 	   << Form(" chi2 = %4.3f", chi2)
+// 	   << Form(" v/s/v/s = %3d %3d %3d %3d", muv1, pM1->fIndex, muv2, pM2->fIndex)
+// 	   << endl;
       
     }
 
