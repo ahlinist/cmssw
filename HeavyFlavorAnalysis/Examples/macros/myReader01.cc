@@ -180,6 +180,11 @@ void myReader01::eventProcessing() {
       ((TH1D*)fpHistFile->Get("m1300pt"))->Fill(pCand->fPlab.Perp());
       ((TH1D*)fpHistFile->Get("m1300pt1"))->Fill(pT1->fPlab.Perp());
 
+
+      for (int i = 0; i < 30; ++i) {
+	((TH1D*)fpHistFile->Get(Form("m%d", i+1350)))->Fill(mass);
+      }
+
     }
 
     if (pCand->fType == 100531) {
@@ -231,6 +236,11 @@ cout << "--> myReader01> bookHist> " << endl;
 
  h = new TH1D("m1300", "mass", 50, 2.0, 12.0); 
  h = new TH1D("m1301", "mass", 30, 2.8, 3.4); 
+
+
+ for (int i = 0; i < 30; ++i) {
+   h = new TH1D(Form("m%d", i+1350), "mass", i+20, 2.8, 3.4); 
+ }
 
  h = new TH1D("m1300pt",  "pt", 50, 0.0, 10.0); 
  h = new TH1D("m1300pt1", "pt1", 50, 0.0, 10.0); 
