@@ -28,7 +28,7 @@ void myReader01::startAnalysis() {
 
 // ----------------------------------------------------------------------
 void myReader01::eventProcessing() {
-  TAnaTrack *pTrack, *pM1, *pM2;
+  TAnaTrack *pTrack, *pM1, *pM2, *pT1, *pT2;
   TAnaCand  *pCand;
 
   fRun = fpEvt->fRunNumber;
@@ -112,14 +112,22 @@ void myReader01::eventProcessing() {
     if (pCand->fSig2 > -1 && pCand->fSig2 < fpEvt->nSigTracks()) pM2 = fpEvt->getSigTrack(pCand->fSig2);
 
     if (0 == pM1 || 0 == pM2) {
-      cout << "problem with one candidate! Skipping" << endl;
+      cout << "problem with candidate sig tracks! Skipping" << endl;
+      continue;
+    }
+
+    pT1 = pT2 = 0; 
+    if (pM1->fIndex > -1) pT1 = fpEvt->getRecTrack(pM1->fIndex); 
+    if (pM2->fIndex > -1) pT2 = fpEvt->getRecTrack(pM2->fIndex); 
+    if (0 == pT1 || 0 == pT2) {
+      cout << "problem with one candidate sig track -> rec track! Skipping" << endl;
       continue;
     }
 
 
     int globalMuon(0), trackerMuon(0), m1(0), m2(0); 
-    int muID1 = fpEvt->getRecTrack(pM1->fIndex)->fMuID; if (muID1 < 0) muID1 = 0; 
-    int muID2 = fpEvt->getRecTrack(pM2->fIndex)->fMuID; if (muID2 < 0) muID2 = 0; 
+    int muID1 = pT1->fMuID; if (muID1 < 0) muID1 = 0; 
+    int muID2 = pT2->fMuID; if (muID2 < 0) muID2 = 0; 
 
     int muv1 = pCand->fVtx.getTrack(0); 
     int muv2 = pCand->fVtx.getTrack(1); 
@@ -159,8 +167,16 @@ void myReader01::eventProcessing() {
     ((TH2D*)fpHistFile->Get("muonID"))->Fill(m1, m2);
 
     if (pCand->fType == 1300) {
-        ((TH1D*)fpHistFile->Get("m1300"))->Fill(mass);
-        ((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
+
+      ((TH1D*)fpHistFile->Get("m1300pt2"))->Fill(pT2->fPlab.Perp());
+      if (pT2->fPlab.Perp() < 1) continue;
+      
+      ((TH1D*)fpHistFile->Get("m1300"))->Fill(mass);
+      ((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
+      
+      ((TH1D*)fpHistFile->Get("m1300pt"))->Fill(pCand->fPlab.Perp());
+      ((TH1D*)fpHistFile->Get("m1300pt1"))->Fill(pT1->fPlab.Perp());
+
     }
 
     if (pCand->fType == 100531) {
@@ -212,6 +228,10 @@ cout << "--> myReader01> bookHist> " << endl;
 
  h = new TH1D("m1300", "mass", 50, 2.0, 12.0); 
  h = new TH1D("m1301", "mass", 30, 2.8, 3.4); 
+
+ h = new TH1D("m1300pt",  "pt", 50, 0.0, 10.0); 
+ h = new TH1D("m1300pt1", "pt1", 50, 0.0, 10.0); 
+ h = new TH1D("m1300pt2", "pt2", 50, 0.0, 10.0); 
 
  h = new TH1D("m100531", "mass", 40, 5.0, 5.6); 
 
