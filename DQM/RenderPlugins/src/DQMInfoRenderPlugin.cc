@@ -61,6 +61,36 @@ private:
       //  obj->GetYaxis()->SetNdivisions(7,true);
       //  obj->GetXaxis()->CenterLabels();
       //  obj->GetYaxis()->CenterLabels();
+      if (o.name.find ("Info/Conditions/") != std::string::npos )
+      {
+        int topBin = 26;
+	int nbins = obj->GetNbinsX();
+	int maxRange = nbins;
+	for ( int i = nbins; i > 0; --i )
+	{
+	  if ( obj->GetBinContent(i,topBin) != 0 )
+	  {
+	     maxRange = i;
+	     break;
+	  }
+        }
+        int minRange = 0;
+        for ( int i = 0; i <= nbins; ++i )
+        {
+          if ( obj->GetBinContent(i,topBin) != 0 )
+          {
+            minRange = i;
+            break;
+          }
+        }
+        obj->GetXaxis()->SetRange(minRange, maxRange);
+        obj->GetYaxis()->SetRange(1,topBin);
+        obj->GetXaxis()->SetTitle("Luminosity Section");
+        obj->GetXaxis()->CenterLabels();
+        int range=maxRange-minRange+1;
+        if (range>11) range=11;
+        obj->GetXaxis()->SetNdivisions(range,true);
+      }
 
       gPad->SetGrid(1,1);
       return;
