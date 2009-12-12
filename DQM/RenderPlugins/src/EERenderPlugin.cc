@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.149 2009/12/05 13:30:35 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.150 2009/12/11 16:23:31 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.149 $
-  \date $Date: 2009/12/05 13:30:35 $
+  \version $Revision: 1.150 $
+  \date $Date: 2009/12/11 16:23:31 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -71,7 +71,7 @@ class EERenderPlugin : public DQMRenderPlugin
   int pCol5[10];
   int pCol6[10];
   
-  TGaxis *timingAxis;
+  TGaxis* timingAxis;
  
 public:
   virtual void initialise( int, char ** )
@@ -1261,60 +1261,58 @@ private:
         text1->GetYaxis()->SetRange(y1, y2);
         text1->Draw("text,same");
       }
-      
+
+/*      
       if( name.find( "EETMT" ) != std::string::npos &&
           (( nbx == 20 && nby == 20 ) || ( nbx == 50 && nby == 50 )) ) 
+      {
+        c->Update();
+        TPaletteAxis* palette =
+          (TPaletteAxis*) obj->GetListOfFunctions()->FindObject("palette");
+        if( palette )
         {
-          
-          obj->GetZaxis()->SetLabelOffset(999);
-          obj->GetZaxis()->SetTickLength(0);
-          
-          // Redraw the new axis (to center time at 0)
-          //          TPaletteAxis* palette = (TPaletteAxis*) obj->GetListOfFunctions()->FindObject("palette");
-          
-          // if ( palette ) {
-          // palette->SetLabelColor(2);
-          // palette->SetLabelColor(10);;
-            
-          // gPad->Update();
-
-          //  timingAxis = new TGaxis(gPad->GetUxmax(), gPad->GetUymin(),
-          //                          gPad->GetUxmax(), gPad->GetUymax(),
-          //                          obj->GetMinimum()-50., obj->GetMaximum()-50., 10,"-LB");
-
-          //  timingAxis->SetLabelOffset(-0.055);
-          //  timingAxis->SetLabelSize(0.03);
-          //  timingAxis->Draw();
-
-          // delete timingAxis;
-          // }
+          palette->SetLabelColor(10);;
+          if( timingAxis ) delete timingAxis;
+          float xup  = c->GetUxmax();
+          float x2   = c->PadtoX(c->GetX2());
+          float xr   = 0.05*(c->GetX2() - c->GetX1());
+          float xmax = c->PadtoX(xup + xr);
+          if (xmax > x2) xmax = c->PadtoX(c->GetX2()-0.01*xr);
+          float ymin = c->PadtoY(c->GetUymin());
+          float ymax = c->PadtoY(c->GetUymax());
+          timingAxis = new TGaxis(xmax, ymin, xmax, ymax,
+                                  obj->GetMinimum()-50.,
+                                  obj->GetMaximum()-50., 10, "+LB");
+          timingAxis->Draw();
         }
+      }
+*/
 
       if( nbx == 20 && nby == 20 && name.find( "EETMT" ) != std::string::npos )
+      {
+        if( name.find( "EE -" ) != std::string::npos )
         {
-          if( name.find( "EE -" ) != std::string::npos )
-          {
-            int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-            int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-            int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-            int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-            text6->GetXaxis()->SetRange(x1, x2);
-            text6->GetYaxis()->SetRange(y1, y2);
-            text6->Draw("text,same");
-          }
-
-          if( name.find( "EE +" ) != std::string::npos )
-          {
-            int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-            int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-            int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-            int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-            text7->GetXaxis()->SetRange(x1, x2);
-            text7->GetYaxis()->SetRange(y1, y2);
-            text7->Draw("text,same");
-          }
-          return;
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
         }
+
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
+      }
 
     }
 
