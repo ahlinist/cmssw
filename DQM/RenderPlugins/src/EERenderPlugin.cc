@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.151 2009/12/12 11:00:13 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.152 2009/12/12 11:07:17 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.151 $
-  \date $Date: 2009/12/12 11:00:13 $
+  \version $Revision: 1.152 $
+  \date $Date: 2009/12/12 11:07:17 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -1266,7 +1266,6 @@ private:
           (( nbx == 20 && nby == 20 ) || ( nbx == 50 && nby == 50 )) ) 
       {
         c->Update();
-/* 
         TPaletteAxis* palette =
           (TPaletteAxis*) obj->GetListOfFunctions()->FindObject("palette");
         if( palette )
@@ -1285,7 +1284,6 @@ private:
                                   obj->GetMaximum()-50., 10, "+LB");
           timingAxis->Draw();
         }
-*/
       }
 
       if( nbx == 20 && nby == 20 && name.find( "EETMT" ) != std::string::npos )
