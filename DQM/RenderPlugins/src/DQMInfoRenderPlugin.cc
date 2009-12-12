@@ -70,7 +70,7 @@ private:
 	{
 	  if ( obj->GetBinContent(i,topBin) != 0 )
 	  {
-	     maxRange = i;
+	     maxRange = i+1;
 	     break;
 	  }
         }
@@ -85,8 +85,8 @@ private:
         }
         obj->GetXaxis()->SetRange(minRange, maxRange);
         obj->GetYaxis()->SetRange(1,topBin-1);
-        obj->GetXaxis()->SetTitle("Luminosity Section");
-        // obj->GetXaxis()->CenterLabels();
+        // obj->GetXaxis()->SetTitle("Luminosity Section");
+        obj->GetXaxis()->CenterLabels();
         int range=maxRange-minRange+1;
         if (range>11) range=11;
         obj->GetXaxis()->SetNdivisions(range,true);
