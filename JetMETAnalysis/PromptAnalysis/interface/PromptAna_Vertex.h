@@ -4,6 +4,9 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/TrackReco/interface/TrackBase.h"
 
 class PromptAna_Vertex : public edm::EDProducer{
  public: 
@@ -13,6 +16,7 @@ class PromptAna_Vertex : public edm::EDProducer{
   
   const edm::InputTag   inputTag;
   const std::string     prefix,suffix;
+  typedef edm::RefToBase<reco::Track> TrackBaseRef;
 };
 
 #endif
