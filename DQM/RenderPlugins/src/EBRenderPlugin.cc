@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.129 2009/12/05 13:30:35 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.130 2009/12/11 16:23:31 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.129 $
-  \date $Date: 2009/12/05 13:30:35 $
+  \version $Revision: 1.130 $
+  \date $Date: 2009/12/11 16:23:31 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -50,7 +50,7 @@ class EBRenderPlugin : public DQMRenderPlugin
   int pCol5[10];
   int pCol6[10];
 
-  TGaxis *timingAxis;
+  TGaxis* timingAxis;
 
 public:
   virtual void initialise( int, char ** )
@@ -839,7 +839,7 @@ private:
       }
     }
 
-  void postDrawTProfile2D( TCanvas *, const VisDQMObject &o )
+  void postDrawTProfile2D( TCanvas *c, const VisDQMObject &o )
     {
       TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
       assert( obj );
@@ -883,32 +883,31 @@ private:
         return;
       }
 
+/*
       if( name.find( "EBTMT" ) != std::string::npos &&
           (( nbx == 72 && nby == 34 ) || ( nbx == 85 && nby == 20 )) ) 
+      {
+        c->Update();
+        TPaletteAxis* palette =
+          (TPaletteAxis*) obj->GetListOfFunctions()->FindObject("palette");
+        if( palette )
         {
-          obj->GetZaxis()->SetLabelOffset(999);
-          obj->GetZaxis()->SetTickLength(0);
-          
-          // Redraw the new axis (to center time at 0)
-          //          TPaletteAxis* palette = (TPaletteAxis*) obj->GetListOfFunctions()->FindObject("palette");
-          
-          // if ( palette ) {
-          // palette->SetLabelColor(2);
-          // palette->SetLabelColor(10);;
-            
-          // gPad->Update();
-
-          //  timingAxis = new TGaxis(gPad->GetUxmax(), gPad->GetUymin(),
-          //                          gPad->GetUxmax(), gPad->GetUymax(),
-          //                          obj->GetMinimum()-50., obj->GetMaximum()-50., 10,"-LB");
-
-          //  timingAxis->SetLabelOffset(-0.055);
-          //  timingAxis->SetLabelSize(0.03);
-          //  timingAxis->Draw();
-
-          // delete timingAxis;
-          // }
+          palette->SetLabelColor(10);;
+          if( timingAxis ) delete timingAxis;
+          float xup  = c->GetUxmax();
+          float x2   = c->PadtoX(c->GetX2());
+          float xr   = 0.05*(c->GetX2() - c->GetX1());
+          float xmax = c->PadtoX(xup + xr);
+          if (xmax > x2) xmax = c->PadtoX(c->GetX2()-0.01*xr);
+          float ymin = c->PadtoY(c->GetUymin());
+          float ymax = c->PadtoY(c->GetUymax());
+          timingAxis = new TGaxis(xmax, ymin, xmax, ymax,
+                                  obj->GetMinimum()-50.,
+                                  obj->GetMaximum()-50., 10, "+LB");
+          timingAxis->Draw();
         }
+      }
+*/
 
       if( nbx == 72 && nby == 34 )
       {
