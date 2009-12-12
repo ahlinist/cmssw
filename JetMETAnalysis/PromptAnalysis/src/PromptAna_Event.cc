@@ -9,6 +9,7 @@ PromptAna_Event::PromptAna_Event(const edm::ParameterSet& iConfig)
   produces <unsigned int> ( "ls"    );
   produces <unsigned int> ( "orbit" );
   produces <double>       ( "time" );   
+  produces <bool>         ( "isData" );   
   //  produces <std::vector<std::string> > ( "Test" );
 }
 
@@ -26,7 +27,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::auto_ptr<unsigned int >  bunch ( new unsigned int(iEvent.bunchCrossing()   ) );
   std::auto_ptr<unsigned int >  orbit ( new unsigned int(iEvent.orbitNumber()     ) );
   std::auto_ptr<double >        time  ( new double(sec+usec/conv));
-  //  std::auto_ptr<std::vector<std::string> >  test( new std::vector<std::string>()  ) ;
+
+  std::auto_ptr<bool >        isdata  ( new bool(iEvent.isRealData()));
 
   //-----------------------------------------------------------------
 
@@ -36,6 +38,5 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put( bunch, "bunch" );
   iEvent.put( orbit, "orbit" );
   iEvent.put( time,  "time"  );
-  //  iEvent.put( test, "Test"  );
-
+  iEvent.put( isdata,"isData");
 }
