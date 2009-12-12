@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.130 2009/12/11 16:23:31 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.131 2009/12/12 11:00:13 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.130 $
-  \date $Date: 2009/12/11 16:23:31 $
+  \version $Revision: 1.131 $
+  \date $Date: 2009/12/12 11:00:13 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -883,11 +883,11 @@ private:
         return;
       }
 
-/*
       if( name.find( "EBTMT" ) != std::string::npos &&
           (( nbx == 72 && nby == 34 ) || ( nbx == 85 && nby == 20 )) ) 
       {
         c->Update();
+/*
         TPaletteAxis* palette =
           (TPaletteAxis*) obj->GetListOfFunctions()->FindObject("palette");
         if( palette )
@@ -906,8 +906,8 @@ private:
                                   obj->GetMaximum()-50., 10, "+LB");
           timingAxis->Draw();
         }
-      }
 */
+      }
 
       if( nbx == 72 && nby == 34 )
       {
