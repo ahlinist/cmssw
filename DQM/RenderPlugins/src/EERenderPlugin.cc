@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.152 2009/12/12 11:07:17 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.153 2009/12/12 11:15:29 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.152 $
-  \date $Date: 2009/12/12 11:07:17 $
+  \version $Revision: 1.153 $
+  \date $Date: 2009/12/12 11:15:29 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -109,12 +109,12 @@ public:
         color->SetRGB( rgb2[i][1], 0, 0 );
       }
 
-      for(short i=0; i<7; i++) pCol3[i]  = i+301;
-      for(short i=0; i<10; i++) pCol4[i] = i+401;
-      for(short i=0; i<10; i++) pCol5[i] = i+501;
+      for(int i=0; i<7; i++) pCol3[i]  = i+301;
+      for(int i=0; i<10; i++) pCol4[i] = i+401;
+      for(int i=0; i<10; i++) pCol5[i] = i+501;
       pCol6[0]=2;
       pCol6[1]=10;
-      for(short i=2; i<9; i++) pCol6[i] = i+1;
+      for(int i=2; i<9; i++) pCol6[i] = i+1;
       pCol6[9]=1;
 
       timingAxis = 0;
@@ -158,14 +158,14 @@ public:
       text14->SetMaximum( +9.01 );
       text15->SetMaximum( +9.01 );
 
-      for(short j=0; j<400; j++)
+      for(int j=0; j<400; j++)
       {
         int x = 5*(1 + j%20);
         int y = 5*(1 + j/20);
         text1->SetBinContent(x, y, inTowersEE[j]);
       }
 
-      for(short i=1; i<=10; i++)
+      for(int i=1; i<=10; i++)
       {
         for(int j=1; j<=10; j++)
         {
@@ -178,7 +178,7 @@ public:
         }
       }
 
-      for(short i=0; i<2; i++)
+      for(int i=0; i<2; i++)
       {
         text3->Fill( 2+i*5, 2, i+1+68 );
         text4->Fill( i, 0., i+1+68 );
@@ -284,7 +284,7 @@ public:
       text13->SetBinContent(5, 2, +5);
       text13->SetBinContent(3, 3, +4);
 
-      for(short i=0; i < 720; i++)
+      for(int i=0; i < 720; i++)
         text14->SetBinContent(ixLabels[i],iyLabels[i],bincontentLabels[i]);
 
       for(int i=1; i<=9; i++) {
