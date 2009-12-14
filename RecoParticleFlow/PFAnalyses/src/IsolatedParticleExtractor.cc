@@ -11,62 +11,62 @@ using namespace pftools;
 using namespace reco;
 using namespace std;
 
-IsolatedParticleExtractor::IsolatedParticleExtractor() {
+bool pftools::operator<(const pftools::RelativeIsolation& a, const pftools::RelativeIsolation& b) {
+	if (a.dR12_ < b.dR12_)
+		return true;
+	return false;
+}
+
+std::ostream& pftools::operator<<(std::ostream& s, const pftools::RelativeIsolation& ri) {
+	s << "Linking " << ri.r1Index_ << " to " << ri.r2Index_ << ", with dR = " << ri.dR12_ << "\n";
+	return s;
+}
+
+IsolatedParticleExtractor::IsolatedParticleExtractor() :
+	investigateIsolation_(false), neutralContamFunc_(0) {
 	LogDebug("IsolatedParticleExtractor") << __PRETTY_FUNCTION__ << std::endl;
-	pionCount_ = fileservice_->make<TH1F> ("pionCount", "Number of #pi", 100,
-			0, 500);
-	pionsSelected_ = fileservice_->make<TH1F> ("pionSelected",
-			"Number of isolated #pi", 50, 0, 50);
-	pionNeighbours_ = fileservice_->make<TH1F> ("pionNeighbours",
-			"Number of candidates within #Delta R cut", 51, -1, 50);
-	pionSeparation_ = fileservice_->make<TH1F> ("pionSeparation",
-			"pionSeparation", 100, 0, 2.0);
-	pionEnergy_ = fileservice_->make<TH1F> ("pionEnergy",
-			"E_{#pi} for all #pi", 100, 0, 50);
-	pionSelectedEnergy_ = fileservice_->make<TH1F> ("pionSelectedEnergy",
-			"E_{#pi} for isolated #pi", 100, 0, 50);
-	pionSelectedEta_ = fileservice_->make<TH1F> ("pionSelectedEta",
-			"#eta for isolated #pi;#eta", 20, 0, 3.0);
-	pionSimEnergyContamination_ = fileservice_->make<TH2F> (
-			"pionSimEnergyContamination",
-			"E_{sim} vs. E_{#pi reco};E_{#pi reco};E_{sim}/E_{#pi reco}", 50,
-			0, 50, 20, 0, 2);
-	pi0SimContrib_
-			= fileservice_->make<TH2F> (
-					"pi0SimContrib",
-					"E_{#pi^{0}, #gamma} from sim;E_{#pi reco}; E_{#pi^{0},#gamma from sim}",
-					50, 0, 50, 20, 0, 10);
+	pionCount_ = fileservice_->make<TH1F> ("pionCount", "Number of #pi", 100, 0, 500);
+	pionsSelected_ = fileservice_->make<TH1F> ("pionSelected", "Number of isolated #pi", 50, 0, 50);
+	pionNeighbours_ = fileservice_->make<TH1F> ("pionNeighbours", "Number of candidates within #Delta R cut", 51, -1, 50);
+	pionSeparation_ = fileservice_->make<TH1F> ("pionSeparation", "pionSeparation", 100, 0, 2.0);
+	pionEnergy_ = fileservice_->make<TH1F> ("pionEnergy", "E_{#pi} for all #pi", 100, 0, 50);
+	pionSelectedEnergy_ = fileservice_->make<TH1F> ("pionSelectedEnergy", "E_{#pi} for isolated #pi", 100, 0, 50);
+	pionSelectedEta_ = fileservice_->make<TH1F> ("pionSelectedEta", "#eta for isolated #pi;#eta", 20, 0, 3.0);
+	pionSimEnergyContamination_ = fileservice_->make<TH2F> ("pionSimEnergyContamination",
+			"E_{sim} vs. E_{#pi reco};E_{#pi reco};E_{sim}/E_{#pi reco}", 50, 0, 50, 20, 0, 2);
+	pi0SimContrib_ = fileservice_->make<TH2F> ("pi0SimContrib",
+			"E_{#pi^{0}, #gamma} from sim;E_{#pi reco}; E_{#pi^{0},#gamma from sim}", 50, 0, 50, 20, 0, 10);
 	pionEnergySep_ = fileservice_->make<TH2F> ("pionEnergySep",
-			"pionEnergySep;Isolated #pi E;#Delta R nearest neighbour", 100, 0,
-			50, 100, 0, 2.0);
-	pionEnergyContamination_ = fileservice_->make<TH2F> (
-			"pionEnergyContamination",
-			"pionEnergyContamination; #pi E; E nearest neighbour", 100, 0, 50,
-			100, 0, 50);
+			"pionEnergySep;Isolated #pi E;#Delta R nearest neighbour", 100, 0, 50, 100, 0, 2.0);
+	pionEnergyContamination_ = fileservice_->make<TH2F> ("pionEnergyContamination",
+			"pionEnergyContamination; #pi E; E nearest neighbour", 100, 0, 50, 100, 0, 50);
 	pionTypeContamination_ = fileservice_->make<TH2F> ("pionTypeContamination",
-			"pionTypeContamination;#pi E; Type of nearest neighbour", 100, 0,
-			50, 7, 0, 7);
+			"pionTypeContamination;#pi E; Type of nearest neighbour", 100, 0, 50, 7, 0, 7);
 
 }
 
 IsolatedParticleExtractor::~IsolatedParticleExtractor() {
 	LogDebug("IsolatedParticleExtractor") << __PRETTY_FUNCTION__ << std::endl;
 
+
+	if(neutralContamFunc_)
+		delete neutralContamFunc_;
+
+
 }
 
-vector<unsigned> IsolatedParticleExtractor::findCandidates(
-		const edm::Event& event, const edm::EventSetup& setup,
-		const reco::PFCandidateCollection& cands,
-		const reco::PFSimParticleCollection& sims) {
+vector<unsigned> IsolatedParticleExtractor::findCandidates(const edm::Event& event, const edm::EventSetup& setup,
+		const reco::PFCandidateCollection& cands, const reco::PFSimParticleCollection& sims) {
 	vector<unsigned> isolates = findCandidates(event, setup, cands);
 
-	estimateContamination(isolates, cands, sims);
+	if (investigateIsolation_)
+		estimateContamination(isolates, cands, sims);
+
 	return isolates;
 
 }
 
-vector<unsigned> IsolatedParticleExtractor::findCandidates(
-		const edm::Event& event, const edm::EventSetup& setup,
+vector<unsigned> IsolatedParticleExtractor::findCandidates(const edm::Event& event, const edm::EventSetup& setup,
 		const reco::PFCandidateCollection& cands) {
 	vector<unsigned> answers;
 
@@ -79,28 +79,46 @@ vector<unsigned> IsolatedParticleExtractor::findCandidates(
 		all.push_back(p);
 		if (cands[p].particleId() == PFCandidate::h) {
 			++eligibles;
+
 			//If there are no objects within deltaREcalIsolation, we're ok
-			vector<unsigned> neighbours = pftools::findCandidatesInDeltaRECAL(
-					cands, cands[p].positionAtECALEntrance().eta(),
-					cands[p].positionAtECALEntrance().phi(),
-					deltaREcalIsolation_);
+			vector<unsigned> ecalNeighbours = pftools::findCandidatesInDeltaRECAL(cands,
+					cands[p].positionAtECALEntrance().eta(), cands[p].positionAtECALEntrance().phi(), deltaREcalIsolation_);
+
 			//this should at least find 1 object - i.e. the candidate itself
-			if (neighbours.size() < 2) {
+			//(assuming it got as far as the ECAL)
+			if (ecalNeighbours.size() < 2 && !allowNeutralContamination_) {
 				answers.push_back(p);
 				//Energy of selected pion candidate
 				pionSelectedEnergy_->Fill(cands[p].energy());
 				pionSelectedEta_->Fill(cands[p].positionAtECALEntrance().eta());
 			}
+
+			if (allowNeutralContamination_) {
+				//loop over particles within deltaR.
+				//Reject events with any charged business going on.
+				//If there are photons and neutral hadrons, sum their energies
+				//and pass the event if the fraction of total cluster energy they
+				//comprise is less than the NeutralContaminationEquation
+				//estimates for fake neutrals (from testbeam)
+
+
+			}
+
 			//How many neighbours?
-			pionNeighbours_->Fill(neighbours.size() - 1);
+			pionNeighbours_->Fill(ecalNeighbours.size() - 1);
 			//Energy of all pion candidates
 			pionEnergy_->Fill(cands[p].energy());
 		}
 	}
+
 	//How many pions were there in that event?
 	pionCount_->Fill(eligibles);
-	vector<RelativeIsolation> isolates = rankCandidatesBySeparation(answers,
-			all, cands);
+
+	if (!investigateIsolation_)
+		return answers;
+
+	vector<RelativeIsolation> isolates = rankCandidatesBySeparation(answers, all, cands);
+
 	//Now, for each isolated candidate,
 	vector<RelativeIsolation>::const_iterator rit = isolates.begin();
 	for (; rit != isolates.end(); ++rit) {
@@ -113,15 +131,13 @@ vector<unsigned> IsolatedParticleExtractor::findCandidates(
 
 	//How many pions found in this event matching criteria?
 	pionsSelected_->Fill(answers.size());
-	cout << "Found " << answers.size() << " candidates to work on, from "
-			<< eligibles << " available\n";
+	cout << "Found " << answers.size() << " candidates to work on, from " << eligibles << " available\n";
 
 	return answers;
 }
 
-void IsolatedParticleExtractor::estimateContamination(const std::vector<
-		unsigned> candIndices, const reco::PFCandidateCollection& cands,
-		const reco::PFSimParticleCollection& sims) {
+void IsolatedParticleExtractor::estimateContamination(const std::vector<unsigned> candIndices,
+		const reco::PFCandidateCollection& cands, const reco::PFSimParticleCollection& sims) {
 
 	vector<unsigned>::const_iterator cit = candIndices.begin();
 	cout << "\tConsulting sim contamination. Sim collection size = " << sims.size() << "\n";
@@ -132,29 +148,23 @@ void IsolatedParticleExtractor::estimateContamination(const std::vector<
 		double candEta = cand.positionAtECALEntrance().eta();
 		double candPhi = cand.positionAtECALEntrance().phi();
 
-		cout << "\tPion reco type " << cand.particleId() << ", energy "
-				<< cand.energy() << ", eta/phi " << candEta << ", " << candPhi
-				<< ":\n";
+		cout << "\tPion reco type " << cand.particleId() << ", energy " << cand.energy() << ", eta/phi " << candEta << ", "
+				<< candPhi << ":\n";
 
 		for (; sit != sims.end(); ++sit) {
 			PFSimParticle sim = *sit;
 			//need to call this (non-const) method on the object before
 			//calling trajectoryPoint( )
 			sim.calculatePositionREP();
-			double
-					simEta =
-							sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().eta();
-			double
-					simPhi =
-							sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().phi();
+			double simEta = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().eta();
+			double simPhi = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().phi();
 			double sep = pftools::deltaR(candEta, simEta, candPhi, simPhi);
-//			cout << "\t\tSim" << " eta/phi " << simEta
-//									<< ", " << simPhi << " pdg " << sim.pdgCode() << " separation " << sep << "\n";
+			//			cout << "\t\tSim" << " eta/phi " << simEta
+			//									<< ", " << simPhi << " pdg " << sim.pdgCode() << " separation " << sep << "\n";
 			if (sep < deltaREcalIsolation_) {
-				double simE = sim.trajectoryPoint(
-						PFTrajectoryPoint::ECALEntrance).momentum().E();
-				cout << "\t\tSim energy " << simE << " eta/phi " << simEta
-						<< ", " << simPhi << " pdg " << sim.pdgCode() << "\n";
+				double simE = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).momentum().E();
+				cout << "\t\tSim energy " << simE << " eta/phi " << simEta << ", " << simPhi << " pdg " << sim.pdgCode()
+						<< "\n";
 				//Sim particle contribution
 				simEnergyInCone += simE;
 				if (sim.pdgCode() == 111 || sim.pdgCode() == 22) {
@@ -163,15 +173,13 @@ void IsolatedParticleExtractor::estimateContamination(const std::vector<
 				}
 			}
 		}
-		pionSimEnergyContamination_->Fill(cand.energy(), simEnergyInCone
-				/ cand.energy());
+		pionSimEnergyContamination_->Fill(cand.energy(), simEnergyInCone / cand.energy());
 	}
 
 }
 
 vector<RelativeIsolation> IsolatedParticleExtractor::rankCandidatesBySeparation(
-		const std::vector<unsigned>& sourceCands,
-		const std::vector<unsigned>& targetCands,
+		const std::vector<unsigned>& sourceCands, const std::vector<unsigned>& targetCands,
 		const PFCandidateCollection& cands) {
 
 	vector<RelativeIsolation> isolates;
@@ -192,8 +200,8 @@ vector<RelativeIsolation> IsolatedParticleExtractor::rankCandidatesBySeparation(
 		vector<unsigned>::const_iterator target = targetCands.begin();
 
 		for (; target != targetCands.end(); ++target) {
-			double testDR = pftools::deltaR(thisEta, cands[*target].positionAtECALEntrance().eta(),
-					thisPhi, cands[*target].positionAtECALEntrance().phi());
+			double testDR = pftools::deltaR(thisEta, cands[*target].positionAtECALEntrance().eta(), thisPhi,
+					cands[*target].positionAtECALEntrance().phi());
 			if (testDR < smallestDR && *cit != *target) {
 				//This candidate is further away
 				smallestDR = testDR;
@@ -217,7 +225,13 @@ vector<RelativeIsolation> IsolatedParticleExtractor::rankCandidatesBySeparation(
 
 void IsolatedParticleExtractor::init(const edm::ParameterSet& parameters) {
 	LogDebug("IsolatedParticleExtractor") << __PRETTY_FUNCTION__ << std::endl;
-	deltaREcalIsolation_ = parameters.getParameter<double> (
-			"DeltaREcalIsolation");
+	deltaREcalIsolation_ = parameters.getParameter<double> ("DeltaREcalIsolation");
+
+	investigateIsolation_ = parameters.getParameter<bool> ("InvestigateIsolation");
+
+	neutralContaminationEquation_ = parameters.getParameter<string> ("NeutralContaminationEquation");
+	allowNeutralContamination_ = parameters.getParameter<bool> ("AllowNeutralContamination");
+
+	neutralContamFunc_ = new TF1("neutralContamFunc", neutralContaminationEquation_.c_str());
 }
 
