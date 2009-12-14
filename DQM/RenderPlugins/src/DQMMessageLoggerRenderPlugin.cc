@@ -1,10 +1,9 @@
-
 /*!
   \file DQMMessageLoggerRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author E. Nesvold
-  \version $Revision: 1.1 $
-  \date $Date: 2009/11/18 09:59:29 $
+  \version $Revision: 1.2 $
+  \date $Date: 2009/11/20 09:59:29 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -20,6 +19,7 @@ class DQMMessageLoggerRenderPlugin : public DQMRenderPlugin{
 public:
   virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &)
     {
+
       if(o.name.find("MessageLogger") != std::string::npos){
         if(o.name.find ("Errors") != std::string::npos){
           if(o.name.find("categoriesErrorsFound")!=std::string::npos){
@@ -30,7 +30,9 @@ public:
             return true;
           }else if(o.name.find("modules_errors")!=std::string::npos){
             return true;
-          }
+          }else if(o.name.find("total_errors")!=std::string::npos){
+	    return true;
+	  }
         }
         if (o.name.find("Warnings") != std::string::npos){
           if(o.name.find("modulesWarningsFound") != std::string::npos){
@@ -41,7 +43,9 @@ public:
             return true;
           }else if(o.name.find("categories_warnings")!=std::string::npos){
             return true;
-          }
+          }else if(o.name.find("total warnings")!=std::string::npos){
+	    return true;
+	  }
         }
 
       }
@@ -69,27 +73,59 @@ private:
 
       c->cd();
 
-      obj->SetTitle(0);
+      //obj->SetTitle(kFALSE);
 
-      Double_t bm = 0.25;
+      Double_t bm = 0.4;
 
-      obj->SetStats(false);
+      
       if(o.name.find("categoriesErrorsFound")!=std::string::npos){
-        gPad->SetBottomMargin(bm);
+	if(obj->ComputeIntegral() > 0.5){
+	  gPad->SetBottomMargin(bm);
+	}
+	gStyle->SetOptStat("e");
       }else if(o.name.find("categoriesWarningsFound")!=std::string::npos){
-        gPad->SetBottomMargin(bm);
+        
+	if(obj->ComputeIntegral() > 0.5){
+	  gPad->SetBottomMargin(bm);
+	}
+	gStyle->SetOptStat("e");
       }else if(o.name.find("modulesErrorsFound")!=std::string::npos){
-        gPad->SetBottomMargin(bm);
+	if(obj->ComputeIntegral() > 0.5){
+	  gPad->SetBottomMargin(bm);
+	}
+	gStyle->SetOptStat("e");
       }else if(o.name.find("modulesWarningsFound")!=std::string::npos){
-        gPad->SetBottomMargin(bm);
+	if(obj->ComputeIntegral() > 0.5){
+	  gPad->SetBottomMargin(bm);
+	}
+	gStyle->SetOptStat("e" );
       }else if(o.name.find("categories_errors")!=std::string::npos){
-        gPad->SetBottomMargin(bm);
+	if(obj->ComputeIntegral() > 0.5){
+	  gPad->SetBottomMargin(bm);
+	}
+        
+	gStyle->SetOptStat("e" );
       }else if(o.name.find("categories_warnings")!=std::string::npos){
-        gPad->SetBottomMargin(bm);
+	if(obj->ComputeIntegral() > 0.5){
+	  gPad->SetBottomMargin(bm);
+	}
+        
+	gStyle->SetOptStat("e" );
       }else if(o.name.find("modules_errors")!=std::string::npos){
-        gPad->SetBottomMargin(bm);
+	if(obj->ComputeIntegral() > 0.5){
+	  gPad->SetBottomMargin(bm);
+	}
+        
+	gStyle->SetOptStat("e" );
       }else if(o.name.find("modules_warnings")!=std::string::npos){
-        gPad->SetBottomMargin(bm);
+	if(obj->ComputeIntegral() > 0.5){
+	  gPad->SetBottomMargin(bm);
+	}        
+	gStyle->SetOptStat("e" );
+      }else if(o.name.find("total warnings")!=std::string::npos){
+	gStyle->SetOptStat("emr");
+      }else if(o.name.find("total_errors")!=std::string::npos){
+	gStyle->SetOptStat("emr");
       }
 
     }
