@@ -46,7 +46,7 @@ EventDelegate = cms.PSet(
     SimCaloRecHitsHcal=cms.InputTag("famosSimHits", "HcalHits"),
     RawRecHitsEcalEB=cms.InputTag("ecalRecHit","EcalRecHitsEB"),
     RawRecHitsEcalEE=cms.InputTag("ecalRecHit","EcalRecHitsEE"),
-	RawRecHitsEcalES=cms.InputTag("ecalRecHit","EcalRecHitsES"),
+	RawRecHitsEcalES=cms.InputTag("ecalPreshowerRecHit","EcalRecHitsES"),
     RawRecHitsHcal=cms.InputTag("hbhereco"),
     
     deltaREcalCaloWindow=cms.double(0.01),
@@ -117,22 +117,23 @@ TestbeamDelegate.RawRecHitsEcalEE=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEE
 TestbeamDelegate.RawRecHitsEcalES=cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
 TestbeamDelegate.EventDelegateType=cms.string('TestbeamDelegate')
 
-# Ignore this for now
 IsolatedParticleExtractor=cms.PSet(
-    #PFCandidate types to extract
-    ParticleType = cms.uint32(1),
-    #If more than one particle is found matching isolation cuts, only extract the 'best' one
-    MostIsolatedOnly = cms.bool(False),
-    
-    #If not, just pass all PFCandidates matching particleType_ cut
-    ApplyIsolationCuts = cms.bool(False),
     
     #Isolation required in the ECAL
-    DeltaREcalIsolation = cms.double(0.3),
+    DeltaREcalIsolation = cms.double(masterConeDeltaR),
     
-    #Isolation required in the HCAL
-    DeltaRHcalIsolation = cms.double(0.3),
+    #Do extra investigation?
+    InvestigateIsolation = cms.bool(True),
+    
+    NeutralContaminationEquation = cms.string('48.2-8.15*TMath::Log(x)'),
+    AllowNeutralContamination = cms.bool(False)
     
 )
     
 
+#For collisions and isolated particle extraction
+CollisionDelegate = cms.PSet(
+    EventDelegate,
+    IsolatedParticleExtractor
+)
+CollisionDelegate.EventDelegateType=cms.string('CollisionDelegate')

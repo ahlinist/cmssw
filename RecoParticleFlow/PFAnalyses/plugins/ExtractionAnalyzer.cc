@@ -10,6 +10,7 @@
 #include "RecoParticleFlow/PFAnalyses/interface/EventDelegate.h"
 #include "RecoParticleFlow/PFAnalyses/interface/DipionDelegate.h"
 #include "RecoParticleFlow/PFAnalyses/interface/TestbeamDelegate.h"
+#include "RecoParticleFlow/PFAnalyses/interface/CollisionDelegate.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 //#include "RecoParticleFlow/PFAnalyses/interface/TestDelegate.h"
 
@@ -23,17 +24,20 @@ using namespace reco;
 using namespace pftools;
 
 ExtractionAnalyzer::ExtractionAnalyzer(const edm::ParameterSet& parameters) :
-	dptype_("DipionDelegate"), tbtype_("TestbeamDelegate") {
+	dptype_("DipionDelegate"), tbtype_("TestbeamDelegate"), collType_("CollisionDelegate") {
 	LogInfo("ExtractionAnalyzer")  << __PRETTY_FUNCTION__ << "\n";
 	edtype_ = parameters.getParameter<std::string>("EventDelegateType");
+
 	if (edtype_ == dptype_) {
 		ed_ = new DipionDelegate();
 	} else if (edtype_ == tbtype_) {
 		ed_ = new TestbeamDelegate();
 //	} else if(edtype_ == testtype_) {
 //		ed_ = new TestDelegate();
-	} else {
-		LogError("ExtractionAnalyzer") << "Couldn't find suitable delegate!" << std::endl;
+	} else if (edtype_ == collType_) {
+		ed_ = new CollisionDelegate();
+	}
+		else { LogError("ExtractionAnalyzer") << "Couldn't find suitable delegate!" << std::endl;
 		//Exception e(msg);
 		//throw e;
 	}

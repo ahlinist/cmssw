@@ -132,6 +132,30 @@ template<typename T> std::vector<unsigned> findCandidatesInDeltaRECAL(
 
 }
 
+template<typename T> std::vector<unsigned> findCandidatesInDeltaRHCAL(
+		const std::vector<T>& objects, const double centralEta,
+		const double centralPhi, const double deltaRCut) {
+//	using namespace edm;
+//	using namespace reco;
+
+	unsigned index(0);
+	std::vector<unsigned> answers;
+	for (typename std::vector<T>::const_iterator oit = objects.begin(); oit
+			!= objects.end(); ++oit) {
+		T obj = *oit;
+		double rhEta = obj.positionAtHCALEntrance().eta();
+		double rhPhi = obj.positionAtHCALEntrance().phi();
+
+		if (pftools::deltaR(rhEta, centralEta, rhPhi, centralPhi) < deltaRCut) {
+			//accept
+			answers.push_back(index);
+		}
+		++index;
+	}
+	return answers;
+
+}
+
 }
 
 #endif

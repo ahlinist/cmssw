@@ -8,6 +8,9 @@
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
 #include <vector>
+#include <TH1.h>
+#include <TH2.h>
+#include <TF1.h>
 #include <ostream>
 
 namespace pftools {
@@ -23,17 +26,9 @@ struct RelativeIsolation {
 
 };
 
-bool operator<(const RelativeIsolation& a, const RelativeIsolation& b) {
-	if (a.dR12_ < b.dR12_)
-		return true;
-	return false;
-}
+bool operator<(const pftools::RelativeIsolation& a, const pftools::RelativeIsolation& b);
 
-std::ostream& operator<<(std::ostream& s, const RelativeIsolation& ri) {
-	s << "Linking " << ri.r1Index_ << " to " << ri.r2Index_ << ", with dR = "
-			<< ri.dR12_ << "\n";
-	return s;
-}
+std::ostream& operator<<(std::ostream& s, const pftools::RelativeIsolation& ri);
 
 /**
  *
@@ -67,22 +62,23 @@ public:
 	virtual void init(const edm::ParameterSet& parameters);
 
 private:
-	/**
-	 * Look only for PFCandidates of type...
-	 */
-	unsigned particleType_;
-	/**
-	 * If not, just pass all PFCandidates matching particleType_ cut
-	 */
-	bool applyIsolationCuts_;
+
 	/**
 	 * Isolation required in the ECAL
 	 */
 	double deltaREcalIsolation_;
+
 	/**
-	 * Isolation required in the HCAL
+	 * Go into detailed investigation mode...
 	 */
-	double deltaRHcalIsolation_;
+	bool investigateIsolation_;
+
+	bool allowNeutralContamination_;
+
+	std::string neutralContaminationEquation_;
+
+	TF1* neutralContamFunc_;
+
 	edm::Service<TFileService> fileservice_;
 	TH1F* pionCount_;
 	TH1F* pionsSelected_;
@@ -117,3 +113,8 @@ private:
 }
 
 #endif /* ISOLATEDPIONEXTRACTOR_H_ */
+
+
+
+
+
