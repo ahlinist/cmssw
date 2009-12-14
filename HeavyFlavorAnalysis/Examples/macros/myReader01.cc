@@ -33,6 +33,8 @@ void myReader01::eventProcessing() {
 
   fRun = fpEvt->fRunNumber;
 
+  if (fIsMC==0 && fRun < 124120) return;
+
   int fL40(0), fL00(0), fL41(0), fGoodTrigger(0); 
 
   TH1D *ht = (TH1D*)fpHistFile->Get("l1tt");
@@ -51,7 +53,7 @@ void myReader01::eventProcessing() {
   // -- skip large events
   int ntrk = fpEvt->nRecTracks();
   ((TH1D*)fpHistFile->Get("ntrk"))->Fill(ntrk);
-  if (ntrk > 100) {
+  if (ntrk > 60) {
     cout << "Skipping event with ntracks = " << ntrk << endl;
     return;
   }
@@ -74,10 +76,10 @@ void myReader01::eventProcessing() {
 
   if (fL40 || fL41) {
     if (fL00) {
-      cout << "L0 validated good trigger" << endl;
+      //      cout << "L0 validated good trigger" << endl;
       fGoodTrigger = 1; 
     } else {
-      cout << "NOT L0 validated good trigger" << endl;
+      //      cout << "NOT L0 validated good trigger" << endl;
     }
   }
 
@@ -152,9 +154,11 @@ void myReader01::eventProcessing() {
     }
     
 
-    if (pCand->fType == 443) pCand->fType = 1300; 
+    if (pCand->fType == 443 && fIsMC == 1) pCand->fType = 1300; 
 
     if (pCand->fType == 1300) {
+
+      
       
 //       cout << Form("C: %5d", pCand->fType)
 // 	   << Form(" m = %5.2f", mass)
@@ -176,12 +180,13 @@ void myReader01::eventProcessing() {
       
       ((TH1D*)fpHistFile->Get("m1300"))->Fill(mass);
       ((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
+      if (m2 > 0) ((TH1D*)fpHistFile->Get("m1313"))->Fill(mass);
       
       ((TH1D*)fpHistFile->Get("m1300pt"))->Fill(pCand->fPlab.Perp());
       ((TH1D*)fpHistFile->Get("m1300pt1"))->Fill(pT1->fPlab.Perp());
 
 
-      for (int i = 0; i < 30; ++i) {
+      for (int i = 0; i < 40; ++i) {
 	((TH1D*)fpHistFile->Get(Form("m%d", i+1350)))->Fill(mass);
       }
 
@@ -197,6 +202,8 @@ void myReader01::eventProcessing() {
 
     if (pCand->fType == 413) {
         ((TH1D*)fpHistFile->Get("m413"))->Fill(mass);
+	double deltaM = mass - fpEvt->getCand(pCand->fDau1)->fMass;
+        ((TH1D*)fpHistFile->Get("dm413"))->Fill(deltaM);
     }
 
 
@@ -230,16 +237,18 @@ cout << "--> myReader01> bookHist> " << endl;
  h = new TH1D("pvz0",  "pv z", 100, -20., 20.); 
  h = new TH1D("pvz1",  "pv z", 100, -20., 20.); 
 
- h = new TH1D("m421", "mass", 40, 1.6, 2.0); 
+ h = new TH1D("m421", "mass", 40, 1.5, 2.1); 
  h = new TH1D("m413", "mass", 50, 1.8, 2.3); 
+ h = new TH1D("dm413","delta(mass)", 30, 0.12, 0.18); 
 
 
- h = new TH1D("m1300", "mass", 50, 2.0, 12.0); 
+ h = new TH1D("m1300", "mass", 60, 0.0, 12.0); 
  h = new TH1D("m1301", "mass", 30, 2.8, 3.4); 
+ h = new TH1D("m1313", "mass", 30, 2.8, 3.4); 
 
 
- for (int i = 0; i < 30; ++i) {
-   h = new TH1D(Form("m%d", i+1350), "mass", i+20, 2.8, 3.4); 
+ for (int i = 0; i < 40; ++i) {
+   h = new TH1D(Form("m%d", i+1350), "mass", i+10, 2.7, 3.5); 
  }
 
  h = new TH1D("m1300pt",  "pt", 50, 0.0, 10.0); 
