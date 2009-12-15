@@ -105,7 +105,7 @@ def compare_effs(
     binning=None,
     output_hist="my_eff",
     label="",
-    title="MyEff",
+    title="CMS Preliminary",
     x_axis = "blah",
     y_axis = "Fake rate"):
 
@@ -166,7 +166,7 @@ canvas = TCanvas("blah", "blah", 700, 500)
 
 std_cut = "$pt > 5 && $ref_emFraction >  0.01"
 #std_cut = "1"
-std_cut_label="p_{T} > 5, jet emFraction > 0.01"
+std_cut_label="p_{T} > 5"
 
 for current_ntuple in ntuples_to_plot:
     print current_ntuple
@@ -174,7 +174,7 @@ for current_ntuple in ntuples_to_plot:
         current_ntuple,
         expr="$pt",
         selection=std_cut,
-        title="Tau p_{T} - 900GeV",
+        title="CMS Preliminary",
         label=std_cut_label,
         binning=(20, 0, 10),
         output_hist="pt")
@@ -184,7 +184,7 @@ for current_ntuple in ntuples_to_plot:
         current_ntuple,
         expr="abs($eta)",
         selection=std_cut,
-        title="Tau #eta - 900GeV",
+        title="CMS Preliminary",
         label=std_cut_label,
         x_axis="|#eta|",
         binning=(10, 0, 2.5),
@@ -195,7 +195,7 @@ for current_ntuple in ntuples_to_plot:
         current_ntuple,
         expr="$nTrks",
         selection=std_cut,
-        title="Tau signal tracks - 900GeV",
+        title="CMS Preliminary",
         label=std_cut_label,
         x_axis = "Number of signal tracks",
         binning=(10, -0.5, 9.5),
@@ -206,7 +206,7 @@ for current_ntuple in ntuples_to_plot:
         current_ntuple,
         expr="$DecayMode",
         selection=std_cut,
-        title="Tau decay mode - 900GeV",
+        title="CMS Preliminary",
         label=std_cut_label,
         x_axis = "5 #times N_{#pi^{+}} + N_{#pi^{0}}",
         binning=(15, -0.5, 14.5),
@@ -217,18 +217,31 @@ for current_ntuple in ntuples_to_plot:
         current_ntuple,
         expr="$mass",
         selection=std_cut,
-        title="Tau invariant mass - 900GeV",
+        title="CMS Preliminary",
         label=std_cut_label,
         x_axis = "Visible mass",
         binning=(20, 0.0, 5),
         output_hist = "mass")
     canvas.SaveAs("%s_mass.png" % current_ntuple.name)
 
+    iso_cut = std_cut+"&& $ByIsolation"
+    iso_cut_label = std_cut_label + " (Isolated)"
+    compare_distributions(
+        current_ntuple,
+        expr="$mass",
+        selection=iso_cut,
+        title="CMS Preliminary",
+        label=iso_cut_label,
+        x_axis = "Visible mass",
+        binning=(20, 0.0, 5),
+        output_hist = "mass_isolated")
+    canvas.SaveAs("%s_mass_isolated.png" % current_ntuple.name)
+
     compare_distributions(
         current_ntuple,
         expr="$mass",
         selection=std_cut,
-        title="Tau charged mass - 900GeV",
+        title="CMS Preliminary",
         label=std_cut_label,
         x_axis = "Visible mass of signal tracks",
         binning=(20, 0.0, 5),
@@ -239,17 +252,18 @@ for current_ntuple in ntuples_to_plot:
         current_ntuple,
         expr="$nGammas",
         selection=std_cut,
-        title="Tau signal gammas - 900GeV",
+        title="CMS Preliminary",
         label=std_cut_label,
         x_axis = "Number of signal gammas",
         binning=(10, -0.5, 9.5),
         output_hist = "nGammas")
+    gPad.SetLogy(True)
     canvas.SaveAs("%s_nGammas.png" % current_ntuple.name)
 
     compare_distributions(
         current_ntuple,
         expr="$nIsoGammas",
-        title="Tau isolation gammas - 900GeV",
+        title="CMS Preliminary",
         selection=std_cut,
         label=std_cut_label,
         x_axis = "Number of isolation gammas",
@@ -260,7 +274,7 @@ for current_ntuple in ntuples_to_plot:
     compare_distributions(
         current_ntuple,
         expr="$nIsoTrks",
-        title="Tau isolation tracks - 900GeV",
+        title="CMS Preliminary",
         selection=std_cut,
         label=std_cut_label,
         x_axis = "Number of isolation tracks",
@@ -271,7 +285,7 @@ for current_ntuple in ntuples_to_plot:
     compare_distributions(
         current_ntuple,
         expr="$nIsoNeu",
-        title="Tau isolation neutral hadrons - 900GeV",
+        title="CMS Preliminary",
         selection=std_cut,
         label=std_cut_label,
         x_axis = "Number of isolation neutral hadrons",
@@ -285,14 +299,13 @@ for current_ntuple in ntuples_to_plot:
     compare_effs(
         current_ntuple,
         expr="$pt",
-        title="Lead Track finding eff. w.r.t jet matching",
+        title="CMS Preliminary",
         numerator=numerator,
         denominator=denominator,
         label=std_cut_label,
         x_axis = "p_{T} (GeV/c)",
         binning = (8, 0, 40),
         output_hist="effLeadTrack")
-    gPad.SetLogy(True)
     canvas.SaveAs("%s_LeadTrackFindingEff.png" % current_ntuple.name)
 
     numerator = std_cut + "&& $ByLeadTrackPt"
@@ -300,7 +313,7 @@ for current_ntuple in ntuples_to_plot:
     compare_effs(
         current_ntuple,
         expr="$pt",
-        title="Lead Track p_{T} > 5 GeV eff. w.r.t jet matching",
+        title="CMS Preliminary",
         numerator=numerator,
         denominator=denominator,
         label=std_cut_label,
@@ -315,7 +328,7 @@ for current_ntuple in ntuples_to_plot:
     compare_effs(
         current_ntuple,
         expr="$pt",
-        title="Lead Pion p_{T} > 5 GeV eff. w.r.t jet matching",
+        title="CMS Preliminary",
         numerator=numerator,
         denominator=denominator,
         label=std_cut_label,
@@ -329,7 +342,7 @@ for current_ntuple in ntuples_to_plot:
     compare_effs(
         current_ntuple,
         expr="$pt",
-        title="Isolation w.r.t Lead Pion p_{T} > 5 GeV eff",
+        title="CMS Preliminary",
         numerator=numerator,
         denominator=denominator,
         label=std_cut_label,
@@ -344,7 +357,7 @@ for current_ntuple in ntuples_to_plot:
     compare_effs(
         current_ntuple,
         expr="$pt",
-        title="Charged Isolation w.r.t Lead Pion p_{T} > 5 GeV eff",
+        title="CMS Preliminary",
         numerator=numerator,
         denominator=denominator,
         label=std_cut_label,
@@ -359,7 +372,7 @@ for current_ntuple in ntuples_to_plot:
     compare_effs(
         current_ntuple,
         expr="$pt",
-        title="TaNC (1%) w.r.t Lead Pion p_{T} > 5 GeV eff",
+        title="CMS Preliminary",
         numerator=numerator,
         denominator=denominator,
         label=std_cut_label,
