@@ -83,18 +83,18 @@ def compare_distributions(
     top_range = max(mc_plot.GetMaximum(), data_plot.GetMaximum())*1.1
     mc_plot.GetYaxis().SetRangeUser(0.0, top_range)
 
-    Legend = TLegend(0.7, 0.7, 0.92, 0.9)
+    Legend = TLegend(0.75, 0.25, 0.95, 0.35)
     Legend.AddEntry(data_plot, "Data", "p")
     Legend.AddEntry(mc_plot, "MC (MinBias)", "p")
     Legend.SetFillColor(0)
     Legend.Draw()
     keep.append(Legend)
 
-    Label = TPaveText(0.2, 0.7, 0.5, 0.9, "brNDC")
+    Label = TPaveText(0.2, 0.8, 0.5, 0.9, "brNDC")
     Label.AddText(label)
     Label.SetFillStyle(0)
     Label.SetBorderSize(0)
-    Label.Draw()
+    #Label.Draw()
     keep.append(Label)
 
 def compare_effs(
@@ -124,7 +124,7 @@ def compare_effs(
     mc_eff.SetMarkerStyle(20)
     mc_plot.GetXaxis().SetTitle(x_axis)
     mc_plot.GetYaxis().SetTitle(y_axis)
-    mc_plot.GetYaxis().SetRangeUser(1e-2, 1.1)
+    mc_plot.GetYaxis().SetRangeUser(1e-3, 1.1)
     mc_plot.Draw()
     mc_eff.Draw("pe1")
     
@@ -142,7 +142,7 @@ def compare_effs(
     data_eff.SetMarkerColor(2)
     data_eff.Draw("pe1")
 
-    Legend = TLegend(0.7, 0.7, 0.92, 0.9)
+    Legend = TLegend(0.75, 0.25, 0.95, 0.35)
     Legend.AddEntry(data_eff, "Data", "p")
     Legend.AddEntry(mc_eff, "MC (MinBias)", "p")
     Legend.SetFillColor(0)
@@ -153,7 +153,7 @@ def compare_effs(
     Label.AddText(label)
     Label.SetFillStyle(0)
     Label.SetBorderSize(0)
-    Label.Draw()
+    #Label.Draw()
     keep.append(Label)
     keep.append(mc_plot)
     keep.append(mc_eff)
@@ -176,7 +176,7 @@ for current_ntuple in ntuples_to_plot:
         selection=std_cut,
         title="CMS Preliminary",
         label=std_cut_label,
-        binning=(20, 0, 10),
+        binning=(20, 0, 20),
         output_hist="pt")
     canvas.SaveAs("%s_pt.png" % current_ntuple.name)
 
@@ -257,7 +257,6 @@ for current_ntuple in ntuples_to_plot:
         x_axis = "Number of signal gammas",
         binning=(10, -0.5, 9.5),
         output_hist = "nGammas")
-    gPad.SetLogy(True)
     canvas.SaveAs("%s_nGammas.png" % current_ntuple.name)
 
     compare_distributions(
@@ -306,6 +305,7 @@ for current_ntuple in ntuples_to_plot:
         x_axis = "p_{T} (GeV/c)",
         binning = (8, 0, 40),
         output_hist="effLeadTrack")
+    gPad.SetLogy(True)
     canvas.SaveAs("%s_LeadTrackFindingEff_pt.png" % current_ntuple.name)
 
     numerator = std_cut + "&& $ByLeadTrackPt"
@@ -381,90 +381,3 @@ for current_ntuple in ntuples_to_plot:
         output_hist="effTaNCIsolationRel")
     canvas.SaveAs("%s_TaNCOneIsolationRel_pt.png" % current_ntuple.name)
 
-    #Eff v. Eta
-    numerator = std_cut + "&& $ByLeadTrack"
-    denominator = std_cut  
-    compare_effs(
-        current_ntuple,
-        expr="abs($eta)",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "#eta",
-        binning = (10, 0, 2.5),
-        output_hist="effLeadTrack")
-    canvas.SaveAs("%s_LeadTrackFindingEff_eta.png" % current_ntuple.name)
-
-    numerator = std_cut + "&& $ByLeadTrackPt"
-    denominator = std_cut  
-    compare_effs(
-        current_ntuple,
-        expr="abs($eta)",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "#eta",
-        binning = (10, 0, 2.5),
-        output_hist="effLeadTrackPt")
-    canvas.SaveAs("%s_LeadTrackPtEff_eta.png" % current_ntuple.name)
-
-
-    numerator = std_cut + "&& $ByLeadPionPt"
-    denominator = std_cut  
-    compare_effs(
-        current_ntuple,
-        expr="abs($eta)",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "#eta",
-        binning = (10, 0, 2.5),
-        output_hist="effLeadPionPt")
-    canvas.SaveAs("%s_LeadPionPtEff_eta.png" % current_ntuple.name)
-
-    denominator = std_cut + "&& $ByLeadPionPt"
-    numerator = denominator + "&& $ByIsolation"
-    compare_effs(
-        current_ntuple,
-        expr="abs($eta)",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "#eta",
-        binning = (10, 0, 2.5),
-        output_hist="effIsolationRel")
-    canvas.SaveAs("%s_IsolationRel_eta.png" % current_ntuple.name)
-
-
-    denominator = std_cut + "&& $ByLeadPionPt"
-    numerator = denominator + "&& $ByTrackIsolation"
-    compare_effs(
-        current_ntuple,
-        expr="abs($eta)",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "#eta",
-        binning = (10, 0, 2.5),
-        output_hist="effTrackIsolationRel")
-    canvas.SaveAs("%s_TrackIsolationRel_eta.png" % current_ntuple.name)
-
-
-    denominator = std_cut + "&& $ByLeadPionPt"
-    numerator = denominator + "&& $ByTaNCfrOne"
-    compare_effs(
-        current_ntuple,
-        expr="abs($eta)",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "#eta",
-        binning = (10, 0, 2.5),
-        output_hist="effTaNCIsolationRel")
-    canvas.SaveAs("%s_TaNCOneIsolationRel_eta.png" % current_ntuple.name)
