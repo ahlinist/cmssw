@@ -13,7 +13,9 @@ class TauStringFunction : public TauFunction {
       bool isValid() const { return func_.get(); };
    protected:
       virtual double compute(const CandBaseRef &c) const;
+      // Will be casted automatically to template type
       double evaluate(const CandBaseRef &c) const;
+      double evaluate(const Obj &c) const;
    private:
       std::string expr_;
       boost::shared_ptr<StringObjectFunction<Obj> > func_;

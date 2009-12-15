@@ -4,27 +4,13 @@ process = cms.Process("USER")
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-#Edit this file so that each line contains each file to use
-my_files = "file_list.txt"
-
-def inputFilesFromFile(input_file):
-    ''' Generator to get around 255 list limit '''
-    my_file = open(input_file, 'r')
-    for file in my_file.readlines():
-        yield file
-
-process.source = cms.Source(
-    "PoolSource",
-    fileNames = cms.untracked.vstring(
-        [file for file in inputFilesFromFile(my_files)]
-    )
-)
+process.load("source_BSCskim_Dec06_Display_900GeV_cff")
 
 process.filteredJets = cms.EDProducer(
     # This should eventually be pf specific...  Anything the produces a vector
     # of PFJets compatibile w/ View<Candidate> is fine
     "CandViewSelector", 
-    cut = cms.string("pt() > 5 && abs(eta()) < 2.1"),
+    cut = cms.string("pt() > 5"),
     src = cms.InputTag("iterativeCone5PFJets")
 )
 
@@ -34,6 +20,13 @@ process.atLeastOneJet = cms.EDFilter(
     src = cms.InputTag("filteredJets"),
     minNumber = cms.uint32(1)
 )
+
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+#process.GlobalTag.globaltag = 'GR09_P_V8::All'
+process.GlobalTag.globaltag = 'MC_3XY_V9A::All'
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 
 # Build the skeleton.  This will create a new sequence called
 # process.buildTauNtuple.  It will automatically build the matching option for you.
@@ -51,6 +44,7 @@ makeTauNtuple(
     # Expressions and discrimaintors are defined in ntupleDefinitions
     expressions = cms.PSet(common_expressions, pftau_expressions),
     discriminators = cms.PSet(pftau_discriminators, pftau_discriminators_extra),
+    decayModeExpressions = pftau_decayModeExpressions,
     # Use only those taus which match our clean jets
     matchingOption = "matched",
     matchingCollection = "filteredJets"
@@ -60,7 +54,7 @@ makeTauNtuple(
 process.shrinkingConePFTauNtupleProducer.matchedType = cms.string("PFJet")
 process.shrinkingConePFTauNtupleProducer.matched_expressions = cms.PSet(
     common_expressions, # pt, eta, charge, mass
-    emFraction = cms.string("neutralHadronEnergyFraction()"),
+    emFraction = cms.string("neutralEmEnergyFraction()"),
 )
 
 # Main process path.  Note that all the ntuple matching/building is done
@@ -69,6 +63,7 @@ process.shrinkingConePFTauNtupleProducer.matched_expressions = cms.PSet(
 #process.load("RecoJets.Configuration.RecoPFJets_cff")
 process.path = cms.Path(
     #process.iterativeCone5PFJets*
+    process.PFTau*
     process.filteredJets*
     process.atLeastOneJet*
     process.buildTauNtuple
@@ -81,6 +76,3 @@ process.out = cms.OutputModule("PoolOutputModule",
       )
 
 process.endpath = cms.EndPath(process.out)
-
-dump_file = open("ntupleCfgDump.py", "w")
-dump_file.write(process.dumpPython())

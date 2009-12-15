@@ -156,23 +156,6 @@ TauNtupleProducer::TauNtupleProducer(const ParameterSet& pset)
             TauFunction *matched_func = 
                TauHelpers::tauMatchStringFuncFromType(matchedType, func_expr, matchView);
 
-            // Make the function specialized to our data type
-            /*
-            if( matchedType == "Candidate" )
-               matched_func = new MatchedToCandidateStringFunction(func_expr, matchView);
-            else if(matchedType == "PFTau")
-               matched_func = new MatchedToPFTauStringFunction(func_expr, matchView);
-            else if(matchedType == "CaloTau")
-               matched_func = new MatchedToCaloTauStringFunction(func_expr, matchView);
-            else if(matchedType == "GenJet")
-               matched_func = new MatchedToGenJetStringFunction(func_expr, matchView);
-            else if(matchedType == "PATTau")
-               matched_func = new MatchedToGenJetStringFunction(func_expr, matchView);
-            else
-               throw cms::Exception("BadMatchedDataType") << "Bad/unsupported matchedType \"" 
-                  << matchedType << "\" passed to TauNtuple producer";
-            */
-
             // Set name
             string function_name = alias + "ref#";
             function_name += *matched_expression;
@@ -201,22 +184,37 @@ TauNtupleProducer::TauNtupleProducer(const ParameterSet& pset)
          // The generalized abstract base class
          TauFunction* func = TauHelpers::tauStringFuncFromType(dataType, func_expr);
          // Get the specific type of Tau Function for the given data type
-         /*
-         if (dataType == "PFTau" )
-            func = new PFTauStringFunction(func_expr);
-         else if (dataType == "CaloTau")
-            func = new CaloTauStringFunction(func_expr);
-         else if (dataType == "Candidate")
-            func = new CandidateStringFunction(func_expr);
-         else if (dataType == "GenJet")
-            func = new GenJetStringFunction(func_expr);
-         else if (dataType == "PATTau")
-            func = new PATTauStringFunction(func_expr);
-         else
-            throw cms::Exception("BadDataType") << "Unsupported string func datatype passed";
-         */
          func->setName(alias + *expression);
          tauFunctions_.push_back(func);
+      }
+   }
+
+   if (pset.existsAs<ParameterSet>("decayModeExpressions"))
+   {
+      ParameterSet dm_exprs = pset.getParameter<ParameterSet>("decayModeExpressions");
+      if (dm_exprs.existsAs<InputTag>("source"))
+      {
+         // Get DM source
+         InputTag dm_source = dm_exprs.getParameter<InputTag>("source");
+         // Register this handle in our handle manager so it is loaded on each event
+         PFTauDecayModeAssociationHandleManager* dmHandleManager = 
+            new PFTauDecayModeAssociationHandleManager(dm_source);
+         handlesToFill_.push_back(dmHandleManager);
+         // Get DM expressions
+         vector<string> dm_expressions = 
+            dm_exprs.getParameterNamesForType<string>();
+         // Loop over the DM expressions
+         for(vector<string>::const_iterator dm_expression = dm_expressions.begin();
+               dm_expression != dm_expressions.end(); ++dm_expression)
+         {
+            const Handle<PFTauDecayModeAssociation> *dmHandle = dmHandleManager->get();
+            string expr = dm_exprs.getParameter<string>(*dm_expression);
+            TauFunction *dm_func = new TauDecayModeFunction(dmHandle, expr);
+            string func_name = alias + "dm#";
+            func_name += *dm_expression;
+            dm_func->setName(func_name);
+            tauFunctions_.push_back(dm_func);
+         }
       }
    }
 

@@ -5,18 +5,28 @@ Common defintions for quanities prodcues in TauNtuples
 '''
 
 common_expressions = cms.PSet(
-      pt       = cms.string("pt()"),
-      phi      = cms.string("phi()"),
-      eta      = cms.string("eta()"),
-      mass     = cms.string("mass()"),
-      charge   = cms.string("charge()"),
+    pt       = cms.string("pt()"),
+    phi      = cms.string("phi()"),
+    eta      = cms.string("eta()"),
+    mass     = cms.string("mass()"),
+    charge   = cms.string("charge()"),
 )
 
 pftau_expressions = cms.PSet(
-      jetPt    = cms.string('pfTauTagInfoRef().pfjetRef().pt()'),
-      jetEta   = cms.string('pfTauTagInfoRef().pfjetRef().eta()'),
-      jetWidth = cms.string('sqrt(pfTauTagInfoRef().pfjetRef().etaetaMoment()^2 + pfTauTagInfoRef().pfjetRef().phiphiMoment()^2)'),
-      nTrks    = cms.string("signalTracks().size()")
+    jetPt         = cms.string('pfTauTagInfoRef().pfjetRef().pt()'),
+    jetEta        = cms.string('pfTauTagInfoRef().pfjetRef().eta()'),
+    jetWidth      = cms.string('sqrt(pfTauTagInfoRef().pfjetRef().etaetaMoment()^2 + pfTauTagInfoRef().pfjetRef().phiphiMoment()^2)'),
+    emFraction    = cms.string('emFraction()'),
+    nTrks         = cms.string("signalPFChargedHadrCands().size()"),
+    nGammas       = cms.string("signalPFGammaCands().size()"),
+    nNeutral      = cms.string("signalPFNeutrHadrCands().size()"),
+    nIsoTrks      = cms.string("isolationPFChargedHadrCands().size()"),
+    nIsoGammas    = cms.string("isolationPFGammaCands().size()"),
+    nIsoNeu       = cms.string("isolationPFNeutrHadrCands().size()"),
+    isoTrkPtSum   = cms.string("isolationPFChargedHadrCandsPtSum()"),
+    isoGammaEtSum = cms.string("isolationPFGammaCandsEtSum()"),
+    #leadTrkPt     = cms.string("leadPFChargedHadrCand().pt()"),
+    #leadTrkSipt   = cms.string("leadPFChargedHadrCandsignedSipt()")
 )
 
 # Discriminator types.  Use RecoTauTag.TauAnalysisTools.tools.ntupleTools to
@@ -40,4 +50,15 @@ pftau_discriminators_extra = cms.PSet(
       ByTaNCfrHalf    = cms.InputTag("shrinkingConePFTauDiscriminationByTaNCfrHalfPercent"),
       ByTaNCfrQuarter = cms.InputTag("shrinkingConePFTauDiscriminationByTaNCfrQuarterPercent"),
       ByTaNCfrTenth   = cms.InputTag("shrinkingConePFTauDiscriminationByTaNCfrTenthPercent"),
+)
+
+pftau_decayModeExpressions = cms.PSet(
+    source = cms.InputTag("shrinkingConePFTauDecayModeProducer"),
+    #decayMode = cms.string("getDecayMode()"),
+    mass = cms.string("mass()"),
+    #nFiltered = cms.string("filteredObjects().size()"),
+    trkMass = cms.string("chargedPions().mass()"),
+    gammaMass = cms.string("neutralPions().mass()"),
+    nTrkFiltered = cms.string("chargedFilteredObjectCandidates().size()"),
+    nNeuFiltered = cms.string("neutralFilteredObjectCandidates().size()"),
 )

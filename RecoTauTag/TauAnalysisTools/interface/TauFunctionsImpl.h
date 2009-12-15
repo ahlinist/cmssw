@@ -31,6 +31,7 @@
 #include "RecoTauTag/TauAnalysisTools/interface/TauDiscriminatorFunction.h"
 #include "RecoTauTag/TauAnalysisTools/interface/TauStringFunction.h"
 #include "RecoTauTag/TauAnalysisTools/interface/TauMatchStringFunction.h"
+#include "RecoTauTag/TauAnalysisTools/interface/TauDecayModeFunction.h"
 
 typedef TauStringFunction<reco::Candidate> CandidateStringFunction; 
 typedef TauStringFunction<reco::PFTau>     PFTauStringFunction;     
