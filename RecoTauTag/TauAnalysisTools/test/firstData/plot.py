@@ -293,91 +293,180 @@ for current_ntuple in ntuples_to_plot:
     canvas.SaveAs("%s_nIsolationHadrons.png" % current_ntuple.name)
 
     #Efficiencies v. Pt
-    numerator = std_cut + "&& $ByLeadTrack"
-    denominator = std_cut  
-    compare_effs(
-        current_ntuple,
-        expr="$pt",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "p_{T} (GeV/c)",
-        binning = (8, 0, 40),
-        output_hist="effLeadTrack")
-    gPad.SetLogy(True)
-    canvas.SaveAs("%s_LeadTrackFindingEff_pt.png" % current_ntuple.name)
 
-    numerator = std_cut + "&& $ByLeadTrackPt"
-    denominator = std_cut  
-    compare_effs(
-        current_ntuple,
-        expr="$pt",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "p_{T} (GeV/c)",
-        binning = (8, 0, 40),
-        output_hist="effLeadTrackPt")
-    canvas.SaveAs("%s_LeadTrackPtEff_pt.png" % current_ntuple.name)
+    eff_vs = {
+        'pt' : {
+            'expr' : "$pt",
+            'label' :  "p_{T} (GeV/c)",
+            'binning' : (8, 0, 40) },
+        'eta' : {
+            'expr' : "abs($eta)",
+            'label' :  "|#eta|",
+            'binning' : (10, 0, 2.5) }
+    }
 
+    for name, eff_info in eff_vs.iteritems():
+        numerator = std_cut + "&& $ByLeadTrack"
+        denominator = std_cut  
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effLeadTrack")
+        gPad.SetLogy(True)
+        canvas.SaveAs("%s_LeadTrackFindingEff_%s.png" % (current_ntuple.name, name))
 
-    numerator = std_cut + "&& $ByLeadPionPt"
-    denominator = std_cut  
-    compare_effs(
-        current_ntuple,
-        expr="$pt",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "p_{T} (GeV/c)",
-        binning = (8, 0, 40),
-        output_hist="effLeadPionPt")
-    canvas.SaveAs("%s_LeadPionPtEff_pt.png" % current_ntuple.name)
-
-    denominator = std_cut + "&& $ByLeadPionPt"
-    numerator = denominator + "&& $ByIsolation"
-    compare_effs(
-        current_ntuple,
-        expr="$pt",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "p_{T} (GeV/c)",
-        binning = (8, 0, 40),
-        output_hist="effIsolationRel")
-    canvas.SaveAs("%s_IsolationRel_pt.png" % current_ntuple.name)
+        numerator = std_cut + "&& $ByLeadTrackPt"
+        denominator = std_cut  
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effLeadTrackPt")
+        canvas.SaveAs("%s_LeadTrackPtEff_%s.png" % (current_ntuple.name, name))
 
 
-    denominator = std_cut + "&& $ByLeadPionPt"
-    numerator = denominator + "&& $ByTrackIsolation"
-    compare_effs(
-        current_ntuple,
-        expr="$pt",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "p_{T} (GeV/c)",
-        binning = (8, 0, 40),
-        output_hist="effTrackIsolationRel")
-    canvas.SaveAs("%s_TrackIsolationRel_pt.png" % current_ntuple.name)
+        numerator = std_cut + "&& $ByLeadPionPt"
+        denominator = std_cut  
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effLeadPionPt")
+        canvas.SaveAs("%s_LeadPionPtEff_%s.png" % (current_ntuple.name, name))
+
+        denominator = std_cut + "&& $ByLeadPionPt"
+        numerator = denominator + "&& $ByIsolation"
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effIsolationRel")
+        canvas.SaveAs("%s_IsolationRel_%s.png" % (current_ntuple.name, name))
 
 
-    denominator = std_cut + "&& $ByLeadPionPt"
-    numerator = denominator + "&& $ByTaNCfrOne"
-    compare_effs(
-        current_ntuple,
-        expr="$pt",
-        title="CMS Preliminary",
-        numerator=numerator,
-        denominator=denominator,
-        label=std_cut_label,
-        x_axis = "p_{T} (GeV/c)",
-        binning = (8, 0, 40),
-        output_hist="effTaNCIsolationRel")
-    canvas.SaveAs("%s_TaNCOneIsolationRel_pt.png" % current_ntuple.name)
+        denominator = std_cut + "&& $ByLeadPionPt"
+        numerator = denominator + "&& $ByTrackIsolation"
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effTrackIsolationRel")
+        canvas.SaveAs("%s_TrackIsolationRel_%s.png" % (current_ntuple.name, name))
+
+        denominator = std_cut + "&& $ByLeadPionPt"
+        numerator = denominator + "&& $ByEcalIsolation"
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effEcalIsolationRel")
+        canvas.SaveAs("%s_EcalIsolationRel_%s.png" % (current_ntuple.name, name))
+
+        denominator = std_cut + "&& $ByLeadPionPt"
+        numerator = denominator + "&& $ByTaNCfrOne"
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effTaNCIsolationRel")
+        canvas.SaveAs("%s_TaNCOneIsolationRel_%s.png" % (current_ntuple.name, name))
+
+        # ABSOLUTE EFFICIENCIES
+        # note that denominator is overridden here in a very hacky fasion (its late)
+        # and the local denominator is used to construct the numerator...
+
+        abs_denominator = std_cut
+
+        denominator = std_cut + "&& $ByLeadPionPt"
+        numerator = denominator + "&& $ByIsolation"
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=abs_denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effIsolationAbs")
+        canvas.SaveAs("%s_IsolationAbs_%s.png" % (current_ntuple.name, name))
+
+
+        denominator = std_cut + "&& $ByLeadPionPt"
+        numerator = denominator + "&& $ByTrackIsolation"
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=abs_denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effTrackIsolationAbs")
+        canvas.SaveAs("%s_TrackIsolationAbs_%s.png" % (current_ntuple.name, name))
+
+        denominator = std_cut + "&& $ByLeadPionPt"
+        numerator = denominator + "&& $ByEcalIsolation"
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=abs_denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effEcalIsolationAbs")
+        canvas.SaveAs("%s_EcalIsolationAbs_%s.png" % (current_ntuple.name, name))
+
+        denominator = std_cut + "&& $ByLeadPionPt"
+        numerator = denominator + "&& $ByTaNCfrOne"
+        compare_effs(
+            current_ntuple,
+            expr=eff_info['expr'],
+            title="CMS Preliminary",
+            numerator=numerator,
+            denominator=abs_denominator,
+            label=std_cut_label,
+            x_axis=eff_info['label'],
+            binning=eff_info['binning'],
+            output_hist="effTaNCIsolationAbs")
+        canvas.SaveAs("%s_TaNCOneIsolationAbs_%s.png" % (current_ntuple.name, name))
 
