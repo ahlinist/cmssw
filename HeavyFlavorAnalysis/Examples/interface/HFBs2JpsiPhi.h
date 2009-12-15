@@ -38,7 +38,7 @@ class HFBs2JpsiPhi : public edm::EDAnalyzer {
   virtual void endJob() ;
 
 
-  RefCountedKinematicTree doVertexFit(std::vector<reco::Track> &Tracks);
+  int           doVertexFit(std::vector<reco::Track> &Tracks, RefCountedKinematicTree &bsTree);
   void          doJpsiVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2, TAnaCand *pCand);
 
   int           fVerbose; 

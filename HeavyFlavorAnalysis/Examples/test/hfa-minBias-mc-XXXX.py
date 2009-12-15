@@ -73,14 +73,15 @@ process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
 process.trkDump = cms.EDAnalyzer(
     "HFDumpTracks",
-    verbose                = cms.untracked.int32(0),
-    generatorEventLabel    = cms.untracked.InputTag('generator'),
-    muonsLabel             = cms.untracked.InputTag("muons"),
-    trackingParticlesLabel = cms.untracked.InputTag('trackingParticles'),
-    associatorLabel        = cms.untracked.InputTag('TrackAssociatorByHits'),
-    doTruthMatching        = cms.untracked.int32(3),
-    tracksLabel            = cms.untracked.InputTag('generalTracks'),
-    simTracksLabel         = cms.untracked.InputTag('allLayer1TrackCands')
+    verbose                        = cms.untracked.int32(0),
+    tracksLabel                    = cms.untracked.InputTag('generalTracks'),
+    primaryVertexCollectionLabel   = cms.untracked.InputTag('offlinePrimaryVertices'),
+    generatorEventLabel            = cms.untracked.InputTag('generator'),
+    muonsLabel                     = cms.untracked.InputTag("muons"),
+    trackingParticlesLabel         = cms.untracked.InputTag('trackingParticles'),
+    associatorLabel                = cms.untracked.InputTag('TrackAssociatorByHits'),
+    doTruthMatching                = cms.untracked.int32(3),
+    simTracksLabel                 = cms.untracked.InputTag('allLayer1TrackCands')
     )
 
 # ----------------------------------------------------------------------
@@ -119,6 +120,7 @@ process.bmtDump = cms.EDAnalyzer(
     verbose       = cms.untracked.int32(0), 
     muonsLabel    = cms.untracked.InputTag("muons"),
     tracksLabel   = cms.untracked.InputTag('generalTracks'),
+    PrimaryVertexLabel       = cms.untracked.InputTag("offlinePrimaryVertices"),
     muonPt        = cms.untracked.double(1.0),
     trackPt       = cms.untracked.double(0.5),
     type          = cms.untracked.int32(1300), 
@@ -132,6 +134,7 @@ process.bmmDump = cms.EDAnalyzer(
     verbose      = cms.untracked.int32(0), 
     muonsLabel   = cms.untracked.InputTag("muons"),
     tracksLabel  = cms.untracked.InputTag('generalTracks'),
+    PrimaryVertexLabel       = cms.untracked.InputTag("offlinePrimaryVertices"),
     muonPt       = cms.untracked.double(1.0),
     type         = cms.untracked.int32(1313), 
     massLow      = cms.untracked.double(0.5), 
@@ -144,6 +147,7 @@ process.bupsikpDump = cms.EDAnalyzer(
     verbose      = cms.untracked.int32(0), 
     muonsLabel   = cms.untracked.InputTag("muons"),
     tracksLabel  = cms.untracked.InputTag('generalTracks'),
+    PrimaryVertexLabel       = cms.untracked.InputTag("offlinePrimaryVertices"),
     muonPt       = cms.untracked.double(1.0),
     trackPt      = cms.untracked.double(0.1),
     type         = cms.untracked.int32(100521) 
@@ -155,6 +159,7 @@ process.bdpsikstarDump = cms.EDAnalyzer(
     verbose      = cms.untracked.int32(0), 
     muonsLabel   = cms.untracked.InputTag("muons"),
     tracksLabel  = cms.untracked.InputTag('generalTracks'),
+    PrimaryVertexLabel       = cms.untracked.InputTag("offlinePrimaryVertices"),
     muonPt       = cms.untracked.double(1.0),
     kaonPt       = cms.untracked.double(0.1),
     pionPt       = cms.untracked.double(0.1),
@@ -167,6 +172,7 @@ process.bspsiphiDump = cms.EDAnalyzer(
     verbose      = cms.untracked.int32(0), 
     muonsLabel   = cms.untracked.InputTag("muons"),
     tracksLabel  = cms.untracked.InputTag('generalTracks'),
+    PrimaryVertexLabel       = cms.untracked.InputTag("offlinePrimaryVertices"),
     muonPt       = cms.untracked.double(1.0),
     trackPt      = cms.untracked.double(0.1),
     type         = cms.untracked.int32(100531) 
@@ -189,8 +195,8 @@ process.b2muD0Dump = cms.EDAnalyzer(
 process.p = cms.Path(
     process.genParticles* 
     process.genDump*
-    process.trkDump*
     process.stuffDump*
+    process.trkDump*
     process.muonDump*
     process.triggerDump*
     process.bmmDump*
