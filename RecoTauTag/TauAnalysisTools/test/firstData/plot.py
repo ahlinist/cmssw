@@ -70,7 +70,6 @@ def compare_distributions(
     if mc_plot.GetEntries() > 0:
         mc_plot.Scale(1.0/mc_plot.GetEntries())
     mc_plot.Draw("pe")
-    mc_plot.GetYaxis().SetRangeUser(0.0, mc_plot.GetMaximum()*1.1)
     
     data_plot.SetMarkerStyle(22)
     #data_plot.SetMarkerSize(2.5)
@@ -78,6 +77,10 @@ def compare_distributions(
     if data_plot.GetEntries() > 0:
         data_plot.Scale(1.0/data_plot.GetEntries())
     data_plot.Draw("same pe")
+
+    max = lambda a, b: a > b and a or b
+    top_range = max(mc_plot.GetMaximum(), data_plot.GetMaximum())*1.1
+    mc_plot.GetYaxis().SetRangeUser(0.0, top_range)
 
     Legend = TLegend(0.7, 0.7, 0.92, 0.9)
     Legend.AddEntry(data_plot, "Data", "p")
