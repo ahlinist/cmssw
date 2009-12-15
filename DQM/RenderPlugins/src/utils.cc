@@ -14,15 +14,14 @@
 #include "TROOT.h"
 
 using namespace dqm;
-bool utils::initsmp = false;
-bool utils::initrgp = false;
+bool utils::init = false;
 void utils::reportSummaryMapPalette(TH2* obj)
 {
   static int pcol[20];
 
-  if( ! utils::initsmp )
+  if( ! utils::init )
   {
-    utils::initsmp = true;
+    utils::init = true;
 
     float rgb[20][3];
 
@@ -61,39 +60,4 @@ void utils::reportSummaryMapPalette(TH2* obj)
     obj->SetMaximum(+1.0);
     obj->SetOption("colz");
   }
-
 }
-
-void utils::redGreenPalette(TH2* obj)
-{
-  static int pcol[2];
-
-  if( ! utils::initrgp )
-  {
-    utils::initrgp = true;
-
-    float rgb[2][2];
-    rgb[0][0] = 0.80;
-    rgb[0][1] = 0.00;
-    rgb[1][0] = 0.00;
-    rgb[1][1] = 0.80;
-
-    for( int i=0; i<2; i++ )
-    {
-      pcol[i] = 901+i;
-      TColor* color = gROOT->GetColor( 901+i );
-      if( ! color ) color = new TColor( 901+i, 0, 0, 0, "" );
-      color->SetRGB( rgb[i][0], rgb[i][1], 0. );
-    }
-
-    gStyle->SetPalette(2, pcol);
-  }
-
-  if( obj )
-  {
-    obj->SetMinimum(-1.e-15);
-    obj->SetMaximum(+1.0);
-    obj->SetOption("colz");
-  }
-}
-

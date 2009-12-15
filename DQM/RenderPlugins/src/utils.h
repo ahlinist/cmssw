@@ -17,11 +17,9 @@ namespace dqm
   {
   public:
     static void reportSummaryMapPalette(TH2* obj);
-    static void redGreenPalette(TH2* obj);
 
   private:
-    static bool initsmp;
-    static bool initrgp;
+    static bool init;
   };
 }
 
