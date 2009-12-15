@@ -74,6 +74,7 @@ def compare_distributions(
     data_plot.SetMarkerStyle(22)
     #data_plot.SetMarkerSize(2.5)
     data_plot.SetMarkerColor(2)
+    data_plot.Sumw2()
     if data_plot.GetEntries() > 0:
         data_plot.Scale(1.0/data_plot.GetEntries())
     data_plot.Draw("same pe")
@@ -123,9 +124,9 @@ def compare_effs(
     mc_eff.SetMarkerStyle(20)
     mc_plot.GetXaxis().SetTitle(x_axis)
     mc_plot.GetYaxis().SetTitle(y_axis)
-    mc_plot.GetYaxis().SetRangeUser(1e-4, 1)
+    mc_plot.GetYaxis().SetRangeUser(1e-2, 1.1)
     mc_plot.Draw()
-    mc_eff.Draw("pe")
+    mc_eff.Draw("pe1")
     
     data_hist_name = "data_"+output_hist
     data_plot, data_eff = efficiency(
@@ -139,7 +140,7 @@ def compare_effs(
 
     data_eff.SetMarkerStyle(22)
     data_eff.SetMarkerColor(2)
-    data_eff.Draw("pe")
+    data_eff.Draw("pe1")
 
     Legend = TLegend(0.7, 0.7, 0.92, 0.9)
     Legend.AddEntry(data_eff, "Data", "p")
@@ -163,9 +164,9 @@ def compare_effs(
     
 canvas = TCanvas("blah", "blah", 700, 500)
 
-#std_cut = "$pt > 5 && $emFraction > 0.1"
-std_cut = "1"
-std_cut_label="p_{T} > 5, emFraction > 0.1"
+std_cut = "$pt > 5 && $ref_emFraction >  0.01"
+#std_cut = "1"
+std_cut_label="p_{T} > 5, jet emFraction > 0.01"
 
 for current_ntuple in ntuples_to_plot:
     print current_ntuple
