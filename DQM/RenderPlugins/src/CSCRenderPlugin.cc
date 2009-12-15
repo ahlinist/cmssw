@@ -46,7 +46,7 @@ class CSCRenderPlugin : public DQMRenderPlugin {
   MapOfPatternResults mopr;
 
 public:
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo & )
     {
       if ( o.name.find( "CSC/" ) != std::string::npos )
         return true;
@@ -54,7 +54,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
+  virtual void preDraw(TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
     {
       if(o.object == NULL)
         return;
@@ -1992,7 +1992,7 @@ public:
       }
     }
 
-  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & ) {
+  virtual void postDraw(TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & ) {
 
       if(o.object == NULL)
         return;
