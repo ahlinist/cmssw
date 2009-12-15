@@ -39,6 +39,8 @@ typedef HandleManagerImpl<reco::PFTauDiscriminator> PFTauDiscriminatorHandleMana
 typedef HandleManagerImpl<reco::CaloTauDiscriminator> CaloTauDiscriminatorHandleManager;
 #include "DataFormats/Candidate/interface/CandMatchMap.h"
 typedef HandleManagerImpl<reco::CandViewMatchMap> CandViewMatchMapHandler;
+#include "DataFormats/TauReco/interface/PFTauDecayModeAssociation.h"
+typedef HandleManagerImpl<reco::PFTauDecayModeAssociation> PFTauDecayModeAssociationHandleManager;
 
 
 #endif

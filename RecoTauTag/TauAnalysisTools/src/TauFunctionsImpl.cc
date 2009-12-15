@@ -9,6 +9,7 @@ template class TauStringFunction<reco::GenJet>;
 template class TauStringFunction<reco::PFJet>;
 template class TauStringFunction<reco::CaloJet>;
 template class TauStringFunction<pat::Tau>;
+template class TauStringFunction<reco::PFTauDecayMode>;
 
 #include "RecoTauTag/TauAnalysisTools/src/TauMatchStringFunction.cc"
 template class TauMatchStringFunction<reco::Candidate>;
