@@ -241,20 +241,22 @@ void HFBd2JpsiKstar::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       fitTracks.push_back(tKaon); 
       fitTracks.push_back(tPion); 
 
-      RefCountedKinematicTree bdTree = doVertexFit(fitTracks); 
-      if (!bdTree->isValid()) {
+      RefCountedKinematicTree bdTree;
+      int OK = doVertexFit(fitTracks, bdTree); 
+
+      if (OK == 0 || !bdTree->isValid()) {
 	if (fVerbose > 0) {
 	  cout << "----------------------------------------" << endl;
-	  cout << "==> HFBd2JpsiKstar: Invalid kinematic fit tree !! " << endl;
-	  cout << tMuon1.px() << ", "  << tMuon1.py() << ", "  << tMuon1.pz() << endl;
-	  cout << tMuon2.px() << ", "  << tMuon2.py() << ", "  << tMuon2.pz() << endl;
-	  cout << tKaon.px() << ", "  << tKaon.py() << ", "  << tKaon.pz() << endl;
-	  cout << tPion.px() << ", "  << tPion.py() << ", "  << tPion.pz() << endl;
+	  cout << "==> HFBd2JpsiKstar: Empty/Invalid kinematic fit tree !! " << endl;
+	  cout << tMuon1.pt() << ", "  << tMuon1.d0() << ", "  << tMuon1.dz() << endl;
+	  cout << tMuon2.pt() << ", "  << tMuon2.d0() << ", "  << tMuon2.dz() << endl;
+	  cout << tKaon.pt() << ", "  << tKaon.d0() << ", "  << tKaon.dz() << endl;
+	  cout << tPion.pt() << ", "  << tPion.d0() << ", "  << tPion.dz() << endl;
 	  cout << "----------------------------------------" << endl;
 	}
 	continue; 
       }
-      
+
       bdTree->movePointerToTheTop();
       RefCountedKinematicVertex bdVertex = bdTree->currentDecayVertex();
       RefCountedKinematicParticle bd = bdTree->currentParticle();
@@ -271,10 +273,10 @@ void HFBd2JpsiKstar::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	if (fVerbose > 0) {
 	  cout << "----------------------------------------" << endl;
 	  cout << "==> HFBd2JpsiKstar: Filling B0 candidate with mass = " << bdMass << endl;
-	  cout << tMuon1.px() << ", "  << tMuon1.py() << ", "  << tMuon1.pz() << endl;
-	  cout << tMuon2.px() << ", "  << tMuon2.py() << ", "  << tMuon2.pz() << endl;
-	  cout << tKaon.px() << ", "  << tKaon.py() << ", "  << tKaon.pz() << endl;
-	  cout << tPion.px() << ", "  << tPion.py() << ", "  << tPion.pz() << endl;
+	  cout << tMuon1.pt() << ", "  << tMuon1.d0() << ", "  << tMuon1.dz() << endl;
+	  cout << tMuon2.pt() << ", "  << tMuon2.d0() << ", "  << tMuon2.dz() << endl;
+	  cout << tKaon.pt() << ", "  << tKaon.d0() << ", "  << tKaon.dz() << endl;
+	  cout << tPion.pt() << ", "  << tPion.d0() << ", "  << tPion.dz() << endl;
 	  cout << "----------------------------------------" << endl;
 	}
 
@@ -442,7 +444,7 @@ void HFBd2JpsiKstar::doJpsiVertexFit(std::vector<reco::Track> &Tracks, int iMuon
   pCand->fPlab = comp.Vect();
   pCand->fMass = comp.M();
   pCand->fVtx  = anaVtx;    
-  pCand->fType = 100443;
+  pCand->fType = fType*1000 + 443;
   pCand->fDau1 = -1;
   pCand->fDau2 = -1;
   pCand->fSig1 = gHFEvent->nSigTracks();
@@ -472,7 +474,7 @@ void HFBd2JpsiKstar::doJpsiVertexFit(std::vector<reco::Track> &Tracks, int iMuon
 
 
 // ----------------------------------------------------------------------
-RefCountedKinematicTree HFBd2JpsiKstar::doVertexFit(std::vector<reco::Track> &Tracks){
+int HFBd2JpsiKstar::doVertexFit(std::vector<reco::Track> &Tracks, RefCountedKinematicTree &bdTree){
 
   KinematicParticleFactoryFromTransientTrack pFactory;
   
@@ -504,45 +506,48 @@ RefCountedKinematicTree HFBd2JpsiKstar::doVertexFit(std::vector<reco::Track> &Tr
   allParticles.push_back(pFactory.particle(ttKaon,   kaon_mass, chi, ndf, kaon_sigma));
   allParticles.push_back(pFactory.particle(ttPion,   pion_mass, chi, ndf, pion_sigma));
   
-  //   /////Example of global fit:
-  //   MultiTrackKinematicConstraint *j_psi_c = new  TwoTrackMassKinematicConstraint(jpsi);
-  //   //creating the fitter
-  //   KinematicConstrainedVertexFitter kcvFitter;
-  //   //obtaining the resulting tree
-  //   RefCountedKinematicTree myTree = kcvFitter.fit(allParticles, j_psi_c);
-  //   cout << "Global fit done:" << endl;
-
-
-  //creating the vertex fitter
   KinematicParticleVertexFitter kpvFitter;
+  RefCountedKinematicTree jpTree; 
+  try {
+    jpTree = kpvFitter.fit(muonParticles);
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    if (fVerbose > 0) cout << "HFBd2JpsiKstar: exception caught from kin fit 1" << endl;
+  }
+  if (jpTree->isEmpty()) {
+    return 0;
+  } 
 
-  //reconstructing a J/Psi decay
-  RefCountedKinematicTree jpTree = kpvFitter.fit(muonParticles);
-
-  //creating the particle fitter
   KinematicParticleFitter csFitter;
-
-  // creating the constraint
   ParticleMass jpsi = MJPSI;
   float jp_m_sigma = 0.00004;
-  KinematicConstraint * jpsi_c2 = new MassKinematicConstraint(jpsi, jp_m_sigma);
+  KinematicConstraint *jpsi_c2 = new MassKinematicConstraint(jpsi, jp_m_sigma);
+  try {
+    jpTree = csFitter.fit(jpsi_c2, jpTree);
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    if (fVerbose > 0) cout << "HFBd2JpsiKstar: exception caught from kin fit 2" << endl;
+    delete jpsi_c2; 
+    return 0; 
+  }
+
+  if (jpTree->isEmpty()) return 0; 
   
-  //the constrained fit:
-  jpTree = csFitter.fit(jpsi_c2, jpTree);
-  
-  //getting the J/Psi KinematicParticle and putting it together with the kaons.
-  //The J/Psi KinematicParticle has a pointer to the tree it belongs to
-  jpTree->movePointerToTheTop();
+  try {
+    jpTree->movePointerToTheTop();
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    if (fVerbose > 0) cout << "HFBd2JpsiKstar: exception caught from kin fit " << endl;
+    delete jpsi_c2; 
+    return 0; 
+  }
+
   RefCountedKinematicParticle jpsi_part = jpTree->currentParticle();
   kstarParticles.push_back(jpsi_part);
   
-  //making a vertex fit and thus reconstructing the Bs parameters
-  // the resulting tree includes all the final state tracks, the J/Psi meson,
-  // its decay vertex, the Bs meson and its decay vertex.
-  RefCountedKinematicTree bdTree = kpvFitter.fit(kstarParticles);
-
-  return bdTree;
-
+  bdTree = kpvFitter.fit(kstarParticles);
+  delete jpsi_c2; 
+  return 1;
 }
 
 

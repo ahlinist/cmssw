@@ -12,6 +12,8 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+
 class TFile;
 class TTree;
 class TAna01Event;
@@ -29,12 +31,14 @@ class HFDumpTracks : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  edm::InputTag        fTracksLabel, 
+  edm::InputTag        fTracksLabel, fPrimaryVertexLabel,
                        fGenEventLabel, fSimTracksLabel,
                        fAssociatorLabel, fTrackingParticlesLabel;
   edm::InputTag        fMuonsLabel;
 
   int                  fVerbose, fDoTruthMatching; 
+
+  reco::Vertex         fPV;
 
   TrackAssociatorBase *fAssociator;
 };

@@ -161,14 +161,15 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
       TrackBaseRef rTrackView(hTracks, itrack2);
       Track tTrack2(*rTrackView);
+      found_candidate = false;
 
       if (tTrack2.pt() < fTrackPt)  continue;
 
-      if ( tMuon1.charge()*tTrack2.charge() < 0  ){
-      	m2.SetPtEtaPhiM(tTrack2.pt(), tTrack2.eta(), tTrack2.phi(), MMUON); 
-      	dimuon = m1 + m2;
-	found_candidate = true; 
-      } 
+      //      if ( tMuon1.charge()*tTrack2.charge() < 0  ){
+      m2.SetPtEtaPhiM(tTrack2.pt(), tTrack2.eta(), tTrack2.phi(), MMUON); 
+      dimuon = m1 + m2;
+      found_candidate = true; 
+      //      } 
       
       if (found_candidate) {
       	if (dimuon.M() < fMassLow || dimuon.M() > fMassHigh) {
@@ -195,7 +196,6 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	} else if ( fVertexing == 0 ) {
 	  fillCandAndSignal(fitTracks, iMuon1, itrack2);
 	}
-	found_candidate = false;
       } 
     }
   }

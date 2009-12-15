@@ -17,6 +17,7 @@
 
 #include "DataFormats/TrackerRecHit2D/interface/SiTrackerGSRecHit2D.h" 
 
+#include "DataFormats/TrackReco/interface/HitPattern.h"
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "DataFormats/TrackReco/interface/TrackExtraFwd.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
@@ -28,7 +29,7 @@
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "DataFormats/TrackReco/interface/HitPattern.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna01Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
@@ -53,6 +54,7 @@ using namespace reco;
 // ----------------------------------------------------------------------
 HFDumpTracks::HFDumpTracks(const edm::ParameterSet& iConfig):
   fTracksLabel(iConfig.getUntrackedParameter<InputTag>("tracksLabel", InputTag("ctfWithMaterialTracks"))),
+  fPrimaryVertexLabel(iConfig.getUntrackedParameter<InputTag>("primaryVertexLabel", InputTag("offlinePrimaryVertices"))),
   fGenEventLabel(iConfig.getUntrackedParameter<InputTag>("generatorEventLabel", InputTag("source"))),
   fSimTracksLabel(iConfig.getUntrackedParameter<InputTag>("simTracksLabel", InputTag("famosSimHits"))),
   fAssociatorLabel(iConfig.getUntrackedParameter<InputTag>("associatorLabel", InputTag("TrackAssociatorByChi2"))), 
@@ -63,6 +65,7 @@ HFDumpTracks::HFDumpTracks(const edm::ParameterSet& iConfig):
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpTracks constructor  " << endl;
   cout << "---  tracksLabel:             " << fTracksLabel << endl;
+  cout << "---  primaryVertexLabel:      " << fPrimaryVertexLabel << endl;
   cout << "---  muonsLabel:              " << fMuonsLabel << endl;
   cout << "---  generatorEventLabel:     " << fGenEventLabel << endl;
   cout << "---  simTracksLabel:          " << fSimTracksLabel << endl;
@@ -86,6 +89,21 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // -- get the collection of RecoTracks 
   edm::Handle<edm::View<reco::Track> > tracksView;
   iEvent.getByLabel(fTracksLabel, tracksView);
+
+  // -- get the primary vertex
+  edm::Handle<VertexCollection> recoPrimaryVertexCollection;
+  iEvent.getByLabel(fPrimaryVertexLabel, recoPrimaryVertexCollection);
+  if(!recoPrimaryVertexCollection.isValid()) {
+    cout << "==>HFMuonAndTrack> No primary vertex collection found, skipping" << endl;
+    return;
+  }
+  const reco::VertexCollection vertices = *(recoPrimaryVertexCollection.product());
+  if (vertices.size() == 0) {
+    cout << "==>HFMuonAndTrack> No primary vertex found, skipping" << endl;
+    return;
+  }
+  fPV = vertices[gHFEvent->fEventTag]; 
+
 
   // -- get the collection of muons and store their corresponding track indices
   vector<unsigned int> muonIndices, muonCollectionIndices;
@@ -132,6 +150,10 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   TAnaTrack *pTrack; 
   TH1D *h1 = (TH1D*)gHFFile->Get("h1");
   if (h1) h1->Fill(tracksView->size());
+
+  
+  math::XYZPoint refPt = fPV.position();
+  
   for (unsigned int i = 0; i < tracksView->size(); ++i){    
 
     TrackBaseRef rTrackView(tracksView,i);
@@ -143,8 +165,8 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			      trackView.eta(),
 			      trackView.phi()
 			      );
-    pTrack->fTip = trackView.dxy(); // no
-    pTrack->fLip = trackView.dsz(); // no
+    pTrack->fTip = trackView.dxy(refPt);
+    pTrack->fLip = trackView.dz(refPt); 
 
     pTrack->fd0  = trackView.d0();
     pTrack->fd0E = trackView.d0Error();

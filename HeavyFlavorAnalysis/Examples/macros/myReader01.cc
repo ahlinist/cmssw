@@ -1,5 +1,6 @@
 #include "myReader01.hh"
 #include <vector>
+
 #include "TRandom.h"
 #define MMUON 0.10566
 #define MKAON 0.49368
@@ -33,7 +34,9 @@ void myReader01::eventProcessing() {
 
   fRun = fpEvt->fRunNumber;
 
-  if (fIsMC==0 && fRun < 124120) return;
+  vector<pair<int, int> > pairs; 
+
+  //  if (fIsMC==0 && fRun < 124120) return;
 
   int fL40(0), fL00(0), fL41(0), fGoodTrigger(0); 
 
@@ -53,7 +56,7 @@ void myReader01::eventProcessing() {
   // -- skip large events
   int ntrk = fpEvt->nRecTracks();
   ((TH1D*)fpHistFile->Get("ntrk"))->Fill(ntrk);
-  if (ntrk > 60) {
+  if (ntrk > 100) {
     cout << "Skipping event with ntracks = " << ntrk << endl;
     return;
   }
@@ -90,16 +93,14 @@ void myReader01::eventProcessing() {
 
   //  cout << "------------------------------" << endl;
 
-//   TAnaTrack *pT; 
-//   for (int it = 0; it < fpEvt->nRecTracks(); ++it) {
-//     pT = fpEvt->getRecTrack(it); 
-//   }
-
   
   ((TH1D*)fpHistFile->Get("pvz1"))->Fill(pvz);
   ((TH2D*)fpHistFile->Get("pvxy"))->Fill(pvx, pvy);
 
   double mass, chi2; 
+  int it1(-1), it2(-1); 
+  bool duplicate; 
+  pairs.clear();
   for (int it = 0; it < fpEvt->nCands(); ++it) {
     pCand = fpEvt->getCand(it);
     mass = pCand->fMass; 
@@ -116,7 +117,7 @@ void myReader01::eventProcessing() {
     if (0 == pM1 || 0 == pM2) {
       cout << "problem with candidate sig tracks! Skipping" << endl;
       continue;
-    }
+    }    
 
     pT1 = pT2 = 0; 
     if (pM1->fIndex > -1) pT1 = fpEvt->getRecTrack(pM1->fIndex); 
@@ -125,6 +126,27 @@ void myReader01::eventProcessing() {
       cout << "problem with one candidate sig track -> rec track! Skipping" << endl;
       continue;
     }
+
+    it1 = pM1->fIndex; 
+    it2 = pM2->fIndex; 
+    duplicate = false; 
+    int duplo(0); 
+    if (1300 == pCand->fType) {
+      for (int i = 0; i < pairs.size(); ++i) {
+	if (it1 == pairs[i].first && it2 == pairs[i].second) {duplicate = true;  duplo = 1000*pairs[i].first + pairs[i].second;}
+	if (it2 == pairs[i].first && it1 == pairs[i].second) {duplicate = true;  duplo = 1000*pairs[i].first + pairs[i].second;}
+	if (duplicate) break;
+      }
+    }
+
+    if (duplicate) {
+      cout << "duplicate event cand ... Skipping: " 
+	   << pCand->fType << " mass: " << pCand->fMass << " it1/2: " << it1 << "/" << it2
+	   << " duplo: " << duplo
+	   << endl;
+      continue;
+    }      
+    pairs.push_back(make_pair(pM1->fIndex, pM2->fIndex)); 
 
 
     int globalMuon(0), trackerMuon(0), m1(0), m2(0); 
@@ -158,7 +180,12 @@ void myReader01::eventProcessing() {
 
     if (pCand->fType == 1300) {
 
-      
+
+      ((TH1D*)fpHistFile->Get("pvz2"))->Fill(pvz);
+
+      if (pCand->fMass < 3.2 && pCand->fMass > 2.8) {
+	cout << Form("M1: %3d M2: %3d, it1: %3d, it2: %3d, mass: %f", pM1->fIndex ,  pM2->fIndex, it1, it2, pCand->fMass) << endl;
+      }
       
 //       cout << Form("C: %5d", pCand->fType)
 // 	   << Form(" m = %5.2f", mass)
@@ -175,15 +202,30 @@ void myReader01::eventProcessing() {
 
     if (pCand->fType == 1300) {
 
+      double PT1CUT(1.0), PT2CUT(1.0); 
+
+      ((TH1D*)fpHistFile->Get("m1300pt1"))->Fill(pT1->fPlab.Perp());
       ((TH1D*)fpHistFile->Get("m1300pt2"))->Fill(pT2->fPlab.Perp());
-      if (pT2->fPlab.Perp() < 1) continue;
+
+      ((TH1D*)fpHistFile->Get("m1300d0"))->Fill(pT1->fTip);
+      ((TH1D*)fpHistFile->Get("m1300dz"))->Fill(pT1->fdz);
+
+      ((TH1D*)fpHistFile->Get("m1300d0"))->Fill(pT2->fTip);
+      ((TH1D*)fpHistFile->Get("m1300dz"))->Fill(pT2->fdz);
       
       ((TH1D*)fpHistFile->Get("m1300"))->Fill(mass);
-      ((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
+      if ((pT1->fPlab.Perp() > PT1CUT) && (pT2->fPlab.Perp() > PT2CUT)) ((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
+      if ((pT1->fPlab.Perp() > PT1CUT) && (pT2->fPlab.Perp() > PT2CUT)
+	  && (pT1->fdz < 20) && (pT2->fdz < 20)
+	  && (pT1->fd0 < 5) && (pT2->fd0 < 5)
+	  && (pCand->fPlab.Perp() > 3.)
+	  && (chi2 < 4)
+	  ) {
+	((TH1D*)fpHistFile->Get("m1302"))->Fill(mass);
+      }
       if (m2 > 0) ((TH1D*)fpHistFile->Get("m1313"))->Fill(mass);
       
       ((TH1D*)fpHistFile->Get("m1300pt"))->Fill(pCand->fPlab.Perp());
-      ((TH1D*)fpHistFile->Get("m1300pt1"))->Fill(pT1->fPlab.Perp());
 
 
       for (int i = 0; i < 40; ++i) {
@@ -236,6 +278,7 @@ cout << "--> myReader01> bookHist> " << endl;
  h = new TH1D("chi2", "chi2", 100, 0., 20.); 
  h = new TH1D("pvz0",  "pv z", 100, -20., 20.); 
  h = new TH1D("pvz1",  "pv z", 100, -20., 20.); 
+ h = new TH1D("pvz2",  "pv z", 100, -20., 20.); 
 
  h = new TH1D("m421", "mass", 40, 1.5, 2.1); 
  h = new TH1D("m413", "mass", 50, 1.8, 2.3); 
@@ -244,6 +287,7 @@ cout << "--> myReader01> bookHist> " << endl;
 
  h = new TH1D("m1300", "mass", 60, 0.0, 12.0); 
  h = new TH1D("m1301", "mass", 30, 2.8, 3.4); 
+ h = new TH1D("m1302", "mass", 30, 2.8, 3.4); 
  h = new TH1D("m1313", "mass", 30, 2.8, 3.4); 
 
 
@@ -255,11 +299,14 @@ cout << "--> myReader01> bookHist> " << endl;
  h = new TH1D("m1300pt1", "pt1", 50, 0.0, 10.0); 
  h = new TH1D("m1300pt2", "pt2", 50, 0.0, 10.0); 
 
+ h = new TH1D("m1300d0",  "d0", 50,  0.0, 0.5); 
+ h = new TH1D("m1300dz",  "dz", 50,-10.0,10.0); 
+
  h = new TH1D("m100531", "mass", 40, 5.0, 5.6); 
 
  TH2 *h2; 
  h2 = new TH2D("muonID", "muon ID", 10, 0., 10., 10, 0., 10.); 
- h2 = new TH2D("pvxy",  "pv y:x", 100, -1., 1., 100, -1., 1.); 
+ h2 = new TH2D("pvxy",  "pv y:x", 100, -0.5, 0.5, 100, -0.5, 0.5); 
 
 // -- Reduced Tree
 fTree = new TTree("events", "events");

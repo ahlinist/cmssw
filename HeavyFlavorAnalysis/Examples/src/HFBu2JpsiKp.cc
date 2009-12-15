@@ -189,7 +189,6 @@ void HFBu2JpsiKp::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Track tKaon; 
   int   iKaon; 
 
-  // -- Loop over all K* daughters: include both K* possibilities 
   // -- kaon!
   for (unsigned int iTrack1 = 0; iTrack1 < hTracks->size(); ++iTrack1){    
     if (static_cast<int>(iTrack1) == iMuon1 || static_cast<int>(iTrack1) == iMuon2) continue; 
@@ -212,118 +211,121 @@ void HFBu2JpsiKp::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     fitTracks.push_back(tMuon2); 
     fitTracks.push_back(tKaon); 
 
-    RefCountedKinematicTree buTree = doVertexFit(fitTracks); 
-    if (!buTree->isValid()) {
+    RefCountedKinematicTree buTree;
+    int OK = doVertexFit(fitTracks, buTree); 
+
+    if (OK == 0 || !buTree->isValid()) {
       if (fVerbose > 0) {
 	cout << "----------------------------------------" << endl;
-	cout << "==> HFBu2JpsiKp: Invalid kinematic fit tree !! " << endl;
+	cout << "==> HFBu2JpsiKp: Empty/Invalid kinematic fit tree !! " << endl;
+	cout << tMuon1.pt() << ", "  << tMuon1.d0() << ", "  << tMuon1.dz() << endl;
+	cout << tMuon2.pt() << ", "  << tMuon2.d0() << ", "  << tMuon2.dz() << endl;
+	cout << tKaon.pt() << ", "  << tKaon.d0() << ", "  << tKaon.dz() << endl;
+	cout << "----------------------------------------" << endl;
+      }
+      continue; 
+    }
+    
+   
+    buTree->movePointerToTheTop();
+    RefCountedKinematicVertex buVertex = buTree->currentDecayVertex();
+    RefCountedKinematicParticle Bu = buTree->currentParticle();
+    
+    TVector3 buPlab = (Bu->currentState().globalMomentum().x(), 
+		       Bu->currentState().globalMomentum().y(), 
+		       Bu->currentState().globalMomentum().z()
+		       );
+    AlgebraicVector7 buParameters = Bu->currentState().kinematicParameters().vector();
+    double buMass = buParameters[6];
+    
+    if (buVertex->vertexIsValid() && buMass > 4.8 && buMass < 6.0) {
+      
+      if (fVerbose > 0) {
+	cout << "----------------------------------------" << endl;
+	cout << "==> HFBu2JpsiKp: Filling B+ candidate with mass = " << buMass << endl;
 	cout << tMuon1.px() << ", "  << tMuon1.py() << ", "  << tMuon1.pz() << endl;
 	cout << tMuon2.px() << ", "  << tMuon2.py() << ", "  << tMuon2.pz() << endl;
 	cout << tKaon.px() << ", "  << tKaon.py() << ", "  << tKaon.pz() << endl;
 	cout << "----------------------------------------" << endl;
       }
-      continue; 
-    }
       
-      buTree->movePointerToTheTop();
-      RefCountedKinematicVertex buVertex = buTree->currentDecayVertex();
-      RefCountedKinematicParticle Bu = buTree->currentParticle();
-
-      TVector3 buPlab = (Bu->currentState().globalMomentum().x(), 
-			 Bu->currentState().globalMomentum().y(), 
-			 Bu->currentState().globalMomentum().z()
-			 );
-      AlgebraicVector7 buParameters = Bu->currentState().kinematicParameters().vector();
-      double buMass = buParameters[6];
-
-      if (buVertex->vertexIsValid() && buMass > 4.8 && buMass < 6.0) {
-
-	if (fVerbose > 0) {
-	  cout << "----------------------------------------" << endl;
-	  cout << "==> HFBu2JpsiKp: Filling B+ candidate with mass = " << buMass << endl;
-	  cout << tMuon1.px() << ", "  << tMuon1.py() << ", "  << tMuon1.pz() << endl;
-	  cout << tMuon2.px() << ", "  << tMuon2.py() << ", "  << tMuon2.pz() << endl;
-	  cout << tKaon.px() << ", "  << tKaon.py() << ", "  << tKaon.pz() << endl;
-	  cout << "----------------------------------------" << endl;
-	}
-
-	TAnaVertex anaVt;
-
-	ChiSquared chi(Bu->chiSquared(), Bu->degreesOfFreedom());
-	anaVt.setInfo(Bu->chiSquared(), Bu->degreesOfFreedom(), chi.probability(), 0, 0);
-	
-	anaVt.fPoint.SetXYZ(buVertex->position().x(), 
-			    buVertex->position().y(), 
-			    buVertex->position().z()
-			    );
-	
-	// -- Distance to primary vertex
-	VertexDistanceXY axy;
-	double dXY      = axy.distance(fPV, buVertex->vertexState()).value();
-	double dXYE     = axy.distance(fPV, buVertex->vertexState()).error();
-	
-	VertexDistance3D a3d;
-	double d3d      = a3d.distance(fPV, buVertex->vertexState()).value();
-	double d3dE     = a3d.distance(fPV, buVertex->vertexState()).error();
-	
-	anaVt.fDxy  = dXY; 
-	anaVt.fDxyE = dXYE; 
-	
-	anaVt.fD3d  = d3d; 
-	anaVt.fD3dE = d3dE; 
-
-	// -- fill candidate
-	TAnaCand  *pCand = gHFEvent->addCand();
-	
-	pCand->fPlab = buPlab;
-	pCand->fMass = buMass;
-	pCand->fVtx  = anaVt;    
-	pCand->fType = fType;
-	pCand->fDau1 = -1;
-	pCand->fDau2 = -1;
-	pCand->fSig1 = gHFEvent->nSigTracks();
-	pCand->fSig2 = pCand->fSig1 + 3;
-
-	// -- fill (not yet refitted) sig tracks
-	pTrack            = gHFEvent->addSigTrack();
-	pTrack->fMCID     = tMuon1.charge()*13; 
-	pTrack->fGenIndex = -1; 
-	pTrack->fQ        = tMuon1.charge();
-	pTrack->fPlab.SetPtEtaPhi(tMuon1.pt(),
-				  tMuon1.eta(),
-				  tMuon1.phi()
-				  ); 
-	pTrack->fIndex  = iMuon1;
-
-	pTrack            = gHFEvent->addSigTrack();
-	pTrack->fMCID     = tMuon2.charge()*13; 
-	pTrack->fGenIndex = -1; 
-	pTrack->fQ        = tMuon2.charge();
-	pTrack->fPlab.SetPtEtaPhi(tMuon2.pt(),
-				  tMuon2.eta(),
-				  tMuon2.phi()
-				  ); 
-	pTrack->fIndex  = iMuon2;
-
-	pTrack            = gHFEvent->addSigTrack();
-	pTrack->fMCID     = tKaon.charge()*321; 
-	pTrack->fGenIndex = -1; 
-	pTrack->fQ        = tKaon.charge();
-	pTrack->fPlab.SetPtEtaPhi(tKaon.pt(),
-				  tKaon.eta(),
-				  tKaon.phi()
-				  ); 
-	pTrack->fIndex  = iKaon;
-	
-
-	// -- Vertex the two muons only
-	pCand = gHFEvent->addCand(); 
-	fitTracks.clear();
-	fitTracks.push_back(tMuon1); 
-	fitTracks.push_back(tMuon2); 
-	doJpsiVertexFit(fitTracks, iMuon1, iMuon2, pCand); 
-
-      }
+      TAnaVertex anaVt;
+      
+      ChiSquared chi(Bu->chiSquared(), Bu->degreesOfFreedom());
+      anaVt.setInfo(Bu->chiSquared(), Bu->degreesOfFreedom(), chi.probability(), 0, 0);
+      
+      anaVt.fPoint.SetXYZ(buVertex->position().x(), 
+			  buVertex->position().y(), 
+			  buVertex->position().z()
+			  );
+      
+      // -- Distance to primary vertex
+      VertexDistanceXY axy;
+      double dXY      = axy.distance(fPV, buVertex->vertexState()).value();
+      double dXYE     = axy.distance(fPV, buVertex->vertexState()).error();
+      
+      VertexDistance3D a3d;
+      double d3d      = a3d.distance(fPV, buVertex->vertexState()).value();
+      double d3dE     = a3d.distance(fPV, buVertex->vertexState()).error();
+      
+      anaVt.fDxy  = dXY; 
+      anaVt.fDxyE = dXYE; 
+      
+      anaVt.fD3d  = d3d; 
+      anaVt.fD3dE = d3dE; 
+      
+      // -- fill candidate
+      TAnaCand  *pCand = gHFEvent->addCand();
+      
+      pCand->fPlab = buPlab;
+      pCand->fMass = buMass;
+      pCand->fVtx  = anaVt;    
+      pCand->fType = fType;
+      pCand->fDau1 = -1;
+      pCand->fDau2 = -1;
+      pCand->fSig1 = gHFEvent->nSigTracks();
+      pCand->fSig2 = pCand->fSig1 + 3;
+      
+      // -- fill (not yet refitted) sig tracks
+      pTrack            = gHFEvent->addSigTrack();
+      pTrack->fMCID     = tMuon1.charge()*13; 
+      pTrack->fGenIndex = -1; 
+      pTrack->fQ        = tMuon1.charge();
+      pTrack->fPlab.SetPtEtaPhi(tMuon1.pt(),
+				tMuon1.eta(),
+				tMuon1.phi()
+				); 
+      pTrack->fIndex  = iMuon1;
+      
+      pTrack            = gHFEvent->addSigTrack();
+      pTrack->fMCID     = tMuon2.charge()*13; 
+      pTrack->fGenIndex = -1; 
+      pTrack->fQ        = tMuon2.charge();
+      pTrack->fPlab.SetPtEtaPhi(tMuon2.pt(),
+				tMuon2.eta(),
+				tMuon2.phi()
+				); 
+      pTrack->fIndex  = iMuon2;
+      
+      pTrack            = gHFEvent->addSigTrack();
+      pTrack->fMCID     = tKaon.charge()*321; 
+      pTrack->fGenIndex = -1; 
+      pTrack->fQ        = tKaon.charge();
+      pTrack->fPlab.SetPtEtaPhi(tKaon.pt(),
+				tKaon.eta(),
+				tKaon.phi()
+				); 
+      pTrack->fIndex  = iKaon;
+      
+      
+      // -- Vertex the two muons only
+      pCand = gHFEvent->addCand(); 
+      fitTracks.clear();
+      fitTracks.push_back(tMuon1); 
+      fitTracks.push_back(tMuon2); 
+      doJpsiVertexFit(fitTracks, iMuon1, iMuon2, pCand); 
+      
+    }
   }
   
 }
@@ -395,7 +397,7 @@ void HFBu2JpsiKp::doJpsiVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, 
   pCand->fPlab = comp.Vect();
   pCand->fMass = comp.M();
   pCand->fVtx  = anaVtx;    
-  pCand->fType = 100443;
+  pCand->fType = fType*1000 + 443;
   pCand->fDau1 = -1;
   pCand->fDau2 = -1;
   pCand->fSig1 = gHFEvent->nSigTracks();
@@ -425,7 +427,7 @@ void HFBu2JpsiKp::doJpsiVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, 
 
 
 // ----------------------------------------------------------------------
-RefCountedKinematicTree HFBu2JpsiKp::doVertexFit(std::vector<reco::Track> &Tracks){
+int HFBu2JpsiKp::doVertexFit(std::vector<reco::Track> &Tracks, RefCountedKinematicTree &buTree){
 
   KinematicParticleFactoryFromTransientTrack pFactory;
   
@@ -447,36 +449,46 @@ RefCountedKinematicTree HFBu2JpsiKp::doVertexFit(std::vector<reco::Track> &Track
   muonParticles.push_back(pFactory.particle(ttMuon2, muon_mass, chi, ndf, muon_sigma));
   allParticles.push_back(pFactory.particle(ttKaon,   kaon_mass, chi, ndf, kaon_sigma));
   
-  //creating the vertex fitter
   KinematicParticleVertexFitter kpvFitter;
+  RefCountedKinematicTree jpTree; 
+  try {
+    jpTree = kpvFitter.fit(muonParticles);
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    if (fVerbose > 0) cout << "HFBu2JpsiKp: exception caught from kin fit 1" << endl;
+  }
+  if (jpTree->isEmpty()) {
+    return 0;
+  } 
 
-  //reconstructing a J/Psi decay
-  RefCountedKinematicTree jpTree = kpvFitter.fit(muonParticles);
-
-  //creating the particle fitter
   KinematicParticleFitter csFitter;
-
-  // creating the constraint
   ParticleMass jpsi = MJPSI;
   float jp_m_sigma = 0.00004;
-  KinematicConstraint * jpsi_c2 = new MassKinematicConstraint(jpsi, jp_m_sigma);
-  
-  //the constrained fit:
-  jpTree = csFitter.fit(jpsi_c2, jpTree);
-  
-  //getting the J/Psi KinematicParticle and putting it together with the kaons.
-  //The J/Psi KinematicParticle has a pointer to the tree it belongs to
-  jpTree->movePointerToTheTop();
+  KinematicConstraint *jpsi_c2 = new MassKinematicConstraint(jpsi, jp_m_sigma);
+  try {
+    jpTree = csFitter.fit(jpsi_c2, jpTree);
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    if (fVerbose > 0) cout << "HFBu2JpsiKp: exception caught from kin fit 2" << endl;
+    delete jpsi_c2; 
+    return 0; 
+  }
+  if (jpTree->isEmpty()) return 0; 
+
+  try {
+    jpTree->movePointerToTheTop();
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    if (fVerbose > 0) cout << "HFBu2JpsiKp: exception caught from kin fit " << endl;
+    delete jpsi_c2; 
+    return 0; 
+  }
+
   RefCountedKinematicParticle jpsi_part = jpTree->currentParticle();
   allParticles.push_back(jpsi_part);
-  
-  //making a vertex fit and thus reconstructing the Bs parameters
-  // the resulting tree includes all the final state tracks, the J/Psi meson,
-  // its decay vertex, the Bs meson and its decay vertex.
-  RefCountedKinematicTree buTree = kpvFitter.fit(allParticles);
-
-  return buTree;
-
+  buTree = kpvFitter.fit(allParticles);
+  delete jpsi_c2; 
+  return 1;
 }
 
 
