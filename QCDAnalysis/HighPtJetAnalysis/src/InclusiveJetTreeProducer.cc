@@ -23,8 +23,6 @@
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
-#include "L1Trigger/GlobalTriggerAnalyzer/interface/L1GtUtils.h"
-
 using namespace edm;
 using namespace reco;
 using namespace std;
@@ -88,6 +86,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   mEvtNo = event.id().event();
   mLumi  = event.luminosityBlock();
   mBunch = event.bunchCrossing();
+
   ////////////Vertices//////////////
   Handle<reco::VertexCollection> recVtxs;
   event.getByLabel("offlinePrimaryVertices",recVtxs);
@@ -95,9 +94,12 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
     {
       if (!((*recVtxs)[ind].isFake())) 
         {
-	  mPVx ->push_back( (*recVtxs)[ind].x() );
-	  mPVy ->push_back( (*recVtxs)[ind].y() );
-	  mPVz ->push_back( (*recVtxs)[ind].z() );
+	  mPVx      ->push_back((*recVtxs)[ind].x());
+	  mPVy      ->push_back((*recVtxs)[ind].y());
+	  mPVz      ->push_back((*recVtxs)[ind].z());
+          mPVchi2   ->push_back((*recVtxs)[ind].chi2());
+          mPVndof   ->push_back((*recVtxs)[ind].ndof());
+          mPVntracks->push_back((*recVtxs)[ind].tracksSize());
         }
     }
 
@@ -132,13 +134,6 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
             hcalNoise.insert(pair<CaloTowerDetId, double>(noiseCTowers[itow]->id(),noiseCTowers[itow]->hadEnergy()));
         }
     }
-
-  Handle<HcalNoiseSummary> noiseSummary;
-  event.getByLabel("hcalnoise", noiseSummary);
-  const HcalNoiseSummary summary = *noiseSummary;
-  mLooseHcalNoise = summary.passLooseNoiseFilter();
-  mTightHcalNoise = summary.passTightNoiseFilter();
-
   ////////////// Jets //////
   Handle<CaloJetCollection> jets;
   event.getByLabel(mJetsName,jets);
@@ -160,6 +155,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       mPhi       ->push_back((*jets)[ind].phi());
       mE         ->push_back((*jets)[ind].energy());
       mN90       ->push_back((*jets)[ind].n90());
+      mN90Hits   ->push_back((*jetsID)[jetRef].n90Hits);
       mfHPD      ->push_back((*jetsID)[jetRef].fHPD);
       mfRBX      ->push_back((*jetsID)[jetRef].fRBX); 
       mEmf       ->push_back((*jets)[ind].emEnergyFraction()); 	
@@ -216,16 +212,24 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
           cout << "\nL1GlobalTriggerReadoutRecord with \n \n not found"
           "\n  --> returning false by default!\n" << endl;
         }
-
+      if (!gtOMRec.isValid()) 
+        {
+          cout << "\nL1GlobalTriggerObjectMapRecord with \n \n not found"
+          "\n  --> returning false by default!\n" << endl;
+        }
       // L1 decision word
       const DecisionWord dWord = gtRecord->decisionWord();
-      // std::map<std::string, int> l1map;
-      for(unsigned int i=0; i<mL1TriggerNames.size(); i++)
-	{
-	  //std::map<std::string, int>::const_iterator itr = l1map.find( mL1TriggerNames[i] );
-	  bool algResult = l1AlgorithmResult(event, iSetup, mL1TriggerNames[i] );
-	  if( algResult ) mL1Names->push_back( mL1TriggerNames[i] );
-	}
+      map<string, int> l1map;
+      const vector<L1GlobalTriggerObjectMap>& objMapVec = gtOMRec->gtObjectMap();
+      for(vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();itMap != objMapVec.end(); ++itMap) 
+        l1map.insert( std::pair<std::string, int> ((*itMap).algoName(), (*itMap).algoBitNumber()) );
+      for(unsigned int i=0; i<mL1TriggerNames.size(); i++) 
+        {
+          map<string, int>::const_iterator itr = l1map.find(mL1TriggerNames[i]);
+          if (itr != l1map.end()) 
+            if (dWord[itr->second]) 
+              mL1Names->push_back( itr->first );
+        }
     }
   ////////////// MET //////
   Handle<CaloMETCollection> met;
@@ -263,73 +267,79 @@ InclusiveJetTreeProducer::~InclusiveJetTreeProducer()
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::buildTree() 
 {
-  mPt         = new std::vector<double>();
-  mEta        = new std::vector<double>();
-  mEtaD       = new std::vector<double>();
-  mY          = new std::vector<double>();
-  mPhi        = new std::vector<double>();
-  mE          = new std::vector<double>();
-  mEmf        = new std::vector<double>();
-  mEtaMoment  = new std::vector<double>();
-  mPhiMoment  = new std::vector<double>();
-  mNtrkVtx    = new std::vector<int>   ();
-  mNtrkCalo   = new std::vector<int>   ();
-  mTrkCaloPt  = new std::vector<double>();
-  mTrkCaloEta = new std::vector<double>();
-  mTrkCaloPhi = new std::vector<double>();
-  mTrkVtxPt   = new std::vector<double>();
-  mTrkVtxEta  = new std::vector<double>();
-  mTrkVtxPhi  = new std::vector<double>();
-  mN90        = new std::vector<int>   ();
-  mfHPD       = new std::vector<double>();
-  mfRBX       = new std::vector<double>();
-  mfHcalNoise = new std::vector<double>();
-  mPVx        = new std::vector<double>();
-  mPVy        = new std::vector<double>();
-  mPVz        = new std::vector<double>();
-  mHLTNames   = new std::vector<std::string>();
-  mL1Names    = new std::vector<std::string>();
+  mPt           = new std::vector<double>();
+  mEta          = new std::vector<double>();
+  mEtaD         = new std::vector<double>();
+  mY            = new std::vector<double>();
+  mPhi          = new std::vector<double>();
+  mE            = new std::vector<double>();
+  mEmf          = new std::vector<double>();
+  mEtaMoment    = new std::vector<double>();
+  mPhiMoment    = new std::vector<double>();
+  mNtrkVtx      = new std::vector<int>   ();
+  mNtrkCalo     = new std::vector<int>   ();
+  mTrkCaloPt    = new std::vector<double>();
+  mTrkCaloEta   = new std::vector<double>();
+  mTrkCaloPhi   = new std::vector<double>();
+  mTrkVtxPt     = new std::vector<double>();
+  mTrkVtxEta    = new std::vector<double>();
+  mTrkVtxPhi    = new std::vector<double>();
+  mN90          = new std::vector<int>   ();
+  mN90Hits      = new std::vector<int>   ();
+  mfHPD         = new std::vector<double>();
+  mfRBX         = new std::vector<double>();
+  mfHcalNoise   = new std::vector<double>();
+  mPVx          = new std::vector<double>();
+  mPVy          = new std::vector<double>();
+  mPVz          = new std::vector<double>();
+  mPVchi2       = new std::vector<double>();
+  mPVndof       = new std::vector<double>();
+  mPVntracks    = new std::vector<int>();
+  mHLTNames     = new std::vector<std::string>();
+  mL1Names      = new std::vector<std::string>();
 
-  mTree->Branch("pt"                 ,"vector<double>"      ,&mPt);
-  mTree->Branch("eta"                ,"vector<double>"      ,&mEta);
-  mTree->Branch("etaDetector"        ,"vector<double>"      ,&mEtaD);
-  mTree->Branch("y"                  ,"vector<double>"      ,&mY);
-  mTree->Branch("phi"                ,"vector<double>"      ,&mPhi);
-  mTree->Branch("e"                  ,"vector<double>"      ,&mE);
-  mTree->Branch("emf"                ,"vector<double>"      ,&mEmf);
-  mTree->Branch("etaMoment"          ,"vector<double>"      ,&mEtaMoment);
-  mTree->Branch("phiMoment"          ,"vector<double>"      ,&mPhiMoment);
-  mTree->Branch("nTrkVtx"            ,"vector<int>"         ,&mNtrkVtx);
-  mTree->Branch("nTrkCalo"           ,"vector<int>"         ,&mNtrkCalo);
-  mTree->Branch("TrkCaloPt"          ,"vector<double>"      ,&mTrkCaloPt);
-  mTree->Branch("TrkCaloEta"         ,"vector<double>"      ,&mTrkCaloEta);
-  mTree->Branch("TrkCaloPhi"         ,"vector<double>"      ,&mTrkCaloPhi);
-  mTree->Branch("TrkVtxPt"           ,"vector<double>"      ,&mTrkVtxPt);
-  mTree->Branch("TrkVtxEta"          ,"vector<double>"      ,&mTrkVtxEta);
-  mTree->Branch("TrkVtxPhi"          ,"vector<double>"      ,&mTrkVtxPhi);
-  mTree->Branch("n90"                ,"vector<int>"         ,&mN90);
-  mTree->Branch("fHPD"               ,"vector<double>"      ,&mfHPD);
-  mTree->Branch("fRBX"               ,"vector<double>"      ,&mfRBX);  
-  mTree->Branch("fHcalNoise"         ,"vector<double>"      ,&mfHcalNoise);
-  mTree->Branch("PVx"                ,"vector<double>"      ,&mPVx);
-  mTree->Branch("PVy"                ,"vector<double>"      ,&mPVy);
-  mTree->Branch("PVz"                ,"vector<double>"      ,&mPVz);
-  mTree->Branch("hltNames"           ,"vector<string>"      ,&mHLTNames);
-  mTree->Branch("l1Names"            ,"vector<string>"      ,&mL1Names);
-  mTree->Branch("evtNo"              ,&mEvtNo               ,"mEvtNo/I");
-  mTree->Branch("runNo"              ,&mRunNo               ,"mRunNo/I");
-  mTree->Branch("lumi"               ,&mLumi                ,"mLumi/I");
-  mTree->Branch("bunch"              ,&mBunch               ,"mBunch/I");
-  mTree->Branch("passLooseHcalNoise" ,&mLooseHcalNoise      ,"mLooseHcalNoise/I");
-  mTree->Branch("passTightHcalNoise" ,&mTightHcalNoise      ,"mTightHcalNoise/I");
-  mTree->Branch("met"                ,&mMET                 ,"mMET/D");
-  mTree->Branch("sumet"              ,&mSumET               ,"mSumET/D");
-  mTree->Branch("metNoHF"            ,&mMETnoHF             ,"mMETnoHF/D");
-  mTree->Branch("sumetNoHF"          ,&mSumETnoHF           ,"mSumETnoHF/D");
+  mTree->Branch("pt"         ,"vector<double>"      ,&mPt);
+  mTree->Branch("eta"        ,"vector<double>"      ,&mEta);
+  mTree->Branch("etaDetector","vector<double>"      ,&mEtaD);
+  mTree->Branch("y"          ,"vector<double>"      ,&mY);
+  mTree->Branch("phi"        ,"vector<double>"      ,&mPhi);
+  mTree->Branch("e"          ,"vector<double>"      ,&mE);
+  mTree->Branch("emf"        ,"vector<double>"      ,&mEmf);
+  mTree->Branch("etaMoment"  ,"vector<double>"      ,&mEtaMoment);
+  mTree->Branch("phiMoment"  ,"vector<double>"      ,&mPhiMoment);
+  mTree->Branch("nTrkVtx"    ,"vector<int>"         ,&mNtrkVtx);
+  mTree->Branch("nTrkCalo"   ,"vector<int>"         ,&mNtrkCalo);
+  mTree->Branch("TrkCaloPt"  ,"vector<double>"      ,&mTrkCaloPt);
+  mTree->Branch("TrkCaloEta" ,"vector<double>"      ,&mTrkCaloEta);
+  mTree->Branch("TrkCaloPhi" ,"vector<double>"      ,&mTrkCaloPhi);
+  mTree->Branch("TrkVtxPt"   ,"vector<double>"      ,&mTrkVtxPt);
+  mTree->Branch("TrkVtxEta"  ,"vector<double>"      ,&mTrkVtxEta);
+  mTree->Branch("TrkVtxPhi"  ,"vector<double>"      ,&mTrkVtxPhi);
+  mTree->Branch("n90"        ,"vector<int>"         ,&mN90);
+  mTree->Branch("n90hits"    ,"vector<int>"         ,&mN90Hits);
+  mTree->Branch("fHPD"       ,"vector<double>"      ,&mfHPD);
+  mTree->Branch("fRBX"       ,"vector<double>"      ,&mfRBX);  
+  mTree->Branch("fHcalNoise" ,"vector<double>"      ,&mfHcalNoise);
+  mTree->Branch("PVx"        ,"vector<double>"      ,&mPVx);
+  mTree->Branch("PVy"        ,"vector<double>"      ,&mPVy);
+  mTree->Branch("PVz"        ,"vector<double>"      ,&mPVz);
+  mTree->Branch("PVchi2"     ,"vector<double>"      ,&mPVchi2);
+  mTree->Branch("PVndof"     ,"vector<double>"      ,&mPVndof);
+  mTree->Branch("PVntracks"  ,"vector<int>"         ,&mPVntracks);
+  mTree->Branch("hltNames"   ,"vector<string>"      ,&mHLTNames);
+  mTree->Branch("l1Names"    ,"vector<string>"      ,&mL1Names);
+  mTree->Branch("evtNo"      ,&mEvtNo               ,"mEvtNo/I");
+  mTree->Branch("runNo"      ,&mRunNo               ,"mRunNo/I");
+  mTree->Branch("lumi"       ,&mLumi                ,"mLumi/I");
+  mTree->Branch("bunch"      ,&mBunch               ,"mBunch/I");
+  mTree->Branch("met"        ,&mMET                 ,"mMET/D");
+  mTree->Branch("sumet"      ,&mSumET               ,"mSumET/D");
+  mTree->Branch("metNoHF"    ,&mMETnoHF             ,"mMETnoHF/D");
+  mTree->Branch("sumetNoHF"  ,&mSumETnoHF           ,"mSumETnoHF/D");
   if(mIsMCarlo)
     {
-      mTree->Branch("pthat"          ,&mPtHat               ,"mPtHat/D");
-      mTree->Branch("weight"         ,&mWeight              ,"mWeight/D");
+      mTree->Branch("pthat"  ,&mPtHat               ,"mPtHat/D");
+      mTree->Branch("weight" ,&mWeight              ,"mWeight/D");
     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -353,12 +363,16 @@ void InclusiveJetTreeProducer::clearTreeVectors()
   mTrkVtxEta ->clear();
   mTrkVtxPhi ->clear();
   mN90       ->clear(); 
+  mN90Hits   ->clear();
   mfHPD      ->clear();
   mfRBX      ->clear();
   mfHcalNoise->clear();
   mPVx       ->clear();
   mPVy       ->clear();
   mPVz       ->clear();
+  mPVndof    ->clear();
+  mPVchi2    ->clear();
+  mPVntracks ->clear();
   mHLTNames  ->clear();
   mL1Names   ->clear();
 }

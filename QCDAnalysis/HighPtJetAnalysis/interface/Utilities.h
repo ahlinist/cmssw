@@ -15,6 +15,7 @@ typedef struct
   int   nTrkVtx;
   int   nTrkCalo;
   int   n90;
+  int   n90hits;
   float rawPt;
   float corPt;
   float eta;
@@ -46,6 +47,10 @@ typedef struct
   float PVz;
   float PVx;
   float PVy;
+  float PVndof;
+  float PVchi2;
+  float PVnormalizedChi2;
+  int   PVntracks;
   float corMass;
   float rawMass; 
   float met;
