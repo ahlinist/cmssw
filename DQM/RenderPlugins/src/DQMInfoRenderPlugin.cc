@@ -28,10 +28,9 @@ public:
   virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an Info object
-      if( o.name.find( "Info/EventInfo/reportSummary" ) == std::string::npos &&
-          o.name.find( "Info/Conditions/" ) == std::string::npos )
-        return false;
-      return true;
+      if( o.name.find( "Info/EventInfo/reportSummary" ) != std::string::npos)
+        return true;
+      return false;
     }
 
   virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
@@ -53,51 +52,29 @@ private:
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
 
+      
+      int topBin = 26;
+      int nbins = obj->GetNbinsX();
+      int maxRange = nbins;
+      for ( int i = nbins; i > 0; --i )
+      {
+	if ( obj->GetBinContent(i,topBin) != 0 )
+	{
+	   maxRange = i+1;
+	   break;
+	}
+      }
+      obj->GetXaxis()->SetRange(1,maxRange);
+      obj->GetYaxis()->SetRange(1,topBin-1);
+      gPad->SetGrid(1,1);
+      gPad->SetLeftMargin(0.12);
+
       obj->SetStats( kFALSE );
-      dqm::utils::reportSummaryMapPalette(obj);
+      dqm::utils::redGreenPalette(obj);
       obj->SetOption("colz");
 
-      //  obj->GetXaxis()->SetNdivisions(1,true);
-      //  obj->GetYaxis()->SetNdivisions(7,true);
-      //  obj->GetXaxis()->CenterLabels();
-      //  obj->GetYaxis()->CenterLabels();
-      if (o.name.find ("Info/Conditions/") != std::string::npos )
-      {
-        int topBin = 26;
-	int nbins = obj->GetNbinsX();
-	int maxRange = nbins;
-	for ( int i = nbins; i > 0; --i )
-	{
-	  if ( obj->GetBinContent(i,topBin) != 0 )
-	  {
-	     maxRange = i+1;
-	     break;
-	  }
-        }
-        int minRange = 0;
-        for ( int i = 1; i <= nbins; ++i )
-        {
-          if ( obj->GetBinContent(i,topBin) != 0 )
-          {
-            minRange = i;
-            break;
-          }
-        }
-        obj->GetXaxis()->SetRange(minRange, maxRange);
-        obj->GetYaxis()->SetRange(1,topBin-1);
-        // obj->GetXaxis()->SetTitle("Luminosity Section");
-        obj->GetXaxis()->CenterLabels();
-        int range=maxRange-minRange+1;
-        if (range>11) range=11;
-        obj->GetXaxis()->SetNdivisions(range,true);
-      }
-
-      gPad->SetGrid(1,1);
       return;
 
-      gStyle->SetCanvasBorderMode( 0 );
-      gStyle->SetPadBorderMode( 0 );
-      gStyle->SetPadBorderSize( 0 );
     }
 };
 
