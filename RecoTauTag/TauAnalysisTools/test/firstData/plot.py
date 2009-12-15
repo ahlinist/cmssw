@@ -320,8 +320,8 @@ for current_ntuple in ntuples_to_plot:
         output_hist="effLeadPionPt")
     canvas.SaveAs("%s_LeadPionPtEff.png" % current_ntuple.name)
 
-    numerator = std_cut + "&& $ByIsolation"
     denominator = std_cut + "&& $ByLeadPionPt"
+    numerator = denominator + "&& $ByIsolation"
     compare_effs(
         current_ntuple,
         expr="$pt",
@@ -335,8 +335,8 @@ for current_ntuple in ntuples_to_plot:
     canvas.SaveAs("%s_IsolationRel.png" % current_ntuple.name)
 
 
-    numerator = std_cut + "&& $ByTrackIsolation"
     denominator = std_cut + "&& $ByLeadPionPt"
+    numerator = denominator + "&& $ByTrackIsolation"
     compare_effs(
         current_ntuple,
         expr="$pt",
@@ -350,8 +350,8 @@ for current_ntuple in ntuples_to_plot:
     canvas.SaveAs("%s_TrackIsolationRel.png" % current_ntuple.name)
 
 
-    numerator = std_cut + "&& $ByTaNCfrOne"
     denominator = std_cut + "&& $ByLeadPionPt"
+    numerator = denominator + "&& $ByTaNCfrOne"
     compare_effs(
         current_ntuple,
         expr="$pt",
