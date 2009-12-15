@@ -1,12 +1,12 @@
 #ifndef dqm_utils_H
 #define dqm_utils_H
 
-// $Id: utils.h,v 1.2 2009/05/22 19:05:24 lat Exp $
+// $Id: utils.h,v 1.3 2009/11/09 11:05:21 emanuele Exp $
 
 /*!
   \file utils.h
-  \version $Revision: 1.2 $
-  \date $Date: 2009/05/22 19:05:24 $
+  \version $Revision: 1.3 $
+  \date $Date: 2009/11/09 11:05:21 $
 */
 
 class TH2;
@@ -17,9 +17,11 @@ namespace dqm
   {
   public:
     static void reportSummaryMapPalette(TH2* obj);
+    static void redGreenPalette(TH2* obj);
 
   private:
-    static bool init;
+    static bool initsmp;
+    static bool initrgp;
   };
 }
 
