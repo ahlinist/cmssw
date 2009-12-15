@@ -80,8 +80,8 @@ def compare_distributions(
     data_plot.Draw("same pe")
 
     Legend = TLegend(0.7, 0.7, 0.92, 0.9)
-    Legend.AddEntry(data_plot, "Data")
-    Legend.AddEntry(mc_plot, "MC (MinBias)")
+    Legend.AddEntry(data_plot, "Data", "p")
+    Legend.AddEntry(mc_plot, "MC (MinBias)", "p")
     Legend.SetFillColor(0)
     Legend.Draw()
     keep.append(Legend)
@@ -139,8 +139,8 @@ def compare_effs(
     data_eff.Draw("pe")
 
     Legend = TLegend(0.7, 0.7, 0.92, 0.9)
-    Legend.AddEntry(data_eff, "Data")
-    Legend.AddEntry(mc_eff, "MC (MinBias)")
+    Legend.AddEntry(data_eff, "Data", "p")
+    Legend.AddEntry(mc_eff, "MC (MinBias)", "p")
     Legend.SetFillColor(0)
     Legend.Draw()
     keep.append(Legend)
