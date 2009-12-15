@@ -22,6 +22,7 @@
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "L1Trigger/GlobalTriggerAnalyzer/interface/L1GtUtils.h"
 
 using namespace edm;
 using namespace reco;
@@ -134,6 +135,11 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
             hcalNoise.insert(pair<CaloTowerDetId, double>(noiseCTowers[itow]->id(),noiseCTowers[itow]->hadEnergy()));
         }
     }
+  Handle<HcalNoiseSummary> noiseSummary; 	 
+  event.getByLabel("hcalnoise", noiseSummary); 	 
+  const HcalNoiseSummary summary = *noiseSummary; 	 
+  mLooseHcalNoise = summary.passLooseNoiseFilter(); 	 
+  mTightHcalNoise = summary.passTightNoiseFilter();
   ////////////// Jets //////
   Handle<CaloJetCollection> jets;
   event.getByLabel(mJetsName,jets);
@@ -212,23 +218,15 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
           cout << "\nL1GlobalTriggerReadoutRecord with \n \n not found"
           "\n  --> returning false by default!\n" << endl;
         }
-      if (!gtOMRec.isValid()) 
-        {
-          cout << "\nL1GlobalTriggerObjectMapRecord with \n \n not found"
-          "\n  --> returning false by default!\n" << endl;
-        }
       // L1 decision word
       const DecisionWord dWord = gtRecord->decisionWord();
-      map<string, int> l1map;
-      const vector<L1GlobalTriggerObjectMap>& objMapVec = gtOMRec->gtObjectMap();
-      for(vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();itMap != objMapVec.end(); ++itMap) 
-        l1map.insert( std::pair<std::string, int> ((*itMap).algoName(), (*itMap).algoBitNumber()) );
+      //map<string, int> l1map;
       for(unsigned int i=0; i<mL1TriggerNames.size(); i++) 
         {
-          map<string, int>::const_iterator itr = l1map.find(mL1TriggerNames[i]);
-          if (itr != l1map.end()) 
-            if (dWord[itr->second]) 
-              mL1Names->push_back( itr->first );
+          //map<string, int>::const_iterator itr = l1map.find(mL1TriggerNames[i]);
+          bool algResult = l1AlgorithmResult(event, iSetup, mL1TriggerNames[i] );
+          if (algResult) 
+            mL1Names->push_back(mL1TriggerNames[i]);
         }
     }
   ////////////// MET //////
@@ -297,49 +295,52 @@ void InclusiveJetTreeProducer::buildTree()
   mPVntracks    = new std::vector<int>();
   mHLTNames     = new std::vector<std::string>();
   mL1Names      = new std::vector<std::string>();
+  
 
-  mTree->Branch("pt"         ,"vector<double>"      ,&mPt);
-  mTree->Branch("eta"        ,"vector<double>"      ,&mEta);
-  mTree->Branch("etaDetector","vector<double>"      ,&mEtaD);
-  mTree->Branch("y"          ,"vector<double>"      ,&mY);
-  mTree->Branch("phi"        ,"vector<double>"      ,&mPhi);
-  mTree->Branch("e"          ,"vector<double>"      ,&mE);
-  mTree->Branch("emf"        ,"vector<double>"      ,&mEmf);
-  mTree->Branch("etaMoment"  ,"vector<double>"      ,&mEtaMoment);
-  mTree->Branch("phiMoment"  ,"vector<double>"      ,&mPhiMoment);
-  mTree->Branch("nTrkVtx"    ,"vector<int>"         ,&mNtrkVtx);
-  mTree->Branch("nTrkCalo"   ,"vector<int>"         ,&mNtrkCalo);
-  mTree->Branch("TrkCaloPt"  ,"vector<double>"      ,&mTrkCaloPt);
-  mTree->Branch("TrkCaloEta" ,"vector<double>"      ,&mTrkCaloEta);
-  mTree->Branch("TrkCaloPhi" ,"vector<double>"      ,&mTrkCaloPhi);
-  mTree->Branch("TrkVtxPt"   ,"vector<double>"      ,&mTrkVtxPt);
-  mTree->Branch("TrkVtxEta"  ,"vector<double>"      ,&mTrkVtxEta);
-  mTree->Branch("TrkVtxPhi"  ,"vector<double>"      ,&mTrkVtxPhi);
-  mTree->Branch("n90"        ,"vector<int>"         ,&mN90);
-  mTree->Branch("n90hits"    ,"vector<int>"         ,&mN90Hits);
-  mTree->Branch("fHPD"       ,"vector<double>"      ,&mfHPD);
-  mTree->Branch("fRBX"       ,"vector<double>"      ,&mfRBX);  
-  mTree->Branch("fHcalNoise" ,"vector<double>"      ,&mfHcalNoise);
-  mTree->Branch("PVx"        ,"vector<double>"      ,&mPVx);
-  mTree->Branch("PVy"        ,"vector<double>"      ,&mPVy);
-  mTree->Branch("PVz"        ,"vector<double>"      ,&mPVz);
-  mTree->Branch("PVchi2"     ,"vector<double>"      ,&mPVchi2);
-  mTree->Branch("PVndof"     ,"vector<double>"      ,&mPVndof);
-  mTree->Branch("PVntracks"  ,"vector<int>"         ,&mPVntracks);
-  mTree->Branch("hltNames"   ,"vector<string>"      ,&mHLTNames);
-  mTree->Branch("l1Names"    ,"vector<string>"      ,&mL1Names);
-  mTree->Branch("evtNo"      ,&mEvtNo               ,"mEvtNo/I");
-  mTree->Branch("runNo"      ,&mRunNo               ,"mRunNo/I");
-  mTree->Branch("lumi"       ,&mLumi                ,"mLumi/I");
-  mTree->Branch("bunch"      ,&mBunch               ,"mBunch/I");
-  mTree->Branch("met"        ,&mMET                 ,"mMET/D");
-  mTree->Branch("sumet"      ,&mSumET               ,"mSumET/D");
-  mTree->Branch("metNoHF"    ,&mMETnoHF             ,"mMETnoHF/D");
-  mTree->Branch("sumetNoHF"  ,&mSumETnoHF           ,"mSumETnoHF/D");
+  mTree->Branch("pt"                 ,"vector<double>"      ,&mPt);
+  mTree->Branch("eta"                ,"vector<double>"      ,&mEta);
+  mTree->Branch("etaDetector"        ,"vector<double>"      ,&mEtaD);
+  mTree->Branch("y"                  ,"vector<double>"      ,&mY);
+  mTree->Branch("phi"                ,"vector<double>"      ,&mPhi);
+  mTree->Branch("e"                  ,"vector<double>"      ,&mE);
+  mTree->Branch("emf"                ,"vector<double>"      ,&mEmf);
+  mTree->Branch("etaMoment"          ,"vector<double>"      ,&mEtaMoment);
+  mTree->Branch("phiMoment"          ,"vector<double>"      ,&mPhiMoment);
+  mTree->Branch("nTrkVtx"            ,"vector<int>"         ,&mNtrkVtx);
+  mTree->Branch("nTrkCalo"           ,"vector<int>"         ,&mNtrkCalo);
+  mTree->Branch("TrkCaloPt"          ,"vector<double>"      ,&mTrkCaloPt);
+  mTree->Branch("TrkCaloEta"         ,"vector<double>"      ,&mTrkCaloEta);
+  mTree->Branch("TrkCaloPhi"         ,"vector<double>"      ,&mTrkCaloPhi);
+  mTree->Branch("TrkVtxPt"           ,"vector<double>"      ,&mTrkVtxPt);
+  mTree->Branch("TrkVtxEta"          ,"vector<double>"      ,&mTrkVtxEta);
+  mTree->Branch("TrkVtxPhi"          ,"vector<double>"      ,&mTrkVtxPhi);
+  mTree->Branch("n90"                ,"vector<int>"         ,&mN90);
+  mTree->Branch("n90hits"            ,"vector<int>"         ,&mN90Hits);
+  mTree->Branch("fHPD"               ,"vector<double>"      ,&mfHPD);
+  mTree->Branch("fRBX"               ,"vector<double>"      ,&mfRBX);  
+  mTree->Branch("fHcalNoise"         ,"vector<double>"      ,&mfHcalNoise);
+  mTree->Branch("PVx"                ,"vector<double>"      ,&mPVx);
+  mTree->Branch("PVy"                ,"vector<double>"      ,&mPVy);
+  mTree->Branch("PVz"                ,"vector<double>"      ,&mPVz);
+  mTree->Branch("PVchi2"             ,"vector<double>"      ,&mPVchi2);
+  mTree->Branch("PVndof"             ,"vector<double>"      ,&mPVndof);
+  mTree->Branch("PVntracks"          ,"vector<int>"         ,&mPVntracks);
+  mTree->Branch("hltNames"           ,"vector<string>"      ,&mHLTNames);
+  mTree->Branch("l1Names"            ,"vector<string>"      ,&mL1Names);
+  mTree->Branch("evtNo"              ,&mEvtNo               ,"mEvtNo/I");
+  mTree->Branch("runNo"              ,&mRunNo               ,"mRunNo/I");
+  mTree->Branch("lumi"               ,&mLumi                ,"mLumi/I");
+  mTree->Branch("bunch"              ,&mBunch               ,"mBunch/I");
+  mTree->Branch("met"                ,&mMET                 ,"mMET/D");
+  mTree->Branch("sumet"              ,&mSumET               ,"mSumET/D");
+  mTree->Branch("metNoHF"            ,&mMETnoHF             ,"mMETnoHF/D");
+  mTree->Branch("sumetNoHF"          ,&mSumETnoHF           ,"mSumETnoHF/D");
+  mTree->Branch("passLooseHcalNoise" ,&mLooseHcalNoise      ,"mLooseHcalNoise/I"); 	 
+  mTree->Branch("passTightHcalNoise" ,&mTightHcalNoise      ,"mTightHcalNoise/I");
   if(mIsMCarlo)
     {
-      mTree->Branch("pthat"  ,&mPtHat               ,"mPtHat/D");
-      mTree->Branch("weight" ,&mWeight              ,"mWeight/D");
+      mTree->Branch("pthat"          ,&mPtHat               ,"mPtHat/D");
+      mTree->Branch("weight"         ,&mWeight              ,"mWeight/D");
     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////
