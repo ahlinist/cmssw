@@ -13,18 +13,18 @@ gROOT.ProcessLine('setTDRStyle()')
 
 keep = [] # prevent garbage collection fucking up legends
 
-mc_files = [
-    "file:data_ntuple.root" ]
-
-data_files = [
-    "file:data_ntuple.root" ]
+from files import tmp_mc_files as mc_files
+from files import tmp_data_files as data_files
 
 mc_events = TChain("Events")
 data_events = TChain("Events")
 
-for file in mc_files:
+for i, file in enumerate(mc_files):
+    print "Adding MC file:", file
     mc_events.AddFile(file)
-for file in data_files:
+
+for i, file in enumerate(data_files):
+    print "Adding data file:", file
     data_events.AddFile(file)
 
 ntuple_manager = TauNtupleManager(data_events)

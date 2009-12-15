@@ -65,6 +65,28 @@ process.shrinkingConePFTauNtupleProducer.matched_expressions = cms.PSet(
     emFraction = cms.string("neutralEmEnergyFraction()"),
 )
 
+makeTauNtuple(
+    process,
+    input_collection = "fixedConePFTauProducer",
+    #The name of the created module is [tauType]NtupleProducer
+    tauType="fixedConePFTau", 
+    dataType="PFTau",
+    # Expressions and discrimaintors are defined in ntupleDefinitions
+    expressions = cms.PSet(common_expressions, pftau_expressions),
+    discriminators = cms.PSet(pftau_discriminators),
+    # Use only those taus which match our clean jets
+    matchingOption = "matched",
+    matchingCollection = "filteredJets"
+)
+
+# Now setup the truth expressions a bit more for our ntuple
+process.fixedConePFTauNtupleProducer.matchedType = cms.string("PFJet")
+process.fixedConePFTauNtupleProducer.matched_expressions = cms.PSet(
+    common_expressions, # pt, eta, charge, mass
+    emFraction = cms.string("neutralEmEnergyFraction()"),
+)
+
+
 # Main process path.  Note that all the ntuple matching/building is done
 # in the sequence buildTauNtuple (created behind the scenes)
 
