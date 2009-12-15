@@ -1,10 +1,18 @@
 import FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.VarParsing as VarParsing
+
+options = VarParsing.VarParsing ('standard')
+
+options.parseArguments()
 
 process = cms.Process("USER")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
 
-process.load("source_BSCskim_Dec06_Display_900GeV_cff")
+process.source = cms.Source (
+    "PoolSource",
+    fileNames = cms.untracked.vstring(options.files)
+)
 
 process.filteredJets = cms.EDProducer(
     # This should eventually be pf specific...  Anything the produces a vector
