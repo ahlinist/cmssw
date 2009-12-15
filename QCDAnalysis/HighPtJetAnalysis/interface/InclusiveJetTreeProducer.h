@@ -25,6 +25,7 @@
 //Hcal Noise Objects
 #include "RecoMET/METAlgorithms/interface/HcalNoiseRBXArray.h"
 #include "DataFormats/METReco/interface/HcalNoiseHPD.h"
+#include "DataFormats/METReco/interface/HcalNoiseSummary.h"
 
 //TFile Service 
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -64,7 +65,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     TTree *mTree;
     bool mFillHLT, mFillL1;
     //---- TREE variables --------
-    int mRunNo, mEvtNo, mLumi, mBunch;
+    int mRunNo, mEvtNo, mLumi, mBunch, mLooseHcalNoise, mTightHcalNoise;
     double mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
     std::vector<int>    *mNtrkVtx,*mNtrkCalo,*mN90,*mN90Hits,*mPVntracks;
     std::vector<double> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
