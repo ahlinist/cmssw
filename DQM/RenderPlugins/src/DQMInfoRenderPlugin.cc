@@ -12,14 +12,12 @@
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
 #include "utils.h"
 
-#include "TProfile2D.h"
-#include "TH1F.h"
 #include "TH2F.h"
 #include "TStyle.h"
 #include "TCanvas.h"
 #include "TColor.h"
-#include "TText.h"
 #include <cassert>
+#include "TROOT.h"
 
 class DQMInfoRenderPlugin : public DQMRenderPlugin
 {
@@ -70,7 +68,25 @@ private:
       gPad->SetLeftMargin(0.12);
 
       obj->SetStats( kFALSE );
-      dqm::utils::redGreenPalette(obj);
+
+      int pcol[2];
+      float rgb[2][2];
+      rgb[0][0] = 0.80;
+      rgb[0][1] = 0.00;
+      rgb[1][0] = 0.00;
+      rgb[1][1] = 0.80;
+
+      for( int i=0; i<2; i++ )
+      {
+	pcol[i] = 801+i;
+	TColor* color2 = gROOT->GetColor( 801+i );
+	if( ! color2 ) color2 = new TColor( 801+i, 0, 0, 0, "" );
+	color2->SetRGB( rgb[i][0], rgb[i][1], 0. );
+      }
+
+      gStyle->SetPalette(2, pcol);
+      obj->SetMinimum(-1.e-15);
+      obj->SetMaximum(1.0);
       obj->SetOption("colz");
 
       return;
