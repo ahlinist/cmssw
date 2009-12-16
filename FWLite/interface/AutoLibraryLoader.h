@@ -10,14 +10,11 @@
  * $Id$
  *
  */
-#include "TObject.h"
 class DummyClassToStopCompilerWarning;
 
-class AutoLibraryLoader: public TObject {
+class AutoLibraryLoader {
   friend class DummyClassToStopCompilerWarning;
 public:
-  /// interface for TClass generators
-  ClassDef(AutoLibraryLoader,2);
   /// enable automatic library loading  
   static void enable();
   
