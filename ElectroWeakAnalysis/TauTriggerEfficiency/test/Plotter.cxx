@@ -12,7 +12,7 @@
 #include <string>
 class Plotter {
 public:
-  Plotter(TString filename="tteffAnalysis.root"){
+  Plotter(TString filename="tteffAnalysis.root", TString treename="TTEffTree"){
 
     //gROOT->LoadMacro("./tdrstyle.cxx");
     setTDRStyle();
@@ -20,7 +20,7 @@ public:
     inFile = TFile::Open(filename);
     //inFile = TFile::Open("tteffAnalysis.root");
     //inFile = TFile::Open("tteffAnalysis-merged.root");
-    tree = (TTree *) (inFile->Get("TTEffTree"));
+    tree = (TTree *) (inFile->Get(treename));
 
     plotXtitle = 0;
     plotYtitle = 0;
