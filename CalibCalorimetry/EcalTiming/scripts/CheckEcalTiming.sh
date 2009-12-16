@@ -56,6 +56,8 @@ echo "      -aa|--all_average     all_average     This is the input average numb
 echo "      -as|--all_shift       all_shift       This is the timing shift for all values default of 1.5"
 echo "      -dr|--do_ratios       do_ratios       Allows one to use the ratios for amplitude and time; default is False"
 echo "      -s09|--splash_09      splash_09       Allows one apply the Splash09 corrections; default is False"
+echo "      -tt|--timing_tree     timing_tree     Allows one to keep the timing tree; default is False"
+
 echo ""
 echo "To specify multiple fed_id's/ieb_id's/cry's to mask use a comma-separated list in between double quotes, e.g., \"1,2,3\" "
 exit
@@ -96,6 +98,7 @@ data_type="Laser"
 eb_radius=1.4
 all_average=5.7
 all_shift=1.5
+timing_tree="False"
 
 manyfiles="0"
 
@@ -197,6 +200,9 @@ manyfiles="0"
       -as|--all_shift)
                 all_shift=$2
                 ;;
+      -tt|--timing_tree)
+                timing_tree=$2
+                ;;
 
     esac
     shift       # Verifica la serie successiva di parametri.
@@ -235,6 +241,7 @@ echo "Overall Average Change:                       $all_average"
 echo "All shift:                                    $all_shift" 
 echo "Using Ratios:                                 $do_ratios"
 echo "Correction Splash09:                          $splash_09"
+echo "Timing Tree:                                  $timing_tree"
 echo ""
 echo ""
 
@@ -412,6 +419,7 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                   RunLength = cms.untracked.double($run_length),
 					              Splash09Cor = cms.untracked.bool($splash_09),
                                   WriteTxtFiles = cms.untracked.bool($write_files),
+                                  TimingTree = cms.untracked.bool($timing_tree),
                                   AllAverage = cms.untracked.double($all_average), 
                                   AllShift = cms.untracked.double($all_shift),
                                   EBRadius = cms.untracked.double($eb_radius)
