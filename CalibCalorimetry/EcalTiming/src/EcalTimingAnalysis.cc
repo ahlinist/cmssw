@@ -261,7 +261,8 @@ EcalTimingAnalysis::beginJob( ) {
       if (fromfile_) 
 	{
 	  eventTimingInfoTree_ = ((TTree*) tf->Get("eventTimingInfoTree"));
-
+	  //eventTimingInfoTree_->SetDirectory(0);
+          eventTimingInfoTree_->SetBranchStatus("*",1);
 	}
       else{
 	eventTimingInfoTree_ = new TTree("eventTimingInfoTree","Timing info of events in all crys");
@@ -564,8 +565,16 @@ void EcalTimingAnalysis::endJob() {
   fullAmpProfileEEM_->Write();
   if ( timingTree_)
     {
+      if (fromfile_) 
+      {
+      TTree *newtree = eventTimingInfoTree_->CloneTree();
+      newtree->Write();
+      }
+      else
+      {
       eventTimingInfoTree_->SetDirectory(f);  
       eventTimingInfoTree_->Write();
+      }
     }
   f->Close();
 
@@ -705,6 +714,17 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	   if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEB,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
+	   if ( rhits ) {
+	      EcalRecHitCollection::const_iterator itt = rhits->find(anid);
+		  if(itt==rhits->end()) continue;
+          uint32_t rhFlag = (*itt).recoFlag();
+          if (!(
+	           rhFlag == EcalRecHit::kGood      ||
+	           rhFlag == EcalRecHit::kOutOfTime ||
+	           rhFlag == EcalRecHit::kPoorCalib
+	           )
+	          ) continue;  
+	   }
        averagetimeEB += mytime;
        numberinaveEB++;
      }  
@@ -813,7 +833,11 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 
    //Calcualte the average EE event timing first.
    double averagetimeEE = 0.0;
+   double averagetimeEEp = 0.0;
+   double averagetimeEEm = 0.0;
    int numberinaveEE = 0;
+   int numberinaveEEp = 0;
+   int numberinaveEEm = 0;
    if (correctAVE_) {
      for(EcalUncalibratedRecHitCollection::const_iterator ithit = hitsEE->begin(); ithit != hitsEE->end(); ++ithit) {
        
@@ -828,9 +852,22 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	 double mytime = ithit->jitter() + extrajit+5.0;
 	 averagetimeEE += mytime;
 	 numberinaveEE++;
+         if (anid.zside() == 1) 
+           {
+            //averagetimeEEp += mytime;
+            //numberinaveEEp++;
+           }
+         else
+           {
+            //averagetimeEEm += mytime;
+            //numberinaveEEm++;
+           }
+           
        }
      }	//end rechit loop
      if (numberinaveEE > 0 ) averagetimeEE /= double (numberinaveEE); 
+     //if (numberinaveEEp > 0 ) averagetimeEEp /= double (numberinaveEEp); 
+     //if (numberinaveEEm > 0 ) averagetimeEEm /= double (numberinaveEEm); 
    }//end EE averaging section
    
    
@@ -886,13 +923,17 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 		   chTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
 		   ttTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
 		   ttTimingEtaEEP_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime);
-	       fullAmpProfileEEP_->Fill(anid.ix(),anid.iy(),damp);
+	           fullAmpProfileEEP_->Fill(anid.ix(),anid.iy(),damp);	
+                   averagetimeEEp += mytime;
+                   numberinaveEEp++;
 		   }
 		   else {
 		   chTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
 		   ttTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
 		   ttTimingEtaEEM_->Fill(pow((anid.ix()-50)*(anid.ix()-50)+(anid.iy()-50)*(anid.iy()-50),0.5),mytime);
-	       fullAmpProfileEEM_->Fill(anid.ix(),anid.iy(),damp);
+	           fullAmpProfileEEM_->Fill(anid.ix(),anid.iy(),damp);
+                   averagetimeEEm += mytime;
+                   numberinaveEEm++;
 		   }
 	   
 	   
@@ -944,11 +985,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    }
    //numEBcrys_=numberinaveEB;
    //numEEcrys_=numberinaveEE;
+   if (numberinaveEEp > 0 ) averagetimeEEp /= double (numberinaveEEp);
+   if (numberinaveEEm > 0 ) averagetimeEEm /= double (numberinaveEEm);
+
    if (timingTree_)
      {
        TTreeMembers_.correctionToSample5EB_= averagetimeEB;
-       TTreeMembers_.correctionToSample5EEP_ = averagetimeEB;
-       TTreeMembers_.correctionToSample5EEM_ = averagetimeEB ;
+       TTreeMembers_.correctionToSample5EEP_ = averagetimeEEp;
+       TTreeMembers_.correctionToSample5EEM_ = averagetimeEEm;
      
        eventTimingInfoTree_->Fill(); //Filling the TTree for Seth
      }
