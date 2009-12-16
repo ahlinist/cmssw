@@ -44,24 +44,30 @@ class ChamberMap {
     static const unsigned short COLOR_RED   = 2;
     static const unsigned short COLOR_BLUE  = 4;
     static const unsigned short COLOR_GREY  = 17;
+
+    TBox*  bBlank;
+    TBox*  bCSC_box[2][4][3][36];
+    TText* tCSC_label[2][4][3][36];
+    TBox*  bLegend[5];
+    TText* tLegend[5];
   
   public:
     
     ChamberMap();
     ~ChamberMap();
-    void draw(TH2*& me) const;
-    void drawStats(TH2*& me) const;
+    void draw(TH2*& me);
+    void drawStats(TH2*& me);
 
   private:
     
-    void printLegendBox(unsigned int& number, const std::string title, const int color) const;
+    void printLegendBox(unsigned int& number, const std::string title, const int color);
     const float Xmin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
     const float Xmax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
     const float Ymin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
     const float Ymax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
     const int N_ring(const int station) const;
     const int N_chamber(const int station, const int ring) const;
-    TBox *bBlank;
+
 };
 
 #endif
