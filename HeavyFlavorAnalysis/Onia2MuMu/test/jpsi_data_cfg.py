@@ -110,7 +110,7 @@ process.firstCollBeamspot = cms.ESSource("PoolDBESSource",
                                          connect = cms.string("frontier://PromptProd/CMS_COND_31X_BEAMSPOT"),
                                          # connect = cms.string("sqlite_file:/afs/cern.ch/user/y/yumiceva/public/BeamSpotObjects_2009_v1_express@a35f2218-e25f-11de-9d9b-0018f34695d6.db"),
                                          toGet = cms.VPSet(cms.PSet(record = cms.string("BeamSpotObjectsRcd"),
-                                                                    tag =cms.string("BeamSpotObjects_2009_v2_offline"))
+                                                                    tag =cms.string("BeamSpotObjects_2009_v3_offline"))
                                                            )
                                          )
 process.es_prefer_firstCollBeamspot = cms.ESPrefer("PoolDBESSource","firstCollBeamspot")
