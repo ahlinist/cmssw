@@ -38,8 +38,15 @@ void myReader01::eventProcessing() {
 
   //  if (fIsMC==0 && fRun < 124120) return;
 
+//   if (fRun == 124120 && fpEvt->fEventNumber == 5686693) {
+//   } else {
+//     return; 
+//   }
+
+
   int fL40(0), fL00(0), fL41(0), fGoodTrigger(0); 
 
+  ((TH1D*)fpHistFile->Get("runs"))->Fill(fRun);
   TH1D *ht = (TH1D*)fpHistFile->Get("l1tt");
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 32; ++j) {
@@ -56,10 +63,10 @@ void myReader01::eventProcessing() {
   // -- skip large events
   int ntrk = fpEvt->nRecTracks();
   ((TH1D*)fpHistFile->Get("ntrk"))->Fill(ntrk);
-  if (ntrk > 100) {
-    cout << "Skipping event with ntracks = " << ntrk << endl;
-    return;
-  }
+  //   if (ntrk > 100) {
+  //     cout << "Skipping event with ntracks = " << ntrk << endl;
+  //     return;
+  //   }
 
   int nmuon = fpEvt->nMuons();
   ((TH1D*)fpHistFile->Get("nmuon"))->Fill(nmuon);
@@ -98,17 +105,24 @@ void myReader01::eventProcessing() {
   ((TH2D*)fpHistFile->Get("pvxy"))->Fill(pvx, pvy);
 
   double mass, chi2; 
-  int it1(-1), it2(-1); 
+  int it1(-1), it2(-1), qq(0); 
   bool duplicate; 
   pairs.clear();
   for (int it = 0; it < fpEvt->nCands(); ++it) {
     pCand = fpEvt->getCand(it);
+
+    if (1300 != pCand->fType) continue; 
+
     mass = pCand->fMass; 
     chi2 = pCand->fVtx.fChi2;
     ((TH1D*)fpHistFile->Get("chi2"))->Fill(chi2);
-    if (chi2>5) {
-      continue;
-    }
+
+   if (fRun == 124120 && fpEvt->fEventNumber == 5686693) {
+     cout << "mass: " << mass << " chi2: " << chi2 << " prob: " <<  pCand->fVtx.fProb << endl;
+   } else {
+     //  return; 
+   }
+
 
     pM1 = pM2 = 0; 
     if (pCand->fSig1 > -1 && pCand->fSig1 < fpEvt->nSigTracks()) pM1 = fpEvt->getSigTrack(pCand->fSig1);
@@ -131,19 +145,17 @@ void myReader01::eventProcessing() {
     it2 = pM2->fIndex; 
     duplicate = false; 
     int duplo(0); 
-    if (1300 == pCand->fType) {
-      for (int i = 0; i < pairs.size(); ++i) {
-	if (it1 == pairs[i].first && it2 == pairs[i].second) {duplicate = true;  duplo = 1000*pairs[i].first + pairs[i].second;}
-	if (it2 == pairs[i].first && it1 == pairs[i].second) {duplicate = true;  duplo = 1000*pairs[i].first + pairs[i].second;}
-	if (duplicate) break;
-      }
+    for (int i = 0; i < pairs.size(); ++i) {
+      if (it1 == pairs[i].first && it2 == pairs[i].second) {duplicate = true;  duplo = 1000*pairs[i].first + pairs[i].second;}
+      if (it2 == pairs[i].first && it1 == pairs[i].second) {duplicate = true;  duplo = 1000*pairs[i].first + pairs[i].second;}
+      if (duplicate) break;
     }
 
     if (duplicate) {
-      cout << "duplicate event cand ... Skipping: " 
-	   << pCand->fType << " mass: " << pCand->fMass << " it1/2: " << it1 << "/" << it2
-	   << " duplo: " << duplo
-	   << endl;
+      //       cout << "duplicate event cand ... Skipping: " 
+      // 	   << pCand->fType << " mass: " << pCand->fMass << " it1/2: " << it1 << "/" << it2
+      // 	   << " duplo: " << duplo
+      // 	   << endl;
       continue;
     }      
     pairs.push_back(make_pair(pM1->fIndex, pM2->fIndex)); 
@@ -152,7 +164,9 @@ void myReader01::eventProcessing() {
     int globalMuon(0), trackerMuon(0), m1(0), m2(0); 
     int muID1 = pT1->fMuID; if (muID1 < 0) muID1 = 0; 
     int muID2 = pT2->fMuID; if (muID2 < 0) muID2 = 0; 
-
+    
+    qq = pT1->fQ*pT2->fQ; 
+    
     int muv1 = pCand->fVtx.getTrack(0); 
     int muv2 = pCand->fVtx.getTrack(1); 
 
@@ -176,16 +190,11 @@ void myReader01::eventProcessing() {
     }
     
 
-    if (pCand->fType == 443 && fIsMC == 1) pCand->fType = 1300; 
+    ((TH1D*)fpHistFile->Get("pvz2"))->Fill(pvz);
 
-    if (pCand->fType == 1300) {
-
-
-      ((TH1D*)fpHistFile->Get("pvz2"))->Fill(pvz);
-
-      if (pCand->fMass < 3.2 && pCand->fMass > 2.8) {
-	cout << Form("M1: %3d M2: %3d, it1: %3d, it2: %3d, mass: %f", pM1->fIndex ,  pM2->fIndex, it1, it2, pCand->fMass) << endl;
-      }
+//       if (pCand->fMass < 3.2 && pCand->fMass > 2.8) {
+// 	cout << Form("M1: %3d M2: %3d, it1: %3d, it2: %3d, mass: %f", pM1->fIndex ,  pM2->fIndex, it1, it2, pCand->fMass) << endl;
+//       }
       
 //       cout << Form("C: %5d", pCand->fType)
 // 	   << Form(" m = %5.2f", mass)
@@ -196,61 +205,75 @@ void myReader01::eventProcessing() {
 // 	   << Form(" v/s/v/s = %3d %3d %3d %3d", muv1, pM1->fIndex, muv2, pM2->fIndex)
 // 	   << endl;
       
-    }
 
     ((TH2D*)fpHistFile->Get("muonID"))->Fill(m1, m2);
 
-    if (pCand->fType == 1300) {
+    
+    double PT1CUT(1.5), PT2CUT(1.5); 
+    double CHI2CUT(2.0); 
+    
+    ((TH1D*)fpHistFile->Get("m1300pt1"))->Fill(pT1->fPlab.Perp());
+    ((TH1D*)fpHistFile->Get("m1300pt2"))->Fill(pT2->fPlab.Perp());
+    
+    ((TH1D*)fpHistFile->Get("m1300tip"))->Fill(pT1->fTip);
+    ((TH1D*)fpHistFile->Get("m1300lip"))->Fill(pT1->fLip);
+    
+    ((TH1D*)fpHistFile->Get("m1300tip"))->Fill(pT2->fTip);
+    ((TH1D*)fpHistFile->Get("m1300lip"))->Fill(pT2->fLip);
 
-      double PT1CUT(1.0), PT2CUT(1.0); 
+    ((TH1D*)fpHistFile->Get("m1300dtip"))->Fill(pT1->fTip - pT2->fTip);
+    ((TH1D*)fpHistFile->Get("m1300dlip"))->Fill(pT1->fLip - pT2->fLip);
 
-      ((TH1D*)fpHistFile->Get("m1300pt1"))->Fill(pT1->fPlab.Perp());
-      ((TH1D*)fpHistFile->Get("m1300pt2"))->Fill(pT2->fPlab.Perp());
-
-      ((TH1D*)fpHistFile->Get("m1300d0"))->Fill(pT1->fTip);
-      ((TH1D*)fpHistFile->Get("m1300dz"))->Fill(pT1->fdz);
-
-      ((TH1D*)fpHistFile->Get("m1300d0"))->Fill(pT2->fTip);
-      ((TH1D*)fpHistFile->Get("m1300dz"))->Fill(pT2->fdz);
-      
+    ((TH1D*)fpHistFile->Get("m1300d0"))->Fill(pT1->fd0);
+    ((TH1D*)fpHistFile->Get("m1300dz"))->Fill(pT1->fdz);
+    
+    ((TH1D*)fpHistFile->Get("m1300d0"))->Fill(pT2->fd0);
+    ((TH1D*)fpHistFile->Get("m1300dz"))->Fill(pT2->fdz);
+    
+    if (qq < 0) {
       ((TH1D*)fpHistFile->Get("m1300"))->Fill(mass);
-      if ((pT1->fPlab.Perp() > PT1CUT) && (pT2->fPlab.Perp() > PT2CUT)) ((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
-      if ((pT1->fPlab.Perp() > PT1CUT) && (pT2->fPlab.Perp() > PT2CUT)
-	  && (pT1->fdz < 20) && (pT2->fdz < 20)
-	  && (pT1->fd0 < 5) && (pT2->fd0 < 5)
-	  && (pCand->fPlab.Perp() > 3.)
-	  && (chi2 < 4)
-	  ) {
-	((TH1D*)fpHistFile->Get("m1302"))->Fill(mass);
+    } else {
+      ((TH1D*)fpHistFile->Get("n1300"))->Fill(mass);
+    }
+
+    if ((pT1->fPlab.Perp() > PT1CUT) && (pT2->fPlab.Perp() > PT2CUT)) {
+      if (qq < 0) {
+	((TH1D*)fpHistFile->Get("m1301"))->Fill(mass);
+      } else {
+	((TH1D*)fpHistFile->Get("n1301"))->Fill(mass);
       }
-      if (m2 > 0) ((TH1D*)fpHistFile->Get("m1313"))->Fill(mass);
+    }
+    if ((pT1->fPlab.Perp() > PT1CUT) && (pT2->fPlab.Perp() > PT2CUT)
+	&& (TMath::Abs(pT1->fLip) < 2.0) && (TMath::Abs(pT2->fLip) < 2.0)
+	&& (TMath::Abs(pT1->fTip) < 0.4) && (TMath::Abs(pT2->fTip) < 0.4)
+	&& (TMath::Abs(pT1->fTip - pT2->fTip) < 0.1) && (TMath::Abs(pT1->fLip - pT2->fLip) < 0.4)
+	&& (pCand->fPlab.Perp() > 2.)
+	&& (chi2 < CHI2CUT)
+	) {
       
-      ((TH1D*)fpHistFile->Get("m1300pt"))->Fill(pCand->fPlab.Perp());
+      if (qq < 0) {
+	((TH1D*)fpHistFile->Get("m1302"))->Fill(mass);
 
+	for (int i = 0; i < 40; ++i) {
+	  ((TH1D*)fpHistFile->Get(Form("m%d", i+1350)))->Fill(mass);
+	}
+      } else {
+	((TH1D*)fpHistFile->Get("n1302"))->Fill(mass);
 
-      for (int i = 0; i < 40; ++i) {
-	((TH1D*)fpHistFile->Get(Form("m%d", i+1350)))->Fill(mass);
+	for (int i = 0; i < 40; ++i) {
+	  ((TH1D*)fpHistFile->Get(Form("n%d", i+1350)))->Fill(mass);
+	}
       }
 
     }
-
-    if (pCand->fType == 100531) {
-        ((TH1D*)fpHistFile->Get("m100531"))->Fill(mass);
-    }
-
-    if (pCand->fType == 421) {
-        ((TH1D*)fpHistFile->Get("m421"))->Fill(mass);
-    }
-
-    if (pCand->fType == 413) {
-        ((TH1D*)fpHistFile->Get("m413"))->Fill(mass);
-	double deltaM = mass - fpEvt->getCand(pCand->fDau1)->fMass;
-        ((TH1D*)fpHistFile->Get("dm413"))->Fill(deltaM);
-    }
-
+    if (m2 > 0) ((TH1D*)fpHistFile->Get("m1313"))->Fill(mass);
+    
+    ((TH1D*)fpHistFile->Get("m1300pt"))->Fill(pCand->fPlab.Perp());
+    
+    
 
   }
-
+  
 
   fpHistFile->cd();
   fillHist(); 
@@ -272,6 +295,8 @@ TH1 *h;
 cout << "--> myReader01> bookHist> " << endl;
 
  fpHistFile->cd(); 
+ h = new TH1D("runs", "runs", 2000, 123000., 125000.); 
+
  h = new TH1D("l1tt", "L1 technical triggers", 64, 0., 64.); 
  h = new TH1D("ntrk", "Ntrk", 100, 0., 100.); 
  h = new TH1D("nmuon", "Nmuon", 20, 0., 20.); 
@@ -280,27 +305,35 @@ cout << "--> myReader01> bookHist> " << endl;
  h = new TH1D("pvz1",  "pv z", 100, -20., 20.); 
  h = new TH1D("pvz2",  "pv z", 100, -20., 20.); 
 
- h = new TH1D("m421", "mass", 40, 1.5, 2.1); 
- h = new TH1D("m413", "mass", 50, 1.8, 2.3); 
- h = new TH1D("dm413","delta(mass)", 30, 0.12, 0.18); 
-
 
  h = new TH1D("m1300", "mass", 60, 0.0, 12.0); 
- h = new TH1D("m1301", "mass", 30, 2.8, 3.4); 
- h = new TH1D("m1302", "mass", 30, 2.8, 3.4); 
- h = new TH1D("m1313", "mass", 30, 2.8, 3.4); 
+ h = new TH1D("n1300", "mass", 60, 0.0, 12.0); 
+ h = new TH1D("m1301", "mass", 30, 2.7, 3.5); 
+ h = new TH1D("n1301", "mass", 30, 2.7, 3.5); 
+
+ h = new TH1D("m1302", "mass", 30, 2.7, 3.5); 
+ h = new TH1D("n1302", "mass", 30, 2.7, 3.5); 
+
+ h = new TH1D("m1313", "mass", 60, 0.0, 12.0); 
 
 
  for (int i = 0; i < 40; ++i) {
-   h = new TH1D(Form("m%d", i+1350), "mass", i+10, 2.7, 3.5); 
+   h = new TH1D(Form("m%d", i+1350), "mass OS", i+10, 2.7, 3.5); 
+   h = new TH1D(Form("n%d", i+1350), "mass LS", i+10, 2.7, 3.5); 
  }
 
  h = new TH1D("m1300pt",  "pt", 50, 0.0, 10.0); 
  h = new TH1D("m1300pt1", "pt1", 50, 0.0, 10.0); 
  h = new TH1D("m1300pt2", "pt2", 50, 0.0, 10.0); 
 
- h = new TH1D("m1300d0",  "d0", 50,  0.0, 0.5); 
- h = new TH1D("m1300dz",  "dz", 50,-10.0,10.0); 
+ h = new TH1D("m1300d0",  "d0", 50, -0.5,  0.5); 
+ h = new TH1D("m1300dz",  "dz", 50,-10.0, 10.0); 
+
+ h = new TH1D("m1300tip",  "tip", 50, -0.5, 0.5); 
+ h = new TH1D("m1300lip",  "lip", 50, -5.0, 5.0); 
+
+ h = new TH1D("m1300dtip",  "dtip", 50, -0.2, 0.2); 
+ h = new TH1D("m1300dlip",  "dlip", 50, -2.0, 2.0); 
 
  h = new TH1D("m100531", "mass", 40, 5.0, 5.6); 
 
