@@ -83,10 +83,15 @@ void DataProxy::clearCacheIsValid() {
 void 
 DataProxy::resetIfTransient() {
    if (!nonTransientAccessRequested_) {
-      invalidate();
+      clearCacheIsValid();
+      invalidateTransientCache();
    }
 }
-      
+
+void 
+DataProxy::invalidateTransientCache() {
+   invalidateCache();
+}
 //
 // const member functions
 //

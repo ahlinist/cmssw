@@ -61,9 +61,16 @@ class DataProxy
       }
    protected:
       /** indicates that the Proxy should invalidate any cached information
-           as that information has 'expired'
+           as that information has 'expired' (i.e. we have moved to a new IOV)
          */
       virtual void invalidateCache() = 0;
+   
+      /** indicates that the Proxy should invalidate any cached information
+          as that information was accessed transiently and therefore is not
+          intended to be kept over the entire IOV.  Default is to call
+          invalidateCache().
+       */
+      virtual void invalidateTransientCache();
 
       void setCacheIsValidAndAccessType(bool iTransientAccessOnly);
       void clearCacheIsValid();      
