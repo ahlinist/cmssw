@@ -39,20 +39,24 @@ class EventDisplay {
 
     static const unsigned int   HISTO_WIDTH = 200;
 
-    TPad *pad0;
-    TPad *pad1;
-    TPad *pad2;
-    TPad *pad3;
-    TPad *pad4;
+    TPad* pad0;
+    TPad* pad1;
+    TPad* pad2;
+    TPad* pad3;
+    TPad* pad4;
 
-    // Cache of objects incl.:
-    // boxes: 3 histos x 6 layers x 160 bins
-    // texts: 3 histos x 6 layers x 160 bins x 2
-    // layer labels: 3 x 6
-    // axis titles: 3 x 2
-    TObject *objs[2 * 3 * 6 * 160 + 3 * 6 * 160 + 3 * 160 + 3 * 6 + 3 * 2];
-    unsigned int p_objs;
-  
+    TH2F* histos[3];
+
+    TText* tTitle;
+    TText* tLayer;
+    TText* tYLabel[6];
+    TText* tXTitle;
+    TText* tXLabel[3][160];
+    TBox*  bBlank;
+    TBox*  bBox[3][6][160];
+    TBox*  bKey[3][160];
+    TText* tKey[3][160];
+
   public:
     
     EventDisplay();
@@ -64,9 +68,9 @@ class EventDisplay {
     int countWiregroups(int station, int ring) const;
     int countStrips(int station, int ring) const;
     int countStripsNose(int station, int ring) const;
-    void drawEventDisplayGrid(TH2* data, int data_first_col, int data_time_col, int data_quality_col,
+    void drawEventDisplayGrid(int hnum, TH2* data, int data_first_col, int data_time_col, int data_quality_col,
                               int count_x, float shift_x, float min_z, float max_z, int split_after_x, int time_corr, int d_corr,
-                              const char* title, const char* title_x);
+                              const char* title_x);
 
 };
 

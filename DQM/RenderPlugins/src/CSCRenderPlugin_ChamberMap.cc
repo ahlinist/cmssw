@@ -25,6 +25,23 @@ ChamberMap::ChamberMap() {
   bBlank->SetFillColor(0);
   bBlank->SetLineColor(1);
   bBlank->SetLineStyle(1);
+
+  for(int n_side = 1; n_side <= 2; n_side++) {
+    for(int station = 1; station <= 4; station++) {
+      for(int n_ring = 1; n_ring <= N_ring(station); n_ring++) {
+        for(int n_chamber = 1; n_chamber <= N_chamber(station, n_ring); n_chamber++) {
+          bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] = 0;
+          tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] = 0;
+        }
+      }
+    }
+  }
+
+  for (int i = 0; i < 5; i++) {
+    bLegend[i] = 0;
+    tLegend[i] = 0;
+  }
+
 }
 
 ChamberMap::~ChamberMap() {
@@ -159,8 +176,8 @@ const int ChamberMap::N_chamber(const int station, const int ring) const
   return n_chambers;
 }
 
-void ChamberMap::draw(TH2*& me) const
-{
+void ChamberMap::draw(TH2*& me) {
+
   gStyle->SetPalette(1,0);
 
   /** VR: Moved this up and made float */
@@ -178,9 +195,6 @@ void ChamberMap::draw(TH2*& me) const
   me->Draw("colz");
 
   bBlank->Draw("l");
-
-  TBox *b[3][5][4][37];
-  TText *tCSC_label[3][5][4][37];
 
   /** VR: Making it floats and moving up */
   float x_min_chamber, x_max_chamber;
@@ -226,31 +240,36 @@ void ChamberMap::draw(TH2*& me) const
               fillColor = 51 + (int)(((BinContent - HistoMinValue) / (HistoMaxValue - HistoMinValue)) * 49.0);
             }
             /** VR: just to be sure :) */
-            if(fillColor > 100)
-            { fillColor = 100; }
-            if(fillColor < 51 )
-            { fillColor = 51;  }
+            if(fillColor > 100) fillColor = 100;
+            if(fillColor < 51 ) fillColor = 51;
+
           }
 
-          b[n_side][station][n_ring][n_chamber] = new TBox(x_min_chamber + 1, y_min_chamber, x_max_chamber + 1, y_max_chamber);
-          b[n_side][station][n_ring][n_chamber]->SetFillColor(fillColor);
-          b[n_side][station][n_ring][n_chamber]->SetLineColor(1);
-          b[n_side][station][n_ring][n_chamber]->SetLineStyle(2);
-          b[n_side][station][n_ring][n_chamber]->Draw("l");
+          if (bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] == 0) {
+            bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] = new TBox(x_min_chamber + 1, y_min_chamber, x_max_chamber + 1, y_max_chamber);
+            bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetLineColor(1);
+            bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetLineStyle(2);
+          }
+          bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetFillColor(fillColor);
+          bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->Draw("l");
 
-          TString ChamberID = Form("%d", n_chamber);
-          tCSC_label[n_side][station][n_ring][n_chamber] = new TText((x_min_chamber + x_max_chamber)/2.0 + 1, (y_min_chamber + y_max_chamber)/2.0, ChamberID);
-          tCSC_label[n_side][station][n_ring][n_chamber]->SetTextAlign(22);
-          tCSC_label[n_side][station][n_ring][n_chamber]->SetTextFont(42);
-          tCSC_label[n_side][station][n_ring][n_chamber]->SetTextSize(0.015);
-          tCSC_label[n_side][station][n_ring][n_chamber]->Draw();
+          if (tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] == 0) {
+            TString ChamberID = Form("%d", n_chamber);
+            tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] = new TText((x_min_chamber + x_max_chamber)/2.0 + 1, (y_min_chamber + y_max_chamber)/2.0, ChamberID);
+            tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetTextAlign(22);
+            tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetTextFont(42);
+            tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetTextSize(0.015);
+          }
+          tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->Draw();
+
         }
       }
     }
   }
+
 }
 
-void ChamberMap::drawStats(TH2*& me) const {
+void ChamberMap::drawStats(TH2*& me) {
 
   gStyle->SetPalette(1,0);
 
@@ -265,13 +284,14 @@ void ChamberMap::drawStats(TH2*& me) const {
   me->SetStats(false);
   me->Draw("col");
 
+  TBox* bBlank = new TBox(1.0, 0.0, 37, 18);
+  bBlank->SetFillColor(0);
+  bBlank->SetLineColor(1);
+  bBlank->SetLineStyle(1);
   bBlank->Draw("l");
 
   std::bitset<10> legend;
   legend.reset();
-
-  TBox *b[3][5][4][37];
-  TText *tCSC_label[3][5][4][37];
 
   /** VR: Making it floats and moving up */
   float x_min_chamber, x_max_chamber;
@@ -317,18 +337,23 @@ void ChamberMap::drawStats(TH2*& me) const {
           else if (fillColor == 3) fillColor = COLOR_BLUE;
           else if (fillColor == 4) fillColor = COLOR_GREY;
 
-          b[n_side][station][n_ring][n_chamber] = new TBox(x_min_chamber + 1, y_min_chamber, x_max_chamber + 1, y_max_chamber);
-          b[n_side][station][n_ring][n_chamber]->SetFillColor(fillColor);
-          b[n_side][station][n_ring][n_chamber]->SetLineColor(1);
-          b[n_side][station][n_ring][n_chamber]->SetLineStyle(2);
-          b[n_side][station][n_ring][n_chamber]->Draw("l");
+          if (bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] == 0) {
+            bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] = new TBox(x_min_chamber + 1, y_min_chamber, x_max_chamber + 1, y_max_chamber);
+            bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetLineColor(1);
+            bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetLineStyle(2);
+          }
+          bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetFillColor(fillColor);
+          bCSC_box[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->Draw("l");
 
-          TString ChamberID = Form("%d", n_chamber);
-          tCSC_label[n_side][station][n_ring][n_chamber] = new TText((x_min_chamber + x_max_chamber)/2.0 + 1, (y_min_chamber + y_max_chamber)/2.0, ChamberID);
-          tCSC_label[n_side][station][n_ring][n_chamber]->SetTextAlign(22);
-          tCSC_label[n_side][station][n_ring][n_chamber]->SetTextFont(42);
-          tCSC_label[n_side][station][n_ring][n_chamber]->SetTextSize(0.015);
-          tCSC_label[n_side][station][n_ring][n_chamber]->Draw();
+          if (tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] == 0) {
+            TString ChamberID = Form("%d", n_chamber);
+            tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1] = new TText((x_min_chamber + x_max_chamber)/2.0 + 1, (y_min_chamber + y_max_chamber)/2.0, ChamberID);
+            tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetTextAlign(22);
+            tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetTextFont(42);
+            tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->SetTextSize(0.015);
+          }
+          tCSC_label[n_side - 1][station - 1][n_ring - 1][n_chamber - 1]->Draw();
+
         }
       }
     }
@@ -340,19 +365,29 @@ void ChamberMap::drawStats(TH2*& me) const {
   if (legend.test(2)) printLegendBox(n, "Error/Hot", COLOR_RED);
   if (legend.test(3)) printLegendBox(n, "Cold", COLOR_BLUE);
   if (legend.test(4)) printLegendBox(n, "Masked", COLOR_GREY);
+
 }
 
-void ChamberMap::printLegendBox(unsigned int& number, const std::string title, const int color) const
-{
-  TBox* lb = new TBox(38, 17 - number * 2, 41, 17 - number * 2 - 1);
-  lb->SetFillColor(color);
-  lb->SetLineColor(1);
-  lb->SetLineStyle(2);
-  lb->Draw("l");
-  TText* lt = new TText((38 + 41)/2.0, (2 * (17 - number * 2) - 1)/2.0, title.c_str());
-  lt->SetTextAlign(22);
-  lt->SetTextFont(42);
-  lt->SetTextSize(0.015);
-  lt->Draw();
+void ChamberMap::printLegendBox(unsigned int& number, const std::string title, const int color) {
+
+  if (bLegend[number] == 0) {
+    bLegend[number] = new TBox(38, 17 - number * 2, 41, 17 - number * 2 - 1);
+    bLegend[number]->SetLineColor(1);
+    bLegend[number]->SetLineStyle(2);
+  }
+  bLegend[number]->SetFillColor(color);
+  bLegend[number]->Draw("l");
+
+  if (tLegend[number] == 0) {
+    tLegend[number] = new TText((38 + 41)/2.0, (2 * (17 - number * 2) - 1)/2.0, title.c_str());
+    tLegend[number]->SetTextAlign(22);
+    tLegend[number]->SetTextFont(42);
+    tLegend[number]->SetTextSize(0.015);
+  } else {
+    tLegend[number]->SetText((38 + 41)/2.0, (2 * (17 - number * 2) - 1)/2.0, title.c_str());
+  }
+  tLegend[number]->Draw();
+
   number++;
+
 }

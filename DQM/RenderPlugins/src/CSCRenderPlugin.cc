@@ -32,7 +32,9 @@
 #include <TPRegexp.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+
 #define REREPLACE(pat, str, rep) { TString s(str); TPRegexp(pat).Substitute(s, rep); str = s; }
+
 typedef std::map<std::string, bool> MapOfPatternResults;
 
 /**
@@ -43,19 +45,21 @@ class CSCRenderPlugin : public DQMRenderPlugin {
 
   ChamberMap chamberMap;
   SummaryMap summaryMap;
+  EventDisplay eventDisplay;
+
   MapOfPatternResults mopr;
 
 public:
-  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo & )
-    {
-      if ( o.name.find( "CSC/" ) != std::string::npos )
-        return true;
 
-      return false;
-    }
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & ) {
+    if ( o.name.find( "CSC/" ) != std::string::npos )
+      return true;
 
-  virtual void preDraw(TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
-    {
+    return false;
+  }
+
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) {
+
       if(o.object == NULL)
         return;
 
@@ -1992,7 +1996,7 @@ public:
       }
     }
 
-  virtual void postDraw(TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & ) {
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & ) {
 
       if(o.object == NULL)
         return;
@@ -2006,7 +2010,6 @@ public:
       if(reMatch(".*CSC_[0-9]+_[0-9]+/Chamber_Event_Display_No[0-9]$", o.name))
       {
         TH2* tmp = dynamic_cast<TH2*>(obj);
-        EventDisplay eventDisplay;
         eventDisplay.drawSingleChamber(tmp);
         return;
       }
