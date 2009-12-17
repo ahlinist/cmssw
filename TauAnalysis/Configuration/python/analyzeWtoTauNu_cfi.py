@@ -4,7 +4,8 @@ import copy
 # import config for histogram managers
 #from TauAnalysis.Core.genPhaseSpaceEventInfoHistManager_cfi import *
 from TauAnalysis.Core.pftauHistManager_cfi import *
-from TauAnalysis.Core.metHistManager_cfi import *
+from TauAnalysis.Core.caloMEtHistManager_cfi import *
+from TauAnalysis.Core.pfMEtHistManager_cfi import *
 from TauAnalysis.Core.jetHistManager_cfi import *
 from TauAnalysis.Core.vertexHistManager_cfi import *
 from TauAnalysis.Core.pftauRecoilEnergyHistManager_cfi import *
@@ -26,7 +27,8 @@ wTauNuHistManagers = cms.vstring(
     'tauHistManager',
     'muonHistManager',
     'electronHistManager',
-    'metHistManager',
+    'caloMEtHistManager',
+    'pfMEtHistManager',
     'jetHistManager',
     'vertexHistManager',
     'tauRecoilEnergyFromJetsHistManager',
