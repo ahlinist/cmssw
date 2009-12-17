@@ -14,8 +14,10 @@
 #include "CommonTools/Utils/interface/PtComparator.h"
 
 // DataFormat includes
-#include <DataFormats/MuonReco/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
+#include <DataFormats/PatCandidates/interface/Muon.h>
+
+#include <CommonTools/UtilAlgos/interface/StringCutObjectSelector.h>
 //
 // class decleration
 //
@@ -29,7 +31,6 @@ class Onia2MuMuPAT : public edm::EDProducer {
   virtual void beginJob() ;
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
-  bool selectionMuons(const reco::Muon& muon,int selectionType) const;
   bool isAbHadron(int pdgID);
   std::pair<int, float> findJpsiMCInfo(reco::GenParticleRef genJpsi);
 
@@ -38,8 +39,8 @@ class Onia2MuMuPAT : public edm::EDProducer {
   edm::InputTag muons_;
   edm::InputTag thebeamspot_;
   edm::InputTag thePVs_;
-  int selectionType1_;
-  int selectionType2_;
+  StringCutObjectSelector<pat::Muon> higherPuritySelection_;
+  StringCutObjectSelector<pat::Muon> lowerPuritySelection_; 
   bool addCommonVertex_;
   bool addMCTruth_;
   GreaterByPt<pat::CompositeCandidate> pTComparator_;

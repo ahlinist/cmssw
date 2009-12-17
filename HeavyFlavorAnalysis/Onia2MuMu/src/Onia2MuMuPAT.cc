@@ -24,8 +24,8 @@ Onia2MuMuPAT::Onia2MuMuPAT(const edm::ParameterSet& iConfig):
   muons_(iConfig.getParameter<edm::InputTag>("muons")),
   thebeamspot_(iConfig.getParameter<edm::InputTag>("beamSpotTag")),
   thePVs_(iConfig.getParameter<edm::InputTag>("primaryVertexTag")),
-  selectionType1_(iConfig.getParameter<int>("higherPuritySelection")),
-  selectionType2_(iConfig.getParameter<int>("lowerPuritySelection")),
+  higherPuritySelection_(iConfig.getParameter<std::string>("higherPuritySelection")),
+  lowerPuritySelection_(iConfig.getParameter<std::string>("lowerPuritySelection")),
   addCommonVertex_(iConfig.getParameter<bool>("addCommonVertex")),
   addMCTruth_(iConfig.getParameter<bool>("addMCTruth"))
 {  
@@ -57,15 +57,6 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::auto_ptr<pat::CompositeCandidateCollection> oniaOutput(new pat::CompositeCandidateCollection);
   
-  //  Handle<TriggerResults> trigger;
-  //iEvent.getByLabel("TriggerResults",trigger);
-
-  //Handle< vector<GenParticle> > particles;
-  //iEvent.getByLabel("genParticles",particles);
-    
-  //Handle< vector<Track> > tracks;
-  //iEvent.getByLabel("generalTracks",tracks);
-
   Handle<BeamSpot> theBeamSpot;
   iEvent.getByLabel(thebeamspot_,theBeamSpot);
   BeamSpot bs = *theBeamSpot;
@@ -92,82 +83,79 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // JPsi candidates only from muons
   for(View<pat::Muon>::const_iterator it = muons->begin(), itend = muons->end(); it != itend; ++it){
-    if(!selectionMuons(*it,1)) continue;
+    // both must pass low quality
+    if(!lowerPuritySelection_(*it)) continue; 
     for(View<pat::Muon>::const_iterator it2 = it+1; it2 != itend;++it2){
-      if(!selectionMuons(*it2,2)) continue;
-
-      // require Tracker track. It will not work with CaloMuon (TO BE FIXED)
-      if(!(it->track().get() && it2->track().get())) continue; 
+      // both must pass low quality
+      if(!lowerPuritySelection_(*it2)) continue; 
+      // one must pass tight quality
+      if (!(higherPuritySelection_(*it) || higherPuritySelection_(*it2))) continue;
 
       pat::CompositeCandidate myCand;
 
-      // ---- order by pT ----
-      // if(it->pt()<it2->pt()){
-      //   myCand.addDaughter(*it, "muon1");
-      //   myCand.addDaughter(*it2,"muon2");
-      // }else{
-      //   myCand.addDaughter(*it, "muon2");
-      //   myCand.addDaughter(*it2,"muon1");	
-      // }
-
-      // ---- order by purity ----
+      // ---- no explicit order defined ----
       myCand.addDaughter(*it, "muon1");
       myCand.addDaughter(*it2,"muon2");	
 
-      // ---- candidate's 4momentum from muons ----  
-      // LorentzVector jpsi = it->p4() + it2->p4();
-         
-      // ---- candidate's 4momentum from tracks ----  
-      Track tr = *it->track();
-      Track tr2 = *it2->track();
-      LorentzVector trp4(tr.px(),tr.py(),tr.pz(),sqrt(tr.p()*tr.p() + 0.011163613));
-      LorentzVector tr2p4(tr2.px(),tr2.py(),tr2.pz(),sqrt(tr2.p()*tr2.p() + 0.011163613));
-      LorentzVector jpsi = trp4 + tr2p4;
-
+      // ---- define and set candidate's 4momentum  ----  
+      LorentzVector jpsi = it->p4() + it2->p4();
       myCand.setP4(jpsi);
+      // if we have tracker tracks, we use the tracker momentum explicitly
+      // just to be sure in the 1-1 comparison with Onia2MuMu non-PAT
+      // in the future we'll probably be ok with the reco::Muon momentum,
+      // and this piece of code can be removed
+      if (it->track().isNonnull() && it2->track().isNonnull()) {
+          // ---- candidate's 4momentum from tracks ----  
+          const Track & tr = *it->track();
+          const Track & tr2 = *it2->track();
+          LorentzVector trp4(tr.px(),tr.py(),tr.pz(),sqrt(tr.p()*tr.p() + 0.011163613));
+          LorentzVector tr2p4(tr2.px(),tr2.py(),tr2.pz(),sqrt(tr2.p()*tr2.p() + 0.011163613));
+          jpsi = trp4 + tr2p4;
+          myCand.setP4(jpsi);
+      }
       
-      // ---- fit vertex using Tracker tracks ----
-      vector<TransientTrack> t_tks;
-      t_tks.push_back(theTTBuilder->build(*it->track()));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
-      t_tks.push_back(theTTBuilder->build(*it2->track())); // otherwise the vertex will have transient refs inside.
-      TransientVertex myVertex = vtxFitter.vertex(t_tks);
-      if (myVertex.isValid()) {
-          float vChi2 = myVertex.totalChiSquared();
-          float vNDF  = myVertex.degreesOfFreedom();
-          float vProb(TMath::Prob(vChi2,(int)vNDF));
+      // ---- fit vertex using Tracker tracks (if they have tracks) ----
+      if (it->track().isNonnull() && it2->track().isNonnull()) {
+          vector<TransientTrack> t_tks;
+          t_tks.push_back(theTTBuilder->build(*it->track()));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
+          t_tks.push_back(theTTBuilder->build(*it2->track())); // otherwise the vertex will have transient refs inside.
+          TransientVertex myVertex = vtxFitter.vertex(t_tks);
+          if (myVertex.isValid()) {
+              float vChi2 = myVertex.totalChiSquared();
+              float vNDF  = myVertex.degreesOfFreedom();
+              float vProb(TMath::Prob(vChi2,(int)vNDF));
 
-          myCand.addUserFloat("vNChi2",vChi2/vNDF);
-          myCand.addUserFloat("vProb",vProb);
+              myCand.addUserFloat("vNChi2",vChi2/vNDF);
+              myCand.addUserFloat("vProb",vProb);
 
-	  TVector3 vtx;
-	  vtx.SetXYZ(myVertex.position().x(),myVertex.position().y(),0);
-	  TVector3 pperp(jpsi.px(), jpsi.py(), 0);
-        
-          // lifetime using PV
-	  TVector3 vdiff = vtx - vPv;
-	  double cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
-	  double ctauPV = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
-	  myCand.addUserFloat("ppdlPV",ctauPV);
-          myCand.addUserFloat("cosAlpha",cosAlpha);
-          // lifetime using BS
-          vdiff = vtx - vBs;
-	  cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
-	  double ctauBS = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
-          myCand.addUserFloat("ppdlBS",ctauBS);
+              TVector3 vtx;
+              vtx.SetXYZ(myVertex.position().x(),myVertex.position().y(),0);
+              TVector3 pperp(jpsi.px(), jpsi.py(), 0);
+            
+              // lifetime using PV
+              TVector3 vdiff = vtx - vPv;
+              double cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
+              double ctauPV = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
+              myCand.addUserFloat("ppdlPV",ctauPV);
+              myCand.addUserFloat("cosAlpha",cosAlpha);
+              // lifetime using BS
+              vdiff = vtx - vBs;
+              cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
+              double ctauBS = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
+              myCand.addUserFloat("ppdlBS",ctauBS);
 
-          if (addCommonVertex_) {
-              myCand.addUserData("commonVertex",reco::Vertex(myVertex));
-          }
-	 
-
-      } else {
-          myCand.addUserFloat("vNChi2",-1);
-          myCand.addUserFloat("vProb", -1);
-          myCand.addUserFloat("ppdlPV",-100);
-          myCand.addUserFloat("cosAlpha",-100);
-          myCand.addUserFloat("ppdlBS",-100);
-          if (addCommonVertex_) {
-              myCand.addUserData("commonVertex",reco::Vertex());
+              if (addCommonVertex_) {
+                  myCand.addUserData("commonVertex",reco::Vertex(myVertex));
+              }
+          } else {
+              myCand.addUserFloat("vNChi2",-1);
+              myCand.addUserFloat("vProb", -1);
+              myCand.addUserFloat("ppdlPV",-100);
+              myCand.addUserFloat("cosAlpha",-100);
+              myCand.addUserFloat("ppdlBS",-100);
+              if (addCommonVertex_) {
+                  myCand.addUserData("commonVertex",reco::Vertex());
+              }
           }
       }
      
@@ -180,7 +168,6 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  reco::GenParticleRef mom1 = genMu1->motherRef();
 	  reco::GenParticleRef mom2 = genMu2->motherRef();
 	  if (mom1.isNonnull() && (mom1 == mom2)) {
-	    if (mom1.isTransient()) std::cerr << "Mom1 is transient???" << std::endl;
 	    myCand.setGenParticleRef(mom1); // set
 	    myCand.embedGenParticle();      // and embed
 	    std::pair<int, float> MCinfo = findJpsiMCInfo(mom1);
@@ -207,29 +194,6 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 }
 
-bool
-Onia2MuMuPAT::selectionMuons(const reco::Muon& muon,int selectionType) const{
-  using namespace std;
-  int actualSelection;
-  if(selectionType ==1) actualSelection = selectionType1_; //selection for higherPurity muons
-  else actualSelection = selectionType2_;                  //selection for lowerPurity muons
-
-  switch(actualSelection){
-  case 1:  //select global muon
-    return muon.isGlobalMuon();
-    break;
-  case 2:  //select tracker muon
-    return muon.isTrackerMuon() && !muon.isGlobalMuon();;
-    break;
-  case 3:  //select calo muon
-    return muon.isCaloMuon();;
-    break;
-  default:
-    cout << "ERROR: acutalSelection is not matching to any known selection" << endl;   
-    return false;
-  }
-
-}
 
 bool 
 Onia2MuMuPAT::isAbHadron(int pdgID) {
