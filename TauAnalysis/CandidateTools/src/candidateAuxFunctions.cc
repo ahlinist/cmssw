@@ -43,8 +43,14 @@ reco::Candidate::LorentzVector getVisMomentum(const std::vector<const reco::GenP
 
   for ( std::vector<const reco::GenParticle*>::const_iterator daughter = daughters.begin();
 	daughter != daughters.end(); ++daughter ) {
-    if ( (status == -1 || (*daughter)->status() == status) && !isNeutrino(*daughter) ) p4Vis += (*daughter)->p4();
+    if ( (status == -1 || (*daughter)->status() == status) && !isNeutrino(*daughter) ) {
+      //std::cout << "adding daughter: pdgId = " << (*daughter)->pdgId() << ", Pt = " << (*daughter)->pt() << ","
+      //	  << " eta = " << (*daughter)->eta() << ", phi = " << (*daughter)->phi()*180./TMath::Pi() << std::endl;
+      p4Vis += (*daughter)->p4();
+    }
   }
+
+  //std::cout << "--> vis. Momentum: Pt = " << p4Vis.pt() << ", eta = " << p4Vis.eta() << ", phi = " << p4Vis.phi() << std::endl;
 
   return p4Vis;
 }
@@ -55,7 +61,6 @@ reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle* genLeg, c
   findDaughters(genLeg, stableDaughters, 1);
 
   reco::Candidate::LorentzVector p4Vis = getVisMomentum(stableDaughters);
-  //std::cout << "vis. Momentum: E = " << p4Vis.energy() << ", eta = " << p4Vis.eta() << ", phi = " << p4Vis.phi() << std::endl;
 
   return p4Vis;
 }
@@ -66,8 +71,14 @@ reco::Candidate::LorentzVector getInvisMomentum(const std::vector<const reco::Ge
 
   for ( std::vector<const reco::GenParticle*>::const_iterator daughter = daughters.begin();
 	daughter != daughters.end(); ++daughter ) {
-    if ( (status == -1 || (*daughter)->status() == status) && isNeutrino(*daughter) ) p4Invis += (*daughter)->p4();
+    if ( (status == -1 || (*daughter)->status() == status) && isNeutrino(*daughter) ) {
+      //std::cout << "adding daughter: pdgId = " << (*daughter)->pdgId() << ", Pt = " << (*daughter)->pt() << ","
+      //	  << " eta = " << (*daughter)->eta() << ", phi = " << (*daughter)->phi()*180./TMath::Pi() << std::endl;
+      p4Invis += (*daughter)->p4();
+    }
   }
+
+  //std::cout << "--> invis. Momentum: Pt = " << p4Invis.pt() << ", phi = " << p4Invis.phi() << std::endl;
 
   return p4Invis;
 }
@@ -78,7 +89,6 @@ reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle* genLeg,
   findDaughters(genLeg, stableDaughters, 1);
   
   reco::Candidate::LorentzVector p4Invis = getInvisMomentum(stableDaughters);
-  //std::cout << "invis. Momentum: E = " << p4Invis.energy() << ", phi = " << p4Invis.phi() << std::endl;
 
   return p4Invis;
 }
