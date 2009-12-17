@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.8 2009/12/03 10:33:26 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.9 2009/12/04 10:22:37 covarell Exp $
 //
 //
 
@@ -613,8 +613,8 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   
   float theMass = aCand->mass();
   float theCtau; 
-  if (_useBS) {theCtau = aCand->userFloat("ppdlBS");}
-  else {theCtau = aCand->userFloat("ppdlPV");}
+  if (_useBS) {theCtau = 10.*aCand->userFloat("ppdlBS");}
+  else {theCtau = 10.*aCand->userFloat("ppdlPV");}
 
   // MC matching
   reco::GenParticleRef genJpsi = aCand->genParticleRef();
@@ -816,7 +816,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     // cout << "life = " << theCtau << " trueLife = " << trueLife << endl;
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
-    JpsictTrue->setVal(aCand->userFloat("ppdlTrue"));
+    JpsictTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
      
     if (_storeefficiency) {
       // to be done

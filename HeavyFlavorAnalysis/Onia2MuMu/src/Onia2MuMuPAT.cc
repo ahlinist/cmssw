@@ -114,11 +114,16 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       myCand.addDaughter(*it, "muon1");
       myCand.addDaughter(*it2,"muon2");	
 
-      // ---- define and set candidate's 4momentum  ----  
-      LorentzVector jpsi = it->p4() + it2->p4();
-      //LorentzVector jpsi = it->track()->p4() + it2->track()->p4();
-      //qh.setRecoJPsi(jpsi);
-      //cout << "jpsi: " << jpsi.mass() << endl;
+      // ---- candidate's 4momentum from muons ----  
+      // LorentzVector jpsi = it->p4() + it2->p4();
+         
+      // ---- candidate's 4momentum from tracks ----  
+      Track tr = *it->track();
+      Track tr2 = *it2->track();
+      LorentzVector trp4(tr.px(),tr.py(),tr.pz(),sqrt(tr.p()*tr.p() + 0.011163613));
+      LorentzVector tr2p4(tr2.px(),tr2.py(),tr2.pz(),sqrt(tr2.p()*tr2.p() + 0.011163613));
+      LorentzVector jpsi = trp4 + tr2p4;
+
       myCand.setP4(jpsi);
       
       // ---- fit vertex using Tracker tracks ----
