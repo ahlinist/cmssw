@@ -20,6 +20,21 @@ diTauCandidateHistManagerForMuTau.pluginName = cms.string('diTauCandidateHistMan
 diTauCandidateHistManagerForMuTau.pluginType = cms.string('PATMuTauPairHistManager')
 diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('allMuTauPairs')
 diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
+from TauAnalysis.Core.diTauCandidateCollinearApproxHistManager_cfi import *
+diTauCandidateCollinearApproxHistManagerBinnedForMuTau = copy.deepcopy(diTauCandidateCollinearApproxHistManagerBinned)
+diTauCandidateCollinearApproxHistManagerBinnedForMuTau.pluginName = cms.string('diTauCandidateCollinearApproxHistManagerBinnedForMuTau')
+diTauCandidateCollinearApproxHistManagerForMuTau = copy.deepcopy(diTauCandidateCollinearApproxHistManager)
+diTauCandidateCollinearApproxHistManagerForMuTau.pluginName = cms.string('diTauCandidateCollinearApproxHistManagerForMuTau')
+diTauCandidateCollinearApproxHistManagerForMuTau.pluginType = cms.string('PATMuTauPairCollinearApproxHistManager')
+diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
+diTauCandidateCollinearApproxHistManagerBinnedForMuTau.histManagers = cms.VPSet(
+    diTauCandidateHistManagerForMuTau.clone(
+        diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
+    ),
+    diTauCandidateCollinearApproxHistManagerForMuTau,
+    pfMEtHistManager,
+    caloMEtHistManager
+)
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForMuTau = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForMuTau')
@@ -68,6 +83,16 @@ triggerHistManagerForMuTau.hltPaths = cms.vstring(
 
 # import config for event weight histogram manager
 from TauAnalysis.Core.eventWeightHistManager_cfi import *
+
+diTauCandidateCollinearApproxBinningForMuTau =  cms.PSet(
+    pluginName = cms.string('diTauCandidateCollinearApproxBinningForMuTau'),
+    pluginType = cms.string('DataBinner'),
+    binning = collinearApproxBinning,
+    binningService = cms.PSet(
+        pluginType = cms.string("DataBinningService")
+    ),
+    dqmDirectory_store = cms.string('collinearApproxBinningResults4regions')
+)
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -293,24 +318,19 @@ muTauEventDump = cms.PSet(
     hltPathsToPrint = cms.vstring('HLT_Mu9', 'HLT_IsoMu9', 'HLT_Mu11', 'HLT_Mu15'),
         
     genParticleSource = cms.InputTag('genParticles'),
+    genJetSource = cms.InputTag('iterativeCone5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
+    
     electronSource = cms.InputTag('cleanLayer1Electrons'),
     muonSource = cms.InputTag('cleanLayer1Muons'),
-    #muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
     tauSource = cms.InputTag('selectedLayer1TausPt20Cumulative'),
-    #tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypotheses'),
+    jetSource = cms.InputTag('allLayer1Jets'),
     caloMEtSource = cms.InputTag('layer1METs'),
     pfMEtSource = cms.InputTag('layer1PFMETs'),
     genMEtSource = cms.InputTag('genMetTrue'),
-    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    #recoTrackSource = cms.InputTag('generalTracks'),
-    #pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
-    #pfGammaSource = cms.InputTag('pfAllPhotons'),
-    #pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
-    #pfCandidateSource = cms.InputTag('particleFlow'),
     
     #output = cms.string("muTauEventDump.txt"),
     output = cms.string("std::cout"),
@@ -784,6 +804,9 @@ muTauAnalysisSequence = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau',
+            'diTauCandidateCollinearApproxHistManagerBinnedForMuTau',
+            'diTauCandidateCollinearApproxBinningForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManager',
             'jetHistManager',
