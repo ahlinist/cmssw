@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: GenericEventDump.h,v 1.8 2009/11/28 10:15:04 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.9 2009/12/05 15:07:31 veelken Exp $
  *
  */
 
@@ -128,6 +128,7 @@ class GenericEventDump : public EventDumpBase
   edm::InputTag patElectronSource_;
   edm::InputTag patMuonSource_;
   edm::InputTag patTauSource_;
+  edm::InputTag patJetSource_;
 
   edm::InputTag diTauCandidateSource_;
 
@@ -136,8 +137,6 @@ class GenericEventDump : public EventDumpBase
   edm::InputTag genMEtSource_;
 
   std::vector<int> skipPdgIdsGenParticleMatch_;
-
-  edm::InputTag patJetSource_;
 
   edm::InputTag recoTrackSource_;
   edm::InputTag recoVertexSource_;
