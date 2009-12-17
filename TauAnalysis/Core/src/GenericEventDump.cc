@@ -18,6 +18,8 @@
 #include "DataFormats/METReco/interface/GenMETFwd.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/PFJetCollection.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
@@ -711,6 +713,82 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
   printMissingEtInfo_i(evt, patCaloMEtSource_, *outputStream_, "recoCaloMET:");
   printMissingEtInfo_i(evt, patPFMEtSource_, *outputStream_, "recoPFMET:");
 
+  edm::Handle<reco::PFJetCollection> recoJets;
+  evt.getByLabel("iterativeCone5PFJets", recoJets);
+
+  edm::Handle<reco::GenJetCollection> genJets;
+  evt.getByLabel(genJetSource_, genJets);
+
+  std::vector<const reco::PFJet*> recoJets_matched;
+
+  const double maxPtDifference = 2.5;
+
+  for ( reco::GenJetCollection::const_iterator genJet = genJets->begin();
+	genJet != genJets->end(); ++genJet ) {
+//--- CV: genJet includes neutrinos,
+//        so cannot simply take genJet four-vector, but need to compute visible momentum
+    reco::Candidate::LorentzVector genJetVisMomentum = getVisMomentum(genJet->getGenConstituents(), 1);
+    
+    if ( !(genJet->pt() > maxPtDifference) ) continue;
+
+    double dPxMin = 1.e+3;
+    double dPyMin = 1.e+3;
+
+    const reco::PFJet* recoJet_matched = 0;
+
+    for ( reco::PFJetCollection::const_iterator recoJet = recoJets->begin(); 
+	  recoJet != recoJets->end(); ++recoJet ) {
+
+      double dPx = recoJet->px() - genJetVisMomentum.px();
+      double dPy = recoJet->py() - genJetVisMomentum.py();
+      if ( reco::deltaR(genJetVisMomentum, recoJet->p4()) < 0.5 &&
+	   (dPx*dPx + dPy*dPy) < (dPxMin*dPxMin + dPyMin*dPyMin) ) {
+	dPxMin = dPx;
+	dPyMin = dPy;
+	recoJet_matched = &(*recoJet);
+      }
+    }
+
+    if ( TMath::Sqrt(dPxMin*dPxMin + dPyMin*dPyMin) > maxPtDifference ) {
+      std::cout << "genJet not matching recoJet: Pt = " << genJetVisMomentum.pt() << ", eta = " << genJetVisMomentum.eta() << "," 
+		<< " phi = " << genJetVisMomentum.phi()*180./TMath::Pi() << std::endl; 
+      std::cout << "(genPx = " << genJetVisMomentum.px() << ", genPy = " << genJetVisMomentum.py();
+      if ( recoJet_matched ) std::cout << "; recoPx = " << recoJet_matched->px() << ", recoPy = " << recoJet_matched->py();
+      std::cout << ")" << std::endl;
+/*
+      std::cout << "genJet constituents:" << std::endl;
+      std::vector<const reco::GenParticle*> genJetConstituents = genJet->getGenConstituents();
+      for ( std::vector<const reco::GenParticle*>::const_iterator genJetConstituent = genJetConstituents.begin();
+	    genJetConstituent != genJetConstituents.end(); ++genJetConstituent ) {
+	std::cout << " pdgId = " << (*genJetConstituent)->pdgId() << ", status = " << (*genJetConstituent)->status() << ":"
+		  << " Pt = " << (*genJetConstituent)->pt() << ", eta = " << (*genJetConstituent)->eta() << "," 
+		  << " phi = " << (*genJetConstituent)->phi()*180./TMath::Pi() << std::endl; 
+      }      
+ */
+    }
+    
+    recoJets_matched.push_back(recoJet_matched);
+  }
+
+  for ( reco::PFJetCollection::const_iterator recoJet = recoJets->begin(); 
+	recoJet != recoJets->end(); ++recoJet ) {
+
+    if ( !(recoJet->pt() > maxPtDifference) ) continue;
+
+    bool isMatched = false;
+
+    for ( std::vector<const reco::PFJet*>::const_iterator recoJet_matched = recoJets_matched.begin(); 
+	  recoJet_matched != recoJets_matched.end(); ++recoJet_matched ) {
+      if ( &(*recoJet) == (*recoJet_matched) ) isMatched = true;
+    }
+    
+    if ( !isMatched ) {
+      std::cout << "recoJet not matching (any) genJet: Pt = " << recoJet->pt() << ", eta = " << recoJet->eta() << "," 
+		<< " phi = " << recoJet->phi()*180./TMath::Pi() << std::endl; 
+      std::cout << "(recoPx = " << recoJet->px() << ", recoPy = " << recoJet->py() << ")" << std::endl;
+    }
+  }
+  
   edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
   evt.getByLabel(genParticleSource_, genParticleCollection);
 
@@ -729,8 +807,8 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
 
   reco::Candidate::LorentzVector invisibleHighEtaGenJets(0,0,0,0);
 
-  edm::Handle<reco::GenJetCollection> genJets;
-  evt.getByLabel(genJetSource_, genJets);
+  //edm::Handle<reco::GenJetCollection> genJets;
+  //evt.getByLabel(genJetSource_, genJets);
   for ( reco::GenJetCollection::const_iterator genJet = genJets->begin();
 	genJet != genJets->end(); ++genJet ) {
     if ( TMath::Abs(genJet->eta()) > 5.0 ) invisibleHighEtaGenJets += genJet->p4();
