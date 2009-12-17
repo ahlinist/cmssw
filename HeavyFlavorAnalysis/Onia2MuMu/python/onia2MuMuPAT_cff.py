@@ -92,11 +92,11 @@ patMuonSequence = cms.Sequence(
 onia2MuMuPatGlbGlb = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
 
 onia2MuMuPatGlbTrk = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
-onia2MuMuPatGlbTrk.lowerPuritySelection  = cms.int32(2)
+onia2MuMuPatGlbTrk.lowerPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon")
 
 onia2MuMuPatTrkTrk = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
-onia2MuMuPatTrkTrk.higherPuritySelection  = cms.int32(2)
-onia2MuMuPatTrkTrk.lowerPuritySelection   = cms.int32(2)
+onia2MuMuPatTrkTrk.higherPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon")
+onia2MuMuPatTrkTrk.lowerPuritySelection   = cms.string("isGlobalMuon || isTrackerMuon")
 
 
 def onia2MuMu_isNotMC(process):
