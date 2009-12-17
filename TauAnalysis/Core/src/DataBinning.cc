@@ -3,6 +3,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "TauAnalysis/Core/interface/binningAuxFunctions.h"
+#include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 
 #include <TPRegexp.h>
 #include <TString.h>
@@ -13,6 +14,9 @@
 #include <iostream>
 #include <iomanip>
  
+const std::string meOptionsBinContent = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s1");
+const std::string meOptionsBinError = std::string(meOptionsSeparator).append("a2").append(meOptionsSeparator).append("s1");
+
 DataBinning::DataBinning()
 {
   numBins_ = 0;
@@ -91,19 +95,14 @@ std::vector<std::string> DataBinning::encodeStringRep() const
 
   for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
     std::ostringstream meName_binContent;
-    meName_binContent << "binContent_region" << (iBin + 1);
+    meName_binContent << "binContent_region" << (iBin + 1) << meOptionsBinContent;
     std::ostringstream meValue_binContent;
     meValue_binContent << std::setprecision(3) << std::fixed << binContents_[iBin];
     std::string entry_binContent = encodeBinningStringRep(meName_binContent.str(), "float", meValue_binContent.str());
     buffer.push_back(entry_binContent);
-    
-//--- CV: bin-errors need to be stored in MonitorElements 
-//        in the format 'square-root(sum of weights)' rather then in the format 'sum of weights',
-//        in order to preserve the relation bin-error/bin-content 
-//        in case DataBinning object gets multiplied by scale-factor
-//       (e.g. to normalize Monte Carlo to integrated luminosity of data)
+
     std::ostringstream meName_binError;
-    meName_binError << "binError_region" << (iBin + 1);
+    meName_binError << "binError_region" << (iBin + 1) << meOptionsBinError;
     std::ostringstream meValue_binError;
     meValue_binError << std::setprecision(3) << std::fixed << TMath::Sqrt(binSumw2_[iBin]);
     std::string entry_binError = encodeBinningStringRep(meName_binError.str(), "float", meValue_binError.str());
@@ -118,10 +117,10 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
   BinningBase::decodeStringRep(buffer);
 
   TPRegexp regexpParser_numBins("numBins");
-  TPRegexp regexpParser_binContents_entry("binContent_region[[:digit:]]+");
-  TPRegexp regexpParser_binContents_binNumber("binContent_region([[:digit:]]+)");
-  TPRegexp regexpParser_binError_entry("binError_region[[:digit:]]+");
-  TPRegexp regexpParser_binError_binNumber("binError_region([[:digit:]]+)");
+  TPRegexp regexpParser_binContents_entry(std::string("binContent_region[[:digit:]]+").append(meOptionsBinContent));
+  TPRegexp regexpParser_binContents_binNumber(std::string("binContent_region([[:digit:]]+)").append(meOptionsBinContent));
+  TPRegexp regexpParser_binError_entry(std::string("binError_region[[:digit:]]+").append(meOptionsBinError));
+  TPRegexp regexpParser_binError_binNumber(std::string("binError_region([[:digit:]]+)").append(meOptionsBinError));
 
   bool numBins_initialized = false;
   std::vector<bool> binContents_initialized;
@@ -174,7 +173,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
       }
     } else if ( regexpParser_binError_entry.Match(meName_tstring) == 1 ) {
       if ( !numBins_initialized ) {
-	edm::LogError ("DataBinning::operator>>") << " Need to initialize numBins before setting binSumw2 !!";
+	edm::LogError ("DataBinning::operator>>") << " Need to initialize numBins before setting binError !!";
 	continue;
       }
 
@@ -207,7 +206,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
   if ( numBins_initialized ) {
     for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
       if ( !binContents_initialized[iBin] ) edm::LogError ("operator>>") << " Failed to decode binContents[" << iBin << "] !!";
-      if ( !binSumw2_initialized[iBin] ) edm::LogError ("operator>>") << " Failed to decode binSumw2[" << iBin << "] !!";
+      if ( !binSumw2_initialized[iBin] ) edm::LogError ("operator>>") << " Failed to decode binError[" << iBin << "] !!";
     }
   } else {
     edm::LogError ("DataBinning::operator>>") << " Failed to decode numBins !!";

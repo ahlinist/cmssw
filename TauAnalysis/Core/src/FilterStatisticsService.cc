@@ -11,8 +11,10 @@
 #include <iomanip>
 #include <algorithm>
 
-const std::string meNamePrefixNum = "_num";
-const std::string meNamePrefixNumWeighted = "_numWeighted";
+const std::string meOptionsNum = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s0");
+const std::string meNameSuffixNum = std::string("_num").append(meOptionsNum);
+const std::string meOptionsNumWeighted = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s1");
+const std::string meNameSuffixNumWeighted = std::string("_numWeighted").append(meOptionsNumWeighted);
 const std::string meTitleSeparator = ". :";
 
 FilterStatisticsService::FilterStatisticsService()
@@ -33,7 +35,7 @@ FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const s
 //--- load MonitorElements holding the number of
 //    unweighted and weighted event counts 
 
-  std::string meName_num = dqmDirectoryName(dqmDirectory).append(elementName).append(meNamePrefixNum);
+  std::string meName_num = dqmDirectoryName(dqmDirectory).append(elementName).append(meNameSuffixNum);
   MonitorElement* meNum = dqmStore.get(meName_num);
   if ( !meNum ) {
     edm::LogError ("loadFilterStatisticsElement") << " Failed to load meName_num = " << meName_num 
@@ -42,7 +44,7 @@ FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const s
   }
   long num = meNum->getIntValue();
 
-  std::string meName_numWeighted = dqmDirectoryName(dqmDirectory).append(elementName).append(meNamePrefixNumWeighted);
+  std::string meName_numWeighted = dqmDirectoryName(dqmDirectory).append(elementName).append(meNameSuffixNumWeighted);
   MonitorElement* meNumWeighted = dqmStore.get(meName_numWeighted);
   if ( !meNumWeighted ) {
     edm::LogError ("loadFilterStatisticsElement") << " Failed to load meName_numWeighted = " << meName_numWeighted 
@@ -132,10 +134,10 @@ void FilterStatisticsService::saveFilterStatisticsElement(DQMStore& dqmStore, co
 {
 //--- create and save MonitorElements holding the number of
 //    unweighted and weighted event counts 
-  MonitorElement* meNum = dqmStore.bookInt(std::string(element->name_).append(meNamePrefixNum));
+  MonitorElement* meNum = dqmStore.bookInt(std::string(element->name_).append(meNameSuffixNum));
   meNum->Fill(element->num_);
 
-  MonitorElement* meNumWeighted = dqmStore.bookFloat(std::string(element->name_).append(meNamePrefixNumWeighted));
+  MonitorElement* meNumWeighted = dqmStore.bookFloat(std::string(element->name_).append(meNameSuffixNumWeighted));
   meNumWeighted->Fill(element->numWeighted_);
 }
 
