@@ -105,15 +105,17 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   void compGenQuantities(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate, const reco::GenParticleCollection* genParticles)
   {
     const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1);
-    //std::cout << "genLeg1 = " << genLeg1 << std::endl;
     if ( genLeg1 ) {
+      //std::cout << "genLeg1: Pt = " << genLeg1->pt() << ", eta = " << genLeg1->eta() << "," 
+      //	  << " phi = " << genLeg1->phi()*180./TMath::Pi() << std::endl;
       compositePtrCandidate.setP4Leg1gen(genLeg1->p4());
       compositePtrCandidate.setP4VisLeg1gen(getVisMomentum(genLeg1, genParticles));
     }
     
     const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1);
-    //std::cout << "genLeg2 = " << genLeg2 << std::endl;
     if ( genLeg2 ) {
+      //std::cout << "genLeg2: Pt = " << genLeg2->pt() << ", eta = " << genLeg2->eta() << "," 
+      //	  << " phi = " << genLeg2->phi()*180./TMath::Pi() << std::endl;
       compositePtrCandidate.setP4Leg2gen(genLeg2->p4());
       compositePtrCandidate.setP4VisLeg2gen(getVisMomentum(genLeg2, genParticles));
     }
