@@ -10,6 +10,7 @@
 #include <TObjArray.h>
 #include <TObjString.h>
 #include <TString.h>
+#include <TMath.h>
 
 #include <iostream>
 
@@ -94,6 +95,40 @@ void dqmRegisterHistogram(DQMStore& dqmStore, TH1* histogram, const std::string&
   } else if ( TProfile2D* h = dynamic_cast<TProfile2D*>(histogram) ) {
     dqmStore.bookProfile2D(name, h);
   }
+}
+
+double getPower_general(const std::string& meName, const std::string& arg, double defaultValue)
+{
+  std::string arg_full = std::string(meOptionsSeparator).append(arg);
+
+  unsigned posStart = meName.find(arg_full);
+
+  if ( posStart != std::string::npos ) {
+    posStart += arg_full.length();
+    
+    unsigned posEnd = meName.find(std::string(meOptionsSeparator), posStart);
+    
+    std::string power_string = ( posEnd != std::string::npos ) ?
+      std::string(meName, posStart, posEnd - posStart) : std::string(meName, posStart);
+    
+    //std::cout << "meName = " << meName << ": power_string = " << power_string << std::endl; 
+    
+    return atof(power_string.data());
+  }
+
+  edm::LogWarning ("getPower_general") << " Failed to decode power for argument " << arg 
+				       <<  " --> returning default value = " << defaultValue << " !!";
+  return defaultValue;
+}
+
+double getPower_scale(const std::string& meName)
+{
+  return getPower_general(meName, "s", 1.);
+}
+
+double getPower_add(const std::string& meName)
+{
+  return getPower_general(meName, "a", 1.);
 }
 
 void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, const std::string& outputDirectory, 
@@ -224,7 +259,10 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 	}
       } else if ( meInput->kind() == MonitorElement::DQM_KIND_REAL ) {
 	double realValue = meInput->getFloatValue();
-	realValue *= scaleFactor;
+	//std::cout << "realValue = " << realValue << std::endl;
+	double power_scale = getPower_scale(*meName);
+	//std::cout << "power_scale = " << power_scale << std::endl;
+	realValue *= TMath::Power(scaleFactor, power_scale);
 	
 	dqmStore.setCurrentFolder(outputDirectory);
 
@@ -235,8 +273,11 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 	
 	MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(*meName));
 	if ( meOutput ) {
+	  double power_add = getPower_add(*meName);
+	  //std::cout << "power_add = " << power_add << std::endl;
 	  double realSum = meOutput->getFloatValue();
-	  meOutput->Fill(realSum + realValue);
+	  //std::cout << "realSum = " << realSum << std::endl;
+	  meOutput->Fill(TMath::Power(TMath::Power(realSum, power_add) + TMath::Power(realValue, power_add), 1./power_add));
 	} else {
 	  meOutput = dqmStore.bookFloat(*meName);
 	  meOutput->Fill(realValue);
