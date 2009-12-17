@@ -31,7 +31,8 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
   
     analyzers = cms.VPSet(
         tauHistManager,
-        metHistManager,
+        caloMEtHistManager,
+        pfMEtHistManager,
         jetHistManager,
         vertexHistManager,
 	tauRecoilEnergyFromJetsHistManager,
