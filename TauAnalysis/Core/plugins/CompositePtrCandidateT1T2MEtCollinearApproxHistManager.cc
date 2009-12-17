@@ -81,7 +81,9 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::bookHistogra
     hGenX1vsX2_ = book2D("GenX1vsX2", "gen. X_{1} vs. X_{2}", 51, -0.01, 1.01, 51, -0.01, 1.01);
   
     hX1vsGenX1_ = book2D("X1vsGenX1", "X_{1} vs. gen. X_{1}", 21, -0.01, 1.01, 100, -2.5, +2.5);
+    hX1vsGenX1Profile_ = bookProfile1D("X1vsGenX1Profile", "X_{1} vs. gen. X_{1}", 51, -0.01, 1.01);
     hX2vsGenX2_ = book2D("X2vsGenX2", "X_{2} vs. gen. X_{2}", 21, -0.01, 1.01, 100, -2.5, +2.5);
+    hX2vsGenX2Profile_ = bookProfile1D("X2vsGenX2Profile", "X_{2} vs. gen. X_{2}", 51, -0.01, 1.01);
   }
 
   hGenLeg1ProjGenMEt_ = book1D("GenLeg1ProjGenMEt", "gen. leg_{1} P_{T} || missing E_{T}", 75, 0., 150.);
@@ -188,7 +190,9 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
 	hGenX1vsX2_->Fill(diTauCandidate->x1gen(), diTauCandidate->x2gen(), weight);
 	
 	hX1vsGenX1_->Fill(diTauCandidate->x1gen(), diTauCandidate->x1CollinearApprox(), weight);
+	hX1vsGenX1Profile_->getTProfile()->Fill(diTauCandidate->x1gen(), diTauCandidate->x1CollinearApprox(), weight);
 	hX2vsGenX2_->Fill(diTauCandidate->x2gen(), diTauCandidate->x2CollinearApprox(), weight);
+	hX2vsGenX2Profile_->getTProfile()->Fill(diTauCandidate->x2gen(), diTauCandidate->x2CollinearApprox(), weight);
       }
       
       if ( diTauCandidate->met()->pt() > 0. && dynamic_cast<const pat::MET*>(diTauCandidate->met().get()) ) {
