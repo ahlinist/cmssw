@@ -25,6 +25,8 @@ const std::string dqmSeparator2 = std::string(dqmSeparator).append(dqmSeparator)
 //const std::string dqmRootDirectory = std::string(dqmSeparator).append("DQMData").append(dqmSeparator);
 const std::string dqmRootDirectory = "";
 
+const std::string meOptionsSeparator = "#";
+
 void separateMonitorElementFromDirectoryName(const std::string&, std::string&, std::string&);
 
 #endif
