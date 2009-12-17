@@ -100,6 +100,20 @@ switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# import utility function for managing pat::METs
+from TauAnalysis.Configuration.tools.metTools import *
+
+# uncomment to add pfMET
+# first Boolean swich on genMET with mu's production
+# second Boolean swich on type-1 corrections
+addPFMet(process, correct = False)
+
+# uncomment to replace caloMET by pfMET in all di-tau objects
+process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
+replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
+#--------------------------------------------------------------------------------
+
 process.p = cms.Path(
     process.producePatTupleZtoDiTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
