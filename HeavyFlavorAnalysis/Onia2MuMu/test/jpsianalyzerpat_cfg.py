@@ -9,7 +9,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        'file:SkimmingOnia2MuMuPAT_output.root'
+        'file:JPsi_10TeV_PAT.root'
     )
 )
 
@@ -29,8 +29,10 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     storeEfficiency = cms.bool(False),	
     useBeamSpot = cms.bool(False),
     useCaloMuons = cms.untracked.bool(False),
-    removeSignalEvents = cms.untracked.bool(False),                            
-    TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT8E29")
+    removeSignalEvents = cms.untracked.bool(False),
+    TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT")           
+    # For Summer09 only 
+    # TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT8E29")
 )
 
 
