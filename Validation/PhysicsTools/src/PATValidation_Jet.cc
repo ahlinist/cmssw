@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Jet.cc,v 1.6 2009/10/24 04:16:19 kfjack Exp $
+// $Id: PATValidation_Jet.cc,v 1.7 2009/11/28 14:35:28 kfjack Exp $
 //
 //
 
@@ -446,7 +446,7 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       else
         nJetC++;
     }
-    if (jet->mass()<0)
+    //if (jet->mass()<0)
 	 
     if (mPhi) mPhi->Fill(jet->phi()); 
     if (mE) mE->Fill (jet->energy());
