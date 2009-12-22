@@ -130,13 +130,13 @@ HitMatchingAlgorithm_thresholds_TTHit_ = cms.ESProducer(
 # etc. in your configuration.
 
 HitMatchingAlgorithm_PSimHit_ = cms.ESPrefer(
-    "HitMatchingAlgorithm_globalgeometry_PSimHit_"
+    "HitMatchingAlgorithm_pixelray_PSimHit_"
     )
 
 HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer(
-    "HitMatchingAlgorithm_globalgeometry_PixelDigi_"
+    "HitMatchingAlgorithm_pixelray_PixelDigi_"
     )
 
 HitMatchingAlgorithm_TTHit_ = cms.ESPrefer(
-    "HitMatchingAlgorithm_globalgeometry_TTHit_"
+    "HitMatchingAlgorithm_pixelray_TTHit_"
     )
