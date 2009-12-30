@@ -17,6 +17,10 @@ process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
 # import configuration parameters for submission of jobs to CERN batch system
 from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
 
+# Castor FastSimulation
+#process.load('FastSimulation.ForwardDetectors.CastorTowerProducer_cfi')
+#Castor reconstruction
+#process.load('RecoLocalCalo.Castor.Castor_cfi')
 #--------------------------------------------------------------------------------
 # print memory consumed by cmsRun
 # (for debugging memory leaks)
@@ -61,14 +65,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#    'rfio:/castor/cern.ch/user/l/liis/SelEvents/qcdEvents_passedEcalCrack.root'
-   #'rfio:/castor/cern.ch/user/l/liis/SelEvents/selEvents_WtoTauNu_Wtaunu_part01.root'
-    'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZmumuSkimMT314_1/muTauSkim_1.root'
-#    'rfio:/castor/cern.ch/user/l/liis/SelEvents/selEvents_WtoTauNu_Wenu_part02.root'    
-#    'rfio:/castor/cern.ch/user/l/liis/SelEvents/qcdEvents_passedEcalCrack.root'
-#    'file:QCDSkim_1.root'   
-#    'file:QCD_PtTrack15_FASTSIM_1000.root'
-#    'file:/afs/cern.ch/user/l/liis/scratch0/CMSSW_2_2_13/src/TauAnalysis/Skimming/test/QCDSkim.root'
+        #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root'
+        'rfio:/castor/cern.ch/user/l/liis/SkimNov09/Wtaunu7TeV_PFCaloTauMet/wTauNuSkim_1.root'
     )
 )
 
@@ -90,10 +88,8 @@ process.layer1METs.metSource = cms.InputTag('met')
 
 from TauAnalysis.Configuration.tools.metTools import *
 
-# uncomment to add pfMET
-# set Boolean swich to true in order to apply type-1 corrections
+# uncomment to add pfMET, set Boolean swich to true in order to apply type-1 corrections
 addPFMet(process, correct = False)
-
 # replace caloMET by pfMET in all tau-Nu objects
 process.load("TauAnalysis.CandidateTools.tauNuPairProduction_cff")
 replaceMETforTauNu(process,
@@ -106,13 +102,15 @@ replaceMETforTauNu(process,
 
 from TauAnalysis.Configuration.tools.changeCut import *
 changeCut(process,"selectedLayer1TausForWTauNuPt20","pt > 20.")
-changeCut(process,"selectedLayer1TausForWTauNuTrkIso","tauID('byTaNCfrQuarterPercent') > 0.5")
-changeCut(process, "selectedLayer1TausForWTauNuLeadTrkPt","leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 20.")
+changeCut(process,"selectedLayer1TausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process,"selectedLayer1TausForWTauNuTrkIso","tauID('byIsolation') > 0.5")
+changeCut(process, "selectedLayer1TausForWTauNuLeadTrkPt","leadTrack().isNonnull() & leadTrack().pt() > 20.")
 changeCut(process, "selectedLayer1ElectronsTightId","electronID('eidRobustTight') > 0")
 
 process.p = cms.Path( 
+#    process.CastorTowerReco
+#    +process.CastorFullReco
     process.producePatTupleWtoTauNuSpecific
-#    +process.layer1CaloMETs
 #    +process.printGenParticleList # print-out of generator level particles
 #    +process.printEventContent    # dump of event content after PAT-tuple production
     +process.selectWtoTauNuEvents
@@ -124,7 +122,6 @@ process.p = cms.Path(
 # import utility function for factorization
 #from TauAnalysis.Configuration.factorizationTools import enableFactorization_runWtoTauNu
 #enableFactorization_runWtoTauNu(process)
-
 #
 # define "hook" for enabling/disabling factorization
 # in case running jobs on the CERN batch system
@@ -139,7 +136,7 @@ process.p.replace(process.producePatTupleWtoTauNuSpecific, process.producePatTup
 #--------------------------------------------------------------------------------
 
 #replace reco->aod. Necessary for fast-sim produced qcd sample
-from TauAnalysis.Configuration.tools.aodTools import *
+#from TauAnalysis.Configuration.tools.aodTools import *
 #switchToAOD(process, eventDumpPlugin = process.wTauNuEventDump)
 
 # print-out all python configuration parameter information
