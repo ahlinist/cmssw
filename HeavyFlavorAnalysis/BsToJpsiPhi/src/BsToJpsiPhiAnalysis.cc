@@ -1,30 +1,10 @@
-// -*- C++ -*-
-//
-// Package:    BsToJPsiPhiAnalysis
-// Class:      BsToJPsiPhiAnalysis
-// 
-/* class BsToJPsiPhiAnalysis BsToJPsiPhiAnalysis.cc HeavyFlavorAnalysis/BsToJpsiPhi/src/BsToJPsiPhiAnalysis.cc
-
- Description: Reconstruction of the decay channel Bs-->J/Psi(mumu) Phi(KK)
-
- Implementation: V01-312-04
-
-*/
-//
-// Original Author:  Giordano Cerizza
-//         Authors:  Giordano Cerizza, Alexander Schmidt, Virginia Azzolini, Barbara Mejias
-//         Created:  Mon June 15 09:16:18 EDT 2009
-// 
-//
-
+// description on https://twiki.cern.ch/twiki/bin/viewauth/CMS/BsJpsiPhi_AWG
 #include "HeavyFlavorAnalysis/BsToJpsiPhi/interface/BsToJpsiPhiAnalysis.h"
-
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/Common/interface/EDProduct.h"
-// #include "FWCore/Framework/interface/Handle.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -33,18 +13,15 @@
 #include "FWCore/Framework/interface/TriggerNames.h"
 #include "FWCore/Framework/interface/TriggerReport.h"
 #include "FWCore/Framework/interface/TriggerNamesService.h"
-
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "SimTracker/Records/interface/TrackAssociatorRecord.h"
-
 #include "RecoVertex/KinematicFitPrimitives/interface/ParticleMass.h"
 #include "RecoVertex/KinematicFitPrimitives/interface/MultiTrackKinematicConstraint.h"
 #include <RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h>
-// #include "RecoVertex/KinematicFitPrimitives/interface/"
 #include "RecoVertex/KinematicFit/interface/KinematicConstrainedVertexFitter.h"
 #include "RecoVertex/KinematicFit/interface/TwoTrackMassKinematicConstraint.h"
 #include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
@@ -61,7 +38,6 @@
 #include "DataFormats/MuonReco/interface/CaloMuon.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-// #include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "DataFormats/Candidate/interface/CandMatchMap.h"
@@ -89,7 +65,8 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
-//#include "CondFormats/DataRecord/interface/SiStripDeDxPion_3D_Rcd.h"
+#include "DataFormats/Math/interface/deltaR.h"
+#include "HeavyFlavorAnalysis/BsToJpsiPhi/interface/KinematicFitInterface.h"
 
 #include <iostream>
 #include <TMath.h>
@@ -98,7 +75,13 @@ using namespace reco;
 using namespace edm;
 using namespace std;
 
-BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : theConfig_(iConfig)
+BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : theConfig_(iConfig), 
+									     nominalJpsiMass( 3.096916 ),
+									     nominalPhiMass(1.019 ),
+									     nominalMuonMass(0.1056583),
+									     nominalKaonMass(0.493677),
+									     nominalPionMass(0.139570),
+									     nominalKstarMass(0.892)
 {
 
   thegenParticlesLabel_ = iConfig.getParameter<InputTag>("genParticlesLabel");
@@ -118,6 +101,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
   JpsiMassWindowAfterFit_ = iConfig.getParameter<double>("JpsiMassWindowAfterFit");
   JpsiPtCut_ =  iConfig.getParameter<double>("JpsiPtCut");
   KaonTrackPtCut_ = iConfig.getParameter<double>("KaonTrackPtCut");
+  BdKaonTrackPtCut_ = iConfig.getParameter<double>("BdKaonTrackPtCut");
   PhiMassWindowBeforeFit_ = iConfig.getParameter<double>("PhiMassWindowBeforeFit");
   PhiMassWindowAfterFit_ = iConfig.getParameter<double>("PhiMassWindowAfterFit");
 
@@ -133,18 +117,23 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
 
   edm::LogInfo("RecoVertex/BsToJpsiPhiAnalysis")<< "Initializing Bs to Jpsi Phi analyser  - Output file: " << outputFile_ <<"\n";
 
+
+ 
+
 }
 
 BsToJpsiPhiAnalysis::~BsToJpsiPhiAnalysis() {}
 
 void BsToJpsiPhiAnalysis::beginJob(edm::EventSetup const& setup)
 {
-  bsRootTree_ = new BsToJpsiPhiRootTree(outputFile_);
+  bsRootTree_ = new BsToJpsiPhiRootTree();
+  bsRootTree_->createTree(outputFile_);
 
 }
 
 void BsToJpsiPhiAnalysis::endJob() 
 {
+  bsRootTree_->writeFile();
   delete bsRootTree_;
   cout << "Total number of Events: " << event_counter_ << endl;
 }
@@ -156,16 +145,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   bsRootTree_->resetEntries();
   
-  /////////////////////////
-  // dE/dx info
-  /////////////////////////
-  
-  Handle<DeDxDataValueMap> energyLossHandle;
-  
-  
-  if(StoreDeDxInfo_)  iEvent.getByLabel("dedxMedian", energyLossHandle);
-  
-  
+
   /////////////////////////////////
   // Get primary vertices  
   /////////////////////////////////
@@ -173,8 +153,19 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   int VtxIndex=-99;
   double minVtxProb=-999.;
   double MinBVtxHyp1=-999.;
-  double MinBVtxHyp2=-999.;
   
+  double BSx;
+  double BSy;
+  double BSz;
+  double PVx;
+  double PVy;
+  double PVz;
+  double PVerrx;
+  double PVerry;
+  double PVerrz;
+
+  BSx=BSy=BSz=PVx=PVy=PVz=PVerrx=PVerry=PVerrz=-9999999;
+
   reco::BeamSpot vertexBeamSpot;
   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
   iEvent.getByType(recoBeamSpotHandle);
@@ -197,7 +188,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   }
   
   const Vertex &RecVtx = (*recVtxs)[VtxIndex];
-  double PVx=0.,PVy=0., PVz=0;
+
   if(VtxIndex!=-99)
     {
       PVx = RecVtx.x(); 
@@ -259,6 +250,14 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   if(saveDoubleMu3TriggeredOnly_ == true)
     if(bsRootTree_->triggerbit_HLTdoubleMu3_ != 1 ) return;
 
+
+  /////////////////////////
+  // dE/dx info
+  /////////////////////////
+  Handle<DeDxDataValueMap> energyLossHandle;
+  if(StoreDeDxInfo_)  iEvent.getByLabel("dedxMedian", energyLossHandle);
+  
+  
  
   // **************************
   // start loop over muons
@@ -267,39 +266,38 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.getByLabel(muonTag_,allmuons);
   
   
-  // variables to determine minima of fit probability and mass diff.
-  double minVtxP = -99.;
-  double minVtxP2 = -99.;
-  double minVtxP3 = -99.;
-  double minJpsiM = 200.;
+  // variables to determine minima of fit probability
+  double minVtxP = -99.;   //KK hypothesis
+  double minJpsiP = -99;   // jpsi alone
   
+  // loop on muons
   for(size_t i=0; i < allmuons->size(); ++i){
-    const Muon & trk1 = (*allmuons)[i];
-    if(!trk1.isGlobalMuon() && !trk1.isTrackerMuon()) continue;
+    const Muon & mu1 = (*allmuons)[i];
+    if(!mu1.isGlobalMuon() && !mu1.isTrackerMuon()) continue;
     for (size_t j=i+1; j < allmuons->size(); ++j){
-      const Muon & trk2 = (*allmuons)[j];
-      if(!trk2.isGlobalMuon() && !trk2.isTrackerMuon()) continue;
+      const Muon & mu2 = (*allmuons)[j];
+      if(!mu2.isGlobalMuon() && !mu2.isTrackerMuon()) continue;
       
-      if(trk1.charge()==trk2.charge()) continue;
+      if(mu1.charge()==mu2.charge()) continue;
       // passed opposite sign cut
       if(bsRootTree_->iPassedCutIdent_   < 1 ) bsRootTree_->iPassedCutIdent_ = 1 ;
       if(bsRootTree_->iPassedCutIdentBd_   < 1 ) bsRootTree_->iPassedCutIdentBd_ = 1 ;
       
       CompositeCandidate Jpsi;
-      Jpsi.addDaughter(trk1);
-      Jpsi.addDaughter(trk2);
+      Jpsi.addDaughter(mu1);
+      Jpsi.addDaughter(mu2);
       AddFourMomenta addP4;
       addP4.set(Jpsi);
       
-      if ( abs(Jpsi.mass()-3.096916) > JpsiMassWindowBeforeFit_ || Jpsi.pt() < JpsiPtCut_) continue;
+      if ( abs(Jpsi.mass()- nominalJpsiMass ) > JpsiMassWindowBeforeFit_ || Jpsi.pt() < JpsiPtCut_) continue;
       // passed jpsi mass and pt cut
       if(bsRootTree_->iPassedCutIdent_   < 2 ) bsRootTree_->iPassedCutIdent_ = 2 ;
       if(bsRootTree_->iPassedCutIdentBd_   < 2 ) bsRootTree_->iPassedCutIdentBd_ = 2 ;
       
       edm::ESHandle<TransientTrackBuilder> theB;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);	
-      TrackRef trkMu1Ref = trk1.get<TrackRef>();
-      TrackRef trkMu2Ref = trk2.get<TrackRef>();
+      TrackRef trkMu1Ref = mu1.get<TrackRef>();
+      TrackRef trkMu2Ref = mu2.get<TrackRef>();
       
       vector<TransientTrack> trk_all;
       trk_all.push_back((*theB).build(&trkMu1Ref));
@@ -314,26 +312,23 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if(bsRootTree_->iPassedCutIdentBd_   < 3 ) bsRootTree_->iPassedCutIdentBd_ = 3 ;
       
       Vertex vertex = tv;
-      GlobalPoint secondaryVertex = tv.position();
-      
       double vtxProb_Jpsi = TMath::Prob(vertex.chi2(),(int)vertex.ndof()); 
       
-      // fill the Jpsi closest to the true Jpsi mass in the tree
-      if(abs(Jpsi.mass()-3.096916)<minJpsiM){
-	minJpsiM = abs(Jpsi.mass()-3.096916);
+      // fill the Jpsi with highest vertex probability in the tree
+      if(vtxProb_Jpsi > minJpsiP){
+	minJpsiP = vtxProb_Jpsi;
+	
 	bsRootTree_->JpsiVtxProb_ = vtxProb_Jpsi;
-	MuCounter1 = i;
-	MuCounter2 = j;	  
 	bsRootTree_->JpsiM_alone_ = Jpsi.mass();	  
 	bsRootTree_->JpsiPhi_alone_ = Jpsi.phi();	  
 	bsRootTree_->JpsiEta_alone_ = Jpsi.eta();	  
 	bsRootTree_->JpsiPt_alone_ = Jpsi.pt();	  
-	bsRootTree_->JpsiMu1Pt_ = trk1.pt();	  
-	bsRootTree_->JpsiMu2Pt_ = trk2.pt();	  
-	bsRootTree_->JpsiMu1Phi_ = trk1.phi();	  
-	bsRootTree_->JpsiMu2Phi_ = trk2.phi();	  
-	bsRootTree_->JpsiMu1Eta_ = trk1.eta();	  
-	bsRootTree_->JpsiMu2Eta_ = trk2.eta();	  
+	bsRootTree_->JpsiMu1Pt_alone_ = mu1.pt();	  
+	bsRootTree_->JpsiMu2Pt_alone_ = mu2.pt();	  
+	bsRootTree_->JpsiMu1Phi_alone_ = mu1.phi();	  
+	bsRootTree_->JpsiMu2Phi_alone_ = mu2.phi();	  
+	bsRootTree_->JpsiMu1Eta_alone_ = mu1.eta();	  
+	bsRootTree_->JpsiMu2Eta_alone_ = mu2.eta();	  
 	
 	// muon categories:
 	// 1: tracker muons
@@ -341,15 +336,15 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	// 3: global + tracker muon
 	// 4: neither tracker nor global
 	
-	if (trk1.isTrackerMuon() && !trk1.isGlobalMuon())       bsRootTree_->JpsiMuon1Cat_ = 1;
-	else if (!trk1.isTrackerMuon() && trk1.isGlobalMuon())  bsRootTree_->JpsiMuon1Cat_ = 2;
-	else if (trk1.isTrackerMuon() && trk1.isGlobalMuon())   bsRootTree_->JpsiMuon1Cat_ = 3;
-	else if (!trk1.isTrackerMuon() && !trk1.isGlobalMuon()) bsRootTree_->JpsiMuon1Cat_ = 4;
+	if (mu1.isTrackerMuon() && !mu1.isGlobalMuon())       bsRootTree_->JpsiMuon1Cat_alone_ = 1;
+	else if (!mu1.isTrackerMuon() && mu1.isGlobalMuon())  bsRootTree_->JpsiMuon1Cat_alone_ = 2;
+	else if (mu1.isTrackerMuon() && mu1.isGlobalMuon())   bsRootTree_->JpsiMuon1Cat_alone_ = 3;
+	else if (!mu1.isTrackerMuon() && !mu1.isGlobalMuon()) bsRootTree_->JpsiMuon1Cat_alone_ = 4;
 	
-	if (trk2.isTrackerMuon() && !trk2.isGlobalMuon())       bsRootTree_->JpsiMuon2Cat_ = 1;
-	else if (!trk2.isTrackerMuon() && trk2.isGlobalMuon())  bsRootTree_->JpsiMuon2Cat_ = 2;
-	else if (trk2.isTrackerMuon() && trk2.isGlobalMuon())   bsRootTree_->JpsiMuon2Cat_ = 3;
-	else if (!trk2.isTrackerMuon() && !trk2.isGlobalMuon()) bsRootTree_->JpsiMuon2Cat_ = 4;
+	if (mu2.isTrackerMuon() && !mu2.isGlobalMuon())       bsRootTree_->JpsiMuon2Cat_alone_ = 1;
+	else if (!mu2.isTrackerMuon() && mu2.isGlobalMuon())  bsRootTree_->JpsiMuon2Cat_alone_ = 2;
+	else if (mu2.isTrackerMuon() && mu2.isGlobalMuon())   bsRootTree_->JpsiMuon2Cat_alone_ = 3;
+	else if (!mu2.isTrackerMuon() && !mu2.isGlobalMuon()) bsRootTree_->JpsiMuon2Cat_alone_ = 4;
       }
 
       ////////////////////////////////////	
@@ -357,19 +352,14 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       ////           Phi
       ////////////////////////////////////
       ////////////////////////////////////
-      
-      if (MuCounter1!=-10 && MuCounter2!=-10){
-	const Candidate & mu1jpsi = (*allmuons)[MuCounter1];
-	const Candidate & mu2jpsi = (*allmuons)[MuCounter2];
+      Handle<CandidateView> allTracks;
+      iEvent.getByLabel(trackLabelK_, allTracks);
 	
-	Handle<CandidateView> allTracks;
-	iEvent.getByLabel(trackLabelK_, allTracks);
-	
-	for (size_t k=0; k< allTracks->size(); ++k){
-	  for (size_t l=k+1; l< allTracks->size(); ++l){
+      for (size_t k=0; k< allTracks->size(); ++k){
+	for (size_t l=k+1; l< allTracks->size(); ++l){
 	    
-	    const Candidate & track1 = (*allTracks)[k];
-	    const Candidate & track2 = (*allTracks)[l];
+	  const Candidate & track1 = (*allTracks)[k];
+	  const Candidate & track2 = (*allTracks)[l];
 	    
 	    if (track1.charge()==track2.charge()) continue;
 	    if (track1.pt() < KaonTrackPtCut_) continue;
@@ -378,56 +368,23 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    // passed kaon opposite sign and pt cut
 	    if(bsRootTree_->iPassedCutIdent_   < 4 ) bsRootTree_->iPassedCutIdent_ = 4 ;
 	    
-	    bsRootTree_->K1Pt_before_   = track1.pt();
-	    bsRootTree_->K1Pz_before_   = track1.pz();
-	    bsRootTree_->K1Eta_before_  = track1.eta();
-	    bsRootTree_->K1Phi_before_  = track1.phi();
-	    bsRootTree_->K2Pt_before_   = track2.pt();
-	    bsRootTree_->K2Pz_before_   = track2.pz();
-	    bsRootTree_->K2Eta_before_  = track2.eta();
-	    bsRootTree_->K2Phi_before_  = track2.phi();
-	    
 	    // phi candidate
-	    
 	    CompositeCandidate PhiCand;
 	    PhiCand.addDaughter(track1);
 	    PhiCand.addDaughter(track2);
 	    AddFourMomenta ad;
 	    ad.set(PhiCand);
 	    
-	    if (abs(PhiCand.mass()-1.019) > PhiMassWindowBeforeFit_) continue;
+	    if (abs(PhiCand.mass()- nominalPhiMass) > PhiMassWindowBeforeFit_) continue;
 	    // passed phi mass window before fit
 	    if(bsRootTree_->iPassedCutIdent_   < 5 ) bsRootTree_->iPassedCutIdent_ = 5 ;
 	    
-	    bsRootTree_->PhiMass_before_ = PhiCand.mass();	  
-	    bsRootTree_->PhiPhi_before_ = PhiCand.phi();
-	    bsRootTree_->PhiEta_before_ = PhiCand.eta();
-	    bsRootTree_->PhiPt_before_ = PhiCand.pt();
-	    bsRootTree_->PhiPz_before_ = PhiCand.pz();
-	    
-	    // jpsi candidate
-	    
-	    CompositeCandidate JpsiCand;
-	    JpsiCand.addDaughter(mu1jpsi);
-	    JpsiCand.addDaughter(mu2jpsi);
-	    AddFourMomenta sum;
-	    sum.set(JpsiCand);
-	    
-	    if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowBeforeFit_) continue;	      
-	    // passed jpsi mass window before fit
-	    if(bsRootTree_->iPassedCutIdent_   < 6 ) bsRootTree_->iPassedCutIdent_ = 6 ;
-	    
-	    bsRootTree_->JpsiMass_before_ = JpsiCand.mass();	  
-	    bsRootTree_->JpsiPhi_before_ = JpsiCand.phi();
-	    bsRootTree_->JpsiEta_before_ = JpsiCand.eta();
-	    bsRootTree_->JpsiPt_before_ = JpsiCand.pt();
-	    bsRootTree_->JpsiPz_before_ = JpsiCand.pz();
+
 	    
 	    // check on the overlap
-	    
 	    OverlapChecker overlap;
-	    if (overlap(mu1jpsi,track1)!=0 || overlap(mu2jpsi,track1)!=0) continue;
-	    if (overlap(mu1jpsi,track2)!=0 || overlap(mu2jpsi,track2)!=0) continue;
+	    if (overlap(mu1,track1)!=0 || overlap(mu2,track1)!=0) continue;
+	    if (overlap(mu1,track2)!=0 || overlap(mu2,track2)!=0) continue;
 	    
 	    // passed muon - track overlap check
 	    if(bsRootTree_->iPassedCutIdent_   < 7 ) bsRootTree_->iPassedCutIdent_ = 7 ;
@@ -436,8 +393,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    // B candidate
 	    
 	    CompositeCandidate BCand;
-	    BCand.addDaughter(mu1jpsi);
-	    BCand.addDaughter(mu2jpsi);
+	    BCand.addDaughter(mu1);
+	    BCand.addDaughter(mu2);
 	    BCand.addDaughter(track1);
 	    BCand.addDaughter(track2);
 	    AddFourMomenta add4mom;
@@ -447,261 +404,112 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    // passed Bs mass cut before fit
 	    if(bsRootTree_->iPassedCutIdent_   < 8 ) bsRootTree_->iPassedCutIdent_ = 8 ;
 	    
-	    bsRootTree_->BsMass_before_ = BCand.mass();	   	      
-	    bsRootTree_->BsPt_before_ = BCand.pt();
-	    bsRootTree_->BsPz_before_ = BCand.pz();
-	    bsRootTree_->BsPhi_before_ = BCand.phi();
-	    bsRootTree_->BsEta_before_ = BCand.eta();
 	    
 	    // start fit on the B candidates
-	    
-	    edm::ESHandle<TransientTrackBuilder> theB;
-	    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);	
-	    TrackRef Mu1Ref = mu1jpsi.get<TrackRef>();
-	    TrackRef Mu2Ref = mu2jpsi.get<TrackRef>();
 	    TrackRef trk1Ref = track1.get<TrackRef>();
 	    TrackRef trk2Ref = track2.get<TrackRef>();
 	    
-	    bsRootTree_->K1Pt_error_   = trk1Ref->ptError();
-	    bsRootTree_->K2Pt_error_   = trk2Ref->ptError();
-	    
 	    vector<TransientTrack> t_tracks;
-	    t_tracks.push_back((*theB).build(&Mu1Ref));
-	    t_tracks.push_back((*theB).build(&Mu2Ref));
+	    t_tracks.push_back((*theB).build(&trkMu1Ref));
+	    t_tracks.push_back((*theB).build(&trkMu2Ref));
 	    t_tracks.push_back((*theB).build(&trk1Ref));
 	    t_tracks.push_back((*theB).build(&trk2Ref));
 	    
-	    if (!Mu1Ref.isNonnull() || !Mu2Ref.isNonnull() || !trk1Ref.isNonnull() || !trk2Ref.isNonnull()) continue;
+	    if (!trkMu1Ref.isNonnull() || !trkMu2Ref.isNonnull() || !trk1Ref.isNonnull() || !trk2Ref.isNonnull()) continue;
 	    // checked track references
 	    if(bsRootTree_->iPassedCutIdent_   < 9 ) bsRootTree_->iPassedCutIdent_ = 9 ;
 	    
-	    TransientTrack track_MuP = t_tracks[0];
-	    TransientTrack track_MuM = t_tracks[1];
-	    TransientTrack track_Kp = t_tracks[2];
-	    TransientTrack track_Km = t_tracks[3];
+	    //call fit interface
+	    KinematicFitInterface Kfitter;
+	    bool fitSuccess = Kfitter.doFit(t_tracks, nominalMuonMass,  nominalKaonMass, nominalKaonMass);
 	    
-	    //Creating a KinematicParticleFactory
-	    KinematicParticleFactoryFromTransientTrack pFactory;
+	    if(fitSuccess != 1) continue;
 	    
-	    //The mass of a muon and the insignificant mass sigma to avoid singularities in the covariance matrix.
-	    ParticleMass muon_mass = 0.1056583;
-	    ParticleMass kaon_mass = 0.493677;
-	    ParticleMass pi_mass = 0.139570;
-	    
-	    float muon_sigma = 0.0000000001;
-	    float kaon_sigma = 0.000016;
-	    float pi_sigma = 0.000016;	      
-	    
-	    //initial chi2 and ndf before kinematic fits. The chi2 of the reconstruction is not considered
-	    float chi = 0.;
-	    float ndf = 0.;	    
-	    
-	    vector<RefCountedKinematicParticle> allParticlesMu;
-	    allParticlesMu.push_back(pFactory.particle (track_MuP,muon_mass,chi,ndf,muon_sigma));
-	    allParticlesMu.push_back(pFactory.particle (track_MuM,muon_mass,chi,ndf,muon_sigma));
-	    
-	    // probability for the KK hypothesis for the charged trks
-	    vector<RefCountedKinematicParticle> allParticlesTrk;
-	    allParticlesTrk.push_back(pFactory.particle (track_Kp,kaon_mass,chi,ndf,kaon_sigma));
-	    allParticlesTrk.push_back(pFactory.particle (track_Km,kaon_mass,chi,ndf,kaon_sigma));
-	    
-	    KinematicParticleVertexFitter Fitter;
-	    RefCountedKinematicTree JpsiTree = Fitter.fit(allParticlesMu);
-
-	    // if the fit fails, do not consider this as candidate
-	    if(JpsiTree->isEmpty()) continue;
-
-	    KinematicParticleFitter constFitter;
-	    
-	    ParticleMass jpsiM = 3.09687;
-	    float jpsiMsigma = 0.00004;
-	    KinematicConstraint * jpsi_const = new MassKinematicConstraint(jpsiM,jpsiMsigma);
-	    
-	    JpsiTree = constFitter.fit(jpsi_const,JpsiTree);
-	    
-	    // if the fit fails, do not consider this as candidate
-	    if(JpsiTree->isEmpty()) continue;
-
-	    JpsiTree->movePointerToTheTop();
-	    RefCountedKinematicParticle Jpsi_branch = JpsiTree->currentParticle();
-	    allParticlesTrk.push_back(Jpsi_branch);
-	    
-	    RefCountedKinematicTree myTree_Bs = Fitter.fit(allParticlesTrk);
-	    
-	    // if the fit fails, do not consider this as candidate
-	    if(myTree_Bs->isEmpty())  continue;
- 
-	    
-	    // probability for the Kpi hypothesis for the charged trks
-	    vector<RefCountedKinematicParticle> allParticlesTrk2;
-	    allParticlesTrk2.push_back(pFactory.particle (track_Kp,kaon_mass,chi,ndf,kaon_sigma));
-	    allParticlesTrk2.push_back(pFactory.particle (track_Km,pi_mass,chi,ndf,pi_sigma));
-	    
-	    JpsiTree->movePointerToTheTop();
-	    RefCountedKinematicParticle Jpsi_branch2 = JpsiTree->currentParticle();
-	    allParticlesTrk2.push_back(Jpsi_branch2);
-	    
-	    RefCountedKinematicTree myTree_Bs2 = Fitter.fit(allParticlesTrk2);
-	    
-	    //if the fit for the alternative hypothesis fails, this is not a reason to discard the event
-	    // => assign fit probability -10 in this case
-	    
-	    if( !myTree_Bs2->isEmpty()) {
-	      myTree_Bs2->movePointerToTheTop();
-	      RefCountedKinematicParticle bs2 = myTree_Bs2->currentParticle();
-	      RefCountedKinematicVertex bVertex2 = myTree_Bs2->currentDecayVertex();
-	      
-	      if (bVertex2->vertexIsValid()) {
-		AlgebraicVector7 b_par2 = bs2->currentState().kinematicParameters().vector();
-		AlgebraicSymMatrix77 bs_er2 = bs2->currentState().kinematicParametersError().matrix();
-		double vtxprob_Bs2 = TMath::Prob(bs2->chiSquared(), (int)bs2->degreesOfFreedom());
-	      
-		if (vtxprob_Bs2 > minVtxP2){
-		  
-		  if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
-		  if (abs(PhiCand.mass()-1.019) > PhiMassWindowAfterFit_) continue;
-		  if (BCand.mass() < BsLowerMassCutAfterFit_ || BCand.mass() > BsUpperMassCutAfterFit_) continue;
-		  
-		  bsRootTree_->BsVtxProbKpi_ = vtxprob_Bs2;
-		  minVtxP2 = vtxprob_Bs2;
-		  
-		  bsRootTree_->BfitM_Kpi_ = b_par2[6];
-		  
-		  bsRootTree_->setFitParKpi(myTree_Bs2);
-		}
-	      }
-	    }
-	    else{
-	      	  bsRootTree_->BsVtxProbKpi_ = -10;
-		  bsRootTree_->BfitM_Kpi_ = -10;
-	    }
-	    
-	    // probability for the pipi hypothesis for the charged trks
-	    vector<RefCountedKinematicParticle> allParticlesTrk3;
-	    allParticlesTrk3.push_back(pFactory.particle (track_Kp,pi_mass,chi,ndf,pi_sigma));
-	    allParticlesTrk3.push_back(pFactory.particle (track_Km,pi_mass,chi,ndf,pi_sigma));
-	    
-	    JpsiTree->movePointerToTheTop();
-	    RefCountedKinematicParticle Jpsi_branch3 = JpsiTree->currentParticle();
-	    allParticlesTrk3.push_back(Jpsi_branch3);
-	    
-	    RefCountedKinematicTree myTree_Bs3 = Fitter.fit(allParticlesTrk2);
-
-	    if( !myTree_Bs3->isEmpty() ){	    
-	      myTree_Bs3->movePointerToTheTop();
-	      RefCountedKinematicParticle bs3 = myTree_Bs3->currentParticle();
-	      RefCountedKinematicVertex bVertex3 = myTree_Bs3->currentDecayVertex();
-	      
-	      if (bVertex3->vertexIsValid()) {
-		AlgebraicVector7 b_par3 = bs3->currentState().kinematicParameters().vector();
-		AlgebraicSymMatrix77 bs_er3 = bs3->currentState().kinematicParametersError().matrix();
-		double vtxprob_Bs3 = TMath::Prob(bs3->chiSquared(), (int)bs3->degreesOfFreedom());
-		
-		if (vtxprob_Bs3 > minVtxP3){
-		  
-		  if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
-		  if (abs(PhiCand.mass()-1.019) > PhiMassWindowAfterFit_) continue;
-		  if (BCand.mass() < BsLowerMassCutAfterFit_ || BCand.mass() > BsUpperMassCutAfterFit_) continue;
-		  
-		  bsRootTree_->BsVtxProbpipi_ = vtxprob_Bs3;
-		  minVtxP3 = vtxprob_Bs3;
-		  
-		  bsRootTree_->BfitM_pipi_ = b_par3[6];
-		  
-		  bsRootTree_->setFitParpipi(myTree_Bs3);
-		  
-		}
-	      }
-	    }
-	    else{
-	      bsRootTree_->BsVtxProbpipi_ = -10;
-	      bsRootTree_->BfitM_pipi_ = -10;
-	    }
-	    
-
-	    // now go back to the original KK hypothesis
-	    myTree_Bs->movePointerToTheTop();
-	    RefCountedKinematicParticle bs = myTree_Bs->currentParticle();
-	    RefCountedKinematicVertex bVertex = myTree_Bs->currentDecayVertex();
-	    
-	    if (!bVertex->vertexIsValid()) continue;
-	    // vertex is valid
 	    if(bsRootTree_->iPassedCutIdent_   < 10 ) bsRootTree_->iPassedCutIdent_ = 10 ;
-	    
+
+	    double vtxprob_Bs = Kfitter.getProb();
+	    RefCountedKinematicParticle bs = Kfitter.getParticle();
+	    RefCountedKinematicVertex bVertex = Kfitter.getVertex();
 	    AlgebraicVector7 b_par = bs->currentState().kinematicParameters().vector();
 	    AlgebraicSymMatrix77 bs_er = bs->currentState().kinematicParametersError().matrix();
-	    double vtxprob_Bs = TMath::Prob(bs->chiSquared(), (int)bs->degreesOfFreedom());
-	    
-	    
+
+	    double fittedBsMass = b_par[6];
 	    if (vtxprob_Bs > minVtxP){
-	      TrkCounter1=k;
-	      TrkCounter2=l;
+	    
 	      
-	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
+	      if (abs(Jpsi.mass() - nominalJpsiMass) > JpsiMassWindowAfterFit_ || Jpsi.pt() < JpsiPtCut_) continue;
 	      // passed jpsi mass window after fit
 	      if(bsRootTree_->iPassedCutIdent_   < 11 ) bsRootTree_->iPassedCutIdent_ = 11 ;
 	      
-	      if (abs(PhiCand.mass()-1.019) > PhiMassWindowAfterFit_) continue;
+	      if (abs(PhiCand.mass() - nominalPhiMass) > PhiMassWindowAfterFit_) continue;
 	      // passed phi mass window after fit
 	      if(bsRootTree_->iPassedCutIdent_   < 12 ) bsRootTree_->iPassedCutIdent_ = 12 ;
 	      
-	      if (BCand.mass() < BsLowerMassCutAfterFit_ || BCand.mass() > BsUpperMassCutAfterFit_) continue;
+	      if (fittedBsMass < BsLowerMassCutAfterFit_ || fittedBsMass > BsUpperMassCutAfterFit_) continue;
 	      // passed Bs mass window after fit
 	      if(bsRootTree_->iPassedCutIdent_   < 13 ) bsRootTree_->iPassedCutIdent_ = 13 ;
 	      
 	      
-	      
+	      minVtxP = vtxprob_Bs;
+
+		
 	      ////////////////////////
 	      // fill kinematic info to tree
 	      //////////////////////////
 	      
-	      bsRootTree_->chi2_Bs_  = bs->chiSquared();
-	      bsRootTree_->ndof_Bs_   =(int)bs->degreesOfFreedom();
-	      bsRootTree_->BsVtxProb_ = vtxprob_Bs;
-	      minVtxP = vtxprob_Bs;
-	      bsRootTree_->BfitM_KK_ = b_par[6];		
-	      
-	      bsRootTree_->setFitParKK(myTree_Bs);
+	      bsRootTree_->BsFitChi2_  = bs->chiSquared();
+	      bsRootTree_->BsFitNdof_   =(int)bs->degreesOfFreedom();
+	      bsRootTree_->BsFitVtxProb_ = vtxprob_Bs;
+	    
+	      GlobalVector Bsvec(b_par[3], b_par[4], b_par[5]); // the fitted momentum vector of the Bs
+	      bsRootTree_->BsFitM_ = b_par[6];		
+	      bsRootTree_->BsFitEta_ = Bsvec.eta();
+	      bsRootTree_->BsFitPt_  = Bsvec.perp();
+	      bsRootTree_->BsFitPz_  = Bsvec.z();
+	      bsRootTree_->BsFitPhi_ = Bsvec.phi();
 
-	      bsRootTree_->BsVtx_x_ = bVertex->position().x();
-	      bsRootTree_->BsVtx_y_ = bVertex->position().y();
-	      bsRootTree_->BsVtx_z_ = bVertex->position().z();
+	      RefCountedKinematicTree reftree = Kfitter.getTree();
+	      setFitParKK(reftree);
 
-	      bsRootTree_->BsMass_after_ = BCand.mass();
-	      bsRootTree_->BsPt_after_ = BCand.pt();
-	      bsRootTree_->BsPz_after_ = BCand.pz();
-	      bsRootTree_->BsPhi_after_ = BCand.phi();
-	      bsRootTree_->BsEta_after_ = BCand.eta();
+	      bsRootTree_->BsFitVtx_x_ = bVertex->position().x();
+	      bsRootTree_->BsFitVtx_y_ = bVertex->position().y();
+	      bsRootTree_->BsFitVtx_z_ = bVertex->position().z();
+
+	      bsRootTree_->BsM_nofit_ = BCand.mass();
+	      bsRootTree_->BsPt_nofit_ = BCand.pt();
+	      bsRootTree_->BsPz_nofit_ = BCand.pz();
+	      bsRootTree_->BsPhi_nofit_ = BCand.phi();
+	      bsRootTree_->BsEta_nofit_ = BCand.eta();
 	      
-	      bsRootTree_->JpsiMass_after_ = JpsiCand.mass();
-	      bsRootTree_->JpsiPhi_after_ = JpsiCand.phi();	  
-	      bsRootTree_->JpsiEta_after_ = JpsiCand.eta();	  
-	      bsRootTree_->JpsiPt_after_ = JpsiCand.pt();	  
-	      bsRootTree_->JpsiPz_after_ = JpsiCand.pz();	  
+	      bsRootTree_->JpsiM_nofit_ = Jpsi.mass();
+	      bsRootTree_->JpsiPhi_nofit_ = Jpsi.phi();	  
+	      bsRootTree_->JpsiEta_nofit_ = Jpsi.eta();	  
+	      bsRootTree_->JpsiPt_nofit_ = Jpsi.pt();	  
+	      bsRootTree_->JpsiPz_nofit_ = Jpsi.pz();	  
 	      
-	      bsRootTree_->PhiMass_after_ = PhiCand.mass();
-	      bsRootTree_->PhiPhi_after_ = PhiCand.phi();	  
-	      bsRootTree_->PhiEta_after_ = PhiCand.eta();	  
-	      bsRootTree_->PhiPt_after_ = PhiCand.pt();	  
-	      bsRootTree_->PhiPz_after_ = PhiCand.pz();	  
+	      bsRootTree_->PhiM_nofit_ = PhiCand.mass();
+	      bsRootTree_->PhiPhi_nofit_ = PhiCand.phi();	  
+	      bsRootTree_->PhiEta_nofit_ = PhiCand.eta();	  
+	      bsRootTree_->PhiPt_nofit_ = PhiCand.pt();	  
+	      bsRootTree_->PhiPz_nofit_ = PhiCand.pz();	  
 	      
-	      bsRootTree_->K1Pt_after_   = track1.pt();
-	      bsRootTree_->K1Pz_after_   = track1.pz();
-	      bsRootTree_->K1Eta_after_  = track1.eta();
-	      bsRootTree_->K1Phi_after_  = track1.phi();
-	      bsRootTree_->K2Pt_after_   = track2.pt();
-	      bsRootTree_->K2Pz_after_   = track2.pz();
-	      bsRootTree_->K2Eta_after_  = track2.eta();
-	      bsRootTree_->K2Phi_after_  = track2.phi();
+	      bsRootTree_->K1Pt_nofit_   = track1.pt();
+	      bsRootTree_->K1Pz_nofit_   = track1.pz();
+	      bsRootTree_->K1Eta_nofit_  = track1.eta();
+	      bsRootTree_->K1Phi_nofit_  = track1.phi();
+	      bsRootTree_->K2Pt_nofit_   = track2.pt();
+	      bsRootTree_->K2Pz_nofit_   = track2.pz();
+	      bsRootTree_->K2Eta_nofit_  = track2.eta();
+	      bsRootTree_->K2Phi_nofit_  = track2.phi();
 	      
 	      bsRootTree_->K1Chi2_ = trk1Ref.get()->normalizedChi2();
 	      bsRootTree_->K1nHits_= trk1Ref.get()->numberOfValidHits();
 	      bsRootTree_->K2Chi2_ = trk2Ref.get()->normalizedChi2();
 	      bsRootTree_->K2nHits_= trk2Ref.get()->numberOfValidHits();
-	      bsRootTree_->Mu1Chi2_ = Mu1Ref.get()->normalizedChi2();
-	      bsRootTree_->Mu1nHits_= Mu1Ref.get()->numberOfValidHits();
-	      bsRootTree_->Mu2Chi2_ = Mu2Ref.get()->normalizedChi2();
-	      bsRootTree_->Mu2nHits_ =Mu2Ref.get()->numberOfValidHits();
+	      bsRootTree_->Mu1Chi2_ = trkMu1Ref.get()->normalizedChi2();
+	      bsRootTree_->Mu1nHits_= trkMu1Ref.get()->numberOfValidHits();
+	      bsRootTree_->Mu2Chi2_ = trkMu2Ref.get()->normalizedChi2();
+	      bsRootTree_->Mu2nHits_ =trkMu2Ref.get()->numberOfValidHits();
 	      
 	      // dedx info
 	      if(StoreDeDxInfo_){
@@ -717,44 +525,29 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      // proper decay time and proper decay length
 	      ////////////////////////////////////////////////
 	      
+	        
 	      if(BCand.pt()!=0) {
-		BLxy=((bVertex->position().x()-BSx)*BCand.px()+(bVertex->position().y()-BSy)*BCand.py())/BCand.pt();
-		BLxy2=((bVertex->position().x()-PVx)*BCand.px()+(bVertex->position().y()-PVy)*BCand.py())/BCand.pt();
+		bsRootTree_->BsLxy_ = ((bVertex->position().x()-PVx)*Bsvec.x()+(bVertex->position().y()-PVy)*Bsvec.y())/Bsvec.perp();
+		bsRootTree_->BsCt_  = bsRootTree_->BsLxy_*fittedBsMass/Bsvec.perp();
 	      }
+	      bsRootTree_->BsErrX_  = bs_er(1,1);
+	      bsRootTree_->BsErrY_  = bs_er(2,2);
+	      bsRootTree_->BsErrXY_ = bs_er(1,2); 
 	      
-	      Bsct1 = BLxy*BCand.mass()/BCand.pt();
-	      Bsct2 = BLxy2*BCand.mass()/BCand.pt();
-	      
-	      BerrX=bs_er(1,1);
-	      BerrY=bs_er(2,2);
-	      BerrXY=bs_er(1,2); 
-	      
-	      bsRootTree_->getLXY(BLxy,BLxy2,BerrX,BerrY,BerrXY,Bsct1,Bsct2);
-	      
-	      double Dist3d = -5;
-	      double dDist3d = -5;
-	      double Time3d = -5;
-	      double dTime3d = -5;
 	      VertexDistance3D vdist3d;
-	      Dist3d = vdist3d.distance(bVertex->vertexState(),RecVtx).value();
-	      dDist3d = vdist3d.distance(bVertex->vertexState(),RecVtx).error();
-	      Time3d = Dist3d * BCand.mass()/BCand.pt() *100. /3.;
-	      dTime3d = dDist3d * BCand.mass()/BCand.pt() * 100. /3.;
+	      bsRootTree_->BsDist3d_    = vdist3d.distance(bVertex->vertexState(),RecVtx).value();
+	      bsRootTree_->BsDist3dErr_ = vdist3d.distance(bVertex->vertexState(),RecVtx).error();
+	      bsRootTree_->BsTime3d_    = bsRootTree_->BsDist3d_    * fittedBsMass/Bsvec.perp() * 100. /3.;
+	      bsRootTree_->BsTime3dErr_ = bsRootTree_->BsDist3dErr_ * BCand.mass()/Bsvec.perp() * 100. /3.;
 	      
-	      bsRootTree_->get3d(Dist3d,dDist3d,Time3d,dTime3d);
-	      
-	      double Dist = -5;
-	      double dDist = -5;
-	      double Time = -5;
-	      double dTime = -5;
+	 	      
 	      VertexDistanceXY vdist;
-	      Dist = vdist.distance(bVertex->vertexState(),RecVtx).value();
-	      dDist = vdist.distance(bVertex->vertexState(),RecVtx).error();
-	      Time = Dist * BCand.mass()/BCand.pt() *100. /3.;
-	      dTime = dDist * BCand.mass()/BCand.pt() * 100. /3.;
+	      bsRootTree_->BsDist2d_     = vdist.distance(bVertex->vertexState(),RecVtx).value();
+	      bsRootTree_->BsDist2dErr_ = vdist.distance(bVertex->vertexState(),RecVtx).error();
+	      bsRootTree_->BsTime2d_     = bsRootTree_->BsDist2d_ * fittedBsMass/Bsvec.perp() *100. /3.;
+	      bsRootTree_->BsTime2dErr_  = bsRootTree_->BsDist2dErr_ * fittedBsMass/Bsvec.perp() * 100. /3.;
 	      
-	      bsRootTree_->get1d(Dist,dDist,Time,dTime);
-	      
+	   	      
 	      ////////////////////////////////////
 	      // transversity basis angles
 	      ////////////////////////////////////
@@ -763,19 +556,19 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      pbs.SetXYZM(BCand.px(),BCand.py(),BCand.pz(),BCand.mass());
 	      
 	      TLorentzVector pmuplus;
-	      double mu1mass = sqrt(mu1jpsi.energy()*mu1jpsi.energy()-
-				    mu1jpsi.px()*mu1jpsi.px()-
-				    mu1jpsi.py()*mu1jpsi.py()-
-				    mu1jpsi.pz()*mu1jpsi.pz());
+	      double mu1mass = sqrt(mu1.energy()*mu1.energy()-
+				    mu1.px()*mu1.px()-
+				    mu1.py()*mu1.py()-
+				    mu1.pz()*mu1.pz());
 	      
-	      pmuplus.SetXYZM(mu1jpsi.px(),mu1jpsi.py(),mu1jpsi.pz(),mu1mass);
+	      pmuplus.SetXYZM(mu1.px(),mu1.py(),mu1.pz(),mu1mass);
 	      
 	      TLorentzVector pmuminus;
-	      double mu2mass = sqrt(mu2jpsi.energy()*mu2jpsi.energy()-
-				    mu2jpsi.px()*mu2jpsi.px()-
-				    mu2jpsi.py()*mu2jpsi.py()-
-				    mu2jpsi.pz()*mu2jpsi.pz());
-	      pmuminus.SetXYZM(mu2jpsi.px(),mu2jpsi.py(),mu2jpsi.pz(),mu2mass);
+	      double mu2mass = sqrt(mu2.energy()*mu2.energy()-
+				    mu2.px()*mu2.px()-
+				    mu2.py()*mu2.py()-
+				    mu2.pz()*mu2.pz());
+	      pmuminus.SetXYZM(mu2.px(),mu2.py(),mu2.pz(),mu2mass);
 	      
 	      TLorentzVector ptotmm = pmuplus + pmuminus;
 	      
@@ -951,7 +744,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      ///////////////////////////////////////////////
 	      
 	      int pixhits3 = 0;
-	      const reco::HitPattern& p3 = Mu1Ref.get()->hitPattern();
+	      const reco::HitPattern& p3 = trkMu1Ref.get()->hitPattern();
 	      for (int i=0; i<p3.numberOfHits(); i++) {
 		uint32_t hit = p3.getHitPattern(i);
 		if (p3.validHitFilter(hit) && p3.pixelBarrelHitFilter(hit)) pixhits3++;
@@ -965,7 +758,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bsRootTree_->Mu1muRPCh_ = p3.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
 	      
 	      int pixhits4=0;
-	      const reco::HitPattern& p4 = Mu2Ref.get()->hitPattern();
+	      const reco::HitPattern& p4 = trkMu2Ref.get()->hitPattern();
 	      for (int i=0; i<p4.numberOfHits(); i++) {
 		uint32_t hit = p4.getHitPattern(i);
 		if (p4.validHitFilter(hit) && p4.pixelBarrelHitFilter(hit)) pixhits4++;
@@ -977,86 +770,21 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bsRootTree_->Mu2muDTh_  = p4.numberOfValidMuonDTHits();      // not-null, valid, muon DT
 	      bsRootTree_->Mu2muCSCh_ = p4.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
 	      bsRootTree_->Mu2muRPCh_ = p4.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
-	    }
-	    
+	  
 
-	    // deltaR
-	    
-	    K1Truth = 0;
-	    if(TrkCounter1!=-10){
-	      double MinDRK=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRK1 = TMath::Sqrt((p.eta()-track1.eta())*(p.eta()-track1.eta())+
-					      (p.phi()-track1.phi())*(p.phi()-track1.phi()));
-		if(DeltaRK1<MinDRK && DeltaRK1<0.05){
-		  MinDRK=DeltaRK1;
-		  K1mcId=p.pdgId();
-		  if(p.mother()!=0) K1momId=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) K1gmomId=p.mother()->mother()->pdgId(); 
-		  if (abs(K1momId)==333 && abs(K1gmomId)==531) K1Truth = 1;
-		}
-	      }
+	      // deltaR matching
+	      bool K1Truth = MCmatching( track1, genParticles, bsRootTree_->K1mcId_, bsRootTree_->K1momId_, bsRootTree_->K1gmomId_, 333, 531);
+	      bool K2Truth = MCmatching( track2, genParticles, bsRootTree_->K2mcId_, bsRootTree_->K2momId_, bsRootTree_->K2gmomId_, 333, 531);
+	      bool Mu1Truth= MCmatching( mu1,    genParticles, bsRootTree_->Mu1mcId_,bsRootTree_->Mu1momId_,bsRootTree_->Mu1gmomId_, 443, 531);
+	      bool Mu2Truth= MCmatching( mu2,    genParticles, bsRootTree_->Mu2mcId_,bsRootTree_->Mu2momId_,bsRootTree_->Mu2gmomId_, 443, 531);
+	      
+	      if (K1Truth==1 && K2Truth==1 && Mu1Truth==1 & Mu2Truth==1)  bsRootTree_->isMatched_ = 1;
+	      else bsRootTree_->isMatched_ = 0;
 	    }
-	    
-	    K2Truth = 0;
-	    if(TrkCounter2!=-10){
-	      double MinDRK=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRK2 = TMath::Sqrt((p.eta()-track2.eta())*(p.eta()-track2.eta())+
-					      (p.phi()-track2.phi())*(p.phi()-track2.phi()));
-		if(DeltaRK2<MinDRK && DeltaRK2<0.05){
-		  MinDRK=DeltaRK2;
-		  K2mcId=p.pdgId();
-		  if(p.mother()!=0) K2momId=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) K2gmomId=p.mother()->mother()->pdgId(); 
-		  if (abs(K2momId)==333 && abs(K2gmomId)==531) K2Truth = 1;
-		}
-	      }
-	    }
-	    
-	    Mu1Truth = 0;
-	    if(MuCounter1!=-10){
-	      double MinDRMu=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRMu1 = TMath::Sqrt((p.eta()-mu1jpsi.eta())*(p.eta()-mu1jpsi.eta())+
-					       (p.phi()-mu1jpsi.phi())*(p.phi()-mu1jpsi.phi()));
-		if(DeltaRMu1<MinDRMu && DeltaRMu1<0.05){
-		  MinDRMu=DeltaRMu1;
-		  Mu1mcId=p.pdgId();
-		  if(p.mother()!=0) Mu1momId=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) Mu1gmomId=p.mother()->mother()->pdgId(); 
-		  if (abs(Mu1momId)==443 && abs(Mu1gmomId)==531) Mu1Truth = 1;
-		}
-	      }
-	    }
-	    
-	    Mu2Truth = 0;
-	    if(MuCounter2!=-10){
-	      double MinDRMu=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRMu2 = TMath::Sqrt((p.eta()-mu2jpsi.eta())*(p.eta()-mu2jpsi.eta())+
-					       (p.phi()-mu2jpsi.phi())*(p.phi()-mu2jpsi.phi()));
-		if(DeltaRMu2<MinDRMu && DeltaRMu2<0.05){
-		  MinDRMu=DeltaRMu2;
-		  Mu2mcId=p.pdgId();
-		  if(p.mother()!=0) Mu2momId=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) Mu2gmomId=p.mother()->mother()->pdgId(); 
-		  if (abs(Mu2momId)==443 && abs(Mu2gmomId)==531) Mu2Truth= 1;
-		}
-	      }
-	    }
-	    
-	    isMatched = -10;
-	    if (K1Truth==1 && K2Truth==1 && Mu1Truth==1 & Mu2Truth==1) isMatched = 1;
-	    bsRootTree_->getMCmatch(isMatched);
-	    
+	
 	  } // trk2 loop
 	} // trk1 loop
-      } // mu counter
+ 
 
       ////////////////////////////////////
       ////////////////////////////////////
@@ -1064,28 +792,27 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       ////////////////////////////////////
       ////////////////////////////////////
       
-      if (MuCounter1!=-10 && MuCounter2!=-10){
-	const Candidate & mu1jpsi = (*allmuons)[MuCounter1];
-	const Candidate & mu2jpsi = (*allmuons)[MuCounter2];
+      
+      
+      Handle<CandidateView> allTracksPi;
+      iEvent.getByLabel(trackLabelPi_, allTracksPi);
+      
+      for (size_t i=0; i< allTracksPi->size(); ++i){
+	for (size_t j=i+1; j< allTracksPi->size(); ++j){
 	
-	Handle<CandidateView> allTracks;
-	iEvent.getByLabel(trackLabelPi_, allTracks);
-	
-	for (size_t i=0; i< allTracks->size(); ++i){
-	  for (size_t j=i+1; j< allTracks->size(); ++j){
-	    const Candidate & track1 = (*allTracks)[i];
-	    const Candidate & track2 = (*allTracks)[j];
+	  const Candidate & track1 = (*allTracksPi)[i];
+	  const Candidate & track2 = (*allTracksPi)[j];
 	    if (track1.charge()==track2.charge()) continue;
-	    if (track1.pt()<0.5) continue;
-	    if (track2.pt()<0.5) continue;
+	    if (track1.pt() < BdKaonTrackPtCut_) continue;
+	    if (track2.pt() < BdKaonTrackPtCut_) continue;
 	        
 	    if(bsRootTree_->iPassedCutIdentBd_   < 4 ) bsRootTree_->iPassedCutIdentBd_ = 4 ;
 	        
 	    // kstar candidate
 	        
-	    double KaonMassSq=0.243717;
-	    double KaonE1=sqrt(KaonMassSq+track1.px()*track1.px()+track1.py()*track1.py()+track1.pz()*track1.pz());
-	    double KaonE2=sqrt(KaonMassSq+track2.px()*track2.px()+track2.py()*track2.py()+track2.pz()*track2.pz());
+	    double KaonMassSq = nominalKaonMass * nominalKaonMass;
+	    double KaonE1 = sqrt(KaonMassSq+track1.px()*track1.px()+track1.py()*track1.py()+track1.pz()*track1.pz());
+	    double KaonE2 = sqrt(KaonMassSq+track2.px()*track2.px()+track2.py()*track2.py()+track2.pz()*track2.pz());
 	    int K1flag=0;
 	    int K2flag=0;
 	    double Kstmass1  = sqrt((KaonE1+track2.energy())*(KaonE1+track2.energy())
@@ -1097,39 +824,32 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 				    -(track1.py()+track2.py())*(track1.py()+track2.py())
 				    -(track1.pz()+track2.pz())*(track1.pz()+track2.pz()));
 	        
-	    if(abs(Kstmass1-0.892) < abs(Kstmass2-0.892)){
-	      if(abs(Kstmass1-0.892) > KstarMassWindowBeforeFit_) continue;
+	    if(abs(Kstmass1 - nominalKstarMass) < abs(Kstmass2 - nominalKstarMass)){
+	      if(abs(Kstmass1 - nominalKstarMass) > KstarMassWindowBeforeFit_) continue;
 	      K1flag=1;
 	    } else{
-	      if(abs(Kstmass2-0.892)> KstarMassWindowBeforeFit_) continue;
+	      if(abs(Kstmass2 - nominalKstarMass) > KstarMassWindowBeforeFit_) continue;
 	      K2flag=1;
 	    }
 	    if(bsRootTree_->iPassedCutIdentBd_   < 5 ) bsRootTree_->iPassedCutIdentBd_ = 5 ;
 	        
-	    // jpsi candidate
-	        
-	    CompositeCandidate JpsiCand;
-	    JpsiCand.addDaughter(mu1jpsi);
-	    JpsiCand.addDaughter(mu2jpsi);
-	    AddFourMomenta sum;
-	    sum.set(JpsiCand);
-	        
-	    if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowBeforeFit_) continue;
+	  
+	    if (abs(Jpsi.mass() - nominalJpsiMass) > JpsiMassWindowBeforeFit_) continue;
 	    if(bsRootTree_->iPassedCutIdentBd_   < 6 ) bsRootTree_->iPassedCutIdentBd_ = 6 ;
 	        
 	    // check on the overlap
 	        
 	    OverlapChecker overlap;
-	    if (overlap(mu1jpsi,track1)!=0 || overlap(mu2jpsi,track1)!=0) continue;
-	    if (overlap(mu1jpsi,track2)!=0 || overlap(mu2jpsi,track2)!=0) continue;
+	    if (overlap(mu1,track1)!=0 || overlap(mu2,track1)!=0) continue;
+	    if (overlap(mu1,track2)!=0 || overlap(mu2,track2)!=0) continue;
 	        
 	    if(bsRootTree_->iPassedCutIdentBd_   < 7 ) bsRootTree_->iPassedCutIdentBd_ = 7 ;
 
 	    // B candidate
 	        
 	    CompositeCandidate BdCand;
-	    BdCand.addDaughter(mu1jpsi);
-	    BdCand.addDaughter(mu2jpsi);
+	    BdCand.addDaughter(mu1);
+	    BdCand.addDaughter(mu2);
 	    BdCand.addDaughter(track1);
 	    BdCand.addDaughter(track2);
 	    AddFourMomenta add4mom;
@@ -1138,15 +858,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if (BdCand.mass() < BdLowerMassCutBeforeFit_ || BdCand.mass() > BdUpperMassCutBeforeFit_) continue;
 	        
 	    if(bsRootTree_->iPassedCutIdentBd_   < 8 ) bsRootTree_->iPassedCutIdentBd_ = 8 ;
-	        
-	    ///////////////////////////////////////////////////////////////////////////////
-	    // list of particle for sequential kinematic vertex fitter - new giordano
-	    ///////////////////////////////////////////////////////////////////////////////
-	        
+
 	    edm::ESHandle<TransientTrackBuilder> theB;
 	    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
-	    TrackRef trkMu1Ref = mu1jpsi.get<TrackRef>();
-	    TrackRef trkMu2Ref = mu2jpsi.get<TrackRef>();
+	
 	    TrackRef trkkst1 = track1.get<TrackRef>();
 	    TrackRef trkkst2 = track2.get<TrackRef>();
 	        
@@ -1159,299 +874,153 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if(!trkMu1Ref.isNonnull() || !trkMu2Ref.isNonnull() || !trkkst1.isNonnull() || !trkkst2.isNonnull() ) continue;
 	    if(bsRootTree_->iPassedCutIdentBd_   < 9 ) bsRootTree_->iPassedCutIdentBd_ = 9 ;
 	        
-	    TransientTrack ttMuP= t_tks[0];
-	    TransientTrack ttMuM= t_tks[1];
-	    TransientTrack ttK = t_tks[2];
-	    TransientTrack ttP = t_tks[3];
-	    KinematicParticleFactoryFromTransientTrack pFactory;
-	        
-	    ParticleMass muon_mass = 0.1056583;
-	    ParticleMass kaon_mass = 0.493677;
-	    ParticleMass pi_mass = 0.139570;
-	        
-	    float muon_sigma = 0.0000001;
-	    float kaon_sigma = 0.000016;
-	    float pi_sigma = 0.000016;
-	    float chi = 0.;
-	    float ndf = 0.;
-	        
-	    vector<RefCountedKinematicParticle> allMuons;
-	    allMuons.push_back(pFactory.particle (ttMuP,muon_mass,chi,ndf,muon_sigma));
-	    allMuons.push_back(pFactory.particle (ttMuM,muon_mass,chi,ndf,muon_sigma));
-	    vector<RefCountedKinematicParticle> KpiParticlesHyp1;
-	    vector<RefCountedKinematicParticle> KpiParticlesHyp2;
-	    KpiParticlesHyp1.push_back(pFactory.particle (ttK,kaon_mass,chi,ndf,kaon_sigma));
-	    KpiParticlesHyp1.push_back(pFactory.particle (ttP,pi_mass,chi,ndf,pi_sigma));
-	   	   
-	    KpiParticlesHyp2.push_back(pFactory.particle (ttP,kaon_mass,chi,ndf,kaon_sigma));
-	    KpiParticlesHyp2.push_back(pFactory.particle (ttK,pi_mass,chi,ndf,pi_sigma));
-	   	        
-	    KinematicParticleVertexFitter FitterHyp1;
-	    KinematicParticleVertexFitter FitterHyp2;
-
-	    RefCountedKinematicTree JpsiTreeHyp1 = FitterHyp1.fit(allMuons);
-	    RefCountedKinematicTree JpsiTreeHyp2 = FitterHyp2.fit(allMuons);
-
-	    // if the fit fails, do not consider this as candidate
-	    if(JpsiTreeHyp1->isEmpty()) continue;
-	    if(JpsiTreeHyp2->isEmpty()) continue;
-	        
-	    KinematicParticleFitter constFitterHyp2;
-	    KinematicParticleFitter constFitterHyp1;
-	        
-	    ParticleMass jpsiM = 3.09687;
-	    float jpsiMsigma = 0.00004;
-	    KinematicConstraint * jpsi_constHyp1 = new MassKinematicConstraint(jpsiM,jpsiMsigma);
-	    KinematicConstraint * jpsi_constHyp2 = new MassKinematicConstraint(jpsiM,jpsiMsigma);
-	        
-	    JpsiTreeHyp1 = constFitterHyp1.fit(jpsi_constHyp1,JpsiTreeHyp1);
-	    JpsiTreeHyp2 = constFitterHyp2.fit(jpsi_constHyp2,JpsiTreeHyp2);
-	        
-	    // if the fit fails, do not consider this as candidate
-	    if(JpsiTreeHyp1->isEmpty()) continue;
-	    if(JpsiTreeHyp2->isEmpty()) continue;
-	        
-	    JpsiTreeHyp1->movePointerToTheTop();
-	    JpsiTreeHyp2->movePointerToTheTop();
-	    RefCountedKinematicParticle Jpsi_branchHyp1 = JpsiTreeHyp1->currentParticle();
-	    RefCountedKinematicParticle Jpsi_branchHyp2 = JpsiTreeHyp2->currentParticle();
-	    KpiParticlesHyp1.push_back(Jpsi_branchHyp1);
-	    KpiParticlesHyp2.push_back(Jpsi_branchHyp2);
-	        
-	    RefCountedKinematicTree myTreeHyp1 = FitterHyp1.fit(KpiParticlesHyp1);
-	    RefCountedKinematicTree myTreeHyp2 = FitterHyp2.fit(KpiParticlesHyp2);
-	        
-	    // if the fit fails, do not consider this as candidate
-	    if(myTreeHyp1->isEmpty())  continue;
-	    if(myTreeHyp2->isEmpty())  continue;
-	    myTreeHyp1->movePointerToTheTop();
-	    myTreeHyp2->movePointerToTheTop();
-	    RefCountedKinematicParticle bmesHyp1 = myTreeHyp1->currentParticle();
-	    RefCountedKinematicVertex bVertexHyp1 = myTreeHyp1->currentDecayVertex();
-
-	    RefCountedKinematicParticle bmesHyp2 = myTreeHyp2->currentParticle();
-	    RefCountedKinematicVertex bVertexHyp2 = myTreeHyp2->currentDecayVertex();
-	        
-	    if (!bVertexHyp1->vertexIsValid()) continue;
-	    if (!bVertexHyp2->vertexIsValid()) continue;
+	    KinematicFitInterface KfitterHyp1;
+            bool fitSuccessHyp1 = KfitterHyp1.doFit(t_tks, nominalMuonMass,  nominalKaonMass, nominalPionMass);
+	    KinematicFitInterface KfitterHyp2;
+            bool fitSuccessHyp2 = KfitterHyp2.doFit(t_tks, nominalMuonMass,  nominalPionMass, nominalKaonMass);
+            if(!fitSuccessHyp1 || !fitSuccessHyp2) continue; 
+	      
 	    if(bsRootTree_->iPassedCutIdentBd_   < 10 ) bsRootTree_->iPassedCutIdentBd_ = 10 ;
-	        
+	
+	    RefCountedKinematicParticle bmesHyp1 = KfitterHyp1.getParticle();
+	    RefCountedKinematicVertex bVertexHyp1 = KfitterHyp1.getVertex();
 	    AlgebraicVector7 b_parHyp1 = bmesHyp1->currentState().kinematicParameters().vector();
 	    AlgebraicSymMatrix77 bd_erHyp1 = bmesHyp1->currentState().kinematicParametersError().matrix();
 	    double vtxProbHyp1 = TMath::Prob(bmesHyp1->chiSquared(),(int)bmesHyp1->degreesOfFreedom());
 
+	    RefCountedKinematicParticle bmesHyp2 =  KfitterHyp2.getParticle();
+	    RefCountedKinematicVertex bVertexHyp2 = KfitterHyp2.getVertex();
 	    AlgebraicVector7 b_parHyp2 = bmesHyp2->currentState().kinematicParameters().vector();
 	    AlgebraicSymMatrix77 bd_erHyp2 = bmesHyp2->currentState().kinematicParametersError().matrix();
 	    double vtxProbHyp2 = TMath::Prob(bmesHyp2->chiSquared(),(int)bmesHyp2->degreesOfFreedom());
 
 	
+// 	    // temporary check
+// 	    if( fabs(vtxProbHyp1 - vtxProbHyp2) > 0.001 ) {
+// 	      std::cout<<"vtx probs not equal" << std::endl;
+// 	      exit(1);
+// 	    }
+
 	    if(vtxProbHyp1>MinBVtxHyp1){
+	   
+	      double fittedBdMassHyp1 =  b_parHyp1[6];
+	      double fittedBdMassHyp2 =  b_parHyp2[6];
+
+	      if (abs(Jpsi.mass() - nominalJpsiMass) > JpsiMassWindowAfterFit_ || Jpsi.pt() < JpsiPtCut_) continue;
+	      // passed jpsi mass window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 11 ) bsRootTree_->iPassedCutIdentBd_ = 11 ;
 	            
+	      if( abs(Kstmass1 - nominalKstarMass)> KstarMassWindowAfterFit_  &&   
+		  abs(Kstmass2 - nominalKstarMass)> KstarMassWindowAfterFit_ ) continue;
+	      // if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
+	      
+	      // passed jpsi kstar window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 12 ) bsRootTree_->iPassedCutIdentBd_ = 12 ;
+	      if ( ( fittedBdMassHyp1 < BdLowerMassCutAfterFit_ || fittedBdMassHyp1 > BdUpperMassCutAfterFit_ ) &&
+		   ( fittedBdMassHyp2 < BdLowerMassCutAfterFit_ || fittedBdMassHyp2 > BdUpperMassCutAfterFit_ )) continue;
+	      // passed Bd mass window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 13 ) bsRootTree_->iPassedCutIdentBd_ = 13 ;
+
+
 	      MinBVtxHyp1 = vtxProbHyp1;
 
-	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
-	      // passed jpsi mass window after fit
-	      if(bsRootTree_->iPassedCutIdentBd_   < 11 ) bsRootTree_->iPassedCutIdentBd_ = 11 ;
-	            
-	      if(abs(Kstmass1-0.892)> KstarMassWindowAfterFit_) continue;
-	      // if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
-	      
-	      // passed jpsi kstar window after fit
-	      if(bsRootTree_->iPassedCutIdentBd_   < 12 ) bsRootTree_->iPassedCutIdentBd_ = 12 ;
-	      if (BdCand.mass() < BdLowerMassCutAfterFit_ || BdCand.mass() > BdUpperMassCutAfterFit_) continue;
-	      // passed Bd mass window after fit
-	      if(bsRootTree_->iPassedCutIdentBd_   < 13 ) bsRootTree_->iPassedCutIdentBd_ = 13 ;
+	      bsRootTree_->BdFitChi2_Hyp1_  = bmesHyp1->chiSquared();
+	      bsRootTree_->BdFitNdof_Hyp1_   =(int)bmesHyp1->degreesOfFreedom();
+	      bsRootTree_->BdFitChi2_Hyp2_  = bmesHyp2->chiSquared();
+	      bsRootTree_->BdFitNdof_Hyp2_   =(int)bmesHyp2->degreesOfFreedom();
 
+	      bsRootTree_->BdFitVtxProb_Hyp1_ = vtxProbHyp1;
+	      bsRootTree_->BdFitVtxProb_Hyp2_ = vtxProbHyp2;
+	      bsRootTree_->BdFitM_Hyp1_ = b_parHyp1[6];		
+	      bsRootTree_->BdFitM_Hyp2_ = b_parHyp2[6];		
 
-	      bsRootTree_->chi2_BdHyp1_  = bmesHyp1->chiSquared();
-	      bsRootTree_->ndof_BdHyp1_   =(int)bmesHyp1->degreesOfFreedom();
-	      bsRootTree_->BdVtxProbHyp1_ = vtxProbHyp1;
-	  
-	      bsRootTree_->BdfitM_KpiHyp1_ = b_parHyp1[6];		
-	      
+	      GlobalVector BdvecHyp1(b_parHyp1[3], b_parHyp1[4], b_parHyp1[5]); // the fitted momentum vector 	
+	      bsRootTree_->BdFitEta_Hyp1_ = BdvecHyp1.eta();
+	      bsRootTree_->BdFitPt_Hyp1_  = BdvecHyp1.perp();
+	      bsRootTree_->BdFitPz_Hyp1_  = BdvecHyp1.z();
+	      bsRootTree_->BdFitPhi_Hyp1_ = BdvecHyp1.phi();
+
+	      GlobalVector BdvecHyp2(b_parHyp2[3], b_parHyp2[4], b_parHyp2[5]); // the fitted momentum vector 	
+	      bsRootTree_->BdFitEta_Hyp2_ = BdvecHyp2.eta();
+	      bsRootTree_->BdFitPt_Hyp2_  = BdvecHyp2.perp();
+	      bsRootTree_->BdFitPz_Hyp2_  = BdvecHyp2.z();
+	      bsRootTree_->BdFitPhi_Hyp2_ = BdvecHyp2.phi();
 
 	      //	      bsRootTree_->setFitParBdKstar(myTree);
+	      RefCountedKinematicTree reftree1 = KfitterHyp1.getTree();
+	      RefCountedKinematicTree reftree2 = KfitterHyp2.getTree() ;
+	      setFitParHyp1( reftree1 );
+	      setFitParHyp2( reftree2 );
 
-	      bsRootTree_->BdVtx_xHyp1_ = bVertexHyp1->position().x();
-	      bsRootTree_->BdVtx_yHyp1_ = bVertexHyp1->position().y();
-	      bsRootTree_->BdVtx_zHyp1_ = bVertexHyp1->position().z();
+	      bsRootTree_->BdFitVtx_x_Hyp1_ = bVertexHyp1->position().x();
+	      bsRootTree_->BdFitVtx_y_Hyp1_ = bVertexHyp1->position().y();
+	      bsRootTree_->BdFitVtx_z_Hyp1_ = bVertexHyp1->position().z();
+	 
+	      bsRootTree_->BdFitVtx_x_Hyp2_ = bVertexHyp2->position().x();
+	      bsRootTree_->BdFitVtx_y_Hyp2_ = bVertexHyp2->position().y();
+	      bsRootTree_->BdFitVtx_z_Hyp2_ = bVertexHyp2->position().z();
 
-	      bsRootTree_->BdMass_after_ = BdCand.mass();
-	      bsRootTree_->BdPt_after_ = BdCand.pt();
-	      bsRootTree_->BdPz_after_ = BdCand.pz();
-	      bsRootTree_->BdPhi_after_ = BdCand.phi();
-	      bsRootTree_->BdEta_after_ = BdCand.eta();
+	      bsRootTree_->BdM_nofit_ = BdCand.mass();
+	      bsRootTree_->BdPt_nofit_ = BdCand.pt();
+	      bsRootTree_->BdPz_nofit_ = BdCand.pz();
+	      bsRootTree_->BdPhi_nofit_ = BdCand.phi();
+	      bsRootTree_->BdEta_nofit_ = BdCand.eta();
 	      
-	      bsRootTree_->KstarMass_after_Hyp1_ = Kstmass1;
-	      
-	      bsRootTree_->BdK1Pt_after_   = track1.pt();
-	      bsRootTree_->BdK1Pz_after_   = track1.pz();
-	      bsRootTree_->BdK1Eta_after_  = track1.eta();
-	      bsRootTree_->BdK1Phi_after_  = track1.phi();
-	      bsRootTree_->BdK2Pt_after_   = track2.pt();
-	      bsRootTree_->BdK2Pz_after_   = track2.pz();
-	      bsRootTree_->BdK2Eta_after_  = track2.eta();
-	      bsRootTree_->BdK2Phi_after_  = track2.phi();
-	      
+	      bsRootTree_->KstarMass_nofit_Hyp1_ = Kstmass1;
+	      bsRootTree_->KstarMass_nofit_Hyp2_ = Kstmass2;	      
 
-	      double BdBLxy = 0; double BdBLxy2 = 0;
+	      bsRootTree_->BdK1Pt_nofit_   = track1.pt();
+	      bsRootTree_->BdK1Pz_nofit_   = track1.pz();
+	      bsRootTree_->BdK1Eta_nofit_  = track1.eta();
+	      bsRootTree_->BdK1Phi_nofit_  = track1.phi();
+	      bsRootTree_->BdK2Pt_nofit_   = track2.pt();
+	      bsRootTree_->BdK2Pz_nofit_   = track2.pz();
+	      bsRootTree_->BdK2Eta_nofit_  = track2.eta();
+	      bsRootTree_->BdK2Phi_nofit_  = track2.phi();
+	      
+	      RefCountedKinematicVertex bdVertex;
+	      AlgebraicSymMatrix77 bd_er;
+	      GlobalVector Bdvec;
+	      double Bdmass;
+	      if(K1flag==1)       {bdVertex =  bVertexHyp1; bd_er = bd_erHyp1; Bdvec = BdvecHyp1; Bdmass = fittedBdMassHyp1; }
+	      else if (K2flag==1) {bdVertex =  bVertexHyp2; bd_er = bd_erHyp2; Bdvec = BdvecHyp2; Bdmass = fittedBdMassHyp2; }
+	      else {std::cout<<"error flag" << std::endl;  exit(1);}
+
 	      if(BdCand.pt()!=0) {
-		BdBLxy=((bVertexHyp1->position().x()-BSx)*BdCand.px()+(bVertexHyp1->position().y()-BSy)*BdCand.py())/BdCand.pt();
-		BdBLxy2=((bVertexHyp1->position().x()-PVx)*BdCand.px()+(bVertexHyp1->position().y()-PVy)*BdCand.py())/BdCand.pt();
-	      }
+                bsRootTree_->BdLxy_ = ((bdVertex->position().x()-PVx)*Bdvec.x()+(bdVertex->position().y()-PVy)*Bdvec.y())/Bdvec.perp();
+                bsRootTree_->BdCt_  = bsRootTree_->BdLxy_*Bdmass/Bdvec.perp();
+              }
+              bsRootTree_->BdErrX_  = bd_er(1,1);
+              bsRootTree_->BdErrY_  = bd_er(2,2);
+              bsRootTree_->BdErrXY_ = bd_er(1,2); 
+              
+              VertexDistance3D vdist3d;
+              bsRootTree_->BdDist3d_    = vdist3d.distance(bdVertex->vertexState(),RecVtx).value();
+              bsRootTree_->BdDist3dErr_ = vdist3d.distance(bdVertex->vertexState(),RecVtx).error();
+              bsRootTree_->BdTime3d_    = bsRootTree_->BdDist3d_    * Bdmass/Bdvec.perp() * 100. /3.;
+              bsRootTree_->BdTime3dErr_ = bsRootTree_->BdDist3dErr_ * Bdmass/Bdvec.perp() * 100. /3.;
+              
+                      
+              VertexDistanceXY vdist;
+              bsRootTree_->BdDist2d_     = vdist.distance(bdVertex->vertexState(),RecVtx).value();
+              bsRootTree_->BdDist2dErr_ = vdist.distance(bdVertex->vertexState(),RecVtx).error();
+              bsRootTree_->BdTime2d_     = bsRootTree_->BdDist2d_ * Bdmass/Bdvec.perp() *100. /3.;
+              bsRootTree_->BdTime2dErr_  = bsRootTree_->BdDist2dErr_ * Bdmass/Bdvec.perp() * 100. /3.;
+        
+	       // deltaR matching
+	      bool K1Truth = MCmatching( track1, genParticles, bsRootTree_->BdK1mcId_, bsRootTree_->BdK1momId_, bsRootTree_->BdK1gmomId_, 313, 511);
+	      bool K2Truth = MCmatching( track2, genParticles, bsRootTree_->BdK2mcId_, bsRootTree_->BdK2momId_, bsRootTree_->BdK2gmomId_, 313, 511);
+	      bool Mu1Truth= MCmatching( mu1,    genParticles, bsRootTree_->BdMu1mcId_,bsRootTree_->BdMu1momId_,bsRootTree_->BdMu1gmomId_, 443, 511);
+	      bool Mu2Truth= MCmatching( mu2,    genParticles, bsRootTree_->BdMu2mcId_,bsRootTree_->BdMu2momId_,bsRootTree_->BdMu2gmomId_, 443, 511);
 	      
-	      double BdBsct1 = BdBLxy*BdCand.mass()/BdCand.pt();
-	      double BdBsct2 = BdBLxy2*BdCand.mass()/BdCand.pt();
-	      
-	      double BdBerrX=bd_erHyp1(1,1);
-	      double BdBerrY=bd_erHyp1(2,2);
-	      double BdBerrXY=bd_erHyp1(1,2); 
-	      
-	      bsRootTree_->getBdLXY(BdBLxy,BdBLxy2,BdBerrX,BdBerrY,BdBerrXY,BdBsct1,BdBsct2);
-	      
-	      double Dist3d = -5;
-	      double dDist3d = -5;
-	      double Time3d = -5;
-	      double dTime3d = -5;
-	      VertexDistance3D vdist3d;
-	      Dist3d = vdist3d.distance(bVertexHyp1->vertexState(),RecVtx).value();
-	      dDist3d = vdist3d.distance(bVertexHyp1->vertexState(),RecVtx).error();
-	      Time3d = Dist3d * BdCand.mass()/BdCand.pt() *100. /3.;
-	      dTime3d = dDist3d * BdCand.mass()/BdCand.pt() * 100. /3.;
-	      
-	      bsRootTree_->getBd3d(Dist3d,dDist3d,Time3d,dTime3d);
-	      
-	      double Dist = -5;
-	      double dDist = -5;
-	      double Time = -5;
-	      double dTime = -5;
-	      VertexDistanceXY vdist;
-	      Dist = vdist.distance(bVertexHyp1->vertexState(),RecVtx).value();
-	      dDist = vdist.distance(bVertexHyp1->vertexState(),RecVtx).error();
-	      Time = Dist * BdCand.mass()/BdCand.pt() *100. /3.;
-	      dTime = dDist * BdCand.mass()/BdCand.pt() * 100. /3.;
-	      
-	      bsRootTree_->getBd1d(Dist,dDist,Time,dTime);
-	      
+	      if (K1Truth==1 && K2Truth==1 && Mu1Truth==1 & Mu2Truth==1)  bsRootTree_->isMatchedBd_ = 1;
+	      else bsRootTree_->isMatchedBd_ = 0; 
+	    }	      
 
-	    }
-
-	    if(vtxProbHyp2>MinBVtxHyp2){
-	            
-	      MinBVtxHyp2 = vtxProbHyp2;
-
-	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
-	      // passed jpsi mass window after fit
-	      if(bsRootTree_->iPassedCutIdentBd_   < 11 ) bsRootTree_->iPassedCutIdentBd_ = 11 ;
-	            
-	      if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
-	      // if(abs(Kstmass2-0.892)> KstarMassWindowAfterFit_) continue;
-	      
-	      // passed jpsi kstar window after fit
-	      if(bsRootTree_->iPassedCutIdentBd_   < 12 ) bsRootTree_->iPassedCutIdentBd_ = 12 ;
-	      if (BdCand.mass() < BdLowerMassCutAfterFit_ || BdCand.mass() > BdUpperMassCutAfterFit_) continue;
-	      // passed Bd mass window after fit
-	      if(bsRootTree_->iPassedCutIdentBd_   < 13 ) bsRootTree_->iPassedCutIdentBd_ = 13 ;
-
-
-	      bsRootTree_->chi2_BdHyp2_  = bmesHyp2->chiSquared();
-	      bsRootTree_->ndof_BdHyp2_   =(int)bmesHyp2->degreesOfFreedom();
-	      bsRootTree_->BdVtxProbHyp2_ = vtxProbHyp2;
-	  
-	      bsRootTree_->BdfitM_KpiHyp2_ = b_parHyp2[6];		
-	      
-	      //	      bsRootTree_->setFitParBdKstar(myTree);
-
-	      bsRootTree_->BdVtx_xHyp2_ = bVertexHyp2->position().x();
-	      bsRootTree_->BdVtx_yHyp2_ = bVertexHyp2->position().y();
-	      bsRootTree_->BdVtx_zHyp2_ = bVertexHyp2->position().z();
-
-	
-	      
-	      bsRootTree_->KstarMass_after_Hyp2_ = Kstmass2;
-	      
-		      
-	    }
-
-	    // deltaR matching!
-
-	    int K1Truth = 0;
-	    if(TrkCounter1!=-10){
-	      double MinDRK=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRK1 = TMath::Sqrt((p.eta()-track1.eta())*(p.eta()-track1.eta())+
-					      (p.phi()-track1.phi())*(p.phi()-track1.phi()));
-		if(DeltaRK1<MinDRK && DeltaRK1<0.05){
-		  MinDRK=DeltaRK1;
-		  K1mcIdBd=p.pdgId();
-		  if(p.mother()!=0) K1momIdBd=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) K1gmomIdBd=p.mother()->mother()->pdgId();
-		  if (abs(K1momIdBd)==313 && abs(K1gmomIdBd)==511) K1Truth = 1;
-		}
-	      }
-	    }
-
-	    int K2Truth = 0;
-	    if(TrkCounter2!=-10){
-	      double MinDRK=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRK2 = TMath::Sqrt((p.eta()-track2.eta())*(p.eta()-track2.eta())+
-					      (p.phi()-track2.phi())*(p.phi()-track2.phi()));
-		if(DeltaRK2<MinDRK && DeltaRK2<0.05){
-		  MinDRK=DeltaRK2;
-		  K2mcIdBd=p.pdgId();
-		  if(p.mother()!=0) K2momIdBd=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) K2gmomIdBd=p.mother()->mother()->pdgId();
-		  if (abs(K2momIdBd)==313 && abs(K2gmomIdBd)==511) K2Truth = 1;
-		}
-	      }
-	    }
-	    
-	    int Mu1Truth = 0;
-	    if(MuCounter1!=-10){
-	      double MinDRMu=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRMu1 = TMath::Sqrt((p.eta()-mu1jpsi.eta())*(p.eta()-mu1jpsi.eta())+
-					       (p.phi()-mu1jpsi.phi())*(p.phi()-mu1jpsi.phi()));
-		if(DeltaRMu1<MinDRMu && DeltaRMu1<0.05){
-		  MinDRMu=DeltaRMu1;
-		  Mu1mcIdBd=p.pdgId();
-		  if(p.mother()!=0) Mu1momIdBd=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) Mu1gmomIdBd=p.mother()->mother()->pdgId();
-		  if (abs(Mu1momIdBd)==443 && abs(Mu1gmomIdBd)==511 && abs(Mu1mcIdBd)==13) Mu1Truth = 1;
-		}
-	      }
-	    }
-	    
-	    int Mu2Truth = 0;
-	    if(MuCounter2!=-10){
-	      double MinDRMu=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRMu2 = TMath::Sqrt((p.eta()-mu2jpsi.eta())*(p.eta()-mu2jpsi.eta())+
-					       (p.phi()-mu2jpsi.phi())*(p.phi()-mu2jpsi.phi()));
-		if(DeltaRMu2<MinDRMu && DeltaRMu2<0.05){
-		  MinDRMu=DeltaRMu2;
-		  Mu2mcIdBd=p.pdgId();
-		  if(p.mother()!=0) Mu2momIdBd=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) Mu2gmomIdBd=p.mother()->mother()->pdgId();
-		  if (abs(Mu2momIdBd)==443 && abs(Mu2gmomIdBd)==511 && abs(Mu2mcIdBd)==13) Mu2Truth= 1;
-		}
-	      }
-	    }
-	    
-	    isMatchedBd = -10;
-	    if (K1Truth==1 && K2Truth==1 && Mu1Truth==1 && Mu2Truth==1 &&
-		(abs(K1mcIdBd)==321 && abs(K2mcIdBd)==211) || (abs(K1mcIdBd)==211 && abs(K2mcIdBd)==321)) isMatchedBd = 1;
-	    bsRootTree_->isMatchedBd_ = isMatchedBd;
-	    
 	    
 	  } // trk2 end loop
 	} // trk1 end loop
-      } // mu counter for kstar      
+  
 
       
     } // loop on muons2
@@ -1646,3 +1215,147 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
   bsRootTree_->GenNumberOfBdecays_ = iNumberOfBdecays;
 
 }
+
+
+
+
+//------------------------------------------
+void BsToJpsiPhiAnalysis::setFitParKK(RefCountedKinematicTree& myTree)
+{
+  
+  
+  vector< RefCountedKinematicParticle > bs_children = myTree->finalStateParticles();
+  
+  // first particle: kaon 1   
+  
+  AlgebraicVector7 bs_par1 = bs_children[0]->currentState().kinematicParameters().vector();
+  for(int i=0; i<7; i++)  bsRootTree_->K1Fit_par_[i] = bs_par1[i];
+  
+  AlgebraicSymMatrix77 bs_err1 = bs_children[0]->currentState().kinematicParametersError().matrix();
+  bsRootTree_->K1Fit_sigX_ = sqrt(bs_err1(0,0));
+  bsRootTree_->K1Fit_sigY_ = sqrt(bs_err1(1,1));
+  bsRootTree_->K1Fit_sigZ_ = sqrt(bs_err1(2,2));
+  bsRootTree_->K1Fit_sigPX_ = sqrt(bs_err1(3,3));
+  bsRootTree_->K1Fit_sigPY_ = sqrt(bs_err1(4,4));
+  bsRootTree_->K1Fit_sigPZ_ = sqrt(bs_err1(5,5));
+  
+  // first particle: kaon 2  
+  
+    
+  AlgebraicVector7 bs_par2 = bs_children[1]->currentState().kinematicParameters().vector();
+  for(int i=0; i<7; i++) bsRootTree_->K2Fit_par_[i] = bs_par2[i];
+  
+  AlgebraicSymMatrix77 bs_err2 = bs_children[1]->currentState().kinematicParametersError().matrix();
+  bsRootTree_->K2Fit_sigX_ = sqrt(bs_err2(0,0));
+  bsRootTree_->K2Fit_sigY_ = sqrt(bs_err2(1,1));
+  bsRootTree_->K2Fit_sigZ_ = sqrt(bs_err2(2,2));
+  bsRootTree_->K2Fit_sigPX_ = sqrt(bs_err2(3,3));
+  bsRootTree_->K2Fit_sigPY_ = sqrt(bs_err2(4,4));
+  bsRootTree_->K2Fit_sigPZ_ = sqrt(bs_err2(5,5));
+  
+}
+
+
+//------------------------------------------
+void BsToJpsiPhiAnalysis::setFitParHyp1(RefCountedKinematicTree& myTree)
+{
+  
+  
+  vector< RefCountedKinematicParticle > bs_children = myTree->finalStateParticles();
+  
+  // first particle: kaon 1   
+  
+  AlgebraicVector7 bs_par1 = bs_children[0]->currentState().kinematicParameters().vector();
+  for(int i=0; i<7; i++)  bsRootTree_->BdK1_kpi_par_Hyp1_[i] = bs_par1[i];
+  
+  AlgebraicSymMatrix77 bs_err1 = bs_children[0]->currentState().kinematicParametersError().matrix();
+  bsRootTree_->BdK1_kpi_sigX_Hyp1_ = sqrt(bs_err1(0,0));
+  bsRootTree_->BdK1_kpi_sigY_Hyp1_ = sqrt(bs_err1(1,1));
+  bsRootTree_->BdK1_kpi_sigZ_Hyp1_ = sqrt(bs_err1(2,2));
+  bsRootTree_->BdK1_kpi_sigPX_Hyp1_ = sqrt(bs_err1(3,3));
+  bsRootTree_->BdK1_kpi_sigPY_Hyp1_ = sqrt(bs_err1(4,4));
+  bsRootTree_->BdK1_kpi_sigPZ_Hyp1_ = sqrt(bs_err1(5,5));
+  
+  // first particle: kaon 2  
+  
+    
+  AlgebraicVector7 bs_par2 = bs_children[1]->currentState().kinematicParameters().vector();
+  for(int i=0; i<7; i++) bsRootTree_->BdK2_kpi_par_Hyp1_[i] = bs_par2[i];
+  
+  AlgebraicSymMatrix77 bs_err2 = bs_children[1]->currentState().kinematicParametersError().matrix();
+  bsRootTree_->BdK2_kpi_sigX_Hyp1_ = sqrt(bs_err2(0,0));
+  bsRootTree_->BdK2_kpi_sigY_Hyp1_ = sqrt(bs_err2(1,1));
+  bsRootTree_->BdK2_kpi_sigZ_Hyp1_ = sqrt(bs_err2(2,2));
+  bsRootTree_->BdK2_kpi_sigPX_Hyp1_ = sqrt(bs_err2(3,3));
+  bsRootTree_->BdK2_kpi_sigPY_Hyp1_ = sqrt(bs_err2(4,4));
+  bsRootTree_->BdK2_kpi_sigPZ_Hyp1_ = sqrt(bs_err2(5,5));
+  
+}
+
+//------------------------------------------
+void BsToJpsiPhiAnalysis::setFitParHyp2(RefCountedKinematicTree& myTree)
+{
+  
+  
+  vector< RefCountedKinematicParticle > bs_children = myTree->finalStateParticles();
+  
+  // first particle: kaon 1   
+  
+  AlgebraicVector7 bs_par1 = bs_children[0]->currentState().kinematicParameters().vector();
+  for(int i=0; i<7; i++)  bsRootTree_->BdK1_kpi_par_Hyp2_[i] = bs_par1[i];
+  
+  AlgebraicSymMatrix77 bs_err1 = bs_children[0]->currentState().kinematicParametersError().matrix();
+  bsRootTree_->BdK1_kpi_sigX_Hyp2_ = sqrt(bs_err1(0,0));
+  bsRootTree_->BdK1_kpi_sigY_Hyp2_ = sqrt(bs_err1(1,1));
+  bsRootTree_->BdK1_kpi_sigZ_Hyp2_ = sqrt(bs_err1(2,2));
+  bsRootTree_->BdK1_kpi_sigPX_Hyp2_ = sqrt(bs_err1(3,3));
+  bsRootTree_->BdK1_kpi_sigPY_Hyp2_ = sqrt(bs_err1(4,4));
+  bsRootTree_->BdK1_kpi_sigPZ_Hyp2_ = sqrt(bs_err1(5,5));
+  
+  // first particle: kaon 2  
+  
+    
+  AlgebraicVector7 bs_par2 = bs_children[1]->currentState().kinematicParameters().vector();
+  for(int i=0; i<7; i++) bsRootTree_->BdK2_kpi_par_Hyp2_[i] = bs_par2[i];
+  
+  AlgebraicSymMatrix77 bs_err2 = bs_children[1]->currentState().kinematicParametersError().matrix();
+  bsRootTree_->BdK2_kpi_sigX_Hyp2_ = sqrt(bs_err2(0,0));
+  bsRootTree_->BdK2_kpi_sigY_Hyp2_ = sqrt(bs_err2(1,1));
+  bsRootTree_->BdK2_kpi_sigZ_Hyp2_ = sqrt(bs_err2(2,2));
+  bsRootTree_->BdK2_kpi_sigPX_Hyp2_ = sqrt(bs_err2(3,3));
+  bsRootTree_->BdK2_kpi_sigPY_Hyp2_ = sqrt(bs_err2(4,4));
+  bsRootTree_->BdK2_kpi_sigPZ_Hyp2_ = sqrt(bs_err2(5,5));
+  
+}
+
+
+
+bool  BsToJpsiPhiAnalysis::MCmatching(const Candidate & track1,  edm::Handle<GenParticleCollection> & genParticles,
+				      int &K1mcId, int &K1momId, int &K1gmomId,
+				      int condMom, int condGMom){
+  bool K1Truth = 0;
+  double MinDRK=999.;
+  
+  K1mcId = -9999999;
+  K1momId = -9999999;
+  K1gmomId = -9999999;
+
+  for(size_t i = 0; i < genParticles->size(); ++ i) {
+    const GenParticle & p = (*genParticles)[i];
+    double DeltaRK1 = deltaR(p.eta(), p.phi(), track1.eta(), track1.phi() );
+   
+    if(DeltaRK1<MinDRK && DeltaRK1<0.05){
+      MinDRK=DeltaRK1;
+      K1mcId=p.pdgId();
+      if(p.mother()!=0) K1momId=p.mother()->pdgId();
+      if(p.mother()!=0 && p.mother()->mother()!=0) K1gmomId=p.mother()->mother()->pdgId(); 
+      if (abs(K1momId)==condMom && abs(K1gmomId)==condGMom) K1Truth = 1;
+      else K1Truth = 0;
+    }
+  }
+
+  return K1Truth;
+  
+}
+
+	    

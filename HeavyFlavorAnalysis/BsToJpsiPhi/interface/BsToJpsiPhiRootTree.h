@@ -1,57 +1,37 @@
 #ifndef HeavyFlavorAnalysis_BsToJpsiPhi_BsToJpsiPhiRootTree_h
 #define HeavyFlavorAnalysis_BsToJpsiPhi_BsToJpsiPhiRootTree_h
 
+#include <string>
 #include <TROOT.h>
 #include <TTree.h>
 #include <TFile.h>
-#include <TH1F.h>
-#include <TH2F.h>
-#include <TF1.h>
-#include "TROOT.h"
-#include "TLorentzVector.h"
-#include "TVector3.h"
-#include "TLorentzRotation.h"
-#include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicVertex.h"
-#include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicParticle.h"
-#include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicTree.h"
-#include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
-#include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
-#include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
-#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
-#include "DataFormats/Math/interface/LorentzVector.h"
+
 
 class BsToJpsiPhiRootTree {
 public:
   
-	BsToJpsiPhiRootTree(const std::string filename = "bsTree.root");
+	BsToJpsiPhiRootTree();
 	
 	~BsToJpsiPhiRootTree();
 	
 	void resetEntries(); 
-	
-	void getTrigBit(const int flag_1, const int flag_2, const int flag_3, const int flag_4, const int flag_5, const int flag_6);
+	void writeFile();
+	void createTree(const std::string filename);
+	void readTree(const std::string filename);
 
-	void getMCmatch(const int aa);
+
+
+
 
  
 	void getAngles(const double aa, const double bb, const double cc, const double dd);
 	void getVtx(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg, 
 		    const double hh, const double ii);
-	void getLXY(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg);
-	void getBdLXY(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg);
-	void getInfoK1(const int aa, const int bb, const int cc, const int dd);
-	void getInfoK2(const int aa, const int bb, const int cc, const int dd);
-	void getInfoMu1(const int aa, const int bb, const int cc, const int dd);
-	void getInfoMu2(const int aa, const int bb, const int cc, const int dd);
-	void get3d(const double aa, const double bb, const double cc, const double dd);
-	void getBd3d(const double aa, const double bb, const double cc, const double dd);
-	void get1d(const double aa, const double bb, const double cc, const double dd);
-	void getBd1d(const double aa, const double bb, const double cc, const double dd);
+
+
 	void getDeDx(const double f1, const double f2, const int f3);
-        void setFitParKK(RefCountedKinematicTree& myTree);
-        void setFitParKpi(RefCountedKinematicTree& myTree);
-        void setFitParpipi(RefCountedKinematicTree& myTree);
-	void fill();  //!< copy the information from memory to Ntuple
+  
+	void fill();  
 
 public:
 
@@ -80,89 +60,65 @@ public:
         double JpsiPhi_alone_;
         double JpsiEta_alone_;
         double JpsiPt_alone_;
-        double JpsiMu1Pt_;
-        double JpsiMu2Pt_;
-        double JpsiMu1Phi_;
-        double JpsiMu2Phi_;
-        double JpsiMu1Eta_;
-        double JpsiMu2Eta_;
-        int JpsiMuon1Cat_;
-        int JpsiMuon2Cat_;
+        double JpsiMu1Pt_alone_;
+        double JpsiMu2Pt_alone_;
+        double JpsiMu1Phi_alone_;
+        double JpsiMu2Phi_alone_;
+        double JpsiMu1Eta_alone_;
+        double JpsiMu2Eta_alone_;
+        int    JpsiMuon1Cat_alone_;
+        int    JpsiMuon2Cat_alone_;
 
-        double BsMass_before_;
-        double BsPhi_before_;
-        double BsEta_before_;
-        double BsPt_before_;
-        double BsPz_before_;
 
-        double JpsiMass_before_;
-        double JpsiPhi_before_;
-        double JpsiEta_before_;
-        double JpsiPt_before_;
-        double JpsiPz_before_;
+        double BsFitChi2_;
+        int    BsFitNdof_;
 
-        double PhiMass_before_;
-        double PhiPhi_before_;
-        double PhiEta_before_;
-        double PhiPt_before_;
-        double PhiPz_before_;
+        double BsFitVtxProb_;
 
-        double  K1Pt_before_;
-        double  K1Pz_before_;
-        double  K1Eta_before_;
-        double  K1Phi_before_;
-        double  K2Eta_before_;
-        double  K2Pt_before_;
-        double  K2Pz_before_;
-        double  K2Phi_before_;
+        double BsFitM_;
+    	double BsFitEta_;
+	double BsFitPt_;
+	double BsFitPz_;
+	double BsFitPhi_;
 
-        double chi2_Bs_;
-        int ndof_Bs_;
+	double BsFitVtx_x_;
+	double BsFitVtx_y_;
+	double BsFitVtx_z_;
 
-        double BsVtxProb_;
-        double BsVtxProbKpi_;
-        double BsVtxProbpipi_;
+        double BsM_nofit_;
+        double BsPhi_nofit_;
+        double BsEta_nofit_;
+        double BsPt_nofit_;
+        double BsPz_nofit_;
 
-        double BfitM_KK_;
-        double BfitM_Kpi_;
-        double BfitM_pipi_;
+        double JpsiM_nofit_;
+        double JpsiPhi_nofit_;
+        double JpsiEta_nofit_;
+        double JpsiPt_nofit_;
+        double JpsiPz_nofit_;
 
-	double BsVtx_x_;
-	double BsVtx_y_;
-	double BsVtx_z_;
+        double PhiM_nofit_;
+        double PhiPhi_nofit_;
+        double PhiEta_nofit_;
+        double PhiPt_nofit_;
+        double PhiPz_nofit_;
 
-        double BsMass_after_;
-        double BsPhi_after_;
-        double BsEta_after_;
-        double BsPt_after_;
-        double BsPz_after_;
 
-        double JpsiMass_after_;
-        double JpsiPhi_after_;
-        double JpsiEta_after_;
-        double JpsiPt_after_;
-        double JpsiPz_after_;
+        double  K1Pt_nofit_;
+        double  K1Pz_nofit_;
+        double  K1Eta_nofit_;
+        double  K1Phi_nofit_;
+        double  K2Eta_nofit_;
+        double  K2Pt_nofit_;
+        double  K2Pz_nofit_;
+        double  K2Phi_nofit_;
 
-        double PhiMass_after_;
-        double PhiPhi_after_;
-        double PhiEta_after_;
-        double PhiPt_after_;
-        double PhiPz_after_;
-
-        double  K1Pt_after_;
-        double  K1Pz_after_;
-        double  K1Eta_after_;
-        double  K1Phi_after_;
-        double  K2Eta_after_;
-        double  K2Pt_after_;
-        double  K2Pz_after_;
-        double  K2Phi_after_;
 
         double  K1Chi2_;
         int     K1nHits_;
         double  K2Chi2_;
         int     K2nHits_;
-        double  K1pixH_;
+        int     K1pixH_;
         int     K1trkH_;
         int     K2pixH_;
         int     K2trkH_;
@@ -171,7 +127,7 @@ public:
         int     Mu1nHits_;
         double  Mu2Chi2_;
         int     Mu2nHits_;
-        double  Mu1pixH_;
+        int     Mu1pixH_;
         int     Mu1trkH_;
         int     Mu2pixH_;
         int     Mu2trkH_;
@@ -184,13 +140,13 @@ public:
 	int isMatched_;
 	int isMatchedBd_;
 
-	double BLxy_;
-	double BLxy2_;
-	double BerrX_;
-	double BerrY_;
-	double BerrXY_;
-	double Bsct1_;
-	double Bsct2_;
+	double BsLxy_;
+	double BsErrX_;
+	double BsErrY_;
+	double BsErrXY_;
+	double BsCt_;
+
+
 
         int     K1trkLay_;
         int     K1muDTh_;
@@ -221,19 +177,16 @@ public:
         int Mu2mcId_;
         int Mu2momId_;
         int Mu2gmomId_;
-        int K1Truth_;
-        int K2Truth_;
-        int Mu1Truth_;
-        int Mu2Truth_;
+     
 
-	double Dist3d_;
-	double dDist3d_;
-	double Time3d_;
-	double dTime3d_;
-	double Dist_;
-	double dDist_;
-	double Time_;
-	double dTime_;
+	double BsDist3d_;
+	double BsDist3dErr_;
+	double BsTime3d_;
+	double BsTime3dErr_;
+	double BsDist2d_;
+	double BsDist2dErr_;
+	double BsTime2d_;
+	double BsTime2dErr_;
 
 	double dedxTrk_;
 	double errdedxTrk_;
@@ -243,106 +196,22 @@ public:
 	int iPassedCutIdentBd_;
 
 
-        double K1_kk_par0_;
-        double K1_kk_par1_;
-        double K1_kk_par2_;
-        double K1_kk_par3_;
-        double K1_kk_par4_;
-        double K1_kk_par5_;
-        double K1_kk_par6_;
+        double K1Fit_par_[7];
+        double K2Fit_par_[7];
+        double K1Fit_sigX_;
+        double K1Fit_sigY_;
+        double K1Fit_sigZ_;
+        double K2Fit_sigX_;
+        double K2Fit_sigY_;
+        double K2Fit_sigZ_;
+        double K1Fit_sigPX_;
+        double K1Fit_sigPY_;
+        double K1Fit_sigPZ_;
+        double K2Fit_sigPX_;
+        double K2Fit_sigPY_;
+        double K2Fit_sigPZ_;
 
-        double K2_kk_par0_;
-        double K2_kk_par1_;
-        double K2_kk_par2_;
-        double K2_kk_par3_;
-        double K2_kk_par4_;
-        double K2_kk_par5_;
-        double K2_kk_par6_;
-
-        double K1_kpi_par0_;
-        double K1_kpi_par1_;
-        double K1_kpi_par2_;
-        double K1_kpi_par3_;
-        double K1_kpi_par4_;
-        double K1_kpi_par5_;
-        double K1_kpi_par6_;
-
-	double K2_kpi_par0_;
-        double K2_kpi_par1_;
-        double K2_kpi_par2_;
-        double K2_kpi_par3_;
-        double K2_kpi_par4_;
-        double K2_kpi_par5_;
-        double K2_kpi_par6_;
-
-        double K1_pipi_par0_;
-        double K1_pipi_par1_;
-        double K1_pipi_par2_;
-        double K1_pipi_par3_;
-        double K1_pipi_par4_;
-        double K1_pipi_par5_;
-        double K1_pipi_par6_;
-
-        double K2_pipi_par0_;
-        double K2_pipi_par1_;
-        double K2_pipi_par2_;
-        double K2_pipi_par3_;
-        double K2_pipi_par4_;
-        double K2_pipi_par5_;
-        double K2_pipi_par6_;
-
-        double K1_kk_sigX_;
-        double K1_kk_sigY_;
-        double K1_kk_sigZ_;
-
-        double K1_kpi_sigX_;
-        double K1_kpi_sigY_;
-        double K1_kpi_sigZ_;
-
-        double K1_pipi_sigX_;
-        double K1_pipi_sigY_;
-        double K1_pipi_sigZ_;
-
-        double K2_kk_sigX_;
-        double K2_kk_sigY_;
-        double K2_kk_sigZ_;
-
-        double K2_kpi_sigX_;
-        double K2_kpi_sigY_;
-        double K2_kpi_sigZ_;
-
-        double K2_pipi_sigX_;
-        double K2_pipi_sigY_;
-        double K2_pipi_sigZ_;
-
-        double K1_kk_sigPX_;
-        double K1_kk_sigPY_;
-        double K1_kk_sigPZ_;
-
-        double K1_kpi_sigPX_;
-        double K1_kpi_sigPY_;
-        double K1_kpi_sigPZ_;
-
-        double K1_pipi_sigPX_;
-        double K1_pipi_sigPY_;
-        double K1_pipi_sigPZ_;
-
-        double K2_kk_sigPX_;
-        double K2_kk_sigPY_;
-        double K2_kk_sigPZ_;
-
-        double K2_kpi_sigPX_;
-        double K2_kpi_sigPY_;
-        double K2_kpi_sigPZ_;
-
-        double K2_pipi_sigPX_;
-        double K2_pipi_sigPY_;
-        double K2_pipi_sigPZ_;
-
-	double K1Pt_error_;
-	double K2Pt_error_;
-
-      
+         
 	int GenNumberOfBdecays_;
 	int BmesonsId_[10];
 	int BDauIdMC_[10][15];
@@ -375,65 +244,116 @@ public:
 
 
 	// for the Bd->Kstar analysis
-	double chi2_BdHyp1_  ; 
-	double ndof_BdHyp1_  ;
-	double BdVtxProbHyp1_;
+	double BdFitChi2_Hyp1_;
+        int    BdFitNdof_Hyp1_;
 
-	double BdfitM_KpiHyp1_;
+        double BdFitVtxProb_Hyp1_;
+   
 
-	double BdVtx_xHyp1_ ;
-	double BdVtx_yHyp1_;
-	double BdVtx_zHyp1_;
+        double BdFitM_Hyp1_;
+  	double BdFitEta_Hyp1_;
+	double BdFitPt_Hyp1_;
+	double BdFitPz_Hyp1_;
+	double BdFitPhi_Hyp1_;
 
-	double KstarMass_after_Hyp1_ ;
+	double BdFitVtx_x_Hyp1_;
+	double BdFitVtx_y_Hyp1_;
+	double BdFitVtx_z_Hyp1_;
 
-	double chi2_BdHyp2_  ; 
-	double ndof_BdHyp2_  ;
-	double BdVtxProbHyp2_;
+        double BdM_nofit_;
+        double BdPhi_nofit_;
+        double BdEta_nofit_;
+        double BdPt_nofit_;
+        double BdPz_nofit_;
 
-	double BdfitM_KpiHyp2_;
+	double KstarMass_nofit_Hyp1_ ;
+	double KstarMass_nofit_Hyp2_ ; 
 
-	double BdVtx_xHyp2_ ;
-	double BdVtx_yHyp2_;
-	double BdVtx_zHyp2_;
+	double BdK1_kpi_par_Hyp1_[7];
+	double BdK2_kpi_par_Hyp1_[7];
+	double BdK1_kpi_sigX_Hyp1_;
+        double BdK1_kpi_sigY_Hyp1_;
+        double BdK1_kpi_sigZ_Hyp1_;
+	double BdK2_kpi_sigX_Hyp1_;
+        double BdK2_kpi_sigY_Hyp1_;
+        double BdK2_kpi_sigZ_Hyp1_;
+	double BdK1_kpi_sigPX_Hyp1_;
+	double BdK1_kpi_sigPY_Hyp1_;
+        double BdK1_kpi_sigPZ_Hyp1_;
+	double BdK2_kpi_sigPX_Hyp1_;
+        double BdK2_kpi_sigPY_Hyp1_;
+        double BdK2_kpi_sigPZ_Hyp1_;
 
-	double KstarMass_after_Hyp2_ ;
+	double BdFitChi2_Hyp2_;
+        int    BdFitNdof_Hyp2_;
+
+        double BdFitVtxProb_Hyp2_;
+   
+
+        double BdFitM_Hyp2_;
+  	double BdFitEta_Hyp2_;
+	double BdFitPt_Hyp2_;
+	double BdFitPz_Hyp2_;
+	double BdFitPhi_Hyp2_;
+
+	double BdFitVtx_x_Hyp2_;
+	double BdFitVtx_y_Hyp2_;
+	double BdFitVtx_z_Hyp2_;
+
+    
+	double BdK1_kpi_par_Hyp2_[7];
+	double BdK2_kpi_par_Hyp2_[7];
+	double BdK1_kpi_sigX_Hyp2_;
+        double BdK1_kpi_sigY_Hyp2_;
+        double BdK1_kpi_sigZ_Hyp2_;
+	double BdK2_kpi_sigX_Hyp2_;
+        double BdK2_kpi_sigY_Hyp2_;
+        double BdK2_kpi_sigZ_Hyp2_;
+	double BdK1_kpi_sigPX_Hyp2_;
+	double BdK1_kpi_sigPY_Hyp2_;
+        double BdK1_kpi_sigPZ_Hyp2_;
+	double BdK2_kpi_sigPX_Hyp2_;
+        double BdK2_kpi_sigPY_Hyp2_;
+        double BdK2_kpi_sigPZ_Hyp2_;
 
 
-	double BdMass_after_ ;
-	double BdPt_after_    ;
-	double BdPz_after_    ;
-	double BdPhi_after_   ;
-	double BdEta_after_   ;
-
-
-
-	double BdK1Pt_after_  ; 
-	double BdK1Pz_after_  ; 
-	double BdK1Eta_after_ ; 
-	double BdK1Phi_after_ ; 
-	double BdK2Pt_after_  ; 
-	double BdK2Pz_after_  ; 
-	double BdK2Eta_after_ ; 
-	double BdK2Phi_after_ ; 
+	double BdK1Pt_nofit_  ; 
+	double BdK1Pz_nofit_  ; 
+	double BdK1Eta_nofit_ ; 
+	double BdK1Phi_nofit_ ; 
+	double BdK2Pt_nofit_  ; 
+	double BdK2Pz_nofit_  ; 
+	double BdK2Eta_nofit_ ; 
+	double BdK2Phi_nofit_ ; 
 
 	double BdLxy_;
-	double BdLxy2_;
-	double BderrX_;
-	double BderrY_;
-	double BderrXY_;
-	double Bdsct1_;
-	double Bdsct2_;
+	double BdErrX_;
+	double BdErrY_;
+	double BdErrXY_;
+	double BdCt_;
 
 	double BdDist3d_;
-	double BddDist3d_;
+	double BdDist3dErr_;
 	double BdTime3d_;
-	double BddTime3d_;
-	double BdDist_;
-	double BddDist_;
-	double BdTime_;
-	double BddTime_;         
+	double BdTime3dErr_;
+	double BdDist2d_;
+	double BdDist2dErr_;
+	double BdTime2d_;
+	double BdTime2dErr_;
 
+	int BdK1mcId_;
+        int BdK1momId_;
+        int BdK1gmomId_;
+        int BdK2mcId_;
+        int BdK2momId_;
+        int BdK2gmomId_;
+        int BdMu1mcId_;
+        int BdMu1momId_;
+        int BdMu1gmomId_;
+        int BdMu2mcId_;
+        int BdMu2momId_;
+        int BdMu2gmomId_;
+       
 
 	TFile* bsFile_;
 	TTree* bsTree_; 
