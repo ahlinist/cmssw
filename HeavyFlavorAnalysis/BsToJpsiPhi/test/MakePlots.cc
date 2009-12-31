@@ -432,7 +432,8 @@ TH1F * hBdMassFinalAfterFit_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHi
 TH1F * hBdMassFinalAfterFit_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_Other"                          );
 TH1F * hBdMassFinalAfterFit_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdMassFinalAfterFit_Other"                          );
 
-
+TH1F * hResoLxy_BsJPsiPhiSignal                 =(TH1F*) BtoJPsiMuMuHistoFile->Get("hResoLxy_BsJPsiPhiSignal"                  );
+TH1F * hResoTime_BsJPsiPhiSignal                 =(TH1F*) BtoJPsiMuMuHistoFile->Get("hResoTime_BsJPsiPhiSignal"                  );
 
 
  ScaleHistograms(
@@ -687,7 +688,6 @@ hBdChi2_BpJpsiKp          ,
 hBdChi2_JpsiOther,
 hBdChi2_ppmumux         );           
 
- std::cout<<"test1 " <<std::endl;
 
  ScaleHistograms(                               
 hBdChi2Ndof_BsJPsiPhiSignal   ,            
@@ -731,7 +731,6 @@ hBdK1Pt_BpJpsiKp          ,
 hBdK1Pt_JpsiOther,
 hBdK1Pt_ppmumux         );           
  
-std::cout<<"test1 " <<std::endl;
 
  ScaleHistograms(                               
 hBdK2Pt_BsJPsiPhiSignal   ,            
@@ -817,7 +816,6 @@ hBdTime_BpJpsiKp          ,
 hBdTime_JpsiOther,
 hBdTime_ppmumux         );           
 
- std::cout<<"test1 " <<std::endl;
 
  ScaleHistograms(                               
 hBdMass_NoTimeCut_BsJPsiPhiSignal   ,            
@@ -1445,6 +1443,15 @@ hBsMassFinal_BsJPsiPhiSignal    ->Draw("SAMES HIST");
 
  leg3->Draw("SAME");
 
+ TCanvas *cv3b = new TCanvas("ResoLxy", "ResoLxy", 750,600);
+ cv3b->cd();
+ cv3b->SetFillColor(0);
+ hResoLxy_BsJPsiPhiSignal ->Draw();
+
+ TCanvas *cv3c = new TCanvas("ResoTime", "ResoTime", 750,600);
+ cv3c->cd();
+ cv3c->SetFillColor(0);
+ hResoTime_BsJPsiPhiSignal->Draw();
 
 //  //---------------
 //  TCanvas *cv4 = new TCanvas("BsVtxProb", "BsVtxProb", 900, 600 );

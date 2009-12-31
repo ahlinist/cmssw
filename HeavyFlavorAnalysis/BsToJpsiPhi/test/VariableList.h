@@ -244,7 +244,17 @@ vector<TH1F*> vhDistSign1D;
  TH1F * hDistSign1D_BsJpsiSignal          ;
  TH1F * hDistSign1D_BsOther               ;
  TH1F * hDistSign1D_Other                 ;
-                           
+                         
+vector<TH1F*> vhResoLxy;
+TH1F * hResoLxy_BsJpsiSignal;
+TH1F * hResoLxy_BsOther;
+TH1F * hResoLxy_Other;
+
+vector<TH1F*> vhResoTime;
+TH1F * hResoTime_BsJpsiSignal;
+TH1F * hResoTime_BsOther;
+TH1F * hResoTime_Other;
+  
 vector<TH1F*> vhPointingAngle;            
  TH1F *hPointingAngle_BsJpsiSignal        ;
  TH1F *hPointingAngle_BsOther             ;
