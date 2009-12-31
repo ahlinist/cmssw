@@ -44,7 +44,8 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           JpsiMassWindowBeforeFit = cms.double(0.150),
                                           JpsiMassWindowAfterFit = cms.double(0.150),
                                           JpsiPtCut      = cms.double(3),
-                                          KaonTrackPtCut = cms.double(0.5),
+                                          KaonTrackPtCut = cms.double(0.8),
+                                          BdKaonTrackPtCut = cms.double(0.5),
                                           PhiMassWindowBeforeFit  = cms.double(0.05),
                                           PhiMassWindowAfterFit  = cms.double(0.02),
                                           BsLowerMassCutBeforeFit = cms.double(4.5),
@@ -76,8 +77,6 @@ process.p = cms.Path(process.mix*process.allPiTracks*process.allKTracks*process.
 
 process.source = cms.Source("PoolSource",
                               fileNames = cms.untracked.vstring(
-                        
-'file:/nfs/data5/cms/store/mc/Summer09/BtoJPsiMuMu/AODSIM/MC_31X_V3_AODSIM-v1/0021/465107F5-E988-DE11-BA12-003048C91B0E.root'
+'file:test'
+))
 
-                              )
-)
