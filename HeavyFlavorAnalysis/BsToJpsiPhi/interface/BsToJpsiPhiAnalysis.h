@@ -57,9 +57,15 @@ public:
 	virtual void endJob();
 
 	void fillMCInfo( edm::Handle<reco::GenParticleCollection> & genParticles);
-	void fillMCInfoBd( edm::Handle<reco::GenParticleCollection> & genParticles);
+
+	void setFitParKK(RefCountedKinematicTree& myTree);
+	void setFitParHyp1(RefCountedKinematicTree& myTree);
+	void setFitParHyp2(RefCountedKinematicTree& myTree);
 
 private:
+	bool MCmatching(const reco::Candidate & track1,  edm::Handle<reco::GenParticleCollection> & genParticles,
+			int &K1mcId, int &K1momId, int &K1gmomId,
+			int condMom, int condGMom);
 
 	BsToJpsiPhiRootTree * bsRootTree_;
 	
@@ -74,10 +80,19 @@ private:
 	edm::InputTag muonTag_; 
 	bool StoreDeDxInfo_;
 	bool saveDoubleMu3TriggeredOnly_;
+
+	const double nominalJpsiMass;
+	const double nominalPhiMass;
+	const double nominalMuonMass;
+	const double nominalKaonMass;
+	const double nominalPionMass;
+	const double nominalKstarMass;
+
 	double JpsiMassWindowBeforeFit_;
 	double JpsiMassWindowAfterFit_;
 	double JpsiPtCut_;
 	double KaonTrackPtCut_;
+	double BdKaonTrackPtCut_;
 	double PhiMassWindowAfterFit_;
 	double PhiMassWindowBeforeFit_;
 	double BsLowerMassCutBeforeFit_;
@@ -94,66 +109,10 @@ private:
 	std::string outputFile_; // output file
 
 	int Mu1Truth;
-	int Mu2Truth;
-	int K1Truth;
-	int K2Truth;
-	int K3Truth;
-	int K4Truth;
-	int isMatched;
-	int isMatchedBd;
+
 
 	int event_counter_;
 
-	double BSx;
-	double BSy;
-	double BSz;
-	double PVx;
-	double PVy;
-	double PVz;
-	double PVerrx;
-	double PVerry;
-	double PVerrz;
-	
-	// single Jpsi
-
-	int MuCounter1;
-	int MuCounter2;
-
-	int TrkCounter1;
-	int TrkCounter2;
-	int K1mcId;
-	int K1momId;
-	int K1gmomId;
-	int K2mcId;
-	int K2momId;
-	int K2gmomId;
-	int Mu1mcId;
-	int Mu1momId;
-	int Mu1gmomId;
-	int Mu2mcId;
-	int Mu2momId;
-	int Mu2gmomId;
-
-	int K1mcIdBd;
-	int K1momIdBd;
-	int K1gmomIdBd;
-	int K2mcIdBd;
-	int K2momIdBd;
-	int K2gmomIdBd;
-	int Mu1mcIdBd;
-	int Mu1momIdBd;
-	int Mu1gmomIdBd;
-	int Mu2mcIdBd;
-	int Mu2momIdBd;
-	int Mu2gmomIdBd;
-	
-	double BLxy;
-	double BLxy2;
-	double BerrX;
-	double BerrY;
-	double BerrXY;
-	double Bsct1;
-	double Bsct2;
 
 	double angle_costheta;
 	double angle_phi;
