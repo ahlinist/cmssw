@@ -28,6 +28,7 @@ void identifyEventType(bool & isGenBsJpsiPhiMuMuKKEvent, bool &isGenBsJpsiKKEven
 		       bool &isGenBsEvent_, bool &isGenBdEvent_, bool &isGenBsJpsiEtaEvent_, bool &isGenBdJpsiK10Event_, 
 		       bool &isGenBdJpsiK0Event_, bool & isGenBpJpsiKpEvent_);
 void printDecayTree();
+void makeVertexResolutionPlots();
 
 // define cuts:
 const double minProbability = 0.02;
@@ -59,11 +60,11 @@ const bool bRemoveJpsiEvents = false;
 void BsAnalysisNew() {
 
  
-//   string treefilename = "BtoJpsiMuMu_29Dec09.root";
-//   TString outputhistofilename = "BtoJpsiMuMuHistoFile.root";
+  string treefilename = "BtoJpsiMuMu_29Dec09.root";
+  TString outputhistofilename = "BtoJpsiMuMuHistoFile.root";
  
-  string treefilename = "JpsiMuMu_29Dec09.root";
-  TString outputhistofilename = "JpsiMuMuHistoFile.root";
+//   string treefilename = "JpsiMuMu_29Dec09.root";
+//   TString outputhistofilename = "JpsiMuMuHistoFile.root";
   
 
   // booking histograms
@@ -144,6 +145,7 @@ void BsAnalysisNew() {
 	fillHistograms(tree->K1Pt_nofit_,         vhK1Pt);
 	fillHistograms(tree->K2Pt_nofit_,         vhK2Pt);
 	
+
 	
 	if(tree->BsFitVtxProb_ >= minProbability) { // passed minimum vertex probability cut
 	  increaseCountersByOne(iBsJPsiPhiSignalEventsProbVertex, iBsJPsiKKSignalEventsProbVertex, iBdJPsiKstarSignalEventsProbVertex,
@@ -166,6 +168,7 @@ void BsAnalysisNew() {
 				    iBsOtherEventsPhiMassCut, iBdOtherEventsPhiMassCut, iOtherEventsPhiMassCut,
 				    iBsJpsiEtaEventsPhiMassCut, iBdJpsiK10EventsPhiMassCut, iBdJpsiK0EventsPhiMassCut, iBpJpsiKpEventsPhiMassCut);
 	      
+	      if(isGenBsJpsiPhiMuMuKKEvent_==1) makeVertexResolutionPlots();
 	      
 	      fillHistograms(tree->BsDist3d_ / tree->BsDist3dErr_ , vhDistSign3D);
 	      fillHistograms(tree->BsDist2d_ / tree->BsDist2dErr_    ,  vhDistSign1D);
@@ -643,7 +646,8 @@ void writeHistos(TString outputfilename){
     vhBdMass_NoTimeCut[i]->Write();   
     vhBdMassFinal[i]->Write();        
     vhBdMassFinalAfterFit[i]->Write();
-
+    vhResoLxy[i]->Write();
+    vhResoTime[i]->Write();
 
 
   }
@@ -967,8 +971,56 @@ vhBdMass_NoTimeCut          .push_back( new TH1F ("hBdMass_NoTimeCut_BdJpsiK0"  
 vhBdMass_NoTimeCut          .push_back( new TH1F ("hBdMass_NoTimeCut_BpJpsiKp"                   ,"hBdMass_NoTimeCut_BpJpsiKp"         , 100, 4.9, 5.7                   ) );
 
 
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BsJPsiPhiSignal"           ,"hResoLxy_BsJPsiPhiSignal"  , 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BsJPsiKKSignal"            ,"hResoLxy_BsJPsiKKSignal"   , 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BdJPsiKstarSignal"         ,"hResoLxy_BdJPsiKstarSignal", 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BsOther"                   ,"hResoLxy_BsOther"          , 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BdOther"                   ,"hResoLxy_BdOther"          , 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_Other"                     ,"hResoLxy_Other"            , 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BsJpsiEta"                 ,"hResoLxy_BsJpsiEta"        , 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BdJpsiK10"                 ,"hResoLxy_BdJpsiK10"        , 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BdJpsiK0"                  ,"hResoLxy_BdJpsiK0"         , 100, -0.15, 0.15      ) );
+vhResoLxy         .push_back( new TH1F ("hResoLxy_BpJpsiKp"                  ,"hResoLxy_BpJpsiKp"         , 100, -0.15, 0.15      ) );
+
+vhResoTime         .push_back( new TH1F ("hResoTime_BsJPsiPhiSignal"           ,"hResoTime_BsJPsiPhiSignal"  , 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_BsJPsiKKSignal"            ,"hResoTime_BsJPsiKKSignal"   , 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_BdJPsiKstarSignal"         ,"hResoTime_BdJPsiKstarSignal", 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_BsOther"                   ,"hResoTime_BsOther"          , 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_BdOther"                   ,"hResoTime_BdOther"          , 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_Other"                     ,"hResoTime_Other"            , 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_BsJpsiEta"                 ,"hResoTime_BsJpsiEta"        , 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_BdJpsiK10"                 ,"hResoTime_BdJpsiK10"        , 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_BdJpsiK0"                  ,"hResoTime_BdJpsiK0"         , 100, -0.1, 0.1      ) );
+vhResoTime         .push_back( new TH1F ("hResoTime_BpJpsiKp"                  ,"hResoTime_BpJpsiKp"         , 100, -0.1, 0.1      ) );
+
+
 
 }
 
 
 
+void makeVertexResolutionPlots(){
+
+  double genDx = tree->genBsVtx_x_ - tree->genBsSVtx_x_;
+  double genDy = tree->genBsVtx_y_ - tree->genBsSVtx_y_;
+ 
+  double genLxy = sqrt(genDx*genDx + genDy*genDy);
+
+  double genM, genPt;
+  if(abs(tree->BmesonsId_[0]) == 531){
+    genM = tree->BMMC_[0];
+    genPt= tree->BPtMC_[0];
+  }
+  else{
+    genM = tree->BMMC_[1];
+    genPt= tree->BPtMC_[1];
+  }
+  double genTime = genLxy * genM / genPt;
+
+  double recoLxy = tree->BsDist2d_;
+  double recoTime = recoLxy * tree->BsFitM_ / tree->BsFitPt_;
+
+  fillHistograms(recoLxy - genLxy, vhResoLxy );
+  fillHistograms(recoTime - genTime, vhResoTime);
+
+}
