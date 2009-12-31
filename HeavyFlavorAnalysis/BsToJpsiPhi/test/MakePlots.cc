@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <map>
 
 // global flag to include ppmumux histograms
 const bool usePpMuMux = false;
@@ -34,10 +35,19 @@ void drawStandardLumiScaled(TString name, TH1F* BsJPsiPhiSignal, TH1F* BdJPsiKst
 void MakePlots() {
 
 
-  TFile * BtoJPsiMuMuHistoFile = new TFile ( "BtoJPsiMuMuHistoFile.root" , "READ");
-  TFile * JPsiMuMuHistoFile  = new TFile ( "JPsiMuMuHistoFile.root", "READ");
+//    TFile * BtoJPsiMuMuHistoFile = new TFile ( "BtoJPsiMuMuHistoFile_8Dec09_Bs_phiCut0_007.root" , "READ");
+//    TFile * JPsiMuMuHistoFile  = new TFile ( "JPsiMuMuHistoFile_8Dec09_Bs_phiCut0_007.root", "READ");
+//    TFile * BtoJPsiMuMuHistoFile = new TFile ( "BtoJPsiMuMuHistoFile7TeV_Bs.root" , "READ");
+//    TFile * JPsiMuMuHistoFile  = new TFile ( "JPsiMuMuHistoFile7TeV_Bs.root", "READ");
+//  TFile * BtoJPsiMuMuHistoFile = new TFile ( "BtoJPsiMuMuHistoFile_8Dec09_Bdclosest.root" , "READ");
+//  TFile * JPsiMuMuHistoFile  = new TFile ( "JPsiMuMuHistoFile_8Dec09_Bdclosest.root", "READ");
+
+   TFile * BtoJPsiMuMuHistoFile = new TFile ( "BtoJPsiMuMuHistoFile.root" , "READ");
+   TFile * JPsiMuMuHistoFile  = new TFile ( "JPsiMuMuHistoFile.root", "READ");
+
 //   TFile * ppmuXHistoFile   = new TFile ("ppmuXHistoFile.root", "READ");
 //  TFile * ppmumuXHistoFile = new TFile ("ppmumuXHistoFile.root", "READ");
+//  TFile * ppmumuXHistoFile = new TFile ("ppMuMuHistoFile_8Dec09_Bs.root", "READ");
   TFile * ppmumuXHistoFile = new TFile ("JPsiMuMuHistoFile.root", "READ");
 
 
@@ -225,6 +235,203 @@ TH1F * hBsVtxProb_BdJpsiK0                     =(TH1F*) BtoJPsiMuMuHistoFile->Ge
 TH1F * hBsVtxProb_BpJpsiKp                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsVtxProb_BpJpsiKp"                    );
 TH1F * hBsVtxProb_JpsiOther                        =(TH1F*) JPsiMuMuHistoFile->Get("hBsVtxProb_Other"                         );
 TH1F * hBsVtxProb_ppmumux                        =(TH1F*) ppmumuXHistoFile->Get("hBsVtxProb_Other"                         );
+
+TH1F * hTime_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BsJPsiPhiSignal"                );
+TH1F * hTime_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BsJPsiKKSignal"                 );
+TH1F * hTime_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BdJPsiKstarSignal"              );
+TH1F * hTime_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BsOther"                        );
+TH1F * hTime_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BdOther"                        );
+TH1F * hTime_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_Other"                          );
+TH1F * hTime_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BsJpsiEta"                      );
+TH1F * hTime_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BdJpsiK10"                      );
+TH1F * hTime_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BdJpsiK0"                       );
+TH1F * hTime_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hTime_BpJpsiKp"                       );
+TH1F * hTime_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hTime_Other"                          );
+TH1F * hTime_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hTime_Other"                          );
+
+TH1F * hBsMass_NoTimeCut_BsJPsiPhiSignal              =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BsJPsiPhiSignal"               );
+TH1F * hBsMass_NoTimeCut_BsJPsiKKSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BsJPsiKKSignal"                );
+TH1F * hBsMass_NoTimeCut_BdJPsiKstarSignal            =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BdJPsiKstarSignal"             );
+TH1F * hBsMass_NoTimeCut_BsOther                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BsOther"                       );
+TH1F * hBsMass_NoTimeCut_BdOther                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BdOther"                       );
+TH1F * hBsMass_NoTimeCut_BOther                        =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_Other"                         );
+TH1F * hBsMass_NoTimeCut_BsJpsiEta                    =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BsJpsiEta"                     );
+TH1F * hBsMass_NoTimeCut_BdJpsiK10                    =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BdJpsiK10"                     );
+TH1F * hBsMass_NoTimeCut_BdJpsiK0                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BdJpsiK0"                      );
+TH1F * hBsMass_NoTimeCut_BpJpsiKp                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_BpJpsiKp"                    );
+TH1F * hBsMass_NoTimeCut_JpsiOther                        =(TH1F*) JPsiMuMuHistoFile->Get("hBsMass_NoTimeCut_Other"                         );
+TH1F * hBsMass_NoTimeCut_ppmumux                        =(TH1F*) ppmumuXHistoFile->Get("hBsMass_NoTimeCut_Other"                         );
+
+TH1F * hBdChi2_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BsJPsiPhiSignal"                );
+TH1F * hBdChi2_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BsJPsiKKSignal"                 );
+TH1F * hBdChi2_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BdJPsiKstarSignal"              );
+TH1F * hBdChi2_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BsOther"                        );
+TH1F * hBdChi2_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BdOther"                        );
+TH1F * hBdChi2_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_Other"                          );
+TH1F * hBdChi2_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BsJpsiEta"                      );
+TH1F * hBdChi2_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BdJpsiK10"                      );
+TH1F * hBdChi2_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BdJpsiK0"                       );
+TH1F * hBdChi2_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2_BpJpsiKp"                       );
+TH1F * hBdChi2_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdChi2_Other"                          );
+TH1F * hBdChi2_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdChi2_Other"                          );
+
+TH1F * hBdChi2Ndof_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BsJPsiPhiSignal"                );
+TH1F * hBdChi2Ndof_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BsJPsiKKSignal"                 );
+TH1F * hBdChi2Ndof_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BdJPsiKstarSignal"              );
+TH1F * hBdChi2Ndof_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BsOther"                        );
+TH1F * hBdChi2Ndof_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BdOther"                        );
+TH1F * hBdChi2Ndof_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_Other"                          );
+TH1F * hBdChi2Ndof_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BsJpsiEta"                      );
+TH1F * hBdChi2Ndof_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BdJpsiK10"                      );
+TH1F * hBdChi2Ndof_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BdJpsiK0"                       );
+TH1F * hBdChi2Ndof_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdChi2Ndof_BpJpsiKp"                       );
+TH1F * hBdChi2Ndof_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdChi2Ndof_Other"                          );
+TH1F * hBdChi2Ndof_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdChi2Ndof_Other"                          );
+
+
+TH1F * hBdVtxProb_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BsJPsiPhiSignal"                );
+TH1F * hBdVtxProb_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BsJPsiKKSignal"                 );
+TH1F * hBdVtxProb_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BdJPsiKstarSignal"              );
+TH1F * hBdVtxProb_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BsOther"                        );
+TH1F * hBdVtxProb_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BdOther"                        );
+TH1F * hBdVtxProb_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_Other"                          );
+TH1F * hBdVtxProb_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BsJpsiEta"                      );
+TH1F * hBdVtxProb_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BdJpsiK10"                      );
+TH1F * hBdVtxProb_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BdJpsiK0"                       );
+TH1F * hBdVtxProb_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdVtxProb_BpJpsiKp"                       );
+TH1F * hBdVtxProb_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdVtxProb_Other"                          );
+TH1F * hBdVtxProb_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdVtxProb_Other"                          );
+
+TH1F * hBdK1Pt_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BsJPsiPhiSignal"                );
+TH1F * hBdK1Pt_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BsJPsiKKSignal"                 );
+TH1F * hBdK1Pt_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BdJPsiKstarSignal"              );
+TH1F * hBdK1Pt_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BsOther"                        );
+TH1F * hBdK1Pt_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BdOther"                        );
+TH1F * hBdK1Pt_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_Other"                          );
+TH1F * hBdK1Pt_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BsJpsiEta"                      );
+TH1F * hBdK1Pt_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BdJpsiK10"                      );
+TH1F * hBdK1Pt_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BdJpsiK0"                       );
+TH1F * hBdK1Pt_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK1Pt_BpJpsiKp"                       );
+TH1F * hBdK1Pt_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdK1Pt_Other"                          );
+TH1F * hBdK1Pt_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdK1Pt_Other"                          );
+
+TH1F * hBdK2Pt_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BsJPsiPhiSignal"                );
+TH1F * hBdK2Pt_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BsJPsiKKSignal"                 );
+TH1F * hBdK2Pt_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BdJPsiKstarSignal"              );
+TH1F * hBdK2Pt_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BsOther"                        );
+TH1F * hBdK2Pt_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BdOther"                        );
+TH1F * hBdK2Pt_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_Other"                          );
+TH1F * hBdK2Pt_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BsJpsiEta"                      );
+TH1F * hBdK2Pt_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BdJpsiK10"                      );
+TH1F * hBdK2Pt_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BdJpsiK0"                       );
+TH1F * hBdK2Pt_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdK2Pt_BpJpsiKp"                       );
+TH1F * hBdK2Pt_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdK2Pt_Other"                          );
+TH1F * hBdK2Pt_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdK2Pt_Other"                          );
+
+TH1F * hKstarMass_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BsJPsiPhiSignal"                );
+TH1F * hKstarMass_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BsJPsiKKSignal"                 );
+TH1F * hKstarMass_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BdJPsiKstarSignal"              );
+TH1F * hKstarMass_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BsOther"                        );
+TH1F * hKstarMass_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BdOther"                        );
+TH1F * hKstarMass_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_Other"                          );
+TH1F * hKstarMass_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BsJpsiEta"                      );
+TH1F * hKstarMass_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BdJpsiK10"                      );
+TH1F * hKstarMass_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BdJpsiK0"                       );
+TH1F * hKstarMass_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hKstarMass_BpJpsiKp"                       );
+TH1F * hKstarMass_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hKstarMass_Other"                          );
+TH1F * hKstarMass_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hKstarMass_Other"                          );
+
+TH1F * hBdDistSign3D_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BsJPsiPhiSignal"                );
+TH1F * hBdDistSign3D_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BsJPsiKKSignal"                 );
+TH1F * hBdDistSign3D_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BdJPsiKstarSignal"              );
+TH1F * hBdDistSign3D_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BsOther"                        );
+TH1F * hBdDistSign3D_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BdOther"                        );
+TH1F * hBdDistSign3D_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_Other"                          );
+TH1F * hBdDistSign3D_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BsJpsiEta"                      );
+TH1F * hBdDistSign3D_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BdJpsiK10"                      );
+TH1F * hBdDistSign3D_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BdJpsiK0"                       );
+TH1F * hBdDistSign3D_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign3D_BpJpsiKp"                       );
+TH1F * hBdDistSign3D_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdDistSign3D_Other"                          );
+TH1F * hBdDistSign3D_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdDistSign3D_Other"                          );
+
+TH1F * hBdDistSign1D_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BsJPsiPhiSignal"                );
+TH1F * hBdDistSign1D_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BsJPsiKKSignal"                 );
+TH1F * hBdDistSign1D_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BdJPsiKstarSignal"              );
+TH1F * hBdDistSign1D_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BsOther"                        );
+TH1F * hBdDistSign1D_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BdOther"                        );
+TH1F * hBdDistSign1D_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_Other"                          );
+TH1F * hBdDistSign1D_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BsJpsiEta"                      );
+TH1F * hBdDistSign1D_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BdJpsiK10"                      );
+TH1F * hBdDistSign1D_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BdJpsiK0"                       );
+TH1F * hBdDistSign1D_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDistSign1D_BpJpsiKp"                       );
+TH1F * hBdDistSign1D_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdDistSign1D_Other"                          );
+TH1F * hBdDistSign1D_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdDistSign1D_Other"                          );
+
+TH1F * hBdDist3D_BsJPsiPhiSignal                 =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BsJPsiPhiSignal"                  );
+TH1F * hBdDist3D_BsJPsiKKSignal                  =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BsJPsiKKSignal"                   );
+TH1F * hBdDist3D_BdJPsiKstarSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BdJPsiKstarSignal"                );
+TH1F * hBdDist3D_BsOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BsOther"                          );
+TH1F * hBdDist3D_BdOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BdOther"                          );
+TH1F * hBdDist3D_BOther                           =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_Other"                            );
+TH1F * hBdDist3D_BsJpsiEta                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BsJpsiEta"                        );
+TH1F * hBdDist3D_BdJpsiK10                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BdJpsiK10"                        );
+TH1F * hBdDist3D_BdJpsiK0                        =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BdJpsiK0"                         );
+TH1F * hBdDist3D_BpJpsiKp                        =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdDist3D_BpJpsiKp"                         );
+TH1F * hBdDist3D_JpsiOther                           =(TH1F*) JPsiMuMuHistoFile->Get("hBdDist3D_Other"                            );
+TH1F * hBdDist3D_ppmumux                           =(TH1F*) ppmumuXHistoFile->Get("hBdDist3D_Other"                            );
+
+TH1F * hBdTime_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BsJPsiPhiSignal"                );
+TH1F * hBdTime_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BsJPsiKKSignal"                 );
+TH1F * hBdTime_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BdJPsiKstarSignal"              );
+TH1F * hBdTime_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BsOther"                        );
+TH1F * hBdTime_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BdOther"                        );
+TH1F * hBdTime_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_Other"                          );
+TH1F * hBdTime_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BsJpsiEta"                      );
+TH1F * hBdTime_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BdJpsiK10"                      );
+TH1F * hBdTime_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BdJpsiK0"                       );
+TH1F * hBdTime_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdTime_BpJpsiKp"                       );
+TH1F * hBdTime_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdTime_Other"                          );
+TH1F * hBdTime_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdTime_Other"                          );
+
+TH1F * hBdMass_NoTimeCut_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BsJPsiPhiSignal"                );
+TH1F * hBdMass_NoTimeCut_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BsJPsiKKSignal"                 );
+TH1F * hBdMass_NoTimeCut_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BdJPsiKstarSignal"              );
+TH1F * hBdMass_NoTimeCut_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BsOther"                        );
+TH1F * hBdMass_NoTimeCut_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BdOther"                        );
+TH1F * hBdMass_NoTimeCut_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_Other"                          );
+TH1F * hBdMass_NoTimeCut_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BsJpsiEta"                      );
+TH1F * hBdMass_NoTimeCut_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BdJpsiK10"                      );
+TH1F * hBdMass_NoTimeCut_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BdJpsiK0"                       );
+TH1F * hBdMass_NoTimeCut_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_BpJpsiKp"                       );
+TH1F * hBdMass_NoTimeCut_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdMass_NoTimeCut_Other"                          );
+TH1F * hBdMass_NoTimeCut_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdMass_NoTimeCut_Other"                          );
+
+TH1F * hBdMassFinal_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BsJPsiPhiSignal"                );
+TH1F * hBdMassFinal_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BsJPsiKKSignal"                 );
+TH1F * hBdMassFinal_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BdJPsiKstarSignal"              );
+TH1F * hBdMassFinal_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BsOther"                        );
+TH1F * hBdMassFinal_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BdOther"                        );
+TH1F * hBdMassFinal_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_Other"                          );
+TH1F * hBdMassFinal_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BsJpsiEta"                      );
+TH1F * hBdMassFinal_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BdJpsiK10"                      );
+TH1F * hBdMassFinal_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BdJpsiK0"                       );
+TH1F * hBdMassFinal_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinal_BpJpsiKp"                       );
+TH1F * hBdMassFinal_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdMassFinal_Other"                          );
+TH1F * hBdMassFinal_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdMassFinal_Other"                          );
+
+TH1F * hBdMassFinalAfterFit_BsJPsiPhiSignal               =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BsJPsiPhiSignal"                );
+TH1F * hBdMassFinalAfterFit_BsJPsiKKSignal                =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BsJPsiKKSignal"                 );
+TH1F * hBdMassFinalAfterFit_BdJPsiKstarSignal             =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BdJPsiKstarSignal"              );
+TH1F * hBdMassFinalAfterFit_BsOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BsOther"                        );
+TH1F * hBdMassFinalAfterFit_BdOther                       =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BdOther"                        );
+TH1F * hBdMassFinalAfterFit_BOther                         =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_Other"                          );
+TH1F * hBdMassFinalAfterFit_BsJpsiEta                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BsJpsiEta"                      );
+TH1F * hBdMassFinalAfterFit_BdJpsiK10                     =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BdJpsiK10"                      );
+TH1F * hBdMassFinalAfterFit_BdJpsiK0                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BdJpsiK0"                       );
+TH1F * hBdMassFinalAfterFit_BpJpsiKp                      =(TH1F*) BtoJPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_BpJpsiKp"                       );
+TH1F * hBdMassFinalAfterFit_JpsiOther                         =(TH1F*) JPsiMuMuHistoFile->Get("hBdMassFinalAfterFit_Other"                          );
+TH1F * hBdMassFinalAfterFit_ppmumux                         =(TH1F*) ppmumuXHistoFile->Get("hBdMassFinalAfterFit_Other"                          );
+
 
 
 
@@ -438,6 +645,223 @@ hBsVtxProb_BpJpsiKp           ,
 hBsVtxProb_JpsiOther,
 hBsVtxProb_ppmumux         );         
 
+ ScaleHistograms(                               
+hTime_BsJPsiPhiSignal   ,            
+hTime_BsJPsiKKSignal    ,            
+hTime_BdJPsiKstarSignal ,            
+hTime_BsOther           ,            
+hTime_BdOther           ,            
+hTime_BOther            ,            
+hTime_BsJpsiEta         ,            
+hTime_BdJpsiK10         ,            
+hTime_BdJpsiK0          ,            
+hTime_BpJpsiKp          ,            
+hTime_JpsiOther,
+hTime_ppmumux         );           
+     
+ ScaleHistograms(                                  
+hBsMass_NoTimeCut_BsJPsiPhiSignal    ,          
+hBsMass_NoTimeCut_BsJPsiKKSignal     ,          
+hBsMass_NoTimeCut_BdJPsiKstarSignal  ,          
+hBsMass_NoTimeCut_BsOther            ,          
+hBsMass_NoTimeCut_BdOther            ,          
+hBsMass_NoTimeCut_BOther             ,          
+hBsMass_NoTimeCut_BsJpsiEta          ,          
+hBsMass_NoTimeCut_BdJpsiK10          ,          
+hBsMass_NoTimeCut_BdJpsiK0           ,          
+hBsMass_NoTimeCut_BpJpsiKp           ,          
+hBsMass_NoTimeCut_JpsiOther,
+hBsMass_NoTimeCut_ppmumux         );         
+
+ ScaleHistograms(                               
+hBdChi2_BsJPsiPhiSignal   ,            
+hBdChi2_BsJPsiKKSignal    ,            
+hBdChi2_BdJPsiKstarSignal ,            
+hBdChi2_BsOther           ,            
+hBdChi2_BdOther           ,            
+hBdChi2_BOther            ,            
+hBdChi2_BsJpsiEta         ,            
+hBdChi2_BdJpsiK10         ,            
+hBdChi2_BdJpsiK0          ,            
+hBdChi2_BpJpsiKp          ,            
+hBdChi2_JpsiOther,
+hBdChi2_ppmumux         );           
+
+ std::cout<<"test1 " <<std::endl;
+
+ ScaleHistograms(                               
+hBdChi2Ndof_BsJPsiPhiSignal   ,            
+hBdChi2Ndof_BsJPsiKKSignal    ,            
+hBdChi2Ndof_BdJPsiKstarSignal ,            
+hBdChi2Ndof_BsOther           ,            
+hBdChi2Ndof_BdOther           ,            
+hBdChi2Ndof_BOther            ,            
+hBdChi2Ndof_BsJpsiEta         ,            
+hBdChi2Ndof_BdJpsiK10         ,            
+hBdChi2Ndof_BdJpsiK0          ,            
+hBdChi2Ndof_BpJpsiKp          ,            
+hBdChi2Ndof_JpsiOther,
+hBdChi2Ndof_ppmumux         );           
+
+ ScaleHistograms(                               
+hBdVtxProb_BsJPsiPhiSignal   ,            
+hBdVtxProb_BsJPsiKKSignal    ,            
+hBdVtxProb_BdJPsiKstarSignal ,            
+hBdVtxProb_BsOther           ,            
+hBdVtxProb_BdOther           ,            
+hBdVtxProb_BOther            ,            
+hBdVtxProb_BsJpsiEta         ,            
+hBdVtxProb_BdJpsiK10         ,            
+hBdVtxProb_BdJpsiK0          ,            
+hBdVtxProb_BpJpsiKp          ,            
+hBdVtxProb_JpsiOther,
+hBdVtxProb_ppmumux         );           
+
+ ScaleHistograms(                               
+hBdK1Pt_BsJPsiPhiSignal   ,            
+hBdK1Pt_BsJPsiKKSignal    ,            
+hBdK1Pt_BdJPsiKstarSignal ,            
+hBdK1Pt_BsOther           ,            
+hBdK1Pt_BdOther           ,            
+hBdK1Pt_BOther            ,            
+hBdK1Pt_BsJpsiEta         ,            
+hBdK1Pt_BdJpsiK10         ,            
+hBdK1Pt_BdJpsiK0          ,            
+hBdK1Pt_BpJpsiKp          ,            
+hBdK1Pt_JpsiOther,
+hBdK1Pt_ppmumux         );           
+ 
+std::cout<<"test1 " <<std::endl;
+
+ ScaleHistograms(                               
+hBdK2Pt_BsJPsiPhiSignal   ,            
+hBdK2Pt_BsJPsiKKSignal    ,            
+hBdK2Pt_BdJPsiKstarSignal ,            
+hBdK2Pt_BsOther           ,            
+hBdK2Pt_BdOther           ,            
+hBdK2Pt_BOther            ,            
+hBdK2Pt_BsJpsiEta         ,            
+hBdK2Pt_BdJpsiK10         ,            
+hBdK2Pt_BdJpsiK0          ,            
+hBdK2Pt_BpJpsiKp          ,            
+hBdK2Pt_JpsiOther,
+hBdK2Pt_ppmumux         );           
+
+ ScaleHistograms(                               
+hKstarMass_BsJPsiPhiSignal   ,            
+hKstarMass_BsJPsiKKSignal    ,            
+hKstarMass_BdJPsiKstarSignal ,            
+hKstarMass_BsOther           ,            
+hKstarMass_BdOther           ,            
+hKstarMass_BOther            ,            
+hKstarMass_BsJpsiEta         ,            
+hKstarMass_BdJpsiK10         ,            
+hKstarMass_BdJpsiK0          ,            
+hKstarMass_BpJpsiKp          ,            
+hKstarMass_JpsiOther,
+hKstarMass_ppmumux         );           
+
+ ScaleHistograms(                               
+hBdDistSign3D_BsJPsiPhiSignal   ,            
+hBdDistSign3D_BsJPsiKKSignal    ,            
+hBdDistSign3D_BdJPsiKstarSignal ,            
+hBdDistSign3D_BsOther           ,            
+hBdDistSign3D_BdOther           ,            
+hBdDistSign3D_BOther            ,            
+hBdDistSign3D_BsJpsiEta         ,            
+hBdDistSign3D_BdJpsiK10         ,            
+hBdDistSign3D_BdJpsiK0          ,            
+hBdDistSign3D_BpJpsiKp          ,            
+hBdDistSign3D_JpsiOther,
+hBdDistSign3D_ppmumux         );           
+
+ ScaleHistograms(                               
+hBdDistSign1D_BsJPsiPhiSignal   ,            
+hBdDistSign1D_BsJPsiKKSignal    ,            
+hBdDistSign1D_BdJPsiKstarSignal ,            
+hBdDistSign1D_BsOther           ,            
+hBdDistSign1D_BdOther           ,            
+hBdDistSign1D_BOther            ,            
+hBdDistSign1D_BsJpsiEta         ,            
+hBdDistSign1D_BdJpsiK10         ,            
+hBdDistSign1D_BdJpsiK0          ,            
+hBdDistSign1D_BpJpsiKp          ,            
+hBdDistSign1D_JpsiOther,
+hBdDistSign1D_ppmumux         );           
+
+ ScaleHistograms(                               
+hBdDist3D_BsJPsiPhiSignal   ,            
+hBdDist3D_BsJPsiKKSignal    ,            
+hBdDist3D_BdJPsiKstarSignal ,            
+hBdDist3D_BsOther           ,            
+hBdDist3D_BdOther           ,            
+hBdDist3D_BOther            ,            
+hBdDist3D_BsJpsiEta         ,            
+hBdDist3D_BdJpsiK10         ,            
+hBdDist3D_BdJpsiK0          ,            
+hBdDist3D_BpJpsiKp          ,            
+hBdDist3D_JpsiOther,
+hBdDist3D_ppmumux         );           
+
+ ScaleHistograms(                               
+hBdTime_BsJPsiPhiSignal   ,            
+hBdTime_BsJPsiKKSignal    ,            
+hBdTime_BdJPsiKstarSignal ,            
+hBdTime_BsOther           ,            
+hBdTime_BdOther           ,            
+hBdTime_BOther            ,            
+hBdTime_BsJpsiEta         ,            
+hBdTime_BdJpsiK10         ,            
+hBdTime_BdJpsiK0          ,            
+hBdTime_BpJpsiKp          ,            
+hBdTime_JpsiOther,
+hBdTime_ppmumux         );           
+
+ std::cout<<"test1 " <<std::endl;
+
+ ScaleHistograms(                               
+hBdMass_NoTimeCut_BsJPsiPhiSignal   ,            
+hBdMass_NoTimeCut_BsJPsiKKSignal    ,            
+hBdMass_NoTimeCut_BdJPsiKstarSignal ,            
+hBdMass_NoTimeCut_BsOther           ,            
+hBdMass_NoTimeCut_BdOther           ,            
+hBdMass_NoTimeCut_BOther            ,            
+hBdMass_NoTimeCut_BsJpsiEta         ,            
+hBdMass_NoTimeCut_BdJpsiK10         ,            
+hBdMass_NoTimeCut_BdJpsiK0          ,            
+hBdMass_NoTimeCut_BpJpsiKp          ,            
+hBdMass_NoTimeCut_JpsiOther,
+hBdMass_NoTimeCut_ppmumux         );           
+
+ ScaleHistograms(                               
+hBdMassFinal_BsJPsiPhiSignal   ,            
+hBdMassFinal_BsJPsiKKSignal    ,            
+hBdMassFinal_BdJPsiKstarSignal ,            
+hBdMassFinal_BsOther           ,            
+hBdMassFinal_BdOther           ,            
+hBdMassFinal_BOther            ,            
+hBdMassFinal_BsJpsiEta         ,            
+hBdMassFinal_BdJpsiK10         ,            
+hBdMassFinal_BdJpsiK0          ,            
+hBdMassFinal_BpJpsiKp          ,            
+hBdMassFinal_JpsiOther,
+hBdMassFinal_ppmumux         );           
+
+ ScaleHistograms(                               
+hBdMassFinalAfterFit_BsJPsiPhiSignal   ,            
+hBdMassFinalAfterFit_BsJPsiKKSignal    ,            
+hBdMassFinalAfterFit_BdJPsiKstarSignal ,            
+hBdMassFinalAfterFit_BsOther           ,            
+hBdMassFinalAfterFit_BdOther           ,            
+hBdMassFinalAfterFit_BOther            ,            
+hBdMassFinalAfterFit_BsJpsiEta         ,            
+hBdMassFinalAfterFit_BdJpsiK10         ,            
+hBdMassFinalAfterFit_BdJpsiK0          ,            
+hBdMassFinalAfterFit_BpJpsiKp          ,            
+hBdMassFinalAfterFit_JpsiOther,
+hBdMassFinalAfterFit_ppmumux         );           
+
+
 
  
  //****************************************
@@ -645,23 +1069,209 @@ hBsVtxProb_ppmumux         );
 						 hBsVtxProb_ppmumux);         
 
 
+  TH1F* hTime_BBackground =  addBackgrounds("hTime_BBackground",                               
+						hTime_BsJPsiPhiSignal   ,            
+						hTime_BsJPsiKKSignal    ,            
+						hTime_BdJPsiKstarSignal ,            
+						hTime_BsOther           ,            
+						hTime_BdOther           ,            
+						hTime_BOther            ,            
+						hTime_BsJpsiEta         ,            
+						hTime_BdJpsiK10         ,            
+						hTime_BdJpsiK0          ,            
+						hTime_BpJpsiKp          ,            
+						hTime_JpsiOther,
+						hTime_ppmumux);           
+     
+  TH1F* hBsMass_NoTimeCut_BBackground =  addBackgrounds("hBsMass_NoTimeCut_BBackground",                                  
+						 hBsMass_NoTimeCut_BsJPsiPhiSignal    ,          
+						 hBsMass_NoTimeCut_BsJPsiKKSignal     ,          
+						 hBsMass_NoTimeCut_BdJPsiKstarSignal  ,          
+						 hBsMass_NoTimeCut_BsOther            ,          
+						 hBsMass_NoTimeCut_BdOther            ,          
+						 hBsMass_NoTimeCut_BOther             ,          
+						 hBsMass_NoTimeCut_BsJpsiEta          ,          
+						 hBsMass_NoTimeCut_BdJpsiK10          ,          
+						 hBsMass_NoTimeCut_BdJpsiK0           ,          
+						 hBsMass_NoTimeCut_BpJpsiKp           ,          
+						 hBsMass_NoTimeCut_JpsiOther  ,
+						 hBsMass_NoTimeCut_ppmumux);         
+
+ TH1F* hBdChi2_BBackground =  addBackgrounds("hBdChi2_BBackground",                               
+						hBdChi2_BsJPsiPhiSignal   ,            
+						hBdChi2_BsJPsiKKSignal    ,            
+						hBdChi2_BdJPsiKstarSignal ,            
+						hBdChi2_BsOther           ,            
+						hBdChi2_BdOther           ,            
+						hBdChi2_BOther            ,            
+						hBdChi2_BsJpsiEta         ,            
+						hBdChi2_BdJpsiK10         ,            
+						hBdChi2_BdJpsiK0          ,            
+						hBdChi2_BpJpsiKp          ,            
+						hBdChi2_JpsiOther,
+						hBdChi2_ppmumux);           
+
+ TH1F* hBdChi2Ndof_BBackground =  addBackgrounds("hBdChi2Ndof_BBackground",                               
+						hBdChi2Ndof_BsJPsiPhiSignal   ,            
+						hBdChi2Ndof_BsJPsiKKSignal    ,            
+						hBdChi2Ndof_BdJPsiKstarSignal ,            
+						hBdChi2Ndof_BsOther           ,            
+						hBdChi2Ndof_BdOther           ,            
+						hBdChi2Ndof_BOther            ,            
+						hBdChi2Ndof_BsJpsiEta         ,            
+						hBdChi2Ndof_BdJpsiK10         ,            
+						hBdChi2Ndof_BdJpsiK0          ,            
+						hBdChi2Ndof_BpJpsiKp          ,            
+						hBdChi2Ndof_JpsiOther,
+						hBdChi2Ndof_ppmumux);           
+ TH1F* hBdVtxProb_BBackground =  addBackgrounds("hBdVtxProb_BBackground",                               
+						hBdVtxProb_BsJPsiPhiSignal   ,            
+						hBdVtxProb_BsJPsiKKSignal    ,            
+						hBdVtxProb_BdJPsiKstarSignal ,            
+						hBdVtxProb_BsOther           ,            
+						hBdVtxProb_BdOther           ,            
+						hBdVtxProb_BOther            ,            
+						hBdVtxProb_BsJpsiEta         ,            
+						hBdVtxProb_BdJpsiK10         ,            
+						hBdVtxProb_BdJpsiK0          ,            
+						hBdVtxProb_BpJpsiKp          ,            
+						hBdVtxProb_JpsiOther,
+						hBdVtxProb_ppmumux);           
+ TH1F* hBdK1Pt_BBackground =  addBackgrounds("hBdK1Pt_BBackground",                               
+						hBdK1Pt_BsJPsiPhiSignal   ,            
+						hBdK1Pt_BsJPsiKKSignal    ,            
+						hBdK1Pt_BdJPsiKstarSignal ,            
+						hBdK1Pt_BsOther           ,            
+						hBdK1Pt_BdOther           ,            
+						hBdK1Pt_BOther            ,            
+						hBdK1Pt_BsJpsiEta         ,            
+						hBdK1Pt_BdJpsiK10         ,            
+						hBdK1Pt_BdJpsiK0          ,            
+						hBdK1Pt_BpJpsiKp          ,            
+						hBdK1Pt_JpsiOther,
+						hBdK1Pt_ppmumux);           
+ TH1F* hBdK2Pt_BBackground =  addBackgrounds("hBdK2Pt_BBackground",                               
+						hBdK2Pt_BsJPsiPhiSignal   ,            
+						hBdK2Pt_BsJPsiKKSignal    ,            
+						hBdK2Pt_BdJPsiKstarSignal ,            
+						hBdK2Pt_BsOther           ,            
+						hBdK2Pt_BdOther           ,            
+						hBdK2Pt_BOther            ,            
+						hBdK2Pt_BsJpsiEta         ,            
+						hBdK2Pt_BdJpsiK10         ,            
+						hBdK2Pt_BdJpsiK0          ,            
+						hBdK2Pt_BpJpsiKp          ,            
+						hBdK2Pt_JpsiOther,
+						hBdK2Pt_ppmumux);           
+ TH1F* hKstarMass_BBackground =  addBackgrounds("hKstarMass_BBackground",                               
+						hKstarMass_BsJPsiPhiSignal   ,            
+						hKstarMass_BsJPsiKKSignal    ,            
+						hKstarMass_BdJPsiKstarSignal ,            
+						hKstarMass_BsOther           ,            
+						hKstarMass_BdOther           ,            
+						hKstarMass_BOther            ,            
+						hKstarMass_BsJpsiEta         ,            
+						hKstarMass_BdJpsiK10         ,            
+						hKstarMass_BdJpsiK0          ,            
+						hKstarMass_BpJpsiKp          ,            
+						hKstarMass_JpsiOther,
+						hKstarMass_ppmumux);           
+ TH1F* hBdDistSign3D_BBackground =  addBackgrounds("hBdDistSign3D_BBackground",                               
+						hBdDistSign3D_BsJPsiPhiSignal   ,            
+						hBdDistSign3D_BsJPsiKKSignal    ,            
+						hBdDistSign3D_BdJPsiKstarSignal ,            
+						hBdDistSign3D_BsOther           ,            
+						hBdDistSign3D_BdOther           ,            
+						hBdDistSign3D_BOther            ,            
+						hBdDistSign3D_BsJpsiEta         ,            
+						hBdDistSign3D_BdJpsiK10         ,            
+						hBdDistSign3D_BdJpsiK0          ,            
+						hBdDistSign3D_BpJpsiKp          ,            
+						hBdDistSign3D_JpsiOther,
+						hBdDistSign3D_ppmumux);           
+ TH1F* hBdDistSign1D_BBackground =  addBackgrounds("hBdDistSign1D_BBackground",                               
+						hBdDistSign1D_BsJPsiPhiSignal   ,            
+						hBdDistSign1D_BsJPsiKKSignal    ,            
+						hBdDistSign1D_BdJPsiKstarSignal ,            
+						hBdDistSign1D_BsOther           ,            
+						hBdDistSign1D_BdOther           ,            
+						hBdDistSign1D_BOther            ,            
+						hBdDistSign1D_BsJpsiEta         ,            
+						hBdDistSign1D_BdJpsiK10         ,            
+						hBdDistSign1D_BdJpsiK0          ,            
+						hBdDistSign1D_BpJpsiKp          ,            
+						hBdDistSign1D_JpsiOther,
+						hBdDistSign1D_ppmumux);           
+ TH1F* hBdDist3D_BBackground =  addBackgrounds("hBdDist3D_BBackground",                               
+						hBdDist3D_BsJPsiPhiSignal   ,            
+						hBdDist3D_BsJPsiKKSignal    ,            
+						hBdDist3D_BdJPsiKstarSignal ,            
+						hBdDist3D_BsOther           ,            
+						hBdDist3D_BdOther           ,            
+						hBdDist3D_BOther            ,            
+						hBdDist3D_BsJpsiEta         ,            
+						hBdDist3D_BdJpsiK10         ,            
+						hBdDist3D_BdJpsiK0          ,            
+						hBdDist3D_BpJpsiKp          ,            
+						hBdDist3D_JpsiOther,
+						hBdDist3D_ppmumux);           
+ TH1F* hBdTime_BBackground =  addBackgrounds("hBdTime_BBackground",                               
+						hBdTime_BsJPsiPhiSignal   ,            
+						hBdTime_BsJPsiKKSignal    ,            
+						hBdTime_BdJPsiKstarSignal ,            
+						hBdTime_BsOther           ,            
+						hBdTime_BdOther           ,            
+						hBdTime_BOther            ,            
+						hBdTime_BsJpsiEta         ,            
+						hBdTime_BdJpsiK10         ,            
+						hBdTime_BdJpsiK0          ,            
+						hBdTime_BpJpsiKp          ,            
+						hBdTime_JpsiOther,
+						hBdTime_ppmumux);           
+ TH1F* hBdMass_NoTimeCut_BBackground =  addBackgrounds("hBdMass_NoTimeCut_BBackground",                               
+						hBdMass_NoTimeCut_BsJPsiPhiSignal   ,            
+						hBdMass_NoTimeCut_BsJPsiKKSignal    ,            
+						hBdMass_NoTimeCut_BdJPsiKstarSignal ,            
+						hBdMass_NoTimeCut_BsOther           ,            
+						hBdMass_NoTimeCut_BdOther           ,            
+						hBdMass_NoTimeCut_BOther            ,            
+						hBdMass_NoTimeCut_BsJpsiEta         ,            
+						hBdMass_NoTimeCut_BdJpsiK10         ,            
+						hBdMass_NoTimeCut_BdJpsiK0          ,            
+						hBdMass_NoTimeCut_BpJpsiKp          ,            
+						hBdMass_NoTimeCut_JpsiOther,
+						hBdMass_NoTimeCut_ppmumux);           
+ TH1F* hBdMassFinal_BBackground =  addBackgrounds("hBdMassFinal_BBackground",                               
+						hBdMassFinal_BsJPsiPhiSignal   ,            
+						hBdMassFinal_BsJPsiKKSignal    ,            
+						hBdMassFinal_BdJPsiKstarSignal ,            
+						hBdMassFinal_BsOther           ,            
+						hBdMassFinal_BdOther           ,            
+						hBdMassFinal_BOther            ,            
+						hBdMassFinal_BsJpsiEta         ,            
+						hBdMassFinal_BdJpsiK10         ,            
+						hBdMassFinal_BdJpsiK0          ,            
+						hBdMassFinal_BpJpsiKp          ,            
+						hBdMassFinal_JpsiOther,
+						hBdMassFinal_ppmumux);           
+ TH1F* hBdMassFinalAfterFit_BBackground =  addBackgrounds("hBdMassFinalAfterFit_BBackground",                               
+						hBdMassFinalAfterFit_BsJPsiPhiSignal   ,            
+						hBdMassFinalAfterFit_BsJPsiKKSignal    ,            
+						hBdMassFinalAfterFit_BdJPsiKstarSignal ,            
+						hBdMassFinalAfterFit_BsOther           ,            
+						hBdMassFinalAfterFit_BdOther           ,            
+						hBdMassFinalAfterFit_BOther            ,            
+						hBdMassFinalAfterFit_BsJpsiEta         ,            
+						hBdMassFinalAfterFit_BdJpsiK10         ,            
+						hBdMassFinalAfterFit_BdJpsiK0          ,            
+						hBdMassFinalAfterFit_BpJpsiKp          ,            
+						hBdMassFinalAfterFit_JpsiOther,
+						hBdMassFinalAfterFit_ppmumux);           
+
 
   //*********************
 
-  drawStandardNormalized("JPsiMass",
-			 hJPsiMass_BsJPsiPhiSignal,
-			 hJPsiMass_BdJPsiKstarSignal,
-			 hJPsiMass_BBackground, 
-			 hJPsiMass_JpsiOther,
-			 hJPsiMass_ppmumux);      
-
-  drawStandardNormalized("PhiMass",
-			 hPhiMass_BsJPsiPhiSignal,              
-			 hPhiMass_BdJPsiKstarSignal,            
-			 hPhiMass_BBackground,                  
-			 hPhiMass_JpsiOther,
-			 hPhiMass_ppmumux);                  
-    
+ 
 
 
   drawStandardNormalized("K1Pt",
@@ -731,6 +1341,23 @@ hBsVtxProb_ppmumux         );
 
   //***********************
   // plots scaled to correct lumi
+ drawStandardLumiScaled("JPsiMass",
+			 hJPsiMass_BsJPsiPhiSignal,
+			 hJPsiMass_BdJPsiKstarSignal,
+			 hJPsiMass_BBackground, 
+			 hJPsiMass_JpsiOther,
+			 hJPsiMass_ppmumux);      
+
+
+
+  drawStandardLumiScaled("PhiMass",
+			 hPhiMass_BsJPsiPhiSignal,              
+			 hPhiMass_BdJPsiKstarSignal,            
+			 hPhiMass_BBackground,                  
+			 hPhiMass_JpsiOther,
+			 hPhiMass_ppmumux);                  
+    
+
   drawStandardLumiScaled("PhiMassFinal",
 			 hPhiMassFinal_BsJPsiPhiSignal,         
 			 hPhiMassFinal_BdJPsiKstarSignal,       
@@ -753,10 +1380,50 @@ hBsVtxProb_ppmumux         );
 			 hBsMassFinalAfterFit_JpsiOther,
 			 hBsMassFinalAfterFit_ppmumux);      
 
+ drawStandardLumiScaled("Time",
+			 hTime_BsJPsiPhiSignal,  
+			 hTime_BdJPsiKstarSignal,
+			 hTime_BBackground,      
+			 hTime_JpsiOther,
+			 hTime_ppmumux);      
+
+ drawStandardLumiScaled("BsMass_NoTimeCut",
+			 hBsMass_NoTimeCut_BsJPsiPhiSignal,  
+			 hBsMass_NoTimeCut_BdJPsiKstarSignal,
+			 hBsMass_NoTimeCut_BBackground,      
+			 hBsMass_NoTimeCut_JpsiOther,
+			 hBsMass_NoTimeCut_ppmumux);      
+
+drawStandardLumiScaled("BdTime",
+			 hBdTime_BsJPsiPhiSignal,  
+			 hBdTime_BdJPsiKstarSignal,
+			 hBdTime_BBackground,      
+			 hBdTime_JpsiOther,
+			 hBdTime_ppmumux);      
 
 
+drawStandardLumiScaled("BdMass_NoTimeCut",
+			 hBdMass_NoTimeCut_BsJPsiPhiSignal,  
+			 hBdMass_NoTimeCut_BdJPsiKstarSignal,
+			 hBdMass_NoTimeCut_BBackground,      
+			 hBdMass_NoTimeCut_JpsiOther,
+			 hBdMass_NoTimeCut_ppmumux);      
 
- TCanvas *cv3 = new TCanvas("Bs mass before/after fit", "Bs mass before/after fit", 900, 600 );
+drawStandardLumiScaled("BdMassFinalAfterFit",
+			 hBdMassFinalAfterFit_BsJPsiPhiSignal,  
+			 hBdMassFinalAfterFit_BdJPsiKstarSignal,
+			 hBdMassFinalAfterFit_BBackground,      
+			 hBdMassFinalAfterFit_JpsiOther,
+			 hBdMassFinalAfterFit_ppmumux);      
+
+drawStandardLumiScaled("KstarMass",
+			 hKstarMass_BsJPsiPhiSignal,  
+			 hKstarMass_BdJPsiKstarSignal,
+			 hKstarMass_BBackground,      
+			 hKstarMass_JpsiOther,
+			 hKstarMass_ppmumux);      
+
+ TCanvas *cv3 = new TCanvas("Bs_mass_before_after_fit", "Bs_mass_before_after_fit", 750, 600 );
  cv3->cd();
  cv3->SetFillColor(0);
 
@@ -772,8 +1439,8 @@ hBsVtxProb_ppmumux         );
  leg3->AddEntry(  hBsMassFinalAfterFit_BsJPsiPhiSignal    , "Bs mass with fit"	);
  
 
-hBsMassFinalAfterFit_BsJPsiPhiSignal   ->Draw();
-hBsMassFinal_BsJPsiPhiSignal    ->Draw("SAME");
+hBsMassFinalAfterFit_BsJPsiPhiSignal   ->Draw("HIST");
+hBsMassFinal_BsJPsiPhiSignal    ->Draw("SAMES HIST");
 
 
  leg3->Draw("SAME");
@@ -881,18 +1548,60 @@ hBsMassFinal_BsJPsiPhiSignal    ->Draw("SAME");
 void ScaleHistograms(TH1F* BsJPsiPhiSignal,  TH1F* BsJPsiKKSignal, TH1F* BdJPsiKstarSignal, TH1F* BsOther,
 		     TH1F* BdOther, TH1F* BOther, TH1F* BsJpsiEta, TH1F* BdJpsiK10, TH1F* BdJpsiK0, TH1F* BpJpsiKp, TH1F* JpsiOther, TH1F *ppmumux){
 
-BsJPsiPhiSignal      ->Scale(100./ 48.); 
-BsJPsiKKSignal       ->Scale(100./ 38. ); 
-BdJPsiKstarSignal    ->Scale(100./ 99.);  
-BsOther              ->Scale(100./ 48. ); 
-BdOther              ->Scale(100./ 83. ); 
-BOther               ->Scale(100./ 69.);  
-BsJpsiEta            ->Scale(100./ 16.);  
-BdJpsiK10            ->Scale(100./ 95. ); 
-BdJpsiK0             ->Scale(100./ 33. ); 
-BpJpsiKp             ->Scale(100./ 17.);  
-JpsiOther            ->Scale(100./ 9.);   
- ppmumux              ->Scale(100./0.9);
+
+BsJPsiPhiSignal   ->Sumw2();
+BsJPsiKKSignal    ->Sumw2();
+BdJPsiKstarSignal ->Sumw2();
+BsOther           ->Sumw2();
+BdOther           ->Sumw2();
+BOther            ->Sumw2();
+BsJpsiEta         ->Sumw2();
+BdJpsiK10         ->Sumw2();
+BdJpsiK0          ->Sumw2();
+BpJpsiKp          ->Sumw2();
+JpsiOther         ->Sumw2();
+ ppmumux          ->Sumw2();
+
+
+// BsJPsiPhiSignal      ->Scale(2.*10./ 48.); 
+// BsJPsiKKSignal       ->Scale(2.*10./ 38. ); 
+// BdJPsiKstarSignal    ->Scale(2.*10./ 99.);  
+// BsOther              ->Scale(2.*10./ 48. ); 
+// BdOther              ->Scale(2.*10./ 83. ); 
+// BOther               ->Scale(2.*10./ 69.);  
+// BsJpsiEta            ->Scale(2.*10./ 16.);  
+// BdJpsiK10            ->Scale(2.*10./ 95. ); 
+// BdJpsiK0             ->Scale(2.*10./ 33. ); 
+// BpJpsiKp             ->Scale(2.*10./ 17.);  
+// JpsiOther            ->Scale(10./ 9.);   
+//  ppmumux              ->Scale(10./0.9);
+
+BsJPsiPhiSignal      ->Scale(10./ 48.); 
+BsJPsiKKSignal       ->Scale(10./ 38. ); 
+BdJPsiKstarSignal    ->Scale(10./ 83.);  
+BsOther              ->Scale(10./ 48. ); 
+BdOther              ->Scale(10./ 83. ); 
+BOther               ->Scale(10./ 69.);  
+BsJpsiEta            ->Scale(10./ 16.);  
+BdJpsiK10            ->Scale(10./ 93. ); 
+BdJpsiK0             ->Scale(10./ 52. ); 
+BpJpsiKp             ->Scale(10./ 69.);  
+JpsiOther            ->Scale(10./ 9.);   
+ ppmumux              ->Scale(10./0.9);
+
+//  // old scaling
+// BsJPsiPhiSignal      ->Scale(100./ 63. ); 
+// BsJPsiKKSignal       ->Scale(100./ 63. ); 
+// BdJPsiKstarSignal    ->Scale(100./ 80.);  
+// BsOther              ->Scale(100./ 63. ); 
+// BdOther              ->Scale(100./ 80. ); 
+// BOther               ->Scale(100./ 80.);  
+// BsJpsiEta            ->Scale(100./ 63.);  
+// BdJpsiK10            ->Scale(100./ 80. ); 
+// BdJpsiK0             ->Scale(100./ 80. ); 
+// BpJpsiKp             ->Scale(100./ 80.);  
+// JpsiOther            ->Scale(100./ 9.);   
+// ppmumux              ->Scale(100./1.);
 }
 
 
@@ -901,6 +1610,7 @@ TH1F* addBackgrounds(TString name, TH1F* BsJPsiPhiSignal,  TH1F* BsJPsiKKSignal,
 		     TH1F* BdOther, TH1F* BOther, TH1F* BsJpsiEta, TH1F* BdJpsiK10, TH1F* BdJpsiK0, TH1F* BpJpsiKp, TH1F* JpsiOther, TH1F* ppmumux){
 
  TH1F* BBackground = (TH1F*) BsJPsiKKSignal->Clone(name);
+ BBackground->Sumw2();
  BBackground->Add( BsOther );
  BBackground->Add( BdOther );
  BBackground->Add( BOther );
@@ -919,7 +1629,7 @@ TH1F* addBackgrounds(TString name, TH1F* BsJPsiPhiSignal,  TH1F* BsJPsiKKSignal,
 void drawStandardNormalized(TString name, TH1F* BsJPsiPhiSignal, TH1F* BdJPsiKstarSignal, TH1F *BBackground, TH1F* JpsiOther, TH1F* ppmumux){
 
 
- TCanvas *cv = new TCanvas(name, name, 900, 600 );
+ TCanvas *cv = new TCanvas(name, name, 750, 600 );
  cv->cd();
  cv->SetFillColor(0);
 
@@ -945,10 +1655,10 @@ void drawStandardNormalized(TString name, TH1F* BsJPsiPhiSignal, TH1F* BdJPsiKst
  if(usePpMuMux) leg3->AddEntry(  ppmumux         , "pp-> mu mu X"    );
 
 
- JpsiOther         ->DrawNormalized();
- BsJPsiPhiSignal   ->DrawNormalized("SAME");
- BdJPsiKstarSignal ->DrawNormalized("SAME");
- BBackground       ->DrawNormalized("SAME");
+ JpsiOther         ->DrawNormalized("HIST");
+ BsJPsiPhiSignal   ->DrawNormalized("SAME HIST");
+ BdJPsiKstarSignal ->DrawNormalized("SAME HIST");
+ BBackground       ->DrawNormalized("SAME HIST");
  if(usePpMuMux) ppmumux           ->DrawNormalized("SAME");
  
 
@@ -959,16 +1669,16 @@ void drawStandardNormalized(TString name, TH1F* BsJPsiPhiSignal, TH1F* BdJPsiKst
 
 
 void drawStandardLumiScaled(TString name, TH1F* BsJPsiPhiSignal, TH1F* BdJPsiKstarSignal, TH1F *BBackground, TH1F* JpsiOther, TH1F* ppmumux){
- TCanvas *cv = new TCanvas(name, name, 900, 600 );
+ TCanvas *cv = new TCanvas(name, name, 750, 600 );
  cv->cd();
  cv->SetFillColor(0);
 
 
- BsJPsiPhiSignal    ->SetLineColor(1 );
- BdJPsiKstarSignal  ->SetLineColor(2 );
- BBackground        ->SetLineColor(3);
- JpsiOther          ->SetLineColor(4 );
- ppmumux            ->SetLineColor( 5);
+ BsJPsiPhiSignal    ->SetLineColor(2 );
+ BdJPsiKstarSignal  ->SetLineColor(3 );
+ BBackground        ->SetLineColor(4);
+ JpsiOther          ->SetLineColor(6 );
+ ppmumux            ->SetLineColor(7);
  
  BsJPsiPhiSignal    ->SetLineWidth(3 );
  BdJPsiKstarSignal  ->SetLineWidth(3 );
@@ -977,21 +1687,43 @@ void drawStandardLumiScaled(TString name, TH1F* BsJPsiPhiSignal, TH1F* BdJPsiKst
  ppmumux            ->SetLineWidth(3);
 
 
+ // sum of everything to look like data:
+ TString sumName = name;
+ sumName += "sum";
+ TH1F * hsum =  (TH1F*) BsJPsiPhiSignal->Clone(sumName);
+ hsum->Add(BdJPsiKstarSignal);
+ hsum->Add(BBackground);
+ hsum->Add(JpsiOther);
+ if(usePpMuMux) hsum->Add(ppmumux);
+
+ // loop over bins of hsum histogram to set the errors correctly
+ for(int i = 1; i<=hsum->GetNbinsX(); i++){
+
+   hsum->SetBinError(i, sqrt(hsum->GetBinContent(i) ) );
+   //  std::cout<< name << " bin content " << i << "  == " << hsum->GetBinContent(i) << " err = " << hsum->GetBinError(i)<< std::endl;
+ }
+   
+ hsum->SetLineColor(1);
+ hsum->SetLineWidth(1);
+ hsum->SetMarkerColor(1);
+ hsum->SetMarkerStyle(21);
+ hsum->SetMarkerSize(0.6);
+
  TLegend * leg3 = new TLegend(0.6,0.75,0.93,0.91);
  leg3->AddEntry(  BsJPsiPhiSignal   , "Bs -> JPsi Phi" );
  leg3->AddEntry(  BdJPsiKstarSignal , "Bd -> JPsi K*"	);
  leg3->AddEntry(  BBackground       , "other B->JPsi X"	);
  leg3->AddEntry(  JpsiOther         , "prompt JPsi"    );
  if(usePpMuMux) leg3->AddEntry(  ppmumux         , "pp-> mu mu X"    );
+ leg3->AddEntry( hsum             , "sum sig + bg" );
 
-
-
- BsJPsiPhiSignal   ->Draw();
- BdJPsiKstarSignal ->Draw("SAME");
- BBackground       ->Draw("SAME");
- JpsiOther         ->Draw("SAME"); 
- if(usePpMuMux) ppmumux           ->Draw("SAME");
-
+ hsum->Draw();
+ BsJPsiPhiSignal   ->Draw("SAME HIST");
+ BdJPsiKstarSignal ->Draw("SAME HIST");
+ BBackground       ->Draw("SAME HIST");
+ JpsiOther         ->Draw("SAME HIST"); 
+ if(usePpMuMux) ppmumux           ->Draw("SAME HIST");
+ 
  leg3->Draw("SAME");
 
 }
