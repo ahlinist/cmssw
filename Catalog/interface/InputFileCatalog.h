@@ -2,8 +2,6 @@
 #define FWCore_Catalog_InputFileCatalog_h
 //////////////////////////////////////////////////////////////////////
 //
-// $Id$
-//
 // Class InputFileCatalog. Services to manage InputFile catalog
 //
 // Author of original version: Luca Lista
