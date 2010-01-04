@@ -16,6 +16,8 @@ $Id$
 namespace edm {
   class InputSourceDescription;
   class ParameterSet;
+  class ParameterSetDescription;
+
   class EDInputSource : public InputSource {
   public:
     explicit EDInputSource(ParameterSet const& pset, InputSourceDescription const& desc);
@@ -31,6 +33,8 @@ namespace edm {
       return n ? secondaryCatalog_.fileCatalogItems() : catalog_.fileCatalogItems();
     }
     InputFileCatalog& catalog(int n = 0) {return n ? secondaryCatalog_ : catalog_;}
+
+    static void fillDescription(ParameterSetDescription & desc);
 
   private:
     virtual void setRun(RunNumber_t);
