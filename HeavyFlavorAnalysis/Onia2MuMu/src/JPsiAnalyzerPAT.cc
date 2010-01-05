@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.10 2009/12/17 11:09:17 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.11 2009/12/17 18:32:06 covarell Exp $
 //
 //
 
@@ -295,8 +295,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   JpsiType->defineType("TT",2);
   if (_useCalo) {
     JpsiType->defineType("GC",3);  
-    JpsiType->defineType("GC",4);  
-    JpsiType->defineType("GC",5);  
+    JpsiType->defineType("TC",4);  
+    JpsiType->defineType("CC",5);  
   }
 
   matchType->defineType("unmatched",0);
@@ -884,7 +884,7 @@ JPsiAnalyzerPAT::theBestQQ() {
 	  }
 	}
 
-	case 1:{
+	case 1: {
 
 	  if (!_applycuts || (((muon1->isGlobalMuon() &&
 				selGlobalMuon(muon1) &&
@@ -940,7 +940,7 @@ JPsiAnalyzerPAT::theBestQQ() {
 	  }
 	}
 
-	case 4:{
+	case 4: {
 
 	  if (!_applycuts || (((muon1->isTrackerMuon() &&
 				selTrackerMuon(muon1) &&
