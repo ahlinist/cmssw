@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.11 2009/12/17 18:32:06 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.12 2010/01/05 11:21:15 covarell Exp $
 //
 //
 
@@ -859,115 +859,131 @@ JPsiAnalyzerPAT::theBestQQ() {
   if (collGT.isValid()) {
     do something else
   } */
-
-  if (collAll.isValid()) {
-    for(vector<pat::CompositeCandidate>::const_iterator it=collAll->begin();
-	 it!=collAll->end();++it) {
   
-      const pat::CompositeCandidate* cand = &(*it);
-    
-      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
-      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
-      
-      if (muon1->charge()*muon2->charge() < 0) {
-	int theJpsiCat = getJpsiCategory(cand);
+  if (collAll.isValid()) {
 
-        switch (theJpsiCat) {
-	  
-	case 0: {
-	  
-	  if (!_applycuts || (selGlobalMuon(muon1) &&
-			      selGlobalMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
-	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(0,cand);
-	  return result; break;
-	  }
-	}
+    // Order by category, not by Pt (Sara's suggestion)
+    for(unsigned int i = 0; i<3; i++) {
 
-	case 1: {
-
-	  if (!_applycuts || (((muon1->isGlobalMuon() &&
-				selGlobalMuon(muon1) &&
-				selTrackerMuon(muon2)) ||
-			       (muon2->isGlobalMuon() &&
-				selGlobalMuon(muon2) &&
-				selTrackerMuon(muon1))) &&
-			      cand->userFloat("vProb") > 0.001 )) {
-	    pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(1,cand);
-	    return result; break;
-	  } 
-	}
-
-	case 2: {
-	  
-	  if (!_applycuts || (selTrackerMuon(muon1) &&
-			      selTrackerMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
-	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(2,cand);
-	  return result; break;
-	  }
-	}
-	}
-      }
-    } 
-  }
-
-  if (_useCalo && collCalo.isValid()) {
-    for(vector<pat::CompositeCandidate>::const_iterator it=collCalo->begin();
-	   it!=collCalo->end();++it) {
-
-      const pat::CompositeCandidate* cand = &(*it);
-
-      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
-      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
-     
-      if(muon1->charge()*muon2->charge() < 0) {
-        int theJpsiCat = getJpsiCategory(cand);
+      for(vector<pat::CompositeCandidate>::const_iterator it=collAll->begin();
+	  it!=collAll->end();++it) {
 	
-        switch (theJpsiCat) {
+	const pat::CompositeCandidate* cand = &(*it);
+        int theJpsiCat = getJpsiCategory(cand);
+        if (theJpsiCat != (int)i) continue;
+	
+        // cout << "Now checking candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
+        const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
+	const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
+	
+	if (muon1->charge()*muon2->charge() < 0) {	  
 	  
-	case 3: {
-	  
-	  if (!_applycuts || (((muon1->isGlobalMuon() &&
-				selGlobalMuon(muon1) &&
-				selCaloMuon(muon2)) ||
-			       (muon2->isGlobalMuon() &&
+	  switch (theJpsiCat) {
+	    
+	  case 0: {
+	    
+	    if (!_applycuts || (selGlobalMuon(muon1) &&
 				selGlobalMuon(muon2) &&
-				selCaloMuon(muon1))) &&
-			      cand->userFloat("vProb") > 0.001 )) {
-	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(3,cand);
-	  return result; break;
+				cand->userFloat("vProb") > 0.001 )) {
+	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(0,cand);
+	      // cout << "Now passed candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
+	      return result; break;
+	    }
 	  }
-	}
-
-	case 4: {
-
-	  if (!_applycuts || (((muon1->isTrackerMuon() &&
-				selTrackerMuon(muon1) &&
-				selCaloMuon(muon2)) ||
-			       (muon2->isTrackerMuon() &&
+	    
+	  case 1: {
+	    
+	    if (!_applycuts || (((muon1->isGlobalMuon() &&
+				  selGlobalMuon(muon1) &&
+				  selTrackerMuon(muon2)) ||
+				 (muon2->isGlobalMuon() &&
+				  selGlobalMuon(muon2) &&
+				  selTrackerMuon(muon1))) &&
+				cand->userFloat("vProb") > 0.001 )) {
+	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(1,cand);
+              // cout << "Now passed candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
+	      return result; break;
+	    } 
+	  }
+	    
+	  case 2: {
+	    
+	    if (!_applycuts || (selTrackerMuon(muon1) &&
 				selTrackerMuon(muon2) &&
-				selCaloMuon(muon1))) &&
-			      cand->userFloat("vProb") > 0.001 )) {
-	    pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(4,cand);
-	    return result; break;
-	  } 
-	}
-
-	case 5: {
-	  
-	  if (!_applycuts || (selCaloMuon(muon1) &&
-			      selCaloMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
-	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(5,cand);
-	  return result; break;
+				cand->userFloat("vProb") > 0.001 )) {
+	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(2,cand);
+              // cout << "Now passed candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
+	      return result; break;
+	    }
+	  }
 	  }
 	}
+      } 
+    }
+  }
+  
+  if (_useCalo && collCalo.isValid()) {
+
+    // Order by category, not by Pt (Sara's suggestion)
+    for(unsigned int i = 3; i<6; i++) {
+
+      for(vector<pat::CompositeCandidate>::const_iterator it=collCalo->begin();
+	  it!=collCalo->end();++it) {
+	
+	const pat::CompositeCandidate* cand = &(*it);
+	int theJpsiCat = getJpsiCategory(cand);
+        if (theJpsiCat != (int)i) continue;    
+
+	const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
+	const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
+	
+	if(muon1->charge()*muon2->charge() < 0) {
+	  
+	  switch (theJpsiCat) {
+	    
+	  case 3: {
+	    
+	    if (!_applycuts || (((muon1->isGlobalMuon() &&
+				  selGlobalMuon(muon1) &&
+				  selCaloMuon(muon2)) ||
+				 (muon2->isGlobalMuon() &&
+				  selGlobalMuon(muon2) &&
+				  selCaloMuon(muon1))) &&
+				cand->userFloat("vProb") > 0.001 )) {
+	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(3,cand);
+	      return result; break;
+	    }
+	  }
+	    
+	  case 4: {
+	    
+	    if (!_applycuts || (((muon1->isTrackerMuon() &&
+				  selTrackerMuon(muon1) &&
+				  selCaloMuon(muon2)) ||
+				 (muon2->isTrackerMuon() &&
+				  selTrackerMuon(muon2) &&
+				  selCaloMuon(muon1))) &&
+				cand->userFloat("vProb") > 0.001 )) {
+	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(4,cand);
+	      return result; break;
+	    } 
+	  }
+	    
+	  case 5: {
+	    
+	    if (!_applycuts || (selCaloMuon(muon1) &&
+				selCaloMuon(muon2) &&
+				cand->userFloat("vProb") > 0.001 )) {
+	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(5,cand);
+	      return result; break;
+	    }
+	  }
+	  }
 	}
       }
     }
   }
-
+    
   pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(99, new pat::CompositeCandidate() );
   return result;	  
 
