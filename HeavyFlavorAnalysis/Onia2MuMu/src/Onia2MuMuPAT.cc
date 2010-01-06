@@ -14,10 +14,10 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
-
 #include "TMath.h"
 #include "Math/VectorUtil.h"
 #include "TVector3.h"
+#include "HeavyFlavorAnalysis/Onia2MuMu/interface/VertexReProducer.h"
 
 
 Onia2MuMuPAT::Onia2MuMuPAT(const edm::ParameterSet& iConfig):
@@ -27,6 +27,7 @@ Onia2MuMuPAT::Onia2MuMuPAT(const edm::ParameterSet& iConfig):
   higherPuritySelection_(iConfig.getParameter<std::string>("higherPuritySelection")),
   lowerPuritySelection_(iConfig.getParameter<std::string>("lowerPuritySelection")),
   addCommonVertex_(iConfig.getParameter<bool>("addCommonVertex")),
+  addMuonlessPrimaryVertex_(iConfig.getParameter<bool>("addMuonlessPrimaryVertex")),
   addMCTruth_(iConfig.getParameter<bool>("addMCTruth"))
 {  
     produces<pat::CompositeCandidateCollection>();  
@@ -116,6 +117,34 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       // ---- fit vertex using Tracker tracks (if they have tracks) ----
       if (it->track().isNonnull() && it2->track().isNonnull()) {
+
+          // Make a PV with everything else
+          if (addMuonlessPrimaryVertex_) {
+                VertexReProducer revertex(priVtxs, iEvent);
+                Handle<TrackCollection> pvtracks;   iEvent.getByLabel(revertex.inputTracks(),   pvtracks);
+                Handle<BeamSpot>        pvbeamspot; iEvent.getByLabel(revertex.inputBeamSpot(), pvbeamspot);
+                if (pvbeamspot.id() != theBeamSpot.id()) edm::LogWarning("Inconsistency") << "The BeamSpot used for PV reco is not the same used in this analyzer.";
+                // I need to go back to the reco::Muon object, as the TrackRef in the pat::Muon can be an embedded ref.
+                const reco::Muon *rmu1 = dynamic_cast<const reco::Muon *>(it->originalObject());
+                const reco::Muon *rmu2 = dynamic_cast<const reco::Muon *>(it2->originalObject());
+                // check that muons are truly from reco::Muons (and not, e.g., from PF Muons)
+                // also check that the tracks really come from the track collection used for the BS
+                if (rmu1 != 0 && rmu2 != 0 && rmu1->track().id() == pvtracks.id() && rmu2->track().id() == pvtracks.id()) { 
+                    // Prepare the collection of tracks without the two muon tracks
+                    TrackCollection muonLess;
+                    muonLess.reserve(pvtracks->size()-2);
+                    for (size_t i = 0, n = pvtracks->size(); i < n; ++i) {
+                        if (i == rmu1->track().key()) continue;
+                        if (i == rmu2->track().key()) continue;
+                        muonLess.push_back((*pvtracks)[i]);
+                    }
+                    vector<TransientVertex> pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
+                    if (!pvs.empty()) {
+                        myCand.addUserData("muonlessPV",reco::Vertex(pvs.front()));
+                    }
+                }
+          }
+
           vector<TransientTrack> t_tks;
           t_tks.push_back(theTTBuilder->build(*it->track()));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
           t_tks.push_back(theTTBuilder->build(*it2->track())); // otherwise the vertex will have transient refs inside.
@@ -157,6 +186,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   myCand.addUserData("commonVertex",reco::Vertex());
               }
           }
+
       }
      
       // ---- MC Truth, if enabled ----

@@ -7,5 +7,6 @@ onia2MuMuPAT = cms.EDProducer('Onia2MuMuPAT',
   higherPuritySelection = cms.string("isGlobalMuon"), ## At least one muon must pass this selection
   lowerPuritySelection  = cms.string("isGlobalMuon"), ## BOTH muons must pass this selection
   addCommonVertex = cms.bool(True), ## Embed the full reco::Vertex out of the common vertex fit
+  addMuonlessPrimaryVertex = cms.bool(True), ## Embed the primary vertex re-made from all the tracks except the two muons
   addMCTruth = cms.bool(True),      ## Add the common MC mother of the two muons, if any
 )

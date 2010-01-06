@@ -41,7 +41,8 @@ class Onia2MuMuPAT : public edm::EDProducer {
   edm::InputTag thePVs_;
   StringCutObjectSelector<pat::Muon> higherPuritySelection_;
   StringCutObjectSelector<pat::Muon> lowerPuritySelection_; 
-  bool addCommonVertex_;
+  bool addCommonVertex_, addMuonlessPrimaryVertex_;
+  
   bool addMCTruth_;
   GreaterByPt<pat::CompositeCandidate> pTComparator_;
 
