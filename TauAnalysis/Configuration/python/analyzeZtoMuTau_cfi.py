@@ -85,7 +85,7 @@ triggerHistManagerForMuTau.hltPaths = cms.vstring(
 # import config for event weight histogram manager
 from TauAnalysis.Core.eventWeightHistManager_cfi import *
 
-diTauCandidateCollinearApproxBinningForMuTau =  cms.PSet(
+diTauCandidateCollinearApproxBinningForMuTau = cms.PSet(
     pluginName = cms.string('diTauCandidateCollinearApproxBinningForMuTau'),
     pluginType = cms.string('DataBinner'),
     binning = collinearApproxBinning,
@@ -100,7 +100,8 @@ diTauCandidateCollinearApproxBinningForMuTau =  cms.PSet(
 from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 sysUncertaintyBinnerForMuTau = copy.deepcopy(sysUncertaintyBinner)
-sysUncertaintyBinnerForMuTau.systematics = cms.vstring(
+sysUncertaintyBinnerForMuTau.pluginName = cms.string('sysUncertaintyBinnerForMuTau')
+sysUncertaintyBinnerForMuTau.binning.systematics = cms.vstring(
     getSysUncertaintyNames(
         [ muonSystematics,
           tauSystematics,
