@@ -235,7 +235,7 @@ prodTemplateHistConfiguratorGammaPlusJetsEnriched.addTemplate(meName_diTauMvis12
 process.prodTemplateHistBgEstGammaPlusJetsEnriched = prodTemplateHistConfiguratorGammaPlusJetsEnriched.configure(process)
 
 prodTemplateHistConfiguratorQCDenriched = prodTemplateHistConfigurator(
-    "prodTemplateHistBgEstWplusJetsEnriched", prodTemplateHist, dqmDirectory = processName
+    "prodTemplateHistBgEstQCDenriched", prodTemplateHist, dqmDirectory = processName
 )
 prodTemplateHistConfiguratorQCDenriched.addProcess("Ztautau", fileNamesZtoElecTau_Ztautau)
 prodTemplateHistConfiguratorQCDenriched.addProcess("Zee", fileNamesZtoElecTau_ZeePlusJets)
