@@ -125,6 +125,8 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
                     if numVariables > 2:
                         ValueError("Maximum supported dimensionality is two right now !!")
 
+                    varEntries = []
+
                     for iVariable in range(len(self.branchNames[meName])):
 
                         varEntry = cms.PSet()
@@ -133,14 +135,9 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
                         setattr(varEntry, "numBins", cms.uint32(self.numBins[meName][iVariable]))
                         setattr(varEntry, "binEdges", cms.vdouble(self.binEdges[meName][iVariable]))
 
-                        varEntryName = None
-                        if iVariable == 1:
-                            varEntryName = "x"
-                        elif iVariable == 2:
-                            varEntryName = "y"
-                        elif iVariable == 3:
-                            varEntryName = "z"    
-                        setattr(configEntry, "varEntryName", varEntry)
+                        varEntries.append(varEntry)
+
+                    setattr(configEntry, "variables", cms.VPSet(varEntries)) 
 
                     config.append(configEntry)
 
