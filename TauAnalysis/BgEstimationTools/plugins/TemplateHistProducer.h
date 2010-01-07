@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: TemplateHistProducer.h,v 1.6 2009/10/27 16:44:21 veelken Exp $
+ * $Id: TemplateHistProducer.h,v 1.7 2009/11/27 18:26:14 veelken Exp $
  *
  */
 
@@ -26,6 +26,7 @@
 
 #include <TChain.h>
 #include <TTree.h>
+#include <TArrayF.h>
 
 #include <string>
 
@@ -45,7 +46,7 @@ class TemplateHistProducer : public edm::EDAnalyzer
   { 
     histEntryType() 
       : me_(0) {}
-    ~histEntryType();
+    ~histEntryType() {}
 
     struct axisEntryType
     {
@@ -53,7 +54,7 @@ class TemplateHistProducer : public edm::EDAnalyzer
       Float_t value_;
 
       unsigned numBins_;
-      float* binEdges_;
+      TArrayF binEdges_;
     };
 
     std::string meName_;
