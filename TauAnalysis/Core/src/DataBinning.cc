@@ -133,7 +133,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
     decodeBinningStringRep(*entry, meName, meType, meValue, error);
 
     if ( error ) {
-      edm::LogError ("DataBinning::operator>>") << " Error in parsing string = " << (*entry) << " --> skipping !!";
+      edm::LogError ("DataBinning::decodeStringRep") << " Error in parsing string = " << (*entry) << " --> skipping !!";
       continue;
     }
 
@@ -142,8 +142,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
     bool binNumber_error = false;
 
     if ( regexpParser_numBins.Match(meName_tstring) == 1 ) {
-      unsigned numBins = (unsigned)atoi(meValue.data());
-      numBins_ = numBins;
+      numBins_ = (unsigned)atoi(meValue.data());
       binContents_.resize(numBins_);
       binSumw2_.resize(numBins_);
       binContents_initialized.resize(numBins_);
@@ -151,7 +150,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
       numBins_initialized = true;
     } else if ( regexpParser_binContents_entry.Match(meName_tstring) == 1 ) {
       if ( !numBins_initialized ) {
-	edm::LogError ("DataBinning::operator>>") << " Need to initialize numBins before setting binContents !!";
+	edm::LogError ("DataBinning::decodeStringRep") << " Need to initialize numBins before setting binContents !!";
 	continue;
       }
       
@@ -164,8 +163,8 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
 	  binContents_[binNumber] = binContent;
 	  binContents_initialized[binNumber] = true;
 	} else {
-	  edm::LogError ("DataBinning::operator>>") << " Bin number = " << binNumber << " decoded from meName = " << meName
-					            << " not within numBins = " << numBins_ << " range of binning object !!";
+	  edm::LogError ("DataBinning::decodeStringRep") << " Bin number = " << binNumber << " decoded from meName = " << meName
+							 << " not within numBins = " << numBins_ << " range of binning object !!";
 	  continue;
 	}
       } else {
@@ -173,7 +172,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
       }
     } else if ( regexpParser_binError_entry.Match(meName_tstring) == 1 ) {
       if ( !numBins_initialized ) {
-	edm::LogError ("DataBinning::operator>>") << " Need to initialize numBins before setting binError !!";
+	edm::LogError ("DataBinning::decodeStringRep") << " Need to initialize numBins before setting binError !!";
 	continue;
       }
 
@@ -186,8 +185,8 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
 	  binSumw2_[binNumber] = binError*binError;
 	  binSumw2_initialized[binNumber] = true;
 	} else {
-	  edm::LogError ("DataBinning::operator>>") << " Bin number = " << binNumber << " decoded from meName = " << meName
-					            << " not within numBins = " << numBins_ << " range of binning object !!";
+	  edm::LogError ("DataBinning::decodeStringRep") << " Bin number = " << binNumber << " decoded from meName = " << meName
+							 << " not within numBins = " << numBins_ << " range of binning object !!";
 	  continue;
 	}
       } else {
@@ -196,7 +195,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
     }
 
     if ( binNumber_error ) {
-      edm::LogError ("DataBinning::operator>>") << " Failed to decode bin number from meName = " << meName << " !!";
+      edm::LogError ("DataBinning::decodeStringRep") << " Failed to decode bin number from meName = " << meName << " !!";
       continue;
     }
   }
@@ -205,11 +204,11 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
 //    have been initialized
   if ( numBins_initialized ) {
     for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
-      if ( !binContents_initialized[iBin] ) edm::LogError ("operator>>") << " Failed to decode binContents[" << iBin << "] !!";
-      if ( !binSumw2_initialized[iBin] ) edm::LogError ("operator>>") << " Failed to decode binError[" << iBin << "] !!";
+      if ( !binContents_initialized[iBin] ) edm::LogError ("decodeStringRep") << " Failed to decode binContents[" << iBin << "] !!";
+      if ( !binSumw2_initialized[iBin] ) edm::LogError ("decodeStringRep") << " Failed to decode binError[" << iBin << "] !!";
     }
   } else {
-    edm::LogError ("DataBinning::operator>>") << " Failed to decode numBins !!";
+    edm::LogError ("DataBinning::decodeStringRep") << " Failed to decode numBins !!";
   }
 }
 
