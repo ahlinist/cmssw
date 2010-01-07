@@ -79,17 +79,6 @@ process.source = cms.Source("PoolSource",
     #skipBadFiles = cms.untracked.bool(True) 
 )
 
-# define auxiliary service
-# for handling of systematic uncertainties
-##from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
-##process.SysUncertaintyService = cms.Service("SysUncertaintyService",
-##    config = getSysUncertaintyParameterSets(
-##        [ muonSystematics,
-##          tauSystematics,
-##          theorySystematics ]
-##    )
-##)
-
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
 # in case running jobs on the CERN batch system
