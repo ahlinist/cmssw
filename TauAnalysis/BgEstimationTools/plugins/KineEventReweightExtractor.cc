@@ -21,7 +21,9 @@ KineEventReweightExtractor::KineEventReweightExtractor(const edm::ParameterSet& 
 
   edm::ParameterSet cfgWeightLookupTable = cfg.getParameter<edm::ParameterSet>("weightLookupTable");
   fileName_ = cfgWeightLookupTable.getParameter<std::string>("fileName");
+  //std::cout << " fileName = " << fileName_ << std::endl;
   meName_ = cfgWeightLookupTable.getParameter<std::string>("meName");
+  //std::cout << " meName = " << meName_ << std::endl;
   
   TFile* inputFile = TFile::Open(fileName_.data());
   TH1* weightLookupTable = (TH1*)inputFile->Get(meName_.data());
@@ -45,8 +47,8 @@ KineEventReweightExtractor::KineEventReweightExtractor(const edm::ParameterSet& 
   for ( unsigned iAxis = 0; iAxis < numAxisLabels; ++iAxis ) {
     const char* axisLabel = axisLabels[iAxis].data();
 
-    if ( cfg.exists(axisLabel) ) {
-      edm::ParameterSet cfgExtractor = cfg.getParameter<edm::ParameterSet>(axisLabel);
+    if ( cfgVariables.exists(axisLabel) ) {
+      edm::ParameterSet cfgExtractor = cfgVariables.getParameter<edm::ParameterSet>(axisLabel);
       kineVarExtractors_.push_back(makeExtractorPlugin(cfgExtractor));
     } else {
       break;
