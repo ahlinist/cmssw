@@ -3,6 +3,11 @@ import FWCore.ParameterSet.Config as cms
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
+# import definitions of systematic uncertainties
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
+
+SysUncertaintyService = cms.Service("SysUncertaintyService")
+
 analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
   
     name = cms.string('zMuTauAnalyzer'), 
@@ -73,12 +78,21 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         pfMEtHistManager,
         particleMultiplicityHistManager,
         vertexHistManager,
-        triggerHistManagerForMuTau
+        triggerHistManagerForMuTau,
+        sysUncertaintyBinnerForMuTau
     ),
 
     eventDumps = cms.VPSet(
         muTauEventDump
     ),
    
-    analysisSequence = muTauAnalysisSequence
+    analysisSequence = muTauAnalysisSequence,
+
+    systematics = cms.vstring(
+        getSysUncertaintyNames(
+            [ muonSystematics,
+              tauSystematics,
+              theorySystematics ]
+        )
+    )
 )
