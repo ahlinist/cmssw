@@ -16,4 +16,16 @@ dumpZtoMuTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
 )
- 
+
+dumpZtoMuTauSysUncertainties = cms.EDAnalyzer("DQMDumpBinningResults",
+    binningService = cms.PSet(
+        pluginType = cms.string("SysUncertaintyBinningService"),
+        dqmDirectories = cms.PSet(
+            Ztautau = cms.string('harvested/Ztautau/zMuTauAnalyzer/afterDiMuPairZmumuHypothesisVeto/sysUncertaintyBinningResults/'),
+            ##Zmumu = cms.string('harvested/Zmumu/zMuTauAnalyzer/afterDiMuPairZmumuHypothesisVeto/sysUncertaintyBinningResults/'),
+            ##WplusJets = cms.string('harvested/WplusJets/zMuTauAnalyzer/afterDiMuPairZmumuHypothesisVeto/sysUncertaintyBinningResults/'),
+            ##QCD = cms.string('harvested/qcdSum/zMuTauAnalyzer/afterDiMuPairZmumuHypothesisVeto/sysUncertaintyBinningResults/'),
+            ##TTplusJets = cms.string('harvested/TTplusJets/zMuTauAnalyzer/afterDiMuPairZmumuHypothesisVeto/sysUncertaintyBinningResults/')
+        )
+    )
+) 
