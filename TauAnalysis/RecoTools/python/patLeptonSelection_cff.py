@@ -11,6 +11,7 @@ from TauAnalysis.RecoTools.patPFTauSelectionForDiTau_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForWTauNu_cfi import *
 
 from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::Electrons
@@ -37,11 +38,12 @@ patElectronSelConfigurator = objSelConfigurator(
       selectedLayer1ElectronsTrk,
       selectedLayer1ElectronsTrkIP ],
     src = "cleanLayer1Electrons",
+    systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1Electrons = patElectronSelConfigurator.configure(namespace = locals())
+selectLayer1Electrons = patElectronSelConfigurator.configure(pyNameSpace = locals())
 
 selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
 selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
@@ -59,11 +61,12 @@ patElectronSelConfiguratorLooseIsolation = objSelConfigurator(
       selectedLayer1ElectronsTrkLooseIsolation,
       selectedLayer1ElectronsTrkIPlooseIsolation ],
     src = "cleanLayer1Electrons",
+    systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1ElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.configure(namespace = locals())
+selectLayer1ElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.configure(pyNameSpace = locals())
 
 selectedLayer1ElectronsForElecTauConversionVeto.cotThetaCut = cms.double(0.045)
 selectedLayer1ElectronsForElecTauConversionVeto.docaElecTrack = cms.double(0)
@@ -74,22 +77,24 @@ selectedLayer1ElectronsForElecTauConversionVeto.nTrkMax = cms.double(1)
 patElectronSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedLayer1ElectronsForElecTauConversionVeto ],
     src = "selectedLayer1ElectronsTrkIPcumulative",
+    systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1ElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(namespace = locals())
+selectLayer1ElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(pyNameSpace = locals())
 
 selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecTauConversionVeto)
 
 patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
     [ selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation ],
     src = "selectedLayer1ElectronsTrkIPlooseIsolationCumulative",
+    systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1ElectronsForElecTauLooseIsolation = patElectronSelConfiguratorForElecTauLooseIsolation.configure(namespace = locals())
+selectLayer1ElectronsForElecTauLooseIsolation = patElectronSelConfiguratorForElecTauLooseIsolation.configure(pyNameSpace = locals())
 
 selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVeto.dRmin = cms.double(0.3)
 selectedLayer1ElectronsForElecMuTightId.cut = cms.string('electronID("eidRobustTight") > 0')
@@ -113,11 +118,12 @@ patElectronSelConfiguratorForElecMu = objSelConfigurator(
       selectedLayer1ElectronsForElecMuTrk,
       selectedLayer1ElectronsForElecMuTrkIP ],
     src = "cleanLayer1Electrons",
+    systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1ElectronsForElecMu = patElectronSelConfiguratorForElecMu.configure(namespace = locals())
+selectLayer1ElectronsForElecMu = patElectronSelConfiguratorForElecMu.configure(pyNameSpace = locals())
 
 selectedLayer1ElectronsForElecMuTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
 selectedLayer1ElectronsForElecMuEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
@@ -136,11 +142,12 @@ patElectronSelConfiguratorForElecMuLooseIsolation = objSelConfigurator(
       selectedLayer1ElectronsForElecMuTrkLooseIsolation,
       selectedLayer1ElectronsForElecMuTrkIPlooseIsolation ],
     src = "cleanLayer1Electrons",
+    systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1ElectronsForElecMuLooseIsolation = patElectronSelConfiguratorForElecMuLooseIsolation.configure(namespace = locals())
+selectLayer1ElectronsForElecMuLooseIsolation = patElectronSelConfiguratorForElecMuLooseIsolation.configure(pyNameSpace = locals())
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::Muons
@@ -171,11 +178,12 @@ patMuonSelConfigurator = objSelConfigurator(
       selectedLayer1MuonsTrk,
       selectedLayer1MuonsTrkIP ],
     src = "cleanLayer1Muons",
+    systematics = muonSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1Muons = patMuonSelConfigurator.configure(namespace = locals())
+selectLayer1Muons = patMuonSelConfigurator.configure(pyNameSpace = locals())
 
 selectedLayer1MuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
 selectedLayer1MuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
@@ -198,11 +206,12 @@ patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
       selectedLayer1MuonsTrkLooseIsolation,
       selectedLayer1MuonsTrkIPlooseIsolation ],
     src = "cleanLayer1Muons",
+    systematics = muonSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1MuonsLooseIsolation = patMuonSelConfiguratorLooseIsolation.configure(namespace = locals())
+selectLayer1MuonsLooseIsolation = patMuonSelConfiguratorLooseIsolation.configure(pyNameSpace = locals())
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::(PF)Taus
@@ -234,12 +243,13 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausEcalCrackVeto,
       selectedLayer1TausMuonVeto ],
     src = "cleanLayer1Taus",
+    systematics = tauSystematics,
     pyModuleName = __name__,
     doSelCumulative = True,
     doSelIndividual = True
 )
 
-selectLayer1Taus = patTauSelConfigurator.configure(namespace = locals())
+selectLayer1Taus = patTauSelConfigurator.configure(pyNameSpace = locals())
 #
 # define collections of pat::(PF)Taus used in semi-leptonic e + tau-jet channel
 # (require electron and tau-jet candidates to be separated in eta-phi,
@@ -271,11 +281,12 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1TausForElecTauElectronVeto,
       selectedLayer1TausForElecTauEcalCrackVeto ],
     src = "cleanLayer1Taus",
+    systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1TausForElecTau = patTauSelConfiguratorForElecTau.configure(namespace = locals())
+selectLayer1TausForElecTau = patTauSelConfiguratorForElecTau.configure(pyNameSpace = locals())
 #
 # define collections of pat::(PF)Taus used in semi-leptonic mu + tau-jet channel
 # (require muon and tau-jet candidates to be separated in eta-phi,
@@ -305,11 +316,12 @@ patTauSelConfiguratorForMuTau = objSelConfigurator(
       selectedLayer1TausForMuTauCharge,
       selectedLayer1TausForMuTauMuonVeto ],
     src = "cleanLayer1Taus",
+    systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1TausForMuTau = patTauSelConfiguratorForMuTau.configure(namespace = locals())
+selectLayer1TausForMuTau = patTauSelConfiguratorForMuTau.configure(pyNameSpace = locals())
 #
 # define collections of pat::(PF)Taus used in pure hadronic tau-jet + tau-jet channel
 # (no need to apply anti-electron or anti-muon vetos)
@@ -333,11 +345,12 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
       selectedLayer1TausForDiTauProng,
       selectedLayer1TausForDiTauCharge ],
     src = "cleanLayer1Taus",
+    systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1TausForDiTau = patTauSelConfiguratorForDiTau.configure(namespace = locals())
+selectLayer1TausForDiTau = patTauSelConfiguratorForDiTau.configure(pyNameSpace = locals())
 
 # define collections of pat::(PF)Taus used in W->tau-jet + nu channel
 
@@ -353,7 +366,7 @@ selectedLayer1TausForWTauNuMuonVeto.cut = selectedLayer1TausMuonVeto.cut
 selectedLayer1TausForWTauNuElectronVeto.cut = selectedLayer1TausElectronVeto.cut
 selectedLayer1TausForWTauNuEcalCrackVeto.cut = selectedLayer1TausEcalCrackVeto.cut
 
-patTauSelConfiguratorForWTauNu =objSelConfigurator(
+patTauSelConfiguratorForWTauNu = objSelConfigurator(
     [ selectedLayer1TausForWTauNuEta21,
       selectedLayer1TausForWTauNuPt20,
       selectedLayer1TausForWTauNuLeadTrk,
@@ -364,13 +377,13 @@ patTauSelConfiguratorForWTauNu =objSelConfigurator(
       selectedLayer1TausForWTauNuCharge, 
       selectedLayer1TausForWTauNuMuonVeto,
       selectedLayer1TausForWTauNuElectronVeto,
-      selectedLayer1TausForWTauNuEcalCrackVeto
-      ],
+      selectedLayer1TausForWTauNuEcalCrackVeto ],
     src = "cleanLayer1Taus",
+    systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
-selectLayer1TausForWTauNu = patTauSelConfiguratorForWTauNu.configure(namespace = locals())
+selectLayer1TausForWTauNu = patTauSelConfiguratorForWTauNu.configure(pyNameSpace = locals())
 
 #Loose isolation selection#
 selectedLayer1TausForWTauNuEcalIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<10")
@@ -393,14 +406,14 @@ patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
       selectedLayer1TausForWTauNuChargeLooseIsolation, 
       selectedLayer1TausForWTauNuMuonVetoLooseIsolation,
       selectedLayer1TausForWTauNuElectronVetoLooseIsolation,
-      selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolation
-      ],
+      selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolation ],
     src = "cleanLayer1Taus",
+    systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectLayer1TausForWTauNuLooseIsolation = patTauSelConfiguratorForWTauNuLooseIsolation.configure(namespace = locals())
+selectLayer1TausForWTauNuLooseIsolation = patTauSelConfiguratorForWTauNuLooseIsolation.configure(pyNameSpace = locals())
 
 produceLayer1SelLeptons = cms.Sequence (
     selectLayer1Electrons + selectLayer1ElectronsLooseIsolation
