@@ -10,4 +10,7 @@ void decodeBinningStringRep(const std::string&, std::string&, std::string&, std:
 std::string encodeVDoubleStringRep(const std::vector<double>&);
 std::vector<double> decodeVDoubleStringRep(const std::string&, int&);
 
+std::string encodeVStringStringRep(const std::vector<std::string>&);
+std::vector<std::string> decodeVStringStringRep(const std::string&, int&);
+
 #endif
