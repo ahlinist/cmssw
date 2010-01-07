@@ -11,7 +11,8 @@
 #include "TauAnalysis/Core/interface/binningAuxFunctions.h"
 
 DQMDumpBinningResults::DQMDumpBinningResults(const edm::ParameterSet& cfg)
-  : binningService_(0), cfgError_(0)
+  : binningService_(0), 
+    cfgError_(0)
 {
   //std::cout << "<DQMDumpBinningResults::DQMDumpBinningResults>:" << std::endl;
 

@@ -26,7 +26,8 @@ BinGrid::BinGrid(const edm::ParameterSet& cfg)
   vParameterSet cfgBinning = cfg.getParameter<vParameterSet>("config");
   for ( vParameterSet::const_iterator cfg1dObjVar = cfgBinning.begin(); 
 	cfg1dObjVar != cfgBinning.end(); ++cfg1dObjVar ) {
-    std::string objVarName = cfg1dObjVar->getParameter<std::string>("branchName");
+    std::string objVarName = ( cfg1dObjVar->exists("branchName") ) ? 
+      cfg1dObjVar->getParameter<std::string>("branchName") : "undefined";
     objVarNames_.push_back(objVarName);
 
     edm::ParameterSet cfg1dBinning = cfg1dObjVar->getParameter<edm::ParameterSet>("binning");
@@ -35,8 +36,9 @@ BinGrid::BinGrid(const edm::ParameterSet& cfg)
     double xMax = cfg1dBinning.getParameter<double>("max");
 
     typedef std::vector<double> vdouble;
-    vdouble binBoundaries = cfg1dBinning.getParameter<vdouble>("boundaries");
-
+    vdouble binBoundaries = ( cfg1dBinning.exists("boundaries") ) ? 
+      cfg1dBinning.getParameter<vdouble>("boundaries") : vdouble();
+    
     unsigned numBinBoundaries = binBoundaries.size();
     unsigned numBins_i = numBinBoundaries + 1;
     vdouble binEdges_i(numBins_i + 1);
