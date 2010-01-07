@@ -60,7 +60,11 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsZtoMuTau.root')
+    outputFileName = cms.string('plotsZtoMuTau.root'),
+    outputCommands = cms.vstring(
+        "drop *",
+        "keep */MuonQuantities"
+    )                                                                                  
 )
 
 process.maxEvents = cms.untracked.PSet(            
@@ -73,8 +77,7 @@ process.source = cms.Source("PoolSource",
         #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
         #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
         #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZmumuSkimMT314_1/muTauSkim_1.root'
-        #'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_1_4/src/TauAnalysis/Skimming/test/muTauSkim.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_1_4/src/TauAnalysis/Configuration/test/muTauSkim_1.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )

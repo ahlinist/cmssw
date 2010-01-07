@@ -33,7 +33,8 @@ diTauCandidateCollinearApproxHistManagerBinnedForMuTau.histManagers = cms.VPSet(
     ),
     diTauCandidateCollinearApproxHistManagerForMuTau,
     pfMEtHistManager,
-    caloMEtHistManager
+    caloMEtHistManager,
+    genPhaseSpaceEventInfoHistManager
 )
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForMuTau = copy.deepcopy(ZllHypothesisHistManager)
@@ -94,6 +95,18 @@ diTauCandidateCollinearApproxBinningForMuTau =  cms.PSet(
     dqmDirectory_store = cms.string('collinearApproxBinningResults4regions')
 )
 
+# import config for binning results
+# used to estimate systematic uncertainties
+from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
+sysUncertaintyBinnerForMuTau = copy.deepcopy(sysUncertaintyBinner)
+sysUncertaintyBinnerForMuTau.systematics = cms.vstring(
+    getSysUncertaintyNames(
+        [ muonSystematics,
+          tauSystematics,
+          theorySystematics ]
+    )
+)
+
 #--------------------------------------------------------------------------------
 # define event selection criteria
 #--------------------------------------------------------------------------------
@@ -152,19 +165,22 @@ evtSelGlobalMuon = cms.PSet(
     pluginName = cms.string('evtSelGlobalMuon'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('globalMuonCut', 'cumulative'),
-    src_individual = cms.InputTag('globalMuonCut', 'individual')
+    src_individual = cms.InputTag('globalMuonCut', 'individual'),
+    systematics = cms.vstring(muonSystematics.keys())
 )
 evtSelMuonEta = cms.PSet(
     pluginName = cms.string('evtSelMuonEta'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('muonEtaCut', 'cumulative'),
-    src_individual = cms.InputTag('muonEtaCut', 'individual')
+    src_individual = cms.InputTag('muonEtaCut', 'individual'),
+    systematics = cms.vstring(muonSystematics.keys())
 )
 evtSelMuonPt = cms.PSet(
     pluginName = cms.string('evtSelMuonPt'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('muonPtCut', 'cumulative'),
-    src_individual = cms.InputTag('muonPtCut', 'individual')
+    src_individual = cms.InputTag('muonPtCut', 'individual'),
+    systematics = cms.vstring(muonSystematics.keys())
 )
 
 # tau acceptance cuts
@@ -172,19 +188,22 @@ evtSelTauAntiOverlapWithMuonsVeto = cms.PSet(
     pluginName = cms.string('evtSelTauAntiOverlapWithMuonsVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauAntiOverlapWithMuonsVeto', 'cumulative'),
-    src_individual = cms.InputTag('tauAntiOverlapWithMuonsVeto', 'individual')
+    src_individual = cms.InputTag('tauAntiOverlapWithMuonsVeto', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauEta = cms.PSet(
     pluginName = cms.string('evtSelTauEta'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauEtaCut', 'cumulative'),
-    src_individual = cms.InputTag('tauEtaCut', 'individual')
+    src_individual = cms.InputTag('tauEtaCut', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauPt = cms.PSet(
     pluginName = cms.string('evtSelTauPt'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauPtCut', 'cumulative'),
-    src_individual = cms.InputTag('tauPtCut', 'individual')
+    src_individual = cms.InputTag('tauPtCut', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 
 # muon candidate (isolation & id.) selection
@@ -192,25 +211,29 @@ evtSelMuonTrkIso = cms.PSet(
     pluginName = cms.string('evtSelMuonTrkIso'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('muonTrkIsoCut', 'cumulative'),
-    src_individual = cms.InputTag('muonTrkIsoCut', 'individual')
+    src_individual = cms.InputTag('muonTrkIsoCut', 'individual'),
+    systematics = cms.vstring(muonSystematics.keys())
 )
 evtSelMuonEcalIso = cms.PSet(
     pluginName = cms.string('evtSelMuonEcalIso'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('muonEcalIsoCut', 'cumulative'),
-    src_individual = cms.InputTag('muonEcalIsoCut', 'individual')
+    src_individual = cms.InputTag('muonEcalIsoCut', 'individual'),
+    systematics = cms.vstring(muonSystematics.keys())
 )
 evtSelMuonAntiPion = cms.PSet(
     pluginName = cms.string('evtSelMuonAntiPion'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('muonAntiPionCut', 'cumulative'),
-    src_individual = cms.InputTag('muonAntiPionCut', 'individual')
+    src_individual = cms.InputTag('muonAntiPionCut', 'individual'),
+    systematics = cms.vstring(muonSystematics.keys())
 )
 evtSelMuonTrkIP = cms.PSet(
     pluginName = cms.string('evtSelMuonTrkIP'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('muonTrkIPcut', 'cumulative'),
-    src_individual = cms.InputTag('muonTrkIPcut', 'individual')
+    src_individual = cms.InputTag('muonTrkIPcut', 'individual'),
+    systematics = cms.vstring(muonSystematics.keys())
 )
 
 # tau candidate (id.) selection
@@ -218,43 +241,50 @@ evtSelTauLeadTrk = cms.PSet(
     pluginName = cms.string('evtSelTauLeadTrk'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauLeadTrkCut', 'cumulative'),
-    src_individual = cms.InputTag('tauLeadTrkCut', 'individual')
+    src_individual = cms.InputTag('tauLeadTrkCut', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauLeadTrkPt = cms.PSet(
     pluginName = cms.string('evtSelTauLeadTrkPt'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauLeadTrkPtCut', 'cumulative'),
-    src_individual = cms.InputTag('tauLeadTrkPtCut', 'individual')
+    src_individual = cms.InputTag('tauLeadTrkPtCut', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauTrkIso = cms.PSet(
     pluginName = cms.string('evtSelTauTrkIso'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauTrkIsoCut', 'cumulative'),
-    src_individual = cms.InputTag('tauTrkIsoCut', 'individual')
+    src_individual = cms.InputTag('tauTrkIsoCut', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauEcalIso = cms.PSet(
     pluginName = cms.string('evtSelTauEcalIso'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauEcalIsoCut', 'cumulative'),
-    src_individual = cms.InputTag('tauEcalIsoCut', 'individual')
+    src_individual = cms.InputTag('tauEcalIsoCut', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauProng = cms.PSet(
     pluginName = cms.string('evtSelTauProng'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauProngCut', 'cumulative'),
-    src_individual = cms.InputTag('tauProngCut', 'individual')
+    src_individual = cms.InputTag('tauProngCut', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauCharge = cms.PSet(
     pluginName = cms.string('evtSelTauCharge'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauChargeCut', 'cumulative'),
-    src_individual = cms.InputTag('tauChargeCut', 'individual')
+    src_individual = cms.InputTag('tauChargeCut', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauMuonVeto = cms.PSet(
     pluginName = cms.string('evtSelTauMuonVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauMuonVeto', 'cumulative'),
-    src_individual = cms.InputTag('tauMuonVeto', 'individual')
+    src_individual = cms.InputTag('tauMuonVeto', 'individual'),
+    systematics = cms.vstring(tauSystematics.keys())
 )
 
 # di-tau candidate selection
@@ -262,31 +292,36 @@ evtSelDiTauCandidateForMuTauAntiOverlapVeto = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForMuTauAntiOverlapVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'individual'),
+    systematics = cms.vstring(muTauPairSystematics.keys())
 )
 evtSelDiTauCandidateForMuTauZeroCharge = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForMuTauZeroCharge'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'individual'),
+    systematics = cms.vstring(muTauPairSystematics.keys())
 )
 evtSelDiTauCandidateForMuTauAcoplanarity12 = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForMuTauAcoplanarity12'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForMuTauAcoplanarity12Cut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForMuTauAcoplanarity12Cut', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForMuTauAcoplanarity12Cut', 'individual'),
+    systematics = cms.vstring(muTauPairSystematics.keys())
 )
 evtSelDiTauCandidateForMuTauMt1MET = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForMuTauMt1METcut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForMuTauMt1METcut', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForMuTauMt1METcut', 'individual'),
+    systematics = cms.vstring(muTauPairSystematics.keys())
 )
 evtSelDiTauCandidateForMuTauPzetaDiff = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForMuTauPzetaDiff'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'individual'),
+    systematics = cms.vstring(muTauPairSystematics.keys())
 )
 
 # veto events compatible with Z --> mu+ mu- hypothesis
@@ -814,7 +849,8 @@ muTauAnalysisSequence = cms.VPSet(
             'pfMEtHistManager',
             'particleMultiplicityHistManager',
             'vertexHistManager',
-            'triggerHistManagerForMuTau'
+            'triggerHistManagerForMuTau',
+            'sysUncertaintyBinnerForMuTau'
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
