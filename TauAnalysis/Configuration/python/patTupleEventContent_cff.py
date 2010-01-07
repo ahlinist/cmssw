@@ -68,6 +68,14 @@ patTupleEventContent.outputCommands.extend(
 )
 
 #--------------------------------------------------------------------------------
+# required for estimation of systematic uncertainties
+#--------------------------------------------------------------------------------
+patTupleEventContent.outputCommands.extend(
+    [ 'keep *_genParticles_*_*',
+      'keep GenEventInfoProduct_generator_*_*' ] 
+)
+
+#--------------------------------------------------------------------------------
 # required by genPhaseSpaceEventInfoHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
@@ -102,8 +110,7 @@ patTupleEventContent.outputCommands.extend(
 # required by lepton histogram managers
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_genParticles_*_*',
-      'keep *_tauGenJets_*_*' ] 
+    [ 'keep *_tauGenJets_*_*' ] 
 )
 
 #--------------------------------------------------------------------------------
