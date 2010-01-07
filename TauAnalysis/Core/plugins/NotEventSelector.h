@@ -5,11 +5,11 @@
   *
   * Selects an event if it does **not** pass the associated event selector
   * 
-  * \author Chriastian Veelken, UC Davis
+  * \author Christian Veelken, UC Davis
   *
   * \version $Revision: 1.1 $
   *
-  * $Id: NotEventSelector.h,v 1.1 2009/03/03 13:07:27 llista Exp $
+  * $Id: NotEventSelector.h,v 1.1 2009/03/20 17:05:18 veelken Exp $
   *
   */
 
