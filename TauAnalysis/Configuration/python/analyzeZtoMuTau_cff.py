@@ -6,7 +6,16 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 # import definitions of systematic uncertainties
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 
-SysUncertaintyService = cms.Service("SysUncertaintyService")
+# define auxiliary service
+# for handling of systematic uncertainties
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
+SysUncertaintyService = cms.Service("SysUncertaintyService",
+    config = getSysUncertaintyParameterSets(
+        [ muonSystematics,
+          tauSystematics,
+          theorySystematics ]
+    )
+)
 
 analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
   
