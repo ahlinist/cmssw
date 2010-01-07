@@ -4,11 +4,37 @@ import FWCore.ParameterSet.Config as cms
 # produce collections of pat::Muons for data-driven background estimation methods
 #--------------------------------------------------------------------------------
 
+muonsPionVetoLooseIsolationForBgEst = cms.EDFilter("PATMuonAntiPionSelector",
+    src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),                                  
+    CaloCompCoefficient = cms.double(0.8),
+    SegmCompCoefficient = cms.double(1.2),
+    AntiPionCut = cms.double(1.0),
+    filter = cms.bool(False)
+)
+
 muonsTrkLooseIsolationForBgEst = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),                                        
+    src = cms.InputTag('muonsPionVetoLooseIsolationForBgEst'),                                        
     cut = cms.string('innerTrack.isNonnull'),
     filter = cms.bool(False)
 )
+
+#--------------------------------------------------------------------------------
+
+muonsPionVetoNoIsolationForBgEst = cms.EDFilter("PATMuonAntiPionSelector",
+    src = cms.InputTag('selectedLayer1MuonsPt15Cumulative'),                                  
+    CaloCompCoefficient = cms.double(0.8),
+    SegmCompCoefficient = cms.double(1.2),
+    AntiPionCut = cms.double(1.0),
+    filter = cms.bool(False)
+)
+
+muonsTrkNoIsolationForBgEst = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag('muonsPionVetoNoIsolationForBgEst'),                                        
+    cut = cms.string('innerTrack.isNonnull'),
+    filter = cms.bool(False)
+)
+
+#--------------------------------------------------------------------------------
 
 muonsTrkIsoForBgEst = cms.EDFilter("PATMuonIsoDepositSelector",
     src = cms.InputTag('selectedLayer1MuonsPt15Cumulative'),                                
@@ -42,7 +68,8 @@ muonsTrkTightIsolationForBgEst = cms.EDFilter("PATMuonSelector",
 )
 
 selectMuonsForBgEst = cms.Sequence(
-    muonsTrkLooseIsolationForBgEst
+    muonsPionVetoLooseIsolationForBgEst * muonsTrkLooseIsolationForBgEst
+   * muonsPionVetoNoIsolationForBgEst * muonsTrkNoIsolationForBgEst
    * muonsTrkIsoForBgEst * muonsEcalIsoForBgEst * muonsPionVetoTightIsolationForBgEst * muonsTrkTightIsolationForBgEst
 )
 
