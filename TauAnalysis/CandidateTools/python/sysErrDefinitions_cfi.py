@@ -7,24 +7,24 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 electronSystematics = {
-    "sysElectronEnUp"       : "smearedLayer1Electrons::sysElectronEnUp",
-    "sysElectronEnDown"     : "smearedLayer1Electrons::sysElectronEnDown"
+    "sysElectronEnUp"       : "smearedLayer1Electrons:sysElectronEnUp",
+    "sysElectronEnDown"     : "smearedLayer1Electrons:sysElectronEnDown"
 }
 
 muonSystematics = {
-    "sysMuonPtUp"           : "smearedLayer1Muons::sysMuonPtUp",
-    "sysMuonPtDown"         : "smearedLayer1Muons::sysMuonPtDown" 
+    "sysMuonPtUp"           : "smearedLayer1Muons:sysMuonPtUp",
+    "sysMuonPtDown"         : "smearedLayer1Muons:sysMuonPtDown" 
 }
 
 tauSystematics = {   
-    "sysTauJetEnUp"         : "smearedLayer1Taus::sysTauJetEnUp",
-    "sysTauJetEnDown"       : "smearedLayer1Taus::sysTauJetEnDown",    
-    "sysTauJetThetaUp"      : "smearedLayer1Taus::sysTauJetThetaUp",
-    "sysTauJetThetaDown"    : "smearedLayer1Taus::sysTauJetThetaDown",
-    "sysTauJetPhiUp"        : "smearedLayer1Taus::sysTauJetPhiUp",
-    "sysTauJetPhiDown"      : "smearedLayer1Taus::sysTauJetPhiDown",
-    "sysTauLeadTrackPtUp"   : "smearedLayer1Taus::sysTauLeadTrackPtUp",
-    "sysTauLeadTrackPtDown" : "smearedLayer1Taus::sysTauLeadTrackPtDown"
+    "sysTauJetEnUp"         : "smearedLayer1Taus:sysTauJetEnUp",
+    "sysTauJetEnDown"       : "smearedLayer1Taus:sysTauJetEnDown",    
+    "sysTauJetThetaUp"      : "smearedLayer1Taus:sysTauJetThetaUp",
+    "sysTauJetThetaDown"    : "smearedLayer1Taus:sysTauJetThetaDown",
+    "sysTauJetPhiUp"        : "smearedLayer1Taus:sysTauJetPhiUp",
+    "sysTauJetPhiDown"      : "smearedLayer1Taus:sysTauJetPhiDown",
+    "sysTauLeadTrackPtUp"   : "smearedLayer1Taus:sysTauLeadTrackPtUp",
+    "sysTauLeadTrackPtDown" : "smearedLayer1Taus:sysTauLeadTrackPtDown"
 }
 
 muTauPairSystematics = {
@@ -65,7 +65,7 @@ def getSysUncertaintyParameterSets(sysUncertaintyMaps):
             sysUncertaintyParameterSet = cms.PSet()
 
             setattr(sysUncertaintyParameterSet, "name", cms.string(sysUncertaintyName))
-            setattr(sysUncertaintyParameterSet, "src", cms.string(sysUncertaintyInputTag))
+            setattr(sysUncertaintyParameterSet, "src", cms.InputTag(sysUncertaintyInputTag))
 
             sysUncertaintyParameterSets.append(sysUncertaintyParameterSet)
 
