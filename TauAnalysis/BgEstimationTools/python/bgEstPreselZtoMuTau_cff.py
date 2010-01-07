@@ -36,9 +36,15 @@ muTauPairCutBgEstPreselection = cms.EDProducer("BoolEventSelFlagProducer",
             minNumber = cms.uint32(1)
         ),
         cms.PSet(
-            pluginName = cms.string("muTauPairCutBgEstPreselQCD"),
+            pluginName = cms.string("muTauPairCutBgEstPreselQCDlooseMuonIsolation"),
             pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
+            minNumber = cms.uint32(1)
+        ),
+        cms.PSet(
+            pluginName = cms.string("muTauPairCutBgEstPreselQCDnoMuonIsolation"),
+            pluginType = cms.string("PATCandViewMinEventSelector"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
             minNumber = cms.uint32(1)
         )
     )
