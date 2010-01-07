@@ -12,10 +12,12 @@ import sys
 
 class objSelConfigurator(cms._ParameterTypeBase):
 
-    def __init__(self, objSelList, src = None, srcAttr = "src", pyModuleName = None, doSelCumulative = True, doSelIndividual = False):
+    def __init__(self, objSelList, src = None, srcAttr = "src", systematics = None,
+                 pyModuleName = None, doSelCumulative = True, doSelIndividual = False):
         self.objSelList = objSelList
         self.src = src
         self.srcAttr = srcAttr
+        self.systematics = systematics
         self.pyModuleName = pyModuleName,
         self.doSelCumulative = doSelCumulative
         self.doSelIndividual = doSelIndividual
@@ -31,9 +33,9 @@ class objSelConfigurator(cms._ParameterTypeBase):
             return part_1 + part_2[0].lower() + part_2[1:]
 
     @staticmethod    
-    def _getInstanceName(obj, namespace):
-        if namespace is not None:
-            for name, ref in namespace.items():
+    def _getInstanceName(obj, pyNameSpace):
+        if pyNameSpace is not None:
+            for name, ref in pyNameSpace.items():
                 if ref is obj : return name
         else:
             for pyModule in sys.modules.values():
@@ -62,7 +64,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
         def get_moduleName(name):
             return objSelConfigurator._composeModuleName(name, "Individual")
 
-    def _addModule(self, objSelItem, namespace, getter):
+    def _addModule(self, objSelItem, pyNameSpace, getter, sysName = None, sysInputTag = None):        
         # create module
         moduleType = objSelItem.type_()
         module = cms.EDFilter(moduleType)
@@ -72,10 +74,17 @@ class objSelConfigurator(cms._ParameterTypeBase):
             objSelAttr = getattr(objSelItem, objSelAttrName)
             if isinstance(objSelAttr, cms._ParameterTypeBase) and not objSelAttrName in ["pluginName", "pluginType"]:
                 setattr(module, objSelAttrName, objSelAttr)
-        src = getter.get_src(self.src, self.lastModuleName)
-        setattr(module, self.srcAttr, cms.InputTag(src))
+                
+        src = None
+        moduleName = None
         
-        moduleName = getter.get_moduleName(self._getInstanceName(objSelItem, namespace))
+        if sysName is None:
+            src = getter.get_src(self.src, self.lastModuleName)
+            moduleName = getter.get_moduleName(self._getInstanceName(objSelItem, pyNameSpace))
+        else:
+            src = getter.get_src(sysInputTag, self.lastModuleName)
+            moduleName = self._composeModuleName(getter.get_moduleName(self._getInstanceName(objSelItem, pyNameSpace)), sysName)
+        setattr(module, self.srcAttr, cms.InputTag(src))
         module.setLabel(moduleName)
                
         # register module in global python name-space
@@ -92,7 +101,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
         else:
             self.sequence *= module
 
-    def configure(self, namespace = None):
+    def configure(self, pyNameSpace = None):
         # configure modules for "cumulative" and "individual" collections
         # of objects passing selection
 
@@ -105,11 +114,15 @@ class objSelConfigurator(cms._ParameterTypeBase):
         if self.doSelCumulative:
             getter = objSelConfigurator._getterCumulative()
             for objSelItem in self.objSelList:
-                self._addModule(objSelItem, namespace, getter)
+                self._addModule(objSelItem, pyNameSpace, getter)
+            if self.systematics is not None:
+                for sysName, sysInputTag in self.systematics.items():
+                    for objSelItem in self.objSelList:
+                        self._addModule(objSelItem, pyNameSpace, getter, sysName = sysName, sysInputTag = sysInputTag)
 
         if self.doSelIndividual:
             getter = objSelConfigurator._getterIndividual()
             for objSelItem in self.objSelList:
-                self._addModule(objSelItem, namespace, getter)
+                self._addModule(objSelItem, pyNameSpace, getter)
 
         return cms.Sequence(self.sequence)
