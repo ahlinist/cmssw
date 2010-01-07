@@ -36,19 +36,20 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 #--------------------------------------------------------------------------------
 
 process.savePatTuple = cms.OutputModule("PoolOutputModule",
-	patTupleEventContent,
-	fileName = cms.untracked.string('patTuple.root')
+    patTupleEventContent,
+    fileName = cms.untracked.string('patTuple.root')
 )
 
 process.maxEvents = cms.untracked.PSet(            
-	input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/PhotonJets_Pt15to20/skimElecTau_PhotonJets_Pt15to20_1.root'
-	)
-        #skipBadFiles = cms.untracked.bool(True)    
+    fileNames = cms.untracked.vstring(
+	#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/PhotonJets_Pt15to20/skimElecTau_PhotonJets_Pt15to20_1.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+    )
+    #skipBadFiles = cms.untracked.bool(True)    
 )
 
 #--------------------------------------------------------------------------------
@@ -97,7 +98,7 @@ process.p = cms.Path(
 )
 
 #process.options = cms.untracked.PSet(
-#	wantSummary = cms.untracked.bool(True)
+#    wantSummary = cms.untracked.bool(True)
 #)
 
 # print-out all python configuration parameter information
