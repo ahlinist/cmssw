@@ -38,4 +38,4 @@ patJetSelConfigurator = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = False
 )
-selectLayer1Jets = patJetSelConfigurator.configure(namespace = locals())
+selectLayer1Jets = patJetSelConfigurator.configure(pyNameSpace = locals())
