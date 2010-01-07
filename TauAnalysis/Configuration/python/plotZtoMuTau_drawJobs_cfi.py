@@ -381,7 +381,7 @@ drawJobConfigurator_ZtoMuTau.add(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+    afterCut = evtSelDiMuPairZmumuHypothesisVeto,
     plots = [
         drawJobConfigEntry(
             meName = 'MuonQuantities/Muon#PAR#',
