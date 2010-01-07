@@ -28,7 +28,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
         # if the last character of part_1 is lower-case (upper-case),
         # capitalize (lowercase) the first character of part_2
         if part_1[-1].islower() or part_1[-1].isdigit():
-            return part_1 + part_2.capitalize()
+            return part_1 + part_2[0].capitalize() + part_2[1:]
         else:
             return part_1 + part_2[0].lower() + part_2[1:]
 
@@ -109,14 +109,15 @@ class objSelConfigurator(cms._ParameterTypeBase):
             raise ValueError("'src' Parameter must not be empty !!")
 
         self.sequence = None
-        self.lastModuleName = None
 
         if self.doSelCumulative:
             getter = objSelConfigurator._getterCumulative()
+            self.lastModuleName = None
             for objSelItem in self.objSelList:
                 self._addModule(objSelItem, pyNameSpace, getter)
             if self.systematics is not None:
                 for sysName, sysInputTag in self.systematics.items():
+                    self.lastModuleName = None
                     for objSelItem in self.objSelList:
                         self._addModule(objSelItem, pyNameSpace, getter, sysName = sysName, sysInputTag = sysInputTag)
 
