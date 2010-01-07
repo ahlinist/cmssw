@@ -17,9 +17,9 @@ sysUncertaintyBinner = cms.PSet(
                     max = cms.double(+0.5)
                 )
             )
-        )
+        ),
+        systematics = cms.vstring()
     ),
-    systematics = cms.vstring(),
     binningService = cms.PSet(
         pluginType = cms.string("SysUncertaintyBinningService")
     ),
