@@ -22,7 +22,7 @@ patMETSelConfigurator = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = True
 )
-selectLayer1METs = patMETSelConfigurator.configure(namespace = locals())
+selectLayer1METs = patMETSelConfigurator.configure(pyNameSpace = locals())
 
 #---------------------------------- electrons -----------------------------------#
 #******* custom reco ********
@@ -122,7 +122,7 @@ patElectronSelConfigurator = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = True
 )
-selectLayer1Electrons = patElectronSelConfigurator.configure(namespace = locals())
+selectLayer1Electrons = patElectronSelConfigurator.configure(pyNameSpace = locals())
 cleanLayer1ElectronsSel.selFlags = cms.PSet(
     tauAnalysisSelElectronIdGlobal = cms.PSet(
       src = cms.InputTag('selectedLayer1ElectronsIdIndividual')
@@ -231,7 +231,7 @@ patMuonSelConfigurator = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = True
 )
-selectLayer1Muons = patMuonSelConfigurator.configure(namespace = locals())
+selectLayer1Muons = patMuonSelConfigurator.configure(pyNameSpace = locals())
 cleanLayer1MuonsSel.selFlags = cms.PSet(
     tauAnalysisSelMuonGlobal = cms.PSet(
       src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
@@ -322,7 +322,7 @@ patElecMuPairSelConfigurator = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = True
 )
-selectElecMuPairs = patElecMuPairSelConfigurator.configure(namespace = locals())
+selectElecMuPairs = patElecMuPairSelConfigurator.configure(pyNameSpace = locals())
 #redefine produce sequence to make new selection work
 produceElecMuPairs = cms.Sequence( allElecMuPairs  )
 selectDiTauPairsAllKinds = cms.Sequence( selectElecMuPairs )
@@ -346,7 +346,7 @@ patJetSelConfigurator = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = False
 )
-selectLayer1Jets = patJetSelConfigurator.configure(namespace = locals())
+selectLayer1Jets = patJetSelConfigurator.configure(pyNameSpace = locals())
 
 #----------------------------------- pattuple -----------------------------------#
 producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
