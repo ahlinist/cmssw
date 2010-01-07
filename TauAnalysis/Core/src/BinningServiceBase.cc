@@ -28,7 +28,7 @@ BinningServiceBase::~BinningServiceBase()
 //--- nothing to be done yet...
 }
 
-bool operator<(const class BinningServiceBase::meEntry& entry1, const class BinningServiceBase::meEntry& entry2)
+bool operator<(const class BinningServiceBase::meEntryType& entry1, const class BinningServiceBase::meEntryType& entry2)
 {
   return entry1.id_ < entry2.id_;
 } 
@@ -45,7 +45,7 @@ BinningBase* BinningServiceBase::loadBinningResults(const std::string& dqmDirect
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
   dqmStore.setCurrentFolder(dqmDirectory);
 
-  std::vector<meEntry> meEntries;
+  std::vector<meEntryType> meEntries;
 
 //--- load from DQMStore auxiliary MonitorElement 
 //    in which order of MonitorElements is encoded,
@@ -126,18 +126,18 @@ BinningBase* BinningServiceBase::loadBinningResults(const std::string& dqmDirect
     } 
 
     int meId = iEntry;
-    meEntries.push_back(meEntry(meId, meName, meType, meValue));
+    meEntries.push_back(meEntryType(meId, meName, meType, meValue));
   }
 
   delete subStrings;
 
-//--- sort meEntry objects representing MonitorElements
+//--- sort meEntryType objects representing MonitorElements
 //    in the order by which MonitorElements have been saved
   std::sort(meEntries.begin(), meEntries.end()); 
 
-//--- fill meEntry objects into buffer in sorted order
+//--- fill meEntryType objects into buffer in sorted order
   std::vector<std::string> buffer;
-  for ( std::vector<meEntry>::const_iterator meEntry_i = meEntries.begin();
+  for ( std::vector<meEntryType>::const_iterator meEntry_i = meEntries.begin();
 	meEntry_i != meEntries.end(); ++meEntry_i ) {
     std::string entry = encodeBinningStringRep(meEntry_i->name_, meEntry_i->type_, meEntry_i->value_);
     //std::cout << "entry = " << entry << std::endl;

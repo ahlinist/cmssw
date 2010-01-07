@@ -11,9 +11,9 @@
 
 class BinningServiceBase
 {
-  struct meEntry
+  struct meEntryType
   {
-    meEntry(int id, const std::string& name, const std::string& type, const std::string& value)
+    meEntryType(int id, const std::string& name, const std::string& type, const std::string& value)
       : id_(id), name_(name), type_(type), value_(value) {}
     int id_;
     std::string name_;
@@ -21,7 +21,7 @@ class BinningServiceBase
     std::string value_;
   };
 
-  friend bool operator<(const meEntry&, const meEntry&);
+  friend bool operator<(const meEntryType&, const meEntryType&);
 
  public: 
   BinningServiceBase(const edm::ParameterSet&);
