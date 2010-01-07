@@ -60,6 +60,9 @@ class TauNtuple(object):
       if self.current_collection == 'matched':
          for expr in self.expressions['ref']:
             output['ref_%s' % expr] = self.parse_expression(expr, 'ref')
+      # Add event and run info (just so $event works as well)
+      output["event"] = "event"
+      output["run"] = "run"
       return output
 
 
@@ -76,6 +79,9 @@ def copy_aliases(tchain):
 
 class TauNtupleManager(object):
     def __init__(self, events, grep="NtupleProducer"):
+        # Add nice aliases for run & event number
+        events.SetAlias("run", "EventAuxiliary.id_.run_");
+        events.SetAlias("event", "EventAuxiliary.id_.event_");
         # If this is a TChain, we need to make sure
         # the aliases are copied over correctly
         if isinstance(events, TChain):
@@ -164,6 +170,13 @@ def draw(events, ntuple=None, expr=None, selection="", output_hist="", binning=(
 
    return return_func()
 
+def scan(events, ntuple=None, expr=None, selection=""):
+    " Interface to TTree scan " 
+    ntuple_dict = ntuple.dictionary()
+    expr = string.Template(expr).substitute(ntuple_dict)
+    selection = string.Template(selection).substitute(ntuple_dict)
+    events.Scan(expr, str(selection))
+
 def efficiency(events, ntuple=None, expr=None,
                numerator="",
                denominator="",
@@ -219,6 +232,11 @@ if __name__ == "__main__":
                             denominator="$pt > 15",
                             output_eff="iso_eff",
                             binning=(20, 0, 60))
+
+   # Do a scan, printing event numbers
+   scan(events, pippo.shrinkingConePFTau,
+        expr="$run:$event:$pt:$eta",
+        selection="$ByIsolation")
 
    c1 = TCanvas()
    bkg.Draw()
