@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.56 2009/08/14 09:51:53 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.57 2009/10/31 23:18:53 lat Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.56 $
-  \date $Date: 2009/08/14 09:51:53 $
+  \version $Revision: 1.57 $
+  \date $Date: 2009/10/31 23:18:53 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -144,14 +144,16 @@ private:
         return;
       }
       // Summary map
-      if( o.name.find( "reportSummaryMap" ) != std::string::npos )
+      if( o.name.find( "reportSummaryMap" ) != std::string::npos ||
+	  o.name.find( "CertificationSummaryMap" ) != std::string::npos ||
+	  o.name.find( "DAQSummaryMap" ) != std::string::npos)
       {
         dqm::utils::reportSummaryMapPalette(obj);
         obj->GetXaxis()->SetNdivisions(13,true);
         obj->GetYaxis()->SetNdivisions(6,true);
         obj->GetXaxis()->CenterLabels();
         obj->GetYaxis()->CenterLabels();
-        //     obj->SetOption("text");
+// 	obj->SetOption("text,colz"); //FIXME
         //     obj->SetMarkerSize( 2 );
         //     gStyle->SetPaintTextFormat("2.0f");
         c->SetGrid(1,1);
@@ -164,9 +166,9 @@ private:
         obj->GetYaxis()->SetNdivisions(6,true);
         obj->GetXaxis()->CenterLabels();
         obj->GetYaxis()->CenterLabels();
-        //     obj->SetOption("text,colz");
+// 	obj->SetOption("text,colz"); //FIXME
         obj->SetMarkerSize( 2 );
-        //     gStyle->SetPaintTextFormat("2.0f");
+// 	gStyle->SetPaintTextFormat("2.0f");
         c->SetGrid(1,1);
         return;
       }
@@ -722,6 +724,15 @@ private:
 
         return;
       }
+      if(o.name.find("DataCorruptionSummary") != std::string::npos)
+      {
+        c->SetGrid(1,1);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetXaxis()->SetNdivisions(11,true);
+        c->SetLeftMargin(0.15);
+
+        return;
+      }
       if( o.name.find( "ROChannel" ) != std::string::npos )
       {
         dqm::utils::reportSummaryMapPalette(obj);
@@ -999,15 +1010,20 @@ private:
         return;
       }
 
-      if(o.name.find("NSegmPerEvent_W" ) < o.name.size())
+      if(o.name.find("NSegmPerEvent_W" ) < o.name.size()
+	 || o.name.find("EnabledROChannelsVsLS") < o.name.size())
       {
         //     obj->GetXaxis()->SetNdivisions(6,true);
+
         obj->GetXaxis()->CenterLabels();
         c->SetGrid(0,1);
         c->SetBottomMargin(0.1);
         obj->GetXaxis()->LabelsOption("u");
         obj->GetXaxis()->SetLabelSize(0.03);
-
+	obj->SetDrawOption("PE");
+	obj->SetMarkerStyle(kFullCircle);
+	obj->SetMarkerSize( 2 );
+	  
         return;
       }
 
