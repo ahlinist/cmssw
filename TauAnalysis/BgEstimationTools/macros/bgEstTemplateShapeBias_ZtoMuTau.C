@@ -5,36 +5,49 @@ Int_t lineStyles[] = { 4, 2, 1 };
 
 void bgEstTemplateShapeBias_ZtoMuTau()
 {
-  TString dqmDirectoryName = "DQMData/harvested/WplusJets/zMuTauAnalyzer/";
+  //TString dqmDirectoryName = "DQMData/harvested/WplusJets/zMuTauAnalyzer/";
+  TString dqmDirectoryName = "DQMData/harvested/qcdSum/zMuTauAnalyzer/";
 
   TObjArray dqmSubDirectoryNames;
-  dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauAcoplanarity12_beforeEvtSelDiTauCandidateForMuTauMt1MET/"));
-  dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauMt1MET_beforeEvtSelDiTauCandidateForMuTauPzetaDiff/"));
-  dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauPzetaDiff/"));
+  //dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauAcoplanarity12_beforeEvtSelDiTauCandidateForMuTauMt1MET/"));
+  //dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauMt1MET_beforeEvtSelDiTauCandidateForMuTauPzetaDiff/"));
+  //dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauPzetaDiff/"));
+  dqmSubDirectoryNames.Add(new TObjString("afterEvtSelTauPt_beforeEvtSelMuonTrkIso/"));
+  dqmSubDirectoryNames.Add(new TObjString("afterEvtSelMuonTrkIso_beforeEvtSelMuonEcalIso/"));
+  dqmSubDirectoryNames.Add(new TObjString("afterEvtSelMuonEcalIso_beforeEvtSelMuonAntiPion/"));
 
   TObjArray legendLabels;
-  legendLabels.Add(new TObjString("before M_{T}^{#mu + MET} Cut"));
-  legendLabels.Add(new TObjString("after M_{T}^{#mu + MET} Cut, before Cut on P_{#zeta} - 1.5*P_{#zeta}^{vis}"));
-  legendLabels.Add(new TObjString("after Cut on P_{#zeta} - 1.5*P_{#zeta}^{vis}"));
+  //legendLabels.Add(new TObjString("before M_{T}^{#mu + MET} Cut"));
+  //legendLabels.Add(new TObjString("after M_{T}^{#mu + MET} Cut, before Cut on P_{#zeta} - 1.5*P_{#zeta}^{vis}"));
+  //legendLabels.Add(new TObjString("after Cut on P_{#zeta} - 1.5*P_{#zeta}^{vis}"));
+  legendLabels.Add(new TObjString("before Muon Track iso. Cut"));
+  legendLabels.Add(new TObjString("after Muon Track iso. Cut, before Cut on Muon ECAL iso."));
+  legendLabels.Add(new TObjString("after Cut on Muon ECAL iso."));
 
   TString outputFileName_unnormalized = "bgEstTemplateShapeBias_unnormalized.ps";
   TString outputFileName_normalized = "bgEstTemplateShapeBias_normalized.ps";
 
-  TString inputFileName = "rfio:/castor/cern.ch/user/v/veelken/bgEstPlots/ZtoMuTau/plotsZtoMuTau_all_shrinkingCone.root";
-  //TString inputFileName = "../../Configuration/test/plotsZtoMuTau_all.root";
+  //TString inputFileName = "rfio:/castor/cern.ch/user/v/veelken/bgEstPlots/ZtoMuTau/plotsZtoMuTau_all_shrinkingCone.root";
+  TString inputFileName = "../../Configuration/test/plotsZtoMuTau_all.root";
 
+  //showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
+  //			    "DiTauCandidateQuantities/DPhi12", "#Delta#phi_{#mu#tau}", false, 
+  //			    "bgEstTemplateShapeBias_ZtoMuTau_WplusJets_DPhi12_unnormalized.eps");
+  //showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
+  //			    "DiTauCandidateQuantities/DPhi12", "#Delta#phi_{#mu#tau}", true, 
+  //			    "bgEstTemplateShapeBias_ZtoMuTau_WplusJets_DPhi12_normalized.eps");
+  //showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
+  //			    "DiTauCandidateQuantities/VisMass", "M_{vis}^{#mu#tau}", false,
+  //			    "bgEstTemplateShapeBias_ZtoMuTau_WplusJets_Mvis_unnormalized.eps");
+  //showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
+  //			    "DiTauCandidateQuantities/VisMass", "M_{vis}^{#mu#tau}", true,
+  //			    "bgEstTemplateShapeBias_ZtoMuTau_WplusJets_Mvis_normalized.eps");
   showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
-			  "DiTauCandidateQuantities/DPhi12", "#Delta#phi_{#mu#tau}", false, 
-			  "bgEstTemplateShapeBias_ZtoMuTau_WplusJets_DPhi12_unnormalized.eps");
+			  "MuonQuantities/MuonEta", "#eta_{#mu}", false,
+			  "bgEstTemplateShapeBias_ZtoMuTau_QCD_muonEta_unnormalized.png");
   showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
-			  "DiTauCandidateQuantities/DPhi12", "#Delta#phi_{#mu#tau}", true, 
-			  "bgEstTemplateShapeBias_ZtoMuTau_WplusJets_DPhi12_normalized.eps");
-  showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
-			  "DiTauCandidateQuantities/VisMass", "M_{vis}^{#mu#tau}", false,
-			  "bgEstTemplateShapeBias_ZtoMuTau_WplusJets_Mvis_unnormalized.eps");
-  showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
-			  "DiTauCandidateQuantities/VisMass", "M_{vis}^{#mu#tau}", true,
-			  "bgEstTemplateShapeBias_ZtoMuTau_WplusJets_Mvis_normalized.eps");
+			  "MuonQuantities/MuonEta", "#eta_{#mu}", true,
+			  "bgEstTemplateShapeBias_ZtoMuTau_QCD_muonEta_normalized.png");
 }
 
 void showTemplateShapeBias_i(const TString& inputFileName, const TString& dqmDirectoryName, 
@@ -51,6 +64,9 @@ void showTemplateShapeBias_i(const TString& inputFileName, const TString& dqmDir
   TCanvas* canvas = new TCanvas("canvas", "canvas", 1, 1, 800, 600);
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
+
+  //canvas->SetLogy(false);
+  canvas->SetLogy(true);
 
   TFile* inputFile = TFile::Open(inputFileName);
 
@@ -81,15 +97,18 @@ void showTemplateShapeBias_i(const TString& inputFileName, const TString& dqmDir
     if ( dqmMonitorElement->GetMaximum() > yMax ) yMax = dqmMonitorElement->GetMaximum();
   }
   
-  TLegend legend(0.44, 0.69, 0.85, 0.89);
+  //TLegend legend(0.44, 0.69, 0.85, 0.89);
+  TLegend legend(0.24, 0.69, 0.85, 0.89);
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
   
   for ( int iDistribution = 0; iDistribution < numDistributions; ++iDistribution ) {
     TH1* dqmMonitorElement = (TH1*)dqmMonitorElements.At(iDistribution);
     
-    dqmMonitorElement->SetMaximum(1.3*yMax);
-    dqmMonitorElement->SetMinimum(0.);
+    //dqmMonitorElement->SetMaximum(1.4*yMax);
+    //dqmMonitorElement->SetMinimum(0.);
+    dqmMonitorElement->SetMaximum(1.e+2*yMax);
+    dqmMonitorElement->SetMinimum(1.e+1);
     
     dqmMonitorElement->SetStats(false);
 
