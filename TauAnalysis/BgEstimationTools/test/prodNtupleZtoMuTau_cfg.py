@@ -43,13 +43,14 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        #'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/BgEstimationTools/test/bgEstSample.root'
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
 
 # produce ntuple
-kineReweight_fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsZtoMuTauII.root')
+kineReweight_fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsZtoMuTau.root')
 kineReweight_dqmDirectory = "DQMData/bgEstKineEventReweights"
 kineReweight_meName = "diTauMvis"
 kineVarExtractor_config = cms.PSet(
@@ -69,10 +70,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonAbsEtaZmumu = cms.PSet(
+        muonEtaZmumu = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstZmumuEnriched'),
-            value = cms.string("abs(leg1.eta)"),
+            value = cms.string("leg1.eta"),
             indices = cms.vuint32(0,1)
         ),
         muonTrackIsoZmumu = cms.PSet(
@@ -115,10 +116,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonAbsEtaWplusJets = cms.PSet(
+        muonEtaWplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
-            value = cms.string("abs(leg1.eta)"),
+            value = cms.string("leg1.eta"),
             indices = cms.vuint32(0,1)
         ),
         muonTrackIsoWplusJets = cms.PSet(
@@ -157,16 +158,16 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg2.tauID('ecalIsolation')"),
             indices = cms.vuint32(0,1)
         ),
-        tauNumSignalConeTracksWplusJets = cms.PSet(
-            pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
-            value = cms.string("leg2.signalTracks.size"),
-            indices = cms.vuint32(0,1)
-        ),
         tauDiscrAgainstMuonsWplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
             value = cms.string("leg2.tauID('againstMuon')"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauDphi12WplusJets = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("dPhi12"),
             indices = cms.vuint32(0,1)
         ),
         diTauMt1MEtWplusJets = cms.PSet(
@@ -197,10 +198,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonAbsEtaTTplusJets = cms.PSet(
+        muonEtaTTplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstTTplusJetsEnriched'),
-            value = cms.string("abs(leg1.eta)"),
+            value = cms.string("leg1.eta"),
             indices = cms.vuint32(0,1)
         ),
         muonTrackIsoTTplusJets = cms.PSet(
@@ -271,40 +272,148 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         ),
 
         # variables for selection of QCD background enriched sample
-        muonPtQCD = cms.PSet(
+        # (loose muon track and ECAL isolation applied)
+        muonPtQCDlooseMuonIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonAbsEtaQCD = cms.PSet(
+        muonEtaQCDlooseMuonIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
-            value = cms.string("abs(leg1.eta)"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
+            value = cms.string("leg1.eta"),
             indices = cms.vuint32(0,1)
         ),
-        muonTrackIsoQCD = cms.PSet(
+        muonTrackIsoQCDlooseMuonIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
             value = cms.string("leg1.trackIso"),
             indices = cms.vuint32(0,1)
         ),
-        muonEcalIsoQCD = cms.PSet(
+        muonEcalIsoQCDlooseMuonIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
             value = cms.string("leg1.ecalIso"),
             indices = cms.vuint32(0,1)
         ),
-        tauDiscrAgainstMuonsQCD = cms.PSet(
+        tauTrackIsoQCDlooseMuonIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
+            value = cms.string("leg2.chargedParticleIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauEcalIsoQCDlooseMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
+            value = cms.string("leg2.gammaParticleIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauDiscrAgainstMuonsQCDlooseMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
             value = cms.string("leg2.tauID('againstMuon')"),
             indices = cms.vuint32(0,1)
         ),
-        numDiTausQCD = cms.PSet(
+        diTauAbsChargeQCDlooseMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
+            value = cms.string("abs(charge)"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauDphi12QCDlooseMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
+            value = cms.string("dPhi12"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauMt1MEtQCDlooseMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
+            value = cms.string("mt1MET"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauPzetaDiffQCDlooseMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
+            value = cms.string("pZeta - 1.5*pZetaVis"),
+            indices = cms.vuint32(0,1)
+        ),
+        numDiTausQCDlooseMuonIso = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched')
-        ), 
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation')
+        ),
+        # (no muon track and ECAL isolation applied)
+        muonPtQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("leg1.pt"),
+            indices = cms.vuint32(0,1)
+        ),
+        muonEtaQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("leg1.eta"),
+            indices = cms.vuint32(0,1)
+        ),
+        muonTrackIsoQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("leg1.trackIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        muonEcalIsoQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("leg1.ecalIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauTrackIsoQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("leg2.chargedParticleIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauEcalIsoQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("leg2.gammaParticleIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauDiscrAgainstMuonsQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("leg2.tauID('againstMuon')"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauAbsChargeQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("abs(charge)"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauDphi12QCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("dPhi12"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauMt1MEtQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("mt1MET"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauPzetaDiffQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+            value = cms.string("pZeta - 1.5*pZetaVis"),
+            indices = cms.vuint32(0,1)
+        ),
+        numDiTausQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation')
+        ),
 
         # "global" variables not specific to any particular background
         metPt = cms.PSet(
@@ -343,9 +452,9 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("p4Vis.mass"),
             indices = cms.vuint32(0,1)
         ),
-        diTauMvis12QCD = cms.PSet(
+        diTauMvis12QCDlooseMuonIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
+            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
             value = cms.string("p4Vis.mass"),
             indices = cms.vuint32(0,1)
         ),
@@ -388,7 +497,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
                 meName = cms.string(kineReweight_dqmDirectory + "/" + "QCD" + "/" + kineReweight_meName)
             ),
             variables = kineVarExtractor_config.clone(
-                src = cms.InputTag('muTauPairsForBgEstQCDenriched')
+                src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation')
             )
         ),
 
@@ -400,27 +509,27 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         #       and **not** used for determining the background contributions to the Z --> mu + tau-jet
         #       cross-section analysis via the template technique
         #
-        ##kineEventReweightTauIdEffQCD = cms.PSet(
-##            pluginType = cms.string("KineEventReweightExtractor"),
-##            weightLookupTable = cms.PSet(
-##                fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsTauIdEffZtoMuTau.root')
-##                meName = cms.string("bgEstKineEventReweights/QCD/muonPtVsAbsEta"),
-##            ),
-##            variables = cms.PSet(
-##                x = cms.PSet(
-##                    pluginType = cms.string("PATMuTauPairValExtractor"),
-##                    src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
-##                    value = cms.string("abs(leg1.eta)"),
-##                    indices = cms.vuint32(0)
-##                ),
-##                y = cms.PSet(
-##                    pluginType = cms.string("PATMuTauPairValExtractor"),
-##                    src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
-##                    value = cms.string("leg1.pt"),
-##                    indices = cms.vuint32(0)
-##                )
-##            )
-##        )
+        kineEventReweightTauIdEffQCDnoMuonIso = cms.PSet(
+            pluginType = cms.string("KineEventReweightExtractor"),
+            weightLookupTable = cms.PSet(
+                fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/muonKineReweightsTauIdEffZtoMuTau.root'),
+                meName = cms.string("DQMData/muonKineReweights/QCDbgEnriched_data/muonPtVsAbsEta")
+            ),
+            variables = cms.PSet(
+                x = cms.PSet(
+                    pluginType = cms.string("PATMuTauPairValExtractor"),
+                    src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+                    value = cms.string("abs(leg1.eta)"),
+                    indices = cms.vuint32(0)
+                ),
+                y = cms.PSet(
+                    pluginType = cms.string("PATMuTauPairValExtractor"),
+                    src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
+                    value = cms.string("leg1.pt"),
+                    indices = cms.vuint32(0)
+                )
+            )
+        )
     )
 )
 
