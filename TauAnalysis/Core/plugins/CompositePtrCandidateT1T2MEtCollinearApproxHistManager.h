@@ -28,13 +28,20 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
   void bookHistogramsImp();
+  void bookMEtHistograms();
   void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
+  void fillMEtHistograms(const edm::Event&, const CompositePtrCandidateT1T2MEt<T1,T2>&, double);
 
 //--- auxiliary functions
   double getDiTauCandidateWeight(const CompositePtrCandidateT1T2MEt<T1,T2>&);
 
 //--- configuration parameters
   edm::InputTag diTauCandidateSrc_;
+
+  edm::InputTag genParticleSrc_;
+  edm::InputTag genJetSrc_;
+  edm::InputTag genMEtSrc_;
+  edm::InputTag recoJetSrc_;
 
   bool requireGenMatch_;
 
@@ -89,6 +96,23 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
   std::vector<MonitorElement*> hCollinearApproxMassDPhi12dep_;
   std::vector<MonitorElement*> hCollinearApproxMassDiTauPtDep_;
   std::vector<MonitorElement*> hCollinearApproxMassMEtPtDep_;
+
+//--- contributions to missing transverse momentum 
+//    from difference sources 
+  MonitorElement* hMEtTauNeutrinosParallelZ_;
+  MonitorElement* hMEtTauNeutrinosPerpendicularZ_;
+  MonitorElement* hMEtNonTauNeutrinosParallelZ_;
+  MonitorElement* hMEtNonTauNeutrinosPerpendicularZ_;
+  MonitorElement* hMEtLeg1MisMeasParallelZ_;
+  MonitorElement* hMEtLeg1MisMeasPerpendicularZ_;
+  MonitorElement* hMEtLeg2MisMeasParallelZ_;
+  MonitorElement* hMEtLeg2MisMeasPerpendicularZ_;
+  MonitorElement* hMEtJetMisMeasParallelZ_;
+  MonitorElement* hMEtJetMisMeasPerpendicularZ_;
+  MonitorElement* hMEtHighEtaJetsParallelZ_;
+  MonitorElement* hMEtHighEtaJetsPerpendicularZ_;
+  MonitorElement* hMEtUnaccountedParallelZ_;
+  MonitorElement* hMEtUnaccountedPerpendicularZ_;
 };
 
 #endif  
