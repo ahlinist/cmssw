@@ -21,12 +21,12 @@
 #define HISTOS2D
 
 const bool defaultDet[7] = {false,
-	true, // PXB
-	true, // PXF
-	false,	// TIB
-	false,	//TID
-	false,	// TOB
-	false	// TEC
+	false, // PXB
+	false, // PXF
+	true,	// TIB
+	true,	//TID
+	true,	// TOB
+        true	// TEC
 };
 
 const bool defaultStereo[2] = {
@@ -56,7 +56,6 @@ public:
 
   bool cut();
 
-
 private:
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
@@ -68,6 +67,8 @@ private:
    Float_t         chi2[2];
    Float_t         path;
    UInt_t          detids[2];
+   Int_t           edge[2];
+   
    Float_t         gX[2];
    Float_t         gY[2];
    Float_t         gZ[2];
@@ -91,11 +92,16 @@ private:
    Float_t         hitEY[2];
    Float_t         simX[2];
    Float_t         momentum;
+   Float_t         clusterWidthX[2];
+   Float_t         clusterWidthY[2];
+   Float_t         clusterSize[2];
+   UInt_t          clusterCharge[2];
 
    // List of branches
    TBranch        *b_hitCounts;   //!
    TBranch        *b_chi2;   //!
    TBranch        *b_path;   //!
+   TBranch        *b_edge;
    TBranch        *b_id;   //!
    TBranch        *b_predPos;   //!
    TBranch        *b_predPar;   //!
@@ -110,6 +116,10 @@ private:
    TBranch        *b_hitEY;   //!
    TBranch        *b_simX;   //!
    TBranch        *b_momentum;     //!
+   TBranch        *b_clusterWidthX;     //!
+   TBranch        *b_clusterWidthY;     //!
+   TBranch        *b_clusterSize;     //!
+   TBranch        *b_clusterCharge;   //!
   //
   typedef std::pair<unsigned int, unsigned int> iiPair;
   typedef iiPair DetIdPair;
@@ -145,6 +155,7 @@ private:
   std::vector<TH1*> simRecHistos_;
   std::vector<TH1*> simTrkHistos_;
   std::vector<TH1*> dxdzHistos_;
+  std::vector<TH1*> dydzHistos_;
   std::vector<TH1*> radHistos_;
   std::vector<TH1*> phiHistos_;
   std::vector<TH1*> zHistos_;
@@ -210,9 +221,6 @@ public:
   /// fill histogram bin with mean and rms
   void fillMean (int ibin, TH1* resultHisto, TH1* inputHisto,
 		 float scale = 1.) const;
-  /// fill histogram bin with mean and rms and systematic
-  void fillMeanWithSyst (int ibin, TH1* resultHisto, TH1* inputHisto,
-		 TH1* inputSystHisto, float scale = 1.) const;
   void fillWidth (int ibin, TH1* resultHisto, TH1* inputHisto,
 		 float scale = 1.) const;
 
@@ -234,7 +242,7 @@ OverlapHistos::OverlapHistos(TTree *tree)
   }
   Init(tree);
   outputFile = "output_test.root";
-  threshold = 15;
+  threshold = 25;
   
   // Some default values:
   acceptLayer = 0;
@@ -290,6 +298,7 @@ void OverlapHistos::Init(TTree *tree)
    fChain->SetBranchAddress("hitCounts", &found, &b_hitCounts);
    fChain->SetBranchAddress("chi2", chi2, &b_chi2);
    fChain->SetBranchAddress("path", &path, &b_path);
+   fChain->SetBranchAddress("edge", &edge, &b_edge);
    fChain->SetBranchAddress("detids", detids, &b_id);
    fChain->SetBranchAddress("predPos", gX, &b_predPos);
    fChain->SetBranchAddress("predPar", predQP, &b_predPar);
@@ -304,6 +313,10 @@ void OverlapHistos::Init(TTree *tree)
    fChain->SetBranchAddress("hitEY", hitEY, &b_hitEY);
    fChain->SetBranchAddress("simX", simX, &b_simX);
    fChain->SetBranchAddress("momentum", &momentum, &b_momentum);
+   fChain->SetBranchAddress("clusterWidthX", clusterWidthX, &b_clusterWidthX);
+   fChain->SetBranchAddress("clusterWidthY", clusterWidthY, &b_clusterWidthY);
+   fChain->SetBranchAddress("clusterSize", clusterSize, &b_clusterSize);
+   fChain->SetBranchAddress("clusterCharge", clusterCharge, &b_clusterCharge);
    Notify();
 }
 

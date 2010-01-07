@@ -29,6 +29,9 @@
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetType.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetType.h"
+#include "Geometry/CommonDetUnit/interface/TrackingGeometry.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
@@ -40,6 +43,8 @@
 #include "DataFormats/SiStripDetId/interface/TIDDetId.h"
 #include "DataFormats/SiStripDetId/interface/TOBDetId.h"
 #include "DataFormats/SiStripDetId/interface/TECDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "RecoLocalTracker/ClusterParameterEstimator/interface/StripClusterParameterEstimator.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
 #include "DataFormats/TrackReco/interface/DeDxData.h"
@@ -53,7 +58,8 @@
 #include "Geometry/TrackerGeometryBuilder/interface/GluedGeomDet.h"
 #include "DataFormats/Common/interface/DetSetVector.h"
 #include "DataFormats/Common/interface/DetSetVectorNew.h"
-#include "DataFormats/SiStripCluster/interface/SiStripCluster.h" 
+#include "DataFormats/SiStripCluster/interface/SiStripCluster.h"
+#include "DataFormats/SiPixelCluster/interface/SiPixelCluster.h"
 
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
@@ -142,19 +148,28 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   
   // Clusters
   // get the SiStripClusters from the event
-  edm::Handle< edmNew::DetSetVector<SiStripCluster> > theClusters;
-  e.getByLabel("siStripClusters", theClusters);
+  edm::Handle< edmNew::DetSetVector<SiStripCluster> > theStripClusters;
+  e.getByLabel("siStripClusters", theStripClusters);
+
+  //should try getting the pixel clusters here, too.
+  edm::Handle<edmNew::DetSetVector<SiPixelCluster> > thePixelClusters;
+  e.getByLabel("siPixelClusters",  thePixelClusters);
 
   //get tracker geometry
   edm::ESHandle<TrackerGeometry> tracker;
   es.get<TrackerDigiGeometryRecord>().get(tracker);
   const TrackerGeometry * tkgeom=&(* tracker);
 
-  //get Cluster Parameter Estimator
-  //std::string cpe = conf_.getParameter<std::string>("StripCPE");
-  edm::ESHandle<StripClusterParameterEstimator> parameterestimator;
-  es.get<TkStripCPERecord>().get("StripCPEfromTrackAngle", parameterestimator); 
-  const StripClusterParameterEstimator &stripcpe(*parameterestimator);
+  //get strip Cluster Parameter Estimator
+  edm::ESHandle<StripClusterParameterEstimator> stripCPE;
+  es.get<TkStripCPERecord>().get("StripCPEfromTrackAngle", stripCPE); 
+  const StripClusterParameterEstimator &stripcpe(*stripCPE);
+
+  //get pixel Cluster Parameter Estimator
+  edm::ESHandle<PixelClusterParameterEstimator> pixelCPE;
+  //es.get<TkPixelCPERecord>().get("PixelCPEfromTrackAngle", pixelCPE); 
+  es.get<TkPixelCPERecord>().get("PixelCPETemplateReco", pixelCPE); 
+  const PixelClusterParameterEstimator &pixelcpe(*pixelCPE);
 
   // get the SiStripQuality records
   edm::ESHandle<SiStripQuality> SiStripQuality_;
@@ -172,12 +187,12 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   events++;
   
   // *************** SiStripCluster Collection
-  const edmNew::DetSetVector<SiStripCluster>& input = *theClusters;
+  const edmNew::DetSetVector<SiStripCluster>& stripClusters = *theStripClusters;
 
   //go through clusters to write out global position of good clusters for the layer understudy for comparison
   // Loop through clusters just to print out locations
 
-  for (edmNew::DetSetVector<SiStripCluster>::const_iterator DSViter = input.begin(); DSViter != input.end(); DSViter++) {
+  for (edmNew::DetSetVector<SiStripCluster>::const_iterator DSViter = stripClusters.begin(); DSViter != stripClusters.end(); DSViter++) {
     // DSViter is a vector of SiStripClusters located on a single module
     unsigned int ClusterId = DSViter->id();
     DetId ClusterDetId(ClusterId);
@@ -209,10 +224,30 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
       if    (subid==  StripSubdetector::TEC) {
 	layer = TECDetId(ClusterDetId).wheel() + 13;
       }
+      if ( subid==PixelSubdetector::PixelBarrel ) {
+	layer = PXBDetId(ClusterDetId).layer() + 22;
+      }
+      if ( subid==PixelSubdetector::PixelEndcap ) {
+	layer = PXFDetId(ClusterDetId).disk() + 25;
+      }
 
       if(DEBUG) cout << "Found hit in cluster collection layer = " << layer << " with id = " << ClusterId << "   local X position = " << lp.x() << " +- " << sqrt(parameters.second.xx()) << "   matched/stereo/rphi = " << ((ClusterId & 0x3)==0) << "/" << ((ClusterId & 0x3)==1) << "/" << ((ClusterId & 0x3)==2) << endl;
     }
   }
+
+  // *************** SiPixelCluster Collection
+  const edmNew::DetSetVector<SiPixelCluster>& pixelClusters = *thePixelClusters;
+  
+  //go through clusters to write out global position of good clusters for the layer understudy for comparison
+  // Loop through clusters just to print out locations
+  
+  for (edmNew::DetSetVector<SiPixelCluster>::const_iterator DSViter = pixelClusters.begin(); DSViter != pixelClusters.end(); DSViter++) {
+    // DSViter is a vector of SiStripClusters located on a single module
+    unsigned int pixelClusterId = DSViter->id();
+
+    cout << "pixel cluster ID = " << pixelClusterId << endl;
+
+  }  
   
   // Tracking 
   const   reco::TrackCollection *tracksCKF=trackCollectionCKF.product();
@@ -289,8 +324,14 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	TECDetId tecid(iidd);
 	TKlayers = tecid.wheel() + 13 ; 
       }
+      if ( subid==PixelSubdetector::PixelBarrel ) {
+	TKlayers = PXBDetId(iidd).layer() + 22;
+      }
+      if ( subid==PixelSubdetector::PixelEndcap ) {
+	TKlayers = PXFDetId(iidd).disk() + 25;
+      }
       if (DEBUG)	cout << "TKlayer from trajectory: " << TKlayers << "  from module = " << iidd <<  "   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
-
+      
       // Make vector of TrajectoryAtValidHits to hold the trajectories
       std::vector<TrajectoryAtValidHit> TMs;
       
@@ -348,16 +389,17 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 
 	  // RPhi RecHit Efficiency 
 	  
-	  if (input.size() > 0 ) {  
-	    if (DEBUG) cout << "Checking clusters with size = " << input.size() << endl;
+	  if (stripClusters.size() > 0 ) {  
+	    if (DEBUG) cout << "Checking clusters with size = " << stripClusters.size() << endl;
 	    int nClusters = 0;
 	    std::vector< std::vector<float> > VCluster_info; //fill with X residual, X residual pull, local X, sig(X), local Y, sig(Y), StoN
-	    for (edmNew::DetSetVector<SiStripCluster>::const_iterator DSViter = input.begin(); DSViter != input.end(); DSViter++) {
+	    // check sistripclusters for a match
+	    for (edmNew::DetSetVector<SiStripCluster>::const_iterator DSViter = stripClusters.begin(); DSViter != stripClusters.end(); DSViter++) {
 	      // DSViter is a vector of SiStripClusters located on a single module
-	      if (DEBUG)      cout << "the ID from the DSViter = " << DSViter->id() << endl; 
+	      if (DEBUG)      cout << "the ID from the DSViter over strip clusters = " << DSViter->id() << endl; 
 	      unsigned int ClusterId = DSViter->id();
 	      if (ClusterId == iidd) {
-		if (DEBUG) cout << "found  (ClusterId == iidd) with ClusterId = " << ClusterId << " and iidd = " << iidd << endl;
+		if (DEBUG) cout << "found strip (ClusterId == iidd) with ClusterId = " << ClusterId << " and iidd = " << iidd << endl;
 		DetId ClusterDetId(ClusterId);
 		const StripGeomDetUnit * stripdet=(const StripGeomDetUnit*)tkgeom->idToDetUnit(ClusterDetId);
 		
@@ -395,6 +437,44 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 		}
 	      }
 	    }
+
+	    // check sipixelclusters for a match
+	    for (edmNew::DetSetVector<SiPixelCluster>::const_iterator DSViter = pixelClusters.begin(); DSViter != pixelClusters.end(); DSViter++) {
+	      // DSViter is a vector of SiPixelClusters located on a single module
+	      if (DEBUG)      cout << "the ID from the DSViter over pixel clusters = " << DSViter->id() << endl; 
+	      unsigned int ClusterId = DSViter->id();
+	      if (ClusterId == iidd) {
+		
+		if (DEBUG) cout << "found pixel (ClusterId == iidd) with ClusterId = " << ClusterId << " and iidd = " << iidd << endl;
+		
+		DetId ClusterDetId(ClusterId);
+		const PixelGeomDetUnit * pixeldet=(const PixelGeomDetUnit*)tkgeom->idToDetUnit(ClusterDetId);
+		for(edmNew::DetSet<SiPixelCluster>::const_iterator iter=DSViter->begin();iter!=DSViter->end();++iter) {
+		  //iter is a single SiPixelCluster
+		  PixelClusterParameterEstimator::LocalValues parameters=pixelcpe.localParameters(*iter,*pixeldet);
+		  float res = (parameters.first.x() - xloc);
+      		  float sigma = checkConsistency(parameters , xloc, xErr);
+		  
+		  std::vector< float > cluster_info;
+		  cluster_info.push_back(res); 
+		  cluster_info.push_back(sigma);
+		  cluster_info.push_back(parameters.first.x()); 
+		  cluster_info.push_back(sqrt(parameters.second.xx()));
+		  cluster_info.push_back(parameters.first.y());
+		  cluster_info.push_back(sqrt(parameters.second.yy()));
+		  //cout << "before getting signal over noise" << endl;
+		  //cluster_info.push_back( clusterInfo.signalOverNoise() );
+		  //cluster_info.push_back( clusterInfo.getSignalOverNoise() );
+		  //cout << "after getting signal over noise" << endl;
+		  VCluster_info.push_back(cluster_info);
+		  nClusters++;
+		  if (DEBUG) cout << "Have ID match. residual = " << VCluster_info.back()[0] << "  res sigma = " << VCluster_info.back()[1] << endl;
+		  if (DEBUG) cout << "trajectory measurement compatability estimate = " << (*itm).estimate() << endl;
+		  if (DEBUG) cout << "hit position = " << parameters.first.x() << "  hit error = " << sqrt(parameters.second.xx()) << "  trajectory position = " << xloc << "  traj error = " << xErr << endl;		
+		}
+	      }
+	    }
+	    
 	    float FinalResSig = 1000.0;
 	    float FinalCluster[7]= {1000.0, 1000.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 	    if (nClusters > 0) {
@@ -595,8 +675,6 @@ bool HitEff::check2DPartner(uint iidd, std::vector<TrajectoryMeasurement> traj) 
   }
   return found2DPartner;
 }
-
-//  const edmNew::DetSetVector<SiStripCluster>& input = *theClusters;
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(HitEff);

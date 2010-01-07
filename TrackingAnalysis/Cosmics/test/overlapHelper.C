@@ -66,7 +66,7 @@ void printId(unsigned int id)
   vector<unsigned int> info;
   fullDecode (id, subdet, layer, part,info, stereo);
   if ( subdet==1 ) {
-  cout << "PXE " << layer //layer
+  cout << "PXB " << layer //layer
        << " Ladder " <<info[0]
        << " Nbr " <<info[1];
   }
