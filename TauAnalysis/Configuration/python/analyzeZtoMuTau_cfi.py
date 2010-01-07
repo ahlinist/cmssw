@@ -98,6 +98,7 @@ diTauCandidateCollinearApproxBinningForMuTau =  cms.PSet(
 # import config for binning results
 # used to estimate systematic uncertainties
 from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 sysUncertaintyBinnerForMuTau = copy.deepcopy(sysUncertaintyBinner)
 sysUncertaintyBinnerForMuTau.systematics = cms.vstring(
     getSysUncertaintyNames(
