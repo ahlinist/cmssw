@@ -124,11 +124,13 @@ void DQMHistEffProducer::endJob()
     separateMonitorElementFromDirectoryName(plot->meName_numerator_, numeratorHistogramName, numeratorHistogramDirectory);
     MonitorElement* meNumerator = dqmStore.get(std::string(numeratorHistogramDirectory).append(dqmSeparator).append(numeratorHistogramName));
     TH1* histoNumerator = ( meNumerator != NULL ) ? meNumerator->getTH1() : NULL;
-    
+    //std::cout << "meName(numerator) = " << plot->meName_numerator_ << ": integral = " << histoNumerator->Integral() << std::endl;
+
     std::string denominatorHistogramName, denominatorHistogramDirectory;
     separateMonitorElementFromDirectoryName(plot->meName_denominator_, denominatorHistogramName, denominatorHistogramDirectory);
     MonitorElement* meDenominator = dqmStore.get(std::string(denominatorHistogramDirectory).append(dqmSeparator).append(denominatorHistogramName));
     TH1* histoDenominator = ( meDenominator != NULL ) ? meDenominator->getTH1() : NULL;
+    //std::cout << "meName(denominator) = " << plot->meName_denominator_ << ": integral = " << histoDenominator->Integral() << std::endl;
     
     if ( histoNumerator != NULL && histoDenominator != NULL ) {
       if ( !histoNumerator->GetSumw2N()   ) histoNumerator->Sumw2();
