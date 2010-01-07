@@ -701,25 +701,18 @@ void printMissingEtInfo_i(const edm::Event& evt, const edm::InputTag& src, std::
   }
 }
 
-void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
+void printJetMatchingInfo_i(const edm::Event& evt, const edm::InputTag& srcRecoJet, const edm::InputTag& srcGenJet, 
+			    std::ostream& stream, const char* label)
 {
-//--- print-out PAT/reco missing Et information
-  
-  if ( !outputStream_ ) {
-    edm::LogError ("printMissingEtInfo") << " outputStream = NULL --> skipping !!";
-    return;
-  }
+  std::cout << label << " matching:" << std::endl;
 
-  printMissingEtInfo_i(evt, patCaloMEtSource_, *outputStream_, "recoCaloMET:");
-  printMissingEtInfo_i(evt, patPFMEtSource_, *outputStream_, "recoPFMET:");
-
-  edm::Handle<reco::PFJetCollection> recoJets;
-  evt.getByLabel("iterativeCone5PFJets", recoJets);
+  edm::Handle<edm::View<reco::Jet> > recoJets;
+  evt.getByLabel(srcRecoJet, recoJets);
 
   edm::Handle<reco::GenJetCollection> genJets;
-  evt.getByLabel(genJetSource_, genJets);
+  evt.getByLabel(srcGenJet, genJets);
 
-  std::vector<const reco::PFJet*> recoJets_matched;
+  std::vector<const reco::Jet*> recoJets_matched;
 
   const double maxPtDifference = 2.5;
 
@@ -731,25 +724,22 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
     
     if ( !(genJet->pt() > maxPtDifference) ) continue;
 
-    double dPxMin = 1.e+3;
-    double dPyMin = 1.e+3;
+    const reco::Jet* recoJet_matched = 0;
+    double dRmin = 1.e+3;
 
-    const reco::PFJet* recoJet_matched = 0;
-
-    for ( reco::PFJetCollection::const_iterator recoJet = recoJets->begin(); 
+    for ( edm::View<reco::Jet>::const_iterator recoJet = recoJets->begin(); 
 	  recoJet != recoJets->end(); ++recoJet ) {
-
-      double dPx = recoJet->px() - genJetVisMomentum.px();
-      double dPy = recoJet->py() - genJetVisMomentum.py();
-      if ( reco::deltaR(genJetVisMomentum, recoJet->p4()) < 0.5 &&
-	   (dPx*dPx + dPy*dPy) < (dPxMin*dPxMin + dPyMin*dPyMin) ) {
-	dPxMin = dPx;
-	dPyMin = dPy;
+      double dR = reco::deltaR(genJetVisMomentum, recoJet->p4());
+      if ( dR < 0.5 && dR < dRmin ) {
 	recoJet_matched = &(*recoJet);
+	dRmin = dR;
       }
     }
-
-    if ( TMath::Sqrt(dPxMin*dPxMin + dPyMin*dPyMin) > maxPtDifference ) {
+    
+    double dPx = ( recoJet_matched ) ? genJetVisMomentum.px() - recoJet_matched->px() : genJetVisMomentum.px();
+    double dPy = ( recoJet_matched ) ? genJetVisMomentum.py() - recoJet_matched->py() : genJetVisMomentum.py();
+    
+    if ( TMath::Sqrt(dPx*dPx + dPy*dPy) > maxPtDifference ) {
       std::cout << "genJet not matching recoJet: Pt = " << genJetVisMomentum.pt() << ", eta = " << genJetVisMomentum.eta() << "," 
 		<< " phi = " << genJetVisMomentum.phi()*180./TMath::Pi() << std::endl; 
       std::cout << "(genPx = " << genJetVisMomentum.px() << ", genPy = " << genJetVisMomentum.py();
@@ -770,14 +760,14 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
     recoJets_matched.push_back(recoJet_matched);
   }
 
-  for ( reco::PFJetCollection::const_iterator recoJet = recoJets->begin(); 
+  for ( edm::View<reco::Jet>::const_iterator recoJet = recoJets->begin(); 
 	recoJet != recoJets->end(); ++recoJet ) {
 
     if ( !(recoJet->pt() > maxPtDifference) ) continue;
 
     bool isMatched = false;
 
-    for ( std::vector<const reco::PFJet*>::const_iterator recoJet_matched = recoJets_matched.begin(); 
+    for ( std::vector<const reco::Jet*>::const_iterator recoJet_matched = recoJets_matched.begin(); 
 	  recoJet_matched != recoJets_matched.end(); ++recoJet_matched ) {
       if ( &(*recoJet) == (*recoJet_matched) ) isMatched = true;
     }
@@ -788,7 +778,23 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
       std::cout << "(recoPx = " << recoJet->px() << ", recoPy = " << recoJet->py() << ")" << std::endl;
     }
   }
+}
+
+void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
+{
+//--- print-out PAT/reco missing Et information
   
+  if ( !outputStream_ ) {
+    edm::LogError ("printMissingEtInfo") << " outputStream = NULL --> skipping !!";
+    return;
+  }
+
+  printMissingEtInfo_i(evt, patCaloMEtSource_, *outputStream_, "recoCaloMET:");
+  printMissingEtInfo_i(evt, patPFMEtSource_, *outputStream_, "recoPFMET:");
+
+  printJetMatchingInfo_i(evt, edm::InputTag("iterativeCone5PFJets"), genJetSource_, *outputStream_, "PFJet");
+  printJetMatchingInfo_i(evt, edm::InputTag("iterativeCone5CaloJets"), genJetSource_, *outputStream_, "CaloJet");
+
   edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
   evt.getByLabel(genParticleSource_, genParticleCollection);
 
@@ -807,8 +813,9 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
 
   reco::Candidate::LorentzVector invisibleHighEtaGenJets(0,0,0,0);
 
-  //edm::Handle<reco::GenJetCollection> genJets;
-  //evt.getByLabel(genJetSource_, genJets);
+  edm::Handle<reco::GenJetCollection> genJets;
+  evt.getByLabel(genJetSource_, genJets);
+
   for ( reco::GenJetCollection::const_iterator genJet = genJets->begin();
 	genJet != genJets->end(); ++genJet ) {
     if ( TMath::Abs(genJet->eta()) > 5.0 ) invisibleHighEtaGenJets += genJet->p4();
