@@ -13,25 +13,34 @@ BoolEventSelFlagProducer::BoolEventSelFlagProducer(const edm::ParameterSet& cfg)
     eventSelectorEntry eventSelector;
     std::string eventSelectorType = cfg.getParameter<std::string>("pluginType");
     eventSelector.plugin_ = EventSelectorPluginFactory::get()->create(eventSelectorType, cfg);
-    eventSelectors_.push_back(eventSelector);
 
 //--- declare production of single boolean flag
-//    (without instance label)
-    produces<bool>();
+//    with instance label set to 'instanceName' configuration parameter
+//    in case 'instanceName' configuration parameter is specified, 
+//    otherwise without instance label
+    if ( cfg.exists("instanceName") ) {
+      eventSelector.instanceName_ = cfg.getParameter<std::string>("instanceName");
+      produces<bool>(eventSelector.instanceName_);
+    } else {
+      produces<bool>();
+    }
+
+    eventSelectors_.push_back(eventSelector);
   } else if ( cfg.exists("selectors") ) { // multiple plugin case
     typedef std::vector<edm::ParameterSet> vParameterSet;
     vParameterSet cfgSelectors = cfg.getParameter<vParameterSet>("selectors");
     for ( vParameterSet::const_iterator cfgSelector = cfgSelectors.begin(); 
 	  cfgSelector != cfgSelectors.end(); ++cfgSelector ) {
       eventSelectorEntry eventSelector;
-      eventSelector.instanceName_ = cfgSelector->getParameter<std::string>("instanceName");
       std::string eventSelectorType = cfgSelector->getParameter<std::string>("pluginType");
       eventSelector.plugin_ = EventSelectorPluginFactory::get()->create(eventSelectorType, *cfgSelector);
-      eventSelectors_.push_back(eventSelector);
 
 //--- declare production of single boolean flag
 //    with instance label set to 'instanceName' configuration parameter
+      eventSelector.instanceName_ = cfgSelector->getParameter<std::string>("instanceName");
       produces<bool>(eventSelector.instanceName_);
+
+      eventSelectors_.push_back(eventSelector);
     }
   } else { 
     edm::LogError("BoolEventSelFlagProducer") << " Failed to decode Configuration ParameterSet !!";
