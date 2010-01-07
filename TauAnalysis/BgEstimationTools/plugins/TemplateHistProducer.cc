@@ -9,18 +9,6 @@
 
 const float epsilon = 1.e-3;
 
-TemplateHistProducer::histEntryType::~histEntryType()
-{
-  for ( std::vector<axisEntryType>::iterator it = axisEntries_.begin();
-	it != axisEntries_.end(); ++it ) {
-    delete[] it->binEdges_;
-  }
-}
-
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
-
 TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
   : allEventsTree_(0), selEventsTree_(0),
     cfgError_(0)
@@ -73,10 +61,9 @@ void TemplateHistProducer::readHistEntry(const edm::ParameterSet& cfg)
     histEntryType::axisEntryType axisEntry;
 
     axisEntry.branchName_ = cfgVariable->getParameter<std::string>("branchName");
-
     axisEntry.numBins_ = cfgVariable->getParameter<unsigned>("numBins");
-    axisEntry.binEdges_ = new float[axisEntry.numBins_];
-    
+    axisEntry.binEdges_.Set(axisEntry.numBins_ + 1);
+
     if ( cfgVariable->exists("min") && cfgVariable->exists("max") && cfgVariable->exists("binEdges") ) {
       edm::LogError ("readHistEntry") << " Configuration Parameters 'min' and 'max'" 
 				      << " and Configuration Parameter 'binEdges' are mutually exclusive !!";
@@ -108,10 +95,9 @@ void TemplateHistProducer::readHistEntry(const edm::ParameterSet& cfg)
 				      << " or Configuration Parameter 'binEdges' must be specified !!";
       cfgError_ = 1;
     } 
-
     histEntry.axisEntries_.push_back(axisEntry);
   }
-  
+
   std::string meName = cfg.getParameter<std::string>("meName");
   if ( meName.find("/") != std::string::npos ) {
     size_t posSeparator = meName.find_last_of("/");
@@ -127,7 +113,7 @@ void TemplateHistProducer::readHistEntry(const edm::ParameterSet& cfg)
     histEntry.dqmDirectory_store_ = "";
     histEntry.meName_ = meName;
   }
-  
+
   histEntry.sumWeights_ = ( cfg.exists("sumWeights") ) ? cfg.getParameter<bool>("sumWeights") : true;
 
   //std::cout << " dqmDirectory_store = " << histEntry.dqmDirectory_store_ << std::endl;
@@ -163,12 +149,12 @@ void TemplateHistProducer::endJob()
     if ( histEntry->dqmDirectory_store_ != "" ) dqmStore.setCurrentFolder(histEntry->dqmDirectory_store_);
     
     if ( histEntry->axisEntries_.size() == 1 ) {
-      dqmStore.book1D(histEntry->meName_, histEntry->meName_, 
-		      histEntry->axisEntries_[0].numBins_, histEntry->axisEntries_[0].binEdges_); 
+      histEntry->me_ = dqmStore.book1D(histEntry->meName_, histEntry->meName_, 
+				       histEntry->axisEntries_[0].numBins_, histEntry->axisEntries_[0].binEdges_.GetArray()); 
     } else if ( histEntry->axisEntries_.size() == 2 ) {
-      dqmStore.book2D(histEntry->meName_, histEntry->meName_, 
-		      histEntry->axisEntries_[0].numBins_, histEntry->axisEntries_[0].binEdges_,
-		      histEntry->axisEntries_[1].numBins_, histEntry->axisEntries_[1].binEdges_);
+      histEntry->me_ = dqmStore.book2D(histEntry->meName_, histEntry->meName_, 
+				       histEntry->axisEntries_[0].numBins_, histEntry->axisEntries_[0].binEdges_.GetArray(),
+				       histEntry->axisEntries_[1].numBins_, histEntry->axisEntries_[1].binEdges_.GetArray());
     } else {
       edm::LogError ("endJob") << " Invalid dimension = " << histEntry->axisEntries_.size() 
 			       << " requested for histogram = " << histEntry->meName_ << " --> skipping !!";
