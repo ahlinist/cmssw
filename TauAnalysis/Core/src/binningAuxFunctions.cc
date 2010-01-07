@@ -26,7 +26,7 @@ void decodeBinningStringRep(const std::string& entry, std::string& meName, std::
 {
   //std::cout << "<decodeBinningStringRep>:" << std::endl;
   //std::cout << " entry = " << entry << std::endl;
-
+  
   TString pattern_entry = "meName[[:space:]]*=[[:space:]]*[[:alnum:]_";
   pattern_entry.Append(meOptionsSeparator).Append("]+");
   pattern_entry.Append("; meType[[:space:]]*=[[:space:]]*[[:alnum:]]+");
@@ -120,6 +120,50 @@ std::vector<double> decodeVDoubleStringRep(const std::string& entry, int& error)
     delete subStrings;
   } else {
     edm::LogError ("decodeVDoubleStringRep") << " Error in parsing string = " << entry << " !!";
+    error = 1;
+  }
+  
+  return elements;
+}
+
+std::string encodeVStringStringRep(const std::vector<std::string>& elements)
+{
+  std::ostringstream entry;
+
+  unsigned numElements = elements.size();
+  for ( unsigned iElement = 0; iElement < numElements; ++iElement ) {
+    entry << elements[iElement];
+    if ( iElement < (numElements - 1) ) entry << ", ";
+  }
+  
+  return entry.str();
+}
+
+std::vector<std::string> decodeVStringStringRep(const std::string& entry, int& error)
+{
+  const std::string pattern_string = "[[:alnum:]]+";
+
+  TString pattern_entry = pattern_string.data();
+  pattern_entry.Append("[,[:space:]*").Append(pattern_string.data()).Append("]*");
+  TPRegexp regexpParser_entry(pattern_entry);
+
+  TString entry_tstring = entry.data();
+  //std::cout << "entry_tstring = " << entry_tstring << std::endl;
+
+  std::vector<std::string> elements;
+
+  if ( regexpParser_entry.Match(entry_tstring) == 1 ) { 
+//--- iterate over all vector elements (separated by ",")
+    TObjArray* subStrings = entry_tstring.Tokenize(",");
+    unsigned numElements = subStrings->GetEntries();
+    for ( unsigned iElement = 0; iElement < numElements; ++iElement ) {
+      std::string element = ((TObjString*)subStrings->At(iElement))->GetString().ReplaceAll(" ", "").Data();
+      //std::cout << " element = " << element << std::endl;
+      elements.push_back(element);
+    }
+    delete subStrings;
+  } else {
+    edm::LogError ("decodeVStringStringRep") << " Error in parsing string = " << entry << " !!";
     error = 1;
   }
   
