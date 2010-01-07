@@ -7,6 +7,7 @@
 #include <TGraphErrors.h>
 #include <TLegend.h>
 #include <TMath.h>
+#include <TStyle.h>
 
 #include <iostream>
 #include <iomanip>
@@ -33,7 +34,7 @@ double getMedian(const TH1* histogram, bool includeUnderAndOverflowBins = false)
   return -1.;
 }
 
-void studyCollinearApproxMassResolution(TCanvas * canvas, TFile* inputFile, const TString& dqmDirectory_Ztautau,
+void studyCollinearApproxMassResolution(TCanvas * canvas, TFile* inputFile, const TString& dqmDirectory,
 					const char* meName, int numBins, int firstBin, int lastBin, double xIncr,
 					const char* plotTitle, const char* plotOutputFileName)
 {
@@ -47,14 +48,14 @@ void studyCollinearApproxMassResolution(TCanvas * canvas, TFile* inputFile, cons
   TArrayD rms(numBins);
   TArrayD rmsError(numBins);
   TGraphErrors* rms_graph = new TGraphErrors(numBins);  
-  TH1* me_sum[numBins];
+  TH1** me_sum = new TH1*[numBins];
 
   int binIncr = ( lastBin > firstBin ) ? +1 : -1;
 
   for ( int iBin = firstBin; iBin >= 0 && iBin <= TMath::Max(firstBin, lastBin); iBin += binIncr ) {
     TString meName_i = TString(meName).Append("_").Append(TString::Format("%02i", iBin));
     std::cout << "meName_i = " << meName_i.Data() << std::endl;
-    TH1* me_i = (TH1*)inputFile->Get(TString(dqmDirectory_Ztautau).Append("/").Append(meName_i));
+    TH1* me_i = (TH1*)inputFile->Get(TString(dqmDirectory).Append("/").Append(meName_i));
     std::cout << "me_i = " << me_i << std::endl;
 
     if ( iBin == firstBin ) {
@@ -77,12 +78,22 @@ void studyCollinearApproxMassResolution(TCanvas * canvas, TFile* inputFile, cons
 
     TString meOutputFileName = TString(meName_i).Append(".png");
 
-    me_sum[iBin]->Draw();
-    canvas->Update();
-    canvas->Print(meOutputFileName);
+    if ( me_sum[iBin]->Integral() > 0. ) {
+      me_sum[iBin]->Draw();
+      canvas->Update();
+      canvas->Print(meOutputFileName);
+    } else {
+      std::cerr << "me_sum is empty --> skipping !!" << std::endl;
+      //continue;
+    }
   }
 
   double numEntries_norm = numEntries[lastBin];
+
+  if ( numEntries_norm == 0. ) {
+    std::cerr << "numEntries_norm is zero --> skipping !!" << std::endl;
+    return;
+  }
 
   for ( int iBin = 0; iBin < numBins; ++iBin ) {
     numEntries[iBin] /= numEntries_norm;
@@ -132,24 +143,35 @@ void studyCollinearApproxMassResolution(TCanvas * canvas, TFile* inputFile, cons
 
   canvas->Update();
   canvas->Print(plotOutputFileName);
+
+  for ( int iBin = 0; iBin < numBins; ++iBin ) {
+    delete me_sum[iBin];
+  }
+
+  delete[] me_sum;
 }
 
-void studyCollinearApproxMassEfficiency(TCanvas * canvas, TFile* inputFile, const TString& dqmDirectory_Ztautau,
-					const char* meName_numerator, const char* meName_denominator, 
-					const char* meName_efficiency, const char* xAxisLabel,
-					const char* plotTitle, const char* plotOutputFileName)
+void studyCollinearApproxMassEfficiency1d(TCanvas * canvas, TFile* inputFile, 
+					  const TString& dqmDirectory_numerator,
+					  const TString& dqmDirectory_denominator,
+					  const char* meName_numerator, const char* meName_denominator,
+					  const char* meName_efficiency, const char* xAxisLabel,
+					  const char* plotTitle, const char* plotOutputFileName)
 {
   canvas->SetLogy(false);
 
-  TH1* me_numerator = (TH1*)inputFile->Get(TString(dqmDirectory_Ztautau).Append("/").Append(meName_numerator));
-  TH1* me_denominator = (TH1*)inputFile->Get(TString(dqmDirectory_Ztautau).Append("/").Append(meName_denominator));
+  TH1* me_numerator = (TH1*)inputFile->Get(TString(dqmDirectory_numerator).Append("/").Append(meName_numerator));
+  std::cout << "me_numerator = " << me_numerator << ", integral = " << me_numerator->Integral() << std::endl;
+  TH1* me_denominator = (TH1*)inputFile->Get(TString(dqmDirectory_denominator).Append("/").Append(meName_denominator));
+  std::cout << "me_denominator = " << me_denominator << ", integral = " << me_denominator->Integral() << std::endl;
 
-  int numBinsX = meName_denominator->GetNbinsX();
-  double xMin = meName_denominator->GetXaxis()->GetXmin();
-  double xMax = meName_denominator->GetXaxis()->GetXmax();
+  int numBinsX = me_denominator->GetNbinsX();
+  double xMin = me_denominator->GetXaxis()->GetXmin();
+  double xMax = me_denominator->GetXaxis()->GetXmax();
   
   TH1* me_efficiency = new TH1F(meName_efficiency, plotTitle, numBinsX, xMin, xMax);
   me_efficiency->Divide(me_numerator, me_denominator);
+  me_efficiency->Rebin(2);
   me_efficiency->SetStats(false);
   me_efficiency->SetXTitle(xAxisLabel);
   me_efficiency->GetXaxis()->SetTitleOffset(1.2);
@@ -157,7 +179,7 @@ void studyCollinearApproxMassEfficiency(TCanvas * canvas, TFile* inputFile, cons
   me_efficiency->SetMaximum(1.4);
   me_efficiency->SetLineColor(817);
   me_efficiency->SetLineWidth(2);
-  me_efficiency->Draw("hist");
+  me_efficiency->Draw("e1p");
 
   TLegend legend(0.53, 0.73, 0.88, 0.89);
   legend.SetBorderSize(0);
@@ -169,43 +191,135 @@ void studyCollinearApproxMassEfficiency(TCanvas * canvas, TFile* inputFile, cons
   canvas->Print(plotOutputFileName);
 }
 
-void studyCollinearApproxMassResolution_dPhi12Dep(TCanvas * canvas, TFile* inputFile, const TString& dqmDirectory_Ztautau)
+void studyCollinearApproxMassEfficiency2d(TCanvas * canvas, TFile* inputFile, 
+					  const TString& dqmDirectory_numerator,
+					  const TString& dqmDirectory_denominator,
+					  const char* meName_numerator, const char* meName_denominator,
+					  const char* meName_efficiency, const char* xAxisLabel, const char* yAxisLabel,
+					  const char* plotTitle, const char* plotOutputFileName)
 {
-  studyCollinearApproxMassResolution(canvas, inputFile, dqmDirectory_Ztautau, 
+  canvas->SetLogy(false);
+
+  TH1* me_numerator = (TH2*)inputFile->Get(TString(dqmDirectory_numerator).Append("/").Append(meName_numerator));
+  std::cout << "me_numerator = " << me_numerator << ", integral = " << me_numerator->Integral() << std::endl;
+  TH1* me_denominator = (TH2*)inputFile->Get(TString(dqmDirectory_denominator).Append("/").Append(meName_denominator));
+  std::cout << "me_denominator = " << me_denominator << ", integral = " << me_denominator->Integral() << std::endl;
+
+  gStyle->SetPalette(1);
+
+  TH1* me_efficiency = (TH1*)me_numerator->Clone(meName_efficiency);
+  me_efficiency->SetTitle(plotTitle);
+  me_efficiency->Divide(me_numerator, me_denominator);
+  me_efficiency->RebinX(2);
+  me_efficiency->RebinY(2);
+  me_efficiency->SetStats(false);
+  me_efficiency->SetXTitle(xAxisLabel);
+  me_efficiency->GetXaxis()->SetTitleOffset(1.2);
+  me_efficiency->SetYTitle(xAxisLabel);
+  me_efficiency->GetYaxis()->SetTitleOffset(1.2);
+  me_efficiency->Draw("COLZ");
+
+  canvas->Update();
+  canvas->Print(plotOutputFileName);
+}
+
+void studyCollinearApproxMassResolution_dPhi12Dep(TCanvas * canvas, TFile* inputFile, 
+						  const TString& dqmDirectory_Ztautau, const TString& dqmDirectory_all,
+						  const TString& dqmDirectory_numerator, const TString& dqmDirectory_denominator)
+{
+  studyCollinearApproxMassResolution(canvas, inputFile, TString(dqmDirectory_Ztautau).Append(dqmDirectory_all), 
 				     "DiTauCandidateQuantities/CollinearApproxMassDPhi12dep", 18, 0, 17, 10., 
 				     "Dependence of collinear Approximation on #Delta#phi_{12}", 
 				     "collinearApproxMassResolution_dPhiDep.png");
-  studyCollinearApproxMassEfficiency(canvas, inputFile, dqmDirectory_Ztautau,
-				     "DiTauCandidateQuantities/DPhi12", "DiTauCandidateQuantities/CollinearApproxEffDPhi12dep",
-				     "CollinearApproxEfficiencyDPhi12", "#Delta#phi_{12}",
-				     "Efficiency for x_{1} > 0. && x_{2} > 0. as function of #Delta#phi_{12}",
-				     "collinearApproxMassEfficiency_dPhiDep.png");
+
+  studyCollinearApproxMassEfficiency1d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "DiTauCandidateQuantities/DPhi12", "DiTauCandidateQuantities/DPhi12", 
+				       "CollinearApproxEfficiencyDPhi12", "#Delta#phi_{12}",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of #Delta#phi_{12}",
+				       "collinearApproxMassEfficiency_dPhiDep.png");
 }
 
-void studyCollinearApproxMassResolution_diTauPtDep(TCanvas * canvas, TFile* inputFile, const TString& dqmDirectory_Ztautau)
+void studyCollinearApproxMassResolution_diTauPtDep(TCanvas * canvas, TFile* inputFile, 
+						   const TString& dqmDirectory_Ztautau, const TString& dqmDirectory_all,
+						   const TString& dqmDirectory_numerator, const TString& dqmDirectory_denominator)
 {
-  studyCollinearApproxMassResolution(canvas, inputFile, dqmDirectory_Ztautau, 
+  studyCollinearApproxMassResolution(canvas, inputFile, TString(dqmDirectory_Ztautau).Append(dqmDirectory_all), 
 				     "DiTauCandidateQuantities/CollinearApproxMassDiTauPtDep", 25, 24, 0, 2.,
 				     "Dependence of collinear Approximation on (Muon + Tau-jet) vis. P_{T}",
  				     "collinearApproxMassResolution_diTauPtDep.png");
-  studyCollinearApproxMassEfficiency(canvas, inputFile, dqmDirectory_Ztautau,
-				     "DiTauCandidateQuantities/VisPt", "DiTauCandidateQuantities/CollinearApproxEffDiTauPtDep",
-				     "CollinearApproxEfficiencyDiTauPt", "P_{T}^{vis}",
-				     "Efficiency for x_{1} > 0. && x_{2} > 0. as function of (Muon + Tau-jet) visible P_{T}",
-				     "collinearApproxMassEfficiency_diTauPtDep.png");
+
+  studyCollinearApproxMassEfficiency1d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "DiTauCandidateQuantities/VisPt", "DiTauCandidateQuantities/VisPt", 
+				       "CollinearApproxEfficiencyDiTauPt", "P_{T}^{vis}",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of (Muon + Tau-jet) visible P_{T}",
+				       "collinearApproxMassEfficiency_diTauPtDep.png");
 }
 
-void studyCollinearApproxMassResolution_metPtDep(TCanvas * canvas, TFile* inputFile, const TString& dqmDirectory_Ztautau)
+void studyCollinearApproxMassResolution_metPtDep(TCanvas * canvas, TFile* inputFile, 
+						 const TString& dqmDirectory_Ztautau, const TString& dqmDirectory_all,
+						 const TString& dqmDirectory_numerator, const TString& dqmDirectory_denominator)
 {
-  studyCollinearApproxMassResolution(canvas, inputFile, dqmDirectory_Ztautau, 
+  studyCollinearApproxMassResolution(canvas, inputFile, TString(dqmDirectory_Ztautau).Append(dqmDirectory_all), 
 				     "DiTauCandidateQuantities/CollinearApproxMassMEtPtDep", 25, 24, 0, 2.,
 				     "Dependence of collinear Approximation on missing E_{T}",
  				     "collinearApproxMassResolution_metPtDep.png");
-  studyCollinearApproxMassEfficiency(canvas, inputFile, dqmDirectory_Ztautau,
-				     "MEtQuantities/RAW_MEtPt", "DiTauCandidateQuantities/CollinearApproxEffMEtPtDep",
-				     "CollinearApproxEfficiencyMEtPt", "E_{T}^{miss}",
-				     "Efficiency for x_{1} > 0. && x_{2} > 0. as function of missing E_{T}",
-				     "collinearApproxMassEfficiency_metPtDep.png");
+
+  studyCollinearApproxMassEfficiency1d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "CaloMEtQuantities/RAW_MEtPt", "CaloMEtQuantities/RAW_MEtPt", 
+				       "CollinearApproxEfficiencyCaloMEtPt", "E_{T}^{calo}",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of E_{T}^{calo}",
+				       "collinearApproxMassEfficiency_caloMEtPtDep.png");
+  studyCollinearApproxMassEfficiency1d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "PFMEtQuantities/MEtPt", "PFMEtQuantities/MEtPt", 
+				       "CollinearApproxEfficiencyPFMEtPt", "E_{T}^{miss}",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of E_{T}^{miss}",
+				       "collinearApproxMassEfficiency_pfMEtPtDep.png");
+  
+  studyCollinearApproxMassEfficiency1d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "PFMEtQuantities/MEtParallelDiffGen", "PFMEtQuantities/MEtParallelDiffGen", 
+				       "CollinearApproxEfficiencyPFMEtParallel", "E_{T}^{miss} || gen. MET",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of 'parallel' Component of E_{T}^{miss}",
+				       "collinearApproxMassEfficiency_pfMEtParallelDep.png");
+  studyCollinearApproxMassEfficiency1d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "PFMEtQuantities/MEtPerpendicularDiffGen", "PFMEtQuantities/MEtPerpendicularDiffGen", 
+				       "CollinearApproxEfficiencyPFMEtPerpendicular", "E_{T}^{miss} #perp gen. MET",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of 'perp.' Component of E_{T}^{miss}",
+				       "collinearApproxMassEfficiency_pfMEtPerpendicularDep.png");
+
+  studyCollinearApproxMassEfficiency1d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "DiTauCandidateQuantities/GenX1", "DiTauCandidateQuantities/GenX1", 
+				       "CollinearApproxEfficiencyGenX1", "gen. x_{1}",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of gen. x_{1}",
+				       "collinearApproxMassEfficiency_genX1Dep.png");
+  studyCollinearApproxMassEfficiency1d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "DiTauCandidateQuantities/GenX2", "DiTauCandidateQuantities/GenX2", 
+				       "CollinearApproxEfficiencyGenX2", "gen. x_{2}",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of gen. x_{2}",
+				       "collinearApproxMassEfficiency_genX2Dep.png");
+  studyCollinearApproxMassEfficiency2d(canvas, inputFile, 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_numerator), 
+				       TString(dqmDirectory_Ztautau).Append(dqmDirectory_denominator),
+				       "DiTauCandidateQuantities/GenX1vsX1", "DiTauCandidateQuantities/GenX1vsX1", 
+				       "DiTauCandidateQuantities/GenX2", "DiTauCandidateQuantities/GenX2", 
+				       "CollinearApproxEfficiencyGenX1vsX2", "gen. x_{1}", "gen. x_{2}",
+				       "Efficiency for x_{1} > 0. && x_{2} > 0. as function of gen. x_{1} and x_{2}",
+				       "collinearApproxMassEfficiency_genX1andX2Dep.png");
 }
 
 void collinearApproxMassResolution()
@@ -214,14 +328,21 @@ void collinearApproxMassResolution()
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
 
-  TString inputFileName = "../test/plotsZtoMuTau_ZtautauSum.root";
+  TString inputFileName = "../test/plotsZtoMuTau.root";
   TFile* inputFile = TFile::Open(inputFileName);
 
-  TString dqmDirectory_Ztautau = "DQMData/Ztautau/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto/";
-
-  studyCollinearApproxMassResolution_dPhi12Dep(canvas, inputFile, dqmDirectory_Ztautau);
-  studyCollinearApproxMassResolution_diTauPtDep(canvas, inputFile, dqmDirectory_Ztautau);
-  //studyCollinearApproxMassResolution_metPtDep(canvas, inputFile, dqmDirectory_Ztautau);
+  TString dqmDirectory_Ztautau = "DQMData/zMuTauAnalyzer/";
+  TString dqmDirectory_all = "afterEvtSelDiMuPairZmumuHypothesisVeto_beforeEvtSelDiTauCandidateForMuTauAntiBackToBack";
+  TString dqmDirectory_numerator = "afterEvtSelDiTauCandidateForMuTauCollinearApproxFailed";
+  TString dqmDirectory_denominator = "afterEvtSelDiTauCandidateForMuTauAntiBackToBack_beforeEvtSelDiTauCandidateForMuTauCollinearApproxFailed";
+/*
+  studyCollinearApproxMassResolution_dPhi12Dep(canvas, inputFile, dqmDirectory_Ztautau, 
+					       dqmDirectory_all, dqmDirectory_numerator, dqmDirectory_denominator);
+  studyCollinearApproxMassResolution_diTauPtDep(canvas, inputFile, dqmDirectory_Ztautau, 
+						dqmDirectory_all, dqmDirectory_numerator, dqmDirectory_denominator);
+ */
+  studyCollinearApproxMassResolution_metPtDep(canvas, inputFile, dqmDirectory_Ztautau, 
+					      dqmDirectory_all, dqmDirectory_numerator, dqmDirectory_denominator);
 
   delete inputFile;
 
