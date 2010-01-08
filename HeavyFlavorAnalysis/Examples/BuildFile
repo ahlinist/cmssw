@@ -1,4 +1,5 @@
 <flags LDFLAGS="-lAna00">
+<use name="PhysicsTools/UtilAlgos">
 <use name="CommonTools/Statistics">
 <use name="CondFormats/DataRecord">
 <use name="CondFormats/L1TObjects">
@@ -13,6 +14,7 @@
 <use name="DataFormats/METReco">
 <use name="DataFormats/MuonDetId">
 <use name="DataFormats/MuonReco">
+<use name="DataFormats/PatCandidates">
 <use name="DataFormats/TrackReco">
 <use name="DataFormats/TrackerRecHit2D">
 <use name="DataFormats/TrackingRecHit">
@@ -25,6 +27,7 @@
 <use name="RecoVertex/KalmanVertexFit">
 <use name="RecoVertex/KinematicFit">
 <use name="RecoVertex/KinematicFitPrimitives">
+<use name="RecoVertex/PrimaryVertexProducer">
 <use name="RecoVertex/VertexTools">
 <use name="SimDataFormats/GeneratorProducts">
 <use name="SimDataFormats/JetMatching">
