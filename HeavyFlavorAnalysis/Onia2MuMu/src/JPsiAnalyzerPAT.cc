@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.12 2010/01/05 11:21:15 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.13 2010/01/05 17:03:22 covarell Exp $
 //
 //
 
@@ -203,6 +203,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       Handle<TriggerResults> trigger;
 
       // data members
+      InputTag       _patJpsi;
+      InputTag       _patJpsiWithCalo;
       string         _histfilename;      
       string         _datasetname;
       vector<double> _ptbinranges;
@@ -243,6 +245,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 // constructors and destructor
 //
 JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
+  _patJpsi(iConfig.getParameter<InputTag>("src")),
+  _patJpsiWithCalo(iConfig.getParameter<InputTag>("srcWithCaloMuons")),
   _histfilename(iConfig.getParameter<string>("histFileName")),		
   _datasetname(iConfig.getParameter<string>("dataSetName")),		
   _ptbinranges(iConfig.getParameter< vector<double> >("pTBinRanges")),	
@@ -347,11 +351,11 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    // try {iEvent.getByLabel("onia2MuMuPatGlbTrk",collGT);}
    // catch (...) {cout << "Global-tracker J/psi not present in event!" << endl;}
 
-   try {iEvent.getByLabel("onia2MuMuPatTrkTrk",collAll);} 
+   try {iEvent.getByLabel(_patJpsi,collAll);} 
    catch (...) {cout << "J/psi not present in event!" << endl;}
 
    if (_useCalo) {
-     try {iEvent.getByLabel("onia2MuMuPatGlbCal",collCalo);} 
+     try {iEvent.getByLabel(_patJpsiWithCalo,collCalo);} 
      catch (...) {cout << "J/psi to calomuons not present in event!" << endl;}
    }
 
@@ -380,7 +384,7 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
      if (_useCalo) {
        for(vector<pat::CompositeCandidate>::const_iterator it=collCalo->begin();
 	   it!=collCalo->end();++it) { 
-	 fillHistosAndDS(getJpsiCategory(&*it), &(*it)); 
+	 if (getJpsiCategory(&*it) > 2) fillHistosAndDS(getJpsiCategory(&*it), &(*it)); 
        }
      }
 
