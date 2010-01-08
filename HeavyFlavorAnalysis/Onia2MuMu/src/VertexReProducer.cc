@@ -25,7 +25,8 @@ VertexReProducer::VertexReProducer(const edm::Handle<reco::VertexCollection> &ha
 
     // Now we also dig out the ProcessName used for the reco::Tracks and reco::Vertices
     std::vector<edm::BranchID> parents = prov->parents();
-    bool foundTracks, foundBeamSpot;
+    bool foundTracks = false;
+    bool foundBeamSpot = false;
     for (std::vector<edm::BranchID>::const_iterator it = parents.begin(), ed = parents.end(); it != ed; ++it) {
         edm::Provenance parprov = iEvent.getProvenance(*it);
         if (parprov.friendlyClassName() == "recoTracks") {
