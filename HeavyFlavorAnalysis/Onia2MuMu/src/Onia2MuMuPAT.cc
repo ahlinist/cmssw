@@ -118,75 +118,77 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // ---- fit vertex using Tracker tracks (if they have tracks) ----
       if (it->track().isNonnull() && it2->track().isNonnull()) {
 
-          // Make a PV with everything else
-          if (addMuonlessPrimaryVertex_) {
-                VertexReProducer revertex(priVtxs, iEvent);
-                Handle<TrackCollection> pvtracks;   iEvent.getByLabel(revertex.inputTracks(),   pvtracks);
-                Handle<BeamSpot>        pvbeamspot; iEvent.getByLabel(revertex.inputBeamSpot(), pvbeamspot);
-                if (pvbeamspot.id() != theBeamSpot.id()) edm::LogWarning("Inconsistency") << "The BeamSpot used for PV reco is not the same used in this analyzer.";
-                // I need to go back to the reco::Muon object, as the TrackRef in the pat::Muon can be an embedded ref.
-                const reco::Muon *rmu1 = dynamic_cast<const reco::Muon *>(it->originalObject());
-                const reco::Muon *rmu2 = dynamic_cast<const reco::Muon *>(it2->originalObject());
-                // check that muons are truly from reco::Muons (and not, e.g., from PF Muons)
-                // also check that the tracks really come from the track collection used for the BS
-                if (rmu1 != 0 && rmu2 != 0 && rmu1->track().id() == pvtracks.id() && rmu2->track().id() == pvtracks.id()) { 
-                    // Prepare the collection of tracks without the two muon tracks
-                    TrackCollection muonLess;
-                    muonLess.reserve(pvtracks->size()-2);
-                    for (size_t i = 0, n = pvtracks->size(); i < n; ++i) {
-                        if (i == rmu1->track().key()) continue;
-                        if (i == rmu2->track().key()) continue;
-                        muonLess.push_back((*pvtracks)[i]);
-                    }
-                    vector<TransientVertex> pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
-                    if (!pvs.empty()) {
-                        myCand.addUserData("muonlessPV",reco::Vertex(pvs.front()));
-                    }
-                }
-          }
-
-          vector<TransientTrack> t_tks;
-          t_tks.push_back(theTTBuilder->build(*it->track()));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
-          t_tks.push_back(theTTBuilder->build(*it2->track())); // otherwise the vertex will have transient refs inside.
-          TransientVertex myVertex = vtxFitter.vertex(t_tks);
-          if (myVertex.isValid()) {
-              float vChi2 = myVertex.totalChiSquared();
-              float vNDF  = myVertex.degreesOfFreedom();
-              float vProb(TMath::Prob(vChi2,(int)vNDF));
-
-              myCand.addUserFloat("vNChi2",vChi2/vNDF);
-              myCand.addUserFloat("vProb",vProb);
-
-              TVector3 vtx;
-              vtx.SetXYZ(myVertex.position().x(),myVertex.position().y(),0);
-              TVector3 pperp(jpsi.px(), jpsi.py(), 0);
-            
-              // lifetime using PV
-              TVector3 vdiff = vtx - vPv;
-              double cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
-              double ctauPV = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
-              myCand.addUserFloat("ppdlPV",ctauPV);
-              myCand.addUserFloat("cosAlpha",cosAlpha);
-              // lifetime using BS
-              vdiff = vtx - vBs;
-              cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
-              double ctauBS = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
-              myCand.addUserFloat("ppdlBS",ctauBS);
-
-              if (addCommonVertex_) {
-                  myCand.addUserData("commonVertex",reco::Vertex(myVertex));
-              }
-          } else {
-              myCand.addUserFloat("vNChi2",-1);
-              myCand.addUserFloat("vProb", -1);
-              myCand.addUserFloat("ppdlPV",-100);
-              myCand.addUserFloat("cosAlpha",-100);
-              myCand.addUserFloat("ppdlBS",-100);
-              if (addCommonVertex_) {
-                  myCand.addUserData("commonVertex",reco::Vertex());
-              }
-          }
-
+	// Make a PV with everything else
+	if (addMuonlessPrimaryVertex_) {
+	  VertexReProducer revertex(priVtxs, iEvent);
+	  Handle<TrackCollection> pvtracks;   iEvent.getByLabel(revertex.inputTracks(),   pvtracks);
+	  Handle<BeamSpot>        pvbeamspot; iEvent.getByLabel(revertex.inputBeamSpot(), pvbeamspot);
+	  if (pvbeamspot.id() != theBeamSpot.id()) edm::LogWarning("Inconsistency") << "The BeamSpot used for PV reco is not the same used in this analyzer.";
+	  // I need to go back to the reco::Muon object, as the TrackRef in the pat::Muon can be an embedded ref.
+	  const reco::Muon *rmu1 = dynamic_cast<const reco::Muon *>(it->originalObject());
+	  const reco::Muon *rmu2 = dynamic_cast<const reco::Muon *>(it2->originalObject());
+	  // check that muons are truly from reco::Muons (and not, e.g., from PF Muons)
+	  // also check that the tracks really come from the track collection used for the BS
+	  if (rmu1 != 0 && rmu2 != 0 && rmu1->track().id() == pvtracks.id() && rmu2->track().id() == pvtracks.id()) { 
+	    // Prepare the collection of tracks without the two muon tracks
+	    TrackCollection muonLess;
+	    muonLess.reserve(pvtracks->size()-2);
+	    for (size_t i = 0, n = pvtracks->size(); i < n; ++i) {
+	      if (i == rmu1->track().key()) continue;
+	      if (i == rmu2->track().key()) continue;
+	      muonLess.push_back((*pvtracks)[i]);
+	    }
+	    vector<TransientVertex> pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
+	    if (!pvs.empty()) {
+	      reco::Vertex muonLessPV = reco::Vertex(pvs.front());
+	      myCand.addUserData("muonlessPV",muonLessPV);
+              vPv.SetXYZ(muonLessPV.position().x(), muonLessPV.position().y(), 0);
+	    }
+	  }
+	}
+	
+	vector<TransientTrack> t_tks;
+	t_tks.push_back(theTTBuilder->build(*it->track()));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
+	t_tks.push_back(theTTBuilder->build(*it2->track())); // otherwise the vertex will have transient refs inside.
+	TransientVertex myVertex = vtxFitter.vertex(t_tks);
+	if (myVertex.isValid()) {
+	  float vChi2 = myVertex.totalChiSquared();
+	  float vNDF  = myVertex.degreesOfFreedom();
+	  float vProb(TMath::Prob(vChi2,(int)vNDF));
+	  
+	  myCand.addUserFloat("vNChi2",vChi2/vNDF);
+	  myCand.addUserFloat("vProb",vProb);
+	  
+	  TVector3 vtx;
+	  vtx.SetXYZ(myVertex.position().x(),myVertex.position().y(),0);
+	  TVector3 pperp(jpsi.px(), jpsi.py(), 0);
+          
+	  // lifetime using PV
+	  TVector3 vdiff = vtx - vPv;
+	  double cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
+	  double ctauPV = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
+	  myCand.addUserFloat("ppdlPV",ctauPV);
+	  myCand.addUserFloat("cosAlpha",cosAlpha);
+	  // lifetime using BS
+	  vdiff = vtx - vBs;
+	  cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
+	  double ctauBS = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
+	  myCand.addUserFloat("ppdlBS",ctauBS);
+	  
+	  if (addCommonVertex_) {
+	    myCand.addUserData("commonVertex",reco::Vertex(myVertex));
+	  }
+	} else {
+	  myCand.addUserFloat("vNChi2",-1);
+	  myCand.addUserFloat("vProb", -1);
+	  myCand.addUserFloat("ppdlPV",-100);
+	  myCand.addUserFloat("cosAlpha",-100);
+	  myCand.addUserFloat("ppdlBS",-100);
+	  if (addCommonVertex_) {
+	    myCand.addUserData("commonVertex",reco::Vertex());
+	  }
+	}
+	
       }
      
       // ---- MC Truth, if enabled ----
