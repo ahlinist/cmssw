@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.13 2010/01/05 17:03:22 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.14 2010/01/08 10:46:07 covarell Exp $
 //
 //
 
@@ -121,6 +121,10 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcWrongGlbGlbMuLife;
       TH1F *hMcRightGlbGlbMuMass;              
       TH1F *hMcWrongGlbGlbMuMass;
+      TH1F *hMcRightGlbGlbMuPt;              
+      TH1F *hMcWrongGlbGlbMuPt;
+      TH1F *hMcRightGlbGlbMuEta;              
+      TH1F *hMcWrongGlbGlbMuEta; 
       TH1F *hMcRightGlbGlbMuVtxProb;
       TH1F *hMcWrongGlbGlbMuVtxProb;
 
@@ -147,8 +151,23 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcWrongGlbTrkMuLife;
       TH1F *hMcRightGlbTrkMuMass;              
       TH1F *hMcWrongGlbTrkMuMass;
+      TH1F *hMcRightGlbTrkMuPt;              
+      TH1F *hMcWrongGlbTrkMuPt;
+      TH1F *hMcRightGlbTrkMuEta;              
+      TH1F *hMcWrongGlbTrkMuEta;
       TH1F *hMcRightGlbTrkMuVtxProb;  
       TH1F *hMcWrongGlbTrkMuVtxProb;
+
+      TH1F *hMcRightTrkTrkMuLife;              
+      TH1F *hMcWrongTrkTrkMuLife;
+      TH1F *hMcRightTrkTrkMuMass;              
+      TH1F *hMcWrongTrkTrkMuMass;
+      TH1F *hMcRightTrkTrkMuPt;              
+      TH1F *hMcWrongTrkTrkMuPt;
+      TH1F *hMcRightTrkTrkMuEta;              
+      TH1F *hMcWrongTrkTrkMuEta;
+      TH1F *hMcRightTrkTrkMuVtxProb;  
+      TH1F *hMcWrongTrkTrkMuVtxProb;
       
       TH1F *hMcRightCalMuChi2; 
       TH1F *hMcWrongCalMuChi2; 
@@ -444,9 +463,13 @@ JPsiAnalyzerPAT::beginJob()
   			       
   // mc truth matching - global + global
   hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 100, 2.6,3.6);
-  hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 100, 2.6,3.6);
+  hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC unmatched (global+global muons)", 100, 2.6,3.6);
   hMcRightGlbGlbMuLife             = new TH1F("hMcRightGlbGlbMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
-  hMcWrongGlbGlbMuLife             = new TH1F("hMcWrongGlbGlbMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
+  hMcWrongGlbGlbMuLife             = new TH1F("hMcWrongGlbGlbMuLife",  "c #tau - MC unmatched (global+global muons)", 90, -1.0,3.5);
+  hMcRightGlbGlbMuPt               = new TH1F("hMcRightGlbGlbMuPt",  "P_{T} - MC matched (global+global muons)", 60, 0.,60.);
+  hMcWrongGlbGlbMuPt               = new TH1F("hMcWrongGlbGlbMuPt",  "P_{T} - MC unmatched (global+global muons)", 60, 0.,60.);
+  hMcRightGlbGlbMuEta              = new TH1F("hMcRightGlbGlbMuEta",  "#eta - MC matched (global+global muons)", 60, -2.5,2.5);
+  hMcWrongGlbGlbMuEta              = new TH1F("hMcWrongGlbGlbMuEta",  "#eta - MC unmatched (global+global muons)", 60, -2.5,2.5);
   hMcRightGlbGlbMuVtxProb          = new TH1F("hMcRightGlbGlbMuVtxProb",  "Vertex probability - MC matched (global+global muons)", 1000, 0.0,1.0);
   hMcWrongGlbGlbMuVtxProb          = new TH1F("hMcWrongGlbGlbMuVtxProb",  "Vertex probability - MC unmatched (global+global muons)", 1000, 0.0,1.0);
   			       
@@ -472,12 +495,28 @@ JPsiAnalyzerPAT::beginJob()
   			       
   // mc truth matching - global + trk
   hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 100, 2.6,3.6);
-  hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 100, 2.6,3.6);
+  hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC unmatched (global+tracker muons)", 100, 2.6,3.6);
   hMcRightGlbTrkMuLife            = new TH1F("hMcRightGlbTrkMuLife",  "c #tau - MC matched (global+tracker muons)", 90, -1.0,3.5);
-  hMcWrongGlbTrkMuLife            = new TH1F("hMcWrongGlbTrkMuLife",  "c #tau - MC matched (global+tracker muons)", 90, -1.0,3.5);
+  hMcWrongGlbTrkMuLife            = new TH1F("hMcWrongGlbTrkMuLife",  "c #tau - MC unmatched (global+tracker muons)", 90, -1.0,3.5);
+  hMcRightGlbTrkMuPt               = new TH1F("hMcRightGlbTrkMuPt",  "P_{T} - MC matched (global+tracker muons)", 60, 0.,60.);
+  hMcWrongGlbTrkMuPt               = new TH1F("hMcWrongGlbTrkMuPt",  "P_{T} - MC unmatched (global+tracker muons)", 60, 0.,60.);
+  hMcRightGlbTrkMuEta              = new TH1F("hMcRightGlbTrkMuEta",  "#eta - MC matched (global+tracker muons)", 60, -2.5,2.5);
+  hMcWrongGlbTrkMuEta              = new TH1F("hMcWrongGlbTrkMuEta",  "#eta - MC unmatched (global+tracker muons)", 60, -2.5,2.5);
   hMcRightGlbTrkMuVtxProb          = new TH1F("hMcRightGlbTrkMuVtxProb",  "Vertex probability - MC matched (global+tracker muons)", 1000, 0.0,1.0);
   hMcWrongGlbTrkMuVtxProb          = new TH1F("hMcWrongGlbTrkMuVtxProb",  "Vertex probability - MC unmatched (global+tracker muons)", 1000, 0.0,1.0);
   			       
+  // mc truth matching - trk + trk
+  hMcRightTrkTrkMuMass            = new TH1F("hMcRightTrkTrkMuMass",  "Inv. mass - MC matched (tracker+tracker muons)", 100, 2.6,3.6);
+  hMcWrongTrkTrkMuMass            = new TH1F("hMcWrongTrkTrkMuMass",  "Inv. mass - MC unmatched (tracker+tracker muons)", 100, 2.6,3.6);
+  hMcRightTrkTrkMuLife            = new TH1F("hMcRightTrkTrkMuLife",  "c #tau - MC matched (tracker+tracker muons)", 90, -1.0,3.5);
+  hMcWrongTrkTrkMuLife            = new TH1F("hMcWrongTrkTrkMuLife",  "c #tau - MC unmatched (tracker+tracker muons)", 90, -1.0,3.5);
+  hMcRightTrkTrkMuPt               = new TH1F("hMcRightTrkTrkMuPt",  "P_{T} - MC matched (tracker+tracker muons)", 60, 0.,60.);
+  hMcWrongTrkTrkMuPt               = new TH1F("hMcWrongTrkTrkMuPt",  "P_{T} - MC unmatched (tracker+tracker muons)", 60, 0.,60.);
+  hMcRightTrkTrkMuEta              = new TH1F("hMcRightTrkTrkMuEta",  "#eta - MC matched (tracker+tracker muons)", 60, -2.5,2.5);
+  hMcWrongTrkTrkMuEta              = new TH1F("hMcWrongTrkTrkMuEta",  "#eta - MC unmatched (tracker+tracker muons)", 60, -2.5,2.5);
+  hMcRightTrkTrkMuVtxProb          = new TH1F("hMcRightTrkTrkMuVtxProb",  "Vertex probability - MC matched (tracker+tracker muons)", 1000, 0.0,1.0);
+  hMcWrongTrkTrkMuVtxProb          = new TH1F("hMcWrongTrkTrkMuVtxProb",  "Vertex probability - MC unmatched (tracker+tracker muons)", 1000, 0.0,1.0);
+
   // mc truth matching - calo  
   hMcRightCalMuPt                  = new TH1F("hMcRightCalMuPt",  "pT  - MC matched (calo muons)", 50, 0.,5.0);
   hMcWrongCalMuPt                  = new TH1F("hMcWrongCalMuPt",  "pT - MC unmatched (calo muons)", 50, 0.,5.0);
@@ -561,6 +600,10 @@ JPsiAnalyzerPAT::endJob() {
   hMcWrongGlbGlbMuMass          -> Write(); 
   hMcRightGlbGlbMuLife          -> Write(); 
   hMcWrongGlbGlbMuLife          -> Write();
+  hMcRightGlbGlbMuPt            -> Write(); 
+  hMcWrongGlbGlbMuPt            -> Write(); 
+  hMcRightGlbGlbMuEta           -> Write(); 
+  hMcWrongGlbGlbMuEta           -> Write();
   hMcRightGlbGlbMuVtxProb       -> Write(); 
   hMcWrongGlbGlbMuVtxProb       -> Write(); 
   			     
@@ -583,8 +626,23 @@ JPsiAnalyzerPAT::endJob() {
   hMcWrongGlbTrkMuMass        	-> Write();
   hMcRightGlbTrkMuLife        	-> Write();
   hMcWrongGlbTrkMuLife        	-> Write();
+  hMcRightGlbTrkMuPt            -> Write(); 
+  hMcWrongGlbTrkMuPt            -> Write(); 
+  hMcRightGlbTrkMuEta           -> Write(); 
+  hMcWrongGlbTrkMuEta           -> Write();
   hMcRightGlbTrkMuVtxProb       -> Write();   
   hMcWrongGlbTrkMuVtxProb       -> Write(); 
+
+  hMcRightTrkTrkMuMass          -> Write();
+  hMcWrongTrkTrkMuMass        	-> Write();
+  hMcRightTrkTrkMuLife        	-> Write();
+  hMcWrongTrkTrkMuLife        	-> Write();
+  hMcRightTrkTrkMuPt            -> Write(); 
+  hMcWrongTrkTrkMuPt            -> Write(); 
+  hMcRightTrkTrkMuEta           -> Write(); 
+  hMcWrongTrkTrkMuEta           -> Write();
+  hMcRightTrkTrkMuVtxProb       -> Write();   
+  hMcWrongTrkTrkMuVtxProb       -> Write(); 
   			     
   hMcRightCalMuChi2             -> Write(); 
   hMcWrongCalMuChi2             -> Write(); 
@@ -711,12 +769,22 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 
       if (theCat == 0) {
 	hMcRightGlbGlbMuMass->Fill(theMass);       
-	hMcRightGlbGlbMuLife->Fill(theCtau);            
+	hMcRightGlbGlbMuLife->Fill(theCtau);
+        hMcRightGlbGlbMuPt->Fill(aCand->pt());
+        hMcRightGlbGlbMuEta->Fill(aCand->eta());             
 	hMcRightGlbGlbMuVtxProb->Fill(aCand->userFloat("vProb")); 
       } else if (theCat == 1) {
         hMcRightGlbTrkMuMass->Fill(theMass);       
-	hMcRightGlbTrkMuLife->Fill(theCtau);            
-	hMcRightGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb"));   
+	hMcRightGlbTrkMuLife->Fill(theCtau);
+	hMcRightGlbTrkMuPt->Fill(aCand->pt());
+        hMcRightGlbTrkMuEta->Fill(aCand->eta());
+	hMcRightGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb")); 
+      } else if (theCat == 2) {
+        hMcRightTrkTrkMuMass->Fill(theMass);       
+	hMcRightTrkTrkMuLife->Fill(theCtau);
+	hMcRightTrkTrkMuPt->Fill(aCand->pt());
+        hMcRightTrkTrkMuEta->Fill(aCand->eta());
+	hMcRightTrkTrkMuVtxProb->Fill(aCand->userFloat("vProb"));    
       } else if (theCat == 3) {
         hMcRightCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
 	hMcRightCalGlbMuMass->Fill(theMass);           
@@ -729,19 +797,28 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     
       if (theCat == 0) {
 	hMcWrongGlbGlbMuMass->Fill(theMass);       
-	hMcWrongGlbGlbMuLife->Fill(theCtau);            
+	hMcWrongGlbGlbMuLife->Fill(theCtau);
+        hMcWrongGlbGlbMuPt->Fill(aCand->pt());
+        hMcWrongGlbGlbMuEta->Fill(aCand->eta());             
 	hMcWrongGlbGlbMuVtxProb->Fill(aCand->userFloat("vProb")); 
       } else if (theCat == 1) {
         hMcWrongGlbTrkMuMass->Fill(theMass);       
-	hMcWrongGlbTrkMuLife->Fill(theCtau);            
-	hMcWrongGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb"));   
-      } else if (theCat == 3) {
-        hMcWrongCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
+	hMcWrongGlbTrkMuLife->Fill(theCtau);
+	hMcWrongGlbTrkMuPt->Fill(aCand->pt());
+        hMcWrongGlbTrkMuEta->Fill(aCand->eta());
+	hMcWrongGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb")); 
+      } else if (theCat == 2) {
+        hMcWrongTrkTrkMuMass->Fill(theMass);       
+	hMcWrongTrkTrkMuLife->Fill(theCtau);
+	hMcWrongTrkTrkMuPt->Fill(aCand->pt());
+        hMcWrongTrkTrkMuEta->Fill(aCand->eta());
+	hMcWrongTrkTrkMuVtxProb->Fill(aCand->userFloat("vProb"));    
+      } else if (theCat == 3) {    
 	hMcWrongCalGlbMuMass->Fill(theMass);           
 	hMcWrongCalGlbMuVtxChi2->Fill(aCand->userFloat("vNChi2"));  
 	hMcWrongCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
 	hMcWrongCalGlbMucosAlpha->Fill(aCand->userFloat("cosAlpha"));
-      }  
+      }   
 
     }
   
