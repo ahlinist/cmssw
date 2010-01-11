@@ -41,7 +41,7 @@ muTauPairSystematics = {
 }
 
 theorySystematics = {
-    "sysPdfWeights[40]"     : "pdfWeights:cteq65",
+    "sysPdfWeights(41)"     : "pdfWeights:cteq65",
     "sysIsrWeight"          : "isrWeight",
     "sysFsrWeight"          : "fsrWeight"
 }
