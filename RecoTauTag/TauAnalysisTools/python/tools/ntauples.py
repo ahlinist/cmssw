@@ -60,9 +60,10 @@ class TauNtuple(object):
       if self.current_collection == 'matched':
          for expr in self.expressions['ref']:
             output['ref_%s' % expr] = self.parse_expression(expr, 'ref')
-      # Add event and run info (just so $event works as well)
+      # Add event, lumi and run info (just so $event works as well)
       output["event"] = "event"
       output["run"] = "run"
+      output["lumi"] = "lumi"
       return output
 
 
@@ -82,6 +83,7 @@ class TauNtupleManager(object):
         # Add nice aliases for run & event number
         events.SetAlias("run", "EventAuxiliary.id_.run_");
         events.SetAlias("event", "EventAuxiliary.id_.event_");
+        events.SetAlias("lumi", "EventAuxiliary.luminosityBlock_");
         # If this is a TChain, we need to make sure
         # the aliases are copied over correctly
         if isinstance(events, TChain):
@@ -235,7 +237,7 @@ if __name__ == "__main__":
 
    # Do a scan, printing event numbers
    scan(events, pippo.shrinkingConePFTau,
-        expr="$run:$event:$pt:$eta",
+        expr="$run:$event:$lumi:$pt:$eta",
         selection="$ByIsolation")
 
    c1 = TCanvas()
