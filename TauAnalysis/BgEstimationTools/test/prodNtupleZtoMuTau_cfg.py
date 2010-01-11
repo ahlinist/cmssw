@@ -70,10 +70,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonEtaZmumu = cms.PSet(
+        muonAbsEtaZmumu = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstZmumuEnriched'),
-            value = cms.string("leg1.eta"),
+            value = cms.string("abs(leg1.eta)"),
             indices = cms.vuint32(0,1)
         ),
         muonTrackIsoZmumu = cms.PSet(
@@ -116,10 +116,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonEtaWplusJets = cms.PSet(
+        muonAbsEtaWplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
-            value = cms.string("leg1.eta"),
+            value = cms.string("abs(leg1.eta)"),
             indices = cms.vuint32(0,1)
         ),
         muonTrackIsoWplusJets = cms.PSet(
@@ -198,10 +198,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonEtaTTplusJets = cms.PSet(
+        muonAbsEtaTTplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstTTplusJetsEnriched'),
-            value = cms.string("leg1.eta"),
+            value = cms.string("abs(leg1.eta)"),
             indices = cms.vuint32(0,1)
         ),
         muonTrackIsoTTplusJets = cms.PSet(
@@ -279,10 +279,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonEtaQCDlooseMuonIso = cms.PSet(
+        muonAbsEtaQCDlooseMuonIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
-            value = cms.string("leg1.eta"),
+            value = cms.string("abs(leg1.eta)"),
             indices = cms.vuint32(0,1)
         ),
         muonTrackIsoQCDlooseMuonIso = cms.PSet(
@@ -350,10 +350,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        muonEtaQCDnoMuonIso = cms.PSet(
+        muonAbsEtaQCDnoMuonIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
-            value = cms.string("leg1.eta"),
+            value = cms.string("abs(leg1.eta)"),
             indices = cms.vuint32(0,1)
         ),
         muonTrackIsoQCDnoMuonIso = cms.PSet(
