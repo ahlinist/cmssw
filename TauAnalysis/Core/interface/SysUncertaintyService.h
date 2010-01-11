@@ -11,9 +11,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.1 $
+  * \version $Revision: 1.2 $
   *
-  * $Id: SysUncertaintyService.h,v 1.1 2010/01/07 13:22:07 veelken Exp $
+  * $Id: SysUncertaintyService.h,v 1.2 2010/01/07 17:07:57 veelken Exp $
   *
   */
 
@@ -32,7 +32,10 @@
 #include <string>
 #include <vector>
 
-const double defaultEvtReweight_error = -1.;
+namespace SysUncertaintyService_namespace
+{
+  const double defaultEvtReweight_error = -1.;
+}
 
 class SysUncertaintyService
 {
@@ -40,7 +43,7 @@ class SysUncertaintyService
   /// constructor 
   explicit SysUncertaintyService(const edm::ParameterSet& cfg, edm::ActivityRegistry&)
   {
-    std::cout << "<SysUncertaintyService::SysUncertaintyService>:" << std::endl;
+    //std::cout << "<SysUncertaintyService::SysUncertaintyService>:" << std::endl;
   
 //--- ensure that SysUncertaintyService is singleton
     assert(!gSysUncertaintyService);
@@ -51,7 +54,7 @@ class SysUncertaintyService
     for ( vParameterSet::const_iterator cfgEvtReweightEntry = cfgEvtReweightEntries.begin();
 	  cfgEvtReweightEntry != cfgEvtReweightEntries.end(); ++cfgEvtReweightEntry ) {
       std::string name = cfgEvtReweightEntry->getParameter<std::string>("name");
-      std::cout << " name = " << name << std::endl;
+      //std::cout << " name = " << name << std::endl;
       
       TPRegexp regexpParser_array_entry("[[:alnum:]]+\\[[[:digit:]]+\\]");
       TPRegexp regexpParser_array_elements("([[:alnum:]]+)\\[([[:digit:]]+)\\]");
@@ -59,7 +62,7 @@ class SysUncertaintyService
       TString name_tstring = name.data();
       
       edm::InputTag src = cfgEvtReweightEntry->getParameter<edm::InputTag>("src");
-      std::cout << " src = " << src.label() << ", instance = " << src.instance() << std::endl;
+      //std::cout << " src = " << src.label() << ", instance = " << src.instance() << std::endl;
       
       std::string sysName = "undefined";
       WeightEntryBase* evtWeightEntry = 0;
@@ -109,6 +112,12 @@ class SysUncertaintyService
     return currentSystematic_;
   }  
 
+  static const std::string& getNameCentralValue() 
+  {
+    static std::string nameCentralValue = "CENTRAL_VALUE";
+    return nameCentralValue; 
+  }
+
   double getWeight() const
   {
     static TPRegexp regexpParser_array_entry("[[:alnum:]]+\\[[[:digit:]]+\\]");
@@ -124,7 +133,7 @@ class SysUncertaintyService
 	sysName = ((TObjString*)subStrings->At(1))->GetString().Data();
       } else {
 	edm::LogError ("getReweight") << " Failed to decode name = " << currentSystematic_ << " of current systematic uncertainty !!";
-	return defaultEvtReweight_error;
+	return SysUncertaintyService_namespace::defaultEvtReweight_error;
       }
     } else {
       sysName = currentSystematic_;
@@ -206,14 +215,14 @@ class SysUncertaintyService
 	    return values_[index];
 	  } else {
 	    edm::LogError ("getWeight") << "Invalid index = " << index << " (valid values = 0.." << (numValues_ - 1) << ") !!";
-	    return defaultEvtReweight_error;
+	    return SysUncertaintyService_namespace::defaultEvtReweight_error;
 	  }
 	} 
       }
   
 //--- failure to parse sysName
       edm::LogError ("getWeight") << " Failed to decode sysName = " << sysName << " !!";
-      return defaultEvtReweight_error;
+      return SysUncertaintyService_namespace::defaultEvtReweight_error;
     }
     typedef std::vector<double> vdouble;
     vdouble values_;
