@@ -303,14 +303,14 @@ evtSelDiTauCandidateForMuTauZeroCharge = cms.PSet(
     src_cumulative = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'individual'),
     systematics = cms.vstring(muTauPairSystematics.keys())
-)
+    )
 evtSelDiTauCandidateForMuTauAcoplanarity12 = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForMuTauAcoplanarity12'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForMuTauAcoplanarity12Cut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForMuTauAcoplanarity12Cut', 'individual'),
     systematics = cms.vstring(muTauPairSystematics.keys())
-)
+    )
 evtSelDiTauCandidateForMuTauMt1MET = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
     pluginType = cms.string('BoolEventSelector'),
