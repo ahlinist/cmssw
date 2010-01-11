@@ -27,12 +27,12 @@ void decodeBinningStringRep(const std::string& entry, std::string& meName, std::
   //std::cout << "<decodeBinningStringRep>:" << std::endl;
   //std::cout << " entry = " << entry << std::endl;
   
-  TString pattern_entry = "meName[[:space:]]*=[[:space:]]*[[:alnum:]_";
+  TString pattern_entry = "meName[[:space:]]*=[[:space:]]*[[:alnum:]_\\(\\)";
   pattern_entry.Append(meOptionsSeparator).Append("]+");
   pattern_entry.Append("; meType[[:space:]]*=[[:space:]]*[[:alnum:]]+");
   pattern_entry.Append("; meValue[[:space:]]*=[[:space:]]*[\\+\\-[:alnum:].]+[,[:space:]\\+\\-[:alnum:].]*"); 
   TPRegexp regexpParser_entry(pattern_entry);
-  TString pattern_items = "meName[[:space:]]*=[[:space:]]*([[:alnum:]_";
+  TString pattern_items = "meName[[:space:]]*=[[:space:]]*([[:alnum:]_\\(\\)";
   pattern_items.Append(meOptionsSeparator).Append("]+)");
   pattern_items.Append("; meType[[:space:]]*=[[:space:]]*([[:alnum:]]+)");
   pattern_items.Append("; meValue[[:space:]]*=[[:space:]]*([\\+\\-[:alnum:].]+[,[:space:]\\+\\-[:alnum:].]*)");
