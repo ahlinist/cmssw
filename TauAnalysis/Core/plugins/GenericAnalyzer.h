@@ -1,6 +1,20 @@
 #ifndef TauAnalysis_Core_GenericAnalyzer_h  
 #define TauAnalysis_Core_GenericAnalyzer_h
 
+ /** \class GenericAnalyzer
+  *
+  * Top-level EDAnalyzer module for event selection and histogram filling in tau analyses
+  * (all decay channels supported by GenericAnalyzer module; 
+  *  just needs suitable python configuration parametersets...)
+  * 
+  * \author Christian Veelken, UC Davis
+  *
+  * \version $Revision: 1.2 $
+  *
+  * $Id: GenericAnalyzer.h,v 1.2 2010/01/07 17:07:57 veelken Exp $
+  *
+  */
+
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
@@ -34,7 +48,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
     virtual bool filter_cumulative(const edm::Event&, const edm::EventSetup&) { return true; }
     virtual bool filter_individual(const edm::Event&, const edm::EventSetup&) { return true; }
     virtual void beginJob() {}
-    virtual void analyze(const edm::Event&, const edm::EventSetup&, double) {}
+    virtual void analyze(const edm::Event&, const edm::EventSetup&, double, bool) {}
     virtual void endJob() {}
     virtual int type() const = 0;
     enum { kUndefined, kFilter, kAnalyzer };
@@ -49,8 +63,9 @@ class GenericAnalyzer : public edm::EDAnalyzer
     bool filter_cumulative(const edm::Event&, const edm::EventSetup&);
     bool filter_individual(const edm::Event&, const edm::EventSetup&);
     int type() const { return analysisSequenceEntry::kFilter; }
-    EventSelectorBase* filterPlugin_cumulative_;
-    EventSelectorBase* filterPlugin_individual_;
+    bool filter(const edm::Event&, const edm::EventSetup&, const std::map<std::string, EventSelectorBase*>&);
+    std::map<std::string, EventSelectorBase*> filterPlugins_cumulative_;
+    std::map<std::string, EventSelectorBase*> filterPlugins_individual_;
     static unsigned filterId_;
   };
 
@@ -60,10 +75,15 @@ class GenericAnalyzer : public edm::EDAnalyzer
     virtual ~analysisSequenceEntry_analyzer();
     void print() const;
     void beginJob();
-    void analyze(const edm::Event&, const edm::EventSetup&, double);
+    void analyze(const edm::Event&, const edm::EventSetup&, double, bool);
     void endJob();
     int type() const { return analysisSequenceEntry::kAnalyzer; }
-    std::list<AnalyzerPluginBase*> analyzerPlugins_;
+    struct analyzerPluginEntry
+    {
+      AnalyzerPluginBase* plugin_;
+      bool supportsSystematics_;
+    };
+    std::list<analyzerPluginEntry> analyzerPlugins_;
   };
 
  public: 
@@ -86,6 +106,8 @@ class GenericAnalyzer : public edm::EDAnalyzer
 
   std::map<std::string, edm::ParameterSet> cfgFilters_;
   std::map<std::string, edm::ParameterSet> cfgAnalyzers_;
+
+  vstring systematics_;
   
   std::list<analysisSequenceEntry*> analysisSequence_;
 
