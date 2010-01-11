@@ -87,7 +87,10 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         pfMEtHistManager,
         particleMultiplicityHistManager,
         vertexHistManager,
-        triggerHistManagerForMuTau,
+        triggerHistManagerForMuTau
+    ),
+
+    analyzers_systematic = cms.VPSet(
         sysUncertaintyBinnerForMuTau
     ),
 
@@ -103,5 +106,5 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
               tauSystematics,
               theorySystematics ]
         )
-    )
+    )                                   
 )
