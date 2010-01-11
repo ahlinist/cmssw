@@ -49,7 +49,7 @@ SecondaryProducer::~SecondaryProducer()
 ////////////////////////////////////////////////////////////////////////////////
   
 //______________________________________________________________________________
-bool SecondaryProducer::fillRawData(edm::EventID& eID,
+int SecondaryProducer::fillRawData(edm::EventID& eID,
 				    edm::Timestamp& tstamp, 
 				    FEDRawDataCollection*& data)
 { 
@@ -76,7 +76,7 @@ bool SecondaryProducer::fillRawData(edm::EventID& eID,
   
   data=new FEDRawDataCollection(*tp);
   
-  return true;
+  return 1;
 }
 
 

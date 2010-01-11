@@ -29,9 +29,9 @@ namespace evf {
     //
     
     // DaqBaseReader interface
-    virtual bool fillRawData(edm::EventID& eID,
-			     edm::Timestamp& tstamp, 
-			     FEDRawDataCollection*& data);
+    virtual int fillRawData(edm::EventID& eID,
+			    edm::Timestamp& tstamp, 
+			    FEDRawDataCollection*& data);
     
     
   private:
