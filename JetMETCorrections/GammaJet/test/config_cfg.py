@@ -54,7 +54,13 @@ process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring('file:/cmsrm/pc17/delre/7A62C541-37A0-DE11-BF0C-00215E221098.root')
 # fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_1_0_pre11/RelValZmumuJets_Pt_20_300_GEN/GEN-SIM-RECO/MC_31X_V1_LowLumiPileUp-v1/0001/FE549F7D-2C65-DE11-9B82-001D09F2AF1E.root')
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/PhotonJet_Pt80to120_Summer09-MC_31X_V3-v1_x100.root')
-    fileNames = cms.untracked.vstring('file:/cmsrm/pc18/pandolf/DiJetSkim_123592_123596.root')
+    fileNames = cms.untracked.vstring(
+'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_123592_596_615_732_734_818.root'
+#'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124009.root',
+#'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124020.root',
+#'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124022.root',
+#'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124023_124024.root'
+)
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_Pt80_Summer09-MC_31X_V3-v1_x100.root')
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3-v1_x100.root')
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3-v1_x100.root')
@@ -70,6 +76,37 @@ process.printTree = cms.EDFilter("ParticleTreeDrawer",
     printIndex = cms.untracked.bool(True)
 )
 
+#physics declared technical bit filter
+process.hltPhysicsDeclared = cms.EDFilter("HLTHighLevel",
+                                TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+                                HLTPaths = cms.vstring("HLT_PhysicsDeclared"
+                                                       ),
+                                eventSetupPathsKey = cms.string(''),
+                                andOr = cms.bool(True),
+                                throw = cms.bool(True)
+)
+
+#bsc technical bit filter
+process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
+process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
+process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
+process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('0 AND (40 OR 41) AND NOT ( 36 OR 37 OR 38 OR 39 )')
+
+#monster track event cleaning
+process.monster = cms.EDFilter(
+   "FilterOutScraping",
+   applyfilter = cms.untracked.bool(True),
+   debugOn = cms.untracked.bool(False),
+   numtrack = cms.untracked.uint32(10),
+   thresh = cms.untracked.double(0.2)
+)
+
+#############   Include the jet corrections ##########
+process.load("JetMETCorrections.Configuration.L2L3Corrections_900GeV_cff")
+# set the record's IOV. Must be defined once. Choose ANY correction service. #
+process.prefer("L2L3JetCorrectorAK5PF") 
+
+
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
     recoProducer = cms.string('ecalRecHit'),
@@ -79,6 +116,8 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     tracks = cms.untracked.InputTag("generalTracks"),
     Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('EcalRecHitsEB'),
+    JetCorrectionService_pfakt5 = cms.string('L2L3JetCorrectorAK5PF'),
+    JetCorrectionService_pfakt7 = cms.string('L2L3JetCorrectorAK7PF'),
     jetsite = cms.untracked.InputTag("iterativeCone5CaloJets"),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
     jetskt6 = cms.untracked.InputTag("kt6CaloJets"),
@@ -112,4 +151,4 @@ process.TFileService = cms.Service("TFileService",
 #process.p = cms.Path(process.myanalysis)
 # produce JPT jets before running analysis
 #process.p = cms.Path(process.ZSPJetCorrections*process.JetPlusTrackCorrections*process.myanalysis)
-process.p = cms.Path(process.myanalysis)
+process.p = cms.Path(process.hltPhysicsDeclared*process.hltLevel1GTSeed*process.monster*process.myanalysis)
