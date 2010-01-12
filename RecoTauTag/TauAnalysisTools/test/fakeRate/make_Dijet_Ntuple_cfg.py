@@ -4,7 +4,7 @@ process = cms.Process("TEST")
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-       "file:taste.root"
+       '/store/mc/Summer09/ppMuX/GEN-SIM-RECO/MC_31X_V3_7TeV_SD_Mu3-v1/0003/FEB0DBFF-DCB2-DE11-8A48-0018F3D09652.root'
        )
     )
 
