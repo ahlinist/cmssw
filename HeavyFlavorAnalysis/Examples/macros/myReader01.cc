@@ -1,5 +1,6 @@
 #include "myReader01.hh"
 #include <vector>
+#include <bitset>
 
 #include "TRandom.h"
 #define MMUON 0.10566
@@ -110,24 +111,17 @@ void myReader01::eventProcessing() {
   pairs.clear();
   for (int it = 0; it < fpEvt->nCands(); ++it) {
     pCand = fpEvt->getCand(it);
-
+    
     if (1300 != pCand->fType) continue; 
-
+    
     mass = pCand->fMass; 
     chi2 = pCand->fVtx.fChi2;
     ((TH1D*)fpHistFile->Get("chi2"))->Fill(chi2);
-
-   if (fRun == 124120 && fpEvt->fEventNumber == 5686693) {
-     cout << "mass: " << mass << " chi2: " << chi2 << " prob: " <<  pCand->fVtx.fProb << endl;
-   } else {
-     //  return; 
-   }
-
-
+    
     pM1 = pM2 = 0; 
     if (pCand->fSig1 > -1 && pCand->fSig1 < fpEvt->nSigTracks()) pM1 = fpEvt->getSigTrack(pCand->fSig1);
     if (pCand->fSig2 > -1 && pCand->fSig2 < fpEvt->nSigTracks()) pM2 = fpEvt->getSigTrack(pCand->fSig2);
-
+    
     if (0 == pM1 || 0 == pM2) {
       cout << "problem with candidate sig tracks! Skipping" << endl;
       continue;
@@ -149,6 +143,21 @@ void myReader01::eventProcessing() {
       if (it1 == pairs[i].first && it2 == pairs[i].second) {duplicate = true;  duplo = 1000*pairs[i].first + pairs[i].second;}
       if (it2 == pairs[i].first && it1 == pairs[i].second) {duplicate = true;  duplo = 1000*pairs[i].first + pairs[i].second;}
       if (duplicate) break;
+    }
+
+    
+    if (fRun == 124120 && fpEvt->fEventNumber == 5686693) {
+      cout << "mass: " << mass << " chi2: " << chi2 << " prob: " <<  pCand->fVtx.fProb << endl;
+      if (TMath::Abs(mass - 3.03179) < 0.1) {
+	cout << "pt1: " << pT1->fPlab.Perp() << " phi: " << pT1->fPlab.Phi() << " eta: " << pT1->fPlab.Eta() 
+	     << " algo: " << pT1->fAlgorithm << endl;
+	for (int ii = 0; ii < 20; ++ii) cout << "    " << std::bitset<32>(pT1->fHitPattern[ii]) << endl; 
+	cout << "pt2: " << pT2->fPlab.Perp() << " phi: " << pT2->fPlab.Phi() << " eta: " << pT2->fPlab.Eta()
+	     << " algo: " << pT2->fAlgorithm << endl;
+	for (int ii = 0; ii < 20; ++ii) cout << "    " << std::bitset<32>(pT2->fHitPattern[ii]) << endl; 
+      } else {
+	//  return; 
+      }
     }
 
     if (duplicate) {
@@ -209,7 +218,7 @@ void myReader01::eventProcessing() {
     ((TH2D*)fpHistFile->Get("muonID"))->Fill(m1, m2);
 
     
-    double PT1CUT(1.5), PT2CUT(1.5); 
+    double PT1CUT(1.0), PT2CUT(1.0); 
     double CHI2CUT(2.0); 
     
     ((TH1D*)fpHistFile->Get("m1300pt1"))->Fill(pT1->fPlab.Perp());
@@ -247,7 +256,7 @@ void myReader01::eventProcessing() {
 	&& (TMath::Abs(pT1->fLip) < 2.0) && (TMath::Abs(pT2->fLip) < 2.0)
 	&& (TMath::Abs(pT1->fTip) < 0.4) && (TMath::Abs(pT2->fTip) < 0.4)
 	&& (TMath::Abs(pT1->fTip - pT2->fTip) < 0.1) && (TMath::Abs(pT1->fLip - pT2->fLip) < 0.4)
-	&& (pCand->fPlab.Perp() > 2.)
+	&& (pCand->fPlab.Perp() > 0.)
 	&& (chi2 < CHI2CUT)
 	) {
       
