@@ -5,6 +5,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "RecoTauTag/TauAnalysisTools/interface/TauFunctionsImpl.h"
+#include <algorithm>
 
 /*
  * TauFakeRateDijetProbesProducer
@@ -48,15 +49,23 @@ class TauFakeRateDijetProbesProducer : public EDProducer {
    private:
       InputTag src_;
       double thresh_;
+      double minThresh_;
       TauFunction* func_;
 };
 
 TauFakeRateDijetProbesProducer::TauFakeRateDijetProbesProducer(const ParameterSet& pset)
 {
    src_ = pset.getParameter<InputTag>("source");
-   thresh_ = pset.getParameter<double>("threshold");
+   thresh_ = pset.getParameter<double>("triggerThreshold");
+   minThresh_ = pset.getParameter<double>("minimumThreshold");
    string dataType = pset.getParameter<string>("dataType");
    string eval_func = pset.getParameter<string>("expression");
+
+   if(thresh_ < minThresh_)
+   {
+      throw cms::Exception("Nonsensical Thresholds") << "Trigger threshold should be greater "
+         << "than filter threshold!";
+   }
 
    // Get our evaluation function
    func_ = TauHelpers::tauStringFuncFromType(dataType, eval_func);
@@ -65,6 +74,14 @@ TauFakeRateDijetProbesProducer::TauFakeRateDijetProbesProducer(const ParameterSe
    produces<CandBaseRefVect>("tagObject");
    produces<CandBaseRefVect>("highestPtProbe");
    produces<CandBaseRefVect>("secondHighestPtProbe");
+}
+
+namespace {
+   // Sorting predicate
+   bool refBaseCandPtDescending(const RefToBase<Candidate> &a, const RefToBase<Candidate> &b)
+   {
+      return (a->pt() > b->pt());
+   }
 }
 
 void
@@ -78,65 +95,63 @@ TauFakeRateDijetProbesProducer::produce(Event &evt, const EventSetup &es)
    Handle<View<Candidate> > sourceView;
    evt.getByLabel(src_, sourceView);
 
+   vector<RefToBase<Candidate> > filteredJets;
    size_t nRawJets = sourceView->size();
    // Ensure we have at least two jets - we need a trigger and a probe.
    if( nRawJets > 1 )
    {
+      cout << "Starting with " << nRawJets << " jets" << endl;
       // Count how many are possible 'trigger' jets
       size_t nTriggerCandidates = 0;
-      RefToBase<Candidate> highestPtJet;
-      RefToBase<Candidate> secondPtJet;
-      RefToBase<Candidate> thirdPtJet;
       for(size_t iJet = 0; iJet < nRawJets; ++iJet)
       {
          RefToBase<Candidate> jet = sourceView->refAt(iJet);
-         double value = (*func_)(jet);
-         if( value > thresh_) 
+         double pt = (*func_)(jet);
+         cout << "Found jet with pt " << pt << endl;
+         if( pt > thresh_) 
          {
             // Count how many above threshold
             nTriggerCandidates++;
          }
 
-         // Keep track of the highest and second highest jets
-         if ( highestPtJet.isNull() || highestPtJet->pt() < value )
+         if( pt > minThresh_ )
          {
-            thirdPtJet = secondPtJet;
-            secondPtJet = highestPtJet;
-            highestPtJet = jet;
+            filteredJets.push_back(jet);
          }
       }
 
-      // Make sure at least one jet fired the trigger
-      if( nTriggerCandidates > 0 )
-      {
-         switch(nTriggerCandidates) {
+      // sort by pt
+      std::sort(filteredJets.begin(), filteredJets.end(), refBaseCandPtDescending);
+
+      switch(nTriggerCandidates) {
+         // No jet fired the trigger, do nothing
+         case 0:
+            break;
             // Only one jet fired, then the highest pt jet is our trigger jet
             //  the second highest pt jet is our probe
-            case 1:
-               assert(secondPtJet.isNonnull());
-               secondHighestPt->push_back(secondPtJet);
-               tagObject->push_back(highestPtJet);
-               break;
+         case 1:
+            secondHighestPt->push_back(filteredJets[1]);
+            tagObject->push_back(filteredJets[0]);
+            cout << "Case 1: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << endl;
+            break;
             // Two jets fired, so the highest Pt jet is our probe, and the 
             //  second highest is the trigger jet
-            case 2:
-               assert(highestPtJet.isNonnull());
-               highestPt->push_back(highestPtJet);
-               tagObject->push_back(secondPtJet);
-               break;
+         case 2:
+            highestPt->push_back(filteredJets[0]);
+            tagObject->push_back(filteredJets[1]);
+            cout << "Case 2: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << endl;
+            break;
 
             // If 3 or more jets fired, then the third (or 4th etc) is our trigger
             //  jet and the 1st and 2nd are both probe jets
-            default:
-               assert(highestPtJet.isNonnull());
-               highestPt->push_back(highestPtJet);
-               assert(secondPtJet.isNonnull());
-               secondHighestPt->push_back(secondPtJet);
-               assert(thirdPtJet.isNonnull());
-               tagObject->push_back(thirdPtJet);
-               break;
-         }
-      } // end - At least one trigger candidate
+         default:
+            highestPt->push_back(filteredJets[0]);
+            secondHighestPt->push_back(filteredJets[1]);
+            tagObject->push_back(filteredJets[2]);
+            cout << "Case 3+: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << 
+               filteredJets[2]->pt() << endl;
+            break;
+      }
    } // end - at least two jets
 
    // store in event

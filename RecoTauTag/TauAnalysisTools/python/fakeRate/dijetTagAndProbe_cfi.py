@@ -41,7 +41,8 @@ dijetTagAndProbes = cms.EDProducer("TauFakeRateDijetProbesProducer",
       source = cms.InputTag("probeTauJets"),
       dataType = cms.string("PFTau"),
       expression = cms.string("pfTauTagInfoRef().pfjetRef().pt()"),
-      threshold = cms.double(15.0)
+      triggerThreshold = cms.double(15.0),
+      minimumThreshold = cms.double(1.0)
 )
 
 atLeastOneTagTau = cms.EDFilter("CandViewCountFilter",
@@ -68,8 +69,8 @@ secondProbeJetNtupleProducer.discriminators = cms.PSet(pftau_discriminators,
       pftau_discriminators_extra)
 
 dijetFakeRateNtupleSequence = cms.Sequence(
-      PFTau
-      *jetTrigger
+      #PFTau
+      jetTrigger
       *probeTauJets
       *atLeastTwoProbeTaus # two, before the tag selection
       *dijetTagAndProbes
