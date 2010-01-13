@@ -65,26 +65,50 @@ void PromptAna_Track::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       nValidhits->push_back(int(it->numberOfValidHits()));//minSiliconHits = cms.int32(7)
       nValidpixelhits->push_back(int(it->hitPattern().numberOfValidPixelHits()));//minPixelHits > 2
       nValidstriphits->push_back(int(it->hitPattern().numberOfValidStripHits()));
-//       quality   ->push_back(int(it->qualityMask()));
+      //       quality   ->push_back(int(it->qualityMask()));
       algorithm ->push_back(int(it->algo()));
 
-      // undefQuality=-1, loose=0, tight=1, highPurity=2, confirmed=3, goodIterative=4, qualitySize=5
+      //-- track quality flags
+      int qualityFlag = 0;
+      /* --> quality flag for tracks is assigned bitwise
+         bit 0: undefQuality
+         bit 1: loose
+         bit 2: tight
+         bit 3: highPurity
+         bit 4: confirmed
+         bit 5: goodIterative
+         bit 6: qualitySize
+
+	 --> to extract info while analyzing the ntuples
+	 "tracksQuality" is the variable stored in the ntuple for each track
+	 for (int itrack=0; itrack<tracksPt->size(); itrack++){
+	   int trackFlags = tracksQuality->at(itrack);
+	   cout << "######" << endl;
+	   cout << trackFlags << endl;
+	   int bit2 = 2; //looking at tight flag
+	   if( ( trackFlags & 1 << bit2) > 0)
+	     cout << "flag corresponding to bit " << bit2 << " is set TRUE for track " << itrack << endl;
+         }
+      */
 
       if(it->quality(reco::Track::undefQuality))
-	quality->push_back(1); else quality->push_back(0);
+	qualityFlag = qualityFlag | 1 << 0; 
       if(it->quality(reco::Track::loose))
-	quality->push_back(1); else quality->push_back(0);
+	qualityFlag = qualityFlag | 1 << 1; 
       if(it->quality(reco::Track::tight))
-	quality->push_back(1); else quality->push_back(0);
+	qualityFlag = qualityFlag | 1 << 2; 
       if(it->quality(reco::Track::highPurity))
-	quality->push_back(1); else quality->push_back(0);
+	qualityFlag = qualityFlag | 1 << 3; 
       if(it->quality(reco::Track::confirmed))
-	quality->push_back(1); else quality->push_back(0);
+	qualityFlag = qualityFlag | 1 << 4; 
       if(it->quality(reco::Track::goodIterative))
-	quality->push_back(1); else quality->push_back(0);
+	qualityFlag = qualityFlag | 1 << 5; 
       if(it->quality(reco::Track::qualitySize))
-	quality->push_back(1); else quality->push_back(0);
+	qualityFlag = qualityFlag | 1 << 6; 
       
+      quality->push_back(qualityFlag);
+      //--
+
       dxy       ->push_back(it->dxy());     
       dxyerror  ->push_back(it->dxyError());//maxD0Significance = cms.double(5.0)
     }
