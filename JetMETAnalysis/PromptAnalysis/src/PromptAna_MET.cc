@@ -28,6 +28,7 @@ PromptAna_MET::PromptAna_MET(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > ( prefix + "HadEtInHE"  + suffix );
   produces <std::vector<double> > ( prefix + "HadEtInHF"  + suffix );
   produces <std::vector<double> > ( prefix + "HadEtInHO"  + suffix );
+  produces <std::vector<double> > ( prefix + "METSigCornell"  + suffix );
 }
 
 void PromptAna_MET::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
@@ -54,6 +55,7 @@ void PromptAna_MET::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> >  hadEtInHE          ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  hadEtInHF          ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  hadEtInHO          ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> >  METSigCornell      ( new std::vector<double>()  ) ;
 
   //Get the MET Collection
   edm::Handle<reco::CaloMETCollection> metcollection;
@@ -84,6 +86,7 @@ void PromptAna_MET::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       hadEtInHE        -> push_back(it->hadEtInHE());
       hadEtInHF        -> push_back(it->hadEtInHF());
       hadEtInHO        -> push_back(it->hadEtInHO()); 
+      METSigCornell    -> push_back(it->metSignificance()); 
     }
 
   iEvent.put( met               ,  prefix + "Pt" + suffix );
@@ -108,5 +111,6 @@ void PromptAna_MET::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( hadEtInHE         ,  prefix + "HadEtInHE"  + suffix );
   iEvent.put( hadEtInHF         ,  prefix + "HadEtInHF"  + suffix );
   iEvent.put( hadEtInHO         ,  prefix + "HadEtInHO"  + suffix );
+  iEvent.put( METSigCornell     ,  prefix + "METSigCornell"  + suffix );
 }
 
