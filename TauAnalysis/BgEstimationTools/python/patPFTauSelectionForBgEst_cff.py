@@ -30,7 +30,14 @@ tausAntiOverlapWithElectronsVetoLooseIsolationForBgEst = cms.EDFilter("PATTauAnt
     filter = cms.bool(False)                                           
 )
 
+tausNoIsolationForBgEst = cms.EDFilter("PATTauSelector",
+    src = cms.InputTag('selectedLayer1TausForMuTauPt20Cumulative'),                                        
+    cut = cms.string('tauID("againstMuon") > 0.5'),
+    filter = cms.bool(False)
+)
+
 selectTausForBgEst = cms.Sequence(
     tausTrkIsoLooseIsolationForBgEst * tausEcalIsoLooseIsolationForBgEst
    * tausAntiOverlapWithMuonsVetoLooseIsolationForBgEst * tausAntiOverlapWithElectronsVetoLooseIsolationForBgEst
+   * tausNoIsolationForBgEst
 )

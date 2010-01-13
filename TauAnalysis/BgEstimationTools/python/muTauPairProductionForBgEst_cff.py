@@ -64,9 +64,19 @@ muTauPairsForBgEstQCDenrichedNoMuonIsolation = cms.EDProducer("PATMuTauPairProdu
     verbosity = cms.untracked.int32(0)
 )
 
+muTauPairsForBgEstQCDenrichedNoIsolation = cms.EDProducer("PATMuTauPairProducer",
+    useLeadingTausOnly = cms.bool(False),
+    srcLeg1 = cms.InputTag('muonsTrkNoIsolationForBgEst'),
+    srcLeg2 = cms.InputTag('tausNoIsolationForBgEst'),
+    dRmin12 = cms.double(0.7),
+    srcMET = cms.InputTag('layer1METs'),
+    recoMode = cms.string(""),
+    verbosity = cms.untracked.int32(0)
+)
+
 produceMuTauPairsForBgEst = cms.Sequence(
     muTauPairsForBgEstZmumuEnriched * muTauPairZmumuHypothesesForBgEstZmumuEnriched * muTauPairVisMassHypothesesForBgEstZmumuEnriched
    * muTauPairsForBgEstWplusJetsEnriched
    * muTauPairsForBgEstTTplusJetsEnriched
-   * muTauPairsForBgEstQCDenrichedLooseMuonIsolation * muTauPairsForBgEstQCDenrichedNoMuonIsolation
+   * muTauPairsForBgEstQCDenrichedLooseMuonIsolation * muTauPairsForBgEstQCDenrichedNoMuonIsolation * muTauPairsForBgEstQCDenrichedNoIsolation
 )
