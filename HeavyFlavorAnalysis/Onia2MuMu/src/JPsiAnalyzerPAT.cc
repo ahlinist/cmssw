@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.14 2010/01/08 10:46:07 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.15 2010/01/11 14:08:28 covarell Exp $
 //
 //
 
@@ -67,12 +67,12 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
+      void makeCuts() ;
       pair< unsigned int, const pat::CompositeCandidate* > theBestQQ();
       void fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand);
       bool selGlobalMuon(const pat::Muon* aMuon);
       bool selTrackerMuon(const pat::Muon* aMuon);
       bool selCaloMuon(const pat::Muon* aMuon);
-      int getJpsiCategory(const pat::CompositeCandidate* aCand);
       int getJpsiVarType(const double jpsivar, vector<double> vectbin);
 
       // histos
@@ -235,6 +235,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _useCalo;
       bool           _removeSignal;
       InputTag       _triggerresults;
+      vector<unsigned int>                     _thePassedCats;
+      vector<const pat::CompositeCandidate*>   _thePassedCands;
 
       // number of events
       unsigned int nEvents;
@@ -378,7 +380,11 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
      catch (...) {cout << "J/psi to calomuons not present in event!" << endl;}
    }
 
-   if (nEvents%10000 == 0) cout << "analyze event # " << nEvents << endl;
+   _thePassedCats.clear();
+   _thePassedCands.clear();
+
+   // APPLY CUTS
+   this->makeCuts();
 
    // BEST J/PSI?
 
@@ -387,24 +393,10 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
      pair< unsigned int, const pat::CompositeCandidate* > theBest = theBestQQ();
      if (theBest.first < 10) fillHistosAndDS(theBest.first, theBest.second);
 
-   } else {   // no, fill all
+   } else {   // no, fill all passing cuts
 
-     // for(vector<pat::CompositeCandidate>::const_iterator it=collGG->begin();
-     // it!=collGG->end();++it) { fillHistosAndDS(0, &(*it)); }
-
-     // for(vector<pat::CompositeCandidate>::const_iterator it=collGT->begin();
-     // it!=collGT->end();++it) { fillHistosAndDS(1, &(*it)); }
-
-     for(vector<pat::CompositeCandidate>::const_iterator it=collAll->begin();
-	 it!=collAll->end();++it) { 
-       fillHistosAndDS(getJpsiCategory(&*it), &(*it)); 
-     }
-
-     if (_useCalo) {
-       for(vector<pat::CompositeCandidate>::const_iterator it=collCalo->begin();
-	   it!=collCalo->end();++it) { 
-	 if (getJpsiCategory(&*it) > 2) fillHistosAndDS(getJpsiCategory(&*it), &(*it)); 
-       }
+     for( unsigned int count = 0; count < _thePassedCands.size(); count++) { 
+       fillHistosAndDS(_thePassedCats.at(count), _thePassedCands.at(count)); 
      }
 
    }
@@ -904,7 +896,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     JpsiEta->setVal(aCand->eta()); 
     JpsiMass->setVal(theMass);
     Jpsict->setVal(theCtau);
-    // cout << "life = " << theCtau << " trueLife = " << trueLife << endl;
+    // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << aCand->eta() << endl;
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
     JpsictTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
@@ -918,6 +910,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     
     JpsiPtType->setIndex(getJpsiVarType(aCand->pt(),_ptbinranges),kTRUE);
     JpsiEtaType->setIndex(getJpsiVarType(fabs(aCand->eta()),_etabinranges),kTRUE);
+    // cout << "JpsiPtType = " << getJpsiVarType(aCand->pt(),_ptbinranges) << " JpsiEtaType = " << getJpsiVarType(fabs(aCand->eta()),_etabinranges) << endl;
     
     // Fill RooDataSet
     RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
@@ -930,143 +923,143 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   }
 }
         
-pair< unsigned int, const pat::CompositeCandidate* > 
-JPsiAnalyzerPAT::theBestQQ() {
+void JPsiAnalyzerPAT::makeCuts() {
 
-  /* if (collGG.isValid()) {
-    do something
-  }
-
-  if (collGT.isValid()) {
-    do something else
-  } */
-  
   if (collAll.isValid()) {
 
-    // Order by category, not by Pt (Sara's suggestion)
-    for(unsigned int i = 0; i<3; i++) {
-
-      for(vector<pat::CompositeCandidate>::const_iterator it=collAll->begin();
-	  it!=collAll->end();++it) {
-	
-	const pat::CompositeCandidate* cand = &(*it);
-        int theJpsiCat = getJpsiCategory(cand);
-        if (theJpsiCat != (int)i) continue;
-	
-        // cout << "Now checking candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
-        const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
-	const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
-	
-	if (muon1->charge()*muon2->charge() < 0) {	  
+    for(vector<pat::CompositeCandidate>::const_iterator it=collAll->begin();
+	it!=collAll->end();++it) {
+      
+      const pat::CompositeCandidate* cand = &(*it);	
+      // cout << "Now checking candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
+      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
+      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
+      
+      if (muon1->charge()*muon2->charge() < 0) {	  
 	  
-	  switch (theJpsiCat) {
-	    
-	  case 0: {
-	    
-	    if (!_applycuts || (selGlobalMuon(muon1) &&
-				selGlobalMuon(muon2) &&
-				cand->userFloat("vProb") > 0.001 )) {
-	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(0,cand);
-	      // cout << "Now passed candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
-	      return result; break;
-	    }
-	  }
-	    
-	  case 1: {
-	    
-	    if (!_applycuts || (((muon1->isGlobalMuon() &&
-				  selGlobalMuon(muon1) &&
-				  selTrackerMuon(muon2)) ||
-				 (muon2->isGlobalMuon() &&
-				  selGlobalMuon(muon2) &&
-				  selTrackerMuon(muon1))) &&
-				cand->userFloat("vProb") > 0.001 )) {
-	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(1,cand);
-              // cout << "Now passed candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
-	      return result; break;
-	    } 
-	  }
-	    
-	  case 2: {
-	    
-	    if (!_applycuts || (selTrackerMuon(muon1) &&
-				selTrackerMuon(muon2) &&
-				cand->userFloat("vProb") > 0.001 )) {
-	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(2,cand);
-              // cout << "Now passed candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
-	      return result; break;
-	    }
-	  }
+        // global + global?
+	if (muon1->isGlobalMuon() && muon2->isGlobalMuon() ) {
+	  if (!_applycuts || (selGlobalMuon(muon1) &&
+			      selGlobalMuon(muon2) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(0);  _thePassedCands.push_back(cand);
+            continue;
 	  }
 	}
-      } 
-    }
-  }
-  
-  if (_useCalo && collCalo.isValid()) {
-
-    // Order by category, not by Pt (Sara's suggestion)
-    for(unsigned int i = 3; i<6; i++) {
-
-      for(vector<pat::CompositeCandidate>::const_iterator it=collCalo->begin();
-	  it!=collCalo->end();++it) {
 	
-	const pat::CompositeCandidate* cand = &(*it);
-	int theJpsiCat = getJpsiCategory(cand);
-        if (theJpsiCat != (int)i) continue;    
+        // global + tracker? (x2)    
+	if (muon1->isGlobalMuon() && muon2->isTrackerMuon() ) {
+	  if (!_applycuts || (selGlobalMuon(muon1) &&
+			      selTrackerMuon(muon2) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(1);  _thePassedCands.push_back(cand);
+	    continue;
+	  }
+	}
 
-	const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
-	const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
-	
-	if(muon1->charge()*muon2->charge() < 0) {
-	  
-	  switch (theJpsiCat) {
-	    
-	  case 3: {
-	    
-	    if (!_applycuts || (((muon1->isGlobalMuon() &&
-				  selGlobalMuon(muon1) &&
-				  selCaloMuon(muon2)) ||
-				 (muon2->isGlobalMuon() &&
-				  selGlobalMuon(muon2) &&
-				  selCaloMuon(muon1))) &&
-				cand->userFloat("vProb") > 0.001 )) {
-	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(3,cand);
-	      return result; break;
-	    }
+        if (muon2->isGlobalMuon() && muon1->isTrackerMuon() ) {
+	  if (!_applycuts || (selGlobalMuon(muon2) &&
+			      selTrackerMuon(muon1) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(1);  _thePassedCands.push_back(cand);
+	    continue;
 	  }
-	    
-	  case 4: {
-	    
-	    if (!_applycuts || (((muon1->isTrackerMuon() &&
-				  selTrackerMuon(muon1) &&
-				  selCaloMuon(muon2)) ||
-				 (muon2->isTrackerMuon() &&
-				  selTrackerMuon(muon2) &&
-				  selCaloMuon(muon1))) &&
-				cand->userFloat("vProb") > 0.001 )) {
-	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(4,cand);
-	      return result; break;
-	    } 
-	  }
-	    
-	  case 5: {
-	    
-	    if (!_applycuts || (selCaloMuon(muon1) &&
-				selCaloMuon(muon2) &&
-				cand->userFloat("vProb") > 0.001 )) {
-	      pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(5,cand);
-	      return result; break;
-	    }
-	  }
+	}
+
+        // tracker + tracker?  
+        if (muon1->isTrackerMuon() && muon2->isTrackerMuon() ) {
+	  if (!_applycuts || (selTrackerMuon(muon1) &&
+			      selTrackerMuon(muon2) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(2);  _thePassedCands.push_back(cand);
+	    continue;
 	  }
 	}
       }
     }
   }
-    
-  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(99, new pat::CompositeCandidate() );
-  return result;	  
+  
+  if (_useCalo && collCalo.isValid()) {
+
+    for(vector<pat::CompositeCandidate>::const_iterator it=collCalo->begin();
+	it!=collCalo->end();++it) {
+      
+      const pat::CompositeCandidate* cand = &(*it);
+      
+      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
+      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
+      
+      if (muon1->charge()*muon2->charge() < 0 && !(muon1->isTrackerMuon()) && !(muon2->isTrackerMuon()) ) {
+
+	// global + calo? (x2)
+	if (muon1->isGlobalMuon() && muon2->isCaloMuon() ) {
+	  if (!_applycuts || (selGlobalMuon(muon1) &&
+			      selCaloMuon(muon2) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(3);  _thePassedCands.push_back(cand);
+            continue;
+	  }
+	}
+
+	if (muon2->isGlobalMuon() && muon1->isCaloMuon() ) {
+	  if (!_applycuts || (selGlobalMuon(muon2) &&
+			      selCaloMuon(muon1) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(3);  _thePassedCands.push_back(cand);
+            continue;
+	  }
+	}
+	
+        // tracker + calo? (x2)    
+	if (muon1->isTrackerMuon() && muon2->isCaloMuon() ) {
+	  if (!_applycuts || (selTrackerMuon(muon1) &&
+			      selCaloMuon(muon2) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(4);  _thePassedCands.push_back(cand);
+	    continue;
+	  }
+	}
+
+        if (muon2->isTrackerMuon() && muon1->isCaloMuon() ) {
+	  if (!_applycuts || (selTrackerMuon(muon2) &&
+			      selCaloMuon(muon1) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(4);  _thePassedCands.push_back(cand);
+	    continue;
+	  }
+	}
+
+        // calo + calo? 
+        if (muon1->isCaloMuon() && muon2->isCaloMuon() ) {
+	  if (!_applycuts || (selCaloMuon(muon1) &&
+			      selCaloMuon(muon2) &&
+			      cand->userFloat("vProb") > 0.001 )) {
+	    _thePassedCats.push_back(5);  _thePassedCands.push_back(cand);
+	    continue;
+	  }
+	}
+      }
+    }
+  }
+
+  return;
+}
+
+pair< unsigned int, const pat::CompositeCandidate* > 
+JPsiAnalyzerPAT::theBestQQ() {
+
+  unsigned int theBestCat = 99;
+  const pat::CompositeCandidate* theBestCand = new pat::CompositeCandidate();
+
+  for( unsigned int i = 0; i < _thePassedCands.size(); i++) { 
+    if (_thePassedCats.at(i) < theBestCat) {
+      theBestCat = _thePassedCats.at(i);
+      theBestCand = _thePassedCands.at(i);
+    }
+  }
+
+  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(theBestCat, theBestCand );
+  return result;
 
 }
 
@@ -1114,23 +1107,6 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
 	   (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
 	  fabs(iTrack->d0()) < 5.0 &&
           fabs(iTrack->dz()) < 20.0 );
-}
-
-int 
-JPsiAnalyzerPAT::getJpsiCategory(const pat::CompositeCandidate* aCand) {
-
-  const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon1"));
-  const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
-  if (muon1->isGlobalMuon() && muon2->isGlobalMuon() ) return 0;
-  if (muon1->isGlobalMuon() && muon2->isTrackerMuon() ) return 1;
-  if (muon1->isTrackerMuon() && muon2->isGlobalMuon() ) return 1;
-  if (muon1->isTrackerMuon() && muon2->isTrackerMuon() ) return 2;
-  if (muon1->isGlobalMuon() && muon2->isCaloMuon() ) return 3;
-  if (muon1->isCaloMuon() && muon2->isGlobalMuon() ) return 3;
-  if (muon1->isTrackerMuon() && muon2->isCaloMuon() ) return 4;
-  if (muon1->isCaloMuon() && muon2->isTrackerMuon() ) return 4;
-  if (muon1->isCaloMuon() && muon2->isCaloMuon() ) return 5;
-  return 99;
 }
 
 int 
