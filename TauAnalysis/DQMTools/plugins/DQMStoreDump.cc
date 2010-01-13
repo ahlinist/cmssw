@@ -1,5 +1,7 @@
 #include "TauAnalysis/DQMTools/plugins/DQMStoreDump.h"
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 //DQM services
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
