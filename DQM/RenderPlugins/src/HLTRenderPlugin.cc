@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.13 2009/12/06 17:30:11 rekovic Exp $
+  $Id: HLTRenderPlugin.cc,v 1.14 2009/12/09 16:47:53 lorenzo Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.14  2009/12/09 16:47:53  lorenzo
+  added log scale
+
   Revision 1.13  2009/12/06 17:30:11  rekovic
   Render for HLT_bx plot
 
@@ -48,7 +51,10 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TPRegexp.h"
 #include <cassert>
+
+#define REMATCH(pat, str) (TPRegexp(pat).MatchB(str))
 
 class HLTRenderPlugin : public DQMRenderPlugin
 {
@@ -130,6 +136,26 @@ private:
 
         obj->GetXaxis()->SetRange(minRange, maxRange);
       }
+
+      // BitSummary histograms
+      if(REMATCH("Efficiency_Summary_*", o.name) || REMATCH("HLTRate_*", o.name) 
+	 || REMATCH("PassingBits_Summary_*", o.name)){
+	
+	//gStyle->SetOptStat(11);
+	//obj->GetXaxis()->SetTitle("");
+	//obj->GetYaxis()->SetTitle("");
+	int nbins = obj->GetNbinsX();
+	int maxRange = nbins;
+	for ( int i = nbins; i > 0; --i ) {
+	  //if ( obj->GetBinContent(i) != 0 ) {
+	  if ( strlen(obj->GetXaxis()->GetBinLabel(i)) != 0 ) {
+	    maxRange = i;
+	    break;
+	  }
+	}
+	obj->GetXaxis()->SetRange(0, maxRange);
+      }
+
 
       // FourVector eff histograms
       if ( o.name.find("FourVector/client") != std::string::npos)
@@ -303,6 +329,32 @@ private:
 	
 	        obj->GetXaxis()->SetRange(minRange, maxRange);
 	      }
+      }
+
+      //HLTMonBitSummary
+      if(REMATCH("PassingBits_Correlation_*", o.name)){
+	
+	//gStyle->SetOptStat(11);
+	//obj->GetXaxis()->SetTitle("");
+	//obj->GetYaxis()->SetTitle("");
+	int nbinsx = obj->GetNbinsX();
+	int maxRangex = nbinsx;
+	for ( int i = nbinsx; i > 0; --i ) {
+	  if ( strlen(obj->GetXaxis()->GetBinLabel(i)) != 0 ) {
+	    maxRangex = i;
+	    break;
+	  }
+	}
+	int nbinsy = obj->GetNbinsY();
+	int maxRangey = nbinsy;
+	for ( int i = nbinsy; i > 0; --i ) {
+	  if ( strlen(obj->GetYaxis()->GetBinLabel(i)) != 0 ) {
+	    maxRangey = i;
+	    break;
+	  }
+	}
+	obj->GetXaxis()->SetRange(0, maxRangex);
+	obj->GetYaxis()->SetRange(0, maxRangey);
       }
 
 
