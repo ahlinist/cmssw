@@ -8,6 +8,7 @@
 #include <TString.h>
 #include <TObjArray.h>
 #include <TObjString.h>
+#include <TMath.h>
 
 #include <iostream>
 #include <iomanip>
@@ -169,3 +170,75 @@ std::vector<std::string> decodeVStringStringRep(const std::string& entry, int& e
   
   return elements;
 }
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+void computeAcceptance(const binEntryType_model& binEntry, double& acceptance, double& acceptanceErr2)
+{
+  double gen = binEntry.gen_.binContent_;
+  double rec = binEntry.rec_.binContent_;
+  double stay = binEntry.stay_.binContent_;
+  double stayErr2 = binEntry.stay_.binSumw2_;
+  double lost = binEntry.lost_.binContent_;
+  double lostErr2 = binEntry.lost_.binSumw2_;
+  double smearIn = binEntry.smearIn_.binContent_;
+  double smearInErr2 = binEntry.smearIn_.binSumw2_;
+  double smearOut = binEntry.smearOut_.binContent_;
+  double smearOutErr2 = binEntry.smearOut_.binSumw2_;
+  
+  if ( gen != 0. ) {
+    acceptance = rec/gen;
+    
+    double denominator = TMath::Power(stay + smearOut + lost, -2.);
+    
+    acceptanceErr2 = TMath::Power((smearOut + lost - smearIn)*denominator, 2.)*stayErr2
+                    + denominator*smearInErr2 + TMath::Power(rec*denominator, 2.)*(lostErr2 + smearOutErr2);
+  } else {
+    acceptance = 0.;
+    acceptanceErr2 = 0.;
+  }
+}
+
+void computePurity(const binEntryType_model& binEntry, double& purity, double& purityErr2)
+{
+  double rec = binEntry.rec_.binContent_;
+  double stay = binEntry.stay_.binContent_;
+  double stayErr2 = binEntry.stay_.binSumw2_;
+  double smearIn = binEntry.smearIn_.binContent_;
+  double smearInErr2 = binEntry.smearIn_.binSumw2_;
+  
+  if ( rec != 0. ) {
+    purity = stay/rec;
+
+    double denominator = TMath::Power(stay + smearIn, -2.);
+
+    purityErr2 = TMath::Power(smearIn*denominator, 2.)*stayErr2
+                + TMath::Power(stay*denominator, 2.)*smearInErr2;
+  } else {
+    purity = 0.;
+    purityErr2 = 0.;
+  }
+}
+
+void computeStability(const binEntryType_model& binEntry, double& stability, double& stabilityErr2)
+{
+  double stay = binEntry.stay_.binContent_;
+  double stayErr2 = binEntry.stay_.binSumw2_;
+  double smearOut = binEntry.smearOut_.binContent_;
+  double smearOutErr2 = binEntry.smearOut_.binSumw2_;
+    
+  if ( (stay + smearOut) != 0. ) {
+    stability = stay/(stay + smearOut);
+
+    double denominator = TMath::Power(stay + smearOut, -2.);
+    
+    stabilityErr2 = TMath::Power(smearOut*denominator, 2.)*stayErr2
+                   + TMath::Power(stay*denominator, 2.)*smearOutErr2;
+  } else {
+    stability = 0.;
+    stabilityErr2 = 0.;
+  }
+}
+
