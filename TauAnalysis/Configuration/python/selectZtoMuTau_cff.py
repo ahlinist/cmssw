@@ -260,3 +260,20 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
 )
 
 selectZtoMuTauEvents = zToMuTauEventSelConfigurator.configure()
+
+isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecZtoMuTau'),
+    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
+    flags = cms.VInputTag(
+        cms.InputTag('genPhaseSpaceEventInfo'),
+        cms.InputTag('evtSelTrigger'),
+        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('muonTrkIPcut', 'cumulative'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
+        cms.InputTag('diMuPairZmumuHypothesisVeto')
+        
+    )
+)
+
+selectZtoMuTauEvents._seq = selectZtoMuTauEvents._seq * isRecZtoMuTau
