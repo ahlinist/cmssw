@@ -21,30 +21,39 @@ process.load("Configuration/StandardSequences/ReconstructionCosmics_cff")
 
 process.load("RecoMuon/Configuration/RecoMuon_cff")
 
-process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
                            fileName = cms.string( 'your_output.root' ),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
-    "/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/151/0E45A7CE-F5DD-DE11-9B2E-001617E30CC8.root"
-        ),
+    #"file:/tmp/santanas/BSC_activity.root"
+    #"file:/tmp/santanas/MinBias900GeV_plus_R122314_ZeroBias_DM_STARTUP3X_V8D_RECO_1.root"
+    #'/store/mc/Summer09/MinBias/GEN-SIM-RECO/STARTUP3X_V8D_900GeV-v1/0005/E4590360-4CD7-DE11-8CB4-002618943896.root'
+    #'/store/data/BeamCommissioning09/MinimumBias/RECO/rereco_GR09_P_V7_v1/0099/DABD5D6D-D4E2-DE11-8FFD-00261894387A.root'
+    "/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/596/F82DED93-36E2-DE11-9316-000423D9870C.root"
+    #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/151/0E45A7CE-F5DD-DE11-9B2E-001617E30CC8.root"
+    ),
     
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
     
     secondaryFileNames = cms.untracked.vstring())
 
-process.MessageLogger = cms.Service("MessageLogger",
-                                    default = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(1000)
-    )
-                                    )
 
-process.halo = cms.Path(process.BeamHaloId)
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.default.limit = 100
+
+# summary
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+
+#process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
+#from HLTrigger.HLTfilters.hltLevel1GTSeed_cfi import hltLevel1GTSeed
+#process.bit40OR41 = hltLevel1GTSeed.clone(L1TechTriggerSeeding = cms.bool(True),
+#                                          L1SeedsLogicalExpression = cms.string('40 OR 41'))
 
 process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     outputCommands = cms.untracked.vstring(
@@ -66,7 +75,10 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanacleanup_*_*'
     ))
 
-process.theBigNtuple = cms.Path( (
+process.theBigNtuple = cms.Path(
+    #process.bit40OR41 *
+    process.BeamHaloId *
+    (
     process.promptanaevent +
     process.promptanamet   +
     process.promptanatcmet   +
@@ -82,6 +94,6 @@ process.theBigNtuple = cms.Path( (
     process.promptanavtx +
     process.promptanatrack +
     process.promptanacleanup
-    ) * process.promptanaTree )
+    )
+    * process.promptanaTree )
 
-schedule = cms.Schedule( process.halo, process.theBigNtuple )
