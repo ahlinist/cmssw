@@ -38,6 +38,25 @@ DataBinning::DataBinning(const edm::ParameterSet& cfg)
   }
 }
 
+DataBinning::DataBinning(const DataBinning& bluePrint)
+  : BinningBase(bluePrint),
+    binContents_(bluePrint.binContents_),
+    binSumw2_(bluePrint.binSumw2_),
+    numBins_(bluePrint.numBins_)
+{}
+
+DataBinning::DataBinning(const std::string& name, const BinGrid& binGrid, 
+			 const std::vector<double>& binContents, const std::vector<double>& binSumw2)
+  : BinningBase(name, binGrid)
+{
+  assert(binContents.size() == binSumw2.size());
+
+  binContents_ = binContents;
+  binSumw2_ = binSumw2;
+
+  numBins_ = binContents_.size();
+}
+
 DataBinning::~DataBinning()
 {
 //--- nothing to be done yet...
