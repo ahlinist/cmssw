@@ -23,10 +23,14 @@ from TauAnalysis.RecoTools.eventVertexSelector_cfi import *
 # with respect to direction of missing Et vector
 from TauAnalysis.CandidateTools.metTopology_cfi import *
 
+# import sequence for selection of generated Z --> tau+ tau- --> ... decay modes
+from TauAnalysis.RecoTools.selectGenZtautauDecayModes_cfi import *
+
 produceGenObjects = cms.Sequence(
     produceGenDecayProductsFromZs
    + produceGenPhaseSpaceEventInfo
    + produceTauGenJets
+   + selectGenZtautauDecayModes
 )
 
 produceRecObjects = cms.Sequence(
