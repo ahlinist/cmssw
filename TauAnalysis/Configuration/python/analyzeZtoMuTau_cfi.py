@@ -85,8 +85,8 @@ triggerHistManagerForMuTau.hltPaths = cms.vstring(
 # import config for event weight histogram manager
 from TauAnalysis.Core.eventWeightHistManager_cfi import *
 
-diTauCandidateCollinearApproxBinningForMuTau = cms.PSet(
-    pluginName = cms.string('diTauCandidateCollinearApproxBinningForMuTau'),
+diTauCandidateCollinearApproxBinnerForMuTau = cms.PSet(
+    pluginName = cms.string('diTauCandidateCollinearApproxBinnerForMuTau'),
     pluginType = cms.string('DataBinner'),
     binning = collinearApproxBinning,
     binningService = cms.PSet(
@@ -94,6 +94,14 @@ diTauCandidateCollinearApproxBinningForMuTau = cms.PSet(
     ),
     dqmDirectory_store = cms.string('collinearApproxBinningResults4regions')
 )
+
+# import config for binning results
+# used to estimate acceptance of event selection
+from TauAnalysis.Core.modelBinner_cfi import *
+modelBinnerForMuTau = copy.deepcopy(modelBinner)
+modelBinnerForMuTau.pluginName = cms.string('modelBinnerForMuTau')
+modelBinnerForMuTau.srcGenFlag = cms.InputTag("isGenZtoMuTau")
+modelBinnerForMuTau.srcRecFlag = cms.InputTag("isRecZtoMuTau")
 
 # import config for binning results
 # used to estimate systematic uncertainties
@@ -411,7 +419,8 @@ muTauAnalysisSequence = cms.VPSet(
             'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForMuTau'
+            'triggerHistManagerForMuTau',
+            'modelBinnerForMuTau',
         )
     ),
 
@@ -843,7 +852,7 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateCollinearApproxHistManagerBinnedForMuTau',
-            'diTauCandidateCollinearApproxBinningForMuTau',
+            'diTauCandidateCollinearApproxBinnerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManager',
             'jetHistManager',

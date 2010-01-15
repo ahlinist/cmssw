@@ -79,7 +79,7 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateHistManagerForMuTau,
         diTauCandidateCollinearApproxHistManagerForMuTau,
         diTauCandidateCollinearApproxHistManagerBinnedForMuTau,
-        diTauCandidateCollinearApproxBinningForMuTau,
+        diTauCandidateCollinearApproxBinnerForMuTau,
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
         muPairHistManager,
         jetHistManager,
@@ -87,7 +87,8 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         pfMEtHistManager,
         particleMultiplicityHistManager,
         vertexHistManager,
-        triggerHistManagerForMuTau
+        triggerHistManagerForMuTau,
+        modelBinnerForMuTau
     ),
 
     analyzers_systematic = cms.VPSet(
