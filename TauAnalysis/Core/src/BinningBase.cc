@@ -20,6 +20,18 @@ BinningBase::BinningBase(const edm::ParameterSet& cfg)
   binGrid_ = new BinGrid(cfg);
 }
 
+BinningBase::BinningBase(const BinningBase& bluePrint)
+  : name_(bluePrint.name_)
+{
+  binGrid_ = new BinGrid(*bluePrint.binGrid_);
+}
+
+BinningBase::BinningBase(const std::string& name, const BinGrid& binGrid)
+  : name_(name)
+{
+  binGrid_ = new BinGrid(binGrid);
+}
+
 BinningBase::~BinningBase()
 {
   delete binGrid_;

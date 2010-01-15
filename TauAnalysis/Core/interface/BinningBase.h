@@ -8,9 +8,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: BinningBase.h,v 1.2 2009/06/17 12:40:21 veelken Exp $
+ * $Id: BinningBase.h,v 1.1 2009/12/04 13:42:00 veelken Exp $
  *
  */
 
@@ -25,6 +25,8 @@ class BinningBase
  public:
   BinningBase();
   BinningBase(const edm::ParameterSet&);
+  BinningBase(const BinningBase&);
+  BinningBase(const std::string&, const BinGrid&);
   virtual ~BinningBase();
 
   const std::string& name() const { return name_; }
