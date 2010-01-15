@@ -13,7 +13,7 @@
 //
 // Original Author:  Gobinda MAJUMDER
 //         Created:  Sun Jul 20 09:33:01 CEST 2008
-// $Id: PromptHOAnalyser.cc,v 1.1 2008/08/18 09:17:12 efe Exp $
+// $Id: PromptHOAnalyser.cc,v 1.2 2009/08/17 08:13:36 efe Exp $
 //
 //
 // Updated on 14th August 2009 to match with Calibration code
@@ -1093,8 +1093,8 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       
       PositionType trkpos(posx, posy, posz);
       
-      Hep3Vector tmpmuon3v(posx, posy, posz);
-      Hep3Vector tmpmuondir(momx, momy, momz);
+      CLHEP::Hep3Vector tmpmuon3v(posx, posy, posz);
+      CLHEP::Hep3Vector tmpmuondir(momx, momy, momz);
       
       bool samedir = (tmpmuon3v.dot(tmpmuondir) >0) ? true : false;
       for (int i=0; i<3; i++) {caloen[i] = 0.0;}
@@ -1103,14 +1103,14 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  ncosmcor != cosmicmuon->end();  ++ncosmcor) {
 	if (ncosmcor==ncosm) continue;
 	
-	Hep3Vector tmpmuon3vcor;
-	Hep3Vector tmpmom3v;
+	CLHEP::Hep3Vector tmpmuon3vcor;
+	CLHEP::Hep3Vector tmpmom3v;
 	if (iiner==1) {
-	  tmpmuon3vcor = Hep3Vector((*ncosmcor).innerPosition().X(),(*ncosmcor).innerPosition().Y(),(*ncosmcor).innerPosition().Z());
-	  tmpmom3v = Hep3Vector((*ncosmcor).innerMomentum().X(),(*ncosmcor).innerMomentum().Y(),(*ncosmcor).innerMomentum().Z());
+	  tmpmuon3vcor = CLHEP::Hep3Vector((*ncosmcor).innerPosition().X(),(*ncosmcor).innerPosition().Y(),(*ncosmcor).innerPosition().Z());
+	  tmpmom3v = CLHEP::Hep3Vector((*ncosmcor).innerMomentum().X(),(*ncosmcor).innerMomentum().Y(),(*ncosmcor).innerMomentum().Z());
 	} else {
-	  tmpmuon3vcor = Hep3Vector((*ncosmcor).outerPosition().X(),(*ncosmcor).outerPosition().Y(),(*ncosmcor).outerPosition().Z());
-	  tmpmom3v = Hep3Vector((*ncosmcor).outerMomentum().X(),(*ncosmcor).outerMomentum().Y(),(*ncosmcor).outerMomentum().Z());	
+	  tmpmuon3vcor = CLHEP::Hep3Vector((*ncosmcor).outerPosition().X(),(*ncosmcor).outerPosition().Y(),(*ncosmcor).outerPosition().Z());
+	  tmpmom3v = CLHEP::Hep3Vector((*ncosmcor).outerMomentum().X(),(*ncosmcor).outerMomentum().Y(),(*ncosmcor).outerMomentum().Z());	
 	  
 	}
 
@@ -1143,7 +1143,7 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	    double ith = (*calt).momentum().theta();
 	    double iph = (*calt).momentum().phi();
 
-	    Hep3Vector calo3v(sin(ith)*cos(iph), sin(ith)*sin(iph), cos(ith));
+	    CLHEP::Hep3Vector calo3v(sin(ith)*cos(iph), sin(ith)*sin(iph), cos(ith));
 	    
 	    double angle = tmpmuon3v.angle(calo3v);
 	    
@@ -1238,7 +1238,7 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  if (steppingHelixstateinfo_.isValid()) {
 
 	    GlobalVector hotrkpos2(steppingHelixstateinfo_.position().x(), steppingHelixstateinfo_.position().y(), steppingHelixstateinfo_.position().z());
-	    Hep3Vector hotrkdir2(steppingHelixstateinfo_.momentum().x(), steppingHelixstateinfo_.momentum().y(),steppingHelixstateinfo_.momentum().z());
+	    CLHEP::Hep3Vector hotrkdir2(steppingHelixstateinfo_.momentum().x(), steppingHelixstateinfo_.momentum().y(),steppingHelixstateinfo_.momentum().z());
 	    
 	    LocalVector lclvt0 = (*aPlane).toLocal(hotrkpos2);
 	    
@@ -1265,7 +1265,7 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 		xhor1 = xx; //lclvt0.x();
 		yhor1 = yy; //lclvt0.y();
 		
-		hoang = Hep3Vector(zLocal.x(),zLocal.y(),zLocal.z()).dot(hotrkdir2.unit());
+		hoang = CLHEP::Hep3Vector(zLocal.x(),zLocal.y(),zLocal.z()).dot(hotrkdir2.unit());
 		break;
 	      default : break;
 	      }
