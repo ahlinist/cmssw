@@ -2,6 +2,20 @@
 
 
 **************
+CRAB templates available:
+
+- template_crab_caf_copyToCastor.cfg 
+submit from caf, copy output on CASTOR
+
+- template_crab_grid_copyToCastor.cfg
+submit from lxplus, copy output on CASTOR
+
+- template_crab_grid_copyToCastor_CrabServer.cfg
+submit from lxplus, copy output on CASTOR, use CERN server
+
+
+**************
+Example of instructions for template_crab_caf_copyToCastor.cfg (similar for others)
 
 -----------------------------
 0) go to CAF from lxplus
