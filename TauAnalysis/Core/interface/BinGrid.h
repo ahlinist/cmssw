@@ -10,9 +10,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: BinGrid.h,v 1.3 2009/06/24 12:52:32 veelken Exp $
+ * $Id: BinGrid.h,v 1.1 2009/12/04 13:42:00 veelken Exp $
  *
  */
 
@@ -29,6 +29,7 @@ class BinGrid
  public: 
   BinGrid();
   BinGrid(const edm::ParameterSet&);
+  BinGrid(const BinGrid&);
   virtual ~BinGrid();
   
   unsigned dimensions() const { return numDimensions_; }

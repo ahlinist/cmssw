@@ -59,6 +59,15 @@ BinGrid::BinGrid(const edm::ParameterSet& cfg)
   print(std::cout);
 }
 
+BinGrid::BinGrid(const BinGrid& bluePrint)
+  : numDimensions_(bluePrint.numDimensions_),
+    objVarNames_(bluePrint.objVarNames_),
+    binEdges_(bluePrint.binEdges_),
+    numBinsPerDimension_(bluePrint.numBinsPerDimension_),
+    numBinsTotal_(bluePrint.numBinsTotal_),
+    dimValues_(bluePrint.dimValues_)
+{}
+
 BinGrid::~BinGrid()
 {
 //--- nothing to be done yet...
