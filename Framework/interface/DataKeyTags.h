@@ -28,9 +28,7 @@
 namespace edm {
    namespace eventsetup {
       
-      class DataKey;
-      
-      typedef heterocontainer::HCTypeTag<DataKey> TypeTag;
+      typedef heterocontainer::HCTypeTag TypeTag;
       
       class SimpleStringTag {
         public:

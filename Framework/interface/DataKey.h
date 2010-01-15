@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/DataKeyTags.h"
-#include "FWCore/Framework/interface/HCTypeTagTemplate.h"
+#include "FWCore/Framework/interface/HCTypeTag.h"
 
 // forward declarations
 namespace edm {
@@ -72,7 +72,7 @@ class DataKey
       // ---------- static member functions --------------------
       template<class T>
          static TypeTag makeTypeTag() {
-            return heterocontainer::HCTypeTagTemplate<T, DataKey>();
+            return heterocontainer::HCTypeTag::make<T>();
          }
       
       // ---------- member functions ---------------------------
