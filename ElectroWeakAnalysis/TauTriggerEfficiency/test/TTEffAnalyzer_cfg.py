@@ -117,7 +117,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         HLTPFTau                = cms.bool(False),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 	GenParticleCollection	= cms.InputTag("genParticles"),
-        outputFileName          = cms.string("/tmp/chinhan/tteffAnalysis.root")
+        outputFileName          = cms.string("tteffAnalysis.root")
 )
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
