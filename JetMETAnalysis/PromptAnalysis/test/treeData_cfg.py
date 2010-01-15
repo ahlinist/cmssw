@@ -26,7 +26,7 @@ process.add_( cms.Service( "TFileService",
                            fileName = cms.string( 'your_output.root' ),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
@@ -84,8 +84,8 @@ process.theBigNtuple = cms.Path(
     process.promptanatcmet   +
     process.promptanapfmet   +
     process.promptananohf  +
-    process.promptanaic5calojet +
-    process.promptanasc5calojet +
+    #process.promptanaic5calojet +
+    #process.promptanasc5calojet +
     process.promptanakt4calojet +
     process.promptanaak5calojet +
     process.promptanahalo +
