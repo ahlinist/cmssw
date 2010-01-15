@@ -38,6 +38,11 @@
    <use name=DQMServices/Core>
    <use name=DQMServices/Components>
    <use name=FWCore/PluginManager>
+   <use name=JetMETCorrections/Algorithms>
+   <use name=JetMETCorrections/Objects>
+   <use name=RecoJets/JetAssociationAlgorithms>
+   <use name=MagneticField/Records>
+   <use name=TrackingTools/Records>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=JetMETAnalysisPromptAnalysis>
