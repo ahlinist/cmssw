@@ -12,8 +12,8 @@ promptananohf = cms.EDProducer("PromptAna_MET",
                             Suffix = cms.string('Calo')
                             )
 
-promptanatcmet = cms.EDProducer( "PromptAna_MET"
-                                 , InputTag  = cms.InputTag('tcMet')
-                                 , Prefix    = cms.string('tcmet')
-                                 , Suffix    = cms.string('')
-                                 )
+#promptanatcmet = cms.EDProducer( "PromptAna_MET"
+#                                 , InputTag  = cms.InputTag('tcMet')
+#                                 , Prefix    = cms.string('tcmet')
+#                                 , Suffix    = cms.string('')
+#                                 )
