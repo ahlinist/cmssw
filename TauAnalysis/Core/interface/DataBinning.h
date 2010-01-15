@@ -12,9 +12,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: DataBinning.h,v 1.2 2009/06/17 12:41:15 veelken Exp $
+ * $Id: DataBinning.h,v 1.1 2009/12/04 13:42:00 veelken Exp $
  *
  */
 
@@ -30,6 +30,8 @@ class DataBinning : public BinningBase
  public:
   DataBinning();
   DataBinning(const edm::ParameterSet&);
+  DataBinning(const DataBinning&);
+  DataBinning(const std::string&, const BinGrid&, const std::vector<double>&, const std::vector<double>&);
   ~DataBinning();
 
   const std::string& name() const { return name_; }
