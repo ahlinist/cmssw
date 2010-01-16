@@ -266,7 +266,7 @@ void analysisClass::Loop()
       //## pass_PhysicsBit - HLT Physics Declared bit set 
       if(isData==1)
 	{
-	  if(hltbits->at(104)==1)
+	  if(hltbits->at(116)==1)
 	    pass_PhysicsBit = 1;
 	}
       else if(isData == 0)
