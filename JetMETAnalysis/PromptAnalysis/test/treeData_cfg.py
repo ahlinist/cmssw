@@ -15,7 +15,10 @@ process.load("RecoMET/METProducers/CSCHaloData_cfi")
 process.load("RecoMET/METProducers/EcalHaloData_cfi")
 process.load("RecoMET/METProducers/HcalHaloData_cfi")
 process.load("RecoMET/METProducers/GlobalHaloData_cfi")
-process.GlobalTag.globaltag ='STARTUP31X_V7::All'
+#MC
+#process.GlobalTag.globaltag ='STARTUP31X_V7::All'
+#DATA (Dec14th rereco)
+process.GlobalTag.globaltag ='GR09_R_V4::All'
 
 process.load("Configuration/StandardSequences/ReconstructionCosmics_cff")
 
@@ -26,15 +29,14 @@ process.add_( cms.Service( "TFileService",
                            fileName = cms.string( 'your_output.root' ),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
-    #"file:/tmp/santanas/BSC_activity.root"
-    #"file:/tmp/santanas/MinBias900GeV_plus_R122314_ZeroBias_DM_STARTUP3X_V8D_RECO_1.root"
+    "/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec14thSkim_v1/0102/BABAF8C3-71EA-DE11-9D8C-0024E8768446.root"
     #'/store/mc/Summer09/MinBias/GEN-SIM-RECO/STARTUP3X_V8D_900GeV-v1/0005/E4590360-4CD7-DE11-8CB4-002618943896.root'
     #'/store/data/BeamCommissioning09/MinimumBias/RECO/rereco_GR09_P_V7_v1/0099/DABD5D6D-D4E2-DE11-8FFD-00261894387A.root'
-    "/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/596/F82DED93-36E2-DE11-9316-000423D9870C.root"
+    #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/596/F82DED93-36E2-DE11-9316-000423D9870C.root"
     #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/151/0E45A7CE-F5DD-DE11-9B2E-001617E30CC8.root"
     ),
     
@@ -52,8 +54,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 #process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
 #from HLTrigger.HLTfilters.hltLevel1GTSeed_cfi import hltLevel1GTSeed
-#process.bit40OR41 = hltLevel1GTSeed.clone(L1TechTriggerSeeding = cms.bool(True),
-#                                          L1SeedsLogicalExpression = cms.string('40 OR 41'))
+#process.bit40OR41 = hltLevel1GTSeed.clone(L1TechTriggerSeeding = cms.bool(True), L1SeedsLogicalExpression = cms.string('40 OR 41'))
+
+from HLTrigger.HLTfilters.hltHighLevelDev_cfi import hltHighLevelDev
+process.physDecl = hltHighLevelDev.clone(HLTPaths = ['HLT_PhysicsDeclared'], HLTPathsPrescales = [1])
 
 process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     outputCommands = cms.untracked.vstring(
@@ -63,8 +67,8 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanatcmet_*_*',
     'keep *_promptanapfmet_*_*',
     'keep *_promptananohf_*_*',
-#    'keep *_promptanaic5calojet_*_*',
-#    'keep *_promptanasc5calojet_*_*',
+    #'keep *_promptanaic5calojet_*_*',
+    #'keep *_promptanasc5calojet_*_*',
     'keep *_promptanakt4calojet_*_*',
     'keep *_promptanaak5calojet_*_*',
     'keep *_promptanahalo_*_*',
@@ -76,6 +80,7 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     ))
 
 process.theBigNtuple = cms.Path(
+    process.physDecl *
     #process.bit40OR41 *
     process.BeamHaloId *
     (
