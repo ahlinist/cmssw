@@ -26,7 +26,7 @@ process.load("RecoMuon/Configuration/RecoMuon_cff")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
-                           fileName = cms.string( 'your_output.root' ),
+                           fileName = cms.string( 'your_output_DATA.root' ),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
