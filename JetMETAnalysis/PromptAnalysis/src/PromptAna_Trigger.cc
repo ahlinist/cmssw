@@ -84,20 +84,26 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<edm::TriggerResults> triggers;
   iEvent.getByLabel(TRGTag, triggers);
   edm::TriggerResults tr = *triggers;
-
-  /*  
-  std::vector<std::string> triggernames;
-  edm::Service<edm::service::TriggerNamesService> tns;
-  tns->getTrigPaths(*triggers, triggernames);
-
-  ofstream  outfile;
-  outfile.open("TRGnames_HLT.txt");
-  for( unsigned int i = 0; i < tr.size(); i++ ){
-    outfile<<TString(triggernames[i]) << std::endl;
-  }
-  outfile.close();
-  */
-
+  
+  //   //new trigger names  
+  //   if (triggers.isValid())
+  //     {
+  //       edm::TriggerNames names; names.init(*triggers);    
+  //       for(unsigned i=0; i < triggers->size(); i++)
+  //    	std::cout << i << " " << names.triggerName(i) << std::endl;    
+  //     }
+  
+  //   //old trigger names (does not work?)
+  //   std::vector<std::string> triggernames;
+  //   edm::Service<edm::service::TriggerNamesService> tns;
+  //   tns->getTrigPaths(*triggers, triggernames);
+  //   ofstream  outfile;
+  //   outfile.open("TRGnames_HLT.txt");
+  //   for( unsigned int i = 0; i < tr.size(); i++ ){
+  //     outfile<<TString(triggernames[i]) << std::endl;
+  //   }
+  //   outfile.close();
+  
   for( unsigned int i = 0; i < tr.size(); i++ ){
     hltbits->push_back(tr[i].accept() ? 1:0);
   }
