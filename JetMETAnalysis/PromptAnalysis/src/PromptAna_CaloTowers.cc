@@ -34,6 +34,7 @@ PromptAna_CaloTowers::PromptAna_CaloTowers(const edm::ParameterSet& iConfig)
   produces <std::vector<float> >  ( prefix + "ECalEBEnergyTop"  + suffix );
   produces <std::vector<float> >  ( prefix + "ECalEBEnergyBottom"  + suffix );
   produces <std::vector<int> >    ( prefix + "ECalEBNCRY805"  + suffix );
+  produces <std::vector<float> >  ( prefix + "ECalEBFRook"  + suffix );
 
   produces <std::vector<float> >  ( prefix + "ECalEEXtalsE3x3"  + suffix );
   produces <std::vector<float> >  ( prefix + "ECalEEXtalsEMax"  + suffix );
@@ -47,6 +48,7 @@ PromptAna_CaloTowers::PromptAna_CaloTowers(const edm::ParameterSet& iConfig)
   produces <std::vector<float> >  ( prefix + "ECalEEEnergyTop"  + suffix );
   produces <std::vector<float> >  ( prefix + "ECalEEEnergyBottom"  + suffix );
   produces <std::vector<int> >    ( prefix + "ECalEENCRY805"  + suffix );
+  produces <std::vector<float> >  ( prefix + "ECalEEFRook"  + suffix );
 }
 
 void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
@@ -76,6 +78,7 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
   std::auto_ptr<std::vector<float> >   ecalebentop        ( new std::vector<float>()  ) ;
   std::auto_ptr<std::vector<float> >   ecalebenbottom     ( new std::vector<float>()  ) ;
   std::auto_ptr<std::vector<int> >     ecalebncry805      ( new std::vector<int>()  ) ;
+  std::auto_ptr<std::vector<float> >   ecalebfrook        ( new std::vector<float>()  ) ;
 
   std::auto_ptr<std::vector<float> >   ecaleextalsE3x3    ( new std::vector<float>()  ) ;
   std::auto_ptr<std::vector<float> >   ecaleextalsEmax    ( new std::vector<float>()  ) ;
@@ -89,6 +92,7 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
   std::auto_ptr<std::vector<float> >   ecaleeentop        ( new std::vector<float>()  ) ;
   std::auto_ptr<std::vector<float> >   ecaleeenbottom     ( new std::vector<float>()  ) ;
   std::auto_ptr<std::vector<int> >     ecaleencry805      ( new std::vector<int>()  ) ;
+  std::auto_ptr<std::vector<float> >   ecaleefrook        ( new std::vector<float>()  ) ;
 
   //Get the ECAL SuperClusters
   edm::Handle<reco::SuperClusterCollection> pHybridSuperClusters;
@@ -167,20 +171,31 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
 	  }
 
       //Calculate frook
-      float emaxrook = -1.;
-      float frook    = -1.;
       float eseed    = EcalClusterTools::eMax ( *aClus , allEBRecHits );
       float eright   = EcalClusterTools::eRight ( *aClus , allEBRecHits, &(*topology) );
       float eleft    = EcalClusterTools::eLeft ( *aClus , allEBRecHits, &(*topology) ) ;
       float etop     = EcalClusterTools::eTop ( *aClus , allEBRecHits, &(*topology) ) ;
       float ebottom  = EcalClusterTools::eBottom ( *aClus , allEBRecHits, &(*topology) );
-      
-      if( eright > 0.08 ) emaxrook = eright;
+
+      //artur      
+      //       float emaxrook = -1.;
+      //       float frook    = -1.;
+      //       if( eright > 0.08 ) emaxrook = eright;
+      //       if( ebottom > emaxrook ) emaxrook = ebottom;
+      //       if( eleft > emaxrook ) emaxrook = eleft;
+      //       if( etop > emaxrook ) emaxrook = etop;
+      //       if ( emaxrook > 0.1*eseed ) 
+      // 	frook = emaxrook/(emaxrook + eseed);
+
+      //francesco
+      float emaxrook = 0.;
+      float frook    = -1.;
+      emaxrook = eright;
       if( ebottom > emaxrook ) emaxrook = ebottom;
       if( eleft > emaxrook ) emaxrook = eleft;
       if( etop > emaxrook ) emaxrook = etop;
+      frook = emaxrook/(emaxrook + eseed);
 
-      if ( emaxrook > 0.1*eseed ) frook = emaxrook/(emaxrook + eseed);
 
       //store the values for each super cluster
       ecalebxtalsE3x3->push_back ( EcalClusterTools::e3x3 ( *aClus , allEBRecHits, &(*topology) ));
@@ -195,6 +210,7 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
       ecalebseedeta  ->push_back ( seedeta );
       ecalebseedphi  ->push_back ( seedphi );
       ecalebncry805  ->push_back ( ncry-- );
+      ecalebfrook    ->push_back ( frook );
     }
   
   // loop over the super clusters in EE to find R9, FROOK and NCLY805
@@ -246,20 +262,31 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
 	  }
 
       //Calculate frook
-      float emaxrook = -1.;
-      float frook    = -1.;
       float eseed    = EcalClusterTools::eMax ( *aClus , allEERecHits );
       float eright   = EcalClusterTools::eRight ( *aClus , allEERecHits, &(*topology) );
       float eleft    = EcalClusterTools::eLeft ( *aClus , allEERecHits, &(*topology) ) ;
       float etop     = EcalClusterTools::eTop ( *aClus , allEERecHits, &(*topology) ) ;
       float ebottom  = EcalClusterTools::eBottom ( *aClus , allEERecHits, &(*topology) );
-      
-      if( eright > 0.08 ) emaxrook = eright;
+
+      //artur
+      //       float emaxrook = -1.;
+      //       float frook    = -1.;      
+      //       if( eright > 0.08 ) emaxrook = eright;
+      //       if( ebottom > emaxrook ) emaxrook = ebottom;
+      //       if( eleft > emaxrook ) emaxrook = eleft;
+      //       if( etop > emaxrook ) emaxrook = etop;
+      //       if ( emaxrook > 0.1*eseed ) 
+      // 	frook = emaxrook/(emaxrook + eseed);
+
+      //francesco
+      float emaxrook = 0.;
+      float frook    = -1.;      
+      emaxrook = eright;
       if( ebottom > emaxrook ) emaxrook = ebottom;
       if( eleft > emaxrook ) emaxrook = eleft;
       if( etop > emaxrook ) emaxrook = etop;
+      frook = emaxrook/(emaxrook + eseed);
 
-      if ( emaxrook > 0.1*eseed ) frook = emaxrook/(emaxrook + eseed);
 
       //store the values for each super cluster
       ecaleextalsE3x3->push_back ( EcalClusterTools::e3x3 ( *aClus , allEERecHits, &(*topology) ));
@@ -274,6 +301,7 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
       ecaleeseedeta  ->push_back ( seedeta );
       ecaleeseedphi  ->push_back ( seedphi );
       ecaleencry805  ->push_back ( ncry-- );
+      ecaleefrook    ->push_back ( frook );
     }
 
   //Get the CaloTower Collection
@@ -321,6 +349,7 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.put( ecalebentop            ,  prefix + "ECalEBEnergyTop"  + suffix );
   iEvent.put( ecalebenbottom         ,  prefix + "ECalEBEnergyBottom"  + suffix );
   iEvent.put( ecalebncry805          ,  prefix + "ECalEBNCRY805"  + suffix );
+  iEvent.put( ecalebfrook            ,  prefix + "ECalEBFRook"  + suffix );
 
   iEvent.put( ecaleextalsE3x3        ,  prefix + "ECalEEXtalsE3x3"  + suffix );
   iEvent.put( ecaleextalsEmax        ,  prefix + "ECalEEXtalsEMax"  + suffix );
@@ -334,6 +363,7 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.put( ecaleeentop            ,  prefix + "ECalEEEnergyTop"  + suffix );
   iEvent.put( ecaleeenbottom         ,  prefix + "ECalEEEnergyBottom"  + suffix );
   iEvent.put( ecaleencry805          ,  prefix + "ECalEENCRY805"  + suffix );
+  iEvent.put( ecaleefrook            ,  prefix + "ECalEEFRook"  + suffix );
 }
 
 float PromptAna_CaloTowers::recHitEnergy(DetId id, const EcalRecHitCollection *recHits)
