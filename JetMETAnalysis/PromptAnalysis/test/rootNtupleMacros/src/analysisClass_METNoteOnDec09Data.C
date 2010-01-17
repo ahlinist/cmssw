@@ -202,6 +202,15 @@ void analysisClass::Loop()
   map<UInt_t,TH1F*> calometPyMap;
   //#################################
 
+  //#################################
+  //## MET related quantities vs ieta bins
+  //#################################
+  map<Int_t,TH1F*> caloSumetIetaMap;
+  map<Int_t,TH1F*> calometPtIetaMap;
+  map<Int_t,TH1F*> calometPxIetaMap;
+  map<Int_t,TH1F*> calometPyIetaMap;
+  //#################################
+
   /////////initialize variables
   
   //////////////////////////////
@@ -659,7 +668,83 @@ void analysisClass::Loop()
              calometPyMap[run]->Fill( calometPy->at(0) );
            }
            //#################################
-           
+          
+
+
+
+	   //#################################
+	   //## MET related quantities vs ieta bins
+	   //#################################
+	   
+	   //loop over ieta bins of calotowers
+	   for(int ieta = -41; ieta<=41; ieta++)
+	     {	 
+
+	       //no calotower with ieta = 0
+	       if(ieta == 0)
+		 continue;
+
+	       //## Calculate MET on the fly from caloTowers     
+	       double sum_et = 0.0;
+	       double sum_ex = 0.0;
+	       double sum_ey = 0.0;    	       
+	       for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
+		 {		   
+
+		   //loop over one ieta ring
+		   if( CaloTowersIeta->at(i) != ieta )
+		     continue;
+
+		   double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
+		   if ( Tower_ET > getPreCutValue1("towerETcut") )
+		     {	       
+		       double phi   = CaloTowersPhi->at(i);
+		       double et    = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
+		       sum_et += et;
+		       sum_ex += et*cos(phi);
+		       sum_ey += et*sin(phi);
+		     }
+		 }
+
+	       double my_Met    = sqrt( sum_ex*sum_ex + sum_ey*sum_ey );
+	       double my_Met_x  = -sum_ex;
+	       double my_Met_y  = -sum_ey;
+	       double my_Sumet  = sum_et;
+	       //double my_MetPhi = atan2( -sum_ey, -sum_ex );       
+	   
+	       //cout << "ieta : " << ieta << " " << " MET: " << my_Met << " SUMET: " <<  my_Sumet << endl;
+
+	       if(caloSumetIetaMap[ieta]) {
+		 caloSumetIetaMap[ieta]->Fill( my_Sumet );
+	       } else {
+		 caloSumetIetaMap[ieta] = new TH1F(Form("h_caloSumet_ieta_%d",ieta), Form("h_caloSumet_ieta_%d",ieta), Nbins_METSumET, 0, Max_METSumET);
+		 caloSumetIetaMap[ieta]->Fill( my_Sumet );
+	       }
+
+	       if(calometPtIetaMap[ieta]) {
+		 calometPtIetaMap[ieta]->Fill( my_Met );
+	       } else {
+		 calometPtIetaMap[ieta] = new TH1F(Form("h_calometPt_ieta_%d",ieta), Form("h_calometPt_ieta_%d",ieta), Nbins_METSumET, 0, Max_METSumET);
+		 calometPtIetaMap[ieta]->Fill( my_Met );
+	       }
+
+	       if(calometPxIetaMap[ieta]) {
+		 calometPxIetaMap[ieta]->Fill( my_Met_x );
+	       } else {
+		 calometPxIetaMap[ieta] = new TH1F(Form("h_calometPx_ieta_%d",ieta), Form("h_calometPx_ieta_%d",ieta), Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2);
+		 calometPxIetaMap[ieta]->Fill( my_Met_x );
+	       }
+
+	       if(calometPyIetaMap[ieta]) {
+		 calometPyIetaMap[ieta]->Fill( my_Met_y );
+	       } else {
+		 calometPyIetaMap[ieta] = new TH1F(Form("h_calometPy_ieta_%d",ieta), Form("h_calometPy_ieta_%d",ieta), Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2);
+		 calometPyIetaMap[ieta]->Fill( my_Met_y );
+	       }
+	      
+	     }//end loop over ieta bins
+
+
 	 }        
            
 
@@ -941,6 +1026,141 @@ void analysisClass::Loop()
   calometPySigma_vs_run->Write();
   //#################################
   
+
+
+  //#################################
+  //## MET related quantities vs ieta bins
+  //#################################
+
+  Int_t n_ieta = calometPtIetaMap.size();
+  Double_t x_ieta[n_ieta], ex_ieta[n_ieta], yM_ieta[n_ieta], eyM_ieta[n_ieta], yR_ieta[n_ieta], eyR_ieta[n_ieta];
+
+  // ## calometPt
+  //   cout<<"-----------------------------------"<<endl;
+  //   cout<<">> Total number of ieta bins: "<<n_ieta<<endl;
+  i=0;
+  for (map<Int_t,TH1F*>::const_iterator it = calometPtIetaMap.begin(); it != calometPtIetaMap.end(); it++) {
+    cout<<">> ieta: "<<it->first<<", MET Mean: "<<it->second->GetMean()<<" GeV"<<", MET Mean Error:"<<it->second->GetMeanError()<<" GeV"<<endl;
+
+    x_ieta[i]=it->first;
+    yM_ieta[i]=it->second->GetMean();
+    yR_ieta[i]=it->second->GetRMS();
+    ex_ieta[i]=0;
+    eyM_ieta[i]=it->second->GetMeanError();
+    eyR_ieta[i]=it->second->GetRMSError();
+    
+    it->second->Write();
+    i++;
+  }
+  //  cout<<"-----------------------------------"<<endl;
+
+  TGraphErrors *calometPtMean_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yM_ieta,ex_ieta,eyM_ieta);
+  calometPtMean_vs_ieta->SetName("g_calometPtMean_vs_ieta");
+  calometPtMean_vs_ieta->SetTitle("CaloMET Mean vs. ieta");
+  calometPtMean_vs_ieta->GetXaxis()->SetTitle("ieta");
+  calometPtMean_vs_ieta->GetYaxis()->SetTitle("CaloMET Mean [GeV]");
+  calometPtMean_vs_ieta->Write();
+  
+  TGraphErrors *calometPtRMS_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yR_ieta,ex_ieta,eyR_ieta);
+  calometPtRMS_vs_ieta->SetName("g_calometPtRMS_vs_ieta");
+  calometPtRMS_vs_ieta->SetTitle("CaloMET RMS vs. ieta");
+  calometPtRMS_vs_ieta->GetXaxis()->SetTitle("ieta");
+  calometPtRMS_vs_ieta->GetYaxis()->SetTitle("CaloMET RMS [GeV]");
+  calometPtRMS_vs_ieta->Write();
+
+
+  // ## caloSumet
+  i=0;
+  for (map<Int_t,TH1F*>::const_iterator it = caloSumetIetaMap.begin(); it != caloSumetIetaMap.end(); it++) {
+
+    x_ieta[i]=it->first;
+    yM_ieta[i]=it->second->GetMean();
+    yR_ieta[i]=it->second->GetRMS();
+    ex_ieta[i]=0;
+    eyM_ieta[i]=it->second->GetMeanError();
+    eyR_ieta[i]=it->second->GetRMSError();
+    
+    it->second->Write();
+    i++;
+  }
+
+  TGraphErrors *caloSumetMean_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yM_ieta,ex_ieta,eyM_ieta);
+  caloSumetMean_vs_ieta->SetName("g_caloSumetMean_vs_ieta");
+  caloSumetMean_vs_ieta->SetTitle("CaloSumET Mean vs. ieta");
+  caloSumetMean_vs_ieta->GetXaxis()->SetTitle("ieta");
+  caloSumetMean_vs_ieta->GetYaxis()->SetTitle("CaloSumET Mean [GeV]");
+  caloSumetMean_vs_ieta->Write();
+  
+  TGraphErrors *caloSumetRMS_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yR_ieta,ex_ieta,eyR_ieta);
+  caloSumetRMS_vs_ieta->SetName("g_caloSumetRMS_vs_ieta");
+  caloSumetRMS_vs_ieta->SetTitle("CaloSumET RMS vs. ieta");
+  caloSumetRMS_vs_ieta->GetXaxis()->SetTitle("ieta");
+  caloSumetRMS_vs_ieta->GetYaxis()->SetTitle("CaloSumET RMS [GeV]");
+  caloSumetRMS_vs_ieta->Write();
+  
+  // ## calometPx
+  i=0;
+  for (map<Int_t,TH1F*>::iterator it = calometPxIetaMap.begin(); it != calometPxIetaMap.end(); it++) {
+
+    x_ieta[i]=it->first;
+    yM_ieta[i]=it->second->GetMean();
+    yR_ieta[i]=it->second->GetRMS();
+    ex_ieta[i]=0;
+    eyM_ieta[i]=it->second->GetMeanError();
+    eyR_ieta[i]=it->second->GetRMSError();
+    
+    it->second->Write();
+    i++;
+
+  }
+  
+  TGraphErrors *calometPxMean_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yM_ieta,ex_ieta,eyM_ieta);
+  calometPxMean_vs_ieta->SetName("g_calometPxMean_vs_ieta");
+  calometPxMean_vs_ieta->SetTitle("CaloMETPx Mean vs. ieta");
+  calometPxMean_vs_ieta->GetXaxis()->SetTitle("ieta");
+  calometPxMean_vs_ieta->GetYaxis()->SetTitle("CaloMETPx Mean [GeV]");
+  calometPxMean_vs_ieta->Write();
+  
+  TGraphErrors *calometPxRMS_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yR_ieta,ex_ieta,eyR_ieta);
+  calometPxRMS_vs_ieta->SetName("g_calometPxRMS_vs_ieta");
+  calometPxRMS_vs_ieta->SetTitle("CaloMETPx RMS vs. ieta");
+  calometPxRMS_vs_ieta->GetXaxis()->SetTitle("ieta");
+  calometPxRMS_vs_ieta->GetYaxis()->SetTitle("CaloMETPx RMS [GeV]");
+  calometPxRMS_vs_ieta->Write();
+  
+  // ## calometPy
+  i=0;
+  for (map<Int_t,TH1F*>::iterator it = calometPyIetaMap.begin(); it != calometPyIetaMap.end(); it++) {
+
+    x_ieta[i]=it->first;
+    yM_ieta[i]=it->second->GetMean();
+    yR_ieta[i]=it->second->GetRMS();
+    ex_ieta[i]=0;
+    eyM_ieta[i]=it->second->GetMeanError();
+    eyR_ieta[i]=it->second->GetRMSError();
+    
+    it->second->Write();
+    i++;
+
+  }
+  
+  TGraphErrors *calometPyMean_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yM_ieta,ex_ieta,eyM_ieta);
+  calometPyMean_vs_ieta->SetName("g_calometPyMean_vs_ieta");
+  calometPyMean_vs_ieta->SetTitle("CaloMETPx Mean vs. ieta");
+  calometPyMean_vs_ieta->GetXaxis()->SetTitle("ieta");
+  calometPyMean_vs_ieta->GetYaxis()->SetTitle("CaloMETPx Mean [GeV]");
+  calometPyMean_vs_ieta->Write();
+  
+  TGraphErrors *calometPyRMS_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yR_ieta,ex_ieta,eyR_ieta);
+  calometPyRMS_vs_ieta->SetName("g_calometPyRMS_vs_ieta");
+  calometPyRMS_vs_ieta->SetTitle("CaloMETPx RMS vs. ieta");
+  calometPyRMS_vs_ieta->GetXaxis()->SetTitle("ieta");
+  calometPyRMS_vs_ieta->GetYaxis()->SetTitle("CaloMETPx RMS [GeV]");
+  calometPyRMS_vs_ieta->Write();
+  //#################################
+
+
+
   //////////write histos 
 
   //TH1F * h_example = new TH1F ("h_example","", getHistoNBins("my_calometPt"), getHistoMin("my_calometPt"), getHistoMax("my_calometPt"));
