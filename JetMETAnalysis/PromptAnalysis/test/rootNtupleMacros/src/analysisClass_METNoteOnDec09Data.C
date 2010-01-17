@@ -9,6 +9,7 @@
 #include <TVector2.h>
 #include <TVector3.h>
 #include <TProfile.h>
+#include <TGraphErrors.h>
 
 analysisClass::analysisClass(string * inputList, string * cutFile, string * treeName, string * outputFileName, string * cutEfficFile)
  :baseClass(inputList, cutFile, treeName, outputFileName, cutEfficFile)
@@ -166,23 +167,10 @@ void analysisClass::Loop()
   TH2F *h2_met_sumet  = new TH2F("h2_met_sumet","h2_met_sumet", nhistos, 0, MaxSumEt, Nbins_METSumET, 0, Max_METSumET);
   TH2F *h2_metsig_sumet  = new TH2F("h2_metsig_sumet","h2_metsig_sumet", nhistos, 0, MaxSumEt, Nbins_METSig, 0, Max_METSig); 
 
-  TH1F *h_metx[nhistos];
-  TH1F *h_mety[nhistos];
-  TH1F *h_met[nhistos];
-  TH1F *h_metsig[nhistos];
-
-  for (Int_t i=0; i<nhistos; i++)
-    {
-      h_metx[i] = new TH1F(Form("h_metx[%d]",i),Form("h_metx[%d]",i),  Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2);
-      h_mety[i] = new TH1F(Form("h_mety[%d]",i),Form("h_mety[%d]",i),  Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2);
-      h_met[i]  = new TH1F(Form("h_met[%d]",i), Form("h_met[%d]",i),  Nbins_METSumET, 0, Max_METSumET);
-      h_metsig[i] = new TH1F(Form("h_metsig[%d]",i),Form("h_metsig[%d]",i),  Nbins_METSig, 0, Max_METSig);
-
-      h_metx[i]->Sumw2();
-      h_mety[i]->Sumw2();
-      h_met[i]->Sumw2();
-      h_metsig[i]->Sumw2();
-    }
+  TH1D *h_metx[nhistos];
+  TH1D *h_mety[nhistos];
+  TH1D *h_met[nhistos];
+  TH1D *h_metsig[nhistos];
 
   TH1F *h_metxrms_sumet = new TH1F ("h_metxrms_sumet","h_metxrms_sumet", nhistos,0,MaxSumEt);
   TH1F *h_metxsigma_sumet = new TH1F ("h_metxsigma_sumet","h_metxsigma_sumet", nhistos,0,MaxSumEt);
@@ -205,6 +193,14 @@ void analysisClass::Loop()
 //   p_metysigmastability ->BuildOptions(0,360,"s");
 //   p_sumetsigmastability->BuildOptions(0,360,"s");
 
+  //#################################
+  //## Trend plotting section
+  //#################################
+  map<UInt_t,TH1F*> calometPtMap;
+  map<UInt_t,TH1F*> caloSumetMap;
+  map<UInt_t,TH1F*> calometPxMap;
+  map<UInt_t,TH1F*> calometPyMap;
+  //#################################
 
   /////////initialize variables
 
@@ -501,10 +497,6 @@ void analysisClass::Loop()
       */
       //=================================================================
 
-
-      //#################################################
-
-
       // Set the evaluation of the cuts to false and clear the variable values and filled status
       resetCuts();
 
@@ -616,8 +608,37 @@ void analysisClass::Loop()
 	   if( calometSumEt->at(0) > 0)
 	     h2_metsig_sumet->Fill( calometSumEt->at(0), calometPt->at(0) / sqrt(calometSumEt->at(0)) );
 	   
-	 }
-
+           //#################################
+           //## Trend plotting section
+           //#################################
+           if(calometPtMap[run]) {
+             calometPtMap[run]->Fill( calometPt->at(0) );
+           } else {
+             calometPtMap[run] = new TH1F(Form("h_calometPt_Run_%u",run), Form("h_calometPt_Run_%u",run), Nbins_METSumET, 0, Max_METSumET);
+             calometPtMap[run]->Fill( calometPt->at(0) );
+           }
+           if(caloSumetMap[run]) {
+             caloSumetMap[run]->Fill( calometSumEt->at(0) );
+           } else {
+             caloSumetMap[run] = new TH1F(Form("h_caloSumet_Run_%u",run), Form("h_caloSumet_Run_%u",run), Nbins_METSumET, 0, Max_METSumET);
+             caloSumetMap[run]->Fill( calometSumEt->at(0) );
+           }
+           if(calometPxMap[run]) {
+             calometPxMap[run]->Fill( calometPx->at(0) );
+           } else {
+             calometPxMap[run] = new TH1F(Form("h_calometPx_Run_%u",run), Form("h_calometPx_Run_%u",run), Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+             calometPxMap[run]->Fill( calometPx->at(0) );
+           }
+           if(calometPyMap[run]) {
+             calometPyMap[run]->Fill( calometPy->at(0) );
+           } else {
+             calometPyMap[run] = new TH1F(Form("h_calometPy_Run_%u",run), Form("h_calometPy_Run_%u",run), Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+             calometPyMap[run]->Fill( calometPy->at(0) );
+           }
+           //#################################
+           
+	 }        
+           
 
       if( passedAllOtherCuts("pass_HFPMTHitVeto") )
 	 {
@@ -711,17 +732,17 @@ void analysisClass::Loop()
     {
       float N_rms_fit = 1.5;
 
-      h_metx[i] =    (TH1F*) h2_metx_sumet->ProjectionY(Form("h_metx[%d]",i), i, i+1, "e");
-      h_mety[i] =    (TH1F*) h2_mety_sumet->ProjectionY(Form("h_mety[%d]",i), i, i+1, "e");
-      h_met[i] =     (TH1F*) h2_met_sumet->ProjectionY(Form("h_met[%d]",i), i, i+1, "e");
-      h_metsig[i] =  (TH1F*) h2_metsig_sumet->ProjectionY(Form("h_metsig[%d]",i), i, i+1, "e");
+      h_metx[i] =   h2_metx_sumet->ProjectionY(Form("h_metx_%d",i), i, i+1, "e");
+      h_mety[i] =   h2_mety_sumet->ProjectionY(Form("h_mety_%d",i), i, i+1, "e");
+      h_met[i] =    h2_met_sumet->ProjectionY(Form("h_met_%d",i), i, i+1, "e");
+      h_metsig[i] = h2_metsig_sumet->ProjectionY(Form("h_metsig_%d",i), i, i+1, "e");
 
       TF1 *fit0 = new TF1("fit0", "gaus", h_metx[i]->GetMean()-N_rms_fit*h_metx[i]->GetRMS(), h_metx[i]->GetMean()+N_rms_fit*h_metx[i]->GetRMS());
       TF1 *fit1 = new TF1("fit1", "gaus", h_mety[i]->GetMean()-N_rms_fit*h_mety[i]->GetRMS(), h_mety[i]->GetMean()+N_rms_fit*h_mety[i]->GetRMS());
       // TF1 *fit2 = new TF1("fit2", "gaus", h_met[i]->GetMean()-N_rms_fit*h_met[i]->GetRMS(), h_met[i]->GetMean()+N_rms_fit*h_met[i]->GetRMS());
       // TF1 *fit3 = new TF1("fit3", "gaus", h_metsig[i]->GetMean()-N_rms_fit*h_metsig[i]->GetRMS(), h_metsig[i]->GetMean()+N_rms_fit*h_metsig[i]->GetRMS());
 
-      if(h_metx[i]->Integral()>0)
+      if(h_metx[i]->Integral()>10)
 	 {
 	   h_metx[i]  ->Fit("fit0", "R");
 	   h_mety[i]  ->Fit("fit1", "R");
@@ -746,7 +767,157 @@ void analysisClass::Loop()
 	   h_metsig_sumet->SetBinContent(i+1, h_metsig[i]->GetMean());
 	   h_metsig_sumet->SetBinError(i+1, h_metsig[i]->GetMeanError() );
 	 }
+	 
+      delete fit0;
+      delete fit1;
     }
+    
+    
+  //#################################
+  //## Trend plotting section
+  //#################################
+  Int_t n = calometPtMap.size();
+  Double_t x[n], ex[n], yM[n], eyM[n], yR[n], eyR[n];
+  // ## calometPt
+//   cout<<"-----------------------------------"<<endl;
+//   cout<<">> Total number of runs processed: "<<n<<endl;
+  Int_t i=0;
+  for (map<UInt_t,TH1F*>::const_iterator it = calometPtMap.begin(); it != calometPtMap.end(); it++) {
+//     cout<<">> Run: "<<it->first<<", MET Mean: "<<it->second->GetMean()<<" GeV"<<", MET Mean Error:"<<it->second->GetMeanError()<<" GeV"<<endl;
+
+    x[i]=it->first;
+    yM[i]=it->second->GetMean();
+    yR[i]=it->second->GetRMS();
+    ex[i]=0;
+    eyM[i]=it->second->GetMeanError();
+    eyR[i]=it->second->GetRMSError();
+    
+    it->second->Write();
+    i++;
+  }
+//   cout<<"-----------------------------------"<<endl;
+
+  TGraphErrors *calometPtMean_vs_run = new TGraphErrors(n,x,yM,ex,eyM);
+  calometPtMean_vs_run->SetName("g_calometPtMean_vs_run");
+  calometPtMean_vs_run->SetTitle("CaloMET Mean vs. Run");
+  calometPtMean_vs_run->GetXaxis()->SetTitle("Run");
+  calometPtMean_vs_run->GetYaxis()->SetTitle("CaloMET Mean [GeV]");
+  calometPtMean_vs_run->Write();
+  
+  TGraphErrors *calometPtRMS_vs_run = new TGraphErrors(n,x,yR,ex,eyR);
+  calometPtRMS_vs_run->SetName("g_calometPtRMS_vs_run");
+  calometPtRMS_vs_run->SetTitle("CaloMET RMS vs. Run");
+  calometPtRMS_vs_run->GetXaxis()->SetTitle("Run");
+  calometPtRMS_vs_run->GetYaxis()->SetTitle("CaloMET RMS [GeV]");
+  calometPtRMS_vs_run->Write();
+  
+  // ## caloSumet
+  i=0;
+  for (map<UInt_t,TH1F*>::const_iterator it = caloSumetMap.begin(); it != caloSumetMap.end(); it++) {
+
+    x[i]=it->first;
+    yM[i]=it->second->GetMean();
+    yR[i]=it->second->GetRMS();
+    ex[i]=0;
+    eyM[i]=it->second->GetMeanError();
+    eyR[i]=it->second->GetRMSError();
+    
+    it->second->Write();
+    i++;
+  }
+
+  TGraphErrors *caloSumetMean_vs_run = new TGraphErrors(n,x,yM,ex,eyM);
+  caloSumetMean_vs_run->SetName("g_caloSumetMean_vs_run");
+  caloSumetMean_vs_run->SetTitle("CaloSumET Mean vs. Run");
+  caloSumetMean_vs_run->GetXaxis()->SetTitle("Run");
+  caloSumetMean_vs_run->GetYaxis()->SetTitle("CaloSumET Mean [GeV]");
+  caloSumetMean_vs_run->Write();
+  
+  TGraphErrors *caloSumetRMS_vs_run = new TGraphErrors(n,x,yR,ex,eyR);
+  caloSumetRMS_vs_run->SetName("g_caloSumetRMS_vs_run");
+  caloSumetRMS_vs_run->SetTitle("CaloSumET RMS vs. Run");
+  caloSumetRMS_vs_run->GetXaxis()->SetTitle("Run");
+  caloSumetRMS_vs_run->GetYaxis()->SetTitle("CaloSumET RMS [GeV]");
+  caloSumetRMS_vs_run->Write();
+  
+  // ## calometPx
+  i=0;
+  for (map<UInt_t,TH1F*>::iterator it = calometPxMap.begin(); it != calometPxMap.end(); it++) {
+    
+    Double_t N_rms_fit = 1.5;
+    Double_t mean = it->second->GetMean();
+    Double_t rms = it->second->GetRMS();
+    
+    TF1 *fit = new TF1("fit", "gaus", mean-N_rms_fit*rms, mean+N_rms_fit*rms);
+    it->second->Fit("fit", "R");
+
+    x[i]=it->first;
+    yM[i]=fit->GetParameter(1);
+    yR[i]=fit->GetParameter(2);
+    ex[i]=0;
+    eyM[i]=fit->GetParError(1);
+    eyR[i]=fit->GetParError(2);
+
+    it->second->Write();
+    i++;
+        
+    delete fit;
+  }
+  
+  TGraphErrors *calometPxMean_vs_run = new TGraphErrors(n,x,yM,ex,eyM);
+  calometPxMean_vs_run->SetName("g_calometPxMean_vs_run");
+  calometPxMean_vs_run->SetTitle("CaloMETPx #mu vs. Run");
+  calometPxMean_vs_run->GetXaxis()->SetTitle("Run");
+  calometPxMean_vs_run->GetYaxis()->SetTitle("CaloMETPx #mu [GeV]");
+  calometPxMean_vs_run->Write();
+  
+  TGraphErrors *calometPxSigma_vs_run = new TGraphErrors(n,x,yR,ex,eyR);
+  calometPxSigma_vs_run->SetName("g_calometPxSigma_vs_run");
+  calometPxSigma_vs_run->SetTitle("CaloMETPx #sigma vs. Run");
+  calometPxSigma_vs_run->GetXaxis()->SetTitle("Run");
+  calometPxSigma_vs_run->GetYaxis()->SetTitle("CaloMETPx #sigma [GeV]");
+  calometPxSigma_vs_run->Write();
+  
+  // ## calometPy
+  i=0;
+  for (map<UInt_t,TH1F*>::iterator it = calometPyMap.begin(); it != calometPyMap.end(); it++) {
+
+    Double_t N_rms_fit = 1.5;
+    Double_t mean = it->second->GetMean();
+    Double_t rms = it->second->GetRMS();
+    
+    TF1 *fit = new TF1("fit", "gaus", mean-N_rms_fit*rms, mean+N_rms_fit*rms);
+    
+    it->second->Fit("fit", "R");
+      
+    x[i]=it->first;
+    yM[i]=fit->GetParameter(1);
+    yR[i]=fit->GetParameter(2);
+    ex[i]=0;
+    eyM[i]=fit->GetParError(1);
+    eyR[i]=fit->GetParError(2);
+    
+    it->second->Write();
+    i++;
+    
+    delete fit;
+  }
+  
+  TGraphErrors *calometPyMean_vs_run = new TGraphErrors(n,x,yM,ex,eyM);
+  calometPyMean_vs_run->SetName("g_calometPyMean_vs_run");
+  calometPyMean_vs_run->SetTitle("CaloMETPx #mu vs. Run");
+  calometPyMean_vs_run->GetXaxis()->SetTitle("Run");
+  calometPyMean_vs_run->GetYaxis()->SetTitle("CaloMETPx #mu [GeV]");
+  calometPyMean_vs_run->Write();
+  
+  TGraphErrors *calometPySigma_vs_run = new TGraphErrors(n,x,yR,ex,eyR);
+  calometPySigma_vs_run->SetName("g_calometPySigma_vs_run");
+  calometPySigma_vs_run->SetTitle("CaloMETPx #sigma vs. Run");
+  calometPySigma_vs_run->GetXaxis()->SetTitle("Run");
+  calometPySigma_vs_run->GetYaxis()->SetTitle("CaloMETPx #sigma [GeV]");
+  calometPySigma_vs_run->Write();
+  //#################################
+  
   //////////write histos 
 
   //TH1F * h_example = new TH1F ("h_example","", getHistoNBins("my_calometPt"), getHistoMin("my_calometPt"), getHistoMax("my_calometPt"));
