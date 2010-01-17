@@ -233,8 +233,15 @@ void analysisClass::Loop()
 
       //## Check if the run is in the list of good runs
       int pass_GoodRunList = 0;
-      for (int i = 0; i < sizeof(goodruns)/sizeof(int) ; i++)
-        if (goodruns[i] == run) pass_GoodRunList = 1;
+      if(isData==1)
+        {
+          for (int i = 0; i < sizeof(goodruns)/sizeof(int) ; i++)
+            if (goodruns[i] == run) pass_GoodRunList = 1;
+        }
+      else if(isData == 0)
+        {
+          pass_GoodRunList = 1;
+        }
 
       //#####################
       //## Trigger selection
@@ -748,10 +755,10 @@ void analysisClass::Loop()
     {
       float N_rms_fit = 1.5;
 
-      h_metx[i] =   h2_metx_sumet->ProjectionY(Form("h_metx_%d",i), i, i+1, "e");
-      h_mety[i] =   h2_mety_sumet->ProjectionY(Form("h_mety_%d",i), i, i+1, "e");
-      h_met[i] =    h2_met_sumet->ProjectionY(Form("h_met_%d",i), i, i+1, "e");
-      h_metsig[i] = h2_metsig_sumet->ProjectionY(Form("h_metsig_%d",i), i, i+1, "e");
+      h_metx[i] =   h2_metx_sumet->ProjectionY(Form("h_metx_%d",i), i+1, i+1, "e");
+      h_mety[i] =   h2_mety_sumet->ProjectionY(Form("h_mety_%d",i), i+1, i+1, "e");
+      h_met[i] =    h2_met_sumet->ProjectionY(Form("h_met_%d",i), i+1, i+1, "e");
+      h_metsig[i] = h2_metsig_sumet->ProjectionY(Form("h_metsig_%d",i), i+1, i+1, "e");
 
       TF1 *fit0 = new TF1("fit0", "gaus", h_metx[i]->GetMean()-N_rms_fit*h_metx[i]->GetRMS(), h_metx[i]->GetMean()+N_rms_fit*h_metx[i]->GetRMS());
       TF1 *fit1 = new TF1("fit1", "gaus", h_mety[i]->GetMean()-N_rms_fit*h_mety[i]->GetRMS(), h_mety[i]->GetMean()+N_rms_fit*h_mety[i]->GetRMS());
