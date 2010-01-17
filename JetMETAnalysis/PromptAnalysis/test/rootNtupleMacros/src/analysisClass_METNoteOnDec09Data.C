@@ -289,10 +289,10 @@ void analysisClass::Loop()
 	 
       if(isData == 1)
 	{
-	  if(tracksPt->size()<10)
+	  if(tracksPt->size()<=10)
 	    {
 	      pass_MonsterTRKEventVeto = 1;
-	    }//<10 tracks	    
+	    }//<=10 tracks	    
 	  else if(tracksPt->size()>10)
 	    {
 	      for (int ii=0; ii<tracksPt->size(); ii++)
