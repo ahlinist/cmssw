@@ -11,9 +11,9 @@
 # analysis. No cut is automatically evaluated on these variables and the cut level must be equal to -1. 
 # Variable names must be unique.
 #
-#VariableName	      value1	   value2		value3		value4		level
-#------------	      ------------ -------------	------------	-------------	-----
-towerETcut	      0.3	   -			-		-		-1
+#VariableName         value1       value2               value3          value4          level
+#------------         ------------ -------------        ------------    -------------   -----
+towerETcut            0.3          -                    -               -               -1
 #
 #
 #--------------------------------- Cuts (level 0,1,2,3 ... n) below --------------------------------------------
@@ -31,11 +31,12 @@ towerETcut	      0.3	   -			-		-		-1
 # The level of the cut (0,1,2 ... n) is provided by the user and can be used in the code to easily determine if
 # groups of same-level cuts have passed or failed.
 #
-#VariableName			minValue1(<) maxValue1(>=)	minValue2(<)	maxValue2(>=)	level	histoNbinsMinMax
-#------------			------------ -------------	------------	-------------	-----	----------------
-pass_BPTX			0	     1			-		-		0	2 0 2				       
-pass_BSC_MB			0	     1			-		-		0	2 0 2 
-pass_BSC_BeamHaloVeto		0	     1			-		-		0	2 0 2 
-pass_PhysicsBit			0	     1			-		-		0	2 0 2 
-pass_MonsterTRKEventVeto	0	     1			-		-		0	2 0 2 
-pass_HFPMTHitVeto		0	     1			-		-		0	2 0 2 
+#VariableName                   minValue1(<) maxValue1(>=)      minValue2(<)    maxValue2(>=)   level   histoNbinsMinMax
+#------------                   ------------ -------------      ------------    -------------   -----   ----------------
+pass_GoodRunList                0            1                  -               -               0       2 0 2
+pass_BPTX                       0            1                  -               -               0       2 0 2
+pass_BSC_MB                     0            1                  -               -               0       2 0 2
+pass_BSC_BeamHaloVeto           0            1                  -               -               0       2 0 2
+pass_PhysicsBit                 0            1                  -               -               0       2 0 2
+pass_MonsterTRKEventVeto        0            1                  -               -               0       2 0 2
+pass_HFPMTHitVeto               0            1                  -               -               0       2 0 2

@@ -203,6 +203,16 @@ void analysisClass::Loop()
   //#################################
 
   /////////initialize variables
+  
+  //////////////////////////////
+  ///// Goood Run List  ////////
+  //////////////////////////////
+  int goodruns[] = {122314, 123575, 123586, 123587, 123591, 
+                        123592, 123596, 123600, 123603, 123606, 123608,
+                        123740, 123801, 123815, 123818, 123893, 123906,
+                        123908, 123909, 123910, 124017, 124019, 124020,
+                        124022, 124023, 124024, 124025, 124026, 124027,
+                        124029, 124030, 124108, 124115};
 
 
   Long64_t nentries = fChain->GetEntriesFast();
@@ -220,6 +230,11 @@ void analysisClass::Loop()
       
       if(jentry < 10 || jentry%1000 == 0) std::cout << "analysisClass::Loop(): jentry = " << jentry << std::endl;   
       ////////////////////// User's code starts here ///////////////////////
+
+      //## Check if the run is in the list of good runs
+      int pass_GoodRunList = 0;
+      for (int i = 0; i < sizeof(goodruns)/sizeof(int) ; i++)
+        if (goodruns[i] == run) pass_GoodRunList = 1;
 
       //#####################
       //## Trigger selection
@@ -500,7 +515,8 @@ void analysisClass::Loop()
       // Set the evaluation of the cuts to false and clear the variable values and filled status
       resetCuts();
 
-      // Set the value of the variableNames listed in the cutFile to their current value       
+      // Set the value of the variableNames listed in the cutFile to their current value
+      fillVariableWithValue("pass_GoodRunList", pass_GoodRunList);
       fillVariableWithValue("pass_BPTX", pass_BPTX);
       fillVariableWithValue("pass_BSC_MB", pass_BSC_MB);
       fillVariableWithValue("pass_BSC_BeamHaloVeto", pass_BSC_BeamHaloVeto);
