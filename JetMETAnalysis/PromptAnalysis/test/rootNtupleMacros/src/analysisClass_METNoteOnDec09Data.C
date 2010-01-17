@@ -92,6 +92,21 @@ void analysisClass::Loop()
   h_caloSumetHadHF->Sumw2();
   h_caloSumetEmHF->Sumw2(); 
 
+  //ECAL spikes
+  TH1F *h_S1S9RatioEB   = new TH1F ("h_S1S9RatioEB","h_S1S9RatioEB",200,-2.,2.);
+  TH1F *h_S12S9RatioEB  = new TH1F ("h_S12S9RatioEB","h_S12S9RatioEB",200,-2.,2.);
+  TH1F *h_S1SCRatioEB   = new TH1F ("h_S1SCRatioEB","h_S1SCRatioEB",200,-2.,2.);
+  TH1F *h_E2nd3x3       = new TH1F ("h_E2nd3x3","h_E2nd3x3",200,-2.,2.);
+  TH1F *h_FRookEB       = new TH1F ("h_FRookEB","h_FRookEB",100,0.,1.);
+  TH1F *h_NCry805EB     = new TH1F ("h_NCry805EB","h_NCry805EB",26,-1.,25.);
+
+  h_S1S9RatioEB->Sumw2();  
+  h_S12S9RatioEB->Sumw2(); 
+  h_S1SCRatioEB->Sumw2();
+  h_FRookEB->Sumw2();      
+  h_NCry805EB->Sumw2();
+  h_E2nd3x3->Sumw2();
+
   //HF PMT hits
   TH1F *h_HFRatio       = new TH1F ("h_HFRatio","h_HFRatio",400,-2.,2.);
   TH1F *h_calometPt_noHFPMTfilter   = new TH1F ("h_calometPt_noHFPMTfilter","h_calometPt_noHFPMTfilter",Nbins_METSumET,0,Max_METSumET);
@@ -150,6 +165,15 @@ void analysisClass::Loop()
   TH2F *h2_HCalNoiseLoose_Vs_MET = new TH2F ("h2_HCalNoiseLoose_Vs_MET","h2_HCalNoiseLoose_Vs_MET",2, 0,2, Nbins_METSumET,0,Max_METSumET);
   TH2F *h2_HCalNoiseTight_Vs_MET = new TH2F ("h2_HCalNoiseTight_Vs_MET","h2_HCalNoiseTight_Vs_MET",2, 0,2, Nbins_METSumET,0,Max_METSumET);
   TH2F *h2_HCalNoiseHighLevel_Vs_MET = new TH2F ("h2_HCalNoiseHighLevel_Vs_MET","h2_HCalNoiseHighLevel_Vs_MET",2, 0,2, Nbins_METSumET,0,Max_METSumET);
+
+  //ecal spikes
+  TH2F *h2_ECalSeedET_Vs_S1S9= new TH2F ("h2_ECalSeedET_Vs_S1S9","h2_ECalSeedET_Vs_S1S9", 50,0,20, 200, 0,2);
+  TH2F *h2_ECalSeedET_Vs_FRook= new TH2F ("h2_ECalSeedET_Vs_FRook","h2_ECalSeedET_Vs_FRook", 50, 0., 20., 100,0.,1.);
+  TH2F *h2_NCry805EB_Vs_S1S9= new TH2F ("h2_NCry805EB_Vs_S1S9","h2_NCry805EB_Vs_S1S9", 25, 0,25, 200,-2.,2.);
+  TH2F *h2_NCry805EB_Vs_FRook= new TH2F ("h2_NCry805EB_Vs_FRook","h2_NCry805EB_Vs_FRook", 25, 0,25, 100,0.,1.);
+  TH2F *h2_FRook_Vs_S1S9= new TH2F ("h2_FRook_Vs_S1S9","h2_FRook_Vs_S1S9", 100,0.,1., 200,-2.,2.);
+  TH2F *h2_FRook_Vs_E2nd3x3= new TH2F ("h2_FRook_Vs_E2nd3x3","h2_FRook_Vs_E2nd3x3", 100,0.,1., 200,0,20);
+  TH2F *h2_ETa_Vs_Phi= new TH2F ("h2_ETa_Vs_Phi","h2_ETa_Vs_Phi", 82,-3.2,3.2, 72,-1.5,1.5);
 
   //calotowers
   TH2F *h2_towersEtaPhi_EM  = new TH2F ("h2_towersEtaPhi_EM","h2_towersEtaPhi_EM",82,-41,41, 72,0,72);
@@ -395,6 +419,32 @@ void analysisClass::Loop()
 	  }
 	}
 
+      //ECAL spikes EB
+      int pass_ECALSpikes = 1;
+      if(isData==1)
+	for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
+	  {
+	    //frook
+	    float emaxrook = 0.;
+	    float frook    = 0.;
+	    
+	    if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
+	      emaxrook = CaloTowersECalEBEnergyRight->at(ii);
+	    if( CaloTowersECalEBEnergyBottom->at(ii) > emaxrook && CaloTowersECalEBEnergyBottom->at(ii) > 0.08) 
+	      emaxrook = CaloTowersECalEBEnergyBottom->at(ii);
+	    if( CaloTowersECalEBEnergyLeft->at(ii) > emaxrook && CaloTowersECalEBEnergyLeft->at(ii) > 0.08) 
+	      emaxrook = CaloTowersECalEBEnergyLeft->at(ii);
+	    if( CaloTowersECalEBEnergyTop->at(ii) > emaxrook && CaloTowersECalEBEnergyTop->at(ii) > 0.08) 
+	      emaxrook = CaloTowersECalEBEnergyTop->at(ii);
+	    
+	    frook = emaxrook/(CaloTowersECalEBXtalsEMax->at(ii));
+	    float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
+	    
+	    if(seedet>3. && frook<0.01)
+	      pass_ECALSpikes = 0;
+	  }
+      if(isData==0)
+	pass_ECALSpikes = 1;
 
       //############################
       //## Calculate Reco Quantities 
@@ -539,7 +589,7 @@ void analysisClass::Loop()
       fillVariableWithValue("pass_PhysicsBit", pass_PhysicsBit);
       fillVariableWithValue("pass_MonsterTRKEventVeto", pass_MonsterTRKEventVeto);
       fillVariableWithValue("pass_HFPMTHitVeto", pass_HFPMTHitVeto);
-
+      fillVariableWithValue("pass_ECALSpikes", pass_ECALSpikes);
 
 
       // Evaluate cuts (but do not apply them)
@@ -754,6 +804,42 @@ void analysisClass::Loop()
 	   h_caloSumet_noHFPMTfilter->Fill( calometSumEt->at(0) );
 	 }
 
+      if( passedAllOtherCuts("pass_ECALSpikes") )
+	for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
+	  {
+	    //frook
+	    float emaxrook = 0.;
+	    float frook    = 0.;
+	    
+	    if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
+	      emaxrook = CaloTowersECalEBEnergyRight->at(ii);
+	    if( CaloTowersECalEBEnergyBottom->at(ii) > emaxrook && CaloTowersECalEBEnergyBottom->at(ii) > 0.08) 
+	      emaxrook = CaloTowersECalEBEnergyBottom->at(ii);
+	    if( CaloTowersECalEBEnergyLeft->at(ii) > emaxrook && CaloTowersECalEBEnergyLeft->at(ii) > 0.08) 
+	      emaxrook = CaloTowersECalEBEnergyLeft->at(ii);
+	    if( CaloTowersECalEBEnergyTop->at(ii) > emaxrook && CaloTowersECalEBEnergyTop->at(ii) > 0.08) 
+	      emaxrook = CaloTowersECalEBEnergyTop->at(ii);
+	    
+	    frook = emaxrook/(CaloTowersECalEBXtalsEMax->at(ii));
+	    h_FRookEB    ->Fill(frook);
+	    ////////////////////
+	    
+	    h_S1S9RatioEB->Fill(CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii));
+	    h_S12S9RatioEB->Fill((CaloTowersECalEBXtalsEMax->at(ii) + CaloTowersECalEBXtalsE2nd3x3->at(ii))/CaloTowersECalEBXtalsE3x3->at(ii));
+	    h_S1SCRatioEB->Fill(CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBSCEnergy->at(ii));
+	    h_NCry805EB  ->Fill(CaloTowersECalEBNCRY805->at(ii));
+	    h_E2nd3x3    ->Fill(CaloTowersECalEBXtalsE2nd3x3->at(ii));
+	    
+	    float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
+	    
+	    h2_ECalSeedET_Vs_S1S9->Fill( seedet, CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) );
+	    h2_ECalSeedET_Vs_FRook->Fill( seedet, frook );
+	    h2_NCry805EB_Vs_S1S9->Fill( CaloTowersECalEBNCRY805->at(ii), CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) );
+	    h2_NCry805EB_Vs_FRook->Fill( CaloTowersECalEBNCRY805->at(ii), frook );
+	    h2_FRook_Vs_S1S9->Fill(frook, CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii));
+	    h2_FRook_Vs_E2nd3x3->Fill(CaloTowersECalEBXtalsE2nd3x3->at(ii), frook);
+	    h2_ETa_Vs_Phi->Fill(CaloTowersECalEBSeedEta->at(ii), CaloTowersECalEBSeedPhi->at(ii));
+	  }
 
       //######## print event number and ls ############
 
@@ -1199,6 +1285,14 @@ void analysisClass::Loop()
   h_calometPt_noHFPMTfilter->Write();
   h_caloSumet_noHFPMTfilter->Write();
 
+ //ECAL spikes
+  h_S1S9RatioEB->Write();
+  h_S12S9RatioEB->Write();
+  h_S1SCRatioEB->Write();
+  h_NCry805EB->Write();
+  h_FRookEB->Write();
+  h_E2nd3x3->Write();
+
   //MPT
   h_nGoodTracks->Write();
   h_MPT->Write();
@@ -1232,6 +1326,15 @@ void analysisClass::Loop()
   h2_HCalNoiseLoose_Vs_MET->Write();   
   h2_HCalNoiseTight_Vs_MET->Write();   
   h2_HCalNoiseHighLevel_Vs_MET->Write();   
+
+  //ecal spikes
+  h2_ECalSeedET_Vs_S1S9->Write();
+  h2_NCry805EB_Vs_S1S9->Write();
+  h2_FRook_Vs_S1S9->Write();
+  h2_ECalSeedET_Vs_FRook->Write();
+  h2_NCry805EB_Vs_FRook->Write();
+  h2_FRook_Vs_E2nd3x3->Write();
+  h2_ETa_Vs_Phi->Write();
 
   //calotowers
   h2_towersEtaPhi_EM->Write();    
