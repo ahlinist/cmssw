@@ -47,6 +47,8 @@ def disableSysUncertainties_runZtoMuTau(process):
     removeModules(process, "selectMuTauPairs", moduleNamePattern, pyNameSpace)
     removeModules(process, "selectMuTauPairsLooseMuonIsolation", moduleNamePattern, pyNameSpace)
 
+    process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
+
     removeModules(process, "selectZtoMuTauEvents", moduleNamePattern, pyNameSpace)
 
     removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, "sysUncertaintyBinnerForMuTau")
