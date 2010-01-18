@@ -26,11 +26,16 @@ from TauAnalysis.CandidateTools.metTopology_cfi import *
 # import sequence for selection of generated Z --> tau+ tau- --> ... decay modes
 from TauAnalysis.RecoTools.selectGenZtautauDecayModes_cfi import *
 
+# import sequence for production of PDF/ISR/FSR (re)weights
+# for estimating systematic (theory) uncertainties
+from TauAnalysis.GenSimTools.sysErrGenEventReweights_cfi import *
+
 produceGenObjects = cms.Sequence(
     produceGenDecayProductsFromZs
    + produceGenPhaseSpaceEventInfo
    + produceTauGenJets
    + selectGenZtautauDecayModes
+   + produceSysErrGenEventReweights
 )
 
 produceRecObjects = cms.Sequence(
