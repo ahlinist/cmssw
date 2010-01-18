@@ -1142,16 +1142,16 @@ void analysisClass::Loop()
   
   TGraphErrors *calometPyMean_vs_run = new TGraphErrors(n,x,yM,ex,eyM);
   calometPyMean_vs_run->SetName("g_calometPyMean_vs_run");
-  calometPyMean_vs_run->SetTitle("CaloMETPx #mu vs. Run");
+  calometPyMean_vs_run->SetTitle("CaloMETPy #mu vs. Run");
   calometPyMean_vs_run->GetXaxis()->SetTitle("Run");
-  calometPyMean_vs_run->GetYaxis()->SetTitle("CaloMETPx #mu [GeV]");
+  calometPyMean_vs_run->GetYaxis()->SetTitle("CaloMETPy #mu [GeV]");
   calometPyMean_vs_run->Write();
   
   TGraphErrors *calometPySigma_vs_run = new TGraphErrors(n,x,yR,ex,eyR);
   calometPySigma_vs_run->SetName("g_calometPySigma_vs_run");
-  calometPySigma_vs_run->SetTitle("CaloMETPx #sigma vs. Run");
+  calometPySigma_vs_run->SetTitle("CaloMETPy #sigma vs. Run");
   calometPySigma_vs_run->GetXaxis()->SetTitle("Run");
-  calometPySigma_vs_run->GetYaxis()->SetTitle("CaloMETPx #sigma [GeV]");
+  calometPySigma_vs_run->GetYaxis()->SetTitle("CaloMETPy #sigma [GeV]");
   calometPySigma_vs_run->Write();
   //#################################
   
@@ -1275,16 +1275,16 @@ void analysisClass::Loop()
   
   TGraphErrors *calometPyMean_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yM_ieta,ex_ieta,eyM_ieta);
   calometPyMean_vs_ieta->SetName("g_calometPyMean_vs_ieta");
-  calometPyMean_vs_ieta->SetTitle("CaloMETPx Mean vs. ieta");
+  calometPyMean_vs_ieta->SetTitle("CaloMETPy Mean vs. ieta");
   calometPyMean_vs_ieta->GetXaxis()->SetTitle("ieta");
-  calometPyMean_vs_ieta->GetYaxis()->SetTitle("CaloMETPx Mean [GeV]");
+  calometPyMean_vs_ieta->GetYaxis()->SetTitle("CaloMETPy Mean [GeV]");
   calometPyMean_vs_ieta->Write();
   
   TGraphErrors *calometPyRMS_vs_ieta = new TGraphErrors(n_ieta,x_ieta,yR_ieta,ex_ieta,eyR_ieta);
   calometPyRMS_vs_ieta->SetName("g_calometPyRMS_vs_ieta");
-  calometPyRMS_vs_ieta->SetTitle("CaloMETPx RMS vs. ieta");
+  calometPyRMS_vs_ieta->SetTitle("CaloMETPy RMS vs. ieta");
   calometPyRMS_vs_ieta->GetXaxis()->SetTitle("ieta");
-  calometPyRMS_vs_ieta->GetYaxis()->SetTitle("CaloMETPx RMS [GeV]");
+  calometPyRMS_vs_ieta->GetYaxis()->SetTitle("CaloMETPy RMS [GeV]");
   calometPyRMS_vs_ieta->Write();
   //#################################
 
