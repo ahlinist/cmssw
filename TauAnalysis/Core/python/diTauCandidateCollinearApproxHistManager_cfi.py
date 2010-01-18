@@ -44,7 +44,7 @@ diTauCandidateCollinearApproxHistManager = cms.PSet(
 
     genParticleSource = cms.InputTag('genParticles'),
     genJetSource = cms.InputTag('iterativeCone5GenJets'),
-    genMEtSource = cms.InputTag('genMETWithMu'),
+    genMEtSource = cms.InputTag('genMetTrue'),
     recoJetSource = cms.InputTag('iterativeCone5PFJets'),
 
     dqmDirectory_store = cms.string('DiTauCandidateCollinearApproxQuantities'),
