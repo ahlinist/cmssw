@@ -123,8 +123,8 @@ patTupleEventContent.outputCommands.extend(
 )
 
 #--------------------------------------------------------------------------------
-# required by event-dump plugins (to be removed for 3_1_x)
+# required by event-dump plugins
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-     [ 'keep *_genMETWithMu_*_*' ]
+     [ 'keep *_genMetTrue_*_*' ]
 )
