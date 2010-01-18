@@ -253,7 +253,9 @@ void analysisClass::Loop()
 		    123740, 123801, 123815, 123818, 123893, 123906,
 		    123908, 123909, 123910, 124017, 124019, 124020,
 		    124022, 124023, 124024, 124025, 124026, 124027,
-		    124029, 124030, 124108, 124115};
+		    124029, 124030, 124108, 124115, 
+		    124120};
+                   //124120 at 2360 GeV
 
   Long64_t nentries = fChain->GetEntriesFast();
   std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl;   
@@ -411,6 +413,9 @@ void analysisClass::Loop()
 	      if( ratio < -Rminus_cut || ratio > Rplus_cut)
 		pass_HFPMTHitVeto = 0; //this is a PMT hit candidate		    
 	    }
+
+	    delete towerL;
+	    delete towerS;
 
 	  }
 	}
@@ -821,6 +826,9 @@ void analysisClass::Loop()
 		       h_HFRatio->Fill(ratio);
 		     }
 
+		   delete towerL;
+		   delete towerS;
+
 		 }
 	     }	   
 	 }
@@ -887,18 +895,9 @@ void analysisClass::Loop()
            
       //######## print event number and ls ############
 
-      /*
-      if( passedCut("0") )
+      
+      if( passedCut("all") )
 	 {
-
-	   if ( pass_MonsterTRKEventVeto == 0 ) 
-	     {
-	       cout << "event: " << event << " " 
-		    << "ls: " << ls << " "
-		    << "run: " << run << "  "
-		    << "--  Is Monster" << " "
-		    << endl;
-	     }
 
 	   if( calometPt->at(0) > 15 )
 	     {
@@ -937,7 +936,7 @@ void analysisClass::Loop()
 	     }
 
 	 }
-      */
+      
 
 
       // Fill histograms and do analysis based on cut evaluation
