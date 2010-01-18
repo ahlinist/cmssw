@@ -1,8 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from TauAnalysis.Configuration.analysisSequenceTools import switchHistManagers
-from TauAnalysis.Configuration.analysisSequenceTools import replaceHistManagerInputTags
+from TauAnalysis.Configuration.tools.analysisSequenceTools import replaceAnalyzerInputTags
 
 #--------------------------------------------------------------------------------
 # import config for event print-out and analysis sequence of Z --> mu + tau-jet events
@@ -73,7 +72,7 @@ muTauEventDump_factorizedWithMuonIsolation.triggerConditions = cms.vstring("")
 #--------------------------------------------------------------------------------
 
 muTauAnalysisSequence_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
-replaceHistManagerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation,
+replaceAnalyzerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation,
     [ ["selectedLayer1MuonsTrkIsoCumulative", "selectedLayer1MuonsTrkIsoLooseIsolationCumulative"],
       ["selectedLayer1MuonsEcalIsoCumulative", "selectedLayer1MuonsEcalIsoLooseIsolationCumulative"],
       ["selectedLayer1MuonsPionVetoCumulative", "selectedLayer1MuonsPionVetoLooseIsolationCumulative"],
