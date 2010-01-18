@@ -420,7 +420,7 @@ muTauAnalysisSequence = cms.VPSet(
             'pfMEtHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
-            'modelBinnerForMuTau',
+            'modelBinnerForMuTau'
         )
     ),
 
