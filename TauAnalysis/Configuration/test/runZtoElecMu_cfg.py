@@ -124,7 +124,7 @@ process.p = cms.Path(
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
-from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoElecMu
+from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runZtoElecMu
 #
 # define "hook" for enabling/disabling factorization
 # in case running jobs on the CERN batch system

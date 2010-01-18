@@ -120,7 +120,7 @@ process.p = cms.Path(
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
-#from TauAnalysis.Configuration.factorizationTools import enableFactorization_runWtoTauNu
+#from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runWtoTauNu
 #enableFactorization_runWtoTauNu(process)
 #
 # define "hook" for enabling/disabling factorization
