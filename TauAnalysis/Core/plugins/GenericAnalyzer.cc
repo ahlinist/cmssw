@@ -575,7 +575,7 @@ GenericAnalyzer::~GenericAnalyzer()
 
 void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {  
-  std::cout << "<GenericAnalyzer::analyze>:" << std::endl; 
+  //std::cout << "<GenericAnalyzer::analyze>:" << std::endl; 
 
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
@@ -592,7 +592,7 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     eventWeight *= (*eventWeight_i);
   }
 
-  std::cout << " eventWeight = " << eventWeight << std::endl;
+  //std::cout << " eventWeight = " << eventWeight << std::endl;
 
   if ( !edm::Service<SysUncertaintyService>().isAvailable() ) {
     edm::LogError ("GenericAnalyzer::analyze") << " Failed to access SysUncertaintyService --> skipping !!";
@@ -615,12 +615,12 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 //
   for ( vstring::const_iterator sysName = systematics_.begin();
 	sysName != systematics_.end(); ++sysName ) {
-    std::cout << " sysName = " << (*sysName) << std::endl;
+    //std::cout << " sysName = " << (*sysName) << std::endl;
 
     sysUncertaintyService->update(*sysName, evt, es);
 
     double eventWeight_systematic = eventWeight*sysUncertaintyService->getWeight();
-    std::cout << " eventWeight_systematic = " << eventWeight_systematic << std::endl;
+    //std::cout << " eventWeight_systematic = " << eventWeight_systematic << std::endl;
 
     bool isSystematicApplied = ( (*sysName) == SysUncertaintyService::getNameCentralValue() ) ? false : true;
 
