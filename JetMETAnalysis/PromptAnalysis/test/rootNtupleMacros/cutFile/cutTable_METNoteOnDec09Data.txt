@@ -39,5 +39,5 @@ pass_BSC_MB                     0            1                  -               
 pass_BSC_BeamHaloVeto           0            1                  -               -               0       2 0 2
 pass_PhysicsBit                 0            1                  -               -               0       2 0 2
 pass_MonsterTRKEventVeto        0            1                  -               -               0       2 0 2
-pass_HFPMTHitVeto               0            1                  -               -               0       2 0 2
-pass_ECALSpikes		        0	     1			-		-               0	2 0 2 
+pass_HFPMTHitVeto               0            1                  -               -               1       2 0 2
+pass_ECALSpikes		        0	     1			-		-               1	2 0 2 
