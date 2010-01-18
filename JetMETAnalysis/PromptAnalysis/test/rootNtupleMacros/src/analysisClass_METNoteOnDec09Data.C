@@ -109,12 +109,18 @@ void analysisClass::Loop()
 
   //HF PMT hits
   TH1F *h_HFRatio       = new TH1F ("h_HFRatio","h_HFRatio",400,-2.,2.);
-  TH1F *h_calometPt_noHFPMTfilter   = new TH1F ("h_calometPt_noHFPMTfilter","h_calometPt_noHFPMTfilter",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_caloSumet_noHFPMTfilter = new TH1F ("h_caloSumet_noHFPMTfilter","h_caloSumet_noHFPMTfilter",Nbins_METSumET,0,Max_METSumET);
-
   h_HFRatio->Sumw2();
-  h_calometPt_noHFPMTfilter->Sumw2();
-  h_caloSumet_noHFPMTfilter->Sumw2();
+
+  // Effect of ECAL, HF filters on MET
+  TH1F *h_calometPt_baseSel   = new TH1F ("h_calometPt_baseSel","h_calometPt_baseSel",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_caloSumet_baseSel = new TH1F ("h_caloSumet_baseSel","h_caloSumet_baseSel",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_calometPt_baseSelPlusHFfilter   = new TH1F ("h_calometPt_baseSelPlusHFfilter","h_calometPt_baseSelPlusHFfilter",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_caloSumet_baseSelPlusHFfilter = new TH1F ("h_caloSumet_baseSelPlusHFfilter","h_caloSumet_baseSelPlusHFfilter",Nbins_METSumET,0,Max_METSumET);
+
+  h_calometPt_baseSel->Sumw2();
+  h_caloSumet_baseSel->Sumw2();
+  h_calometPt_baseSelPlusHFfilter->Sumw2();
+  h_caloSumet_baseSelPlusHFfilter->Sumw2();
 
   //MPT
   TH1F *h_nGoodTracks = new TH1F ("h_nGoodTracks","h_nGoodTracks",100,0,100);
@@ -179,7 +185,9 @@ void analysisClass::Loop()
   TH2F *h2_towersEtaPhi_EM  = new TH2F ("h2_towersEtaPhi_EM","h2_towersEtaPhi_EM",82,-41,41, 72,0,72);
   TH2F *h2_towersEtaPhi_HAD = new TH2F ("h2_towersEtaPhi_HAD","h2_towersEtaPhi_HAD",82,-41,41, 72,0,72);
 
-
+  //HF PMT hits
+  TH2F *h2_ETL_vs_HFratio= new TH2F ("h2_ETL_vs_HFratio","h2_ETL_vs_HFratio", 300,-1.5,1.5 , 50,0,50 );
+  TH2F *h2_ETS_vs_HFratio= new TH2F ("h2_ETS_vs_HFratio","h2_ETS_vs_HFratio", 300,-1.5,1.5 , 50,0,50 );
 
   // met_quantities vs SumET (1D + 2D histograms)
   int   nhistos  = 20;
@@ -393,27 +401,17 @@ void analysisClass::Loop()
 	    towerS->SetPtEtaPhi(0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
 		
 	    Float_t ratio = -1.5;
-	    if( (towerL->Pt() > ETL_cut) || (towerS->Pt() > ETS_cut) ) 
-	    {
-	      ratio = ( fabs(towerL->Mag()) - fabs(towerS->Mag()) ) 
-		/ ( fabs(towerL->Mag()) + fabs(towerS->Mag()) );
-	    }	    
 
 	    if( (towerL->Pt() > ETL_cut && towerS->Mag() < ES_cut) 
 		|| (towerS->Pt() > ETS_cut && towerL->Mag() < EL_cut) )
 	    {		
+	      ratio = ( fabs(towerL->Mag()) - fabs(towerS->Mag()) ) 
+		/ ( fabs(towerL->Mag()) + fabs(towerS->Mag()) );
+
 	      if( ratio < -Rminus_cut || ratio > Rplus_cut)
 		pass_HFPMTHitVeto = 0; //this is a PMT hit candidate		    
 	    }
 
-	    //plot "ratio" for all HF towers - after event selection
-	    if(pass_BPTX == 1 && pass_BSC_MB == 1 
-	       && pass_BSC_BeamHaloVeto == 1 && pass_PhysicsBit == 1 
-	       && pass_MonsterTRKEventVeto == 1 )
-	      {
-		h_HFRatio->Fill(ratio);
-	      }
- 
 	  }
 	}
 
@@ -793,15 +791,41 @@ void analysisClass::Loop()
 	     }//end loop over ieta bins
 
 
-	 }        
+	 }//---- end passed cut "all" ----        
            
 
+      //## passed all cuts except HF PMT filter
       if( passedAllOtherCuts("pass_HFPMTHitVeto") )
 	 {
-	   h_calometPt_noHFPMTfilter->Fill( calometPt->at(0) );
-	   h_caloSumet_noHFPMTfilter->Fill( calometSumEt->at(0) );
+	   
+	   for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
+	     {
+	       if( fabs(CaloTowersIeta->at(i)) >= 29 ) //HF only
+		 {
+		   TVector3 * towerL = new TVector3;
+		   TVector3 * towerS = new TVector3;
+		   towerL->SetPtEtaPhi(CaloTowersEmEt->at(i)+0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
+		   towerS->SetPtEtaPhi(0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
+
+		   //minimum energy in either Long or Short fiber
+		   if( towerL->Mag() > EL_cut || towerS->Mag() > ES_cut )
+		     {
+		   
+		       Float_t ratio = -1.5;
+		       ratio = ( fabs(towerL->Mag()) - fabs(towerS->Mag()) ) 
+			 / ( fabs(towerL->Mag()) + fabs(towerS->Mag()) );
+		       
+		       h2_ETL_vs_HFratio->Fill(ratio,towerL->Pt());
+		       h2_ETS_vs_HFratio->Fill(ratio,towerS->Pt());
+		       
+		       h_HFRatio->Fill(ratio);
+		     }
+
+		 }
+	     }	   
 	 }
 
+      //## passed all cuts except ECAL spikes filter
       if( passedAllOtherCuts("pass_ECALSpikes") )
 	for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
 	  {
@@ -839,6 +863,28 @@ void analysisClass::Loop()
 	    h2_ETa_Vs_Phi->Fill(CaloTowersECalEBSeedEta->at(ii), CaloTowersECalEBSeedPhi->at(ii));
 	  }
 
+
+      //## Effect of ECAL, HF filters on MET
+
+      //BASELINE SELECTION
+      if( passedCut("0") )
+	{
+	  h_calometPt_baseSel->Fill( calometPt->at(0) );
+	  h_caloSumet_baseSel->Fill( calometSumEt->at(0) );	 
+	}
+
+      //BASELINE SELECTION + HF filter
+      if( passedCut("0") && passedCut("pass_HFPMTHitVeto") )
+	{
+	  h_calometPt_baseSelPlusHFfilter->Fill( calometPt->at(0) );
+	  h_caloSumet_baseSelPlusHFfilter->Fill( calometSumEt->at(0) );	 	  
+	}
+
+      //BASELINE SELECTION + HF filter + ECAL filter 
+      // this is already available at 
+      // h_calometPt and h_caloSumet
+
+           
       //######## print event number and ls ############
 
       /*
@@ -1280,10 +1326,14 @@ void analysisClass::Loop()
 
   //HF PMT hits
   h_HFRatio->Write();
-  h_calometPt_noHFPMTfilter->Write();
-  h_caloSumet_noHFPMTfilter->Write();
 
- //ECAL spikes
+  //Effect of ECAL, HF filters on MET
+  h_calometPt_baseSel->Write();
+  h_caloSumet_baseSel->Write();
+  h_calometPt_baseSelPlusHFfilter->Write();
+  h_caloSumet_baseSelPlusHFfilter->Write();
+
+  //ECAL spikes
   h_S1S9RatioEB->Write();
   h_S12S9RatioEB->Write();
   h_S1SCRatioEB->Write();
@@ -1338,6 +1388,9 @@ void analysisClass::Loop()
   h2_towersEtaPhi_EM->Write();    
   h2_towersEtaPhi_HAD->Write();   
 
+  //HF PMT hits
+  h2_ETL_vs_HFratio->Write();
+  h2_ETS_vs_HFratio->Write();
 
   // met_quantities vs SumET (1D + 2D histograms)
   for(int i=0;i<nhistos;i++)
