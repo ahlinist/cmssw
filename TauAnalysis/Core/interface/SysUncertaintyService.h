@@ -11,9 +11,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.2 $
+  * \version $Revision: 1.3 $
   *
-  * $Id: SysUncertaintyService.h,v 1.2 2010/01/07 17:07:57 veelken Exp $
+  * $Id: SysUncertaintyService.h,v 1.3 2010/01/11 10:13:56 veelken Exp $
   *
   */
 
@@ -48,6 +48,9 @@ class SysUncertaintyService
 //--- ensure that SysUncertaintyService is singleton
     assert(!gSysUncertaintyService);
     gSysUncertaintyService = this;
+
+    currentSystematic_ = "undefined";
+    currentEventReweight_ = -1.;
 
     typedef std::vector<edm::ParameterSet> vParameterSet;
     vParameterSet cfgEvtReweightEntries = cfg.getParameter<vParameterSet>("config");
@@ -99,27 +102,10 @@ class SysUncertaintyService
 
   void update(const std::string& systematic, const edm::Event& evt, const edm::EventSetup& es)
   {
+    //std::cout << "<SysUncertaintyService::update>:" << std::endl;
+
     currentSystematic_ = systematic;
 
-    for ( std::map<std::string, WeightEntryBase*>::iterator evtReweightEntry = evtReweightEntries_.begin();
-	  evtReweightEntry != evtReweightEntries_.end(); ++evtReweightEntry ) {
-      evtReweightEntry->second->update(evt, es);
-    }
-  }
-
-  const std::string& getCurrentSystematic() const
-  {
-    return currentSystematic_;
-  }  
-
-  static const std::string& getNameCentralValue() 
-  {
-    static std::string nameCentralValue = "CENTRAL_VALUE";
-    return nameCentralValue; 
-  }
-
-  double getWeight() const
-  {
     static TPRegexp regexpParser_array_entry("[[:alnum:]]+\\[[[:digit:]]+\\]");
     static TPRegexp regexpParser_array_name("([[:alnum:]]+)\\[[[:digit:]]+\\]");
     
@@ -132,28 +118,54 @@ class SysUncertaintyService
       if ( subStrings->GetEntries() == 2 ) {
 	sysName = ((TObjString*)subStrings->At(1))->GetString().Data();
       } else {
-	edm::LogError ("getReweight") << " Failed to decode name = " << currentSystematic_ << " of current systematic uncertainty !!";
-	return SysUncertaintyService_namespace::defaultEvtReweight_error;
+	edm::LogError ("update") << " Failed to decode name = " << currentSystematic_ << " of current systematic uncertainty !!";
+	currentEventReweight_ = SysUncertaintyService_namespace::defaultEvtReweight_error;
       }
     } else {
       sysName = currentSystematic_;
     }
 
+    //std::cout << " sysName = " << sysName << std::endl;
+
     std::map<std::string, WeightEntryBase*>::const_iterator evtReweightEntry = evtReweightEntries_.find(sysName);
     if ( evtReweightEntry != evtReweightEntries_.end() ) {
-      return evtReweightEntry->second->getWeight(currentSystematic_);
+      evtReweightEntry->second->update(evt, es);
+      currentEventReweight_ = evtReweightEntry->second->getWeight(currentSystematic_);
     } else {
 //--- no reweight defined for current systematic
 //    (e.g. current systematic is a shift of the muon Pt;
 //     handled by repeating a cut on the shifted value, not by applying a reweight)
-      return 1.;
+      currentEventReweight_ = 1.;
     }
+  }
+
+  const std::string& getCurrentSystematic() const
+  {
+    if ( currentSystematic_ == "undefined" ) {
+      edm::LogError ("getCurrentSystematic") << " Current systematic uninitialized; presumable update function has not been called !!";
+    }
+    return currentSystematic_;
+  }  
+
+  static const std::string& getNameCentralValue() 
+  {
+    static std::string nameCentralValue = "CENTRAL_VALUE";
+    return nameCentralValue; 
+  }
+
+  double getWeight() const
+  {
+    if ( currentEventReweight_ == -1. ) {
+      edm::LogError ("getReweight") << " Current event reweight uninitialized; presumable update function has not been called !!";
+    }
+    return currentEventReweight_;
   }
 
  private:
   static SysUncertaintyService* gSysUncertaintyService;
 
   std::string currentSystematic_;
+  double currentEventReweight_;
 
   struct WeightEntryBase
   {
