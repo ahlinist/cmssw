@@ -38,7 +38,7 @@ patElectronSelConfigurator = objSelConfigurator(
       selectedLayer1ElectronsTrk,
       selectedLayer1ElectronsTrkIP ],
     src = "cleanLayer1Electrons",
-    systematics = electronSystematics,
+    #systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -61,7 +61,7 @@ patElectronSelConfiguratorLooseIsolation = objSelConfigurator(
       selectedLayer1ElectronsTrkLooseIsolation,
       selectedLayer1ElectronsTrkIPlooseIsolation ],
     src = "cleanLayer1Electrons",
-    systematics = electronSystematics,
+    #systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -77,7 +77,7 @@ selectedLayer1ElectronsForElecTauConversionVeto.nTrkMax = cms.double(1)
 patElectronSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedLayer1ElectronsForElecTauConversionVeto ],
     src = "selectedLayer1ElectronsTrkIPcumulative",
-    systematics = electronSystematics,
+    #systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -89,7 +89,7 @@ selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation = copy.deepcopy(se
 patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
     [ selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation ],
     src = "selectedLayer1ElectronsTrkIPlooseIsolationCumulative",
-    systematics = electronSystematics,
+    #systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -118,7 +118,7 @@ patElectronSelConfiguratorForElecMu = objSelConfigurator(
       selectedLayer1ElectronsForElecMuTrk,
       selectedLayer1ElectronsForElecMuTrkIP ],
     src = "cleanLayer1Electrons",
-    systematics = electronSystematics,
+    #systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -142,7 +142,7 @@ patElectronSelConfiguratorForElecMuLooseIsolation = objSelConfigurator(
       selectedLayer1ElectronsForElecMuTrkLooseIsolation,
       selectedLayer1ElectronsForElecMuTrkIPlooseIsolation ],
     src = "cleanLayer1Electrons",
-    systematics = electronSystematics,
+    #systematics = electronSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -281,7 +281,7 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1TausForElecTauElectronVeto,
       selectedLayer1TausForElecTauEcalCrackVeto ],
     src = "cleanLayer1Taus",
-    systematics = tauSystematics,
+    #systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -316,7 +316,7 @@ patTauSelConfiguratorForMuTau = objSelConfigurator(
       selectedLayer1TausForMuTauCharge,
       selectedLayer1TausForMuTauMuonVeto ],
     src = "cleanLayer1Taus",
-    systematics = tauSystematics,
+    #systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -345,7 +345,7 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
       selectedLayer1TausForDiTauProng,
       selectedLayer1TausForDiTauCharge ],
     src = "cleanLayer1Taus",
-    systematics = tauSystematics,
+    #systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -379,7 +379,7 @@ patTauSelConfiguratorForWTauNu = objSelConfigurator(
       selectedLayer1TausForWTauNuElectronVeto,
       selectedLayer1TausForWTauNuEcalCrackVeto ],
     src = "cleanLayer1Taus",
-    systematics = tauSystematics,
+    #systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -408,7 +408,7 @@ patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
       selectedLayer1TausForWTauNuElectronVetoLooseIsolation,
       selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolation ],
     src = "cleanLayer1Taus",
-    systematics = tauSystematics,
+    #systematics = tauSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
