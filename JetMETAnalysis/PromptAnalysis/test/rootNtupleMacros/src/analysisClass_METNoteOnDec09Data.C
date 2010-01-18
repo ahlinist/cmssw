@@ -241,12 +241,11 @@ void analysisClass::Loop()
   ///// Goood Run List  ////////
   //////////////////////////////
   int goodruns[] = {122314, 123575, 123586, 123587, 123591, 
-                        123592, 123596, 123600, 123603, 123606, 123608,
-                        123740, 123801, 123815, 123818, 123893, 123906,
-                        123908, 123909, 123910, 124017, 124019, 124020,
-                        124022, 124023, 124024, 124025, 124026, 124027,
-                        124029, 124030, 124108, 124115};
-
+		    123592, 123596, 123600, 123603, 123606, 123608,
+		    123740, 123801, 123815, 123818, 123893, 123906,
+		    123908, 123909, 123910, 124017, 124019, 124020,
+		    124022, 124023, 124024, 124025, 124026, 124027,
+		    124029, 124030, 124108, 124115};
 
   Long64_t nentries = fChain->GetEntriesFast();
   std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl;   
@@ -325,11 +324,10 @@ void analysisClass::Loop()
 	  pass_PhysicsBit = 1;
 	}
 
-
       //#####################
       //## Reco-based filters
       //#####################
-
+      
       //## pass_MonsterTRKEventVeto - "Monster Events" Tracker Filter
       //see https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe
       int pass_MonsterTRKEventVeto = 0;
@@ -338,34 +336,34 @@ void analysisClass::Loop()
       float fraction      = 0.;  
       float thresh        = 0.2;
 	 
-      if(isData == 1)
+      //       if(isData == 1)
+      // 	{
+      if(tracksPt->size()<=10)
 	{
-	  if(tracksPt->size()<=10)
-	    {
-	      pass_MonsterTRKEventVeto = 1;
-	    }//<=10 tracks	    
-	  else if(tracksPt->size()>10)
-	    {
-	      for (int ii=0; ii<tracksPt->size(); ii++)
-		{
-		  int trackFlags = tracksQuality->at(ii);
-		  int highPurityFlag = 3;
-		  if( ( trackFlags & 1 << highPurityFlag) > 0)
-		    {
-		      num_good_tracks++;		      
-		      fraction = (float)num_good_tracks / (float)tracksPt->size();
-		      
-		      if( fraction > thresh ) 
-			pass_MonsterTRKEventVeto = 1;
-		    }
-		}
-	    }//>10 tracks	    
-	}
-      else if(isData == 0)
-	{ 
 	  pass_MonsterTRKEventVeto = 1;
-	}
-
+	}//<=10 tracks	    
+      else if(tracksPt->size()>10)
+	{
+	  for (int ii=0; ii<tracksPt->size(); ii++)
+	    {
+	      int trackFlags = tracksQuality->at(ii);
+	      int highPurityFlag = 3;
+	      if( ( trackFlags & 1 << highPurityFlag) > 0)
+		{
+		  num_good_tracks++;		      
+		  fraction = (float)num_good_tracks / (float)tracksPt->size();
+		  
+		  if( fraction > thresh ) 
+		    pass_MonsterTRKEventVeto = 1;
+		}
+	    }
+	}//>10 tracks	    
+      //  }
+      //       else if(isData == 0)
+      // 	{ 
+      // 	  pass_MonsterTRKEventVeto = 1;
+      // 	}
+  
       //## pass_HFPMTHitVeto - Reject anomalous events in HF due to PMT hits
       //--> Recipe from Efe Yazgan  -  14 Jan 2010 
       //if (EL < 1.2 && ES < 1.8) do not flag anything.
@@ -385,7 +383,7 @@ void analysisClass::Loop()
       float Rplus_cut   = 0.995;       
       float Rminus_cut  = 0.995;       
 
-      for (int i = 0; i<int(CaloTowersEmEtVtx0->size()); i++)
+      for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
 	{
 	  if( fabs(CaloTowersIeta->at(i)) >= 29 ) //HF only
 	  {
@@ -421,30 +419,30 @@ void analysisClass::Loop()
 
       //ECAL spikes EB
       int pass_ECALSpikes = 1;
-      if(isData==1)
-	for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
-	  {
-	    //frook
-	    float emaxrook = 0.;
-	    float frook    = 0.;
-	    
-	    if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
-	      emaxrook = CaloTowersECalEBEnergyRight->at(ii);
-	    if( CaloTowersECalEBEnergyBottom->at(ii) > emaxrook && CaloTowersECalEBEnergyBottom->at(ii) > 0.08) 
-	      emaxrook = CaloTowersECalEBEnergyBottom->at(ii);
-	    if( CaloTowersECalEBEnergyLeft->at(ii) > emaxrook && CaloTowersECalEBEnergyLeft->at(ii) > 0.08) 
-	      emaxrook = CaloTowersECalEBEnergyLeft->at(ii);
-	    if( CaloTowersECalEBEnergyTop->at(ii) > emaxrook && CaloTowersECalEBEnergyTop->at(ii) > 0.08) 
-	      emaxrook = CaloTowersECalEBEnergyTop->at(ii);
-	    
-	    frook = emaxrook/(CaloTowersECalEBXtalsEMax->at(ii));
-	    float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
-	    
-	    if(seedet>3. && frook<0.01)
-	      pass_ECALSpikes = 0;
-	  }
-      if(isData==0)
-	pass_ECALSpikes = 1;
+      //if(isData==1)
+      for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
+	{
+	  //frook
+	  float emaxrook = 0.;
+	  float frook    = 0.;
+	  
+	  if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
+	    emaxrook = CaloTowersECalEBEnergyRight->at(ii);
+	  if( CaloTowersECalEBEnergyBottom->at(ii) > emaxrook && CaloTowersECalEBEnergyBottom->at(ii) > 0.08) 
+	    emaxrook = CaloTowersECalEBEnergyBottom->at(ii);
+	  if( CaloTowersECalEBEnergyLeft->at(ii) > emaxrook && CaloTowersECalEBEnergyLeft->at(ii) > 0.08) 
+	    emaxrook = CaloTowersECalEBEnergyLeft->at(ii);
+	  if( CaloTowersECalEBEnergyTop->at(ii) > emaxrook && CaloTowersECalEBEnergyTop->at(ii) > 0.08) 
+	    emaxrook = CaloTowersECalEBEnergyTop->at(ii);
+	  
+	  frook = emaxrook/(CaloTowersECalEBXtalsEMax->at(ii));
+	  float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
+	  
+	  if(seedet>3. && frook<0.01)
+	    pass_ECALSpikes = 0;
+	}
+      //       if(isData==0)
+      // 	pass_ECALSpikes = 1;
 
       //############################
       //## Calculate Reco Quantities 
