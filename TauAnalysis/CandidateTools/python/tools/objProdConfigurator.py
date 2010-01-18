@@ -57,7 +57,9 @@ class objProdConfigurator(cms._ParameterTypeBase):
         # producing different combinations of leptonic and hadronic decay products
         # for estimation of systematic uncertainties
 
-        self.sequence = None
+        # add original module (for production of central value) to sequence
+        #self.sequence = None
+        self.sequence = self.objProd
 
         for sysName, sysInputTags in self.systematics.items():
             self._addModule(self.objProd, pyNameSpace, sysName = sysName, sysInputTags = sysInputTags)
