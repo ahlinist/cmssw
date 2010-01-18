@@ -32,7 +32,8 @@ GenericAnalyzer::analysisSequenceEntry::~analysisSequenceEntry()
 //
 
 GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(const std::string& name, const std::string& title,
-									   const edm::ParameterSet& cfgFilter, int& cfgError)
+									    const edm::ParameterSet& cfgFilter, 
+									    bool estimateSysUncertainties, int& cfgError)
   : analysisSequenceEntry(name)
 {
   //std::cout << "<analysisSequenceEntry_filter::analysisSequenceEntry_filter>:" << std::endl;
@@ -70,7 +71,7 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
 //          ("individual" event selection has effect on filter statistics table only,
 //           not on histogram filling or computation of binning results)
 //
-  if ( cfgFilter.exists("systematics") ) {
+  if ( estimateSysUncertainties && cfgFilter.exists("systematics") ) {
     typedef std::vector<std::string> vstring;
     vstring systematics = cfgFilter.getParameter<vstring>("systematics");
     for ( vstring::const_iterator sysName = systematics.begin();
@@ -250,7 +251,8 @@ void GenericAnalyzer::addFilter(const std::string& filterName, const vstring& sa
     
     std::string filterTitle = ( cfgFilter.exists("title") ) ? cfgFilter.getParameter<std::string>("title") : filterName;
     
-    analysisSequenceEntry_filter* entry = new analysisSequenceEntry_filter(filterName, filterTitle, cfgFilter, cfgError_);
+    analysisSequenceEntry_filter* entry 
+      = new analysisSequenceEntry_filter(filterName, filterTitle, cfgFilter, estimateSysUncertainties_, cfgError_);
     analysisSequence_.push_back(entry);
   } else {
     edm::LogError("GenericAnalyzer::addFilter") << " Failed to access configuration parameter for filter = " << filterName
@@ -385,6 +387,9 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
 
   eventWeightSrc_ = ( cfg.exists("eventWeightSource") ) ? cfg.getParameter<vInputTag>("eventWeightSource") : vInputTag();
 
+  estimateSysUncertainties_ = cfg.exists("estimateSysUncertainties") ?
+    cfg.getParameter<bool>("estimateSysUncertainties") : false;
+
   typedef std::vector<edm::ParameterSet> vParameterSet;
 
 //--- store configuration parameters for filters
@@ -411,7 +416,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     }
   }
 
-  if ( cfg.exists("analyzers_systematic") ) {
+  if ( estimateSysUncertainties_ && cfg.exists("analyzers_systematic") ) {
     vParameterSet cfgAnalyzers_systematic = cfg.getParameter<vParameterSet>("analyzers_systematic");
     for ( vParameterSet::iterator cfgAnalyzer_systematic = cfgAnalyzers_systematic.begin(); 
 	  cfgAnalyzer_systematic != cfgAnalyzers_systematic.end(); ++cfgAnalyzer_systematic ) {
@@ -423,7 +428,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
 
 //--- configure names of systematic uncertainties
 //    to be taken into account in analysis
-  if ( cfg.exists("systematics") ) {
+  if ( estimateSysUncertainties_ ) {
     vstring cfgSystematics = cfg.getParameter<vstring>("systematics");
     for ( vstring::const_iterator sysName = cfgSystematics.begin();
 	  sysName != cfgSystematics.end(); ++sysName ) {
@@ -645,7 +650,7 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
       }
     }
 
-    if ( (*sysName) == SysUncertaintyService::getNameCentralValue() ) {
+    if ( !isSystematicApplied ) {
 
 //--- update filter statistics table
       filterStatisticsTable_->update(filterResults_cumulative, filterResults_individual, eventWeight);
