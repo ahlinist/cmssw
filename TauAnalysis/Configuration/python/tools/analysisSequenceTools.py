@@ -6,17 +6,17 @@ import copy
 # usable for all channels
 #--------------------------------------------------------------------------------
 
-def switchHistManagers(analysisSequence, histManagers):
+def switchAnalyzers(analysisSequence, analyzers):
     for pset in analysisSequence:
-        if hasattr(pset, "analyzers") : setattr(pset, "analyzers", histManagers)
+        if hasattr(pset, "analyzers") : setattr(pset, "analyzers", analyzers)
 
-def replaceHistManagerInputTags(analysisSequence, replacements):
+def replaceAnalyzerInputTags(analysisSequence, replacements):
     # check that replacement is a list of type [ replace_1, replace_2 .. replace_N ]
     # with each replace_i being a list with exactly two entries
     # (first entry = string to be replace, second entry = substitute string)
     for replacement in replacements:
         assert isinstance(replacement,list) and len(replacement) == 2, \
-               "Error in <replaceHistManagerInputTags>: Invalid argument replacements = " + replacements
+               "Error in <replaceAnalyzerInputTags>: Invalid argument replacements = " + replacements
 
     # substitute in all "replacement" attributes of analysisSequence object given as function argument
     # all occurences of replace_i[first entry] by replace_i[second entry] (for all replace_i)
@@ -35,15 +35,11 @@ def replaceHistManagerInputTags(analysisSequence, replacements):
 
                 entries_orig[iEntry] = entry_mod
 
-
-                    
-
-def replaceTitles(analysisSequence, replacements):
+def replaceAnalyzerTitles(analysisSequence, replacements):
     # check that replacement is a list of type [ replace_1, replace_2 .. replace_N ]
     # with each replace_i being a list with exactly two entries
     # (first entry = string to be replace, second entry = substitute string)
     for replacement in replacements:
-        #print (replacements)
         assert isinstance(replacement,list) and len(replacement) == 2, \
                "Error in <replaceTitles>: Invalid argument replacements = " + replacements
 
@@ -52,7 +48,6 @@ def replaceTitles(analysisSequence, replacements):
     for pset in analysisSequence:
         if hasattr(pset, "title"):
             entries_orig = getattr(pset, "title")
-            #print(entries_orig)
 
             for replacement in replacements:
                 replacement_orig = replacement[0]
@@ -60,4 +55,13 @@ def replaceTitles(analysisSequence, replacements):
 
                 if str(entries_orig) == str(replacement_orig):
                    setattr(pset,'title',replacement_mod)
-            #print getattr(pset,'title')
+
+def removeAnalyzer(analysisSequence, analyzerName):
+    # remove all analyzers with name given as function argument from analysisSequence object
+    for pset in analysisSequence:
+        if hasattr(pset, "analyzers"):
+            analyzers = getattr(pset, "analyzers")
+
+            if analyzers.count(analyzerName) > 0:
+                analyzers.remove(analyzerName)
+
