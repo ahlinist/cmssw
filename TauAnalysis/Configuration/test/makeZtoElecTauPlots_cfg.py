@@ -18,7 +18,7 @@ process.loadZtoElecTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/v
 #process.loadZtoElecTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/j/jkolb/elecTauAnalysis/hists/")
 
 # import utility function to enable factorization
-from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeZtoElecTauPlots
+from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeZtoElecTauPlots
 enableFactorization_makeZtoElecTauPlots(process)
 
 process.makeZtoElecTauPlots = cms.Sequence(

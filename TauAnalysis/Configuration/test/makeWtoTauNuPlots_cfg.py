@@ -14,7 +14,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("EmptySource")
 
 # import utility function to enable factorization
-#from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeWtoTauNuPlots
+#from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeWtoTauNuPlots
 #enableFactorization_makeWtoTauNuPlots(process)
 
 process.makeWtoTauNuPlots = cms.Sequence( process.loadWtoTauNu

@@ -18,7 +18,7 @@ process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/vee
 #process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/l/lusito/ZtoMuTauAnalysis/")
 
 # import utility function to enable factorization
-from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeZtoMuTauPlots
+from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeZtoMuTauPlots
 enableFactorization_makeZtoMuTauPlots(process)
 
 process.makeZtoMuTauPlots = cms.Sequence(
