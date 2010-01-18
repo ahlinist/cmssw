@@ -9,9 +9,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.2 $
+  * \version $Revision: 1.7 $
   *
-  * $Id: GenericAnalyzer.h,v 1.2 2010/01/07 17:07:57 veelken Exp $
+  * $Id: GenericAnalyzer.h,v 1.7 2010/01/11 10:14:37 veelken Exp $
   *
   */
 
@@ -57,7 +57,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
 
   struct analysisSequenceEntry_filter : analysisSequenceEntry
   {
-    explicit analysisSequenceEntry_filter(const std::string&, const std::string&, const edm::ParameterSet&, int&);
+    explicit analysisSequenceEntry_filter(const std::string&, const std::string&, const edm::ParameterSet&, bool, int&);
     virtual ~analysisSequenceEntry_filter();
     void print() const;
     bool filter_cumulative(const edm::Event&, const edm::EventSetup&);
@@ -107,6 +107,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
   std::map<std::string, edm::ParameterSet> cfgFilters_;
   std::map<std::string, edm::ParameterSet> cfgAnalyzers_;
 
+  bool estimateSysUncertainties_;
   vstring systematics_;
   
   std::list<analysisSequenceEntry*> analysisSequence_;
