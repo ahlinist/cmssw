@@ -33,7 +33,7 @@ process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
-#from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_cfi import *
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_10TeV_cfi import *
 #--------------------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
 # + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-  + process.selectZtoMuTauEvents 
+  + process.selectZtoMuTauEvents
   + process.analyzeZtoMuTauEvents
   + process.saveZtoMuTauPlots
 )
@@ -139,12 +139,26 @@ from TauAnalysis.MCEmbeddingTools.tools.switchInputTags import switchInputTags
  
 #--------------------------------------------------------------------------------
 # import utility function for factorization
-from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoMuTau
+from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runZtoMuTau
 #
 # define "hook" for enabling/disabling factorization
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#factorization#
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for disabling estimation of systematic uncertainties
+#
+# NOTE: per default, estimation of systematic uncertainties is **enabled** per default
+#
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoMuTau
+#
+# define "hook" for keeping enabled/disabling estimation of systematic uncertainties
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#__#sysUncertainties#
+disableSysUncertainties_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
