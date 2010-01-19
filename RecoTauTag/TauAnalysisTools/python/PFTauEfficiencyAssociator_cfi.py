@@ -34,7 +34,34 @@ MuEnrichedQCDEffSources = add_eff_sources(prefix="fr",
 shrinkingConeMuEnrichedQCDAssociator = protoEffciencyAssociator.clone()
 shrinkingConeMuEnrichedQCDAssociator.efficiencySources = cms.PSet(
         MuEnrichedQCDEffSources,
-        filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/ppMuX_histograms.root")
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/ppmux_histograms.root")
+)
+
+DiJetHighPtEffSources = add_eff_sources(prefix="fr",
+        disc_configs=disc_configs.keys(), suffix="DiJetHighPtsim")
+
+shrinkingConeDiJetHighPt = protoEffciencyAssociator.clone()
+shrinkingConeDiJetHighPt.efficiencySources = cms.PSet(
+        DiJetHighPtEffSources,
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/dijet_highpt_histograms.root")
+)
+
+DiJetSecondPtEffSources = add_eff_sources(prefix="fr",
+        disc_configs=disc_configs.keys(), suffix="DiJetSecondPtsim")
+
+shrinkingConeDiJetSecondPt = protoEffciencyAssociator.clone()
+shrinkingConeDiJetSecondPt.efficiencySources = cms.PSet(
+        DiJetSecondPtEffSources,
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/dijet_secondpt_histograms.root")
+)
+
+WJetsEffSources = add_eff_sources(prefix="fr",
+        disc_configs=disc_configs.keys(), suffix="WJetssim")
+
+shrinkingConeWJets = protoEffciencyAssociator.clone()
+shrinkingConeWJets.efficiencySources = cms.PSet(
+        WJetsEffSources,
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/wjets_histograms.root")
 )
 
 ZTTEffSimSources = add_eff_sources(prefix="eff",
@@ -43,15 +70,27 @@ ZTTEffSimSources = add_eff_sources(prefix="eff",
 shrinkingConeZTTEffSimAssociator = protoEffciencyAssociator.clone()
 shrinkingConeZTTEffSimAssociator.efficiencySources = cms.PSet(
         ZTTEffSimSources,
-        filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/ZTT_histograms.root")
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/ztt_histograms.root")
 )
+
+associateTauFakeRates = cms.Sequence(shrinkingConeZTTEffSimAssociator*
+                                     shrinkingConeWJets*
+                                     shrinkingConeMuEnrichedQCDAssociator*
+                                     shrinkingConeDiJetHighPt*
+                                     shrinkingConeDiJetSecondPt)
    
 if __name__ == '__main__':
    # Print all the available efficiencies
+   fake_rates = [shrinkingConeZTTEffSimAssociator,
+                 shrinkingConeWJets,
+                 shrinkingConeMuEnrichedQCDAssociator,
+                 shrinkingConeDiJetHighPt,
+                 shrinkingConeDiJetSecondPt]
+
    my_pat_effs = cms.PSet()
-   build_pat_efficiency_loader(shrinkingConeZTTEffSimAssociator, 
-	 namespace=locals(), append_to=my_pat_effs)
-   build_pat_efficiency_loader(shrinkingConeMuEnrichedQCDAssociator, 
-	 namespace=locals(), append_to=my_pat_effs)
+   # Loop by index to avoid funny namespace stuff
+   for i in range(len(fake_rates)):
+       build_pat_efficiency_loader(
+           fake_rates[i], namespace=None, append_to=my_pat_effs)
    print my_pat_effs
 
