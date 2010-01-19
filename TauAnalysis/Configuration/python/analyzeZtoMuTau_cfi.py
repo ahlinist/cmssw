@@ -102,6 +102,12 @@ modelBinnerForMuTau = copy.deepcopy(modelBinner)
 modelBinnerForMuTau.pluginName = cms.string('modelBinnerForMuTau')
 modelBinnerForMuTau.srcGenFlag = cms.InputTag("isGenZtoMuTau")
 modelBinnerForMuTau.srcRecFlag = cms.InputTag("isRecZtoMuTau")
+modelBinnerForMuTau.dqmDirectory_store = cms.string('modelBinningResults')
+modelBinnerForMuTauWithinAcceptance = copy.deepcopy(modelBinner)
+modelBinnerForMuTauWithinAcceptance.pluginName = cms.string('modelBinnerForMuTauWithinAcceptance')
+modelBinnerForMuTauWithinAcceptance.srcGenFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
+modelBinnerForMuTauWithinAcceptance.srcRecFlag = cms.InputTag("isRecZtoMuTau")
+modelBinnerForMuTauWithinAcceptance.dqmDirectory_store = cms.string('modelBinningResultsWithinAcceptance')
 
 # import config for binning results
 # used to estimate systematic uncertainties
@@ -420,7 +426,8 @@ muTauAnalysisSequence = cms.VPSet(
             'pfMEtHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
-            'modelBinnerForMuTau'
+            'modelBinnerForMuTau',
+            'modelBinnerForMuTauWithinAcceptance'
         )
     ),
 
