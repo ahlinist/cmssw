@@ -18,7 +18,9 @@ ModelBinner::ModelBinner(const edm::ParameterSet& cfg)
   objValExtractorGen_ = ObjValVectorExtractorPluginFactory::get()->create("MultiObjValExtractor", cfgGenBinning);
 
   srcGenFlag_ = cfg.getParameter<edm::InputTag>("srcGenFlag");
+  //std::cout << " srcGenFlag = " << srcGenFlag_.label() << std::endl;
   srcRecFlag_ = cfg.getParameter<edm::InputTag>("srcRecFlag");
+  //std::cout << " srcRecFlag = " << srcRecFlag_.label() << std::endl;
 
   srcWeightGen_ = ( cfg.exists("genWeightSource") ) ?
     cfg.getParameter<edm::InputTag>("genWeightSource") : edm::InputTag();
