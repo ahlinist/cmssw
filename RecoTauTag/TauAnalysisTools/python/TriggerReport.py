@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+'''
+TriggerReport.py
+
+Author: Evan K. Friis, UC Davis (evan.friis@cern.ch)
+
+Utility to merge and manage multiple trigger reports from CMSSW log files.
+See ./TriggerReport.py for usage
+
+'''
 
 import re
 import itertools
@@ -103,6 +112,7 @@ class LogFileTriggerReport(object):
         for line in self.file:
             if self.grepper.match(line):
                 self.trigReport.append(line)
+        self.file.close()
 
     def paths(self):
         ''' Generator to return summary info for each path in the report '''
@@ -210,28 +220,47 @@ class TriggerReport(PathReport):
             for path in paths:
                 path.modules = [
                     module for module in logfile.modulesInPath(path.name)]
-            #check if we haven't added this path
-            if path.name not in self.paths.keys():
-                if not quiet:
-                    print "Adding path %s with %i sub-modules" % (path.name, len(path.modules))
-                self.paths[path.name] = path
-            # if it already exists, merge it w/ the existing one
-            else:
-                self.paths[path.name].absorb(path)
+                #check if we haven't added this path
+                if path.name not in self.paths.keys():
+                    if not quiet:
+                        print "Adding path %s with %i sub-modules" % (path.name, len(path.modules))
+                    self.paths[path.name] = path
+                # if it already exists, merge it w/ the existing one
+                else:
+                    self.paths[path.name].absorb(path)
 
 if __name__ == "__main__":
     from optparse import OptionParser                                                                                                                                                                       
-    parser = OptionParser()
+    usage = \
+'''%prog [options] logfile1 [logfile2, ... logfileN]
+
+Example: ./%prog -p "my_path" crab_output/res/CMSSW_*.stderr
+merges all the trigger reports in the log files listed, then prints out
+the step by step module efficiencies for path "my_path"
+'''
+    parser = OptionParser(usage)
     parser.add_option("-p", "--path", help="Print efficiencies for path")
     parser.add_option("-v", "--verbose", help="Print modules for which efficiency = 100%", action="store_true")
     parser.add_option("-l", "--list", help="List available paths", action="store_true")
+    parser.add_option("-d", "--debug", help="Debug output when parsing files", action="store_true")
 
     (options, args) = parser.parse_args()
+
+    # Require at least one option passed
+    if len(args) == 0:
+        parser.print_help()
+        sys.exit()
+
+    # If no path is specified, set list to true
+    if options.path is None:
+        options.list = True
 
     # Load files
     report = TriggerReport(name="report")
     for file in args:
-        report.addLogFile(file)
+        quiet = True
+        if options.debug: quiet = False
+        report.addLogFile(file, quiet)
 
     if options.list is not None:
         print "Available paths:"
@@ -246,5 +275,5 @@ if __name__ == "__main__":
         try:
             report.paths[options.path].efficiencyReport(printAll=options.verbose)
         except KeyError:
-            print "ERROR: path not found in list of available paths!"
+            print "ERROR: path %s not found in list of available paths!" % options.path
             sys.exit()

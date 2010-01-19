@@ -27,7 +27,7 @@ makeTauNtuple(process,
       matchingOption = "matched",
       matchingCollection = "trueHadronicTaus")
 
-process.path = cms.Path(process.buildTauNtuple)
+process.path = cms.Path(process.makeTruthCollections*process.buildTauNtuple)
 
 process.out = cms.OutputModule("PoolOutputModule",                                                                                                                                                        
       outputCommands = cms.untracked.vstring("drop *", "keep *_*NtupleProducer_*_*" ),

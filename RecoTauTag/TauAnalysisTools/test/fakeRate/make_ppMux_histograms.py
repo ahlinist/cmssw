@@ -1,8 +1,12 @@
 from RecoTauTag.TauAnalysisTools.fakeRate.makeHistograms import *
 
 import sys
+import os
 
 files = sys.argv[1:]
+
+#Filter non-existent files
+files[:] = [file for file in files if os.path.exists(file)]
 
 # Constant weights
 weights = [1 for file in files]
