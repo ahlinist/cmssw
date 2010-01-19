@@ -109,7 +109,7 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
 
   ++filterId_;
 
-  print();
+  //print();
 }
 
 GenericAnalyzer::analysisSequenceEntry_filter::~analysisSequenceEntry_filter()
