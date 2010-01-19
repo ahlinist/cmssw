@@ -95,14 +95,14 @@ edm::ServiceRegistry::createServicesFromConfig(std::string const& config) {
 }
 
 edm::ServiceToken 
-edm::ServiceRegistry::createSet(const std::vector<ParameterSet>& iPS)
+edm::ServiceRegistry::createSet(std::vector<ParameterSet>& iPS)
 {
    using namespace edm::serviceregistry;
    boost::shared_ptr<ServicesManager> returnValue(new ServicesManager(iPS));
    return edm::ServiceToken(returnValue);
 }
 edm::ServiceToken 
-edm::ServiceRegistry::createSet(const std::vector<ParameterSet>& iPS,
+edm::ServiceRegistry::createSet(std::vector<ParameterSet>& iPS,
                                 ServiceToken iToken,
                                 serviceregistry::ServiceLegacy iLegacy)
 {

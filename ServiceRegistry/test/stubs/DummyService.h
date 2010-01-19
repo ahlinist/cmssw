@@ -25,6 +25,10 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 
+namespace edm {
+  class ConfigurationDescriptions;
+}
+
 // forward declarations
 namespace testserviceregistry {
    class DummyService
@@ -38,7 +42,10 @@ namespace testserviceregistry {
       int value() const { return value_; }
       
       bool beginJobCalled() const {return beginJobCalled_;}
+
       // ---------- static member functions --------------------
+
+      static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
       // ---------- member functions ---------------------------
 

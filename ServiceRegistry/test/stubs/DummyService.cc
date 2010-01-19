@@ -15,6 +15,8 @@
 
 // user include files
 #include "FWCore/ServiceRegistry/test/stubs/DummyService.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 
 //
 // constants, enums and typedefs
@@ -24,6 +26,16 @@ using namespace testserviceregistry;
 //
 // static data member definitions
 //
+
+void
+DummyService::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+
+    edm::ParameterSetDescription desc;
+
+    desc.add<int>("value");
+
+    descriptions.addDefault(desc);
+}
 
 //
 // constructors and destructor

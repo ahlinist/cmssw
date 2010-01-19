@@ -30,11 +30,15 @@
 
 
 namespace edm {
+   class ConfigurationDescriptions;
+
    namespace service {
       class Tracer {
 public:
          Tracer(const ParameterSet&,ActivityRegistry&);
          
+         static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
+
          void postBeginJob();
          void postEndJob();
          

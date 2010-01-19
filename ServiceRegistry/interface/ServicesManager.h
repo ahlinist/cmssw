@@ -46,19 +46,19 @@ namespace edm {
 public:
          struct MakerHolder {
             MakerHolder(boost::shared_ptr<ServiceMakerBase> iMaker,
-                        const edm::ParameterSet& iPSet,
+                        edm::ParameterSet& iPSet,
                         edm::ActivityRegistry&) ;
             bool add(ServicesManager&) const;
             
             boost::shared_ptr<ServiceMakerBase> maker_;
-            const edm::ParameterSet* pset_;
+            edm::ParameterSet* pset_;
             edm::ActivityRegistry* registry_;
             mutable bool wasAdded_;
          };
          typedef std::map< TypeIDBase, boost::shared_ptr<ServiceWrapperBase> > Type2Service;
          typedef std::map< TypeIDBase, MakerHolder > Type2Maker;
          
-         ServicesManager(const std::vector<edm::ParameterSet>& iConfiguration);
+         ServicesManager(std::vector<edm::ParameterSet>& iConfiguration);
 
          /** Takes the services described by iToken and places them into the manager.
              Conflicts over Services provided by both the iToken and iConfiguration 
@@ -66,7 +66,7 @@ public:
          */
          ServicesManager(ServiceToken iToken,
                          ServiceLegacy iLegacy,
-                         const std::vector<edm::ParameterSet>& iConfiguration);
+                         std::vector<edm::ParameterSet>& iConfiguration);
 
          ~ServicesManager();
          
@@ -149,7 +149,7 @@ private:
          
          const ServicesManager& operator=(const ServicesManager&); // stop default
          
-         void fillListOfMakers(const std::vector<edm::ParameterSet>&);
+         void fillListOfMakers(std::vector<edm::ParameterSet>&);
          void createServices();
 
          // ---------- member data --------------------------------
