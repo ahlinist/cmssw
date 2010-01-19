@@ -48,11 +48,21 @@ void ModelBinning::bin(const std::vector<double>& x, double weight)
 void ModelBinning::bin(const std::vector<double>& xRec, bool passesRec, double weightRec,
 		       const std::vector<double>& xGen, bool passesGen, double weightGen)
 {
+  //std::cout << "<ModelBinning::bin>:" << std::endl;
+  //std::cout << " passesRec = " << passesRec << std::endl;
+  //std::cout << " weightRec = " << weightRec << std::endl;
+  //std::cout << " passesGen = " << passesGen << std::endl;
+  //std::cout << " weightGen = " << weightGen << std::endl;
+
   int recBin = binGrid_->binNumber(xRec);
   bool inRec = ( recBin >= 0 && recBin < (int)numBins_ ) ? true : false;
+  //std::cout << " recBin = " << recBin << std::endl;
+  //std::cout << " inRec = " << inRec << std::endl;
 
   int genBin = binGrid_->binNumber(xGen);
   bool inGen = ( genBin >= 0 && genBin < (int)numBins_ ) ? true : false;
+  //std::cout << " genBin = " << genBin << std::endl;
+  //std::cout << " inGen = " << inGen << std::endl;
 
   if ( passesRec && inRec ) binEntries_[recBin].rec_ += weightRec;  
   if ( passesGen && inGen ) binEntries_[genBin].gen_ += weightGen;
