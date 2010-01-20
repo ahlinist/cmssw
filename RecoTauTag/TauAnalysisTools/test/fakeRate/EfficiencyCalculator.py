@@ -117,9 +117,12 @@ if __name__ == "__main__":
       print "and stores the result in [histogram]_efficiency \n \n Usage: ./EfficiencyCalculator.py [files]"
 
    for file in files:
-      tfile = TFile.Open(file, "UPDATE")
-      tfile.cd()
-      divideAllNumerators(gDirectory)
-      tfile.Write()
+       if file == '-b':
+           continue
+       tfile = TFile.Open(file, "UPDATE")
+       tfile.cd()
+       divideAllNumerators(gDirectory)
+       tfile.Write()
+       tfile.Close()
 
 
