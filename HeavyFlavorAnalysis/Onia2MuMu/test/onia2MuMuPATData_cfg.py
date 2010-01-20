@@ -98,21 +98,21 @@ process.p = cms.Path(
         process.primaryVertexFilter +
         process.scrapingFilter +
         process.patMuonSequence +     # produce PAT muons for Onia2MuMu (includes merging with CaloMuons)
-        process.onia2MuMuPatTrkTrk +  # make J/Psi's (inclusively down to tracker+tracker)
-        process.selectedEvents        # select events with J/Psi's
+        process.onia2MuMuPatTrkTrk   # make J/Psi's (inclusively down to tracker+tracker)
+        #process.selectedEvents        # select events with J/Psi's
 )
 
 
 ### output
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('PAT_promptJPsi_STARTUP_10TeV.root'),
+    fileName = cms.untracked.string('BeamCommissioning09_BSCNOBEAMHALO_Dec19thSkim_336p3.root'),
     outputCommands = cms.untracked.vstring('drop *',
         'keep edmTriggerResults_TriggerResults_*_*',
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',
         'keep patCompositeCandidates_*__SkimmingOnia2MuMuPAT'
     ),
     ## Uncomment to activate skimming!
-    # SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
+    SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
 )
 process.e = cms.EndPath(process.out)
 
