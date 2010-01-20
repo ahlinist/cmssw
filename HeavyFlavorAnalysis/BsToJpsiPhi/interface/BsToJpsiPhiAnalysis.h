@@ -80,6 +80,7 @@ private:
 	edm::InputTag muonTag_; 
 	bool StoreDeDxInfo_;
 	bool saveDoubleMu3TriggeredOnly_;
+	bool verbose_;
 
 	const double nominalJpsiMass;
 	const double nominalPhiMass;
