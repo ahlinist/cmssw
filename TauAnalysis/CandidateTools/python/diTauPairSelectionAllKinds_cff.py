@@ -6,7 +6,6 @@ from TauAnalysis.CandidateTools.muTauPairSelection_cfi import *
 from TauAnalysis.CandidateTools.diTauPairSelection_cfi import *
 
 from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
-from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 
 #--------------------------------------------------------------------------------
 # define selection criteria for e + mu pairs
@@ -28,7 +27,6 @@ patElecMuPairSelConfigurator = objSelConfigurator(
       selectedElecMuPairsMt2MET,
       selectedElecMuPairsPzetaDiff ],
     src = "allElecMuPairs",
-    #systematics = elecMuPairSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -50,7 +48,6 @@ patElecMuPairSelConfiguratorLooseElectronIsolation = objSelConfigurator(
       selectedElecMuPairsMt2METlooseElectronIsolation,
       selectedElecMuPairsPzetaDiffLooseElectronIsolation ],
     src = "allElecMuPairsLooseElectronIsolation",
-    #systematics = elecMuPairSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -75,7 +72,6 @@ patElecTauPairSelConfigurator = objSelConfigurator(
       selectedElecTauPairsMt1MET,
       selectedElecTauPairsPzetaDiff ],
     src = "allElecTauPairs",
-    #systematics = elecTauPairSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -95,7 +91,6 @@ patElecTauPairSelConfiguratorLooseElectronIsolation = objSelConfigurator(
       selectedElecTauPairsMt1METlooseElectronIsolation,
       selectedElecTauPairsPzetaDiffLooseElectronIsolation ],
     src = "allElecTauPairsLooseElectronIsolation",
-    #systematics = elecTauPairSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -120,7 +115,6 @@ patMuTauPairSelConfigurator = objSelConfigurator(
       selectedMuTauPairsMt1MET,
       selectedMuTauPairsPzetaDiff ],
     src = "allMuTauPairs",
-    systematics = muTauPairSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -153,7 +147,6 @@ patMuTauPairSelConfiguratorLooseMuonIsolation = objSelConfigurator(
       selectedMuTauPairsMt1METlooseMuonIsolation,
       selectedMuTauPairsPzetaDiffLooseMuonIsolation ],
     src = "allMuTauPairsLooseMuonIsolation",
-    systematics = muTauPairSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -174,7 +167,6 @@ patDiTauPairSelConfigurator = objSelConfigurator(
       selectedDiTauPairsAcoplanarity,
       selectedDiTauPairsZeroCharge ],
     src = "selectedDiTauPairs2ndTauChargeCumulative",
-    #systematics = diTauPairSystematics,
     pyModuleName = __name__,
     doSelIndividual = True
 )
