@@ -10,7 +10,7 @@ outputDirectory = "/castor/cern.ch/user/g/gfball/tauanalysis/bbAHtoElecTau/"
 
 # small cmsRun job for testing purposes...
 #submitToBatch(configFile = "runbbAHtoElecTau_cfg.py", channel = "bbAHtoElecTau", sample = "Ztautau",
-#              replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 100; applyFactorization = false",
+#              replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 100; applyFactorization = false; estimateSysUncertainties = false",
 #              job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
 
 #--------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ outputDirectory = "/castor/cern.ch/user/g/gfball/tauanalysis/bbAHtoElecTau/"
 #        see https://twiki.cern.ch/twiki/bin/view/CMS/CMSUKCMSSWBatch for details about the CERN batch system)           
 #
 #--------------------------------------------------------------------------------
-#submitToBatch(configFile = "runbbAHtoElecTau_cfg.py", channel = "bbAHtoElecTau", sample = 'Ztautau_part01',                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 100; applyFactorization = false",job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
+#submitToBatch(configFile = "runbbAHtoElecTau_cfg.py", channel = "bbAHtoElecTau", sample = 'Ztautau_part01',                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 100; applyFactorization = false; estimateSysUncertainties = false",job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
 
 
 samples = [
@@ -55,11 +55,11 @@ for s in samples:
     s = (s[0],s[1],-1)
   if s[1]==-1:
     submitToBatch(configFile = "runbbAHtoElecTau_cfg.py", channel = "bbAHtoElecTau", sample = s[0],
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = %d; applyFactorization = false"%s[2],
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = %d; applyFactorization = false; estimateSysUncertainties = false"%s[2],
                   job = "analysis", queue = "8nh", outputDirectory = outputDirectory)
   else:
     for p in range(1,s[1]+1):
       submitToBatch(configFile = "runbbAHtoElecTau_cfg.py", channel = "bbAHtoElecTau", sample = "%s_part%02d"%(s[0],p),
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = %d; applyFactorization = false"%s[2],
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = %d; applyFactorization = false; estimateSysUncertainties = false"%s[2],
                   job = "analysis", queue = "8nh", outputDirectory = outputDirectory)
 

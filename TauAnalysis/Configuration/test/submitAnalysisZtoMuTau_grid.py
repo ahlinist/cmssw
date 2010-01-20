@@ -16,5 +16,5 @@ submitToGrid(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
              dbs_name = "/Ztautau/sunil-Summer08_Skim-411de0fd9a45f2e9090c88c36bde639d/USER",
              dbs_url = "http://cmsdbsprod.cern.ch/cms_dbs_prod_local_09/servlet/DBSServlet",             
              replFunction = makeReplacementsAnalysis, replacements =
-             "maxEvents = 100; eventsPerJob = 20000; applyFactorization = false",
+             "maxEvents = 100; eventsPerJob = 20000; applyFactorization = false; estimateSysUncertainties = false",
              outputFiles = [ plotsOutputFileNameZtoElecMu_Ztautau ], outputDirectory = outputDirectory)
