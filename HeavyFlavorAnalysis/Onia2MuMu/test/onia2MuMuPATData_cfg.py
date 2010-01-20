@@ -11,17 +11,18 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 ### global tag
-process.GlobalTag.globaltag = "MC_3XY_V15::All"
+process.GlobalTag.globaltag = "GR09_R_V5:All"
 
 ### source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-	'/store/relval/CMSSW_3_3_6/RelValJpsiMM/GEN-SIM-RECO/STARTUP3X_V8H-v1/0009/905182A6-9EE4-DE11-8862-0026189438F4.root',
-	'/store/relval/CMSSW_3_3_6/RelValJpsiMM/GEN-SIM-RECO/STARTUP3X_V8H-v1/0008/D6A36332-35E4-DE11-BC59-00304867BECC.root',
-	'/store/relval/CMSSW_3_3_6/RelValJpsiMM/GEN-SIM-RECO/STARTUP3X_V8H-v1/0008/AE159A65-36E4-DE11-A0BA-0026189438A5.root',
-	'/store/relval/CMSSW_3_3_6/RelValJpsiMM/GEN-SIM-RECO/STARTUP3X_V8H-v1/0008/789D3223-34E4-DE11-AA97-001A92810AEE.root',
-	'/store/relval/CMSSW_3_3_6/RelValJpsiMM/GEN-SIM-RECO/STARTUP3X_V8H-v1/0008/464893C0-35E4-DE11-B22F-0030486791C6.root',
-    )
+         '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/FCFEFB8D-E0F0-DE11-A01D-0015178C6B88.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/F8269247-E0F0-DE11-9431-00151796D9C4.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/F4E10D24-E0F0-DE11-870D-0024E8767DAD.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/EAFCDCA2-E0F0-DE11-AF3D-0015178C6B8C.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/E2F75B8B-E0F0-DE11-8435-0024E8768D34.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/DE4AFC37-E0F0-DE11-A291-001D0967DC3D.root'
+   )
 )
 
 ### number of events
@@ -116,9 +117,9 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.e = cms.EndPath(process.out)
 
 ## If this is real data:
-#from HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cff import onia2MuMu_isNotMC
-#onia2MuMu_isNotMC(process)
-#process.source.inputCommands = cms.untracked.vstring("keep *", "drop *_genParticles_*_*")
+from HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cff import onia2MuMu_isNotMC
+onia2MuMu_isNotMC(process)
+process.source.inputCommands = cms.untracked.vstring("keep *", "drop *_genParticles_*_*")
 
 ## If this is Summer09 MC
 #process.patTrigger.processName    = "HLT8E29" 
