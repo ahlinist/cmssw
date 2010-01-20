@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 import copy
 import sys
 
-from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
+from TauAnalysis.CandidateTools.tools.getInstanceName import getInstanceName
+from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
 
 #--------------------------------------------------------------------------------
 # utility function for configuring BoolEventSelFlagProducer modules
@@ -42,7 +43,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
                 if sysName is None:
                     setattr(selector_i, "src", src_i[0])
                 else:
-                    setattr(selector_i, "src", objSelConfigurator._composeModuleName(src_i[0], sysName))
+                    setattr(selector_i, "src", composeModuleName(src_i[0], sysName))
                 if len(src_i) >= 2 : setattr(selector_i, "instanceName", cms.string(src_i[1]))
                 selectors.append(selector_i)
 
@@ -60,7 +61,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
             if sysName is None:
                 setattr(module, "src", src[0])
             else:
-                setattr(module, "src", cms.InputTag(objSelConfigurator._composeModuleName(src[0].value(), sysName)))
+                setattr(module, "src", cms.InputTag(composeModuleName(src[0].value(), sysName)))
             if len(src) >= 2 : setattr(module, "instanceName", cms.string(src[1]))
 
         # set module attributes
@@ -68,7 +69,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
         if sysName is None:
             moduleName = objSelItem.pluginName.value()
         else:
-            moduleName = objSelConfigurator._composeModuleName(objSelItem.pluginName.value(), sysName)
+            moduleName = composeModuleName(objSelItem.pluginName.value(), sysName)
         module.setLabel(moduleName)
                
         # register module in global python name-space
