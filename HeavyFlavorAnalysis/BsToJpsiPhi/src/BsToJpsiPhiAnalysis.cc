@@ -303,6 +303,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	std::cout<<"******MUONS HAVE OPPOSITE CHARGE: mu1.charge() = " << mu1.charge()
 		 <<"  mu2.charge() = " << mu2.charge() << std::endl;
       }
+
+      if(!muon::isGoodMuon(mu1, muon::TM2DCompatibilityTight)) continue;
+      if(!muon::isGoodMuon(mu2, muon::TM2DCompatibilityTight)) continue;
+      
       // passed opposite sign cut
       if(bsRootTree_->iPassedCutIdent_   < 1 ) bsRootTree_->iPassedCutIdent_ = 1 ;
       if(bsRootTree_->iPassedCutIdentBd_   < 1 ) bsRootTree_->iPassedCutIdentBd_ = 1 ;
