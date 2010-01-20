@@ -16,9 +16,9 @@ void findDaughters(const reco::GenParticle*, std::vector<const reco::GenParticle
 
 bool isNeutrino(const reco::GenParticle*);
 
-reco::Candidate::LorentzVector getVisMomentum(const std::vector<const reco::GenParticle*>&, int = +1);
+reco::Candidate::LorentzVector getVisMomentum(const std::vector<const reco::GenParticle*>&, int = 1);
 reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle*, const reco::GenParticleCollection*);
-reco::Candidate::LorentzVector getInvisMomentum(const std::vector<const reco::GenParticle*>&, int = +1);
+reco::Candidate::LorentzVector getInvisMomentum(const std::vector<const reco::GenParticle*>&, int = 1);
 reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle*, const reco::GenParticleCollection*);
 
 double getPhysX(double x, bool& isWithinPhysRange);
