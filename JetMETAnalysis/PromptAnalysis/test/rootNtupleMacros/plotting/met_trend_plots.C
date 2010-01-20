@@ -89,10 +89,10 @@ void overlay_trend_plots(const string& fFile0, const string& fFile1, const strin
    h[0]->GetYaxis()->SetTitle(g[0]->GetYaxis()->GetTitle());
    h[0]->GetXaxis()->SetLabelSize(0.035);
    h[0]->SetLineStyle(2);
-   h[0]->SetLineWidth(3);
+   h[0]->SetLineWidth(2);
    h[0]->SetLineColor(kRed);
    h[0]->Draw("EL");
-   h[1]->SetLineWidth(3);
+   h[1]->SetLineWidth(2);
    h[1]->SetLineColor(kGreen+2);
    h[1]->Draw("ELsame");
    
@@ -143,12 +143,12 @@ void makePlots() {
 //    overlay_trend_plots(all_runs_900, good_runs_900, "g_calometPyMean_vs_run", "CaloMETy  #mu vs. Run (900 GeV)", "calometPyMean_vs_run_900GeV.png");
 //    overlay_trend_plots(all_runs_900, good_runs_900, "g_calometPySigma_vs_run", "CaloMETy  #sigma vs. Run (900 GeV)", "calometPySigma_vs_run_900GeV.png");
 
-   overlay_trend_plots(all_runs, good_runs, "g_caloSumetMean_vs_run", "CaloSumET Mean vs. Run", "caloSumetMean_vs_run.png");
-   overlay_trend_plots(all_runs, good_runs, "g_caloSumetRMS_vs_run", "CaloSumET RMS vs. Run", "caloSumetRMS_vs_run.png");
-   overlay_trend_plots(all_runs, good_runs, "g_calometPtMean_vs_run", "CaloMET Mean vs. Run", "calometPtMean_vs_run.png");
-   overlay_trend_plots(all_runs, good_runs, "g_calometPtRMS_vs_run", "CaloMET RMS vs. Run", "calometPtRMS_vs_run.png");
-   overlay_trend_plots(all_runs, good_runs, "g_calometPxMean_vs_run", "CaloMETx  #mu vs. Run", "calometPxMean_vs_run.png");
-   overlay_trend_plots(all_runs, good_runs, "g_calometPxSigma_vs_run", "CaloMETx  #sigma vs. Run", "calometPxSigma_vs_run.png");
-   overlay_trend_plots(all_runs, good_runs, "g_calometPyMean_vs_run", "CaloMETy  #mu vs. Run", "calometPyMean_vs_run.png");
-   overlay_trend_plots(all_runs, good_runs, "g_calometPySigma_vs_run", "CaloMETy  #sigma vs. Run", "calometPySigma_vs_run.png");
+   overlay_trend_plots(all_runs, good_runs, "g_caloSumetMean_vs_run", "CaloSumET Mean vs. Run", "caloSumetMean_vs_run.eps");
+   overlay_trend_plots(all_runs, good_runs, "g_caloSumetRMS_vs_run", "CaloSumET RMS vs. Run", "caloSumetRMS_vs_run.eps");
+   overlay_trend_plots(all_runs, good_runs, "g_calometPtMean_vs_run", "CaloMET Mean vs. Run", "calometPtMean_vs_run.eps");
+   overlay_trend_plots(all_runs, good_runs, "g_calometPtRMS_vs_run", "CaloMET RMS vs. Run", "calometPtRMS_vs_run.eps");
+   overlay_trend_plots(all_runs, good_runs, "g_calometPxMean_vs_run", "CaloMETx #mu vs. Run", "calometPxMean_vs_run.eps");
+   overlay_trend_plots(all_runs, good_runs, "g_calometPxSigma_vs_run", "CaloMETx #sigma vs. Run", "calometPxSigma_vs_run.eps");
+   overlay_trend_plots(all_runs, good_runs, "g_calometPyMean_vs_run", "CaloMETy #mu vs. Run", "calometPyMean_vs_run.eps");
+   overlay_trend_plots(all_runs, good_runs, "g_calometPySigma_vs_run", "CaloMETy #sigma vs. Run", "calometPySigma_vs_run.eps");
 }
