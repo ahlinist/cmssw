@@ -119,6 +119,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorAgainstMuons_;
 
   MonitorElement* hTauRecDecayMode_;
+  MonitorElement* hTauRecVsGenDecayMode_;
 
   MonitorElement* hTauTaNCoutputOneProngNoPi0s_;
   MonitorElement* hTauTaNCoutputOneProngOnePi0_;

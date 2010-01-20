@@ -124,6 +124,53 @@ TauHistManager::~TauHistManager()
   }
 }
 
+void setAxisLabelsGenTauDecayMode(TAxis* axis)
+{
+  // set labels for generated tau decay modes
+  // ( as defined in PhysicsTools/JetMCUtils/src/JetMCTag.cc )
+  //
+  // NOTE: bin numbers start at 1 (not 0) !!
+  //
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecaysElectron, "electron");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecayMuon, "muon");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero, "oneProng0Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero, "oneProng1Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero, "oneProng2Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion4PiZero, "oneProngOther");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero, "threeProng0Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero, "threeProng1Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero, "threeProngOther");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecayOther, "rare");
+}
+
+
+void setAxisLabelsRecTauDecayMode(TAxis* axis)
+{
+  // set labels for reconstructed tau decay modes
+  // ( as defined in DataFormats/TauReco/interface/PFTauDecayMode.h )
+  //
+  // NOTE: bin numbers start at 1 (not 0) !!
+  //
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecaysElectron, "electron");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecayMuon, "muon");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero, "oneProng0Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero, "oneProng1Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero, "oneProng2Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion3PiZero, "oneProng3Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion4PiZero, "oneProng4Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay2ChargedPion0PiZero, "twoProng0Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay2ChargedPion1PiZero, "twoProng1Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay2ChargedPion2PiZero, "twoProng2Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay2ChargedPion3PiZero, "twoProng3Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay2ChargedPion4PiZero, "twoProng4Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero, "threeProng0Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero, "threeProng1Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion2PiZero, "threeProng2Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion3PiZero, "threeProng3Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero, "threeProng4Pi0");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecayOther, "other");
+}
+
 void TauHistManager::bookHistogramsImp()
 {
   //std::cout << "<TauHistManager::bookHistogramsImp>:" << std::endl;
@@ -147,19 +194,7 @@ void TauHistManager::bookHistogramsImp()
   
   hTauMatchingGenParticlePdgId_ = book1D("TauMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
   hTauMatchingGenTauDecayMode_ = book1D("TauMatchingGenTauDecayMode", "matching gen. Tau decay mode", 20, -0.5, 19.5);
-  // CV: set labels for gen. tau decay modes
-  //     as defined in PhysicsTools/JetMCUtils/src/JetMCTag.cc
-  TAxis* xAxisTauMatchingGenTauDecayMode = hTauMatchingGenTauDecayMode_->getTH1()->GetXaxis();
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(2, "electron");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(4, "muon");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(6, "oneProng0Pi0");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(7, "oneProng1Pi0");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(8, "oneProng2Pi0");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(9, "oneProngOther");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(11, "threeProng0Pi0");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(12, "threeProng1Pi0");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(13, "threeProngOther");
-  xAxisTauMatchingGenTauDecayMode->SetBinLabel(15, "rare");
+  setAxisLabelsGenTauDecayMode(hTauMatchingGenTauDecayMode_->getTH1()->GetXaxis());
   
   hTauNumTracksSignalCone_ = book1D("TauNumTracksSignalCone", "Tracks in Signal Cone", 10, -0.5, 9.5);
   hTauNumTracksIsoCone_ = book1D("TauNumTracksIsoCone", "Tracks in Isolation Cone", 20, -0.5, 19.5);
@@ -192,8 +227,12 @@ void TauHistManager::bookHistogramsImp()
   hTauDiscriminatorAgainstMuons_ = book1D("TauDiscriminatorAgainstMuons", 
 					  "Discriminator against Muons", 102, -0.01, 1.01);
   
-  hTauRecDecayMode_ = book1D("TauRecDecayMode", "decayMode()", 25, -0.5, 24.5);
-  
+  hTauRecDecayMode_ = book1D("TauRecDecayMode", "rec. Tau decay mode", 20, -0.5, 19.5);
+  setAxisLabelsRecTauDecayMode(hTauRecDecayMode_->getTH1()->GetXaxis());
+  hTauRecVsGenDecayMode_ = book2D("TauRecVsGenDecayMode", "rec. vs. gen. Tau decay mode", 20, -0.5, 19.5, 20, -0.5, 19.5);
+  setAxisLabelsGenTauDecayMode(hTauRecVsGenDecayMode_->getTH1()->GetXaxis());
+  setAxisLabelsRecTauDecayMode(hTauRecVsGenDecayMode_->getTH1()->GetYaxis());
+
   hTauTaNCoutputOneProngNoPi0s_ = book1D("TauTaNCoutputOneProngNoPi0s", 
 					 "TauTaNCoutputOneProngNoPi0s", 102, -0.01, 1.01); 
   hTauTaNCoutputOneProngOnePi0_ = book1D("TauTaNCoutputOneProngOnePi0", 
@@ -401,6 +440,10 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   
     int tauDecayMode = patTau->decayMode();
     hTauRecDecayMode_->Fill(tauDecayMode, weight);
+    if ( patTau->genJet() != 0 ) {
+      TH2* tauRecVsGenDecayMode_th2 = dynamic_cast<TH2*>(hTauRecVsGenDecayMode_->getTH1());
+      tauRecVsGenDecayMode_th2->Fill(JetMCTagUtils::genTauDecayMode(*patTau->genJet()).data(), tauDecayMode, weight);
+    }
 
     static std::map<std::string, bool> discrAvailability_hasBeenChecked;
     fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrOnePercent_, *patTau, "byTaNCfrOnePercent", 
