@@ -113,6 +113,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
   BdLowerMassCutAfterFit_ = iConfig.getParameter<double>("BdLowerMassCutAfterFit");
   BdUpperMassCutAfterFit_ = iConfig.getParameter<double>("BdUpperMassCutAfterFit");
 
+  verbose_                = iConfig.getParameter<bool>("verbose");
   outputFile_ = iConfig.getUntrackedParameter<std::string>("outputFile");
 
   edm::LogInfo("RecoVertex/BsToJpsiPhiAnalysis")<< "Initializing Bs to Jpsi Phi analyser  - Output file: " << outputFile_ <<"\n";
@@ -206,14 +207,23 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   
   bsRootTree_->getVtx(BSx,BSy,BSz,PVx,PVy,PVz,PVerrx,PVerry,PVerrz);
   
+  if(verbose_ == true){
+    std::cout<<"Beam Spot (x,y,z) = ("<< BSx << ", "<< BSy << ", "<< BSz 
+	     << ")  Primary Vtx = (" << PVx <<" ," << PVy << " ," <<PVz<< ")"<< std::endl;  
+  }
+
   /////////////////////////////////    
   // MC info 
   /////////////////////////////////
-  edm::Handle<GenParticleCollection> genParticles;
-  iEvent.getByLabel(thegenParticlesLabel_ , genParticles );
   
-  // call function which does the job: filling MC info
-  fillMCInfo(genParticles);
+  edm::Handle<GenParticleCollection> genParticles;
+  
+  if(thegenParticlesLabel_.label() != "" ){
+    iEvent.getByLabel(thegenParticlesLabel_ , genParticles );
+    
+    // call function which does the job: filling MC info
+    fillMCInfo(genParticles);
+  }
   
   //////////////////////////////////
   //
@@ -265,6 +275,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::Handle<reco::MuonCollection> allmuons;
   iEvent.getByLabel(muonTag_,allmuons);
   
+  if(verbose_==true){
+    if(allmuons->size()>0){
+      std::cout<<"******found number of muons = "<< allmuons->size() << std::endl;
+    }
+  }
   
   // variables to determine minima of fit probability
   double minVtxP = -99.;   //KK hypothesis
@@ -278,7 +293,16 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       const Muon & mu2 = (*allmuons)[j];
       if(!mu2.isGlobalMuon() && !mu2.isTrackerMuon()) continue;
       
+      if(verbose_==true){
+	std::cout<<"******mu1.isGlobalMuon() == " <<mu1.isGlobalMuon()<<"  mu1.isTrackerMuon() == " <<mu1.isTrackerMuon()
+		 <<"  mu2.isGlobalMuon() == " <<mu2.isGlobalMuon()<<"  mu2.isTrackerMuon() == " <<mu2.isTrackerMuon()<<std::endl;
+      }
+
       if(mu1.charge()==mu2.charge()) continue;
+      if(verbose_==true){
+	std::cout<<"******MUONS HAVE OPPOSITE CHARGE: mu1.charge() = " << mu1.charge()
+		 <<"  mu2.charge() = " << mu2.charge() << std::endl;
+      }
       // passed opposite sign cut
       if(bsRootTree_->iPassedCutIdent_   < 1 ) bsRootTree_->iPassedCutIdent_ = 1 ;
       if(bsRootTree_->iPassedCutIdentBd_   < 1 ) bsRootTree_->iPassedCutIdentBd_ = 1 ;
@@ -289,6 +313,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       AddFourMomenta addP4;
       addP4.set(Jpsi);
       
+      if(verbose_==true){
+	std::cout<<"******Di-Muon Mass = " << Jpsi.mass() << std::endl;
+      }
+
       if ( abs(Jpsi.mass()- nominalJpsiMass ) > JpsiMassWindowBeforeFit_ || Jpsi.pt() < JpsiPtCut_) continue;
       // passed jpsi mass and pt cut
       if(bsRootTree_->iPassedCutIdent_   < 2 ) bsRootTree_->iPassedCutIdent_ = 2 ;
@@ -307,6 +335,9 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       TransientVertex tv = kvf.vertex(trk_all);
       
       if (!tv.isValid()) continue; 
+      if(verbose_==true){
+	std::cout<<"****** MUONS HAVE VALID VERTEX FIT"<< std::endl;
+      }
       // valid jpsi vertex
       if(bsRootTree_->iPassedCutIdent_   < 3 ) bsRootTree_->iPassedCutIdent_ = 3 ;
       if(bsRootTree_->iPassedCutIdentBd_   < 3 ) bsRootTree_->iPassedCutIdentBd_ = 3 ;
@@ -777,7 +808,6 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bool K2Truth = MCmatching( track2, genParticles, bsRootTree_->K2mcId_, bsRootTree_->K2momId_, bsRootTree_->K2gmomId_, 333, 531);
 	      bool Mu1Truth= MCmatching( mu1,    genParticles, bsRootTree_->Mu1mcId_,bsRootTree_->Mu1momId_,bsRootTree_->Mu1gmomId_, 443, 531);
 	      bool Mu2Truth= MCmatching( mu2,    genParticles, bsRootTree_->Mu2mcId_,bsRootTree_->Mu2momId_,bsRootTree_->Mu2gmomId_, 443, 531);
-	      
 	      if (K1Truth==1 && K2Truth==1 && Mu1Truth==1 & Mu2Truth==1)  bsRootTree_->isMatched_ = 1;
 	      else bsRootTree_->isMatched_ = 0;
 	    }
@@ -1333,6 +1363,7 @@ void BsToJpsiPhiAnalysis::setFitParHyp2(RefCountedKinematicTree& myTree)
 bool  BsToJpsiPhiAnalysis::MCmatching(const Candidate & track1,  edm::Handle<GenParticleCollection> & genParticles,
 				      int &K1mcId, int &K1momId, int &K1gmomId,
 				      int condMom, int condGMom){
+  if(thegenParticlesLabel_.label() == "" ) return 0;
   bool K1Truth = 0;
   double MinDRK=999.;
   
