@@ -153,12 +153,15 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 # NOTE: per default, estimation of systematic uncertainties is **enabled** per default
 #
 from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoMuTau
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runZtoMuTau
 #
 # define "hook" for keeping enabled/disabling estimation of systematic uncertainties
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
-#__#sysUncertainties#
-disableSysUncertainties_runZtoMuTau(process)
+#__#systematics#
+if not hasattr(process, "batchMode"):
+    disableSysUncertainties_runZtoMuTau(process)
+    #enableSysUncertainties_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
