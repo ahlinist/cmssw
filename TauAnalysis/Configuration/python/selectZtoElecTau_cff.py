@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from TauAnalysis.RecoTools.eventSelFlagProdConfigurator import *
+from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 #--------------------------------------------------------------------------------
 # define event selection criteria for Z --> e + tau-jet channel

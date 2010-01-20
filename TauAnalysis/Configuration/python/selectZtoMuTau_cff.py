@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from TauAnalysis.RecoTools.eventSelFlagProdConfigurator import *
+from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 
 #--------------------------------------------------------------------------------
