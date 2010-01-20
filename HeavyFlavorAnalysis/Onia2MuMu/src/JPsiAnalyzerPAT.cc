@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.15 2010/01/11 14:08:28 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.16 2010/01/13 14:52:25 covarell Exp $
 //
 //
 
@@ -245,6 +245,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       // limits 
       float JpsiMassMin;
       float JpsiMassMax;
+      float JpsiMassMinSide;
+      float JpsiMassMaxSide;
       float JpsiCtMin;
       float JpsiCtMax;
       float JpsiPtMin;           // SET BY 
@@ -286,6 +288,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
 
   JpsiMassMin = 2.6;
   JpsiMassMax = 3.6;
+  JpsiMassMinSide = 2.0;
+  JpsiMassMaxSide = 4.0;
   JpsiCtMin = -1.0;
   JpsiCtMax = 3.5;
 
@@ -410,9 +414,9 @@ JPsiAnalyzerPAT::beginJob()
   // book histos
 
   // trigger passed 
-  QQMass2Glob_passmu3              = new TH1F("QQMass2Glob_passmu3",  "Invariant mass (2 global muons)", 100, 2.,4.);
-  QQMass1Glob1Trk_passmu3          = new TH1F("QQMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 2.,4.);
-  QQMass1Glob1Cal_passmu3          = new TH1F("QQMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, 2.,4.);
+  QQMass2Glob_passmu3              = new TH1F("QQMass2Glob_passmu3",  "Invariant mass (2 global muons)", 100, JpsiMassMinSide,JpsiMassMaxSide);
+  QQMass1Glob1Trk_passmu3          = new TH1F("QQMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, JpsiMassMinSide,JpsiMassMaxSide);
+  QQMass1Glob1Cal_passmu3          = new TH1F("QQMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, JpsiMassMinSide,JpsiMassMaxSide);
   QQMass2GlobPT6_passmu3           = new TH1F("QQMass2GlobPT6_passmu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
   QQMass1Glob1TrkPT6_passmu3       = new TH1F("QQMass1Glob1TrkPT6_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
   QQMass1Glob1CalPT6_passmu3       = new TH1F("QQMass1Glob1CalPT6_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
@@ -454,8 +458,8 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongGlbMuFirstLayer          = new TH1F("hMcWrongGlbMuFirstLayer",  "first pixel layer hit - MC unmatched (global muons)", 4, -0.5, 3.5);
   			       
   // mc truth matching - global + global
-  hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 100, 2.6,3.6);
-  hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC unmatched (global+global muons)", 100, 2.6,3.6);
+  hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC unmatched (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcRightGlbGlbMuLife             = new TH1F("hMcRightGlbGlbMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
   hMcWrongGlbGlbMuLife             = new TH1F("hMcWrongGlbGlbMuLife",  "c #tau - MC unmatched (global+global muons)", 90, -1.0,3.5);
   hMcRightGlbGlbMuPt               = new TH1F("hMcRightGlbGlbMuPt",  "P_{T} - MC matched (global+global muons)", 60, 0.,60.);
@@ -486,8 +490,8 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongTrkMudz                  = new TH1F("hMcWrongTrkMudz",  "dz - MC unmatched (global muons)", 100, 0., 50.);
   			       
   // mc truth matching - global + trk
-  hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 100, 2.6,3.6);
-  hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC unmatched (global+tracker muons)", 100, 2.6,3.6);
+  hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC unmatched (global+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcRightGlbTrkMuLife            = new TH1F("hMcRightGlbTrkMuLife",  "c #tau - MC matched (global+tracker muons)", 90, -1.0,3.5);
   hMcWrongGlbTrkMuLife            = new TH1F("hMcWrongGlbTrkMuLife",  "c #tau - MC unmatched (global+tracker muons)", 90, -1.0,3.5);
   hMcRightGlbTrkMuPt               = new TH1F("hMcRightGlbTrkMuPt",  "P_{T} - MC matched (global+tracker muons)", 60, 0.,60.);
@@ -498,8 +502,8 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongGlbTrkMuVtxProb          = new TH1F("hMcWrongGlbTrkMuVtxProb",  "Vertex probability - MC unmatched (global+tracker muons)", 1000, 0.0,1.0);
   			       
   // mc truth matching - trk + trk
-  hMcRightTrkTrkMuMass            = new TH1F("hMcRightTrkTrkMuMass",  "Inv. mass - MC matched (tracker+tracker muons)", 100, 2.6,3.6);
-  hMcWrongTrkTrkMuMass            = new TH1F("hMcWrongTrkTrkMuMass",  "Inv. mass - MC unmatched (tracker+tracker muons)", 100, 2.6,3.6);
+  hMcRightTrkTrkMuMass            = new TH1F("hMcRightTrkTrkMuMass",  "Inv. mass - MC matched (tracker+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcWrongTrkTrkMuMass            = new TH1F("hMcWrongTrkTrkMuMass",  "Inv. mass - MC unmatched (tracker+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcRightTrkTrkMuLife            = new TH1F("hMcRightTrkTrkMuLife",  "c #tau - MC matched (tracker+tracker muons)", 90, -1.0,3.5);
   hMcWrongTrkTrkMuLife            = new TH1F("hMcWrongTrkTrkMuLife",  "c #tau - MC unmatched (tracker+tracker muons)", 90, -1.0,3.5);
   hMcRightTrkTrkMuPt               = new TH1F("hMcRightTrkTrkMuPt",  "P_{T} - MC matched (tracker+tracker muons)", 60, 0.,60.);
@@ -935,6 +939,9 @@ void JPsiAnalyzerPAT::makeCuts() {
       const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
       const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
       
+      // Remove non-quarkonia region
+      if (cand->mass() < 1.5 && cand->mass() > 15.) continue;
+ 
       if (muon1->charge()*muon2->charge() < 0) {	  
 	  
         // global + global?
@@ -989,6 +996,9 @@ void JPsiAnalyzerPAT::makeCuts() {
       const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
       const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
       
+      // Remove non-quarkonia region
+      if (cand->mass() < 1.5 && cand->mass() > 15.) continue;
+
       if (muon1->charge()*muon2->charge() < 0 && !(muon1->isTrackerMuon()) && !(muon2->isTrackerMuon()) ) {
 
 	// global + calo? (x2)
@@ -1071,8 +1081,8 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 
   return (iTrack->found() > 11 &&
 	  aMuon->globalTrack()->chi2()/aMuon->globalTrack()->ndof() < 20.0 &&
-	  (p.numberOfValidPixelHits() > 2 || 
-	   (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
+	  // (p.numberOfValidPixelHits() > 2 || 
+	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
 	  fabs(iTrack->d0()) < 5.0 &&
           fabs(iTrack->dz()) < 20.0 );
 }
@@ -1085,11 +1095,10 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
 
   return (iTrack->found() > 11 &&
 	  iTrack->chi2()/iTrack->ndof() < 5.0 &&
-          aMuon->muonID("TrackerMuonArbitrated") &&
-          (aMuon->muonID("TMLastStationOptimizedLowPtLoose") ||
-	  aMuon->muonID("TM2DCompatibilityTight")) &&
-	  (p.numberOfValidPixelHits() > 2 || 
-	   (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
+	  //   aMuon->muonID("TrackerMuonArbitrated") &&
+	  aMuon->muonID("TMLastStationAngTight") &&
+	  // (p.numberOfValidPixelHits() > 2 || 
+	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
 	  fabs(iTrack->d0()) < 5.0 &&
           fabs(iTrack->dz()) < 20.0 );
 }
@@ -1103,8 +1112,8 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
   return (aMuon->caloCompatibility() > 0.89 &&
 	  iTrack->found() > 11 &&
 	  iTrack->chi2()/iTrack->ndof() < 5.0 &&
-	  (p.numberOfValidPixelHits() > 2 || 
-	   (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
+	  // (p.numberOfValidPixelHits() > 2 || 
+	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
 	  fabs(iTrack->d0()) < 5.0 &&
           fabs(iTrack->dz()) < 20.0 );
 }
