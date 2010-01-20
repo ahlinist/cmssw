@@ -58,7 +58,8 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           BdUpperMassCutBeforeFit = cms.double(6),
                                           BdLowerMassCutAfterFit = cms.double(4.9),
                                           BdUpperMassCutAfterFit = cms.double(5.7),
-                                          
+
+                                          verbose                = cms.bool( False ),
                                           outputFile = cms.untracked.string("outputfile.root"),
                                          )
 
