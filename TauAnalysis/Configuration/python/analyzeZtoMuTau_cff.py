@@ -3,9 +3,6 @@ import FWCore.ParameterSet.Config as cms
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
-# import definitions of systematic uncertainties
-from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
-
 # define auxiliary service
 # for handling of systematic uncertainties
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
