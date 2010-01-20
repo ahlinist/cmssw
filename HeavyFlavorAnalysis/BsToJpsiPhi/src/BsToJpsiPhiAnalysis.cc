@@ -265,7 +265,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   // dE/dx info
   /////////////////////////
   Handle<DeDxDataValueMap> energyLossHandle;
-  if(StoreDeDxInfo_)  iEvent.getByLabel("dedxMedian", energyLossHandle);
+  if(StoreDeDxInfo_)  iEvent.getByLabel("dedxHarmonic2", energyLossHandle);
   
   
  
