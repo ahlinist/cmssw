@@ -12,15 +12,39 @@ bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
         qcdMuEnriched = cms.PSet(
             tauJetDiscriminators = cms.VPSet(
                 cms.PSet(
-                    tauJetIdEffSource = cms.InputTag("shrinkingConeEfficienciesProducerFromFile", "effByECALIsolationZtautausim"),
-                    qcdJetFakeRateSource = cms.InputTag("shrinkingConeEfficienciesProducerFromFile", "frByECALIsolationMuEnrichedQCDsim"),
-                    tauJetDiscrSource = cms.InputTag("shrinkingConePFTauDiscriminationByIsolation")
+                    tauJetIdEffSource = cms.InputTag("shrinkingConeZTTEffSimAssociator", "effByStandardChainZTTsim"),
+                    qcdJetFakeRateSource = cms.InputTag("shrinkingConeMuEnrichedQCDAssociator", "frByStandardChainMuEnrichedQCDsim"),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
                 )
             )
         ),
-        #qcdDiJetLeadJet
-        #qcdDiJetSecondLeadJet
-        #wPlusJets
+        qcdDiJetLeadJet = cms.PSet(
+            tauJetDiscriminators = cms.VPSet(
+                cms.PSet(
+                    tauJetIdEffSource = cms.InputTag("shrinkingConeZTTEffSimAssociator", "effByStandardChainZTTsim"),
+                    qcdJetFakeRateSource = cms.InputTag("shrinkingConeDiJetHighPt", "frByStandardChainDiJetHighPtsim"),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
+                )
+            )
+        ),
+        qcdDiJetSecondLeadJet = cms.PSet(
+            tauJetDiscriminators = cms.VPSet(
+                cms.PSet(
+                    tauJetIdEffSource = cms.InputTag("shrinkingConeZTTEffSimAssociator", "effByStandardChainZTTsim"),
+                    qcdJetFakeRateSource = cms.InputTag("shrinkingConeDiJetSecondPt", "frByStandardChainDiJetSecondPtsim"),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
+                )
+            )
+        ),
+        WplusJets = cms.PSet(
+            tauJetDiscriminators = cms.VPSet(
+                cms.PSet(
+                    tauJetIdEffSource = cms.InputTag("shrinkingConeZTTEffSimAssociator", "effByStandardChainZTTsim"),
+                    qcdJetFakeRateSource = cms.InputTag("shrinkingConeWJets", "frByStandardChainWJetssim"),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
+                )
+            )
+        )
         #gammaPlusJets        
     )
 )
