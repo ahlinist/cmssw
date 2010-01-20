@@ -1,6 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import sys
 
+from TauAnalysis.CandidateTools.tools.getInstanceName import getInstanceName
+from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
+
 #--------------------------------------------------------------------------------
 # utility function for generation of sequences
 # producing collections of selected pat::Electrons,
@@ -22,27 +25,6 @@ class objSelConfigurator(cms._ParameterTypeBase):
         self.doSelCumulative = doSelCumulative
         self.doSelIndividual = doSelIndividual
 
-    @staticmethod
-    def _composeModuleName(part_1, part_2):
-        # auxiliary function for concatenating two strings;
-        # if the last character of part_1 is lower-case (upper-case),
-        # capitalize (lowercase) the first character of part_2
-        if part_1[-1].islower() or part_1[-1].isdigit():
-            return part_1 + part_2[0].capitalize() + part_2[1:]
-        else:
-            return part_1 + part_2[0].lower() + part_2[1:]
-
-    @staticmethod    
-    def _getInstanceName(obj, pyNameSpace):
-        if pyNameSpace is not None:
-            for name, ref in pyNameSpace.items():
-                if ref is obj : return name
-        else:
-            for pyModule in sys.modules.values():
-                for name, ref in pyModule.__dict__.items():
-                    if ref is obj : return name
-        return None            
-
     class _getterCumulative:
         # auxiliary class for composing name of module selecting "cumulative" collection
         @staticmethod
@@ -53,7 +35,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
                 return lastModuleName
         @staticmethod
         def get_moduleName(name):
-            return objSelConfigurator._composeModuleName(name, "Cumulative")
+            return composeModuleName(name, "Cumulative")
 
     class _getterIndividual:
         # auxiliary class for composing name of module selecting "individual" collection
@@ -62,9 +44,9 @@ class objSelConfigurator(cms._ParameterTypeBase):
             return src
         @staticmethod
         def get_moduleName(name):
-            return objSelConfigurator._composeModuleName(name, "Individual")
+            return composeModuleName(name, "Individual")
 
-    def _addModule(self, objSelItem, pyNameSpace, getter, sysName = None, sysInputTag = None):        
+    def _addModule(self, objSelItem, getter, sysName = None, sysInputTag = None, pyNameSpace = None, process = None):        
         # create module
         moduleType = objSelItem.type_()
         module = cms.EDFilter(moduleType)
@@ -80,18 +62,22 @@ class objSelConfigurator(cms._ParameterTypeBase):
         
         if sysName is None:
             src = getter.get_src(self.src, self.lastModuleName)
-            moduleName = getter.get_moduleName(self._getInstanceName(objSelItem, pyNameSpace))
+            moduleName = getter.get_moduleName(getInstanceName(objSelItem, pyNameSpace, process))
         else:
             src = getter.get_src(sysInputTag, self.lastModuleName)
-            moduleName = self._composeModuleName(getter.get_moduleName(self._getInstanceName(objSelItem, pyNameSpace)), sysName)
+            moduleName = composeModuleName(getter.get_moduleName(getInstanceName(objSelItem, pyNameSpace, process)), sysName)
         setattr(module, self.srcAttr, cms.InputTag(src))
         module.setLabel(moduleName)
-               
-        # register module in global python name-space
-        pyModule = sys.modules[self.pyModuleName[0]]
-        if pyModule is None:
-            raise ValueError("'pyModuleName' Parameter invalid !!")
-        setattr(pyModule, moduleName, module)
+
+        # if process object exists, attach module to process object;
+        # else register module in global python name-space
+        if process is not None:
+            setattr(process, moduleName, module)
+        else:
+            pyModule = sys.modules[self.pyModuleName[0]]
+            if pyModule is None:
+                raise ValueError("'pyModuleName' Parameter invalid !!")
+            setattr(pyModule, moduleName, module)
         
         self.lastModuleName = moduleName
 
@@ -101,7 +87,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
         else:
             self.sequence *= module
 
-    def configure(self, pyNameSpace = None):
+    def configure(self, pyNameSpace = None, process = None):
         # configure modules for "cumulative" and "individual" collections
         # of objects passing selection
 
@@ -114,16 +100,17 @@ class objSelConfigurator(cms._ParameterTypeBase):
             getter = objSelConfigurator._getterCumulative()
             self.lastModuleName = None
             for objSelItem in self.objSelList:
-                self._addModule(objSelItem, pyNameSpace, getter)
+                self._addModule(objSelItem, getter, pyNameSpace = pyNameSpace, process = process)
             if self.systematics is not None:
                 for sysName, sysInputTag in self.systematics.items():
                     self.lastModuleName = None
                     for objSelItem in self.objSelList:
-                        self._addModule(objSelItem, pyNameSpace, getter, sysName = sysName, sysInputTag = sysInputTag)
+                        self._addModule(objSelItem, getter, sysName = sysName, sysInputTag = sysInputTag,
+                                        pyNameSpace = pyNameSpace, process = process)
 
         if self.doSelIndividual:
             getter = objSelConfigurator._getterIndividual()
             for objSelItem in self.objSelList:
-                self._addModule(objSelItem, pyNameSpace, getter)
+                self._addModule(objSelItem, getter, pyNameSpace = pyNameSpace, process = process)
 
         return cms.Sequence(self.sequence)
