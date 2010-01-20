@@ -55,6 +55,7 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     replaceStatements_retVal = []
 
     factorization = None
+    systematics = None
 
     for replaceStatement in replaceStatements:
 
@@ -76,17 +77,29 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
 	if paramName == "maxEvents":
 	    replaceStatements_retVal.append(replaceStatement)
 	if paramName == "applyFactorization":
-	    factorization = None
 	    if paramValue.lower() == "false":
 	        factorization = ""
             elif paramValue.lower() == "true":
 	        factorization = "enableFactorization_run" + channel + "(process)"
             else:
 	        raise ValueError("Invalid factorization option = " + paramValue + " !!")
+        if paramName == "estimateSysUncertainties":
+	    if paramValue.lower() == "false":
+	        systematics = "disableSysUncertainties_run" + channel + "(process)"
+            elif paramValue.lower() == "true":
+                systematics = "enableSysUncertainties_run" + channel + "(process)"
+            else:
+	        raise ValueError("Invalid systematics option = " + paramValue + " !!")
+
     # check that factorization option has been defined
     if factorization is None:
         raise ValueError("Undefined factorization option !!")
     replaceStatements_retVal.append("factorization = " + factorization)
+
+    # check that systematics option has been defined
+    if systematics is None:
+        raise ValueError("Undefined systematics option !!")
+    replaceStatements_retVal.append("systematics = " + systematics)
 
     # check that the input file type option has been defined
     inputFileNames = None
