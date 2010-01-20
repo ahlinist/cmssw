@@ -46,7 +46,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_10TeV_cfi import *
 
 process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
     src = cms.InputTag("genParticles"),
-    maxEventsToPrint = cms.untracked.int32(10)
+    maxEventsToPrint = cms.untracked.int32(100)
 )
 
 # print event content 
