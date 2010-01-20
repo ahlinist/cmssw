@@ -11,7 +11,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 ### global tag
-process.GlobalTag.globaltag = "GR09_R_V5:All"
+process.GlobalTag.globaltag = "GR09_R_V5::All"
 
 ### source
 process.source = cms.Source("PoolSource",
