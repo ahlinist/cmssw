@@ -2,6 +2,7 @@
 import os
 import sys
 import string
+import imp
 from optparse import OptionParser
 
 parser = OptionParser()
@@ -14,18 +15,22 @@ parser.add_option("-n", "--dry_run", action="store_true", dest="dry_run")
 
 (options, args) = parser.parse_args()
 
-print options
-
 bsub_command_template = string.Template('''
 #!/bin/bash
 cd $working_dir
 eval `scram ru -sh`
 cd - 
-cmsRun $cfg_file files=$src_file
+cmsRun $cfg_file files=$src_file >& /dev/null
 rfcp $out_file $castor_location
 ''')
 
-source = __import__(options.source)
+try:
+    source = __import__(options.source)
+except ImportError:
+    try:
+        source = imp.load_source('*', options.source)
+    except: raise ImportError
+
 file_list = source.source.fileNames.value()
 
 full_cfg_file = os.path.abspath(options.cfg_file)
@@ -47,4 +52,5 @@ for index, file in enumerate(file_list):
     temp_file.close()
     if options.dry_run is None:
         os.system('bsub -q 8nh < temp.txt')
-        print "...submitted"
+        print "...submitted",
+    print ""
