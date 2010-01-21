@@ -1,12 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
-from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
+from TauAnalysis.CandidateTools.tools.composeModuleName import *
 
 def changeCut(process, name, value, attribute = "cut"):
 
     cutNames = []
-    cutNames.append(objSelConfigurator._composeModuleName(name, "Cumulative"))
-    cutNames.append(objSelConfigurator._composeModuleName(name, "Individual"))
+    cutNames.append(composeModuleName(name, "Cumulative"))
+    cutNames.append(composeModuleName(name, "Individual"))
 
     oldValue = 0.
     oldValue_initialized = False
