@@ -1,9 +1,5 @@
 // description on https://twiki.cern.ch/twiki/bin/viewauth/CMS/BsJpsiPhi_AWG
 #include "HeavyFlavorAnalysis/BsToJpsiPhi/interface/BsToJpsiPhiAnalysis.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/Common/interface/EDProduct.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -67,6 +63,7 @@
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "HeavyFlavorAnalysis/BsToJpsiPhi/interface/KinematicFitInterface.h"
+#include "RecoVertex/PrimaryVertexProducer/interface/PrimaryVertexProducerAlgorithm.h"
 
 #include <iostream>
 #include <TMath.h>
@@ -488,6 +485,16 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      minVtxP = vtxprob_Bs;
 
 		
+	      //recalculate primary vertex without tracks from B
+	      reco::Vertex reFitVertex = reVertex(recVtxs, iEvent,iSetup, trkMu1Ref, trkMu2Ref, trk1Ref, trk2Ref);
+	      bsRootTree_->PVx_refit_ = reFitVertex.x();
+	      bsRootTree_->PVy_refit_ = reFitVertex.y();
+	      bsRootTree_->PVz_refit_ = reFitVertex.z();
+
+	      bsRootTree_->PVerrx_refit_ = reFitVertex.xError();
+	      bsRootTree_->PVerry_refit_ = reFitVertex.yError();
+	      bsRootTree_->PVerrz_refit_ = reFitVertex.zError();
+	      
 	      ////////////////////////
 	      // fill kinematic info to tree
 	      //////////////////////////
@@ -557,31 +564,36 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      }
 	      
 	      ////////////////////////////////////////////////
-	      // proper decay time and proper decay length
+	      // proper decay time and proper decay length with the refitted vertex
 	      ////////////////////////////////////////////////
 	      
-	        
-	      if(BCand.pt()!=0) {
-		bsRootTree_->BsLxy_ = ((bVertex->position().x()-PVx)*Bsvec.x()+(bVertex->position().y()-PVy)*Bsvec.y())/Bsvec.perp();
-		bsRootTree_->BsCt_  = bsRootTree_->BsLxy_*fittedBsMass/Bsvec.perp();
+	      VertexDistanceXY vdist;	      
+	      if(Bsvec.perp()!=0) {
+		bsRootTree_->BsLxy_    = vdist.distance( reFitVertex, bVertex->vertexState() ).value(); 
+		bsRootTree_->BsLxyErr_ = vdist.distance( reFitVertex, bVertex->vertexState() ).error(); 
+		if (  (bVertex->position().x()- reFitVertex.x())*Bsvec.x()+(bVertex->position().y()-reFitVertex.y())*Bsvec.y() < 0  )
+		  bsRootTree_->BsLxy_ = -1.0 * bsRootTree_->BsLxy_;   // in case negative sign is necessary 
+		bsRootTree_->BsCt_     = bsRootTree_->BsLxy_     *  fittedBsMass/Bsvec.perp();
+		bsRootTree_->BsCtErr_  = bsRootTree_->BsLxyErr_  *  fittedBsMass/Bsvec.perp();
 	      }
 	      bsRootTree_->BsErrX_  = bs_er(1,1);
 	      bsRootTree_->BsErrY_  = bs_er(2,2);
 	      bsRootTree_->BsErrXY_ = bs_er(1,2); 
 	      
 	      VertexDistance3D vdist3d;
-	      bsRootTree_->BsDist3d_    = vdist3d.distance(bVertex->vertexState(),RecVtx).value();
-	      bsRootTree_->BsDist3dErr_ = vdist3d.distance(bVertex->vertexState(),RecVtx).error();
+	      bsRootTree_->BsDist3d_    = vdist3d.distance(bVertex->vertexState(),reFitVertex).value();
+	      bsRootTree_->BsDist3dErr_ = vdist3d.distance(bVertex->vertexState(),reFitVertex).error();
 	      bsRootTree_->BsTime3d_    = bsRootTree_->BsDist3d_    * fittedBsMass/Bsvec.perp() * 100. /3.;
 	      bsRootTree_->BsTime3dErr_ = bsRootTree_->BsDist3dErr_ * BCand.mass()/Bsvec.perp() * 100. /3.;
 	      
 	 	      
-	      VertexDistanceXY vdist;
-	      bsRootTree_->BsDist2d_     = vdist.distance(bVertex->vertexState(),RecVtx).value();
-	      bsRootTree_->BsDist2dErr_ = vdist.distance(bVertex->vertexState(),RecVtx).error();
+	     
+	      bsRootTree_->BsDist2d_     = vdist.distance(bVertex->vertexState(),reFitVertex).value();
+	      bsRootTree_->BsDist2dErr_ = vdist.distance(bVertex->vertexState(),reFitVertex).error();
 	      bsRootTree_->BsTime2d_     = bsRootTree_->BsDist2d_ * fittedBsMass/Bsvec.perp() *100. /3.;
 	      bsRootTree_->BsTime2dErr_  = bsRootTree_->BsDist2dErr_ * fittedBsMass/Bsvec.perp() * 100. /3.;
 	      
+	     
 	   	      
 	      ////////////////////////////////////
 	      // transversity basis angles
@@ -1394,3 +1406,80 @@ bool  BsToJpsiPhiAnalysis::MCmatching(const Candidate & track1,  edm::Handle<Gen
 }
 
 	    
+reco::Vertex BsToJpsiPhiAnalysis::reVertex(const edm::Handle<reco::VertexCollection> &handle, const edm::Event &iEvent, const edm::EventSetup& iSetup,
+					   TrackRef trk1, TrackRef trk2, TrackRef trk3, TrackRef trk4){
+
+
+  //copied from Onia2MuMu/VertexReProducer
+  const edm::Provenance *prov = handle.provenance();
+  if (prov == 0) throw cms::Exception("CorruptData") << "Vertex handle doesn't have provenance.";
+  edm::ParameterSetID psid = prov->psetID();
+  
+  edm::pset::Registry *psregistry = edm::pset::Registry::instance();
+  edm::ParameterSet psetFromProvenance;
+  if (!psregistry->getMapped(psid, psetFromProvenance)) 
+    throw cms::Exception("CorruptData") << "Vertex handle parameter set ID id = " << psid;
+  
+  if (prov->moduleName() != "PrimaryVertexProducer") 
+    throw cms::Exception("Configuration") << "Vertices to re-produce don't come from a PrimaryVertexProducer, but from a " << prov->moduleName() <<".\n";
+  
+  edm::InputTag tracksTag_   = psetFromProvenance.getParameter<edm::InputTag>("TrackLabel");
+  edm::InputTag   beamSpotTag_ = psetFromProvenance.getParameter<edm::InputTag>("beamSpotLabel");
+  
+  Handle<reco::TrackCollection> pvtracks;   iEvent.getByLabel(tracksTag_,   pvtracks);
+  Handle<reco::BeamSpot>        pvbeamspot; iEvent.getByLabel(beamSpotTag_, pvbeamspot);
+  
+  TrackCollection muonLess;
+  muonLess.reserve(pvtracks->size()-4);
+
+  for (size_t i = 0; i < pvtracks->size(); ++i) {
+    if (i == trk1.key()){
+      double dpt = trk1->pt() - (*pvtracks)[i].pt();   double deta =  trk1->eta() - (*pvtracks)[i].eta(); double dphi= trk1->phi() - (*pvtracks)[i].phi();
+      double delta = dpt*dpt + deta*deta + dphi*dphi;
+      if( delta > 0.0001){
+	std::cout<<"BsToJpsiPhiAnalysis::reVertex: ERROR" << std::endl;
+	exit(1);
+      }
+    } 
+    if (i == trk2.key()){
+      double dpt = trk2->pt() - (*pvtracks)[i].pt();   double deta =  trk2->eta() - (*pvtracks)[i].eta(); double dphi= trk2->phi() - (*pvtracks)[i].phi();
+      double delta = dpt*dpt + deta*deta + dphi*dphi;
+      if( delta > 0.0001){
+	std::cout<<"BsToJpsiPhiAnalysis::reVertex: ERROR" << std::endl;
+	exit(1);
+      }      
+    } 
+    if (i == trk3.key()){
+      double dpt = trk3->pt() - (*pvtracks)[i].pt();   double deta =  trk3->eta() - (*pvtracks)[i].eta(); double dphi= trk3->phi() - (*pvtracks)[i].phi();
+      double delta = dpt*dpt + deta*deta + dphi*dphi;
+      if( delta > 0.0001){
+	std::cout<<"BsToJpsiPhiAnalysis::reVertex: ERROR" << std::endl;
+	exit(1);
+      }
+    } 
+  }
+
+
+ for (size_t i = 0; i < pvtracks->size(); ++i) {
+   if (i == trk1.key()) continue;
+   if (i == trk2.key()) continue;
+   if (i == trk3.key()) continue;
+   if (i == trk4.key()) continue;
+   muonLess.push_back((*pvtracks)[i]);
+ }
+
+
+ edm::ESHandle<TransientTrackBuilder> theB;
+ iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
+ 
+ vector<reco::TransientTrack> t_tks; t_tks.reserve(muonLess.size());
+ 
+ for (reco::TrackCollection::const_iterator it = muonLess.begin(); it != muonLess.end(); ++it) {
+   t_tks.push_back((*theB).build(*it));
+   t_tks.back().setBeamSpot(*pvbeamspot);
+ }
+
+ vector<TransientVertex> pvs = PrimaryVertexProducerAlgorithm(psetFromProvenance).vertices(t_tks, *pvbeamspot);
+ 
+ return reco::Vertex(pvs.front());
+}

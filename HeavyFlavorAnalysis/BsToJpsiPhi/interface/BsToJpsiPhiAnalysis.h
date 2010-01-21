@@ -39,6 +39,11 @@
 #include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetUnit.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h" 
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetType.h"
 #include "Geometry/CommonTopologies/interface/StripTopology.h"
@@ -67,6 +72,9 @@ private:
 			int &K1mcId, int &K1momId, int &K1gmomId,
 			int condMom, int condGMom);
 
+	reco::Vertex reVertex(const edm::Handle<reco::VertexCollection> &, const edm::Event &,const edm::EventSetup&, reco::TrackRef, 
+			      reco::TrackRef, reco::TrackRef, reco::TrackRef);
+	
 	BsToJpsiPhiRootTree * bsRootTree_;
 	
 	edm::ParameterSet theConfig_;
