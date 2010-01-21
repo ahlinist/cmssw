@@ -39,8 +39,7 @@ macro EVENTSETUP_RECORD_REG is used to create that code.
 #define EVENTSETUP_RECORD_NAME2_HIDDEN(_a_,_b_) _a_ ## _b_
 
 #define EVENTSETUP_RECORD_REG(_recordclassname_) \
-namespace edm { namespace eventsetup { namespace heterocontainer { template<> const char* \
-className<_recordclassname_>() {return # _recordclassname_; } } } }\
+HCTYPETAG_HELPER_METHODS(_recordclassname_) \
 static edm::eventsetup::EventSetupRecordProviderFactoryTemplate<_recordclassname_> EVENTSETUP_RECORD_NAME2(s_factory,__LINE__);\
 DEFINE_HCTYPETAG_REGISTRATION(_recordclassname_);\
 template void edm::eventsetup::eventSetupGetImplementation<_recordclassname_>(edm::EventSetup const&, _recordclassname_ const*&); \
