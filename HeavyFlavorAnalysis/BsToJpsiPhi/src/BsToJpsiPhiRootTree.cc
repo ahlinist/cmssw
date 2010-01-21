@@ -33,7 +33,16 @@ bsTree_->Branch(  "PVy"				  , &PVy_,                              "PVy/D");
 bsTree_->Branch(  "PVz"				  , &PVz_,                              "PVz/D");                                                       
 bsTree_->Branch(  "PVerrx"			  , &PVerrx_,                           "PVerrx/D");                                                    
 bsTree_->Branch(  "PVerry"			  , &PVerry_,                           "PVerry/D");                                                    
-bsTree_->Branch(  "PVerrz"			  , &PVerrz_,                           "PVerrz/D");                                                    
+bsTree_->Branch(  "PVerrz"			  , &PVerrz_,                           "PVerrz/D"); 
+
+bsTree_->Branch( "PVx_refit"   ,         &PVx_refit_   ,         "PVx_refit/D"   ); 
+bsTree_->Branch( "PVy_refit"   ,	 &PVy_refit_   ,	 "PVy_refit/D"   );
+bsTree_->Branch( "PVz_refit"   ,	 &PVz_refit_   ,	 "PVz_refit/D"   );
+bsTree_->Branch( "PVerrx_refit",	 &PVerrx_refit_,	 "PVerrx_refit/D");
+bsTree_->Branch( "PVerry_refit",	 &PVerry_refit_,	 "PVerry_refit/D");
+bsTree_->Branch( "PVerrz_refit",	 &PVerrz_refit_,	 "PVerrz_refit/D");
+
+                                                   
 bsTree_->Branch(  "JpsiVtxProb"			  , &JpsiVtxProb_,                      "JpsiVtxProb/D");                                               
 bsTree_->Branch(  "JpsiM_alone"			  , &JpsiM_alone_,                      "JpsiM_alone/D");                                               
 bsTree_->Branch(  "JpsiPhi_alone"		  , &JpsiPhi_alone_,                    "JpsiPhi_alone/D");                                             
@@ -105,10 +114,15 @@ bsTree_->Branch(  "AngleBsDecayLength"		  , &AngleBsDecayLength_,               
 bsTree_->Branch(  "isMatched"			  , &isMatched_,                        "isMatched/I");                                                
 bsTree_->Branch(  "isMatchedBd"			  , &isMatchedBd_,                      "isMatchedBd/I");                                              
 bsTree_->Branch(  "BsLxy"			  , &BsLxy_,                            "BsLxy/D");                                                     
+bsTree_->Branch(  "BsCt"			  , &BsCt_,                             "BsCt/D");         
+bsTree_->Branch(  "BsLxyErr"			  , &BsLxyErr_,                            "BsLxyErr/D");                                                     
+bsTree_->Branch(  "BsCtErr"			  , &BsCtErr_,                             "BsCtErr/D");         
+
+
 bsTree_->Branch(  "BsErrX"			  , &BsErrX_,                           "BsErrX/D");                                                    
 bsTree_->Branch(  "BsErrY"			  , &BsErrY_,                           "BsErrY/D");                                                    
 bsTree_->Branch(  "BsErrXY"			  , &BsErrXY_,                          "BsErrXY/D");                                                   
-bsTree_->Branch(  "BsCt"			  , &BsCt_,                             "BsCt/D");                                                      
+                                             
 bsTree_->Branch(  "K1trkLay"			  , &K1trkLay_,                         "K1trkLay/I");                                                  
 bsTree_->Branch(  "K1muDTh"			  , &K1muDTh_,                          "K1muDTh/I");                                               
 bsTree_->Branch(  "K1muCSCh"			  , &K1muCSCh_,                         "K1muCSCh/I");                                                
@@ -317,6 +331,15 @@ void BsToJpsiPhiRootTree::resetEntries()
   PVerrx_ = -9999999;
   PVerry_ = -9999999;
   PVerrz_ = -9999999;
+
+  PVx_refit_= -9999999; 
+  PVy_refit_= -9999999;
+  PVz_refit_= -9999999;   
+  PVerrx_refit_= -9999999;
+  PVerry_refit_= -9999999;
+  PVerrz_refit_= -9999999;
+
+
   JpsiVtxProb_ = -9999999;
   JpsiM_alone_ = -9999999;
   JpsiPhi_alone_ = -9999999;
@@ -388,10 +411,12 @@ void BsToJpsiPhiRootTree::resetEntries()
   isMatched_ = -9999999;
   isMatchedBd_ = -9999999;
   BsLxy_ = -9999999;
+  BsLxyErr_ = -9999999;
   BsErrX_ = -9999999;
   BsErrY_ = -9999999;
   BsErrXY_ = -9999999;
   BsCt_ = -9999999;
+  BsCtErr_ = -9999999;
   K1trkLay_ = -9999999;
   K1muDTh_ = -9999999;
   K1muCSCh_ = -9999999;
@@ -679,7 +704,15 @@ bsTree_->SetBranchAddress(  "PVy"				  , &PVy_  );
 bsTree_->SetBranchAddress(  "PVz"				  , &PVz_  );                                                  
 bsTree_->SetBranchAddress(  "PVerrx"			  , &PVerrx_  );                                               
 bsTree_->SetBranchAddress(  "PVerry"			  , &PVerry_  );                                               
-bsTree_->SetBranchAddress(  "PVerrz"			  , &PVerrz_  );                                               
+bsTree_->SetBranchAddress(  "PVerrz"			  , &PVerrz_  ); 
+
+bsTree_->SetBranchAddress( "PVx_refit"   ,         &PVx_refit_      ); 
+bsTree_->SetBranchAddress( "PVy_refit"   ,	 &PVy_refit_        );
+bsTree_->SetBranchAddress( "PVz_refit"   ,	 &PVz_refit_        );
+bsTree_->SetBranchAddress( "PVerrx_refit",	 &PVerrx_refit_     );
+bsTree_->SetBranchAddress( "PVerry_refit",	 &PVerry_refit_     );
+bsTree_->SetBranchAddress( "PVerrz_refit",	 &PVerrz_refit_     );
+                                              
 bsTree_->SetBranchAddress(  "JpsiVtxProb"			  , &JpsiVtxProb_  );                                          
 bsTree_->SetBranchAddress(  "JpsiM_alone"			  , &JpsiM_alone_  );                                          
 bsTree_->SetBranchAddress(  "JpsiPhi_alone"		  , &JpsiPhi_alone_  );                                        
@@ -750,11 +783,13 @@ bsTree_->SetBranchAddress(  "cospsi"			  , &cospsi_  );
 bsTree_->SetBranchAddress(  "AngleBsDecayLength"		  , &AngleBsDecayLength_  );                                   
 bsTree_->SetBranchAddress(  "isMatched"			  , &isMatched_  );                                           
 bsTree_->SetBranchAddress(  "isMatchedBd"			  , &isMatchedBd_  );                                         
-bsTree_->SetBranchAddress(  "BsLxy"			  , &BsLxy_  );                                                
+bsTree_->SetBranchAddress(  "BsLxy"			  , &BsLxy_  );                    
+bsTree_->SetBranchAddress(  "BsLxyErr"			  , &BsLxyErr_  );                                                
 bsTree_->SetBranchAddress(  "BsErrX"			  , &BsErrX_  );                                               
 bsTree_->SetBranchAddress(  "BsErrY"			  , &BsErrY_  );                                               
 bsTree_->SetBranchAddress(  "BsErrXY"			  , &BsErrXY_  );                                              
 bsTree_->SetBranchAddress(  "BsCt"			  , &BsCt_  );                                                 
+bsTree_->SetBranchAddress(  "BsCtErr"			  , &BsCtErr_  );                                                 
 bsTree_->SetBranchAddress(  "K1trkLay"			  , &K1trkLay_  );                                             
 bsTree_->SetBranchAddress(  "K1muDTh"			  , &K1muDTh_  );                                          
 bsTree_->SetBranchAddress(  "K1muCSCh"			  , &K1muCSCh_  );                                           

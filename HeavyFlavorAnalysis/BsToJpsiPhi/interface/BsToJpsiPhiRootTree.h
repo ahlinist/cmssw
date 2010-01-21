@@ -54,6 +54,13 @@ public:
 	double	PVerry_ ;
 	double	PVerrz_ ;
 
+	double PVx_refit_;
+	double PVy_refit_;
+	double PVz_refit_;
+	double PVerrx_refit_;
+	double PVerry_refit_;
+	double PVerrz_refit_;
+
         double JpsiVtxProb_;
     
         double JpsiM_alone_;
@@ -141,10 +148,15 @@ public:
 	int isMatchedBd_;
 
 	double BsLxy_;
+	double BsLxyErr_;
+
+	double BsCt_;
+	double BsCtErr_;
+
 	double BsErrX_;
 	double BsErrY_;
 	double BsErrXY_;
-	double BsCt_;
+
 
 
 
