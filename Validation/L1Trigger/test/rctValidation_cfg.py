@@ -11,13 +11,7 @@ process.GlobalTag.globaltag = cms.string('MC_3XY_V10::All')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_3_4_0_pre2/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_3XY_V10-v1/0003/F0A3B9CE-95BD-DE11-8E2C-003048679294.root',
-        '/store/relval/CMSSW_3_4_0_pre2/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_3XY_V10-v1/0003/DE3EB3A8-C0BD-DE11-9156-003048679084.root',
-        '/store/relval/CMSSW_3_4_0_pre2/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_3XY_V10-v1/0003/BCB2A176-8FBD-DE11-92A9-002618943826.root',
-        '/store/relval/CMSSW_3_4_0_pre2/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_3XY_V10-v1/0003/8023DEEF-90BD-DE11-AE6F-001731A283E1.root',
-        '/store/relval/CMSSW_3_4_0_pre2/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_3XY_V10-v1/0003/7AA2A890-98BD-DE11-A586-001731AF6A87.root',
-        '/store/relval/CMSSW_3_4_0_pre2/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_3XY_V10-v1/0003/3C5AEDEF-8EBD-DE11-A0BE-00261894396B.root',
-        '/store/relval/CMSSW_3_4_0_pre2/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_3XY_V10-v1/0003/0EB64073-8FBD-DE11-BEC7-002618943838.root'
+
     )
 )
 
@@ -42,6 +36,9 @@ process.load("Validation.L1Trigger.rctValidation_cff")
 process.validation = cms.Path(
     process.rctValidation
 )
+
+
+
 
 process.postProcess  = cms.EndPath(process.rctHarvesting+
                                    process.rctQualityTests+
