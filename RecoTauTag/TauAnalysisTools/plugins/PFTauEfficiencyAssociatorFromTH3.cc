@@ -3,13 +3,13 @@
  * \created : Mon Sep 21 17:46:35 PDT 2009 
  * \author Evan K. Friis, (UC Davis)
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
  * Implements PFTauEfficiencyAssociator to produce a mapping of efficiencies
  * (parameterizied by pt, eta, and jet widht) stored in a ROOT TH3 histograms
  * to reco::PFTaus
  *
- * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.3 2009/11/23 21:50:01 friis Exp $
+ * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.4 2010/01/20 21:23:26 friis Exp $
  *
  */
 
@@ -63,11 +63,9 @@ PFTauEfficiencyAssociatorFromTH3::PFTauEfficiencyAssociatorFromTH3(const Paramet
    {
       throw cms::Exception("PFTauEfficiencyAssociatorFromFile") << "Can't open ROOT file: " << filename;
    }
-   cout << "Got file " << endl;
 
    for(vstring::const_iterator iSource = effNames.begin(); iSource != effNames.end(); ++iSource)
    {
-      cout << "Building source " << *iSource << endl;
       // get the associated pset
       const ParameterSet& sourcePSet = effSources.getParameter<ParameterSet>(*iSource);
 
@@ -90,11 +88,9 @@ PFTauEfficiencyAssociatorFromTH3::PFTauEfficiencyAssociatorFromTH3(const Paramet
       efficiencies_.push_back(container);
    }
 
-   cout << "Closing up " << endl;
    // Restore the previous directory state.
    file_->Close();
    old_dir->cd();
-   cout << "Done" << endl;
 }
 
 pat::LookupTableRecord
