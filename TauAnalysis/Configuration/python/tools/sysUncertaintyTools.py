@@ -35,9 +35,10 @@ def removeModules(process, sequenceName, moduleNamePattern, pyNameSpace):
                 if moduleNamePattern_regexp.match(moduleName):
                     sequence.remove(module)
 
-#
 #--------------------------------------------------------------------------------
-#
+# functions to enable/disable estimation of systematic uncertainties
+# specific to Z --> muon + tau-jet channel
+#--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runZtoMuTau(process):
     print("<disableSysUncertainties_runZtoMuTau>:")
@@ -105,6 +106,52 @@ def enableSysUncertainties_runZtoMuTau(process):
     
     setattr(patMuTauPairSelConfiguratorLooseMuonIsolation, "systematics", muTauPairSystematics)
     process.selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolation.configure(process = process)
+
+#--------------------------------------------------------------------------------
+# functions to enable/disable estimation of systematic uncertainties
+# specific to Z --> electron + tau-jet channel
+#--------------------------------------------------------------------------------
+
+def disableSysUncertainties_runZtoElecTau(process):
+    print("<disableSysUncertainties_runZtoElecTau>:")
+    
+    moduleNamePattern = "\w+Sys\w+(Up|Down)"
+    pyNameSpace = None
+
+    process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
+
+    removeModules(process, "selectZtoElecTauEvents", moduleNamePattern, pyNameSpace)
+
+#--------------------------------------------------------------------------------
+# functions to enable/disable estimation of systematic uncertainties
+# specific to Z --> electron + muon channel
+#--------------------------------------------------------------------------------
+
+def disableSysUncertainties_runZtoElecMu(process):
+    print("<disableSysUncertainties_runZtoElecMu>:")
+    
+    moduleNamePattern = "\w+Sys\w+(Up|Down)"
+    pyNameSpace = None
+
+    process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
+
+    removeModules(process, "selectZtoElecMuEvents", moduleNamePattern, pyNameSpace)
+
+#--------------------------------------------------------------------------------
+# functions to enable/disable estimation of systematic uncertainties
+# specific to Z --> tau-jet + tau-jet channel
+#--------------------------------------------------------------------------------
+
+def disableSysUncertainties_runZtoDiTau(process):
+    print("<disableSysUncertainties_runZtoDiTau>:")
+    
+    moduleNamePattern = "\w+Sys\w+(Up|Down)"
+    pyNameSpace = None
+
+    process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
+
+    removeModules(process, "selectZtoDiTauEvents", moduleNamePattern, pyNameSpace)
+
 
 
 
