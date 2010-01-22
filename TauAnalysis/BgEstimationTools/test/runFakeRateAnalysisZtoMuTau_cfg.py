@@ -26,7 +26,8 @@ process.load("TauAnalysis.Configuration.producePatTupleZtoMuTauSpecific_cff")
 
 # import sequence for production of event weights
 # specific to application of fake-rate technique for background estimation
-process.load("TauAnalysis.BgEstimationTools.produceFakeRateWeightsForMuTau_cff")
+process.load("TauAnalysis.BgEstimationTools.fakeRateJetWeightProducer_cfi")
+process.load("TauAnalysis.BgEstimationTools.fakeRateEventWeightProducer_cfi")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
@@ -72,6 +73,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_Ztautau_part01.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_Ztautau_part02.root'
         'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
@@ -104,8 +107,21 @@ switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
-process.produceFakeRates = cms.Sequence( process.shrinkingConeEfficienciesProducerFromFile * process.produceFakeRateWeightsForMuTau )
-process.producePrePat.replace(process.shrinkingConeEfficienciesProducerFromFile, process.produceFakeRates)
+#--------------------------------------------------------------------------------
+# import utility function for managing pat::METs
+from TauAnalysis.Configuration.tools.metTools import *
+
+# uncomment to add pfMET
+# set Boolean swich to true in order to apply type-1 corrections
+addPFMet(process, correct = False)
+
+# uncomment to replace caloMET by pfMET in all di-tau objects
+process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
+replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
+#--------------------------------------------------------------------------------
+
+process.produceFakeRates = cms.Sequence( process.bgEstFakeRateJetWeights * process.bgEstFakeRateEventWeights )
+process.producePrePat._seq = process.producePrePat._seq * process.produceFakeRates
 
 process.p = cms.Path(
     process.producePatTuple
@@ -134,7 +150,7 @@ from TauAnalysis.BgEstimationTools.tools.fakeRateTools import enableFakeRates_ru
 # disable cuts on tau id. discriminators;
 # instead, weight events passing all selection criteria except tau id. discriminators
 # by fake-rates
-enableFakeRates_runZtoMuTau(process, frTypes = [ "qcdMuEnriched", ], method = "simple") # "simple"/"CDF"
+enableFakeRates_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
