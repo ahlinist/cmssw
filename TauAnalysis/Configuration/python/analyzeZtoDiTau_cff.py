@@ -3,6 +3,16 @@ import FWCore.ParameterSet.Config as cms
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeZtoDiTau_cfi import *
 
+# define auxiliary service
+# for handling of systematic uncertainties
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
+SysUncertaintyService = cms.Service("SysUncertaintyService",
+    config = getSysUncertaintyParameterSets(
+        [ tauSystematics,
+          theorySystematics ]
+    )
+)
+
 analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
   
     name = cms.string('zDiTauAnalyzer'), 
@@ -65,9 +75,20 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         triggerHistManagerForDiTau
     ),
 
+    analyzers_systematic = cms.VPSet(),
+
     eventDumps = cms.VPSet(
         diTauEventDump
     ),
    
-    analysisSequence = diTauAnalysisSequence
+    analysisSequence = diTauAnalysisSequence,
+
+    #estimateSysUncertainties = cms.bool(True),                                       
+    estimateSysUncertainties = cms.bool(False), 
+    systematics = cms.vstring(
+        getSysUncertaintyNames(
+            [ tauSystematics,
+              theorySystematics ]
+        )
+    )                                       
 )

@@ -4,6 +4,17 @@ import copy
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
 
+# define auxiliary service
+# for handling of systematic uncertainties
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
+SysUncertaintyService = cms.Service("SysUncertaintyService",
+    config = getSysUncertaintyParameterSets(
+        [ electronSystematics,
+          tauSystematics,
+          theorySystematics ]
+    )
+)
+
 analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
   
     name = cms.string('zElecTauAnalyzer'), 
@@ -77,10 +88,22 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         triggerHistManagerForElecTau
     ),
 
+    analyzers_systematic = cms.VPSet(),                                     
+
     eventDumps = cms.VPSet(
         elecTauEventDump
     ),
    
-    analysisSequence = elecTauAnalysisSequence
+    analysisSequence = elecTauAnalysisSequence,
+
+    #estimateSysUncertainties = cms.bool(True),                                       
+    estimateSysUncertainties = cms.bool(False), 
+    systematics = cms.vstring(
+        getSysUncertaintyNames(
+            [ electronSystematics,
+              tauSystematics,
+              theorySystematics ]
+        )
+    )                                         
 )
 
