@@ -8,7 +8,7 @@ import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.Configuration.analyzeZtoElecMu_factorized_cfi import *
 from TauAnalysis.Configuration.analyzeZtoElecMu_cff import *
-from TauAnalysis.Configuration.factorizationTools import replaceEventSelections
+from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelections
 
 #--------------------------------------------------------------------------------
 # define Z --> elec + mu analysis module
