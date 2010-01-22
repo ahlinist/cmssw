@@ -616,12 +616,16 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
 /*
   CV: tau id. efficiencies and fake-rates not available in CMSSW_3_1_x yet
 
-      *outputStream_ << " pat::Tau id. efficiencies:" 
-		     << " byIsolation = " << patTau->efficiency("effByIsolationZtautausim").value() << ","
-		     << " byEcalIsolation = " << patTau->efficiency("effByECALIsolationZtautausim").value() << std::endl;
-      *outputStream_ << " pat::Tau fake-rates:"
-		     << " byIsolation = " << patTau->efficiency("frByIsolationMuEnrichedQCDsim").value() << ","
-		     << " byEcalIsolation = " << patTau->efficiency("frByECALIsolationMuEnrichedQCDsim").value() << std::endl;
+
+      *outputStream_ << "* matching gen. pdgId = " 
+		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
+      *outputStream_ << " pat::Tau id. efficiencies (byStandardChain):" << std::endl
+		     << "  Ztautau = " << patTau->efficiency("effByStandardChainZTTsim").value() << std::endl;
+      *outputStream_ << " pat::Tau fake-rates (byStandardChain):" << std::endl
+		     << "  ppMuX = " << patTau->efficiency("frByStandardChainMuEnrichedQCDsim").value() << std::endl
+		     << "  QCD, highest Pt jet = " << patTau->efficiency("frByStandardChainDiJetHighPtsim").value() << std::endl
+		     << "  QCD, second highest Pt jet = " << patTau->efficiency("frByStandardChainDiJetSecondPtsim").value() << std::endl
+		     << "  WplusJets = " << patTau->efficiency("frByStandardChainWJetssim").value() << std::endl;
  */
       *outputStream_ << "* matching gen. pdgId = " 
 		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
