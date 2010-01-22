@@ -272,8 +272,13 @@ diTauEventDump = cms.PSet(
     pluginName = cms.string('diTauEventDump'),
     pluginType = cms.string('DiTauEventDump'),
 
-    l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
-    l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+    # L1 trigger bits not contained in AOD;
+    # in order to process Monte Carlo samples produced by FastSimulation,
+    # disable histogram filling for now
+    #l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
+    #l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+    l1GtReadoutRecordSource = cms.InputTag(''),
+    l1GtObjectMapRecordSource = cms.InputTag(''),
     l1BitsToPrint = cms.vstring('L1_SingleTauJet40', 'L1_SingleTauJet60',  
                                 'L1_DoubleTauJet20', 'L1_DoubleTauJet30', 'L1_DoubleTauJet40',
                                 'L1_TauJet30_ETM30', 'L1_TauJet30_ETM40'),
@@ -282,18 +287,17 @@ diTauEventDump = cms.PSet(
     hltPathsToPrint = cms.vstring('HLT_IsoTau_MET65_Trk20', 'HLT_IsoTau_MET35_Trk15_L1MET', 'HLT_DoubleIsoTau_Trk3'),
     
     genParticleSource = cms.InputTag('genParticles'),
+    genJetSource = cms.InputTag('iterativeCone5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
+    
     electronSource = cms.InputTag('cleanLayer1Electrons'),
     muonSource = cms.InputTag('cleanLayer1Muons'),
     tauSource = cms.InputTag('cleanLayer1Taus'),
     diTauCandidateSource = cms.InputTag('allDiTauPairs'),
-    metSource = cms.InputTag('layer1METs'),
-    genMEtSource = cms.InputTag('genMetTrue'),
     jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    #recoTrackSource = cms.InputTag('generalTracks'),
-    #pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
-    #pfGammaSource = cms.InputTag('pfAllPhotons'),
-    #pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
+    caloMEtSource = cms.InputTag('layer1METs'),
+    pfMEtSource = cms.InputTag('layer1PFMETs'),
+    genMEtSource = cms.InputTag('genMetTrue'),
     
     #output = cms.string("diTauEventDump.txt"),
     output = cms.string("std::cout"),
