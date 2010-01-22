@@ -73,8 +73,6 @@ process.source = cms.Source("PoolSource",
         #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
         'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
         'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZmumuSkimMT314_1/muTauSkim_1.root'
-        #'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_1_4/src/TauAnalysis/Skimming/test/muTauSkim.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
