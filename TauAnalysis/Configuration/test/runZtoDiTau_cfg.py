@@ -124,6 +124,23 @@ process.p = cms.Path(
 )
 
 #--------------------------------------------------------------------------------
+# import utility function for disabling estimation of systematic uncertainties
+#
+# NOTE: per default, estimation of systematic uncertainties is **enabled** per default
+#
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoDiTau
+#from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runZtoDiTau
+#
+# define "hook" for keeping enabled/disabling estimation of systematic uncertainties
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#__#systematics#
+if not hasattr(process, "batchMode"):
+    disableSysUncertainties_runZtoDiTau(process)
+    #enableSysUncertainties_runZtoDiTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 #
 process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.producePatTupleZtoDiTauSpecific )
 #
