@@ -59,12 +59,12 @@ evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation.src_individual = cms.Inp
 muTauEventDump_factorizedWithoutMuonIsolation = copy.deepcopy(muTauEventDump)
 muTauEventDump_factorizedWithoutMuonIsolation.name = cms.string('muTauEventDump_factorizedWithoutMuonIsolation')
 muTauEventDump_factorizedWithoutMuonIsolation.output = cms.string("std::cout")
-muTauEventDump_factorizedWithoutMuonIsolation.triggerConditions = cms.vstring("")
+muTauEventDump_factorizedWithoutMuonIsolation.triggerConditions = cms.vstring()
 
 muTauEventDump_factorizedWithMuonIsolation = copy.deepcopy(muTauEventDump)
 muTauEventDump_factorizedWithMuonIsolation.name = cms.string('muTauEventDump_factorizedWithMuonIsolation')
 muTauEventDump_factorizedWithMuonIsolation.output = cms.string("std::cout")
-muTauEventDump_factorizedWithMuonIsolation.triggerConditions = cms.vstring("")
+muTauEventDump_factorizedWithMuonIsolation.triggerConditions = cms.vstring()
 
 #--------------------------------------------------------------------------------
 # define factorization specific analysis sequences

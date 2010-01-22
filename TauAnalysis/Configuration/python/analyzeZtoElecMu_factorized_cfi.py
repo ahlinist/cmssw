@@ -63,12 +63,12 @@ evtSelDiTauCandidateForElecMuPzetaDiffLooseElectronIsolation.src_individual = cm
 elecMuEventDump_factorizedWithoutElectronIsolation = copy.deepcopy(elecMuEventDump)
 elecMuEventDump_factorizedWithoutElectronIsolation.name = cms.string('elecMuEventDump_factorizedWithoutElectronIsolation')
 elecMuEventDump_factorizedWithoutElectronIsolation.output = cms.string("std::cout")
-elecMuEventDump_factorizedWithoutElectronIsolation.triggerConditions = cms.vstring("")
+elecMuEventDump_factorizedWithoutElectronIsolation.triggerConditions = cms.vstring()
 
 elecMuEventDump_factorizedWithElectronIsolation = copy.deepcopy(elecMuEventDump)
 elecMuEventDump_factorizedWithElectronIsolation.name = cms.string('elecMuEventDump_factorizedWithElectronIsolation')
 elecMuEventDump_factorizedWithElectronIsolation.output = cms.string("std::cout")
-elecMuEventDump_factorizedWithElectronIsolation.triggerConditions = cms.vstring("")
+elecMuEventDump_factorizedWithElectronIsolation.triggerConditions = cms.vstring()
 
 #--------------------------------------------------------------------------------
 # define factorization specific analysis sequences
