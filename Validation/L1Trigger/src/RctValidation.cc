@@ -65,10 +65,7 @@ RctValidation::~RctValidation()
 
 
 //--------------------------------------------------------
-void 
-RctValidation::beginJob(const EventSetup& context){
 
-}
 
 //--------------------------------------------------------
 void RctValidation::beginRun(const edm::Run& r, const EventSetup& context) {

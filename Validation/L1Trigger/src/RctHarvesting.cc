@@ -82,11 +82,7 @@ RctHarvesting::~RctHarvesting()
 }
 
 
-//--------------------------------------------------------
-void 
-RctHarvesting::beginJob(const EventSetup& context){
 
-}
 
 //--------------------------------------------------------
 void RctHarvesting::beginRun(const edm::Run& r, const EventSetup& context) {
