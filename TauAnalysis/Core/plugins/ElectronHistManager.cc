@@ -156,7 +156,7 @@ void ElectronHistManager::bookHistogramsImp()
   hElectronEcalIsoPt_ = book1D("ElectronEcalIsoPt", "Electron ECAL Isolation P_{T}", 100, 0., 10.);
   hElectronEcalIsoPtBarrel_ = book1D("ElectronEcalIsoPtBarrel", "Electron (Barrel) ECAL Isolation P_{T}", 100, 0., 10.);
   hElectronEcalIsoPtEndcap_ = book1D("ElectronEcalIsoPtEndcap", "Electron (Endcap) ECAL Isolation P_{T}", 100, 0., 10.);
-  hElectronEcalIsoPtVsElectronPt_ = book2D("ElectronTrkIsoPtVsElectronPt", "Electron ECAL Isolation P_{T} vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);   
+  hElectronEcalIsoPtVsElectronPt_ = book2D("ElectronEcalIsoPtVsElectronPt", "Electron ECAL Isolation P_{T} vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);   
   hElectronHcalIsoPt_ = book1D("ElectronHcalIsoPt", "Electron HCAL Isolation P_{T}", 100, 0., 10.);
   hElectronIsoSumPt_ = book1D("ElectronIsoSumPt", "Electron Isolation Sum(P_{T})", 100, 0., 10.);
   hElectronIsoSumPtVsElectronPt_ = book2D("hElectronIsoSumPtVsElectronPt", "Electron Isolation Sum(P_{T}) vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);   
