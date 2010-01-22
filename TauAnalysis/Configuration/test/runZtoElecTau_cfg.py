@@ -72,10 +72,8 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root',
         #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZmumuSkimMT314_1/muTauSkim_1.root'
-        #'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_1_4/src/TauAnalysis/Skimming/test/muTauSkim.root'
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
     )
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -142,7 +140,23 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 # (needs to be done after process.p has been defined)
 #
 #__#factorization#
-#enableFactorization_runZtoElecTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for disabling estimation of systematic uncertainties
+#
+# NOTE: per default, estimation of systematic uncertainties is **enabled** per default
+#
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoElecTau
+#from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runZtoElecTau
+#
+# define "hook" for keeping enabled/disabling estimation of systematic uncertainties
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#__#systematics#
+if not hasattr(process, "batchMode"):
+    disableSysUncertainties_runZtoElecTau(process)
+    #enableSysUncertainties_runZtoElecTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
