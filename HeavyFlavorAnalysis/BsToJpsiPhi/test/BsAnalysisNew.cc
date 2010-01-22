@@ -60,7 +60,7 @@ const bool bRemoveJpsiEvents = false;
 void BsAnalysisNew() {
 
  
-  string treefilename = "BtoJpsiMuMu_29Dec09.root";
+  string treefilename = "/nfs/data6/alschmid/BsJpsiPhiRootTrees/BtoJpsiMuMu10TeV_22Jan10.root";
   TString outputhistofilename = "BtoJpsiMuMuHistoFile.root";
  
 //   string treefilename = "JpsiMuMu_29Dec09.root";
@@ -648,7 +648,10 @@ void writeHistos(TString outputfilename){
     vhBdMassFinalAfterFit[i]->Write();
     vhResoLxy[i]->Write();
     vhResoTime[i]->Write();
-
+    vhResoCt[i]->Write();
+    vhResoRefitLxy[i]->Write();
+    vhResoRefitTime[i]->Write();
+    vhResoRefitCt[i]->Write();
 
   }
  histofile->Write();
@@ -982,6 +985,17 @@ vhResoLxy         .push_back( new TH1F ("hResoLxy_BdJpsiK10"                 ,"h
 vhResoLxy         .push_back( new TH1F ("hResoLxy_BdJpsiK0"                  ,"hResoLxy_BdJpsiK0"         , 100, -0.15, 0.15      ) );
 vhResoLxy         .push_back( new TH1F ("hResoLxy_BpJpsiKp"                  ,"hResoLxy_BpJpsiKp"         , 100, -0.15, 0.15      ) );
 
+vhResoCt         .push_back( new TH1F ("hResoCt_BsJPsiPhiSignal"           ,"hResoCt_BsJPsiPhiSignal"  , 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_BsJPsiKKSignal"            ,"hResoCt_BsJPsiKKSignal"   , 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_BdJPsiKstarSignal"         ,"hResoCt_BdJPsiKstarSignal", 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_BsOther"                   ,"hResoCt_BsOther"          , 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_BdOther"                   ,"hResoCt_BdOther"          , 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_Other"                     ,"hResoCt_Other"            , 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_BsJpsiEta"                 ,"hResoCt_BsJpsiEta"        , 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_BdJpsiK10"                 ,"hResoCt_BdJpsiK10"        , 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_BdJpsiK0"                  ,"hResoCt_BdJpsiK0"         , 100, -0.15, 0.15      ) );
+vhResoCt         .push_back( new TH1F ("hResoCt_BpJpsiKp"                  ,"hResoCt_BpJpsiKp"         , 100, -0.15, 0.15      ) );
+
 vhResoTime         .push_back( new TH1F ("hResoTime_BsJPsiPhiSignal"           ,"hResoTime_BsJPsiPhiSignal"  , 100, -0.1, 0.1      ) );
 vhResoTime         .push_back( new TH1F ("hResoTime_BsJPsiKKSignal"            ,"hResoTime_BsJPsiKKSignal"   , 100, -0.1, 0.1      ) );
 vhResoTime         .push_back( new TH1F ("hResoTime_BdJPsiKstarSignal"         ,"hResoTime_BdJPsiKstarSignal", 100, -0.1, 0.1      ) );
@@ -993,6 +1007,38 @@ vhResoTime         .push_back( new TH1F ("hResoTime_BdJpsiK10"                 ,
 vhResoTime         .push_back( new TH1F ("hResoTime_BdJpsiK0"                  ,"hResoTime_BdJpsiK0"         , 100, -0.1, 0.1      ) );
 vhResoTime         .push_back( new TH1F ("hResoTime_BpJpsiKp"                  ,"hResoTime_BpJpsiKp"         , 100, -0.1, 0.1      ) );
 
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BsJPsiPhiSignal"           ,"hResoRefitLxy_BsJPsiPhiSignal"  , 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BsJPsiKKSignal"            ,"hResoRefitLxy_BsJPsiKKSignal"   , 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BdJPsiKstarSignal"         ,"hResoRefitLxy_BdJPsiKstarSignal", 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BsOther"                   ,"hResoRefitLxy_BsOther"          , 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BdOther"                   ,"hResoRefitLxy_BdOther"          , 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_Other"                     ,"hResoRefitLxy_Other"            , 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BsJpsiEta"                 ,"hResoRefitLxy_BsJpsiEta"        , 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BdJpsiK10"                 ,"hResoRefitLxy_BdJpsiK10"        , 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BdJpsiK0"                  ,"hResoRefitLxy_BdJpsiK0"         , 100, -0.15, 0.15      ) );
+vhResoRefitLxy         .push_back( new TH1F ("hResoRefitLxy_BpJpsiKp"                  ,"hResoRefitLxy_BpJpsiKp"         , 100, -0.15, 0.15      ) );
+
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BsJPsiPhiSignal"           ,"hResoRefitCt_BsJPsiPhiSignal"  , 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BsJPsiKKSignal"            ,"hResoRefitCt_BsJPsiKKSignal"   , 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BdJPsiKstarSignal"         ,"hResoRefitCt_BdJPsiKstarSignal", 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BsOther"                   ,"hResoRefitCt_BsOther"          , 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BdOther"                   ,"hResoRefitCt_BdOther"          , 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_Other"                     ,"hResoRefitCt_Other"            , 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BsJpsiEta"                 ,"hResoRefitCt_BsJpsiEta"        , 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BdJpsiK10"                 ,"hResoRefitCt_BdJpsiK10"        , 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BdJpsiK0"                  ,"hResoRefitCt_BdJpsiK0"         , 100, -0.15, 0.15      ) );
+vhResoRefitCt         .push_back( new TH1F ("hResoRefitCt_BpJpsiKp"                  ,"hResoRefitCt_BpJpsiKp"         , 100, -0.15, 0.15      ) );
+
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BsJPsiPhiSignal"           ,"hResoRefitTime_BsJPsiPhiSignal"  , 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BsJPsiKKSignal"            ,"hResoRefitTime_BsJPsiKKSignal"   , 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BdJPsiKstarSignal"         ,"hResoRefitTime_BdJPsiKstarSignal", 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BsOther"                   ,"hResoRefitTime_BsOther"          , 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BdOther"                   ,"hResoRefitTime_BdOther"          , 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_Other"                     ,"hResoRefitTime_Other"            , 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BsJpsiEta"                 ,"hResoRefitTime_BsJpsiEta"        , 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BdJpsiK10"                 ,"hResoRefitTime_BdJpsiK10"        , 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BdJpsiK0"                  ,"hResoRefitTime_BdJpsiK0"         , 100, -0.1, 0.1      ) );
+vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BpJpsiKp"                  ,"hResoRefitTime_BpJpsiKp"         , 100, -0.1, 0.1      ) );
 
 
 }
@@ -1015,12 +1061,26 @@ void makeVertexResolutionPlots(){
     genM = tree->BMMC_[1];
     genPt= tree->BPtMC_[1];
   }
-  double genTime = genLxy * genM / genPt;
+  //  double genTime = genLxy * genM / genPt;
+  double genCt   =  genLxy * genM / genPt;
 
-  double recoLxy = tree->BsDist2d_;
-  double recoTime = recoLxy * tree->BsFitM_ / tree->BsFitPt_;
+  double recoLxyRefit = fabs(tree->BsLxy_ );
+  double recoCtRefit  = fabs(tree->BsCt_ );
+  // double recoTime = recoLxy * tree->BsFitM_ / tree->BsFitPt_;
 
-  fillHistograms(recoLxy - genLxy, vhResoLxy );
-  fillHistograms(recoTime - genTime, vhResoTime);
+  fillHistograms(recoLxyRefit - genLxy, vhResoRefitLxy );
+  fillHistograms(recoCtRefit - genCt,   vhResoRefitCt );
+  
+
+  // now for the vertex without refit
+  double recDx = tree->PVx_ - tree->BsFitVtx_x_;
+  double recDy = tree->PVy_ - tree->BsFitVtx_y_;
+  double recLxy= sqrt(recDx*recDx + recDy*recDy);
+  double recCt = recLxy *  tree->BsFitM_ / tree->BsFitPt_;
+
+  fillHistograms(recLxy - genLxy , vhResoLxy);
+  fillHistograms(recCt - genCt , vhResoCt);
+
+ //  fillHistograms(recoTime - genTime, vhResoTime);
 
 }
