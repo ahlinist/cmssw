@@ -41,7 +41,7 @@ submitToBatch(configFile = "harvestZtoMuTauPlots_cfg.py", channel = "ZtoMuTau", 
               job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
 
 # harvest PPmuXptGt20
-for i in range(2):
+for i in range(3):
     submitToBatch(configFile = "harvestZtoMuTauPlots_cfg.py", channel = "ZtoMuTau", sample = "PPmuXptGt20_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsHarvesting, replacements =
                   "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotZtoMuTau_processes_10TeV_cfi",
