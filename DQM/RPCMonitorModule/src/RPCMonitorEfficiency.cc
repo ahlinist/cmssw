@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.35 2009/11/16 16:10:43 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.36 2009/12/09 00:35:35 carrillo Exp $
 //
 //
 
@@ -82,6 +82,8 @@ public:
   
   TH1F * MeanResiduals;
   TH1F * MeanResiduals11;
+  TH1F * AllResidualsBarrel;
+  TH1F * AllResidualsEndCap;
 
   TH1F * RMSResiduals;
   TH1F * RMSResiduals11;
@@ -640,8 +642,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   badBXEffPositiveEndCap = new TH1F ("badBXEffPositiveEndCap","Efficiency Distribution Positive EndCap with bad BX",51,0.5,100.5);
   badBXEffNegativeEndCap = new TH1F ("badBXEffPositiveEndCap","Efficiency Distribution Negative EndCap with bad BX",51,0.5,100.5);
 
-  HeightVsEffR2 = new TH2F ("HeightVsEffR2","Height Vs Efficiency Ring 2",10,0.,1.,10,-1.,1.);
-  HeightVsEffR3 = new TH2F ("HeightVsEffR3","Height Vs Efficiency Ring 3",10,0.,1.,10,-1.,1.);
+  HeightVsEffR2 = new TH2F ("HeightVsEffR2","Height Vs Efficiency Ring 2",100,0.,1.,100,-1.,1.);
+  HeightVsEffR3 = new TH2F ("HeightVsEffR3","Height Vs Efficiency Ring 3",100,0.,1.,100,-1.,1.);
 
   CLSWm2= new TH1F ("ClusterSizeWm2","Cluster Size Wheel -2 per sector",12,0.5,12.5);
   CLSWm1= new TH1F ("ClusterSizeWm1","Cluster Size Wheel -1 per sector",12,0.5,12.5);
@@ -968,6 +970,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   MeanResiduals = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-5,5);
   MeanResiduals11 = new TH1F ("Mean_Residuals_Distribution_1cm","Mean_Residuals_Distribution_1cm",20,-1,1);
+  AllResidualsBarrel  = new TH1F ("AllResiduals_Barrel","AllResidualsBarrel",101,-20,20);
+  AllResidualsEndCap  = new TH1F ("AllResiduals_EndCap","AllResidualsEndCap",101,-20,20);
 
   RMSResiduals = new TH1F ("RMS_Residuals_Distribution","RMS_Residuals_Distribution",20,-5,5);
   RMSResiduals11 = new TH1F ("RMS_Residuals_Distribution_1cm","RMS_Residuals_Distribution_1cm",20,-1,1);
@@ -1347,7 +1351,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoResidual->Add(histoResidual2);
 	  histoResidual->Add(histoResidual3);
 	  histoResidual->Add(histoResidualO);
-	  
+
+	  AllResidualsBarrel->Add(histoResidual);
+
 	  histoINEF= (TH2F*)theFile->Get(meIdINEF.c_str());
 	  
 	  const int n = 20;
@@ -2271,7 +2277,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoResidual->Add(histoResidual2);
 	  histoResidual->Add(histoResidual3);
 	  histoResidual->Add(histoResidualO);
-	  
+
+	  AllResidualsEndCap->Add(histoResidual);
+ 
 	  histoINEF = (TH2F*)theFile->Get(meIdINEF.c_str());
 	  
 	  const int n = 20;
@@ -3224,38 +3232,54 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     command = "cat htmltemplates/indextail.html >> indexW2far.html"; system(command.c_str());
   }
 
+  TH1F * EfficiencyPerChamberNumber = new TH1F("EfficiencyPerChamberNumber","Efficiency per Chamber Number (All Rings and Disks)",36,0.5,36.5);
 
   float eff,N,err;
   int k;
   for(k=1;k<=36;k++){
     float h = sin((k-1)*10*3.14159565/180.);
-  
+    
+    float acumulatedexpected = 0;
+    float acumulatedobserved = 0;
+
     err=0; eff=0; N=ExGregD1R2->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregD1R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
     GregD1R2->SetBinContent(k,eff); GregD1R2->SetBinError(k,err);
     HeightVsEffR2->Fill(eff,h);
     
     err=0; eff=0; N=ExGregD1R3->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregD1R3->GetBinContent(k);
     if(N!=0.){eff = OcGregD1R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD1R3->SetBinContent(k,eff); GregD1R3->SetBinError(k,err);
     HeightVsEffR3->Fill(eff,h);
     
     err=0; eff=0; N=ExGregD2R2->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregD2R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD2R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD2R2->SetBinContent(k,eff); GregD2R2->SetBinError(k,err);
     HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD2R3->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregD2R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregD2R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD2R3->SetBinContent(k,eff); GregD2R3->SetBinError(k,err);
     HeightVsEffR3->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD3R2->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregD3R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD3R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD3R2->SetBinContent(k,eff); GregD3R2->SetBinError(k,err);
     HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD3R3->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregD3R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregD3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);
     HeightVsEffR3->Fill(eff,h);
@@ -3263,34 +3287,52 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     //Negative EndCap
 
     err=0; eff=0; N=ExGregDm1R2->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregDm1R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
     GregDm1R2->SetBinContent(k,eff); GregDm1R2->SetBinError(k,err);
     HeightVsEffR2->Fill(eff,h);
     
     err=0; eff=0; N=ExGregDm1R3->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregDm1R3->GetBinContent(k);
     if(N!=0.){eff = OcGregDm1R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregDm1R3->SetBinContent(k,eff); GregDm1R3->SetBinError(k,err);
     HeightVsEffR3->Fill(eff,h);
     
     err=0; eff=0; N=ExGregDm2R2->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregDm2R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm2R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregDm2R2->SetBinContent(k,eff); GregDm2R2->SetBinError(k,err);
     HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregDm2R3->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregDm2R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm2R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregDm2R3->SetBinContent(k,eff); GregDm2R3->SetBinError(k,err);
     HeightVsEffR3->Fill(eff,h);
 
     err=0; eff=0; N=ExGregDm3R2->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregDm3R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm3R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregDm3R2->SetBinContent(k,eff); GregDm3R2->SetBinError(k,err);
     HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregDm3R3->GetBinContent(k);
+    acumulatedexpected = N + acumulatedexpected;
+    acumulatedobserved = acumulatedobserved + OcGregDm3R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregDm3R3->SetBinContent(k,eff); GregDm3R3->SetBinError(k,err);
     HeightVsEffR3->Fill(eff,h);
+
+    if(acumulatedexpected!=0){ 
+      eff = acumulatedobserved/acumulatedexpected; err=sqrt(eff*(1-eff)/acumulatedexpected);
+      EfficiencyPerChamberNumber->SetBinContent(k,eff); EfficiencyPerChamberNumber->SetBinError(k,err);
+      std::cout<<acumulatedobserved<<" "<<acumulatedexpected<<" "<<eff<<" "<<err<<std::endl;
+    }
   }
 
   
@@ -4470,6 +4512,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca5->SaveAs("Greg/Dm3R3.png"); GregDm3R3->Write();
   Ca5->Clear(); 
 
+  EfficiencyPerChamberNumber->Draw(); EfficiencyPerChamberNumber->GetXaxis()->SetTitle("Chamber");EfficiencyPerChamberNumber->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/EfficiencyPerChamberNumber.png"); EfficiencyPerChamberNumber->Write();
+  Ca5->Clear(); 
+
   int colorPalette3[20];
 
   colorPalette3[0]= 632; // 0 red 
@@ -4582,6 +4628,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   MeanResiduals11->Draw(); MeanResiduals11->GetXaxis()->SetTitle("cm");
   Ca9->SaveAs("MeanResiduals11.png");  
+  Ca9->Clear();
+
+  AllResidualsBarrel->Draw(); AllResidualsBarrel->GetXaxis()->SetTitle("cm");
+  Ca9->SaveAs("AllResidualsBarrel.png"); 
+  Ca9->Clear();
+
+  AllResidualsEndCap->Draw(); AllResidualsEndCap->GetXaxis()->SetTitle("cm");
+  Ca9->SaveAs("AllResidualsEndCap.png"); 
   Ca9->Clear();
 
   RMSResiduals->Draw(); RMSResiduals->GetXaxis()->SetTitle("cm");
