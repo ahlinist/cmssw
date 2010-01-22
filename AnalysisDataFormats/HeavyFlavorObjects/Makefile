@@ -51,7 +51,7 @@ ANA00   =    TAna01Event.o TAna01EventDict.o \
              TAnaVertex.o TAnaVertexDict.o \
              TAnaJet.o TAnaJetDict.o 
 
-ANACLASSES = ana.o anaDict.o 
+ANACLASSES = anaTNP2.o anaTNP2Dict.o 
 
 UTIL       = PidTable.o PidTableDict.o \
              PidData.o PidDataDict.o 
@@ -99,6 +99,18 @@ rootio/TAnaJetDict.cc: rootio/TAnaJet.hh
 
 rootio/TGenMuonDict.cc: rootio/TGenMuon.hh 
 	cd rootio && $(ROOTCINT) -f TGenMuonDict.cc -c TGenMuon.hh && cd - 
+
+tnp/anaTNP2Dict.cc: tnp/anaTNP2.hh 
+	$(ROOTSYS)/bin/rootcint  -f tnp/anaTNP2Dict.cc -c tnp/anaTNP2.hh 
+
+
+# ================================================================================
+anaclasses: $(addprefix obj/,$(ANACLASSES))
+# ----------------------------------
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so
+
+obj/ana.o: test/ana.cc
+	cd test && $(CXX) $(CXXFLAGS) -c ana.cc -o ../obj/ana.o  && cd ..
 
 
 # ================================================================================
@@ -165,7 +177,6 @@ runMyReader: test/myReader.hh test/myReader.cc
 
 # ======================================================================
 ana: test/ana.cc
-	cd test && $(CXX) $(CXXFLAGS) -c ana.cc -o ../obj/ana.o  && cd ..
 	cd test && $(ROOTCINT)  -f anaDict.cc -c ana.hh && cd ..
 	cd test && $(CXX) $(CXXFLAGS) -c anaDict.cc -o ../obj/anaDict.o  && cd ..
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so
