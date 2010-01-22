@@ -108,19 +108,29 @@ def composeFactorizationSequence(process,
         dqmDirectory_output = cms.string(dqmDirectoryOut + "FilterStatistics" + "/")
     )
 
+    # automatically add to meNames
+    # suffix indicating how MonitorElements of type float
+    # need to get scaled and added
+    #
+    # NOTE: definitions of meOptionsSeparator and meOptionsNumWeighted
+    #       need to match those in TauAnalysis/Core/src/FilterStatisticsService.cc 
+    #
+    meOptionsSeparator = "#"
+    meOptionsNumWeighted = "".join([meOptionsSeparator, "a1", meOptionsSeparator, "s1"])
+
     if meName_numerator is not None and meName_denominator is not None:
         dqmDirectory_factorizedLooseSel = cms.string(dqmDirectoryIn_factorizedLooseEvtSel + "FilterStatistics" + "/")
         dqmDirectory_factorizedTightSel = cms.string(dqmDirectoryIn_factorizedTightEvtSel + "FilterStatistics" + "/")
         meType = cms.string("real")
         
-        setattr(dqmHistScaler_plotsLooseEvtSel, "meNameNumerator", cms.string(meName_numerator))
-        setattr(dqmHistScaler_plotsLooseEvtSel, "meNameDenominator", cms.string(meName_denominator))
+        setattr(dqmHistScaler_plotsLooseEvtSel, "meNameNumerator", cms.string("".join([meName_numerator, meOptionsNumWeighted])))
+        setattr(dqmHistScaler_plotsLooseEvtSel, "meNameDenominator", cms.string("".join([meName_denominator, meOptionsNumWeighted])))
         setattr(dqmHistScaler_plotsLooseEvtSel, "dqmDirectory_factorizedLooseSel", dqmDirectory_factorizedLooseSel)
         setattr(dqmHistScaler_plotsLooseEvtSel, "dqmDirectory_factorizedTightSel", dqmDirectory_factorizedTightSel)
         setattr(dqmHistScaler_plotsLooseEvtSel, "meType", meType)
         
-        setattr(dqmHistScaler_filterStatLooseEvtSel, "meNameNumerator", cms.string(meName_numerator))
-        setattr(dqmHistScaler_filterStatLooseEvtSel, "meNameDenominator", cms.string(meName_denominator))
+        setattr(dqmHistScaler_filterStatLooseEvtSel, "meNameNumerator", cms.string("".join([meName_numerator, meOptionsNumWeighted])))
+        setattr(dqmHistScaler_filterStatLooseEvtSel, "meNameDenominator", cms.string("".join([meName_denominator, meOptionsNumWeighted])))
         setattr(dqmHistScaler_filterStatLooseEvtSel, "dqmDirectory_factorizedLooseSel", dqmDirectory_factorizedLooseSel)
         setattr(dqmHistScaler_filterStatLooseEvtSel, "dqmDirectory_factorizedTightSel", dqmDirectory_factorizedTightSel)
         setattr(dqmHistScaler_filterStatLooseEvtSel, "meType", meType)
@@ -167,7 +177,7 @@ def enableFactorization_runZtoMuTau(process):
 
 def enableFactorization_makeZtoMuTauPlots(process,
         dqmDirectoryIn_InclusivePPmuX = 'harvested/InclusivePPmuX/zMuTauAnalyzer',
-        dqmDirectoryOut_InclusivePPmuX = 'harvested/InclusivePPmuX/zMuTauAnalyzer',
+        dqmDirectoryOut_InclusivePPmuX = 'harvested/InclusivePPmuX_factorized/zMuTauAnalyzer',
         dqmDirectoryIn_PPmuXptGt20 = 'harvested/PPmuXptGt20/zMuTauAnalyzer',
         dqmDirectoryOut_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/zMuTauAnalyzer',                                  
         modName_addZtoMuTau_qcdSum = "addZtoMuTau_qcdSum",
