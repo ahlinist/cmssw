@@ -49,6 +49,8 @@ def disableSysUncertainties_runZtoMuTau(process):
     process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
 
     removeModules(process, "selectZtoMuTauEvents", moduleNamePattern, pyNameSpace)
+    if hasattr(process, "selectZtoMuTauEventsLooseMuonIsolation"):
+        removeModules(process, "selectZtoMuTauEventsLooseMuonIsolation", moduleNamePattern, pyNameSpace)
 
     removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, "sysUncertaintyBinnerForMuTau")
     process.analyzeZtoMuTauEvents.estimateSysUncertainties = cms.bool(False)
@@ -121,6 +123,8 @@ def disableSysUncertainties_runZtoElecTau(process):
     process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
 
     removeModules(process, "selectZtoElecTauEvents", moduleNamePattern, pyNameSpace)
+    if hasattr(process, "selectZtoElecTauEventsLooseElectronIsolation"):
+        removeModules(process, "selectZtoElecTauEventsLooseElectronIsolation", moduleNamePattern, pyNameSpace)
 
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
@@ -136,6 +140,8 @@ def disableSysUncertainties_runZtoElecMu(process):
     process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
 
     removeModules(process, "selectZtoElecMuEvents", moduleNamePattern, pyNameSpace)
+    if hasattr(process, "selectZtoElecMuEventsLooseElectronIsolation"):
+        removeModules(process, "selectZtoElecMuEventsLooseElectronIsolation", moduleNamePattern, pyNameSpace)
 
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
