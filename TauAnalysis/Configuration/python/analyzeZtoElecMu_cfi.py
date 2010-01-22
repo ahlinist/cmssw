@@ -61,7 +61,7 @@ triggerHistManagerForElecMu.l1Bits = cms.vstring(
 
 triggerHistManagerForElecMu.hltPaths = cms.vstring(
     'HLT_Ele15_SW_EleId_L1R',
-    'HLT_Ele15_SW_LooseTrackIso_L1R'
+    'HLT_Ele15_SW_LooseTrackIso_L1R',
     'HLT_Mu9',
     'HLT_IsoMu9',
     'HLT_Mu11',
@@ -299,14 +299,10 @@ elecMuEventDump = cms.PSet(
     muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
     tauSource = cms.InputTag('selectedLayer1TausPt20Cumulative'),
     diTauCandidateSource = cms.InputTag('allElecMuPairs'),
+    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
     caloMEtSource = cms.InputTag('layer1METs'),
     pfMEtSource = cms.InputTag('layer1PFMETs'),
     genMEtSource = cms.InputTag('genMetTrue'),
-    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    #recoTrackSource = cms.InputTag('generalTracks'),
-    #pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
-    #pfGammaSource = cms.InputTag('pfAllPhotons'),
-    #pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
 
     #output = cms.string("elecMuEventDump.txt"),
     output = cms.string("std::cout"),
