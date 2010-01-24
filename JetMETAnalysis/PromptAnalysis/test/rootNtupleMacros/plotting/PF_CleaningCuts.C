@@ -3,7 +3,7 @@
 gROOT->Reset();
 
 TFile DATA("output_DATA900.root");
-TFile MC("output_MC900.root");
+TFile MC("output_MC900_test1.root");
 //cut functions from http://indico.cern.ch/getFile.py/access?contribId=5&resId=0&materialId=slides&confId=81128
 
 float E_cut_EM = 80.;
@@ -13,6 +13,12 @@ TLine l_Cut_HF_EM( 1 / E_cut_EM , 0 , 1 / E_cut_EM , f_Cut_HF_EM.Eval( 1/E_cut_E
 float E_cut_HAD = 120.;
 TF1 f_Cut_HF_HAD("f_Cut_HF_HAD","0.045*log10(1/60 * 1/x)",0,0.02);
 TLine l_Cut_HF_HAD( 1 / E_cut_HAD , 0 , 1 / E_cut_HAD , f_Cut_HF_HAD.Eval( 1/E_cut_HAD ) );
+
+TF1 f_Cut_ECAL("f_Cut_ECAL","0.04*log10(1/4 * 1/x)",0,0.5);
+
+
+//########### HF ############
+
 
 DATA.cd();
 
@@ -40,7 +46,7 @@ l_Cut_HF_EM->SetLineWidth(3);
 l_Cut_HF_EM->SetLineStyle(2);
 l_Cut_HF_EM->Draw("same");
 
-c_EM_DATA.SaveAs("S9S1_vs_1overE_em_DATA.eps");
+c_EM_DATA.SaveAs("hf_S9S1_vs_1overE_em_DATA.eps");
 
 //*************
 TCanvas c_HAD_DATA;
@@ -65,7 +71,7 @@ l_Cut_HF_HAD->SetLineWidth(3);
 l_Cut_HF_HAD->SetLineStyle(2);
 l_Cut_HF_HAD->Draw("same");
 
-c_HAD_DATA.SaveAs("S9S1_vs_1overE_had_DATA.eps");
+c_HAD_DATA.SaveAs("hf_S9S1_vs_1overE_had_DATA.eps");
 
 
 MC.cd();
@@ -94,7 +100,7 @@ l_Cut_HF_EM->SetLineWidth(3);
 l_Cut_HF_EM->SetLineStyle(2);
 l_Cut_HF_EM->Draw("same");
 
-c_EM_MC.SaveAs("S9S1_vs_1overE_em_MC.eps");
+c_EM_MC.SaveAs("hf_S9S1_vs_1overE_em_MC.eps");
 
 //*************
 TCanvas c_HAD_MC;
@@ -119,7 +125,61 @@ l_Cut_HF_HAD->SetLineWidth(3);
 l_Cut_HF_HAD->SetLineStyle(2);
 l_Cut_HF_HAD->Draw("same");
 
-c_HAD_MC.SaveAs("S9S1_vs_1overE_had_MC.eps");
+c_HAD_MC.SaveAs("hf_S9S1_vs_1overE_had_MC.eps");
+
+
+
+//########### ECAL ############
+
+
+
+DATA.cd();
+
+//*************
+TCanvas c_EB_DATA;
+c_EB_DATA.SetGridx();
+c_EB_DATA.SetGridy();
+
+h2_S4S1_vs_1overEseed->SetTitle("f_{Neighbours} vs 1/E_{seed} (ECAL Barrel) - DATA");
+h2_S4S1_vs_1overEseed->GetXaxis()->SetRangeUser(0,0.5);
+h2_S4S1_vs_1overEseed->GetYaxis()->SetRangeUser(0,0.2);
+h2_S4S1_vs_1overEseed->GetXaxis()->SetTitle("1/E");
+h2_S4S1_vs_1overEseed->GetYaxis()->SetTitle("S_{4}/S_{1}");
+h2_S4S1_vs_1overEseed->SetMarkerStyle(20);
+h2_S4S1_vs_1overEseed->SetMarkerSize(0.5);
+h2_S4S1_vs_1overEseed->SetMarkerColor(kBlue);
+h2_S4S1_vs_1overEseed->Draw();
+f_Cut_ECAL->SetLineColor(kRed);
+f_Cut_ECAL->SetLineWidth(3);
+f_Cut_ECAL->SetLineStyle(2);
+f_Cut_ECAL->Draw("same");
+
+c_EB_DATA.SaveAs("eb_S4S1_vs_1overE_DATA.eps");
+
+
+MC.cd();
+
+//*************
+TCanvas c_EB_MC;
+c_EB_MC.SetGridx();
+c_EB_MC.SetGridy();
+
+h2_S4S1_vs_1overEseed->SetTitle("f_{Neighbours} vs 1/E_{seed} (ECAL Barrel) - MC");
+h2_S4S1_vs_1overEseed->GetXaxis()->SetRangeUser(0,0.5);
+h2_S4S1_vs_1overEseed->GetYaxis()->SetRangeUser(0,0.2);
+h2_S4S1_vs_1overEseed->GetXaxis()->SetTitle("1/E");
+h2_S4S1_vs_1overEseed->GetYaxis()->SetTitle("S_{4}/S_{1}");
+h2_S4S1_vs_1overEseed->SetMarkerStyle(20);
+h2_S4S1_vs_1overEseed->SetMarkerSize(0.5);
+h2_S4S1_vs_1overEseed->SetMarkerColor(kBlue);
+h2_S4S1_vs_1overEseed->Draw();
+f_Cut_ECAL->SetLineColor(kRed);
+f_Cut_ECAL->SetLineWidth(3);
+f_Cut_ECAL->SetLineStyle(2);
+f_Cut_ECAL->Draw("same");
+
+c_EB_MC.SaveAs("eb_S4S1_vs_1overE_MC.eps");
+
 
 
 }
