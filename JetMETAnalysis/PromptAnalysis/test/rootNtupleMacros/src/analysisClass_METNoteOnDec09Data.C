@@ -124,13 +124,57 @@ void analysisClass::Loop()
   // Effect of ECAL, HF filters on MET
   TH1F *h_calometPt_baseSel   = new TH1F ("h_calometPt_baseSel","h_calometPt_baseSel",Nbins_METSumET,0,Max_METSumET);
   TH1F *h_caloSumet_baseSel = new TH1F ("h_caloSumet_baseSel","h_caloSumet_baseSel",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_calometPt_baseSelPlusHFfilter   = new TH1F ("h_calometPt_baseSelPlusHFfilter","h_calometPt_baseSelPlusHFfilter",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_caloSumet_baseSelPlusHFfilter = new TH1F ("h_caloSumet_baseSelPlusHFfilter","h_caloSumet_baseSelPlusHFfilter",Nbins_METSumET,0,Max_METSumET);
+  
+  TH1F *h_calometPt_baseSel_HFPMTHitVeto_caloMET   = new TH1F ("h_calometPt_baseSel_HFPMTHitVeto_caloMET",
+							       "h_calometPt_baseSel_HFPMTHitVeto_caloMET",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_caloSumet_baseSel_HFPMTHitVeto_caloMET   = new TH1F ("h_caloSumet_baseSel_HFPMTHitVeto_caloMET",
+							       "h_caloSumet_baseSel_HFPMTHitVeto_caloMET",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_calometPt_baseSel_HFPMTHitVeto_tcMET   = new TH1F ("h_calometPt_baseSel_HFPMTHitVeto_tcMET",
+							     "h_calometPt_baseSel_HFPMTHitVeto_tcMET",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_caloSumet_baseSel_HFPMTHitVeto_tcMET   = new TH1F ("h_caloSumet_baseSel_HFPMTHitVeto_tcMET",
+							     "h_caloSumet_baseSel_HFPMTHitVeto_tcMET",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_calometPt_baseSel_HFPMTHitVeto_PFMET   = new TH1F ("h_calometPt_baseSel_HFPMTHitVeto_PFMET",
+							     "h_calometPt_baseSel_HFPMTHitVeto_PFMET",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_caloSumet_baseSel_HFPMTHitVeto_PFMET   = new TH1F ("h_caloSumet_baseSel_HFPMTHitVeto_PFMET",
+							     "h_caloSumet_baseSel_HFPMTHitVeto_PFMET",Nbins_METSumET,0,Max_METSumET);
+
+  TH1F *h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET   = new TH1F ("h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET",
+									      "h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET",
+									      Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET   = new TH1F ("h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET",
+									      "h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET",
+									      Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET   = new TH1F ("h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET",
+									      "h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET",
+									      Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET   = new TH1F ("h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET",
+									      "h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET",
+									      Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET   = new TH1F ("h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET",
+									      "h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET",
+									      Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET   = new TH1F ("h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET",
+									      "h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET",
+									      Nbins_METSumET,0,Max_METSumET);
+
 
   h_calometPt_baseSel->Sumw2();
   h_caloSumet_baseSel->Sumw2();
-  h_calometPt_baseSelPlusHFfilter->Sumw2();
-  h_caloSumet_baseSelPlusHFfilter->Sumw2();
+
+  h_calometPt_baseSel_HFPMTHitVeto_caloMET->Sumw2();
+  h_caloSumet_baseSel_HFPMTHitVeto_caloMET->Sumw2();
+  h_calometPt_baseSel_HFPMTHitVeto_tcMET->Sumw2();
+  h_caloSumet_baseSel_HFPMTHitVeto_tcMET->Sumw2();
+  h_calometPt_baseSel_HFPMTHitVeto_PFMET->Sumw2();
+  h_caloSumet_baseSel_HFPMTHitVeto_PFMET->Sumw2();
+
+  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET->Sumw2();
+  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET->Sumw2();
+  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET->Sumw2();
+  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET->Sumw2();
+  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET->Sumw2();
+  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET->Sumw2();
+
 
   //MPT
   TH1F *h_nGoodTracks = new TH1F ("h_nGoodTracks","h_nGoodTracks",100,0,100);
@@ -166,6 +210,13 @@ void analysisClass::Loop()
   h_VertexSumpt->Sumw2();     
   h_VertexSumptW5->Sumw2();   
 
+  //tracks
+  TH1F *h_ntracks_MonsterYES    = new TH1F ("h_ntracks_MonsterYES","h_ntracks_MonsterYES",300,0,300);
+  TH1F *h_ntracks_MonsterNO    = new TH1F ("h_ntracks_MonsterNO","h_ntracks_MonsterNO",300,0,300);
+
+  h_ntracks_MonsterYES->Sumw2();
+  h_ntracks_MonsterNO->Sumw2();
+
   //## 2D histograms
 
   //MET vs ...
@@ -183,13 +234,26 @@ void analysisClass::Loop()
   TH2F *h2_HCalNoiseHighLevel_Vs_MET = new TH2F ("h2_HCalNoiseHighLevel_Vs_MET","h2_HCalNoiseHighLevel_Vs_MET",2, 0,2, Nbins_METSumET,0,Max_METSumET);
 
   //ecal spikes
-  TH2F *h2_ECalSeedET_Vs_S1S9= new TH2F ("h2_ECalSeedET_Vs_S1S9","h2_ECalSeedET_Vs_S1S9", 50,0,20, 200, 0,2);
-  TH2F *h2_ECalSeedET_Vs_FRook= new TH2F ("h2_ECalSeedET_Vs_FRook","h2_ECalSeedET_Vs_FRook", 50, 0., 20., 100,0.,1.);
   TH2F *h2_NCry805EB_Vs_S1S9= new TH2F ("h2_NCry805EB_Vs_S1S9","h2_NCry805EB_Vs_S1S9", 25, 0,25, 200,-2.,2.);
   TH2F *h2_NCry805EB_Vs_FRook= new TH2F ("h2_NCry805EB_Vs_FRook","h2_NCry805EB_Vs_FRook", 25, 0,25, 100,0.,1.);
   TH2F *h2_FRook_Vs_S1S9= new TH2F ("h2_FRook_Vs_S1S9","h2_FRook_Vs_S1S9", 100,0.,1., 200,-2.,2.);
   TH2F *h2_FRook_Vs_E2nd3x3= new TH2F ("h2_FRook_Vs_E2nd3x3","h2_FRook_Vs_E2nd3x3", 100,0.,1., 200,0,20);
-  TH2F *h2_ETa_Vs_Phi= new TH2F ("h2_ETa_Vs_Phi","h2_ETa_Vs_Phi", 82,-3.2,3.2, 72,-1.5,1.5);
+  TH2F *h2_ETa_Vs_Phi= new TH2F ("h2_ETa_Vs_Phi","h2_ETa_Vs_Phi", 82,-3.2,3.2, 72,-1.5,1.5); 
+  TH2F *h2_ECalSeedET_Vs_S1S9= new TH2F ("h2_ECalSeedET_Vs_S1S9","h2_ECalSeedET_Vs_S1S9", 200, 0,2, 50,0,20);
+  TH2F *h2_ECalSeedET_Vs_FRook= new TH2F ("h2_ECalSeedET_Vs_FRook","h2_ECalSeedET_Vs_FRook", 100,0.,1. , 50, 0., 20.);
+  TH2F *h2_ECalSeedET_Vs_S4_tcMEToverS1= new TH2F ("h2_ECalSeedET_Vs_S4_tcMEToverS1","h2_ECalSeedET_Vs_S4_tcMEToverS1", 100,0.,1. , 50, 0., 20.);
+  TH2F *h2_S4S1_vs_1overEseed= new TH2F ("h2_S4S1_vs_1overEseed","h2_S4S1_vs_1overEseed", 100,0,0.5, 100,0,0.4);
+
+  TH2F *h2_ECALSpikesVeto_tcMET_vs_caloMET = new TH2F ("h2_ECALSpikesVeto_tcMET_vs_caloMET","h2_ECALSpikesVeto_tcMET_vs_caloMET", 2,0,2, 2,0,2 );
+  TH2F *h2_ECALSpikesVeto_tcMET_vs_PFMET = new TH2F ("h2_ECALSpikesVeto_tcMET_vs_PFMET","h2_ECALSpikesVeto_tcMET_vs_PFMET", 2,0,2, 2,0,2 );
+  TH2F *h2_ECALSpikesVeto_PFMET_vs_caloMET = new TH2F ("h2_ECALSpikesVeto_PFMET_vs_caloMET","h2_ECALSpikesVeto_PFMET_vs_caloMET", 2,0,2, 2,0,2 );
+
+  h2_ECALSpikesVeto_tcMET_vs_caloMET->GetXaxis()->SetTitle("passECALSpikesVeto? (caloMET cuts)");
+  h2_ECALSpikesVeto_tcMET_vs_caloMET->GetYaxis()->SetTitle("passECALSpikesVeto? (tcMET cuts)");
+  h2_ECALSpikesVeto_tcMET_vs_PFMET->GetXaxis()->SetTitle("passECALSpikesVeto? (PFMET cuts)");
+  h2_ECALSpikesVeto_tcMET_vs_PFMET->GetYaxis()->SetTitle("passECALSpikesVeto? (tcMET cuts)");
+  h2_ECALSpikesVeto_PFMET_vs_caloMET->GetXaxis()->SetTitle("passECALSpikesVeto? (caloMET cuts)");
+  h2_ECALSpikesVeto_PFMET_vs_caloMET->GetYaxis()->SetTitle("passECALSpikesVeto? (PFMET cuts)");
 
   //calotowers
   TH2F *h2_towersEtaPhi_EM  = new TH2F ("h2_towersEtaPhi_EM","h2_towersEtaPhi_EM",82,-41,41, 72,0,72);
@@ -214,6 +278,35 @@ void analysisClass::Loop()
   h2_HFPMTHitVeto_PFMET_vs_caloMET->GetXaxis()->SetTitle("passHFPMTHitVeto? (caloMET cuts)");
   h2_HFPMTHitVeto_PFMET_vs_caloMET->GetYaxis()->SetTitle("passHFPMTHitVeto? (PFMET cuts)");
 
+  //ecal and hf cleanings
+  TH2F *h2_HFPMTHitVeto_vs_ECALSpikesVeto_caloMET = new TH2F ("h2_HFPMTHitVeto_vs_ECALSpikesVeto_caloMET","h2_HFPMTHitVeto_vs_ECALSpikesVeto_caloMET", 
+							      2,0,2, 2,0,2 );
+  TH2F *h2_HFPMTHitVeto_vs_ECALSpikesVeto_tcMET = new TH2F ("h2_HFPMTHitVeto_vs_ECALSpikesVeto_tcMET","h2_HFPMTHitVeto_vs_ECALSpikesVeto_tcMET", 
+							    2,0,2, 2,0,2 );
+  TH2F *h2_HFPMTHitVeto_vs_ECALSpikesVeto_PFMET = new TH2F ("h2_HFPMTHitVeto_vs_ECALSpikesVeto_PFMET","h2_HFPMTHitVeto_vs_ECALSpikesVeto_PFMET", 
+							    2,0,2, 2,0,2 );
+
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_caloMET->GetXaxis()->SetTitle("passECALSpikesVeto? (caloMET cuts)");
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_caloMET->GetYaxis()->SetTitle("passHFPMTHitVeto? (caloMET cuts)");
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_tcMET->GetXaxis()->SetTitle("passECALSpikesVeto? (tcMET cuts)");
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_tcMET->GetYaxis()->SetTitle("passHFPMTHitVeto? (tcMET cuts)");
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_PFMET->GetXaxis()->SetTitle("passECALSpikesVeto? (PFMET cuts)");
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_PFMET->GetYaxis()->SetTitle("passHFPMTHitVeto? (PFMET cuts)");
+
+  map<UInt_t,UInt_t> NoiseEvents_ECAL_Map_caloMET;
+  map<UInt_t,UInt_t> NoiseEvents_HFHAD_Map_caloMET;
+  map<UInt_t,UInt_t> NoiseEvents_HFEM_Map_caloMET;
+
+  map<UInt_t,UInt_t> NoiseEvents_ECAL_Map_tcMET;
+  map<UInt_t,UInt_t> NoiseEvents_HFHAD_Map_tcMET;
+  map<UInt_t,UInt_t> NoiseEvents_HFEM_Map_tcMET;
+
+  map<UInt_t,UInt_t> NoiseEvents_ECAL_Map_PFMET;
+  map<UInt_t,UInt_t> NoiseEvents_HFHAD_Map_PFMET;
+  map<UInt_t,UInt_t> NoiseEvents_HFEM_Map_PFMET;
+
+  map<UInt_t,UInt_t> TotEventsMap;
+
   // met_quantities vs SumET (1D + 2D histograms)
   int   nhistos  = 20;
   float MaxSumEt = Max_METSumET;
@@ -236,7 +329,6 @@ void analysisClass::Loop()
   TH1F *h_metrms_sumet = new TH1F ("h_metrms_sumet","h_metrms_sumet", nhistos,0,MaxSumEt);
   TH1F *h_metsig_sumet = new TH1F ("h_metsig_sumet","h_metsig_sumet", nhistos,0,MaxSumEt);
   
-
 
 //   TProfile * p_metstability         = new TProfile ("p_metstability","p_metstability", 360,0,360);
 //   TProfile * p_metxstability        = new TProfile ("p_metxstability","p_metxstability", 360,0,360);
@@ -269,10 +361,16 @@ void analysisClass::Loop()
   map<Int_t,TH1F*> calometPyIetaMap;
   //#################################
 
+
   /////////initialize variables
 
-  float ApplyPFcleaning = getPreCutValue1("applyPFcleaning");
+  float Applyhfpfcleaning = getPreCutValue1("applyhfpfcleaning");
   float PrintOut = getPreCutValue1("printout");
+
+  vector<int> HFPMTHitVeto_PF0_tc1;
+  vector<int> HFPMTHitVeto_PF1_tc0;
+  vector<int> ECALSpikesVeto_PF0_tc1;
+  vector<int> ECALSpikesVeto_PF1_tc0;
 
   //////////////////////////////
   ///// Goood Run List  ////////
@@ -502,7 +600,7 @@ void analysisClass::Loop()
 		}
 
 	      //## skip PF calculation if specified in cut file (to gain speed) ##
-	      if( ApplyPFcleaning == 1 )
+	      if( Applyhfpfcleaning == 1 )
 		{
 
 		  //-- a la Particle Flow (Patrick)
@@ -792,12 +890,19 @@ void analysisClass::Loop()
 	pass_HFPMTHitVeto_PFMET = 0 ;
 
 
-      //ECAL spikes EB - using FROOK
-      int pass_ECALSpikes = 1;
+      //ECAL spikes EB
+      int pass_ECALSpikesVeto_caloMET = 1;
+      int pass_ECALSpikesVeto_tcMET = 1;
+      int pass_ECALSpikesVeto_PFMET = 1;
       //if(isData==1)
       for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
 	{
-	  //frook
+
+	  //-- seed crystal info --
+	  float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
+	  float seedEnergy = CaloTowersECalEBXtalsEMax->at(ii);
+
+	  //frook vs ET (a la caloMET)
 	  float emaxrook = 0.;
 	  float frook    = 0.;
 	  
@@ -810,16 +915,43 @@ void analysisClass::Loop()
 	  if( CaloTowersECalEBEnergyTop->at(ii) > emaxrook && CaloTowersECalEBEnergyTop->at(ii) > 0.08) 
 	    emaxrook = CaloTowersECalEBEnergyTop->at(ii);
 	  
-	  frook = emaxrook/(CaloTowersECalEBXtalsEMax->at(ii));
-	  float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
+	  frook = emaxrook / seedEnergy;
 	  
-	  if(seedet>3. && frook<0.01)
-	    pass_ECALSpikes = 0;
+	  if(seedet > 3. && frook < 0.01)
+	    pass_ECALSpikesVeto_caloMET = 0;
+
+	  //S4/S1 vs ET (a la tcMET)
+	  float S4_tcMET = 0.;
+	  S4_tcMET = CaloTowersECalEBEnergyRight->at(ii) 
+	    + CaloTowersECalEBEnergyLeft->at(ii)
+	    + CaloTowersECalEBEnergyTop->at(ii)
+	    + CaloTowersECalEBEnergyBottom->at(ii);
+
+	  float S4_tcMEToverS1 = S4_tcMET / seedEnergy;
+
+	  if(seedet > 5. && S4_tcMEToverS1 < 0.01)
+	    pass_ECALSpikesVeto_tcMET = 0;
+
+	  //S4/S1 vs log(E) (a la PFMET)
+	  float S4_PFMET = 0.;
+	  if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
+	    S4_PFMET += CaloTowersECalEBEnergyRight->at(ii);
+	  if( CaloTowersECalEBEnergyLeft->at(ii) > 0.08 )
+	    S4_PFMET += CaloTowersECalEBEnergyLeft->at(ii);
+	  if( CaloTowersECalEBEnergyTop->at(ii) > 0.08 )
+	    S4_PFMET += CaloTowersECalEBEnergyTop->at(ii);
+	  if( CaloTowersECalEBEnergyBottom->at(ii) > 0.08 )
+	    S4_PFMET += CaloTowersECalEBEnergyBottom->at(ii);
+
+	  float S4_PFMEToverS1 = S4_PFMET / seedEnergy;
+	
+	  if( S4_PFMEToverS1 < 0.04 * log10( seedEnergy / 4 ) )
+	    pass_ECALSpikesVeto_PFMET = 0;
+	  
 	}
       //       if(isData==0)
-      // 	pass_ECALSpikes = 1;
-
-
+      // 	pass_ECALSpikesVeto_caloMET = 1;
+      
 
       //############################
       //## Calculate Reco Quantities 
@@ -964,7 +1096,9 @@ void analysisClass::Loop()
       fillVariableWithValue("pass_PhysicsBit", pass_PhysicsBit);
       fillVariableWithValue("pass_MonsterTRKEventVeto", pass_MonsterTRKEventVeto);
 
-      fillVariableWithValue("pass_ECALSpikes", pass_ECALSpikes);
+      //fillVariableWithValue("pass_ECALSpikesVeto_caloMET", pass_ECALSpikesVeto_caloMET);
+      fillVariableWithValue("pass_ECALSpikesVeto_tcMET", pass_ECALSpikesVeto_tcMET);
+      //fillVariableWithValue("pass_ECALSpikesVeto_PFMET", pass_ECALSpikesVeto_PFMET);
 
       fillVariableWithValue("pass_HFPMTHitVeto_tcMET", pass_HFPMTHitVeto_tcMET);
       //fillVariableWithValue("pass_HFPMTHitVeto_tcMET_HAD", pass_HFPMTHitVeto_tcMET_HAD);
@@ -1185,8 +1319,8 @@ void analysisClass::Loop()
 	 }//---- end passed cut "all" ----        
            
 
-      //## passed all cuts except HF PMT filter
-      if( passedAllOtherCuts("pass_HFPMTHitVeto_tcMET") )
+      //## HF plots after BASELINE SELECTION
+      if( passedCut("0") )
 	 {
 	   
 	   for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
@@ -1197,7 +1331,6 @@ void analysisClass::Loop()
 		   TVector3 * towerS = new TVector3;
 		   towerL->SetPtEtaPhi(CaloTowersEmEt->at(i)+0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
 		   towerS->SetPtEtaPhi(0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
-
 
 		   //tower masked
 		   int isLongMasked=0;
@@ -1220,7 +1353,6 @@ void analysisClass::Loop()
 		   if( CaloTowersIeta->at(i) == 38 && CaloTowersIphi->at(i) == 67)
 		     isShortMasked = 1;
 		   
-
 		   //minimum energy in either Long or Short fiber
 		   if( (towerL->Mag() > 1.2 || towerS->Mag() > 1.8) 
 		       && isLongMasked==0 && isShortMasked==0 )
@@ -1244,11 +1376,16 @@ void analysisClass::Loop()
 	     }	   
 	 }
 
-      //## passed all cuts except ECAL spikes filter
-      if( passedAllOtherCuts("pass_ECALSpikes") )
+      //## ECAL plots after BASELINE SELECTION
+      if( passedCut("0") )
 	for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
 	  {
-	    //frook
+
+	    //-- seed crystal info --
+	    float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
+	    float seedEnergy = CaloTowersECalEBXtalsEMax->at(ii);
+	    
+	    //frook (a la caloMET)
 	    float emaxrook = 0.;
 	    float frook    = 0.;
 	    
@@ -1261,25 +1398,50 @@ void analysisClass::Loop()
 	    if( CaloTowersECalEBEnergyTop->at(ii) > emaxrook && CaloTowersECalEBEnergyTop->at(ii) > 0.08) 
 	      emaxrook = CaloTowersECalEBEnergyTop->at(ii);
 	    
-	    frook = emaxrook/(CaloTowersECalEBXtalsEMax->at(ii));
-	    h_FRookEB    ->Fill(frook);
-	    ////////////////////
+	    frook = emaxrook / seedEnergy;
+
+	    //S4/S1 vs ET (a la tcMET)
+	    float S4_tcMET = 0.;
+	    S4_tcMET = CaloTowersECalEBEnergyRight->at(ii) 
+	      + CaloTowersECalEBEnergyLeft->at(ii)
+	      + CaloTowersECalEBEnergyTop->at(ii)
+	      + CaloTowersECalEBEnergyBottom->at(ii);
 	    
+	    float S4_tcMEToverS1 = S4_tcMET / seedEnergy;
+	    
+	    //S4/S1 vs log(E) (a la PFMET)
+	    float S4_PFMET = 0.;
+	    if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
+	      S4_PFMET += CaloTowersECalEBEnergyRight->at(ii);
+	    if( CaloTowersECalEBEnergyLeft->at(ii) > 0.08 )
+	      S4_PFMET += CaloTowersECalEBEnergyLeft->at(ii);
+	    if( CaloTowersECalEBEnergyTop->at(ii) > 0.08 )
+	      S4_PFMET += CaloTowersECalEBEnergyTop->at(ii);
+	    if( CaloTowersECalEBEnergyBottom->at(ii) > 0.08 )
+	      S4_PFMET += CaloTowersECalEBEnergyBottom->at(ii);
+
+	    float S4_PFMEToverS1 = S4_PFMET / seedEnergy;
+
+	    ////////////////////
+
+	    h_FRookEB    ->Fill(frook);	   	    
 	    h_S1S9RatioEB->Fill(CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii));
 	    h_S12S9RatioEB->Fill((CaloTowersECalEBXtalsEMax->at(ii) + CaloTowersECalEBXtalsE2nd3x3->at(ii))/CaloTowersECalEBXtalsE3x3->at(ii));
 	    h_S1SCRatioEB->Fill(CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBSCEnergy->at(ii));
 	    h_NCry805EB  ->Fill(CaloTowersECalEBNCRY805->at(ii));
 	    h_E2nd3x3    ->Fill(CaloTowersECalEBXtalsE2nd3x3->at(ii));
 	    
-	    float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
-	    
-	    h2_ECalSeedET_Vs_S1S9->Fill( seedet, CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) );
-	    h2_ECalSeedET_Vs_FRook->Fill( seedet, frook );
 	    h2_NCry805EB_Vs_S1S9->Fill( CaloTowersECalEBNCRY805->at(ii), CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) );
 	    h2_NCry805EB_Vs_FRook->Fill( CaloTowersECalEBNCRY805->at(ii), frook );
 	    h2_FRook_Vs_S1S9->Fill(frook, CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii));
 	    h2_FRook_Vs_E2nd3x3->Fill(CaloTowersECalEBXtalsE2nd3x3->at(ii), frook);
 	    h2_ETa_Vs_Phi->Fill(CaloTowersECalEBSeedEta->at(ii), CaloTowersECalEBSeedPhi->at(ii));
+
+	    h2_ECalSeedET_Vs_S1S9->Fill( CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) , seedet );
+	    h2_ECalSeedET_Vs_FRook->Fill( frook , seedet );
+	    h2_ECalSeedET_Vs_S4_tcMEToverS1->Fill( S4_tcMEToverS1, seedet );
+	    h2_S4S1_vs_1overEseed->Fill( 1/seedEnergy , S4_PFMEToverS1);	    
+
 	  }
 
 
@@ -1292,16 +1454,43 @@ void analysisClass::Loop()
 	  h_caloSumet_baseSel->Fill( calometSumEt->at(0) );	 	 
 	}
 
-      //BASELINE SELECTION + HF filter
-      if( passedCut("0") && passedCut("pass_HFPMTHitVeto_tcMET") )
+      //BASELINE SELECTION + HF filter (caloMET)
+      if( passedCut("0") && pass_HFPMTHitVeto_caloMET == 1 )
 	{
-	  h_calometPt_baseSelPlusHFfilter->Fill( calometPt->at(0) );
-	  h_caloSumet_baseSelPlusHFfilter->Fill( calometSumEt->at(0) );	 	  
+	  h_calometPt_baseSel_HFPMTHitVeto_caloMET->Fill( calometPt->at(0) );
+	  h_caloSumet_baseSel_HFPMTHitVeto_caloMET->Fill( calometSumEt->at(0) );	 	  
+	}
+      //BASELINE SELECTION + HF filter (tcMET)
+      if( passedCut("0") && pass_HFPMTHitVeto_tcMET == 1 )
+	{
+	  h_calometPt_baseSel_HFPMTHitVeto_tcMET->Fill( calometPt->at(0) );
+	  h_caloSumet_baseSel_HFPMTHitVeto_tcMET->Fill( calometSumEt->at(0) );	 	  
+	}
+      //BASELINE SELECTION + HF filter (PFMET)
+      if( passedCut("0") && pass_HFPMTHitVeto_PFMET == 1 )
+	{
+	  h_calometPt_baseSel_HFPMTHitVeto_PFMET->Fill( calometPt->at(0) );
+	  h_caloSumet_baseSel_HFPMTHitVeto_PFMET->Fill( calometSumEt->at(0) );	 	  
 	}
 
-      //BASELINE SELECTION + HF filter + ECAL filter 
-      // this is already available at 
-      // h_calometPt and h_caloSumet
+      //BASELINE SELECTION + HF + ECAL filter (caloMET) 
+      if( passedCut("0") && pass_HFPMTHitVeto_caloMET == 1 && pass_ECALSpikesVeto_caloMET == 1 )
+	{
+	  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET->Fill( calometPt->at(0) );
+	  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET->Fill( calometSumEt->at(0) );
+	}
+      //BASELINE SELECTION + HF + ECAL filter (tcMET) 
+      if( passedCut("0") && pass_HFPMTHitVeto_tcMET == 1 && pass_ECALSpikesVeto_tcMET == 1 )
+	{
+	  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET->Fill( calometPt->at(0) );
+	  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET->Fill( calometSumEt->at(0) );
+	}
+      //BASELINE SELECTION + HF + ECAL filter (PFMET) 
+      if( passedCut("0") && pass_HFPMTHitVeto_PFMET == 1 && pass_ECALSpikesVeto_PFMET == 1 )
+	{
+	  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET->Fill( calometPt->at(0) );
+	  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET->Fill( calometSumEt->at(0) );
+	}
 
 
       //## Comparison between different cleaning
@@ -1309,6 +1498,8 @@ void analysisClass::Loop()
       //BASELINE SELECTION
       if( passedCut("0") )
 	{
+
+	  //HF cleanings
 	  h2_HFPMTHitVeto_tcMET_vs_caloMET->Fill( pass_HFPMTHitVeto_caloMET , pass_HFPMTHitVeto_tcMET );
 	  h2_HFPMTHitVeto_tcMET_vs_PFMET->Fill( pass_HFPMTHitVeto_PFMET , pass_HFPMTHitVeto_tcMET );
 	  h2_HFPMTHitVeto_PFMET_vs_caloMET->Fill( pass_HFPMTHitVeto_caloMET , pass_HFPMTHitVeto_PFMET );	 
@@ -1321,14 +1512,149 @@ void analysisClass::Loop()
 		h_HFPMTHitVeto_tc1_vs_PF0__PFcuts->Fill(1.1);
 	      if( pass_HFPMTHitVeto_PF_S9oS1_EM==0 )
 		h_HFPMTHitVeto_tc1_vs_PF0__PFcuts->Fill(2.1);	      
+	      
+	      if( PrintOut == 1)
+		{
+		  cout << "event: " << event << " " 
+		       << "ls: " << ls << " "
+		       << "run: " << run << "  "
+		       << "-- HFPMTHitVeto_PF0_tc1 "
+		       << endl;
+		  HFPMTHitVeto_PF0_tc1.push_back(event);
+		}
 	    }
-
+	  
 	  if( pass_HFPMTHitVeto_PFMET==1 && pass_HFPMTHitVeto_tcMET==0)
 	    {
 	      if( pass_HFPMTHitVeto_tcMET_HAD==0 )
 		h_HFPMTHitVeto_tc0_vs_PF1__tccuts->Fill(0.1);
 	      if( pass_HFPMTHitVeto_tcMET_EM==0 )
 		h_HFPMTHitVeto_tc0_vs_PF1__tccuts->Fill(1.1);
+	      
+	      if( PrintOut == 1)
+		{
+		  cout << "event: " << event << " " 
+		       << "ls: " << ls << " "
+		       << "run: " << run << "  "
+		       << "-- HFPMTHitVeto_PF1_tc0 " 
+		       << endl;
+		  HFPMTHitVeto_PF1_tc0.push_back(event);
+		}
+	    }
+
+	  //ECAL cleanings
+	  h2_ECALSpikesVeto_tcMET_vs_caloMET->Fill( pass_ECALSpikesVeto_caloMET , pass_ECALSpikesVeto_tcMET );
+	  h2_ECALSpikesVeto_tcMET_vs_PFMET->Fill( pass_ECALSpikesVeto_PFMET , pass_ECALSpikesVeto_tcMET );
+	  h2_ECALSpikesVeto_PFMET_vs_caloMET->Fill( pass_ECALSpikesVeto_caloMET , pass_ECALSpikesVeto_PFMET );	 
+
+
+	  if( pass_ECALSpikesVeto_PFMET==0 && pass_ECALSpikesVeto_tcMET==1)
+	    {
+	      if( PrintOut == 1)
+		{
+		  cout << "event: " << event << " " 
+		       << "ls: " << ls << " "
+		       << "run: " << run << "  "
+		       << "-- ECALSpikesVeto_PF0_tc1"
+		       << endl;
+		  ECALSpikesVeto_PF0_tc1.push_back(event);
+		}	      
+	    }
+
+	  if( pass_ECALSpikesVeto_PFMET==1 && pass_ECALSpikesVeto_tcMET==0)
+	    {
+	      if( PrintOut == 1)
+		{
+		  cout << "event: " << event << " " 
+		       << "ls: " << ls << " "
+		       << "run: " << run << "  "
+		       << "-- ECALSpikesVeto_PF1_tc0"
+		       << endl;
+		  ECALSpikesVeto_PF1_tc0.push_back(event);
+		}	      
+	    }
+
+	  //ECAL vs HF cleaning
+	  h2_HFPMTHitVeto_vs_ECALSpikesVeto_caloMET->Fill( pass_ECALSpikesVeto_caloMET , pass_HFPMTHitVeto_caloMET );
+	  h2_HFPMTHitVeto_vs_ECALSpikesVeto_tcMET->Fill( pass_ECALSpikesVeto_tcMET , pass_HFPMTHitVeto_tcMET );
+	  h2_HFPMTHitVeto_vs_ECALSpikesVeto_PFMET->Fill( pass_ECALSpikesVeto_PFMET , pass_HFPMTHitVeto_PFMET );
+
+	  //Rate of noise events in given run
+	 
+	  //Tot. number of events per run
+	  if(TotEventsMap[run])
+	    TotEventsMap[run]++;
+	  else
+	    {
+	      NoiseEvents_ECAL_Map_caloMET[run] = 0;
+	      NoiseEvents_HFHAD_Map_caloMET[run] = 0;
+	      NoiseEvents_HFEM_Map_caloMET[run] = 0;
+	      
+	      NoiseEvents_ECAL_Map_tcMET[run] = 0;
+	      NoiseEvents_HFHAD_Map_tcMET[run] = 0;
+	      NoiseEvents_HFEM_Map_tcMET[run] = 0;
+	      
+	      NoiseEvents_ECAL_Map_PFMET[run] = 0;
+	      NoiseEvents_HFHAD_Map_PFMET[run] = 0;
+	      NoiseEvents_HFEM_Map_PFMET[run] = 0;
+	      
+	      TotEventsMap[run] = 0;
+
+	      TotEventsMap[run]++;
+	    }
+
+	  //CaloMET
+	  if( pass_ECALSpikesVeto_caloMET==0 )
+	    NoiseEvents_ECAL_Map_caloMET[run]++;
+	  
+	  if( pass_HFPMTHitVeto_caloMET_HAD==0 )
+	    NoiseEvents_HFHAD_Map_caloMET[run]++;
+
+	  if( pass_HFPMTHitVeto_caloMET_EM==0 )
+	    NoiseEvents_HFEM_Map_caloMET[run]++;
+
+	  //tcMET
+	  if( pass_ECALSpikesVeto_tcMET==0 )
+	    NoiseEvents_ECAL_Map_tcMET[run]++;
+	  
+	  if( pass_HFPMTHitVeto_tcMET_HAD==0 )
+	    NoiseEvents_HFHAD_Map_tcMET[run]++;
+
+	  if( pass_HFPMTHitVeto_tcMET_EM==0 )
+	    NoiseEvents_HFEM_Map_tcMET[run]++;
+
+	  //PFMET
+	  if( pass_ECALSpikesVeto_PFMET==0 )
+	    NoiseEvents_ECAL_Map_PFMET[run]++;
+
+	  if( pass_HFPMTHitVeto_PF_LoS_HAD==0 || pass_HFPMTHitVeto_PF_S9oS1_HAD==0 )
+	    NoiseEvents_HFHAD_Map_PFMET[run]++;
+
+	  if( pass_HFPMTHitVeto_PF_S9oS1_EM==0 )
+	    NoiseEvents_HFEM_Map_PFMET[run]++;
+
+	}//passed cuts level "0"
+
+
+      if( passedAllOtherCuts("pass_MonsterTRKEventVeto") )
+	{
+
+	  if( pass_MonsterTRKEventVeto==0 )
+	    {
+	      h_ntracks_MonsterYES->Fill( tracksPt->size() );
+	      if( PrintOut == 1)
+		{
+		  cout << "event: " << event << " " 
+		       << "ls: " << ls << " "
+		       << "run: " << run << "  "
+		       << "--  IsMonsterEvent - tracksPt->size() : " << tracksPt->size()
+		       << endl;
+		}
+	    }
+
+	  if( pass_MonsterTRKEventVeto==1 )
+	    {
+	      h_ntracks_MonsterNO->Fill( tracksPt->size() );
 	    }
 
 	}
@@ -1360,6 +1686,7 @@ void analysisClass::Loop()
 	       << "run: " << run << "  " << endl;
 	}
       */
+
 
       if( passedCut("all") && PrintOut == 1)
 	 {
@@ -1633,7 +1960,7 @@ void analysisClass::Loop()
   //   cout<<">> Total number of ieta bins: "<<n_ieta<<endl;
   i=0;
   for (map<Int_t,TH1F*>::const_iterator it = calometPtIetaMap.begin(); it != calometPtIetaMap.end(); it++) {
-    cout<<">> ieta: "<<it->first<<", MET Mean: "<<it->second->GetMean()<<" GeV"<<", MET Mean Error:"<<it->second->GetMeanError()<<" GeV"<<endl;
+    //cout<<">> ieta: "<<it->first<<", MET Mean: "<<it->second->GetMean()<<" GeV"<<", MET Mean Error:"<<it->second->GetMeanError()<<" GeV"<<endl;
 
     x_ieta[i]=it->first;
     yM_ieta[i]=it->second->GetMean();
@@ -1754,6 +2081,235 @@ void analysisClass::Loop()
 
 
 
+  //#################################
+  //## ECAL,HF cleaning vs # of events in run
+  //#################################
+
+  // 	  TotEventsMap[run]++;
+  // 	  //caloMET
+  // 	  if( pass_ECALSpikesVeto_caloMET==0 )
+  // 	    NoiseEvents_ECAL_Map_caloMET[run]++;
+
+  Int_t Nruns = TotEventsMap.size();
+  Double_t x_noise[Nruns], ex_noise[Nruns], y_noise[Nruns], ey_noise[Nruns];
+
+  Int_t i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = TotEventsMap.begin(); it != TotEventsMap.end(); it++) {
+    x_noise[i_noise] = it->second;    
+    ex_noise[i_noise] = sqrt(it->second);    
+    cout << "TotEventsMap: " << x_noise[i_noise] << endl;    
+    i_noise++;
+  }
+
+  //ECAL cleaning (caloMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_ECAL_Map_caloMET.begin(); it != NoiseEvents_ECAL_Map_caloMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);    
+    cout << "NoiseEvents_ECAL_Map_caloMET: " << y_noise[i_noise] << endl;
+    i_noise++;  
+  }
+  TGraphErrors *g_RateNoiseEvents_ECAL_caloMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_ECAL_caloMET->SetName("g_RateNoiseEvents_ECAL_caloMET");
+  g_RateNoiseEvents_ECAL_caloMET->SetTitle("Rate of noise events per run - ECAL (caloMET cuts)");
+  g_RateNoiseEvents_ECAL_caloMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_ECAL_caloMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_ECAL_caloMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_ECAL_caloMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_ECAL_caloMET->Fit("pol1");
+  g_RateNoiseEvents_ECAL_caloMET->Write();
+
+  //ECAL cleaning (tcMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_ECAL_Map_tcMET.begin(); it != NoiseEvents_ECAL_Map_tcMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);    
+    cout << "NoiseEvents_ECAL_Map_tcMET: " << y_noise[i_noise] << endl;
+    i_noise++;  
+  }
+  TGraphErrors *g_RateNoiseEvents_ECAL_tcMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_ECAL_tcMET->SetName("g_RateNoiseEvents_ECAL_tcMET");
+  g_RateNoiseEvents_ECAL_tcMET->SetTitle("Rate of noise events per run - ECAL (tcMET cuts)");
+  g_RateNoiseEvents_ECAL_tcMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_ECAL_tcMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_ECAL_tcMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_ECAL_tcMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_ECAL_tcMET->Fit("pol1");
+  g_RateNoiseEvents_ECAL_tcMET->Write();
+
+  //ECAL cleaning (PFMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_ECAL_Map_PFMET.begin(); it != NoiseEvents_ECAL_Map_PFMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);    
+    cout << "NoiseEvents_ECAL_Map_PFMET: " << y_noise[i_noise] << endl;
+    i_noise++;
+  }
+  TGraphErrors *g_RateNoiseEvents_ECAL_PFMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_ECAL_PFMET->SetName("g_RateNoiseEvents_ECAL_PFMET");
+  g_RateNoiseEvents_ECAL_PFMET->SetTitle("Rate of noise events per run - ECAL (PFMET cuts)");
+  g_RateNoiseEvents_ECAL_PFMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_ECAL_PFMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_ECAL_PFMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_ECAL_PFMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_ECAL_PFMET->Fit("pol1");
+  g_RateNoiseEvents_ECAL_PFMET->Write();
+
+  //HFHAD cleaning (caloMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_HFHAD_Map_caloMET.begin(); it != NoiseEvents_HFHAD_Map_caloMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);
+    cout << "NoiseEvents_HFHAD_Map_caloMET: " << y_noise[i_noise] << endl;    
+    i_noise++;
+  }
+  TGraphErrors *g_RateNoiseEvents_HFHAD_caloMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_HFHAD_caloMET->SetName("g_RateNoiseEvents_HFHAD_caloMET");
+  g_RateNoiseEvents_HFHAD_caloMET->SetTitle("Rate of noise events per run - HFHAD (caloMET cuts)");
+  g_RateNoiseEvents_HFHAD_caloMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_HFHAD_caloMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_HFHAD_caloMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_HFHAD_caloMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_HFHAD_caloMET->Fit("pol1");
+  g_RateNoiseEvents_HFHAD_caloMET->Write();
+
+  //HFHAD cleaning (tcMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_HFHAD_Map_tcMET.begin(); it != NoiseEvents_HFHAD_Map_tcMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);    
+    cout << "NoiseEvents_HFHAD_Map_tcMET: " << y_noise[i_noise] << endl;    
+    i_noise++;
+  }
+  TGraphErrors *g_RateNoiseEvents_HFHAD_tcMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_HFHAD_tcMET->SetName("g_RateNoiseEvents_HFHAD_tcMET");
+  g_RateNoiseEvents_HFHAD_tcMET->SetTitle("Rate of noise events per run - HFHAD (tcMET cuts)");
+  g_RateNoiseEvents_HFHAD_tcMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_HFHAD_tcMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_HFHAD_tcMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_HFHAD_tcMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_HFHAD_tcMET->Fit("pol1");
+  g_RateNoiseEvents_HFHAD_tcMET->Write();
+
+  //HFHAD cleaning (PFMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_HFHAD_Map_PFMET.begin(); it != NoiseEvents_HFHAD_Map_PFMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);
+    cout << "NoiseEvents_HFHAD_Map_PFMET: " << y_noise[i_noise] << endl;        
+    i_noise++;
+  }
+  TGraphErrors *g_RateNoiseEvents_HFHAD_PFMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_HFHAD_PFMET->SetName("g_RateNoiseEvents_HFHAD_PFMET");
+  g_RateNoiseEvents_HFHAD_PFMET->SetTitle("Rate of noise events per run - HFHAD (PFMET cuts)");
+  g_RateNoiseEvents_HFHAD_PFMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_HFHAD_PFMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_HFHAD_PFMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_HFHAD_PFMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_HFHAD_PFMET->Fit("pol1");
+  g_RateNoiseEvents_HFHAD_PFMET->Write();
+
+
+  //HFEM cleaning (caloMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_HFEM_Map_caloMET.begin(); it != NoiseEvents_HFEM_Map_caloMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);    
+    cout << "NoiseEvents_HFEM_Map_caloMET: " << y_noise[i_noise] << endl;    
+    i_noise++;
+  }
+  TGraphErrors *g_RateNoiseEvents_HFEM_caloMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_HFEM_caloMET->SetName("g_RateNoiseEvents_HFEM_caloMET");
+  g_RateNoiseEvents_HFEM_caloMET->SetTitle("Rate of noise events per run - HFEM (caloMET cuts)");
+  g_RateNoiseEvents_HFEM_caloMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_HFEM_caloMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_HFEM_caloMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_HFEM_caloMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_HFEM_caloMET->Fit("pol1");
+  g_RateNoiseEvents_HFEM_caloMET->Write();
+
+  //HFEM cleaning (tcMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_HFEM_Map_tcMET.begin(); it != NoiseEvents_HFEM_Map_tcMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);    
+    cout << "NoiseEvents_HFEM_Map_tcMET: " << y_noise[i_noise] << endl;    
+    i_noise++;
+  }
+  TGraphErrors *g_RateNoiseEvents_HFEM_tcMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_HFEM_tcMET->SetName("g_RateNoiseEvents_HFEM_tcMET");
+  g_RateNoiseEvents_HFEM_tcMET->SetTitle("Rate of noise events per run - HFEM (tcMET cuts)");
+  g_RateNoiseEvents_HFEM_tcMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_HFEM_tcMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_HFEM_tcMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_HFEM_tcMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_HFEM_tcMET->Fit("pol1");
+  g_RateNoiseEvents_HFEM_tcMET->Write();
+
+  //HFEM cleaning (PFMET)
+  i_noise=0;
+  for (map<UInt_t,UInt_t>::const_iterator it = NoiseEvents_HFEM_Map_PFMET.begin(); it != NoiseEvents_HFEM_Map_PFMET.end(); it++) {
+    y_noise[i_noise] = it->second;    
+    ey_noise[i_noise] = sqrt(it->second);
+    cout << "NoiseEvents_HFEM_Map_PFMET: " << y_noise[i_noise] << endl;        
+    i_noise++;
+  }
+  TGraphErrors *g_RateNoiseEvents_HFEM_PFMET = new TGraphErrors( Nruns , x_noise , y_noise , ex_noise , ey_noise );
+  g_RateNoiseEvents_HFEM_PFMET->SetName("g_RateNoiseEvents_HFEM_PFMET");
+  g_RateNoiseEvents_HFEM_PFMET->SetTitle("Rate of noise events per run - HFEM (PFMET cuts)");
+  g_RateNoiseEvents_HFEM_PFMET->SetMarkerStyle(22);
+  g_RateNoiseEvents_HFEM_PFMET->SetMarkerColor(kBlue);
+  g_RateNoiseEvents_HFEM_PFMET->GetXaxis()->SetTitle("total number of events");
+  g_RateNoiseEvents_HFEM_PFMET->GetYaxis()->SetTitle("number of noise events");
+  //g_RateNoiseEvents_HFEM_PFMET->Fit("pol1");
+  g_RateNoiseEvents_HFEM_PFMET->Write();
+    
+  //#################################
+
+
+  //////////Some print out
+
+  if( PrintOut == 1)
+    {
+      
+      cout << endl;
+      cout << "HFPMTHitVeto_PF0_tc1 - all events" << endl;
+      for (int kk =0; kk< HFPMTHitVeto_PF0_tc1.size(); kk++)
+	{
+	  cout << HFPMTHitVeto_PF0_tc1[kk] << "," ;
+	  if(kk==HFPMTHitVeto_PF0_tc1.size() - 1 )
+	    cout << endl;
+	}
+
+      cout << endl;
+      cout << "HFPMTHitVeto_PF1_tc0 - all events" << endl;
+      for (int kk =0; kk< HFPMTHitVeto_PF1_tc0.size(); kk++)
+	{
+	  cout << HFPMTHitVeto_PF1_tc0[kk] << "," ;
+	  if(kk==HFPMTHitVeto_PF1_tc0.size() - 1 )
+	    cout << endl;
+	}
+
+      cout << endl;
+      cout << "ECALSpikesVeto_PF0_tc1 - all events" << endl;
+      for (int kk =0; kk< ECALSpikesVeto_PF0_tc1.size(); kk++)
+	{
+	  cout << ECALSpikesVeto_PF0_tc1[kk] << "," ;
+	  if(kk==ECALSpikesVeto_PF0_tc1.size() - 1 )
+	    cout << endl;
+	}
+
+      cout << endl;
+      cout << "ECALSpikesVeto_PF1_tc0 - all events" << endl;
+      for (int kk =0; kk< ECALSpikesVeto_PF1_tc0.size(); kk++)
+	{
+	  cout << ECALSpikesVeto_PF1_tc0[kk] << "," ;
+	  if(kk==ECALSpikesVeto_PF1_tc0.size() - 1 )
+	    cout << endl;
+	}
+
+    }
+
   //////////write histos 
 
   //TH1F * h_example = new TH1F ("h_example","", getHistoNBins("my_calometPt"), getHistoMin("my_calometPt"), getHistoMax("my_calometPt"));
@@ -1795,8 +2351,20 @@ void analysisClass::Loop()
   //Effect of ECAL, HF filters on MET
   h_calometPt_baseSel->Write();
   h_caloSumet_baseSel->Write();
-  h_calometPt_baseSelPlusHFfilter->Write();
-  h_caloSumet_baseSelPlusHFfilter->Write();
+
+  h_calometPt_baseSel_HFPMTHitVeto_caloMET->Write();
+  h_caloSumet_baseSel_HFPMTHitVeto_caloMET->Write();
+  h_calometPt_baseSel_HFPMTHitVeto_tcMET->Write();
+  h_caloSumet_baseSel_HFPMTHitVeto_tcMET->Write();
+  h_calometPt_baseSel_HFPMTHitVeto_PFMET->Write();
+  h_caloSumet_baseSel_HFPMTHitVeto_PFMET->Write();
+
+  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET->Write();
+  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_caloMET->Write();
+  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET->Write();
+  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET->Write();
+  h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET->Write();
+  h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET->Write();
 
   //ECAL spikes
   h_S1S9RatioEB->Write();
@@ -1824,6 +2392,10 @@ void analysisClass::Loop()
   h_VertexSumpt->Write();     
   h_VertexSumptW5->Write();   
 
+  //Tracks
+  h_ntracks_MonsterYES->Write();
+  h_ntracks_MonsterNO->Write();
+  
 
   //## 2D histograms
 
@@ -1841,14 +2413,19 @@ void analysisClass::Loop()
   h2_HCalNoiseHighLevel_Vs_MET->Write();   
 
   //ecal spikes
-  h2_ECalSeedET_Vs_S1S9->Write();
   h2_NCry805EB_Vs_S1S9->Write();
   h2_FRook_Vs_S1S9->Write();
-  h2_ECalSeedET_Vs_FRook->Write();
   h2_NCry805EB_Vs_FRook->Write();
   h2_FRook_Vs_E2nd3x3->Write();
   h2_ETa_Vs_Phi->Write();
-
+  h2_ECalSeedET_Vs_S1S9->Write();
+  h2_ECalSeedET_Vs_FRook->Write();
+  h2_ECalSeedET_Vs_S4_tcMEToverS1->Write();
+  h2_S4S1_vs_1overEseed->Write();
+  h2_ECALSpikesVeto_tcMET_vs_caloMET->Write();
+  h2_ECALSpikesVeto_tcMET_vs_PFMET->Write();
+  h2_ECALSpikesVeto_PFMET_vs_caloMET->Write();
+	  
   //calotowers
   h2_towersEtaPhi_EM->Write();    
   h2_towersEtaPhi_HAD->Write();   
@@ -1862,6 +2439,11 @@ void analysisClass::Loop()
   h2_HFPMTHitVeto_tcMET_vs_caloMET->Write();
   h2_HFPMTHitVeto_tcMET_vs_PFMET->Write();
   h2_HFPMTHitVeto_PFMET_vs_caloMET->Write();
+
+  //ecal and hf cleanings
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_caloMET->Write();
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_tcMET->Write();
+  h2_HFPMTHitVeto_vs_ECALSpikesVeto_PFMET->Write();
   
   // met_quantities vs SumET (1D + 2D histograms)
   for(int i=0;i<nhistos;i++)
