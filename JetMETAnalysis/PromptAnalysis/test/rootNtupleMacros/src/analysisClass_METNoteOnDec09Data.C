@@ -93,6 +93,86 @@ void analysisClass::Loop()
   h_caloSumetHadHF->Sumw2();
   h_caloSumetEmHF->Sumw2(); 
 
+  //########################################
+  //#### MET for different subdetectors ####
+  //########################################
+
+  //calomet for different subdetectors
+  
+  TH1F *my_calometEBPt   = new TH1F ("my_calometEBPt","my_calometEBPt",Nbins_METSumET,0,Max_METSumET);
+  TH1F *my_calometEBPhi  = new TH1F ("my_calometEBPhi","my_calometEBPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometEBPx   = new TH1F ("my_calometEBPx","my_calometEBPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_calometEBPy   = new TH1F ("my_calometEBPy","my_calometEBPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_caloSumetEB   = new TH1F ("my_caloSumetEB","my_caloSumetEB",Nbins_METSumET,0,Max_METSumET);
+  
+  TH1F *my_calometEEPt   = new TH1F ("my_calometEEPt","my_calometEEPt",Nbins_METSumET,0,Max_METSumET);
+  TH1F *my_calometEEPhi  = new TH1F ("my_calometEEPhi","my_calometEEPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometEEPx   = new TH1F ("my_calometEEPx","my_calometEEPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_calometEEPy   = new TH1F ("my_calometEEPy","my_calometEEPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_caloSumetEE   = new TH1F ("my_caloSumetEE","my_caloSumetEE",Nbins_METSumET,0,Max_METSumET);
+  
+  TH1F *my_calometHBPt   = new TH1F ("my_calometHBPt","my_calometHBPt",Nbins_METSumET,0,Max_METSumET);
+  TH1F *my_calometHBPhi  = new TH1F ("my_calometHBPhi","my_calometHBPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometHBPx   = new TH1F ("my_calometHBPx","my_calometHBPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_calometHBPy   = new TH1F ("my_calometHBPy","my_calometHBPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_caloSumetHB   = new TH1F ("my_caloSumetHB","my_caloSumetHB",Nbins_METSumET,0,Max_METSumET);
+  
+  TH1F *my_calometHEPt   = new TH1F ("my_calometHEPt","my_calometHEPt",Nbins_METSumET,0,Max_METSumET);
+  TH1F *my_calometHEPhi  = new TH1F ("my_calometHEPhi","my_calometHEPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometHEPx   = new TH1F ("my_calometHEPx","my_calometHEPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_calometHEPy   = new TH1F ("my_calometHEPy","my_calometHEPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_caloSumetHE   = new TH1F ("my_caloSumetHE","my_caloSumetHE",Nbins_METSumET,0,Max_METSumET);
+  
+  TH1F *my_calometEmHFPt   = new TH1F ("my_calometEmHFPt","my_calometEmHFPt",Nbins_METSumET,0,Max_METSumET);
+  TH1F *my_calometEmHFPhi  = new TH1F ("my_calometEmHFPhi","my_calometEmHFPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometEmHFPx   = new TH1F ("my_calometEmHFPx","my_calometEmHFPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_calometEmHFPy   = new TH1F ("my_calometEmHFPy","my_calometEmHFPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_caloSumetEmHF   = new TH1F ("my_caloSumetEmHF","my_caloSumetEmHF",Nbins_METSumET,0,Max_METSumET);
+  
+  TH1F *my_calometHadHFPt   = new TH1F ("my_calometHadHFPt","my_calometHadHFPt",Nbins_METSumET,0,Max_METSumET);
+  TH1F *my_calometHadHFPhi  = new TH1F ("my_calometHadHFPhi","my_calometHadHFPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometHadHFPx   = new TH1F ("my_calometHadHFPx","my_calometHadHFPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_calometHadHFPy   = new TH1F ("my_calometHadHFPy","my_calometHadHFPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *my_caloSumetHadHF   = new TH1F ("my_caloSumetHadHF","my_caloSumetHadHF",Nbins_METSumET,0,Max_METSumET);
+  
+  my_calometEBPt->Sumw2();
+  my_calometEBPhi->Sumw2();
+  my_calometEBPx->Sumw2();
+  my_calometEBPy->Sumw2();
+  my_caloSumetEB->Sumw2();
+  
+  my_calometEEPt->Sumw2();
+  my_calometEEPhi->Sumw2();
+  my_calometEEPx->Sumw2();
+  my_calometEEPy->Sumw2();
+  my_caloSumetEE->Sumw2();
+  
+  my_calometHBPt->Sumw2();
+  my_calometHBPhi->Sumw2();
+  my_calometHBPx->Sumw2();
+  my_calometHBPy->Sumw2();
+  my_caloSumetHB->Sumw2();
+  
+  my_calometHEPt->Sumw2();
+  my_calometHEPhi->Sumw2();
+  my_calometHEPx->Sumw2();
+  my_calometHEPy->Sumw2();
+  my_caloSumetHE->Sumw2();
+  
+  my_calometEmHFPt->Sumw2();
+  my_calometEmHFPhi->Sumw2();
+  my_calometEmHFPx->Sumw2();
+  my_calometEmHFPy->Sumw2();
+  my_caloSumetEmHF->Sumw2();
+  
+  my_calometHadHFPt->Sumw2();
+  my_calometHadHFPhi->Sumw2();
+  my_calometHadHFPx->Sumw2();
+  my_calometHadHFPy->Sumw2();
+  my_caloSumetHadHF->Sumw2();
+
+  //########################################
+  
   //ECAL spikes
   TH1F *h_S1S9RatioEB   = new TH1F ("h_S1S9RatioEB","h_S1S9RatioEB",200,-2.,2.);
   TH1F *h_S12S9RatioEB  = new TH1F ("h_S12S9RatioEB","h_S12S9RatioEB",200,-2.,2.);
@@ -1083,6 +1163,117 @@ void analysisClass::Loop()
       double my_MetHADPhi = atan2( -sum_ey, -sum_ex );
 
       */
+      
+      //########################################
+      //#### MET for different subdetectors ####
+      //########################################
+
+      //Calculate MET for different subdetectors from EM towers only
+      double sum_et_EB = 0.0;
+      double sum_ex_EB = 0.0;
+      double sum_ey_EB = 0.0;
+      double sum_et_EE = 0.0;
+      double sum_ex_EE = 0.0;
+      double sum_ey_EE = 0.0;
+      double sum_et_EmHF = 0.0;
+      double sum_ex_EmHF = 0.0;
+      double sum_ey_EmHF = 0.0;
+      
+      for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
+         {
+           double Tower_ET = CaloTowersEmEt->at(i);
+           if (Tower_ET>getPreCutValue1("subDetTowerETcut"))
+             {
+               int Ieta   = CaloTowersIeta->at(i);
+               double phi = CaloTowersPhi->at(i);
+               double et  = CaloTowersEmEt->at(i);
+               
+               if(abs(Ieta)<18) {
+                 sum_et_EB += et;
+                 sum_ex_EB += et*cos(phi);
+                 sum_ey_EB += et*sin(phi);
+               } else if (abs(Ieta)>=18 && abs(Ieta)<30) {
+                 sum_et_EE += et;
+                 sum_ex_EE += et*cos(phi);
+                 sum_ey_EE += et*sin(phi);
+               } else {
+                 sum_et_EmHF += et;
+                 sum_ex_EmHF += et*cos(phi);
+                 sum_ey_EmHF += et*sin(phi);
+               }
+             }
+         }
+
+      double my_MetEB    = sqrt( sum_ex_EB*sum_ex_EB + sum_ey_EB*sum_ey_EB );
+      double my_MetEB_x  = -sum_ex_EB;
+      double my_MetEB_y  = -sum_ey_EB;
+      double my_SumetEB  = sum_et_EB;
+      double my_MetEBPhi = atan2( -sum_ey_EB, -sum_ex_EB );
+      double my_MetEE    = sqrt( sum_ex_EE*sum_ex_EE + sum_ey_EE*sum_ey_EE );
+      double my_MetEE_x  = -sum_ex_EE;
+      double my_MetEE_y  = -sum_ey_EE;
+      double my_SumetEE  = sum_et_EE;
+      double my_MetEEPhi = atan2( -sum_ey_EE, -sum_ex_EE );
+      double my_MetEmHF    = sqrt( sum_ex_EmHF*sum_ex_EmHF + sum_ey_EmHF*sum_ey_EmHF );
+      double my_MetEmHF_x  = -sum_ex_EmHF;
+      double my_MetEmHF_y  = -sum_ey_EmHF;
+      double my_SumetEmHF  = sum_et_EmHF;
+      double my_MetEmHFPhi = atan2( -sum_ey_EmHF, -sum_ex_EmHF );
+
+      //Calculate MET for different subdetectors from HAD towers only
+      double sum_et_HB = 0.0;
+      double sum_ex_HB = 0.0;
+      double sum_ey_HB = 0.0;
+      double sum_et_HE = 0.0;
+      double sum_ex_HE = 0.0;
+      double sum_ey_HE = 0.0;
+      double sum_et_HadHF = 0.0;
+      double sum_ex_HadHF = 0.0;
+      double sum_ey_HadHF = 0.0;
+      
+      for (int i = 0; i<int(CaloTowersHadEt->size()); i++)
+         {
+           double Tower_ET = CaloTowersHadEt->at(i);
+           if (Tower_ET>getPreCutValue1("subDetTowerETcut"))
+             {
+               int Ieta   = CaloTowersIeta->at(i);
+               double phi = CaloTowersPhi->at(i);
+               double et  = CaloTowersHadEt->at(i);
+               
+               if(abs(Ieta)<17) {
+                 sum_et_HB += et;
+                 sum_ex_HB += et*cos(phi);
+                 sum_ey_HB += et*sin(phi);
+               } else if (abs(Ieta)>=17 && abs(Ieta)<30) {
+                 sum_et_HE += et;
+                 sum_ex_HE += et*cos(phi);
+                 sum_ey_HE += et*sin(phi);
+               } else {
+                 sum_et_HadHF += et;
+                 sum_ex_HadHF += et*cos(phi);
+                 sum_ey_HadHF += et*sin(phi);
+               }
+             }
+         }
+
+      double my_MetHB    = sqrt( sum_ex_HB*sum_ex_HB + sum_ey_HB*sum_ey_HB );
+      double my_MetHB_x  = -sum_ex_HB;
+      double my_MetHB_y  = -sum_ey_HB;
+      double my_SumetHB  = sum_et_HB;
+      double my_MetHBPhi = atan2( -sum_ey_HB, -sum_ex_HB );
+      double my_MetHE    = sqrt( sum_ex_HE*sum_ex_HE + sum_ey_HE*sum_ey_HE );
+      double my_MetHE_x  = -sum_ex_HE;
+      double my_MetHE_y  = -sum_ey_HE;
+      double my_SumetHE  = sum_et_HE;
+      double my_MetHEPhi = atan2( -sum_ey_HE, -sum_ex_HE );
+      double my_MetHadHF    = sqrt( sum_ex_HadHF*sum_ex_HadHF + sum_ey_HadHF*sum_ey_HadHF );
+      double my_MetHadHF_x  = -sum_ex_HadHF;
+      double my_MetHadHF_y  = -sum_ey_HadHF;
+      double my_SumetHadHF  = sum_et_HadHF;
+      double my_MetHadHFPhi = atan2( -sum_ey_HadHF, -sum_ex_HadHF );
+
+      //########################################
+      
       //=================================================================
 
       // Set the evaluation of the cuts to false and clear the variable values and filled status
@@ -1153,6 +1344,48 @@ void analysisClass::Loop()
 	   h_caloSumetHadHF->Fill( calometHadEtInHF->at(0) ) ;
 	   h_caloSumetEmHF->Fill( calometEmEtInHF->at(0) ) ;
 
+           //########################################
+           //#### MET for different subdetectors ####
+           //########################################
+           
+           my_calometEBPt->Fill( my_MetEB   );
+           my_calometEBPhi->Fill( my_MetEBPhi );
+           my_calometEBPx->Fill( my_MetEB_x );
+           my_calometEBPy->Fill( my_MetEB_y );
+           my_caloSumetEB->Fill( my_SumetEB );
+           
+           my_calometEEPt->Fill( my_MetEE   );
+           my_calometEEPhi->Fill( my_MetEEPhi );
+           my_calometEEPx->Fill( my_MetEE_x );
+           my_calometEEPy->Fill( my_MetEE_y );
+           my_caloSumetEE->Fill( my_SumetEE );
+                         
+           my_calometHBPt->Fill( my_MetHB   );
+           my_calometHBPhi->Fill( my_MetHBPhi );
+           my_calometHBPx->Fill( my_MetHB_x );
+           my_calometHBPy->Fill( my_MetHB_y );
+           my_caloSumetHB->Fill( my_SumetHB );
+           
+           my_calometHEPt->Fill( my_MetHE   );
+           my_calometHEPhi->Fill( my_MetHEPhi );
+           my_calometHEPx->Fill( my_MetHE_x );
+           my_calometHEPy->Fill( my_MetHE_y );
+           my_caloSumetHE->Fill( my_SumetHE );
+           
+           my_calometEmHFPt->Fill( my_MetEmHF   );
+           my_calometEmHFPhi->Fill( my_MetEmHFPhi );
+           my_calometEmHFPx->Fill( my_MetEmHF_x );
+           my_calometEmHFPy->Fill( my_MetEmHF_y );
+           my_caloSumetEmHF->Fill( my_SumetEmHF );
+           
+           my_calometHadHFPt->Fill( my_MetHadHF   );
+           my_calometHadHFPhi->Fill( my_MetHadHFPhi );
+           my_calometHadHFPx->Fill( my_MetHadHF_x );
+           my_calometHadHFPy->Fill( my_MetHadHF_y );
+           my_caloSumetHadHF->Fill( my_SumetHadHF );
+           
+          //########################################
+           
 	   //MPT
 	   h_nGoodTracks->Fill(nGoodTracks);	       
 	   if(nGoodTracks>0)
@@ -2343,6 +2576,48 @@ void analysisClass::Loop()
   h_caloSumetHadHF->Write();
   h_caloSumetEmHF->Write(); 
 
+  //########################################
+  //#### MET for different subdetectors ####
+  //########################################
+  
+  my_calometEBPt->Write();
+  my_calometEBPhi->Write();
+  my_calometEBPx->Write();
+  my_calometEBPy->Write();
+  my_caloSumetEB->Write();
+  
+  my_calometEEPt->Write();
+  my_calometEEPhi->Write();
+  my_calometEEPx->Write();
+  my_calometEEPy->Write();
+  my_caloSumetEE->Write();
+  
+  my_calometHBPt->Write();
+  my_calometHBPhi->Write();
+  my_calometHBPx->Write();
+  my_calometHBPy->Write();
+  my_caloSumetHB->Write();
+  
+  my_calometHEPt->Write();
+  my_calometHEPhi->Write();
+  my_calometHEPx->Write();
+  my_calometHEPy->Write();
+  my_caloSumetHE->Write();
+  
+  my_calometEmHFPt->Write();
+  my_calometEmHFPhi->Write();
+  my_calometEmHFPx->Write();
+  my_calometEmHFPy->Write();
+  my_caloSumetEmHF->Write();
+  
+  my_calometHadHFPt->Write();
+  my_calometHadHFPhi->Write();
+  my_calometHadHFPx->Write();
+  my_calometHadHFPy->Write();
+  my_caloSumetHadHF->Write();
+  
+  //########################################
+  
   //HF PMT hits
   h_HFRatio->Write();
   h_HFPMTHitVeto_tc1_vs_PF0__PFcuts->Write();
