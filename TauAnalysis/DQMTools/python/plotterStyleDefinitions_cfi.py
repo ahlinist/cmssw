@@ -159,7 +159,7 @@ drawOption_black_separate = cms.PSet(
     fillColor = color_black,        
     fillStyle = cms.int32(0),
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_red_separate = cms.PSet(
@@ -169,7 +169,7 @@ drawOption_red_separate = cms.PSet(
     fillColor = color_red,        
     fillStyle = cms.int32(0),
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_green_separate = cms.PSet(
@@ -179,7 +179,7 @@ drawOption_green_separate = cms.PSet(
     fillColor = color_green,        
     fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_lightBlue_separate = cms.PSet(
@@ -189,7 +189,7 @@ drawOption_lightBlue_separate = cms.PSet(
     fillColor = color_lightBlue,        
     fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_darkBlue_separate = cms.PSet(
@@ -199,7 +199,7 @@ drawOption_darkBlue_separate = cms.PSet(
     fillColor = color_darkBlue,        
     fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_yellow_separate = cms.PSet(
@@ -209,7 +209,7 @@ drawOption_yellow_separate = cms.PSet(
     fillColor = color_yellow,        
     fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_orange_separate = cms.PSet(
@@ -219,7 +219,7 @@ drawOption_orange_separate = cms.PSet(
     fillColor = color_orange,        
     fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_green_separate = cms.PSet(
@@ -229,7 +229,7 @@ drawOption_green_separate = cms.PSet(
     fillColor = color_green,        
     fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_violett_separate = cms.PSet(
@@ -239,7 +239,7 @@ drawOption_violett_separate = cms.PSet(
     fillColor = color_violett,
     fillStyle = cms.int32(0),
     drawOption = cms.string('hist'),
-    drawOptionLegend = cms.string('f')
+    drawOptionLegend = cms.string('l')
 )
 
 drawOption_gray_separate = cms.PSet(
@@ -249,7 +249,7 @@ drawOption_gray_separate = cms.PSet(
     fillColor = color_gray,        
     fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
-    drawOptionLegend = cms.string('f') 
+    drawOptionLegend = cms.string('l') 
 )
 
 drawOption_sum_separate = cms.PSet(
