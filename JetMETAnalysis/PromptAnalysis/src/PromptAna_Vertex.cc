@@ -15,7 +15,7 @@ PromptAna_Vertex::PromptAna_Vertex(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > ( prefix + "Chi2"  + suffix );
   produces <std::vector<double> > ( prefix + "SumPt" + suffix );//SumPt of all tracks
   produces <std::vector<double> > ( prefix + "SumPtW5" + suffix );//SumPt of tracks with weight > 0.5
-  produces <std::vector<int> >    ( prefix + "NDF"  + suffix );
+  produces <std::vector<double> > ( prefix + "NDF"  + suffix );
   produces <std::vector<int> >    ( prefix + "NTracks"  + suffix );
   produces <std::vector<int> >    ( prefix + "NTracksW5"  + suffix );
   produces <std::vector<bool> >   ( prefix + "isValid"  + suffix );
@@ -32,7 +32,7 @@ void PromptAna_Vertex::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   std::auto_ptr<std::vector<double> >  chi2             ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  sumpt            ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  sumptw5          ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<int> >  ndf                 ( new std::vector<int>()  ) ;
+  std::auto_ptr<std::vector<double> >  ndf              ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<int> >  ntracks             ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >  ntracksw5           ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<bool> >  isvalid            ( new std::vector<bool>() ) ;
@@ -51,7 +51,7 @@ void PromptAna_Vertex::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       yErr -> push_back(it->yError());
       zErr -> push_back(it->zError());
       chi2 -> push_back(it->chi2());
-      ndf  -> push_back(int(it->ndof()));
+      ndf  -> push_back(it->ndof());
       ntracks->push_back(int(it->tracksSize()));
       isvalid->push_back(int(it->isValid()));
 
@@ -63,7 +63,7 @@ void PromptAna_Vertex::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	  std::vector<TrackBaseRef>::const_iterator trackIt;
 	  for( trackIt = it->tracks_begin(); trackIt != it->tracks_end(); trackIt++)
 	    {
-	      if(fabs((**trackIt).charge()) < 1.)
+	      if(fabs((**trackIt).charge()) <= 1.)
 		{
 		  _SumPt += (**trackIt).pt();
 		  
