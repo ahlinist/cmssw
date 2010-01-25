@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from TauAnalysis.DQMTools.drawJobConfigurator import *
+from TauAnalysis.DQMTools.tools.composeSubDirectoryName import composeSubDirectoryName
 
 #--------------------------------------------------------------------------------
 # utility function for configuring drawJobs
@@ -16,25 +16,19 @@ from TauAnalysis.DQMTools.drawJobConfigurator import *
 
 class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
 
-    def __init__(self, template, dqmDirectory_prefix, dqmDirectory_suffix):
+    def __init__(self, template, dqmDirectories, legendEntries, frTypes):
         self.template = template
-        self.dqmDirectory_prefix = dqmDirectory_prefix.value()
-        if not self.dqmDirectory_prefix.endswith("/"):
-            self.dqmDirectory_prefix += "/"
-        self.dqmDirectory_suffix = dqmDirectory_suffix.value()
-        if not self.dqmDirectory_suffix.endswith("/"):
-            self.dqmDirectory_suffix += "/"
+        self.dqmDirectories = dqmDirectories
+        self.legendEntries = legendEntries
+        self.frTypes = frTypes
         self.dqmSubDirectories_process = dict()
         self.plots_afterCut = []
         self.plots_beforeCut = []
         self.plots_configEntry = []
         self.pset = cms.PSet()
 
-    def addProcess(self, process, dqmSubDirectory):
-        self.dqmSubDirectories_process[process] = dqmSubDirectory.value()
-
-        if not self.dqmSubDirectories_process[process].endswith("/"):
-            self.dqmSubDirectories_process[process] += "/"
+    def addProcess(self, process, dqmSubDirectory_process):
+        self.dqmSubDirectories_process[process] = dqmSubDirectory_process.value()
 
     def addPlots(self, afterCut = None, beforeCut = None, plot = None, plots = None):
         
@@ -59,34 +53,49 @@ class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
 
     def configure(self):
 
+        self.pset = cms.PSet()
+
         for processName, dqmSubDirectory_process in self.dqmSubDirectories_process.items():
-
-            drawJobConfigurator_process = drawJobConfigurator(
-                template = self.template,
-                dqmDirectory = self.dqmDirectory_prefix + dqmSubDirectory_process + self.dqmDirectory_suffix
-            )
-
             for iPlot in range(len(self.plots_configEntry)):
 
-                drawJobConfigEntry_plot = copy.deepcopy(self.plots_configEntry[iPlot])
+                plot_configEntry = self.plots_configEntry[iPlot]
 
-                name_orig = getattr(self.plots_configEntry[iPlot], "name")
-                name_mod = name_orig.replace("#PROCESSNAME#", processName)
-                setattr(drawJobConfigEntry_plot, "name", name_mod)
+                drawJobConfig_plots = []
 
-                drawJobConfigurator_process.add(
-                    afterCut = self.plots_afterCut[iPlot],
-                    beforeCut = self.plots_beforeCut[iPlot],
-                    plot = drawJobConfigEntry_plot
-                )
+                parameter = None
+                plot_name = None
+                
+                for frType in self.frTypes:
+                    drawJobConfig_plot = cms.PSet()
+                    plot_name = getattr(plot_configEntry, "name")
 
-            drawJobConfig_process = drawJobConfigurator_process.configure()
+                    dqmDirectory = self.dqmDirectories[frType]
+                    dqmDirectory = dqmDirectory.replace("#PROCESSDIR#", dqmSubDirectory_process)
+                    afterCut = self.plots_afterCut[iPlot]
+                    beforeCut = self.plots_beforeCut[iPlot]
+                    dqmDirectory += '/' + composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut)
 
-            for drawJobConfigEntryName_process in dir(drawJobConfig_process):            
-                drawJobConfigEntry_process = getattr(drawJobConfig_process, drawJobConfigEntryName_process)
+                    meName_full = dqmDirectory + '/' + getattr(plot_configEntry, "meName")
+                    print("meName_full = " + meName_full)
 
-                if isinstance(drawJobConfigEntry_process, cms.PSet):
-                    setattr(self.pset, drawJobConfigEntryName_process, drawJobConfigEntry_process)
+                    setattr(drawJobConfig_plot, "process", cms.string(frType))
+                    setattr(drawJobConfig_plot, "dqmMonitorElements", cms.vstring(meName_full))
+                    setattr(drawJobConfig_plot, "drawOptionEntry", cms.string(frType))
+                    setattr(drawJobConfig_plot, "legendEntry", cms.string(self.legendEntries[frType]))
+
+                    if hasattr(drawJobConfig_plot, "PAR"):
+                        parameter = getattr(drawJobConfig_plot, "PAR")
+                    
+                    drawJobConfig_plots.append(drawJobConfig_plot)
+
+                drawJob = copy.deepcopy(self.template)    
+                setattr(drawJob, "plots", cms.VPSet(drawJobConfig_plots))
+                
+                if parameter is not None:
+                    setattr(drawJob, "parameter", cms.vstring(parameter))
+
+                drawJobName = plot_name.replace("#PROCESSNAME#", processName)
+                setattr(self.pset, drawJobName, drawJob)          
 
         return self.pset
     
