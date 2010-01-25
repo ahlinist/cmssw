@@ -5,7 +5,7 @@ from TauAnalysis.Skimming.makeReplacementsSkimByRunEventNumbers import makeRepla
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputDirectory = "/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/"
+outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/"
 
 #--------------------------------------------------------------------------------
 #
@@ -16,9 +16,10 @@ outputDirectory = "/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/"
 #
 #--------------------------------------------------------------------------------
 
-# Z --> e e + jets jobs
-for i in range(13):
-    submitToBatch(configFile = "skimByRunEventNumbers_cfg.py", channel = "ZtoElecTau", sample = "ZeePlusJets_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsSkimByRunEventNumbers,
-                  replacements = "maxEvents = -1; runEventNumberFileName = /afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/DQMTools/test/selEvents_ZtoElecTau_ZeePlusJets.txt",
-                  job = "skimByRunEventNumbers", queue = "1nd", outputDirectory = outputDirectory)
+# pp --> mu X QCD jobs
+for i in range(21):
+    submitToBatch(configFile = "skimByRunEventNumbers_cfg.py", channel = "ZtoMuTau",
+                  sample = "InclusivePPmuX_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsSkimByRunEventNumbers, replacements =
+                  "maxEvents = -1; runEventNumberFileName = /afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_1_4/src/TauAnalysis/DQMTools/test/selEvents_ZtoTauNu_InclusivePPmuX_passed.txt",
+                  job = "skimByRunEventNumbers", queue = "1nd", outputFilePath = outputFilePath)
