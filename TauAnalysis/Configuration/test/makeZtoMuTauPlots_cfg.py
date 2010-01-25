@@ -26,7 +26,7 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
 process.makeZtoMuTauPlots = cms.Sequence(
     process.loadZtoMuTau
-   + process.dumpDQMStore
+  #+ process.dumpDQMStore
    + process.addZtoMuTau
    + process.saveZtoMuTau
    + process.dumpZtoMuTau
