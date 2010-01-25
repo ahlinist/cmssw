@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
-from TauAnalysis.DQMTools.drawJobConfigurator import *
+from TauAnalysis.DQMTools.tools.drawJobConfigurator import *
 
 # define template for all kins of plots
 # (specific to Z --> e + tau-jet analysis)
