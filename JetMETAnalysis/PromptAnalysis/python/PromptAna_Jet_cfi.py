@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 promptanaic5calojet = cms.EDProducer("PromptAna_Jet",
                                      InputTag = cms.InputTag('iterativeCone5CaloJets'),
                                      TracksInputTag = cms.InputTag('generalTracks'),
+                                     JetCorrectionService = cms.string('L2L3JetCorrectorIC5Calo'),
                                      Prefix = cms.string('ic5Jet'),
                                      Suffix = cms.string(''),
                                      # Jet ID configuration
@@ -19,6 +20,7 @@ promptanaic5calojet = cms.EDProducer("PromptAna_Jet",
 promptanakt4calojet = cms.EDProducer("PromptAna_Jet",
                                      InputTag = cms.InputTag('kt4CaloJets'),
                                      TracksInputTag = cms.InputTag('generalTracks'),
+                                     JetCorrectionService = cms.string('L2L3JetCorrectorKT4Calo'),
                                      Prefix = cms.string('kt4Jet'),
                                      Suffix = cms.string(''),
                                      # Jet ID configuration
@@ -34,7 +36,8 @@ promptanakt4calojet = cms.EDProducer("PromptAna_Jet",
 
 promptanasc5calojet = cms.EDProducer("PromptAna_Jet",
                             InputTag = cms.InputTag('sisCone5CaloJets'),
-                                     TracksInputTag = cms.InputTag('generalTracks'),
+                            TracksInputTag = cms.InputTag('generalTracks'),
+                            JetCorrectionService = cms.string('L2L3JetCorrectorSC5Calo'),
                             Prefix = cms.string('sc5Jet'),
                             Suffix = cms.string(''),
                             # Jet ID configuration
@@ -51,6 +54,7 @@ promptanasc5calojet = cms.EDProducer("PromptAna_Jet",
 promptanaak5calojet = cms.EDProducer("PromptAna_Jet",
                             InputTag = cms.InputTag('ak5CaloJets'),
                             TracksInputTag = cms.InputTag('generalTracks'),
+                            JetCorrectionService = cms.string('L2L3JetCorrectorAK5Calo'),
                             Prefix = cms.string('ak5Jet'),
                             Suffix = cms.string(''),
                             # Jet ID configuration

@@ -29,7 +29,8 @@ process.add_( cms.Service( "TFileService",
                            fileName = cms.string( 'your_output_MC.root' ),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
@@ -41,10 +42,13 @@ process.source = cms.Source (
     
     secondaryFileNames = cms.untracked.vstring())
 
-
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.default.limit = 100
+
+# jet corrections
+process.load("JetMETCorrections.Configuration.L2L3Corrections_900GeV_cff")
+#process.load("JetMETCorrections.Configuration.L2L3Corrections_2360GeV_cff")
 
 # summary
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
@@ -68,6 +72,8 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     #'keep *_promptanasc5calojet_*_*',
     'keep *_promptanakt4calojet_*_*',
     'keep *_promptanaak5calojet_*_*',
+    'keep *_promptanaJPTak5_*_*',
+    'keep *_promptanaak5pfjet_*_*',
     'keep *_promptanahalo_*_*',
     'keep *_promptanacalotowers_*_*',
     'keep *_promptanatrigger_*_*',
@@ -90,6 +96,8 @@ process.theBigNtuple = cms.Path(
     #process.promptanasc5calojet +
     process.promptanakt4calojet +
     process.promptanaak5calojet +
+    process.promptanaJPTak5 +
+    process.promptanaak5pfjet +
     process.promptanahalo +
     process.promptanacalotowers +
     process.promptanatrigger +

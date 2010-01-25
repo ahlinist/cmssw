@@ -13,6 +13,7 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
 
 class PromptAna_Jet : public edm::EDProducer{
  public: 
@@ -23,6 +24,7 @@ class PromptAna_Jet : public edm::EDProducer{
   std::vector<const reco::Track*> FindAssociatedTracks(const reco::CaloJet *jet, const reco::TrackCollection *tracks);
   const edm::InputTag   inputTag;
   const edm::InputTag   tracksinputTag;
+  const std::string     jetCorrectionService;
   const std::string     prefix,suffix;
   const edm::ParameterSet   jetID;
 };
