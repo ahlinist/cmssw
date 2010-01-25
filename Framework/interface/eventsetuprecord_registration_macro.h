@@ -39,9 +39,8 @@ macro EVENTSETUP_RECORD_REG is used to create that code.
 #define EVENTSETUP_RECORD_NAME2_HIDDEN(_a_,_b_) _a_ ## _b_
 
 #define EVENTSETUP_RECORD_REG(_recordclassname_) \
-HCTYPETAG_HELPER_METHODS(_recordclassname_) \
+TYPELOOKUP_DATA_REG(_recordclassname_); \
 static edm::eventsetup::EventSetupRecordProviderFactoryTemplate<_recordclassname_> EVENTSETUP_RECORD_NAME2(s_factory,__LINE__);\
-DEFINE_HCTYPETAG_REGISTRATION(_recordclassname_);\
 template void edm::eventsetup::eventSetupGetImplementation<_recordclassname_>(edm::EventSetup const&, _recordclassname_ const*&); \
 template  edm::eventsetup::EventSetupRecordKey edm::eventsetup::heterocontainer::makeKey<_recordclassname_, edm::eventsetup::EventSetupRecordKey>()
 
