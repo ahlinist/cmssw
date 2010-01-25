@@ -49,14 +49,14 @@ edm::typelookup::NameRegistrar::NameRegistrar(const char* iTypeName,const std::t
 }
 
 
-const std::type_info* 
+std::pair<const char*, const std::type_info*> 
 edm::typelookup::findType(const char* iTypeName) {
 
    std::map<const char*, const std::type_info*,StringCompare>::iterator itFind = typeNameToValueMap().find(iTypeName);
    
    if(itFind == typeNameToValueMap().end()) {
-      return 0;
+      return std::make_pair(static_cast<const char*>(0), static_cast<std::type_info*> (0));
    }
    
-   return (*itFind).second;
+   return (*itFind);
 }
