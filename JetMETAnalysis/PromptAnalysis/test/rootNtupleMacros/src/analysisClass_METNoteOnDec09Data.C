@@ -545,7 +545,15 @@ void analysisClass::Loop()
       //#####################
       //## Reco-based filters
       //#####################
+      //pass_GoodVertex 
+      //https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe
+      int pass_GoodVertex = 1;
       
+      if(vertexZ->size() == 0) pass_GoodVertex = 0;
+      for (int ii=0; ii<vertexZ->size(); ii++)
+	if( vertexChi2->at(ii) == 0. || vertexNTracks->at(ii) < 4 || fabs(vertexZ->at(ii)) >= 15. )
+	  pass_GoodVertex = 0;
+
       //## pass_MonsterTRKEventVeto - "Monster Events" Tracker Filter
       //see https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe
       int pass_MonsterTRKEventVeto = 0;
@@ -581,7 +589,7 @@ void analysisClass::Loop()
       // 	{ 
       // 	  pass_MonsterTRKEventVeto = 1;
       // 	}
-  
+
       //## pass_HFPMTHitVeto - Reject anomalous events in HF due to PMT hits - 
       int pass_HFPMTHitVeto_caloMET = 1;
       int pass_HFPMTHitVeto_caloMET_HAD = 1;
@@ -1286,6 +1294,7 @@ void analysisClass::Loop()
       fillVariableWithValue("pass_BSC_MB", pass_BSC_MB);
       fillVariableWithValue("pass_BSC_BeamHaloVeto", pass_BSC_BeamHaloVeto);
       fillVariableWithValue("pass_PhysicsBit", pass_PhysicsBit);
+      fillVariableWithValue("pass_GoodVertex", pass_GoodVertex);
       fillVariableWithValue("pass_MonsterTRKEventVeto", pass_MonsterTRKEventVeto);
 
       //fillVariableWithValue("pass_ECALSpikesVeto_caloMET", pass_ECALSpikesVeto_caloMET);
@@ -1412,7 +1421,6 @@ void analysisClass::Loop()
 	   h_AllNVertex->Fill(vertexZ->size());
 	   for (int ii=0; ii<vertexZ->size(); ii++)
 	     {
-	       if(vertexNTracks->at(ii)<2) continue;
 	       h_AllVertexZ->Fill(vertexZ->at(ii));
 	       h_AllVertexChi2->Fill(vertexChi2->at(ii));
 	       h_AllVertexNDOF->Fill(vertexNDF->at(ii));
