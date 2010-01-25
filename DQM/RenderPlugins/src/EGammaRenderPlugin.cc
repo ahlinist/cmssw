@@ -10,6 +10,7 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TClass.h"
 #include <cassert>
 
 class EGammaRenderPlugin : public DQMRenderPlugin
@@ -19,8 +20,18 @@ class EGammaRenderPlugin : public DQMRenderPlugin
 public:
   virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
-      if (o.name.find( "PhotonAnalyzer/" )   == std::string::npos)
+      // electrons
+
+      if ( o.name.find( "Electrons/") != std::string::npos )
+        return true;
+           
+      // photons
+
+      if (o.name.find( "PhotonAnalyzer/" ) == std::string::npos)
         return false;
+
+      if( o.name.find( "/General/" ) != std::string::npos )
+        return true;
 
       if( o.name.find( "/Efficiencies/" ) != std::string::npos )
         return true;
@@ -41,6 +52,30 @@ public:
     {
       c->cd();
 
+      // electrons
+      if ( o.name.find( "Electrons/") != std::string::npos )
+       {
+        TH1 * histo = dynamic_cast<TH1*>(o.object) ;
+        assert(histo) ;
+        
+        TString histo_option = histo->GetOption() ;
+        if (histo_option.Contains("ELE_LOGY")==kTRUE)
+         { c->SetLogy(1) ; }
+         
+        if ( dynamic_cast<TH2*>(o.object) )
+         {
+          gStyle->SetPalette(1) ;
+          gStyle->SetOptStat(110) ;
+         }
+        else if ( dynamic_cast<TProfile*>(o.object) )
+         { gStyle->SetOptStat(110) ; }
+        else // TH1
+         { gStyle->SetOptStat(111110) ; }
+        
+        return ;
+       }
+             
+      // photons
       if( dynamic_cast<TH2F*>( o.object ) )
       {
         preDrawTH2F( c, o );
@@ -49,8 +84,9 @@ public:
       {
         preDrawTH1F( c, o );
       }
-      else if( dynamic_cast<TProfile*>( o.object ) ) {
-	preDrawTProfile( c, o );
+      else if( dynamic_cast<TProfile*>( o.object ) )
+      {
+	      preDrawTProfile( c, o );
       }
 
     }
@@ -58,6 +94,12 @@ public:
   virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
+      
+      // electrons : do nothing
+      if ( o.name.find( "Electrons/") != std::string::npos )
+       { return ; }
+             
+      // photons
       if( dynamic_cast<TH1F*>( o.object ) )
       {
         postDrawTH1F( c, o );
@@ -69,6 +111,7 @@ public:
     }
 
 private:
+
   void preDrawTH2F( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
@@ -111,22 +154,22 @@ private:
         gStyle->SetOptStat("e");
     }
 
-  void preDrawTProfile( TCanvas *c, const VisDQMObject &o ) {
+  void preDrawTProfile( TCanvas *c, const VisDQMObject &o )
+    {
     
-    c->cd();
-    TProfile* obj = dynamic_cast<TProfile*>( o.object );
-    assert( obj );
-       
-    gStyle->SetOptStat("em");
+      c->cd();
+      TProfile* obj = dynamic_cast<TProfile*>( o.object );
+      assert( obj );
+         
+      gStyle->SetOptStat("em");
 
-  }
-
-
+    }
 
   void postDrawTH1F( TCanvas *c, const VisDQMObject &o )
     {
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
       assert( obj );
+      
       //gStyle->SetOptStat(11);
       obj->SetMinimum(0);
 
@@ -162,6 +205,7 @@ private:
       //gStyle->SetOptStat("e");
 
     }
+
 };
 
 static EGammaRenderPlugin instance;
