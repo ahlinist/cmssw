@@ -30,7 +30,7 @@ from RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi import *
 #from RecoTauTag.TauTagTools.TancCVTransform_cfi import *
 
 # produce tau id. efficiencies & fake-rates
-#from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
+from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
 
 # produce MET significance values
 from RecoMET.METProducers.CaloMETSignif_cfi import *
@@ -47,7 +47,7 @@ producePrePat = cms.Sequence(
    + PFTau
    + shrinkingConePFTauDiscriminationByTaNC + RunTanc
    #+ shrinkingConePFTauTancCVTransform
-   #+ associateTauFakeRates
+   + associateTauFakeRates
    + ewkTauId 
    + metsignificance
    + produceEventShapeVars
