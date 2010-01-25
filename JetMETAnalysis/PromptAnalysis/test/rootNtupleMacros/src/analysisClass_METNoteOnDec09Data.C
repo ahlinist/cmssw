@@ -41,12 +41,13 @@ void analysisClass::Loop()
   int   Nbins_Phi = 50; // -4 + 4
   int   Nbins_METSig = 50;
   int   Max_METSig = 20;
+  float Max_Phi = 3.15;
 
   //## 1D histograms
 
   //calomet
   TH1F *h_calometPt   = new TH1F ("h_calometPt","h_calometPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_calometPhi  = new TH1F ("h_calometPhi","h_calometPhi",Nbins_Phi,-4,4);
+  TH1F *h_calometPhi  = new TH1F ("h_calometPhi","h_calometPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *h_calometPx   = new TH1F ("h_calometPx","h_calometPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_calometPy   = new TH1F ("h_calometPy","h_calometPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_caloSumet   = new TH1F ("h_caloSumet","h_caloSumet",Nbins_METSumET,0,Max_METSumET);
@@ -63,7 +64,7 @@ void analysisClass::Loop()
 
   //calometNoHF
   TH1F *h_calometNoHFPt   = new TH1F ("h_calometNoHFPt","h_calometNoHFPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_calometNoHFPhi  = new TH1F ("h_calometNoHFPhi","h_calometNoHFPhi",Nbins_Phi,-4,4);
+  TH1F *h_calometNoHFPhi  = new TH1F ("h_calometNoHFPhi","h_calometNoHFPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *h_calometNoHFPx   = new TH1F ("h_calometNoHFPx","h_calometNoHFPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_calometNoHFPy   = new TH1F ("h_calometNoHFPy","h_calometNoHFPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_caloSumetNoHF   = new TH1F ("h_caloSumetNoHF","h_caloSumetNoHF",Nbins_METSumET,0,Max_METSumET);
@@ -100,37 +101,37 @@ void analysisClass::Loop()
   //calomet for different subdetectors
   
   TH1F *my_calometEBPt   = new TH1F ("my_calometEBPt","my_calometEBPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *my_calometEBPhi  = new TH1F ("my_calometEBPhi","my_calometEBPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometEBPhi  = new TH1F ("my_calometEBPhi","my_calometEBPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *my_calometEBPx   = new TH1F ("my_calometEBPx","my_calometEBPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_calometEBPy   = new TH1F ("my_calometEBPy","my_calometEBPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_caloSumetEB   = new TH1F ("my_caloSumetEB","my_caloSumetEB",Nbins_METSumET,0,Max_METSumET);
   
   TH1F *my_calometEEPt   = new TH1F ("my_calometEEPt","my_calometEEPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *my_calometEEPhi  = new TH1F ("my_calometEEPhi","my_calometEEPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometEEPhi  = new TH1F ("my_calometEEPhi","my_calometEEPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *my_calometEEPx   = new TH1F ("my_calometEEPx","my_calometEEPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_calometEEPy   = new TH1F ("my_calometEEPy","my_calometEEPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_caloSumetEE   = new TH1F ("my_caloSumetEE","my_caloSumetEE",Nbins_METSumET,0,Max_METSumET);
   
   TH1F *my_calometHBPt   = new TH1F ("my_calometHBPt","my_calometHBPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *my_calometHBPhi  = new TH1F ("my_calometHBPhi","my_calometHBPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometHBPhi  = new TH1F ("my_calometHBPhi","my_calometHBPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *my_calometHBPx   = new TH1F ("my_calometHBPx","my_calometHBPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_calometHBPy   = new TH1F ("my_calometHBPy","my_calometHBPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_caloSumetHB   = new TH1F ("my_caloSumetHB","my_caloSumetHB",Nbins_METSumET,0,Max_METSumET);
   
   TH1F *my_calometHEPt   = new TH1F ("my_calometHEPt","my_calometHEPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *my_calometHEPhi  = new TH1F ("my_calometHEPhi","my_calometHEPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometHEPhi  = new TH1F ("my_calometHEPhi","my_calometHEPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *my_calometHEPx   = new TH1F ("my_calometHEPx","my_calometHEPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_calometHEPy   = new TH1F ("my_calometHEPy","my_calometHEPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_caloSumetHE   = new TH1F ("my_caloSumetHE","my_caloSumetHE",Nbins_METSumET,0,Max_METSumET);
   
   TH1F *my_calometEmHFPt   = new TH1F ("my_calometEmHFPt","my_calometEmHFPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *my_calometEmHFPhi  = new TH1F ("my_calometEmHFPhi","my_calometEmHFPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometEmHFPhi  = new TH1F ("my_calometEmHFPhi","my_calometEmHFPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *my_calometEmHFPx   = new TH1F ("my_calometEmHFPx","my_calometEmHFPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_calometEmHFPy   = new TH1F ("my_calometEmHFPy","my_calometEmHFPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_caloSumetEmHF   = new TH1F ("my_caloSumetEmHF","my_caloSumetEmHF",Nbins_METSumET,0,Max_METSumET);
   
   TH1F *my_calometHadHFPt   = new TH1F ("my_calometHadHFPt","my_calometHadHFPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *my_calometHadHFPhi  = new TH1F ("my_calometHadHFPhi","my_calometHadHFPhi",Nbins_Phi,-4,4);
+  TH1F *my_calometHadHFPhi  = new TH1F ("my_calometHadHFPhi","my_calometHadHFPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *my_calometHadHFPx   = new TH1F ("my_calometHadHFPx","my_calometHadHFPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_calometHadHFPy   = new TH1F ("my_calometHadHFPy","my_calometHadHFPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_caloSumetHadHF   = new TH1F ("my_caloSumetHadHF","my_caloSumetHadHF",Nbins_METSumET,0,Max_METSumET);
@@ -259,7 +260,7 @@ void analysisClass::Loop()
   //MPT
   TH1F *h_nGoodTracks = new TH1F ("h_nGoodTracks","h_nGoodTracks",100,0,100);
   TH1F *h_MPT   = new TH1F ("h_MPT","h_MPT",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_MPTPhi  = new TH1F ("h_MPTPhi","h_MPTPhi",Nbins_Phi,-4,4);
+  TH1F *h_MPTPhi  = new TH1F ("h_MPTPhi","h_MPTPhi",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *h_MPx   = new TH1F ("h_MPx","h_MPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_MPy   = new TH1F ("h_MPy","h_MPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_Phi_MPT_MET   = new TH1F ("h_Phi_MPT_MET","h_Phi_MPT_MET",50,0,4);
@@ -300,7 +301,7 @@ void analysisClass::Loop()
   //## 2D histograms
 
   //MET vs ...
-  TH2F *h2_MET_Vs_METPhi = new TH2F ("h2_MET_Vs_METPhi","h2_MET_Vs_METPhi",Nbins_Phi, -4,4, Nbins_METSumET,0,Max_METSumET);
+  TH2F *h2_MET_Vs_METPhi = new TH2F ("h2_MET_Vs_METPhi","h2_MET_Vs_METPhi",Nbins_Phi, -Max_Phi,Max_Phi, Nbins_METSumET,0,Max_METSumET);
   TH2F *h2_MET_Vs_SumET  = new TH2F ("h2_MET_Vs_SumET","h2_MET_Vs_SumET",Nbins_METSumET, 0,Max_METSumET, Nbins_METSumET,0,Max_METSumET);
   TH2F *h2_MET_Vs_METX   = new TH2F ("h2_MET_Vs_METX","h2_MET_Vs_METX",Nbins_METSumET, -Max_METSumET/2,Max_METSumET/2, Nbins_METSumET,0,Max_METSumET);
   TH2F *h2_MET_Vs_METY   = new TH2F ("h2_MET_Vs_METY","h2_MET_Vs_METY",Nbins_METSumET, -Max_METSumET/2,Max_METSumET/2, Nbins_METSumET,0,Max_METSumET);
@@ -479,7 +480,7 @@ void analysisClass::Loop()
       
       if(jentry < 10 || jentry%1000 == 0) std::cout << "analysisClass::Loop(): jentry = " << jentry << std::endl;   
       ////////////////////// User's code starts here ///////////////////////
-
+      
       //## Check if the run is in the list of good runs
       int pass_GoodRunList = 0;
       if(isData==1)
@@ -1347,43 +1348,53 @@ void analysisClass::Loop()
            //########################################
            //#### MET for different subdetectors ####
            //########################################
+           if(my_SumetEB>0) {
+             my_calometEBPt->Fill( my_MetEB   );
+             my_calometEBPhi->Fill( my_MetEBPhi );
+             my_calometEBPx->Fill( my_MetEB_x );
+             my_calometEBPy->Fill( my_MetEB_y );
+             my_caloSumetEB->Fill( my_SumetEB );
+           }
            
-           my_calometEBPt->Fill( my_MetEB   );
-           my_calometEBPhi->Fill( my_MetEBPhi );
-           my_calometEBPx->Fill( my_MetEB_x );
-           my_calometEBPy->Fill( my_MetEB_y );
-           my_caloSumetEB->Fill( my_SumetEB );
+           if(my_SumetEE>0) {
+             my_calometEEPt->Fill( my_MetEE   );
+             my_calometEEPhi->Fill( my_MetEEPhi );
+             my_calometEEPx->Fill( my_MetEE_x );
+             my_calometEEPy->Fill( my_MetEE_y );
+             my_caloSumetEE->Fill( my_SumetEE );
+           }
            
-           my_calometEEPt->Fill( my_MetEE   );
-           my_calometEEPhi->Fill( my_MetEEPhi );
-           my_calometEEPx->Fill( my_MetEE_x );
-           my_calometEEPy->Fill( my_MetEE_y );
-           my_caloSumetEE->Fill( my_SumetEE );
-                         
-           my_calometHBPt->Fill( my_MetHB   );
-           my_calometHBPhi->Fill( my_MetHBPhi );
-           my_calometHBPx->Fill( my_MetHB_x );
-           my_calometHBPy->Fill( my_MetHB_y );
-           my_caloSumetHB->Fill( my_SumetHB );
+           if(my_SumetHB>0) {
+             my_calometHBPt->Fill( my_MetHB   );
+             my_calometHBPhi->Fill( my_MetHBPhi );
+             my_calometHBPx->Fill( my_MetHB_x );
+             my_calometHBPy->Fill( my_MetHB_y );
+             my_caloSumetHB->Fill( my_SumetHB );
+           }
            
-           my_calometHEPt->Fill( my_MetHE   );
-           my_calometHEPhi->Fill( my_MetHEPhi );
-           my_calometHEPx->Fill( my_MetHE_x );
-           my_calometHEPy->Fill( my_MetHE_y );
-           my_caloSumetHE->Fill( my_SumetHE );
+           if(my_SumetHE>0) {
+             my_calometHEPt->Fill( my_MetHE   );
+             my_calometHEPhi->Fill( my_MetHEPhi );
+             my_calometHEPx->Fill( my_MetHE_x );
+             my_calometHEPy->Fill( my_MetHE_y );
+             my_caloSumetHE->Fill( my_SumetHE );
+           }
            
-           my_calometEmHFPt->Fill( my_MetEmHF   );
-           my_calometEmHFPhi->Fill( my_MetEmHFPhi );
-           my_calometEmHFPx->Fill( my_MetEmHF_x );
-           my_calometEmHFPy->Fill( my_MetEmHF_y );
-           my_caloSumetEmHF->Fill( my_SumetEmHF );
+           if(my_SumetEmHF>0) {
+             my_calometEmHFPt->Fill( my_MetEmHF   );
+             my_calometEmHFPhi->Fill( my_MetEmHFPhi );
+             my_calometEmHFPx->Fill( my_MetEmHF_x );
+             my_calometEmHFPy->Fill( my_MetEmHF_y );
+             my_caloSumetEmHF->Fill( my_SumetEmHF );
+           }
            
-           my_calometHadHFPt->Fill( my_MetHadHF   );
-           my_calometHadHFPhi->Fill( my_MetHadHFPhi );
-           my_calometHadHFPx->Fill( my_MetHadHF_x );
-           my_calometHadHFPy->Fill( my_MetHadHF_y );
-           my_caloSumetHadHF->Fill( my_SumetHadHF );
-           
+           if(my_SumetHadHF>0) {
+             my_calometHadHFPt->Fill( my_MetHadHF   );
+             my_calometHadHFPhi->Fill( my_MetHadHFPhi );
+             my_calometHadHFPx->Fill( my_MetHadHF_x );
+             my_calometHadHFPy->Fill( my_MetHadHF_y );
+             my_caloSumetHadHF->Fill( my_SumetHadHF );
+           }
           //########################################
            
 	   //MPT
