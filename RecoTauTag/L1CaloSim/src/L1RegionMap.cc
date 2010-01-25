@@ -13,11 +13,12 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1RegionMap.cc,v 1.1.2.1 2008/07/08 18:05:54 chinhan Exp $
+// $Id: L1RegionMap.cc,v 1.2 2008/07/24 10:20:31 chinhan Exp $
 //
 
 
 #include "RecoTauTag/L1CaloSim/interface/L1RegionMap.h"
+#include <stdlib.h>
 
 L1RegionMap::L1RegionMap()
 {
