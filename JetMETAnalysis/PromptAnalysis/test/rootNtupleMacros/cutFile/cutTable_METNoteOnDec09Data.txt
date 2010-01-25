@@ -14,7 +14,7 @@
 #VariableName         value1       value2               value3          value4          level
 #------------         ------------ -------------        ------------    -------------   -----
 towerETcut            0.3          -                    -               -               -1
-subDetTowerETcut      0.2          -                    -               -               -1
+subDetTowerETcut      0.1          -                    -               -               -1
 applyhfpfcleaning     1		   -			-		-		-1
 ## NOTE: the code runs a factor of two faster if "applyhfpfcleaning" is set to 0
 printout	      1		   -			-		-		-1
