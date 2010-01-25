@@ -28,15 +28,16 @@ analysisClass::~analysisClass()
 
 void analysisClass::Loop()
 {
-   std::cout << "analysisClass::Loop() begins" <<std::endl;   
-    
-   char dataset[200]="900 GeV collision data";
-
-   if (fChain == 0) return;
-   double ptMin=8.;
-   double ptMax=100.;
-   int ptBin=50;
-   
+  std::cout << "analysisClass::Loop() begins" <<std::endl;   
+  
+  char dataset[200]="900 GeV collision data";
+  //   char dataset[200]="2.36 TeV collision data";
+  
+  if (fChain == 0) return;
+  double ptMin=8.;
+  double ptMax=100.;
+  int ptBin=50;
+  
   int  phiBin=100;
   double phiMax=-3.2;
   double phiMin=3.2;
@@ -44,8 +45,6 @@ void analysisClass::Loop()
   int  etaBin=100;
   double etaMax=-5  ;
   double etaMin=5  ;
-
-
    
   TH1I *ak5njets = new TH1I("ak5njets","",20,0,20);
   ak5njets->SetXTitle("Number of jets per event");
@@ -62,7 +61,6 @@ void analysisClass::Loop()
   TH1I *ak5nconstcleaned = new TH1I("ak5nconstcleaned","",20,0,20);
   ak5nconstcleaned->SetXTitle("Number of constituents");
   ak5nconstcleaned->SetTitle(dataset);
-
 
   TH1I *kt4njets = new TH1I("kt4njets","",20,0,20);
   kt4njets->SetXTitle("Number of jets per event");
@@ -82,7 +80,6 @@ void analysisClass::Loop()
   TH1D *ptall = new TH1D("ptall","",ptBin+8,0.,ptMax);
   ptall->SetXTitle("p_{T}[GeV]");
   ptall->SetTitle(dataset);
-
   TH1I *ak5NlooseTracks = new TH1I("ak5NlooseTracks","",50,0,50);
   ak5NlooseTracks->SetXTitle("Number of loose tracks in the cone");
   ak5NlooseTracks->SetTitle(dataset);
@@ -95,6 +92,13 @@ void analysisClass::Loop()
   TH1D *ChFracTight = new TH1D("ChFracTight","",101,-0.005,1.005);
   ChFracTight->SetXTitle("charged fraction (tight tracks)");
   ChFracTight->SetTitle(dataset);
+  TH1D *variousEff = new TH1D("variousEff","",4,0,4);
+  //  variousEff->SetXTitle("Efficiency of loose and tight ID and associated trks");
+  variousEff->SetTitle(dataset);
+  variousEff->GetXaxis()->SetBinLabel(1,"Loose JetID");
+  variousEff->GetXaxis()->SetBinLabel(2,"Tight JetID");
+  variousEff->GetXaxis()->SetBinLabel(3,">1 Associated Loose Tracks");
+  variousEff->GetXaxis()->SetBinLabel(4,">1 Associated Tight Tracks");
 
   TH1D *dijetptall1 = new TH1D("dijetptall1","",ptBin, ptMin,ptMax);
   dijetptall1->SetXTitle("p_{T}[GeV]");
@@ -137,6 +141,13 @@ void analysisClass::Loop()
   ak5njetsindijets->SetXTitle("Number of jets per event");
   ak5njetsindijets->SetTitle(dataset);
 
+  TH1D *variousEffindijets = new TH1D("variousEffindijets","",4,0,4);
+  //  variousEffindijets->SetXTitle("Efficiency of loose and tight ID and associated trks");
+  variousEffindijets->SetTitle(dataset);
+  variousEffindijets->GetXaxis()->SetBinLabel(1,"Loose JetID");
+  variousEffindijets->GetXaxis()->SetBinLabel(2,"Tight JetID");
+  variousEffindijets->GetXaxis()->SetBinLabel(3,">1 Associated Loose Tracks");
+  variousEffindijets->GetXaxis()->SetBinLabel(4,">1 Associated Tight Tracks");
 
   TH1D *dijetptall1cleaned = new TH1D("dijetptall1cleaned","",ptBin, ptMin,ptMax);
   dijetptall1cleaned->SetXTitle("p_{T}[GeV]");
@@ -154,7 +165,6 @@ void analysisClass::Loop()
   TH1I *ak5njetsindijetscleaned = new TH1I("ak5njetsindijetscleaned","",20,0,20);
   ak5njetsindijetscleaned->SetXTitle("Number of jets per event");
   ak5njetsindijetscleaned->SetTitle(dataset);
-
 
   TH1D *pt = new TH1D("pt","",ptBin,ptMin,ptMax);
   pt->SetXTitle("p_{T}[GeV]");
@@ -176,8 +186,6 @@ void analysisClass::Loop()
   TH1D *phicleaned = new TH1D("phicleaned","",phiBin,phiMin,phiMax);
   phicleaned->SetXTitle("p_{T}[GeV]");
   phicleaned->SetTitle(dataset);
-
-  
 
   TH2D *mapall = new TH2D("mapall","",50,-5.,5.,24,-3.2,3.2);
   mapall->SetXTitle("#eta_{jet}");
@@ -218,19 +226,32 @@ void analysisClass::Loop()
   n90hits->SetTitle(dataset);
 
    //////////book histos here
-
-   //2D histograms
-
-       ofstream  outfile;
-       outfile.open("interestingevents.txt");
-
-   Long64_t nentries = fChain->GetEntriesFast();
+  
+  ofstream  outfile;
+  outfile.open("interestingevents.txt");
+  
+  Long64_t nentries = fChain->GetEntriesFast();
    std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl;   
 
    ////// The following ~7 lines have been taken from rootNtupleClass->Loop() /////
    ////// If the root version is updated and rootNtupleClass regenerated,     /////
    ////// these lines may need to be updated.                                 /////    
    Long64_t nb = 0;
+
+   //counters   
+   int Nak5TOT=0;
+   int Nak5JetIDLooseTOT=0;
+   int Nak5JetIDTightTOT=0;
+   int Nak5AssTrksLooseTOT=0;
+   int Nak5AssTrksTightTOT=0;
+   int Nkt4TOT=0;
+   int Ncleanedkt4TOT=0;
+   int Nak5indijetsTOT=0;
+   int Nak5indijetsJetIDLooseTOT=0;
+   int Nak5indijetsJetIDTightTOT=0;
+   int Nak5indijetsAssTrksLooseTOT=0;
+   int Nak5indijetsAssTrksTightTOT=0;
+   //
 
    for (Long64_t jentry=0; jentry<nentries;jentry++) 
      {
@@ -249,16 +270,22 @@ void analysisClass::Loop()
 	   int eventid = event;
 	   int LS = ls;
 	   int runid = run;
-	   
-	   ak5nalljets->Fill(ak5JetpT->size());
-	   kt4nalljets->Fill(kt4JetpT->size());
+	   //counters   
 	   int Nak5=0;
+	   int Nak5JetIDLoose=0;
+	   int Nak5JetIDTight=0;
+	   int Nak5AssTrksLoose=0;
+	   int Nak5AssTrksTight=0;
 	   int Nkt4=0;
-	   int Ncleanedak5=0;
 	   int Ncleanedkt4=0;
 	   int Nak5indijets=0;
-	   int Ncleanedak5indijets=0;
-	   //
+	   int Nak5indijetsJetIDLoose=0;
+	   int NALLak5indijetsJetIDLoose=0;
+	   int Nak5indijetsJetIDTight=0;
+	   int Nak5indijetsAssTrksLoose=0;
+	   int Nak5indijetsAssTrksTight=0;
+	   ak5nalljets->Fill(ak5JetpT->size());
+	   kt4nalljets->Fill(kt4JetpT->size());
 	   for (int j = 0; j<int(ak5JetpT->size()); j++){
 	  
 	      ptall->Fill(ak5JetpT->at(j));
@@ -288,26 +315,33 @@ void analysisClass::Loop()
 	       bool emf=false;	      
 		 if(ak5JetJIDresEMF->at(j)>0.01) emf=true;	        else  emf=false;
 	       //fill the histos for cleaned jets
-		 //  if(emf && ak5JetJIDn90Hits->at(j)>1 && ak5JetJIDfHPD->at(j)<0.98 ){//loose cleaning
 		 if(emf && ak5JetJIDfHPD->at(j)<0.98 && ak5JetJIDn90Hits->at(j)>1  ){//loose cleaning
+		   Nak5JetIDLoose++;
+		   ak5nconstcleaned->Fill(ak5JetNConstituents->at(j));
+		   ptcleaned->Fill(ak5JetpT->at(j)); 
+		   etacleaned->Fill(ak5JetEta->at(j));
+		   phicleaned->Fill(ak5JetPhi->at(j));
 		   
-		 Ncleanedak5++;
-		 ak5nconstcleaned->Fill(ak5JetNConstituents->at(j));
-		 ptcleaned->Fill(ak5JetpT->at(j)); 
-		 etacleaned->Fill(ak5JetEta->at(j));
-		 phicleaned->Fill(ak5JetPhi->at(j));
-
-		 if(fabs(ak5JetEta->at(j))<1.4){
-		   Ebarrelcleaned->Fill(ak5JetEnergy->at(j));
-		 } else {
-		   Eendcapcleaned->Fill(ak5JetEnergy->at(j));
+		   if(fabs(ak5JetEta->at(j))<1.4){
+		     Ebarrelcleaned->Fill(ak5JetEnergy->at(j));
+		   } else {
+		     Eendcapcleaned->Fill(ak5JetEnergy->at(j));
+		   }
+		   mapcleaned->Fill(ak5JetEta->at(j),ak5JetPhi->at(j));
+		   cout<<runid<< " " << LS<< " "<< eventid << endl;
+		   outfile<<runid<< "\t" << LS<< "\t"<< eventid << endl;
 		 }
-		 mapcleaned->Fill(ak5JetEta->at(j),ak5JetPhi->at(j));
-		 cout<<runid<< " " << LS<< " "<< eventid << endl;
-		 outfile<<runid<< "\t" << LS<< "\t"<< eventid << endl;
+		 if(emf && ak5JetJIDfHPD->at(j)<0.98 && ak5JetJIDn90Hits->at(j)>1  ){//tight cleaning (for the moment equal to loose!!)
+		   Nak5JetIDTight++;
 		 }
-	      } //<  8
-	   } //jety loop
+		 if(ak5JetNAssoTrksLoose->at(j)>1){
+		   Nak5AssTrksLoose++;
+		 }
+		 if(ak5JetNAssoTrksTight->at(j)>1){
+		   Nak5AssTrksTight++;
+		 }
+	      } //pt min
+	   } //loop on jets
 
 
 	   //dijet
@@ -353,11 +387,42 @@ void analysisClass::Loop()
 		   //now loop on jets and count how many CLEANED jets with pT>8 are in each event
 		   for (int dj = 0; dj<int(ak5JetpT->size()); dj++){
 		     if(ak5JetpT->at(dj)>ptMin && ak5JetJIDresEMF->at(dj)>0.01 && ak5JetJIDfHPD->at(dj)<0.98 && ak5JetJIDn90Hits->at(dj)>1){
-		       Ncleanedak5indijets++;
+		       NALLak5indijetsJetIDLoose++;
 		     }
 		   }
 		 }
-	       }
+		 //how many of the jets in dijets events pass the loose jetID (look only at the two leading jets)
+		 if(ak5JetJIDresEMF->at(0)>0.01 && ak5JetJIDfHPD->at(0)<0.98 && ak5JetJIDn90Hits->at(0)>1){
+		   Nak5indijetsJetIDLoose++;
+		 }
+		 if(ak5JetJIDresEMF->at(1)>0.01 && ak5JetJIDfHPD->at(1)<0.98 && ak5JetJIDn90Hits->at(1)>1){
+		   Nak5indijetsJetIDLoose++;
+		 }
+
+
+		 //how many of the jets in dijets events pass the tight jetID (look only at the two leading jets)
+		 //FOR THE MOMENT THE TIGHT JETID IS EQUAL TO THE LOOSE ONE!
+		 if(ak5JetJIDresEMF->at(0)>0.01 && ak5JetJIDfHPD->at(0)<0.98 && ak5JetJIDn90Hits->at(0)>1){
+		   Nak5indijetsJetIDTight++;
+		 }
+		 if(ak5JetJIDresEMF->at(1)>0.01 && ak5JetJIDfHPD->at(1)<0.98 && ak5JetJIDn90Hits->at(1)>1){
+		   Nak5indijetsJetIDTight++;
+		 }
+		 //how many of the jets in dijets events have two or more associated loose tracks
+		 if(ak5JetNAssoTrksLoose->at(0)>1){
+		   Nak5indijetsAssTrksLoose++;
+		 }
+		 if(ak5JetNAssoTrksLoose->at(1)>1){
+		   Nak5indijetsAssTrksLoose++;
+		 }
+		 //how many of the jets in dijets events have two or more associated tight tracks
+		 if(ak5JetNAssoTrksTight->at(0)>1){
+		   Nak5indijetsAssTrksTight++;
+		 }
+		 if(ak5JetNAssoTrksTight->at(1)>1){
+		   Nak5indijetsAssTrksTight++;
+		 }
+	       }//dphi cut
 	     }
 	   }
 
@@ -380,11 +445,12 @@ void analysisClass::Loop()
 	   }
 	   //after looping on jets
 	   ak5njets->Fill(Nak5);     
-	   ak5ncleanedjets->Fill(Ncleanedak5);
+	   ak5ncleanedjets->Fill(Nak5JetIDLoose);
 	   kt4njets->Fill(Nkt4);     
 	   kt4ncleanedjets->Fill(Ncleanedkt4);
-	   ak5njetsindijetscleaned->Fill(Ncleanedak5indijets);
+	   ak5njetsindijetscleaned->Fill(NALLak5indijetsJetIDLoose);
 	   ak5njetsindijets->Fill(Nak5indijets);
+
 	   //#################################################
        
        /*       // Set the evaluation of the cuts to false and clear the variable values and filled status
@@ -394,12 +460,40 @@ void analysisClass::Loop()
        // Evaluate cuts (but do not apply them)
        evaluateCuts();
        */
- 
-       
+	   Nak5TOT+=Nak5;
+	   Nak5JetIDLooseTOT+=Nak5JetIDLoose;
+	   Nak5JetIDTightTOT+=Nak5JetIDTight;
+	   Nak5AssTrksLooseTOT+=Nak5AssTrksLoose;
+	   Nak5AssTrksTightTOT+=Nak5AssTrksTight;
+	   Nkt4TOT+=Nkt4;
+	   Ncleanedkt4TOT+=Ncleanedkt4;
+	   Nak5indijetsTOT+=Nak5indijets;
+	   Nak5indijetsJetIDLooseTOT+=Nak5indijetsJetIDLoose;
+	   Nak5indijetsJetIDTightTOT+=Nak5indijetsJetIDTight;
+	   Nak5indijetsAssTrksLooseTOT+=Nak5indijetsAssTrksLoose;
+	   Nak5indijetsAssTrksTightTOT+=Nak5indijetsAssTrksTight;
        ////////////////////// User's code ends here ///////////////////////
 	   //		 } // chi2 vertex
 	   }// techbits/vertex/tracks
      } // End loop over events
+   
+   //efficiency histos
+   if(Nak5TOT>0){
+     cout<< 1.*Nak5JetIDLooseTOT <<"  /  " <<1.*Nak5TOT << "  =  " << endl;
+     cout<< (1.*Nak5JetIDLooseTOT/(1.*Nak5TOT)) << endl;
+     variousEff->SetBinContent(1,(1.*Nak5JetIDLooseTOT/(1.*Nak5TOT)));
+     variousEff->SetBinContent(2,(1.*Nak5JetIDTightTOT/(1.*Nak5TOT)));
+     variousEff->SetBinContent(3,(1.*Nak5AssTrksLooseTOT/(1.*Nak5TOT)));
+     variousEff->SetBinContent(4,(1.*Nak5AssTrksTightTOT/(1.*Nak5TOT)));
+   }
+   //efficiency histos
+   if(Nak5indijetsTOT>0){
+     variousEffindijets->SetBinContent(1,(1.*Nak5indijetsJetIDLooseTOT/(1.*Nak5indijetsTOT)));
+     variousEffindijets->SetBinContent(2,(1.*Nak5indijetsJetIDTightTOT/(1.*Nak5indijetsTOT)));
+     variousEffindijets->SetBinContent(3,(1.*Nak5indijetsAssTrksLooseTOT/(1.*Nak5indijetsTOT)));
+     variousEffindijets->SetBinContent(4,(1.*Nak5indijetsAssTrksTightTOT/(1.*Nak5indijetsTOT)));
+   }
+   
    
    //////////write histos 
           outfile.close();
@@ -455,6 +549,8 @@ void analysisClass::Loop()
    fhpddijets->Write();
    frbxdijets->Write();
    n90hitsdijets->Write();
+   variousEff->Write();
+   variousEffindijets->Write();
 
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
      }
