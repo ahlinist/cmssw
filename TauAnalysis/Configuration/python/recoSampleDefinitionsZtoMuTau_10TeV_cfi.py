@@ -1050,7 +1050,7 @@ patTupleOutputFileNameZtoMuTau_WplusJets_10TeV = cms.untracked.string('patTupleZ
 #--------------------------------------------------------------------------------
 # muon enriched QCD sample generated with Pythia (no cut on Pt(hat))
 #  integrated luminosity = 0.0851 pb^-1
-# (corrected by scale factor of 1. for missing files)
+# (no files missing)
 #
 intLumiZtoMuTau_InclusivePPmuX_10TeV = float(0.0851)
 corrFactorZtoMuTau_InclusivePPmuX_10TeV = float(1.)
@@ -1647,10 +1647,10 @@ patTupleOutputFileNameZtoMuTau_InclusivePPmuX_10TeV = cms.untracked.string('patT
 #--------------------------------------------------------------------------------
 # muon enriched QCD sample generated with Pythia (Pt(hat)> 20 GeV && PtMuon > 15 GeV)
 #  integrated luminosity = 44.8 pb^-1
-# (corrected by scale factor of 1. for missing files)
+# (corrected for missing files by estimated scale factor of 1.03)
 #
 intLumiZtoMuTau_PPmuXptGt20_10TeV = float(44.8)
-corrFactorZtoMuTau_PPmuXptGt20_10TeV = float(1.)
+corrFactorZtoMuTau_PPmuXptGt20_10TeV = float(1.03)
 
 fileNamesZtoMuTau_PPmuXptGt20_10TeV_part01 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/IncMu15QCDSkimMT314_1/muTauSkim_1.root',
