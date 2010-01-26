@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
-from TauAnalysis.DQMTools.tools.drawJobConfigurator import *
+from TauAnalysis.DQMTools.drawJobConfigurator import *
 
 # define template for all kinds of plots
 # (specific to Z --> mu + tau-jet analysis)
@@ -11,13 +11,10 @@ plots_ZtoMuTau = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'Zmumu',
-            #'ZmumuPlusJets',
-            #'ZeePlusJets',
             'WplusJets',
             'TTplusJets',
             'qcdSum',
             'Ztautau'
-            #'ZtautauPlusJets'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -28,13 +25,10 @@ plots_ZtoMuTau = cms.PSet(
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
         'Zmumu',
-        #'ZmumuPlusJets',
-        #'ZeePlusJets',
         'WplusJets',
         'TTplusJets',
         'qcdSum',
         'Ztautau'
-        #'ZtautauPlusJets'
     )
 )
 
@@ -364,16 +358,16 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
-    plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
-    )
-)
+##drawJobConfigurator_ZtoMuTau.add(
+##    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+##    plot = drawJobConfigEntry(
+##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+##        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
+##        xAxis = 'Mass',
+##        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+##    )
+##)
 
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
