@@ -38,10 +38,20 @@ LIBS          = $(ROOTLIBS)
 GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
 
 
+# ======================================================================
+# -- Default rules
 $(addprefix obj/,%.o) : $(addprefix rootio/,%.cc )
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(addprefix obj/,%.o) : $(addprefix test/,%.cc )
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(addprefix obj/,%.o) : $(addprefix tnp/,%.cc ) 
+	$(CXX) $(CXXFLAGS) -c $< -I. -o $@
+# ======================================================================
+
+
+# ======================================================================
 ANA00   =    TAna01Event.o TAna01EventDict.o \
              TGenCand.o TGenCandDict.o \
              TAnaTrack.o TAnaTrackDict.o \
@@ -54,7 +64,10 @@ ANA00   =    TAna01Event.o TAna01EventDict.o \
 ANACLASSES = anaTNP2.o anaTNP2Dict.o 
 
 UTIL       = PidTable.o PidTableDict.o \
-             PidData.o PidDataDict.o 
+             PidData.o PidDataDict.o \
+             functions.o functionsDict.o \
+             hpl.o hplDict.o \
+             util.o utilDict.o
 
 
 # ================================================================================
@@ -62,6 +75,9 @@ all:
 # --
 	@$(MAKE) ana00
 	@$(MAKE) util
+	@$(MAKE) anaclasses
+
+examples: 
 	@$(MAKE) writeA01Event
 	@$(MAKE) readA01Event
 	@$(MAKE) runTreeReader01
@@ -100,17 +116,14 @@ rootio/TAnaJetDict.cc: rootio/TAnaJet.hh
 rootio/TGenMuonDict.cc: rootio/TGenMuon.hh 
 	cd rootio && $(ROOTCINT) -f TGenMuonDict.cc -c TGenMuon.hh && cd - 
 
-tnp/anaTNP2Dict.cc: tnp/anaTNP2.hh 
-	$(ROOTSYS)/bin/rootcint  -f tnp/anaTNP2Dict.cc -c tnp/anaTNP2.hh 
-
 
 # ================================================================================
 anaclasses: $(addprefix obj/,$(ANACLASSES))
 # ----------------------------------
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so
 
-obj/ana.o: test/ana.cc
-	cd test && $(CXX) $(CXXFLAGS) -c ana.cc -o ../obj/ana.o  && cd ..
+tnp/anaTNP2Dict.cc: tnp/anaTNP2.hh 
+	$(ROOTSYS)/bin/rootcint  -f tnp/anaTNP2Dict.cc -c tnp/anaTNP2.hh 
 
 
 # ================================================================================
@@ -123,6 +136,16 @@ rootio/PidTableDict.cc: rootio/PidTable.hh
 
 rootio/PidDataDict.cc: rootio/PidData.hh 
 	cd rootio && $(ROOTCINT) -f PidDataDict.cc -c PidData.hh 
+
+rootio/utilDict.cc: rootio/util.hh 
+	cd rootio && $(ROOTSYS)/bin/rootcint -f utilDict.cc -c util.hh utilLinkDef.h
+
+rootio/functionsDict.cc: rootio/functions.hh
+	cd rootio && $(ROOTSYS)/bin/rootcint -f functionsDict.cc -c functions.hh functionsLinkDef.h
+
+rootio/hplDict.cc: rootio/hpl.hh 
+	cd rootio && $(ROOTSYS)/bin/rootcint -f hplDict.cc -c hpl.hh hplLinkDef.h 
+
 
 
 # ======================================================================
@@ -145,6 +168,7 @@ runTreeReader01: test/treeReader01.cc test/treeReader01.cc
 	cd test && $(ROOTSYS)/bin/rootcint -f treeReader01Dict.cc -c treeReader01.hh && cd ..
 	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runTreeReader01.o -c runTreeReader01.cc && cd ..
 	cd test && $(LD) $(LDFLAGS)  -o ../bin/runTreeReader01 $(GLIBS) ../lib/libAna00.so ../obj/runTreeReader01.o ../obj/treeReader01.o && cd ..
+
 
 
 # ================================================================================
@@ -201,5 +225,8 @@ clean:
 cleanall:
 	@$(MAKE) clean
 	rm -f bin/writeA01Event bin/readA01Event
+	rm -f lib/lib*.so
 	rm -f ../../../lib/$(SCRAM_ARCH)/libAna00.so
+	rm -f ../../../lib/$(SCRAM_ARCH)/libUtil.so
+	rm -f ../../../lib/$(SCRAM_ARCH)/libAnaClasses.so
 

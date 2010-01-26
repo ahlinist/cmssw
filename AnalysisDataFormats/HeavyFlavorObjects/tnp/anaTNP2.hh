@@ -21,7 +21,7 @@
 #include "TROOT.h"
 #include "TVirtualPad.h"  // access to gPad
 
-#include "FsxUtil/PidTable.hh"
+#include "rootio/PidTable.hh"
 
 #include <iostream>
 #include <fstream>

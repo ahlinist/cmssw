@@ -21,8 +21,8 @@
 #include "TROOT.h"
 #include "TVirtualPad.h"  // access to gPad
 
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <vector>
 

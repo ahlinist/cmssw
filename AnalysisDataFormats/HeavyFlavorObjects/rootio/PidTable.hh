@@ -68,7 +68,7 @@ public:
   void     setPidTablesDir(const char *s = "/u/ec/ursl/epidtables");
   void     setHistName(const char *s = "e6003") {fHistName = s;}
   void     setHistMinMax(double min, double max) {fHistMin = min; fHistMax = max;}
-  TH2D*    get2dHist(const char *hname, const char *title);
+  TH2D*    get2dHist(const char *hname, const char *title, int mode = 0);
   void     setEffAndErrMode(int mode = 0);
   void     recalculate();
   TIter    next() {return TIter(fDataVector);} 
@@ -197,7 +197,7 @@ private:
   
   static const double Tmax = 2.4;  
   static const double Tmin = -2.4;
-  static const int Tbin = 24;
+  static const int Tbin = 48;
   static const double Pmax = 20.;
   static const double Pmin = 0.;
   static const int Pbin = 40;

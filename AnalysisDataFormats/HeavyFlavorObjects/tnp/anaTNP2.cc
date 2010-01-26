@@ -1,8 +1,8 @@
 #include "anaTNP2.hh"
-#include "FsxUtil/hpl.hh"
-#include "FsxUtil/util.hh"
-#include "FsxUtil/functions.hh"
-#include "FsxUtil/PidTable.hh"
+#include "rootio/hpl.hh"
+#include "rootio/util.hh"
+#include "rootio/functions.hh"
+#include "rootio/PidTable.hh"
 
 #include "TF1.h"
 #include "TKey.h"
@@ -14,6 +14,22 @@
 #include "TCanvas.h"
 
 #include <iomanip>
+
+// ----------------------------------------------------------------------
+// Usage: 
+// -----
+// 
+// lxplus308>r
+// Loading libPhysics.so
+// root [0] gSystem->Load("lib/libUtil.so");                     
+// root [1] gSystem->Load("lib/libAnaClasses.so");               
+// root [2] anaTNP2 a("/afs/cern.ch/user/u/ursl/public/root", 40)
+// --> Loading rootfiles in /afs/cern.ch/user/u/ursl/public/root/ for 40
+// root [3] a.makeAll(3)                                          
+//
+// NOTE: (1) this works for ME, YOU have to copy the files and directories in ~ursl/public/root
+//       (2) If it does not work the first time, .q, and try again... (don't ask, I don't know)
+// ----------------------------------------------------------------------
 
 
 ClassImp(anaTNP2)
@@ -180,6 +196,9 @@ void anaTNP2::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_sameHem.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_pt6.root");  
     } else if (31 == i) {
+      ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
+      jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
+    } else if (40 == i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else {
@@ -922,9 +941,9 @@ void anaTNP2::readHistograms(TFile *f,
   int   charge, n; 
   char searchString1[2000], searchString2[2000], searchString3[2000], 
     searchString1MC[2000], searchString2MC[2000]; 
-  char *sp = "%"; 
-  char *sf = "f"; 
-  char *sd = "d"; 
+  char sp[] = "%"; 
+  char sf[] = "f"; 
+  char sd[] = "d"; 
   sprintf(searchString1, "%s,eta%s%s_%s%s,pt%s%s_%s%s,Q%s%s", s1, sp, sf, sp, sf, sp, sf, sp, sf, sp, sd); 
   cout << "searchString1: " << searchString1 << endl;
   sprintf(searchString1MC, "%s%s,eta%s%s_%s%s,pt%s%s_%s%s,Q%s%s", s1, sm, sp, sf, sp, sf, sp, sf, sp, sf, sp, sd); 
@@ -1775,7 +1794,7 @@ void anaTNP2::biasPlots(const char *fname, const char *psname,  int mode) {
 
   Int_t nentries = Int_t(t->GetEntries());
 
-  Int_t nb(0), nbytes(0), nevents(0);
+  Int_t nb(0), nbytes(0);
   //  for (Int_t jentry = 0; jentry < 20000; jentry++) {
   for (Int_t jentry = 0; jentry < nentries; jentry++) {
     nb = t->GetEntry(jentry);   nbytes += nb;
@@ -1855,9 +1874,9 @@ bool anaTNP2::getBinCenters(string hname, double &eta, double &pT, int &Q) {
   size_t ipos = hname.find(string("eta")); 
   sprintf(hchar, "%s", hname.substr(ipos).c_str()); 
 
-  char *sp = "%"; 
-  char *sf = "f"; 
-  char *sd = "d"; 
+  char sp[] = "%"; 
+  char sf[] = "f"; 
+  char sd[] = "d"; 
   sprintf(searchString, "eta%s%s_%s%s,pt%s%s_%s%s,Q%s%s", sp, sf, sp, sf, sp, sf, sp, sf, sp, sd); 
  
   n = sscanf(hchar, searchString, &etamin, &etamax, &ptmin, &ptmax, &charge);
