@@ -262,7 +262,7 @@ def enableFactorization_makeZtoMuTauPlots(process,
     )
 
     scaleZtoMuTauName_PPmuXptGt20 = "scaleZtoMuTau_PPmuXptGt20" + "_" + pyObjectLabel
-    setattr(process, scaleZtoMuTauName_PPmuXptGt20, scaleZtoMuTau_InclusivePPmuX)
+    setattr(process, scaleZtoMuTauName_PPmuXptGt20, scaleZtoMuTau_PPmuXptGt20)
     
     # compute QCD background sum using factorized histograms and FilterStatistics objects
     addZtoMuTau_qcdSum = getattr(process, modName_addZtoMuTau_qcdSum)
@@ -277,7 +277,7 @@ def enableFactorization_makeZtoMuTauPlots(process,
     addZtoMuTau._seq = addZtoMuTau._seq * getattr(process, modName_addZtoMuTau_qcdSum)
     if hasattr(process, modName_addZtoMuTau_smSum):
         addZtoMuTau._seq = addZtoMuTau._seq * getattr(process, modName_addZtoMuTau_smSum)
-    setattr(process, seqName_addZtoMuTau + "_" + pyObjectLabel, addZtoMuTau)
+    setattr(process, seqName_addZtoMuTau, addZtoMuTau)
 
     if hasattr(process, "plotZtoMuTau"):
         process.plotZtoMuTau.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
