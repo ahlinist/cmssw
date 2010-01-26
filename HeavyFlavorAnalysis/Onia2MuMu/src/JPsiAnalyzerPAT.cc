@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.16 2010/01/13 14:52:25 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.17 2010/01/20 10:31:54 covarell Exp $
 //
 //
 
@@ -67,8 +67,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
-      void makeCuts() ;
-      pair< unsigned int, const pat::CompositeCandidate* > theBestQQ();
+      void makeCuts(int sign) ;
+      pair< unsigned int, const pat::CompositeCandidate* > theBestQQ(int sign);
       void fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand);
       bool selGlobalMuon(const pat::Muon* aMuon);
       bool selTrackerMuon(const pat::Muon* aMuon);
@@ -82,9 +82,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *QQMass2GlobPT6_passmu3;
       TH1F *QQMass1Glob1TrkPT6_passmu3;
       TH1F *QQMass1Glob1CalPT6_passmu3;
-      TH1F *WSMass2Glob_passmu3;
-      TH1F *WSMass1Glob1Trk_passmu3;
-      TH1F *WSMass1Glob1Cal_passmu3;
+  // TH1F *WSMass2Glob_passmu3;
+  // TH1F *WSMass1Glob1Trk_passmu3;
+  // TH1F *WSMass1Glob1Cal_passmu3;
       TH1F *QQMass2Glob_passmu5;
       TH1F *QQMass1Glob1Trk_passmu5;
       TH1F *QQMass1Glob1Cal_passmu5;
@@ -97,9 +97,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *QQMass2Glob_pass2mu3;
       TH1F *QQMass1Glob1Trk_pass2mu3;
       TH1F *QQMass1Glob1Cal_pass2mu3;
-      TH1F *WSMass2Glob_pass2mu3;
-      TH1F *WSMass1Glob1Trk_pass2mu3;
-      TH1F *WSMass1Glob1Cal_pass2mu3;
+  // TH1F *WSMass2Glob_pass2mu3;
+  // TH1F *WSMass1Glob1Trk_pass2mu3;
+  // TH1F *WSMass1Glob1Cal_pass2mu3;
       TH1F *QQMass2Glob_pass2mu0;             
       TH1F *QQMass1Glob1Trk_pass2mu0; 
       TH1F *QQMass1Glob1Cal_pass2mu0;
@@ -121,6 +121,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcWrongGlbGlbMuLife;
       TH1F *hMcRightGlbGlbMuMass;              
       TH1F *hMcWrongGlbGlbMuMass;
+      TH1F *hMcPPGlbGlbMuMass;
+      TH1F *hMcMMGlbGlbMuMass;
+      TH1F *hMcSqrtGlbGlbMuMass;
       TH1F *hMcRightGlbGlbMuPt;              
       TH1F *hMcWrongGlbGlbMuPt;
       TH1F *hMcRightGlbGlbMuEta;              
@@ -138,6 +141,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcWrongTrkBit8;
       TH1F *hMcRightTrkBit9;
       TH1F *hMcWrongTrkBit9;
+      TH1F *hMcRightTrkBitNew;
+      TH1F *hMcWrongTrkBitNew;
       TH1F *hMcRightTrkMuChi2;   
       TH1F *hMcWrongTrkMuChi2; 
       TH1F *hMcRightTrkMuNhits;
@@ -151,6 +156,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcWrongGlbTrkMuLife;
       TH1F *hMcRightGlbTrkMuMass;              
       TH1F *hMcWrongGlbTrkMuMass;
+      TH1F *hMcPPGlbTrkMuMass;
+      TH1F *hMcMMGlbTrkMuMass;
+      TH1F *hMcSqrtGlbTrkMuMass;
       TH1F *hMcRightGlbTrkMuPt;              
       TH1F *hMcWrongGlbTrkMuPt;
       TH1F *hMcRightGlbTrkMuEta;              
@@ -162,6 +170,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcWrongTrkTrkMuLife;
       TH1F *hMcRightTrkTrkMuMass;              
       TH1F *hMcWrongTrkTrkMuMass;
+      TH1F *hMcPPTrkTrkMuMass;
+      TH1F *hMcMMTrkTrkMuMass;
+      TH1F *hMcSqrtTrkTrkMuMass;
       TH1F *hMcRightTrkTrkMuPt;              
       TH1F *hMcWrongTrkTrkMuPt;
       TH1F *hMcRightTrkTrkMuEta;              
@@ -234,9 +245,10 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _useBS;
       bool           _useCalo;
       bool           _removeSignal;
+      bool           _storeWs;
       InputTag       _triggerresults;
-      vector<unsigned int>                     _thePassedCats;
-      vector<const pat::CompositeCandidate*>   _thePassedCands;
+      vector<unsigned int>                     _thePassedCats[3];
+      vector<const pat::CompositeCandidate*>   _thePassedCands[3];
 
       // number of events
       unsigned int nEvents;
@@ -280,14 +292,15 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _useBS(iConfig.getParameter<bool>("useBeamSpot")),
   _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),
   _removeSignal(iConfig.getUntrackedParameter<bool>("removeSignalEvents",false)),
+  _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false)),
   _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
   nEvents = 0;
   passedCandidates = 0;
 
-  JpsiMassMin = 2.6;
-  JpsiMassMax = 3.6;
+  JpsiMassMin = 0.;
+  JpsiMassMax = 12.;
   JpsiMassMinSide = 2.0;
   JpsiMassMaxSide = 4.0;
   JpsiCtMin = -1.0;
@@ -384,23 +397,34 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
      catch (...) {cout << "J/psi to calomuons not present in event!" << endl;}
    }
 
-   _thePassedCats.clear();
-   _thePassedCands.clear();
+   _thePassedCats[0].clear();      _thePassedCands[0].clear();
+   _thePassedCats[1].clear();      _thePassedCands[1].clear();
+   _thePassedCats[2].clear();      _thePassedCands[2].clear();
 
    // APPLY CUTS
-   this->makeCuts();
+   int lastSign = 0;
+   this->makeCuts(0);
+   if (_storeWs) {
+     this->makeCuts(1);
+     this->makeCuts(2);
+     lastSign = 2;
+   }
 
-   // BEST J/PSI?
+   // BEST J/PSI? 
 
-   if (_onlythebest) {  // yes, fill simply the best
+   if (_onlythebest) {  // yes, fill simply the best (possibly wrong-sign)
 
-     pair< unsigned int, const pat::CompositeCandidate* > theBest = theBestQQ();
-     if (theBest.first < 10) fillHistosAndDS(theBest.first, theBest.second);
+     for (int iSign = 0; iSign <= lastSign; iSign++) {
+       pair< unsigned int, const pat::CompositeCandidate* > theBest = theBestQQ(iSign);
+       if (theBest.first < 10) fillHistosAndDS(theBest.first, theBest.second);
+     }
 
-   } else {   // no, fill all passing cuts
+   } else {   // no, fill all candidates passing cuts (possibly wrong-sign)
 
-     for( unsigned int count = 0; count < _thePassedCands.size(); count++) { 
-       fillHistosAndDS(_thePassedCats.at(count), _thePassedCands.at(count)); 
+     for (int iSign = 0; iSign <= lastSign; iSign++) {
+       for( unsigned int count = 0; count < _thePassedCands[iSign].size(); count++) { 
+	 fillHistosAndDS(_thePassedCats[iSign].at(count), _thePassedCands[iSign].at(count)); 
+       }
      }
 
    }
@@ -420,9 +444,9 @@ JPsiAnalyzerPAT::beginJob()
   QQMass2GlobPT6_passmu3           = new TH1F("QQMass2GlobPT6_passmu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
   QQMass1Glob1TrkPT6_passmu3       = new TH1F("QQMass1Glob1TrkPT6_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
   QQMass1Glob1CalPT6_passmu3       = new TH1F("QQMass1Glob1CalPT6_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-  WSMass2Glob_passmu3              = new TH1F("WSMass2Glob_passmu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  WSMass1Glob1Trk_passmu3          = new TH1F("WSMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  WSMass1Glob1Cal_passmu3          = new TH1F("WSMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
+  // WSMass2Glob_passmu3              = new TH1F("WSMass2Glob_passmu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
+  // WSMass1Glob1Trk_passmu3          = new TH1F("WSMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
+  // WSMass1Glob1Cal_passmu3          = new TH1F("WSMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
   QQMass2Glob_passmu5              = new TH1F("QQMass2Glob_passmu5",  "Invariant mass (2 global muons)", 100, 0.,15.);
   QQMass1Glob1Trk_passmu5          = new TH1F("QQMass1Glob1Trk_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
   QQMass1Glob1Cal_passmu5          = new TH1F("QQMass1Glob1Cal_passmu5",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.); 
@@ -435,9 +459,9 @@ JPsiAnalyzerPAT::beginJob()
   QQMass2Glob_pass2mu3              = new TH1F("QQMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
   QQMass1Glob1Trk_pass2mu3          = new TH1F("QQMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
   QQMass1Glob1Cal_pass2mu3          = new TH1F("QQMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-  WSMass2Glob_pass2mu3              = new TH1F("WSMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  WSMass1Glob1Trk_pass2mu3          = new TH1F("WSMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  WSMass1Glob1Cal_pass2mu3          = new TH1F("WSMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
+  // WSMass2Glob_pass2mu3              = new TH1F("WSMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
+  // WSMass1Glob1Trk_pass2mu3          = new TH1F("WSMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
+  // WSMass1Glob1Cal_pass2mu3          = new TH1F("WSMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
   QQMass2Glob_pass2mu0              = new TH1F("QQMass2Glob_pass2mu0",  "Invariant mass (2 global muons)", 100, 0.,15.);
   QQMass1Glob1Trk_pass2mu0          = new TH1F("QQMass1Glob1Trk_pass2mu0",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
   QQMass1Glob1Cal_pass2mu0          = new TH1F("QQMass1Glob1Cal_pass2mu0",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
@@ -460,6 +484,9 @@ JPsiAnalyzerPAT::beginJob()
   // mc truth matching - global + global
   hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC unmatched (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcPPGlbGlbMuMass                = new TH1F("hMcPPGlbGlbMuMass",  "Inv. mass - plus-plus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcMMGlbGlbMuMass                = new TH1F("hMcMMGlbGlbMuMass",  "Inv. mass - minus-minus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcSqrtGlbGlbMuMass              = new TH1F("hMcSqrtGlbGlbMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcRightGlbGlbMuLife             = new TH1F("hMcRightGlbGlbMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
   hMcWrongGlbGlbMuLife             = new TH1F("hMcWrongGlbGlbMuLife",  "c #tau - MC unmatched (global+global muons)", 90, -1.0,3.5);
   hMcRightGlbGlbMuPt               = new TH1F("hMcRightGlbGlbMuPt",  "P_{T} - MC matched (global+global muons)", 60, 0.,60.);
@@ -484,6 +511,8 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongTrkBit8                  = new TH1F("hMcWrongTrkBit8",  "StationOptimizedLowPtLoose bit - MC unmatched (tracker muons)", 4, -1.5,2.5);
   hMcRightTrkBit9                  = new TH1F("hMcRightTrkBit9",  "StationOptimizedLowPtTight bit - MC matched (tracker muons)", 4, -1.5,2.5);
   hMcWrongTrkBit9                  = new TH1F("hMcWrongTrkBit9",  "StationOptimizedLowPtTight bit - MC unmatched (tracker muons)", 4, -1.5,2.5);
+  hMcRightTrkBitNew                = new TH1F("hMcRightTrkBitNew",  "TMLastStationAngTight bit - MC matched (tracker muons)", 4, -1.5,2.5);
+  hMcWrongTrkBitNew                = new TH1F("hMcWrongTrkBitNew",  "TMLastStationAngTight - MC unmatched (tracker muons)", 4, -1.5,2.5);
   hMcRightTrkMud0                  = new TH1F("hMcRightTrkMud0",  "d0 - MC matched (global muons)", 100, 0., 30.);
   hMcWrongTrkMud0                  = new TH1F("hMcWrongTrkMud0",  "d0 - MC unmatched (global muons)", 100, 0., 30.);
   hMcRightTrkMudz                  = new TH1F("hMcRightTrkMudz",  "dz - MC matched (global muons)", 100, 0., 50.);
@@ -492,6 +521,9 @@ JPsiAnalyzerPAT::beginJob()
   // mc truth matching - global + trk
   hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC unmatched (global+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcPPGlbTrkMuMass                = new TH1F("hMcPPGlbTrkMuMass",  "Inv. mass - plus-plus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcMMGlbTrkMuMass                = new TH1F("hMcMMGlbTrkMuMass",  "Inv. mass - minus-minus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcSqrtGlbTrkMuMass              = new TH1F("hMcSqrtGlbTrkMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcRightGlbTrkMuLife            = new TH1F("hMcRightGlbTrkMuLife",  "c #tau - MC matched (global+tracker muons)", 90, -1.0,3.5);
   hMcWrongGlbTrkMuLife            = new TH1F("hMcWrongGlbTrkMuLife",  "c #tau - MC unmatched (global+tracker muons)", 90, -1.0,3.5);
   hMcRightGlbTrkMuPt               = new TH1F("hMcRightGlbTrkMuPt",  "P_{T} - MC matched (global+tracker muons)", 60, 0.,60.);
@@ -504,6 +536,9 @@ JPsiAnalyzerPAT::beginJob()
   // mc truth matching - trk + trk
   hMcRightTrkTrkMuMass            = new TH1F("hMcRightTrkTrkMuMass",  "Inv. mass - MC matched (tracker+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcWrongTrkTrkMuMass            = new TH1F("hMcWrongTrkTrkMuMass",  "Inv. mass - MC unmatched (tracker+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcPPTrkTrkMuMass                = new TH1F("hMcPPTrkTrkMuMass",  "Inv. mass - plus-plus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcMMTrkTrkMuMass                = new TH1F("hMcMMTrkTrkMuMass",  "Inv. mass - minus-minus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcSqrtTrkTrkMuMass              = new TH1F("hMcSqrtTrkTrkMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
   hMcRightTrkTrkMuLife            = new TH1F("hMcRightTrkTrkMuLife",  "c #tau - MC matched (tracker+tracker muons)", 90, -1.0,3.5);
   hMcWrongTrkTrkMuLife            = new TH1F("hMcWrongTrkTrkMuLife",  "c #tau - MC unmatched (tracker+tracker muons)", 90, -1.0,3.5);
   hMcRightTrkTrkMuPt               = new TH1F("hMcRightTrkTrkMuPt",  "P_{T} - MC matched (tracker+tracker muons)", 60, 0.,60.);
@@ -548,6 +583,9 @@ JPsiAnalyzerPAT::beginJob()
 void 
 JPsiAnalyzerPAT::endJob() {
   
+  cout << "Total number of events = " << nEvents << endl;
+  cout << "Total number of passed candidates = " << passedCandidates << endl;
+
   TFile fOut(_histfilename.c_str(), "RECREATE");
   fOut.cd();
   
@@ -557,9 +595,9 @@ JPsiAnalyzerPAT::endJob() {
   QQMass2GlobPT6_passmu3        -> Write();        
   QQMass1Glob1TrkPT6_passmu3    -> Write(); 
   QQMass1Glob1CalPT6_passmu3    -> Write();
-  WSMass2Glob_passmu3           -> Write();        
-  WSMass1Glob1Trk_passmu3       -> Write(); 
-  WSMass1Glob1Cal_passmu3       -> Write();
+  // WSMass2Glob_passmu3           -> Write();        
+  // WSMass1Glob1Trk_passmu3       -> Write(); 
+  // WSMass1Glob1Cal_passmu3       -> Write();
   QQMass2Glob_passmu5           -> Write();
   QQMass1Glob1Trk_passmu5       -> Write();
   QQMass1Glob1Cal_passmu5       -> Write();
@@ -572,9 +610,9 @@ JPsiAnalyzerPAT::endJob() {
   QQMass2Glob_pass2mu3          -> Write();
   QQMass1Glob1Trk_pass2mu3      -> Write();
   QQMass1Glob1Cal_pass2mu3      -> Write();
-  WSMass2Glob_pass2mu3          -> Write();
-  WSMass1Glob1Trk_pass2mu3      -> Write();
-  WSMass1Glob1Cal_pass2mu3      -> Write();
+  // WSMass2Glob_pass2mu3          -> Write();
+  // WSMass1Glob1Trk_pass2mu3      -> Write();
+  // WSMass1Glob1Cal_pass2mu3      -> Write();
   QQMass2Glob_pass2mu0          -> Write();  
   QQMass1Glob1Trk_pass2mu0      -> Write();  
   QQMass1Glob1Cal_pass2mu0      -> Write();  
@@ -594,6 +632,8 @@ JPsiAnalyzerPAT::endJob() {
   			     
   hMcRightGlbGlbMuMass          -> Write(); 
   hMcWrongGlbGlbMuMass          -> Write(); 
+  hMcPPGlbGlbMuMass             -> Write();
+  hMcMMGlbGlbMuMass             -> Write();
   hMcRightGlbGlbMuLife          -> Write(); 
   hMcWrongGlbGlbMuLife          -> Write();
   hMcRightGlbGlbMuPt            -> Write(); 
@@ -613,6 +653,8 @@ JPsiAnalyzerPAT::endJob() {
   hMcWrongTrkBit8               -> Write(); 
   hMcRightTrkBit9               -> Write(); 
   hMcWrongTrkBit9               -> Write();
+  hMcRightTrkBitNew             -> Write(); 
+  hMcWrongTrkBitNew             -> Write();
   hMcRightTrkMuChi2             -> Write();   
   hMcWrongTrkMuChi2             -> Write(); 
   hMcRightTrkMuNhits            -> Write(); 
@@ -620,6 +662,8 @@ JPsiAnalyzerPAT::endJob() {
 
   hMcRightGlbTrkMuMass          -> Write();
   hMcWrongGlbTrkMuMass        	-> Write();
+  hMcPPGlbTrkMuMass             -> Write();
+  hMcMMGlbTrkMuMass             -> Write();
   hMcRightGlbTrkMuLife        	-> Write();
   hMcWrongGlbTrkMuLife        	-> Write();
   hMcRightGlbTrkMuPt            -> Write(); 
@@ -631,6 +675,8 @@ JPsiAnalyzerPAT::endJob() {
 
   hMcRightTrkTrkMuMass          -> Write();
   hMcWrongTrkTrkMuMass        	-> Write();
+  hMcPPTrkTrkMuMass             -> Write();
+  hMcMMTrkTrkMuMass             -> Write();
   hMcRightTrkTrkMuLife        	-> Write();
   hMcWrongTrkTrkMuLife        	-> Write();
   hMcRightTrkTrkMuPt            -> Write(); 
@@ -664,6 +710,30 @@ JPsiAnalyzerPAT::endJob() {
   hMcRightCalGlbMucosAlpha      -> Write(); 
   hMcWrongCalGlbMucosAlpha      -> Write();
    
+  // find correct combination of ++ and -- candidates
+  for (int iBin = 0; iBin <= hMcPPGlbGlbMuMass->GetNbinsX(); iBin++) {
+    float pp = hMcPPGlbGlbMuMass->GetBinContent(iBin);
+    float mm = hMcMMGlbGlbMuMass->GetBinContent(iBin);
+    hMcSqrtGlbGlbMuMass->SetBinContent(iBin,2*sqrt(pp*mm));
+    hMcSqrtGlbGlbMuMass->SetBinError(iBin,sqrt(pp + mm));  // do the calculation, if you don't believe it
+  }
+  for (int iBin = 0; iBin <= hMcPPGlbTrkMuMass->GetNbinsX(); iBin++) {
+    float pp = hMcPPGlbTrkMuMass->GetBinContent(iBin);
+    float mm = hMcMMGlbTrkMuMass->GetBinContent(iBin);
+    hMcSqrtGlbTrkMuMass->SetBinContent(iBin,2*sqrt(pp*mm));
+    hMcSqrtGlbTrkMuMass->SetBinError(iBin,sqrt(pp + mm));  // do the calculation, if you don't believe it
+  }
+  for (int iBin = 0; iBin <= hMcPPTrkTrkMuMass->GetNbinsX(); iBin++) {
+    float pp = hMcPPTrkTrkMuMass->GetBinContent(iBin);
+    float mm = hMcMMTrkTrkMuMass->GetBinContent(iBin);
+    hMcSqrtTrkTrkMuMass->SetBinContent(iBin,2*sqrt(pp*mm));
+    hMcSqrtTrkTrkMuMass->SetBinError(iBin,sqrt(pp + mm));  // do the calculation, if you don't believe it
+  }
+
+  hMcSqrtGlbGlbMuMass           -> Write();
+  hMcSqrtGlbTrkMuMass           -> Write();
+  hMcSqrtTrkTrkMuMass           -> Write();
+
   fOut.Close();
 
   TFile fOut2(_datasetname.c_str(), "RECREATE");
@@ -700,7 +770,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     // check if trigger name in config
     const unsigned int n(hltConfig.size());
     for (unsigned int ihlt = 0; ihlt < NTRIGGERS; ihlt++) {
-      hltBits[ihlt] = 0;
+      hltBits[ihlt] = 1000;
       unsigned int triggerIndex( hltConfig.triggerIndex(HLTbitNames[ihlt]) );
       if (triggerIndex>=n) {
 	cout << "TriggerName " << HLTbitNames[ihlt] << " not available in config!" << endl;
@@ -713,7 +783,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   // Trigger passed
 
   if (trigger.isValid()) {
-    if (trigger->accept(hltBits[1])) { // pass Mu3
+    if (hltBits[1] < 1000 && trigger->accept(hltBits[1])) { // pass Mu3
       if (muon1->charge()*muon2->charge() < 0) {
 	if (theCat == 0) QQMass2Glob_passmu3->Fill(theMass);          
 	if (theCat == 1) QQMass1Glob1Trk_passmu3->Fill(theMass);
@@ -721,13 +791,13 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 	if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(theMass);     
 	if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(theMass);
 	if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(theMass);
-      } else {
-	if (theCat == 0) WSMass2Glob_passmu3->Fill(theMass);          
-	if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(theMass);
-	if (theCat == 3) WSMass1Glob1Cal_passmu3->Fill(theMass);       
+	// } else {
+	// if (theCat == 0) WSMass2Glob_passmu3->Fill(theMass);          
+	// if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(theMass);
+	// if (theCat == 3) WSMass1Glob1Cal_passmu3->Fill(theMass);       
       }
     }
-    if (trigger->accept(hltBits[2])) { // pass Mu5
+    if (hltBits[2] < 1000 && trigger->accept(hltBits[2])) { // pass Mu5
       if (muon1->charge()*muon2->charge() < 0) {
 	if (theCat == 0) QQMass2Glob_passmu5->Fill(theMass);          
 	if (theCat == 1) QQMass1Glob1Trk_passmu5->Fill(theMass);
@@ -737,18 +807,18 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 	if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(theMass);
       } 
     }
-    if (trigger->accept(hltBits[3])) { // pass 2Mu3
+    if (hltBits[3] < 1000 && trigger->accept(hltBits[3])) { // pass 2Mu3
       if (muon1->charge()*muon2->charge() < 0) {
 	if (theCat == 0) QQMass2Glob_pass2mu3->Fill(theMass);          
 	if (theCat == 1) QQMass1Glob1Trk_pass2mu3->Fill(theMass);
 	if (theCat == 3) QQMass1Glob1Cal_pass2mu3->Fill(theMass);    
-      } else {
-	if (theCat == 0) WSMass2Glob_pass2mu3->Fill(theMass);          
-	if (theCat == 1) WSMass1Glob1Trk_pass2mu3->Fill(theMass);
-	if (theCat == 3) WSMass1Glob1Cal_pass2mu3->Fill(theMass);       
+	// } else {
+	// if (theCat == 0) WSMass2Glob_pass2mu3->Fill(theMass);          
+	// if (theCat == 1) WSMass1Glob1Trk_pass2mu3->Fill(theMass);
+	// if (theCat == 3) WSMass1Glob1Cal_pass2mu3->Fill(theMass);       
       }
     }
-    if (trigger->accept(hltBits[4])) { // pass 2Mu0
+    if (hltBits[4] < 1000 && trigger->accept(hltBits[4])) { // pass 2Mu0
       if (muon1->charge()*muon2->charge() < 0) {
 	if (theCat == 0) QQMass2Glob_pass2mu0->Fill(theMass);          
 	if (theCat == 1) QQMass1Glob1Trk_pass2mu0->Fill(theMass);
@@ -878,7 +948,20 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 	}
       }
     }
-  }
+  // wrong-sign J/psi's
+  } else if (muon1->charge() + muon2->charge() == 2) {   
+
+    if (theCat == 0) hMcPPGlbGlbMuMass->Fill(theMass);
+    if (theCat == 1) hMcPPGlbTrkMuMass->Fill(theMass);
+    if (theCat == 2) hMcPPTrkTrkMuMass->Fill(theMass);
+
+  } else if (muon1->charge() + muon2->charge() == -2) {
+    
+    if (theCat == 0) hMcMMGlbGlbMuMass->Fill(theMass);
+    if (theCat == 1) hMcMMGlbTrkMuMass->Fill(theMass);
+    if (theCat == 2) hMcMMTrkTrkMuMass->Fill(theMass);
+     
+  } 
 
   // Now the RooDataSet
 
@@ -927,7 +1010,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   }
 }
         
-void JPsiAnalyzerPAT::makeCuts() {
+void JPsiAnalyzerPAT::makeCuts(int sign) {
 
   if (collAll.isValid()) {
 
@@ -940,16 +1023,20 @@ void JPsiAnalyzerPAT::makeCuts() {
       const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
       
       // Remove non-quarkonia region
-      if (cand->mass() < 1.5 && cand->mass() > 15.) continue;
+      // if (cand->mass() < 1.5 && cand->mass() > 15.) continue;
  
-      if (muon1->charge()*muon2->charge() < 0) {	  
+      bool thisSign = (sign == 0 && muon1->charge() + muon2->charge() == 0) || 
+	(sign == 1 && muon1->charge() + muon2->charge() == 2) || 
+	(sign == 2 && muon1->charge() + muon2->charge() == -2);
+
+      if (thisSign) {	  
 	  
         // global + global?
 	if (muon1->isGlobalMuon() && muon2->isGlobalMuon() ) {
 	  if (!_applycuts || (selGlobalMuon(muon1) &&
 			      selGlobalMuon(muon2) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(0);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(0);  _thePassedCands[sign].push_back(cand);
             continue;
 	  }
 	}
@@ -959,7 +1046,7 @@ void JPsiAnalyzerPAT::makeCuts() {
 	  if (!_applycuts || (selGlobalMuon(muon1) &&
 			      selTrackerMuon(muon2) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(1);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(1);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
 	}
@@ -968,7 +1055,7 @@ void JPsiAnalyzerPAT::makeCuts() {
 	  if (!_applycuts || (selGlobalMuon(muon2) &&
 			      selTrackerMuon(muon1) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(1);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(1);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
 	}
@@ -978,7 +1065,7 @@ void JPsiAnalyzerPAT::makeCuts() {
 	  if (!_applycuts || (selTrackerMuon(muon1) &&
 			      selTrackerMuon(muon2) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(2);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(2);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
 	}
@@ -997,16 +1084,20 @@ void JPsiAnalyzerPAT::makeCuts() {
       const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
       
       // Remove non-quarkonia region
-      if (cand->mass() < 1.5 && cand->mass() > 15.) continue;
+      // if (cand->mass() < 1.5 && cand->mass() > 15.) continue;
 
-      if (muon1->charge()*muon2->charge() < 0 && !(muon1->isTrackerMuon()) && !(muon2->isTrackerMuon()) ) {
+       bool thisSign = (sign == 0 && muon1->charge() + muon2->charge() == 0) || 
+	(sign == 1 && muon1->charge() + muon2->charge() == 2) || 
+	(sign == 2 && muon1->charge() + muon2->charge() == -2);
+
+      if (thisSign && !(muon1->isTrackerMuon()) && !(muon2->isTrackerMuon()) ) {
 
 	// global + calo? (x2)
 	if (muon1->isGlobalMuon() && muon2->isCaloMuon() ) {
 	  if (!_applycuts || (selGlobalMuon(muon1) &&
 			      selCaloMuon(muon2) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(3);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(3);  _thePassedCands[sign].push_back(cand);
             continue;
 	  }
 	}
@@ -1015,7 +1106,7 @@ void JPsiAnalyzerPAT::makeCuts() {
 	  if (!_applycuts || (selGlobalMuon(muon2) &&
 			      selCaloMuon(muon1) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(3);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(3);  _thePassedCands[sign].push_back(cand);
             continue;
 	  }
 	}
@@ -1025,7 +1116,7 @@ void JPsiAnalyzerPAT::makeCuts() {
 	  if (!_applycuts || (selTrackerMuon(muon1) &&
 			      selCaloMuon(muon2) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(4);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(4);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
 	}
@@ -1034,7 +1125,7 @@ void JPsiAnalyzerPAT::makeCuts() {
 	  if (!_applycuts || (selTrackerMuon(muon2) &&
 			      selCaloMuon(muon1) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(4);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(4);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
 	}
@@ -1044,7 +1135,7 @@ void JPsiAnalyzerPAT::makeCuts() {
 	  if (!_applycuts || (selCaloMuon(muon1) &&
 			      selCaloMuon(muon2) &&
 			      cand->userFloat("vProb") > 0.001 )) {
-	    _thePassedCats.push_back(5);  _thePassedCands.push_back(cand);
+	    _thePassedCats[sign].push_back(5);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
 	}
@@ -1056,15 +1147,15 @@ void JPsiAnalyzerPAT::makeCuts() {
 }
 
 pair< unsigned int, const pat::CompositeCandidate* > 
-JPsiAnalyzerPAT::theBestQQ() {
+JPsiAnalyzerPAT::theBestQQ(int sign) {
 
   unsigned int theBestCat = 99;
   const pat::CompositeCandidate* theBestCand = new pat::CompositeCandidate();
 
-  for( unsigned int i = 0; i < _thePassedCands.size(); i++) { 
-    if (_thePassedCats.at(i) < theBestCat) {
-      theBestCat = _thePassedCats.at(i);
-      theBestCand = _thePassedCands.at(i);
+  for( unsigned int i = 0; i < _thePassedCands[sign].size(); i++) { 
+    if (_thePassedCats[sign].at(i) < theBestCat) {
+      theBestCat = _thePassedCats[sign].at(i);
+      theBestCand = _thePassedCands[sign].at(i);
     }
   }
 

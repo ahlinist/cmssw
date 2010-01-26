@@ -38,6 +38,7 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     useBeamSpot = cms.bool(False),
     useCaloMuons = cms.untracked.bool(False),
     removeSignalEvents = cms.untracked.bool(False),
+    storeWrongSign = cms.untracked.bool(True),
     TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT")           
     # For Summer09 only 
     # TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT8E29")
