@@ -115,11 +115,12 @@ public:
         double  K1Pz_nofit_;
         double  K1Eta_nofit_;
         double  K1Phi_nofit_;
+	int     K1Key_nofit_;
         double  K2Eta_nofit_;
         double  K2Pt_nofit_;
         double  K2Pz_nofit_;
         double  K2Phi_nofit_;
-
+	int     K2Key_nofit_;
 
         double  K1Chi2_;
         int     K1nHits_;
@@ -333,10 +334,12 @@ public:
 	double BdK1Pz_nofit_  ; 
 	double BdK1Eta_nofit_ ; 
 	double BdK1Phi_nofit_ ; 
+	int BdK1Key_nofit_  ; 
 	double BdK2Pt_nofit_  ; 
 	double BdK2Pz_nofit_  ; 
 	double BdK2Eta_nofit_ ; 
 	double BdK2Phi_nofit_ ; 
+	int BdK2Key_nofit_  ; 
 
 	double BdLxy_;
 	double BdErrX_;

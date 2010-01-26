@@ -539,10 +539,12 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bsRootTree_->K1Pz_nofit_   = track1.pz();
 	      bsRootTree_->K1Eta_nofit_  = track1.eta();
 	      bsRootTree_->K1Phi_nofit_  = track1.phi();
+	      bsRootTree_->K1Key_nofit_  = trk1Ref.key();
 	      bsRootTree_->K2Pt_nofit_   = track2.pt();
 	      bsRootTree_->K2Pz_nofit_   = track2.pz();
 	      bsRootTree_->K2Eta_nofit_  = track2.eta();
 	      bsRootTree_->K2Phi_nofit_  = track2.phi();
+	      bsRootTree_->K2Key_nofit_  = trk2Ref.key();
 	      
 	      bsRootTree_->K1Chi2_ = trk1Ref.get()->normalizedChi2();
 	      bsRootTree_->K1nHits_= trk1Ref.get()->numberOfValidHits();
@@ -1019,11 +1021,13 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bsRootTree_->BdK1Pz_nofit_   = track1.pz();
 	      bsRootTree_->BdK1Eta_nofit_  = track1.eta();
 	      bsRootTree_->BdK1Phi_nofit_  = track1.phi();
+	      bsRootTree_->BdK1Key_nofit_  = trkkst1.key();
 	      bsRootTree_->BdK2Pt_nofit_   = track2.pt();
 	      bsRootTree_->BdK2Pz_nofit_   = track2.pz();
 	      bsRootTree_->BdK2Eta_nofit_  = track2.eta();
 	      bsRootTree_->BdK2Phi_nofit_  = track2.phi();
-	      
+	      bsRootTree_->BdK2Key_nofit_  = trkkst2.key();	      
+
 	      RefCountedKinematicVertex bdVertex;
 	      AlgebraicSymMatrix77 bd_er;
 	      GlobalVector Bdvec;
