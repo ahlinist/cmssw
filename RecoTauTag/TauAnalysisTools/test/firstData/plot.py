@@ -1,12 +1,12 @@
+from ROOT import *
+gROOT.SetBatch(True)
 # Load ntauple tools
 from RecoTauTag.TauAnalysisTools.tools.ntauples import *
 
 # Load FWLite libraries (prevents warnings)
 from PhysicsTools.PythonAnalysis import *
-from ROOT import *
 gSystem.Load("libFWCoreFWLite.so")
 AutoLibraryLoader.enable()
-gROOT.SetBatch(True)
 
 gROOT.ProcessLine('.L tdrstyle.C')
 gROOT.ProcessLine('setTDRStyle()')
@@ -164,7 +164,7 @@ def compare_effs(
     
 canvas = TCanvas("blah", "blah", 700, 500)
 
-std_cut = "$pt > 5 && $ref_emFraction >  0.01"
+std_cut = "$pt > 5. && $ref_emFraction >  0.01"
 #std_cut = "1"
 std_cut_label="p_{T} > 5"
 

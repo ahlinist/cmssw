@@ -31,7 +31,7 @@ process.atLeastOneJet = cms.EDFilter(
 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = 'GR09_P_V7::All'
+process.GlobalTag.globaltag = 'GR09_P_V7::All'
 #process.GlobalTag.globaltag = 'MC_31X_V3::All'
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
