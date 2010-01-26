@@ -17,7 +17,7 @@ inputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/patTuples/ZtoMuTau/"
 #              sample = "Ztautau_10TeV_part01",
 #              replFunction = makeReplacementsAnalysis, replacements =
 #              "maxEvents = 100; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
-#              job = "analysis", queue = "1nh", outputFilePath = outputFilePath)
+#              job = "frAnalysis", queue = "1nh", outputFilePath = outputFilePath)
 
 #--------------------------------------------------------------------------------
 #
@@ -37,7 +37,7 @@ for i in range(15):
                   sample = "Ztautau_10TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
-                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+                  job = "frAnalysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # Z --> mu mu jobs
 for i in range(17):
@@ -45,7 +45,7 @@ for i in range(17):
                   sample = "Zmumu_10TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
-                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+                  job = "frAnalysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # pp --> mu X QCD jobs
 for i in range(21):
@@ -53,14 +53,14 @@ for i in range(21):
                   sample = "InclusivePPmuX_10TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
-                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+                  job = "frAnalysis", queue = "1nd", outputFilePath = outputFilePath)
 
 for i in range(68):
     submitToBatch(configFile = "runFakeRateAnalysisZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "PPmuXptGt20_10TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
-                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+                  job = "frAnalysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # W + jets jobs
 for i in range(26):
@@ -68,7 +68,7 @@ for i in range(26):
                   sample = "WplusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
-                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+                  job = "frAnalysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # ttbar + jets jobs
 for i in range(17):
@@ -76,5 +76,5 @@ for i in range(17):
                   sample = "TTplusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
-                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+                  job = "frAnalysis", queue = "1nd", outputFilePath = outputFilePath)
 
