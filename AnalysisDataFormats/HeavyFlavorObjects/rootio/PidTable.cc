@@ -4,6 +4,8 @@
 #include "TProfile.h"
 #include "TMath.h"
 
+#include <algorithm>
+#include <set>
 #include <iostream>
 #include <iomanip>
 
@@ -518,6 +520,7 @@ double PidTable::errR(double momentum, double theta, double phi, int run) {
 // ----------------------------------------------------------------------
 void PidTable::dumpToFile(const char *psname) {
   if (fVerbose > 0) cout << "Dumping table to file " << psname << endl;
+  fFileName = psname; 
   ofstream EFF(psname);
   print(EFF);
   TIter next(fDataVector); PidData *iTable;
@@ -897,6 +900,7 @@ void PidTable::relErrHist(TH1 *h, double pmin, double pmax, double tmin, double 
 void PidTable::projectP(TH1 *h, double tmin, double tmax, double fmin, double fmax, int absVal) {
   
   int drawIt(0);
+
   if (0 == h) {
     drawIt = 1;
     double min(0.), max(1.);
@@ -1028,11 +1032,49 @@ void PidTable::tot2d(TH2 *h, double fmin, double fmax) {
 
 
 // ----------------------------------------------------------------------
-TH2D* PidTable::get2dHist(const char *hname, const char *title) {
-  TH2D *h = new TH2D(hname, title, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
-  h->SetMinimum(fHistMin); 
-  h->SetMaximum(fHistMax); 
-  return h;
+TH2D* PidTable::get2dHist(const char *hname, const char *title, int mode) {
+  if (0 == mode) {
+    TH2D *h = new TH2D(hname, title, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
+    h->SetMinimum(fHistMin); 
+    h->SetMaximum(fHistMax); 
+    return h;
+  } else {
+
+    double xBins[50], yBins[50]; 
+    set<double> etaBins, ptBins;
+    TIter next(fDataVector); PidData *iTable;
+    while ((iTable = (PidData*)next())) {
+      etaBins.insert(iTable->getTmin());
+      etaBins.insert(iTable->getTmax());
+
+      ptBins.insert(iTable->getPmin());
+      ptBins.insert(iTable->getPmax());
+    }
+    
+    set<double>::iterator it;
+    int i(0); 
+    for (it = etaBins.begin(); it != etaBins.end(); it++) {
+      xBins[i] = *it; 
+      ++i; 
+    }
+
+    i = 0; 
+    for (it = ptBins.begin(); it != ptBins.end(); it++) {
+      yBins[i] = *it; 
+      ++i; 
+    }
+
+    for (unsigned int j = 0; j < etaBins.size(); ++j) {
+      cout << j << " " << xBins[j] << endl;
+    }
+
+    for (unsigned int j = 0; j < ptBins.size(); ++j) {
+      cout << j << " " << yBins[j] << endl;
+    }
+
+    TH2D *h = new TH2D(hname, title, etaBins.size()-1, xBins, ptBins.size()-1, yBins);
+    return h;
+  }
 }
 
 
