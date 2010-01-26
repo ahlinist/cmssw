@@ -24,7 +24,7 @@ processZtoMuTau_Ztautau.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_Ztautau_10TeV_part11.root',
     'plotsZtoMuTau_Ztautau_10TeV_part12.root',
     'plotsZtoMuTau_Ztautau_10TeV_part13.root',
-    'plotsZtoMuTau_Ztautau_10TeV_part14.root',
+    #'plotsZtoMuTau_Ztautau_10TeV_part14.root',
     'plotsZtoMuTau_Ztautau_10TeV_part15.root'    
 )
 processZtoMuTau_Ztautau.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoMuTau_Ztautau_10TeV*intLumiZtoMuTau_Data_10TeV/intLumiZtoMuTau_Ztautau_10TeV)
@@ -113,7 +113,7 @@ processZtoMuTau_WplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 processZtoMuTau_InclusivePPmuX = copy.deepcopy(process_InclusivePPmuX)
 processZtoMuTau_InclusivePPmuX.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_InclusivePPmuX_10TeV_part01.root',
-    'plotsZtoMuTau_InclusivePPmuX_10TeV_part02.root',
+    #'plotsZtoMuTau_InclusivePPmuX_10TeV_part02.root',
     'plotsZtoMuTau_InclusivePPmuX_10TeV_part03.root',
     'plotsZtoMuTau_InclusivePPmuX_10TeV_part04.root',
     'plotsZtoMuTau_InclusivePPmuX_10TeV_part05.root',
@@ -168,7 +168,7 @@ processZtoMuTau_PPmuXptGt20_part01.config_dqmFileLoader.inputFileNames = cms.vst
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part18.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part19.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part20.root',
-    'plotsZtoMuTau_PPmuXptGt20_10TeV_part21.root',
+    #'plotsZtoMuTau_PPmuXptGt20_10TeV_part21.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part22.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part23.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part24.root',
