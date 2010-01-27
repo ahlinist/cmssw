@@ -28,8 +28,8 @@ DEFINE_SEAL_MODULE();
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_TcMET.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PfMET.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Jet.h"
-#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_JPT.h"
-#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PFJet.h"
+//#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_JPT.h"
+//#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PFJet.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_BeamHalo.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CaloTowers.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Trigger.h"
@@ -43,8 +43,8 @@ DEFINE_ANOTHER_FWK_MODULE(PromptAna_MET);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_TcMET);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_PfMET);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Jet);
-DEFINE_ANOTHER_FWK_MODULE(PromptAna_JPT);
-DEFINE_ANOTHER_FWK_MODULE(PromptAna_PFJet);
+//DEFINE_ANOTHER_FWK_MODULE(PromptAna_JPT);
+//DEFINE_ANOTHER_FWK_MODULE(PromptAna_PFJet);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_BeamHalo);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_CaloTowers);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Trigger);
