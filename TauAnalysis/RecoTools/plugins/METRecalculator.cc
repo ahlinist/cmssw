@@ -9,7 +9,7 @@ METRecalculator::METRecalculator(const edm::ParameterSet& iConfig):
   originalObjects_(iConfig.getParameter<std::vector<edm::InputTag> >("originalObjects")),  
   smearedObjects_(iConfig.getParameter<std::vector<edm::InputTag> >("smearedObjects"))  
 {
-      produces<pat::METCollection >();
+   produces<pat::METCollection >();
 }
 
 void 
@@ -44,8 +44,6 @@ METRecalculator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //Make the difference
   math::XYZTLorentzVector difference = finalVector - originalVector;
-  //Take the tarnsverse part
-  math::XYZTLorentzVector metCorrection(difference.px(),difference.py(),0.0,sqrt(difference.px()*difference.px()+difference.py()*difference.py()));
 
   std::auto_ptr<pat::METCollection > out(new pat::METCollection);
   Handle<pat::METCollection> srcH;
@@ -53,7 +51,8 @@ METRecalculator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if(iEvent.getByLabel(met_,srcH)) 
     for(unsigned int i=0;i<srcH->size();++i) {
       pat::MET  met = srcH->at(i);
-      met.setP4(met.p4()+metCorrection);
+      math::XYZTLorentzVector newMET = met.p4()-difference;
+      met.setP4(math::XYZTLorentzVector(newMET.px(),newMET.py(),0.0,sqrt(newMET.px()*newMET.px()+newMET.py()*newMET.py())));
       out->push_back(met);
     }
   iEvent.put(out);
