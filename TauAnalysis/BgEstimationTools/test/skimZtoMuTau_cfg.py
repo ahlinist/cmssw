@@ -12,7 +12,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'IDEAL_V12::All'
+process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -26,8 +26,10 @@ process.load("TauAnalysis.BgEstimationTools.bgEstPreselZtoMuTau_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_cfi import *
-from TauAnalysis.BgEstimationTools.bgEstSampleDefinitionsZtoMuTau_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_10TeV_cfi import *
+#from TauAnalysis.BgEstimationTools.bgEstSampleDefinitionsZtoMuTau_7TeV_cfi import *
+from TauAnalysis.BgEstimationTools.bgEstSampleDefinitionsZtoMuTau_10TeV_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
@@ -43,7 +45,10 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root',
+        #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
     )
 )
 
@@ -97,7 +102,14 @@ process.bgEstSkimPath = cms.Path(
    + process.selectEventsByBoolEventSelFlags
 )
 
-process.o = cms.EndPath( process.saveBgEstSample )
+process.o = cms.EndPath(process.saveBgEstSample)
+
+#--------------------------------------------------------------------------------
+# disable estimation of systematic uncertainties
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoMuTau
+#
+disableSysUncertainties_runZtoMuTau(process)
+#--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
