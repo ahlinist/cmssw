@@ -59,7 +59,7 @@ process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdd
     )                          
 )
 
-process.addBgEstFakeRateZtoMuTau_tauFakeRate = cms.Sequence( process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate )
+process.addBgEstFakeRateZtoMuTau_tauFakeRate = cms.Sequence(process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ drawFakeRateHistConfiguratorZtoMuTau.addProcess("TTplusJets", processZtoMuTau_TT
 drawFakeRateHistConfiguratorZtoMuTau.addProcess("QCD", cms.string('harvested/qcdSum'))
 
 drawFakeRateHistConfiguratorZtoMuTau.addPlots(
-    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+    afterCut = evtSelDiMuPairZmumuHypothesisVeto,
     plots = [
         drawJobConfigEntry(
             meName = 'MuonQuantities/Muon#PAR#',
@@ -248,7 +248,7 @@ process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
    + process.loadBgEstFakeRateZtoMuTau_tauFakeRate
    + process.dumpDQMStore
    + process.addBgEstFakeRateZtoMuTau_tauFakeRate
-   #+ process.saveBgEstFakeRateZtoMuTau
+   + process.saveBgEstFakeRateZtoMuTau
    + process.plotBgEstFakeRateZtoMuTau
 )
 
