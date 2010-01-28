@@ -96,6 +96,10 @@ diTauCandidateCollinearApproxBinnerForMuTau = cms.PSet(
 )
 
 # import config for binning results
+# used for keeping track of number of events passing all selection criteria
+from TauAnalysis.Core.dataBinner_cfi import *
+
+# import config for binning results
 # used to estimate acceptance of event selection
 from TauAnalysis.Core.modelBinner_cfi import *
 modelBinnerForMuTau = copy.deepcopy(modelBinner)
@@ -371,6 +375,7 @@ muTauEventDump = cms.PSet(
     genParticleSource = cms.InputTag('genParticles'),
     genJetSource = cms.InputTag('iterativeCone5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
+    genEventInfoSource = cms.InputTag('generator'),
     
     electronSource = cms.InputTag('cleanLayer1Electrons'),
     muonSource = cms.InputTag('cleanLayer1Muons'),
@@ -387,7 +392,8 @@ muTauEventDump = cms.PSet(
     output = cms.string("std::cout"),
     
     #triggerConditions = cms.vstring("evtSelTauTrkIso: rejected_cumulative")
-    triggerConditions = cms.vstring("evtSelDiMuPairZmumuHypothesisVeto: passed_cumulative")
+    #triggerConditions = cms.vstring("evtSelDiMuPairZmumuHypothesisVeto: passed_cumulative")
+    triggerConditions = cms.vstring("genPhaseSpaceCut: always")
 )
 
 #--------------------------------------------------------------------------------
@@ -869,6 +875,7 @@ muTauAnalysisSequence = cms.VPSet(
             'particleMultiplicityHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
+            'dataBinner',
             'sysUncertaintyBinnerForMuTau'
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
