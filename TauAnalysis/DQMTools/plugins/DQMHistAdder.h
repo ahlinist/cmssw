@@ -1,13 +1,13 @@
-#ifndef ElectroWeakAnalysis_EWKTau_DQMHistAdder_h
-#define ElectroWeakAnalysis_EWKTau_DQMHistAdder_h
+#ifndef TauAnalysis_DQMTools_DQMHistAdder_h
+#define TauAnalysis_DQMTools_DQMHistAdder_h
 
 /** \class DQMHistAdder
  *  
  *  Class to add DQM monitoring elements stored in separate directories in DQMStore
  *  (in order to e.g. compute the total Standard Model expectation)
  *
- *  $Date: 2009/01/21 17:34:57 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/03/17 13:18:45 $
+ *  $Revision: 1.2 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -18,8 +18,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DQMServices/Core/interface/DQMDefinitions.h"
-
-#include <TH1.h>
 
 #include <vector>
 #include <string>
