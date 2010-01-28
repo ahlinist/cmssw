@@ -423,6 +423,18 @@ drawOption_green_eff = cms.PSet(
     drawOptionLegend = cms.string('p')
 )
 
+# for error-bands
+# (e.g. systematic uncertainty on Monte Carlo expectation)
+drawOption_uncertainty = cms.PSet(
+    lineColor = color_green,
+    lineStyle = cms.int32(1),
+    lineWidth = cms.int32(1),
+    fillColor = color_green,
+    fillStyle = cms.int32(3004),
+    drawOption = cms.string('eBand'),
+    drawOptionLegend = cms.string('f')
+)
+
 #--------------------------------------------------------------------------------
 # define drawOptions used per default for different Monte Carlo processes
 #
