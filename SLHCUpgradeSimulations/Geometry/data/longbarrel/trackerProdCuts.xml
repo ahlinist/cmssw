@@ -72,6 +72,16 @@
   <SpecPar name="tracker-sens-pixel">
     <PartSelector path="//PixelBarrelActiveFull" />
     <PartSelector path="//PixelBarrelActiveHalf" />
+    <PartSelector path="//PixelBarrelActiveStack0" />
+    <PartSelector path="//PixelBarrelActiveStack1" />
+    <PartSelector path="//PixelBarrelActiveStack2" />
+    <PartSelector path="//PixelBarrelActiveStack3" />
+    <PartSelector path="//PixelBarrelActiveStack4" />
+    <PartSelector path="//PixelBarrelActiveStack5" />
+    <PartSelector path="//PixelBarrelActiveStack6" />
+    <PartSelector path="//PixelBarrelActiveStack7" />
+    <PartSelector path="//PixelBarrelActiveStack8" />
+    <PartSelector path="//PixelBarrelActiveStack9" />
     <PartSelector path="//PixelForwardActive1x2" />
     <PartSelector path="//PixelForwardActive1x5" />
     <PartSelector path="//PixelForwardActive2x3" />
