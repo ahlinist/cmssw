@@ -85,6 +85,7 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         particleMultiplicityHistManager,
         vertexHistManager,
         triggerHistManagerForMuTau,
+        dataBinner,
         modelBinnerForMuTau,
         modelBinnerForMuTauWithinAcceptance
     ),
