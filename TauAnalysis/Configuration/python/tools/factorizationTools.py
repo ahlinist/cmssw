@@ -33,6 +33,12 @@ def replaceEventSelections(analyzer, evtSel_replacements):
 #--------------------------------------------------------------------------------
 #
 
+def composeDirectoryName(dqmDirectory, factorizationLabel):
+    if dqmDirectory.rfind("_") == -1:
+        return dqmDirectory + '_' + factorizationLabel + '/'
+    else:        
+        return dqmDirectory[:dqmDirectory.rindex("_")] + '_' + factorizationLabel + dqmDirectory[dqmDirectory.rindex("_"):] + '/'
+
 def composeSubDirectoryNames_plots(evtSelList):
     # auxiliary function to compose names of dqmSubDirectories
     # in which histograms are stored
@@ -169,12 +175,16 @@ def composeFactorizationSequence(process,
 
 def enableFactorization_runZtoMuTau(process):
     process.load("TauAnalysis.Configuration.selectZtoMuTau_factorized_cff")
-    process.selectZtoMuTauEvents_factorized = cms.Sequence( process.selectZtoMuTauEvents
-                                                           *process.selectZtoMuTauEventsLooseMuonIsolation )
+    process.selectZtoMuTauEvents_factorized = cms.Sequence(
+        process.selectZtoMuTauEvents
+       * process.selectZtoMuTauEventsLooseMuonIsolation
+    )
     process.p.replace(process.selectZtoMuTauEvents, process.selectZtoMuTauEvents_factorized)
     process.load("TauAnalysis.Configuration.analyzeZtoMuTau_factorized_cff")
-    process.analyzeZtoMuTauEvents_factorized = cms.Sequence( process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation
-                                                            *process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation )
+    process.analyzeZtoMuTauEvents_factorized = cms.Sequence(
+        process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation
+       * process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation
+    )
     process.p.replace(process.analyzeZtoMuTauEvents, process.analyzeZtoMuTauEvents_factorized)
 
 def enableFactorization_makeZtoMuTauPlots(process,
@@ -235,9 +245,9 @@ def enableFactorization_makeZtoMuTauPlots(process,
     scaleZtoMuTau_InclusivePPmuX = composeFactorizationSequence(
         process = process,
         processName = "InclusivePPmuX" + "_" + pyObjectLabel,
-        dqmDirectoryIn_factorizedTightEvtSel = dqmDirectoryIn_InclusivePPmuX + '_factorizedWithMuonIsolation/',
+        dqmDirectoryIn_factorizedTightEvtSel = composeDirectoryName(dqmDirectoryIn_InclusivePPmuX, "factorizedWithMuonIsolation"),
         evtSel_factorizedTight = evtSelZtoMuTau_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = dqmDirectoryIn_InclusivePPmuX + '_factorizedWithoutMuonIsolation/',
+        dqmDirectoryIn_factorizedLooseEvtSel = composeDirectoryName(dqmDirectoryIn_InclusivePPmuX, "factorizedWithoutMuonIsolation"),
         evtSel_factorizedLoose = evtSelZtoMuTau_factorizedLoose,
         meName_numerator = meNameZtoMuTau_numerator,
         meName_denominator = meNameZtoMuTau_denominator,
@@ -252,9 +262,9 @@ def enableFactorization_makeZtoMuTauPlots(process,
     scaleZtoMuTau_PPmuXptGt20 = composeFactorizationSequence(
         process = process,
         processName = "PPmuXptGt20" + "_" + pyObjectLabel,
-        dqmDirectoryIn_factorizedTightEvtSel = dqmDirectoryIn_PPmuXptGt20 + '_factorizedWithMuonIsolation/',
+        dqmDirectoryIn_factorizedTightEvtSel = composeDirectoryName(dqmDirectoryIn_PPmuXptGt20, "factorizedWithMuonIsolation"),
         evtSel_factorizedTight = evtSelZtoMuTau_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = dqmDirectoryIn_PPmuXptGt20 + '_factorizedWithoutMuonIsolation/',
+        dqmDirectoryIn_factorizedLooseEvtSel = composeDirectoryName(dqmDirectoryIn_PPmuXptGt20, "factorizedWithoutMuonIsolation"),
         evtSel_factorizedLoose = evtSelZtoMuTau_factorizedLoose,
         meName_numerator = meNameZtoMuTau_numerator,
         meName_denominator = meNameZtoMuTau_denominator,
