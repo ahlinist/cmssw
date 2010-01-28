@@ -5,6 +5,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "DataFormats/Common/interface/Handle.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
@@ -46,6 +47,12 @@ void MuTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSet
   printEventSelectionInfo(filterResults_cumulative, filterResults_individual, outputStream_);
 
   *outputStream_ << ">>GENERATOR LEVEL INFORMATION<<" << std::endl;
+
+  edm::Handle<GenEventInfoProduct> genEventInfo;
+  iEvent.getByLabel(genEventInfoSource_, genEventInfo);
+  if ( genEventInfo.isValid() && genEventInfo->hasBinningValues() ) {
+    std::cout << "Pt(hat) = " << genEventInfo->binningValues()[0] << std::endl;
+  }
 
   edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
   iEvent.getByLabel(genParticleSource_, genParticleCollection);

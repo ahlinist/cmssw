@@ -128,7 +128,9 @@ bool isFulfilled(const std::string& filterName, const std::string& triggerCondit
     bool filterPassed_individual = filterResult_individual->second;
 
     if ( filterName_i == filterName ) {
-      if ( triggerCondition == "passed" ) {
+      if ( triggerCondition == "always" ) {
+	return true;
+      } else if ( triggerCondition == "passed" ) {
 	return filterPassed_individual;
       } else if ( triggerCondition == "rejected" ) {
 	return !filterPassed_individual;

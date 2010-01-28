@@ -54,6 +54,7 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
   genParticleSource_ = getInputTag(cfg, "genParticleSource");
   genJetSource_ = getInputTag(cfg, "genJetSource");
   genTauJetSource_ = getInputTag(cfg, "genTauJetSource");
+  genEventInfoSource_ = getInputTag(cfg, "genEventInfoSource");
 
   patElectronSource_ = getInputTag(cfg, "electronSource");
   patMuonSource_ = getInputTag(cfg, "muonSource");

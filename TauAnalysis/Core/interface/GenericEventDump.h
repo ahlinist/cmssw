@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: GenericEventDump.h,v 1.9 2009/12/05 15:07:31 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.10 2009/12/17 11:03:33 veelken Exp $
  *
  */
 
@@ -124,6 +124,7 @@ class GenericEventDump : public EventDumpBase
   edm::InputTag genParticleSource_;
   edm::InputTag genJetSource_;
   edm::InputTag genTauJetSource_;
+  edm::InputTag genEventInfoSource_;
 
   edm::InputTag patElectronSource_;
   edm::InputTag patMuonSource_;
