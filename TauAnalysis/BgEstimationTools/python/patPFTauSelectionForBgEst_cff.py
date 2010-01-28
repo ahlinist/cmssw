@@ -6,13 +6,13 @@ import FWCore.ParameterSet.Config as cms
 
 tausTrkIsoLooseIsolationForBgEst = cms.EDFilter("PATTauSelector",
     src = cms.InputTag('selectedLayer1TausLeadTrkPtCumulative'),                                        
-    cut = cms.string('tauID("trackIsolation") > 0.5 | chargedParticleIso < 8.'),
+    cut = cms.string('tauID("trackIsolation") > 0.5 | chargedHadronIso < 8.'),
     filter = cms.bool(False)
 )
 
 tausEcalIsoLooseIsolationForBgEst = cms.EDFilter("PATTauSelector",
     src = cms.InputTag('tausTrkIsoLooseIsolationForBgEst'),                                        
-    cut = cms.string('tauID("ecalIsolation") > 0.5 | gammaParticleIso < 8.'),
+    cut = cms.string('tauID("ecalIsolation") > 0.5 | photonIso < 8.'),
     filter = cms.bool(False)
 )
 
