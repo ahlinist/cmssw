@@ -17,6 +17,7 @@
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
@@ -58,6 +59,12 @@ void ElecTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iS
   printEventSelectionInfo(filterResults_cumulative, filterResults_individual, outputStream_);
 
   *outputStream_ << ">>GENERATOR LEVEL INFORMATION<<" << std::endl;
+
+  edm::Handle<GenEventInfoProduct> genEventInfo;
+  iEvent.getByLabel(genEventInfoSource_, genEventInfo);
+  if ( genEventInfo.isValid() && genEventInfo->hasBinningValues() ) {
+    std::cout << "Pt(hat) = " << genEventInfo->binningValues()[0] << std::endl;
+  }
 
   edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
   iEvent.getByLabel(genParticleSource_, genParticleCollection);
