@@ -61,14 +61,10 @@ class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
                 plot_configEntry = self.plots_configEntry[iPlot]
 
                 drawJobConfig_plots = []
-
-                parameter = None
-                plot_name = None
                 
                 for frType in self.frTypes:
                     drawJobConfig_plot = cms.PSet()
-                    plot_name = getattr(plot_configEntry, "name")
-
+    
                     dqmDirectory = self.dqmDirectories[frType]
                     dqmDirectory = dqmDirectory.replace("#PROCESSDIR#", dqmSubDirectory_process)
                     afterCut = self.plots_afterCut[iPlot]
@@ -76,26 +72,26 @@ class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
                     dqmDirectory += '/' + composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut)
 
                     meName_full = dqmDirectory + '/' + getattr(plot_configEntry, "meName")
-                    print("meName_full = " + meName_full)
 
                     setattr(drawJobConfig_plot, "process", cms.string(frType))
                     setattr(drawJobConfig_plot, "dqmMonitorElements", cms.vstring(meName_full))
                     setattr(drawJobConfig_plot, "drawOptionEntry", cms.string(frType))
                     setattr(drawJobConfig_plot, "legendEntry", cms.string(self.legendEntries[frType]))
 
-                    if hasattr(drawJobConfig_plot, "PAR"):
-                        parameter = getattr(drawJobConfig_plot, "PAR")
-                    
                     drawJobConfig_plots.append(drawJobConfig_plot)
 
-                drawJob = copy.deepcopy(self.template)    
+                drawJob = copy.deepcopy(self.template)               
                 setattr(drawJob, "plots", cms.VPSet(drawJobConfig_plots))
-                
-                if parameter is not None:
+                if hasattr(plot_configEntry, "title"):
+                    title = getattr(plot_configEntry, "title")
+                    setattr(drawJob, "title", cms.string(title))
+                if hasattr(plot_configEntry, "PAR"):
+                    parameter = getattr(plot_configEntry, "PAR")
                     setattr(drawJob, "parameter", cms.vstring(parameter))
 
+                plot_name = getattr(plot_configEntry, "name")
                 drawJobName = plot_name.replace("#PROCESSNAME#", processName)
-                setattr(self.pset, drawJobName, drawJob)          
+                setattr(self.pset, drawJobName, drawJob)
 
         return self.pset
     
