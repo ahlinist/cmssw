@@ -292,6 +292,7 @@ elecMuEventDump = cms.PSet(
     genParticleSource = cms.InputTag('genParticles'),
     genJetSource = cms.InputTag('iterativeCone5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
+    genEventInfoSource = cms.InputTag('generator'),
     
     #electronSource = cms.InputTag('cleanLayer1Electrons'),
     electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),

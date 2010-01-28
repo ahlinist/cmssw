@@ -289,6 +289,7 @@ diTauEventDump = cms.PSet(
     genParticleSource = cms.InputTag('genParticles'),
     genJetSource = cms.InputTag('iterativeCone5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
+    genEventInfoSource = cms.InputTag('generator'),
     
     electronSource = cms.InputTag('cleanLayer1Electrons'),
     muonSource = cms.InputTag('cleanLayer1Muons'),

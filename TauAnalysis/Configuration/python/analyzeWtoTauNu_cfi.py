@@ -173,7 +173,10 @@ wTauNuEventDump = cms.PSet(
     pluginType = cms.string('wTauNuEventDump'),
 
     genParticleSource = cms.InputTag('genParticles'),
+    genJetSource = cms.InputTag('iterativeCone5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
+    genEventInfoSource = cms.InputTag('generator'),
+    
     tauSource = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
     metSource = cms.InputTag('layer1METs'),
     jetSource = cms.InputTag('selectedLayer1JetsEt20ForWTauNuCumulative'),
