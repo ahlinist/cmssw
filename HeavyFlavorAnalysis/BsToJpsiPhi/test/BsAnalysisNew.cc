@@ -176,6 +176,8 @@ void BsAnalysisNew() {
 	      fillHistograms(tree->BsDist3d_,             vhDist3D); 
 	      fillHistograms(tree->BsTime2d_,               vhTime);
 	      fillHistograms(tree->BsFitM_,           vhBsMass_NoTimeCut);
+              fillHistograms(tree->BsCt_,           vhBsCt);
+              fillHistograms(tree->BsCtErr_,        vhBsCtErr);
 	      
 	      if(tree->BsDist2d_ /tree-> BsDist2dErr_ > decayLengthCut) {  // passed transverse decay length cut
 		increaseCountersByOne(iBsJPsiPhiSignalEventsDecayLengthCut, iBsJPsiKKSignalEventsDecayLengthCut, iBdJPsiKstarSignalEventsDecayLengthCut, 
@@ -653,6 +655,9 @@ void writeHistos(TString outputfilename){
     vhResoRefitTime[i]->Write();
     vhResoRefitCt[i]->Write();
 
+    vhBsCt[i]->Write();
+    vhBsCtErr[i]->Write();
+
   }
  histofile->Write();
  histofile->Close();
@@ -1040,6 +1045,27 @@ vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BdJpsiK10"        
 vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BdJpsiK0"                  ,"hResoRefitTime_BdJpsiK0"         , 100, -0.1, 0.1      ) );
 vhResoRefitTime         .push_back( new TH1F ("hResoRefitTime_BpJpsiKp"                  ,"hResoRefitTime_BpJpsiKp"         , 100, -0.1, 0.1      ) );
 
+vhBsCt             .push_back( new TH1F ("hBsCt_BsJPsiPhiSignal"               ,"hBsCt_BsJPsiPhiSignal"      , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_BsJPsiKKSignal"                ,"hBsCt_BsJPsiKKSignal"       , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_BdJPsiKstarSignal"             ,"hBsCt_BdJPsiKstarSignal"    , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_BsOther"                       ,"hBsCt_BsOther"              , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_BdOther"                       ,"hBsCt_BdOther"              , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_Other"                         ,"hBsCt_Other"                , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_BsJpsiEta"                     ,"hBsCt_BsJpsiEta"            , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_BdJpsiK10"                     ,"hBsCt_BdJpsiK10"            , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_BdJpsiK0"                      ,"hBsCt_BdJpsiK0"             , 100, -0.05, 0.5                  ) );
+vhBsCt             .push_back( new TH1F ("hBsCt_BpJpsiKp"                          ,"hBsCt_BpJpsiKp"             , 100, -0.05, 0.5                  ) );
+
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BsJPsiPhiSignal"               ,"hBsCtErr_BsJPsiPhiSignal"      , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BsJPsiKKSignal"                ,"hBsCtErr_BsJPsiKKSignal"       , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BdJPsiKstarSignal"             ,"hBsCtErr_BdJPsiKstarSignal"    , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BsOther"                       ,"hBsCtErr_BsOther"              , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BdOther"                       ,"hBsCtErr_BdOther"              , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_Other"                         ,"hBsCtErr_Other"                , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BsJpsiEta"                     ,"hBsCtErr_BsJpsiEta"            , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BdJpsiK10"                     ,"hBsCtErr_BdJpsiK10"            , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BdJpsiK0"                      ,"hBsCtErr_BdJpsiK0"             , 100, 0., 0.03                  ) );
+vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BpJpsiKp"                            ,"hBsCtErr_BpJpsiKp"             , 100, 0., 0.03                  ) );
 
 }
 

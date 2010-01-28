@@ -194,6 +194,9 @@ int HLT = 0;
 //declaration of histograms
 //********************
 
+vector<TH1F*> vhBsCt;
+vector<TH1F*> vhBsCtErr;
+
 vector<TH1F*> vhJPsiMass;
 TH1F * hJPsiMass_BsJpsiSignal            ;
  TH1F * hJPsiMass_BsOther                 ;
