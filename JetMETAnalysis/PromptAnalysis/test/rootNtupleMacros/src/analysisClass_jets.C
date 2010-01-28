@@ -97,8 +97,8 @@ void analysisClass::Loop()
   variousEff->SetTitle(dataset);
   variousEff->GetXaxis()->SetBinLabel(1,"Loose JetID");
   variousEff->GetXaxis()->SetBinLabel(2,"Tight JetID");
-  variousEff->GetXaxis()->SetBinLabel(3,">1 Associated Loose Tracks");
-  variousEff->GetXaxis()->SetBinLabel(4,">1 Associated Tight Tracks");
+  variousEff->GetXaxis()->SetBinLabel(3,">1 Ass. Loose Tracks");
+  variousEff->GetXaxis()->SetBinLabel(4,">1 Ass. Tight Tracks");
 
   TH1D *dijetptall1 = new TH1D("dijetptall1","",ptBin, ptMin,ptMax);
   dijetptall1->SetXTitle("p_{T}[GeV]");
@@ -107,7 +107,8 @@ void analysisClass::Loop()
   dijetptall2->SetXTitle("p_{T}[GeV]");
   dijetptall2->SetTitle(dataset);
   TH1D *dijetdphi = new TH1D("dijetdphi","",phiBin, 0., 3.5);
-  dijetdphi->SetXTitle("p_{T}[GeV]");
+//   dijetdphi->SetXTitle("p_{T}[GeV]");
+  dijetdphi->SetXTitle("#Delta #phi_{di-jet}");
   dijetdphi->SetTitle(dataset);
   TH2D *mapalldijets = new TH2D("mapalldijets","",25,-2.4,2.4,24,-3.2,3.2);
   mapalldijets->SetXTitle("#eta_{jet}");
@@ -156,7 +157,8 @@ void analysisClass::Loop()
   dijetptall2cleaned->SetXTitle("p_{T}[GeV]");
   dijetptall2cleaned->SetTitle(dataset);
   TH1D *dijetdphicleaned = new TH1D("dijetdphicleaned","",phiBin, 0., 3.5);
-  dijetdphicleaned->SetXTitle("p_{T}[GeV]");
+//   dijetdphicleaned->SetXTitle("p_{T}[GeV]");
+  dijetdphicleaned->SetXTitle("#Delta #phi_{di-jet}");
   dijetdphicleaned->SetTitle(dataset);
   TH2D *mapalldijetscleaned = new TH2D("mapalldijetscleaned","",25,-2.4,2.4,24,-3.2,3.2);
   mapalldijetscleaned->SetXTitle("#eta_{jet}");
@@ -174,17 +176,19 @@ void analysisClass::Loop()
   ptcleaned->SetTitle(dataset);
 
   TH1D *eta = new TH1D("eta","",etaBin,etaMin,etaMax);
-  eta->SetXTitle("p_{T}[GeV]");
+  eta->SetXTitle("#eta");
   eta->SetTitle(dataset);
   TH1D *etacleaned = new TH1D("etacleaned","",etaBin,etaMin,etaMax);
-  etacleaned->SetXTitle("p_{T}[GeV]");
+  etacleaned->SetXTitle("#eta");
   etacleaned->SetTitle(dataset);
 
   TH1D *phi = new TH1D("phi","",phiBin,phiMin,phiMax);
-  phi->SetXTitle("p_{T}[GeV]");
+//   phi->SetXTitle("p_{T}[GeV]");
+  phi->SetXTitle("#phi");
   phi->SetTitle(dataset);
   TH1D *phicleaned = new TH1D("phicleaned","",phiBin,phiMin,phiMax);
-  phicleaned->SetXTitle("p_{T}[GeV]");
+//   phicleaned->SetXTitle("p_{T}[GeV]");
+  phicleaned->SetXTitle("#phi");
   phicleaned->SetTitle(dataset);
 
   TH2D *mapall = new TH2D("mapall","",50,-5.,5.,24,-3.2,3.2);
@@ -554,3 +558,5 @@ void analysisClass::Loop()
 
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
      }
+
+
