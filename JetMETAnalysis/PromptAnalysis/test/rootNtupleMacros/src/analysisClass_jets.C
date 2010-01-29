@@ -2,6 +2,7 @@
 #include "analysisClass.h"
 #include <TH2.h>
 #include <TH1F.h>
+#include <TH1.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TLorentzVector.h>
@@ -39,12 +40,12 @@ void analysisClass::Loop()
   int ptBin=50;
   
   int  phiBin=100;
-  double phiMax=-3.2;
-  double phiMin=3.2;
+  double phiMax=3.2;   // -
+  double phiMin=-3.2;
   
   int  etaBin=100;
-  double etaMax=-5  ;
-  double etaMin=5  ;
+  double etaMax=5;   //-
+  double etaMin=-5;
    
   TH1I *ak5njets = new TH1I("ak5njets","",20,0,20);
   ak5njets->SetXTitle("Number of jets per event");
@@ -62,21 +63,21 @@ void analysisClass::Loop()
   ak5nconstcleaned->SetXTitle("Number of constituents");
   ak5nconstcleaned->SetTitle(dataset);
 
-  TH1I *kt4njets = new TH1I("kt4njets","",20,0,20);
-  kt4njets->SetXTitle("Number of jets per event");
-  kt4njets->SetTitle(dataset);
-  TH1I *kt4nalljets = new TH1I("kt4nalljets","",20,0,20);
-  kt4nalljets->SetXTitle("Number of jets per event");
-  kt4nalljets->SetTitle(dataset);
-  TH1I *kt4nconst = new TH1I("kt4nconst","",20,0,20);
-  kt4nconst->SetXTitle("Number of constituents");
-  kt4nconst->SetTitle(dataset);
-  TH1I *kt4ncleanedjets = new TH1I("kt4ncleanedjets","",20,0,20);
-  kt4ncleanedjets->SetXTitle("Number of jets per event");
-  kt4ncleanedjets->SetTitle(dataset);
-  TH1I *kt4nconstcleaned = new TH1I("kt4nconstcleaned","",20,0,20);
-  kt4nconstcleaned->SetXTitle("Number of constituents");
-  kt4nconstcleaned->SetTitle(dataset);
+  TH1I *ic5njets = new TH1I("ic5njets","",20,0,20);
+  ic5njets->SetXTitle("Number of jets per event");
+  ic5njets->SetTitle(dataset);
+  TH1I *ic5nalljets = new TH1I("ic5nalljets","",20,0,20);
+  ic5nalljets->SetXTitle("Number of jets per event");
+  ic5nalljets->SetTitle(dataset);
+  TH1I *ic5nconst = new TH1I("ic5nconst","",20,0,20);
+  ic5nconst->SetXTitle("Number of constituents");
+  ic5nconst->SetTitle(dataset);
+  TH1I *ic5ncleanedjets = new TH1I("ic5ncleanedjets","",20,0,20);
+  ic5ncleanedjets->SetXTitle("Number of jets per event");
+  ic5ncleanedjets->SetTitle(dataset);
+  TH1I *ic5nconstcleaned = new TH1I("ic5nconstcleaned","",20,0,20);
+  ic5nconstcleaned->SetXTitle("Number of constituents");
+  ic5nconstcleaned->SetTitle(dataset);
   TH1D *ptall = new TH1D("ptall","",ptBin+8,0.,ptMax);
   ptall->SetXTitle("p_{T}[GeV]");
   ptall->SetTitle(dataset);
@@ -182,6 +183,7 @@ void analysisClass::Loop()
   etacleaned->SetXTitle("#eta");
   etacleaned->SetTitle(dataset);
 
+
   TH1D *phi = new TH1D("phi","",phiBin,phiMin,phiMax);
 //   phi->SetXTitle("p_{T}[GeV]");
   phi->SetXTitle("#phi");
@@ -229,6 +231,14 @@ void analysisClass::Loop()
   n90hits->SetXTitle("N_{90}hits");
   n90hits->SetTitle(dataset);
 
+  // cleaning efficiencies:
+
+  //  TH1D *ak5jetcleaningeffeta = new TH1D("ak5jetcleaningeffeta","",100,-5,5);
+  TH1D *ak5jetcleaningeffeta = new TH1D("ak5jetcleaningeffeta","",etaBin, etaMin, etaMax);
+  TH1D *ak5jetcleaningeffphi = new TH1D("ak5jetcleaningeffphi","",phiBin,phiMin,phiMax);
+
+
+
    //////////book histos here
   
   ofstream  outfile;
@@ -248,8 +258,8 @@ void analysisClass::Loop()
    int Nak5JetIDTightTOT=0;
    int Nak5AssTrksLooseTOT=0;
    int Nak5AssTrksTightTOT=0;
-   int Nkt4TOT=0;
-   int Ncleanedkt4TOT=0;
+   int Nic5TOT=0;
+   int Ncleanedic5TOT=0;
    int Nak5indijetsTOT=0;
    int Nak5indijetsJetIDLooseTOT=0;
    int Nak5indijetsJetIDTightTOT=0;
@@ -269,8 +279,21 @@ void analysisClass::Loop()
        int BeamHalo    = 0;
 
 
+
+       ////event selection - cut on vertex for now. l1 tech bits already asked at skimming step
+       ////Common JetMET selction: * isFake() false; |z|<15.cm; * number of tracks > 3 with 'trackWeight()'
+       ////larger than 0.5.
+       //if(vertexNTracksW5->at(0)>3. && fabs(vertexZ->at(0))<15 && vertexisValid->at(0)==true){
+
+
+
+
        //event selection - cut on vertex for now. l1 tech bits already asked at skimming step
-       if(vertexNTracks->at(0)>1. && fabs(vertexZ->at(0))<20){
+//        if(vertexNTracks->at(0)>1. && fabs(vertexZ->at(0))<20){   // "old" event selection (as taken over from viola)
+       if(vertexNTracks->at(0)>3. && fabs(vertexZ->at(0))<15 && vertexisValid->at(0)==true){    // "new" event selection
+
+
+
 	   int eventid = event;
 	   int LS = ls;
 	   int runid = run;
@@ -280,8 +303,8 @@ void analysisClass::Loop()
 	   int Nak5JetIDTight=0;
 	   int Nak5AssTrksLoose=0;
 	   int Nak5AssTrksTight=0;
-	   int Nkt4=0;
-	   int Ncleanedkt4=0;
+	   int Nic5=0;
+	   int Ncleanedic5=0;
 	   int Nak5indijets=0;
 	   int Nak5indijetsJetIDLoose=0;
 	   int NALLak5indijetsJetIDLoose=0;
@@ -289,7 +312,7 @@ void analysisClass::Loop()
 	   int Nak5indijetsAssTrksLoose=0;
 	   int Nak5indijetsAssTrksTight=0;
 	   ak5nalljets->Fill(ak5JetpT->size());
-	   kt4nalljets->Fill(kt4JetpT->size());
+	   ic5nalljets->Fill(ic5JetpT->size());
 	   for (int j = 0; j<int(ak5JetpT->size()); j++){
 	  
 	      ptall->Fill(ak5JetpT->at(j));
@@ -430,28 +453,28 @@ void analysisClass::Loop()
 	     }
 	   }
 
-	   for(int j = 0; j<int(kt4JetpT->size()); j++){
-	     if(kt4JetpT->at(j)>ptMin){
-	       Nkt4++;
-	       kt4nconst->Fill(kt4JetNConstituents->at(j));
-	       bool emfkt4=false;
-	       if(fabs(kt4JetEta->at(j))<2.6){
-		 if(kt4JetJIDresEMF->at(j)>0.01) emfkt4=true;
+	   for(int j = 0; j<int(ic5JetpT->size()); j++){
+	     if(ic5JetpT->at(j)>ptMin){
+	       Nic5++;
+	       ic5nconst->Fill(ic5JetNConstituents->at(j));
+	       bool emfic5=false;
+	       if(fabs(ic5JetEta->at(j))<2.6){
+		 if(ic5JetJIDresEMF->at(j)>0.01) emfic5=true;
 	       } else {
-		 emfkt4=true;
+		 emfic5=true;
 	       }
 	       //fill the histos for cleaned jets
-	       if(emfkt4 && kt4JetJIDn90Hits->at(j)>1 && kt4JetJIDfHPD->at(j)<0.98 ){//loose cleaning
-		 Ncleanedkt4++;
-		 kt4nconstcleaned->Fill(kt4JetNConstituents->at(j));
+	       if(emfic5 && ic5JetJIDn90Hits->at(j)>1 && ic5JetJIDfHPD->at(j)<0.98 ){//loose cleaning
+		 Ncleanedic5++;
+		 ic5nconstcleaned->Fill(ic5JetNConstituents->at(j));
 	       }
 	     }
 	   }
 	   //after looping on jets
 	   ak5njets->Fill(Nak5);     
 	   ak5ncleanedjets->Fill(Nak5JetIDLoose);
-	   kt4njets->Fill(Nkt4);     
-	   kt4ncleanedjets->Fill(Ncleanedkt4);
+	   ic5njets->Fill(Nic5);     
+	   ic5ncleanedjets->Fill(Ncleanedic5);
 	   ak5njetsindijetscleaned->Fill(NALLak5indijetsJetIDLoose);
 	   ak5njetsindijets->Fill(Nak5indijets);
 
@@ -469,8 +492,8 @@ void analysisClass::Loop()
 	   Nak5JetIDTightTOT+=Nak5JetIDTight;
 	   Nak5AssTrksLooseTOT+=Nak5AssTrksLoose;
 	   Nak5AssTrksTightTOT+=Nak5AssTrksTight;
-	   Nkt4TOT+=Nkt4;
-	   Ncleanedkt4TOT+=Ncleanedkt4;
+	   Nic5TOT+=Nic5;
+	   Ncleanedic5TOT+=Ncleanedic5;
 	   Nak5indijetsTOT+=Nak5indijets;
 	   Nak5indijetsJetIDLooseTOT+=Nak5indijetsJetIDLoose;
 	   Nak5indijetsJetIDTightTOT+=Nak5indijetsJetIDTight;
@@ -497,6 +520,13 @@ void analysisClass::Loop()
      variousEffindijets->SetBinContent(3,(1.*Nak5indijetsAssTrksLooseTOT/(1.*Nak5indijetsTOT)));
      variousEffindijets->SetBinContent(4,(1.*Nak5indijetsAssTrksTightTOT/(1.*Nak5indijetsTOT)));
    }
+
+
+   // cleaning efficiencies
+   ak5jetcleaningeffeta->Add(etacleaned);
+   ak5jetcleaningeffeta->Divide(eta);
+   ak5jetcleaningeffphi->Add(phicleaned);
+   ak5jetcleaningeffphi->Divide(phi);
    
    
    //////////write histos 
@@ -520,11 +550,11 @@ void analysisClass::Loop()
    ak5nconst->Write();
    ak5ncleanedjets->Write();
    ak5nconstcleaned->Write();
-   kt4nalljets->Write();
-   kt4njets->Write();
-   kt4nconst->Write();
-   kt4ncleanedjets->Write();
-   kt4nconstcleaned->Write();	 
+   ic5nalljets->Write();
+   ic5njets->Write();
+   ic5nconst->Write();
+   ic5ncleanedjets->Write();
+   ic5nconstcleaned->Write();	 
    phi->Write();
    phicleaned->Write();
    eta->Write(); 
@@ -555,8 +585,11 @@ void analysisClass::Loop()
    n90hitsdijets->Write();
    variousEff->Write();
    variousEffindijets->Write();
+ 
+   ak5jetcleaningeffeta->Write();
+   ak5jetcleaningeffphi->Write();
 
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
-     }
+}
 
 
