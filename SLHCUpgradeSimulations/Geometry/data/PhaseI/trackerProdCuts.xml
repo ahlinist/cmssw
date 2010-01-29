@@ -67,8 +67,7 @@ July 2009
   </SpecPar>
   <SpecPar name="tracker-dead-pixel">
     <PartSelector path="//PixelBarrel" />
-    <PartSelector path="//PixelForwardZPlus" />
-    <PartSelector path="//PixelForwardZMinus" />
+    <PartSelector path="//PixelForward" />
     <Parameter name="CMSCutsRegion" value="TrackerPixelDeadRegion" eval="false"/>
     <Parameter name="ProdCutsForElectrons" value="1*mm"/>
     <Parameter name="ProdCutsForPositrons" value="1*mm"/>
