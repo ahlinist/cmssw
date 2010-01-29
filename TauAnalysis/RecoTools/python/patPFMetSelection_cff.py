@@ -11,8 +11,15 @@ import copy
 # on how to use the cut-string parser
 
 selectedLayer1PFMETsPt25 = cms.EDFilter("PATMETSelector",
-                                            src = cms.InputTag("layer1PFMETs"),
-                                            cut = cms.string('pt > 25.'),
-                                            filter = cms.bool(False)
+                                        src = cms.InputTag("layer1PFMETs"),
+                                        cut = cms.string('pt > 25.'),
+                                        filter = cms.bool(False)
                                         )
-selectLayer1PFMETs = cms.Sequence(selectedLayer1PFMETsPt25)
+selectedLayer1PFMETsPt40 = cms.EDFilter("PATMETSelector",
+                                        src = cms.InputTag("layer1PFMETs"),
+                                        cut = cms.string('pt > 40'),
+                                        filter = cms.bool(False)
+                                        )
+
+selectLayer1PFMETs = cms.Sequence(selectedLayer1PFMETsPt25
+                                  *selectedLayer1PFMETsPt40)
