@@ -1,4 +1,5 @@
-
+#ifndef BSJPSIPHIVARIABLELIST_H
+#define BSJPSIPHIVARIABLELIST_H
 
 //*************************
 // analysis code variables
@@ -351,3 +352,7 @@ int sig15 = 0; int jpsikk15 = 0; int jpsikst15 = 0; int otherbs15 = 0; int other
 int jpsik1p15 = 0;
 int sig16 = 0; int jpsikk16 = 0; int jpsikst16 = 0; int otherbs16 = 0; int otherbd16 = 0; int other16 = 0; int jpsieta16 = 0; int jpsik1016 = 0; int jpsik016 = 0;
 int jpsik1p16 = 0;
+
+
+
+#endif
