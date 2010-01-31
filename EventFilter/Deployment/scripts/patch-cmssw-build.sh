@@ -17,7 +17,7 @@ export PATH=$PATH:$PWD/EventFilter/Deployment/scripts
 export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
 
 # define SCRAM_ARCH if unset
-[ -n "$SCRAM_ARCH" ] && SCRAM_ARCH=slc4onl_ia32_gcc346
+[ -n "$SCRAM_ARCH" ] || SCRAM_ARCH=slc4onl_ia32_gcc346
 export SCRAM_ARCH
 
 # create a scram wrapper
