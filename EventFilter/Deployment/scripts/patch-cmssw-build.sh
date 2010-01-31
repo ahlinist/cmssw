@@ -9,6 +9,9 @@ PATCH_ID=$2                 # an arbitrary tag which identifies the extra code (
 PRO_DEV=$3                  # "pro", "dev", etc...
 LOCAL_CODE_PATCHES_TOP=$4   # absolute path to the area where extra code to be compiled in can be found, equivalent to $CMSSW_BASE/src
 
+# set the RMP build architecture
+BUILD_ARCH=$(uname -i)      # "i386" for SLC4, "x86_64" for SLC5
+
 # set environment variables
 export PATH=$PATH:$PWD/EventFilter/Deployment/scripts
 export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
@@ -105,7 +108,7 @@ Packager: scram
 Source: none
 %define _tmppath $TOPDIR/patch-cmssw
 BuildRoot: %{_tmppath}
-BuildArch: i386
+BuildArch: $BUILD_ARCH
 Provides:/opt/cmssw/$PRO_DEV/lib
 Provides:/opt/cmssw/$PRO_DEV/python
 Provides:/opt/cmssw/$PRO_DEV/base
@@ -143,4 +146,4 @@ rpmbuild --define "_topdir `pwd`/RPMBUILD" -bb patch-cmssw.spec
 # copy the RPM to a local folder
 VERSION=$(echo $CMSSW_VERSION | sed -e's/_ONLINE$//')
 mkdir -p /cmsswrelease/$VERSION/patch
-cp $TOPDIR/RPMBUILD/RPMS/i386/patch-cmssw-$PRO_DEV-$CMSSW_VERSION_CLEAN$PATCH_ID-*.i386.rpm /cmsswrelease/$VERSION/patch
+cp $TOPDIR/RPMBUILD/RPMS/$BUILD_ARCH/patch-cmssw-$PRO_DEV-$CMSSW_VERSION_CLEAN$PATCH_ID-*.$BUILD_ARCH.rpm /cmsswrelease/$VERSION/patch
