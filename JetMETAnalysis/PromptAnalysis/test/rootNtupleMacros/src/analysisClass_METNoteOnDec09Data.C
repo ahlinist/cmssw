@@ -136,6 +136,20 @@ void analysisClass::Loop()
   TH1F *my_calometHadHFPy   = new TH1F ("my_calometHadHFPy","my_calometHadHFPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_caloSumetHadHF   = new TH1F ("my_caloSumetHadHF","my_caloSumetHadHF",Nbins_METSumET,0,Max_METSumET);
   
+//   TH1F *my_caloEnergyEB = new TH1F ("my_caloEnergyEB","my_caloEnergyEB",50,0,1);
+//   TH1F *my_caloEnergyEE = new TH1F ("my_caloEnergyEE","my_caloEnergyEE",50,0,5);
+//   TH1F *my_caloEnergyHB = new TH1F ("my_caloEnergyHB","my_caloEnergyHB",50,0,5);
+//   TH1F *my_caloEnergyHE = new TH1F ("my_caloEnergyHE","my_caloEnergyHE",50,0,5);
+//   TH1F *my_caloEnergyEmHF = new TH1F ("my_caloEnergyEmHF","my_caloEnergyEmHF",50,0,3);
+//   TH1F *my_caloEnergyHadHF = new TH1F ("my_caloEnergyHadHF","my_caloEnergyHadHF",50,0,10);
+//   
+//   TH1F *my_nCTEB = new TH1F ("my_nCTEB","my_nCTEB",100,0,100);
+//   TH1F *my_nCTEE = new TH1F ("my_nCTEE","my_nCTEE",100,0,100);
+//   TH1F *my_nCTHB = new TH1F ("my_nCTHB","my_nCTHB",30,0,30);
+//   TH1F *my_nCTHE = new TH1F ("my_nCTHE","my_nCTHE",30,0,30);
+//   TH1F *my_nCTEmHF = new TH1F ("my_nCTEmHF","my_nCTEmHF",30,0,30);
+//   TH1F *my_nCTHadHF = new TH1F ("my_nCTHadHF","my_nCTHadHF",30,0,30);
+  
   my_calometEBPt->Sumw2();
   my_calometEBPhi->Sumw2();
   my_calometEBPx->Sumw2();
@@ -171,6 +185,20 @@ void analysisClass::Loop()
   my_calometHadHFPx->Sumw2();
   my_calometHadHFPy->Sumw2();
   my_caloSumetHadHF->Sumw2();
+  
+//   my_caloEnergyEB->Sumw2();
+//   my_caloEnergyEE->Sumw2();
+//   my_caloEnergyHB->Sumw2();
+//   my_caloEnergyHE->Sumw2();
+//   my_caloEnergyEmHF->Sumw2();
+//   my_caloEnergyHadHF->Sumw2();
+//   
+//   my_nCTEB->Sumw2();
+//   my_nCTEE->Sumw2();
+//   my_nCTHB->Sumw2();
+//   my_nCTHE->Sumw2();
+//   my_nCTEmHF->Sumw2();
+//   my_nCTHadHF->Sumw2();
 
   //########################################
   
@@ -465,6 +493,22 @@ void analysisClass::Loop()
 		    124120};
                    //124120 at 2360 GeV
 
+   int goodLSmin[] = {0, 0, 0, 0, 0, 
+                      0, 0, 0, 0, 0, 0,
+                      0, 0, 0, 0, 0, 0,
+                      0, 0, 0, 0, 0, 0,
+                      0, 0, 0, 0, 0, 0,
+                      0, 0, 0, 0, 
+                      0};
+
+   int goodLSmax[] = {999999, 999999, 999999, 999999, 999999, 
+                      999999, 999999, 999999, 999999, 999999, 999999,
+                      999999, 999999, 999999, 999999, 999999, 999999,
+                      999999, 999999, 999999, 999999, 999999, 999999,
+                      999999, 999999, 999999, 999999, 999999, 999999,
+                      999999, 999999, 999999, 999999, 
+                      999999};
+
   Long64_t nentries = fChain->GetEntriesFast();
   std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl;   
 
@@ -485,8 +529,12 @@ void analysisClass::Loop()
       int pass_GoodRunList = 0;
       if(isData==1)
         {
-          for (int i = 0; i < sizeof(goodruns)/sizeof(int) ; i++)
-            if (goodruns[i] == run) pass_GoodRunList = 1;
+          for (int i = 0; i < sizeof(goodruns)/sizeof(int) ; i++) {
+            if (goodruns[i] == run && ls >= goodLSmin[i] && ls <= goodLSmax[i]) {
+              pass_GoodRunList = 1;
+              break;
+            }
+          }
         }
       else if(isData == 0)
         {
@@ -1199,10 +1247,14 @@ void analysisClass::Loop()
       double sum_et_EmHF = 0.0;
       double sum_ex_EmHF = 0.0;
       double sum_ey_EmHF = 0.0;
+//       int nCTEB = 0;
+//       int nCTEE = 0;
+//       int nCTEmHF = 0;
       
       for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
          {
-           double Tower_ET = CaloTowersEmEt->at(i);
+//            double Tower_ET = CaloTowersEmEt->at(i);
+           double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
            if (Tower_ET>getPreCutValue1("subDetTowerETcut"))
              {
                int Ieta   = CaloTowersIeta->at(i);
@@ -1213,14 +1265,20 @@ void analysisClass::Loop()
                  sum_et_EB += et;
                  sum_ex_EB += et*cos(phi);
                  sum_ey_EB += et*sin(phi);
+//                  my_caloEnergyEB->Fill(et*cosh(CaloTowersEta->at(i)));
+//                  nCTEB++;
                } else if (abs(Ieta)>=18 && abs(Ieta)<30) {
                  sum_et_EE += et;
                  sum_ex_EE += et*cos(phi);
                  sum_ey_EE += et*sin(phi);
+//                  my_caloEnergyEE->Fill(et*cosh(CaloTowersEta->at(i)));
+//                  nCTEE++;
                } else {
                  sum_et_EmHF += et;
                  sum_ex_EmHF += et*cos(phi);
                  sum_ey_EmHF += et*sin(phi);
+//                  my_caloEnergyEmHF->Fill(et*cosh(CaloTowersEta->at(i)));
+//                  nCTEmHF++;
                }
              }
          }
@@ -1241,6 +1299,10 @@ void analysisClass::Loop()
       double my_SumetEmHF  = sum_et_EmHF;
       double my_MetEmHFPhi = atan2( -sum_ey_EmHF, -sum_ex_EmHF );
 
+//       my_nCTEB->Fill( nCTEB );
+//       my_nCTEE->Fill( nCTEE );
+//       my_nCTEmHF->Fill( nCTEmHF );
+      
       //Calculate MET for different subdetectors from HAD towers only
       double sum_et_HB = 0.0;
       double sum_ex_HB = 0.0;
@@ -1251,10 +1313,14 @@ void analysisClass::Loop()
       double sum_et_HadHF = 0.0;
       double sum_ex_HadHF = 0.0;
       double sum_ey_HadHF = 0.0;
+//       int nCTHB = 0;
+//       int nCTHE = 0;
+//       int nCTHadHF = 0;
       
       for (int i = 0; i<int(CaloTowersHadEt->size()); i++)
          {
-           double Tower_ET = CaloTowersHadEt->at(i);
+//            double Tower_ET = CaloTowersHadEt->at(i);
+           double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
            if (Tower_ET>getPreCutValue1("subDetTowerETcut"))
              {
                int Ieta   = CaloTowersIeta->at(i);
@@ -1265,14 +1331,20 @@ void analysisClass::Loop()
                  sum_et_HB += et;
                  sum_ex_HB += et*cos(phi);
                  sum_ey_HB += et*sin(phi);
+//                  my_caloEnergyHB->Fill(et*cosh(CaloTowersEta->at(i)));
+//                  nCTHB++;
                } else if (abs(Ieta)>=17 && abs(Ieta)<30) {
                  sum_et_HE += et;
                  sum_ex_HE += et*cos(phi);
                  sum_ey_HE += et*sin(phi);
+//                  my_caloEnergyHE->Fill(et*cosh(CaloTowersEta->at(i)));
+//                  nCTHE++;
                } else {
                  sum_et_HadHF += et;
                  sum_ex_HadHF += et*cos(phi);
                  sum_ey_HadHF += et*sin(phi);
+//                  my_caloEnergyHadHF->Fill(et*cosh(CaloTowersEta->at(i)));
+//                  nCTHadHF++;
                }
              }
          }
@@ -1293,6 +1365,10 @@ void analysisClass::Loop()
       double my_SumetHadHF  = sum_et_HadHF;
       double my_MetHadHFPhi = atan2( -sum_ey_HadHF, -sum_ex_HadHF );
 
+//       my_nCTHB->Fill( nCTHB );
+//       my_nCTHE->Fill( nCTHE );
+//       my_nCTHadHF->Fill( nCTHadHF );
+      
       //########################################
       
       //=================================================================
@@ -1369,54 +1445,54 @@ void analysisClass::Loop()
            //########################################
            //#### MET for different subdetectors ####
            //########################################
+           my_caloSumetEB->Fill( my_SumetEB );
            if(my_SumetEB>0) {
              my_calometEBPt->Fill( my_MetEB   );
              my_calometEBPhi->Fill( my_MetEBPhi );
              my_calometEBPx->Fill( my_MetEB_x );
              my_calometEBPy->Fill( my_MetEB_y );
-             my_caloSumetEB->Fill( my_SumetEB );
            }
            
+           my_caloSumetEE->Fill( my_SumetEE );
            if(my_SumetEE>0) {
              my_calometEEPt->Fill( my_MetEE   );
              my_calometEEPhi->Fill( my_MetEEPhi );
              my_calometEEPx->Fill( my_MetEE_x );
              my_calometEEPy->Fill( my_MetEE_y );
-             my_caloSumetEE->Fill( my_SumetEE );
            }
            
+           my_caloSumetHB->Fill( my_SumetHB );
            if(my_SumetHB>0) {
              my_calometHBPt->Fill( my_MetHB   );
              my_calometHBPhi->Fill( my_MetHBPhi );
              my_calometHBPx->Fill( my_MetHB_x );
              my_calometHBPy->Fill( my_MetHB_y );
-             my_caloSumetHB->Fill( my_SumetHB );
            }
            
+           my_caloSumetHE->Fill( my_SumetHE );
            if(my_SumetHE>0) {
              my_calometHEPt->Fill( my_MetHE   );
              my_calometHEPhi->Fill( my_MetHEPhi );
              my_calometHEPx->Fill( my_MetHE_x );
              my_calometHEPy->Fill( my_MetHE_y );
-             my_caloSumetHE->Fill( my_SumetHE );
            }
            
+           my_caloSumetEmHF->Fill( my_SumetEmHF );
            if(my_SumetEmHF>0) {
              my_calometEmHFPt->Fill( my_MetEmHF   );
              my_calometEmHFPhi->Fill( my_MetEmHFPhi );
              my_calometEmHFPx->Fill( my_MetEmHF_x );
              my_calometEmHFPy->Fill( my_MetEmHF_y );
-             my_caloSumetEmHF->Fill( my_SumetEmHF );
            }
            
+           my_caloSumetHadHF->Fill( my_SumetHadHF );
            if(my_SumetHadHF>0) {
              my_calometHadHFPt->Fill( my_MetHadHF   );
              my_calometHadHFPhi->Fill( my_MetHadHFPhi );
              my_calometHadHFPx->Fill( my_MetHadHF_x );
              my_calometHadHFPy->Fill( my_MetHadHF_y );
-             my_caloSumetHadHF->Fill( my_SumetHadHF );
            }
-          //########################################
+           //########################################
            
 	   //MPT
 	   h_nGoodTracks->Fill(nGoodTracks);	       
@@ -2646,6 +2722,20 @@ void analysisClass::Loop()
   my_calometHadHFPx->Write();
   my_calometHadHFPy->Write();
   my_caloSumetHadHF->Write();
+  
+//   my_caloEnergyEB->Write();
+//   my_caloEnergyEE->Write();
+//   my_caloEnergyHB->Write();
+//   my_caloEnergyHE->Write();
+//   my_caloEnergyEmHF->Write();
+//   my_caloEnergyHadHF->Write();
+//   
+//   my_nCTEB->Write();
+//   my_nCTEE->Write();
+//   my_nCTHB->Write();
+//   my_nCTHE->Write();
+//   my_nCTEmHF->Write();
+//   my_nCTHadHF->Write();
   
   //########################################
   
