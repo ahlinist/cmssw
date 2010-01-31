@@ -101,24 +101,24 @@ void perform_fit(const string& fFile, const string& fPlot, const double fXmin, c
    TCanvas *c = new TCanvas("c","",1200,800);
    c->cd();
 
-   TH1F *h_metxsigma2_sumet = new TH1F("h_metxsigma2_sumet","h_metxsigma2_sumet",20,0,100);
+   TH1F *h_metsigma2_sumet = new TH1F("h_metsigma2_sumet","h_metsigma2_sumet",20,0,100);
 
    for(Int_t i=0; i<20; i++) {
-     h_metxsigma2_sumet->SetBinContent(i+1, h->GetBinContent(i+1)*h->GetBinContent(i+1) );
-     h_metxsigma2_sumet->SetBinError(i+1, 2*h->GetBinContent(i+1)*h->GetBinError(i+1) );
+     h_metsigma2_sumet->SetBinContent(i+1, h->GetBinContent(i+1)*h->GetBinContent(i+1) );
+     h_metsigma2_sumet->SetBinError(i+1, 2*h->GetBinContent(i+1)*h->GetBinError(i+1) );
    }
 
-   h_metxsigma2_sumet->GetXaxis()->SetRangeUser(fXmin,fXmax);
-   h_metxsigma2_sumet->SetLineColor(kRed);
-   h_metxsigma2_sumet->SetMarkerStyle(26);
-   h_metxsigma2_sumet->SetMarkerColor(kRed);
-   h_metxsigma2_sumet->Draw();
+   h_metsigma2_sumet->GetXaxis()->SetRangeUser(fXmin,fXmax);
+   h_metsigma2_sumet->SetLineColor(kRed);
+   h_metsigma2_sumet->SetMarkerStyle(26);
+   h_metsigma2_sumet->SetMarkerColor(kRed);
+   h_metsigma2_sumet->Draw();
 
    TF1 *fit = new TF1("fit","pow([0],2)+pow([1],2)*(x-[3])+pow([2]*(x-[3]),2)",fXmin,fXmax);
 //    fit->SetParLimits(3, 0, 10);
    fit->FixParameter(3, 0);
 
-   h_metxsigma2_sumet->Fit("fit","R");
+   h_metsigma2_sumet->Fit("fit","R");
    
    c->SaveAs(("fit_"+fName).c_str());
 
