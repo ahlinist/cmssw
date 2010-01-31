@@ -113,12 +113,12 @@ After the end of the crab job ( see step 7) for details ) the .root output files
 
 rfdir /castor/cern.ch/user/s/santanas/MET/rootNtuples/test_25Nov09/Ntuples-V00-00-02-Run122314_20091125_214656
 
--rw-r--r--   1 santanas zh                     181394 Nov 25 20:36 ExpressPhysics__BeamCommissioning09-Express-v2__FEVT____run122314_1.root
--rw-r--r--   1 santanas zh                     176087 Nov 25 20:36 ExpressPhysics__BeamCommissioning09-Express-v2__FEVT____run122314_2.root
--rw-r--r--   1 santanas zh                     173971 Nov 25 20:35 MinimumBias__BeamCommissioning09-PromptReco-v2__RECO____run122314_1.root
--rw-r--r--   1 santanas zh                     173140 Nov 25 20:35 MinimumBias__BeamCommissioning09-PromptReco-v2__RECO____run122314_2.root
--rw-r--r--   1 santanas zh                     173864 Nov 25 20:35 MinimumBias__BeamCommissioning09-rereco_FIRSTCOLL_v1__RECO____run122314_1.root
--rw-r--r--   1 santanas zh                     173205 Nov 25 20:35 MinimumBias__BeamCommissioning09-rereco_FIRSTCOLL_v1__RECO____run122314_2.root
+-rw-r--r--   1 santanas zh                     181394 Nov 25 20:36 ExpressPhysics__BeamCommissioning09-Express-v2__FEVT_1.root
+-rw-r--r--   1 santanas zh                     176087 Nov 25 20:36 ExpressPhysics__BeamCommissioning09-Express-v2__FEVT_2.root
+-rw-r--r--   1 santanas zh                     173971 Nov 25 20:35 MinimumBias__BeamCommissioning09-PromptReco-v2__RECO_1.root
+-rw-r--r--   1 santanas zh                     173140 Nov 25 20:35 MinimumBias__BeamCommissioning09-PromptReco-v2__RECO_2.root
+-rw-r--r--   1 santanas zh                     173864 Nov 25 20:35 MinimumBias__BeamCommissioning09-rereco_FIRSTCOLL_v1__RECO_1.root
+-rw-r--r--   1 santanas zh                     173205 Nov 25 20:35 MinimumBias__BeamCommissioning09-rereco_FIRSTCOLL_v1__RECO_2.root
 
 ------------------------------------------------------------------------
 7) Launch submit/getouput/etc.. commands after the creation of the jobs  

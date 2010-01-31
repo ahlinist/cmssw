@@ -171,10 +171,10 @@ foreach $inputListLine(@inputListFile)
 
     ## outputfile .root
     my $outputfile = $datasetName.""."\.root"; 
-    if($runNumber != -999 )
-    {
-	$outputfile = $datasetName."\_\_\_\_run".$runNumber.""."\.root"; 
-    }
+#     if($runNumber != -999 )
+#     {
+# 	$outputfile = $datasetName."\_\_\_\_run".$runNumber.""."\.root"; 
+#     }
     #print "outputfilename : $outputfile ... \n";
 
     ## read template CMSSW config file
