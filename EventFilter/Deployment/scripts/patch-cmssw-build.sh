@@ -16,8 +16,11 @@ BUILD_ARCH=$(uname -i)      # "i386" for SLC4, "x86_64" for SLC5
 export PATH=$PATH:$PWD/EventFilter/Deployment/scripts
 export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
 
+# define SCRAM_ARCH if unset
+[ -n "$SCRAM_ARCH" ] && SCRAM_ARCH=slc4onl_ia32_gcc346
+export SCRAM_ARCH
+
 # create a scram wrapper
-export SCRAM_ARCH=slc4onl_ia32_gcc346
 SCRAM_VERSION=`cat /opt/cmssw/$SCRAM_ARCH/etc/default-scramv1-version`
 cat > EventFilter/Deployment/scripts/scramv1 <<EOF
 #! /bin/bash
