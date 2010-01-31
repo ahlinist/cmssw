@@ -42,26 +42,33 @@ void analysisClass::Loop()
   int   Nbins_METSig = 50;
   int   Max_METSig = 20;
   float Max_Phi = 3.15;
+  int Nbins_Energy = 300;
+  float Max_Energy = 300;
 
   //## 1D histograms
 
   //calomet
   TH1F *h_calometPt   = new TH1F ("h_calometPt","h_calometPt",Nbins_METSumET,0,Max_METSumET);
   TH1F *h_calometPhi  = new TH1F ("h_calometPhi","h_calometPhi",Nbins_Phi,-Max_Phi,Max_Phi);
+  TH1F *h_calometPhi_METcut  = new TH1F ("h_calometPhi_METcut","h_calometPhi_METcut",Nbins_Phi,-Max_Phi,Max_Phi);
   TH1F *h_calometPx   = new TH1F ("h_calometPx","h_calometPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_calometPy   = new TH1F ("h_calometPy","h_calometPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_caloSumet   = new TH1F ("h_caloSumet","h_caloSumet",Nbins_METSumET,0,Max_METSumET);
   TH1F *h_calometSig   = new TH1F ("h_calometSig","h_calometSig",Nbins_METSig,0,Max_METSig);
   TH1F *h_calometSigCornell   = new TH1F ("h_calometSigCornell","h_calometSigCornell",Nbins_METSig,0,Max_METSig);
+  TH1F *h_calometPt_baseSel_HFfilter = new TH1F ("h_calometPt_baseSel_HFfilter","h_calometPt_baseSel_HFfilter",Nbins_METSumET,0,Max_METSumET);
 
   h_calometPt->Sumw2();
   h_calometPhi->Sumw2(); 
+  h_calometPhi_METcut->Sumw2(); 
   h_calometPx->Sumw2();  
   h_calometPy->Sumw2();  
   h_caloSumet->Sumw2();  
   h_calometSig->Sumw2(); 
   h_calometSigCornell->Sumw2();
+  h_calometPt_baseSel_HFfilter->Sumw2();
 
+  /*
   //calometNoHF
   TH1F *h_calometNoHFPt   = new TH1F ("h_calometNoHFPt","h_calometNoHFPt",Nbins_METSumET,0,Max_METSumET);
   TH1F *h_calometNoHFPhi  = new TH1F ("h_calometNoHFPhi","h_calometNoHFPhi",Nbins_Phi,-Max_Phi,Max_Phi);
@@ -78,6 +85,7 @@ void analysisClass::Loop()
   h_caloSumetNoHF->Sumw2();  
   h_calometSigNoHF->Sumw2(); 
   h_calometSigCornellNoHF->Sumw2();
+  */
 
   //calosumet for different subdetectors
   TH1F *h_caloSumetEB     = new TH1F ("h_caloSumetEB","h_caloSumetEB",Nbins_METSumET,0,Max_METSumET);
@@ -136,20 +144,20 @@ void analysisClass::Loop()
   TH1F *my_calometHadHFPy   = new TH1F ("my_calometHadHFPy","my_calometHadHFPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *my_caloSumetHadHF   = new TH1F ("my_caloSumetHadHF","my_caloSumetHadHF",Nbins_METSumET,0,Max_METSumET);
   
-//   TH1F *my_caloEnergyEB = new TH1F ("my_caloEnergyEB","my_caloEnergyEB",50,0,1);
-//   TH1F *my_caloEnergyEE = new TH1F ("my_caloEnergyEE","my_caloEnergyEE",50,0,5);
-//   TH1F *my_caloEnergyHB = new TH1F ("my_caloEnergyHB","my_caloEnergyHB",50,0,5);
-//   TH1F *my_caloEnergyHE = new TH1F ("my_caloEnergyHE","my_caloEnergyHE",50,0,5);
-//   TH1F *my_caloEnergyEmHF = new TH1F ("my_caloEnergyEmHF","my_caloEnergyEmHF",50,0,3);
-//   TH1F *my_caloEnergyHadHF = new TH1F ("my_caloEnergyHadHF","my_caloEnergyHadHF",50,0,10);
-//   
-//   TH1F *my_nCTEB = new TH1F ("my_nCTEB","my_nCTEB",100,0,100);
-//   TH1F *my_nCTEE = new TH1F ("my_nCTEE","my_nCTEE",100,0,100);
-//   TH1F *my_nCTHB = new TH1F ("my_nCTHB","my_nCTHB",30,0,30);
-//   TH1F *my_nCTHE = new TH1F ("my_nCTHE","my_nCTHE",30,0,30);
-//   TH1F *my_nCTEmHF = new TH1F ("my_nCTEmHF","my_nCTEmHF",30,0,30);
-//   TH1F *my_nCTHadHF = new TH1F ("my_nCTHadHF","my_nCTHadHF",30,0,30);
-  
+  //   TH1F *my_caloEnergyEB = new TH1F ("my_caloEnergyEB","my_caloEnergyEB",50,0,1);
+  //   TH1F *my_caloEnergyEE = new TH1F ("my_caloEnergyEE","my_caloEnergyEE",50,0,5);
+  //   TH1F *my_caloEnergyHB = new TH1F ("my_caloEnergyHB","my_caloEnergyHB",50,0,5);
+  //   TH1F *my_caloEnergyHE = new TH1F ("my_caloEnergyHE","my_caloEnergyHE",50,0,5);
+  //   TH1F *my_caloEnergyEmHF = new TH1F ("my_caloEnergyEmHF","my_caloEnergyEmHF",50,0,3);
+  //   TH1F *my_caloEnergyHadHF = new TH1F ("my_caloEnergyHadHF","my_caloEnergyHadHF",50,0,10);
+  //   
+  //   TH1F *my_nCTEB = new TH1F ("my_nCTEB","my_nCTEB",100,0,100);
+  //   TH1F *my_nCTEE = new TH1F ("my_nCTEE","my_nCTEE",100,0,100);
+  //   TH1F *my_nCTHB = new TH1F ("my_nCTHB","my_nCTHB",30,0,30);
+  //   TH1F *my_nCTHE = new TH1F ("my_nCTHE","my_nCTHE",30,0,30);
+  //   TH1F *my_nCTEmHF = new TH1F ("my_nCTEmHF","my_nCTEmHF",30,0,30);
+  //   TH1F *my_nCTHadHF = new TH1F ("my_nCTHadHF","my_nCTHadHF",30,0,30);
+
   my_calometEBPt->Sumw2();
   my_calometEBPhi->Sumw2();
   my_calometEBPx->Sumw2();
@@ -185,20 +193,20 @@ void analysisClass::Loop()
   my_calometHadHFPx->Sumw2();
   my_calometHadHFPy->Sumw2();
   my_caloSumetHadHF->Sumw2();
-  
-//   my_caloEnergyEB->Sumw2();
-//   my_caloEnergyEE->Sumw2();
-//   my_caloEnergyHB->Sumw2();
-//   my_caloEnergyHE->Sumw2();
-//   my_caloEnergyEmHF->Sumw2();
-//   my_caloEnergyHadHF->Sumw2();
-//   
-//   my_nCTEB->Sumw2();
-//   my_nCTEE->Sumw2();
-//   my_nCTHB->Sumw2();
-//   my_nCTHE->Sumw2();
-//   my_nCTEmHF->Sumw2();
-//   my_nCTHadHF->Sumw2();
+
+  //   my_caloEnergyEB->Sumw2();
+  //   my_caloEnergyEE->Sumw2();
+  //   my_caloEnergyHB->Sumw2();
+  //   my_caloEnergyHE->Sumw2();
+  //   my_caloEnergyEmHF->Sumw2();
+  //   my_caloEnergyHadHF->Sumw2();
+  //   
+  //   my_nCTEB->Sumw2();
+  //   my_nCTEE->Sumw2();
+  //   my_nCTHB->Sumw2();
+  //   my_nCTHE->Sumw2();
+  //   my_nCTEmHF->Sumw2();
+  //   my_nCTHadHF->Sumw2();
 
   //########################################
   
@@ -326,6 +334,37 @@ void analysisClass::Loop()
   h_ntracks_MonsterYES->Sumw2();
   h_ntracks_MonsterNO->Sumw2();
 
+  //plots about spikes
+  TH1F *h_ECALspikesPerEvent = new TH1F ("h_ECALspikesPerEvent","h_ECALspikesPerEvent",10,0,10);
+  TH1F *h_HFspikesPerEvent = new TH1F ("h_HFspikesPerEvent","h_HFspikesPerEvent",10,0,10);
+
+  TH1F *h_HFspikes_Long_Energy = new TH1F ("h_HFspikes_Long_Energy","h_HFspikes_Long_Energy",Nbins_Energy,0,Max_Energy);
+  TH1F *h_HFspikes_Long_Pt = new TH1F ("h_HFspikes_Long_Pt","h_HFspikes_Long_Pt",Nbins_METSumET,0,Max_METSumET);
+  TH2F *h_HFspikes_Long_EtaPhi = new TH2F ("h_HFspikes_Long_EtaPhi","h_HFspikes_Long_EtaPhi",Nbins_Phi,-5.2,5.2,Nbins_Phi,-Max_Phi,Max_Phi);
+  TH2F *h_HFspikes_Long_EtaPhiWeight = new TH2F ("h_HFspikes_Long_EtaPhiWeight","h_HFspikes_Long_EtaPhiWeight",Nbins_Phi,-5.2,5.2,Nbins_Phi,-Max_Phi,Max_Phi);
+
+  TH1F *h_HFspikes_Short_Energy = new TH1F ("h_HFspikes_Short_Energy","h_HFspikes_Short_Energy",Nbins_Energy,0,Max_Energy);
+  TH1F *h_HFspikes_Short_Pt = new TH1F ("h_HFspikes_Short_Pt","h_HFspikes_Short_Pt",Nbins_METSumET,0,Max_METSumET);
+  TH2F *h_HFspikes_Short_EtaPhi = new TH2F ("h_HFspikes_Short_EtaPhi","h_HFspikes_Short_EtaPhi",Nbins_Phi,-5.2,5.2,Nbins_Phi,-Max_Phi,Max_Phi);
+  TH2F *h_HFspikes_Short_EtaPhiWeight = new TH2F ("h_HFspikes_Short_EtaPhiWeight","h_HFspikes_Short_EtaPhi",Nbins_Phi,-5.2,5.2,Nbins_Phi,-Max_Phi,Max_Phi);
+
+  TH1F *h_ECALspikes_Energy = new TH1F ("h_ECALspikes_Energy","h_ECALspikes_Energy",Nbins_Energy,0,Max_Energy);
+  TH1F *h_ECALspikes_Pt = new TH1F ("h_ECALspikes_Pt","h_ECALspikes_Pt",Nbins_METSumET,0,Max_METSumET);
+  TH2F *h_ECALspikes_EtaPhi = new TH2F ("h_ECALspikes_EtaPhi","h_ECALspikes_EtaPhi",Nbins_Phi,-5.2,5.2,Nbins_Phi,-Max_Phi,Max_Phi);
+  TH2F *h_ECALspikes_EtaPhiWeight = new TH2F ("h_ECALspikes_EtaPhiWeight","h_ECALspikes_EtaPhiWeight",Nbins_Phi,-5.2,5.2,Nbins_Phi,-Max_Phi,Max_Phi);
+
+  h_ECALspikesPerEvent->Sumw2();
+  h_HFspikesPerEvent->Sumw2();
+
+  h_HFspikes_Long_Energy->Sumw2();
+  h_HFspikes_Long_Pt->Sumw2();
+  
+  h_HFspikes_Short_Energy->Sumw2();
+  h_HFspikes_Short_Pt->Sumw2();
+
+  h_ECALspikes_Energy->Sumw2();
+  h_ECALspikes_Pt->Sumw2();
+
   //## 2D histograms
 
   //MET vs ...
@@ -348,9 +387,9 @@ void analysisClass::Loop()
   TH2F *h2_FRook_Vs_S1S9= new TH2F ("h2_FRook_Vs_S1S9","h2_FRook_Vs_S1S9", 100,0.,1., 200,-2.,2.);
   TH2F *h2_FRook_Vs_E2nd3x3= new TH2F ("h2_FRook_Vs_E2nd3x3","h2_FRook_Vs_E2nd3x3", 100,0.,1., 200,0,20);
   TH2F *h2_ETa_Vs_Phi= new TH2F ("h2_ETa_Vs_Phi","h2_ETa_Vs_Phi", 82,-3.2,3.2, 72,-1.5,1.5); 
-  TH2F *h2_ECalSeedET_Vs_S1S9= new TH2F ("h2_ECalSeedET_Vs_S1S9","h2_ECalSeedET_Vs_S1S9", 200, 0,2, 50,0,20);
-  TH2F *h2_ECalSeedET_Vs_FRook= new TH2F ("h2_ECalSeedET_Vs_FRook","h2_ECalSeedET_Vs_FRook", 100,0.,1. , 50, 0., 20.);
-  TH2F *h2_ECalSeedET_Vs_S4_tcMEToverS1= new TH2F ("h2_ECalSeedET_Vs_S4_tcMEToverS1","h2_ECalSeedET_Vs_S4_tcMEToverS1", 100,0.,1. , 50, 0., 20.);
+  TH2F *h2_ECalSeedET_Vs_S1S9= new TH2F ("h2_ECalSeedET_Vs_S1S9","h2_ECalSeedET_Vs_S1S9", 200, 0,2, 50,0,50);
+  TH2F *h2_ECalSeedET_Vs_FRook= new TH2F ("h2_ECalSeedET_Vs_FRook","h2_ECalSeedET_Vs_FRook", 100,0.,1. , 50, 0., 50.);
+  TH2F *h2_ECalSeedET_Vs_S4_tcMEToverS1= new TH2F ("h2_ECalSeedET_Vs_S4_tcMEToverS1","h2_ECalSeedET_Vs_S4_tcMEToverS1", 200,-0.5,1.5 , 50, 0., 50.);
   TH2F *h2_S4S1_vs_1overEseed= new TH2F ("h2_S4S1_vs_1overEseed","h2_S4S1_vs_1overEseed", 100,0,0.5, 100,0,0.4);
 
   TH2F *h2_ECALSpikesVeto_tcMET_vs_caloMET = new TH2F ("h2_ECALSpikesVeto_tcMET_vs_caloMET","h2_ECALSpikesVeto_tcMET_vs_caloMET", 2,0,2, 2,0,2 );
@@ -417,7 +456,7 @@ void analysisClass::Loop()
   map<UInt_t,UInt_t> TotEventsMap;
 
   // met_quantities vs SumET (1D + 2D histograms)
-  int   nhistos  = 20;
+  int   nhistos  = 25;
   float MaxSumEt = Max_METSumET;
   //float MaxSumEt = 100;
 
@@ -439,18 +478,10 @@ void analysisClass::Loop()
   TH1F *h_metsig_sumet = new TH1F ("h_metsig_sumet","h_metsig_sumet", nhistos,0,MaxSumEt);
   
 
-//   TProfile * p_metstability         = new TProfile ("p_metstability","p_metstability", 360,0,360);
-//   TProfile * p_metxstability        = new TProfile ("p_metxstability","p_metxstability", 360,0,360);
-//   TProfile * p_metystability        = new TProfile ("p_metystability","p_metystability", 360,0,360);
-//   TProfile * p_metxsigmastability   = new TProfile ("p_metxsigmastability","p_metxsigmastability", 360,0,360);
-//   TProfile * p_metysigmastability   = new TProfile ("p_metysigmastability","p_metysigmastability", 360,0,360);
-//   TProfile * p_sumetstability       = new TProfile ("p_sumetstability","p_sumetstability", 360,0,360);
-//   TProfile * p_metsigmastability    = new TProfile ("p_metsigmastability","p_metsigmastability", 360,0,360);
-//   TProfile * p_sumetsigmastability  = new TProfile ("p_sumetsigmastability","p_sumetsigmastability", 360,0,360);
-//   p_metsigmastability  ->BuildOptions(0,360,"s");
-//   p_metxsigmastability ->BuildOptions(0,360,"s");
-//   p_metysigmastability ->BuildOptions(0,360,"s");
-//   p_sumetsigmastability->BuildOptions(0,360,"s");
+  //Example of TProfile
+  //   TProfile * p_metystability        = new TProfile ("p_metystability","p_metystability", 360,0,360);
+  //   p_metsigmastability  ->BuildOptions(0,360,"s");
+
 
   //#################################
   //## Trend plotting section
@@ -516,6 +547,7 @@ void analysisClass::Loop()
       if(jentry < 10 || jentry%1000 == 0) std::cout << "analysisClass::Loop(): jentry = " << jentry << std::endl;   
       ////////////////////// User's code starts here ///////////////////////
       
+
       //## Check if the run is in the list of good runs
       int pass_GoodRunList = 0;
       if(isData==1)
@@ -531,6 +563,7 @@ void analysisClass::Loop()
         {
           pass_GoodRunList = 1;
         }
+
 
       //#####################
       //## Trigger selection
@@ -548,16 +581,12 @@ void analysisClass::Loop()
 	    pass_BPTX = 1;
 	}
       else if(isData==0)
-	{
-	  pass_BPTX = 1;
-	}      
-
+	pass_BPTX = 1;
+      
       //## pass_BSC_MB - BSC MinBias triggers firing (both Data and MC)
       if( l1techbits->at(40)==1 || l1techbits->at(41)==1 ) 
-	{
-	  pass_BSC_MB = 1;
-	}	  
-
+	pass_BSC_MB = 1;
+      
       //## pass_BSC_BeamHaloVeto - Veto on BSC Beam Halo Triggers firing
       if(isData==1)
 	{
@@ -566,9 +595,7 @@ void analysisClass::Loop()
 	    pass_BSC_BeamHaloVeto = 0;
 	}
       else if(isData == 0)
-	{ 
-	  pass_BSC_BeamHaloVeto = 1;
-	}
+	pass_BSC_BeamHaloVeto = 1;
 
       //## pass_PhysicsBit - HLT Physics Declared bit set 
       if(isData==1)
@@ -577,30 +604,53 @@ void analysisClass::Loop()
 	    pass_PhysicsBit = 1;
 	}
       else if(isData == 0)
-	{
-	  pass_PhysicsBit = 1;
-	}
+	pass_PhysicsBit = 1;
+
+      //##############################
+      //## Towers with anomalous noise 
+      //## (should stay before "Reco-based filters")
+      //##############################
+
+      //the flag "tcMET" refers to the cuts originally proposed by tcMET group
+
+      vector<float> ECALspikes_tcMET_Px;
+      vector<float> ECALspikes_tcMET_Py;
+      vector<float> ECALspikes_tcMET_Pt;
+      vector<float> ECALspikes_tcMET_Eta;
+      vector<float> ECALspikes_tcMET_Phi;
+
+      vector<float> HFspikes_tcMET_ShortPx;
+      vector<float> HFspikes_tcMET_ShortPy;
+      vector<float> HFspikes_tcMET_LongPx;
+      vector<float> HFspikes_tcMET_LongPy;
+      vector<float> HFspikes_tcMET_ShortPt;
+      vector<float> HFspikes_tcMET_LongPt;
+      vector<float> HFspikes_tcMET_Pt;
+      vector<float> HFspikes_tcMET_Eta;
+      vector<float> HFspikes_tcMET_Phi;
+      vector<float> HFspikes_tcMET_iEta;
+      vector<float> HFspikes_tcMET_iPhi;
+      vector<float> HFspikes_tcMET_EMis0_HADis1;
 
       //#####################
       //## Reco-based filters
       //#####################
+
       //pass_GoodVertex 
       //https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe
       int pass_GoodVertex = 1;
-      
+
       if(vertexZ->size() == 0) pass_GoodVertex = 0;
       for (int ii=0; ii<vertexZ->size(); ii++)
 	{
 	  if(isData == 1)
 	    {
-	      if( vertexChi2->at(ii) == 0. || vertexNTracks->at(ii) < 4 || fabs(vertexZ->at(ii)) >= 15. )
+	      if( vertexChi2->at(ii) == 0. || vertexNDF->at(ii) == 0 || vertexNTracksW5->at(ii) < 4 || fabs(vertexZ->at(ii)) >= 15. )
 		pass_GoodVertex = 0;
 	    }
 	  else if(isData == 0)
 	    {
-	      if( vertexChi2->at(ii) == 0. || vertexNTracks->at(ii) < 4 
-		  //|| fabs(vertexZ->at(ii)) >= 15. //removing cut on Z for MC (enable if there is agreement with data) 
-		  )
+	      if( vertexChi2->at(ii) == 0. || vertexNDF->at(ii) == 0 || vertexNTracksW5->at(ii) < 4 || fabs(vertexZ->at(ii)) >= 15. )
 		pass_GoodVertex = 0;
 	    }
 	}
@@ -647,8 +697,8 @@ void analysisClass::Loop()
       int pass_HFPMTHitVeto_caloMET_EM = 1;
 
       int pass_HFPMTHitVeto_tcMET   = 1;
-      int pass_HFPMTHitVeto_tcMET_HAD   = 1;
-      int pass_HFPMTHitVeto_tcMET_EM   = 1;
+      int pass_HFPMTHitVeto_tcMET_HAD  = 1;
+      int pass_HFPMTHitVeto_tcMET_EM  = 1;
 
       int pass_HFPMTHitVeto_PFMET = 1;
       int pass_HFPMTHitVeto_PF_LoS_HAD = 1;
@@ -728,14 +778,45 @@ void analysisClass::Loop()
 		  ratio_tcMET = ( fabs(towerL->Mag()) - fabs(towerS->Mag()) ) 
 		    / ( fabs(towerL->Mag()) + fabs(towerS->Mag()) );
 
-		  if( ratio_tcMET < -Rminus_cut_tcMET )
-		    pass_HFPMTHitVeto_tcMET_HAD = 0; 
+		  float towerPt = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
+		  float towerShortPt = towerS->Pt();
+		  float towerLongPt = towerL->Pt();
+		  float towerShortPx = towerShortPt * cos( CaloTowersPhi->at(i) );
+		  float towerShortPy = towerShortPt * sin( CaloTowersPhi->at(i) );
+		  float towerLongPx = towerLongPt * cos( CaloTowersPhi->at(i) );
+		  float towerLongPy = towerLongPt * sin( CaloTowersPhi->at(i) );
+		  float towerEta = CaloTowersEta->at(i);
+		  float towerPhi = CaloTowersPhi->at(i);
+		  float towerIEta = CaloTowersIeta->at(i);
+		  float towerIPhi = CaloTowersIphi->at(i);
 
-		  if( ratio_tcMET > Rplus_cut_tcMET)
-		    pass_HFPMTHitVeto_tcMET_EM = 0; 
+		  if( ratio_tcMET < -Rminus_cut_tcMET ) //is long fiber
+		    {
+		      pass_HFPMTHitVeto_tcMET_HAD = 0; 
+		      HFspikes_tcMET_EMis0_HADis1.push_back(1);
+		    }
+
+		  if( ratio_tcMET > Rplus_cut_tcMET) //is short fiber
+		    {
+		      pass_HFPMTHitVeto_tcMET_EM = 0; 
+		      HFspikes_tcMET_EMis0_HADis1.push_back(0);
+		    }
 
 		  if( ratio_tcMET < -Rminus_cut_tcMET || ratio > Rplus_cut_tcMET )
-		    pass_HFPMTHitVeto_tcMET = 0; 
+		    {
+		      pass_HFPMTHitVeto_tcMET = 0; 
+		      HFspikes_tcMET_ShortPt.push_back(towerShortPt);
+		      HFspikes_tcMET_LongPt.push_back(towerLongPt);
+		      HFspikes_tcMET_ShortPx.push_back(towerShortPx);
+		      HFspikes_tcMET_ShortPy.push_back(towerShortPy);
+		      HFspikes_tcMET_LongPx.push_back(towerLongPx);
+		      HFspikes_tcMET_LongPy.push_back(towerLongPy);
+		      HFspikes_tcMET_Pt.push_back(towerPt);
+		      HFspikes_tcMET_Eta.push_back(towerEta);
+		      HFspikes_tcMET_Phi.push_back(towerPhi);
+		      HFspikes_tcMET_iEta.push_back(towerIEta);
+		      HFspikes_tcMET_iPhi.push_back(towerIPhi);
+		    }
 
 		}
 
@@ -1034,13 +1115,17 @@ void analysisClass::Loop()
       int pass_ECALSpikesVeto_caloMET = 1;
       int pass_ECALSpikesVeto_tcMET = 1;
       int pass_ECALSpikesVeto_PFMET = 1;
-      //if(isData==1)
+      //if(isData==1)      
       for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
 	{
 
 	  //-- seed crystal info --
-	  float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
 	  float seedEnergy = CaloTowersECalEBXtalsEMax->at(ii);
+	  float seedet = CaloTowersECalEBXtalsEMax->at(ii) / cosh(CaloTowersECalEBSeedEta->at(ii));
+	  float seedex = seedet * cos( CaloTowersECalEBSeedPhi->at(ii) );
+	  float seedey = seedet * sin( CaloTowersECalEBSeedPhi->at(ii) );
+	  float seedeta = CaloTowersECalEBSeedEta->at(ii);
+	  float seedphi = CaloTowersECalEBSeedPhi->at(ii);
 
 	  //frook vs ET (a la caloMET)
 	  float emaxrook = 0.;
@@ -1069,8 +1154,16 @@ void analysisClass::Loop()
 
 	  float S4_tcMEToverS1 = S4_tcMET / seedEnergy;
 
-	  if(seedet > 5. && S4_tcMEToverS1 < 0.01)
-	    pass_ECALSpikesVeto_tcMET = 0;
+	  if(seedet > 5. && S4_tcMEToverS1 < 0.05)
+	    {
+	      pass_ECALSpikesVeto_tcMET = 0;
+
+	      ECALspikes_tcMET_Px.push_back( seedex )  ;
+	      ECALspikes_tcMET_Py.push_back( seedey )  ;
+	      ECALspikes_tcMET_Pt.push_back( seedet )   ;
+	      ECALspikes_tcMET_Eta.push_back( seedeta ) ;
+	      ECALspikes_tcMET_Phi.push_back( seedphi ) ;
+	    }
 
 	  //S4/S1 vs log(E) (a la PFMET)
 	  float S4_PFMET = 0.;
@@ -1122,108 +1215,9 @@ void analysisClass::Loop()
       MPTPhi = mpt2->Phi();
 
 
-      //=================================================================
 
-      //#################################
-      //## Additional quantities 
-      //## (commented out for the moment)
-      //#################################
-      /*   
 
-      //## Calculate MET on the fly from caloTowers
-      double sum_et = 0.0;
-      double sum_ex = 0.0;
-      double sum_ey = 0.0;
-      for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
-	 {
-	   double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
-	   if (Tower_ET>getPreCutValue1("towerETcut"))
-	     {	       
-	       double phi   = CaloTowersPhi->at(i);
-	       double et    = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
-	       sum_et += et;
-	       sum_ex += et*cos(phi);
-	       sum_ey += et*sin(phi);
-	     }
-	 }
 
-      double my_Met    = sqrt( sum_ex*sum_ex + sum_ey*sum_ey );
-      double my_Met_x  = -sum_ex;
-      double my_Met_y  = -sum_ey;
-      double my_Sumet  = sum_et;
-      double my_MetPhi = atan2( -sum_ey, -sum_ex );       
-
-      //## Calculate MET on the fly from caloTowers with VTX0
-      sum_et = 0.0;
-      sum_ex = 0.0;
-      sum_ey = 0.0;
-      for (int i = 0; i<int(CaloTowersEmEtVtx0->size()); i++)
-	{
-	   double Tower_ET = CaloTowersEmEtVtx0->at(i) + CaloTowersHadEtVtx0->at(i);
-	   if (Tower_ET>getPreCutValue1("towerETcut"))
-	     {
-	       double phi   = CaloTowersPhi->at(i);
-	       double et    = CaloTowersEmEtVtx0->at(i) + CaloTowersHadEtVtx0->at(i);
-	       sum_et += et;
-	       sum_ex += et*cos(phi);
-	       sum_ey += et*sin(phi);
-	     }
-	 }
-
-      double my_MetVtx0    = sqrt( sum_ex*sum_ex + sum_ey*sum_ey );
-      double my_MetVtx0_x  = -sum_ex;
-      double my_MetVtx0_y  = -sum_ey;
-      double my_SumetVtx0  = sum_et;
-      double my_MetPhiVtx0 = atan2( -sum_ey, -sum_ex );       
-
-      //Calculate MET from EM towers only
-      sum_et = 0.0;
-      sum_ex = 0.0;
-      sum_ey = 0.0;
-      for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
-	 {
-	   double Tower_ET = CaloTowersEmEt->at(i);
-	   if (Tower_ET>getPreCutValue1("towerETcut"))
-	     {
-	       double phi   = CaloTowersPhi->at(i);
-	       double et    = CaloTowersEmEt->at(i);
-	       sum_et += et;
-	       sum_ex += et*cos(phi);
-	       sum_ey += et*sin(phi);
-	     }
-	 }
-
-      double my_MetEM    = sqrt( sum_ex*sum_ex + sum_ey*sum_ey );
-      double my_MetEM_x  = -sum_ex;
-      double my_MetEM_y  = -sum_ey;
-      double my_SumetEM  = sum_et;
-      double my_MetEMPhi = atan2( -sum_ey, -sum_ex );
-
-      //Calculate MET from HAD towers only
-      sum_et = 0.0;
-      sum_ex = 0.0;
-      sum_ey = 0.0;
-      for (int i = 0; i<int(CaloTowersHadEt->size()); i++)
-	 {
-	   double Tower_ET = CaloTowersHadEt->at(i);
-	   if (Tower_ET>getPreCutValue1("towerETcut"))
-	     {
-	       double phi   = CaloTowersPhi->at(i);
-	       double et    = CaloTowersHadEt->at(i);
-	       sum_et += et;
-	       sum_ex += et*cos(phi);
-	       sum_ey += et*sin(phi);
-	     }
-	 }
-
-      double my_MetHAD    = sqrt( sum_ex*sum_ex + sum_ey*sum_ey );
-      double my_MetHAD_x  = -sum_ex;
-      double my_MetHAD_y  = -sum_ey;
-      double my_SumetHAD  = sum_et;
-      double my_MetHADPhi = atan2( -sum_ey, -sum_ex );
-
-      */
-      
       //########################################
       //#### MET for different subdetectors ####
       //########################################
@@ -1238,41 +1232,41 @@ void analysisClass::Loop()
       double sum_et_EmHF = 0.0;
       double sum_ex_EmHF = 0.0;
       double sum_ey_EmHF = 0.0;
-//       int nCTEB = 0;
-//       int nCTEE = 0;
-//       int nCTEmHF = 0;
+      //       int nCTEB = 0;
+      //       int nCTEE = 0;
+      //       int nCTEmHF = 0;
       
       for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
-         {
-//            double Tower_ET = CaloTowersEmEt->at(i);
-           double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
-           if (Tower_ET>getPreCutValue1("subDetTowerETcut"))
-             {
-               int Ieta   = CaloTowersIeta->at(i);
-               double phi = CaloTowersPhi->at(i);
-               double et  = CaloTowersEmEt->at(i);
+	{
+	  //            double Tower_ET = CaloTowersEmEt->at(i);
+	  double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
+	  if (Tower_ET>getPreCutValue1("subDetTowerETcut"))
+	    {
+	      int Ieta   = CaloTowersIeta->at(i);
+	      double phi = CaloTowersPhi->at(i);
+	      double et  = CaloTowersEmEt->at(i);
                
-               if(abs(Ieta)<18) {
-                 sum_et_EB += et;
-                 sum_ex_EB += et*cos(phi);
-                 sum_ey_EB += et*sin(phi);
-//                  my_caloEnergyEB->Fill(et*cosh(CaloTowersEta->at(i)));
-//                  nCTEB++;
-               } else if (abs(Ieta)>=18 && abs(Ieta)<30) {
-                 sum_et_EE += et;
-                 sum_ex_EE += et*cos(phi);
-                 sum_ey_EE += et*sin(phi);
-//                  my_caloEnergyEE->Fill(et*cosh(CaloTowersEta->at(i)));
-//                  nCTEE++;
-               } else {
-                 sum_et_EmHF += et;
-                 sum_ex_EmHF += et*cos(phi);
-                 sum_ey_EmHF += et*sin(phi);
-//                  my_caloEnergyEmHF->Fill(et*cosh(CaloTowersEta->at(i)));
-//                  nCTEmHF++;
-               }
-             }
-         }
+	      if(abs(Ieta)<18) {
+		sum_et_EB += et;
+		sum_ex_EB += et*cos(phi);
+		sum_ey_EB += et*sin(phi);
+		//                  my_caloEnergyEB->Fill(et*cosh(CaloTowersEta->at(i)));
+		//                  nCTEB++;
+	      } else if (abs(Ieta)>=18 && abs(Ieta)<30) {
+		sum_et_EE += et;
+		sum_ex_EE += et*cos(phi);
+		sum_ey_EE += et*sin(phi);
+		//                  my_caloEnergyEE->Fill(et*cosh(CaloTowersEta->at(i)));
+		//                  nCTEE++;
+	      } else {
+		sum_et_EmHF += et;
+		sum_ex_EmHF += et*cos(phi);
+		sum_ey_EmHF += et*sin(phi);
+		//                  my_caloEnergyEmHF->Fill(et*cosh(CaloTowersEta->at(i)));
+		//                  nCTEmHF++;
+	      }
+	    }
+	}
 
       double my_MetEB    = sqrt( sum_ex_EB*sum_ex_EB + sum_ey_EB*sum_ey_EB );
       double my_MetEB_x  = -sum_ex_EB;
@@ -1290,9 +1284,9 @@ void analysisClass::Loop()
       double my_SumetEmHF  = sum_et_EmHF;
       double my_MetEmHFPhi = atan2( -sum_ey_EmHF, -sum_ex_EmHF );
 
-//       my_nCTEB->Fill( nCTEB );
-//       my_nCTEE->Fill( nCTEE );
-//       my_nCTEmHF->Fill( nCTEmHF );
+      //       my_nCTEB->Fill( nCTEB );
+      //       my_nCTEE->Fill( nCTEE );
+      //       my_nCTEmHF->Fill( nCTEmHF );
       
       //Calculate MET for different subdetectors from HAD towers only
       double sum_et_HB = 0.0;
@@ -1304,41 +1298,41 @@ void analysisClass::Loop()
       double sum_et_HadHF = 0.0;
       double sum_ex_HadHF = 0.0;
       double sum_ey_HadHF = 0.0;
-//       int nCTHB = 0;
-//       int nCTHE = 0;
-//       int nCTHadHF = 0;
+      //       int nCTHB = 0;
+      //       int nCTHE = 0;
+      //       int nCTHadHF = 0;
       
       for (int i = 0; i<int(CaloTowersHadEt->size()); i++)
-         {
-//            double Tower_ET = CaloTowersHadEt->at(i);
-           double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
-           if (Tower_ET>getPreCutValue1("subDetTowerETcut"))
-             {
-               int Ieta   = CaloTowersIeta->at(i);
-               double phi = CaloTowersPhi->at(i);
-               double et  = CaloTowersHadEt->at(i);
+	{
+	  //            double Tower_ET = CaloTowersHadEt->at(i);
+	  double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
+	  if (Tower_ET>getPreCutValue1("subDetTowerETcut"))
+	    {
+	      int Ieta   = CaloTowersIeta->at(i);
+	      double phi = CaloTowersPhi->at(i);
+	      double et  = CaloTowersHadEt->at(i);
                
-               if(abs(Ieta)<17) {
-                 sum_et_HB += et;
-                 sum_ex_HB += et*cos(phi);
-                 sum_ey_HB += et*sin(phi);
-//                  my_caloEnergyHB->Fill(et*cosh(CaloTowersEta->at(i)));
-//                  nCTHB++;
-               } else if (abs(Ieta)>=17 && abs(Ieta)<30) {
-                 sum_et_HE += et;
-                 sum_ex_HE += et*cos(phi);
-                 sum_ey_HE += et*sin(phi);
-//                  my_caloEnergyHE->Fill(et*cosh(CaloTowersEta->at(i)));
-//                  nCTHE++;
-               } else {
-                 sum_et_HadHF += et;
-                 sum_ex_HadHF += et*cos(phi);
-                 sum_ey_HadHF += et*sin(phi);
-//                  my_caloEnergyHadHF->Fill(et*cosh(CaloTowersEta->at(i)));
-//                  nCTHadHF++;
-               }
-             }
-         }
+	      if(abs(Ieta)<17) {
+		sum_et_HB += et;
+		sum_ex_HB += et*cos(phi);
+		sum_ey_HB += et*sin(phi);
+		//                  my_caloEnergyHB->Fill(et*cosh(CaloTowersEta->at(i)));
+		//                  nCTHB++;
+	      } else if (abs(Ieta)>=17 && abs(Ieta)<30) {
+		sum_et_HE += et;
+		sum_ex_HE += et*cos(phi);
+		sum_ey_HE += et*sin(phi);
+		//                  my_caloEnergyHE->Fill(et*cosh(CaloTowersEta->at(i)));
+		//                  nCTHE++;
+	      } else {
+		sum_et_HadHF += et;
+		sum_ex_HadHF += et*cos(phi);
+		sum_ey_HadHF += et*sin(phi);
+		//                  my_caloEnergyHadHF->Fill(et*cosh(CaloTowersEta->at(i)));
+		//                  nCTHadHF++;
+	      }
+	    }
+	}
 
       double my_MetHB    = sqrt( sum_ex_HB*sum_ex_HB + sum_ey_HB*sum_ey_HB );
       double my_MetHB_x  = -sum_ex_HB;
@@ -1356,11 +1350,13 @@ void analysisClass::Loop()
       double my_SumetHadHF  = sum_et_HadHF;
       double my_MetHadHFPhi = atan2( -sum_ey_HadHF, -sum_ex_HadHF );
 
-//       my_nCTHB->Fill( nCTHB );
-//       my_nCTHE->Fill( nCTHE );
-//       my_nCTHadHF->Fill( nCTHadHF );
+      //       my_nCTHB->Fill( nCTHB );
+      //       my_nCTHE->Fill( nCTHE );
+      //       my_nCTHadHF->Fill( nCTHadHF );
       
       //########################################
+
+
       
       //=================================================================
 
@@ -1373,7 +1369,7 @@ void analysisClass::Loop()
       fillVariableWithValue("pass_BSC_MB", pass_BSC_MB);
       fillVariableWithValue("pass_BSC_BeamHaloVeto", pass_BSC_BeamHaloVeto);
       fillVariableWithValue("pass_PhysicsBit", pass_PhysicsBit);
-      //fillVariableWithValue("pass_GoodVertex", pass_GoodVertex);
+      fillVariableWithValue("pass_GoodVertex", pass_GoodVertex);
       fillVariableWithValue("pass_MonsterTRKEventVeto", pass_MonsterTRKEventVeto);
 
       //fillVariableWithValue("pass_ECALSpikesVeto_caloMET", pass_ECALSpikesVeto_caloMET);
@@ -1393,390 +1389,530 @@ void analysisClass::Loop()
       //fillVariableWithValue("pass_HFPMTHitVeto_PF_S9oS1_HAD", pass_HFPMTHitVeto_PF_S9oS1_HAD);
       //fillVariableWithValue("pass_HFPMTHitVeto_PF_S9oS1_EM", pass_HFPMTHitVeto_PF_S9oS1_EM);
 
-
       // Evaluate cuts (but do not apply them)
       evaluateCuts();
 
+      //################
+      //## MET Cleaning
+      //################
+
+      float calometPx_clean = calometPx->at(0); 
+      float calometPy_clean = calometPy->at(0); 
+      float calometPx_clean_HFonly = calometPx->at(0);
+      float calometPy_clean_HFonly = calometPy->at(0);
+      float calometPt_clean = -99; 
+      float calometPt_clean_HFonly = -99; 
+      float calometPhi_clean = -99; 
+      float calometSumEt_clean = calometSumEt->at(0); 
+      float calometEmEtInEB_clean = calometEmEtInEB->at(0);
+      float calometHadEtInHF_clean = calometHadEtInHF->at(0);
+      float calometEmEtInHF_clean = calometEmEtInHF->at(0);
+
+      //## clean hf spikes      
+      for (int hs=0; hs<HFspikes_tcMET_Pt.size(); hs++)
+	{
+	  
+	  if( HFspikes_tcMET_EMis0_HADis1[hs] == 0 )//is EM = Long fiber
+	    {
+	      calometPx_clean = calometPx_clean + HFspikes_tcMET_LongPx[hs];
+	      calometPy_clean = calometPy_clean + HFspikes_tcMET_LongPy[hs];
+	      calometSumEt_clean = calometSumEt_clean - HFspikes_tcMET_LongPt[hs]; 
+	      calometEmEtInHF_clean = calometEmEtInHF_clean - HFspikes_tcMET_LongPt[hs];
+	    }
+
+	  if( HFspikes_tcMET_EMis0_HADis1[hs] == 1 )//is HAD = Short fiber
+	    {
+	      calometPx_clean = calometPx_clean + HFspikes_tcMET_ShortPx[hs];
+	      calometPy_clean = calometPy_clean + HFspikes_tcMET_ShortPy[hs];
+	      calometSumEt_clean = calometSumEt_clean - HFspikes_tcMET_ShortPt[hs]; 
+	      calometHadEtInHF_clean = calometHadEtInHF_clean - 2*HFspikes_tcMET_ShortPt[hs];
+	    }
+
+	  calometPx_clean_HFonly = calometPx_clean;
+	  calometPy_clean_HFonly = calometPy_clean;
+	  	  
+	}
+
+      //## re-calculate met pt (HF filter only)
+      calometPt_clean_HFonly = sqrt( calometPx_clean_HFonly * calometPx_clean_HFonly 
+				     + calometPy_clean_HFonly * calometPy_clean_HFonly );      
+            
+      //## clean ecal spikes
+      for (int es=0; es<ECALspikes_tcMET_Pt.size(); es++)
+	{
+	  calometPx_clean = calometPx_clean + ECALspikes_tcMET_Px[es];
+	  calometPy_clean = calometPy_clean + ECALspikes_tcMET_Py[es];
+	  calometSumEt_clean = calometSumEt_clean - ECALspikes_tcMET_Pt[es]; 
+	  calometEmEtInEB_clean = calometEmEtInEB_clean - ECALspikes_tcMET_Pt[es]; 
+	}
+
+      //## re-calculate met pt and phi
+      calometPt_clean = sqrt( calometPx_clean * calometPx_clean + calometPy_clean * calometPy_clean );      
+      calometPhi_clean = atan2( calometPy_clean, calometPx_clean );       
+
+      //###########################
+      //## Start filling histograms
+      //###########################
+
+
+      if( passedCut("0") )
+	{
+	   
+	  //#########################
+	  //## 1D histograms
+	  //#########################
+
+	  //calomet
+	  // 	   h_calometPt->Fill( calometPt->at(0) );
+	  // 	   h_calometPhi->Fill( calometPhi->at(0) );
+	  // 	   h_calometPx->Fill( calometPx->at(0) ); 
+	  // 	   h_calometPy->Fill( calometPy->at(0) ); 
+	  // 	   h_caloSumet->Fill( calometSumEt->at(0) ); 
+	  // 	   h_calometSigCornell->Fill( calometMETSigCornell->at(0) ); 
+	  // 	   if( calometSumEt->at(0) > 0)
+	  // 	     h_calometSig->Fill( calometPt->at(0) / sqrt(calometSumEt->at(0)) );
+
+	  h_calometPt->Fill( calometPt_clean );
+	  h_calometPhi->Fill( calometPhi_clean );
+	  h_calometPx->Fill( calometPx_clean ); 
+	  h_calometPy->Fill( calometPy_clean ); 
+	  h_caloSumet->Fill( calometSumEt_clean ); 
+	  h_calometSigCornell->Fill( calometMETSigCornell->at(0) ); 
+	  if( calometSumEt_clean > 0)
+	    h_calometSig->Fill( calometPt_clean / sqrt( calometSumEt_clean ) );
+
+	  h_calometPt_baseSel_HFfilter->Fill( calometPt_clean_HFonly );
+
+	  float cut = 10;
+	  if( calometSumEt_clean > cut )
+	    h_calometPhi_METcut->Fill( calometPhi_clean );
+
+	  //calosumet for different subdetectors
+	  // 	   h_caloSumetEB->Fill( calometEmEtInEB->at(0) ) ;
+	  // 	   h_caloSumetEE->Fill( calometEmEtInEE->at(0) ) ;
+	  // 	   h_caloSumetHB->Fill( calometHadEtInHB->at(0) ) ;
+	  // 	   h_caloSumetHE->Fill( calometHadEtInHE->at(0) ) ;
+	  // 	   h_caloSumetHadHF->Fill( calometHadEtInHF->at(0) ) ;
+	  // 	   h_caloSumetEmHF->Fill( calometEmEtInHF->at(0) ) ;
+
+	  h_caloSumetEB->Fill( calometEmEtInEB_clean ) ;
+	  h_caloSumetEE->Fill( calometEmEtInEE->at(0) ) ;
+	  h_caloSumetHB->Fill( calometHadEtInHB->at(0) ) ;
+	  h_caloSumetHE->Fill( calometHadEtInHE->at(0) ) ;
+	  h_caloSumetHadHF->Fill( calometHadEtInHF_clean ) ;
+	  h_caloSumetEmHF->Fill( calometEmEtInHF_clean ) ;
+
+	  /*
+	  //calometNoHF
+	  h_calometNoHFPt->Fill(metnohfPtCalo->at(0));
+	  h_calometNoHFPhi->Fill(metnohfPhiCalo->at(0));
+	  h_calometNoHFPx->Fill(metnohfPxCalo->at(0)); 
+	  h_calometNoHFPy->Fill(metnohfPyCalo->at(0)); 
+	  h_caloSumetNoHF->Fill(metnohfSumEtCalo->at(0)); 
+	  h_calometSigCornellNoHF->Fill( metnohfMETSigCornellCalo->at(0) ); 
+	  if( metnohfSumEtCalo->at(0) > 0)
+	  h_calometSigNoHF->Fill( metnohfPtCalo->at(0) / sqrt(metnohfSumEtCalo->at(0)) );
+	  */
+
+	  //## plots about spikes
+	  h_ECALspikesPerEvent->Fill( ECALspikes_tcMET_Pt.size() );
+	  h_HFspikesPerEvent->Fill( HFspikes_tcMET_Pt.size() );
+	   
+	  for (int hs=0; hs<HFspikes_tcMET_Pt.size(); hs++)
+	    {	     
+	      if( HFspikes_tcMET_EMis0_HADis1[hs] == 0 )//is EM = Long fiber
+		{
+		  h_HFspikes_Long_Energy->Fill( HFspikes_tcMET_LongPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
+		  h_HFspikes_Long_Pt->Fill( HFspikes_tcMET_LongPt[hs] );		   
+		  h_HFspikes_Long_EtaPhi->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] );		   
+		  h_HFspikes_Long_EtaPhiWeight->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] 
+						      , HFspikes_tcMET_LongPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
+		}
+	       
+	      if( HFspikes_tcMET_EMis0_HADis1[hs] == 1 )//is HAD = Short fiber
+		{
+		  h_HFspikes_Short_Energy->Fill( HFspikes_tcMET_ShortPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
+		  h_HFspikes_Short_Pt->Fill( HFspikes_tcMET_ShortPt[hs] );		   
+		  h_HFspikes_Short_EtaPhi->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] );		   
+		  h_HFspikes_Short_EtaPhi->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] 
+						 , HFspikes_tcMET_ShortPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
+		}
+	    }
+	   
+	  for (int es=0; es<ECALspikes_tcMET_Pt.size(); es++)
+	    {
+	      h_ECALspikes_Energy->Fill( ECALspikes_tcMET_Pt[es] * cosh(ECALspikes_tcMET_Eta[es]) );		   
+	      h_ECALspikes_Pt->Fill( ECALspikes_tcMET_Pt[es] );		   
+	      h_ECALspikes_EtaPhi->Fill( ECALspikes_tcMET_Eta[es] , ECALspikes_tcMET_Phi[es] );		   	       	       
+	      h_ECALspikes_EtaPhiWeight->Fill( ECALspikes_tcMET_Eta[es] , ECALspikes_tcMET_Phi[es] 
+					       , ECALspikes_tcMET_Pt[es] * cosh(ECALspikes_tcMET_Eta[es]) );		   	       	       
+	    }
+
+
+	  //MPT
+	  h_nGoodTracks->Fill(nGoodTracks);	       
+	  if(nGoodTracks>0)
+	    {
+	      h_MPT->Fill( MPT );
+	      h_MPTPhi->Fill( MPTPhi );
+	      h_MPx->Fill( MPx );
+	      h_MPy->Fill( MPy );
+	      h_Phi_MPT_MET->Fill( acos( cos( MPTPhi - calometPhi_clean ) ) );	       
+	    }
+
+
+	  //#########################
+	  //## 2D histograms
+	  //#########################	  
+
+
+	  //hcal noise
+	  h2_HCalNoiseLoose_Vs_MET->Fill(HcalNoiseFilterLoose,calometPt_clean);
+	  h2_HCalNoiseTight_Vs_MET->Fill(HcalNoiseFilterTight,calometPt_clean);
+	  h2_HCalNoiseHighLevel_Vs_MET->Fill(HcalNoiseFilterHighLevel,calometPt_clean);
+
+	  //MET vs ...
+	  h2_MET_Vs_METPhi->Fill(calometPhi_clean, calometPt_clean);
+	  h2_MET_Vs_SumET ->Fill(calometSumEt_clean, calometPt_clean);
+	  h2_MET_Vs_METX  ->Fill(calometPx_clean, calometPt_clean);
+	  h2_MET_Vs_METY  ->Fill(calometPy_clean, calometPt_clean);
+	  h2_METX_Vs_METY ->Fill(calometPx_clean, calometPy_clean);
+	  if(nGoodTracks>0)
+	    h2_MET_Vs_MPT   ->Fill(calometPt_clean, MPT);
+
+	  // met_quantities vs SumET
+	  h2_metx_sumet->Fill( calometSumEt_clean, calometPx_clean );
+	  h2_mety_sumet->Fill( calometSumEt_clean, calometPy_clean );
+	  h2_met_sumet ->Fill( calometSumEt_clean, calometPt_clean );
+	  if( calometSumEt_clean > 0)
+	    h2_metsig_sumet->Fill( calometSumEt_clean , calometPt_clean / sqrt(calometSumEt_clean) );
+
+
+	  //## HF plots after BASELINE SELECTION
+	  for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
+	    {
+	      if( fabs(CaloTowersIeta->at(i)) >= 29 ) //HF only
+		{
+		  TVector3 * towerL = new TVector3;
+		  TVector3 * towerS = new TVector3;
+		  towerL->SetPtEtaPhi(CaloTowersEmEt->at(i)+0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
+		  towerS->SetPtEtaPhi(0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
+
+		  //tower masked
+		  int isLongMasked=0;
+		  int isShortMasked=0;
+		  if( CaloTowersIeta->at(i) == 37 && CaloTowersIphi->at(i) == 67)
+		    isLongMasked = 1;
+		  if( CaloTowersIeta->at(i) == 29 && CaloTowersIphi->at(i) == 67)
+		    isLongMasked = 1;
+		  if( CaloTowersIeta->at(i) == 35 && CaloTowersIphi->at(i) == 67)
+		    isLongMasked = 1;
+		   
+		  if( CaloTowersIeta->at(i) == 29 && CaloTowersIphi->at(i) == 67)
+		    isShortMasked = 1;
+		  if( CaloTowersIeta->at(i) == 30 && CaloTowersIphi->at(i) == 67)
+		    isShortMasked = 1;
+		  if( CaloTowersIeta->at(i) == 32 && CaloTowersIphi->at(i) == 67)
+		    isShortMasked = 1;
+		  if( CaloTowersIeta->at(i) == 36 && CaloTowersIphi->at(i) == 67)
+		    isShortMasked = 1;
+		  if( CaloTowersIeta->at(i) == 38 && CaloTowersIphi->at(i) == 67)
+		    isShortMasked = 1;
+		   
+		  //minimum energy in either Long or Short fiber
+		  if( (towerL->Mag() > 1.2 || towerS->Mag() > 1.8) 
+		      && isLongMasked==0 && isShortMasked==0 )
+		    {
+		   
+		      Float_t ratio = -1.5;
+		      ratio = ( fabs(towerL->Mag()) - fabs(towerS->Mag()) ) 
+			/ ( fabs(towerL->Mag()) + fabs(towerS->Mag()) );
+		       
+		      h2_ETL_vs_HFratio->Fill(ratio,towerL->Pt());
+		      h2_ETS_vs_HFratio->Fill(ratio,towerS->Pt());
+		      h2_ET_vs_HFratio->Fill(ratio,CaloTowersEmEt->at(i)+CaloTowersHadEt->at(i));
+		       
+		      h_HFRatio->Fill(ratio);
+		    }
+
+		  delete towerL;
+		  delete towerS;
+
+		}
+	    }	   
+
+
+	  //## ECAL plots after BASELINE SELECTION
+	  for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
+	    {
+
+	      //-- seed crystal info --
+	      float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
+	      float seedEnergy = CaloTowersECalEBXtalsEMax->at(ii);
+	    
+	      //frook (a la caloMET)
+	      float emaxrook = 0.;
+	      float frook    = 0.;
+	    
+	      if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
+		emaxrook = CaloTowersECalEBEnergyRight->at(ii);
+	      if( CaloTowersECalEBEnergyBottom->at(ii) > emaxrook && CaloTowersECalEBEnergyBottom->at(ii) > 0.08) 
+		emaxrook = CaloTowersECalEBEnergyBottom->at(ii);
+	      if( CaloTowersECalEBEnergyLeft->at(ii) > emaxrook && CaloTowersECalEBEnergyLeft->at(ii) > 0.08) 
+		emaxrook = CaloTowersECalEBEnergyLeft->at(ii);
+	      if( CaloTowersECalEBEnergyTop->at(ii) > emaxrook && CaloTowersECalEBEnergyTop->at(ii) > 0.08) 
+		emaxrook = CaloTowersECalEBEnergyTop->at(ii);
+	    
+	      frook = emaxrook / seedEnergy;
+
+	      //S4/S1 vs ET (a la tcMET)
+	      float S4_tcMET = 0.;
+	      S4_tcMET = CaloTowersECalEBEnergyRight->at(ii) 
+		+ CaloTowersECalEBEnergyLeft->at(ii)
+		+ CaloTowersECalEBEnergyTop->at(ii)
+		+ CaloTowersECalEBEnergyBottom->at(ii);
+	    
+	      float S4_tcMEToverS1 = S4_tcMET / seedEnergy;
+	    
+	      //S4/S1 vs log(E) (a la PFMET)
+	      float S4_PFMET = 0.;
+	      if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
+		S4_PFMET += CaloTowersECalEBEnergyRight->at(ii);
+	      if( CaloTowersECalEBEnergyLeft->at(ii) > 0.08 )
+		S4_PFMET += CaloTowersECalEBEnergyLeft->at(ii);
+	      if( CaloTowersECalEBEnergyTop->at(ii) > 0.08 )
+		S4_PFMET += CaloTowersECalEBEnergyTop->at(ii);
+	      if( CaloTowersECalEBEnergyBottom->at(ii) > 0.08 )
+		S4_PFMET += CaloTowersECalEBEnergyBottom->at(ii);
+
+	      float S4_PFMEToverS1 = S4_PFMET / seedEnergy;
+
+	      ////////////////////
+
+	      h_FRookEB    ->Fill(frook);	   	    
+	      h_S1S9RatioEB->Fill(CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii));
+	      h_S12S9RatioEB->Fill((CaloTowersECalEBXtalsEMax->at(ii) + CaloTowersECalEBXtalsE2nd3x3->at(ii))/CaloTowersECalEBXtalsE3x3->at(ii));
+	      h_S1SCRatioEB->Fill(CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBSCEnergy->at(ii));
+	      h_NCry805EB  ->Fill(CaloTowersECalEBNCRY805->at(ii));
+	      h_E2nd3x3    ->Fill(CaloTowersECalEBXtalsE2nd3x3->at(ii));
+	    
+	      h2_NCry805EB_Vs_S1S9->Fill( CaloTowersECalEBNCRY805->at(ii), CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) );
+	      h2_NCry805EB_Vs_FRook->Fill( CaloTowersECalEBNCRY805->at(ii), frook );
+	      h2_FRook_Vs_S1S9->Fill(frook, CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii));
+	      h2_FRook_Vs_E2nd3x3->Fill(CaloTowersECalEBXtalsE2nd3x3->at(ii), frook);
+	      h2_ETa_Vs_Phi->Fill(CaloTowersECalEBSeedEta->at(ii), CaloTowersECalEBSeedPhi->at(ii));
+
+	      h2_ECalSeedET_Vs_S1S9->Fill( CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) , seedet );
+	      h2_ECalSeedET_Vs_FRook->Fill( frook , seedet );
+	      h2_ECalSeedET_Vs_S4_tcMEToverS1->Fill( S4_tcMEToverS1, seedet );
+	      h2_S4S1_vs_1overEseed->Fill( 1/seedEnergy , S4_PFMEToverS1);	    
+
+	    }
+
+	   	   	   
+	}//-------------- passed cuts "0"
+
+
+
+
+
+      if( passedAllPreviousCuts("pass_GoodVertex") )
+	{
+	  //Vertex
+	  h_AllNVertex->Fill(vertexZ->size());
+	  for (int ii=0; ii<vertexZ->size(); ii++)
+	    {
+	      if(vertexNTracksW5->at(ii)==0)
+		continue;
+
+	      h_AllVertexZ->Fill(vertexZ->at(ii));
+	      h_AllVertexChi2->Fill(vertexChi2->at(ii));
+	      h_AllVertexNDOF->Fill(vertexNDF->at(ii));
+	      h_AllVertexNtrk->Fill(vertexNTracks->at(ii));
+	      if(vertexNDF->at(ii)!=0)
+		h_AllVertexChi2_0_NDOF->Fill( vertexChi2->at(ii) / vertexNDF->at(ii) );
+	      
+	      h_VertexSumpt->Fill(vertexSumPt->at(ii));
+	      h_VertexSumptW5->Fill(vertexSumPtW5->at(ii));
+	    }
+	}
+
+
 
       if( passedCut("all") )
-	 {
+	{
 
-	   //#########################
-	   //## 1D histograms
-	   //#########################
+	  //calotowers
+	  for (int ii=0; ii<CaloTowersEta->size(); ii++)
+	    h2_towersEtaPhi_EM->Fill( CaloTowersIeta->at(ii), CaloTowersIphi->at(ii), CaloTowersEmEt->at(ii));
+	  for (int ii=0; ii<CaloTowersEta->size(); ii++)
+	    h2_towersEtaPhi_HAD->Fill( CaloTowersIeta->at(ii), CaloTowersIphi->at(ii), CaloTowersHadEt->at(ii));
 
-	   //calomet
-	   h_calometPt->Fill( calometPt->at(0) );
-	   h_calometPhi->Fill( calometPhi->at(0) );
-	   h_calometPx->Fill( calometPx->at(0) ); 
-	   h_calometPy->Fill( calometPy->at(0) ); 
-	   h_caloSumet->Fill( calometSumEt->at(0) ); 
-	   h_calometSigCornell->Fill( calometMETSigCornell->at(0) ); 
-	   if( calometSumEt->at(0) > 0)
-	     h_calometSig->Fill( calometPt->at(0) / sqrt(calometSumEt->at(0)) );
 
-	   //calometNoHF
-	   h_calometNoHFPt->Fill(metnohfPtCalo->at(0));
-	   h_calometNoHFPhi->Fill(metnohfPhiCalo->at(0));
-	   h_calometNoHFPx->Fill(metnohfPxCalo->at(0)); 
-	   h_calometNoHFPy->Fill(metnohfPyCalo->at(0)); 
-	   h_caloSumetNoHF->Fill(metnohfSumEtCalo->at(0)); 
-	   h_calometSigCornellNoHF->Fill( metnohfMETSigCornellCalo->at(0) ); 
-	   if( metnohfSumEtCalo->at(0) > 0)
-	     h_calometSigNoHF->Fill( metnohfPtCalo->at(0) / sqrt(metnohfSumEtCalo->at(0)) );
-
-	   //calosumet for different subdetectors
-	   h_caloSumetEB->Fill( calometEmEtInEB->at(0) ) ;
-	   h_caloSumetEE->Fill( calometEmEtInEE->at(0) ) ;
-	   h_caloSumetHB->Fill( calometHadEtInHB->at(0) ) ;
-	   h_caloSumetHE->Fill( calometHadEtInHE->at(0) ) ;
-	   h_caloSumetHadHF->Fill( calometHadEtInHF->at(0) ) ;
-	   h_caloSumetEmHF->Fill( calometEmEtInHF->at(0) ) ;
-
-           //########################################
-           //#### MET for different subdetectors ####
-           //########################################
-           my_caloSumetEB->Fill( my_SumetEB );
-           if(my_SumetEB>0) {
-             my_calometEBPt->Fill( my_MetEB   );
-             my_calometEBPhi->Fill( my_MetEBPhi );
-             my_calometEBPx->Fill( my_MetEB_x );
-             my_calometEBPy->Fill( my_MetEB_y );
-           }
+	  //########################################
+	  //#### MET for different subdetectors ####
+	  //########################################
+	  my_caloSumetEB->Fill( my_SumetEB );
+	  if(my_SumetEB>0) {
+	    my_calometEBPt->Fill( my_MetEB   );
+	    my_calometEBPhi->Fill( my_MetEBPhi );
+	    my_calometEBPx->Fill( my_MetEB_x );
+	    my_calometEBPy->Fill( my_MetEB_y );
+	  }
            
-           my_caloSumetEE->Fill( my_SumetEE );
-           if(my_SumetEE>0) {
-             my_calometEEPt->Fill( my_MetEE   );
-             my_calometEEPhi->Fill( my_MetEEPhi );
-             my_calometEEPx->Fill( my_MetEE_x );
-             my_calometEEPy->Fill( my_MetEE_y );
-           }
+	  my_caloSumetEE->Fill( my_SumetEE );
+	  if(my_SumetEE>0) {
+	    my_calometEEPt->Fill( my_MetEE   );
+	    my_calometEEPhi->Fill( my_MetEEPhi );
+	    my_calometEEPx->Fill( my_MetEE_x );
+	    my_calometEEPy->Fill( my_MetEE_y );
+	  }
            
-           my_caloSumetHB->Fill( my_SumetHB );
-           if(my_SumetHB>0) {
-             my_calometHBPt->Fill( my_MetHB   );
-             my_calometHBPhi->Fill( my_MetHBPhi );
-             my_calometHBPx->Fill( my_MetHB_x );
-             my_calometHBPy->Fill( my_MetHB_y );
-           }
+	  my_caloSumetHB->Fill( my_SumetHB );
+	  if(my_SumetHB>0) {
+	    my_calometHBPt->Fill( my_MetHB   );
+	    my_calometHBPhi->Fill( my_MetHBPhi );
+	    my_calometHBPx->Fill( my_MetHB_x );
+	    my_calometHBPy->Fill( my_MetHB_y );
+	  }
            
-           my_caloSumetHE->Fill( my_SumetHE );
-           if(my_SumetHE>0) {
-             my_calometHEPt->Fill( my_MetHE   );
-             my_calometHEPhi->Fill( my_MetHEPhi );
-             my_calometHEPx->Fill( my_MetHE_x );
-             my_calometHEPy->Fill( my_MetHE_y );
-           }
+	  my_caloSumetHE->Fill( my_SumetHE );
+	  if(my_SumetHE>0) {
+	    my_calometHEPt->Fill( my_MetHE   );
+	    my_calometHEPhi->Fill( my_MetHEPhi );
+	    my_calometHEPx->Fill( my_MetHE_x );
+	    my_calometHEPy->Fill( my_MetHE_y );
+	  }
            
-           my_caloSumetEmHF->Fill( my_SumetEmHF );
-           if(my_SumetEmHF>0) {
-             my_calometEmHFPt->Fill( my_MetEmHF   );
-             my_calometEmHFPhi->Fill( my_MetEmHFPhi );
-             my_calometEmHFPx->Fill( my_MetEmHF_x );
-             my_calometEmHFPy->Fill( my_MetEmHF_y );
-           }
+	  my_caloSumetEmHF->Fill( my_SumetEmHF );
+	  if(my_SumetEmHF>0) {
+	    my_calometEmHFPt->Fill( my_MetEmHF   );
+	    my_calometEmHFPhi->Fill( my_MetEmHFPhi );
+	    my_calometEmHFPx->Fill( my_MetEmHF_x );
+	    my_calometEmHFPy->Fill( my_MetEmHF_y );
+	  }
            
-           my_caloSumetHadHF->Fill( my_SumetHadHF );
-           if(my_SumetHadHF>0) {
-             my_calometHadHFPt->Fill( my_MetHadHF   );
-             my_calometHadHFPhi->Fill( my_MetHadHFPhi );
-             my_calometHadHFPx->Fill( my_MetHadHF_x );
-             my_calometHadHFPy->Fill( my_MetHadHF_y );
-           }
-           //########################################
-           
-	   //MPT
-	   h_nGoodTracks->Fill(nGoodTracks);	       
-	   if(nGoodTracks>0)
-	     {
-	       h_MPT->Fill( MPT );
-	       h_MPTPhi->Fill( MPTPhi );
-	       h_MPx->Fill( MPx );
-	       h_MPy->Fill( MPy );
-	       h_Phi_MPT_MET->Fill( acos( cos( MPTPhi - calometPhi->at(0) ) ) );	       
-	     }
+	  my_caloSumetHadHF->Fill( my_SumetHadHF );
+	  if(my_SumetHadHF>0) {
+	    my_calometHadHFPt->Fill( my_MetHadHF   );
+	    my_calometHadHFPhi->Fill( my_MetHadHFPhi );
+	    my_calometHadHFPx->Fill( my_MetHadHF_x );
+	    my_calometHadHFPy->Fill( my_MetHadHF_y );
+	  }
+	  //########################################
 
-	   //Vertex
-	   h_AllNVertex->Fill(vertexZ->size());
-	   for (int ii=0; ii<vertexZ->size(); ii++)
-	     {
-	       h_AllVertexZ->Fill(vertexZ->at(ii));
-	       h_AllVertexChi2->Fill(vertexChi2->at(ii));
-	       h_AllVertexNDOF->Fill(vertexNDF->at(ii));
-	       h_AllVertexNtrk->Fill(vertexNTracks->at(ii));
-	       if(vertexNDF->at(ii)!=0)
-		 h_AllVertexChi2_0_NDOF->Fill( vertexChi2->at(ii) / vertexNDF->at(ii) );
 
-	       h_VertexSumpt->Fill(vertexSumPt->at(ii));
-	       h_VertexSumptW5->Fill(vertexSumPtW5->at(ii));
-	     }
-	
-	   //#########################
-	   //## 2D histograms
-	   //#########################	  
-
-	   //calotowers
-	   for (int ii=0; ii<CaloTowersEta->size(); ii++)
-	     h2_towersEtaPhi_EM->Fill( CaloTowersIeta->at(ii), CaloTowersIphi->at(ii), CaloTowersEmEt->at(ii));
-	   for (int ii=0; ii<CaloTowersEta->size(); ii++)
-	     h2_towersEtaPhi_HAD->Fill( CaloTowersIeta->at(ii), CaloTowersIphi->at(ii), CaloTowersHadEt->at(ii));
-
-	   //hcal noise
-	   h2_HCalNoiseLoose_Vs_MET->Fill(HcalNoiseFilterLoose,calometPt->at(0));
-	   h2_HCalNoiseTight_Vs_MET->Fill(HcalNoiseFilterTight,calometPt->at(0));
-	   h2_HCalNoiseHighLevel_Vs_MET->Fill(HcalNoiseFilterHighLevel,calometPt->at(0));
-
-	   //MET vs ...
-	   h2_MET_Vs_METPhi->Fill(calometPhi->at(0), calometPt->at(0));
-	   h2_MET_Vs_SumET ->Fill(calometSumEt->at(0), calometPt->at(0));
-	   h2_MET_Vs_METX  ->Fill(calometPx->at(0), calometPt->at(0));
-	   h2_MET_Vs_METY  ->Fill(calometPy->at(0), calometPt->at(0));
-	   h2_METX_Vs_METY ->Fill(calometPx->at(0), calometPy->at(0));
-	   if(nGoodTracks>0)
-	     h2_MET_Vs_MPT   ->Fill(calometPt->at(0), MPT);
-
-	   // met_quantities vs SumET
-	   h2_metx_sumet->Fill( calometSumEt->at(0), calometPx->at(0) );
-	   h2_mety_sumet->Fill( calometSumEt->at(0), calometPy->at(0) );
-	   h2_met_sumet ->Fill( calometSumEt->at(0), calometPt->at(0) );
-	   if( calometSumEt->at(0) > 0)
-	     h2_metsig_sumet->Fill( calometSumEt->at(0), calometPt->at(0) / sqrt(calometSumEt->at(0)) );
 	   
-           //#################################
-           //## Trend plotting section
-           //#################################
-           if(calometPtMap[run]) {
-             calometPtMap[run]->Fill( calometPt->at(0) );
-           } else {
-             calometPtMap[run] = new TH1F(Form("h_calometPt_Run_%u",run), Form("h_calometPt_Run_%u",run), Nbins_METSumET, 0, Max_METSumET);
-             calometPtMap[run]->Fill( calometPt->at(0) );
-           }
-           if(caloSumetMap[run]) {
-             caloSumetMap[run]->Fill( calometSumEt->at(0) );
-           } else {
-             caloSumetMap[run] = new TH1F(Form("h_caloSumet_Run_%u",run), Form("h_caloSumet_Run_%u",run), Nbins_METSumET, 0, Max_METSumET);
-             caloSumetMap[run]->Fill( calometSumEt->at(0) );
-           }
-           if(calometPxMap[run]) {
-             calometPxMap[run]->Fill( calometPx->at(0) );
-           } else {
-             calometPxMap[run] = new TH1F(Form("h_calometPx_Run_%u",run), Form("h_calometPx_Run_%u",run), Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-             calometPxMap[run]->Fill( calometPx->at(0) );
-           }
-           if(calometPyMap[run]) {
-             calometPyMap[run]->Fill( calometPy->at(0) );
-           } else {
-             calometPyMap[run] = new TH1F(Form("h_calometPy_Run_%u",run), Form("h_calometPy_Run_%u",run), Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-             calometPyMap[run]->Fill( calometPy->at(0) );
-           }
-           //#################################
+	  //#################################
+	  //## Trend plotting section
+	  //#################################
+	  if(calometPtMap[run]) {
+	    calometPtMap[run]->Fill( calometPt->at(0) );
+	  } else {
+	    calometPtMap[run] = new TH1F(Form("h_calometPt_Run_%u",run), Form("h_calometPt_Run_%u",run), Nbins_METSumET, 0, Max_METSumET);
+	    calometPtMap[run]->Fill( calometPt->at(0) );
+	  }
+	  if(caloSumetMap[run]) {
+	    caloSumetMap[run]->Fill( calometSumEt->at(0) );
+	  } else {
+	    caloSumetMap[run] = new TH1F(Form("h_caloSumet_Run_%u",run), Form("h_caloSumet_Run_%u",run), Nbins_METSumET, 0, Max_METSumET);
+	    caloSumetMap[run]->Fill( calometSumEt->at(0) );
+	  }
+	  if(calometPxMap[run]) {
+	    calometPxMap[run]->Fill( calometPx->at(0) );
+	  } else {
+	    calometPxMap[run] = new TH1F(Form("h_calometPx_Run_%u",run), Form("h_calometPx_Run_%u",run), Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+	    calometPxMap[run]->Fill( calometPx->at(0) );
+	  }
+	  if(calometPyMap[run]) {
+	    calometPyMap[run]->Fill( calometPy->at(0) );
+	  } else {
+	    calometPyMap[run] = new TH1F(Form("h_calometPy_Run_%u",run), Form("h_calometPy_Run_%u",run), Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+	    calometPyMap[run]->Fill( calometPy->at(0) );
+	  }
+	  //#################################
           
 
 
 
-	   //#################################
-	   //## MET related quantities vs ieta bins
-	   //#################################
+	  //#################################
+	  //## MET related quantities vs ieta bins
+	  //#################################
 	   
-	   //loop over ieta bins of calotowers
-	   for(int ieta = -41; ieta<=41; ieta++)
-	     {	 
+	  //loop over ieta bins of calotowers
+	  for(int ieta = -41; ieta<=41; ieta++)
+	    {	 
 
-	       //no calotower with ieta = 0
-	       if(ieta == 0)
-		 continue;
+	      //no calotower with ieta = 0
+	      if(ieta == 0)
+		continue;
 
-	       //## Calculate MET on the fly from caloTowers     
-	       double sum_et = 0.0;
-	       double sum_ex = 0.0;
-	       double sum_ey = 0.0;    	       
-	       for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
-		 {		   
+	      //## Calculate MET on the fly from caloTowers     
+	      double sum_et = 0.0;
+	      double sum_ex = 0.0;
+	      double sum_ey = 0.0;    	       
+	      for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
+		{		   
 
-		   //loop over one ieta ring
-		   if( CaloTowersIeta->at(i) != ieta )
-		     continue;
+		  //loop over one ieta ring
+		  if( CaloTowersIeta->at(i) != ieta )
+		    continue;
 
-		   double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
-		   if ( Tower_ET > getPreCutValue1("towerETcut") )
-		     {	       
-		       double phi   = CaloTowersPhi->at(i);
-		       double et    = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
-		       sum_et += et;
-		       sum_ex += et*cos(phi);
-		       sum_ey += et*sin(phi);
-		     }
-		 }
+		  double Tower_ET = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
+		  if ( Tower_ET > getPreCutValue1("towerETcut") )
+		    {	       
+		      double phi   = CaloTowersPhi->at(i);
+		      double et    = CaloTowersEmEt->at(i) + CaloTowersHadEt->at(i);
+		      sum_et += et;
+		      sum_ex += et*cos(phi);
+		      sum_ey += et*sin(phi);
+		    }
+		}
 
-	       double my_Met    = sqrt( sum_ex*sum_ex + sum_ey*sum_ey );
-	       double my_Met_x  = -sum_ex;
-	       double my_Met_y  = -sum_ey;
-	       double my_Sumet  = sum_et;
-	       //double my_MetPhi = atan2( -sum_ey, -sum_ex );       
+	      double my_Met    = sqrt( sum_ex*sum_ex + sum_ey*sum_ey );
+	      double my_Met_x  = -sum_ex;
+	      double my_Met_y  = -sum_ey;
+	      double my_Sumet  = sum_et;
+	      //double my_MetPhi = atan2( -sum_ey, -sum_ex );       
 	   
-	       //cout << "ieta : " << ieta << " " << " MET: " << my_Met << " SUMET: " <<  my_Sumet << endl;
+	      //cout << "ieta : " << ieta << " " << " MET: " << my_Met << " SUMET: " <<  my_Sumet << endl;
 
-	       if(caloSumetIetaMap[ieta]) {
-		 caloSumetIetaMap[ieta]->Fill( my_Sumet );
-	       } else {
-		 caloSumetIetaMap[ieta] = new TH1F(Form("h_caloSumet_ieta_%d",ieta), Form("h_caloSumet_ieta_%d",ieta), Nbins_METSumET, 0, Max_METSumET);
-		 caloSumetIetaMap[ieta]->Fill( my_Sumet );
-	       }
+	      if(caloSumetIetaMap[ieta]) {
+		caloSumetIetaMap[ieta]->Fill( my_Sumet );
+	      } else {
+		caloSumetIetaMap[ieta] = new TH1F(Form("h_caloSumet_ieta_%d",ieta), Form("h_caloSumet_ieta_%d",ieta), Nbins_METSumET, 0, Max_METSumET);
+		caloSumetIetaMap[ieta]->Fill( my_Sumet );
+	      }
 
-	       if(calometPtIetaMap[ieta]) {
-		 calometPtIetaMap[ieta]->Fill( my_Met );
-	       } else {
-		 calometPtIetaMap[ieta] = new TH1F(Form("h_calometPt_ieta_%d",ieta), Form("h_calometPt_ieta_%d",ieta), Nbins_METSumET, 0, Max_METSumET);
-		 calometPtIetaMap[ieta]->Fill( my_Met );
-	       }
+	      if(calometPtIetaMap[ieta]) {
+		calometPtIetaMap[ieta]->Fill( my_Met );
+	      } else {
+		calometPtIetaMap[ieta] = new TH1F(Form("h_calometPt_ieta_%d",ieta), Form("h_calometPt_ieta_%d",ieta), Nbins_METSumET, 0, Max_METSumET);
+		calometPtIetaMap[ieta]->Fill( my_Met );
+	      }
 
-	       if(calometPxIetaMap[ieta]) {
-		 calometPxIetaMap[ieta]->Fill( my_Met_x );
-	       } else {
-		 calometPxIetaMap[ieta] = new TH1F(Form("h_calometPx_ieta_%d",ieta), Form("h_calometPx_ieta_%d",ieta), Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2);
-		 calometPxIetaMap[ieta]->Fill( my_Met_x );
-	       }
+	      if(calometPxIetaMap[ieta]) {
+		calometPxIetaMap[ieta]->Fill( my_Met_x );
+	      } else {
+		calometPxIetaMap[ieta] = new TH1F(Form("h_calometPx_ieta_%d",ieta), Form("h_calometPx_ieta_%d",ieta), Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2);
+		calometPxIetaMap[ieta]->Fill( my_Met_x );
+	      }
 
-	       if(calometPyIetaMap[ieta]) {
-		 calometPyIetaMap[ieta]->Fill( my_Met_y );
-	       } else {
-		 calometPyIetaMap[ieta] = new TH1F(Form("h_calometPy_ieta_%d",ieta), Form("h_calometPy_ieta_%d",ieta), Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2);
-		 calometPyIetaMap[ieta]->Fill( my_Met_y );
-	       }
+	      if(calometPyIetaMap[ieta]) {
+		calometPyIetaMap[ieta]->Fill( my_Met_y );
+	      } else {
+		calometPyIetaMap[ieta] = new TH1F(Form("h_calometPy_ieta_%d",ieta), Form("h_calometPy_ieta_%d",ieta), Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2);
+		calometPyIetaMap[ieta]->Fill( my_Met_y );
+	      }
 	      
-	     }//end loop over ieta bins
+	    }//end loop over ieta bins
 
 
-	 }//---- end passed cut "all" ----        
+	}//---- end passed cut "all" ----        
            
 
-      //## HF plots after BASELINE SELECTION
-      if( passedCut("0") )
-	 {
-	   
-	   for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
-	     {
-	       if( fabs(CaloTowersIeta->at(i)) >= 29 ) //HF only
-		 {
-		   TVector3 * towerL = new TVector3;
-		   TVector3 * towerS = new TVector3;
-		   towerL->SetPtEtaPhi(CaloTowersEmEt->at(i)+0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
-		   towerS->SetPtEtaPhi(0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
 
-		   //tower masked
-		   int isLongMasked=0;
-		   int isShortMasked=0;
-		   if( CaloTowersIeta->at(i) == 37 && CaloTowersIphi->at(i) == 67)
-		     isLongMasked = 1;
-		   if( CaloTowersIeta->at(i) == 29 && CaloTowersIphi->at(i) == 67)
-		     isLongMasked = 1;
-		   if( CaloTowersIeta->at(i) == 35 && CaloTowersIphi->at(i) == 67)
-		     isLongMasked = 1;
-		   
-		   if( CaloTowersIeta->at(i) == 29 && CaloTowersIphi->at(i) == 67)
-		     isShortMasked = 1;
-		   if( CaloTowersIeta->at(i) == 30 && CaloTowersIphi->at(i) == 67)
-		     isShortMasked = 1;
-		   if( CaloTowersIeta->at(i) == 32 && CaloTowersIphi->at(i) == 67)
-		     isShortMasked = 1;
-		   if( CaloTowersIeta->at(i) == 36 && CaloTowersIphi->at(i) == 67)
-		     isShortMasked = 1;
-		   if( CaloTowersIeta->at(i) == 38 && CaloTowersIphi->at(i) == 67)
-		     isShortMasked = 1;
-		   
-		   //minimum energy in either Long or Short fiber
-		   if( (towerL->Mag() > 1.2 || towerS->Mag() > 1.8) 
-		       && isLongMasked==0 && isShortMasked==0 )
-		     {
-		   
-		       Float_t ratio = -1.5;
-		       ratio = ( fabs(towerL->Mag()) - fabs(towerS->Mag()) ) 
-			 / ( fabs(towerL->Mag()) + fabs(towerS->Mag()) );
-		       
-		       h2_ETL_vs_HFratio->Fill(ratio,towerL->Pt());
-		       h2_ETS_vs_HFratio->Fill(ratio,towerS->Pt());
-		       h2_ET_vs_HFratio->Fill(ratio,CaloTowersEmEt->at(i)+CaloTowersHadEt->at(i));
-		       
-		       h_HFRatio->Fill(ratio);
-		     }
-
-		   delete towerL;
-		   delete towerS;
-
-		 }
-	     }	   
-	 }
-
-      //## ECAL plots after BASELINE SELECTION
-      if( passedCut("0") )
-	for (int ii=0; ii<CaloTowersECalEBXtalsEMax->size(); ii++)
-	  {
-
-	    //-- seed crystal info --
-	    float seedet = CaloTowersECalEBXtalsEMax->at(ii)/cosh(CaloTowersECalEBSeedEta->at(ii));
-	    float seedEnergy = CaloTowersECalEBXtalsEMax->at(ii);
-	    
-	    //frook (a la caloMET)
-	    float emaxrook = 0.;
-	    float frook    = 0.;
-	    
-	    if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
-	      emaxrook = CaloTowersECalEBEnergyRight->at(ii);
-	    if( CaloTowersECalEBEnergyBottom->at(ii) > emaxrook && CaloTowersECalEBEnergyBottom->at(ii) > 0.08) 
-	      emaxrook = CaloTowersECalEBEnergyBottom->at(ii);
-	    if( CaloTowersECalEBEnergyLeft->at(ii) > emaxrook && CaloTowersECalEBEnergyLeft->at(ii) > 0.08) 
-	      emaxrook = CaloTowersECalEBEnergyLeft->at(ii);
-	    if( CaloTowersECalEBEnergyTop->at(ii) > emaxrook && CaloTowersECalEBEnergyTop->at(ii) > 0.08) 
-	      emaxrook = CaloTowersECalEBEnergyTop->at(ii);
-	    
-	    frook = emaxrook / seedEnergy;
-
-	    //S4/S1 vs ET (a la tcMET)
-	    float S4_tcMET = 0.;
-	    S4_tcMET = CaloTowersECalEBEnergyRight->at(ii) 
-	      + CaloTowersECalEBEnergyLeft->at(ii)
-	      + CaloTowersECalEBEnergyTop->at(ii)
-	      + CaloTowersECalEBEnergyBottom->at(ii);
-	    
-	    float S4_tcMEToverS1 = S4_tcMET / seedEnergy;
-	    
-	    //S4/S1 vs log(E) (a la PFMET)
-	    float S4_PFMET = 0.;
-	    if( CaloTowersECalEBEnergyRight->at(ii) > 0.08 )
-	      S4_PFMET += CaloTowersECalEBEnergyRight->at(ii);
-	    if( CaloTowersECalEBEnergyLeft->at(ii) > 0.08 )
-	      S4_PFMET += CaloTowersECalEBEnergyLeft->at(ii);
-	    if( CaloTowersECalEBEnergyTop->at(ii) > 0.08 )
-	      S4_PFMET += CaloTowersECalEBEnergyTop->at(ii);
-	    if( CaloTowersECalEBEnergyBottom->at(ii) > 0.08 )
-	      S4_PFMET += CaloTowersECalEBEnergyBottom->at(ii);
-
-	    float S4_PFMEToverS1 = S4_PFMET / seedEnergy;
-
-	    ////////////////////
-
-	    h_FRookEB    ->Fill(frook);	   	    
-	    h_S1S9RatioEB->Fill(CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii));
-	    h_S12S9RatioEB->Fill((CaloTowersECalEBXtalsEMax->at(ii) + CaloTowersECalEBXtalsE2nd3x3->at(ii))/CaloTowersECalEBXtalsE3x3->at(ii));
-	    h_S1SCRatioEB->Fill(CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBSCEnergy->at(ii));
-	    h_NCry805EB  ->Fill(CaloTowersECalEBNCRY805->at(ii));
-	    h_E2nd3x3    ->Fill(CaloTowersECalEBXtalsE2nd3x3->at(ii));
-	    
-	    h2_NCry805EB_Vs_S1S9->Fill( CaloTowersECalEBNCRY805->at(ii), CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) );
-	    h2_NCry805EB_Vs_FRook->Fill( CaloTowersECalEBNCRY805->at(ii), frook );
-	    h2_FRook_Vs_S1S9->Fill(frook, CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii));
-	    h2_FRook_Vs_E2nd3x3->Fill(CaloTowersECalEBXtalsE2nd3x3->at(ii), frook);
-	    h2_ETa_Vs_Phi->Fill(CaloTowersECalEBSeedEta->at(ii), CaloTowersECalEBSeedPhi->at(ii));
-
-	    h2_ECalSeedET_Vs_S1S9->Fill( CaloTowersECalEBXtalsEMax->at(ii)/CaloTowersECalEBXtalsE3x3->at(ii) , seedet );
-	    h2_ECalSeedET_Vs_FRook->Fill( frook , seedet );
-	    h2_ECalSeedET_Vs_S4_tcMEToverS1->Fill( S4_tcMEToverS1, seedet );
-	    h2_S4S1_vs_1overEseed->Fill( 1/seedEnergy , S4_PFMEToverS1);	    
-
-	  }
-
-
-      //## Effect of ECAL, HF filters on MET
+      //## Effect of ECAL, HF filters on MET (rejecting events)
 
       //BASELINE SELECTION
       if( passedCut("0") )
@@ -1993,72 +2129,71 @@ void analysisClass::Loop()
       //######## print event number and ls ############
 
       /*
-      if(pass_HFPMTHitVeto_PF_LoS_HAD == 0)
+	if(pass_HFPMTHitVeto_PF_LoS_HAD == 0)
 	{
-	  cout << "pass_HFPMTHitVeto_PF_LoS_HAD = 0" << endl;
-	  cout << "event: " << event << " " 
-	       << "ls: " << ls << " "
-	       << "run: " << run << "  " << endl;
+	cout << "pass_HFPMTHitVeto_PF_LoS_HAD = 0" << endl;
+	cout << "event: " << event << " " 
+	<< "ls: " << ls << " "
+	<< "run: " << run << "  " << endl;
 	}
 
-      if(pass_HFPMTHitVeto_PF_S9oS1_HAD == 0)
+	if(pass_HFPMTHitVeto_PF_S9oS1_HAD == 0)
 	{
-	  cout << "pass_HFPMTHitVeto_PF_S9oS1_HAD = 0" << endl;
-	  cout << "event: " << event << " " 
-	       << "ls: " << ls << " "
-	       << "run: " << run << "  " << endl;
+	cout << "pass_HFPMTHitVeto_PF_S9oS1_HAD = 0" << endl;
+	cout << "event: " << event << " " 
+	<< "ls: " << ls << " "
+	<< "run: " << run << "  " << endl;
 	}
 
-      if(pass_HFPMTHitVeto_PF_S9oS1_EM == 0)
+	if(pass_HFPMTHitVeto_PF_S9oS1_EM == 0)
 	{
-	  cout << "pass_HFPMTHitVeto_PF_S9oS1_EM = 0" << endl;
-	  cout << "event: " << event << " " 
-	       << "ls: " << ls << " "
-	       << "run: " << run << "  " << endl;
+	cout << "pass_HFPMTHitVeto_PF_S9oS1_EM = 0" << endl;
+	cout << "event: " << event << " " 
+	<< "ls: " << ls << " "
+	<< "run: " << run << "  " << endl;
 	}
       */
 
+      if( passedCut("0") && PrintOut == 1)
+	{
 
-      if( passedCut("all") && PrintOut == 1)
-	 {
+	  if( calometPt_clean > 15 )
+	    {
+	      cout << "event: " << event << " " 
+		   << "ls: " << ls << " "
+		   << "run: " << run << "  "
+		   << "--  calometPt_clean : " <<  calometPt_clean << " "
+		   << endl;
+	    }
 
-	   if( calometPt->at(0) > 15 )
-	     {
-	       cout << "event: " << event << " " 
-		    << "ls: " << ls << " "
-		    << "run: " << run << "  "
-		    << "--  calometPt->at(0) : " <<  calometPt->at(0) << " "
-		    << endl;
-	     }
+	  if( calometSumEt_clean > 50 )
+	    {
+	      cout << "event: " << event << " " 
+		   << "ls: " << ls << " "
+		   << "run: " << run << "  "
+		   << "--  calometSumEt_clean : " <<  calometSumEt_clean << " "
+		   << endl;
+	    }
 
-	   if( calometSumEt->at(0) > 50 )
-	     {
-	       cout << "event: " << event << " " 
-		    << "ls: " << ls << " "
-		    << "run: " << run << "  "
-		    << "--  calometSumEt->at(0) : " <<  calometSumEt->at(0) << " "
-		    << endl;
-	     }
+	  if( calometHadEtInHF_clean > 20 )
+	    {
+	      cout << "event: " << event << " " 
+		   << "ls: " << ls << " "
+		   << "run: " << run << "  "
+		   << "--  calometHadEtInHF_clean : " <<  calometHadEtInHF_clean << " "
+		   << endl;
+	    }
 
-	   if( calometHadEtInHF->at(0) > 20 )
-	     {
-	       cout << "event: " << event << " " 
-		    << "ls: " << ls << " "
-		    << "run: " << run << "  "
-		    << "--  calometHadEtInHF->at(0) : " <<  calometHadEtInHF->at(0) << " "
-		    << endl;
-	     }
+	  if( calometEmEtInHF_clean > 20 )
+	    {
+	      cout << "event: " << event << " " 
+		   << "ls: " << ls << " "
+		   << "run: " << run << "  "
+		   << "--  calometEmEtInHF_clean : " <<  calometEmEtInHF_clean << " "
+		   << endl;
+	    }
 
-	   if( calometEmEtInHF->at(0) > 20 )
-	     {
-	       cout << "event: " << event << " " 
-		    << "ls: " << ls << " "
-		    << "run: " << run << "  "
-		    << "--  calometEmEtInHF->at(0) : " <<  calometEmEtInHF->at(0) << " "
-		    << endl;
-	     }
-
-	 }
+	}
 
 
       // Fill histograms and do analysis based on cut evaluation
@@ -2651,12 +2786,15 @@ void analysisClass::Loop()
   //calomet
   h_calometPt->Write();   
   h_calometPhi->Write();    
+  h_calometPhi_METcut->Write(); 
   h_calometPx->Write();   
   h_calometPy->Write();   
   h_caloSumet->Write();   
   h_calometSig->Write();   
   h_calometSigCornell->Write();   
+  h_calometPt_baseSel_HFfilter->Write();
 
+  /*
   //calometNoHF  
   h_calometNoHFPt->Write();
   h_calometNoHFPhi->Write(); 
@@ -2665,6 +2803,7 @@ void analysisClass::Loop()
   h_caloSumetNoHF->Write();  
   h_calometSigNoHF->Write(); 
   h_calometSigCornellNoHF->Write();
+  */
 
   //calosumet for different subdetectors
   h_caloSumetEB->Write();
@@ -2714,20 +2853,20 @@ void analysisClass::Loop()
   my_calometHadHFPy->Write();
   my_caloSumetHadHF->Write();
   
-//   my_caloEnergyEB->Write();
-//   my_caloEnergyEE->Write();
-//   my_caloEnergyHB->Write();
-//   my_caloEnergyHE->Write();
-//   my_caloEnergyEmHF->Write();
-//   my_caloEnergyHadHF->Write();
-//   
-//   my_nCTEB->Write();
-//   my_nCTEE->Write();
-//   my_nCTHB->Write();
-//   my_nCTHE->Write();
-//   my_nCTEmHF->Write();
-//   my_nCTHadHF->Write();
-  
+  //   my_caloEnergyEB->Write();
+  //   my_caloEnergyEE->Write();
+  //   my_caloEnergyHB->Write();
+  //   my_caloEnergyHE->Write();
+  //   my_caloEnergyEmHF->Write();
+  //   my_caloEnergyHadHF->Write();
+  //   
+  //   my_nCTEB->Write();
+  //   my_nCTEE->Write();
+  //   my_nCTHB->Write();
+  //   my_nCTHE->Write();
+  //   my_nCTEmHF->Write();
+  //   my_nCTHadHF->Write();
+
   //########################################
   
   //HF PMT hits
@@ -2752,6 +2891,25 @@ void analysisClass::Loop()
   h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_tcMET->Write();
   h_calometPt_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET->Write();
   h_calosumet_baseSel_HFPMTHitVeto_ECALSpikesVeto_PFMET->Write();
+
+  //plots about spikes
+  h_ECALspikesPerEvent->Write();
+  h_HFspikesPerEvent->Write();
+  
+  h_HFspikes_Long_Energy->Write();
+  h_HFspikes_Long_Pt->Write();
+  h_HFspikes_Long_EtaPhi->Write();
+  h_HFspikes_Long_EtaPhiWeight->Write();
+  
+  h_HFspikes_Short_Energy->Write();
+  h_HFspikes_Short_Pt->Write();
+  h_HFspikes_Short_EtaPhi->Write();
+  h_HFspikes_Short_EtaPhiWeight->Write();
+
+  h_ECALspikes_Energy->Write();
+  h_ECALspikes_Pt->Write();
+  h_ECALspikes_EtaPhi->Write();
+  h_ECALspikes_EtaPhiWeight->Write();
 
   //ECAL spikes
   h_S1S9RatioEB->Write();
