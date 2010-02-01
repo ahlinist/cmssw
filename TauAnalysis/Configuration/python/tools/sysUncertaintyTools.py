@@ -160,6 +160,24 @@ def disableSysUncertainties_runZtoDiTau(process):
 
     removeModules(process, "selectZtoDiTauEvents", moduleNamePattern, pyNameSpace)
 
+#--------------------------------------------------------------------------------
+# functions to enable/disable estimation of systematic uncertainties
+# specific to ! --> tau-jet + nu channel
+#--------------------------------------------------------------------------------
+
+def disableSysUncertainties_runWtoTauNu(process):
+    print("<disableSysUncertainties_runWtoTauNu>:")
+    
+    moduleNamePattern = "\w+Sys\w+(Up|Down)"
+    pyNameSpace = None
+
+    process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
+
+    removeModules(process, "selectWtoTauNuEvents", moduleNamePattern, pyNameSpace)
+    if hasattr(process, "selectWtoTauNuEventsLooseIsolation"):
+        removeModules(process, "selectWtoTauNuEventsLooseIsolation", moduleNamePattern, pyNameSpace)
+
+
 
 
 
