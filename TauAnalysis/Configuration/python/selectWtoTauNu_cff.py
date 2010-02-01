@@ -41,7 +41,7 @@ cfgTauPtCut = cms.PSet(
 cfgMetPt = cms.PSet(
     pluginName = cms.string('metPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedLayer1METsPt15'),
+    src = cms.InputTag('selectedLayer1METsPt25'),
     minNumber = cms.uint32(1)
 )
 
