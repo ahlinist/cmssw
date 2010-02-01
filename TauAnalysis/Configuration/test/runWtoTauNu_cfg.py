@@ -47,6 +47,8 @@ process.saveWtoTauNuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 process.load("TauAnalysis.Configuration.selectWtoTauNu_cff")
 process.load("TauAnalysis.Configuration.analyzeWtoTauNu_cff")
+process.load("TauAnalysis.Configuration.selectWtoTauNu_boosted_cff")
+process.load("TauAnalysis.Configuration.analyzeWtoTauNu_boosted_cff")
 
 process.DQMStore = cms.Service("DQMStore")
 
@@ -78,6 +80,21 @@ process.source = cms.Source("PoolSource",
 #__process.saveWtoTauNuPlots.outputFileName = #plotsOutputFileName#
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# import utility function for disabling estimation of systematic uncertainties
+#
+# NOTE: per default, estimation of systematic uncertainties is **enabled** per default
+#
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runWtoTauNu
+#
+# define "hook" for keeping enabled/disabling estimation of systematic uncertainties
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#__#systematics#
+if not hasattr(process, "batchMode"):
+    disableSysUncertainties_runWtoTauNu(process)
+ 
+#--------------------------------------------------------------------------------
 
 from PhysicsTools.PatAlgos.tools.tauTools import * 
 switchToPFTauShrinkingCone(process)
@@ -101,7 +118,7 @@ replaceMETforTauNu(process,
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.tools.changeCut import *
-changeCut(process,"selectedLayer1TausForWTauNuPt20","pt > 20.")
+changeCut(process,"selectedLayer1TausForWTauNuPt20","pt > 20. & pt < 60.")
 changeCut(process,"selectedLayer1TausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
 changeCut(process,"selectedLayer1TausForWTauNuTrkIso","tauID('byIsolation') > 0.5")
 changeCut(process, "selectedLayer1TausForWTauNuLeadTrkPt","leadTrack().isNonnull() & leadTrack().pt() > 20.")
@@ -115,6 +132,8 @@ process.p = cms.Path(
 #    +process.printEventContent    # dump of event content after PAT-tuple production
     +process.selectWtoTauNuEvents
     +process.analyzeWtoTauNuEvents
+    +process.selectWtoTauNuEventsBoosted
+    +process.analyzeWtoTauNuEventsBoosted
     +process.saveWtoTauNuPlots 
 )
 
