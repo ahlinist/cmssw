@@ -1,6 +1,18 @@
 import FWCore.ParameterSet.Config as cms
 from TauAnalysis.Configuration.analyzeWtoTauNu_cfi import *
 
+# define auxiliary service
+# for handling of systematic uncertainties
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
+SysUncertaintyService = cms.Service("SysUncertaintyService",
+                                    config = getSysUncertaintyParameterSets(
+    [ muonSystematics,
+      tauSystematics,
+      theorySystematics ]
+    )
+                                    )
+
+
 analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
   
     name = cms.string('wTauNuAnalyzer'), 
