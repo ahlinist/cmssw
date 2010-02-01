@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.29 2009/11/23 13:25:26 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.30 2009/11/24 15:11:31 chinhan Exp $
 //
 //
 
@@ -62,22 +62,8 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
-      template <class T> void loop(const edm::Event& iEvent,const edm::EventSetup& iSetup, const T& collection) {
-        for(typename T::const_iterator particle = collection.begin(); particle != collection.end(); ++particle) {
-          // Fill common variables
-	  unsigned int i = particle - collection.begin();
-          fill(*particle,i);
+      template <class T> void loop(const edm::Event& iEvent,const edm::EventSetup& iSetup, const T& collection);
 
-          // Call individual analyzers
-          _L1analyzer.fill(iEvent, *particle);
-          _L2analyzer.fill(iEvent,iSetup, *particle);
-          _L25and3analyzer.fill(iEvent, *particle);
-
-          // Finally, fill the entry to tree
-          _TTEffTree->Fill();
-        }
-      }
-      
       virtual void fillLV(const LorentzVector&,unsigned int i = 0); // was fill() before, but was confusing
       virtual void fill(const reco::PFTau&,unsigned int i = 0); 
       virtual void fill(const reco::CaloTau&,unsigned int i = 0);

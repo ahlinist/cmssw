@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.33 2009/11/23 13:25:26 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.34 2009/11/24 15:08:54 chinhan Exp $
 //
 //
 
@@ -29,9 +29,9 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
+  PFTauMuonRej_(iConfig.getParameter<edm::InputTag>("PFTauMuonRejectionCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
-  MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone")),
-  PFTauMuonRej_(iConfig.getParameter<edm::InputTag>("PFTauMuonRejectionCollection"))
+  MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
 {
   // File setup
   _TTEffFile = TFile::Open(rootFile_.c_str(), "RECREATE");
@@ -137,6 +137,23 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    
    // For electron lorentzvectors, add similar clauses
+}
+
+template <class T>
+void TTEffAnalyzer::loop(const edm::Event& iEvent,const edm::EventSetup& iSetup, const T& collection) {
+  for(typename T::const_iterator particle = collection.begin(); particle != collection.end(); ++particle) {
+    // Fill common variables
+    unsigned int i = particle - collection.begin();
+    fill(*particle,i);
+
+    // Call individual analyzers
+    _L1analyzer.fill(iEvent, *particle);
+    _L2analyzer.fill(iEvent,iSetup, *particle);
+    _L25and3analyzer.fill(iEvent, *particle);
+
+    // Finally, fill the entry to tree
+    _TTEffTree->Fill();
+  }
 }
 
 void TTEffAnalyzer::fillLV(const LorentzVector& tau,unsigned int i) {
