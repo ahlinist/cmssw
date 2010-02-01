@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-process = cms.Process("SKIM")
+process = cms.Process("TTEffSKIM")
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(1000)
@@ -15,34 +15,27 @@ process.MessageLogger.cout = cms.untracked.PSet(
 #    threshold = cms.untracked.string("WARNING")  # print LogWarnings and above
     )
 # This is also neede for printing debugs
-process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus",
+process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus","IdentifiedTauFilter")
 
-"IdentifiedTauFilter")
-
-#from ElectroWeakAnalysis.TauTriggerEfficiency.RelValQCD_Pt_80_120_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO_IDEAL_V9_v2 import *
-#from ElectroWeakAnalysis.TauTriggerEfficiency.QCD_Mike_HLTExtra import *
-#process.source = source
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-	"file:reco.root"
-##      "file:/tmp/chinhan/hltRECO.root"
+from ElectroWeakAnalysis.TauTriggerEfficiency.MinimumBias_BeamCommissioning09_SD_AllMinBias_Dec19thSkim_336p3_v1_RAW_RECO import *
+process.source = source
+#process.source = cms.Source("PoolSource",
+#    fileNames = cms.untracked.vstring(
+##	"file:reco.root"
 ##	"rfio:/castor/cern.ch/user/s/slehti/reco.root"
-    )
-)
+##	"rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/SD_AllMinBias-Dec19thSkim_336p3_v1/0008/FC895826-E8F0-DE11-8E36-001D0967DA76.root"
+#    )
+#)
 
 
 from ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff import *
-#from ElectroWeakAnalysis.TauTriggerEfficiency.OfflineTauIDProducer_cff import *
 from ElectroWeakAnalysis.TauTriggerEfficiency.OfflineTauIDFilter_cff import *
 
-#process.IdentifiedTaus = IdentifiedTaus
 process.IncludedHLTs = IncludedHLTs
 process.IdentifiedTauFilter = IdentifiedTauFilter
 
 
-
-
-
+process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi")
 process.thisPFRecoTauDiscriminationByLeadingPionPtCut = cms.EDFilter("PFRecoTauDiscriminationByLeadingPionPtCut",
 #    PFTauProducer = cms.InputTag('pfRecoTauProducerHighEfficiency'),
     PFTauProducer = cms.InputTag('shrinkingConePFTauProducer'),
@@ -50,12 +43,12 @@ process.thisPFRecoTauDiscriminationByLeadingPionPtCut = cms.EDFilter("PFRecoTauD
 )
 
 process.PFTausSelected = cms.EDFilter("PFTauSelector",
-#    src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
     src = cms.InputTag("shrinkingConePFTauProducer"),
     discriminators = cms.VPSet(
-	#cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByTrackIsolationHighEfficiency"),selectionCut=cms.double(0.5))
-	#cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByLeadingPionPtCutHighEfficiency"),selectionCut=cms.double(0.5))
-	cms.PSet( discriminator=cms.InputTag("thisPFRecoTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.double(0.5))
+#	cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByTrackIsolationHighEfficiency"),selectionCut=cms.double(0.5))
+#	cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByLeadingPionPtCutHighEfficiency"),selectionCut=cms.double(-0.5))
+#       cms.PSet( discriminator=cms.InputTag("thisPFRecoTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.double(0.5))
+#	cms.PSet( discriminator=cms.InputTag("thisPFRecoTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.double(-0.5))
     )
 )# Now filtered the tau collection is made
 
@@ -81,32 +74,17 @@ process.CounterSavedEvents = cms.EDAnalyzer("EventCounter",
 
 process.tauFilter = cms.Path(
 	process.CounterAllEvents *
-	process.IncludedHLTs *
+#	process.IncludedHLTs *
 	process.CounterHTLEvents *
-        process.thisPFRecoTauDiscriminationByLeadingPionPtCut*
+#        process.thisPFRecoTauDiscriminationByLeadingPionPtCut*
 	process.PFTausSelected *
 	process.CounterOfflineEvents *
-#	process.IdentifiedTaus *
         process.IdentifiedTauFilter *
 	process.CounterSavedEvents
 )
 
-## L1CaloSim
-#process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
-#process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
-#process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
-#process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
-#process.load("RecoTauTag.L1CaloSim.l1calosim_cfi")
-#process.l1CaloSim.AlgorithmSource = "RecHits"
-#process.l1CaloSim.EmInputs =
 cms.VInputTag(cms.InputTag("ecalRecHit","EcalRecHitsEB"),
 cms.InputTag("ecalRecHit","EcalRecHitsEE"))
-#process.l1CaloSim.DoBitInfo = cms.bool(True)
-#process.l1CaloSim.EMActiveLevelIso = cms.double(2.0)
-#process.l1CaloSim.HadActiveLevelIso = cms.double(2.0)
-#process.l1CaloSim.IsolationEt = cms.double(4.0)
-#
-#process.p  = cms.Path(process.l1CaloSim)
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
 GenParticles  = cms.untracked.InputTag("genParticles"),
@@ -117,7 +95,7 @@ GenParticles  = cms.untracked.InputTag("genParticles"),
        EtaMax         = cms.untracked.double(2.5)
 )
 
-process.pmc  = cms.Path(process.TauMCProducer)
+##process.pmc  = cms.Path(process.TauMCProducer)
 
 from ElectroWeakAnalysis.TauTriggerEfficiency.eventContent_cfi import *
 process.output = cms.OutputModule("PoolOutputModule",
