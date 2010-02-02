@@ -38,7 +38,7 @@ class PATLeptonRecoilEnergyAlgorithm
 	  idxEnergyObject < numEnergyObjects; ++idxEnergyObject ) {
       edm::Ptr<T2> energyObjectPtr = energyObjects.ptrAt(idxEnergyObject);
 
-      if ( energyObjectPtr->eta() > etaMin_ && energyObjectPtr->eta() < etaMax_ &&
+      if ( fabs(energyObjectPtr->eta()) > etaMin_ && fabs(energyObjectPtr->eta()) < etaMax_ &&
 	   energyObjectPtr->et() > etMin_ ) {
 	double dPhi = TMath::Abs(normalizedPhi(lepton->phi() - energyObjectPtr->phi()));
 	if ( dPhi > dPhiMin_ && dPhi < dPhiMax_ ) {
