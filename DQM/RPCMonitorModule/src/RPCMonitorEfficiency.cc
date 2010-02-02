@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.37 2010/01/22 15:29:20 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.38 2010/02/02 11:51:43 carrillo Exp $
 //
 //
 
@@ -4549,85 +4549,108 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca5->Clear(); 
   
   //Positive Endcap
-
   
-  GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
-  GregD1R2_black->SetMarkerColor(kRed);
+  GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregD1R2_black->SetLineColor(kRed);
+  GregD1R2_black->SetMarkerSize(1.0);
+  GregD1R2_black->SetMarkerStyle(21);
   std::cout<<"drawing first black histogram"<<std::endl;
   GregD1R2_black->Draw("same");
   Ca5->SaveAs("Greg/D1R2.png"); GregD1R2->Write();
   Ca5->Clear(); 
   
-  GregD1R3->Draw(); GregD1R3->GetXaxis()->SetTitle("Chamber");  GregD1R3->GetYaxis()->SetRangeUser(0.,1.);
-  GregD1R3_black->SetMarkerColor(kRed);
+  GregD1R3->Draw(); GregD1R3->GetXaxis()->SetTitle("Chamber");  GregD1R3->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregD1R3_black->SetLineColor(kRed);
   std::cout<<"drawing second black histogram"<<std::endl;
   GregD1R3_black->Draw("same");
+  GregD1R3_black->SetMarkerSize(1.0);
+  GregD1R3_black->SetMarkerStyle(21);
   Ca5->SaveAs("Greg/D1R3.png"); GregD1R3->Write();
   Ca5->Clear(); 
   
-  GregD2R2->Draw(); GregD2R2->GetXaxis()->SetTitle("Chamber");GregD2R2->GetYaxis()->SetRangeUser(0.,1.);
-  GregD2R2_black->SetMarkerColor(kRed);
+  GregD2R2->Draw(); GregD2R2->GetXaxis()->SetTitle("Chamber");GregD2R2->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregD2R2_black->SetLineColor(kRed);
   GregD2R2_black->Draw("same");
+  GregD2R2_black->SetMarkerSize(1.0);
+  GregD2R2_black->SetMarkerStyle(21);
   Ca5->SaveAs("Greg/D2R2.png"); GregD2R2->Write();
   Ca5->Clear(); 
   
-  GregD2R3->Draw(); GregD2R3->GetXaxis()->SetTitle("Chamber"); GregD2R3->GetYaxis()->SetRangeUser(0.,1.);
-  GregD2R3_black->SetMarkerColor(kRed);
+  GregD2R3->Draw(); GregD2R3->GetXaxis()->SetTitle("Chamber"); GregD2R3->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregD2R3_black->SetLineColor(kRed);
   GregD2R3_black->Draw("same");
+  GregD2R3_black->SetMarkerSize(1.0);
+  GregD2R3_black->SetMarkerStyle(21);
   Ca5->SaveAs("Greg/D2R3.png");  GregD2R3->Write();
   Ca5->Clear(); 
   
-  GregD3R2->Draw(); GregD3R2->GetXaxis()->SetTitle("Chamber");GregD3R2->GetYaxis()->SetRangeUser(0.,1.);
-  GregD3R2_black->SetMarkerColor(kRed);
+  GregD3R2->Draw(); GregD3R2->GetXaxis()->SetTitle("Chamber");GregD3R2->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregD3R2_black->SetLineColor(kRed);
   std::cout<<"drawing fifth black histogram"<<std::endl;
   GregD3R2_black->Draw("same");
+  GregD3R2_black->SetMarkerSize(1.0);
+  GregD3R2_black->SetMarkerStyle(21);
   Ca5->SaveAs("Greg/D3R2.png"); GregD3R2->Write();
   Ca5->Clear(); 
   
-  GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
-  GregD3R3_black->SetMarkerColor(kRed);
+  GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregD3R3_black->SetLineColor(kRed);
   std::cout<<"drawing sixth black histogram"<<std::endl;
   GregD3R3_black->Draw("same");
+  GregD3R3_black->SetMarkerStyle(21);
+  GregD3R3_black->SetMarkerSize(1.0);
   Ca5->SaveAs("Greg/D3R3.png"); GregD3R3->Write();
   Ca5->Clear(); 
 
   //Negative Endcap
 
-  GregDm1R2->Draw(); GregDm1R2->GetXaxis()->SetTitle("Chamber"); GregDm1R2->GetYaxis()->SetRangeUser(0.,1.);
-  GregDm1R2_black->SetMarkerColor(kRed);
+  GregDm1R2->Draw(); GregDm1R2->GetXaxis()->SetTitle("Chamber"); GregDm1R2->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregDm1R2_black->SetLineColor(kRed);
   GregDm1R2_black->Draw("same");
+  GregDm1R2_black->SetMarkerStyle(21);
+  GregDm1R2_black->SetMarkerSize(1.0);
   std::cout<<"drawing second negative endcap black histogram"<<std::endl;
   Ca5->SaveAs("Greg/Dm1R2.png"); GregDm1R2->Write();
   Ca5->Clear(); 
   
-  GregDm1R3->Draw(); GregDm1R3->GetXaxis()->SetTitle("Chamber");  GregDm1R3->GetYaxis()->SetRangeUser(0.,1.);
-  GregDm1R3_black->SetMarkerColor(kRed);
+  GregDm1R3->Draw(); GregDm1R3->GetXaxis()->SetTitle("Chamber");  GregDm1R3->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregDm1R3_black->SetLineColor(kRed);
   GregDm1R3_black->Draw("same");
+  GregDm1R3_black->SetMarkerStyle(21);
+  GregDm1R3_black->SetMarkerSize(1.0);
   std::cout<<"drawing second negative endcap black histogram"<<std::endl;
   Ca5->SaveAs("Greg/Dm1R3.png"); GregDm1R3->Write();
   Ca5->Clear(); 
   
-  GregDm2R2->Draw(); GregDm2R2->GetXaxis()->SetTitle("Chamber");GregDm2R2->GetYaxis()->SetRangeUser(0.,1.);
-  GregDm2R2_black->SetMarkerColor(kRed);
+  GregDm2R2->Draw(); GregDm2R2->GetXaxis()->SetTitle("Chamber");GregDm2R2->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregDm2R2_black->SetLineColor(kRed);
   GregDm2R2_black->Draw("same");
+  GregDm2R2_black->SetMarkerStyle(21);
+  GregDm2R2_black->SetMarkerSize(1.0);
   Ca5->SaveAs("Greg/Dm2R2.png"); GregDm2R2->Write();
   Ca5->Clear(); 
   
-  GregDm2R3->Draw(); GregDm2R3->GetXaxis()->SetTitle("Chamber"); GregDm2R3->GetYaxis()->SetRangeUser(0.,1.);
-  GregDm2R3_black->SetMarkerColor(kRed);
+  GregDm2R3->Draw(); GregDm2R3->GetXaxis()->SetTitle("Chamber"); GregDm2R3->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregDm2R3_black->SetLineColor(kRed);
   GregDm2R3_black->Draw("same");
+  GregDm2R3_black->SetMarkerStyle(21);
+  GregDm2R3_black->SetMarkerSize(1.0);
   Ca5->SaveAs("Greg/Dm2R3.png");  GregDm2R3->Write();
   Ca5->Clear(); 
   
-  GregDm3R2->Draw(); GregDm3R2->GetXaxis()->SetTitle("Chamber");GregDm3R2->GetYaxis()->SetRangeUser(0.,1.);
-  GregDm3R2_black->SetMarkerColor(kRed);
+  GregDm3R2->Draw(); GregDm3R2->GetXaxis()->SetTitle("Chamber");GregDm3R2->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregDm3R2_black->SetLineColor(kRed);
   GregDm3R2_black->Draw("same");
+  GregDm3R2_black->SetMarkerStyle(21);
+  GregDm3R2_black->SetMarkerSize(1.0);
   Ca5->SaveAs("Greg/Dm3R2.png"); GregDm3R2->Write();
   Ca5->Clear(); 
   
-  GregDm3R3->Draw(); GregDm3R3->GetXaxis()->SetTitle("Chamber");GregDm3R3->GetYaxis()->SetRangeUser(0.,1.);
-  GregDm3R3_black->SetMarkerColor(kRed);
+  GregDm3R3->Draw(); GregDm3R3->GetXaxis()->SetTitle("Chamber");GregDm3R3->GetYaxis()->SetRangeUser(-0.01,1.01);
+  GregDm3R3_black->SetLineColor(kRed);
   GregDm3R3_black->Draw("same");
+  GregDm3R3_black->SetMarkerStyle(21);
+  GregDm3R3_black->SetMarkerSize(1.0);
   Ca5->SaveAs("Greg/Dm3R3.png"); GregDm3R3->Write();
   Ca5->Clear(); 
 
