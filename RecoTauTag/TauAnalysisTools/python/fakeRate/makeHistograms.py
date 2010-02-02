@@ -2,15 +2,14 @@ from RecoTauTag.TauAnalysisTools.tools.ntauples import *
 from array import array
 from ROOT import TH3F, TFile
 
-# Get our configuration
-from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfiguration import cuts
-
 def make_plots(files_and_weights, 
                output_file = "fakeRateHistograms.root",
                ntuple_name = "shrinking",
                ntuple_setup = lambda ntuple: ntuple.set_collection("matched"),
-               x_expr="$jetPt", y_expr="$eta", z_expr="$jetWidth", 
-               x_bins=[], y_bins=[], z_bins=[], selections=cuts, **kwargs):
+               x_expr="$jetPt", 
+               y_expr="abs($jetEta)", 
+               z_expr="$jetWidth", 
+               x_bins=[], y_bins=[], z_bins=[], selections={}, **kwargs):
     output = TFile(output_file, "RECREATE")
     x_bins = array('d', x_bins)
     y_bins = array('d', y_bins)
@@ -21,8 +20,6 @@ def make_plots(files_and_weights,
                     len(x_bins)-1, x_bins,
                     len(y_bins)-1, y_bins,
                     len(z_bins)-1, z_bins)
-    # Add the denominator
-    selections["denominator"] = "1"
     # Build our histograms
     histograms = {}
     for cut_name, cut in selections.iteritems():
