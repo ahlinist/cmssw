@@ -23,3 +23,27 @@ tauRecoilEnergyFromCaloTowersHistManager = cms.PSet(
     #normalization = cms.string("leptons")
     normalization = cms.string("events")
 )
+
+tauRecoilEnergyFromForwardCaloTowersHistManager = cms.PSet(    
+    pluginName = cms.string('tauRecoilEnergyFromForwardCaloTowersHistManager'),
+    pluginType = cms.string('TauRecoilEnergyFromForwardCaloTowersHistManager'),
+
+    leptonRecoilEnergySource = cms.InputTag('tauRecoilEnergyFromForwardCaloTowers'),
+
+    dqmDirectory_store = cms.string('TauRecoilEnergyFromForwardCaloTowersQuantities'),
+
+    #normalization = cms.string("leptons")
+    normalization = cms.string("events")
+)
+
+tauRecoilEnergyFromCentralCaloTowersHistManager = cms.PSet(    
+    pluginName = cms.string('tauRecoilEnergyFromCentralCaloTowersHistManager'),
+    pluginType = cms.string('TauRecoilEnergyFromCentralCaloTowersHistManager'),
+
+    leptonRecoilEnergySource = cms.InputTag('tauRecoilEnergyFromCentralCaloTowers'),
+
+    dqmDirectory_store = cms.string('TauRecoilEnergyFromCentralCaloTowersQuantities'),
+
+    #normalization = cms.string("leptons")
+    normalization = cms.string("events")
+)
