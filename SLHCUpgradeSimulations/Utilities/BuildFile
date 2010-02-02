@@ -42,5 +42,3 @@
 
   <lib name=SLHCUpgradeSimulationsUtilities>
 </export>
-
-<!--flags EDM_PLUGIN=1-->

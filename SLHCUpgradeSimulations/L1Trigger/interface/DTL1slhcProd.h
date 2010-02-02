@@ -1,11 +1,10 @@
 // -*- C++ -*-
 //
-// Package:    SCMSNtuplesProducer
-// Class:      SCMSNtuplesProducer
+// Package:    DTL1slhcProd
+// Class:      DTL1slhcProd
 // 
-/**\class SCMSNtuplesProducer 
-          SCMSNtuplesProducer.cc 
-          SCMSNtuples/SCMSNtuplesProducer/src/SCMSNtuplesProducer.cc
+/**\class DTL1slhcProd 
+          DTL1slhcProd.cc 
 
  Description: <one line class summary>
 
@@ -47,7 +46,7 @@ using namespace edm;
 using namespace cmsUpgrades;
 
 
-class DTL1slhcProd : public edm::EDProducer, L1DTSimOperation {
+class DTL1slhcProd : public edm::EDProducer, DTL1SimOperation {
   
 public:
   
@@ -63,9 +62,6 @@ private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob();
 	
-	
-	
-
 };
 
 
