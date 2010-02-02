@@ -35,7 +35,7 @@ void analysisClass::Loop()
   //   char dataset[200]="2.36 TeV collision data";
   
   if (fChain == 0) return;
-  double ptMin=8.;
+  double ptMin=15.;
   double ptMax=100.;
   int ptBin=50;
   
@@ -46,6 +46,13 @@ void analysisClass::Loop()
   int  etaBin=100;
   double etaMax=5;   //-
   double etaMin=-5;
+
+  // ----------------------------------------------------------------
+  // decide wether you want to apply jet corrections or not
+  bool makeJetCorr = true;
+  // ----------------------------------------------------------------
+
+
    
   TH1I *ak5njets = new TH1I("ak5njets","",20,0,20);
   ak5njets->SetXTitle("Number of jets per event");
@@ -279,6 +286,12 @@ void analysisClass::Loop()
        int BeamHalo    = 0;
 
 
+       // ---------------------------------------------------------------
+       
+
+
+       // ---------------------------------------------------------------
+
 
        ////event selection - cut on vertex for now. l1 tech bits already asked at skimming step
        ////Common JetMET selction: * isFake() false; |z|<15.cm; * number of tracks > 3 with 'trackWeight()'
@@ -290,14 +303,48 @@ void analysisClass::Loop()
 
        //event selection - cut on vertex for now. l1 tech bits already asked at skimming step
 //        if(vertexNTracks->at(0)>1. && fabs(vertexZ->at(0))<20){   // "old" event selection (as taken over from viola)
-       if(vertexNTracks->at(0)>3. && fabs(vertexZ->at(0))<15 && vertexisValid->at(0)==true){    // "new" event selection
+//        if(vertexNTracksW5->at(0)>3. && fabs(vertexZ->at(0))<15 && vertexisValid->at(0)==true){    // "new" event selection
+       if(vertexNTracksW5->at(0)>=4. && fabs(vertexZ->at(0))<15 && vertexNDF->at(0)!=0 && tracksChi2!=0){    // "newer" event selection
 
 
-
-	   int eventid = event;
-	   int LS = ls;
-	   int runid = run;
-	   //counters   
+	 int isdata = isData;
+	 int eventid = event;
+	 int LS = ls;
+	 int runid = run;
+	 // --------------------------------------------------------------------
+	 // skip some lumi sections...
+	 if(isdata == 1 && (
+			    (runid==123596 && LS<2) ||
+			    (runid==123615 && LS<70) ||
+			    (runid==123732 && LS<62) ||
+			    (runid==123815 && LS<62) ||
+			    (runid==123815 && LS>109) ||
+			    (runid==123818 && LS<2) ||
+			    (runid==123818 && LS>42) ||
+			    (runid==123908 && LS<2) ||
+			    (runid==123908 && LS>12) ||
+			    (runid==124008 && LS!=1) ||
+			    (runid==124009 && LS>68) ||
+			    (runid==124020 && LS<12) ||
+			    (runid==124020 && LS>94) ||
+			    (runid==124022 && LS<66) ||
+			    (runid==124022 && LS>179) ||
+			    (runid==124023 && LS<38) ||
+			    (runid==124024 && LS<2) ||
+			    (runid==124024 && LS>83) ||
+			    (runid==124025 && LS<5) ||
+			    (runid==124025 && LS>13) ||
+			    (runid==124027 && LS<24) ||
+			    (runid==124030 && LS<2)  )
+	    ) {
+	   continue;
+	 }
+	 
+	 cout<<"-------------------------"<<endl;
+	 cout<<runid<<":"<<LS<<endl;
+	 // --------------------------------------------------------------------
+	 
+	 //counters   
 	   int Nak5=0;
 	   int Nak5JetIDLoose=0;
 	   int Nak5JetIDTight=0;
@@ -313,27 +360,49 @@ void analysisClass::Loop()
 	   int Nak5indijetsAssTrksTight=0;
 	   ak5nalljets->Fill(ak5JetpT->size());
 	   ic5nalljets->Fill(ic5JetpT->size());
-	   for (int j = 0; j<int(ak5JetpT->size()); j++){
-	  
-	      ptall->Fill(ak5JetpT->at(j));
-	      mapall->Fill(ak5JetEta->at(j),ak5JetPhi->at(j));
+
+// 	     cout<<"------------"<<endl;
+// 	     cout<<ak5JetpT->size()<<endl;
+// 	     cout<<ak5JetscaleL2L3->size()<<endl;
 	     
-	      if(ak5JetpT->at(j)>ptMin){
+
+
+
+	   for (int j = 0; j<int(ak5JetpT->size()); j++){
+	     
+	     // --------------------------------------------------------------    //jc
+	     // JET CORRECTION
+	     // --------------------------------------------------------------
+	     double jcScale;    //jc
+
+	     if(makeJetCorr==true) {
+	       jcScale = ak5JetscaleL2L3->at(j);
+	     }
+	     else {
+	       jcScale = 1;
+	     }
+	     
+	     // --------------------------------------------------------------
+	     
+	     ptall->Fill(ak5JetpT->at(j) * jcScale);    //jc
+	     mapall->Fill(ak5JetEta->at(j),ak5JetPhi->at(j));
+	     
+	     if(ak5JetpT->at(j) * jcScale >ptMin){    //jc
 	       Nak5++;
 	       ak5nconst->Fill(ak5JetNConstituents->at(j));
-	       pt->Fill(ak5JetpT->at(j));
+	       pt->Fill(ak5JetpT->at(j) * jcScale);    //jc 
 	       if(fabs(ak5JetEta->at(j))<1.4){
-		 Ebarrel->Fill(ak5JetEnergy->at(j));
+		 Ebarrel->Fill(ak5JetEnergy->at(j) * jcScale);  //jc
 	       } else {
-		 Eendcap->Fill(ak5JetEnergy->at(j));
+		 Eendcap->Fill(ak5JetEnergy->at(j) * jcScale);   //jc
 	       }
 	       map->Fill(ak5JetEta->at(j),ak5JetPhi->at(j)); 
 	       eta->Fill(ak5JetEta->at(j));
 	       phi->Fill(ak5JetPhi->at(j));
 	       ak5NlooseTracks->Fill(ak5JetNAssoTrksLoose->at(j));
 	       ak5NtightTracks->Fill(ak5JetNAssoTrksTight->at(j));
-	       ChFracLoose->Fill(sqrt(pow(ak5JetLooseAssoTrkspx->at(j),2)+pow(ak5JetLooseAssoTrkspy->at(j),2))/ak5JetpT->at(j));
-	       ChFracTight->Fill(sqrt(pow(ak5JetTightAssoTrkspx->at(j),2)+pow(ak5JetTightAssoTrkspy->at(j),2))/ak5JetpT->at(j));
+	       ChFracLoose->Fill(sqrt(pow(ak5JetLooseAssoTrkspx->at(j),2)+pow(ak5JetLooseAssoTrkspy->at(j),2))/(ak5JetpT->at(j) * jcScale));  //jc
+	       ChFracTight->Fill(sqrt(pow(ak5JetTightAssoTrkspx->at(j),2)+pow(ak5JetTightAssoTrkspy->at(j),2))/(ak5JetpT->at(j) * jcScale));  //jc
 	       resemf->Fill(ak5JetJIDresEMF->at(j));
 	       fhpd->Fill(ak5JetJIDfHPD->at(j));
 	       frbx->Fill(ak5JetJIDfRBX->at(j));
@@ -345,7 +414,7 @@ void analysisClass::Loop()
 		 if(emf && ak5JetJIDfHPD->at(j)<0.98 && ak5JetJIDn90Hits->at(j)>1  ){//loose cleaning
 		   Nak5JetIDLoose++;
 		   ak5nconstcleaned->Fill(ak5JetNConstituents->at(j));
-		   ptcleaned->Fill(ak5JetpT->at(j)); 
+		   ptcleaned->Fill(ak5JetpT->at(j) * jcScale);  //jc
 		   etacleaned->Fill(ak5JetEta->at(j));
 		   phicleaned->Fill(ak5JetPhi->at(j));
 		   
@@ -370,11 +439,27 @@ void analysisClass::Loop()
 	      } //pt min
 	   } //loop on jets
 
+	   
+	     // --------------------------------------------------------   //jc
+	     // JET CORRECTION
+	     // -------------------------------------------------------
+	   double jcScale0;
+	   double jcScale1;
 
 	   //dijet
 	   if(int(ak5JetpT->size()>=2)){
 	     // both passed pT and eta cuts
-	     if(fabs(ak5JetEta->at(0))<2.4 && ak5JetpT->at(0)>ptMin && fabs(ak5JetEta->at(1))<2.4 && ak5JetpT->at(1)>ptMin){
+
+	     if(makeJetCorr == true) {
+	       jcScale0 = ak5JetscaleL2L3->at(0);
+	       jcScale1 = ak5JetscaleL2L3->at(1);
+	     }
+	     else {
+	       jcScale0=1;
+	       jcScale1=1;
+	     }
+
+	     if(fabs(ak5JetEta->at(0))<2.4 && ak5JetpT->at(0) * jcScale0 >ptMin && fabs(ak5JetEta->at(1))<2.4 && ak5JetpT->at(1) * jcScale1 >ptMin){   //jc
 	       // dphi
 	       double dphi = fabs(ak5JetPhi->at(0) - ak5JetPhi->at(1) );
 	       if (dphi > 3.14) dphi=fabs(dphi -6.28 );
@@ -382,8 +467,8 @@ void analysisClass::Loop()
 		 for (int dj = 0; dj<int(ak5JetpT->size()); dj++){
 		   if(ak5JetpT->at(dj)>ptMin) Nak5indijets++;
 		 }
-		 dijetptall1->Fill(ak5JetpT->at(0));
-		 dijetptall2->Fill(ak5JetpT->at(1)); 
+		 dijetptall1->Fill(ak5JetpT->at(0) * jcScale0);  //jc
+		 dijetptall2->Fill(ak5JetpT->at(1) * jcScale1);   //jc
 		 dijetdphi->Fill(dphi);
 		 mapalldijets->Fill(ak5JetEta->at(0),ak5JetPhi->at(0));
 		 mapalldijets->Fill(ak5JetEta->at(1),ak5JetPhi->at(1));
@@ -391,10 +476,10 @@ void analysisClass::Loop()
 		 ak5NtightTracksdijets->Fill(ak5JetNAssoTrksTight->at(0));
 		 ak5NlooseTracksdijets->Fill(ak5JetNAssoTrksLoose->at(1));
 		 ak5NtightTracksdijets->Fill(ak5JetNAssoTrksTight->at(1));
-		 ChFracLoosedijets->Fill(sqrt(pow(ak5JetLooseAssoTrkspx->at(0),2)+pow(ak5JetLooseAssoTrkspy->at(0),2))/ak5JetpT->at(0));
-		 ChFracLoosedijets->Fill(sqrt(pow(ak5JetLooseAssoTrkspx->at(1),2)+pow(ak5JetLooseAssoTrkspy->at(1),2))/ak5JetpT->at(1));
-		 ChFracTightdijets->Fill(sqrt(pow(ak5JetTightAssoTrkspx->at(0),2)+pow(ak5JetTightAssoTrkspy->at(0),2))/ak5JetpT->at(0));
-		 ChFracTightdijets->Fill(sqrt(pow(ak5JetTightAssoTrkspx->at(1),2)+pow(ak5JetTightAssoTrkspy->at(1),2))/ak5JetpT->at(1));
+		 ChFracLoosedijets->Fill(sqrt(pow(ak5JetLooseAssoTrkspx->at(0),2)+pow(ak5JetLooseAssoTrkspy->at(0),2))/ak5JetpT->at(0) * jcScale0);  //jc
+		 ChFracLoosedijets->Fill(sqrt(pow(ak5JetLooseAssoTrkspx->at(1),2)+pow(ak5JetLooseAssoTrkspy->at(1),2))/ak5JetpT->at(1) * jcScale1);  //jc
+		 ChFracTightdijets->Fill(sqrt(pow(ak5JetTightAssoTrkspx->at(0),2)+pow(ak5JetTightAssoTrkspy->at(0),2))/ak5JetpT->at(0) * jcScale0);  //jc
+		 ChFracTightdijets->Fill(sqrt(pow(ak5JetTightAssoTrkspx->at(1),2)+pow(ak5JetTightAssoTrkspy->at(1),2))/ak5JetpT->at(1) * jcScale1);  //jc
 		 //jetID variables for jets in the dijet sample
 		 resemfdijets->Fill(ak5JetJIDresEMF->at(0));
 		 fhpddijets->Fill(ak5JetJIDfHPD->at(0));
@@ -406,8 +491,8 @@ void analysisClass::Loop()
 		 n90hitsdijets->Fill(ak5JetJIDn90Hits->at(1));
 		 // both passed jet cleaning
 		 if(ak5JetJIDresEMF->at(0)>0.01 && ak5JetJIDfHPD->at(0)<0.98 && ak5JetJIDn90Hits->at(0)>1 && ak5JetJIDresEMF->at(1) >0.01 && ak5JetJIDfHPD->at(1)<0.98 && ak5JetJIDn90Hits->at(1)>1){  
-		   dijetptall1cleaned->Fill(ak5JetpT->at(0));
-		   dijetptall2cleaned->Fill(ak5JetpT->at(1)); 
+		   dijetptall1cleaned->Fill(ak5JetpT->at(0) * jcScale0);   //jc
+		   dijetptall2cleaned->Fill(ak5JetpT->at(1) * jcScale1);   //jc
 		   dijetdphicleaned->Fill(dphi);
 		   mapalldijetscleaned->Fill(ak5JetEta->at(0),ak5JetPhi->at(0));
 		   mapalldijetscleaned->Fill(ak5JetEta->at(1),ak5JetPhi->at(1));
@@ -454,7 +539,23 @@ void analysisClass::Loop()
 	   }
 
 	   for(int j = 0; j<int(ic5JetpT->size()); j++){
-	     if(ic5JetpT->at(j)>ptMin){
+
+	     
+	     // --------------------------------------------------------------    //jc
+	     // JET CORRECTION
+	     // --------------------------------------------------------------
+	     double jcScale;    //jc
+	     
+	     if(makeJetCorr==true) {
+	       jcScale = ic5JetscaleL2L3->at(j);
+	     }
+	     else {
+	       jcScale = 1;
+	     }
+	     
+	     // --------------------------------------------------------------
+
+	     if(ic5JetpT->at(j) * jcScale >ptMin){   //jc
 	       Nic5++;
 	       ic5nconst->Fill(ic5JetNConstituents->at(j));
 	       bool emfic5=false;
