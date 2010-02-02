@@ -11,14 +11,17 @@
 '''
 import FWCore.ParameterSet.Config as cms
 from RecoTauTag.TauAnalysisTools.tools.ntupleDefinitions import pftau_expressions
-from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfiguration import cuts as disc_configs
+from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfiguration import makeCuts 
 from RecoTauTag.TauAnalysisTools.fakeRate.associatorTools import *
 
+# Get the histogram selection definitions.  We don't need to worry about what
+# the denominator is here, we just need the names
+disc_configs = makeCuts(denominator="1")
 
 protoEffciencyAssociator = cms.EDProducer("PFTauEfficiencyAssociatorFromTH3",
        PFTauProducer = cms.InputTag("shrinkingConePFTauProducer"),
        xAxisFunction = pftau_expressions.jetPt,
-       yAxisFunction = pftau_expressions.jetEta,
+       yAxisFunction = cms.string("abs(%s)" % pftau_expressions.jetEta),
        zAxisFunction = pftau_expressions.jetWidth,
        efficiencySources = cms.PSet(
            filename = cms.string("/afs/cern.ch/user/f/friis/public/TauPeformance_QCD_BCtoMu.root"),

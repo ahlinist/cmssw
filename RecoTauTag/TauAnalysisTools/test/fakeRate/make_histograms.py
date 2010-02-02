@@ -1,6 +1,9 @@
 from RecoTauTag.TauAnalysisTools.fakeRate.makeHistograms import *
 from RecoTauTag.TauAnalysisTools.TriggerReport import TriggerReport
 
+# Get our configuration
+from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfiguration import makeCuts
+
 import sys
 import os
 import glob
@@ -34,8 +37,10 @@ standard_bins = {
     'z_bins' : [0, 0.01, 0.02, 0.04, 0.08, 0.1, 0.15] # jet width
 }
 
-#build_list = ['dijet_first', 'dijet_second', 'ppmux', 'ztt']
-build_list = ['wjets']
+denominator = "$ByLeadTrackPt && abs($eta) < 2.1 && $pt > 20"
+
+build_list = ['dijet_first', 'dijet_second', 'ppmux', 'ztt', 'wjets']
+#build_list = ['wjets']
 
 sources = {}
 # Define our sources
@@ -115,12 +120,11 @@ for source, source_info in to_build:
     for loc, (xSec, filterEff, nEvents, weight) in source_info['sources'].iteritems():
         print "Loc: %s, nEvents: %i, weight %f" % (loc, nEvents, weight)
 
-
 for source, source_info in to_build:
     # Build file list
     files_and_weights = []
     for loc, (xSec, filterEff, nEvents, weight) in source_info['sources'].iteritems():
         for file in glob.glob("%s/*.root" % loc):
             files_and_weights.append((file, weight))
-    make_plots(files_and_weights, **source_info)
+    make_plots(files_and_weights, selections=makeCuts(denominator), **source_info)
 
