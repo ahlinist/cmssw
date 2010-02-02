@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.36 2009/12/09 00:35:35 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.37 2010/01/22 15:29:20 carrillo Exp $
 //
 //
 
@@ -161,6 +161,14 @@ public:
   TH1F * GregD3R2;  
   TH1F * GregD3R3;  
 
+  // For black list
+  TH1F * GregD1R2_black;
+  TH1F * GregD1R3_black;
+  TH1F * GregD2R2_black;
+  TH1F * GregD2R3_black;
+  TH1F * GregD3R2_black;
+  TH1F * GregD3R3_black;
+
   TH1F * OcGregD1R2;  
   TH1F * OcGregD1R3;  
   TH1F * OcGregD2R2;  
@@ -180,8 +188,16 @@ public:
   TH1F * GregDm2R2;  
   TH1F * GregDm2R3;  
   TH1F * GregDm3R2;  
-  TH1F * GregDm3R3;  
+  TH1F * GregDm3R3;
 
+  //For black list
+  TH1F * GregDm1R2_black;   
+  TH1F * GregDm1R3_black;   
+  TH1F * GregDm2R2_black;   
+  TH1F * GregDm2R3_black;   
+  TH1F * GregDm3R2_black;   
+  TH1F * GregDm3R3_black;
+  
   TH1F * OcGregDm1R2;  
   TH1F * OcGregDm1R3;  
   TH1F * OcGregDm2R2;  
@@ -495,7 +511,6 @@ public:
   TH1F * DistBorderClu3La4;
   TH1F * DistBorderClu3La5;
   TH1F * DistBorderClu3La6;
-
   TPaveText * pave;
 
 private:
@@ -509,6 +524,7 @@ private:
   std::ofstream alignment;
   std::ofstream rollZeroEff;
   std::ofstream rollZeroPrediction;
+  std::string BlackListFile;
   bool prodimages;
   bool makehtml;
   bool debug;
@@ -516,6 +532,9 @@ private:
   double threshold;
   bool endcap;
   bool barrel; 
+  std::vector<unsigned int> blacklist;
+  
+
 };
 
 int rollY(std::string shortname,std::map<int,std::string> rollNames){
@@ -532,6 +551,25 @@ int rollY(std::string shortname,std::map<int,std::string> rollNames){
   return myy;
 }
 
+bool HasBadRoll(int region,uint32_t station,uint32_t ring,int k,std::vector<uint32_t> thelist){
+  uint32_t sector = (k-1)/6+1;
+  uint32_t subsector =k%6==0?6:k%6;
+  // RPCDetId(int region, ring,station, sector,layer,subsector,roll);
+  bool hasBadRoll = true;
+  for(uint32_t roll =1;roll<=3;roll++){
+    RPCDetId ThisDetId(region,ring,station,sector,1,subsector,roll);
+    bool thisroll = false;
+    if(!(find(thelist.begin(),thelist.end(),ThisDetId.rawId())==thelist.end())){
+      thisroll=true;
+    }
+    hasBadRoll=hasBadRoll*thisroll;
+  }
+  
+  if(hasBadRoll) std::cout<<"This RawId has bad roll"<<RPCDetId(region,ring,station,sector,1,subsector,1).rawId()<<std::endl;
+  
+  return hasBadRoll;
+}
+
 RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   //now do what ever initialization is needed
   file=iConfig.getUntrackedParameter<std::string>("fileName");
@@ -543,6 +581,8 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   threshold=iConfig.getUntrackedParameter<double>("threshold");
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
+  BlackListFile  = iConfig.getUntrackedParameter<std::string>("BlackListFile","blacklist.dat"); 
+
   efftxt.open("RPCDetId_Eff.dat");
   alignment.open("Alignment.dat");
   RollYEff.open("rollYeff.txt");
@@ -558,6 +598,26 @@ void RPCMonitorEfficiency::beginJob(const edm::EventSetup&){
   theFile = new TFile(file.c_str());
   if(!theFile)if(debug) std::cout<<"The File Doesn't exist"<<std::endl;
   theFileOut = new TFile(fileout.c_str(), "RECREATE");
+  
+  std::ifstream ifin(BlackListFile.c_str());
+
+  std::cout<<"Blacklist file name "<<BlackListFile<<" status"<<!ifin<<std::endl;
+  
+  blacklist.clear();
+
+  if(ifin.is_open()){
+    uint32_t rawId;
+    std::string name;
+    while (ifin.good()){
+      ifin >>rawId >>name;
+      blacklist.push_back(rawId);
+      if(debug) std::cout<<"rawId ="<<rawId<<" name="<<name<<std::endl;
+    }
+  }
+  
+  if(debug) std::cout<<"Black list has "<<blacklist.size()<<" rolls"<<std::endl;
+  ifin.close();
+
 }
 
 
@@ -735,6 +795,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD2R3= new TH1F ("GregDistroD2R3","Efficiency for Station 2 Ring 3",36,0.5,36.5);
   GregD3R2= new TH1F ("GregDistroD3R2","Efficiency for Station 3 Ring 2",36,0.5,36.5);
   GregD3R3= new TH1F ("GregDistroD3R3","Efficiency for Station 3 Ring 3",36,0.5,36.5);
+  
+   // For black list
+  GregD1R2_black= new TH1F ("GregDistroD1R2_black","Efficiency for Station 1 Ring 2 black",36,0.5,36.5);
+  GregD1R3_black= new TH1F ("GregDistroD1R3_black","Efficiency for Station 1 Ring 3 black",36,0.5,36.5);
+  GregD2R2_black= new TH1F ("GregDistroD2R2_black","Efficiency for Station 2 Ring 2 black",36,0.5,36.5);
+  GregD2R3_black= new TH1F ("GregDistroD2R3_black","Efficiency for Station 2 Ring 3 black",36,0.5,36.5);
+  GregD3R2_black= new TH1F ("GregDistroD3R2_black","Efficiency for Station 3 Ring 2 black",36,0.5,36.5);
+  GregD3R3_black= new TH1F ("GregDistroD3R3_black","Efficiency for Station 3 Ring 3 black",36,0.5,36.5);
 
   OcGregD1R2= new TH1F ("OcGregDistroD1R2","Occupancy Distribution for Station 1 Ring 2",36,0.5,36.5);
   OcGregD1R3= new TH1F ("OcGregDistroD1R3","Occupancy Distribution for Station 1 Ring 3",36,0.5,36.5);
@@ -756,6 +824,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregDm2R3= new TH1F ("GregDistroDm2R3","Efficiency for Station - 2 Ring 3",36,0.5,36.5);
   GregDm3R2= new TH1F ("GregDistroDm3R2","Efficiency for Station - 3 Ring 2",36,0.5,36.5);
   GregDm3R3= new TH1F ("GregDistroDm3R3","Efficiency for Station - 3 Ring 3",36,0.5,36.5);
+
+  // For black list
+  GregDm1R2_black= new TH1F ("GregDistroDm1R2_black","Efficiency for Station - 1 Ring 2 black",36,0.5,36.5);
+  GregDm1R3_black= new TH1F ("GregDistroDm1R3_black","Efficiency for Station - 1 Ring 3 black",36,0.5,36.5);
+  GregDm2R2_black= new TH1F ("GregDistroDm2R2_black","Efficiency for Station - 2 Ring 2 black",36,0.5,36.5);
+  GregDm2R3_black= new TH1F ("GregDistroDm2R3_black","Efficiency for Station - 2 Ring 3 black",36,0.5,36.5);
+  GregDm3R2_black= new TH1F ("GregDistroDm3R2_black","Efficiency for Station - 3 Ring 2 black",36,0.5,36.5);
+  GregDm3R3_black= new TH1F ("GregDistroDm3R3_black","Efficiency for Station - 3 Ring 3 black",36,0.5,36.5);
 
   OcGregDm1R2= new TH1F ("OcGregDistroDm1R2","Occupancy Distribution for Station - 1 Ring 2",36,0.5,36.5);
   OcGregDm1R3= new TH1F ("OcGregDistroDm1R3","Occupancy Distribution for Station - 1 Ring 3",36,0.5,36.5);
@@ -3241,47 +3317,53 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     
     float acumulatedexpected = 0;
     float acumulatedobserved = 0;
-
+    
     err=0; eff=0; N=ExGregD1R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregD1R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
-    GregD1R2->SetBinContent(k,eff); GregD1R2->SetBinError(k,err);
+    if(HasBadRoll(1,1,2,k,blacklist)){ GregD1R2_black->SetBinContent(k,eff); GregD1R2_black->SetBinError(k,err);}
+    else{GregD1R2->SetBinContent(k,eff); GregD1R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
     
     err=0; eff=0; N=ExGregD1R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregD1R3->GetBinContent(k);
     if(N!=0.){eff = OcGregD1R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregD1R3->SetBinContent(k,eff); GregD1R3->SetBinError(k,err);
+    if(HasBadRoll(1,1,3,k,blacklist)){GregD1R3_black->SetBinContent(k,eff); GregD1R3_black->SetBinError(k,err);}
+    else{GregD1R3->SetBinContent(k,eff); GregD1R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
     
     err=0; eff=0; N=ExGregD2R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregD2R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD2R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregD2R2->SetBinContent(k,eff); GregD2R2->SetBinError(k,err);
+    if(HasBadRoll(1,2,2,k,blacklist)){GregD2R2_black->SetBinContent(k,eff); GregD2R2_black->SetBinError(k,err);}
+    else{GregD2R2->SetBinContent(k,eff); GregD2R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD2R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregD2R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregD2R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregD2R3->SetBinContent(k,eff); GregD2R3->SetBinError(k,err);
+    if(HasBadRoll(1,2,3,k,blacklist)){GregD2R3_black->SetBinContent(k,eff); GregD2R3_black->SetBinError(k,err);}
+    else{GregD2R3->SetBinContent(k,eff); GregD2R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD3R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregD3R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD3R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregD3R2->SetBinContent(k,eff); GregD3R2->SetBinError(k,err);
+    if(HasBadRoll(1,3,2,k,blacklist)){GregD3R2_black->SetBinContent(k,eff); GregD3R2_black->SetBinError(k,err);}
+    else{GregD3R2->SetBinContent(k,eff); GregD3R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD3R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregD3R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregD3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);
+    if(HasBadRoll(1,3,3,k,blacklist)){GregD3R3_black->SetBinContent(k,eff); GregD3R3_black->SetBinError(k,err);}
+    else{GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
 
     //Negative EndCap
@@ -3290,42 +3372,48 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregDm1R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
-    GregDm1R2->SetBinContent(k,eff); GregDm1R2->SetBinError(k,err);
+    if(HasBadRoll(-1,1,2,k,blacklist)){GregDm1R2_black->SetBinContent(k,eff); GregDm1R2_black->SetBinError(k,err);}
+    else{GregDm1R2->SetBinContent(k,eff); GregDm1R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
     
     err=0; eff=0; N=ExGregDm1R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregDm1R3->GetBinContent(k);
     if(N!=0.){eff = OcGregDm1R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregDm1R3->SetBinContent(k,eff); GregDm1R3->SetBinError(k,err);
+    if(HasBadRoll(-1,1,3,k,blacklist)){GregDm1R3_black->SetBinContent(k,eff); GregDm1R3_black->SetBinError(k,err);}
+    else{GregDm1R3->SetBinContent(k,eff); GregDm1R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
     
     err=0; eff=0; N=ExGregDm2R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregDm2R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm2R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregDm2R2->SetBinContent(k,eff); GregDm2R2->SetBinError(k,err);
+    if(HasBadRoll(-1,2,2,k,blacklist)){GregDm2R2_black->SetBinContent(k,eff); GregDm2R2_black->SetBinError(k,err);}
+    else{GregDm2R2->SetBinContent(k,eff); GregDm2R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregDm2R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregDm2R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm2R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregDm2R3->SetBinContent(k,eff); GregDm2R3->SetBinError(k,err);
+    if(HasBadRoll(-1,2,3,k,blacklist)){GregDm2R3_black->SetBinContent(k,eff); GregDm2R3_black->SetBinError(k,err);}
+    else{GregDm2R3->SetBinContent(k,eff); GregDm2R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
 
     err=0; eff=0; N=ExGregDm3R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregDm3R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm3R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregDm3R2->SetBinContent(k,eff); GregDm3R2->SetBinError(k,err);
+    if(HasBadRoll(-1,3,2,k,blacklist)){GregDm3R2_black->SetBinContent(k,eff); GregDm3R2_black->SetBinError(k,err);}
+    else{GregDm3R2->SetBinContent(k,eff); GregDm3R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregDm3R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregDm3R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregDm3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
-    GregDm3R3->SetBinContent(k,eff); GregDm3R3->SetBinError(k,err);
+    if(HasBadRoll(-1,3,3,k,blacklist)){GregDm3R3_black->SetBinContent(k,eff); GregDm3R3_black->SetBinError(k,err);}
+    else{GregDm3R3->SetBinContent(k,eff); GregDm3R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
 
     if(acumulatedexpected!=0){ 
@@ -4462,53 +4550,84 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   //Positive Endcap
 
+  
   GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
+  GregD1R2_black->SetMarkerColor(kRed);
+  std::cout<<"drawing first black histogram"<<std::endl;
+  GregD1R2_black->Draw("same");
   Ca5->SaveAs("Greg/D1R2.png"); GregD1R2->Write();
   Ca5->Clear(); 
   
   GregD1R3->Draw(); GregD1R3->GetXaxis()->SetTitle("Chamber");  GregD1R3->GetYaxis()->SetRangeUser(0.,1.);
+  GregD1R3_black->SetMarkerColor(kRed);
+  std::cout<<"drawing second black histogram"<<std::endl;
+  GregD1R3_black->Draw("same");
   Ca5->SaveAs("Greg/D1R3.png"); GregD1R3->Write();
   Ca5->Clear(); 
   
   GregD2R2->Draw(); GregD2R2->GetXaxis()->SetTitle("Chamber");GregD2R2->GetYaxis()->SetRangeUser(0.,1.);
+  GregD2R2_black->SetMarkerColor(kRed);
+  GregD2R2_black->Draw("same");
   Ca5->SaveAs("Greg/D2R2.png"); GregD2R2->Write();
   Ca5->Clear(); 
   
   GregD2R3->Draw(); GregD2R3->GetXaxis()->SetTitle("Chamber"); GregD2R3->GetYaxis()->SetRangeUser(0.,1.);
+  GregD2R3_black->SetMarkerColor(kRed);
+  GregD2R3_black->Draw("same");
   Ca5->SaveAs("Greg/D2R3.png");  GregD2R3->Write();
   Ca5->Clear(); 
   
   GregD3R2->Draw(); GregD3R2->GetXaxis()->SetTitle("Chamber");GregD3R2->GetYaxis()->SetRangeUser(0.,1.);
+  GregD3R2_black->SetMarkerColor(kRed);
+  std::cout<<"drawing fifth black histogram"<<std::endl;
+  GregD3R2_black->Draw("same");
   Ca5->SaveAs("Greg/D3R2.png"); GregD3R2->Write();
   Ca5->Clear(); 
   
   GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
+  GregD3R3_black->SetMarkerColor(kRed);
+  std::cout<<"drawing sixth black histogram"<<std::endl;
+  GregD3R3_black->Draw("same");
   Ca5->SaveAs("Greg/D3R3.png"); GregD3R3->Write();
   Ca5->Clear(); 
 
   //Negative Endcap
 
   GregDm1R2->Draw(); GregDm1R2->GetXaxis()->SetTitle("Chamber"); GregDm1R2->GetYaxis()->SetRangeUser(0.,1.);
+  GregDm1R2_black->SetMarkerColor(kRed);
+  GregDm1R2_black->Draw("same");
+  std::cout<<"drawing second negative endcap black histogram"<<std::endl;
   Ca5->SaveAs("Greg/Dm1R2.png"); GregDm1R2->Write();
   Ca5->Clear(); 
   
   GregDm1R3->Draw(); GregDm1R3->GetXaxis()->SetTitle("Chamber");  GregDm1R3->GetYaxis()->SetRangeUser(0.,1.);
+  GregDm1R3_black->SetMarkerColor(kRed);
+  GregDm1R3_black->Draw("same");
+  std::cout<<"drawing second negative endcap black histogram"<<std::endl;
   Ca5->SaveAs("Greg/Dm1R3.png"); GregDm1R3->Write();
   Ca5->Clear(); 
   
   GregDm2R2->Draw(); GregDm2R2->GetXaxis()->SetTitle("Chamber");GregDm2R2->GetYaxis()->SetRangeUser(0.,1.);
+  GregDm2R2_black->SetMarkerColor(kRed);
+  GregDm2R2_black->Draw("same");
   Ca5->SaveAs("Greg/Dm2R2.png"); GregDm2R2->Write();
   Ca5->Clear(); 
   
   GregDm2R3->Draw(); GregDm2R3->GetXaxis()->SetTitle("Chamber"); GregDm2R3->GetYaxis()->SetRangeUser(0.,1.);
+  GregDm2R3_black->SetMarkerColor(kRed);
+  GregDm2R3_black->Draw("same");
   Ca5->SaveAs("Greg/Dm2R3.png");  GregDm2R3->Write();
   Ca5->Clear(); 
   
   GregDm3R2->Draw(); GregDm3R2->GetXaxis()->SetTitle("Chamber");GregDm3R2->GetYaxis()->SetRangeUser(0.,1.);
+  GregDm3R2_black->SetMarkerColor(kRed);
+  GregDm3R2_black->Draw("same");
   Ca5->SaveAs("Greg/Dm3R2.png"); GregDm3R2->Write();
   Ca5->Clear(); 
   
   GregDm3R3->Draw(); GregDm3R3->GetXaxis()->SetTitle("Chamber");GregDm3R3->GetYaxis()->SetRangeUser(0.,1.);
+  GregDm3R3_black->SetMarkerColor(kRed);
+  GregDm3R3_black->Draw("same");
   Ca5->SaveAs("Greg/Dm3R3.png"); GregDm3R3->Write();
   Ca5->Clear(); 
 
