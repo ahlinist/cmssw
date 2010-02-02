@@ -35,7 +35,7 @@ void analysisClass::Loop()
   //   char dataset[200]="2.36 TeV collision data";
   
   if (fChain == 0) return;
-  double ptMin=15.;
+
   double ptMax=100.;
   int ptBin=50;
   
@@ -50,6 +50,13 @@ void analysisClass::Loop()
   // ----------------------------------------------------------------
   // decide wether you want to apply jet corrections or not
   bool makeJetCorr = true;
+  double barreleta =1.4;
+  double endcapeta =2.4;  
+  double ptMin=15.;
+  double fhpdmax = 0.98;
+  double n90hitsmin =1;
+  double emffrac = 0.01;
+
   // ----------------------------------------------------------------
 
 
@@ -365,9 +372,6 @@ void analysisClass::Loop()
 // 	     cout<<ak5JetpT->size()<<endl;
 // 	     cout<<ak5JetscaleL2L3->size()<<endl;
 	     
-
-
-
 	   for (int j = 0; j<int(ak5JetpT->size()); j++){
 	     
 	     // --------------------------------------------------------------    //jc
@@ -391,7 +395,7 @@ void analysisClass::Loop()
 	       Nak5++;
 	       ak5nconst->Fill(ak5JetNConstituents->at(j));
 	       pt->Fill(ak5JetpT->at(j) * jcScale);    //jc 
-	       if(fabs(ak5JetEta->at(j))<1.4){
+	       if(fabs(ak5JetEta->at(j))<barreleta){
 		 Ebarrel->Fill(ak5JetEnergy->at(j) * jcScale);  //jc
 	       } else {
 		 Eendcap->Fill(ak5JetEnergy->at(j) * jcScale);   //jc
@@ -409,16 +413,16 @@ void analysisClass::Loop()
 	       n90hits->Fill(ak5JetJIDn90Hits->at(j));
 	       //calculate jetid loose
 	       bool emf=false;	      
-		 if(ak5JetJIDresEMF->at(j)>0.01) emf=true;	        else  emf=false;
+		 if(ak5JetJIDresEMF->at(j)>emffrac) emf=true;	        else  emf=false;
 	       //fill the histos for cleaned jets
-		 if(emf && ak5JetJIDfHPD->at(j)<0.98 && ak5JetJIDn90Hits->at(j)>1  ){//loose cleaning
+		 if(emf && ak5JetJIDfHPD->at(j)<fhpdmax && ak5JetJIDn90Hits->at(j)>n90hitsmin  ){//loose cleaning
 		   Nak5JetIDLoose++;
 		   ak5nconstcleaned->Fill(ak5JetNConstituents->at(j));
 		   ptcleaned->Fill(ak5JetpT->at(j) * jcScale);  //jc
 		   etacleaned->Fill(ak5JetEta->at(j));
 		   phicleaned->Fill(ak5JetPhi->at(j));
 		   
-		   if(fabs(ak5JetEta->at(j))<1.4){
+		   if(fabs(ak5JetEta->at(j))<barreleta){
 		     Ebarrelcleaned->Fill(ak5JetEnergy->at(j));
 		   } else {
 		     Eendcapcleaned->Fill(ak5JetEnergy->at(j));
@@ -427,13 +431,13 @@ void analysisClass::Loop()
 		   cout<<runid<< " " << LS<< " "<< eventid << endl;
 		   outfile<<runid<< "\t" << LS<< "\t"<< eventid << endl;
 		 }
-		 if(emf && ak5JetJIDfHPD->at(j)<0.98 && ak5JetJIDn90Hits->at(j)>1  ){//tight cleaning (for the moment equal to loose!!)
+		 if(emf && ak5JetJIDfHPD->at(j)<fhpdmax && ak5JetJIDn90Hits->at(j)>n90hitsmin  ){//tight cleaning (for the moment equal to loose!!)
 		   Nak5JetIDTight++;
 		 }
-		 if(ak5JetNAssoTrksLoose->at(j)>1){
+		 if(ak5JetNAssoTrksLoose->at(j)>n90hitsmin){
 		   Nak5AssTrksLoose++;
 		 }
-		 if(ak5JetNAssoTrksTight->at(j)>1){
+		 if(ak5JetNAssoTrksTight->at(j)>n90hitsmin){
 		   Nak5AssTrksTight++;
 		 }
 	      } //pt min
@@ -459,7 +463,7 @@ void analysisClass::Loop()
 	       jcScale1=1;
 	     }
 
-	     if(fabs(ak5JetEta->at(0))<2.4 && ak5JetpT->at(0) * jcScale0 >ptMin && fabs(ak5JetEta->at(1))<2.4 && ak5JetpT->at(1) * jcScale1 >ptMin){   //jc
+	     if(fabs(ak5JetEta->at(0))<endcapeta && ak5JetpT->at(0) * jcScale0 >ptMin && fabs(ak5JetEta->at(1))<endcapeta && ak5JetpT->at(1) * jcScale1 >ptMin){   //jc
 	       // dphi
 	       double dphi = fabs(ak5JetPhi->at(0) - ak5JetPhi->at(1) );
 	       if (dphi > 3.14) dphi=fabs(dphi -6.28 );
@@ -490,7 +494,7 @@ void analysisClass::Loop()
 		 frbxdijets->Fill(ak5JetJIDfRBX->at(1));
 		 n90hitsdijets->Fill(ak5JetJIDn90Hits->at(1));
 		 // both passed jet cleaning
-		 if(ak5JetJIDresEMF->at(0)>0.01 && ak5JetJIDfHPD->at(0)<0.98 && ak5JetJIDn90Hits->at(0)>1 && ak5JetJIDresEMF->at(1) >0.01 && ak5JetJIDfHPD->at(1)<0.98 && ak5JetJIDn90Hits->at(1)>1){  
+		 if(ak5JetJIDresEMF->at(0)>emffrac && ak5JetJIDfHPD->at(0)<fhpdmax && ak5JetJIDn90Hits->at(0)>n90hitsmin && ak5JetJIDresEMF->at(1) >emffrac && ak5JetJIDfHPD->at(1)<fhpdmax && ak5JetJIDn90Hits->at(1)>n90hitsmin){  
 		   dijetptall1cleaned->Fill(ak5JetpT->at(0) * jcScale0);   //jc
 		   dijetptall2cleaned->Fill(ak5JetpT->at(1) * jcScale1);   //jc
 		   dijetdphicleaned->Fill(dphi);
@@ -498,26 +502,26 @@ void analysisClass::Loop()
 		   mapalldijetscleaned->Fill(ak5JetEta->at(1),ak5JetPhi->at(1));
 		   //now loop on jets and count how many CLEANED jets with pT>8 are in each event
 		   for (int dj = 0; dj<int(ak5JetpT->size()); dj++){
-		     if(ak5JetpT->at(dj)>ptMin && ak5JetJIDresEMF->at(dj)>0.01 && ak5JetJIDfHPD->at(dj)<0.98 && ak5JetJIDn90Hits->at(dj)>1){
+		     if(ak5JetpT->at(dj)>ptMin && ak5JetJIDresEMF->at(dj)>emffrac && ak5JetJIDfHPD->at(dj)<fhpdmax && ak5JetJIDn90Hits->at(dj)>n90hitsmin){
 		       NALLak5indijetsJetIDLoose++;
 		     }
 		   }
 		 }
 		 //how many of the jets in dijets events pass the loose jetID (look only at the two leading jets)
-		 if(ak5JetJIDresEMF->at(0)>0.01 && ak5JetJIDfHPD->at(0)<0.98 && ak5JetJIDn90Hits->at(0)>1){
+		 if(ak5JetJIDresEMF->at(0)>emffrac && ak5JetJIDfHPD->at(0)<fhpdmax && ak5JetJIDn90Hits->at(0)>n90hitsmin){
 		   Nak5indijetsJetIDLoose++;
 		 }
-		 if(ak5JetJIDresEMF->at(1)>0.01 && ak5JetJIDfHPD->at(1)<0.98 && ak5JetJIDn90Hits->at(1)>1){
+		 if(ak5JetJIDresEMF->at(1)>emffrac && ak5JetJIDfHPD->at(1)<fhpdmax && ak5JetJIDn90Hits->at(1)>n90hitsmin){
 		   Nak5indijetsJetIDLoose++;
 		 }
 
 
 		 //how many of the jets in dijets events pass the tight jetID (look only at the two leading jets)
 		 //FOR THE MOMENT THE TIGHT JETID IS EQUAL TO THE LOOSE ONE!
-		 if(ak5JetJIDresEMF->at(0)>0.01 && ak5JetJIDfHPD->at(0)<0.98 && ak5JetJIDn90Hits->at(0)>1){
+		 if(ak5JetJIDresEMF->at(0)>emffrac && ak5JetJIDfHPD->at(0)<fhpdmax && ak5JetJIDn90Hits->at(0)>n90hitsmin){
 		   Nak5indijetsJetIDTight++;
 		 }
-		 if(ak5JetJIDresEMF->at(1)>0.01 && ak5JetJIDfHPD->at(1)<0.98 && ak5JetJIDn90Hits->at(1)>1){
+		 if(ak5JetJIDresEMF->at(1)>emffrac && ak5JetJIDfHPD->at(1)<fhpdmax && ak5JetJIDn90Hits->at(1)>n90hitsmin){
 		   Nak5indijetsJetIDTight++;
 		 }
 		 //how many of the jets in dijets events have two or more associated loose tracks
@@ -560,12 +564,12 @@ void analysisClass::Loop()
 	       ic5nconst->Fill(ic5JetNConstituents->at(j));
 	       bool emfic5=false;
 	       if(fabs(ic5JetEta->at(j))<2.6){
-		 if(ic5JetJIDresEMF->at(j)>0.01) emfic5=true;
+		 if(ic5JetJIDresEMF->at(j)>emffrac) emfic5=true;
 	       } else {
 		 emfic5=true;
 	       }
 	       //fill the histos for cleaned jets
-	       if(emfic5 && ic5JetJIDn90Hits->at(j)>1 && ic5JetJIDfHPD->at(j)<0.98 ){//loose cleaning
+	       if(emfic5 && ic5JetJIDn90Hits->at(j)>n90hitsmin && ic5JetJIDfHPD->at(j)<fhpdmax ){//loose cleaning
 		 Ncleanedic5++;
 		 ic5nconstcleaned->Fill(ic5JetNConstituents->at(j));
 	       }
