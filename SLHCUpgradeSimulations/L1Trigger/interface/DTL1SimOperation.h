@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
-// Package:    L1DTSimOperation
-// Class:      L1DTSimOperation
+// Package:    DTL1SimOperation
+// Class:      DTL1SimOperation
 // 
 /*
  Description: <one line class summary>
@@ -15,8 +15,8 @@
 // $Id$
 //
 //
-#ifndef __L1DTSimOperation__
-#define __L1DTSimOperation__
+#ifndef __DTL1SimOperation__
+#define __DTL1SimOperation__
 
 // system include files
 #include <memory>
@@ -42,35 +42,49 @@
 #include <string>
 #include <iomanip>
 
+//----------------------------------------------------------------------------------
 #include "L1Trigger/DTTrigger/interface/DTTrig.h"
-#include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackContainer.h"
+//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTBtiTrigger.h"
+#include "SimDataFormats/SLHC/interface/DTBtiTrigger.h"
+#include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackCand.h"
 #include "L1Trigger/DTTrackFinder/interface/L1MuDTTrack.h"
-
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTBtiTrigger.h"
-
-#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerGeometry.h"
-#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerGeometryRecord.h"
-#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerDetUnit.h"
-#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerDetId.h"
 
 #include "SimDataFormats/SLHC/interface/StackedTrackerTypes.h"
 
+#include "Geometry/Records/interface/MuonGeometryRecord.h"
+#include "Geometry/DTGeometry/interface/DTGeometry.h"
+#include "Geometry/DTGeometry/interface/DTLayer.h"
+#include "Geometry/DTGeometry/interface/DTTopology.h"
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
 
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/DetId/interface/DetId.h"
-
-#include "SLHCUpgradeSimulations/Utilities/interface/classInfo.h"  //???? a che serve ???
+#include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackContainer.h"
 
 #include "DataFormats/Common/interface/DetSetVector.h"
 #include "DataFormats/SiPixelDigi/interface/PixelDigi.h"
 
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTStubMatch.h"
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTTrackerStub.h"
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTStubMatchesCollection.h"
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTSeededTracklet.h"
+#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerGeometry.h"
+#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerGeometryRecord.h"
+#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerDetUnit.h"
+#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerDetId.h"
+#include "SLHCUpgradeSimulations/Utilities/interface/classInfo.h" 
+
+//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTStubMatch.h"
+//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTTSPhiTrigger.h"
+//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTTSThetaTrigger.h"
+//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTTrackerStub.h"
+//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTStubMatchesCollection.h"
+//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTSeededTracklet.h"
+#include "SimDataFormats/SLHC/interface/DTStubMatch.h"
+#include "SimDataFormats/SLHC/interface/DTTSPhiTrigger.h"
+#include "SimDataFormats/SLHC/interface/DTTSThetaTrigger.h"
+#include "SimDataFormats/SLHC/interface/DTTrackerStub.h"
+#include "SimDataFormats/SLHC/interface/DTStubMatchesCollection.h"
+#include "SimDataFormats/SLHC/interface/DTSeededTracklet.h"
+
 
 using namespace std;
 //using namespace edm;
@@ -79,25 +93,28 @@ using namespace cmsUpgrades;
 // *****************************************************************************
 
 typedef 
-std::map< DetId, vector<const GlobalStub_PixelDigi_ *>  > DigiGlobalStubsMap_t;
+std::map< DetId, vector<const GlobalStub_PixelDigi_ *> > DigiGlobalStubsMap_t;
+
+// *****************************************************************************
+
+typedef std::vector<const L1MuDTTrack*>  L1DTTracksCollection;
 
 // *****************************************************************************
 
 
-
-class L1DTSimOperation 
+class DTL1SimOperation 
 {
   
 public:
   
   //----------------------------------------------------------------------------
   
-  L1DTSimOperation(const edm::ParameterSet&);
+  DTL1SimOperation(const edm::ParameterSet&);
   void Init(const edm::EventSetup&);
   int Do(edm::Event&, const edm::EventSetup&);
   void End_of_Operations();
 
-  ~L1DTSimOperation();
+  ~DTL1SimOperation();
 
   //----------------------------------------------------------------------------
 
@@ -113,12 +130,20 @@ public:
 	    tsphi.step()   == bti.step() && 
 	    2              == bti.btiSL());
   }
+  bool match(DTChambThSegm const tstheta, DTChambPhSegm const tsphi)
+  {
+    return (tsphi.wheel()  == tstheta.ChamberId().wheel() && 
+	    tsphi.station()== tstheta.ChamberId().station() && 
+	    tsphi.sector() == tstheta.ChamberId().sector() && 
+	    tsphi.step()   == tstheta.step());
+  }
   void getTrackerGlobalStubs(edm::Event& event, const edm::EventSetup& eventSetup);
   void getDTPrimitivesToTrackerStubsMatches();
   void setDTSeededTrackletRefCollection(edm::Event& event); 
 
 protected:
 
+  edm::ESHandle<DTGeometry> muonGeom;
   const TrackerGeometry* theTracker;  
   DTTrig* theTrigger;
   bool    theTriggerOK;
@@ -142,15 +167,21 @@ protected:
   bool debug_traco;
   bool debug_tsphi;
   bool debug_tstheta;
+  bool USE_TSTheta;
   bool debug_dtmatch;
   bool debug_global;
   bool debug_stubs;
   bool debug_dttrackmatch;
   bool debug_dttrackmatch_extrapolation;
+  bool debug_dttf;
+
 
   //----------- products ---------------------------------------------------
   BtiTrigsCollection*           BtiTrigs;
+  TSPhiTrigsCollection*         TSPhiTrigs;
+  TSThetaTrigsCollection*       TSThetaTrigs;
   DTStubMatchesCollection*      DTStubMatches;
+  L1DTTracksCollection*         L1MuDTTracks;
   DTSeededTrackletsCollection*  DTSeededTracklets;
 
   // --------- useful member data ------------------------------------------

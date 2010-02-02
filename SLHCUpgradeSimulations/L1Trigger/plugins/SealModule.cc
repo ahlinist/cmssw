@@ -5,8 +5,6 @@
 #include "SLHCUpgradeSimulations/L1Trigger/interface/L1JetMaker.h"
 #include "SLHCUpgradeSimulations/L1Trigger/interface/L1ExtraMaker.h"
 #include "SLHCUpgradeSimulations/L1Trigger/interface/SLHCCaloTriggerAccessor.h"
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTL1slhcProd.h"
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTL1slhcTestAnalysis.h"
 
 DEFINE_SEAL_MODULE();
 DEFINE_FWK_MODULE(L1CaloTowerProducer);
@@ -16,6 +14,3 @@ DEFINE_ANOTHER_FWK_MODULE(L1JetMaker);
 DEFINE_ANOTHER_FWK_MODULE(L1ExtraMaker);
 DEFINE_ANOTHER_FWK_MODULE(SLHCCaloTriggerAccessor);
 DEFINE_FWK_EVENTSETUP_MODULE(L1CaloTriggerSetupProducer);
-DEFINE_ANOTHER_FWK_MODULE(DTL1slhcProd);
-DEFINE_ANOTHER_FWK_MODULE(DTL1slhcTestAnalysis);
-

@@ -1,6 +1,7 @@
 <use name=FWCore/Framework>
 <use name=FWCore/PluginManager>
 <use name=FWCore/ParameterSet>
+
 <use name=FWCore/Utilities>
 
 <use name=CondFormats/DataRecord>
@@ -22,10 +23,16 @@
 <use name=DataFormats/MuonDetId>
 <use name=DataFormats/TrackReco>
 <use name=DataFormats/VertexReco>
+
 <use name=DataFormats/EcalDigi>
 <use name=DataFormats/EcalDetId>
 <use name=DataFormats/HcalDigi>
 <use name=DataFormats/HcalDetId>
+<use name=TrackingTools/TrackAssociator>
+<use name=SimDataFormats/SLHC>
+<use name=PhysicsTools/CandUtils>
+<use name=FWCore/MessageLogger>
+
 <use name=DataFormats/L1Trigger>
 <use name=DataFormats/HepMCCandidate>
 
@@ -47,6 +54,7 @@
 
 <use name=L1Trigger/DTTrigger>
 <use name=L1Trigger/DTBti>
+<use name=L1Trigger/DTTrackFinder>
 <use name=HLTrigger/HLTcore>
 
 <use name=SLHCUpgradeSimulations/Utilities>
@@ -54,11 +62,20 @@
 <use name=PhysicsTools/CandUtils>
 <use name=FWCore/MessageLogger>
 
+
+<use name=CondFormats/L1TObjects>
+<use name=CondFormats/DataRecord>
+
+
 <use name=clhep>
 <use name=xerces-c>
 <use name=boost>
 <use name=root>
 <use name=rootrflx>
+
+<use name=SimDataFormats/Track>
+<use name=SimDataFormats/SLHC>
+<use name=DataFormats/SiPixelDetId>
 
 <export>
  <Flags SEALPLUGIN=1>
@@ -100,5 +117,6 @@
   <use name=rootrflx>
   <use name=xerces-c>
 </export>
+
 
 

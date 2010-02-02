@@ -57,6 +57,8 @@ template<	typename T	>
 class LocalStubBuilder : public edm::EDProducer {
 
 	typedef std::vector<  cmsUpgrades::LocalStub< T > > LocalStubCollectionType;
+    typedef std::pair<cmsUpgrades::StackedTrackerDetId,int> ClusterKey;
+    typedef std::map<ClusterKey,std::vector<std::vector<T> > > ClusterMapType;
 
 	public:
 		explicit LocalStubBuilder(const edm::ParameterSet& iConfig);
@@ -84,19 +86,48 @@ class LocalStubBuilder : public edm::EDProducer {
 
 		virtual void produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		{	
-			std::map< DetId, std::vector< T > > rawHits;
+			typedef std::map< DetId, std::vector< T > > HitMapType;
+            HitMapType rawHits;
 			RetrieveRawHits( rawHits , iEvent );
 
 			std::auto_ptr< LocalStubCollectionType > LocalStubsForOutput(new LocalStubCollectionType );
+            
+            std::auto_ptr<ClusterMapType> clusterPtr(new ClusterMapType);
 
 			for (  StackedTrackerIterator = theStackedTrackers->stacks().begin(); StackedTrackerIterator != theStackedTrackers->stacks().end() ; ++StackedTrackerIterator ) {
-				cmsUpgrades::StackedTrackerDetId Id = (**StackedTrackerIterator).Id() ;
+                cmsUpgrades::StackedTrackerDetUnit* Unit = *StackedTrackerIterator;
+                cmsUpgrades::StackedTrackerDetId Id = Unit->Id();
+                
+                assert(Unit == theStackedTrackers->idToStack(Id));
 
 				std::vector< std::vector< T > > innerHits, outerHits;
 				typedef typename std::vector< std::vector< T > >::iterator VVT_IT;
 			
-				if ( rawHits.find( (**StackedTrackerIterator).stackMember(0) ) != rawHits.end() )	clusteringAlgoHandle->Cluster( innerHits , rawHits.find( (**StackedTrackerIterator).stackMember(0) )->second );
-				if ( rawHits.find( (**StackedTrackerIterator).stackMember(1) ) != rawHits.end() )	clusteringAlgoHandle->Cluster( outerHits , rawHits.find( (**StackedTrackerIterator).stackMember(1) )->second );
+                typename HitMapType::const_iterator innerHitFind = rawHits.find(Unit->stackMember(0));
+                typename HitMapType::const_iterator outerHitFind = rawHits.find(Unit->stackMember(1));
+                
+				if (innerHitFind != rawHits.end())
+                    clusteringAlgoHandle->Cluster(innerHits, innerHitFind->second);
+				if (outerHitFind != rawHits.end())
+                    clusteringAlgoHandle->Cluster(outerHits, outerHitFind->second);
+                
+                if (storeClusters)
+                {
+                    if (innerHits.size())
+                    {
+                        ClusterKey inmapkey = std::make_pair(Id, 0);
+                        (*clusterPtr)[inmapkey].insert((*clusterPtr)[inmapkey].end(),
+                                                       innerHits.begin(),
+                                                       innerHits.end());
+                    }
+                    if (outerHits.size())
+                    {
+                        ClusterKey outmapkey = std::make_pair(Id, 1);
+                        (*clusterPtr)[outmapkey].insert((*clusterPtr)[outmapkey].end(),
+                                                        outerHits.begin(),
+                                                        outerHits.end());
+                    }
+                }
 
 				if( innerHits.size() && outerHits.size() ){
 
@@ -113,6 +144,12 @@ class LocalStubBuilder : public edm::EDProducer {
 			}
 			std::cout	<<"Made " << LocalStubsForOutput->size() << " local stubs of type " << (mClassInfo->TemplateTypes().begin()->second) << "." << std::endl;
 			iEvent.put(LocalStubsForOutput);
+            if (storeClusters)
+            {
+                std::string prodtype =
+                    mClassInfo->TemplateTypes().begin()->second.substr(17);
+                iEvent.put(clusterPtr, std::string("ClusteredHitsFrom") + prodtype);
+            }
 		}
 
 
@@ -130,7 +167,8 @@ class LocalStubBuilder : public edm::EDProducer {
         std::vector<edm::InputTag>  rawHitInputTags;
 
 		const cmsUpgrades::classInfo *mClassInfo;
-
+        
+        bool storeClusters;
 
 
 		//For Digis
@@ -150,7 +188,15 @@ class LocalStubBuilder : public edm::EDProducer {
 		LocalStubBuilder<T>::LocalStubBuilder<T>(const edm::ParameterSet& iConfig): mClassInfo( new cmsUpgrades::classInfo(__PRETTY_FUNCTION__) )
 		{
 			produces< LocalStubCollectionType >();
+            
 			rawHitInputTags  = iConfig.getParameter< std::vector<edm::InputTag> >("rawHits");
+            storeClusters = iConfig.getParameter<bool>("storeClusters");
+            if (storeClusters) {
+                std::string prodtype =
+                    mClassInfo->TemplateTypes().begin()->second.substr(17);
+                produces<ClusterMapType>(std::string("ClusteredHitsFrom") +
+                                                prodtype);
+            }
 		}
 
 		template<>
@@ -158,7 +204,14 @@ class LocalStubBuilder : public edm::EDProducer {
 		{
 			produces< LocalStubCollectionType >();
 			rawHitInputTags  = iConfig.getParameter< std::vector<edm::InputTag> >("rawHits");
+            storeClusters = iConfig.getParameter<bool>("storeClusters");
 			ADCThreshold = iConfig.getParameter<unsigned int>("ADCThreshold");
+            if (storeClusters) {
+                std::string prodtype =
+                    mClassInfo->TemplateTypes().begin()->second.substr(17);
+                produces<ClusterMapType>(std::string("ClusteredHitsFrom") +
+                                                prodtype);
+            }
 		}
 
 ////////////////////////////////////////

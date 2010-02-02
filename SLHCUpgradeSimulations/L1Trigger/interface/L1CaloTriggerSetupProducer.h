@@ -83,7 +83,8 @@ class L1CaloTriggerSetupProducer : public edm::ESProducer {
       XMLCh* ATT_SETTINGS_IsolationTA;
       XMLCh* ATT_SETTINGS_IsolationTB;
       XMLCh* ATT_SETTINGS_IsolationZone;
-      XMLCh* ATT_SETTINGS_IsolationPedestal;
+      XMLCh* ATT_SETTINGS_IsolationPedestalEG;
+      XMLCh* ATT_SETTINGS_IsolationPedestalTau;
 
 
       XMLCh* ATT_SETTINGS_JetCenter;
