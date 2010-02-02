@@ -10,6 +10,7 @@
 
 #include "../interface/BsToJpsiPhiRootTree.h"
 #include "VariableList.h"
+#include "BsTreeSelector.h"
 
 BsToJpsiPhiRootTree *tree=0;
 
@@ -29,6 +30,7 @@ void identifyEventType(bool & isGenBsJpsiPhiMuMuKKEvent, bool &isGenBsJpsiKKEven
 		       bool &isGenBdJpsiK0Event_, bool & isGenBpJpsiKpEvent_);
 void printDecayTree();
 void makeVertexResolutionPlots();
+
 
 // define cuts:
 const double minProbability = 0.02;
@@ -54,7 +56,9 @@ const int iNumberOfCategories_ = 10;
 // switch to remove Jpsi events from ppMuMu sample
 const bool bRemoveJpsiEvents = false;
 
-
+// switch to write out selected trees for the fit
+const bool bWriteSelectedTrees  = true;
+const TString filenameSelectedTrees = "Selected";
 
 // ***************main function*****************************
 void BsAnalysisNew() {
@@ -65,7 +69,7 @@ void BsAnalysisNew() {
  
 //   string treefilename = "JpsiMuMu_29Dec09.root";
 //   TString outputhistofilename = "JpsiMuMuHistoFile.root";
-  
+
 
   // booking histograms
   bookHistoVectors();  
@@ -76,6 +80,10 @@ void BsAnalysisNew() {
   // get tree from file
   tree = new BsToJpsiPhiRootTree;
   tree->readTree(treefilename);
+
+  // initialize the selector if needed
+  SelectorForFit * mySelector = 0;
+  if(bWriteSelectedTrees) mySelector = new SelectorForFit(tree, filenameSelectedTrees);
 
 
   int nentries = tree->bsTree_->GetEntries();
@@ -179,6 +187,10 @@ void BsAnalysisNew() {
               fillHistograms(tree->BsCt_,           vhBsCt);
               fillHistograms(tree->BsCtErr_,        vhBsCtErr);
 	      
+	      //****************
+	      if(mySelector)mySelector->fill(); // **** filling root trees for fit here!
+	      //****************
+
 	      if(tree->BsDist2d_ /tree-> BsDist2dErr_ > decayLengthCut) {  // passed transverse decay length cut
 		increaseCountersByOne(iBsJPsiPhiSignalEventsDecayLengthCut, iBsJPsiKKSignalEventsDecayLengthCut, iBdJPsiKstarSignalEventsDecayLengthCut, 
 				      iBsOtherEventsDecayLengthCut, iBdOtherEventsDecayLengthCut, iOtherEventsDecayLengthCut,
@@ -424,6 +436,10 @@ void BsAnalysisNew() {
 
  // write histograms to output file
  writeHistos(outputhistofilename);
+
+ 
+ delete mySelector;
+
 
 }   // finished main function
 
@@ -1110,3 +1126,5 @@ void makeVertexResolutionPlots(){
  //  fillHistograms(recoTime - genTime, vhResoTime);
 
 }
+
+
