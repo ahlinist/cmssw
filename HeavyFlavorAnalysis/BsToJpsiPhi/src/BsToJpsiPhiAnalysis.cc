@@ -972,6 +972,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 	      MinBVtxHyp1 = vtxProbHyp1;
 
+	      //recalculate primary vertex without tracks from B
+	      reco::Vertex reFitVertex = reVertex(recVtxs, iEvent,iSetup, trkMu1Ref, trkMu2Ref, trkkst1, trkkst2);
+
+
+
 	      bsRootTree_->BdFitChi2_Hyp1_  = bmesHyp1->chiSquared();
 	      bsRootTree_->BdFitNdof_Hyp1_   =(int)bmesHyp1->degreesOfFreedom();
 	      bsRootTree_->BdFitChi2_Hyp2_  = bmesHyp2->chiSquared();
@@ -1036,10 +1041,27 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      else if (K2flag==1) {bdVertex =  bVertexHyp2; bd_er = bd_erHyp2; Bdvec = BdvecHyp2; Bdmass = fittedBdMassHyp2; }
 	      else {std::cout<<"error flag" << std::endl;  exit(1);}
 
-	      if(BdCand.pt()!=0) {
-                bsRootTree_->BdLxy_ = ((bdVertex->position().x()-PVx)*Bdvec.x()+(bdVertex->position().y()-PVy)*Bdvec.y())/Bdvec.perp();
-                bsRootTree_->BdCt_  = bsRootTree_->BdLxy_*Bdmass/Bdvec.perp();
-              }
+
+
+	      ////////////////////////////////////////////////
+	      // proper decay time and proper decay length with the refitted vertex
+	      ////////////////////////////////////////////////
+	      
+	      VertexDistanceXY vdist;	      
+	      if(Bdvec.perp()!=0) {
+		bsRootTree_->BdLxy_    = vdist.distance( reFitVertex, bdVertex->vertexState() ).value(); 
+		bsRootTree_->BdLxyErr_ = vdist.distance( reFitVertex, bdVertex->vertexState() ).error(); 
+		if (  (bdVertex->position().x()- reFitVertex.x())*Bdvec.x()+(bdVertex->position().y()-reFitVertex.y())*Bdvec.y() < 0  )
+		  bsRootTree_->BdLxy_ = -1.0 * bsRootTree_->BdLxy_;   // in case negative sign is necessary 
+		bsRootTree_->BdCt_     = bsRootTree_->BdLxy_     *  Bdmass/Bdvec.perp();
+		bsRootTree_->BdCtErr_  = bsRootTree_->BdLxyErr_  *  Bdmass/Bdvec.perp();
+	      }
+
+// 	      if(BdCand.pt()!=0) {
+//                 bsRootTree_->BdLxy_ = ((bdVertex->position().x()-PVx)*Bdvec.x()+(bdVertex->position().y()-PVy)*Bdvec.y())/Bdvec.perp();
+//                 bsRootTree_->BdCt_  = bsRootTree_->BdLxy_*Bdmass/Bdvec.perp();
+//               }
+
               bsRootTree_->BdErrX_  = bd_er(1,1);
               bsRootTree_->BdErrY_  = bd_er(2,2);
               bsRootTree_->BdErrXY_ = bd_er(1,2); 
@@ -1050,8 +1072,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
               bsRootTree_->BdTime3d_    = bsRootTree_->BdDist3d_    * Bdmass/Bdvec.perp() * 100. /3.;
               bsRootTree_->BdTime3dErr_ = bsRootTree_->BdDist3dErr_ * Bdmass/Bdvec.perp() * 100. /3.;
               
-                      
-              VertexDistanceXY vdist;
+                       
               bsRootTree_->BdDist2d_     = vdist.distance(bdVertex->vertexState(),RecVtx).value();
               bsRootTree_->BdDist2dErr_ = vdist.distance(bdVertex->vertexState(),RecVtx).error();
               bsRootTree_->BdTime2d_     = bsRootTree_->BdDist2d_ * Bdmass/Bdvec.perp() *100. /3.;
@@ -1213,6 +1234,9 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
 	bsRootTree_->BPzMC_[arrayIndex] = genBsCand.pz();
 	bsRootTree_->BEtaMC_[arrayIndex] = genBsCand.eta();
 	bsRootTree_->BPhiMC_[arrayIndex] = genBsCand.phi();
+	bsRootTree_->BVtxMC_x_[arrayIndex] = genBsCand.mother(0)->vx();
+	bsRootTree_->BVtxMC_y_[arrayIndex] = genBsCand.mother(0)->vy();
+	bsRootTree_->BVtxMC_z_[arrayIndex] = genBsCand.mother(0)->vz();
 	//generated primary vertex
 	if (abs(MC_particleID)== 531){
 	  bsRootTree_->genBsVtx_x_= genBsCand.mother(0)->vx();
@@ -1230,6 +1254,9 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
 	  bsRootTree_->BDauPzMC_[arrayIndex][j] = Bsdau->pz();
 	  bsRootTree_->BDauEtaMC_[arrayIndex][j] = Bsdau->eta();
 	  bsRootTree_->BDauPhiMC_[arrayIndex][j] = Bsdau->phi();
+	  bsRootTree_->BSVtxMC_x_[arrayIndex]   =    Bsdau->vx(); 
+	  bsRootTree_->BSVtxMC_y_[arrayIndex]   =    Bsdau->vy(); 
+	  bsRootTree_->BSVtxMC_z_[arrayIndex]   =    Bsdau->vz(); 
 	  //Generated secondary vertex.
 	  if ( abs(Bsdau->pdgId())== 333){
 	    bsRootTree_->genBsSVtx_x_= Bsdau->vx();
@@ -1237,6 +1264,8 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
 	    bsRootTree_->genBsSVtx_z_= Bsdau->vz();
 	  }
 
+
+	  
 	  // daughter of daughter (muons, kaons in case of jpsi phi)
 	  int numBsDaughtersDaughters = Bsdau->numberOfDaughters();
 	  bsRootTree_->GenNumberOfDaughtersDaughters_[arrayIndex][j] = numBsDaughtersDaughters;
@@ -1254,6 +1283,13 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
 
 	  }// loop Bs daughters daughters
 	} // loop Bs daughters
+	
+ 	  // calculate gen c tau 
+	double deltaX =  bsRootTree_->BSVtxMC_x_[arrayIndex] - 	bsRootTree_->BVtxMC_x_[arrayIndex];
+	double deltaY =  bsRootTree_->BSVtxMC_y_[arrayIndex] - 	bsRootTree_->BVtxMC_y_[arrayIndex];
+	bsRootTree_->BLxy_MC_[arrayIndex] = sqrt( deltaX*deltaX + deltaY*deltaY);
+	if(deltaX * genBsCand.px() + deltaY * genBsCand.py() < 0 )  bsRootTree_->BLxy_MC_[arrayIndex] = -1. *  bsRootTree_->BLxy_MC_[arrayIndex];
+	bsRootTree_->BCt_MC_[arrayIndex] = bsRootTree_->BLxy_MC_[arrayIndex] * bsRootTree_->BMMC_[arrayIndex] / 	bsRootTree_->BPtMC_[arrayIndex];
       }
     }
   

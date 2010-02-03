@@ -202,7 +202,17 @@ bsTree_->Branch(  "BMMC"			  , BMMC_,                              "BMMC[10]/D")
 bsTree_->Branch(  "BPtMC"			  , BPtMC_,                             "BPtMC[10]/D");                                         
 bsTree_->Branch(  "BPzMC"			  , BPzMC_,                             "BPzMC[10]/D");                                        
 bsTree_->Branch(  "BEtaMC"			  , BEtaMC_,                            "BEtaMC[10]/D");                                        
-bsTree_->Branch(  "BPhiMC"			  , BPhiMC_,                            "BPhiMC[10]/D");                                       
+bsTree_->Branch(  "BPhiMC"			  , BPhiMC_,                            "BPhiMC[10]/D");    
+
+bsTree_->Branch(  "BVtxMC_x" ,   BVtxMC_x_  , "BVtxMC_x[10]/D" );
+bsTree_->Branch(  "BVtxMC_y" ,	 BVtxMC_y_  , "BVtxMC_y[10]/D" );
+bsTree_->Branch(  "BVtxMC_z" ,	 BVtxMC_z_  , "BVtxMC_z[10]/D" );
+bsTree_->Branch(  "BSVtxMC_x",	 BSVtxMC_x_ , "BSVtxMC_x[10]/D");
+bsTree_->Branch(  "BSVtxMC_y",	 BSVtxMC_y_ , "BSVtxMC_y[10]/D");
+bsTree_->Branch(  "BSVtxMC_z",	 BSVtxMC_z_ , "BSVtxMC_z[10]/D");
+bsTree_->Branch(  "BLxy_MC"  ,	 BLxy_MC_   , "BLxy_MC[10]/D"  );
+bsTree_->Branch(  "BCt_MC"   ,	 BCt_MC_    , "BCt_MC[10]/D"   );   
+                                   
 bsTree_->Branch(  "genBsVtx_z"			  , &genBsVtx_z_,                       "genBsVtx_z/D");                                                
 bsTree_->Branch(  "genBsVtx_y"			  , &genBsVtx_y_,                       "genBsVtx_y/D");                                                
 bsTree_->Branch(  "genBsVtx_x"			  , &genBsVtx_x_,                       "genBsVtx_x/D");                                                
@@ -279,10 +289,12 @@ bsTree_->Branch(  "BdK2Eta_nofit" 		  , &BdK2Eta_nofit_,                    "BdK
 bsTree_->Branch(  "BdK2Phi_nofit" 		  , &BdK2Phi_nofit_,                    "BdK2Phi_nofit/D");                                             
 bsTree_->Branch(  "BdK2Key_nofit" 		  , &BdK2Key_nofit_,                     "BdK2Key_nofit/I");                                              
 bsTree_->Branch(  "BdLxy"			  , &BdLxy_,                            "BdLxy/D");                                                     
+bsTree_->Branch(  "BdLxyErr"			  , &BdLxyErr_,                            "BdLxyErr/D");                                                     
 bsTree_->Branch(  "BdErrX"			  , &BdErrX_,                           "BdErrX/D");                                                    
 bsTree_->Branch(  "BdErrY"			  , &BdErrY_,                           "BdErrY/D");                                                    
 bsTree_->Branch(  "BdErrXY"			  , &BdErrXY_,                          "BdErrXY/D");                                                   
 bsTree_->Branch(  "BdCt"			  , &BdCt_,                             "BdCt/D");                                                      
+bsTree_->Branch(  "BdCtErr"			  , &BdCtErr_,                           "BdCtErr/D");                                                      
 bsTree_->Branch(  "BdDist3d"			  , &BdDist3d_,                         "BdDist3d/D");                                                  
 bsTree_->Branch(  "BdDist3dErr"			  , &BdDist3dErr_,                      "BdDist3dErr/D");                                               
 bsTree_->Branch(  "BdTime3d"			  , &BdTime3d_,                         "BdTime3d/D");                                                  
@@ -554,10 +566,12 @@ void BsToJpsiPhiRootTree::resetEntries()
   BdK2Phi_nofit_ = -9999999; 
   BdK2Key_nofit_ = -9999999; 
   BdLxy_ = -9999999;
+  BdLxyErr_ = -9999999;
   BdErrX_ = -9999999;
   BdErrY_ = -9999999;
   BdErrXY_ = -9999999;
   BdCt_ = -9999999;
+  BdCtErr_ = -9999999;
   BdDist3d_ = -9999999;
   BdDist3dErr_ = -9999999;
   BdTime3d_ = -9999999;
@@ -603,6 +617,15 @@ BdMu2gmomId_ = -9999999;
     BEtaMC_[i] =  -9999999;
     BPhiMC_[i] =  -9999999;
 
+    BVtxMC_x_[i] =  -9999999;
+    BVtxMC_y_[i]  =  -9999999;
+    BVtxMC_z_[i]  =  -9999999;
+    BSVtxMC_x_[i] =  -9999999;
+    BSVtxMC_y_[i] =  -9999999;
+    BSVtxMC_z_[i] =  -9999999;
+    BLxy_MC_[i]   =  -9999999;
+    BCt_MC_[i]    =  -9999999;
+    
     GenNumberOfDaughters_[i] =  -9999999;
 
     for(int j=0;j<15;j++){
@@ -877,7 +900,18 @@ bsTree_->SetBranchAddress(  "BMMC"			  , BMMC_  );
 bsTree_->SetBranchAddress(  "BPtMC"			  , BPtMC_  );                                         
 bsTree_->SetBranchAddress(  "BPzMC"			  , BPzMC_  );                                        
 bsTree_->SetBranchAddress(  "BEtaMC"			  , BEtaMC_  );                                        
-bsTree_->SetBranchAddress(  "BPhiMC"			  , BPhiMC_  );                                       
+bsTree_->SetBranchAddress(  "BPhiMC"			  , BPhiMC_  );        
+
+bsTree_->SetBranchAddress(  "BVtxMC_x" , BVtxMC_x_); 
+bsTree_->SetBranchAddress(  "BVtxMC_y" , BVtxMC_y_); 
+bsTree_->SetBranchAddress(  "BVtxMC_z" , BVtxMC_z_); 
+bsTree_->SetBranchAddress(  "BSVtxMC_x", BSVtxMC_x_);
+bsTree_->SetBranchAddress(  "BSVtxMC_y", BSVtxMC_y_);
+bsTree_->SetBranchAddress(  "BSVtxMC_z", BSVtxMC_z_);
+bsTree_->SetBranchAddress(  "BLxy_MC"  , BLxy_MC_);  
+bsTree_->SetBranchAddress(  "BCt_MC"   , BCt_MC_);   
+
+                               
 bsTree_->SetBranchAddress(  "genBsVtx_z"			  , &genBsVtx_z_  );                                           
 bsTree_->SetBranchAddress(  "genBsVtx_y"			  , &genBsVtx_y_  );                                           
 bsTree_->SetBranchAddress(  "genBsVtx_x"			  , &genBsVtx_x_  );                                           
@@ -954,10 +988,12 @@ bsTree_->SetBranchAddress(  "BdK2Eta_nofit" 		  , &BdK2Eta_nofit_  );
 bsTree_->SetBranchAddress(  "BdK2Phi_nofit" 		  , &BdK2Phi_nofit_  );                                        
 bsTree_->SetBranchAddress(  "BdK2Key_nofit" 		  , &BdK2Key_nofit_  );                                                  
 bsTree_->SetBranchAddress(  "BdLxy"			  , &BdLxy_  );                                                
+bsTree_->SetBranchAddress(  "BdLxyErr"			  , &BdLxyErr_  );                                                
 bsTree_->SetBranchAddress(  "BdErrX"			  , &BdErrX_  );                                               
 bsTree_->SetBranchAddress(  "BdErrY"			  , &BdErrY_  );                                               
 bsTree_->SetBranchAddress(  "BdErrXY"			  , &BdErrXY_  );                                              
 bsTree_->SetBranchAddress(  "BdCt"			  , &BdCt_  );                                                 
+bsTree_->SetBranchAddress(  "BdCtErr"			  , &BdCtErr_  );                                                 
 bsTree_->SetBranchAddress(  "BdDist3d"			  , &BdDist3d_  );                                             
 bsTree_->SetBranchAddress(  "BdDist3dErr"			  , &BdDist3dErr_  );                                          
 bsTree_->SetBranchAddress(  "BdTime3d"			  , &BdTime3d_  );                                             
