@@ -122,9 +122,6 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
 #--------------------------------------------------------------------------------
 
-process.produceFakeRates = cms.Sequence( process.bgEstFakeRateJetWeights * process.bgEstFakeRateEventWeights )
-process.producePrePat._seq = process.producePrePat._seq * process.produceFakeRates
-
 process.p = cms.Path(
     process.producePatTuple
   + process.producePatTupleZtoMuTauSpecific
