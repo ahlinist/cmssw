@@ -46,6 +46,7 @@ class PFCandidateHistManager : public HistManagerBase
   MonitorElement* hPFCandidateWeightPosWeighted_;
   MonitorElement* hPFCandidateWeightNegUnweighted_;
   MonitorElement* hPFCandidateWeightNegWeighted_;
+  MonitorElement* hPFCandidateWeightZero_;
 };
 
 #endif  

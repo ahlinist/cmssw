@@ -88,7 +88,7 @@ void ZllHypothesisT1T2HistManager<T1,T2>::bookHistogramsImp()
 
   bookWeightHistograms(*dqmStore_, "ZllHypothesisWeight", "ZllHypothesis Weight", 
 		       hZllHypothesisWeightPosUnweighted_, hZllHypothesisWeightPosWeighted_, 
-		       hZllHypothesisWeightNegUnweighted_, hZllHypothesisWeightNegWeighted_);
+		       hZllHypothesisWeightNegUnweighted_, hZllHypothesisWeightNegWeighted_, hZllHypothesisWeightZero_);
 }
 
 template<typename T1, typename T2>
@@ -191,7 +191,7 @@ void ZllHypothesisT1T2HistManager<T1,T2>::fillHistogramsImp(const edm::Event& ev
     }
 
     fillWeightHistograms(hZllHypothesisWeightPosUnweighted_, hZllHypothesisWeightPosWeighted_, 
-			 hZllHypothesisWeightNegUnweighted_, hZllHypothesisWeightNegWeighted_, ZllHypothesisWeight);
+			 hZllHypothesisWeightNegUnweighted_, hZllHypothesisWeightNegWeighted_, hZllHypothesisWeightZero_, ZllHypothesisWeight);
   }
 }
 

@@ -129,7 +129,7 @@ void ElectronHistManager::bookHistogramsImp()
   
   bookWeightHistograms(*dqmStore_, "ElectronWeight", "Electron Weight", 
 		       hElectronWeightPosUnweighted_, hElectronWeightPosWeighted_, 
-		       hElectronWeightNegUnweighted_, hElectronWeightNegWeighted_);
+		       hElectronWeightNegUnweighted_, hElectronWeightNegWeighted_, hElectronWeightZero_);
 
   hElectronEnCompToGen_ = book1D("ElectronEnCompToGen", "Electron RECO-GEN #Delta E", 100, -0.50, +0.50);
   hElectronThetaCompToGen_ = book1D("ElectronThetaCompToGen", "Electron RECO-GEN #Delta#theta", 200, -0.010, +0.010);
@@ -246,7 +246,7 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
     hElectronCharge_->Fill(patElectron->charge(), weight);
 
     fillWeightHistograms(hElectronWeightPosUnweighted_, hElectronWeightPosWeighted_, 
-			 hElectronWeightNegUnweighted_, hElectronWeightNegWeighted_, electronWeight);
+			 hElectronWeightNegUnweighted_, hElectronWeightNegWeighted_, hElectronWeightZero_, electronWeight);
 
 //--- compare reconstructed electron to generator level one;
 //    normalize difference between reconstructed and generated energy

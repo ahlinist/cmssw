@@ -79,6 +79,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauJetWeightPosWeighted_;
   MonitorElement* hTauJetWeightNegUnweighted_;
   MonitorElement* hTauJetWeightNegWeighted_;
+  MonitorElement* hTauJetWeightZero_;
 
   MonitorElement* hTauEnCompToGen_;
   MonitorElement* hTauThetaCompToGen_;

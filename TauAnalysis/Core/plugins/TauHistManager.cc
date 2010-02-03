@@ -186,7 +186,7 @@ void TauHistManager::bookHistogramsImp()
   
   bookWeightHistograms(*dqmStore_, "TauJetWeight", "Tau Weight", 
 		       hTauJetWeightPosUnweighted_, hTauJetWeightPosWeighted_, 
-		       hTauJetWeightNegUnweighted_, hTauJetWeightNegWeighted_);
+		       hTauJetWeightNegUnweighted_, hTauJetWeightNegWeighted_, hTauJetWeightZero_);
 
   hTauEnCompToGen_ = book1D("TauEnCompToGen", "RECO-GEN #Delta E", 100, -2.50, +2.50);
   hTauThetaCompToGen_ = book1D("TauThetaCompToGen", "RECO-GEN #Delta#theta", 200, -0.050, +0.050);
@@ -373,7 +373,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hTauCharge_->Fill(patTau->charge(), weight);
 
     fillWeightHistograms(hTauJetWeightPosUnweighted_, hTauJetWeightPosWeighted_, 
-			 hTauJetWeightNegUnweighted_, hTauJetWeightNegWeighted_, tauJetWeight);
+			 hTauJetWeightNegUnweighted_, hTauJetWeightNegWeighted_, hTauJetWeightZero_, tauJetWeight);
 
 //--- compare reconstructed tau-jet 
 //    to visible decay products on generator level;

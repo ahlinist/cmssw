@@ -77,6 +77,7 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
   MonitorElement* hDiTauCandidateWeightPosWeighted_;
   MonitorElement* hDiTauCandidateWeightNegUnweighted_;
   MonitorElement* hDiTauCandidateWeightNegWeighted_;
+  MonitorElement* hDiTauCandidateWeightZero_;
 
   MonitorElement* hCollinearApproxEffDPhi12dep_;
   MonitorElement* hCollinearApproxEffDiTauPtDep_;

@@ -55,6 +55,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hGenDiTauCandidatePt_;
 
   MonitorElement* hGenLeg1PtVsLeg2Pt_;
+  MonitorElement* hGenLeg1EtaVsLeg2Eta_;
 
   MonitorElement* hDiTauCandidatePt_;
   MonitorElement* hDiTauCandidateEta_;
@@ -69,6 +70,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDiTauCandidateWeightPosWeighted_;
   MonitorElement* hDiTauCandidateWeightNegUnweighted_;
   MonitorElement* hDiTauCandidateWeightNegWeighted_;
+  MonitorElement* hDiTauCandidateWeightZero_;
 
   MonitorElement* hDiTauCandidateImpParSig_;
 

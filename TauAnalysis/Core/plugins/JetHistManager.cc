@@ -67,7 +67,7 @@ void JetHistManager::bookHistogramsImp()
   
   bookWeightHistograms(*dqmStore_, "JetWeight", "Jet Weight", 
 		       hJetWeightPosUnweighted_, hJetWeightPosWeighted_, 
-		       hJetWeightNegUnweighted_, hJetWeightNegWeighted_);
+		       hJetWeightNegUnweighted_, hJetWeightNegWeighted_, hJetWeightZero_);
 
   hJetAlpha_ = book1D("JetAlpha", "Jet #alpha", 102, -0.01, +1.01);
   hJetNumTracks_ = book1D("JetNumTracks", "Jet Track Multiplicity", 50, -0.5, 49.5);
@@ -171,7 +171,7 @@ void JetHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hJetPtVsEta_->Fill(patJet->eta(), patJet->pt(), weight);
 
     fillWeightHistograms(hJetWeightPosUnweighted_, hJetWeightPosWeighted_, 
-			 hJetWeightNegUnweighted_, hJetWeightNegWeighted_, jetWeight);
+			 hJetWeightNegUnweighted_, hJetWeightNegWeighted_, hJetWeightZero_, jetWeight);
 
     hJetAlpha_->Fill(jetAlphaExtractor_(*patJet), weight);
     unsigned numTracks = 0;

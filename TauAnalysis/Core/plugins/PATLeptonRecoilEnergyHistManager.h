@@ -45,6 +45,7 @@ class PATLeptonRecoilEnergyHistManager : public HistManagerBase
   MonitorElement* hLeptonWeightPosWeighted_;
   MonitorElement* hLeptonWeightNegUnweighted_;
   MonitorElement* hLeptonWeightNegWeighted_;
+  MonitorElement* hLeptonWeightZero_;
 
   MonitorElement* hEtSum_;
   MonitorElement* hNumObjects_;
