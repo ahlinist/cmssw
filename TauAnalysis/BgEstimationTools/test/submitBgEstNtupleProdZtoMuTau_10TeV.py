@@ -5,7 +5,7 @@ from TauAnalysis.BgEstimationTools.makeReplacementsBgEstNtupleProd import makeRe
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstNtuples/ZtoMuTau/10TeV/"
+outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstNtuples/ZtoMuTau/10TeVii/"
 
 #--------------------------------------------------------------------------------
 #
@@ -23,39 +23,45 @@ outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstNtuples/ZtoMuT
 for i in range(3):
     submitToBatch(configFile = "prodNtupleZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "Ztautau_10TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsBgEstNtupleProd, replacements = "maxEvents = -1; skipEvents = 0",
+                  replFunction = makeReplacementsBgEstNtupleProd,
+                  replacements = "maxEvents = -1; skipEvents = 0; intLumiData = intLumiZtoMuTau_Data_10TeV",
                   job = "bgEstNtupleProd", queue = "1nd", outputFilePath = outputFilePath)
 
 # Z --> mu mu jobs
 for i in range(9):
     submitToBatch(configFile = "prodNtupleZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "Zmumu_10TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsBgEstNtupleProd, replacements = "maxEvents = -1; skipEvents = 0",
+                  replFunction = makeReplacementsBgEstNtupleProd,
+                  replacements = "maxEvents = -1; skipEvents = 0; intLumiData = intLumiZtoMuTau_Data_10TeV",
                   job = "bgEstNtupleProd", queue = "1nd", outputFilePath = outputFilePath)
 
 # pp --> mu X QCD jobs
 for i in range(2):
     submitToBatch(configFile = "prodNtupleZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "InclusivePPmuX_10TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsBgEstNtupleProd, replacements = "maxEvents = -1; skipEvents = 0",
+                  replFunction = makeReplacementsBgEstNtupleProd,
+                  replacements = "maxEvents = -1; skipEvents = 0; intLumiData = intLumiZtoMuTau_Data_10TeV",
                   job = "bgEstNtupleProd", queue = "1nd", outputFilePath = outputFilePath)
 
 for i in range(14):
     submitToBatch(configFile = "prodNtupleZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "PPmuXptGt20_10TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsBgEstNtupleProd, replacements = "maxEvents = -1; skipEvents = 0",
+                  replFunction = makeReplacementsBgEstNtupleProd,
+                  replacements = "maxEvents = -1; skipEvents = 0; intLumiData = intLumiZtoMuTau_Data_10TeV",
                   job = "bgEstNtupleProd", queue = "1nd", outputFilePath = outputFilePath)
 
 # W + jets jobs
 for i in range(5):
     submitToBatch(configFile = "prodNtupleZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "WplusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsBgEstNtupleProd, replacements = "maxEvents = -1; skipEvents = 0",
+                  replFunction = makeReplacementsBgEstNtupleProd,
+                  replacements = "maxEvents = -1; skipEvents = 0; intLumiData = intLumiZtoMuTau_Data_10TeV",
                   job = "bgEstNtupleProd", queue = "1nd", outputFilePath = outputFilePath)
 
 # ttbar + jets  jobs
 for i in range(4):
     submitToBatch(configFile = "prodNtupleZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "TTplusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsBgEstNtupleProd, replacements = "maxEvents = -1; skipEvents = 0",
+                  replFunction = makeReplacementsBgEstNtupleProd,
+                  replacements = "maxEvents = -1; skipEvents = 0; intLumiData = intLumiZtoMuTau_Data_10TeV",
                   job = "bgEstNtupleProd", queue = "1nd", outputFilePath = outputFilePath)
