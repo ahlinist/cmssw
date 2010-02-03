@@ -156,7 +156,7 @@ processZtoMuTau_PPmuXptGt20_part01.config_dqmFileLoader.inputFileNames = cms.vst
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part06.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part07.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part08.root',
-    'plotsZtoMuTau_PPmuXptGt20_10TeV_part09.root',
+    #'plotsZtoMuTau_PPmuXptGt20_10TeV_part09.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part10.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part11.root',
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part12.root',
