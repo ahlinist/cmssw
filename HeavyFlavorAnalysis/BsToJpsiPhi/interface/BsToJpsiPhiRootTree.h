@@ -250,6 +250,15 @@ public:
 	double BEtaMC_[10];
 	double BPhiMC_[10];
 
+	double BVtxMC_x_[10];
+	double BVtxMC_y_[10];
+	double BVtxMC_z_[10];
+	double BSVtxMC_x_[10];
+	double BSVtxMC_y_[10];
+	double BSVtxMC_z_[10];
+	double BLxy_MC_[10];
+	double BCt_MC_[10];
+
         double genBsVtx_z_, genBsVtx_y_, genBsVtx_x_ ;
         double genBsSVtx_z_, genBsSVtx_y_, genBsSVtx_x_ ;
 
@@ -342,10 +351,12 @@ public:
 	int BdK2Key_nofit_  ; 
 
 	double BdLxy_;
+	double BdLxyErr_;
 	double BdErrX_;
 	double BdErrY_;
 	double BdErrXY_;
 	double BdCt_;
+	double BdCtErr_;
 
 	double BdDist3d_;
 	double BdDist3dErr_;
