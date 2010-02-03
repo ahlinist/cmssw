@@ -64,7 +64,7 @@ const TString filenameSelectedTrees = "Selected";
 void BsAnalysisNew() {
 
  
-  string treefilename = "/nfs/data6/alschmid/BsJpsiPhiRootTrees/BtoJpsiMuMu10TeV_22Jan10.root";
+  string treefilename = "../test_ctau/BtoJpsiMuMu7TeV_22.root";
   TString outputhistofilename = "BtoJpsiMuMuHistoFile.root";
  
 //   string treefilename = "JpsiMuMu_29Dec09.root";
@@ -105,6 +105,9 @@ void BsAnalysisNew() {
     // ignore Jpsi events in case of ppMuMu
     if(bRemoveJpsiEvents) if(tree->isGenJpsiEvent_ == 1) continue;
 
+    // reset value
+    indexOfBmesonWithJpsiDecay = -1;
+
     // identify event type
     identifyEventType(isGenBsJpsiPhiMuMuKKEvent_, isGenBsJpsiKKEvent_, isGenBdJpsiKstarMuMuKpiEvent_, isGenBsEvent_, isGenBdEvent_, isGenBsJpsiEtaEvent_, isGenBdJpsiK10Event_, 
 		      isGenBdJpsiK0Event_, isGenBpJpsiKpEvent_);
@@ -128,7 +131,8 @@ void BsAnalysisNew() {
 			  iTriggered_DoubleMu3_BdJpsiK0Events,         iTriggered_DoubleMu3_BpJpsiKpEvents);
     
     fillHistograms(tree->JpsiM_alone_,     vhJPsiMass); 
-     
+    fillHistograms(tree->BCt_MC_[indexOfBmesonWithJpsiDecay],       vhGenBCt);
+
     //***********************************************
     // Bs analysis specific cuts start here.   Bd analysis is below.
     //***********************************************
@@ -186,7 +190,7 @@ void BsAnalysisNew() {
 	      fillHistograms(tree->BsFitM_,           vhBsMass_NoTimeCut);
               fillHistograms(tree->BsCt_,           vhBsCt);
               fillHistograms(tree->BsCtErr_,        vhBsCtErr);
-	      
+	   	      
 	      //****************
 	      if(mySelector)mySelector->fill(); // **** filling root trees for fit here!
 	      //****************
@@ -579,6 +583,8 @@ void identifyEventType(bool & isGenBsJpsiPhiMuMuKKEvent, bool &isGenBsJpsiKKEven
       if(B_id == 521 && absDau_id == 20443) BpExcitedJpsi = 1;
       if(B_id == 521 && absDau_id == 445) BpExcitedJpsi = 1;
       // loop over daughters daughters
+      if(absDau_id ==443) indexOfBmesonWithJpsiDecay = i;
+
       for(int k=0; k < tree->GenNumberOfDaughtersDaughters_[i][j]; k++){
 	int DauDau_id = tree->BDauDauIdMC_[i][j][k];
 	int absDauDau_id= abs(DauDau_id);
@@ -673,6 +679,7 @@ void writeHistos(TString outputfilename){
 
     vhBsCt[i]->Write();
     vhBsCtErr[i]->Write();
+    vhGenBCt[i]->Write();
 
   }
  histofile->Write();
@@ -1083,7 +1090,18 @@ vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BdJpsiK10"                
 vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BdJpsiK0"                      ,"hBsCtErr_BdJpsiK0"             , 100, 0., 0.03                  ) );
 vhBsCtErr             .push_back( new TH1F ("hBsCtErr_BpJpsiKp"                            ,"hBsCtErr_BpJpsiKp"             , 100, 0., 0.03                  ) );
 
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BsJPsiPhiSignal"               ,"hGenBCt_BsJPsiPhiSignal"      , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BsJPsiKKSignal"                ,"hGenBCt_BsJPsiKKSignal"       , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BdJPsiKstarSignal"             ,"hGenBCt_BdJPsiKstarSignal"    , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BsOther"                       ,"hGenBCt_BsOther"              , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BdOther"                       ,"hGenBCt_BdOther"              , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_Other"                         ,"hGenBCt_Other"                , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BsJpsiEta"                     ,"hGenBCt_BsJpsiEta"            , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BdJpsiK10"                     ,"hGenBCt_BdJpsiK10"            , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BdJpsiK0"                      ,"hGenBCt_BdJpsiK0"             , 100, -0.05, 0.5                  ) );
+vhGenBCt             .push_back( new TH1F ("hGenBCt_BpJpsiKp"                          ,"hGenBCt_BpJpsiKp"             , 100, -0.05, 0.5                  ) );
 }
+
 
 
 
