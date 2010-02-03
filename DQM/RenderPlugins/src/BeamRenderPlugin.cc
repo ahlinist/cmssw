@@ -2,8 +2,8 @@
   \File BeamRenderPlugin
   \Display Plugin for BeamSpot DQM Histograms
   \author 
-  \version $Revision: 1.2 $
-  \date $Date: 2009/11/19 04:43:33 $
+  \version $Revision: 1.4 $
+  \date $Date: 2009/12/07 02:49:34 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -48,6 +48,10 @@ public:
       preDrawTH1F( c, o );
     }
 
+    if( dynamic_cast<TProfile*>( o.object ) ) {
+      preDrawTProfile( c, o );
+    }
+
   }
 
   virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & ) {
@@ -74,13 +78,13 @@ private:
     TAxis* xa = obj->GetXaxis();
     TAxis* ya = obj->GetYaxis();
 
-    xa->SetTitleOffset(0.7);
-    xa->SetTitleSize(0.05);
-    xa->SetLabelSize(0.04);
+    //xa->SetTitleOffset(0.7);
+    xa->SetTitleSize(0.04);
+    xa->SetLabelSize(0.03);
 
-    ya->SetTitleOffset(0.7);
-    ya->SetTitleSize(0.05);
-    ya->SetLabelSize(0.04);
+    //ya->SetTitleOffset(0.7);
+    ya->SetTitleSize(0.04);
+    ya->SetLabelSize(0.03);
 
     if ( o.name.find( "reportSummaryMap" )  != std::string::npos) {
       obj->SetStats( kFALSE );
@@ -98,12 +102,15 @@ private:
     if ( o.name.find( "fitResults" )  != std::string::npos) {
       c->SetGrid();
       obj->SetStats( kFALSE );
+      obj->SetMarkerSize(2.);
+      xa->SetTitleSize(0.04);
+      xa->SetLabelSize(0.045);
       return;
     }
 
   }
 
-  void preDrawTH1F( TCanvas *, const VisDQMObject &o ) {
+  void preDrawTH1F( TCanvas *c, const VisDQMObject &o ) {
     TH1F* obj = dynamic_cast<TH1F*>( o.object );
     assert( obj );
 
@@ -112,11 +119,43 @@ private:
     ya->SetTitleSize(0.04);
     ya->SetLabelSize(0.03);
 
-    if( o.name.find( "nTrk_lumi" )  != std::string::npos) {
+    if( o.name.find( "_lumi" )  != std::string::npos) {
+      gStyle->SetOptStat(11);
+      return;
+    }
+
+    if( o.name.find( "trkPt" )  != std::string::npos) {
+      c->SetLogy();
+      return;
+    }
+  }
+
+  void preDrawTProfile( TCanvas *, const VisDQMObject &o ) {
+    TProfile* obj = dynamic_cast<TProfile*>( o.object );
+    assert( obj );
+
+    // This applies to all
+    gStyle->SetCanvasBorderMode( 0 );
+    gStyle->SetPadBorderMode( 0 );
+    gStyle->SetPadBorderSize( 0 );
+    
+    TAxis* xa = obj->GetXaxis();
+    TAxis* ya = obj->GetYaxis();
+    
+    //xa->SetTitleOffset(0.9);
+    xa->SetTitleSize(0.04);
+    xa->SetLabelSize(0.03);
+    
+    //ya->SetTitleOffset(0.9);
+    ya->SetTitleSize(0.04);
+    ya->SetLabelSize(0.03);
+
+    if ( o.name.find( "d0_phi0" )  != std::string::npos) {
       gStyle->SetOptStat(11);
       return;
     }
   }
+
 
   void postDrawTH2F( TCanvas *c, const VisDQMObject &o ) {
 
