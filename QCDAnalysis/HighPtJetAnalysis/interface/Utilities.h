@@ -33,6 +33,7 @@ typedef struct
   float sigmaPhi;
   float emf;
   float chf;
+  float dR;
 } JET_VAR;
 typedef struct 
 {
@@ -44,13 +45,13 @@ typedef struct
   int   passLooseHcalNoise;
   int   passTightHcalNoise;
   int   nPV;
+  int   PVntracks;
   float PVz;
   float PVx;
   float PVy;
   float PVndof;
   float PVchi2;
   float PVnormalizedChi2;
-  int   PVntracks;
   float corMass;
   float rawMass; 
   float met;

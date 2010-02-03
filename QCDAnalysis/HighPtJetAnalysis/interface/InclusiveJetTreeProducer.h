@@ -49,6 +49,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     bool mIsMCarlo;
     double mJetPtMin;
     std::string mJetsName;
+    std::string mGenJetsName;
     std::string mJetsIDName;
     std::string mJetExtender;
     std::string mMetName;
@@ -68,6 +69,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     int mRunNo, mEvtNo, mLumi, mBunch, mLooseHcalNoise, mTightHcalNoise;
     double mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
     std::vector<int>    *mNtrkVtx,*mNtrkCalo,*mN90,*mN90Hits,*mPVntracks;
+    std::vector<double> *mGenMatchR;
     std::vector<double> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
     std::vector<double> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
     std::vector<double> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
