@@ -54,7 +54,7 @@ process.source = cms.Source("PoolSource",
 )
 
 # produce ntuple
-kineReweight_fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsZtoMuTau.root')
+kineReweight_fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstKineReweights/bgEstKineEventReweightsZtoMuTau.root')
 kineReweight_dqmDirectory = "DQMData/bgEstKineEventReweights"
 kineReweight_meName = "diTauMvis"
 kineVarExtractor_config = cms.PSet(
@@ -588,8 +588,8 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         kineEventReweightTauIdEffQCDnoIso = cms.PSet(
             pluginType = cms.string("KineEventReweightExtractor"),
             weightLookupTable = cms.PSet(
-                fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/muonKineReweightsTauIdEffZtoMuTau.root'),
-                meName = cms.string("DQMData/muonKineReweights/QCDbgEnriched_data/muonPtVsAbsEta")
+                fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstKineReweights/muonKineReweightsTauIdEffZtoMuTau.root'),
+                meName = cms.string("DQMData/muonKineReweights/QCDbgEnrichedCombIso_data/muonPtVsAbsEta")
             ),
             variables = cms.PSet(
                 x = cms.PSet(
@@ -622,7 +622,7 @@ process.TFileService = cms.Service("TFileService",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.genPhaseSpaceFilter.selector = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.TFileService.fileName = #bgEstNtupleOutputFileName#
-#__process.ntupleProducer.branches.eventWeight.value = cms.double(#corrFactor#*intLumiZtoMuTau_Data/#intLumi#)
+#__process.ntupleProducer.branches.eventWeight.value = cms.double(#corrFactor#*#intLumiData#/#intLumi#)
 #
 #--------------------------------------------------------------------------------
 
