@@ -307,7 +307,7 @@ vector<TH1F*> vhBdTime;
 vector<TH1F*> vhBdMass_NoTimeCut;
 vector<TH1F*> vhBdMassFinal;
 vector<TH1F*> vhBdMassFinalAfterFit;
-
+vector<TH1F*> vhGenBCt;
 
  bool isGenBsJpsiPhiMuMuKKEvent_;
   bool isGenBsJpsiKKEvent_;
@@ -319,6 +319,7 @@ bool isGenBdJpsiK10Event_ ;
 bool isGenBdJpsiK0Event_  ;
 bool isGenBpJpsiKpEvent_  ;
 
+int indexOfBmesonWithJpsiDecay = -1;
 
 int sig1 = 0; int jpsikk1 = 0; int jpsikst1 = 0; int otherbs1 = 0; int otherbd1 = 0; int other1 = 0; int jpsieta1 = 0; int jpsik101 = 0; int jpsik01 = 0; 
 int jpsik1p1 = 0;

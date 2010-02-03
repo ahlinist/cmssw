@@ -21,7 +21,7 @@
 // definition of  tree to write out
 class BstoJpsiPhiSelectedTree{
 public:
-  BstoJpsiPhiSelectedTree( BsToJpsiPhiRootTree * origTree, TString name, const TString filename) : myName(name),myFilename(filename) {
+  BstoJpsiPhiSelectedTree( BsToJpsiPhiRootTree * origTree, TString name, const TString filename) : myName(name),myFilename(filename),originalTree(origTree) {
     tree = new TTree("BsTree", "BsTree");
     tree->Branch(  "BsCt",          &origTree->BsCt_,         "BsCt/D");   
     tree->Branch(  "BsDist3d"     , &origTree->BsDist3d_,     "BsDist3d/D"    );
@@ -36,9 +36,20 @@ public:
     tree->Branch(  "phi"          , &origTree->phi_,          "phi/D"         );
     tree->Branch(  "cospsi"       , &origTree->cospsi_,       "cospsi/D"      );
     tree->Branch(  "BsFitM"       , &origTree->BsFitM_,       "BsFitM/D"      );
+    tree->Branch(  "BCt_MC"       , &myBCt_MC_value,          "BCt_MC/D"     );
   }
   ~BstoJpsiPhiSelectedTree(){write();}
   
+  
+  void fill(){
+    // set value of generated c tau: now we know the array index
+    if(indexOfBmesonWithJpsiDecay >=0) myBCt_MC_value = originalTree->BCt_MC_[indexOfBmesonWithJpsiDecay];
+    else myBCt_MC_value = -999999;
+    //now fill the tree
+    tree->Fill();   
+  }
+
+
   void write(){
     myFilename += "_";  myFilename += myName;  myFilename += ".root";
     
@@ -51,7 +62,14 @@ public:
   TString myName;
   TString myFilename;
   TTree *tree;
+  BsToJpsiPhiRootTree *originalTree;
+
+  // the value of the generated c tau needs to be cached, 
+  // because the array index of BCt_MC_[] is unknown at this point
+  double myBCt_MC_value;
 };
+
+
 
 /////////////////////////////////////////
 /// definition of the selecting functions
@@ -73,16 +91,16 @@ public:
   ~SelectorForFit(){}
 
   void fill(){
-    if(isGenBsJpsiPhiMuMuKKEvent_ == 1)           BsJpsiPhiMuMuKKTree.tree->Fill();
-    else if(isGenBsJpsiKKEvent_ == 1)             BsJPsiKKTree.tree->Fill();
-    else if (isGenBdJpsiKstarMuMuKpiEvent_ == 1) BdJpsiKstarMuMuKpiTree.tree->Fill();
-    else if (isGenBsJpsiEtaEvent_ == 1)          BsJpsiEtaTree.tree->Fill();
-    else if (isGenBdJpsiK10Event_ == 1)          BdJpsiK10Tree.tree->Fill();
-    else if (isGenBdJpsiK0Event_ == 1)           BdJpsiK0Tree.tree->Fill();
-    else if (isGenBpJpsiKpEvent_ == 1)           BpJpsiKpTree.tree->Fill();
-    else if (isGenBsEvent_ == 1)                 BsOtherTree.tree->Fill();
-    else if (isGenBdEvent_ == 1)                 BdOtherTree.tree->Fill();
-    else                                         OtherTree.tree->Fill();
+    if(isGenBsJpsiPhiMuMuKKEvent_ == 1)           BsJpsiPhiMuMuKKTree.fill();
+    else if(isGenBsJpsiKKEvent_ == 1)             BsJPsiKKTree.fill();
+    else if (isGenBdJpsiKstarMuMuKpiEvent_ == 1) BdJpsiKstarMuMuKpiTree.fill();
+    else if (isGenBsJpsiEtaEvent_ == 1)          BsJpsiEtaTree.fill();
+    else if (isGenBdJpsiK10Event_ == 1)          BdJpsiK10Tree.fill();
+    else if (isGenBdJpsiK0Event_ == 1)           BdJpsiK0Tree.fill();
+    else if (isGenBpJpsiKpEvent_ == 1)           BpJpsiKpTree.fill();
+    else if (isGenBsEvent_ == 1)                 BsOtherTree.fill();
+    else if (isGenBdEvent_ == 1)                 BdOtherTree.fill();
+    else                                         OtherTree.fill();
   }
   
   BstoJpsiPhiSelectedTree BsJpsiPhiMuMuKKTree   ;
