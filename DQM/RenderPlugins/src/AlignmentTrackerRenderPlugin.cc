@@ -8,7 +8,7 @@
 #include "TGaxis.h"
 #include "TPaveStats.h"
 #include "TList.h"
-
+#include <cassert>
 
 class AlignmentTrackerRenderPlugin : public DQMRenderPlugin
 {

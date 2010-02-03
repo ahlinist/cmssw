@@ -16,6 +16,7 @@
 #include "TProfile2D.h"
 
 #include <math.h>
+#include <cassert>
 
 class ESRenderPlugin : public DQMRenderPlugin {
 
