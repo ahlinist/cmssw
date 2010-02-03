@@ -123,7 +123,7 @@ void MuonHistManager::bookHistogramsImp()
   
   bookWeightHistograms(*dqmStore_, "MuonWeight", "Muon Weight", 
 		       hMuonWeightPosUnweighted_, hMuonWeightPosWeighted_, 
-		       hMuonWeightNegUnweighted_, hMuonWeightNegWeighted_);
+		       hMuonWeightNegUnweighted_, hMuonWeightNegWeighted_, hMuonWeightZero_);
   
   hMuonPtCompToGen_ = book1D("MuonPtCompToGen", "MuonPtCompToGen", 200, -0.10, +0.10);
   hMuonThetaCompToGen_ = book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.010, +0.010);
@@ -234,7 +234,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
     hMuonCharge_->Fill(patMuon->charge(), weight);
 
     fillWeightHistograms(hMuonWeightPosUnweighted_, hMuonWeightPosWeighted_, 
-			 hMuonWeightNegUnweighted_, hMuonWeightNegWeighted_, muonWeight);
+			 hMuonWeightNegUnweighted_, hMuonWeightNegWeighted_, hMuonWeightZero_, muonWeight);
 
 //--- compare reconstructed muon to generator level one;
 //    normalize difference between reconstructed and generated Pt

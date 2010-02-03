@@ -62,7 +62,7 @@ void CompositePtrCandidateTMEtHistManager<T>::bookHistogramsImp()
 
   bookWeightHistograms(*dqmStore_, "NuTauCandidateWeight", "Composite Weight", 
 		       hNuTauCandidateWeightPosUnweighted_, hNuTauCandidateWeightPosWeighted_, 
-		       hNuTauCandidateWeightNegUnweighted_, hNuTauCandidateWeightNegWeighted_);
+		       hNuTauCandidateWeightNegUnweighted_, hNuTauCandidateWeightNegWeighted_, hNuTauCandidateWeightZero_);
 
   hNuTauCandidateDPhi_ = book1D("NuTauCandidateDPhi", "#Delta#phi_{T,MET}", 36, -epsilon, TMath::Pi() + epsilon);
   hNuTauCandidateMt_ = book1D("NuTauCandidateMt", "Mass_{T,MET}", 40, 0., 200.);
@@ -110,7 +110,7 @@ void CompositePtrCandidateTMEtHistManager<T>::fillHistogramsImp(const edm::Event
     hNuTauCandidatePhi_->Fill(tauNuCandidate->phi(), weight);
     
     fillWeightHistograms(hNuTauCandidateWeightPosUnweighted_, hNuTauCandidateWeightPosWeighted_, 
-			 hNuTauCandidateWeightNegUnweighted_, hNuTauCandidateWeightNegWeighted_, tauJetWeight);
+			 hNuTauCandidateWeightNegUnweighted_, hNuTauCandidateWeightNegWeighted_, hNuTauCandidateWeightZero_, tauJetWeight);
     
     hNuTauCandidateDPhi_->Fill(tauNuCandidate->dPhi(), weight);
     hNuTauCandidateMt_->Fill(tauNuCandidate->mt(), weight);

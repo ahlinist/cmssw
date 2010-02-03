@@ -39,7 +39,7 @@ void PFCandidateHistManager::bookHistogramsImp()
 
   bookWeightHistograms(*dqmStore_, "PFCandidateWeight", "PFCandidate Weight", 
 		       hPFCandidateWeightPosUnweighted_, hPFCandidateWeightPosWeighted_, 
-		       hPFCandidateWeightNegUnweighted_, hPFCandidateWeightNegWeighted_);
+		       hPFCandidateWeightNegUnweighted_, hPFCandidateWeightNegWeighted_, hPFCandidateWeightZero_);
 }
 
 void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
@@ -61,7 +61,7 @@ void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm:
     hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt(), weight);
 
     fillWeightHistograms(hPFCandidateWeightPosUnweighted_, hPFCandidateWeightPosWeighted_, 
-			 hPFCandidateWeightNegUnweighted_, hPFCandidateWeightNegWeighted_, pfCandidateWeight);
+			 hPFCandidateWeightNegUnweighted_, hPFCandidateWeightNegWeighted_, hPFCandidateWeightZero_, pfCandidateWeight);
   }
 }
 

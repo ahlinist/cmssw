@@ -29,6 +29,8 @@ class EventWeightHistManager : public HistManagerBase
 
   MonitorElement* hEvtWeightPosWeighted_;
   MonitorElement* hEvtWeightNegWeighted_;
+
+  MonitorElement* hEvtWeightZero_;
 };
 
 #endif  

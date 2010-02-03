@@ -69,6 +69,7 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronWeightPosWeighted_;
   MonitorElement* hElectronWeightNegUnweighted_;
   MonitorElement* hElectronWeightNegWeighted_;
+  MonitorElement* hElectronWeightZero_;
 
   MonitorElement* hElectronEnCompToGen_;
   MonitorElement* hElectronThetaCompToGen_;

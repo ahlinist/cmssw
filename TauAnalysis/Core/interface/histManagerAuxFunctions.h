@@ -14,8 +14,9 @@
 
 #include "TauAnalysis/Core/interface/FakeRateJetWeightExtractor.h"
 
-void bookWeightHistograms(DQMStore&, const char*, const char*, MonitorElement*&, MonitorElement*&, MonitorElement*&, MonitorElement*&);
-void fillWeightHistograms(MonitorElement*, MonitorElement*, MonitorElement*, MonitorElement*, double);
+void bookWeightHistograms(DQMStore&, const char*, const char*, 
+			  MonitorElement*&, MonitorElement*&, MonitorElement*&, MonitorElement*&, MonitorElement*&);
+void fillWeightHistograms(MonitorElement*, MonitorElement*, MonitorElement*, MonitorElement*, MonitorElement*, double);
 
 void fillLeptonIsoDepositHistograms(const pat::IsoDeposit*, MonitorElement*, MonitorElement*, MonitorElement*, double);
 

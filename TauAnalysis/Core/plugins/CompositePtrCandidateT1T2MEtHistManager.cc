@@ -75,6 +75,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hGenDiTauCandidatePt_ = book1D("GenDiTauCandidatePt", "gen. Composite P_{T}", 75, 0., 150.);
   
   hGenLeg1PtVsLeg2Pt_ = book2D("GenLeg1PtVsLeg2Pt", "gen. leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
+  hGenLeg1EtaVsLeg2Eta_ = book2D("GenLeg1EtaVsLeg2Eta", "gen. leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
 
   hDiTauCandidatePt_ = book1D("DiTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
   hDiTauCandidateEta_ = book1D("DiTauCandidateEta", "Composite #eta", 100, -5., +5.);
@@ -87,7 +88,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   
   bookWeightHistograms(*dqmStore_, "DiTauCandidateWeight", "Composite Weight", 
 		       hDiTauCandidateWeightPosUnweighted_, hDiTauCandidateWeightPosWeighted_, 
-		       hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_);
+		       hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_, hDiTauCandidateWeightZero_);
 
   hDiTauCandidateImpParSig_ = book1D("DiTauCandidateImpParSig", "#sqrt{#frac{dxy_{1}}{#Delta dxy_{1}}^{2}+#frac{dxy_{2}}{#Delta dxy_{2}}^{2}}", 30, 0., 15.);
   
@@ -170,6 +171,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
       hGenDiTauCandidatePt_->Fill(diTauCandidate->p4VisGen().pt(), weight);
 
       hGenLeg1PtVsLeg2Pt_->Fill(diTauCandidate->p4VisLeg1gen().pt(), diTauCandidate->p4VisLeg2gen().pt(), weight);
+      hGenLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->p4VisLeg1gen().eta(), diTauCandidate->p4VisLeg2gen().eta(), weight);
     }
 
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
@@ -182,7 +184,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->leg1()->eta(), diTauCandidate->leg2()->eta(), weight);
 
     fillWeightHistograms(hDiTauCandidateWeightPosUnweighted_, hDiTauCandidateWeightPosWeighted_, 
-			 hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_, diTauCandidateWeight);
+			 hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_, hDiTauCandidateWeightZero_, diTauCandidateWeight);
 
     const reco::Track* trackLeg1 = trackExtractorLeg1_(*diTauCandidate->leg1());
     const reco::Track* trackLeg2 = trackExtractorLeg2_(*diTauCandidate->leg2());

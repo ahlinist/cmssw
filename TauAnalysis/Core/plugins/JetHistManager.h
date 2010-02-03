@@ -65,6 +65,7 @@ class JetHistManager : public HistManagerBase
   MonitorElement* hJetWeightPosWeighted_;
   MonitorElement* hJetWeightNegUnweighted_;
   MonitorElement* hJetWeightNegWeighted_;
+  MonitorElement* hJetWeightZero_;
   
   MonitorElement* hJetAlpha_;
   MonitorElement* hJetNumTracks_;

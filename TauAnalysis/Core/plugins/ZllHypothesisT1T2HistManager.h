@@ -82,6 +82,7 @@ class ZllHypothesisT1T2HistManager : public HistManagerBase
   MonitorElement* hZllHypothesisWeightPosWeighted_;
   MonitorElement* hZllHypothesisWeightNegUnweighted_;
   MonitorElement* hZllHypothesisWeightNegWeighted_;
+  MonitorElement* hZllHypothesisWeightZero_;
 };
 
 #endif  

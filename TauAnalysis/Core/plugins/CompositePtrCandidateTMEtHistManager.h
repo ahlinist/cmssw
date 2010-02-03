@@ -51,6 +51,7 @@ class CompositePtrCandidateTMEtHistManager : public HistManagerBase
   MonitorElement* hNuTauCandidateWeightPosWeighted_;
   MonitorElement* hNuTauCandidateWeightNegUnweighted_;
   MonitorElement* hNuTauCandidateWeightNegWeighted_;
+  MonitorElement* hNuTauCandidateWeightZero_;
 
   MonitorElement* hNuTauCandidateDPhi_;
   MonitorElement* hNuTauCandidateMt_;
