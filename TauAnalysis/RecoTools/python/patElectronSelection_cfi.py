@@ -44,7 +44,7 @@ selectedLayer1ElectronsTrkIso = cms.EDFilter("PATElectronSelector",
 # with respect to energy deposits in ECAL
 # (not associated to electron candidate)
 selectedLayer1ElectronsEcalIso = cms.EDFilter("PATElectronSelector",
-    cut = cms.string('(abs(superCluster.eta) < 1.479 & ecalIso < 1.0) | (abs(superCluster.eta) > 1.479 & ecalIso < 2.5)'),
+    cut = cms.string('(abs(superCluster.eta) < 1.479 & ecalIso < 2.5) | (abs(superCluster.eta) > 1.479 & ecalIso < 3.5)'),
     filter = cms.bool(False)
 )
 
