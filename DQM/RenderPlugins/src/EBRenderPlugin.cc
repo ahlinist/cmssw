@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.133 2009/12/12 11:15:29 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.134 2009/12/13 16:32:52 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.133 $
-  \date $Date: 2009/12/12 11:15:29 $
+  \version $Revision: 1.134 $
+  \date $Date: 2009/12/13 16:32:52 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -32,6 +32,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <math.h>
+#include <cassert>
 
 class EBRenderPlugin : public DQMRenderPlugin
 {

@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.153 2009/12/12 11:15:29 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.154 2009/12/13 16:32:52 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.153 $
-  \date $Date: 2009/12/12 11:15:29 $
+  \version $Revision: 1.154 $
+  \date $Date: 2009/12/13 16:32:52 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -29,6 +29,7 @@
 #include "TPaletteAxis.h"
 #include <iostream>
 #include <math.h>
+#include <cassert>
 
 class EERenderPlugin : public DQMRenderPlugin
 {
