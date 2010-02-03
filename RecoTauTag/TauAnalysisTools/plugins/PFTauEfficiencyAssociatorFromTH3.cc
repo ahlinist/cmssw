@@ -3,13 +3,13 @@
  * \created : Mon Sep 21 17:46:35 PDT 2009 
  * \author Evan K. Friis, (UC Davis)
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
  * Implements PFTauEfficiencyAssociator to produce a mapping of efficiencies
  * (parameterizied by pt, eta, and jet widht) stored in a ROOT TH3 histograms
  * to reco::PFTaus
  *
- * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.4 2010/01/20 21:23:26 friis Exp $
+ * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.5 2010/01/22 18:44:14 friis Exp $
  *
  */
 
@@ -80,7 +80,8 @@ PFTauEfficiencyAssociatorFromTH3::PFTauEfficiencyAssociatorFromTH3(const Paramet
       container.location = loc;
       if( !(container.histogram) )
       {
-         throw cms::Exception("InputFileError") << "can't retieve histogram " << container.name << " from location: " << container.location;
+	throw cms::Exception("InputFileError") << "can't retrieve histogram " << container.name 
+					       << " from location: " << container.location << " in file: " << filename;
       }
       // set the user as the object owner (to prevent deletion when the file is closed)
       container.histogram->SetDirectory(0);
