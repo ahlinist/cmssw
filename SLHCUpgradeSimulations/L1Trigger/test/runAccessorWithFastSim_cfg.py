@@ -65,3 +65,4 @@ process.p1 = cms.Path(process.simulationWithFamos+process.caloJetMetGen+
 
 # Make the job crash in case of missing product
 process.options = cms.untracked.PSet( Rethrow = cms.untracked.vstring('ProductNotFound') )
+

@@ -25,3 +25,4 @@ class HitMatchingAlgorithmRecord : public edm::eventsetup::DependentRecordImplem
 }
 
 #endif
+

@@ -16,3 +16,4 @@ LocalStubsFromTrackTriggerHits = cms.EDFilter("LocalStubBuilder_TTHit_",
     storeClusters = cms.bool(False)
 )
 
+

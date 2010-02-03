@@ -13,7 +13,7 @@
 //
 // Original Author:  Jim Brooke
 //         Created:  Sun Oct 14 21:13:26 CEST 2007
-// $Id: TrackTriggerPrimitiveProducer.cc,v 1.1 2008/11/05 17:23:06 jbrooke Exp $
+// $Id: TrackTriggerPrimitiveProducer.cc,v 1.1 2009/05/18 16:21:39 arose Exp $
 //
 //
 
@@ -119,3 +119,4 @@ TrackTriggerPrimitiveProducer::endJob() {
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(TrackTriggerPrimitiveProducer);
+

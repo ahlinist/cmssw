@@ -32,3 +32,4 @@ class CaloClusterFilteringCard : public CaloCard<l1slhc::L1CaloCluster>
 };
 
 #endif
+

@@ -294,3 +294,4 @@ class LocalStubBuilder : public edm::EDProducer {
 
 
 #endif
+

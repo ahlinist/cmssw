@@ -104,3 +104,4 @@ class GlobalStubBuilder : public edm::EDProducer {
 };
 
 #endif
+

@@ -91,7 +91,7 @@ L1ExtraMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      {
        
        size_t N=nObjects_;
-       if(jets->size()<nObjects_)
+       if(int(jets->size())<nObjects_)
        N=jets->size();
        
        for(size_t i = 0;i<N;++i)
@@ -117,5 +117,6 @@ L1ExtraMaker::beginJob(const edm::EventSetup&)
 void
 L1ExtraMaker::endJob() {
 }
+
 
 

@@ -13,7 +13,7 @@
 //
 // Original Author:  Jim Brooke
 //         Created:  Thu Sep 27 16:42:09 CEST 2007
-// $Id: TrackTriggerHitsFromMC.cc,v 1.3 2009/01/07 10:11:58 arose Exp $
+// $Id: TrackTriggerHitsFromMC.cc,v 1.1 2009/05/18 16:21:39 arose Exp $
 //
 //
 
@@ -342,3 +342,4 @@ TrackTriggerHitsFromMC::endJob() {
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(TrackTriggerHitsFromMC);
+

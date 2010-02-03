@@ -38,3 +38,4 @@ class L1CaloTowerProducer : public edm::EDProducer {
       edm::InputTag hcalDigis_;
 
 };
+

@@ -16,7 +16,7 @@
 //
 // Original Author:  Ignazio Lazzizzera
 //         Created:  Fri Oct 16 15:44:58 CEST 2009
-// $Id$
+// $Id: DTL1slhcPlots.h,v 1.1 2010/02/02 18:44:29 arose Exp $
 //
 //
 
@@ -124,4 +124,5 @@ private:
 };
 
 #endif
+
 

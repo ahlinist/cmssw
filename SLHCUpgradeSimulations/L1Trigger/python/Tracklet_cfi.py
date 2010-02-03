@@ -20,3 +20,4 @@ TrackletsFromTrackTriggerHits = cms.EDFilter("TrackletBuilder_TTHit_",
 	fastPhiCut = cms.double(0.1),
     GlobalStubs = cms.InputTag("GlobalStubsFromTrackTriggerHits")
 )
+

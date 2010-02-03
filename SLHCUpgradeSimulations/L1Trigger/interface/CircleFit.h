@@ -233,3 +233,4 @@ TRACE
 		std::vector< GlobalPoint > mData;
 };
 #endif
+

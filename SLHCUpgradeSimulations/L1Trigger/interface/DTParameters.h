@@ -6,3 +6,4 @@ const float Erre =  316.;
 // This should be the radius of the inner surface of the coil
 
 #endif
+

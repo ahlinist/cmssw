@@ -25,3 +25,4 @@ class ClusteringAlgorithmRecord : public edm::eventsetup::DependentRecordImpleme
 }
 
 #endif
+

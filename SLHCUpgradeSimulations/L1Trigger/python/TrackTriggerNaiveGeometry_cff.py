@@ -16,3 +16,4 @@ trackTriggerNaiveGeom = cms.ESProducer("TrackTriggerNaiveGeometryESProducer",
                                        barrelPixelPhiSize = cms.vdouble( 0.015 )
 )                                       
                                      
+

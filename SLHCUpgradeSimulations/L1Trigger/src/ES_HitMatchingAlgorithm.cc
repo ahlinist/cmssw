@@ -16,3 +16,4 @@
 EVENTSETUP_DATA_REG(cmsUpgrades::HitMatchingAlgorithm<cmsUpgrades::Ref_PSimHit_>);
 EVENTSETUP_DATA_REG(cmsUpgrades::HitMatchingAlgorithm<cmsUpgrades::Ref_PixelDigi_>);
 EVENTSETUP_DATA_REG(cmsUpgrades::HitMatchingAlgorithm<cmsUpgrades::Ref_TTHit_>);
+

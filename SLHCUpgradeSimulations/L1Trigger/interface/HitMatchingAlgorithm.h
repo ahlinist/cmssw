@@ -48,3 +48,4 @@ class HitMatchingAlgorithm {
 }
 
 #endif
+

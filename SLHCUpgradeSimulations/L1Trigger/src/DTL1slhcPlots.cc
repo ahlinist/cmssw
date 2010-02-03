@@ -13,7 +13,7 @@
 //
 // Original Author:  Ignazio Lazzizzera
 //         Created:  Fri Oct 16 15:44:58 CEST 2009
-// $Id$
+// $Id: DTL1slhcPlots.cc,v 1.1 2010/02/02 18:44:30 arose Exp $
 //
 //
 
@@ -420,3 +420,4 @@ void DTL1slhcPlots::getOptimalRange(TH1* h, float entries[])
 
 //define this as a plug-in
 //DEFINE_FWK_MODULE(DTL1slhcPlots);
+

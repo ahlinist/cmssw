@@ -43,3 +43,4 @@ char* biny (int Value, bool truncated_on_the_left , size_t wordSize) {
   FinalText[size] = 0;
   return FinalText;
 }
+

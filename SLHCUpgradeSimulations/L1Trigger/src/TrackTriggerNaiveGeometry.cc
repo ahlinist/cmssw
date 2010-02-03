@@ -366,3 +366,4 @@ std::ostream& operator << (std::ostream& os, const TrackTriggerNaiveGeometry& g)
   os << " pixelSizePhi=" << g.barrelPixelSizePhi(0);
   return os;
 }
+

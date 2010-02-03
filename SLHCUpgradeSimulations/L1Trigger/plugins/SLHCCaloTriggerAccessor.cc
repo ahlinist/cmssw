@@ -109,7 +109,7 @@ SLHCCaloTriggerAccessor::analyze(const edm::Event& iEvent,
   edm::Handle<l1extra::L1EmParticleCollection> l1egamma;
   if (iEvent.getByLabel(l1egamma_,l1egamma)) {
     int n=0;
-    for (int i=0;i<l1egamma->size();i++) {
+    for (unsigned int i=0;i<l1egamma->size();i++) {
       l1eg_et[n]  = (*l1egamma)[i].et();
       l1eg_eta[n] = (*l1egamma)[i].eta();
       l1eg_phi[n] = (*l1egamma)[i].phi();
@@ -122,7 +122,7 @@ SLHCCaloTriggerAccessor::analyze(const edm::Event& iEvent,
   edm::Handle<l1extra::L1EmParticleCollection> l1isoegamma;
   if (iEvent.getByLabel(l1isoegamma_,l1isoegamma)) {
     int n=0;
-    for (int i=0;i<l1isoegamma->size();i++) {
+    for (unsigned int i=0;i<l1isoegamma->size();i++) {
       l1isoeg_et[n]  = (*l1isoegamma)[i].et();
       l1isoeg_eta[n] = (*l1isoegamma)[i].eta();
       l1isoeg_phi[n] = (*l1isoegamma)[i].phi();
@@ -135,7 +135,7 @@ SLHCCaloTriggerAccessor::analyze(const edm::Event& iEvent,
    edm::Handle<l1extra::L1JetParticleCollection> l1tau;
    if (iEvent.getByLabel(l1tau_,l1tau)) {
       int n=0;
-      for (int i=0;i<l1tau->size();i++) {
+      for (unsigned int i=0;i<l1tau->size();i++) {
         l1tau_et[n]  = (*l1tau)[i].et();
         l1tau_eta[n] = (*l1tau)[i].eta();
         l1tau_phi[n] = (*l1tau)[i].phi();
@@ -148,7 +148,7 @@ SLHCCaloTriggerAccessor::analyze(const edm::Event& iEvent,
    edm::Handle<l1extra::L1JetParticleCollection> l1isotau;
    if (iEvent.getByLabel(l1isotau_,l1isotau)) {
       int n=0;
-      for (int i=0;i<l1isotau->size();i++) {
+      for (unsigned int i=0;i<l1isotau->size();i++) {
 	printf("Looping on Iso Tau\n");
         l1isotau_et[n]  = (*l1isotau)[i].et();
         l1isotau_eta[n] = (*l1isotau)[i].eta();
@@ -193,4 +193,5 @@ SLHCCaloTriggerAccessor::endJob() {
   f->Close();
 
 }
+
 

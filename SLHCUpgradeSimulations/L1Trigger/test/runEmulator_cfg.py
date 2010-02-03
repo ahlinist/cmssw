@@ -36,3 +36,4 @@ process.output = cms.OutputModule("PoolOutputModule",
 )
 process.path = cms.Path(process.L1SLHCEmulator)
 process.end = cms.EndPath(process.output)
+

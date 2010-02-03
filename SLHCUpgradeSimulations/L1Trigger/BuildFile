@@ -39,8 +39,8 @@
 <use name=SimDataFormats/Track>
 <use name=SimDataFormats/Vertex>
 <use name=SimDataFormats/TrackingHit>
-<use name=SimDataFormats/SLHC>
-<use name=DataFormats/SiPixelDetId>
+#<use name=SimDataFormats/SLHC>
+#<use name=DataFormats/SiPixelDetId>
 
 <use name=TrackingTools/Records>
 <use name=TrackingTools/PatternTools>
@@ -48,7 +48,7 @@
 <use name=TrackingTools/GeomPropagators>
 <use name=TrackingTools/TransientTrack>
 <use name=TrackingTools/TrajectoryParametrization>
-<use name=TrackingTools/TrackAssociator>
+#<use name=TrackingTools/TrackAssociator>
 
 <use name=RecoTracker/TrackProducer>
 
@@ -59,12 +59,12 @@
 
 <use name=SLHCUpgradeSimulations/Utilities>
 
-<use name=PhysicsTools/CandUtils>
-<use name=FWCore/MessageLogger>
+#<use name=PhysicsTools/CandUtils>
+#<use name=FWCore/MessageLogger>
 
 
-<use name=CondFormats/L1TObjects>
-<use name=CondFormats/DataRecord>
+#<use name=CondFormats/L1TObjects>
+#<use name=CondFormats/DataRecord>
 
 
 <use name=clhep>
@@ -73,9 +73,9 @@
 <use name=root>
 <use name=rootrflx>
 
-<use name=SimDataFormats/Track>
-<use name=SimDataFormats/SLHC>
-<use name=DataFormats/SiPixelDetId>
+#<use name=SimDataFormats/Track>
+#<use name=SimDataFormats/SLHC>
+#<use name=DataFormats/SiPixelDetId>
 
 <export>
  <Flags SEALPLUGIN=1>
@@ -117,6 +117,7 @@
   <use name=rootrflx>
   <use name=xerces-c>
 </export>
+
 
 
 
