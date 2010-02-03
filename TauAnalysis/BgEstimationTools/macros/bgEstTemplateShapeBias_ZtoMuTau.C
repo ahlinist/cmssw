@@ -6,7 +6,8 @@ Int_t lineStyles[] = { 4, 2, 1 };
 void bgEstTemplateShapeBias_ZtoMuTau()
 {
   //TString dqmDirectoryName = "DQMData/harvested/WplusJets/zMuTauAnalyzer/";
-  TString dqmDirectoryName = "DQMData/harvested/qcdSum/zMuTauAnalyzer/";
+  //TString dqmDirectoryName = "DQMData/harvested/qcdSum/zMuTauAnalyzer/";
+  TString dqmDirectoryName = "DQMData/harvested/PPmuXptGt20_factorized/zMuTauAnalyzer/";
 
   TObjArray dqmSubDirectoryNames;
   //dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauAcoplanarity12_beforeEvtSelDiTauCandidateForMuTauMt1MET/"));
@@ -108,7 +109,10 @@ void showTemplateShapeBias_i(const TString& inputFileName, const TString& dqmDir
     //dqmMonitorElement->SetMaximum(1.4*yMax);
     //dqmMonitorElement->SetMinimum(0.);
     dqmMonitorElement->SetMaximum(1.e+2*yMax);
-    dqmMonitorElement->SetMinimum(1.e+1);
+    if ( normalize )
+      dqmMonitorElement->SetMinimum(1.e-3);
+    else
+      dqmMonitorElement->SetMinimum(1.e+1);
     
     dqmMonitorElement->SetStats(false);
 
