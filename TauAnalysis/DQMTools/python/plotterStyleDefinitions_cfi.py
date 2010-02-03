@@ -426,11 +426,11 @@ drawOption_green_eff = cms.PSet(
 # for error-bands
 # (e.g. systematic uncertainty on Monte Carlo expectation)
 drawOption_uncertainty = cms.PSet(
-    lineColor = color_green,
+    lineColor = color_gray,
     lineStyle = cms.int32(1),
-    lineWidth = cms.int32(1),
-    fillColor = color_green,
-    fillStyle = cms.int32(3004),
+    lineWidth = cms.int32(2),
+    fillColor = color_gray,
+    fillStyle = cms.int32(3003),
     drawOption = cms.string('eBand'),
     drawOptionLegend = cms.string('f')
 )
