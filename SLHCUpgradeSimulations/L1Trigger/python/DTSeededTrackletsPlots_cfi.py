@@ -39,3 +39,4 @@ DTL1slhcPlots = cms.EDAnalyzer(
   desert = cms.untracked.double(0.0005),
   rootFileNamePlots = cms.untracked.string('')
 )
+

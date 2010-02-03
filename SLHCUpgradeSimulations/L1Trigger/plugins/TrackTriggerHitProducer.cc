@@ -13,7 +13,7 @@
 //
 // Original Author:  Steve Stroiney
 //         Created:  Wed Oct 15 12:09:57 EDT 2008
-// $Id: TrackTriggerHitProducer.cc,v 1.2 2008/12/16 21:09:07 stroiney Exp $
+// $Id: TrackTriggerHitProducer.cc,v 1.1 2009/05/18 16:21:39 arose Exp $
 //
 //
 
@@ -212,3 +212,4 @@ TrackTriggerHitProducer::endJob() {
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(TrackTriggerHitProducer);
+

@@ -13,7 +13,7 @@
 //
 // Original Author:  Jim Brooke
 //         Created:  Mon Nov 26 00:16:29 CET 2007
-// $Id: TrackTriggerHitsPrinter.cc,v 1.1 2008/11/05 17:23:06 jbrooke Exp $
+// $Id: TrackTriggerHitsPrinter.cc,v 1.1 2009/05/18 16:21:39 arose Exp $
 //
 //
 
@@ -117,3 +117,4 @@ DumpL1TrackerHits::endJob() {
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(DumpL1TrackerHits);
+

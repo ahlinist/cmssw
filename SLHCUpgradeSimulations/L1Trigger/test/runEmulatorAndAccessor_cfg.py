@@ -35,3 +35,4 @@ process.output = cms.OutputModule("PoolOutputModule",
 
 process.path = cms.Path(process.L1SLHCEmulator+process.CaloTriggerAccessor)
 process.end = cms.EndPath(process.output)
+

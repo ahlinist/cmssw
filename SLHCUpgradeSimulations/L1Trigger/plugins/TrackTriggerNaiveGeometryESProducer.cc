@@ -13,7 +13,7 @@
 //
 // Original Author:  Jim Brooke
 //         Created:  Thu Mar 20 10:59:56 CET 2008
-// $Id: TrackTriggerNaiveGeometryESProducer.cc,v 1.2 2008/11/11 08:59:31 harder Exp $
+// $Id: TrackTriggerNaiveGeometryESProducer.cc,v 1.1 2009/05/18 16:21:39 arose Exp $
 //
 //
 
@@ -126,3 +126,4 @@ TrackTriggerNaiveGeometryESProducer::produce(const TrackTriggerNaiveGeometryRcd&
 
 //define this as a plug-in
 DEFINE_FWK_EVENTSETUP_MODULE(TrackTriggerNaiveGeometryESProducer);
+

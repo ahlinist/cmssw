@@ -11,3 +11,4 @@ L1CaloTriggerSetupSource = cms.ESSource("EmptyESSource",
 L1CaloTriggerSetup = cms.ESProducer("L1CaloTriggerSetupProducer",
                                     InputXMLFile = cms.FileInPath('SLHCUpgradeSimulations/L1Trigger/data/setup40.xml')
                                     )
+

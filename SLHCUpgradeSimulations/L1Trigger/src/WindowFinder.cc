@@ -158,3 +158,4 @@ cmsUpgrades::StackedTrackerWindow cmsUpgrades::WindowFinder::getWindow( const St
 
 	return cmsUpgrades::StackedTrackerWindow::StackedTrackerWindow (  mMinrow , mMaxrow , mMincol , mMaxcol  );
 }
+

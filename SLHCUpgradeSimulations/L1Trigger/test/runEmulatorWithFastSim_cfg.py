@@ -77,3 +77,4 @@ process.outpath = cms.EndPath(process.o1)
 
 # Make the job crash in case of missing product
 process.options = cms.untracked.PSet( Rethrow = cms.untracked.vstring('ProductNotFound') )
+

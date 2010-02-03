@@ -3,7 +3,7 @@
 //
 // Original Author:  Ignazio Lazzizzera
 //         Created:  Thu Jul 30 11:56:13 CEST 2009
-// $Id$
+// $Id: DTL1SimOperation.cc,v 1.1 2010/02/02 18:44:30 arose Exp $
 //
 //
 
@@ -202,6 +202,7 @@ void DTL1SimOperation::End_of_Operations()
     outAscii.close();
   delete TSThetaTrigs;
 }
+
 
 
 

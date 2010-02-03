@@ -140,3 +140,4 @@ HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer(
 HitMatchingAlgorithm_TTHit_ = cms.ESPrefer(
     "HitMatchingAlgorithm_pixelray_TTHit_"
     )
+

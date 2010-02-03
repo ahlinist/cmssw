@@ -16,7 +16,7 @@
 //
 // Author:      
 // Created:     Thu Mar 20 11:49:31 CET 2008
-// $Id: TrackTriggerNaiveGeometryRcd.h,v 1.1 2008/11/05 17:23:06 jbrooke Exp $
+// $Id: TrackTriggerNaiveGeometryRcd.h,v 1.1 2009/05/18 16:21:38 arose Exp $
 //
 
 #include "FWCore/Framework/interface/EventSetupRecordImplementation.h"
@@ -24,3 +24,4 @@
 class TrackTriggerNaiveGeometryRcd : public edm::eventsetup::EventSetupRecordImplementation<TrackTriggerNaiveGeometryRcd> {};
 
 #endif
+

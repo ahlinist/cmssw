@@ -116,3 +116,4 @@ getPixelRayEndpoints(const LocalStub<T> & aLocalStub,
 }
 
 #endif
+

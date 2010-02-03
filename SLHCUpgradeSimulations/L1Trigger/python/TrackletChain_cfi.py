@@ -17,3 +17,4 @@ TrackletChainsFromTrackTriggerHits = cms.EDFilter("TrackletChainBuilder_TTHit_",
     Zmatch = cms.double(1.0),
     ShortTracklets = cms.InputTag("TrackletsFromTrackTriggerHits", "ShortTracklets" )
 )
+

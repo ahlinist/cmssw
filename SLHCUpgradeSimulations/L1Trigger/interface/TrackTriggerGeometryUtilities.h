@@ -17,3 +17,4 @@ GlobalPoint averagePosition(const GeomDetUnit* geom, const std::vector<TrackTrig
 }
 
 #endif
+

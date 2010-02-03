@@ -8,3 +8,4 @@ CaloTriggerAccessor = cms.EDFilter("SLHCCaloTriggerAccessor",
     Jets           = cms.InputTag("L1ExtraMaker","Jets"),
     OutputFileName = cms.string('analysis.root')
 )
+

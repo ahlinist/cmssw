@@ -82,3 +82,4 @@ ClusteringAlgorithm_PixelDigi_ = cms.ESPrefer(
 ClusteringAlgorithm_TTHit_ = cms.ESPrefer(
     "ClusteringAlgorithm_a_TTHit_"
     )
+

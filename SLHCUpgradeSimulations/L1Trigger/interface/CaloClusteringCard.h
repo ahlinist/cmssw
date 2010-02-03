@@ -34,3 +34,4 @@ class CaloClusteringCard : public CaloCard<l1slhc::L1CaloTower>
 };
 
 #endif
+

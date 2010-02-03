@@ -93,3 +93,4 @@ else {stationfrom2=stationto; stationto2=stationfrom;}
 		zcorr = zcorrlookup[stationto2 + 2][deltaz]*(.01);
 	}
 }
+

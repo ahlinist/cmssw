@@ -6,3 +6,4 @@ trackTriggerHits = cms.EDProducer("TrackTriggerHitsFromMC",
     magField = cms.double(4.0),
     inputTag = cms.InputTag("mix")
 )
+

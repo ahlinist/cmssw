@@ -25,3 +25,4 @@ GlobalPoint cmsUpgrades::TrackTriggerGeometryUtilities::averagePosition(const Ge
 	averageZ /= hits.size();
 	return GlobalPoint(averageX, averageY, averageZ);
 }
+

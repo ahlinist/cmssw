@@ -12,3 +12,4 @@ GlobalStubsFromTrackTriggerHits = cms.EDFilter("GlobalStubBuilder_TTHit_",
     LocalStubs = cms.InputTag("LocalStubsFromTrackTriggerHits")
 )
 
+

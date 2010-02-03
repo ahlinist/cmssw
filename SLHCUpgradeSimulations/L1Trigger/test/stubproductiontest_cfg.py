@@ -240,3 +240,4 @@ process.p7 = cms.Path(process.TrackTriggerHitsFromPixelDigis*process.LocalStubsF
 #process.p6 = cms.Path(process.offlineBeamSpot+process.recopixelvertexing*process.ckftracks)
 #process.p7 = cms.Path(process.trackingParticles*process.cutsTPEffic*process.cutsTPFake*process.multiTrackValidator)
 process.schedule = cms.Schedule(process.p1,process.p2,process.p5,process.p6,process.p7,process.p,process.outpath)
+
