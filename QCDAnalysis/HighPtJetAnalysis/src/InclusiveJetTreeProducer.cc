@@ -34,7 +34,6 @@ typedef math::PtEtaPhiELorentzVectorF LorentzVector;
 InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg) 
 {
   mJetsName               = cfg.getParameter<std::string>              ("jets");
-  mGenJetsName            = cfg.getUntrackedParameter<std::string>     ("genjets","");
   mJetsIDName             = cfg.getParameter<std::string>              ("jetsID");
   mMetName                = cfg.getParameter<std::string>              ("met");
   mMetNoHFName            = cfg.getParameter<std::string>              ("metNoHF");
@@ -46,8 +45,9 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mTriggerResultsTag      = cfg.getParameter<edm::InputTag>            ("triggerResultsTag");               
   mL1GTReadoutRcdSource   = cfg.getParameter<edm::InputTag>            ("L1GTReadoutRcdSource");
   mL1GTObjectMapRcdSource = cfg.getParameter<edm::InputTag>            ("L1GTObjectMapRcdSource");
-  mIsMCarlo               = cfg.getParameter<bool>                     ("isMCarlo");
   mJetPtMin               = cfg.getParameter<double>                   ("minJetPt");
+  mIsMCarlo               = cfg.getUntrackedParameter<bool>            ("isMCarlo",false);
+  mGenJetsName            = cfg.getUntrackedParameter<std::string>     ("genjets","");
 
   mFillHLT = (!mTriggerNames.empty());
   mFillL1  = (!mL1TriggerNames.empty());
