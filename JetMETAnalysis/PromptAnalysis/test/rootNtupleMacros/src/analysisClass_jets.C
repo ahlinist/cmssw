@@ -311,7 +311,8 @@ void analysisClass::Loop()
        //event selection - cut on vertex for now. l1 tech bits already asked at skimming step
 //        if(vertexNTracks->at(0)>1. && fabs(vertexZ->at(0))<20){   // "old" event selection (as taken over from viola)
 //        if(vertexNTracksW5->at(0)>3. && fabs(vertexZ->at(0))<15 && vertexisValid->at(0)==true){    // "new" event selection
-       if(vertexNTracksW5->at(0)>=4. && fabs(vertexZ->at(0))<15 && vertexNDF->at(0)!=0 && tracksChi2!=0){    // "newer" event selection
+//        if(vertexNTracksW5->at(0)>=4. && fabs(vertexZ->at(0))<15 && vertexNDF->at(0)!=0 && tracksChi2!=0){    // "newer" event selection
+       if(fabs(vertexZ->at(0))<15 && vertexNDF->at(0)>=5 && vertexisValid->at(0)==true){    // "newest" event selection
 
 
 	 int isdata = isData;
