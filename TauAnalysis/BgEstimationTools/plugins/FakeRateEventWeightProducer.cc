@@ -50,17 +50,7 @@ void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup
       
       getTauJetProperties(evt, tauJetRef, iTauJet, preselTauJets, frTypeEntry->second, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
     
-      double fakeRateJetWeight = 0.;
-    
-      if ( method_ == "simple" ) {
-	fakeRateJetWeight = qcdJetFakeRate;
-      } else if ( method_ == "CDF" ) {
-	if ( tauJetIdEff > qcdJetFakeRate ) {
-	  fakeRateJetWeight = ( tauJetDiscr_passed ) ? 
-	    -qcdJetFakeRate*(1. - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate) : qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
-	}
-      }
-      
+      double fakeRateJetWeight = getFakeRateJetWeight(tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed, tauJetRef.get());
       //std::cout << " --> jet weight = " << fakeRateJetWeight << std::endl;
       
       fakeRateJetWeightSum += fakeRateJetWeight;

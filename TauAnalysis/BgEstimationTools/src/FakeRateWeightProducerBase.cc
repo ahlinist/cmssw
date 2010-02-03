@@ -79,7 +79,11 @@ FakeRateWeightProducerBase::fakeRateTypeEntry::~fakeRateTypeEntry()
 //
 
 FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& cfg)
-  : cfgError_(0)
+  : cfgError_(0),
+    numJets_weightBelowMinimum_(0),
+    numJets_weightAboveMaximum_(0),
+    numJets_reverseWeightOrder_(0),
+    numJets_processed_(0)
 {
   method_ = cfg.getParameter<std::string>("method");
   if ( !(method_ == "simple" || method_ == "CDF") ) {
@@ -101,11 +105,24 @@ FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& 
 
     fakeRateTypes_.insert(std::pair<std::string, fakeRateTypeEntry>(*frTypeName, cfgFakeRateType));
   }
+
+  minJetWeight_ = cfg.getParameter<double>("minJetWeight");
+  maxJetWeight_ = cfg.getParameter<double>("maxJetWeight");
+
+  minJetPt_ = cfg.getParameter<double>("minJetPt");
+  maxJetPt_ = cfg.getParameter<double>("maxJetPt");
+  minJetEta_ = cfg.getParameter<double>("minJetEta");
+  maxJetEta_ = cfg.getParameter<double>("maxJetEta");
 }
 
 FakeRateWeightProducerBase::~FakeRateWeightProducerBase()
 {
-//--- nothing to be done yet...
+  std::cout << "<~FakeRateWeightProducerBase>:" << std::endl;
+  std::cout << "number of tau-jet candidates" << std::endl;
+  std::cout << " processed = " << numJets_processed_ << std::endl;
+  std::cout << " jet-weight < miminum (= " << minJetWeight_ << ") = " << numJets_weightBelowMinimum_ << std::endl;
+  std::cout << " jet-weight < maxinum (= " << maxJetWeight_ << ") = " << numJets_weightAboveMaximum_ << std::endl;
+  std::cout << " tau id. efficiency < fake-rate = " << numJets_reverseWeightOrder_ << std::endl;
 }
 
 void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
@@ -190,4 +207,50 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
     
     if ( !(tauJetDiscr_value > tauJetDiscr->tauJetDiscrThreshold_) ) tauJetDiscr_passed = false;
   }
+}
+
+double FakeRateWeightProducerBase::getFakeRateJetWeight(double tauJetIdEff, double qcdJetFakeRate, 
+							bool tauJetDiscr_passed, const reco::BaseTau* tauJet)
+{
+  double fakeRateJetWeight = 0.;
+
+  if ( tauJet->pt()  > minJetPt_  && tauJet->pt()  < maxJetPt_ &&
+       tauJet->eta() > minJetEta_ && tauJet->eta() < maxJetEta_ ) {
+    if ( method_ == "simple" ) {
+      fakeRateJetWeight = qcdJetFakeRate;
+    } else if ( method_ == "CDF" ) {
+      if ( tauJetIdEff > qcdJetFakeRate ) {
+	fakeRateJetWeight = ( tauJetDiscr_passed ) ? 
+	  -qcdJetFakeRate*(1. - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate) : qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
+
+	if ( fakeRateJetWeight < minJetWeight_ ) {
+	  edm::LogWarning ("getFakeRateJetWeight") 
+	    << " Jet-weight = " << fakeRateJetWeight << " falls below minimum value = " << minJetWeight_
+	    << " --> setting jet-weight to minimum value !!";
+	  fakeRateJetWeight = minJetWeight_;
+	  ++numJets_weightBelowMinimum_;
+	}
+	
+	if ( fakeRateJetWeight > maxJetWeight_ ) {
+	  edm::LogWarning ("getFakeRateJetWeight") 
+	    << " Jet-weight = " << fakeRateJetWeight << " exceeds maximum value = " << maxJetWeight_
+	    << " --> setting jet-weight to maximum value !!";
+	  fakeRateJetWeight = maxJetWeight_;
+	  ++numJets_weightAboveMaximum_;
+	}
+      } else {
+	edm::LogWarning ("getFakeRateJetWeight") 
+	  << " QCD-jet fake-rate = " << qcdJetFakeRate << " exceeds Tau-jet id. efficiency = " << tauJetIdEff
+	  << " for Pt = " << tauJet->pt() << ", eta = " << tauJet->eta() << ", phi = " << tauJet->phi()
+	  // CV: jet-radius not yet available in pat::Tau,
+	  //     would need reference to reco::Jet (which right now needs PFTauTagInfo)
+	  //<< " jet-radius = " << TMath::Sqrt(tauJet->etaetaMoment() + tauJet->phiphiMoment())
+	  << " --> setting jet-weight to zero !!";
+	++numJets_reverseWeightOrder_;
+      }
+    }
+    ++++numJets_processed_;
+  }
+
+  return fakeRateJetWeight;
 }

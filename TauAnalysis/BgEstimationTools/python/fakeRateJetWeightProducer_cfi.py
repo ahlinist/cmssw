@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
-    method = cms.string("CDF"), # "simple"/"CDF"
+    method = cms.string("CDF"),
+    #method = cms.string("simple"),          
                                          
     allTauJetSource = cms.InputTag('shrinkingConePFTauProducer'),
     preselTauJetSource = cms.InputTag('shrinkingConePFTauProducer'),
@@ -46,5 +47,17 @@ bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
             )
         )
         #gammaPlusJets        
-    )
+    ),
+
+    # minimum/maximum jet weights below/above which
+    # jet weights get "truncated"                                          
+    minJetWeight = cms.double(-1.),
+    maxJetWeight = cms.double(+1.),
+
+    # kinematic range within which jet weights are computed
+    # (jets with Pt/Eta < mininimum or > maximum get assigned a weights of zero)
+    minJetPt = cms.double(20.),
+    maxJetPt = cms.double(120.),
+    minJetEta = cms.double(-2.1),
+    maxJetEta = cms.double(+2.1)             
 )
