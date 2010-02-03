@@ -20,9 +20,12 @@ class EGammaRenderPlugin : public DQMRenderPlugin
 public:
   virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
+      // egamma filter
+      if ( o.name.find( "Egamma/") == std::string::npos )
+        return false;
+           
       // electrons
-
-      if ( o.name.find( "Electrons/") != std::string::npos )
+      if ( o.name.find( "/Electrons/ele") != std::string::npos )
         return true;
            
       // photons
@@ -53,7 +56,7 @@ public:
       c->cd();
 
       // electrons
-      if ( o.name.find( "Electrons/") != std::string::npos )
+      if ( o.name.find( "/Electrons/ele") != std::string::npos )
        {
         TH1 * histo = dynamic_cast<TH1*>(o.object) ;
         assert(histo) ;
@@ -96,7 +99,7 @@ public:
       c->cd();
       
       // electrons : do nothing
-      if ( o.name.find( "Electrons/") != std::string::npos )
+      if ( o.name.find( "/Electrons/ele") != std::string::npos )
        { return ; }
              
       // photons
