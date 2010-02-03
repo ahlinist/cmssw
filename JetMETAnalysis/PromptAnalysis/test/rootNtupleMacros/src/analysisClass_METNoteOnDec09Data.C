@@ -638,23 +638,16 @@ void analysisClass::Loop()
 
       //pass_GoodVertex 
       //https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe
-      int pass_GoodVertex = 1;
+      int pass_GoodVertex = 0;
 
       if(vertexZ->size() == 0) pass_GoodVertex = 0;
       for (int ii=0; ii<vertexZ->size(); ii++)
-	{
-	  if(isData == 1)
-	    {
-	      if( vertexChi2->at(ii) == 0. || vertexNDF->at(ii) == 0 || vertexNTracksW5->at(ii) < 4 || fabs(vertexZ->at(ii)) >= 15. )
-		pass_GoodVertex = 0;
-	    }
-	  else if(isData == 0)
-	    {
-	      if( vertexChi2->at(ii) == 0. || vertexNDF->at(ii) == 0 || vertexNTracksW5->at(ii) < 4 || fabs(vertexZ->at(ii)) >= 15. )
-		pass_GoodVertex = 0;
-	    }
-	}
-
+	if( vertexChi2->at(ii) != 0. && vertexNDF->at(ii) != 0 && vertexNDF->at(ii) >= 5 && fabs(vertexZ->at(ii)) <= 15. )
+	  {
+	    pass_GoodVertex = 1;
+	    break;
+	  }
+      
       //## pass_MonsterTRKEventVeto - "Monster Events" Tracker Filter
       //see https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe
       int pass_MonsterTRKEventVeto = 0;
