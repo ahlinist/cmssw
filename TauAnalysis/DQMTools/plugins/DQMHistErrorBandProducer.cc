@@ -97,12 +97,12 @@ void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_cent
 		      const std::string& outputDirectory, 
 		      const std::string& dqmSubDirectory, int nDoF)
 {
-  std::cout << "<computeErrorBand>:" << std::endl;
-  std::cout << " inputDirectory_centralValue = " << inputDirectory_centralValue << std::endl;
-  std::cout << " inputDirectories_variance = " << format_vstring(inputDirectories_variance) << std::endl;
-  std::cout << " outputDirectory = " << outputDirectory << std::endl;
-  std::cout << " dqmSubDirectory = " << dqmSubDirectory << std::endl;
-  std::cout << " nDoF = " << nDoF << std::endl;
+  //std::cout << "<computeErrorBand>:" << std::endl;
+  //std::cout << " inputDirectory_centralValue = " << inputDirectory_centralValue << std::endl;
+  //std::cout << " inputDirectories_variance = " << format_vstring(inputDirectories_variance) << std::endl;
+  //std::cout << " outputDirectory = " << outputDirectory << std::endl;
+  //std::cout << " dqmSubDirectory = " << dqmSubDirectory << std::endl;
+  //std::cout << " nDoF = " << nDoF << std::endl;
 
   std::string dqmDirectory_centralValue = dqmDirectoryName(inputDirectory_centralValue).append(dqmSubDirectory);
 
@@ -123,18 +123,9 @@ void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_cent
 	meName != meNames.end(); ++meName ) {
     bool dqmError = false;
 
+    dqmStore.setCurrentFolder(dqmDirectory_centralValue);
     MonitorElement* me_centralValue = getMonitorElement(dqmStore, dqmDirectory_centralValue, *meName, dqmError);
-
-    std::vector<MonitorElement*> mes_variance;
-    for ( std::vector<std::string>::const_iterator dqmDirectory_variance = dqmDirectories_variance.begin();
-	  dqmDirectory_variance != dqmDirectories_variance.end(); ++dqmDirectory_variance ) {
-      MonitorElement* me_variance = getMonitorElement(dqmStore, *dqmDirectory_variance, *meName, dqmError);
-      mes_variance.push_back(me_variance);
-    }
-
-    MonitorElement* me_output = getMonitorElement(dqmStore, dqmDirectory_output, *meName, dqmError);
-
-    if ( dqmError ) continue;
+    if ( !me_centralValue ) continue;
 
     if ( me_centralValue->kind() == MonitorElement::DQM_KIND_TH1F      ||
 	 me_centralValue->kind() == MonitorElement::DQM_KIND_TH1S      ||
@@ -146,16 +137,27 @@ void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_cent
       TH1* histogram_centralValue = getHistogram(me_centralValue, dqmError);
 
       std::vector<TH1*> histograms_variance;
-      for ( std::vector<MonitorElement*>::iterator me_variance = mes_variance.begin();
-	    me_variance != mes_variance.end(); ++me_variance ) {
-	assert(me_centralValue->kind() == (*me_variance)->kind() == me_output->kind());
-	TH1* histogram_variance = getHistogram(*me_variance, dqmError);
-	histograms_variance.push_back(histogram_variance);
+      for ( std::vector<std::string>::const_iterator dqmDirectory_variance = dqmDirectories_variance.begin();
+	    dqmDirectory_variance != dqmDirectories_variance.end(); ++dqmDirectory_variance ) {
+	dqmStore.setCurrentFolder(*dqmDirectory_variance);
+	MonitorElement* me_variance = getMonitorElement(dqmStore, *dqmDirectory_variance, *meName, dqmError);
+	if ( me_variance ) {
+	  TH1* histogram_variance = getHistogram(me_variance, dqmError);
+	  histograms_variance.push_back(histogram_variance);
+	}
       }
 
-      TH1* histogram_output = getHistogram(me_output, dqmError);
-
-      if ( dqmError ) continue;
+      dqmStore.setCurrentFolder(dqmDirectory_output);
+      MonitorElement* me_output = getMonitorElement(dqmStore, dqmDirectory_output, *meName, dqmError);
+      TH1* histogram_output = 0;
+      if ( me_output ) {
+	histogram_output = getHistogram(me_output, dqmError);
+      }
+      
+      if ( dqmError ) {
+	edm::LogWarning ("computeErrorBand") << " Failed to retrieve histograms for meName = " << (*meName) << " --> skipping !!";
+	continue;
+      }
 
       unsigned numBinsX = histogram_centralValue->GetNbinsX();
       for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
@@ -169,9 +171,23 @@ void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_cent
 	    double variance = 0.;
 	    for ( std::vector<TH1*>::const_iterator histogram_variance = histograms_variance.begin();
 		  histogram_variance != histograms_variance.end(); ++histogram_variance ) {
-	      assert(histogram_centralValue->GetNbinsX() == (*histogram_variance)->GetNbinsX() == histogram_output->GetNbinsX());
-	      assert(histogram_centralValue->GetNbinsY() == (*histogram_variance)->GetNbinsY() == histogram_output->GetNbinsY());
-	      assert(histogram_centralValue->GetNbinsZ() == (*histogram_variance)->GetNbinsZ() == histogram_output->GetNbinsZ());
+	      if ( !(histogram_centralValue->GetNbinsX() == (*histogram_variance)->GetNbinsX() &&
+		     histogram_centralValue->GetNbinsX() == histogram_output->GetNbinsX() &&
+		     histogram_centralValue->GetNbinsY() == (*histogram_variance)->GetNbinsY() &&
+		     histogram_centralValue->GetNbinsY() == histogram_output->GetNbinsY() &&
+		     histogram_centralValue->GetNbinsZ() == (*histogram_variance)->GetNbinsZ() &&
+		     histogram_centralValue->GetNbinsZ() == histogram_output->GetNbinsZ()) ) {
+		edm::LogWarning ("computeErrorBand") << " Mismatch in histogram binning for meName = " << (*meName) << " --> skipping !!";
+		std::cout << " central value: numBinsX = " << histogram_centralValue->GetNbinsX() << ","
+			  << " numBinsY = " << histogram_centralValue->GetNbinsY() << ","
+			  << " numBinsZ = " << histogram_centralValue->GetNbinsZ() << std::endl;
+		std::cout << " variance: numBinsX = " << (*histogram_variance)->GetNbinsX() << ","
+			  << " numBinsY = " << (*histogram_variance)->GetNbinsY() << ","
+			  << " numBinsZ = " << (*histogram_variance)->GetNbinsZ() << std::endl;
+		std::cout << " output: numBinsX = " << histogram_output->GetNbinsX() << ","
+			  << " numBinsY = " << histogram_output->GetNbinsY() << ","
+			  << " numBinsZ = " << histogram_output->GetNbinsZ() << std::endl;
+	      }
 	      double binContent_variance = (*histogram_variance)->GetBinContent(binNumber);
 	      double diffBinContent = binContent_variance - binContent_centralValue;
 	      variance += diffBinContent*diffBinContent;
@@ -192,7 +208,9 @@ void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_cent
 	dirName != dirNames.end(); ++dirName ) {
     std::string subDirName = dqmSubDirectoryName(dqmDirectory_centralValue, *dirName);
 
-    computeErrorBand(dqmStore, inputDirectory_centralValue, inputDirectories_variance, outputDirectory, subDirName, nDoF);
+    std::string dqmSubDirectory_descend = dqmDirectoryName(dqmSubDirectory).append(subDirName);
+
+    computeErrorBand(dqmStore, inputDirectory_centralValue, inputDirectories_variance, outputDirectory, dqmSubDirectory_descend, nDoF);
   }
 }
 
@@ -228,8 +246,8 @@ void DQMHistErrorBandProducer::endJob()
     if ( dqmDirectory_inputCentralValue != "" ) {
       dqmCopyRecursively(dqmStore, dqmDirectory_inputCentralValue, dqmDirectory_output, 1., 1, false);
       nDoF = dqmDirectories_inputVariance.size();
-    } else {
-      double scaleFactor = dqmDirectories_inputVariance.size();
+    } else if ( dqmDirectories_inputVariance.size() > 0. ) {
+      double scaleFactor = 1./dqmDirectories_inputVariance.size();
       for ( vstring::const_iterator dqmDirectory_input = dqmDirectories_inputVariance.begin();
 	    dqmDirectory_input != dqmDirectories_inputVariance.end(); ++dqmDirectory_input ) {
 //--- when processing first inputDirectory, check that histograms in outputDirectory do not yet exist;
@@ -239,6 +257,11 @@ void DQMHistErrorBandProducer::endJob()
 	dqmCopyRecursively(dqmStore, *dqmDirectory_input, dqmDirectory_output, scaleFactor, mode, false);
       }
       nDoF = dqmDirectories_inputVariance.size() - 1;
+    } else {
+      edm::LogError ("endJob") 
+	<< " Invalid values for Configuration Parameters 'dqmDirectory_inputCentralValue' and 'dqmDirectories_inputVariance'"
+	<< " --> error-band histograms will NOT be produced !!";
+      continue;
     }
 
 //--- compute sum of variations around central value
