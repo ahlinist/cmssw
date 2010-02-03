@@ -13,6 +13,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include <TH1.h>
+#include <TMath.h>
 
 #include <iostream>
 #include <iomanip>
@@ -20,26 +21,47 @@
 typedef std::vector<std::string> vstring;
 
 DQMHistEffProducer::cfgEntryPlot::cfgEntryPlot(const edm::ParameterSet& cfg)
+  : cfgError_(0)
 {
   //std::cout << "<cfgEntryPlot::cfgEntryPlot>:" << std::endl;
 
-  meName_numerator_ = cfg.getParameter<std::string>("meName_numerator");
-  //std::cout << " meName_numerator = " << meName_numerator_ << std::endl;
-
-  meName_denominator_ = cfg.getParameter<std::string>("meName_denominator");
-  //std::cout << " meName_denominator = " << meName_denominator_ << std::endl;
+  if ( cfg.exists("meNames_numerator") && cfg.exists("meNames_denominator") ) {
+    typedef std::vector<std::string> vstring;
+    meNames_numerator_ = cfg.getParameter<vstring>("meNames_numerator");
+    meNames_denominator_ = cfg.getParameter<vstring>("meNames_denominator");
+    if ( meNames_numerator_.size() != meNames_denominator_.size()  ) {
+      edm::LogError("DQMHistEffProducer") 
+	<< " Mismatch in number of numerator = " << meNames_numerator_.size() 
+	<< " and denominator = " <<  meNames_denominator_.size() << " histograms !!"; 
+      cfgError_ = 1;
+    }
+  } else {
+    meNames_numerator_.push_back(cfg.getParameter<std::string>("meName_numerator"));
+    meNames_denominator_.push_back(cfg.getParameter<std::string>("meName_denominator"));
+  }
 
   meName_efficiency_ = cfg.getParameter<std::string>("meName_efficiency");
-  //std::cout << " meName_efficiency = " << meName_efficiency_ << std::endl;
+
+  //print();
 }
 
-DQMHistEffProducer::cfgEntryPlot::cfgEntryPlot(const std::string& meName_numerator, const std::string& meName_denominator, const std::string& meName_efficiency)
-  : meName_numerator_(meName_numerator), meName_denominator_(meName_denominator), meName_efficiency_(meName_efficiency)
+DQMHistEffProducer::cfgEntryPlot::cfgEntryPlot(const std::string& meName_numerator, 
+					       const std::string& meName_denominator, 
+					       const std::string& meName_efficiency)
+  : meName_efficiency_(meName_efficiency)
 {
-  //std::cout << "<cfgEntryPlot::cfgEntryPlot>:" << std::endl;
-  //std::cout << " meName_numerator = " << meName_numerator_ << std::endl;
-  //std::cout << " meName_denominator = " << meName_denominator_ << std::endl;
-  //std::cout << " meName_efficiency = " << meName_efficiency_ << std::endl;
+  meNames_numerator_.push_back(meName_numerator);
+  meNames_denominator_.push_back(meName_denominator);
+
+  //print();
+}
+
+void DQMHistEffProducer::cfgEntryPlot::print() const
+{
+  std::cout << "<cfgEntryPlot::print>:" << std::endl;
+  std::cout << " meNames_numerator = " << format_vstring(meNames_numerator_) << std::endl;
+  std::cout << " meNames_denominator = " << format_vstring(meNames_denominator_) << std::endl;
+  std::cout << " meName_efficiency = " << meName_efficiency_ << std::endl;
 }
 
 //
@@ -58,7 +80,7 @@ DQMHistEffProducer::DQMHistEffProducer(const edm::ParameterSet& cfg)
       std::string meName_numerator = cfgPlot->getParameter<std::string>("meName_numerator");
       std::string meName_denominator = cfgPlot->getParameter<std::string>("meName_denominator");
       std::string meName_efficiency = cfgPlot->getParameter<std::string>("meName_efficiency");
-
+      
       vstring parameter = cfgPlot->getParameter<vstring>("parameter");
       
       for ( vstring::const_iterator parameter_i = parameter.begin();
@@ -106,6 +128,101 @@ float* getBinning(const TAxis* axis)
   return binEdges_float;
 }
 
+std::vector<TH1*> getHistograms(DQMStore& dqmStore, const std::vector<std::string>& meNames, bool& dqmError)
+{
+  std::vector<TH1*> histograms;
+
+  for ( std::vector<std::string>::const_iterator meName = meNames.begin();
+	meName != meNames.end(); ++meName ) {
+    std::string histogramName, histogramDirectory;
+    separateMonitorElementFromDirectoryName(*meName, histogramName, histogramDirectory);
+
+    MonitorElement* me = dqmStore.get(std::string(histogramDirectory).append(dqmSeparator).append(histogramName));
+
+    TH1* histogram = ( me != NULL ) ? me->getTH1() : NULL;
+    //std::cout << "meName = " << (*meName) << ": integral = " << histogram->Integral() << std::endl;
+
+    if ( histogram ) {
+      if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+
+      histograms.push_back(histogram);
+    } else {
+      edm::LogError("DQMHistEffProducer") << " Failed to retrieve MonitorElement = " << (*meName) << " --> skipping !!";
+      dqmError = true;
+    }
+  } 
+
+  return histograms;
+}
+
+TH1* computeHistogramProd(const std::vector<TH1*>& histograms, bool& isOwned)
+{
+  if ( histograms.size() == 0 ) {
+    edm::LogError("computeHistogramProd") << " List of Histograms passed as function Argument is empty !!";
+    isOwned = false;
+    return 0;
+  } else if ( histograms.size() == 1 ) {
+    isOwned = false;
+    return histograms.front();
+  } else {
+    unsigned numBinsX = histograms.front()->GetNbinsX();
+    unsigned numBinsY = histograms.front()->GetNbinsY();
+    unsigned numBinsZ = histograms.front()->GetNbinsZ();
+    
+    for ( std::vector<TH1*>::const_iterator histogram = histograms.begin();
+	  histogram != histograms.end(); ++histogram ) {
+      unsigned numBinsX_i = (*histogram)->GetNbinsX();
+      unsigned numBinsY_i = (*histogram)->GetNbinsY();
+      unsigned numBinsZ_i = (*histogram)->GetNbinsZ();
+      
+      if ( !(numBinsX_i == numBinsX && numBinsY_i == numBinsY && numBinsZ_i == numBinsZ) ) {
+	edm::LogError("computeHistogramProd") << " Mismatch in Histogram binning !!";
+	std::cout << "(X: found = " << numBinsX_i << ", expected = " << numBinsX << ";"
+		  << " Y: found = " << numBinsY_i << ", expected = " << numBinsY << ";"
+		  << " Z: found = " << numBinsZ_i << ", expected = " << numBinsZ << ")" << std::endl;
+	return 0;
+      }
+    }
+    
+    TH1* histogramProd = (TH1*)histograms.front()->Clone();
+    
+    for ( unsigned iBinX = 0; iBinX <= (numBinsX + 1); ++iBinX ) {
+      for ( unsigned iBinY = 0; iBinY <= (numBinsY + 1); ++iBinY ) {
+	for ( unsigned iBinZ = 0; iBinZ <= (numBinsZ + 1); ++iBinZ ) {
+	  double binContent_prod = 1.;
+	  double fractionalSigma_sum2 = 0.;
+      
+	  for ( std::vector<TH1*>::const_iterator histogram = histograms.begin();
+		histogram != histograms.end(); ++histogram ) {
+	    double binContent_i = (*histogram)->GetBinContent(iBinX, iBinY, iBinZ);
+	    double binError_i = (*histogram)->GetBinError(iBinX, iBinY, iBinZ);
+
+	    binContent_prod *= binContent_i;
+	    // CV: compute uncertainty on product of bin-contents;
+	    //     for 
+	    //      prod := a*b*c 
+	    //     the uncertainty is 
+	    //      sigma_prod^2 = (b*c*sigma_a)^2 + (a*c*sigma_b)^2 + (a*b*sigma_c)^2
+	    //                   = prod^2*((sigma_a/a)^2 + (sigma_b/b)^2 + (sigma_c/c)^2)
+	    if ( binContent_i > 0. ) {
+	      double fractionalSigma = binError_i/binContent_i;
+	      fractionalSigma_sum2 += fractionalSigma*fractionalSigma;
+	    }
+	  }
+
+	  double binError_prod = binContent_prod * TMath::Sqrt(fractionalSigma_sum2);
+
+	  histogramProd->SetBinContent(iBinX, iBinY, iBinZ, binContent_prod);
+	  histogramProd->SetBinError(iBinX, iBinY, iBinZ, binError_prod);
+	}
+      }
+    }
+
+    isOwned = true;
+    return histogramProd;
+  }
+}
+
 void DQMHistEffProducer::endJob()
 {
   //std::cout << "<DQMHistEffProducer::endJob>:" << std::endl;
@@ -120,56 +237,51 @@ void DQMHistEffProducer::endJob()
 
   for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntryPlot_.begin(); 
         plot != cfgEntryPlot_.end(); ++plot ) {
-    std::string numeratorHistogramName, numeratorHistogramDirectory;
-    separateMonitorElementFromDirectoryName(plot->meName_numerator_, numeratorHistogramName, numeratorHistogramDirectory);
-    MonitorElement* meNumerator = dqmStore.get(std::string(numeratorHistogramDirectory).append(dqmSeparator).append(numeratorHistogramName));
-    TH1* histoNumerator = ( meNumerator != NULL ) ? meNumerator->getTH1() : NULL;
-    //std::cout << "meName(numerator) = " << plot->meName_numerator_ << ": integral = " << histoNumerator->Integral() << std::endl;
+    bool dqmError = false;
 
-    std::string denominatorHistogramName, denominatorHistogramDirectory;
-    separateMonitorElementFromDirectoryName(plot->meName_denominator_, denominatorHistogramName, denominatorHistogramDirectory);
-    MonitorElement* meDenominator = dqmStore.get(std::string(denominatorHistogramDirectory).append(dqmSeparator).append(denominatorHistogramName));
-    TH1* histoDenominator = ( meDenominator != NULL ) ? meDenominator->getTH1() : NULL;
-    //std::cout << "meName(denominator) = " << plot->meName_denominator_ << ": integral = " << histoDenominator->Integral() << std::endl;
+    std::vector<TH1*> histogramsNumerator = getHistograms(dqmStore, plot->meNames_numerator_, dqmError);
+    std::vector<TH1*> histogramsDenominator = getHistograms(dqmStore, plot->meNames_denominator_, dqmError);
     
-    if ( histoNumerator != NULL && histoDenominator != NULL ) {
-      if ( !histoNumerator->GetSumw2N()   ) histoNumerator->Sumw2();
-      if ( !histoDenominator->GetSumw2N() ) histoDenominator->Sumw2();
-      
+    if ( !dqmError ) {
       std::string effHistogramName, effHistogramDirectory, dummy;
       separateMonitorElementFromDirectoryName(plot->meName_efficiency_, effHistogramName, effHistogramDirectory);
-      if ( effHistogramDirectory == "" ) separateMonitorElementFromDirectoryName(numeratorHistogramName, dummy, effHistogramDirectory);
-      if ( effHistogramDirectory != "" ) dqmStore.setCurrentFolder(effHistogramDirectory);
+      dqmStore.setCurrentFolder(effHistogramDirectory);
+
+      int numDimensions = -1;
+      for ( std::vector<TH1*>::const_iterator histogramNumerator = histogramsNumerator.begin();
+	    histogramNumerator != histogramsNumerator.end(); ++histogramNumerator ) {
+	int numDimensions_i = (*histogramNumerator)->GetDimension();
+	if ( numDimensions == -1 ) numDimensions = numDimensions_i;
+	if ( numDimensions != -1 && numDimensions_i != numDimensions ) {
+	  edm::LogError("endJob") << " Mismatch in Histogram dimensionality !!";
+	  std::cout << "(found = " << numDimensions_i << ", expected = " << numDimensions << ")" << std::endl;
+	}
+      }
+
+      bool histogramProdNumerator_isOwned;
+      TH1* histogramProdNumerator = computeHistogramProd(histogramsNumerator, histogramProdNumerator_isOwned);
+      bool histogramProdDenominator_isOwned;
+      TH1* histogramProdDenominator = computeHistogramProd(histogramsDenominator, histogramProdDenominator_isOwned);
       
-      if ( histoNumerator->GetDimension() == 1 && histoDenominator->GetDimension() == 1 ) {
-	unsigned numBins = histoNumerator->GetXaxis()->GetNbins();
-	float* binEdges = getBinning(histoNumerator->GetXaxis());
-	MonitorElement* histoEfficiency = dqmStore.book1D(effHistogramName, effHistogramName, 
-							  numBins, binEdges);
-	histoEfficiency->getTH1F()->Divide(histoNumerator, histoDenominator, 1., 1., "B");
+      if ( numDimensions == 1 ) {
+	unsigned numBins = histogramProdNumerator->GetXaxis()->GetNbins();
+	float* binEdges = getBinning(histogramProdNumerator->GetXaxis());
+	MonitorElement* histogramEfficiency = dqmStore.book1D(effHistogramName, effHistogramName, numBins, binEdges);
+	histogramEfficiency->getTH1F()->Divide(histogramProdNumerator, histogramProdDenominator, 1., 1., "B");
 	delete[] binEdges;
-      } else if ( histoNumerator->GetDimension() == 2 && histoDenominator->GetDimension() == 2 ) {
-	unsigned numBinsX = histoNumerator->GetXaxis()->GetNbins();
-	float* binEdgesX = getBinning(histoNumerator->GetXaxis());
-	unsigned numBinsY = histoNumerator->GetYaxis()->GetNbins();
-	float* binEdgesY = getBinning(histoNumerator->GetYaxis());
-	MonitorElement* histoEfficiency = dqmStore.book2D(effHistogramName, effHistogramName, 
-							  numBinsX, binEdgesX, numBinsY, binEdgesY);
-	histoEfficiency->getTH2F()->Divide(histoNumerator, histoDenominator, 1., 1., "B");
+      } else if ( numDimensions == 2 ) {
+	unsigned numBinsX = histogramProdNumerator->GetXaxis()->GetNbins();
+	float* binEdgesX = getBinning(histogramProdNumerator->GetXaxis());
+	unsigned numBinsY = histogramProdNumerator->GetYaxis()->GetNbins();
+	float* binEdgesY = getBinning(histogramProdNumerator->GetYaxis());
+	MonitorElement* histogramEfficiency = dqmStore.book2D(effHistogramName, effHistogramName, numBinsX, binEdgesX, numBinsY, binEdgesY);
+	histogramEfficiency->getTH2F()->Divide(histogramProdNumerator, histogramProdDenominator, 1., 1., "B");
 	delete[] binEdgesX;
 	delete[] binEdgesY;
-      } else {
-	edm::LogError("endJob") << " Unsupported dimensionality of numerator = " << histoNumerator->GetDimension()
-				<< " and denominator = " << histoDenominator->GetDimension() << " Histograms !!";
-      }
-    } else {
-      std::ostringstream message;
-      message << " Failed to produce efficiency Histogram = " << plot->meName_efficiency_ << ";";
-      if ( histoNumerator   == NULL ) message << " numerator = " << plot->meName_numerator_ << " does not exist";
-      if ( histoNumerator   == NULL && histoDenominator == NULL ) message << ",";
-      if ( histoDenominator == NULL ) message << " denominator = " << plot->meName_denominator_ << " does not exist";
-      message << " !!";
-      edm::LogError("endJob") << message.str();
+      } 
+
+      if ( histogramProdNumerator_isOwned   ) delete histogramProdNumerator;
+      if ( histogramProdDenominator_isOwned ) delete histogramProdDenominator;
     }
   }
 }
