@@ -10,6 +10,14 @@ bgEstFakeRateEventWeights = cms.EDProducer("FakeRateEventWeightProducer",
                                            
     dRmatch = bgEstFakeRateJetWeights.dRmatch,
 
-    frTypes = bgEstFakeRateJetWeights.frTypes
+    frTypes = bgEstFakeRateJetWeights.frTypes,
+
+    minJetWeight = bgEstFakeRateJetWeights.minJetWeight,
+    maxJetWeight = bgEstFakeRateJetWeights.maxJetWeight,
+
+    minJetPt = bgEstFakeRateJetWeights.minJetPt,
+    maxJetPt = bgEstFakeRateJetWeights.maxJetPt,
+    minJetEta = bgEstFakeRateJetWeights.minJetEta,
+    maxJetEta = bgEstFakeRateJetWeights.maxJetEta
 )
 

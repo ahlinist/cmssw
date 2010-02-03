@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: FakeRateWeightProducerBase.h,v 1.4 2009/10/30 13:24:27 veelken Exp $
+ * $Id: FakeRateWeightProducerBase.h,v 1.5 2009/11/07 15:15:51 veelken Exp $
  *
  */
 
@@ -68,6 +68,7 @@ class FakeRateWeightProducerBase : public edm::EDProducer
 
   void getTauJetProperties(const edm::Event&, edm::RefToBase<reco::BaseTau>&, unsigned, 
 			   const edm::Handle<edm::View<reco::Candidate> >&, const fakeRateTypeEntry&, double&, double&, bool&);
+  double getFakeRateJetWeight(double, double, bool, const reco::BaseTau*);
 
 //--- configuration parameters
   std::string method_; // "simple"/"CDF"
@@ -80,8 +81,20 @@ class FakeRateWeightProducerBase : public edm::EDProducer
   typedef std::map<std::string, fakeRateTypeEntry> fakeRateTypeMap;
   fakeRateTypeMap fakeRateTypes_;
 
+  double minJetWeight_;
+  double maxJetWeight_;
+
+  double  minJetPt_;
+  double  maxJetPt_;
+  double  minJetEta_;
+  double  maxJetEta_;
+
   int cfgError_;
 
+  long numJets_weightBelowMinimum_;
+  long numJets_weightAboveMaximum_;
+  long numJets_reverseWeightOrder_;
+  long numJets_processed_;
 };
 
 #endif  
