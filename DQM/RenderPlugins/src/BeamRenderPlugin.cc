@@ -2,8 +2,8 @@
   \File BeamRenderPlugin
   \Display Plugin for BeamSpot DQM Histograms
   \author 
-  \version $Revision: 1.4 $
-  \date $Date: 2009/12/07 02:49:34 $
+  \version $Revision: 1.5 $
+  \date $Date: 2010/02/03 00:31:55 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -105,6 +105,8 @@ private:
       obj->SetMarkerSize(2.);
       xa->SetTitleSize(0.04);
       xa->SetLabelSize(0.045);
+
+      ya->SetLabelSize(0.045);
       return;
     }
 
