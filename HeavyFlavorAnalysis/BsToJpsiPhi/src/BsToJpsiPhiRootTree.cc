@@ -287,7 +287,15 @@ bsTree_->Branch(  "BdK2Pt_nofit" 		  , &BdK2Pt_nofit_,                     "BdK2
 bsTree_->Branch(  "BdK2Pz_nofit" 		  , &BdK2Pz_nofit_,                     "BdK2Pz_nofit/D");                                              
 bsTree_->Branch(  "BdK2Eta_nofit" 		  , &BdK2Eta_nofit_,                    "BdK2Eta_nofit/D");                                             
 bsTree_->Branch(  "BdK2Phi_nofit" 		  , &BdK2Phi_nofit_,                    "BdK2Phi_nofit/D");                                             
-bsTree_->Branch(  "BdK2Key_nofit" 		  , &BdK2Key_nofit_,                     "BdK2Key_nofit/I");                                              
+bsTree_->Branch(  "BdK2Key_nofit" 		  , &BdK2Key_nofit_,                     "BdK2Key_nofit/I"); 
+
+bsTree_->Branch(  "BdPVx_refit" ,  &BdPVx_refit_ ,  "BdPVx_refit/D" );    
+bsTree_->Branch(  "BdPVy_refit" ,&BdPVy_refit_ ,    "BdPVy_refit/D");   
+bsTree_->Branch(  "BdPVz_refit" ,  &BdPVz_refit_ ,  "BdPVz_refit/D" );              
+bsTree_->Branch(  "BdPVerrx_refit" , &BdPVerrx_refit_ , "BdPVerrx_refit/D" ); 
+bsTree_->Branch(  "BdPVerry_refit" ,&BdPVerry_refit_ ,"BdPVerry_refit/D" ); 
+bsTree_->Branch(  "BdPVerrz_refit" , &BdPVerrz_refit_ , "BdPVerrz_refit/D" ); 
+                                             
 bsTree_->Branch(  "BdLxy"			  , &BdLxy_,                            "BdLxy/D");                                                     
 bsTree_->Branch(  "BdLxyErr"			  , &BdLxyErr_,                            "BdLxyErr/D");                                                     
 bsTree_->Branch(  "BdErrX"			  , &BdErrX_,                           "BdErrX/D");                                                    
@@ -542,6 +550,13 @@ void BsToJpsiPhiRootTree::resetEntries()
   BdFitVtx_y_Hyp2_ = -9999999;
   BdFitVtx_z_Hyp2_ = -9999999;
  
+BdPVx_refit_    = -9999999;
+BdPVy_refit_    = -9999999;
+BdPVz_refit_    = -9999999;
+               
+BdPVerrx_refit_ = -9999999;
+BdPVerry_refit_ = -9999999;
+BdPVerrz_refit_ = -9999999;
 
   BdK1_kpi_sigX_Hyp2_ = -9999999;
   BdK1_kpi_sigY_Hyp2_ = -9999999;
@@ -963,6 +978,13 @@ bsTree_->SetBranchAddress(  "BdFitVtx_x_Hyp2"		  , &BdFitVtx_x_Hyp2_  );
 bsTree_->SetBranchAddress(  "BdFitVtx_y_Hyp2"		  , &BdFitVtx_y_Hyp2_  );                                      
 bsTree_->SetBranchAddress(  "BdFitVtx_z_Hyp2"		  , &BdFitVtx_z_Hyp2_  );                                      
                   
+bsTree_->SetBranchAddress(  "BdPVx_refit",      &BdPVx_refit_   );     
+bsTree_->SetBranchAddress(  "BdPVy_refit",      &BdPVy_refit_   );     
+bsTree_->SetBranchAddress(  "BdPVz_refit",      &BdPVz_refit_   );     
+bsTree_->SetBranchAddress(  "BdPVerrx_refit",   &BdPVerrx_refit_);     
+bsTree_->SetBranchAddress(  "BdPVerry_refit",   &BdPVerry_refit_);     
+bsTree_->SetBranchAddress(  "BdPVerrz_refit",   &BdPVerrz_refit_);     
+
 bsTree_->SetBranchAddress(  "BdK1_kpi_par_Hyp2"		  , BdK1_kpi_par_Hyp2_  );                                 
 bsTree_->SetBranchAddress(  "BdK2_kpi_par_Hyp2"		  , BdK2_kpi_par_Hyp2_  );                             
 bsTree_->SetBranchAddress(  "BdK1_kpi_sigX_Hyp2"		  , &BdK1_kpi_sigX_Hyp2_  );                                   
