@@ -14,6 +14,11 @@
 
 #include <iostream>
 
+const std::string method_sqrt = "sqrt";
+const std::string method_min_max = "min_max"; 
+
+const std::string defaultMethod = method_sqrt;
+
 const int verbosity = 0;
 
 //
@@ -28,7 +33,9 @@ DQMHistErrorBandProducer::cfgEntryProduceJob::cfgEntryProduceJob(const edm::Para
     cfg.getParameter<std::string>("dqmDirectory_inputCentralValue") : "";
   dqmDirectories_inputVariance_ = cfg.getParameter<vstring>("dqmDirectories_inputVariance");
   dqmDirectory_output_ = cfg.getParameter<std::string>("dqmDirectory_output");
-  
+  method_ = ( cfg.exists("method") ) ?
+    cfg.getParameter<std::string>("method") : defaultMethod;
+
   if ( verbosity ) print();
 }
 
@@ -38,6 +45,7 @@ void DQMHistErrorBandProducer::cfgEntryProduceJob::print() const
   std::cout << " dqmDirectory_inputCentralValue = " << dqmDirectory_inputCentralValue_ << std::endl;
   std::cout << " dqmDirectories_inputVariance = " << format_vstring(dqmDirectories_inputVariance_) << std::endl;
   std::cout << " dqmDirectory_output = " << dqmDirectory_output_ << std::endl;
+  std::cout << " method = " << method_ << std::endl;
 }
 
 //
@@ -95,7 +103,7 @@ TH1* getHistogram(MonitorElement* me, bool& dqmError)
 void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_centralValue, 
 		      const std::vector<std::string>& inputDirectories_variance, 
 		      const std::string& outputDirectory, 
-		      const std::string& dqmSubDirectory, int nDoF)
+		      const std::string& dqmSubDirectory, const std::string& method, int nDoF)
 {
   //std::cout << "<computeErrorBand>:" << std::endl;
   //std::cout << " inputDirectory_centralValue = " << inputDirectory_centralValue << std::endl;
@@ -166,9 +174,15 @@ void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_cent
 	  unsigned numBinsZ = histogram_centralValue->GetNbinsZ();
 	  for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
 	    int binNumber = histogram_centralValue->GetBin(iBinX, iBinY, iBinZ);
-	    double binContent_centralValue = histogram_centralValue->GetBinContent(binNumber);
 
+	    double binContent_centralValue = histogram_centralValue->GetBinContent(binNumber);
+	    
 	    double variance = 0.;
+
+	    double binContent_min = 0.;
+	    double binContent_max = 0.;
+	    bool isFirstHistogram = true;
+
 	    for ( std::vector<TH1*>::const_iterator histogram_variance = histograms_variance.begin();
 		  histogram_variance != histograms_variance.end(); ++histogram_variance ) {
 	      if ( !(histogram_centralValue->GetNbinsX() == (*histogram_variance)->GetNbinsX() &&
@@ -188,13 +202,29 @@ void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_cent
 			  << " numBinsY = " << histogram_output->GetNbinsY() << ","
 			  << " numBinsZ = " << histogram_output->GetNbinsZ() << std::endl;
 	      }
-	      double binContent_variance = (*histogram_variance)->GetBinContent(binNumber);
-	      double diffBinContent = binContent_variance - binContent_centralValue;
+
+	      double binContent = (*histogram_variance)->GetBinContent(binNumber);
+
+	      double diffBinContent = binContent - binContent_centralValue;
 	      variance += diffBinContent*diffBinContent;
+
+	      if ( binContent < binContent_min || isFirstHistogram ) binContent_min = binContent;
+	      if ( binContent > binContent_max || isFirstHistogram ) binContent_max = binContent;
+	      isFirstHistogram = false;
 	    }
 	    
-	    double binError = ( nDoF > 0 ) ? TMath::Sqrt(variance/nDoF) : 0.;
-	    histogram_output->SetBinError(binNumber, binError);
+	    if ( method == method_sqrt ) {
+	      double binError = ( nDoF > 0 ) ? TMath::Sqrt(variance/nDoF) : 0.;
+	      histogram_output->SetBinError(binNumber, binError);
+	    } else if ( method == method_min_max ) {
+	      double binContent_centralValue = 0.5*(binContent_max + binContent_min);
+	      histogram_output->SetBinContent(binNumber, binContent_centralValue);
+
+	      double binError = 0.5*(binContent_max - binContent_min);
+	      histogram_output->SetBinError(binNumber, binError);
+	    } else {
+	      edm::LogWarning ("computeErrorBand") << " Unsupported method = " << method << " for computing error-band --> skipping !!";
+	    }
 	  }
 	}
       }
@@ -210,7 +240,8 @@ void computeErrorBand(DQMStore& dqmStore, const std::string& inputDirectory_cent
 
     std::string dqmSubDirectory_descend = dqmDirectoryName(dqmSubDirectory).append(subDirName);
 
-    computeErrorBand(dqmStore, inputDirectory_centralValue, inputDirectories_variance, outputDirectory, dqmSubDirectory_descend, nDoF);
+    computeErrorBand(dqmStore, inputDirectory_centralValue, inputDirectories_variance, 
+		     outputDirectory, dqmSubDirectory_descend, method, nDoF);
   }
 }
 
@@ -265,7 +296,8 @@ void DQMHistErrorBandProducer::endJob()
     }
 
 //--- compute sum of variations around central value
-    computeErrorBand(dqmStore, dqmDirectory_output, dqmDirectories_inputVariance, dqmDirectory_output, "", nDoF);
+    computeErrorBand(dqmStore, dqmDirectory_output, dqmDirectories_inputVariance, 
+		     dqmDirectory_output, "", produceJob->method_, nDoF);
   }
 
   std::cout << "done." << std::endl; 

@@ -7,8 +7,8 @@
  *  by summing bin-by-bin variations of histograms filled after shifting up/down and smearing
  *  the quantities filled into each histogram
  *
- *  $Date: 2009/03/17 13:18:45 $
- *  $Revision: 1.2 $
+ *  $Date: 2010/01/28 16:58:46 $
+ *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -32,6 +32,7 @@ class DQMHistErrorBandProducer : public edm::EDAnalyzer
     std::string dqmDirectory_inputCentralValue_;
     vstring dqmDirectories_inputVariance_;
     std::string dqmDirectory_output_;
+    std::string method_;
   };	
 
  public:
