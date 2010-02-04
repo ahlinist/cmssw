@@ -607,6 +607,7 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << "  pfChargedHadronIsolation = " << patTau->chargedHadronIso() << std::endl;
       *outputStream_ << "  pfNeutralHadronIsolation = " << patTau->neutralHadronIso() << std::endl;
       *outputStream_ << "  pfGammaIsolation = " << patTau->photonIso() << std::endl;
+      *outputStream_ << " jetRadius = " << TMath::Sqrt(patTau->etaetaMoment() + patTau->phiphiMoment()) << std::endl;
       *outputStream_ << " eVeto = " << patTau->tauID("againstElectron") << std::endl;
       *outputStream_ << " EcalStripSumE/P = " << patTau->ecalStripSumEOverPLead() << std::endl;
       *outputStream_ << " BremsRecoveryE/P = " << patTau->bremsRecoveryEOverPLead() << std::endl;
@@ -614,10 +615,6 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << " muVeto = " << patTau->tauID("againstMuon") << std::endl;
       *outputStream_ << " vertex" << std::endl;
       printVertexInfo(patTau->vertex(), outputStream_);
-/*
-  CV: tau id. efficiencies and fake-rates not available in CMSSW_3_1_x yet
-
-
       *outputStream_ << "* matching gen. pdgId = " 
 		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
       *outputStream_ << " pat::Tau id. efficiencies (byStandardChain):" << std::endl
@@ -627,7 +624,6 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
 		     << "  QCD, highest Pt jet = " << patTau->efficiency("frByStandardChainDiJetHighPtsim").value() << std::endl
 		     << "  QCD, second highest Pt jet = " << patTau->efficiency("frByStandardChainDiJetSecondPtsim").value() << std::endl
 		     << "  WplusJets = " << patTau->efficiency("frByStandardChainWJetssim").value() << std::endl;
- */
       *outputStream_ << "* matching gen. pdgId = " 
 		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
       ++iTau;
