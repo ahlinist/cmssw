@@ -66,59 +66,59 @@ process.addBgEstFakeRateZtoMuTau_tauFakeRate = cms.Sequence(process.addBgEstFake
 process.compErrorBandsBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistErrorBandProducer",
     config = cms.VPSet(
         cms.PSet(
-            #dqmDirectory_inputCentralValue = cms.string('tauIdDiscr/harvested/Ztautau/zMuTauAnalyzer'),
             dqmDirectories_inputVariance = cms.vstring(
                 'tauFakeRate/harvested/Ztautau/zMuTauAnalyzer_qcdMuEnriched',
                 'tauFakeRate/harvested/Ztautau/zMuTauAnalyzer_qcdDiJetLeadJet',
-                #'tauFakeRate/harvested/Ztautau/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
+                'tauFakeRate/harvested/Ztautau/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
                 'tauFakeRate/harvested/Ztautau/zMuTauAnalyzer_WplusJets'
-                #'tauFakeRate/harvested/Ztautau/zMuTauAnalyzer_gammaPlusJets',
+                #'tauFakeRate/harvested/Ztautau/zMuTauAnalyzer_gammaPlusJets'
             ),
-            dqmDirectory_output = cms.string('tauFakeRate/harvested/Ztautau/frSysUncertainty')
+            dqmDirectory_output = cms.string('tauFakeRate/harvested/Ztautau/frSysUncertainty'),
+            method = cms.string("min_max")
         ),
         cms.PSet(
-            #dqmDirectory_inputCentralValue = cms.string('tauIdDiscr/harvested/Zmumu/zMuTauAnalyzer'),
             dqmDirectories_inputVariance = cms.vstring(
                 'tauFakeRate/harvested/Zmumu/zMuTauAnalyzer_qcdMuEnriched',
                 'tauFakeRate/harvested/Zmumu/zMuTauAnalyzer_qcdDiJetLeadJet',
-                #'tauFakeRate/harvested/Zmumu/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
+                'tauFakeRate/harvested/Zmumu/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
                 'tauFakeRate/harvested/Zmumu/zMuTauAnalyzer_WplusJets'
                 #'tauFakeRate/harvested/Zmumu/zMuTauAnalyzer_gammaPlusJets'
             ),
-            dqmDirectory_output = cms.string('tauFakeRate/harvested/Zmumu/frSysUncertainty')
+            dqmDirectory_output = cms.string('tauFakeRate/harvested/Zmumu/frSysUncertainty'),
+            method = cms.string("min_max")
         ),
         cms.PSet(
-            #dqmDirectory_inputCentralValue = cms.string('tauIdDiscr/harvested/WplusJets/zMuTauAnalyzer'),
             dqmDirectories_inputVariance = cms.vstring(
                 'tauFakeRate/harvested/WplusJets/zMuTauAnalyzer_qcdMuEnriched',
                 'tauFakeRate/harvested/WplusJets/zMuTauAnalyzer_qcdDiJetLeadJet',
-                #'tauFakeRate/harvested/WplusJets/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
+                'tauFakeRate/harvested/WplusJets/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
                 'tauFakeRate/harvested/WplusJets/zMuTauAnalyzer_WplusJets'
                 #'tauFakeRate/harvested/WplusJets/zMuTauAnalyzer_gammaPlusJets'
             ),
-            dqmDirectory_output = cms.string('tauFakeRate/harvested/WplusJets/frSysUncertainty')
+            dqmDirectory_output = cms.string('tauFakeRate/harvested/WplusJets/frSysUncertainty'),
+            method = cms.string("min_max")
         ),
         cms.PSet(
-            #dqmDirectory_inputCentralValue = cms.string('tauIdDiscr/harvested/TTplusJets/zMuTauAnalyzer'),
             dqmDirectories_inputVariance = cms.vstring(
                 'tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer_qcdMuEnriched',
                 'tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer_qcdDiJetLeadJet',
-                #'tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
+                'tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
                 'tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer_WplusJets'
                 #'tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer_gammaPlusJets'
             ),
-            dqmDirectory_output = cms.string('tauFakeRate/harvested/TTplusJets/frSysUncertainty')
+            dqmDirectory_output = cms.string('tauFakeRate/harvested/TTplusJets/frSysUncertainty'),
+            method = cms.string("min_max")
         ),
         cms.PSet(
-            #dqmDirectory_inputCentralValue = cms.string('tauIdDiscr/harvested/qcdSum/zMuTauAnalyzer'),
             dqmDirectories_inputVariance = cms.vstring(
                 'tauFakeRate/harvested/qcdSum/zMuTauAnalyzer_qcdMuEnriched',
                 'tauFakeRate/harvested/qcdSum/zMuTauAnalyzer_qcdDiJetLeadJet',
-                #'tauFakeRate/harvested/qcdSum/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
+                'tauFakeRate/harvested/qcdSum/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
                 'tauFakeRate/harvested/qcdSum/zMuTauAnalyzer_WplusJets'
                 #'tauFakeRate/harvested/qcdSum/zMuTauAnalyzer_gammaPlusJets'
             ),
-            dqmDirectory_output = cms.string('tauFakeRate/harvested/qcdSum/frSysUncertainty')
+            dqmDirectory_output = cms.string('tauFakeRate/harvested/qcdSum/frSysUncertainty'),
+            method = cms.string("min_max")
         )
     )
 )                                                             
@@ -309,9 +309,23 @@ process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
 # import utility function for fake-rate technique
 from TauAnalysis.BgEstimationTools.tools.fakeRateTools import enableFakeRates_makeZtoMuTauPlots
 enableFakeRates_makeZtoMuTauPlots(process)
- 
+
 #--------------------------------------------------------------------------------
-from TauAnalysis.BgEstimationTools.tools.fakeRateTools import makeEventDumpSequence
+process.dumpZtoMuTau_frUnweighted = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
+    dqmDirectories = cms.PSet(
+        Ztautau = cms.string('harvested/Ztautau/zMuTauAnalyzer_frUnweighted/FilterStatistics'),
+        Zmumu = cms.string('harvested/Zmumu/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
+        WplusJets = cms.string('harvested/WplusJets/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
+        QCD = cms.string('harvested/qcdSum/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
+        TTplusJets = cms.string('harvested/TTplusJets/zMuTauAnalyzer_frUnweighted/FilterStatistics')
+    ),
+    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
+)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+from TauAnalysis.BgEstimationTools.tools.fakeRateTools import makeDataBinningDumpSequence
+from TauAnalysis.BgEstimationTools.tools.fakeRateTools import makeFilterStatTableDumpSequence
 
 processSubDirectories = dict()
 processSubDirectories["Ztautau"] = processZtoMuTau_Ztautau.config_dqmHistPlotter.dqmDirectory
@@ -320,7 +334,8 @@ processSubDirectories["WplusJets"] = processZtoMuTau_WplusJets.config_dqmHistPlo
 processSubDirectories["TTplusJets"] = processZtoMuTau_TTplusJets.config_dqmHistPlotter.dqmDirectory
 processSubDirectories["QCD"] = cms.string('harvested/qcdSum')
 
-dqmDirectory = 'tauFakeRate/#PROCESSDIR#/#FAKERATEDIR#/afterEvtSelDiMuPairZmumuHypothesisVeto/dataBinningResults/'
+dqmDirectory_frDataBinning = 'tauFakeRate/#PROCESSDIR#/#FAKERATEDIR#/afterEvtSelDiMuPairZmumuHypothesisVeto/dataBinningResults/'
+dqmDirectory_frFilterStatTable = 'tauFakeRate/#PROCESSDIR#/#FAKERATEDIR#/FilterStatistics/'
 
 frSubDirectories = dict()
 frSubDirectories["frQCDmuEnriched"] = "zMuTauAnalyzer_qcdMuEnriched"
@@ -330,7 +345,23 @@ frSubDirectories["frWplusJets"] = "zMuTauAnalyzer_WplusJets"
 ##frSubDirectories["frGammaPlusJets"] = "zMuTauAnalyzer_GammaPlusJets"
 frSubDirectories["frSysUncertainty"] = "frSysUncertainty"
 
-process.dumpBgEstFakeRateZtoMuTau = cms.Sequence(makeEventDumpSequence(process, dqmDirectory, processSubDirectories, frSubDirectories))
+frDataBinningDumpSequence = makeDataBinningDumpSequence(process, dqmDirectory_frDataBinning, processSubDirectories, frSubDirectories)
+frFilterStatTableDumpSequence = makeFilterStatTableDumpSequence(process, dqmDirectory_frFilterStatTable, processSubDirectories, frSubDirectories)
+
+dqmDirectory_discrDataBinning = 'tauIdDiscr/#PROCESSDIR#/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto/dataBinningResults/'
+dqmDirectory_discrFilterStatTable = 'tauIdDiscr/#PROCESSDIR#/zMuTauAnalyzer/FilterStatistics/'
+
+discrSubDirectories = dict()
+discrSubDirectories["discr"] = "zMuTauAnalyzer"
+
+discrDataBinningDumpSequence = makeEventDumpSequence(process, dqmDirectory_discrDataBinning, processSubDirectories, discrSubDirectories)
+discrFilterStatTableDumpSequence = makeFilterStatTableDumpSequence(process, dqmDirectory_discrFilterStatTable, processSubDirectories, discrSubDirectories)
+
+process.dumpBgEstFakeRateZtoMuTau = cms.Sequence(
+    frEventDumpSequence += discrEventDumpSequence
+   += frFilterStatTableDumpSequence += discrFilterStatTableDumpSequence
+)
+
 #--------------------------------------------------------------------------------
 
 process.saveBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
@@ -346,6 +377,7 @@ process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
    + process.addBgEstFakeRateZtoMuTau_tauFakeRate
    + process.compErrorBandsBgEstFakeRateZtoMuTau 
    + process.saveBgEstFakeRateZtoMuTau
+   + process.dumpZtoMuTau_frUnweighted
    + process.dumpBgEstFakeRateZtoMuTau 
    + process.plotBgEstFakeRateZtoMuTau
 )
