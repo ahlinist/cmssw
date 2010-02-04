@@ -456,12 +456,12 @@ void analysisClass::Loop()
   map<UInt_t,UInt_t> TotEventsMap;
 
   // met_quantities vs SumET (1D + 2D histograms)
-  int   nhistos  = 25;
+  int   nhistos  = 30;
   float MaxSumEt = Max_METSumET;
   //float MaxSumEt = 100;
 
-  TH2F *h2_metx_sumet = new TH2F("h2_metx_sumet","h2_metx_sumet", nhistos, 0, MaxSumEt, Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2); 
-  TH2F *h2_mety_sumet = new TH2F("h2_mety_sumet","h2_mety_sumet", nhistos, 0, MaxSumEt, Nbins_METSumET, -Max_METSumET/2, Max_METSumET/2); 
+  TH2F *h2_metx_sumet = new TH2F("h2_metx_sumet","h2_metx_sumet", nhistos, 0, MaxSumEt, 200, -Max_METSumET/2, Max_METSumET/2); 
+  TH2F *h2_mety_sumet = new TH2F("h2_mety_sumet","h2_mety_sumet", nhistos, 0, MaxSumEt, 200, -Max_METSumET/2, Max_METSumET/2); 
   TH2F *h2_met_sumet  = new TH2F("h2_met_sumet","h2_met_sumet", nhistos, 0, MaxSumEt, Nbins_METSumET, 0, Max_METSumET);
   TH2F *h2_metsig_sumet  = new TH2F("h2_metsig_sumet","h2_metsig_sumet", nhistos, 0, MaxSumEt, Nbins_METSig, 0, Max_METSig); 
 
@@ -654,7 +654,7 @@ void analysisClass::Loop()
 
       int num_good_tracks = 0;
       float fraction      = 0.;  
-      float thresh        = 0.2;
+      float thresh        = 0.25;
 	 
       //       if(isData == 1)
       // 	{
