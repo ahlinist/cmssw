@@ -22,9 +22,9 @@ process.load("TauAnalysis.Configuration.producePatTuple_cff")
 #from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecMu_cfi import *
 #from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
 #from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
-#from TauAnalysis.Configuration.recoSampleDefinitionsLooseZtoElecTau_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 #from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_cfi import *
-from TauAnalysis.BgEstimationTools.recoSampleDefinitionsTauIdEffZtoMuTau_cfi import *
+#from TauAnalysis.BgEstimationTools.recoSampleDefinitionsTauIdEffZtoMuTau_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
