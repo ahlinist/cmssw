@@ -4,7 +4,7 @@ import sys
 def add_eff_sources(prefix="fr", disc_configs=None, suffix="", 
                     file_mapping=lambda name: name + "_efficiency"):
     output_pset = cms.PSet()
-    for efficiency in disc_configs:
+    for efficiency in (eff for eff in disc_configs if eff != "denominator"):
         object_name = prefix + efficiency + suffix
         location = file_mapping(efficiency)
         setattr(output_pset, object_name, cms.PSet(location=cms.string(location)))
