@@ -43,8 +43,8 @@ pass_BSC_MB                     0            1                  -               
 pass_BSC_BeamHaloVeto           0            1                  -               -               0       2 0 2
 #pass_PhysicsBit                0            1                  -               -               0       2 0 2
 pass_GoodRunList                0            1                  -               -               0       2 0 2
-pass_MonsterTRKEventVeto        0            1                  -               -               0       2 0 2
 pass_GoodVertex                 0            1                  -               -               0       2 0 2
+pass_MonsterTRKEventVeto        0            1                  -               -               0       2 0 2
 pass_HFPMTHitVeto_tcMET		0	     1			-		-		1	2 0 2
 pass_ECALSpikesVeto_tcMET	0	     1			-		-               1	2 0 2 
 #
