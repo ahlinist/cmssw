@@ -65,15 +65,13 @@ process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(100)    
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root',
-        #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+		#'rfio:/castor/cern.ch/user/j/jkolb//eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_10TeV/skimElecTau_Ztautau_10TeV_01.root'
+        'rfio:/castor/cern.ch/user/j/jkolb//eTauSkims/Summer09_CMSSW_3_1_4/PhotonPlusJets_Pt30to50_7TeV/skimElecTau_PhotonPlusJets_Pt30to50_7TeV_01.root'
     )
     #skipBadFiles = cms.untracked.bool(True)    
 )
