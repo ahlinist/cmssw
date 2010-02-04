@@ -484,9 +484,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      
 	      minVtxP = vtxprob_Bs;
 
-		
+	      reco::Vertex reFitVertex;
 	      //recalculate primary vertex without tracks from B
-	      reco::Vertex reFitVertex = reVertex(recVtxs, iEvent,iSetup, trkMu1Ref, trkMu2Ref, trk1Ref, trk2Ref);
+	      reco::Vertex tmpFitVertex = reVertex(recVtxs, iEvent,iSetup, trkMu1Ref, trkMu2Ref, trk1Ref, trk2Ref);
+	      if(tmpFitVertex.isValid()) reFitVertex = tmpFitVertex;
+	      else reFitVertex = reco::Vertex(RecVtx);   // use the original vertex if the refit vertex is invalid
 	      bsRootTree_->PVx_refit_ = reFitVertex.x();
 	      bsRootTree_->PVy_refit_ = reFitVertex.y();
 	      bsRootTree_->PVz_refit_ = reFitVertex.z();
@@ -972,9 +974,21 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 	      MinBVtxHyp1 = vtxProbHyp1;
 
+	   
+	      reco::Vertex reFitVertex;
 	      //recalculate primary vertex without tracks from B
-	      reco::Vertex reFitVertex = reVertex(recVtxs, iEvent,iSetup, trkMu1Ref, trkMu2Ref, trkkst1, trkkst2);
+	      reco::Vertex tmpFitVertex = reVertex(recVtxs, iEvent,iSetup, trkMu1Ref, trkMu2Ref, trkkst1, trkkst2);
+	      if(tmpFitVertex.isValid()) reFitVertex = tmpFitVertex;
+	      else reFitVertex = reco::Vertex(RecVtx);   // use the original vertex if the refit vertex is invalid
 
+	      bsRootTree_->BdPVx_refit_    = reFitVertex.x();
+	      bsRootTree_->BdPVy_refit_    = reFitVertex.y();
+	      bsRootTree_->BdPVz_refit_    = reFitVertex.z();
+
+	      bsRootTree_->BdPVerrx_refit_ = reFitVertex.xError();
+	      bsRootTree_->BdPVerry_refit_ = reFitVertex.yError();
+	      bsRootTree_->BdPVerrz_refit_ = reFitVertex.zError();
+	      
 
 
 	      bsRootTree_->BdFitChi2_Hyp1_  = bmesHyp1->chiSquared();
@@ -1521,5 +1535,6 @@ reco::Vertex BsToJpsiPhiAnalysis::reVertex(const edm::Handle<reco::VertexCollect
 
  vector<TransientVertex> pvs = PrimaryVertexProducerAlgorithm(psetFromProvenance).vertices(t_tks, *pvbeamspot);
  
- return reco::Vertex(pvs.front());
+ if(pvs.size() > 0) return reco::Vertex(pvs.front());
+ return reco::Vertex();
 }

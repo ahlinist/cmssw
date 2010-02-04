@@ -271,6 +271,12 @@ public:
 
         double BdFitVtxProb_Hyp1_;
    
+	double BdPVx_refit_   ;
+	double BdPVy_refit_   ;
+	double BdPVz_refit_   ;
+	double BdPVerrx_refit_;
+	double BdPVerry_refit_;
+	double BdPVerrz_refit_;
 
         double BdFitM_Hyp1_;
   	double BdFitEta_Hyp1_;
