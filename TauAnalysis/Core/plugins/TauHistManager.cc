@@ -183,10 +183,11 @@ void TauHistManager::bookHistogramsImp()
   bookTauHistograms(hTauPt_, hTauEta_, hTauPhi_, "Tau");
   hTauPtVsEta_ = book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
   hTauCharge_ = book1D("TauCharge", "Tau Charge (#Sigma Tracks in Signal Cone)", 11, -5.5, +5.5);
+  hTauJetRadius_ = book1D("TauJetRadius", "Tau jet-Radius", 51, -0.005, +0.505);
   
   bookWeightHistograms(*dqmStore_, "TauJetWeight", "Tau Weight", 
-		       hTauJetWeightPosUnweighted_, hTauJetWeightPosWeighted_, 
-		       hTauJetWeightNegUnweighted_, hTauJetWeightNegWeighted_, hTauJetWeightZero_);
+		       hTauJetWeightPosLog_, hTauJetWeightNegLog_, hTauJetWeightZero_, 
+		       hTauJetWeightLinear_);
 
   hTauEnCompToGen_ = book1D("TauEnCompToGen", "RECO-GEN #Delta E", 100, -2.50, +2.50);
   hTauThetaCompToGen_ = book1D("TauThetaCompToGen", "RECO-GEN #Delta#theta", 200, -0.050, +0.050);
@@ -371,9 +372,10 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     fillTauHistograms(*patTau, hTauPt_, hTauEta_, hTauPhi_, weight);
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt(), weight);
     hTauCharge_->Fill(patTau->charge(), weight);
+    hTauJetRadius_->Fill(TMath::Sqrt(patTau->etaetaMoment() + patTau->phiphiMoment()), weight);
 
-    fillWeightHistograms(hTauJetWeightPosUnweighted_, hTauJetWeightPosWeighted_, 
-			 hTauJetWeightNegUnweighted_, hTauJetWeightNegWeighted_, hTauJetWeightZero_, tauJetWeight);
+    fillWeightHistograms(hTauJetWeightPosLog_, hTauJetWeightNegLog_, hTauJetWeightZero_, 
+			 hTauJetWeightLinear_, tauJetWeight);
 
 //--- compare reconstructed tau-jet 
 //    to visible decay products on generator level;

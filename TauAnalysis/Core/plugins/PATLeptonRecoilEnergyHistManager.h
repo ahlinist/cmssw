@@ -41,11 +41,10 @@ class PATLeptonRecoilEnergyHistManager : public HistManagerBase
   std::vector<FakeRateJetWeightExtractor<T1>*> leptonWeightExtractors_;
 
 //--- histograms
-  MonitorElement* hLeptonWeightPosUnweighted_;
-  MonitorElement* hLeptonWeightPosWeighted_;
-  MonitorElement* hLeptonWeightNegUnweighted_;
-  MonitorElement* hLeptonWeightNegWeighted_;
+  MonitorElement* hLeptonWeightPosLog_;
+  MonitorElement* hLeptonWeightNegLog_;
   MonitorElement* hLeptonWeightZero_;
+  MonitorElement* hLeptonWeightLinear_;
 
   MonitorElement* hEtSum_;
   MonitorElement* hNumObjects_;

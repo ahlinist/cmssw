@@ -87,8 +87,8 @@ void ZllHypothesisT1T2HistManager<T1,T2>::bookHistogramsImp()
   hVisMassFromGsfTracks_ = book1D("VisMassFromGsfTracks", "hypothetic Z^{0} Mass from GSF Tracks", 40, 0., 200.);
 
   bookWeightHistograms(*dqmStore_, "ZllHypothesisWeight", "ZllHypothesis Weight", 
-		       hZllHypothesisWeightPosUnweighted_, hZllHypothesisWeightPosWeighted_, 
-		       hZllHypothesisWeightNegUnweighted_, hZllHypothesisWeightNegWeighted_, hZllHypothesisWeightZero_);
+		       hZllHypothesisWeightPosLog_, hZllHypothesisWeightNegLog_, hZllHypothesisWeightZero_,
+		       hZllHypothesisWeightLinear_);
 }
 
 template<typename T1, typename T2>
@@ -190,8 +190,8 @@ void ZllHypothesisT1T2HistManager<T1,T2>::fillHistogramsImp(const edm::Event& ev
       hVisMassFromTracks_->Fill((gsfTrack1Momentum + gsfTrack2Momentum).mass(), weight);
     }
 
-    fillWeightHistograms(hZllHypothesisWeightPosUnweighted_, hZllHypothesisWeightPosWeighted_, 
-			 hZllHypothesisWeightNegUnweighted_, hZllHypothesisWeightNegWeighted_, hZllHypothesisWeightZero_, ZllHypothesisWeight);
+    fillWeightHistograms(hZllHypothesisWeightPosLog_, hZllHypothesisWeightNegLog_, hZllHypothesisWeightZero_, 
+			 hZllHypothesisWeightLinear_, ZllHypothesisWeight);
   }
 }
 

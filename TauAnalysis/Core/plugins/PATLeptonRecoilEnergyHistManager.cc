@@ -41,8 +41,8 @@ void PATLeptonRecoilEnergyHistManager<T1,T2>::bookHistogramsImp()
   //std::cout << "<PATLeptonRecoilEnergyHistManager::bookHistogramsImp>:" << std::endl;
   
   bookWeightHistograms(*dqmStore_, "LeptonWeight", "Lepton Weight", 
-		       hLeptonWeightPosUnweighted_, hLeptonWeightPosWeighted_, 
-		       hLeptonWeightNegUnweighted_, hLeptonWeightNegWeighted_, hLeptonWeightZero_);
+		       hLeptonWeightPosLog_, hLeptonWeightNegLog_, hLeptonWeightZero_,
+		       hLeptonWeightLinear_);
 
   hEtSum_ = book1D("EtSum", "#Sigma E_{T}^{recoil}", 100, 0., 50.);
   hNumObjects_  = book1D("NumObjects", "Recoil Energy Objects", 50, -0.5, 49.5);
@@ -75,8 +75,8 @@ void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistogramsImp(const edm::Event
     double leptonWeight = getLeptonWeight(*leptonRecoilEnergy);
     double weight = getWeight(evtWeight, leptonWeight, leptonWeightSum);
 
-    fillWeightHistograms(hLeptonWeightPosUnweighted_, hLeptonWeightPosWeighted_, 
-			 hLeptonWeightNegUnweighted_, hLeptonWeightNegWeighted_, hLeptonWeightZero_, leptonWeight);
+    fillWeightHistograms(hLeptonWeightPosLog_, hLeptonWeightNegLog_, hLeptonWeightZero_, 
+			 hLeptonWeightLinear_, leptonWeight);
 
     hEtSum_->Fill(leptonRecoilEnergy->etSum(), weight);
     hNumObjects_->Fill(leptonRecoilEnergy->recoilEnergyObjects().size(), weight);

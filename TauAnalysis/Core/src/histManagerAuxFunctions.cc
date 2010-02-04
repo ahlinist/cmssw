@@ -3,52 +3,47 @@
 #include <TMath.h>
 
 void bookWeightHistograms(DQMStore& dqmStore, const char* name, const char* title, 
-			  MonitorElement*& h_posUnweighted, MonitorElement*& h_posWeighted,
-			  MonitorElement*& h_negUnweighted, MonitorElement*& h_negWeighted,
-			  MonitorElement*& h_zero)
+			  MonitorElement*& h_posLog, MonitorElement*& h_negLog, MonitorElement*& h_zero, MonitorElement*& h_linear)
 {
-  std::string hName_posUnweighted = std::string(name).append("PosUnweighted");
-  std::string hTitle_posUnweighted = std::string("log10(|").append(title).append("|), ").append(title).append(" #geq 0 (unweighted)");
-  h_posUnweighted = dqmStore.book1D(hName_posUnweighted.data(), hTitle_posUnweighted.data(), 104, -6.2, 4.2);
+  std::string hName_posLog = std::string(name).append("PosLog");
+  std::string hTitle_posLog = std::string("log10(|").append(title).append("|), ").append(title).append(" #geq 0");
+  h_posLog = dqmStore.book1D(hName_posLog.data(), hTitle_posLog.data(), 104, -6.2, 4.2);
 
-  std::string hName_posWeighted = std::string(name).append("PosWeighted");
-  std::string hTitle_posWeighted = std::string("log10(|").append(title).append("|), ").append(title).append(" #geq 0 (weighted)");
-  h_posWeighted = dqmStore.book1D(hName_posWeighted.data(), hTitle_posWeighted.data(), 104, -6.2, 4.2);
-
-  std::string hName_negUnweighted = std::string(name).append("NegUnweighted");
-  std::string hTitle_negUnweighted = std::string("log10(|").append(title).append("|), ").append(title).append(" #leq 0 (unweighted)");
-  h_negUnweighted = dqmStore.book1D(hName_negUnweighted.data(), hTitle_negUnweighted.data(), 104, -6.2, 4.2);
-
-  std::string hName_negWeighted = std::string(name).append("NegWeighted");
-  std::string hTitle_negWeighted = std::string("log10(|").append(title).append("|), ").append(title).append(" #leq 0 (weighted)");
-  h_negWeighted = dqmStore.book1D(hName_negWeighted.data(), hTitle_negWeighted.data(), 104, -6.2, 4.2);
+  std::string hName_negLog = std::string(name).append("NegLog");
+  std::string hTitle_negLog = std::string("log10(|").append(title).append("|), ").append(title).append(" #leq 0");
+  h_negLog = dqmStore.book1D(hName_negLog.data(), hTitle_negLog.data(), 104, -6.2, 4.2);
 
   std::string hName_zero = std::string(name).append("Zero");
   std::string hTitle_zero = std::string(title).append(" == 0");
   h_zero = dqmStore.book1D(hName_zero.data(), hTitle_zero.data(), 2, -0.5, 1.5);
+
+  std::string hName_linear = std::string(name).append("Linear");
+  std::string hTitle_linear = std::string(title);
+  h_linear = dqmStore.book1D(hName_linear.data(), hTitle_linear.data(), 403, -1.075, +1.075);
 }
 
-void fillWeightHistograms(MonitorElement* h_posUnweighted, MonitorElement* h_posWeighted, 
-			  MonitorElement* h_negUnweighted, MonitorElement* h_negWeighted, 
-			  MonitorElement* h_zero, 
-			  double weight)
+void fillWeightHistograms(MonitorElement* h_posLog, MonitorElement* h_negLog, MonitorElement* h_zero, 
+			  MonitorElement* h_linear, double weight)
 {
-  if ( weight == 0. ) {
-    h_zero->Fill(1);
-  } else {
+  if ( weight != 0. ) {
     double log10weight = TMath::Log10(TMath::Abs(weight));
     
     if ( log10weight >  4. ) log10weight =  4.15;
     if ( log10weight < -6. ) log10weight = -6.15;
     
     if ( weight > 0. ) {
-      h_posUnweighted->Fill(log10weight);
-      h_posWeighted->Fill(log10weight, weight);
+      h_posLog->Fill(log10weight);
     } else if ( weight < 0. ) {
-      h_negUnweighted->Fill(log10weight);
-      h_negWeighted->Fill(log10weight, weight);
+      h_negLog->Fill(log10weight);
     }
+  } else {
+    h_zero->Fill(1);
   }
+
+  double linWeight = weight;
+  if ( linWeight < -1. ) linWeight = -1.05;
+  if ( linWeight > +1. ) linWeight = +1.05;
+  h_linear->Fill(linWeight);
 }
 
 //
