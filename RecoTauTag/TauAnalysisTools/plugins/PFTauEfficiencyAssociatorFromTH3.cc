@@ -3,13 +3,13 @@
  * \created : Mon Sep 21 17:46:35 PDT 2009 
  * \author Evan K. Friis, (UC Davis)
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
  * Implements PFTauEfficiencyAssociator to produce a mapping of efficiencies
  * (parameterizied by pt, eta, and jet widht) stored in a ROOT TH3 histograms
  * to reco::PFTaus
  *
- * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.5 2010/01/22 18:44:14 friis Exp $
+ * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.6 2010/02/03 10:04:16 veelken Exp $
  *
  */
 
@@ -100,11 +100,7 @@ PFTauEfficiencyAssociatorFromTH3::getEfficiency(size_t iEff)
    // get the appropriate efficiency source
    const Histogram& effSource = efficiencies_[iEff];
 
-   //find the global bin number corresponding to the current taus kinematics
-   // explanation:
-   //   const_cast - for some reason TH1::FindBin is not const???
-   //   (this->*(effSource.xAxis)) effSource.xAxis is a pointer to the either pt, eta, or width() member fuctions of this producer
-   //   and returns the value of the of the current tau for the variable associated to the xAxis
+   // Find the bin corresponding to this point in feature space
    Int_t globalBin = effSource.histogram->FindBin( this->x(), this->y(), this->z());
 
    double efficiency = effSource.histogram->GetBinContent(globalBin);
