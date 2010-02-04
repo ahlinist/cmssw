@@ -25,7 +25,7 @@ FakeRateEventWeightProducer::~FakeRateEventWeightProducer()
 
 void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup&) 
 { 
-  //std::cout << "<FakeRateEventWeightProducer::produce>:" << std::endl;
+  if ( gVerbosity_ ) std::cout << "<FakeRateEventWeightProducer::produce>:" << std::endl;
 
   if ( cfgError_ ) return;
 
@@ -37,6 +37,8 @@ void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup
 
   for ( fakeRateTypeMap::const_iterator frTypeEntry = fakeRateTypes_.begin();
 	frTypeEntry != fakeRateTypes_.end(); ++frTypeEntry ) {
+    if ( gVerbosity_ ) std::cout << "frType = " << frTypeEntry->first << std::endl;
+
     double fakeRateJetWeightSum = 0.;
 
     unsigned numTauJets = allTauJets->size();
@@ -51,14 +53,13 @@ void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup
       getTauJetProperties(evt, tauJetRef, iTauJet, preselTauJets, frTypeEntry->second, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
     
       double fakeRateJetWeight = getFakeRateJetWeight(tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed, tauJetRef.get());
-      //std::cout << " --> jet weight = " << fakeRateJetWeight << std::endl;
       
       fakeRateJetWeightSum += fakeRateJetWeight;
     }
     
     double fakeRateEventWeight = fakeRateJetWeightSum;
 
-    //std::cout << " --> event weight = " << fakeRateEventWeight << std::endl;
+    if ( gVerbosity_ ) std::cout << " --> event weight = " << fakeRateEventWeight << std::endl;
     
     std::auto_ptr<double> fakeRateEventWeightPtr(new double(fakeRateEventWeight));
     
