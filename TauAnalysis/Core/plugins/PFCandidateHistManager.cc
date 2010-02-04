@@ -20,7 +20,7 @@ PFCandidateHistManager::PFCandidateHistManager(const edm::ParameterSet& cfg)
 
   pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
   //std::cout << " pfCandidateSrc = " << pfCandidateSrc_ << std::endl;
-  
+
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "pfCandidates");
 }
@@ -36,10 +36,6 @@ void PFCandidateHistManager::bookHistogramsImp()
   
   bookPFCandidateHistograms(hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, "PFCandidate");
   hPFCandidatePtVsEta_ = book2D("PFCandidatePtVsEta", "PFCandidatePtVsEta", 24, -3., +3., 30, 0., 150.);
-
-  bookWeightHistograms(*dqmStore_, "PFCandidateWeight", "PFCandidate Weight", 
-		       hPFCandidateWeightPosUnweighted_, hPFCandidateWeightPosWeighted_, 
-		       hPFCandidateWeightNegUnweighted_, hPFCandidateWeightNegWeighted_, hPFCandidateWeightZero_);
 }
 
 void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
@@ -59,9 +55,6 @@ void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm:
   
     fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, weight);
     hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt(), weight);
-
-    fillWeightHistograms(hPFCandidateWeightPosUnweighted_, hPFCandidateWeightPosWeighted_, 
-			 hPFCandidateWeightNegUnweighted_, hPFCandidateWeightNegWeighted_, hPFCandidateWeightZero_, pfCandidateWeight);
   }
 }
 
