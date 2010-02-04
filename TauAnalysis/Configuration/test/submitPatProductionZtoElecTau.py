@@ -113,7 +113,7 @@ for i in range(58):
 # 7TeV samples
 	
 # Z --> tau tau jobs
-for i in range(16):
+for i in range(20):
 	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
 		sample = "ZtoElecTau_Ztautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
