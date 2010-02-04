@@ -81,21 +81,23 @@ void DataBinning::print(std::ostream& stream) const
   double binContent_sum = 0.;
   double binSumw2_sum = 0.;
   for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
-    stream << " bin " << std::setw(2) << iBin << " (center: ";
-
-    vdouble binCenter = binGrid_->binCenter(iBin);
-    if ( binCenter.size() != objVarNames.size() ) {
-      edm::LogError ("DataBinning::print") << "Invalid dimension of bin-center vector !!";
-      return;
+    if ( numBins_ >= 1 ) {
+      stream << " bin " << std::setw(2) << iBin << " (center: ";
+      
+      vdouble binCenter = binGrid_->binCenter(iBin);
+      if ( binCenter.size() != objVarNames.size() ) {
+	edm::LogError ("DataBinning::print") << "Invalid dimension of bin-center vector !!";
+	return;
+      }
+      
+      unsigned numObjVarNames = objVarNames.size();
+      for ( unsigned iObjVar = 0; iObjVar < numObjVarNames; ++iObjVar ) {
+	stream << objVarNames[iObjVar] << " = " << std::setprecision(3) << std::fixed << binCenter[iObjVar];
+	if ( iObjVar < (numObjVarNames - 1) ) stream << ", ";
+      }
+      
+      stream << "): " << std::setprecision(3) << std::fixed << binContents_[iBin] << " +/- " << TMath::Sqrt(binSumw2_[iBin]) << std::endl;
     }
-
-    unsigned numObjVarNames = objVarNames.size();
-    for ( unsigned iObjVar = 0; iObjVar < numObjVarNames; ++iObjVar ) {
-      stream << objVarNames[iObjVar] << " = " << std::setprecision(3) << std::fixed << binCenter[iObjVar];
-      if ( iObjVar < (numObjVarNames - 1) ) stream << ", ";
-    }
-
-    stream << "): " << std::setprecision(3) << std::fixed << binContents_[iBin] << " +/- " << TMath::Sqrt(binSumw2_[iBin]) << std::endl;
     
     binContent_sum += binContents_[iBin];
     binSumw2_sum += binSumw2_[iBin];
