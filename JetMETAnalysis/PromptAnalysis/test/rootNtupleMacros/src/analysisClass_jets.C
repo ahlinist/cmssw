@@ -51,12 +51,13 @@ void analysisClass::Loop()
   // decide wether you want to apply jet corrections or not
   bool makeJetCorr = true;
   double barreleta =1.4;
-  double endcapeta =2.4;  
-  double ptMin=15.;
+  double endcapeta =2.6;  
+  double ptMin=10.;
   double fhpdmax = 0.98;
   double n90hitsmin =1;
   double emffrac = 0.01;
-
+  double dijetptmin1=10;
+  double dijetptmin2=10;
   // ----------------------------------------------------------------
 
 
@@ -125,7 +126,7 @@ void analysisClass::Loop()
 //   dijetdphi->SetXTitle("p_{T}[GeV]");
   dijetdphi->SetXTitle("#Delta #phi_{di-jet}");
   dijetdphi->SetTitle(dataset);
-  TH2D *mapalldijets = new TH2D("mapalldijets","",25,-2.4,2.4,24,-3.2,3.2);
+  TH2D *mapalldijets = new TH2D("mapalldijets","",25,-3.4,3.4,24,-3.2,3.2);
   mapalldijets->SetXTitle("#eta_{jet}");
   mapalldijets->SetYTitle("#phi_{jet}");
   mapalldijets->SetTitle(dataset);
@@ -156,6 +157,22 @@ void analysisClass::Loop()
   TH1I *ak5njetsindijets = new TH1I("ak5njetsindijets","",20,0,20);
   ak5njetsindijets->SetXTitle("Number of jets per event");
   ak5njetsindijets->SetTitle(dataset);
+ 
+
+  // fake jetes
+  TH1D *fhpdfakejets = new TH1D("fhpdfakejets","",101,-0.005,1.005);
+  fhpdfakejets->SetXTitle("f_{HPD}");
+  fhpdfakejets->SetTitle(dataset);
+
+   TH1I *n90hitsfakejets = new TH1I("n90hitsfakejets","",50,0,50);
+   n90hitsfakejets->SetXTitle("N_{90}hits");
+   n90hitsfakejets->SetTitle(dataset);
+   TH1D *resemffakejets = new TH1D("resemffakejets","",101,-0.005,1.005);
+   resemffakejets->SetXTitle("restricted emf");
+   resemffakejets->SetTitle(dataset);
+   TH1D *fakejetptall1 = new TH1D("fakejetptall1","",ptBin, 0,50);
+   fakejetptall1->SetXTitle("p_{T}[GeV]");
+   fakejetptall1->SetTitle(dataset);
 
   TH1D *variousEffindijets = new TH1D("variousEffindijets","",4,0,4);
   //  variousEffindijets->SetXTitle("Efficiency of loose and tight ID and associated trks");
@@ -175,7 +192,7 @@ void analysisClass::Loop()
 //   dijetdphicleaned->SetXTitle("p_{T}[GeV]");
   dijetdphicleaned->SetXTitle("#Delta #phi_{di-jet}");
   dijetdphicleaned->SetTitle(dataset);
-  TH2D *mapalldijetscleaned = new TH2D("mapalldijetscleaned","",25,-2.4,2.4,24,-3.2,3.2);
+  TH2D *mapalldijetscleaned = new TH2D("mapalldijetscleaned","",25,-3.4,3.4,24,-3.2,3.2);
   mapalldijetscleaned->SetXTitle("#eta_{jet}");
   mapalldijetscleaned->SetYTitle("#phi_{jet}");
   mapalldijetscleaned->SetTitle(dataset);
@@ -311,15 +328,13 @@ void analysisClass::Loop()
        //event selection - cut on vertex for now. l1 tech bits already asked at skimming step
 //        if(vertexNTracks->at(0)>1. && fabs(vertexZ->at(0))<20){   // "old" event selection (as taken over from viola)
 //        if(vertexNTracksW5->at(0)>3. && fabs(vertexZ->at(0))<15 && vertexisValid->at(0)==true){    // "new" event selection
-//        if(vertexNTracksW5->at(0)>=4. && fabs(vertexZ->at(0))<15 && vertexNDF->at(0)!=0 && tracksChi2!=0){    // "newer" event selection
-       if(fabs(vertexZ->at(0))<15 && vertexNDF->at(0)>=5 && vertexisValid->at(0)==true){    // "newest" event selection
-
-
+       //      if(vertexNTracksW5->at(0)>=4. && fabs(vertexZ->at(0))<15 && vertexNDF->at(0)!=0 && tracksChi2!=0){    // "newer" event selection      
+       if( fabs(vertexZ->at(0))<15 && vertexisValid->at(0)==true && vertexNDF->at(0)>=5) {
 	 int isdata = isData;
 	 int eventid = event;
 	 int LS = ls;
 	 int runid = run;
-	 // --------------------------------------------------------------------
+	 // -------------------------------------------------------------------
 	 // skip some lumi sections...
 	 if(isdata == 1 && (
 			    (runid==123596 && LS<2) ||
@@ -392,7 +407,7 @@ void analysisClass::Loop()
 	     ptall->Fill(ak5JetpT->at(j) * jcScale);    //jc
 	     mapall->Fill(ak5JetEta->at(j),ak5JetPhi->at(j));
 	     
-	     if(ak5JetpT->at(j) * jcScale >ptMin){    //jc
+	     if(ak5JetpT->at(j) * jcScale >ptMin && fabs(ak5JetEta->at(j)) < endcapeta ){    //jc
 	       Nak5++;
 	       ak5nconst->Fill(ak5JetNConstituents->at(j));
 	       pt->Fill(ak5JetpT->at(j) * jcScale);    //jc 
@@ -464,7 +479,7 @@ void analysisClass::Loop()
 	       jcScale1=1;
 	     }
 
-	     if(fabs(ak5JetEta->at(0))<endcapeta && ak5JetpT->at(0) * jcScale0 >ptMin && fabs(ak5JetEta->at(1))<endcapeta && ak5JetpT->at(1) * jcScale1 >ptMin){   //jc
+	     if(fabs(ak5JetEta->at(0))<endcapeta && ak5JetpT->at(0) * jcScale0 >dijetptmin1 && fabs(ak5JetEta->at(1))<endcapeta && ak5JetpT->at(1) * jcScale1 >dijetptmin2){   //jc
 	       // dphi
 	       double dphi = fabs(ak5JetPhi->at(0) - ak5JetPhi->at(1) );
 	       if (dphi > 3.14) dphi=fabs(dphi -6.28 );
@@ -472,6 +487,16 @@ void analysisClass::Loop()
 		 for (int dj = 0; dj<int(ak5JetpT->size()); dj++){
 		   if(ak5JetpT->at(dj)>ptMin) Nak5indijets++;
 		 }
+		 for (int dj = 0; dj<int(ak5JetpT->size()); dj++){ 
+		    if  (dj >2 &&ak5JetpT->at(dj)>5 ) {		    
+		   //Dijet event : what else ?
+		  	
+		   resemffakejets->Fill(ak5JetJIDresEMF->at(dj));
+		   fhpdfakejets->Fill(ak5JetJIDfHPD->at(dj));
+		   n90hitsfakejets->Fill(ak5JetJIDn90Hits->at(dj));
+		   fakejetptall1 ->Fill(ak5JetpT->at(dj));
+		 }
+	       }
 		 dijetptall1->Fill(ak5JetpT->at(0) * jcScale0);  //jc
 		 dijetptall2->Fill(ak5JetpT->at(1) * jcScale1);   //jc
 		 dijetdphi->Fill(dphi);
@@ -689,6 +714,11 @@ void analysisClass::Loop()
    fhpddijets->Write();
    frbxdijets->Write();
    n90hitsdijets->Write();
+ 
+   resemffakejets->Write();
+   fhpdfakejets->Write();
+   n90hitsfakejets->Write();
+   fakejetptall1 ->Write();
    variousEff->Write();
    variousEffindijets->Write();
  
