@@ -61,11 +61,10 @@ class JetHistManager : public HistManagerBase
   MonitorElement* hJetPtVsEta_;
   MonitorElement* hJetPhi_;
 
-  MonitorElement* hJetWeightPosUnweighted_;
-  MonitorElement* hJetWeightPosWeighted_;
-  MonitorElement* hJetWeightNegUnweighted_;
-  MonitorElement* hJetWeightNegWeighted_;
+  MonitorElement* hJetWeightPosLog_;
+  MonitorElement* hJetWeightNegLog_;
   MonitorElement* hJetWeightZero_;
+  MonitorElement* hJetWeightLinear_;
   
   MonitorElement* hJetAlpha_;
   MonitorElement* hJetNumTracks_;

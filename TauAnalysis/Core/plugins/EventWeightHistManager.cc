@@ -23,7 +23,7 @@ void EventWeightHistManager::bookHistogramsImp()
   //std::cout << "<EventWeightHistManager::bookHistogramsImp>:" << std::endl;
   
   bookWeightHistograms(*dqmStore_, "EvtWeight", "Event Weight", 
-		       hEvtWeightPosUnweighted_, hEvtWeightPosWeighted_, hEvtWeightNegUnweighted_, hEvtWeightNegWeighted_,
+		       hEvtWeightPosLog_, hEvtWeightNegLog_, hEvtWeightLinear_,
 		       hEvtWeightZero_);
 }
 
@@ -34,8 +34,8 @@ void EventWeightHistManager::fillHistogramsImp(const edm::Event& evt, const edm:
 {  
   //std::cout << "<EventWeightHistManager::fillHistogramsImp>:" << std::endl; 
 
-  fillWeightHistograms(hEvtWeightPosUnweighted_, hEvtWeightPosWeighted_, 
-		       hEvtWeightNegUnweighted_, hEvtWeightNegWeighted_, hEvtWeightZero_, evtWeight);
+  fillWeightHistograms(hEvtWeightPosLog_, hEvtWeightNegLog_, hEvtWeightZero_, 
+		       hEvtWeightLinear_, evtWeight);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

@@ -24,13 +24,10 @@ class EventWeightHistManager : public HistManagerBase
   void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- histograms
-  MonitorElement* hEvtWeightPosUnweighted_;
-  MonitorElement* hEvtWeightNegUnweighted_;
-
-  MonitorElement* hEvtWeightPosWeighted_;
-  MonitorElement* hEvtWeightNegWeighted_;
-
+  MonitorElement* hEvtWeightPosLog_;
+  MonitorElement* hEvtWeightNegLog_;
   MonitorElement* hEvtWeightZero_;
+  MonitorElement* hEvtWeightLinear_;
 };
 
 #endif  

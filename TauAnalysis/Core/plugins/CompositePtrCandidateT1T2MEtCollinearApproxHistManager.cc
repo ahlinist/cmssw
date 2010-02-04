@@ -97,8 +97,8 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::bookHistogra
   hGenLeg2ProjGenMEt_ = book1D("GenLeg2ProjGenMEt", "gen. leg_{2} P_{T} || missing E_{T}", 75, 0., 150.);
   
   bookWeightHistograms(*dqmStore_, "DiTauCandidateWeight", "Composite Weight", 
-		       hDiTauCandidateWeightPosUnweighted_, hDiTauCandidateWeightPosWeighted_, 
-		       hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_, hDiTauCandidateWeightZero_);
+		       hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_,
+		       hDiTauCandidateWeightLinear_);
   
   hCollinearApproxEffDPhi12dep_ = book1D("CollinearApproxEffDPhi12dep", "Eff. of collinear Approximation as function of #Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon);
   hCollinearApproxEffDiTauPtDep_ = book1D("CollinearApproxEffDiTauPtDep", "Eff. of collinear Approximation as function of Visible P_{T}", 50, 0., 100.);
@@ -252,8 +252,8 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
       }
     }
 
-    fillWeightHistograms(hDiTauCandidateWeightPosUnweighted_, hDiTauCandidateWeightPosWeighted_, 
-			 hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_, hDiTauCandidateWeightZero_, diTauCandidateWeight);
+    fillWeightHistograms(hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_, 
+			 hDiTauCandidateWeightLinear_, diTauCandidateWeight);
 
     hCollinearApproxEffDPhi12dep_->Fill(diTauCandidate->dPhi12(), weight);
     hCollinearApproxEffDiTauPtDep_->Fill(diTauCandidate->p4Vis().pt(), weight);

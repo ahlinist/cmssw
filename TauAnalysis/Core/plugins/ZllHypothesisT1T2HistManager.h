@@ -78,11 +78,10 @@ class ZllHypothesisT1T2HistManager : public HistManagerBase
   MonitorElement* hVisMassFromGsfElectrons_;
   MonitorElement* hVisMassFromGsfTracks_;
 
-  MonitorElement* hZllHypothesisWeightPosUnweighted_;
-  MonitorElement* hZllHypothesisWeightPosWeighted_;
-  MonitorElement* hZllHypothesisWeightNegUnweighted_;
-  MonitorElement* hZllHypothesisWeightNegWeighted_;
+  MonitorElement* hZllHypothesisWeightPosLog_;
+  MonitorElement* hZllHypothesisWeightNegLog_;
   MonitorElement* hZllHypothesisWeightZero_;
+  MonitorElement* hZllHypothesisWeightLinear_;
 };
 
 #endif  

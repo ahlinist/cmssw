@@ -87,8 +87,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hLeg1EtaVsLeg2Eta_ = book2D("Leg1EtaVsLeg2Eta", "leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
   
   bookWeightHistograms(*dqmStore_, "DiTauCandidateWeight", "Composite Weight", 
-		       hDiTauCandidateWeightPosUnweighted_, hDiTauCandidateWeightPosWeighted_, 
-		       hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_, hDiTauCandidateWeightZero_);
+		       hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_, 
+		       hDiTauCandidateWeightLinear_);
 
   hDiTauCandidateImpParSig_ = book1D("DiTauCandidateImpParSig", "#sqrt{#frac{dxy_{1}}{#Delta dxy_{1}}^{2}+#frac{dxy_{2}}{#Delta dxy_{2}}^{2}}", 30, 0., 15.);
   
@@ -183,8 +183,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
     hLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->leg1()->eta(), diTauCandidate->leg2()->eta(), weight);
 
-    fillWeightHistograms(hDiTauCandidateWeightPosUnweighted_, hDiTauCandidateWeightPosWeighted_, 
-			 hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_, hDiTauCandidateWeightZero_, diTauCandidateWeight);
+    fillWeightHistograms(hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_, 
+			 hDiTauCandidateWeightLinear_, diTauCandidateWeight);
 
     const reco::Track* trackLeg1 = trackExtractorLeg1_(*diTauCandidate->leg1());
     const reco::Track* trackLeg2 = trackExtractorLeg2_(*diTauCandidate->leg2());
