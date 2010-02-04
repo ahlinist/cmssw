@@ -29,8 +29,6 @@ class PFCandidateHistManager : public HistManagerBase
 //--- auxiliary functions
   void bookPFCandidateHistograms(MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  double getPFCandidateWeight(const reco::PFCandidate&);
-
   void fillPFCandidateHistograms(const reco::PFCandidate&, MonitorElement*, MonitorElement*, MonitorElement*, double);
 
 //--- configuration parameters
@@ -41,12 +39,6 @@ class PFCandidateHistManager : public HistManagerBase
   MonitorElement* hPFCandidateEta_;
   MonitorElement* hPFCandidatePtVsEta_;
   MonitorElement* hPFCandidatePhi_;
-
-  MonitorElement* hPFCandidateWeightPosUnweighted_;
-  MonitorElement* hPFCandidateWeightPosWeighted_;
-  MonitorElement* hPFCandidateWeightNegUnweighted_;
-  MonitorElement* hPFCandidateWeightNegWeighted_;
-  MonitorElement* hPFCandidateWeightZero_;
 };
 
 #endif  
