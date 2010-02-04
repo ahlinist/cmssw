@@ -11,13 +11,13 @@ plots_ZtoElecTau = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             #'Zee',
-            'ZeePlusJets',
-            'WplusJets',
-            'TTplusJets',
-            'qcdSum',
+			'ZeePlusJets',
+			'WplusJets',
+			'TTplusJets',
+			'qcdSum',
             'gammaPlusJetsSum',
-            'Ztautau'
-            #'ZtautauPlusJets'
+			#'Ztautau'
+            'ZtautauPlusJets'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -28,13 +28,13 @@ plots_ZtoElecTau = cms.PSet(
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
          #'Zee',
-         'ZeePlusJets',
-         'WplusJets',
-         'TTplusJets',
-         'qcdSum',
+		 'ZeePlusJets',
+		 'WplusJets',
+		 'TTplusJets',
+		 'qcdSum',
          'gammaPlusJetsSum',
-         'Ztautau'
-         #'ZtautauPlusJets' 
+		 #'Ztautau'
+         'ZtautauPlusJets' 
     )
 )
 
@@ -54,7 +54,7 @@ drawJobConfigurator_ZtoElecTau.add(
     beforeCut = evtSelPrimaryEventVertexQuality,
     plot = drawJobConfigEntry(
         meName = 'VertexQuantities/VertexChi2Prob',
-        title = "P(#Chi^{2}_{vtx} (after primary Event Vertex Cut)",
+        title = "P(#Chi^{2}_{vtx}) (after primary Event Vertex Cut)",
         xAxis = 'prob',
         name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex"
     )
@@ -113,7 +113,7 @@ drawJobConfigurator_ZtoElecTau.add(
     plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/Electron#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Electron (after Electron anti-crack Cut)",
+        title = "Electron (after Electron  #eta Cut)",
         xAxis = '#PAR#',
         name = "cutFlowControlPlots_electron_afterElectronEta"
     )
@@ -144,7 +144,7 @@ drawJobConfigurator_ZtoElecTau.add(
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after Electron-Tau overlap Veto)",
+            title = "Tau lead. Track Pt (after Electron-Tau overlap Veto)",
             xAxis = 'Pt',
             name = "cutFlowControlPlots_tauLeadTrkPt_afterTauAntiOverlapWithElectronsVeto"
             )
@@ -164,7 +164,7 @@ drawJobConfigurator_ZtoElecTau.add(
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after Tau #eta Cut)",
+            title = "Tau lead. Track Pt (after Tau  #eta Cut)",
             xAxis = 'Pt',
             name = "cutFlowControlPlots_tauLeadTrkPt_afterTauEta"
             )
@@ -185,12 +185,26 @@ drawJobConfigurator_ZtoElecTau.add(
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelElectronTrkIso,
     beforeCut = evtSelElectronEcalIso,
-    plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/ElectronEcalIsoPt',
-        title = "Electron ECAL iso. (after Electron Track iso. Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_electronEcalIso_afterElectronTrkIso"
-    )
+    plots = [
+		drawJobConfigEntry(
+        	meName = 'ElectronQuantities/ElectronEcalIsoPt',
+        	title = "Electron ECAL iso. (after Electron Track iso. Cut)",
+        	xAxis = 'Pt',
+        	name = "cutFlowControlPlots_electronEcalIso_afterElectronTrkIso"
+    	),
+		drawJobConfigEntry(
+        	meName = 'ElectronQuantities/ElectronEcalIsoPtBarrel',
+        	title = "Electron ECAL iso. in barrel (after Electron Track iso. Cut)",
+        	xAxis = 'Pt',
+        	name = "cutFlowControlPlots_electronEcalIsoBarrel_afterElectronTrkIso"
+    	),
+		drawJobConfigEntry(
+        	meName = 'ElectronQuantities/ElectronEcalIsoPtEndcap',
+        	title = "Electron ECAL iso. in endcap (after Electron Track iso. Cut)",
+        	xAxis = 'Pt',
+        	name = "cutFlowControlPlots_electronEcalIsoEndcap_afterElectronTrkIso"
+    	)
+	]
 )
 
 drawJobConfigurator_ZtoElecTau.add(
@@ -217,13 +231,25 @@ drawJobConfigurator_ZtoElecTau.add(
     )
 )
 
+# temporary...to check how correlated this is with the IP_xy cut above
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelElectronTrkIP,
+    beforeCut = evtSelElectronConversionVeto,
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/ElectronTrackIPz',
+        title = "Electron track IP_z (after Electron Track IP_{xy} Cut)",
+        xAxis = 'IPz',
+        name = "cutFlowControlPlots_electronTrkIPz_afterElectronTrkIP"
+    )
+)
+
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelElectronTrkIP,
     beforeCut = evtSelElectronConversionVeto,
     plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/Electron#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Electron (after Electron (after Electron Track IP_{xy} Cut)",
+        title = "Electron (after Electron Track IP_{xy} Cut)",
         xAxis = '#PAR#',
         name = "cutFlowControlPlots_electron_afterElectronTrkIP"
     )
@@ -236,13 +262,13 @@ drawJobConfigurator_ZtoElecTau.add(
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after Electron #gamma-Conversion Veto)",
+            title = "Tau (after Electron (after Electron #gamma-Conversion Veto)",
             xAxis = '#PAR#',
             name = "cutFlowControlPlots_tau_afterElectronConversionVeto"
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after Electron #gamma-Conversion Veto)",
+            title = "Tau lead. Track Pt (after Electron #gamma-Conversion Veto)",
             xAxis = 'Pt',
             name = "cutFlowControlPlots_tauLeadTrkPt_afterElectronConversionVeto"
             )
@@ -262,7 +288,7 @@ drawJobConfigurator_ZtoElecTau.add(
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after Tau lead. Track Cut)",
+            title = "Tau lead. Track Pt (after Tau lead. Track Cut)",
             xAxis = 'Pt',
             name = "cutFlowControlPlots_tauLeadTrkPt_afterTauLeadTrk"
         )
@@ -273,8 +299,8 @@ drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTauLeadTrkPt,
     beforeCut = evtSelTauTrkIso,
     plot = drawJobConfigEntry(
-        meName = 'TauQuantities/TauTrkIsoPt',
-        title = "Tau Track iso. (after Tau lead. Track P_{T} Cut)",
+        meName = 'TauQuantities/TauTrkIsoPtProfile',
+        title = "Tau Track iso. (after Tau lead. Track P_{t} Cut)",
         xAxis = 'Pt',
         name = "cutFlowControlPlots_tauTrkIso_afterTauLeadTrkPt"
     )
@@ -459,7 +485,7 @@ drawJobConfigurator_ZtoElecTau.add(
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (final Event sample)",
+            title = "Tau lead. Track Pt (final Event sample)",
             xAxis = 'Pt',
             name = "finalSamplePlots_tauLeadTrkPt"
         ),

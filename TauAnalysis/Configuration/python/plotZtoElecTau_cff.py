@@ -15,24 +15,39 @@ from TauAnalysis.Configuration.plotZtoElecTau_processes_cfi import *
 from TauAnalysis.Configuration.plotZtoElecTau_drawJobs_cfi import *
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
-loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
-    Ztautau = copy.deepcopy(processZtoElecTau_ZtautauSum.config_dqmFileLoader),
-    Zee = copy.deepcopy(processZtoElecTau_ZeeSum.config_dqmFileLoader),
-    ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJetsSum.config_dqmFileLoader),
-    ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJetsSum.config_dqmFileLoader),                      
-    gammaPlusJets_Pt15to20 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader),
-    gammaPlusJets_Pt20to25 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt20to25.config_dqmFileLoader),
-    gammaPlusJets_Pt25to30 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt25to30.config_dqmFileLoader),
-    gammaPlusJets_Pt30to35 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt30to35.config_dqmFileLoader),
-    gammaPlusJets_PtGt35 = copy.deepcopy(processZtoElecTau_gammaPlusJets_PtGt35.config_dqmFileLoader),
-    WplusJets = copy.deepcopy(processZtoElecTau_WplusJetsSum.config_dqmFileLoader),
-    QCD_BCtoE_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30Sum.config_dqmFileLoader),
-    QCD_BCtoE_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt30to80Sum.config_dqmFileLoader),
-    QCD_BCtoE_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt80to170Sum.config_dqmFileLoader),
-    QCD_EMenriched_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt20to30Sum.config_dqmFileLoader),
-    QCD_EMenriched_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt30to80Sum.config_dqmFileLoader),
-    QCD_EMenriched_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt80to170Sum.config_dqmFileLoader),
-    TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJetsSum.config_dqmFileLoader)
+loadZtoElecTau_10TeV = cms.EDAnalyzer("DQMFileLoader",
+	Ztautau = copy.deepcopy(processZtoElecTau_Ztautau_10TeV_Sum.config_dqmFileLoader),
+	Zee = copy.deepcopy(processZtoElecTau_Zee_10TeV_Sum.config_dqmFileLoader),
+	ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJets_10TeV_Sum.config_dqmFileLoader),
+	ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJets_10TeV_Sum.config_dqmFileLoader),                      
+	gammaPlusJets_Pt15to20 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt15to20_10TeV.config_dqmFileLoader),
+	gammaPlusJets_Pt20to30 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt20to30_10TeV.config_dqmFileLoader),
+	gammaPlusJets_Pt30to50 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt30to50_10TeV.config_dqmFileLoader),
+	WplusJets = copy.deepcopy(processZtoElecTau_WplusJets_10TeV_Sum.config_dqmFileLoader),
+	QCD_BCtoE_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30_10TeV_Sum.config_dqmFileLoader),
+	QCD_BCtoE_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt30to80_10TeV_Sum.config_dqmFileLoader),
+	QCD_BCtoE_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt80to170_10TeV_Sum.config_dqmFileLoader),
+	QCD_EMenriched_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt20to30_10TeV_Sum.config_dqmFileLoader),
+	QCD_EMenriched_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt30to80_10TeV_Sum.config_dqmFileLoader),
+	QCD_EMenriched_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt80to170_10TeV_Sum.config_dqmFileLoader),
+	TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJets_10TeV_Sum.config_dqmFileLoader)
+)
+loadZtoElecTau_7TeV = cms.EDAnalyzer("DQMFileLoader",
+	Ztautau = copy.deepcopy(processZtoElecTau_Ztautau_7TeV_Sum.config_dqmFileLoader),
+	Zee = copy.deepcopy(processZtoElecTau_Zee_7TeV_Sum.config_dqmFileLoader),
+	ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJets_7TeV_Sum.config_dqmFileLoader),
+	ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJets_7TeV_Sum.config_dqmFileLoader),                      
+	gammaPlusJets_Pt15to20 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt15to20_7TeV.config_dqmFileLoader),
+	gammaPlusJets_Pt20to30 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt20to30_7TeV.config_dqmFileLoader),
+	gammaPlusJets_Pt30to50 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt30to50_7TeV.config_dqmFileLoader),
+	WplusJets = copy.deepcopy(processZtoElecTau_WplusJets_7TeV_Sum.config_dqmFileLoader),
+	QCD_BCtoE_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_Sum.config_dqmFileLoader),
+	QCD_BCtoE_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_Sum.config_dqmFileLoader),
+	QCD_BCtoE_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_Sum.config_dqmFileLoader),
+	QCD_EMenriched_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_Sum.config_dqmFileLoader),
+	QCD_EMenriched_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_Sum.config_dqmFileLoader),
+	QCD_EMenriched_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_Sum.config_dqmFileLoader),
+	TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJets_7TeV_Sum.config_dqmFileLoader)
 )
 
 addZtoElecTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
@@ -53,10 +68,8 @@ addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
     gammaPlusJetsSum = cms.PSet(
 	dqmDirectories_input = cms.vstring(
             'harvested/gammaPlusJets_Pt15to20',
-            'harvested/gammaPlusJets_Pt20to25',
-            'harvested/gammaPlusJets_Pt25to30',
-            'harvested/gammaPlusJets_Pt30to35',
-            'harvested/gammaPlusJets_PtGt35'
+            'harvested/gammaPlusJets_Pt20to30',
+            'harvested/gammaPlusJets_Pt30to50'
         ),
 	dqmDirectory_output = cms.string('harvested/gammaPlusJetsSum')
     )                          
@@ -65,8 +78,8 @@ addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
 addZtoElecTau_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Ztautau',
-            #'harvested/ZtautauPlusJets',
+			#'harvested/Ztautau',
+            'harvested/ZtautauPlusJets',
             'harvested/ZeePlusJets', 
             #'harvested/Zee',
             'harvested/gammaPlusJetsSum',
@@ -92,7 +105,7 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
             dqmDirectory = cms.string('harvested/gammaPlusJetsSum'),
             legendEntry = cms.string('#gamma + Jets'),
             type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-	),
+		),
         qcdSum = cms.PSet(
             dqmDirectory = cms.string('harvested/qcdSum'),
             legendEntry = cms.string('QCD'),
@@ -122,7 +135,7 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
         numEntries_linear = copy.deepcopy(yAxis_numEntries_linear),
         numEntries_log = copy.deepcopy(yAxis_numEntries_log)
     ),
-
+	
     legends = cms.PSet(
         regular = copy.deepcopy(legend_regular)
     ),
@@ -141,7 +154,7 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
             gammaPlusJetsSum = copy.deepcopy(drawOption_gammaPlusJets),
             qcdSum = copy.deepcopy(drawOption_QCD),
             TTplusJets = copy.deepcopy(drawOption_TTplusJets)
-	)
+		)
     ),
 
     drawJobs = drawJobConfigurator_ZtoElecTau.configure(),
