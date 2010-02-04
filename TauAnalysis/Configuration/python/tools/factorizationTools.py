@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from TauAnalysis.DQMTools.drawJobConfigurator import *
+from TauAnalysis.DQMTools.tools.drawJobConfigurator import *
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
 from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
