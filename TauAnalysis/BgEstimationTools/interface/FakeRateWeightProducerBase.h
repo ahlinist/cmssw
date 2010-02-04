@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: FakeRateWeightProducerBase.h,v 1.5 2009/11/07 15:15:51 veelken Exp $
+ * $Id: FakeRateWeightProducerBase.h,v 1.6 2010/02/03 15:19:33 veelken Exp $
  *
  */
 
@@ -84,18 +84,23 @@ class FakeRateWeightProducerBase : public edm::EDProducer
   double minJetWeight_;
   double maxJetWeight_;
 
-  double  minJetPt_;
-  double  maxJetPt_;
-  double  minJetEta_;
-  double  maxJetEta_;
+  double minJetPt_;
+  double maxJetPt_;
+  double minJetEta_;
+  double maxJetEta_;
 
   int cfgError_;
 
   long numJets_weightBelowMinimum_;
   long numJets_weightAboveMaximum_;
   long numJets_reverseWeightOrder_;
+  long numJets_outOfRange_;
   long numJets_processed_;
+
+  static int gVerbosity_;
 };
+
+double getJetRadius(const reco::BaseTau& tauJet);
 
 #endif  
 

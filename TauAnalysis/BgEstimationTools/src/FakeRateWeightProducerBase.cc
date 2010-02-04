@@ -11,12 +11,18 @@
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 
+#include "DataFormats/JetReco/interface/Jet.h"
+
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "DataFormats/Common/interface/ValueMap.h" 
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 
+#include <TMath.h>
+
 typedef edm::ValueMap<pat::LookupTableRecord> LookupTableMap;
+
+int FakeRateWeightProducerBase::gVerbosity_ = 1;
 
 FakeRateWeightProducerBase::tauJetDiscrEntry::tauJetDiscrEntry(const edm::ParameterSet& cfg)
   : caloTauSelector_(0),
@@ -83,6 +89,7 @@ FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& 
     numJets_weightBelowMinimum_(0),
     numJets_weightAboveMaximum_(0),
     numJets_reverseWeightOrder_(0),
+    numJets_outOfRange_(0),
     numJets_processed_(0)
 {
   method_ = cfg.getParameter<std::string>("method");
@@ -123,6 +130,7 @@ FakeRateWeightProducerBase::~FakeRateWeightProducerBase()
   std::cout << " jet-weight < miminum (= " << minJetWeight_ << ") = " << numJets_weightBelowMinimum_ << std::endl;
   std::cout << " jet-weight < maxinum (= " << maxJetWeight_ << ") = " << numJets_weightAboveMaximum_ << std::endl;
   std::cout << " tau id. efficiency < fake-rate = " << numJets_reverseWeightOrder_ << std::endl;
+  std::cout << " in underflow/overflow bins = " << numJets_outOfRange_ << std::endl;
 }
 
 void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
@@ -142,6 +150,8 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
   }
 
   if ( !passesPreselection ) {
+    if ( gVerbosity_ ) std::cout << " (fails preselection)" << std::endl;
+
     tauJetIdEff = 0.;
     qcdJetFakeRate = 0.;
     
@@ -200,8 +210,9 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
 	tauJetDiscr_value = ( (*tauJetDiscr->pfTauSelector_)(*pfTauJetRef) ) ? 1. : 0.;
       }
     } else {
-      edm::LogError("FakeRateWeightProducerBase::getTauJetProperties") << " Undefined tau Type = " << typeid(*tauJetRef).name() 
-								       << " --> skipping !!";
+      edm::LogError("FakeRateWeightProducerBase::getTauJetProperties") 
+	<< " Undefined tau Type = " << typeid(*tauJetRef).name() 
+	<< " --> skipping !!";
       continue;
     }
     
@@ -224,33 +235,53 @@ double FakeRateWeightProducerBase::getFakeRateJetWeight(double tauJetIdEff, doub
 	  -qcdJetFakeRate*(1. - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate) : qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
 
 	if ( fakeRateJetWeight < minJetWeight_ ) {
-	  edm::LogWarning ("getFakeRateJetWeight") 
-	    << " Jet-weight = " << fakeRateJetWeight << " falls below minimum value = " << minJetWeight_
-	    << " --> setting jet-weight to minimum value !!";
+	  //edm::LogWarning ("getFakeRateJetWeight") 
+	  //  << " Jet-weight = " << fakeRateJetWeight << " falls below minimum value = " << minJetWeight_
+	  //  << " --> setting jet-weight to minimum value !!";
 	  fakeRateJetWeight = minJetWeight_;
 	  ++numJets_weightBelowMinimum_;
 	}
 	
 	if ( fakeRateJetWeight > maxJetWeight_ ) {
-	  edm::LogWarning ("getFakeRateJetWeight") 
-	    << " Jet-weight = " << fakeRateJetWeight << " exceeds maximum value = " << maxJetWeight_
-	    << " --> setting jet-weight to maximum value !!";
+	  //edm::LogWarning ("getFakeRateJetWeight") 
+	  //  << " Jet-weight = " << fakeRateJetWeight << " exceeds maximum value = " << maxJetWeight_
+	  //  << " --> setting jet-weight to maximum value !!";
 	  fakeRateJetWeight = maxJetWeight_;
 	  ++numJets_weightAboveMaximum_;
 	}
       } else {
-	edm::LogWarning ("getFakeRateJetWeight") 
+	edm::LogWarning ("getFakeRateJetWeight") 	  
 	  << " QCD-jet fake-rate = " << qcdJetFakeRate << " exceeds Tau-jet id. efficiency = " << tauJetIdEff
 	  << " for Pt = " << tauJet->pt() << ", eta = " << tauJet->eta() << ", phi = " << tauJet->phi()
-	  // CV: jet-radius not yet available in pat::Tau,
-	  //     would need reference to reco::Jet (which right now needs PFTauTagInfo)
-	  //<< " jet-radius = " << TMath::Sqrt(tauJet->etaetaMoment() + tauJet->phiphiMoment())
-	  << " --> setting jet-weight to zero !!";
+	  << " jet-radius = " << getJetRadius(*tauJet) << " --> setting jet-weight to zero !!";
 	++numJets_reverseWeightOrder_;
       }
     }
-    ++++numJets_processed_;
+  } else {
+    ++numJets_outOfRange_;
   }
+
+  ++numJets_processed_;
 
   return fakeRateJetWeight;
 }
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+double getJetRadius(const reco::BaseTau& tauJet)
+{
+  if ( typeid(tauJet) == typeid(reco::CaloTau) ) {
+    const reco::CaloTau* caloTauJet = dynamic_cast<const reco::CaloTau*>(&tauJet);
+    reco::Jet::EtaPhiMoments etaPhiStatistics = caloTauJet->caloTauTagInfoRef()->calojetRef()->etaPhiStatistics();
+    return TMath::Sqrt(etaPhiStatistics.etaEtaMoment + etaPhiStatistics.phiPhiMoment);
+  } else if ( typeid(tauJet) == typeid(reco::PFTau) ) {
+    const reco::PFTau* pfTauJet = dynamic_cast<const reco::PFTau*>(&tauJet);
+    reco::Jet::EtaPhiMoments etaPhiStatistics = pfTauJet->pfTauTagInfoRef()->pfjetRef()->etaPhiStatistics();
+    return TMath::Sqrt(etaPhiStatistics.etaEtaMoment + etaPhiStatistics.phiPhiMoment);
+  } else {
+    edm::LogError ("getJetRadius") << " Unsupported type of Tau-jet passed as function Argument !!";
+    return -1.;
+  }
+} 

@@ -30,7 +30,7 @@ FakeRateJetWeightProducer::~FakeRateJetWeightProducer()
 
 void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&) 
 { 
-  //std::cout << "<FakeRateJetWeightProducer::produce>:" << std::endl;
+  if ( gVerbosity_ ) std::cout << "<FakeRateJetWeightProducer::produce>:" << std::endl;
 
   if ( cfgError_ ) return;
 
@@ -42,6 +42,8 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
 
   for ( fakeRateTypeMap::const_iterator frTypeEntry = fakeRateTypes_.begin();
 	frTypeEntry != fakeRateTypes_.end(); ++frTypeEntry ) {
+    if ( gVerbosity_ ) std::cout << "frType = " << frTypeEntry->first << std::endl;
+
     std::vector<pat::LookupTableRecord> fakeRateJetWeights;
 
     unsigned numTauJets = allTauJets->size();
@@ -56,7 +58,9 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
       getTauJetProperties(evt, tauJetRef, iTauJet, preselTauJets, frTypeEntry->second, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
     
       double fakeRateJetWeight = getFakeRateJetWeight(tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed, tauJetRef.get());
-      //std::cout << " --> jet weight = " << fakeRateJetWeight << std::endl;
+      if ( gVerbosity_ ) 
+	std::cout << " Pt = " << tauJetRef->pt() << ", eta = " << tauJetRef->eta() << ", phi = " << tauJetRef->phi() << ","
+		  << " jet-radius = " << getJetRadius(*tauJetRef) << ":" << " jet weight = " << fakeRateJetWeight << std::endl;
       
       fakeRateJetWeights.push_back(pat::LookupTableRecord(fakeRateJetWeight));
     }
