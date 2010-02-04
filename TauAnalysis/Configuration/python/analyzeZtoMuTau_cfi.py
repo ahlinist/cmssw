@@ -390,10 +390,10 @@ muTauEventDump = cms.PSet(
     
     #output = cms.string("muTauEventDump.txt"),
     output = cms.string("std::cout"),
-    
+
     #triggerConditions = cms.vstring("evtSelTauTrkIso: rejected_cumulative")
-    #triggerConditions = cms.vstring("evtSelDiMuPairZmumuHypothesisVeto: passed_cumulative")
-    triggerConditions = cms.vstring("genPhaseSpaceCut: always")
+    triggerConditions = cms.vstring("evtSelDiMuPairZmumuHypothesisVeto: passed_cumulative")
+    #triggerConditions = cms.vstring("genPhaseSpaceCut: always")
 )
 
 #--------------------------------------------------------------------------------
