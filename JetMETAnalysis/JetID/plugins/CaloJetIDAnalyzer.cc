@@ -385,8 +385,8 @@ private:
   unsigned int      clnhqtrk_[mjt_];
   float             jtchf_[mjt_];
   float             jtchfs_[mjt_];
-  float             jthef_[mjt_];
-  float             jthof_[mjt_]; // HO fraction
+  float             jthef_[mjt_]; // HE approximate (RECO) fraction
+  float             jthof_[mjt_]; // HO approximate (RECO) fraction
   float             jtf1hpd_[mjt_];
   float             jtf2hpd_[mjt_];
   float             jtf1rbx_[mjt_];
@@ -404,10 +404,21 @@ private:
   unsigned int      jtnhn90_[mjt_];
   // others from jet ID helper
   float             jtremf_[mjt_];
-  float             jtsd1_[mjt_];
+  float             jtsd1_[mjt_]; // approximate (RECO) fractions
   float             jtsd2_[mjt_];
   float             jtsd3_[mjt_];
   float             jtsd4_[mjt_];
+  float             jthsd1_[mjt_]; // precide fractions
+  float             jthsd2_[mjt_];
+  float             jthsd3_[mjt_];
+  float             jthsd4_[mjt_];
+  float             jtfeb_[mjt_];
+  float             jtfee_[mjt_];
+  float             jtfhb_[mjt_];
+  float             jtfhe_[mjt_];
+  float             jtfho_[mjt_];
+  float             jtflong_[mjt_];
+  float             jtfshort_[mjt_];
   //  float             jtebq1e_[mjt_]; // E fraction marked with EB quality bit #1
   unsigned int      jtnsd_[mjt_]; // number of contributing sub detectors
   float             jtfq_[mjt_];  // marked by quality bits
@@ -831,6 +842,17 @@ void CaloJetIDAnalyzer::beginJob(const edm::EventSetup&)
   tree_->Branch("jtsd2",     jtsd2_,     "jtsd2[njt]/F");
   tree_->Branch("jtsd3",     jtsd3_,     "jtsd3[njt]/F");
   tree_->Branch("jtsd4",     jtsd4_,     "jtsd4[njt]/F");
+  tree_->Branch("jthsd1",    jthsd1_,    "jthsd1[njt]/F");
+  tree_->Branch("jthsd2",    jthsd2_,    "jthsd2[njt]/F");
+  tree_->Branch("jthsd3",    jthsd3_,    "jthsd3[njt]/F");
+  tree_->Branch("jthsd4",    jthsd4_,    "jthsd4[njt]/F");
+  tree_->Branch("jtfeb",     jtfeb_,     "jtfeb[njt]/F");
+  tree_->Branch("jtfee",     jtfee_,     "jtfee[njt]/F");
+  tree_->Branch("jtfhb",     jtfhb_,     "jtfhb[njt]/F");
+  tree_->Branch("jtfhe",     jtfhe_,     "jtfhe[njt]/F");
+  tree_->Branch("jtfho",     jtfho_,     "jtfho[njt]/F");
+  tree_->Branch("jtfl",      jtflong_,   "jtfl[njt]/F");
+  tree_->Branch("jtfs",      jtfshort_,  "jtfs[njt]/F");
   tree_->Branch("jtnsd",     jtnsd_,     "jtnsd[njt]/i");
   tree_->Branch("jtfq",      jtfq_,      "jtfq[njt]/F");
   tree_->Branch("jtnq",      jtnq_,      "jtnq[njt]/i");
@@ -1889,10 +1911,21 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
       jtaodrbx_[njt_] = idh.approximatefRBX();
       jtnhn90_[njt_] = idh.hitsInN90();
       jtremf_[njt_] = idh.restrictedEMF();
-      jtsd1_[njt_] = idh.fSubDetector1();
-      jtsd2_[njt_] = idh.fSubDetector2();
-      jtsd3_[njt_] = idh.fSubDetector3();
-      jtsd4_[njt_] = idh.fSubDetector4();
+      jtsd1_[njt_] = idh.approximatefSubDetector1(); // the old JetIDHelper called these fSubDetector1, etc.
+      jtsd2_[njt_] = idh.approximatefSubDetector2();
+      jtsd3_[njt_] = idh.approximatefSubDetector3();
+      jtsd4_[njt_] = idh.approximatefSubDetector4();
+      jthsd1_[njt_] = idh.fSubDetector1();
+      jthsd2_[njt_] = idh.fSubDetector2();
+      jthsd3_[njt_] = idh.fSubDetector3();
+      jthsd4_[njt_] = idh.fSubDetector4();
+      jtfeb_[njt_] = idh.fEB();
+      jtfee_[njt_] = idh.fEE();
+      jtfhb_[njt_] = idh.fHB();
+      jtfhe_[njt_] = idh.fHE();
+      jtfho_[njt_] = idh.fHO();
+      jtflong_[njt_] = idh.fLong();
+      jtfshort_[njt_] = idh.fShort();
 
       if( debug_ && dumpReason > 0) {
 	//edm::LogWarning("PossibleBug")<<"DumpReason:"<<dumpReason;
