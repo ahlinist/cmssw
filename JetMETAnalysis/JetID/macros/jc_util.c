@@ -277,28 +277,85 @@ TGraphAsymmErrors* contrastEffs (TGraphAsymmErrors& gse, TGraphAsymmErrors& gbe)
 }
 
 // ---------------------------------------------------------------------------------------------
+TString stripStart( const TString& in ) {
+  int lastOFirstWhiteSpaces = in(TRegexp("^[ \t\n]*")).Length();
+  return in( lastOFirstWhiteSpaces, in.Length() );
+}
+
+TString stripEnd( const TString& in ) {
+  int firstOfLastWhiteSpaces = in.Index(TRegexp("[ \t\n]*$"));
+  if( firstOfLastWhiteSpaces < 0 ) firstOfLastWhiteSpaces = in.Length();
+  return in( 0, firstOfLastWhiteSpaces );
+}
+
+bool allInBrackets( const TString& in, char opening_bracket = '(', char closing_bracket = ')' ) 
+{
+  int n_in = 0;
+  for( int ii = 0; ii<in.Length(); ++ii) {
+    char c = in[ii]; 
+    if( c == opening_bracket ) {
+      ++n_in; 
+    } else if( c == closing_bracket ) {
+      --n_in;
+    } else if( c != ' ' && n_in <= 0 ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// ---------------------------------------------------------------------------------------------
 TString weightCut (TCut cut, bool needMCweight, int treeVersion = 2, bool pTweighted = false)
 {
   TString sWMC (treeVersion <= 1 ? "xsec" : "w");
   TString sPT (treeVersion <= 2 ? "jtpt" : "jtrawpt");
-  const char *title = cut.GetTitle();
-  if (needMCweight || pTweighted) { // need some sort of weight
+  TString title( stripStart( stripEnd( cut.GetTitle() ) ) );
+  
+  TString title_in_parenthesis( title );
+  if( ! allInBrackets( title ) ) title_in_parenthesis = "("+title+")";
+  if( needMCweight || pTweighted ) { // need some sort of weight
     TString sW;
-    if (needMCweight && !pTweighted) sW = sWMC.Data();
-    if (pTweighted && !needMCweight) sW = sPT.Data();
-    if (needMCweight && pTweighted) sW = Form("(%s*%s)", sWMC.Data(), sPT.Data());
-    if (strlen (title) == 0) {
+    if( needMCweight && !pTweighted ) sW = sWMC.Data();
+    if( pTweighted && !needMCweight ) sW = sPT.Data();
+    if( needMCweight && pTweighted )  sW = Form("(%s*%s)", sWMC.Data(), sPT.Data());
+    if( title.IsWhitespace() ) {
       return sW;
     } else {
-      return Form ("(%s)*%s", cut.GetTitle(), sW.Data());
+      return title_in_parenthesis + "*" + sW;
     }
-  } else { // no weights needed
-    return title;
+  } else { // no weights needed. 
+    // But this is a cut, not a weigh, so add parenthesis and a test to prevent weighting
+    if( title.IsWhitespace() ) return "";
+    return title_in_parenthesis+">0";
   }
 }
 
+int currentUnits( TH1& h1 )
+{
+  TString ss( h1.GetYaxis()->GetTitle() );
+  ss.ReplaceAll ("_{T}", "_%@#"); // otherwise it messes up the reg. exp.
+  // all backslashes are doubled, to get by the compiler string parsing, leaving \[ for TRegexp --> literal [s & ]s
+  int iOpenBracket = ss.Index (TRegexp ("\\[[^\\]]*\\][^\\[\\]]*$"));// That is, the start of the last square brackets
+  int iCloseBracket = ss.Last(']'); // no need for quotes with char
+  if( iOpenBracket < 0 || iCloseBracket <= iOpenBracket ) {
+    // can't find units
+    return -666;
+  }
+
+  // parse input units
+  TString inputUnits = ss( 1+iOpenBracket, -1 + iCloseBracket - iOpenBracket);
+  int curPrefix = 0;
+  if( inputUnits.BeginsWith( "m"   ) ) curPrefix = -3;
+  if( inputUnits.BeginsWith( "#mu" ) ) curPrefix = -6;
+  if( inputUnits.BeginsWith( "n"   ) ) curPrefix = -9; 
+  if( inputUnits.BeginsWith( "p"   ) ) curPrefix = -12;
+  if( inputUnits.BeginsWith( "f"   ) ) curPrefix = -15;
+  if( inputUnits.BeginsWith( "k"   ) ) curPrefix = 3;
+  return curPrefix;
+}
+
 // ---------------------------------------------------------------------------------------------
-// returns scaling (in log 10) or -666 if failed
+// returns scaling (change in normalization, in log 10) or -666 if failed
 // optional parameter accepts the desired unit prefix (in log 10)
 int adjustUnits( TH1& h1, int forceNewPrefix = -666)
 {
