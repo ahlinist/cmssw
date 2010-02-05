@@ -54,7 +54,6 @@ void overlay_trend_plots(const string& fFile0, const string& fFile1, const strin
    string fileName = fName;
 //    c->SaveAs(("g_"+fileName).c_str());
    
-   
    Int_t n = g[0]->GetN();
    
    TH1F *h[2];
@@ -85,12 +84,13 @@ void overlay_trend_plots(const string& fFile0, const string& fFile1, const strin
         h[0]->SetBinError(i+1,eyAll);
      }
      
-     h[0]->GetXaxis()->SetBinLabel(i+1,Form("Run %d",(Int_t)xAll));
+     h[0]->GetXaxis()->SetBinLabel(i+1,Form("%d",(Int_t)xAll));
    }
    
    h[0]->SetTitle(fTitle.c_str());
    h[0]->GetYaxis()->SetTitle(fYTitle.c_str());
-   h[0]->GetXaxis()->SetLabelSize(0.04);
+   h[0]->GetXaxis()->SetTitle("Run");
+   h[0]->GetXaxis()->SetLabelSize(0.045);
    h[0]->SetLineStyle(2);
    h[0]->SetLineWidth(2);
    h[0]->SetLineColor(kRed);
@@ -129,23 +129,11 @@ void makePlots() {
    //********************************************
    // root files
    //********************************************
-   string all_runs_900 = "data/output/output_DATA900GeV_AllRuns.root";
-   string good_runs_900 = "data/output/output_DATA900GeV.root";
-   
    string all_runs = "data/output/output_DATA_AllRuns.root";
    string good_runs = "data/output/output_DATA.root";
    //********************************************
    // make plots
    //********************************************
-//    overlay_trend_plots(all_runs_900, good_runs_900, "g_caloSumetMean_vs_run", "#scale[0.8]{#sum}E_{T} Mean vs. Run (900 GeV)", "#scale[0.8]{#sum}E_{T} Mean [GeV]", "caloSumetMean_vs_run_900GeV.eps");
-//    overlay_trend_plots(all_runs_900, good_runs_900, "g_caloSumetRMS_vs_run", "#scale[0.8]{#sum}E_{T} RMS vs. Run (900 GeV)", "#scale[0.8]{#sum}E_{T} RMS [GeV]","caloSumetRMS_vs_run_900GeV.eps");
-//    overlay_trend_plots(all_runs_900, good_runs_900, "g_calometPtMean_vs_run", "#slash{E}_{T} Mean vs. Run (900 GeV)", "#slash{E}_{T} Mean [GeV]", "calometPtMean_vs_run_900GeV.eps");
-//    overlay_trend_plots(all_runs_900, good_runs_900, "g_calometPtRMS_vs_run", "#slash{E}_{T} RMS vs. Run (900 GeV)", "#slash{E}_{T} RMS [GeV]", "calometPtRMS_vs_run_900GeV.eps");
-//    overlay_trend_plots(all_runs_900, good_runs_900, "g_calometPxMean_vs_run", "#mu(#slash{E}_{x}) vs. Run (900 GeV)", "#mu(#slash{E}_{x}) [GeV]", "calometPxMean_vs_run_900GeV.eps");
-//    overlay_trend_plots(all_runs_900, good_runs_900, "g_calometPxSigma_vs_run", "#sigma(#slash{E}_{x}) vs. Run (900 GeV)", "#sigma(#slash{E}_{x}) [GeV]", "calometPxSigma_vs_run_900GeV.eps");
-//    overlay_trend_plots(all_runs_900, good_runs_900, "g_calometPyMean_vs_run", "#mu(#slash{E}_{y}) vs. Run (900 GeV)", "#mu(#slash{E}_{y}) [GeV]", "calometPyMean_vs_run_900GeV.eps");
-//    overlay_trend_plots(all_runs_900, good_runs_900, "g_calometPySigma_vs_run", "#sigma(#slash{E}_{y}) vs. Run (900 GeV)", "#sigma(#slash{E}_{y}) [GeV]", "calometPySigma_vs_run_900GeV.eps");
-
    overlay_trend_plots(all_runs, good_runs, "g_caloSumetMean_vs_run", "#scale[0.8]{#sum}E_{T} Mean vs. Run", "#scale[0.8]{#sum}E_{T} Mean [GeV]", "caloSumetMean_vs_run.eps");
    overlay_trend_plots(all_runs, good_runs, "g_caloSumetRMS_vs_run", "#scale[0.8]{#sum}E_{T} RMS vs. Run", "#scale[0.8]{#sum}E_{T} RMS [GeV]","caloSumetRMS_vs_run.eps");
    overlay_trend_plots(all_runs, good_runs, "g_calometPtMean_vs_run", "#slash{E}_{T} Mean vs. Run", "#slash{E}_{T} Mean [GeV]", "calometPtMean_vs_run.eps");
