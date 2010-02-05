@@ -78,6 +78,8 @@ process.source = cms.Source("PoolSource",
         #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
         'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
         'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/WplusJetsSkimMT314/muTauSkim_1.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/WplusJetsSkimMT314/muTauSkim_2.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -156,7 +158,7 @@ from TauAnalysis.BgEstimationTools.tools.fakeRateTools import enableFakeRates_ru
 # disable cuts on tau id. discriminators;
 # instead, weight events passing all selection criteria except tau id. discriminators
 # by fake-rates
-enableFakeRates_runZtoMuTau(process)
+enableFakeRates_runZtoMuTau(process, method = "simple") # "simple"/"CDF"
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
