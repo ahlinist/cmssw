@@ -60,13 +60,13 @@ class ChamberMap {
 
   private:
     
-    void printLegendBox(unsigned int& number, const std::string title, const int color);
-    const float Xmin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
-    const float Xmax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
-    const float Ymin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
-    const float Ymax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
-    const int N_ring(const int station) const;
-    const int N_chamber(const int station, const int ring) const;
+    void printLegendBox(unsigned int& number, const std::string title, int color);
+    float Xmin_local_derived_from_ChamberID(int side, int station, int ring, int chamber) const;
+    float Xmax_local_derived_from_ChamberID(int side, int station, int ring, int chamber) const;
+    float Ymin_local_derived_from_ChamberID(int side, int station, int ring, int chamber) const;
+    float Ymax_local_derived_from_ChamberID(int side, int station, int ring, int chamber) const;
+    int N_ring(int station) const;
+    int N_chamber(int station, int ring) const;
 
 };
 

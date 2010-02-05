@@ -32,7 +32,7 @@ namespace cscdqm {
     * @param  cstr Chamber string
     * @return chamber y-axis position
     */
-  const int Utility::getCSCTypeBin(const std::string& cstr) {
+  int Utility::getCSCTypeBin(const std::string& cstr) {
     if (cstr.compare("ME-4/2") == 0) return 0;
     if (cstr.compare("ME-4/1") == 0) return 1;
     if (cstr.compare("ME-3/2") == 0) return 2;
@@ -86,7 +86,7 @@ namespace cscdqm {
    * @param  delimiters delimiter string, default " "
    * @return 
    */
-  const int Utility::tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters) {
+  int Utility::tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters) {
     std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
     std::string::size_type pos = str.find_first_of(delimiters, lastPos);
     while (std::string::npos != pos || std::string::npos != lastPos) {
@@ -139,7 +139,7 @@ namespace cscdqm {
    * @param  message value to check
    * @return true if message matches RegExp expression
    */
-  const bool Utility::regexMatch(const TPRegexp& re_expression, const std::string& message) {
+  bool Utility::regexMatch(const TPRegexp& re_expression, const std::string& message) {
     TPRegexp *re = const_cast<TPRegexp*>(&re_expression);
     return re->MatchB(message);
   }
@@ -150,7 +150,7 @@ namespace cscdqm {
    * @param  message value to check
    * @return true if message matches RegExp expression
    */
-  const bool Utility::regexMatch(const std::string& expression, const std::string& message) {
+  bool Utility::regexMatch(const std::string& expression, const std::string& message) {
     return regexMatch(TPRegexp(expression), message);
   }
 

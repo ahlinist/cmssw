@@ -65,7 +65,7 @@ namespace cscdqm {
 /**
  * @brief  Mask of the address which is used to switch on and off appropriate Address fields.
  */
-typedef struct AddressMask {
+struct AddressMask {
   bool side;
   bool station;
   bool ring;
@@ -79,7 +79,7 @@ typedef struct AddressMask {
  * @brief  Structure to store detector addresses of any granularity: from
  * whole detector to the single HV element.
  */
-typedef struct Address {
+struct Address {
 
   unsigned int side;
   unsigned int station;
@@ -91,7 +91,7 @@ typedef struct Address {
 
   AddressMask mask;
 
-  const bool operator== (const Address& a) const {
+  bool operator== (const Address& a) const {
     if (mask.side    == a.mask.side    && mask.side    == true && side    != a.side)    return false;
     if (mask.station == a.mask.station && mask.station == true && station != a.station) return false;
     if (mask.ring    == a.mask.ring    && mask.ring    == true && ring    != a.ring)    return false;
@@ -125,7 +125,7 @@ typedef struct Address {
 /**
  * @brief  Area covered by Address in eta/phy space
  */
-typedef struct AddressBox {
+struct AddressBox {
   Address adr;
   float xmin;
   float xmax;
@@ -135,7 +135,7 @@ typedef struct AddressBox {
 
 
 /** Map of partitions and partition covering adresses indexes type */
-typedef std::map<const unsigned int, std::vector<unsigned int> > PartitionMap;
+typedef std::map<unsigned int, std::vector<unsigned int> > PartitionMap;
 
 /** Iterator type of PartitionMap */
 typedef PartitionMap::iterator PartitionMapIterator;
@@ -148,35 +148,35 @@ class Detector {
 
   public:
 
-    Detector(const unsigned int p_partitions_x = 0, const unsigned int p_partitions_y = 0);
+    Detector(unsigned int p_partitions_x = 0, unsigned int p_partitions_y = 0);
 
-    const bool NextAddress(unsigned int& i, const Address*& adr, const Address& mask) const;
-    const bool NextAddressBox(unsigned int& i, const AddressBox*& box, const Address& mask) const;
-    //const bool NextAddressBoxByPartition(unsigned int& i, unsigned int& px, unsigned int& py, const AddressBox*& box, const Address& mask, const float xmin, const float xmax, const float ymin, const float ymax);
-    const bool NextAddressBoxByPartition (unsigned int& i, const unsigned int px, const unsigned int py, AddressBox*& box);
+    bool NextAddress(unsigned int& i, const Address*& adr, const Address& mask) const;
+    bool NextAddressBox(unsigned int& i, const AddressBox*& box, const Address& mask) const;
+    //bool NextAddressBoxByPartition(unsigned int& i, unsigned int& px, unsigned int& py, const AddressBox*& box, const Address& mask, float xmin, float xmax, float ymin, float ymax);
+    bool NextAddressBoxByPartition (unsigned int& i, unsigned int px, unsigned int py, AddressBox*& box);
 
-    const float Area(const unsigned int station) const;
-    const float Area(const Address& adr) const;
+    float Area(unsigned int station) const;
+    float Area(const Address& adr) const;
 
     void PrintAddress(const Address& adr) const;
     const std::string AddressName(const Address& adr) const;
-    const bool AddressFromString(const std::string str_address, Address& adr) const;
+    bool AddressFromString(const std::string str_address, Address& adr) const;
 
-    const unsigned int NumberOfRings(const unsigned int station) const;
-    const unsigned int NumberOfChambers(const unsigned int station, const unsigned int ring) const;
-    const unsigned int NumberOfChamberCFEBs(const unsigned int station, const unsigned int ring) const;
-    const unsigned int NumberOfChamberHVs(const unsigned int station, const unsigned int ring) const;
+    unsigned int NumberOfRings(unsigned int station) const;
+    unsigned int NumberOfChambers(unsigned int station, unsigned int ring) const;
+    unsigned int NumberOfChamberCFEBs(unsigned int station, unsigned int ring) const;
+    unsigned int NumberOfChamberHVs(unsigned int station, unsigned int ring) const;
 
   private:
 
-    const float Eta(const float r, const float z) const;
-    const float EtaToX(const float eta) const;
-    const float PhiToY(const float phi) const;
-    const float Z(const int station, const int ring) const;
-    const float RMinHV(const int station, const int ring, const int n_hv) const;
-    const float RMaxHV(const int station, const int ring, const int n_hv) const;
-    const float PhiMinCFEB(const int station, const int ring, const int chamber, const int cfeb) const;
-    const float PhiMaxCFEB(const int station, const int ring, const int chamber, const int cfeb) const;
+    float Eta(float r, float z) const;
+    float EtaToX(float eta) const;
+    float PhiToY(float phi) const;
+    float Z(const int station, const int ring) const;
+    float RMinHV(const int station, const int ring, const int n_hv) const;
+    float RMaxHV(const int station, const int ring, const int n_hv) const;
+    float PhiMinCFEB(const int station, const int ring, const int chamber, const int cfeb) const;
+    float PhiMaxCFEB(const int station, const int ring, const int chamber, const int cfeb) const;
 
     /** Address boxes in epa/phi space */
     AddressBox boxes[N_ELEMENTS];
