@@ -37,6 +37,16 @@ def removeModules(process, sequenceName, moduleNamePattern, pyNameSpace):
 
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
+# in PAT-tuple production
+#--------------------------------------------------------------------------------
+
+def disableSysUncertainties_patTupleProduction(process):
+    print("<disableSysUncertainties_patTupleProduction>:")
+    
+    process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
+
+#--------------------------------------------------------------------------------
+# functions to enable/disable estimation of systematic uncertainties
 # specific to Z --> muon + tau-jet channel
 #--------------------------------------------------------------------------------
 
