@@ -35,8 +35,6 @@
 #include "DataFormats/METReco/interface/CaloMET.h" // it's declared but not defined in CaloMETCollection
 #include "DataFormats/JetReco/interface/BasicJet.h"
 
-#include "DataFormats/METReco/interface/HcalNoiseSummary.h"
-
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
@@ -44,7 +42,12 @@
 #include "DataFormats/Math/interface/deltaPhi.h"
 
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/METReco/interface/HcalNoiseSummary.h"
+#include "RecoJets/JetAlgorithms/interface/JetMatchingTools.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include <TTree.h>
 #include <TH1F.h>
 #include <TH2F.h>
@@ -109,6 +112,7 @@ public:
   double scale () const {return fScale;}
   double corrPt() const {return fScale * pt();}
   double rawPt() const {return pt();}
+  double corrE() const {return fScale * energy();}
   const reco::CaloJet& orgJet() const {return *fpOrg;}
 
   friend bool operator < (const jetWithScale& lhs, const jetWithScale& rhs)
@@ -175,11 +179,17 @@ private:
 			  double& E_prob_tower, double& E_prob_ecal, double& E_prob_hcal,
 			  const int iDbg = 0);
 
+  void countTracks( const reco::JetTracksAssociation::Container& JTA, const reco::CaloJet& jet,
+		    unsigned int& N, unsigned int& Nhard, unsigned int& Nqual, unsigned int& Nqualhard );
+  double generatedFraction( const jetWithScale& jet, 
+			    const edm::Handle<reco::GenParticleRefVector>& particles );
 
   // constants
   static int n_HBHE_flags, n_HF_flags, n_HO_flags, n_ECAL_flags;
   
 private:
+  void resetFieldsForJet( const int i );
+
   // this method update the matching with information about matches to a particular trigger slot
   void matchTriggerObjsToJets(unsigned int itr,
 			      const trigger::Keys& keys,
@@ -207,22 +217,28 @@ private:
 
 private:
 
+  void fill_technical_triggers( const edm::Event& event );
+
   // This is (among other things) a di-jet tag & probe selector. Hence the number 2 is special. 
-  // To increase readability whenever two is used because of di-jets, will use the constant;
+  // In faint hope of increasing readability, whenever two is used because of di-jets, will use the constant;
   const static unsigned int two_ = 2;
 
 
   // Configuration options
   // ---------------------
   string            moduleName_;
+  int               debug_;
   bool              useTracking_;
   bool              requireRandomTrigger_;
 
   edm::InputTag     srcTriggerResults_;
   edm::InputTag     srcTriggerEvent_;
+  edm::InputTag     srcGlobalTriggerDigis_;
   edm::InputTag     srcPrimVertex_;
   edm::InputTag     srcCaloJets_;
-  edm::InputTag     srcCaloJetTrkAssoc_;
+  edm::InputTag     srcJetTrkAssocAtVertex_;
+  edm::InputTag     srcJetTrkAssocAtCalo_;
+  edm::InputTag     srcGenForJets_;
   edm::InputTag     srcTracks_; // for activity vetoes
   edm::InputTag     srcTrackJets_;
   edm::InputTag     srcHCALnoiseRemoval_;
@@ -230,6 +246,7 @@ private:
   string            jecTag_;
   string            hltProcessName_;
   double            deltaRTrgMatch_;
+  double            deltaRGenMatch_;
   vector<string>    triggerNames_;
   vector<float>     triggerDeltaR_;
   HLTConfigProvider hltConfig_;
@@ -268,7 +285,7 @@ private:
   // ---------
   
   vector<int>       triggerFired_;
-  std::map<string, int>  nSamples_;
+  std::map<string, int>  nSamples_, triggers_fired_counts_;
   std::set<string>  triggersSeen_, triggersUsedAsMu_;
   vector<TriggerObject> triggerMuObjects_;
 
@@ -283,10 +300,10 @@ private:
   TH1F*             pPtHatBin_;
   TH2F*             pGoodBadJets_;
   
-  int nDbgTrkPrintsLeft;
-
   unsigned int nJets_; // number of jets 
   bool isRandomTrigger_;
+  bool simHits_available_;
+  bool gen_particles_available_;
 
   // the output tree
   // ---------------
@@ -296,14 +313,29 @@ private:
   TTree*            tree_;
   unsigned int      run_;
   unsigned int      event_;
+  unsigned int      LBN_;
+  int               bunch_crossing_;
+  int               orbit_;
   unsigned int      trg_;
   float             pthat_;
   unsigned int      pthatbin_;
+  float             qscale_;
   float             xsec_;
+  float             runxsec_;
   float             wmc_; // to be updated later
   unsigned int      hcal_word_;
   int               hcal_mhpd_;
   int               hcal_mrbx_;
+  UInt_t            tech1_;
+  UInt_t            tech2_;
+  bool              L1BX_;
+  bool              L1MB_;
+  bool              L1BH_;
+  bool              L1HS_;
+  bool              L1P_;
+  bool              L1NO_;
+  bool              phys_;
+  bool              GB_;
 
   unsigned char     npv_;
   float             pvz_[mpv_];
@@ -342,8 +374,17 @@ private:
   float             jtphiphi_[mjt_];
   float             jtetaphi_[mjt_];
   float             jtptrel_[mjt_]; // a measure of the jet width linear in angle. Sum tower pT relative to jet axis
-  unsigned int      jtntrk_[mjt_]; // conceptually part of the tag, but need to keep fields apart
-  float             jtchf_[mjt_];  // conceptually part of the tag, but need to keep fields apart
+  // conceptually, the tracks are part of the tag, but need to keep fields apart
+  unsigned int      jtntrk_[mjt_];
+  unsigned int      jtnhtrk_[mjt_];
+  unsigned int      jtnqtrk_[mjt_];
+  unsigned int      jtnhqtrk_[mjt_];
+  unsigned int      clntrk_[mjt_];
+  unsigned int      clnhtrk_[mjt_];
+  unsigned int      clnqtrk_[mjt_];
+  unsigned int      clnhqtrk_[mjt_];
+  float             jtchf_[mjt_];
+  float             jtchfs_[mjt_];
   float             jthef_[mjt_];
   float             jthof_[mjt_]; // HO fraction
   float             jtf1hpd_[mjt_];
@@ -361,6 +402,12 @@ private:
   float             jtaodhpd_[mjt_];
   float             jtaodrbx_[mjt_];
   unsigned int      jtnhn90_[mjt_];
+  // others from jet ID helper
+  float             jtremf_[mjt_];
+  float             jtsd1_[mjt_];
+  float             jtsd2_[mjt_];
+  float             jtsd3_[mjt_];
+  float             jtsd4_[mjt_];
   //  float             jtebq1e_[mjt_]; // E fraction marked with EB quality bit #1
   unsigned int      jtnsd_[mjt_]; // number of contributing sub detectors
   float             jtfq_[mjt_];  // marked by quality bits
@@ -403,6 +450,8 @@ private:
   float             jtfft_[mjt_]; // energy fraction in flagged towers
   float             jtffe_[mjt_]; // energy fraction in flagged ECAL towers
   float             jtffh_[mjt_]; // energy fraction in flagged HCAL towers
+  float             jttf_[mjt_]; // true energy fraction (simHits matched to calo cells)
+  float             jtgf_[mjt_]; // fraction of energy generated within the cone
   // tag fields on the probe side are named by side (though conceptually part of the tag)
   float             jtposf_[mjt_]; // might be useless
   unsigned int      jtntrkjet_[mjt_]; // number of track jets. Should be 1 in normal cases
@@ -413,6 +462,12 @@ private:
   float             jttrkjetphi_[mjt_];
   float             jttrkjetDR_[mjt_]; // relative to the jet itself
   float             jtmintrkjetDR_[mjt_]; // relative to the jet itself, for all track jets
+  // previous jet IDs
+  bool              minimal08_[mjt_];
+  bool              loose_pas_[mjt_];
+  bool              tight_pas_[mjt_];
+  bool              loose08_[mjt_];
+  bool              tight08_[mjt_];
 
   // tag fields
   //   1) what tag conditions does this probe jet have?
@@ -435,6 +490,8 @@ private:
   float             tagemf_[mjt_];
   unsigned int      tagntrk_[mjt_];
   float             tagchf_[mjt_];
+  float             tagtf_[mjt_];
+  float             taggf_[mjt_];
   // other activity in probe region (same phi, other eta):
   float             omaxjetpt_[mjt_]; // max pT of other jets in probe region
   float             omaxtrkpt_ [mjt_]; // max pT of tracks in veto region
@@ -525,19 +582,24 @@ int CaloJetIDAnalyzer::n_ECAL_flags = 11;
 //______________________________________________________________________________
 CaloJetIDAnalyzer::CaloJetIDAnalyzer(const edm::ParameterSet& iConfig)
   : moduleName_(iConfig.getParameter<string>               ("@module_label"))
+  , debug_(iConfig.getParameter<int>                       ("debug"))
   , useTracking_(iConfig.getParameter<bool>                ("useTracking"))
   , requireRandomTrigger_(iConfig.getParameter<bool>       ("requireRandomTrigger"))
   , srcTriggerResults_(iConfig.getParameter<edm::InputTag> ("srcTriggerResults"))
   , srcTriggerEvent_(iConfig.getParameter<edm::InputTag>   ("srcTriggerEvent"))
+  , srcGlobalTriggerDigis_(iConfig.getParameter<edm::InputTag> ("srcGlobalTriggerDigis"))
   , srcPrimVertex_(iConfig.getParameter<edm::InputTag>     ("srcPrimVertex"))
   , srcCaloJets_(iConfig.getParameter<edm::InputTag>       ("srcCaloJets"))
-  , srcCaloJetTrkAssoc_(iConfig.getParameter<edm::InputTag>("srcCaloJetTrkAssoc"))
+  , srcJetTrkAssocAtVertex_(iConfig.getParameter<edm::InputTag>("srcJetTrkAssocAtVertex"))
+  , srcJetTrkAssocAtCalo_(iConfig.getParameter<edm::InputTag>("srcJetTrkAssocAtCalo"))
+  , srcGenForJets_(iConfig.getParameter<edm::InputTag>     ("srcGenForJets"))
   , srcTracks_(iConfig.getParameter<edm::InputTag>         ("srcTracks"))
   , srcTrackJets_(iConfig.getParameter<edm::InputTag>      ("srcTrackJets"))
   , srcHCALnoiseRemoval_(iConfig.getParameter<edm::InputTag>("srcHCALnoiseRemoval"))
   , jecTag_(iConfig.getParameter<string>                   ("jecTag"))
   , hltProcessName_(iConfig.getParameter<string>           ("hltProcessName"))
   , deltaRTrgMatch_(iConfig.getParameter<double>           ("deltaRTrgMatch"))
+  , deltaRGenMatch_(iConfig.getParameter<double>           ("deltaRGenMatch"))
   , triggerNames_(iConfig.getParameter< vector<string> >   ("triggerNames"))
   , maxTrackJetDeltaR_(iConfig.getParameter<double>        ("maxTrackJetDeltaR"))
   , max3rdJetPt_(iConfig.getParameter<double>              ("max3rdJetPt"))
@@ -560,8 +622,7 @@ CaloJetIDAnalyzer::CaloJetIDAnalyzer(const edm::ParameterSet& iConfig)
   , mcXsecs_(iConfig.getParameter< vector<double> >        ("mcXsecs"))
   , ptHatBins_(iConfig.getParameter< vector<double> >      ("ptHatBins"))
 {
-  nDbgTrkPrintsLeft = 20;
-
+  simHits_available_ = gen_particles_available_ = true; // until proven otherwise
   use_hcal_noise_summary_ = true;
   edm::ParameterSet jet_ID_helper_config = iConfig.getParameter<edm::ParameterSet>( "jetIDHelperConfig" );
   jet_ID_helper_ = reco::helper::JetIDHelper( jet_ID_helper_config );
@@ -569,25 +630,35 @@ CaloJetIDAnalyzer::CaloJetIDAnalyzer(const edm::ParameterSet& iConfig)
   cout<<",------------- CaloJetIDAnalyzer [ "<<moduleName_<<" ] --------------------"
       <<"\n book dijets? "<<bookDiJets_<<", by trackjet? "<<bookByTrackJet_
       <<"\n 3rd jet? "<<book3rdJet_<<"; too many? "<<bookTooMany_<<"; all? "<<bookAll_;
-  if( bookAll_) cout<<", avoidMu? "<<avoidMuon_;
-  if( bookTooMany_) cout<<", tooManyIs: "<<tooManyIs_<<" with pT>"<<minJetPt_;
-  if( book3rdJet_) cout<<"\n Third jet definitions: |eta_{1,2}|<"<<maxLeadEta_<<", minDPhi: "<<minLeadDPhi_
+  if( bookAll_ ) cout<<", avoidMu? "<<avoidMuon_;
+  if( bookTooMany_ ) cout<<", tooManyIs: "<<tooManyIs_<<" with pT>"<<minJetPt_;
+  if( book3rdJet_ ) cout<<"\n Third jet definitions: |eta_{1,2}|<"<<maxLeadEta_<<", minDPhi: "<<minLeadDPhi_
 		       <<", maxLeadDelta: "<<maxLeadDelta_<<", max4thJetPt: "<<max4thPt_;
   cout<<"\n jet ID helper config: "<<jet_ID_helper_config;
   cout<<"\n Trigger results source: \""<<srcTriggerResults_<<"\""
       <<"\n                 event: \""<<srcTriggerEvent_<<"\""
+      <<"\n Source of global triger digis: \""<<srcGlobalTriggerDigis_<<"\""
       <<"\n requireRandomTrigger? "<<requireRandomTrigger_<<", jet-trigger deltaR: "<<deltaRTrgMatch_
       <<"\n HLT process: \""<<hltProcessName_<<"\", trigger names: ";
   for (unsigned int i=0; i<triggerNames_.size(); ++i) cout<<triggerNames_[i]<<" ";
+  if( triggerNames_.size() > 32 ) cerr<<"WARNING: can only keep track of 32 triggers :-("<<endl;
   cout<<"\n Jet source: \""<<srcCaloJets_<<"\""
       <<"\n Jet correction service: \""<<jecTag_<<"\""<<endl;
+  if( srcGenForJets_ == edm::InputTag("") ) {
+    gen_particles_available_ = false;
+  } else {
+    cout<<" Source of GenParticles to be matched to jets: \""<<srcGenForJets_<<"\", dR<"<<deltaRGenMatch_<<endl;
+  }
   if( useTracking_) {
     cout<<" P.V. source: \""<<srcPrimVertex_<<"\""<<endl;
     cout<<" Track jet source: \""<<srcTrackJets_<<"\"\n maxTrackJetDeltaR: "<<maxTrackJetDeltaR_<<endl;
     cout<<" Tracks source: \""<<srcTracks_<<"\""<<endl;
-    if( ! (srcCaloJetTrkAssoc_ == edm::InputTag("")))  // prevents copying (& disabling) others, but can be disabled itself
-      cout<<" track-jet associations source: \""<<srcCaloJetTrkAssoc_<<"\""
+    if( ! (srcJetTrkAssocAtVertex_ == edm::InputTag("")))  // prevents copying (& disabling) others, but can be disabled itself
+      cout<<" source of track-jet associations @ vertex: \""<<srcJetTrkAssocAtVertex_<<"\""
 	  <<"\n         minPt: "<<minTrackPt_<<", for match: "<<minMatchTrackPt_<<endl;
+    if( ! (srcJetTrkAssocAtCalo_ == edm::InputTag("")))  // prevents copying (& disabling) others, but can be disabled itself
+      cout<<" source of track-jet associations @ calo face: \""<<srcJetTrkAssocAtCalo_<<"\""
+	  <<"\n         minPt: "<<minTrackPt_<<endl;
   }
   if( use_hcal_noise_summary_ ) cout<<"Using hcal noise summaries from source: \""<<srcHCALnoiseRemoval_<<"\""<<endl;
   cout<<"\n max3rdJetPt: "<<max3rdJetPt_<<", maxDelta: "<<maxDelta_<<", requireProbe (to book)? "<<requireProbe_
@@ -609,7 +680,7 @@ CaloJetIDAnalyzer::CaloJetIDAnalyzer(const edm::ParameterSet& iConfig)
       edm::LogError("BadInput")<<"ptHatBins must increase monotonously";
   nSamples_[string("dijet")] = nSamples_[string("trackjet")] = nSamples_[string("toomany")] 
     = nSamples_[string("3rdjet")] = nSamples_[string("all")] = nSamples_[string("randomTrigger")]
-    = nSamples_[string("analyzed")] = 0;
+    = nSamples_[string("preselection")] = nSamples_[string("analyzed")] = 0;
 }
 
 
@@ -658,6 +729,7 @@ void CaloJetIDAnalyzer::beginJob(const edm::EventSetup&)
   for (unsigned int ihist=0;ihist<triggerNames_.size();ihist++) {
     triggerFired_.push_back(0);
     string hname = "hTrgDeltaR_"+triggerNames_[ihist];
+    // add try & catch and add error that this will fail if trigger names are not unique...
     hTrgDeltaR_[ihist] = fs->make<TH1F>(hname.c_str(),"",200,0,1.0);
     hname = "hTrgObjCount_"+triggerNames_[ihist];
     hTrgObjCount_[ihist] = fs->make<TH1F>(hname.c_str(),"",11,-0.5,10.5);
@@ -668,14 +740,29 @@ void CaloJetIDAnalyzer::beginJob(const edm::EventSetup&)
   
   tree_->Branch("run",       &run_,      "run/i");
   tree_->Branch("event",     &event_,    "event/i");
+  tree_->Branch("LBN",       &LBN_,      "LBN/i");
+  tree_->Branch("BX", &bunch_crossing_,  "BX/I");
+  tree_->Branch("orbit",     &orbit_,    "orbit/I");
   tree_->Branch("trg",       &trg_,      "trg/i");
   tree_->Branch("pthat",     &pthat_,    "pthat/F");
   tree_->Branch("pthatbin",  &pthatbin_, "pthatbin/i");
+  tree_->Branch("qscale",    &qscale_,   "qscale/F");
   tree_->Branch("xsec",      &xsec_,     "xsec/F");
   tree_->Branch("w",         &wmc_,      "w/F");
+  tree_->Branch("runxsec",   &runxsec_,  "runxsec/F");
   tree_->Branch("hcal",      &hcal_word_,"hcal/i");
   tree_->Branch("mhpd",      &hcal_mhpd_,"mhpd/I");
   tree_->Branch("mrbx",      &hcal_mrbx_,"mrbx/I");
+  tree_->Branch("tech1",     &tech1_,    "tech1/i");
+  tree_->Branch("tech2",     &tech2_,    "tech2/i");
+  tree_->Branch("L1BX",      &L1BX_,     "L1BX/O");
+  tree_->Branch("L1MB",      &L1MB_,     "L1MB/O");
+  tree_->Branch("L1BH",      &L1BH_,     "L1BH/O");
+  tree_->Branch("L1HS",      &L1HS_,     "L1HS/O");
+  tree_->Branch("L1P",       &L1P_,      "L1P/O");
+  tree_->Branch("L1NO",      &L1NO_,     "L1NO/O");
+  tree_->Branch("phys",      &phys_,     "phys/O");
+  tree_->Branch("GB",        &GB_,       "GB/O");
   
   tree_->Branch("npv",       &npv_,      "npv/b");
   tree_->Branch("pvz",       pvz_,       "pvz[npv]/F");
@@ -714,7 +801,15 @@ void CaloJetIDAnalyzer::beginJob(const edm::EventSetup&)
   tree_->Branch("jtetaphi",  jtetaphi_,  "jtetaphi[njt]/F");
   tree_->Branch("jtptrel",   jtptrel_,   "jtptrel[njt]/F");
   tree_->Branch("jtntrk",    jtntrk_,    "jtntrk[njt]/i");
+  tree_->Branch("jtnhtrk",   jtnhtrk_,   "jtnhtrk[njt]/i");
+  tree_->Branch("jtnqtrk",   jtnqtrk_,   "jtnqtrk[njt]/i");
+  tree_->Branch("jtnhqtrk",  jtnhqtrk_,  "jtnhqtrk[njt]/i");
+  tree_->Branch("clntrk",    clntrk_,    "clntrk[njt]/i");
+  tree_->Branch("clnhtrk",   clnhtrk_,   "clnhtrk[njt]/i");
+  tree_->Branch("clnqtrk",   clnqtrk_,   "clnqtrk[njt]/i");
+  tree_->Branch("clnhqtrk",  clnhqtrk_,  "clnhqtrk[njt]/i");
   tree_->Branch("jtchf",     jtchf_,     "jtchf[njt]/F");
+  tree_->Branch("jtchfs",    jtchfs_,    "jtchfs[njt]/F");
   tree_->Branch("jthef",     jthef_,     "jthef[njt]/F");
   tree_->Branch("jthof",     jthof_,     "jthof[njt]/F");
   tree_->Branch("jtf1hpd",   jtf1hpd_,   "jtf1hpd[njt]/F");
@@ -731,6 +826,11 @@ void CaloJetIDAnalyzer::beginJob(const edm::EventSetup&)
   tree_->Branch("jtaodhpd",  jtaodhpd_,  "jtaodhpd[njt]/F");
   tree_->Branch("jtaodrbx",  jtaodrbx_,  "jtaodrbx[njt]/F");
   tree_->Branch("jtnhn90",   jtnhn90_,   "jtnhn90[njt]/i");
+  tree_->Branch("jtremf",    jtremf_,    "jtremf[njt]/F");
+  tree_->Branch("jtsd1",     jtsd1_,     "jtsd1[njt]/F");
+  tree_->Branch("jtsd2",     jtsd2_,     "jtsd2[njt]/F");
+  tree_->Branch("jtsd3",     jtsd3_,     "jtsd3[njt]/F");
+  tree_->Branch("jtsd4",     jtsd4_,     "jtsd4[njt]/F");
   tree_->Branch("jtnsd",     jtnsd_,     "jtnsd[njt]/i");
   tree_->Branch("jtfq",      jtfq_,      "jtfq[njt]/F");
   tree_->Branch("jtnq",      jtnq_,      "jtnq[njt]/i");
@@ -771,14 +871,21 @@ void CaloJetIDAnalyzer::beginJob(const edm::EventSetup&)
   tree_->Branch("jtfft",     jtfft_,     "jtfft[njt]/F");
   tree_->Branch("jtffe",     jtffe_,     "jtffe[njt]/F");
   tree_->Branch("jtffh",     jtffh_,     "jtffh[njt]/F");
+  tree_->Branch("jttf",      jttf_,      "jttf[njt]/F");
+  tree_->Branch("jtgf",      jtgf_,      "jtgf[njt]/F");
   tree_->Branch("jtposf",    jtposf_,    "jtposf[njt]/F"); // = sum pt in pos tracks / sum pt in all tracks
   tree_->Branch("ntj",       jtntrkjet_, "ntj[njt]/i");
-  tree_->Branch("tjntrk",    jttrkjetntrk_, "tjntrk[njt]/i"); // these fields are for the leading track jet
-  tree_->Branch("tjpt",      jttrkjetpt_  , "tjpt[njt]/F");
-  tree_->Branch("tjeta",     jttrkjeteta_ , "tjeta[njt]/F");
-  tree_->Branch("tjphi",     jttrkjetphi_ , "tjphi[njt]/F");
-  tree_->Branch("dr",        jttrkjetDR_  , "dr[njt]/F");
-  tree_->Branch("mindr",     jtmintrkjetDR_  , "mindr[njt]/F"); // this one is for all track jets
+  tree_->Branch("tjntrk",    jttrkjetntrk_,  "tjntrk[njt]/i"); // these fields are for the leading track jet
+  tree_->Branch("tjpt",      jttrkjetpt_  ,  "tjpt[njt]/F");
+  tree_->Branch("tjeta",     jttrkjeteta_ ,  "tjeta[njt]/F");
+  tree_->Branch("tjphi",     jttrkjetphi_ ,  "tjphi[njt]/F");
+  tree_->Branch("dr",        jttrkjetDR_  ,  "dr[njt]/F");
+  tree_->Branch("mindr",     jtmintrkjetDR_, "mindr[njt]/F"); // this one is for all track jets
+  tree_->Branch("minimal08", minimal08_, "minimal08[njt]/O");
+  tree_->Branch("loosepas",  loose_pas_, "loosepas[njt]/O");
+  tree_->Branch("tightpas",  tight_pas_, "tightpas[njt]/O");
+  tree_->Branch("loose08",   loose08_,   "loose08[njt]/O");
+  tree_->Branch("tight08",   tight08_,   "tight08[njt]/O");
   // tag fields
   tree_->Branch("dj",        bydijet_,   "dj[njt]/O");
   tree_->Branch("tj",        bytrackjet_,"tj[njt]/O");
@@ -797,6 +904,8 @@ void CaloJetIDAnalyzer::beginJob(const edm::EventSetup&)
   tree_->Branch("tagemf",    tagemf_,    "tagemf[njt]/F");
   tree_->Branch("tagntrk",   tagntrk_,   "tagntrk[njt]/i");
   tree_->Branch("tagchf",    tagchf_,    "tagchf[njt]/F");
+  tree_->Branch("tagtf",     tagtf_,     "tagtf[njt]/F");
+  tree_->Branch("taggf",     taggf_,     "taggf[njt]/F");
   // other activity in probe region fields
   tree_->Branch("omaxjetpt", omaxjetpt_, "omaxjetpt[njt]/F");
   tree_->Branch("omaxtrkpt", omaxtrkpt_, "omaxtrkpt[njt]/F");
@@ -890,15 +999,13 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 {
   ++nSamples_["analyzed"];
 
-  int debug = 0; // for manual debugging
-
   // a rather elaborate calculation to limit printing (from OPAL code)
   unsigned int eventDumpReason = 0;
   int jentry = nSamples_["analyzed"];
   int JTEMP = TMath::Nint (TMath::Power (10., Double_t (TMath::Floor (TMath::Log10 ( Double_t (1+jentry) )))));
   if(  ((1+jentry)%JTEMP) == 0) {
     cout<<"entry #"<<jentry<<"..."<<endl; 
-    if( debug > 9 ) eventDumpReason |= 0x40;
+    if( debug_ > 9 ) eventDumpReason |= 0x40;
   }
  
 
@@ -932,10 +1039,19 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
     hcal_mrbx_ = hcal_noise_summary.maxRBXHits();
   }
 
+  fill_technical_triggers( event );
+  GB_ = phys_ && L1P_; // good beams = physics_declared & all level 1 technical bits indicate physics-quality data (clean hard scatters)
+
   // must keep track of pT hat of every event (for MC weights)
-  edm::Handle<double> genEventScale;
-  bool OK = event.getByLabel("genEventScale",genEventScale);
-  pthat_ = OK ? (*genEventScale) : -666.;
+  edm::Handle<GenRunInfoProduct> genRunInfo;
+  bool OK = event.getByLabel( "generator", genRunInfo );
+  runxsec_ = OK ? genRunInfo->crossSection() : -666.; 
+
+  edm::Handle<GenEventInfoProduct> GenInfoHandle;
+  OK = event.getByLabel( "generator", GenInfoHandle );
+  qscale_ = OK ? GenInfoHandle->qScale() : -666.;
+  pthat_ =( OK && GenInfoHandle->hasBinningValues() ) ? GenInfoHandle->binningValues()[0] : -666.;
+
   pPtHatHist_ -> Fill (pthat_);
   pthatbin_ = 0; // this is a ROOT like index, so bin=0 is underflow
   for (; pthatbin_ < ptHatBins_.size() && ptHatBins_[pthatbin_] < pthat_; ++pthatbin_);
@@ -944,14 +1060,29 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
     : 0; // to be used as a weight when plotting MC: 0 = ignore.
   wmc_ = xsec_; // will be updated later using # of events
     
-  reco::JetTracksAssociation::Container caloJetsToTrks;
-  if( useTracking_ && ! (srcCaloJetTrkAssoc_ == edm::InputTag(""))) {
-    edm::Handle< reco::JetTracksAssociation::Container > handleToCaloJetsToTrks;
-    event.getByLabel(srcCaloJetTrkAssoc_, handleToCaloJetsToTrks);
-    caloJetsToTrks = *handleToCaloJetsToTrks;
+  reco::JetTracksAssociation::Container JTAV, JTAC;
+  if( useTracking_ && ! ( srcJetTrkAssocAtVertex_ == edm::InputTag("") ) ) {
+    edm::Handle< reco::JetTracksAssociation::Container > handleToJTAV;
+    event.getByLabel( srcJetTrkAssocAtVertex_, handleToJTAV );
+    JTAV = *handleToJTAV;
+  }
+  if( useTracking_ && ! ( srcJetTrkAssocAtCalo_ == edm::InputTag("") ) ) {
+    edm::Handle< reco::JetTracksAssociation::Container > handleToJTAC;
+    event.getByLabel( srcJetTrkAssocAtCalo_, handleToJTAC );
+    JTAC = *handleToJTAC;
+  }
+  // Generated particles to be matched to jets
+  edm::Handle<reco::GenParticleRefVector> gen_particles_for_jets;
+  if( gen_particles_available_ ) {
+    try{
+      event.getByLabel( srcGenForJets_, gen_particles_for_jets );
+    } catch(...) {
+      cout<<"Turned off the gen particles matching, since gen particles are not available in "<<srcGenForJets_<<endl;
+      gen_particles_available_ = false;
+    }
   }
   // primary vertex
-  edm::Handle< reco::VertexCollection> primVertices; // left in its illegal state if tracking is not used
+  edm::Handle<reco::VertexCollection> primVertices; // left in its illegal state if tracking is not used
   if( useTracking_) event.getByLabel(srcPrimVertex_, primVertices);
   // tracks
   edm::Handle<reco::TrackCollection> tracks;
@@ -1013,7 +1144,8 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
       // calculate the correction without applying it (since no jet object is passed to corrector....)
       double scale = corrector->correction(jet->p4());
       if( scale <= 0) {
-	edm::LogError("BadJetCorrection")<<"Code assumes jet corrections are positive!";
+	edm::LogError("BadJetCorrection")<<"Code assumes jet corrections are positive! (eta:"
+					 <<jet->eta()<<" rawpt:"<<jet->pt()<<")"; // JEC group asked for more detalied bug report...
 	scale = 0.000001;
       }
       // create my "jetWithScale" object
@@ -1036,6 +1168,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
     }
   }
   LogTrace("Flow")<<"DBG: prepared jetsWithScale "<<endl;
+  ++nSamples_["preselection"];
 
 
   // Find (suspected) muon triggers
@@ -1121,8 +1254,11 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
   // Prepare parts of tree that are independent of tag and probe
   // -----------------------------------------------------------
 
-  run_   = event.id().run();
-  event_ = event.id().event();
+  run_            = event.id().run();
+  event_          = event.id().event();
+  LBN_            = event.luminosityBlock();
+  bunch_crossing_ = event.bunchCrossing();
+  orbit_          = event.orbitNumber();
   if( useTracking_) {
     npv_   = TMath::Min (mpv_, primVertices->size());
     for (unsigned int ipv=0;ipv<npv_;ipv++) {
@@ -1199,13 +1335,13 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
   // is there a better way to concatenate RefVectors? At least this way the dereferencing mess was only done once
   vector<const reco::Track*> vpTrack01;
   if( useTracking_) {
-    const reco::TrackRefVector& trackRefs0 = reco::JetTracksAssociation::getValue(caloJetsToTrks, 
+    const reco::TrackRefVector& trackRefs0 = reco::JetTracksAssociation::getValue(JTAV, 
 										  jetsWithScale.at(0).orgJet());
     LogTrace("Flow")<<"DBG: after first association"<<endl; 
     std::transform (trackRefs0.begin(), trackRefs0.end(), 
 		    std::inserter (vpTrack01, vpTrack01.end()), CaloJetIDAnalyzer::getTrackPointer);
     if( nJets_ > 1) {
-      const reco::TrackRefVector& trackRefs1 = reco::JetTracksAssociation::getValue(caloJetsToTrks, 
+      const reco::TrackRefVector& trackRefs1 = reco::JetTracksAssociation::getValue(JTAV, 
 										    jetsWithScale.at(1).orgJet());
       std::transform (trackRefs1.begin(), trackRefs1.end(), 
 		      std::inserter (vpTrack01, vpTrack01.end()), CaloJetIDAnalyzer::getTrackPointer);
@@ -1233,7 +1369,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
     
       // require tag-side track
       if( useTracking_) {
-	const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue(caloJetsToTrks, tag.orgJet());
+	const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue(JTAV, tag.orgJet());
 	bool foundTrack = false;
 	for (int itr = 0; itr < int(trackRefs.size()); ++itr) {
 	  const reco::Track& trk = *(trackRefs[itr]);
@@ -1364,7 +1500,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 
       bool trackMatched = false;
       if( useTracking_) {
-	const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue(caloJetsToTrks, jet.orgJet());
+	const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue(JTAV, jet.orgJet());
 	trackMatched = trackRefs.size() > 0; // try different stuff here?
       }
 
@@ -1388,6 +1524,19 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 
   JetIDSelectionFunctor jetIDTight( JetIDSelectionFunctor::CRAFT08,
                                     JetIDSelectionFunctor::TIGHT );
+
+  JetMatchingTools* jetMatching = 0;
+  if( simHits_available_ ) {
+    try {
+      jetMatching = new JetMatchingTools( event );
+      jetMatching->getEBSimHitCollection ();
+    } catch(...) {
+      jetMatching = 0;
+      simHits_available_ = false;
+      cout<<"Turned off the JetMatchingTools, since simHits are not available."<<endl;
+    }
+  }
+
   // book jets
   // ---------
   njt_ = 0; // i.e. how many aready booked
@@ -1397,6 +1546,8 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
     vector<unsigned int>::const_iterator curTooManyProbe  = std::find (iTooManyProbes.begin(),  iTooManyProbes.end(),  ijet);
     vector<unsigned int>::const_iterator curThirdJetProbe = std::find (iThirdJetProbes.begin(), iThirdJetProbes.end(), ijet);
     
+    resetFieldsForJet( njt_ );
+
     bydijet_   [njt_] = bookDiJets_     && (curDiJetProbe    != iDijetProbes.end()   );
     bytrackjet_[njt_] = bookByTrackJet_ && (curTrackJetProbe != iTrackJetProbes.end());
     bytoomany_ [njt_] = bookTooMany_    && (curTooManyProbe  != iTooManyProbes.end() );
@@ -1434,10 +1585,18 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
       tageta_  [njt_] = tag.eta();
       tagphi_  [njt_] = tag.phi();
       tagemf_  [njt_] = tag.emEnergyFraction();
-      tagntrk_ [njt_] = useTracking_ ? reco::JetTracksAssociation::tracksNumber (caloJetsToTrks, tag.orgJet()) : -666;
+      tagntrk_ [njt_] = useTracking_ ? reco::JetTracksAssociation::tracksNumber (JTAV, tag.orgJet()) : -666;
       tagchf_  [njt_] = (useTracking_ && tag.corrPt() > 0)                     // charged fraction
-	? reco::JetTracksAssociation::tracksP4 (caloJetsToTrks, tag.orgJet()).pt() / tag.corrPt() 
+	? reco::JetTracksAssociation::tracksP4 (JTAV, tag.orgJet()).pt() / tag.corrPt() 
 	: -666;
+      tagtf_[njt_] = -1;
+      if( jetMatching && tag.corrE() > 0 ) {
+	std::vector <const reco::GenParticle*> particles( jetMatching->getGenParticles( tag.orgJet(), false ) );
+	double gen_E = 0;
+	for( unsigned int ip = 0; ip < particles.size(); ++ip ) gen_E += particles[ ip ]->energy();
+	tagtf_[njt_] = gen_E / tag.corrE();
+      }
+      taggf_[njt_] = generatedFraction( tag, gen_particles_for_jets );
     } else {
       if( by3rd_[njt_]) {
 	// On second thought, it's interesting to see how the 3rd jet balanced the two main ones!
@@ -1500,6 +1659,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
     jte_[njt_]      = probe.energy(); // uncorrected!
     jtpt_[njt_]     = probe.corrPt();
     jtrawpt_[njt_]  = probe.rawPt();
+    if( probe.rawPt() > 0 ) jtjes_[njt_] = probe.corrPt() / probe.rawPt();
     // physicsEta was removed from RecoJet in CMSSW_3 (can still be done via static method in Jet)
     // since it proved to be a nuisance anyway, stopped using it
     jteta_[njt_]    = probe.eta(); // Was: (npv_==0) ? probe.eta() : probe.physicsEta(pvz_[0]);
@@ -1511,22 +1671,29 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
     jtetaeta_[njt_] = probe.etaetaMoment();
     jtphiphi_[njt_] = probe.phiphiMoment();
     jtetaphi_[njt_] = probe.etaphiMoment();
-    jtntrk_[njt_]   = useTracking_ ?
-      reco::JetTracksAssociation::tracksNumber(caloJetsToTrks,probe.orgJet()) : 0;
+    countTracks( JTAV, probe.orgJet(), jtntrk_[njt_], jtnhtrk_[njt_], jtnqtrk_[njt_], jtnhqtrk_[njt_] ); 
+    countTracks( JTAC, probe.orgJet(), clntrk_[njt_], clnhtrk_[njt_], clnqtrk_[njt_], clnhqtrk_[njt_] ); 
     jtchf_[njt_]    =  (useTracking_ && probe.corrPt() > 0) ?                                 // charged fraction
-      (reco::JetTracksAssociation::tracksP4(caloJetsToTrks,probe.orgJet()).pt() / probe.corrPt()) : -666;
+      (reco::JetTracksAssociation::tracksP4(JTAV,probe.orgJet()).pt() / probe.corrPt()) : -666;
     jthef_[njt_]    = (probe.energy () > 0) ? probe.hadEnergyInHE() / probe.energy () : -666; // HE fraction
     double pTallTracks = 0, pTposTracks = 0;
-    jtposf_[njt_]   =  -666;
     if( useTracking_) {
-      const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue(caloJetsToTrks, probe.orgJet());
+      const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue(JTAC, probe.orgJet());
       for (int itr = 0; itr < int(trackRefs.size()); ++itr) {
 	const reco::Track& trk = *(trackRefs[itr]);
 	pTallTracks += trk.pt();
 	if( trk.charge() > 0) pTposTracks += trk.pt();
       }
       if( pTallTracks > 0) jtposf_[njt_] = pTposTracks / pTallTracks; // track pT fraction in positive tracks
+      jtchfs_[njt_] = pTallTracks;
     }
+    if( jetMatching && probe.corrE() > 0 ) {
+      std::vector <const reco::GenParticle*> particles( jetMatching->getGenParticles( probe.orgJet(), false ) );
+      double gen_E = 0;
+      for( unsigned int ip = 0; ip < particles.size(); ++ip ) gen_E += particles[ ip ]->energy();
+      jttf_[njt_] = gen_E / probe.corrE();
+    }
+    jtgf_[njt_] = generatedFraction( probe, gen_particles_for_jets );
 	    
     jtnsd_[njt_] = 0;
     // sensible values for when these fields don't get filled later on (which is legit.)
@@ -1568,7 +1735,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 			   E_bad_tower,  E_bad_ecal,  E_bad_hcal,
 			   E_recovered_tower,  E_recovered_ecal,  E_recovered_hcal,
 			   E_prob_tower,  E_prob_ecal,  E_prob_hcal,
-			   debug ? 1 : 0 );
+			   debug_ ? 1 : 0 );
 	
 	jtnbt_ [njt_] = n_bad_towers;
 	jtnbst_[njt_] = n_bad_subtowers;
@@ -1721,8 +1888,13 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
       jtaodhpd_[njt_] = idh.approximatefHPD();
       jtaodrbx_[njt_] = idh.approximatefRBX();
       jtnhn90_[njt_] = idh.hitsInN90();
+      jtremf_[njt_] = idh.restrictedEMF();
+      jtsd1_[njt_] = idh.fSubDetector1();
+      jtsd2_[njt_] = idh.fSubDetector2();
+      jtsd3_[njt_] = idh.fSubDetector3();
+      jtsd4_[njt_] = idh.fSubDetector4();
 
-      if( debug && dumpReason > 0) {
+      if( debug_ && dumpReason > 0) {
 	//edm::LogWarning("PossibleBug")<<"DumpReason:"<<dumpReason;
 	cout<<"Possible bug - dump reason: "<<dumpReason<<" rerunning calculation..."<<endl;
 	jet_ID_helper_.calculate( event, probe, 5 ); //dynamic_cast<reco::CaloJet const &> probe );
@@ -1734,7 +1906,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 	    <<", (hn50: "<<hn50<<")"<<endl;
 	cout<<"idh - fHPD: "<<idh.fHPD()<<", fRBX: "<<idh.fRBX()<<"; hn90: "<<idh.n90Hits()<<","
 	    <<"\n       nht: "<<idh.nHCALTowers()<<", net: "<<idh.nECALTowers()<<", rfem: "<<idh.restrictedEMF()
-	    <<"; subdets: "<<idh.fSubDetector1()<<", "<<idh.fSubDetector2()<<", "<<idh.fSubDetector3()
+	    <<"; subdet fractions: "<<idh.fSubDetector1()<<", "<<idh.fSubDetector2()<<", "<<idh.fSubDetector3()
 	    <<", "<<idh.fSubDetector4()<<endl;
 	cout<<"ECal_E:";
 	for (unsigned int i=0; i<ECal_energies.size(); ++i) cout<<" "<<ECal_energies[i];
@@ -1760,7 +1932,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
     jttrg_  [njt_] = jetTriggerBits_[ijet];
     jttrgpt_[njt_] = jetTriggerPt_  [ijet];
     jttrgds_[njt_] = jetTriggerDs_  [ijet];
-
+    
     jtntrkjet_    [njt_] = nMatchingTrackJets_[ijet];
     jttrkjetntrk_ [njt_] = (iMatchingTrackJet_[ijet] >= 0)
       ? trackJets->at(iMatchingTrackJet_[ijet]).nConstituents()
@@ -1781,6 +1953,68 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
       ? reco::deltaR (probe, trackJets->at(iMinDRTrackJet_[ijet]))
       : -666; 
 
+    {
+      // previous jet IDs
+      float abs_eta = TMath::Abs( probe.eta() );
+      bool in_HBHE = abs_eta < 2.6;
+      float corr_pT = jtpt_[njt_];
+      float raw_pT = jtrawpt_[njt_];
+      float emf = jtemf_[njt_];
+      float fhpd = jtf1hpd_[njt_];
+      float n90 = jtn90_[njt_];
+
+      minimal08_[njt_] = ! ( in_HBHE && emf <= 0.01 );
+      loose08_[njt_] = minimal08_[njt_] && n90 >= 2 && fhpd < 0.98;
+      if( (! in_HBHE) && ( emf <= -0.9 
+			   || (corr_pT > 80 && emf >= 1) 
+			   ) 
+	  ) loose08_[njt_] = false;
+      bool tight08 = loose08_[njt_];
+      if( raw_pT > 25. && fhpd >= 0.95 ) tight08 = false;
+      if( abs_eta >= 1 && corr_pT >= 80 && emf >= 1 ) tight08 = false;
+      if( ! in_HBHE ) {
+	if( emf <= -0.3 ) tight08 = false;
+	if( abs_eta < 3.25 ) { // HE-HF transition region
+	  if( corr_pT >= 50 && emf <= -0.2 ) tight08 = false;
+	  if( corr_pT >= 80 && emf <= -0.1 ) tight08 = false;
+	  if( corr_pT >= 340 && emf >= 0.95 ) tight08 = false;
+	} else { // HF
+	  if( emf >= 0.9 ) tight08 = false;
+	  if( corr_pT >= 50 && emf <= -0.2 ) tight08 = false;
+	  if( corr_pT >= 50 && emf >= 0.8 ) tight08 = false;
+	  if( corr_pT >= 130 && emf <= -0.1 ) tight08 = false;
+	  if( corr_pT >= 130 && emf >= 0.7 ) tight08 = false;
+	}
+      }
+      tight08_[njt_] = tight08;
+      bool in_HBHE_pas = abs_eta < 2.55;
+      loose_pas_[njt_] = n90 >= 2 && fhpd < 0.98;
+      if( in_HBHE_pas ) {
+	if( emf <= 0.01 ) loose_pas_[njt_] = false;
+      } else {
+	if( emf <= -0.9 ) loose_pas_[njt_] = false;
+	if( corr_pT > 80 && emf >= 1 ) loose_pas_[njt_] = false;
+      }
+      bool tight_pas = loose_pas_[njt_];
+      if( raw_pT > 25. && fhpd >= 0.95 ) tight_pas = false;
+      if( abs_eta >= 1 && corr_pT >= 80 && emf >= 1 ) tight_pas = false;
+      if( ! in_HBHE_pas ) {
+	if( emf <= -0.3 ) tight_pas = false;
+	if( abs_eta < 3.25 ) { // HE-HF transition region
+	  if( corr_pT >= 50 && emf <= -0.2 ) tight_pas = false;
+	  if( corr_pT >= 80 && emf <= -0.1 ) tight_pas = false;
+	  if( corr_pT >= 340 && emf >= 0.95 ) tight_pas = false;
+	} else { // HF
+	  if( emf >= 0.9 ) tight_pas = false;
+	  if( corr_pT >= 50 && emf <= -0.2 ) tight_pas = false;
+	  if( corr_pT >= 50 && emf >= 0.8 ) tight_pas = false;
+	  if( corr_pT >= 130 && emf <= -0.1 ) tight_pas = false;
+	  if( corr_pT >= 130 && emf >= 0.7 ) tight_pas = false;
+	}
+      }
+      tight_pas_[njt_] = tight_pas;
+    }
+
     if( byADijet) {
       // fill probe region fields in tree (omaxjetpt_ already filled above)
       omaxtrkpt_[njt_] = otrkptsum_[njt_] = 0;
@@ -1798,7 +2032,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 	
 	  // is it in the probe jet?
 	  bool matchedToProbe = false;
-	  const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue(caloJetsToTrks, probe.orgJet());
+	  const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue(JTAV, probe.orgJet());
 	  for (unsigned int itrj = 0; itrj < trackRefs.size(); ++itrj) {
 	    const reco::Track& probeTrack = *(trackRefs[itrj]);
 	    if( &probeTrack == &trk) {matchedToProbe = true; break;}
@@ -1851,43 +2085,89 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 
     // book this pair (later)!
     ++ njt_;
+    if( njt_ >= mjt_ ) break; // can't book more jets in this event
     
   } // loop on all jets
-
+  
   pCutFlowHist0_ -> Fill (nStepsPassed[0]);
   if( nJets_ >= 1) pCutFlowHist1_ -> Fill (nStepsPassed[1]);
 
   // fill event without tag & probe pairs?
-  if( njt_ > 0 || !requireProbe_) tree_->Fill();
+  if( njt_ > 0 || ! requireProbe_ ) tree_->Fill();
   LogTrace("Flow")<<"DBG: finished processing event"<<endl;
+}
+
+void CaloJetIDAnalyzer::countTracks( const reco::JetTracksAssociation::Container& JTA, const reco::CaloJet& jet,
+				     unsigned int& N, unsigned int& Nhard, unsigned int& Nqual, unsigned int& Nqualhard )
+{
+  N = Nhard = Nqual = Nqualhard = 0;
+  if( ! useTracking_ ) return;
+  const reco::TrackRefVector& trackRefs = reco::JetTracksAssociation::getValue( JTA, jet );
+  for( int itr = 0; itr < int( trackRefs.size() ); ++itr ) {
+    const reco::Track& trk = *( trackRefs[ itr ] );
+    ++N;
+    bool qual = trk.quality( reco::TrackBase::goodIterative );
+    bool hard = trk.pt() > minMatchTrackPt_;
+    if( hard ) ++Nhard;
+    if( qual ) ++Nqual;
+    if( hard && qual ) ++Nqualhard;
+  }
+}
+
+void CaloJetIDAnalyzer::  fill_technical_triggers( const edm::Event& event )
+{
+  edm::Handle<L1GlobalTriggerReadoutRecord> l1GtReadoutRecord;
+  event.getByLabel( srcGlobalTriggerDigis_, l1GtReadoutRecord );
+  TechnicalTriggerWord bool_vector = l1GtReadoutRecord->technicalTriggerWord();
+  tech1_ = tech2_ = 0;
+  for( unsigned int ib=0; ib<bool_vector.size(); ++ib ) {
+    if( bool_vector[ ib ] == false ) continue;
+    if( ib < 32 ) {
+      tech1_ |= ( 1 << ib );
+    } else if( ib < 64 ) {
+      tech2_ |= ( 1 << (ib - 32 ) );
+    } else {
+      edm::LogError("CodeAssumptionsViolated")<<"Bug?! code assumes no more than 64 bits in TechnicalTriggerWord";
+    }
+  }
+  L1BX_ = (tech1_ & 0x1 );
+  L1MB_ = (tech2_ & 0x0300 ) > 0; // bits 40 - 41
+  L1BH_ = (tech2_ & 0x00F0 ) > 0; // bits 36 - 39
+  L1HS_ = L1BX_ && L1MB_;
+  L1P_ = L1HS_ && ! L1BH_;
+  L1NO_ = (! L1HS_) && ! L1BH_;
 }
 
 
 //______________________________________________________________________________
 void CaloJetIDAnalyzer::endJob()
 {
-  std::stringstream ss, ss2, ss3, ss4;
+  std::stringstream ss, ss_samp, ss_ts, ss_mu, ss_c;
 
-  for (unsigned int itrg=0;itrg<triggerNames_.size();itrg++)
+  for( unsigned int itrg=0;itrg<triggerNames_.size();itrg++ )
     ss<<triggerNames_[itrg]<<":\t"<<triggerFired_[itrg]<<"\n";
 
-  for (std::map<string,int>::const_iterator it=nSamples_.begin(); it != nSamples_.end(); ++it)
-    ss2<<Form("%10s: %d", it->first.c_str(), it->second)<<"\n";
+  for( std::map<string,int>::const_iterator it=nSamples_.begin(); it != nSamples_.end(); ++it )
+    ss_samp<<Form("%10s: %d", it->first.c_str(), it->second)<<"\n";
 
-  for (std::set<string>::const_iterator it=triggersSeen_.begin(); it != triggersSeen_.end(); ++it)
-    ss3<<" "<<*it<<",";
+  for( std::set<string>::const_iterator it=triggersSeen_.begin(); it != triggersSeen_.end(); ++it )
+    ss_ts<<" "<<*it<<",";
 
-  for (std::set<string>::const_iterator it=triggersUsedAsMu_.begin(); it != triggersUsedAsMu_.end(); ++it)
-    ss4<<" "<<*it<<",";
+  for( std::set<string>::const_iterator it=triggersUsedAsMu_.begin(); it != triggersUsedAsMu_.end(); ++it )
+    ss_mu<<" "<<*it<<",";
+
+  for( std::map<string, int>::const_iterator it=triggers_fired_counts_.begin(); it != triggers_fired_counts_.end(); ++it )
+    ss_c<<" "<<it->first<<": "<<it->second<<",";
 
   edm::LogPrint("Summary")
     <<"++++++++++++++++++++++++++++++++++++++++++++++++++"
     <<"\n"<<moduleName_<<"(CaloJetIDAnalyzer) SUMMARY:"
     <<"\n\nBooked "<<tree_->GetEntries()<<" events in tree."
     <<"\n"<<ss.str()
-    <<"\n"<<ss2.str()
-    <<"\n All triggers seen in events:"<<ss3.str()
-    <<"\n Those used as muon triggers:"<<ss4.str()
+    <<"\n"<<ss_samp.str()
+    <<"\n All triggers seen in events:"<<ss_ts.str()
+    <<"\n Those used as muon triggers:"<<ss_mu.str()
+    <<"\n How many times each trigger fired:"<<ss_c.str()
     <<"\n++++++++++++++++++++++++++++++++++++++++++++++++++";
 }
 
@@ -1990,6 +2270,53 @@ void markFlags( vector< int >& jet_flag_counts, vector< double >& jet_flag_energ
       jet_flag_energies[ ibit ] += hitE;
     }
   }
+}
+
+void CaloJetIDAnalyzer::resetFieldsForJet( const int i )
+{
+  jtrank_[i] = i;
+  // sensible values for when these fields don't get filled later on (which is legit.)
+  jtf1hpd_[i] = jtf2hpd_[i] = jtf1rbx_[i] = 0;
+  jtf1h_[i] = jtf2h_[i] = jtf1e_[i] = jtf2e_[i] = jtminhade_[i] = 0;
+  // senseless ("unphysical") values for these fields, for when they don't get filled later on (which is odd)
+  // - unfortunately, no convenient illegal value for unsigned int.
+  jte_[i] = jtrawpt_[i] = jtpt_[i] = 0;
+  jteta_[i] = jtdeta_[i] = jtphi_[i] = -6.66;
+  jtjes_[i] = 0;
+  jtemf_[i] = jtchf_[i] = jtchfs_[i] = jthef_[i] = jthof_[i] = jtposf_[i] = -1;
+  jtn90_[i] = jthn90_[i] = jthn50_[i] = jtntwrs_[i] = jtnhits_[i] = jtnhh_[i] = jtneh_[i] = jtnht_[i] = jtnet_[i] = jtnsd_[i] = 12345;
+  jtetaeta_[i] = jtphiphi_[i] = jtetaphi_[i] = -0.123;
+  jtptrel_[i] = -666.;
+  jtntrk_[i] = jtnhtrk_[i] = jtnqtrk_[i] = jtnhqtrk_[i] = 12345;
+  clntrk_[i] = clnhtrk_[i] = clnqtrk_[i] = clnhqtrk_[i] = 12345;
+  jttrg_[i] = 0; jttrgpt_[i] = -666; jttrgds_[i] = -0.123;
+  jtremf_[i] = jtsd1_[i] = jtsd2_[i] = jtsd3_[i] = jtsd4_[i] = -1;
+  jtfq_  [i] = -1; jtnq_  [i] = jtnsdq_  [i] = 12345;
+  jtfoot_[i] = -1; jtnoot_[i] = jtnsdoot_[i] = 12345;
+  jtfsat_[i] = -1; jtnsat_[i] = jtnsdsat_[i] = 12345;
+  jtnbt_[i] = jtnbst_[i] = jtnbh_ [i] = jtnbe_ [i] = 999;
+  jtnrt_[i] = jtnrst_[i] = jtnrh_ [i] = jtnre_ [i] = 999;
+  jtnpt_[i] = jtnpst_[i] = jtnph_ [i] = jtnpe_ [i] = 999;
+  jtnft_[i] = jtnfst_[i] = jtnfh_ [i] = jtnfe_ [i] = 999;
+  jtfbt_[i] = jtfbe_ [i] = jtfbh_ [i] = -1;
+  jtfrt_[i] = jtfre_ [i] = jtfrh_ [i] = -1;
+  jtfpt_[i] = jtfpe_ [i] = jtfph_ [i] = -1;
+  jtfft_[i] = jtffe_ [i] = jtffh_ [i] = -1;
+  jttf_[i] = jtgf_[i] = -1;
+  jtntrkjet_[i] = 999;
+  jttrkjetpt_[i] = -1; jttrkjeteta_[i] = jttrkjetphi_[i] = -6.66; jttrkjetDR_[i] = jtmintrkjetDR_[i] = -0.123;
+  minimal08_[i] = loose_pas_[i] = tight_pas_[i] = loose08_[i] = tight08_[i] = false;
+
+  bydijet_[i] = bytrackjet_[i] = bytoomany_[i] = by3rd_[i] = byall_[i] = false;
+  tagdelta_[i] = -0.123; tagtrg_[i] = 0; tagntrk_[i] = 12345;
+  tagtrgpt_[i] = tagtrgds_[i] = tage_[i] = tagpt_[i] = tagrawpt_[i] = -1.23;
+  tageta_[i] = tagphi_[i] = -6.66;
+  tagemf_[i] = tagchf_[i] = tagtf_[i] = taggf_[i] = -1;
+  omaxjetpt_[i] = omaxtrkpt_[i] = otrkptsum_[i] = omaxtrkjetpt_[i] = -6.66;
+  otrkjet1eta_[i] = -6.66;
+  ontrk_[i] = ontrkjet_[i] = 999;
+  vntrkjet_[i] = 999;
+  vmaxtrkjetpt_[i] = vtrkjet1eta_[i] = vtrkjet1phi_[i] = -6.66; 
 }
 
 //______________________________________________________________________________
@@ -2464,37 +2791,32 @@ void CaloJetIDAnalyzer::analyzeNonjetTriggers (const TrgEvtHandle_t& triggerEven
     edm::LogWarning("BadInput")<<"trigger results (and/or event) not available";
     return;
   }
+  assert (triggerResults->size()==hltConfig_.size()); // just a sanity check 
 
-  // sanity check
-  assert (triggerResults->size()==hltConfig_.size());  
-
-  // just to warm up, use my old code to mark all triggers seen in the events 
-  for (trigger::size_type ifilter=0; ifilter < triggerEvent->sizeFilters(); ++ifilter) {
-    const trigger::Keys& keys = triggerEvent->filterKeys(ifilter); 
-    if( keys.size() > 0) {
-      string sTag = triggerEvent->filterTag(ifilter).encode();
-      triggersSeen_.insert (sTag);
-      LogTrace("DebugTrigger")<<"DBG - ifilter: "<<ifilter<<" is: "<<sTag<<", #K: "<<keys.size()<<endl;
-    }
-  }
-
-  // back to official trigger usage :-)
   const TriggerObjectCollection& TOC (triggerEvent->getObjects());
   std::set<int> iSelectedObjects;
 
+  phys_ = false;
   const unsigned int nConfiguredTriggers = hltConfig_.size();
   LogTrace("DebugTrigger")<<"DBG - nObj: "<<TOC.size()<<" nConfiguredTriggers: "<<nConfiguredTriggers<<endl;
   for (unsigned int ict=0; ict < nConfiguredTriggers; ++ict) { // loop on ALL configured triggers 
     // ict = what the original analyzeTrigger called triggerIndex
     const string triggerName (hltConfig_.triggerName(ict));
+    triggersSeen_.insert( triggerName );
     
     LogTrace("DebugTrigger")<<"DBG - ict: "<<ict<<" is: "<<triggerName<<" run? "<<triggerResults->wasrun(ict)
 			    <<" accept? "<<triggerResults->accept(ict)<<endl;
 
     // only interested in triggers that actually fired
     if(  ! (triggerResults->wasrun(ict) && triggerResults->accept(ict)) ) continue;
+    if( triggers_fired_counts_.count( triggerName ) > 0 ) {
+      triggers_fired_counts_[ triggerName ] += 1;
+    } else {
+      triggers_fired_counts_[ triggerName ] = 1;
+    }
 
     if( triggerName.find ("RandomPath") != string::npos) isRandomTrigger_ = true;
+    if( triggerName.find ("HLT_PhysicsDeclared") != string::npos) phys_ = true;
 
     // and may be muon triggers  (there's one called PhysicsNoMuonPath, which probably doesn't require muons)
     if( triggerName.find ("Mu") == string::npos
@@ -2502,13 +2824,6 @@ void CaloJetIDAnalyzer::analyzeNonjetTriggers (const TrgEvtHandle_t& triggerEven
 	|| triggerName.find("BTagMu") != string::npos) continue;
 
     // and are not used as jet triggers
-    bool cppStyle = (std::find (triggerNames_.begin(), triggerNames_.end(), triggerName) != triggerNames_.end());
-    bool cStyle = false;
-    for (unsigned int ijt=0; ijt<triggerNames_.size(); ++ijt) {
-      if( triggerName == triggerNames_[ijt]) cStyle = true;
-    }
-    assert (cppStyle == cStyle);
-    LogTrace("DebugTrigger")<<"DBG - known jet trigger? "<<cppStyle<<endl;
     if( std::find (triggerNames_.begin(), triggerNames_.end(), triggerName) != triggerNames_.end()) continue;
 
     // OK, will use all the objects from this one
@@ -2587,6 +2902,27 @@ CaloJetIDAnalyzer::Region CaloJetIDAnalyzer::region( int iEta )
   return HBpos;
 }
 
+double CaloJetIDAnalyzer::generatedFraction( const jetWithScale& jet, 
+					     const edm::Handle<reco::GenParticleRefVector>& particles )
+{
+  //cout<<"DBG for jet with corrE: "<<jet.corrE()<<" = "<<jet.energy()<<" * "<<jet.scale()
+  //    <<", eta: "<<jet.eta()<<", phi: "<<jet.phi()<<endl;
+  if( particles.isValid() && jet.corrE() > 0 ) {
+    double gen_E = 0;
+    for( unsigned int ip = 0; ip < particles->size(); ++ip ) {
+      const GenParticle & particle = *( particles->at( ip ).get() );
+      double deltaR = reco::deltaR( particle, jet );
+      if( deltaR < deltaRGenMatch_) { 
+	gen_E += particle.energy();
+      }
+      //cout<<"  "<<ip<<") E: "<<particle.energy()<<", pT: "<<particle.pt()
+      //  <<", eta: "<<particle.eta()<<", phi: "<<particle.phi()
+      //  <<" --> "<<deltaR<<", "<<gen_E<<endl;
+    }
+    return TMath::Min( gen_E / jet.corrE(), 12.345 );
+  }
+  return -1;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // define CaloJetIDAnalyzer as a plugin
