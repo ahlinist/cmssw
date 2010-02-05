@@ -126,16 +126,68 @@ char* formValErr (Double_t val, Double_t err, Double_t acc = 1.449777)
   }
 }
 
-TString formatInNaturalPrecision (Double_t val, int maxDigiAfterPeriod = 2)
+TString formatInNaturalPrecision( Double_t val, int maxDigiAfterPeriod = 2 )
 {
-  if (maxDigiAfterPeriod < 0) return "";
-  TString s1 (Form ("%.*f", maxDigiAfterPeriod, val));
-  while (s1.Length() > 1 && s1.EndsWith("0")) 
+  if( maxDigiAfterPeriod < 0 ) return "";
+  TString s1( Form( "%.*f", maxDigiAfterPeriod, val ) );
+  while( s1.Contains('.') && s1.Length() > 1 && s1.EndsWith("0") ) 
+    s1.Remove( -1+s1.Length() );
+  if( s1.Length() > 1 && s1.EndsWith(".") )
     s1.Remove (-1+s1.Length());
-  if (s1.Length() > 1 && s1.EndsWith("."))
-    s1.Remove (-1+s1.Length());
-  if (s1 == "-0") s1 = "0";
+  if( s1 == "-0" ) s1 = "0";
   return s1;
+}
+int find_exponent( double num )
+{
+  // use string processing since their internal trickery is ~20 times more
+  // accurate than what I managed to do with logs, rounds offs, etc.
+  TString ss( Form("%e", num ) );
+  int n = ss.Length();
+  TString s2( ss( n-3, 3 ) );
+  return s2.Atoi();
+}
+
+
+double find_round_number_in_range( double min, double max )
+{
+  if( min * max <= 0 ) return 0;
+  // so now both non-zero and have same sign 
+
+  // arrange signs and sort
+  bool negative = min < 0;
+  if( negative ) {min *= -1; max *= -1;}
+  if( max < min ) {
+    double tmp = min;
+    min = max;
+    max = tmp;
+  }
+
+  int min_0s = find_exponent( max - min );
+  int max_0s = find_exponent( max );
+  
+  double out = -1;
+  double mid = ( min + max ) / 2;
+  for( int n0s = max_0s; n0s >= min_0s; --n0s ) {
+    double one_and_0s = pow( 10, n0s );
+    double last = one_and_0s * TMath::Floor( max / one_and_0s );
+    if( last >= min ) {
+      double mid_low = one_and_0s * TMath::Floor( mid / one_and_0s );
+      double mid_high = one_and_0s * TMath::Ceil( mid / one_and_0s );
+      if( mid_low < min ) { out = mid_high; break; }
+      if( mid_high > max ) { out = mid_low; break; }
+      double d_low = mid - mid_low;
+      double d_high = mid_high - mid;
+      if( d_low < d_high ) { out = mid_low; break; }
+      out = mid_high; break;
+    }
+  }
+  if( out < 0 ) {
+    cerr<<"BUG! out<0 after main loop of find_round_number_in_range(+/- "<<min<<" <--> "<<max<<")"<<endl; 
+    out=mid; // at least return something within the range
+  }
+
+  if( negative ) out *= -1;
+  return out;
 }
 
 Double_t addInQuadrature (Double_t a, Double_t b)

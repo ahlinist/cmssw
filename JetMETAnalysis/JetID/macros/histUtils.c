@@ -8,6 +8,7 @@
 #include "TROOT.h"
 #include "TH2F.h"
 #include "TF1.h"
+#include "TString.h"
 #include "TVirtualFitter.h"
 #include "TMatrixD.h"
 #include "TMatrixDEigen.h"
@@ -172,6 +173,44 @@ TH1F* subtractHists (TH1F& all, TH1F& bad, TString nameSuffix = "_sub")
   }
   if (all.GetEntries() > bad.GetEntries()) hnew->SetEntries(all.GetEntries()-bad.GetEntries());
   return hnew;
+}
+
+// replace histogram context f(x) with the cumulative integral of f(x)
+void accumulate( TH1& hist, const bool from_left = true )
+{
+  Double_t entries = hist.GetEntries();
+  TAxis* ax = hist.GetXaxis();
+  int last = ax->GetLast();
+  int first = ax->GetFirst();
+
+  Double_t sum = 0, dsum2 = 0;
+  if( from_left ) {
+    for( int ibin = first - 1; ibin <= last + 1; ++ibin ) {
+      sum += hist.GetBinContent( ibin );
+      dsum2 += TMath::Power( hist.GetBinError( ibin ), 2 );
+
+      hist.SetBinContent( ibin, sum );
+      hist.SetBinError( ibin, TMath::Sqrt( dsum2 ) );
+    }
+  } else {
+    for( int ibin = last + 1; ibin >= first-1; --ibin ) {
+      sum += hist.GetBinContent( ibin );
+      dsum2 += TMath::Power( hist.GetBinError( ibin ), 2 );
+
+      hist.SetBinContent( ibin, sum );
+      hist.SetBinError( ibin, TMath::Sqrt( dsum2 ) );
+    }
+  }
+  // patch for ROOT versions <5.24 is commenting out the line: hist.ResetStats();
+  hist.SetEntries( entries );
+  return;
+}
+
+inline bool accumulate( TH1* hist, const bool from_left = true )
+{
+  if( 0 == hist ) {cerr<<"NULL pointer was input to accumulate"<<endl; return false;}
+  accumulate( *hist, from_left );
+  return true;
 }
 
 void sumBins (TH1* h, const Int_t binx1, const Int_t binx2, double& sum, double& dsum)
@@ -911,7 +950,7 @@ TH2F* equalizeXstats (TH2& hin, const int nBins, TString name = "")
   if (nbx <= 0) {cerr<<"equalizeXstats problem - nbx: "<<nbx<<endl; return 0;}
   if (nby <= 0) {cerr<<"equalizeXstats problem - nby: "<<nby<<endl; return 0;}
   
-  N = hin.Integral (1,nbx, 0, nby+2); // can handle overflows in y, but not in x
+  N = hin.Integral (1,nbx, 0, nby+1); // can handle overflows in y, but not in x
   if (N <= 0) {cerr<<"equalizeXstats can only handle positive entries. #Entries with legal 'x' is non-positive."<<endl; return 0;}
 
   Stat_t want = N / nBins; // includes overflows
@@ -922,7 +961,7 @@ TH2F* equalizeXstats (TH2& hin, const int nBins, TString name = "")
   double precision = 0.01 / nBins;
   
   for (int ix=1; ix <= nbx; ++ix) { // excluding overflows
-    Stat_t integ = hin.Integral (ix,ix, 0,nby+2); // including overflows
+    Stat_t integ = hin.Integral (ix,ix, 0,nby+1); // including overflows
     sumSoFar += integ;
     if (sumSoFar >= (1+iFilled) * want * (1-precision)) { // enough for the next* one?   * hence "1+"
       xLows [1+iFilled] = hin.GetBinLowEdge (ix+1);
@@ -941,6 +980,8 @@ TH2F* equalizeXstats (TH2& hin, const int nBins, TString name = "")
   for (int ib=0; ib<1+nBins; ++ib) cout<<xLows[ib]<<" ";
   cout<<endl;
   TH2F* hn = new TH2F (name, hin.GetTitle(), nBins, xLows, nby, ymin, ymax);
+  hn->GetXaxis()->SetTitle( hin.GetXaxis()->GetTitle() );
+  hn->GetYaxis()->SetTitle( hin.GetYaxis()->GetTitle() );
 
   // copy overflows
   for (int iy=0; iy <= nby+1; ++iy) { // including overflows
@@ -999,6 +1040,74 @@ TH1D* delta( const TF1& f1, TString name = "")
 {
   if (f1.GetHistogram() == 0) return 0;
   return delta( *f1.GetHistogram(), name );
+}
+
+
+// overflows in y direction are normalized as part of the slice
+TH2* normalize_x_slices( TH2& hin, double norm = 0, TString name = "" )
+{
+  if( name.Length() == 0 ) {
+    name = hin.GetName();
+    name += "NX";
+  }
+  TH2 *out = ( TH2* ) hin.Clone( name );
+  if( out == 0) { cout<<"ERROR! normalize_x_slices failed to clone input histogram"<<endl; return 0; }
+  out->SetMaximum();
+  out->SetMinimum();
+
+  Int_t nbx  = hin.GetNbinsX();
+  Int_t nby  = hin.GetNbinsY();
+  
+  if( norm == 0 ) norm = hin.Integral( 1, 1, 0, 1+nby ); // can handle overflows in y direction
+  if( norm == 0 ) { cerr<<"ERROR! can't take normalization from first x slice (nothing there)."<<endl; return 0; }
+
+  for( int ix=1; ix <= nbx; ++ix ) { // excluding overflows
+    Stat_t integ = hin.Integral( ix, ix, 0, 1+nby ); // including overflows
+    if( integ == 0 ) continue;
+
+    double scale = norm / integ;
+
+    for( int iy=0; iy <= nby+1; ++iy ) { // including overflows
+      Stat_t prev = hin.GetBinContent( ix, iy );
+      out->SetBinContent( ix, iy, prev * scale );
+    }
+  }
+  return out;
+}
+
+// overflows in y direction are normalized as part of the slice
+TH2* equalize_max_of_x_slices( TH2& hin, double norm = 1, TString name = "" )
+{
+  if( name.Length() == 0 ) {
+    name = hin.GetName();
+    name += "EX";
+  }
+  TH2 *out = ( TH2* ) hin.Clone( name );
+  if( out == 0) { cout<<"ERROR! equalize_max_of_x_slices failed to clone input histogram"<<endl; return 0; }
+  out->SetMaximum();
+  out->SetMinimum();
+
+  Int_t nbx  = hin.GetNbinsX();
+  Int_t nby  = hin.GetNbinsY();
+
+  for( int ix=1; ix <= nbx; ++ix ) { // excluding overflows
+
+    TH1D* slice = hin.ProjectionY( "_py", ix, ix );
+    if( 0 == slice ) { cerr<<"ERROR! equalize_max_of_x_slices failed to take a slice of "<<hin.GetName()<<endl; return 0;}
+    slice->SetMaximum();
+    Double_t max = slice->GetMaximum();
+    
+    if( max == 0 ) continue;
+
+    double scale = norm / max;
+
+    for( int iy=0; iy <= nby+1; ++iy ) { // including overflows
+      Stat_t prev = slice->GetBinContent( iy );
+      out->SetBinContent( ix, iy, prev * scale );
+    }
+    // do not deallocate slice, as TH2::DoProjection is optimized to reuse the histogram by name
+  }
+  return out;
 }
 
 #endif

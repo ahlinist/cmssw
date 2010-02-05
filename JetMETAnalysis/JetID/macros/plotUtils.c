@@ -35,11 +35,12 @@ bool set_top_fraction( TH1& h1, const double fraction, const int logyOpt = -1, c
     if( fraction > 0.97 ) {cerr<<"ERROR set_top_fraction: fraction is too big."<<endl; return false;}
     Stat_t minCurY = h1.GetYaxis()->GetXmin();
     Stat_t maxCurY = h1.GetMaximum();
-    if( iDebug > 2 ) cout<<"fraction: "<<fraction<<", curY: "<<minCurY<<" - "<<maxCurY<<endl;
+    if( iDebug > 2 ) cout<<"top fraction: "<<fraction<<", curY: "<<minCurY<<" - "<<maxCurY<<endl;
     if( maxCurY > minCurY ) {
       if( logy ) {
 	if( minCurY == 0 ) { // hard to figure out what ROOT does in this case,
 	  minCurY = minPositiveEntry (h1) / 3.; // this is a decent approx.
+	  h1.SetMinimum( minCurY );
 	  if( iDebug > 2 ) cout<<"    ... minCurY: "<<minCurY<<endl;
 	}
 	if( minCurY > 0 ) {
