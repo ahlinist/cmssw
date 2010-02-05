@@ -375,16 +375,18 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt(), weight);
     hTauCharge_->Fill(patTau->charge(), weight);
     double jetRadius = TMath::Sqrt(patTau->etaetaMoment() + patTau->phiphiMoment());
-    hTauJetRadius_->Fill(jetRadius, weight);
+    if ( !TMath::IsNaN(jetRadius) ) {
+      hTauJetRadius_->Fill(jetRadius, weight);
 /*
   
   CV: temporary work-around until MonitorElement::Fill(double, double, double) is fixed for TProfiles
 
-    hTauJetRadiusPtProfile_->Fill(patTau->pt(), jetRadius, weight);
-    hTauJetRadiusEnProfile_->Fill(patTau->energy(), jetRadius, weight);
+      hTauJetRadiusPtProfile_->Fill(patTau->pt(), jetRadius, weight);
+      hTauJetRadiusEnProfile_->Fill(patTau->energy(), jetRadius, weight);
  */
-    hTauJetRadiusPtProfile_->getTProfile()->Fill(patTau->pt(), jetRadius, weight);
-    hTauJetRadiusEnProfile_->getTProfile()->Fill(patTau->energy(), jetRadius, weight);
+      hTauJetRadiusPtProfile_->getTProfile()->Fill(patTau->pt(), jetRadius, weight);
+      hTauJetRadiusEnProfile_->getTProfile()->Fill(patTau->energy(), jetRadius, weight);
+    }
 
     fillWeightHistograms(hTauJetWeightPosLog_, hTauJetWeightNegLog_, hTauJetWeightZero_, 
 			 hTauJetWeightLinear_, tauJetWeight);
