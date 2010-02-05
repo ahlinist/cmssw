@@ -59,6 +59,8 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
   patElectronSource_ = getInputTag(cfg, "electronSource");
   patMuonSource_ = getInputTag(cfg, "muonSource");
   patTauSource_ = getInputTag(cfg, "tauSource");
+  printTauIdEfficiencies_ = cfg.exists("printTauIdEfficiencies") ? 
+    cfg.getParameter<bool>("printTauIdEfficiencies") : false;
 
   diTauCandidateSource_ = getInputTag(cfg, "diTauCandidateSource");
 
@@ -626,13 +628,15 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       printVertexInfo(patTau->vertex(), outputStream_);
       *outputStream_ << "* matching gen. pdgId = " 
 		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
-      *outputStream_ << " pat::Tau id. efficiencies (byStandardChain):" << std::endl
-		     << "  Ztautau = " << patTau->efficiency("effByStandardChainZTTsim").value() << std::endl;
-      *outputStream_ << " pat::Tau fake-rates (byStandardChain):" << std::endl;
-      printTauEfficiency(*outputStream_, *patTau, "ppMuX", "frByStandardChainMuEnrichedQCDsim", "qcdMuEnriched");
-      printTauEfficiency(*outputStream_, *patTau, "QCD, highest Pt jet", "frByStandardChainDiJetHighPtsim", "qcdDiJetLeadJet");
-      printTauEfficiency(*outputStream_, *patTau, "QCD, second highest Pt jet", "frByStandardChainDiJetSecondPtsim", "qcdDiJetSecondLeadJet");
-      printTauEfficiency(*outputStream_, *patTau, "WplusJets", "frByStandardChainWJetssim", "WplusJets");
+      if ( printTauIdEfficiencies_ ) {
+	*outputStream_ << " pat::Tau id. efficiencies (byStandardChain):" << std::endl
+		       << "  Ztautau = " << patTau->efficiency("effByStandardChainZTTsim").value() << std::endl;
+	*outputStream_ << " pat::Tau fake-rates (byStandardChain):" << std::endl;
+	printTauEfficiency(*outputStream_, *patTau, "ppMuX", "frByStandardChainMuEnrichedQCDsim", "qcdMuEnriched");
+	printTauEfficiency(*outputStream_, *patTau, "QCD, highest Pt jet", "frByStandardChainDiJetHighPtsim", "qcdDiJetLeadJet");
+	printTauEfficiency(*outputStream_, *patTau, "QCD, second highest Pt jet", "frByStandardChainDiJetSecondPtsim", "qcdDiJetSecondLeadJet");
+	printTauEfficiency(*outputStream_, *patTau, "WplusJets", "frByStandardChainWJetssim", "WplusJets");
+      }
       *outputStream_ << "* matching gen. pdgId = " 
 		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
       ++iTau;
