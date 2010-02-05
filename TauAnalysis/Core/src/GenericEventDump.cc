@@ -544,6 +544,15 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
   }
 }
 
+void printTauEfficiency(std::ostream& outputStream, const pat::Tau& patTau,
+			const char* frTypeLabel, const char* patName, const char* tauAnalysisName)
+{
+  outputStream << "  " << frTypeLabel << " = " 
+	       << patTau.efficiency(patName).value() 
+	       << " (" << patTau.efficiency(std::string("bgEstFakeRateJetWeight_").append(tauAnalysisName).data()).value() << ")" 
+	       << std::endl;
+}
+
 void GenericEventDump::printTauInfo(const edm::Event& evt) const
 {
   if ( !outputStream_ ) {
@@ -619,11 +628,11 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
 		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
       *outputStream_ << " pat::Tau id. efficiencies (byStandardChain):" << std::endl
 		     << "  Ztautau = " << patTau->efficiency("effByStandardChainZTTsim").value() << std::endl;
-      *outputStream_ << " pat::Tau fake-rates (byStandardChain):" << std::endl
-		     << "  ppMuX = " << patTau->efficiency("frByStandardChainMuEnrichedQCDsim").value() << std::endl
-		     << "  QCD, highest Pt jet = " << patTau->efficiency("frByStandardChainDiJetHighPtsim").value() << std::endl
-		     << "  QCD, second highest Pt jet = " << patTau->efficiency("frByStandardChainDiJetSecondPtsim").value() << std::endl
-		     << "  WplusJets = " << patTau->efficiency("frByStandardChainWJetssim").value() << std::endl;
+      *outputStream_ << " pat::Tau fake-rates (byStandardChain):" << std::endl;
+      printTauEfficiency(*outputStream_, *patTau, "ppMuX", "frByStandardChainMuEnrichedQCDsim", "qcdMuEnriched");
+      printTauEfficiency(*outputStream_, *patTau, "QCD, highest Pt jet", "frByStandardChainDiJetHighPtsim", "qcdDiJetLeadJet");
+      printTauEfficiency(*outputStream_, *patTau, "QCD, second highest Pt jet", "frByStandardChainDiJetSecondPtsim", "qcdDiJetSecondLeadJet");
+      printTauEfficiency(*outputStream_, *patTau, "WplusJets", "frByStandardChainWJetssim", "WplusJets");
       *outputStream_ << "* matching gen. pdgId = " 
 		     << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
       ++iTau;
