@@ -280,18 +280,18 @@ void perform_fit(const string& fFile, const string& fPlot, const double fXmin, c
 
    Int_t nBins = h->GetXaxis()->GetNbins();
    
-   TH1F *h_metsigma2_sumet = new TH1F("h_metsigma2_sumet","h_metsigma2_sumet",nBins,h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax());
+   TH1F *h_sigma2 = new TH1F("h_sigma2","h_sigma2",nBins,h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax());
 
    for(Int_t i=0; i<nBins; i++) {
-     h_metsigma2_sumet->SetBinContent(i+1, h->GetBinContent(i+1)*h->GetBinContent(i+1) );
-     h_metsigma2_sumet->SetBinError(i+1, 2*h->GetBinContent(i+1)*h->GetBinError(i+1) );
+     h_sigma2->SetBinContent(i+1, h->GetBinContent(i+1)*h->GetBinContent(i+1) );
+     h_sigma2->SetBinError(i+1, 2*h->GetBinContent(i+1)*h->GetBinError(i+1) );
    }
 
-   h_metsigma2_sumet->GetXaxis()->SetRangeUser(fXmin,fXmax);
-   h_metsigma2_sumet->SetLineColor(kRed);
-   h_metsigma2_sumet->SetMarkerStyle(26);
-   h_metsigma2_sumet->SetMarkerColor(kRed);
-   h_metsigma2_sumet->Draw();
+   h_sigma2->GetXaxis()->SetRangeUser(fXmin,fXmax);
+   h_sigma2->SetLineColor(kRed);
+   h_sigma2->SetMarkerStyle(26);
+   h_sigma2->SetMarkerColor(kRed);
+   h_sigma2->Draw();
 
    TF1 *fit = new TF1("fit","pow([0],2)+pow([1],2)*(x-[3])+pow([2]*(x-[3]),2)",fXmin,fXmax);
    fit->SetParameter(0, 0.5);
@@ -304,7 +304,7 @@ void perform_fit(const string& fFile, const string& fPlot, const double fXmin, c
    fit->SetParLimits(3, 2, 5);
 //    fit->FixParameter(3, 0);
 
-   h_metsigma2_sumet->Fit("fit","R");
+   h_sigma2->Fit("fit","R");
    
    c->SaveAs(("fit_"+fName).c_str());
 
@@ -345,6 +345,164 @@ void perform_fit(const string& fFile, const string& fPlot, const double fXmin, c
    delete c;
 }
 
+void overlay_and_fit(const string& fFile0, const string& fFile1, const string& fPlot0, const string& fPlot1, const double fXmin, const double fXmax, const double fYmin, const double fYmax,const string& fXAxisLabel, const string& fYAxisLabel, const string& fTitle, const string& fName, const int logY) {
+  
+   gStyle->SetOptStat(kFALSE);
+ 
+   TH2F *h2[4];
+   TH1F *h[2];
+   
+   TFile file0(fFile0.c_str());
+   h2[0] = (TH2F*)file0.Get(fPlot0.c_str()); 
+   h2[1] = (TH2F*)file0.Get(fPlot1.c_str()); 
+   
+   h2[0]->Add(h2[1],1.0);
+   
+   TFile file1(fFile1.c_str());
+   h2[2] = (TH2F*)file1.Get(fPlot0.c_str()); 
+   h2[3] = (TH2F*)file1.Get(fPlot1.c_str()); 
+   
+   h2[2]->Add(h2[3],1.0);
+   
+   h[0] = new TH1F("h0","h0",h2[0]->GetXaxis()->GetNbins(),h2[0]->GetXaxis()->GetXmin(),h2[0]->GetXaxis()->GetXmax());
+   h[1] = new TH1F("h1","h1",h2[2]->GetXaxis()->GetNbins(),h2[2]->GetXaxis()->GetXmin(),h2[2]->GetXaxis()->GetXmax());
+   
+   for(Int_t i=1; i<=h2[0]->GetNbinsX(); i++) {
+
+     TH1D* h_temp = h2[0]->ProjectionY("h_temp", i, i, "e");
+     
+     const double fitmin=h_temp->GetMean()-h_temp->GetRMS();
+     const double fitmax=h_temp->GetMean()+h_temp->GetRMS();
+  
+     TF1* f1= new TF1("f1", "gaus", fitmin, fitmax);
+     f1->SetParameters(h_temp->GetBinContent(h_temp->GetMaximumBin()),h_temp->GetMean(),h_temp->GetRMS());
+     h_temp->Fit("f1","R", "",h_temp->GetXaxis()->GetXmin(),h_temp->GetXaxis()->GetXmax());
+  
+     h[0]->SetBinContent(i, f1->GetParameter(2));
+     h[0]->SetBinError(i, f1->GetParError(2));
+      
+     delete f1;
+     delete h_temp;
+   }
+   
+   for(Int_t i=1; i<=h2[2]->GetNbinsX(); i++) {
+
+     TH1D* h_temp = h2[2]->ProjectionY("h_temp", i, i, "e");
+     
+     const double fitmin=h_temp->GetMean()-h_temp->GetRMS();
+     const double fitmax=h_temp->GetMean()+h_temp->GetRMS();
+  
+     TF1* f1= new TF1("f1", "gaus", fitmin, fitmax);
+     f1->SetParameters(h_temp->GetBinContent(h_temp->GetMaximumBin()),h_temp->GetMean(),h_temp->GetRMS());
+     h_temp->Fit("f1","R", "",h_temp->GetXaxis()->GetXmin(),h_temp->GetXaxis()->GetXmax());
+  
+     h[1]->SetBinContent(i, f1->GetParameter(2));
+     h[1]->SetBinError(i, f1->GetParError(2));
+      
+     delete f1;
+     delete h_temp;
+   }
+   
+   TCanvas *c = new TCanvas("c","",1200,800);
+   c->cd();
+   
+   TH1F *h_sigma2 = new TH1F("h_sigma2","h_sigma2",h[1]->GetXaxis()->GetNbins(),h[1]->GetXaxis()->GetXmin(),h[1]->GetXaxis()->GetXmax());
+
+   for(Int_t i=1; i<=h[1]->GetXaxis()->GetNbins(); i++) {
+     h_sigma2->SetBinContent(i, h[1]->GetBinContent(i)*h[1]->GetBinContent(i) );
+     h_sigma2->SetBinError(i, 2*h[1]->GetBinContent(i)*h[1]->GetBinError(i) );
+   }
+
+   h_sigma2->GetXaxis()->SetRangeUser(fXmin,fXmax);
+   h_sigma2->SetLineColor(kRed);
+   h_sigma2->SetMarkerStyle(26);
+   h_sigma2->SetMarkerColor(kRed);
+   h_sigma2->Draw();
+
+   TF1 *fit = new TF1("fit","pow([0],2)+pow([1],2)*(x-[3])+pow([2]*(x-[3]),2)",fXmin,fXmax);
+   fit->SetParameter(0, 0.5);
+   fit->SetParLimits(0, 0.1, 2);
+   fit->SetParameter(1, 0.5);
+   fit->SetParLimits(1, 0, 1.5);
+   fit->SetParameter(2, 0.02);
+   fit->SetParLimits(2, 0, 0.2);
+   fit->SetParameter(3, 3);
+   fit->SetParLimits(3, 2, 5);
+//    fit->FixParameter(3, 0);
+
+   h_sigma2->Fit("fit","R");
+   
+   c->SaveAs(("fit_"+fName).c_str());
+
+   TF1 *final = new TF1("final","sqrt(fit)",fXmin,fXmax);
+   
+   h[0]->SetTitle(fTitle.c_str());
+   h[0]->GetXaxis()->SetTitle(fXAxisLabel.c_str());
+   h[0]->GetYaxis()->SetTitle(fYAxisLabel.c_str());
+   h[0]->GetXaxis()->SetRangeUser(fXmin,fXmax);
+   h[0]->GetYaxis()->SetRangeUser(fYmin,fYmax);
+
+   h[0]->SetTitleOffset(1.2,"X");
+   h[0]->GetXaxis()->SetTitleSize(0.04);
+   h[0]->GetYaxis()->SetTitleSize(0.04);
+  
+   h[0]->SetLineWidth(2);
+   h[0]->SetLineStyle(2);
+   h[0]->SetLineColor(kRed);
+   h[0]->SetFillColor(kRed);
+//    h[0]->SetMarkerSize(.6);
+   h[0]->SetMarkerStyle(26);
+   h[0]->SetMarkerColor(kRed);
+   h[0]->Draw("");
+   h[1]->SetLineWidth(2);
+//    h[1]->SetLineStyle(3);
+   h[1]->SetLineColor(kBlack);
+//    h[1]->SetMarkerSize(.8);
+   h[1]->SetMarkerStyle(20);
+   h[1]->SetMarkerColor(kBlack);
+   h[1]->Draw("same");
+   final->Draw("same");
+   
+   TLegend *legend = new TLegend(.13,.65,.3,.75);
+   legend->SetBorderSize(1);
+   legend->SetFillColor(0);
+   //    legend->SetFillStyle(0);
+   legend->AddEntry(h[1],"Data","lp");
+   legend->AddEntry(h[0],"MC","lp");
+   legend->Draw();
+   
+   if(logY==1)
+     c->SetLogy();
+   
+   TLatex l;
+   l.SetTextAlign(12);
+   l.SetTextSize(0.04);
+   l.SetTextFont(62);
+   l.SetNDC();
+   l.DrawLatex(0.13,0.83,"CMS 2009 Preliminary");
+   
+   l.DrawLatex(0.55,0.4,"f(x)=#sqrt{A^{2}+B^{2}(x-D)+C^{2}(x-D)^{2}}");
+   string sA = "A="; sA=sA+Form("%.3f",fit->GetParameter(0))+"#pm"+Form("%.3f",fit->GetParError(0))+" GeV";
+   string sB = "B="; sB=sB+Form("%.3f",fit->GetParameter(1))+"#pm"+Form("%.3f",fit->GetParError(1))+" (GeV)^{1/2}";
+   string sC = "C="; sC=sC+Form("%.3f",fit->GetParameter(2))+"#pm"+Form("%.3f",fit->GetParError(2));
+   string sD = "D="; sD=sD+Form("%.3f",fit->GetParameter(3))+"#pm"+Form("%.3f",fit->GetParError(3))+ " GeV";
+   l.DrawLatex(0.55,0.3,sA.c_str());
+   l.DrawLatex(0.55,0.25,sB.c_str());
+   l.DrawLatex(0.55,0.2,sC.c_str());
+   l.DrawLatex(0.55,0.15,sD.c_str());
+   
+   c->SaveAs(("final_"+fName).c_str());
+   
+   delete h_sigma2;
+   delete fit;
+   delete final;
+   delete legend;
+   delete h[0];
+   delete h[1];
+   delete c;
+}
+
+
 
 void makePlots() {
    // turn on/off batch mode
@@ -364,25 +522,27 @@ void makePlots() {
    //********************************************
    // make plots
    //********************************************
-   overlay_plots(MC_900, data_900, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "900 GeV", "h_metxsigma_sumet_900.eps",0);
-   overlay_plots(MC_900, data_900, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "900 GeV", "h_metysigma_sumet_900.eps",0);
-   overlay_plots2(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}, #slash{E}_{y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",0);
-   
-   perform_fit(MC_900, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "MC 900 GeV", "metxsigma_sumet_MC_900.eps");
-   perform_fit(MC_900, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "MC 900 GeV", "metysigma_sumet_MC_900.eps");
-//    
-   perform_fit(data_900, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "DATA 900 GeV", "metxsigma_sumet_DATA_900.eps");
-   perform_fit(data_900, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "DATA 900 GeV", "metysigma_sumet_DATA_900.eps");
-// 
-   overlay_plots(MC_2360, data_2360, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "2360 GeV", "h_metxsigma_sumet_2360.eps",0);
-   overlay_plots(MC_2360, data_2360, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "2360 GeV", "h_metysigma_sumet_2360.eps",0);
-   overlay_plots2(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}, #slash{E}_{y}) [GeV]", "2360 GeV", "h_metxysigma_sumet_2360.eps",0);
-   //    
-   perform_fit(MC_2360, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "MC 2360 GeV", "metxsigma_sumet_MC_2360.eps");
-   perform_fit(MC_2360, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "MC 2360 GeV", "metysigma_sumet_MC_2360.eps");
-//    
-   perform_fit(data_2360, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "DATA 2360 GeV", "metxsigma_sumet_DATA_2360.eps");
-   perform_fit(data_2360, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "DATA 2360 GeV", "metysigma_sumet_DATA_2360.eps");
+//    overlay_plots(MC_900, data_900, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "900 GeV", "h_metxsigma_sumet_900.eps",0);
+//    overlay_plots(MC_900, data_900, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "900 GeV", "h_metysigma_sumet_900.eps",0);
+//    overlay_plots2(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}, #slash{E}_{y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",0);
+   overlay_and_fit(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}, #slash{E}_{y}) [GeV]", "900 GeV", "metxysigma_sumet_900.eps",0);
+      
+//    perform_fit(MC_900, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "MC 900 GeV", "metxsigma_sumet_MC_900.eps");
+//    perform_fit(MC_900, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "MC 900 GeV", "metysigma_sumet_MC_900.eps");
+// //    
+//    perform_fit(data_900, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "DATA 900 GeV", "metxsigma_sumet_DATA_900.eps");
+//    perform_fit(data_900, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "DATA 900 GeV", "metysigma_sumet_DATA_900.eps");
+// // 
+//    overlay_plots(MC_2360, data_2360, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "2360 GeV", "h_metxsigma_sumet_2360.eps",0);
+//    overlay_plots(MC_2360, data_2360, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "2360 GeV", "h_metysigma_sumet_2360.eps",0);
+//    overlay_plots2(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}, #slash{E}_{y}) [GeV]", "2360 GeV", "h_metxysigma_sumet_2360.eps",0);
+   overlay_and_fit(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}, #slash{E}_{y}) [GeV]", "2360 GeV", "metxysigma_sumet_2360.eps",0);
+//    //    
+//    perform_fit(MC_2360, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "MC 2360 GeV", "metxsigma_sumet_MC_2360.eps");
+//    perform_fit(MC_2360, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "MC 2360 GeV", "metysigma_sumet_MC_2360.eps");
+// //    
+//    perform_fit(data_2360, "h2_metx_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "DATA 2360 GeV", "metxsigma_sumet_DATA_2360.eps");
+//    perform_fit(data_2360, "h2_mety_sumet", 0, 36, 0, 6, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{y}) [GeV]", "DATA 2360 GeV", "metysigma_sumet_DATA_2360.eps");
 
 //    overlay_plots(QCD_FlatPt_15to3000, QCD_FlatPt_15to3000, "h_metxsigma_sumet", 0, 1000, 0, 40, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "QCD FlatPt 15to3000", "h_metxsigma_sumet_QCD_FlatPt_15to3000.eps",0);
 //    perform_fit(QCD_FlatPt_15to3000, "h_metxsigma_sumet", 0, 1000, 0, 40, "#scale[1.0]{#sum}E_{T} [GeV]", "#sigma(#slash{E}_{x}) [GeV]", "MC QCD FlatPt 15to3000", "metxsigma_sumet_QCD_FlatPt_15to3000.eps");
