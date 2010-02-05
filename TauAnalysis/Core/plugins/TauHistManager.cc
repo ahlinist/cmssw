@@ -184,6 +184,8 @@ void TauHistManager::bookHistogramsImp()
   hTauPtVsEta_ = book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
   hTauCharge_ = book1D("TauCharge", "Tau Charge (#Sigma Tracks in Signal Cone)", 11, -5.5, +5.5);
   hTauJetRadius_ = book1D("TauJetRadius", "Tau jet-Radius", 51, -0.005, +0.505);
+  hTauJetRadiusPtProfile_ = bookProfile1D("TauJetRadiusPtProfile", "Tau jet-Radius vs. P_{T}", 30, 0., 150.);
+  hTauJetRadiusEnProfile_ = bookProfile1D("TauJetRadiusEnProfile", "Tau jet-Radius vs. Energy", 50, 0., 250.);
   
   bookWeightHistograms(*dqmStore_, "TauJetWeight", "Tau Weight", 
 		       hTauJetWeightPosLog_, hTauJetWeightNegLog_, hTauJetWeightZero_, 
@@ -372,7 +374,17 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     fillTauHistograms(*patTau, hTauPt_, hTauEta_, hTauPhi_, weight);
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt(), weight);
     hTauCharge_->Fill(patTau->charge(), weight);
-    hTauJetRadius_->Fill(TMath::Sqrt(patTau->etaetaMoment() + patTau->phiphiMoment()), weight);
+    double jetRadius = TMath::Sqrt(patTau->etaetaMoment() + patTau->phiphiMoment());
+    hTauJetRadius_->Fill(jetRadius, weight);
+/*
+  
+  CV: temporary work-around until MonitorElement::Fill(double, double, double) is fixed for TProfiles
+
+    hTauJetRadiusPtProfile_->Fill(patTau->pt(), jetRadius, weight);
+    hTauJetRadiusEnProfile_->Fill(patTau->energy(), jetRadius, weight);
+ */
+    hTauJetRadiusPtProfile_->getTProfile()->Fill(patTau->pt(), jetRadius, weight);
+    hTauJetRadiusEnProfile_->getTProfile()->Fill(patTau->energy(), jetRadius, weight);
 
     fillWeightHistograms(hTauJetWeightPosLog_, hTauJetWeightNegLog_, hTauJetWeightZero_, 
 			 hTauJetWeightLinear_, tauJetWeight);
