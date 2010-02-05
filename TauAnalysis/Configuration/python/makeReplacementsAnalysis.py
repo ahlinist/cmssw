@@ -37,111 +37,111 @@
 
 def makeReplacementsAnalysis(channel = None, sample = None, replacements = None):
 
-	# check that channel, sample and replacements parameters are defined and non-empty
-	if channel is None:
-		raise ValueError("Undefined channel Parameter !!")
-	if sample is None:
-		raise ValueError("Undefined sample Parameter !!")
-	if replacements is None:
-		raise ValueError("Undefined replacements Parameter !!")
+    # check that channel, sample and replacements parameters are defined and non-empty
+    if channel is None:
+        raise ValueError("Undefined channel Parameter !!")
+    if sample is None:
+        raise ValueError("Undefined sample Parameter !!")
+    if replacements is None:
+        raise ValueError("Undefined replacements Parameter !!")
 
-	# remove all white-space characters from replacements parameter string
-	replacements = replacements.replace(" ", "")
+    # remove all white-space characters from replacements parameter string
+    replacements = replacements.replace(" ", "")
 
-	# split replacements string into list of individual replace statements
-	# (separated by ";" character)
-	replaceStatements = replacements.split(";")
+    # split replacements string into list of individual replace statements
+    # (separated by ";" character)
+    replaceStatements = replacements.split(";")
 
-	replaceStatements_retVal = []
+    replaceStatements_retVal = []
 
-	factorization = None
-	systematics = None
+    factorization = None
+    systematics = None
 
-	for replaceStatement in replaceStatements:
+    for replaceStatement in replaceStatements:
 
-		# split replacement string into name, value pairs
+        # split replacement string into name, value pairs
 	paramNameValuePair = replaceStatement.split("=")
 
 	# check that replacement string matches 'paramName=paramValue' format
 	if len(paramNameValuePair) != 2:
-		raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
-
-	# extract name and value to be used for replacement
+	    raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
+    
+        # extract name and value to be used for replacement
 	paramName = paramNameValuePair[0]
 	paramValue = paramNameValuePair[1]
 
 	if paramName == "inputFilePath":
-		inputFilePath = paramValue
+	    inputFilePath = paramValue
 	if paramName == "inputFileType":
-		inputFileType = paramValue
+	    inputFileType = paramValue
 	if paramName == "maxEvents":
-		replaceStatements_retVal.append(replaceStatement)
+	    replaceStatements_retVal.append(replaceStatement)
 	if paramName == "applyFactorization":
-		if paramValue.lower() == "false":
-			factorization = ""
-		elif paramValue.lower() == "true":
-			factorization = "enableFactorization_run" + channel + "(process)"
-		else:
-			raise ValueError("Invalid factorization option = " + paramValue + " !!")
-		if paramName == "estimateSysUncertainties":
-			if paramValue.lower() == "false":
-				systematics = "disableSysUncertainties_run" + channel + "(process)"
-			elif paramValue.lower() == "true":
-				systematics = "enableSysUncertainties_run" + channel + "(process)"
-			else:
-				raise ValueError("Invalid systematics option = " + paramValue + " !!")
+	    if paramValue.lower() == "false":
+	        factorization = ""
+            elif paramValue.lower() == "true":
+	        factorization = "enableFactorization_run" + channel + "(process)"
+            else:
+	        raise ValueError("Invalid factorization option = " + paramValue + " !!")
+        if paramName == "estimateSysUncertainties":
+	    if paramValue.lower() == "false":
+	        systematics = "disableSysUncertainties_run" + channel + "(process)"
+            elif paramValue.lower() == "true":
+                systematics = "enableSysUncertainties_run" + channel + "(process)"
+            else:
+	        raise ValueError("Invalid systematics option = " + paramValue + " !!")
 
-	# check that factorization option has been defined
-	if factorization is None:
-		raise ValueError("Undefined factorization option !!")
-	replaceStatements_retVal.append("factorization = " + factorization)
+    # check that factorization option has been defined
+    if factorization is None:
+        raise ValueError("Undefined factorization option !!")
+    replaceStatements_retVal.append("factorization = " + factorization)
 
-	# check that systematics option has been defined
-	if systematics is None:
-		raise ValueError("Undefined systematics option !!")
-	replaceStatements_retVal.append("systematics = " + systematics)
+    # check that systematics option has been defined
+    if systematics is None:
+        raise ValueError("Undefined systematics option !!")
+    replaceStatements_retVal.append("systematics = " + systematics)
 
-	# check that the input file type option has been defined
-	inputFileNames = None
-	patTupleProduction_line01 = None
-	if inputFileType is None:
-		raise ValueError("Undefined inputFileType option !!")
-	if inputFileType == "RECO/AOD":
-		inputFileNames = "fileNames" + channel + "_" + sample
-		patTupleProduction_line01 = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
-	elif inputFileType == "PATTuple":
-		# check that the input filename path option has been defined
-		if inputFilePath is None:
-			raise ValueError("Undefined inputFilePath option !!")
-		# check that the input filename path ends with "/"
-		if not inputFilePath.endswith("/"):
-			inputFilePath += "/"
+    # check that the input file type option has been defined
+    inputFileNames = None
+    patTupleProduction_line01 = None
+    if inputFileType is None:
+        raise ValueError("Undefined inputFileType option !!")
+    if inputFileType == "RECO/AOD":
+        inputFileNames = "fileNames" + channel + "_" + sample
+        patTupleProduction_line01 = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
+    elif inputFileType == "PATTuple":
+        # check that the input filename path option has been defined
+        if inputFilePath is None:
+            raise ValueError("Undefined inputFilePath option !!")
+        # check that the input filename path ends with "/"
+        if not inputFilePath.endswith("/"):
+            inputFilePath += "/"
+        
+        inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample + ")"
+        if sample.find("_part") != -1:
+	    inputFileNames = "cms.untracked.vstring(" + inputFileNames[:inputFileNames.rfind("_part")]
+	    inputFileNames += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "')))"
+        patTupleProduction_line01 = ""
+    else:
+        raise ValueError("Invalid inputFileType parameter = " + inputFileType + " !!")
+    replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
+    replaceStatements_retVal.append("patTupleProduction_line01 = " + patTupleProduction_line01)
+    replaceStatements_retVal.append("patTupleProduction_line02 = setattr(process, 'batchMode', cms.PSet())")
 
-		inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample + ")"
-		if sample.find("_part") != -1:
-			inputFileNames = "cms.untracked.vstring(" + inputFileNames[:inputFileNames.rfind("_part")]
-			inputFileNames += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "')))"
-		patTupleProduction_line01 = ""
-	else:
-		raise ValueError("Invalid inputFileType parameter = " + inputFileType + " !!")
-	replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
-	replaceStatements_retVal.append("patTupleProduction_line01 = " + patTupleProduction_line01)
-	replaceStatements_retVal.append("patTupleProduction_line02 = setattr(process, 'batchMode', cms.PSet())")
+    # replace genPhaseSpaceCut and plotsOutputFileName parameters
+    # (ommit "_part.." suffix of sample name in case of processes split
+    #  into multiple cmsRun job parts, in order to avoid having to specify
+    #   genPhaseSpaceCut, plotsOutputFileName and patTupleOutputFileName
+    #  again and again for each part)
+    genPhaseSpaceCut = "genPhaseSpaceCut" + channel + "_" + sample
+    plotsOutputFileName = "plotsOutputFileName" + channel + "_" + sample
+    if sample.find("_part") != -1:
+        genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
+        plotsOutputFileName = "cms.string(" + plotsOutputFileName[:plotsOutputFileName.rfind("_part")]
+        plotsOutputFileName += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+    replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
+    replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
 
-	# replace genPhaseSpaceCut and plotsOutputFileName parameters
-	# (ommit "_part.." suffix of sample name in case of processes split
-	#  into multiple cmsRun job parts, in order to avoid having to specify
-	#   genPhaseSpaceCut, plotsOutputFileName and patTupleOutputFileName
-	#  again and again for each part)
-	genPhaseSpaceCut = "genPhaseSpaceCut" + channel + "_" + sample
-	plotsOutputFileName = "plotsOutputFileName" + channel + "_" + sample
-	if sample.find("_part") != -1:
-		genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
-		plotsOutputFileName = "cms.string(" + plotsOutputFileName[:plotsOutputFileName.rfind("_part")]
-		plotsOutputFileName += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
-	replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
-	replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
+    replacements_retVal = "; ".join(replaceStatements_retVal)
 
-	replacements_retVal = "; ".join(replaceStatements_retVal)
-
-	return replacements_retVal
+    return replacements_retVal
