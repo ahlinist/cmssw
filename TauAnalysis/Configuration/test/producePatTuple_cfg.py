@@ -11,7 +11,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'IDEAL_V12::All'
+process.GlobalTag.globaltag = 'MC_31X_V2::All'
 
 #--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
@@ -36,20 +36,19 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 #--------------------------------------------------------------------------------
 
 process.savePatTuple = cms.OutputModule("PoolOutputModule",
-    patTupleEventContent,
-    fileName = cms.untracked.string('patTuple.root')
+	patTupleEventContent,
+	fileName = cms.untracked.string('patTuple.root')
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+	input = cms.untracked.int32(10)    
 )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-	#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/PhotonJets_Pt15to20/skimElecTau_PhotonJets_Pt15to20_1.root'
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
-    )
-    #skipBadFiles = cms.untracked.bool(True)    
+	fileNames = cms.untracked.vstring(
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_17.root'
+	)
+	#skipBadFiles = cms.untracked.bool(True)    
 )
 
 #--------------------------------------------------------------------------------
@@ -89,12 +88,16 @@ addPFMet(process, False)
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
+
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import *
+# uncomment to disable produceSysErrGenEventReweights sequence from PAT post-production
+disableSysUncertainties_patTupleProduction(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
-    process.producePatTuple
-#  + process.printEventContent      
-   + process.savePatTuple
+		process.producePatTuple
+		#  + process.printEventContent      
+		+ process.savePatTuple
 )
 
 #process.options = cms.untracked.PSet(
