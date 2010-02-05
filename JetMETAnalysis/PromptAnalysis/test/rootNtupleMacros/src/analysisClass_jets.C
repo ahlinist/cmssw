@@ -44,15 +44,15 @@ void analysisClass::Loop()
   double phiMin=-3.2;
   
   int  etaBin=100;
-  double etaMax=3;   //-
-  double etaMin=-3;
+  double etaMax=3.4;   //-
+  double etaMin=-3.4;
 
   // ----------------------------------------------------------------
   // decide wether you want to apply jet corrections or not
   bool makeJetCorr = true;
   // cut values
   double barreleta =1.4;
-  double endcapeta =2.6;
+  double endcapeta =3.0;
   double fhpdmax = 0.98;
   double n90hitsmin =1;
   double emffrac = 0.01;
@@ -412,7 +412,7 @@ void analysisClass::Loop()
       int pass_MonsterTRKEventVeto = 0;
       int num_good_tracks = 0;
       float fraction      = 0.;  
-      float thresh        = 0.2;
+      float thresh        = 0.25;
 
       if(tracksPt->size()<=10){
 	  pass_MonsterTRKEventVeto = 1;
