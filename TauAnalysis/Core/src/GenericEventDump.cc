@@ -551,7 +551,7 @@ void printTauEfficiency(std::ostream& outputStream, const pat::Tau& patTau,
 {
   outputStream << "  " << frTypeLabel << " = " 
 	       << patTau.efficiency(patName).value() 
-	       << " (" << patTau.efficiency(std::string("bgEstFakeRateJetWeight_").append(tauAnalysisName).data()).value() << ")" 
+             //<< " (" << patTau.efficiency(std::string("bgEstFakeRateJetWeight_").append(tauAnalysisName).data()).value() << ")" 
 	       << std::endl;
 }
 
