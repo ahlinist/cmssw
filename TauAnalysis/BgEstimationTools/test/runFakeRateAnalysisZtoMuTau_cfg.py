@@ -65,7 +65,7 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsZtoMuTau.root')
+    outputFileName = cms.string('plotsZtoMuTau_bgEstFakeRate.root')
 )
 
 process.maxEvents = cms.untracked.PSet(            
