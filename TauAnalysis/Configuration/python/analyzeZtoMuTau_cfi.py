@@ -380,6 +380,7 @@ muTauEventDump = cms.PSet(
     electronSource = cms.InputTag('cleanLayer1Electrons'),
     muonSource = cms.InputTag('cleanLayer1Muons'),
     tauSource = cms.InputTag('selectedLayer1TausPt20Cumulative'),
+    printTauIdEfficiencies = cms.bool(True),
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypotheses'),
