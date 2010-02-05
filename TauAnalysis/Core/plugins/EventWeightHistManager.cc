@@ -23,11 +23,9 @@ void EventWeightHistManager::bookHistogramsImp()
   //std::cout << "<EventWeightHistManager::bookHistogramsImp>:" << std::endl;
   
   bookWeightHistograms(*dqmStore_, "EvtWeight", "Event Weight", 
-		       hEvtWeightPosLog_, hEvtWeightNegLog_, hEvtWeightLinear_,
-		       hEvtWeightZero_);
+		       hEvtWeightPosLog_, hEvtWeightNegLog_, hEvtWeightZero_,
+		       hEvtWeightLinear_);
 }
-
-
 
 void EventWeightHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
