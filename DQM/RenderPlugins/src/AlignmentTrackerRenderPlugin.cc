@@ -107,7 +107,9 @@ private:
     
     obj->GetYaxis()->SetTitleSize(0.06);
     obj->GetYaxis()->SetLabelSize(0.06);
-    obj->GetYaxis()->SetTitle("# hits");
+    if((o.name.find( "h_Dmr" ) != std::string::npos)){
+      obj->GetYaxis()->SetTitle("# hits");
+    }
     
     obj->SetStats(kTRUE);
   }
