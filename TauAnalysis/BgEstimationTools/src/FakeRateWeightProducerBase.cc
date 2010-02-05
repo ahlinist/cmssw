@@ -22,7 +22,7 @@
 
 typedef edm::ValueMap<pat::LookupTableRecord> LookupTableMap;
 
-int FakeRateWeightProducerBase::gVerbosity_ = 1;
+int FakeRateWeightProducerBase::gVerbosity_ = 0;
 
 FakeRateWeightProducerBase::tauJetDiscrEntry::tauJetDiscrEntry(const edm::ParameterSet& cfg)
   : caloTauSelector_(0),
