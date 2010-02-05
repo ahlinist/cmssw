@@ -75,7 +75,9 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauPhi_;
   MonitorElement* hTauCharge_;
   MonitorElement* hTauJetRadius_;
-
+  MonitorElement* hTauJetRadiusPtProfile_;
+  MonitorElement* hTauJetRadiusEnProfile_;
+  
   MonitorElement* hTauJetWeightPosLog_;
   MonitorElement* hTauJetWeightNegLog_;
   MonitorElement* hTauJetWeightZero_;
