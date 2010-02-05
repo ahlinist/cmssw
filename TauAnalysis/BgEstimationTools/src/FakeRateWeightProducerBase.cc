@@ -171,13 +171,13 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
     edm::Handle<LookupTableMap> tauJetIdEffMap;
     evt.getByLabel(tauJetDiscr->tauJetIdEffSource_, tauJetIdEffMap);
     //std::cout << " tau id. efficiency (" << tauJetDiscr->tauJetIdEffSource_ << ") = " 
-    //	  << (*tauJetIdEffMap)[tauJetRef].value() << std::endl;
+    //	        << (*tauJetIdEffMap)[tauJetRef].value() << std::endl;
     tauJetIdEff *= (*tauJetIdEffMap)[tauJetRef].value();
 
     edm::Handle<LookupTableMap> qcdJetFakeRateMap;
     evt.getByLabel(tauJetDiscr->qcdJetFakeRateSource_, qcdJetFakeRateMap);
     //std::cout << " fake-rate (" << tauJetDiscr->qcdJetFakeRateSource_ << ") = " 
-    //	  << (*qcdJetFakeRateMap)[tauJetRef].value() << std::endl;
+    //	        << (*qcdJetFakeRateMap)[tauJetRef].value() << std::endl;
     qcdJetFakeRate *= (*qcdJetFakeRateMap)[tauJetRef].value();
 
     double tauJetDiscr_value = -1.;
