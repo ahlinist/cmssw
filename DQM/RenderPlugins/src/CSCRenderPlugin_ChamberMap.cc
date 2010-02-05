@@ -49,7 +49,7 @@ ChamberMap::~ChamberMap() {
 }
 
 // Transform chamber ID to local canvas coordinates
-const float ChamberMap::Xmin_local_derived_from_ChamberID(const int /* side */, const int station, const int ring, const int chamber) const {
+float ChamberMap::Xmin_local_derived_from_ChamberID(int /* side */, int station, int ring, int chamber) const {
   float x;
 
   if((station == 2 || station == 3 || station == 4) && ring == 1) {
@@ -64,7 +64,7 @@ const float ChamberMap::Xmin_local_derived_from_ChamberID(const int /* side */, 
 }
 
 // Transform chamber ID to local canvas coordinates
-const float ChamberMap::Xmax_local_derived_from_ChamberID(const int /* side */, const int station, const int ring, const int chamber) const
+float ChamberMap::Xmax_local_derived_from_ChamberID(int /* side */, int station, int ring, int chamber) const
 {
   float x;
 
@@ -81,7 +81,7 @@ const float ChamberMap::Xmax_local_derived_from_ChamberID(const int /* side */, 
 }
 
 // Transform chamber ID to local canvas coordinates
-const float ChamberMap::Ymin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int /* chamber */) const
+float ChamberMap::Ymin_local_derived_from_ChamberID(int side, int station, int ring, int /* chamber */) const
 {
   float y = 0;
   float offset = 0.0;
@@ -118,7 +118,7 @@ const float ChamberMap::Ymin_local_derived_from_ChamberID(const int side, const 
 }
 
 // Transform chamber ID to local canvas coordinates
-const float ChamberMap::Ymax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int /* chamber */) const
+float ChamberMap::Ymax_local_derived_from_ChamberID(int side, int station, int ring, int /* chamber */) const
 {
   float y = 0;
   float offset = 0.0;
@@ -153,7 +153,7 @@ const float ChamberMap::Ymax_local_derived_from_ChamberID(const int side, const 
 }
 
 // Ring number
-const int ChamberMap::N_ring(const int station) const
+int ChamberMap::N_ring(int station) const
 {
   int n_ring = 0;
   if(station == 1) n_ring = 3;
@@ -164,7 +164,7 @@ const int ChamberMap::N_ring(const int station) const
 }
 
 // Chamber number
-const int ChamberMap::N_chamber(const int station, const int ring) const
+int ChamberMap::N_chamber(int station, int ring) const
 {
   int n_chambers;
   if(station == 1) n_chambers = 36;
@@ -368,7 +368,7 @@ void ChamberMap::drawStats(TH2*& me) {
 
 }
 
-void ChamberMap::printLegendBox(unsigned int& number, const std::string title, const int color) {
+void ChamberMap::printLegendBox(unsigned int& number, const std::string title, int color) {
 
   if (bLegend[number] == 0) {
     bLegend[number] = new TBox(38, 17 - number * 2, 41, 17 - number * 2 - 1);

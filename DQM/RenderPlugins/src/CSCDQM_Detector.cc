@@ -32,7 +32,7 @@ namespace cscdqm {
    * @param  p_partition_y Number of efficiency partitions on Y axis
    * @return 
    */
-  Detector::Detector(const unsigned int p_partitions_x, const unsigned int p_partitions_y) {
+  Detector::Detector(unsigned int p_partitions_x, unsigned int p_partitions_y) {
   
     partitions_x = p_partitions_x;
     partitions_y = p_partitions_y;
@@ -137,7 +137,7 @@ namespace cscdqm {
    * @param  station Station number
    * @return Area that is being covered by station
    */
-  const float Detector::Area(const unsigned int station) const {
+  float Detector::Area(unsigned int station) const {
     if (station > 0 && station <= N_STATIONS) {
       return station_area[station - 1];
     }
@@ -149,7 +149,7 @@ namespace cscdqm {
    * @param  adr Address
    * @return Area that is being covered by address
    */
-  const float Detector::Area(const Address& adr) const {
+  float Detector::Area(const Address& adr) const {
     float a = 0;
     for(unsigned int i = 0; i < N_ELEMENTS; i++ ) {
       if (boxes[i].adr == adr) {
@@ -164,7 +164,7 @@ namespace cscdqm {
    * @param  station Station number (1, 2, 3, 4)
    * @return number of rings for the given station
    */
-  const unsigned int Detector::NumberOfRings(const unsigned int station) const {
+  unsigned int Detector::NumberOfRings(unsigned int station) const {
     if (station == 1) return 3;
     if (station == 2) return 2;
     if (station == 3) return 2;
@@ -178,7 +178,7 @@ namespace cscdqm {
    * @param  ring Ring number (1...3)
    * @return number of chambers
    */
-  const unsigned int Detector::NumberOfChambers(const unsigned int station, const unsigned int ring) const {
+  unsigned int Detector::NumberOfChambers(unsigned int station, unsigned int ring) const {
     if(station == 1 && ring == 1) return 36;
     if(station == 1 && ring == 2) return 36;
     if(station == 1 && ring == 3) return 36;
@@ -197,7 +197,7 @@ namespace cscdqm {
    * @param  ring Ring number (1...3)
    * @return Number of CFEBs per Chamber
    */
-  const unsigned int Detector::NumberOfChamberCFEBs(const unsigned int station, const unsigned int ring) const {
+  unsigned int Detector::NumberOfChamberCFEBs(unsigned int station, unsigned int ring) const {
     if(station == 1 && ring == 1) return 4;
     if(station == 1 && ring == 2) return 5;
     if(station == 1 && ring == 3) return 4;
@@ -216,7 +216,7 @@ namespace cscdqm {
    * @param  ring Ring number (1...3)
    * @return Number of HVs per Chamber
    */
-  const unsigned int Detector::NumberOfChamberHVs(const unsigned int station, const unsigned int ring) const {
+  unsigned int Detector::NumberOfChamberHVs(unsigned int station, unsigned int ring) const {
     if(station == 1 && ring == 1) return 2;
     if(station == 1 && ring == 2) return 3;
     if(station == 1 && ring == 3) return 3;
@@ -267,7 +267,7 @@ namespace cscdqm {
    * @param  mask for addresses
    * @return true if address was found and filled in, false - otherwise 
    */
-  const bool Detector::NextAddress(unsigned int& i, const Address*& adr, const Address& mask) const {
+  bool Detector::NextAddress(unsigned int& i, const Address*& adr, const Address& mask) const {
     for(; i < N_ELEMENTS; i++ ) {
       if (boxes[i].adr == mask) {
           adr = &boxes[i].adr;
@@ -285,7 +285,7 @@ namespace cscdqm {
    * @param  mask for addresses
    * @return true if address box was found and filled in, false - otherwise 
    */
-  const bool Detector::NextAddressBox(unsigned int& i, const AddressBox*& box, const Address& mask) const {
+  bool Detector::NextAddressBox(unsigned int& i, const AddressBox*& box, const Address& mask) const {
   
     for(; i < N_ELEMENTS; i++ ) {
       if (boxes[i].adr == mask) {
@@ -305,7 +305,7 @@ namespace cscdqm {
    * @param  box AddressBox to return
    * @return true if address box was found and filled in, false - otherwise 
    */
-  const bool Detector::NextAddressBoxByPartition (unsigned int& i, const unsigned int px, const unsigned int py, AddressBox*& box) {
+  bool Detector::NextAddressBoxByPartition (unsigned int& i, unsigned int px, unsigned int py, AddressBox*& box) {
   
     unsigned int index = PARTITION_INDEX(px, py);
   
@@ -321,7 +321,7 @@ namespace cscdqm {
   
   }
   
-  const float Detector::Eta(const float r, const float z) const {
+  float Detector::Eta(float r, float z) const {
     if(r > 0.0 || z > 0.0) {
       float sin_theta = r / sqrt(r * r + z * z);
       float cos_theta = z / sqrt(r * r + z * z);
@@ -337,7 +337,7 @@ namespace cscdqm {
    * @param  eta Eta coordinate
    * @return local canvas coordinate
    */
-  const float Detector::EtaToX(const float eta) const {
+  float Detector::EtaToX(float eta) const {
     float x_min   = -2.5;
     float x_max   =  2.5;
     float eta_min = -2.5;
@@ -352,7 +352,7 @@ namespace cscdqm {
    * @param  phi Phi coordinate
    * @return local canvas coordinate
    */
-  const float Detector::PhiToY(const float phi) const {
+  float Detector::PhiToY(float phi) const {
     float y_min   = 0.0;
     float y_max   = 2.0 * 3.14159;
     float phi_min = 0.0;
@@ -368,7 +368,7 @@ namespace cscdqm {
    * @param  ring Ring Id
    * @return Z value
    */
-  const float Detector::Z(const int station, const int ring) const {
+  float Detector::Z(const int station, const int ring) const {
     float z_csc = 0;
     
     if(station == 1 && ring == 1) z_csc = (5834.5 + 6101.5) / 2.0;
@@ -388,7 +388,7 @@ namespace cscdqm {
    * @param  n_hv HV number
    * @return R min value
    */
-  const float Detector::RMinHV(const int station, const int ring, const int n_hv) const {
+  float Detector::RMinHV(const int station, const int ring, const int n_hv) const {
     float r_min_hv = 0;
     
     if(station == 1 && ring == 1) {
@@ -444,7 +444,7 @@ namespace cscdqm {
    * @param  n_hv HV number
    * @return R max value
    */
-  const float Detector::RMaxHV(const int station, const int ring, const int n_hv) const {
+  float Detector::RMaxHV(const int station, const int ring, const int n_hv) const {
     float r_max_hv = 0;
     
     if(station == 1 && ring == 1) {
@@ -501,7 +501,7 @@ namespace cscdqm {
    * @param  cfeb CFEB number
    * @return Min phi CFEB boundary
    */
-  const float Detector::PhiMinCFEB(const int station, const int ring, const int chamber, const int cfeb) const {
+  float Detector::PhiMinCFEB(const int station, const int ring, const int chamber, const int cfeb) const {
     float phi_min_cfeb;
     
     int n_cfeb = NumberOfChamberCFEBs(station, ring);
@@ -520,7 +520,7 @@ namespace cscdqm {
    * @param  cfeb CFEB number
    * @return Max phi CFEB boundary
    */
-  const float Detector::PhiMaxCFEB(const int station, const int ring, const int chamber, const int cfeb) const {
+  float Detector::PhiMaxCFEB(const int station, const int ring, const int chamber, const int cfeb) const {
     float phi_max_cfeb;
     
     int n_cfeb = NumberOfChamberCFEBs(station, ring);
@@ -569,7 +569,7 @@ namespace cscdqm {
    * @param  adr Address to return
    * @return true if address was successfully created, false - otherwise
    */
-  const bool Detector::AddressFromString(const std::string str_address, Address& adr) const {
+  bool Detector::AddressFromString(const std::string str_address, Address& adr) const {
     
     std::vector<std::string> tokens;
     Utility::splitString(str_address, ",", tokens);
