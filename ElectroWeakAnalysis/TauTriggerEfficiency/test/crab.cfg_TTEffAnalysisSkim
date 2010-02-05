@@ -13,14 +13,15 @@ server_name            = Bari
 #datasetpath		= /Zee/Summer08_IDEAL_V11_redigi_v1/GEN-SIM-RAW
 #datasetpath		= /QCDpt30/Summer08_IDEAL_V11_redigi_v1/GEN-SIM-RAW
 #datasetpath		= /WJets-madgraph/Fall08_IDEAL_V9_v1/GEN-SIM-RAW
-datasetpath		= /Wmunu/Summer09-MC_31X_V3-v1/GEN-SIM-RECO
+#datasetpath		= /Wmunu/Summer09-MC_31X_V3-v1/GEN-SIM-RECO
+datasetpath		= /MinimumBias/BeamCommissioning09-SD_AllMinBias-Dec19thSkim_336p3_v1/RAW-RECO
 
 pset                    = TTEffAnalysisSkim_cfg.py
 total_number_of_events  = -1
-events_per_job          = 1000
+events_per_job          = 10000
 output_file             = skim.root
 
-use_parent = 1
+use_parent = 0
 
 [USER]
 return_data             = 0
@@ -29,13 +30,13 @@ copy_data 		= 1
 ####storage_element         = T2_IT_Pisa
 storage_element		= cmsdcache.pi.infn.it
 storage_path=/srm/managerv2?SFN=/pnfs/pi.infn.it/data/cms
-user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/TauTriggerEff_Wmunu_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run2
+user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/MinimumBias_BeamCommissioning09_SD_AllMinBias_Dec19thSkim_336p3_v1_RAW_RECO_Skim_run1
 role= priorityuser
 #user_remote_dir         = TauTriggerEfficiencyMeasurementData
 srm_version             = srmv2
 ####eMail                   = sami.lehti@helsinki.fi
 publish_data            = 1
-publish_data_name       = TauTriggerEff_Wmunu_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run2
+publish_data_name       = TauTriggerEff_MinimumBias_BeamCommissioning09_SD_AllMinBias_Dec19thSkim_336p3_v1_RAW_RECO_Skim_run1
 #dbs_url_for_publication = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet
 dbs_url_for_publication = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet
 
@@ -67,6 +68,6 @@ retry_count             = 0
 lcg_catalog_type        = lfc
 lfc_host                = lfc-cms-test.cern.ch
 lfc_home                = /grid/cms
-CE_white_list = T2_IT_Pisa,T2_FR_CCIN2P3,T2_US_Florida,T2_EE_Estonia
+#CE_white_list = T2_IT_Pisa,T2_FR_CCIN2P3,T2_US_Florida,T2_EE_Estonia
 #CE_white_list = T2_US_Wisconsin
 #CE_black_list = lcg02.ciemat.es
