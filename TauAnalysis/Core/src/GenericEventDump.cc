@@ -580,6 +580,8 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << " leading Track" << std::endl;
       printTrackInfo(edm::RefToBase<reco::Track>(patTau->leadTrack()), patTau->vertex(), true, false, outputStream_);
       *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
+      *outputStream_ << "(#signal PFChargedHadrons = " << patTau->signalPFChargedHadrCands().size() << ")" << std::endl;
+      if ( patTau->signalTracks().size() != patTau->signalPFChargedHadrCands().size() ) *outputStream_ << "--> CHECK !!!" << std::endl;
       *outputStream_ << " tauId" << std::endl;
       *outputStream_ << "  leadingTrackFinding = " << patTau->tauID("leadingTrackFinding") << std::endl;
       *outputStream_ << "  leadingTrackPtCut = " << patTau->tauID("leadingTrackPtCut") << std::endl;
@@ -603,7 +605,8 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
 	if ( (*pfGamma)->pt() > 1.5 ) sumPtIsolationConePFGammas += (*pfGamma)->pt();
       }
       *outputStream_ << "  ecalIsolation (from isolation cone PFGammas) = " << sumPtIsolationConePFGammas << std::endl;
-      *outputStream_ << "  pfCandidateIsolation = " << patTau->particleIso() << std::endl;
+      *outputStream_ << "  pfCandidateIsolation: Pt = " << patTau->particleIso() << ", " 
+		     << " #particles = " << patTau->isolationPFCands().size() << std::endl;
 /*
       edm::Handle<reco::PFCandidateCollection> pfCandidates;
       evt.getByLabel(pfCandidateSource_, pfCandidates);
@@ -615,9 +618,12 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
         }
       }
  */
-      *outputStream_ << "  pfChargedHadronIsolation = " << patTau->chargedHadronIso() << std::endl;
-      *outputStream_ << "  pfNeutralHadronIsolation = " << patTau->neutralHadronIso() << std::endl;
-      *outputStream_ << "  pfGammaIsolation = " << patTau->photonIso() << std::endl;
+      *outputStream_ << "  pfChargedHadronIsolation: Pt = " << patTau->chargedHadronIso() << "," 
+		     << " #particles = " << patTau->isolationPFChargedHadrCands().size() << std::endl;      
+      *outputStream_ << "  pfNeutralHadronIsolation: Pt = " << patTau->neutralHadronIso() << ", " 
+		     << " #particles = " << patTau->isolationPFNeutrHadrCands().size() << std::endl;
+      *outputStream_ << "  pfGammaIsolation: Pt  = " << patTau->photonIso() << "," 
+		     << " #particles = " << patTau->isolationPFGammaCands().size() << std::endl;
       *outputStream_ << " jetRadius = " << TMath::Sqrt(patTau->etaetaMoment() + patTau->phiphiMoment()) << std::endl;
       *outputStream_ << " eVeto = " << patTau->tauID("againstElectron") << std::endl;
       *outputStream_ << " EcalStripSumE/P = " << patTau->ecalStripSumEOverPLead() << std::endl;
