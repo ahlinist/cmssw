@@ -68,7 +68,8 @@ fileNamesZtoMuTau_qcdSum_10TeV = cms.vstring(
 fileNamesZtoMuTau_TTplusJets_10TeV = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_10TeV_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_10TeV_part02.root',
-    bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_10TeV_part03.root'
+    bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_10TeV_part03.root',
+    bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_10TeV_part04.root'
 )
 #--------------------------------------------------------------------------------
 
