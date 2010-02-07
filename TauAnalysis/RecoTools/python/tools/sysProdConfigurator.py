@@ -26,7 +26,10 @@ class sysProdConfigurator(cms._ParameterTypeBase):
             module.gaussianSmearingSigmaPhi = cms.double(phiSmearing)
             module.gaussianSmearingEScale   = cms.double(energyScaleSmearing)
             module.setLabel(modulePrefix)
-
+            if moduleType =='smearedTauProducer': #Additional Tau default Config
+                module.smearConstituents = cms.bool(False),
+                hadronEnergyScale        = cms.double(1.0),
+                gammaEnergyScale         = cms.double(1.0)  
 
 
             #ENERGY SCALE
