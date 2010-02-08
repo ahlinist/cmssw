@@ -25,8 +25,8 @@
 #include <TMath.h>
 
 const std::string genElectronsFromZsCollectionSource = "genElectronsFromZs";
-const std::string recoElectronCollectionSource = "pixelMatchGsfElectrons";
-const std::string recoElectronTrackCollectionSource = "pixelMatchGsfFit";
+const std::string recoElectronCollectionSource = "gsfElectrons";
+const std::string recoElectronTrackCollectionSource = "electronGsfTracks";
 const std::string recoCaloJetCollectionSource = "iterativeCone5CaloJets";
 const std::string recoPFJetCollectionSource = "iterativeCone5PFJets";
 const std::string recoCaloTauCollectionSource = "caloRecoTauProducer";
