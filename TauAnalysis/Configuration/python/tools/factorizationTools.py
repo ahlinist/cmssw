@@ -551,65 +551,37 @@ def enableFactorization_makeZtoElecTauPlots(process):
         dqmDirectoryOut = 'harvested/gammaPlusJets_Pt15to20_factorized/zElecTauAnalyzer/'
     )
 
-    # configure sequence for applying factorization to "PhotonJets_Pt20to25" process
-    process.scaleZtoElecTau_gammaPlusJets_Pt20to25 = composeFactorizationSequence(
+    # configure sequence for applying factorization to "PhotonJets_Pt20to30" process
+    process.scaleZtoElecTau_gammaPlusJets_Pt20to30 = composeFactorizationSequence(
         process = process,
-        processName = "gammaPlusJets_Pt20to25",
-        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/gammaPlusJets_Pt20to25/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+        processName = "gammaPlusJets_Pt20to30",
+        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/gammaPlusJets_Pt20to30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
         evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/gammaPlusJets_Pt20to25/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/gammaPlusJets_Pt20to30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
         evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
         meName_numerator = meNameZtoElecTau_numerator,
         meName_denominator = meNameZtoElecTau_denominator,
-        dqmDirectoryOut = 'harvested/gammaPlusJets_Pt20to25_factorized/zElecTauAnalyzer/'
+        dqmDirectoryOut = 'harvested/gammaPlusJets_Pt20to30_factorized/zElecTauAnalyzer/'
     )
 
-    # configure sequence for applying factorization to "PhotonJets_Pt25to30" process
-    process.scaleZtoElecTau_gammaPlusJets_Pt25to30 = composeFactorizationSequence(
+    # configure sequence for applying factorization to "PhotonJets_Pt30to50" process
+    process.scaleZtoElecTau_gammaPlusJets_Pt30to50 = composeFactorizationSequence(
         process = process,
-        processName = "gammaPlusJets_Pt25to30",
-        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/gammaPlusJets_Pt25to30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+        processName = "gammaPlusJets_Pt30to50",
+        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/gammaPlusJets_Pt30to50/zElecTauAnalyzer_factorizedWithElectronIsolation/',
         evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/gammaPlusJets_Pt25to30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/gammaPlusJets_Pt30to50/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
         evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
         meName_numerator = meNameZtoElecTau_numerator,
         meName_denominator = meNameZtoElecTau_denominator,
-        dqmDirectoryOut = 'harvested/gammaPlusJets_Pt25to30_factorized/zElecTauAnalyzer/'
-    )
-
-    # configure sequence for applying factorization to "PhotonJets_Pt30to35" process
-    process.scaleZtoElecTau_gammaPlusJets_Pt30to35 = composeFactorizationSequence(
-        process = process,
-        processName = "gammaPlusJets_Pt30to35",
-        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/gammaPlusJets_Pt30to35/zElecTauAnalyzer_factorizedWithElectronIsolation/',
-        evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/gammaPlusJets_Pt30to35/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
-        evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
-        meName_numerator = meNameZtoElecTau_numerator,
-        meName_denominator = meNameZtoElecTau_denominator,
-        dqmDirectoryOut = 'harvested/gammaPlusJets_Pt30to35_factorized/zElecTauAnalyzer/'
-    )
-
-    # configure sequence for applying factorization to "PhotonJets_PtGt35" process
-    process.scaleZtoElecTau_gammaPlusJets_PtGt35 = composeFactorizationSequence(
-        process = process,
-        processName = "gammaPlusJets_PtGt35",
-        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/gammaPlusJets_PtGt35/zElecTauAnalyzer_factorizedWithElectronIsolation/',
-        evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/gammaPlusJets_PtGt35/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
-        evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
-        meName_numerator = meNameZtoElecTau_numerator,
-        meName_denominator = meNameZtoElecTau_denominator,
-        dqmDirectoryOut = 'harvested/gammaPlusJets_PtGt35_factorized/zElecTauAnalyzer/'
+        dqmDirectoryOut = 'harvested/gammaPlusJets_Pt30to50_factorized/zElecTauAnalyzer/'
     )
 
     # compute gamma+jets background sum using factorized histograms and FilterStatistics objects
     process.addZtoElecTau_gammaPlusJetsSum.gammaPlusJetsSum.dqmDirectories_input = cms.vstring(
         'harvested/gammaPlusJets_Pt15to20_factorized',
-        'harvested/gammaPlusJets_Pt20to25_factorized',
-        'harvested/gammaPlusJets_Pt25to30_factorized',
-        'harvested/gammaPlusJets_Pt30to35_factorized',
-        'harvested/gammaPlusJets_PtGt35_factorized'
+        'harvested/gammaPlusJets_Pt20to30_factorized',
+        'harvested/gammaPlusJets_Pt30to50_factorized'
     )
 
     # compute QCD background sum using factorized histograms and FilterStatistics objects
@@ -628,11 +600,9 @@ def enableFactorization_makeZtoElecTauPlots(process):
 					 + process.scaleZtoElecTau_QCD_BCtoE_Pt30to80
 					 + process.scaleZtoElecTau_QCD_BCtoE_Pt80to170
 					 + process.scaleZtoElecTau_gammaPlusJets_Pt15to20
-					 + process.scaleZtoElecTau_gammaPlusJets_Pt20to25
-					 + process.scaleZtoElecTau_gammaPlusJets_Pt25to30
-					 + process.scaleZtoElecTau_gammaPlusJets_Pt30to35
-					 + process.scaleZtoElecTau_gammaPlusJets_PtGt35
-                                         + process.addZtoElecTau_qcdSum 
+					 + process.scaleZtoElecTau_gammaPlusJets_Pt20to30
+					 + process.scaleZtoElecTau_gammaPlusJets_Pt30to50
+                     + process.addZtoElecTau_qcdSum 
 					 + process.addZtoElecTau_gammaPlusJetsSum 
 					 + process.addZtoElecTau_smSum
                                           )
