@@ -51,12 +51,13 @@ def processBlock(input, startRegex, headerRegex, meatRegex, endRegex, meatHandle
 
 class Efficiency(object):
     " Base efficiency object for a path/module"
-    def __init__(self, name = "", visited=0, passed=0, failed=0, trig=1, bit=0, error=0, **catchall):
+    def __init__(self, name = "", visited=0, run=0, passed=0, failed=0, trig=1, bit=0, error=0, **catchall):
         self.name         = name
         self.trig         = int(trig)
         self.bit          = int(bit)
         self.error        = int(error)
         self.visited      = int(visited)
+        self.run          = int(run)
         self.passed       = int(passed)
 
     def efficiency(self):
@@ -73,6 +74,7 @@ class Efficiency(object):
         self.bit     += other.bit #???
         self.error   += other.error
         self.visited += other.visited
+        self.run     += other.run
         self.passed  += other.passed
 
 class LogFileTriggerReport(object):
@@ -87,9 +89,13 @@ class LogFileTriggerReport(object):
             'TrigReport ---------- Path   Summary ------------')
         self.endPathListFinder = re.compile(
             'TrigReport -------End-Path   Summary ------------')
+        self.moduleSummaryFinder = re.compile(
+            'TrigReport ---------- Module Summary ------------')
         self.headerFinder      = re.compile(
             'TrigReport  Trig Bit#        Run     Passed     Failed      Error Name')
         self.moduleSummaryHeader = re.compile(
+            r'TrigReport    Visited        Run     Passed     Failed      Error Name')
+        self.pathModuleSummaryHeader = re.compile(
             r'TrigReport  Trig Bit#    Visited     Passed     Failed      Error Name')
         self.eventSummaryFinder  = re.compile(
             r'TrigReport ---------- Event  Summary ------------')
@@ -97,7 +103,8 @@ class LogFileTriggerReport(object):
             r'TrigReport Events total = (?P<total>\d+) passed = (?P<passed>\d+) failed = (?P<failed>\d+)')
         self.pathModulesfinder = lambda path : re.compile(
             r'TrigReport ---------- Modules in Path:\s+%s\s+[-]+' % path)
-        self.moduleSummaryFinder = re.compile('TrigReport [-]+ Module')
+        self.anyModuleSummaryFinder = re.compile('TrigReport [-]+ Module')
+        self.nullRegex = re.compile(r'asdfasdfasdfasdfasdfasdfasdf') # hack to match nothing
         self.statsFinder = re.compile(r'''
                                       TrigReport\s+
                                       (?P<trig>\d+)\s+
@@ -108,6 +115,16 @@ class LogFileTriggerReport(object):
                                       (?P<errror>\d+)\s+
                                       (?P<name>\w+)\s*$
                                       ''', re.VERBOSE)
+        self.moduleSummaryStatsFinder = re.compile(r'''
+                                      TrigReport\s+
+                                      (?P<visited>\d+)\s+
+                                      (?P<run>\d+)\s+
+                                      (?P<passed>\d+)\s+
+                                      (?P<failed>\d+)\s+
+                                      (?P<errror>\d+)\s+
+                                      (?P<name>\w+)\s*$
+                                      ''', re.VERBOSE)
+        
         # store in memory all lines of the file that begin w/ TrigReport
         for line in self.file:
             if self.grepper.match(line):
@@ -132,7 +149,18 @@ class LogFileTriggerReport(object):
                               self.endPathListFinder,
                               self.headerFinder,
                               self.statsFinder,
+                              self.anyModuleSummaryFinder,
+                              handler):
+            yield x
+
+    def modulesFromSummary(self):
+        ''' Yields all modules from the summary '''
+        handler = lambda match : PathReport(**match.groupdict())
+        for x in processBlock(self.trigReport,
                               self.moduleSummaryFinder,
+                              self.moduleSummaryHeader,
+                              self.moduleSummaryStatsFinder,
+                              self.nullRegex,
                               handler):
             yield x
 
@@ -149,9 +177,9 @@ class LogFileTriggerReport(object):
         handler = lambda match : Efficiency(**match.groupdict())
         for x in processBlock(self.trigReport,
                               pathModuleFinder,
-                              self.moduleSummaryHeader,
+                              self.pathModuleSummaryHeader,
                               self.statsFinder,
-                              self.moduleSummaryFinder,
+                              self.anyModuleSummaryFinder,
                               handler):
             yield x
 
@@ -172,26 +200,29 @@ class PathReport(Efficiency):
             output.cumulative = cumulativeEfficiency
             yield output
 
-    def efficiencyReport(self, printAll = True, csv=False):
+    def efficiencyReport(self, printAll = True, csv=False, showCumulativeEfficiencies=True):
         " Print a helpful report on moudles in this path"
         print " * Efficiency for modules in path %s - total efficiency: (%i/%i)"\
                 % (self.name, self.passed, self.visited)
         maxModuleNameLength = \
                 lambda max, module : max > len(module.name) and max or len(module.name)
         maxLength = reduce(maxModuleNameLength, self.modules, 0)
-        formatString = " * * %-"+str(maxLength+2)+"s %15s  %15s, %10s %10s"
+        formatString = " * * %-"+str(maxLength+2)+"s %15s  %15s %10s %10s"
         #check if want comma seperated
         if csv: 
-            formatString = "%s,%s,%s,%s,%s"
+            formatString = "%s,%s,%s,%s,%s,%s"
 
         print formatString % ("Name", "Rel Eff", "Total Eff", "Passed", "Total")
         for module in self.moduleEfficiencies():
             if printAll or module.efficiency() < 1.:
                 percent = lambda eff : "%0.2f%%" % (eff*100.)
+                cumEfficiency = -1
+                if showCumulativeEfficiencies:
+                    cumEfficiency = percent(module.cumulative)
                 print formatString % (
                     module.name, 
                     percent(module.efficiency()), 
-                    percent(module.cumulative), 
+                    cumEfficiency, 
                     module.passed, module.visited) 
 
     def absorb(self, other):
@@ -213,7 +244,26 @@ class TriggerReport(PathReport):
             if not quiet:
                 print "Examining file: %s" % file
             logfile = LogFileTriggerReport(file)
-            # get all the paths for the report
+
+            # Absorb the module summary into this trigger report
+            class DummyTrigReport(object):
+                def __init__(self, name):
+                    self.name = name
+                    self.trig = -1
+                    self.bit = -1
+                    self.visited = -1
+                    self.passed = -1
+                    self.run = -1
+                    self.error = -1
+
+            dummy = DummyTrigReport(self.name)
+            dummy.modules = [module for module in logfile.modulesFromSummary()]
+            if not self.modules:
+                self.modules = dummy.modules
+            else:
+                self.absorb(dummy)
+
+            # Absorb all the sub paths
             paths = [path for path in logfile.paths()]
             #populate the sub modules of each path, and absorb it into 
             # a previous copy if it exists
@@ -240,6 +290,7 @@ the step by step module efficiencies for path "my_path"
 '''
     parser = OptionParser(usage)
     parser.add_option("-p", "--path", help="Print efficiencies for path")
+    parser.add_option("-s", "--summary", help="Print out the module summary", action="store_true")
     parser.add_option("-v", "--verbose", help="Print modules for which efficiency = 100%", action="store_true")
     parser.add_option("-l", "--list", help="List available paths", action="store_true")
     parser.add_option("-d", "--debug", help="Debug output when parsing files", action="store_true")
@@ -270,6 +321,9 @@ the step by step module efficiencies for path "my_path"
 
     if options.verbose is None:
         options.verbose = False
+
+    if options.summary is not None:
+        report.efficiencyReport(printAll = options.verbose, showCumulativeEfficiencies=False)
 
     if options.path is not None:
         try:
