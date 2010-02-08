@@ -5,21 +5,15 @@ from TauAnalysis.Configuration.makeReplacementsAnalysis import makeReplacementsA
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frCDF/10TeV/"
+#outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frCDF/10TeV/"
 #outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frCDF/10TeVii/"
 #outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frSimple/10TeV/"
+outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frSimple/10TeVii/"
 
 inputFileType = "RECO/AOD"
 #inputFileType = "PATTuple"
 
 inputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/patTuples/ZtoMuTau/"
-
-# small cmsRun job for testing purposes...
-#submitToBatch(configFile = "runFakeRateAnalysisZtoMuTau_cfg.py", channel = "ZtoMuTau",
-#              sample = "Ztautau_10TeV_part01",
-#              replFunction = makeReplacementsAnalysis, replacements =
-#              "maxEvents = 100; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
-#              job = "frAnalysis", queue = "1nh", outputFilePath = outputFilePath)
 
 #--------------------------------------------------------------------------------
 #
