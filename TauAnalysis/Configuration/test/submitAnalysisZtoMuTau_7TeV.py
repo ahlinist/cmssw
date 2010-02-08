@@ -13,17 +13,10 @@ inputFileType = "RECO/AOD"
 
 inputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/patTuples/ZtoMuTau/"
 
-# small cmsRun job for testing purposes...
-#submitToBatch(configFile = "runZtoMuTau_cfg.py", channel = "ZtoMuTau",
-#              sample = "Ztautau_7TeV_part01",
-#              replFunction = makeReplacementsAnalysis, replacements =
-#              "maxEvents = 100; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false",
-#              job = "analysis", queue = "1nh", outputFilePath = outputFilePath)
-
 #--------------------------------------------------------------------------------
 #
-# Monte Carlo samples from Summer'08 production
-# reprocessed with CMSSW_2_2_3, skimmed by Letizia and Monica
+# Monte Carlo samples from Summer'09 production
+# reprocessed with CMSSW_3_1_2, skimmed by Letizia and Manuel
 #
 # NOTE: The jobs get submitted to the '1nd' queue,
 #       which allows for an execution time of the cmsRun jobs of up to 24 hours
