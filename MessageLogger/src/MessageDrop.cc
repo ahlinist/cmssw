@@ -28,6 +28,9 @@ using namespace edm;
 
 
 edm::Exception * MessageDrop::ex_p = 0;
+bool MessageDrop::debugEnabled=true;
+bool MessageDrop::infoEnabled=true;
+bool MessageDrop::warningEnabled=true;
 
 MessageDrop *
 MessageDrop::instance()
