@@ -3,12 +3,22 @@ import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.RecoTools.tools.sysProdConfigurator import *
 
+
+RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+            saveFileName = cms.untracked.string('')
+        )
+randomEngineStateProducer = cms.EDProducer("RandomEngineStateProducer")
+
+
+
+
 sysConfigurator =sysProdConfigurator(pyModuleName = __name__,
                                   pyNameSpace  = locals())
 
 tauSystematicsSequence =sysConfigurator.createSequence(
+                                    randomNumberService = RandomNumberGeneratorService,
                                     modulePrefix        = 'smearedTaus',
-                                    moduleType          = 'smearedTauProducer',
+                                    moduleType          = 'SmearedTauProducer',
                                     src                 = 'allLayer1Taus',
                                     energyScaleMean     = 1.0,
                                     energyScaleShift    = 0.1,
