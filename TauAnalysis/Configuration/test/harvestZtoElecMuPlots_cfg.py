@@ -2,8 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('harvestZtoElecMuPlots')
 
-from TauAnalysis.Configuration.plotZtoElecMu_processes_cfi import *
-
 process.DQMStore = cms.Service("DQMStore")
 
 process.maxEvents = cms.untracked.PSet(            
@@ -16,9 +14,11 @@ process.source = cms.Source("EmptySource")
 # define "hooks" for replacing configuration parameters
 # in case running jobs on the CERN batch system
 #
+from #recoSampleDefinitionsFile# import *
+
 process.loadZtoElecMu = cms.EDAnalyzer("DQMFileLoader",
     #process# = copy.deepcopy(#inputFileNames#),
-    inputFilePath = cms.string(#inputFilePath#)
+    inputFilePath = cms.string(#inputFilePath#)                                      
 )
 
 process.saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
@@ -26,8 +26,10 @@ process.saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 #--------------------------------------------------------------------------------
 
-process.harvestZtoElecMuPlots = cms.Sequence( process.loadZtoElecMu
-                                             +process.saveZtoElecMu )
+process.harvestZtoElecMuPlots = cms.Sequence(
+    process.loadZtoElecMu
+   + process.saveZtoElecMu
+)
 
 process.p = cms.Path(process.harvestZtoElecMuPlots)
 
