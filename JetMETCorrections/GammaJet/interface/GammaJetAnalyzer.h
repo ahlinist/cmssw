@@ -102,6 +102,9 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       edm::InputTag HBhitsrc_; 
       string recoCollection_; 
       string recoProducer_; 
+      string JetCorrector_pfakt5_; 
+      string JetCorrector_pfakt7_; 
+
 /*       TH1D*       PtPhoton1st; */
 /*       TH1D*       PtPhoton2st; */
 /*       TH1D*       PtPhoton3st; */
@@ -127,7 +130,11 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t vx;
       Float_t vy;
       Float_t vz;
+      Float_t vntracks;
+      Float_t vchi2;
+      Float_t vndof;
 
+ 
       // Vertex distribution at MC truth level
       Float_t vxMC;
       Float_t vyMC;
@@ -328,6 +335,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
 
       Int_t nJet_pfakt5;
       Float_t ptJet_pfakt5[100];
+      Float_t ptCorrJet_pfakt5[100];
       Float_t eJet_pfakt5[100];
       Float_t etaJet_pfakt5[100];
       Float_t phiJet_pfakt5[100];
@@ -375,6 +383,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
 
       Int_t nJet_pfakt7;
       Float_t ptJet_pfakt7[100];
+      Float_t ptCorrJet_pfakt7[100];
       Float_t eJet_pfakt7[100];
       Float_t etaJet_pfakt7[100];
       Float_t phiJet_pfakt7[100];

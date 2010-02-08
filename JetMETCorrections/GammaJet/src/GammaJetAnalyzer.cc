@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.17 2009/12/07 20:14:09 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.18 2009/12/08 10:42:04 pandolf Exp $
 //
 //
 
@@ -66,6 +66,8 @@
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
+
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h" 
 #include "RecoCaloTools/Selectors/interface/CaloConeSelector.h"
@@ -170,6 +172,8 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   HBhitsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("hbhits");
   recoCollection_    = iConfig.getParameter<std::string>("recoCollection");
   recoProducer_      = iConfig.getParameter<std::string>("recoProducer");
+  JetCorrector_pfakt5_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt5");
+  JetCorrector_pfakt7_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt7");
 //   PtPhoton1st = new TH1D( "PtPhoton1st", "Pt spectrum of the most energetic photon", 50, 0.0, 400.0);
 //   PtPhoton2st = new TH1D( "PtPhoton2st", "Pt spectrum of the 2' most energetic photon", 50, 0.0, 400.0);
 //   PtPhoton3st = new TH1D( "PtPhoton3st", "Pt spectrum of the 3' most energetic photon", 50, 0.0, 400.0);
@@ -262,6 +266,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel("conversions", "", convertedPhotonHandle);
    const reco::ConversionCollection convphoCollection = *(convertedPhotonHandle.product());
 
+   // get PFCandidates
+   Handle<PFCandidateCollection>  PFCandidates;
+   iEvent.getByLabel("particleFlow", PFCandidates);
+
    // get calo jet collection
    Handle<CaloJetCollection> jetsite;
    iEvent.getByLabel(Jetsrcite_, jetsite);
@@ -296,6 +304,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    Handle<PFJetCollection> pfjetssis7;
    iEvent.getByLabel(JetPFsrcsis7_, pfjetssis7);
 
+   //get jet correctors
+   const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
+   const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
+ 
    // get gen jet collection
    Handle<GenJetCollection> jetsgenite;
    if( isMC ) iEvent.getByLabel(JetGensrcite_, jetsgenite);
@@ -434,8 +446,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      // 4-5: incoming partons (|pdgId|<=21, udscg, no b?),
      // 6-7: outgoing partons (|pdgId|<=22, udscg, photons)
      // Every parton 2-7 has the same production vertex (0 for 0-1)
-     assert(genParticles->at(2).status()==3);
-     assert(fabs(genParticles->at(2).pdgId())<100); //<25-><100 to include Z,W
+     //assert(genParticles->at(2).status()==3);
+     //assert(fabs(genParticles->at(2).pdgId())<100); //<25-><100 to include Z,W
      vxMC = genParticles->at(2).vx();
      vyMC = genParticles->at(2).vy();
      vzMC = genParticles->at(2).vz();
@@ -1022,16 +1034,22 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    maxptphoton1 = 0; maxptphoton2 = 0; maxptphoton3 = 0;
 
    // Get the primary vertex coordinates
-   vx = VertexHandle->begin()->x();
-   vy = VertexHandle->begin()->y();
-   vz = VertexHandle->begin()->z();
+   vx = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->x() : 999.;
+   vy = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->y() : 999.;
+   vz = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->z() : 999.;
+
+   vntracks = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->tracksSize() : 0;
+   vchi2 = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->normalizedChi2() : 100.;
+   vndof = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->ndof() : 0.;
+
+
 
    // Loop over reco photons
 
    for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
 	 it != PhotonHandle->end(); ++it) {
      
-     if (it->energy()<5.) continue;
+     if (it->energy()<3.) continue;
      if (nPhot>=40) {cout << "number of photons is larger than 40. Skipping" << endl; continue;}
      
      ptPhot[nPhot] = it->pt();
@@ -1522,6 +1540,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      etaJet_pfakt5[nJet_pfakt5] = it->eta();	 
      phiJet_pfakt5[nJet_pfakt5] = it->phi();	      
      
+     // Jet Energy Scale Corrections on-the-fly     
+     PFJet  correctedJet = *it;
+     double scale = corrector_pfakt5->correction(it->p4());
+     correctedJet.scaleEnergy(scale);
+     ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
+
      // Extra variables for PFlow studies
      Int_t nChargedHadrons = 0;
      Int_t nPhotons = 0;
@@ -1673,6 +1697,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        etaJet_pfakt7[nJet_pfakt7] = it->eta();	 
        phiJet_pfakt7[nJet_pfakt7] = it->phi();	      
      
+       // Jet Energy Scale Corrections on-the-fly     
+       PFJet  correctedJet = *it;
+       double scale = corrector_pfakt7->correction(it->p4());
+       correctedJet.scaleEnergy(scale);
+       ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
+
        // Extra variables for PFlow studies
        Int_t nChargedHadrons = 0;
        Int_t nPhotons = 0;
@@ -2158,6 +2188,7 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 
   m_tree->Branch("nJet_pfakt5",&nJet_pfakt5,"nJet_pfakt5/I");
   m_tree->Branch("ptJet_pfakt5 ",&ptJet_pfakt5 ,"ptJet_pfakt5[nJet_pfakt5]/F");
+  m_tree->Branch("ptCorrJet_pfakt5 ",&ptCorrJet_pfakt5 ,"ptCorrJet_pfakt5[nJet_pfakt5]/F");
   m_tree->Branch("eJet_pfakt5  ",&eJet_pfakt5  ,"eJet_pfakt5[nJet_pfakt5]/F");
   m_tree->Branch("etaJet_pfakt5",&etaJet_pfakt5,"etaJet_pfakt5[nJet_pfakt5]/F");
   m_tree->Branch("phiJet_pfakt5",&phiJet_pfakt5,"phiJet_pfakt5[nJet_pfakt5]/F");
@@ -2205,10 +2236,11 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 
   m_tree->Branch("nJet_pfakt7",&nJet_pfakt7,"nJet_pfakt7/I");
   m_tree->Branch("ptJet_pfakt7 ",&ptJet_pfakt7 ,"ptJet_pfakt7[nJet_pfakt7]/F");
+  m_tree->Branch("ptCorrJet_pfakt7 ",&ptCorrJet_pfakt7 ,"ptCorrJet_pfakt7[nJet_pfakt7]/F");
   m_tree->Branch("eJet_pfakt7  ",&eJet_pfakt7  ,"eJet_pfakt7[nJet_pfakt7]/F");
   m_tree->Branch("etaJet_pfakt7",&etaJet_pfakt7,"etaJet_pfakt7[nJet_pfakt7]/F");
   m_tree->Branch("phiJet_pfakt7",&phiJet_pfakt7,"phiJet_pfakt7[nJet_pfakt7]/F");
-//
+
 //   // Extra variables for PFlow studies
   m_tree->Branch("nChargedHadrons_pfakt7",nChargedHadrons_pfakt7,"nChargedHadrons_pfakt7[nJet_pfakt7]/I");
   m_tree->Branch("nPhotons_pfakt7",       nPhotons_pfakt7,       "nPhotons_pfakt7[nJet_pfakt7]/I");
@@ -2394,6 +2426,18 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("phiMetGen2",&phiMetGen2,"phiMetGen2/F");
 
   //HLT_Photon10_L1R HLT_Photon10_LooseEcalIso_TrackIso_L1R HLT_Photon15_L1R HLT_Photon20_LooseEcalIso_TrackIso_L1R HLT_Photon25_L1R HLT_Photon25_LooseEcalIso_TrackIso_L1R HLT_Photon30_L1R_1E31 HLT_Photon70_L1R
+
+  //vertex info
+  m_tree->Branch("vxMC",&vxMC,"vxMC/F");
+  m_tree->Branch("vyMC",&vyMC,"vyMC/F");
+  m_tree->Branch("vzMC",&vzMC,"vzMC/F");
+
+  m_tree->Branch("vx",&vx,"vx/F");
+  m_tree->Branch("vy",&vy,"vy/F");
+  m_tree->Branch("vz",&vz,"vz/F");
+  m_tree->Branch("vntracks",&vntracks,"vntracks/F");
+  m_tree->Branch("vchi2",&vchi2,"vchi2/F");
+  m_tree->Branch("vndof",&vndof,"vndof/F");
 
   // Set trigger bits of interest
   nHLT = 8;
