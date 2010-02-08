@@ -2194,7 +2194,7 @@ genPhaseSpaceCutZtoMuTau_PPmuXptGt20_10TeV = cms.PSet(
     pluginName = cms.string('genPhaseSpaceCut'),
     pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
     src = cms.InputTag('genPhaseSpaceEventInfo'),
-    cut = cms.string('ptHat > 20.')
+    cut = cms.string('')
 )
 
 plotsOutputFileNameZtoMuTau_PPmuXptGt20_10TeV = cms.string('plotsZtoMuTau_PPmuXptGt20_10TeV_partXX.root')
