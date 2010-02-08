@@ -29,7 +29,8 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_7TeV_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_10TeV_cfi import *
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
