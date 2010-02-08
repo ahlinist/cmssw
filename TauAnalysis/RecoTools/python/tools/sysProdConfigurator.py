@@ -1,6 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import sys
 import copy
+import random
+
+
 
 class sysProdConfigurator(cms._ParameterTypeBase):
     def __init__(self,pyModuleName,pyNameSpace):
@@ -8,10 +11,13 @@ class sysProdConfigurator(cms._ParameterTypeBase):
         self.pyNameSpace = pyNameSpace 
         self.sequence = None
 
-    def createSequence(self,modulePrefix,moduleType,src,energyScaleMean,energyScaleShift,energyScaleSmearing,ptShift,ptSmearing,etaShift,etaSmearing,phiShift,phiSmearing):
+
+    def createSequence(self,randomNumberService,modulePrefix,moduleType,src,energyScaleMean,energyScaleShift,energyScaleSmearing,ptShift,ptSmearing,etaShift,etaSmearing,phiShift,phiSmearing):
             module =cms.EDProducer(moduleType)
             module.src = cms.InputTag(src)
-            module.fileName = cms.string('')
+            #THE FileInPath shooudl not be empty!!!! Put a file that exists even if
+            #it has no meaning... There is no trivial way to avoid that :-(
+            module.fileName = cms.FileInPath('TauAnalysis/RecoTools/plugins/SmearedParticleProducer.cc')
             module.smearMCParticle = cms.bool(False)
             module.smearFromPtHistogram = cms.bool(False)
             module.smearFromEtaHistogram = cms.bool(False)
@@ -24,12 +30,17 @@ class sysProdConfigurator(cms._ParameterTypeBase):
             module.gaussianSmearingSigmaPt = cms.double(ptSmearing)
             module.gaussianSmearingSigmaEta = cms.double(etaSmearing)
             module.gaussianSmearingSigmaPhi = cms.double(phiSmearing)
-            module.gaussianSmearingEScale   = cms.double(energyScaleSmearing)
+            module.gaussianSmearingSigmaEScale   = cms.double(energyScaleSmearing)
             module.setLabel(modulePrefix)
-            if moduleType =='smearedTauProducer': #Additional Tau default Config
-                module.smearConstituents = cms.bool(False),
-                hadronEnergyScale        = cms.double(1.0),
-                gammaEnergyScale         = cms.double(1.0)  
+            if moduleType =='SmearedTauProducer': #Additional Tau default Config
+                module.smearConstituents = cms.bool(False)
+                module.hadronEnergyScale        = cms.double(1.0)
+                module.gammaEnergyScale         = cms.double(1.0)  
+
+            randomPSet = cms.PSet(
+                initialSeed = cms.untracked.uint32(987346),
+                engineName = cms.untracked.string('TRandom3')
+            )
 
 
             #ENERGY SCALE
@@ -49,6 +60,12 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                 else:
                   self.sequence*=m
 
+                #Create an entry in the random number service
+                randomSet = randomPSet.clone()
+                randomSet.initialSeed = random.randint(100000,300000)
+                setattr(randomNumberService,modulePrefix+label,randomSet)
+              
+
 
             #PT
             ptValues = [-ptShift,ptShift]
@@ -67,6 +84,11 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                    self.sequence=m
                 else:
                   self.sequence*=m
+              #Create an entry in the random number service
+                randomSet = randomPSet.clone()
+                randomSet.initialSeed = random.randint(100000,300000)
+                setattr(randomNumberService,modulePrefix+label,randomSet)
+
 
             #eta
             etaValues = [-etaShift,etaShift]
@@ -85,6 +107,9 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                    self.sequence=m
                 else:
                   self.sequence*=m
+                randomSet = randomPSet.clone()
+                randomSet.initialSeed = random.randint(100000,300000)
+                setattr(randomNumberService,modulePrefix+label,randomSet)
 
             #phi
             phiValues = [-phiShift,phiShift]
@@ -103,5 +128,8 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                    self.sequence=m
                 else:
                   self.sequence*=m
+                randomSet = randomPSet.clone()
+                randomSet.initialSeed = random.randint(100000,300000)
+                setattr(randomNumberService,modulePrefix+label,randomSet)
 
             return cms.Sequence(self.sequence)
