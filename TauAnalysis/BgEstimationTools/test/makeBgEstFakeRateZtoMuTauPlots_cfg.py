@@ -47,7 +47,7 @@ reconfigDQMFileLoader(
     process.loadBgEstFakeRateZtoMuTau_tauFakeRate,
     dqmDirectory = 'tauFakeRate/#PROCESSDIR#'
 )
-process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frSimple/10TeV/")
+process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frSimple/10TeVii/")
 
 process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
@@ -345,8 +345,8 @@ frSubDirectories["frWplusJets"] = "zMuTauAnalyzer_WplusJets"
 ##frSubDirectories["frGammaPlusJets"] = "zMuTauAnalyzer_GammaPlusJets"
 frSubDirectories["frSysUncertainty"] = "frSysUncertainty"
 
-frDataBinningDumpSequence = makeDataBinningDumpSequence(process, dqmDirectory_frDataBinning, processSubDirectories, frSubDirectories)
-frFilterStatTableDumpSequence = makeFilterStatTableDumpSequence(process, dqmDirectory_frFilterStatTable, processSubDirectories, frSubDirectories)
+process.frDataBinningDumpSequence = cms.Sequence(makeDataBinningDumpSequence(process, dqmDirectory_frDataBinning, processSubDirectories, frSubDirectories))
+process.frFilterStatTableDumpSequence = cms.Sequence(makeFilterStatTableDumpSequence(process, dqmDirectory_frFilterStatTable, processSubDirectories, frSubDirectories))
 
 dqmDirectory_discrDataBinning = 'tauIdDiscr/#PROCESSDIR#/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto/dataBinningResults/'
 dqmDirectory_discrFilterStatTable = 'tauIdDiscr/#PROCESSDIR#/zMuTauAnalyzer/FilterStatistics/'
@@ -354,12 +354,12 @@ dqmDirectory_discrFilterStatTable = 'tauIdDiscr/#PROCESSDIR#/zMuTauAnalyzer/Filt
 discrSubDirectories = dict()
 discrSubDirectories["discr"] = "zMuTauAnalyzer"
 
-discrDataBinningDumpSequence = makeEventDumpSequence(process, dqmDirectory_discrDataBinning, processSubDirectories, discrSubDirectories)
-discrFilterStatTableDumpSequence = makeFilterStatTableDumpSequence(process, dqmDirectory_discrFilterStatTable, processSubDirectories, discrSubDirectories)
+process.discrDataBinningDumpSequence = cms.Sequence(makeDataBinningDumpSequence(process, dqmDirectory_discrDataBinning, processSubDirectories, discrSubDirectories))
+process.discrFilterStatTableDumpSequence = cms.Sequence(makeFilterStatTableDumpSequence(process, dqmDirectory_discrFilterStatTable, processSubDirectories, discrSubDirectories))
 
 process.dumpBgEstFakeRateZtoMuTau = cms.Sequence(
-    frEventDumpSequence += discrEventDumpSequence
-   += frFilterStatTableDumpSequence += discrFilterStatTableDumpSequence
+    process.frDataBinningDumpSequence + process.discrDataBinningDumpSequence
+   + process.frFilterStatTableDumpSequence + process.discrFilterStatTableDumpSequence
 )
 
 #--------------------------------------------------------------------------------
@@ -385,4 +385,4 @@ process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
 process.p = cms.Path(process.makeBgEstFakeRateZtoMuTauPlots)
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
