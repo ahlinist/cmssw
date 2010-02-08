@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from TauAnalysis.DQMTools.tools.drawJobConfigurator import *
+from TauAnalysis.DQMTools.tools.composeSubDirectoryName import composeSubDirectoryName
+
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
 from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
@@ -48,7 +49,7 @@ def composeSubDirectoryNames_plots(evtSelList):
         afterCut = evtSelList[iEvtSel]
         beforeCut = evtSelList[iEvtSel + 1]
         
-        dqmSubDirectoryNames.append(drawJobConfigurator._composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut))
+        dqmSubDirectoryNames.append(composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut))
 
     return dqmSubDirectoryNames
 
@@ -300,15 +301,27 @@ def enableFactorization_makeZtoMuTauPlots(process,
 
 def enableFactorization_runZtoElecMu(process):
     process.load("TauAnalysis.Configuration.selectZtoElecMu_factorized_cff")
-    process.selectZtoElecMuEvents_factorized = cms.Sequence( process.selectZtoElecMuEvents
-                                                            *process.selectZtoElecMuEventsLooseElectronIsolation )
+    process.selectZtoElecMuEvents_factorized = cms.Sequence(
+        process.selectZtoElecMuEvents
+       * process.selectZtoElecMuEventsLooseElectronIsolation
+    )
     process.p.replace(process.selectZtoElecMuEvents, process.selectZtoElecMuEvents_factorized)
     process.load("TauAnalysis.Configuration.analyzeZtoElecMu_factorized_cff")
-    process.analyzeZtoElecMuEvents_factorized = cms.Sequence( process.analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation
-                                                             *process.analyzeZtoElecMuEvents_factorizedWithElectronIsolation )
+    process.analyzeZtoElecMuEvents_factorized = cms.Sequence(
+        process.analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation
+       * process.analyzeZtoElecMuEvents_factorizedWithElectronIsolation
+    )
     process.p.replace(process.analyzeZtoElecMuEvents, process.analyzeZtoElecMuEvents_factorized)
 
-def enableFactorization_makeZtoElecMuPlots(process):
+def enableFactorization_makeZtoElecMuPlots(process,
+        dqmDirectoryIn_InclusivePPmuX = 'harvested/InclusivePPmuX/zElecMuAnalyzer',
+        dqmDirectoryOut_InclusivePPmuX = 'harvested/InclusivePPmuX_factorized/zElecMuAnalyzer',
+        dqmDirectoryIn_PPmuXptGt20 = 'harvested/PPmuXptGt20/zElecMuAnalyzer',
+        dqmDirectoryOut_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/zElecMuAnalyzer',                                  
+        modName_addZtoElecMu_qcdSum = "addZtoElecMu_qcdSum",
+        modName_addZtoElecMu_smSum = "addZtoElecMu_smSum",                                
+        seqName_addZtoElecMu = "addZtoElecMu",
+        pyObjectLabel = ""):
 
     # define list of event selection criteria on "tight" muon isolation branch of the analysis,
     # **before** applying factorization of muon track + ECAL isolation efficiencies
@@ -353,43 +366,56 @@ def enableFactorization_makeZtoElecMuPlots(process):
 
     # configure sequence for applying factorization to "InclusivePPmuX" process
     # (QCD background sample for Pt(hat) < 20 GeV region in phase-space)
-    process.scaleZtoElecMu_InclusivePPmuX = composeFactorizationSequence(
+    scaleZtoElecMu_InclusivePPmuX = composeFactorizationSequence(
         process = process,
-        processName = "InclusivePPmuX",
-        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/InclusivePPmuX/zElecMuAnalyzer_factorizedWithElectronIsolation/',
+        processName = "InclusivePPmuX" + "_" + pyObjectLabel,
+        dqmDirectoryIn_factorizedTightEvtSel = composeDirectoryName(dqmDirectoryIn_InclusivePPmuX, "factorizedWithElectronIsolation"),
         evtSel_factorizedTight = evtSelZtoElecMu_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/InclusivePPmuX/zElecMuAnalyzer_factorizedWithoutElectronIsolation/',
+        dqmDirectoryIn_factorizedLooseEvtSel = composeDirectoryName(dqmDirectoryIn_InclusivePPmuX, "factorizedWithoutElectronIsolation"),
         evtSel_factorizedLoose = evtSelZtoElecMu_factorizedLoose,
         meName_numerator = meNameZtoElecMu_numerator,
         meName_denominator = meNameZtoElecMu_denominator,
-        dqmDirectoryOut = 'harvested/InclusivePPmuX_factorized/zElecMuAnalyzer/'
+        dqmDirectoryOut = dqmDirectoryOut_InclusivePPmuX + '/'
     )
+
+    scaleZtoElecMuName_InclusivePPmuX = "scaleZtoElecMu_InclusivePPmuX" + "_" + pyObjectLabel
+    setattr(process, scaleZtoElecMuName_InclusivePPmuX, scaleZtoElecMu_InclusivePPmuX)
 
     # configure sequence for applying factorization to "PPmuXPPmuXptGt20" process
     # (QCD background sample for Pt(hat) > 20 GeV region in phase-space)
-    process.scaleZtoElecMu_PPmuXptGt20 = composeFactorizationSequence(
+    scaleZtoElecMu_PPmuXptGt20 = composeFactorizationSequence(
         process = process,
-        processName = "PPmuXptGt20",
-        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/PPmuXptGt20/zElecMuAnalyzer_factorizedWithElectronIsolation/',
+        processName = "PPmuXptGt20" + "_" + pyObjectLabel,
+        dqmDirectoryIn_factorizedTightEvtSel = composeDirectoryName(dqmDirectoryIn_PPmuXptGt20, "factorizedWithElectronIsolation"),
         evtSel_factorizedTight = evtSelZtoElecMu_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/PPmuXptGt20/zElecMuAnalyzer_factorizedWithoutElectronIsolation/',
+        dqmDirectoryIn_factorizedLooseEvtSel = composeDirectoryName(dqmDirectoryIn_PPmuXptGt20, "factorizedWithoutElectronIsolation"),
         evtSel_factorizedLoose = evtSelZtoElecMu_factorizedLoose,
         meName_numerator = meNameZtoElecMu_numerator,
         meName_denominator = meNameZtoElecMu_denominator,
-        dqmDirectoryOut = 'harvested/PPmuXptGt20_factorized/zElecMuAnalyzer/'
+        dqmDirectoryOut = dqmDirectoryOut_PPmuXptGt20 + '/'
     )
+
+    scaleZtoElecMuName_PPmuXptGt20 = "scaleZtoElecMu_PPmuXptGt20" + "_" + pyObjectLabel
+    setattr(process, scaleZtoElecMuName_PPmuXptGt20, scaleZtoElecMu_PPmuXptGt20)
 
     # compute QCD background sum using factorized histograms and FilterStatistics objects
-    process.addZtoElecMu_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
-        'harvested/InclusivePPmuX_factorized',
-        'harvested/PPmuXptGt20_factorized'
+    addZtoElecMu_qcdSum = getattr(process, modName_addZtoElecMu_qcdSum)
+    addZtoElecMu_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
+        dqmDirectoryOut_InclusivePPmuX + '/',
+        dqmDirectoryOut_PPmuXptGt20 + '/'
     )
+    addZtoElecMu = cms.Sequence(
+        getattr(process, scaleZtoElecMuName_InclusivePPmuX)
+       + getattr(process, scaleZtoElecMuName_PPmuXptGt20)
+    )
+    addZtoElecMu._seq = addZtoElecMu._seq * getattr(process, modName_addZtoElecMu_qcdSum)
+    if hasattr(process, modName_addZtoElecMu_smSum):
+        addZtoElecMu._seq = addZtoElecMu._seq * getattr(process, modName_addZtoElecMu_smSum)
+    setattr(process, seqName_addZtoElecMu, addZtoElecMu)
 
-    process.addZtoElecMu = cms.Sequence( process.scaleZtoElecMu_InclusivePPmuX + process.scaleZtoElecMu_PPmuXptGt20
-                                        +process.addZtoElecMu_qcdSum + process.addZtoElecMu_smSum )
-
-    process.plotZtoElecMu.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
-    process.plotZtoElecMu.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
+    if hasattr(process, "plotZtoElecMu"):
+        process.plotZtoElecMu.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
+        process.plotZtoElecMu.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
 
 #--------------------------------------------------------------------------------
 # utility functions specific to factorization
