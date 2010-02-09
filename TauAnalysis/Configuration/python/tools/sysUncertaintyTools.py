@@ -7,6 +7,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 from TauAnalysis.Configuration.tools.analysisSequenceTools import removeAnalyzer
 
 from TauAnalysis.RecoTools.patLeptonSelection_cff import *
+from TauAnalysis.RecoTools.patLeptonSystematics_cff import *
 from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
 from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
@@ -57,6 +58,8 @@ def disableSysUncertainties_runZtoMuTau(process):
     pyNameSpace = None
 
     process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
+    process.producePatTupleZtoMuTauSpecific.remove(process.prodSmearedMuons)
+    process.producePatTupleZtoMuTauSpecific.remove(process.prodSmearedTaus)
 
     if hasattr(process, "selectZtoMuTauEvents"):
         removeModules(process, "selectZtoMuTauEvents", moduleNamePattern, pyNameSpace)
@@ -87,6 +90,9 @@ def enableSysUncertainties_runZtoMuTau(process):
     setattr(patTauSelConfigurator, "systematics", tauSystematics)
     process.selectLayer1Taus = patTauSelConfigurator.configure(process = process)
 
+    setattr(patTauSelConfiguratorForMuTau, "systematics", tauSystematics)
+    process.selectLayer1TausForMuTau = patTauSelConfiguratorForMuTau.configure(process = process)
+
     setattr(muTauPairProdConfigurator, "systematics", {
         "sysMuonPtUp"           : { "srcLeg1" : "selectedLayer1MuonsTrkIPsysMuonPtUpCumulative" },
         "sysMuonPtDown"         : { "srcLeg1" : "selectedLayer1MuonsTrkIPsysMuonPtDownCumulative" },
@@ -95,23 +101,19 @@ def enableSysUncertainties_runZtoMuTau(process):
         "sysTauJetThetaUp"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetThetaUpCumulative" }, 
         "sysTauJetThetaDown"    : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetThetaDownCumulative" }, 
         "sysTauJetPhiUp"        : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiUpCumulative" }, 
-        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiDownCumulative" }, 
-        "sysTauLeadTrackPtUp"   : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauLeadTrackPtUpCumulative" }, 
-        "sysTauLeadTrackPtDown" : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauLeadTrackPtDownCumulative" }
+        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiDownCumulative" }
     })
     process.produceMuTauPairs = muTauPairProdConfigurator.configure(process = process)
 
     setattr(muTauPairProdConfiguratorLooseMuonIsolation, "systematics", {
-        "sysMuonPtUp"           : { "srcLeg1" : "selectedLayer1MuonsTrkIPlooseMuonIsolationSysMuonPtUpCumulative" },
-        "sysMuonPtDown"         : { "srcLeg1" : "selectedLayer1MuonsTrkIPlooseMuonIsolationSysMuonPtDownCumulative" },
+        "sysMuonPtUp"           : { "srcLeg1" : "selectedLayer1MuonsTrkIPlooseIsolationSysMuonPtUpCumulative" },
+        "sysMuonPtDown"         : { "srcLeg1" : "selectedLayer1MuonsTrkIPlooseIsolationSysMuonPtDownCumulative" },
         "sysTauJetEnUp"         : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetEnUpCumulative" },
         "sysTauJetEnDown"       : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetEnDownCumulative" }, 
         "sysTauJetThetaUp"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetThetaUpCumulative" }, 
         "sysTauJetThetaDown"    : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetThetaDownCumulative" }, 
         "sysTauJetPhiUp"        : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiUpCumulative" }, 
-        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiDownCumulative" }, 
-        "sysTauLeadTrackPtUp"   : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauLeadTrackPtUpCumulative" }, 
-        "sysTauLeadTrackPtDown" : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauLeadTrackPtDownCumulative" }
+        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiDownCumulative" }
     })
     process.produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(process = process)
 
@@ -120,6 +122,13 @@ def enableSysUncertainties_runZtoMuTau(process):
     
     setattr(patMuTauPairSelConfiguratorLooseMuonIsolation, "systematics", muTauPairSystematics)
     process.selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolation.configure(process = process)
+
+    if hasattr(process, "analyzeZtoMuTauEvents"):
+        process.analyzeZtoMuTauEvents.estimateSysUncertainties = cms.bool(True)
+    if hasattr(process, "analyzeZtoMuTauEvents_factorizedWithMuonIsolation"):
+        process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)
+    if hasattr(process, "analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation"):
+        process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)    
 
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
