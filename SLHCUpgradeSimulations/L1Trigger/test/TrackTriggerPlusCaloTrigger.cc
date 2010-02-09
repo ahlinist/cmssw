@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrew William Rose
 //         Created:  Fri Mar 13 11:06:51 CET 2009
-// $Id$
+// $Id: TrackTriggerPlusCaloTrigger.cc,v 1.1 2010/02/03 12:14:30 arose Exp $
 //
 //
 
@@ -40,14 +40,14 @@
 
 #include "SimDataFormats/SLHC/interface/StackedTrackerTypes.h"
 
-//#include "DataFormats/L1Trigger/interface/L1EmParticle.h"
-//#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
-//#include "DataFormats/L1Trigger/interface/L1JetParticle.h"
-//#include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
+#include "DataFormats/L1Trigger/interface/L1EmParticle.h"
+#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
+#include "DataFormats/L1Trigger/interface/L1JetParticle.h"
+#include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
 
-//#include "Geometry/Records/interface/CaloGeometryRecord.h"
-//#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
-//#include "SLHCUpgradeSimulations/L1Trigger/interface/TriggerTowerGeometry.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "SLHCUpgradeSimulations/L1Trigger/interface/TriggerTowerGeometry.h"
 
 #include <TROOT.h>
 #include <TFile.h>
@@ -96,25 +96,38 @@ TrackTriggerPlusCaloTrigger::analyze(const edm::Event& iEvent, const edm::EventS
 {
 
 //-------------------------------------------------------------------------
-/*	edm::Handle<l1extra::L1EmParticleCollection> l1egamma_;
+	edm::Handle<l1extra::L1EmParticleCollection> l1egamma_;
 	iEvent.getByLabel("L1ExtraMaker","EGamma",l1egamma_);
 	l1extra::L1EmParticleCollection l1egamma = (*l1egamma_);
 	egamma_count	    			->	Fill(	l1egamma.size()	);
+	for(unsigned int i = 0; i != l1egamma.size() ; ++i )
+		cout	<< "L1EGamma at LorentzVector : "
+				<< l1egamma[i].p4() << endl;
 //-------------------------------------------------------------------------
 	edm::Handle<l1extra::L1EmParticleCollection> l1isoegamma_;
 	iEvent.getByLabel("L1ExtraMaker","IsoEGamma",l1isoegamma_);
 	l1extra::L1EmParticleCollection l1isoegamma = (*l1isoegamma_);
 	isoegamma_count					->	Fill(	l1isoegamma.size()	);
+	for(unsigned int i = 0; i != l1isoegamma.size() ; ++i )
+		cout	<< "L1IsoEGamma at LorentzVector : "
+				<< l1isoegamma[i].p4() << endl;
 //-------------------------------------------------------------------------
 	edm::Handle<l1extra::L1JetParticleCollection> l1tau_;
 	iEvent.getByLabel("L1ExtraMaker","Taus",l1tau_);
 	l1extra::L1JetParticleCollection l1tau = (*l1tau_);
-	jet_count		       			->	Fill(	l1tau.size()	);
+	taujet_count		   			->	Fill(	l1tau.size()	);
+	for(unsigned int i = 0; i != l1tau.size() ; ++i )
+		cout	<< "L1Tau at LorentzVector : "
+				<< l1tau[i].p4() << endl;
 //-------------------------------------------------------------------------
 	edm::Handle<l1extra::L1JetParticleCollection> l1jets_;
 	iEvent.getByLabel("L1ExtraMaker","Jets",l1jets_);
 	l1extra::L1JetParticleCollection l1jets = (*l1jets_);
-	taujet_count					->	Fill(	l1jets.size()	);*/
+	jet_count						->	Fill(	l1jets.size()	);
+	for(unsigned int i = 0; i != l1jets.size() ; ++i )
+		cout	<< "L1Jets at LorentzVector : "
+				<< l1jets[i].p4() << endl;
+
 //-------------------------------------------------------------------------
 	edm::Handle< cmsUpgrades::LocalStub_PixelDigi_Collection > DigiLocalStubHandle;
 	iEvent.getByLabel( "LocalStubsFromPixelDigis" , DigiLocalStubHandle);

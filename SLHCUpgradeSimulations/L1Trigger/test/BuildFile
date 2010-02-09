@@ -10,6 +10,14 @@
   <use name=Geometry/TrackerNumberingBuilder>
   <use name=Geometry/CommonDetUnit>
   <use name=CondFormats/Alignment>
+
+  <use name=DataFormats/CaloTowers>
+  <use name=DataFormats/HcalDetId>
+  <use name=DataFormats/EcalDetId>
+  <use name=Geometry/CaloTopology>
+  <use name=Geometry/CaloGeometry>
+  <use name=Geometry/CaloEventSetup>
+
   <use name=SimDataFormats/SLHC>
   <use name=SLHCUpgradeSimulations/Utilities>
   <use name=root>
