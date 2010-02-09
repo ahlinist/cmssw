@@ -45,7 +45,7 @@ class sysProdConfigurator(cms._ParameterTypeBase):
 
             #ENERGY SCALE
             energyScaleValues = [energyScaleMean-energyScaleShift, energyScaleMean ,energyScaleMean+energyScaleShift]
-            energyScaleLabels = ['EScaleDown' ,'','EScaleUp']
+            energyScaleLabels = ['EnScaleDown' ,'', 'EnScaleUp']
 
             for label,eScale in zip(energyScaleLabels,energyScaleValues):
                 m =module.clone()
