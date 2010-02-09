@@ -415,7 +415,59 @@ intLumiZtoElecMu_PPmuXptGt20_7TeV = float(48.7)
 corrFactorZtoElecMu_PPmuXptGt20_7TeV = float(1.)
 
 fileNamesZtoElecMu_PPmuXptGt20_7TeV_part01 = cms.untracked.vstring(
-    # CV: not yet skimmed (as of 2010/02/07)
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_1.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part02 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_2.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part03 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_3.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part04 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_4.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part05 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_5.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part06 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_6.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part07 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_7.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part08 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_8.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part09 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_9.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part10 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_10.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part11 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_11.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part12 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_12.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part13 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_13.root'
+)
+
+fileNamesZtoElecMu_PPmuXptGt20_7TeV_part14 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/InclusiveMu15/akalinow-SkimElMu_7TeV_314_pass1/SkimElMu_Merged_14.root'
 )
 
 genPhaseSpaceCutZtoElecMu_PPmuXptGt20_7TeV = cms.PSet(
