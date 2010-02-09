@@ -52,7 +52,7 @@ void analysisClass::Loop()
   bool makeJetCorr = true;
   // cut values
   double barreleta =1.4;
-  double endcapeta =3.;
+  double endcapeta =2.6;
   double fhpdmax = 0.98;
   double n90hitsmin =1;
   double emffrac = 0.01;
@@ -466,31 +466,6 @@ void analysisClass::Loop()
 	// 	     cout<<ak5JetpT->size()<<endl;
 	// 	     cout<<ak5JetscaleL2L3->size()<<endl;
 	
-
-
-	
-	// --------------------------------------------------------------
-	for (int j = 0; j<int(ic5JetpT->size()); j++) {
-
-	  double jcScale;    //jc
-	  if(makeJetCorr==true) {
-	    jcScale = ic5JetscaleL2L3->at(j);
-	  }
-	  else {
-	    jcScale = 1;
-	  }
-	  
-	  // ic5JetpT spectrum
-	  if(ic5JetpT->at(j) * jcScale >ptMin && fabs(ic5JetEta->at(j))<endcapeta){    //jc
-	    ic5pt->Fill(ic5JetpT->at(j));
-	  }
-	  
-
-
-
-
-	}
-
 	for (int j = 0; j<int(ak5JetpT->size()); j++){
 	  
 	  // --------------------------------------------------------------    //jc
@@ -713,6 +688,7 @@ void analysisClass::Loop()
 	  if(ic5JetpT->at(j) * jcScale >ptMin && fabs(ic5JetEta->at(j))<endcapeta){   //jc
 	    Nic5++;
 	    ic5nconst->Fill(ic5JetNConstituents->at(j));
+	    ic5pt->Fill(ic5JetpT->at(j) * jcScale);
 	    bool emfic5=false;
 	    if(fabs(ic5JetEta->at(j))<2.6){
 	      if(ic5JetJIDresEMF->at(j)>emffrac) emfic5=true;
