@@ -32,9 +32,9 @@ def getNEvents(logFileGlob, pathName):
 
 # Define our standard binning
 standard_bins = {
-    'x_bins' : [0, 10, 20, 50, 80, 120], # pt
+    'x_bins' : [0, 10, 20, 30, 50, 80, 120], # pt
     'y_bins' : [0, 0.5, 1.0, 1.2, 1.5, 2.0, 2.5], # eta
-    'z_bins' : [0, 0.01, 0.02, 0.04, 0.08, 0.1, 0.15] # jet width
+    'z_bins' : [0, 0.01, 0.02, 0.03, 0.04] # jet width
 }
 
 denominator = "$ByLeadTrackPt && abs($eta) < 2.1 && $pt > 20"
