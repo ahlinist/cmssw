@@ -44,21 +44,29 @@ def divideNumeratorsInDirectory(directory):
 
       histogramType = "TH%i" % denominator.GetDimension()
 
-      # loop over numerators and make efficiency 'histograms'
-      numerators = [ histo for histo in objectsInheritingFrom(histogramType, directory) if histo is not None and histo.GetName() != "denominator" ] 
-      for numerator in numerators:
-         # make a temporary TGraphAssymErrors so the errors are calculated correctly 
-         # for 0/100% efficiency bins
-         #tgraphMitErrors = TGraphAsymmErrors(numerator, denominator)
+      denom_projections = [
+          denominator.Project3D(axis) for axis in ["x", "y", "z"]]
 
-         # Make a new histogram w/ the efficiency computed for each bin
-         efficiencyHistogram = numerator.Clone(
-	       numerator.GetName() + "_efficiency")
-         efficiencyHistogram.Divide(denominator)
-	 efficiencyHistogram.SetDirectory(directory)
-         efficiencyHistogram.Write()
-	 del efficiencyHistogram
-         #print "Made eff histo", efficiencyHistogram.GetName()
+      # loop over numerators and make efficiency 'histograms'
+      numerators = [ histo for histo in objectsInheritingFrom(histogramType, directory) 
+                    if histo is not None and histo.GetName() != "denominator" and histo.GetName().find("_eff") != 1] 
+      for numerator in numerators:
+          numerator_projections = [
+              (axis, numerator.Project3D(axis)) for axis in ["x", "y", "z"]]
+          for (axis, num), denom in zip(numerator_projections, denom_projections):
+              num.Divide(denom)
+              num.SetName(numerator.GetName()+"_eff_"+axis)
+              num.SetDirectory(directory)
+              num.Write()
+              del num
+
+          # Make a new histogram w/ the efficiency computed for each bin
+          efficiencyHistogram = numerator.Clone(
+              numerator.GetName() + "_efficiency")
+          efficiencyHistogram.Divide(denominator)
+          efficiencyHistogram.SetDirectory(directory)
+          efficiencyHistogram.Write()
+          del efficiencyHistogram
 
 
 def applyInAllDirectories(functor, directory, depth = 1):
