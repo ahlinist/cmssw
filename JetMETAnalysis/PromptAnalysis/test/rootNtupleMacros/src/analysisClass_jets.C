@@ -52,7 +52,7 @@ void analysisClass::Loop()
   bool makeJetCorr = true;
   // cut values
   double barreleta =1.4;
-  double endcapeta =3.0;
+  double endcapeta =3.;
   double fhpdmax = 0.98;
   double n90hitsmin =1;
   double emffrac = 0.01;
@@ -133,9 +133,9 @@ void analysisClass::Loop()
   dijetptall2->SetXTitle("p_{T}[GeV]");
   dijetptall2->SetTitle(dataset);
   TH1D *dijetdphi = new TH1D("dijetdphi","",phiBin, 0., 3.5);
-    //   dijetdphi->SetXTitle("p_{T}[GeV]");
-    dijetdphi->SetXTitle("#Delta #phi_{di-jet}");
-    dijetdphi->SetTitle(dataset);
+//   dijetdphi->SetXTitle("p_{T}[GeV]");
+  dijetdphi->SetXTitle("#Delta #phi_{di-jet}");
+  dijetdphi->SetTitle(dataset);
   TH1D *dijeteta = new TH1D("dijeteta","",25,etaMin,etaMax);
   dijeteta->SetXTitle("#eta");
   dijeteta->SetTitle(dataset);
@@ -180,22 +180,6 @@ void analysisClass::Loop()
   ak5njetsindijets->SetXTitle("Number of jets per event");
   ak5njetsindijets->SetTitle(dataset);
 
-  // fake jetes
-  TH1D *fhpdfakejets = new TH1D("fhpdfakejets","",101,-0.005,1.005);
-  fhpdfakejets->SetXTitle("f_{HPD}");
-  fhpdfakejets->SetTitle(dataset);
-
-  TH1I *n90hitsfakejets = new TH1I("n90hitsfakejets","",50,0,50);
-  n90hitsfakejets->SetXTitle("N_{90}hits");
-  n90hitsfakejets->SetTitle(dataset);
-  TH1D *resemffakejets = new TH1D("resemffakejets","",101,-0.005,1.005);
-  resemffakejets->SetXTitle("restricted emf");
-  resemffakejets->SetTitle(dataset);
-  TH1D *fakejetptall1 = new TH1D("fakejetptall1","",ptBin, 0,50);
-  fakejetptall1->SetXTitle("p_{T}[GeV]");
-  fakejetptall1->SetTitle(dataset);
-
-
   TH1D *variousEffindijets = new TH1D("variousEffindijets","",4,0,4);
   //  variousEffindijets->SetXTitle("Efficiency of loose and tight ID and associated trks");
   variousEffindijets->SetTitle(dataset);
@@ -214,8 +198,6 @@ void analysisClass::Loop()
 //   dijetdphicleaned->SetXTitle("p_{T}[GeV]");
   dijetdphicleaned->SetXTitle("#Delta #phi_{di-jet}");
   dijetdphicleaned->SetTitle(dataset);
-  
-
   TH2D *mapalldijetscleaned = new TH2D("mapalldijetscleaned","",25,etaMin,etaMax,24,-3.2,3.2);
   mapalldijetscleaned->SetXTitle("#eta_{jet}");
   mapalldijetscleaned->SetYTitle("#phi_{jet}");
@@ -230,6 +212,12 @@ void analysisClass::Loop()
   TH1D *ptcleaned = new TH1D("ptcleaned","",ptBin,ptMin,ptMax);
   ptcleaned->SetXTitle("p_{T}[GeV]");
   ptcleaned->SetTitle(dataset);
+  TH1D *ic5pt = new TH1D("ic5pt","",ptBin,ptMin,ptMax);
+  ic5pt->SetXTitle("p_{T}[GeV]");
+  ic5pt->SetTitle(dataset);
+  TH1D *ic5ptcleaned = new TH1D("ic5ptcleaned","",ptBin,ptMin,ptMax);
+  ic5ptcleaned->SetXTitle("p_{T}[GeV]");
+  ic5ptcleaned->SetTitle(dataset);
 
   TH1D *eta = new TH1D("eta","",etaBin,etaMin,etaMax);
   eta->SetXTitle("#eta");
@@ -285,7 +273,19 @@ void analysisClass::Loop()
   TH1I *n90hits = new TH1I("n90hits","",50,0,50);
   n90hits->SetXTitle("N_{90}hits");
   n90hits->SetTitle(dataset);
-
+  // fake jetes
+  TH1D *fhpdfakejets = new TH1D("fhpdfakejets","",101,-0.005,1.005);
+  fhpdfakejets->SetXTitle("f_{HPD}");
+  fhpdfakejets->SetTitle(dataset);
+  TH1I *n90hitsfakejets = new TH1I("n90hitsfakejets","",50,0,50);
+  n90hitsfakejets->SetXTitle("N_{90}hits");
+  n90hitsfakejets->SetTitle(dataset);
+  TH1D *resemffakejets = new TH1D("resemffakejets","",101,-0.005,1.005);
+  resemffakejets->SetXTitle("restricted emf");
+  resemffakejets->SetTitle(dataset);
+  TH1D *fakejetptall1 = new TH1D("fakejetptall1","",ptBin, 0,50);
+  fakejetptall1->SetXTitle("p_{T}[GeV]");
+  fakejetptall1->SetTitle(dataset);
   // cleaning efficiencies:
 
   //  TH1D *ak5jetcleaningeffeta = new TH1D("ak5jetcleaningeffeta","",100,-5,5);
@@ -329,6 +329,9 @@ void analysisClass::Loop()
        nb = fChain->GetEntry(jentry);   
       
       if(jentry < 10 || jentry%1000 == 0) std::cout << "analysisClass::Loop(): jentry = " << jentry << std::endl;   
+       ////////////////////// User's code starts here ///////////////////////
+//        int BSC_techbit = 0;
+//        int BeamHalo    = 0;
 
       // --------------------------------------------------------------------
       int isdata = isData;
@@ -434,13 +437,14 @@ void analysisClass::Loop()
 
 
 
+
+
       //PV event selection - cut on vertex for now. l1 tech bits already asked at skimming step
       //https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe   
       if(pass_MonsterTRKEventVeto && fabs(vertexZ->at(0))<15 && vertexNDF->at(0)>=5 && vertexisValid->at(0)==true){    // "newest" event selection
 	
 	// --------------------------------------------------------------------
-        cout<<"-------------------------"<<endl; 	 
-	cout<<runid<<":"<<LS<<endl;
+	
 	//counters   
 	int Nak5=0;
 	int Nak5JetIDLoose=0;
@@ -457,6 +461,35 @@ void analysisClass::Loop()
 	int Nak5indijetsAssTrksTight=0;
 	ak5nalljets->Fill(ak5JetpT->size());
 	ic5nalljets->Fill(ic5JetpT->size());
+	   
+	// 	     cout<<"------------"<<endl;
+	// 	     cout<<ak5JetpT->size()<<endl;
+	// 	     cout<<ak5JetscaleL2L3->size()<<endl;
+	
+
+
+	
+	// --------------------------------------------------------------
+	for (int j = 0; j<int(ic5JetpT->size()); j++) {
+
+	  double jcScale;    //jc
+	  if(makeJetCorr==true) {
+	    jcScale = ic5JetscaleL2L3->at(j);
+	  }
+	  else {
+	    jcScale = 1;
+	  }
+	  
+	  // ic5JetpT spectrum
+	  if(ic5JetpT->at(j) * jcScale >ptMin && fabs(ic5JetEta->at(j))<endcapeta){    //jc
+	    ic5pt->Fill(ic5JetpT->at(j));
+	  }
+	  
+
+
+
+
+	}
 
 	for (int j = 0; j<int(ak5JetpT->size()); j++){
 	  
@@ -470,9 +503,8 @@ void analysisClass::Loop()
 	  }
 	  else {
 	    jcScale = 1;
-	  }	  
-	  // --------------------------------------------------------------
-	     
+	  }
+	  
 	  ptall->Fill(ak5JetpT->at(j) * jcScale);    //jc
 	  mapall->Fill(ak5JetEta->at(j),ak5JetPhi->at(j));
 	  
@@ -571,13 +603,16 @@ void analysisClass::Loop()
 		  fakejetptall1 ->Fill(ak5JetpT->at(dj));
 		}
 	      }
-	 	      
+	      
+
+
+	      
 	      dijetptall1->Fill(ak5JetpT->at(0) * jcScale0);  //jc
 	      dijetptall2->Fill(ak5JetpT->at(1) * jcScale1);   //jc
 	      dijetdphi->Fill(dphi);
 	      mapalldijets->Fill(ak5JetEta->at(0),ak5JetPhi->at(0));
 	      mapalldijets->Fill(ak5JetEta->at(1),ak5JetPhi->at(1));
-    	 
+		 
 	      dijeteta->Fill(ak5JetEta->at(0));
 	      dijeteta->Fill(ak5JetEta->at(1));
 	      dijetphi->Fill(ak5JetPhi->at(0));
@@ -619,7 +654,7 @@ void analysisClass::Loop()
 		  else {
 		    dijcScale = 1;
 		  }
-		  if(ak5JetpT->at(dj) * dijcScale >ptMinDijet && ak5JetJIDresEMF->at(dj)>emffrac && ak5JetJIDfHPD->at(dj)<fhpdmax && ak5JetJIDn90Hits->at(dj)>n90hitsmin){
+		  if(ak5JetpT->at(dj) * dijcScale >ptMinDijet && ak5JetJIDresEMF->at(dj)>emffrac && ak5JetJIDfHPD->at(dj)<fhpdmax && ak5JetJIDn90Hits->at(dj)>n90hitsmin && ak5JetEta->at(dj)<endcapeta){   ///
 		    NALLak5indijetsJetIDLoose++;
 		  }
 		}
@@ -631,7 +666,9 @@ void analysisClass::Loop()
 	      if(ak5JetJIDresEMF->at(1)>emffrac && ak5JetJIDfHPD->at(1)<fhpdmax && ak5JetJIDn90Hits->at(1)>n90hitsmin){
 		Nak5indijetsJetIDLoose++;
 	      }
-              //how many of the jets in dijets events pass the tight jetID (look only at the two leading jets)
+	      
+	      
+	      //how many of the jets in dijets events pass the tight jetID (look only at the two leading jets)
 	      //FOR THE MOMENT THE TIGHT JETID IS EQUAL TO THE LOOSE ONE!
 	      if(ak5JetJIDresEMF->at(0)>emffrac && ak5JetJIDfHPD->at(0)<fhpdmax && ak5JetJIDn90Hits->at(0)>n90hitsmin){
 		Nak5indijetsJetIDTight++;
@@ -657,15 +694,13 @@ void analysisClass::Loop()
 	  }//eta/pt cuts ion dijets
 	}//di jets >= 2 jets
 	
-
-
-	///--------------------------------------Incluisive jets -------------------------------------
 	for(int j = 0; j<int(ic5JetpT->size()); j++){
 	     
 	  // --------------------------------------------------------------    //jc
 	  // JET CORRECTION
 	  // --------------------------------------------------------------
-	  double jcScale;    //jc	  
+	  double jcScale;    //jc
+	  
 	  if(makeJetCorr==true) {
 	    jcScale = ic5JetscaleL2L3->at(j);
 	  }
@@ -713,7 +748,7 @@ void analysisClass::Loop()
 	Nak5indijetsAssTrksTightTOT+=Nak5indijetsAssTrksTight;
       } //vertex monster event
       }// techbits
-   } // End loop over events
+     } // End loop over events
    //--------------------------------------------
 
    //efficiency histos
@@ -807,6 +842,7 @@ void analysisClass::Loop()
    dijetetacleaned->Write();
    dijetphicleaned->Write();
 
+   ic5pt->Write();
 
    ak5jetcleaningeffeta->Write();
    ak5jetcleaningeffphi->Write();
