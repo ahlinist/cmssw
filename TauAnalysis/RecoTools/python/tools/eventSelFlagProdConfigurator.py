@@ -23,47 +23,6 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
         # create module
         module = cms.EDFilter(self.boolEventSelFlagProducer)
 
-        # check if multiple plugins need to be created for
-        # "cumulative" and "individual" collections
-        if len(srcParam) >= 2:
-            # multiple plugin case;
-            # prepare configuration parameters for plugins
-            # derrived from EventSelectorBase class
-            exclAttributeNames = [ "src_cumulative", "src_individual" ]
-            selector = cms.PSet()
-            for objSelAttrName in dir(objSelItem):
-                objSelAttr = getattr(objSelItem, objSelAttrName)
-                if isinstance(objSelAttr, cms._ParameterTypeBase) and not objSelAttrName in exclAttributeNames:
-                    setattr(selector, objSelAttrName, objSelAttr)
-                
-            selectors = []        
-            for src_i in srcParam:
-                assert len(src_i) == 2, "'src_i' Parameter must have exactly 2 elements !!"
-                selector_i = copy.deepcopy(selector)
-                if sysName is None:
-                    setattr(selector_i, "src", src_i[0])
-                else:
-                    setattr(selector_i, "src", composeModuleName(src_i[0], sysName))
-                if len(src_i) >= 2 : setattr(selector_i, "instanceName", cms.string(src_i[1]))
-                selectors.append(selector_i)
-
-            setattr(module, "selectors", cms.VPSet(*selectors))
-        else:
-            # single plugin case;
-            # add configuration parameters directly to module
-            exclAttributeNames = [ "src", ]
-            for objSelAttrName in dir(objSelItem):
-                objSelAttr = getattr(objSelItem, objSelAttrName)
-                if isinstance(objSelAttr, cms._ParameterTypeBase) and not objSelAttrName in exclAttributeNames:
-                    setattr(module, objSelAttrName, objSelAttr)
-
-            src = srcParam[0]
-            if sysName is None:
-                setattr(module, "src", src[0])
-            else:
-                setattr(module, "src", cms.InputTag(composeModuleName(src[0].value(), sysName)))
-            if len(src) >= 2 : setattr(module, "instanceName", cms.string(src[1]))
-
         # set module attributes
         moduleName = None
         if sysName is None:
@@ -71,6 +30,40 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
         else:
             moduleName = composeModuleName(objSelItem.pluginName.value(), sysName)
         module.setLabel(moduleName)
+
+        selectors = []
+        
+        for src_i in srcParam:
+
+            assert len(src_i) == 2, "'src_i' Parameter must have exactly 2 elements !!"
+
+            exclAttributeNames = [ "src", "src_cumulative", "src_individual", "systematics" ]
+            selector = cms.PSet()
+            for objSelAttrName in dir(objSelItem):
+                objSelAttr = getattr(objSelItem, objSelAttrName)
+                if isinstance(objSelAttr, cms._ParameterTypeBase) and not objSelAttrName in exclAttributeNames:
+                    setattr(selector, objSelAttrName, objSelAttr)
+
+            selector_i = copy.deepcopy(selector)
+                
+            if sysName is None:
+                setattr(selector_i, "src", src_i[0])
+            else:
+                src_extensions = [ "Cumulative", "cumulative", "Individual", "individual" ]
+                for src_extension in src_extensions:
+                    if src_i[0].value().endswith(src_extension):
+                        src_iBase = src_i[0].value()[:src_i[0].value().rindex(src_extension)]
+                        src_iExt = src_extension
+                        setattr(selector_i, "src", cms.InputTag(composeModuleName(composeModuleName(src_iBase, sysName), src_iExt)))
+                if not hasattr(selector_i, "src"):
+                    setattr(selector_i, "src", cms.InputTag(composeModuleName(src_i[0].value(), sysName)))
+
+            if src_i[1] is not None:
+                setattr(selector_i, "instanceName", cms.string(src_i[1]))
+                
+            selectors.append(selector_i)
+
+        setattr(module, "selectors", cms.VPSet(*selectors))
                
         # register module in global python name-space
         pyModule = sys.modules[self.pyModuleName]
@@ -116,14 +109,14 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
                 raise ValueError("must specify either 'src' or 'src_cumulative' and 'src_individual' Parameters !!")
 
             if src is not None:
-                self._addModule(objSelItem, [ [ src, ] ] )
+                self._addModule(objSelItem, [ [ src, "" ] ] )
                 if systematics is not None:
                     for sysName in systematics:
-                        self._addModule(objSelItem, [ src, ], sysName )
+                        self._addModule(objSelItem, [ [ src, "" ] ], sysName )
             if src_cumulative is not None and src_individual is not None:
                 self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ], [ src_individual, "individual" ] ])
                 if systematics is not None:
                     for sysName in systematics:
-                        self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ] ], sysName)
+                        self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ], ], sysName)
 
         return cms.Sequence(self.sequence)
