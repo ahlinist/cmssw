@@ -43,7 +43,7 @@ for i in range(2):
                   replacements = "maxEvents = -1; skipEvents = 0; intLumiData = intLumiZtoMuTau_Data_10TeV",
                   job = "bgEstNtupleProd", queue = "1nd", outputFilePath = outputFilePath)
 
-for i in range(14):
+for i in range(34):
     submitToBatch(configFile = "prodNtupleZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "PPmuXptGt20_10TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsBgEstNtupleProd,
