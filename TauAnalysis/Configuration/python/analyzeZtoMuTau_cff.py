@@ -5,12 +5,15 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
 # define auxiliary service
 # for handling of systematic uncertainties
+#
+# NOTE: only systematic uncertainties handled via weights
+#      (not the ones handled via shifting/smearing pat::Objects and reapplying cuts)
+#       must be passed to SysUncertaintyService !!
+#
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 SysUncertaintyService = cms.Service("SysUncertaintyService",
     config = getSysUncertaintyParameterSets(
-        [ muonSystematics,
-          tauSystematics,
-          theorySystematics ]
+        [ theorySystematics ]
     )
 )
 
