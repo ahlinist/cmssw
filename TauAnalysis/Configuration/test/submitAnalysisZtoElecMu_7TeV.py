@@ -56,15 +56,12 @@ for i in range(2):
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
-##for i in range(xx):
-##    
-## CV: not yet skimmed (as of 2010/02/07)
-##    
-##    submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
-##                  sample = "PPmuXptGt20_10TeV_part%(i)02d" % {"i" : (i + 1)},
-##                  replFunction = makeReplacementsAnalysis, replacements =
-##                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
-##                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+for i in range(14):
+    submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
+                  sample = "PPmuXptGt20_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # W + jets jobs
 for i in range(6):
