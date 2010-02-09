@@ -853,6 +853,9 @@ muTauAnalysisSequence = cms.VPSet(
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
                               'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative')
     ),
+
+    # veto events compatible with Z --> mu+ mu- hypothesis
+    # (based on reconstructed invariant mass of di-muon pair)
     cms.PSet(
         filter = cms.string('evtSelDiMuPairZmumuHypothesisVeto'),
         title = cms.string('not 80 < M (Muon-Muon) < 100 GeV'),
