@@ -7,6 +7,12 @@ import FWCore.ParameterSet.Config as cms
 
 #
 # produce collections of pat::Electrons, pat::Muons and
+# pat::(PF)Taus shifted and smeared to better describe the data
+# and for estimating systematic uncertainties
+#
+from TauAnalysis.RecoTools.patLeptonSystematics_cff import *
+#
+# produce collections of pat::Electrons, pat::Muons and
 # pat::(PF)Taus passing different selection criteria
 #
 from TauAnalysis.RecoTools.patLeptonSelection_cff import *
@@ -41,7 +47,9 @@ from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
 from TauAnalysis.RecoTools.diMuPairZmumuHypothesis_cff import *
 
 producePatTupleZtoMuTauSpecific = cms.Sequence(
-    selectLayer1Muons + selectLayer1MuonsLooseIsolation
+    prodSmearedMuons
+   + prodSmearedTaus
+   + selectLayer1Muons + selectLayer1MuonsLooseIsolation
    + selectLayer1Electrons
    + selectLayer1Taus + selectLayer1TausForMuTau
    + produceMuTauPairs + produceMuTauPairsLooseMuonIsolation
