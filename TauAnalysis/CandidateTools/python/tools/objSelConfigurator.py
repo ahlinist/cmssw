@@ -29,13 +29,16 @@ class objSelConfigurator(cms._ParameterTypeBase):
         # auxiliary class for composing name of module selecting "cumulative" collection
         @staticmethod
         def get_src(src, lastModuleName):
-            if lastModuleName == None:
+            if lastModuleName is None:
                 return src
             else:
                 return lastModuleName
         @staticmethod
-        def get_moduleName(name):
-            return composeModuleName(name, "Cumulative")
+        def get_moduleName(name, sysName = None):
+            moduleName_base = name
+            if sysName is not None:
+                moduleName_base = composeModuleName(name, sysName)
+            return composeModuleName(moduleName_base, "Cumulative")
 
     class _getterIndividual:
         # auxiliary class for composing name of module selecting "individual" collection
@@ -43,8 +46,11 @@ class objSelConfigurator(cms._ParameterTypeBase):
         def get_src(src, lastModuleName):
             return src
         @staticmethod
-        def get_moduleName(name):
-            return composeModuleName(name, "Individual")
+        def get_moduleName(name, sysName = None):
+            moduleName_base = name
+            if sysName is not None:
+                moduleName_base = composeModuleName(name, sysName)
+            return composeModuleName(moduleName_base, "Individual")
 
     def _addModule(self, objSelItem, getter, sysName = None, sysInputTag = None, pyNameSpace = None, process = None):        
         # create module
@@ -57,17 +63,15 @@ class objSelConfigurator(cms._ParameterTypeBase):
             if isinstance(objSelAttr, cms._ParameterTypeBase) and not objSelAttrName in ["pluginName", "pluginType"]:
                 setattr(module, objSelAttrName, objSelAttr)
                 
+        moduleName = getter.get_moduleName(getInstanceName(objSelItem, pyNameSpace, process), sysName)
+        module.setLabel(moduleName)        
+
         src = None
-        moduleName = None
-        
         if sysName is None:
             src = getter.get_src(self.src, self.lastModuleName)
-            moduleName = getter.get_moduleName(getInstanceName(objSelItem, pyNameSpace, process))
         else:
             src = getter.get_src(sysInputTag, self.lastModuleName)
-            moduleName = composeModuleName(getter.get_moduleName(getInstanceName(objSelItem, pyNameSpace, process)), sysName)
         setattr(module, self.srcAttr, cms.InputTag(src))
-        module.setLabel(moduleName)
 
         # if process object exists, attach module to process object;
         # else register module in global python name-space
@@ -82,7 +86,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
         self.lastModuleName = moduleName
 
         # add module to sequence
-        if self.sequence == None:
+        if self.sequence is None:
             self.sequence = module
         else:
             self.sequence *= module
