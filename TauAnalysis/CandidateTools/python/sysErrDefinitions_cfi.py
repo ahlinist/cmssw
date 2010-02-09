@@ -7,37 +7,33 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 electronSystematics = {
-    "sysElectronEnUp"       : "smearedLayer1Electrons:sysElectronEnUp",
-    "sysElectronEnDown"     : "smearedLayer1Electrons:sysElectronEnDown"
+    "sysElectronEnUp"       : "smearedElectronsEnScaleUp",
+    "sysElectronEnDown"     : "smearedElectronsEnScaleDown"
 }
 
 muonSystematics = {
-    "sysMuonPtUp"           : "smearedLayer1Muons:sysMuonPtUp",
-    "sysMuonPtDown"         : "smearedLayer1Muons:sysMuonPtDown" 
+    "sysMuonPtUp"           : "smearedMuonsEnScaleUp",
+    "sysMuonPtDown"         : "smearedMuonsEnScaleDown"
 }
 
 tauSystematics = {   
-    "sysTauJetEnUp"         : "smearedLayer1Taus:sysTauJetEnUp",
-    "sysTauJetEnDown"       : "smearedLayer1Taus:sysTauJetEnDown",    
-    "sysTauJetThetaUp"      : "smearedLayer1Taus:sysTauJetThetaUp",
-    "sysTauJetThetaDown"    : "smearedLayer1Taus:sysTauJetThetaDown",
-    "sysTauJetPhiUp"        : "smearedLayer1Taus:sysTauJetPhiUp",
-    "sysTauJetPhiDown"      : "smearedLayer1Taus:sysTauJetPhiDown",
-    "sysTauLeadTrackPtUp"   : "smearedLayer1Taus:sysTauLeadTrackPtUp",
-    "sysTauLeadTrackPtDown" : "smearedLayer1Taus:sysTauLeadTrackPtDown"
+    "sysTauJetEnUp"         : "smearedTausEnScaleUp",
+    "sysTauJetEnDown"       : "smearedTausEnScaleDown",
+    "sysTauJetThetaUp"      : "smearedTausEtaShiftUp",
+    "sysTauJetThetaDown"    : "smearedTausEtaShiftDown",
+    "sysTauJetPhiUp"        : "smearedTausPhiShiftUp",
+    "sysTauJetPhiDown"      : "smearedTausPhiShiftDown"
 }
 
 muTauPairSystematics = {
-    "sysMuonPtUp"           : "smearedMuTauPairsSysMuonPtUp",
-    "sysMuonPtDown"         : "smearedMuTauPairsSysMuonPtDown",
-    "sysTauJetEnUp"         : "smearedMuTauPairsSysTauJetEnUp",
-    "sysTauJetEnDown"       : "smearedMuTauPairsSysTauJetEnDown",
-    "sysTauJetThetaUp"      : "smearedMuTauPairsSysTauJetThetaUp",
-    "sysTauJetThetaDown"    : "smearedMuTauPairsSysTauJetThetaDown",
-    "sysTauJetPhiUp"        : "smearedMuTauPairsSysTauJetPhiUp",
-    "sysTauJetPhiDown"      : "smearedMuTauPairsSysTauJetPhiDown",
-    "sysTauLeadTrackPtUp"   : "smearedMuTauPairsSysTauLeadTrackPtUp",
-    "sysTauLeadTrackPtDown" : "smearedMuTauPairsSysTauLeadTrackPtDown"
+    "sysMuonPtUp"           : "allMuTauPairsSysMuonPtUp",
+    "sysMuonPtDown"         : "allMuTauPairsSysMuonPtDown",
+    "sysTauJetEnUp"         : "allMuTauPairsSysTauJetEnUp",
+    "sysTauJetEnDown"       : "allMuTauPairsSysTauJetEnDown",
+    "sysTauJetThetaUp"      : "allMuTauPairsSysTauJetThetaUp",
+    "sysTauJetThetaDown"    : "allMuTauPairsSysTauJetThetaDown",
+    "sysTauJetPhiUp"        : "allMuTauPairsSysTauJetPhiUp",
+    "sysTauJetPhiDown"      : "allMuTauPairsSysTauJetPhiDown"
 }
 
 theorySystematics = {
