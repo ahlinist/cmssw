@@ -23,7 +23,8 @@ bsTree_->Branch(  "triggerbit_HLTmu3"             , &triggerbit_HLTmu3_,        
 bsTree_->Branch(  "triggerbit_HLTmu5"		  , &triggerbit_HLTmu5_,                "triggerbit_HLTmu5/I");                                      
 bsTree_->Branch(  "triggerbit_HLTmu9"		  , &triggerbit_HLTmu9_,                "triggerbit_HLTmu9/I");                                      
 bsTree_->Branch(  "triggerbit_HLTdoubleIsoMu3"	  , &triggerbit_HLTdoubleIsoMu3_,       "triggerbit_HLTdoubleIsoMu3/I");                                
-bsTree_->Branch(  "triggerbit_HLTdoubleMu3"	  , &triggerbit_HLTdoubleMu3_,          "triggerbit_HLTdoubleMu3/I");                             
+bsTree_->Branch(  "triggerbit_HLTdoubleMu3"	  , &triggerbit_HLTdoubleMu3_,          "triggerbit_HLTdoubleMu3/I");        
+bsTree_->Branch(  "triggerbit_HLTdoubleMu0"	  , &triggerbit_HLTdoubleMu0_,          "triggerbit_HLTdoubleMu0/I");                             
 bsTree_->Branch(  "triggerbit_HLTdoubleMu3_JPsi"  , &triggerbit_HLTdoubleMu3_JPsi_,     "triggerbit_HLTdoubleMu3_JPsi/I");                              
 bsTree_->Branch(  "BSx"				  , &BSx_,                              "BSx/D");                                                     
 bsTree_->Branch(  "BSy"				  , &BSy_,                              "BSy/D");                                                    
@@ -119,7 +120,7 @@ bsTree_->Branch(  "BsLxy"			  , &BsLxy_,                            "BsLxy/D");
 bsTree_->Branch(  "BsCt"			  , &BsCt_,                             "BsCt/D");         
 bsTree_->Branch(  "BsLxyErr"			  , &BsLxyErr_,                            "BsLxyErr/D");                                                     
 bsTree_->Branch(  "BsCtErr"			  , &BsCtErr_,                             "BsCtErr/D");         
-
+ bsTree_->Branch(  "BsNumberOfCandidates"          , &BsNumberOfCandidates_,            "BsNumberOfCandidates/I");
 
 bsTree_->Branch(  "BsErrX"			  , &BsErrX_,                           "BsErrX/D");                                                    
 bsTree_->Branch(  "BsErrY"			  , &BsErrY_,                           "BsErrY/D");                                                    
@@ -263,7 +264,7 @@ bsTree_->Branch(  "BdFitPhi_Hyp2"		  , &BdFitPhi_Hyp2_,                    "BdFi
 bsTree_->Branch(  "BdFitVtx_x_Hyp2"		  , &BdFitVtx_x_Hyp2_,                  "BdFitVtx_x_Hyp2/D");                                           
 bsTree_->Branch(  "BdFitVtx_y_Hyp2"		  , &BdFitVtx_y_Hyp2_,                  "BdFitVtx_y_Hyp2/D");                                           
 bsTree_->Branch(  "BdFitVtx_z_Hyp2"		  , &BdFitVtx_z_Hyp2_,                  "BdFitVtx_z_Hyp2/D");                                           
-        
+bsTree_->Branch(  "BdNumberOfCandidates"          , &BdNumberOfCandidates_,            "BdNumberOfCandidates/I");
 bsTree_->Branch(  "BdK1_kpi_par_Hyp2"		  , BdK1_kpi_par_Hyp2_,                 "BdK1_kpi_par_Hyp2[7]/D");                                  
 bsTree_->Branch(  "BdK2_kpi_par_Hyp2"		  , BdK2_kpi_par_Hyp2_,                 "BdK2_kpi_par_Hyp2[7]/D");                              
 bsTree_->Branch(  "BdK1_kpi_sigX_Hyp2"		  , &BdK1_kpi_sigX_Hyp2_,               "BdK1_kpi_sigX_Hyp2/D");                                        
@@ -345,6 +346,7 @@ void BsToJpsiPhiRootTree::resetEntries()
   triggerbit_HLTmu9_ = -9999999;
   triggerbit_HLTdoubleIsoMu3_ = -9999999;
   triggerbit_HLTdoubleMu3_ = -9999999;
+  triggerbit_HLTdoubleMu0_ = -9999999;
   triggerbit_HLTdoubleMu3_JPsi_ = -9999999;
   BSx_ = -9999999;
   BSy_ = -9999999;
@@ -380,7 +382,7 @@ void BsToJpsiPhiRootTree::resetEntries()
   BsFitChi2_ = -9999999;
   BsFitNdof_ = -9999999;
   BsFitVtxProb_ = -9999999;
-
+  BsNumberOfCandidates_ =  0;
   BsFitM_ = -9999999;
   BsFitEta_ = -9999999;
   BsFitPt_ = -9999999;
@@ -549,7 +551,8 @@ void BsToJpsiPhiRootTree::resetEntries()
   BdFitVtx_x_Hyp2_ = -9999999;
   BdFitVtx_y_Hyp2_ = -9999999;
   BdFitVtx_z_Hyp2_ = -9999999;
- 
+  BdNumberOfCandidates_ =  0; 
+
 BdPVx_refit_    = -9999999;
 BdPVy_refit_    = -9999999;
 BdPVz_refit_    = -9999999;
@@ -740,7 +743,8 @@ bsTree_->SetBranchAddress(  "triggerbit_HLTmu3"             , &triggerbit_HLTmu3
 bsTree_->SetBranchAddress(  "triggerbit_HLTmu5"		  , &triggerbit_HLTmu5_  );                                   
 bsTree_->SetBranchAddress(  "triggerbit_HLTmu9"		  , &triggerbit_HLTmu9_  );                                 
 bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleIsoMu3"	  , &triggerbit_HLTdoubleIsoMu3_  );                           
-bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleMu3"	  , &triggerbit_HLTdoubleMu3_  );                        
+bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleMu3"	  , &triggerbit_HLTdoubleMu3_  );                 
+bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleMu0"	  , &triggerbit_HLTdoubleMu0_  );                        
 bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleMu3_JPsi"  , &triggerbit_HLTdoubleMu3_JPsi_  );                         
 bsTree_->SetBranchAddress(  "BSx"				  , &BSx_  );                                                
 bsTree_->SetBranchAddress(  "BSy"				  , &BSy_  );                                               
@@ -775,7 +779,8 @@ bsTree_->SetBranchAddress(  "JpsiMuon2Cat_alone"		  , &JpsiMuon2Cat_alone_  );
 bsTree_->SetBranchAddress(  "BsFitChi2"			  , &BsFitChi2_  );                                            
 bsTree_->SetBranchAddress(  "BsFitNdof"			  , &BsFitNdof_  );                                           
 bsTree_->SetBranchAddress(  "BsFitVtxProb"		  , &BsFitVtxProb_  );                                         
-       
+bsTree_->SetBranchAddress(  "BsNumberOfCandidates"        , &BsNumberOfCandidates_);
+
 bsTree_->SetBranchAddress(  "BsFitM"			  , &BsFitM_  );                                            
 bsTree_->SetBranchAddress(  "BsFitEta"			  , &BsFitEta_  );                                             
 bsTree_->SetBranchAddress(  "BsFitPt"			  , &BsFitPt_  );                                              
@@ -984,7 +989,7 @@ bsTree_->SetBranchAddress(  "BdPVz_refit",      &BdPVz_refit_   );
 bsTree_->SetBranchAddress(  "BdPVerrx_refit",   &BdPVerrx_refit_);     
 bsTree_->SetBranchAddress(  "BdPVerry_refit",   &BdPVerry_refit_);     
 bsTree_->SetBranchAddress(  "BdPVerrz_refit",   &BdPVerrz_refit_);     
-
+bsTree_->SetBranchAddress(  "BdNumberOfCandidates"        , &BdNumberOfCandidates_);
 bsTree_->SetBranchAddress(  "BdK1_kpi_par_Hyp2"		  , BdK1_kpi_par_Hyp2_  );                                 
 bsTree_->SetBranchAddress(  "BdK2_kpi_par_Hyp2"		  , BdK2_kpi_par_Hyp2_  );                             
 bsTree_->SetBranchAddress(  "BdK1_kpi_sigX_Hyp2"		  , &BdK1_kpi_sigX_Hyp2_  );                                   

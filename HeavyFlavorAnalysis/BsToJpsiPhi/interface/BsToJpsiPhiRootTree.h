@@ -41,7 +41,7 @@ public:
         int triggerbit_HLTdoubleIsoMu3_;
         int triggerbit_HLTdoubleMu3_;
         int triggerbit_HLTdoubleMu3_JPsi_;
-	
+	int triggerbit_HLTdoubleMu0_;
 
 
 	double	BSx_ ;
@@ -158,7 +158,7 @@ public:
 	double BsErrY_;
 	double BsErrXY_;
 
-
+	int BsNumberOfCandidates_;
 
 
         int     K1trkLay_;
@@ -271,6 +271,8 @@ public:
 
         double BdFitVtxProb_Hyp1_;
    
+	int BdNumberOfCandidates_;
+
 	double BdPVx_refit_   ;
 	double BdPVy_refit_   ;
 	double BdPVz_refit_   ;
