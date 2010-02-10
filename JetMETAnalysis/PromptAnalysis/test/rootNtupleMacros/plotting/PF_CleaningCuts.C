@@ -2,8 +2,8 @@
 
 gROOT->Reset();
 
-TFile DATA("output_DATA900.root");
-TFile MC("output_MC900_test1.root");
+TFile DATA("output_DATA900GeV_PFCleaning_1.root");
+TFile MC("output_MC900GeV_PFCleaning_1.root");
 //cut functions from http://indico.cern.ch/getFile.py/access?contribId=5&resId=0&materialId=slides&confId=81128
 
 float E_cut_EM = 80.;
@@ -179,6 +179,92 @@ f_Cut_ECAL->SetLineStyle(2);
 f_Cut_ECAL->Draw("same");
 
 c_EB_MC.SaveAs("eb_S4S1_vs_1overE_MC.eps");
+
+
+DATA.cd();
+
+TF1 fitpol1("fitpol1","pol1",0,100000);
+fitpol1.SetLineColor(kRed);
+
+TF1 fitpol1_PF("fitpol1_PF","pol1",0,100000);
+fitpol1_PF.SetLineColor(kBlue);
+fitpol1_PF.SetLineStyle(2);
+
+TF1 fitpol1_tc("fitpol1_tc","pol1",0,100000);
+fitpol1_tc.SetLineColor(kRed);
+fitpol1_tc.SetLineStyle(2);
+
+//*************
+TCanvas c_EB_DATA_Rate;
+c_EB_DATA_Rate.SetGridx();
+c_EB_DATA_Rate.SetGridy();
+
+g_RateNoiseEvents_ECAL_PFMET.SetMarkerColor(kBlue);
+g_RateNoiseEvents_ECAL_PFMET.SetMarkerStyle(23);
+g_RateNoiseEvents_ECAL_PFMET.Draw("ap");
+g_RateNoiseEvents_ECAL_PFMET.Fit("fitpol1");
+
+TCanvas c_HFEM_DATA_Rate;
+c_HFEM_DATA_Rate.SetGridx();
+c_HFEM_DATA_Rate.SetGridy();
+
+g_RateNoiseEvents_HFEM_PFMET.SetMarkerColor(kBlue);
+g_RateNoiseEvents_HFEM_PFMET.SetMarkerStyle(23);
+g_RateNoiseEvents_HFEM_PFMET.Draw("ap");
+g_RateNoiseEvents_HFEM_PFMET.Fit("fitpol1");
+
+TCanvas c_HFHAD_DATA_Rate;
+c_HFHAD_DATA_Rate.SetGridx();
+c_HFHAD_DATA_Rate.SetGridy();
+
+g_RateNoiseEvents_HFHAD_PFMET.SetMarkerColor(kBlue);
+g_RateNoiseEvents_HFHAD_PFMET.SetMarkerStyle(23);
+g_RateNoiseEvents_HFHAD_PFMET.Draw("ap");
+g_RateNoiseEvents_HFHAD_PFMET.Fit("fitpol1");
+
+
+TCanvas c_EB_DATA_Rate_tc_vs_pf;
+c_EB_DATA_Rate_tc_vs_pf.SetGridx();
+c_EB_DATA_Rate_tc_vs_pf.SetGridy();
+
+g_RateNoiseEvents_ECAL_PFMET.SetMarkerColor(kBlue);
+g_RateNoiseEvents_ECAL_PFMET.SetMarkerStyle(23);
+g_RateNoiseEvents_ECAL_PFMET.Draw("ap");
+g_RateNoiseEvents_ECAL_PFMET.Fit("fitpol1_PF");
+
+g_RateNoiseEvents_ECAL_tcMET.SetMarkerColor(kRed);
+g_RateNoiseEvents_ECAL_tcMET.SetMarkerStyle(23);
+g_RateNoiseEvents_ECAL_tcMET.Draw("psame");
+g_RateNoiseEvents_ECAL_tcMET.Fit("fitpol1_tc");
+
+
+TCanvas c_HFEM_DATA_Rate_tc_vs_pf;
+c_HFEM_DATA_Rate_tc_vs_pf.SetGridx();
+c_HFEM_DATA_Rate_tc_vs_pf.SetGridy();
+
+g_RateNoiseEvents_HFEM_PFMET.SetMarkerColor(kBlue);
+g_RateNoiseEvents_HFEM_PFMET.SetMarkerStyle(23);
+g_RateNoiseEvents_HFEM_PFMET.Draw("ap");
+g_RateNoiseEvents_HFEM_PFMET.Fit("fitpol1_PF");
+
+g_RateNoiseEvents_HFEM_tcMET.SetMarkerColor(kRed);
+g_RateNoiseEvents_HFEM_tcMET.SetMarkerStyle(23);
+g_RateNoiseEvents_HFEM_tcMET.Draw("psame");
+g_RateNoiseEvents_HFEM_tcMET.Fit("fitpol1_tc");
+
+TCanvas c_HFHAD_DATA_Rate_tc_vs_pf;
+c_HFHAD_DATA_Rate_tc_vs_pf.SetGridx();
+c_HFHAD_DATA_Rate_tc_vs_pf.SetGridy();
+
+g_RateNoiseEvents_HFHAD_PFMET.SetMarkerColor(kBlue);
+g_RateNoiseEvents_HFHAD_PFMET.SetMarkerStyle(23);
+g_RateNoiseEvents_HFHAD_PFMET.Draw("ap");
+g_RateNoiseEvents_HFHAD_PFMET.Fit("fitpol1_PF");
+
+g_RateNoiseEvents_HFHAD_tcMET.SetMarkerColor(kRed);
+g_RateNoiseEvents_HFHAD_tcMET.SetMarkerStyle(23);
+g_RateNoiseEvents_HFHAD_tcMET.Draw("psame");
+g_RateNoiseEvents_HFHAD_tcMET.Fit("fitpol1_tc");
 
 
 
