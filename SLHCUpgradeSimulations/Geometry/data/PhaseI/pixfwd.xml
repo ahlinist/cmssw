@@ -9,19 +9,27 @@
  <Constant name="AnchorZ"        value="0.*mm"/>
  <Constant name="ZPixelForward"  value="291.*mm"/>
  <Constant name="RootStartZ"     value="-2*mm"/>
- <Constant name="RootMidZ"       value="[cms:TrackBeamZ1]-[ZPixelForward]"/>
+ <Constant name="RootMidZ1"      value="[cms:TrackLumiZ1]-[ZPixelForward]"/>
+ <Constant name="RootMidZ2"      value="[cms:TrackLumiZ2]-[ZPixelForward]"/>
+ <Constant name="RootMidZ3"      value="[cms:TrackBeamZ1]-[ZPixelForward]"/>
  <Constant name="RootEndZ"       value="2*[RootHalfLength]"/>
 
- <Constant name="Disk1Z"         value="31*mm"/> 
+ <Constant name="Disk1Z"         value="31*mm"/>
  <Constant name="Disk2Z"         value="[Disk1Z]+75*mm"/>
  <Constant name="Disk3Z"         value="[Disk2Z]+120*mm"/>
-  <Constant name="ZCylinder" value="[AnchorZ]"/>
+
+ <Constant name="ZCylinder"      value="[AnchorZ]"/>
+
 </ConstantsSection>
 
 <SolidSection label="pixfwd.xml">
  <Polycone name="PixelForward" startPhi="0*deg" deltaPhi="360*deg" >
  <ZSection z="[RootStartZ]"  rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
- <ZSection z="[RootMidZ]"    rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
+ <ZSection z="[RootMidZ1]"   rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
+ <ZSection z="[RootMidZ1]"   rMin="[cms:TrackLumiR1]" rMax="[RootRadius]"/>
+ <ZSection z="[RootMidZ2]"   rMin="[cms:TrackLumiR1]" rMax="[RootRadius]"/>
+ <ZSection z="[RootMidZ2]"   rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
+ <ZSection z="[RootMidZ3]"   rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
  <ZSection z="[RootEndZ]"    rMin="[cms:TrackBeamR2]" rMax="[RootRadius]"/>
  </Polycone>
 </SolidSection>
@@ -38,37 +46,33 @@
 
 <PosPartSection label="pixfwd.xml">
   <PosPart copyNumber="1">
-    <rParent name="PixelForward"/>
+    <rParent name="pixfwd:PixelForward"/>
     <rChild name="pixfwdDisks:PixelForwardDisk"/>
-    <Translation x="0.*mm" y="0.*mm" z="[AnchorZ]+[Disk1Z]"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk1Z]"/>
   </PosPart>
-  
   <PosPart copyNumber="2">
-    <rParent name="PixelForward"/>
+    <rParent name="pixfwd:PixelForward"/>
     <rChild name="pixfwdDisks:PixelForwardDisk"/>
-    <Translation x="0.*mm" y="0.*mm" z="[AnchorZ]+[Disk2Z]"/>
-   </PosPart>
-  
-  <PosPart copyNumber="3">
-   <rParent name="PixelForward"/>
-      <rChild name="pixfwdDisks:PixelForwardDisk"/>
-   <Translation x="0.*mm" y="0.*mm" z="[AnchorZ]+[Disk3Z]" />
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk2Z]"/>
   </PosPart>
-
+  <PosPart copyNumber="3">
+    <rParent name="pixfwd:PixelForward"/>
+    <rChild name="pixfwdDisks:PixelForwardDisk"/>
+    <Translation x="0." y="0." z="[AnchorZ]+ [Disk3Z]" />
+  </PosPart>
 
   <PosPart copyNumber="1">
     <rParent name="pixfwd:PixelForward"/>
     <rChild name="pixfwdCylinder:PixelForwardServiceCylinder"/>
-    <Translation x="0.*mm" y="0.*mm" z="0.*mm"/>
+    <Translation x="0." y="0." z="0."/>
   </PosPart>
-
   <PosPart copyNumber="1">
-    <rParent name="pixfwd:PixelForward"/>
+
+  <rParent name="pixfwd:PixelForward"/>
     <rChild name="pixfwdCylinder:PixelForwardCylinderEndFlange"/>
     <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersOuterLength]+[pixfwdCylinder:CylindersEndFlangeLength]/2."/>
     <rRotation name="pixfwdCylinder:EndFlangeRot1"/>
   </PosPart>
-
   <PosPart copyNumber="2">
     <rParent name="pixfwd:PixelForward"/>
     <rChild name="pixfwdCylinder:PixelForwardCylinderEndFlange"/>
@@ -79,10 +83,9 @@
   <!-- xt PosPart copyNumber="1">
     <rParent name="pixfwd:PixelForward"/>
     <rChild name="pixfwdCylinder:PixelForwardCylinderBackCyl"/>
-    <Translation x="0.*mm" y="0.*mm" z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersFrontLength]+[pixfwdCylinder:CylinderBackLength]/2." />
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersFrontLength]+[pixfwdCylinder:CylinderBackLength]/2." />
   </PosPart xt -->
 
 </PosPartSection>
-
     
 </DDDefinition>
