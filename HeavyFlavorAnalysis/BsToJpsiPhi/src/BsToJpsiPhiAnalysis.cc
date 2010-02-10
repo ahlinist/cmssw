@@ -112,6 +112,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
 
   verbose_                = iConfig.getParameter<bool>("verbose");
   outputFile_ = iConfig.getUntrackedParameter<std::string>("outputFile");
+  event_counter_ = 0;
 
   edm::LogInfo("RecoVertex/BsToJpsiPhiAnalysis")<< "Initializing Bs to Jpsi Phi analyser  - Output file: " << outputFile_ <<"\n";
 
@@ -250,6 +251,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     if (trigName=="HLT_Mu9") bsRootTree_->triggerbit_HLTmu9_ = hltresults->accept(itrig);
     if (trigName=="HLT_DoubleIsoMu3")  bsRootTree_->triggerbit_HLTdoubleIsoMu3_   = hltresults->accept(itrig);
     if (trigName=="HLT_DoubleMu3")     bsRootTree_->triggerbit_HLTdoubleMu3_      = hltresults->accept(itrig);
+    if (trigName=="HLT_DoubleMu0")     bsRootTree_->triggerbit_HLTdoubleMu0_      = hltresults->accept(itrig);
     if (trigName=="HLT_DoubleMu3_JPsi")bsRootTree_->triggerbit_HLTdoubleMu3_JPsi_ = hltresults->accept(itrig);
   }
   
@@ -466,9 +468,15 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    AlgebraicSymMatrix77 bs_er = bs->currentState().kinematicParametersError().matrix();
 
 	    double fittedBsMass = b_par[6];
-	    if (vtxprob_Bs > minVtxP){
 	    
-	      
+	    // check if it is a valid candidate to be counted (verify passed AfterFit cuts)
+	    if (abs(Jpsi.mass() - nominalJpsiMass) < JpsiMassWindowAfterFit_ && Jpsi.pt() > JpsiPtCut_ &&
+		abs(PhiCand.mass() - nominalPhiMass) < PhiMassWindowAfterFit_ &&
+		fittedBsMass > BsLowerMassCutAfterFit_ && fittedBsMass < BsUpperMassCutAfterFit_  ) bsRootTree_->BsNumberOfCandidates_++;
+
+	    // store values in root tree if vtx probability is higher than already stored one
+	    if (vtxprob_Bs > minVtxP){
+	     
 	      if (abs(Jpsi.mass() - nominalJpsiMass) > JpsiMassWindowAfterFit_ || Jpsi.pt() < JpsiPtCut_) continue;
 	      // passed jpsi mass window after fit
 	      if(bsRootTree_->iPassedCutIdent_   < 11 ) bsRootTree_->iPassedCutIdent_ = 11 ;
@@ -945,17 +953,23 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    double vtxProbHyp2 = TMath::Prob(bmesHyp2->chiSquared(),(int)bmesHyp2->degreesOfFreedom());
 
 	
-// 	    // temporary check
-// 	    if( fabs(vtxProbHyp1 - vtxProbHyp2) > 0.001 ) {
-// 	      std::cout<<"vtx probs not equal" << std::endl;
-// 	      exit(1);
-// 	    }
-
+	    // 	    // temporary check
+	    // 	    if( fabs(vtxProbHyp1 - vtxProbHyp2) > 0.001 ) {
+	    // 	      std::cout<<"vtx probs not equal" << std::endl;
+	    // 	      exit(1);
+	    // 	    }
+	    
+	    double fittedBdMassHyp1 =  b_parHyp1[6];
+	    double fittedBdMassHyp2 =  b_parHyp2[6];
+	    
+	    if (abs(Jpsi.mass() - nominalJpsiMass) < JpsiMassWindowAfterFit_ && Jpsi.pt() > JpsiPtCut_ &&
+		(abs(Kstmass1 - nominalKstarMass)< KstarMassWindowAfterFit_  ||   
+		 abs(Kstmass2 - nominalKstarMass)< KstarMassWindowAfterFit_) &&
+	       ( ( fittedBdMassHyp1 > BdLowerMassCutAfterFit_ && fittedBdMassHyp1 < BdUpperMassCutAfterFit_ ) ||
+		( fittedBdMassHyp2 > BdLowerMassCutAfterFit_ && fittedBdMassHyp2 < BdUpperMassCutAfterFit_ ) ) ) bsRootTree_->BdNumberOfCandidates_++;
+	    
 	    if(vtxProbHyp1>MinBVtxHyp1){
-	   
-	      double fittedBdMassHyp1 =  b_parHyp1[6];
-	      double fittedBdMassHyp2 =  b_parHyp2[6];
-
+	      
 	      if (abs(Jpsi.mass() - nominalJpsiMass) > JpsiMassWindowAfterFit_ || Jpsi.pt() < JpsiPtCut_) continue;
 	      // passed jpsi mass window after fit
 	      if(bsRootTree_->iPassedCutIdentBd_   < 11 ) bsRootTree_->iPassedCutIdentBd_ = 11 ;
