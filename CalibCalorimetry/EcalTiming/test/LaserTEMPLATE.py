@@ -14,7 +14,7 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
-process.GlobalTag.globaltag = 'GR09_31X_V6P::All'
+process.GlobalTag.globaltag = 'GR10_P_V1::All'
 
 
 process.maxEvents = cms.untracked.PSet(

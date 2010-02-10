@@ -37,7 +37,7 @@ echo 'Making Calib Webpages for ' ${run_num}
 
 
 # specify directories here
-my_cmssw_base='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/ccecal/PFG_devel_332/src'
+my_cmssw_base='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/ccecal/PFG_devel_341/src'
 work_dir=${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/SCRIPTS'
 
 plots_dir=plots/Calib/$run_num;

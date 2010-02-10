@@ -72,20 +72,21 @@ if [ "${analy_type}" == "Laser" ]
 then
    echo "Running the laser combination analysis"
    CheckEcalTiming.sh -p Run_${run_num} -ff True -ffn ${analy_type}_${run_num}.root -n 25 -t 25 -dt Laser -l 2
-   rm -fr data
-   rm -fr conf
+   ####rm -fr data
+   ####rm -fr conf
    mv -f log/Timing${analy_type}_Run_${run_num}.*.root ${analy_type}_${run_num}.root
-   rm -fr log
+   ####rm -fr log
 fi
 
 if [ "${analy_type}" == "Timing" ]
 then
    echo "Running the Timing combination analysis"
-   CheckEcalTiming.sh -p Run_${run_num} -ff True -ffn ${analy_type}_${run_num}.root -n 5 -t 25 -dt Physics -l 2 -aa 5.0 -as 0.0 -dr True 
-   rm -fr data
-   rm -fr conf
+   #CheckEcalTiming.sh -p Run_${run_num} -ff True -ffn ${analy_type}_${run_num}.root -n 5 -t 25 -dt Physics -l 2 -aa 5.0 -as 0.0 -dr True 
+   CheckEcalTiming.sh -p Run_${run_num} -ff True -ffn ${analy_type}_${run_num}.root -n 0 -t 15 -dt Physics -l 2 -aa 5.0 -as 0.0 -dr True -tt True
+   ###rm -fr data
+   ###rm -fr conf
    mv -f log/TimingPhysics_Run_${run_num}.*.root ${analy_type}_${run_num}.root
-   rm -fr log
+   ###rm -fr log
 fi
 
 
@@ -119,7 +120,7 @@ else
     rfcp ${analy_type}_${run_num}.root ${output_dir}
     rfchmod 775 ${output_dir}/${analy_type}_${run_num}.log
     rfchmod 775 ${output_dir}/${analy_type}_${run_num}.root
-    rm -f ${analy_type}_${run_num}.log
+    ####rm -f ${analy_type}_${run_num}.log
 fi
 
 size=`\ls -l ${analy_type}_${run_num}.root | grep -c ${run_num}`;

@@ -14,7 +14,17 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
-process.GlobalTag.globaltag = 'GR09_P_V6::All'
+process.GlobalTag.globaltag = 'GR10_P_V1::All'
+
+# shaping our Message logger to suit our needs
+process.MessageLogger = cms.Service("MessageLogger",
+    #suppressWarning = cms.untracked.vstring('ecalEBunpacker', 'ecalUncalibHit', 'ecalRecHit', 'ecalCosmicsHists'),
+    #suppressInfo = cms.untracked.vstring('ecalEBunpacker', 'ecalUncalibHit', 'ecalRecHit', 'ecalCosmicsHists'),
+    cout = cms.untracked.PSet(threshold = cms.untracked.string('ERROR')),
+    categories = cms.untracked.vstring('ecalDigis','ecalDccDigis','uncalibHitMaker','ecalDetIdToBeRecovered','ecalRecHit'),
+    destinations = cms.untracked.vstring('cout')
+)
+
 
 
 process.maxEvents = cms.untracked.PSet(
@@ -54,12 +64,14 @@ process.uncalibHitMaker = cms.EDProducer("EcalUncalibRecHitProducer",
 
 process.ecalDccDigis = cms.EDFilter("EcalDccDigiSkimer",
                                         EEdigiCollectionOut = cms.string('eeDigiSkim'),
-                                        EEdigiCollection = cms.InputTag("ecalEBunpacker","eeDigis"),
+                                        EEdigiCollection = cms.InputTag("ecalDigis","eeDigis"),
                                         EBdigiCollectionOut = cms.string('ebDigiSkim'),
-                                        EBdigiCollection = cms.InputTag("ecalEBunpacker","ebDigis"),
-                                        DigiUnpacker = cms.InputTag("ecalEBunpacker"),
+                                        EBdigiCollection = cms.InputTag("ecalDigis","ebDigis"),
+                                        DigiUnpacker = cms.InputTag("ecalDigis"),
                                         DigiType = cms.string('Physics')
                                     )
+
+process.load("RecoLocalCalo.EcalRecProducers.ecalDetIdToBeRecovered_cfi")
 
 process.load("RecoLocalCalo.EcalRecProducers.ecalRecHit_cfi")
 # make sure our calibrated rec hits can find the new name for our uncalibrated rec hits
@@ -106,7 +118,7 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                               ChPeakTime = cms.untracked.string('ChPeakTimeTiming.txt'),
                               hitCollection = cms.string('EcalUncalibRecHitsEB'),
                               rhitCollection = cms.untracked.string('EcalRecHitsEB'),
-                              digiProducer = cms.string('ecalEBunpacker'),
+                              digiProducer = cms.string('ecalDigis'),
                               CorrectEcalReadout = cms.untracked.bool(False),
                               FromFile = cms.untracked.bool(False),
                               RunStart = cms.untracked.double(1215192037.0),
@@ -119,6 +131,7 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                               MinEBXtals = cms.untracked.int32(-1),
                               EBRadius = cms.untracked.double(1.4)
                               )
+process.ecalDigis = process.ecalEBunpacker.clone()
 
-process.p = cms.Path(process.ecalEBunpacker*process.ecalDccDigis*process.uncalibHitMaker*process.ecalRecHit*process.timing)
+process.p = cms.Path(process.ecalDigis*process.ecalDccDigis*process.uncalibHitMaker*process.ecalDetIdToBeRecovered*process.ecalRecHit*process.timing)
 
