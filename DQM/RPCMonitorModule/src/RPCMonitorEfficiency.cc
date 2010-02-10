@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.38 2010/02/02 11:51:43 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.39 2010/02/02 12:32:31 carrillo Exp $
 //
 //
 
@@ -111,7 +111,7 @@ public:
   TH1F * residualDiskm3Ring3;
   
   TH1F * EffBarrel; //Average
-  TH1F * DoubleGapBarrel; //Double Gap
+  TH1F * DoubleGapBarrel; //Double GapEff
   TH1F * CentralEffBarrel; //Central Zone
   TH1F * BXEffBarrel; //Distribution for good synchronized chambers
   TH1F * badBXEffBarrel; //Distribution for bad synchronized chambers
@@ -3979,6 +3979,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
+       std::cout<<"flag "<<i<<" "<<x[i]<<" "<<ex[i]<<" "<<y[i]<<" "<<ey[i]<<std::endl;
      }
   }   
   
@@ -4773,10 +4774,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca9->Clear();
 
   AllResidualsBarrel->Draw(); AllResidualsBarrel->GetXaxis()->SetTitle("cm");
+  AllResidualsBarrel->Write();
   Ca9->SaveAs("AllResidualsBarrel.png"); 
   Ca9->Clear();
 
   AllResidualsEndCap->Draw(); AllResidualsEndCap->GetXaxis()->SetTitle("cm");
+  AllResidualsEndCap->Write();
   Ca9->SaveAs("AllResidualsEndCap.png"); 
   Ca9->Clear();
 
@@ -5719,6 +5722,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  DoubleGapDistroW2far->Write();
 
  EffBarrel->Write();
+ DoubleGapBarrel->Write();
+ CentralEffBarrel->Write();
+ BXEffBarrel->Write();
+ badBXEffBarrel->Write();
+
  EffDistroWm2->Write();
  EffDistroWm1->Write();
  EffDistroW0->Write();
@@ -5732,6 +5740,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  EffDistroW2far->Write();
 
  EffEndCap->Write();
+ CentralEffEndCap->Write();
+ DoubleGapEndCap->Write();
+ badBXEffEndCap ->Write();
 
  GregD1R2->Write();
  GregD1R3->Write();
