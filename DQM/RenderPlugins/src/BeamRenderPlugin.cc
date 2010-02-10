@@ -2,8 +2,8 @@
   \File BeamRenderPlugin
   \Display Plugin for BeamSpot DQM Histograms
   \author 
-  \version $Revision: 1.5 $
-  \date $Date: 2010/02/03 00:31:55 $
+  \version $Revision: 1.6 $
+  \date $Date: 2010/02/03 00:43:46 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -31,6 +31,9 @@ public:
       return true;
       
     if (o.name.find( "/Fit/" ) != std::string::npos)
+      return true;
+
+    if (o.name.find( "/PrimaryVertex/" ) != std::string::npos)
       return true;
 
     return false;
@@ -86,27 +89,28 @@ private:
     ya->SetTitleSize(0.04);
     ya->SetLabelSize(0.03);
 
-    if ( o.name.find( "reportSummaryMap" )  != std::string::npos) {
-      obj->SetStats( kFALSE );
-      dqm::utils::reportSummaryMapPalette(obj);
-      obj->SetOption("colz");
-      return;
-    }
-
     if ( o.name.find( "trk_vx_vy" )  != std::string::npos) {
       gStyle->SetOptStat(11);
       obj->SetOption("colz");
       return;
     }
 
-    if ( o.name.find( "fitResults" )  != std::string::npos) {
+    xa->SetTitleSize(0.04);
+    xa->SetLabelSize(0.045);
+    ya->SetLabelSize(0.045);
+
+    if ( o.name.find( "fitResults" )  != std::string::npos ||
+	 o.name.find( "pvResults" )  != std::string::npos) {
       c->SetGrid();
       obj->SetStats( kFALSE );
       obj->SetMarkerSize(2.);
-      xa->SetTitleSize(0.04);
-      xa->SetLabelSize(0.045);
+      return;
+    }
 
-      ya->SetLabelSize(0.045);
+    if ( o.name.find( "reportSummaryMap" )  != std::string::npos) {
+      obj->SetStats( kFALSE );
+      dqm::utils::reportSummaryMapPalette(obj);
+      obj->SetOption("colz");
       return;
     }
 
@@ -117,7 +121,7 @@ private:
     assert( obj );
 
     TAxis* ya = obj->GetYaxis();
-    ya->SetTitleOffset(1.1);
+    ya->SetTitleOffset(1.15);
     ya->SetTitleSize(0.04);
     ya->SetLabelSize(0.03);
 
@@ -130,6 +134,7 @@ private:
       c->SetLogy();
       return;
     }
+
   }
 
   void preDrawTProfile( TCanvas *, const VisDQMObject &o ) {
