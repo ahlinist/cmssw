@@ -278,7 +278,7 @@ process.source = cms.Source('PoolSource',
 fi
 
 path="
-process.p = cms.Path(process.ecalEBunpacker*process.ecalDccDigis*process.uncalibHitMaker*process.timing)
+process.p = cms.Path(process.ecalDigis*process.ecalDccDigis*process.uncalibHitMaker*process.ecalDetIdToBeRecovered*process.ecalRecHit*process.timing)
 "
 
 if [[ $from_file == "True" ]]; then
@@ -356,7 +356,9 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
-process.GlobalTag.globaltag = 'GR09_31X_V6P::All'
+#process.GlobalTag.globaltag = 'GR09_31X_V6P::All'
+process.GlobalTag.globaltag = 'GR10_P_V1::All'
+
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32( $maxevnts )
@@ -370,10 +372,10 @@ $recomethod
 
 process.ecalDccDigis = cms.EDFilter("EcalDccDigiSkimer",
                                         EEdigiCollectionOut = cms.string('eeDigiSkim'),
-                                        EEdigiCollection = cms.InputTag("ecalEBunpacker","eeDigis"),
+                                        EEdigiCollection = cms.InputTag("ecalDigis","eeDigis"),
                                         EBdigiCollectionOut = cms.string('ebDigiSkim'),
-                                        EBdigiCollection = cms.InputTag("ecalEBunpacker","ebDigis"),
-                                        DigiUnpacker = cms.InputTag("ecalEBunpacker"),
+                                        EBdigiCollection = cms.InputTag("ecalDigis","ebDigis"),
+                                        DigiUnpacker = cms.InputTag("ecalDigis"),
                                         DigiType = cms.string('$data_type')
                                     )
 
@@ -381,6 +383,7 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                   rootfile = cms.untracked.string('Timing${data_type}_$data_file.$$.root'),
                                   CorrectBH = cms.untracked.bool($correct_bh),
                                   hitProducer = cms.string('uncalibHitMaker'),
+				  rhitProducer = cms.untracked.string('ecalRecHit'),
                                   minNumEvt = cms.untracked.double($number),
                                   FromFileName = cms.untracked.string('$from_file_name'),
                                   TTPeakTime = cms.untracked.string('TTPeakPositionFile${data_type}_${data_file}.$$.txt'),
@@ -396,6 +399,7 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                                                              5., 5., 5., 5., 5.,
                                                                              5., 5., 5., 5.),                                                                          
 				  hitProducerEE = cms.string('uncalibHitMaker'),
+				  rhitProducerEE = cms.untracked.string('ecalRecHit'),
                                   amplThr = cms.untracked.double($threshold),
                                   SMCorrections = cms.untracked.vdouble(5.0, 5.0, 5.0, 5.0, 5.0,
                                                                         5.0, 5.0, 5.0, 5.0, 5.0,
@@ -410,9 +414,11 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                                                         5.0, 5.0, 5.0, 5.0),
 				  BeamHaloPlus = cms.untracked.bool($bh_plus),
                                   hitCollectionEE = cms.string('EcalUncalibRecHitsEE'),
+				  rhitCollectionEE = cms.untracked.string('EcalRecHitsEE'),
                                   ChPeakTime = cms.untracked.string('ChPeakTime${data_type}_${data_file}.$$.txt'),
                                   hitCollection = cms.string('EcalUncalibRecHitsEB'),
-                                  digiProducer = cms.string('ecalEBunpacker'),
+				  rhitCollection = cms.untracked.string('EcalRecHitsEB'),
+                                  digiProducer = cms.string('ecalDigis'),
                                   CorrectEcalReadout = cms.untracked.bool($correct_ecal),
                                   FromFile = cms.untracked.bool($from_file),
                                   RunStart = cms.untracked.double($start_time),
@@ -424,6 +430,14 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                   AllShift = cms.untracked.double($all_shift),
                                   EBRadius = cms.untracked.double($eb_radius)
                               )
+
+process.ecalDigis = process.ecalEBunpacker.clone()
+process.load("RecoLocalCalo.EcalRecProducers.ecalDetIdToBeRecovered_cfi")
+process.load("RecoLocalCalo.EcalRecProducers.ecalRecHit_cfi")
+# make sure our calibrated rec hits can find the new name for our uncalibrated rec hits
+process.ecalRecHit.EBuncalibRecHitCollection = 'uncalibHitMaker:EcalUncalibRecHitsEB'
+process.ecalRecHit.EEuncalibRecHitCollection = 'uncalibHitMaker:EcalUncalibRecHitsEE'
+
 
 $path
 

@@ -25,6 +25,7 @@ for i
       -s) shift; nsplit=$2;shift;;
       -at) shift; analy_type=$2;shift;;
       -fn)  shift; file_name=$2;shift;;
+      -fnf) shift; fnamefiles=$2;shift;; 
 #      -o) shift; output_dir=$2;shift;;
   esac      
 done
@@ -40,6 +41,17 @@ if [ "X"${file_name} == "X" ]
     then
     echo "You are using crab"
 fi
+
+if [ "X"${fnamefiles} != "X" ]
+    then
+    echo "You are using a list of files"
+    echo 
+    echo " file name is: " $file_name
+    file_name=`echo $(cat ${file_name})`
+    echo " file name is now: " $file_name
+
+fi
+
 
 
 if [ ${run_num} -lt 68094 ]
@@ -98,9 +110,18 @@ if [ ${analy_type} == "Laser" ]
     else
 	echo " splitting into "${nsplit} "events per job"
     fi
+elif [ ${analy_type} == "Timing" ]
+	then
+	if [ "X"${nsplit} == "X" ]
+	    then
+	    nsplit=50000
+	    echo " using default split of 50000 events per job"
+	else
+	    echo " splitting into "${nsplit} "events per job"
+	fi
 else
     nsplit=10000000000
-    echo " Calib or Timing run: all events in one job"
+    echo " Calib run: all events in one job"
 fi
 
 this_dir=`pwd`;
@@ -144,14 +165,17 @@ cat CRABTEMPLATE.cfg | /bin/sed "s@RUNNUMBER@${run_num}@g; s@EVENTSPERJOB@${nspl
 cd ${analy_type}_${run_num};
 #pwd
 
-echo " setting up crab env"
-# setup crab environment
-source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh;
+
 eval `scramv1 runtime -sh`;
-source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh;
 
 if [ "X"${file_name} == "X" ]
     then
+    echo " setting up crab env"
+# setup crab environment
+    source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh;
+    eval `scramv1 runtime -sh`;
+    source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh;
+
     echo "You are using crab"
     echo " launching crab jobs"
     crab -create;
