@@ -3,7 +3,8 @@
 BsToJpsiPhiRootTree::BsToJpsiPhiRootTree()
 {
   resetEntries();
-  
+  bsTree_ = 0;
+  bsFile_ = 0;
 
 }
 
@@ -737,6 +738,20 @@ void BsToJpsiPhiRootTree::readTree(const std::string filename)
   // create tree structure
   bsTree_ =  (TTree*) bsFile_->Get("BsTree");
   
+  setBranchAddresses();
+}
+
+void BsToJpsiPhiRootTree::readTree(std::vector<std::string> filenames){
+  TChain * myChain = new TChain("BsTree");
+  for(std::vector<std::string>::iterator it = filenames.begin(); it!=filenames.end(); it++){
+    myChain->Add( (*it).c_str());
+  }
+
+  bsTree_ = myChain;
+  setBranchAddresses();
+}
+
+void BsToJpsiPhiRootTree::setBranchAddresses(){
 
 
 bsTree_->SetBranchAddress(  "triggerbit_HLTmu3"             , &triggerbit_HLTmu3_  );                    

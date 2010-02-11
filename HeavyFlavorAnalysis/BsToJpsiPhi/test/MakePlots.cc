@@ -8,10 +8,13 @@
 #include <vector>
 #include <iostream>
 #include <map>
+#include "VariableList.h"
 
 // global flag to include ppmumux histograms
 const bool usePpMuMux = false;
 
+// lumi to be scaled to
+const double LumiToScaleTo = 10. ; // scale to 10pb-1
 
 // function to scale histograms to the normalized luminosity
 void ScaleHistograms(TH1F* BsJPsiPhiSignal,  TH1F* BsJPsiKKSignal, TH1F* BdJPsiKstarSignal, TH1F* BsOther,
@@ -1678,18 +1681,19 @@ JpsiOther         ->Sumw2();
 // JpsiOther            ->Scale(10./ 9.);   
 //  ppmumux              ->Scale(10./0.9);
 
-BsJPsiPhiSignal      ->Scale(10./ 48.); 
-BsJPsiKKSignal       ->Scale(10./ 38. ); 
-BdJPsiKstarSignal    ->Scale(10./ 83.);  
-BsOther              ->Scale(10./ 48. ); 
-BdOther              ->Scale(10./ 83. ); 
-BOther               ->Scale(10./ 69.);  
-BsJpsiEta            ->Scale(10./ 16.);  
-BdJpsiK10            ->Scale(10./ 93. ); 
-BdJpsiK0             ->Scale(10./ 52. ); 
-BpJpsiKp             ->Scale(10./ 69.);  
-JpsiOther            ->Scale(10./ 9.);   
- ppmumux              ->Scale(10./0.9);
+BsJPsiPhiSignal      ->Scale(LumiToScaleTo/scaleFactor_BsJPsiPhiSignalEvents);
+BdJPsiKstarSignal->Scale(LumiToScaleTo/scaleFactor_BdJpsiKstar              );
+BsJPsiKKSignal    ->Scale(LumiToScaleTo/scaleFactor_BsJpsiKK                );
+BsOther              ->Scale(LumiToScaleTo/scaleFactor_BsOtherEvents        );
+BdOther              ->Scale(LumiToScaleTo/scaleFactor_BdOtherEvents        );
+BOther               ->Scale(LumiToScaleTo/scaleFactor_OtherEvents          );
+BsJpsiEta            ->Scale(LumiToScaleTo/scaleFactor_BsJpsiEtaEvents      );
+BdJpsiK10            ->Scale(LumiToScaleTo/scaleFactor_BdJpsiK10Events      );
+BdJpsiK0             ->Scale(LumiToScaleTo/scaleFactor_BdJpsiK0Events       );
+BpJpsiKp             ->Scale(LumiToScaleTo/scaleFactor_BpJpsiKpEvents       ); 
+
+JpsiOther            ->Scale(LumiToScaleTo/ 9.);   
+ppmumux              ->Scale(LumiToScaleTo/0.9);
 
 //  // old scaling
 // BsJPsiPhiSignal      ->Scale(100./ 63. ); 
