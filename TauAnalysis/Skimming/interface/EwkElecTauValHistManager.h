@@ -4,14 +4,14 @@
 /** \class EwkElecTauValHistManager
  *
  * Booking and filling of histograms for data-quality monitoring purposes
- * in Z --> electron + tau-jet channel
+ * in Z --> tau+ tau- --> electron + tau-jet channel
  * 
  * \author Joshua Swanson
  *        (modified by Christian Veelken)
  *
  * \version $Revision: 1.1 $
  *
- * $Id: EwkElecTauValHistManager.h,v 1.1 2009/12/01 17:03:36 veelken Exp $
+ * $Id: EwkElecTauValHistManager.h,v 1.1 2010/02/10 16:14:20 veelken Exp $
  *
  */
 
@@ -22,12 +22,14 @@
 
 #include "DQMServices/Core/interface/MonitorElement.h"
 
+#include "TauAnalysis/Skimming/interface/EwkValHistManagerBase.h"
+
 #include <string>
 
-class EwkElecTauValHistManager
+class EwkElecTauValHistManager : public EwkValHistManagerBase
 {
  public:
-  EwkElecTauValHistManager(const edm::ParameterSet&, DQMStore*);
+  EwkElecTauValHistManager(const edm::ParameterSet&);
 
   void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
@@ -67,12 +69,6 @@ class EwkElecTauValHistManager
 
   double visMassCut_;
 
-//--- pointer to DQM histogram management service
-  DQMStore* dqmStore_;
-
-//--- name of DQM directory in which histograms for Z --> electron + tau-jet channel get stored
-  std::string dqmDirectory_;
-  
 //--- histograms  
   MonitorElement* hNumIdElectrons_;
   MonitorElement* hElectronPt_;
@@ -116,14 +112,7 @@ class EwkElecTauValHistManager
          kPassedTauLeadTrack = 6, kPassedTauLeadTrackPt = 7, kPassedTauTrackIso = 8, kPassedTauEcalIso = 9, 
          kPassedTauDiscrAgainstElectrons = 10, kPassedTauDiscrAgainstMuons = 11 }; 
 
-//--- counters for filter-statistics output
-  unsigned numEventsAnalyzed_;
-  unsigned numEventsSelected_;
-
-  int cfgError_;
-
-  int maxNumWarnings_;
-
+//--- counters for different types of warnings
   long numWarningsTriggerResults_;
   long numWarningsHLTpath_;
   long numWarningsVertex_;

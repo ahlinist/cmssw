@@ -5,11 +5,13 @@ process = cms.Process("diTauSkim")
 
 from TauAnalysis.Skimming.EventContent_cff import *
 
+process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
-process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -159,6 +161,12 @@ diTauEventSelection = cms.untracked.PSet(
         SelectEvents = cms.vstring('pfTauSkimPath', 'caloTauSkimPath', 'mixedTauSkimPathI', 'mixedTauSkimPathII')
     )
 )
+
+#--------------------------------------------------------------------------------
+# save events passing either the caloTau + caloTau, pfTau + pfTau
+# or mixed caloTau + pfTau selection
+#--------------------------------------------------------------------------------
+
 process.diTauSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     tauAnalysisEventContent,                                               
     diTauEventSelection,
@@ -169,5 +177,5 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.o = cms.EndPath( process.diTauSkimOutputModule )
+process.o = cms.EndPath(process.diTauSkimOutputModule)
 

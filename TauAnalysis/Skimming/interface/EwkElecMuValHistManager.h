@@ -1,17 +1,16 @@
-#ifndef TauAnalysis_Skimming_EwkMuTauValHistManager_h
-#define TauAnalysis_Skimming_EwkMuTauValHistManager_h
+#ifndef TauAnalysis_Skimming_EwkElecMuValHistManager_h
+#define TauAnalysis_Skimming_EwkElecMuValHistManager_h
 
-/** \class EwkMuTauValHistManager
+/** \class EwkElecMuValHistManager
  *
  * Booking and filling of histograms for data-quality monitoring purposes
- * in Z --> tau+ tau- --> muon + tau-jet channel
+ * in Z --> tau+ tau- --> electron + muon channel
  * 
- * \author Letizia Lusito,
- *         Christian Veelken
+ * \author Christian Veelken, UC Davis
  *
  * \version $Revision: 1.1 $
  *
- * $Id: EwkMuTauValHistManager.h,v 1.1 2010/02/10 16:14:20 veelken Exp $
+ * $Id: EwkElecMuValHistManager.h,v 1.1 2010/02/10 16:14:20 veelken Exp $
  *
  */
 
@@ -26,10 +25,10 @@
 
 #include <string>
 
-class EwkMuTauValHistManager : public EwkValHistManagerBase
+class EwkElecMuValHistManager : public EwkValHistManagerBase
 {
  public:
-  EwkMuTauValHistManager(const edm::ParameterSet&);
+  EwkElecMuValHistManager(const edm::ParameterSet&);
 
   void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
@@ -42,20 +41,20 @@ class EwkMuTauValHistManager : public EwkValHistManagerBase
   edm::InputTag triggerResultsSource_;
   edm::InputTag vertexSource_;
   edm::InputTag beamSpotSource_;
+  edm::InputTag electronSource_;
   edm::InputTag muonSource_;
-  edm::InputTag tauJetSource_;
   edm::InputTag caloMEtSource_;
   edm::InputTag pfMEtSource_;
 
-  edm::InputTag tauDiscrByLeadTrackFinding_;
-  edm::InputTag tauDiscrByLeadTrackPtCut_;
-  edm::InputTag tauDiscrByTrackIso_;
-  edm::InputTag tauDiscrByEcalIso_;
-  edm::InputTag tauDiscrAgainstMuons_;
-  
 //--- event selection criteria
   typedef std::vector<std::string> vstring;
   vstring hltPaths_;
+
+  double electronEtaCut_;
+  double electronPtCut_;
+  double electronTrackIsoCut_;
+  double electronEcalIsoCut_;
+  int electronIsoMode_;
 
   double muonEtaCut_;
   double muonPtCut_;
@@ -63,37 +62,32 @@ class EwkMuTauValHistManager : public EwkValHistManagerBase
   double muonEcalIsoCut_;
   int muonIsoMode_;
 
-  double tauJetEtaCut_;
-  double tauJetPtCut_;
-
   double visMassCut_;
 
 //--- histograms  
+  MonitorElement* hNumIdElectrons_;
+  MonitorElement* hElectronPt_;
+  MonitorElement* hElectronEta_;
+  MonitorElement* hElectronPhi_;
+  MonitorElement* hElectronTrackIsoPt_;
+  MonitorElement* hElectronEcalIsoPt_;
+
   MonitorElement* hNumGlobalMuons_;
   MonitorElement* hMuonPt_;
   MonitorElement* hMuonEta_;
   MonitorElement* hMuonPhi_;
   MonitorElement* hMuonTrackIsoPt_;
   MonitorElement* hMuonEcalIsoPt_;
-
-  MonitorElement* hTauJetPt_;
-  MonitorElement* hTauJetEta_;
-  MonitorElement* hTauJetPhi_;
-  MonitorElement* hTauLeadTrackPt_;
-  MonitorElement* hTauTrackIsoPt_;
-  MonitorElement* hTauEcalIsoPt_;
-  MonitorElement* hTauDiscrAgainstMuons_;
-  MonitorElement* hTauJetCharge_;
-  MonitorElement* hTauJetNumSignalTracks_;
-  MonitorElement* hTauJetNumIsoTracks_;
   
   MonitorElement* hVisMass_;
+  MonitorElement* hMtElecCaloMEt_;
+  MonitorElement* hMtElecPFMEt_;
   MonitorElement* hMtMuCaloMEt_;
   MonitorElement* hMtMuPFMEt_;
   MonitorElement* hPzetaCaloMEt_;
   MonitorElement* hPzetaPFMEt_;
-  MonitorElement* hMuTauAcoplanarity_;
-  MonitorElement* hMuTauCharge_;
+  MonitorElement* hElecMuAcoplanarity_;
+  MonitorElement* hElecMuCharge_;
 
   MonitorElement* hVertexChi2_;
   MonitorElement* hVertexZ_;
@@ -107,21 +101,15 @@ class EwkMuTauValHistManager : public EwkValHistManagerBase
 
   MonitorElement* hCutFlowSummary_;
   enum { kPassedPreselection = 1, kPassedTrigger = 2, kPassedMuonId = 3, kPassedMuonTrackIso = 4, kPassedMuonEcalIso = 5,
-         kPassedTauLeadTrack = 6, kPassedTauLeadTrackPt = 7, kPassedTauTrackIso = 8, kPassedTauEcalIso = 9, 
-	 kPassedTauDiscrAgainstMuons = 10 }; 
+	 kPassedElectronId = 6, kPassedElectronTrackIso = 7, kPassedElectronEcalIso = 8 };
   
 //--- counters for different types of warnings
   long numWarningsTriggerResults_;
   long numWarningsHLTpath_;
   long numWarningsVertex_;
   long numWarningsBeamSpot_;
+  long numWarningsElectron_;
   long numWarningsMuon_;
-  long numWarningsTauJet_;
-  long numWarningsTauDiscrByLeadTrackFinding_;
-  long numWarningsTauDiscrByLeadTrackPtCut_;
-  long numWarningsTauDiscrByTrackIso_;
-  long numWarningsTauDiscrByEcalIso_;
-  long numWarningsTauDiscrAgainstMuons_;
   long numWarningsCaloMEt_;
   long numWarningsPFMEt_;
 };

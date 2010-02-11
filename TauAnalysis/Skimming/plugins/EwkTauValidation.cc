@@ -5,20 +5,14 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 
+#include <stdlib.h>
+
+const std::string runKeyword = "r";
+
 const std::string dqmSeparator = "/";
 
-std::string dqmDirectoryName(const std::string& dqmRootDirectory, const std::string& dqmSubDirectory)
-{
-//--- concatenate names of dqmRootDirectory and dqmSubDirectory;
-//    add "/" separator inbetween if necessary
-  std::string dirName = dqmRootDirectory;
-  if ( dirName != "" && dirName.find_last_of(dqmSeparator) != (dirName.length() - 1) )  dirName.append(dqmSeparator);
-  dirName.append(dqmSubDirectory);
-  return dirName;
-}
-
 EwkTauValidation::EwkTauValidation(const edm::ParameterSet& cfg)
-  : dqmDirectory_(cfg.getParameter<std::string>("dqmDirectory")),
+  : cfgChannels_(cfg.getParameter<vParameterSet>("channels")),
     dqmError_(0)
 {
   if ( !edm::Service<DQMStore>().isAvailable() ) {
@@ -27,52 +21,89 @@ EwkTauValidation::EwkTauValidation(const edm::ParameterSet& cfg)
     return;
   }
 
-  DQMStore* dqmStore = &(*edm::Service<DQMStore>());
-
   maxNumWarnings_ = cfg.exists("maxNumWarnings") ? cfg.getParameter<int>("maxNumWarnings") : 1;
-
-  edm::ParameterSet cfgChannels = cfg.getParameter<edm::ParameterSet>("channels");
-
-  edm::ParameterSet cfgElecTauChannel = cfgChannels.getParameter<edm::ParameterSet>("elecTauChannel");
-  std::string dqmSubDirectoryElecTauChannel = cfgElecTauChannel.getParameter<std::string>("dqmSubDirectory");  
-  cfgElecTauChannel.addParameter<std::string>("dqmDirectory", dqmDirectoryName(dqmDirectory_, dqmSubDirectoryElecTauChannel));
-  cfgElecTauChannel.addParameter<int>("maxNumWarnings", maxNumWarnings_);
-  elecTauHistManager_ = new EwkElecTauValHistManager(cfgElecTauChannel, dqmStore);
-
-  edm::ParameterSet cfgMuTauChannel = cfgChannels.getParameter<edm::ParameterSet>("muTauChannel");
-  std::string dqmSubDirectoryMuTauChannel = cfgMuTauChannel.getParameter<std::string>("dqmSubDirectory");
-  cfgMuTauChannel.addParameter<std::string>("dqmDirectory", dqmDirectoryName(dqmDirectory_, dqmSubDirectoryMuTauChannel));
-  cfgMuTauChannel.addParameter<int>("maxNumWarnings", maxNumWarnings_);
-  muTauHistManager_ = new EwkMuTauValHistManager(cfgMuTauChannel, dqmStore);
 }
 
 EwkTauValidation::~EwkTauValidation()
 {
-  delete elecTauHistManager_;
-  delete muTauHistManager_;
+  for ( std::map<edm::RunNumber_t, vEwkValHistManagerBase>::iterator histManagers_run = histManagers_.begin();
+	histManagers_run != histManagers_.end(); ++histManagers_run ) {
+    for ( vEwkValHistManagerBase::iterator histManager_run = histManagers_run->second.begin();
+	  histManager_run != histManagers_run->second.end(); ++histManager_run ) {
+      delete (*histManager_run);
+    }
+  }
 }
 
 void EwkTauValidation::beginJob()
 {
   if ( dqmError_ ) return;
- 
-  elecTauHistManager_->bookHistograms();
-  muTauHistManager_->bookHistograms();
 }
 
 void EwkTauValidation::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
   if ( dqmError_ ) return;
 
-  elecTauHistManager_->fillHistograms(evt, es);
-  muTauHistManager_->fillHistograms(evt, es);
+  edm::RunNumber_t runNumber = evt.id().run();
+
+//--- check if histogram manager plugins already exists for current run;
+//    if not, create them
+  if ( histManagers_.find(runNumber) == histManagers_.end() ) {
+    bookHistograms(runNumber);
+  }
+
+//--- fill histograms for current run
+  for ( std::map<edm::RunNumber_t, vEwkValHistManagerBase>::iterator histManagers_run = histManagers_.begin();
+	histManagers_run != histManagers_.end(); ++histManagers_run ) {
+    for ( vEwkValHistManagerBase::iterator histManager_run = histManagers_run->second.begin();
+	  histManager_run != histManagers_run->second.end(); ++histManager_run ) {
+      (*histManager_run)->fillHistograms(evt, es);
+    }
+  }
 }
 
 void EwkTauValidation::endJob()
 {
   if ( dqmError_ ) return;
 
-  elecTauHistManager_->finalizeHistograms();
-  muTauHistManager_->finalizeHistograms();
+  for ( std::map<edm::RunNumber_t, vEwkValHistManagerBase>::iterator histManagers_run = histManagers_.begin();
+	histManagers_run != histManagers_.end(); ++histManagers_run ) {
+    for ( vEwkValHistManagerBase::iterator histManager_run = histManagers_run->second.begin();
+	  histManager_run != histManagers_run->second.begin(); ++histManager_run ) {
+      (*histManager_run)->finalizeHistograms();
+    }
+  }
 }
 
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+void EwkTauValidation::bookHistograms(edm::RunNumber_t runNumber)
+{
+  for ( vParameterSet::const_iterator cfgChannel = cfgChannels_.begin();
+	cfgChannel != cfgChannels_.end(); ++cfgChannel ) {
+    std::string pluginName = cfgChannel->getParameter<std::string>("pluginName");
+
+    std::string dqmDirectory = cfgChannel->getParameter<std::string>("dqmDirectory");
+
+    std::ostringstream dqmDirectory_run;
+    dqmDirectory_run << runKeyword << runNumber << dqmSeparator << dqmDirectory;
+
+    edm::LogInfo ("EwkTauValidation") 
+      << "Booking " << pluginName << " histograms for run = " << runNumber << ", dqmDirectory = " << dqmDirectory_run.str();
+    
+    edm::ParameterSet cfgChannel_run(*cfgChannel);
+    cfgChannel_run.addParameter<std::string>("dqmDirectory", dqmDirectory_run.str());
+    cfgChannel_run.addParameter<int>("maxNumWarnings", maxNumWarnings_);
+
+    std::string pluginType = cfgChannel->getParameter<std::string>("pluginType");
+    EwkValHistManagerBase* histManager_run = EwkValHistManagerPluginFactory::get()->create(pluginType, cfgChannel_run);
+    histManager_run->bookHistograms();
+    histManagers_[runNumber].push_back(histManager_run);
+  }
+}
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+
+DEFINE_ANOTHER_FWK_MODULE(EwkTauValidation);
