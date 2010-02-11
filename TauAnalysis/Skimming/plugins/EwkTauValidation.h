@@ -13,9 +13,9 @@
  *          Joshua Swanson,
  *          Christian Veelken
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: EwkTauValidation.h,v 1.2 2010/01/21 09:40:36 veelken Exp $
+ * $Id: EwkTauValidation.h,v 1.1 2010/02/10 16:14:21 veelken Exp $
  *
  */
 
@@ -23,8 +23,7 @@
 
 #include "DQMServices/Core/interface/DQMStore.h"
 
-#include "TauAnalysis/Skimming/interface/EwkElecTauValHistManager.h"
-#include "TauAnalysis/Skimming/interface/EwkMuTauValHistManager.h"
+#include "TauAnalysis/Skimming/interface/EwkValHistManagerBase.h"
 
 #include <string>
 
@@ -39,13 +38,20 @@ class EwkTauValidation : public edm::EDAnalyzer
   void endJob();
   
  private:
+  void bookHistograms(edm::RunNumber_t runNumber);
+
+  typedef std::vector<edm::ParameterSet> vParameterSet;
+  vParameterSet cfgChannels_;
+
+  typedef std::vector<EwkValHistManagerBase*> vEwkValHistManagerBase;
+  std::map<edm::RunNumber_t, vEwkValHistManagerBase> histManagers_;
+
   DQMStore* dqmStore_;
   std::string dqmDirectory_;
-  int dqmError_;
-  int maxNumWarnings_;
 
-  EwkElecTauValHistManager* elecTauHistManager_;
-  EwkMuTauValHistManager* muTauHistManager_;
+  int dqmError_;
+
+  int maxNumWarnings_;
 };
 
 #endif

@@ -30,12 +30,8 @@
 #include <iostream>
 #include <iomanip>
 
-EwkElecTauValHistManager::EwkElecTauValHistManager(const edm::ParameterSet& cfg, DQMStore* dqmStore) 
-  : dqmStore_(dqmStore),
-    dqmDirectory_(cfg.getParameter<std::string>("dqmDirectory")),
-    numEventsAnalyzed_(0),
-    numEventsSelected_(0),
-    cfgError_(0),
+EwkElecTauValHistManager::EwkElecTauValHistManager(const edm::ParameterSet& cfg) 
+  : EwkValHistManagerBase(cfg),
     numWarningsTriggerResults_(0),
     numWarningsHLTpath_(0),
     numWarningsVertex_(0),
@@ -79,8 +75,6 @@ EwkElecTauValHistManager::EwkElecTauValHistManager(const edm::ParameterSet& cfg,
   tauJetPtCut_ = cfg.getParameter<double>("tauJetPtCut");
 
   visMassCut_ = cfg.getParameter<double>("visMassCut");
-
-  maxNumWarnings_ = cfg.exists("maxNumWarnings") ? cfg.getParameter<int>("maxNumWarnings") : 1;
 }
 
 void EwkElecTauValHistManager::bookHistograms()
@@ -390,15 +384,10 @@ void EwkElecTauValHistManager::fillHistograms(const edm::Event& evt, const edm::
 
 void EwkElecTauValHistManager::finalizeHistograms()
 {
-  edm::LogInfo ("EwkElecTauValHistManager") 
-    << "Filter-Statistics Summary:" << std::endl
-    << " Events analyzed = " << numEventsAnalyzed_ << std::endl
-    << " Events selected = " << numEventsSelected_;
-  if ( numEventsAnalyzed_ > 0 ) {
-    double eff = numEventsSelected_/(double)numEventsAnalyzed_;
-    edm::LogInfo ("") 
-      << "Overall efficiency = " << std::setprecision(4) << eff*100. 
-      << " +/- " << std::setprecision(4) << TMath::Sqrt(eff*(1 - eff)/numEventsAnalyzed_)*100. << ")%";
-  }
+  printFilterStatistics();
 }
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+
+DEFINE_EDM_PLUGIN(EwkValHistManagerPluginFactory, EwkElecTauValHistManager, "EwkElecTauValHistManager");
 

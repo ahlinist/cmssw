@@ -4,11 +4,13 @@ process = cms.Process("elecMuSkim")
 
 from TauAnalysis.Skimming.EventContent_cff import *
 
+process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
-process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -69,6 +71,38 @@ elecMuEventSelection = cms.untracked.PSet(
     )
 )
 
+#--------------------------------------------------------------------------------
+# fill validation histograms for events passing the electron + muon selection
+#--------------------------------------------------------------------------------
+
+process.DQMStore = cms.Service("DQMStore")
+
+from TauAnalysis.Skimming.ewkElecMuValHistManager_cfi import *
+
+process.fillElecMuValPlots = cms.EDAnalyzer("EwkTauValidation",
+
+    # list of individual channels                           
+    channels = cms.VPSet(
+        ewkElecMuValHistManager
+    ),
+
+    # disable all warnings
+    maxNumWarnings = cms.int32(1)                       
+)
+
+process.saveElecMuValPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
+    outputFileName = cms.string('elecMuValPlots.root')
+)
+
+process.p = cms.Path(
+    process.fillElecMuValPlots
+   + process.saveElecMuValPlots
+)
+
+#--------------------------------------------------------------------------------
+# save events passing the electron + muon selection
+#--------------------------------------------------------------------------------
+
 process.elecMuSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     tauAnalysisEventContent,                                               
     elecMuEventSelection,
@@ -79,5 +113,5 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.o = cms.EndPath( process.elecMuSkimOutputModule )
+process.o = cms.EndPath(process.elecMuSkimOutputModule)
 

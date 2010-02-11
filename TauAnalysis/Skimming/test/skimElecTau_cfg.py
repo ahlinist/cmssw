@@ -4,11 +4,13 @@ process = cms.Process("elecTauSkim")
 
 from TauAnalysis.Skimming.EventContent_cff import *
 
+process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
-process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -93,7 +95,7 @@ process.selectedElecPFTauPairs = cms.EDFilter("DiCandidatePairSelector",
 )
 
 #--------------------------------------------------------------------------------
-# keep event in case it passed either the muon + pfTau or muon + caloTau selection
+# keep event in case it passed either the electron + pfTau or electron + caloTau selection
 #--------------------------------------------------------------------------------
 
 process.elecPFTauSkimPath = cms.Path(
@@ -113,6 +115,39 @@ elecTauEventSelection = cms.untracked.PSet(
         SelectEvents = cms.vstring('elecPFTauSkimPath','elecCaloTauSkimPath')
     )
 )
+
+#--------------------------------------------------------------------------------
+# fill validation histograms for events passing either the electron + pfTau or electron + caloTau selection
+#--------------------------------------------------------------------------------
+
+process.DQMStore = cms.Service("DQMStore")
+
+from TauAnalysis.Skimming.ewkElecTauValHistManager_cfi import *
+
+process.fillElecTauValPlots = cms.EDAnalyzer("EwkTauValidation",
+
+    # list of individual channels                           
+    channels = cms.VPSet(
+        ewkElecTauValHistManager
+    ),
+
+    # disable all warnings
+    maxNumWarnings = cms.int32(1)                      
+)
+
+process.saveElecTauValPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
+    outputFileName = cms.string('elecTauValPlots.root')
+)
+
+process.p = cms.Path(
+    process.fillElecTauValPlots
+   + process.saveElecTauValPlots
+)
+
+#--------------------------------------------------------------------------------
+# save events passing either the electron + pfTau or electron + caloTau selection
+#--------------------------------------------------------------------------------
+
 process.elecTauSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     tauAnalysisEventContent,                                               
     elecTauEventSelection,
@@ -123,4 +158,4 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.o = cms.EndPath( process.elecTauSkimOutputModule )
+process.o = cms.EndPath(process.elecTauSkimOutputModule)

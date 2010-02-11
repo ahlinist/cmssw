@@ -4,11 +4,13 @@ process = cms.Process("muTauSkim")
 
 from TauAnalysis.Skimming.EventContent_cff import *
 
+process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
-process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -114,15 +116,48 @@ muTauEventSelection = cms.untracked.PSet(
     )
 )
 
+#--------------------------------------------------------------------------------
+# fill validation histograms for events passing either the muon + pfTau or muon + caloTau selection
+#--------------------------------------------------------------------------------
+
+process.DQMStore = cms.Service("DQMStore")
+
+from TauAnalysis.Skimming.ewkMuTauValHistManager_cfi import *
+
+process.fillMuTauValPlots = cms.EDAnalyzer("EwkTauValidation",
+
+    # list of individual channels                           
+    channels = cms.VPSet(
+        ewkMuTauValHistManager
+    ),
+
+    # disable all warnings
+    maxNumWarnings = cms.int32(1)                    
+)
+
+process.saveMuTauValPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
+    outputFileName = cms.string('muTauValPlots.root')
+)
+
+process.p = cms.Path(
+    process.fillMuTauValPlots
+   + process.saveMuTauValPlots
+)
+
+#--------------------------------------------------------------------------------
+# save events passing either the muon + pfTau or muon + caloTau selection
+#--------------------------------------------------------------------------------
+
 process.muTauSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     tauAnalysisEventContent,                                               
     muTauEventSelection,
     fileName = cms.untracked.string('muTauSkim.root')
 )
 
+
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.o = cms.EndPath( process.muTauSkimOutputModule )
+process.o = cms.EndPath(process.muTauSkimOutputModule)
 
