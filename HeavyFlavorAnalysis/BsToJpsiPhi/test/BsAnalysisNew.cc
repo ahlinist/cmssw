@@ -15,8 +15,8 @@
 BsToJpsiPhiRootTree *tree=0;
 
 // declare some functions. These are implemented at the end of this file
-void increaseCountersByOne(int &BsJpsiPhiSignal, int& BsJpsiKKSignal, int& BdJpsiKstar, int& BsOther, int& BdOther,  int& other, 
-			   int &BsJpsiEta, int &BdJpsiK10, int &BdJpsiK0, int &BpJpsiKp  );
+void increaseCountersByOne(double &BsJpsiPhiSignal, double& BsJpsiKKSignal, double& BdJpsiKstar, double& BsOther, double& BdOther,  double& other, 
+			   double &BsJpsiEta, double &BdJpsiK10, double &BdJpsiK0, double &BpJpsiKp  );
 
 void fillHistograms(double value, TH1F* hBsJpsiPhiSignal, TH1F* hBsOther, TH1F * hOther, TH1F *hBsJPsiKK = 0);
 void fillHistograms(double value, vector<TH1F*> &histoVector);  // pass vector of histograms for the various categories
@@ -28,13 +28,19 @@ void writeHistos(TString outputfilename);
 void identifyEventType(bool & isGenBsJpsiPhiMuMuKKEvent, bool &isGenBsJpsiKKEvent, bool &isGenBdJpsiKstarMuMuKpiEvent, 
 		       bool &isGenBsEvent_, bool &isGenBdEvent_, bool &isGenBsJpsiEtaEvent_, bool &isGenBdJpsiK10Event_, 
 		       bool &isGenBdJpsiK0Event_, bool & isGenBpJpsiKpEvent_);
+void scaleNumbersToLumi();
+void scale(double &BsJpsiPhiSignal, double& BsJpsiKKSignal, double& BdJpsiKstar, double& BsOther, double& BdOther,  double& other, 
+	   double &BsJpsiEta, double &BdJpsiK10, double &BdJpsiK0, double &BpJpsiKp  );
+
 void printDecayTree();
 void makeVertexResolutionPlots();
+void printResults();
+void printSimpleResults();
 
-
+//***********************
 // define cuts:
 const double minProbability = 0.02;
-const double KaonPtCut = 0.9;
+const double KaonPtCut = 0.5;
 const double BdKaonPtCut = 0.6;
 const double nominalPhiMass = 1.0195 ;
 const double nominalKstarMass = 0.896;
@@ -58,16 +64,19 @@ const bool bRemoveJpsiEvents = false;
 
 // switch to write out selected trees for the fit
 const bool bWriteSelectedTrees  = true;
-const TString filenameSelectedTrees = "Selected";
+// const TString filenameSelectedTrees = "Selected";
+const TString filenameSelectedTrees = "SelectedPrompt";
 
 // ***************main function*****************************
 void BsAnalysisNew() {
 
  
-  string treefilename = "../test_ctau/BtoJpsiMuMu7TeV_22.root";
+  vector<std::string> treefilenames; // chain all filenames together in this vector to create a TChain
+  treefilenames.push_back( "/nfs/data6/alschmid/BsJpsiPhiRootTrees/BtoJpsiMuMu7TeV_5Feb10.root");
+  
   TString outputhistofilename = "BtoJpsiMuMuHistoFile.root";
- 
-//   string treefilename = "JpsiMuMu_29Dec09.root";
+
+//   string treefilename = "/nfs/data6/alschmid/BsJpsiPhiRootTrees/JpsiMuMu7TeV_5Feb10.root";
 //   TString outputhistofilename = "JpsiMuMuHistoFile.root";
 
 
@@ -79,7 +88,7 @@ void BsAnalysisNew() {
   
   // get tree from file
   tree = new BsToJpsiPhiRootTree;
-  tree->readTree(treefilename);
+  tree->readTree(treefilenames);
 
   // initialize the selector if needed
   SelectorForFit * mySelector = 0;
@@ -149,6 +158,8 @@ void BsAnalysisNew() {
 	
 	
 	// successful fit, fill histograms
+	
+	//	fillHistograms(tree->BsNumberOfCandidates_,          vhBsNumCandidates)
 
 	fillHistograms(tree->BsFitChi2_,                     vhChi2);
 	fillHistograms(tree->BsFitChi2_/ tree->BsFitNdof_ ,  vhChi2Ndof);
@@ -332,107 +343,6 @@ void BsAnalysisNew() {
   //****************************
   
   
-  // print out results
-  std::cout<< "There are " << entrycounter << " events in the tree." << std::endl;
- std::cout<< "Events with only HLT: " << HLT << std::endl << std::endl;
- 
- std::cout<< "                          | Bs->JpsiPhi | Bd->Jpsi K* | Bs->Jpsi KK | Bs->Jpsi Eta| Bd->Jpsi K10| Bd->Jpsi K0 | Bp->Jpsi Kp | Other Bs    | Other Bd    | Other "<<  std::endl;
- std::cout<< "events                    | " << setw(11) << iBsJPsiPhiSignalEvents << " | " << setw(11) << iBdJPsiKstarSignalEvents << " | " << setw(11) << iBsJPsiKKSignalEvents << " | " 
-	  << setw(11) << iBsJpsiEtaEvents << " | " << setw(11) << iBdJpsiK10Events << " | " << setw(11) << iBdJpsiK0Events << " | " << setw(11) << iBpJpsiKpEvents << " | " 
-	  << setw(11) << iBsOtherEvents << " | " << setw(11) << iBdOtherEvents << " | " << setw(11) << iOtherEvents << std::endl;
-
- std::cout<< "triggered events          | " << setw(11) << iTriggered_DoubleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu3_BsJpsiKK << " | " 
-	  << setw(11) << iTriggered_DoubleMu3_BsJpsiEtaEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiK10Events << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiK0Events << " | " << setw(11) << iTriggered_DoubleMu3_BpJpsiKpEvents << " | " 
-	  << setw(11) << iTriggered_DoubleMu3_BsOtherEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdOtherEvents << " | " << setw(11) << iTriggered_DoubleMu3_OtherEvents << std::endl;
-
- std::cout<<std::endl<<std::endl;
- std::cout<<"Bs->Jpsi Phi Analysis:" << std::endl;
- 
- std::cout<< "pre kin fit               | " << setw(11) << iBsJPsiPhiSignalEventsPreKinFit << " | " << setw(11) << iBdJPsiKstarSignalEventsPreKinFit << " | " << setw(11) << iBsJPsiKKSignalEventsPreKinFit << " | " 
-	  << setw(11) << iBsJpsiEtaEventsPreKinFit << " | " << setw(11) << iBdJpsiK10EventsPreKinFit << " | " << setw(11) << iBdJpsiK0EventsPreKinFit << " | " << setw(11) << iBpJpsiKpEventsPreKinFit << " | " 
-	  << setw(11) << iBsOtherEventsPreKinFit << " | " << setw(11) << iBdOtherEventsPreKinFit << " | " << setw(11) << iOtherEventsPreKinFit << std::endl;
-
-
- std::cout<< "after kin fit             | " << setw(11) << iBsJPsiPhiSignalEventsOfflineSel1 << " | " << setw(11) << iBdJPsiKstarSignalEventsOfflineSel1 << " | " << setw(11) << iBsJPsiKKSignalEventsOfflineSel1 << " | " 
-	  << setw(11) << iBsJpsiEtaEventsOfflineSel1 << " | " << setw(11) << iBdJpsiK10EventsOfflineSel1 << " | " << setw(11) << iBdJpsiK0EventsOfflineSel1 << " | " << setw(11) << iBpJpsiKpEventsOfflineSel1 << " | " 
-	  << setw(11) << iBsOtherEventsOfflineSel1 << " | " << setw(11) << iBdOtherEventsOfflineSel1 << " | " << setw(11) << iOtherEventsOfflineSel1 << std::endl;
-
- std::cout<< "Prob vertex(KK)>2 percent | " << setw(11) << iBsJPsiPhiSignalEventsProbVertex << " | " << setw(11) << iBdJPsiKstarSignalEventsProbVertex << " | " << setw(11) << iBsJPsiKKSignalEventsProbVertex << " | " 
-	  << setw(11) << iBsJpsiEtaEventsProbVertex << " | " << setw(11) << iBdJpsiK10EventsProbVertex << " | " << setw(11) << iBdJpsiK0EventsProbVertex << " | " << setw(11) << iBpJpsiKpEventsProbVertex << " | " 
-	  << setw(11) << iBsOtherEventsProbVertex << " | " << setw(11) << iBdOtherEventsProbVertex << " | " << setw(11) << iOtherEventsProbVertex << std::endl;
-
-
-
- std::cout<< "Kaon pt > 0.9             | " << setw(11) << iBsJPsiPhiSignalEventsKaonPtCut << " | " << setw(11) << iBdJPsiKstarSignalEventsKaonPtCut << " | " << setw(11) << iBsJPsiKKSignalEventsKaonPtCut << " | " 
-	  << setw(11) << iBsJpsiEtaEventsKaonPtCut << " | " << setw(11) << iBdJpsiK10EventsKaonPtCut << " | " << setw(11) << iBdJpsiK0EventsKaonPtCut << " | " << setw(11) << iBpJpsiKpEventsKaonPtCut << " | " 
-	  << setw(11) << iBsOtherEventsKaonPtCut << " | " << setw(11) << iBdOtherEventsKaonPtCut << " | " << setw(11) << iOtherEventsKaonPtCut << std::endl;
-
-
-
- std::cout<< "deltaPhiMass< 7MeV        | " << setw(11) << iBsJPsiPhiSignalEventsPhiMassCut << " | " << setw(11) << iBdJPsiKstarSignalEventsPhiMassCut << " | " << setw(11) << iBsJPsiKKSignalEventsPhiMassCut << " | " 
-	  << setw(11) << iBsJpsiEtaEventsPhiMassCut << " | " << setw(11) << iBdJpsiK10EventsPhiMassCut << " | " << setw(11) << iBdJpsiK0EventsPhiMassCut << " | " << setw(11) << iBpJpsiKpEventsPhiMassCut << " | " 
-	  << setw(11) << iBsOtherEventsPhiMassCut << " | " << setw(11) << iBdOtherEventsPhiMassCut << " | " << setw(11) << iOtherEventsPhiMassCut << std::endl;
-
-
-
- std::cout<< "decayLengthSign > 3       | " << setw(11) << iBsJPsiPhiSignalEventsDecayLengthCut << " | " << setw(11) << iBdJPsiKstarSignalEventsDecayLengthCut << " | " << setw(11) << iBsJPsiKKSignalEventsDecayLengthCut << " | " 
-	  << setw(11) << iBsJpsiEtaEventsDecayLengthCut << " | " << setw(11) << iBdJpsiK10EventsDecayLengthCut << " | " << setw(11) << iBdJpsiK0EventsDecayLengthCut << " | " << setw(11) << iBpJpsiKpEventsDecayLengthCut << " | " 
-	  << setw(11) << iBsOtherEventsDecayLengthCut << " | " << setw(11) << iBdOtherEventsDecayLengthCut << " | " << setw(11) << iOtherEventsDecayLengthCut << std::endl;
-
-
- std::cout<< "pointing cut              | " << setw(11) << iBsJPsiPhiSignalEventsPointingCut << " | " << setw(11) << iBdJPsiKstarSignalEventsPointingCut << " | " << setw(11) << iBsJPsiKKSignalEventsPointingCut << " | " 
-	  << setw(11) << iBsJpsiEtaEventsPointingCut << " | " << setw(11) << iBdJpsiK10EventsPointingCut << " | " << setw(11) << iBdJpsiK0EventsPointingCut << " | " << setw(11) << iBpJpsiKpEventsPointingCut << " | " 
-	  << setw(11) << iBsOtherEventsPointingCut << " | " << setw(11) << iBdOtherEventsPointingCut << " | " << setw(11) << iOtherEventsPointingCut << std::endl;
-
-
-
- std::cout<< "  "<<  std::endl;
- std::cout<< "  "<<  std::endl;
-
-
- std::cout<<std::endl<<std::endl;
- std::cout<<"Bd->Jpsi Kstar Analysis:" << std::endl;
- 
- std::cout<< "pre kin fit               | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPreKinFit << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPreKinFit << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsPreKinFit << " | " 
-	  << setw(11) << iBdAna_BsJpsiEtaEventsPreKinFit << " | " << setw(11) << iBdAna_BdJpsiK10EventsPreKinFit << " | " << setw(11) << iBdAna_BdJpsiK0EventsPreKinFit << " | " << setw(11) << iBdAna_BpJpsiKpEventsPreKinFit << " | " 
-	  << setw(11) << iBdAna_BsOtherEventsPreKinFit << " | " << setw(11) << iBdAna_BdOtherEventsPreKinFit << " | " << setw(11) << iBdAna_OtherEventsPreKinFit << std::endl;
-
-
- std::cout<< "after kin fit             | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsOfflineSel1 << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsOfflineSel1 << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsOfflineSel1 << " | " 
-	  << setw(11) << iBdAna_BsJpsiEtaEventsOfflineSel1 << " | " << setw(11) << iBdAna_BdJpsiK10EventsOfflineSel1 << " | " << setw(11) << iBdAna_BdJpsiK0EventsOfflineSel1 << " | " << setw(11) << iBdAna_BpJpsiKpEventsOfflineSel1 << " | " 
-	  << setw(11) << iBdAna_BsOtherEventsOfflineSel1 << " | " << setw(11) << iBdAna_BdOtherEventsOfflineSel1 << " | " << setw(11) << iBdAna_OtherEventsOfflineSel1 << std::endl;
-
- std::cout<< "Prob vertex(KK)>2 percent | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsProbVertex << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsProbVertex << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsProbVertex << " | " 
-	  << setw(11) << iBdAna_BsJpsiEtaEventsProbVertex << " | " << setw(11) << iBdAna_BdJpsiK10EventsProbVertex << " | " << setw(11) << iBdAna_BdJpsiK0EventsProbVertex << " | " << setw(11) << iBdAna_BpJpsiKpEventsProbVertex << " | " 
-	  << setw(11) << iBdAna_BsOtherEventsProbVertex << " | " << setw(11) << iBdAna_BdOtherEventsProbVertex << " | " << setw(11) << iBdAna_OtherEventsProbVertex << std::endl;
-
-
-
- std::cout<< "Kaon pt cut               | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsKaonPtCut << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsKaonPtCut << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsKaonPtCut << " | " 
-	  << setw(11) << iBdAna_BsJpsiEtaEventsKaonPtCut << " | " << setw(11) << iBdAna_BdJpsiK10EventsKaonPtCut << " | " << setw(11) << iBdAna_BdJpsiK0EventsKaonPtCut << " | " << setw(11) << iBdAna_BpJpsiKpEventsKaonPtCut << " | " 
-	  << setw(11) << iBdAna_BsOtherEventsKaonPtCut << " | " << setw(11) << iBdAna_BdOtherEventsKaonPtCut << " | " << setw(11) << iBdAna_OtherEventsKaonPtCut << std::endl;
-
-
-
- std::cout<< "deltaKstarMass            | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPhiMassCut << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPhiMassCut << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsPhiMassCut << " | " 
-	  << setw(11) << iBdAna_BsJpsiEtaEventsPhiMassCut << " | " << setw(11) << iBdAna_BdJpsiK10EventsPhiMassCut << " | " << setw(11) << iBdAna_BdJpsiK0EventsPhiMassCut << " | " << setw(11) << iBdAna_BpJpsiKpEventsPhiMassCut << " | " 
-	  << setw(11) << iBdAna_BsOtherEventsPhiMassCut << " | " << setw(11) << iBdAna_BdOtherEventsPhiMassCut << " | " << setw(11) << iBdAna_OtherEventsPhiMassCut << std::endl;
-
-
-
- std::cout<< "decayLengthSign > 3       | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsDecayLengthCut << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsDecayLengthCut << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsDecayLengthCut << " | " 
-	  << setw(11) << iBdAna_BsJpsiEtaEventsDecayLengthCut << " | " << setw(11) << iBdAna_BdJpsiK10EventsDecayLengthCut << " | " << setw(11) << iBdAna_BdJpsiK0EventsDecayLengthCut << " | " << setw(11) << iBdAna_BpJpsiKpEventsDecayLengthCut << " | " 
-	  << setw(11) << iBdAna_BsOtherEventsDecayLengthCut << " | " << setw(11) << iBdAna_BdOtherEventsDecayLengthCut << " | " << setw(11) << iBdAna_OtherEventsDecayLengthCut << std::endl;
-
-
- std::cout<< "pointing cut              | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPointingCut << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPointingCut << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsPointingCut << " | " 
-	  << setw(11) << iBdAna_BsJpsiEtaEventsPointingCut << " | " << setw(11) << iBdAna_BdJpsiK10EventsPointingCut << " | " << setw(11) << iBdAna_BdJpsiK0EventsPointingCut << " | " << setw(11) << iBdAna_BpJpsiKpEventsPointingCut << " | " 
-	  << setw(11) << iBdAna_BsOtherEventsPointingCut << " | " << setw(11) << iBdAna_BdOtherEventsPointingCut << " | " << setw(11) << iBdAna_OtherEventsPointingCut << std::endl;
-
-
-
- std::cout<< "  "<<  std::endl;
- std::cout<< "  "<<  std::endl;
 
 
  // message for  removal of Jpsi
@@ -445,24 +355,46 @@ void BsAnalysisNew() {
  delete mySelector;
 
 
+  // print out results
+ std::cout<<"********* PRINTING RAW RESULTS WITHOUT SCALING **********************"<<std::endl<< std::endl;
+ printResults();
+
+ scaleNumbersToLumi();
+
+ std::cout<<"********* PRINTING SCALED RESULTS (scaled to the same luminosity)****"<<std::endl<< std::endl;
+ std::cout<<"********* the scaling factors are:"<< std::endl;
+ std::cout<<"scaleFactor_BsJPsiPhiSignalEvents = "<< scaleFactor_BsJPsiPhiSignalEvents<< std::endl;
+ std::cout<<"scaleFactor_BdJpsiKstar           = "<< scaleFactor_BdJpsiKstar          << std::endl;
+ std::cout<<"scaleFactor_BsJpsiKK              = "<< scaleFactor_BsJpsiKK             << std::endl;    
+ std::cout<<"scaleFactor_BsOtherEvents         = "<< scaleFactor_BsOtherEvents        << std::endl;  
+ std::cout<<"scaleFactor_BdOtherEvents         = "<< scaleFactor_BdOtherEvents        << std::endl;   
+ std::cout<<"scaleFactor_OtherEvents           = "<< scaleFactor_OtherEvents          << std::endl;      
+ std::cout<<"scaleFactor_BsJpsiEtaEvents       = "<< scaleFactor_BsJpsiEtaEvents      << std::endl;
+ std::cout<<"scaleFactor_BdJpsiK10Events       = "<< scaleFactor_BdJpsiK10Events      << std::endl;
+ std::cout<<"scaleFactor_BdJpsiK0Events        = "<< scaleFactor_BdJpsiK0Events       << std::endl;   
+ std::cout<<"scaleFactor_BpJpsiKpEvents        = "<< scaleFactor_BpJpsiKpEvents       << std::endl;  
+ printResults();
+
+ std::cout<<"******** PRINTING SIMPLIFIED RESULT *****************" << std::endl;
+ printSimpleResults();
 }   // finished main function
 
 
 
 // define counting function
-void increaseCountersByOne(int &BsJpsiPhiSignal, int& BsJpsiKKSignal, int& BdJpsiKstar, int& BsOther, int& BdOther,  int& other, 
-			   int &BsJpsiEta, int &BdJpsiK10, int &BdJpsiK0, int &BpJpsiKp  ){
+void increaseCountersByOne(double &BsJpsiPhiSignal, double& BsJpsiKKSignal, double& BdJpsiKstar, double& BsOther, double& BdOther,  double& other, 
+			   double &BsJpsiEta, double &BdJpsiK10, double &BdJpsiK0, double &BpJpsiKp  ){
 
-  if(isGenBsJpsiPhiMuMuKKEvent_ == 1)          BsJpsiPhiSignal++;
-  else if (isGenBsJpsiKKEvent_ == 1)           BsJpsiKKSignal++;
-  else if (isGenBdJpsiKstarMuMuKpiEvent_ == 1) BdJpsiKstar++;
-  else if (isGenBsJpsiEtaEvent_ == 1)          BsJpsiEta++;
-  else if (isGenBdJpsiK10Event_ == 1)          BdJpsiK10++;
-  else if (isGenBdJpsiK0Event_ == 1)           BdJpsiK0++;
-  else if (isGenBpJpsiKpEvent_ == 1)           BpJpsiKp++;
-  else if (isGenBsEvent_ == 1)                 BsOther++;
-  else if (isGenBdEvent_ == 1)                 BdOther++;		 
-  else                                         other++; 
+  if(isGenBsJpsiPhiMuMuKKEvent_ == 1)          BsJpsiPhiSignal+=1;
+  else if (isGenBsJpsiKKEvent_ == 1)           BsJpsiKKSignal+=1;
+  else if (isGenBdJpsiKstarMuMuKpiEvent_ == 1) BdJpsiKstar+=1;
+  else if (isGenBsJpsiEtaEvent_ == 1)          BsJpsiEta+=1;
+  else if (isGenBdJpsiK10Event_ == 1)          BdJpsiK10+=1;
+  else if (isGenBdJpsiK0Event_ == 1)           BdJpsiK0+=1;
+  else if (isGenBpJpsiKpEvent_ == 1)           BpJpsiKp+=1;
+  else if (isGenBsEvent_ == 1)                 BsOther+=1;
+  else if (isGenBdEvent_ == 1)                 BdOther+=1;		 
+  else                                         other+=1; 
   
 }  // end definition of counting function
 
@@ -1146,3 +1078,315 @@ void makeVertexResolutionPlots(){
 }
 
 
+
+void printResults(){
+
+  std::cout<< "There are " << entrycounter << " events in the tree." << std::endl;
+ std::cout<< "Events with only HLT: " << HLT << std::endl << std::endl;
+ 
+ std::cout<< "                          | Bs->JpsiPhi | Bd->Jpsi K* | Bs->Jpsi KK | Bs->Jpsi Eta| Bd->Jpsi K10| Bd->Jpsi K0 | Bp->Jpsi Kp | Other Bs    | Other Bd    | Other "<<  std::endl;
+ std::cout<< "events                    | " << setw(11) << iBsJPsiPhiSignalEvents << " | " << setw(11) << iBdJPsiKstarSignalEvents << " | " << setw(11) << iBsJPsiKKSignalEvents << " | " 
+	  << setw(11) << iBsJpsiEtaEvents << " | " << setw(11) << iBdJpsiK10Events << " | " << setw(11) << iBdJpsiK0Events << " | " << setw(11) << iBpJpsiKpEvents << " | " 
+	  << setw(11) << iBsOtherEvents << " | " << setw(11) << iBdOtherEvents << " | " << setw(11) << iOtherEvents << std::endl;
+
+ std::cout<< "triggered events          | " << setw(11) << iTriggered_DoubleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu3_BsJpsiKK << " | " 
+	  << setw(11) << iTriggered_DoubleMu3_BsJpsiEtaEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiK10Events << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiK0Events << " | " << setw(11) << iTriggered_DoubleMu3_BpJpsiKpEvents << " | " 
+	  << setw(11) << iTriggered_DoubleMu3_BsOtherEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdOtherEvents << " | " << setw(11) << iTriggered_DoubleMu3_OtherEvents << std::endl;
+
+ std::cout<<std::endl<<std::endl;
+ std::cout<<"Bs->Jpsi Phi Analysis:" << std::endl;
+ 
+ std::cout<< "pre kin fit               | " << setw(11) << iBsJPsiPhiSignalEventsPreKinFit << " | " << setw(11) << iBdJPsiKstarSignalEventsPreKinFit << " | " << setw(11) << iBsJPsiKKSignalEventsPreKinFit << " | " 
+	  << setw(11) << iBsJpsiEtaEventsPreKinFit << " | " << setw(11) << iBdJpsiK10EventsPreKinFit << " | " << setw(11) << iBdJpsiK0EventsPreKinFit << " | " << setw(11) << iBpJpsiKpEventsPreKinFit << " | " 
+	  << setw(11) << iBsOtherEventsPreKinFit << " | " << setw(11) << iBdOtherEventsPreKinFit << " | " << setw(11) << iOtherEventsPreKinFit << std::endl;
+
+
+ std::cout<< "after kin fit             | " << setw(11) << iBsJPsiPhiSignalEventsOfflineSel1 << " | " << setw(11) << iBdJPsiKstarSignalEventsOfflineSel1 << " | " << setw(11) << iBsJPsiKKSignalEventsOfflineSel1 << " | " 
+	  << setw(11) << iBsJpsiEtaEventsOfflineSel1 << " | " << setw(11) << iBdJpsiK10EventsOfflineSel1 << " | " << setw(11) << iBdJpsiK0EventsOfflineSel1 << " | " << setw(11) << iBpJpsiKpEventsOfflineSel1 << " | " 
+	  << setw(11) << iBsOtherEventsOfflineSel1 << " | " << setw(11) << iBdOtherEventsOfflineSel1 << " | " << setw(11) << iOtherEventsOfflineSel1 << std::endl;
+
+ std::cout<< "Prob vertex(KK)>2 percent | " << setw(11) << iBsJPsiPhiSignalEventsProbVertex << " | " << setw(11) << iBdJPsiKstarSignalEventsProbVertex << " | " << setw(11) << iBsJPsiKKSignalEventsProbVertex << " | " 
+	  << setw(11) << iBsJpsiEtaEventsProbVertex << " | " << setw(11) << iBdJpsiK10EventsProbVertex << " | " << setw(11) << iBdJpsiK0EventsProbVertex << " | " << setw(11) << iBpJpsiKpEventsProbVertex << " | " 
+	  << setw(11) << iBsOtherEventsProbVertex << " | " << setw(11) << iBdOtherEventsProbVertex << " | " << setw(11) << iOtherEventsProbVertex << std::endl;
+
+
+
+ std::cout<< "Kaon pt > 0.9             | " << setw(11) << iBsJPsiPhiSignalEventsKaonPtCut << " | " << setw(11) << iBdJPsiKstarSignalEventsKaonPtCut << " | " << setw(11) << iBsJPsiKKSignalEventsKaonPtCut << " | " 
+	  << setw(11) << iBsJpsiEtaEventsKaonPtCut << " | " << setw(11) << iBdJpsiK10EventsKaonPtCut << " | " << setw(11) << iBdJpsiK0EventsKaonPtCut << " | " << setw(11) << iBpJpsiKpEventsKaonPtCut << " | " 
+	  << setw(11) << iBsOtherEventsKaonPtCut << " | " << setw(11) << iBdOtherEventsKaonPtCut << " | " << setw(11) << iOtherEventsKaonPtCut << std::endl;
+
+
+
+ std::cout<< "deltaPhiMass< 7MeV        | " << setw(11) << iBsJPsiPhiSignalEventsPhiMassCut << " | " << setw(11) << iBdJPsiKstarSignalEventsPhiMassCut << " | " << setw(11) << iBsJPsiKKSignalEventsPhiMassCut << " | " 
+	  << setw(11) << iBsJpsiEtaEventsPhiMassCut << " | " << setw(11) << iBdJpsiK10EventsPhiMassCut << " | " << setw(11) << iBdJpsiK0EventsPhiMassCut << " | " << setw(11) << iBpJpsiKpEventsPhiMassCut << " | " 
+	  << setw(11) << iBsOtherEventsPhiMassCut << " | " << setw(11) << iBdOtherEventsPhiMassCut << " | " << setw(11) << iOtherEventsPhiMassCut << std::endl;
+
+
+
+ std::cout<< "decayLengthSign > 3       | " << setw(11) << iBsJPsiPhiSignalEventsDecayLengthCut << " | " << setw(11) << iBdJPsiKstarSignalEventsDecayLengthCut << " | " << setw(11) << iBsJPsiKKSignalEventsDecayLengthCut << " | " 
+	  << setw(11) << iBsJpsiEtaEventsDecayLengthCut << " | " << setw(11) << iBdJpsiK10EventsDecayLengthCut << " | " << setw(11) << iBdJpsiK0EventsDecayLengthCut << " | " << setw(11) << iBpJpsiKpEventsDecayLengthCut << " | " 
+	  << setw(11) << iBsOtherEventsDecayLengthCut << " | " << setw(11) << iBdOtherEventsDecayLengthCut << " | " << setw(11) << iOtherEventsDecayLengthCut << std::endl;
+
+
+ std::cout<< "pointing cut              | " << setw(11) << iBsJPsiPhiSignalEventsPointingCut << " | " << setw(11) << iBdJPsiKstarSignalEventsPointingCut << " | " << setw(11) << iBsJPsiKKSignalEventsPointingCut << " | " 
+	  << setw(11) << iBsJpsiEtaEventsPointingCut << " | " << setw(11) << iBdJpsiK10EventsPointingCut << " | " << setw(11) << iBdJpsiK0EventsPointingCut << " | " << setw(11) << iBpJpsiKpEventsPointingCut << " | " 
+	  << setw(11) << iBsOtherEventsPointingCut << " | " << setw(11) << iBdOtherEventsPointingCut << " | " << setw(11) << iOtherEventsPointingCut << std::endl;
+
+
+
+ std::cout<< "  "<<  std::endl;
+ std::cout<< "  "<<  std::endl;
+
+
+ std::cout<<std::endl<<std::endl;
+ std::cout<<"Bd->Jpsi Kstar Analysis:" << std::endl;
+ 
+ std::cout<< "pre kin fit               | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPreKinFit << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPreKinFit << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsPreKinFit << " | " 
+	  << setw(11) << iBdAna_BsJpsiEtaEventsPreKinFit << " | " << setw(11) << iBdAna_BdJpsiK10EventsPreKinFit << " | " << setw(11) << iBdAna_BdJpsiK0EventsPreKinFit << " | " << setw(11) << iBdAna_BpJpsiKpEventsPreKinFit << " | " 
+	  << setw(11) << iBdAna_BsOtherEventsPreKinFit << " | " << setw(11) << iBdAna_BdOtherEventsPreKinFit << " | " << setw(11) << iBdAna_OtherEventsPreKinFit << std::endl;
+
+
+ std::cout<< "after kin fit             | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsOfflineSel1 << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsOfflineSel1 << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsOfflineSel1 << " | " 
+	  << setw(11) << iBdAna_BsJpsiEtaEventsOfflineSel1 << " | " << setw(11) << iBdAna_BdJpsiK10EventsOfflineSel1 << " | " << setw(11) << iBdAna_BdJpsiK0EventsOfflineSel1 << " | " << setw(11) << iBdAna_BpJpsiKpEventsOfflineSel1 << " | " 
+	  << setw(11) << iBdAna_BsOtherEventsOfflineSel1 << " | " << setw(11) << iBdAna_BdOtherEventsOfflineSel1 << " | " << setw(11) << iBdAna_OtherEventsOfflineSel1 << std::endl;
+
+ std::cout<< "Prob vertex(KK)>2 percent | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsProbVertex << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsProbVertex << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsProbVertex << " | " 
+	  << setw(11) << iBdAna_BsJpsiEtaEventsProbVertex << " | " << setw(11) << iBdAna_BdJpsiK10EventsProbVertex << " | " << setw(11) << iBdAna_BdJpsiK0EventsProbVertex << " | " << setw(11) << iBdAna_BpJpsiKpEventsProbVertex << " | " 
+	  << setw(11) << iBdAna_BsOtherEventsProbVertex << " | " << setw(11) << iBdAna_BdOtherEventsProbVertex << " | " << setw(11) << iBdAna_OtherEventsProbVertex << std::endl;
+
+
+
+ std::cout<< "Kaon pt cut               | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsKaonPtCut << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsKaonPtCut << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsKaonPtCut << " | " 
+	  << setw(11) << iBdAna_BsJpsiEtaEventsKaonPtCut << " | " << setw(11) << iBdAna_BdJpsiK10EventsKaonPtCut << " | " << setw(11) << iBdAna_BdJpsiK0EventsKaonPtCut << " | " << setw(11) << iBdAna_BpJpsiKpEventsKaonPtCut << " | " 
+	  << setw(11) << iBdAna_BsOtherEventsKaonPtCut << " | " << setw(11) << iBdAna_BdOtherEventsKaonPtCut << " | " << setw(11) << iBdAna_OtherEventsKaonPtCut << std::endl;
+
+
+
+ std::cout<< "deltaKstarMass            | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPhiMassCut << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPhiMassCut << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsPhiMassCut << " | " 
+	  << setw(11) << iBdAna_BsJpsiEtaEventsPhiMassCut << " | " << setw(11) << iBdAna_BdJpsiK10EventsPhiMassCut << " | " << setw(11) << iBdAna_BdJpsiK0EventsPhiMassCut << " | " << setw(11) << iBdAna_BpJpsiKpEventsPhiMassCut << " | " 
+	  << setw(11) << iBdAna_BsOtherEventsPhiMassCut << " | " << setw(11) << iBdAna_BdOtherEventsPhiMassCut << " | " << setw(11) << iBdAna_OtherEventsPhiMassCut << std::endl;
+
+
+
+ std::cout<< "decayLengthSign > 3       | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsDecayLengthCut << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsDecayLengthCut << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsDecayLengthCut << " | " 
+	  << setw(11) << iBdAna_BsJpsiEtaEventsDecayLengthCut << " | " << setw(11) << iBdAna_BdJpsiK10EventsDecayLengthCut << " | " << setw(11) << iBdAna_BdJpsiK0EventsDecayLengthCut << " | " << setw(11) << iBdAna_BpJpsiKpEventsDecayLengthCut << " | " 
+	  << setw(11) << iBdAna_BsOtherEventsDecayLengthCut << " | " << setw(11) << iBdAna_BdOtherEventsDecayLengthCut << " | " << setw(11) << iBdAna_OtherEventsDecayLengthCut << std::endl;
+
+
+ std::cout<< "pointing cut              | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPointingCut << " | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPointingCut << " | " << setw(11) << iBdAna_BsJPsiKKSignalEventsPointingCut << " | " 
+	  << setw(11) << iBdAna_BsJpsiEtaEventsPointingCut << " | " << setw(11) << iBdAna_BdJpsiK10EventsPointingCut << " | " << setw(11) << iBdAna_BdJpsiK0EventsPointingCut << " | " << setw(11) << iBdAna_BpJpsiKpEventsPointingCut << " | " 
+	  << setw(11) << iBdAna_BsOtherEventsPointingCut << " | " << setw(11) << iBdAna_BdOtherEventsPointingCut << " | " << setw(11) << iBdAna_OtherEventsPointingCut << std::endl;
+
+
+
+ std::cout<< "  "<<  std::endl;
+ std::cout<< "  "<<  std::endl;
+
+
+}
+
+
+
+void printSimpleResults(){
+
+  std::cout<< "There are " << entrycounter << " events in the tree." << std::endl;
+ std::cout<< "Events with only HLT: " << HLT << std::endl << std::endl;
+ 
+ std::cout<< "                          | Bs->JpsiPhi | Background (B or prompt bckgr. depending on used sample) "<<  std::endl;
+ std::cout<< "events                    | " << setw(11) << iBsJPsiPhiSignalEvents << " | " << setw(11) << iBdJPsiKstarSignalEvents + iBsJPsiKKSignalEvents +  iBsJpsiEtaEvents + 
+   iBdJpsiK10Events+  iBdJpsiK0Events+  iBpJpsiKpEvents + iBsOtherEvents+  iBdOtherEvents + iOtherEvents << std::endl;
+
+ std::cout<< "triggered events          | " << setw(11) << iTriggered_DoubleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiKstar + iTriggered_DoubleMu3_BsJpsiKK  
+	  + iTriggered_DoubleMu3_BsJpsiEtaEvents + iTriggered_DoubleMu3_BdJpsiK10Events + iTriggered_DoubleMu3_BdJpsiK0Events + iTriggered_DoubleMu3_BpJpsiKpEvents  
+	  + iTriggered_DoubleMu3_BsOtherEvents + iTriggered_DoubleMu3_BdOtherEvents + iTriggered_DoubleMu3_OtherEvents << std::endl;
+
+ std::cout<<std::endl<<std::endl;
+ std::cout<<"Bs->Jpsi Phi Analysis:" << std::endl;
+ 
+ std::cout<< "pre kin fit               | " << setw(11) << iBsJPsiPhiSignalEventsPreKinFit << " | " << setw(11) << iBdJPsiKstarSignalEventsPreKinFit + iBsJPsiKKSignalEventsPreKinFit  
+	  + iBsJpsiEtaEventsPreKinFit + iBdJpsiK10EventsPreKinFit + iBdJpsiK0EventsPreKinFit + iBpJpsiKpEventsPreKinFit  
+	  + iBsOtherEventsPreKinFit + iBdOtherEventsPreKinFit + iOtherEventsPreKinFit << std::endl;
+
+
+ std::cout<< "after kin fit             | " << setw(11) << iBsJPsiPhiSignalEventsOfflineSel1 << " | " << setw(11) << iBdJPsiKstarSignalEventsOfflineSel1 + iBsJPsiKKSignalEventsOfflineSel1  
+	  + iBsJpsiEtaEventsOfflineSel1 + iBdJpsiK10EventsOfflineSel1 + iBdJpsiK0EventsOfflineSel1 + iBpJpsiKpEventsOfflineSel1  
+	  + iBsOtherEventsOfflineSel1 + iBdOtherEventsOfflineSel1 + iOtherEventsOfflineSel1 << std::endl;
+
+ std::cout<< "Prob vertex(KK)>2 percent | " << setw(11) << iBsJPsiPhiSignalEventsProbVertex << " | " << setw(11) << iBdJPsiKstarSignalEventsProbVertex + iBsJPsiKKSignalEventsProbVertex  
+	  + iBsJpsiEtaEventsProbVertex + iBdJpsiK10EventsProbVertex + iBdJpsiK0EventsProbVertex + iBpJpsiKpEventsProbVertex  
+	  + iBsOtherEventsProbVertex + iBdOtherEventsProbVertex + iOtherEventsProbVertex << std::endl;
+
+
+
+ std::cout<< "Kaon pt > 0.9             | " << setw(11) << iBsJPsiPhiSignalEventsKaonPtCut << " | " << setw(11) << iBdJPsiKstarSignalEventsKaonPtCut + iBsJPsiKKSignalEventsKaonPtCut  
+	  + iBsJpsiEtaEventsKaonPtCut + iBdJpsiK10EventsKaonPtCut + iBdJpsiK0EventsKaonPtCut + iBpJpsiKpEventsKaonPtCut  
+	  + iBsOtherEventsKaonPtCut + iBdOtherEventsKaonPtCut + iOtherEventsKaonPtCut << std::endl;
+
+
+
+ std::cout<< "deltaPhiMass< 7MeV        | " << setw(11) << iBsJPsiPhiSignalEventsPhiMassCut << " | " << setw(11) << iBdJPsiKstarSignalEventsPhiMassCut + iBsJPsiKKSignalEventsPhiMassCut  
+	  + iBsJpsiEtaEventsPhiMassCut + iBdJpsiK10EventsPhiMassCut + iBdJpsiK0EventsPhiMassCut + iBpJpsiKpEventsPhiMassCut  
+	  + iBsOtherEventsPhiMassCut + iBdOtherEventsPhiMassCut + iOtherEventsPhiMassCut << std::endl;
+
+
+
+ std::cout<< "decayLengthSign > 3       | " << setw(11) << iBsJPsiPhiSignalEventsDecayLengthCut << " | " << setw(11) << iBdJPsiKstarSignalEventsDecayLengthCut + iBsJPsiKKSignalEventsDecayLengthCut  
+	  + iBsJpsiEtaEventsDecayLengthCut + iBdJpsiK10EventsDecayLengthCut + iBdJpsiK0EventsDecayLengthCut + iBpJpsiKpEventsDecayLengthCut  
+	  + iBsOtherEventsDecayLengthCut + iBdOtherEventsDecayLengthCut + iOtherEventsDecayLengthCut << std::endl;
+
+
+ std::cout<< "pointing cut              | " << setw(11) << iBsJPsiPhiSignalEventsPointingCut << " | " << setw(11) << iBdJPsiKstarSignalEventsPointingCut + iBsJPsiKKSignalEventsPointingCut  
+	  + iBsJpsiEtaEventsPointingCut + iBdJpsiK10EventsPointingCut + iBdJpsiK0EventsPointingCut + iBpJpsiKpEventsPointingCut  
+	  + iBsOtherEventsPointingCut + iBdOtherEventsPointingCut + iOtherEventsPointingCut << std::endl;
+
+
+
+ std::cout<< "  "<<  std::endl;
+ std::cout<< "  "<<  std::endl;
+
+
+ std::cout<<std::endl<<std::endl;
+ std::cout<<"Bd->Jpsi Kstar Analysis:" << std::endl;
+ 
+ std::cout<< "                          | Bd->JpsiK*  | Background (B or prompt bckgr. depending on used sample) "<<  std::endl;
+ std::cout<< "pre kin fit               | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPreKinFit << " | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPreKinFit + iBdAna_BsJPsiKKSignalEventsPreKinFit  
+	  + iBdAna_BsJpsiEtaEventsPreKinFit + iBdAna_BdJpsiK10EventsPreKinFit + iBdAna_BdJpsiK0EventsPreKinFit + iBdAna_BpJpsiKpEventsPreKinFit  
+	  + iBdAna_BsOtherEventsPreKinFit + iBdAna_BdOtherEventsPreKinFit + iBdAna_OtherEventsPreKinFit << std::endl;
+
+
+ std::cout<< "after kin fit             | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsOfflineSel1 << " | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsOfflineSel1 + iBdAna_BsJPsiKKSignalEventsOfflineSel1  
+	  + iBdAna_BsJpsiEtaEventsOfflineSel1 + iBdAna_BdJpsiK10EventsOfflineSel1 + iBdAna_BdJpsiK0EventsOfflineSel1 + iBdAna_BpJpsiKpEventsOfflineSel1  
+	  + iBdAna_BsOtherEventsOfflineSel1 + iBdAna_BdOtherEventsOfflineSel1 + iBdAna_OtherEventsOfflineSel1 << std::endl;
+
+ std::cout<< "Prob vertex(KK)>2 percent | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsProbVertex << " | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsProbVertex + iBdAna_BsJPsiKKSignalEventsProbVertex  
+	  + iBdAna_BsJpsiEtaEventsProbVertex + iBdAna_BdJpsiK10EventsProbVertex + iBdAna_BdJpsiK0EventsProbVertex + iBdAna_BpJpsiKpEventsProbVertex  
+	  + iBdAna_BsOtherEventsProbVertex + iBdAna_BdOtherEventsProbVertex + iBdAna_OtherEventsProbVertex << std::endl;
+
+
+
+ std::cout<< "Kaon pt cut               | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsKaonPtCut << " | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsKaonPtCut + iBdAna_BsJPsiKKSignalEventsKaonPtCut  
+	  + iBdAna_BsJpsiEtaEventsKaonPtCut + iBdAna_BdJpsiK10EventsKaonPtCut + iBdAna_BdJpsiK0EventsKaonPtCut + iBdAna_BpJpsiKpEventsKaonPtCut  
+	  + iBdAna_BsOtherEventsKaonPtCut + iBdAna_BdOtherEventsKaonPtCut + iBdAna_OtherEventsKaonPtCut << std::endl;
+
+
+
+ std::cout<< "deltaKstarMass            | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPhiMassCut << " | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPhiMassCut + iBdAna_BsJPsiKKSignalEventsPhiMassCut  
+	  + iBdAna_BsJpsiEtaEventsPhiMassCut + iBdAna_BdJpsiK10EventsPhiMassCut + iBdAna_BdJpsiK0EventsPhiMassCut + iBdAna_BpJpsiKpEventsPhiMassCut  
+	  + iBdAna_BsOtherEventsPhiMassCut + iBdAna_BdOtherEventsPhiMassCut + iBdAna_OtherEventsPhiMassCut << std::endl;
+
+
+
+ std::cout<< "decayLengthSign > 3       | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsDecayLengthCut << " | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsDecayLengthCut + iBdAna_BsJPsiKKSignalEventsDecayLengthCut  
+	  + iBdAna_BsJpsiEtaEventsDecayLengthCut + iBdAna_BdJpsiK10EventsDecayLengthCut + iBdAna_BdJpsiK0EventsDecayLengthCut + iBdAna_BpJpsiKpEventsDecayLengthCut  
+	  + iBdAna_BsOtherEventsDecayLengthCut + iBdAna_BdOtherEventsDecayLengthCut + iBdAna_OtherEventsDecayLengthCut << std::endl;
+
+
+ std::cout<< "pointing cut              | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPointingCut << " | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPointingCut + iBdAna_BsJPsiKKSignalEventsPointingCut  
+	  + iBdAna_BsJpsiEtaEventsPointingCut + iBdAna_BdJpsiK10EventsPointingCut + iBdAna_BdJpsiK0EventsPointingCut + iBdAna_BpJpsiKpEventsPointingCut  
+	  + iBdAna_BsOtherEventsPointingCut + iBdAna_BdOtherEventsPointingCut + iBdAna_OtherEventsPointingCut << std::endl;
+
+
+
+ std::cout<< "  "<<  std::endl;
+ std::cout<< "  "<<  std::endl;
+
+
+}
+
+
+
+
+
+void scaleNumbersToLumi(){
+
+  
+
+  scale(iBsJPsiPhiSignalEvents, iBsJPsiKKSignalEvents, iBdJPsiKstarSignalEvents, iBsOtherEvents, iBdOtherEvents, iOtherEvents, 
+	iBsJpsiEtaEvents, iBdJpsiK10Events, iBdJpsiK0Events, iBpJpsiKpEvents);
+  
+  
+  scale(iTriggered_DoubleMu3_BsJPsiPhiSignalEvents,  iTriggered_DoubleMu3_BsJpsiKK, 
+	iTriggered_DoubleMu3_BdJpsiKstar,            iTriggered_DoubleMu3_BsOtherEvents, 
+	iTriggered_DoubleMu3_BdOtherEvents,          iTriggered_DoubleMu3_OtherEvents,
+	iTriggered_DoubleMu3_BsJpsiEtaEvents,        iTriggered_DoubleMu3_BdJpsiK10Events,
+	iTriggered_DoubleMu3_BdJpsiK0Events,         iTriggered_DoubleMu3_BpJpsiKpEvents);
+  
+  
+  scale(iBsJPsiPhiSignalEventsPreKinFit, iBsJPsiKKSignalEventsPreKinFit, iBdJPsiKstarSignalEventsPreKinFit,
+	iBsOtherEventsPreKinFit, iBdOtherEventsPreKinFit, iOtherEventsPreKinFit,
+	iBsJpsiEtaEventsPreKinFit, iBdJpsiK10EventsPreKinFit, iBdJpsiK0EventsPreKinFit, iBpJpsiKpEventsPreKinFit);
+  
+
+  scale(iBsJPsiPhiSignalEventsOfflineSel1, iBsJPsiKKSignalEventsOfflineSel1, iBdJPsiKstarSignalEventsOfflineSel1,
+	iBsOtherEventsOfflineSel1, iBdOtherEventsOfflineSel1, iOtherEventsOfflineSel1,
+	iBsJpsiEtaEventsOfflineSel1, iBdJpsiK10EventsOfflineSel1, iBdJpsiK0EventsOfflineSel1, iBpJpsiKpEventsOfflineSel1);
+  
+  scale(iBsJPsiPhiSignalEventsProbVertex, iBsJPsiKKSignalEventsProbVertex, iBdJPsiKstarSignalEventsProbVertex,
+	iBsOtherEventsProbVertex, iBdOtherEventsProbVertex, iOtherEventsProbVertex,
+	iBsJpsiEtaEventsProbVertex, iBdJpsiK10EventsProbVertex, iBdJpsiK0EventsProbVertex, iBpJpsiKpEventsProbVertex);
+  
+  scale(iBsJPsiPhiSignalEventsKaonPtCut, iBsJPsiKKSignalEventsKaonPtCut, iBdJPsiKstarSignalEventsKaonPtCut, 
+	iBsOtherEventsKaonPtCut, iBdOtherEventsKaonPtCut, iOtherEventsKaonPtCut,
+	iBsJpsiEtaEventsKaonPtCut, iBdJpsiK10EventsKaonPtCut, iBdJpsiK0EventsKaonPtCut, iBpJpsiKpEventsKaonPtCut);
+  
+  scale(iBsJPsiPhiSignalEventsPhiMassCut, iBsJPsiKKSignalEventsPhiMassCut, iBdJPsiKstarSignalEventsPhiMassCut, 
+	iBsOtherEventsPhiMassCut, iBdOtherEventsPhiMassCut, iOtherEventsPhiMassCut,
+	iBsJpsiEtaEventsPhiMassCut, iBdJpsiK10EventsPhiMassCut, iBdJpsiK0EventsPhiMassCut, iBpJpsiKpEventsPhiMassCut);
+  
+  scale(iBsJPsiPhiSignalEventsDecayLengthCut, iBsJPsiKKSignalEventsDecayLengthCut, iBdJPsiKstarSignalEventsDecayLengthCut, 
+	iBsOtherEventsDecayLengthCut, iBdOtherEventsDecayLengthCut, iOtherEventsDecayLengthCut,
+	iBsJpsiEtaEventsDecayLengthCut, iBdJpsiK10EventsDecayLengthCut, iBdJpsiK0EventsDecayLengthCut, iBpJpsiKpEventsDecayLengthCut);
+  
+  scale(iBsJPsiPhiSignalEventsPointingCut, iBsJPsiKKSignalEventsPointingCut, iBdJPsiKstarSignalEventsPointingCut, 
+	iBsOtherEventsPointingCut, iBdOtherEventsPointingCut, iOtherEventsPointingCut,
+	iBsJpsiEtaEventsPointingCut, iBdJpsiK10EventsPointingCut, iBdJpsiK0EventsPointingCut, iBpJpsiKpEventsPointingCut);
+  
+  scale(iBdAna_BsJPsiPhiSignalEventsPreKinFit, iBdAna_BsJPsiKKSignalEventsPreKinFit, iBdAna_BdJPsiKstarSignalEventsPreKinFit,
+	iBdAna_BsOtherEventsPreKinFit, iBdAna_BdOtherEventsPreKinFit, iBdAna_OtherEventsPreKinFit,
+	iBdAna_BsJpsiEtaEventsPreKinFit, iBdAna_BdJpsiK10EventsPreKinFit, iBdAna_BdJpsiK0EventsPreKinFit, iBdAna_BpJpsiKpEventsPreKinFit); 
+  
+
+  scale(iBdAna_BsJPsiPhiSignalEventsOfflineSel1, iBdAna_BsJPsiKKSignalEventsOfflineSel1, iBdAna_BdJPsiKstarSignalEventsOfflineSel1,
+	iBdAna_BsOtherEventsOfflineSel1, iBdAna_BdOtherEventsOfflineSel1, iBdAna_OtherEventsOfflineSel1,
+	iBdAna_BsJpsiEtaEventsOfflineSel1, iBdAna_BdJpsiK10EventsOfflineSel1, iBdAna_BdJpsiK0EventsOfflineSel1, iBdAna_BpJpsiKpEventsOfflineSel1);
+  
+  
+  scale(iBdAna_BsJPsiPhiSignalEventsProbVertex, iBdAna_BsJPsiKKSignalEventsProbVertex, iBdAna_BdJPsiKstarSignalEventsProbVertex,
+	iBdAna_BsOtherEventsProbVertex, iBdAna_BdOtherEventsProbVertex, iBdAna_OtherEventsProbVertex,
+	iBdAna_BsJpsiEtaEventsProbVertex, iBdAna_BdJpsiK10EventsProbVertex, iBdAna_BdJpsiK0EventsProbVertex, iBdAna_BpJpsiKpEventsProbVertex);
+  
+  scale(iBdAna_BsJPsiPhiSignalEventsKaonPtCut, iBdAna_BsJPsiKKSignalEventsKaonPtCut, iBdAna_BdJPsiKstarSignalEventsKaonPtCut, 
+	iBdAna_BsOtherEventsKaonPtCut, iBdAna_BdOtherEventsKaonPtCut, iBdAna_OtherEventsKaonPtCut,
+	iBdAna_BsJpsiEtaEventsKaonPtCut, iBdAna_BdJpsiK10EventsKaonPtCut, iBdAna_BdJpsiK0EventsKaonPtCut, iBdAna_BpJpsiKpEventsKaonPtCut);
+  
+  scale(iBdAna_BsJPsiPhiSignalEventsPhiMassCut, iBdAna_BsJPsiKKSignalEventsPhiMassCut, iBdAna_BdJPsiKstarSignalEventsPhiMassCut, 
+	iBdAna_BsOtherEventsPhiMassCut, iBdAna_BdOtherEventsPhiMassCut, iBdAna_OtherEventsPhiMassCut,
+	iBdAna_BsJpsiEtaEventsPhiMassCut, iBdAna_BdJpsiK10EventsPhiMassCut, iBdAna_BdJpsiK0EventsPhiMassCut, iBdAna_BpJpsiKpEventsPhiMassCut);
+  
+  
+  scale(iBdAna_BsJPsiPhiSignalEventsDecayLengthCut, iBdAna_BsJPsiKKSignalEventsDecayLengthCut, iBdAna_BdJPsiKstarSignalEventsDecayLengthCut, 
+	iBdAna_BsOtherEventsDecayLengthCut, iBdAna_BdOtherEventsDecayLengthCut, iBdAna_OtherEventsDecayLengthCut,
+	iBdAna_BsJpsiEtaEventsDecayLengthCut, iBdAna_BdJpsiK10EventsDecayLengthCut, iBdAna_BdJpsiK0EventsDecayLengthCut, iBdAna_BpJpsiKpEventsDecayLengthCut);
+  
+  
+  scale(iBdAna_BsJPsiPhiSignalEventsPointingCut, iBdAna_BsJPsiKKSignalEventsPointingCut, iBdAna_BdJPsiKstarSignalEventsPointingCut, 
+	iBdAna_BsOtherEventsPointingCut, iBdAna_BdOtherEventsPointingCut, iBdAna_OtherEventsPointingCut,
+	iBdAna_BsJpsiEtaEventsPointingCut, iBdAna_BdJpsiK10EventsPointingCut, iBdAna_BdJpsiK0EventsPointingCut, iBdAna_BpJpsiKpEventsPointingCut);
+}
+
+
+void scale(double &BsJpsiPhiSignal, double& BsJpsiKKSignal, double& BdJpsiKstar, double& BsOther, double& BdOther,  double& other, 
+	   double &BsJpsiEta, double &BdJpsiK10, double &BdJpsiK0, double &BpJpsiKp  ){
+  
+  BsJpsiPhiSignal /= scaleFactor_BsJPsiPhiSignalEvents;
+  BsJpsiKKSignal  /= scaleFactor_BsJpsiKK;
+  BdJpsiKstar     /= scaleFactor_BdJpsiKstar;
+  BsJpsiEta       /= scaleFactor_BsJpsiEtaEvents;
+  BdJpsiK10       /= scaleFactor_BdJpsiK10Events;
+  BdJpsiK0        /= scaleFactor_BdJpsiK0Events;
+  BpJpsiKp        /= scaleFactor_BpJpsiKpEvents;
+  BsOther         /= scaleFactor_BsOtherEvents;
+  BdOther         /= scaleFactor_BdOtherEvents;		 
+  other           /= scaleFactor_OtherEvents; 
+  
+}

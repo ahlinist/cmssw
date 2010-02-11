@@ -5,7 +5,8 @@
 #include <TROOT.h>
 #include <TTree.h>
 #include <TFile.h>
-
+#include <TChain.h>
+#include <vector>
 
 class BsToJpsiPhiRootTree {
 public:
@@ -17,11 +18,12 @@ public:
 	void resetEntries(); 
 	void writeFile();
 	void createTree(const std::string filename);
-	void readTree(const std::string filename);
 
+	// read tree from single file
+	void readTree(const std::string filename); 
 
-
-
+	// read tree as chain from multiple files
+	void readTree(std::vector<std::string> filenames);
 
  
 	void getAngles(const double aa, const double bb, const double cc, const double dd);
@@ -33,6 +35,7 @@ public:
   
 	void fill();  
 
+	void setBranchAddresses();
 public:
 
         int triggerbit_HLTmu3_;
