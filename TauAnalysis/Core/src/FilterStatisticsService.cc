@@ -42,7 +42,7 @@ FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const s
 						  << " from dqmDirectory = " << dqmDirectory << " --> skipping !!";
     return 0;
   }
-  long num = meNum->getIntValue();
+  int64_t num = meNum->getIntValue();
 
   std::string meName_numWeighted = dqmDirectoryName(dqmDirectory).append(elementName).append(meNameSuffixNumWeighted);
   MonitorElement* meNumWeighted = dqmStore.get(meName_numWeighted);
