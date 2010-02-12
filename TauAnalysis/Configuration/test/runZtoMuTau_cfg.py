@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
+process.GlobalTag.globaltag = cms.string('MC_31X_V9::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -102,6 +102,14 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # as input for pat::Tau production
 switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for managing pat::Jets
+from PhysicsTools.PatAlgos.tools.jetTools import *
+
+# uncomment to replace caloJets by pfJets
+switchJetCollection(process, "iterativeCone5PFJets")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
