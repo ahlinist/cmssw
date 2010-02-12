@@ -24,6 +24,10 @@ MuTauEventDump::MuTauEventDump(const edm::ParameterSet& cfg)
 {
   //std::cout << "<MuTauEventDump::MuTauEventDump>:" << std::endl;
 
+  muonDump_ = makeObjectDump(cfg, "PATMuonDump");
+  tauDump_ = makeObjectDump(cfg, "PATTauDump");
+  muTauDump_ = makeObjectDump(cfg, "PATMuTauPairDump");
+
   muTauZmumuHypothesisSource_ = getInputTag(cfg, "muTauZmumuHypothesisSource");
   diMuZmumuHypothesisSource_ = getInputTag(cfg, "diMuZmumuHypothesisSource");
 }
@@ -63,10 +67,13 @@ void MuTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSet
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 
   printElectronInfo(iEvent);
-  printMuonInfo(iEvent);
-  printTauInfo(iEvent);
+  //printMuonInfo(iEvent);
+  muonDump_->print(iEvent, iSetup);
+  //printTauInfo(iEvent);
+  tauDump_->print(iEvent, iSetup);
 
-  printDiTauCandidateInfo(iEvent);
+  //printDiTauCandidateInfo(iEvent);
+  muTauDump_->print(iEvent, iSetup);
   printMuTauZmumuHypothesisInfo(iEvent);
   printDiMuZmumuHypothesisInfo(iEvent);
 
