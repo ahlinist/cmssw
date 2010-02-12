@@ -9,9 +9,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.7 $
+  * \version $Revision: 1.8 $
   *
-  * $Id: GenericAnalyzer.h,v 1.7 2010/01/11 10:14:37 veelken Exp $
+  * $Id: GenericAnalyzer.h,v 1.8 2010/01/18 12:53:06 veelken Exp $
   *
   */
 
@@ -39,14 +39,16 @@
 #include <list>
 #include <map>
 
+class SysUncertaintyService;
+
 class GenericAnalyzer : public edm::EDAnalyzer 
 {
   struct analysisSequenceEntry
   {
     analysisSequenceEntry(const std::string&);
     virtual ~analysisSequenceEntry();
-    virtual bool filter_cumulative(const edm::Event&, const edm::EventSetup&) { return true; }
-    virtual bool filter_individual(const edm::Event&, const edm::EventSetup&) { return true; }
+    virtual bool filter_cumulative(const edm::Event&, const edm::EventSetup&, const SysUncertaintyService*) { return true; }
+    virtual bool filter_individual(const edm::Event&, const edm::EventSetup&, const SysUncertaintyService*) { return true; }
     virtual void beginJob() {}
     virtual void analyze(const edm::Event&, const edm::EventSetup&, double, bool) {}
     virtual void endJob() {}
@@ -60,12 +62,14 @@ class GenericAnalyzer : public edm::EDAnalyzer
     explicit analysisSequenceEntry_filter(const std::string&, const std::string&, const edm::ParameterSet&, bool, int&);
     virtual ~analysisSequenceEntry_filter();
     void print() const;
-    bool filter_cumulative(const edm::Event&, const edm::EventSetup&);
-    bool filter_individual(const edm::Event&, const edm::EventSetup&);
+    bool filter_cumulative(const edm::Event&, const edm::EventSetup&, const SysUncertaintyService*);
+    bool filter_individual(const edm::Event&, const edm::EventSetup&, const SysUncertaintyService*);
     int type() const { return analysisSequenceEntry::kFilter; }
-    bool filter(const edm::Event&, const edm::EventSetup&, const std::map<std::string, EventSelectorBase*>&);
+    bool filter(const edm::Event&, const edm::EventSetup&, const SysUncertaintyService*, 
+		const std::map<std::string, EventSelectorBase*>&);
     std::map<std::string, EventSelectorBase*> filterPlugins_cumulative_;
     std::map<std::string, EventSelectorBase*> filterPlugins_individual_;
+    bool estimateSysUncertainties_;
     static unsigned filterId_;
   };
 
