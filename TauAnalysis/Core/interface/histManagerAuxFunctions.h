@@ -21,8 +21,6 @@ void fillLeptonIsoDepositHistograms(const pat::IsoDeposit*, MonitorElement*, Mon
 
 void clearIsoParam(reco::isodeposit::AbsVetos&);
 
-int getMatchingGenParticlePdgId(const reco::Particle::LorentzVector&, edm::Handle<reco::GenParticleCollection>&, const std::vector<int>* = 0);
-
 double getDeltaRnearestJet(const reco::Particle::LorentzVector&, edm::Handle<pat::JetCollection>&, double = -1.);
 
 template<typename T>
