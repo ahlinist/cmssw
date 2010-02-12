@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.18 2010/01/26 14:02:14 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.19 2010/02/12 13:20:03 covarell Exp $
 //
 //
 
@@ -913,6 +913,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
           hMcRightTrkBit5->Fill(int(thisMuon->muonID("TM2DCompatibilityTight")));
 	  hMcRightTrkBit8->Fill(int(thisMuon->muonID("TMLastStationOptimizedLowPtLoose")));
 	  hMcRightTrkBit9->Fill(int(thisMuon->muonID("TMLastStationOptimizedLowPtTight")));
+          hMcRightTrkBitNew->Fill(int(thisMuon->muonID("TMLastStationAngTight")));
           hMcRightTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
           hMcRightTrkMuNhits->Fill(iTrack->found());
           hMcRightTrkMud0->Fill(fabs(iTrack->d0()));
@@ -936,6 +937,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
           hMcWrongTrkBit5->Fill((int)thisMuon->muonID("TM2DCompatibilityTight"));
 	  hMcWrongTrkBit8->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtLoose"));
 	  hMcWrongTrkBit9->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtTight"));
+	  hMcRightTrkBitNew->Fill(int(thisMuon->muonID("TMLastStationAngTight")));
           hMcWrongTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
           hMcWrongTrkMuNhits->Fill(iTrack->found());
           hMcWrongTrkMud0->Fill(fabs(iTrack->d0()));
