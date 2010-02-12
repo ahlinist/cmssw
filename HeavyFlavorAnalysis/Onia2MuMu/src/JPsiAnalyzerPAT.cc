@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.17 2010/01/20 10:31:54 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.18 2010/01/26 14:02:14 covarell Exp $
 //
 //
 
@@ -1174,6 +1174,7 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 	  aMuon->globalTrack()->chi2()/aMuon->globalTrack()->ndof() < 20.0 &&
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
+          p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->d0()) < 5.0 &&
           fabs(iTrack->dz()) < 20.0 );
 }
@@ -1190,6 +1191,7 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
 	  aMuon->muonID("TMLastStationAngTight") &&
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
+          p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->d0()) < 5.0 &&
           fabs(iTrack->dz()) < 20.0 );
 }
@@ -1205,6 +1207,7 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
 	  iTrack->chi2()/iTrack->ndof() < 5.0 &&
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
+          p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->d0()) < 5.0 &&
           fabs(iTrack->dz()) < 20.0 );
 }
