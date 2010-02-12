@@ -14,6 +14,7 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
+#include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 #include "TMath.h"
 #include "Math/VectorUtil.h"
 #include "TVector3.h"
@@ -58,21 +59,21 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::auto_ptr<pat::CompositeCandidateCollection> oniaOutput(new pat::CompositeCandidateCollection);
   
+  Vertex* thePrimaryV;
+  Vertex* theBeamSpotV; 
+
   Handle<BeamSpot> theBeamSpot;
   iEvent.getByLabel(thebeamspot_,theBeamSpot);
   BeamSpot bs = *theBeamSpot;
-  TVector3 vBs;
-  vBs.SetXYZ(bs.x0(), bs.y0(), 0);
+  theBeamSpotV = new Vertex(bs.position(), bs.covariance3D());
 
   Handle<VertexCollection> priVtxs;
   iEvent.getByLabel(thePVs_, priVtxs);
-  TVector3 vPv;
   if ( priVtxs->begin() != priVtxs->end() ) {
-    Vertex privtx = *(priVtxs->begin());
-    vPv.SetXYZ(privtx.position().x(), privtx.position().y(), 0);
+    thePrimaryV = new Vertex(*(priVtxs->begin()));
   }
   else {
-    vPv.SetXYZ(0, 0, 0);
+    thePrimaryV = new Vertex(bs.position(), bs.covariance3D());
   }
 
   Handle< View<pat::Muon> > muons;
@@ -142,7 +143,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    if (!pvs.empty()) {
 	      reco::Vertex muonLessPV = reco::Vertex(pvs.front());
 	      myCand.addUserData("muonlessPV",muonLessPV);
-              vPv.SetXYZ(muonLessPV.position().x(), muonLessPV.position().y(), 0);
+              thePrimaryV = &muonLessPV;
 	    }
 	  }
 	}
@@ -160,20 +161,32 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  myCand.addUserFloat("vProb",vProb);
 	  
 	  TVector3 vtx;
+          TVector3 pvtx;
+          VertexDistanceXY vdistXY;
+
 	  vtx.SetXYZ(myVertex.position().x(),myVertex.position().y(),0);
 	  TVector3 pperp(jpsi.px(), jpsi.py(), 0);
           
 	  // lifetime using PV
-	  TVector3 vdiff = vtx - vPv;
+          pvtx.SetXYZ(thePrimaryV->position().x(),thePrimaryV->position().y(),0);
+	  TVector3 vdiff = vtx - pvtx;
 	  double cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
-	  double ctauPV = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
+	  Measurement1D distXY = vdistXY.distance(reco::Vertex(myVertex), *thePrimaryV);
+	  double ctauPV = distXY.value()*cosAlpha*3.09688/pperp.Perp();
+          double ctauErrPV = distXY.error()*cosAlpha*3.09688/pperp.Perp();
 	  myCand.addUserFloat("ppdlPV",ctauPV);
+          myCand.addUserFloat("ppdlErrPV",ctauErrPV);
 	  myCand.addUserFloat("cosAlpha",cosAlpha);
+
 	  // lifetime using BS
-	  vdiff = vtx - vBs;
+          pvtx.SetXYZ(theBeamSpotV->position().x(),theBeamSpotV->position().y(),0);
+	  vdiff = vtx - pvtx;
 	  cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
-	  double ctauBS = vdiff.Perp()*cosAlpha*3.09688/pperp.Perp();
+	  distXY = vdistXY.distance(reco::Vertex(myVertex), *theBeamSpotV);
+	  double ctauBS = distXY.value()*cosAlpha*3.09688/pperp.Perp();
+          double ctauErrBS = distXY.error()*cosAlpha*3.09688/pperp.Perp();
 	  myCand.addUserFloat("ppdlBS",ctauBS);
+          myCand.addUserFloat("ppdlErrBS",ctauErrBS);
 	  
 	  if (addCommonVertex_) {
 	    myCand.addUserData("commonVertex",reco::Vertex(myVertex));
@@ -182,8 +195,10 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  myCand.addUserFloat("vNChi2",-1);
 	  myCand.addUserFloat("vProb", -1);
 	  myCand.addUserFloat("ppdlPV",-100);
+          myCand.addUserFloat("ppdlErrPV",-100);
 	  myCand.addUserFloat("cosAlpha",-100);
 	  myCand.addUserFloat("ppdlBS",-100);
+          myCand.addUserFloat("ppdlErrBS",-100);
 	  if (addCommonVertex_) {
 	    myCand.addUserData("commonVertex",reco::Vertex());
 	  }
