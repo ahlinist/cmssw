@@ -37,7 +37,8 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
   : analysisSequenceEntry(name)
 {
   //std::cout << "<analysisSequenceEntry_filter::analysisSequenceEntry_filter>:" << std::endl;
-
+  //std::cout << " name = " << name_ << std::endl;
+  
   std::string filterType = cfgFilter.getParameter<std::string>("pluginType");
 
   EventSelectorBase* filterPlugin_cumulative = 0;
@@ -84,6 +85,8 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
       } else { 
 	src = cfgFilter.getParameter<edm::InputTag>("src");
       }
+
+      //std::cout << " src = " << src.label() << std::endl;
 
 //--- compose name of InputTag
 //
@@ -148,6 +151,9 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
 //    if so evaluate that event selector module, 
 //    else evaluate the event selector module for no systematic shifts applied
 
+  //std::cout << "<analysisSequenceEntry_filter::filter>:" << std::endl;
+  //std::cout << " name = " << name_ << std::endl;
+
   if ( !edm::Service<SysUncertaintyService>().isAvailable() ) {
     edm::LogError ("filter") << " Failed to access SysUncertaintyService !!";
     return false;
@@ -156,6 +162,7 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
   const SysUncertaintyService* sysUncertaintyService = &(*edm::Service<SysUncertaintyService>());
 
   const std::string& currentSystematic = sysUncertaintyService->getCurrentSystematic();
+  //std::cout << " currentSystematic = " << currentSystematic << std::endl;
 
   std::map<std::string, EventSelectorBase*>::const_iterator it = filterPlugins.find(currentSystematic);
   if ( it == filterPlugins.end() ) it = filterPlugins.find(SysUncertaintyService::getNameCentralValue());
@@ -165,7 +172,9 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
   };
 
   edm::Event* evt_nonConst = const_cast<edm::Event*>(&evt);
-  return (*it->second)(*evt_nonConst, es);
+  bool filterDecision = (*it->second)(*evt_nonConst, es);
+  //std::cout << " filterDecision = " << filterDecision << std::endl;
+  return filterDecision;
 }
 
 bool GenericAnalyzer::analysisSequenceEntry_filter::filter_cumulative(const edm::Event& evt, const edm::EventSetup& es)
@@ -354,10 +363,12 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
       cfgAnalyzer.addParameter<std::string>("afterFilterName", afterFilterName);
       cfgAnalyzer.addParameter<std::string>("beforeFilterName", beforeFilterName);
 
-      std::string dqmDirectory_store = cfgAnalyzer.getParameter<std::string>("dqmDirectory_store");
-      std::string dirName = dqmDirectoryName(name_).append(dqmSubDirectoryName_filter(afterFilterName, beforeFilterName));
-      std::string dirName_full = dqmDirectoryName(dirName).append(dqmDirectory_store);
-      cfgAnalyzer.addParameter<std::string>("dqmDirectory_store", dirName_full);
+      if ( cfgAnalyzer.exists("dqmDirectory_store") ) {
+	std::string dqmDirectory_store = cfgAnalyzer.getParameter<std::string>("dqmDirectory_store");
+	std::string dirName = dqmDirectoryName(name_).append(dqmSubDirectoryName_filter(afterFilterName, beforeFilterName));
+	std::string dirName_full = dqmDirectoryName(dirName).append(dqmDirectory_store);
+	cfgAnalyzer.addParameter<std::string>("dqmDirectory_store", dirName_full);
+      }
 
       cfgAnalyzers.push_back(cfgAnalyzer);
     } else {
