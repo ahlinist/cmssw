@@ -34,7 +34,8 @@ GenericAnalyzer::analysisSequenceEntry::~analysisSequenceEntry()
 GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(const std::string& name, const std::string& title,
 									    const edm::ParameterSet& cfgFilter, 
 									    bool estimateSysUncertainties, int& cfgError)
-  : analysisSequenceEntry(name)
+  : analysisSequenceEntry(name),
+    estimateSysUncertainties_(estimateSysUncertainties)
 {
   //std::cout << "<analysisSequenceEntry_filter::analysisSequenceEntry_filter>:" << std::endl;
   //std::cout << " name = " << name_ << std::endl;
@@ -145,6 +146,7 @@ void GenericAnalyzer::analysisSequenceEntry_filter::print() const
 }
 
 bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt, const edm::EventSetup& es, 
+							   const SysUncertaintyService* sysUncertaintyService,
 							   const std::map<std::string, EventSelectorBase*>& filterPlugins)
 {
 //--- check if specific event selector module is defined for current systematic uncertainty;
@@ -154,17 +156,8 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
   //std::cout << "<analysisSequenceEntry_filter::filter>:" << std::endl;
   //std::cout << " name = " << name_ << std::endl;
 
-  if ( !edm::Service<SysUncertaintyService>().isAvailable() ) {
-    edm::LogError ("filter") << " Failed to access SysUncertaintyService !!";
-    return false;
-  }
-
-  const SysUncertaintyService* sysUncertaintyService = &(*edm::Service<SysUncertaintyService>());
-
-  const std::string& currentSystematic = sysUncertaintyService->getCurrentSystematic();
-  //std::cout << " currentSystematic = " << currentSystematic << std::endl;
-
-  std::map<std::string, EventSelectorBase*>::const_iterator it = filterPlugins.find(currentSystematic);
+  std::map<std::string, EventSelectorBase*>::const_iterator it = ( estimateSysUncertainties_ ) ?
+    filterPlugins.find(sysUncertaintyService->getCurrentSystematic()) : filterPlugins.end();
   if ( it == filterPlugins.end() ) it = filterPlugins.find(SysUncertaintyService::getNameCentralValue());
   if ( it == filterPlugins.end() ) {
     edm::LogError ("filter") << " No event selector plugin defined for central value !!";
@@ -177,14 +170,16 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
   return filterDecision;
 }
 
-bool GenericAnalyzer::analysisSequenceEntry_filter::filter_cumulative(const edm::Event& evt, const edm::EventSetup& es)
+bool GenericAnalyzer::analysisSequenceEntry_filter::filter_cumulative(const edm::Event& evt, const edm::EventSetup& es, 
+								      const SysUncertaintyService* sysUncertaintyService)
 {
-  return filter(evt, es, filterPlugins_cumulative_);
+  return filter(evt, es, sysUncertaintyService, filterPlugins_cumulative_);
 }
 
-bool GenericAnalyzer::analysisSequenceEntry_filter::filter_individual(const edm::Event& evt, const edm::EventSetup& es)
+bool GenericAnalyzer::analysisSequenceEntry_filter::filter_individual(const edm::Event& evt, const edm::EventSetup& es, 
+								      const SysUncertaintyService* sysUncertaintyService)
 {
-  return filter(evt, es, filterPlugins_individual_);
+  return filter(evt, es, sysUncertaintyService, filterPlugins_individual_);
 }
 
 //
@@ -605,12 +600,15 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 
   //std::cout << " eventWeight = " << eventWeight << std::endl;
 
-  if ( !edm::Service<SysUncertaintyService>().isAvailable() ) {
-    edm::LogError ("GenericAnalyzer::analyze") << " Failed to access SysUncertaintyService --> skipping !!";
-    return;
+  SysUncertaintyService* sysUncertaintyService = 0;
+  if ( estimateSysUncertainties_ ) {
+    if ( edm::Service<SysUncertaintyService>().isAvailable() ) {
+      sysUncertaintyService = &(*edm::Service<SysUncertaintyService>());
+    } else {
+      edm::LogError ("GenericAnalyzer::analyze") << " Failed to access SysUncertaintyService --> skipping !!";
+      return;
+    }
   }
-
-  SysUncertaintyService* sysUncertaintyService = &(*edm::Service<SysUncertaintyService>());
 
 //--- estimate systematic uncertainties:
 //    iterate over names of systematics uncertainties,
@@ -628,9 +626,12 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 	sysName != systematics_.end(); ++sysName ) {
     //std::cout << " sysName = " << (*sysName) << std::endl;
 
-    sysUncertaintyService->update(*sysName, evt, es);
+    double eventWeight_systematic = eventWeight;
+    if ( estimateSysUncertainties_ ) {
+      sysUncertaintyService->update(*sysName, evt, es);
+      eventWeight_systematic *= sysUncertaintyService->getWeight();
+    }
 
-    double eventWeight_systematic = eventWeight*sysUncertaintyService->getWeight();
     //std::cout << " eventWeight_systematic = " << eventWeight_systematic << std::endl;
 
     bool isSystematicApplied = ( (*sysName) == SysUncertaintyService::getNameCentralValue() ) ? false : true;
@@ -645,13 +646,13 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 	  entry != analysisSequence_.end(); ++entry ) {
       
       if ( (*entry)->type() == analysisSequenceEntry::kFilter ) {
-	bool filterPassed_cumulative = (*entry)->filter_cumulative(evt, es);
+	bool filterPassed_cumulative = (*entry)->filter_cumulative(evt, es, sysUncertaintyService);
 	
 	filterResults_cumulative.push_back(std::pair<std::string, bool>((*entry)->name_, filterPassed_cumulative));
 	
 	if ( !filterPassed_cumulative ) previousFiltersPassed = false;
 	
-	bool filterPassed_individual = (*entry)->filter_individual(evt, es);
+	bool filterPassed_individual = (*entry)->filter_individual(evt, es, sysUncertaintyService);
 	
 	filterResults_individual.push_back(std::pair<std::string, bool>((*entry)->name_, filterPassed_individual));
       }
