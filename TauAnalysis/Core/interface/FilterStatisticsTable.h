@@ -25,7 +25,7 @@ class FilterStatisticsElement
  public:
   explicit FilterStatisticsElement(const std::string& name)
     : name_(name), num_(0), numWeighted_(0.) {}
-  explicit FilterStatisticsElement(const std::string& name, long num, double numWeighted)
+  explicit FilterStatisticsElement(const std::string& name, int64_t num, double numWeighted)
     : name_(name), num_(num), numWeighted_(numWeighted) {}  
   ~FilterStatisticsElement() {}
 
@@ -36,13 +36,13 @@ class FilterStatisticsElement
     }
   }
   
-  long num() const { return num_; }
+  int64_t num() const { return num_; }
   double numWeighted() const { return numWeighted_; }
 
  private:
   std::string name_;
   
-  long num_;
+  int64_t num_;
   double numWeighted_;
 };
 
@@ -103,8 +103,8 @@ class FilterStatisticsTable
  private:
   std::string name_;
 
-  long numEvents_processed_;
-  long numEvents_passedAllFilters_;
+  int64_t numEvents_processed_;
+  int64_t numEvents_passedAllFilters_;
 
   typedef std::pair<std::string, FilterStatisticsRow*> rowEntry_type; 
   std::vector<rowEntry_type> rows_; 
