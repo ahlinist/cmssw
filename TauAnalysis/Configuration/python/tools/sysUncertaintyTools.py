@@ -96,24 +96,24 @@ def enableSysUncertainties_runZtoMuTau(process):
     setattr(muTauPairProdConfigurator, "systematics", {
         "sysMuonPtUp"           : { "srcLeg1" : "selectedLayer1MuonsTrkIPsysMuonPtUpCumulative" },
         "sysMuonPtDown"         : { "srcLeg1" : "selectedLayer1MuonsTrkIPsysMuonPtDownCumulative" },
-        "sysTauJetEnUp"         : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetEnUpCumulative" },
-        "sysTauJetEnDown"       : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetEnDownCumulative" }, 
-        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetThetaUpCumulative" }, 
-        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetThetaDownCumulative" }, 
-        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiUpCumulative" }, 
-        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiDownCumulative" }
+        "sysTauJetEnUp"         : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetEnUpCumulative" },
+        "sysTauJetEnDown"       : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetEnDownCumulative" }, 
+        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetThetaUpCumulative" }, 
+        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetThetaDownCumulative" }, 
+        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetPhiUpCumulative" }, 
+        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetPhiDownCumulative" }
     })
     process.produceMuTauPairs = muTauPairProdConfigurator.configure(process = process)
 
     setattr(muTauPairProdConfiguratorLooseMuonIsolation, "systematics", {
         "sysMuonPtUp"           : { "srcLeg1" : "selectedLayer1MuonsTrkIPlooseIsolationSysMuonPtUpCumulative" },
         "sysMuonPtDown"         : { "srcLeg1" : "selectedLayer1MuonsTrkIPlooseIsolationSysMuonPtDownCumulative" },
-        "sysTauJetEnUp"         : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetEnUpCumulative" },
-        "sysTauJetEnDown"       : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetEnDownCumulative" }, 
-        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetThetaUpCumulative" }, 
-        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetThetaDownCumulative" }, 
-        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiUpCumulative" }, 
-        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausMuonVetoSysTauJetPhiDownCumulative" }
+        "sysTauJetEnUp"         : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetEnUpCumulative" },
+        "sysTauJetEnDown"       : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetEnDownCumulative" }, 
+        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetThetaUpCumulative" }, 
+        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetThetaDownCumulative" }, 
+        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetPhiUpCumulative" }, 
+        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetPhiDownCumulative" }
     })
     process.produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(process = process)
 
