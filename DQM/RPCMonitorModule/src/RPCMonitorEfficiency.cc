@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.39 2010/02/02 12:32:31 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.40 2010/02/10 14:10:32 carrillo Exp $
 //
 //
 
@@ -36,7 +36,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include<string>
 #include<fstream>
-#include <DQMOffline/Muon/interface/RPCBookFolderStructure.h>
+#include <DQM/RPCMonitorDigi/interface/RPCBookFolderStructure.h>
 #include <Geometry/CommonTopologies/interface/RectangularStripTopology.h>
 #include <Geometry/CommonTopologies/interface/TrapezoidalStripTopology.h>
 
