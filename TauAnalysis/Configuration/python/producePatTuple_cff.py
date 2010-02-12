@@ -21,10 +21,17 @@ from TauAnalysis.RecoTools.patElectronConfig_cfi import *
 from TauAnalysis.RecoTools.patMuonConfig_cfi import *
 from TauAnalysis.RecoTools.patPFTauConfig_cfi import *
 #
+# disable production of MHT objects
+#
+from PhysicsTools.PatAlgos.producersLayer1.allLayer1Objects_cff import *
+allLayer1Objects.remove(layer1MHTs)
+allLayer1Objects.remove(allLayer1Summary)
+#
 # enable PAT trigger matching
 # (disabled per default in CMSSW_3_1_x)
 #
 from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff import *
+from PhysicsTools.PatAlgos.producersLayer1.allLayer1Objects_cff import *
 from PhysicsTools.PatAlgos.patSequences_cff import *
 patDefaultSequence += patTriggerSequence
 patTrigger.onlyStandAlone = False
