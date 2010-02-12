@@ -81,7 +81,7 @@ void DataBinning::print(std::ostream& stream) const
   double binContent_sum = 0.;
   double binSumw2_sum = 0.;
   for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
-    if ( numBins_ >= 1 ) {
+    if ( numBins_ > 1 ) {
       stream << " bin " << std::setw(2) << iBin << " (center: ";
       
       vdouble binCenter = binGrid_->binCenter(iBin);
