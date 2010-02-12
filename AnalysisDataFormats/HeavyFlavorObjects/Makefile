@@ -76,13 +76,13 @@ all:
 	@$(MAKE) ana00
 	@$(MAKE) util
 	@$(MAKE) anaclasses
+	@$(MAKE) links
 
 examples: 
 	@$(MAKE) writeA01Event
 	@$(MAKE) readA01Event
 	@$(MAKE) runTreeReader01
 	@$(MAKE) runMyReader01
-	@$(MAKE) links
 
 # ================================================================================
 ana00: $(addprefix obj/,$(ANA00))
