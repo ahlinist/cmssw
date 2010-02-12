@@ -2,43 +2,13 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
-#include <iostream>
-#include <fstream>
-
 EventDumpBase::EventDumpBase(const edm::ParameterSet& cfg)
+  : cfgError_(false)
 {
-  //std::cout << "<EventDumpBase::EventDumpBase>:" << std::endl;
-
-  if ( cfg.exists("output") ) {
-    std::string output = cfg.getParameter<std::string>("output");
-    //std::cout << " output = " << output << std::endl;
-
-    if ( output == "std::cout" ) {
-      //std::cout << "--> setting outputStream to std::cout." << std::endl;
-      outputStream_ = &std::cout;
-      isOutputFile_ = false;
-    } else if ( output == "std::cerr" ) {
-      //std::cout << "--> setting outputStream to std::cerr." << std::endl;
-      outputStream_ = &std::cerr;
-      isOutputFile_ = false;
-    } else if ( output != "" ) {
-      //std::cout << "--> setting outputStream to std::ofstream." << std::endl;
-      outputStream_ = new std::ofstream(output.data(), std::ios::out);
-      isOutputFile_ = true;
-    } else {
-      edm::LogError ("EventDumpBase::EventDumpBase") << " Invalid Configuration Parameter output = " << output
-						     << " --> skipping !!";
-      cfgError_ = 1;
-    }
-  } else {
-    //std::cout << " no outputFileName specified in configuration parameters" << std::endl;
-    //std::cout << "--> setting outputStream to std::cout." << std::endl;
-
-    outputStream_ = &std::cout;
-    isOutputFile_ = false;
-  }
+  outputStream_ = getOutputOptions(cfg, isOutputFile_, cfgError_);
 
   vstring cfgTriggerConditions = ( cfg.exists("triggerConditions") ) ? cfg.getParameter<vstring>("triggerConditions") : vstring();
   for ( vstring::const_iterator cfgTriggerCondition = cfgTriggerConditions.begin();
@@ -80,6 +50,17 @@ EventDumpBase::~EventDumpBase()
 {
 //--- close output file
   if ( isOutputFile_ ) delete outputStream_;
+}
+
+ObjectDumpBase* EventDumpBase::makeObjectDump(const edm::ParameterSet& cfg, const std::string& pluginType) 
+{
+  edm::ParameterSet cfgObjectDump(cfg);
+  cfgObjectDump.addParameter<std::string>("output", "nonStandAlone");
+
+  ObjectDumpBase* objectDump = ObjectDumpPluginFactory::get()->create(pluginType, cfgObjectDump);
+  objectDump->setOutputStream(outputStream_);
+
+  return objectDump;
 }
 
 bool isFulfilled(const std::string& filterName, const std::string& triggerCondition,
