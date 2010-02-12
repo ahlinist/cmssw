@@ -18,6 +18,8 @@
 
 #include <iostream>
 
+std::ostream* getOutputOptions(const edm::ParameterSet&, bool&, int&);
+
 void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >&, const std::vector<std::pair<std::string, bool> >&, std::ostream*);
 
 void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >&, edm::Handle<edm::View<reco::GenJet> >&, std::ostream*);

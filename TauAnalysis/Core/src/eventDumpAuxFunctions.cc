@@ -13,6 +13,50 @@
 
 #include <TMath.h>
 
+#include <fstream>
+
+std::ostream* getOutputOptions(const edm::ParameterSet& cfg, bool& isOutputFile, int& error)
+{
+  //std::cout << "<getOutputOptions>:" << std::endl;
+
+  std::ostream* outputStream = 0;
+
+  if ( cfg.exists("output") ) {
+    std::string output = cfg.getParameter<std::string>("output");
+    //std::cout << " output = " << output << std::endl;
+
+    if ( output == "std::cout" ) {
+      //std::cout << "--> setting outputStream to std::cout." << std::endl;
+      outputStream = &std::cout;
+      isOutputFile = false;
+    } else if ( output == "std::cerr" ) {
+      //std::cout << "--> setting outputStream to std::cerr." << std::endl;
+      outputStream = &std::cerr;
+      isOutputFile = false;
+    } else if ( output != "" ) {
+      //std::cout << "--> setting outputStream to std::ofstream." << std::endl;
+      outputStream = new std::ofstream(output.data(), std::ios::out);
+      isOutputFile = true;
+    } else {
+      edm::LogError ("getOutputOptions") 
+	<< " Invalid Configuration Parameter output = " << output << " --> skipping !!";
+      error = 1;
+    }
+  } else {
+    //std::cout << " no outputFileName specified in configuration parameters" << std::endl;
+    //std::cout << "--> setting outputStream to std::cout." << std::endl;
+    
+    outputStream = &std::cout;
+    isOutputFile = false;
+  }
+
+  return outputStream;
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
 void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >& filterResults_cumulative, 
 			     const std::vector<std::pair<std::string, bool> >& filterResults_individual, std::ostream* stream)
 {
@@ -39,8 +83,6 @@ void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >& f
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
-
-
 
 void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticles,
 			  edm::Handle<edm::View<reco::GenJet> >& genTauJets,
