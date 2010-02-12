@@ -10,6 +10,7 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
 #include "TauAnalysis/Core/interface/GenericEventDump.h"
+#include "TauAnalysis/Core/interface/ObjectDumpBase.h"
 
 class MuTauEventDump : public GenericEventDump
 {
@@ -24,6 +25,10 @@ class MuTauEventDump : public GenericEventDump
  protected:
   void print(const edm::Event&, const edm::EventSetup&, 
 	     const filterResults_type&, const filterResults_type&, double) const;
+
+  ObjectDumpBase* muonDump_;
+  ObjectDumpBase* tauDump_;
+  ObjectDumpBase* muTauDump_;
 
   void printMuTauZmumuHypothesisInfo(const edm::Event&) const;
   void printDiMuZmumuHypothesisInfo(const edm::Event&) const;
