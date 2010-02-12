@@ -17,7 +17,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
     cout << " No input file specified !" << endl;
     return;
   }
-
+ 
   cout << "Producing Laser plots for: " << infile << endl;
 
   TFile* f = new TFile(infile);
@@ -25,7 +25,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 
   int runNumber = 0;
   runNumber = runNum;
-
+  bool fit = true;
 
   char name[100];  
   char mytitle[200];
@@ -54,14 +54,14 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   double tbinsL = -26.;
   double tbinsH = 26.;
   
-  double thigh = 16.;
-  double tlow  = 6.;
+  double thigh = 36.;
+  double tlow  = -36.;
   
-  double thighc = 30.;
-  double tlowc  = -10.;
+  double thighc = 50.;
+  double tlowc  = -50.;
   
-  double thight = 12.;
-  double tlowt  = 9.;
+  double thight = 30.;
+  double tlowt  = -30.;
   
 //First thing is do print the profiles
 
@@ -293,7 +293,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   timeTTProfile->GetXaxis()->SetNdivisions(-18);
   timeTTProfile->GetYaxis()->SetNdivisions(2);
   c[16]->SetLogy(0);
-  c[16]->SetLogz(1);
+  c[16]->SetLogz(0);
   c[16]->SetGridx(1);
   c[16]->SetGridy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTProfile_%i.%s",dirName,mType,runNumber,fileType); c[16]->Print(name); }
@@ -649,7 +649,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
    sprintf(mytitle,"%s EB Crystal Times;Time (ns);Number of Crystals",runChar); 
   hctEB->SetTitle(mytitle);
   hctEB->GetXaxis()->SetNdivisions(512);
-  hctEB->Fit("gaus");
+  if ( fit ) hctEB->Fit("gaus");
   gStyle->SetOptFit(111);
   c[28]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMES_%i.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
@@ -658,7 +658,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
    sprintf(mytitle,"%s EB Crystal Times (Error Filtered);Time (ns);Number of Crystals",runChar); 
   hctEBf->SetTitle(mytitle);
   hctEBf->GetXaxis()->SetNdivisions(512);
-  hctEBf->Fit("gaus");
+  if ( fit ) hctEBf->Fit("gaus");
   gStyle->SetOptFit(111);
   c[28]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMESFILT_%i.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
@@ -670,7 +670,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   hctEE->SetTitle(mytitle);
   c[29]->SetLogy(1);
   hctEE->GetXaxis()->SetNdivisions(512);
-  hctEE->Fit("gaus");
+  if ( fit ) hctEE->Fit("gaus");
   gStyle->SetOptFit(111);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMES_%i.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
   eventTimingInfoTree->Draw("(crystalTimesEE-5.)*25. >> hctEEf(tbins,tbinsL,tbinsH)",eefilter);
@@ -678,7 +678,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   hctEEf->SetTitle(mytitle);
   c[29]->SetLogy(1);
   hctEEf->GetXaxis()->SetNdivisions(512);
-  hctEEf->Fit("gaus");
+  if ( fit ) hctEEf->Fit("gaus");
   gStyle->SetOptFit(111);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESFILT_%i.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
 
@@ -689,7 +689,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   hctEEp->SetTitle(mytitle);
   c[54]->SetLogy(1);
   hctEEp->GetXaxis()->SetNdivisions(512);
-  hctEEp->Fit("gaus");
+  if ( fit ) hctEEp->Fit("gaus");
   gStyle->SetOptFit(111);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMES_%i.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
 
@@ -700,7 +700,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   hctEEm->SetTitle(mytitle);
   c[55]->SetLogy(1);
   hctEEm->GetXaxis()->SetNdivisions(512);
-  hctEEm->Fit("gaus");
+  if ( fit ) hctEEm->Fit("gaus");
   gStyle->SetOptFit(111);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMES_%i.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
 
@@ -933,7 +933,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   hctEEMDEEP->SetTitle(mytitle);
   hctEEMDEEP->GetXaxis()->SetNdivisions(512);
   cout << "mean is " << hctEEMDEEP->GetMean() << endl;
-  if (hctEEMDEEP->GetMean() != 0) hctEEMDEEP->Fit("gaus");
+  if (hctEEMDEEP->GetMean() != 0 && fit) hctEEMDEEP->Fit("gaus");
   //hctEEMEEP->SetMinimum(.5);
   c[62]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[62]->Print(name); } 
@@ -967,7 +967,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   sprintf(mytitle,"%s EB TT Timing;TT time average (ns)",runChar); 
   tthistEB->SetTitle(mytitle);
   tthistEB->GetXaxis()->SetNdivisions(512);
-  if (tthistEB->GetMean() != 0) tthistEB->Fit("gaus");
+  if (tthistEB->GetMean() != 0 && fit) tthistEB->Fit("gaus");
   c[66]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[66]->Print(name); }
 
@@ -978,7 +978,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   sprintf(mytitle,"%s EB CH Timing;CH time average (ns)",runChar); 
   chhistEB->SetTitle(mytitle);
   chhistEB->GetXaxis()->SetNdivisions(512);
-  if (chhistEB->GetMean() != 0) chhistEB->Fit("gaus");
+  if (chhistEB->GetMean() != 0 && fit ) chhistEB->Fit("gaus");
   c[67]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
 
@@ -989,7 +989,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   sprintf(mytitle,"%s EE+ TT Timing;TT time average (ns)",runChar); 
   tthistEEP->SetTitle(mytitle);
   tthistEEP->GetXaxis()->SetNdivisions(512);
-  if (tthistEEP->GetMean() != 0) tthistEEP->Fit("gaus");
+  if (tthistEEP->GetMean() != 0 && fit) tthistEEP->Fit("gaus");
   c[68]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[68]->Print(name); }
 
@@ -1000,7 +1000,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   sprintf(mytitle,"%s EE+ CH Timing;CH time average (ns)",runChar); 
   chhistEEP->SetTitle(mytitle);
   chhistEEP->GetXaxis()->SetNdivisions(512);
-  if (chhistEEP->GetMean() != 0) chhistEEP->Fit("gaus");
+  if (chhistEEP->GetMean() != 0 && fit) chhistEEP->Fit("gaus");
   c[69]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[69]->Print(name); }
 
@@ -1011,7 +1011,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   sprintf(mytitle,"%s EE- TT Timing;TT time average (ns)",runChar); 
   tthistEEM->SetTitle(mytitle);
   tthistEEM->GetXaxis()->SetNdivisions(512);
-  if (tthistEEM->GetMean() != 0) tthistEEM->Fit("gaus");
+  if (tthistEEM->GetMean() != 0 && fit) tthistEEM->Fit("gaus");
   c[70]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[70]->Print(name); }
 
@@ -1022,7 +1022,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   sprintf(mytitle,"%s EE- CH Timing;CH time average (ns)",runChar); 
   chhistEEM->SetTitle(mytitle);
   chhistEEM->GetXaxis()->SetNdivisions(512);
-  if (chhistEEM->GetMean() != 0) chhistEEM->Fit("gaus");
+  if (chhistEEM->GetMean() != 0 && fit) chhistEEM->Fit("gaus");
   c[71]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[71]->Print(name); }
   
