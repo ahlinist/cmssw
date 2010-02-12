@@ -7,15 +7,17 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: EventDumpBase.h,v 1.2 2009/03/26 13:31:01 veelken Exp $
+ * $Id: EventDumpBase.h,v 1.3 2009/08/03 07:02:11 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "TauAnalysis/Core/interface/ObjectDumpBase.h"
 
 #include <vector>
 #include <string>
@@ -36,6 +38,8 @@ class EventDumpBase
 		       const filterResults_type&, const filterResults_type&, double);
 
  protected:
+  ObjectDumpBase* makeObjectDump(const edm::ParameterSet&, const std::string&);
+
   virtual void print(const edm::Event&, const edm::EventSetup&, 
 		     const filterResults_type&, const filterResults_type&, double) const = 0;
 
