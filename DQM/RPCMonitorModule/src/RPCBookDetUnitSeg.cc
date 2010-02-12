@@ -7,7 +7,8 @@
 
 #include <DataFormats/MuonDetId/interface/RPCDetId.h>
 #include <DQM/RPCMonitorModule/interface/MuonSegmentEff.h>
-#include <DQMOffline/Muon/interface/RPCBookFolderStructure.h>
+
+#include <DQM/RPCMonitorDigi/interface/RPCBookFolderStructure.h>
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "Geometry/RPCGeometry/interface/RPCGeomServ.h"
