@@ -11,9 +11,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.3 $
+  * \version $Revision: 1.4 $
   *
-  * $Id: SysUncertaintyService.h,v 1.3 2010/01/11 10:13:56 veelken Exp $
+  * $Id: SysUncertaintyService.h,v 1.4 2010/01/18 14:22:06 veelken Exp $
   *
   */
 
@@ -24,6 +24,8 @@
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+
 #include <TPRegexp.h>
 #include <TString.h>
 #include <TObjArray.h>
@@ -32,10 +34,12 @@
 #include <string>
 #include <vector>
 
-namespace SysUncertaintyService_namespace
+struct SysUncertaintyService_namespace
 {
-  const double defaultEvtReweight_error = -1.;
-}
+  static const double defaultEvtReweight_error;
+  static const char* regexpParserExpr_array_entry;
+  static const char* regexpParserExpr_array_elements;
+};
 
 class SysUncertaintyService
 {
@@ -59,9 +63,9 @@ class SysUncertaintyService
       std::string name = cfgEvtReweightEntry->getParameter<std::string>("name");
       //std::cout << " name = " << name << std::endl;
       
-      TPRegexp regexpParser_array_entry("[[:alnum:]]+\\[[[:digit:]]+\\]");
-      TPRegexp regexpParser_array_elements("([[:alnum:]]+)\\[([[:digit:]]+)\\]");
-      
+      TPRegexp regexpParser_array_entry(SysUncertaintyService_namespace::regexpParserExpr_array_entry);
+      TPRegexp regexpParser_array_elements(SysUncertaintyService_namespace::regexpParserExpr_array_elements);
+
       TString name_tstring = name.data();
       
       edm::InputTag src = cfgEvtReweightEntry->getParameter<edm::InputTag>("src");
@@ -85,6 +89,8 @@ class SysUncertaintyService
 	evtWeightEntry = new WeightEntry(src);
       }
       
+      //std::cout << " sysName = " << sysName << std::endl;
+
       evtReweightEntries_.insert(std::pair<std::string, WeightEntryBase*>(sysName, evtWeightEntry));
     }
   }
@@ -106,16 +112,16 @@ class SysUncertaintyService
 
     currentSystematic_ = systematic;
 
-    static TPRegexp regexpParser_array_entry("[[:alnum:]]+\\[[[:digit:]]+\\]");
-    static TPRegexp regexpParser_array_name("([[:alnum:]]+)\\[[[:digit:]]+\\]");
-    
+    static TPRegexp regexpParser_array_entry(SysUncertaintyService_namespace::regexpParserExpr_array_entry);
+    static TPRegexp regexpParser_array_elements(SysUncertaintyService_namespace::regexpParserExpr_array_elements);
+
     TString currentSystematic_tstring = currentSystematic_.data();
     
     std::string sysName = "undefined";
     if ( regexpParser_array_entry.Match(currentSystematic_tstring) == 1 ) {
-      TObjArray* subStrings = regexpParser_array_name.MatchS(currentSystematic_tstring);
+      TObjArray* subStrings = regexpParser_array_elements.MatchS(currentSystematic_tstring);
       
-      if ( subStrings->GetEntries() == 2 ) {
+      if ( subStrings->GetEntries() == 3 ) {
 	sysName = ((TObjString*)subStrings->At(1))->GetString().Data();
       } else {
 	edm::LogError ("update") << " Failed to decode name = " << currentSystematic_ << " of current systematic uncertainty !!";
@@ -184,12 +190,21 @@ class SysUncertaintyService
     virtual ~WeightEntry() {}
     void update(const edm::Event& evt, const edm::EventSetup& es)
     {  
+      //std::cout << "<WeightEntry::update>:" << std::endl;
+      //std::cout << " src = " << src_.label() << std::endl;
+
       edm::Handle<double> weight;
       evt.getByLabel(src_, weight);
+
+      //std::cout << " weight = " << (*weight) << std::endl;
+
       value_ = (*weight);
     }
     double getWeight(const std::string&) const 
-    {
+    {      
+      //std::cout << "<WeightEntry::getWeight>:" << std::endl;
+      //std::cout << " value = " << value_ << std::endl;
+
       return value_;
     }
     double value_;
@@ -205,25 +220,37 @@ class SysUncertaintyService
     virtual ~WeightVectorEntry() {}
     void update(const edm::Event& evt, const edm::EventSetup& es)
     {
+      //std::cout << "<WeightVectorEntry::update>:" << std::endl;
+      //std::cout << " src = " << src_.label() << std::endl;
+
       edm::Handle<vdouble> weights;
       evt.getByLabel(src_, weights);
+
+      //std::cout << " weights = " << format_vdouble(*weights) << std::endl;
+
       values_ = (*weights);
       numValues_ = values_.size();
     }
     double getWeight(const std::string& sysName) const
     { 
-      static TPRegexp regexpParser_array_entry("[[:alnum:]]+\\[[[:digit:]]+\\]");
-      static TPRegexp regexpParser_array_index("[[:alnum:]]+\\[([[:digit:]]+)\\]");
+      //std::cout << "<WeightVectorEntry::getWeight>:" << std::endl;
+
+      static TPRegexp regexpParser_array_entry(SysUncertaintyService_namespace::regexpParserExpr_array_entry);
+      static TPRegexp regexpParser_array_elements(SysUncertaintyService_namespace::regexpParserExpr_array_elements);
       
       TString sysName_tstring = sysName.data();
       
       if ( regexpParser_array_entry.Match(sysName_tstring) == 1 ) {
-	TObjArray* subStrings = regexpParser_array_index.MatchS(sysName_tstring);
+	TObjArray* subStrings = regexpParser_array_elements.MatchS(sysName_tstring);
 	
-	if ( subStrings->GetEntries() == 2 ) {
-	  unsigned index = (unsigned)atoi(((TObjString*)subStrings->At(1))->GetString().Data());
+	if ( subStrings->GetEntries() == 3 ) {
+	  unsigned index = (unsigned)atoi(((TObjString*)subStrings->At(2))->GetString().Data());
+
+	  //std::cout << " index = " << index << std::endl;
 	  
 	  if ( index < numValues_ ) {
+	    //std::cout << " value = " << values_[index] << std::endl;
+
 	    return values_[index];
 	  } else {
 	    edm::LogError ("getWeight") << "Invalid index = " << index << " (valid values = 0.." << (numValues_ - 1) << ") !!";
