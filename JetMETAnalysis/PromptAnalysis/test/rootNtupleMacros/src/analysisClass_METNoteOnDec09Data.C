@@ -2186,6 +2186,25 @@ void analysisClass::Loop()
 		   << endl;
 	    }
 
+
+	  if( pass_HFPMTHitVeto_tcMET == 0)
+	    {
+	      cout << "event: " << event << " " 
+		   << "ls: " << ls << " "
+		   << "run: " << run << "  "
+		   << "--  pass_HFPMTHitVeto_tcMET : " <<  pass_HFPMTHitVeto_tcMET << " "
+		   << endl;
+	    }
+
+	  if( pass_ECALSpikesVeto_tcMET == 0 )
+	    {
+	      cout << "event: " << event << " " 
+		   << "ls: " << ls << " "
+		   << "run: " << run << "  "
+		   << "--  pass_ECALSpikesVeto_tcMET : " <<  pass_ECALSpikesVeto_tcMET << " "
+		   << endl;
+	    }
+
 	}
 
 
