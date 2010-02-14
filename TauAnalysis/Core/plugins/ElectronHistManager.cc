@@ -12,6 +12,7 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -419,7 +420,7 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
     hElectronPFGammaIsoPtCtrl_->Fill(patElectron.ecalIso(), patElectron.photonIso(), weight);
   } 
 
-  fillLeptonIsoDepositHistograms(patElectron.trackerIsoDeposit(), 
+  fillLeptonIsoDepositHistograms(patElectron.trackIsoDeposit(), 
 				 hElectronTrkIsoValProfile_, hElectronTrkIsoEtaDistProfile_, hElectronTrkIsoPhiDistProfile_, weight);
   fillLeptonIsoDepositHistograms(patElectron.ecalIsoDeposit(), 
 				 hElectronEcalIsoValProfile_, hElectronEcalIsoEtaDistProfile_, hElectronEcalIsoPhiDistProfile_, weight);
@@ -434,7 +435,7 @@ void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electr
   for ( unsigned iConeSize = 1; iConeSize <= numElectronIsoConeSizes_; ++iConeSize ) {
     float isoConeSize_i = iConeSize*electronIsoConeSizeIncr_;
     
-    float electronTrkIsoDeposit_i = patElectron.trackerIsoDeposit()->countWithin(isoConeSize_i, electronTrkIsoParam_, false);
+    float electronTrkIsoDeposit_i = patElectron.trackIsoDeposit()->countWithin(isoConeSize_i, electronTrkIsoParam_, false);
     hElectronTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronTrkIsoDeposit_i, weight);
     
     float electronEcalIsoDeposit_i = patElectron.ecalIsoDeposit()->countWithin(isoConeSize_i, electronEcalIsoParam_, false);
@@ -443,27 +444,27 @@ void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electr
     float electronHcalIsoDeposit_i = patElectron.hcalIsoDeposit()->countWithin(isoConeSize_i, electronHcalIsoParam_, false);
     hElectronHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronHcalIsoDeposit_i, weight);
 
-    if ( patElectron.isoDeposit(pat::ParticleIso) ) {
+    if ( patElectron.isoDeposit(pat::PfAllParticleIso) ) {
       double electronParticleFlowIsoDeposit_i 
-	= patElectron.isoDeposit(pat::ParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
+	= patElectron.isoDeposit(pat::PfAllParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
       hElectronParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronParticleFlowIsoDeposit_i, weight);
     }
     
-    if ( patElectron.isoDeposit(pat::ChargedHadronIso) ) {
+    if ( patElectron.isoDeposit(pat::PfChargedHadronIso) ) {
       double electronPFChargedHadronIsoDeposit_i 
-	= patElectron.isoDeposit(pat::ChargedHadronIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
+	= patElectron.isoDeposit(pat::PfChargedHadronIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
       hElectronPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFChargedHadronIsoDeposit_i, weight);
     }
     
-    if ( patElectron.isoDeposit(pat::NeutralHadronIso) ) {
+    if ( patElectron.isoDeposit(pat::PfNeutralHadronIso) ) {
       double electronPFNeutralHadronIsoDeposit_i 
-	= patElectron.isoDeposit(pat::NeutralHadronIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
+	= patElectron.isoDeposit(pat::PfNeutralHadronIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
       hElectronPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFNeutralHadronIsoDeposit_i, weight);
     }
 
-    if ( patElectron.isoDeposit(pat::PhotonIso) ) {
+    if ( patElectron.isoDeposit(pat::PfGammaIso) ) {
       double electronPFGammaIsoDeposit_i 
-	= patElectron.isoDeposit(pat::PhotonIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
+	= patElectron.isoDeposit(pat::PfGammaIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
       hElectronPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFGammaIsoDeposit_i, weight);
     }
   }

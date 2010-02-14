@@ -11,6 +11,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -387,7 +388,7 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, double wei
     hMuonPFGammaIsoPtCtrl_->Fill(patMuon.ecalIso(), patMuon.photonIso(), weight);
   }
 
-  fillLeptonIsoDepositHistograms(patMuon.trackerIsoDeposit(), 
+  fillLeptonIsoDepositHistograms(patMuon.trackIsoDeposit(), 
 				 hMuonTrkIsoValProfile_, hMuonTrkIsoEtaDistProfile_, hMuonTrkIsoPhiDistProfile_, weight);
   fillLeptonIsoDepositHistograms(patMuon.ecalIsoDeposit(), 
 				 hMuonEcalIsoValProfile_, hMuonEcalIsoEtaDistProfile_, hMuonEcalIsoPhiDistProfile_, weight);
@@ -402,7 +403,7 @@ void MuonHistManager::fillMuonIsoConeSizeDepHistograms(const pat::Muon& patMuon,
   for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
     double isoConeSize_i = iConeSize*muonIsoConeSizeIncr_;
     
-    double muonTrkIsoDeposit_i = patMuon.trackerIsoDeposit()->countWithin(isoConeSize_i, muonTrkIsoParam_, false);
+    double muonTrkIsoDeposit_i = patMuon.trackIsoDeposit()->countWithin(isoConeSize_i, muonTrkIsoParam_, false);
     hMuonTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonTrkIsoDeposit_i, weight);
     
     double muonEcalIsoDeposit_i = patMuon.ecalIsoDeposit()->countWithin(isoConeSize_i, muonEcalIsoParam_, false);
@@ -411,27 +412,27 @@ void MuonHistManager::fillMuonIsoConeSizeDepHistograms(const pat::Muon& patMuon,
     double muonHcalIsoDeposit_i = patMuon.hcalIsoDeposit()->countWithin(isoConeSize_i, muonHcalIsoParam_, false);
     hMuonHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonHcalIsoDeposit_i, weight);
 
-    if ( patMuon.isoDeposit(pat::ParticleIso) ) {
+    if ( patMuon.isoDeposit(pat::PfAllParticleIso) ) {
       double muonParticleFlowIsoDeposit_i 
-	= patMuon.isoDeposit(pat::ParticleIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
+	= patMuon.isoDeposit(pat::PfAllParticleIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
       hMuonParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonParticleFlowIsoDeposit_i, weight);
     }
     
-    if ( patMuon.isoDeposit(pat::ChargedHadronIso) ) {
+    if ( patMuon.isoDeposit(pat::PfChargedHadronIso) ) {
       double muonPFChargedHadronIsoDeposit_i 
-	= patMuon.isoDeposit(pat::ChargedHadronIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
+	= patMuon.isoDeposit(pat::PfChargedHadronIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
       hMuonPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonPFChargedHadronIsoDeposit_i, weight);
     }
     
-    if ( patMuon.isoDeposit(pat::NeutralHadronIso) ) {
+    if ( patMuon.isoDeposit(pat::PfNeutralHadronIso) ) {
       double muonPFNeutralHadronIsoDeposit_i 
-	= patMuon.isoDeposit(pat::NeutralHadronIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
+	= patMuon.isoDeposit(pat::PfNeutralHadronIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
       hMuonPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonPFNeutralHadronIsoDeposit_i, weight);
     }
 
-    if ( patMuon.isoDeposit(pat::PhotonIso) ) {
+    if ( patMuon.isoDeposit(pat::PfGammaIso) ) {
       double muonPFGammaIsoDeposit_i 
-	= patMuon.isoDeposit(pat::PhotonIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
+	= patMuon.isoDeposit(pat::PfGammaIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
       hMuonPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonPFGammaIsoDeposit_i, weight);
     }
   }
