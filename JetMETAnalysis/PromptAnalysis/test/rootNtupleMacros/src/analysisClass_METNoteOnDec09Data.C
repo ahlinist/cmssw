@@ -795,7 +795,7 @@ void analysisClass::Loop()
 		      HFspikes_tcMET_EMis0_HADis1.push_back(0);
 		    }
 
-		  if( ratio_tcMET < -Rminus_cut_tcMET || ratio > Rplus_cut_tcMET )
+		  if( ratio_tcMET < -Rminus_cut_tcMET || ratio_tcMET > Rplus_cut_tcMET )
 		    {
 		      pass_HFPMTHitVeto_tcMET = 0; 
 		      HFspikes_tcMET_ShortPt.push_back(towerShortPt);
