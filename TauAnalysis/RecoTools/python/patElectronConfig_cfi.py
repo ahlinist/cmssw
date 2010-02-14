@@ -25,19 +25,19 @@ cleanLayer1ElectronsTriggerMatch.matches = cms.VInputTag("electronTriggerMatchHL
 #
 # Track isolation
 #
-allLayer1Electrons.isolation.tracker.src = cms.InputTag("eleIsoDepositTk")
-allLayer1Electrons.isolation.tracker.deltaR = cms.double(0.6)
-allLayer1Electrons.isolation.tracker.vetos = cms.vstring(
+allLayer1Electrons.userIsolation.tracker.src = cms.InputTag("eleIsoDepositTk")
+allLayer1Electrons.userIsolation.tracker.deltaR = cms.double(0.6)
+allLayer1Electrons.userIsolation.tracker.vetos = cms.vstring(
     '0.015',         # inner radius veto cone 
     'Threshold(0.3)' # threshold on individual track pt
 )
-allLayer1Electrons.isolation.tracker.skipDefaultVeto = cms.bool(True)
+allLayer1Electrons.userIsolation.tracker.skipDefaultVeto = cms.bool(True)
 #
 # ECAL isolation
 #
-allLayer1Electrons.isolation.ecal.src = cms.InputTag("eleIsoDepositEcalFromHits")
-allLayer1Electrons.isolation.ecal.deltaR = cms.double(0.6)
-allLayer1Electrons.isolation.ecal.vetos = cms.vstring(
+allLayer1Electrons.userIsolation.ecal.src = cms.InputTag("eleIsoDepositEcalFromHits")
+allLayer1Electrons.userIsolation.ecal.deltaR = cms.double(0.6)
+allLayer1Electrons.userIsolation.ecal.vetos = cms.vstring(
     'EcalBarrel:0.045', 
     'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)',
     'EcalEndcaps:0.1',                          # default: 0.07
@@ -45,19 +45,19 @@ allLayer1Electrons.isolation.ecal.vetos = cms.vstring(
     'EcalBarrel:ThresholdFromTransverse(0.12)', # default: 0.08
     'EcalEndcaps:ThresholdFromTransverse(0.3)'
 )
-allLayer1Electrons.isolation.ecal.skipDefaultVeto = cms.bool(True)
+allLayer1Electrons.userIsolation.ecal.skipDefaultVeto = cms.bool(True)
 #
 # HCAL isolation
 #
-allLayer1Electrons.isolation.hcal.src = cms.InputTag("eleIsoDepositHcalFromTowers")
-allLayer1Electrons.isolation.hcal.deltaR = cms.double(0.6)
+allLayer1Electrons.userIsolation.hcal.src = cms.InputTag("eleIsoDepositHcalFromTowers")
+allLayer1Electrons.userIsolation.hcal.deltaR = cms.double(0.6)
 #
 # add IsoDeposit objects for Track, ECAL and HCAL based isolation
 #
 allLayer1Electrons.isoDeposits = cms.PSet(
-   tracker          = allLayer1Electrons.isolation.tracker.src,
-   ecal             = allLayer1Electrons.isolation.ecal.src,
-   hcal             = allLayer1Electrons.isolation.hcal.src,
+   tracker          = allLayer1Electrons.userIsolation.tracker.src,
+   ecal             = allLayer1Electrons.userIsolation.ecal.src,
+   hcal             = allLayer1Electrons.userIsolation.hcal.src,
    particle         = cms.InputTag("pfeleIsoDepositPFCandidates"),
    pfChargedHadrons = cms.InputTag("pfeleIsoChDepositPFCandidates"),
    pfNeutralHadrons = cms.InputTag("pfeleIsoNeDepositPFCandidates"),
