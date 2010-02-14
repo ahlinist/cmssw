@@ -13,8 +13,8 @@ from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
 # set Pt thresholds for PFChargedHadron (PFGamma) isolation to 1.0 (1.5) GeV,
 #  matching the thresholds used when computing the tau iso. discriminators
 #  in RecoTauTag/RecoTau/python/PFRecoTauDiscriminationByIsolation_cfi.py)
-allLayer1Taus.isolation.pfChargedHadron.threshold = cms.double(1.0)
-allLayer1Taus.isolation.pfGamma.threshold = cms.double(1.5)
+allLayer1Taus.userIsolation.pfChargedHadron.threshold = cms.double(1.0)
+allLayer1Taus.userIsolation.pfGamma.threshold = cms.double(1.5)
 
 # embed track references in pat::Tau
 # (so that analysis can access track information if running on PAT-tuples)

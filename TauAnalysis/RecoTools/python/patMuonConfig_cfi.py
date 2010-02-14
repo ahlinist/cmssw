@@ -20,16 +20,17 @@ cleanLayer1MuonsTriggerMatch.matches = cms.VInputTag("muonTriggerMatchHLTIsoMu11
 #--------------------------------------------------------------------------------
 
 # increase size of muon isolation cone from default of deltaR = 0.3 to 0.6
-allLayer1Muons.isolation.tracker.deltaR = cms.double(0.6)
-allLayer1Muons.isolation.ecal.deltaR = cms.double(0.6)
-allLayer1Muons.isolation.hcal.deltaR = cms.double(0.6)
-allLayer1Muons.isolation.user.deltaR = cms.double(0.6)
+allLayer1Muons.userIsolation.tracker.deltaR = cms.double(0.6)
+allLayer1Muons.userIsolation.ecal.deltaR = cms.double(0.6)
+allLayer1Muons.userIsolation.hcal.deltaR = cms.double(0.6)
+allLayer1Muons.userIsolation.user[0].deltaR = cms.double(0.6)
+allLayer1Muons.userIsolation.user[1].deltaR = cms.double(0.6)
 
 # add IsoDeposit objects for Track, ECAL and HCAL based isolation
 allLayer1Muons.isoDeposits = cms.PSet(
-   tracker          = allLayer1Muons.isolation.tracker.src,
-   ecal             = allLayer1Muons.isolation.ecal.src,
-   hcal             = allLayer1Muons.isolation.hcal.src,
+   tracker          = allLayer1Muons.userIsolation.tracker.src,
+   ecal             = allLayer1Muons.userIsolation.ecal.src,
+   hcal             = allLayer1Muons.userIsolation.hcal.src,
    particle         = cms.InputTag("pfmuIsoDepositPFCandidates"),
    pfChargedHadrons = cms.InputTag("pfmuIsoChDepositPFCandidates"),
    pfNeutralHadrons = cms.InputTag("pfmuIsoNeDepositPFCandidates"),
