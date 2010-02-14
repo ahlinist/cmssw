@@ -15,6 +15,7 @@
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -617,27 +618,27 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau, dou
   for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
     double isoConeSize_i = iConeSize*tauIsoConeSizeIncr_;
 
-    if ( patTau.isoDeposit(pat::ParticleIso) ) {
+    if ( patTau.isoDeposit(pat::PfAllParticleIso) ) {
       double tauParticleFlowIsoDeposit_i 
-	= patTau.isoDeposit(pat::ParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::PfAllParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauParticleFlowIsoDeposit_i, weight);
     }
     
-    if ( patTau.isoDeposit(pat::ChargedHadronIso) ) {
+    if ( patTau.isoDeposit(pat::PfChargedHadronIso) ) {
       double tauPFChargedHadronIsoDeposit_i 
-	= patTau.isoDeposit(pat::ChargedHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::PfChargedHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFChargedHadronIsoDeposit_i, weight);
     }
     
-    if ( patTau.isoDeposit(pat::NeutralHadronIso) ) {
+    if ( patTau.isoDeposit(pat::PfNeutralHadronIso) ) {
       double tauPFNeutralHadronIsoDeposit_i 
-	= patTau.isoDeposit(pat::NeutralHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::PfNeutralHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFNeutralHadronIsoDeposit_i, weight);
     }
 
-    if ( patTau.isoDeposit(pat::PhotonIso) ) {
+    if ( patTau.isoDeposit(pat::PfGammaIso) ) {
       double tauPFGammaIsoDeposit_i 
-	= patTau.isoDeposit(pat::PhotonIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::PfGammaIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFGammaIsoDeposit_i, weight);
     }
   }
