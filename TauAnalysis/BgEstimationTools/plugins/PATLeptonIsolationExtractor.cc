@@ -31,16 +31,6 @@ PATLeptonIsolationExtractor<T>::PATLeptonIsolationExtractor(const edm::Parameter
 	isoType_string != isoTypes_string.end(); ++isoType_string ) {
     pat::IsolationKeys isoType = pat::UserBaseIso;
 
-    // CMSSW_3_1_x
-    if ( (*isoType_string) == "TrackIso" ) isoType = pat::TrackerIso;
-    else if ( (*isoType_string) == "EcalIso" ) isoType = pat::ECalIso;
-    else if ( (*isoType_string) == "HcalIso" ) isoType = pat::HCalIso;
-    else if ( (*isoType_string) == "ParticleIso" ) isoType = pat::ParticleIso;
-    else if ( (*isoType_string) == "PfChargedHadronIso" ) isoType = pat::ChargedHadronIso;
-    else if ( (*isoType_string) == "PfNeutralHadronIso" ) isoType = pat::NeutralHadronIso;
-    else if ( (*isoType_string) == "PfGammaIso" ) isoType = pat::PhotonIso;
-/*
-    // CMSSW_3_3_x 
     if ( (*isoType_string) == "TrackIso" ) isoType = pat::TrackIso;
     else if ( (*isoType_string) == "EcalIso" ) isoType = pat::EcalIso;
     else if ( (*isoType_string) == "HcalIso" ) isoType = pat::HcalIso;
@@ -48,7 +38,6 @@ PATLeptonIsolationExtractor<T>::PATLeptonIsolationExtractor(const edm::Parameter
     else if ( (*isoType_string) == "PfChargedHadronIso" ) isoType = pat::PfChargedHadronIso;
     else if ( (*isoType_string) == "PfNeutralHadronIso" ) isoType = pat::PfNeutralHadronIso;
     else if ( (*isoType_string) == "PfGammaIso" ) isoType = pat::PfGammaIso;
- */    
     else {
       edm::LogError("PATLeptonIsolationExtractor") << " Configuration parameter 'isoType' = " << (*isoType_string) << " invalid !!";
       error_ = 1;

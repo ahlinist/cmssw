@@ -131,10 +131,10 @@ void TauIdEffZtoMuTauHistManager::fillHistogramsImp(const edm::Event& evt, const
     hMuonAbsEta_->Fill(TMath::Abs(patMuon->eta()), evtWeight); 
     hMuonPtVsAbsEta_->Fill(TMath::Abs(patMuon->eta()), patMuon->pt(), evtWeight); 
 
-    hMuonExtTrkIsoPt_->Fill(getMuonExtIso(*patMuon, pat::TrackerIso), evtWeight);
-    hMuonExtEcalIsoPt_->Fill(getMuonExtIso(*patMuon, pat::ECalIso), evtWeight);
-    hMuonExtHcalIsoPt_->Fill(getMuonExtIso(*patMuon, pat::HCalIso), evtWeight);
-    double muonExtIsoSum = getMuonExtIso(*patMuon, pat::TrackerIso) + getMuonExtIso(*patMuon, pat::ECalIso) + getMuonExtIso(*patMuon, pat::HCalIso);
+    hMuonExtTrkIsoPt_->Fill(getMuonExtIso(*patMuon, pat::TrackIso), evtWeight);
+    hMuonExtEcalIsoPt_->Fill(getMuonExtIso(*patMuon, pat::EcalIso), evtWeight);
+    hMuonExtHcalIsoPt_->Fill(getMuonExtIso(*patMuon, pat::HcalIso), evtWeight);
+    double muonExtIsoSum = getMuonExtIso(*patMuon, pat::TrackIso) + getMuonExtIso(*patMuon, pat::EcalIso) + getMuonExtIso(*patMuon, pat::HcalIso);
     hMuonExtIsoSumPt_->Fill(muonExtIsoSum, evtWeight);
   }
   
@@ -142,10 +142,10 @@ void TauIdEffZtoMuTauHistManager::fillHistogramsImp(const edm::Event& evt, const
 	patTau != patTaus->end(); ++patTau ) {
     hTauDiscriminatorByEwkTauId_->Fill(patTau->tauID(tauIdDiscriminator_), evtWeight);
 
-    hTauExtParticleFlowIsoPt_->Fill(getTauExtIso(*patTau, pat::ParticleIso, tauIsolationVetos_), evtWeight);
-    hTauExtPFChargedHadronIsoPt_->Fill(getTauExtIso(*patTau, pat::ChargedHadronIso, tauIsolationVetos_), evtWeight);
-    hTauExtPFNeutralHadronIsoPt_->Fill(getTauExtIso(*patTau, pat::NeutralHadronIso, tauIsolationVetos_), evtWeight);
-    hTauExtPFGammaIsoPt_->Fill(getTauExtIso(*patTau, pat::PhotonIso, tauIsolationVetos_), evtWeight);
+    hTauExtParticleFlowIsoPt_->Fill(getTauExtIso(*patTau, pat::PfAllParticleIso, tauIsolationVetos_), evtWeight);
+    hTauExtPFChargedHadronIsoPt_->Fill(getTauExtIso(*patTau, pat::PfChargedHadronIso, tauIsolationVetos_), evtWeight);
+    hTauExtPFNeutralHadronIsoPt_->Fill(getTauExtIso(*patTau, pat::PfNeutralHadronIso, tauIsolationVetos_), evtWeight);
+    hTauExtPFGammaIsoPt_->Fill(getTauExtIso(*patTau, pat::PfGammaIso, tauIsolationVetos_), evtWeight);
   }
 
   double diTauChargeSign = (*diTauChargeSignExtractor_)(evt);
