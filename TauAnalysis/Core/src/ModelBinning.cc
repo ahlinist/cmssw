@@ -92,24 +92,26 @@ void ModelBinning::print(std::ostream& stream) const
   
   const std::vector<std::string>& objVarNames = binGrid_->objVarNames();
   
-  for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
-    stream << " bin " << std::setw(2) << iBin << " (center: ";
+  if ( numBins_ > 1 ) {
+    for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
+      stream << " bin " << std::setw(2) << iBin << " (center: ";
 
-    std::vector<double> binCenter = binGrid_->binCenter(iBin);
-    if ( binCenter.size() != objVarNames.size() ) {
-      edm::LogError ("ModelBinning::print") << "Invalid dimension of bin-center vector !!";
-      return;
+      std::vector<double> binCenter = binGrid_->binCenter(iBin);
+      if ( binCenter.size() != objVarNames.size() ) {
+	edm::LogError ("ModelBinning::print") << "Invalid dimension of bin-center vector !!";
+	return;
+      }
+      
+      unsigned numObjVarNames = objVarNames.size();
+      for ( unsigned iObjVar = 0; iObjVar < numObjVarNames; ++iObjVar ) {
+	stream << objVarNames[iObjVar] << " = " << std::setprecision(3) << std::fixed << binCenter[iObjVar];
+	if ( iObjVar < (numObjVarNames - 1) ) stream << ", ";
+      }
+      
+      stream << "): " << std::endl;
+      
+      printBinEntry(stream, binEntries_[iBin]);
     }
-
-    unsigned numObjVarNames = objVarNames.size();
-    for ( unsigned iObjVar = 0; iObjVar < numObjVarNames; ++iObjVar ) {
-      stream << objVarNames[iObjVar] << " = " << std::setprecision(3) << std::fixed << binCenter[iObjVar];
-      if ( iObjVar < (numObjVarNames - 1) ) stream << ", ";
-    }
-
-    stream << "): " << std::endl;
-
-    printBinEntry(stream, binEntries_[iBin]);
   }
 
   binEntryType_model binEntrySum;  
