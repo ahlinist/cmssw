@@ -17,20 +17,18 @@ from TauAnalysis.RecoTools.recoElectronIdentification_cfi import *
 from TauAnalysis.RecoTools.recoPFTauIdentification_cfi import *
 
 # produce collections of dR = 0.07 and dR = 0.15 fixed
-# and dR = 5.0/Et shrinking signal cone taus using latest tags
+# and dR = 5.0/Et shrinking signal cone taus using latest tags;
+# produce tau id. discriminators (including TaNC = "Tau Neural Classifiers")
 from RecoTauTag.Configuration.RecoPFTauTag_cff import *
-
-# compute TaNC ("tau neural classifiers") discriminators
-# for shrinking cone PFTau collection
-from RecoTauTag.TauTagTools.TauMVADiscriminator_cfi import *
-
-# compute discrimanators based on TaNC output
-# for different tau-jet efficiency vs. QCD-jet fake rate "working-points"
-from RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi import *
 #from RecoTauTag.TauTagTools.TancCVTransform_cfi import *
 
 # produce tau id. efficiencies & fake-rates
 from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
+
+# produce anti-kt jet collections not present in Summer'09 samples yet
+from RecoJets.Configuration.RecoJets_cff import *
+from RecoJets.Configuration.GenJetParticles_cff import *
+from RecoJets.Configuration.RecoGenJets_cff import *
 
 # produce MET significance values
 from RecoMET.METProducers.CaloMETSignif_cfi import *
@@ -45,10 +43,10 @@ producePrePat = cms.Sequence(
    + recoElectronIsolation
    + recoMuonIsolation
    + PFTau
-   + shrinkingConePFTauDiscriminationByTaNC + RunTanc
    #+ shrinkingConePFTauTancCVTransform
    + associateTauFakeRates
-   + ewkTauId 
+   + ewkTauId
+   + ak5CaloJets + ak5CaloJetsPUCorr + genParticlesForJets + ak5GenJets
    + metsignificance
    + produceEventShapeVars
 )
