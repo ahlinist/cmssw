@@ -243,16 +243,19 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   triggerNames_.init(* hltresults);
   
   int ntrigs = hltresults->size();
+
+
   for (int itrig = 0; itrig != ntrigs; ++itrig){
-    
     TString trigName=triggerNames_.triggerName(itrig);
     if (trigName=="HLT_Mu3") bsRootTree_->triggerbit_HLTmu3_ = hltresults->accept(itrig);
-    if (trigName=="HLT_Mu5") bsRootTree_->triggerbit_HLTmu5_ = hltresults->accept(itrig);
+    if (trigName=="HLT_Mu5") bsRootTree_->triggerbit_HLTmu5_ = hltresults->accept(itrig); 
     if (trigName=="HLT_Mu9") bsRootTree_->triggerbit_HLTmu9_ = hltresults->accept(itrig);
     if (trigName=="HLT_DoubleIsoMu3")  bsRootTree_->triggerbit_HLTdoubleIsoMu3_   = hltresults->accept(itrig);
     if (trigName=="HLT_DoubleMu3")     bsRootTree_->triggerbit_HLTdoubleMu3_      = hltresults->accept(itrig);
     if (trigName=="HLT_DoubleMu0")     bsRootTree_->triggerbit_HLTdoubleMu0_      = hltresults->accept(itrig);
     if (trigName=="HLT_DoubleMu3_JPsi")bsRootTree_->triggerbit_HLTdoubleMu3_JPsi_ = hltresults->accept(itrig);
+    if (trigName=="HLT_L1DoubleMuOpen")bsRootTree_->triggerbit_HLTL1DoubleMuOpen_ = hltresults->accept(itrig);
+    if (trigName=="HLT_L1MuOpen")bsRootTree_->triggerbit_HLTL1MuOpen_ = hltresults->accept(itrig);
   }
   
   // continue only if it is a  triggered event

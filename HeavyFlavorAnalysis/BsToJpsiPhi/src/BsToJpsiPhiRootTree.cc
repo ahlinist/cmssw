@@ -26,7 +26,9 @@ bsTree_->Branch(  "triggerbit_HLTmu9"		  , &triggerbit_HLTmu9_,                "
 bsTree_->Branch(  "triggerbit_HLTdoubleIsoMu3"	  , &triggerbit_HLTdoubleIsoMu3_,       "triggerbit_HLTdoubleIsoMu3/I");                                
 bsTree_->Branch(  "triggerbit_HLTdoubleMu3"	  , &triggerbit_HLTdoubleMu3_,          "triggerbit_HLTdoubleMu3/I");        
 bsTree_->Branch(  "triggerbit_HLTdoubleMu0"	  , &triggerbit_HLTdoubleMu0_,          "triggerbit_HLTdoubleMu0/I");                             
-bsTree_->Branch(  "triggerbit_HLTdoubleMu3_JPsi"  , &triggerbit_HLTdoubleMu3_JPsi_,     "triggerbit_HLTdoubleMu3_JPsi/I");                              
+bsTree_->Branch(  "triggerbit_HLTdoubleMu3_JPsi"  , &triggerbit_HLTdoubleMu3_JPsi_,     "triggerbit_HLTdoubleMu3_JPsi/I");             
+bsTree_->Branch(  "triggerbit_HLTL1DoubleMuOpen"  , &triggerbit_HLTL1DoubleMuOpen_,     "triggerbit_HLTL1DoubleMuOpen/I");             
+bsTree_->Branch(  "triggerbit_HLTL1MuOpen"  , &triggerbit_HLTL1MuOpen_,     "triggerbit_HLTL1MuOpen/I");             
 bsTree_->Branch(  "BSx"				  , &BSx_,                              "BSx/D");                                                     
 bsTree_->Branch(  "BSy"				  , &BSy_,                              "BSy/D");                                                    
 bsTree_->Branch(  "BSz"				  , &BSz_,                              "BSz/D");                                                       
@@ -349,6 +351,9 @@ void BsToJpsiPhiRootTree::resetEntries()
   triggerbit_HLTdoubleMu3_ = -9999999;
   triggerbit_HLTdoubleMu0_ = -9999999;
   triggerbit_HLTdoubleMu3_JPsi_ = -9999999;
+  triggerbit_HLTL1DoubleMuOpen_ = -9999999;
+  triggerbit_HLTL1MuOpen_ = -9999999;
+
   BSx_ = -9999999;
   BSy_ = -9999999;
   BSz_ = -9999999;
@@ -760,7 +765,10 @@ bsTree_->SetBranchAddress(  "triggerbit_HLTmu9"		  , &triggerbit_HLTmu9_  );
 bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleIsoMu3"	  , &triggerbit_HLTdoubleIsoMu3_  );                           
 bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleMu3"	  , &triggerbit_HLTdoubleMu3_  );                 
 bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleMu0"	  , &triggerbit_HLTdoubleMu0_  );                        
-bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleMu3_JPsi"  , &triggerbit_HLTdoubleMu3_JPsi_  );                         
+bsTree_->SetBranchAddress(  "triggerbit_HLTdoubleMu3_JPsi"  , &triggerbit_HLTdoubleMu3_JPsi_  );        
+bsTree_->SetBranchAddress(  "triggerbit_HLTL1DoubleMuOpen"  , &triggerbit_HLTL1DoubleMuOpen_  );               
+bsTree_->SetBranchAddress(  "triggerbit_HLTL1MuOpen"	  , &triggerbit_HLTL1MuOpen_  );               
+                 
 bsTree_->SetBranchAddress(  "BSx"				  , &BSx_  );                                                
 bsTree_->SetBranchAddress(  "BSy"				  , &BSy_  );                                               
 bsTree_->SetBranchAddress(  "BSz"				  , &BSz_  );                                                  
