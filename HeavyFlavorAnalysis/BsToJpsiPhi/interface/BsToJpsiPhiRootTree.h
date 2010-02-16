@@ -45,7 +45,8 @@ public:
         int triggerbit_HLTdoubleMu3_;
         int triggerbit_HLTdoubleMu3_JPsi_;
 	int triggerbit_HLTdoubleMu0_;
-
+	int triggerbit_HLTL1DoubleMuOpen_;
+	int triggerbit_HLTL1MuOpen_;
 
 	double	BSx_ ;
 	double	BSy_ ;
