@@ -10,7 +10,7 @@ process.source = cms.Source("PoolSource",
 
 process.MessageLogger = cms.Service("MessageLogger")
 
-process.analyzeBasicPat = cms.EDFilter("PatBasicAnalyzer",
+process.analyzeBasicPat = cms.EDAnalyzer("PatBasicAnalyzer",
   photonSrc   = cms.untracked.InputTag("cleanLayer1Photons"),
   electronSrc = cms.untracked.InputTag("cleanLayer1Electrons"),
   muonSrc     = cms.untracked.InputTag("cleanLayer1Muons"),                                             
