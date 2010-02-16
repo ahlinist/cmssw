@@ -27,7 +27,7 @@ inputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/patTuples/ZtoElecMu/
 # Z --> tau tau jobs
 for i in range(6):
     submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
-                  sample = "Ztautau_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  sample = "Ztautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
@@ -35,7 +35,7 @@ for i in range(6):
 # Z --> mu mu + jets jobs
 for i in range(2):
     submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
-                  sample = "ZmumuPlusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  sample = "ZmumuPlusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
@@ -43,7 +43,7 @@ for i in range(2):
 # Z --> e e + jets jobs
 for i in range(2):
     submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
-                  sample = "ZeePlusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  sample = "ZeePlusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)    
@@ -51,14 +51,14 @@ for i in range(2):
 # pp --> mu X QCD jobs
 for i in range(2):
     submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
-                  sample = "InclusivePPmuX_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  sample = "InclusivePPmuX_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 for i in range(14):
     submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
-                  sample = "PPmuXptGt20_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  sample = "PPmuXptGt20_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
@@ -66,7 +66,7 @@ for i in range(14):
 # W + jets jobs
 for i in range(6):
     submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
-                  sample = "WplusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  sample = "WplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
@@ -74,7 +74,7 @@ for i in range(6):
 # ttbar + jets jobs
 for i in range(20):
     submitToBatch(configFile = "runZtoElecMu_cfg.py", channel = "ZtoElecMu",
-                  sample = "TTplusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
+                  sample = "TTplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
