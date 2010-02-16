@@ -30,18 +30,14 @@ DataBinning::DataBinning(const edm::ParameterSet& cfg)
   numBins_ = binGrid_->numBins();
   //std::cout << "numBins = " << numBins_ << std::endl;
 
-  binContents_.resize(numBins_);
-  binSumw2_.resize(numBins_);
   for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
-    binContents_[iBin] = 0.;
-    binSumw2_[iBin] = 0.;
+    binEntries_.push_back(binEntryType());
   }
 }
 
 DataBinning::DataBinning(const DataBinning& bluePrint)
   : BinningBase(bluePrint),
-    binContents_(bluePrint.binContents_),
-    binSumw2_(bluePrint.binSumw2_),
+    binEntries_(bluePrint.binEntries_),
     numBins_(bluePrint.numBins_)
 {}
 
@@ -51,10 +47,14 @@ DataBinning::DataBinning(const std::string& name, const BinGrid& binGrid,
 {
   assert(binContents.size() == binSumw2.size());
 
-  binContents_ = binContents;
-  binSumw2_ = binSumw2;
+  numBins_ = binEntries_.size();
 
-  numBins_ = binContents_.size();
+  for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
+    binEntryType& binEntry = binEntries_[iBin];
+
+    binEntry.binContent_ = binContents[iBin];
+    binEntry.binSumw2_ = binSumw2[iBin];
+  }
 }
 
 DataBinning::~DataBinning()
@@ -66,8 +66,10 @@ void DataBinning::bin(const std::vector<double>& x, double weight)
 {
   int iBin = binGrid_->binNumber(x);
   if ( iBin >= 0 && iBin < (int)numBins_ ) {
-    binContents_[iBin] += weight;
-    binSumw2_[iBin] += weight*weight;
+    binEntryType& binEntry = binEntries_[iBin];
+
+    binEntry.binContent_ += weight;
+    binEntry.binSumw2_ += weight*weight;
   }
 }
 
@@ -76,34 +78,56 @@ void DataBinning::print(std::ostream& stream) const
   stream << "<DataBinning::print>:" << std::endl;
   stream << " name = " << name_ << std::endl;
   
-  const std::vector<std::string>& objVarNames = binGrid_->objVarNames();
-  
   double binContent_sum = 0.;
   double binSumw2_sum = 0.;
   for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
+    const binEntryType& binEntry = binEntries_[iBin];
+
     if ( numBins_ > 1 ) {
-      stream << " bin " << std::setw(2) << iBin << " (center: ";
-      
-      vdouble binCenter = binGrid_->binCenter(iBin);
-      if ( binCenter.size() != objVarNames.size() ) {
-	edm::LogError ("DataBinning::print") << "Invalid dimension of bin-center vector !!";
-	return;
-      }
-      
-      unsigned numObjVarNames = objVarNames.size();
-      for ( unsigned iObjVar = 0; iObjVar < numObjVarNames; ++iObjVar ) {
-	stream << objVarNames[iObjVar] << " = " << std::setprecision(3) << std::fixed << binCenter[iObjVar];
-	if ( iObjVar < (numObjVarNames - 1) ) stream << ", ";
-      }
-      
-      stream << "): " << std::setprecision(3) << std::fixed << binContents_[iBin] << " +/- " << TMath::Sqrt(binSumw2_[iBin]) << std::endl;
+      printBinCenterPosition(stream, binGrid_, iBin);
+      stream << std::setprecision(3) << std::fixed << binEntry.binContent_ << " +/- " << TMath::Sqrt(binEntry.binSumw2_) << std::endl;
     }
     
-    binContent_sum += binContents_[iBin];
-    binSumw2_sum += binSumw2_[iBin];
+    binContent_sum += binEntry.binContent_;
+    binSumw2_sum += binEntry.binSumw2_;
   }
 
   stream << " sum: " << std::setprecision(3) << std::fixed << binContent_sum << " +/- " << TMath::Sqrt(binSumw2_sum) << std::endl;
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+std::vector<binResultType> DataBinning::getBinResults(unsigned binNumber) const
+{
+  std::vector<binResultType> binResults;
+  
+  if ( binNumber >= 0 && binNumber < numBins_ ) {
+    const binEntryType& binEntry = binEntries_[binNumber];
+
+    binResults.push_back(binResultType(binEntry.binContent_, binEntry.binSumw2_, "rec"));
+  } else {
+    edm::LogError ("DataBinning::getBinResults") << "Invalid binNumber = " << binNumber << " !!";
+  }
+  
+  return binResults;
+}
+
+std::vector<binResultType> DataBinning::getBinResultsSum() const
+{
+  binEntryType binEntrySum;
+  
+  for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
+    const binEntryType& binEntry = binEntries_[iBin];
+
+    binEntrySum += binEntry;
+  }
+
+  std::vector<binResultType> binResultsSum;
+  binResultsSum.push_back(binResultType(binEntrySum.binContent_, binEntrySum.binSumw2_, "rec"));
+  
+  return binResultsSum;
 }
 
 //
@@ -115,17 +139,19 @@ std::vector<std::string> DataBinning::encodeStringRep() const
   std::vector<std::string> buffer = BinningBase::encodeStringRep();
 
   for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
+    const binEntryType& binEntry = binEntries_[iBin];
+
     std::ostringstream meName_binContent;
     meName_binContent << "binContent_region" << (iBin + 1) << meOptionsBinContent;
     std::ostringstream meValue_binContent;
-    meValue_binContent << std::setprecision(3) << std::fixed << binContents_[iBin];
+    meValue_binContent << std::setprecision(3) << std::fixed << binEntry.binContent_;
     std::string entry_binContent = encodeBinningStringRep(meName_binContent.str(), "float", meValue_binContent.str());
     buffer.push_back(entry_binContent);
 
     std::ostringstream meName_binError;
     meName_binError << "binError_region" << (iBin + 1) << meOptionsBinError;
     std::ostringstream meValue_binError;
-    meValue_binError << std::setprecision(3) << std::fixed << TMath::Sqrt(binSumw2_[iBin]);
+    meValue_binError << std::setprecision(3) << std::fixed << TMath::Sqrt(binEntry.binSumw2_);
     std::string entry_binError = encodeBinningStringRep(meName_binError.str(), "float", meValue_binError.str());
     buffer.push_back(entry_binError);
   }
@@ -138,13 +164,13 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
   BinningBase::decodeStringRep(buffer);
 
   TPRegexp regexpParser_numBins("numBins");
-  TPRegexp regexpParser_binContents_entry(std::string("binContent_region[[:digit:]]+").append(meOptionsBinContent));
-  TPRegexp regexpParser_binContents_binNumber(std::string("binContent_region([[:digit:]]+)").append(meOptionsBinContent));
+  TPRegexp regexpParser_binContent_entry(std::string("binContent_region[[:digit:]]+").append(meOptionsBinContent));
+  TPRegexp regexpParser_binContent_binNumber(std::string("binContent_region([[:digit:]]+)").append(meOptionsBinContent));
   TPRegexp regexpParser_binError_entry(std::string("binError_region[[:digit:]]+").append(meOptionsBinError));
   TPRegexp regexpParser_binError_binNumber(std::string("binError_region([[:digit:]]+)").append(meOptionsBinError));
 
   bool numBins_initialized = false;
-  std::vector<bool> binContents_initialized;
+  std::vector<bool> binContent_initialized;
   std::vector<bool> binSumw2_initialized;
   
   for ( std::vector<std::string>::const_iterator entry = buffer.begin();
@@ -164,25 +190,24 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
 
     if ( regexpParser_numBins.Match(meName_tstring) == 1 ) {
       numBins_ = (unsigned)atoi(meValue.data());
-      binContents_.resize(numBins_);
-      binSumw2_.resize(numBins_);
-      binContents_initialized.resize(numBins_);
+      binEntries_.resize(numBins_);
+      binContent_initialized.resize(numBins_);
       binSumw2_initialized.resize(numBins_);
       numBins_initialized = true;
-    } else if ( regexpParser_binContents_entry.Match(meName_tstring) == 1 ) {
+    } else if ( regexpParser_binContent_entry.Match(meName_tstring) == 1 ) {
       if ( !numBins_initialized ) {
 	edm::LogError ("DataBinning::decodeStringRep") << " Need to initialize numBins before setting binContents !!";
 	continue;
       }
       
-      TObjArray* subStrings = regexpParser_binContents_binNumber.MatchS(meName_tstring);
+      TObjArray* subStrings = regexpParser_binContent_binNumber.MatchS(meName_tstring);
       if ( subStrings->GetEntries() == 2 ) {
 	int binNumber = (unsigned)atoi(((TObjString*)subStrings->At(1))->GetString().Data()) - 1;
 	float binContent = atof(meValue.data());
 	
 	if ( binNumber >= 0 && binNumber < (int)numBins_ ) {
-	  binContents_[binNumber] = binContent;
-	  binContents_initialized[binNumber] = true;
+	  binEntries_[binNumber].binContent_ = binContent;
+	  binContent_initialized[binNumber] = true;
 	} else {
 	  edm::LogError ("DataBinning::decodeStringRep") << " Bin number = " << binNumber << " decoded from meName = " << meName
 							 << " not within numBins = " << numBins_ << " range of binning object !!";
@@ -203,7 +228,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
 	float binError = atof(meValue.data());
 
 	if ( binNumber >= 0 && binNumber < (int)numBins_ ) {
-	  binSumw2_[binNumber] = binError*binError;
+	  binEntries_[binNumber].binSumw2_ = binError*binError;
 	  binSumw2_initialized[binNumber] = true;
 	} else {
 	  edm::LogError ("DataBinning::decodeStringRep") << " Bin number = " << binNumber << " decoded from meName = " << meName
@@ -225,7 +250,7 @@ void DataBinning::decodeStringRep(std::vector<std::string>& buffer)
 //    have been initialized
   if ( numBins_initialized ) {
     for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
-      if ( !binContents_initialized[iBin] ) edm::LogError ("decodeStringRep") << " Failed to decode binContents[" << iBin << "] !!";
+      if ( !binContent_initialized[iBin] ) edm::LogError ("decodeStringRep") << " Failed to decode binContents[" << iBin << "] !!";
       if ( !binSumw2_initialized[iBin] ) edm::LogError ("decodeStringRep") << " Failed to decode binError[" << iBin << "] !!";
     }
   } else {
