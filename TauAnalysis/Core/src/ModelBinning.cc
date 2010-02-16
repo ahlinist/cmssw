@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "TauAnalysis/Core/interface/binningAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
@@ -90,26 +91,10 @@ void ModelBinning::print(std::ostream& stream) const
   stream << "<ModelBinning::print>:" << std::endl;
   stream << " name = " << name_ << std::endl;
   
-  const std::vector<std::string>& objVarNames = binGrid_->objVarNames();
-  
   if ( numBins_ > 1 ) {
     for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
-      stream << " bin " << std::setw(2) << iBin << " (center: ";
-
-      std::vector<double> binCenter = binGrid_->binCenter(iBin);
-      if ( binCenter.size() != objVarNames.size() ) {
-	edm::LogError ("ModelBinning::print") << "Invalid dimension of bin-center vector !!";
-	return;
-      }
-      
-      unsigned numObjVarNames = objVarNames.size();
-      for ( unsigned iObjVar = 0; iObjVar < numObjVarNames; ++iObjVar ) {
-	stream << objVarNames[iObjVar] << " = " << std::setprecision(3) << std::fixed << binCenter[iObjVar];
-	if ( iObjVar < (numObjVarNames - 1) ) stream << ", ";
-      }
-      
-      stream << "): " << std::endl;
-      
+      printBinCenterPosition(stream, binGrid_, iBin);
+      stream << std::endl;
       printBinEntry(stream, binEntries_[iBin]);
     }
   }
@@ -118,12 +103,10 @@ void ModelBinning::print(std::ostream& stream) const
   
   for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
     const binEntryType_model& binEntry = binEntries_[iBin];
-
     binEntrySum += binEntry;
   }
   
   stream << " sum:" << std::endl;
-
   printBinEntry(stream, binEntrySum);
 }
 
@@ -150,6 +133,61 @@ void ModelBinning::printBinEntry(std::ostream& stream, const binEntryType_model&
   double stability, stabilityErr2;
   computeStability(binEntry, stability, stabilityErr2);
   printBinEntry_element(stream, "stability", stability, stabilityErr2);
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+std::vector<binResultType> makeBinResults(const binEntryType_model& binEntry)
+{
+  std::vector<binResultType> binResults;
+
+  binResults.push_back(binResultType(binEntry.gen_.binContent_, binEntry.gen_.binSumw2_, "gen"));
+  binResults.push_back(binResultType(binEntry.rec_.binContent_, binEntry.rec_.binSumw2_, "rec"));
+  binResults.push_back(binResultType(binEntry.stay_.binContent_, binEntry.stay_.binSumw2_, "stay"));
+  binResults.push_back(binResultType(binEntry.lost_.binContent_, binEntry.lost_.binSumw2_, "lost"));
+  binResults.push_back(binResultType(binEntry.smearIn_.binContent_, binEntry.smearIn_.binSumw2_, "smearIn"));
+  binResults.push_back(binResultType(binEntry.smearOut_.binContent_, binEntry.smearOut_.binSumw2_, "smearOut"));
+  
+  double acceptance, acceptanceErr2;
+  computeAcceptance(binEntry, acceptance, acceptanceErr2);
+  binResults.push_back(binResultType(acceptance, acceptanceErr2, "acceptance"));
+  
+  double purity, purityErr2;
+  computePurity(binEntry, purity, purityErr2);
+  binResults.push_back(binResultType(purity, purityErr2, "purity"));
+  
+  double stability, stabilityErr2;
+  computeStability(binEntry, stability, stabilityErr2);
+  binResults.push_back(binResultType(stability, stabilityErr2, "stability"));
+
+  return binResults;
+}
+
+std::vector<binResultType> ModelBinning::getBinResults(unsigned binNumber) const
+{
+  if ( binNumber >= 0 && binNumber < numBins_ ) {
+    const binEntryType_model& binEntry = binEntries_[binNumber];
+
+    return makeBinResults(binEntry);
+  } else {
+    edm::LogError ("DataBinning::getBinResults") << "Invalid binNumber = " << binNumber << " !!";
+    return std::vector<binResultType>();
+  }
+}
+
+std::vector<binResultType> ModelBinning::getBinResultsSum() const
+{
+  binEntryType_model binEntrySum;
+  
+  for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
+    const binEntryType_model& binEntry = binEntries_[iBin];
+
+    binEntrySum += binEntry;
+  }
+
+  return makeBinResults(binEntrySum);
 }
 
 //
