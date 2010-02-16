@@ -10,9 +10,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.1 $
  *
- * $Id: BinnerBase.h,v 1.4 2009/08/16 13:59:23 veelken Exp $
+ * $Id: BinnerBase.h,v 1.1 2009/12/04 13:42:00 veelken Exp $
  *
  */
 
@@ -31,7 +31,8 @@
 class BinnerBase : public AnalyzerPluginBase
 {
  public: 
-  explicit BinnerBase(const edm::ParameterSet&);
+  BinnerBase();
+  BinnerBase(const edm::ParameterSet&);
   virtual ~BinnerBase();
 
   const BinningBase* getBinning() const { return binning_; }
@@ -39,6 +40,8 @@ class BinnerBase : public AnalyzerPluginBase
   virtual void beginJob() {}
   virtual void analyze(const edm::Event&, const edm::EventSetup&, double);
   virtual void endJob();
+
+  friend class SysUncertaintyBinner;
 
  protected:
   virtual void bin(const edm::Event&, const edm::EventSetup&, double);
