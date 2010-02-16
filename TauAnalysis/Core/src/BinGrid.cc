@@ -56,7 +56,7 @@ BinGrid::BinGrid(const edm::ParameterSet& cfg)
 //    data-members for encoding/decoding of bin numbers
   initialize();
 
-  print(std::cout);
+  //print(std::cout);
 }
 
 BinGrid::BinGrid(const BinGrid& bluePrint)
