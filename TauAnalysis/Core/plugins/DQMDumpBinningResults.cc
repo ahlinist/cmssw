@@ -64,7 +64,7 @@ BinningBase* DQMDumpBinningResults::loadBinningResults(const std::string& dqmDir
     return 0;
   }
 
-  return binningService_->loadBinningResults( dqmDirectory);
+  return binningService_->loadBinningResults(dqmDirectory);
 }
 
 void DQMDumpBinningResults::endJob()
@@ -83,7 +83,7 @@ void DQMDumpBinningResults::endJob()
     return;
   }
 
-//--- load objects inhertiting from BinningBase class from DQM directories
+//--- load objects inheriting from BinningBase class from DQM directories
   for ( vstring::const_iterator process = processes_.begin();
 	process != processes_.end(); ++process ) {
     const std::string& dqmDirectory = dqmDirectories_[*process];
