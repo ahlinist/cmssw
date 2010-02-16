@@ -12,9 +12,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: DataBinning.h,v 1.1 2009/12/04 13:42:00 veelken Exp $
+ * $Id: DataBinning.h,v 1.2 2010/01/15 17:38:10 veelken Exp $
  *
  */
 
@@ -24,6 +24,26 @@
 
 #include <vector>
 #include <string>
+
+struct binEntryType
+{
+  binEntryType()
+    : binContent_(0.), binSumw2_(0.) {}
+  binEntryType& operator+=(double value)
+  {
+    binContent_ += value;
+    binSumw2_ += (value*value);
+    return (*this);
+  }
+  binEntryType& operator+=(const binEntryType& operand)
+  {
+    binContent_ += operand.binContent_;
+    binSumw2_ += operand.binSumw2_;
+    return (*this);
+  }
+  double binContent_;
+  double binSumw2_;
+};
 
 class DataBinning : public BinningBase
 {
@@ -42,13 +62,14 @@ class DataBinning : public BinningBase
 
   void print(std::ostream&) const;
 
+  std::vector<binResultType> getBinResults(unsigned) const;
+  std::vector<binResultType> getBinResultsSum() const;
+
  protected:
   virtual std::vector<std::string> encodeStringRep() const;
   virtual void decodeStringRep(std::vector<std::string>&);
 
-  typedef std::vector<double> vdouble;
-  vdouble binContents_;
-  vdouble binSumw2_;
+  std::vector<binEntryType> binEntries_;
   unsigned numBins_;
 };
 
