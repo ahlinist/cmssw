@@ -42,7 +42,7 @@ def removeModules(process, sequenceName, moduleNamePattern, pyNameSpace):
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_patTupleProduction(process):
-    print("<disableSysUncertainties_patTupleProduction>:")
+    #print("<disableSysUncertainties_patTupleProduction>:")
     
     process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
 
@@ -52,7 +52,7 @@ def disableSysUncertainties_patTupleProduction(process):
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runZtoMuTau(process):
-    print("<disableSysUncertainties_runZtoMuTau>:")
+    #print("<disableSysUncertainties_runZtoMuTau>:")
     
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
@@ -77,7 +77,7 @@ def disableSysUncertainties_runZtoMuTau(process):
         process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(False)    
 
 def enableSysUncertainties_runZtoMuTau(process):
-    print("<enableSysUncertainties_runZtoMuTau>:")
+    #print("<enableSysUncertainties_runZtoMuTau>:")
     
     pyNameSpace = None
 
@@ -136,7 +136,7 @@ def enableSysUncertainties_runZtoMuTau(process):
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runZtoElecTau(process):
-    print("<disableSysUncertainties_runZtoElecTau>:")
+    #print("<disableSysUncertainties_runZtoElecTau>:")
     
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
@@ -153,7 +153,7 @@ def disableSysUncertainties_runZtoElecTau(process):
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runZtoElecMu(process):
-    print("<disableSysUncertainties_runZtoElecMu>:")
+    #print("<disableSysUncertainties_runZtoElecMu>:")
     
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
@@ -170,7 +170,7 @@ def disableSysUncertainties_runZtoElecMu(process):
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runZtoDiTau(process):
-    print("<disableSysUncertainties_runZtoDiTau>:")
+    #print("<disableSysUncertainties_runZtoDiTau>:")
     
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
@@ -185,7 +185,7 @@ def disableSysUncertainties_runZtoDiTau(process):
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runWtoTauNu(process):
-    print("<disableSysUncertainties_runWtoTauNu>:")
+    #print("<disableSysUncertainties_runWtoTauNu>:")
     
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
