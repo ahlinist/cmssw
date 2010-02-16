@@ -7,6 +7,14 @@
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 
+BinnerBase::BinnerBase()
+  : objValExtractor_(0),
+    binning_(0),
+    binningService_(0)
+{
+//--- nothing to be done yet...
+}
+
 BinnerBase::BinnerBase(const edm::ParameterSet& cfg)
 {
   //std::cout << "<BinnerBase::BinnerBase>:" << std::endl; 
