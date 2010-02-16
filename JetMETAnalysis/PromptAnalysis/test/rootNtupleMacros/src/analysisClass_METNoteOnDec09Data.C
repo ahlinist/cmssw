@@ -783,13 +783,13 @@ void analysisClass::Loop()
 		  float towerIEta = CaloTowersIeta->at(i);
 		  float towerIPhi = CaloTowersIphi->at(i);
 
-		  if( ratio_tcMET < -Rminus_cut_tcMET ) //is long fiber
+		  if( ratio_tcMET < -Rminus_cut_tcMET ) //is short fiber
 		    {
 		      pass_HFPMTHitVeto_tcMET_HAD = 0; 
 		      HFspikes_tcMET_EMis0_HADis1.push_back(1);
 		    }
 
-		  if( ratio_tcMET > Rplus_cut_tcMET) //is short fiber
+		  if( ratio_tcMET > Rplus_cut_tcMET) //is long fiber
 		    {
 		      pass_HFPMTHitVeto_tcMET_EM = 0; 
 		      HFspikes_tcMET_EMis0_HADis1.push_back(0);
@@ -1527,8 +1527,8 @@ void analysisClass::Loop()
 		  h_HFspikes_Short_Energy->Fill( HFspikes_tcMET_ShortPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
 		  h_HFspikes_Short_Pt->Fill( HFspikes_tcMET_ShortPt[hs] );		   
 		  h_HFspikes_Short_EtaPhi->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] );		   
-		  h_HFspikes_Short_EtaPhi->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] 
-						 , HFspikes_tcMET_ShortPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
+		  h_HFspikes_Short_EtaPhiWeight->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] 
+						       , HFspikes_tcMET_ShortPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
 		}
 	    }
 	   
