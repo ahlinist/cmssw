@@ -19,14 +19,12 @@ BinningBase* BinningService<T>::createBinning() const
 
 #include "TauAnalysis/Core/interface/DataBinning.h"
 #include "TauAnalysis/Core/interface/ModelBinning.h"
-#include "TauAnalysis/Core/interface/SysUncertaintyBinning.h"
 
 typedef BinningService<DataBinning> DataBinningService;
 typedef BinningService<ModelBinning> ModelBinningService;
-typedef BinningService<SysUncertaintyBinning> SysUncertaintyBinningService;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(BinningServicePluginFactory, DataBinningService, "DataBinningService");
 DEFINE_EDM_PLUGIN(BinningServicePluginFactory, ModelBinningService, "ModelBinningService");
-DEFINE_EDM_PLUGIN(BinningServicePluginFactory, SysUncertaintyBinningService, "SysUncertaintyBinningService");
+
