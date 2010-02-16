@@ -34,7 +34,7 @@ def makeCuts(denominator="1"):
     # Combo discriminators
     cuts['ByChargeAndTracks']             =  cuts['ByCharge']*cuts['ByNumTracks']
 
-    cuts['ByStandardChain']               =  cuts['ByLeadPionPt']*cuts['ByIsolation']*cuts['ByChargeAndTracks']
+    cuts['ByStandardChain']               =  cuts['ByLeadTrackPt']*cuts['ByIsolation']*cuts['ByChargeAndTracks']
     cuts['ByStandardChainNoMuon']         =  cuts['ByStandardChain']*cuts['AgainstMuon']
     cuts['ByStandardChainNoElectron']     =  cuts['ByStandardChain']*cuts['AgainstElectron']
 
