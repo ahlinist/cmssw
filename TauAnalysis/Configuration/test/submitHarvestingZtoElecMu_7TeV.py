@@ -39,14 +39,11 @@ submitToBatch(configFile = "harvestZtoElecMuPlots_cfg.py", channel = "ZtoElecMu"
               "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotZtoElecMu_processes_7TeV_cfi",
               job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
 
-## harvest PPmuXptGt20
-##    
-## CV: not yet skimmed (as of 2010/02/07)
-##   
-##submitToBatch(configFile = "harvestZtoElecMuPlots_cfg.py", channel = "ZtoElecMu", sample = "PPmuXptGt20_7TeV",
-##              replFunction = makeReplacementsHarvesting, replacements =
-##              "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotZtoElecMu_processes_7TeV_cfi",
-##              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+# harvest PPmuXptGt20
+submitToBatch(configFile = "harvestZtoElecMuPlots_cfg.py", channel = "ZtoElecMu", sample = "PPmuXptGt20_7TeV",
+              replFunction = makeReplacementsHarvesting, replacements =
+              "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotZtoElecMu_processes_7TeV_cfi",
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
 
 # harvest W + jets
 submitToBatch(configFile = "harvestZtoElecMuPlots_cfg.py", channel = "ZtoElecMu", sample = "WplusJets_7TeV",
