@@ -8,9 +8,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: BinningBase.h,v 1.1 2009/12/04 13:42:00 veelken Exp $
+ * $Id: BinningBase.h,v 1.2 2010/01/15 17:38:48 veelken Exp $
  *
  */
 
@@ -19,6 +19,20 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include <vector>
+
+struct binResultType
+{
+  binResultType(double binContent, double binSumw2, const std::string name)
+    : binContent_(binContent), 
+      binSumw2_(binSumw2), 
+      name_(name)
+  {}
+
+  double binContent_;
+  double binSumw2_;
+
+  std::string name_;
+};
 
 class BinningBase
 {
@@ -36,6 +50,9 @@ class BinningBase
   virtual void bin(const std::vector<double>&, double = 1.) = 0;
 
   virtual void print(std::ostream&) const = 0;
+
+  virtual std::vector<binResultType> getBinResults(unsigned) const = 0;
+  virtual std::vector<binResultType> getBinResultsSum() const = 0;
 
   friend std::vector<std::string>& operator<<(std::vector<std::string>&, const BinningBase&);
   friend std::vector<std::string>& operator>>(std::vector<std::string>&, BinningBase&);
