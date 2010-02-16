@@ -234,6 +234,120 @@ plotsOutputFileNameZtoMuTau_Ztautau_7TeV = cms.string('plotsZtoMuTau_Ztautau_7Te
 patTupleOutputFileNameZtoMuTau_Ztautau_7TeV = cms.untracked.string('patTupleZtoMuTau_Ztautau_7TeV_partXX.root')
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# Z --> tau+ tau- sample generated with Pythia + Tauola (all decay modes)
+#  integrated luminosity = 1686.9 pb^-1
+# (corrected by scale factor of 1. for missing files)
+#
+# NOTE:
+#     (1) skimmed by requiring generated tau+/tau- pair of Pt > 12 GeV within detector acceptance |eta| < 2.5;
+#         no selection on reconstruction level applied
+#     (2) sample to be used for acceptance studies only
+#
+intLumiZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV = float(1686.9)
+corrFactorZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV = float(1.)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part01 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_1.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_2.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_5.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part02 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_6.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_7.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_8.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_9.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_10.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part03 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_11.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_12.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_13.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_15.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part04 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_16.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_17.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_18.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_19.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_20.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part05 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_21.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_22.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_23.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_24.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_25.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part06 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_26.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_27.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_28.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_29.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_30.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part07 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_31.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_32.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_33.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_34.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_35.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part08 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_36.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_37.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_38.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_39.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_40.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part09 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_41.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_42.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_43.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_44.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_45.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part10 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_46.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_47.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_48.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_49.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_50.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part11 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_51.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_52.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_53.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_54.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_55.root'
+)
+
+fileNamesZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part12 = cms.untracked.vstring(    
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_56.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_57.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/ZtautauGenTauLeptonPairAccSkimMT314/genTauLeptonsPairAccSkim_58.root'
+)
+
+genPhaseSpaceCutZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV = cms.PSet(
+    pluginName = cms.string('genPhaseSpaceCut'),
+    pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
+    src = cms.InputTag('genPhaseSpaceEventInfo'),
+    cut = cms.string('')
+)
+
+plotsOutputFileNameZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV = cms.string('plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_partXX.root')
+patTupleOutputFileNameZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV = cms.untracked.string('patTupleZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_partXX.root')
+#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # Z --> mu+ mu- sample generated with Pythia
