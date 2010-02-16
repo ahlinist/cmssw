@@ -313,11 +313,11 @@ enableFakeRates_makeZtoMuTauPlots(process)
 #--------------------------------------------------------------------------------
 process.dumpZtoMuTau_frUnweighted = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     dqmDirectories = cms.PSet(
-        Ztautau = cms.string('harvested/Ztautau/zMuTauAnalyzer_frUnweighted/FilterStatistics'),
-        Zmumu = cms.string('harvested/Zmumu/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
-        WplusJets = cms.string('harvested/WplusJets/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
-        QCD = cms.string('harvested/qcdSum/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
-        TTplusJets = cms.string('harvested/TTplusJets/zMuTauAnalyzer_frUnweighted/FilterStatistics')
+        Ztautau = cms.string('tauFakeRate/harvested/Ztautau/zMuTauAnalyzer_frUnweighted/FilterStatistics'),
+        Zmumu = cms.string('tauFakeRate/harvested/Zmumu/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
+        WplusJets = cms.string('tauFakeRate/harvested/WplusJets/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
+        QCD = cms.string('tauFakeRate/harvested/qcdSum/zMuTauAnalyzer_frUnweighted/FilterStatistics/'),
+        TTplusJets = cms.string('tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer_frUnweighted/FilterStatistics')
     ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
 )
@@ -373,8 +373,8 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
     process.loadBgEstFakeRateZtoMuTau_tauIdDiscr
    + process.loadBgEstFakeRateZtoMuTau_tauFakeRate
+   + process.addBgEstFakeRateZtoMuTau_tauFakeRate 
    + process.dumpDQMStore
-   + process.addBgEstFakeRateZtoMuTau_tauFakeRate
    + process.compErrorBandsBgEstFakeRateZtoMuTau 
    + process.saveBgEstFakeRateZtoMuTau
    + process.dumpZtoMuTau_frUnweighted
