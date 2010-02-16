@@ -13,6 +13,36 @@
 #include <iostream>
 #include <iomanip>
 
+void printBinCenterPosition(std::ostream& stream, const BinGrid* binGrid, unsigned binNumber)
+{
+  unsigned numBins = binGrid->numBins();
+  if ( binNumber > 0 && binNumber < numBins ) {
+    stream << " bin " << std::setw(2) << binNumber << " (center: ";
+
+    std::vector<double> binCenter = binGrid->binCenter(binNumber);
+
+    const std::vector<std::string>& objVarNames = binGrid->objVarNames();
+    if ( binCenter.size() != objVarNames.size() ) {
+      edm::LogError ("printBinCenterPosition") << "Invalid dimension of bin-center vector !!";
+      return;
+    }
+    
+    unsigned numObjVarNames = objVarNames.size();
+    for ( unsigned iObjVar = 0; iObjVar < numObjVarNames; ++iObjVar ) {
+      stream << objVarNames[iObjVar] << " = " << std::setprecision(3) << std::fixed << binCenter[iObjVar];
+      if ( iObjVar < (numObjVarNames - 1) ) stream << ", ";
+    }
+    
+    std::cout << "): " << std::endl;
+  } else {
+    edm::LogError ("printBinCenterPosition") << "Invalid binNumber = " << binNumber << " !!";
+  }
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
 std::string encodeBinningStringRep(const std::string& meName, const std::string& meType, const std::string& meValue)
 {
   std::ostringstream entry;
