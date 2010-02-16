@@ -710,7 +710,7 @@ void analysisClass::Loop()
 
       for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
 	{
-	  if( fabs(CaloTowersIeta->at(i)) >= 29 ) //HF only
+	  if( fabs(CaloTowersIeta->at(i)) > 29 ) //HF only
 	    {
 	      TVector3 * towerL = new TVector3;
 	      TVector3 * towerS = new TVector3;
@@ -868,7 +868,7 @@ void analysisClass::Loop()
 		  for (int j = 0; j<int(CaloTowersEmEt->size()); j++)
 		    {
 
-		      if( fabs(CaloTowersIeta->at(j)) < 29 )  //HF only
+		      if( fabs(CaloTowersIeta->at(j)) <= 29 )  //HF only
 			continue;
 
 		      float theta = 2 * atan( exp( - CaloTowersEta->at(j) ) );
@@ -1019,7 +1019,7 @@ void analysisClass::Loop()
 			    for (int j = 0; j<int(CaloTowersEmEt->size()); j++)
 			    {
 			  
-			    if( fabs(CaloTowersIeta->at(j)) < 29 )  //HF only
+			    if( fabs(CaloTowersIeta->at(j)) <= 29 )  //HF only
 			    continue;
 			  
 			    float theta = 2 * atan( exp( - CaloTowersEta->at(j) ) );
@@ -1076,7 +1076,7 @@ void analysisClass::Loop()
 			    for (int j = 0; j<int(CaloTowersEmEt->size()); j++)
 			    {
 			  
-			    if( fabs(CaloTowersIeta->at(j)) < 29 )  //HF only
+			    if( fabs(CaloTowersIeta->at(j)) <= 29 )  //HF only
 			    continue;
 			  
 			    float theta = 2 * atan( exp( - CaloTowersEta->at(j) ) );
@@ -1584,7 +1584,7 @@ void analysisClass::Loop()
 	  //## HF plots after BASELINE SELECTION
 	  for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
 	    {
-	      if( fabs(CaloTowersIeta->at(i)) >= 29 ) //HF only
+	      if( fabs(CaloTowersIeta->at(i)) > 29 ) //HF only
 		{
 		  TVector3 * towerL = new TVector3;
 		  TVector3 * towerS = new TVector3;
