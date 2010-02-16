@@ -10,7 +10,7 @@ process.source = cms.Source("PoolSource",
 
 process.MessageLogger = cms.Service("MessageLogger")
 
-process.analyzeZjetsJets = cms.EDFilter("PatZjetsJetAnalyzer",
+process.analyzeZjetsJets = cms.EDAnalyzer("PatZjetsJetAnalyzer",
   src = cms.untracked.InputTag("cleanLayer1Jets")
 )
 
