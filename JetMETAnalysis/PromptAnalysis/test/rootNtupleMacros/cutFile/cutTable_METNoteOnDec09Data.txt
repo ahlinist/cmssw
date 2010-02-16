@@ -18,6 +18,7 @@ subDetTowerETcut      0.3          -                    -               -       
 applyhfpfcleaning     0		   -			-		-		-1
 ## NOTE: the code runs a factor of two faster if "applyhfpfcleaning" is set to 0
 printout	      1		   -			-		-		-1
+printoutCleaned       1            -                    -               -               -1
 ## NOTE: if "printout" is set to 1 the macro will print info on high MET/SUMET events
 #
 #
