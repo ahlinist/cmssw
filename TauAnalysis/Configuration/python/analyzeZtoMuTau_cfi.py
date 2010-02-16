@@ -102,16 +102,16 @@ from TauAnalysis.Core.dataBinner_cfi import *
 # import config for binning results
 # used to estimate acceptance of event selection
 from TauAnalysis.Core.modelBinner_cfi import *
-modelBinnerForMuTau = copy.deepcopy(modelBinner)
-modelBinnerForMuTau.pluginName = cms.string('modelBinnerForMuTau')
-modelBinnerForMuTau.srcGenFlag = cms.InputTag("isGenZtoMuTau")
-modelBinnerForMuTau.srcRecFlag = cms.InputTag("isRecZtoMuTau")
-modelBinnerForMuTau.dqmDirectory_store = cms.string('modelBinningResults')
-modelBinnerForMuTauWithinAcceptance = copy.deepcopy(modelBinner)
-modelBinnerForMuTauWithinAcceptance.pluginName = cms.string('modelBinnerForMuTauWithinAcceptance')
-modelBinnerForMuTauWithinAcceptance.srcGenFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
-modelBinnerForMuTauWithinAcceptance.srcRecFlag = cms.InputTag("isRecZtoMuTau")
-modelBinnerForMuTauWithinAcceptance.dqmDirectory_store = cms.string('modelBinningResultsWithinAcceptance')
+modelBinnerForMuTauGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
+modelBinnerForMuTauGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc')
+modelBinnerForMuTauGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenZtoMuTau")
+modelBinnerForMuTauGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
+modelBinnerForMuTauGenTauLeptonPairAcc.dqmDirectory_store = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc')
+modelBinnerForMuTauWrtGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
+modelBinnerForMuTauWrtGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauWrtGenTauLeptonPairAcc')
+modelBinnerForMuTauWrtGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
+modelBinnerForMuTauWrtGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isRecZtoMuTau")
+modelBinnerForMuTauWrtGenTauLeptonPairAcc.dqmDirectory_store = cms.string('modelBinnerForMuTauWrtGenTauLeptonPairAcc')
 
 # import config for binning results
 # used to estimate systematic uncertainties
@@ -119,7 +119,12 @@ from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 sysUncertaintyBinnerForMuTau = copy.deepcopy(sysUncertaintyBinner)
 sysUncertaintyBinnerForMuTau.pluginName = cms.string('sysUncertaintyBinnerForMuTau')
-sysUncertaintyBinnerForMuTau.binning.systematics = cms.vstring(
+sysUncertaintyBinnerForMuTau.binnerPlugins = cms.VPSet(
+    dataBinner,
+    modelBinnerForMuTauGenTauLeptonPairAcc,
+    modelBinnerForMuTauWrtGenTauLeptonPairAcc
+)
+sysUncertaintyBinnerForMuTau.systematics = cms.vstring(
     getSysUncertaintyNames(
         [ muonSystematics,
           tauSystematics,
@@ -417,8 +422,15 @@ muTauAnalysisSequence = cms.VPSet(
     ),
 
     # generator level phase-space selection
-    # (NOTE: to be used in case of Monte Carlo samples
-    #        overlapping in simulated phase-space only !!)
+    #
+    # NOTE:
+    #     (1) to be used in case of Monte Carlo samples
+    #         overlapping in simulated phase-space only !!
+    #     (2) binning objects for computation of signal acceptance and systematic uncertainties
+    #         need to be filled at this stage of the analysis sequence,
+    #         so that the number of generator level events within detector acceptance get counted
+    #         regardless of whether the event passes or fails the final event selection on reconstruction level !!
+    #
     cms.PSet(
         filter = cms.string('genPhaseSpaceCut'),
         title = cms.string('gen. Phase-Space'),
@@ -433,8 +445,9 @@ muTauAnalysisSequence = cms.VPSet(
             'pfMEtHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
-            'modelBinnerForMuTau',
-            'modelBinnerForMuTauWithinAcceptance'
+            'modelBinnerForMuTauGenTauLeptonPairAcc',
+            'modelBinnerForMuTauWrtGenTauLeptonPairAcc',
+            'sysUncertaintyBinnerForMuTau'
         )
     ),
 
@@ -879,8 +892,7 @@ muTauAnalysisSequence = cms.VPSet(
             'particleMultiplicityHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
-            'dataBinner',
-            'sysUncertaintyBinnerForMuTau'
+            'dataBinner'
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
