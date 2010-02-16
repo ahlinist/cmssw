@@ -1719,8 +1719,8 @@ void analysisClass::Loop()
 		  h_HFspikes_Short_Energy->Fill( HFspikes_tcMET_ShortPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
 		  h_HFspikes_Short_Pt->Fill( HFspikes_tcMET_ShortPt[hs] );		   
 		  h_HFspikes_Short_EtaPhi->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] );		   
-		  h_HFspikes_Short_EtaPhi->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] 
-						 , HFspikes_tcMET_ShortPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
+		  h_HFspikes_Short_EtaPhiWeight->Fill( HFspikes_tcMET_Eta[hs] , HFspikes_tcMET_Phi[hs] 
+						       , HFspikes_tcMET_ShortPt[hs] * cosh(HFspikes_tcMET_Eta[hs]) );		   
 		}
 	    }
 	   
