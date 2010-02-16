@@ -14,19 +14,39 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: DataBinning.h,v 1.1 2009/12/04 13:42:00 veelken Exp $
+ * $Id: ModelBinning.h,v 1.1 2010/01/15 17:36:49 veelken Exp $
  *
  */
 
 #include "TauAnalysis/Core/interface/BinningBase.h"
 #include "TauAnalysis/Core/interface/DataBinning.h"
-#include "TauAnalysis/Core/interface/binningAuxFunctions.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
 #include <vector>
 #include <string>
+
+struct binEntryType_model
+{
+  binEntryType_model() {}
+  binEntryType_model& operator+=(const binEntryType_model& operand)
+  {
+    gen_ += operand.gen_;
+    rec_ += operand.rec_;
+    stay_ += operand.stay_;
+    lost_ += operand.lost_;
+    smearIn_ += operand.smearIn_;
+    smearOut_ += operand.smearOut_;
+    return (*this);
+  }
+  binEntryType gen_;
+  binEntryType rec_;
+  binEntryType stay_;
+  binEntryType lost_;
+  binEntryType smearIn_;
+  binEntryType smearOut_;
+};
 
 class ModelBinning : public BinningBase
 {
@@ -47,6 +67,9 @@ class ModelBinning : public BinningBase
   DataBinning getStability() const;
 
   void print(std::ostream&) const;
+
+  std::vector<binResultType> getBinResults(unsigned) const;
+  std::vector<binResultType> getBinResultsSum() const;
 
  protected:
   virtual std::vector<std::string> encodeStringRep() const;
