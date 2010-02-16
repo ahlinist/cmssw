@@ -92,8 +92,8 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
 //--- compose name of InputTag
 //
 // NOTE: string concatenation rule (first character of systematics name is capitalized) for composition of InputTag
-//       needs to match implementation in (python) function _composeModuleName
-//       defined in TauAnalysis/CandidateTools/python/tools/objSelConfigurator.py
+//       needs to match implementation in (python) function composeModuleName
+//       defined in TauAnalysis/CandidateTools/python/tools/composeModuleName.py
 //
       std::string src_label = src.label();
       std::string src_instance = src.instance();
