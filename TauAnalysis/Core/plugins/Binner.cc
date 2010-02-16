@@ -19,14 +19,10 @@ Binner<T>::~Binner()
 }
 
 #include "TauAnalysis/Core/interface/DataBinning.h"
-#include "TauAnalysis/Core/interface/SysUncertaintyBinning.h"
 
 typedef Binner<DataBinning> DataBinner;
-typedef Binner<SysUncertaintyBinning> SysUncertaintyBinner;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, DataBinner, "DataBinner");
 DEFINE_EDM_PLUGIN(BinnerPluginFactory, DataBinner, "DataBinner");
-DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, SysUncertaintyBinner, "SysUncertaintyBinner");
-DEFINE_EDM_PLUGIN(BinnerPluginFactory, SysUncertaintyBinner, "SysUncertaintyBinner");
