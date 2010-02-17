@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Photon.cc,v 1.5 2009/07/17 18:31:37 malik Exp $
+// $Id: PATValidation_Photon.cc,v 1.6 2009/07/26 18:50:29 malik Exp $
 //
 //
 
@@ -123,7 +123,7 @@ PATValidation_Photon::~PATValidation_Photon()
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-PATValidation_Photon::beginJob(const edm::EventSetup&)
+PATValidation_Photon::beginJob()
 {
 
 

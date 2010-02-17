@@ -5,7 +5,7 @@
 // Author Sudhir Malik 20 May 2009
 // Original F. Ratnikov, Sept. 7, 2006
 // Modified by J F Novak July 10, 2008
-// $Id: PATValidation_Jet.h,v 1.6 2009/10/24 04:16:19 kfjack Exp $
+// $Id: PATValidation_Jet.h,v 1.7 2009/11/28 14:35:29 kfjack Exp $
 
 #include <string>
 
@@ -26,7 +26,7 @@ public:
   ~PATValidation_Jet();
 
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void endJob() ;
  
 private:

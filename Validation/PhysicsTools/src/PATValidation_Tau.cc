@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Tau.cc,v 1.5 2009/07/17 20:26:03 malik Exp $
+// $Id: PATValidation_Tau.cc,v 1.6 2009/10/29 04:37:14 kfjack Exp $
 //
 //
 
@@ -101,7 +101,7 @@ PATValidation_Tau::~PATValidation_Tau()
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-PATValidation_Tau::beginJob(const edm::EventSetup&)
+PATValidation_Tau::beginJob()
 {
                    
 dbe = edm::Service<DQMStore>().operator->();

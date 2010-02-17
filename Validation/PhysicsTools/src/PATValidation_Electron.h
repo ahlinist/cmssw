@@ -16,7 +16,7 @@ class PATValidation_Electron : public edm::EDAnalyzer {
   ~PATValidation_Electron();
 
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void endJob() ;
 
   

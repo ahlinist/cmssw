@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id$
+// $Id: PATValidation_Electron.cc,v 1.4 2009/07/13 17:54:10 malik Exp $
 //
 //
 
@@ -133,7 +133,7 @@ PATValidation_Electron::~PATValidation_Electron()
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-PATValidation_Electron::beginJob(const edm::EventSetup&)
+PATValidation_Electron::beginJob()
 {
                    
 dbe = edm::Service<DQMStore>().operator->();
