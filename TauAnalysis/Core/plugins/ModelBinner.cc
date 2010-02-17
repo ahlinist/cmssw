@@ -1,6 +1,9 @@
 #include "TauAnalysis/Core/plugins/ModelBinner.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+
+#include "TauAnalysis/Core/interface/SysUncertaintyService.h"
 
 #include "TauAnalysis/Core/interface/ModelBinning.h"
 
@@ -33,6 +36,8 @@ ModelBinner::~ModelBinner()
 
 void ModelBinner::bin(const edm::Event& evt, const edm::EventSetup& es, double evtWeight) 
 {
+  //std::cout << "<ModelBinner::bin>:" << std::endl;
+
   if ( !binning_ ) {
     edm::LogError ("ModelBinner::bin") << " No binning object defined --> skipping !!";
     return;
@@ -42,10 +47,23 @@ void ModelBinner::bin(const edm::Event& evt, const edm::EventSetup& es, double e
   std::vector<double> xGen = (*objValExtractorGen_)(evt);
 
   edm::Handle<bool> recFlag;
-  evt.getByLabel(srcRecFlag_, recFlag);
-
   edm::Handle<bool> genFlag;
-  evt.getByLabel(srcGenFlag_, genFlag);
+  if ( edm::Service<SysUncertaintyService>().isAvailable() ) {
+    const SysUncertaintyService& sysUncertaintyService = (*edm::Service<SysUncertaintyService>());
+    
+    //std::cout << " currentSystematic = " << sysUncertaintyService.getCurrentSystematic() << std::endl;
+
+    edm::InputTag srcRecFlag_systematic = sysUncertaintyService.getInputTag(srcRecFlag_);
+    //std::cout << " srcRecFlag_systematic = " << srcRecFlag_systematic << std::endl;
+    evt.getByLabel(srcRecFlag_systematic, recFlag);
+    
+    edm::InputTag srcGenFlag_systematic = sysUncertaintyService.getInputTag(srcGenFlag_);
+    //std::cout << " srcGenFlag_systematic = " << srcGenFlag_systematic << std::endl;
+    evt.getByLabel(srcGenFlag_systematic, genFlag);
+  } else {
+    evt.getByLabel(srcRecFlag_, recFlag);
+    evt.getByLabel(srcGenFlag_, genFlag);
+  }
 
   double evtWeightGen;
   if ( srcWeightGen_.label() != "" ) {

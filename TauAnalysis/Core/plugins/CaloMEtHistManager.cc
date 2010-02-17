@@ -118,7 +118,7 @@ void CaloMEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Eve
   //std::cout << "<CaloMEtHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<std::vector<pat::MET> > patMETs;
-  evt.getByLabel(metSrc_, patMETs);
+  getCollection(evt, metSrc_, patMETs);
 
   double metSignificance = -1.;
   if ( metSignificanceSrc_.label() != "" ) {

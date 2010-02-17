@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -198,7 +199,7 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
 
   typedef std::vector<CompositePtrCandidateT1T2MEt<T1,T2> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> diTauCandidates;
-  evt.getByLabel(diTauCandidateSrc_, diTauCandidates);
+  getCollection(evt, diTauCandidateSrc_, diTauCandidates);
 
   //std::cout << " diTauCandidates.size = " << diTauCandidates->size() << std::endl;
 

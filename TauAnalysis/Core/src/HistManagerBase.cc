@@ -131,9 +131,6 @@ MonitorElement* HistManagerBase::bookProfile1D(const std::string& name, const st
 
   return me;
 }
-/*
-  
-  CV: CMSSW_3_3_x only
 
 MonitorElement* HistManagerBase::bookProfile1D(const std::string& name, const std::string& title, 
 					       int numBinsX, float* xBinning)
@@ -152,7 +149,7 @@ MonitorElement* HistManagerBase::bookProfile1D(const std::string& name, const st
 
   return me;
 }
- */
+
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 EDM_REGISTER_PLUGINFACTORY(HistManagerPluginFactory, "HistManagerPluginFactory");

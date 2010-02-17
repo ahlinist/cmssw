@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEtFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -83,7 +84,7 @@ void CompositePtrCandidateTMEtHistManager<T>::fillHistogramsImp(const edm::Event
 
   typedef std::vector<CompositePtrCandidateTMEt<T> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> tauNuCandidates;
-  evt.getByLabel(tauNuCandidateSrc_, tauNuCandidates);
+  getCollection(evt, tauNuCandidateSrc_, tauNuCandidates);
 
   //std::cout << " tauNuCandidates.size = " << tauNuCandidates->size() << std::endl;
 
