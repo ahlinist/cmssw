@@ -41,11 +41,14 @@ DQMDumpFilterStatisticsTables::DQMDumpFilterStatisticsTables(const edm::Paramete
   }
 
   if ( processes_.size() == 0 ) {
-    edm::LogError("DQMDumpFilterStatisticsTables") << " Configuration Parameter dqmDirectories contains no Entries --> skipping !!";
+    edm::LogError("DQMDumpFilterStatisticsTables") 
+      << " Configuration Parameter dqmDirectories contains no Entries --> skipping !!";
     cfgError_ = 1;
   }
 
   columnsSummaryTable_ = ( cfg.exists("columnsSummaryTable") ) ? cfg.getParameter<vstring>("columnsSummaryTable") : vstring();
+
+  printSummaryTableOnly_ = ( cfg.exists("printSummaryTableOnly") ) ? cfg.getParameter<bool>("printSummaryTableOnly") : false;
 }
 
 DQMDumpFilterStatisticsTables::~DQMDumpFilterStatisticsTables() 
@@ -78,14 +81,14 @@ void printSummaryTable(std::ostream& stream, unsigned widthNameColumn, unsigned 
     if ( columnLabel == columnLabels.begin() ) {
       stream << std::setw(widthNameColumn) << std::left << (*columnLabel);
     } else {
-      for ( unsigned iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
+      for ( int iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
 	stream << " ";
       }
       stream << " " << std::setw(columnLabel->length()) << std::left << (*columnLabel);
     }
   }
   stream << std::endl;
-  for ( unsigned iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
+  for ( int iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl;
@@ -97,7 +100,7 @@ void printSummaryTable(std::ostream& stream, unsigned widthNameColumn, unsigned 
     }
     stream << std::endl;
   } 
-  for ( unsigned iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
+  for ( int iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl << std::endl;  
@@ -109,13 +112,15 @@ void DQMDumpFilterStatisticsTables::endJob()
 
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
-    edm::LogError ("endjob") << " Error in Configuration ParameterSet --> FilterStatisticsTables will NOT be printed-out !!";
+    edm::LogError ("endjob") 
+      << " Error in Configuration ParameterSet --> FilterStatisticsTables will NOT be printed-out !!";
     return;
   }
 
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("endJob") << " Failed to access dqmStore --> FilterStatisticsTables will NOT be printed-out !!";
+    edm::LogError ("endJob") 
+      << " Failed to access dqmStore --> FilterStatisticsTables will NOT be printed-out !!";
     return;
   }
 
@@ -131,18 +136,21 @@ void DQMDumpFilterStatisticsTables::endJob()
     if ( filterStatisticsTable ) {
       filterStatisticsTables_[*process] = filterStatisticsTable;
     } else {
-      edm::LogError ("DQMDumpFilterStatisticsTables") << " Failed to load FilterStatisticsTable from dqmDirectory = " << dqmDirectory
-						      << " --> FilterStatisticsTables will NOT be printed-out !!";
+      edm::LogError ("DQMDumpFilterStatisticsTables") 
+	<< " Failed to load FilterStatisticsTable from dqmDirectory = " << dqmDirectory
+	<< " --> FilterStatisticsTables will NOT be printed-out !!";
       return;
     }
   }
 
 //--- print FilterStatisticsTables
-  for ( std::vector<std::string>::const_iterator process = processes_.begin();
-	process != processes_.end(); ++process ) {
-    FilterStatisticsTable* filterStatisticsTable = filterStatisticsTables_[*process];
-    std::cout << "Filter Statistics for process = " << (*process) << ":" << std::endl;
-    filterStatisticsTable->print(std::cout);
+  if ( !printSummaryTableOnly_ ) {
+    for ( std::vector<std::string>::const_iterator process = processes_.begin();
+	  process != processes_.end(); ++process ) {
+      FilterStatisticsTable* filterStatisticsTable = filterStatisticsTables_[*process];
+      std::cout << "Filter Statistics for process = " << (*process) << ":" << std::endl;
+      filterStatisticsTable->print(std::cout);
+    }
   }
 
 //--- print filter statistics (cut-flow) summary tables
@@ -171,16 +179,17 @@ void DQMDumpFilterStatisticsTables::endJob()
 
       std::vector<std::string> filterTitleColumn = filterStatisticsTable->extractFilterTitleColumn();
       if ( filterTitleColumn.size() != numFilters ) {
-	edm::LogError ("DQMDumpFilterStatisticsTables") << " Number of entries in Filter Title columns do not match"
-							<< " --> FilterStatistics summary Tables will NOT be printed-out !!";
+	edm::LogError ("DQMDumpFilterStatisticsTables") 
+	  << " Number of entries in Filter Title columns do not match"
+	  << " --> FilterStatistics summary Tables will NOT be printed-out !!";
 	return;
       } else {
 	for ( size_t iFilter = 0; iFilter < numFilters; ++iFilter ) {
 	  if ( filterTitleColumn[iFilter] != refFilterTitleColumn[iFilter] ) {
-	    edm::LogError ("DQMDumpFilterStatisticsTables") << " Filter Title columns do not match"
-							    << " (current = " << filterTitleColumn[iFilter] << ","
-							    << " reference = " << refFilterTitleColumn[iFilter] << ")"
-							    << " --> FilterStatistics summary Tables will NOT be printed-out !!";
+	    edm::LogError ("DQMDumpFilterStatisticsTables") 
+	      << " Filter Title columns do not match"
+	      << " (current = " << filterTitleColumn[iFilter] << ", reference = " << refFilterTitleColumn[iFilter] << ")"
+	      << " --> FilterStatistics summary Tables will NOT be printed-out !!";
 	    return;
 	  }
 	}
@@ -188,8 +197,9 @@ void DQMDumpFilterStatisticsTables::endJob()
 
       std::vector<double> column = filterStatisticsTable->extractColumn(*columnSummaryTable, true);
       if ( column.size() != numFilters ) {
-	edm::LogError ("DQMDumpFilterStatisticsTables") << " Number of entries in Title and Number columns do not match"
-							<< " --> FilterStatistics summary Tables will NOT be printed-out !!";
+	edm::LogError ("DQMDumpFilterStatisticsTables") 
+	  << " Number of entries in Title and Number columns do not match"
+	  << " --> FilterStatistics summary Tables will NOT be printed-out !!";
 	return;
       }
 
