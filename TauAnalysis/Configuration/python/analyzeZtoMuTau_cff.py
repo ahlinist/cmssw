@@ -12,8 +12,14 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 #
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 SysUncertaintyService = cms.Service("SysUncertaintyService",
-    config = getSysUncertaintyParameterSets(
+    weights = getSysUncertaintyParameterSets(
         [ theorySystematics ]
+    ),
+    sources = cms.PSet(
+        isRecZtoMuTau = cms.vstring(
+            "sysMuon*", "",
+            "sysTau*", "",
+        )        
     )
 )
 
