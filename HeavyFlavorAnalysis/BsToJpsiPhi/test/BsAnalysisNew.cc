@@ -72,8 +72,12 @@ void BsAnalysisNew() {
 
  
   vector<std::string> treefilenames; // chain all filenames together in this vector to create a TChain
-  treefilenames.push_back( "/nfs/data6/alschmid/BsJpsiPhiRootTrees/BtoJpsiMuMu7TeV_5Feb10.root");
-  
+
+treefilenames.push_back("/nfs/data6/alschmid/BsJpsiPhi/CMSSW_3_3_6_patch3/src/HeavyFlavorAnalysis/BsToJpsiPhi/test_7TeV_MuOpen/BtoJpsiMuMu7TeV_1.root");
+treefilenames.push_back("/nfs/data6/alschmid/BsJpsiPhi/CMSSW_3_3_6_patch3/src/HeavyFlavorAnalysis/BsToJpsiPhi/test_7TeV_MuOpen/BtoJpsiMuMu7TeV_10.root");
+treefilenames.push_back("/nfs/data6/alschmid/BsJpsiPhi/CMSSW_3_3_6_patch3/src/HeavyFlavorAnalysis/BsToJpsiPhi/test_7TeV_MuOpen/BtoJpsiMuMu7TeV_100.root");
+
+
   TString outputhistofilename = "BtoJpsiMuMuHistoFile.root";
 
 //   string treefilename = "/nfs/data6/alschmid/BsJpsiPhiRootTrees/JpsiMuMu7TeV_5Feb10.root";
@@ -129,15 +133,44 @@ void BsAnalysisNew() {
     increaseCountersByOne(iBsJPsiPhiSignalEvents, iBsJPsiKKSignalEvents, iBdJPsiKstarSignalEvents, iBsOtherEvents, iBdOtherEvents, iOtherEvents, 
 			  iBsJpsiEtaEvents, iBdJpsiK10Events, iBdJpsiK0Events, iBpJpsiKpEvents);
     
-    if(tree->triggerbit_HLTdoubleMu3_ != 1) continue;      // IS TRIGGERED_HLTdoubleMu3**************
-    HLT++;
-    
+
     // count number of triggered events of each type
-    increaseCountersByOne(iTriggered_DoubleMu3_BsJPsiPhiSignalEvents,  iTriggered_DoubleMu3_BsJpsiKK, 
-			  iTriggered_DoubleMu3_BdJpsiKstar,            iTriggered_DoubleMu3_BsOtherEvents, 
-			  iTriggered_DoubleMu3_BdOtherEvents,          iTriggered_DoubleMu3_OtherEvents,
-			  iTriggered_DoubleMu3_BsJpsiEtaEvents,        iTriggered_DoubleMu3_BdJpsiK10Events,
-			  iTriggered_DoubleMu3_BdJpsiK0Events,         iTriggered_DoubleMu3_BpJpsiKpEvents);
+    if(tree->triggerbit_HLTdoubleMu3_ == 1) increaseCountersByOne(iTriggered_DoubleMu3_BsJPsiPhiSignalEvents,  iTriggered_DoubleMu3_BsJpsiKK, 
+								  iTriggered_DoubleMu3_BdJpsiKstar,            iTriggered_DoubleMu3_BsOtherEvents, 
+								  iTriggered_DoubleMu3_BdOtherEvents,          iTriggered_DoubleMu3_OtherEvents,
+								  iTriggered_DoubleMu3_BsJpsiEtaEvents,        iTriggered_DoubleMu3_BdJpsiK10Events,
+								  iTriggered_DoubleMu3_BdJpsiK0Events,         iTriggered_DoubleMu3_BpJpsiKpEvents);
+    
+    if(tree->triggerbit_HLTdoubleMu0_ == 1) increaseCountersByOne(iTriggered_DoubleMu0_BsJPsiPhiSignalEvents,  iTriggered_DoubleMu0_BsJpsiKK, 
+								  iTriggered_DoubleMu0_BdJpsiKstar,            iTriggered_DoubleMu0_BsOtherEvents, 
+								  iTriggered_DoubleMu0_BdOtherEvents,          iTriggered_DoubleMu0_OtherEvents,
+								  iTriggered_DoubleMu0_BsJpsiEtaEvents,        iTriggered_DoubleMu0_BdJpsiK10Events,
+								  iTriggered_DoubleMu0_BdJpsiK0Events,         iTriggered_DoubleMu0_BpJpsiKpEvents);
+    
+    if(tree->triggerbit_HLTmu3_ == 1) increaseCountersByOne(iTriggered_SingleMu3_BsJPsiPhiSignalEvents,  iTriggered_SingleMu3_BsJpsiKK, 
+							    iTriggered_SingleMu3_BdJpsiKstar,            iTriggered_SingleMu3_BsOtherEvents, 
+							    iTriggered_SingleMu3_BdOtherEvents,          iTriggered_SingleMu3_OtherEvents,
+							    iTriggered_SingleMu3_BsJpsiEtaEvents,        iTriggered_SingleMu3_BdJpsiK10Events,
+							    iTriggered_SingleMu3_BdJpsiK0Events,         iTriggered_SingleMu3_BpJpsiKpEvents);
+
+    if(tree->triggerbit_HLTmu3_ == 1 || tree->triggerbit_HLTdoubleMu0_ == 1) 
+      increaseCountersByOne(iTriggered_DoubleMu0_OR_SingleMu3_BsJPsiPhiSignalEvents,  iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiKK, 
+			    iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiKstar,            iTriggered_DoubleMu0_OR_SingleMu3_BsOtherEvents, 
+			    iTriggered_DoubleMu0_OR_SingleMu3_BdOtherEvents,          iTriggered_DoubleMu0_OR_SingleMu3_OtherEvents,
+			    iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiEtaEvents,        iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK10Events,
+			    iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK0Events,         iTriggered_DoubleMu0_OR_SingleMu3_BpJpsiKpEvents);
+
+    if(tree->triggerbit_HLTL1DoubleMuOpen_ == 1)  increaseCountersByOne(iTriggered_L1DoubleMuOpen_BsJPsiPhiSignalEvents,  iTriggered_L1DoubleMuOpen_BsJpsiKK, 
+							    iTriggered_L1DoubleMuOpen_BdJpsiKstar,            iTriggered_L1DoubleMuOpen_BsOtherEvents, 
+							    iTriggered_L1DoubleMuOpen_BdOtherEvents,          iTriggered_L1DoubleMuOpen_OtherEvents,
+							    iTriggered_L1DoubleMuOpen_BsJpsiEtaEvents,        iTriggered_L1DoubleMuOpen_BdJpsiK10Events,
+							    iTriggered_L1DoubleMuOpen_BdJpsiK0Events,         iTriggered_L1DoubleMuOpen_BpJpsiKpEvents);
+        
+    // continue the analysis only for triggered events
+    //   if(tree->triggerbit_HLTmu3_ != 1 && tree->triggerbit_HLTdoubleMu0_ != 1) continue;      // IS TRIGGERED_HLTdoubleMu3**************
+    if(tree->triggerbit_HLTL1DoubleMuOpen_ == 1) continue;      // IS TRIGGERED_HLTdoubleMu3**************
+    HLT++;
+      
     
     fillHistograms(tree->JpsiM_alone_,     vhJPsiMass); 
     fillHistograms(tree->BCt_MC_[indexOfBmesonWithJpsiDecay],       vhGenBCt);
@@ -159,7 +192,7 @@ void BsAnalysisNew() {
 	
 	// successful fit, fill histograms
 	
-	//	fillHistograms(tree->BsNumberOfCandidates_,          vhBsNumCandidates)
+	fillHistograms(tree->BsNumberOfCandidates_,          vhBsNumCandidates);
 
 	fillHistograms(tree->BsFitChi2_,                     vhChi2);
 	fillHistograms(tree->BsFitChi2_/ tree->BsFitNdof_ ,  vhChi2Ndof);
@@ -167,7 +200,7 @@ void BsAnalysisNew() {
 	
 	fillHistograms(tree->K1Pt_nofit_,         vhK1Pt);
 	fillHistograms(tree->K2Pt_nofit_,         vhK2Pt);
-	
+	fillHistograms(tree->BsFitPt_,            vhBsFitPt);
 
 	
 	if(tree->BsFitVtxProb_ >= minProbability) { // passed minimum vertex probability cut
@@ -612,7 +645,8 @@ void writeHistos(TString outputfilename){
     vhBsCt[i]->Write();
     vhBsCtErr[i]->Write();
     vhGenBCt[i]->Write();
-
+    vhBsFitPt[i]->Write();
+    vhBsNumCandidates[i]->Write();
   }
  histofile->Write();
  histofile->Close();
@@ -1032,6 +1066,28 @@ vhGenBCt             .push_back( new TH1F ("hGenBCt_BsJpsiEta"                  
 vhGenBCt             .push_back( new TH1F ("hGenBCt_BdJpsiK10"                     ,"hGenBCt_BdJpsiK10"            , 100, -0.05, 0.5                  ) );
 vhGenBCt             .push_back( new TH1F ("hGenBCt_BdJpsiK0"                      ,"hGenBCt_BdJpsiK0"             , 100, -0.05, 0.5                  ) );
 vhGenBCt             .push_back( new TH1F ("hGenBCt_BpJpsiKp"                          ,"hGenBCt_BpJpsiKp"             , 100, -0.05, 0.5                  ) );
+
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BsJPsiPhiSignal"               ,"hBsFitPt_BsJPsiPhiSignal"      , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BsJPsiKKSignal"                ,"hBsFitPt_BsJPsiKKSignal"       , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BdJPsiKstarSignal"             ,"hBsFitPt_BdJPsiKstarSignal"    , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BsOther"                       ,"hBsFitPt_BsOther"              , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BdOther"                       ,"hBsFitPt_BdOther"              , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_Other"                         ,"hBsFitPt_Other"                , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BsJpsiEta"                     ,"hBsFitPt_BsJpsiEta"            , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BdJpsiK10"                     ,"hBsFitPt_BdJpsiK10"            , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BdJpsiK0"                      ,"hBsFitPt_BdJpsiK0"             , 100, 0, 20     ) );
+vhBsFitPt             .push_back( new TH1F ("hBsFitPt_BpJpsiKp"                      ,"hBsFitPt_BpJpsiKp"             , 100, 0, 20     ) );
+
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BsJPsiPhiSignal"               ,"hBsNumCandidates_BsJPsiPhiSignal"      , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BsJPsiKKSignal"                ,"hBsNumCandidates_BsJPsiKKSignal"       , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BdJPsiKstarSignal"             ,"hBsNumCandidates_BdJPsiKstarSignal"    , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BsOther"                       ,"hBsNumCandidates_BsOther"              , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BdOther"                       ,"hBsNumCandidates_BdOther"              , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_Other"                         ,"hBsNumCandidates_Other"                , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BsJpsiEta"                     ,"hBsNumCandidates_BsJpsiEta"            , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BdJpsiK10"                     ,"hBsNumCandidates_BdJpsiK10"            , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BdJpsiK0"                      ,"hBsNumCandidates_BdJpsiK0"             , 100, 0,10    ) );
+vhBsNumCandidates             .push_back( new TH1F ("hBsNumCandidates_BpJpsiKp"                          ,"hBsNumCandidates_BpJpsiKp"         , 100, 0,10    ) );
 }
 
 
@@ -1082,16 +1138,33 @@ void makeVertexResolutionPlots(){
 void printResults(){
 
   std::cout<< "There are " << entrycounter << " events in the tree." << std::endl;
- std::cout<< "Events with only HLT: " << HLT << std::endl << std::endl;
+  // std::cout<< "Events with only HLT: " << HLT << std::endl << std::endl;
  
  std::cout<< "                          | Bs->JpsiPhi | Bd->Jpsi K* | Bs->Jpsi KK | Bs->Jpsi Eta| Bd->Jpsi K10| Bd->Jpsi K0 | Bp->Jpsi Kp | Other Bs    | Other Bd    | Other "<<  std::endl;
  std::cout<< "events                    | " << setw(11) << iBsJPsiPhiSignalEvents << " | " << setw(11) << iBdJPsiKstarSignalEvents << " | " << setw(11) << iBsJPsiKKSignalEvents << " | " 
 	  << setw(11) << iBsJpsiEtaEvents << " | " << setw(11) << iBdJpsiK10Events << " | " << setw(11) << iBdJpsiK0Events << " | " << setw(11) << iBpJpsiKpEvents << " | " 
 	  << setw(11) << iBsOtherEvents << " | " << setw(11) << iBdOtherEvents << " | " << setw(11) << iOtherEvents << std::endl;
 
- std::cout<< "triggered events          | " << setw(11) << iTriggered_DoubleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu3_BsJpsiKK << " | " 
+ std::cout<< "DoubleMu3 trigger         | " << setw(11) << iTriggered_DoubleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu3_BsJpsiKK << " | " 
 	  << setw(11) << iTriggered_DoubleMu3_BsJpsiEtaEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiK10Events << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiK0Events << " | " << setw(11) << iTriggered_DoubleMu3_BpJpsiKpEvents << " | " 
 	  << setw(11) << iTriggered_DoubleMu3_BsOtherEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdOtherEvents << " | " << setw(11) << iTriggered_DoubleMu3_OtherEvents << std::endl;
+
+ std::cout<< "DoubleMu0 trigger         | " << setw(11) << iTriggered_DoubleMu0_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu0_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu0_BsJpsiKK << " | " 
+	  << setw(11) << iTriggered_DoubleMu0_BsJpsiEtaEvents << " | " << setw(11) << iTriggered_DoubleMu0_BdJpsiK10Events << " | " << setw(11) << iTriggered_DoubleMu0_BdJpsiK0Events << " | " << setw(11) << iTriggered_DoubleMu0_BpJpsiKpEvents << " | " 
+	  << setw(11) << iTriggered_DoubleMu0_BsOtherEvents << " | " << setw(11) << iTriggered_DoubleMu0_BdOtherEvents << " | " << setw(11) << iTriggered_DoubleMu0_OtherEvents << std::endl;
+
+ std::cout<< "L1DoubleMuOpen trigger    | " << setw(11) << iTriggered_L1DoubleMuOpen_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_L1DoubleMuOpen_BdJpsiKstar << " | " << setw(11) << iTriggered_L1DoubleMuOpen_BsJpsiKK << " | " 
+	  << setw(11) << iTriggered_L1DoubleMuOpen_BsJpsiEtaEvents << " | " << setw(11) << iTriggered_L1DoubleMuOpen_BdJpsiK10Events << " | " << setw(11) << iTriggered_L1DoubleMuOpen_BdJpsiK0Events << " | " << setw(11) << iTriggered_L1DoubleMuOpen_BpJpsiKpEvents << " | " 
+	  << setw(11) << iTriggered_L1DoubleMuOpen_BsOtherEvents << " | " << setw(11) << iTriggered_L1DoubleMuOpen_BdOtherEvents << " | " << setw(11) << iTriggered_L1DoubleMuOpen_OtherEvents << std::endl;
+
+ std::cout<< "SingleMu3 trigger         | " << setw(11) << iTriggered_SingleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_SingleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_SingleMu3_BsJpsiKK << " | " 
+	  << setw(11) << iTriggered_SingleMu3_BsJpsiEtaEvents << " | " << setw(11) << iTriggered_SingleMu3_BdJpsiK10Events << " | " << setw(11) << iTriggered_SingleMu3_BdJpsiK0Events << " | " << setw(11) << iTriggered_SingleMu3_BpJpsiKpEvents << " | " 
+	  << setw(11) << iTriggered_SingleMu3_BsOtherEvents << " | " << setw(11) << iTriggered_SingleMu3_BdOtherEvents << " | " << setw(11) << iTriggered_SingleMu3_OtherEvents << std::endl;
+
+ std::cout<< "DoubleMu3 || SingleMu0 trg| " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiKK << " | " 
+	  << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiEtaEvents << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK10Events << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK0Events << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BpJpsiKpEvents << " | " 
+	  << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BsOtherEvents << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BdOtherEvents << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_OtherEvents << std::endl;
+
 
  std::cout<<std::endl<<std::endl;
  std::cout<<"Bs->Jpsi Phi Analysis:" << std::endl;
@@ -1190,15 +1263,32 @@ void printResults(){
 void printSimpleResults(){
 
   std::cout<< "There are " << entrycounter << " events in the tree." << std::endl;
- std::cout<< "Events with only HLT: " << HLT << std::endl << std::endl;
+  //std::cout<< "Events with only HLT: " << HLT << std::endl << std::endl;
  
  std::cout<< "                          | Bs->JpsiPhi | Background (B or prompt bckgr. depending on used sample) "<<  std::endl;
  std::cout<< "events                    | " << setw(11) << iBsJPsiPhiSignalEvents << " | " << setw(11) << iBdJPsiKstarSignalEvents + iBsJPsiKKSignalEvents +  iBsJpsiEtaEvents + 
    iBdJpsiK10Events+  iBdJpsiK0Events+  iBpJpsiKpEvents + iBsOtherEvents+  iBdOtherEvents + iOtherEvents << std::endl;
 
- std::cout<< "triggered events          | " << setw(11) << iTriggered_DoubleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiKstar + iTriggered_DoubleMu3_BsJpsiKK  
+ std::cout<< "DoubleMu3 trigger         | " << setw(11) << iTriggered_DoubleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu3_BdJpsiKstar + iTriggered_DoubleMu3_BsJpsiKK  
 	  + iTriggered_DoubleMu3_BsJpsiEtaEvents + iTriggered_DoubleMu3_BdJpsiK10Events + iTriggered_DoubleMu3_BdJpsiK0Events + iTriggered_DoubleMu3_BpJpsiKpEvents  
 	  + iTriggered_DoubleMu3_BsOtherEvents + iTriggered_DoubleMu3_BdOtherEvents + iTriggered_DoubleMu3_OtherEvents << std::endl;
+
+ std::cout<< "DoubleMu0 trigger         | " << setw(11) << iTriggered_DoubleMu0_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu0_BdJpsiKstar + iTriggered_DoubleMu0_BsJpsiKK  
+	  + iTriggered_DoubleMu0_BsJpsiEtaEvents + iTriggered_DoubleMu0_BdJpsiK10Events + iTriggered_DoubleMu0_BdJpsiK0Events + iTriggered_DoubleMu0_BpJpsiKpEvents  
+	  + iTriggered_DoubleMu0_BsOtherEvents + iTriggered_DoubleMu0_BdOtherEvents + iTriggered_DoubleMu0_OtherEvents << std::endl;
+
+ std::cout<< "L1DoubleMuOpen trigger    | " << setw(11) << iTriggered_L1DoubleMuOpen_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_L1DoubleMuOpen_BdJpsiKstar + iTriggered_L1DoubleMuOpen_BsJpsiKK  
+	  + iTriggered_L1DoubleMuOpen_BsJpsiEtaEvents + iTriggered_L1DoubleMuOpen_BdJpsiK10Events + iTriggered_L1DoubleMuOpen_BdJpsiK0Events + iTriggered_L1DoubleMuOpen_BpJpsiKpEvents  
+	  + iTriggered_L1DoubleMuOpen_BsOtherEvents + iTriggered_L1DoubleMuOpen_BdOtherEvents + iTriggered_L1DoubleMuOpen_OtherEvents << std::endl;
+
+ std::cout<< "SingleMu3 trigger         | " << setw(11) << iTriggered_SingleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_SingleMu3_BdJpsiKstar + iTriggered_SingleMu3_BsJpsiKK  
+	  + iTriggered_SingleMu3_BsJpsiEtaEvents + iTriggered_SingleMu3_BdJpsiK10Events + iTriggered_SingleMu3_BdJpsiK0Events + iTriggered_SingleMu3_BpJpsiKpEvents  
+	  + iTriggered_SingleMu3_BsOtherEvents + iTriggered_SingleMu3_BdOtherEvents + iTriggered_SingleMu3_OtherEvents << std::endl;
+
+ std::cout<< "SingleMu3 OR DoubleMu0    | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BsJPsiPhiSignalEvents << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiKstar + iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiKK  
+	  + iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiEtaEvents + iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK10Events + iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK0Events + iTriggered_DoubleMu0_OR_SingleMu3_BpJpsiKpEvents  
+	  + iTriggered_DoubleMu0_OR_SingleMu3_BsOtherEvents + iTriggered_DoubleMu0_OR_SingleMu3_BdOtherEvents + iTriggered_DoubleMu0_OR_SingleMu3_OtherEvents << std::endl;
+
 
  std::cout<<std::endl<<std::endl;
  std::cout<<"Bs->Jpsi Phi Analysis:" << std::endl;
@@ -1249,6 +1339,27 @@ void printSimpleResults(){
  std::cout<<"Bd->Jpsi Kstar Analysis:" << std::endl;
  
  std::cout<< "                          | Bd->JpsiK*  | Background (B or prompt bckgr. depending on used sample) "<<  std::endl;
+ std::cout<< "DoubleMu3 trigger         | " << setw(11) << iTriggered_DoubleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu3_BsJPsiPhiSignalEvents + iTriggered_DoubleMu3_BsJpsiKK  
+	  + iTriggered_DoubleMu3_BsJpsiEtaEvents + iTriggered_DoubleMu3_BdJpsiK10Events + iTriggered_DoubleMu3_BdJpsiK0Events + iTriggered_DoubleMu3_BpJpsiKpEvents  
+	  + iTriggered_DoubleMu3_BsOtherEvents + iTriggered_DoubleMu3_BdOtherEvents + iTriggered_DoubleMu3_OtherEvents << std::endl;
+
+ std::cout<< "DoubleMu0 trigger         | " << setw(11) << iTriggered_DoubleMu0_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu0_BsJPsiPhiSignalEvents + iTriggered_DoubleMu0_BsJpsiKK  
+	  + iTriggered_DoubleMu0_BsJpsiEtaEvents + iTriggered_DoubleMu0_BdJpsiK10Events + iTriggered_DoubleMu0_BdJpsiK0Events + iTriggered_DoubleMu0_BpJpsiKpEvents  
+	  + iTriggered_DoubleMu0_BsOtherEvents + iTriggered_DoubleMu0_BdOtherEvents + iTriggered_DoubleMu0_OtherEvents << std::endl;
+
+ std::cout<< "L1DoubleMuOpen trigger    | " << setw(11) << iTriggered_L1DoubleMuOpen_BdJpsiKstar << " | " << setw(11) << iTriggered_L1DoubleMuOpen_BsJPsiPhiSignalEvents + iTriggered_L1DoubleMuOpen_BsJpsiKK  
+	  + iTriggered_L1DoubleMuOpen_BsJpsiEtaEvents + iTriggered_L1DoubleMuOpen_BdJpsiK10Events + iTriggered_L1DoubleMuOpen_BdJpsiK0Events + iTriggered_L1DoubleMuOpen_BpJpsiKpEvents  
+	  + iTriggered_L1DoubleMuOpen_BsOtherEvents + iTriggered_L1DoubleMuOpen_BdOtherEvents + iTriggered_L1DoubleMuOpen_OtherEvents << std::endl;
+
+ std::cout<< "SingleMu3 trigger         | " << setw(11) << iTriggered_SingleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_SingleMu3_BsJPsiPhiSignalEvents + iTriggered_SingleMu3_BsJpsiKK  
+	  + iTriggered_SingleMu3_BsJpsiEtaEvents + iTriggered_SingleMu3_BdJpsiK10Events + iTriggered_SingleMu3_BdJpsiK0Events + iTriggered_SingleMu3_BpJpsiKpEvents  
+	  + iTriggered_SingleMu3_BsOtherEvents + iTriggered_SingleMu3_BdOtherEvents + iTriggered_SingleMu3_OtherEvents << std::endl;
+
+ std::cout<< "SingleMu3 OR DoubleMu0    | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiKstar << " | " << setw(11) << iTriggered_DoubleMu0_OR_SingleMu3_BsJPsiPhiSignalEvents + iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiKK  
+	  + iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiEtaEvents + iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK10Events + iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK0Events + iTriggered_DoubleMu0_OR_SingleMu3_BpJpsiKpEvents  
+	  + iTriggered_DoubleMu0_OR_SingleMu3_BsOtherEvents + iTriggered_DoubleMu0_OR_SingleMu3_BdOtherEvents + iTriggered_DoubleMu0_OR_SingleMu3_OtherEvents << std::endl;
+
+
  std::cout<< "pre kin fit               | " << setw(11) << iBdAna_BdJPsiKstarSignalEventsPreKinFit << " | " << setw(11) << iBdAna_BsJPsiPhiSignalEventsPreKinFit + iBdAna_BsJPsiKKSignalEventsPreKinFit  
 	  + iBdAna_BsJpsiEtaEventsPreKinFit + iBdAna_BdJpsiK10EventsPreKinFit + iBdAna_BdJpsiK0EventsPreKinFit + iBdAna_BpJpsiKpEventsPreKinFit  
 	  + iBdAna_BsOtherEventsPreKinFit + iBdAna_BdOtherEventsPreKinFit + iBdAna_OtherEventsPreKinFit << std::endl;
@@ -1310,6 +1421,28 @@ void scaleNumbersToLumi(){
 	iTriggered_DoubleMu3_BdOtherEvents,          iTriggered_DoubleMu3_OtherEvents,
 	iTriggered_DoubleMu3_BsJpsiEtaEvents,        iTriggered_DoubleMu3_BdJpsiK10Events,
 	iTriggered_DoubleMu3_BdJpsiK0Events,         iTriggered_DoubleMu3_BpJpsiKpEvents);
+  scale(iTriggered_DoubleMu0_BsJPsiPhiSignalEvents,  iTriggered_DoubleMu0_BsJpsiKK, 
+	iTriggered_DoubleMu0_BdJpsiKstar,            iTriggered_DoubleMu0_BsOtherEvents, 
+	iTriggered_DoubleMu0_BdOtherEvents,          iTriggered_DoubleMu0_OtherEvents,
+	iTriggered_DoubleMu0_BsJpsiEtaEvents,        iTriggered_DoubleMu0_BdJpsiK10Events,
+	iTriggered_DoubleMu0_BdJpsiK0Events,         iTriggered_DoubleMu0_BpJpsiKpEvents);
+
+  scale(iTriggered_L1DoubleMuOpen_BsJPsiPhiSignalEvents,  iTriggered_L1DoubleMuOpen_BsJpsiKK, 
+	iTriggered_L1DoubleMuOpen_BdJpsiKstar,            iTriggered_L1DoubleMuOpen_BsOtherEvents, 
+	iTriggered_L1DoubleMuOpen_BdOtherEvents,          iTriggered_L1DoubleMuOpen_OtherEvents,
+	iTriggered_L1DoubleMuOpen_BsJpsiEtaEvents,        iTriggered_L1DoubleMuOpen_BdJpsiK10Events,
+	iTriggered_L1DoubleMuOpen_BdJpsiK0Events,         iTriggered_L1DoubleMuOpen_BpJpsiKpEvents);
+
+  scale(iTriggered_SingleMu3_BsJPsiPhiSignalEvents,  iTriggered_SingleMu3_BsJpsiKK, 
+	iTriggered_SingleMu3_BdJpsiKstar,            iTriggered_SingleMu3_BsOtherEvents, 
+	iTriggered_SingleMu3_BdOtherEvents,          iTriggered_SingleMu3_OtherEvents,
+	iTriggered_SingleMu3_BsJpsiEtaEvents,        iTriggered_SingleMu3_BdJpsiK10Events,
+	iTriggered_SingleMu3_BdJpsiK0Events,         iTriggered_SingleMu3_BpJpsiKpEvents);
+  scale(iTriggered_DoubleMu0_OR_SingleMu3_BsJPsiPhiSignalEvents,  iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiKK, 
+	iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiKstar,            iTriggered_DoubleMu0_OR_SingleMu3_BsOtherEvents, 
+	iTriggered_DoubleMu0_OR_SingleMu3_BdOtherEvents,          iTriggered_DoubleMu0_OR_SingleMu3_OtherEvents,
+	iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiEtaEvents,        iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK10Events,
+	iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK0Events,         iTriggered_DoubleMu0_OR_SingleMu3_BpJpsiKpEvents);
   
   
   scale(iBsJPsiPhiSignalEventsPreKinFit, iBsJPsiKKSignalEventsPreKinFit, iBdJPsiKstarSignalEventsPreKinFit,

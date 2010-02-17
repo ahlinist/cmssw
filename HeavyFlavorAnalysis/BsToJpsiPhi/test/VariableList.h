@@ -8,6 +8,7 @@
 // definition of scale factors for 7TeV
 // normalizing to 1pb-1
 double scaleFactor_OtherEvents = 60;  // other events could be prompt in case of prompt sample
+//double scaleFactor_OtherEvents = 11;
 
 double scaleFactor_BsJPsiPhiSignalEvents = 31.;
 double scaleFactor_BdJpsiKstar = 54.;
@@ -45,6 +46,49 @@ double iTriggered_DoubleMu3_BdJpsiK10Events = 0;
 double iTriggered_DoubleMu3_BdJpsiK0Events  = 0;
 double iTriggered_DoubleMu3_BpJpsiKpEvents  = 0;    
 
+double iTriggered_DoubleMu0_BsJPsiPhiSignalEvents = 0;
+double iTriggered_DoubleMu0_BdJpsiKstar = 0;
+double iTriggered_DoubleMu0_BsJpsiKK = 0;
+double iTriggered_DoubleMu0_BsOtherEvents = 0;
+double iTriggered_DoubleMu0_BdOtherEvents = 0;
+double iTriggered_DoubleMu0_OtherEvents = 0;
+double iTriggered_DoubleMu0_BsJpsiEtaEvents   = 0;
+double iTriggered_DoubleMu0_BdJpsiK10Events = 0;
+double iTriggered_DoubleMu0_BdJpsiK0Events  = 0;
+double iTriggered_DoubleMu0_BpJpsiKpEvents  = 0;
+
+double iTriggered_L1DoubleMuOpen_BsJPsiPhiSignalEvents = 0;
+double iTriggered_L1DoubleMuOpen_BdJpsiKstar = 0;
+double iTriggered_L1DoubleMuOpen_BsJpsiKK = 0;
+double iTriggered_L1DoubleMuOpen_BsOtherEvents = 0;
+double iTriggered_L1DoubleMuOpen_BdOtherEvents = 0;
+double iTriggered_L1DoubleMuOpen_OtherEvents = 0;
+double iTriggered_L1DoubleMuOpen_BsJpsiEtaEvents   = 0;
+double iTriggered_L1DoubleMuOpen_BdJpsiK10Events = 0;
+double iTriggered_L1DoubleMuOpen_BdJpsiK0Events  = 0;
+double iTriggered_L1DoubleMuOpen_BpJpsiKpEvents  = 0;        
+
+double iTriggered_DoubleMu0_OR_SingleMu3_BsJPsiPhiSignalEvents = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiKstar = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiKK = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_BsOtherEvents = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_BdOtherEvents = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_OtherEvents = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiEtaEvents   = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK10Events = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK0Events  = 0;
+double iTriggered_DoubleMu0_OR_SingleMu3_BpJpsiKpEvents  = 0;    
+
+double iTriggered_SingleMu3_BsJPsiPhiSignalEvents = 0;
+double iTriggered_SingleMu3_BdJpsiKstar = 0;
+double iTriggered_SingleMu3_BsJpsiKK = 0;
+double iTriggered_SingleMu3_BsOtherEvents = 0;
+double iTriggered_SingleMu3_BdOtherEvents = 0;
+double iTriggered_SingleMu3_OtherEvents = 0;
+double iTriggered_SingleMu3_BsJpsiEtaEvents   = 0;
+double iTriggered_SingleMu3_BdJpsiK10Events = 0;
+double iTriggered_SingleMu3_BdJpsiK0Events  = 0;
+double iTriggered_SingleMu3_BpJpsiKpEvents  = 0;    
 
 double iBsJPsiPhiSignalEventsPreKinFit = 0;
 double iBsJPsiKKSignalEventsPreKinFit = 0;
@@ -322,6 +366,9 @@ vector<TH1F*> vhBdMass_NoTimeCut;
 vector<TH1F*> vhBdMassFinal;
 vector<TH1F*> vhBdMassFinalAfterFit;
 vector<TH1F*> vhGenBCt;
+
+vector<TH1F*> vhBsNumCandidates;
+vector<TH1F*> vhBsFitPt;
 
  bool isGenBsJpsiPhiMuMuKKEvent_;
   bool isGenBsJpsiKKEvent_;
