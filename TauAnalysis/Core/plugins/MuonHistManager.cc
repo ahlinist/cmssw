@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -198,10 +199,10 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
   //std::cout << "<MuonHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<pat::MuonCollection> patMuons;
-  evt.getByLabel(muonSrc_, patMuons);
+  getCollection(evt, muonSrc_, patMuons);
 
   edm::Handle<pat::JetCollection> patJets;
-  evt.getByLabel(jetSrc_, patJets);
+  getCollection(evt, jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(genParticleSrc_, genParticles);

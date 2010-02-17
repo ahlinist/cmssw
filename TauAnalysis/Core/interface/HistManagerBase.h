@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: HistManagerBase.h,v 1.6 2009/10/27 16:14:46 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.7 2009/12/05 15:02:57 veelken Exp $
  *
  */
 
@@ -17,9 +17,12 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
+
+#include "TauAnalysis/Core/interface/SysUncertaintyService.h"
 
 #include "TauAnalysis/Core/interface/AnalyzerPluginBase.h"
 
@@ -48,12 +51,20 @@ class HistManagerBase : public AnalyzerPluginBase
   virtual MonitorElement* book2D(const std::string&, const std::string&, int, double, double, int, double, double);
   virtual MonitorElement* book2D(const std::string&, const std::string&, int, float*, int, float*);
   virtual MonitorElement* bookProfile1D(const std::string&, const std::string&, int, double, double);
-/*
-  
-  CV: CMSSW_3_3_x only
-
   virtual MonitorElement* bookProfile1D(const std::string&, const std::string&, int, float*);
- */
+
+  template<typename T>
+  void getCollection(const edm::Event& evt, const edm::InputTag& src, edm::Handle<T>& collection)
+  {
+    if ( edm::Service<SysUncertaintyService>().isAvailable() ) {
+      const SysUncertaintyService& sysUncertaintyService = (*edm::Service<SysUncertaintyService>()); 
+      edm::InputTag src_systematic = sysUncertaintyService.getInputTag(src);
+      evt.getByLabel(src_systematic, collection);
+    } else {
+      evt.getByLabel(src, collection);
+    }
+  }
+
   DQMStore* dqmStore_;
   std::string dqmDirectory_store_;
   int dqmError_;

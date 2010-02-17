@@ -228,7 +228,7 @@ void GenericAnalyzer::analysisSequenceEntry_analyzer::analyze(const edm::Event& 
 {
   for ( std::list<analyzerPluginEntry>::const_iterator analyzer = analyzerPlugins_.begin();
 	analyzer != analyzerPlugins_.end(); ++analyzer ) {
-
+    
     if ( analyzer->supportsSystematics_ == false && isSystematicApplied ) continue;
 
     analyzer->plugin_->analyze(evt, es, evtWeight);
@@ -601,13 +601,12 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
   //std::cout << " eventWeight = " << eventWeight << std::endl;
 
   SysUncertaintyService* sysUncertaintyService = 0;
-  if ( estimateSysUncertainties_ ) {
-    if ( edm::Service<SysUncertaintyService>().isAvailable() ) {
-      sysUncertaintyService = &(*edm::Service<SysUncertaintyService>());
-    } else {
-      edm::LogError ("GenericAnalyzer::analyze") << " Failed to access SysUncertaintyService --> skipping !!";
-      return;
-    }
+  if ( edm::Service<SysUncertaintyService>().isAvailable() ) {
+    sysUncertaintyService = &(*edm::Service<SysUncertaintyService>());
+    sysUncertaintyService->update(SysUncertaintyService::getNameCentralValue(), evt, es);
+  } else if ( estimateSysUncertainties_ ) {
+    edm::LogError ("GenericAnalyzer::analyze") << " Failed to access SysUncertaintyService --> skipping !!";
+    return;
   }
 
 //--- estimate systematic uncertainties:

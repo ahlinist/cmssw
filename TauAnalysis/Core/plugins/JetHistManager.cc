@@ -129,7 +129,7 @@ void JetHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   //std::cout << "<JetHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<pat::JetCollection> patJets;
-  evt.getByLabel(jetSrc_, patJets);
+  getCollection(evt, jetSrc_, patJets);
 
   //std::cout << " patJets.size = " << patJets->size() << std::endl;
 

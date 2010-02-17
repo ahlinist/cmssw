@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -336,10 +337,10 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   //std::cout << "<TauHistManager::fillHistogramsImp>:" << std::endl; 
   
   edm::Handle<pat::TauCollection> patTaus;
-  evt.getByLabel(tauSrc_, patTaus);
+  getCollection(evt, tauSrc_, patTaus);
 
   edm::Handle<pat::JetCollection> patJets;
-  evt.getByLabel(jetSrc_, patJets);
+  getCollection(evt, jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(genParticleSrc_, genParticles);

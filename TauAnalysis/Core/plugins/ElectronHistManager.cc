@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -211,10 +212,10 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
   //std::cout << "<ElectronHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<pat::ElectronCollection> patElectrons;
-  evt.getByLabel(electronSrc_, patElectrons);
+  getCollection(evt, electronSrc_, patElectrons);
 
   edm::Handle<pat::JetCollection> patJets;
-  evt.getByLabel(jetSrc_, patJets);
+  getCollection(evt, jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(genParticleSrc_, genParticles);
