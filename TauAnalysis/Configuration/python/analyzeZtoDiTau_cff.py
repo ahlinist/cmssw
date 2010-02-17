@@ -7,7 +7,7 @@ from TauAnalysis.Configuration.analyzeZtoDiTau_cfi import *
 # for handling of systematic uncertainties
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 SysUncertaintyService = cms.Service("SysUncertaintyService",
-    config = getSysUncertaintyParameterSets(
+    weights = getSysUncertaintyParameterSets(
         [ tauSystematics,
           theorySystematics ]
     )
