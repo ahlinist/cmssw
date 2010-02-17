@@ -345,8 +345,8 @@ frSubDirectories["frWplusJets"] = "zMuTauAnalyzer_WplusJets"
 ##frSubDirectories["frGammaPlusJets"] = "zMuTauAnalyzer_GammaPlusJets"
 frSubDirectories["frSysUncertainty"] = "frSysUncertainty"
 
-process.frDataBinningDumpSequence = cms.Sequence(makeDataBinningDumpSequence(process, dqmDirectory_frDataBinning, processSubDirectories, frSubDirectories))
-process.frFilterStatTableDumpSequence = cms.Sequence(makeFilterStatTableDumpSequence(process, dqmDirectory_frFilterStatTable, processSubDirectories, frSubDirectories))
+process.frDataBinningDumpSequence = cms.Sequence(makeDataBinningDumpSequence(process, dqmDirectory_frDataBinning, processSubDirectories, frSubDirectories, "fr"))
+process.frFilterStatTableDumpSequence = cms.Sequence(makeFilterStatTableDumpSequence(process, dqmDirectory_frFilterStatTable, processSubDirectories, frSubDirectories, "fr"))
 
 dqmDirectory_discrDataBinning = 'tauIdDiscr/#PROCESSDIR#/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto/dataBinningResults/'
 dqmDirectory_discrFilterStatTable = 'tauIdDiscr/#PROCESSDIR#/zMuTauAnalyzer/FilterStatistics/'
@@ -354,8 +354,8 @@ dqmDirectory_discrFilterStatTable = 'tauIdDiscr/#PROCESSDIR#/zMuTauAnalyzer/Filt
 discrSubDirectories = dict()
 discrSubDirectories["discr"] = "zMuTauAnalyzer"
 
-process.discrDataBinningDumpSequence = cms.Sequence(makeDataBinningDumpSequence(process, dqmDirectory_discrDataBinning, processSubDirectories, discrSubDirectories))
-process.discrFilterStatTableDumpSequence = cms.Sequence(makeFilterStatTableDumpSequence(process, dqmDirectory_discrFilterStatTable, processSubDirectories, discrSubDirectories))
+process.discrDataBinningDumpSequence = cms.Sequence(makeDataBinningDumpSequence(process, dqmDirectory_discrDataBinning, processSubDirectories, discrSubDirectories, "discr"))
+process.discrFilterStatTableDumpSequence = cms.Sequence(makeFilterStatTableDumpSequence(process, dqmDirectory_discrFilterStatTable, processSubDirectories, discrSubDirectories, "discr"))
 
 process.dumpBgEstFakeRateZtoMuTau = cms.Sequence(
     process.frDataBinningDumpSequence + process.discrDataBinningDumpSequence
@@ -374,7 +374,7 @@ process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
     process.loadBgEstFakeRateZtoMuTau_tauIdDiscr
    + process.loadBgEstFakeRateZtoMuTau_tauFakeRate
    + process.addBgEstFakeRateZtoMuTau_tauFakeRate 
-   + process.dumpDQMStore
+  #+ process.dumpDQMStore
    + process.compErrorBandsBgEstFakeRateZtoMuTau 
    + process.saveBgEstFakeRateZtoMuTau
    + process.dumpZtoMuTau_frUnweighted
