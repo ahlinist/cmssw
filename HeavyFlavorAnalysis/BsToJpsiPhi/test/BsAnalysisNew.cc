@@ -168,7 +168,7 @@ treefilenames.push_back("/nfs/data6/alschmid/BsJpsiPhi/CMSSW_3_3_6_patch3/src/He
         
     // continue the analysis only for triggered events
     //   if(tree->triggerbit_HLTmu3_ != 1 && tree->triggerbit_HLTdoubleMu0_ != 1) continue;      // IS TRIGGERED_HLTdoubleMu3**************
-    if(tree->triggerbit_HLTL1DoubleMuOpen_ == 1) continue;      // IS TRIGGERED_HLTdoubleMu3**************
+    if(tree->triggerbit_HLTL1DoubleMuOpen_ != 1) continue;      // IS TRIGGERED_HLTdoubleMu3**************
     HLT++;
       
     
