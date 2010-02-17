@@ -18,7 +18,7 @@ class PATValidation_Photon : public edm::EDAnalyzer {
   ~PATValidation_Photon();
 
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void endJob() ;
 
   

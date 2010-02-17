@@ -16,7 +16,7 @@ class PATValidation_Muon : public edm::EDAnalyzer {
   ~PATValidation_Muon();
 
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void endJob() ;
 
   

@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id$
+// $Id: PATValidation_Muon.cc,v 1.5 2009/07/17 20:35:34 malik Exp $
 //
 //
 */
@@ -136,7 +136,7 @@ PATValidation_Muon::~PATValidation_Muon()
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void PATValidation_Muon::beginJob(const edm::EventSetup&)
+void PATValidation_Muon::beginJob()
 {
                    
 dbe = edm::Service<DQMStore>().operator->();

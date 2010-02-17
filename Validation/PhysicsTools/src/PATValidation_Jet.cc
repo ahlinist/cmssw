@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Jet.cc,v 1.7 2009/11/28 14:35:28 kfjack Exp $
+// $Id: PATValidation_Jet.cc,v 1.8 2009/12/18 03:45:51 kfjack Exp $
 //
 //
 
@@ -91,7 +91,7 @@ PATValidation_Jet::~PATValidation_Jet()
 }
 
 void
-PATValidation_Jet::beginJob(const edm::EventSetup&)
+PATValidation_Jet::beginJob()
 {
                    
 dbe = edm::Service<DQMStore>().operator->();

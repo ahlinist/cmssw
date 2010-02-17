@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id$
+// $Id: PATValidation_MET.cc,v 1.4 2009/07/13 17:54:11 malik Exp $
 //
 //
 
@@ -111,7 +111,7 @@ PATValidation_MET::~PATValidation_MET()
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-PATValidation_MET::beginJob(const edm::EventSetup&)
+PATValidation_MET::beginJob()
 {
                    
 dbe = edm::Service<DQMStore>().operator->();
