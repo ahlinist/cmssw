@@ -105,7 +105,7 @@ namespace cscdqm {
    * @return 
    */
   void Utility::splitString(std::string str, const std::string delim, std::vector<std::string>& results) {
-    unsigned int cutAt;
+    size_t cutAt;
     while ((cutAt = str.find_first_of(delim)) != str.npos) {
       if(cutAt > 0) {
         results.push_back(str.substr(0, cutAt));
