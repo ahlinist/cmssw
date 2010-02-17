@@ -245,14 +245,16 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
     if ( columnLabel == columnLabels.begin() ) {
       stream << std::setw(widthNameColumn) << std::left << (*columnLabel);
     } else {
-      for ( int iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
-	stream << " ";
+      if ( columnLabel->length() < widthNumberColumns ) {
+	for ( unsigned iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
+	  stream << " ";
+	}
       }
       stream << " " << std::setw(columnLabel->length()) << std::left << (*columnLabel);
     }
   }
   stream << std::endl;
-  for ( int iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
+  for ( unsigned iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl;
@@ -261,7 +263,7 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
     const FilterStatisticsRow* row = it->second;
     row->print(stream, widthNameColumn, widthNumberColumns);
   }
-  for ( int iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
+  for ( unsigned iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl << std::endl;
