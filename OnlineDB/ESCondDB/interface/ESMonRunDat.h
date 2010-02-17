@@ -1,5 +1,5 @@
-#ifndef MONRUNDAT_H
-#define MONRUNDAT_H
+#ifndef ESMONRUNDAT_H
+#define ESMONRUNDAT_H
 
 #include <vector>
 #include <stdexcept>
