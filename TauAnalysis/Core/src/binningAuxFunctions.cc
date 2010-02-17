@@ -16,7 +16,7 @@
 void printBinCenterPosition(std::ostream& stream, const BinGrid* binGrid, unsigned binNumber)
 {
   unsigned numBins = binGrid->numBins();
-  if ( binNumber > 0 && binNumber < numBins ) {
+  if ( binNumber >= 0 && binNumber < numBins ) {
     stream << " bin " << std::setw(2) << binNumber << " (center: ";
 
     std::vector<double> binCenter = binGrid->binCenter(binNumber);
