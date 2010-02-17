@@ -87,7 +87,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
   triggerTag_ = iConfig.getParameter<edm::InputTag>("TriggerTag");
   muonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
   StoreDeDxInfo_ = iConfig.getParameter<bool>("StoreDeDxInfo");
-  saveDoubleMu3TriggeredOnly_ = iConfig.getParameter<bool>("saveDoubleMu3TriggeredOnly");
+  saveL1DoubleMuOpenTriggeredOnly_ = iConfig.getParameter<bool>("saveL1DoubleMuOpenTriggeredOnly");
   JpsiMassWindowBeforeFit_ = iConfig.getParameter<double>("JpsiMassWindowBeforeFit");
 
   BsLowerMassCutBeforeFit_  = iConfig.getParameter<double>("BsLowerMassCutBeforeFit");
@@ -259,8 +259,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   }
   
   // continue only if it is a  triggered event
-  if(saveDoubleMu3TriggeredOnly_ == true)
-    if(bsRootTree_->triggerbit_HLTdoubleMu3_ != 1 ) return;
+  if(saveL1DoubleMuOpenTriggeredOnly_ == true)
+    if(bsRootTree_->triggerbit_HLTL1DoubleMuOpen_ != 1 ) return;
 
 
   /////////////////////////
