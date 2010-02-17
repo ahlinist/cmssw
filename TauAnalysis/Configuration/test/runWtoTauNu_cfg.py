@@ -100,6 +100,14 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 
+#--------------------------------------------------------------------------------
+# import utility function for managing pat::Jets
+from PhysicsTools.PatAlgos.tools.jetTools import *
+
+# uncomment to replace caloJets by pfJets
+switchJetCollection(process, "iterativeCone5PFJets")
+#--------------------------------------------------------------------------------
+
 #------------------------Switching to PF-MET and raw Calo-MET----------------------------------
 process.layer1METs.metSource = cms.InputTag('met')
 
