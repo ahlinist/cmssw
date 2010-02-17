@@ -194,6 +194,7 @@ h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
 h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events");
 h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.3);
 
+h_calometPt_baseSel->UseCurrentStyle();
 h_calometPt_baseSel->Draw("");
 h_calometPt_baseSel_HFfilter->Draw("sames");
 h_calometPt->Draw("sameshist");
@@ -202,6 +203,7 @@ h_calometPt->Draw("sameshist");
 gPad->RedrawAxis();
 
 TLegend *legend_900 = new TLegend(0.375839,0.449301,0.909396,0.706294);
+legend_900->SetTextFont(42);
 legend_900->SetFillColor(0);
 legend_900->AddEntry(h_calometPt_baseSel,"No cleaning","pl");
 legend_900->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","pl");
@@ -264,6 +266,7 @@ h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
 h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events");
 h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.3);
 
+h_calometPt_baseSel->UseCurrentStyle();
 h_calometPt_baseSel->Draw("");
 h_calometPt_baseSel_HFfilter->Draw("sames");
 h_calometPt->Draw("sameshist");
@@ -272,6 +275,7 @@ h_calometPt->Draw("sameshist");
 gPad->RedrawAxis();
 
 TLegend *legend_2360 = new TLegend(0.375839,0.449301,0.909396,0.706294);
+legend_2360->SetTextFont(42);
 legend_2360->SetFillColor(0);
 legend_2360->AddEntry(h_calometPt_baseSel,"No cleaning","pl");
 legend_2360->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","pl");
