@@ -168,27 +168,31 @@ h_calometPt_baseSel->SetTitle("");
 
 h_calometPt_baseSel->SetLineColor(kBlack);
 h_calometPt_baseSel_HFfilter->SetLineColor(kRed);
-h_calometPt->SetLineColor(kGreen+1);
+h_calometPt_baseSel_HFfilter->SetLineWidth(2);
+h_calometPt->SetLineColor(kBlue);
 h_calometPt->SetLineWidth(2);
 
 h_calometPt_baseSel->SetMarkerColor(kBlack);
 h_calometPt_baseSel_HFfilter->SetMarkerColor(kRed);
-h_calometPt->SetMarkerColor(kGreen+1);
+h_calometPt->SetMarkerColor(kBlue);
 
 h_calometPt_baseSel->SetFillColor(kBlack);
 h_calometPt_baseSel_HFfilter->SetFillColor(kRed);
-//h_calometPt->SetFillColor(kGreen+1);
+h_calometPt->SetFillColor(kBlue);
+h_calometPt->SetFillStyle(3002);
 
 
 h_calometPt_baseSel->SetMarkerStyle(20);
 h_calometPt_baseSel_HFfilter->SetMarkerStyle(26);
 h_calometPt->SetMarkerStyle(23);
 
-h_calometPt_baseSel->SetMarkerSize(0.8);
-h_calometPt_baseSel_HFfilter->SetMarkerSize(0.8);
-h_calometPt->SetMarkerSize(0.8);
+h_calometPt_baseSel->SetMarkerSize(1);
+h_calometPt_baseSel_HFfilter->SetMarkerSize(1);
+h_calometPt->SetMarkerSize(1);
 
 h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
+h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events");
+h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.3);
 
 h_calometPt_baseSel->Draw("");
 h_calometPt_baseSel_HFfilter->Draw("sames");
@@ -197,11 +201,11 @@ h_calometPt->Draw("sameshist");
 
 gPad->RedrawAxis();
 
-TLegend *legend_900 = new TLegend(0.456376,0.449301,0.901007,0.708042);
+TLegend *legend_900 = new TLegend(0.375839,0.449301,0.909396,0.706294);
 legend_900->SetFillColor(0);
 legend_900->AddEntry(h_calometPt_baseSel,"No cleaning","pl");
 legend_900->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","pl");
-legend_900->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","l");
+legend_900->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","lf");
 legend_900->SetBorderSize(0);
 //Draw legend
 legend_900->Draw();
@@ -234,27 +238,31 @@ h_calometPt_baseSel->SetTitle("");
 
 h_calometPt_baseSel->SetLineColor(kBlack);
 h_calometPt_baseSel_HFfilter->SetLineColor(kRed);
-h_calometPt->SetLineColor(kGreen+1);
+h_calometPt_baseSel_HFfilter->SetLineWidth(2);
+h_calometPt->SetLineColor(kBlue);
 h_calometPt->SetLineWidth(2);
 
 h_calometPt_baseSel->SetMarkerColor(kBlack);
 h_calometPt_baseSel_HFfilter->SetMarkerColor(kRed);
-h_calometPt->SetMarkerColor(kGreen+1);
+h_calometPt->SetMarkerColor(kBlue);
 
 h_calometPt_baseSel->SetFillColor(kBlack);
 h_calometPt_baseSel_HFfilter->SetFillColor(kRed);
-//h_calometPt->SetFillColor(kGreen+1);
+h_calometPt->SetFillColor(kBlue);
+h_calometPt->SetFillStyle(3002);
 
 
 h_calometPt_baseSel->SetMarkerStyle(20);
 h_calometPt_baseSel_HFfilter->SetMarkerStyle(26);
 h_calometPt->SetMarkerStyle(23);
 
-h_calometPt_baseSel->SetMarkerSize(0.8);
-h_calometPt_baseSel_HFfilter->SetMarkerSize(0.8);
-h_calometPt->SetMarkerSize(0.8);
+h_calometPt_baseSel->SetMarkerSize(1);
+h_calometPt_baseSel_HFfilter->SetMarkerSize(1);
+h_calometPt->SetMarkerSize(1);
 
 h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
+h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events");
+h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.3);
 
 h_calometPt_baseSel->Draw("");
 h_calometPt_baseSel_HFfilter->Draw("sames");
@@ -263,11 +271,11 @@ h_calometPt->Draw("sameshist");
 
 gPad->RedrawAxis();
 
-TLegend *legend_2360 = new TLegend(0.456376,0.449301,0.901007,0.708042);
+TLegend *legend_2360 = new TLegend(0.375839,0.449301,0.909396,0.706294);
 legend_2360->SetFillColor(0);
 legend_2360->AddEntry(h_calometPt_baseSel,"No cleaning","pl");
 legend_2360->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","pl");
-legend_2360->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","l");
+legend_2360->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","lf");
 legend_2360->SetBorderSize(0);
 //Draw legend
 legend_2360->Draw();
