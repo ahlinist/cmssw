@@ -43,7 +43,8 @@ class ODESFEPedestalOffsetInfo : public IODConfig {
   void setParameters(std::map<string,string> my_keys_map);
   int fetchID()  throw(std::runtime_error);
 
- vector<int>  fetchRunPlus(const int recid)  throw(std::runtime_error);
+  vector<int>  fetchRunPlus(const int recid)  throw(std::runtime_error);
+  std::map< int,int > fetchGain(const string gain)  throw(std::runtime_error);
  
 private:
   void prepareWrite()  throw(std::runtime_error);
@@ -54,8 +55,6 @@ private:
 
   void fetchData(ODESFEPedestalOffsetInfo * result)     throw(std::runtime_error);
  
-
-
 
   // User data
   int m_ID;
