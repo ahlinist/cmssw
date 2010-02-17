@@ -5,8 +5,8 @@
  *  
  *  Class to print-out cut-flow information contained in FilterStatisticsTables
  *
- *  $Date: 2009/04/16 13:27:31 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/04/17 18:59:54 $
+ *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -37,6 +37,7 @@ private:
   std::map<std::string, std::string> dqmDirectories_;
 
   vstring columnsSummaryTable_;
+  bool printSummaryTableOnly_;
 
   FilterStatisticsService* filterStatisticsService_;
   std::map<std::string, FilterStatisticsTable*> filterStatisticsTables_;
