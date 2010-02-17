@@ -270,8 +270,7 @@ isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
-        cms.InputTag('diMuPairZmumuHypothesisVeto')
-        
+        cms.InputTag('diMuPairZmumuHypothesisVeto')      
     )
 )
 
