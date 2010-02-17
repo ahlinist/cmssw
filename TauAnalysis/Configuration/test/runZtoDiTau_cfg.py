@@ -101,6 +101,14 @@ switchToPFTauShrinkingCone(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# import utility function for managing pat::Jets
+from PhysicsTools.PatAlgos.tools.jetTools import *
+
+# uncomment to replace caloJets by pfJets
+switchJetCollection(process, "iterativeCone5PFJets")
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # import utility function for managing pat::METs
 from TauAnalysis.Configuration.tools.metTools import *
 
