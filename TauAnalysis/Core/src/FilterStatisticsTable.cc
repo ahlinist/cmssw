@@ -179,8 +179,8 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
     }
 
     if ( filterResult_individual == filterResults_individual.end() ) {
-      edm::LogError ("FilterStatisticsTable::update") << " Failed to find filterResult_individual for filterName = " << filterName
-						      << " --> skipping !!";     
+      edm::LogError ("FilterStatisticsTable::update") 
+	<< " Failed to find filterResult_individual for filterName = " << filterName << " --> skipping !!";     
       continue;
     }
 
@@ -195,8 +195,8 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
       }
     }
     if ( !row ) {
-      edm::LogError ("FilterStatisticsTable::update") << " Failed to access FilterStatisticsRow for filterName = " << filterName
-						      << " --> skipping !!";     
+      edm::LogError ("FilterStatisticsTable::update") 
+	<< " Failed to access FilterStatisticsRow for filterName = " << filterName << " --> skipping !!";     
       continue;
     }
 
@@ -245,14 +245,14 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
     if ( columnLabel == columnLabels.begin() ) {
       stream << std::setw(widthNameColumn) << std::left << (*columnLabel);
     } else {
-      for ( unsigned iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
+      for ( int iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
 	stream << " ";
       }
       stream << " " << std::setw(columnLabel->length()) << std::left << (*columnLabel);
     }
   }
   stream << std::endl;
-  for ( unsigned iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
+  for ( int iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl;
@@ -261,7 +261,7 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
     const FilterStatisticsRow* row = it->second;
     row->print(stream, widthNameColumn, widthNumberColumns);
   }
-  for ( unsigned iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
+  for ( int iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl << std::endl;
