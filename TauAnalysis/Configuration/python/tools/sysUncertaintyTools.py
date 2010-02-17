@@ -4,6 +4,7 @@ import re
 from PhysicsTools.PatAlgos.tools.helpers import listModules
 
 from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
+from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
 from TauAnalysis.Configuration.tools.analysisSequenceTools import removeAnalyzer
 
 from TauAnalysis.RecoTools.patLeptonSelection_cff import *
@@ -36,6 +37,39 @@ def removeModules(process, sequenceName, moduleNamePattern, pyNameSpace):
                 if moduleNamePattern_regexp.match(moduleName):
                     sequence.remove(module)
 
+def addBoolEventSelFlagProducer(process, moduleName, expSysUncertainties, sequenceName):
+
+    if hasattr(process, moduleName) and hasattr(process, sequenceName):
+
+        module = getattr(process, moduleName)
+        sequence = getattr(process, sequenceName)
+
+        for expSysUncertainty in expSysUncertainties:
+            module_systematic = copy.deepcopy(module)
+
+            flags = getattr(module, "flags")
+            flags_systematic = []
+
+            for flag in flags:
+                                
+                flagModuleLabel_systematic = composeModuleName(flag.getModuleLabel(), expSysUncertainty)
+                
+                if hasattr(process, flagModuleLabel_systematic):
+                    flag_systematic = copy.deepcopy(flag)
+                    flag_systematic.setModuleLabel(flagModuleLabel_systematic)
+                    flags_systematic.append(flag_systematic)
+                else:
+                    flags_systematic.append(flag)
+
+            setattr(module_systematic, "flags", cms.VInputTag(flags_systematic))
+
+            moduleName_systematic = composeModuleName(moduleName, expSysUncertainty)
+            setattr(process, moduleName_systematic, module_systematic)
+
+            module_systematic = getattr(process, moduleName_systematic)
+
+            sequence._seq = sequence._seq * module_systematic
+            
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
 # in PAT-tuple production
@@ -123,6 +157,13 @@ def enableSysUncertainties_runZtoMuTau(process):
     setattr(patMuTauPairSelConfiguratorLooseMuonIsolation, "systematics", muTauPairSystematics)
     process.selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolation.configure(process = process)
 
+    if hasattr(process, "isRecZtoMuTau"):        
+        expSysUncertainties = getSysUncertaintyNames(
+            [ muonSystematics,
+              tauSystematics ]
+        )
+        addBoolEventSelFlagProducer(process, "isRecZtoMuTau", expSysUncertainties, "selectZtoMuTauEvents")
+    
     if hasattr(process, "analyzeZtoMuTauEvents"):
         process.analyzeZtoMuTauEvents.estimateSysUncertainties = cms.bool(True)
     if hasattr(process, "analyzeZtoMuTauEvents_factorizedWithMuonIsolation"):
