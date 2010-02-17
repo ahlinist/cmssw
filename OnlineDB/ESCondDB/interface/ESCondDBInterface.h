@@ -1,7 +1,7 @@
 /***********************************************/
 /* ESCondDBInterface.h		       */
 /* 					       */
-/* $Id: ESCondDBInterface.h,v 1.20 2009/09/01 10:08:31 dellaric Exp $ 	        		       */
+/* $Id: ESCondDBInterface.h,v 1.1 2009/09/30 10:04:50 gcheveni Exp $ 	        		       */
 /* 					       */
 /* Interface to the ES Conditions DB.	       */
 /***********************************************/
@@ -94,6 +94,12 @@ class ESCondDBInterface : public EcalCondDBInterface {
    */
   ESMonRunIOV fetchESMonRunIOV(RunTag* runtag, std::string montag, run_t run, subrun_t monrun)
     throw(std::runtime_error);
+
+
+ std::string query_location(const int num) throw(std::runtime_error);
+
+ int query_side(const int num) throw(std::runtime_error);
+
 
  private:
 
