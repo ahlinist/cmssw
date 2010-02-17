@@ -87,7 +87,7 @@ private:
 	edm::InputTag triggerTag_; 
 	edm::InputTag muonTag_; 
 	bool StoreDeDxInfo_;
-	bool saveDoubleMu3TriggeredOnly_;
+	bool saveL1DoubleMuOpenTriggeredOnly_;
 	bool verbose_;
 
 	const double nominalJpsiMass;
