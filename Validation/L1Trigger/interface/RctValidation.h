@@ -78,6 +78,7 @@ private:
   int binsEta_;
   int binsPhi_;
   double matchDR_;
+  double egammaThreshold_;
 
   //MEs
   MonitorElement* egamma_rank;
@@ -91,9 +92,19 @@ private:
   MonitorElement* egamma_et_eff_denom;
   MonitorElement* egamma_eta_eff_num;
   MonitorElement* egamma_eta_eff_denom;
+  MonitorElement* egamma_phi_eff_num;
+  MonitorElement* egamma_phi_eff_denom;
+
+  MonitorElement* egamma_et_eff_num2D;
+  MonitorElement* egamma_et_eff_denom2D;
+
 
   MonitorElement* isoegamma_et_eff_num;
   MonitorElement* isoegamma_eta_eff_num;
+  MonitorElement* isoegamma_phi_eff_num;
+  MonitorElement* isoegamma_et_eff_num2D;
+
+
 
   MonitorElement* region_rank;
 
