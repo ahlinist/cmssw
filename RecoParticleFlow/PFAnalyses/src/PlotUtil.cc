@@ -440,7 +440,7 @@ TStyle* PlotUtil::makeSquashedStyle(const std::string& name) {
 	return rStyle;
 }
 
-bool PlotUtil::streamTH1ToGraphFile(std::string filename, TH1* histo, bool recreate) {
+bool PlotUtil::streamTH1ToGraphFile(std::string filename, TH1* histo, bool recreate, bool statErrors) {
 	//If recreate = false, check the file doesn't already exist first
 	if (!recreate) {
 		fstream fin;
@@ -457,7 +457,11 @@ bool PlotUtil::streamTH1ToGraphFile(std::string filename, TH1* histo, bool recre
 	if (file.is_open()) {
 		unsigned entries = histo->GetNbinsX();
 		for (unsigned entry(1); entry < entries + 1; ++entry) {
-			file << histo->GetBinCenter(entry) << "\t" << histo->GetBinContent(entry) << "\n";
+			//if statErrors, also include error
+			if(statErrors)
+				file << histo->GetBinCenter(entry) << "\t" << histo->GetBinContent(entry) << "\t" << histo->GetBinError(entry) << "\n";
+			else
+				file << histo->GetBinCenter(entry) << "\t" << histo->GetBinContent(entry) << "\n";
 		}
 		file.close();
 		return true;

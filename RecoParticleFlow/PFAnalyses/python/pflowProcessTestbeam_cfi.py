@@ -11,11 +11,12 @@ particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecalRecHitMaker", "EcalRecH
 # Don't use PS for PFlow - the calibration scale is unknown and the rechits are not aligned
 particleFlowRecHitPS.ecalRecHitsES =  cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
 
-particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("hbhereco")
+particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("pflowCalibHcalRechits", "HBHERechitsCalib")
 particleFlowRecHitHCAL.caloTowers = cms.InputTag("")
 particleFlowRecHitHCAL.isTestbeam = cms.bool(True)
 particleFlowRecHitECAL.crossBarrelEndcapBorder = cms.bool(False)
 particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
+particleFlowRecHitHCAL.HCAL_Calib = cms.bool(False)
 #particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
 #particleFlowClusterHCAL.thresh_Barrel = cms.double(0.6)
 

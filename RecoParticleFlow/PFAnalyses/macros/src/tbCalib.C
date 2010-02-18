@@ -1070,6 +1070,8 @@ computeBarrelCoefficients(const char* calibFile) {
 				break;
 			}
 		}
+		
+
 	//}
 	//threshE = threshH=0.1;
 
@@ -1179,7 +1181,7 @@ computeBarrelCoefficients(const char* calibFile) {
 	//fb->SetParameters(1.2,0.5,-1,50,1.2,30); // 2.5
 	//fb->SetParameters(1.2,0.5,-1.5,40,1.2,30); // 3.0
 	fb->SetParameters(1.0, 0.2, 0.0, 60, 0.4, 53); // NEW
-	fb->FixParameter(2, 0.0);
+	//fb->FixParameter(2, 0.0);
 	grb->Fit("fb", "", "", 2, 301);
 	grb->Fit("fb", "W", "", 2, 301);
 
@@ -1308,12 +1310,12 @@ computeBarrelCoefficients(const char* calibFile) {
 	 fa0->Draw("same");
 	 */
 
-	TH2F* result = new TH2F("result", "Resultat", 1000, 0, 1000., 150, -1.5, 1.5);
+	TH2F* result = new TH2F("result", "Resultat", 301, 0, 301., 150, -1.5, 1.5);
 	TH2F* resultCol = new TH2F("resultCol", "Resultat", 1000, 0, 1000., 150, -1.5, 1.5);
 	TH2F* resultJam = new TH2F("resultJam", "Resultat", 1000, 0, 1000., 150, -1.5, 1.5);
 	TH2F* resultRaw = new TH2F("resultRaw", "Resultat", 1000, 0, 1000., 150, -1.5, 1.5);
 
-	TH2F* resultE = new TH2F("resultE", "Resultat", 1000, 0, 1000., 150, -1.5, 1.5);
+	TH2F* resultE = new TH2F("resultE", "Resultat", 301, 0, 301., 150, -1.5, 1.5);
 	TH2F* resultColE = new TH2F("resultColE", "Resultat", 1000, 0, 1000., 150, -1.5, 1.5);
 	TH2F* resultJamE = new TH2F("resultJamE", "Resultat", 1000, 0, 1000., 150, -1.5, 1.5);
 	TH2F* resultRawE = new TH2F("resultRawE", "Resultat", 1000, 0, 1000., 150, -1.5, 1.5);
@@ -1359,7 +1361,7 @@ computeBarrelCoefficients(const char* calibFile) {
 		fits.push_back(new Fit(bin, bin + 20.));
 	}
 
-	//unsigned nEntries = TT->GetEntriesFast();
+	nEntries = TT->GetEntriesFast();
 	for (unsigned entry = 0; entry < nEntries; ++entry) {
 		if (entry / 10000* 10000 == entry )
 			cout << "Process entry " << entry << endl;
@@ -1384,15 +1386,15 @@ computeBarrelCoefficients(const char* calibFile) {
 		//  h *= 1.10;
 		// }
 
-		if (eta < etamin || eta > etamax)
-			continue;
-		if (e + h < 0.5)
-			continue;
-		if (t < 1.)
-			continue;
-		// if (e!=0.) continue;
-		if (h == 0.)
-			continue;
+// 		if (eta < etamin || eta > etamax)
+// 			continue;
+// 		if (e + h < 0.5)
+// 			continue;
+// 		if (t < 1.)
+// 			continue;
+// 		// if (e!=0.) continue;
+// 		if (h == 0.)
+// 			continue;
 
 		double a = h > 0. ? fa->Eval(t) : fa->Eval(t);
 		double b = e > 0. ? fb->Eval(t) : fc->Eval(t);
@@ -1409,14 +1411,16 @@ computeBarrelCoefficients(const char* calibFile) {
 			//if ( fits[ifit]->fill(a*e,thresh+b*h,t,eta,1) ) break;
 		}
 
-		result->Fill(t, (eCorr - t) / t);
-		if (e > 0.)
-			if (h > 0.)
-				resultE->Fill(t, (eCorr - t) / t);
+		result->Fill(t, eCorr/ t);
+		if (e > 0.) {
+			if (h > 0.) {
+				//std::cout << t << "\t" << eCorr/t << "\n";
+				resultE->Fill(t, eCorr / t);
+			}
 			else
-				resultE0->Fill(t, (eCorr - t) / t);
-		else
-			resultH->Fill(t, (eCorr - t) / t);
+				resultE0->Fill(t, eCorr / t);
+		} else
+			resultH->Fill(t, eCorr  / t);
 
 		etadep->Fill(fabs(ntuple->eta), (eCorr - t) / t);
 		if (e > 0.)
@@ -1462,16 +1466,30 @@ computeBarrelCoefficients(const char* calibFile) {
 			etadepJam_100_1000->Fill(fabs(ntuple->eta), (eCorr - t) / t);
 
 		eCorr = ntuple->Ecal + ntuple->Hcal;
-		resultRaw->Fill(t, (eCorr - t) / t);
+		resultRaw->Fill(t, eCorr  / t);
 		if (e > 0.)
 			if (h > 0.)
-				resultRawE->Fill(t, (eCorr - t) / t);
+				resultRawE->Fill(t, eCorr  / t);
 			else
-				resultRawE0->Fill(t, (eCorr - t) / t);
+				resultRawE0->Fill(t, eCorr / t);
 		else
-			resultRawH->Fill(t, (eCorr - t) / t);
+			resultRawH->Fill(t, eCorr / t);
 
 	}
+
+
+	result->Draw("colz");
+	gPad->Print("result.png");
+	result->SaveAs("result.C");
+	resultE->Draw("colz");
+	resultE->SaveAs("resultE.C");
+	gPad->Print("resultE.png");
+	
+	resultRawE->SaveAs("resultRawE.C");
+	resultRaw->SaveAs("resultRaw.C");
+	resultRawH->SaveAs("resultRawH.C");
+	
+	
 
 	if (true)
 		return 0;
@@ -1607,6 +1625,8 @@ computeBarrelCoefficients(const char* calibFile) {
 	grbEta2->SetLineColor(6);
 	grbEta2->SetLineWidth(2);
 	grbEta2->Draw("P");
+	
+
 
 	TH2F* resultEta = new TH2F("resultEta", "Resultat eta", 1000, 0, 1000., 150, -1.5, 1.5);
 	TH2F* resultEtaE0 = new TH2F("resultEtaE0", "Resultat eta", 1000, 0, 1000., 150, -1.5, 1.5);
@@ -1801,7 +1821,10 @@ computeBarrelCoefficients(const char* calibFile) {
 void tbCalib() {
 
 	isEndcaps = true;
-	computeBarrelCoefficients("../../../PFClusterTools/test/FullPions_endcap_noExcesses.csv");
+	computeBarrelCoefficients("../../../PFClusterTools/test/TBPions_endcaps_BlockEcalKludge_pionCalib.csv");
+	
+	//threshH = 1.2;
+	//threshE = 0.6;
 
 	//isEndcaps=true;
 	//computeBarrelCoefficients("../../../PFClusterTools/test/FastPions_endcap_noExcesses.csv");

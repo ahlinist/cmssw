@@ -29,8 +29,8 @@ process.famosSimHits.MaterialEffects.MultipleScattering = False
 process.famosSimHits.MaterialEffects.NuclearInteraction = False
 process.famosSimHits.Calorimetry.UnfoldedMode = True
 
-#process.load("SimCalorimetry.HcalZeroSuppressionProducers.hcalDigisRealistic_cfi")
-#process.load("SimCalorimetry.EcalSelectiveReadoutProducers.ecalDigis_cfi")
+process.load("SimCalorimetry.HcalZeroSuppressionProducers.hcalDigisRealistic_cfi")
+process.load("SimCalorimetry.EcalSelectiveReadoutProducers.ecalDigis_cfi")
 process.simEcalDigis.srpBarrelLowInterestChannelZS = cms.double(-1.e9)
 process.simEcalDigis.srpEndcapLowInterestChannelZS = cms.double(-1.e9)
 #process.simHcalDigis.HBlevel = cms.int32(-8000)

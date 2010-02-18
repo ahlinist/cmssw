@@ -71,6 +71,7 @@ if options.endcapMode <> 0:
     process.extraction.RawRecHitsEcalES = cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
     process.faketracks.endcapMode = cms.bool(True)
     process.particleFlowRecHitHCAL.isEndcap2007 = cms.bool(True)
+    process.pflowCalibHcalRechits.isEndcap2007 = cms.bool(True)
     process.extraction.isEndcap2007 = cms.bool(True)
     process.extraction.stripAnomalousEvents =cms.uint32(0)
     process.particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("")

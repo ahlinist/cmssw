@@ -108,7 +108,7 @@ public:
 
 	//Loops over histogram and writes out literal entries of the form
 	//<Bin center>	|	<Content>
-	bool streamTH1ToGraphFile(std::string filename, TH1* histo, bool recreate = true);
+	bool streamTH1ToGraphFile(std::string filename, TH1* histo, bool recreate = true, bool statErrors = false);
 
 	bool streamTH2ToGraphFile(std::string filename, TH2* histo, bool recreate = true);
 

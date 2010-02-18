@@ -47,8 +47,8 @@ else:
 files = []
 
 for line in result:
-    file = line.split('\n')
-    item = file[1]
+    file = line.split('\n') #now unnecessary?!
+    item = line
     staged = True
     filename = item.split(' ')
     if filename[1] == 'SUBREQUEST_FAILED':

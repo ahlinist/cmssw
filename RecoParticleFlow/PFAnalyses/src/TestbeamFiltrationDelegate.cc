@@ -145,8 +145,10 @@ ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleC
 					LogInfo("TestbeamFiltrationDelegate") << "\tIt's a proton/kaon.\n";
 			}
 			if (electron == DEFINITEYES || proton == DEFINITEYES) {
-				if (saveAllCleanParticles_)
+				if (saveAllCleanParticles_) {
 					thisEventPasses_ = true;
+					LogDebug("TestbeamFiltrationDelegage") << "\tPassing non-pion\n";
+				}
 			}
 		}
 	}

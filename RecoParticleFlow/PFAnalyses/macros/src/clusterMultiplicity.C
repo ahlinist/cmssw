@@ -15,9 +15,9 @@
 using namespace std;
 using namespace pftools;
 	
-bool endcap(false);
-int data(0);
-int full(1);
+bool endcap(true);
+int data(1);
+int full(0);
 int fast(0);
 
 bool operator<(const CalibratableElement& ce1, const CalibratableElement& ce2) {
@@ -166,13 +166,13 @@ void clusterMultiplicity() {
 	if(endcap) {
 		energies = endcap_energies;
 		if(data) {
-			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_endcaps_0T_tbCalib_BlockEcalKludge.root");
-			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_endcaps_0T_tbCalib_BlockEcalKludge.root");
-			directory = "plots/endcap_data";
+			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_endcaps_0T_tbCalib_BlockEcalKludge_PionCalib.root");
+			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_endcaps_0T_tbCalib_BlockEcalKludge_PionCalib.root");
+			directory = "plots/endcap_pionCalib";
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");
-			chain->Add("/tmp/ballin/Dipion_Tree_All_10k_endcap_noExcesses_full_4T.root");
+			chain->Add("/tmp/ballin/Dipion_Tree_All_10k_endcap_noExcesses_full_4T");
 			directory = "plots/endcap_full";
 		}
 		else if(fast) {
