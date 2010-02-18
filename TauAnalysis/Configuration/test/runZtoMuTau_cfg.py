@@ -85,6 +85,7 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoMuTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
+#__#batchMode#
 #
 #--------------------------------------------------------------------------------
 
@@ -177,8 +178,7 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
-#__#patTupleProduction_line01#
-#__#patTupleProduction_line02#
+#__#patTupleProduction#
 if not hasattr(process, "batchMode"):
     process.p.replace(process.producePatTupleZtoMuTauSpecific, process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
 #--------------------------------------------------------------------------------
