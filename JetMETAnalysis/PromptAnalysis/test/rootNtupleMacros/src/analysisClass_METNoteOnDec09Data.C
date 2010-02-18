@@ -515,6 +515,7 @@ void analysisClass::Loop()
   float Applyhfpfcleaning = getPreCutValue1("applyhfpfcleaning");
   float PrintOut = getPreCutValue1("printout");
   float PrintOutCleaned = getPreCutValue1("printoutCleaned");
+  float HFEnergyCut = getPreCutValue1("HFEnergyCut");
 
   vector<int> HFPMTHitVeto_PF0_tc1;
   vector<int> HFPMTHitVeto_PF1_tc0;
@@ -644,6 +645,49 @@ void analysisClass::Loop()
       //#####################
       //## Reco-based filters
       //#####################
+
+      //pass_HFEnergyCut
+      int pass_HFEnergyCut = 0;
+      int pass_HFEnergyCut_Plus = 0;
+      int pass_HFEnergyCut_Minus = 0;
+      
+      for (int i = 0; i<int(CaloTowersEmEt->size()); i++)
+	{
+
+	  if( fabs(CaloTowersIeta->at(i)) > 29 ) //HF only
+	    {
+	 
+	      TVector3 * towerL = new TVector3;
+	      TVector3 * towerS = new TVector3;
+	      towerL->SetPtEtaPhi(CaloTowersEmEt->at(i)+0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
+	      towerS->SetPtEtaPhi(0.5*CaloTowersHadEt->at(i), CaloTowersEta->at(i), CaloTowersPhi->at(i));
+
+	      // energy on plus side	    
+	      if( CaloTowersIeta->at(i) > 0 && ( towerL->Mag() + towerS->Mag() ) > HFEnergyCut )
+		{
+		  pass_HFEnergyCut_Plus=1;		  
+		  if( pass_HFEnergyCut_Plus == 1 && pass_HFEnergyCut_Minus == 1 )
+		    {
+		      pass_HFEnergyCut = 1;
+		      break;
+		    }
+		}
+
+	      // energy on minus side	    
+	      if( CaloTowersIeta->at(i) < 0 && ( towerL->Mag() + towerS->Mag() ) > HFEnergyCut )
+		{
+		  pass_HFEnergyCut_Minus=1;
+		  if( pass_HFEnergyCut_Plus == 1 && pass_HFEnergyCut_Minus == 1 )
+		    {
+		      pass_HFEnergyCut = 1;
+		      break;
+		    }
+		}
+				
+	    }//end loop over calotowers in HF
+
+	}//end loop over calotowers
+      
 
       //pass_GoodVertex 
       //https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe
@@ -1229,6 +1273,7 @@ void analysisClass::Loop()
       fillVariableWithValue("pass_PhysicsBit", pass_PhysicsBit);
       fillVariableWithValue("pass_GoodVertex", pass_GoodVertex);
       fillVariableWithValue("pass_MonsterTRKEventVeto", pass_MonsterTRKEventVeto);
+      fillVariableWithValue("pass_HFEnergyCut", pass_HFEnergyCut);
 
       //fillVariableWithValue("pass_ECALSpikesVeto_caloMET", pass_ECALSpikesVeto_caloMET);
       fillVariableWithValue("pass_ECALSpikesVeto_tcMET", pass_ECALSpikesVeto_tcMET);

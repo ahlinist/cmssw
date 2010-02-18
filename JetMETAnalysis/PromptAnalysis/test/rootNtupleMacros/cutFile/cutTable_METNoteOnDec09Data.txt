@@ -16,6 +16,7 @@
 towerETcut            0.3          -                    -               -               -1
 subDetTowerETcut      0.3          -                    -               -               -1
 applyhfpfcleaning     0		   -			-		-		-1
+HFEnergyCut	      3		   -			-		-		-1
 ## NOTE: the code runs a factor of two faster if "applyhfpfcleaning" is set to 0
 printout	      1		   -			-		-		-1
 printoutCleaned       1            -                    -               -               -1
@@ -46,6 +47,7 @@ pass_BSC_BeamHaloVeto           0            1                  -               
 pass_GoodRunList                0            1                  -               -               0       2 0 2
 pass_GoodVertex                 0            1                  -               -               0       2 0 2
 pass_MonsterTRKEventVeto        0            1                  -               -               0       2 0 2
+#pass_HFEnergyCut		0	     1			-		-		0	2 0 2
 pass_HFPMTHitVeto_tcMET		0	     1			-		-		1	2 0 2
 pass_ECALSpikesVeto_tcMET	0	     1			-		-               1	2 0 2 
 #
