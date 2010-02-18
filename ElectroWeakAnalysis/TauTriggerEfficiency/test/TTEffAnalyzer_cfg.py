@@ -23,8 +23,8 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#        "rfio:/castor/cern.ch/user/s/slehti/testData/tteffHLT_999.root"
-	"file:/tmp/slehti/tteffHLT_999.root"
+        "rfio:/castor/cern.ch/user/s/slehti/testData/tteffHLT_999.root"
+#	"file:/tmp/slehti/tteffHLT_999.root"
     )
 )
 
