@@ -311,32 +311,24 @@ void EventDelegate::extractEERecHits(const EcalRecHitCollection& ecalRechits,
 	for (std::vector<EcalRecHit>::const_iterator erIt = ecalRechits.begin(); erIt
 			!= ecalRechits.end(); ++erIt) {
 
-		cout << __LINE__ << endl;
 		const EcalRecHit& erh = *erIt;
-		cout << __LINE__ << endl;
 		const CaloCellGeometry* thisCell = geometry->getGeometry(erh.detid());
-		cout << __LINE__ << endl;
 		if (thisCell) {
-			cout << __LINE__ << endl;
 			//compute delta R
 			cout << "This cell: " << thisCell->getPosition().eta() << ", " << thisCell->getPosition().eta() << endl;
 			double dR = pftools::deltaR(thisCell->getPosition().eta(),
 					targetEta, thisCell->getPosition().phi(), targetPhi);
-			cout << __LINE__ << endl;
 			if (dR < deltaRRechitsToTrack_ || deltaRRechitsToTrack_ <= 0) {
 				CalibratableElement ce(erh.energy(),
 						thisCell->getPosition().eta(),
 						thisCell->getPosition().phi(), PFLayer::ECAL_ENDCAP, 0,
 						erh.time());
 				calib_->tb_ecal_.push_back(ce);
-				cout << __LINE__ << endl;
 
 			}
-			cout << __LINE__ << endl;
 		} else
 			LogWarning("EventDelegate") << ": failed to decode ECAL rechit.\n";
 	}
-	cout << __LINE__ << endl;
 
 }
 
