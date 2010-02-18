@@ -683,7 +683,10 @@ void analysisClass::Loop()
 		      break;
 		    }
 		}
-				
+			
+	      delete towerL;
+	      delete towerS;
+	
 	    }//end loop over calotowers in HF
 
 	}//end loop over calotowers
