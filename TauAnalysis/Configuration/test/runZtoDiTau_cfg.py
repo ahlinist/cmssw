@@ -64,8 +64,6 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/r/rahmat/hk/rahmat/QCDPt15_GenTrack12_FASTSIM/RAHMAT_QCD/972a8d071c1d3694edbf11929c935ed9/qcdpt15Skim_1.root',
-        #'rfio:/castor/cern.ch/user/r/rahmat/hk/rahmat/QCDPt15_GenTrack12_FASTSIM/RAHMAT_QCD/972a8d071c1d3694edbf11929c935ed9/qcdpt15Skim_2.root'
         'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
         'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
     )
@@ -81,6 +79,7 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoDiTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoDiTauPlots.outputFileName = #plotsOutputFileName#
+#__#batchMode#
 #
 #--------------------------------------------------------------------------------
 
@@ -155,8 +154,7 @@ process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.pro
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
-#__#patTupleProduction_line01#
-#__#patTupleProduction_line02#
+#__#patTupleProduction#
 if not hasattr(process, "batchMode"):
     process.p.replace(process.producePatTupleZtoDiTauSpecific, process.producePatTuple + process.producePatTupleZtoDiTauSpecific)
 #--------------------------------------------------------------------------------

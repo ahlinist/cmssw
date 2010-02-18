@@ -78,6 +78,7 @@ process.source = cms.Source("PoolSource",
 #__process.source.fileNames = #inputFileNames#
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.saveWtoTauNuPlots.outputFileName = #plotsOutputFileName#
+#__#batchMode#
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

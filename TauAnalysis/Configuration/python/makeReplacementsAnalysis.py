@@ -103,12 +103,12 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
 
     # check that the input file type option has been defined
     inputFileNames = None
-    patTupleProduction_line01 = None
+    patTupleProduction = None
     if inputFileType is None:
         raise ValueError("Undefined inputFileType option !!")
     if inputFileType == "RECO/AOD":
         inputFileNames = "fileNames" + channel + "_" + sample
-        patTupleProduction_line01 = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
+        patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
     elif inputFileType == "PATTuple":
         # check that the input filename path option has been defined
         if inputFilePath is None:
@@ -121,12 +121,11 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
         if sample.find("_part") != -1:
 	    inputFileNames = "cms.untracked.vstring(" + inputFileNames[:inputFileNames.rfind("_part")]
 	    inputFileNames += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "')))"
-        patTupleProduction_line01 = ""
+        patTupleProduction = ""
     else:
         raise ValueError("Invalid inputFileType parameter = " + inputFileType + " !!")
     replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
-    replaceStatements_retVal.append("patTupleProduction_line01 = " + patTupleProduction_line01)
-    replaceStatements_retVal.append("patTupleProduction_line02 = setattr(process, 'batchMode', cms.PSet())")
+    replaceStatements_retVal.append("patTupleProduction = " + patTupleProduction)
 
     # replace genPhaseSpaceCut and plotsOutputFileName parameters
     # (ommit "_part.." suffix of sample name in case of processes split
@@ -141,6 +140,8 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
         plotsOutputFileName += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
     replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
     replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
+
+    replaceStatements_retVal.append("batchMode = setattr(process, 'batchMode', cms.PSet())")
 
     replacements_retVal = "; ".join(replaceStatements_retVal)
 
