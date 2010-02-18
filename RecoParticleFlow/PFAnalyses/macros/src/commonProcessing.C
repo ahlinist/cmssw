@@ -36,8 +36,9 @@
 #include "RecoParticleFlow/PFAnalyses/interface/PlotUtil.h"
 
 bool endcap(true);
-int data(1);
-int full(0);
+bool subtractNeutrals(false);
+int data(0);
+int full(1);
 int fast(0);
 using namespace std;
 class CommonProcessing {
@@ -131,6 +132,9 @@ void CommonProcessing::reset(TTree* t, std::string graphicsFile, std::string mac
 
 void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 	TStyle* rStyle = util_.makeSquashedStyle("mipStyle");
+	
+	rStyle->SetOptFit(1111);
+	rStyle->SetOptStat("1111");
 	rStyle->cd();
 
 	util_.newPage();
@@ -183,6 +187,7 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		tree_->Draw(qry.c_str(), cut.c_str());
 		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
 		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Sumw2();
 		tbNeutralENoEcal->Scale(maxNorm);
 
 		util_.streamTH1ToGraphFile(string(directory_).append("/hits_").append(obj2str(energy)).append("GeV_mip.dat"),
@@ -193,8 +198,10 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		tbGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			tbGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
-			tbReso.addPoint(energy, 0, gaus.second, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(2));
+			TF1* f = tbNeutralENoEcal->GetFunction("stableGaus");
+			tbGraph.addPoint(energy, 0, gaus.first, f->GetParError(1) * f->GetChisquare()/ f->GetNDF());
+			double error = sqrt(pow(f->GetParError(2)/gaus.second, 2) + pow(f->GetParError(1)/gaus.first, 2)) * gaus.second/gaus.first * f->GetChisquare()/ f->GetNDF();
+			tbReso.addPoint(energy, 0, gaus.second/gaus.first, error);
 		}
 
 
@@ -207,13 +214,16 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 
 		TH1* reso = util_.getType<TH1>("reso");
 		maxNorm = 1.0 / reso->GetBinContent(reso->GetMaximumBin());
+		reso->Sumw2();
 		reso->Scale(maxNorm);
 
 		pair<double, double> resgaus = util_.fitStabilisedGaussian(reso);
 
 		gaussianess = fabs(resgaus.first / reso->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			tbResBoth.addPoint(energy, 0, resgaus.second, reso->GetFunction("stableGaus")->GetParError(2));
+			TF1* f = reso->GetFunction("stableGaus");
+			double error = sqrt(pow(f->GetParError(2)/resgaus.second, 2) + pow(f->GetParError(1)/resgaus.first, 2)) * resgaus.second/resgaus.first * f->GetChisquare()/ f->GetNDF();
+			tbResBoth.addPoint(energy, 0, resgaus.second/resgaus.first, error);
 		}
 	}
 
@@ -247,6 +257,7 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		tree_->Draw(qry.c_str(), cut.c_str());
 		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
 		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Sumw2();
 		tbNeutralENoEcal->Scale(maxNorm);
 		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal, 0.1, 1.5);
 		clusterGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
@@ -271,13 +282,19 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		//		std::string
 		//				cut(
 		//						"tb_energyEcal_ < 0.5 && cand_type_==5 && int(sim_energyEvent_) == ");
-		std::string cut("cluster_numEcal_==0 && int(sim_energyEvent_) == ");
+		std::string cut("cluster_numHcal_ > 0 && cluster_numEcal_==0 && int(sim_energyEvent_) == ");
+		std::string qry("(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>");
+		if(subtractNeutrals) {
+			cut = "(cand_energyHcal_ + cand_energyEcal_ - cand_energyNeutralHad_)/sim_energyEvent_ > 0.1 && cluster_numHcal_ > 0 && cluster_numEcal_==0 && int(sim_energyEvent_) == ";
+			qry = "(cand_energyHcal_ + cand_energyEcal_ - cand_energyNeutralHad_)/sim_energyEvent_>>";
+			
+		}
+		
 		cut.append(obj2str(energy));
 
 		std::string histoName("candNeutralENoEcal");
 		histoName.append(obj2str(energy));
 
-		std::string qry("(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>");
 		qry.append(histoName);
 		qry.append("(170, -1.2, 2.2)");
 		std::string poshHistoName(obj2str(energy));
@@ -286,18 +303,22 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		tree_->Draw(qry.c_str(), cut.c_str());
 		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
 		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Sumw2();
 		tbNeutralENoEcal->Scale(maxNorm);
 		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal, 0.1, 1.5);
 		candGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			candGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
-			candReso.addPoint(energy, 0, gaus.second, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(2));
+			
+			TF1* f = tbNeutralENoEcal->GetFunction("stableGaus");
+			candGraph.addPoint(energy, 0, gaus.first, f->GetParError(1)* f->GetChisquare()/ f->GetNDF());
+			double error = sqrt(pow(f->GetParError(2)/gaus.second, 2) + pow(f->GetParError(1)/gaus.first, 2)) * gaus.second/gaus.first * f->GetChisquare()/ f->GetNDF();
+			candReso.addPoint(energy, 0, gaus.second/gaus.first, error);
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
 		util_.streamTH1ToGraphFile(string(directory_).append("/cands_").append(obj2str(energy)).append("GeV_mip.dat"),
-				tbNeutralENoEcal, true);
+				tbNeutralENoEcal, true, true);
 
 
 	}
@@ -542,6 +563,8 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		tree_->Draw(qry.c_str(), cut.c_str());
 		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
 		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Sumw2();
+		
 		tbNeutralENoEcal->Scale(maxNorm);
 
 
@@ -552,8 +575,10 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		tbGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			tbGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
-			tbReso.addPoint(energy, 0, gaus.second, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(2));
+			TF1* f = tbNeutralENoEcal->GetFunction("stableGaus");
+			tbGraph.addPoint(energy, 0, gaus.first, f->GetParError(1)* f->GetChisquare()/ f->GetNDF());
+			double error = sqrt(pow(f->GetParError(2)/gaus.second, 2) + pow(f->GetParError(1)/gaus.first, 2)) * gaus.second/gaus.first * f->GetChisquare()/ f->GetNDF();
+			tbReso.addPoint(energy, 0, gaus.second/gaus.first, error);
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
@@ -566,6 +591,7 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		tree_->Draw(qryEcal.c_str(), "int(sim_energyEvent_)==50");
 		TH1* ecal = util_.getType<TH1> (ecalActivity);
        		maxNorm = 1.0 / ecal->GetBinContent(ecal->GetMaximumBin());
+			ecal->Sumw2();
 	        ecal->Scale(maxNorm);
 
 		util_.streamTH1ToGraphFile(string(directory_).append("/ecalActivity.dat"), ecal, true);
@@ -618,6 +644,7 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		tree_->Draw(qry.c_str(), cut.c_str());
 		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
 		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Sumw2();
 		tbNeutralENoEcal->Scale(maxNorm);
 		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal, 0.1, 1.5);
 		clusterGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
@@ -644,16 +671,20 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		//						"tb_energyEcal_ < 0.5 && cand_type_==5 && int(sim_energyEvent_) == ");
 
 		string cut;
-		cut.append("cluster_numEcal_>0 && cluster_numHcal_>0 && int(sim_energyEvent_) == ");
-
+		cut.append("cluster_numEcal_>0 && cluster_numHcal_!=0 && int(sim_energyEvent_) == ");
+		string qry = "(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>";
+		if(subtractNeutrals) {
+			cut = "(cand_energyHcal_ + cand_energyEcal_ - cand_energyNeutralHad_ - cand_energyNeutralEM_)/sim_energyEvent_ > 0.1 && cluster_numHcal_ > 0 && cluster_numEcal_==0 && int(sim_energyEvent_) == ";
+			qry = "(cand_energyHcal_ + cand_energyEcal_ - cand_energyNeutralHad_ - cand_energyNeutralEM_)/sim_energyEvent_>>";
+			
+		}
+		//Use cut to just compute energy associated with charged hadrons
+		//std::string qry("(cand_energyHcal_ + cand_energyEcal_-cand_energyNeutralEM_-cand_energyNeutralHad_)/sim_energyEvent_>>");
+		//ALL PF candidate contribute
 		cut.append(obj2str(energy));
 
 		std::string histoName("candIntEcal");
 		histoName.append(obj2str(energy));
-		//Use cut to just compute energy associated with charged hadrons
-		//std::string qry("(cand_energyHcal_ + cand_energyEcal_-cand_energyNeutralEM_-cand_energyNeutralHad_)/sim_energyEvent_>>");
-		//ALL PF candidate contribute
-		string qry = "(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>";
 		qry.append(histoName);
 		qry.append("(170, -1.2, 2.2)");
 		std::string poshHistoName(obj2str(energy));
@@ -663,18 +694,21 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
 		//tbNeutralENoEcal->Scale(1.0/tbNeutralENoEcal->Integral());
 		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Sumw2();
 		tbNeutralENoEcal->Scale(maxNorm);
 		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal, 0.1, 1.5);
 		candGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			candGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
-			candReso.addPoint(energy, 0, gaus.second, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(2));
+			TF1* f = tbNeutralENoEcal->GetFunction("stableGaus");
+			candGraph.addPoint(energy, 0, gaus.first, f->GetParError(1)* f->GetChisquare()/ f->GetNDF());
+			double error = sqrt(pow(f->GetParError(2)/gaus.second, 2) + pow(f->GetParError(1)/gaus.first, 2))  * gaus.second/gaus.first * f->GetChisquare()/f->GetNDF();
+			candReso.addPoint(energy, 0, gaus.second/gaus.first, error);
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
 		util_.streamTH1ToGraphFile(string(directory_).append("/cands_").append(obj2str(energy)).append("GeV_int.dat"),
-				tbNeutralENoEcal, true);
+				tbNeutralENoEcal, true, true);
 
 
 	}
@@ -804,6 +838,7 @@ void commonProcessing() {
 	energies.push_back(300);
 
 	std::vector<int> endcap_energies;
+	endcap_energies.push_back(3);
 	endcap_energies.push_back(4);
 	endcap_energies.push_back(5);
 	endcap_energies.push_back(6);
@@ -830,13 +865,14 @@ void commonProcessing() {
 // 			chain->Add("/tmp/ballin/PFlowTB_Tree_All_endcap_tbCalib.root");
 // 			directory = "plots/endcap_tbCalib";
 
-			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_endcaps_0T_tbCalib_BlockEcalKludge.root");
-			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_endcaps_0T_tbCalib_BlockEcalKludge.root");
-			directory = "plots/endcap_data";
+			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_endcaps_0T_tbCalib_BlockEcalKludge_PionCalib.root");
+			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_endcaps_0T_tbCalib_BlockEcalKludge_PionCalib.root");
+			directory = "plots/endcap_pionCalib";
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");
 			chain->Add("/tmp/ballin/Dipion_Tree_All_10k_endcap_noExcesses_full_4T.root");
+			//chain->Add("/tmp/ballin/Dipion_Tree_All_10k_endcaps_4T_slack_full.root");
 			directory = "plots/endcap_full";
 		}
 		else if(fast) {
@@ -857,6 +893,7 @@ void commonProcessing() {
 			chain = new TChain("extractionToTree/Extraction");
 			//chain->Add("/tmp/ballin/Dipion_Tree_full_All_barrel_noZspSr_4T.root");
 			chain->Add("/tmp/ballin/Dipion_Tree_All_10k_barrel_noExcesses_full_4T.root");
+			
 			directory = "plots/barrel_full";
 		}
 		else if(fast) {

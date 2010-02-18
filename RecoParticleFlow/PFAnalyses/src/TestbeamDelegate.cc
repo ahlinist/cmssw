@@ -179,6 +179,9 @@ bool TestbeamDelegate::processEvent(const edm::Event& event, const edm::EventSet
 	else if (decision.type_ == ParticleFiltrationDecision::OTHER || decision.type_ == ParticleFiltrationDecision::NOISE) {
 		calib_->tb_pdg_ = 0;
 	}
+	
+	if(calib_->tb_pdg_ != thisRun_->particlePDG_)
+		LogInfo("TestbeamDelegate") << "Processing non-pion\n";
 
 	calib_->tb_run_ = thisRun_->runNumber_;
 	calib_->tb_eta_ = thisRun_->tableEta_;
@@ -238,7 +241,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event, const edm::EventSet
 	}
 
 	if (!isEndcap2007_) {
-		//extractEBRecHits(**rawRecHitsEcalEB_, ecalBarrelGeometry, targetEcalEta, targetEcalPhi);
+		extractEBRecHits(**rawRecHitsEcalEB_, ecalBarrelGeometry, targetEcalEta, targetEcalPhi);
 		extractHcalRecHits(**rawRecHitsHcal_, hcalBarrelGeometry, thisRun_->hcalEta_, thisRun_->hcalPhi_);
 	}
 	if (isEndcap2007_) {
@@ -381,7 +384,7 @@ void TestbeamDelegate::extractHcalRecHits(const HBHERecHitCollection& hcalRechit
 
 		if (iphiNew <= 0)
 			iphiNew += 72;
-		newDetId = new HcalDetId(detid.subdet(), ietaNew, iphiNew, depth);
+		newDetId = new HcalDetId(detid.subdet(), ieta, iphi, depth); //DISABLE TRANSFORMATION!!
 		if (newDetId == 0) {
 			LogWarning("TestbeamDelegate") << ": couldn't create new HcalDetId.\n";
 			continue;

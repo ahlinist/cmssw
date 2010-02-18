@@ -44,13 +44,18 @@ extraction = cms.EDAnalyzer("ExtractionAnalyzer",
     calibratable.TestbeamDelegate
 )
 
+pflowCalibHcalRechits = cms.EDProducer("HcalCalibRechitProducer",
+    HBHEUncalColl = cms.InputTag("hbhereco"),
+    isEndcap2007 = cms.bool(False)
+)
+
 pflowCalibEcalRechits = cms.EDProducer("EcalCalibRechitProducer",
     EEUncalColl=cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEE"),
     EENoisesFile=cms.untracked.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/EE_noises.txt"),
     EECoeffsFile=cms.untracked.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/ee_calib_test.txt"),
 )
 
-
+towerMakerPF.hbheInput = cms.InputTag("pflowCalibHcalRechits", "HBHERechitsCalib")
 towerMakerPF.ecalInputs = cms.VInputTag(
     cms.InputTag("pflowCalibEcalRechits","EcalRecHitsEB"), 
     cms.InputTag("pflowCalibEcalRechits","EcalRecHitsEE"))
@@ -59,10 +64,12 @@ towerMakerPF.hoInput=cms.InputTag("");
 towerMakerPF.UseHO = cms.bool(False)
 towerMakerPF.AllowMissingInputs=cms.bool(True)
 
-pflowEndcapRechitMaker = cms.Sequence(particleFiltration * faketracks * pflowCalibEcalRechits * towerMakerPF)
+pflowEndcapRechitMaker = cms.Sequence(particleFiltration * faketracks * pflowCalibEcalRechits * 
+pflowCalibHcalRechits * towerMakerPF)
 
 
 pfAlgoAndExtractionTestbeam = cms.Sequence(faketracks * 
+				    pflowCalibHcalRechits *
                                     pfClusteringECAL * 
                                     pfClusteringHCALTB * 
                                     particleFlowBlock * 
@@ -71,6 +78,7 @@ pfAlgoAndExtractionTestbeam = cms.Sequence(faketracks *
 
 pfAlgoAndExtractionTestbeamEndcaps = cms.Sequence(faketracks * 
                                     pflowCalibEcalRechits *
+				    pflowCalibHcalRechits *
                                     towerMakerPF *
                                     pfClusteringECAL * 
                                     pfClusteringHCALTB * 

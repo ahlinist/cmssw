@@ -116,6 +116,7 @@ TestbeamDelegate.RawRecHitsEcalEB=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB
 TestbeamDelegate.RawRecHitsEcalEE=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEE")
 TestbeamDelegate.RawRecHitsEcalES=cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
 TestbeamDelegate.EventDelegateType=cms.string('TestbeamDelegate')
+TestbeamDelegate.RawRecHitsHcal = cms.InputTag("pflowCalibHcalRechits", "HBHERechitsCalib")
 
 IsolatedParticleExtractor=cms.PSet(
     
