@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.1 $
-  \date $Date: 2009/11/26 12:10:04 $
+  \version $Revision: 1.2 $
+  \date $Date: 2009/12/06 21:48:33 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -60,7 +60,7 @@ class HcalCalibRenderPlugin : public DQMRenderPlugin
   // Color Schemes
   // seach scheme needs an array of color indices, 
   // the number of contours to be used, and the number of RGB stop points
-  Int_t summaryColors[80];
+  Int_t summaryColors[100];
   Int_t NRGBs_summary;
   Int_t NCont_summary;
 
@@ -77,12 +77,12 @@ public:
 
     //make summaryColors, with a value of -1 indicated in gray, values >-1 and <0 in white,
     // values 0-0.98 scaling from red to yellow, and values > 0.98 in green.
-    NRGBs_summary=6;
-    NCont_summary=80;
-    Double_t stops_summary[] = {0.00,0.025,0.4999,0.50,0.98,1.00}; // set limits for color transitions
-    Double_t red_summary[]   = {0.6,1.00,1.00,1.00,1.00,0.00};
-    Double_t green_summary[] = {0.6,1.00,1.00,0.00,1.00,0.80};
-    Double_t blue_summary[]  = {0.6,1.00,1.00,0.00,0.00,0.00};
+    NRGBs_summary=7;
+    NCont_summary=100;
+    Double_t stops_summary[] = {0.00,0.025,0.4999,0.50,0.98,0.981,1.00}; // set limits for color transitions
+    Double_t red_summary[]   = {0.6,1.00,1.00,1.00,1.00,0.00,0.00};
+    Double_t green_summary[] = {0.6,1.00,1.00,0.00,1.00,0.80,0.80};
+    Double_t blue_summary[]  = {0.6,1.00,1.00,0.00,0.00,0.00,0.00};
     nColorsGradient=0;
     highestIndex=0; // set starting index for new color (to avoid existing root colors)
     for (int g=1;g<NRGBs_summary;++g)
