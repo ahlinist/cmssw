@@ -39,6 +39,26 @@ void RctHarvesting::harvest()
 	  rctEgammaEtEff->getTH1F()->Divide(etNum->getTH1F(),etDenom->getTH1F(),1.,1.,"B");
 	}
 
+      MonitorElement *etNum2D = store->get(directories_[i]+"/rctEgammaEtEffNum2D");
+      MonitorElement *etDenom2D = store->get(directories_[i]+"/rctEgammaEtEffDenom2D");
+      if(etNum2D&&etDenom2D)
+	{
+	  int binsx = etNum2D->getTH2F()->GetNbinsX();
+	  double minx  = etNum2D->getTH2F()->GetXaxis()->GetXmin();
+	  double maxx  = etNum2D->getTH2F()->GetXaxis()->GetXmax();
+
+	  int binsy = etNum2D->getTH2F()->GetNbinsY();
+	  double miny  = etNum2D->getTH2F()->GetYaxis()->GetXmin();
+	  double maxy  = etNum2D->getTH2F()->GetYaxis()->GetXmax();
+
+	  MonitorElement *rctEgammaEtEff2D = store->book2D("rctEgammaEtEff2D","e/#gamma Efficiency vs ET",binsx,minx,maxx,binsy,miny,maxy);
+
+	  for(int i=1;i<binsx;++i)
+	    for( int j=1;j<binsy;++j)
+	      rctEgammaEtEff2D->getTH2F()->SetBinContent(i,j,((float)etNum2D->getTH2F()->GetBinContent(i,j))/((float)etDenom2D->getTH2F()->GetBinContent(i,j)));
+	}
+
+
       MonitorElement *etaNum = store->get(directories_[i]+"/rctEgammaEtaEffNum");
       MonitorElement *etaDenom = store->get(directories_[i]+"/rctEgammaEtaEffDenom");
       if(etaNum&&etaDenom)
@@ -48,6 +68,17 @@ void RctHarvesting::harvest()
 	  double max  = etaNum->getTH1F()->GetXaxis()->GetXmax();
 	  MonitorElement *rctEgammaEtaEff = store->book1D("rctEgammaEtaEff","e/#gamma Efficiency vs #eta",bins,min,max);
 	  rctEgammaEtaEff->getTH1F()->Divide(etaNum->getTH1F(),etaDenom->getTH1F(),1.,1.,"B");
+	}
+
+      MonitorElement *phiNum = store->get(directories_[i]+"/rctEgammaPhiEffNum");
+      MonitorElement *phiDenom = store->get(directories_[i]+"/rctEgammaPhiEffDenom");
+      if(phiNum&&phiDenom)
+	{
+	  int bins = phiNum->getTH1F()->GetNbinsX();
+	  double min  = phiNum->getTH1F()->GetXaxis()->GetXmin();
+	  double max  = phiNum->getTH1F()->GetXaxis()->GetXmax();
+	  MonitorElement *rctEgammaPhiEff = store->book1D("rctEgammaPhiEff","e/#gamma Efficiency vs #phi",bins,min,max);
+	  rctEgammaPhiEff->getTH1F()->Divide(phiNum->getTH1F(),phiDenom->getTH1F(),1.,1.,"B");
 	}
 
       MonitorElement *isoEtNum = store->get(directories_[i]+"/rctIsoEgammaEtEffNum");
@@ -68,6 +99,16 @@ void RctHarvesting::harvest()
 	  double max  = isoEtaNum->getTH1F()->GetXaxis()->GetXmax();
 	  MonitorElement *rctIsoEgammaEtaEff = store->book1D("rctIsoEgammaEtaEff","Iso e/#gamma Efficiency vs #eta",bins,min,max);
 	  rctIsoEgammaEtaEff->getTH1F()->Divide(isoEtaNum->getTH1F(),etaDenom->getTH1F(),1.,1.,"B");
+	}
+
+      MonitorElement *isoPhiNum = store->get(directories_[i]+"/rctIsoEgammaPhiEffNum");
+      if(isoPhiNum&&phiDenom)
+	{
+	  int bins = isoPhiNum->getTH1F()->GetNbinsX();
+	  double min  = isoPhiNum->getTH1F()->GetXaxis()->GetXmin();
+	  double max  = isoPhiNum->getTH1F()->GetXaxis()->GetXmax();
+	  MonitorElement *rctIsoEgammaPhiEff = store->book1D("rctIsoEgammaPhiEff","Iso e/#gamma Efficiency vs #eta",bins,min,max);
+	  rctIsoEgammaPhiEff->getTH1F()->Divide(isoPhiNum->getTH1F(),phiDenom->getTH1F(),1.,1.,"B");
 	}
 
     }
