@@ -23,7 +23,8 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    "rfio:/castor/cern.ch/user/s/slehti/skim_238.root"
+#        "rfio:/castor/cern.ch/user/s/slehti/testData/tteffHLT_999.root"
+	"file:/tmp/slehti/tteffHLT_999.root"
     )
 )
 
@@ -38,13 +39,25 @@ process.source = cms.Source("PoolSource",
 process.load("L1Trigger/Configuration/L1Config_cff")
 ####process.load("Configuration/StandardSequences/L1TriggerDefaultMenu_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'MC_31X_V3::All'
+#process.GlobalTag.globaltag = 'MC_31X_V3::All'
+process.GlobalTag.globaltag = 'GR09_H_V6OFF::All'
 #process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1031/L1Menu_MC2009_v0_L1T_Scales_20080922_Imp0_Unprescaled_cff")
 process.load('L1TriggerConfig.L1GtConfigProducers.Luminosity.lumi1031.L1Menu_MC2009_v2_L1T_Scales_20090519_Imp0_Unprescaled_cff')
 
+#process.DQM = cms.Service( "DQM",)
+#process.DQMStore = cms.Service( "DQMStore",)
+#
+#process.HLTConfigVersion = cms.PSet(
+#  tableName = cms.string('/online/collisions/week49/HLT/V1')
+#)
 
 ### Add HLTextra stuff
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HLTextra_cff")
+#process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HLTextra_cff")
+
+#process.load("HLTrigger.Configuration.HLT_GRun_cff")
+#process.caloTowerB = cms.Path(
+#    process.CaloTowerConstituentsMapBuilder
+#)
 
 process.load("RecoTauTag.L1CaloSim.l1calosim_cfi")
 process.l1CaloSim.AlgorithmSource = "RecHits"
@@ -57,15 +70,15 @@ process.l1CaloSim.IsolationEt = cms.double(2.0)
 
 
 
-process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
-process.tteffL1GTSeed = copy.deepcopy(process.hltLevel1GTSeed)
-process.tteffL1GTSeed.L1TechTriggerSeeding = cms.bool(False)
-process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet30")
-#process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet60 OR L1_SingleJet100")
-process.tteffL1GTSeed.L1GtReadoutRecordTag = cms.InputTag("hltGtDigis","","TTEff")
-process.tteffL1GTSeed.L1GtObjectMapTag = cms.InputTag("hltL1GtObjectMap","","TTEff")
-process.tteffL1GTSeed.L1CollectionsTag = cms.InputTag("hltL1extraParticles","","TTEff")
-process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles","","TTEff")
+#process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
+#process.tteffL1GTSeed = copy.deepcopy(process.hltLevel1GTSeed)
+#process.tteffL1GTSeed.L1TechTriggerSeeding = cms.bool(False)
+#process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet30")
+##process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet60 OR L1_SingleJet100")
+#process.tteffL1GTSeed.L1GtReadoutRecordTag = cms.InputTag("hltGtDigis","","TTEff")
+#process.tteffL1GTSeed.L1GtObjectMapTag = cms.InputTag("hltL1GtObjectMap","","TTEff")
+#process.tteffL1GTSeed.L1CollectionsTag = cms.InputTag("hltL1extraParticles","","TTEff")
+#process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles","","TTEff")
 
 
 #copying the Discriminator by Isolation
@@ -92,15 +105,16 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         # Check that Isolation collection below actually matched up with Tau Collection above
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
         #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
-	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "TTEff"),
-	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "TTEff"),
+	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT2"),
+	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT2"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
-        L1GtReadoutRecord       = cms.InputTag("hltGtDigis","","TTEff"),
-        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","TTEff"),
+        L1GtReadoutRecord       = cms.InputTag("hltGtDigis","","HLT2"),
+        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","HLT2"),
         HltResults              = cms.InputTag("TriggerResults"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
-        L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
+#        L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
+	L2AssociationCollection = cms.InputTag("openhltL2TauIsolationProducer"),
         EERecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEE"),
         EBRecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEB"),
         CaloTowers               = cms.untracked.InputTag("towerMaker"),
@@ -109,7 +123,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         crystalThresholdEB      = cms.untracked.double(0.15),
         crystalThresholdEE      = cms.untracked.double(0.45),
         L2matchingDeltaR        = cms.double(0.2),
-        l25JetSource            = cms.InputTag("hltL25TauConeIsolation"),
+        l25JetSource            = cms.InputTag("openhltL25TauConeIsolation"),
         l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtCutSelector"),
         l3IsoSource             = cms.InputTag("hltL3TauIsolationSelector"), #obsolet: L25/L3 merged?
         l25MatchingCone         = cms.double(0.3),
@@ -130,13 +144,13 @@ GenParticles  = cms.untracked.InputTag("genParticles"),
 )
 
 process.runEDAna = cms.Path(
-    process.TauMCProducer*
-    process.HLT_SingleIsoTau20_Trk5*
-    process.l1CaloSim*
-#    process.PFTausSelected*
-    process.thisPFTauDiscriminationByIsolation*
-    process.thisPFTauDiscriminationAgainstMuon*
-    process.tteffL1GTSeed*
+#    process.TauMCProducer*
+#    process.HLT_SingleIsoTau20_Trk5*
+#    process.l1CaloSim *
+##    process.PFTausSelected*
+#    process.thisPFTauDiscriminationByIsolation*
+#    process.thisPFTauDiscriminationAgainstMuon*
+#    process.tteffL1GTSeed*
     process.TTEffAnalysis
 ) 
 
