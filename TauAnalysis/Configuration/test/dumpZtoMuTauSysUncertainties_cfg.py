@@ -59,7 +59,7 @@ process.dumpZtoMuTauAccUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinn
             sysTitle = cms.string("FSR")
         )
     ),
-    resultTypes =  cms.vstring("acceptance"),  
+    resultTypes = cms.vstring("acceptance"),  
     dqmDirectories = cms.PSet(
         Ztautau = cms.string(dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults/modelBinnerForMuTauGenTauLeptonPairAcc')
     )
