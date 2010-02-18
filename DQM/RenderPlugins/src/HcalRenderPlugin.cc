@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.33 $
-  \date $Date: 2009/11/28 04:31:29 $
+  \version $Revision: 1.34 $
+  \date $Date: 2009/12/06 21:48:33 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -60,7 +60,7 @@ class HcalRenderPlugin : public DQMRenderPlugin
   // Color schemes
   int errorFracColors[20];
   int standardColors[20];
-  int summaryColors[80];
+  int summaryColors[100];
   int hcalErrorColors[100];
   int hcalRainbowColors[100];
   Int_t NRGBs_summary;
@@ -166,12 +166,12 @@ public:
 
     //make summaryColors, with a value of -1 indicated in gray, values >-1 and <0 in white,
     // values 0-0.98 scaling from red to yellow, and values > 0.98 in green.
-    NRGBs_summary=6;
-    NCont_summary=80;
-    Double_t stops_summary[] = {0.00,0.025,0.4999,0.50,0.98,1.00}; // set limits for color transitions
-    Double_t red_summary[]   = {0.6,1.00,1.00,1.00,1.00,0.00};
-    Double_t green_summary[] = {0.6,1.00,1.00,0.00,1.00,0.80};
-    Double_t blue_summary[]  = {0.6,1.00,1.00,0.00,0.00,0.00};
+    NRGBs_summary=7;
+    NCont_summary=100;
+    Double_t stops_summary[] = {0.00,0.025,0.4999,0.50,0.98,.981,1.00}; // set limits for color transitions
+    Double_t red_summary[]   = {0.6,1.00,1.00,1.00,1.00,0.00,0.00};
+    Double_t green_summary[] = {0.6,1.00,1.00,0.00,1.00,0.80,0.80};
+    Double_t blue_summary[]  = {0.6,1.00,1.00,0.00,0.00,0.00,0.00};
     nColorsGradient=0;
     highestIndex=0;
     for (int g=1;g<NRGBs_summary;++g)
@@ -362,6 +362,8 @@ private:
 	    gStyle->SetOptStat("iourmen");
 	    obj->SetStats( kTRUE );
 	  }
+	else if (o.name.find("NumberOfDeadCellEvents")!=std::string::npos)
+	  obj->SetMinimum(0);
       } // DeadCellMonitor
   } // void preDrawTH1(...)
 
@@ -841,6 +843,14 @@ private:
 	  }
       }
       
+
+    if ((o.name.find("RecHitMonitor_Hcal")!=std::string::npos) &&
+	(o.name.find("FlagCorrelation")!=std::string::npos))
+      {
+	gPad->SetLogz();
+	obj->SetDrawOption("textcolz");
+      }
+
     // Dead Cell check -- warn that plots need many events before they update
     if (o.name.find("DeadCellMonitor_Hcal/" )!=std::string::npos)
       {
@@ -848,11 +858,11 @@ private:
 	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present")!=std::string::npos) ||
 	     (o.name.find("DeadCellMonitor_Hcal/problem_deadcells")      !=std::string::npos) ||
 	     (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")      !=std::string::npos) ||
-	     (o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")        !=std::string::npos)
+	     (o.name.find("DeadCellMonitor_Hcal/TotalDeadCells_HCAL_vs_LS") !=std::string::npos)
 	     )
 	  {
 	    TText t;
-	    t.DrawTextNDC(0.05,0.01,"Histogram updates every L.S. (min 1000 events)");
+	    t.DrawTextNDC(0.05,0.01,"Histogram updates every N lumi sections");
 	  }
       } // if (o.name.find("DeadCellMonitor_Hcal/"...)
       
