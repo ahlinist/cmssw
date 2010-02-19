@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.34 $
-  \date $Date: 2009/12/06 21:48:33 $
+  \version $Revision: 1.35 $
+  \date $Date: 2010/02/18 20:04:52 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -804,7 +804,6 @@ private:
 	    tx.DrawText((FEDS3_X0*30)+0, (SPIG3_Y0*17)-3.5, "15");
 	    tx.DrawText((FEDS3_X0*30)+0, (SPIG3_Y0*17)-5  , "CK");
 
-	    tx.DrawText((FEDS3_X0*30)+4 , (SPIG3_Y0*17)-2  , "LW");
 	    tx.DrawText((FEDS3_X0*30)+4 , (SPIG3_Y0*17)-3.5, "WW");
 	    tx.DrawText((FEDS3_X0*30)+4 , (SPIG3_Y0*17)-5  , "IW");}
         return;
