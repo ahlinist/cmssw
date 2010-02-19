@@ -24,9 +24,10 @@ jetHistManager.centralJetsToBeVetoed.alphaMin = cms.vdouble()
 #jetHistManager.jetSource = cms.InputTag('selectedLayer1JetsEtaCumulative')
 jetHistManager.jetSource = cms.InputTag('cleanLayer1Jets')
 
-# import config for missing-Et histogram manager
-from TauAnalysis.Core.metHistManager_cfi import *
-metHistManager.metSource = cms.InputTag("layer1METs")
+# import config for missing-Et histogram managers
+from TauAnalysis.Core.caloMEtHistManager_cfi import *
+from TauAnalysis.Core.pfMEtHistManager_cfi import *
+caloMEtHistManager.metSource = cms.InputTag("layer1METs")
 
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
@@ -41,7 +42,7 @@ triggerHistManager.hltPaths = cms.vstring('HLT_IsoEle15_L1I', 'HLT_Mu15', 'HLT_I
 elecMuHistManagers = cms.vstring( 'electronHistManager',
                                   'muonHistManager',
                                   'diTauCandidateHistManagerForElecMu',
-                                  'metHistManager',
+                                  'caloMEtHistManager',
                                   'jetHistManager',
                                   'vertexHistManager',
                                   'triggerHistManager' )
