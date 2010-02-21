@@ -13,4 +13,4 @@ from JetMETAnalysis.PromptAnalysis.PromptAna_Trigger_cfi import *
 from JetMETAnalysis.PromptAnalysis.PromptAna_CleanUp_cfi import *
 from JetMETAnalysis.PromptAnalysis.PromptAna_Vertex_cfi import *
 from JetMETAnalysis.PromptAnalysis.PromptAna_Track_cfi import *
-
+from JetMETAnalysis.PromptAnalysis.PromptAna_PMTNoise_cfi import *
