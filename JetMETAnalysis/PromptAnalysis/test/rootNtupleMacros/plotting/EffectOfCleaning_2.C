@@ -154,6 +154,7 @@ TFile DATA2360GeV("output_DATA2360GeV.root");
 
 //900 GeV
 
+
 TCanvas c_calomet_900GeV;
 
 c_calomet_900GeV.SetLogy();
@@ -161,6 +162,8 @@ c_calomet_900GeV.SetLogy();
 // c_calomet_900GeV.SetGridy();
 
 DATA900GeV.cd();
+h_calometPt_baseSel->UseCurrentStyle();
+
 h_calometPt_baseSel->GetXaxis()->SetRangeUser(0,80);
 
 h_calometPt_baseSel->SetTitle("");
@@ -173,41 +176,42 @@ h_calometPt->SetLineColor(kBlue);
 h_calometPt->SetLineWidth(2);
 
 h_calometPt_baseSel->SetMarkerColor(kBlack);
-h_calometPt_baseSel_HFfilter->SetMarkerColor(kRed);
+h_calometPt_baseSel_HFfilter->SetMarkerColor(kBlack);
 h_calometPt->SetMarkerColor(kBlue);
 
-h_calometPt_baseSel->SetFillColor(kBlack);
-h_calometPt_baseSel_HFfilter->SetFillColor(kRed);
+h_calometPt_baseSel->SetFillColor(kWhite);
+h_calometPt_baseSel_HFfilter->SetFillColor(896);
+//h_calometPt_baseSel_HFfilter->SetFillStyle(3002);
 h_calometPt->SetFillColor(kBlue);
-h_calometPt->SetFillStyle(3002);
-
+//h_calometPt->SetFillColor(38);
+//h_calometPt->SetFillStyle(3004);
 
 h_calometPt_baseSel->SetMarkerStyle(20);
-h_calometPt_baseSel_HFfilter->SetMarkerStyle(26);
+h_calometPt_baseSel_HFfilter->SetMarkerStyle(20);
 h_calometPt->SetMarkerStyle(23);
 
 h_calometPt_baseSel->SetMarkerSize(1);
 h_calometPt_baseSel_HFfilter->SetMarkerSize(1);
 h_calometPt->SetMarkerSize(1);
 
-h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
+h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T}[GeV]");
 h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events");
-h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.3);
+h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.1);
 
-h_calometPt_baseSel->UseCurrentStyle();
-h_calometPt_baseSel->Draw("");
-h_calometPt_baseSel_HFfilter->Draw("sames");
+h_calometPt_baseSel->Draw("p");
+h_calometPt_baseSel_HFfilter->Draw("histsames");
 h_calometPt->Draw("sameshist");
 //h_calometPt_baseSel->Draw("same");
+h_calometPt_baseSel->Draw("psame");
 
 gPad->RedrawAxis();
 
 TLegend *legend_900 = new TLegend(0.375839,0.449301,0.909396,0.706294);
 legend_900->SetTextFont(42);
 legend_900->SetFillColor(0);
-legend_900->AddEntry(h_calometPt_baseSel,"No cleaning","pl");
-legend_900->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","pl");
-legend_900->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","lf");
+legend_900->AddEntry(h_calometPt_baseSel,"No cleaning","p");
+legend_900->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","f");
+legend_900->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","f");
 legend_900->SetBorderSize(0);
 //Draw legend
 legend_900->Draw();
@@ -218,7 +222,7 @@ l_900.SetTextAlign(12);
 l_900.SetTextSize(0.04);
 l_900.SetTextFont(62);
 l_900.SetNDC();
-l_900.DrawLatex(0.533557,0.872378," #splitline{CMS 2009 Preliminary}{#sqrt{s}=900 GeV}");
+l_900.DrawLatex(0.533557,0.872378," #splitline{CMS Preliminary 2009}{#sqrt{s}=900 GeV}");
 
 c_calomet_900GeV.SaveAs("calometPt_afterFilters_900.eps");
 
@@ -233,6 +237,9 @@ c_calomet_2360GeV.SetLogy();
 // c_calomet_2360GeV.SetGridy();
 
 DATA2360GeV.cd();
+
+h_calometPt_baseSel->UseCurrentStyle();
+
 h_calometPt_baseSel->GetXaxis()->SetRangeUser(0,80);
 
 h_calometPt_baseSel->SetTitle("");
@@ -245,52 +252,52 @@ h_calometPt->SetLineColor(kBlue);
 h_calometPt->SetLineWidth(2);
 
 h_calometPt_baseSel->SetMarkerColor(kBlack);
-h_calometPt_baseSel_HFfilter->SetMarkerColor(kRed);
+h_calometPt_baseSel_HFfilter->SetMarkerColor(kBlack);
 h_calometPt->SetMarkerColor(kBlue);
 
-h_calometPt_baseSel->SetFillColor(kBlack);
-h_calometPt_baseSel_HFfilter->SetFillColor(kRed);
+h_calometPt_baseSel->SetFillColor(kOrange-2);
+h_calometPt_baseSel_HFfilter->SetFillColor(896);
+//h_calometPt_baseSel_HFfilter->SetFillStyle(3002);
 h_calometPt->SetFillColor(kBlue);
-h_calometPt->SetFillStyle(3002);
-
+//h_calometPt->SetFillColor(38);
+//h_calometPt->SetFillStyle(3004);
 
 h_calometPt_baseSel->SetMarkerStyle(20);
-h_calometPt_baseSel_HFfilter->SetMarkerStyle(26);
+h_calometPt_baseSel_HFfilter->SetMarkerStyle(20);
 h_calometPt->SetMarkerStyle(23);
 
 h_calometPt_baseSel->SetMarkerSize(1);
 h_calometPt_baseSel_HFfilter->SetMarkerSize(1);
 h_calometPt->SetMarkerSize(1);
 
-h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
+h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T}[GeV]");
 h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events");
-h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.3);
+h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.1);
 
-h_calometPt_baseSel->UseCurrentStyle();
-h_calometPt_baseSel->Draw("");
-h_calometPt_baseSel_HFfilter->Draw("sames");
+h_calometPt_baseSel->Draw("phist");
+h_calometPt_baseSel_HFfilter->Draw("histsames");
 h_calometPt->Draw("sameshist");
 //h_calometPt_baseSel->Draw("same");
+h_calometPt_baseSel->Draw("psame");
 
 gPad->RedrawAxis();
 
 TLegend *legend_2360 = new TLegend(0.375839,0.449301,0.909396,0.706294);
 legend_2360->SetTextFont(42);
 legend_2360->SetFillColor(0);
-legend_2360->AddEntry(h_calometPt_baseSel,"No cleaning","pl");
-legend_2360->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","pl");
-legend_2360->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","lf");
+legend_2360->AddEntry(h_calometPt_baseSel,"No cleaning","p");
+legend_2360->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","f");
+legend_2360->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","f");
 legend_2360->SetBorderSize(0);
 //Draw legend
 legend_2360->Draw();
-
 
 TLatex l_2360;
 l_2360.SetTextAlign(12);
 l_2360.SetTextSize(0.04);
 l_2360.SetTextFont(62);
 l_2360.SetNDC();
-l_2360.DrawLatex(0.533557,0.872378," #splitline{CMS 2009 Preliminary}{#sqrt{s}=2360 GeV}");
+l_2360.DrawLatex(0.533557,0.872378," #splitline{CMS Preliminary 2009}{#sqrt{s}=2360 GeV}");
 
 c_calomet_2360GeV.SaveAs("calometPt_afterFilters_2360.eps");
 
