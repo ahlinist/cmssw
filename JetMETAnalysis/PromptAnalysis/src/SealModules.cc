@@ -36,6 +36,7 @@ DEFINE_SEAL_MODULE();
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CleanUp.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Vertex.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Track.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PMTNoise.h"
 
 DEFINE_ANOTHER_FWK_MODULE(PromptAnaTree);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Event);
@@ -51,4 +52,5 @@ DEFINE_ANOTHER_FWK_MODULE(PromptAna_Trigger);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_CleanUp);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Vertex);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Track);
+DEFINE_ANOTHER_FWK_MODULE(PromptAna_PMTNoise);
 
