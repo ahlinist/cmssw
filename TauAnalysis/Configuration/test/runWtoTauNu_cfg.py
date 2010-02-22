@@ -78,7 +78,7 @@ process.source = cms.Source("PoolSource",
 #__process.source.fileNames = #inputFileNames#
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.saveWtoTauNuPlots.outputFileName = #plotsOutputFileName#
-#__#batchMode#
+#__#isBatchMode#
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -92,9 +92,8 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncert
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
-if not hasattr(process, "batchMode"):
+if not hasattr(process, "isBatchMode"):
     disableSysUncertainties_runWtoTauNu(process)
- 
 #--------------------------------------------------------------------------------
 
 from PhysicsTools.PatAlgos.tools.tauTools import * 

@@ -81,7 +81,7 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoElecMuEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoElecMuPlots.outputFileName = #plotsOutputFileName#
-#__#batchMode#
+#__#isBatchMode#
 #
 #--------------------------------------------------------------------------------
 
@@ -153,7 +153,7 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncert
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
-if not hasattr(process, "batchMode"):
+if not hasattr(process, "isBatchMode"):
     disableSysUncertainties_runZtoElecMu(process)
     #enableSysUncertainties_runZtoElecMu(process)
 #--------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-if not hasattr(process, "batchMode"):
+if not hasattr(process, "isBatchMode"):
     process.p.replace(process.producePatTupleZtoElecMuSpecific, process.producePatTuple + process.producePatTupleZtoElecMuSpecific)
 #--------------------------------------------------------------------------------
 
