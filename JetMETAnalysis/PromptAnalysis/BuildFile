@@ -1,4 +1,4 @@
-   <use name=PhysicsTools/UtilAlgos>
+<use name=PhysicsTools/UtilAlgos>
    <use name=FWCore/ServiceRegistry>
    <use name=DataFormats/CaloTowers>
    <use name=DataFormats/Common>
@@ -29,6 +29,7 @@
    <use name=RecoEgamma/EgammaMCTools>
    <use name=RecoEgamma/EgammaTools>	
    <use name=CondFormats/L1TObjects>
+   <use name=CondFormats/HcalObjects>	
    <use name=CondFormats/DataRecord>
    <use name=RecoMET/METAlgorithms>
    <use name=RecoMuon/MuonIsolation>
