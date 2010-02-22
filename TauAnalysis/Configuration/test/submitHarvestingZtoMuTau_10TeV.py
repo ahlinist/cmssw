@@ -22,13 +22,13 @@ inputFilePath = "rfio:" + outputFilePath
 #
 #--------------------------------------------------------------------------------
 
-# harvest Z --> tau tau 
+# harvest Z --> tau+ tau- 
 submitToBatch(configFile = "harvestZtoMuTauPlots_cfg.py", channel = "ZtoMuTau", sample = "Ztautau",
               replFunction = makeReplacementsHarvesting, replacements =
               "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotZtoMuTau_processes_10TeV_cfi",
               job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
 
-# harvest Z --> mu mu
+# harvest Z --> mu+ mu-
 submitToBatch(configFile = "harvestZtoMuTauPlots_cfg.py", channel = "ZtoMuTau", sample = "Zmumu",
               replFunction = makeReplacementsHarvesting, replacements =
               "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotZtoMuTau_processes_10TeV_cfi",
