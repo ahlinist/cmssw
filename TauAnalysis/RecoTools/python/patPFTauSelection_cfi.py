@@ -41,7 +41,7 @@ selectedLayer1TausEcalIso = cms.EDFilter("PATTauSelector",
 
 # require tau candidate to have either one or three tracks within signal cone
 selectedLayer1TausProng = cms.EDFilter("PATTauSelector",
-    cut = cms.string('signalTracks.size() = 1 | signalTracks.size() = 3'),                                   
+    cut = cms.string('signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3'),                                   
     filter = cms.bool(False)                                 
 )
 
