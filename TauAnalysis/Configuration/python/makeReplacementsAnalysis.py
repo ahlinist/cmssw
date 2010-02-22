@@ -56,6 +56,7 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
 
     factorization = None
     systematics = None
+    disableEventDump = None
 
     for replaceStatement in replaceStatements:
 
@@ -90,6 +91,8 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
                 systematics = "enableSysUncertainties_run" + channel + "(process)"
             else:
 	        raise ValueError("Invalid systematics option = " + paramValue + " !!")
+        if paramName == "disableEventDump":
+	    disableEventDump = paramValue
 
     # check that factorization option has been defined
     if factorization is None:
@@ -100,6 +103,12 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     if systematics is None:
         raise ValueError("Undefined systematics option !!")
     replaceStatements_retVal.append("systematics = " + systematics)
+
+    # check if event-dump output is to be disabled
+    # (keep event-dump output enabled per default,
+    #  in case disableEventDump option has not been explicitely specified)
+    if disableEventDump is not None and disableEventDump.lower() == "true":
+        replaceStatements_retVal.append("disableEventDump = setattr(process, 'disableEventDump', cms.PSet())")
 
     # check that the input file type option has been defined
     inputFileNames = None
@@ -141,7 +150,7 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
     replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
 
-    replaceStatements_retVal.append("batchMode = setattr(process, 'batchMode', cms.PSet())")
+    replaceStatements_retVal.append("isBatchMode = setattr(process, 'isBatchMode', cms.PSet())")
 
     replacements_retVal = "; ".join(replaceStatements_retVal)
 
