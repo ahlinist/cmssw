@@ -67,7 +67,6 @@ from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import muonTriggerMa
 muonTriggerMatchHLT1MuonIso.src = 'patMuonsWithoutTrigger'
 muonTriggerMatchHLT1MuonIso.andOr = False # i.e. 'AND'
 
-muonMatchHLTL1MuOpen  = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_L1MuOpen" ])
 muonMatchHLTMu3       = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Mu3" ])
 muonMatchHLTMu5       = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Mu5" ])
 muonMatchHLTDoubleMu0 = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_DoubleMu0" ])
@@ -79,11 +78,26 @@ muonMatchHLTOniaMu8E29 = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_On
 muonMatchHLTOniaPx8E29 = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltOniaPixelTrackCands8E29::HLT'] )
 muonMatchHLTOniaTk8E29 = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltOniaCtfTrackCands8E29::HLT'  ] )
 
+### == For HLT triggers which are just L1s, we need a different matcher
+from MuonAnalysis.MuonAssociators.muonHLTL1Match_cfi import muonHLTL1Match
+
+muonMatchHLTL1MuOpen = muonHLTL1Match.clone(
+    # Input
+    src     = muonTriggerMatchHLT1MuonIso.src,
+    matched = muonTriggerMatchHLT1MuonIso.matched,
+    # Matching criteria
+    maxDeltaR   = cms.double(0.3),
+    # Which trigger to use
+    pathName = cms.string('HLT_L1MuOpen'),
+)
+muonMatchHLTL1DoubleMuOpen = muonMatchHLTL1MuOpen.clone(pathName = 'HLT_L1DoubleMuOpen')
+
+
 ## ==== Embed ====
 patMuonsWithTrigger = cms.EDProducer( "PATTriggerMatchMuonEmbedder",
     src     = cms.InputTag(  "patMuonsWithoutTrigger" ),
     matches = cms.VInputTag( 
-        cms.InputTag('muonMatchHLTL1MuOpen'),
+        # HLT Matches
         cms.InputTag('muonMatchHLTMu3'),
         cms.InputTag('muonMatchHLTMu5'),
         cms.InputTag('muonMatchHLTDoubleMu0'),
@@ -94,6 +108,10 @@ patMuonsWithTrigger = cms.EDProducer( "PATTriggerMatchMuonEmbedder",
         cms.InputTag('muonMatchHLTOniaMu8E29'),
         cms.InputTag('muonMatchHLTOniaPx8E29'),
         cms.InputTag('muonMatchHLTOniaTk8E29'),
+        # L1 Matches
+        cms.InputTag('muonMatchHLTL1MuOpen','propagatedReco'), # will match if the muon did propagate to station 2
+        cms.InputTag('muonMatchHLTL1MuOpen'),
+        cms.InputTag('muonMatchHLTL1DoubleMuOpen'),
     )
 
 )
@@ -101,9 +119,10 @@ patMuonsWithTrigger = cms.EDProducer( "PATTriggerMatchMuonEmbedder",
 ## ==== Trigger Sequence ====
 patTriggerMatching = cms.Sequence(
     patTrigger * 
-    ( muonMatchHLTL1MuOpen  +
+    ( muonMatchHLTL1MuOpen   +
       muonMatchHLTMu3        +
       muonMatchHLTMu5        +
+      muonMatchHLTL1DoubleMuOpen  +
       muonMatchHLTDoubleMu0  +
       muonMatchHLTDoubleMu3  +
       muonMatchHLTOniaMu     +
