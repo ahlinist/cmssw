@@ -10,8 +10,8 @@
  *  tree of the selected variables, which it obtains from the EDM
  *  tree.  
  *
- *  $Date: 2009/11/19 18:21:35 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/11/22 00:03:47 $
+ *  $Revision: 1.2 $
  *  \author Burt Betchart - University of Rochester <burton.andrew.betchart@cern.ch>
  */
 
@@ -29,7 +29,8 @@
 
 class PromptAnaTree : public edm::EDAnalyzer {
 private:    
-  virtual void beginJob(const edm::EventSetup&);
+/*   virtual void beginJob(const edm::EventSetup&); */
+  virtual void beginJob();
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob(){}
 

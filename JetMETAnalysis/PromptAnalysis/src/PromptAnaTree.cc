@@ -41,7 +41,8 @@ TypedBranchConnector(edm::BranchDescription const* desc,
 }
 
 void PromptAnaTree::
-beginJob(const edm::EventSetup&) {
+//beginJob(const edm::EventSetup&) {
+beginJob() {
   tree = fs->make<TTree>("tree", ""); 
 
   std::map<std::string, LEAFTYPE> leafmap;
