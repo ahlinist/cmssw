@@ -9,6 +9,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_cfi import *
 # names of .root files containing histograms
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_Ztautau = copy.deepcopy(process_Ztautau)
 processZtoMuTau_Ztautau.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_Ztautau_7TeV_part01.root',
@@ -35,9 +36,51 @@ processZtoMuTau_ZtautauSum.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processZtoMuTau_ZtautauSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_ZtautauSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+processZtoMuTau_ZtautauGenTauLeptonPairAcc = copy.deepcopy(process_Ztautau)
+processZtoMuTau_ZtautauGenTauLeptonPairAcc.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part01.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part02.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part03.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part04.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part05.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part06.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part07.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part08.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part09.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part10.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part11.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part12.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part13.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part14.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part15.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part16.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part17.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part18.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part19.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part20.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part21.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part22.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part23.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part24.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part25.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part26.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part27.root',
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV_part28.root'
+)
+processZtoMuTau_ZtautauGenTauLeptonPairAcc.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoMuTau_ZtautauGenTauLeptonPairAcc_7TeV*intLumiZtoMuTau_Data_7TeV/intLumiZtoMuTau_Ztautau_7TeV)
+
+processZtoMuTau_ZtautauGenTauLeptonPairAccSum = copy.deepcopy(process_Ztautau)
+processZtoMuTau_ZtautauGenTauLeptonPairAccSum.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoMuTau_ZtautauGenTauLeptonPairAccSum.root'
+)
+processZtoMuTau_ZtautauGenTauLeptonPairAccSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
+processZtoMuTau_ZtautauGenTauLeptonPairAccSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 processZtoMuTau_Zmumu = copy.deepcopy(process_Zmumu)
 processZtoMuTau_Zmumu.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_Zmumu_7TeV_part01.root',
@@ -64,9 +107,9 @@ processZtoMuTau_ZmumuSum.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processZtoMuTau_ZmumuSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_ZmumuSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_WplusJets = copy.deepcopy(process_WplusJets)
 processZtoMuTau_WplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_WplusJets_7TeV_part01.root',
@@ -110,9 +153,9 @@ processZtoMuTau_WplusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processZtoMuTau_WplusJetsSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_WplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_InclusivePPmuX = copy.deepcopy(process_InclusivePPmuX)
 processZtoMuTau_InclusivePPmuX.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_InclusivePPmuX_7TeV_part01.root',
@@ -153,21 +196,21 @@ processZtoMuTau_InclusivePPmuXsum.config_dqmFileLoader.inputFileNames = cms.vstr
 )
 processZtoMuTau_InclusivePPmuXsum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_InclusivePPmuXsum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_PPmuXptGt20_part01 = copy.deepcopy(process_PPmuXptGt20)
 processZtoMuTau_PPmuXptGt20_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part01.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part02.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part02.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part03.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part04.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part05.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part06.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part06.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part07.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part08.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part09.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part10.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part10.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part11.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part12.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part13.root',
@@ -177,11 +220,11 @@ processZtoMuTau_PPmuXptGt20_part01.config_dqmFileLoader.inputFileNames = cms.vst
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part17.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part18.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part19.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part20.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part20.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part21.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part22.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part23.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part24.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part24.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part25.root'
 )
 processZtoMuTau_PPmuXptGt20_part01.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoMuTau_PPmuXptGt20_7TeV*intLumiZtoMuTau_Data_7TeV/intLumiZtoMuTau_PPmuXptGt20_7TeV)
@@ -191,18 +234,18 @@ processZtoMuTau_PPmuXptGt20_part02.config_dqmFileLoader.inputFileNames = cms.vst
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part26.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part27.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part28.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part29.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part30.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part31.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part32.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part29.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part30.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part31.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part32.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part33.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part34.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part34.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part35.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part36.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part37.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part38.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part38.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part39.root',
-    'plotsZtoMuTau_PPmuXptGt20_7TeV_part40.root',
+    #'plotsZtoMuTau_PPmuXptGt20_7TeV_part40.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part41.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part42.root',
     'plotsZtoMuTau_PPmuXptGt20_7TeV_part43.root',
@@ -250,9 +293,9 @@ processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader.inputFileNames = cms.vstring
 )
 processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_TTplusJets = copy.deepcopy(process_TTplusJets)
 processZtoMuTau_TTplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_TTplusJets_7TeV_part01.root',
@@ -274,3 +317,4 @@ processZtoMuTau_TTplusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processZtoMuTau_TTplusJetsSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_TTplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+#--------------------------------------------------------------------------------
