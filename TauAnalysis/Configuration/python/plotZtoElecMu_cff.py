@@ -126,6 +126,6 @@ plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
     indOutputFileName = cms.string('plotZtoElecMu_#PLOT#.png')
 )
 
-saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
+saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoElecMu_all.root')
 )
