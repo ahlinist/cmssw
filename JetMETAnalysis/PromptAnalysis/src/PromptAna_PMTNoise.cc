@@ -15,10 +15,12 @@ PromptAna_PMTNoise::PromptAna_PMTNoise(const edm::ParameterSet& iConfig)
 
 {
   //EVENT
-  //   produces <unsigned int> (prefix+"Run"+suffix);
-  //   produces <unsigned int> (prefix+"Event"+suffix);
-  //   produces <unsigned int> (prefix+"LumiSection"+suffix);
-  //   produces <unsigned int> (prefix+"BunchCrossing"+suffix);
+  /*
+  produces <unsigned int> (prefix+"Run"+suffix);
+  produces <unsigned int> (prefix+"Event"+suffix);
+  produces <unsigned int> (prefix+"LumiSection"+suffix);
+  produces <unsigned int> (prefix+"BunchCrossing"+suffix);
+  */
 
   // RECHIT
   produces <std::vector<double> > (prefix + "RecHitEnergy"+suffix);
@@ -32,6 +34,8 @@ PromptAna_PMTNoise::PromptAna_PMTNoise(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > (prefix + "RecHitPartEnergy"+suffix);
   produces <std::vector<double> > (prefix + "RecHitSum4Long"+suffix);
   produces <std::vector<double> > (prefix + "RecHitSum4Short"+suffix);
+  produces <std::vector<int> >    (prefix + "RecHitChannelStatus"+suffix);
+  produces <std::vector<int> >    (prefix + "RecHitIsSeed"+suffix);
 
   // MET
   produces <std::vector<double> > (prefix + "MET"+suffix);
@@ -70,13 +74,13 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // -----------------------------------------------------------------------------------------
   // PART I:  EVENT INFO
-  
-//   if (debug_>0) cout <<"ADDING RUN INFO"<<endl;
-//   auto_ptr<unsigned int> run(new unsigned int(iEvent.id().run()));
-//   auto_ptr<unsigned int> evt(new unsigned int(iEvent.id().event()));
-//   auto_ptr<unsigned int> ls(new unsigned int(iEvent.luminosityBlock()));
-//   auto_ptr<unsigned int> bx(new unsigned int(iEvent.bunchCrossing()));
-
+  /*
+  if (debug_>0) cout <<"ADDING RUN INFO"<<endl;
+  auto_ptr<unsigned int> run(new unsigned int(iEvent.id().run()));
+  auto_ptr<unsigned int> evt(new unsigned int(iEvent.id().event()));
+  auto_ptr<unsigned int> ls(new unsigned int(iEvent.luminosityBlock()));
+  auto_ptr<unsigned int> bx(new unsigned int(iEvent.bunchCrossing()));
+  */
   // -----------------------------------------------------------------------------------------
   // PART 2:  HF RECHIT INFO
 
@@ -92,11 +96,19 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   auto_ptr<vector<double> > rechitpartenergy    ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitsum4long  ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitsum4short  ( new std::vector<double>()  ) ;
+  auto_ptr<vector<int> > rechitchanstat  (new std::vector<int>() );
+  auto_ptr<vector<int> > rechitiSseed  (new std::vector<int>() );
 
   edm::Handle<HFRecHitCollection> hfhits;
   if (debug_>1) cout <<"\tTrying to get HF rechits with tag '"<<HFRecHitTag<<"'"<<endl;
   if (!iEvent.getByLabel(HFRecHitTag, hfhits))
     cout <<"Could not get HF rechits!"<<endl;
+
+  // Get channel quality status
+  edm::ESHandle<HcalChannelQuality> p;
+  iSetup.get<HcalChannelQualityRcd>().get(p);
+  HcalChannelQuality* chanquality = new HcalChannelQuality(*p.product());
+  std::vector<DetId> mydetids = chanquality->getAllChannels();
 
   double R=1;
   double partenergy=0;
@@ -104,6 +116,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   int ieta=-99;
   int iphi=-99;
   int depth=-99;
+  double Emax=-999;
 
   // Loop over rechits
   if (debug_>1) cout <<"\tRECHIT SIZE = "<<hfhits->size()<<endl;
@@ -111,10 +124,17 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     {
       R=1;  // assume no partner
       partenergy=0;  // assume no partner
+      Emax=-999; // max long (short) energy of adjacent long (short) fibers
       HcalDetId id(hf->detid().rawId());
       ieta=id.ieta();
       iphi=id.iphi();
       depth=id.depth();
+      const HcalChannelStatus* origstatus=chanquality->getValues(id);
+      rechitchanstat->push_back(origstatus->getValue());
+      if (origstatus->getValue()!=0  && debug_>2)
+	cout <<"\t\t Non-normal status for RecHit HF("
+	     <<ieta<<", "<<iphi<<", "<<depth<<")  status = "
+	     <<origstatus->getValue()<<endl;
       rechitieta->push_back(ieta);
       rechitiphi->push_back(iphi);
       rechitdepth->push_back(depth);
@@ -124,25 +144,30 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       Eta=0.5*(theHFEtaBounds[abs(ieta)-29]+theHFEtaBounds[abs(ieta)-28]);
       rechitET->push_back(hf->energy()/cosh(Eta));
 
-      if (debug_>2) cout <<"\t\tSearching for partner for HF("<<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
+      if (debug_>2) cout <<"\t\tSearching for partner for HF("
+			 <<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
       // Search for partner rechit
       HcalDetId pId(HcalForward, ieta, iphi,3-depth);
       HFRecHitCollection::const_iterator part=hfhits->find(pId);
-      if (part!=hfhits->end()&& (part->energy()+hf->energy())!=0)
+      if (part!=hfhits->end() && (part->energy()+hf->energy())!=0)
 	{
-          partenergy=part->energy();
-	  R=(hf->energy()-part->energy())/(hf->energy()+part->energy());
+	  partenergy=part->energy();
+	  //R=(hf->energy()-part->energy())/(hf->energy()+part->energy());
+	  R=( fabs(hf->energy()) - fabs(part->energy()) ) 
+	    / ( fabs(hf->energy()) + fabs(part->energy()) );
 	  if (id.depth()==2)
 	    R*=-1;
 	}
       rechitRvalue->push_back(R);
       rechitpartenergy->push_back(partenergy);
-      
+
       // Sum the 4 long, 4 short channels around the cell
       double sum4long=0;
       double sum4short=0;
       
-      if (debug_>2) cout <<"\t\tR value = "<<R<<"\n\t\tSearching for neighbors for HF("<<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
+      if (debug_>2) cout <<"\t\tR value = "<<R
+			 <<"\n\t\tSearching for neighbors for HF("
+			 <<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
       std::vector<HcalDetId> LongNeighbors;
       std::vector<HcalDetId> ShortNeighbors;
       int myiphileft=iphi;
@@ -189,16 +214,28 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	{
 	  HFRecHitCollection::const_iterator temp=hfhits->find(*L);
 	  if (temp!=hfhits->end())
-	    sum4long+=temp->energy();
+	    {
+	      sum4long+=temp->energy();
+	      if(temp->energy() > Emax && depth==1) 
+		Emax = temp->energy();
+	    }
 	}
       for (vector<HcalDetId>::iterator S=ShortNeighbors.begin(); S!=ShortNeighbors.end();++S)
 	{
 	  HFRecHitCollection::const_iterator temp=hfhits->find(*S);
 	  if (temp!=hfhits->end())
-	    sum4short+=temp->energy();
+	    {
+	      sum4short+=temp->energy();
+	      if(temp->energy() > Emax && depth==2) 
+		Emax = temp->energy();
+	    }
 	}
       rechitsum4long->push_back(sum4long);
       rechitsum4short->push_back(sum4short);
+      if(Emax < hf->energy())
+	rechitiSseed->push_back(1);
+      else
+	rechitiSseed->push_back(0);      
       if (debug_>2) cout <<"\t\tsum4 long = "<<sum4long<<"\t sum4 short = "<<sum4short<<endl;
     } // loop on HF rechits
 
@@ -224,6 +261,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for(reco::CaloMETCollection::const_iterator it = metcollection->begin(); it != metcollection->end() ; ++it )
     {
+      if (debug_>1) cout <<"\tMET = "<<it->pt()<<endl;
       met->push_back(it->pt());
       metphi->push_back(it->phi());
       sumet            -> push_back(it->sumEt());
@@ -253,11 +291,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   auto_ptr<bool> isbptxminus( new bool() );    
 
 
-  // assume all tests false
+  // evaluate primary vertex, phys declared; assume others false until evaluated
+  
+  *isprimaryvertex.get()=isPrimaryVertex(iEvent);
+  *isphysdeclared.get()=isPhysDeclared(iEvent,iSetup);
   *BSaccept.get()=false;
-  *isprimaryvertex.get()=false;
   *isbscminbias.get()=false;
-  *isphysdeclared.get()=false;
   *isbschalo.get()=false;
   *isbptx0.get()=false;
   *isbptxplus.get()=false;
@@ -289,7 +328,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   *NHQTracks.get()=numhighpurity;
   *NTracks.get()=tkColl->size();
 
-  if (debug_>1) cout <<"Getting L1GtTriggerMentu"<<endl;
+  if (debug_>1) cout <<"Getting L1GtTriggerMenu"<<endl;
   edm::ESHandle<L1GtTriggerMenu> menuRcd;
   iSetup.get<L1GtTriggerMenuRcd>().get(menuRcd) ;
   const L1GtTriggerMenu* menu = menuRcd.product();
@@ -301,8 +340,6 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       BSCTriggers(iEvent,  *gtRecord, isbscminbias, isbschalo);
       BPTXTriggers(iEvent, *gtRecord, *menu, isbptx0, isbptxplus, isbptxminus);
     }
-
-  *isphysdeclared.get()=isPhysDeclared(iEvent, iSetup);
 
   // -----------------------------------------------------------------------------------------
   // Part 5:  ECAL noise search
@@ -363,11 +400,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if (debug_>0) cout <<"ADDING OBJECTS TO COLLECTION"<<endl;
 
  //EVENT
-  //   iEvent.put(run,prefix+"Run"+suffix);
-  //   iEvent.put(evt,prefix+"Event"+suffix);
-  //   iEvent.put(ls,prefix+"LumiSection"+suffix);
-  //   iEvent.put(bx,prefix+"BunchCrossing"+suffix);
-
+  /*
+  iEvent.put(run,prefix+"Run"+suffix);
+  iEvent.put(evt,prefix+"Event"+suffix);
+  iEvent.put(ls,prefix+"LumiSection"+suffix);
+  iEvent.put(bx,prefix+"BunchCrossing"+suffix);
+  */
   // RECHIT
   iEvent.put(rechitenergy,prefix + "RecHitEnergy"+suffix);
   iEvent.put(rechittime,prefix + "RecHitTime"+suffix);
@@ -377,9 +415,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(rechitflag,prefix + "RecHitFlag"+suffix);
   iEvent.put(rechitRvalue,prefix + "RecHitRValue"+suffix);
   iEvent.put(rechitET,prefix + "RecHitET"+suffix);
-  iEvent.put(rechitenergy,prefix + "RecHitPartEnergy"+suffix);
+  iEvent.put(rechitpartenergy,prefix + "RecHitPartEnergy"+suffix);
   iEvent.put(rechitsum4long,prefix + "RecHitSum4Long"+suffix);
   iEvent.put(rechitsum4short,prefix + "RecHitSum4Short"+suffix);
+  iEvent.put(rechitchanstat,prefix+"RecHitChannelStatus"+suffix);
+  iEvent.put(rechitiSseed,prefix+"RecHitIsSeed"+suffix);
 
   // MET
   iEvent.put(met,prefix + "MET"+suffix);
@@ -505,9 +545,11 @@ bool PromptAna_PMTNoise::isPhysDeclared(edm::Event& iEvent,
   iEvent.getByLabel(hlTriggerResults_, trh);
   if (!(trh.isValid())) 
     {
-      if (debug_>1) cout<<"\t\tTRH not valid!"<<endl;
+      if (debug_>1) cout <<"\t\tTriggerResults object with tag '"<<hlTriggerResults_<<"' is not valid!"<<endl;
       return false;
     }
+
+
   triggerNames_.init(*trh);
   hlNames_=triggerNames_.triggerNames();
     
@@ -516,11 +558,11 @@ bool PromptAna_PMTNoise::isPhysDeclared(edm::Event& iEvent,
 
   for (unsigned int i=0;i<hlNames_.size();++i)
     {
-      if (debug_>2) cout <<"\t\t\tTrig #"<<i<<"  NAME = "<<hlNames_[i]<<endl;
+      if (debug_>2) cout <<"\t\t Checking trigger #"<<i<<"  name "<<hlNames_[i]<<endl;
       if (hlNames_[i]==mytrig && trh->accept(i))
 	{
 	  physdeclared=true;
-	  if (debug_>0)  cout <<"\t\t PHYSICS DECLARED TRIGGER FOUND!"<<endl;
+	  if (debug_>0) cout <<"\t\t isPhysDeclared bit is TRUE!"<<endl;
 	  break;
 	}
     }
