@@ -35,7 +35,6 @@ else:
     process.GlobalTag.globaltag ='GR09_R_34X_V5::All'
 
 
-
 process.load("Configuration/StandardSequences/ReconstructionCosmics_cff")
 
 process.load("RecoMuon/Configuration/RecoMuon_cff")
