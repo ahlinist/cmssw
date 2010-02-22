@@ -19,7 +19,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
         self.boolEventSelFlagProducer = boolEventSelFlagProducer
         self.pyModuleName = pyModuleName
 
-    def _addModule(self, objSelItem, srcParam, sysName = None):
+    def _addModule(self, objSelItem, srcParam, sysName = None, process = None):
         # create module
         module = cms.EDFilter(self.boolEventSelFlagProducer)
 
@@ -64,12 +64,16 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
             selectors.append(selector_i)
 
         setattr(module, "selectors", cms.VPSet(*selectors))
-               
-        # register module in global python name-space
-        pyModule = sys.modules[self.pyModuleName]
-        if pyModule is None:
-            raise ValueError("'pyModuleName' Parameter invalid !!")
-        setattr(pyModule, moduleName, module)
+
+        # if process object exists, attach module to process object;
+        # else register module in global python name-space
+        if process is not None:
+            setattr(process, moduleName, module)
+        else:
+            pyModule = sys.modules[self.pyModuleName]
+            if pyModule is None:
+                raise ValueError("'pyModuleName' Parameter invalid !!")
+            setattr(pyModule, moduleName, module)
 
         # add module to sequence
         if self.sequence == None:
@@ -77,7 +81,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
         else:
             self.sequence *= module
 
-    def configure(self):
+    def configure(self, process = None):
         # configure 'BoolEventSelFlagProducer' modules
         # storing results of event selection as boolean flags in the event
 
@@ -109,14 +113,14 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
                 raise ValueError("must specify either 'src' or 'src_cumulative' and 'src_individual' Parameters !!")
 
             if src is not None:
-                self._addModule(objSelItem, [ [ src, "" ] ] )
+                self._addModule(objSelItem, [ [ src, "" ] ], process = process )
                 if systematics is not None:
                     for sysName in systematics:
-                        self._addModule(objSelItem, [ [ src, "" ] ], sysName )
+                        self._addModule(objSelItem, [ [ src, "" ] ], sysName, process = process)
             if src_cumulative is not None and src_individual is not None:
-                self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ], [ src_individual, "individual" ] ])
+                self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ], [ src_individual, "individual" ] ], process = process)
                 if systematics is not None:
                     for sysName in systematics:
-                        self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ], ], sysName)
+                        self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ], ], sysName, process = process)
 
         return cms.Sequence(self.sequence)
