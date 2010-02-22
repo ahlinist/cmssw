@@ -10,9 +10,9 @@ import copy
 #--------------------------------------------------------------------------------
 
 # uncomment next line to make plots for 10 TeV centre-of-mass energy
-from TauAnalysis.Configuration.plotZtoMuTau_processes_10TeV_cfi import *
+#from TauAnalysis.Configuration.plotZtoMuTau_processes_10TeV_cfi import *
 # uncomment next line to make plots for 7 TeV centre-of-mass energy
-#from TauAnalysis.Configuration.plotZtoMuTau_processes_7TeV_cfi import *
+from TauAnalysis.Configuration.plotZtoMuTau_processes_7TeV_cfi import *
 from TauAnalysis.Configuration.plotZtoMuTau_drawJobs_cfi import *
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
