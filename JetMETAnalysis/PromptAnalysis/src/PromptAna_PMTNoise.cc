@@ -29,6 +29,7 @@ PromptAna_PMTNoise::PromptAna_PMTNoise(const edm::ParameterSet& iConfig)
   produces <std::vector<int> >    (prefix + "RecHitFlag"+suffix);
   produces <std::vector<double> > (prefix + "RecHitRValue"+suffix);
   produces <std::vector<double> > (prefix + "RecHitET"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitPartEnergy"+suffix);
   produces <std::vector<double> > (prefix + "RecHitSum4Long"+suffix);
   produces <std::vector<double> > (prefix + "RecHitSum4Short"+suffix);
 
@@ -88,6 +89,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   auto_ptr<vector<int> > rechitflag     ( new std::vector<int>()  ) ;
   auto_ptr<vector<double> > rechitRvalue  ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitET  ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechitpartenergy    ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitsum4long  ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitsum4short  ( new std::vector<double>()  ) ;
 
@@ -97,6 +99,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     cout <<"Could not get HF rechits!"<<endl;
 
   double R=1;
+  double partenergy=0;
   double Eta=0;
   int ieta=-99;
   int iphi=-99;
@@ -107,6 +110,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   for (HFRecHitCollection::const_iterator hf=hfhits->begin();hf!=hfhits->end();++hf)
     {
       R=1;  // assume no partner
+      partenergy=0;  // assume no partner
       HcalDetId id(hf->detid().rawId());
       ieta=id.ieta();
       iphi=id.iphi();
@@ -126,12 +130,14 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       HFRecHitCollection::const_iterator part=hfhits->find(pId);
       if (part!=hfhits->end()&& (part->energy()+hf->energy())!=0)
 	{
+          partenergy=part->energy();
 	  R=(hf->energy()-part->energy())/(hf->energy()+part->energy());
 	  if (id.depth()==2)
 	    R*=-1;
 	}
       rechitRvalue->push_back(R);
-
+      rechitpartenergy->push_back(partenergy);
+      
       // Sum the 4 long, 4 short channels around the cell
       double sum4long=0;
       double sum4short=0;
@@ -371,6 +377,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(rechitflag,prefix + "RecHitFlag"+suffix);
   iEvent.put(rechitRvalue,prefix + "RecHitRValue"+suffix);
   iEvent.put(rechitET,prefix + "RecHitET"+suffix);
+  iEvent.put(rechitenergy,prefix + "RecHitPartEnergy"+suffix);
   iEvent.put(rechitsum4long,prefix + "RecHitSum4Long"+suffix);
   iEvent.put(rechitsum4short,prefix + "RecHitSum4Short"+suffix);
 
