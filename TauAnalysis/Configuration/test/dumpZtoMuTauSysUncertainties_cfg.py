@@ -16,13 +16,16 @@ process.source = cms.Source("EmptySource")
 
 process.loadZtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
     dump = cms.PSet(
-        inputFileNames = cms.vstring('plotsZtoMuTau_systematics.root'),
+        inputFileNames = cms.vstring(
+            'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/plots/ZtoMuTau/7TeV/plotsZtoMuTau_ZtautauGenTauLeptonPairAccSum.root'
+        ),
+        #inputFileNames = cms.vstring('plotsZtoMuTau_systematics.root'),
         dqmDirectory_store = cms.string('')
     )
 )
 
-#dqmDirectory_Ztautau = 'harvested/Ztautau/zMuTauAnalyzer/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
-dqmDirectory_Ztautau = 'zMuTauAnalyzer/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+dqmDirectory_Ztautau = 'Ztautau/zMuTauAnalyzer/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+#dqmDirectory_Ztautau = 'zMuTauAnalyzer/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
 
 process.dumpZtoMuTauAcceptance = cms.EDAnalyzer("DQMDumpBinningResults",
     binningService = cms.PSet(
