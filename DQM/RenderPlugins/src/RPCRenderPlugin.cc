@@ -33,11 +33,13 @@ public:
     {
       c->cd();
 
-      if( dynamic_cast<TH2*>( o.object ) )
-      {
+      if( dynamic_cast<TH2*>( o.object ) ){
         preDrawTH2( c, o );
+      }else if( dynamic_cast<TH1*>( o.object ) )   {
+	preDrawTH1(c, o);
       }
-    }
+
+ }
 
   virtual void postDraw(TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
     {
@@ -46,6 +48,20 @@ public:
     }
 
 private:
+
+ void preDrawTH1( TCanvas *c, const VisDQMObject &o){
+    TH1* obj = dynamic_cast<TH1*>( o.object );
+    assert( obj );
+
+   if(o.name.find("BX") != std::string::npos){
+	  obj->StatOverflows(false); 
+   }
+
+
+  }
+
+
+
   void preDrawTH2( TCanvas *c, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
