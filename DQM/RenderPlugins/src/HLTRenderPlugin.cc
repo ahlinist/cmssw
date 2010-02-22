@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.14 2009/12/09 16:47:53 lorenzo Exp $
+  $Id: HLTRenderPlugin.cc,v 1.15 2010/01/15 23:57:26 wteo Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.15  2010/01/15 23:57:26  wteo
+  show only non-empty bins for HLTMonBitSummary plots
+
   Revision 1.14  2009/12/09 16:47:53  lorenzo
   added log scale
 
@@ -106,12 +109,20 @@ private:
       assert (obj); // checks that object indeed exists
 
       // rate histograms
-      if ( o.name.find("rate_p") != std::string::npos || o.name.find("count_per_LS") != std::string::npos)
+      if ( o.name.find("rate_p") != std::string::npos || 
+           o.name.find("counts_p") != std::string::npos || 
+           o.name.find("hltCount") != std::string::npos || 
+           o.name.find("hltRate") != std::string::npos || 
+           o.name.find("hltRate") != std::string::npos || 
+           o.name.find("mergeCount") != std::string::npos)
       {
         gStyle->SetOptStat(11);
         obj->GetXaxis()->SetTitle("Luminosity Segment Number");
-        if ( o.name.find("count_per_LS") == std::string::npos)
+        if ( o.name.find("counts_p") == std::string::npos)
           obj->GetYaxis()->SetTitle("Rate (Hz)");
+        else 
+          obj->GetYaxis()->SetTitle("Counts (no units)");
+
         int nbins = obj->GetNbinsX();
 
         int maxRange = nbins;
