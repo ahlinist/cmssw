@@ -1,0 +1,49 @@
+universe = vanilla                                                                                                                                                                                       
+Executable = make_histograms.py
+should_transfer_files = NO                                                                                                                                                                               
+getenv = true                                                                                                                                                                                            
+Output = histograms/wjets_$(cluster)_$(process).out                                                                                                                                                 
+Error  = histograms/wjets_$(cluster)_$(process).err                                                                                                                                                 
+Log    = histograms/wjets_$(cluster)_$(process).condor                                                                                                                                              
+Arguments = -n 50 -j $(process) -s wjets 
+Queue 50     
+
+universe = vanilla                                                                                                                                                                                       
+Executable = make_histograms.py
+should_transfer_files = NO                                                                                                                                                                               
+getenv = true                                                                                                                                                                                            
+Output = histograms/ztt_$(cluster)_$(process).out                                                                                                                                                 
+Error  = histograms/ztt_$(cluster)_$(process).err                                                                                                                                                 
+Log    = histograms/ztt_$(cluster)_$(process).condor                                                                                                                                              
+Arguments = -n 50 -j $(process) -s ztt 
+Queue 50     
+
+universe = vanilla                                                                                                                                                                                       
+Executable = make_histograms.py
+should_transfer_files = NO                                                                                                                                                                               
+getenv = true                                                                                                                                                                                            
+Output = histograms/ppmux_$(cluster)_$(process).out                                                                                                                                                 
+Error  = histograms/ppmux_$(cluster)_$(process).err                                                                                                                                                 
+Log    = histograms/ppmux_$(cluster)_$(process).condor                                                                                                                                              
+Arguments = -n 50 -j $(process) -s ppmux 
+Queue 50     
+
+universe = vanilla                                                                                                                                                                                       
+Executable = make_histograms.py
+should_transfer_files = NO                                                                                                                                                                               
+getenv = true                                                                                                                                                                                            
+Output = histograms/dijet_first_$(cluster)_$(process).out                                                                                                                                                 
+Error  = histograms/dijet_first_$(cluster)_$(process).err                                                                                                                                                 
+Log    = histograms/dijet_first_$(cluster)_$(process).condor                                                                                                                                              
+Arguments = -n 50 -j $(process) -s dijet_first 
+Queue 50     
+
+universe = vanilla                                                                                                                                                                                       
+Executable = make_histograms.py
+should_transfer_files = NO                                                                                                                                                                               
+getenv = true                                                                                                                                                                                            
+Output = histograms/dijet_second_$(cluster)_$(process).out                                                                                                                                                 
+Error  = histograms/dijet_second_$(cluster)_$(process).err                                                                                                                                                 
+Log    = histograms/dijet_second_$(cluster)_$(process).condor                                                                                                                                              
+Arguments = -n 50 -j $(process) -s dijet_second 
+Queue 50     

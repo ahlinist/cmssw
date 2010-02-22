@@ -25,7 +25,7 @@ def makeCuts(denominator="1"):
     cuts['AgainstMuon']      =  TauNtupleSelection("$AgainstMuon")*denominator
     cuts['AgainstElectron']  =  TauNtupleSelection("$AgainstElectron")*denominator
     cuts['ByCharge']         =  TauNtupleSelection("abs($charge) == 1")*denominator
-    cuts['ByNumTracks']      =  TauNtupleSelection("$nTrks == 1 || $nTrks == 3")*denominator
+    cuts['ByNumTracks']      =  TauNtupleSelection("$nCharged == 1 || $nCharged == 3")*denominator
     cuts['ByTaNCfrOne']      =  TauNtupleSelection('$ByTaNCfrOne')*denominator
     cuts['ByTaNCfrHalf']     =  TauNtupleSelection('$ByTaNCfrHalf')*denominator
     cuts['ByTaNCfrQuarter']  =  TauNtupleSelection('$ByTaNCfrQuarter')*denominator

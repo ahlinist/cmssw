@@ -103,7 +103,7 @@ for source, source_info in to_build:
     for location in list(source_info['sources'].keys()):
         print "Parsing %s logs" % location
         xSec, filterEff = source_info['sources'][location]
-        nEvents = getNEvents("OldCrabDirs/%s/*.stderr" % location, "path")
+        nEvents = getNEvents("%s/*.stderr" % location, "path")
         weight = normalizeToOneInverseNanoBarn(
             xSec, nEvents, filterEff)
         # Update the info
@@ -121,7 +121,7 @@ for source, source_info in to_build:
     # Build file list
     files_and_weights = []
     for loc, (xSec, filterEff, nEvents, weight) in source_info['sources'].iteritems():
-        for file in glob.glob("OldCrabDirs/%s/*.root" % loc):
+        for file in glob.glob("%s/*.root" % loc):
             files_and_weights.append((file, weight))
     make_plots(files_and_weights, selections=makeCuts(denominator), **source_info)
 
