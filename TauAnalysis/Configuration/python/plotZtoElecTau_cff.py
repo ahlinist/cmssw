@@ -32,6 +32,7 @@ loadZtoElecTau_10TeV = cms.EDAnalyzer("DQMFileLoader",
 	QCD_EMenriched_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt80to170_10TeV_Sum.config_dqmFileLoader),
 	TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJets_10TeV_Sum.config_dqmFileLoader)
 )
+
 loadZtoElecTau_7TeV = cms.EDAnalyzer("DQMFileLoader",
 	Ztautau = copy.deepcopy(processZtoElecTau_Ztautau_7TeV_Sum.config_dqmFileLoader),
 	Zee = copy.deepcopy(processZtoElecTau_Zee_7TeV_Sum.config_dqmFileLoader),
@@ -78,7 +79,7 @@ addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
 addZtoElecTau_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-			#'harvested/Ztautau',
+	    #'harvested/Ztautau',
             'harvested/ZtautauPlusJets',
             'harvested/ZeePlusJets', 
             #'harvested/Zee',
@@ -105,7 +106,7 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
             dqmDirectory = cms.string('harvested/gammaPlusJetsSum'),
             legendEntry = cms.string('#gamma + Jets'),
             type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-		),
+	),
         qcdSum = cms.PSet(
             dqmDirectory = cms.string('harvested/qcdSum'),
             legendEntry = cms.string('QCD'),
@@ -154,7 +155,7 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
             gammaPlusJetsSum = copy.deepcopy(drawOption_gammaPlusJets),
             qcdSum = copy.deepcopy(drawOption_QCD),
             TTplusJets = copy.deepcopy(drawOption_TTplusJets)
-		)
+	)
     ),
 
     drawJobs = drawJobConfigurator_ZtoElecTau.configure(),
