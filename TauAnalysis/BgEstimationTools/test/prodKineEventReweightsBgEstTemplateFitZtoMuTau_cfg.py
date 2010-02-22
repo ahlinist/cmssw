@@ -27,7 +27,9 @@ process.source = cms.Source("EmptySource")
 
 process.loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
-        inputFileNames = cms.vstring('rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau/10TeV/plotsZtoMuTau_all.root'),
+        inputFileNames = cms.vstring(
+           'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/7TeV/plotsZtoMuTau_all.root'
+        ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('')
     )
@@ -40,28 +42,12 @@ meName_denominator = 'zMuTauAnalyzer/afterEvtSelDiTauCandidateForMuTauAcoplanari
 process.prodKineEventReweightsZtoMuTau = cms.EDAnalyzer("DQMHistEffProducer",
     config = cms.VPSet(
         cms.PSet(
-            meName_numerator = cms.string('harvested/Ztautau/' + meName_numerator),
-            meName_denominator = cms.string('harvested/Ztautau/' + meName_denominator),
-            meName_efficiency = cms.string("bgEstKineEventReweights/Ztautau/diTauMvis")
-        ),
-        cms.PSet(
             meName_numerator = cms.string('harvested/WplusJets/' + meName_numerator),
             meName_denominator = cms.string('harvested/WplusJets/' + meName_denominator),
-            meName_efficiency = cms.string("bgEstKineEventReweights/WplusJets/diTauMvis")
-        ),
-        cms.PSet(
-            meName_numerator = cms.string('harvested/TTplusJets/' + meName_numerator),
-            meName_denominator = cms.string('harvested/TTplusJets/' + meName_denominator),
-            meName_efficiency = cms.string("bgEstKineEventReweights/TTplusJets/diTauMvis")
-        ),
-        cms.PSet(
-            meName_numerator = cms.string('harvested/qcdSum/' + meName_numerator),
-            meName_denominator = cms.string('harvested/qcdSum/' + meName_denominator),
-            meName_efficiency = cms.string("bgEstKineEventReweights/QCD/diTauMvis")
+            meName_efficiency = cms.string("bgEstTemplateKineEventReweights/WplusJets/diTauMvis")
         )
     )                                                     
 )
-
 
 process.saveKineEventReweightsZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('bgEstKineEventReweightsZtoMuTau.root'),
