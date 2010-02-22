@@ -27,12 +27,12 @@ selectedLayer1MuonsPt15 = cms.EDFilter("PATMuonSelector",
     filter = cms.bool(False)
 )
 
+# require muon candidate to be isolated
+# with respect to tracks (of Pt >~ 0.3 GeV)
 selectedLayer1MuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
     type = cms.string('tracker'),
-    #vetos = cms.vstring("0.01", "Threshold(0.9)"),
     vetos = cms.vstring("0.01"),                          
     dRisoCone = cms.double(0.6),
-    #numMax = cms.int32(0),
     sumPtMax = cms.double(1.),
     filter = cms.bool(False)
 )
@@ -41,7 +41,7 @@ selectedLayer1MuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
 # with respect to energy deposits in ECAL
 # (not associated to muon candidate)
 selectedLayer1MuonsEcalIso = cms.EDFilter("PATMuonSelector",
-    cut = cms.string('ecalIso < 1.'),
+    cut = cms.string('userIsolation(pat::EcalIso) < 1.'),
     filter = cms.bool(False)
 )
 
@@ -85,7 +85,7 @@ selectedLayer1MuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
 selectedLayer1MuonsTrkIsoLooseIsolation.sumPtMax = cms.double(8.)
 
 selectedLayer1MuonsEcalIsoLooseIsolation = copy.deepcopy(selectedLayer1MuonsEcalIso)
-selectedLayer1MuonsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedLayer1MuonsEcalIsoLooseIsolation.cut = cms.string('userIsolation(pat::EcalIso) < 8.')
 
 selectedLayer1MuonsPionVetoLooseIsolation = copy.deepcopy(selectedLayer1MuonsPionVeto)
 
