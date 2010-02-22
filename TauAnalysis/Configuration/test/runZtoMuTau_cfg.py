@@ -85,7 +85,8 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoMuTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
-#__#batchMode#
+#__#isBatchMode#
+#__#disableEventDump#
 #
 #--------------------------------------------------------------------------------
 
@@ -166,9 +167,16 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
-if not hasattr(process, "batchMode"):
+if not hasattr(process, "isBatchMode"):
     disableSysUncertainties_runZtoMuTau(process)
     #enableSysUncertainties_runZtoMuTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# disable event-dump output
+# in order to reduce size of log-files
+if hasattr(process, "disableEventDump"):
+    process.analyzeZtoMuTauEvents.eventDumps = cms.VPSet()
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -179,7 +187,7 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-if not hasattr(process, "batchMode"):
+if not hasattr(process, "isBatchMode"):
     process.p.replace(process.producePatTupleZtoMuTauSpecific, process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
 #--------------------------------------------------------------------------------
 
