@@ -62,7 +62,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
             objSelAttr = getattr(objSelItem, objSelAttrName)
             if isinstance(objSelAttr, cms._ParameterTypeBase) and not objSelAttrName in ["pluginName", "pluginType"]:
                 setattr(module, objSelAttrName, objSelAttr)
-                
+
         moduleName = getter.get_moduleName(getInstanceName(objSelItem, pyNameSpace, process), sysName)
         module.setLabel(moduleName)        
 
@@ -82,7 +82,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
             if pyModule is None:
                 raise ValueError("'pyModuleName' Parameter invalid !!")
             setattr(pyModule, moduleName, module)
-        
+
         self.lastModuleName = moduleName
 
         # add module to sequence
