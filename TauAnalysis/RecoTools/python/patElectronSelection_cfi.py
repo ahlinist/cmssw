@@ -36,15 +36,15 @@ selectedLayer1ElectronsPt15 = cms.EDFilter("PATElectronSelector",
 # require electron candidate to be isolated
 # with respect to tracks (of Pt >~ 0.3 GeV)
 selectedLayer1ElectronsTrkIso = cms.EDFilter("PATElectronSelector",
-    cut = cms.string('trackIso < 1.'),
+    cut = cms.string('userIsolation("pat::TrackIso") < 1.'),
     filter = cms.bool(False)
-)
+)                                    
 
 # require electron candidate to be isolated
 # with respect to energy deposits in ECAL
 # (not associated to electron candidate)
 selectedLayer1ElectronsEcalIso = cms.EDFilter("PATElectronSelector",
-    cut = cms.string('(abs(superCluster.eta) < 1.479 & ecalIso < 2.5) | (abs(superCluster.eta) > 1.479 & ecalIso < 3.5)'),
+    cut = cms.string('(abs(superCluster.eta) < 1.479 & userIsolation("pat::EcalIso") < 2.5) | (abs(superCluster.eta) > 1.479 & userIsolation("pat::EcalIso") < 3.5)'),
     filter = cms.bool(False)
 )
 
@@ -72,10 +72,10 @@ selectedLayer1ElectronsTrkIP = cms.EDFilter("PATElectronIpSelector",
 #--------------------------------------------------------------------------------
 
 selectedLayer1ElectronsTrkIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsTrkIso)
-selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
+selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('userIsolation(pat::TrackIso) < 8.')
 
 selectedLayer1ElectronsEcalIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsEcalIso)
-selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('userIsolation(pat::EcalIso) < 8.')
 
 selectedLayer1ElectronsTrkLooseIsolation = copy.deepcopy(selectedLayer1ElectronsTrk)
 

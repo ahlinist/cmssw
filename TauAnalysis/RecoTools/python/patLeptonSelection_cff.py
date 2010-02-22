@@ -21,8 +21,8 @@ selectedLayer1ElectronsTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 
 selectedLayer1ElectronsAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
 selectedLayer1ElectronsEta21.cut = cms.string('abs(eta) < 2.1')
 selectedLayer1ElectronsPt15.cut = cms.string('pt > 15.')
-selectedLayer1ElectronsTrkIso.cut = cms.string('trackIso < 1.')
-selectedLayer1ElectronsEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & ecalIso < 2.5) | (abs(superCluster.eta) > 1.479 & ecalIso < 3.5)')
+selectedLayer1ElectronsTrkIso.cut = cms.string('userIsolation("pat::TrackIso") < 1.')
+selectedLayer1ElectronsEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & userIsolation("pat::EcalIso") < 2.5) | (abs(superCluster.eta) > 1.479 & userIsolation("pat::EcalIso") < 3.5)')
 selectedLayer1ElectronsTrk.cut = cms.string('gsfTrack.isNonnull')
 selectedLayer1ElectronsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
 selectedLayer1ElectronsTrkIP.IpMax = cms.double(0.05)
@@ -43,8 +43,8 @@ patElectronSelConfigurator = objSelConfigurator(
 
 selectLayer1Electrons = patElectronSelConfigurator.configure(pyNameSpace = locals())
 
-selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
-selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('userIsolation("pat::TrackIso") < 8.')
+selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('userIsolation("pat::EcalIso") < 8.')
 selectedLayer1ElectronsTrkLooseIsolation.cut = selectedLayer1ElectronsTrk.cut
 selectedLayer1ElectronsTrkIPlooseIsolation.vertexSource = selectedLayer1ElectronsTrkIP.vertexSource
 selectedLayer1ElectronsTrkIPlooseIsolation.IpMax = selectedLayer1ElectronsTrkIP.IpMax
@@ -96,7 +96,7 @@ selectedLayer1ElectronsForElecMuTightId.cut = cms.string('electronID("eidRobustT
 selectedLayer1ElectronsForElecMuAntiCrackCut.cut = selectedLayer1ElectronsAntiCrackCut.cut
 selectedLayer1ElectronsForElecMuEta21.cut = selectedLayer1ElectronsEta21.cut 
 selectedLayer1ElectronsForElecMuPt15.cut = selectedLayer1ElectronsPt15.cut 
-selectedLayer1ElectronsForElecMuTrkIso.cut = cms.string('trackIso < 2.')
+selectedLayer1ElectronsForElecMuTrkIso.cut = cms.string('userIsolation("pat::TrackIso") < 2.')
 selectedLayer1ElectronsForElecMuEcalIso.cut = selectedLayer1ElectronsEcalIso.cut
 selectedLayer1ElectronsForElecMuTrk.cut = selectedLayer1ElectronsTrk.cut 
 selectedLayer1ElectronsForElecMuTrkIP.vertexSource = selectedLayer1ElectronsTrkIP.vertexSource 
@@ -119,8 +119,8 @@ patElectronSelConfiguratorForElecMu = objSelConfigurator(
 
 selectLayer1ElectronsForElecMu = patElectronSelConfiguratorForElecMu.configure(pyNameSpace = locals())
 
-selectedLayer1ElectronsForElecMuTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
-selectedLayer1ElectronsForElecMuEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedLayer1ElectronsForElecMuTrkIsoLooseIsolation.cut = cms.string('userIsolation("pat::TrackIso") < 8.')
+selectedLayer1ElectronsForElecMuEcalIsoLooseIsolation.cut = cms.string('userIsolation("pat::EcalIso") < 8.')
 selectedLayer1ElectronsForElecMuTrkLooseIsolation.cut = selectedLayer1ElectronsForElecMuTrk.cut
 selectedLayer1ElectronsForElecMuTrkIPlooseIsolation.vertexSource = selectedLayer1ElectronsForElecMuTrkIP.vertexSource
 selectedLayer1ElectronsForElecMuTrkIPlooseIsolation.IpMax = selectedLayer1ElectronsForElecMuTrkIP.IpMax
@@ -153,7 +153,7 @@ selectedLayer1MuonsPt15.cut = cms.string('pt > 15.')
 selectedLayer1MuonsTrkIso.vetos = vetos = cms.vstring("0.01")
 selectedLayer1MuonsTrkIso.dRisoCone = cms.double(0.6)
 selectedLayer1MuonsTrkIso.sumPtMax = cms.double(1.)
-selectedLayer1MuonsEcalIso.cut = cms.string('ecalIso < 1.')
+selectedLayer1MuonsEcalIso.cut = cms.string('userIsolation("pat::EcalIso") < 1.')
 selectedLayer1MuonsPionVeto.CaloCompCoefficient = cms.double(0.8)
 selectedLayer1MuonsPionVeto.SegmCompCoefficient = cms.double(1.2)
 selectedLayer1MuonsPionVeto.AntiPionCut = cms.double(1.0)
@@ -180,7 +180,7 @@ selectLayer1Muons = patMuonSelConfigurator.configure(pyNameSpace = locals())
 selectedLayer1MuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
 selectedLayer1MuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
 selectedLayer1MuonsTrkIsoLooseIsolation.sumPtMax = cms.double(8.)
-selectedLayer1MuonsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedLayer1MuonsEcalIsoLooseIsolation.cut = cms.string('userIsolation("pat::EcalIso") < 8.')
 selectedLayer1MuonsPionVetoLooseIsolation.CaloCompCoefficient = selectedLayer1MuonsPionVeto.CaloCompCoefficient
 selectedLayer1MuonsPionVetoLooseIsolation.SegmCompCoefficient = selectedLayer1MuonsPionVeto.SegmCompCoefficient
 selectedLayer1MuonsPionVetoLooseIsolation.AntiPionCut = selectedLayer1MuonsPionVeto.AntiPionCut
@@ -215,7 +215,7 @@ selectedLayer1TausLeadTrk.cut = cms.string('tauID("leadingTrackFinding") > 0.5')
 selectedLayer1TausLeadTrkPt.cut = cms.string('tauID("leadingTrackPtCut") > 0.5')
 selectedLayer1TausTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
 selectedLayer1TausEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
-selectedLayer1TausProng.cut = cms.string("signalTracks.size() = 1 | signalTracks.size() = 3")
+selectedLayer1TausProng.cut = cms.string("signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3")
 selectedLayer1TausCharge.cut = cms.string('abs(charge) > 0.5 & abs(charge) < 1.5')
 selectedLayer1TausElectronVeto.cut = cms.string('tauID("againstElectron") > 0.5')
 selectedLayer1TausEcalCrackVeto.cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558")
