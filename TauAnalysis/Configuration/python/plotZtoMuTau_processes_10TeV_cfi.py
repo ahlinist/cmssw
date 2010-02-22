@@ -9,6 +9,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_10TeV_cfi import *
 # names of .root files containing histograms
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_Ztautau = copy.deepcopy(process_Ztautau)
 processZtoMuTau_Ztautau.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_Ztautau_10TeV_part01.root',
@@ -35,9 +36,9 @@ processZtoMuTau_ZtautauSum.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processZtoMuTau_ZtautauSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_ZtautauSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_Zmumu = copy.deepcopy(process_Zmumu)
 processZtoMuTau_Zmumu.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_Zmumu_10TeV_part01.root',
@@ -66,9 +67,9 @@ processZtoMuTau_ZmumuSum.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processZtoMuTau_ZmumuSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_ZmumuSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #-----------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_WplusJets = copy.deepcopy(process_WplusJets)
 processZtoMuTau_WplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_WplusJets_10TeV_part01.root',
@@ -107,9 +108,9 @@ processZtoMuTau_WplusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processZtoMuTau_WplusJetsSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_WplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_InclusivePPmuX = copy.deepcopy(process_InclusivePPmuX)
 processZtoMuTau_InclusivePPmuX.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_InclusivePPmuX_10TeV_part01.root',
@@ -143,9 +144,9 @@ processZtoMuTau_InclusivePPmuXsum.config_dqmFileLoader.inputFileNames = cms.vstr
 )
 processZtoMuTau_InclusivePPmuXsum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_InclusivePPmuXsum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_PPmuXptGt20_part01 = copy.deepcopy(process_PPmuXptGt20)
 processZtoMuTau_PPmuXptGt20_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_PPmuXptGt20_10TeV_part01.root',
@@ -237,9 +238,9 @@ processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader.inputFileNames = cms.vstring
 )
 processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
-
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
 processZtoMuTau_TTplusJets = copy.deepcopy(process_TTplusJets)
 processZtoMuTau_TTplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoMuTau_TTplusJets_10TeV_part01.root',
@@ -268,3 +269,4 @@ processZtoMuTau_TTplusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processZtoMuTau_TTplusJetsSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoMuTau_TTplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+#--------------------------------------------------------------------------------
