@@ -38,7 +38,7 @@ void DQMDumpHistogram::analyze(const edm::Event&, const edm::EventSetup&)
 
 void DQMDumpHistogram::endJob()
 {
-  //std::cout << "<DQMDumpHistogram::endJob>:" << std::endl;
+  std::cout << "<DQMDumpHistogram::endJob>:" << std::endl;
 
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
@@ -56,8 +56,9 @@ void DQMDumpHistogram::endJob()
 
   for ( vstring::const_iterator meName = meNames_.begin();
 	meName != meNames_.end(); ++meName ) {
+    std::cout << " meName = " << (*meName) << std::endl;
+
     MonitorElement* me = dqmStore.get(*meName);
-    //std::cout << " me = " << me << std::endl;
     if ( !me ) {
       edm::LogError ("endjob") 
 	<< " Failed to access meName = " << (*meName) << " in DQMStore --> skipping !!";
