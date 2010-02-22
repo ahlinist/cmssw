@@ -37,12 +37,12 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 #          in the format 'paramName1=paramValue1; paramName2=paramValue2;...';
 #          in the original config file, each occurence of any paramName
 #          will be replaced by the associated paramValue
-#      (8) outputFiles
+#      (8) outputFileNames
 #          names of all .root files produced by cmsRun job
 #
 #          NOTE: .root files missing in this list will not be copied to castor !!
 #
-#      (9) outputDirectory
+#      (9) outputFilePath
 #          name of the directory (either on afs area or castor)
 #          to which all .root files produced by the cmsRun job will be copied
 #          (e.g. "/castor/cern.ch/user/v/veelken/")
@@ -57,9 +57,9 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 def submitToGrid(configFile = None, channel = None,
                  sample = None, dbs_name = None, dbs_url = None, 
                  replFunction = None, replacements = "",
-                 outputFiles = None, outputDirectory = None,
+                 outputFileNames = None, outputFilePath = None,
                  submit = "yes"):
-    # check that configFile, channel, sample and outputDirectory
+    # check that configFile, channel, sample and outputFilePath
     # parameters are defined and non-empty
     if configFile is None:
         raise ValueError("Undefined configFile Parameter !!")
@@ -71,15 +71,15 @@ def submitToGrid(configFile = None, channel = None,
         raise ValueError("Undefined dbs_name Parameter !!")
     if dbs_url is None:
         raise ValueError("Undefined dbs_url Parameter !!")
-    if outputFiles is None:
-        raise ValueError("Undefined outputFiles Parameter !!")
-    if outputDirectory is None:
-        raise ValueError("Undefined outputDirectory Parameter !!")
+    if outputFileNames is None:
+        raise ValueError("Undefined outputFileNames Parameter !!")
+    if outputFilePath is None:
+        raise ValueError("Undefined outputFilePath Parameter !!")
 
-    # in case outputDirectory parameter not terminated by "/",
-    # add terminating "/" character to outputDirectory string
-    if not outputDirectory.endswith("/"):
-        outputDirectory += "/"
+    # in case outputFilePath parameter not terminated by "/",
+    # add terminating "/" character to outputFilePath string
+    if not outputFilePath.endswith("/"):
+        outputFilePath += "/"
 
     # get name of directory in which config files will be created;
     # add terminating "/" character to submissionDirectory string also,
@@ -127,7 +127,7 @@ def submitToGrid(configFile = None, channel = None,
             eventsPerJob = paramNameValuePair[1]
     crabDirectory = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "/")
     crabOutputFiles = ""
-    for outputFile in outputFiles:
+    for outputFile in outputFileNames:
         if crabOutputFiles != "":
             crabOutputFiles += ", "
         crabOutputFiles += outputFile.value().replace("_partXX", "")
@@ -139,12 +139,14 @@ def submitToGrid(configFile = None, channel = None,
     replacements += "; output_file = " + crabOutputFiles
     replacements += "; ui_working_dir = " + crabDirectory
     replacements += "; logdir = " + crabDirectory + "log/"
-    replacements += "; user_remote_dir = " + outputDirectory
+    replacements += "; user_remote_dir = " + outputFilePath
     prepareConfigFile(configFile_orig = crabConfigFile_orig, replacements = replacements, configFile_mod = crabConfigFile_mod)
     
     # finally, submit job to the Grid
     if submit == "yes":
         crabCreateCommand = "crab -create -cfg " + crabConfigFile_mod
-        crabSubmitCommand = "crab -submit -c "+ crabDirectory
         subprocess.call(crabCreateCommand, shell = True)
+        crabSubmitCommand = "crab -submit -c "+ crabDirectory
         subprocess.call(crabSubmitCommand, shell = True)
+        crabStatusCommand = "crab -status -c "+ crabDirectory
+        subprocess.call(crabStatusCommand, shell = True)
