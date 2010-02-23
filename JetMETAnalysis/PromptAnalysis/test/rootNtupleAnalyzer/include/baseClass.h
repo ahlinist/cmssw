@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <TH1F.h>
 #include <math.h>
+#include <stdlib.h> 
 
 #define STDOUT(STRING) {		   \
 	std::cout << __FILE__ <<" - Line "<<__LINE__<<" - "<<__FUNCTION__<<": "<< STRING <<std::endl;   \
@@ -113,33 +114,33 @@ class baseClass : public rootNtupleClass {
   public :
   map<string, bool> combCutName_passed_;
 
-  void baseClass::resetCuts();
+  void resetCuts();
   void fillVariableWithValue(const std::string&, const double&);
-  void baseClass::evaluateCuts();
-  bool baseClass::passedCut(const string& s);
-  bool baseClass::passedAllPreviousCuts(const string& s);
-  bool baseClass::passedAllOtherCuts(const string& s);
-  bool baseClass::passedAllOtherSameAndLowerLevelCuts(const string& s);
-  bool baseClass::variableIsFilled(const string& s);
-  double baseClass::getVariableValue(const string& s);
-  double baseClass::getPreCutValue1(const string& s);
-  double baseClass::getPreCutValue2(const string& s);
-  double baseClass::getPreCutValue3(const string& s);
-  double baseClass::getPreCutValue4(const string& s);
-  double baseClass::getCutMinValue1(const string& s);
-  double baseClass::getCutMaxValue1(const string& s);
-  double baseClass::getCutMinValue2(const string& s);
-  double baseClass::getCutMaxValue2(const string& s);
+  void evaluateCuts();
+  bool passedCut(const string& s);
+  bool passedAllPreviousCuts(const string& s);
+  bool passedAllOtherCuts(const string& s);
+  bool passedAllOtherSameAndLowerLevelCuts(const string& s);
+  bool variableIsFilled(const string& s);
+  double getVariableValue(const string& s);
+  double getPreCutValue1(const string& s);
+  double getPreCutValue2(const string& s);
+  double getPreCutValue3(const string& s);
+  double getPreCutValue4(const string& s);
+  double getCutMinValue1(const string& s);
+  double getCutMaxValue1(const string& s);
+  double getCutMinValue2(const string& s);
+  double getCutMaxValue2(const string& s);
 
-  const TH1F& baseClass::getHisto_noCuts_or_skim(const string& s);
-  const TH1F& baseClass::getHisto_allPreviousCuts(const string& s);
-  const TH1F& baseClass::getHisto_allOthrSmAndLwrLvlCuts(const string& s);
-  const TH1F& baseClass::getHisto_allOtherCuts(const string& s);
-  const TH1F& baseClass::getHisto_allCuts(const string& s);
+  const TH1F& getHisto_noCuts_or_skim(const string& s);
+  const TH1F& getHisto_allPreviousCuts(const string& s);
+  const TH1F& getHisto_allOthrSmAndLwrLvlCuts(const string& s);
+  const TH1F& getHisto_allOtherCuts(const string& s);
+  const TH1F& getHisto_allCuts(const string& s);
 
-  int    baseClass::getHistoNBins(const string& s);
-  double baseClass::getHistoMin(const string& s);
-  double baseClass::getHistoMax(const string& s);
+  int    getHistoNBins(const string& s);
+  double getHistoMin(const string& s);
+  double getHistoMax(const string& s);
 
 
   baseClass(string * inputList, string * cutFile, string * treeName, string *outputFileName=0, string * cutEfficFile=0);
@@ -163,14 +164,14 @@ class baseClass : public rootNtupleClass {
   map<string, preCut> preCutName_cut_;
   map<string, cut> cutName_cut_;
   vector<string> orderedCutNames_; 
-  void baseClass::init();
-  void baseClass::readInputList();
-  void baseClass::readCutFile();
-  bool baseClass::fillCutHistos();
-  bool baseClass::writeCutHistos();
-  bool baseClass::updateCutEffic();
-  bool baseClass::writeCutEfficFile();
-  bool baseClass::sortCuts(const cut&, const cut&);
+  void init();
+  void readInputList();
+  void readCutFile();
+  bool fillCutHistos();
+  bool writeCutHistos();
+  bool updateCutEffic();
+  bool writeCutEfficFile();
+  bool sortCuts(const cut&, const cut&);
   vector<string> split(const string& s);
   double decodeCutValue(const string& s);
   bool skimWasMade_;
