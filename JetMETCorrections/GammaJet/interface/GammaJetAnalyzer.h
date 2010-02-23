@@ -437,30 +437,49 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Int_t nElectronsGen_akt5[100];
       Int_t nMuonsGen_akt5[100];
       Int_t nNeutralHadronsGen_akt5[100];
+      Int_t nHFHadronsGen_akt5[100];
+
+      Int_t nNeutronsGen_akt5[100];
+      Int_t nK0LGen_akt5[100];
+      Int_t nK0SGen_akt5[100];
+      Int_t nLambdasGen_akt5[100];
+      Int_t nCsiGen_akt5[100];
+      Int_t nOtherNeutralHadronsGen_akt5[100];
 
       Float_t eTracksGen_akt5[100];
       Float_t ePhotonsGen_akt5[100];
       Float_t eElectronsGen_akt5[100];
       Float_t eMuonsGen_akt5[100];
       Float_t eNeutralHadronsGen_akt5[100];
+      Float_t eHFHadronsGen_akt5[100];
+
+      Float_t eNeutronsGen_akt5[100];
+      Float_t eK0LGen_akt5[100];
+      Float_t eK0SGen_akt5[100];
+      Float_t eLambdasGen_akt5[100];
+      Float_t eCsiGen_akt5[100];
+      Float_t eOtherNeutralHadronsGen_akt5[100];
 
       Float_t ptTracksGen_akt5[100];
       Float_t ptPhotonsGen_akt5[100];
       Float_t ptElectronsGen_akt5[100];
       Float_t ptMuonsGen_akt5[100];
       Float_t ptNeutralHadronsGen_akt5[100];
+      Float_t ptHFHadronsGen_akt5[100];
 
       Float_t phiTracksGen_akt5[100];
       Float_t phiPhotonsGen_akt5[100];
       Float_t phiElectronsGen_akt5[100];
       Float_t phiMuonsGen_akt5[100];
       Float_t phiNeutralHadronsGen_akt5[100];
+      Float_t phiHFHadronsGen_akt5[100];
 
       Float_t etaTracksGen_akt5[100];
       Float_t etaPhotonsGen_akt5[100];
       Float_t etaElectronsGen_akt5[100];
       Float_t etaMuonsGen_akt5[100];
       Float_t etaNeutralHadronsGen_akt5[100];
+      Float_t etaHFHadronsGen_akt5[100];
       
       Int_t nJetGen_akt7;
       Float_t ptJetGen_akt7[100];
