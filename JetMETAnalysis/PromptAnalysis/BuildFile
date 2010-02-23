@@ -24,6 +24,7 @@
    <use name=DataFormats/TrackReco>
    <use name=DataFormats/VertexReco>
    <use name=DetectorDescription/Core>
+   <use name=Geometry/CSCGeometry>
    <use name=root>
    <use name=RecoEcal/EgammaClusterAlgos>
    <use name=RecoEgamma/EgammaMCTools>
@@ -72,5 +73,6 @@
    <use name=DataFormats/SiPixelDigi>
    <use name=DataFormats/TrackReco>
    <use name=DataFormats/VertexReco>
+   <use name=Geometry/CSCGeometry>
    <use name=root>
 </export>
