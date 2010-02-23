@@ -438,6 +438,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Int_t nMuonsGen_akt5[100];
       Int_t nNeutralHadronsGen_akt5[100];
       Int_t nHFHadronsGen_akt5[100];
+      Int_t nHFEMGen_akt5[100];
 
       Int_t nNeutronsGen_akt5[100];
       Int_t nK0LGen_akt5[100];
@@ -452,6 +453,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t eMuonsGen_akt5[100];
       Float_t eNeutralHadronsGen_akt5[100];
       Float_t eHFHadronsGen_akt5[100];
+      Float_t eHFEMGen_akt5[100];
 
       Float_t eNeutronsGen_akt5[100];
       Float_t eK0LGen_akt5[100];
@@ -466,6 +468,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t ptMuonsGen_akt5[100];
       Float_t ptNeutralHadronsGen_akt5[100];
       Float_t ptHFHadronsGen_akt5[100];
+      Float_t ptHFEMGen_akt5[100];
 
       Float_t phiTracksGen_akt5[100];
       Float_t phiPhotonsGen_akt5[100];
@@ -473,6 +476,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t phiMuonsGen_akt5[100];
       Float_t phiNeutralHadronsGen_akt5[100];
       Float_t phiHFHadronsGen_akt5[100];
+      Float_t phiHFEMGen_akt5[100];
 
       Float_t etaTracksGen_akt5[100];
       Float_t etaPhotonsGen_akt5[100];
@@ -480,6 +484,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t etaMuonsGen_akt5[100];
       Float_t etaNeutralHadronsGen_akt5[100];
       Float_t etaHFHadronsGen_akt5[100];
+      Float_t etaHFEMGen_akt5[100];
       
       Int_t nJetGen_akt7;
       Float_t ptJetGen_akt7[100];
