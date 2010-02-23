@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
 
   //=============Special Bins for TT and Modules borders=============================
   double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
-  double modEtaBins[10]={-85, -65, -45, -25, 0, 1, 26, 46, 66, 86};
+  // double modEtaBins[10]={-85, -65, -45, -25, 0, 1, 26, 46, 66, 86};
   double ttPhiBins[73];
   double modPhiBins[19];
   double timingBins[79];
