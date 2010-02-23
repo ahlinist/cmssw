@@ -155,9 +155,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  //R=(hf->energy()-part->energy())/(hf->energy()+part->energy());
 	  R=( fabs(hf->energy()) - fabs(part->energy()) ) 
 	    / ( fabs(hf->energy()) + fabs(part->energy()) );
-	  if (id.depth()==2)
-	    R*=-1;
 	}
+      if (id.depth()==2)
+        R*=-1;
       rechitRvalue->push_back(R);
       rechitpartenergy->push_back(partenergy);
 
