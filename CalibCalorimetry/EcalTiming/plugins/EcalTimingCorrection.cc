@@ -100,7 +100,7 @@ EcalTimingCorrection::beginRun(edm::EventSetup const& eventSetup ) {
 void
 EcalTimingCorrection::beginJob( ) {
 //========================================================================
-  char profName[150];char profTit[150];
+  //char profName[150];char profTit[150];
  
   ievt_ = 0; //Just a simple stupid event counter
 
@@ -287,8 +287,8 @@ double EcalTimingCorrection::timecorr(const CaloSubdetectorGeometry *geometry_p,
    //Correct Ecal IP readout time assumption
    if (corrtimeEcal && inEB){
    
-      int ieta = (EBDetId(id)).ieta() ;
-	  double zz=0.0;
+     //int ieta = (EBDetId(id)).ieta() ;
+     //  double zz=0.0;
 	  /*
       if (ieta > 65 )  zz=5.188213395;
 	  else if (ieta > 45 )  zz=2.192428069;

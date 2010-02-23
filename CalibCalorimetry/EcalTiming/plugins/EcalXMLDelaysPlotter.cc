@@ -98,7 +98,7 @@ EcalXMLDelaysPlotter::beginRun(edm::EventSetup const& eventSetup ) {
 void
 EcalXMLDelaysPlotter::beginJob( ) {
 //========================================================================
-  char profName[150];char profTit[150];
+  //char profName[150];char profTit[150];
  
   ievt_ = 0; //Just a simple stupid event counter
   //Now for the 3D timing plots.
@@ -162,8 +162,8 @@ EcalXMLDelaysPlotter::analyze(  edm::Event const& iEvent,  edm::EventSetup const
    edm::ESHandle<CaloGeometry> geoHandle;
    iSetup.get<CaloGeometryRecord>().get(geoHandle);
    
-   const CaloSubdetectorGeometry *geometry_pEB = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
-   const CaloSubdetectorGeometry *geometry_pEE = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalEndcap);
+   // const CaloSubdetectorGeometry *geometry_pEB = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
+   //const CaloSubdetectorGeometry *geometry_pEE = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalEndcap);
 
   // std::cout << " ok 0.010 " << std::endl;
    for (int idcc = 0; idcc < 54; ++idcc)
@@ -299,8 +299,8 @@ double EcalXMLDelaysPlotter::timecorr(const CaloSubdetectorGeometry *geometry_p,
    //Correct Ecal IP readout time assumption
    if (corrtimeEcal && inEB){
    
-      int ieta = (EBDetId(id)).ieta() ;
-	  double zz=0.0;
+     // int ieta = (EBDetId(id)).ieta() ;
+     //  double zz=0.0;
 	  /*
       if (ieta > 65 )  zz=5.188213395;
 	  else if (ieta > 45 )  zz=2.192428069;

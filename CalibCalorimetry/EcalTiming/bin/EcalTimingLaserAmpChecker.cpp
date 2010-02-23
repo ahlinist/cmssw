@@ -206,6 +206,7 @@ for (Int_t iphi = 0; iphi <= numBinsphi+1; ++iphi)
 	Double_t amp = tprof->GetBinContent(biniter);
 	if (amp > thres ) 
 	{
+
 	   numXtals++;
 	}
 	biniter++;
@@ -219,7 +220,7 @@ return numXtals;
 
 TProfile2D* getProfileWithThreshold(TProfile2D *tprof, Double_t thres)
 {
-TProfile2D* tempProf;
+TProfile2D* tempProf=0;
 
 
 return tempProf;
