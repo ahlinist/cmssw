@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.20 2010/02/23 12:06:04 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.21 2010/02/23 14:39:29 pandolf Exp $
 //
 //
 
@@ -886,11 +886,11 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
              }
            } //if no track
          } else if (partPdgId==22) { //photons
-           shortPtcls.push_back(*iPart);
            if( fabs((*iPart)->eta())<3.) { //tracker acceptance
              nPhotonsGen += 1;
              p4PhotonsGen += p4;
              //save photons and later check for conversions:
+             shortPtcls.push_back(*iPart); //(only if eta<3)
            } else {
              nHFEMGen += 1;
              p4HFEMGen += p4;
@@ -898,8 +898,17 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
          } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
         	  && (fabs(partPdgId) != 16)) { // veto neutrinos
         
-         nNeutralHadronsGen += 1;
-         p4NeutralHadronsGen += p4;
+         if( fabs((*iPart)->eta())<3. ) {
+           nNeutralHadronsGen += 1;
+           p4NeutralHadronsGen += p4;
+         } else {
+           nHFHadronsGen += 1;
+           p4HFHadronsGen += p4;
+         }
+         
+         // Decay K0S and Lambda later and correct fractions
+         if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
+           shortPtcls.push_back(*iPart);
 
          //save single neutral hadron components
          if( abs(partPdgId)==2112 ) { //neutrons
@@ -923,11 +932,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
          }
 
         
-         // Decay K0S and Lambda later and correct fractions
-         if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
-           shortPtcls.push_back(*iPart);
          }
-         }
+         } //if neutral hadrons
         
        } //for jetParticles
     
@@ -951,8 +957,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
              p4PhotonsGen -= p4mom;
            }
            else {
-             nNeutralHadronsGen -= 1;
-             p4NeutralHadronsGen -= p4mom;
+             if( fabs((*iGen)->eta())<3. ) {
+               nNeutralHadronsGen -= 1;
+               p4NeutralHadronsGen -= p4mom;
+             } else {
+               nHFHadronsGen -= 1;
+               p4HFHadronsGen -= p4mom;
+             }
            }
         
            set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
