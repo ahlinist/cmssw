@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.18 2009/12/08 10:42:04 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.19 2010/02/08 11:48:46 pandolf Exp $
 //
 //
 
@@ -782,6 +782,28 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        Int_t nNeutralHadronsGen = 0;
        TLorentzVector p4NeutralHadronsGen;
     
+       Int_t nHFHadronsGen = 0;
+       TLorentzVector p4HFHadronsGen;
+    
+       Int_t nNeutronsGen = 0;
+       TLorentzVector p4NeutronsGen;
+    
+       Int_t nK0LGen = 0;
+       TLorentzVector p4K0LGen;
+    
+       Int_t nK0SGen = 0;
+       TLorentzVector p4K0SGen;
+    
+       Int_t nLambdasGen = 0;
+       TLorentzVector p4LambdasGen;
+    
+       Int_t nCsiGen = 0;
+       TLorentzVector p4CsiGen;
+    
+       Int_t nOtherNeutralHadronsGen = 0;
+       TLorentzVector p4OtherNeutralHadronsGen;
+    
+    
        vector<const GenParticle*> jetParticles = it->getGenConstituents();
        vector<const GenParticle*> shortPtcls;
 
@@ -837,13 +859,28 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
            nMuonsGen += 1;
            p4MuonsGen += p4;
          } else if (fabs(partPdgId)==11) { //electrons
-           nElectronsGen += 1;
-           p4ElectronsGen += p4;
+           if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
+             nElectronsGen += 1;
+             p4ElectronsGen += p4;
+           } else { //if no track, they're just photons
+             nPhotonsGen += 1;
+             p4PhotonsGen += p4;
+           }    
          } else if ((*iPart)->charge() != 0) { // charged hadrons
-           nTracksGen += 1;
-           p4TracksGen += p4;
+           if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
+             nTracksGen += 1;
+             p4TracksGen += p4;
+           } else { //if no track, they're just hadrons
+             if( fabs((*iPart)->eta())<3. ) { //HCAL acceptance
+               nNeutralHadronsGen += 1;
+               p4NeutralHadronsGen += p4;
+             } else { //HF
+               nHFHadronsGen += 1;
+               p4HFHadronsGen += p4;
+             }
+           } //if no track
          } else if (partPdgId==22) { //photons
-           nPhotonsGen += 1;
+           nPhotonsGen += 1; //photons are always photons
            p4PhotonsGen += p4;
            //save photons and later check for conversions:
            shortPtcls.push_back(*iPart);
@@ -852,6 +889,28 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         
          nNeutralHadronsGen += 1;
          p4NeutralHadronsGen += p4;
+
+         //save single neutral hadron components
+         if( abs(partPdgId)==2112 ) { //neutrons
+           nNeutronsGen += 1;
+           p4NeutronsGen += p4;
+         } else if( abs(partPdgId)==130 ) { //neutrons
+           nK0LGen += 1;
+           p4K0LGen += p4;
+         } else if( abs(partPdgId)==310 ) { //neutrons
+           nK0SGen += 1;
+           p4K0SGen += p4;
+         } else if( abs(partPdgId)==3122 ) { //lambda's
+           nLambdasGen += 1;
+           p4LambdasGen += p4;
+         } else if( abs(partPdgId)==3322 ) { //lambda's
+           nCsiGen += 1;
+           p4CsiGen += p4;
+         } else {
+           nOtherNeutralHadronsGen += 1;
+           p4OtherNeutralHadronsGen += p4;
+         }
+
         
          // Decay K0S and Lambda later and correct fractions
          if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
@@ -977,6 +1036,41 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        etaNeutralHadronsGen_akt5[nJetGen_akt5] =(p->Pt() ?
                                          p->Eta() - it->eta() : 0);
        
+       nHFHadronsGen_akt5[nJetGen_akt5] = nHFHadronsGen;
+       p = &p4HFHadronsGen;
+       eHFHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+       ptHFHadronsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
+       phiHFHadronsGen_akt5[nJetGen_akt5] = (p->Pt() ?
+                                     delta_phi(p->Phi(), it->phi()) : 0);
+       etaHFHadronsGen_akt5[nJetGen_akt5] =(p->Pt() ?
+                                         p->Eta() - it->eta() : 0);
+       
+
+
+       nNeutronsGen_akt5[nJetGen_akt5] = nNeutronsGen;
+       p = &p4NeutronsGen;
+       eNeutronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+
+       nK0LGen_akt5[nJetGen_akt5] = nK0LGen;
+       p = &p4K0LGen;
+       eK0LGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+
+       nK0SGen_akt5[nJetGen_akt5] = nK0SGen;
+       p = &p4K0SGen;
+       eK0SGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+
+       nLambdasGen_akt5[nJetGen_akt5] = nLambdasGen;
+       p = &p4LambdasGen;
+       eLambdasGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+
+       nCsiGen_akt5[nJetGen_akt5] = nCsiGen;
+       p = &p4CsiGen;
+       eCsiGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+
+       nOtherNeutralHadronsGen_akt5[nJetGen_akt5] = nOtherNeutralHadronsGen;
+       p = &p4OtherNeutralHadronsGen;
+       eOtherNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+
        nJetGen_akt5++;
      } // if >genjetptthr
      } // gen_akt5
@@ -2328,6 +2422,21 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 		 "nTracksGen_akt5[nJetGen_akt5]/I");
   m_tree->Branch("nNeutralHadronsGen_akt5", nNeutralHadronsGen_akt5,
 		 "nNeutralHadronsGen_akt5[nJetGen_akt5]/I");
+  m_tree->Branch("nHFHadronsGen_akt5", nHFHadronsGen_akt5,
+		 "nHFHadronsGen_akt5[nJetGen_akt5]/I");
+
+  m_tree->Branch("nNeutronsGen_akt5", nNeutronsGen_akt5,
+		 "nNeutronsGen_akt5[nJetGen_akt5]/I");
+  m_tree->Branch("nK0LGen_akt5", nK0LGen_akt5,
+		 "nK0LGen_akt5[nJetGen_akt5]/I");
+  m_tree->Branch("nK0SGen_akt5", nK0SGen_akt5,
+		 "nK0SGen_akt5[nJetGen_akt5]/I");
+  m_tree->Branch("nLambdasGen_akt5", nLambdasGen_akt5,
+		 "nLambdasGen_akt5[nJetGen_akt5]/I");
+  m_tree->Branch("nCsiGen_akt5", nCsiGen_akt5,
+		 "nCsiGen_akt5[nJetGen_akt5]/I");
+  m_tree->Branch("nOtherNeutralHadronsGen_akt5", nOtherNeutralHadronsGen_akt5,
+		 "nOtherNeutralHadronsGen_akt5[nJetGen_akt5]/I");
 
   m_tree->Branch("eMuonsGen_akt5", eMuonsGen_akt5,
 		 "eMuonsGen_akt5[nJetGen_akt5]/F");
@@ -2339,6 +2448,21 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 		 "eTracksGen_akt5[nJetGen_akt5]/F");
   m_tree->Branch("eNeutralHadronsGen_akt5", eNeutralHadronsGen_akt5,
 		 "eNeutralHadronsGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("eHFHadronsGen_akt5", eHFHadronsGen_akt5,
+		 "eHFHadronsGen_akt5[nJetGen_akt5]/F");
+
+  m_tree->Branch("eNeutronsGen_akt5", eNeutronsGen_akt5,
+		 "eNeutronsGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("eK0LGen_akt5", eK0LGen_akt5,
+		 "eK0LGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("eK0SGen_akt5", eK0SGen_akt5,
+		 "eK0SGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("eLambdasGen_akt5", eLambdasGen_akt5,
+		 "eLambdasGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("eCsiGen_akt5", eCsiGen_akt5,
+		 "eCsiGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("eOtherNeutralHadronsGen_akt5", eOtherNeutralHadronsGen_akt5,
+		 "eOtherNeutralHadronsGen_akt5[nJetGen_akt5]/F");
 
   m_tree->Branch("ptMuonsGen_akt5", ptMuonsGen_akt5,
 		 "ptMuonsGen_akt5[nJetGen_akt5]/F");
@@ -2350,6 +2474,8 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 		 "ptTracksGen_akt5[nJetGen_akt5]/F");
   m_tree->Branch("ptNeutralHadronsGen_akt5", ptNeutralHadronsGen_akt5,
 		 "ptNeutralHadronsGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("ptHFHadronsGen_akt5", ptHFHadronsGen_akt5,
+		 "ptHFHadronsGen_akt5[nJetGen_akt5]/F");
 
   m_tree->Branch("phiMuonsGen_akt5", phiMuonsGen_akt5,
 		 "phiMuonsGen_akt5[nJetGen_akt5]/F");
@@ -2361,6 +2487,8 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 		 "phiTracksGen_akt5[nJetGen_akt5]/F");
   m_tree->Branch("phiNeutralHadronsGen_akt5", phiNeutralHadronsGen_akt5,
 		 "phiNeutralHadronsGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("phiHFHadronsGen_akt5", phiHFHadronsGen_akt5,
+		 "phiHFHadronsGen_akt5[nJetGen_akt5]/F");
 
   m_tree->Branch("etaMuonsGen_akt5", etaMuonsGen_akt5,
 		 "etaMuonsGen_akt5[nJetGen_akt5]/F");
@@ -2372,6 +2500,8 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 		 "etaTracksGen_akt5[nJetGen_akt5]/F");
   m_tree->Branch("etaNeutralHadronsGen_akt5", etaNeutralHadronsGen_akt5,
 		 "etaNeutralHadronsGen_akt5[nJetGen_akt5]/F");
+  m_tree->Branch("etaHFHadronsGen_akt5", etaHFHadronsGen_akt5,
+		 "etaHFHadronsGen_akt5[nJetGen_akt5]/F");
 
   m_tree->Branch("nJetGen_akt7",&nJetGen_akt7,"nJetGen_akt7/I");
   m_tree->Branch("ptJetGen_akt7 ",&ptJetGen_akt7 ,"ptJetGen_akt7[nJetGen_akt7]/F");
