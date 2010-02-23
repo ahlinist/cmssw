@@ -37,8 +37,7 @@ echo 'Making Calib Webpages for ' ${run_num}
 
 
 # specify directories here
-my_cmssw_base='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/ccecal/PFG_devel_341/src'
-work_dir=${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/SCRIPTS'
+work_dir=${CMSSW_BASE}'/src/CalibCalorimetry/EcalTiming/test/SCRIPTS'
 
 plots_dir=plots/Calib/$run_num;
 mkdir $plots_dir
@@ -52,7 +51,7 @@ cp ${work_dir}/Calib_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}
 echo
 echo 'Now making plots, by running these command in ROOT:'
 echo
-echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/SCRIPTS/plotCalib.C'
+echo '.L '${CMSSW_BASE}'/src/CalibCalorimetry/EcalTiming/test/SCRIPTS/plotCalib.C'
 echo 'DrawCalibPlots("'${plots_dir}'/'${root_file}'",'${run_num}',kTRUE,"png","'${plots_dir}'",kFALSE)'
 echo
 
@@ -63,7 +62,7 @@ cat > ${plots_dir}/plot.py <<EOF
 from ROOT import gROOT
 
 #load my macro
-gROOT.LoadMacro(  '${my_cmssw_base}/CalibCalorimetry/EcalTiming/test/plotCalib.C')
+gROOT.LoadMacro(  '${CMSSW_BASE}/src/CalibCalorimetry/EcalTiming/test/plotCalib.C')
 
 #get my cute class
 from ROOT import DrawCalibPlots
