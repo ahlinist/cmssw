@@ -55,6 +55,7 @@ void overlay_plots(const string& fFile0, const string& fFile1, const string& fPl
 //    h[0]->SetMarkerStyle(26);
 //    h[0]->SetMarkerColor(kRed);
 //    h[0]->Draw("hist");
+   h[1]->SetMinimum(0.5);
    h[1]->SetLineWidth(3);
 //    h[1]->SetLineStyle(3);
    h[1]->SetLineColor(kBlack);
@@ -104,7 +105,7 @@ void overlay_plots(const string& fFile0, const string& fFile1, const string& fPl
    l.SetTextSize(0.04);
    l.SetTextFont(62);
    l.SetNDC();
-   l.DrawLatex(0.40,0.15,"CMS 2009 Preliminary");
+   l.DrawLatex(0.45,0.15,"CMS 2009 Preliminary");
 
    if(logY==1)
      c->SetLogy();
@@ -126,18 +127,20 @@ void makePlots() {
    // root files
    //********************************************
    // *** MC ***
-   string MC_noise = "data/output/RecHitValidation_NoiseOnly_STARTUP3X_V8I.root";
+//    string MC_noise = "data/output/RecHitValidation_NoiseOnly_STARTUP3X_V8I.root";
+   string MC_noise = "data/output/RecHitValidation_NoiseOnly_STARTUP3X_V8N.root";
    // *** data ***
-   string data_ZB = "data/output/RecHitValidation_R123596_ZeroBias_GR09_P_V7.root";
+//    string data_ZB = "data/output/RecHitValidation_ZeroBias_R124022_900GeV_Dec14thReReco.root";
+   string data_ZB = "data/output/RecHitValidation_ZeroBias_R124022_900GeV_Jan23rdReReco.root";
    //********************************************
    // make plots
    //********************************************
 
-   overlay_plots(MC_noise, data_ZB, "h_RecHitEinEB", -0.3, 0.3, "EB RecHit Energy [GeV]", "h_RecHitEinEB.eps",1);
-   overlay_plots(MC_noise, data_ZB, "h_RecHitEinEE", -1, 1, "EE RecHit Energy [GeV]", "h_RecHitEinEE.eps",1);
-   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHB", -2, 2, "HB RecHit Energy [GeV]", "h_RecHitEinHB.eps",1);
-   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHE", -2, 2, "HE RecHit Energy [GeV]", "h_RecHitEinHE.eps",1);
-   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHO", -4.5, 4.5, "HO RecHit Energy [GeV]", "h_RecHitEinHO.eps",1);
-   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHFl", -4, 4, "HF Long RecHit Energy [GeV]", "h_RecHitEinHFl.eps",1);
-   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHFs", -4, 4, "HF Short RecHit Energy [GeV]", "h_RecHitEinHFs.eps",1);
+   overlay_plots(MC_noise, data_ZB, "h_RecHitEinEB", -0.35, 0.35, "EB RecHit Energy [GeV]", "h_RecHitEinEB.png",1);
+   overlay_plots(MC_noise, data_ZB, "h_RecHitEinEE", -1.5, 1.5, "EE RecHit Energy [GeV]", "h_RecHitEinEE.png",1);
+   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHB", -2, 2, "HB RecHit Energy [GeV]", "h_RecHitEinHB.png",1);
+   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHE", -2, 2, "HE RecHit Energy [GeV]", "h_RecHitEinHE.png",1);
+   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHO", -4.5, 4.5, "HO RecHit Energy [GeV]", "h_RecHitEinHO.png",1);
+   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHFl", -4, 4, "HF Long RecHit Energy [GeV]", "h_RecHitEinHFl.png",1);
+   overlay_plots(MC_noise, data_ZB, "h_RecHitEinHFs", -4, 4, "HF Short RecHit Energy [GeV]", "h_RecHitEinHFs.png",1);
 }
