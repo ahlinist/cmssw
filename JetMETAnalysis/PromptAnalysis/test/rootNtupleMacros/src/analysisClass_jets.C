@@ -1,3 +1,4 @@
+
 #define analysisClass_cxx
 #include "analysisClass.h"
 #include <TH2.h>
@@ -251,7 +252,18 @@ void analysisClass::Loop()
   variousEff->GetXaxis()->SetBinLabel(2,"Tight JetID");
   variousEff->GetXaxis()->SetBinLabel(3,">1 Ass. Loose Tracks");
   variousEff->GetXaxis()->SetBinLabel(4,">1 Ass. Tight Tracks");
+  
+  TH1D *evtNumber = new TH1D("evtNumber","",7,0,7);
+  evtNumber->SetTitle(dataset);
+  evtNumber->GetXaxis()->SetBinLabel(1,"Evt");
+  evtNumber->GetXaxis()->SetBinLabel(2,"BPTX");
+  evtNumber->GetXaxis()->SetBinLabel(3,"BSC");
+  evtNumber->GetXaxis()->SetBinLabel(4,"HALO");
+  evtNumber->GetXaxis()->SetBinLabel(5,"PHYSBIT");
+  evtNumber->GetXaxis()->SetBinLabel(6,"Monster");
+  evtNumber->GetXaxis()->SetBinLabel(7,"PV");
 
+  
   TH1D *cutEff = new TH1D("cutEff","",7,0,7);
   cutEff->SetTitle(dataset);
   cutEff->GetXaxis()->SetBinLabel(1,"Good run evts");
@@ -260,15 +272,22 @@ void analysisClass::Loop()
   cutEff->GetXaxis()->SetBinLabel(4,"HALO");
   cutEff->GetXaxis()->SetBinLabel(5,"PHYSBIT");
   cutEff->GetXaxis()->SetBinLabel(6,"Monster");
-  cutEff->GetXaxis()->SetBinLabel(7,"PV");
- 
-  TH1D * jetNumber = new TH1D("jetNumber","",4,0,4);
+  cutEff->GetXaxis()->SetBinLabel(7,"PV"); 
+  
+  TH1D *jetNumber = new TH1D("jetNumber","",9,0,9);
   jetNumber->SetTitle(dataset);
-  jetNumber->GetXaxis()->SetBinLabel(1,"All jets");
-  jetNumber->GetXaxis()->SetBinLabel(2,"Cleaned jets");
-  jetNumber->GetXaxis()->SetBinLabel(3,"Dijets");
-  jetNumber->GetXaxis()->SetBinLabel(4,"CleanedDijets");
-
+  jetNumber->GetXaxis()->SetBinLabel(1,"Jet");
+  jetNumber->GetXaxis()->SetBinLabel(2,"BPTX");
+  jetNumber->GetXaxis()->SetBinLabel(3,"BSC");
+  jetNumber->GetXaxis()->SetBinLabel(4,"HALO");
+  jetNumber->GetXaxis()->SetBinLabel(5,"PHYSBIT");
+  jetNumber->GetXaxis()->SetBinLabel(6,"Monster");
+  jetNumber->GetXaxis()->SetBinLabel(7,"PV");
+  // after all trigger/PV/Monster .
+  jetNumber->GetXaxis()->SetBinLabel(8,"All + #eta, p_{T} cuts");
+  jetNumber->GetXaxis()->SetBinLabel(9,"All + Lose Cleaning");
+ 
+ 
   // fake jetes -----------------------
   TH1D *fhpdfakejets = new TH1D("fhpdfakejets","",101,-0.005,1.005);
   fhpdfakejets->SetXTitle("f_{HPD}");
@@ -331,6 +350,7 @@ void analysisClass::Loop()
    int NindijetsJetIDTightTOT=0;
    int NindijetsAssTrksLooseTOT=0;
    int NindijetsAssTrksTightTOT=0;
+
    int goodevts=0;
    int bptxevt=0;
    int bscevt=0;
@@ -338,6 +358,16 @@ void analysisClass::Loop()
    int phybitevt=0;
    int trckevt=0;
    int pvevt=0;
+
+   int alljets=0;
+   int bptxjets=0;
+   int bscjets=0;
+   int beamhalojets=0;
+   int phybitjets=0;
+   int trckjets=0;
+   int pvjets=0;
+
+   
    for (Long64_t jentry=0; jentry<nentries;jentry++) 
      {
        Long64_t ientry = LoadTree(jentry);
@@ -381,6 +411,7 @@ void analysisClass::Loop()
 	continue;
       }
       goodevts++;
+      alljets+=ak5JetpT->size();
       // ---------------------------------------------------------------
       //########## Trigger Selection - to be 100 % sure: 
       int pass_BPTX              = 0;
@@ -394,20 +425,30 @@ void analysisClass::Loop()
 	  if(l1techbits->at(0)==1)
 	    pass_BPTX = 1; 
   	    bptxevt++;
+	    bptxjets+=ak5JetpT->size();
 	}
       else if(isData==0)
 	pass_BPTX = 1;
       
       //## pass_BSC_MB - BSC MinBias triggers firing (both Data and MC)
-      if( l1techbits->at(40)==1 || l1techbits->at(41)==1 ) 
-	{	pass_BSC_MB = 1;bscevt++;}
+      if( l1techbits->at(40)==1 || l1techbits->at(41)==1 ) {	
+	pass_BSC_MB = 1;
+	bscevt++;
+        bscjets+=ak5JetpT->size();
+	}
 
       //## pass_BSC_BeamHaloVeto - Veto on BSC Beam Halo Triggers firing
       if(isData==1)
 	{
 	  pass_BSC_BeamHaloVeto = 1;
 	  if( l1techbits->at(36) == 1 || l1techbits->at(37) == 1 || l1techbits->at(38) == 1 || l1techbits->at(39) == 1 )
-	    {       pass_BSC_BeamHaloVeto = 0;	; beamhaloevt++;}  
+	  pass_BSC_BeamHaloVeto = 0;	
+	  
+	  if (pass_BSC_BeamHaloVeto==1){
+	    beamhaloevt++;
+	    beamhalojets+=ak5JetpT->size();
+	    }
+	  
 	}
       else if(isData == 0)
 		pass_BSC_BeamHaloVeto = 1; 
@@ -417,7 +458,10 @@ void analysisClass::Loop()
       if(isData==1)
 	{
 	  if(hltbits->at(116)==1)
-	    {pass_PhysicsBit = 1;phybitevt++;}
+	    {pass_PhysicsBit = 1;
+	    phybitevt++;
+	    phybitjets+=ak5JetpT->size(); 
+	    }
 	}
       else if(isData == 0)
 	pass_PhysicsBit = 1;
@@ -444,18 +488,21 @@ void analysisClass::Loop()
 		  num_good_tracks++;		      
 		  fraction = (float)num_good_tracks / (float)tracksPt->size();
 
-		  if( fraction > thresh ) 
+		  if( fraction > thresh ) {
 		    pass_MonsterTRKEventVeto = 1;
-		  trckevt++;
-		}
-	    }
+		    }
+		}//if trackFlags & 1 << highPurityFla
+	  }//int ii=0
 	}//>10 tracks	    
-
-
+      if ( pass_MonsterTRKEventVeto == 1){
+      trckevt++; 
+      trckjets+=ak5JetpT->size(); 
+      }
       //PV event selection - cut on vertex for now. l1 tech bits already asked at skimming step
       //https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe   
       if(pass_MonsterTRKEventVeto && fabs(vertexZ->at(0))<15 && vertexNDF->at(0)>=5 && vertexisValid->at(0)==true){    // "newest" event selection
-	pvevt++;	
+	pvevt++;
+	pvjets+=ak5JetpT->size(); 	
 	// --------------------------------------------------------------------
 	
 	//counters   
@@ -475,24 +522,20 @@ void analysisClass::Loop()
 	nalljets->Fill(ak5JetpT->size());
 	ic5nalljets->Fill(ic5JetpT->size());
 	 
-
+	// Inclusive  Jets -----------------------------------------------------------------------
 	for (int j = 0; j<int(ak5JetpT->size()); j++){	  
-	  // --------------------------------------------------------------    //jc
+	  // ----------------------
 	  // JET CORRECTION
-	  // --------------------------------------------------------------
-	  double jcScale;    //jc
-	  if(makeJetCorr==true) {
-	    jcScale = ak5JetscaleL2L3->at(j);
-	  }
-	  else {
-	    jcScale = 1;
-	  }	  
-	  ptall->Fill(ak5JetpT->at(j) * jcScale);    //jc
+	  // ----------------------
+	  double jcScale;    
+	  if(makeJetCorr==true) jcScale = ak5JetscaleL2L3->at(j);
+	  else jcScale = 1;	    
+	  ptall->Fill(ak5JetpT->at(j) * jcScale);   
 	  mapall->Fill(ak5JetEta->at(j),ak5JetPhi->at(j));
-	  
-	  // Inclusive  Jets -----------------------------------
+
+	  // Loop over Inclusive jets ----- 
 	  if(ak5JetpT->at(j) * jcScale >ptMin && fabs(ak5JetEta->at(j))<endcapeta){    //jc
-	    NJets++;
+	    NJets++;	    
 	    nconst->Fill(ak5JetNConstituents->at(j));
 	    pt->Fill(ak5JetpT->at(j) * jcScale);    //jc 
 	    if(fabs(ak5JetEta->at(j))<barreleta){
@@ -510,12 +553,12 @@ void analysisClass::Loop()
 	    resemf->Fill(ak5JetJIDresEMF->at(j));
 	    fhpd->Fill(ak5JetJIDfHPD->at(j));
 	    frbx->Fill(ak5JetJIDfRBX->at(j));
-	    n90hits->Fill(ak5JetJIDn90Hits->at(j));
-	   
+	    n90hits->Fill(ak5JetJIDn90Hits->at(j));	   
 	    //calculate jetid loose
 	    bool emf=false;	      
 	    if(ak5JetJIDresEMF->at(j)>emffrac) emf=true;	        
 	    else  emf=false;
+	   
 	    //fill the histos for cleaned jets
 	    if(emf && ak5JetJIDfHPD->at(j)<fhpdmax && ak5JetJIDn90Hits->at(j)>n90hitsmin  ){//loose cleaning
 	      NJetIDLoose++;
@@ -535,8 +578,7 @@ void analysisClass::Loop()
 	    }
 	    if(emf && ak5JetJIDfHPD->at(j)<fhpdmax && ak5JetJIDn90Hits->at(j)>n90hitsmin  ){//tight cleaning (for the moment equal to loose!!)
 	      NJetIDTight++;
-	    }
-	    
+	    }	    
 	    // @@@ Seems to be an error ////
 	    if(ak5JetNAssoTrksLoose->at(j)>n90hitsmin){
 	      NAssTrksLoose++;
@@ -544,13 +586,13 @@ void analysisClass::Loop()
 	    if(ak5JetNAssoTrksTight->at(j)>n90hitsmin){
 	      NAssTrksTight++;
 	    }
-	  } //pt min
+	  } //pt min/ eta 
 	} //loop on inclusive ak5 jets 
 	
 	   
-	// --------------------DiJets----------------------------------   
+	// --------------------DiJets---------------------------------------------------------------------   
 	// JET CORRECTION
-	// -------------------------------------------------------
+	// --------------------
 	double jcScale0;
 	double jcScale1;	
 	//dijet
@@ -600,8 +642,7 @@ void analysisClass::Loop()
 	      dijeteta->Fill(ak5JetEta->at(1));
 	      dijetphi->Fill(ak5JetPhi->at(0));
 	      dijetphi->Fill(ak5JetPhi->at(1));
-	      
-	      NlooseTracksdijets->Fill(ak5JetNAssoTrksLoose->at(0));
+      	      NlooseTracksdijets->Fill(ak5JetNAssoTrksLoose->at(0));
 	      NtightTracksdijets->Fill(ak5JetNAssoTrksTight->at(0));
 	      NlooseTracksdijets->Fill(ak5JetNAssoTrksLoose->at(1));
 	      NtightTracksdijets->Fill(ak5JetNAssoTrksTight->at(1));
@@ -680,18 +721,15 @@ void analysisClass::Loop()
 
 
 
-	 // ------------------------IC5 -----------------------------    //jc	
+	 // ------------------------IC5 ---------------------------------------------------------------------------    //jc	
 	for(int j = 0; j<int(ic5JetpT->size()); j++){	     
-	  // -------------------------------------------------------------    //jc
+	  // ------------------------
 	  // JET CORRECTION
-	  // --------------------------------------------------------------
+	  // -----------------------
 	  double jcScale;    //jc	  
-	  if(makeJetCorr==true) {
-	    jcScale = ic5JetscaleL2L3->at(j);
-	  }
-	  else {
-	    jcScale = 1;
-	  }	  	  
+	  if(makeJetCorr==true)jcScale = ic5JetscaleL2L3->at(j);
+	  else jcScale = 1;
+	    	  
 	  
 	  if(ic5JetpT->at(j) * jcScale >ptMin && fabs(ic5JetEta->at(j))<endcapeta){   //jc
 	    NJetsic5++;
@@ -709,14 +747,17 @@ void analysisClass::Loop()
 	      ic5nconstcleaned->Fill(ic5JetNConstituents->at(j));
 	    }
 	  }
-	}	//after looping on jets
+	}
+
+
+
+	//after looping on jets
 	ic5njets->Fill(NJetsic5);     
 	ic5ncleanedjets->Fill(Ncleanedic5);	
 	njets->Fill(NJets);     
 	ncleanedjets->Fill(NJetIDLoose);
 	njetsindijetscleaned->Fill(NALLindijetsJetIDLoose);
-	njetsindijets->Fill(Nindijets);
-	
+	njetsindijets->Fill(Nindijets);	
 	//Counting Jets
 	NJetsTOT+=NJets;
 	NJetIDLooseTOT+=NJetIDLoose;
@@ -733,7 +774,10 @@ void analysisClass::Loop()
       } //vertex monster event
       }// techbits
      } // End loop over events
-   //--------------------------------------------
+   
+
+
+   //--------------------------------------------------------------------------------------------------
 
    //efficiency histos
    if(NJetsTOT>0){
@@ -751,9 +795,9 @@ void analysisClass::Loop()
      variousEffindijets->SetBinContent(3,(1.*NindijetsAssTrksLooseTOT/(1.*NindijetsTOT)));
      variousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksTightTOT/(1.*NindijetsTOT)));
    }
-   if(goodevts>0){
-     cutEff->SetBinContent(1,1 ); 
+   if(goodevts>0){ 
      cutEff->SetMaximum(1.3);
+     cutEff->SetBinContent(1,1 );
      cutEff->SetBinContent(2,(1.*bptxevt)/(1*goodevts));
      cutEff->SetBinContent(3,(1.*bscevt)/(1*goodevts));
      cutEff->SetBinContent(4,(1.*beamhaloevt)/(1*goodevts));
@@ -762,10 +806,27 @@ void analysisClass::Loop()
      cutEff->SetBinContent(7,(1.*pvevt)/(1*goodevts)); 
    }
    
-   jetNumber->SetBinContent(1,NJetsTOT );
-   jetNumber->SetBinContent(2,NJetIDLooseTOT );
-   jetNumber->SetBinContent(3,NindijetsTOT ) ;
-   jetNumber->SetBinContent(4,NindijetsJetIDLooseTOT );
+  
+   jetNumber->SetBinContent(1,  alljets );
+   jetNumber->SetBinContent(2,   bptxjets);
+   jetNumber->SetBinContent(3,   bscjets );
+   jetNumber->SetBinContent(4,   beamhalojets );
+   jetNumber->SetBinContent(5,   phybitjets );
+   jetNumber->SetBinContent(6,   trckjets );
+   jetNumber->SetBinContent(7,   pvjets ); 
+   jetNumber->SetBinContent(8,NJetsTOT );
+   jetNumber->SetBinContent(9,NJetIDLooseTOT );
+   
+   evtNumber->SetBinContent(1,  goodevts );
+   evtNumber->SetBinContent(2,   bptxevt);
+   evtNumber->SetBinContent(3,   bscevt );
+   evtNumber->SetBinContent(4,   beamhaloevt );
+   evtNumber->SetBinContent(5,   phybitevt );
+   evtNumber->SetBinContent(6,   trckevt );
+   evtNumber->SetBinContent(7,   pvevt ); 
+
+   //  jetNumber->SetBinContent(3,NindijetsTOT ) ;
+   // jetNumber->SetBinContent(4,NindijetsJetIDLooseTOT );
       cout <<"###################################"       << endl;
       cout <<"Good Events " << goodevts      <<" Selected events="<< pvevt<<  endl;
 
@@ -834,6 +895,8 @@ void analysisClass::Loop()
    n90hitsdijets->Write();
    variousEff->Write();
    cutEff->Write();
+   jetNumber->Write(); 
+   evtNumber->Write();
    variousEffindijets->Write();
    resemffakejets->Write();
    fhpdfakejets->Write();
