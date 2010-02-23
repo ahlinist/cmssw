@@ -31,8 +31,8 @@ process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(999999)
         )
 process.source = cms.Source("PoolSource",
-                                debugFlag = cms.untracked.bool(True),
-                                debugVebosity = cms.untracked.uint32(10),
+                                #debugFlag = cms.untracked.bool(True),
+                                #debugVebosity = cms.untracked.uint32(10),
                                 skipEvents = cms.untracked.uint32(0),
                                 fileNames = cms.untracked.vstring('MYINPUTFILETYPE')
                             )

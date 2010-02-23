@@ -14,15 +14,15 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
-process.GlobalTag.globaltag = 'GR10_P_V1::All'
+process.GlobalTag.globaltag = 'GR10_P_V2::All'
 
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(999999)
         )
 process.source = cms.Source("PoolSource",
-                                debugFlag = cms.untracked.bool(True),
-                                debugVebosity = cms.untracked.uint32(10),
+                                #debugFlag = cms.untracked.bool(True),
+                                #debugVebosity = cms.untracked.uint32(10),
 #                                skipEvents = cms.untracked.uint32(1200000),
                                 skipEvents = cms.untracked.uint32(0),
                                 fileNames = cms.untracked.vstring('/store/data/Commissioning08/TestEnables/RAW/v1/000/064/735/8868E0F8-8594-DD11-9EC6-000423D98930.root',

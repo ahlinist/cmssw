@@ -39,7 +39,7 @@ echo 'Making Laser Webpages for ' ${run_num}
 # specify directories here
 #my_cmssw_base='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/ccecal/CRAFT_devel_321/src'
 my_cmssw_base=$CMSSW_BASE/src
-work_dir=${my_cmssw_base}/'CalibCalorimetry/EcalTiming/test/SCRIPTS'
+work_dir=${my_cmssw_base}/'CalibCalorimetry/EcalTiming/test'
 
 plots_dir=plots/${analy_type}/$run_num;
 mkdir $plots_dir
@@ -55,7 +55,7 @@ cp ${work_dir}/${analy_type}_${run_num}/${crab_dir}/res/${root_file} ${plots_dir
 echo
 echo 'Going to make the plots, by running in ROOT:'
 echo
-echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/SCRIPTS/plotLaser.C'
+echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/plotLaser.C'
 echo 'DrawLaserPlots("'${plots_dir}'/'${root_file}'",'${run_num}',kTRUE,"png","'${plots_dir}'",kFALSE,"${analy_type}")'
 echo
 
