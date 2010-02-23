@@ -259,9 +259,9 @@ else
      # if getting data from a .root pool file
 process.source = cms.Source('NewEventStreamFileReader',
       skipEvents = cms.untracked.uint32($first_event),
-      fileNames = cms.untracked.vstring('file:$data_path'),
-      debugFlag = cms.untracked.bool(True),
-      debugVebosity = cms.untracked.uint32(10)
+      fileNames = cms.untracked.vstring('file:$data_path')
+      #debugFlag = cms.untracked.bool(True),
+      #debugVebosity = cms.untracked.uint32(10)
   )"
  
 fi
@@ -271,9 +271,9 @@ if [[ $manyfiles == "1" ]]; then
     input_module="
 process.source = cms.Source('PoolSource',
       skipEvents = cms.untracked.uint32($first_event),
-      fileNames = cms.untracked.vstring(`/bin/cat $files_file`),
-      debugFlag = cms.untracked.bool(True),
-      debugVebosity = cms.untracked.uint32(10)
+      fileNames = cms.untracked.vstring(`/bin/cat $files_file`)
+      #debugFlag = cms.untracked.bool(True),
+      #debugVebosity = cms.untracked.uint32(10)
   )"
 fi
 
@@ -357,7 +357,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 #process.GlobalTag.globaltag = 'GR09_31X_V6P::All'
-process.GlobalTag.globaltag = 'GR10_P_V1::All'
+process.GlobalTag.globaltag = 'GR10_P_V2::All'
 
 
 process.maxEvents = cms.untracked.PSet(
