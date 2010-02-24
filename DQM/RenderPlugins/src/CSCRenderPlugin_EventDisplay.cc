@@ -21,7 +21,18 @@
 /**
  * @brief  Constructor
  */
-EventDisplay::EventDisplay() { 
+EventDisplay::EventDisplay() {
+
+  greyscaleExec = new TExec("cscdqm_greyscaleExec", " \
+    Double_t Red[2]    = { 1.00, 0.00 };\
+    Double_t Green[2]  = { 1.00, 0.00 };\
+    Double_t Blue[2]   = { 1.00, 0.00 };\
+    Double_t Length[2] = { 0.00, 1.00 };\
+    TColor::CreateGradientColorTable(2, Length, Red, Green, Blue, 50);\
+  ");
+  normalExec = new TExec("cscdqm_normalExec", " \
+    gStyle->SetPalette(1,0);\
+  ");
 
   histos[0] = new TH2F("EventDisplay_h1", "Anode Hit Timing and Quality", HISTO_WIDTH, 0, HISTO_WIDTH, 6, 0, 6);
   histos[0]->GetXaxis()->SetLabelSize(0.0);
@@ -71,6 +82,7 @@ EventDisplay::EventDisplay() {
 
   tLayer = 0;
   tXTitle = 0;
+
 }
 
 /**
@@ -82,6 +94,9 @@ EventDisplay::~EventDisplay() {
   delete histos[1];
   delete histos[2];
   delete bBlank;
+
+  delete greyscaleExec;
+  delete normalExec;
 
 }
 
@@ -130,7 +145,9 @@ void EventDisplay::drawSingleChamber(TH2*& data) {
       gPad->SetBottomMargin(0.12);
 
       drawEventDisplayGrid(0, data, 4, 2, 3,
-                          countWiregroups(station, ring), 0.0f, -5.0f, 5.0f, 0, -3, -8, "wiregroup #");
+                          countWiregroups(station, ring), 0.0f, -5.0f, 
+                          5.0f, 0, -3, -8, 
+                          "wiregroup #", false);
     }
 
     // *************************************
@@ -145,7 +162,9 @@ void EventDisplay::drawSingleChamber(TH2*& data) {
       gPad->SetBottomMargin(0.12);
 
       drawEventDisplayGrid(1, data, 12, 10, 11,
-                          (countStrips(station, ring) + countStripsNose(station, ring)) * 2, (countStripsNose(station, ring) > 0 ? 0.0f : 1.0f), -5.0f, 5.0f, (countStripsNose(station, ring) > 0 ? countStrips(station, ring) * 2 : 0), 155, -7, "half-strip #");
+                          (countStrips(station, ring) + countStripsNose(station, ring)) * 2, (countStripsNose(station, ring) > 0 ? 0.0f : 1.0f), -5.0f, 5.0f, 
+                          (countStripsNose(station, ring) > 0 ? countStrips(station, ring) * 2 : 0), 155, -7, 
+                          "half-strip #", false);
     }
 
     // *************************************
@@ -160,7 +179,9 @@ void EventDisplay::drawSingleChamber(TH2*& data) {
       gPad->SetBottomMargin(0.12);
 
       drawEventDisplayGrid(2, data, 18, -1, -1,
-                          (countStrips(station, ring) + countStripsNose(station, ring)), (countStripsNose(station, ring) > 0 ? 0.0f : 0.5f), 0.0f, 1000.0f, (countStripsNose(station, ring) > 0 ? countStrips(station, ring) : 0), 0, 0, "strip #");
+                          (countStrips(station, ring) + countStripsNose(station, ring)), (countStripsNose(station, ring) > 0 ? 0.0f : 0.5f), 0.0f, 1000.0f, 
+                          (countStripsNose(station, ring) > 0 ? countStrips(station, ring) : 0), 0, 0, 
+                          "strip #", true);
     }
 
   }
@@ -186,12 +207,19 @@ void EventDisplay::drawSingleChamber(TH2*& data) {
 
 void EventDisplay::drawEventDisplayGrid(int hnum, TH2* data, int data_first_col, int data_time_col, int data_quality_col,
                                         int count_x, float shift_x, float min_z, float max_z, int split_after_x, int time_corr, int d_corr,
-                                        const char* title_x) {
+                                        const char* title_x, bool greyscale) {
 
   TObject *post_draw[160 * 2];
   int p_post_draw = 0;
 
   histos[hnum]->Draw("colz");
+  if (greyscale) {
+    greyscaleExec->Draw();
+    histos[hnum]->Draw("colz same");
+  } else {
+    normalExec->Draw();
+    histos[hnum]->Draw("colz same");
+  }
 
   bBlank->Draw("l");
 
@@ -227,7 +255,15 @@ void EventDisplay::drawEventDisplayGrid(int hnum, TH2* data, int data_first_col,
         d += d_corr;
         if (d > max_z) d = (int) max_z;
         if (d < min_z) d = (int) min_z;
-        color = 51 + (int) (((float) d / (float) (max_z - min_z)) * 49.0);
+
+        float df = (float) d / (float) (max_z - min_z);
+
+        if (greyscale) {
+          color = TColor::GetColor(df, df, df);
+        } else {
+          color = 51 + (int) (df * 49.0);
+        }
+
       }
 
       if (bBox[hnum][l][xg] != 0) {
@@ -238,7 +274,7 @@ void EventDisplay::drawEventDisplayGrid(int hnum, TH2* data, int data_first_col,
       bBox[hnum][l][xg]->SetLineStyle(1);
       bBox[hnum][l][xg]->SetFillColor(color);
       bBox[hnum][l][xg]->Draw("l");
-        
+
       if (l == 2 && quality > 0) {
 
         time += time_corr;

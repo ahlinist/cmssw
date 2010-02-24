@@ -28,6 +28,8 @@
 #include <TPRegexp.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <TExec.h>
+#include <TColor.h>
 
 /**
  * @class EventDisplay
@@ -57,6 +59,9 @@ class EventDisplay {
     TBox*  bKey[3][160];
     TText* tKey[3][160];
 
+    TExec* greyscaleExec;
+    TExec* normalExec;
+
   public:
     
     EventDisplay();
@@ -70,7 +75,7 @@ class EventDisplay {
     int countStripsNose(int station, int ring) const;
     void drawEventDisplayGrid(int hnum, TH2* data, int data_first_col, int data_time_col, int data_quality_col,
                               int count_x, float shift_x, float min_z, float max_z, int split_after_x, int time_corr, int d_corr,
-                              const char* title_x);
+                              const char* title_x, bool greyscale);
 
 };
 

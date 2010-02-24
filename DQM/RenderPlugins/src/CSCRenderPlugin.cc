@@ -20,6 +20,7 @@
 #include "CSCRenderPlugin_ChamberMap.h"
 #include "CSCRenderPlugin_SummaryMap.h"
 #include "CSCRenderPlugin_EventDisplay.h"
+#include "CSCRenderPlugin_EmuEventDisplay.h"
 
 #include <math.h>
 #include <string>
@@ -43,22 +44,23 @@ typedef std::map<std::string, bool> MapOfPatternResults;
  */
 class CSCRenderPlugin : public DQMRenderPlugin {
 
-  ChamberMap chamberMap;
-  SummaryMap summaryMap;
-  EventDisplay eventDisplay;
+  private:
 
-  MapOfPatternResults mopr;
+    ChamberMap chamberMap;
+    SummaryMap summaryMap;
+    EventDisplay eventDisplay;
+    EmuEventDisplay emuEventDisplay;
+    MapOfPatternResults mopr;
 
-public:
+  public:
 
-  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & ) {
-    if ( o.name.find( "CSC/" ) != std::string::npos )
-      return true;
+    virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & ) {
+      if ( o.name.find( "CSC/" ) != std::string::npos )
+        return true;
+      return false;
+    }
 
-    return false;
-  }
-
-  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) {
+    virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) {
 
       if(o.object == NULL)
         return;
@@ -2045,6 +2047,28 @@ public:
         chamberMap.draw(obj2);
         return;
       }
+
+      if(reMatch(".*Summary/Event_Display_Anode$", o.name))
+      {
+        TH2* tmp = dynamic_cast<TH2*>(obj);
+        emuEventDisplay.drawEventDisplay_ZR(tmp);
+        return;
+      }
+
+      if(reMatch(".*Summary/Event_Display_Cathode$", o.name))
+      {
+        TH2* tmp = dynamic_cast<TH2*>(obj);
+        emuEventDisplay.drawEventDisplay_ZPhi(tmp);
+        return;
+      }
+
+      if(reMatch(".*Summary/Event_Display_XY$", o.name))
+      {
+        TH2* tmp = dynamic_cast<TH2*>(obj);
+        emuEventDisplay.drawEventDisplay_XY(tmp);
+        return;
+      }
+
     }
 
 private:
