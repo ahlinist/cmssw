@@ -47,7 +47,7 @@ reconfigDQMFileLoader(
     process.loadBgEstFakeRateZtoMuTau_tauFakeRate,
     dqmDirectory = 'tauFakeRate/#PROCESSDIR#'
 )
-process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frSimple/10TeVii/")
+process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frSimple/10TeV/")
 
 process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
@@ -133,6 +133,7 @@ dqmDirectories["frQCDdiJetSecondLeadJet"] = 'tauFakeRate' + '/' + '#PROCESSDIR#'
 dqmDirectories["frWplusJets"] = 'tauFakeRate' + '/' + '#PROCESSDIR#' + '/' + 'zMuTauAnalyzer_WplusJets'
 ##dqmDirectories["frGammaPlusJets"] = 'tauFakeRate' + '/' + '#PROCESSDIR#' + '/' + 'zMuTauAnalyzer_gammaPlusJets'
 dqmDirectories["frSysUncertainty"] = 'tauFakeRate' + '/' + '#PROCESSDIR#' + '/' + 'frSysUncertainty'
+dqmDirectories["tauIdEff"] = 'tauFakeRate' + '/' + '#PROCESSDIR#' + '/' + 'zMuTauAnalyzer_tauIdEfficiency'
 
 legendEntries = dict()
 legendEntries["tauIdDiscr"] = "Final Analysis"
@@ -142,6 +143,42 @@ legendEntries["frQCDdiJetSecondLeadJet"] = "QCD fr., next-to-lead. Jet"
 legendEntries["frWplusJets"] = "W + Jets fr."
 ##legendEntries["frGammaPlusJets"] = "#gamma + Jets fr."
 legendEntries["frSysUncertainty"] = "Average fr."
+legendEntries["tauIdEff"] = "Tau Id. eff."
+
+bgEstFakeRatePlots = [
+    drawJobConfigEntry(
+        meName = 'MuonQuantities/Muon#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Muon (final Event sample)",
+        xAxis = '#PAR#',
+        name = "bgEstFakeRatePlots_#PROCESSNAME#_muon"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/Tau#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Tau (final Event sample)",
+        xAxis = '#PAR#',
+        name = "bgEstFakeRatePlots_#PROCESSNAME#_tau"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/TauLeadTrkPt',
+        title = "Tau lead. Track (final Event sample)",
+        xAxis = 'Pt',
+        name = "bgEstFakeRatePlots_#PROCESSNAME#_tauLeadTrkPt"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/Mt1MET',
+        title = "M_{T}(Muon + MET) (final Event sample)",
+        xAxis = 'Mt',
+        name = "bgEstFakeRatePlots_#PROCESSNAME#_mtMuonMET"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/VisMass',
+        title = "M_{vis}(Muon + Tau) (final Event sample)",
+        xAxis = 'Mass',
+        name = "bgEstFakeRatePlots_#PROCESSNAME#_mVisible"
+    )     
+]
 
 drawFakeRateHistConfiguratorZtoMuTau = drawFakeRateHistConfigurator(
     template = cms.PSet(
@@ -172,40 +209,7 @@ drawFakeRateHistConfiguratorZtoMuTau.addProcess("QCD", cms.string('harvested/qcd
 
 drawFakeRateHistConfiguratorZtoMuTau.addPlots(
     afterCut = evtSelDiMuPairZmumuHypothesisVeto,
-    plots = [
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/Muon#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Muon (final Event sample)",
-            xAxis = '#PAR#',
-            name = "bgEstFakeRatePlots_#PROCESSNAME#_muon"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/Tau#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (final Event sample)",
-            xAxis = '#PAR#',
-            name = "bgEstFakeRatePlots_#PROCESSNAME#_tau"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (final Event sample)",
-            xAxis = 'Pt',
-            name = "bgEstFakeRatePlots_#PROCESSNAME#_tauLeadTrkPt"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/Mt1MET',
-            title = "M_{T}(Muon + MET) (final Event sample)",
-            xAxis = 'Mt',
-            name = "bgEstFakeRatePlots_#PROCESSNAME#_mtMuonMET"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/VisMass',
-            title = "M_{vis}(Muon + Tau) (final Event sample)",
-            xAxis = 'Mass',
-            name = "bgEstFakeRatePlots_#PROCESSNAME#_mVisible"
-        )     
-    ]
+    plots = bgEstFakeRatePlots
 )
 
 process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
@@ -304,6 +308,56 @@ process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
     #outputFileName = cms.string('plotsBgEstFakeRateZtoMuTau.ps')
     indOutputFileName = cms.string('plotBgEstFakeRateZtoMuTau_#PLOT#.png')
 )
+
+drawTauIdEffHistConfiguratorZtoMuTau = drawFakeRateHistConfigurator(
+    template = cms.PSet(
+        xAxis = cms.string('unlabeled'),
+        #yAxis = cms.string('numEntries_linear'),
+        yAxis = cms.string('numEntries_log'),
+        legend = cms.string('regular'),
+        labels = cms.vstring('mcNormScale')
+    ),
+    dqmDirectories = dqmDirectories,
+    legendEntries = legendEntries,
+    frTypes = [
+        "tauIdDiscr",
+        "tauIdEff"
+    ]
+)
+
+drawTauIdEffHistConfiguratorZtoMuTau.addProcess("Ztautau", processZtoMuTau_Ztautau.config_dqmHistPlotter.dqmDirectory)
+
+drawTauIdEffHistConfiguratorZtoMuTau.addPlots(
+    afterCut = evtSelDiMuPairZmumuHypothesisVeto,
+    plots = bgEstFakeRatePlots
+)
+
+process.plotTauIdEffZtoMuTau = process.plotBgEstFakeRateZtoMuTau.Clone(
+    processes = cms.PSet(
+        tauIdDiscr = cms.PSet(
+            #dqmDirectory = cms.string(dqmDirectories["tauIdDiscr"]),
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string('tauIdDiscr'),
+            type = cms.string('smMC')
+        ),
+        tauIdEff = cms.PSet(
+            #dqmDirectory = cms.string(dqmDirectories["tauIdEff"]),
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string('frQCDmuEnriched'),
+            type = cms.string('smMC')
+        )
+    ),
+
+    drawOptionEntries = cms.PSet(
+        tauIdDiscr = copy.deepcopy(drawOption_black_separate),
+        tauIdEff = copy.deepcopy(drawOption_red_separate)
+    ),
+                              
+    drawJobs = drawTauIdEffHistConfiguratorZtoMuTau.configure(),
+
+    #outputFileName = cms.string('plotsBgEstFakeRateZtoMuTau_tauIdEff.ps')
+    indOutputFileName = cms.string('plotBgEstFakeRateZtoMuTau_tauIdEff_#PLOT#.png')
+)
 #--------------------------------------------------------------------------------
 
 # import utility function for fake-rate technique
@@ -380,6 +434,7 @@ process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
    + process.dumpZtoMuTau_frUnweighted
    + process.dumpBgEstFakeRateZtoMuTau 
    + process.plotBgEstFakeRateZtoMuTau
+   + process.plotTauIdEffZtoMuTau
 )
 
 process.p = cms.Path(process.makeBgEstFakeRateZtoMuTauPlots)
