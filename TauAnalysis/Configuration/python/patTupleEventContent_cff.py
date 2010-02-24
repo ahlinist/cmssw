@@ -27,17 +27,22 @@ patTupleEventContent.outputCommands.extend(
      [ 'keep *_iterativeCone5CaloJets_*_*',
        'keep *_iterativeCone5PFJets_*_*',
        'keep *_generalTracks_*_*', 
-       'keep *_genElectronsFromZs_*_*', 
-       'keep *_pixelMatchGsfElectrons_*_*', 
-       'keep *_pixelMatchGsfFit_*_*' ]
+       'keep *_genElectronsFromZs_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
-# required by photon conversion rejection (to be removed for 3_1_x)
+# required by photon conversion rejection
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
       [ 'keep *_generalTracks_*_*',
-	'keep recoTrackExtras_pixelMatchGsfFit_*_*' ]
+		'keep *_gsfElectrons_*_*',
+		'keep *_electronGsfTracks_*_*',
+		'keep *_cleanLayer1Photons*_*_*',
+		'keep *_photonCore_*_*',
+		'keep *_photons_*_*',
+		'keep *_conversions_*_*',
+		'keep *_ckfInOutTracksFromConversions_*_*',
+		'keep *_ckfOutInTracksFromConversions_*_*']
 )
 
 #--------------------------------------------------------------------------------
@@ -45,7 +50,8 @@ patTupleEventContent.outputCommands.extend(
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_pfAll*_*_*', 
-      'keep *_particleFlow_*_*' ]
+      'keep *_particleFlow_*_*',
+	  'keep *_offlinePrimaryVerticesWithBS_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
