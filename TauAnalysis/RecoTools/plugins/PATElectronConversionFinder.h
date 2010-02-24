@@ -29,6 +29,10 @@
 
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
@@ -63,11 +67,44 @@ class PATElectronConversionFinderImp
       
       std::vector<const pat::Electron*> selected_;
 
-      edm::InputTag tracks_;
+      edm::InputTag tracks_, conversions_, photons_;
       
-	  double cotTheta_,dRin_,eventWeight_;
+	  double cotTheta_,dca_,dRin_,eventWeight_;
       bool doPXBcut_;
+	  bool doHists_;
+	  bool useInnerParsForElec_;
+	  bool useInnerParsForTrks_;
+	  bool useConversionColl_;
       double nMax_;
+      
+	  TH1F *hnTracksPass, 
+		*hPXBLayer, 
+		*hPXFDisk, 
+	  	*hDzin,
+	  	*hDzinFilt,
+	  	*hDzinOS,
+		*hDeltaCotTheta, 
+		*hDeltaCotThetaFilt, 
+		*hDeltaCotThetaOS, 
+		*hMassTrkAndElec,
+		*hMassTrkAndElecFilt,
+		*hMassTrkAndElecOS,
+		*hPt,
+		*hPtOSFilt,
+		*hPtOS,
+		*hOS,
+		*hOSFilt,
+		*hAbsPtDiff,
+		*hAbsPtDiffFilt,
+		*hAbsPtDiffOS,
+		*hDeltaR,
+		*hDeltaRFilt,
+		*hDeltaROS,
+		*nElecs,
+		*nPhotons,
+		*nConv,
+		*nConvTrks;
+//      TH2F *hDoca; 
 };
 
 #endif
