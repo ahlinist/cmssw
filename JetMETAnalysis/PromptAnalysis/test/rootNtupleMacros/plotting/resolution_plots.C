@@ -467,6 +467,9 @@ void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& 
    l.DrawLatex(0.17,0.9,"CMS Preliminary 2009");
    l.DrawLatex(0.17,0.85,("#sqrt{s}="+fTitle).c_str());
 
+   c->SetGridx();
+   c->SetGridy();
+   
    string fileName = fName;
    c->SaveAs(fileName.c_str());
    
