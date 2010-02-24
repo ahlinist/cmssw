@@ -45,8 +45,7 @@ namespace cscdqm {
   
     /**  Creating real eta/phi boxes for available addresses */
     for (adr.side = 1; adr.side <= N_SIDES; adr.side++) { 
-      float sign = +1.0;
-      if(adr.side == 2) sign = -1.0;
+      float sign = (float) SideSign(adr.side);
       for (adr.station = 1; adr.station <= N_STATIONS; adr.station++) {
         for (adr.ring = 1; adr.ring <= NumberOfRings(adr.station); adr.ring++) { 
           for (adr.chamber = 1; adr.chamber <= NumberOfChambers(adr.station, adr.ring); adr.chamber++) {
@@ -534,7 +533,7 @@ namespace cscdqm {
   /**
    * @brief  Get the full name of the address prefixed with CSC_. It is being used by summaryReportContent variables
    * @param  adr Address
-   * @return Address name as string
+   * @return Address name as std::string
    */
   const std::string Detector::AddressName(const Address& adr) const {
     std::ostringstream oss;
@@ -564,8 +563,8 @@ namespace cscdqm {
   }
   
   /**
-   * @brief  Construct address from string
-   * @param  str_address Address in string
+   * @brief  Construct address from std::string
+   * @param  str_address Address in std::string
    * @param  adr Address to return
    * @return true if address was successfully created, false - otherwise
    */
@@ -625,6 +624,348 @@ namespace cscdqm {
   
     return true;
   
+  }
+
+  int Detector::NumberOfChamberParts(int station, int ring) const {
+    if (station == 1 && ring == 1) return 2;
+    return 1;
+  }
+
+  std::string Detector::ChamberPart(int npart) const {
+    if (npart == 2) return "a";
+    return "b";
+  }
+
+  bool Detector::isChamberInstalled(int side, int station, int ring, int chamber) const {
+    if (station == 4 && ring == 2) {
+      if (side == -1 || side == 2) return false;
+      if (side ==  1 && (chamber < 9 || chamber > 13)) return false;
+    }
+    return true;
+  }
+
+  int Detector::SideSign(int side) const {
+    return (side == 2 ? -1 : 1);
+  }
+
+  int Detector::NumberOfWiregroups(int station, int ring) const {
+    if (station == 1 && ring == 1) return 48;
+    if (station == 1 && ring == 2) return 64;
+    if (station == 1 && ring == 3) return 32;
+    if (station == 2 && ring == 1) return 112;
+    if (station == 2 && ring == 2) return 64;
+    if (station == 3 && ring == 1) return 96;
+    if (station == 3 && ring == 2) return 64;
+    if (station == 4 && ring == 1) return 96;
+    if (station == 4 && ring == 2) return 64;
+    return -1;
+  }
+
+  double Detector::Z_mm(int side, int station, int ring, int chamber, int layer) const {
+    double z = 0.0;
+    // ME1/1 even chambers are closer to IP
+    if (station == 1 && ring == 1 && chamber%2 == 0) z = 5834.5 + 22.0*(double)(layer - 1);
+    // ME1/1 odd chambers are further from IP
+    else
+      if (station == 1 && ring == 1 && chamber%2 == 1) z = 6101.5 + 22.0*(double)(layer - 1);
+    // All other ME (not ME1/1) - odd chambers mounted to iron, even chambers mounted further from the iron disk
+    else
+      if (station == 1 && ring == 2 && chamber%2 == 0) z = 6769.48 + (6937.75-6769.48)/7.0*(double)(layer);
+    else
+      if (station == 1 && ring == 2 && chamber%2 == 1) z = 7043.48 + (7211.75-7043.48)/7.0*(double)(layer);
+    else
+      if (station == 1 && ring == 3) z = 6867.45 + (7035.72-6867.45)/7.0*(double)(layer);
+    else
+      if (station == 2 && ring == 1 && chamber%2 == 0) z = 8077.47 + (8245.75-8077.47)/7.0*(double)(layer);
+    else
+      if (station == 2 && ring == 1 && chamber%2 == 1) z = 8325.48 + (8493.75-8325.48)/7.0*(double)(layer);
+    else
+      if (station == 2 && ring == 2 && chamber%2 == 0) z = 8077.47 + (8245.75-8077.47)/7.0*(double)(layer);
+    else
+      if (station == 2 && ring == 2 && chamber%2 == 1) z = 8325.48 + (8493.75-8325.48)/7.0*(double)(layer);
+    else
+      if (station == 3 && ring == 1 && chamber%2 == 0) z = 9394.25 + (9562.53-9394.25)/7.0*(double)(layer);
+    else
+      if (station == 3 && ring == 1 && chamber%2 == 1) z = 9146.25 + (9314.52-9146.25)/7.0*(double)(layer);
+    else
+      if (station == 3 && ring == 2 && chamber%2 == 0) z = 9394.25 + (9562.53-9394.25)/7.0*(double)(layer);
+    else
+      if (station == 3 && ring == 2 && chamber%2 == 1) z = 9146.25 + (9314.52-9146.25)/7.0*(double)(layer);
+    else
+      if (station == 4 && ring == 1 && chamber%2 == 0) z = 10289.25 + (10457.53-10289.25)/7.0*(double)(layer);
+    else
+      if (station == 4 && ring == 1 && chamber%2 == 1) z = 10041.25 + (10209.52-10041.25)/7.0*(double)(layer);
+    else
+      if (station == 4 && ring == 2 && chamber%2 == 0) z = 10289.25 + (10457.53-10289.25)/7.0*(double)(layer);
+    else
+      if (station == 4 && ring == 2 && chamber%2 == 1) z = 10041.25 + (10209.52-10041.25)/7.0*(double)(layer);
+    z = (double)(SideSign(side)) * z;
+    return z;
+  }
+
+double Detector::RPin ( int station, int ring ) const {
+  double rPin = 100000.0; // Some default large value
+  
+  if( station == 1 && ring == 1 ) rPin = 1060.0; // "Pin" = "Chamber's bottom edge" for ME1/1
+  if( station == 1 && ring == 2 ) rPin = 2784.9;
+  if( station == 1 && ring == 3 ) rPin = 5089.9;
+  if( station == 2 && ring == 1 ) rPin = 1438.9;
+  if( station == 2 && ring == 2 ) rPin = 3609.9;
+  if( station == 3 && ring == 1 ) rPin = 1638.9;
+  if( station == 3 && ring == 2 ) rPin = 3609.9;
+  if( station == 4 && ring == 1 ) rPin = 1837.9;
+  if( station == 4 && ring == 2 ) rPin = 3609.9;
+  
+  return rPin;
+}
+
+double Detector::PhiDegChamberCenter ( int station, int ring, int chamber ) const {
+  double phiDegChamberCenter = 0.0; // Default value
+  
+  if( station == 1 && ring == 1 ) phiDegChamberCenter = (chamber - 1)*10.0;
+  if( station == 1 && ring == 2 ) phiDegChamberCenter = (chamber - 1)*10.0;
+  if( station == 1 && ring == 3 ) phiDegChamberCenter = (chamber - 1)*10.0;
+  if( station == 2 && ring == 1 ) phiDegChamberCenter = 5.0 + (chamber - 1)*20.0;
+  if( station == 2 && ring == 2 ) phiDegChamberCenter = (chamber - 1)*10.0;
+  if( station == 3 && ring == 1 ) phiDegChamberCenter = 5.0 + (chamber - 1)*20.0;
+  if( station == 3 && ring == 2 ) phiDegChamberCenter = (chamber - 1)*10.0;
+  if( station == 4 && ring == 1 ) phiDegChamberCenter = 5.0 + (chamber - 1)*20.0;
+  if( station == 4 && ring == 2 ) phiDegChamberCenter = (chamber - 1)*10.0;
+  
+  return phiDegChamberCenter;
+}
+
+
+double Detector::LocalYtoBeam(int station, int ring, int wgroup) const {
+  double localYtoBeam = 100000.0; // Some default large value
+  
+  localYtoBeam = LocalYtoBeam(station, ring, "b", 1, wgroup);
+  
+  return localYtoBeam;
+}
+
+double Detector::LocalYtoBeam(int station, int ring, const std::string &part, int hstrip, int wgroup) const {
+  double localYtoBeam = 100000.0; // Some default large value
+  
+  // Special case: ME1/1
+  if( station == 1 && ring == 1) {
+    int side  = 1;
+    int layer = 1;
+    // Half strip angle w.r.t. horizontal line
+    double localPhiRad = LocalPhiRadhstripToChamberCenter(side, station, ring, part, layer, hstrip);
+    // Wire groups incline angle for ME1/1 = 29 degrees
+    double inclineAngleRad = 29.0 * 3.14159 / 180.0;
+    if( wgroup == 1 || wgroup == NumberOfWiregroups(1,1) ) inclineAngleRad = 0.5 * 29.0 * 3.14159 / 180.0;
+    
+    localYtoBeam = ( RPin(station, ring) + dPinToWGCenter_ME1_1[wgroup - 1])
+                   / ( 1 - tan(inclineAngleRad)*tan(localPhiRad) );
+  }
+  
+  // All other chambers
+  if( station == 1 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME1_2[wgroup - 1];
+  if( station == 1 && ring == 3) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME1_3[wgroup - 1];
+  if( station == 2 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME2_1[wgroup - 1];
+  if( station == 2 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
+  if( station == 3 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME3_1[wgroup - 1];
+  if( station == 3 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
+  if( station == 4 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME4_1[wgroup - 1];
+  if( station == 4 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
+  
+  return localYtoBeam;
+}
+
+int Detector::NumberOfStrips(int station, int ring, const std::string &part) const {
+  int nstrips = -1; // Default value
+  
+  if( station == 1 && ring == 1 && part == "a") nstrips = 48;
+  if( station == 1 && ring == 1 && part == "b") nstrips = 64;
+  if( station == 1 && ring == 2) nstrips = 80;
+  if( station == 1 && ring == 3) nstrips = 64;
+  if( station == 2 && ring == 1) nstrips = 80;
+  if( station == 2 && ring == 2) nstrips = 80;
+  if( station == 3 && ring == 1) nstrips = 80;
+  if( station == 3 && ring == 2) nstrips = 80;
+  if( station == 4 && ring == 1) nstrips = 80;
+  if( station == 4 && ring == 2) nstrips = 80;
+  
+  return nstrips;
+}
+
+double Detector::stripDPhiDeg(int station, int ring, const std::string &part) const {
+  double stripDPhi = 0; // Default value
+  
+  if( station == 1 && ring == 1 && part == "a") stripDPhi = 3.88*1e-3*180/PI; // 3.88 mrad
+  if( station == 1 && ring == 1 && part == "b") stripDPhi = 2.96*1e-3*180/PI; // 2.96 mrad
+  if( station == 1 && ring == 2) stripDPhi = 10.0/75.0;
+  if( station == 1 && ring == 3) stripDPhi = 7.893/64.0;
+  if( station == 2 && ring == 1) stripDPhi = 20.0/75.0;
+  if( station == 2 && ring == 2) stripDPhi = 10.0/75.0;
+  if( station == 3 && ring == 1) stripDPhi = 20.0/75.0;
+  if( station == 3 && ring == 2) stripDPhi = 10.0/75.0;
+  if( station == 4 && ring == 1) stripDPhi = 20.0/75.0;
+  if( station == 4 && ring == 2) stripDPhi = 10.0/75.0;
+  
+  return stripDPhi;
+  
+}
+
+double Detector::stripStaggerInstripWidth( int station, int ring, int layer ) const {
+  double stripStagger = 0.0; // Default value
+  
+  if( station == 1 && ring == 1) stripStagger = 0.0;
+  
+  if( station == 1 && ring == 2 && (layer == 1 || layer == 3 || layer == 5) ) stripStagger = 0.25;
+  if( station == 1 && ring == 2 && (layer == 2 || layer == 4 || layer == 6) ) stripStagger = -0.25;
+  
+  if( station == 1 && ring == 3 && (layer == 1 || layer == 3 || layer == 5) ) stripStagger = 0.25;
+  if( station == 1 && ring == 3 && (layer == 2 || layer == 4 || layer == 6) ) stripStagger = -0.25;
+  
+  if( station == 2 && ring == 1 && (layer == 1 || layer == 3 || layer == 5) ) stripStagger = 0.25;
+  if( station == 2 && ring == 1 && (layer == 2 || layer == 4 || layer == 6) ) stripStagger = -0.25;
+  
+  if( station == 2 && ring == 2 && (layer == 1 || layer == 3 || layer == 5) ) stripStagger = 0.25;
+  if( station == 2 && ring == 2 && (layer == 2 || layer == 4 || layer == 6) ) stripStagger = -0.25;
+  
+  if( station == 3 && ring == 1 && (layer == 1 || layer == 3 || layer == 5) ) stripStagger = -0.25;
+  if( station == 3 && ring == 1 && (layer == 2 || layer == 4 || layer == 6) ) stripStagger = 0.25;
+  
+  if( station == 3 && ring == 2 && (layer == 1 || layer == 3 || layer == 5) ) stripStagger = -0.25;
+  if( station == 3 && ring == 2 && (layer == 2 || layer == 4 || layer == 6) ) stripStagger = 0.25;
+  
+  if( station == 4 && ring == 1 && (layer == 1 || layer == 3 || layer == 5) ) stripStagger = 0.25;
+  if( station == 4 && ring == 1 && (layer == 2 || layer == 4 || layer == 6) ) stripStagger = -0.25;
+  
+  if( station == 4 && ring == 2 && (layer == 1 || layer == 3 || layer == 5) ) stripStagger = 0.25;
+  if( station == 4 && ring == 2 && (layer == 2 || layer == 4 || layer == 6) ) stripStagger = -0.25;
+  
+  return stripStagger;
+  
+}
+
+double Detector::LocalPhiDegstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const {
+  double localPhi = 0.0;
+  
+  localPhi = stripDPhiDeg(station, ring, part)
+             * ( (double)strip - (double)NumberOfStrips(station, ring, part)/2.0 - 1.0/2.0 )
+       + stripDPhiDeg(station, ring, part) * stripStaggerInstripWidth(station, ring, layer);
+  
+  // in the West (positive z) endcap:
+  //   strip numbers in stations 1 and 2 are in increasing phi order
+  //   strip numbers in stations 3 and 4 are in decreasing phi order
+  if (side == 1 && station == 1) {
+    localPhi = localPhi;
+  }
+  if (side == 1 && station == 2) {
+    localPhi = localPhi;
+  }
+  if (side == 1 && station == 3) {
+    localPhi = - localPhi;
+  }
+  if (side == 1 && station == 4) {
+    localPhi = - localPhi;
+  }
+  
+  // in the East (negative z) endcap:
+  //   strip numbers in stations 1 and 2 are in decreasing phi order
+  //   strip numbers in stations 3 and 4 are in increasing phi order
+  if ((side == -1 || side == 2) && station == 1) {
+    localPhi = - localPhi;
+  }
+  if ((side == -1 || side == 2) && station == 2) {
+    localPhi = - localPhi;
+  }
+  if ((side == -1 || side == 2) && station == 3) {
+    localPhi = localPhi;
+  }
+  if ((side == -1 || side == 2) && station == 4) {
+    localPhi = localPhi;
+  }
+  
+  return localPhi;
+}
+
+double Detector::LocalPhiDeghstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const {
+  double localPhi = 0.0;
+  
+  localPhi = hstripDPhiDeg(station, ring, part)
+             * ( (double)hstrip - (double)NumberOfHalfstrips(station, ring, part)/2.0 - 1.0/2.0 )
+       + stripDPhiDeg(station, ring, part) * stripStaggerInstripWidth(station, ring, layer);
+  
+  // in the West (positive z) endcap:
+  //   strip numbers in stations 1 and 2 are in increasing phi order
+  //   strip numbers in stations 3 and 4 are in decreasing phi order
+  if (side ==  1 && station == 1) {
+    localPhi = localPhi;
+  }
+  if (side ==  1 && station == 2) {
+    localPhi = localPhi;
+  }
+  if (side ==  1 && station == 3) {
+    localPhi = - localPhi;
+  }
+  if (side ==  1 && station == 4) {
+    localPhi = - localPhi;
+  }
+  
+  // in the East (negative z) endcap:
+  //   strip numbers in stations 1 and 2 are in decreasing phi order
+  //   strip numbers in stations 3 and 4 are in increasing phi order
+  if ((side == -1 || side == 2) && station == 1) {
+    localPhi = - localPhi;
+  }
+  if ((side == -1 || side == 2) && station == 2) {
+    localPhi = - localPhi;
+  }
+  if ((side == -1 || side == 2) && station == 3) {
+    localPhi = localPhi;
+  }
+  if ((side == -1 || side == 2) && station == 4) {
+    localPhi = localPhi;
+  }
+  
+  return localPhi;
+}
+
+double Detector::Phi_deg(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip) const {
+  double phi = 0.0;
+  
+  phi =   PhiDegChamberCenter(station, ring, chamber)
+        + LocalPhiDeghstripToChamberCenter(side, station, ring, part, layer, hstrip);
+  
+  return phi;
+}
+
+double Detector::R_mm(int side, int station, int ring, const std::string &part, int layer, int hstrip, int wgroup) const {
+  double r = 0.0;
+  
+  r =   LocalYtoBeam(station, ring, part, hstrip, wgroup)
+      / cos( LocalPhiRadhstripToChamberCenter(side, station, ring, part, layer, hstrip) );
+  
+  return r;
+}
+
+double Detector::X_mm(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip, int wgroup) const {
+  double x = 0.0;
+  
+  x =   R_mm(side, station, ring, part, layer, hstrip, wgroup)
+      * cos( Phi_rad(side, station, ring, part, chamber, layer, hstrip) );
+  
+  return x;
+}
+
+double Detector::Y_mm(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip, int wgroup) const {
+  double y = 0.0;
+  
+  y =   R_mm(side, station, ring, part, layer, hstrip, wgroup)
+      * sin( Phi_rad(side, station, ring, part, chamber, layer, hstrip) );
+  
+  return y;
+}
+
+  double Detector::Theta_rad(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip, int wgroup) const {
+    double theta = 0.0;
+    theta = atan( R_mm(side, station, ring, part, layer, hstrip, wgroup) / Z_mm(side, station, ring, chamber, layer) );
+    return theta;
   }
 
 }

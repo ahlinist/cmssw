@@ -29,9 +29,13 @@
 
 #ifdef CSC_RENDER_PLUGIN
 #include "CSCDQM_Utility.h"
+#include "CSCDQM_WiregroupData.h"
 #else
 #include "DQM/CSCMonitorModule/interface/CSCDQM_Utility.h"
+#include "DQM/CSCMonitorModule/interface/CSCDQM_WiregroupData.h"
 #endif
+
+#define PI 3.14159256
 
 namespace cscdqm {
 
@@ -166,6 +170,81 @@ class Detector {
     unsigned int NumberOfChambers(unsigned int station, unsigned int ring) const;
     unsigned int NumberOfChamberCFEBs(unsigned int station, unsigned int ring) const;
     unsigned int NumberOfChamberHVs(unsigned int station, unsigned int ring) const;
+    int NumberOfChamberParts(int station, int ring) const;
+    std::string ChamberPart(int npart) const;
+    bool isChamberInstalled(int side, int station, int ring, int chamber) const;
+    int SideSign(int side) const;
+    int NumberOfWiregroups(int station, int ring ) const;
+
+    // Methods to find relative position of chambers w.r.t. CMS global coordinate system
+    double RPin(int station, int ring) const;
+    double PhiDegChamberCenter(int station, int ring, int chamber) const;
+    double PhiRadChamberCenter(int station, int ring, int chamber) const {
+      return PI/180.0*PhiDegChamberCenter(station, ring, chamber);
+    };
+  
+    // Wire Groups
+    double LocalYtoBeam(int station, int ring, int wgroup) const;
+    double LocalYtoBeam(int station, int ring, const std::string &part, int hstrip, int wgroup) const;
+    
+    // strips and hstrips
+    double stripStaggerInstripWidth(int station, int ring, int layer) const;
+  
+    int NumberOfStrips(int station, int ring, const std::string &part) const;
+    int NumberOfStrips(int station, int ring) const { return NumberOfStrips( station, ring, "b" ); };
+    int NumberOfHalfstrips(int station, int ring, const std::string &part) const { return 2 * NumberOfStrips(station, ring, part); };
+    int NumberOfHalfstrips(int station, int ring) const { return NumberOfHalfstrips( station, ring, "b" ); };
+  
+    double stripDPhiDeg(int station, int ring, const std::string &part) const;
+    double stripDPhiDeg(int station, int ring ) const { return stripDPhiDeg(station, ring, "b"); };
+    double stripDPhiRad(int station, int ring, const std::string &part) const { return PI/180.0*stripDPhiDeg( station, ring, part ); };
+    double stripDPhiRad(int station, int ring ) const { return stripDPhiRad(station, ring, "b"); };
+  
+    double hstripDPhiDeg(int station, int ring, const std::string &part) const { return 0.5*stripDPhiDeg( station, ring, part ); };
+    double hstripDPhiDeg(int station, int ring) const { return hstripDPhiDeg( station, ring, "b" ); };
+    double hstripDPhiRad(int station, int ring, const std::string &part) const { return PI/180.0*hstripDPhiDeg( station, ring, part ); };
+    double hstripDPhiRad(int station, int ring) const { return hstripDPhiRad( station, ring, "b" ); };
+
+    double LocalPhiDegstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const;
+    double LocalPhiDegstripToChamberCenter(int side, int station, int ring, int layer, int strip) const {
+      return LocalPhiDegstripToChamberCenter(side, station, ring, "b", layer, strip);
+    };
+    
+    double LocalPhiRadstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const {
+      return PI/180.0*LocalPhiDegstripToChamberCenter(side, station, ring, part, layer, strip);
+    };
+    double LocalPhiRadstripToChamberCenter(int side, int station, int ring, int layer, int strip) const {
+      return PI/180.0*LocalPhiDegstripToChamberCenter(side, station, ring, layer, strip);
+    };
+    
+    double LocalPhiDeghstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const;
+    double LocalPhiDeghstripToChamberCenter(int side, int station, int ring, int layer, int hstrip) const {
+      return LocalPhiDeghstripToChamberCenter(side, station, ring, "b", layer, hstrip);
+    };
+  
+    double LocalPhiRadhstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const {
+      return PI/180.0*LocalPhiDeghstripToChamberCenter(side, station, ring, part, layer, hstrip);
+    };
+    double LocalPhiRadhstripToChamberCenter(int side, int station, int ring, int layer, int hstrip) const {
+      return PI/180.0*LocalPhiDeghstripToChamberCenter(side, station, ring, layer, hstrip);
+    };
+  
+    double Z_mm(int side, int station, int ring, int chamber, int layer) const;
+
+    double Phi_deg(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip) const;
+    double Phi_rad(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip) const {
+      return PI/180.0*Phi_deg(side, station, ring, part, chamber, layer, hstrip);
+    };
+  
+    double R_mm(int side, int station, int ring, const std::string &part, int layer, int hstrip, int wgroup) const;
+  
+    double X_mm(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip, int wgroup) const;
+    double Y_mm(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip, int wgroup) const;
+  
+    double Theta_rad(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip, int wgroup) const;
+    double Theta_deg(int side, int station, int ring, const std::string &part, int chamber, int layer, int hstrip, int wgroup) const {
+      return 180.0/PI*Theta_rad(side, station, ring, part, chamber, layer, hstrip, wgroup);
+    };
 
   private:
 

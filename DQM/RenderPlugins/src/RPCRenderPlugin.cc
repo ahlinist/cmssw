@@ -49,7 +49,7 @@ public:
 
 private:
 
- void preDrawTH1( TCanvas *c, const VisDQMObject &o){
+ void preDrawTH1(TCanvas *c __attribute__ ((unused)) , const VisDQMObject &o){
     TH1* obj = dynamic_cast<TH1*>( o.object );
     assert( obj );
 

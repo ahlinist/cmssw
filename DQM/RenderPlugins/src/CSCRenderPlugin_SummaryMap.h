@@ -42,12 +42,14 @@ class TText;
 class SummaryMap {
 
   public:
+
     SummaryMap();
     ~SummaryMap();
     void drawDetector(TH2* me);
     void drawStation(TH2* me, const int station);
 
   private:
+
     cscdqm::Detector detector;
 
     TBox  *bDetector[N_TICS][N_TICS];
