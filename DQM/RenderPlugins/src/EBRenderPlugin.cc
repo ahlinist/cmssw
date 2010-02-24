@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.134 2009/12/13 16:32:52 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.135 2010/02/03 20:45:50 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.134 $
-  \date $Date: 2009/12/13 16:32:52 $
+  \version $Revision: 1.135 $
+  \date $Date: 2010/02/03 20:45:50 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -49,7 +49,7 @@ class EBRenderPlugin : public DQMRenderPlugin
   int pCol3[7];
   int pCol4[10];
   int pCol5[10];
-  int pCol6[10];
+  int pCol6[7];
 
   TGaxis* timingAxis;
 
@@ -89,11 +89,15 @@ public:
       for(int i=0; i<7; i++) pCol3[i]  = i+301;
       for(int i=0; i<10; i++) pCol4[i] = i+401;
       for(int i=0; i<10; i++) pCol5[i] = i+501;
-      pCol6[0]=2;
-      pCol6[1]=10;
-      for(int i=2; i<9; i++) pCol6[i] = i+1;
-      pCol6[9]=1;
 
+      pCol6[0] = kGray+2;
+      pCol6[1] = kWhite;
+      pCol6[2] = kRed;
+      pCol6[3] = kOrange;
+      pCol6[4] = kGreen;
+      pCol6[5] = kAzure;
+      pCol6[6] = kViolet;
+      
       timingAxis = 0;
 
       text1 = new TH2C( "eb_text1", "text1", 85, 0,  85, 20,   0, 20 );
