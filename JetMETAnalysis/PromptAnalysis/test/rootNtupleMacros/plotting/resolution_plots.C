@@ -438,22 +438,22 @@ void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& 
    h[0]->SetLineStyle(2);
    h[0]->SetLineColor(kRed);
    h[0]->SetFillColor(kRed);
-//    h[0]->SetMarkerSize(.6);
+   h[0]->SetMarkerSize(1.);
    h[0]->SetMarkerStyle(26);
    h[0]->SetMarkerColor(kRed);
    h[0]->Draw("");
    h[1]->SetLineWidth(2);
 //    h[1]->SetLineStyle(3);
    h[1]->SetLineColor(kBlack);
-//    h[1]->SetMarkerSize(.8);
+   h[1]->SetMarkerSize(1.);
    h[1]->SetMarkerStyle(20);
    h[1]->SetMarkerColor(kBlack);
    h[1]->Draw("same");
    
-   TLegend *legend = new TLegend(.65,.25,.95,.4);
-   legend->SetBorderSize(0);
+   TLegend *legend = new TLegend(.61,.26,.91,.41);
+   legend->SetBorderSize(1);
    legend->SetFillColor(0);
-   legend->SetFillStyle(0);
+//    legend->SetFillStyle(0);
    legend->SetTextFont(42);
    legend->AddEntry(h[1],"Data","lp");
    legend->AddEntry(h[0],"Simulation","lp");
