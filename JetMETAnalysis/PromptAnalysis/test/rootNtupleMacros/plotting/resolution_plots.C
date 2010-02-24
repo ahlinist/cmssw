@@ -461,11 +461,10 @@ void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& 
    
    TLatex l;
    l.SetTextAlign(12);
-   l.SetTextSize(0.05);
+   l.SetTextSize(0.04);
    l.SetTextFont(62);
    l.SetNDC();
-   l.DrawLatex(0.17,0.9,"CMS Preliminary 2009");
-   l.DrawLatex(0.17,0.85,("#sqrt{s}="+fTitle).c_str());
+   l.DrawLatex(0.15,0.88,("#splitline{CMS Preliminary 2009}{#sqrt{s}="+fTitle+"}").c_str());
 
    c->SetGridx();
    c->SetGridy();
