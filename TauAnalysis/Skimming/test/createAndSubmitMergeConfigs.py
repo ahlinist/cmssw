@@ -13,7 +13,7 @@ if len(sys.argv) != 4:
 	sys.exit(1) 
 
 # get command line args
-sampleName = sys.argv[1]
+sampleName = str(sys.argv[1])
 numInputFiles = int(sys.argv[2])
 numInputFilesPerOutputFile = int(sys.argv[3])
 
@@ -25,7 +25,7 @@ if rem != 0:
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-castorDirectory = "/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/"
+castorDirectory = "/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/"
 outputDirectory = castorDirectory + sampleName
 
 # set input file path and base filename
@@ -44,5 +44,5 @@ for i in range(0, numOutputFiles):
 	submitToBatch(configFile = "mergeSkimOutput_cfg.py", channel = "ZtoElecTau", sample = "%(sName)s_%(i)02d" % {"sName" : sampleName, "i" : (i + 1)},
 		replFunction = makeReplacementsMerge,
 		replacements = "part = %(i)02d; minFileNum = %(min)d; maxFileNum = %(max)d; maxEvents = -1; inputFileNameBase = %(inDir)s" % {"i" : (i + 1), "min" : min, "max" : max, "inDir" : inputFileNameBase },
-		job = "merge", queue = "8nh", outputDirectory = outputDirectory, resourceRequest = "", submit = "yes")
+		job = "merge", queue = "8nh", outputFilePath = outputDirectory, resourceRequest = "", submit = "yes")
 
