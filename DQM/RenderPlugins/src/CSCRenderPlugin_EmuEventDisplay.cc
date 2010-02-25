@@ -36,7 +36,7 @@ EmuEventDisplay::EmuEventDisplay() {
   histo_zr->GetYaxis()->SetLabelSize(0.02);
   histo_zr->SetStats(kFALSE);
 
-  histo_zphi = new TH2F("h2", "CSC events #x", 22, -11.0, 11.0, PI * 2 + 0.2, -0.2, PI * 2);
+  histo_zphi = new TH2F("h2", "CSC events #x", 22, -11.0, 11.0, (int) (PI * 2 + 0.2), -0.2, PI * 2);
   histo_zphi->GetXaxis()->SetTitle("#Zeta * 1000");
   histo_zphi->GetXaxis()->SetTitleOffset(1.2);
   histo_zphi->GetXaxis()->CenterTitle(true);
