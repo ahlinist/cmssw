@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+import os
+import sys
+
+cmssw_base = os.environ['CMSSW_BASE']
+working_dir = os.path.join(cmssw_base, 'src/RecoTauTag/TauAnalysisTools/test/fakeRate')
+sys.path.append(working_dir)
+
+print "Working directory: ", os.getcwd()
+print "Syspaths: ", sys.path
 
 from RecoTauTag.TauAnalysisTools.fakeRate.makeHistograms import make_plots
 from RecoTauTag.TauAnalysisTools.TriggerReport import TriggerReport
@@ -59,15 +68,12 @@ for source, source_info in to_build:
     for location in list(source_info['sources'].keys()):
         print "Parsing %s logs" % location
         xSec, filterEff = source_info['sources'][location]
-        nEvents = getNEvents("OldCrabDirs/%s/*.stderr" % location, "path")
+        nEvents = getNEvents(os.path.join(working_dir, "%s/*.stderr" % location), "path")
         weight = normalizeToOneInverseNanoBarn(
             xSec, nEvents, filterEff)
         # Update the info
         source_info['sources'][location] = (
             xSec, filterEff, nEvents, weight)
-        # Change the output filename to reflect the batch job
-        source_info['output_file'] = source_info['output_file'].replace(
-            '.root', '_%i.root' % options.job)
 
 for source, source_info in to_build:
     # Print out some info
@@ -81,7 +87,10 @@ for source, source_info in to_build:
     for loc, (xSec, filterEff, nEvents, weight) in source_info['sources'].iteritems():
         # Loop over the files to use for this run
         for file in nthOfEveryMItems(options.job, options.njobs, 
-                                     glob.glob("OldCrabDirs/%s/*.root" % loc)):
+                                     glob.glob(os.path.join(working_dir, "%s/*.root" % loc))):
             files_and_weights.append((file, weight))
+    # Change the output filename to reflect the batch job
+    source_info['output_file'] = source_info['output_file'].replace( '.root', '_%i.root' % options.job)
+    source_info['output_file'] = os.path.join( working_dir, source_info['output_file'])
     make_plots(files_and_weights, selections=makeCuts(denominator), **source_info)
 
