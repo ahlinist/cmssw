@@ -16,8 +16,11 @@ from TauAnalysis.RecoTools.patMetSelection_cff import *
 from TauAnalysis.RecoTools.patPFMetSelection_cff import *
 #produce collections for tau+met pairs
 from TauAnalysis.CandidateTools.tauNuPairProduction_cff import *
+from TauAnalysis.CandidateTools.tauNuPairSelection_cfi import *
 #produce collections for tau recoil energy
 from TauAnalysis.RecoTools.tauRecoilEnergy_cff import *
+#produce collections for met topology
+from TauAnalysis.CandidateTools.metTopology_cfi import *
 
 
 producePatTupleWtoTauNuSpecific = cms.Sequence(
@@ -27,7 +30,10 @@ producePatTupleWtoTauNuSpecific = cms.Sequence(
     selectLayer1METs+
     selectLayer1PFMETs+
     produceTauNuPairs+
+    selectTauNuPairs+
+    selectTauNuPairsLooseIsolation+
     produceTauRecoilEnergy+
+    produceMEtTopology+
     selectLayer1Muons+
     selectLayer1Electrons+    
     selectLayer1Taus+
