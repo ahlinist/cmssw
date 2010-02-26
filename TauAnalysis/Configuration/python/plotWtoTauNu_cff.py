@@ -5,44 +5,77 @@ import copy
 # Plot histograms for W --> tau-jet + nu channel
 #--------------------------------------------------------------------------------
 
-from TauAnalysis.Configuration.plotWtoTauNu_processes_cfi import *
+# uncomment next line to make plots for 10 TeV centre-of-mass energy
+from TauAnalysis.Configuration.plotWtoTauNu_processes_10TeV_cfi import *
+# uncomment next line to make plots for 7 TeV centre-of-mass energy
+#from TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi import *
+
 from TauAnalysis.Configuration.plotWtoTauNu_drawJobs_cfi import *
+from TauAnalysis.Configuration.plotWtoTauNu_drawJobs_boosted_cfi import *
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 loadWtoTauNu = cms.EDAnalyzer("DQMFileLoader",
     Wtaunu = copy.deepcopy(processWtoTauNu_WtaunuSum.config_dqmFileLoader),
     qcd_W = copy.deepcopy(processWtoTauNu_qcd_WSum.config_dqmFileLoader),
     Wmunu = copy.deepcopy(processWtoTauNu_WmunuSum.config_dqmFileLoader),
-    Wenu = copy.deepcopy(processWtoTauNu_WenuSum.config_dqmFileLoader),
-    ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJetsSum.config_dqmFileLoader),
-    TTplusJets = copy.deepcopy(processWtoTauNu_TTplusJetsSum.config_dqmFileLoader)
+    Wenu = copy.deepcopy(processWtoTauNu_WenuSum.config_dqmFileLoader)
+#    ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJetsSum.config_dqmFileLoader),
 )
 
 #addWtoTauNu_smSum = cms.EDAnalyzer("DQMHistAdder",
-addWtoTauNu = cms.EDAnalyzer("DQMHistAdder",
-    smSum = cms.PSet(
+#     smSum = cms.PSet(
+#        dqmDirectories_input = cms.vstring(
+#            'harvested/Wtaunu/wTauNuAnalyzer',
+#            'harvested/Wmunu/wTauNuAnalyzer',
+#            'harvested/Wenu/wTauNuAnalyzer',
+            #'ZplusJets',
+#            ),
+#        dqmDirectory_output = cms.string('smSum/wTauNuAnalyzer')
+#    )
+#)
+
+addWtoTauNu_qcd = cms.EDAnalyzer("DQMHistAdder",
+   qcd = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'Wtaunu',
-            'qcd_W',
-            'Wmunu',
-            'Wenu',
-            'ZplusJets',
-            'TTplusJets'
-        ),
-        dqmDirectory_output = cms.string('smSum')
-    )
+            'harvested/qcd_W/wTauNuAnalyzer'
+            ),
+        dqmDirectory_output = cms.string('qcd/wTauNuAnalyzer')
+        )
 )
+
+addWtoTauNu = cms.Sequence(addWtoTauNu_qcd)# + addWtoTauNu_smSum)
+
+#addWtoTauNuBoosted_smSum = cms.EDAnalyzer("DQMHistAdder",
+#     smSum = cms.PSet(
+#        dqmDirectories_input = cms.vstring(
+#            'harvested/Wtaunu/wTauNuBoostedAnalyzer',
+#            'harvested/Wmunu/wTauNuBoostedAnalyzer',
+#            'harvested/Wenu/wTauNuBoostedAnalyzer',
+            #'ZplusJets',
+#            ),
+#        dqmDirectory_output = cms.string('smSum/wTauNuBoostedAnalyzer')
+#    )
+#)
+
+addWtoTauNuBoosted_qcd = cms.EDAnalyzer("DQMHistAdder",
+   qcd = cms.PSet(
+        dqmDirectories_input = cms.vstring(
+            'harvested/qcd_W/wTauNuBoostedAnalyzer'
+            ),
+        dqmDirectory_output = cms.string('qcd/wTauNuBoostedAnalyzer')
+        )
+)
+
+addWtoTauNuBoosted = cms.Sequence(addWtoTauNuBoosted_qcd) # + addWtoTauNuBoosted_smSum)
 
 
 plotWtoTauNu = cms.EDAnalyzer("DQMHistPlotter",
-     processes = cms.PSet(
+                              processes = cms.PSet(
         Wtaunu = copy.deepcopy(processWtoTauNu_Wtaunu.config_dqmHistPlotter),
         qcd_W = copy.deepcopy(processWtoTauNu_qcd_W.config_dqmHistPlotter),        
         Wmunu = copy.deepcopy(processWtoTauNu_Wmunu.config_dqmHistPlotter),
         Wenu = copy.deepcopy(processWtoTauNu_Wenu.config_dqmHistPlotter),
-        ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJets.config_dqmHistPlotter),
-        TTplusJets = copy.deepcopy(processWtoTauNu_TTplusJets.config_dqmHistPlotter)
-             
+        #ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJets.config_dqmHistPlotter),
         ),
 
     xAxes = cms.PSet(
@@ -82,9 +115,8 @@ plotWtoTauNu = cms.EDAnalyzer("DQMHistPlotter",
             qcd_W = copy.deepcopy(drawOption_QCD),
             Wmunu = copy.deepcopy(drawOption_Wmunu),
             Wenu = copy.deepcopy(drawOption_Wenu),
-            ZplusJets = copy.deepcopy(drawOption_ZplusJets),
-            TTplusJets = copy.deepcopy(drawOption_TTplusJets)
-        )
+          #  ZplusJets = copy.deepcopy(drawOption_ZplusJets),
+            )
     ),
                               
     drawJobs = drawJobConfigurator_WtoTauNu.configure(),
@@ -97,9 +129,72 @@ plotWtoTauNu = cms.EDAnalyzer("DQMHistPlotter",
     indOutputFileName = cms.string('plotWtoTauNu_#PLOT#.png')
 )
 
+plotWtoTauNu_boosted = cms.EDAnalyzer("DQMHistPlotter",
+                              processes = cms.PSet(
+        Wtaunu = copy.deepcopy(processWtoTauNu_Wtaunu.config_dqmHistPlotter),
+        qcd_W = copy.deepcopy(processWtoTauNu_qcd_W.config_dqmHistPlotter),        
+        Wmunu = copy.deepcopy(processWtoTauNu_Wmunu.config_dqmHistPlotter),
+        Wenu = copy.deepcopy(processWtoTauNu_Wenu.config_dqmHistPlotter),
+        #ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJets.config_dqmHistPlotter),
+        ),
+
+    xAxes = cms.PSet(
+        Pt = copy.deepcopy(xAxis_pt),
+        Eta = copy.deepcopy(xAxis_eta),
+        Phi = copy.deepcopy(xAxis_phi),
+        IPxy = copy.deepcopy(xAxis_ipXY),
+        IPz = copy.deepcopy(xAxis_ipZ),
+        dR = copy.deepcopy(xAxis_dR),
+        dPhi = copy.deepcopy(xAxis_dPhi),
+        prob = copy.deepcopy(xAxis_prob),
+        posZ = copy.deepcopy(xAxis_posZ),
+        Mt = copy.deepcopy(xAxis_transMass),
+        Mass = copy.deepcopy(xAxis_mass),
+        N = copy.deepcopy(xAxis_num),
+        PdgId = copy.deepcopy(xAxis_pdgId),
+        GeV = copy.deepcopy(xAxis_GeV),
+        unlabeled = copy.deepcopy(xAxis_unlabeled)
+    ),
+
+    yAxes = cms.PSet(                         
+        numEntries_linear = copy.deepcopy(yAxis_numEntries_linear),
+        numEntries_log = copy.deepcopy(yAxis_numEntries_log)
+    ),
+
+    legends = cms.PSet(
+        regular = copy.deepcopy(legend_regular)
+    ),
+
+    labels = cms.PSet(
+        mcNormScale = copy.deepcopy(label_mcNormScale)
+    ),
+
+    drawOptionSets = cms.PSet(
+        default = cms.PSet(
+            Wtaunu = copy.deepcopy(drawOption_Wtaunu),
+            qcd_W = copy.deepcopy(drawOption_QCD),
+            Wmunu = copy.deepcopy(drawOption_Wmunu),
+            Wenu = copy.deepcopy(drawOption_Wenu),
+          #  ZplusJets = copy.deepcopy(drawOption_ZplusJets),
+            )
+    ),
+                              
+    drawJobs = drawJobConfigurator_WtoTauNuBoosted.configure(),
+
+    canvasSizeX = cms.int32(800),
+    canvasSizeY = cms.int32(640),                         
+
+    outputFilePath = cms.string('./plots_boosted/'),
+    #outputFileName = cms.string('plotsWtoTauNu.ps')
+    indOutputFileName = cms.string('plotWtoTauNu_#PLOT#.png')
+)
+
 saveWtoTauNu = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsWtoTauNu_all.root')
 )
 
+saveWtoTauNuBoosted = cms.EDAnalyzer("DQMSimpleFileSaver",
+                              outputFileName = cms.string('plotsWtoTauNu_boosted_all.root')
+                              )
 
   
