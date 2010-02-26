@@ -5,7 +5,7 @@ import copy
 process = cms.Process('runWtoTauNu')
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 500
 
 #load geometry
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
@@ -15,7 +15,8 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
 
 # import configuration parameters for submission of jobs to CERN batch system
-from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_7TeV_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_10TeV_cfi import *
 
 # Castor FastSimulation
 #process.load('FastSimulation.ForwardDetectors.CastorTowerProducer_cfi')
@@ -69,6 +70,7 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root'
         'rfio:/castor/cern.ch/user/l/liis/SkimNov09/Wtaunu7TeV_PFCaloTauMet/wTauNuSkim_1.root'
+        #'rfio:/castor/cern.ch/user/l/liis/CMSSW_31X/SelEvents/MinBias_RawPlusReco_10.root'
     )
 )
 
@@ -126,7 +128,7 @@ replaceMETforTauNu(process,
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.tools.changeCut import *
-changeCut(process,"selectedLayer1TausForWTauNuPt20","pt > 20. & pt < 60.")
+changeCut(process,"selectedLayer1TausForWTauNuPt20","pt > 25. & pt < 60.")
 changeCut(process,"selectedLayer1TausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
 changeCut(process,"selectedLayer1TausForWTauNuTrkIso","tauID('byIsolation') > 0.5")
 changeCut(process, "selectedLayer1TausForWTauNuLeadTrkPt","leadTrack().isNonnull() & leadTrack().pt() > 20.")
@@ -149,6 +151,9 @@ process.p = cms.Path(
 # import utility function for factorization
 #from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runWtoTauNu
 #enableFactorization_runWtoTauNu(process)
+#from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runWtoTauNu_boosted
+#enableFactorization_runWtoTauNu_boosted(process)
+
 #
 # define "hook" for enabling/disabling factorization
 # in case running jobs on the CERN batch system
