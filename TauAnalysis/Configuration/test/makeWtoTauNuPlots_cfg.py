@@ -13,15 +13,21 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("EmptySource")
 
+# define directory from which .root files containing the histograms get loaded
+process.loadWtoTauNu.inputFilePath = cms.string("rfio:/castor/cern.ch/user/l/liis/CMSSW_3_1_X/WTauNuPlots10TeV")
+#process.loadWtoTauNu.inputFilePath = cms.string("rfio:/castor/cern.ch/user/l/liis/CMSSW_3_1_X/WTauNuPlots7TeV")
+
 # import utility function to enable factorization
 #from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeWtoTauNuPlots
 #enableFactorization_makeWtoTauNuPlots(process)
 
-process.makeWtoTauNuPlots = cms.Sequence( process.loadWtoTauNu
-                                         +process.addWtoTauNu
-                                         +process.saveWtoTauNu
-                                         +process.dumpWtoTauNu
-                                         +process.plotWtoTauNu )
+process.makeWtoTauNuPlots = cms.Sequence(
+    process.loadWtoTauNu
+    +process.addWtoTauNu
+    +process.saveWtoTauNu
+    +process.dumpWtoTauNu
+    +process.plotWtoTauNu
+    )
 
 process.p = cms.Path(process.makeWtoTauNuPlots)
 
