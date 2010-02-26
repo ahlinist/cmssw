@@ -138,11 +138,25 @@ cfgCentralJetVetoBoosted = cms.PSet(
     src = cms.InputTag('selectedLayer1JetsEt15ForWTauNuCumulative'),
     maxNumber = cms.uint32(1)
     )
+cfgPhiMetTauBoosted = cms.PSet(
+    pluginName = cms.string('phiMetTauBoosted'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedTauNuPairsDPhiMetTauCumulative'),
+    src_individual = cms.InputTag('selectedTauNuPairsDPhiMetTauIndividual'),
+    minNumber = cms.uint32(1)
+)
+
+cfgMetTopologyCutBoosted = cms.PSet(
+    pluginName = cms.string('metTopologyCutBoosted'),
+    pluginType = cms.string('MEtTopologyMinEventSelector'),
+    src = cms.InputTag('selectedMEtTopology04'),
+    minNumber = cms.uint32(1)
+)
 
 cfgMetSignificanceCutBoosted = cms.PSet(
     pluginName = cms.string('metSignificanceCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedMetSignificance15'),
+    src = cms.InputTag('selectedMetSignificance10'),
     minNumber = cms.uint32(1)
     )
 
@@ -165,6 +179,8 @@ wToTauNuBoostedEventSelConfigurator = eventSelFlagProdConfigurator(
      cfgTauEcalCrackVetoBoosted,
      cfgRecoilJetBoosted,
      cfgCentralJetVetoBoosted,
+     cfgPhiMetTauBoosted,
+     cfgMetTopologyCutBoosted,
      cfgMetSignificanceCutBoosted
      ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
