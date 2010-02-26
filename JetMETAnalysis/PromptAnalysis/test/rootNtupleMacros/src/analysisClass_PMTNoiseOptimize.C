@@ -8,6 +8,7 @@
 #include <TVector2.h>
 #include <TVector3.h>
 
+
 analysisClass::analysisClass(string * inputList, string * cutFile, string * treeName, string * outputFileName, string * cutEfficFile)
   :baseClass(inputList, cutFile, treeName, outputFileName, cutEfficFile)
 {
@@ -45,10 +46,12 @@ void analysisClass::Loop()
    TH1F *h_N_HFspikesPerEv_L    = new TH1F ("h_N_HFspikesPerEv_L","h_N_HFspikesPerEv_L",bin_Nspikes,0,Max_Nspikes);
    TH1F *h_N_HFspikesPerEv_S    = new TH1F ("h_N_HFspikesPerEv_S","h_N_HFspikesPerEv_S",bin_Nspikes,0,Max_Nspikes);
    TH1F *h_N_HFspikesPerEv_TOT    = new TH1F ("h_N_HFspikesPerEv_TOT","h_N_HFspikesPerEv_TOT",bin_Nspikes,0,Max_Nspikes);
-   
+   TH1F *h_N_EBspikesPerEv_TOT    = new TH1F ("h_N_EBspikesPerEv_TOT","h_N_EBspikesPerEv_TOT",bin_Nspikes,0,Max_Nspikes);
+
    h_N_HFspikesPerEv_L->Sumw2();
    h_N_HFspikesPerEv_S->Sumw2();
    h_N_HFspikesPerEv_TOT->Sumw2();
+   h_N_EBspikesPerEv_TOT->Sumw2();
 
    TH1F *h_HFRecHitE_L = new TH1F("h_HFRecHitE_L","h_HFRecHitE_L",100,-5.,200.);
    TH1F *h_HFRecHitE_L_Flagged = new TH1F("h_HFRecHitE_L_Flagged","h_HFRecHitE_L_Flagged",100,-5.,200.);
@@ -140,6 +143,29 @@ void analysisClass::Loop()
 	 {
 	   pass_GoodRunList = 1;
 	 }
+
+
+       //## Definition of ECAL spikes
+
+       //the ntuple maker stores already only ecal crystals with ET > 5 GeV
+       vector<float> EBspikes_ET;
+       for (int xtal=0; xtal<PMTnoiseEcalEnergy->size(); xtal++)
+	 {
+	   //calculate S4/S1 of crystal
+	   float S4oS1 = PMTnoiseEcalS4->at(xtal) / PMTnoiseEcalEnergy->at(xtal);
+
+	   //calculate ET of crystal
+	   float etaSize_ = 0.0174;
+	   float ieta_ = PMTnoiseEcalIeta->at(xtal); 
+	   float eta_ = etaSize_ * ( fabs(ieta_) - 0.5 ); 
+	   if(ieta_ < 0) 
+	     eta_ = eta_ * -1;
+	   float ET_ = PMTnoiseEcalEnergy->at(xtal)/cosh(eta_);
+	   // 	   cout << "ET: "     << ET_  
+	   // 		<< " S4/S1: " << S4oS1 << endl;	   
+	   if(S4oS1 < 0.05)
+	     EBspikes_ET.push_back(ET_);
+	 }       
 
        //#################################################
        
@@ -322,6 +348,9 @@ void analysisClass::Loop()
 	   h_N_HFspikesPerEv_S->Fill(N_HFspikes_S);
 	   h_N_HFspikesPerEv_TOT->Fill(N_HFspikes_TOT);
 
+	   //ECAL spikes
+	   h_N_EBspikesPerEv_TOT->Fill(EBspikes_ET.size());
+
 	 }//end pass all cut level 0
 
        // retrieve value of previously filled variables (after making sure that they were filled)
@@ -354,6 +383,7 @@ void analysisClass::Loop()
    h_N_HFspikesPerEv_L->Write();
    h_N_HFspikesPerEv_S->Write();
    h_N_HFspikesPerEv_TOT->Write();
+   h_N_EBspikesPerEv_TOT->Write();
 
    h_HFRecHitE_L->Write();
    h_HFRecHitE_L_Flagged->Write();
