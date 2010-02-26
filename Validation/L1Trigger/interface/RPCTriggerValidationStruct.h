@@ -1,26 +1,7 @@
-#ifndef Validation_L1Trigger_RPCTriggerValidation_H
-#define Validation_L1Trigger_RPCTriggerValidation_H
-// -*- C++ -*-
-//
-// Package:    RPCTriggerValidation
-// Class:      RPCTriggerValidation
-// 
-/**\class RPCTriggerValidation RPCTriggerValidation.h Validation/L1Trigger/interface/RPCTriggerValidation.h
+#ifndef Validation_L1Trigger_RPCTriggerValidationStruct_H
+#define Validation_L1Trigger_RPCTriggerValidationStruct_H 
 
- Description: Validation module for RPCTrigger
-
- Implementation:
-     <Notes on implementation>
-*/
-//
-// Original Author:  Tomasz Maciej Frueboes
-//         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.h,v 1.3 2009/11/06 14:30:33 fruboes Exp $
-//
-//
-
-
-// system include files
+ // system include files
 #include <memory>
 
 // user include files
@@ -33,15 +14,15 @@
 #include <L1Trigger/RPCTrigger/interface/RPCConst.h>
 #include <L1Trigger/RPCTrigger/interface/RPCLogCone.h>
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-//#include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
+
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
-#include "RPCTriggerValidationStruct.h"
 
 
+#include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 
 #include <vector>
 #include <string>
@@ -50,64 +31,77 @@
 //
 
 #include <iosfwd>
-#include <iostream>
+#include <iostream>     
+      
+namespace RPCTriggerValidationStruct {    
 
-using namespace RPCTriggerValidationStruct;
+static RPCConst _const;
+//static int  _NumberOfQuality;
 
-class L1MuRegionalCand;
+struct L1MuonCandLocalInfo {
+	
+	
+	
+	
+         private:
+           int _charge;
+           int _bx;
+           int _ptCode;
+           int _tower;
+	   float _phi;
+           float _eta;
+	   int _quality;
+         public:
+	   L1MuonCandLocalInfo( L1MuRegionalCand const & cand) ;
+//   	
+// 	{
+// 	_charge=cand.chargeValue();
+//   	_bx=cand.bx();
+//  	 _ptCode=cand.pt_packed();
+//   	_tower=cand.eta_packed();
+//   	_phi=cand.phiValue();
+//   	_eta=cand.etaValue();
+//   	_quality=cand.quality();
+//  	//_eta = -_eta;
+//   	//_phi-=3.14159265;
+// 	};
+	 
+           float eta() const {return _eta;};
+           float phi() const {return _phi;};
+           int ptCode() const {return  _ptCode;};
+           int bx()  const {return _bx;};
+           int charge()  const {return _charge;};    
+           int tower() const {return  (_tower> 16) ? -( (~_tower & 63) + 1) : _tower ;};
+	   int quality() const {return _quality;};
+	
 
-class RPCTriggerValidation : public edm::EDAnalyzer {
-   public:
-      explicit RPCTriggerValidation(const edm::ParameterSet&);
-      ~RPCTriggerValidation();
+      };
 
-//       struct L1MuonCandLocalInfo {
-//          L1MuonCandLocalInfo(L1MuRegionalCand const & cand);
-//          private:
-//            int _charge;
-//            int _bx;
-//            int _ptCode;
-//            int _tower;
-// 	   float _phi;
-//            float _eta;
-// 	   int _quality;
-//          public:
-//            float eta() const {return _eta;};
-//            float phi() const {return _phi;};
-//            int ptCode() const {return  _ptCode;};
-//            int bx()  const {return _bx;};
-//            int charge()  const {return _charge;};    
-//            int tower() const {return  (_tower> 16) ? -( (~_tower & 63) + 1) : _tower ;};
-// 	   int quality() const {return _quality;};
-// 	
-// 
-//       };
-// 
-//       struct GenMuonLocalInfo {
-//         GenMuonLocalInfo(reco::CandidateBaseRef ref) : _charge( ref->charge()), 
-//                                                        _pt( ref->pt()), 
-//                                                        _phi( ref->phi() ), 
-//                                                        _eta( ref->eta()) {} ;
-//         private:
-//           int _charge;
-//           float _pt;
-//           float _phi; 
-//           float _eta;
-//         public:
-//           float eta() const {return _eta;};
-//           float phi() const {return _phi;};
-//           float pt() const {return _pt; };
-//           int charge() const {return _charge;};
-//      	  std::vector<L1MuonCandLocalInfo> _l1cands;
-// 
-// 	
-// 
-// 
-// 
-//       };
+struct GenMuonLocalInfo {
+        GenMuonLocalInfo(reco::CandidateBaseRef ref) : _charge( ref->charge()), 
+                                                       _pt( ref->pt()), 
+                                                       _phi( ref->phi() ), 
+                                                       _eta( ref->eta()) {} ;
+        private:
+          int _charge;
+          float _pt;
+          float _phi; 
+          float _eta;
+        public:
+          float eta() const {return _eta;};
+          float phi() const {return _phi;};
+          float pt() const {return _pt; };
+          int charge() const {return _charge;};
+     	  std::vector<L1MuonCandLocalInfo> _l1cands;
 
-/*
-      struct MEResolution {
+	
+
+
+
+      };
+       
+      
+struct MEResolution {
         public:
           MEResolution(edm::ParameterSet ps, DQMStore * dqm): _etaL(ps.getParameter<double>("etaL")), 
                                               _etaH(ps.getParameter<double>("etaH")),
@@ -118,8 +112,7 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
 
       
 	    
-            // 1) unique name containing information about eta{L,H} and pt{L,H} 
-            // 2) nice title with same information 
+            
 	                for (  int it=0; it<(2*(_NumberOfQuality+1)) ; ++it  ) {
 			std::stringstream name;
 	    std::stringstream title;
@@ -137,10 +130,10 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
           
           void fill( GenMuonLocalInfo gl ) 
           {
-            // TODO check if ptGen (not ptCode) and etaGen is in range. If so - fill _me with reconstructed ptCode
+            
             if((gl.pt()>=_ptL)&&(gl.pt()<=_ptH)&&(gl.eta()>=_etaL)&&(gl.eta()<=_etaH)){
 	    
-	    if((gl._l1cands.size()>0)){
+	    if(gl._l1cands.size()>0){
 	    _meVec[(gl._l1cands.begin()->quality())]->Fill((gl._l1cands.begin())->ptCode());
 	    _meVec[_NumberOfQuality]->Fill((gl._l1cands.begin())->ptCode());
 	    }
@@ -155,10 +148,10 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
 	    }
 	    
 	    }
-          };
+          }
 	  
 	  
-	  
+	static int  _NumberOfQuality;
         private:
           float _etaL, _etaH, _ptL, _ptH;
           
@@ -171,12 +164,12 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
 		std::string s=ss.str();
 		s.replace(s.find('.'),1,1,'x');
 		return s;
-	  };  
+	  }
 
       
       };
 
-      struct MEDistribution {
+struct MEDistribution {
         public:
           MEDistribution(edm::ParameterSet ps, DQMStore * dqm): 
                                               _ptL(ps.getParameter<double>("ptL")),
@@ -189,7 +182,7 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
 	    for (  int it=0; it<4; ++it  ) {
 			std::stringstream name;
 	    std::stringstream title;
-		name<<"Distribution_"<<_tag[it]<<"_TowerVsPhi_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+		name<<"Distribution_"<<_tag[it]<<"_TowerVsPhi_pt_"<<(int)_ptL<<"_"<<(int)_ptH;
 	    title<<"RPCTrigger: Distribution "<<_tag[it]<<" Tower Vs #phi pt ["<<_ptL<<","<<_ptH<<"]";
 	    
             _meVecTowerVsPhiGen[it] = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
@@ -220,7 +213,7 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
           
           void fill( GenMuonLocalInfo gl ) {
             
-            if((gl.pt()>=_ptL)&&(gl.pt()<=_ptH)){ 
+            if((gl.pt()>=_ptL)&&(gl.pt()<=_ptH)){
 	    
 	    _meVecEtaVsPhiGen[3]->Fill(gl.eta(),gl.phi());
 	    _meVecTowerVsPhiGen[3]->Fill(_const.towerNumFromEta(gl.eta()),gl.phi());
@@ -250,7 +243,7 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
 	  MonitorElement * _meTowerVsPhiL1;
       	 static const std::string _tag[] ;
 	 
-	  std::string changedot(double x)
+	 std::string changedot(double x)
 	  {
 		std::stringstream ss;
 		ss<<x;
@@ -258,12 +251,10 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
 		s.replace(s.find('.'),1,1,'x');
 		return s;
 	  }
-
 	 
-      };const
-     
-      
-       struct MEEfficieny {
+      };
+           
+struct MEEfficieny {
         public:
           MEEfficieny(edm::ParameterSet ps, DQMStore * dqm): 
                                               _etaL(ps.getParameter<double>("etaL")),
@@ -271,14 +262,13 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
           {
      
 	std::stringstream name;
-	std::stringstreamusing namespace std; title;
+	std::stringstream title;
 	
 	name<<"EfficienyVsPt_eta_"<<changedot(_etaL)<<"_"<<changedot(_etaH);
 	title<<"RPCTrigger: Efficieny Vs Pt #eta ["<<_etaL<<","<<_etaH<<"]";
 	    
         _meNomPt = dqm->book1D(name.str(),title.str(),32, -0.5, _const.m_PT_CODE_MAX+0.5);
-	    // 1) unique name containing information about eta{L,H} and pt{L,H} 
-            // 2) nice title with same information 
+	    
 	 name<<"_Denom";
 	 title<<" Denom";
 	 
@@ -301,7 +291,7 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
           }
 	  
 	  void dev(  ) {
-            
+            // Struct
             _meNomPt->getTH1F()->Divide((_meDenomPt->getTH1F()));
 	    
 	    
@@ -325,43 +315,14 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
 		s.replace(s.find('.'),1,1,'x');
 		return s;
 	  }
-
+	  
       	 
       }; 
-   
-   
-   */
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
 
-      void assignCandidatesToGens( std::vector<GenMuonLocalInfo> & gens, 
-                                   std::vector<L1MuonCandLocalInfo> & l1cands);
-				   
-	//static int  _NumberOfQuality; 			   
-        //static RPCConst _const;
-      MonitorElement * nomEta, * denomEta, * ghost, * unassigned,* nomPt, * denomPt;
-      std::vector<MEResolution> _meResolutionVec; 
-      std::vector<MEDistribution> _meDistributionVec;
-      std::vector<MEEfficieny> _meEfficienyVec;
+
+
+      }
       
-
       
-      std::vector<edm::InputTag > m_l1CollectionsVec; 
-      edm::InputTag m_inColMC;       /// input tag for reco::muon (DQMOffline) or genParticles (Validation)
-      std::string m_outputDirectory; /// where to put DQM histos
-      std::string m_outputFile;
-      DQMStore * dqm;
-      double deltaRThreshold;
       
-      bool m_L1MuonFromReco;
-      
-};
-
-
-std::ostream& operator<<( std::ostream& os, const RPCTriggerValidationStruct::L1MuonCandLocalInfo& l1 );
-std::ostream& operator<<( std::ostream& os, const RPCTriggerValidationStruct::GenMuonLocalInfo& l1 );
-
 #endif
-

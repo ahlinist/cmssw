@@ -12,6 +12,7 @@
 <use name=PhysicsTools/UtilAlgos>
 <use name=DataFormats/HepMCCandidate>
 <use name=root>
+<use name=L1Trigger/RPCTrigger>
 <export>
    <lib name=ValidationL1Trigger>
    <use name=FWCore/Framework>
