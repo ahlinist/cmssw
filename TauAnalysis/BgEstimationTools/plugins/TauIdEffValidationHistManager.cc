@@ -18,12 +18,12 @@ std::string getMEname(const char* name, const std::string& suffix)
   return std::string(name).append(suffix);
 }
 
-std::string getMEtitle(const char* title, const std::string& cutEffName)
+std::string getMEtitle(const char* title, const std::string& meTitle_label)
 {
-  if ( cutEffName != "" ) {
-    return std::string(title).append(" (").append(cutEffName).append(")");
+  if ( meTitle_label != "" ) {
+    return std::string(title).append(" (").append(meTitle_label).append(")");
   } else {
-    return std::string(title).append(" (tauIdDiscr)");
+    return std::string(title);
   }
 }
 
@@ -33,46 +33,58 @@ std::string getMEtitle(const char* title, const std::string& cutEffName)
 
 TauIdEffValidationHistManager::valPlotEntryType::valPlotEntryType(DQMStore& dqmStore, const std::string& dqmDirectory,
 								  const std::string& frType_prefix, const std::string& frType_suffix,
-								  const valPlotConfigEntryType& valPlotConfigEntry)
+								  const valPlotConfigEntryType& valPlotConfigEntry,
+								  bool checkConfigParameter)
   : patTauEffName_(""),
     cfgError_(0)
 {
-  if ( (valPlotConfigEntry.cuts_.size() == 0 && valPlotConfigEntry.cutEffName_ == "") ||
-       (valPlotConfigEntry.cuts_.size() != 0 && valPlotConfigEntry.cutEffName_ != "") ) {
+  if ( checkConfigParameter && (valPlotConfigEntry.cuts_.size() == 0 && valPlotConfigEntry.cutEffName_ == "") ||
+                               (valPlotConfigEntry.cuts_.size() != 0 && valPlotConfigEntry.cutEffName_ != "") ) {
     edm::LogError ("valPlotEntryType") << " Need to either specify 'cutEffName' or 'cuts' Configuration Parameter !!";
-    cfgError_ = 1;
     return;
   }
 
   const std::string& cutEffName = valPlotConfigEntry.cutEffName_;
 
-  std::string dqmDirectory_frType = dqmDirectoryName(dqmDirectory).append(frType_prefix).append(frType_suffix);
-
+  std::string dqmDirectory_frType = dqmDirectoryName(dqmDirectory).append("_").append(frType_prefix).append(frType_suffix);
+  
   dqmStore.setCurrentFolder(dqmDirectory_frType);
 
   std::string meName_suffix;
-  if ( valPlotConfigEntry.cuts_.size() >0 ) {
-    meName_suffix = std::string("_tauIdDiscr");
+  std::string meTitle_label;
+  if ( valPlotConfigEntry.cuts_.size() >0 ) { // tau id. discriminator(s) applied (numerator)
+    meName_suffix = "_tauIdDiscr";
+    meTitle_label = "tauIdDiscr";
     for ( vstring::const_iterator cut_string = valPlotConfigEntry.cuts_.begin();
 	  cut_string != valPlotConfigEntry.cuts_.end(); ++cut_string ) {
       StringCutObjectSelector<pat::Tau>* cut = new StringCutObjectSelector<pat::Tau>(*cut_string);
       cuts_.push_back(cut);
     }
-  } else {
+  } else if ( cutEffName != "" ) { // fake-rate applied (numerator)
     meName_suffix = std::string("_").append(cutEffName);
+    meTitle_label = cutEffName;
     patTauEffName_ = std::string(frType_prefix).append(cutEffName).append(frType_suffix);
+  } else { // unweighted (denominator)
+    meName_suffix = std::string("_").append(frType_suffix);
+    meTitle_label = frType_suffix;
   }
-/*
-  hTauPt_ = book1D(getMEname("TauPt", meName_suffix), getMEtitle("Tau Pt", cutEffName), 75, 0., 150.);
-  hTauEta_ = book1D(getMEname("TauEta", meName_suffix), getMEtitle("Tau Eta", cutEffName), 60, -3., +3.);
-  hTauPhi_ = book1D(getMEname("TauPhi", meName_suffix), getMEtitle("Tau Phi", cutEffName), 36, -TMath::Pi(), +TMath::Pi());
-  hTauJetRadius_ = book1D(getMEname("TauJetRadius", meName_suffix), getMEtitle("Tau jet-Radius", cutEffName), 51, -0.005, +0.505);
-  hTauNumTracksSignalCone_ = book1D(getMEname("TauNumTracksSignalCone", meName_suffix), 
-				    getMEtitle("Tracks in Signal Cone", cutEffName), 10, -0.5, 9.5);
-  hTauNumTracksIsoCone_ = book1D(getMEname("TauNumTracksIsoCone", meName_suffix),
-				 getMEtitle("Tracks in Isolation Cone", cutEffName), 20, -0.5, 19.5);
-  hTauLeadTrkPt_= book1D(getMEname("TauLeadTrkPt", meName_suffix), getMEtitle("Tau lead. Track Pt", effLabel), 75, 0., 150.);
- */
+
+  hTauPt_ = HistManagerBase::book1D(dqmStore, dqmDirectory_frType, getMEname("TauPt", meName_suffix), 
+				    getMEtitle("Tau Pt", meTitle_label), 75, 0., 150.);
+  hTauAssocJetPt_ = HistManagerBase::book1D(dqmStore, dqmDirectory_frType, getMEname("TauAssocJetPt", meName_suffix), 
+					    getMEtitle("Pt of Jet associated to Tau", meTitle_label), 75, 0., 150.);
+  hTauEta_ = HistManagerBase::book1D(dqmStore, dqmDirectory_frType, getMEname("TauEta", meName_suffix), 
+				     getMEtitle("Tau Eta", meTitle_label), 60, -3., +3.);
+  hTauPhi_ = HistManagerBase::book1D(dqmStore, dqmDirectory_frType, getMEname("TauPhi", meName_suffix), 
+				     getMEtitle("Tau Phi", meTitle_label), 36, -TMath::Pi(), +TMath::Pi());
+  hTauJetRadius_ = HistManagerBase::book1D(dqmStore, dqmDirectory_frType, getMEname("TauJetRadius", meName_suffix), 
+					   getMEtitle("Tau jet-Radius", meTitle_label), 51, -0.005, +0.505);
+  hTauNumTracksSignalCone_ = HistManagerBase::book1D(dqmStore, dqmDirectory_frType, getMEname("TauNumTracksSignalCone", meName_suffix), 
+						     getMEtitle("Tracks in Signal Cone", meTitle_label), 10, -0.5, 9.5);
+  hTauNumTracksIsoCone_ = HistManagerBase::book1D(dqmStore, dqmDirectory_frType, getMEname("TauNumTracksIsoCone", meName_suffix), 
+						  getMEtitle("Tracks in Isolation Cone", meTitle_label), 20, -0.5, 19.5);
+  hTauLeadTrkPt_= HistManagerBase::book1D(dqmStore, dqmDirectory_frType, getMEname("TauLeadTrkPt", meName_suffix), 
+					  getMEtitle("Tau lead. Track Pt", meTitle_label), 75, 0., 150.);
 }
 
 TauIdEffValidationHistManager::valPlotEntryType::~valPlotEntryType()
@@ -110,6 +122,8 @@ void TauIdEffValidationHistManager::valPlotEntryType::fillHistograms(const pat::
 
   if ( passedTauId ) {
     hTauPt_->Fill(patTau.pt(), weight);
+    if ( patTau.pfTauTagInfoRef().isAvailable() && patTau.pfTauTagInfoRef()->pfjetRef().isAvailable() ) 
+      hTauAssocJetPt_->Fill(patTau.pfTauTagInfoRef()->pfjetRef()->pt(), weight);
     hTauEta_->Fill(patTau.eta(), weight);
     hTauPhi_->Fill(patTau.phi(), weight);
     double jetRadius = TMath::Sqrt(patTau.etaetaMoment() + patTau.phiphiMoment());
@@ -162,15 +176,19 @@ void TauIdEffValidationHistManager::bookHistogramsImp()
 	valPlotConfigEntry != valPlotConfigEntries_.end(); ++valPlotConfigEntry ) {
     for ( vstring::const_iterator frType = frTypes_.begin();
 	  frType != frTypes_.end(); ++frType ) {
-      valPlotEntryType* valPlotEntry = new valPlotEntryType(*dqmStore_, dqmDirectory_store_, "fr", *frType, *valPlotConfigEntry);
-      valPlotEntries_.push_back(valPlotEntry);
+      valPlotEntryType* valPlotEntry_fr = new valPlotEntryType(*dqmStore_, dqmDirectory_store_, "fr", *frType, *valPlotConfigEntry);
+      valPlotEntries_.push_back(valPlotEntry_fr);
     }
 
     for ( vstring::const_iterator effType = effTypes_.begin();
 	  effType != effTypes_.end(); ++effType ) {
-      valPlotEntryType* valPlotEntry = new valPlotEntryType(*dqmStore_, dqmDirectory_store_, "eff", *effType, *valPlotConfigEntry);
-      valPlotEntries_.push_back(valPlotEntry);
+      valPlotEntryType* valPlotEntry_eff = new valPlotEntryType(*dqmStore_, dqmDirectory_store_, "eff", *effType, *valPlotConfigEntry);
+      valPlotEntries_.push_back(valPlotEntry_eff);
     }
+
+    valPlotEntryType* valPlotEntry_unweighted 
+      = new valPlotEntryType(*dqmStore_, dqmDirectory_store_, "", "unweighted", *valPlotConfigEntry, false);
+    valPlotEntries_.push_back(valPlotEntry_unweighted);
   }
 }
 
