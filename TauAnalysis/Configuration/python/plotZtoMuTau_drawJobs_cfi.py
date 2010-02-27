@@ -416,6 +416,12 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_tauNumTracksSignalCone"
         ),
         drawJobConfigEntry(
+            meName = 'TauQuantities/TauJetRadius',
+            title = "Tau Jet Radius (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_tauJetRadius"
+        ),
+        drawJobConfigEntry(
             meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
             title = "TaNC output (fr = 0.25%) (final Event sample)",
             xAxis = 'unlabeled',
