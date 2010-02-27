@@ -28,7 +28,7 @@ process.source = cms.Source("EmptySource")
 process.loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
-           'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/7TeV/plotsZtoMuTau_all.root'
+            'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/7TeV/plotsZtoMuTau_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('')
