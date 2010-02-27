@@ -61,6 +61,7 @@ void TemplateFitAdapterBase::data1dType::initialize()
 {
   std::cout << "<data1dType::initialize>:" << std::endl;
   std::cout << " process = " << processName_ << ", variable = " << varName_ << std::endl;
+  std::cout << " meName = " << meName_ << std::endl;
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
   me_ = dqmStore.get(meName_);
@@ -86,7 +87,7 @@ void TemplateFitAdapterBase::data1dType::compFittedFraction(const TH1* histogram
 {
   integral_ = getIntegral(me_->getTH1());
   
-  fittedIntegral_ = getIntegral(histogram, &fitRanges_);
+  fittedIntegral_ = getIntegral(histogram);
 
   fittedFraction_ = ( integral_ > 0. ) ? (fittedIntegral_/integral_) : 1.;
 }
