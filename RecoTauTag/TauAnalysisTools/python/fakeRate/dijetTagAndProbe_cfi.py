@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-import copy
 
 from RecoTauTag.TauAnalysisTools.TauNtupleProducer_cfi import *
 from RecoTauTag.Configuration.RecoPFTauTag_cff import *
@@ -27,11 +26,13 @@ jetTrigger.HLTPaths = cms.vstring('HLT_L1Jet15')
 #      cut = cms.string('abs(eta) < 2.5 && pfTauTagInfoRef().pfjetRef().pt() > 5.0')
 #)
 
+# Kinematically select taus
 probeTauJets = cms.EDProducer("CandViewRefSelector",
       src = cms.InputTag('shrinkingConePFTauProducer'),
       cut = cms.string('abs(eta) < 2.5 && pt() > 5')
 )
 
+# Require at least two taus - at least one must independently fire the trigger
 atLeastTwoProbeTaus = cms.EDFilter("CandViewCountFilter",
       src = cms.InputTag('probeTauJets'),
       minNumber = cms.uint32(2)

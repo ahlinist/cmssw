@@ -8,11 +8,11 @@
 standard_bins = {
     'x_bins' : [0, 10, 20, 25, 30, 40, 60, 120], # pt                                                                                                                                                        
     'y_bins' : [0, 0.5, 1.0, 1.2, 1.5, 2.0, 2.5], # eta                                                                                                                                                      
-    'z_bins' : [0, 0.0125, 0.025, 0.05, 0.075, 0.10, 0.15, 0.20, 0.30, 0.4 ] # jet width    
+    'z_bins' : [0, 0.0125, 0.025, 0.05, 0.075, 0.10, 0.15, 0.20, 0.25] # jet width    
 }
 
-#denominator = "$ByLeadTrackPt && abs($eta) < 2.1 && $pt > 20 && $AgainstMuon"
-denominator = "$ByLeadTrackPt && abs($eta) < 2.1 && $pt > 20"
+denominator = "$ByLeadTrackPt && abs($eta) < 2.1 && $pt > 20 && $AgainstMuon"
+#denominator = "$ByLeadTrackPt && abs($eta) < 2.1 && $pt > 20"
 
 sources = {}
 # Define our sources

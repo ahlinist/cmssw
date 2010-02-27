@@ -100,14 +100,14 @@ TauFakeRateDijetProbesProducer::produce(Event &evt, const EventSetup &es)
    // Ensure we have at least two jets - we need a trigger and a probe.
    if( nRawJets > 1 )
    {
-      cout << "Starting with " << nRawJets << " jets" << endl;
+      //cout << "Starting with " << nRawJets << " jets" << endl;
       // Count how many are possible 'trigger' jets
       size_t nTriggerCandidates = 0;
       for(size_t iJet = 0; iJet < nRawJets; ++iJet)
       {
          RefToBase<Candidate> jet = sourceView->refAt(iJet);
          double pt = (*func_)(jet);
-         cout << "Found jet with pt " << pt << endl;
+         //cout << "Found jet with pt " << pt << endl;
          if( pt > thresh_) 
          {
             // Count how many above threshold
@@ -132,14 +132,14 @@ TauFakeRateDijetProbesProducer::produce(Event &evt, const EventSetup &es)
          case 1:
             secondHighestPt->push_back(filteredJets[1]);
             tagObject->push_back(filteredJets[0]);
-            cout << "Case 1: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << endl;
+            //cout << "Case 1: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << endl;
             break;
             // Two jets fired, so the highest Pt jet is our probe, and the 
             //  second highest is the trigger jet
          case 2:
             highestPt->push_back(filteredJets[0]);
             tagObject->push_back(filteredJets[1]);
-            cout << "Case 2: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << endl;
+            //cout << "Case 2: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << endl;
             break;
 
             // If 3 or more jets fired, then the third (or 4th etc) is our trigger
@@ -148,8 +148,8 @@ TauFakeRateDijetProbesProducer::produce(Event &evt, const EventSetup &es)
             highestPt->push_back(filteredJets[0]);
             secondHighestPt->push_back(filteredJets[1]);
             tagObject->push_back(filteredJets[2]);
-            cout << "Case 3+: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << 
-               filteredJets[2]->pt() << endl;
+            //cout << "Case 3+: " << filteredJets[0]->pt() << " " << filteredJets[1]->pt() << 
+            //   filteredJets[2]->pt() << endl;
             break;
       }
    } // end - at least two jets
