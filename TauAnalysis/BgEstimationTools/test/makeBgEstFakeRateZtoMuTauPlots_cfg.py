@@ -312,8 +312,8 @@ process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
 drawTauIdEffHistConfiguratorZtoMuTau = drawFakeRateHistConfigurator(
     template = cms.PSet(
         xAxis = cms.string('unlabeled'),
-        #yAxis = cms.string('numEntries_linear'),
-        yAxis = cms.string('numEntries_log'),
+        yAxis = cms.string('numEntries_linear'),
+        #yAxis = cms.string('numEntries_log'),
         legend = cms.string('regular'),
         labels = cms.vstring('mcNormScale')
     ),
@@ -332,7 +332,7 @@ drawTauIdEffHistConfiguratorZtoMuTau.addPlots(
     plots = bgEstFakeRatePlots
 )
 
-process.plotTauIdEffZtoMuTau = process.plotBgEstFakeRateZtoMuTau.Clone(
+process.plotTauIdEffZtoMuTau = process.plotBgEstFakeRateZtoMuTau.clone(
     processes = cms.PSet(
         tauIdDiscr = cms.PSet(
             #dqmDirectory = cms.string(dqmDirectories["tauIdDiscr"]),
@@ -419,7 +419,8 @@ process.dumpBgEstFakeRateZtoMuTau = cms.Sequence(
 #--------------------------------------------------------------------------------
 
 process.saveBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsZtoMuTau_bgEstFakeRate.root')
+    outputFileName = cms.string('plotsZtoMuTau_bgEstFakeRate.root'),
+    outputCommands = cms.vstring('drop tauIdDiscr/*')                                   
 )
 
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
@@ -430,11 +431,11 @@ process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
    + process.addBgEstFakeRateZtoMuTau_tauFakeRate 
   #+ process.dumpDQMStore
    + process.compErrorBandsBgEstFakeRateZtoMuTau 
-   + process.saveBgEstFakeRateZtoMuTau
    + process.dumpZtoMuTau_frUnweighted
    + process.dumpBgEstFakeRateZtoMuTau 
    + process.plotBgEstFakeRateZtoMuTau
    + process.plotTauIdEffZtoMuTau
+   + process.saveBgEstFakeRateZtoMuTau
 )
 
 process.p = cms.Path(process.makeBgEstFakeRateZtoMuTauPlots)
