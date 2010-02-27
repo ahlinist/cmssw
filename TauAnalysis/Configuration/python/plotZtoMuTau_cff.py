@@ -35,20 +35,29 @@ addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     )                          
 )
 
-addZtoMuTau_smSum = cms.EDAnalyzer("DQMHistAdder",
-    smSum = cms.PSet(
+addZtoMuTau_smBgSum = cms.EDAnalyzer("DQMHistAdder",
+    smBgSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Ztautau/zMuTauAnalyzer',
             'harvested/Zmumu/zMuTauAnalyzer',
             'harvested/WplusJets/zMuTauAnalyzer',
             'harvested/TTplusJets/zMuTauAnalyzer',
             'harvested/qcdSum/zMuTauAnalyzer'
         ),
+        dqmDirectory_output = cms.string('harvested/smBgSum/zMuTauAnalyzer')
+    )
+)
+
+addZtoMuTau_smSum = cms.EDAnalyzer("DQMHistAdder",
+    smSum = cms.PSet(
+        dqmDirectories_input = cms.vstring(
+            'harvested/Ztautau/zMuTauAnalyzer',
+            'harvested/smBgSum/zMuTauAnalyzer'
+        ),
         dqmDirectory_output = cms.string('harvested/smSum/zMuTauAnalyzer')
     )
 )
 
-addZtoMuTau = cms.Sequence(addZtoMuTau_qcdSum + addZtoMuTau_smSum)
+addZtoMuTau = cms.Sequence(addZtoMuTau_qcdSum + addZtoMuTau_smBgSum + addZtoMuTau_smSum)
 
 plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
