@@ -164,7 +164,7 @@ c_calomet_900GeV.SetLogy();
 DATA900GeV.cd();
 h_calometPt_baseSel->UseCurrentStyle();
 
-h_calometPt_baseSel->GetXaxis()->SetRangeUser(0,80);
+h_calometPt_baseSel->GetXaxis()->SetRangeUser(0,79);
 
 h_calometPt_baseSel->SetTitle("");
 //h_calometPt_baseSel_HFfilter->SetTitle("");
@@ -194,8 +194,8 @@ h_calometPt_baseSel->SetMarkerSize(1);
 h_calometPt_baseSel_HFfilter->SetMarkerSize(1);
 h_calometPt->SetMarkerSize(1);
 
-h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T}[GeV]");
-h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events");
+h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
+h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events / GeV");
 h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.1);
 
 h_calometPt_baseSel->Draw("p");
@@ -209,7 +209,7 @@ gPad->RedrawAxis();
 TLegend *legend_900 = new TLegend(0.375839,0.449301,0.909396,0.706294);
 legend_900->SetTextFont(42);
 legend_900->SetFillColor(0);
-legend_900->AddEntry(h_calometPt_baseSel,"No cleaning","p");
+legend_900->AddEntry(h_calometPt_baseSel,"No cleaning","lp");
 legend_900->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","f");
 legend_900->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","f");
 legend_900->SetBorderSize(0);
@@ -240,7 +240,7 @@ DATA2360GeV.cd();
 
 h_calometPt_baseSel->UseCurrentStyle();
 
-h_calometPt_baseSel->GetXaxis()->SetRangeUser(0,80);
+h_calometPt_baseSel->GetXaxis()->SetRangeUser(0,79);
 
 h_calometPt_baseSel->SetTitle("");
 //h_calometPt_baseSel_HFfilter->SetTitle("");
@@ -270,8 +270,8 @@ h_calometPt_baseSel->SetMarkerSize(1);
 h_calometPt_baseSel_HFfilter->SetMarkerSize(1);
 h_calometPt->SetMarkerSize(1);
 
-h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T}[GeV]");
-h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events");
+h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
+h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events / GeV");
 h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.1);
 
 h_calometPt_baseSel->Draw("phist");
@@ -285,7 +285,7 @@ gPad->RedrawAxis();
 TLegend *legend_2360 = new TLegend(0.375839,0.449301,0.909396,0.706294);
 legend_2360->SetTextFont(42);
 legend_2360->SetFillColor(0);
-legend_2360->AddEntry(h_calometPt_baseSel,"No cleaning","p");
+legend_2360->AddEntry(h_calometPt_baseSel,"No cleaning","lp");
 legend_2360->AddEntry(h_calometPt_baseSel_HFfilter,"After HF noise cleaning","f");
 legend_2360->AddEntry(h_calometPt,"After HF+ECAL noise cleaning","f");
 legend_2360->SetBorderSize(0);
