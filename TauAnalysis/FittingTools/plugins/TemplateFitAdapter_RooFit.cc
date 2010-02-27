@@ -256,7 +256,7 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
     edm::ParameterSet cfgVariable = cfgVariables.getParameter<edm::ParameterSet>(*varName);
 
     std::string name = cfgVariable.getParameter<std::string>("name");
-    std::string title = cfgVariable.getParameter<std::string>("title");
+    std::string title = ( cfgVariable.exists("title") ) ? cfgVariable.getParameter<std::string>("title") : name;
     
     // CV: use dummy range for now, to be initialized with correct values later,
     //     once histograms that are fitted have been retrieved from DQMStore
