@@ -247,8 +247,9 @@ double getIntegral(const TH1* histogram, const fitRangeEntryCollection* fitRange
       }
     } 
   } else {
-    edm::LogError ("getIntegral") << " Mismatch between dimensionality of histogram = " << histogram->GetDimension()
-				  << " and number of fit-range definitions = " << fitRanges->size() << " !!";
+    edm::LogError ("getIntegral") 
+      << " Mismatch between dimensionality of Histogram = " << histogram->GetDimension()
+      << " and number of fit-range Definitions = " << fitRanges->size() << " !!";
   }
 
   return integral;
@@ -277,8 +278,9 @@ TH1* makeSubrangeHistogram(const TH1* histogram, const fitRangeEntryCollection* 
   if ( !fitRanges ) return (TH1*)histogram->Clone(subrangeHistogramName.data());
 
   if ( histogram->GetDimension() != (int)fitRanges->size() ) {
-    edm::LogError ("makeSubrangeHistogram") << " Mismatch between dimensionality of histogram = " << histogram->GetDimension()
-					    << " and number of fit-range definitions = " << fitRanges->size() << " !!";
+    edm::LogError ("makeSubrangeHistogram") 
+      << " Mismatch between dimensionality of Histogram = " << histogram->GetDimension()
+      << " and number of fit-range Definitions = " << fitRanges->size() << " !!";
     return 0;
   }
 
@@ -533,7 +535,8 @@ TH1* makeConcatenatedHistogram(const std::string& histogramName_concatenated, co
 
 void saveMonitorElement_float(DQMStore& dqmStore, const char* meName, float meValue)
 {
-  MonitorElement* me = dqmStore.bookFloat(meName);
+  const std::string meOptions = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s1");
+  MonitorElement* me = dqmStore.bookFloat(std::string(meName).append(meOptions));
   me->Fill(meValue);
 }
 
@@ -567,6 +570,8 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
 				      const char* plotLabel, const char* xAxisLabel,
 				      const std::string& fileName)
 {
+  std::cout << "<makeControlPlot1dObsDistribution>:" << std::endl;
+
   TCanvas canvas("TemplateHistFitter", "TemplateHistFitter", defaultCanvasSizeX, defaultCanvasSizeY);
   canvas.SetFillColor(10);
   canvas.SetFrameFillColor(10);
@@ -602,14 +607,14 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
 
     if ( !fittedTemplateHistogram_sum ) {
       std::string fittedTemplateHistogramName_sum = std::string("fittedTemplateHistogram_sum");
-      fittedTemplateHistogram_sum = (TH1*)fittedTemplateHistogram->Clone(fittedTemplateHistogramName_sum.data());
+      fittedTemplateHistogram_sum = (TH1*)fittedTemplateHistogram_cloned->Clone(fittedTemplateHistogramName_sum.data());
       fittedTemplateHistogram_sum->SetStats(false);
       fittedTemplateHistogram_sum->GetXaxis()->SetTitle(xAxisLabel);
       fittedTemplateHistogram_sum->SetLineColor(1); // black
       fittedTemplateHistogram_sum->SetLineStyle(1); // solid
-      fittedTemplateHistogram_sum->SetLineWidth(fittedTemplateHistogram->GetLineWidth());
+      fittedTemplateHistogram_sum->SetLineWidth(fittedTemplateHistogram_cloned->GetLineWidth());
     } else {
-      fittedTemplateHistogram_sum->Add(fittedTemplateHistogram);
+      fittedTemplateHistogram_sum->Add(fittedTemplateHistogram_cloned);
     }
   }
 
@@ -618,10 +623,16 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
   dataHistogram_cloned->SetMarkerStyle(8);
   legend.AddEntry(dataHistogram_cloned, "final Evt. Sel.", "p");
   
+  //std::cout << " dataHistogram_cloned = " << dataHistogram_cloned << ":" 
+  //	      << " integral = " << dataHistogram_cloned->Integral() << std::endl;
+
   fittedTemplateHistogram_sum->SetMinimum(0.);
   double yMax = TMath::Max(fittedTemplateHistogram_sum->GetMaximum(), dataHistogram->GetMaximum());
   fittedTemplateHistogram_sum->SetMaximum(1.4*yMax);
   legend.AddEntry(fittedTemplateHistogram_sum, "fitted #Sigma", "l");
+
+  //std::cout << " fittedTemplateHistogram_sum = " << fittedTemplateHistogram_sum << ":" 
+  //	      << " integral = " << fittedTemplateHistogram_sum->Integral() << std::endl;
   
   fittedTemplateHistogram_sum->Draw("hist");
   
@@ -629,6 +640,8 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
 	fittedTemplateHistogram_cloned != fittedTemplateHistograms_cloned.end(); ++fittedTemplateHistogram_cloned ) {
     (*fittedTemplateHistogram_cloned)->Draw("histsame");
   }
+
+  fittedTemplateHistogram_sum->Draw("histsame");
 
   dataHistogram_cloned->Draw("e1psame");
 
@@ -751,8 +764,9 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
       const std::string& processName = process->first;
 	
       if ( var->second.templates_.find(processName) == var->second.templates_.end() ) {
-	edm::LogError ("makeControlPlotsNdObsDistribution") << " Failed to find template histogram for process = " << processName << ","
-							    << " variable = " << varName << " --> skipping !!";
+	edm::LogError ("makeControlPlotsNdObsDistribution") 
+	  << " Failed to find template histogram for process = " << processName << ","
+	  << " variable = " << varName << " --> skipping !!";
 	return;
       } 
 
@@ -768,8 +782,8 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
       int errorFlag = 0;
       std::string fileName = replace_string(controlPlotsFileName, plotKeyword, varName, 1, 1, errorFlag);
       if ( errorFlag ) {
-	edm::LogError("makeControlPlotsNdObsDistribution") << " Failed to decode controlPlotsFileName = " 
-							   << controlPlotsFileName << " --> skipping !!";
+	edm::LogError("makeControlPlotsNdObsDistribution") 
+	  << " Failed to decode controlPlotsFileName = " << controlPlotsFileName << " --> skipping !!";
 	return;
       }
 
@@ -843,8 +857,8 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
       }
       
       if ( errorFlag ) {
-	edm::LogError("makeControlPlotsNdObsDistribution") << " Failed to decode controlPlotsFileName = " 
-							   << controlPlotsFileName << " --> skipping !!";
+	edm::LogError("makeControlPlotsNdObsDistribution") 
+	  << " Failed to decode controlPlotsFileName = " << controlPlotsFileName << " --> skipping !!";
 	return;
       }
 
@@ -900,8 +914,8 @@ void makeControlPlotsCovariance(const TVectorD& bestEstimate, const TVectorD& er
       if ( !errorFlag ) {
 	drawErrorEllipse(x0, y0, errX0, errY0, Sxx, Sxy, Syy, labelX, labelY, fileName.data());
       } else {
-	edm::LogError("drawErrorEllipses") << " Failed to decode controlPlotsFileName = " << controlPlotsFileName 
-					   << " --> skipping !!";
+	edm::LogError("drawErrorEllipses") 
+	  << " Failed to decode controlPlotsFileName = " << controlPlotsFileName << " --> skipping !!";
 	return;
       }
     }
@@ -968,8 +982,8 @@ void drawErrorEllipse(double x0, double y0, double errX0, double errY0, double S
     TColor* orange = (TColor*)colors->At(42);
     orange->SetRGB(1.00,0.80,0.00);
   } else {
-    edm::LogWarning ("drawErrorEllipse") << " Failed to access list of Colors from gROOT object"
-					 << " --> skipping definition of Color 'orange' !!";
+    edm::LogWarning ("drawErrorEllipse") 
+      << " Failed to access list of Colors from gROOT object" << " --> skipping definition of Color 'orange' !!";
   }
   twoSigmaErrorEllipse.SetFillColor(42);
   twoSigmaErrorEllipse.SetLineColor(44);
@@ -993,8 +1007,8 @@ void drawErrorEllipse(double x0, double y0, double errX0, double errY0, double S
        TMath::Abs(maxY - minY) < epsilon ) {
     if ( TMath::Abs(maxX - minX) < epsilon ) edm::LogWarning ("drawErrorEllipse") << " Invalid x-range: minX = maxX = " << minX;
     if ( TMath::Abs(maxY - minY) < epsilon ) edm::LogWarning ("drawErrorEllipse") << " Invalid y-range: minY = maxY = " << minY;
-    edm::LogWarning ("drawErrorEllipse") << " --> skipping drawing of Error ellipse for labelX = " << labelX << ","
-					 << " labelY = " << labelY << " !!";
+    edm::LogWarning ("drawErrorEllipse") 
+      << " --> skipping drawing of Error ellipse for labelX = " << labelX << ", labelY = " << labelY << " !!";
     return;
   }
 
@@ -1063,14 +1077,14 @@ double compChi2red(const TemplateFitAdapterBase::fitResultType* fitResult)
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
 
 //--- restrict computation of chi^2 to region included in fit
-      if ( histogramData->GetDimension() == 0 ) {
+      if ( histogramData->GetDimension() == 1 ) {
 	double xMin = var->second.fitRanges_[0].min_;
 	double xMax = var->second.fitRanges_[0].max_;
 
 	double binCenter = histogramData->GetBinCenter(iBin);
 
 	if ( !(binCenter > xMin && binCenter < xMax) ) continue;
-      } else if ( histogramData->GetDimension() == 0 ) {
+      } else if ( histogramData->GetDimension() == 2 ) {
 	double xMin = var->second.fitRanges_[0].min_;
 	double xMax = var->second.fitRanges_[0].max_;
 
@@ -1082,7 +1096,7 @@ double compChi2red(const TemplateFitAdapterBase::fitResultType* fitResult)
 
 	if ( !(binCenterX > xMin && binCenterX < xMax &&
 	       binCenterY > yMin && binCenterY < yMax) ) continue;
-      } else if ( histogramData->GetDimension() == 0 ) {
+      } else if ( histogramData->GetDimension() == 3 ) {
 	double xMin = var->second.fitRanges_[0].min_;
 	double xMax = var->second.fitRanges_[0].max_;
 
@@ -1112,8 +1126,9 @@ double compChi2red(const TemplateFitAdapterBase::fitResultType* fitResult)
 	const std::string& processName = process->first;
       
 	if ( var->second.templates_.find(processName) == var->second.templates_.end() ) {
-	  edm::LogError ("makeControlPlotsObsDistribution") << " Failed to find template histogram for process = " << processName << ","
-							    << " variable = " << varName << " --> skipping !!";
+	  edm::LogError ("makeControlPlotsObsDistribution") 
+	    << " Failed to find template histogram for process = " << processName << ","
+	    << " variable = " << varName << " --> skipping !!";
 	  return 1.e+3;
 	} 
 
@@ -1156,8 +1171,8 @@ double compChi2red(const TemplateFitAdapterBase::fitResultType* fitResult)
   if ( numDoF > 0 ) {
     return (chi2/numDoF);
   } else {
-    edm::LogWarning ("compChi2red") << " numDoF = " << numDoF << " must not be negative"
-				    << " returning Chi2red = 1.e+3 !!";
+    edm::LogWarning ("compChi2red") 
+      << " numDoF = " << numDoF << " must not be negative --> returning Chi2red = 1.e+3 !!";
     return 1.e+3;
   }
 }
