@@ -95,14 +95,14 @@ void TemplateHistFitter::endJob()
 
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("TemplateHistFitter::endJob") << " Failed to access dqmStore" 
-					       << " --> histogram will NOT be fitted !!";
+    edm::LogError ("TemplateHistFitter::endJob") 
+      << " Failed to access dqmStore" << " --> histogram will NOT be fitted !!";
     return;
   }
   
   if ( fitAlgorithm_->getErrors() ) {
-    edm::LogError ("TemplateHistFitter::endJob") << " Error in Configuration ParameterSet" 
-						 << " --> histogram will NOT be fitted !!";
+    edm::LogError ("TemplateHistFitter::endJob") 
+      << " Error in Configuration ParameterSet" << " --> histogram will NOT be fitted !!";
     return;
   }
 
@@ -189,8 +189,8 @@ void TemplateHistFitter::estimateUncertainties(bool fluctStat, bool fluctSys, in
       const std::string& processName = processNames_[iProcess];
 
       if ( fitResult_tmp->normalizations_.find(processName) == fitResult_tmp->normalizations_.end() ) {
-	  edm::LogError ("estimateUncertainties") << " Failed to find normalization for process = " << processName 
-						  << " --> skipping !!";
+	  edm::LogError ("estimateUncertainties") 
+	    << " Failed to find normalization for process = " << processName << " --> skipping !!";
 	  return;
       } 
 
