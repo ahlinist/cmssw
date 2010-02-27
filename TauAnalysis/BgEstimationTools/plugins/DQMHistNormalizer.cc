@@ -64,24 +64,26 @@ void DQMHistNormalizer::endJob()
   
   for ( std::vector<jobEntryType>::const_iterator jobEntry = jobs_.begin();
 	jobEntry != jobs_.end(); ++jobEntry ) {
+    //std::cout << " meNameInput = " << jobEntry->meNameInput_ << std::endl;
     MonitorElement* meInput = dqmStore.get(jobEntry->meNameInput_);
+    //std::cout << " meInput = " << meInput << std::endl;
     TH1* histoInput = ( meInput ) ? meInput->getTH1() : 0;
     if ( !histoInput ) {
       edm::LogError ("endJob") << " Failed to retrieve histogram " << jobEntry->meNameInput_ << " from dqmStore !!";
       continue;
     }
 
-    TH1F* histoOutput = (TH1F*)histoInput->Clone();
+    std::auto_ptr<TH1> histoOutput(dynamic_cast<TH1*>(histoInput->Clone()));
     if ( !histoOutput->GetSumw2N() ) histoOutput->Sumw2();
     if ( histoOutput->Integral() != 0. ) histoOutput->Scale(norm_/histoOutput->Integral());
   
     std::string outputHistogramName, outputHistogramDirectory;
     separateMonitorElementFromDirectoryName(jobEntry->meNameOutput_, outputHistogramName, outputHistogramDirectory);
-    //std::cout << " meNameOutput = " << meNameOutput_ << std::endl;
+    //std::cout << " meNameOutput = " << jobEntry->meNameOutput_ << std::endl;
     //std::cout << " outputHistogramDirectory = " << outputHistogramDirectory << std::endl;
     //std::cout << " outputHistogramName = " << outputHistogramName << std::endl;
     if ( outputHistogramDirectory != "" ) dqmStore.setCurrentFolder(outputHistogramDirectory);
-    dqmStore.book1D(outputHistogramName, histoOutput);
+    dqmRegisterHistogram(dqmStore, histoOutput.release(), outputHistogramName);
   }
 }
 
