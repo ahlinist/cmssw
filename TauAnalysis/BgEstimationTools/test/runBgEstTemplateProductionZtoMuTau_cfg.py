@@ -76,6 +76,7 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # as input for pat::Tau production
 switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+setattr(process.allLayer1Taus.tauIDSources, "ewkTauId", cms.InputTag('ewkTauId'))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -99,17 +100,18 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
 #--------------------------------------------------------------------------------
 
-process.load('TauAnalysis.BgEstimationTools.bgEstWplusJetsEnrichedSelection_cff')
-process.load('TauAnalysis.BgEstimationTools.bgEstTTplusJetsEnrichedSelection_cff')
-process.load('TauAnalysis.BgEstimationTools.bgEstZmumuEnrichedSelection_cff')
-process.load('TauAnalysis.BgEstimationTools.bgEstQCDenrichedSelection_cff')
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelection_cff')
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauTTplusJetsEnrichedSelection_cff')
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauZmumuEnrichedSelection_cff')
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cff')
 
 # set generator level phase-space selection
 # (to avoid overlap of different  Monte Carlo samples in simulated phase-space)
 if hasattr(process, "isBatchMode"):
     process.analyzeEventsBgEstWplusJetsEnriched.filters[0] = getattr(process, "genPhaseSpaceCut")
     process.analyzeEventsBgEstTTplusJetsEnriched.filters[0] = getattr(process, "genPhaseSpaceCut")
-    process.analyzeEventsBgEstZmumuEnriched.filters[0] = getattr(process, "genPhaseSpaceCut")
+    process.analyzeEventsBgEstZmumuJetMisIdEnriched.filters[0] = getattr(process, "genPhaseSpaceCut")
+    process.analyzeEventsBgEstZmumuMuonMisIdEnriched.filters[0] = getattr(process, "genPhaseSpaceCut")
     process.analyzeEventsBgEstQCDenriched.filters[0] = getattr(process, "genPhaseSpaceCut")
 
 # produce event weight variable for correcting "bias"
@@ -121,7 +123,7 @@ process.kineEventReweightBgEstTemplateWplusJets = cms.EDProducer("ObjValProducer
         pluginType = cms.string("KineEventReweightExtractor"),
         weightLookupTable = cms.PSet(
             fileName = cms.string(
-                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root.root'
+                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root'
             ),
             meName = cms.string('DQMData/bgEstTemplateKineEventReweights/WplusJets/diTauMvis')
         ),
@@ -134,14 +136,18 @@ process.kineEventReweightBgEstTemplateWplusJets = cms.EDProducer("ObjValProducer
     )
 )
 
-# add event weight variable to analysis sequence
-# for producing W + jets templates
-setattr(process.analyzeEventsBgEstWplusJetsEnriched, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateWplusJets"))
+# add another analysis sequence for producing W + jets templates
+# in which the events are reweighted in order to correct for "bias" of muon + tau-jet visible invariant mass distribution
+# caused by cuts on muon + MEt transverse cut and CDF PzetaDiff variable
+process.analyzeEventsBgEstWplusJetsEnriched_reweighted = copy.deepcopy(process.analyzeEventsBgEstWplusJetsEnriched)
+process.analyzeEventsBgEstWplusJetsEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnriched_reweighted')
+setattr(process.analyzeEventsBgEstWplusJetsEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateWplusJets"))
 
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
   + process.selectZtoMuTauEvents
-  + process.kineEventReweightBgEstTemplateWplusJets + process.bgEstWplusJetsEnrichedAnalysisSequence
+  + process.bgEstWplusJetsEnrichedAnalysisSequence
+  + process.kineEventReweightBgEstTemplateWplusJets + process.analyzeEventsBgEstWplusJetsEnriched_reweighted
   + process.bgEstTTplusJetsEnrichedAnalysisSequence
   + process.bgEstZmumuEnrichedAnalysisSequence
   + process.bgEstQCDenrichedAnalysisSequence 
