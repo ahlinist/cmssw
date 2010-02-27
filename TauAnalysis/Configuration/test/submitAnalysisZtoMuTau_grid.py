@@ -7,8 +7,8 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_10TeV_cfi import *
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputDirectory = "/castor/cern.ch/user/v/veelken/plots/ZtoMuTau_grid/"
-#outputDirectory = "/castor/cern.ch/user/l/lusito/ZMuTauAnalysis/"
+outputFilePath = "/castor/cern.ch/user/v/veelken/plots/ZtoMuTau_grid/"
+#outputFilePath = "/castor/cern.ch/user/l/lusito/ZMuTauAnalysis/"
 
 # small cmsRun job for testing purposes...
 submitToGrid(configFile = "runZtoMuTau_cfg.py", channel = "ZtoMuTau",
@@ -17,4 +17,4 @@ submitToGrid(configFile = "runZtoMuTau_cfg.py", channel = "ZtoMuTau",
              dbs_url = "http://cmsdbsprod.cern.ch/cms_dbs_prod_local_09/servlet/DBSServlet",             
              replFunction = makeReplacementsAnalysis, replacements =
              "maxEvents = 100; eventsPerJob = 20000; applyFactorization = false; estimateSysUncertainties = false",
-             outputFiles = [ plotsOutputFileNameZtoMuTau_Ztautau_10TeV ], outputDirectory = outputDirectory)
+             outputFileNames = [ plotsOutputFileNameZtoMuTau_Ztautau_10TeV ], outputFilePath = outputFilePath)
