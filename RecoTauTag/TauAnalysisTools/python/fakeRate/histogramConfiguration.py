@@ -22,6 +22,8 @@ def makeCuts(denominator="1"):
     cuts['ByLeadTrackPt']    =  TauNtupleSelection("$ByLeadTrackPt")*denominator
     cuts['ByLeadPionPt']     =  TauNtupleSelection("$ByLeadPionPt")*denominator
     cuts['ByIsolation']      =  TauNtupleSelection("$ByIsolation")*denominator
+    cuts['ByTrackIsolation'] =  TauNtupleSelection("$ByTrackIsolation")*denominator
+    cuts['ByEcalIsolation']  =  TauNtupleSelection("$ByEcalIsolation")*denominator
     cuts['AgainstMuon']      =  TauNtupleSelection("$AgainstMuon")*denominator
     cuts['AgainstElectron']  =  TauNtupleSelection("$AgainstElectron")*denominator
     cuts['ByCharge']         =  TauNtupleSelection("abs($charge) == 1")*denominator
@@ -33,6 +35,11 @@ def makeCuts(denominator="1"):
 
     # Combo discriminators
     cuts['ByChargeAndTracks']             =  cuts['ByCharge']*cuts['ByNumTracks']
+
+    cuts['ByTrackIsolationSeq']           = cuts['ByTrackIsolation']*denominator
+    cuts['ByEcalIsolationSeq']            = cuts['ByEcalIsolation']*cuts['ByTrackIsolationSeq']
+    cuts['ByNTracksSeq']                  = cuts['ByNumTracks']*cuts['ByEcalIsolationSeq']
+    cuts['ByChargeSeq']                   = cuts['ByCharge']*cuts['ByNTracksSeq']
 
     cuts['ByStandardChain']               =  cuts['ByLeadTrackPt']*cuts['ByIsolation']*cuts['ByChargeAndTracks']
     cuts['ByStandardChainNoMuon']         =  cuts['ByStandardChain']*cuts['AgainstMuon']

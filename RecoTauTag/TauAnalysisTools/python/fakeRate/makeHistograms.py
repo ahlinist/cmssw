@@ -6,8 +6,8 @@ def make_plots(files_and_weights,
                output_file = "fakeRateHistograms.root",
                ntuple_name = "shrinking",
                ntuple_setup = lambda ntuple: ntuple.set_collection("matched"),
-               x_expr="$jetPt", 
-               y_expr="abs($jetEta)", 
+               x_expr="$pt", 
+               y_expr="abs($eta)", 
                z_expr="$jetWidth", 
                x_bins=[], y_bins=[], z_bins=[], selections={}, **kwargs):
     output = TFile(output_file, "RECREATE")
