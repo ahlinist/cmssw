@@ -53,10 +53,10 @@ void analysisClass::Loop()
    h_N_HFspikesPerEv_TOT->Sumw2();
    h_N_EBspikesPerEv_TOT->Sumw2();
 
-   TH1F *h_HFRecHitE_L = new TH1F("h_HFRecHitE_L","h_HFRecHitE_L",100,-5.,200.);
-   TH1F *h_HFRecHitE_L_Flagged = new TH1F("h_HFRecHitE_L_Flagged","h_HFRecHitE_L_Flagged",100,-5.,200.);
-   TH1F *h_HFRecHitE_S = new TH1F("h_HFRecHitE_S","h_HFRecHitE_S",100,-5.,200.);
-   TH1F *h_HFRecHitE_S_Flagged = new TH1F("h_HFRecHitE_S_Flagged","h_HFRecHitE_S_Flagged",100,-5.,200.);
+   TH1F *h_HFRecHitE_L = new TH1F("h_HFRecHitE_L","h_HFRecHitE_L;E [GeV]",100,-5.,200.);
+   TH1F *h_HFRecHitE_L_Flagged = new TH1F("h_HFRecHitE_L_Flagged","h_HFRecHitE_L_Flagged;E [GeV]",100,-5.,200.);
+   TH1F *h_HFRecHitE_S = new TH1F("h_HFRecHitE_S","h_HFRecHitE_S;E [GeV]",100,-5.,200.);
+   TH1F *h_HFRecHitE_S_Flagged = new TH1F("h_HFRecHitE_S_Flagged","h_HFRecHitE_S_Flagged;E [GeV]",100,-5.,200.);
    
    h_HFRecHitE_L->Sumw2();
    h_HFRecHitE_L_Flagged->Sumw2();
@@ -67,27 +67,152 @@ void analysisClass::Loop()
    map<UInt_t,TH1F*> h_HFRecHitE_L_Flagged_ieta;
    map<UInt_t,TH1F*> h_HFRecHitE_S_ieta;
    map<UInt_t,TH1F*> h_HFRecHitE_S_Flagged_ieta;
-      
+   
+   TH1F *h_HFRecHitET_L = new TH1F("h_HFRecHitET_L","h_HFRecHitET_L;E_{T} [GeV]",100,-5.,200.);
+   TH1F *h_HFRecHitET_S = new TH1F("h_HFRecHitET_S","h_HFRecHitET_S;E_{T} [GeV]",100,-5.,200.);
+   TH1F *h_HFRecHitET_L_Flagged = new TH1F("h_HFRecHitET_L_Flagged","h_HFRecHitET_L_Flagged;E_{T} [GeV]",100,-5.,200.);
+   TH1F *h_HFRecHitET_S_Flagged = new TH1F("h_HFRecHitET_S_Flagged","h_HFRecHitET_S_Flagged;E_{T} [GeV]",100,-5.,200.);
+   
+   h_HFRecHitET_L->Sumw2();
+   h_HFRecHitET_S->Sumw2();
+   h_HFRecHitET_L_Flagged->Sumw2();
+   h_HFRecHitET_S_Flagged->Sumw2();
+   
+   map<UInt_t,TH1F*> h_HFRecHitET_L_ieta;
+   map<UInt_t,TH1F*> h_HFRecHitET_S_ieta;
+   map<UInt_t,TH1F*> h_HFRecHitET_L_Flagged_ieta;
+   map<UInt_t,TH1F*> h_HFRecHitET_S_Flagged_ieta;
+   
+   for( uint i=29; i<=41; i++ ) {
+     h_HFRecHitE_L_ieta[i] = new TH1F(Form("h_HFRecHitE_L_ieta_%u",i),Form("h_HFRecHitE_L_ieta_%u;E [GeV]",i),100,-5.,200.);
+     h_HFRecHitE_L_ieta[i]->Sumw2();
+     h_HFRecHitE_S_ieta[i] = new TH1F(Form("h_HFRecHitE_S_ieta_%u",i),Form("h_HFRecHitE_S_ieta_%u;E [GeV]",i),100,-5.,200.);
+     h_HFRecHitE_S_ieta[i]->Sumw2();
+     h_HFRecHitE_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_L_Flagged_ieta_%u",i),Form("h_HFRecHitE_L_Flagged_ieta_%u;E [GeV]",i),100,-5.,200.);
+     h_HFRecHitE_L_Flagged_ieta[i]->Sumw2();
+     h_HFRecHitE_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_S_Flagged_ieta_%u",i),Form("h_HFRecHitE_S_Flagged_ieta_%u;E [GeV]",i),100,-5.,200.);
+     h_HFRecHitE_S_Flagged_ieta[i]->Sumw2();
+     
+     h_HFRecHitET_L_ieta[i] = new TH1F(Form("h_HFRecHitET_L_ieta_%u",i),Form("h_HFRecHitET_L_ieta_%u;E_{T} [GeV]",i),100,-5.,200.);
+     h_HFRecHitET_L_ieta[i]->Sumw2();
+     h_HFRecHitET_S_ieta[i] = new TH1F(Form("h_HFRecHitET_S_ieta_%u",i),Form("h_HFRecHitET_S_ieta_%u;E_{T} [GeV]",i),100,-5.,200.);
+     h_HFRecHitET_S_ieta[i]->Sumw2();
+     h_HFRecHitET_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_L_Flagged_ieta_%u",i),Form("h_HFRecHitET_L_Flagged_ieta_%u;E_{T} [GeV]",i),100,-5.,200.);
+     h_HFRecHitET_L_Flagged_ieta[i]->Sumw2();
+     h_HFRecHitET_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_S_Flagged_ieta_%u",i),Form("h_HFRecHitET_S_Flagged_ieta_%u;E_{T} [GeV]",i),100,-5.,200.);
+     h_HFRecHitET_S_Flagged_ieta[i]->Sumw2();
+   }
+   
+   //MET histograms
+   int   Nbins_METSumET = 100;
+   float Max_METSumET = 100;
+   int   Nbins_Phi = 50;
+   float Max_Phi = 3.15;
+  
+   TH1F *h_CaloMET   = new TH1F ("h_CaloMET","h_CaloMET;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1F *h_CaloMETPhi  = new TH1F ("h_CaloMETPhi","h_CaloMETPhi;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1F *h_CaloMEx   = new TH1F ("h_CaloMEx","h_CaloMEx;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloMEy   = new TH1F ("h_CaloMEy","h_CaloMEy;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloSumET   = new TH1F ("h_CaloSumET","h_CaloSumET;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   
+   h_CaloMET->Sumw2();
+   h_CaloMETPhi->Sumw2();
+   h_CaloMEx->Sumw2();
+   h_CaloMEy->Sumw2();
+   h_CaloSumET->Sumw2();
+   
+   TH1F *h_CaloMET_cleanECAL = new TH1F ("h_CaloMET_cleanECAL","h_CaloMET_cleanECAL;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1F *h_CaloMETPhi_cleanECAL  = new TH1F ("h_CaloMETPhi_cleanECAL","h_CaloMETPhi_cleanECAL;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1F *h_CaloMEx_cleanECAL   = new TH1F ("h_CaloMEx_cleanECAL","h_CaloMEx_cleanECAL;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloMEy_cleanECAL   = new TH1F ("h_CaloMEy_cleanECAL","h_CaloMEy_cleanECAL;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloSumET_cleanECAL   = new TH1F ("h_CaloSumET_cleanECAL","h_CaloSumET_cleanECAL;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+
+   h_CaloMET_cleanECAL->Sumw2();
+   h_CaloMETPhi_cleanECAL->Sumw2();
+   h_CaloMEx_cleanECAL->Sumw2();
+   h_CaloMEy_cleanECAL->Sumw2();
+   h_CaloSumET_cleanECAL->Sumw2();
+
+   TH1F *h_CaloMET_clean = new TH1F ("h_CaloMET_clean","h_CaloMET_clean;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1F *h_CaloMETPhi_clean  = new TH1F ("h_CaloMETPhi_clean","h_CaloMETPhi_clean;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1F *h_CaloMEx_clean   = new TH1F ("h_CaloMEx_clean","h_CaloMEx_clean;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloMEy_clean   = new TH1F ("h_CaloMEy_clean","h_CaloMEy_clean;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloSumET_clean   = new TH1F ("h_CaloSumET_clean","h_CaloSumET_clean;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   
+   h_CaloMET_clean->Sumw2();
+   h_CaloMETPhi_clean->Sumw2();
+   h_CaloMEx_clean->Sumw2();
+   h_CaloMEy_clean->Sumw2();
+   h_CaloSumET_clean->Sumw2();
+
+   TH1F *h_CaloMETHF   = new TH1F ("h_CaloMETHF","h_CaloMETHF;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1F *h_CaloMETPhiHF  = new TH1F ("h_CaloMETPhiHF","h_CaloMETPhiHF;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1F *h_CaloMExHF   = new TH1F ("h_CaloMExHF","h_CaloMExHF;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloMEyHF   = new TH1F ("h_CaloMEyHF","h_CaloMEyHF;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloSumETHF   = new TH1F ("h_CaloSumETHF","h_CaloSumETHF;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+
+   h_CaloMETHF->Sumw2();
+   h_CaloMETPhiHF->Sumw2();
+   h_CaloMExHF->Sumw2();
+   h_CaloMEyHF->Sumw2();
+   h_CaloSumETHF->Sumw2();
+   
+   TH1F *h_CaloMETHF_clean   = new TH1F ("h_CaloMETHF_clean","h_CaloMETHF_clean;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1F *h_CaloMETPhiHF_clean  = new TH1F ("h_CaloMETPhiHF_clean","h_CaloMETPhiHF_clean;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1F *h_CaloMExHF_clean   = new TH1F ("h_CaloMExHF_clean","h_CaloMExHF_clean;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloMEyHF_clean   = new TH1F ("h_CaloMEyHF_clean","h_CaloMEyHF_clean;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1F *h_CaloSumETHF_clean   = new TH1F ("h_CaloSumETHF_clean","h_CaloSumETHF_clean;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   
+   h_CaloMETHF_clean->Sumw2();
+   h_CaloMETPhiHF_clean->Sumw2();
+   h_CaloMExHF_clean->Sumw2();
+   h_CaloMEyHF_clean->Sumw2();
+   h_CaloSumETHF_clean->Sumw2();
+   
    //2D histograms
    TH2F *h2_N_HFspikes_L_ieta_iphi  = new TH2F ("h2_N_HFspikes_L_ieta_iphi","h2_N_HFspikes_L_ieta_iphi",13,28.5,41.5,72,0.5,72.5);
    TH2F *h2_N_HFspikes_S_ieta_iphi  = new TH2F ("h2_N_HFspikes_S_ieta_iphi","h2_N_HFspikes_S_ieta_iphi",13,28.5,41.5,72,0.5,72.5);
    
-   TH2F *h2_HFRecHitE_L_vs_S = new TH2F ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S",100,-5.,200.,100,-5.,200.);
-   TH2F *h2_HFRecHitE_vs_R_L = new TH2F ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L",120,-1.1,1.1,100,-5.,200.);
-   TH2F *h2_HFRecHitE_vs_R_S = new TH2F ("h2_HFRecHitE_vs_R_S","h2_HFRecHitE_vs_R_S",120,-1.1,1.1,100,-5.,200.);
+   TH2F *h2_HFRecHitE_L_vs_S = new TH2F ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S;E [GeV];E [GeV]",100,-5.,200.,100,-5.,200.);
+   TH2F *h2_HFRecHitE_vs_R_L = new TH2F ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L;R;E [GeV]",120,-1.1,1.1,100,-5.,200.);
+   TH2F *h2_HFRecHitE_vs_R_S = new TH2F ("h2_HFRecHitE_vs_R_S","h2_HFRecHitE_vs_R_S;R;E [GeV]",120,-1.1,1.1,100,-5.,200.);
    
-//    TH2F *h2_R_vs_iphi_L  = new TH2F ("h2_R_vs_iphi_L","h2_R_vs_iphi_L",72,0.5,72.5,120,-1.1,1.1);
-//    TH2F *h2_R_vs_ieta_L  = new TH2F ("h2_R_vs_ieta_L","h2_R_vs_ieta_L",13,28.5,41.5,120,-1.1,1.1);
-//    TH2F *h2_R_vs_iphi_S  = new TH2F ("h2_R_vs_iphi_S","h2_R_vs_iphi_S",72,0.5,72.5,120,-1.1,1.1);
-//    TH2F *h2_R_vs_ieta_S  = new TH2F ("h2_R_vs_ieta_S","h2_R_vs_ieta_S",13,28.5,41.5,120,-1.1,1.1);
+   TH2F *h2_R_vs_iphi_L  = new TH2F ("h2_R_vs_iphi_L","h2_R_vs_iphi_L;i#phi;R",72,0.5,72.5,120,-1.1,1.1);
+   TH2F *h2_R_vs_ieta_L  = new TH2F ("h2_R_vs_ieta_L","h2_R_vs_ieta_L;i#eta;R",13,28.5,41.5,120,-1.1,1.1);
+   TH2F *h2_R_vs_iphi_S  = new TH2F ("h2_R_vs_iphi_S","h2_R_vs_iphi_S;i#phi;R",72,0.5,72.5,120,-1.1,1.1);
+   TH2F *h2_R_vs_ieta_S  = new TH2F ("h2_R_vs_ieta_S","h2_R_vs_ieta_S;i#eta;R",13,28.5,41.5,120,-1.1,1.1);
 
-//    TH2F *h2_S9oS1_vs_1oE_L_AllIeta  = new TH2F ("h2_S9oS1_vs_1oE_L_AllIeta","h2_S9oS1_vs_1oE_L_AllIeta"
-// 						,bin_1oE,0,1/Min_E, bin_SXoS1,Min_SXoS1,Max_SXoS1);
-//    TH2F *h2_S9oS1_vs_1oE_S_AllIeta  = new TH2F ("h2_S9oS1_vs_1oE_S_AllIeta","h2_S9oS1_vs_1oE_S_AllIeta"
-// 						,bin_1oE,0,1/Min_E, bin_SXoS1,Min_SXoS1,Max_SXoS1);
+   TH2F *h2_S9oS1_vs_E_L  = new TH2F ("h2_S9oS1_vs_E_L","h2_S9oS1_vs_E_L;E [GeV];S9/S1",100,-5.,300.,100,-0.1,0.5);
+   TH2F *h2_S9oS1_vs_E_S  = new TH2F ("h2_S9oS1_vs_E_S","h2_S9oS1_vs_E_S;E [GeV];S9/S1",100,-5.,300.,100,-0.1,0.5);
+   TH2F *h2_S5oS1_vs_E_L  = new TH2F ("h2_S5oS1_vs_E_L","h2_S5oS1_vs_E_L;E [GeV];S5/S1",100,-5.,300.,100,-0.1,0.5);
+   TH2F *h2_S5oS1_vs_E_S  = new TH2F ("h2_S5oS1_vs_E_S","h2_S5oS1_vs_E_S;E [GeV];S5/S1",100,-5.,300.,100,-0.1,0.5);
+   TH2F *h2_S9oS1_vs_E_L_Flagged  = new TH2F ("h2_S9oS1_vs_E_L_Flagged","h2_S9oS1_vs_E_L_Flagged;E [GeV];S9/S1",100,-5.,300.,100,-0.1,0.5);
+   TH2F *h2_S9oS1_vs_E_S_Flagged  = new TH2F ("h2_S9oS1_vs_E_S_Flagged","h2_S9oS1_vs_E_S_Flagged;E [GeV];S9/S1",100,-5.,300.,100,-0.1,0.5);
+   TH2F *h2_S5oS1_vs_E_L_Flagged  = new TH2F ("h2_S5oS1_vs_E_L_Flagged","h2_S5oS1_vs_E_L_Flagged;E [GeV];S5/S1",100,-5.,300.,100,-0.1,0.5);
+   TH2F *h2_S5oS1_vs_E_S_Flagged  = new TH2F ("h2_S5oS1_vs_E_S_Flagged","h2_S5oS1_vs_E_S_Flagged;E [GeV];S5/S1",100,-5.,300.,100,-0.1,0.5);
+
+   map<UInt_t,TH2F*> h2_S9oS1_vs_E_L_ieta;
+   map<UInt_t,TH2F*> h2_S9oS1_vs_E_S_ieta;
+   map<UInt_t,TH2F*> h2_S5oS1_vs_E_L_ieta;
+   map<UInt_t,TH2F*> h2_S5oS1_vs_E_S_ieta;
+   map<UInt_t,TH2F*> h2_S9oS1_vs_E_L_Flagged_ieta;
+   map<UInt_t,TH2F*> h2_S9oS1_vs_E_S_Flagged_ieta;
+   map<UInt_t,TH2F*> h2_S5oS1_vs_E_L_Flagged_ieta;
+   map<UInt_t,TH2F*> h2_S5oS1_vs_E_S_Flagged_ieta;
+   
+   for( uint i=29; i<=41; i++ ) {
+     h2_S9oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_ieta_%u",i),Form("h2_S9oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S9oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_ieta_%u",i),Form("h2_S9oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S5oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_ieta_%u",i),Form("h2_S5oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S5oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_ieta_%u",i),Form("h2_S5oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S9oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S9oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S5oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+   }
    
    /////////initialize variables
-   
+
    //////////////////////////////
    ///// Goood Run List  ////////
    //////////////////////////////
@@ -149,6 +274,9 @@ void analysisClass::Loop()
 
        //the ntuple maker stores already only ecal crystals with ET > 5 GeV
        vector<float> EBspikes_ET;
+       vector<float> EBspikes_Px;
+       vector<float> EBspikes_Py;
+       
        for (int xtal=0; xtal<PMTnoiseEcalEnergy->size(); xtal++)
 	 {
 	   //calculate S4/S1 of crystal
@@ -156,15 +284,21 @@ void analysisClass::Loop()
 
 	   //calculate ET of crystal
 	   float etaSize_ = 0.0174;
-	   float ieta_ = PMTnoiseEcalIeta->at(xtal); 
-	   float eta_ = etaSize_ * ( fabs(ieta_) - 0.5 ); 
+	   float ieta_ = PMTnoiseEcalIeta->at(xtal);
+	   float eta_ = etaSize_ * ( fabs(ieta_) - 0.5 );
 	   if(ieta_ < 0) 
 	     eta_ = eta_ * -1;
 	   float ET_ = PMTnoiseEcalEnergy->at(xtal)/cosh(eta_);
+           float iphi_ = PMTnoiseEcalIphi->at(xtal);
+           float phi_ = etaSize_ * ( iphi_ - 0.5 );
+           float px_ = ET_ * cos( phi_ );
+           float py_ = ET_ * sin( phi_ );
 	   // 	   cout << "ET: "     << ET_  
-	   // 		<< " S4/S1: " << S4oS1 << endl;	   
+	   // 		<< " S4/S1: " << S4oS1 << endl;
 	   if(S4oS1 < 0.05)
 	     EBspikes_ET.push_back(ET_);
+             EBspikes_Px.push_back(px_);
+             EBspikes_Py.push_back(py_);
 	 }       
 
        //#################################################
@@ -205,130 +339,143 @@ void analysisClass::Loop()
        evaluateCuts();
        
        // Fill histograms and do analysis based on cut evaluation
-       
+
        if( passedCut("0") )
 	 {
-          
+
            //## Loop over HF rechits             
+
+           vector<float> HFspikes_ET;
+           vector<float> HFspikes_Px;
+           vector<float> HFspikes_Py;
 
            int N_HFspikes_L=0;
            int N_HFspikes_S=0;
            int N_HFspikes_TOT=0;
-         
+
            for (int i = 0; i<int(PMTnoiseRecHitET->size()); i++)
-             {       
+             {
 
                double energy = PMTnoiseRecHitEnergy->at(i);
+               double ET = PMTnoiseRecHitET->at(i);
                double partenergy = PMTnoiseRecHitPartEnergy->at(i);
+               double sum4Long = PMTnoiseRecHitSum4Long->at(i);
+               double sum4Short = PMTnoiseRecHitSum4Short->at(i);
                int ieta = PMTnoiseRecHitIeta->at(i);
                int iphi = PMTnoiseRecHitIphi->at(i);
+               double phi = ((2*3.14159)/72) * iphi;
+               if(abs(ieta)>39) phi = ((2*3.14159)/72) * (iphi-1);
                int depth = PMTnoiseRecHitDepth->at(i);
-               //R = |L|-|S|/|L|+|S|
-               double R = ( fabs(energy) - fabs(partenergy) ) / ( fabs(energy) + fabs(partenergy) );
+               
+               if( energy<3. ) continue;
+               
+               //R = L-S/L+S
+               double R = ( energy - partenergy ) / ( energy + partenergy );
                if(depth==2)
                  R = R * -1;
+               
+               //S9/S1
+               double S9oS1 = -99.;
+               if( energy>0 ) S9oS1 = ( partenergy + sum4Long + sum4Short ) / energy;
+               
+               //S5/S1
+               double S5oS1 = -99.;
+               if( depth==1 && energy>0 ) //L
+                 {
+                   S5oS1 = ( partenergy + sum4Long ) / energy;
+                 }
+               if( depth==2 && energy>0) //S
+                 {
+                   S5oS1 = ( partenergy + sum4Short ) / energy;
+                 }
+               
+               //masked towers
+               // HF(37,67,1): STATUS = 0x8040
+               // HF(29,67,1): STATUS = 0x40
+               // HF(35,67,1): STATUS = 0x8040
+               // HF(29,67,2): STATUS = 0x40
+               // HF(30,67,2): STATUS = 0x8040
+               // HF(32,67,2): STATUS = 0x8040
+               // HF(36,67,2): STATUS = 0x8040
+               // HF(38,67,2): STATUS = 0x8040
 
-               //## identify spikes a la Igor
-               bool isPMThit = false;
+               //tower masked
+               int isLongMasked=0;
+               int isShortMasked=0;
+               if( (ieta==37 || ieta==29 || ieta==35) && iphi==67)
+                 isLongMasked = 1;
 
-               if( depth==1 && energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) {
-                 isPMThit = true;
-                 N_HFspikes_L++;
-               } else if( depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 ) {
-                 isPMThit = true;
-                 N_HFspikes_S++;
-               }
+               if( (ieta==29 || ieta==30 || ieta==32 || ieta==36 || ieta==38) && iphi==67)
+                 isShortMasked = 1;
+
+               //## identify HF spikes a la Igor
+               if( isLongMasked==0 && depth==1 && energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 )
+                 {
+                   N_HFspikes_L++;
+                   
+                   HFspikes_ET.push_back(ET);
+                   HFspikes_Px.push_back(ET*cos(phi));
+                   HFspikes_Py.push_back(ET*sin(phi));
+
+                   h2_N_HFspikes_L_ieta_iphi->Fill(abs(ieta),iphi);
+                   h_HFRecHitE_L_Flagged->Fill( energy );
+                   h_HFRecHitE_L_Flagged_ieta[abs(ieta)]->Fill( energy );
+                   h_HFRecHitET_L_Flagged->Fill( ET );
+                   h_HFRecHitET_L_Flagged_ieta[abs(ieta)]->Fill( ET );
+                   h2_S9oS1_vs_E_L_Flagged->Fill( energy, S9oS1 );
+                   h2_S5oS1_vs_E_L_Flagged->Fill( energy, S5oS1 );
+                   h2_S9oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S9oS1 );
+                   h2_S5oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S5oS1 );
+                 }
+               else if( isShortMasked==0 && depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 )
+                 {
+                   N_HFspikes_S++;
+                 
+                   HFspikes_ET.push_back(ET);
+                   HFspikes_Px.push_back(ET*cos(phi));
+                   HFspikes_Py.push_back(ET*sin(phi));
+
+                   h2_N_HFspikes_S_ieta_iphi->Fill(abs(ieta),iphi);
+                   h_HFRecHitE_S_Flagged->Fill( energy );
+                   h_HFRecHitE_S_Flagged_ieta[abs(ieta)]->Fill( energy );
+                   h_HFRecHitET_S_Flagged->Fill( ET );
+                   h_HFRecHitET_S_Flagged_ieta[abs(ieta)]->Fill( ET );
+                   h2_S9oS1_vs_E_S_Flagged->Fill( energy, S9oS1 );
+                   h2_S5oS1_vs_E_S_Flagged->Fill( energy, S5oS1 );
+                   h2_S9oS1_vs_E_S_Flagged_ieta[abs(ieta)]->Fill( energy, S9oS1 );
+                   h2_S5oS1_vs_E_S_Flagged_ieta[abs(ieta)]->Fill( energy, S5oS1 );
+                 }//## end of identify HF spikes
 
                if( depth==1 ) {
-                 h_HFRecHitE_L->Fill( energy );
                  h2_HFRecHitE_vs_R_L->Fill( R, energy );
                  h2_HFRecHitE_L_vs_S->Fill( partenergy, energy );
+                 h_HFRecHitE_L->Fill( energy );
+                 h_HFRecHitE_L_ieta[abs(ieta)]->Fill( energy );
+                 h_HFRecHitET_L->Fill( ET );
+                 h_HFRecHitET_L_ieta[abs(ieta)]->Fill( ET );
+                 h2_R_vs_iphi_L->Fill( iphi, R );
+                 h2_R_vs_ieta_L->Fill( abs(ieta), R );
+                 h2_S9oS1_vs_E_L->Fill( energy, S9oS1 );
+                 h2_S5oS1_vs_E_L->Fill( energy, S5oS1 );
+                 h2_S9oS1_vs_E_L_ieta[abs(ieta)]->Fill( energy, S9oS1 );
+                 h2_S5oS1_vs_E_L_ieta[abs(ieta)]->Fill( energy, S5oS1 );
+               }
 
-                 if(h_HFRecHitE_L_ieta[abs(ieta)]) {
-                   h_HFRecHitE_L_ieta[abs(ieta)]->Fill( energy );
-                 } else {
-                   h_HFRecHitE_L_ieta[abs(ieta)] = new TH1F(Form("h_HFRecHitE_L_ieta_%u",abs(ieta)),Form("h_HFRecHitE_L_ieta_%u",abs(ieta)),100,-5.,200.);
-                   h_HFRecHitE_L_ieta[abs(ieta)]->Sumw2();
-                   h_HFRecHitE_L_ieta[abs(ieta)]->Fill( energy );
-                 }
-               }
-               if ( depth==1 && isPMThit ) {
-                 h2_N_HFspikes_L_ieta_iphi->Fill(abs(ieta),iphi);
-                 h_HFRecHitE_L_Flagged->Fill( energy );
-                 
-                 if(h_HFRecHitE_L_Flagged_ieta[abs(ieta)]) {
-                   h_HFRecHitE_L_Flagged_ieta[abs(ieta)]->Fill( energy );
-                 } else {
-                   h_HFRecHitE_L_Flagged_ieta[abs(ieta)] = new TH1F(Form("h_HFRecHitE_L_Flagged_ieta_%u",abs(ieta)),Form("h_HFRecHitE_L_Flagged_ieta_%u",abs(ieta)),100,-5.,200.);
-                   h_HFRecHitE_L_Flagged_ieta[abs(ieta)]->Sumw2();
-                   h_HFRecHitE_L_Flagged_ieta[abs(ieta)]->Fill( energy );
-                 }
-               }
                if( depth==2 ) {
-                 h_HFRecHitE_S->Fill( energy );
                  h2_HFRecHitE_vs_R_S->Fill( R, energy );
                  h2_HFRecHitE_L_vs_S->Fill( energy, partenergy );
-
-                 if(h_HFRecHitE_S_ieta[abs(ieta)]) {
-                   h_HFRecHitE_S_ieta[abs(ieta)]->Fill( energy );
-                 } else {
-                   h_HFRecHitE_S_ieta[abs(ieta)] = new TH1F(Form("h_HFRecHitE_S_ieta_%u",abs(ieta)),Form("h_HFRecHitE_S_ieta_%u",abs(ieta)),100,-5.,200.);
-                   h_HFRecHitE_S_ieta[abs(ieta)]->Sumw2();
-                   h_HFRecHitE_S_ieta[abs(ieta)]->Fill( energy );
-                 }
+                 h_HFRecHitE_S->Fill( energy );
+                 h_HFRecHitE_S_ieta[abs(ieta)]->Fill( energy );
+                 h_HFRecHitET_S->Fill( ET );
+                 h_HFRecHitET_S_ieta[abs(ieta)]->Fill( ET );
+                 h2_R_vs_iphi_S->Fill( iphi, R );
+                 h2_R_vs_ieta_S->Fill( abs(ieta), R );
+                 h2_S9oS1_vs_E_S->Fill( energy, S9oS1 );
+                 h2_S5oS1_vs_E_S->Fill( energy, S5oS1 );
+                 h2_S9oS1_vs_E_S_ieta[abs(ieta)]->Fill( energy, S9oS1 );
+                 h2_S5oS1_vs_E_S_ieta[abs(ieta)]->Fill( energy, S5oS1 );
                }
-               if ( depth==2 && isPMThit ) {
-                 h2_N_HFspikes_S_ieta_iphi->Fill(abs(ieta),iphi);
-                 h_HFRecHitE_S_Flagged->Fill( energy );
-                 
-                 if(h_HFRecHitE_S_Flagged_ieta[abs(ieta)]) {
-                   h_HFRecHitE_S_Flagged_ieta[abs(ieta)]->Fill( energy );
-                 } else {
-                   h_HFRecHitE_S_Flagged_ieta[abs(ieta)] = new TH1F(Form("h_HFRecHitE_S_Flagged_ieta_%u",abs(ieta)),Form("h_HFRecHitE_S_Flagged_ieta_%u",abs(ieta)),100,-5.,200.);
-                   h_HFRecHitE_S_Flagged_ieta[abs(ieta)]->Sumw2();
-                   h_HFRecHitE_S_Flagged_ieta[abs(ieta)]->Fill( energy );
-                 }
-               }
-               
-               /*
-               //S9/S1
-               float S9oS1=-99;
-               if( PMTnoiseRecHitIsSeed->at(i) == 1 && PMTnoiseRecHitEnergy->at(i) > 0)
-                 {
-                   S9oS1 = ( PMTnoiseRecHitPartEnergy->at(i) 
-                             + PMTnoiseRecHitSum4Long->at(i)
-                             + PMTnoiseRecHitSum4Short->at(i) ) / PMTnoiseRecHitEnergy->at(i);
-                 }
 
-               //S4/S1
-               float S4oS1=-99;
-               if( PMTnoiseRecHitIsSeed->at(i) == 1 && PMTnoiseRecHitDepth->at(i)==1 && PMTnoiseRecHitEnergy->at(i) > 0) //L
-                 {
-                   S4oS1 = ( PMTnoiseRecHitPartEnergy->at(i) 
-                             + PMTnoiseRecHitSum4Long->at(i) ) / PMTnoiseRecHitEnergy->at(i);
-                 }
-               if( PMTnoiseRecHitIsSeed->at(i) == 1 && PMTnoiseRecHitDepth->at(i)==2 && PMTnoiseRecHitEnergy->at(i) > 0) //S
-                 {
-                   S4oS1 = ( PMTnoiseRecHitPartEnergy->at(i) 
-                             + PMTnoiseRecHitSum4Short->at(i) ) / PMTnoiseRecHitEnergy->at(i);
-                 }
-               */
-               
-               //S9/S1
-//                if( PMTnoiseRecHitIsSeed->at(i) == 1 && PMTnoiseRecHitEnergy->at(i) > Min_E )
-//                  {
-//                    float S9oS1 = ( PMTnoiseRecHitPartEnergy->at(i) 
-//                                    + PMTnoiseRecHitSum4Long->at(i)
-//                                    + PMTnoiseRecHitSum4Short->at(i) ) / PMTnoiseRecHitEnergy->at(i);
-//                                   
-//                    if( PMTnoiseRecHitDepth->at(i)==1 )
-//                      h2_S9oS1_vs_1oE_L_AllIeta->Fill( 1/PMTnoiseRecHitEnergy->at(i) , S9oS1 );
-// 
-//                    if( PMTnoiseRecHitDepth->at(i)==2 )
-//                      h2_S9oS1_vs_1oE_S_AllIeta->Fill( 1/PMTnoiseRecHitEnergy->at(i) , S9oS1 );
-// 
-//                  }
-               
                //## identify spikes a la caloMET
                
 //                if( PMTnoiseRecHitDepth->at(i)==1 
@@ -350,7 +497,81 @@ void analysisClass::Loop()
 
 	   //ECAL spikes
 	   h_N_EBspikesPerEv_TOT->Fill(EBspikes_ET.size());
+           
+           // met before cleaning
+           double met_clean = PMTnoiseMET->at(0);
+           double metphi_clean = PMTnoiseMETphi->at(0);
+           double mex_clean = met_clean*cos(metphi_clean);
+           double mey_clean = met_clean*sin(metphi_clean);
+           double sumet_clean = PMTnoiseSUMET->at(0);
 
+           h_CaloMET->Fill( met_clean );
+           h_CaloMETPhi->Fill( metphi_clean );
+           h_CaloMEx->Fill( mex_clean );
+           h_CaloMEy->Fill( mey_clean );
+           h_CaloSumET->Fill( sumet_clean );
+           
+           //## clean ECAL spikes
+           for (int i=0; i<EBspikes_ET.size(); i++)
+             {
+               mex_clean += EBspikes_Px[i];
+               mey_clean += EBspikes_Py[i];
+               sumet_clean -= EBspikes_ET[i]; 
+             }
+           
+           //## re-calculate met pt and phi after ECAL spike cleaning
+           met_clean = sqrt( mex_clean * mex_clean + mey_clean * mey_clean );
+           metphi_clean = atan2( mey_clean, mex_clean );
+           
+           h_CaloMET_cleanECAL->Fill( met_clean );
+           h_CaloMETPhi_cleanECAL->Fill( metphi_clean );
+           h_CaloMEx_cleanECAL->Fill( mex_clean );
+           h_CaloMEy_cleanECAL->Fill( mey_clean );
+           h_CaloSumET_cleanECAL->Fill( sumet_clean );
+
+           double mexHF_clean = PMTnoiseMETHFM->at(0)*cos( PMTnoiseMETphiHFM->at(0) ) + PMTnoiseMETHFP->at(0)*cos( PMTnoiseMETphiHFP->at(0) );
+           double meyHF_clean = PMTnoiseMETHFM->at(0)*sin( PMTnoiseMETphiHFM->at(0) ) + PMTnoiseMETHFP->at(0)*sin( PMTnoiseMETphiHFP->at(0) );
+           double metHF_clean = sqrt( mexHF_clean * mexHF_clean + meyHF_clean * meyHF_clean );
+           double metphiHF_clean = atan2( meyHF_clean, mexHF_clean );
+           double sumetHF_clean = PMTnoiseSUMETHFM->at(0) + PMTnoiseSUMETHFP->at(0);
+           
+           h_CaloMETHF->Fill( metHF_clean );
+           h_CaloMETPhiHF->Fill( metphiHF_clean );
+           h_CaloMExHF->Fill( mexHF_clean );
+           h_CaloMEyHF->Fill( meyHF_clean );
+           h_CaloSumETHF->Fill( sumetHF_clean );
+           
+           //## clean HF spikes
+           for (int i=0; i<HFspikes_ET.size(); i++)
+             {
+               mex_clean += HFspikes_Px[i];
+               mey_clean += HFspikes_Py[i];
+               sumet_clean -= HFspikes_ET[i];
+               
+               mexHF_clean += HFspikes_Px[i];
+               meyHF_clean += HFspikes_Py[i];
+               sumetHF_clean -= HFspikes_ET[i];
+             }
+           
+           //## re-calculate met pt and phi after HF spike cleaning
+           met_clean = sqrt( mex_clean * mex_clean + mey_clean * mey_clean );
+           metphi_clean = atan2( mey_clean, mex_clean );
+           
+           metHF_clean = sqrt( mexHF_clean * mexHF_clean + meyHF_clean * meyHF_clean );
+           metphiHF_clean = atan2( meyHF_clean, mexHF_clean );
+           
+           h_CaloMET_clean->Fill( met_clean );
+           h_CaloMETPhi_clean->Fill( metphi_clean );
+           h_CaloMEx_clean->Fill( mex_clean );
+           h_CaloMEy_clean->Fill( mey_clean );
+           h_CaloSumET_clean->Fill( sumet_clean );
+           
+           h_CaloMETHF_clean->Fill( metHF_clean );
+           h_CaloMETPhiHF_clean->Fill( metphiHF_clean );
+           h_CaloMExHF_clean->Fill( mexHF_clean );
+           h_CaloMEyHF_clean->Fill( meyHF_clean );
+           h_CaloSumETHF_clean->Fill( sumetHF_clean );
+           
 	 }//end pass all cut level 0
 
        // retrieve value of previously filled variables (after making sure that they were filled)
@@ -395,6 +616,16 @@ void analysisClass::Loop()
    for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitE_S_ieta.begin(); it != h_HFRecHitE_S_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitE_S_Flagged_ieta.begin(); it != h_HFRecHitE_S_Flagged_ieta.end(); it++) it->second->Write();
    
+   h_HFRecHitET_L->Write();
+   h_HFRecHitET_S->Write();
+   h_HFRecHitET_L_Flagged->Write();
+   h_HFRecHitET_S_Flagged->Write();
+   
+   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_L_ieta.begin(); it != h_HFRecHitET_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_S_ieta.begin(); it != h_HFRecHitET_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_L_Flagged_ieta.begin(); it != h_HFRecHitET_L_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_S_Flagged_ieta.begin(); it != h_HFRecHitET_S_Flagged_ieta.end(); it++) it->second->Write();
+   
    h2_N_HFspikes_L_ieta_iphi->Write();
    h2_N_HFspikes_S_ieta_iphi->Write();
    
@@ -402,13 +633,58 @@ void analysisClass::Loop()
    h2_HFRecHitE_vs_R_L->Write();
    h2_HFRecHitE_vs_R_S->Write();
    
-//    h2_R_vs_iphi_L->Write();
-//    h2_R_vs_ieta_L->Write();
-//    h2_R_vs_iphi_S->Write();
-//    h2_R_vs_ieta_S->Write();
+   h2_R_vs_iphi_L->Write();
+   h2_R_vs_ieta_L->Write();
+   h2_R_vs_iphi_S->Write();
+   h2_R_vs_ieta_S->Write();
 
-//    h2_S9oS1_vs_1oE_L_AllIeta->Write();
-//    h2_S9oS1_vs_1oE_S_AllIeta->Write();
-
+   h2_S9oS1_vs_E_L->Write();
+   h2_S9oS1_vs_E_S->Write();
+   h2_S5oS1_vs_E_L->Write();
+   h2_S5oS1_vs_E_S->Write();
+   h2_S9oS1_vs_E_L_Flagged->Write();
+   h2_S9oS1_vs_E_S_Flagged->Write();
+   h2_S5oS1_vs_E_L_Flagged->Write();
+   h2_S5oS1_vs_E_S_Flagged->Write();
+   
+   for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_L_ieta.begin(); it != h2_S9oS1_vs_E_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_S_ieta.begin(); it != h2_S9oS1_vs_E_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_L_ieta.begin(); it != h2_S5oS1_vs_E_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_S_ieta.begin(); it != h2_S5oS1_vs_E_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
+   
+   h_CaloMET->Write();
+   h_CaloMETPhi->Write();
+   h_CaloMEx->Write();
+   h_CaloMEy->Write();
+   h_CaloSumET->Write();
+   
+   h_CaloMET_cleanECAL->Write();
+   h_CaloMETPhi_cleanECAL->Write();
+   h_CaloMEx_cleanECAL->Write();
+   h_CaloMEy_cleanECAL->Write();
+   h_CaloSumET_cleanECAL->Write();
+   
+   h_CaloMET_clean->Write();
+   h_CaloMETPhi_clean->Write();
+   h_CaloMEx_clean->Write();
+   h_CaloMEy_clean->Write();
+   h_CaloSumET_clean->Write();
+   
+   h_CaloMETHF->Write();
+   h_CaloMETPhiHF->Write();
+   h_CaloMExHF->Write();
+   h_CaloMEyHF->Write();
+   h_CaloSumETHF->Write();
+   
+   h_CaloMETHF_clean->Write();
+   h_CaloMETPhiHF_clean->Write();
+   h_CaloMExHF_clean->Write();
+   h_CaloMEyHF_clean->Write();
+   h_CaloSumETHF_clean->Write();
+   
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
