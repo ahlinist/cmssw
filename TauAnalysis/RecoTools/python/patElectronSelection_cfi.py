@@ -72,10 +72,10 @@ selectedLayer1ElectronsTrkIP = cms.EDFilter("PATElectronIpSelector",
 #--------------------------------------------------------------------------------
 
 selectedLayer1ElectronsTrkIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsTrkIso)
-selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('userIsolation(pat::TrackIso) < 8.')
+selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('userIsolation("pat::TrackIso") < 8.')
 
 selectedLayer1ElectronsEcalIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsEcalIso)
-selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('userIsolation(pat::EcalIso) < 8.')
+selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('userIsolation("pat::EcalIso") < 8.')
 
 selectedLayer1ElectronsTrkLooseIsolation = copy.deepcopy(selectedLayer1ElectronsTrk)
 
