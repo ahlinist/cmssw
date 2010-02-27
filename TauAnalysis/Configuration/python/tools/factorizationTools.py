@@ -194,6 +194,7 @@ def enableFactorization_makeZtoMuTauPlots(process,
         dqmDirectoryIn_PPmuXptGt20 = 'harvested/PPmuXptGt20/zMuTauAnalyzer',
         dqmDirectoryOut_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/zMuTauAnalyzer',                                  
         modName_addZtoMuTau_qcdSum = "addZtoMuTau_qcdSum",
+        modName_addZtoMuTau_smBgSum = "addZtoMuTau_smBgSum",  
         modName_addZtoMuTau_smSum = "addZtoMuTau_smSum",                                
         seqName_addZtoMuTau = "addZtoMuTau",
         pyObjectLabel = ""):
@@ -286,6 +287,8 @@ def enableFactorization_makeZtoMuTauPlots(process,
        + getattr(process, scaleZtoMuTauName_PPmuXptGt20)
     )
     addZtoMuTau._seq = addZtoMuTau._seq * getattr(process, modName_addZtoMuTau_qcdSum)
+    if hasattr(process, modName_addZtoMuTau_smBgSum):
+        addZtoMuTau._seq = addZtoMuTau._seq * getattr(process, modName_addZtoMuTau_smBgSum)
     if hasattr(process, modName_addZtoMuTau_smSum):
         addZtoMuTau._seq = addZtoMuTau._seq * getattr(process, modName_addZtoMuTau_smSum)
     setattr(process, seqName_addZtoMuTau, addZtoMuTau)
