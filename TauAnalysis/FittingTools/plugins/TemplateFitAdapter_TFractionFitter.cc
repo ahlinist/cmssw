@@ -194,18 +194,21 @@ void TemplateFitAdapter_TFractionFitter::makeControlPlotsImpSpecific()
 {
 //--- produce technical control plot of template variations 
 //    in case TFractionFitter algorithm is used to perform the actual fitting
+
+  std::cout << "<TemplateFitAdapter_TFractionFitter::makeControlPlotsImpSpecific>:" << std::endl;
+
   TCanvas canvas("TemplateFitAdapter_TFractionFitter", "TemplateFitAdapter_TFractionFitter", defaultCanvasSizeX, defaultCanvasSizeY);
   canvas.SetFillColor(10);
   canvas.SetFrameFillColor(10);
   
   TH1* histo_smSum = (TH1*)fitAlgorithmImp_->GetPlot();
-  //std::cout << " histo_smSum = " << histo_smSum << std::endl;
+  //std::cout << " histo_smSum = " << histo_smSum << ": integral = " << histo_smSum->Integral() << std::endl;  
   histo_smSum->SetLineWidth(2);
   histo_smSum->SetLineColor(2);
   histo_smSum->Draw("hist");
   
   TH1* histo_Data = dataNdEntryImpSpecific_->auxConcatenatedHistogram_;
-  //std::cout << " histo_Data = " << histo_Data << std::endl;
+  //std::cout << " histo_Data = " << histo_Data << ": integral = " << histo_Data->Integral() << std::endl; 
   histo_Data->SetLineWidth(2);
   histo_Data->SetMarkerStyle(20);
   histo_Data->Draw("epsame");
@@ -218,8 +221,8 @@ void TemplateFitAdapter_TFractionFitter::makeControlPlotsImpSpecific()
   if ( !errorFlag ) {
     canvas.Print(fileName.data());
   } else {
-    edm::LogError("makeControlPlotsImpSpecific") << " Failed to decode controlPlotsFileName = " 
-						 << controlPlotsFileName_ << " --> skipping !!";
+    edm::LogError("makeControlPlotsImpSpecific") 
+      << " Failed to decode controlPlotsFileName = " << controlPlotsFileName_ << " --> skipping !!";
     return;
   }
 }
