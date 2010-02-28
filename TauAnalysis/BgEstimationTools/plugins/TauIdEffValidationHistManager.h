@@ -49,7 +49,7 @@ class TauIdEffValidationHistManager : public HistManagerBase
 //--- histograms
   struct valPlotEntryType
   {
-    valPlotEntryType(DQMStore&, const std::string&, const std::string&, const std::string&, const valPlotConfigEntryType&, bool = true);
+    valPlotEntryType(DQMStore&, const std::string&, const std::string&, const std::string&, const std::string&, const vstring&);
     ~valPlotEntryType();
     void fillHistograms(const pat::Tau&, double);
     MonitorElement* hTauPt_;
@@ -60,9 +60,9 @@ class TauIdEffValidationHistManager : public HistManagerBase
     MonitorElement* hTauNumTracksSignalCone_;
     MonitorElement* hTauNumTracksIsoCone_;
     MonitorElement* hTauLeadTrkPt_;
+    std::string effTypeLabel_;
     std::string patTauEffName_;
     std::vector<StringCutObjectSelector<pat::Tau>*> cuts_;
-    int cfgError_;
   };
 
   std::vector<valPlotEntryType*> valPlotEntries_;
