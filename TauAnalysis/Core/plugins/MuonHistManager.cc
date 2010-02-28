@@ -256,7 +256,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
       hMuonMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
     }
 
-    if ( vertexSrc_.label() != "" && patMuon->track().isAvailable() && patMuon->track().isNonnull() ) {
+    if ( vertexSrc_.label() != "" && patMuon->track().isAvailable() ) {
       edm::Handle<std::vector<reco::Vertex> > recoVertices;
       evt.getByLabel(vertexSrc_, recoVertices);
       if ( recoVertices->size() >= 1 ) {
