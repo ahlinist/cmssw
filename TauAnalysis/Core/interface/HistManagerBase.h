@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: HistManagerBase.h,v 1.7 2009/12/05 15:02:57 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.8 2010/02/17 18:16:58 veelken Exp $
  *
  */
 
@@ -39,6 +39,15 @@ class HistManagerBase : public AnalyzerPluginBase
   void analyze(const edm::Event& evt, const edm::EventSetup& es, double evtWeight = 1.) { fillHistograms(evt, es, evtWeight); }
   void endJob() {}
 
+  static MonitorElement* book1D(DQMStore&, const std::string&, const std::string&, const std::string&, int, double, double, bool = true);
+  static MonitorElement* book1D(DQMStore&, const std::string&, const std::string&, const std::string&, int, float*, bool = true);
+  static MonitorElement* book2D(DQMStore&, const std::string&, 
+				const std::string&, const std::string&, int, double, double, int, double, double, bool = true);
+  static MonitorElement* book2D(DQMStore&, const std::string&, 
+				const std::string&, const std::string&, int, float*, int, float*, bool = true);
+  static MonitorElement* bookProfile1D(DQMStore&, const std::string&, const std::string&, const std::string&, int, double, double);
+  static MonitorElement* bookProfile1D(DQMStore&, const std::string&, const std::string&, const std::string&, int, float*);
+				       
  protected:
   // methods for booking and filling of histograms
   virtual void bookHistograms();
