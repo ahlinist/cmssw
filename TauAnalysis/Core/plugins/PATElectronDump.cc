@@ -53,7 +53,7 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
 		   << " (eta = " << patElectron->eta() << ")" << std::endl;
     *outputStream_ << " phi = " << patElectron->phi()*180./TMath::Pi() << std::endl;
     *outputStream_ << " Supercluster" << std::endl;
-    if ( patElectron->superCluster().isAvailable() && patElectron->superCluster().isNonnull() ) {
+    if ( patElectron->superCluster().isAvailable() ) {
       double et = patElectron->superCluster()->energy()*TMath::Sin(patElectron->superCluster()->position().theta());
       *outputStream_ << "  Et = " << et << std::endl;
     } else {

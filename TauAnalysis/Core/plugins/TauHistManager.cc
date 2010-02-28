@@ -418,7 +418,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hTauNumTracksSignalCone_->Fill(patTau->signalTracks().size(), weight);
     hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size(), weight);
 
-    if ( patTau->leadTrack().isAvailable() && patTau->leadTrack().isNonnull() ) {
+    if ( patTau->leadTrack().isAvailable() ) {
       hTauLeadTrkPt_->Fill(patTau->leadTrack()->pt(), weight);
       hTauLeadTrkEta_->Fill(patTau->leadTrack()->eta(), weight);
       hTauLeadTrkPhi_->Fill(patTau->leadTrack()->phi(), weight);
