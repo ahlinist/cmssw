@@ -14,12 +14,12 @@ def addAnalyzer(genAnalyzerModule, analyzer, afterCutName, replaceStatement = No
     
     # add configuration parameterset of analyzer to genAnalyzerModule
     # in case it is not alread added
-    analyzerName = getattr(analyzer, "pluginName")
+    analyzerName = getattr(analyzer, "pluginName").value()
     analyzer_isDefined = False
     
     genAnalyzerModule_analyzers = getattr(genAnalyzerModule, "analyzers")
     for genAnalyzerModule_analyzer in genAnalyzerModule_analyzers:
-        genAnalyzerModule_analyzerName = getattr(genAnalyzerModule_analyzer, "pluginName")
+        genAnalyzerModule_analyzerName = getattr(genAnalyzerModule_analyzer, "pluginName").value()
         if genAnalyzerModule_analyzerName == analyzerName:
             analyzer_isDefined = True
 
@@ -38,12 +38,12 @@ def addAnalyzer(genAnalyzerModule, analyzer, afterCutName, replaceStatement = No
             if hasattr(pset, "analyzers"):
                 pset_analyzers = getattr(pset, "analyzers").value()
                 pset_analyzers.append(analyzerName)
-                setattr(pset, "analyzers", pset_analyzers)
+                setattr(pset, "analyzers", cms.vstring(pset_analyzers))
 
                 if replaceStatement is not None:
                     pset_replace = getattr(pset, "replace").value()
                     pset_replace.append(replaceStatement)
-                    setattr(pset, "replace", pset_replace)
+                    setattr(pset, "replace", cms.vstring(pset_replace))
             else:
                 pset_analyzers = cms.PSet(
                     analyzers = cms.vstring(analyzerName)
@@ -57,7 +57,7 @@ def addAnalyzer(genAnalyzerModule, analyzer, afterCutName, replaceStatement = No
             insert = False
         
         if hasattr(pset, "filter"):
-            pset_filter = getattr(pset, "filter")
+            pset_filter = getattr(pset, "filter").value()
             if pset_filter == afterCutName:
                 insert = True
 
