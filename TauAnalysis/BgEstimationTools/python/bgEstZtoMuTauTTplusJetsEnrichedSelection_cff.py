@@ -210,7 +210,7 @@ dataBinnerBgEstTTplusJetsEnriched.pluginName = cms.string('dataBinnerBgEstTTplus
 
 analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
   
-    name = cms.string('BgEstTemplateAnalyzer_BgEstTTplusJetsEnriched'), 
+    name = cms.string('BgEstTemplateAnalyzer_TTplusJetsEnriched'), 
                             
     filters = cms.VPSet(
         genPhaseSpaceCut,
