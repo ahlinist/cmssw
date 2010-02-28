@@ -566,20 +566,20 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
         ##    ),
         ##    drawOptions = drawOption_Zmumu
         ##),
-        ZmumuJetMisId = cms.PSet(
-            templates = cms.PSet(
-                diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_Zmumu_templateJetMisId_data + '/' + meName_diTauMvis12_norm),
-                    smoothing = diTauMvis12_smoothing.clone(
-                        pluginName = cms.string("diTauMvis12SmoothingZmumuJetMisId")
-                    )
-                )
-            ),    
-            norm = cms.PSet(
-                initial = cms.double(25.)
-            ),
-            drawOptions = drawOption_Zmumu
-        ),
+        ##ZmumuJetMisId = cms.PSet(
+        ##    templates = cms.PSet(
+        ##        diTauMvis12 = cms.PSet(
+        ##            meName = cms.string(dqmDirectory_Zmumu_templateJetMisId_data + '/' + meName_diTauMvis12_norm),
+        ##            smoothing = diTauMvis12_smoothing.clone(
+        ##                pluginName = cms.string("diTauMvis12SmoothingZmumuJetMisId")
+        ##            )
+        ##        )
+        ##    ),    
+        ##    norm = cms.PSet(
+        ##        initial = cms.double(25.)
+        ##    ),
+        ##    drawOptions = drawOption_Zmumu
+        ##),
         ZmumuMuonMisId = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
@@ -606,9 +606,6 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                                 initial = cms.double(2.5)
                             )
                         )
-                    )
-                    smoothing = diTauMvis12_smoothing.clone(
-                        pluginName = cms.string("diTauMvis12SmoothingZmumuMuonMisId")
                     )
                 )
             ),    
@@ -745,9 +742,9 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     Ztautau = cms.PSet(
                         diTauMvis12 = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
                     ),
-                    ZmumuJetMisId = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsJetMisId + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
-                    ),
+                    ##ZmumuJetMisId = cms.PSet(
+                    ##    diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsJetMisId + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+                    ##),
                     ZmumuMuonMisId = cms.PSet(
                         diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsMuonMisId + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
                     ),
@@ -771,9 +768,9 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     Ztautau = cms.PSet(
                         diTauMvis12 = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
                     ),
-                    ZmumuJetMisId = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsJetMisId + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
-                    ),
+                    ##ZmumuJetMisId = cms.PSet(
+                    ##    diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsJetMisId + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+                    ##),
                     ZmumuMuonMisId = cms.PSet(
                         diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsMuonMisId + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
                     ),
