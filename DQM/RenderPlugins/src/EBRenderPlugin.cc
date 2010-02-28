@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.135 2010/02/03 20:45:50 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.136 2010/02/24 14:37:06 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.135 $
-  \date $Date: 2010/02/03 20:45:50 $
+  \version $Revision: 1.136 $
+  \date $Date: 2010/02/24 14:37:06 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -435,6 +435,8 @@ private:
       {
         gPad->SetBottomMargin(0.2);
         obj->GetXaxis()->LabelsOption("v");
+        obj->SetMinimum(-25.);
+        obj->SetMaximum(25.);
       }
     }
 
@@ -807,6 +809,12 @@ private:
         obj->GetXaxis()->LabelsOption("v");
       }
 
+      if( name.find( "EBOT rec hit flags" ) != std::string::npos )
+      {
+        gPad->SetBottomMargin(0.4);
+        obj->GetXaxis()->LabelsOption("v");
+      }
+      
       if( name.find( "EBRDT" ) != std::string::npos )
       {
         gPad->SetBottomMargin(0.2);
