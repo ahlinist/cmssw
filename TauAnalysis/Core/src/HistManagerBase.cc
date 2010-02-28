@@ -77,24 +77,62 @@ bool checkExistence(const DQMStore& dqmStore, const std::string& dqmDirectory, c
   }
 }
 
+MonitorElement* HistManagerBase::book1D(DQMStore& dqmStore, const std::string& dqmDirectory,
+					const std::string& name, const std::string& title, 
+					int numBinsX, double xMin, double xMax, 
+					bool sumWeights)
+{
+  if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
+
+  MonitorElement* me = dqmStore.book1D(name, title, numBinsX, xMin, xMax);
+  if ( sumWeights ) me->getTH1()->Sumw2();
+
+  return me;
+}
+
+
 MonitorElement* HistManagerBase::book1D(const std::string& name, const std::string& title, 
 					int numBinsX, double xMin, double xMax)
 {
-  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
+  if ( !dqmError_ ) {
+    return book1D(*dqmStore_, dqmDirectory_store_, name, title, numBinsX, xMin, xMax, sumWeightsTH1_);
+  } else { 
+    return 0;
+  }
+}
 
-  MonitorElement* me = dqmStore_->book1D(name, title, numBinsX, xMin, xMax);
-  if ( sumWeightsTH1_ ) me->getTH1()->Sumw2();
+MonitorElement* HistManagerBase::book1D(DQMStore& dqmStore, const std::string& dqmDirectory,
+					const std::string& name, const std::string& title, 
+					int numBinsX, float* xBinning,
+					bool sumWeights)
+{
+  if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
 
-  return me;
+  MonitorElement* me = dqmStore.book1D(name, title, numBinsX, xBinning);
+  if ( sumWeights ) me->getTH1()->Sumw2();
+
+  return me;  
 }
 
 MonitorElement* HistManagerBase::book1D(const std::string& name, const std::string& title, 
 					int numBinsX, float* xBinning)
 {
-  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
+  if ( !dqmError_ ) {
+    return book1D(*dqmStore_, dqmDirectory_store_, name, title, numBinsX, xBinning, sumWeightsTH1_);
+  } else { 
+    return 0;
+  }
+}
 
-  MonitorElement* me = dqmStore_->book1D(name, title, numBinsX, xBinning);
-  if ( sumWeightsTH1_ ) me->getTH1()->Sumw2();
+MonitorElement* HistManagerBase::book2D(DQMStore& dqmStore, const std::string& dqmDirectory,
+					const std::string& name, const std::string& title, 
+					int numBinsX, double xMin, double xMax, int numBinsY, double yMin, double yMax,
+					bool sumWeights)
+{
+  if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
+
+  MonitorElement* me = dqmStore.book2D(name, title, numBinsX, xMin, xMax, numBinsY, yMin, yMax);
+  if ( sumWeights ) me->getTH1()->Sumw2();
 
   return me;
 }
@@ -102,10 +140,22 @@ MonitorElement* HistManagerBase::book1D(const std::string& name, const std::stri
 MonitorElement* HistManagerBase::book2D(const std::string& name, const std::string& title, 
 					int numBinsX, double xMin, double xMax, int numBinsY, double yMin, double yMax)
 {
-  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
+  if ( !dqmError_ ) {
+    return book2D(*dqmStore_, dqmDirectory_store_, name, title, numBinsX, xMin, xMax, numBinsY, yMin, yMax, sumWeightsTH2_);
+  } else { 
+    return 0;
+  }
+}
 
-  MonitorElement* me = dqmStore_->book2D(name, title, numBinsX, xMin, xMax, numBinsY, yMin, yMax);
-  if ( sumWeightsTH2_ ) me->getTH1()->Sumw2();
+MonitorElement* HistManagerBase::book2D(DQMStore& dqmStore, const std::string& dqmDirectory,
+					const std::string& name, const std::string& title, 
+					int numBinsX, float* xBinning, int numBinsY, float* yBinning,
+					bool sumWeights)
+{
+  if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
+
+  MonitorElement* me = dqmStore.book2D(name, title, numBinsX, xBinning, numBinsY, yBinning);
+  if ( sumWeights ) me->getTH1()->Sumw2();
 
   return me;
 }
@@ -113,21 +163,50 @@ MonitorElement* HistManagerBase::book2D(const std::string& name, const std::stri
 MonitorElement* HistManagerBase::book2D(const std::string& name, const std::string& title, 
 					int numBinsX, float* xBinning, int numBinsY, float* yBinning)
 {
-  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
+  if ( !dqmError_ ) {
+    return book2D(*dqmStore_, dqmDirectory_store_, name, title, numBinsX, xBinning, numBinsY, yBinning, sumWeightsTH2_);
+  } else {
+    return 0;
+  }
+}
 
-  MonitorElement* me = dqmStore_->book2D(name, title, numBinsX, xBinning, numBinsY, yBinning);
-  if ( sumWeightsTH2_ ) me->getTH1()->Sumw2();
+MonitorElement* HistManagerBase::bookProfile1D(DQMStore& dqmStore, const std::string& dqmDirectory,
+					       const std::string& name, const std::string& title, 
+					       int numBinsX, double xMin, double xMax)
+{
+  if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
 
+  MonitorElement* me = dqmStore.bookProfile(name, title, numBinsX, xMin, xMax,
+					    defaultTProfileNumYbins, defaultTProfileYmin, defaultTProfileYmax, defaultTProfileOption);
+  
   return me;
 }
 
 MonitorElement* HistManagerBase::bookProfile1D(const std::string& name, const std::string& title, 
 					       int numBinsX, double xMin, double xMax)
 {
-  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
+  if ( !dqmError_ ) {
+    return bookProfile1D(*dqmStore_, dqmDirectory_store_, name, title, numBinsX, xMin, xMax);
+  } else {
+    return 0;
+  }
+}
 
-  MonitorElement* me = dqmStore_->bookProfile(name, title, numBinsX, xMin, xMax,
-					      defaultTProfileNumYbins, defaultTProfileYmin, defaultTProfileYmax, defaultTProfileOption);
+MonitorElement* HistManagerBase::bookProfile1D(DQMStore& dqmStore, const std::string& dqmDirectory,
+					       const std::string& name, const std::string& title, 
+					       int numBinsX, float* xBinning)
+{
+  if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
+
+  double* xBinning_double = new double[numBinsX + 1];
+  for ( int iBin = 0; iBin <= numBinsX; ++iBin ) {
+    xBinning_double[iBin] = xBinning[iBin];
+  }
+
+  MonitorElement* me = dqmStore.bookProfile(name, title, numBinsX, xBinning_double, 
+					    defaultTProfileNumYbins, defaultTProfileYmin, defaultTProfileYmax, defaultTProfileOption);
+
+  delete[] xBinning_double;
 
   return me;
 }
@@ -135,19 +214,11 @@ MonitorElement* HistManagerBase::bookProfile1D(const std::string& name, const st
 MonitorElement* HistManagerBase::bookProfile1D(const std::string& name, const std::string& title, 
 					       int numBinsX, float* xBinning)
 {
-  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
-
-  double* xBinning_double = new double[numBinsX + 1];
-  for ( int iBin = 0; iBin <= numBinsX; ++iBin ) {
-    xBinning_double[iBin] = xBinning[iBin];
+  if ( !dqmError_ ) {
+    return bookProfile1D(*dqmStore_, dqmDirectory_store_, name, title, numBinsX, xBinning);
+  } else {
+    return 0;
   }
-
-  MonitorElement* me = dqmStore_->bookProfile(name, title, numBinsX, xBinning_double, 
-					      defaultTProfileNumYbins, defaultTProfileYmin, defaultTProfileYmax, defaultTProfileOption);
-
-  delete[] xBinning_double;
-
-  return me;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
