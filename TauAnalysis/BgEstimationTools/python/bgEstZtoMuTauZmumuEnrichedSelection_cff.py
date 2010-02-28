@@ -475,12 +475,33 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('dR(Muon-Tau) > 0.7')
         ),
         cms.PSet(
+            analyzers = cms.vstring(
+                'muonHistManagerBgEstZmumuEnriched',
+                'tauHistManagerBgEstZmumuJetMisIdEnriched',
+                'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched'
+            )
+        ),
+        cms.PSet(
             filter = cms.string('diMuonPairBgEstZmumuJetMisIdEnriched'),
             title = cms.string('Muon-Pair')
         ),
         cms.PSet(
+            analyzers = cms.vstring(
+                'muonHistManagerBgEstZmumuEnriched',
+                'tauHistManagerBgEstZmumuJetMisIdEnriched',
+                'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched'
+            )
+        ),
+        cms.PSet(
             filter = cms.string('diMuonPairZeroChargeBgEstZmumuJetMisIdEnriched'),
             title = cms.string('Charge(Muon-Pair) = 0')
+        ),
+        cms.PSet(
+            analyzers = cms.vstring(
+                'muonHistManagerBgEstZmumuEnriched',
+                'tauHistManagerBgEstZmumuJetMisIdEnriched',
+                'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched'
+            )
         ),
         cms.PSet(
             filter = cms.string('diMuonPairInvMassBgEstZmumuJetMisIdEnriched'),
