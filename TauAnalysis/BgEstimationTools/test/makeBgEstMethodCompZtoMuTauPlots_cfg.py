@@ -86,7 +86,7 @@ process.compBgEstFakeRateZtoMuTau_smBgSum = cms.Sequence(process.addBgEstFakeRat
 ##process.scaleBgEstTemplateFitZtoMuTau_Ztautau = cms.EDAnalyzer("DQMHistScaler",
 ##    dqmDirectory_input = cms.string('methodTauIdDiscr/harvested/Ztautau/afterEvtSelDiMuPairZmumuHypothesisVeto'),
 ##    dqmDirectory_output = cms.string('methodBgEstTemplateFit/template/Ztautau'),
-##    meNameScaleFactor = cms.string('methodBgEstTemplateFit/fitBgEstTemplateZtoMuTau/fitResults/Ztautau/norm/value'),
+##    meNameScaleFactor = cms.string('methodBgEstTemplateFit/fitBgEstTemplateZtoMuTau/fitResults/Ztautau/norm/value#a1#s1'),
 ##    meTypeScaleFactor = cms.string('real')                                                            
 ##)
 
