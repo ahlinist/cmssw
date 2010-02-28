@@ -170,8 +170,8 @@ void analysisClass::Loop()
    h_CaloSumETHF_clean->Sumw2();
    
    //2D histograms
-   TH2F *h2_N_HFspikes_L_ieta_iphi  = new TH2F ("h2_N_HFspikes_L_ieta_iphi","h2_N_HFspikes_L_ieta_iphi",13,28.5,41.5,72,0.5,72.5);
-   TH2F *h2_N_HFspikes_S_ieta_iphi  = new TH2F ("h2_N_HFspikes_S_ieta_iphi","h2_N_HFspikes_S_ieta_iphi",13,28.5,41.5,72,0.5,72.5);
+   TH2F *h2_N_HFspikes_L_ieta_iphi  = new TH2F ("h2_N_HFspikes_L_ieta_iphi","h2_N_HFspikes_L_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
+   TH2F *h2_N_HFspikes_S_ieta_iphi  = new TH2F ("h2_N_HFspikes_S_ieta_iphi","h2_N_HFspikes_S_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
    
    TH2F *h2_HFRecHitE_L_vs_S = new TH2F ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S;E [GeV];E [GeV]",100,-5.,200.,100,-5.,200.);
    TH2F *h2_HFRecHitE_vs_R_L = new TH2F ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L;R;E [GeV]",120,-1.1,1.1,100,-5.,200.);
@@ -203,12 +203,12 @@ void analysisClass::Loop()
    for( uint i=29; i<=41; i++ ) {
      h2_S9oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_ieta_%u",i),Form("h2_S9oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
      h2_S9oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_ieta_%u",i),Form("h2_S9oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S5oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_ieta_%u",i),Form("h2_S5oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S5oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_ieta_%u",i),Form("h2_S5oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S5oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_ieta_%u",i),Form("h2_S5oS1_vs_E_L_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S5oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_ieta_%u",i),Form("h2_S5oS1_vs_E_S_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
      h2_S9oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
      h2_S9oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S5oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S5oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
    }
    
    /////////initialize variables
@@ -367,7 +367,30 @@ void analysisClass::Loop()
                if(abs(ieta)>39) phi = ((2*3.14159)/72) * (iphi-1);
                int depth = PMTnoiseRecHitDepth->at(i);
                
-               if( energy<3. ) continue;
+               //skip the RecHit if it's just a pedestal noise
+               if( (depth==1 && energy<1.2) || (depth==2 && energy<1.8) ) continue;
+               
+               //masked towers
+               // HF(37,67,1): STATUS = 0x8040
+               // HF(29,67,1): STATUS = 0x40
+               // HF(35,67,1): STATUS = 0x8040
+               // HF(29,67,2): STATUS = 0x40
+               // HF(30,67,2): STATUS = 0x8040
+               // HF(32,67,2): STATUS = 0x8040
+               // HF(36,67,2): STATUS = 0x8040
+               // HF(38,67,2): STATUS = 0x8040
+
+               //tower masked
+               int isLongMasked=0;
+               int isShortMasked=0;
+               if( (ieta==37 || ieta==29 || ieta==35) && iphi==67)
+                 isLongMasked = 1;
+
+               if( (ieta==29 || ieta==30 || ieta==32 || ieta==36 || ieta==38) && iphi==67)
+                 isShortMasked = 1;
+               
+               //skip the RecHit if it's in the tower with crystals mounted
+               if( isLongMasked==1 || isShortMasked==1 ) continue;
                
                //R = L-S/L+S
                double R = ( energy - partenergy ) / ( energy + partenergy );
@@ -388,28 +411,9 @@ void analysisClass::Loop()
                  {
                    S5oS1 = ( partenergy + sum4Short ) / energy;
                  }
-               
-               //masked towers
-               // HF(37,67,1): STATUS = 0x8040
-               // HF(29,67,1): STATUS = 0x40
-               // HF(35,67,1): STATUS = 0x8040
-               // HF(29,67,2): STATUS = 0x40
-               // HF(30,67,2): STATUS = 0x8040
-               // HF(32,67,2): STATUS = 0x8040
-               // HF(36,67,2): STATUS = 0x8040
-               // HF(38,67,2): STATUS = 0x8040
-
-               //tower masked
-               int isLongMasked=0;
-               int isShortMasked=0;
-               if( (ieta==37 || ieta==29 || ieta==35) && iphi==67)
-                 isLongMasked = 1;
-
-               if( (ieta==29 || ieta==30 || ieta==32 || ieta==36 || ieta==38) && iphi==67)
-                 isShortMasked = 1;
 
                //## identify HF spikes a la Igor
-               if( isLongMasked==0 && depth==1 && energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 )
+               if( depth==1 && energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 )
                  {
                    N_HFspikes_L++;
                    
@@ -427,7 +431,7 @@ void analysisClass::Loop()
                    h2_S9oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S9oS1 );
                    h2_S5oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S5oS1 );
                  }
-               else if( isShortMasked==0 && depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 )
+               else if( depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 )
                  {
                    N_HFspikes_S++;
                  
