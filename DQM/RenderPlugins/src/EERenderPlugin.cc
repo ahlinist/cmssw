@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.155 2010/02/03 20:45:50 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.156 2010/02/24 14:37:06 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.155 $
-  \date $Date: 2010/02/03 20:45:50 $
+  \version $Revision: 1.156 $
+  \date $Date: 2010/02/24 14:37:06 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -568,6 +568,8 @@ private:
       {
         gPad->SetBottomMargin(0.2);
         obj->GetXaxis()->LabelsOption("v");        
+        obj->SetMinimum(-25.);
+        obj->SetMaximum(25.);
       }
     }
 
@@ -966,6 +968,12 @@ private:
       if( name.find( "EEIT DCC" ) != std::string::npos )
       {
         gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
+      }
+
+      if( name.find( "EEOT rec hit flags" ) != std::string::npos )
+      {
+        gPad->SetBottomMargin(0.4);
         obj->GetXaxis()->LabelsOption("v");
       }
 
