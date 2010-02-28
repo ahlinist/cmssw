@@ -570,8 +570,6 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
 				      const char* plotLabel, const char* xAxisLabel,
 				      const std::string& fileName)
 {
-  std::cout << "<makeControlPlot1dObsDistribution>:" << std::endl;
-
   TCanvas canvas("TemplateHistFitter", "TemplateHistFitter", defaultCanvasSizeX, defaultCanvasSizeY);
   canvas.SetFillColor(10);
   canvas.SetFrameFillColor(10);
@@ -600,7 +598,7 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
     fittedTemplateHistogram_cloned->SetLineColor(drawOptionsEntry->lineColor_);
     fittedTemplateHistogram_cloned->SetLineStyle(drawOptionsEntry->lineStyle_);
     fittedTemplateHistogram_cloned->SetLineWidth(drawOptionsEntry->lineWidth_);
-      
+
     fittedTemplateHistograms_cloned.push_back(fittedTemplateHistogram_cloned);
 
     legend.AddEntry(fittedTemplateHistogram_cloned, processNames[iTemplateHistogram].data(), "l");
@@ -620,9 +618,10 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
 
   std::string dataHistogramName_cloned = std::string(dataHistogram->GetName()).append("_cloned");
   TH1* dataHistogram_cloned = (TH1*)dataHistogram->Clone(dataHistogramName_cloned.data());
+
   dataHistogram_cloned->SetMarkerStyle(8);
   legend.AddEntry(dataHistogram_cloned, "final Evt. Sel.", "p");
-  
+
   //std::cout << " dataHistogram_cloned = " << dataHistogram_cloned << ":" 
   //	      << " integral = " << dataHistogram_cloned->Integral() << std::endl;
 
@@ -635,7 +634,7 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
   //	      << " integral = " << fittedTemplateHistogram_sum->Integral() << std::endl;
   
   fittedTemplateHistogram_sum->Draw("hist");
-  
+
   for ( std::vector<TH1*>::const_iterator fittedTemplateHistogram_cloned = fittedTemplateHistograms_cloned.begin();
 	fittedTemplateHistogram_cloned != fittedTemplateHistograms_cloned.end(); ++fittedTemplateHistogram_cloned ) {
     (*fittedTemplateHistogram_cloned)->Draw("histsame");
@@ -682,7 +681,7 @@ void addHistogramsProjXsliced(const TH2* histogram2d, histogramPtrCollection& hi
   for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
     std::ostringstream histogramNameProjXsliced_i;
     histogramNameProjXsliced_i << histogram2d->GetName() << "_projXsliced" << iBinY;
-    TH1* histogramProjXsliced_i = histogram2d->ProjectionX(histogramNameProjXsliced_i.str().data(), iBinY, iBinY, "e");
+    TH1* histogramProjXsliced_i = histogram2d->ProjectionX(histogramNameProjXsliced_i.str().data(), iBinY, iBinY, "e");    
     histogramsProjX_sliced.push_back(histogramProjXsliced_i);
   }
 }
@@ -772,7 +771,7 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
 
       fittedTemplateHistograms.push_back(var->second.templates_.find(processName)->second);
     }
-
+    
     unsigned numDimensions = dataHistogram->GetDimension();
 
     if ( numDimensions == 1 ) {
@@ -812,12 +811,13 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
       std::vector<std::string> histogramLabelsProjY_sliced;
       addHistogramLabelsProjYsliced(dataHistogram2d, histogramLabelsProjY_sliced);
 
-      histogramPtrCollection fittedTemplateHistogramsProjX;
-      std::vector<histogramPtrCollection> fittedTemplateHistogramsProjX_sliced;
-      histogramPtrCollection fittedTemplateHistogramsProjY;
-      std::vector<histogramPtrCollection> fittedTemplateHistogramsProjY_sliced;
-
       unsigned numTemplateHistograms = fittedTemplateHistograms.size();
+
+      histogramPtrCollection fittedTemplateHistogramsProjX;
+      std::vector<histogramPtrCollection> fittedTemplateHistogramsProjX_sliced(numTemplateHistograms);
+      histogramPtrCollection fittedTemplateHistogramsProjY;
+      std::vector<histogramPtrCollection> fittedTemplateHistogramsProjY_sliced(numTemplateHistograms);
+
       for ( unsigned iTemplateHistogram = 0; iTemplateHistogram < numTemplateHistograms; ++iTemplateHistogram ) {
 	const TH2* fittedTemplateHistogram2d = dynamic_cast<const TH2*>(fittedTemplateHistograms[iTemplateHistogram]);
 
@@ -869,7 +869,13 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
 				       dataHistogramProjX, "", xAxisLabelProjX, fileNameProjX);
       unsigned numSlicesProjX = fittedTemplateHistogramsProjX_sliced.size();
       for ( unsigned iSliceProjX = 0; iSliceProjX < numSlicesProjX; ++iSliceProjX ) {
-	makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjX_sliced[iSliceProjX],
+
+	histogramPtrCollection fittedTemplateHistogramsProjX_i;
+	for ( unsigned iTemplateHistogram = 0; iTemplateHistogram < numTemplateHistograms; ++iTemplateHistogram ) {
+	  fittedTemplateHistogramsProjX_i.push_back(fittedTemplateHistogramsProjX_sliced[iTemplateHistogram][iSliceProjX]);
+	}
+
+	makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjX_i,
 					 processNormalizations, drawOptions_vector, dataHistogramsProjX_sliced[iSliceProjX], 
 					 histogramLabelsProjX_sliced[iSliceProjX].data(), xAxisLabelProjX, 
 					 fileNamesProjX_sliced[iSliceProjX]);
@@ -878,7 +884,13 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
 				       dataHistogramProjY, "", xAxisLabelProjY, fileNameProjY);
       unsigned numSlicesProjY = fittedTemplateHistogramsProjY_sliced.size();
       for ( unsigned iSliceProjY = 0; iSliceProjY < numSlicesProjY; ++iSliceProjY ) {
-	makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjY_sliced[iSliceProjY],
+
+	histogramPtrCollection fittedTemplateHistogramsProjY_i;
+	for ( unsigned iTemplateHistogram = 0; iTemplateHistogram < numTemplateHistograms; ++iTemplateHistogram ) {
+	  fittedTemplateHistogramsProjY_i.push_back(fittedTemplateHistogramsProjY_sliced[iTemplateHistogram][iSliceProjY]);
+	}
+
+	makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjY_i,
 					 processNormalizations, drawOptions_vector, dataHistogramsProjY_sliced[iSliceProjY], 
 					 histogramLabelsProjY_sliced[iSliceProjY].data(), xAxisLabelProjY, 
 					 fileNamesProjY_sliced[iSliceProjY]);
@@ -1072,91 +1084,102 @@ double compChi2red(const TemplateFitAdapterBase::fitResultType* fitResult)
     ++numVariables;
 
     const TH1* histogramData = var->second.data_;
+    //std::cout << " histogramData: name = " << histogramData->GetName() << "," 
+    //	        << " numDimensions = " << histogramData->GetDimension() << std::endl;
 
-    int numBins = getNbinsTot(histogramData);
-    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+    int numBinsX = histogramData->GetNbinsX();
+    for ( int iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
+
+      int numBinsY = histogramData->GetNbinsY();
+      for ( int iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
+	
+	int numBinsZ = histogramData->GetNbinsZ();
+	for ( int iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
 
 //--- restrict computation of chi^2 to region included in fit
-      if ( histogramData->GetDimension() == 1 ) {
-	double xMin = var->second.fitRanges_[0].min_;
-	double xMax = var->second.fitRanges_[0].max_;
+	  if ( histogramData->GetDimension() == 1 ) {
+	    double xMin = var->second.fitRanges_[0].min_;
+	    double xMax = var->second.fitRanges_[0].max_;
+	    
+	    double binCenter = histogramData->GetXaxis()->GetBinCenter(iBinX);
+	    
+	    if ( !(binCenter > xMin && binCenter < xMax) ) continue;
+	  } else if ( histogramData->GetDimension() == 2 ) {
+	    double xMin = var->second.fitRanges_[0].min_;
+	    double xMax = var->second.fitRanges_[0].max_;
+	    
+	    double yMin = var->second.fitRanges_[1].min_;
+	    double yMax = var->second.fitRanges_[1].max_;
+	    
+	    double binCenterX = histogramData->GetXaxis()->GetBinCenter(iBinX);
+	    double binCenterY = histogramData->GetYaxis()->GetBinCenter(iBinY);
+	    
+	    if ( !(binCenterX > xMin && binCenterX < xMax &&
+		   binCenterY > yMin && binCenterY < yMax) ) continue;
+	  } else if ( histogramData->GetDimension() == 3 ) {
+	    double xMin = var->second.fitRanges_[0].min_;
+	    double xMax = var->second.fitRanges_[0].max_;
+	    
+	    double yMin = var->second.fitRanges_[1].min_;
+	    double yMax = var->second.fitRanges_[1].max_;
+	    
+	    double zMin = var->second.fitRanges_[2].min_;
+	    double zMax = var->second.fitRanges_[2].max_;
 
-	double binCenter = histogramData->GetBinCenter(iBin);
+	    double binCenterX = histogramData->GetXaxis()->GetBinCenter(iBinX);
+	    double binCenterY = histogramData->GetYaxis()->GetBinCenter(iBinY);
+	    double binCenterZ = histogramData->GetZaxis()->GetBinCenter(iBinZ);
 
-	if ( !(binCenter > xMin && binCenter < xMax) ) continue;
-      } else if ( histogramData->GetDimension() == 2 ) {
-	double xMin = var->second.fitRanges_[0].min_;
-	double xMax = var->second.fitRanges_[0].max_;
-
-	double yMin = var->second.fitRanges_[1].min_;
-	double yMax = var->second.fitRanges_[1].max_;
-
-	double binCenterX = histogramData->GetXaxis()->GetBinCenter(iBin);
-	double binCenterY = histogramData->GetYaxis()->GetBinCenter(iBin);
-
-	if ( !(binCenterX > xMin && binCenterX < xMax &&
-	       binCenterY > yMin && binCenterY < yMax) ) continue;
-      } else if ( histogramData->GetDimension() == 3 ) {
-	double xMin = var->second.fitRanges_[0].min_;
-	double xMax = var->second.fitRanges_[0].max_;
-
-	double yMin = var->second.fitRanges_[1].min_;
-	double yMax = var->second.fitRanges_[1].max_;
-
-	double zMin = var->second.fitRanges_[2].min_;
-	double zMax = var->second.fitRanges_[2].max_;
-
-	double binCenterX = histogramData->GetXaxis()->GetBinCenter(iBin);
-	double binCenterY = histogramData->GetYaxis()->GetBinCenter(iBin);
-	double binCenterZ = histogramData->GetZaxis()->GetBinCenter(iBin);
-
-	if ( !(binCenterX > xMin && binCenterX < xMax &&
-	       binCenterY > yMin && binCenterY < yMax &&
-	       binCenterZ > zMin && binCenterZ < zMax) ) continue;
-      } 
-
-      double dataBinContent = histogramData->GetBinContent(iBin);
-      double dataBinError = histogramData->GetBinError(iBin);
+	    if ( !(binCenterX > xMin && binCenterX < xMax &&
+		   binCenterY > yMin && binCenterY < yMax &&
+		   binCenterZ > zMin && binCenterZ < zMax) ) continue;
+	  } 
+	  
+	  double dataBinContent = histogramData->GetBinContent(iBinX, iBinY, iBinZ);
+	  double dataBinError = histogramData->GetBinError(iBinX, iBinY, iBinZ);
       
-      double fitBinContent = 0.;
-      double fitBinError2 = 0.;
-      typedef std::map<std::string, TemplateFitAdapterBase::fitResultType::normEntryType> normEntryMap;
-      for ( normEntryMap::const_iterator process = fitResult->normalizations_.begin();
-	    process != fitResult->normalizations_.end(); ++process ) {
-	const std::string& processName = process->first;
+	  double fitBinContent = 0.;
+	  double fitBinError2 = 0.;
+	  typedef std::map<std::string, TemplateFitAdapterBase::fitResultType::normEntryType> normEntryMap;
+	  for ( normEntryMap::const_iterator process = fitResult->normalizations_.begin();
+		process != fitResult->normalizations_.end(); ++process ) {
+	    const std::string& processName = process->first;
       
-	if ( var->second.templates_.find(processName) == var->second.templates_.end() ) {
-	  edm::LogError ("makeControlPlotsObsDistribution") 
-	    << " Failed to find template histogram for process = " << processName << ","
-	    << " variable = " << varName << " --> skipping !!";
-	  return 1.e+3;
-	} 
+	    if ( var->second.templates_.find(processName) == var->second.templates_.end() ) {
+	      edm::LogError ("makeControlPlotsObsDistribution") 
+		<< " Failed to find template histogram for process = " << processName << ","
+		<< " variable = " << varName << " --> skipping !!";
+	      return 1.e+3;
+	    } 
 
-	const TH1* histogramProcess = var->second.templates_.find(processName)->second;
+	    const TH1* histogramProcess = var->second.templates_.find(processName)->second;
+	    
+	    double processBinContent = histogramProcess->GetBinContent(iBinX, iBinY, iBinZ);
+	    double processBinError = histogramProcess->GetBinError(iBinX, iBinY, iBinZ);
 
-	double processBinContent = histogramProcess->GetBinContent(iBin);
-	double processBinError = histogramProcess->GetBinError(iBin);
+	    double processNorm = process->second.value_;
+	    double processIntegral = getIntegral(histogramProcess, &var->second.fitRanges_);
+	    double scaleFactor = ( processIntegral > 0. ) ? (processNorm/processIntegral) : 1.;
 
-	double processNorm = process->second.value_;
-	double processIntegral = getIntegral(histogramProcess, &var->second.fitRanges_);
-	double scaleFactor = ( processIntegral > 0. ) ? (processNorm/processIntegral) : 1.;
+	    double processBinContent_scaled = scaleFactor*processBinContent;
+	    double processBinError_scaled = scaleFactor*processBinError;
 
-	double processBinContent_scaled = scaleFactor*processBinContent;
-	double processBinError_scaled = scaleFactor*processBinError;
-
-	fitBinContent += processBinContent_scaled;
-	fitBinError2 += processBinError_scaled*processBinError_scaled;
-      }
+	    fitBinContent += processBinContent_scaled;
+	    fitBinError2 += processBinError_scaled*processBinError_scaled;
+	  }
       
-      //std::cout << "iBin = " << iBin << ": dataBinContent = " << dataBinContent << " +/- " << dataBinError << "," 
-      //	  << " fitBinContent = " << fitBinContent << " +/- " << TMath::Sqrt(fitBinError2) << std::endl;
+	  //std::cout << "iBinX = " << iBinX << ", iBinY = " << iBinY << ", iBinZ = " << iBinZ << ":"
+	  //	      << " dataBinContent = " << dataBinContent << " +/- " << dataBinError << "," 
+	  //	      << " fitBinContent = " << fitBinContent << " +/- " << TMath::Sqrt(fitBinError2) << std::endl;
 
-      double diffBinContent2 = (dataBinContent - fitBinContent)*(dataBinContent - fitBinContent);
-      double diffBinError2 = fitBinError2 + dataBinError*dataBinError;
-      
-      if ( diffBinError2 > 0. ) {
-	chi2 += (diffBinContent2/diffBinError2);
-	++numDoF;
+	  double diffBinContent2 = (dataBinContent - fitBinContent)*(dataBinContent - fitBinContent);
+	  double diffBinError2 = fitBinError2 + dataBinError*dataBinError;
+	  
+	  if ( diffBinError2 > 0. ) {
+	    chi2 += (diffBinContent2/diffBinError2);
+	    ++numDoF;
+	  }
+	}
       }
     }
   }
@@ -1165,8 +1188,8 @@ double compChi2red(const TemplateFitAdapterBase::fitResultType* fitResult)
 //    for number of fitted parameters
   numDoF -= numVariables;
 
-  //std::cout << "chi2 = " << chi2 << std::endl;
-  //std::cout << "numDoF = " << numDoF << std::endl;
+  //std::cout << " chi2 = " << chi2 << std::endl;
+  //std::cout << " numDoF = " << numDoF << std::endl;
   
   if ( numDoF > 0 ) {
     return (chi2/numDoF);
