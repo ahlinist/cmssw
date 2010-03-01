@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.35 2010/02/01 14:43:38 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.36 2010/03/01 08:16:51 mkortela Exp $
 //
 //
 
@@ -22,6 +22,7 @@
 #include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElement.h"
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
+#include "DataFormats/Common/interface/View.h"
 
 using namespace std;
 
@@ -108,6 +109,7 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    edm::Handle<CaloTauCollection> caloTaus;
    edm::Handle<reco::GsfElectronCollection> electronTaus;
+   edm::Handle<edm::View<reco::Candidate> > genericTaus;
 
    if( DoMCTauEfficiency_ ) { // this is to calculate efficiencies per MC tau candidate
      iEvent.getByLabel(MCTaus_, mcTaus);
@@ -135,6 +137,9 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      }
      else if(iEvent.getByLabel(PFTaus_, electronTaus)) {
        loop(iEvent,iSetup, *electronTaus);
+     }
+     else if(iEvent.getByLabel(PFTaus_, genericTaus)) {
+       loop(iEvent,iSetup, *genericTaus);
      }
    }
    
@@ -166,6 +171,10 @@ void TTEffAnalyzer::fillLV(const LorentzVector& tau,unsigned int i) {
 }
 
 void TTEffAnalyzer::fill(const reco::GsfElectron& tau,unsigned int i) {
+  fillLV(tau.p4());
+}
+
+void TTEffAnalyzer::fill(const reco::Candidate& tau,unsigned int i) {
   fillLV(tau.p4());
 }
 

@@ -143,6 +143,9 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& 
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::CaloTau& tau) {
         fill(iEvent,tau.p4());
 }
+void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Candidate& tau) {
+        fill(iEvent,tau.p4());
+}
 
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector& tau) {
 

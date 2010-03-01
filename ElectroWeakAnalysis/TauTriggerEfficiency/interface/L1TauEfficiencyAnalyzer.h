@@ -22,6 +22,7 @@ namespace reco {
         class PFTau;
         class CaloTau;
         class GsfElectron;
+        class Candidate;
 }
 class TTree;
 
@@ -38,6 +39,7 @@ class L1TauEfficiencyAnalyzer {
         void fill(const edm::Event&, const reco::CaloTau&);
         void fill(const edm::Event&, const LorentzVector&);
         void fill(const edm::Event&, const reco::GsfElectron&);
+        void fill(const edm::Event&, const reco::Candidate&);
 	double L1JetEtUncorr(const double corPt);
 
    private:
