@@ -334,7 +334,8 @@ void overlay_plots(const string& fFile0, const string& fFile1, const string& fPl
 
 void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& fPlot0, const string& fPlot1, const double fXmin, const double fXmax, const double fYmin, const double fYmax,const string& fXAxisLabel, const string& fYAxisLabel, const string& fTitle, const string& fName, const int doFit) {
   
-   gStyle->SetOptStat(kFALSE);
+   gStyle->SetOptStat(kTRUE);
+   gStyle->SetOptTitle(1);
  
    TH2F *h2[4];
    TH1F *h[2];
@@ -354,32 +355,49 @@ void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& 
    h[0] = new TH1F("h0","h0",h2[0]->GetXaxis()->GetNbins(),h2[0]->GetXaxis()->GetXmin(),h2[0]->GetXaxis()->GetXmax());
    h[1] = new TH1F("h1","h1",h2[2]->GetXaxis()->GetNbins(),h2[2]->GetXaxis()->GetXmin(),h2[2]->GetXaxis()->GetXmax());
    
+   TCanvas *c0 = new TCanvas("c0");
+   c0->cd();
+   
 //    for(Int_t i=1; i<=h2[0]->GetNbinsX(); i++) {
-     for(Int_t i=1; i<=14; i++) {
+   for(Int_t i=1; i<=14; i++) {
 
-     TH1D* h_temp = h2[0]->ProjectionY("h_temp", i, i, "e");
-
+     string title;
+    
+     if( fTitle.find("900") != string::npos ) title = Form("h_SIM_900GeV_%i",i);
+     else if( fTitle.find("2360") != string::npos ) title = Form("h_SIM_2360GeV_%i",i);
+    
+     TH1D* h_temp = h2[0]->ProjectionY(title.c_str(), i, i, "e");
+     h_temp->SetTitle(title.c_str());
+     h_temp->GetXaxis()->SetTitle("#slash{E}_{x,y}");
+     
      Int_t ngroup = 1;
 
      if( fTitle.find("900") != string::npos ) {
        if(i==10) ngroup = 2;
        else if(i==11) ngroup = 4;
        else if(i==12) ngroup = 4;
+       else if(i==13) ngroup = 4;
+       else if(i==14) ngroup = 8;
+       else if(i==15) ngroup = 8;
      } else if( fTitle.find("2360") != string::npos ) {
        if(i==10) ngroup = 4;
        else if(i==11) ngroup = 4;
        else if(i==12) ngroup = 4;
        else if(i==13) ngroup = 4;
        else if(i==14) ngroup = 8;
+       else if(i==15) ngroup = 8;
      }
      
      h_temp->Rebin(ngroup);
      
      TF1* f1= new TF1("f1", "gaus", h_temp->GetXaxis()->GetXmin(), h_temp->GetXaxis()->GetXmax());
      f1->SetParameters(h_temp->GetBinContent(h_temp->GetMaximumBin()),h_temp->GetMean(),h_temp->GetRMS());
-     
      h_temp->Fit("f1","R", "",h_temp->GetXaxis()->GetXmin(),h_temp->GetXaxis()->GetXmax());
-  
+
+//      h_temp->Draw();
+//      c0->SetLogy();
+//      c0->SaveAs((title+".png").c_str());
+     
      h[0]->SetBinContent(i, f1->GetParameter(2));
      h[0]->SetBinError(i, f1->GetParError(2));
       
@@ -390,20 +408,31 @@ void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& 
 //    for(Int_t i=1; i<=h2[2]->GetNbinsX(); i++) {
    for(Int_t i=1; i<=14; i++) {
     
-     TH1D* h_temp = h2[2]->ProjectionY("h_temp", i, i, "e");
-     
+     string title;
+    
+     if( fTitle.find("900") != string::npos ) title = Form("h_DATA_900GeV_%i",i);
+     else if( fTitle.find("2360") != string::npos ) title = Form("h_DATA_2360GeV_%i",i);
+    
+     TH1D* h_temp = h2[2]->ProjectionY(title.c_str(), i, i, "e");
+     h_temp->SetTitle(title.c_str());
+     h_temp->GetXaxis()->SetTitle("#slash{E}_{x,y}");
+          
      Int_t ngroup = 1;
 
      if( fTitle.find("900") != string::npos ) {
        if(i==10) ngroup = 2;
        else if(i==11) ngroup = 4;
        else if(i==12) ngroup = 4;
+       else if(i==13) ngroup = 4;
+       else if(i==14) ngroup = 8;
+       else if(i==15) ngroup = 8;
      } else if( fTitle.find("2360") != string::npos ) {
        if(i==10) ngroup = 4;
        else if(i==11) ngroup = 4;
        else if(i==12) ngroup = 4;
        else if(i==13) ngroup = 4;
        else if(i==14) ngroup = 8;
+       else if(i==15) ngroup = 8;
      }
      
      h_temp->Rebin(ngroup);
@@ -412,6 +441,10 @@ void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& 
      f1->SetParameters(h_temp->GetBinContent(h_temp->GetMaximumBin()),h_temp->GetMean(),h_temp->GetRMS());
      h_temp->Fit("f1","R", "",h_temp->GetXaxis()->GetXmin(),h_temp->GetXaxis()->GetXmax());
   
+//      h_temp->Draw();
+//      c0->SetLogy();
+//      c0->SaveAs((title+".png").c_str());
+     
      h[1]->SetBinContent(i, f1->GetParameter(2));
      h[1]->SetBinError(i, f1->GetParError(2));
       
@@ -429,7 +462,10 @@ void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& 
    h[0]->SetTitleOffset(1.,"Y");
 //    h[0]->GetXaxis()->SetTitleSize(0.04);
 //    h[0]->GetYaxis()->SetTitleSize(0.04);
-   
+
+   gStyle->SetOptStat(kFALSE);
+   gStyle->SetOptTitle(0);
+
 //    TCanvas *c = new TCanvas("c","",1200,800);
    TCanvas *c = new TCanvas("c");
    c->cd();
@@ -475,6 +511,7 @@ void overlay_plotsPAS(const string& fFile0, const string& fFile1, const string& 
    delete legend;
    delete h[0];
    delete h[1];
+   delete c0;
    delete c;
 }
 
@@ -485,7 +522,7 @@ void makePlots() {
    // set ROOT style
 //    setMyStyle();
    setTDRStyle();
-   gStyle->SetOptTitle(0);
+//    gStyle->SetOptTitle(0);
    gStyle->SetFuncColor(kBlack);
    gStyle->SetFuncWidth(2);
    //********************************************
@@ -502,8 +539,8 @@ void makePlots() {
    //********************************************
 
 //    overlay_plots(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 39, 0, 6.5, "#SigmaE_{T} [GeV]", "#sigma(#slash{E}_{x,y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",1);
-   overlay_plotsPAS(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 39, 0, 6, "#SigmaE_{T} [GeV]", "#sigma(#slash{E}_{x,y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",0);
+   overlay_plotsPAS(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "Calo #SigmaE_{T} [GeV]", "Calo #sigma(#slash{E}_{x,y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",0);
 
 //    overlay_plots(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "#SigmaE_{T} [GeV]", "#sigma(#slash{E}_{x,y}) [GeV]", "2360 GeV", "h_metxysigma_sumet_2360.eps",1);
-   overlay_plotsPAS(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 45, 0, 6, "#SigmaE_{T} [GeV]", "#sigma(#slash{E}_{x,y}) [GeV]", "2360 GeV", "h_metxysigma_sumet_2360.eps",0);
+   overlay_plotsPAS(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "Calo #SigmaE_{T} [GeV]", "Calo #sigma(#slash{E}_{x,y}) [GeV]", "2360 GeV", "h_metxysigma_sumet_2360.eps",0);
 }

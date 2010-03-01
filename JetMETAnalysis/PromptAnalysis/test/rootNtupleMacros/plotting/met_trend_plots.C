@@ -365,7 +365,7 @@ void makePlots() {
 //    overlay_trend_plots(all_runs, good_runs, "g_calometPyMean_vs_run", "#mu(#slash{E}_{y}) vs. Run", "#mu(#slash{E}_{y}) [GeV]", "calometPyMean_vs_run.eps");
 //    overlay_trend_plots(all_runs, good_runs, "g_calometPySigma_vs_run", "#sigma(#slash{E}_{y}) vs. Run", "#sigma(#slash{E}_{y}) [GeV]", "calometPySigma_vs_run.eps");
    
-   trend_plot(good_runs, "g_calometPtMean_vs_run", "#slash{E}_{T} Mean vs. Run", "#slash{E}_{T} Mean [GeV]", "calometPtMean_vs_run.eps");
-   trend_plot(good_runs, "g_calometPtRMS_vs_run", "#slash{E}_{T} RMS vs. Run", "#slash{E}_{T} RMS [GeV]", "calometPtRMS_vs_run.eps");
+   trend_plot(good_runs, "g_calometPtMean_vs_run", "#slash{E}_{T} Mean vs. Run", "Calo #slash{E}_{T} Mean [GeV]", "calometPtMean_vs_run.eps");
+   trend_plot(good_runs, "g_calometPtRMS_vs_run", "#slash{E}_{T} RMS vs. Run", "Calo #slash{E}_{T} RMS [GeV]", "calometPtRMS_vs_run.eps");
 }                                              
                                                                                                                                                                                                                                                                                           
