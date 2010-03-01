@@ -62,11 +62,13 @@ class L1TauEfficiencyAnalyzer {
 	double L1JetEtUncorr(const double corPt);
 
    private:
+        void fillCaloRegion(const edm::Event& iEvent, unsigned regionId);
+
         // Input parameters
 	InputTag PFTauCollectionSource;  
 	InputTag L1extraTauJetSource;  
         InputTag L1extraCentralJetSource;
-        InputTag L1bitInfoSource;
+        edm::InputTag L1CaloRegionSource;
 
         InputTag L1GtReadoutRecordSource;
         InputTag L1GtObjectMapRecordSource;
@@ -75,14 +77,15 @@ class L1TauEfficiencyAnalyzer {
         InputTag L1TauTriggerSource;
 
 	double   jetMatchingCone;
+        unsigned isolationThreshold;
 
         // Output tree and related variables
         TTree *l1tree;
 
-        float jetPt, jetEt, jetUncorrEt, jetEta, jetPhi;
+        float jetPt, jetEt, jetUncorrEt, jetEta, jetPhi, jetMinDR;
         char hasL1Jet, hasL1TauJet, hasL1CenJet;
-        char hasTauVeto, hasEmTauVeto, hasHadTauVeto, hasIsolationVeto, hasPartialIsolationVeto, hasSumEtBelowThres, hasMaxEt, hasSoft, hasHard;
-	char hasTauVetoForPartIso;
+        bool hasTauVeto;
+        int l1Isolation;
 	char hasTriggeredL1TauJet;
  	char hasTriggeredL1CenJet;
 
