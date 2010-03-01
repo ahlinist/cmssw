@@ -52,19 +52,19 @@ struct L1MuonCandLocalInfo {
            float _eta;
 	   int _quality;
          public:
-	   L1MuonCandLocalInfo( L1MuRegionalCand const & cand) ;
-//   	
-// 	{
-// 	_charge=cand.chargeValue();
-//   	_bx=cand.bx();
-//  	 _ptCode=cand.pt_packed();
-//   	_tower=cand.eta_packed();
-//   	_phi=cand.phiValue();
-//   	_eta=cand.etaValue();
-//   	_quality=cand.quality();
-//  	//_eta = -_eta;
-//   	//_phi-=3.14159265;
-// 	};
+	   L1MuonCandLocalInfo( L1MuRegionalCand const & cand) //;
+  	
+	{
+	_charge=cand.chargeValue();
+  	_bx=cand.bx();
+ 	 _ptCode=cand.pt_packed();
+  	_tower=cand.eta_packed();
+  	_phi=cand.phiValue();
+  	_eta=cand.etaValue();
+  	_quality=cand.quality();
+ 	//_eta = -_eta;
+  	//_phi-=3.14159265;
+	};
 	 
            float eta() const {return _eta;};
            float phi() const {return _phi;};
@@ -235,6 +235,16 @@ struct MEDistribution {
 	   } 
 	    
           }
+	  
+	  void dev(  ) {
+            
+            _meVecTowerVsPhiGen[0]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
+	    _meVecTowerVsPhiGen[1]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
+	    _meVecTowerVsPhiGen[2]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
+	    
+	    
+	   } 	  
+	  
         private:
           float  _ptL, _ptH;
           
@@ -251,6 +261,9 @@ struct MEDistribution {
 		s.replace(s.find('.'),1,1,'x');
 		return s;
 	  }
+	  
+	  
+	  
 	 
       };
            
@@ -291,7 +304,7 @@ struct MEEfficieny {
           }
 	  
 	  void dev(  ) {
-            // Struct
+            
             _meNomPt->getTH1F()->Divide((_meDenomPt->getTH1F()));
 	    
 	    
