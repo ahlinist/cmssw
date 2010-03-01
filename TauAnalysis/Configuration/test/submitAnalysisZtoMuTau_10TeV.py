@@ -49,7 +49,7 @@ for i in range(21):
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false; disableEventDump = true",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
-for i in range(68):
+for i in range(167):
     submitToBatch(configFile = "runZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "PPmuXptGt20_10TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
