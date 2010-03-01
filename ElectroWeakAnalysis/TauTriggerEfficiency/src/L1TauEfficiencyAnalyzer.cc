@@ -16,9 +16,7 @@
 
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 
-#include "DataFormats/TauReco/interface/CaloTau.h"
-#include "DataFormats/TauReco/interface/PFTau.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/L1GlobalCaloTrigger/interface/L1GctJetCand.h"
@@ -132,17 +130,6 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   _HltEvtCnt = 0;
 }
 
-void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::GsfElectron& tau) {
-  fill(iEvent,tau.p4());
-}
-
-void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& tau) {
-	fill(iEvent,tau.p4());
-}
-
-void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::CaloTau& tau) {
-        fill(iEvent,tau.p4());
-}
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Candidate& tau) {
         fill(iEvent,tau.p4());
 }

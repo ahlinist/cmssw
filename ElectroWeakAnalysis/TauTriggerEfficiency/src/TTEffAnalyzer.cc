@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.36 2010/03/01 08:16:51 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.37 2010/03/01 08:43:21 mkortela Exp $
 //
 //
 
@@ -170,10 +170,6 @@ void TTEffAnalyzer::fillLV(const LorentzVector& tau,unsigned int i) {
   PFPhi = tau.Phi();
 }
 
-void TTEffAnalyzer::fill(const reco::GsfElectron& tau,unsigned int i) {
-  fillLV(tau.p4());
-}
-
 void TTEffAnalyzer::fill(const reco::Candidate& tau,unsigned int i) {
   fillLV(tau.p4());
 }
@@ -248,10 +244,6 @@ using namespace reco;
   PFClusterPhiRMS = rms[1];
   PFClusterDrRMS = rms[2];
 }
-
-void TTEffAnalyzer::fill(const reco::CaloTau& tau,unsigned int i) {
-  fillLV(tau.p4());
-} 
 
 void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
 using namespace reco;

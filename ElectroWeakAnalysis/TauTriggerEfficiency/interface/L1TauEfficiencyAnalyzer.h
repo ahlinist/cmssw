@@ -19,9 +19,6 @@
 
 // Forward declarations
 namespace reco {
-        class PFTau;
-        class CaloTau;
-        class GsfElectron;
         class Candidate;
 }
 class TTree;
@@ -35,10 +32,7 @@ class L1TauEfficiencyAnalyzer {
         ~L1TauEfficiencyAnalyzer();
 
         void Setup(const edm::ParameterSet&,TTree *l1tree);
-        void fill(const edm::Event&, const reco::PFTau&);
-        void fill(const edm::Event&, const reco::CaloTau&);
         void fill(const edm::Event&, const LorentzVector&);
-        void fill(const edm::Event&, const reco::GsfElectron&);
         void fill(const edm::Event&, const reco::Candidate&);
 	double L1JetEtUncorr(const double corPt);
 
