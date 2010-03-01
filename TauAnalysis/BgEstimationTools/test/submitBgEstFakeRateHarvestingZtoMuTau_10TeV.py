@@ -5,9 +5,8 @@ from TauAnalysis.Configuration.makeReplacementsHarvesting import makeReplacement
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frCDF/10TeV/"
-#outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frCDF/10TeVii/"
-#outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/bgEstPlots/ZtoMuTau_frSimple/10TeV/"
+#outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frCDF/10TeV/"
+outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/10TeV/"
 
 inputFilePath = "rfio:" + outputFilePath
 
@@ -42,7 +41,7 @@ submitToBatch(configFile = "../../Configuration/test/harvestZtoMuTauPlots_cfg.py
               job = "frHarvesting", queue = "1nh", outputFilePath = outputFilePath)
 
 # harvest PPmuXptGt20
-for i in range(3):
+for i in range(7):
     submitToBatch(configFile = "../../Configuration/test/harvestZtoMuTauPlots_cfg.py", channel = "ZtoMuTau", sample = "PPmuXptGt20_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsHarvesting, replacements =
                   "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotZtoMuTau_processes_10TeV_cfi",
