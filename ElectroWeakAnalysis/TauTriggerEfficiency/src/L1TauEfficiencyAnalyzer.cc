@@ -1,10 +1,34 @@
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
-//#include "PhysicsTools/Utilities/interface/deltaR.h"
+
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "DataFormats/L1Trigger/interface/L1JetParticle.h"
+#include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
+
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
+
+#include "DataFormats/Common/interface/TriggerResults.h"
+
+#include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
+
+#include "DataFormats/TauReco/interface/CaloTau.h"
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/L1GlobalCaloTrigger/interface/L1GctJetCand.h"
 #include "DataFormats/L1CaloTrigger/interface/L1CaloRegion.h"
 
-#include "TF1.h"
+
+#include <TTree.h>
+#include <TF1.h>
+
+#include <string>
 
 namespace {
   class EtaPhiHelper {
@@ -48,12 +72,22 @@ namespace {
   };
 }
 
+using namespace edm;
+using namespace l1extra;
+using namespace reco;
+using namespace std;
+
 // Default constructor
-L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer()
+L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer():
+  l1tree(0),
+  _l1Flag(new bool[128]),
+  _hltFlag(new bool[512])
 {}
 
 
 L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
+  delete[] _hltFlag;
+  delete[] _l1Flag;
   /*
 	cout << endl;
 	cout << "Events analyzed " << nEvents << endl;
@@ -63,14 +97,13 @@ L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
 
 void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
-  PFTauCollectionSource = iConfig.getParameter<edm::InputTag>("PFTauCollection");
   L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
   L1extraCentralJetSource = iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource");
   L1CaloRegionSource = iConfig.getParameter<edm::InputTag>("L1CaloRegionSource");
 
   L1GtReadoutRecordSource = iConfig.getParameter<edm::InputTag>("L1GtReadoutRecord");
-  L1GtObjectMapRecordSource = iConfig.getParameter<edm::InputTag>("L1GtObjectMapRecord");;
-  HLTResultsSource = iConfig.getParameter<edm::InputTag>("HltResults");;
+  L1GtObjectMapRecordSource = iConfig.getParameter<edm::InputTag>("L1GtObjectMapRecord");
+  HLTResultsSource = iConfig.getParameter<edm::InputTag>("HltResults");
   
   L1TauTriggerSource = iConfig.getParameter<edm::InputTag>("L1TauTriggerSource");
 
@@ -80,25 +113,23 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree = trigtree;
 
   // Setup branches
-  l1tree->Branch("L1JetPt", &jetPt, "L1JetPt/F");
-  l1tree->Branch("L1JetEt", &jetPt, "L1JetEt/F");
-  l1tree->Branch("L1JetEta", &jetEta, "L1JetEta/F");
-  l1tree->Branch("L1JetPhi", &jetPhi, "L1JetPhi/F");
+  l1tree->Branch("L1JetPt", &jetPt);
+  l1tree->Branch("L1JetEt", &jetPt);
+  l1tree->Branch("L1JetEta", &jetEta);
+  l1tree->Branch("L1JetPhi", &jetPhi);
   l1tree->Branch("L1JetMatchDR", &jetMinDR);
   l1tree->Branch("L1TauVeto", &hasTauVeto);
   l1tree->Branch("L1IsolationRegions", &l1Isolation);
-  l1tree->Branch("hasMatchedL1Jet", &hasL1Jet, "hasMatchedL1Jet/B");
-  l1tree->Branch("hasMatchedL1TauJet", &hasL1TauJet, "hasMatchedL1TauJet/B");
-  l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet, "hasMatchedL1CenJet/B");
+  l1tree->Branch("hasMatchedL1Jet", &hasL1Jet);
+  l1tree->Branch("hasMatchedL1TauJet", &hasL1TauJet);
+  l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet);
 
-  l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet, "hasTriggeredAndMatchedL1TauJet/B");
-  l1tree->Branch("hasTriggeredAndMatchedL1CenJet", &hasTriggeredL1CenJet, "hasTriggeredAndMatchedL1CenJet/B");
+  l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet);
+  l1tree->Branch("hasTriggeredAndMatchedL1CenJet", &hasTriggeredL1CenJet);
 
 
   _L1EvtCnt = 0;
   _HltEvtCnt = 0;
-  _l1Flag = new bool[128]; 
-  _hltFlag = new bool[512]; 
 }
 
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::GsfElectron& tau) {
@@ -122,13 +153,13 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   jetEta = 0.0;
   jetPhi = -999.0;
   jetMinDR = 0.0;
-  hasL1Jet = 0;
-  hasL1TauJet = 0;
-  hasL1CenJet = 0;
+  hasL1Jet = false;
+  hasL1TauJet = false;
+  hasL1CenJet = false;
   hasTauVeto = false;
   l1Isolation = 0;
-  hasTriggeredL1TauJet = 0;
-  hasTriggeredL1CenJet = 0;
+  hasTriggeredL1TauJet = false;
+  hasTriggeredL1CenJet = false;
 
   unsigned jetRegionId = 0;
 
@@ -165,8 +196,8 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
       jetUncorrEt = L1JetEtUncorr(jetEt);
       jetEta = iJet->eta();
       jetPhi = iJet->phi();
-      hasL1Jet = 1;
-      hasL1TauJet = 1;
+      hasL1Jet = true;
+      hasL1TauJet = true;
       jetRegionId = iJet->gctJetCand()->regionId().rawId();
       /*
       std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId()
@@ -190,8 +221,8 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
 	jetUncorrEt = L1JetEtUncorr(jetEt);
         jetEta = iJet->eta();
         jetPhi = iJet->phi();
-        hasL1Jet = 1;
-        hasL1CenJet = 1;
+        hasL1Jet = true;
+        hasL1CenJet = true;
         jetRegionId = iJet->gctJetCand()->regionId().rawId();
         /*
         std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId() 
@@ -222,7 +253,6 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
     return;
   }
 
-  TString algoBitToName[128];
   // 1st event : Book as many branches as trigger paths provided in the input...
   if (l1GTRR.isValid() and l1GTOMRec.isValid()) {  
     DecisionWord gtDecisionWord = l1GTRR->decisionWord();
@@ -236,9 +266,9 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
         // Get trigger bits
         int itrig = (*itMap).algoBitNumber();
         // Get trigger names
-        algoBitToName[itrig] = TString( (*itMap).algoName() );
+        TString algoBitToName( (*itMap).algoName() );
         
-        l1tree->Branch(algoBitToName[itrig],_l1Flag+itrig,algoBitToName[itrig]+"/B");
+        l1tree->Branch(algoBitToName, _l1Flag+itrig);
       }
       _L1EvtCnt++;
     }
@@ -257,8 +287,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
     std::cout << "%L1TauEffAnalyzer -- No HltResults found! " << std::endl;
     return;
   }
-
-  if (hltresults.isValid()) {
+  else {
     int ntrigs = hltresults->size();
     _triggerNames.init(* hltresults);
 
@@ -266,7 +295,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
     if (_HltEvtCnt==0){
       for (int itrig = 0; itrig != ntrigs; ++itrig) {
         TString trigName = _triggerNames.triggerName(itrig);
-        l1tree->Branch(trigName,_hltFlag+itrig,trigName+"/B");
+        l1tree->Branch(trigName, _hltFlag+itrig);
       }
       _HltEvtCnt++;
     }
@@ -302,7 +331,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
 			   tau.Eta(), tau.Phi());
 	if(DR < jetMatchingCone && DR < minDR) {
 	  minDR = DR;
-	  hasTriggeredL1TauJet = 1;
+	  hasTriggeredL1TauJet = true;
 	  //std::cout<<"Found triggered tau: "<<tauCandRefVec[iL1Tau]->et()
 	  //   <<" "<<tauCandRefVec[iL1Tau]->eta()
 	  //   <<" "<<tauCandRefVec[iL1Tau]->phi()<<std::endl;
@@ -316,7 +345,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
 			   tau.Eta(), tau.Phi());
 	if(DR < jetMatchingCone && DR < minDR) {
 	  minDR = DR;
-	  hasTriggeredL1CenJet = 1;
+	  hasTriggeredL1CenJet = true;
 	  //std::cout<<"Found triggered jet: "<<jetCandRefVec[iL1Jet]->et()
 	  //   <<" "<<jetCandRefVec[iL1Jet]->eta()
 	  //   <<" "<<jetCandRefVec[iL1Jet]->phi()<<std::endl;
