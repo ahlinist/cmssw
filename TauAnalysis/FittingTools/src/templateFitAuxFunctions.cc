@@ -627,7 +627,7 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
 
   fittedTemplateHistogram_sum->SetMinimum(0.);
   double yMax = TMath::Max(fittedTemplateHistogram_sum->GetMaximum(), dataHistogram->GetMaximum());
-  fittedTemplateHistogram_sum->SetMaximum(1.4*yMax);
+  fittedTemplateHistogram_sum->SetMaximum(1.7*yMax);
   legend.AddEntry(fittedTemplateHistogram_sum, "fitted #Sigma", "l");
 
   //std::cout << " fittedTemplateHistogram_sum = " << fittedTemplateHistogram_sum << ":" 
@@ -801,15 +801,11 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
       TH1* dataHistogramProjX = dataHistogram2d->ProjectionX(dataHistogramNameProjX.data(), 1, numBinsY, "e");
       histogramPtrCollection dataHistogramsProjX_sliced;
       addHistogramsProjXsliced(dataHistogram2d, dataHistogramsProjX_sliced);
+
       std::string dataHistogramNameProjY = std::string(dataHistogram->GetName()).append("_projY");
       TH1* dataHistogramProjY = dataHistogram2d->ProjectionY(dataHistogramNameProjY.data(), 1, numBinsX, "e");
       histogramPtrCollection dataHistogramsProjY_sliced;
       addHistogramsProjYsliced(dataHistogram2d, dataHistogramsProjY_sliced);
-
-      std::vector<std::string> histogramLabelsProjX_sliced;
-      addHistogramLabelsProjXsliced(dataHistogram2d, histogramLabelsProjX_sliced);
-      std::vector<std::string> histogramLabelsProjY_sliced;
-      addHistogramLabelsProjYsliced(dataHistogram2d, histogramLabelsProjY_sliced);
 
       unsigned numTemplateHistograms = fittedTemplateHistograms.size();
 
@@ -825,16 +821,20 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
 	TH1* fittedTemplateHistogramProjX = 
 	  fittedTemplateHistogram2d->ProjectionX(fittedTemplateHistogramNameProjX.data(), 1, numBinsY, "e");
 	fittedTemplateHistogramsProjX.push_back(fittedTemplateHistogramProjX);
-
 	addHistogramsProjXsliced(fittedTemplateHistogram2d, fittedTemplateHistogramsProjX_sliced[iTemplateHistogram]);
 
 	std::string fittedTemplateHistogramNameProjY = std::string(fittedTemplateHistogram2d->GetName()).append("_projY");
 	TH1* fittedTemplateHistogramProjY = 
 	  fittedTemplateHistogram2d->ProjectionY(fittedTemplateHistogramNameProjY.data(), 1, numBinsX, "e");
 	fittedTemplateHistogramsProjY.push_back(fittedTemplateHistogramProjY);
-
 	addHistogramsProjYsliced(fittedTemplateHistogram2d, fittedTemplateHistogramsProjY_sliced[iTemplateHistogram]);
       }
+
+      std::vector<std::string> histogramLabelsProjX_sliced;
+      addHistogramLabelsProjXsliced(dataHistogram2d, histogramLabelsProjX_sliced);
+
+      std::vector<std::string> histogramLabelsProjY_sliced;
+      addHistogramLabelsProjYsliced(dataHistogram2d, histogramLabelsProjY_sliced);
 
       int errorFlag = 0;
       std::string varNameProjX = std::string(varName).append("_projX");
@@ -844,7 +844,7 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
       std::vector<std::string> fileNamesProjX_sliced;
       for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
 	std::ostringstream varNameProjX_sliced;
-	varNameProjX_sliced << varName << "_projY" << iBinY;
+	varNameProjX_sliced << varName << "_projX" << iBinY;
 	std::string fileNameProjX_sliced = replace_string(controlPlotsFileName, plotKeyword, varNameProjX_sliced.str(), 1, 1, errorFlag);
 	fileNamesProjX_sliced.push_back(fileNameProjX_sliced);
       }
@@ -867,33 +867,42 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
 
       makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjX, processNormalizations, drawOptions_vector, 
 				       dataHistogramProjX, "", xAxisLabelProjX, fileNameProjX);
-      unsigned numSlicesProjX = fittedTemplateHistogramsProjX_sliced.size();
-      for ( unsigned iSliceProjX = 0; iSliceProjX < numSlicesProjX; ++iSliceProjX ) {
-
+      for ( unsigned iProjY = 0; iProjY < numBinsY; ++iProjY ) {
 	histogramPtrCollection fittedTemplateHistogramsProjX_i;
+	std::vector<double> processNormalizationsProjX_i;
 	for ( unsigned iTemplateHistogram = 0; iTemplateHistogram < numTemplateHistograms; ++iTemplateHistogram ) {
-	  fittedTemplateHistogramsProjX_i.push_back(fittedTemplateHistogramsProjX_sliced[iTemplateHistogram][iSliceProjX]);
+	  const TH1* fittedTemplateHistogramProjX_i = fittedTemplateHistogramsProjX_sliced[iTemplateHistogram][iProjY];
+	  fittedTemplateHistogramsProjX_i.push_back(fittedTemplateHistogramProjX_i);
+	  double fittedTemplateHistogramProjX_integral = fittedTemplateHistogramsProjX[iTemplateHistogram]->Integral();	  
+	  double processNormalizationProjX_i = ( fittedTemplateHistogramProjX_integral != 0 ) ?
+	    processNormalizations[iTemplateHistogram]*fittedTemplateHistogramProjX_i->Integral()/fittedTemplateHistogramProjX_integral : 0.; 
+	  processNormalizationsProjX_i.push_back(processNormalizationProjX_i);
 	}
 
 	makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjX_i,
-					 processNormalizations, drawOptions_vector, dataHistogramsProjX_sliced[iSliceProjX], 
-					 histogramLabelsProjX_sliced[iSliceProjX].data(), xAxisLabelProjX, 
-					 fileNamesProjX_sliced[iSliceProjX]);
+					 processNormalizationsProjX_i, drawOptions_vector, dataHistogramsProjX_sliced[iProjY],
+					 histogramLabelsProjX_sliced[iProjY].data(), xAxisLabelProjX, 
+					 fileNamesProjX_sliced[iProjY]);
       }	
+
       makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjY, processNormalizations, drawOptions_vector, 
 				       dataHistogramProjY, "", xAxisLabelProjY, fileNameProjY);
-      unsigned numSlicesProjY = fittedTemplateHistogramsProjY_sliced.size();
-      for ( unsigned iSliceProjY = 0; iSliceProjY < numSlicesProjY; ++iSliceProjY ) {
-
+      for ( unsigned iProjX = 0; iProjX < numBinsX; ++iProjX ) {
 	histogramPtrCollection fittedTemplateHistogramsProjY_i;
+	std::vector<double> processNormalizationsProjY_i;
 	for ( unsigned iTemplateHistogram = 0; iTemplateHistogram < numTemplateHistograms; ++iTemplateHistogram ) {
-	  fittedTemplateHistogramsProjY_i.push_back(fittedTemplateHistogramsProjY_sliced[iTemplateHistogram][iSliceProjY]);
+	  const TH1* fittedTemplateHistogramProjY_i = fittedTemplateHistogramsProjY_sliced[iTemplateHistogram][iProjX];
+	  fittedTemplateHistogramsProjY_i.push_back(fittedTemplateHistogramProjY_i);
+	  double fittedTemplateHistogramProjY_integral = fittedTemplateHistogramsProjY[iTemplateHistogram]->Integral();
+	  double processNormalizationProjY_i = ( fittedTemplateHistogramProjY_integral != 0 ) ?
+	    processNormalizations[iTemplateHistogram]*fittedTemplateHistogramProjY_i->Integral()/fittedTemplateHistogramProjY_integral : 0.; 
+	  processNormalizationsProjY_i.push_back(processNormalizationProjY_i);
 	}
 
 	makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjY_i,
-					 processNormalizations, drawOptions_vector, dataHistogramsProjY_sliced[iSliceProjY], 
-					 histogramLabelsProjY_sliced[iSliceProjY].data(), xAxisLabelProjY, 
-					 fileNamesProjY_sliced[iSliceProjY]);
+					 processNormalizationsProjY_i, drawOptions_vector, dataHistogramsProjY_sliced[iProjX], 
+					 histogramLabelsProjY_sliced[iProjX].data(), xAxisLabelProjY, 
+					 fileNamesProjY_sliced[iProjX]);
       }	
     } 
   }
