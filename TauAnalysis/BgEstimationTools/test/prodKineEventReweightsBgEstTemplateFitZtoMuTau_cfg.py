@@ -36,15 +36,24 @@ process.loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
 )
 
 meName = 'DiTauCandidateQuantities/VisMass'
-meName_numerator = 'zMuTauAnalyzer/afterEvtSelDiTauCandidateForMuTauPzetaDiff_beforeEvtSelDiMuPairZmumuHypothesisVeto/' + meName
-meName_denominator = 'zMuTauAnalyzer/afterEvtSelDiTauCandidateForMuTauAcoplanarity12_beforeEvtSelDiTauCandidateForMuTauMt1MET/' + meName
+
+meNameWplusJets_numerator = 'zMuTauAnalyzer/afterEvtSelDiTauCandidateForMuTauPzetaDiff_beforeEvtSelDiMuPairZmumuHypothesisVeto/' + meName
+meNameWplusJets_denominator = 'zMuTauAnalyzer/afterEvtSelDiTauCandidateForMuTauAcoplanarity12_beforeEvtSelDiTauCandidateForMuTauMt1MET/' + meName
+
+meNameZmumu_numerator = 'zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto/' + meName
+meNameZmumu_denominator = 'zMuTauAnalyzer/afterEvtSelDiTauCandidateForMuTauPzetaDiff_beforeEvtSelDiMuPairZmumuHypothesisVeto/' + meName
 
 process.prodKineEventReweightsZtoMuTau = cms.EDAnalyzer("DQMHistEffProducer",
     config = cms.VPSet(
         cms.PSet(
-            meName_numerator = cms.string('harvested/WplusJets/' + meName_numerator),
-            meName_denominator = cms.string('harvested/WplusJets/' + meName_denominator),
+            meName_numerator = cms.string('harvested/WplusJets/' + meNameWplusJets_numerator),
+            meName_denominator = cms.string('harvested/WplusJets/' + meNameWplusJets_denominator),
             meName_efficiency = cms.string("bgEstTemplateKineEventReweights/WplusJets/diTauMvis")
+        ),
+        cms.PSet(
+            meName_numerator = cms.string('harvested/Zmumu/' + meNameZmumu_numerator),
+            meName_denominator = cms.string('harvested/Zmumu/' + meNameZmumu_denominator),
+            meName_efficiency = cms.string("bgEstTemplateKineEventReweights/ZmumuJetMisId/diTauMvis")
         )
     )                                                     
 )
