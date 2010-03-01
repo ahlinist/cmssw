@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.3 2009/11/06 14:30:34 fruboes Exp $
+// $Id: RPCTriggerValidation.cc,v 1.4 2010/02/26 13:14:10 dbart Exp $
 //
 //
 
@@ -48,19 +48,7 @@ using namespace RPCTriggerValidationStruct;
 
 int RPCTriggerValidationStruct::MEResolution::_NumberOfQuality;
 
-RPCTriggerValidationStruct::L1MuonCandLocalInfo::L1MuonCandLocalInfo(L1MuRegionalCand const & cand) :
-  _charge(cand.chargeValue()),
-  _bx(cand.bx()),
-  _ptCode(cand.pt_packed() ),
-  _tower(cand.eta_packed()),
-  _phi(cand.phiValue()),
-  _eta(cand.etaValue()),
-  _quality(cand.quality())
-{
 
- //_eta = -_eta;
-  //_phi-=3.14159265;
-}
 
 
 RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
@@ -369,7 +357,15 @@ RPCTriggerValidation::endJob() {
      for (;itEff!=itEffE; ++itEff){
       itEff->dev();
      }
-    if (m_outputFile.size() != 0 && dqm ) dqm -> save(m_outputFile);              
+    
+    
+     std::vector<MEDistribution>::iterator itDis =  _meDistributionVec.begin();
+     std::vector<MEDistribution>::iterator itDisE =  _meDistributionVec.end();
+     for (;itDis!=itDisE; ++itDis){
+      itDis->dev();
+     }
+    
+    if (m_outputFile.size() != 0 && dqm ) dqm -> save(m_outputFile);            
 }
 
 
