@@ -160,6 +160,11 @@ L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iS
   fill(iEvent,iSetup,tau.p4());
 }
 
+void
+L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iSetup,const reco::Candidate& tau) {
+  fill(iEvent,iSetup,tau.p4());
+}
+
 
 std::vector<double> 
 L2TauEfficiencyAnalyzer::clusterSeparation(const reco::PFCandidateRefVector& isol_cands,const reco::PFCandidateRefVector& signal_cands)

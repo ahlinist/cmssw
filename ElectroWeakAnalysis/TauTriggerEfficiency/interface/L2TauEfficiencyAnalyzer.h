@@ -61,6 +61,7 @@ class L2TauEfficiencyAnalyzer {
       void fill(const edm::Event&,const edm::EventSetup& ,const reco::CaloTau&);
       void fill(const edm::Event&,const edm::EventSetup& ,const LV&);
       void fill(const edm::Event&,const edm::EventSetup& ,const reco::GsfElectron&);
+      void fill(const edm::Event&,const edm::EventSetup& ,const reco::Candidate&);
 
    private:
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );

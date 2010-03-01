@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.30 2009/11/24 15:11:31 chinhan Exp $
+// $Id: TTEffAnalyzer.h,v 1.31 2010/02/01 14:43:38 mkortela Exp $
 //
 //
 
@@ -69,6 +69,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       virtual void fill(const reco::CaloTau&,unsigned int i = 0);
       virtual void fill(const reco::GsfElectron&,unsigned int i = 0);
       virtual void fill(const LorentzVector&,unsigned int i = 0); // this one is for the loop per MCtau
+      virtual void fill(const reco::Candidate&,unsigned int i = 0);
 
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );

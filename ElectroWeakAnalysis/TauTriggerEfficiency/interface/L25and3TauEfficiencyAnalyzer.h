@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.15 2009/03/25 15:08:19 gfball Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.1 2009/04/04 06:43:16 smaruyam Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -34,6 +34,7 @@ virtual void fill(const edm::Event&, const reco::PFTau&);
 virtual void fill(const edm::Event&, const reco::CaloTau&);
 virtual void fill(const edm::Event&, const LorentzVector&);
 virtual void fill(const edm::Event&, const reco::GsfElectron&);
+virtual void fill(const edm::Event&, const reco::Candidate&);
 virtual void fill(const edm::Event&, const reco::Particle&);
 
    private:

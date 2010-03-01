@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.2 2009/04/24 13:59:53 chinhan Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.3 2009/10/08 21:22:53 chinhan Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -41,6 +41,10 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
 }
 
 void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Particle& tau) {
+  fill(iEvent,tau.p4());
+}
+
+void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Candidate& tau) {
   fill(iEvent,tau.p4());
 }
 
