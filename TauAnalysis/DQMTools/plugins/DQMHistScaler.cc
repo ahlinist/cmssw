@@ -23,6 +23,9 @@ const int verbosity = 0;
 //
 
 DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
+  : scaleFactor_(-1),
+    meNameScaleFactor_(""),
+    meTypeScaleFactor_("")
 {
   //std::cout << "<DQMHistScaler::DQMHistScaler>:" << std::endl;
 
@@ -36,13 +39,21 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
   unsigned numScales = 0;
 
   if ( cfg.exists("scaleFactor") ) {
-    cfgScaleFactor_ = cfg.getParameter<double>("scaleFactor");
+    scaleFactor_ = cfg.getParameter<double>("scaleFactor");
     ++numScales;
-  } else {
-    cfgScaleFactor_ = -1.;
+  } 
+
+  //std::cout << " scaleFactor = " << scaleFactor_ << std::endl;
+
+  if ( cfg.exists("meNameScaleFactor") &&
+       cfg.exists("meTypeScaleFactor") ) {
+    meNameScaleFactor_ = cfg.getParameter<std::string>("meNameScaleFactor"); 
+    meTypeScaleFactor_ = cfg.getParameter<std::string>("meTypeScaleFactor"); 
+    ++numScales;
   }
 
-  //std::cout << " scaleFactor = " << cfgScaleFactor_ << std::endl;
+  //std::cout << " meNameScaleFactor = " << meNameScaleFactor_ << std::endl;
+  //std::cout << " meTypeScaleFactor = " << meTypeScaleFactor_ << std::endl;
 
   if ( cfg.exists("dqmDirectory_factorizedLooseSel") &&
        cfg.exists("dqmDirectory_factorizedTightSel") &&
@@ -62,6 +73,7 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
     meNameDenominator_ = "";
     meType_ =  "";
   }
+
   //std::cout << " dqmDirectory_factorizedLooseSel = " << dqmDirectory_factorizedLooseSel_ << std::endl;
   //std::cout << " dqmDirectory_factorizedTightSel = " << dqmDirectory_factorizedTightSel_ << std::endl;
   //std::cout << " meNameNumerator = " << meNameNumerator_ << std::endl;
@@ -79,9 +91,10 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
 //     o numerator + denominator
 //    configuration parameters are defined 
   if ( numScales != 1 ) {
-    edm::LogError("DQMHistScaler") << " Need to specify either Configuration parameter 'scaleFactor'"
-				   << " or 'dqmDirectory_factorizedLooseSel', 'dqmDirectory_factorizedTightSel'," 
-				   << " 'meNameNumerator', 'meNameDenominator' and 'meType' !!";
+    edm::LogError("DQMHistScaler") 
+      << " Need to specify either Configuration parameter 'scaleFactor', 'meNameScaleFactor' and 'meTypeScaleFactor'"
+      << " or 'dqmDirectory_factorizedLooseSel', 'dqmDirectory_factorizedTightSel'," 
+      << " 'meNameNumerator', 'meNameDenominator' and 'meType' !!";
     cfgError_ = 1;
   } 
 
@@ -124,8 +137,8 @@ double getMonitorElementNorm(DQMStore& dqmStore, const std::string& dqmDirectory
   if ( !me ) {						
     std::string meName_temp, dqmDirectoryName_temp;
     separateMonitorElementFromDirectoryName(meName, meName_temp, dqmDirectoryName_temp);
-    edm::LogError("getMonitorElementNorm") << " Failed to retrieve Monitor Element = " << meName_temp
-					   << " from dqmDirectory = " << dqmDirectory_full << " !!";
+    edm::LogError("getMonitorElementNorm") 
+      << " Failed to retrieve Monitor Element = " << meName_temp << " from dqmDirectory = " << dqmDirectory_full << " !!";
     errorFlag = 1;
     return -1.;
   }
@@ -169,32 +182,44 @@ void DQMHistScaler::endJob()
   
 //--- compute scale factor
   double scaleFactor = 0.;
-  if ( cfgScaleFactor_ != -1. ) {
-    scaleFactor = cfgScaleFactor_;
+  if ( scaleFactor_ != -1. ) {
+    scaleFactor = scaleFactor_;
+  } else if ( meNameScaleFactor_ != "" ) { 
+    int errorFlag = 0;
+
+    std::string dqmDirectoryScaleFactor, meNameScaleFactor;
+    separateMonitorElementFromDirectoryName(meNameScaleFactor_, meNameScaleFactor, dqmDirectoryScaleFactor);
+    scaleFactor = getMonitorElementNorm(dqmStore, dqmDirectoryScaleFactor, meNameScaleFactor, meTypeScaleFactor_, errorFlag);
+
+    if ( errorFlag ) {
+      edm::LogError ("endJob") 
+	<< " Failed to access scale factor Monitor Element --> histograms will NOT be scaled !!";
+      return;
+    }
   } else {
     int errorFlag = 0;
 
-    double numeratorLooseSel = getMonitorElementNorm(dqmStore, dqmDirectory_factorizedLooseSel_, 
-						     meNameNumerator_, meType_, errorFlag);
+    double numeratorLooseSel = 
+      getMonitorElementNorm(dqmStore, dqmDirectory_factorizedLooseSel_, meNameNumerator_, meType_, errorFlag);
     //std::cout << " numeratorLooseSel = " << numeratorLooseSel << std::endl;
-    double denominatorLooseSel = getMonitorElementNorm(dqmStore, dqmDirectory_factorizedLooseSel_, 
-						       meNameDenominator_, meType_, errorFlag);
+    double denominatorLooseSel = 
+      getMonitorElementNorm(dqmStore, dqmDirectory_factorizedLooseSel_, meNameDenominator_, meType_, errorFlag);
     //std::cout << " denominatorLooseSel = " << denominatorLooseSel << std::endl;
     double efficiencyLooseSel = ( denominatorLooseSel > 0. ) ? numeratorLooseSel/denominatorLooseSel : 0.;
     //std::cout << " efficiencyLooseSel = " << efficiencyLooseSel << std::endl;
 
-    double numeratorTightSel = getMonitorElementNorm(dqmStore, dqmDirectory_factorizedTightSel_, 
-						     meNameNumerator_, meType_, errorFlag);
+    double numeratorTightSel = 
+      getMonitorElementNorm(dqmStore, dqmDirectory_factorizedTightSel_, meNameNumerator_, meType_, errorFlag);
     //std::cout << " numeratorTightSel = " << numeratorTightSel << std::endl;
-    double denominatorTightSel = getMonitorElementNorm(dqmStore, dqmDirectory_factorizedTightSel_, 
-						       meNameDenominator_, meType_, errorFlag);
+    double denominatorTightSel = 
+      getMonitorElementNorm(dqmStore, dqmDirectory_factorizedTightSel_, meNameDenominator_, meType_, errorFlag);
     //std::cout << " denominatorTightSel = " << denominatorTightSel << std::endl;
     double efficiencyTightSel = ( denominatorTightSel > 0. ) ? numeratorTightSel/denominatorTightSel : 0.;
     //std::cout << " efficiencyTightSel = " << efficiencyTightSel << std::endl;
 
     if ( errorFlag ) {
-      edm::LogError ("endJob") << " Failed to access numerator and denominator Monitor Elements"
-			       << " --> histograms will NOT be scaled !!";
+      edm::LogError ("endJob") 
+	<< " Failed to access numerator and denominator Monitor Elements --> histograms will NOT be scaled !!";
       return;
     }
 
