@@ -128,7 +128,7 @@ label_mcNormScale = cms.PSet(
     textSize = cms.double(0.04),        
     textAlign = cms.int32(22),
     text = cms.vstring('sim. 200pb^{-1}',
-                       '#sqrt{s}=10TeV')
+                       '#sqrt{s}=7TeV')
 )
 
 #--------------------------------------------------------------------------------
@@ -143,7 +143,8 @@ color_lightBlue = cms.int32(856)
 color_yellow = cms.int32(396)
 color_orange = cms.int32(797)
 color_violett = cms.int32(877)
-color_gray = cms.int32(15)
+color_lightGray = cms.int32(17)
+color_darkGray = cms.int32(14)
 
 #--------------------------------------------------------------------------------
 # define drawOptions
@@ -242,11 +243,21 @@ drawOption_violett_separate = cms.PSet(
     drawOptionLegend = cms.string('l')
 )
 
-drawOption_gray_separate = cms.PSet(
-    lineColor = color_gray,        
+drawOption_lightGray_separate = cms.PSet(
+    lineColor = color_lightGray,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = color_gray,        
+    fillColor = color_lightGray,        
+    fillStyle = cms.int32(0),      
+    drawOption = cms.string('hist'),  
+    drawOptionLegend = cms.string('l') 
+)
+
+drawOption_darkGray_separate = cms.PSet(
+    lineColor = color_darkGray,        
+    lineStyle = cms.int32(1),         
+    lineWidth = cms.int32(2),         
+    fillColor = color_darkGray,        
     fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('l') 
@@ -345,11 +356,21 @@ drawOption_violett_stacked = cms.PSet(
     drawOptionLegend = cms.string('f')
 )
 
-drawOption_gray_stacked = cms.PSet(
-    lineColor = color_gray,
+drawOption_lightGray_stacked = cms.PSet(
+    lineColor = color_lightGray,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = color_gray,
+    fillColor = color_lightGray,
+    fillStyle = cms.int32(1001),
+    drawOption = cms.string('hist'),
+    drawOptionLegend = cms.string('f')
+)
+
+drawOption_darkGray_stacked = cms.PSet(
+    lineColor = color_darkGray,
+    lineStyle = cms.int32(1),
+    lineWidth = cms.int32(1),
+    fillColor = color_darkGray,
     fillStyle = cms.int32(1001),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
@@ -426,10 +447,10 @@ drawOption_green_eff = cms.PSet(
 # for error-bands
 # (e.g. systematic uncertainty on Monte Carlo expectation)
 drawOption_uncertainty = cms.PSet(
-    lineColor = color_gray,
+    lineColor = color_lightGray,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
-    fillColor = color_gray,
+    fillColor = color_lightGray,
     fillStyle = cms.int32(3003),
     drawOption = cms.string('eBand'),
     drawOptionLegend = cms.string('f')
@@ -441,37 +462,72 @@ drawOption_uncertainty = cms.PSet(
 # (NOTE: per default, expectations of different Monte Carlo processes
 #        are stacked on top of each other)
 #--------------------------------------------------------------------------------
-drawOption_AH = copy.deepcopy(drawOption_yellow_stacked)
-drawOption_AHbb = copy.deepcopy(drawOption_black_stacked)
-drawOption_Ztautau = copy.deepcopy(drawOption_red_stacked)
-drawOption_Zee = copy.deepcopy(drawOption_green_stacked)
-drawOption_Zmumu = copy.deepcopy(drawOption_darkBlue_stacked)
-drawOption_WplusJets = copy.deepcopy(drawOption_lightBlue_stacked)
-drawOption_Wtaunu = copy.deepcopy(drawOption_red_stacked)
-drawOption_Wmunu = copy.deepcopy(drawOption_darkBlue_stacked)
-drawOption_Wenu = copy.deepcopy(drawOption_green_stacked)
-drawOption_ZplusJets = copy.deepcopy(drawOption_lightBlue_stacked)
-drawOption_ZeePlusJets = drawOption_Zee
-drawOption_ZmumuPlusJets = drawOption_Zmumu
+
+drawOption_Ztautau_stacked = copy.deepcopy(drawOption_red_stacked)
+drawOption_Ztautau_separate = copy.deepcopy(drawOption_red_separate)
+drawOption_Ztautau = drawOption_Ztautau_stacked
 drawOption_ZtautauPlusJets = drawOption_Ztautau
-drawOption_TTplusJets = copy.deepcopy(drawOption_violett_stacked)
-drawOption_gammaPlusJets = copy.deepcopy(drawOption_yellow_stacked)
-drawOption_QCD = copy.deepcopy(drawOption_orange_stacked)
-drawOption_QCD_BCtoE_Pt20to30 = copy.deepcopy(drawOption_QCD)
-drawOption_QCD_BCtoE_Pt30to80 = copy.deepcopy(drawOption_QCD)
-drawOption_QCD_BCtoE_Pt80to170 = copy.deepcopy(drawOption_QCD)
-drawOption_QCD_EMenriched_Pt20to30 = copy.deepcopy(drawOption_QCD)
-drawOption_QCD_EMenriched_Pt30to80 = copy.deepcopy(drawOption_QCD)
-drawOption_QCD_EMenriched_Pt80to170 = copy.deepcopy(drawOption_QCD)
-drawOption_gammaPlusJets_Pt15to20 = copy.deepcopy(drawOption_gammaPlusJets)
-drawOption_gammaPlusJets_Pt20to25 = copy.deepcopy(drawOption_gammaPlusJets)
-drawOption_gammaPlusJets_Pt25to30 = copy.deepcopy(drawOption_gammaPlusJets)
-drawOption_gammaPlusJets_Pt30to35 = copy.deepcopy(drawOption_gammaPlusJets)
-drawOption_gammaPlusJets_PtGt35 = copy.deepcopy(drawOption_gammaPlusJets)
-drawOption_gammaPlusJetsSum = copy.deepcopy(drawOption_gammaPlusJets)
-drawOption_qcdSum = copy.deepcopy(drawOption_QCD)
+
+drawOption_Zee_stacked = copy.deepcopy(drawOption_green_stacked)
+drawOption_Zee_separate = copy.deepcopy(drawOption_green_separate)
+drawOption_Zee = drawOption_Zee_stacked
+drawOption_ZeePlusJets = drawOption_Zee
+
+drawOption_Zmumu_stacked = copy.deepcopy(drawOption_darkBlue_stacked)
+drawOption_Zmumu_separate = copy.deepcopy(drawOption_darkBlue_separate)
+drawOption_Zmumu = drawOption_Zmumu_stacked
+drawOption_ZmumuPlusJets = drawOption_Zmumu
+
+drawOption_ZplusJets_stacked = copy.deepcopy(drawOption_lightBlue_stacked)
+drawOption_ZplusJets_separate = copy.deepcopy(drawOption_lightBlue_separate)
+drawOption_ZplusJets = drawOption_ZplusJets_stacked 
+
+drawOption_Wtaunu_stacked = copy.deepcopy(drawOption_red_stacked)
+drawOption_Wtaunu_separate = copy.deepcopy(drawOption_red_separate)
+drawOption_Wtaunu = drawOption_Wtaunu_stacked
+
+drawOption_Wenu_stacked = copy.deepcopy(drawOption_green_stacked)
+drawOption_Wenu_separate = copy.deepcopy(drawOption_green_separate)
+drawOption_Wenu = drawOption_Wenu_stacked
+
+drawOption_Wmunu_stacked = copy.deepcopy(drawOption_darkBlue_stacked)
+drawOption_Wmunu_separate = copy.deepcopy(drawOption_darkBlue_separate)
+drawOption_Wmunu = drawOption_Wmunu_stacked
+
+drawOption_WplusJets_stacked = copy.deepcopy(drawOption_lightBlue_stacked)
+drawOption_WplusJets_separate = copy.deepcopy(drawOption_lightBlue_separate)
+drawOption_WplusJets = drawOption_WplusJets_stacked
+
+drawOption_TTplusJets_stacked = copy.deepcopy(drawOption_violett_stacked)
+drawOption_TTplusJets_separate = copy.deepcopy(drawOption_violett_separate)
+drawOption_TTplusJets = drawOption_TTplusJets_stacked
+
+drawOption_gammaPlusJets_stacked = copy.deepcopy(drawOption_yellow_stacked)
+drawOption_gammaPlusJets_separate = copy.deepcopy(drawOption_yellow_separate)
+drawOption_gammaPlusJets = drawOption_gammaPlusJets_stacked
+drawOption_gammaPlusJets_Pt15to20 = drawOption_gammaPlusJets
+drawOption_gammaPlusJets_Pt20to25 = drawOption_gammaPlusJets
+drawOption_gammaPlusJets_Pt25to30 = drawOption_gammaPlusJets
+drawOption_gammaPlusJets_Pt30to35 = drawOption_gammaPlusJets
+drawOption_gammaPlusJets_PtGt35 = drawOption_gammaPlusJets
+drawOption_gammaPlusJetsSum = drawOption_gammaPlusJets
+
+drawOption_QCD_stacked = copy.deepcopy(drawOption_orange_stacked)
+drawOption_QCD_separate = copy.deepcopy(drawOption_orange_separate)
+drawOption_QCD = drawOption_QCD_stacked
+drawOption_QCD_BCtoE_Pt20to30 = drawOption_QCD
+drawOption_QCD_BCtoE_Pt30to80 = drawOption_QCD
+drawOption_QCD_BCtoE_Pt80to170 = drawOption_QCD
+drawOption_QCD_EMenriched_Pt20to30 = drawOption_QCD
+drawOption_QCD_EMenriched_Pt30to80 = drawOption_QCD
+drawOption_QCD_EMenriched_Pt80to170 = drawOption_QCD
+drawOption_qcdSum = drawOption_QCD
+
+drawOption_AH = copy.deepcopy(drawOption_lightGray_stacked)
 drawOption_AH115_tautau = copy.deepcopy(drawOption_AH)
 drawOption_AH160_tautau = copy.deepcopy(drawOption_AH)
+
+drawOption_AHbb = copy.deepcopy(drawOption_darkGray_stacked)
 drawOption_AH115bb_tautau = copy.deepcopy(drawOption_AHbb)
 drawOption_AH160bb_tautau = copy.deepcopy(drawOption_AHbb)
 
