@@ -18,6 +18,10 @@ typedef std::pair<int, TPRegexp> outputCommandEntry;
 
 std::string dqmDirectoryName(const std::string&);
 std::string dqmSubDirectoryName(const std::string&, const std::string&);
+
+void dqmCheckExistence(DQMStore&, const std::string&, const std::string&, int, int&);
+void dqmRegisterHistogram(DQMStore&, TH1*, const std::string&);
+
 void dqmCopyRecursively(DQMStore&, const std::string&, const std::string&, double, int, bool, std::vector<outputCommandEntry>* = 0);
 
 const std::string dqmSeparator = "/";
