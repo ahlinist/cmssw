@@ -404,12 +404,36 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('dR(Muon-Tau) > 0.7')
         ),
         cms.PSet(
+            analyzers = cms.vstring(
+                'muonHistManagerBgEstWplusJetsEnriched',
+                'tauHistManagerBgEstWplusJetsEnriched',
+                'diTauCandidateHistManagerBgEstWplusJetsEnriched'
+            ),
+            replace = cms.vstring(
+                'diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = muTauPairsBgEstWplusJetsEnriched'
+            )
+        ),
+        cms.PSet(
             filter = cms.string('muTauPairMt1MEtBgEstWplusJetsEnriched'),
             title = cms.string('M_{T}(Muon-MET) > 30 GeV')
         ),
         cms.PSet(
+            analyzers = cms.vstring(
+                'muonHistManagerBgEstWplusJetsEnriched',
+                'tauHistManagerBgEstWplusJetsEnriched',
+                'diTauCandidateHistManagerBgEstWplusJetsEnriched'
+            )
+        ),
+        cms.PSet(
             filter = cms.string('centralJetVetoBgEstWplusJetsEnriched'),
             title = cms.string('central Jet Veto')
+        ),
+        cms.PSet(
+            analyzers = cms.vstring(
+                'muonHistManagerBgEstWplusJetsEnriched',
+                'tauHistManagerBgEstWplusJetsEnriched',
+                'diTauCandidateHistManagerBgEstWplusJetsEnriched'
+            )
         ),
         cms.PSet(
             filter = cms.string('diMuonVetoBgEstWplusJetsEnriched'),
