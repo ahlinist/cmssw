@@ -15,7 +15,8 @@ process.MessageLogger.cout = cms.untracked.PSet(
     threshold = cms.untracked.string("WARNING")  # print LogWarnings and above
     )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
-
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
+#process.MessageLogger.cout.FwkReport.reportEvery = 1
 
 #Mike needs Calo Geometry
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
@@ -107,12 +108,13 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT2"),
 	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT2"),
-        L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
+        L1CaloRegionSource      = cms.InputTag("hltGctDigis"), # "", "HLT2"),                               
         L1GtReadoutRecord       = cms.InputTag("hltGtDigis","","HLT2"),
         L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","HLT2"),
         HltResults              = cms.InputTag("TriggerResults"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
+        L1IsolationThreshold    = cms.uint32(2), # count regions with "et() < threshold"
 #        L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
 	L2AssociationCollection = cms.InputTag("openhltL2TauIsolationProducer"),
         EERecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEE"),

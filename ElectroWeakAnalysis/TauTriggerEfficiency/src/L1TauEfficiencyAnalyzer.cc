@@ -1,10 +1,52 @@
-#include "FastSimDataFormats/External/interface/FastL1BitInfo.h"
-
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 //#include "PhysicsTools/Utilities/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/L1GlobalCaloTrigger/interface/L1GctJetCand.h"
+#include "DataFormats/L1CaloTrigger/interface/L1CaloRegion.h"
 
 #include "TF1.h"
+
+namespace {
+  class EtaPhiHelper {
+  public:
+    EtaPhiHelper(unsigned minE, unsigned maxE, unsigned minP, unsigned maxP):
+      minEta(minE), maxEta(maxE), minPhi(minP), maxPhi(maxP) {}
+
+    unsigned nextPhi(unsigned phi) const {
+      if(phi >= maxPhi)
+        return minPhi;
+      else
+        return phi+1;
+    }
+
+    unsigned prevPhi(unsigned phi) const {
+      if(phi <= minPhi)
+        return maxPhi;
+      else
+        return phi-1;
+    }
+
+    unsigned nextEta(unsigned eta) const {
+      if(eta >= maxEta)
+        return eta;
+      else
+        return eta+1;
+    }
+
+    unsigned prevEta(unsigned eta) const {
+      if(eta <= minEta)
+        return eta;
+      else
+        return eta-1;
+    }
+
+  private:
+    const unsigned minEta;
+    const unsigned maxEta;
+    const unsigned minPhi;
+    const unsigned maxPhi;
+  };
+}
 
 // Default constructor
 L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer()
@@ -24,7 +66,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   PFTauCollectionSource = iConfig.getParameter<edm::InputTag>("PFTauCollection");
   L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
   L1extraCentralJetSource = iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource");
-  L1bitInfoSource = iConfig.getParameter<edm::InputTag>("L1bitInfoSource");
+  L1CaloRegionSource = iConfig.getParameter<edm::InputTag>("L1CaloRegionSource");
 
   L1GtReadoutRecordSource = iConfig.getParameter<edm::InputTag>("L1GtReadoutRecord");
   L1GtObjectMapRecordSource = iConfig.getParameter<edm::InputTag>("L1GtObjectMapRecord");;
@@ -33,6 +75,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   L1TauTriggerSource = iConfig.getParameter<edm::InputTag>("L1TauTriggerSource");
 
   jetMatchingCone = iConfig.getParameter<double>("L1JetMatchingCone");
+  isolationThreshold = iConfig.getParameter<unsigned>("L1IsolationThreshold");
 
   l1tree = trigtree;
 
@@ -41,16 +84,9 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("L1JetEt", &jetPt, "L1JetEt/F");
   l1tree->Branch("L1JetEta", &jetEta, "L1JetEta/F");
   l1tree->Branch("L1JetPhi", &jetPhi, "L1JetPhi/F");
-  l1tree->Branch("L1TauVeto", &hasTauVeto, "L1TauVeto/B");
-  l1tree->Branch("L1EmTauVeto", &hasEmTauVeto, "L1EmTauVeto/B");
-  l1tree->Branch("L1HadTauVeto", &hasHadTauVeto, "L1HadTauVeto/B");
-  l1tree->Branch("L1IsolationVeto", &hasIsolationVeto, "L1IsolationVeto/B");
-  l1tree->Branch("L1TauVetoForPartIso", &hasTauVetoForPartIso, "L1TauVetoForPartIso/B");
-  l1tree->Branch("L1PartialIsolationVeto", &hasPartialIsolationVeto, "L1PartialIsolationVeto/B");
-  l1tree->Branch("L1SumEtBelowThreshold", &hasSumEtBelowThres, "L1SumEtBelowThrehold/B");
-  l1tree->Branch("L1MaxEt", &hasMaxEt, "L1MaxEt/B");
-  l1tree->Branch("L1Soft", &hasSoft, "L1Soft/B");
-  l1tree->Branch("L1Hard", &hasHard, "L1Hard/B");
+  l1tree->Branch("L1JetMatchDR", &jetMinDR);
+  l1tree->Branch("L1TauVeto", &hasTauVeto);
+  l1tree->Branch("L1IsolationRegions", &l1Isolation);
   l1tree->Branch("hasMatchedL1Jet", &hasL1Jet, "hasMatchedL1Jet/B");
   l1tree->Branch("hasMatchedL1TauJet", &hasL1TauJet, "hasMatchedL1TauJet/B");
   l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet, "hasMatchedL1CenJet/B");
@@ -85,30 +121,18 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   jetUncorrEt = 0.0;
   jetEta = 0.0;
   jetPhi = -999.0;
+  jetMinDR = 0.0;
   hasL1Jet = 0;
   hasL1TauJet = 0;
   hasL1CenJet = 0;
-  hasTauVeto = 0;
-  hasTauVetoForPartIso = 0;
-  hasEmTauVeto = 0;
-  hasHadTauVeto = 0;
-  hasIsolationVeto = 0;
-  hasPartialIsolationVeto = 0;
-  hasSumEtBelowThres = 0;
-  hasMaxEt = 0;
-  hasSoft = 0;
-  hasHard = 0;
+  hasTauVeto = false;
+  l1Isolation = 0;
   hasTriggeredL1TauJet = 0;
   hasTriggeredL1CenJet = 0;
 
-  // Get data from event 
-  Handle<FastL1BitInfoCollection> bitInfos;
-  iEvent.getByLabel(L1bitInfoSource, bitInfos);
-  if(!bitInfos.isValid()) {
-    std::cout << "%L1TauEffAnalyzer -- No L1 Bit Info found! " << std::endl;
-    //return;
-  }
+  unsigned jetRegionId = 0;
 
+  // Get data from event 
   Handle<L1JetParticleCollection> l1TauHandle;
   iEvent.getByLabel(L1extraTauJetSource, l1TauHandle);
   if(!l1TauHandle.isValid()) {
@@ -128,14 +152,14 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   L1JetParticleCollection::const_iterator iJet;
 
   // Match for PF tau and L1extra tau
-  float minDR = 99999999.;
+  jetMinDR = 99999999.;
   for(iJet = l1Taus.begin(); iJet != l1Taus.end(); ++iJet) {
     //if(iJet->et() <= 5.)
     //  continue;
 
     double DR = deltaR(iJet->eta(), iJet->phi(), tau.Eta(), tau.Phi());
-    if(DR < jetMatchingCone && DR < minDR) {
-      minDR = DR;
+    if(DR < jetMatchingCone && DR < jetMinDR) {
+      jetMinDR = DR;
       jetPt = iJet->pt();
       jetEt = iJet->et();
       jetUncorrEt = L1JetEtUncorr(jetEt);
@@ -143,6 +167,12 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
       jetPhi = iJet->phi();
       hasL1Jet = 1;
       hasL1TauJet = 1;
+      jetRegionId = iJet->gctJetCand()->regionId().rawId();
+      /*
+      std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId()
+                << " etaIndex " << iJet->gctJetCand()->etaIndex() << " phiIndex " << iJet->gctJetCand()->phiIndex()
+                << std::endl;
+      */                
     }
   }
 
@@ -153,8 +183,8 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
       //  continue;
 
       double DR = deltaR(iJet->eta(), iJet->phi(), tau.Eta(), tau.Phi());
-      if(DR < jetMatchingCone && DR < minDR) {
-        minDR = DR;
+      if(DR < jetMatchingCone && DR < jetMinDR) {
+        jetMinDR = DR;
         jetPt = iJet->pt();
         jetEt = iJet->et();
 	jetUncorrEt = L1JetEtUncorr(jetEt);
@@ -162,29 +192,19 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
         jetPhi = iJet->phi();
         hasL1Jet = 1;
         hasL1CenJet = 1;
+        jetRegionId = iJet->gctJetCand()->regionId().rawId();
+        /*
+        std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId() 
+                  << " etaIndex " << iJet->gctJetCand()->etaIndex() << " phiIndex " << iJet->gctJetCand()->phiIndex()
+                  << std::endl;
+        */
       }
     }
   }
-  
-  // If match found, find the corresponding bit field
-  if(hasL1Jet && bitInfos.isValid()) {
-    for(FastL1BitInfoCollection::const_iterator bitInfo = bitInfos->begin(); bitInfo != bitInfos->end(); ++bitInfo) {
-      if(fabs(bitInfo->getEta() - jetEta) < 0.1 &&
-         fabs(bitInfo->getPhi() - jetPhi) < 0.1) {
 
-        hasTauVeto = bitInfo->getTauVeto() ? 1 : 0;
-//FIXME        hasTauVetoForPartIso = bitInfo->getTauVetoForPartIso() ? 1 : 0;
-        hasEmTauVeto = bitInfo->getEmTauVeto() ? 1 : 0;
-        hasHadTauVeto = bitInfo->getHadTauVeto() ? 1 : 0;
-        hasIsolationVeto = bitInfo->getIsolationVeto() ? 1 : 0;
-//FIXME        hasPartialIsolationVeto = bitInfo->getPartialIsolationVeto() ? 1 : 0;
-        hasSumEtBelowThres = bitInfo->getSumEtBelowThres() ? 1 : 0;
-        hasMaxEt = bitInfo->getMaxEt() ? 1 : 0;
-        hasSoft = bitInfo->getSoft() ? 1 : 0;
-        hasHard = bitInfo->getHard() ? 1 : 0;
-      }
-    }
-  }
+  if(hasL1Jet)
+    fillCaloRegion(iEvent, jetRegionId);
+      
 
   // Store L1 trigger bits
   edm::Handle<L1GlobalTriggerReadoutRecord>      l1GTRR;
@@ -274,7 +294,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
     l1TriggeredTaus->getObjects(trigger::TriggerL1CenJet,jetCandRefVec);
 
     //std::cout<<tauCandRefVec.size()<<std::endl;
-    minDR = 99999999.;
+    float minDR = 99999999.;
     for( unsigned int iL1Tau=0; iL1Tau <tauCandRefVec.size();iL1Tau++) { 
       if(&tauCandRefVec[iL1Tau]) {
 	
@@ -309,6 +329,83 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
 
 } 
 
+void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, unsigned regionId) {
+  edm::Handle<std::vector<L1CaloRegion> > caloRegionHandle;
+  if(!iEvent.getByLabel(L1CaloRegionSource, caloRegionHandle)) {
+    std::cout << "No L1CaloRegion! with label " << L1CaloRegionSource << std::endl;
+    return;
+  }
+
+  if(caloRegionHandle->size() == 0) {
+    std::cout << "L1CaloRegion size is zero!" << std::endl;
+    return;
+  }
+      
+
+  std::vector<L1CaloRegion>::const_iterator iter = caloRegionHandle->begin();
+  std::vector<L1CaloRegion>::const_iterator found = caloRegionHandle->end();
+  unsigned minEta = iter->gctEta();
+  unsigned maxEta = iter->gctEta();
+  unsigned minPhi = iter->gctPhi();
+  unsigned maxPhi = iter->gctPhi();
+  for(; iter != caloRegionHandle->end(); ++iter) {
+    minEta = std::min(minEta, iter->gctEta());
+    maxEta = std::max(maxEta, iter->gctEta());
+    minPhi = std::min(minPhi, iter->gctPhi());
+    maxPhi = std::max(maxPhi, iter->gctPhi());
+
+    if(regionId == iter->id().rawId()) {
+      /*
+      std::cout << "L1Analyzer " << __LINE__ << ": " << iter->id().rawId()
+                << " etaIndex " << iter->gctEta() << " phiIndex " << iter->gctPhi()
+                << " et " << iter->et()
+                << " tauVeto " << iter->tauVeto()
+                << std::endl;
+      */
+      found = iter;
+    }
+  }
+  if(found == caloRegionHandle->end()) {
+    std::cout << "Didn't find matching L1CaloRegion" << std::endl;
+    return;
+  }
+
+  hasTauVeto = found->tauVeto();
+
+  unsigned eta = found->gctEta();
+  unsigned phi = found->gctPhi();
+
+  EtaPhiHelper helper(minEta, maxEta, minPhi, maxPhi);
+  unsigned nextEta = helper.nextEta(eta);
+  unsigned prevEta = helper.prevEta(eta);
+  unsigned nextPhi = helper.nextPhi(phi);
+  unsigned prevPhi = helper.prevPhi(phi);
+
+  
+  if(nextEta == eta || prevEta == eta)
+    throw cms::Exception("LogicError") << "Logic error with etas in " << __LINE__ << ":" << __LINE__;
+
+  for(iter = caloRegionHandle->begin(); iter != caloRegionHandle->end(); ++iter) {
+    if(((iter->gctEta() == nextEta || iter->gctEta() == prevEta) &&
+        (iter->gctPhi() == nextPhi || iter->gctPhi() == prevPhi)) ||
+       (iter->gctEta() == eta && (iter->gctPhi() == nextPhi || iter->gctPhi() == prevPhi)) ||
+       (iter->gctPhi() == phi && (iter->gctEta() == nextEta || iter->gctEta() == prevEta))) {
+      /*
+      std::cout << "L1Analyzer " << __LINE__ << ": " << iter->id().rawId()
+                << " etaIndex " << iter->gctEta() << " phiIndex " << iter->gctPhi()
+                << " et " << iter->et()
+                << " tauVeto " << iter->tauVeto()
+                << std::endl;
+      */
+      if(iter->et() < isolationThreshold)
+        ++l1Isolation;
+      hasTauVeto = hasTauVeto || found->tauVeto();
+    }
+  }
+  //std::cout << "L1Analyzer " << __LINE__ << ": L1 isolation " << l1Isolation << " (number of adjacent cells with Et < " << isolationThreshold << " GeV; should be 7/8 for tau)" << std::endl;
+}
+
+
 double L1TauEfficiencyAnalyzer::L1JetEtUncorr(const double corPt)
 {
   TF1 *Response = new TF1("Response","[0]-[1]/(pow(log10(x),[2])+[3])+[4]/x",4,5000);
@@ -322,5 +419,4 @@ double L1TauEfficiencyAnalyzer::L1JetEtUncorr(const double corPt)
   //cout<<"Corrected jet Pt = "<<corPt<<" GeV, Response = "<<r<<", Uncorrected jet Pt = "<<Pt<<" GeV"<<endl;                  
   return Pt;
 }
-
 
