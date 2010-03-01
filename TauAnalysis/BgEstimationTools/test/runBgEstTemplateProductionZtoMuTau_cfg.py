@@ -143,6 +143,34 @@ process.analyzeEventsBgEstWplusJetsEnriched_reweighted = copy.deepcopy(process.a
 process.analyzeEventsBgEstWplusJetsEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnriched_reweighted')
 setattr(process.analyzeEventsBgEstWplusJetsEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateWplusJets"))
 
+# produce event weight variable for correcting "bias"
+# of visible invariant muon + tau-jet mass distribution
+# caused by M(muon + muon) invariant mass veto
+process.kineEventReweightBgEstTemplateZmumuJetMisId = cms.EDProducer("ObjValProducer",
+    config = cms.PSet(
+        pluginType = cms.string("KineEventReweightExtractor"),
+        weightLookupTable = cms.PSet(
+            fileName = cms.string(
+                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root'
+            ),
+            meName = cms.string('DQMData/bgEstTemplateKineEventReweights/ZmumuJetMisId/diTauMvis')
+        ),
+        variables = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsBgEstZmumuJetMisIdEnriched'),
+            value = cms.string("p4Vis.mass"),
+            indices = cms.vuint32(0)
+        )
+    )
+)
+
+# add another analysis sequence for producing W + jets templates
+# in which the events are reweighted in order to correct for "bias" of muon + tau-jet visible invariant mass distribution
+# caused by cuts on muon + MEt transverse cut and CDF PzetaDiff variable
+process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted = copy.deepcopy(process.analyzeEventsBgEstZmumuJetMisIdEnriched)
+process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched_reweighted')
+setattr(process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateZmumuJetMisId"))
+
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
   + process.selectZtoMuTauEvents
@@ -150,6 +178,7 @@ process.p = cms.Path(
   + process.kineEventReweightBgEstTemplateWplusJets + process.analyzeEventsBgEstWplusJetsEnriched_reweighted
   + process.bgEstTTplusJetsEnrichedAnalysisSequence
   + process.bgEstZmumuEnrichedAnalysisSequence
+  + process.kineEventReweightBgEstTemplateZmumuJetMisId + process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted 
   + process.bgEstQCDenrichedAnalysisSequence 
   + process.saveTemplatesZtoMuTau
 )
