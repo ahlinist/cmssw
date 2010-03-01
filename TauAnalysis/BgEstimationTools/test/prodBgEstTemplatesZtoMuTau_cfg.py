@@ -118,10 +118,10 @@ process.dumpZtoMuTauBgEstTemplates = cms.Sequence(
 
 process.p = cms.Path(
     process.loadZtoMuTau
-   + process.dumpDQMStore
+  #+ process.dumpDQMStore
    + process.addZtoMuTauBgEstTemplates
+   + process.dumpZtoMuTauBgEstTemplates 
    + process.saveZtoMuTau
-   + process.dumpZtoMuTauBgEstTemplates
 )
 
 # print-out all python configuration parameter information
