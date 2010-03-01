@@ -194,7 +194,7 @@ h_calometPt_baseSel->SetMarkerSize(1);
 h_calometPt_baseSel_HFfilter->SetMarkerSize(1);
 h_calometPt->SetMarkerSize(1);
 
-h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
+h_calometPt_baseSel->GetXaxis()->SetTitle("Calo #slash{E}_{T} [GeV]");
 h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events / GeV");
 h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.1);
 
@@ -270,7 +270,7 @@ h_calometPt_baseSel->SetMarkerSize(1);
 h_calometPt_baseSel_HFfilter->SetMarkerSize(1);
 h_calometPt->SetMarkerSize(1);
 
-h_calometPt_baseSel->GetXaxis()->SetTitle("#slash{E}_{T} [GeV]");
+h_calometPt_baseSel->GetXaxis()->SetTitle("Calo #slash{E}_{T} [GeV]");
 h_calometPt_baseSel->GetYaxis()->SetTitle("Number of Events / GeV");
 h_calometPt_baseSel->GetYaxis()->SetTitleOffset(1.1);
 
