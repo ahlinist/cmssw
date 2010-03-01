@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.34 2009/11/24 15:08:54 chinhan Exp $
+// $Id: TTEffAnalyzer.cc,v 1.35 2010/02/01 14:43:38 mkortela Exp $
 //
 //
 
@@ -22,6 +22,8 @@
 #include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElement.h"
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
+
+using namespace std;
 
 TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   DoMCTauEfficiency_(iConfig.getParameter<bool>("DoMCTauEfficiency")),

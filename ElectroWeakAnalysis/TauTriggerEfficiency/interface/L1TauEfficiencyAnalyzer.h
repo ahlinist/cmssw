@@ -13,38 +13,17 @@
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-#include "DataFormats/L1Trigger/interface/L1JetParticle.h"
-#include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
-
-#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
-#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
-#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
-#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
-#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
-
-#include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Framework/interface/TriggerNames.h"
 
-#include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
-
-#include "DataFormats/TauReco/interface/CaloTau.h"
-#include "DataFormats/TauReco/interface/PFTau.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
-#include <TTree.h>
-#include <TFile.h>
-
-#include <string>
-
-using namespace edm;
-using namespace l1extra;
-using namespace reco;
-using namespace std;
+// Forward declarations
+namespace reco {
+        class PFTau;
+        class CaloTau;
+        class GsfElectron;
+}
+class TTree;
 
 class L1TauEfficiencyAnalyzer {
 
@@ -65,16 +44,15 @@ class L1TauEfficiencyAnalyzer {
         void fillCaloRegion(const edm::Event& iEvent, unsigned regionId);
 
         // Input parameters
-	InputTag PFTauCollectionSource;  
-	InputTag L1extraTauJetSource;  
-        InputTag L1extraCentralJetSource;
+        edm::InputTag L1extraTauJetSource;
+        edm::InputTag L1extraCentralJetSource;
         edm::InputTag L1CaloRegionSource;
 
-        InputTag L1GtReadoutRecordSource;
-        InputTag L1GtObjectMapRecordSource;
-        InputTag HLTResultsSource;
+        edm::InputTag L1GtReadoutRecordSource;
+        edm::InputTag L1GtObjectMapRecordSource;
+        edm::InputTag HLTResultsSource;
 
-        InputTag L1TauTriggerSource;
+        edm::InputTag L1TauTriggerSource;
 
 	double   jetMatchingCone;
         unsigned isolationThreshold;
@@ -83,11 +61,11 @@ class L1TauEfficiencyAnalyzer {
         TTree *l1tree;
 
         float jetPt, jetEt, jetUncorrEt, jetEta, jetPhi, jetMinDR;
-        char hasL1Jet, hasL1TauJet, hasL1CenJet;
+        bool hasL1Jet, hasL1TauJet, hasL1CenJet;
         bool hasTauVeto;
         int l1Isolation;
-	char hasTriggeredL1TauJet;
- 	char hasTriggeredL1CenJet;
+	bool hasTriggeredL1TauJet;
+ 	bool hasTriggeredL1CenJet;
 
 	int _L1EvtCnt;
 	int _HltEvtCnt;
