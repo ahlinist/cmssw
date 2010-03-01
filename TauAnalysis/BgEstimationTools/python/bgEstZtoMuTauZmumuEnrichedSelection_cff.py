@@ -125,10 +125,13 @@ diMuonPairsZeroChargeBgEstZmumuJetMisIdEnriched = cms.EDFilter("DiCandidatePairS
     cut = cms.string('charge = 0'),
     filter = cms.bool(False)
 )
-
+#
+# Note: do not apply tight cut on M(muon + muon) invariant mass
+#       as it would bias the muon + tau-jet visible invariant mass distribution
+#   
 diMuonPairsInvMassBgEstZmumuJetMisIdEnriched = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('diMuonPairsZeroChargeBgEstZmumuJetMisIdEnriched'),                                   
-    cut = cms.string('p4Vis.mass > 80. & p4Vis.mass < 100.'),
+    cut = cms.string('p4Vis.mass > 40. & p4Vis.mass < 100.'),
     filter = cms.bool(False)
 )
 
@@ -475,22 +478,8 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('dR(Muon-Tau) > 0.7')
         ),
         cms.PSet(
-            analyzers = cms.vstring(
-                'muonHistManagerBgEstZmumuEnriched',
-                'tauHistManagerBgEstZmumuJetMisIdEnriched',
-                'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched'
-            )
-        ),
-        cms.PSet(
             filter = cms.string('diMuonPairBgEstZmumuJetMisIdEnriched'),
             title = cms.string('Muon-Pair')
-        ),
-        cms.PSet(
-            analyzers = cms.vstring(
-                'muonHistManagerBgEstZmumuEnriched',
-                'tauHistManagerBgEstZmumuJetMisIdEnriched',
-                'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched'
-            )
         ),
         cms.PSet(
             filter = cms.string('diMuonPairZeroChargeBgEstZmumuJetMisIdEnriched'),
@@ -505,7 +494,7 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('diMuonPairInvMassBgEstZmumuJetMisIdEnriched'),
-            title = cms.string('80 < M (Muon-Pair) < 100 GeV')
+            title = cms.string('40 < M (Muon-Pair) < 100 GeV')
         ),
         cms.PSet(
             analyzers = cms.vstring(
