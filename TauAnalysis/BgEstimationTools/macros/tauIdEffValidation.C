@@ -24,7 +24,8 @@ void tauIdEffValidation()
   meNames.Add(new TObjString("TauAssocJetPt"));
   meNames.Add(new TObjString("TauJetRadius"));
 
-  TString dqmDirectory = "zMuTauAnalyzer_frUnweighted/afterEvtSelTauLeadTrkPt_beforeEvtSelTauTrkIso/TauIdEffValidation";
+  //TString dqmDirectory = "zMuTauAnalyzer_frUnweighted/afterEvtSelTauLeadTrkPt_beforeEvtSelTauTrkIso/TauIdEffValidation";
+  TString dqmDirectory = "zMuTauAnalyzer_frUnweighted/afterEvtSelDiMuPairZmumuHypothesisVeto/TauIdEffValidation";
 
   showTauIdEfficiency(inputFile, "Ztautau", dqmDirectory, meNames, cutEffNames, "effZTTsim", colors);
   //showTauIdEfficiency(inputFile, "qcdSum", dqmDirectory, meNames, cutEffNames, "frMuEnrichedQCDsim", colors);
