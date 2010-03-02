@@ -197,24 +197,33 @@ void TemplateFitAdapter_TFractionFitter::makeControlPlotsImpSpecific()
 
   std::cout << "<TemplateFitAdapter_TFractionFitter::makeControlPlotsImpSpecific>:" << std::endl;
 
+//--- check fit status;
+//    "template prediction" histogram obtained from TFractionFitter::GetPlot method
+//    only exists in case fit converted (status = 0)
+  if ( fitResult_->status_ != 0 ) {
+    edm::LogWarning("makeControlPlotsImpSpecific") 
+      << " Fit failed to converge --> skipping !!";
+    return;
+  }
+
   TCanvas canvas("TemplateFitAdapter_TFractionFitter", "TemplateFitAdapter_TFractionFitter", defaultCanvasSizeX, defaultCanvasSizeY);
   canvas.SetFillColor(10);
   canvas.SetFrameFillColor(10);
-  
+
   TH1* histo_smSum = (TH1*)fitAlgorithmImp_->GetPlot();
   //std::cout << " histo_smSum = " << histo_smSum << ": integral = " << histo_smSum->Integral() << std::endl;  
   histo_smSum->SetLineWidth(2);
   histo_smSum->SetLineColor(2);
   histo_smSum->Draw("hist");
-  
+
   TH1* histo_Data = dataNdEntryImpSpecific_->auxConcatenatedHistogram_;
   //std::cout << " histo_Data = " << histo_Data << ": integral = " << histo_Data->Integral() << std::endl; 
   histo_Data->SetLineWidth(2);
   histo_Data->SetMarkerStyle(20);
   histo_Data->Draw("epsame");
-  
+
   canvas.Update();
-  
+
   int errorFlag = 0;
   std::string fileNameParam = std::string("modConcatenatedHistogram");
   std::string fileName = replace_string(controlPlotsFileName_, plotKeyword, fileNameParam, 1, 1, errorFlag);
