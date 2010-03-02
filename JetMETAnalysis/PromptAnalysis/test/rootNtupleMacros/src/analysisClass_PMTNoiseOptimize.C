@@ -174,8 +174,11 @@ void analysisClass::Loop()
    TH2F *h2_N_HFspikes_S_ieta_iphi  = new TH2F ("h2_N_HFspikes_S_ieta_iphi","h2_N_HFspikes_S_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
    
    TH2F *h2_HFRecHitE_L_vs_S = new TH2F ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S;E [GeV];E [GeV]",100,-5.,200.,100,-5.,200.);
+   TH2F *h2_HFRecHitET_L_vs_S = new TH2F ("h2_HFRecHitET_L_vs_S","h2_HFRecHitET_L_vs_S;E_{T} [GeV];E_{T} [GeV]",100,-5.,200.,100,-5.,200.);
    TH2F *h2_HFRecHitE_vs_R_L = new TH2F ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L;R;E [GeV]",120,-1.1,1.1,100,-5.,200.);
    TH2F *h2_HFRecHitE_vs_R_S = new TH2F ("h2_HFRecHitE_vs_R_S","h2_HFRecHitE_vs_R_S;R;E [GeV]",120,-1.1,1.1,100,-5.,200.);
+   TH2F *h2_HFRecHitET_vs_R_L = new TH2F ("h2_HFRecHitET_vs_R_L","h2_HFRecHitET_vs_R_L;R;E_{T} [GeV]",120,-1.1,1.1,100,-5.,200.);
+   TH2F *h2_HFRecHitET_vs_R_S = new TH2F ("h2_HFRecHitET_vs_R_S","h2_HFRecHitET_vs_R_S;R;E_{T} [GeV]",120,-1.1,1.1,100,-5.,200.);
    
    TH2F *h2_R_vs_iphi_L  = new TH2F ("h2_R_vs_iphi_L","h2_R_vs_iphi_L;i#phi;R",72,0.5,72.5,120,-1.1,1.1);
    TH2F *h2_R_vs_ieta_L  = new TH2F ("h2_R_vs_ieta_L","h2_R_vs_ieta_L;i#eta;R",13,28.5,41.5,120,-1.1,1.1);
@@ -394,12 +397,12 @@ void analysisClass::Loop()
                
                //R = L-S/L+S
                double R = ( energy - partenergy ) / ( energy + partenergy );
+               if( partenergy<0 ) R = 1.;
                if(depth==2)
                  R = R * -1;
                
                //S9/S1
-               double S9oS1 = -99.;
-               if( energy>0 ) S9oS1 = ( partenergy + sum4Long + sum4Short ) / energy;
+               double S9oS1 = ( partenergy + sum4Long + sum4Short ) / energy;
                
                //S5/S1
                double S5oS1 = -99.;
@@ -452,7 +455,9 @@ void analysisClass::Loop()
 
                if( depth==1 ) {
                  h2_HFRecHitE_vs_R_L->Fill( R, energy );
+                 h2_HFRecHitET_vs_R_L->Fill( R, ET );
                  h2_HFRecHitE_L_vs_S->Fill( partenergy, energy );
+                 h2_HFRecHitET_L_vs_S->Fill( partenergy*(ET/energy), ET );
                  h_HFRecHitE_L->Fill( energy );
                  h_HFRecHitE_L_ieta[abs(ieta)]->Fill( energy );
                  h_HFRecHitET_L->Fill( ET );
@@ -467,7 +472,9 @@ void analysisClass::Loop()
 
                if( depth==2 ) {
                  h2_HFRecHitE_vs_R_S->Fill( R, energy );
-                 h2_HFRecHitE_L_vs_S->Fill( energy, partenergy );
+                 h2_HFRecHitET_vs_R_S->Fill( R, ET );
+                 if(partenergy==0) h2_HFRecHitE_L_vs_S->Fill( energy, partenergy ); // if(...) necessary to avoid double-counting
+                 if(partenergy==0) h2_HFRecHitET_L_vs_S->Fill( ET, partenergy*(ET/energy) ); // if(...) necessary to avoid double-counting
                  h_HFRecHitE_S->Fill( energy );
                  h_HFRecHitE_S_ieta[abs(ieta)]->Fill( energy );
                  h_HFRecHitET_S->Fill( ET );
@@ -634,8 +641,11 @@ void analysisClass::Loop()
    h2_N_HFspikes_S_ieta_iphi->Write();
    
    h2_HFRecHitE_L_vs_S->Write();
+   h2_HFRecHitET_L_vs_S->Write();
    h2_HFRecHitE_vs_R_L->Write();
    h2_HFRecHitE_vs_R_S->Write();
+   h2_HFRecHitET_vs_R_L->Write();
+   h2_HFRecHitET_vs_R_S->Write();
    
    h2_R_vs_iphi_L->Write();
    h2_R_vs_ieta_L->Write();
