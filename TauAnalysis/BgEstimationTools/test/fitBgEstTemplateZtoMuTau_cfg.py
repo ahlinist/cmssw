@@ -828,14 +828,14 @@ process.p = cms.Path(
    + process.normalizeAnalysisHistZtoMuTau
    + process.prodSysBiasHistZtoMuTau
    + process.prodSysBgEnrichedSamplePurityHistZtoMuTau
-   + process.dumpDQMStore
+   #+ process.dumpDQMStore
    + process.plotTemplateHistZtoMuTau
    + process.fitZtoMuTau
    + process.saveFitResultsZtoMuTau
 )
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
 
 
   
