@@ -162,7 +162,8 @@ struct MEResolution {
 		std::stringstream ss;
 		ss<<x;
 		std::string s=ss.str();
-		s.replace(s.find('.'),1,1,'x');
+                if (s.find('.')!=std::string::npos)
+		  s.replace(s.find('.'),1,1,'x');
 		return s;
 	  }
 
@@ -238,9 +239,11 @@ struct MEDistribution {
 	  
 	  void dev(  ) {
             
+            /*
             _meVecTowerVsPhiGen[0]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
 	    _meVecTowerVsPhiGen[1]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
 	    _meVecTowerVsPhiGen[2]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
+             */
 	    
 	    
 	   } 	  
@@ -258,7 +261,8 @@ struct MEDistribution {
 		std::stringstream ss;
 		ss<<x;
 		std::string s=ss.str();
-		s.replace(s.find('.'),1,1,'x');
+                if (s.find('.')!=std::string::npos)
+		  s.replace(s.find('.'),1,1,'x');
 		return s;
 	  }
 	  
@@ -325,7 +329,8 @@ struct MEEfficieny {
 		std::stringstream ss;
 		ss<<x;
 		std::string s=ss.str();
-		s.replace(s.find('.'),1,1,'x');
+                if (s.find('.')!=std::string::npos)
+		  s.replace(s.find('.'),1,1,'x');
 		return s;
 	  }
 	  
