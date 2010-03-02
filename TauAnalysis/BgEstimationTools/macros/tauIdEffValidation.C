@@ -1,20 +1,25 @@
 
 void tauIdEffValidation()
 {
-  TFile* inputFile = TFile::Open("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/10TeV/plotsZtoMuTau_ZtautauSum.root");
+  //TFile* inputFile = TFile::Open("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/10TeV/plotsZtoMuTau_ZtautauSum.root");
+  TFile* inputFile = TFile::Open("file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_3_6_patch5/src/TauAnalysis/BgEstimationTools/test/plotsZtoMuTau_bgEstFakeRate.root");
 
   // define colors used to plot efficiencies/fake-rates of different tau id. criteria
   // (definition of "rainbow" colors taken from TauAnalysis/DQMTools/python/plotterStyleDefinitions_cfi.py)
   TArrayI colors(7);
   colors[0] = 877; // violett
   colors[1] = 596; // dark blue
-  colors[2] = 856; // light blue
-  colors[3] = 817; // green
-  colors[4] = 396; // yellow
-  colors[5] = 797; // orange
-  colors[6] = 628; // red
+  //colors[2] = 856; // light blue
+  colors[2] = 817; // green
+  //colors[4] = 396; // yellow
+  //colors[3] = 797; // orange
+  colors[3] = 628; // red
 
   TObjArray cutEffNames;
+  cutEffNames.Add(new TObjString("ByTrackIsolationSeq"));
+  cutEffNames.Add(new TObjString("ByEcalIsolationSeq"));  
+  cutEffNames.Add(new TObjString("ByNTracksSeq"));
+  //cutEffNames.Add(new TObjString("ByChargeSeq"));
   cutEffNames.Add(new TObjString("ByStandardChain"));
 
   TObjArray meNames;
@@ -35,7 +40,8 @@ void tauIdEffValidation()
 
 TH1* getMonitorElement(TFile* inputFile, const TString& dqmDirectoryName, const char* processName, const TString& meName)
 {
-  TString meName_full = TString("DQMData").Append("/").Append(processName).Append("/").Append(dqmDirectoryName).Append("/").Append(meName);
+  //TString meName_full = TString("DQMData").Append("/").Append(processName).Append("/").Append(dqmDirectoryName).Append("/").Append(meName);
+  TString meName_full = TString("DQMData").Append("/").Append(dqmDirectoryName).Append("/").Append(meName);
   std::cout << "meName_full = " << meName_full << std::endl;
   
   TH1* me = (TH1*)inputFile->Get(meName_full);
@@ -95,6 +101,7 @@ void showTauIdEfficiency(TFile* inputFile, const char* processName, const TStrin
 	me_efficiency_cuts->SetMinimum(0.);
 	me_efficiency_cuts->SetMaximum(1.4);
 	me_efficiency_cuts->Draw("e1p");
+	isFirst = false;
       } else {
 	me_efficiency_cuts->Draw("e1psame");	
       }
