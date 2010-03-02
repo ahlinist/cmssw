@@ -27,6 +27,12 @@
 #include "DataFormats/METReco/interface/HcalNoiseHPD.h"
 #include "DataFormats/METReco/interface/HcalNoiseSummary.h"
 
+//L1 trigger beasties
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
+#include "L1Trigger/GlobalTriggerAnalyzer/interface/L1GtUtils.h"
+
+
 //TFile Service 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
@@ -35,7 +41,8 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
 {
   public:
     explicit InclusiveJetTreeProducer(edm::ParameterSet const& cfg);
-    virtual void beginJob(edm::EventSetup const& iSetup);
+//    virtual void beginJob(edm::EventSetup const& iSetup);
+    virtual void beginJob();
     virtual void analyze(edm::Event const& evt, edm::EventSetup const& iSetup);
     virtual void endJob();
     virtual ~InclusiveJetTreeProducer();
@@ -43,10 +50,14 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
   private:
     
     void buildTree();
+    // called ahead of filling the tree to allow cutting on whatever 
+    // combination of tree vars deemed appropriate
+    bool preTreeFillCut();
     void clearTreeVectors();
     
     //---- configurable parameters --------  
     bool mIsMCarlo;
+    bool mFirstEventFlag;
     double mJetPtMin;
     std::string mJetsName;
     std::string mGenJetsName;
@@ -60,7 +71,22 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<unsigned int> mTriggerIndex;
     edm::InputTag mHcalNoiseTag;
     edm::InputTag mTriggerResultsTag, mL1GTReadoutRcdSource, mL1GTObjectMapRcdSource;    
-    HLTConfigProvider mHltConfig;     
+    HLTConfigProvider mHltConfig;   
+
+//  Each trigger path gets a branch with these guys in them
+//  fired should be: -1 if something bad happened (i.e. path doesn't exist)
+//                    0 existed but didn't fire
+//                    1 fired.
+//  prescale will be filled soon -- easy access exists but not yet part of
+//           a release yet.  Currently hardwired to 1. 
+    typedef struct {
+      int prescale;
+      int fired;
+    } TrigStruct;
+
+//    typedef std::map<std::string,mTrigStruct> TrigMap;
+    
+    const L1GtTriggerMenu* m_l1GtMenu;  
 
     edm::Service<TFileService> fs;
     TTree *mTree;
@@ -78,5 +104,8 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<double> *mfHcalNoise;
     std::vector<std::string> *mHLTNames;
     std::vector<std::string> *mL1Names;
+    // since each trigger gets its own branch, it didn't make sense to have 
+    // these be vectors.
+    TrigStruct mHLTTrigResults[100],mL1TrigResults[100];
 };
 #endif
