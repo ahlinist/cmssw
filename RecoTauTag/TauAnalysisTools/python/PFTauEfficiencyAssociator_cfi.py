@@ -10,7 +10,7 @@
 
 '''
 import FWCore.ParameterSet.Config as cms
-from RecoTauTag.TauAnalysisTools.tools.ntupleDefinitions import pftau_expressions
+from RecoTauTag.TauAnalysisTools.tools.ntupleDefinitions import pftau_expressions, common_expressions
 from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfiguration import makeCuts 
 from RecoTauTag.TauAnalysisTools.fakeRate.associatorTools import *
 
@@ -20,8 +20,8 @@ disc_configs = makeCuts(denominator="1")
 
 protoEffciencyAssociator = cms.EDProducer("PFTauEfficiencyAssociatorFromTH3",
        PFTauProducer = cms.InputTag("shrinkingConePFTauProducer"),
-       xAxisFunction = pftau_expressions.eta,
-       yAxisFunction = cms.string("abs(%s)" % pftau_expressions.eta.value()),
+       xAxisFunction = common_expressions.pt,
+       yAxisFunction = cms.string("abs(%s)" % common_expressions.eta.value()),
        zAxisFunction = pftau_expressions.jetWidth,
        efficiencySources = cms.PSet(
            filename = cms.string("/afs/cern.ch/user/f/friis/public/TauPeformance_QCD_BCtoMu.root"),
