@@ -25,12 +25,12 @@
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
-#include "L1Trigger/GlobalTriggerAnalyzer/interface/L1GtUtils.h"
 
 using namespace edm;
 using namespace reco;
 using namespace std;
 typedef math::PtEtaPhiELorentzVectorF LorentzVector;
+
 InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg) 
 {
   mJetsName               = cfg.getParameter<std::string>              ("jets");
@@ -53,10 +53,11 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mFillL1  = (!mL1TriggerNames.empty());
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup) 
+//void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup) 
+void InclusiveJetTreeProducer::beginJob() 
 {
   mTree = fs->make<TTree>("InclusiveJetTree","InclusiveJetTree");
-
+  mFirstEventFlag = true;
   buildTree();
   
   //must be done at beginRun and not only at beginJob, because 
@@ -70,10 +71,15 @@ void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup)
           if (mTriggerIndex[i] == mHltConfig.size())
             {
 	      string errorMessage = "Requested TriggerName does not exist! -- "+mTriggerNames[i]+"\n";
-	      throw  cms::Exception("Configuration",errorMessage);
+//            now handle this with an error flag in the tree rather than 
+//            aborting the entire job.  Will likely remove this whole section 
+//	      throw  cms::Exception("Configuration",errorMessage);
             }
         }
-    } 
+    }
+
+ 
+
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::endJob() 
@@ -156,44 +162,82 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   ////////////// Trigger //////
   //===================== save HLT Trigger information =======================
   Handle<TriggerResults> triggerResultsHandle;
+//  TriggerNames triggerNames;
   if (mFillHLT)
     {
+      int ErrFlag=0;
       event.getByLabel(mTriggerResultsTag,triggerResultsHandle); 
       if (!triggerResultsHandle.isValid())
         {
           string errorMessage = "Requested TriggerResult is not present in file! -- \n";
-          throw  cms::Exception("Configuration",errorMessage);
+          cout << errorMessage << endl;
+          ErrFlag=-1;
+        //  Again we don't want to abort the entire job in this case
+        //  throw  cms::Exception("Configuration",errorMessage);
         }
+
       for(unsigned int i=0;i<mTriggerNames.size();i++) 
         {
-          bool accept = triggerResultsHandle->accept(mHltConfig.triggerIndex(mTriggerNames[i]));
-          if (accept) 
+          mHLTTrigResults[i].fired=ErrFlag;
+          mHLTTrigResults[i].prescale=1;
+          bool accept=false;
+          try {
+             accept = triggerResultsHandle->accept(mHltConfig.triggerIndex(mTriggerNames[i]));
+             }
+          catch (...) {
+             accept=false;
+             mHLTTrigResults[i].fired=-1;
+          }
+          if (accept) {
             mHLTNames->push_back(mTriggerNames[i]);
+            mHLTTrigResults[i].fired=1;
+          }
+          if (mFirstEventFlag) 
+            cout << i << ": " << mTriggerNames[i] << " decision: " << accept << endl;
         }
     }
   //===================== save L1 Trigger information ======================= 
   // get L1TriggerReadout records
   Handle<L1GlobalTriggerReadoutRecord> gtRecord;
-  Handle<L1GlobalTriggerObjectMapRecord> gtOMRec;
   if (mFillL1)
     {
-      event.getByLabel(mL1GTObjectMapRcdSource, gtOMRec);
-      event.getByLabel(mL1GTReadoutRcdSource,gtRecord);
-      // sanity check on L1 Trigger Records
-      if (!gtRecord.isValid()) 
+    edm::ESHandle<L1GtTriggerMenu> l1GtMenu;
+    iSetup.get<L1GtTriggerMenuRcd>().get(l1GtMenu) ;
+    const L1GtTriggerMenu* m_l1GtMenu = l1GtMenu.product();
+
+    event.getByLabel(mL1GTReadoutRcdSource,gtRecord);
+   // sanity check on L1 Trigger Records
+    int ErrFlag=0;
+    if (!gtRecord.isValid()) 
         {
           cout << "\nL1GlobalTriggerReadoutRecord with \n \n not found"
           "\n  --> returning false by default!\n" << endl;
+          ErrFlag=-1;
         }
+
       // L1 decision word
       const DecisionWord dWord = gtRecord->decisionWord();
-      //map<string, int> l1map;
+
+
       for(unsigned int i=0; i<mL1TriggerNames.size(); i++) 
         {
-          //map<string, int>::const_iterator itr = l1map.find(mL1TriggerNames[i]);
-          bool algResult = l1AlgorithmResult(event, iSetup, mL1TriggerNames[i] );
-          if (algResult) 
+          mL1TrigResults[i].fired=ErrFlag; 
+          mL1TrigResults[i].prescale=1; 
+          
+          bool algResult=false;
+          try { 
+              algResult = m_l1GtMenu->gtAlgorithmResult(mL1TriggerNames[i],dWord );
+          }
+          catch (...) {
+             algResult=false;
+             mL1TrigResults[i].fired=-1;
+          }
+          if (algResult) {
             mL1Names->push_back(mL1TriggerNames[i]);
+            mL1TrigResults[i].fired=1;
+          }
+          if (mFirstEventFlag) 
+            cout << i << ": " << mL1TriggerNames[i] << " decision: " << algResult << endl;
         }
     }
   ////////////// MET //////
@@ -277,7 +321,8 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
          }
     }
 
-  mTree->Fill();
+  if (preTreeFillCut()) mTree->Fill();
+  mFirstEventFlag=false;
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 InclusiveJetTreeProducer::~InclusiveJetTreeProducer() 
@@ -315,6 +360,9 @@ void InclusiveJetTreeProducer::buildTree()
   mPVchi2       = new std::vector<double>();
   mPVndof       = new std::vector<double>();
   mPVntracks    = new std::vector<int>();
+
+// Haven't completely removed these yet, but did at least pull them out of
+// the tree.  
   mHLTNames     = new std::vector<std::string>();
   mL1Names      = new std::vector<std::string>();
   
@@ -346,8 +394,6 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("PVchi2"             ,"vector<double>"      ,&mPVchi2);
   mTree->Branch("PVndof"             ,"vector<double>"      ,&mPVndof);
   mTree->Branch("PVntracks"          ,"vector<int>"         ,&mPVntracks);
-  mTree->Branch("hltNames"           ,"vector<string>"      ,&mHLTNames);
-  mTree->Branch("l1Names"            ,"vector<string>"      ,&mL1Names);
   mTree->Branch("evtNo"              ,&mEvtNo               ,"mEvtNo/I");
   mTree->Branch("runNo"              ,&mRunNo               ,"mRunNo/I");
   mTree->Branch("lumi"               ,&mLumi                ,"mLumi/I");
@@ -358,6 +404,28 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("sumetNoHF"          ,&mSumETnoHF           ,"mSumETnoHF/D");
   mTree->Branch("passLooseHcalNoise" ,&mLooseHcalNoise      ,"mLooseHcalNoise/I"); 	 
   mTree->Branch("passTightHcalNoise" ,&mTightHcalNoise      ,"mTightHcalNoise/I");
+//  mTree->Branch("hltNames"           ,"vector<string>"      ,&mHLTNames);
+//  mTree->Branch("l1Names"            ,"vector<string>"      ,&mL1Names);
+
+// The idea here is we get a branch named after each trigger path named
+// in the config -- whether it exists or not (since having them drop in and
+// out as they might when gathered from the data run by run would mean you
+// couldn't hadd the resulting trees together.
+
+
+  cout << "mTriggerNames: " << mTriggerNames.size() << endl;
+  for (unsigned int jname=0;jname<mTriggerNames.size();jname++) {
+     const char* branchname=mTriggerNames[jname].c_str();
+     mTree->Branch(branchname,&mHLTTrigResults[jname],"prescale/I:fired/I");
+     }
+
+  cout << "mL1TriggerNames: " << mL1TriggerNames.size() << endl;
+  for (unsigned int jname=0;jname<mL1TriggerNames.size();jname++) {
+     const char* branchname=mL1TriggerNames[jname].c_str();
+     mTree->Branch(branchname,&mL1TrigResults[jname],"prescale/I:fired/I");
+     }
+
+
   if(mIsMCarlo)
     {
       mTree->Branch("pthat"          ,&mPtHat               ,"mPtHat/D");
@@ -365,6 +433,23 @@ void InclusiveJetTreeProducer::buildTree()
       mTree->Branch("genMatchR"      ,"vector<double>"      ,&mGenMatchR);
     }
 }
+///////////////////////////////////////////////////////////////////////////////
+
+bool InclusiveJetTreeProducer::preTreeFillCut()
+{
+//  Just something to apply some cuts on the tree vars & friends if necessary 
+//  to remove any obvious useless data from the tree.
+
+
+// If there ain't any jets there isn't a lot we can do!
+// if ((*mPt).size() < 1) return false;
+
+return true;
+}
+
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::clearTreeVectors() 
 {
