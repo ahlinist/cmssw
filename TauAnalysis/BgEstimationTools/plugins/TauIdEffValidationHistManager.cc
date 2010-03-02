@@ -132,7 +132,7 @@ TauIdEffValidationHistManager::TauIdEffValidationHistManager(const edm::Paramete
   effTypes_ = cfg.getParameter<vstring>("effTypes");
 
   typedef std::vector<edm::ParameterSet> vParameterSet;
-  vParameterSet cfgEffValPlots = cfg.getParameter<vParameterSet>("validation");
+  vParameterSet cfgEffValPlots = cfg.getParameter<vParameterSet>("numerators");
   for ( vParameterSet::const_iterator cfgEffValPlot = cfgEffValPlots.begin();
 	cfgEffValPlot != cfgEffValPlots.end(); ++cfgEffValPlot ) {
     std::string cutEffName = cfgEffValPlot->getParameter<std::string>("cutEffName");   
@@ -181,12 +181,12 @@ void TauIdEffValidationHistManager::bookHistogramsImp()
     valPlotEntryType* valPlotEntry_cuts = 
       new valPlotEntryType(*dqmStore_, dqmDirectory_store_, dqmSubDirectory_cuts, "cuts", "", valPlotConfigEntry->cuts_);
     valPlotEntries_.push_back(valPlotEntry_cuts);
-
-    std::string dqmSubDirectory_denominator = dqmDirectoryName("denominator");
-    valPlotEntryType* valPlotEntry_denominator = 
-      new valPlotEntryType(*dqmStore_, dqmDirectory_store_, dqmSubDirectory_denominator, "denominator", "", vstring());
-    valPlotEntries_.push_back(valPlotEntry_denominator);
   }
+
+  std::string dqmSubDirectory_denominator = dqmDirectoryName("denominator");
+  valPlotEntryType* valPlotEntry_denominator = 
+    new valPlotEntryType(*dqmStore_, dqmDirectory_store_, dqmSubDirectory_denominator, "denominator", "", vstring());
+  valPlotEntries_.push_back(valPlotEntry_denominator);
 }
 
 void TauIdEffValidationHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
