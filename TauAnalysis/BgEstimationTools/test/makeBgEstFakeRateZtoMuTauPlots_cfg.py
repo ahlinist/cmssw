@@ -36,7 +36,7 @@ process.source = cms.Source("EmptySource")
 #--------------------------------------------------------------------------------
 process.loadBgEstFakeRateZtoMuTau_tauIdDiscr = cms.EDAnalyzer("DQMFileLoader",
     tauIdDiscr = cms.PSet(
-        inputFileNames = cms.vstring('rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/plots/ZtoMuTau/10TeV/plotsZtoMuTau_all.root'),
+        inputFileNames = cms.vstring('rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/10TeV/plotsZtoMuTau_all.root'),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('tauIdDiscr')
     )
@@ -47,7 +47,7 @@ reconfigDQMFileLoader(
     process.loadBgEstFakeRateZtoMuTau_tauFakeRate,
     dqmDirectory = 'tauFakeRate/#PROCESSDIR#'
 )
-process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/10TeV/")
+process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/10TeVii/")
 
 process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
@@ -290,7 +290,8 @@ process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
     ),
 
     drawOptionEntries = cms.PSet(
-        tauIdDiscr = copy.deepcopy(drawOption_black_separate),
+        #tauIdDiscr = copy.deepcopy(drawOption_black_separate),
+        tauIdDiscr = copy.deepcopy(drawOption_black_points),
         frQCDmuEnriched = copy.deepcopy(drawOption_lightBlue_separate),
         frQCDdiJetLeadJet = copy.deepcopy(drawOption_red_separate),
         frQCDdiJetSecondLeadJet = copy.deepcopy(drawOption_orange_separate),
