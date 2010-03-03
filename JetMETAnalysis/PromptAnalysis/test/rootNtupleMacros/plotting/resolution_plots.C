@@ -201,12 +201,16 @@ void overlay_plots(const string& fFile0, const string& fFile1, const string& fPl
        if(i==10) ngroup = 2;
        else if(i==11) ngroup = 4;
        else if(i==12) ngroup = 4;
+       else if(i==13) ngroup = 4;
+       else if(i==14) ngroup = 8;
+       else if(i==15) ngroup = 8;
      } else if( fTitle.find("2360") != string::npos ) {
        if(i==10) ngroup = 4;
        else if(i==11) ngroup = 4;
        else if(i==12) ngroup = 4;
        else if(i==13) ngroup = 4;
        else if(i==14) ngroup = 8;
+       else if(i==15) ngroup = 8;
      }
      
      h_temp->Rebin(ngroup);
@@ -234,12 +238,16 @@ void overlay_plots(const string& fFile0, const string& fFile1, const string& fPl
        if(i==10) ngroup = 2;
        else if(i==11) ngroup = 4;
        else if(i==12) ngroup = 4;
+       else if(i==13) ngroup = 4;
+       else if(i==14) ngroup = 8;
+       else if(i==15) ngroup = 8;
      } else if( fTitle.find("2360") != string::npos ) {
        if(i==10) ngroup = 4;
        else if(i==11) ngroup = 4;
        else if(i==12) ngroup = 4;
        else if(i==13) ngroup = 4;
        else if(i==14) ngroup = 8;
+       else if(i==15) ngroup = 8;
      }
      
      h_temp->Rebin(ngroup);
@@ -320,10 +328,12 @@ void overlay_plots(const string& fFile0, const string& fFile1, const string& fPl
    l.SetNDC();
    l.DrawLatex(0.14,0.84,"CMS 2009 Preliminary");
    l.DrawLatex(0.14,0.79,("#sqrt{s}="+fTitle).c_str());
-   l.DrawLatex(0.16,0.55,"f(x)=#sqrt{A^{2}+B^{2}(x-D)+C^{2}(x-D)^{2}}");
+   l.DrawLatex(0.12,0.5,"f(x)=#sqrt{A^{2}+B^{2}(x-D)+C^{2}(x-D)^{2}}");
 
-   string fileName = fName;
-   c->SaveAs(fileName.c_str());
+   c->SetGridx();
+   c->SetGridy();
+
+   c->SaveAs(fName.c_str());
    
    delete legend;
    delete h[0];
@@ -538,9 +548,9 @@ void makePlots() {
    // make plots
    //********************************************
 
-//    overlay_plots(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 39, 0, 6.5, "#SigmaE_{T} [GeV]", "#sigma(#slash{E}_{x,y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",1);
-   overlay_plotsPAS(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "Calo #SigmaE_{T} [GeV]", "Calo #sigma(#slash{E}_{x,y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",0);
+//    overlay_plots(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "#SigmaE_{T} [GeV]", "#sigma(#slash{E}_{x,y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",1);
+   overlay_plotsPAS(MC_900, data_900, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "Calo #SigmaE_{T} [GeV]", "#sigma(Calo #slash{E}_{x,y}) [GeV]", "900 GeV", "h_metxysigma_sumet_900.eps",0);
 
 //    overlay_plots(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "#SigmaE_{T} [GeV]", "#sigma(#slash{E}_{x,y}) [GeV]", "2360 GeV", "h_metxysigma_sumet_2360.eps",1);
-   overlay_plotsPAS(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "Calo #SigmaE_{T} [GeV]", "Calo #sigma(#slash{E}_{x,y}) [GeV]", "2360 GeV", "h_metxysigma_sumet_2360.eps",0);
+   overlay_plotsPAS(MC_2360, data_2360, "h2_metx_sumet", "h2_mety_sumet", 0, 46, 0, 7, "Calo #SigmaE_{T} [GeV]", "#sigma(Calo #slash{E}_{x,y}) [GeV]", "2360 GeV", "h_metxysigma_sumet_2360.eps",0);
 }
