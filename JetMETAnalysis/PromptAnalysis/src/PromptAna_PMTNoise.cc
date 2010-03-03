@@ -14,14 +14,6 @@ PromptAna_PMTNoise::PromptAna_PMTNoise(const edm::ParameterSet& iConfig)
     debug_(iConfig.getUntrackedParameter<int>("debug",0))
 
 {
-  //EVENT
-  /*
-  produces <unsigned int> (prefix+"Run"+suffix);
-  produces <unsigned int> (prefix+"Event"+suffix);
-  produces <unsigned int> (prefix+"LumiSection"+suffix);
-  produces <unsigned int> (prefix+"BunchCrossing"+suffix);
-  */
-
   // RECHIT
   produces <std::vector<double> > (prefix + "RecHitEnergy"+suffix);
   produces <std::vector<double> > (prefix + "RecHitTime"+suffix);
@@ -32,6 +24,14 @@ PromptAna_PMTNoise::PromptAna_PMTNoise(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > (prefix + "RecHitRValue"+suffix);
   produces <std::vector<double> > (prefix + "RecHitET"+suffix);
   produces <std::vector<double> > (prefix + "RecHitPartEnergy"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitRightLongEnergy"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitRightShortEnergy"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitLeftLongEnergy"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitLeftShortEnergy"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitTopLongEnergy"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitTopShortEnergy"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitBottomLongEnergy"+suffix);
+  produces <std::vector<double> > (prefix + "RecHitBottomShortEnergy"+suffix);
   produces <std::vector<double> > (prefix + "RecHitSum4Long"+suffix);
   produces <std::vector<double> > (prefix + "RecHitSum4Short"+suffix);
   produces <std::vector<int> >    (prefix + "RecHitChannelStatus"+suffix);
@@ -65,24 +65,20 @@ PromptAna_PMTNoise::PromptAna_PMTNoise(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > (prefix+"EcalS4"+suffix);
   produces <std::vector<int> > (prefix+"EcalIeta"+suffix);
   produces <std::vector<int> > (prefix+"EcalIphi"+suffix);
+  
+  //Generator Information
+  produces <std::vector<double> > (prefix+"PtHat"+suffix);
+  produces <std::vector<double> > (prefix+"PhotonEnergy"+suffix);
+  produces <std::vector<double> > (prefix+"PhotonEta"+suffix);
+  produces <std::vector<double> > (prefix+"PhotonPhi"+suffix); 
 }
 
 
 void PromptAna_PMTNoise::
 produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 {
-
-  // -----------------------------------------------------------------------------------------
-  // PART I:  EVENT INFO
-  /*
-  if (debug_>0) cout <<"ADDING RUN INFO"<<endl;
-  auto_ptr<unsigned int> run(new unsigned int(iEvent.id().run()));
-  auto_ptr<unsigned int> evt(new unsigned int(iEvent.id().event()));
-  auto_ptr<unsigned int> ls(new unsigned int(iEvent.luminosityBlock()));
-  auto_ptr<unsigned int> bx(new unsigned int(iEvent.bunchCrossing()));
-  */
-  // -----------------------------------------------------------------------------------------
-  // PART 2:  HF RECHIT INFO
+  //---------------------------------------------------------------------------------------- //
+  // PART 1:  HF RECHIT INFO
 
   if (debug_>0) cout <<"ADDING HF RECHIT INFO"<<endl;
   auto_ptr<vector<double> > rechitenergy    ( new std::vector<double>()  ) ;
@@ -94,6 +90,14 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   auto_ptr<vector<double> > rechitRvalue  ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitET  ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitpartenergy    ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechitrightlongenergy    ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechitrightshortenergy    ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechitleftlongenergy    ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechitleftshortenergy    ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechittoplongenergy    ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechittopshortenergy    ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechitbottomlongenergy    ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > rechitbottomshortenergy    ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitsum4long  ( new std::vector<double>()  ) ;
   auto_ptr<vector<double> > rechitsum4short  ( new std::vector<double>()  ) ;
   auto_ptr<vector<int> > rechitchanstat  (new std::vector<int>() );
@@ -110,26 +114,18 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   HcalChannelQuality* chanquality = new HcalChannelQuality(*p.product());
   std::vector<DetId> mydetids = chanquality->getAllChannels();
 
-  double R=1;
-  double partenergy=0;
-  double Eta=0;
-  int ieta=-99;
-  int iphi=-99;
-  int depth=-99;
-  double Emax=-999;
-
   // Loop over rechits
   if (debug_>1) cout <<"\tRECHIT SIZE = "<<hfhits->size()<<endl;
   for (HFRecHitCollection::const_iterator hf=hfhits->begin();hf!=hfhits->end();++hf)
     {
-      R=1;  // assume no partner
-      partenergy=0;  // assume no partner
-      Emax=-999; // max long (short) energy of adjacent long (short) fibers
-      HcalDetId id(hf->detid().rawId());
-      ieta=id.ieta();
-      iphi=id.iphi();
-      depth=id.depth();
-      const HcalChannelStatus* origstatus=chanquality->getValues(id);
+      double R=1.;  // assume no partner
+      double partenergy=-999.;  // assume no partner
+      int isSeed = 0;
+      double energy = hf->energy();
+      int ieta=hf->id().ieta();
+      int iphi=hf->id().iphi();
+      int depth=hf->id().depth();
+      const HcalChannelStatus* origstatus=chanquality->getValues(hf->id());
       rechitchanstat->push_back(origstatus->getValue());
       if (origstatus->getValue()!=0  && debug_>2)
 	cout <<"\t\t Non-normal status for RecHit HF("
@@ -139,109 +135,119 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       rechitiphi->push_back(iphi);
       rechitdepth->push_back(depth);
       rechittime->push_back(hf->time());
-      rechitenergy->push_back(hf->energy());
+      rechitenergy->push_back(energy);
       rechitflag->push_back(hf->flags());
-      Eta=0.5*(theHFEtaBounds[abs(ieta)-29]+theHFEtaBounds[abs(ieta)-28]);
-      rechitET->push_back(hf->energy()/cosh(Eta));
+      double eta=0.5*(theHFEtaBounds[abs(ieta)-29]+theHFEtaBounds[abs(ieta)-28]);
+      rechitET->push_back(energy/cosh(eta));
 
       if (debug_>2) cout <<"\t\tSearching for partner for HF("
 			 <<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
       // Search for partner rechit
       HcalDetId pId(HcalForward, ieta, iphi,3-depth);
       HFRecHitCollection::const_iterator part=hfhits->find(pId);
-      if (part!=hfhits->end() && (part->energy()+hf->energy())!=0)
+      if (part!=hfhits->end() && (part->energy()+energy)!=0)
 	{
 	  partenergy=part->energy();
-	  //R=(hf->energy()-part->energy())/(hf->energy()+part->energy());
-	  R=( fabs(hf->energy()) - fabs(part->energy()) ) 
-	    / ( fabs(hf->energy()) + fabs(part->energy()) );
+	  R=(energy-partenergy)/(energy+partenergy);
+          if(partenergy<0) R=1.;
 	}
-      if (id.depth()==2)
+      if (depth==2)
         R*=-1;
       rechitRvalue->push_back(R);
       rechitpartenergy->push_back(partenergy);
 
-      // Sum the 4 long, 4 short channels around the cell
+      // Energies in 4 long and 4 short channels around the cell and their sums
+      double rightlongenergy=0;
+      double rightshortenergy=0;
+      double leftlongenergy=0;
+      double leftshortenergy=0;
+      double toplongenergy=0;
+      double topshortenergy=0;
+      double bottomlongenergy=0;
+      double bottomshortenergy=0;
       double sum4long=0;
       double sum4short=0;
       
       if (debug_>2) cout <<"\t\tR value = "<<R
 			 <<"\n\t\tSearching for neighbors for HF("
 			 <<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
-      std::vector<HcalDetId> LongNeighbors;
-      std::vector<HcalDetId> ShortNeighbors;
-      int myiphileft=iphi;
-      int myiphiright=iphi;
-
+      int myiphi=iphi;
+      int zside=ieta/abs(ieta);
+      
       // special case to find neighbor at boundary between 10, 20-degree cells
       // 20-degree cells have i%4==3 (3, 7, 11, ...)
-      if (ieta==39)
-	(iphi%4==3) ? myiphiright=iphi : myiphiright=iphi+2;
-      else if (ieta==-39)
-	(iphi%4==3) ? myiphileft=iphi : myiphileft=iphi+2;
+      if (abs(ieta)==39)
+        (iphi%4==3) ? myiphi=iphi : myiphi=iphi+2;
 
       int shift=-99;
       //  channels at |ieta|<40 increment by +2 in iphi count
-      fabs(ieta)<40 ? shift=2 : shift=4;
+      abs(ieta)<40 ? shift=2 : shift=4;
 
+      HFRecHitCollection::const_iterator temp;
       // Long neighbors
-      // +/- 1 cell in iphi
-      LongNeighbors.push_back(HcalDetId(HcalForward,ieta,(iphi+shift)%72,1));
-      LongNeighbors.push_back(HcalDetId(HcalForward,ieta,(iphi-shift)%72,1));
+      // right/left cell (+/- 1 in iphi on the negative z-side, -/+ in iphi on the positive z-side)
+      temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi-zside*shift)+72)%72,1));
+      if (temp!=hfhits->end()) rightlongenergy+=temp->energy();
+      temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi+zside*shift)+72)%72,1));
+      if (temp!=hfhits->end()) leftlongenergy+=temp->energy();
 
-      LongNeighbors.push_back(HcalDetId(HcalForward,ieta-1,myiphileft,1));
-      LongNeighbors.push_back(HcalDetId(HcalForward,ieta+1,myiphiright,1));
-      // handle boundary condition for cells at ieta=40 by adding 1 more neighbor cell
-      if (ieta==40)
-	LongNeighbors.push_back(HcalDetId(HcalForward,ieta-1,(iphi-2)%72,1));
-      else if (ieta==-40)
-	LongNeighbors.push_back(HcalDetId(HcalForward,ieta+1,(iphi-2)%72,1));
+      // top/bottom cell (+/- 1 in |ieta|)
+      temp=hfhits->find(HcalDetId(HcalForward,ieta+zside,(myiphi+72)%72,1));
+      if (temp!=hfhits->end()) toplongenergy+=temp->energy();
+      temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,(iphi+72)%72,1));
+      if (temp!=hfhits->end()) bottomlongenergy+=temp->energy();
+
+      // handle boundary condition for cells at |ieta|=40 by adding 1 more neighbor cell
+      if (abs(ieta)==40)
+        {
+          temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,((iphi-2)+72)%72,1));
+          if (temp!=hfhits->end()) bottomlongenergy+=temp->energy();
+        }
 
       // Short neighbors
-      ShortNeighbors.push_back(HcalDetId(HcalForward,ieta,(iphi+shift)%72,2));
-      ShortNeighbors.push_back(HcalDetId(HcalForward,ieta,(iphi-shift)%72,2));
+      // right/left cell (+/- 1 in iphi on the negative z-side, -/+ in iphi on the positive z-side)
+      temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi-zside*shift)+72)%72,2));
+      if (temp!=hfhits->end()) rightshortenergy+=temp->energy();
+      temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi+zside*shift)+72)%72,2));
+      if (temp!=hfhits->end()) leftshortenergy+=temp->energy();
 
-      ShortNeighbors.push_back(HcalDetId(HcalForward,ieta-1,myiphileft,2));
-      ShortNeighbors.push_back(HcalDetId(HcalForward,ieta+1,myiphiright,2));
+      // top/bottom cell (+/- 1 in |ieta|)
+      temp=hfhits->find(HcalDetId(HcalForward,ieta+zside,(myiphi+72)%72,2));
+      if (temp!=hfhits->end()) topshortenergy+=temp->energy();
+      temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,(iphi+72)%72,2));
+      if (temp!=hfhits->end()) bottomshortenergy+=temp->energy();
 
-      // handle boundary condition for cells at ieta=40
-      if (ieta==40)
-	ShortNeighbors.push_back(HcalDetId(HcalForward,ieta-1,(iphi-2)%72,1));
-      else if (ieta==-40)
-	ShortNeighbors.push_back(HcalDetId(HcalForward,ieta+1,(iphi-2)%72,1));
+      // handle boundary condition for cells at |ieta|=40 by adding 1 more neighbor cell
+      if (abs(ieta)==40)
+        {
+          temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,((iphi-2)+72)%72,2));
+          if (temp!=hfhits->end()) bottomshortenergy+=temp->energy();
+        }
 
-      for (std::vector<HcalDetId>::const_iterator L=LongNeighbors.begin(); L!=LongNeighbors.end();++L)
-	{
-	  HFRecHitCollection::const_iterator temp=hfhits->find(*L);
-	  if (temp!=hfhits->end())
-	    {
-	      sum4long+=temp->energy();
-	      if(temp->energy() > Emax && depth==1) 
-		Emax = temp->energy();
-	    }
-	}
-      for (vector<HcalDetId>::iterator S=ShortNeighbors.begin(); S!=ShortNeighbors.end();++S)
-	{
-	  HFRecHitCollection::const_iterator temp=hfhits->find(*S);
-	  if (temp!=hfhits->end())
-	    {
-	      sum4short+=temp->energy();
-	      if(temp->energy() > Emax && depth==2) 
-		Emax = temp->energy();
-	    }
-	}
+      if( depth==1 && energy>rightlongenergy && energy>leftlongenergy && energy>toplongenergy && energy>bottomlongenergy ) isSeed = 1;
+      else if( depth==2 && energy>rightshortenergy && energy>leftshortenergy && energy>topshortenergy && energy>bottomshortenergy ) isSeed = 1;
+
+      sum4long = rightlongenergy + leftlongenergy + toplongenergy + bottomlongenergy;
+      sum4short = rightshortenergy + leftshortenergy + topshortenergy + bottomshortenergy;
+
+      rechitrightlongenergy->push_back(rightlongenergy);
+      rechitrightshortenergy->push_back(rightshortenergy);
+      rechitleftlongenergy->push_back(leftlongenergy);
+      rechitleftshortenergy->push_back(leftshortenergy);
+      rechittoplongenergy->push_back(toplongenergy);
+      rechittopshortenergy->push_back(topshortenergy);
+      rechitbottomlongenergy->push_back(bottomlongenergy);
+      rechitbottomshortenergy->push_back(bottomshortenergy);
       rechitsum4long->push_back(sum4long);
       rechitsum4short->push_back(sum4short);
-      if(Emax < hf->energy())
-	rechitiSseed->push_back(1);
-      else
-	rechitiSseed->push_back(0);      
+      rechitiSseed->push_back(isSeed);
+      
       if (debug_>2) cout <<"\t\tsum4 long = "<<sum4long<<"\t sum4 short = "<<sum4short<<endl;
     } // loop on HF rechits
 
   
   // -----------------------------------------------------------------------------------------
-  // PART 3:  MET/SumET info
+  // PART 2:  MET/SumET info
   
   if (debug_>0) cout <<"ADDING MET/SumET INFO"<<endl;
  
@@ -275,7 +281,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     } // loop on MET
 
   // -----------------------------------------------------------------------------------------
-  // PART IV:  TRACK/TRIGGER INFO
+  // PART 3:  TRACK/TRIGGER INFO
 
   if (debug_>0) cout <<"ADDING TRACK/TRIGGER INFO"<<endl;
 
@@ -342,11 +348,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
   // -----------------------------------------------------------------------------------------
-  // Part 5:  ECAL noise search
+  // Part 4:  ECAL noise search
 
   if (debug_>0) cout <<"ADDING ECAL INFO"<<endl;
 
-  // Store enregy, iphi, ieta, S4 for all cells with ET > 5 GeV 
+  // Store energy, iphi, ieta, S4 for all cells with ET > 5 GeV 
   auto_ptr<vector<double> > ecalEnergy   ( new std::vector<double>()  ) ;
   auto_ptr<vector<int> > ecaliPhi   ( new std::vector<int>()  ) ;
   auto_ptr<vector<int> > ecaliEta   ( new std::vector<int>()  ) ;
@@ -393,6 +399,39 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
   //---------------------------------------------------------------------------------------- //
+  // Part 6: Generator Information
+  
+  if (debug_>0) cout <<"ADDING GENERATOR INFO"<<endl;
+  
+  auto_ptr<vector<double> > pthat  ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > photonenergy  ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > photoneta  ( new std::vector<double>()  ) ;
+  auto_ptr<vector<double> > photonphi  ( new std::vector<double>()  ) ;
+
+  // Get GenEventInfoProduct
+  if (debug_>1) cout <<"\tTrying to get GenEventInfoProduct"<<endl;
+  edm::Handle<GenEventInfoProduct> genEvtInfo;
+  if (iEvent.getByLabel("generator", genEvtInfo) && genEvtInfo.isValid())
+    {
+      double pthat_ = ( genEvtInfo->hasBinningValues() ? (genEvtInfo->binningValues())[0] : 0.0 );
+
+      pthat->push_back(pthat_);
+    }
+
+  // Get GenParticles
+  if (debug_>1) cout <<"\tTrying to get GenParticles"<<endl;
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  if (iEvent.getByLabel("genParticles", genParticles) && genParticles.isValid())
+    {
+      for (GenParticleCollection::const_iterator p = genParticles->begin(); p != genParticles->end(); ++p) {
+
+        if( p->pdgId()!=22 ) continue;
+       
+        photonenergy->push_back(p->energy());
+        photoneta->push_back(p->eta());
+        photonphi->push_back(p->phi());
+      }
+    }
   //---------------------------------------------------------------------------------------- //
 
   // Add objects to collection
@@ -416,6 +455,14 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(rechitRvalue,prefix + "RecHitRValue"+suffix);
   iEvent.put(rechitET,prefix + "RecHitET"+suffix);
   iEvent.put(rechitpartenergy,prefix + "RecHitPartEnergy"+suffix);
+  iEvent.put(rechitrightlongenergy,prefix + "RecHitRightLongEnergy"+suffix);
+  iEvent.put(rechitrightshortenergy,prefix + "RecHitRightShortEnergy"+suffix);
+  iEvent.put(rechitleftlongenergy,prefix + "RecHitLeftLongEnergy"+suffix);
+  iEvent.put(rechitleftshortenergy,prefix + "RecHitLeftShortEnergy"+suffix);
+  iEvent.put(rechittoplongenergy,prefix + "RecHitTopLongEnergy"+suffix);
+  iEvent.put(rechittopshortenergy,prefix + "RecHitTopShortEnergy"+suffix);
+  iEvent.put(rechitbottomlongenergy,prefix + "RecHitBottomLongEnergy"+suffix);
+  iEvent.put(rechitbottomshortenergy,prefix + "RecHitBottomShortEnergy"+suffix);
   iEvent.put(rechitsum4long,prefix + "RecHitSum4Long"+suffix);
   iEvent.put(rechitsum4short,prefix + "RecHitSum4Short"+suffix);
   iEvent.put(rechitchanstat,prefix+"RecHitChannelStatus"+suffix);
@@ -449,6 +496,13 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(ecalS4,prefix+"EcalS4"+suffix);
   iEvent.put(ecaliEta,prefix+"EcalIeta"+suffix);
   iEvent.put(ecaliPhi,prefix+"EcalIphi"+suffix);
+  
+  // Generator Information
+  iEvent.put(pthat,prefix+"PtHat"+suffix);
+  iEvent.put(photonenergy,prefix+"PhotonEnergy"+suffix);
+  iEvent.put(photoneta,prefix+"PhotonEta"+suffix);
+  iEvent.put(photonphi,prefix+"PhotonPhi"+suffix);
+
 } // void PromptAna_PMTNoise::produce()
 
 
