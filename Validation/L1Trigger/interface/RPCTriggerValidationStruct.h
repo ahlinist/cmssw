@@ -38,6 +38,16 @@ namespace RPCTriggerValidationStruct {
 static RPCConst _const;
 //static int  _NumberOfQuality;
 
+std::string changedot(double x)
+	  {
+		std::stringstream ss;
+		ss<<x;
+		std::string s=ss.str();
+                if (s.find('.')!=std::string::npos)
+		  s.replace(s.find('.'),1,1,'d');
+		return s;
+	  }
+
 struct L1MuonCandLocalInfo {
 	
 	
@@ -157,15 +167,6 @@ struct MEResolution {
           
 	  MonitorElement * _meVec[18];
 
-	  std::string changedot(double x)
-	  {
-		std::stringstream ss;
-		ss<<x;
-		std::string s=ss.str();
-                if (s.find('.')!=std::string::npos)
-		  s.replace(s.find('.'),1,1,'x');
-		return s;
-	  }
 
       
       };
@@ -239,11 +240,11 @@ struct MEDistribution {
 	  
 	  void dev(  ) {
             
-            /*
-            _meVecTowerVsPhiGen[0]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
-	    _meVecTowerVsPhiGen[1]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
-	    _meVecTowerVsPhiGen[2]->getTH2D()->Divide((_meVecTowerVsPhiGen[3]->getTH2D()));
-             */
+            
+            _meVecTowerVsPhiGen[0]->getTH2F()->Divide((_meVecTowerVsPhiGen[3]->getTH2F()));
+	    _meVecTowerVsPhiGen[1]->getTH2F()->Divide((_meVecTowerVsPhiGen[3]->getTH2F()));
+	    _meVecTowerVsPhiGen[2]->getTH2F()->Divide((_meVecTowerVsPhiGen[3]->getTH2F()));
+             
 	    
 	    
 	   } 	  
@@ -256,21 +257,13 @@ struct MEDistribution {
 	  MonitorElement * _meTowerVsPhiL1;
       	 static const std::string _tag[] ;
 	 
-	 std::string changedot(double x)
-	  {
-		std::stringstream ss;
-		ss<<x;
-		std::string s=ss.str();
-                if (s.find('.')!=std::string::npos)
-		  s.replace(s.find('.'),1,1,'x');
-		return s;
-	  }
-	  
+
 	  
 	  
 	 
       };
            
+
 struct MEEfficieny {
         public:
           MEEfficieny(edm::ParameterSet ps, DQMStore * dqm): 
@@ -324,20 +317,13 @@ struct MEEfficieny {
 	  MonitorElement * _meDenomPt;
 	  MonitorElement * _meNomPt;
 	  
-	  std::string changedot(double x)
-	  {
-		std::stringstream ss;
-		ss<<x;
-		std::string s=ss.str();
-                if (s.find('.')!=std::string::npos)
-		  s.replace(s.find('.'),1,1,'x');
-		return s;
-	  }
+
 	  
       	 
       }; 
 
 
+	  
 
       }
       
