@@ -126,9 +126,9 @@ struct MEResolution {
 	                for (  int it=0; it<(2*(_NumberOfQuality+1)) ; ++it  ) {
 			std::stringstream name;
 	    std::stringstream title;
-	name<<"Resolution_eta"<<changedot(_etaL)<<"_"<<changedot(_etaH)<<"_pt"<<changedot(_ptL)<<"_"<<changedot(_ptH)<<"_quality_"<< ((it>4) ? it-5 : it);
-	    title<<"RPCTrigger: Resolution  #eta ["<<_etaL<<":"<<_etaH<<"] pt ["<<_ptL<<":"<<_ptH<<"] quality "<<((it>4) ? (it-5) : it);
-	    if(it>4){
+	name<<"Resolution_eta"<<changedot(_etaL)<<"_"<<changedot(_etaH)<<"_pt"<<changedot(_ptL)<<"_"<<changedot(_ptH)<<"_quality_"<< ((it>_NumberOfQuality) ? it-_NumberOfQuality-1 : it);
+	    title<<"RPCTrigger: Resolution  #eta ["<<_etaL<<":"<<_etaH<<"] pt ["<<_ptL<<":"<<_ptH<<"] quality "<<((it>_NumberOfQuality) ? (it-_NumberOfQuality-1) : it);
+	    if(it>_NumberOfQuality){
 	    name<<"_ghost";
 	    title<<" ghost";
 	  		}
