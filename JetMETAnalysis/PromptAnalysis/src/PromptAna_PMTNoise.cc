@@ -426,6 +426,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (GenParticleCollection::const_iterator p = genParticles->begin(); p != genParticles->end(); ++p) {
 
         if( p->pdgId()!=22 ) continue;
+        if( fabs(p->eta())<2.8 || fabs(p->eta())>5.2 ) continue;
        
         photonenergy->push_back(p->energy());
         photoneta->push_back(p->eta());
