@@ -1,0 +1,10 @@
+<flags   CXXFLAGS="-O0 -g3 -fno-inline"/>
+<environment>
+  <use   name="boost"/>
+  <use   name="root"/>
+</environment>
+<bin   file="L1RPCAddDQMHistos.cc">
+</bin>
+<bin   file="L1RPCPlotHistos.cc">
+  <use   name="rootgraphics"/>
+</bin>
