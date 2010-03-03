@@ -2,8 +2,8 @@
   \File BeamRenderPlugin
   \Display Plugin for BeamSpot DQM Histograms
   \author 
-  \version $Revision: 1.6 $
-  \date $Date: 2010/02/03 00:43:46 $
+  \version $Revision: 1.7 $
+  \date $Date: 2010/02/10 08:23:21 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -120,12 +120,22 @@ private:
     TH1F* obj = dynamic_cast<TH1F*>( o.object );
     assert( obj );
 
+    TAxis* xa = obj->GetXaxis();
     TAxis* ya = obj->GetYaxis();
     ya->SetTitleOffset(1.15);
     ya->SetTitleSize(0.04);
     ya->SetLabelSize(0.03);
 
-    if( o.name.find( "_lumi" )  != std::string::npos) {
+    if( o.name.find( "_lumi" )  != std::string::npos ) {
+      gStyle->SetOptStat(11);
+      return;
+    }
+
+    xa->SetTitleOffset(1.15);
+    xa->SetTitleSize(0.04);
+    xa->SetLabelSize(0.03);
+
+    if(	o.name.find( "_time" )  != std::string::npos ) {
       gStyle->SetOptStat(11);
       return;
     }
