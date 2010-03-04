@@ -119,7 +119,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   for (HFRecHitCollection::const_iterator hf=hfhits->begin();hf!=hfhits->end();++hf)
     {
       double R=1.;  // assume no partner
-      double partenergy=-999.;  // assume no partner
+      double partenergy=0;  // assume no partner
       int isSeed = 0;
       double energy = hf->energy();
       int ieta=hf->id().ieta();
@@ -145,11 +145,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // Search for partner rechit
       HcalDetId pId(HcalForward, ieta, iphi,3-depth);
       HFRecHitCollection::const_iterator part=hfhits->find(pId);
-      if (part!=hfhits->end() && (part->energy()+energy)!=0)
+      if ( part!=hfhits->end() )
 	{
 	  partenergy=part->energy();
-	  R=(energy-partenergy)/(energy+partenergy);
-          if(partenergy<0) R=1.;
+          if( energy>0 && partenergy<0 ) R=1.;
+          else if(energy>0 && partenergy>=0) R=(energy-partenergy)/(energy+partenergy);
+          else R=-999.;
 	}
       if (depth==2)
         R*=-1;
