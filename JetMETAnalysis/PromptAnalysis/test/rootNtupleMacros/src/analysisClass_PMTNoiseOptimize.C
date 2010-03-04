@@ -34,11 +34,6 @@ void analysisClass::Loop()
    //////////book histos here
 
    //binning
-   float Min_E=10;
-   int bin_1oE=100;
-   float Max_SXoS1=0.5;
-   float Min_SXoS1=-0.5;
-   int bin_SXoS1=100;
    float Max_Nspikes=10;
    int bin_Nspikes=10;
 
@@ -396,24 +391,14 @@ void analysisClass::Loop()
                if( isLongMasked==1 || isShortMasked==1 ) continue;
                
                //R = L-S/L+S
-               double R = ( energy - partenergy ) / ( energy + partenergy );
-               if( partenergy<0 ) R = 1.;
-               if(depth==2)
-                 R = R * -1;
+               double R = PMTnoiseRecHitRValue->at(i);
                
                //S9/S1
                double S9oS1 = ( partenergy + sum4Long + sum4Short ) / energy;
                
                //S5/S1
-               double S5oS1 = -99.;
-               if( depth==1 && energy>0 ) //L
-                 {
-                   S5oS1 = ( partenergy + sum4Long ) / energy;
-                 }
-               if( depth==2 && energy>0) //S
-                 {
-                   S5oS1 = ( partenergy + sum4Short ) / energy;
-                 }
+               double S5oS1 = ( partenergy + sum4Long ) / energy; // L
+               if( depth==2 ) S5oS1 = ( partenergy + sum4Short ) / energy; // S
 
                //## identify HF spikes a la Igor
                if( depth==1 && energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 )
@@ -637,6 +622,36 @@ void analysisClass::Loop()
    for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_L_Flagged_ieta.begin(); it != h_HFRecHitET_L_Flagged_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_S_Flagged_ieta.begin(); it != h_HFRecHitET_S_Flagged_ieta.end(); it++) it->second->Write();
    
+   h_CaloMET->Write();
+   h_CaloMETPhi->Write();
+   h_CaloMEx->Write();
+   h_CaloMEy->Write();
+   h_CaloSumET->Write();
+   
+   h_CaloMET_cleanECAL->Write();
+   h_CaloMETPhi_cleanECAL->Write();
+   h_CaloMEx_cleanECAL->Write();
+   h_CaloMEy_cleanECAL->Write();
+   h_CaloSumET_cleanECAL->Write();
+   
+   h_CaloMET_clean->Write();
+   h_CaloMETPhi_clean->Write();
+   h_CaloMEx_clean->Write();
+   h_CaloMEy_clean->Write();
+   h_CaloSumET_clean->Write();
+   
+   h_CaloMETHF->Write();
+   h_CaloMETPhiHF->Write();
+   h_CaloMExHF->Write();
+   h_CaloMEyHF->Write();
+   h_CaloSumETHF->Write();
+   
+   h_CaloMETHF_clean->Write();
+   h_CaloMETPhiHF_clean->Write();
+   h_CaloMExHF_clean->Write();
+   h_CaloMEyHF_clean->Write();
+   h_CaloSumETHF_clean->Write();
+   
    h2_N_HFspikes_L_ieta_iphi->Write();
    h2_N_HFspikes_S_ieta_iphi->Write();
    
@@ -669,36 +684,6 @@ void analysisClass::Loop()
    for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
-   
-   h_CaloMET->Write();
-   h_CaloMETPhi->Write();
-   h_CaloMEx->Write();
-   h_CaloMEy->Write();
-   h_CaloSumET->Write();
-   
-   h_CaloMET_cleanECAL->Write();
-   h_CaloMETPhi_cleanECAL->Write();
-   h_CaloMEx_cleanECAL->Write();
-   h_CaloMEy_cleanECAL->Write();
-   h_CaloSumET_cleanECAL->Write();
-   
-   h_CaloMET_clean->Write();
-   h_CaloMETPhi_clean->Write();
-   h_CaloMEx_clean->Write();
-   h_CaloMEy_clean->Write();
-   h_CaloSumET_clean->Write();
-   
-   h_CaloMETHF->Write();
-   h_CaloMETPhiHF->Write();
-   h_CaloMExHF->Write();
-   h_CaloMEyHF->Write();
-   h_CaloSumETHF->Write();
-   
-   h_CaloMETHF_clean->Write();
-   h_CaloMETPhiHF_clean->Write();
-   h_CaloMExHF_clean->Write();
-   h_CaloMEyHF_clean->Write();
-   h_CaloSumETHF_clean->Write();
    
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
