@@ -585,7 +585,7 @@ void analysisClass::Loop()
       else if(isData == 0)
 	pass_PhysicsBit = 1;
     
-      if (pass_BPTX && 	pass_BSC_MB /*&& pass_PhysicsBit */&& pass_BSC_BeamHaloVeto) {
+      if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
      // ---------------------------------------------------------------
      //# Reco-based Selection
       //## pass_MonsterTRKEventVeto - "Monster Events" Tracker Filter
@@ -831,7 +831,7 @@ void analysisClass::Loop()
 		  else {
 		    dijcScale = 1;
 		  }
-		  if((ak5JetpT->at(dj) * dijcScale) >ptMinDijet && ak5JetEta->at(dj)<endcapeta 
+		  if((ak5JetpT->at(dj) * dijcScale) >ptMinDijet && ak5JetEta->at(dj)<endcapeta_dijet
 		     && JetIdloose(ak5JetJIDresEMF->at(dj),ak5JetJIDfHPD->at(dj),ak5JetJIDn90Hits->at(dj))){   ///
 		    NALLindijetsJetIDLoose++;
 		  }
