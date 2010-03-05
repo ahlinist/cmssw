@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: FakeRateWeightProducerBase.h,v 1.6 2010/02/03 15:19:33 veelken Exp $
+ * $Id: FakeRateWeightProducerBase.h,v 1.7 2010/02/04 16:19:59 veelken Exp $
  *
  */
 
@@ -20,8 +20,7 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-//#include "PhysicsTools/Utilities/interface/StringCutObjectSelector.h" // for CMSSW_2_2_x
-#include "CommonTools/Utils/interface/StringCutObjectSelector.h"    // for CMSSW_3_1_x
+#include "CommonTools/Utils/interface/StringCutObjectSelector.h" 
 
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
