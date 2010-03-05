@@ -28,13 +28,19 @@ ODESFEPedestalOffsetInfo::ODESFEPedestalOffsetInfo()
   clear();   
 }
 
+/******************************/
+
 void ODESFEPedestalOffsetInfo::clear(){
 
 }
 
+/******************************/
+
 ODESFEPedestalOffsetInfo::~ODESFEPedestalOffsetInfo()
 {
 }
+
+/******************************/
 
 int ODESFEPedestalOffsetInfo::fetchNextId()  throw(std::runtime_error) {
 
@@ -58,14 +64,18 @@ int ODESFEPedestalOffsetInfo::fetchNextId()  throw(std::runtime_error) {
 
 }
 
+/******************************/
+
 void ODESFEPedestalOffsetInfo::prepareWrite()
   throw(runtime_error)
 {
+  
   this->checkConnection();
 
   int next_id=0;
   if(getId()==0){
-    next_id=fetchNextId();
+     next_id=fetchNextId();
+     cout << " next_id=" << next_id << endl;
   }
 
   try {
@@ -75,12 +85,14 @@ void ODESFEPedestalOffsetInfo::prepareWrite()
 	  " VALUES ( :1, :2, :3 ,:4, :5, :6) " );
     m_writeStmt->setInt(1, next_id);
     m_ID=next_id;
-
+    cout << "Id= " << m_ID << endl;
   } catch (SQLException &e) {
     throw(runtime_error("ODESFEPedestalOffsetInfo::prepareWrite():  "+e.getMessage()));
   }
 
 }
+
+/******************************/
 
 void ODESFEPedestalOffsetInfo::setParameters(std::map<string,string> my_keys_map){
   
@@ -94,6 +106,8 @@ void ODESFEPedestalOffsetInfo::setParameters(std::map<string,string> my_keys_map
     if(ci->first==  "TAG") setConfigTag(ci->second); 
   }
 }
+
+/******************************/
 
 void ODESFEPedestalOffsetInfo::writeDB()
   throw(runtime_error)
@@ -128,6 +142,7 @@ void ODESFEPedestalOffsetInfo::writeDB()
   }
 }
 
+/******************************/
 
 void ODESFEPedestalOffsetInfo::fetchData(ODESFEPedestalOffsetInfo * result)
   throw(runtime_error)
@@ -142,10 +157,14 @@ void ODESFEPedestalOffsetInfo::fetchData(ODESFEPedestalOffsetInfo * result)
   }
 
   try {
-    if(result->getId()!=0) { 
+    if(result->getId()!=0) {
       m_readStmt->setSQL("SELECT * FROM " + getTable() +   
 			 " where  rec_id = :1 ");
       m_readStmt->setInt(1, result->getId());
+   } else if (result->getVersion()==0) {
+      m_readStmt->setSQL("SELECT * FROM "+ getTable() +
+          " where version = ( select max(version) from "+ getTable() +" ) and tag=:1");
+      m_readStmt->setString(1, result->getConfigTag());
     } else if (result->getConfigTag()!="") {
       m_readStmt->setSQL("SELECT * FROM " + getTable() +   
 			 " where  tag=:1 AND version=:2 " );
@@ -157,7 +176,6 @@ void ODESFEPedestalOffsetInfo::fetchData(ODESFEPedestalOffsetInfo * result)
     }
 
     ResultSet* rset = m_readStmt->executeQuery();
-
     rset->next();
 
     // 1 is the id and 2 is the config tag and 3 is the version
@@ -174,6 +192,8 @@ void ODESFEPedestalOffsetInfo::fetchData(ODESFEPedestalOffsetInfo * result)
     throw(runtime_error("ODESFEPedestalOffsetInfo::fetchData():  "+e.getMessage()));
   }
 }
+
+/******************************/
 
 void ODESFEPedestalOffsetInfo::fetchLastData(ODESFEPedestalOffsetInfo * result)
   throw(runtime_error)
@@ -203,6 +223,7 @@ void ODESFEPedestalOffsetInfo::fetchLastData(ODESFEPedestalOffsetInfo * result)
   }
 }
 
+/******************************/
 
 int ODESFEPedestalOffsetInfo::fetchID()    throw(std::runtime_error)
 {
@@ -236,30 +257,56 @@ int ODESFEPedestalOffsetInfo::fetchID()    throw(std::runtime_error)
   return m_ID;
 }
 
-  
- vector<int>  ODESFEPedestalOffsetInfo::fetchRunPlus(const int recid)    throw(std::runtime_error)
+/*****************************/
+
+std::map< int,int >  ODESFEPedestalOffsetInfo::fetchIovId(const int runp,const int runm) throw(std::runtime_error)
 {
-   vector<int> refrun ;
- 
+  std::map< int,int > fillMap;
+
+  fillMap.clear();
   this->checkConnection();
-  cout << "REC_ID= " << recid << endl;
-  cout << "Query=" << "SELECT iov_id_es_pl,iov_id_es_pl,iov_id_es_mi FROM "+ getTable()+" WHERE  rec_id=:1 " << endl;
   try {
     Statement* stmt = m_conn->createStatement();
-    stmt->setSQL("SELECT iov_id_es_pl,iov_id_es_pl,iov_id_es_mi FROM "+ getTable()+
-                 " WHERE  rec_id=:1 " );
 
-    stmt->setInt(1,recid);
+    stmt->setSQL("select c.iov_id, sum(b.logic_id) as Side from CMS_ES_COND.ES_MON_RUN_IOV D inner join CMS_ES_COND.RUN_CONFIG_DAT A on A.iov_id= D.run_iov_id inner join CMS_ES_COND.RUN_DAT B on B.iov_id= D.run_iov_id inner join CMS_ES_COND.RUN_IOV c on C.iov_id= D.run_iov_id where B.num_events >0 and (c.run_num=:1 or c.run_num=:2) group by c.iov_id having count(B.Logic_id)=:3 order by c.iov_id");
+    stmt->setInt(1,runp);
+    stmt->setInt(2,runm);
+    stmt->setInt(3,20);
     ResultSet* rset = stmt->executeQuery();
     while (rset->next()) {
-      refrun.push_back(rset->getInt(1));
-      refrun.push_back(rset->getInt(2));
-      refrun.push_back(rset->getInt(3));
+      fillMap[rset->getInt(1)]=rset->getInt(2);
     }
+    m_conn->terminateStatement(stmt);
+  } catch (SQLException &e) {
+    throw(runtime_error("ODESFEPedestalOffsetInfo::fetchRunPlus:  "+e.getMessage()));
+ }
+ return  fillMap ;
+}
 
+/******************************/
+
+std::map< int,int >  ODESFEPedestalOffsetInfo::fetchGain(const string gain)    throw(std::runtime_error)
+{
+  std::map< int,int > fillMap;
+
+  fillMap.clear();
+  this->checkConnection();
+  try {
+    Statement* stmt = m_conn->createStatement();
+
+    stmt->setSQL("select c.run_num, sum(b.logic_id) as Side from CMS_ES_COND.ES_MON_RUN_IOV D inner join CMS_ES_COND.RUN_CONFIG_DAT A on A.iov_id= D.run_iov_id inner join CMS_ES_COND.RUN_DAT B on B.iov_id= D.run_iov_id inner join CMS_ES_COND.RUN_IOV c on C.iov_id= D.run_iov_id where  A.config_tag=:1 and B.num_events >0 group by c.run_num having count(B.Logic_id)=:2 order by c.run_num");
+    if((gain=="H")||(gain=="h"))
+      stmt->setString(1,"PEDESTAL-HG-TTC");
+    else
+      stmt->setString(1,"PEDESTAL-LG-TTC");
+    stmt->setInt(2,20);
+    ResultSet* rset = stmt->executeQuery();
+    while (rset->next()) {
+      fillMap[rset->getInt(1)]=rset->getInt(2);
+    }
     m_conn->terminateStatement(stmt);
   } catch (SQLException &e) {
     throw(runtime_error("ODESFEPedestalOffsetInfo::fetchRunPlus:  "+e.getMessage()));
   }
- return  refrun ;
+ return  fillMap ;
 }
