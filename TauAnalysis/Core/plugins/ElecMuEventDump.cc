@@ -13,6 +13,10 @@ ElecMuEventDump::ElecMuEventDump(const edm::ParameterSet& cfg)
   : GenericEventDump(cfg)
 {
   //std::cout << "<ElecMuEventDump::ElecMuEventDump>:" << std::endl;
+
+  electronDump_ = makeObjectDump(cfg, "PATElectronDump");
+  muonDump_ = makeObjectDump(cfg, "PATMuonDump");
+  elecMuDump_ = makeObjectDump(cfg, "PATElecMuPairDump");
 }
 
 ElecMuEventDump::~ElecMuEventDump()
@@ -43,10 +47,10 @@ void ElecMuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 
-  printElectronInfo(iEvent);
-  printMuonInfo(iEvent);
+  electronDump_->print(iEvent, iSetup);
+  muonDump_->print(iEvent, iSetup);
 
-  printDiTauCandidateInfo(iEvent);
+  elecMuDump_->print(iEvent, iSetup);
 
   printMissingEtInfo(iEvent);
 

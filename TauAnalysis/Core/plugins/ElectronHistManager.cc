@@ -13,6 +13,7 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
@@ -27,7 +28,7 @@ bool matchesGenElectron(const pat::Electron& patElectron)
   std::vector<reco::GenParticleRef> associatedGenParticles = patElectron.genParticleRefs();
   for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin(); 
 	it != associatedGenParticles.end(); ++it ) {
-    if ( it->isAvailable() ) {
+    if ( isValidRef(*it) ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -11 || genParticle->pdgId() == +11 ) isGenElectronMatched = true;
     } else {
@@ -269,7 +270,7 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
       hElectronMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
     }
 
-    if ( patElectron->gsfTrack().isAvailable() ) {
+    if ( isValidRef(patElectron->gsfTrack()) ) {
       hElectronTrackPt_->Fill(patElectron->gsfTrack()->pt(), weight);
       if ( vertexSrc_.label() != "" ) {
 	edm::Handle<std::vector<reco::Vertex> > recoVertices;
@@ -294,7 +295,7 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
     hElectronSuperclShapeSigmaEtaEta_->Fill(patElectron->sigmaEtaEta(), weight); 
     hElectronDeltaPhiSuperclToExtrapolTrack_->Fill(patElectron->deltaPhiSuperClusterTrackAtVtx(), weight);
     hElectronDeltaEtaSuperclToExtrapolTrack_->Fill(patElectron->deltaEtaSuperClusterTrackAtVtx(), weight);
-    if ( patElectron->gsfTrack().isAvailable() ) {
+    if ( isValidRef(patElectron->gsfTrack()) ) {
       double pIn  = patElectron->trackMomentumAtVtx().R(); 
       double pOut = patElectron->trackMomentumOut().R(); 
       if ( pIn > 0. ) hElectronBremsFraction_->Fill((pIn - pOut)/pIn, weight);
@@ -383,7 +384,7 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   hElectronTrkIsoPtVsElectronPt_->Fill(patElectron.pt(), patElectron.trackIso(), weight);
   hElectronEcalIsoPt_->Fill(patElectron.ecalIso(), weight);
 
-  if ( patElectron.superCluster().isAvailable() ) {
+  if ( isValidRef(patElectron.superCluster()) ) {
     if ( TMath::Abs(patElectron.superCluster()->eta()) < electronEtaMaxBarrel_ ) 
       hElectronEcalIsoPtBarrel_->Fill(patElectron.ecalIso(), weight);
     if ( TMath::Abs(patElectron.superCluster()->eta()) > electronEtaMinEndcap_ ) 
@@ -396,7 +397,7 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   hElectronIsoSumPtVsElectronPt_->Fill(patElectron.pt(), patElectron.trackIso() + patElectron.ecalIso(), weight);
   hElectronTrkIsoPtRel_->Fill(patElectron.trackIso()/patElectron.pt(), weight);
   hElectronEcalIsoPtRel_->Fill(patElectron.ecalIso()/patElectron.pt(), weight);
-  if ( patElectron.superCluster().isAvailable() ) {
+  if ( isValidRef(patElectron.superCluster()) ) {
     if ( TMath::Abs(patElectron.superCluster()->eta()) < electronEtaMaxBarrel_ ) 
       hElectronEcalIsoPtBarrelRel_->Fill(patElectron.ecalIso()/patElectron.pt(), weight);
     if ( TMath::Abs(patElectron.superCluster()->eta()) > electronEtaMinEndcap_ ) 

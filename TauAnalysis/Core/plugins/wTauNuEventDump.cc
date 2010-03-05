@@ -14,6 +14,8 @@ wTauNuEventDump::wTauNuEventDump(const edm::ParameterSet& cfg)
   : GenericEventDump(cfg)
 {
   //std::cout << "<wTauNuEventDump::wTauNuEventDump>:" << std::endl;
+
+  tauDump_ = makeObjectDump(cfg, "PATTauDump");  
 }
 
 wTauNuEventDump::~wTauNuEventDump()
@@ -68,8 +70,10 @@ void wTauNuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
     
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 
+  tauDump_->print(iEvent, iSetup);
+
   printMissingEtInfo(iEvent);
-  printTauInfo(iEvent);
+
   printJetInfo(iEvent);  
 }
 

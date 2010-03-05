@@ -17,15 +17,12 @@ class MuTauEventDump : public GenericEventDump
  public:  
   explicit MuTauEventDump(const edm::ParameterSet&);
   ~MuTauEventDump();
-
-  void printDiTauCandidateInfo(const edm::Event& evt) const {
-    printDiTauCandidateInfoImp<pat::Muon, pat::Tau>(evt);
-  }
   
  protected:
   void print(const edm::Event&, const edm::EventSetup&, 
 	     const filterResults_type&, const filterResults_type&, double) const;
 
+  ObjectDumpBase* electronDump_;
   ObjectDumpBase* muonDump_;
   ObjectDumpBase* tauDump_;
   ObjectDumpBase* muTauDump_;

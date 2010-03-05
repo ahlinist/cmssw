@@ -12,6 +12,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
@@ -26,7 +27,7 @@ bool matchesGenMuon(const pat::Muon& patMuon)
   std::vector<reco::GenParticleRef> associatedGenParticles = patMuon.genParticleRefs();
   for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin(); 
 	it != associatedGenParticles.end(); ++it ) {
-    if ( it->isAvailable() ) {
+    if ( isValidRef(*it) ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -13 || genParticle->pdgId() == +13 ) isGenMuonMatched = true;
     } else {
@@ -256,7 +257,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
       hMuonMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
     }
 
-    if ( vertexSrc_.label() != "" && patMuon->track().isAvailable() ) {
+    if ( vertexSrc_.label() != "" && isValidRef(patMuon->track()) ) {
       edm::Handle<std::vector<reco::Vertex> > recoVertices;
       evt.getByLabel(vertexSrc_, recoVertices);
       if ( recoVertices->size() >= 1 ) {

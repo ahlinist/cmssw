@@ -38,6 +38,11 @@ ElecTauEventDump::ElecTauEventDump(const edm::ParameterSet& cfg)
   : GenericEventDump(cfg)
 {
   //std::cout << "<ElecTauEventDump::ElecTauEventDump>:" << std::endl;
+
+  electronDump_ = makeObjectDump(cfg, "PATElectronDump");
+  muonDump_ = makeObjectDump(cfg, "PATMuonDump");
+  tauDump_ = makeObjectDump(cfg, "PATTauDump");  
+  elecTauDump_ = makeObjectDump(cfg, "PATElecTauPairDump");
 }
 
 ElecTauEventDump::~ElecTauEventDump()
@@ -74,11 +79,11 @@ void ElecTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iS
 
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 
-  printElectronInfo(iEvent);
-  printMuonInfo(iEvent);
-  printTauInfo(iEvent);
+  electronDump_->print(iEvent, iSetup);
+  muonDump_->print(iEvent, iSetup);
+  tauDump_->print(iEvent, iSetup);
 
-  printDiTauCandidateInfo(iEvent);
+  elecTauDump_->print(iEvent, iSetup);
 
   printZeeInfo(iEvent);
 

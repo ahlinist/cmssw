@@ -9,6 +9,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
+#include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
@@ -53,16 +54,16 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
 		   << " (eta = " << patElectron->eta() << ")" << std::endl;
     *outputStream_ << " phi = " << patElectron->phi()*180./TMath::Pi() << std::endl;
     *outputStream_ << " Supercluster" << std::endl;
-    if ( patElectron->superCluster().isAvailable() ) {
+    if ( isValidRef(patElectron->superCluster()) ) {
       double et = patElectron->superCluster()->energy()*TMath::Sin(patElectron->superCluster()->position().theta());
       *outputStream_ << "  Et = " << et << std::endl;
     } else {
       *outputStream_ << "  none." << std::endl;
     }
     *outputStream_ << " Track" << std::endl;
-    printTrackInfo(edm::RefToBase<reco::Track>(patElectron->track()), patElectron->vertex(), true, false, outputStream_);
+    printTrackInfo(patElectron->track(), patElectron->vertex(), true, false, outputStream_);
     *outputStream_ << " gsf Track" << std::endl;
-    printTrackInfo(edm::RefToBase<reco::Track>(patElectron->gsfTrack()), patElectron->vertex(), true, false, outputStream_);
+    printTrackInfo(patElectron->gsfTrack(), patElectron->vertex(), true, false, outputStream_);
     *outputStream_ << " Supercluster Energy/Track Momentum = " << patElectron->eSuperClusterOverP() << std::endl;
     *outputStream_ << " electronID('eidRobustTight') = " << patElectron->electronID("eidRobustTight") << std::endl;
     *outputStream_ << " trackIso = " << patElectron->trackIso() << std::endl;
