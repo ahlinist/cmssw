@@ -27,11 +27,15 @@ ODESFEPedestalOffsetsDat::ODESFEPedestalOffsetsDat()
   m_zs= 0;
   m_cm_masked= 0;
   m_cm_range= 0;  
-} 
-  
+}
+ 
+/******************************/
+
 ODESFEPedestalOffsetsDat::~ODESFEPedestalOffsetsDat()
 { 
 }
+
+/******************************/
 
 void ODESFEPedestalOffsetsDat::prepareWrite()
   throw(runtime_error)
@@ -46,6 +50,8 @@ void ODESFEPedestalOffsetsDat::prepareWrite()
     throw(runtime_error("ODESFEPedestalOffsetsDat::prepareWrite():  "+e.getMessage()));
   }
 }
+
+/******************************/
 
 void ODESFEPedestalOffsetsDat::writeDB(const ODESFEPedestalOffsetsDat* item, ODESFEPedestalOffsetInfo* iov )
   throw(runtime_error)
@@ -79,32 +85,25 @@ void ODESFEPedestalOffsetsDat::writeDB(const ODESFEPedestalOffsetsDat* item, ODE
 void ODESFEPedestalOffsetsDat::fetchData(std::vector< ODESFEPedestalOffsetsDat >* p, ODESFEPedestalOffsetInfo* iov)
   throw(std::runtime_error)
 {
-  int run_numberPlus=-1;
-  int run_numberMinus=-1;
-  vector<int> val;
 
   cout << "	fetchCurData Get data" << endl;
   this->checkConnection();
-  iov->setConnection(m_env, m_conn);  
+  
+  iov->setConnection(m_env, m_conn); 
+ 
   int iovID = iov->fetchID();
   if (!iovID) { 
     std::cout <<"ID not in the DB"<< endl; 
     return;
   }
-  val.clear();
-  cout << "iovid=" << iovID << endl;
-  val = iov->fetchRunPlus(iovID);
-  iovID=val[0];
-  run_numberPlus=val[1];
-  run_numberMinus=val[2];
-  if (run_numberPlus<0) { 
-    std::cout <<"RunPlus not in the DB"<< endl; 
-    return;
-  }
- 
-  cout << "Query Data for iovId= " << iovID << " Run+=" << run_numberPlus << "  Run-=" << run_numberMinus << endl;
+
+  int rp=iov->getRunIov_P();
+  int rm=iov->getRunIov_M();
+  cout << "RPlus=" <<rp << " RMinus=" << rm << endl;
+  cout << "Fetch IOV=" << iovID << endl;
+
   try {
-  m_readStmt->setSQL("select distinct :1 REC_ID,v.sourcefed FED_ID, v.fibernb FIBER_ID,v.kchipid KCHIP_ID,ascii(substr(v.module_type,2,1))-96 PACE_ID,to_number(substr(to_char(p.logic_id),9,2)) STRIP_ID,v.rxid RX_ID,0 GAIN,p.ped_mean PEDESTAL,0 MASKED,0 ZS,0 CM_MASKED,0 CM_RANGE, p.ped_rms RMS from viewall v, es_mon_run_iov b inner join run_dat r on  r.iov_id=b.run_iov_id inner join es_mon_pedestals_dat p on p.iov_id= b.iov_id inner join channelview c on c.logic_id= p.logic_id  where  v.x=c.id2 and v.y=c.id3 and c.name=:2 and v.tagid=:3 and ((((v.plane=:4 and v.zside=:5 and to_char(c.logic_id) like :6) or (v.plane=:7 and v.zside=:8 and to_char(c.logic_id) like :9)) and r.logic_id=:10 and b.run_iov_id=:11) or (((v.plane=:12 and v.zside=:13 and to_char(c.logic_id) like :14) or (v.plane=:15 and v.zside=:16 and to_char(c.logic_id) like :17)) and r.logic_id=:18 and b.run_iov_id=:19))");
+  m_readStmt->setSQL("select distinct :1 REC_ID,v.sourcefed FED_ID, v.fibernb FIBER_ID,v.kchipid KCHIP_ID,ascii(substr(v.module_type,2,1))-96 PACE_ID,to_number(substr(to_char(p.logic_id),9,2)) STRIP_ID,v.rxid RX_ID,0 GAIN, to_number(p.ped_mean) PEDESTAL,0 MASKED,0 ZS,0 CM_MASKED,0 CM_RANGE, to_number(p.ped_rms) RMS from cms_es_conf.es_fe_conf_info a, cms_es_conf.viewall v, cms_es_cond.es_mon_run_iov b inner join cms_es_cond.es_mon_run_dat r on r.iov_id=b.iov_id inner join cms_es_cond.es_mon_pedestals_dat p on p.iov_id= b.iov_id inner join cms_es_cond.channelview c on c.logic_id= p.logic_id  where  v.x=c.id2 and v.y=c.id3 and c.name=:2 and v.tagid=:3 and ((((v.plane=:4 and v.zside=:5 and to_char(c.logic_id) like :6) or (v.plane=:7 and v.zside=:8 and to_char(c.logic_id) like :9)) and r.logic_id=:10 and b.run_iov_id=:11) or ((((v.plane=:12 and v.zside=:13 and to_char(c.logic_id) like :14) or (v.plane=:15 and v.zside=:16 and to_char(c.logic_id) like :17)) and r.logic_id=:18 and b.run_iov_id=:19))) order by FED_ID,KCHIP_ID");
   m_readStmt->setInt(1,iovID);
   m_readStmt->setString(2,"ES_readout_strip");
   m_readStmt->setInt(3,1);
@@ -116,7 +115,7 @@ void ODESFEPedestalOffsetsDat::fetchData(std::vector< ODESFEPedestalOffsetsDat >
   m_readStmt->setInt(8,1);
   m_readStmt->setString(9,"1032%");
   m_readStmt->setInt(10,1100000000);
-  m_readStmt->setInt(11,run_numberPlus);
+  m_readStmt->setInt(11,rp);
 
   m_readStmt->setInt(12,2);
   m_readStmt->setInt(13,-1);
@@ -125,7 +124,7 @@ void ODESFEPedestalOffsetsDat::fetchData(std::vector< ODESFEPedestalOffsetsDat >
   m_readStmt->setInt(16,-1);
   m_readStmt->setString(17,"1034%");
   m_readStmt->setInt(18,1200000000);
-  m_readStmt->setInt(19,run_numberMinus);
+  m_readStmt->setInt(19,rm);
 
   ResultSet* rset = m_readStmt->executeQuery();
   ODESFEPedestalOffsetsDat dat;
@@ -226,7 +225,6 @@ void ODESFEPedestalOffsetsDat::writeArrayDB(const std::vector< ODESFEPedestalOff
     z5_len[count]=sizeof(zz1[count]);
     z6_len[count]=sizeof(zz1[count]);
   }
-
 
   try {
     m_writeStmt->setDataBuffer(1, (dvoid*)ids, OCCIINT, sizeof(ids[0]),ids_len);
