@@ -155,7 +155,7 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
     double dR = reco::deltaR(tauJetRef->p4(), preselTauJet->p4());
     //std::cout << " preselTauJet: Pt = " << preselTauJet->pt() << "," 
     //	        << " eta = " << preselTauJet->eta() << ", phi = " << preselTauJet->phi() << ", dR = " << dR << std::endl;
-    if ( reco::deltaR(tauJetRef->p4(), preselTauJet->p4()) < dRmatch_ ) {
+    if ( dR < dRmatch_ ) {
       //std::cout << "--> matches tauJetRef." << std::endl;
       passesPreselection = true;
     }
@@ -261,7 +261,7 @@ double FakeRateWeightProducerBase::getFakeRateJetWeight(double tauJetIdEff, doub
 	  fakeRateJetWeight = maxJetWeight_;
 	  ++numJets_weightAboveMaximum_;
 	}
-      } else {
+      } else if ( tauJetIdEff < qcdJetFakeRate ) {
 	edm::LogWarning ("getFakeRateJetWeight") 	  
 	  << " QCD-jet fake-rate = " << qcdJetFakeRate << " exceeds Tau-jet id. efficiency = " << tauJetIdEff
 	  << " for Pt = " << tauJet->pt() << ", eta = " << tauJet->eta() << ", phi = " << tauJet->phi()
