@@ -6,6 +6,7 @@
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -105,7 +106,7 @@ void TauIdEffValidationHistManager::valPlotEntryType::fillHistograms(const pat::
 
   if ( passedTauId ) {
     hTauPt_->Fill(patTau.pt(), weight);
-    if ( patTau.pfTauTagInfoRef().isAvailable() && patTau.pfTauTagInfoRef()->pfjetRef().isAvailable() ) 
+    if ( isValidRef(patTau.pfTauTagInfoRef()) && isValidRef(patTau.pfTauTagInfoRef()->pfjetRef()) ) 
       hTauAssocJetPt_->Fill(patTau.pfTauTagInfoRef()->pfjetRef()->pt(), weight);
     hTauEta_->Fill(patTau.eta(), weight);
     hTauPhi_->Fill(patTau.phi(), weight);
