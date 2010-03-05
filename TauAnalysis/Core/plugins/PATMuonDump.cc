@@ -9,6 +9,7 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
+#include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
@@ -55,11 +56,11 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " isGlobalMuon = " << patMuon->isGlobalMuon() << std::endl;
     *outputStream_ << " isStandAloneMuon = " << patMuon->isStandAloneMuon() << std::endl;
     *outputStream_ << " inner Track" << std::endl;
-    printTrackInfo(edm::RefToBase<reco::Track>(patMuon->innerTrack()), patMuon->vertex(), true, false, outputStream_);
+    printTrackInfo(patMuon->innerTrack(), patMuon->vertex(), true, false, outputStream_);
     *outputStream_ << " outer Track" << std::endl;
-    printTrackInfo(edm::RefToBase<reco::Track>(patMuon->outerTrack()), patMuon->vertex(), true, false, outputStream_);
+    printTrackInfo(patMuon->outerTrack(), patMuon->vertex(), true, false, outputStream_);
     *outputStream_ << " global Track" << std::endl;
-    printTrackInfo(edm::RefToBase<reco::Track>(patMuon->globalTrack()), patMuon->vertex(), true, false, outputStream_);
+    printTrackInfo(patMuon->globalTrack(), patMuon->vertex(), true, false, outputStream_);
     *outputStream_ << " caloCompatibility = " << patMuon->caloCompatibility() << std::endl;
     *outputStream_ << "  isCaloCompatibilityValid = " << patMuon->isCaloCompatibilityValid() << std::endl;
     *outputStream_ << " segmentCompatibility = " << muon::segmentCompatibility(*patMuon) << std::endl;
@@ -69,7 +70,7 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " hcalIso = " << patMuon->hcalIso() << std::endl;
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patMuon->vertex(), outputStream_);
-    if ( patMuon->track().isAvailable() ) *outputStream_ << " dIP = " << patMuon->track()->dxy(patMuon->vertex()) << std::endl;
+    if ( isValidRef(patMuon->track()) ) *outputStream_ << " dIP = " << patMuon->track()->dxy(patMuon->vertex()) << std::endl;
     *outputStream_ << "* matching gen. pdgId = " 
 		   << getMatchingGenParticlePdgId(patMuon->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
     ++iMuon; 

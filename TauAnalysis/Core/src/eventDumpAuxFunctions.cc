@@ -3,7 +3,6 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/TriggerNames.h"
 
-#include "DataFormats/Common/interface/RefToBase.h"
 #include "DataFormats/TrackReco/interface/HitPattern.h"
 
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
@@ -195,18 +194,6 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
-
-void printTrackInfo(const edm::RefToBase<reco::Track>& track, const reco::Candidate::Point& vertex, bool printDxy, bool printDz,
-		    std::ostream* stream)
-{
-  if ( track.isAvailable() && track.isNonnull() ) {
-    *stream << "  Pt = " << track->pt() << std::endl;
-    if ( printDxy ) *stream << "  dXY = " << track->dxy(vertex) << std::endl;
-    if ( printDz  ) *stream << "  dZ = " << track->dz(vertex) << std::endl;
-  } else {
-    *stream << "  none." << std::endl;
-  }
-}
 
 void printVertexInfo(const reco::Candidate::Point& vertex, std::ostream* stream)
 {

@@ -16,6 +16,7 @@
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
@@ -28,7 +29,7 @@ bool matchesGenTau(const pat::Tau& patTau)
   std::vector<reco::GenParticleRef> associatedGenParticles = patTau.genParticleRefs();
   for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin(); 
 	it != associatedGenParticles.end(); ++it ) {
-    if ( it->isAvailable() ) {
+    if ( isValidRef(*it) ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -15 || genParticle->pdgId() == +15 ) isGenTauMatched = true;
     }
@@ -50,8 +51,9 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 
   vertexSrc_ = ( cfg.exists("vertexSource") ) ? cfg.getParameter<edm::InputTag>("vertexSource") : edm::InputTag();
   if ( vertexSrc_.label() == "" ) {
-    edm::LogWarning("TauHistManager") << " Configuration parameter 'vertexSource' not specified" 
-				      << " --> Impact Parameter histograms will NOT be plotted !!";
+    edm::LogWarning("TauHistManager") 
+      << " Configuration parameter 'vertexSource' not specified" 
+      << " --> Impact Parameter histograms will NOT be plotted !!";
   }
   //std::cout << " vertexSrc = " << vertexSrc_.label() << std::endl;
 
@@ -60,8 +62,9 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
   if ( genParticleSrc_.label() == "" ) {
-    edm::LogWarning("TauHistManager") << " Configuration parameter 'genParticleSource' not specified" 
-				      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+    edm::LogWarning("TauHistManager") 
+      << " Configuration parameter 'genParticleSource' not specified" 
+      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
   }
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
@@ -99,6 +102,10 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 
   makeIsoPtConeSizeDepHistograms_ = ( cfg.exists("makeIsoPtConeSizeDepHistograms") ) ? 
     cfg.getParameter<bool>("makeIsoPtConeSizeDepHistograms") : false;
+
+  checkWeightConsistency_ = ( cfg.exists("checkWeightConsistency") ) ?
+    cfg.getParameter<bool>("checkWeightConsistency") : false;
+  //std::cout << " checkWeightConsistency = " << checkWeightConsistency_ << std::endl;
 
   numTauIsoConeSizes_ = 15;
   tauIsoConeSizeIncr_ = 0.1;
@@ -306,9 +313,9 @@ void TauHistManager::fillTauDiscriminatorHistogram(MonitorElement* h, const pat:
 //    in case the discriminator given as function argument is unavailable
   if ( !discrAvailability_hasBeenChecked[discrName] ) {
     if ( !patTau.isTauIDAvailable(discrName) ) {
-      edm::LogWarning("TauHistManager") << " Discriminator = " << discrName 
-					<< " unavailable for pat::Tau collection = " << tauSrc_.label() 
-					<< " --> skipping filling of histogram = " << h->getName() << " !!";
+      edm::LogWarning("TauHistManager") 
+	<< " Discriminator = " << discrName << " unavailable for pat::Tau collection = " << tauSrc_.label() 
+	<< " --> skipping filling of histogram = " << h->getName() << " !!";
     }
     
     discrAvailability_hasBeenChecked[discrName] = true;
@@ -354,6 +361,14 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
 
     tauJetWeightSum += getTauJetWeight<pat::Tau>(*patTau, tauJetWeightExtractors_);
+  }
+
+  //std::cout << " tauJetWeightSum = " << tauJetWeightSum << std::endl;
+  //std::cout << " evtWeight = " << evtWeight << std::endl;
+
+  if ( checkWeightConsistency_ && evtWeight != 1. && TMath::Abs(evtWeight - tauJetWeightSum) > 1.e-4 ) {
+    edm::LogWarning("TauHistManager") 
+      << " Mismatch between tauJetWeightSum = " << tauJetWeightSum << " and evtWeight = " << evtWeight << " !!";
   }
 
   //std::cout << " patTaus.size = " << patTaus->size() << std::endl;
@@ -418,7 +433,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hTauNumTracksSignalCone_->Fill(patTau->signalTracks().size(), weight);
     hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size(), weight);
 
-    if ( patTau->leadTrack().isAvailable() ) {
+    if ( isValidRef(patTau->leadTrack()) ) {
       hTauLeadTrkPt_->Fill(patTau->leadTrack()->pt(), weight);
       hTauLeadTrkEta_->Fill(patTau->leadTrack()->eta(), weight);
       hTauLeadTrkPhi_->Fill(patTau->leadTrack()->phi(), weight);

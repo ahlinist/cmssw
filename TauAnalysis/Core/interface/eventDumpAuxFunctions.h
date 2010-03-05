@@ -13,6 +13,8 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
+#include "TauAnalysis/Core/interface/eventAuxFunctions.h"
+
 #include <vector>
 #include <string>
 
@@ -24,7 +26,18 @@ void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >&, 
 
 void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >&, edm::Handle<edm::View<reco::GenJet> >&, std::ostream*);
 
-void printTrackInfo(const edm::RefToBase<reco::Track>&, const reco::Candidate::Point&, bool, bool, std::ostream*);
+template<typename T>
+void printTrackInfo(const edm::Ref<T>& track, const reco::Candidate::Point& vertex, bool printDxy, bool printDz, std::ostream* stream)
+{
+  if ( isValidRef(track) ) {
+    *stream << "  Pt = " << track->pt() << std::endl;
+    if ( printDxy ) *stream << "  dXY = " << track->dxy(vertex) << std::endl;
+    if ( printDz  ) *stream << "  dZ = " << track->dz(vertex) << std::endl;
+  } else {
+    *stream << "  none." << std::endl;
+  }
+}
+
 void printVertexInfo(const reco::Candidate::Point&, std::ostream*);
 
 void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>&, const reco::Candidate::Vector&, double, double, double, const reco::Vertex::Point&, std::ostream*);

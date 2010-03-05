@@ -52,6 +52,8 @@ class TauHistManager : public HistManagerBase
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
 
+  bool checkWeightConsistency_;
+
   unsigned numTauIsoConeSizes_;
   float tauIsoConeSizeIncr_;
   unsigned numTauIsoPtThresholds_;

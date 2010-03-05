@@ -10,20 +10,21 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 
 #include "TauAnalysis/Core/interface/GenericEventDump.h"
+#include "TauAnalysis/Core/interface/ObjectDumpBase.h"
 
 class ElecMuEventDump : public GenericEventDump
 {
  public:  
   explicit ElecMuEventDump(const edm::ParameterSet&);
   ~ElecMuEventDump();
-
-  void printDiTauCandidateInfo(const edm::Event& evt) const {
-    printDiTauCandidateInfoImp<pat::Electron, pat::Muon>(evt);
-  }
   
  protected:
   void print(const edm::Event&, const edm::EventSetup&, 
 	     const filterResults_type&, const filterResults_type&, double) const;
+
+  ObjectDumpBase* electronDump_;
+  ObjectDumpBase* muonDump_;
+  ObjectDumpBase* elecMuDump_;
 };
 
 #endif  

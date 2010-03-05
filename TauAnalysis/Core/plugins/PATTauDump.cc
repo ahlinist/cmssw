@@ -65,7 +65,7 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
 		   << " (eta = " << patTau->eta() << ")" << std::endl;
     *outputStream_ << " phi = " << patTau->phi()*180./TMath::Pi() << std::endl;
     *outputStream_ << " leading Track" << std::endl;
-    printTrackInfo(edm::RefToBase<reco::Track>(patTau->leadTrack()), patTau->vertex(), true, false, outputStream_);
+    printTrackInfo(patTau->leadTrack(), patTau->vertex(), true, false, outputStream_);
     *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
     *outputStream_ << "(#signal PFChargedHadrons = " << patTau->signalPFChargedHadrCands().size() << ")" << std::endl;
     if ( patTau->signalTracks().size() != patTau->signalPFChargedHadrCands().size() ) *outputStream_ << "--> CHECK !!!" << std::endl;
