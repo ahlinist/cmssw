@@ -37,12 +37,7 @@ process.load("Configuration.StandardSequences.SimL1Emulator_cff")
 
 # Analysis Module Definition
 ############################
-process.effic = cms.EDAnalyzer("CSCTFValidation",
-	outFile = cms.untracked.string("CSCTFValidation.root"),
-	genProd = cms.InputTag("genParticles"),
-	cscProd = cms.InputTag("simCsctfDigis:CSC"),
-	DQMStore = cms.untracked.bool(True)
-)
+process.load("Validation.L1Trigger.csctfValidation_cfi")
 	
 process.FEVT = cms.OutputModule("PoolOutputModule",
 	fileName = cms.untracked.string("dataStruct.root"),
@@ -52,6 +47,6 @@ process.FEVT = cms.OutputModule("PoolOutputModule",
 )	
 # Path Definition
 #################
-process.p = cms.Path(process.simCscTriggerPrimitiveDigis*process.simDtTriggerPrimitiveDigis*process.simCsctfTrackDigis*process.simCsctfDigis*process.effic)
+process.p = cms.Path(process.simCscTriggerPrimitiveDigis*process.simDtTriggerPrimitiveDigis*process.simCsctfTrackDigis*process.simCsctfDigis*process.csctfValidation)
 #process.outpath = cms.EndPath(process.FEVT)
 #process.schedule = cms.Schedule(process.p, process.outpath)
