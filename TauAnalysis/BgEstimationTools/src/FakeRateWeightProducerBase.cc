@@ -92,6 +92,8 @@ FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& 
     numJets_outOfRange_(0),
     numJets_processed_(0)
 {
+  //std::cout << "<FakeRateWeightProducerBase::FakeRateWeightProducerBase>:" << std::endl;
+
   method_ = cfg.getParameter<std::string>("method");
   if ( !(method_ == "simple" || method_ == "CDF") ) {
     edm::LogError("FakeRateWeightProducerBase") << " Configuration parameter 'method' = " << method_ << " invalid !!";
@@ -100,8 +102,10 @@ FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& 
 
   allTauJetSource_ = cfg.getParameter<edm::InputTag>("allTauJetSource");
   preselTauJetSource_ = cfg.getParameter<edm::InputTag>("preselTauJetSource");
+  //std::cout << " preselTauJetSource = " << preselTauJetSource_ << std::endl;
 
   dRmatch_ = cfg.getParameter<double>("dRmatch");
+  //std::cout << " dRmatch = " << dRmatch_ << std::endl;
 
   edm::ParameterSet cfgFakeRateTypes = cfg.getParameter<edm::ParameterSet>("frTypes");
   typedef std::vector<std::string> vstring;
@@ -140,13 +144,21 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
 						     double& tauJetIdEff, double& qcdJetFakeRate, bool& tauJetDiscr_passed)
 { 
   //std::cout << "<FakeRateWeightProducerBase::getTauJetProperties>:" << std::endl;
+  //std::cout << " tauJetRef: Pt = " << tauJetRef->pt() << "," 
+  //	      << " eta = " << tauJetRef->eta() << ", phi = " << tauJetRef->phi() << std::endl;
 
   if ( cfgError_ ) return;
 
   bool passesPreselection = false;
   for ( edm::View<reco::Candidate>::const_iterator preselTauJet = preselTauJets->begin();
 	preselTauJet != preselTauJets->end(); ++preselTauJet ) {
-    if ( reco::deltaR(tauJetRef->p4(), preselTauJet->p4()) < dRmatch_ ) passesPreselection = true;
+    double dR = reco::deltaR(tauJetRef->p4(), preselTauJet->p4());
+    //std::cout << " preselTauJet: Pt = " << preselTauJet->pt() << "," 
+    //	        << " eta = " << preselTauJet->eta() << ", phi = " << preselTauJet->phi() << ", dR = " << dR << std::endl;
+    if ( reco::deltaR(tauJetRef->p4(), preselTauJet->p4()) < dRmatch_ ) {
+      //std::cout << "--> matches tauJetRef." << std::endl;
+      passesPreselection = true;
+    }
   }
 
   if ( !passesPreselection ) {
