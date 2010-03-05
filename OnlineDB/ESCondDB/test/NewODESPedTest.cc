@@ -18,6 +18,8 @@
 bool dbg;
 using namespace std;
 
+/* ----------------------------------- */
+
 class CondDBApp {
 public: 
 //friend class EcalCondDBInterface;
@@ -36,6 +38,8 @@ public:
     }
   }
 
+/* ----------------------------------- */
+
   /**
    *  App destructor;  Cleans up database connection
    */
@@ -44,6 +48,7 @@ public:
     delete econn;
   }
 
+/* ----------------------------------- */
 
 void printInfo( ODESFEPedestalOffsetInfo info)
 {
@@ -51,24 +56,36 @@ void printInfo( ODESFEPedestalOffsetInfo info)
   cout << "Version="  << info.getVersion() << " Iov+= " << info.getIov_pl() << " Iov-= " << info.getIov_mi() << endl;
   cout << "COMMENT= " <<  info.getUser_comment() << "  Id= " << info.getId() << " Tag=" << info.getConfigTag()  << endl;
 }
- 
+
+/* ----------------------------------- */
+
 void printResult(std::vector< ODESFEPedestalOffsetsDat >* p)
 {
   int l;
 
   // for(unsigned i=0; i< p->size() ; ++i)
   cerr << " Display Size= " << p->size() << endl << endl;
-  for(unsigned i=0; i< p->size() ; ++i)
+  for(unsigned i=0; i< 10 ; ++i)
   {
     l=(*p)[i].getPedestal();
     cerr << "ID= " << (*p)[i].getId() << " FED= " << (*p)[i].getFedId() << endl;
+    cerr << " Pace=" << (*p)[i].getPaceId() << " RX= " << (*p)[i].getRxId() << endl;
+    cerr <<" ped=" << l << " Strip= " << (*p)[i].getStripId() << " Fiber= " << (*p)[i].getFiberId() <<" Kchip= " << (*p)[i].getKchipId() << endl;
+    cerr << " Rms= " << (*p)[i].getRms() <<  endl;
+  }
+  for(unsigned i=68608; i< 68618 ; ++i)
+  {
+    l=(*p)[i].getPedestal();
+    cerr << "ID= " << (*p)[i].getId() << " FED= " << (*p)[i].getFedId() << endl;
+    cerr << " Pace=" << (*p)[i].getPaceId() << " RX= " << (*p)[i].getRxId() << endl; 
     cerr <<" ped=" << l << " Strip= " << (*p)[i].getStripId() << " Fiber= " << (*p)[i].getFiberId() <<" Kchip= " << (*p)[i].getKchipId() << endl;
     cerr << " Rms= " << (*p)[i].getRms() <<  endl;
   }
 }
 
+/* ----------------------------------- */
 
-void testWrite(const bool ped,const float ZSV,const float CMCV,const string tag,const string hlg,const string comment )
+void WriteConfData(const bool ped,const float ZSV,const float CMCV,const string tag,const string hlg,const string comment )
 { 
   
 
@@ -77,7 +94,8 @@ void testWrite(const bool ped,const float ZSV,const float CMCV,const string tag,
   int version=0;
   ODESFEPedestalOffsetInfo run_info;
   std::map< int,int > Gain;
- 
+  std::map< int,int > Iov;
+
   // Get Last Version for tag
   run_info.setId(0);
   run_info.setConfigTag(tag);
@@ -88,12 +106,13 @@ void testWrite(const bool ped,const float ZSV,const float CMCV,const string tag,
   econn->fetchConfigSet(&run_info);
   
 //this->printInfo(run_info);
-  
-   version=run_info.getVersion()+1;
 
+  version=run_info.getVersion()+1;
+  
   cout << endl;
   cout << endl <<  "The TAG=" << tag <<  "  Is now set with the version number: " << version << endl;
   cout << endl;
+
   Gain.clear();
   Gain=run_info.fetchGain(hlg);
   
@@ -142,7 +161,7 @@ void testWrite(const bool ped,const float ZSV,const float CMCV,const string tag,
       }
     }
   }
-  cout << endl<<endl;
+  cout <<endl<<endl;
   string runplus;
   string runminus;
   string ok;
@@ -187,9 +206,10 @@ void testWrite(const bool ped,const float ZSV,const float CMCV,const string tag,
   }
   cerr << nbP << " " << nbM << endl;
  
-  // return;
-
-  // Now insert new Info entry
+  cout  << endl;
+  cout << "Tag=" << tag << " Version=" << version << endl << endl;
+ 
+  run_info.setId(0);
   run_info.setConfigTag(tag);
   run_info.setVersion(version);
   run_info.setIov_pl(nbP);
@@ -201,23 +221,57 @@ void testWrite(const bool ped,const float ZSV,const float CMCV,const string tag,
   Isped=ped;
   cout << "CMCVal=" << CMCVal << "  ZSVal=" << ZSVal << "  Isped=" << Isped << endl;
   cout << "Inserting in DB the ODRunConfigInfo..." << flush;
-  econn->insertConfigSet(&run_info);
-  cout << "Done." << endl;
+
+  Iov.clear();
+  Iov=run_info.fetchIovId(nbP,nbM);
+  int runp=-1;
+  int runm=-1;
+  if(Iov.size()==2)
+  {
+    for( std::map<int,int>::iterator it=Iov.begin(); it!=Iov.end(); ++it)
+    {
+      if((*it).second>500)
+        runm=(*it).first;
+      else
+        runp=(*it).first;
+    }
+  }
+  else
+  {
+    cout << "Cannot find run nmuber ?? " << endl;
+    return;
+  }
+  cout << endl << "runp=" << runp << " runm=" << runm << endl;
+  if((runp<0)||(runm<0))  
+    return;
+
+  run_info.setRunIov_P(runp);
+  run_info.setRunIov_M(runm);
+
+// Now insert new Info entry  
+  econn->insertConfigSet(&run_info); 
+  cout << "Insert Info Done." << endl;
 
   vector<ODESFEPedestalOffsetsDat> dataset;
   dataset.clear();
 
   econn->fetchConfigDataSet(&dataset,&run_info);
+  cout << "Strip Size=" << dataset.size() << endl;
   if( dataset.size()==137216)
-    ;//this->printResult(&dataset);
+  {
+    cout << "Strips Completed: OK" << endl;
+  }
   else
   {
-    cout << "Strips not Completed" << endl;
+    cout << "Strips Not Completed: Abort run" << endl;
     return;
   }
+  // this->printResult(&dataset);
+
   this->writeDb(dataset,&run_info);
 }
 
+/* ----------------------------------- */
 
 void writeDb(std::vector< ODESFEPedestalOffsetsDat > dataset,ODESFEPedestalOffsetInfo * runinfo) {
  
@@ -276,6 +330,8 @@ void writeDb(std::vector< ODESFEPedestalOffsetsDat > dataset,ODESFEPedestalOffse
   }
 }
 
+/* ----------------------------------- */
+
 private:
   CondDBApp();  // hidden default constructor
   EcalCondDBInterface* econn;
@@ -283,6 +339,8 @@ private:
   float CMCVal;
   bool Isped;
 };
+
+/* ----------------------------------- */
 
 int main (int argc, char* argv[])
 {
@@ -315,7 +373,7 @@ int main (int argc, char* argv[])
     exit(1);
   }
 
-  char comments[90];
+  char comments[100];
   dbg=true;
   while(1)
   {
@@ -330,8 +388,8 @@ int main (int argc, char* argv[])
     higLowT="HG";
     MagOnOff="BON";
 
-    ZS_Val="4.3";
-    CMC_Range="3.0";
+    ZS_Val="3.0";
+    CMC_Range="4.3";
 
     while(1)
     {    
@@ -360,7 +418,7 @@ int main (int argc, char* argv[])
     }
     else
     {
-      cout << "ZS_Val(4.3): Enter new Value= ";
+      cout << "ZS_Val(3.0): Enter new Value= ";
       cin >> ZS_Val;
     }
 
@@ -381,7 +439,7 @@ int main (int argc, char* argv[])
     }
     else
     {
-      cout << "CMC_Range(3): Enter new Value= ";
+      cout << "CMC_Range(4.3): Enter new Value= ";
       cin >> CMC_Range;
     }
 
@@ -428,17 +486,22 @@ int main (int argc, char* argv[])
     cin.clear();
     cin.ignore(256,'\n');
     cout << "Do you have a comment to set? --> " ;
-    cin.getline(comments,80);
+    cin.getline(comments,99);
+    strcat(comments," ZS_VAL=");
+    strcat(comments, ZS_Val.c_str());
+    strcat(comments," CMC_Range=");
+    strcat(comments,CMC_Range.c_str());
     comment=comments;
-    
+    //+" ZS_VAL="+ ZS_Val+" CMC_Range="+CMC_Range;
+
     cout << endl;
 
     cout << "Tag Selection:" << endl << endl;
     cout << "  PED_SUB = " << Ped_sub << endl;
     cout << "  ZS      = " << zs << endl;
     cout << "  CMC     = " << cmc  << endl << endl ;
-    cout << "  ZS Value (4.3)      = " << ZS_Val << endl;
-    cout << "  CMC_Range Value (3) = " << CMC_Range << endl;
+    cout << "  ZS Value (3.0)      = " << ZS_Val << endl;
+    cout << "  CMC_Range Value (4.3) = " << CMC_Range << endl;
     if ((higLow=="H")||(higLow=="h"))
       cout << "  Selected Gain       = HIGH GAIN" << endl;
     else
@@ -447,7 +510,6 @@ int main (int argc, char* argv[])
     
     cout << "  Tag Name       = " << tag << endl;
     cout << "  Comment        = " << comment << endl << endl;
-    //cerr << tag << endl;
     
     while(1)
     {
@@ -476,7 +538,7 @@ int main (int argc, char* argv[])
   try {
     CondDBApp app(host, sid, user, pass);
 
-    app.testWrite(ped,atof(ZS_Val.c_str()),atof(CMC_Range.c_str()),tag,higLow,comment);
+    app.WriteConfData(ped,atof(ZS_Val.c_str()),atof(CMC_Range.c_str()),tag,higLow,comment);
 
   } catch (exception &e) {
     cout << "ERROR:  " << e.what() << endl;
