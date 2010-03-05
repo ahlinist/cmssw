@@ -134,12 +134,12 @@ replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFM
 
 process.p = cms.Path(
     process.producePatTuple
-  + process.producePatTupleZtoMuTauSpecific
-# + process.printGenParticleList # uncomment to enable print-out of generator level particles
-# + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-  + process.selectZtoMuTauEvents 
-  + process.analyzeZtoMuTauEvents
-  + process.saveZtoMuTauPlots 
+   + process.producePatTupleZtoMuTauSpecific
+  #+ process.printGenParticleList # uncomment to enable print-out of generator level particles
+  #+ process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+   + process.selectZtoMuTauEvents 
+   + process.analyzeZtoMuTauEvents
+   + process.saveZtoMuTauPlots 
 )
 
 #--------------------------------------------------------------------------------
