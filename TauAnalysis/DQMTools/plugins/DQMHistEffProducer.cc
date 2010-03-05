@@ -186,9 +186,9 @@ TH1* computeHistogramProd(const std::vector<TH1*>& histograms, bool& isOwned)
     
     TH1* histogramProd = (TH1*)histograms.front()->Clone();
     
-    for ( unsigned iBinX = 0; iBinX <= (numBinsX + 1); ++iBinX ) {
-      for ( unsigned iBinY = 0; iBinY <= (numBinsY + 1); ++iBinY ) {
-	for ( unsigned iBinZ = 0; iBinZ <= (numBinsZ + 1); ++iBinZ ) {
+    for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
+      for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
+	for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
 	  double binContent_prod = 1.;
 	  double fractionalSigma_sum2 = 0.;
       
