@@ -458,8 +458,8 @@ void analysisClass::Loop()
                if( depth==2 ) {
                  h2_HFRecHitE_vs_R_S->Fill( R, energy );
                  h2_HFRecHitET_vs_R_S->Fill( R, ET );
-                 if(partenergy==0) h2_HFRecHitE_L_vs_S->Fill( energy, partenergy ); // if(...) necessary to avoid double-counting
-                 if(partenergy==0) h2_HFRecHitET_L_vs_S->Fill( ET, partenergy*(ET/energy) ); // if(...) necessary to avoid double-counting
+                 if(partenergy<1.2) h2_HFRecHitE_L_vs_S->Fill( energy, partenergy ); // if(...) necessary to avoid double-counting
+                 if(partenergy<1.2) h2_HFRecHitET_L_vs_S->Fill( ET, partenergy*(ET/energy) ); // if(...) necessary to avoid double-counting
                  h_HFRecHitE_S->Fill( energy );
                  h_HFRecHitE_S_ieta[abs(ieta)]->Fill( energy );
                  h_HFRecHitET_S->Fill( ET );
