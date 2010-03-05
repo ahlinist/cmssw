@@ -1,7 +1,7 @@
 
 void tauIdEffValidation()
 {
-  //TFile* inputFile = TFile::Open("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/10TeV/plotsZtoMuTau_ZtautauSum.root");
+  //TFile* inputFile = TFile::Open("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/10TeVii/plotsZtoMuTau_bgEstFakeRate.root");
   TFile* inputFile = TFile::Open("file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_3_6_patch5/src/TauAnalysis/BgEstimationTools/test/plotsZtoMuTau_bgEstFakeRate.root");
 
   // define colors used to plot efficiencies/fake-rates of different tau id. criteria
@@ -19,29 +19,31 @@ void tauIdEffValidation()
   cutEffNames.Add(new TObjString("ByTrackIsolationSeq"));
   cutEffNames.Add(new TObjString("ByEcalIsolationSeq"));  
   cutEffNames.Add(new TObjString("ByNTracksSeq"));
-  //cutEffNames.Add(new TObjString("ByChargeSeq"));
-  cutEffNames.Add(new TObjString("ByStandardChain"));
+  cutEffNames.Add(new TObjString("ByChargeSeq"));
+  //cutEffNames.Add(new TObjString("ByStandardChain"));
 
   TObjArray meNames;
   meNames.Add(new TObjString("TauPt"));
   meNames.Add(new TObjString("TauEta"));
   meNames.Add(new TObjString("TauPhi"));
   meNames.Add(new TObjString("TauAssocJetPt"));
+  meNames.Add(new TObjString("TauLeadTrkPt"));
   meNames.Add(new TObjString("TauJetRadius"));
 
   //TString dqmDirectory = "zMuTauAnalyzer_frUnweighted/afterEvtSelTauLeadTrkPt_beforeEvtSelTauTrkIso/TauIdEffValidation";
   TString dqmDirectory = "zMuTauAnalyzer_frUnweighted/afterEvtSelDiMuPairZmumuHypothesisVeto/TauIdEffValidation";
 
-  showTauIdEfficiency(inputFile, "Ztautau", dqmDirectory, meNames, cutEffNames, "effZTTsim", colors);
-  //showTauIdEfficiency(inputFile, "qcdSum", dqmDirectory, meNames, cutEffNames, "frMuEnrichedQCDsim", colors);
+  showTauIdEfficiency(inputFile, "Ztautau", dqmDirectory, meNames, cutEffNames, "effZTTsim", colors, false);
+  showTauIdEfficiency(inputFile, "qcdSum", dqmDirectory, meNames, cutEffNames, "frMuEnrichedQCDsim", colors, true);
+  //showTauIdEfficiency(inputFile, "PPmuXptGt20_factorized", dqmDirectory, meNames, cutEffNames, "frMuEnrichedQCDsim", colors, true);
 
   delete inputFile;
 }
 
 TH1* getMonitorElement(TFile* inputFile, const TString& dqmDirectoryName, const char* processName, const TString& meName)
 {
-  //TString meName_full = TString("DQMData").Append("/").Append(processName).Append("/").Append(dqmDirectoryName).Append("/").Append(meName);
-  TString meName_full = TString("DQMData").Append("/").Append(dqmDirectoryName).Append("/").Append(meName);
+  TString meName_full = TString("DQMData/tauFakeRate/harvested").Append("/").Append(processName).Append("/").Append(dqmDirectoryName).Append("/").Append(meName);
+  //TString meName_full = TString("DQMData").Append("/").Append(dqmDirectoryName).Append("/").Append(meName);
   std::cout << "meName_full = " << meName_full << std::endl;
   
   TH1* me = (TH1*)inputFile->Get(meName_full);
@@ -52,11 +54,13 @@ TH1* getMonitorElement(TFile* inputFile, const TString& dqmDirectoryName, const 
 }
 
 void showTauIdEfficiency(TFile* inputFile, const char* processName, const TString& dqmDirectoryName, const TObjArray& meNames,
-			 const TObjArray& cutEffNames, const char* effTypeLabel, const TArrayI& colors)
+			 const TObjArray& cutEffNames, const char* effTypeLabel, const TArrayI& colors, bool useLogScale)
 {
   TCanvas* canvas = new TCanvas("canvas", "canvas", 1, 1, 800, 600);
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
+
+  canvas->SetLogy(useLogScale);
 
   unsigned numMonitorElements = meNames.GetEntries();
   for ( unsigned iMonitorElement = 0; iMonitorElement < numMonitorElements; ++iMonitorElement ) {
@@ -98,8 +102,13 @@ void showTauIdEfficiency(TFile* inputFile, const char* processName, const TStrin
       if ( isFirst ) {	
 	me_efficiency_cuts->SetTitle(TString(meName).Append(" (").Append(processName).Append(")"));
 	me_efficiency_cuts->SetStats(false);
-	me_efficiency_cuts->SetMinimum(0.);
-	me_efficiency_cuts->SetMaximum(1.4);
+	if ( useLogScale ) {
+	  me_efficiency_cuts->SetMinimum(1.e-3);
+	  me_efficiency_cuts->SetMaximum(1.e+2);
+	} else {
+	  me_efficiency_cuts->SetMinimum(0.);
+	  me_efficiency_cuts->SetMaximum(1.4);
+	}
 	me_efficiency_cuts->Draw("e1p");
 	isFirst = false;
       } else {
@@ -114,7 +123,7 @@ void showTauIdEfficiency(TFile* inputFile, const char* processName, const TStrin
 
     legend.Draw();
 
-    TString outputFileName = TString("tauIdEffValidation").Append("_").Append(processName).Append("_").Append(meName).Append(".png");
+    TString outputFileName = TString("tauIdEffValidation").Append("_").Append(processName).Append("_").Append(meName).Append(".eps");
 
     canvas->Update();
     canvas->Print(outputFileName);
