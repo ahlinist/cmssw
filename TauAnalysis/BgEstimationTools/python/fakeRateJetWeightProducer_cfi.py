@@ -51,10 +51,10 @@ bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
 
     # minimum/maximum jet weights below/above which
     # jet weights get "truncated"                                          
-    #minJetWeight = cms.double(-1.),
-    #maxJetWeight = cms.double(+1.),
-    minJetWeight = cms.double(-1.e+6),
-    maxJetWeight = cms.double(+1.e+6),                                     
+    minJetWeight = cms.double(-1.),
+    maxJetWeight = cms.double(+1.),
+    #minJetWeight = cms.double(-1.e+6),
+    #maxJetWeight = cms.double(+1.e+6),                                     
 
     # kinematic range within which jet weights are computed
     # (jets with Pt/Eta < mininimum or > maximum get assigned a weights of zero)
