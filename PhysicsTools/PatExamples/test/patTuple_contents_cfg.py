@@ -4,16 +4,6 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # ----------------------------------------------------
-# switch off new tau features introduced in 33X to
-# restore 31X defaults new feaures:
-# - shrinkingConeTaus instead of fixedCone ones
-# - TaNC discriminants attached for shrinkingConeTaus
-# - default preselection on cleaningLayer1
-# ----------------------------------------------------
-from PhysicsTools.PatAlgos.tools.tauTools import *
-switchTo31Xdefaults(process)
-
-# ----------------------------------------------------
 # EXAMPLE 1: change the pat jet collection in the 
 #            event content
 # ----------------------------------------------------
