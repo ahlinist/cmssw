@@ -25,11 +25,11 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 # ----------------------------------------------------
 #from PhysicsTools.PatAlgos.tools.jetTools import *
 #addJetCollection(process,cms.InputTag('ak7CaloJets'),
-#                 'AK7',
+#                 'AK7', 'Calo',
 #                 doJTA        = True,
 #                 doBTagging   = False,
 #                 jetCorrLabel = None,
-#                 doType1MET   = True,
+#                 doType1MET   = False,
 #                 doL1Cleaning = True,                 
 #                 doL1Counters = False,
 #                 genJetCollection=cms.InputTag("ak7GenJets"),
@@ -37,7 +37,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 #                 jetIdLabel   = "ak7"
 #                 )
 #addJetCollection(process,cms.InputTag('iterativeCone5CaloJets'),
-#                 'IC5',
+#                 'IC5', 'Calo',
 #                 doJTA        = True,
 #                 doBTagging   = True,
 #                 jetCorrLabel = ('IC5', 'Calo'),
@@ -47,10 +47,6 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 #                 genJetCollection=cms.InputTag("iterativeCone5GenJets"),
 #                 doJetID      = False
 #                 )
-#process.out.outputCommands += ["keep *_cleanLayer1Jets*_*_*",
-#                               "keep *_selectedLayer1Jets*_*_*",                               
-#                               "keep *_layer1METs*_*_*"
-#                               ]
 
 # ----------------------------------------------------
 # EXAMPLE 3: add different kinds of MET to the event
@@ -59,14 +55,12 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 #from PhysicsTools.PatAlgos.tools.metTools import *
 #addTcMET(process, 'TC')
 #addPfMET(process, 'PF')
-#process.out.outputCommands += ["keep *_layer1METs*_*_*"
-#                               ]
 
 # ----------------------------------------------------
 # EXAMPLE 4: switch to different standard ouputs of
 #            the pat tuple
 # ----------------------------------------------------
-## switched from cleanLayer1Candidates to selectedLayer1Candidates
+## switched from cleanPatCandidates to selectedPatCandidates
 #from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
 #removeCleaning(process)
 
