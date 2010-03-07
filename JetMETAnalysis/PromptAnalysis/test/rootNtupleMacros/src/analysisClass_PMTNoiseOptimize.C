@@ -36,24 +36,27 @@ void analysisClass::Loop()
    //////////book histos here
 
    //binning
+   int Nbins_Nspikes=10;
    float Max_Nspikes=10;
-   int bin_Nspikes=10;
+   int   Nbins_E = 300;
+   float Min_E = -15.;
+   float Max_E = 600.;
 
    //1D histograms
-   TH1F *h_N_HFspikesPerEv_L    = new TH1F ("h_N_HFspikesPerEv_L","h_N_HFspikesPerEv_L",bin_Nspikes,0,Max_Nspikes);
-   TH1F *h_N_HFspikesPerEv_S    = new TH1F ("h_N_HFspikesPerEv_S","h_N_HFspikesPerEv_S",bin_Nspikes,0,Max_Nspikes);
-   TH1F *h_N_HFspikesPerEv_TOT    = new TH1F ("h_N_HFspikesPerEv_TOT","h_N_HFspikesPerEv_TOT",bin_Nspikes,0,Max_Nspikes);
-   TH1F *h_N_EBspikesPerEv_TOT    = new TH1F ("h_N_EBspikesPerEv_TOT","h_N_EBspikesPerEv_TOT",bin_Nspikes,0,Max_Nspikes);
+   TH1F *h_N_HFspikesPerEv_L    = new TH1F ("h_N_HFspikesPerEv_L","h_N_HFspikesPerEv_L",Nbins_Nspikes,0,Max_Nspikes);
+   TH1F *h_N_HFspikesPerEv_S    = new TH1F ("h_N_HFspikesPerEv_S","h_N_HFspikesPerEv_S",Nbins_Nspikes,0,Max_Nspikes);
+   TH1F *h_N_HFspikesPerEv_TOT    = new TH1F ("h_N_HFspikesPerEv_TOT","h_N_HFspikesPerEv_TOT",Nbins_Nspikes,0,Max_Nspikes);
+   TH1F *h_N_EBspikesPerEv_TOT    = new TH1F ("h_N_EBspikesPerEv_TOT","h_N_EBspikesPerEv_TOT",Nbins_Nspikes,0,Max_Nspikes);
 
    h_N_HFspikesPerEv_L->Sumw2();
    h_N_HFspikesPerEv_S->Sumw2();
    h_N_HFspikesPerEv_TOT->Sumw2();
    h_N_EBspikesPerEv_TOT->Sumw2();
 
-   TH1F *h_HFRecHitE_L = new TH1F("h_HFRecHitE_L","h_HFRecHitE_L;E [GeV]",100,-5.,200.);
-   TH1F *h_HFRecHitE_L_Flagged = new TH1F("h_HFRecHitE_L_Flagged","h_HFRecHitE_L_Flagged;E [GeV]",100,-5.,200.);
-   TH1F *h_HFRecHitE_S = new TH1F("h_HFRecHitE_S","h_HFRecHitE_S;E [GeV]",100,-5.,200.);
-   TH1F *h_HFRecHitE_S_Flagged = new TH1F("h_HFRecHitE_S_Flagged","h_HFRecHitE_S_Flagged;E [GeV]",100,-5.,200.);
+   TH1F *h_HFRecHitE_L = new TH1F("h_HFRecHitE_L","h_HFRecHitE_L;E [GeV]",Nbins_E,Min_E,Max_E);
+   TH1F *h_HFRecHitE_L_Flagged = new TH1F("h_HFRecHitE_L_Flagged","h_HFRecHitE_L_Flagged;E [GeV]",Nbins_E,Min_E,Max_E);
+   TH1F *h_HFRecHitE_S = new TH1F("h_HFRecHitE_S","h_HFRecHitE_S;E [GeV]",Nbins_E,Min_E,Max_E);
+   TH1F *h_HFRecHitE_S_Flagged = new TH1F("h_HFRecHitE_S_Flagged","h_HFRecHitE_S_Flagged;E [GeV]",Nbins_E,Min_E,Max_E);
    
    h_HFRecHitE_L->Sumw2();
    h_HFRecHitE_L_Flagged->Sumw2();
@@ -65,10 +68,10 @@ void analysisClass::Loop()
    map<UInt_t,TH1F*> h_HFRecHitE_S_ieta;
    map<UInt_t,TH1F*> h_HFRecHitE_S_Flagged_ieta;
    
-   TH1F *h_HFRecHitET_L = new TH1F("h_HFRecHitET_L","h_HFRecHitET_L;E_{T} [GeV]",100,-5.,200.);
-   TH1F *h_HFRecHitET_S = new TH1F("h_HFRecHitET_S","h_HFRecHitET_S;E_{T} [GeV]",100,-5.,200.);
-   TH1F *h_HFRecHitET_L_Flagged = new TH1F("h_HFRecHitET_L_Flagged","h_HFRecHitET_L_Flagged;E_{T} [GeV]",100,-5.,200.);
-   TH1F *h_HFRecHitET_S_Flagged = new TH1F("h_HFRecHitET_S_Flagged","h_HFRecHitET_S_Flagged;E_{T} [GeV]",100,-5.,200.);
+   TH1F *h_HFRecHitET_L = new TH1F("h_HFRecHitET_L","h_HFRecHitET_L;E_{T} [GeV]",Nbins_E,Min_E,Max_E);
+   TH1F *h_HFRecHitET_S = new TH1F("h_HFRecHitET_S","h_HFRecHitET_S;E_{T} [GeV]",Nbins_E,Min_E,Max_E);
+   TH1F *h_HFRecHitET_L_Flagged = new TH1F("h_HFRecHitET_L_Flagged","h_HFRecHitET_L_Flagged;E_{T} [GeV]",Nbins_E,Min_E,Max_E);
+   TH1F *h_HFRecHitET_S_Flagged = new TH1F("h_HFRecHitET_S_Flagged","h_HFRecHitET_S_Flagged;E_{T} [GeV]",Nbins_E,Min_E,Max_E);
    
    h_HFRecHitET_L->Sumw2();
    h_HFRecHitET_S->Sumw2();
@@ -81,22 +84,22 @@ void analysisClass::Loop()
    map<UInt_t,TH1F*> h_HFRecHitET_S_Flagged_ieta;
    
    for( uint i=29; i<=41; i++ ) {
-     h_HFRecHitE_L_ieta[i] = new TH1F(Form("h_HFRecHitE_L_ieta_%u",i),Form("h_HFRecHitE_L_ieta_%u;E [GeV]",i),100,-5.,200.);
+     h_HFRecHitE_L_ieta[i] = new TH1F(Form("h_HFRecHitE_L_ieta_%u",i),Form("h_HFRecHitE_L_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_L_ieta[i]->Sumw2();
-     h_HFRecHitE_S_ieta[i] = new TH1F(Form("h_HFRecHitE_S_ieta_%u",i),Form("h_HFRecHitE_S_ieta_%u;E [GeV]",i),100,-5.,200.);
+     h_HFRecHitE_S_ieta[i] = new TH1F(Form("h_HFRecHitE_S_ieta_%u",i),Form("h_HFRecHitE_S_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_S_ieta[i]->Sumw2();
-     h_HFRecHitE_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_L_Flagged_ieta_%u",i),Form("h_HFRecHitE_L_Flagged_ieta_%u;E [GeV]",i),100,-5.,200.);
+     h_HFRecHitE_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_L_Flagged_ieta_%u",i),Form("h_HFRecHitE_L_Flagged_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_L_Flagged_ieta[i]->Sumw2();
-     h_HFRecHitE_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_S_Flagged_ieta_%u",i),Form("h_HFRecHitE_S_Flagged_ieta_%u;E [GeV]",i),100,-5.,200.);
+     h_HFRecHitE_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_S_Flagged_ieta_%u",i),Form("h_HFRecHitE_S_Flagged_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_S_Flagged_ieta[i]->Sumw2();
      
-     h_HFRecHitET_L_ieta[i] = new TH1F(Form("h_HFRecHitET_L_ieta_%u",i),Form("h_HFRecHitET_L_ieta_%u;E_{T} [GeV]",i),100,-5.,200.);
+     h_HFRecHitET_L_ieta[i] = new TH1F(Form("h_HFRecHitET_L_ieta_%u",i),Form("h_HFRecHitET_L_ieta_%u;E_{T} [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitET_L_ieta[i]->Sumw2();
-     h_HFRecHitET_S_ieta[i] = new TH1F(Form("h_HFRecHitET_S_ieta_%u",i),Form("h_HFRecHitET_S_ieta_%u;E_{T} [GeV]",i),100,-5.,200.);
+     h_HFRecHitET_S_ieta[i] = new TH1F(Form("h_HFRecHitET_S_ieta_%u",i),Form("h_HFRecHitET_S_ieta_%u;E_{T} [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitET_S_ieta[i]->Sumw2();
-     h_HFRecHitET_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_L_Flagged_ieta_%u",i),Form("h_HFRecHitET_L_Flagged_ieta_%u;E_{T} [GeV]",i),100,-5.,200.);
+     h_HFRecHitET_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_L_Flagged_ieta_%u",i),Form("h_HFRecHitET_L_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitET_L_Flagged_ieta[i]->Sumw2();
-     h_HFRecHitET_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_S_Flagged_ieta_%u",i),Form("h_HFRecHitET_S_Flagged_ieta_%u;E_{T} [GeV]",i),100,-5.,200.);
+     h_HFRecHitET_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_S_Flagged_ieta_%u",i),Form("h_HFRecHitET_S_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitET_S_Flagged_ieta[i]->Sumw2();
    }
    
@@ -175,26 +178,33 @@ void analysisClass::Loop()
    TH2F *h2_N_HFspikes_L_ieta_iphi  = new TH2F ("h2_N_HFspikes_L_ieta_iphi","h2_N_HFspikes_L_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
    TH2F *h2_N_HFspikes_S_ieta_iphi  = new TH2F ("h2_N_HFspikes_S_ieta_iphi","h2_N_HFspikes_S_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
    
-   TH2F *h2_HFRecHitE_L_vs_S = new TH2F ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S;E [GeV];E [GeV]",100,-5.,200.,100,-5.,200.);
-   TH2F *h2_HFRecHitET_L_vs_S = new TH2F ("h2_HFRecHitET_L_vs_S","h2_HFRecHitET_L_vs_S;E_{T} [GeV];E_{T} [GeV]",100,-5.,200.,100,-5.,200.);
-   TH2F *h2_HFRecHitE_vs_R_L = new TH2F ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L;R;E [GeV]",120,-1.1,1.1,100,-5.,200.);
-   TH2F *h2_HFRecHitE_vs_R_S = new TH2F ("h2_HFRecHitE_vs_R_S","h2_HFRecHitE_vs_R_S;R;E [GeV]",120,-1.1,1.1,100,-5.,200.);
-   TH2F *h2_HFRecHitET_vs_R_L = new TH2F ("h2_HFRecHitET_vs_R_L","h2_HFRecHitET_vs_R_L;R;E_{T} [GeV]",120,-1.1,1.1,100,-5.,200.);
-   TH2F *h2_HFRecHitET_vs_R_S = new TH2F ("h2_HFRecHitET_vs_R_S","h2_HFRecHitET_vs_R_S;R;E_{T} [GeV]",120,-1.1,1.1,100,-5.,200.);
+   int   Nbins_R = 120;
+   float Min_R = -1.1;
+   float Max_R = 1.1;
+   int   Nbins_S9oS1 = 300;
+   float Min_S9oS1 = -0.3;
+   float Max_S9oS1 = 1.5;
    
-   TH2F *h2_R_vs_iphi_L  = new TH2F ("h2_R_vs_iphi_L","h2_R_vs_iphi_L;i#phi;R",72,0.5,72.5,120,-1.1,1.1);
-   TH2F *h2_R_vs_ieta_L  = new TH2F ("h2_R_vs_ieta_L","h2_R_vs_ieta_L;i#eta;R",13,28.5,41.5,120,-1.1,1.1);
-   TH2F *h2_R_vs_iphi_S  = new TH2F ("h2_R_vs_iphi_S","h2_R_vs_iphi_S;i#phi;R",72,0.5,72.5,120,-1.1,1.1);
-   TH2F *h2_R_vs_ieta_S  = new TH2F ("h2_R_vs_ieta_S","h2_R_vs_ieta_S;i#eta;R",13,28.5,41.5,120,-1.1,1.1);
+   TH2F *h2_HFRecHitE_L_vs_S = new TH2F ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S;E [GeV];E [GeV]",Nbins_E,Min_E,Max_E,Nbins_E,Min_E,Max_E);
+   TH2F *h2_HFRecHitET_L_vs_S = new TH2F ("h2_HFRecHitET_L_vs_S","h2_HFRecHitET_L_vs_S;E_{T} [GeV];E_{T} [GeV]",Nbins_E,Min_E,Max_E,Nbins_E,Min_E,Max_E);
+   TH2F *h2_HFRecHitE_vs_R_L = new TH2F ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L;R;E [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+   TH2F *h2_HFRecHitE_vs_R_S = new TH2F ("h2_HFRecHitE_vs_R_S","h2_HFRecHitE_vs_R_S;R;E [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+   TH2F *h2_HFRecHitET_vs_R_L = new TH2F ("h2_HFRecHitET_vs_R_L","h2_HFRecHitET_vs_R_L;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+   TH2F *h2_HFRecHitET_vs_R_S = new TH2F ("h2_HFRecHitET_vs_R_S","h2_HFRecHitET_vs_R_S;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+   
+   TH2F *h2_R_vs_iphi_L  = new TH2F ("h2_R_vs_iphi_L","h2_R_vs_iphi_L;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
+   TH2F *h2_R_vs_ieta_L  = new TH2F ("h2_R_vs_ieta_L","h2_R_vs_ieta_L;i#eta;R",13,28.5,41.5,Nbins_R,Min_R,Max_R);
+   TH2F *h2_R_vs_iphi_S  = new TH2F ("h2_R_vs_iphi_S","h2_R_vs_iphi_S;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
+   TH2F *h2_R_vs_ieta_S  = new TH2F ("h2_R_vs_ieta_S","h2_R_vs_ieta_S;i#eta;R",13,28.5,41.5,Nbins_R,Min_R,Max_R);
 
-   TH2F *h2_S9oS1_vs_E_L  = new TH2F ("h2_S9oS1_vs_E_L","h2_S9oS1_vs_E_L;E [GeV];S9/S1",100,-5.,300.,100,-0.1,0.5);
-   TH2F *h2_S9oS1_vs_E_S  = new TH2F ("h2_S9oS1_vs_E_S","h2_S9oS1_vs_E_S;E [GeV];S9/S1",100,-5.,300.,100,-0.1,0.5);
-   TH2F *h2_S5oS1_vs_E_L  = new TH2F ("h2_S5oS1_vs_E_L","h2_S5oS1_vs_E_L;E [GeV];S5/S1",100,-5.,300.,100,-0.1,0.5);
-   TH2F *h2_S5oS1_vs_E_S  = new TH2F ("h2_S5oS1_vs_E_S","h2_S5oS1_vs_E_S;E [GeV];S5/S1",100,-5.,300.,100,-0.1,0.5);
-   TH2F *h2_S9oS1_vs_E_L_Flagged  = new TH2F ("h2_S9oS1_vs_E_L_Flagged","h2_S9oS1_vs_E_L_Flagged;E [GeV];S9/S1",100,-5.,300.,100,-0.1,0.5);
-   TH2F *h2_S9oS1_vs_E_S_Flagged  = new TH2F ("h2_S9oS1_vs_E_S_Flagged","h2_S9oS1_vs_E_S_Flagged;E [GeV];S9/S1",100,-5.,300.,100,-0.1,0.5);
-   TH2F *h2_S5oS1_vs_E_L_Flagged  = new TH2F ("h2_S5oS1_vs_E_L_Flagged","h2_S5oS1_vs_E_L_Flagged;E [GeV];S5/S1",100,-5.,300.,100,-0.1,0.5);
-   TH2F *h2_S5oS1_vs_E_S_Flagged  = new TH2F ("h2_S5oS1_vs_E_S_Flagged","h2_S5oS1_vs_E_S_Flagged;E [GeV];S5/S1",100,-5.,300.,100,-0.1,0.5);
+   TH2F *h2_S9oS1_vs_E_L  = new TH2F ("h2_S9oS1_vs_E_L","h2_S9oS1_vs_E_L;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2F *h2_S9oS1_vs_E_S  = new TH2F ("h2_S9oS1_vs_E_S","h2_S9oS1_vs_E_S;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2F *h2_S5oS1_vs_E_L  = new TH2F ("h2_S5oS1_vs_E_L","h2_S5oS1_vs_E_L;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2F *h2_S5oS1_vs_E_S  = new TH2F ("h2_S5oS1_vs_E_S","h2_S5oS1_vs_E_S;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2F *h2_S9oS1_vs_E_L_Flagged  = new TH2F ("h2_S9oS1_vs_E_L_Flagged","h2_S9oS1_vs_E_L_Flagged;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2F *h2_S9oS1_vs_E_S_Flagged  = new TH2F ("h2_S9oS1_vs_E_S_Flagged","h2_S9oS1_vs_E_S_Flagged;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2F *h2_S5oS1_vs_E_L_Flagged  = new TH2F ("h2_S5oS1_vs_E_L_Flagged","h2_S5oS1_vs_E_L_Flagged;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2F *h2_S5oS1_vs_E_S_Flagged  = new TH2F ("h2_S5oS1_vs_E_S_Flagged","h2_S5oS1_vs_E_S_Flagged;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
 
    map<UInt_t,TH2F*> h2_S9oS1_vs_E_L_ieta;
    map<UInt_t,TH2F*> h2_S9oS1_vs_E_S_ieta;
@@ -206,14 +216,14 @@ void analysisClass::Loop()
    map<UInt_t,TH2F*> h2_S5oS1_vs_E_S_Flagged_ieta;
    
    for( uint i=29; i<=41; i++ ) {
-     h2_S9oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_ieta_%u",i),Form("h2_S9oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S9oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_ieta_%u",i),Form("h2_S9oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S5oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_ieta_%u",i),Form("h2_S5oS1_vs_E_L_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S5oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_ieta_%u",i),Form("h2_S5oS1_vs_E_S_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S9oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S9oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S5oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
-     h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
+     h2_S9oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_ieta_%u",i),Form("h2_S9oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S9oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_ieta_%u",i),Form("h2_S9oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S5oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_ieta_%u",i),Form("h2_S5oS1_vs_E_L_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S5oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_ieta_%u",i),Form("h2_S5oS1_vs_E_S_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S9oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S9oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S5oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
    }
    
    TProfile * p_NspikesInHF_vs_SumEinHF    = new TProfile ("p_NspikesInHF_vs_SumEinHF","p_NspikesInHF_vs_SumEinHF",100,0,5000.);
