@@ -7,7 +7,9 @@
 #include <TLorentzVector.h>
 #include <TVector2.h>
 #include <TVector3.h>
+#include <TProfile.h>
 
+float N_ch_TOT_inHF = 1728;
 
 analysisClass::analysisClass(string * inputList, string * cutFile, string * treeName, string * outputFileName, string * cutEfficFile)
   :baseClass(inputList, cutFile, treeName, outputFileName, cutEfficFile)
@@ -163,6 +165,11 @@ void analysisClass::Loop()
    h_CaloMExHF_clean->Sumw2();
    h_CaloMEyHF_clean->Sumw2();
    h_CaloSumETHF_clean->Sumw2();
+
+   //Sum E histograms
+   int Nbins_SumE = 200;
+   float Max_SumE = 5000;
+   TH1 *h_SumEinHF   = new TH1F ("h_SumEinHF","h_SumEinHF;#SigmaE [GeV]",Nbins_SumE,0,Max_SumE);
    
    //2D histograms
    TH2F *h2_N_HFspikes_L_ieta_iphi  = new TH2F ("h2_N_HFspikes_L_ieta_iphi","h2_N_HFspikes_L_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
@@ -209,6 +216,18 @@ void analysisClass::Loop()
      h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S5/S1",i),100,-5.,300.,100,-0.1,0.5);
    }
    
+   TProfile * p_NspikesInHF_vs_SumEinHF    = new TProfile ("p_NspikesInHF_vs_SumEinHF","p_NspikesInHF_vs_SumEinHF",100,0,5000.);
+   TProfile * p_NspikesInHF_L_vs_SumEinHF  = new TProfile ("p_NspikesInHF_L_vs_SumEinHF","p_NspikesInHF_L_vs_SumEinHF",100,0,5000.);
+   TProfile * p_NspikesInHF_S_vs_SumEinHF  = new TProfile ("p_NspikesInHF_S_vs_SumEinHF","p_NspikesInHF_S_vs_SumEinHF",100,0,5000.);   
+
+   map<UInt_t,TProfile*> p_NspikesInHF_vs_SumEinHF_ieta;
+   for( uint i=1; i<=5; i++ ) {
+     p_NspikesInHF_vs_SumEinHF_ieta[i] = new TProfile(Form("p_NspikesInHF_vs_SumEinHF_ieta_%u",i),Form("p_NspikesInHF_vs_SumEinHF_ieta_%u;SumE HF [GeV]; N. spikes per ev.",i)
+						      ,100,0,5000.);
+   }
+   
+   TProfile * p_OccupancyHF_vs_SumEinHF = new TProfile ("p_OccupancyHF_vs_SumEinHF","p_OccupancyHF_vs_SumEinHF",100,0,5000.);
+
    /////////initialize variables
 
    //////////////////////////////
@@ -346,10 +365,29 @@ void analysisClass::Loop()
            vector<float> HFspikes_ET;
            vector<float> HFspikes_Px;
            vector<float> HFspikes_Py;
+           vector<float> HFspikes_E;
+           vector<int> HFspikes_ieta;
 
            int N_HFspikes_L=0;
            int N_HFspikes_S=0;
            int N_HFspikes_TOT=0;
+
+	   float SumEinHF=0.;
+	   // 	   float SumEinHFP=0.;
+	   // 	   float SumEinHFM=0.;
+
+	   map<UInt_t,float> SumEinHF_ieta;
+	   map<UInt_t,float> N_HFspikes_L_ieta;
+	   map<UInt_t,float> N_HFspikes_S_ieta;
+	   map<UInt_t,float> N_HFspikes_TOT_ieta;
+	   for( uint i=1; i<=5; i++ ) {
+	     SumEinHF_ieta[i]=0;
+	     N_HFspikes_L_ieta[i]=0;
+	     N_HFspikes_S_ieta[i]=0;
+	     N_HFspikes_TOT_ieta[i]=0;
+	   }
+
+	   float N_rechit_above_thr_inHF = 0;
 
            for (int i = 0; i<int(PMTnoiseRecHitET->size()); i++)
              {
@@ -364,7 +402,29 @@ void analysisClass::Loop()
                double phi = ((2*3.14159)/72) * iphi;
                if(abs(ieta)>39) phi = ((2*3.14159)/72) * (iphi-1);
                int depth = PMTnoiseRecHitDepth->at(i);
-               
+
+	       //eta regions
+	       int index_eta = 0;
+	       if(abs(ieta)==29) index_eta = 1;
+	       if(abs(ieta)>=30 && abs(ieta)<=33) index_eta = 2;
+	       if(abs(ieta)>=34 && abs(ieta)<=37) index_eta = 3;
+	       if(abs(ieta)>=38 && abs(ieta)<=40) index_eta = 4;
+	       if(abs(ieta)==41) index_eta = 5;	       
+
+	       //calculate sum of energy in HF (including spikes at this stage)
+	       SumEinHF = SumEinHF + energy;
+	       SumEinHF_ieta[index_eta] = SumEinHF_ieta[index_eta] + energy; 
+
+// 	       if(ieta>0)
+// 		 float SumEinHFP = SumEinHFP + energy;
+// 	       if(ieta<0)
+// 		 float SumEinHFM = SumEinHFM + energy;
+
+	       //calculate occupancy in HF
+	       float OccThreshold = 1;
+	       if(energy > OccThreshold)
+		 N_rechit_above_thr_inHF++;
+ 
                //skip the RecHit if it's just a pedestal noise
                if( (depth==1 && energy<1.2) || (depth==2 && energy<1.8) ) continue;
                
@@ -404,10 +464,13 @@ void analysisClass::Loop()
                if( depth==1 && energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 )
                  {
                    N_HFspikes_L++;
-                   
+		   N_HFspikes_L_ieta[index_eta] = N_HFspikes_L_ieta[index_eta] + 1;                   
+
                    HFspikes_ET.push_back(ET);
                    HFspikes_Px.push_back(ET*cos(phi));
                    HFspikes_Py.push_back(ET*sin(phi));
+                   HFspikes_E.push_back(energy);
+		   HFspikes_ieta.push_back(ieta);
 
                    h2_N_HFspikes_L_ieta_iphi->Fill(abs(ieta),iphi);
                    h_HFRecHitE_L_Flagged->Fill( energy );
@@ -422,10 +485,13 @@ void analysisClass::Loop()
                else if( depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 )
                  {
                    N_HFspikes_S++;
+		   N_HFspikes_S_ieta[index_eta] = N_HFspikes_S_ieta[index_eta] + 1;                   
                  
                    HFspikes_ET.push_back(ET);
                    HFspikes_Px.push_back(ET*cos(phi));
                    HFspikes_Py.push_back(ET*sin(phi));
+                   HFspikes_E.push_back(energy);
+		   HFspikes_ieta.push_back(ieta);
 
                    h2_N_HFspikes_S_ieta_iphi->Fill(abs(ieta),iphi);
                    h_HFRecHitE_S_Flagged->Fill( energy );
@@ -472,6 +538,7 @@ void analysisClass::Loop()
                  h2_S5oS1_vs_E_S_ieta[abs(ieta)]->Fill( energy, S5oS1 );
                }
 
+
                //## identify spikes a la caloMET
                
 //                if( PMTnoiseRecHitDepth->at(i)==1 
@@ -486,10 +553,39 @@ void analysisClass::Loop()
              }//end loop over hf rechits
 
            N_HFspikes_TOT = N_HFspikes_L + N_HFspikes_S;
-          
+	   for( uint i=1; i<=5; i++ ) {
+	     N_HFspikes_TOT_ieta[i] = N_HFspikes_L_ieta[i] + N_HFspikes_S_ieta[i];                             
+	   }
+
 	   h_N_HFspikesPerEv_L->Fill(N_HFspikes_L);
 	   h_N_HFspikesPerEv_S->Fill(N_HFspikes_S);
 	   h_N_HFspikesPerEv_TOT->Fill(N_HFspikes_TOT);
+
+	   //N. HF spikes vs SumE in HF
+	   for(int spike=0; spike<HFspikes_E.size(); spike++)
+	     {
+	       SumEinHF = SumEinHF - HFspikes_E[spike];	      
+	       //eta regions
+	       int index_eta = 0;
+	       if(abs(HFspikes_ieta[spike])==29) index_eta = 1;
+	       if(abs(HFspikes_ieta[spike])>=30 && abs(HFspikes_ieta[spike])<=33) index_eta = 2;
+	       if(abs(HFspikes_ieta[spike])>=34 && abs(HFspikes_ieta[spike])<=37) index_eta = 3;
+	       if(abs(HFspikes_ieta[spike])>=38 && abs(HFspikes_ieta[spike])<=40) index_eta = 4;
+	       if(abs(HFspikes_ieta[spike])==41) index_eta = 5;	       
+	       SumEinHF_ieta[index_eta] = SumEinHF_ieta[index_eta] - HFspikes_E[spike];	       
+	     }
+
+	   h_SumEinHF->Fill(SumEinHF);
+	   p_NspikesInHF_vs_SumEinHF->Fill(SumEinHF,N_HFspikes_TOT);
+	   p_NspikesInHF_L_vs_SumEinHF->Fill(SumEinHF,N_HFspikes_L);
+	   p_NspikesInHF_S_vs_SumEinHF->Fill(SumEinHF,N_HFspikes_S);
+	   for( uint i=1; i<=5; i++ ) {
+	     p_NspikesInHF_vs_SumEinHF_ieta[i]->Fill(SumEinHF_ieta[i],N_HFspikes_TOT_ieta[i]);
+	   }
+
+	   //HF occupancy (above thr.) vs SumE in HF
+	   float occupancyInHF = float( ( N_rechit_above_thr_inHF - HFspikes_E.size() ) / N_ch_TOT_inHF);
+	   p_OccupancyHF_vs_SumEinHF->Fill(SumEinHF,occupancyInHF);
 
 	   //ECAL spikes
 	   h_N_EBspikesPerEv_TOT->Fill(EBspikes_ET.size());
@@ -591,6 +687,18 @@ void analysisClass::Loop()
        ////////////////////// User's code ends here ///////////////////////
        
      } // End loop over events
+
+
+//    p_NspikesInHF_L_vs_SumEinHF->Fill(SumEinHF,N_HFspikes_L);
+//    p_NspikesInHF_S_vs_SumEinHF->Fill(SumEinHF,N_HFspikes_S);
+//    for( uint i=1; i<=5; i++ ) {
+//      p_NspikesInHF_vs_SumEinHF_ieta[i]->Fill(SumEinHF_ieta[i],N_HFspikes_TOT_ieta[i]);
+//    }
+   
+//    //HF occupancy (above thr.) vs SumE in HF
+//    float occupancyInHF = float( ( N_rechit_above_thr_inHF - HFspikes_E.size() ) / N_ch_TOT_inHF);
+//    p_OccupancyHF_vs_SumEinHF->Fill(SumEinHF,occupancyInHF);
+
    
    //////////write histos 
    
@@ -684,6 +792,17 @@ void analysisClass::Loop()
    for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
+
+   h_SumEinHF->Write();
+   p_NspikesInHF_vs_SumEinHF->Write(); 
+   p_NspikesInHF_L_vs_SumEinHF->Write();
+   p_NspikesInHF_S_vs_SumEinHF->Write();
+
+   for( uint i=1; i<=5; i++ ) {
+     p_NspikesInHF_vs_SumEinHF_ieta[i]->Write();
+   }
+
+   p_OccupancyHF_vs_SumEinHF->Write();
    
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
