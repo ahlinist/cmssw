@@ -23,6 +23,10 @@ diTauProducer = cms.EDProducer(
     #  o or di-tau reconstructed from visible decay products only ('')
     # NOTE: leave recoMode empty in case of no srcMET defined   
     recoMode = cms.string('collinearApprox'),
+
+    # scale function for diTaus rescued by the improved collinear approximation
+    # '1' is the default
+    scaleFuncImprovedCollinearApprox = cms.string('1'),
     
     # if true, use the highest pT tau on both legs.
     # otherwise, try all combinations
