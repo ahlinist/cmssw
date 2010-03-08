@@ -91,9 +91,9 @@ process.theBigNtuple = cms.Path(
     process.promptanatcmet   +
     process.promptanapfmet   +
     process.promptananohf  +
-    #process.promptanaic5calojet +
+    process.promptanaic5calojet +
     #process.promptanasc5calojet +
-    process.promptanakt4calojet +
+    #process.promptanakt4calojet +
     process.promptanaak5calojet +
     process.promptanaJPTak5 +
     process.promptanaak5pfjet +
