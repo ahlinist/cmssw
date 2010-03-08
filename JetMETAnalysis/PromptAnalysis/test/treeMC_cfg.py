@@ -16,7 +16,9 @@ process.load("RecoMET/METProducers/EcalHaloData_cfi")
 process.load("RecoMET/METProducers/HcalHaloData_cfi")
 process.load("RecoMET/METProducers/GlobalHaloData_cfi")
 #MC (good for /MinBias/Summer09-STARTUP3X_V8I_900GeV-v2/GEN-SIM-RECO)
-process.GlobalTag.globaltag = 'STARTUP3X_V8I::All'
+#process.GlobalTag.globaltag = 'STARTUP3X_V8I::All'
+#process.GlobalTag.globaltag = 'STARTUP3X_V8D::All'
+process.GlobalTag.globaltag = 'MC_3XY_V18::All'
 #DATA (Dec14th rereco)
 #process.GlobalTag.globaltag ='GR09_R_V4::All'
 
@@ -67,9 +69,9 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanatcmet_*_*',
     'keep *_promptanapfmet_*_*',
     'keep *_promptananohf_*_*',
-    #'keep *_promptanaic5calojet_*_*',
+    'keep *_promptanaic5calojet_*_*',
     #'keep *_promptanasc5calojet_*_*',
-    'keep *_promptanakt4calojet_*_*',
+    #'keep *_promptanakt4calojet_*_*',
     'keep *_promptanaak5calojet_*_*',
     'keep *_promptanaJPTak5_*_*',
     'keep *_promptanaak5pfjet_*_*',
