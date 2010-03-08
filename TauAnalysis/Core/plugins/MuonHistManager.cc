@@ -361,19 +361,23 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, double wei
 {
   //std::cout << "<MuonHistManager::fillMuonIsoHistograms>:" << std::endl;
 
-  hMuonTrkIsoPt_->Fill(patMuon.trackIso(), weight);
-  hMuonTrkIsoPtVsMuonPt_->Fill(patMuon.pt(), patMuon.trackIso(), weight);
-  hMuonEcalIsoPt_->Fill(patMuon.ecalIso(), weight);
-  hMuonEcalIsoPtVsMuonPt_->Fill(patMuon.pt(), patMuon.ecalIso(), weight);
-  hMuonHcalIsoPt_->Fill(patMuon.hcalIso(), weight);
-  //hMuonIsoSumPt_->Fill(patMuon.trackIso() + patMuon.ecalIso() + patMuon.hcalIso(), weight);
-  hMuonIsoSumPt_->Fill(patMuon.trackIso() + patMuon.ecalIso(), weight);
-  hMuonIsoSumPtVsMuonPt_->Fill(patMuon.pt(), patMuon.trackIso() + patMuon.ecalIso(), weight);
-  hMuonTrkIsoPtRel_->Fill(patMuon.trackIso()/patMuon.pt(), weight);
-  hMuonEcalIsoPtRel_->Fill(patMuon.ecalIso()/patMuon.pt(), weight);
-  hMuonHcalIsoPtRel_->Fill(patMuon.hcalIso()/patMuon.pt(), weight);
-  //hMuonIsoSumPtRel_->Fill((patMuon.trackIso() + patMuon.ecalIso() + patMuon.hcalIso())/patMuon.pt(), weight);
-  hMuonIsoSumPtRel_->Fill((patMuon.trackIso() + patMuon.ecalIso())/patMuon.pt(), weight);
+  double muonTrackIso = patMuon.userIsolation(pat::TrackIso);
+  double muonEcalIso = patMuon.userIsolation(pat::EcalIso);
+  double muonHcalIso = patMuon.userIsolation(pat::HcalIso);
+
+  hMuonTrkIsoPt_->Fill(muonTrackIso, weight);
+  hMuonTrkIsoPtVsMuonPt_->Fill(patMuon.pt(), muonTrackIso, weight);
+  hMuonEcalIsoPt_->Fill(muonEcalIso, weight);
+  hMuonEcalIsoPtVsMuonPt_->Fill(patMuon.pt(), muonEcalIso, weight);
+  hMuonHcalIsoPt_->Fill(muonHcalIso, weight);
+  //hMuonIsoSumPt_->Fill(muonTrackIso + muonEcalIso + muonHcalIso, weight);
+  hMuonIsoSumPt_->Fill(muonTrackIso + muonEcalIso, weight);
+  hMuonIsoSumPtVsMuonPt_->Fill(patMuon.pt(), muonTrackIso + muonEcalIso, weight);
+  hMuonTrkIsoPtRel_->Fill(muonTrackIso/patMuon.pt(), weight);
+  hMuonEcalIsoPtRel_->Fill(muonEcalIso/patMuon.pt(), weight);
+  hMuonHcalIsoPtRel_->Fill(muonHcalIso/patMuon.pt(), weight);
+  //hMuonIsoSumPtRel_->Fill((muonTrackIso + muonEcalIso + muonHcalIso)/patMuon.pt(), weight);
+  hMuonIsoSumPtRel_->Fill((muonTrackIso + muonEcalIso)/patMuon.pt(), weight);
 
   //std::cout << " particleIso = " << patMuon.particleIso() << std::endl;
   //std::cout << " chargedHadronIso = " << patMuon.chargedHadronIso() << std::endl;
@@ -386,8 +390,8 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, double wei
   hMuonPFGammaIsoPt_->Fill(patMuon.photonIso(), weight);
   
   if ( makeIsoPtCtrlHistograms_ ) {
-    hMuonPFChargedHadronIsoPtCtrl_->Fill(patMuon.trackIso(), patMuon.chargedHadronIso(), weight);
-    hMuonPFGammaIsoPtCtrl_->Fill(patMuon.ecalIso(), patMuon.photonIso(), weight);
+    hMuonPFChargedHadronIsoPtCtrl_->Fill(muonTrackIso, patMuon.chargedHadronIso(), weight);
+    hMuonPFGammaIsoPtCtrl_->Fill(muonEcalIso, patMuon.photonIso(), weight);
   }
 
   fillLeptonIsoDepositHistograms(patMuon.trackIsoDeposit(), 
