@@ -48,7 +48,7 @@ cp -r $TOPDIR/$CMSSW_VERSION/lib $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms
 # for non-patch builds, add links to the external data directories
 if [ "$RELEASE_TYPE" == "online" ]; then
   echo "Linking extrnal data to their destination"
-  for CMSSWDATA in $(scram tool info cmsswdata | grep CMSSW_SEARCH_PATH | cut -d= -f2 | tr ':' ' '); do 
+  for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEARCH_PATH | cut -d= -f2 | tr ':' ' '); do 
     for DATA in $CMSSWDATA/*/*/data; do
       RELATIVE=$(echo "$DATA" | sed -e"s#$CMSSWDATA/##")
       TARGET=$TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/src/$RELATIVE
