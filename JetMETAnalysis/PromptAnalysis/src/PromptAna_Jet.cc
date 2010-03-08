@@ -26,6 +26,8 @@ PromptAna_Jet::PromptAna_Jet(const edm::ParameterSet& iConfig)
   //produces <std::vector<double> > ( prefix + "JIDfSubDet3"  + suffix );
   //produces <std::vector<double> > ( prefix + "JIDfSubDet4"  + suffix );
   produces <std::vector<double> > ( prefix + "JIDresEMF"  + suffix );
+  produces <std::vector<double> > ( prefix + "SigmaEta"  + suffix );
+  produces <std::vector<double> > ( prefix + "SigmaPhi"  + suffix );
   produces <std::vector<double> > ( prefix + "EmEnergyFraction"  + suffix );
   produces <std::vector<double> > ( prefix + "EnergyFractionHadronic"  + suffix );
   produces <std::vector<double> > ( prefix + "TowersArea"  + suffix );
@@ -78,6 +80,8 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //std::auto_ptr<std::vector<double> >  fSubDet3  ( new std::vector<double>()  ) ;
   //std::auto_ptr<std::vector<double> >  fSubDet4  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  resEMF  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> >  sigmaEta  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> >  sigmaPhi  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  emEnergyFraction  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  energyFractionHadronic ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  towersArea   ( new std::vector<double>()  ) ;
@@ -155,6 +159,8 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //fSubDet3->push_back(jetIDHelper.fSubDetector3() );
     //fSubDet4->push_back(jetIDHelper.fSubDetector4() );
     resEMF->push_back(jetIDHelper.restrictedEMF() );
+    sigmaEta->push_back(sqrt(it->etaetaMoment()));
+    sigmaPhi->push_back(sqrt(it->phiphiMoment()));
     //ok for the moment i add this by hand, just to be sure
     if(jetIDHelper.fHPD()<0.98 && jetIDHelper.n90Hits()>=2 && jetIDHelper.restrictedEMF()>0.01) clj++;
     emEnergyFraction->push_back(it->emEnergyFraction());
@@ -250,6 +256,8 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //iEvent.put( fSubDet3,  prefix + "JIDfSubDet3"  + suffix );
   //iEvent.put( fSubDet4,  prefix + "JIDfSubDet4"  + suffix );
   iEvent.put( resEMF,  prefix + "JIDresEMF"    + suffix );
+  iEvent.put(sigmaEta,  prefix + "SigmaEta"    + suffix );
+  iEvent.put(sigmaPhi,  prefix + "SigmaPhi"    + suffix );
   iEvent.put( emEnergyFraction,  prefix + "EmEnergyFraction"  + suffix );
   iEvent.put( energyFractionHadronic,  prefix + "EnergyFractionHadronic"  + suffix );
   iEvent.put( towersArea,  prefix + "TowersArea"  + suffix );
