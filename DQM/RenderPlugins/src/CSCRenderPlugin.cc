@@ -2051,7 +2051,21 @@ class CSCRenderPlugin : public DQMRenderPlugin {
       if(reMatch(".*Summary/Event_Display_Anode$", o.name))
       {
         TH2* tmp = dynamic_cast<TH2*>(obj);
-        emuEventDisplay.drawEventDisplay_ZR(tmp);
+        emuEventDisplay.drawEventDisplay_ZR(tmp, 0);
+        return;
+      }
+
+      if(reMatch(".*Summary/Event_Display_Anode_Up$", o.name))
+      {
+        TH2* tmp = dynamic_cast<TH2*>(obj);
+        emuEventDisplay.drawEventDisplay_ZR(tmp, 1);
+        return;
+      }
+
+      if(reMatch(".*Summary/Event_Display_Anode_Down$", o.name))
+      {
+        TH2* tmp = dynamic_cast<TH2*>(obj);
+        emuEventDisplay.drawEventDisplay_ZR(tmp, 2);
         return;
       }
 

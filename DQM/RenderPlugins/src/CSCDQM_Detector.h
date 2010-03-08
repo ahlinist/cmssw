@@ -205,28 +205,28 @@ class Detector {
     double hstripDPhiRad(int station, int ring, const std::string &part) const { return PI/180.0*hstripDPhiDeg( station, ring, part ); };
     double hstripDPhiRad(int station, int ring) const { return hstripDPhiRad( station, ring, "b" ); };
 
-    double LocalPhiDegstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const;
-    double LocalPhiDegstripToChamberCenter(int side, int station, int ring, int layer, int strip) const {
-      return LocalPhiDegstripToChamberCenter(side, station, ring, "b", layer, strip);
+    double LocalPhiDegStripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const;
+    double LocalPhiDegStripToChamberCenter(int side, int station, int ring, int layer, int strip) const {
+      return LocalPhiDegStripToChamberCenter(side, station, ring, "b", layer, strip);
     };
     
-    double LocalPhiRadstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const {
-      return PI/180.0*LocalPhiDegstripToChamberCenter(side, station, ring, part, layer, strip);
+    double LocalPhiRadStripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const {
+      return PI/180.0*LocalPhiDegStripToChamberCenter(side, station, ring, part, layer, strip);
     };
-    double LocalPhiRadstripToChamberCenter(int side, int station, int ring, int layer, int strip) const {
-      return PI/180.0*LocalPhiDegstripToChamberCenter(side, station, ring, layer, strip);
+    double LocalPhiRadStripToChamberCenter(int side, int station, int ring, int layer, int strip) const {
+      return PI/180.0*LocalPhiDegStripToChamberCenter(side, station, ring, layer, strip);
     };
     
-    double LocalPhiDeghstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const;
-    double LocalPhiDeghstripToChamberCenter(int side, int station, int ring, int layer, int hstrip) const {
-      return LocalPhiDeghstripToChamberCenter(side, station, ring, "b", layer, hstrip);
+    double LocalPhiDegHstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const;
+    double LocalPhiDegHstripToChamberCenter(int side, int station, int ring, int layer, int hstrip) const {
+      return LocalPhiDegHstripToChamberCenter(side, station, ring, "b", layer, hstrip);
     };
   
-    double LocalPhiRadhstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const {
-      return PI/180.0*LocalPhiDeghstripToChamberCenter(side, station, ring, part, layer, hstrip);
+    double LocalPhiRadHstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const {
+      return PI/180.0*LocalPhiDegHstripToChamberCenter(side, station, ring, part, layer, hstrip);
     };
-    double LocalPhiRadhstripToChamberCenter(int side, int station, int ring, int layer, int hstrip) const {
-      return PI/180.0*LocalPhiDeghstripToChamberCenter(side, station, ring, layer, hstrip);
+    double LocalPhiRadHstripToChamberCenter(int side, int station, int ring, int layer, int hstrip) const {
+      return PI/180.0*LocalPhiDegHstripToChamberCenter(side, station, ring, layer, hstrip);
     };
   
     double Z_mm(int side, int station, int ring, int chamber, int layer) const;

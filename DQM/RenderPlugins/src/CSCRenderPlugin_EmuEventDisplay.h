@@ -53,16 +53,32 @@ class EmuEventDisplay {
     TH2F* histo_zphi;
     TH2F* histo_xy;
 
-    std::vector<TPolyLine*> zrChambers;
+    std::vector<TPolyLine*> zrChambersUp;
+    std::vector<TPolyLine*> zrChambersDown;
     std::vector<TPolyLine*> zpChambers;
     std::vector<TPolyLine*> xyChambers;
+
+    std::vector<TBox*> zrHits;
+    std::vector<TBox*> zrHitsUp;
+    std::vector<TBox*> zrHitsDown;
+    std::vector<TBox*> zpHits;
+    std::vector<TBox*> xyHits;
+
+    template<class T>
+    void deleteItems(std::vector<T*> &v) {
+      for (unsigned int i = 0; i < v.size(); i++) {
+        T* t = v.at(i);
+        delete t;
+      }
+      v.clear();
+    }
 
   public:
     
     EmuEventDisplay();
     ~EmuEventDisplay();
 
-    void drawEventDisplay_ZR(TH2* data);
+    void drawEventDisplay_ZR(TH2* data, int histogramType);
     void drawEventDisplay_ZPhi(TH2* data);
     void drawEventDisplay_XY(TH2* data);
 

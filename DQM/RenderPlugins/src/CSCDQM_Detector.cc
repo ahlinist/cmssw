@@ -752,7 +752,7 @@ double Detector::LocalYtoBeam(int station, int ring, const std::string &part, in
     int side  = 1;
     int layer = 1;
     // Half strip angle w.r.t. horizontal line
-    double localPhiRad = LocalPhiRadhstripToChamberCenter(side, station, ring, part, layer, hstrip);
+    double localPhiRad = LocalPhiRadHstripToChamberCenter(side, station, ring, part, layer, hstrip);
     // Wire groups incline angle for ME1/1 = 29 degrees
     double inclineAngleRad = 29.0 * 3.14159 / 180.0;
     if( wgroup == 1 || wgroup == NumberOfWiregroups(1,1) ) inclineAngleRad = 0.5 * 29.0 * 3.14159 / 180.0;
@@ -842,7 +842,7 @@ double Detector::stripStaggerInstripWidth( int station, int ring, int layer ) co
   
 }
 
-double Detector::LocalPhiDegstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const {
+double Detector::LocalPhiDegStripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int strip) const {
   double localPhi = 0.0;
   
   localPhi = stripDPhiDeg(station, ring, part)
@@ -884,7 +884,7 @@ double Detector::LocalPhiDegstripToChamberCenter(int side, int station, int ring
   return localPhi;
 }
 
-double Detector::LocalPhiDeghstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const {
+double Detector::LocalPhiDegHstripToChamberCenter(int side, int station, int ring, const std::string &part, int layer, int hstrip) const {
   double localPhi = 0.0;
   
   localPhi = hstripDPhiDeg(station, ring, part)
@@ -930,7 +930,7 @@ double Detector::Phi_deg(int side, int station, int ring, const std::string &par
   double phi = 0.0;
   
   phi =   PhiDegChamberCenter(station, ring, chamber)
-        + LocalPhiDeghstripToChamberCenter(side, station, ring, part, layer, hstrip);
+        + LocalPhiDegHstripToChamberCenter(side, station, ring, part, layer, hstrip);
   
   return phi;
 }
@@ -939,7 +939,7 @@ double Detector::R_mm(int side, int station, int ring, const std::string &part, 
   double r = 0.0;
   
   r =   LocalYtoBeam(station, ring, part, hstrip, wgroup)
-      / cos( LocalPhiRadhstripToChamberCenter(side, station, ring, part, layer, hstrip) );
+      / cos( LocalPhiRadHstripToChamberCenter(side, station, ring, part, layer, hstrip) );
   
   return r;
 }
