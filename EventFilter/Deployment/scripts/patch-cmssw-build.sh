@@ -20,14 +20,6 @@ export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
 [ -n "$SCRAM_ARCH" ] || SCRAM_ARCH=slc5onl_ia32_gcc434
 export SCRAM_ARCH
 
-# create a scram wrapper
-SCRAM_VERSION=`cat /opt/cmssw/$SCRAM_ARCH/etc/default-scramv1-version`
-cat > EventFilter/Deployment/scripts/scramv1 <<EOF
-#! /bin/bash
-/opt/cmssw/$SCRAM_ARCH/lcg/SCRAMV1/$SCRAM_VERSION/bin/scram \$@
-EOF
-chmod +x EventFilter/Deployment/scripts/scramv1
-
 # check for an online release vs. an online patch release
 RELEASE_TYPE="online"
 if echo $CMSSW_VERSION | grep -q "patch"; then
@@ -41,11 +33,11 @@ cd     patch-cmssw-tmp
 TOPDIR=$PWD
 
 # create a local CMSSW area, import patches from the specidfied directory, and build them (except for the "test" directories)
-scramv1 project CMSSW $CMSSW_VERSION
+scram project CMSSW $CMSSW_VERSION
 sed -e's#<classpath path=".*+test"/>##' -i $CMSSW_VERSION/config/BuildFile.xml
 cd $CMSSW_VERSION/src
 cp -r $LOCAL_CODE_PATCHES_TOP/* .
-scramv1 b -j 4
+scram b -j 4
 cd $TOPDIR
 
 echo "Moving patches to their destination"
