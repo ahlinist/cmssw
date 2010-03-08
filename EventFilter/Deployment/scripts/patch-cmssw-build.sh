@@ -6,7 +6,7 @@ if [ $numArgs -lt 4 ]; then
 fi
 CMSSW_VERSION=$1            # the CMSSW version, as known to scram
 PATCH_ID=$2                 # an arbitrary tag which identifies the extra code (usually, "p1", "p2", ...)
-PRO_DEV=$3                  # "pro", "dev", etc...
+AREA=$3                     # "pro", "dev", etc...
 LOCAL_CODE_PATCHES_TOP=$4   # absolute path to the area where extra code to be compiled in can be found, equivalent to $CMSSW_BASE/src
 
 # set the RMP build architecture
@@ -49,31 +49,31 @@ scramv1 b -j 4
 cd $TOPDIR
 
 echo "Moving patches to their destination"
-mkdir -p $TOPDIR/opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION
-cp -r $TOPDIR/$CMSSW_VERSION/src $TOPDIR/opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/
-cp -r $TOPDIR/$CMSSW_VERSION/lib $TOPDIR/opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/
+mkdir -p $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION
+cp -r $TOPDIR/$CMSSW_VERSION/src $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/
+cp -r $TOPDIR/$CMSSW_VERSION/lib $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/
 
 echo "Generating and populating summary directories"
 CMSSW_ROOT_DIRECTORY=`grep RELEASETOP $CMSSW_VERSION/.SCRAM/$SCRAM_ARCH/Environment | cut -d= -f2`
 cd $CMSSW_ROOT_DIRECTORY/src
-install_env.pl $TOPDIR/opt/cmssw/$PRO_DEV/lib $TOPDIR/opt/cmssw/$PRO_DEV/module $TOPDIR/opt/cmssw/$PRO_DEV/env.txt $TOPDIR/opt/cmssw/$PRO_DEV/python
+install_env.pl $TOPDIR/opt/cmssw/$AREA/lib $TOPDIR/opt/cmssw/$AREA/module $TOPDIR/opt/cmssw/$AREA/env.txt $TOPDIR/opt/cmssw/$AREA/python
 
 echo "Linking .rootmap plugin entries from $CMSSW_ROOT_DIRECTORY"
-find $CMSSW_ROOT_DIRECTORY/external/$SCRAM_ARCH/lib -name '*.rootmap' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$PRO_DEV/lib
-find $CMSSW_ROOT_DIRECTORY/lib/$SCRAM_ARCH          -name '*.rootmap' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$PRO_DEV/lib
+find $CMSSW_ROOT_DIRECTORY/external/$SCRAM_ARCH/lib -name '*.rootmap' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$AREA/lib
+find $CMSSW_ROOT_DIRECTORY/lib/$SCRAM_ARCH          -name '*.rootmap' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$AREA/lib
 
 cd $TOPDIR
-for x in opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/lib/$SCRAM_ARCH/*.so
+for x in opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/lib/$SCRAM_ARCH/*.so
 do
   if [ -e $x ]
       then
-      ln -sf $PWD/$x opt/cmssw/$PRO_DEV/lib/
+      ln -sf $PWD/$x opt/cmssw/$AREA/lib/
   fi
 done
 
 echo "Updating edm plugin registry with patches"
 cd $TOPDIR/$CMSSW_VERSION
-RESPONSE=`reset_edm_cache.pl $TOPDIR/opt/cmssw/$PRO_DEV/lib $TOPDIR/opt/cmssw/$PRO_DEV/module /dev/null`
+RESPONSE=`reset_edm_cache.pl $TOPDIR/opt/cmssw/$AREA/lib $TOPDIR/opt/cmssw/$AREA/module /dev/null`
 echo "reset_edm_cache returned $RESPONSE"
 
 ### Extract the root version from the scram runtime here before making the symbolic links
@@ -83,25 +83,25 @@ echo "  ROOTSYS at $ROOTSYS"
 
 # fix symbolic links for patched libs so it is visible after installation
 cd $TOPDIR
-for x in opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/lib/$SCRAM_ARCH/*.so
+for x in opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/lib/$SCRAM_ARCH/*.so
 do
   if [ -e $x ]
       then
-      ln -sf /$x opt/cmssw/$PRO_DEV/lib
+      ln -sf /$x opt/cmssw/$AREA/lib
   fi
 done
 
 cd $TOPDIR
 # remove temporary directory holding the local patches
 #rm -rf $TOPDIR/$CMSSW_VERSION
-ln -s /opt/cmssw/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION                   opt/cmssw/$PRO_DEV/base
-ln -s /opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION  opt/cmssw/$PRO_DEV/patch
-ln -s $ROOTSYS                                                                       opt/cmssw/$PRO_DEV/root
+ln -s /opt/cmssw/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION                   opt/cmssw/$AREA/base
+ln -s /opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION  opt/cmssw/$AREA/patch
+ln -s $ROOTSYS                                                                       opt/cmssw/$AREA/root
 CMSSW_VERSION_CLEAN=`echo $CMSSW_VERSION | tr -d "-"`
 
 echo "CMSSW_VERSION now $CMSSW_VERSION"
 cat > patch-cmssw.spec <<EOF
-Name: patch-cmssw-$PRO_DEV
+Name: patch-cmssw-$AREA
 Version: $CMSSW_VERSION_CLEAN$PATCH_ID
 Release: 7
 Summary: CMSSW Patches
@@ -112,11 +112,11 @@ Source: none
 %define _tmppath $TOPDIR/patch-cmssw
 BuildRoot: %{_tmppath}
 BuildArch: $BUILD_ARCH
-Provides:/opt/cmssw/$PRO_DEV/lib
-Provides:/opt/cmssw/$PRO_DEV/python
-Provides:/opt/cmssw/$PRO_DEV/base
-Provides:/opt/cmssw/$PRO_DEV/root
-Provides:/opt/cmssw/$PRO_DEV/env.txt
+Provides:/opt/cmssw/$AREA/lib
+Provides:/opt/cmssw/$AREA/python
+Provides:/opt/cmssw/$AREA/base
+Provides:/opt/cmssw/$AREA/root
+Provides:/opt/cmssw/$AREA/env.txt
 Requires:cms+$RELEASE_TYPE+$CMSSW_VERSION
 
 %description
@@ -134,13 +134,13 @@ tar -C $TOPDIR -c opt/cmssw | tar -xC \$RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root, -)
-/opt/cmssw/$PRO_DEV/lib
-/opt/cmssw/$PRO_DEV/python
-/opt/cmssw/$PRO_DEV/env.txt
-/opt/cmssw/$PRO_DEV/base
-/opt/cmssw/$PRO_DEV/patch
-/opt/cmssw/$PRO_DEV/root
-/opt/cmssw/$PRO_DEV/patches
+/opt/cmssw/$AREA/lib
+/opt/cmssw/$AREA/python
+/opt/cmssw/$AREA/env.txt
+/opt/cmssw/$AREA/base
+/opt/cmssw/$AREA/patch
+/opt/cmssw/$AREA/root
+/opt/cmssw/$AREA/patches
 EOF
 mkdir -p RPMBUILD/{RPMS/{i386,i586,i686,x86_64},SPECS,BUILD,SOURCES,SRPMS}
 rpmbuild --define "_topdir `pwd`/RPMBUILD" -bb patch-cmssw.spec
@@ -149,4 +149,4 @@ rpmbuild --define "_topdir `pwd`/RPMBUILD" -bb patch-cmssw.spec
 # copy the RPM to a local folder
 VERSION=$(echo $CMSSW_VERSION | sed -e's/_ONLINE$//')
 mkdir -p /cmsswrelease/$VERSION/patch
-cp $TOPDIR/RPMBUILD/RPMS/$BUILD_ARCH/patch-cmssw-$PRO_DEV-$CMSSW_VERSION_CLEAN$PATCH_ID-*.$BUILD_ARCH.rpm /cmsswrelease/$VERSION/patch
+cp $TOPDIR/RPMBUILD/RPMS/$BUILD_ARCH/patch-cmssw-$AREA-$CMSSW_VERSION_CLEAN$PATCH_ID-*.$BUILD_ARCH.rpm /cmsswrelease/$VERSION/patch
