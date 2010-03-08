@@ -37,7 +37,7 @@ scram project CMSSW $CMSSW_VERSION
 sed -e's#<classpath path=".*+test"/>##' -i $CMSSW_VERSION/config/BuildFile.xml
 cd $CMSSW_VERSION/src
 cp -r $LOCAL_CODE_PATCHES_TOP/* .
-scram b -j 4
+scram b -j 8
 cd $TOPDIR
 
 echo "Moving patches to their destination"
