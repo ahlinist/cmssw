@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.3 2009/07/11 15:35:01 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.4 2009/12/01 17:02:50 veelken Exp $
  *
  */
 
@@ -97,6 +97,24 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double x2CollinearApprox() const { return x2CollinearApprox_; }
   bool collinearApproxIsValid() const { return collinearApproxIsValid_; }
 
+  /// get the four-momentum and x1-x2 (xi = visible energy fraction of the ith-tau)
+  /// computed by improved coll. approx.
+  const reco::Candidate::LorentzVector& p4ImprovedCollinearApprox() const { return p4ImprovedCollinearApprox_; }
+  double x1ImprovedCollinearApprox() const { return x1ImprovedCollinearApprox_; }
+  double x2ImprovedCollinearApprox() const { return x2ImprovedCollinearApprox_; }
+  /// get the scale-factor to re-weight the mass of the diTaus rescued in the 
+  /// improved coll.approx. This scale factor is a function of the visible diTau-pT
+  /// The functional dependence can be configured by the user in the _cfg.
+  double scaleFactor() const { return 1./scaleFactor_;}
+  /// is the improved coll. approx. valid?
+  bool ImprovedCollinearApproxIsValid() const { return ImprovedCollinearApproxIsValid_; }
+  /// flag to discriminate which collinear approximation is valid:
+  //     0 : coll. approx. and improved coll. approx. are false
+  //     1 : coll. approx. is true 
+  //     2 : coll. approx. is false but improved coll. approx. (not-back-to-back legs) is true 
+  //     3 : coll. approx. is false but improved coll. approx. (back-to-back legs) is true 
+  int validityCollinearApproxFlag() const { return validityCollinearApproxFlag_; }
+
   /// get "pseudo" four-momentum computed by CDF method
   /// (for a description of the method, see e.g. CDF note 8972)
   const reco::Candidate::LorentzVector& p4CDFmethod() const { return p4CDFmethod_; }
@@ -153,12 +171,24 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void setP4Vis(const reco::Candidate::LorentzVector& p4) { p4Vis_ = p4; } 
   /// set four-momentum and scaling factors for momenta of visible decay products
   /// computed by collinear approximation
-  void setCollinearApproxQuantities(const reco::Candidate::LorentzVector& p4, double x1, double x2, bool isValid)
+  void setCollinearApproxQuantities(const reco::Candidate::LorentzVector& p4, double x1, double x2, bool isValid, int flag)
   {
     p4CollinearApprox_ = p4;
     x1CollinearApprox_ = x1;
     x2CollinearApprox_ = x2;
     collinearApproxIsValid_ = isValid;
+    validityCollinearApproxFlag_ = flag;
+  }
+  /// set four-momentum and scaling factors for momenta of visible decay products
+  /// computed by Improved collinear approximation
+  void setImprovedCollinearApproxQuantities(const reco::Candidate::LorentzVector& p4, double x1, double x2, double scaleFactor, bool isValid, int flag)
+  {
+    p4ImprovedCollinearApprox_ = p4;
+    x1ImprovedCollinearApprox_ = x1;
+    x2ImprovedCollinearApprox_ = x2;
+    scaleFactor_ = scaleFactor;
+    ImprovedCollinearApproxIsValid_ = isValid;
+    validityCollinearApproxFlag_ = flag;
   }
   /// set "pseudo" four-momentum computed by CDF method
   /// (for a description of the method, see e.g. CDF note 8972)
@@ -202,6 +232,19 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   bool collinearApproxIsValid_;
   double x1CollinearApprox_;
   double x2CollinearApprox_;
+
+  /// four-momentum of visible decay products
+  reco::Candidate::LorentzVector p4ImprovedCollinearApprox_;
+  /// four-momentum and x1-x2 fractions computed by improved collinear approximation
+  bool ImprovedCollinearApproxIsValid_;
+  double x1ImprovedCollinearApprox_;
+  double x2ImprovedCollinearApprox_;
+  /// scale factors for diTau mass computed in the improved coll. approx.
+  double scaleFactor_;
+  /// flag to discriminate which approximation is valid
+  int validityCollinearApproxFlag_;
+  
+
   /// "pseudo" four-momentum computed by CDF method
   reco::Candidate::LorentzVector p4CDFmethod_;
   /// transverse mass of visible decay products + missing transverse momentum
