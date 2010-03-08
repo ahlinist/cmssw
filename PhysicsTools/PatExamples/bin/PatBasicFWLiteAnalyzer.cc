@@ -10,10 +10,11 @@
 #include <TFile.h>
 #include <TSystem.h>
 
-#include "DataFormats/FWLite/interface/Handle.h"
+#include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
-
+#include "PhysicsTools/FWLite/interface/TFileService.h"
 
 int main(int argc, char* argv[]) 
 {
@@ -30,9 +31,11 @@ int main(int argc, char* argv[])
   AutoLibraryLoader::enable();
   
   // book a set of histograms
-  TH1F* muonPt_  = new TH1F("muonPt", "pt",    100,  0.,300.);
-  TH1F* muonEta_ = new TH1F("muonEta","eta",   100, -3.,  3.);
-  TH1F* muonPhi_ = new TH1F("muonPhi","phi",   100, -5.,  5.);  
+  fwlite::TFileService fs = fwlite::TFileService("analyzePatBasics.root");
+  TFileDirectory theDir = fs.mkdir("analyzeBasicPat");
+  TH1F* muonPt_  = theDir.make<TH1F>("muonPt", "pt",    100,  0.,300.);
+  TH1F* muonEta_ = theDir.make<TH1F>("muonEta","eta",   100, -3.,  3.);
+  TH1F* muonPhi_ = theDir.make<TH1F>("muonPhi","phi",   100, -5.,  5.);  
   
   // open input file (can be located on castor)
   TFile* inFile = TFile::Open( "file:PATLayer1_Output.fromAOD_full.root" );
@@ -48,8 +51,10 @@ int main(int argc, char* argv[])
 
   // loop the events
   unsigned int iEvent=0;
-  fwlite::Event event(inFile);
-  for(event.toBegin(); !event.atEnd(); ++event, ++iEvent){
+  fwlite::Event ev(inFile);
+  for(ev.toBegin(); !ev.atEnd(); ++ev, ++iEvent){
+    edm::EventBase const & event = ev;
+
     // break loop after end of file is reached 
     // or after 1000 events have been processed
     if( iEvent==1000 ) break;
@@ -59,9 +64,10 @@ int main(int argc, char* argv[])
       std::cout << "  processing event: " << iEvent << std::endl;
     }
 
-    // fwlite::Handle to to muon collection
-    fwlite::Handle<std::vector<pat::Muon> > muons;
-    muons.getByLabel(event, "cleanPatMuons");
+    // Handle to the muon collection
+    edm::Handle<std::vector<pat::Muon> > muons;
+    edm::InputTag muonLabel("cleanPatMuons");
+    event.getByLabel(muonLabel, muons);
     
     // loop muon collection and fill histograms
     for(unsigned i=0; i<muons->size(); ++i){
@@ -76,30 +82,10 @@ int main(int argc, char* argv[])
   // ----------------------------------------------------------------------
   // Third Part: 
   //
-  //  * open the output file 
-  //  * write the histograms to the output file
-  //  * close the output file
-  // ----------------------------------------------------------------------
-  
-  //open output file
-  TFile outFile( "analyzePatBasics.root", "recreate" );
-  outFile.mkdir("analyzeBasicPat");
-  outFile.cd("analyzeBasicPat");
-  muonPt_ ->Write( );
-  muonEta_->Write( );
-  muonPhi_->Write( );
-  outFile.Close();
-  
-  // ----------------------------------------------------------------------
-  // Fourth Part: 
-  //
-  //  * never forgett to free the memory of the histograms
+  //  * never forget to free the memory of objects you created
   // ----------------------------------------------------------------------
 
-  // free allocated space
-  delete muonPt_;
-  delete muonEta_;
-  delete muonPhi_;
+  // in this example there is nothing to do 
   
   // that's it!
   return 0;
