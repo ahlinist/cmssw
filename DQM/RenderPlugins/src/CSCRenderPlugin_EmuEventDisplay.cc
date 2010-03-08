@@ -18,6 +18,8 @@
 
 #include "CSCRenderPlugin_EmuEventDisplay.h"
 
+#define HIT_DELTA 0.005
+
 /**
  * @brief  Constructor
  */
@@ -49,7 +51,7 @@ EmuEventDisplay::EmuEventDisplay() {
   histo_zphi->GetYaxis()->SetLabelSize(0.02);
   histo_zphi->SetStats(kFALSE);
 
-  histo_xy = new TH2F("h3", "CSC event #x", 14, -7.0, 7.0, 14, -7.0, 7.0);
+  histo_xy = new TH2F("h3", "CSC event #x", 19, -9.33, 9.33, 14, -7.0, 7.0);
   histo_xy->GetXaxis()->SetTitle("X * 1000");
   histo_xy->GetXaxis()->SetTitleOffset(1.2);
   histo_xy->GetXaxis()->CenterTitle(true);
@@ -67,6 +69,7 @@ EmuEventDisplay::EmuEventDisplay() {
       for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
         
         double rd = (detector.NumberOfStrips(station, ring) * detector.stripDPhiRad(station, ring)) / 2;
+        rd += HIT_DELTA;
 
         for (unsigned int chamber = 1; chamber <= detector.NumberOfChambers(station, ring); chamber++) {
 
@@ -76,15 +79,18 @@ EmuEventDisplay::EmuEventDisplay() {
               std::string part = detector.ChamberPart(ipart);
   
               double z1 = detector.Z_mm(side, station, ring, chamber, 1);
-              z1 = z1 / 1000.0;
+              z1 = z1 / 1000.0 + (side == 1 ? -HIT_DELTA : HIT_DELTA);
+
               double z2 = detector.Z_mm(side, station, ring, chamber, N_LAYERS);
-              z2 = z2 / 1000.0;
+              z2 = z2 / 1000.0 + (side == 1 ? HIT_DELTA : -HIT_DELTA);
 
               {
+                
                 double r1 = detector.R_mm(side, station, ring, part, 1, 1, 1);
-                r1 = r1 / 1000.0;
+                r1 = r1 / 1000.0 - HIT_DELTA;
+
                 double r2 = detector.R_mm(side, station, ring, part, N_LAYERS, detector.NumberOfHalfstrips(station, ring, part), detector.NumberOfWiregroups(station, ring));
-                r2 = r2 / 1000.0;
+                r2 = r2 / 1000.0 + HIT_DELTA;
   
                 Double_t x[5] = { z1, z1, z2, z2, z1 };
                 Double_t y[5] = { r1, r2, r2, r1, r1 };
@@ -93,7 +99,12 @@ EmuEventDisplay::EmuEventDisplay() {
                 pline->SetLineColor(kRed - 10);
                 pline->SetLineStyle(1);
                 pline->SetLineWidth(1);
-                zrChambers.push_back(pline);
+
+                if (chamber <= (detector.NumberOfChambers(station, ring) / 2)) {
+                  zrChambersUp.push_back(pline);
+                } else {
+                  zrChambersDown.push_back(pline);
+                }
 
               }
 
@@ -155,54 +166,279 @@ EmuEventDisplay::EmuEventDisplay() {
  * @brief  Destructor
  */
 EmuEventDisplay::~EmuEventDisplay() {
-  
+
   delete histo_zr;
   delete histo_zphi;
   delete histo_xy;
 
-  for (std::vector<TPolyLine*>::iterator it = zrChambers.begin(); it != zrChambers.end(); it++) {
-    delete (*it);
-  }
+  deleteItems(zrChambersUp);
+  deleteItems(zrChambersDown);
+  deleteItems(zpChambers);
+  deleteItems(xyChambers);
 
-  for (std::vector<TPolyLine*>::iterator it = zpChambers.begin(); it != zpChambers.end(); it++) {
-    delete (*it);
-  }
-
-  for (std::vector<TPolyLine*>::iterator it = xyChambers.begin(); it != xyChambers.end(); it++) {
-    delete (*it);
-  }
+  deleteItems(zrHits);
+  deleteItems(zrHitsUp);
+  deleteItems(zrHitsDown);
+  deleteItems(zpHits);
+  deleteItems(xyHits);
 
 }
 
-void EmuEventDisplay::drawEventDisplay_ZR(TH2* data) {
+/**
+ * @brief  Draw ZPhi event display map
+ * @param  data Data histogram
+ * @param  histogramType type of the map to draw: 0 - full detector, 1 - upper
+ * chambers (1-9/18), 2 - lower chambers (10/19-18/36)
+ * @return 
+ */
+void EmuEventDisplay::drawEventDisplay_ZR(TH2* data, int histogramType) {
 
-  data->GetBinContent(1,1);
+  switch (histogramType) {
+    case 0:
+      deleteItems(zrHits);
+      break;
+    case 1:
+      deleteItems(zrHitsUp);
+      break;
+    case 2:
+      deleteItems(zrHitsDown);
+      break;
+  };
+
   histo_zr->Draw();
   
-  for (std::vector<TPolyLine*>::iterator it = zrChambers.begin(); it != zrChambers.end(); it++) {
-    (*it)->Draw("l");
+  if (histogramType == 0 || histogramType == 1) {
+    for (std::vector<TPolyLine*>::iterator it = zrChambersUp.begin(); it != zrChambersUp.end(); it++) {
+      (*it)->Draw("l");
+    }
   }
 
+  if (histogramType == 0 || histogramType == 2) {
+    for (std::vector<TPolyLine*>::iterator it = zrChambersDown.begin(); it != zrChambersDown.end(); it++) {
+      (*it)->Draw("l");
+    }
+  }
+
+  int chIndex = 1;
+  for (unsigned int side = 1; side <= N_SIDES; side++) {
+    for (unsigned int station = 1; station <= N_STATIONS; station++) {
+      for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
+        for (unsigned int chamber = 1; chamber <= detector.NumberOfChambers(station, ring); chamber++) {
+          if (detector.isChamberInstalled(side, station, ring, chamber)) {
+
+            if (histogramType == 0 || 
+                (histogramType == 1 && chamber <= (detector.NumberOfChambers(station, ring) / 2)) ||
+                (histogramType == 2 && chamber >  (detector.NumberOfChambers(station, ring) / 2))) { 
+
+              std::vector<int> wgs[6], hss[6];
+              bool is_wgs = false, is_hss = false;
+
+              for (int wg = 1; wg <= detector.NumberOfWiregroups(station, ring); wg++) {
+                int wgBitset = (int) data->GetBinContent(chIndex, wg);
+                if (wgBitset > 0) {
+                  for (int layer = 0; layer < N_LAYERS; layer++) {
+                    if (wgBitset & (1 << layer)) {
+                      wgs[layer].push_back(wg + layer);
+                      is_wgs = true;
+                    }
+                  }
+                }
+              }
+
+              for (int hs = 1; hs <= detector.NumberOfHalfstrips(station, ring); hs++) {
+                int hsBitset = (int) data->GetBinContent(chIndex, 160 + hs);
+                if (hsBitset > 0) {
+                  for (int layer = 0; layer < N_LAYERS; layer++) {
+                    if (hsBitset & (1 << layer)) {
+                      hss[layer].push_back(hs + layer);
+                      is_hss = true;
+                    }
+                  }
+                }
+              }
+
+              if (is_wgs && is_hss) {
+                for (int ipart = 1; ipart <= detector.NumberOfChamberParts(station, ring); ipart++) {
+                  std::string part = detector.ChamberPart(ipart);
+                  for (int layer = 0; layer < N_LAYERS; layer++) {
+                    if (!hss[layer].empty() && !wgs[layer].empty()) {
+                      for (unsigned int i = 0; i < wgs[layer].size(); i++) {
+                        int wg = wgs[layer][i];
+                        for (unsigned int j = 0; j < hss[layer].size(); j++) {
+                          int hs = hss[layer][j];
+                          
+                          double z = detector.Z_mm(side, station, ring, chamber, layer + 1);
+                          z = z / 1000.0;
+                          
+                          double r = detector.R_mm(side, station, ring, part, layer + 1, hs, wg);
+                          r = r / 1000.0;
+
+                          TBox* hit = new TBox(z + HIT_DELTA, r + HIT_DELTA, z - HIT_DELTA, r - HIT_DELTA);
+                          hit->SetLineColor(1);
+                          hit->SetLineStyle(0);
+                          hit->SetLineWidth(0);
+                          hit->SetFillColor(1);
+                          hit->Draw("l");
+
+                          switch (histogramType) {
+                            case 0:
+                              zrHits.push_back(hit);
+                              break;
+                            case 1:
+                              zrHitsUp.push_back(hit);
+                              break;
+                            case 2:
+                              zrHitsDown.push_back(hit);
+                              break;
+                          };
+
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+            }
+
+            chIndex += 1;
+
+          }
+        }
+      }
+    }
+  }
+  
 }
+
 
 void EmuEventDisplay::drawEventDisplay_ZPhi(TH2* data) {
   
-  data->GetBinContent(1,1);
   histo_zphi->Draw();
 
   for (std::vector<TPolyLine*>::iterator it = zpChambers.begin(); it != zpChambers.end(); it++) {
     (*it)->Draw("l");
   }
 
+  int chIndex = 1;
+  for (unsigned int side = 1; side <= N_SIDES; side++) {
+    for (unsigned int station = 1; station <= N_STATIONS; station++) {
+      for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
+        for (unsigned int chamber = 1; chamber <= detector.NumberOfChambers(station, ring); chamber++) {
+
+          if (detector.isChamberInstalled(side, station, ring, chamber)) {
+
+            double r = detector.PhiRadChamberCenter(station, ring, chamber);
+
+            for (int strip = 1; strip <= detector.NumberOfStrips(station, ring); strip++) {
+              int layerBitset = (int) data->GetBinContent(chIndex, strip);
+              if (layerBitset > 0) {
+                for (int layer = 0; layer < N_LAYERS; layer++) {
+                  if (layerBitset & (1 << layer)) {
+                    double z = detector.Z_mm(side, station, ring, chamber, layer + 1);
+                    double pd = detector.LocalPhiRadStripToChamberCenter(side, station, ring, layer + 1, strip);
+                    TBox* hit = new TBox(z / 1000.0, r + pd, z / 1000.0, r + pd);
+                    hit->SetLineColor(1);
+                    hit->SetLineStyle(0);
+                    hit->SetLineWidth(0);
+                    hit->SetFillColor(1);
+                    hit->Draw("l");
+                    zpHits.push_back(hit);
+
+                  }
+                }
+              }
+            }
+
+            chIndex += 1;
+
+          }
+        }
+      }
+    }
+  }
+
 }
 
 void EmuEventDisplay::drawEventDisplay_XY(TH2* data) {
   
-  data->GetBinContent(1,1);
+  deleteItems(xyHits);
+
   histo_xy->Draw();
 
   for (std::vector<TPolyLine*>::iterator it = xyChambers.begin(); it != xyChambers.end(); it++) {
     (*it)->Draw("l");
+  }
+
+  int chIndex = 1;
+  for (unsigned int side = 1; side <= N_SIDES; side++) {
+    for (unsigned int station = 1; station <= N_STATIONS; station++) {
+      for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
+        for (unsigned int chamber = 1; chamber <= detector.NumberOfChambers(station, ring); chamber++) {
+          if (detector.isChamberInstalled(side, station, ring, chamber)) {
+
+            std::vector<int> wgs[6], hss[6];
+            bool is_wgs = false, is_hss = false;
+
+            for (int wg = 1; wg <= detector.NumberOfWiregroups(station, ring); wg++) {
+              int wgBitset = (int) data->GetBinContent(chIndex, wg);
+              if (wgBitset > 0) {
+                for (int layer = 0; layer < N_LAYERS; layer++) {
+                  if (wgBitset & (1 << layer)) {
+                    wgs[layer].push_back(wg + layer);
+                    is_wgs = true;
+                  }
+                }
+              }
+            }
+
+            for (int hs = 1; hs <= detector.NumberOfHalfstrips(station, ring); hs++) {
+              int hsBitset = (int) data->GetBinContent(chIndex, 160 + hs);
+              if (hsBitset > 0) {
+                for (int layer = 0; layer < N_LAYERS; layer++) {
+                  if (hsBitset & (1 << layer)) {
+                    hss[layer].push_back(hs + layer);
+                    is_hss = true;
+                  }
+                }
+              }
+            }
+
+            if (is_wgs && is_hss) {
+              for (int ipart = 1; ipart <= detector.NumberOfChamberParts(station, ring); ipart++) {
+                std::string part = detector.ChamberPart(ipart);
+                for (int layer = 0; layer < N_LAYERS; layer++) {
+                  if (!hss[layer].empty() && !wgs[layer].empty()) {
+                    for (unsigned int i = 0; i < wgs[layer].size(); i++) {
+                      int wg = wgs[layer][i];
+                      for (unsigned int j = 0; j < hss[layer].size(); j++) {
+                        int hs = hss[layer][j];
+
+                        double cx = detector.X_mm(side, station, ring, part, chamber, layer + 1, hs, wg);
+                        cx = cx / 1000.0;
+                        double cy = detector.Y_mm(side, station, ring, part, chamber, layer + 1, hs, wg);
+                        cy = cy / 1000.0;
+                        TBox* hit = new TBox(cx + HIT_DELTA, cy + HIT_DELTA, cx - HIT_DELTA, cy - HIT_DELTA);
+                        hit->SetLineColor(1);
+                        hit->SetLineStyle(1);
+                        hit->SetLineWidth(1);
+                        hit->Draw("l");
+
+                        xyHits.push_back(hit);
+
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            chIndex += 1;
+
+          }
+        }
+      }
+    }
   }
 
 }
