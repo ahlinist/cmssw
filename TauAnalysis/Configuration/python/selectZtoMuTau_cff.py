@@ -174,6 +174,14 @@ cfgTauMuonVeto = cms.PSet(
     systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
+cfgTauElectronVeto = cms.PSet(
+    pluginName = cms.string('tauElectronVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1TausForMuTauElectronVetoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1TausForMuTauElectronVetoIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
 
 # di-tau candidate selection
 cfgDiTauCandidateForMuTauAntiOverlapVeto = cms.PSet(
@@ -249,6 +257,7 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauProngCut,
       cfgTauChargeCut,
       cfgTauMuonVeto,
+      cfgTauElectronVeto,
       cfgDiTauCandidateForMuTauAntiOverlapVeto,
       cfgDiTauCandidateForMuTauZeroChargeCut,
       cfgDiTauCandidateForMuTauAcoplanarity12Cut,
@@ -268,7 +277,7 @@ isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('Trigger'),
         cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
-        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVeto')      
     )
