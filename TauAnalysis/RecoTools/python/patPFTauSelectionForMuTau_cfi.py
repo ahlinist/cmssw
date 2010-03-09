@@ -8,7 +8,7 @@ from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 #  as muon and as tau candidate)
 selectedLayer1TausForMuTauAntiOverlapWithMuonsVeto = cms.EDFilter("PATTauAntiOverlapSelector",
     srcNotToBeFiltered = cms.VInputTag("selectedLayer1MuonsGlobalIndividual"),
-    dRmin = cms.double(0.3),
+    dRmin = cms.double(0.5),
     filter = cms.bool(False)                                           
 )
 
@@ -42,3 +42,6 @@ selectedLayer1TausForMuTauCharge = copy.deepcopy(selectedLayer1TausCharge)
 
 # require tau candidate to pass muon veto
 selectedLayer1TausForMuTauMuonVeto = copy.deepcopy(selectedLayer1TausMuonVeto)
+
+# require tau candidate to pass electron veto
+selectedLayer1TausForMuTauElectronVeto = copy.deepcopy(selectedLayer1TausElectronVeto)
