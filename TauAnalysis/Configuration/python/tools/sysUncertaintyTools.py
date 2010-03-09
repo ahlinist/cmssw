@@ -222,7 +222,7 @@ def disableSysUncertainties_runZtoDiTau(process):
 
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
-# specific to ! --> tau-jet + nu channel
+# specific to W --> tau-jet + nu channel
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runWtoTauNu(process):
@@ -237,6 +237,22 @@ def disableSysUncertainties_runWtoTauNu(process):
     if hasattr(process, "selectWtoTauNuEventsLooseIsolation"):
         removeModules(process, "selectWtoTauNuEventsLooseIsolation", moduleNamePattern, pyNameSpace)
 
+#--------------------------------------------------------------------------------
+# functions to enable/disable estimation of systematic uncertainties
+# specific to MSSM Higgs --> muon + tau-jet channel
+#--------------------------------------------------------------------------------
+
+def disableSysUncertainties_runAHtoMuTau(process):
+    #print("<disableSysUncertainties_runAHtoMuTau>:")
+    
+    moduleNamePattern = "\w+Sys\w+(Up|Down)"
+    pyNameSpace = None
+
+    process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
+
+    removeModules(process, "selectAHtoMuTauEvents", moduleNamePattern, pyNameSpace)
+    if hasattr(process, "selectAHtoMuTauEventsLooseMuonIsolation"):
+        removeModules(process, "selectAHtoMuTauEventsLooseMuonIsolation", moduleNamePattern, pyNameSpace)
 
 
 
