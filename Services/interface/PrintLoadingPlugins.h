@@ -29,6 +29,10 @@
 
 // forward declarations
 
+namespace edm {
+  class ConfigurationDescriptions;
+}
+
 class PrintLoadingPlugins
 {
 
@@ -43,6 +47,7 @@ class PrintLoadingPlugins
        // ---------- const member functions ---------------------
 
       // ---------- static member functions --------------------
+      static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
       // ---------- member functions ---------------------------
 

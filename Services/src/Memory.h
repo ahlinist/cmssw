@@ -29,6 +29,7 @@ namespace edm {
   class Event;
   class EventSetup;
   class ModuleDescription;
+  class ConfigurationDescriptions;
 
   namespace service {
     struct procInfo
@@ -53,7 +54,9 @@ namespace edm {
 
       SimpleMemoryCheck(const ParameterSet&,ActivityRegistry&);
       ~SimpleMemoryCheck();
-      
+
+      static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
+
       void preSourceConstruction(const ModuleDescription&);
       void postSourceConstruction(const ModuleDescription&);
       void postSource();

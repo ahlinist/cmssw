@@ -30,12 +30,16 @@ namespace edm {
   class Event;
   class EventSetup;
   class ParameterSet;
+  class ConfigurationDescriptions;
+
   namespace service {
     class Timing
     {
     public:
       Timing(const ParameterSet&,ActivityRegistry&);
       ~Timing();
+
+      static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
       sigc::signal<void, const ModuleDescription&, double> newMeasurementSignal;
     private:

@@ -14,12 +14,16 @@
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 
 namespace edm {
+  class ConfigurationDescriptions;
+
   namespace service {
     class SimpleProfiling
     {
     public:
       SimpleProfiling(const ParameterSet&,ActivityRegistry&);
       ~SimpleProfiling();
+
+      static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
       
       void postBeginJob();
       void postEndJob();

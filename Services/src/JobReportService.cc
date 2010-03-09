@@ -11,6 +11,8 @@
 
 
 #include "FWCore/Services/src/JobReportService.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 
 namespace edm {
 
@@ -57,6 +59,12 @@ namespace edm {
       // postEndJob() and frameworkShutdownOnFailure(), so that common
       // elements are reported through common code.
       impl()->flushFiles();
+    }
+
+    void
+    JobReportService::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+      edm::ParameterSetDescription desc;
+      descriptions.addDefault(desc);
     }
   } // namespace service
 } //namspace edm

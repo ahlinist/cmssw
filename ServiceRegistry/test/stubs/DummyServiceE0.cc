@@ -11,6 +11,8 @@
 
 #include "FWCore/ServiceRegistry/test/stubs/DummyServiceE0.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 
 #include <iostream>
 
@@ -21,6 +23,11 @@ namespace {
 }
 
 // ------------------------------------------------------
+
+void DummyServiceBase::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+  edm::ParameterSetDescription desc;
+  descriptions.addDefault(desc);
+}
 
 DummyServiceE0::DummyServiceE0(const edm::ParameterSet& iPSet,
                              edm::ActivityRegistry&iAR)

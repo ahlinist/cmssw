@@ -12,6 +12,8 @@
 #include "FWCore/Services/src/Profiling.h"
 #include "FWCore/Services/src/SimpleProfiler.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 
 namespace edm {
   namespace service {
@@ -26,6 +28,11 @@ namespace edm {
 
     SimpleProfiling::~SimpleProfiling()
     {
+    }
+
+    void SimpleProfiling::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+      edm::ParameterSetDescription desc;
+      descriptions.add("SimpleProfiling", desc);
     }
 
     void SimpleProfiling::postBeginJob()

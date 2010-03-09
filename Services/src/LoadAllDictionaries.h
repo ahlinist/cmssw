@@ -26,6 +26,7 @@
 // forward declarations
 namespace edm {
    class ParameterSet;
+   class ConfigurationDescriptions;
    namespace service {
       class LoadAllDictionaries
    {
@@ -37,6 +38,7 @@ namespace edm {
       // ---------- const member functions ---------------------
 
       // ---------- static member functions --------------------
+      static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
       // ---------- member functions ---------------------------
 

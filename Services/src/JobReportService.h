@@ -29,6 +29,8 @@ through the MessageLogger.
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 
 namespace edm {
+  class ConfigurationDescriptions;
+
   namespace service {
     class JobReportService : public JobReport {
     public:
@@ -46,6 +48,7 @@ namespace edm {
 
       void frameworkShutdownOnFailure();
 
+      static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
     };
   }
 }

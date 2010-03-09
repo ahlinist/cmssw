@@ -18,6 +18,8 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/PluginManager/interface/PluginInfo.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 
 #include "boost/bind.hpp"
 #include "boost/mem_fn.hpp"
@@ -60,6 +62,11 @@ PrintLoadingPlugins::PrintLoadingPlugins()
 
 PrintLoadingPlugins::~PrintLoadingPlugins()
 {
+}
+
+void PrintLoadingPlugins::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+  edm::ParameterSetDescription desc;
+  descriptions.add("PrintLoadingPlugins", desc);
 }
 
 //
