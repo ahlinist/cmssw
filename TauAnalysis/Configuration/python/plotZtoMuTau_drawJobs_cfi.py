@@ -305,12 +305,32 @@ drawJobConfigurator_ZtoMuTau.add(
 
 drawJobConfigurator_ZtoMuTau.add(
     afterCut = evtSelTauMuonVeto,
+    beforeCut = evtSelTauElectronVeto,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'TauQuantities/Tau#PAR#',
+            PAR = [ 'Pt', 'Eta', 'Phi' ],
+            title = "Tau (after Charge(Tau) = +/-1 Cut)",
+            xAxis = '#PAR#',
+            name = "cutFlowControlPlots_tau_afterTauCharge"
+        ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauDiscriminatorAgainstElectrons',
+            title = "Tau anti-Electron Discr. (after Tau #mu-Veto Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauMuonVeto"
+        )
+    ]
+)
+
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelTauElectronVeto,
     beforeCut = evtSelDiTauCandidateForMuTauAntiOverlapVeto,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DR12',
-        title = "#Delta R(Muon,Tau) (after Tau #mu-Veto Cut)",
+        title = "#Delta R(Muon,Tau) (after Tau e-Veto Cut)",
         xAxis = 'dR',
-        name = "cutFlowControlPlots_dR12_afterTauMuonVeto"
+        name = "cutFlowControlPlots_dR12_afterTauElectronVeto"
     )
 )
 
@@ -358,16 +378,16 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-##drawJobConfigurator_ZtoMuTau.add(
-##    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
-##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
-##    plot = drawJobConfigEntry(
-##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
-##        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-##        xAxis = 'Mass',
-##        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
-##    )
-##)
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+    plot = drawJobConfigEntry(
+	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
+        xAxis = 'Mass',
+        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+    )
+)
 
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
