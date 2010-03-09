@@ -523,13 +523,16 @@ drawOption_QCD_EMenriched_Pt30to80 = drawOption_QCD
 drawOption_QCD_EMenriched_Pt80to170 = drawOption_QCD
 drawOption_qcdSum = drawOption_QCD
 
-drawOption_AH = copy.deepcopy(drawOption_lightGray_stacked)
+drawOption_AH_stacked = copy.deepcopy(drawOption_lightGray_stacked)
+drawOption_AH_separate = copy.deepcopy(drawOption_lightGray_separate)
+drawOption_AH = drawOption_AH_stacked
 drawOption_AH115_tautau = copy.deepcopy(drawOption_AH)
 drawOption_AH160_tautau = copy.deepcopy(drawOption_AH)
 
-drawOption_AHbb = copy.deepcopy(drawOption_darkGray_stacked)
+drawOption_AHbb_stacked = copy.deepcopy(drawOption_darkGray_stacked)
+drawOption_AHbb_separate = copy.deepcopy(drawOption_darkGray_separate)
+drawOption_AHbb = drawOption_AHbb_stacked
 drawOption_AH115bb_tautau = copy.deepcopy(drawOption_AHbb)
 drawOption_AH160bb_tautau = copy.deepcopy(drawOption_AHbb)
-
 
 
