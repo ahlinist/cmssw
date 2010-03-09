@@ -217,9 +217,9 @@ selectedLayer1TausTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
 selectedLayer1TausEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
 selectedLayer1TausProng.cut = cms.string("signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3")
 selectedLayer1TausCharge.cut = cms.string('abs(charge) > 0.5 & abs(charge) < 1.5')
+selectedLayer1TausMuonVeto.cut = cms.string('tauID("againstMuon") > 0.5')
 selectedLayer1TausElectronVeto.cut = cms.string('tauID("againstElectron") > 0.5')
 selectedLayer1TausEcalCrackVeto.cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558")
-selectedLayer1TausMuonVeto.cut = cms.string('tauID("againstMuon") > 0.5')
 
 patTauSelConfigurator = objSelConfigurator(
     [ selectedLayer1TausEta21,
@@ -230,9 +230,9 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausEcalIso,
       selectedLayer1TausProng,
       selectedLayer1TausCharge,
+      selectedLayer1TausMuonVeto,
       selectedLayer1TausElectronVeto,
-      selectedLayer1TausEcalCrackVeto,
-      selectedLayer1TausMuonVeto ],
+      selectedLayer1TausEcalCrackVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelCumulative = True,
@@ -257,6 +257,7 @@ selectedLayer1TausForElecTauProng.cut = selectedLayer1TausProng.cut
 selectedLayer1TausForElecTauCharge.cut = selectedLayer1TausCharge.cut
 selectedLayer1TausForElecTauElectronVeto.cut = selectedLayer1TausElectronVeto.cut
 selectedLayer1TausForElecTauEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
+selectedLayer1TausForElecTauMuonVeto.cut = selectedLayer1TausMuonVeto.cut
 
 patTauSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto,
@@ -269,7 +270,8 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1TausForElecTauProng,
       selectedLayer1TausForElecTauCharge,
       selectedLayer1TausForElecTauElectronVeto,
-      selectedLayer1TausForElecTauEcalCrackVeto ],
+      selectedLayer1TausForElecTauEcalCrackVeto,
+      selectedLayer1TausForElecTauMuonVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelIndividual = True
@@ -292,6 +294,7 @@ selectedLayer1TausForMuTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForMuTauProng.cut = selectedLayer1TausProng.cut
 selectedLayer1TausForMuTauCharge.cut = selectedLayer1TausCharge.cut
 selectedLayer1TausForMuTauMuonVeto.cut = selectedLayer1TausMuonVeto.cut
+selectedLayer1TausForMuTauElectronVeto.cut = selectedLayer1TausElectronVeto.cut
 
 patTauSelConfiguratorForMuTau = objSelConfigurator(
     [ selectedLayer1TausForMuTauAntiOverlapWithMuonsVeto,
@@ -303,7 +306,8 @@ patTauSelConfiguratorForMuTau = objSelConfigurator(
       selectedLayer1TausForMuTauEcalIso,
       selectedLayer1TausForMuTauProng,
       selectedLayer1TausForMuTauCharge,
-      selectedLayer1TausForMuTauMuonVeto ],
+      selectedLayer1TausForMuTauMuonVeto,
+      selectedLayer1TausForMuTauElectronVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelIndividual = True
