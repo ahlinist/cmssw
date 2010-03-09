@@ -45,21 +45,19 @@ mkdir -p $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VE
 cp -r $TOPDIR/$CMSSW_VERSION/src $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/
 cp -r $TOPDIR/$CMSSW_VERSION/lib $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/
 
-# for non-patch builds, add links to the external data directories
-if [ "$RELEASE_TYPE" == "online" ]; then
-  echo "Linking extrnal data to their destination"
-  for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEARCH_PATH | cut -d= -f2 | tr ':' ' '); do 
-    for DATA in $CMSSWDATA/*/*/data; do
-      RELATIVE=$(echo "$DATA" | sed -e"s#$CMSSWDATA/##")
-      TARGET=$TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/src/$RELATIVE
-      # remove the target data directory, if present
-      rm -rf $TARGET
-      # make sure the parent directory for the link exists
-      mkdir -p $(dirname $TARGET)
-      ln -s $DATA $TARGET
-    done
+# add links to the external data directories
+echo "Linking extrnal data to their destination"
+for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEARCH_PATH | cut -d= -f2 | tr ':' ' '); do 
+  for DATA in $CMSSWDATA/*/*/data; do
+    RELATIVE=$(echo "$DATA" | sed -e"s#$CMSSWDATA/##")
+    TARGET=$TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/src/$RELATIVE
+    # remove the target data directory, if present
+    rm -rf $TARGET
+    # make sure the parent directory for the link exists
+    mkdir -p $(dirname $TARGET)
+    ln -s $DATA $TARGET
   done
-fi
+done
 
 echo "Generating and populating summary directories"
 CMSSW_ROOT_DIRECTORY=`grep RELEASETOP $CMSSW_VERSION/.SCRAM/$SCRAM_ARCH/Environment | cut -d= -f2`
