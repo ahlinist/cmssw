@@ -15,10 +15,11 @@ from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelec
 # for the path with "regular" muon isolation criteria applied
 #--------------------------------------------------------------------------------
 
-analyzeZtoMuTauEvents_factorizedWithMuonIsolation = copy.deepcopy(analyzeZtoMuTauEvents)
-analyzeZtoMuTauEvents_factorizedWithMuonIsolation.name = cms.string('zMuTauAnalyzer_factorizedWithMuonIsolation')
+analyzeZtoMuTauEvents_factorizedWithMuonIsolation = analyzeZtoMuTauEvents.clone(
+    name = cms.string('zMuTauAnalyzer_factorizedWithMuonIsolation'),
+    analysisSequence = muTauAnalysisSequence_factorizedWithMuonIsolation
+)    
 analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
-analyzeZtoMuTauEvents_factorizedWithMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithMuonIsolation
 
 #--------------------------------------------------------------------------------
 # define Z --> mu + tau-jet analysis module
@@ -32,8 +33,10 @@ analyzeZtoMuTauEvents_factorizedWithMuonIsolation.analysisSequence = muTauAnalys
 #
 #--------------------------------------------------------------------------------
 
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation = copy.copy(analyzeZtoMuTauEvents)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.name = cms.string('zMuTauAnalyzer_factorizedWithoutMuonIsolation')
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation = analyzeZtoMuTauEvents.clone(
+    name = cms.string('zMuTauAnalyzer_factorizedWithoutMuonIsolation')
+)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation, 
     [ [ evtSelMuonTrkIso, evtSelMuonTrkIsoLooseIsolation ],
       [ evtSelMuonEcalIso, evtSelMuonEcalIsoLooseIsolation ],
@@ -45,6 +48,5 @@ replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation,
       [ evtSelDiTauCandidateForMuTauMt1MET, evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation ],
       [ evtSelDiTauCandidateForMuTauPzetaDiff, evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation ] ]
 )                       
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithoutMuonIsolation
 

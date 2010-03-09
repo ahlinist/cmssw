@@ -14,51 +14,60 @@ from TauAnalysis.Configuration.selectZtoMuTau_cff import *
 #--------------------------------------------------------------------------------
 
 # muon candidate selection with "loose" muon isolation criteria applied
-cfgMuonTrkIsoCutLooseIsolation = copy.deepcopy(cfgMuonTrkIsoCut)
-cfgMuonTrkIsoCutLooseIsolation.pluginName = "muonTrkIsoCutLooseIsolation"
-cfgMuonTrkIsoCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationCumulative')
-cfgMuonTrkIsoCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationIndividual')
+cfgMuonTrkIsoCutLooseIsolation = cfgMuonTrkIsoCut.clone(
+    pluginName = cms.string('muonTrkIsoCutLooseIsolation'),
+    src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationIndividual')
+)    
 
-cfgMuonEcalIsoCutLooseIsolation = copy.deepcopy(cfgMuonEcalIsoCut)
-cfgMuonEcalIsoCutLooseIsolation.pluginName = "muonEcalIsoCutLooseIsolation"
-cfgMuonEcalIsoCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative')
-cfgMuonEcalIsoCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationIndividual')
+cfgMuonEcalIsoCutLooseIsolation = cfgMuonEcalIsoCut.clone(
+    pluginName = cms.string('muonEcalIsoCutLooseIsolation'),
+    src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationIndividual')
+)
 
-cfgMuonAntiPionCutLooseIsolation = copy.deepcopy(cfgMuonAntiPionCut)
-cfgMuonAntiPionCutLooseIsolation.pluginName = "muonAntiPionCutLooseIsolation"
-cfgMuonAntiPionCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationCumulative')
-cfgMuonAntiPionCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationIndividual')
+cfgMuonAntiPionCutLooseIsolation = cfgMuonAntiPionCut.clone(
+    pluginName = cms.string('muonAntiPionCutLooseIsolation'),
+    src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationIndividual')
+)    
 
-cfgMuonTrkIPcutLooseIsolation = copy.deepcopy(cfgMuonTrkIPcut)
-cfgMuonTrkIPcutLooseIsolation.pluginName = "muonTrkIPcutLooseIsolation"
-cfgMuonTrkIPcutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationCumulative')
-cfgMuonTrkIPcutLooseIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationIndividual')
+cfgMuonTrkIPcutLooseIsolation = cfgMuonTrkIPcut.clone(
+    pluginName = cms.string('muonTrkIPcutLooseIsolation'),
+    src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationIndividual')
+)    
 
 # selection of di-tau candidates composed of combination of tau-jet with "loosely" isolated muon 
-cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauAntiOverlapVeto)
-cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.pluginName = "diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation"
-cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative')
-cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationIndividual')
+cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation = cfgDiTauCandidateForMuTauAntiOverlapVeto.clone(
+    pluginName = cms.string('diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationIndividual')
+)
 
-cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauZeroChargeCut)
-cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.pluginName = "diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation"
-cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative')
-cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationIndividual')
+cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateForMuTauZeroChargeCut.clone(
+    pluginName = cms.string('diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationIndividual')
+)
 
-cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauAcoplanarity12Cut)
-cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation.pluginName = "diTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation"
-cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarity12LooseMuonIsolationCumulative')
-cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsAcoplanarity12LooseMuonIsolationIndividual')
+cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation = cfgDiTauCandidateForMuTauAcoplanarity12Cut.clone(
+    pluginName = cms.string('diTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarity12LooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsAcoplanarity12LooseMuonIsolationIndividual')
+)    
 
-cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauMt1METcut)
-cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.pluginName = "diTauCandidateForMuTauMt1METcutLooseMuonIsolation"
-cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationCumulative')
-cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationIndividual')
+cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation = cfgDiTauCandidateForMuTauMt1METcut.clone(
+    pluginName = cms.string('diTauCandidateForMuTauMt1METcutLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationIndividual')
+)    
 
-cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauPzetaDiffCut)
-cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation.pluginName = "diTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation"
-cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative')
-cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsPzetaDiffLooseMuonIsolationIndividual')
+cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation = cfgDiTauCandidateForMuTauPzetaDiffCut.clone(
+    pluginName = cms.string('diTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsPzetaDiffLooseMuonIsolationIndividual')
+)    
 
 zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     [ cfgMuonTrkIsoCutLooseIsolation,
