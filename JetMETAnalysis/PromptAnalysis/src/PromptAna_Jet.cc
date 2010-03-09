@@ -5,12 +5,13 @@ PromptAna_Jet::PromptAna_Jet(const edm::ParameterSet& iConfig)
   : inputTag(iConfig.getParameter<edm::InputTag>("InputTag"))
   , tracksinputTag(iConfig.getParameter<edm::InputTag>("TracksInputTag"))
   , jetCorrectionService  (iConfig.getParameter<std::string>  ("JetCorrectionService"  ))
+  , jetTracksAtCaloinputTag  (iConfig.getParameter<edm::InputTag>("JetTracksAtCalo"))
+  , jetTracksAtVertexinputTag  (iConfig.getParameter<edm::InputTag>("JetTracksAtVertex"))
   , prefix  (iConfig.getParameter<std::string>  ("Prefix"  ))
   , suffix  (iConfig.getParameter<std::string>  ("Suffix"  ))
 {
   // Jet ID helper
   jetIDHelper = reco::helper::JetIDHelper(iConfig.getParameter<edm::ParameterSet>("jetID")  );
-
   produces <std::vector<int> > ( prefix + "NJets"  + suffix );
   produces <std::vector<int> > ( prefix + "NcleanedJets"  + suffix );
   produces <std::vector<double> > ( prefix + "pT"  + suffix );
@@ -47,18 +48,32 @@ PromptAna_Jet::PromptAna_Jet(const edm::ParameterSet& iConfig)
   //produces <std::vector<double> > ( prefix + "EnergyFirst"  + suffix );
   //produces <std::vector<double> > ( prefix + "EtaFirst"  + suffix );
   //produces <std::vector<double> > ( prefix + "PhiFirst"  + suffix );
-  produces <std::vector<int> > ( prefix + "NAssoTrksAll"  + suffix );
-  produces <std::vector<double> > ( prefix + "AllAssoTrkspx"  + suffix );
-  produces <std::vector<double> > ( prefix + "AllAssoTrkspy"  + suffix );
-  produces <std::vector<double> > ( prefix + "AllAssoTrkspz"  + suffix );
-  produces <std::vector<int> > ( prefix + "NAssoTrksLoose"  + suffix );
-  produces <std::vector<double> > ( prefix + "LooseAssoTrkspx"  + suffix );
-  produces <std::vector<double> > ( prefix + "LooseAssoTrkspy"  + suffix );
-  produces <std::vector<double> > ( prefix + "LooseAssoTrkspz"  + suffix );
-  produces <std::vector<int> > ( prefix + "NAssoTrksTight"  + suffix );
-  produces <std::vector<double> > ( prefix + "TightAssoTrkspx"  + suffix );
-  produces <std::vector<double> > ( prefix + "TightAssoTrkspy"  + suffix );
-  produces <std::vector<double> > ( prefix + "TightAssoTrkspz"  + suffix );
+  //using the jet-tracks association at the calorimeter face
+  produces <std::vector<int> > ( prefix + "NAssoTrksAtCaloAll"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrksAtCalopx"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrksAtCalopy"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrksAtCalopz"  + suffix );
+  produces <std::vector<int> > ( prefix + "NAssoTrksAtCaloHighPurity"  + suffix );
+  produces <std::vector<double> > ( prefix + "HighPurityAssoTrksAtCalopx"  + suffix );
+  produces <std::vector<double> > ( prefix + "HighPurityAssoTrksAtCalopy"  + suffix );
+  produces <std::vector<double> > ( prefix + "HighPurityAssoTrksAtCalopz"  + suffix );
+  produces <std::vector<int> > ( prefix + "NAssoTrksAtCaloTight"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrksAtCalopx"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrksAtCalopy"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrksAtCalopz"  + suffix );
+  //using the jet-tracks association at the vertex
+  produces <std::vector<int> > ( prefix + "NAssoTrksAtVtxAll"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrksAtVtxpx"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrksAtVtxpy"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrksAtVtxpz"  + suffix );
+  produces <std::vector<int> > ( prefix + "NAssoTrksAtVtxHighPurity"  + suffix );
+  produces <std::vector<double> > ( prefix + "HighPurityAssoTrksAtVtxpx"  + suffix );
+  produces <std::vector<double> > ( prefix + "HighPurityAssoTrksAtVtxpy"  + suffix );
+  produces <std::vector<double> > ( prefix + "HighPurityAssoTrksAtVtxpz"  + suffix );
+  produces <std::vector<int> > ( prefix + "NAssoTrksAtVtxTight"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrksAtVtxpx"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrksAtVtxpy"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrksAtVtxpz"  + suffix );
 
 }
 
@@ -101,18 +116,30 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //std::auto_ptr<std::vector<double> >  energyfirst  ( new std::vector<double>()  ) ;
   //std::auto_ptr<std::vector<double> >  etafirst  ( new std::vector<double>()  ) ;
   //std::auto_ptr<std::vector<double> >  phifirst  ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<int> >  nAssoTrksAll  ( new std::vector<int>()  ) ; 
-  std::auto_ptr<std::vector<double> >  allAssoTrkspx  ( new std::vector<double>()  ) ; 
-  std::auto_ptr<std::vector<double> >  allAssoTrkspy  ( new std::vector<double>()  ) ; 
-  std::auto_ptr<std::vector<double> >  allAssoTrkspz  ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<int> >  nAssoTrksLoose  ( new std::vector<int>()  ) ; 
-  std::auto_ptr<std::vector<double> >  looseAssoTrkspx  ( new std::vector<double>()  ) ; 
-  std::auto_ptr<std::vector<double> >  looseAssoTrkspy  ( new std::vector<double>()  ) ; 
-  std::auto_ptr<std::vector<double> >  looseAssoTrkspz  ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<int> >  nAssoTrksTight  ( new std::vector<int>()  ) ; 
-  std::auto_ptr<std::vector<double> >  tightAssoTrkspx  ( new std::vector<double>()  ) ; 
-  std::auto_ptr<std::vector<double> >  tightAssoTrkspy  ( new std::vector<double>()  ) ; 
-  std::auto_ptr<std::vector<double> >  tightAssoTrkspz  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<int> >  nAssoTrksAtCaloAll  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrksAtCalopx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrksAtCalopy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrksAtCalopz  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<int> >  nAssoTrksAtCaloHighPurity  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  highPurityAssoTrksAtCalopx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  highPurityAssoTrksAtCalopy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  highPurityAssoTrksAtCalopz  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<int> >  nAssoTrksAtCaloTight  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrksAtCalopx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrksAtCalopy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrksAtCalopz  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<int> >  nAssoTrksAtVtxAll  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrksAtVtxpx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrksAtVtxpy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrksAtVtxpz  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<int> >  nAssoTrksAtVtxHighPurity  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  highPurityAssoTrksAtVtxpx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  highPurityAssoTrksAtVtxpy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  highPurityAssoTrksAtVtxpz  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<int> >  nAssoTrksAtVtxTight  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrksAtVtxpx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrksAtVtxpy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrksAtVtxpz  ( new std::vector<double>()  ) ;
 
   //Get the Jets Collection
   edm::Handle<reco::CaloJetCollection> jetcollection;
@@ -121,11 +148,13 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	//Get Tracks collection
   edm::Handle<reco::TrackCollection> tracks;
   iEvent.getByLabel(tracksinputTag, tracks);
-
-  // Get Transient Track Builder
-  edm::ESHandle<TransientTrackBuilder> theB;
-  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
   
+  edm::Handle<reco::JetTracksAssociation::Container> jetTracksAtCalo;
+  iEvent.getByLabel(jetTracksAtCaloinputTag,jetTracksAtCalo);
+
+  edm::Handle<reco::JetTracksAssociation::Container> jetTracksAtVertex;
+  iEvent.getByLabel(jetTracksAtVertexinputTag,jetTracksAtVertex);
+
   /*  edm::Handle<reco::VertexCollection> vertices;   
   iEvent.getByLabel(primaryVertexTag, vertices);
   */
@@ -182,60 +211,106 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     scaleL2L3->push_back( corrector->correction(it->p4()) );
     //std::cout << corrector->correction(it->p4()) << std::endl;
 
+
     //associated tracks
-    int    tnAssoTrksAll=0;
-    int    tnAssoTrksLoose=0;
-    int    tnAssoTrksTight=0;
+    int    tnAssoTrksAtCaloAll=0;
+    int    tnAssoTrksAtCaloHighPurity=0;
+    int    tnAssoTrksAtCaloTight=0;
 
-    double tallAssoTrkspx=0.;
-    double tallAssoTrkspy=0.;
-    double tallAssoTrkspz=0.;
-    double tlooseAssoTrkspx=0.;
-    double tlooseAssoTrkspy=0.;
-    double tlooseAssoTrkspz=0.;
-    double ttightAssoTrkspx=0.;
-    double ttightAssoTrkspy=0.;
-    double ttightAssoTrkspz=0.;
+    double tallAssoTrksAtCalopx=0.;
+    double tallAssoTrksAtCalopy=0.;
+    double tallAssoTrksAtCalopz=0.;
+    double thighPurityAssoTrksAtCalopx=0.;
+    double thighPurityAssoTrksAtCalopy=0.;
+    double thighPurityAssoTrksAtCalopz=0.;
+    double ttightAssoTrksAtCalopx=0.;
+    double ttightAssoTrksAtCalopy=0.;
+    double ttightAssoTrksAtCalopz=0.;
 
-    if(fabs(it->eta())<2.9){//when the cone of dR=0.5 around the jet is (at least partially) inside the tracker acceptance
-    std::vector<const reco::Track*> AssociatedTracks = FindAssociatedTracks(&(*it), tracks.product());
-    std::vector<reco::TransientTrack> AssociatedTTracks;
-    //    for (reco::TrackRefVector::iterator trk = it->associatedTracks().begin(); trk != it->associatedTracks().end(); ++trk) {
-      //(*trk)->pt()>minPttrk && (*trk)->pt()<maxPttrk && fabs((*trk)->dxy(PrimaryVertex.position()))<maxD0trk && (*trk)->chi2()<maxChi2trk){
-	  //all tracks
-    for(size_t t = 0; t < AssociatedTracks.size(); ++t){
-      AssociatedTTracks.push_back(theB->build(AssociatedTracks[t]));
-	  tnAssoTrksAll++;
-	  tallAssoTrkspx+=AssociatedTracks[t]->px();
-	  tallAssoTrkspy+=AssociatedTracks[t]->py();
-	  tallAssoTrkspz+=AssociatedTracks[t]->pz();
-	  if(AssociatedTracks[t]->quality(reco::Track::loose)) {
-	    tnAssoTrksLoose++;
-	  tlooseAssoTrkspx+=AssociatedTracks[t]->px();
-	  tlooseAssoTrkspy+=AssociatedTracks[t]->py();
-	  tlooseAssoTrkspz+=AssociatedTracks[t]->pz();
-	  }
-	  if(AssociatedTracks[t]->quality(reco::Track::tight)) {
-	    tnAssoTrksTight++;
-	  ttightAssoTrkspx+=AssociatedTracks[t]->px();
-	  ttightAssoTrkspy+=AssociatedTracks[t]->py();
-	  ttightAssoTrkspz+=AssociatedTracks[t]->pz();
-	  }
-	  //	}
+    //associated tracks
+    int    tnAssoTrksAtVtxAll=0;
+    int    tnAssoTrksAtVtxHighPurity=0;
+    int    tnAssoTrksAtVtxTight=0;
+
+    double tallAssoTrksAtVtxpx=0.;
+    double tallAssoTrksAtVtxpy=0.;
+    double tallAssoTrksAtVtxpz=0.;
+    double thighPurityAssoTrksAtVtxpx=0.;
+    double thighPurityAssoTrksAtVtxpy=0.;
+    double thighPurityAssoTrksAtVtxpz=0.;
+    double ttightAssoTrksAtVtxpx=0.;
+    double ttightAssoTrksAtVtxpy=0.;
+    double ttightAssoTrksAtVtxpz=0.;
+
+    //use the jet-tracks-assciator at calorimeter face
+    reco::TrackRefVector AssociatedTracksAtCalo = reco::JetTracksAssociation::getValue (*jetTracksAtCalo, (*it));
+    //all tracks
+    for(size_t t = 0; t < AssociatedTracksAtCalo.size(); ++t){
+      //AssociatedTTracksAtCalo.push_back(theB->build(AssociatedTracksAtCalo[t]));
+      tnAssoTrksAtCaloAll++;
+      tallAssoTrksAtCalopx+=AssociatedTracksAtCalo[t]->px();
+      tallAssoTrksAtCalopy+=AssociatedTracksAtCalo[t]->py();
+      tallAssoTrksAtCalopz+=AssociatedTracksAtCalo[t]->pz();
+      if(AssociatedTracksAtCalo[t]->quality(reco::Track::highPurity)) {
+	tnAssoTrksAtCaloHighPurity++;
+	thighPurityAssoTrksAtCalopx+=AssociatedTracksAtCalo[t]->px();
+	thighPurityAssoTrksAtCalopy+=AssociatedTracksAtCalo[t]->py();
+	thighPurityAssoTrksAtCalopz+=AssociatedTracksAtCalo[t]->pz();
+      }
+      if(AssociatedTracksAtCalo[t]->quality(reco::Track::tight)) {
+	tnAssoTrksAtCaloTight++;
+	ttightAssoTrksAtCalopx+=AssociatedTracksAtCalo[t]->px();
+	ttightAssoTrksAtCalopy+=AssociatedTracksAtCalo[t]->py();
+	ttightAssoTrksAtCalopz+=AssociatedTracksAtCalo[t]->pz();
+      }
+      
     }
+    //use the jet-tracks associator at the vertex    
+    reco::TrackRefVector AssociatedTracksAtVtx = reco::JetTracksAssociation::getValue (*jetTracksAtVertex, (*it));
+      //all tracks
+    for(size_t t = 0; t < AssociatedTracksAtVtx.size(); ++t){
+      tnAssoTrksAtVtxAll++;
+      tallAssoTrksAtVtxpx+=AssociatedTracksAtVtx[t]->px();
+      tallAssoTrksAtVtxpy+=AssociatedTracksAtVtx[t]->py();
+      tallAssoTrksAtVtxpz+=AssociatedTracksAtVtx[t]->pz();
+      if(AssociatedTracksAtVtx[t]->quality(reco::Track::highPurity)) {
+	tnAssoTrksAtVtxHighPurity++;
+	thighPurityAssoTrksAtVtxpx+=AssociatedTracksAtVtx[t]->px();
+	thighPurityAssoTrksAtVtxpy+=AssociatedTracksAtVtx[t]->py();
+	thighPurityAssoTrksAtVtxpz+=AssociatedTracksAtVtx[t]->pz();
+      }
+      if(AssociatedTracksAtVtx[t]->quality(reco::Track::tight)) {
+	tnAssoTrksAtVtxTight++;
+	ttightAssoTrksAtVtxpx+=AssociatedTracksAtVtx[t]->px();
+	  ttightAssoTrksAtVtxpy+=AssociatedTracksAtVtx[t]->py();
+	  ttightAssoTrksAtVtxpz+=AssociatedTracksAtVtx[t]->pz();
+      }
     }
-    nAssoTrksAll->push_back(tnAssoTrksAll);
-    allAssoTrkspx->push_back(tallAssoTrkspx);
-    allAssoTrkspy->push_back(tallAssoTrkspy);
-    allAssoTrkspz->push_back(tallAssoTrkspz);
-    nAssoTrksLoose->push_back(tnAssoTrksLoose);
-    looseAssoTrkspx->push_back(tlooseAssoTrkspx);
-    looseAssoTrkspy->push_back(tlooseAssoTrkspy);
-    looseAssoTrkspz->push_back(tlooseAssoTrkspz);
-    nAssoTrksTight->push_back(tnAssoTrksTight);
-    tightAssoTrkspx->push_back(ttightAssoTrkspx);
-    tightAssoTrkspy->push_back(ttightAssoTrkspy);
-    tightAssoTrkspz->push_back(ttightAssoTrkspz);
+    nAssoTrksAtCaloAll->push_back(tnAssoTrksAtCaloAll);
+    allAssoTrksAtCalopx->push_back(tallAssoTrksAtCalopx);
+    allAssoTrksAtCalopy->push_back(tallAssoTrksAtCalopy);
+    allAssoTrksAtCalopz->push_back(tallAssoTrksAtCalopz);
+    nAssoTrksAtCaloHighPurity->push_back(tnAssoTrksAtCaloHighPurity);
+    highPurityAssoTrksAtCalopx->push_back(thighPurityAssoTrksAtCalopx);
+    highPurityAssoTrksAtCalopy->push_back(thighPurityAssoTrksAtCalopy);
+    highPurityAssoTrksAtCalopz->push_back(thighPurityAssoTrksAtCalopz);
+    nAssoTrksAtCaloTight->push_back(tnAssoTrksAtCaloTight);
+    tightAssoTrksAtCalopx->push_back(ttightAssoTrksAtCalopx);
+    tightAssoTrksAtCalopy->push_back(ttightAssoTrksAtCalopy);
+    tightAssoTrksAtCalopz->push_back(ttightAssoTrksAtCalopz);
+
+    nAssoTrksAtVtxAll->push_back(tnAssoTrksAtVtxAll);
+    allAssoTrksAtVtxpx->push_back(tallAssoTrksAtVtxpx);
+    allAssoTrksAtVtxpy->push_back(tallAssoTrksAtVtxpy);
+    allAssoTrksAtVtxpz->push_back(tallAssoTrksAtVtxpz);
+    nAssoTrksAtVtxHighPurity->push_back(tnAssoTrksAtVtxHighPurity);
+    highPurityAssoTrksAtVtxpx->push_back(thighPurityAssoTrksAtVtxpx);
+    highPurityAssoTrksAtVtxpy->push_back(thighPurityAssoTrksAtVtxpy);
+    highPurityAssoTrksAtVtxpz->push_back(thighPurityAssoTrksAtVtxpz);
+    nAssoTrksAtVtxTight->push_back(tnAssoTrksAtVtxTight);
+    tightAssoTrksAtVtxpx->push_back(ttightAssoTrksAtVtxpx);
+    tightAssoTrksAtVtxpy->push_back(ttightAssoTrksAtVtxpy);
+    tightAssoTrksAtVtxpz->push_back(ttightAssoTrksAtVtxpz);
 
       //
   }
@@ -277,31 +352,30 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //iEvent.put( energyfirst,  prefix + "EnergyFirst"  + suffix );
   //iEvent.put( etafirst,  prefix + "EtaFirst"  + suffix );
   //iEvent.put( phifirst,  prefix + "PhiFirst"  + suffix );
-  iEvent.put(nAssoTrksAll,  prefix + "NAssoTrksAll"  + suffix );
-  iEvent.put(allAssoTrkspx,  prefix + "AllAssoTrkspx"  + suffix );
-  iEvent.put(allAssoTrkspy,  prefix + "AllAssoTrkspy"  + suffix );
-  iEvent.put(allAssoTrkspz,  prefix + "AllAssoTrkspz"  + suffix );
-  iEvent.put(nAssoTrksLoose,  prefix + "NAssoTrksLoose"  + suffix );
-  iEvent.put(looseAssoTrkspx,  prefix + "LooseAssoTrkspx"  + suffix );
-  iEvent.put(looseAssoTrkspy,  prefix + "LooseAssoTrkspy"  + suffix );
-  iEvent.put(looseAssoTrkspz,  prefix + "LooseAssoTrkspz"  + suffix );
-  iEvent.put(nAssoTrksTight,  prefix + "NAssoTrksTight"  + suffix );
-  iEvent.put(tightAssoTrkspx,  prefix + "TightAssoTrkspx"  + suffix );
-  iEvent.put(tightAssoTrkspy,  prefix + "TightAssoTrkspy"  + suffix );
-  iEvent.put(tightAssoTrkspz,  prefix + "TightAssoTrkspz"  + suffix );
+  iEvent.put(nAssoTrksAtCaloAll,  prefix + "NAssoTrksAtCaloAll"  + suffix );
+  iEvent.put(allAssoTrksAtCalopx,  prefix + "AllAssoTrksAtCalopx"  + suffix );
+  iEvent.put(allAssoTrksAtCalopy,  prefix + "AllAssoTrksAtCalopy"  + suffix );
+  iEvent.put(allAssoTrksAtCalopz,  prefix + "AllAssoTrksAtCalopz"  + suffix );
+  iEvent.put(nAssoTrksAtCaloHighPurity,  prefix + "NAssoTrksAtCaloHighPurity"  + suffix );
+  iEvent.put(highPurityAssoTrksAtCalopx,  prefix + "HighPurityAssoTrksAtCalopx"  + suffix );
+  iEvent.put(highPurityAssoTrksAtCalopy,  prefix + "HighPurityAssoTrksAtCalopy"  + suffix );
+  iEvent.put(highPurityAssoTrksAtCalopz,  prefix + "HighPurityAssoTrksAtCalopz"  + suffix );
+  iEvent.put(nAssoTrksAtCaloTight,  prefix + "NAssoTrksAtCaloTight"  + suffix );
+  iEvent.put(tightAssoTrksAtCalopx,  prefix + "TightAssoTrksAtCalopx"  + suffix );
+  iEvent.put(tightAssoTrksAtCalopy,  prefix + "TightAssoTrksAtCalopy"  + suffix );
+  iEvent.put(tightAssoTrksAtCalopz,  prefix + "TightAssoTrksAtCalopz"  + suffix );
 
+  iEvent.put(nAssoTrksAtVtxAll,  prefix + "NAssoTrksAtVtxAll"  + suffix );
+  iEvent.put(allAssoTrksAtVtxpx,  prefix + "AllAssoTrksAtVtxpx"  + suffix );
+  iEvent.put(allAssoTrksAtVtxpy,  prefix + "AllAssoTrksAtVtxpy"  + suffix );
+  iEvent.put(allAssoTrksAtVtxpz,  prefix + "AllAssoTrksAtVtxpz"  + suffix );
+  iEvent.put(nAssoTrksAtVtxHighPurity,  prefix + "NAssoTrksAtVtxHighPurity"  + suffix );
+  iEvent.put(highPurityAssoTrksAtVtxpx,  prefix + "HighPurityAssoTrksAtVtxpx"  + suffix );
+  iEvent.put(highPurityAssoTrksAtVtxpy,  prefix + "HighPurityAssoTrksAtVtxpy"  + suffix );
+  iEvent.put(highPurityAssoTrksAtVtxpz,  prefix + "HighPurityAssoTrksAtVtxpz"  + suffix );
+  iEvent.put(nAssoTrksAtVtxTight,  prefix + "NAssoTrksAtVtxTight"  + suffix );
+  iEvent.put(tightAssoTrksAtVtxpx,  prefix + "TightAssoTrksAtVtxpx"  + suffix );
+  iEvent.put(tightAssoTrksAtVtxpy,  prefix + "TightAssoTrksAtVtxpy"  + suffix );
+  iEvent.put(tightAssoTrksAtVtxpz,  prefix + "TightAssoTrksAtVtxpz"  + suffix );
 }
 
-std::vector<const reco::Track*> PromptAna_Jet::FindAssociatedTracks(const reco::CaloJet *jet, const reco::TrackCollection *tracks){
-//returns a list of tracks associated to a given jet
-	std::vector<const reco::Track*> AssociatedTracks;
-	double jeteta=jet->eta();
-	double jetphi=jet->phi();
-	for(reco::TrackCollection::const_iterator itk = tracks->begin(); itk!=tracks->end(); ++itk){
-		if(sqrt(pow(itk->eta()-jeteta,2) + pow(itk->phi()-jetphi,2))<0.5) {
-			const reco::Track *t = new reco::Track(*itk);
-			AssociatedTracks.push_back(t);
-		}
-	}
-	return AssociatedTracks;
-}
