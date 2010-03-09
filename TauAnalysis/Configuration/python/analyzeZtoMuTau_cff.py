@@ -65,6 +65,7 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauProng,
         evtSelTauCharge,
         evtSelTauMuonVeto,
+        evtSelTauElectronVeto,
 
         # di-tau candidate selection
         evtSelDiTauCandidateForMuTauAntiOverlapVeto,
