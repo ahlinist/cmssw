@@ -7,7 +7,7 @@ bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
     allTauJetSource = cms.InputTag('shrinkingConePFTauProducer'),
     preselTauJetSource = cms.InputTag('shrinkingConePFTauProducer'),
                                          
-    dRmatch = cms.double(0.3),
+    dRmatch = cms.double(0.1),
                                          
     frTypes = cms.PSet(
         qcdMuEnriched = cms.PSet(
