@@ -127,6 +127,100 @@ bool goodPVtx(double pvtxndof,double pvtxz){
   return goodpvtx;
 }
 
+//function to calculate the thrust AND the thrust axis:
+//T_c[0]=TA_x, T_c[1]=TA_y, T_c[2]=TA_z=0; T_c[3]=tau = 1-thrust
+std::vector<double> Thrust_calculate (std::vector<TLorentzVector> Input_PtEtaPhiE){
+  double thrustmax_calc =0;
+  double temp_calc =0;
+  unsigned int length_thrust_calc =0;
+  std::vector<double> ThrustValues;
+  std::vector<double> Thrust_Axis_calc;
+  std::vector<double> p_thrust_max_calc;
+  std::vector<double> p_dec_1_calc;
+  std::vector<double> p_dec_2_calc;
+  std::vector<double> p_pt_beam_calc;
+
+   if (!ThrustValues.empty()){
+     ThrustValues.clear();
+     Thrust_Axis_calc.clear();
+     p_thrust_max_calc.clear();
+     p_dec_1_calc.clear();
+     p_dec_2_calc.clear();
+     p_pt_beam_calc.clear();
+   }
+
+  for(unsigned int j = 0; j < 3; j++){
+    p_pt_beam_calc.push_back(0.);
+    p_dec_1_calc.push_back(0.);
+    p_dec_2_calc.push_back(0.);
+    p_thrust_max_calc.push_back(0.);
+    Thrust_Axis_calc.push_back(0.);
+  }
+  
+  for(unsigned int j =0;j<4;j++){
+    ThrustValues.push_back(0.);
+  }
+  length_thrust_calc = Input_PtEtaPhiE.size(); 
+
+  double Pt_sum_calc =0;
+
+  for(unsigned int k=0;k<length_thrust_calc;k++){
+    Pt_sum_calc+=Input_PtEtaPhiE[k].Pt(); 
+    for(unsigned int j = 0; j < 3; j++){
+      p_thrust_max_calc[j]=0;
+    }
+    //get a vector perpendicular to the beam axis and 
+    //perpendicular to the momentum of particle k
+    //per default beam axis b = (0,0,1)   
+    p_pt_beam_calc[0] = Input_PtEtaPhiE[k].Py()*1; 
+    p_pt_beam_calc[1] = - Input_PtEtaPhiE[k].Px()*1;
+    p_pt_beam_calc[3] = 0.;
+    for(unsigned int i=0;i<length_thrust_calc;i++){
+      if(i!=k){
+	if((Input_PtEtaPhiE[i].Px()*p_pt_beam_calc[0]+Input_PtEtaPhiE[i].Py()*p_pt_beam_calc[1])>=0){
+	  p_thrust_max_calc[0]= p_thrust_max_calc[0]+Input_PtEtaPhiE[i].Px();
+	  p_thrust_max_calc[1]= p_thrust_max_calc[1]+Input_PtEtaPhiE[i].Py();
+	}
+	else{
+	  p_thrust_max_calc[0]= p_thrust_max_calc[0]-Input_PtEtaPhiE[i].Px();
+	  p_thrust_max_calc[1]= p_thrust_max_calc[1]-Input_PtEtaPhiE[i].Py();
+	}
+      }
+    }
+    p_dec_1_calc[0]=p_thrust_max_calc[0]+Input_PtEtaPhiE[k].Px();
+    p_dec_1_calc[1]=p_thrust_max_calc[1]+Input_PtEtaPhiE[k].Py();
+    p_dec_1_calc[2]=0;
+    p_dec_2_calc[0]=p_thrust_max_calc[0]-Input_PtEtaPhiE[k].Px();
+    p_dec_2_calc[1]=p_thrust_max_calc[1]-Input_PtEtaPhiE[k].Py();
+    p_dec_2_calc[2]=0;
+    temp_calc = pow(p_dec_1_calc[0],2)+pow(p_dec_1_calc[1],2);
+    if(temp_calc>thrustmax_calc){
+      thrustmax_calc =temp_calc;
+      for(unsigned int i=0;i<3;i++){
+	Thrust_Axis_calc[i]=p_dec_1_calc[i]/sqrt(thrustmax_calc);
+      }
+    }
+    temp_calc = pow(p_dec_2_calc[0],2)+pow(p_dec_2_calc[1],2);
+    if(temp_calc>thrustmax_calc){
+      thrustmax_calc =temp_calc;
+      for(unsigned int i=0;i<3;i++){
+	Thrust_Axis_calc[i]=p_dec_2_calc[i]/sqrt(thrustmax_calc);
+      }
+    }
+  }
+  for(unsigned int j=0;j<3;j++){
+    ThrustValues[j]=Thrust_Axis_calc[j];
+  }
+  double thrust_calc=0;
+  thrust_calc = sqrt(thrustmax_calc)/Pt_sum_calc;
+
+  //the variable which gets resummed is not the thrust
+  //but tau=1-thrust
+  ThrustValues[3]=1-thrust_calc;
+  
+  return ThrustValues;
+
+}
 
 double DeltaPhi(double jetPhi1,double jetPhi2){
   double deltaphi=fabs(jetPhi1-jetPhi2);
@@ -242,6 +336,15 @@ void analysisClass::Loop()
   TH1D *phi = new TH1D("phi","",phiBin,phiMin,phiMax);
   phi->SetXTitle("#phi");
   phi->SetTitle(dataset);
+
+  TH1D* h_phi_TA = new TH1D("phi_thrust_axis","",25,phiMin,phiMax);
+  h_phi_TA->SetXTitle("#phi(TA)");
+  h_phi_TA->SetTitle(dataset);
+
+  TH1D* h_thrust = new TH1D("thrust","",25,-14.5,-0.75);
+  h_thrust->SetXTitle("log#tau_{#perp}");
+  h_thrust->SetTitle(dataset);
+
   TH1D *phicleaned = new TH1D("phicleaned","",phiBin,phiMin,phiMax);
   phicleaned->SetXTitle("#phi");
   phicleaned->SetTitle(dataset);
@@ -312,6 +415,9 @@ void analysisClass::Loop()
 //   dijetdphi->SetXTitle("p_{T}[GeV]");
   dijetdphi->SetXTitle("#Delta #phi_{di-jet}");
   dijetdphi->SetTitle(dataset);
+  TH1D *dijetdeta = new TH1D("dijetdeta","",phiBin, 0., 6.0);
+  dijetdeta->SetXTitle("#Delta #eta_{di-jet}");
+  dijetdeta->SetTitle(dataset);
   TH1D *dijeteta = new TH1D("dijeteta","",25,etaMin,etaMax);
   dijeteta->SetXTitle("#eta");
   dijeteta->SetTitle(dataset);
@@ -364,6 +470,9 @@ void analysisClass::Loop()
   TH1D *dijetdphicleaned = new TH1D("dijetdphicleaned","",phiBin, 0., 3.5);
   dijetdphicleaned->SetXTitle("#Delta #phi_{di-jet}");
   dijetdphicleaned->SetTitle(dataset);
+  TH1D *dijetdetacleaned = new TH1D("dijetdetacleaned","",phiBin, 0., 6.0);
+  dijetdetacleaned->SetXTitle("#Delta #eta_{di-jet}");
+  dijetdetacleaned->SetTitle(dataset);
   TH2D *mapalldijetscleaned = new TH2D("mapalldijetscleaned","",25,etaMin,etaMax,24,-3.2,3.2);
   mapalldijetscleaned->SetXTitle("#eta_{jet}");
   mapalldijetscleaned->SetYTitle("#phi_{jet}");
@@ -653,6 +762,15 @@ void analysisClass::Loop()
 	double mypt1=-10;
 	double mypt2=-10;
 
+
+	//define TLorentzvector/fill all good jets/require two hardest jets to be good+met_by_etsum<0.5->Fill thrust histos.
+
+	std::vector<TLorentzVector> vPtEtaPhiE;
+	
+	if(!vPtEtaPhiE.empty()){
+	  vPtEtaPhiE.clear();
+	}
+
 	// Inclusive  Jets -----------------------------------------------------------------------
 	for (int j = 0; j<int(ak5JetpT->size()); j++){
 	  //check if jet is among hardest two
@@ -676,8 +794,14 @@ void analysisClass::Loop()
 	  else jcScale = 1;	    
 	  ptall->Fill(ak5JetpT->at(j) * jcScale);   
 	  mapall->Fill(ak5JetEta->at(j),ak5JetPhi->at(j));
-
-	  // Loop over Inclusive jets ----- 
+	  //after jc - fill TLorentzVector with all good jets
+	  if((ak5JetpT->at(j) * jcScale) >ptMinDijet && fabs(ak5JetEta->at(j))<endcapeta_dijet
+	     && JetIdloose(ak5JetJIDresEMF->at(j),ak5JetJIDfHPD->at(j),ak5JetJIDn90Hits->at(j))){ 
+	    TLorentzVector PtEtaPhiE4Dlorentzvector2=TLorentzVector(0,0,0,0);
+	    PtEtaPhiE4Dlorentzvector2.SetPtEtaPhiE(ak5JetpT->at(j)*jcScale,ak5JetEta->at(j),ak5JetPhi->at(j),ak5JetEnergy->at(j)*jcScale);
+	    vPtEtaPhiE.push_back(PtEtaPhiE4Dlorentzvector2);
+	  }
+	  //Loop over Inclusive jets ----- 
 	  if(ak5JetpT->at(j) * jcScale >ptMin && fabs(ak5JetEta->at(j))<endcapeta){    //jc
 	    NJets++;	    
 	    nconst->Fill(ak5JetNConstituents->at(j));
@@ -760,9 +884,23 @@ void analysisClass::Loop()
 	  }
 	  
 	  if(fabs(ak5JetEta->at(index_jet1))<endcapeta_dijet && (ak5JetpT->at(index_jet1) * jcScale0 )>ptMinDijet && fabs(ak5JetEta->at(index_jet2))<endcapeta_dijet && (ak5JetpT->at(index_jet2) * jcScale1) >ptMinDijet){   //jc
-	    finalDijetGoodEvents++;
+	    //not only dijet events wanted: cut on met/sumet for event cleanup
+	    //fill only 
+	    if(vPtEtaPhiE.size()>1 && (calometPt->at(0)/calometSumEt->at(0))<cut_metbysumet 
+	       && JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1)) 
+	       && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2))){
+	      finalDijetGoodEvents++;
+	      std::vector<double> thrust_variables=Thrust_calculate(vPtEtaPhiE);
+	      h_phi_TA->Fill(atan2(thrust_variables[1],thrust_variables[0]));
+	      h_thrust->Fill(log(thrust_variables[3]));
+	    }
 	    // dphi
 	    double dphi = DeltaPhi(ak5JetPhi->at(index_jet1),ak5JetPhi->at(index_jet2) );
+	    dijetdphi->Fill(dphi);
+	    if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1)) 
+	       && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2))){
+	      dijetdphicleaned->Fill(dphi);
+	    }
 	    if (dphi >cut_CaloDiJetDeltaPhi_min) {
 	      // fake jet study
 	      double dijcScale;
@@ -786,7 +924,7 @@ void analysisClass::Loop()
 	      // basic di-jet variables 
 	      dijetptall1->Fill(ak5JetpT->at(index_jet1) * jcScale0);  //jc
 	      dijetptall2->Fill(ak5JetpT->at(index_jet2) * jcScale1);   //jc
-	      dijetdphi->Fill(dphi);
+	      dijetdeta->Fill(fabs(ak5JetEta->at(index_jet1)-ak5JetEta->at(index_jet2)));
 	      mapalldijets->Fill(ak5JetEta->at(index_jet1),ak5JetPhi->at(index_jet1));
 	      mapalldijets->Fill(ak5JetEta->at(index_jet2),ak5JetPhi->at(index_jet2));
       	      dijeteta->Fill(ak5JetEta->at(index_jet1));
@@ -816,7 +954,7 @@ void analysisClass::Loop()
 		 && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2))){
 		dijetptall1cleaned->Fill(ak5JetpT->at(index_jet1) * jcScale0);   //jc
 		dijetptall2cleaned->Fill(ak5JetpT->at(index_jet2) * jcScale1);   //jc
-		dijetdphicleaned->Fill(dphi);
+		dijetdetacleaned->Fill(fabs(ak5JetEta->at(index_jet1)-ak5JetEta->at(index_jet2)));
 		mapalldijetscleaned->Fill(ak5JetEta->at(index_jet1),ak5JetPhi->at(index_jet1));
 		mapalldijetscleaned->Fill(ak5JetEta->at(index_jet2),ak5JetPhi->at(index_jet2));
 		dijetetacleaned->Fill(ak5JetEta->at(index_jet1));
@@ -937,7 +1075,7 @@ void analysisClass::Loop()
    if(NJetsTOT>0){
      cout<< 1.*NJetIDLooseTOT <<"  /  " <<1.*NJetsTOT << "  =  " << endl;
      cout<< (1.*NJetIDLooseTOT/(1.*NJetsTOT)) << endl;
-     cout<<"jet id loose passed for dijet events: "<<finalDijetGoodEvents<<endl;
+     cout<<"events passed for thrust calculation: "<<finalDijetGoodEvents<<endl;
      variousEff->SetBinContent(1,(1.*NJetIDLooseTOT/(1.*NJetsTOT)));
      variousEff->SetBinContent(2,(1.*NJetIDTightTOT/(1.*NJetsTOT)));
      variousEff->SetBinContent(3,(1.*NAssTrksLooseTOT/(1.*NJetsTOT)));
@@ -992,10 +1130,12 @@ void analysisClass::Loop()
    jetcleaningeffeta->Divide(eta);
    jetcleaningeffphi->Add(phicleaned);
    jetcleaningeffphi->Divide(phi);
-   
+  
    
    //////////write histos 
    outfile.close();
+   h_thrust->Write();
+   h_phi_TA->Write();
    ptall->Write();
    pt->Write();
    ptcleaned->Write();
@@ -1031,6 +1171,7 @@ void analysisClass::Loop()
    dijetptall1->Write();
    dijetptall2->Write();
    dijetdphi->Write();
+   dijetdeta->Write();
    mapalldijets->Write();
    NlooseTracksdijets->Write();
    NtightTracksdijets->Write();
@@ -1039,6 +1180,7 @@ void analysisClass::Loop()
    dijetptall1cleaned->Write();
    dijetptall2cleaned->Write();
    dijetdphicleaned->Write();
+   dijetdetacleaned->Write();
    mapalldijetscleaned->Write();
    njetsindijets->Write();
    njetsindijetscleaned->Write();
@@ -1069,6 +1211,8 @@ void analysisClass::Loop()
    jetNumber->Write();
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
+
+
 
 
 
