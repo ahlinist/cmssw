@@ -101,9 +101,9 @@ def makeReplacementsCrab(channel = None, sample = None, replacements = None):
     if sample.find("_part") != -1:
         genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
         patTupleOutputFileName = "cms.untracked.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")]
-        patTupleOutputFileName += ".value().replace('_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+        patTupleOutputFileName += ".value().replace('_partXX', '')"
         plotsOutputFileName = "cms.string(" + plotsOutputFileName[:plotsOutputFileName.rfind("_part")]
-        plotsOutputFileName += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+        plotsOutputFileName += ".value().replace(\'_partXX', '')"
     else:
         plotsOutputFileName += ".value().replace(\'_partXX', '')"
     replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
