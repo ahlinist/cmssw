@@ -18,15 +18,6 @@ muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto = muTauPairVisMassHypothese
 muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto.ZllHypotheses[0].src = \
   cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto')
 
-muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation = muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto.clone(
-    diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative')
-)
-
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation = muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto.clone(
-    diCandidatePairSource = muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation.diCandidatePairSource
-)
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation.ZllHypotheses[0].src = \
-  cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation')
 
 muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag = muTauPairZmumuHypotheses.clone(
     diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative')
@@ -38,6 +29,23 @@ muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag = muTauPairVisMassHypothese
 muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag.ZllHypotheses[0].src = \
   cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag')
 
+produceMuTauPairZmumuHypothesesForAHtoMuTau = cms.Sequence(
+   muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto
+  * muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto
+  * muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag
+  * muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag
+)
+
+muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation = muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto.clone(
+    diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative')
+)
+
+muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation = muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto.clone(
+    diCandidatePairSource = muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation.diCandidatePairSource
+)
+muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation.ZllHypotheses[0].src = \
+  cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation')
+
 muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation = muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag.clone(
     diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxLooseMuonIsolationCumulative')
 )
@@ -48,13 +56,9 @@ muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation = muTauPa
 muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation.ZllHypotheses[0].src = \
   cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation')
 
-produceMuTauPairZmumuHypothesesForAHtoMuTau = cms.Sequence(
-   muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto
-  * muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto
-  * muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation
+produceMuTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation = cms.Sequence(
+   muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation
   * muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation
-  * muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag
-  * muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag
   * muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation
   * muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation
 )
