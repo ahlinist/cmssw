@@ -10,10 +10,9 @@
 #include "DataFormats/TrackReco/interface/TrackBase.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
-#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
-#include "TrackingTools/Records/interface/TransientTrackRecord.h"
-#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "DataFormats/JetReco/interface/JetTracksAssociation.h"
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
+
 
 class PromptAna_Jet : public edm::EDProducer{
  public: 
@@ -21,12 +20,14 @@ class PromptAna_Jet : public edm::EDProducer{
   reco::helper::JetIDHelper jetIDHelper;
  private: 
   void produce( edm::Event &, const edm::EventSetup & );
-  std::vector<const reco::Track*> FindAssociatedTracks(const reco::CaloJet *jet, const reco::TrackCollection *tracks);
   const edm::InputTag   inputTag;
   const edm::InputTag   tracksinputTag;
   const std::string     jetCorrectionService;
+  const edm::InputTag   jetTracksAtCaloinputTag;
+  const edm::InputTag   jetTracksAtVertexinputTag;
   const std::string     prefix,suffix;
   const edm::ParameterSet   jetID;
 };
+//change in analysis class
 
 #endif
