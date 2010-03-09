@@ -333,6 +333,7 @@ process_PPmuXptGt20 = cms.PSet(
     ) 
 )
 
+# MSSM Higgs A/H --> tau+ tau-
 process_AH115bb_tautau = cms.PSet(
     config_dqmFileLoader = cms.PSet(
         inputFileNames = cms.vstring(''),
@@ -341,7 +342,7 @@ process_AH115bb_tautau = cms.PSet(
     ),
     config_dqmHistPlotter = cms.PSet(
         dqmDirectory = cms.string('AH115bb_tautau'),
-        legendEntry = cms.string('bb+H(115) to #tau#tau'),
+        legendEntry = cms.string('bb + H(115) to #tau^{+} #tau^{-}'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     ) 
 )
@@ -354,8 +355,21 @@ process_AH160bb_tautau = cms.PSet(
     ),
     config_dqmHistPlotter = cms.PSet(
         dqmDirectory = cms.string('AH160bb_tautau'),
-        legendEntry = cms.string('bb+H(160) to #tau#tau'),
+        legendEntry = cms.string('bb + H(160) to #tau^{+} #tau^{-}'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    ) 
+)
+
+process_AHbb_tautau = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('AHbb_tautau')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('AHbb_tautau'),
+        legendEntry = cms.string('bb + A/H to #tau^{+} #tau^{-}'),
+        type = cms.string('bsmMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     ) 
 )
 
@@ -367,7 +381,7 @@ process_AH115_tautau = cms.PSet(
     ),
     config_dqmHistPlotter = cms.PSet(
         dqmDirectory = cms.string('AH115_tautau'),
-        legendEntry = cms.string('gg-H(115) to #tau#tau'),
+        legendEntry = cms.string('gg-H(115) to #tau^{+} #tau^{-}'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     ) 
 )
@@ -380,8 +394,20 @@ process_AH160_tautau = cms.PSet(
     ),
     config_dqmHistPlotter = cms.PSet(
         dqmDirectory = cms.string('AH160_tautau'),
-        legendEntry = cms.string('gg-H(160) to #tau#tau'),
+        legendEntry = cms.string('gg-H(160) to #tau^{+} #tau^{-}'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     ) 
 )
 
+process_AH_tautau = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('AH_tautau')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('AH_tautau'),
+        legendEntry = cms.string('gg-A/H to #tau^{+} #tau^{-}'),
+        type = cms.string('bsmMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    ) 
+)
