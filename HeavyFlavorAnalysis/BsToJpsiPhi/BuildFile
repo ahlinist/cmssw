@@ -4,6 +4,7 @@
 <use name=SimDataFormats/TrackingAnalysis>
 <use name=FWCore/ParameterSet>
 <use name=TrackingTools/TransientTrack>
+<use name=TrackingTools/Records>
 <use name=CommonTools/Statistics>
 <use name=RecoVertex/KinematicFit>
 <use name=RecoVertex/KinematicFitPrimitives>
