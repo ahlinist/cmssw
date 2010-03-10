@@ -33,8 +33,8 @@ muonMatch.src = 'mergedMuons'
 ##                                                                           
 ##   
 ### ==== Make PAT Muons ====
-from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import allLayer1Muons
-patMuonsWithoutTrigger = allLayer1Muons.clone(
+import PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi
+patMuonsWithoutTrigger = PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi.patMuons.clone(
     muonSource = 'mergedMuons',
     # embed the tracks, so we don't have to carry them around
     embedTrack          = True,
@@ -63,28 +63,28 @@ from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi import patTrigger
 patTrigger.onlyStandAlone = True
 
 ### ==== Then perform a match for all HLT triggers of interest
-from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import muonTriggerMatchHLT1MuonIso
-muonTriggerMatchHLT1MuonIso.src = 'patMuonsWithoutTrigger'
-muonTriggerMatchHLT1MuonIso.andOr = False # i.e. 'AND'
+from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import muonTriggerMatchHLTMu3
+muonTriggerMatchHLTMu3.src = 'patMuonsWithoutTrigger'
+muonTriggerMatchHLTMu3.andOr = False # i.e. 'AND'
 
-muonMatchHLTMu3       = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Mu3" ])
-muonMatchHLTMu5       = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Mu5" ])
-muonMatchHLTDoubleMu0 = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_DoubleMu0" ])
-muonMatchHLTDoubleMu3  = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_DoubleMu3" ])
-muonMatchHLTOniaMu = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltL3MuonCandidates::HLT'   ] )
-muonMatchHLTOniaPx = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltOniaPixelTrackCands::HLT'] )
-muonMatchHLTOniaTk = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltOniaCtfTrackCands::HLT'  ] )
-muonMatchHLTOniaMu8E29 = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltL3MuonCandidates::HLT'       ] )
-muonMatchHLTOniaPx8E29 = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltOniaPixelTrackCands8E29::HLT'] )
-muonMatchHLTOniaTk8E29 = muonTriggerMatchHLT1MuonIso.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltOniaCtfTrackCands8E29::HLT'  ] )
+muonMatchHLTMu3       = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3" ])
+muonMatchHLTMu5       = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5" ])
+muonMatchHLTDoubleMu0 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_DoubleMu0" ])
+muonMatchHLTDoubleMu3  = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_DoubleMu3" ])
+muonMatchHLTOniaMu = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltL3MuonCandidates::HLT'   ] )
+muonMatchHLTOniaPx = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltOniaPixelTrackCands::HLT'] )
+muonMatchHLTOniaTk = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltOniaCtfTrackCands::HLT'  ] )
+muonMatchHLTOniaMu8E29 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltL3MuonCandidates::HLT'       ] )
+muonMatchHLTOniaPx8E29 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltOniaPixelTrackCands8E29::HLT'] )
+muonMatchHLTOniaTk8E29 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltOniaCtfTrackCands8E29::HLT'  ] )
 
 ### == For HLT triggers which are just L1s, we need a different matcher
 from MuonAnalysis.MuonAssociators.muonHLTL1Match_cfi import muonHLTL1Match
 
 muonMatchHLTL1MuOpen = muonHLTL1Match.clone(
     # Input
-    src     = muonTriggerMatchHLT1MuonIso.src,
-    matched = muonTriggerMatchHLT1MuonIso.matched,
+    src     = muonTriggerMatchHLTMu3.src,
+    matched = muonTriggerMatchHLTMu3.matched,
     # Matching criteria
     maxDeltaR   = cms.double(0.3),
     # Which trigger to use
