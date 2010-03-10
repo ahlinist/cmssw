@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.4 2010/02/26 13:14:10 dbart Exp $
+// $Id: RPCTriggerValidation.cc,v 1.5 2010/03/01 11:21:50 dbart Exp $
 //
 //
 
@@ -57,8 +57,8 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
       m_outputDirectory(iConfig.getParameter<std::string >("outputDirectory")),
       m_outputFile(iConfig.getParameter<std::string>("outputFile")),
       deltaRThreshold(iConfig.getParameter<double>("deltaRThreshold")),
-      m_L1MuonFromReco(iConfig.getParameter<bool>("L1MuonFromReco"))
-     
+      m_L1MuonFromReco(iConfig.getParameter<bool>("L1MuonFromReco")),
+      m_takeGMT(iConfig.getParameter<bool>("takeGMT"))
       
       //etaMin(iConfig.getParameter<double>("etaMin")),
       //etaMax(iConfig.getParameter<double>("etaMax"))
@@ -141,8 +141,8 @@ void RPCTriggerValidation::analyze(const edm::Event& iEvent, const edm::EventSet
 
    std::vector<L1MuonCandLocalInfo> l1s;
   if(m_L1MuonFromReco){
-edm::Handle<L1MuGMTReadoutCollection> pCollection;
-  iEvent.getByLabel(*(m_l1CollectionsVec.begin()),pCollection);
+   edm::Handle<L1MuGMTReadoutCollection> pCollection;
+     iEvent.getByLabel(*(m_l1CollectionsVec.begin()),pCollection);
   
     
   L1MuGMTReadoutCollection const* gmtrc = pCollection.product();
@@ -155,26 +155,43 @@ edm::Handle<L1MuGMTReadoutCollection> pCollection;
        RRItr++ ) 
   {
     
-  
-   vector<vector<L1MuRegionalCand> > brlAndFwdCands;
-   brlAndFwdCands.push_back(RRItr->getBrlRPCCands());
-   brlAndFwdCands.push_back(RRItr->getFwdRPCCands());
-  
+   if (m_takeGMT) {
+     std::vector<L1MuGMTExtendedCand> gmtCANDS = RRItr->getGMTCands();
+     std::vector<L1MuGMTExtendedCand>::const_iterator gmtIT = gmtCANDS.begin();
+     for(; gmtIT != gmtCANDS.end(); ++gmtIT) 
+     {
+       L1MuonCandLocalInfo tt(*gmtIT);
+       std::cout << " Found: " << tt << std::endl;
+       ///if (tt.tower() >= 0 ) {
+       l1s.push_back(tt);
+       //}
+     }
+
    
-   vector<vector<L1MuRegionalCand> >::iterator RPCTFCands = brlAndFwdCands.begin();
-   for(; RPCTFCands!= brlAndFwdCands.end(); ++RPCTFCands)
+   }
+   else 
    {
+     vector<vector<L1MuRegionalCand> > brlAndFwdCands;
+     brlAndFwdCands.push_back(RRItr->getBrlRPCCands());
+     brlAndFwdCands.push_back(RRItr->getFwdRPCCands());
+
+     vector<vector<L1MuRegionalCand> >::iterator RPCTFCands = brlAndFwdCands.begin();
+     for(; RPCTFCands!= brlAndFwdCands.end(); ++RPCTFCands)
+     {
       
-      for( vector<L1MuRegionalCand>::const_iterator 
-          ECItr = RPCTFCands->begin() ;
-          ECItr != RPCTFCands->end() ;
-          ++ECItr ) 
-      {
-      	l1s.push_back(L1MuonCandLocalInfo(*ECItr) );
-      }
+        for( vector<L1MuRegionalCand>::const_iterator 
+            ECItr = RPCTFCands->begin() ;
+            ECItr != RPCTFCands->end() ;
+            ++ECItr ) 
+        {
+        	l1s.push_back(L1MuonCandLocalInfo(*ECItr) );
+        }
+     }
+
   }
 
 }
+
 }
 else{
    std::vector< edm::InputTag >::iterator it = m_l1CollectionsVec.begin();

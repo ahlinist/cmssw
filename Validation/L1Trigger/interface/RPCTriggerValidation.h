@@ -15,7 +15,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.h,v 1.4 2010/02/26 13:14:09 dbart Exp $
+// $Id: RPCTriggerValidation.h,v 1.5 2010/03/01 11:21:49 dbart Exp $
 //
 //
 
@@ -85,7 +85,7 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
       double deltaRThreshold;
       
       bool m_L1MuonFromReco;
-      
+       bool m_takeGMT;
 };
 
 
