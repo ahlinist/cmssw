@@ -4,24 +4,31 @@ process = cms.Process("SkimmingOnia2MuMuPAT")
 
 ### standard includes
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.load('Configuration/StandardSequences/GeometryExtended_cff')
+process.load('Configuration.StandardSequences.GeometryExtended_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 ### global tag
-process.GlobalTag.globaltag = "GR09_R_V5::All"
+process.GlobalTag.globaltag = "GR09_R_35X_V3::All"
 
 ### source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-         '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/FCFEFB8D-E0F0-DE11-A01D-0015178C6B88.root',
-        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/F8269247-E0F0-DE11-9431-00151796D9C4.root',
-        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/F4E10D24-E0F0-DE11-870D-0024E8767DAD.root',
-        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/EAFCDCA2-E0F0-DE11-AF3D-0015178C6B8C.root',
-        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/E2F75B8B-E0F0-DE11-8435-0024E8768D34.root',
-        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec19thSkim_336p3_v1/0008/DE4AFC37-E0F0-DE11-A291-001D0967DC3D.root'
+        ## Latest processing; files are from BSC skim, run 124120 lumis 1-59 
+	'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root',
+	'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/DCEE6C1B-052B-DF11-ACD7-001E0B5FB53E.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/DAA107B9-162B-DF11-BD3D-00237DA14F86.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/C88851E0-0C2B-DF11-8AEB-00237DA13FB6.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/A6EBA5BD-082B-DF11-B1B7-0017A477102C.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/9E229FC2-082B-DF11-BA33-0017A4771020.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/7C5889F6-172B-DF11-AFD2-0017A4770418.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/5A051558-0E2B-DF11-9A77-0017A4770C10.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/4AE212AF-052B-DF11-9846-001E0B48D108.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/2A1B18B6-082B-DF11-A7AD-0017A4770034.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/2206BC35-1B2B-DF11-88FA-00237DA1ED1C.root',
+	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/129A56F7-172B-DF11-A506-0017A4770014.root',
    )
 )
 
@@ -59,7 +66,7 @@ process.hltMinBiasBSC = cms.EDFilter("HLTHighLevel",
 # filter on good vertex
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            vertexCollection = cms.InputTag('offlinePrimaryVertices'),
-                                           minimumNumberOfTracks = cms.uint32(3) ,
+                                           minimumNDOF = cms.uint32(4),
                                            maxAbsZ = cms.double(15),	
                                            maxd0 = cms.double(2)	
                                            )
@@ -69,7 +76,7 @@ process.scrapingFilter = cms.EDFilter("FilterOutScraping",
                                       applyfilter = cms.untracked.bool(True),
                                       debugOn = cms.untracked.bool(False),
                                       numtrack = cms.untracked.uint32(10),
-                                      thresh = cms.untracked.double(0.2)
+                                      thresh = cms.untracked.double(0.25)
                                       )
 
 ###############################################
@@ -105,7 +112,7 @@ process.p = cms.Path(
 
 ### output
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('BeamCommissioning09_BSCNOBEAMHALO_Dec19thSkim_336p3.root'),
+    fileName = cms.untracked.string('onia2MuMuPAT_Data2009_Run124120.root'),
     outputCommands = cms.untracked.vstring('drop *',
         'keep edmTriggerResults_TriggerResults_*_*',
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',
@@ -116,10 +123,9 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 process.e = cms.EndPath(process.out)
 
-## If this is real data:
+##This is real data:
 from HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cff import onia2MuMu_isNotMC
 onia2MuMu_isNotMC(process)
-process.source.inputCommands = cms.untracked.vstring("keep *", "drop *_genParticles_*_*")
 
 ## If this is Summer09 MC
 #process.patTrigger.processName    = "HLT8E29" 
