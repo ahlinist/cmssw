@@ -264,19 +264,21 @@ L2TauEfficiencyAnalyzer::getHCALTowers(const LV& jet,const edm::Event& iEvent,co
 {
   using namespace edm;
   using namespace reco;
-
-  edm::Handle<CaloTowerCollection> caltowers;
-  iEvent.getByLabel(CaloTowers_,caltowers);
-
   //Create a container for the cal towers
   math::PtEtaPhiELorentzVectorCollection jetHCaltowers;
-  
-  for (CaloTowerCollection::const_iterator cnd=caltowers->begin(); cnd!=caltowers->end(); cnd++) {
-    math::PtEtaPhiELorentzVector p(cnd->hadEt(), cnd->eta(), cnd->phi(), cnd->hadEnergy());
-    if(ROOT::Math::VectorUtil::DeltaR(p,jet) <outerCone_) {
-      jetHCaltowers.push_back(p);
+
+  edm::Handle<CaloTowerCollection> caltowers;
+  if(iEvent.getByLabel(CaloTowers_,caltowers)) 
+    {
+
+      
+      for (CaloTowerCollection::const_iterator cnd=caltowers->begin(); cnd!=caltowers->end(); cnd++) {
+	math::PtEtaPhiELorentzVector p(cnd->hadEt(), cnd->eta(), cnd->phi(), cnd->hadEnergy());
+	if(ROOT::Math::VectorUtil::DeltaR(p,jet) <outerCone_) {
+	  jetHCaltowers.push_back(p);
+	}
+      }
     }
-  }
   return jetHCaltowers;
 }
 
@@ -285,20 +287,22 @@ L2TauEfficiencyAnalyzer::getECALTowers(const LV& jet,const edm::Event& iEvent,co
 {
   using namespace edm;
   using namespace reco;
-
-  edm::Handle<CaloTowerCollection> caltowers;
-  iEvent.getByLabel(CaloTowers_,caltowers);
-
-  //Create a container for the cal towers
-  math::PtEtaPhiELorentzVectorCollection jetEcaltowers;
+    //Create a container for the cal towers
+      math::PtEtaPhiELorentzVectorCollection jetEcaltowers;
   
-  for (CaloTowerCollection::const_iterator cnd=caltowers->begin(); cnd!=caltowers->end(); cnd++) {
-    math::PtEtaPhiELorentzVector p(cnd->emEt(), cnd->eta(), cnd->phi(), cnd->emEnergy());
-    if(ROOT::Math::VectorUtil::DeltaR(p,jet) <outerCone_) {
-      jetEcaltowers.push_back(p);
+  edm::Handle<CaloTowerCollection> caltowers;
+  if(iEvent.getByLabel(CaloTowers_,caltowers))
+    {
+
+  
+      for (CaloTowerCollection::const_iterator cnd=caltowers->begin(); cnd!=caltowers->end(); cnd++) {
+	math::PtEtaPhiELorentzVector p(cnd->emEt(), cnd->eta(), cnd->phi(), cnd->emEnergy());
+	if(ROOT::Math::VectorUtil::DeltaR(p,jet) <outerCone_) {
+	  jetEcaltowers.push_back(p);
+	}
+      }
     }
-  }
-  return jetEcaltowers;
+      return jetEcaltowers;
 }
 
 
