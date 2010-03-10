@@ -8,6 +8,7 @@
 #include <TVector2.h>
 #include <TVector3.h>
 #include <TProfile.h>
+#include <TF1.h>
 
 float N_ch_TOT_inHF = 1728;
 
@@ -38,9 +39,12 @@ void analysisClass::Loop()
    //binning
    int Nbins_Nspikes=10;
    float Max_Nspikes=10;
-   int   Nbins_E = 300;
-   float Min_E = -15.;
+   int   Nbins_E = 305;
+   float Min_E = -10.;
    float Max_E = 600.;
+   int   Nbins_ET = 205;
+   float Min_ET = -5.;
+   float Max_ET = 200.;
 
    //1D histograms
    TH1F *h_N_HFspikesPerEv_L    = new TH1F ("h_N_HFspikesPerEv_L","h_N_HFspikesPerEv_L",Nbins_Nspikes,0,Max_Nspikes);
@@ -68,10 +72,10 @@ void analysisClass::Loop()
    map<UInt_t,TH1F*> h_HFRecHitE_S_ieta;
    map<UInt_t,TH1F*> h_HFRecHitE_S_Flagged_ieta;
    
-   TH1F *h_HFRecHitET_L = new TH1F("h_HFRecHitET_L","h_HFRecHitET_L;E_{T} [GeV]",Nbins_E,Min_E,Max_E);
-   TH1F *h_HFRecHitET_S = new TH1F("h_HFRecHitET_S","h_HFRecHitET_S;E_{T} [GeV]",Nbins_E,Min_E,Max_E);
-   TH1F *h_HFRecHitET_L_Flagged = new TH1F("h_HFRecHitET_L_Flagged","h_HFRecHitET_L_Flagged;E_{T} [GeV]",Nbins_E,Min_E,Max_E);
-   TH1F *h_HFRecHitET_S_Flagged = new TH1F("h_HFRecHitET_S_Flagged","h_HFRecHitET_S_Flagged;E_{T} [GeV]",Nbins_E,Min_E,Max_E);
+   TH1F *h_HFRecHitET_L = new TH1F("h_HFRecHitET_L","h_HFRecHitET_L;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
+   TH1F *h_HFRecHitET_S = new TH1F("h_HFRecHitET_S","h_HFRecHitET_S;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
+   TH1F *h_HFRecHitET_L_Flagged = new TH1F("h_HFRecHitET_L_Flagged","h_HFRecHitET_L_Flagged;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
+   TH1F *h_HFRecHitET_S_Flagged = new TH1F("h_HFRecHitET_S_Flagged","h_HFRecHitET_S_Flagged;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
    
    h_HFRecHitET_L->Sumw2();
    h_HFRecHitET_S->Sumw2();
@@ -93,13 +97,13 @@ void analysisClass::Loop()
      h_HFRecHitE_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_S_Flagged_ieta_%u",i),Form("h_HFRecHitE_S_Flagged_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_S_Flagged_ieta[i]->Sumw2();
      
-     h_HFRecHitET_L_ieta[i] = new TH1F(Form("h_HFRecHitET_L_ieta_%u",i),Form("h_HFRecHitET_L_ieta_%u;E_{T} [GeV]",i),Nbins_E,Min_E,Max_E);
+     h_HFRecHitET_L_ieta[i] = new TH1F(Form("h_HFRecHitET_L_ieta_%u",i),Form("h_HFRecHitET_L_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
      h_HFRecHitET_L_ieta[i]->Sumw2();
-     h_HFRecHitET_S_ieta[i] = new TH1F(Form("h_HFRecHitET_S_ieta_%u",i),Form("h_HFRecHitET_S_ieta_%u;E_{T} [GeV]",i),Nbins_E,Min_E,Max_E);
+     h_HFRecHitET_S_ieta[i] = new TH1F(Form("h_HFRecHitET_S_ieta_%u",i),Form("h_HFRecHitET_S_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
      h_HFRecHitET_S_ieta[i]->Sumw2();
-     h_HFRecHitET_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_L_Flagged_ieta_%u",i),Form("h_HFRecHitET_L_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_E,Min_E,Max_E);
+     h_HFRecHitET_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_L_Flagged_ieta_%u",i),Form("h_HFRecHitET_L_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
      h_HFRecHitET_L_Flagged_ieta[i]->Sumw2();
-     h_HFRecHitET_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_S_Flagged_ieta_%u",i),Form("h_HFRecHitET_S_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_E,Min_E,Max_E);
+     h_HFRecHitET_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_S_Flagged_ieta_%u",i),Form("h_HFRecHitET_S_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
      h_HFRecHitET_S_Flagged_ieta[i]->Sumw2();
    }
    
@@ -178,7 +182,7 @@ void analysisClass::Loop()
    TH2F *h2_N_HFspikes_L_ieta_iphi  = new TH2F ("h2_N_HFspikes_L_ieta_iphi","h2_N_HFspikes_L_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
    TH2F *h2_N_HFspikes_S_ieta_iphi  = new TH2F ("h2_N_HFspikes_S_ieta_iphi","h2_N_HFspikes_S_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
    
-   int   Nbins_R = 120;
+   int   Nbins_R = 220;
    float Min_R = -1.1;
    float Max_R = 1.1;
    int   Nbins_S9oS1 = 300;
@@ -186,11 +190,11 @@ void analysisClass::Loop()
    float Max_S9oS1 = 1.5;
    
    TH2F *h2_HFRecHitE_L_vs_S = new TH2F ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S;E [GeV];E [GeV]",Nbins_E,Min_E,Max_E,Nbins_E,Min_E,Max_E);
-   TH2F *h2_HFRecHitET_L_vs_S = new TH2F ("h2_HFRecHitET_L_vs_S","h2_HFRecHitET_L_vs_S;E_{T} [GeV];E_{T} [GeV]",Nbins_E,Min_E,Max_E,Nbins_E,Min_E,Max_E);
+   TH2F *h2_HFRecHitET_L_vs_S = new TH2F ("h2_HFRecHitET_L_vs_S","h2_HFRecHitET_L_vs_S;E_{T} [GeV];E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET,Nbins_ET,Min_ET,Max_ET);
    TH2F *h2_HFRecHitE_vs_R_L = new TH2F ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L;R;E [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
    TH2F *h2_HFRecHitE_vs_R_S = new TH2F ("h2_HFRecHitE_vs_R_S","h2_HFRecHitE_vs_R_S;R;E [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
-   TH2F *h2_HFRecHitET_vs_R_L = new TH2F ("h2_HFRecHitET_vs_R_L","h2_HFRecHitET_vs_R_L;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
-   TH2F *h2_HFRecHitET_vs_R_S = new TH2F ("h2_HFRecHitET_vs_R_S","h2_HFRecHitET_vs_R_S;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+   TH2F *h2_HFRecHitET_vs_R_L = new TH2F ("h2_HFRecHitET_vs_R_L","h2_HFRecHitET_vs_R_L;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
+   TH2F *h2_HFRecHitET_vs_R_S = new TH2F ("h2_HFRecHitET_vs_R_S","h2_HFRecHitET_vs_R_S;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
    
    TH2F *h2_R_vs_iphi_L  = new TH2F ("h2_R_vs_iphi_L","h2_R_vs_iphi_L;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
    TH2F *h2_R_vs_ieta_L  = new TH2F ("h2_R_vs_ieta_L","h2_R_vs_ieta_L;i#eta;R",13,28.5,41.5,Nbins_R,Min_R,Max_R);
@@ -259,11 +263,17 @@ void analysisClass::Loop()
                       9999, 83, 13, 9999, 9999,
                       9999};
    
+   // For S9/S1 flagging
+   double slopes[] = {0.0196446,0.0278163,0.0342744,0.0429757,0.0564848,0.0642055,0.0815315,0.0882627,0.102562,0.1231,0.095548,0.0630538};
+   
+   int useS9oS1Algo = (int)getPreCutValue1("useS9oS1Algo");
+
+
    Long64_t nentries = fChain->GetEntriesFast();
    std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl;   
 
 
-   
+
    ////// The following ~7 lines have been taken from rootNtupleClass->Loop() /////
    ////// If the root version is updated and rootNtupleClass regenerated,     /////
    ////// these lines may need to be updated.                                 /////    
@@ -402,6 +412,7 @@ void analysisClass::Loop()
            for (int i = 0; i<int(PMTnoiseRecHitET->size()); i++)
              {
 
+               bool isPMThit = false;
                double energy = PMTnoiseRecHitEnergy->at(i);
                double ET = PMTnoiseRecHitET->at(i);
                double partenergy = PMTnoiseRecHitPartEnergy->at(i);
@@ -470,11 +481,20 @@ void analysisClass::Loop()
                double S5oS1 = ( partenergy + sum4Long ) / energy; // L
                if( depth==2 ) S5oS1 = ( partenergy + sum4Short ) / energy; // S
 
-               //## identify HF spikes a la Igor
-               if( depth==1 && energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 )
+               // For S9/S1 flagging
+               double slope = (0.297433-0.024976*abs(ieta)+0.000524259*ieta*ieta);
+               if( abs(ieta)>39 ) slope = slopes[ieta-30];
+               double intercept = -slope*log((162.4-10.19*abs(ieta)+0.21*ieta*ieta));
+                
+               //## identify HF spikes
+               if( depth==1 && useS9oS1Algo==0 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) ) isPMThit = true;
+               else if( depth==1 && useS9oS1Algo==1 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && S9oS1<(intercept+slope*log(energy)) ) ) isPMThit = true;
+               else if( depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 ) isPMThit = true;
+               
+               if( depth==1 && isPMThit )
                  {
                    N_HFspikes_L++;
-		   N_HFspikes_L_ieta[index_eta] = N_HFspikes_L_ieta[index_eta] + 1;                   
+		   N_HFspikes_L_ieta[index_eta] = N_HFspikes_L_ieta[index_eta] + 1;
 
                    HFspikes_ET.push_back(ET);
                    HFspikes_Px.push_back(ET*cos(phi));
@@ -492,10 +512,10 @@ void analysisClass::Loop()
                    h2_S9oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S9oS1 );
                    h2_S5oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S5oS1 );
                  }
-               else if( depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 )
+               else if( depth==2 && isPMThit )
                  {
                    N_HFspikes_S++;
-		   N_HFspikes_S_ieta[index_eta] = N_HFspikes_S_ieta[index_eta] + 1;                   
+		   N_HFspikes_S_ieta[index_eta] = N_HFspikes_S_ieta[index_eta] + 1;
                  
                    HFspikes_ET.push_back(ET);
                    HFspikes_Px.push_back(ET*cos(phi));
@@ -547,8 +567,7 @@ void analysisClass::Loop()
                  h2_S9oS1_vs_E_S_ieta[abs(ieta)]->Fill( energy, S9oS1 );
                  h2_S5oS1_vs_E_S_ieta[abs(ieta)]->Fill( energy, S5oS1 );
                }
-
-
+               
                //## identify spikes a la caloMET
                
 //                if( PMTnoiseRecHitDepth->at(i)==1 
@@ -559,7 +578,6 @@ void analysisClass::Loop()
 //                    && (PMTnoiseRecHitET->at(i) + ETpart) > 5 && R < -0.8)
 //                  N_HFspikes_S++;
 
-               
              }//end loop over hf rechits
 
            N_HFspikes_TOT = N_HFspikes_L + N_HFspikes_S;
