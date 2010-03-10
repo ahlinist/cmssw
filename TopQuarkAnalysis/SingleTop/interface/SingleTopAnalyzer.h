@@ -5,7 +5,7 @@
  *
  * \Authors M.Merola, A. Orso M. Iorio
  * 
- * \ version $Id: SingleTopAnalyzer.h $
+ * \ version $Id: SingleTopAnalyzer.h,v 1.1 2010/03/09 16:33:06 oiorio Exp $
  */
 
 
@@ -80,9 +80,7 @@ class SingleTopAnalyzer : public edm::EDAnalyzer {
   
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
   void         EventInfo();
 
   string rootFileName;

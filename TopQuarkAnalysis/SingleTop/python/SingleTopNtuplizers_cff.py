@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
 
-singleTopBJets = cms.EDProducer(
+singleTopPreselectedJets = cms.EDProducer(
     "CandViewNtpProducer",
-    src = cms.InputTag("bJets"),
+    src = cms.InputTag("preselectedJets"),
     lazyParser = cms.untracked.bool(True),
     prefix = cms.untracked.string("bJets"),
     variables = cms.VPSet(
@@ -21,25 +21,13 @@ singleTopBJets = cms.EDProducer(
 
     )
 
-singleTopForwardJets = cms.EDProducer(
-    "CandViewNtpProducer",
-    src = cms.InputTag("forwardJets"),
-    lazyParser = cms.untracked.bool(True),
-    prefix = cms.untracked.string("forwardJets"),
-    variables = cms.VPSet(
 
-    cms.PSet(
-    tag = cms.untracked.string("Pt"),
-    quantity = cms.untracked.string("pt")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("Eta"),
-    quantity = cms.untracked.string("eta")
-    ),
-   
-    ),
+singleTopPreLeptonsCutsJets = singleTopPreselectedJets.clone(src = cms.InputTag("topJets"),prefix = cms.untracked.string("preLeptonsCutsJets") )
+singleTopJets = singleTopPreLeptonsCutsJets.clone(prefix = cms.untracked.string("topJets"))
 
-    )
+singleTopBJets = singleTopPreselectedJets.clone(src = cms.InputTag("bJets"), prefix = cms.untracked.string("bJets") )
+singleTopForwardJets = singleTopPreselectedJets.clone(src = cms.InputTag("forwardJets"), prefix = cms.untracked.string("forwardJets"))
+
 
 singleTopFinalElectrons = cms.EDProducer(
     "CandViewNtpProducer",
@@ -62,27 +50,9 @@ singleTopFinalElectrons = cms.EDProducer(
 
     )
 
-
-singleTopFinalMuons = cms.EDProducer(
-    "CandViewNtpProducer",
-    src = cms.InputTag("topMuons"),
-    lazyParser = cms.untracked.bool(True),
-    prefix = cms.untracked.string("finalMuons"),
-    variables = cms.VPSet(
-
-    cms.PSet(
-    tag = cms.untracked.string("Pt"),
-    quantity = cms.untracked.string("pt")
-    ),
-
-    cms.PSet(
-    tag = cms.untracked.string("RelIso"),
-    quantity = cms.untracked.string("pt/(pt + trackIso + caloIso)")
-    ),
-    
-    ),
-
-    )
+singleTopFinalMuons = singleTopFinalElectrons.clone(src = cms.InputTag("topMuons"),prefix = cms.untracked.string("finalMuons") )
+singleTopPreJetsCutsElectrons = singleTopFinalElectrons.clone(prefix = cms.untracked.string("preJetsCutsElectrons") )
+singleTopPreJetsCutsMuons = singleTopFinalMuons.clone(prefix = cms.untracked.string("preJetsCutsMuons"))
 
 singleTopFinalTops = cms.EDProducer(
     "CandViewNtpProducer",
@@ -137,6 +107,4 @@ singleTopFinalTops = cms.EDProducer(
     ) 
 
 
-singleTopPreJetsCutsElectrons = singleTopFinalElectrons.clone(prefix = cms.untracked.string("preJetsCutsElectrons") )
-singleTopPreJetsCutsMuons = singleTopFinalMuons.clone(prefix = cms.untracked.string("preJetsCutsMuons"))
 singleTopPreJetsCutsTops = singleTopFinalTops.clone(prefix = cms.untracked.string("preJetsCutsTops") )
