@@ -23,6 +23,7 @@
 
 
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
+#include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTExtendedCand.h"
 
 #include <vector>
 #include <string>
@@ -76,6 +77,27 @@ struct L1MuonCandLocalInfo {
   	//_phi-=3.14159265;
 	};
 	 
+
+	L1MuonCandLocalInfo( L1MuGMTExtendedCand const & cand) //;
+  	
+	{
+	_charge=cand.charge();
+  	_bx=cand.bx();
+ 	 _ptCode=cand.ptIndex();
+  	_tower=cand.etaIndex(); // carefull...
+  	_phi=cand.phiValue();
+  	_eta=cand.etaValue();
+  	_quality=cand.quality();
+        /*
+        if ( _ptCode == 1)  {
+          _phi = 1000;
+          _eta = 1000;
+        }*/
+
+        };
+
+
+
            float eta() const {return _eta;};
            float phi() const {return _phi;};
            int ptCode() const {return  _ptCode;};
