@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopAnalyzer.cc $ 
+*\version  $Id: SingleTopAnalyzer.cc,v 1.1 2010/03/09 16:33:06 oiorio Exp $ 
 */
 
 // =================================
@@ -351,15 +351,7 @@ void SingleTopAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
   
 }
 
-void SingleTopAnalyzer::beginJob(const edm::EventSetup&)
-{
-  cout << "================\n\n\n";
-}
 
-void SingleTopAnalyzer::endJob() 
-{
-  
-}
 
 
 //define this as a plug-in
