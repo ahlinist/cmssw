@@ -1,4 +1,3 @@
-
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
 #include "utils.h"
 
@@ -103,11 +102,6 @@ private:
        
         gStyle->SetPalette(1);
         c->SetGrid(1,1); 
-        //int colorError1[3];
-        //colorError1[0] = 416;// kGreen
-        //colorError1[1] = 400;// kYellow
-        //colorError1[2] = 632;// kRed
-        // gStyle->SetPalette(3, colorError1);
         return;
       }
     
