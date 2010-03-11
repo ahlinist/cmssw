@@ -298,14 +298,14 @@ EcalTimingAnalysis::beginJob( ) {
 	eventTimingInfoTree_->Branch("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_,"correctionToSample5EB/F");
 	eventTimingInfoTree_->Branch("correctionToSampleEEP",&TTreeMembers_.correctionToSample5EEP_,"correctionToSample5EEP/F");
 	eventTimingInfoTree_->Branch("correctionToSampleEEM",&TTreeMembers_.correctionToSample5EEM_,"correctionToSample5EEM/F");
-	eventTimingInfoTree_->Branch("numTriggers",&TTreeMembers_.numTriggers_,"/I");
+	eventTimingInfoTree_->Branch("numTriggers",&TTreeMembers_.numTriggers_,"numTriggers/I");
 	eventTimingInfoTree_->Branch("triggers",&TTreeMembers_.triggers_,"triggers[numTriggers]/I");
-	eventTimingInfoTree_->Branch("numTechTriggers",&TTreeMembers_.numTechTriggers_,"/I");
+	eventTimingInfoTree_->Branch("numTechTriggers",&TTreeMembers_.numTechTriggers_,"numTechTriggers/I");
 	eventTimingInfoTree_->Branch("techtriggers",&TTreeMembers_.techtriggers_,"techtriggers[numTechTriggers]/I");
-	eventTimingInfoTree_->Branch("absTime",&TTreeMembers_.absTime_,"/F");
-	eventTimingInfoTree_->Branch("lumiSection",&TTreeMembers_.lumiSection_,"/I");
-	eventTimingInfoTree_->Branch("bx",&TTreeMembers_.bx_,"/I");
-	eventTimingInfoTree_->Branch("orbit",&TTreeMembers_.orbit_,"/I");
+	eventTimingInfoTree_->Branch("absTime",&TTreeMembers_.absTime_,"absTime/F");
+	eventTimingInfoTree_->Branch("lumiSection",&TTreeMembers_.lumiSection_,"lumiSection/I");
+	eventTimingInfoTree_->Branch("bx",&TTreeMembers_.bx_,"bx/I");
+	eventTimingInfoTree_->Branch("orbit",&TTreeMembers_.orbit_,"orbit/I");
       }
     }
 

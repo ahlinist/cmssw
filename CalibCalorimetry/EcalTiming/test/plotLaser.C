@@ -17,6 +17,14 @@ struct TTreeMembers {
   float cryTimeErrorsEE_[14648];
   float cryAmpsEB_[61200];
   float cryAmpsEE_[14648];
+  int numTriggers_;
+  int numTechTriggers_;
+  int triggers_[200];
+  int techtriggers_[200];
+  float absTime_;
+  int lumiSection_;
+  int bx_;
+  int orbit_;
   float correctionToSample5EB_;
   float correctionToSample5EEP_;
   float correctionToSample5EEM_;
@@ -1077,6 +1085,14 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   eventTimingInfoTree->SetBranchAddress("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_);
   eventTimingInfoTree->SetBranchAddress("correctionToSampleEEP",&TTreeMembers_.correctionToSample5EEP_);
   eventTimingInfoTree->SetBranchAddress("correctionToSampleEEM",&TTreeMembers_.correctionToSample5EEM_);
+  eventTimingInfoTree->SetBranchAddress("numTriggers",&TTreeMembers_.numTriggers_);
+  eventTimingInfoTree->SetBranchAddress("triggers",&(TTreeMembers_.triggers_[0]));
+  eventTimingInfoTree->SetBranchAddress("numTechTriggers",&TTreeMembers_.numTechTriggers_);
+  eventTimingInfoTree->SetBranchAddress("techtriggers",&(TTreeMembers_.techtriggers_[0]));
+  eventTimingInfoTree->SetBranchAddress("absTime",&TTreeMembers_.absTime_);
+  eventTimingInfoTree->SetBranchAddress("lumiSection",&TTreeMembers_.lumiSection_);
+  eventTimingInfoTree->SetBranchAddress("bx",&TTreeMembers_.bx_);
+  eventTimingInfoTree->SetBranchAddress("orbit",&TTreeMembers_.orbit_);
   int nents = eventTimingInfoTree->GetEntries();
   cout << "nentries is " << nents << endl;
 
@@ -1129,6 +1145,9 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
      if ( EBPn > 0.0 && EBMn > 0.0 ) { hEBPlus2Minus->Fill(EBPave,EBMave);}
      if ( EEPn > 0.0 && EEMn > 0.0 ) hEEPlus2Minus->Fill(EEPave,EEMave);
 
+     double totnumb = EBPn + EBMn + EEPn + EEMn;
+     if (totnumb < 0 ) continue;
+ 
      
   }
   //----------End of the fun looping stuff
