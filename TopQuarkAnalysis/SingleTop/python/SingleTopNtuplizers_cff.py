@@ -24,8 +24,8 @@ singleTopPreselectedJets = cms.EDProducer(
 
 singleTopPreLeptonsCutsJets = singleTopPreselectedJets.clone(src = cms.InputTag("topJets"),prefix = cms.untracked.string("preLeptonsCutsJets") )
 singleTopJets = singleTopPreLeptonsCutsJets.clone(prefix = cms.untracked.string("topJets"))
-
 singleTopBJets = singleTopPreselectedJets.clone(src = cms.InputTag("bJets"), prefix = cms.untracked.string("bJets") )
+
 singleTopForwardJets = singleTopPreselectedJets.clone(src = cms.InputTag("forwardJets"), prefix = cms.untracked.string("forwardJets"))
 
 
@@ -40,18 +40,18 @@ singleTopFinalElectrons = cms.EDProducer(
     tag = cms.untracked.string("Pt"),
     quantity = cms.untracked.string("pt")
     ),
-
+    
     cms.PSet(
     tag = cms.untracked.string("relIso"),
     quantity = cms.untracked.string("pt/(pt + trackIso + caloIso)")
     ),
-    
     ),
-
     )
 
 singleTopFinalMuons = singleTopFinalElectrons.clone(src = cms.InputTag("topMuons"),prefix = cms.untracked.string("finalMuons") )
+
 singleTopPreJetsCutsElectrons = singleTopFinalElectrons.clone(prefix = cms.untracked.string("preJetsCutsElectrons") )
+
 singleTopPreJetsCutsMuons = singleTopFinalMuons.clone(prefix = cms.untracked.string("preJetsCutsMuons"))
 
 singleTopFinalTops = cms.EDProducer(
