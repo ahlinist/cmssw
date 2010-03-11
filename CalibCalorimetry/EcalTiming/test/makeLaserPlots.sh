@@ -63,9 +63,15 @@ echo
 
 cat > ${plots_dir}/plot.py <<EOF
 
-from ROOT import gROOT
+#from ROOT import gROOT
+#from ROOT import gSystem
+from ROOT import *
 
 #load my macro
+gSystem.Load('libFWCoreFWLite.so')
+AutoLibraryLoader.enable();
+gSystem.Load('libDataFormatsFWLite.so')
+gSystem.Load('libDataFormatsPatCandidates.so')
 gROOT.LoadMacro(  '${my_cmssw_base}/CalibCalorimetry/EcalTiming/test/plotLaser.C')
 
 #get my cute class

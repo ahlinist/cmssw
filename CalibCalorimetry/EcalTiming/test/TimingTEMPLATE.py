@@ -14,7 +14,7 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
-process.GlobalTag.globaltag = 'GR10_P_V1::All'
+process.GlobalTag.globaltag = 'GR10_P_V2::All'
 
 # shaping our Message logger to suit our needs
 process.MessageLogger = cms.Service("MessageLogger",
