@@ -5,9 +5,41 @@ int Wait() {
      if ((x == 'q') || (x == 'Q')) return 1;
      return 0;
 }
+  
+struct TTreeMembers {
+  int numEBcrys_;
+  int numEEcrys_;
+  int cryHashesEB_[61200];
+  int cryHashesEE_[14648];
+  float cryTimesEB_[61200];
+  float cryTimesEE_[14648];
+  float cryTimeErrorsEB_[61200];
+  float cryTimeErrorsEE_[14648];
+  float cryAmpsEB_[61200];
+  float cryAmpsEE_[14648];
+  float correctionToSample5EB_;
+  float correctionToSample5EEP_;
+  float correctionToSample5EEM_;
+} TTreeMembers_;
+
+
+//gSystem->Load("libFWCoreFWLite.so");
+//AutoLibraryLoader::enable();
+//gSystem->Load("libDataFormatsFWLite.so");
+//gSystem->Load("libDataFormatsPatCandidates.so");
+#if !defined(__CINT__) && !defined(__MAKECINT__)
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+#endif
+EBDetId mydet = 0;
+EEDetId mydete = 0;
+
+
 
 void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE, Char_t* fileType = "png", Char_t* dirName = ".", Bool_t doWait=kFALSE, Char_t* mType = "Laser")
 {
+ 
+  cout << "Loading FW Lite setup." << endl;
 
   gROOT->SetStyle("Plain");
   gStyle->SetNumberContours(99);
@@ -30,7 +62,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   char name[100];  
   char mytitle[200];
 
-  const int nHists1=80;
+  const int nHists1=100;
   const int nHists = nHists1;
   //  const int nHists = 9;
   cout << nHists1 << " " << nHists << endl;;
@@ -1025,8 +1057,114 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   if (chhistEEM->GetMean() != 0 && fit) chhistEEM->Fit("gaus");
   c[71]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[71]->Print(name); }
-  
   cout << name << endl;
+
+  //NOW I do some more compliacted stuff by actually looping over the TTree the old fashioned way
+  //eventTimingInfoTree->SetBranchStatus("*",1);
+  //using namespace edm;
+
+  
+  eventTimingInfoTree->SetBranchAddress("numberOfEBcrys",&TTreeMembers_.numEBcrys_);
+  eventTimingInfoTree->SetBranchAddress("numberOfEEcrys",&TTreeMembers_.numEEcrys_);
+  eventTimingInfoTree->SetBranchAddress("crystalHashedIndicesEB",&(TTreeMembers_.cryHashesEB_[0]));
+  eventTimingInfoTree->SetBranchAddress("crystalHashedIndicesEE",&(TTreeMembers_.cryHashesEE_[0]));
+  eventTimingInfoTree->SetBranchAddress("crystalTimesEB",&(TTreeMembers_.cryTimesEB_[0]));
+  eventTimingInfoTree->SetBranchAddress("crystalTimesEE",&(TTreeMembers_.cryTimesEE_[0]));
+  eventTimingInfoTree->SetBranchAddress("crystalTimeErrorsEB",&(TTreeMembers_.cryTimeErrorsEB_[0]));
+  eventTimingInfoTree->SetBranchAddress("crystalTimeErrorsEE",&(TTreeMembers_.cryTimeErrorsEE_[0]));
+  eventTimingInfoTree->SetBranchAddress("crystalAmplitudesEB",&(TTreeMembers_.cryAmpsEB_[0]));
+  eventTimingInfoTree->SetBranchAddress("crystalAmplitudesEE",&(TTreeMembers_.cryAmpsEE_[0]));
+  eventTimingInfoTree->SetBranchAddress("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_);
+  eventTimingInfoTree->SetBranchAddress("correctionToSampleEEP",&TTreeMembers_.correctionToSample5EEP_);
+  eventTimingInfoTree->SetBranchAddress("correctionToSampleEEM",&TTreeMembers_.correctionToSample5EEM_);
+  int nents = eventTimingInfoTree->GetEntries();
+  cout << "nentries is " << nents << endl;
+
+  TH1F *hEBTimeEtaLess5 = new TH1F("hEBTimeEtaLess5","EB Timing |ieta|<5; Crystal Time (ns); Entries",100, -60.,60.);
+  TH1F *hEBPlusTime   = new TH1F("hEBPlusTime", "EB+ Timing; Crystal Time (ns); Entries",100, -60.,60.);
+  TH1F *hEBMinusTime  = new TH1F("hEBMinusTime","EB- Timing; Crystal Time (ns); Entries",100, -60.,60.);
+  TH2F *hEBPlus2Minus = new TH2F("hEBPlus2Minus","EB+ to EB- Timing; EB+ Average Time (ns); EB- Average Time (ns)",50, -60.,60.,50, -60.,60.);
+  TH2F *hEEPlus2Minus = new TH2F("hEEPlus2Minus","EE+ to EE- Timing; EE+ Average Time (ns); EE- Average Time (ns)",50, -75.,75.,50, -75.,75.);
+
+  //Now I need to define a few histograms that I will later fill
+
+  for (int i=0; i<nents;i++) {
+     eventTimingInfoTree->GetEvent(i);
+     double EBave   = (TTreeMembers_.correctionToSample5EB_ -5.0)*25;
+     double EEPaveO = (TTreeMembers_.correctionToSample5EEP_ -5.0)*25;
+     double EEMaveO = (TTreeMembers_.correctionToSample5EEM_ -5.0)*25;
+     double EBPave  = 0,EBMave = 0, EEPave  = 0, EEMave  = 0;
+     double EBPn    = 0,EBMn   = 0, EEPn    = 0, EEMn    = 0;
+
+     for (int ebx=0; ebx < TTreeMembers_.numEBcrys_; ebx++) {
+         int crystalHashedIndicesEB = TTreeMembers_.cryHashesEB_[ebx];
+         if (crystalHashedIndicesEB == 25822 || crystalHashedIndicesEB == 32705 || crystalHashedIndicesEB == 56473) continue;
+         mydet    = EBDetId::unhashIndex(crystalHashedIndicesEB);
+         double myt     = (TTreeMembers_.cryTimesEB_[ebx] -5.0)*25;
+         double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
+         int ieta = mydet.ieta();
+         int iphi = mydet.iphi();
+         if ( ieta > 0 ) {EBPave += myt/myterr; EBPn += 1./myterr; hEBPlusTime->Fill(myt);}
+         else {EBMave += myt/myterr; EBMn += 1./myterr; hEBMinusTime->Fill(myt);}
+
+         if ( fabs(ieta) < 5 ) hEBTimeEtaLess5->Fill(myt);
+     }
+     for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
+         int crystalHashedIndicesEE = TTreeMembers_.cryHashesEE_[eex];
+         if (crystalHashedIndicesEE == 11658 || crystalHashedIndicesEE == 11742 || crystalHashedIndicesEE == 10224 || crystalHashedIndicesEE == 10225 || crystalHashedIndicesEE == 10226 || crystalHashedIndicesEE == 10310 || crystalHashedIndicesEE == 10311 || crystalHashedIndicesEE == 10394 || crystalHashedIndicesEE == 10395 || crystalHashedIndicesEE == 10875 || crystalHashedIndicesEE == 11316 || crystalHashedIndicesEE == 11659 || crystalHashedIndicesEE == 11660 || crystalHashedIndicesEE == 11661 || crystalHashedIndicesEE == 11743  || crystalHashedIndicesEE == 11744 || crystalHashedIndicesEE == 11744 || crystalHashedIndicesEE == 11745 || crystalHashedIndicesEE == 11932 || crystalHashedIndicesEE == 11746 || crystalHashedIndicesEE == 12702 || crystalHashedIndicesEE == 4252 || crystalHashedIndicesEE == 4335 || crystalHashedIndicesEE == 4337 || crystalHashedIndicesEE == 4419 || crystalHashedIndicesEE == 4423 || crystalHashedIndicesEE == 4785 || crystalHashedIndicesEE == 6181 || crystalHashedIndicesEE == 14613 || crystalHashedIndicesEE == 13726 || crystalHashedIndicesEE == 13727 || crystalHashedIndicesEE == 7717 || crystalHashedIndicesEE == 7778 || crystalHashedIndicesEE == 4420 || crystalHashedIndicesEE == 4421 || crystalHashedIndicesEE == 4423 || crystalHashedIndicesEE == 2946 || crystalHashedIndicesEE == 2900 || crystalHashedIndicesEE == 2902 || crystalHashedIndicesEE == 2901 || crystalHashedIndicesEE == 2903 || crystalHashedIndicesEE == 2904 || crystalHashedIndicesEE == 2905 || crystalHashedIndicesEE == 2986 || crystalHashedIndicesEE == 2987 || crystalHashedIndicesEE == 2988 || crystalHashedIndicesEE == 2989 || crystalHashedIndicesEE == 3070 || crystalHashedIndicesEE == 3071 || crystalHashedIndicesEE == 4252 || crystalHashedIndicesEE == 4253 || crystalHashedIndicesEE == 4254 || crystalHashedIndicesEE == 4255 || crystalHashedIndicesEE == 4256) continue;
+         mydete = mydete.unhashIndex(crystalHashedIndicesEE);
+         double myt     = (TTreeMembers_.cryTimesEE_[eex] -5.0)*25;
+         double myterr  = (TTreeMembers_.cryTimeErrorsEE_[eex])*25;
+         int ix = mydete.ix();
+         int iy = mydete.iy();
+         int iz = mydete.zside();
+         if ( iz> 0 ) {EEPave += myt/myterr; EEPn += 1./myterr;}
+         else {EEMave += myt/myterr; EEMn += 1./myterr;}
+     }
+     if (EBPn > 0.0 ) {EBPave /= EBPn; }
+     if (EBMn > 0.0 ) {EBMave /= EBMn; }
+     if (EEPn > 0.0 ) {EEPave /= EEPn; }
+     if (EEMn > 0.0 ) {EEMave /= EEMn; }
+
+     if ( EBPn > 0.0 && EBMn > 0.0 ) { hEBPlus2Minus->Fill(EBPave,EBMave);}
+     if ( EEPn > 0.0 && EEMn > 0.0 ) hEEPlus2Minus->Fill(EEPave,EEMave);
+
+     
+  }
+  //----------End of the fun looping stuff
+
+  // Now I need to print some of these new histograms and plots
+  
+  c[80]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  if (hEBTimeEtaLess5->GetMean() != 0 && fit) hEBTimeEtaLess5->Fit("gaus");
+  c[80]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTimeEtaLess5_%i.%s",dirName,mType,runNumber,fileType); c[80]->Print(name); }
+
+  c[81]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  if (hEBPlusTime->GetMean() != 0 && fit ) hEBPlusTime->Fit("gaus");
+  c[81]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlusTime_%i.%s",dirName,mType,runNumber,fileType); c[81]->Print(name); }
+
+  c[82]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  if (hEBMinusTime->GetMean() != 0 && fit) hEBMinusTime->Fit("gaus");
+  c[82]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBMinusTime_%i.%s",dirName,mType,runNumber,fileType); c[82]->Print(name); }
+
+  c[83]->cd();
+  gStyle->SetOptStat(10);
+  hEBPlus2Minus->Draw("colz");
+  c[83]->SetLogy(0);
+  c[83]->SetLogz(0);
+  c[83]->SetGridx(0);
+  c[83]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlus2Minus_%i.%s",dirName,mType,runNumber,fileType); c[83]->Print(name); }
 
   return;
 
