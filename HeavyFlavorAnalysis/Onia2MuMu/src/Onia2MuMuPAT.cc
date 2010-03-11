@@ -102,20 +102,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // ---- define and set candidate's 4momentum  ----  
       LorentzVector jpsi = it->p4() + it2->p4();
       myCand.setP4(jpsi);
-      // if we have tracker tracks, we use the tracker momentum explicitly
-      // just to be sure in the 1-1 comparison with Onia2MuMu non-PAT
-      // in the future we'll probably be ok with the reco::Muon momentum,
-      // and this piece of code can be removed
-      if (it->track().isNonnull() && it2->track().isNonnull()) {
-          // ---- candidate's 4momentum from tracks ----  
-          const Track & tr = *it->track();
-          const Track & tr2 = *it2->track();
-          LorentzVector trp4(tr.px(),tr.py(),tr.pz(),sqrt(tr.p()*tr.p() + 0.011163613));
-          LorentzVector tr2p4(tr2.px(),tr2.py(),tr2.pz(),sqrt(tr2.p()*tr2.p() + 0.011163613));
-          jpsi = trp4 + tr2p4;
-          myCand.setP4(jpsi);
-      }
-      
+      myCand.setCharge(it->charge()+it2->charge());
+
+     
       // ---- fit vertex using Tracker tracks (if they have tracks) ----
       if (it->track().isNonnull() && it2->track().isNonnull()) {
 
