@@ -1,7 +1,7 @@
 #define analysisClass_cxx
 #include "analysisClass.h"
 #include <TH2.h>
-#include <TH1F.h>
+#include <TH1D.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TLorentzVector.h>
@@ -39,71 +39,71 @@ void analysisClass::Loop()
    //binning
    int Nbins_Nspikes=10;
    float Max_Nspikes=10;
-   int   Nbins_E = 305;
+   int   Nbins_E = 320;
    float Min_E = -10.;
-   float Max_E = 600.;
-   int   Nbins_ET = 205;
-   float Min_ET = -5.;
-   float Max_ET = 200.;
+   float Max_E = 630.;
+   int   Nbins_ET = 240;
+   float Min_ET = -10.;
+   float Max_ET = 230.;
 
    //1D histograms
-   TH1F *h_N_HFspikesPerEv_L    = new TH1F ("h_N_HFspikesPerEv_L","h_N_HFspikesPerEv_L",Nbins_Nspikes,0,Max_Nspikes);
-   TH1F *h_N_HFspikesPerEv_S    = new TH1F ("h_N_HFspikesPerEv_S","h_N_HFspikesPerEv_S",Nbins_Nspikes,0,Max_Nspikes);
-   TH1F *h_N_HFspikesPerEv_TOT    = new TH1F ("h_N_HFspikesPerEv_TOT","h_N_HFspikesPerEv_TOT",Nbins_Nspikes,0,Max_Nspikes);
-   TH1F *h_N_EBspikesPerEv_TOT    = new TH1F ("h_N_EBspikesPerEv_TOT","h_N_EBspikesPerEv_TOT",Nbins_Nspikes,0,Max_Nspikes);
+   TH1D *h_N_HFspikesPerEv_L    = new TH1D ("h_N_HFspikesPerEv_L","h_N_HFspikesPerEv_L",Nbins_Nspikes,0,Max_Nspikes);
+   TH1D *h_N_HFspikesPerEv_S    = new TH1D ("h_N_HFspikesPerEv_S","h_N_HFspikesPerEv_S",Nbins_Nspikes,0,Max_Nspikes);
+   TH1D *h_N_HFspikesPerEv_TOT    = new TH1D ("h_N_HFspikesPerEv_TOT","h_N_HFspikesPerEv_TOT",Nbins_Nspikes,0,Max_Nspikes);
+   TH1D *h_N_EBspikesPerEv_TOT    = new TH1D ("h_N_EBspikesPerEv_TOT","h_N_EBspikesPerEv_TOT",Nbins_Nspikes,0,Max_Nspikes);
 
    h_N_HFspikesPerEv_L->Sumw2();
    h_N_HFspikesPerEv_S->Sumw2();
    h_N_HFspikesPerEv_TOT->Sumw2();
    h_N_EBspikesPerEv_TOT->Sumw2();
 
-   TH1F *h_HFRecHitE_L = new TH1F("h_HFRecHitE_L","h_HFRecHitE_L;E [GeV]",Nbins_E,Min_E,Max_E);
-   TH1F *h_HFRecHitE_L_Flagged = new TH1F("h_HFRecHitE_L_Flagged","h_HFRecHitE_L_Flagged;E [GeV]",Nbins_E,Min_E,Max_E);
-   TH1F *h_HFRecHitE_S = new TH1F("h_HFRecHitE_S","h_HFRecHitE_S;E [GeV]",Nbins_E,Min_E,Max_E);
-   TH1F *h_HFRecHitE_S_Flagged = new TH1F("h_HFRecHitE_S_Flagged","h_HFRecHitE_S_Flagged;E [GeV]",Nbins_E,Min_E,Max_E);
+   TH1D *h_HFRecHitE_L = new TH1D("h_HFRecHitE_L","h_HFRecHitE_L;E [GeV]",Nbins_E,Min_E,Max_E);
+   TH1D *h_HFRecHitE_L_Flagged = new TH1D("h_HFRecHitE_L_Flagged","h_HFRecHitE_L_Flagged;E [GeV]",Nbins_E,Min_E,Max_E);
+   TH1D *h_HFRecHitE_S = new TH1D("h_HFRecHitE_S","h_HFRecHitE_S;E [GeV]",Nbins_E,Min_E,Max_E);
+   TH1D *h_HFRecHitE_S_Flagged = new TH1D("h_HFRecHitE_S_Flagged","h_HFRecHitE_S_Flagged;E [GeV]",Nbins_E,Min_E,Max_E);
    
    h_HFRecHitE_L->Sumw2();
    h_HFRecHitE_L_Flagged->Sumw2();
    h_HFRecHitE_S->Sumw2();
    h_HFRecHitE_S_Flagged->Sumw2();
    
-   map<UInt_t,TH1F*> h_HFRecHitE_L_ieta;
-   map<UInt_t,TH1F*> h_HFRecHitE_L_Flagged_ieta;
-   map<UInt_t,TH1F*> h_HFRecHitE_S_ieta;
-   map<UInt_t,TH1F*> h_HFRecHitE_S_Flagged_ieta;
+   map<UInt_t,TH1D*> h_HFRecHitE_L_ieta;
+   map<UInt_t,TH1D*> h_HFRecHitE_L_Flagged_ieta;
+   map<UInt_t,TH1D*> h_HFRecHitE_S_ieta;
+   map<UInt_t,TH1D*> h_HFRecHitE_S_Flagged_ieta;
    
-   TH1F *h_HFRecHitET_L = new TH1F("h_HFRecHitET_L","h_HFRecHitET_L;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
-   TH1F *h_HFRecHitET_S = new TH1F("h_HFRecHitET_S","h_HFRecHitET_S;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
-   TH1F *h_HFRecHitET_L_Flagged = new TH1F("h_HFRecHitET_L_Flagged","h_HFRecHitET_L_Flagged;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
-   TH1F *h_HFRecHitET_S_Flagged = new TH1F("h_HFRecHitET_S_Flagged","h_HFRecHitET_S_Flagged;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
+   TH1D *h_HFRecHitET_L = new TH1D("h_HFRecHitET_L","h_HFRecHitET_L;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
+   TH1D *h_HFRecHitET_S = new TH1D("h_HFRecHitET_S","h_HFRecHitET_S;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
+   TH1D *h_HFRecHitET_L_Flagged = new TH1D("h_HFRecHitET_L_Flagged","h_HFRecHitET_L_Flagged;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
+   TH1D *h_HFRecHitET_S_Flagged = new TH1D("h_HFRecHitET_S_Flagged","h_HFRecHitET_S_Flagged;E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET);
    
    h_HFRecHitET_L->Sumw2();
    h_HFRecHitET_S->Sumw2();
    h_HFRecHitET_L_Flagged->Sumw2();
    h_HFRecHitET_S_Flagged->Sumw2();
    
-   map<UInt_t,TH1F*> h_HFRecHitET_L_ieta;
-   map<UInt_t,TH1F*> h_HFRecHitET_S_ieta;
-   map<UInt_t,TH1F*> h_HFRecHitET_L_Flagged_ieta;
-   map<UInt_t,TH1F*> h_HFRecHitET_S_Flagged_ieta;
+   map<UInt_t,TH1D*> h_HFRecHitET_L_ieta;
+   map<UInt_t,TH1D*> h_HFRecHitET_S_ieta;
+   map<UInt_t,TH1D*> h_HFRecHitET_L_Flagged_ieta;
+   map<UInt_t,TH1D*> h_HFRecHitET_S_Flagged_ieta;
    
    for( uint i=29; i<=41; i++ ) {
-     h_HFRecHitE_L_ieta[i] = new TH1F(Form("h_HFRecHitE_L_ieta_%u",i),Form("h_HFRecHitE_L_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
+     h_HFRecHitE_L_ieta[i] = new TH1D(Form("h_HFRecHitE_L_ieta_%u",i),Form("h_HFRecHitE_L_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_L_ieta[i]->Sumw2();
-     h_HFRecHitE_S_ieta[i] = new TH1F(Form("h_HFRecHitE_S_ieta_%u",i),Form("h_HFRecHitE_S_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
+     h_HFRecHitE_S_ieta[i] = new TH1D(Form("h_HFRecHitE_S_ieta_%u",i),Form("h_HFRecHitE_S_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_S_ieta[i]->Sumw2();
-     h_HFRecHitE_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_L_Flagged_ieta_%u",i),Form("h_HFRecHitE_L_Flagged_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
+     h_HFRecHitE_L_Flagged_ieta[i] = new TH1D(Form("h_HFRecHitE_L_Flagged_ieta_%u",i),Form("h_HFRecHitE_L_Flagged_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_L_Flagged_ieta[i]->Sumw2();
-     h_HFRecHitE_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitE_S_Flagged_ieta_%u",i),Form("h_HFRecHitE_S_Flagged_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
+     h_HFRecHitE_S_Flagged_ieta[i] = new TH1D(Form("h_HFRecHitE_S_Flagged_ieta_%u",i),Form("h_HFRecHitE_S_Flagged_ieta_%u;E [GeV]",i),Nbins_E,Min_E,Max_E);
      h_HFRecHitE_S_Flagged_ieta[i]->Sumw2();
      
-     h_HFRecHitET_L_ieta[i] = new TH1F(Form("h_HFRecHitET_L_ieta_%u",i),Form("h_HFRecHitET_L_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
+     h_HFRecHitET_L_ieta[i] = new TH1D(Form("h_HFRecHitET_L_ieta_%u",i),Form("h_HFRecHitET_L_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
      h_HFRecHitET_L_ieta[i]->Sumw2();
-     h_HFRecHitET_S_ieta[i] = new TH1F(Form("h_HFRecHitET_S_ieta_%u",i),Form("h_HFRecHitET_S_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
+     h_HFRecHitET_S_ieta[i] = new TH1D(Form("h_HFRecHitET_S_ieta_%u",i),Form("h_HFRecHitET_S_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
      h_HFRecHitET_S_ieta[i]->Sumw2();
-     h_HFRecHitET_L_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_L_Flagged_ieta_%u",i),Form("h_HFRecHitET_L_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
+     h_HFRecHitET_L_Flagged_ieta[i] = new TH1D(Form("h_HFRecHitET_L_Flagged_ieta_%u",i),Form("h_HFRecHitET_L_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
      h_HFRecHitET_L_Flagged_ieta[i]->Sumw2();
-     h_HFRecHitET_S_Flagged_ieta[i] = new TH1F(Form("h_HFRecHitET_S_Flagged_ieta_%u",i),Form("h_HFRecHitET_S_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
+     h_HFRecHitET_S_Flagged_ieta[i] = new TH1D(Form("h_HFRecHitET_S_Flagged_ieta_%u",i),Form("h_HFRecHitET_S_Flagged_ieta_%u;E_{T} [GeV]",i),Nbins_ET,Min_ET,Max_ET);
      h_HFRecHitET_S_Flagged_ieta[i]->Sumw2();
    }
    
@@ -113,11 +113,11 @@ void analysisClass::Loop()
    int   Nbins_Phi = 50;
    float Max_Phi = 3.15;
   
-   TH1F *h_CaloMET   = new TH1F ("h_CaloMET","h_CaloMET;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1F *h_CaloMETPhi  = new TH1F ("h_CaloMETPhi","h_CaloMETPhi;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1F *h_CaloMEx   = new TH1F ("h_CaloMEx","h_CaloMEx;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloMEy   = new TH1F ("h_CaloMEy","h_CaloMEy;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloSumET   = new TH1F ("h_CaloSumET","h_CaloSumET;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMET   = new TH1D ("h_CaloMET","h_CaloMET;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETPhi  = new TH1D ("h_CaloMETPhi","h_CaloMETPhi;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_CaloMEx   = new TH1D ("h_CaloMEx","h_CaloMEx;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloMEy   = new TH1D ("h_CaloMEy","h_CaloMEy;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloSumET   = new TH1D ("h_CaloSumET","h_CaloSumET;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
    
    h_CaloMET->Sumw2();
    h_CaloMETPhi->Sumw2();
@@ -125,11 +125,11 @@ void analysisClass::Loop()
    h_CaloMEy->Sumw2();
    h_CaloSumET->Sumw2();
    
-   TH1F *h_CaloMET_cleanECAL = new TH1F ("h_CaloMET_cleanECAL","h_CaloMET_cleanECAL;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1F *h_CaloMETPhi_cleanECAL  = new TH1F ("h_CaloMETPhi_cleanECAL","h_CaloMETPhi_cleanECAL;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1F *h_CaloMEx_cleanECAL   = new TH1F ("h_CaloMEx_cleanECAL","h_CaloMEx_cleanECAL;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloMEy_cleanECAL   = new TH1F ("h_CaloMEy_cleanECAL","h_CaloMEy_cleanECAL;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloSumET_cleanECAL   = new TH1F ("h_CaloSumET_cleanECAL","h_CaloSumET_cleanECAL;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMET_cleanECAL = new TH1D ("h_CaloMET_cleanECAL","h_CaloMET_cleanECAL;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETPhi_cleanECAL  = new TH1D ("h_CaloMETPhi_cleanECAL","h_CaloMETPhi_cleanECAL;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_CaloMEx_cleanECAL   = new TH1D ("h_CaloMEx_cleanECAL","h_CaloMEx_cleanECAL;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloMEy_cleanECAL   = new TH1D ("h_CaloMEy_cleanECAL","h_CaloMEy_cleanECAL;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloSumET_cleanECAL   = new TH1D ("h_CaloSumET_cleanECAL","h_CaloSumET_cleanECAL;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
 
    h_CaloMET_cleanECAL->Sumw2();
    h_CaloMETPhi_cleanECAL->Sumw2();
@@ -137,11 +137,11 @@ void analysisClass::Loop()
    h_CaloMEy_cleanECAL->Sumw2();
    h_CaloSumET_cleanECAL->Sumw2();
 
-   TH1F *h_CaloMET_clean = new TH1F ("h_CaloMET_clean","h_CaloMET_clean;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1F *h_CaloMETPhi_clean  = new TH1F ("h_CaloMETPhi_clean","h_CaloMETPhi_clean;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1F *h_CaloMEx_clean   = new TH1F ("h_CaloMEx_clean","h_CaloMEx_clean;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloMEy_clean   = new TH1F ("h_CaloMEy_clean","h_CaloMEy_clean;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloSumET_clean   = new TH1F ("h_CaloSumET_clean","h_CaloSumET_clean;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMET_clean = new TH1D ("h_CaloMET_clean","h_CaloMET_clean;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETPhi_clean  = new TH1D ("h_CaloMETPhi_clean","h_CaloMETPhi_clean;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_CaloMEx_clean   = new TH1D ("h_CaloMEx_clean","h_CaloMEx_clean;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloMEy_clean   = new TH1D ("h_CaloMEy_clean","h_CaloMEy_clean;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloSumET_clean   = new TH1D ("h_CaloSumET_clean","h_CaloSumET_clean;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
    
    h_CaloMET_clean->Sumw2();
    h_CaloMETPhi_clean->Sumw2();
@@ -149,11 +149,11 @@ void analysisClass::Loop()
    h_CaloMEy_clean->Sumw2();
    h_CaloSumET_clean->Sumw2();
 
-   TH1F *h_CaloMETHF   = new TH1F ("h_CaloMETHF","h_CaloMETHF;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1F *h_CaloMETPhiHF  = new TH1F ("h_CaloMETPhiHF","h_CaloMETPhiHF;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1F *h_CaloMExHF   = new TH1F ("h_CaloMExHF","h_CaloMExHF;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloMEyHF   = new TH1F ("h_CaloMEyHF","h_CaloMEyHF;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloSumETHF   = new TH1F ("h_CaloSumETHF","h_CaloSumETHF;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETHF   = new TH1D ("h_CaloMETHF","h_CaloMETHF;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETPhiHF  = new TH1D ("h_CaloMETPhiHF","h_CaloMETPhiHF;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_CaloMExHF   = new TH1D ("h_CaloMExHF","h_CaloMExHF;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloMEyHF   = new TH1D ("h_CaloMEyHF","h_CaloMEyHF;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloSumETHF   = new TH1D ("h_CaloSumETHF","h_CaloSumETHF;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
 
    h_CaloMETHF->Sumw2();
    h_CaloMETPhiHF->Sumw2();
@@ -161,11 +161,11 @@ void analysisClass::Loop()
    h_CaloMEyHF->Sumw2();
    h_CaloSumETHF->Sumw2();
    
-   TH1F *h_CaloMETHF_clean   = new TH1F ("h_CaloMETHF_clean","h_CaloMETHF_clean;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1F *h_CaloMETPhiHF_clean  = new TH1F ("h_CaloMETPhiHF_clean","h_CaloMETPhiHF_clean;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1F *h_CaloMExHF_clean   = new TH1F ("h_CaloMExHF_clean","h_CaloMExHF_clean;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloMEyHF_clean   = new TH1F ("h_CaloMEyHF_clean","h_CaloMEyHF_clean;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1F *h_CaloSumETHF_clean   = new TH1F ("h_CaloSumETHF_clean","h_CaloSumETHF_clean;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETHF_clean   = new TH1D ("h_CaloMETHF_clean","h_CaloMETHF_clean;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETPhiHF_clean  = new TH1D ("h_CaloMETPhiHF_clean","h_CaloMETPhiHF_clean;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_CaloMExHF_clean   = new TH1D ("h_CaloMExHF_clean","h_CaloMExHF_clean;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloMEyHF_clean   = new TH1D ("h_CaloMEyHF_clean","h_CaloMEyHF_clean;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloSumETHF_clean   = new TH1D ("h_CaloSumETHF_clean","h_CaloSumETHF_clean;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
    
    h_CaloMETHF_clean->Sumw2();
    h_CaloMETPhiHF_clean->Sumw2();
@@ -176,58 +176,58 @@ void analysisClass::Loop()
    //Sum E histograms
    int Nbins_SumE = 200;
    float Max_SumE = 5000;
-   TH1 *h_SumEinHF   = new TH1F ("h_SumEinHF","h_SumEinHF;#SigmaE [GeV]",Nbins_SumE,0,Max_SumE);
+   TH1 *h_SumEinHF   = new TH1D ("h_SumEinHF","h_SumEinHF;#SigmaE [GeV]",Nbins_SumE,0,Max_SumE);
    
    //2D histograms
-   TH2F *h2_N_HFspikes_L_ieta_iphi  = new TH2F ("h2_N_HFspikes_L_ieta_iphi","h2_N_HFspikes_L_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
-   TH2F *h2_N_HFspikes_S_ieta_iphi  = new TH2F ("h2_N_HFspikes_S_ieta_iphi","h2_N_HFspikes_S_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
+   TH2D *h2_N_HFspikes_L_ieta_iphi  = new TH2D ("h2_N_HFspikes_L_ieta_iphi","h2_N_HFspikes_L_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
+   TH2D *h2_N_HFspikes_S_ieta_iphi  = new TH2D ("h2_N_HFspikes_S_ieta_iphi","h2_N_HFspikes_S_ieta_iphi;i#eta;i#phi",13,28.5,41.5,72,0.5,72.5);
    
    int   Nbins_R = 220;
    float Min_R = -1.1;
    float Max_R = 1.1;
-   int   Nbins_S9oS1 = 300;
-   float Min_S9oS1 = -0.3;
-   float Max_S9oS1 = 1.5;
+   int   Nbins_S9oS1 = 240;
+   float Min_S9oS1 = -0.4;
+   float Max_S9oS1 = 2.0;
    
-   TH2F *h2_HFRecHitE_L_vs_S = new TH2F ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S;E [GeV];E [GeV]",Nbins_E,Min_E,Max_E,Nbins_E,Min_E,Max_E);
-   TH2F *h2_HFRecHitET_L_vs_S = new TH2F ("h2_HFRecHitET_L_vs_S","h2_HFRecHitET_L_vs_S;E_{T} [GeV];E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET,Nbins_ET,Min_ET,Max_ET);
-   TH2F *h2_HFRecHitE_vs_R_L = new TH2F ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L;R;E [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
-   TH2F *h2_HFRecHitE_vs_R_S = new TH2F ("h2_HFRecHitE_vs_R_S","h2_HFRecHitE_vs_R_S;R;E [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
-   TH2F *h2_HFRecHitET_vs_R_L = new TH2F ("h2_HFRecHitET_vs_R_L","h2_HFRecHitET_vs_R_L;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
-   TH2F *h2_HFRecHitET_vs_R_S = new TH2F ("h2_HFRecHitET_vs_R_S","h2_HFRecHitET_vs_R_S;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
+   TH2D *h2_HFRecHitE_L_vs_S = new TH2D ("h2_HFRecHitE_L_vs_S","h2_HFRecHitE_L_vs_S;E [GeV];E [GeV]",Nbins_E,Min_E,Max_E,Nbins_E,Min_E,Max_E);
+   TH2D *h2_HFRecHitET_L_vs_S = new TH2D ("h2_HFRecHitET_L_vs_S","h2_HFRecHitET_L_vs_S;E_{T} [GeV];E_{T} [GeV]",Nbins_ET,Min_ET,Max_ET,Nbins_ET,Min_ET,Max_ET);
+   TH2D *h2_HFRecHitE_vs_R_L = new TH2D ("h2_HFRecHitE_vs_R_L","h2_HFRecHitE_vs_R_L;R;E [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+   TH2D *h2_HFRecHitE_vs_R_S = new TH2D ("h2_HFRecHitE_vs_R_S","h2_HFRecHitE_vs_R_S;R;E [GeV]",Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+   TH2D *h2_HFRecHitET_vs_R_L = new TH2D ("h2_HFRecHitET_vs_R_L","h2_HFRecHitET_vs_R_L;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
+   TH2D *h2_HFRecHitET_vs_R_S = new TH2D ("h2_HFRecHitET_vs_R_S","h2_HFRecHitET_vs_R_S;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
    
-   TH2F *h2_R_vs_iphi_L  = new TH2F ("h2_R_vs_iphi_L","h2_R_vs_iphi_L;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
-   TH2F *h2_R_vs_ieta_L  = new TH2F ("h2_R_vs_ieta_L","h2_R_vs_ieta_L;i#eta;R",13,28.5,41.5,Nbins_R,Min_R,Max_R);
-   TH2F *h2_R_vs_iphi_S  = new TH2F ("h2_R_vs_iphi_S","h2_R_vs_iphi_S;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
-   TH2F *h2_R_vs_ieta_S  = new TH2F ("h2_R_vs_ieta_S","h2_R_vs_ieta_S;i#eta;R",13,28.5,41.5,Nbins_R,Min_R,Max_R);
+   TH2D *h2_R_vs_iphi_L  = new TH2D ("h2_R_vs_iphi_L","h2_R_vs_iphi_L;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
+   TH2D *h2_R_vs_ieta_L  = new TH2D ("h2_R_vs_ieta_L","h2_R_vs_ieta_L;i#eta;R",13,28.5,41.5,Nbins_R,Min_R,Max_R);
+   TH2D *h2_R_vs_iphi_S  = new TH2D ("h2_R_vs_iphi_S","h2_R_vs_iphi_S;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
+   TH2D *h2_R_vs_ieta_S  = new TH2D ("h2_R_vs_ieta_S","h2_R_vs_ieta_S;i#eta;R",13,28.5,41.5,Nbins_R,Min_R,Max_R);
 
-   TH2F *h2_S9oS1_vs_E_L  = new TH2F ("h2_S9oS1_vs_E_L","h2_S9oS1_vs_E_L;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2F *h2_S9oS1_vs_E_S  = new TH2F ("h2_S9oS1_vs_E_S","h2_S9oS1_vs_E_S;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2F *h2_S5oS1_vs_E_L  = new TH2F ("h2_S5oS1_vs_E_L","h2_S5oS1_vs_E_L;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2F *h2_S5oS1_vs_E_S  = new TH2F ("h2_S5oS1_vs_E_S","h2_S5oS1_vs_E_S;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2F *h2_S9oS1_vs_E_L_Flagged  = new TH2F ("h2_S9oS1_vs_E_L_Flagged","h2_S9oS1_vs_E_L_Flagged;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2F *h2_S9oS1_vs_E_S_Flagged  = new TH2F ("h2_S9oS1_vs_E_S_Flagged","h2_S9oS1_vs_E_S_Flagged;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2F *h2_S5oS1_vs_E_L_Flagged  = new TH2F ("h2_S5oS1_vs_E_L_Flagged","h2_S5oS1_vs_E_L_Flagged;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2F *h2_S5oS1_vs_E_S_Flagged  = new TH2F ("h2_S5oS1_vs_E_S_Flagged","h2_S5oS1_vs_E_S_Flagged;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S9oS1_vs_E_L  = new TH2D ("h2_S9oS1_vs_E_L","h2_S9oS1_vs_E_L;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S9oS1_vs_E_S  = new TH2D ("h2_S9oS1_vs_E_S","h2_S9oS1_vs_E_S;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S5oS1_vs_E_L  = new TH2D ("h2_S5oS1_vs_E_L","h2_S5oS1_vs_E_L;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S5oS1_vs_E_S  = new TH2D ("h2_S5oS1_vs_E_S","h2_S5oS1_vs_E_S;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S9oS1_vs_E_L_Flagged  = new TH2D ("h2_S9oS1_vs_E_L_Flagged","h2_S9oS1_vs_E_L_Flagged;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S9oS1_vs_E_S_Flagged  = new TH2D ("h2_S9oS1_vs_E_S_Flagged","h2_S9oS1_vs_E_S_Flagged;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S5oS1_vs_E_L_Flagged  = new TH2D ("h2_S5oS1_vs_E_L_Flagged","h2_S5oS1_vs_E_L_Flagged;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S5oS1_vs_E_S_Flagged  = new TH2D ("h2_S5oS1_vs_E_S_Flagged","h2_S5oS1_vs_E_S_Flagged;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
 
-   map<UInt_t,TH2F*> h2_S9oS1_vs_E_L_ieta;
-   map<UInt_t,TH2F*> h2_S9oS1_vs_E_S_ieta;
-   map<UInt_t,TH2F*> h2_S5oS1_vs_E_L_ieta;
-   map<UInt_t,TH2F*> h2_S5oS1_vs_E_S_ieta;
-   map<UInt_t,TH2F*> h2_S9oS1_vs_E_L_Flagged_ieta;
-   map<UInt_t,TH2F*> h2_S9oS1_vs_E_S_Flagged_ieta;
-   map<UInt_t,TH2F*> h2_S5oS1_vs_E_L_Flagged_ieta;
-   map<UInt_t,TH2F*> h2_S5oS1_vs_E_S_Flagged_ieta;
+   map<UInt_t,TH2D*> h2_S9oS1_vs_E_L_ieta;
+   map<UInt_t,TH2D*> h2_S9oS1_vs_E_S_ieta;
+   map<UInt_t,TH2D*> h2_S5oS1_vs_E_L_ieta;
+   map<UInt_t,TH2D*> h2_S5oS1_vs_E_S_ieta;
+   map<UInt_t,TH2D*> h2_S9oS1_vs_E_L_Flagged_ieta;
+   map<UInt_t,TH2D*> h2_S9oS1_vs_E_S_Flagged_ieta;
+   map<UInt_t,TH2D*> h2_S5oS1_vs_E_L_Flagged_ieta;
+   map<UInt_t,TH2D*> h2_S5oS1_vs_E_S_Flagged_ieta;
    
    for( uint i=29; i<=41; i++ ) {
-     h2_S9oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_ieta_%u",i),Form("h2_S9oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S9oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_ieta_%u",i),Form("h2_S9oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S5oS1_vs_E_L_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_ieta_%u",i),Form("h2_S5oS1_vs_E_L_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S5oS1_vs_E_S_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_ieta_%u",i),Form("h2_S5oS1_vs_E_S_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S9oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S9oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S5oS1_vs_E_L_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2F(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S9oS1_vs_E_L_ieta[i] = new TH2D(Form("h2_S9oS1_vs_E_L_ieta_%u",i),Form("h2_S9oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S9oS1_vs_E_S_ieta[i] = new TH2D(Form("h2_S9oS1_vs_E_S_ieta_%u",i),Form("h2_S9oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S5oS1_vs_E_L_ieta[i] = new TH2D(Form("h2_S5oS1_vs_E_L_ieta_%u",i),Form("h2_S5oS1_vs_E_L_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S5oS1_vs_E_S_ieta[i] = new TH2D(Form("h2_S5oS1_vs_E_S_ieta_%u",i),Form("h2_S5oS1_vs_E_S_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S9oS1_vs_E_L_Flagged_ieta[i] = new TH2D(Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S9oS1_vs_E_S_Flagged_ieta[i] = new TH2D(Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S5oS1_vs_E_L_Flagged_ieta[i] = new TH2D(Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2D(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
    }
    
    TProfile * p_NspikesInHF_vs_SumEinHF    = new TProfile ("p_NspikesInHF_vs_SumEinHF","p_NspikesInHF_vs_SumEinHF",100,0,5000.);
@@ -730,7 +730,7 @@ void analysisClass::Loop()
    
    //////////write histos 
    
-   //TH1F * h_example = new TH1F ("h_example","", getHistoNBins("my_calometPt"), getHistoMin("my_calometPt"), getHistoMax("my_calometPt"));
+   //TH1D * h_example = new TH1D ("h_example","", getHistoNBins("my_calometPt"), getHistoMin("my_calometPt"), getHistoMax("my_calometPt"));
    //h_example->Add( & getHisto_noCuts_or_skim("my_calometPt") ); // all histos can be retrieved, see other getHisto_xxxx methods in baseClass.h
 
    h_N_HFspikesPerEv_L->Write();
@@ -743,20 +743,20 @@ void analysisClass::Loop()
    h_HFRecHitE_S->Write();
    h_HFRecHitE_S_Flagged->Write();
    
-   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitE_L_ieta.begin(); it != h_HFRecHitE_L_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitE_L_Flagged_ieta.begin(); it != h_HFRecHitE_L_Flagged_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitE_S_ieta.begin(); it != h_HFRecHitE_S_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitE_S_Flagged_ieta.begin(); it != h_HFRecHitE_S_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1D*>::const_iterator it = h_HFRecHitE_L_ieta.begin(); it != h_HFRecHitE_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1D*>::const_iterator it = h_HFRecHitE_L_Flagged_ieta.begin(); it != h_HFRecHitE_L_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1D*>::const_iterator it = h_HFRecHitE_S_ieta.begin(); it != h_HFRecHitE_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1D*>::const_iterator it = h_HFRecHitE_S_Flagged_ieta.begin(); it != h_HFRecHitE_S_Flagged_ieta.end(); it++) it->second->Write();
    
    h_HFRecHitET_L->Write();
    h_HFRecHitET_S->Write();
    h_HFRecHitET_L_Flagged->Write();
    h_HFRecHitET_S_Flagged->Write();
    
-   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_L_ieta.begin(); it != h_HFRecHitET_L_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_S_ieta.begin(); it != h_HFRecHitET_S_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_L_Flagged_ieta.begin(); it != h_HFRecHitET_L_Flagged_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH1F*>::const_iterator it = h_HFRecHitET_S_Flagged_ieta.begin(); it != h_HFRecHitET_S_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1D*>::const_iterator it = h_HFRecHitET_L_ieta.begin(); it != h_HFRecHitET_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1D*>::const_iterator it = h_HFRecHitET_S_ieta.begin(); it != h_HFRecHitET_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1D*>::const_iterator it = h_HFRecHitET_L_Flagged_ieta.begin(); it != h_HFRecHitET_L_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH1D*>::const_iterator it = h_HFRecHitET_S_Flagged_ieta.begin(); it != h_HFRecHitET_S_Flagged_ieta.end(); it++) it->second->Write();
    
    h_CaloMET->Write();
    h_CaloMETPhi->Write();
@@ -812,14 +812,14 @@ void analysisClass::Loop()
    h2_S5oS1_vs_E_L_Flagged->Write();
    h2_S5oS1_vs_E_S_Flagged->Write();
    
-   for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_L_ieta.begin(); it != h2_S9oS1_vs_E_L_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_S_ieta.begin(); it != h2_S9oS1_vs_E_S_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_L_ieta.begin(); it != h2_S5oS1_vs_E_L_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_S_ieta.begin(); it != h2_S5oS1_vs_E_S_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2F*>::const_iterator it = h2_S9oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2F*>::const_iterator it = h2_S5oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S9oS1_vs_E_L_ieta.begin(); it != h2_S9oS1_vs_E_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S9oS1_vs_E_S_ieta.begin(); it != h2_S9oS1_vs_E_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S5oS1_vs_E_L_ieta.begin(); it != h2_S5oS1_vs_E_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S5oS1_vs_E_S_ieta.begin(); it != h2_S5oS1_vs_E_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S9oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S9oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S5oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S5oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
 
    h_SumEinHF->Write();
    p_NspikesInHF_vs_SumEinHF->Write(); 
