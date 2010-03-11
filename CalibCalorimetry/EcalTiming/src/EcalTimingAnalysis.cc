@@ -27,6 +27,23 @@
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMask.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMaskAlgoTrigRcd.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMaskTechTrigRcd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetup.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GtPsbWord.h"
+
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetup.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
+#include "L1Trigger/GlobalTrigger/interface/L1GlobalTrigger.h"
+
 
 #include<fstream>
 #include <iomanip>
@@ -72,7 +89,7 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    timeerrthr_         =  iConfig.getUntrackedParameter<double>("TimeErrorThreshold",10000.);
    min_num_ev_         = (int) (iConfig.getUntrackedParameter<double>("minNumEvt", 100.)); 
    max_num_ev_         = (int) (iConfig.getUntrackedParameter<double>("maxNumEvt", -1.));
-   timerunstart_       = iConfig.getUntrackedParameter<double>("RunStart",1220192037.);
+   timerunstart_       = iConfig.getUntrackedParameter<double>("RunStart",1268192037.);
    timerunlength_       =iConfig.getUntrackedParameter<double>("RunLength",2.);
    EBradius_           = iConfig.getUntrackedParameter<double>("EBRadius",1.4);
    corrtimeEcal        = iConfig.getUntrackedParameter<bool>("CorrectEcalReadout",false);
@@ -85,6 +102,7 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    minxtals_           = iConfig.getUntrackedParameter<int>("MinEBXtals",-1); 
    mintime_           = iConfig.getUntrackedParameter<double>("MinTime",3.0);
    maxtime_           = iConfig.getUntrackedParameter<double>("MaxTime",9.0);     
+   gtRecordCollectionTag_ = iConfig.getParameter<std::string>("GTRecordCollection") ;
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
    if (fromfile_) fromfilename_ = iConfig.getUntrackedParameter<std::string>("FromFileName","EMPTYFILE.root");
@@ -280,6 +298,14 @@ EcalTimingAnalysis::beginJob( ) {
 	eventTimingInfoTree_->Branch("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_,"correctionToSample5EB/F");
 	eventTimingInfoTree_->Branch("correctionToSampleEEP",&TTreeMembers_.correctionToSample5EEP_,"correctionToSample5EEP/F");
 	eventTimingInfoTree_->Branch("correctionToSampleEEM",&TTreeMembers_.correctionToSample5EEM_,"correctionToSample5EEM/F");
+	eventTimingInfoTree_->Branch("numTriggers",&TTreeMembers_.numTriggers_,"/I");
+	eventTimingInfoTree_->Branch("triggers",&TTreeMembers_.triggers_,"triggers[numTriggers]/I");
+	eventTimingInfoTree_->Branch("numTechTriggers",&TTreeMembers_.numTechTriggers_,"/I");
+	eventTimingInfoTree_->Branch("techtriggers",&TTreeMembers_.techtriggers_,"techtriggers[numTechTriggers]/I");
+	eventTimingInfoTree_->Branch("absTime",&TTreeMembers_.absTime_,"/F");
+	eventTimingInfoTree_->Branch("lumiSection",&TTreeMembers_.lumiSection_,"/I");
+	eventTimingInfoTree_->Branch("bx",&TTreeMembers_.bx_,"/I");
+	eventTimingInfoTree_->Branch("orbit",&TTreeMembers_.orbit_,"/I");
       }
     }
 
@@ -636,7 +662,11 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    TTreeMembers_.correctionToSample5EB_=0;
    TTreeMembers_.correctionToSample5EEP_ =0;
    TTreeMembers_.correctionToSample5EEM_ = 0;
+   TTreeMembers_.absTime_ = -1.;
+   TTreeMembers_.numTriggers_ = 0;
+   TTreeMembers_.lumiSection_ = 0;
    for ( int ji = 0 ; ji < 61200; ++ji){
+      if ( ji < 200 ) {TTreeMembers_.triggers_[ji] = 0;}
       if ( ji < 14648) {
 	     TTreeMembers_.cryHashesEE_[ji]=0;
 		 TTreeMembers_.cryTimesEE_[ji]=-1000;
@@ -653,6 +683,45 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    unsigned int  timeStampLow = ( 0xFFFFFFFF & iEvent.time().value() );
    unsigned int  timeStampHigh = ( iEvent.time().value() >> 32 );
    double eventtime = ( double)(timeStampHigh)+((double )(timeStampLow)/1000000.) - timerunstart_;
+   TTreeMembers_.absTime_ = eventtime;
+   TTreeMembers_.lumiSection_ = iEvent.luminosityBlock();
+   TTreeMembers_.bx_ = iEvent.bunchCrossing();
+   TTreeMembers_.orbit_ = iEvent.orbitNumber();
+
+   //NOW I look into the trigger information
+   //I (Jason) Decided ONLY to look at the L1 triggers that took part in the decision, not just the ACTIVE triggers
+   // HOPEFULLY this wasn't a bad decision
+   edm::Handle< L1GlobalTriggerReadoutRecord > gtRecord;
+   iEvent.getByLabel( edm::InputTag(gtRecordCollectionTag_), gtRecord);
+   DecisionWord dWord = gtRecord->decisionWord();   // this will get the decision word *before* masking disabled bits
+   int iBit = -1;
+   TTreeMembers_.numTriggers_ = 0 ;
+   for (std::vector<bool>::iterator itBit = dWord.begin(); itBit != dWord.end(); ++itBit) {        
+     iBit++;
+     if (*itBit) {
+	TTreeMembers_.triggers_[TTreeMembers_.numTriggers_] = iBit ;
+	TTreeMembers_.numTriggers_++ ;      
+     }
+   }
+    
+   TTreeMembers_.numTechTriggers_ = 0;
+   TechnicalTriggerWord tw = gtRecord->technicalTriggerWord();
+   if ( ! tw.empty() ) {
+     // loop over dec. bit to get total rate (no overlap)
+     for ( int itechbit = 0; itechbit < 64; ++itechbit ) {
+	
+	TTreeMembers_.techtriggers_[TTreeMembers_.numTechTriggers_] = 0; // ADD THIS 
+	
+	if ( tw[itechbit] ){
+	  TTreeMembers_.techtriggers_[TTreeMembers_.numTechTriggers_] = itechbit;
+	  TTreeMembers_.numTechTriggers_++ ;
+	}
+	
+     }
+   }
+    
+
+   //----------END LOOKING AT THE L1 Trigger information
    //std::cout << "Event Time " << eventtime << " High " <<timeStampHigh<< " low"<<timeStampLow <<" value " <<iEvent.time().value() << std::endl;
    // std::cout << " i0 " << std::endl; 
    int lambda = -1;
@@ -994,7 +1063,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        TTreeMembers_.correctionToSample5EEP_ = averagetimeEEp;
        TTreeMembers_.correctionToSample5EEM_ = averagetimeEEm;
      
-       eventTimingInfoTree_->Fill(); //Filling the TTree for Seth
+       if (TTreeMembers_.numEEcrys_ > 0 || TTreeMembers_.numEBcrys_ > 0) eventTimingInfoTree_->Fill(); //Filling the TTree for Seth
      }
 }
 

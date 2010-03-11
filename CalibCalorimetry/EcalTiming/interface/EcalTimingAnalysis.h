@@ -70,6 +70,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       std::string rhitProducer_;
       std::string rhitProducerEE_;
       std::string digiProducer_;
+      std::string gtRecordCollectionTag_;
       float ampl_thr_;
       float ampl_thrEE_;
 	  double mintime_;
@@ -168,6 +169,14 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	  float cryTimeErrorsEE_[14648];
 	  float cryAmpsEB_[61200];
 	  float cryAmpsEE_[14648];
+	  int numTriggers_;
+	  int numTechTriggers_;
+	  int triggers_[200];
+	  int techtriggers_[200];
+	  float absTime_;
+	  int lumiSection_;
+          int bx_;
+          int orbit_;
 	  float correctionToSample5EB_;
 	  float correctionToSample5EEP_;
 	  float correctionToSample5EEM_;
