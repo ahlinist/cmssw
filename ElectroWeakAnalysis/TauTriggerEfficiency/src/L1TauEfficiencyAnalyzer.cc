@@ -6,6 +6,9 @@
 #include "DataFormats/L1Trigger/interface/L1JetParticle.h"
 #include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
 
+#include "DataFormats/L1Trigger/interface/L1EtMissParticle.h"
+#include "DataFormats/L1Trigger/interface/L1EtMissParticleFwd.h"
+
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
@@ -96,6 +99,8 @@ L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
 void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
   L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
+  L1extraMETSource = iConfig.getParameter<edm::InputTag>("L1extraMETSource");
+  L1extraMHTSource = iConfig.getParameter<edm::InputTag>("L1extraMHTSource");
   L1extraCentralJetSource = iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource");
   L1CaloRegionSource = iConfig.getParameter<edm::InputTag>("L1CaloRegionSource");
 
@@ -121,6 +126,8 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("hasMatchedL1Jet", &hasL1Jet);
   l1tree->Branch("hasMatchedL1TauJet", &hasL1TauJet);
   l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet);
+  l1tree->Branch("L1MET", &met);
+  l1tree->Branch("L1MHT", &mht);
 
   l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet);
   l1tree->Branch("hasTriggeredAndMatchedL1CenJet", &hasTriggeredL1CenJet);
@@ -150,6 +157,8 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   l1Isolation = 0;
   hasTriggeredL1TauJet = false;
   hasTriggeredL1CenJet = false;
+  met=0.;
+  mht=0.;
 
   unsigned jetRegionId = 0;
 
@@ -161,12 +170,41 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
     return;
   }
 
+  // Get data from event 
+  Handle<L1EtMissParticleCollection> l1METHandle;
+  iEvent.getByLabel(L1extraMETSource, l1METHandle);
+  if(!l1METHandle.isValid()) {
+    std::cout << "%L1TauEffAnalyzer -- No L1extra MET found! " << std::endl;
+    return;
+  }
+
+  // Get data from event 
+  Handle<L1EtMissParticleCollection> l1MHTHandle;
+  iEvent.getByLabel(L1extraMHTSource, l1MHTHandle);
+  if(!l1MHTHandle.isValid()) {
+    std::cout << "%L1TauEffAnalyzer -- No L1extra MHT found! " << std::endl;
+    return;
+  }
+
   Handle<L1JetParticleCollection> l1CentralJetHandle;
   iEvent.getByLabel(L1extraCentralJetSource, l1CentralJetHandle);
   if(!l1CentralJetHandle.isValid()) {
     std::cout << "%L1TauEffAnalyzer -- No L1extra central jet found! " << std::endl;
     return;
   }
+
+
+  //Fill the MET/MHT
+  if(l1METHandle->size()>0)
+    met = l1METHandle->at(0).et();
+  else 
+    met=0;
+
+  if(l1MHTHandle->size()>0)
+    mht = l1MHTHandle->at(0).et();
+  else 
+    mht=0;
+
 
   // Process L1 triggered taus
   const L1JetParticleCollection & l1Taus = *(l1TauHandle.product());

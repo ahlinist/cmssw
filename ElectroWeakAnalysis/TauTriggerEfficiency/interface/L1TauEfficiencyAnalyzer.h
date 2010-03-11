@@ -42,6 +42,8 @@ class L1TauEfficiencyAnalyzer {
         // Input parameters
         edm::InputTag L1extraTauJetSource;
         edm::InputTag L1extraCentralJetSource;
+        edm::InputTag L1extraMETSource;
+        edm::InputTag L1extraMHTSource;
         edm::InputTag L1CaloRegionSource;
 
         edm::InputTag L1GtReadoutRecordSource;
@@ -62,6 +64,9 @@ class L1TauEfficiencyAnalyzer {
         int l1Isolation;
 	bool hasTriggeredL1TauJet;
  	bool hasTriggeredL1CenJet;
+
+	float met;
+	float mht;
 
 	int _L1EvtCnt;
 	int _HltEvtCnt;

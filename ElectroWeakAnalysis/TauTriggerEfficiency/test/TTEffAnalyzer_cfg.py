@@ -106,8 +106,14 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         # Check that Isolation collection below actually matched up with Tau Collection above
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
         #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
+
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT2"),
 	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT2"),
+
+	L1extraMETSource	= cms.InputTag("hltL1extraParticles", "MET", "HLT2"),
+	L1extraMHTSource	= cms.InputTag("hltL1extraParticles", "MHT", "HLT2"),
+
+
         L1CaloRegionSource      = cms.InputTag("hltGctDigis"), # "", "HLT2"),                               
         L1GtReadoutRecord       = cms.InputTag("hltGtDigis","","HLT2"),
         L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","HLT2"),
