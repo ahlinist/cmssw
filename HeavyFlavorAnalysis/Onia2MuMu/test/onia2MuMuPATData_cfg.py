@@ -16,20 +16,8 @@ process.GlobalTag.globaltag = "GR09_R_35X_V3::All"
 ### source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        ## Latest processing; files are from BSC skim, run 124120 lumis 1-59 
-	'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root',
-	'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/DCEE6C1B-052B-DF11-ACD7-001E0B5FB53E.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/DAA107B9-162B-DF11-BD3D-00237DA14F86.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/C88851E0-0C2B-DF11-8AEB-00237DA13FB6.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/A6EBA5BD-082B-DF11-B1B7-0017A477102C.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/9E229FC2-082B-DF11-BA33-0017A4771020.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/7C5889F6-172B-DF11-AFD2-0017A4770418.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/5A051558-0E2B-DF11-9A77-0017A4770C10.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/4AE212AF-052B-DF11-9846-001E0B48D108.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/2A1B18B6-082B-DF11-A7AD-0017A4770034.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/2206BC35-1B2B-DF11-88FA-00237DA1ED1C.root',
-	#'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/129A56F7-172B-DF11-A506-0017A4770014.root',
-   )
+        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root'
+   ),
 )
 
 ### number of events
@@ -50,7 +38,7 @@ process.hltPhysicsDeclared = cms.EDFilter("HLTHighLevel",
                                                         ),
                                  eventSetupPathsKey = cms.string(''),
                                  andOr = cms.bool(True),
-                                 throw = cms.bool(True)
+                                 throw = cms.bool(False)  # Avoid crashes if the job happens to process runs that don't have the HLT_PhysicsDeclared (e.g. 122294)
                                  )
 
 # this is for filtering on HLT MinBiasBSC bit
@@ -105,14 +93,14 @@ process.p = cms.Path(
         process.primaryVertexFilter +
         process.scrapingFilter +
         process.patMuonSequence +     # produce PAT muons for Onia2MuMu (includes merging with CaloMuons)
-        process.onia2MuMuPatTrkTrk   # make J/Psi's (inclusively down to tracker+tracker)
-        #process.selectedEvents        # select events with J/Psi's
+        process.onia2MuMuPatTrkTrk +  # make J/Psi's (inclusively down to tracker+tracker)
+        process.selectedEvents        # select events with J/Psi's
 )
 
 
 ### output
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('onia2MuMuPAT_Data2009_Run124120.root'),
+    fileName = cms.untracked.string('onia2MuMuPAT_Data2009.root'),
     outputCommands = cms.untracked.vstring('drop *',
         'keep edmTriggerResults_TriggerResults_*_*',
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',
