@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopAnalyzer.cc,v 1.1 2010/03/09 16:33:06 oiorio Exp $ 
+*\version  $Id: SingleTopAnalyzer.cc,v 1.2 2010/03/10 14:04:39 oiorio Exp $ 
 */
 
 // =================================
@@ -22,7 +22,8 @@
 
 #include "TopQuarkAnalysis/SingleTop/interface/SingleTopAnalyzer.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+//#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/Framework/interface/TriggerNames.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "DataFormats/Candidate/interface/NamedCompositeCandidate.h"
@@ -60,6 +61,7 @@ SingleTopAnalyzer::SingleTopAnalyzer(const edm::ParameterSet& iConfig)
 #endif
   
   Service<TFileService> fs;
+
 #if DEBUG
   cout << "constructor 3" << endl;
 #endif

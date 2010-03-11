@@ -3,11 +3,11 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 
 
 def run35xOn31xMC(process,
-                    #                jetSrc = cms.InputTag("antikt5CaloJets"),
-                    jetSrc = "antikt5CaloJets",
+                  jetSrc = cms.InputTag("antikt5CaloJets"),
+                    #jetSrc = "antikt5CaloJets",
                     jetIdTag = "antikt5"):
-    #    addJetID(process,"antikt5CaloJets",jetIdTag)
-    addJetID(process,"antikt5CaloJets",jetIdTag)
+    addJetID(process,jetSrc,jetIdTag)
+    #addJetID(process,"antikt5CaloJets",jetIdTag)
     switchJetCollection(process,
                         cms.InputTag('antikt5CaloJets'),
                         doJTA                 = True,
