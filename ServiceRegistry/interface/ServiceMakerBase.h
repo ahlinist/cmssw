@@ -30,6 +30,7 @@ namespace edm {
    
    namespace serviceregistry {
 
+      class SaveConfiguration;
       class ServiceWrapperBase;
       class ServicesManager;
       
@@ -46,10 +47,16 @@ public:
                            edm::ActivityRegistry&,
                            ServicesManager&) const = 0;
 
+         virtual bool saveConfiguration() const = 0;
+         
          // ---------- static member functions --------------------
          
          // ---------- member functions ---------------------------
          
+protected:
+         bool testSaveConfiguration(const SaveConfiguration*) const {return true;}
+         bool testSaveConfiguration(const void*) const {return false;}
+
 private:
          ServiceMakerBase(const ServiceMakerBase&); // stop default
          
