@@ -60,13 +60,19 @@ class HcalCalibRenderPlugin : public DQMRenderPlugin
   // Color Schemes
   // seach scheme needs an array of color indices, 
   // the number of contours to be used, and the number of RGB stop points
-  Int_t summaryColors[100];
+  Int_t summaryColors[80];
   Int_t NRGBs_summary;
   Int_t NCont_summary;
 
   Int_t pedestalColors[40];
   Int_t NRGBs_pedestal;
   Int_t NCont_pedestal;
+
+  // error colors:  green for <5% error, then yellow->red, then grey above 100% (previously-known problems)
+  int hcalErrorColors[105];
+  Int_t NRGBs_hcalError;
+  Int_t NCont_hcalError;
+
 
 public:
   virtual void initialise (int, char **)
@@ -78,8 +84,8 @@ public:
     //make summaryColors, with a value of -1 indicated in gray, values >-1 and <0 in white,
     // values 0-0.98 scaling from red to yellow, and values > 0.98 in green.
     NRGBs_summary=7;
-    NCont_summary=100;
-    Double_t stops_summary[] = {0.00,0.025,0.4999,0.50,0.98,0.981,1.00}; // set limits for color transitions
+    NCont_summary=80;
+    Double_t stops_summary[] = {0.00,0.025,0.4999,0.50,0.99,0.991,1.00}; // set limits for color transitions
     Double_t red_summary[]   = {0.6,1.00,1.00,1.00,1.00,0.00,0.00};
     Double_t green_summary[] = {0.6,1.00,1.00,0.00,1.00,0.80,0.80};
     Double_t blue_summary[]  = {0.6,1.00,1.00,0.00,0.00,0.00,0.00};
@@ -134,6 +140,34 @@ public:
 	  }
       }
 
+
+  // repeat for hcal error colors.  Assign color positions starting at 2201
+    NRGBs_hcalError = 8; // specify number of RGB boundaries for hcalError
+    NCont_hcalError = 105; // specify number of contours for hcalError
+    Double_t stops_hcalError[] = { 0.00, 0.05/1.05, 0.40/1.05, 0.75/1.05, 0.95/1.05, 1.00/1.05,  1.01/1.05,1.05/1.05};
+    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.0};
+    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00, 0.00, 0.0};
+    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.0};
+    nColorsGradient=0;
+    highestIndex=0;
+    for (int g=1;g<NRGBs_hcalError;++g)
+      {
+        nColorsGradient = (Int_t) (floor(NCont_hcalError*stops_hcalError[g]) - floor(NCont_hcalError*stops_hcalError[g-1])); // specify number of gradients between stops (g-1) and (g)
+        for (int c = 0; c < nColorsGradient; c++)
+	  {
+	    hcalErrorColors[highestIndex]=2201+highestIndex;
+	    TColor* color = gROOT->GetColor(2201+highestIndex);
+	    // Make new color only if old color does not exist
+	    if (!color)
+	      color = new TColor(2201+highestIndex,
+				 red_hcalError[g-1] + c * (red_hcalError[g] - red_hcalError[g-1])/ nColorsGradient,
+				 green_hcalError[g-1] + c * (green_hcalError[g] - green_hcalError[g-1])/ nColorsGradient,
+				 blue_hcalError[g-1] + c * (blue_hcalError[g] - blue_hcalError[g-1])/ nColorsGradient,
+				 "  ");
+
+	    highestIndex++;
+	  }
+      }
 
   }
 
@@ -212,6 +246,57 @@ private:
     gStyle->SetOptStat("iourmen");
     obj->SetStats(kTRUE);
     
+    // List of all histograms that should be in log scale
+    
+    if (o.name.find("DataFormatMonitor/") !=std::string::npos ||
+	o.name.find("RawDataMonitor_Hcal/")!=std::string::npos
+	)
+      {
+	if (  (o.name.find("Corruption/03 OrN Difference")               !=std::string::npos) ||
+	      (o.name.find("Corruption/04 HTR BCN when")                 !=std::string::npos) ||
+	      (o.name.find("Corruption/05 BCN Difference")               !=std::string::npos) ||
+	      (o.name.find("Corruption/06 EvN Difference")               !=std::string::npos) ||
+	      (o.name.find("Data Flow/BCN from")                         !=std::string::npos) ||
+	      (o.name.find("Data Flow/DCC Data Block Size Distribution") !=std::string::npos) ||
+	      (o.name.find("Data Flow/DCC Event Counts")                 !=std::string::npos) ||
+	      (o.name.find("Diagnostics/HTR Fiber Orbit")                !=std::string::npos) ||
+	      (o.name.find("Diagnostics/HTR Status Word H")              !=std::string::npos) ||
+	      (o.name.find("Diagnostics/HTR UnSupp")                     !=std::string::npos)
+	      ) 
+	  {
+	    if (obj->GetMaximum()>0) gPad->SetLogy(1);
+	  }
+	
+	else if (  (o.name.find("Data Flow/DCC Data Block Size Distribution")!=std::string::npos) ||
+		   (o.name.find("Diagnostics/HTR Fiber Orbit")!=std::string::npos)  
+		   ) 
+	  {
+	    if (obj->GetMaximum()>0) 
+	      gPad->SetLogx(1);
+	  }
+      } // Raw Data search
+
+    else if (o.name.find("RecHitMonitor_Hcal/") !=std::string::npos)
+      {
+	if (o.name.find("rechit_1D_plots")   !=std::string::npos) 
+	  {
+	    if (obj->GetMaximum()>0) 
+	      gPad->SetLogy(1);
+	    gStyle->SetOptStat("iourmen");
+	    obj->SetStats( kTRUE );
+	  }
+	else if (o.name.find("AnomalousCellFlags") !=std::string::npos)
+	  {
+	    c->SetBottomMargin(0.30);
+	    if (obj->GetMaximum()>0)
+	      gPad->SetLogy(1);
+	  }
+	else if (o.name.find("HcalRecHitIeta")!=std::string::npos ||
+		 o.name.find("HcalRecHitIphi")!=std::string::npos)
+	  obj->SetMinimum(0);
+      } // RecHitMonitor
+
+
   } // void preDrawTH1(...)
 
 
@@ -227,15 +312,58 @@ private:
 
     // default coloring scheme
     gStyle->SetPalette(1);
+    obj->SetContour(100);
     obj->SetOption("colz");
     //c->SetRightMargin(2*c->GetRightMargin()); // double right margin
     gPad->SetGridx();
     gPad->SetGridy();
+
+    if ((o.name.find("DataFormatMonitor/Corruption/") !=std::string::npos) ||
+	(o.name.find("RawDataMonitor_Hcal/Corruption") !=std::string::npos)  ){
+      // Set error palette for normalized histograms.                                                                                                      
+      obj->SetOption("colz");
+      gStyle->SetFrameFillColor(17); 
+    }
+    // Set default color scheme
+
     if (o.name.find("HcalCalib/EventInfo/reportSummaryMap")!=std::string::npos)
       {
-	obj->SetOption("text90colz"); // draw marker at 90 degrees
+	obj->SetOption("colztext90"); // draw marker at 90 degrees
 	setColorScheme(obj,NCont_summary,summaryColors);
       }
+
+
+   // Normalized error rate histograms plotted with error Fraction colors (0 = green, 1 = red)
+    if ( (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
+	 (o.name.find("RecHitMonitor_Hcal/problem_rechits/")!= std::string::npos ) ||
+	 (o.name.find("DigiMonitor_Hcal/ ProblemDigis")!= std::string::npos ) ||
+	 (o.name.find("DigiMonitor_Hcal/problem_digis/")!= std::string::npos ) ||
+	 (o.name.find("DetDiagPedestalMonitor_Hcal/ ProblemDetDiagPedestal")!= std::string::npos ) ||
+	 (o.name.find("DetDiagPedestalMonitor_Hcal/problem_DetDiagPedestal/")!= std::string::npos ) ||
+	 (o.name.find("DetDiagLaserMonitor_Hcal/ ProblemDetDiagLaser")!= std::string::npos ) ||
+	 (o.name.find("DetDiagLaserMonitor_Hcal/problem_DetDiagLaser/")!= std::string::npos ) 
+	 )
+      {
+	gStyle->SetFrameFillColor(17);  // set background to grey so that yellow can stand out
+	
+	// rescaling -- can probably be removed
+        double scale = obj->GetBinContent(0,0);
+        if (scale>1) // problem histograms don't have underflow bins filled any more
+	  obj->Scale(1./scale);
+
+	// Set error palette for normalized histograms.  
+	// Setting error color forces min/max to be 0./1.05, since otherwise, colors aren't sensible
+	obj->SetMinimum(0.);
+	obj->SetMaximum(1.05);
+	setColorScheme(obj,NCont_hcalError,hcalErrorColors);
+	obj->SetOption("colz");
+
+	// cells satisfying hot criterion in <1% of events not shown by default?  Disrupts overall color mapping?
+	if (o.name.find("HotCellMonitor_Hcal/")!=std::string::npos)
+	  obj->SetMinimum(0.01); 
+      }
+
+
     // Set Pedestal mean maximum to 2x nominal (3 ADC counts)
     if (o.name.find("HcalCalib/HcalDetDiagPedestalMonitor/Summary Plots/HBHEHF pedestal mean map") !=std::string::npos)
       {
@@ -288,7 +416,242 @@ private:
     c->cd();
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
-  }
+
+ // in the future, we can add text output based on error status,
+    // or set bin range based on filled histograms, etc.
+    if ( (o.name.find("RawDataMonitor_Hcal/Corruption")      != std::string::npos)   ||
+	 (o.name.find("RawDataMonitor_Hcal/Corruption/F")      != std::string::npos) ||
+	 (o.name.find("DataFormatMonitor/Corruption")      != std::string::npos)   ||
+	 (o.name.find("DataFormatMonitor/Corruption/F")      != std::string::npos) )
+      {
+        TText t;
+        t.SetTextSize( 0.1);
+        if (obj->GetEffectiveEntries() <= 0.0)
+	  t.DrawText(1, 1, "Empty == OK"); 
+      }
+
+    // Move histogram to accomodate colz column
+    TPaletteAxis *pal = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
+    if (pal!=0)
+      {
+	c->SetRightMargin(0.15);
+	pal->SetX1NDC(0.85);
+	pal->SetX2NDC(0.90);
+      }
+      
+
+    // Want to move colz palette, but this crashes code, and does not move the palette.  Hmm...
+    obj->GetYaxis()->SetTickLength(0.0);
+    obj->GetXaxis()->SetTickLength(0.0);
+
+    if (o.name.find("Data Flow/DCC Data Block Size Each FED")!=std::string::npos)
+      c->SetLogy();
+
+
+    if ( (o.name.find("Corruption/Chan") != std::string::npos )         )
+      {
+        c->SetBottomMargin(0.200);
+        TLine line;
+        line.SetLineWidth(1);
+        for (int i=0; i<24; i++)
+	  {   // x-axis:24 channels
+	    for (int j=0; j<15; j++)
+	      { // y-axis:15 spigots
+		line.DrawLine(MARGIN+(i*CHNS2_X0), MARGIN+(j*SPIG2_Y0),
+			      ((i+1) *  CHNS2_X0), MARGIN+(j*SPIG2_Y0)    );
+		line.DrawLine(MARGIN+(i*CHNS2_X0), MARGIN+(j*SPIG2_Y0)+2,
+			      ((i+1) *  CHNS2_X0), MARGIN+(j*SPIG2_Y0)+2  );
+
+		line.DrawLine(MARGIN+(i*CHNS2_X0)  , MARGIN+(j*SPIG2_Y0),
+			      MARGIN+(i*CHNS2_X0)  , ((j+1) *  SPIG2_Y0)    );
+		line.DrawLine(MARGIN+(i*CHNS2_X0)+2, MARGIN+(j*SPIG2_Y0),
+			      MARGIN+(i*CHNS2_X0)+2, ((j+1) *  SPIG2_Y0)    );
+	      }
+	  }
+        // Draw a legend above the plot
+        line.DrawLine((CHNS2_X0*20)  , (SPIG2_Y0*16)  ,
+                      (CHNS2_X0*21)-1, (SPIG2_Y0*16)  );
+        line.DrawLine((CHNS2_X0*20)  , (SPIG2_Y0*17)-1,
+                      (CHNS2_X0*21)-1, (SPIG2_Y0*17)-1);
+
+        line.DrawLine((CHNS2_X0*20)  , (SPIG2_Y0*16)  ,
+                      (CHNS2_X0*20)  , (SPIG2_Y0*17)-1);
+        line.DrawLine((CHNS2_X0*21)-1, (SPIG2_Y0*16)  ,
+                      (CHNS2_X0*21)-1, (SPIG2_Y0*17)-1);
+        TText tx;
+        tx.SetTextSize( 0.02);
+        tx.DrawText((CHNS2_X0*20)-6, (SPIG2_Y0*16)     , "DigiSize");
+        tx.DrawText((CHNS2_X0*20)-4, (SPIG2_Y0*17)-1.75, "!DV"     );
+
+        tx.DrawText((CHNS2_X0*21)  , (SPIG2_Y0*16)    , "CapRotat" );
+        tx.DrawText((CHNS2_X0*21)  , (SPIG2_Y0*17)-1.75,"Er"      );
+
+	obj->SetMinimum(0.);
+	//obj->SetMaximum(1.);
+        return;
+      }
+    else if ( (o.name.find("Data Flow/01") != std::string::npos )         )
+      {
+	if (obj->GetBinContent(0)>0)
+	  obj->SetMaximum(obj->GetBinContent(0));
+        c->SetBottomMargin(0.200);
+        TLine line;
+        line.SetLineWidth(1);
+        for (int i=0; i<32; i++)
+	  {   // x-axis:32 DCCs
+	    for (int j=0; j<15; j++)
+	      { // y-axis:15 spigots
+		line.DrawLine(MARGIN+(i*FEDS2_X0), MARGIN+(j*SPIG3_Y0),
+			      ((i+1) *  FEDS2_X0), MARGIN+(j*SPIG3_Y0)    );
+		line.DrawLine(MARGIN+(i*FEDS2_X0), MARGIN+(j*SPIG3_Y0)+3,
+			      ((i+1) *  FEDS2_X0), MARGIN+(j*SPIG3_Y0)+3  );
+
+		line.DrawLine(MARGIN+(i*FEDS2_X0)  , MARGIN+(j*SPIG3_Y0),
+			      MARGIN+(i*FEDS2_X0)  , ((j+1) *  SPIG3_Y0)    );
+		line.DrawLine(MARGIN+(i*FEDS2_X0)+2, MARGIN+(j*SPIG3_Y0),
+			      MARGIN+(i*FEDS2_X0)+2, ((j+1) *  SPIG3_Y0)    );
+	      }
+	  }
+        // Draw a legend above the plot
+        line.DrawLine((FEDS2_X0*28)-2, (SPIG3_Y0*16)-1,
+                      (FEDS2_X0*31)-1, (SPIG3_Y0*16)-1);
+        line.DrawLine((FEDS2_X0*28)-2, (SPIG3_Y0*17)  ,
+                      (FEDS2_X0*31)-1, (SPIG3_Y0*17)  );
+
+        line.DrawLine((FEDS2_X0*28)-2, (SPIG3_Y0*16)-1,
+                      (FEDS2_X0*28)-2, (SPIG3_Y0*17)  );
+        line.DrawLine((FEDS2_X0*31)-1, (SPIG3_Y0*16)-1,
+                      (FEDS2_X0*31)-1, (SPIG3_Y0*17)  );
+        TText tx;
+        tx.SetTextSize( 0.02);
+        tx.DrawText((FEDS2_X0*29)-7, (SPIG3_Y0*16)-2.0, "CE");
+
+        tx.DrawText((FEDS2_X0*29)-4, (SPIG3_Y0*16)+2.5, "OW");
+	tx.DrawText((FEDS2_X0*29)-4, (SPIG3_Y0*16)+1  , "BZ");
+        tx.DrawText((FEDS2_X0*29)-4, (SPIG3_Y0*16)-0.5, "EE");
+
+        tx.DrawText((FEDS2_X0*29)+0, (SPIG3_Y0*16)+2.5, "OFW");
+	tx.DrawText((FEDS2_X0*29)+0, (SPIG3_Y0*16)+1  , "BSY");
+        tx.DrawText((FEDS2_X0*29)+0, (SPIG3_Y0*16)-0.5, "L1A");
+        return;
+      }
+    else if ( (o.name.find("Corruption/09") != std::string::npos )         )
+      {
+	obj->SetOption("colz");
+	gStyle->SetFrameFillColor(17); 
+	obj->SetMinimum(0.);
+        c->SetBottomMargin(0.200);
+        TLine line;
+        line.SetLineWidth(1);
+        for (int i=0; i<32; i++)
+	  {   // x-axis:32 DCCs
+	    for (int j=0; j<15; j++)
+	      { // y-axis:15 spigots
+		line.DrawLine(MARGIN+(i*FEDS2_X0), MARGIN+(j*SPIG2_Y0),
+			      ((i+1) *  FEDS2_X0), MARGIN+(j*SPIG2_Y0)    );
+		line.DrawLine(MARGIN+(i*FEDS2_X0), MARGIN+(j*SPIG2_Y0)+2,
+			      ((i+1) *  FEDS2_X0), MARGIN+(j*SPIG2_Y0)+2  );
+
+		line.DrawLine(MARGIN+(i*FEDS2_X0)  , MARGIN+(j*SPIG2_Y0),
+			      MARGIN+(i*FEDS2_X0)  , ((j+1) *  SPIG2_Y0)    );
+		line.DrawLine(MARGIN+(i*FEDS2_X0)+2, MARGIN+(j*SPIG2_Y0),
+			      MARGIN+(i*FEDS2_X0)+2, ((j+1) *  SPIG2_Y0)    );
+	      }
+	  }
+        // Draw a legend above the plot
+        line.DrawLine((FEDS2_X0*30)  , (SPIG2_Y0*16)  ,
+                      (FEDS2_X0*31)-1, (SPIG2_Y0*16)  );
+        line.DrawLine((FEDS2_X0*30)  , (SPIG2_Y0*17)-1,
+                      (FEDS2_X0*31)-1, (SPIG2_Y0*17)-1);
+
+        line.DrawLine((FEDS2_X0*30)  , (SPIG2_Y0*16)  ,
+                      (FEDS2_X0*30)  , (SPIG2_Y0*17)-1);
+        line.DrawLine((FEDS2_X0*31)-1, (SPIG2_Y0*16)  ,
+                      (FEDS2_X0*31)-1, (SPIG2_Y0*17)-1);
+        TText tx;
+        tx.SetTextSize( 0.02);
+        tx.DrawText((FEDS2_X0*30)-6, (SPIG2_Y0*16)     , "DigiSize");
+        tx.DrawText((FEDS2_X0*30)-4, (SPIG2_Y0*17)-1.75, "!DV"     );
+
+        tx.DrawText((FEDS2_X0*31)  , (SPIG2_Y0*16)    , "CapRotat" );
+        tx.DrawText((FEDS2_X0*31)  , (SPIG2_Y0*17)-1.75,"Er"      );
+        return;
+      }
+
+    if ( (o.name.find("DataFormatMonitor/Corruption/01") != std::string::npos) ||
+	 (o.name.find("DataFormatMonitor/Corruption/02") != std::string::npos) ||
+	 (o.name.find("DataFormatMonitor/Diagnostics/DCC Stat") != std::string::npos)    )
+      {
+        obj->SetStats(0);
+        c->SetLeftMargin( 0.350); // in fractions of a TCanvas... ?
+      }
+    else  if ( (o.name.find("DataFormatMonitor/Diagnostics/HTR Status Word") != std::string::npos)    )
+      {
+        obj->SetStats(0);
+        c->SetLeftMargin( 0.250); // in fractions of a TCanvas... ?
+      }
+    else if ( (o.name.find("Corruption/07") != std::string::npos ) ||
+	      (o.name.find("Corruption/08") != std::string::npos )   )
+      {
+	obj->SetMaximum(obj->GetBinContent(0,0));
+        TLine line;
+        line.SetLineWidth(1);
+        for (int i=0; i<32; i++)
+	  {    // x-axis:32 DCC's (FEDs 700:731)
+	    for (int j=0; j<15; j++)
+	      {  // y-axis:15 spigots
+		line.DrawLine(MARGIN+(i*FEDS3_X0), MARGIN+(j*SPIG3_Y0),
+			      ((i+1) *  FEDS3_X0), MARGIN+(j*SPIG3_Y0)    );
+		line.DrawLine(MARGIN+(i*FEDS3_X0), MARGIN+(j*SPIG3_Y0)+3,
+			      ((i+1) *  FEDS3_X0), MARGIN+(j*SPIG3_Y0)+3    );
+
+		line.DrawLine(MARGIN+(i*FEDS3_X0)  , MARGIN+(j*SPIG3_Y0),
+			      MARGIN+(i*FEDS3_X0)  , ((j+1) *  SPIG3_Y0)    );
+		line.DrawLine(MARGIN+(i*FEDS3_X0)+3, MARGIN+(j*SPIG3_Y0),
+			      MARGIN+(i*FEDS3_X0)+3, ((j+1) *  SPIG3_Y0)    );
+	      }}
+        // Draw a legend above the plot
+        line.DrawLine(FEDS3_X0*28.5, (SPIG3_Y0*16)-1,
+                      FEDS3_X0*32  , (SPIG3_Y0*16)-1);
+        line.DrawLine(FEDS3_X0*28.5, (SPIG3_Y0*17)+0,
+                      FEDS3_X0*32  , (SPIG3_Y0*17)+0);
+						 
+        line.DrawLine(FEDS3_X0*28.5, (SPIG3_Y0*16)-1,
+                      FEDS3_X0*28.5, (SPIG3_Y0*17)+0);
+        line.DrawLine(FEDS3_X0*32  , (SPIG3_Y0*16)-1,
+                      FEDS3_X0*32  , (SPIG3_Y0*17)+0);
+        TText tx;
+        tx.SetTextSize( 0.02);
+        if (o.name.find("LRB") != std::string::npos )
+	  {
+	    tx.DrawText((FEDS3_X0*30)-8, (SPIG3_Y0*17)-6  , "T");
+
+	    tx.DrawText((FEDS3_X0*30)-5, (SPIG3_Y0*17)-2  , "E!P");
+	    tx.DrawText((FEDS3_X0*30)-5, (SPIG3_Y0*17)-3.5, "ND" );
+	    tx.DrawText((FEDS3_X0*30)-5, (SPIG3_Y0*17)-5  , "CRC");
+
+	    tx.DrawText((FEDS3_X0*30)+0, (SPIG3_Y0*17)-2  , "UE");
+	    tx.DrawText((FEDS3_X0*30)+0, (SPIG3_Y0*17)-3.5, "OV");
+	    tx.DrawText((FEDS3_X0*30)+0, (SPIG3_Y0*17)-5  , "ST");
+
+	    tx.DrawText((FEDS3_X0*30)+4, (SPIG3_Y0*17)-2  , "TR");
+	    tx.DrawText((FEDS3_X0*30)+4, (SPIG3_Y0*17)-3.5, "ID");
+	    tx.DrawText((FEDS3_X0*30)+4, (SPIG3_Y0*17)-5  , "ODD");}
+        if (o.name.find("Half-HTR") != std::string::npos )
+	  {
+	    tx.DrawText((FEDS3_X0*30)-5, (SPIG3_Y0*17)-2  , "CT");
+	    tx.DrawText((FEDS3_X0*30)-5, (SPIG3_Y0*17)-3.5, "HM");
+	    tx.DrawText((FEDS3_X0*30)-5, (SPIG3_Y0*17)-5  , "TM");
+
+	    tx.DrawText((FEDS3_X0*30)+0, (SPIG3_Y0*17)-2  , "BE");
+	    tx.DrawText((FEDS3_X0*30)+0, (SPIG3_Y0*17)-3.5, "15");
+	    tx.DrawText((FEDS3_X0*30)+0, (SPIG3_Y0*17)-5  , "CK");
+
+	    tx.DrawText((FEDS3_X0*30)+4 , (SPIG3_Y0*17)-3.5, "WW");
+	    tx.DrawText((FEDS3_X0*30)+4 , (SPIG3_Y0*17)-5  , "IW");
+	  }
+      }
+  } // void postDrawTH2(...)
 
   void setColorScheme(TH2* obj, Int_t cont, Int_t* Colors)
   {

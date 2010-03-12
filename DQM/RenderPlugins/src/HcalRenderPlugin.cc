@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.35 $
-  \date $Date: 2010/02/18 20:04:52 $
+  \version $Revision: 1.36 $
+  \date $Date: 2010/02/19 06:21:30 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -54,22 +54,45 @@
 
 using std::cout;
 using std::endl;
+using std::string;
 
 class HcalRenderPlugin : public DQMRenderPlugin
 {
   // Color schemes
+
+  // errorFracColors, standardColors aren't used
   int errorFracColors[20];
   int standardColors[20];
-  int summaryColors[100];
-  int hcalErrorColors[100];
-  int hcalRainbowColors[100];
+
+  Int_t defNCont_;  // default number of contours
+
+  //reportSummary Color Scheme
+  int summaryColors[100]; // grey for values of -1, then red at 0 and green above 0.98
   Int_t NRGBs_summary;
   Int_t NCont_summary;
-  Int_t NRGBs_rainbow;
-  Int_t NCont_rainbow;
+
+  // old error color scheme:  green for <5%, max out at red=100%
+  int oldHcalErrorColors[100];
+  Int_t NRGBs_oldError;
+  Int_t NCont_oldError;
+
+  // error colors:  green for <5% error, then yellow->red, then grey above 100% (previously-known problems)
+  int hcalErrorColors[105];
   Int_t NRGBs_hcalError;
   Int_t NCont_hcalError;
-  Int_t defNCont_;  // default number of contours
+
+  // pretty rainbow scheme!
+  int hcalRainbowColors[100];
+  Int_t NRGBs_rainbow;
+  Int_t NCont_rainbow;
+  
+  //timing plot -- rainbows, but plots values at midpoint as white
+  // Doesn't yet work -- can't get a fine enough gradation to put white only at exactly 0
+  /*
+  int hcalTimingColors[100];
+  Int_t NRGBs_timing;
+  Int_t NCont_timing;
+  */
 
 public:
   virtual void initialise (int, char **)
@@ -112,7 +135,7 @@ public:
     NRGBs_rainbow = 5; // specify number of RGB boundaries for rainbow
     NCont_rainbow = 100; // specify number of contours for rainbow
     Double_t stops_rainbow[] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-    Double_t red_rainbow[]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+    Double_t red_rainbow[]   = { 0.00, 0.00, 0.87, 1.00, 0.91 };
     Double_t green_rainbow[] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
     Double_t blue_rainbow[]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
     Int_t nColorsGradient=0;
@@ -136,42 +159,16 @@ public:
 	  }
       }
 
-    // repeat for hcal error colors.  Assign color positions 1201-1300;
-    NRGBs_hcalError = 6; // specify number of RGB boundaries for hcalError
-    NCont_hcalError = 100; // specify number of contours for hcalError
-    Double_t stops_hcalError[] = { 0.00, 0.05, 0.40, 0.75, 0.95, 1.00};
-    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 0.60};
-    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00};
-    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00};
-    nColorsGradient=0;
-    highestIndex=0;
-    for (int g=1;g<NRGBs_hcalError;++g)
-      {
-        nColorsGradient = (Int_t) (floor(NCont_hcalError*stops_hcalError[g]) - floor(NCont_hcalError*stops_hcalError[g-1])); // specify number of gradients between stops (g-1) and (g)
-        for (int c = 0; c < nColorsGradient; c++)
-	  {
-	    hcalErrorColors[highestIndex]=1201+highestIndex;
-	    TColor* color = gROOT->GetColor(1201+highestIndex);
-	    // Make new color only if old color does not exist
-	    if (!color)
-	      color = new TColor(1201+highestIndex,
-				 red_hcalError[g-1] + c * (red_hcalError[g] - red_hcalError[g-1])/ nColorsGradient,
-				 green_hcalError[g-1] + c * (green_hcalError[g] - green_hcalError[g-1])/ nColorsGradient,
-				 blue_hcalError[g-1] + c * (blue_hcalError[g] - blue_hcalError[g-1])/ nColorsGradient,
-				 "  ");
-
-	    highestIndex++;
-	  }
-      }
 
     //make summaryColors, with a value of -1 indicated in gray, values >-1 and <0 in white,
     // values 0-0.98 scaling from red to yellow, and values > 0.98 in green.
+    // assign values 1201-1300
     NRGBs_summary=7;
     NCont_summary=100;
-    Double_t stops_summary[] = {0.00,0.025,0.4999,0.50,0.98,.981,1.00}; // set limits for color transitions
-    Double_t red_summary[]   = {0.6,1.00,1.00,1.00,1.00,0.00,0.00};
-    Double_t green_summary[] = {0.6,1.00,1.00,0.00,1.00,0.80,0.80};
-    Double_t blue_summary[]  = {0.6,1.00,1.00,0.00,0.00,0.00,0.00};
+    Double_t stops_summary[] = {0.00, 0.025, 0.4999, 0.50, 0.99, 0.991, 1.00}; // set limits for color transitions
+    Double_t red_summary[]   = {0.6,  1.0,   1.0,    1.0,  1.0,  0.0,   0.00};
+    Double_t green_summary[] = {0.6,  1.0,   1.0,    0.0,  1.0,  0.8,   0.80};
+    Double_t blue_summary[]  = {0.6,  1.0,   1.0,    0.0,  0.0,  0.0,   0.00};
     nColorsGradient=0;
     highestIndex=0;
     for (int g=1;g<NRGBs_summary;++g)
@@ -179,14 +176,71 @@ public:
 	nColorsGradient = (Int_t) (floor(NCont_summary*stops_summary[g]) - floor(NCont_summary*stops_summary[g-1])); // specify number of gradients between stops (g-1) and (g)
         for (int c = 0; c < nColorsGradient; c++)
 	  {
-	    summaryColors[highestIndex]=1301+highestIndex;
-	    TColor* color = gROOT->GetColor(1301+highestIndex);
+	    summaryColors[highestIndex]=1201+highestIndex;
+	    TColor* color = gROOT->GetColor(1201+highestIndex);
 	    // Make new color only if old color does not exist
 	    if (!color)
-	      color = new TColor(1301+highestIndex,
+	      color = new TColor(1201+highestIndex,
 				 red_summary[g-1] + c * (red_summary[g] - red_summary[g-1])/ nColorsGradient,
 				 green_summary[g-1] + c * (green_summary[g] - green_summary[g-1])/ nColorsGradient,
 				 blue_summary[g-1] + c * (blue_summary[g] - blue_summary[g-1])/ nColorsGradient,
+				 "  ");
+
+	    highestIndex++;
+	  }
+      }
+
+    /*
+    NRGBs_timing = 8; // specify number of RGB boundaries for rainbow
+    NCont_timing = 100; // specify number of contours for rainbow
+    Double_t stops_timing[] = { 0.00, 0.34, 0.499, 0.500,  0.61, 0.84, 1.00 };
+    Double_t red_timing[]   = { 0.00, 0.00, 0.0000, 1.0000, 0.0000, 0.87, 1.00, 0.91 };
+    Double_t green_timing[] = { 0.00, 0.81, 1.0000, 1.0000, 1.0000, 1.00, 0.20, 0.00 };
+    Double_t blue_timing[]  = { 0.51, 1.00, 1.0000, 1.0000, 0.0000, 0.12, 0.00, 0.00 };
+    nColorsGradient=0;
+    highestIndex=0;
+    for (int g=1;g<NRGBs_timing;++g)
+      {
+        nColorsGradient = (Int_t) (floor(NCont_timing*stops_timing[g]) - floor(NCont_timing*stops_timing[g-1])); // specify number of gradients between stops (g-1) and (g)
+	if (nColorsGradient<-1) continue;
+        for (int c = 0; c < nColorsGradient; c++)
+	  {
+	    hcalTimingColors[highestIndex]=1401+highestIndex;
+	    TColor* color = gROOT->GetColor(1401+highestIndex);
+	    // Make new color only if old color does not exist
+	    if (!color )
+	      color = new TColor(1401+highestIndex,
+				 red_timing[g-1] + c * (red_timing[g] - red_timing[g-1])/ nColorsGradient,
+				 green_timing[g-1] + c * (green_timing[g] - green_timing[g-1])/ nColorsGradient,
+				 blue_timing[g-1] + c * (blue_timing[g] - blue_timing[g-1])/ nColorsGradient,
+				 "  ");
+	    highestIndex++;
+	  }
+      }
+    */
+
+    // repeat for hcal error colors.  Assign color positions starting at 1501
+    NRGBs_hcalError = 8; // specify number of RGB boundaries for hcalError
+    NCont_hcalError = 105; // specify number of contours for hcalError
+    Double_t stops_hcalError[] = { 0.00, 0.05/1.05, 0.40/1.05, 0.75/1.05, 0.95/1.05, 1.00/1.05,  1.01/1.05,1.05/1.05};
+    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.0};
+    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00, 0.00, 0.0};
+    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.0};
+    nColorsGradient=0;
+    highestIndex=0;
+    for (int g=1;g<NRGBs_hcalError;++g)
+      {
+        nColorsGradient = (Int_t) (floor(NCont_hcalError*stops_hcalError[g]) - floor(NCont_hcalError*stops_hcalError[g-1])); // specify number of gradients between stops (g-1) and (g)
+        for (int c = 0; c < nColorsGradient; c++)
+	  {
+	    hcalErrorColors[highestIndex]=1501+highestIndex;
+	    TColor* color = gROOT->GetColor(1501+highestIndex);
+	    // Make new color only if old color does not exist
+	    if (!color)
+	      color = new TColor(1501+highestIndex,
+				 red_hcalError[g-1] + c * (red_hcalError[g] - red_hcalError[g-1])/ nColorsGradient,
+				 green_hcalError[g-1] + c * (green_hcalError[g] - green_hcalError[g-1])/ nColorsGradient,
+				 blue_hcalError[g-1] + c * (blue_hcalError[g] - blue_hcalError[g-1])/ nColorsGradient,
 				 "  ");
 
 	    highestIndex++;
@@ -272,7 +326,9 @@ private:
     // o.name is a std::string object
     // Add in list of names of histograms for which we want log plotting here.
 
-    if (o.name.find("DataFormatMonitor/") !=std::string::npos)
+    if (o.name.find("DataFormatMonitor/") !=std::string::npos ||
+	o.name.find("RawDataMonitor_Hcal/")!=std::string::npos
+	)
       {
 	if (  (o.name.find("Corruption/03 OrN Difference")               !=std::string::npos) ||
 	      (o.name.find("Corruption/04 HTR BCN when")                 !=std::string::npos) ||
@@ -300,32 +356,41 @@ private:
 
     else if (o.name.find("DigiMonitor_Hcal/") !=std::string::npos)
       {
-	if  (o.name.find("DigiMonitor_Hcal/good_digis/# of Good Digis") !=std::string::npos)
-	  {if (obj->GetMaximum()>0) gPad->SetLogy(1);}
-	
-	else if (  (o.name.find("Digi Shape - over thresh")!=std::string::npos)  )
-	  obj->SetMinimum(0);
-	
-	else if (  ((o.name.find("DigiMonitor_Hcal/digi_info/") !=std::string::npos) &&
-		    (o.name.find(" CapID") != std::string::npos)) ||
-		   ((o.name.find("DigiMonitor_Hcal/digi_info/") !=std::string::npos) &&
-		    (o.name.find(" Digi Shape") != std::string::npos))
-		   )
-	  {
-	    obj->SetMinimum(0.);
-	  }
-	else if (o.name.find("digi_info/# of Digis") !=std::string::npos)
-	  {
-	    if (obj->GetMaximum()>0) gPad->SetLogy(1);
-	    gStyle->SetOptStat("iourmen");
-	    obj->SetStats(kTRUE);
-	  }
 
-	else if (o.name.find(" Capid 1st Time Slice") !=std::string::npos)
+	// good_digis subdirectory
+	if  (o.name.find("/good_digis/")!=std::string::npos)
 	  {
-	    if (obj->GetMaximum()>0) gPad->SetLogy(1);
-	  }
-	else if (o.name.find("bad_digis") !=std::string::npos)
+	   if (o.name.find("Number of Good Digis") !=std::string::npos)
+	     {
+	       if (obj->GetMaximum()>0) gPad->SetLogy(1);
+	     }
+	   else if (o.name.find("digi_occupancy/") !=std::string::npos)
+	     obj->SetMinimum(0);
+	  } // good_digis subdirectory
+
+	// digi_info subdirectory
+	else if (o.name.find("/digi_info/")!=std::string::npos)
+	  {
+	    if ( (o.name.find(" CapID") != std::string::npos) ||
+		 (o.name.find(" Digi Shape") != std::string::npos) ||
+		 (o.name.find("Digi Shape - over thresh") !=std::string::npos)
+		 )
+	      {
+		obj->SetMinimum(0.);
+	      }
+	    else if (o.name.find("Number of Digis") !=std::string::npos)
+	      {
+		if (obj->GetMaximum()>0) gPad->SetLogy(1);
+		gStyle->SetOptStat("iourmen");
+		obj->SetStats(kTRUE);
+	      }
+	    else if (o.name.find(" Capid 1st Time Slice") !=std::string::npos)
+	      {
+		if (obj->GetMaximum()>0) gPad->SetLogy(1);
+	      }
+	  } // digi_info subdirectory
+
+	else if (o.name.find("/bad_digis/") !=std::string::npos)
 	  {
 	    gStyle->SetOptStat("iourmen");
 	    obj->SetStats(kTRUE);
@@ -340,7 +405,7 @@ private:
 
     else if (o.name.find("RecHitMonitor_Hcal/") !=std::string::npos)
       {
-	if (o.name.find("RecHitMonitor_Hcal/rechit_1D_plots")                           !=std::string::npos) 
+	if (o.name.find("rechit_1D_plots")   !=std::string::npos) 
 	  {
 	    if (obj->GetMaximum()>0) 
 	      gPad->SetLogy(1);
@@ -353,6 +418,9 @@ private:
 	    if (obj->GetMaximum()>0)
 	      gPad->SetLogy(1);
 	  }
+	else if (o.name.find("HcalRecHitIeta")!=std::string::npos ||
+		 o.name.find("HcalRecHitIphi")!=std::string::npos)
+	  obj->SetMinimum(0);
       } // RecHitMonitor
 
     else if (o.name.find("DeadCellMonitor_Hcal/") !=std::string::npos)
@@ -365,7 +433,14 @@ private:
 	else if (o.name.find("NumberOfDeadCellEvents")!=std::string::npos)
 	  obj->SetMinimum(0);
       } // DeadCellMonitor
+
+    else if (o.name.find("HcalInfo/") !=std::string::npos)
+      {
+	if (o.name.find("CalibrationType")!=std::string::npos && obj->GetMaximum()>0)
+	  gPad->SetLogy();
+      }
   } // void preDrawTH1(...)
+
 
   void preDrawTH2 ( TCanvas *c, const VisDQMObject &o )
   {
@@ -385,11 +460,14 @@ private:
     obj->SetOption("colz");
     c->SetRightMargin(2*c->GetRightMargin()); // double right margin
 
-    if ((o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos) ||
-	(o.name.find("DataFormatMonitor/H")!= std::string::npos) ||
-	(o.name.find("DataFormatMonitor/Corruption/") !=std::string::npos))
-      gStyle->SetFrameFillColor(18);
-    
+    if ((o.name.find("DataFormatMonitor/Corruption/") !=std::string::npos) ||
+	(o.name.find("RawDataMonitor_Hcal/Corruption") !=std::string::npos)  ){
+      // Set error palette for normalized histograms.                                                                                                      
+      // Setting error color forces min/max to be 0./1.05, since otherwise, colors aren't sensible                                                         
+      //setErrorColor(obj);
+      obj->SetOption("colz");
+      gStyle->SetFrameFillColor(17); 
+    }
     // Set default color scheme
     
     // For reportSummary plots, use the summaryColors defined within this code
@@ -397,7 +475,7 @@ private:
 
     if (o.name.find("reportSummaryMap" ) != std::string::npos)
       {
-	obj->SetContour(40);
+	obj->SetContour(100);
         setSummaryColor(obj);
 	gStyle->SetPaintTextFormat("5.4g"); // set to %5.4f  text format in cells
 	obj->SetMarkerSize(3); // set font size to 3x normal
@@ -410,10 +488,9 @@ private:
 	     o.name.find("EventInfo/HB HE HF Depth 2 Summary Map") != std::string::npos ||
 	     o.name.find("EventInfo/HE Depth 3 Summary Map") != std::string::npos ||
 	     o.name.find("EventInfo/HO Depth 4 Summary Map") != std::string::npos ||
-	     o.name.find("EventInfo/StatusVsLS") !=std::string::npos
+	     o.name.find("HcalInfo/SummaryClientPlots/StatusVsLS") !=std::string::npos 
 	     )
       {
-	obj->SetContour(40);
 	setSummaryColor(obj);
 	obj->SetMinimum(-1.);
 	obj->SetMaximum(1.);
@@ -428,7 +505,7 @@ private:
 	obj->SetMaximum(1.);
       }
 
-    // Overall problem hot cells are plotted with error Fraction colors (0 = green, 1 = red)
+    // Normalized error rate histograms plotted with error Fraction colors (0 = green, 1 = red)
     else if ( (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
 	      (o.name.find("RecHitMonitor_Hcal/problem_rechits/")!= std::string::npos ) ||
 	      (o.name.find("DigiMonitor_Hcal/ ProblemDigis")!= std::string::npos ) ||
@@ -438,27 +515,38 @@ private:
 	      (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
 	      (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/")!= std::string::npos ) ||
 	      (o.name.find("BeamMonitor_Hcal/ ProblemBeamMonitor")!= std::string::npos ) ||
-	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos )  
+	      (o.name.find("BeamMonitor_Hcal/ Problem BeamMonitor")!= std::string::npos ) ||
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos )  ||
+	      (o.name.find("TrigPrimMonitor_Hcal/ ProblemTriggerPrimitives")  != std::string::npos) ||
+	      (o.name.find("TrigPrimMonitor_Hcal/problem_triggerprimitives")  != std::string::npos) ||
+	      (o.name.find("NZSMonitor_Hcal/ ProblemNZS")  != std::string::npos) ||
+	      (o.name.find("NZSMonitor_Hcal/problem_NZS/") != std::string::npos) ||
+	      (o.name.find("RawDataMonitor_Hcal/ ProblemRawData")   != std::string::npos) ||
+	      (o.name.find("RawDataMonitor_Hcal/problem_rawdata/") != std::string::npos) ||
+	      (o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos) ||
+	      (o.name.find("DataFormatMonitor/H")!= std::string::npos)  ||
+	      (o.name.find("HcalInfo/SummaryClientPlots") !=std::string::npos)
 	      )
-		
       {
-	//c->SetFrameFillColor(16);
-	gStyle->SetFrameFillColor(17);
+	gStyle->SetFrameFillColor(17);  // set background to grey so that yellow can stand out
+	
+	// rescaling -- can probably be removed
         double scale = obj->GetBinContent(0,0);
         if (scale>1) // problem histograms don't have underflow bins filled any more
 	  obj->Scale(1./scale);
 
-	obj->SetMinimum(0.);
-	if (o.name.find("HotCellMonitor_Hcal/")!=std::string::npos)
-	  obj->SetMinimum(0.01); // cells satisfying hot criterion in <1% of events not shown by default
-	obj->SetMaximum(1.);
-	//Set error palette just for normalized histograms?
+	// Set error palette for normalized histograms.  
+	// Setting error color forces min/max to be 0./1.05, since otherwise, colors aren't sensible
 	setErrorColor(obj);
-        obj->SetOption("colz");
+	obj->SetOption("colz");
+
+	// cells satisfying hot criterion in <1% of events not shown by default?  Disrupts overall color mapping?
+	if (o.name.find("HotCellMonitor_Hcal/")!=std::string::npos)
+	  obj->SetMinimum(0.01); 
       }
 
     // Do we want these plots to show error fractions (0-1) as well?
-    // I think it's usef ul to have raw number of events plotted here; don't renormalize (yet)
+    // I think it's useful to have raw number of events plotted here; don't renormalize yet
 
     else if (// Hot Cell subdirectories
 	     (o.name.find("HotCellMonitor_Hcal/hot_pedestaltest/") != std::string::npos) ||
@@ -467,7 +555,6 @@ private:
 	     (o.name.find("HotCellMonitor_Hcal/hot_neighbortest/") != std::string::npos)  ||
 	     // Dead Cell subdirectories
 	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing/")!= std::string::npos ) ||
-	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present/")!= std::string::npos ) ||
 	     (o.name.find("DeadCellMonitor_Hcal/dead_energytest/")!= std::string::npos ) ||
 	     // Digi Subdirectories
 	     (o.name.find("DigiMonitor_Hcal/bad_digis/bad_digi_occupancy/")!=std::string::npos) ||
@@ -490,39 +577,43 @@ private:
 	    obj->SetMinimum(0.);
 	    obj->SetStats(0);
 	  }
-        setErrorColor(obj);
+        setOldErrorColor(obj);
         obj->SetOption("colz");
       }
 
     else if (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present")!=std::string::npos)
-      obj->SetMaximum(1); // useful for offline running, where multiple entries fill the occupancy hist more than once
-    // Soon will be removed, as pedestal checking now done elsewhere
+      obj->SetMaximum(2); // useful for offline running, where multiple entries fill the occupancy hist more than once.  Good occupancy will have value=1 (appears green in rainbow)
+
     else if (
-	     (o.name.find("ReferencePedestalMonitor_Hcal/adc/unsubtracted") != std::string::npos)  ||
-	     (o.name.find("ReferencePedestalMonitor_Hcal/reference_pedestals/adc") != std::string::npos) 
+	     (o.name.find("ADC Pedestals From Conditions DB")!=std::string::npos)
 	     )
       {
         // ADC pedestals should be centered at 3; set maximum to 2*3=6
         obj->SetMinimum(0.);
-        if ( (obj->GetMaximum()<6.) &&
-	     (o.name.find("Pedestal Values ") != std::string::npos)
-	     )
-	  obj->SetMaximum(6.);
-
-        else if ( (obj->GetMaximum()<2.) &&
-		  (o.name.find("Pedestal Widths ") != std::string::npos)
-		  )
-	  obj->SetMaximum(2.);
-
+	obj->SetMaximum(6.);
         setRainbowColor(obj); // sets to rainbow color with finer gradations than setPalette(1)
         obj->SetOption("colz");
       }
-
-    else   // default color is rainbow
+    else if (o.name.find("TrigPrimMonitor_Hcal/")!=std::string::npos)
       {
-        gStyle->SetPalette(1);
-        obj->SetOption("colz");
+	if ((o.name.find("Error Flag_")!=std::string::npos) ||
+	    (o.name.find("FG Correlation_")!=std::string::npos))
+	  {
+	    obj->SetOption("textcolz");
+	    gPad->SetLogz();
+	  }
       }
+    else if (o.name.find("RecHitMonitor_Hcal/")!=std::string::npos)
+      {
+	if (o.name.find("RecHit Average Time")!=std::string::npos)
+	  {
+	    obj->SetMinimum(-150);
+	    obj->SetMaximum(150);
+	    //setTimingColor(obj);
+	    // add color scheme later that plots t=0.0000 as white (indicating empty channels)
+	  }
+      }
+
   } // void preDrawTH2
 
   void preDrawTProfile ( TCanvas *, const VisDQMObject &o )
@@ -558,8 +649,9 @@ private:
     TH1* obj = dynamic_cast<TH1*>( o.object ); 
     assert( obj ); 
     
-    if ( (o.name.find("DataFormatMonitor/Corruption")      != std::string::npos) &&
-	 (obj->GetEntries() == 0) )
+    if ( ((o.name.find("DataFormatMonitor/Corruption")      != std::string::npos) ||
+	  (o.name.find("RawDataMonitor_Hcal/Corruption")      != std::string::npos)   )&&
+	 (obj->GetMaximum() == 0.0) )
       {
         TText t;
         t.SetTextSize( 0.1);
@@ -569,13 +661,33 @@ private:
 	  t.DrawText(-1*(obj->GetNbinsX() * 0.5), 0, "Empty == OK"); 
 
       }
-
+    else if (o.name.find("BeamMonitor_Hcal") !=std::string::npos)
+      {
+	if (o.name.find("/Lumi") !=std::string::npos && obj->GetMinimum()>0)
+	  obj->SetMinimum(0);
+      } // BeamMonitor_Hcal
   }
 
   void postDrawTH2( TCanvas *c, const VisDQMObject &o )
   {
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
+
+
+    // in the future, we can add text output based on error status,
+    // or set bin range based on filled histograms, etc.
+    if ( (o.name.find("RawDataMonitor_Hcal/Corruption")      != std::string::npos)   ||
+	 (o.name.find("RawDataMonitor_Hcal/Corruption/F")      != std::string::npos) ||
+	 (o.name.find("DataFormatMonitor/Corruption")      != std::string::npos)   ||
+	 (o.name.find("DataFormatMonitor/Corruption/F")      != std::string::npos) )
+      {
+        TText t;
+	//setErrorColor(obj); // not sure we want to do this, unless we are sure plots are normalized
+	
+        t.SetTextSize( 0.1);
+        if (obj->GetEffectiveEntries() <= 0.0)
+	  t.DrawText(1, 1, "Empty == OK"); 
+      }
 
     // Move histogram to accomodate colz column
     TPaletteAxis *pal = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
@@ -591,20 +703,9 @@ private:
     obj->GetYaxis()->SetTickLength(0.0);
     obj->GetXaxis()->SetTickLength(0.0);
 
-    if (o.name.find("DataFormatMonitor/Data Flow/DCC Data Block Size Each FED")!=std::string::npos)
+    if (o.name.find("Data Flow/DCC Data Block Size Each FED")!=std::string::npos)
       c->SetLogy();
 
-    // in the future, we can add text output based on error status,
-    // or set bin range based on filled histograms, etc.
-    if ( (o.name.find("DataFormatMonitor/Corruption")      != std::string::npos) ||
-	 (o.name.find("DataFormatMonitor/Corruption/F")      != std::string::npos) )
-      {
-        TText t;
-	setErrorColor(obj);
-        t.SetTextSize( 0.1);
-        if (obj->GetEntries() == 0)
-	  t.DrawText(1, 1, "Empty == OK"); 
-      }
 
     if ( (o.name.find("Corruption/Chan") != std::string::npos )         )
       {
@@ -644,7 +745,8 @@ private:
         tx.DrawText((CHNS2_X0*21)  , (SPIG2_Y0*16)    , "CapRotat" );
         tx.DrawText((CHNS2_X0*21)  , (SPIG2_Y0*17)-1.75,"Er"      );
 
-	obj->SetMaximum(1);
+	obj->SetMinimum(0.);
+	//obj->SetMaximum(1.);
         return;
       }
     else if ( (o.name.find("Data Flow/01") != std::string::npos )         )
@@ -694,7 +796,11 @@ private:
       }
     else if ( (o.name.find("Corruption/09") != std::string::npos )         )
       {
-	obj->SetMaximum(1);
+	//setErrorColor(obj);
+	obj->SetOption("colz");
+	gStyle->SetFrameFillColor(17); 
+	//obj->SetMaximum(1.05);
+	obj->SetMinimum(0.);
         c->SetBottomMargin(0.200);
         TLine line;
         line.SetLineWidth(1);
@@ -738,7 +844,7 @@ private:
 	 (o.name.find("DataFormatMonitor/Diagnostics/DCC Stat") != std::string::npos)    )
       {
         obj->SetStats(0);
-	setErrorColor(obj);
+	setOldErrorColor(obj);
         c->SetLeftMargin( 0.350); // in fractions of a TCanvas... ?
       }
     else  if ( (o.name.find("DataFormatMonitor/Diagnostics/HTR Status Word") != std::string::npos)    )
@@ -750,7 +856,7 @@ private:
 	      (o.name.find("Corruption/08") != std::string::npos )   )
       {
 	obj->SetMaximum(obj->GetBinContent(0,0));
-	setErrorColor(obj);
+	setOldErrorColor(obj);
         TLine line;
         line.SetLineWidth(1);
         for (int i=0; i<32; i++)
@@ -806,8 +912,7 @@ private:
 
 	    tx.DrawText((FEDS3_X0*30)+4 , (SPIG3_Y0*17)-3.5, "WW");
 	    tx.DrawText((FEDS3_X0*30)+4 , (SPIG3_Y0*17)-5  , "IW");}
-        return;
-      }
+      }  // o.name.find("Corruption/08")
 
     else if ( (o.name.find("DigiMonitor_Hcal/ ProblemDigis")!= std::string::npos ) ||
 	      (o.name.find("DigiMonitor_Hcal/problem_digis")!= std::string::npos ) ||
@@ -864,32 +969,51 @@ private:
 	    t.DrawTextNDC(0.05,0.01,"Histogram updates every N lumi sections");
 	  }
       } // if (o.name.find("DeadCellMonitor_Hcal/"...)
-      
+    
     //drawEtaPhiLines(obj);
-
+    
   }
 
-  void setRainbowColor(TH2* obj)
+void setRainbowColor(TH2* obj)
   {
     obj->SetContour(NCont_rainbow);
     gStyle->SetPalette(NCont_rainbow,hcalRainbowColors);
   }
 
-  void setSummaryColor(TH2* obj)
+  /*
+void setTimingColor(TH2* obj)
   {
-    obj->SetContour(NCont_summary);
-    gStyle->SetPalette(NCont_summary,summaryColors);
+    obj->SetContour(NCont_timing);
+    gStyle->SetPalette(NCont_timing,hcalTimingColors);
   }
+  */
 
-  void setErrorColor(TH2* obj)
-  {
-    obj->SetContour(NCont_hcalError);
-    gStyle->SetPalette(NCont_hcalError,hcalErrorColors);
-  }
+void setSummaryColor(TH2* obj)
+{
+  obj->SetContour(NCont_summary);
+  gStyle->SetPalette(NCont_summary,summaryColors);
+}
+
+void setErrorColor(TH2* obj)
+{
+  obj->SetMinimum(0.00);
+  obj->SetMaximum(1.05);
+  obj->SetContour(NCont_hcalError);
+  gStyle->SetPalette(NCont_hcalError,hcalErrorColors);
+}
+
+void setOldErrorColor(TH2* obj)
+{
+  obj->SetContour(100);
+  /*
+  obj->SetContour(NCont_oldError);
+  gStyle->SetPalette(NCont_oldError, oldHcalErrorColors);
+  */
+}
 
   void drawEtaPhiLines(TH2* obj)
   {
-    // I don't think we want these; it's easier just to zoom in from onlineDQM
+    // I don't think we want these any more; it's easier just to zoom in from onlineDQM
     TAxis *xaxis =obj->GetXaxis();
     TAxis *yaxis=obj->GetYaxis();
     if (xaxis->GetXmax()!=HCAL_ETAMAX) return;
