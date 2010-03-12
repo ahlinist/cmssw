@@ -21,6 +21,13 @@ process.load("Validation.L1Trigger.rpcTriggerValidation_cfi")
 #process.RPCTriggerVal.MC  = cms.InputTag("muons")
 #process.RPCTriggerVal.MC  = cms.InputTag("muonsFromCosmics")
 
+process.rpcTriggerValidation.L1CandsCollections = cms.VInputTag(cms.InputTag("simGmtDigis") )
+process.rpcTriggerValidation.L1MuonFromReco=cms.bool(True)
+process.rpcTriggerValidation.takeGMT = cms.bool(True)
+process.rpcTriggerValidation.NumberOfQuality = 8
+
+
+
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
