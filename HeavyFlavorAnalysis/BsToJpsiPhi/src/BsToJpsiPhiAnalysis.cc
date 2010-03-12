@@ -123,7 +123,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
 
 BsToJpsiPhiAnalysis::~BsToJpsiPhiAnalysis() {}
 
-void BsToJpsiPhiAnalysis::beginJob(edm::EventSetup const& setup)
+void BsToJpsiPhiAnalysis::beginJob()
 {
   bsRootTree_ = new BsToJpsiPhiRootTree();
   bsRootTree_->createTree(outputFile_);
