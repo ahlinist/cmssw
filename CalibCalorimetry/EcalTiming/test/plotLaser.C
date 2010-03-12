@@ -70,7 +70,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   char name[100];  
   char mytitle[200];
 
-  const int nHists1=100;
+  const int nHists1=120;
   const int nHists = nHists1;
   //  const int nHists = 9;
   cout << nHists1 << " " << nHists << endl;;
@@ -999,6 +999,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   c[65]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysAmp_%i.%s",dirName,mType,runNumber,fileType); c[65]->Print(name); }
 
+  //NEW plots that take into account the new TTree variables.
+
   //FINAL 1D timing number, by crystal by TT
   c[66]->cd();
   gStyle->SetOptStat(111110);
@@ -1071,6 +1073,26 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //eventTimingInfoTree->SetBranchStatus("*",1);
   //using namespace edm;
 
+  //Get the max and min times of the absolute time
+
+  eventTimingInfoTree->Draw("absTime >> habsTime","","");
+  double minTime = habsTime->GetXaxis()->GetXmin()/60;
+  double maxTime = habsTime->GetXaxis()->GetXmax()/60 + 1.;
+  double diffTime = maxTime - minTime;
+  minTime = habsTime->GetXaxis()->GetXmin()/60.;
+  
+  eventTimingInfoTree->Draw("triggers >> htriggers","","");
+  double minTrig = htriggers->GetXaxis()->GetXmin();
+  double maxTrig = htriggers->GetXaxis()->GetXmax();
+  double diffTtrig = maxTrig - minTrig;
+  if ( minTrig < 0 ) cout << " Min trig is less than 0: " << minTrig;
+
+  eventTimingInfoTree->Draw("techtriggers >> htechtriggers","","");
+  double minTTrig = htechtriggers->GetXaxis()->GetXmin();
+  double maxTTrig = htechtriggers->GetXaxis()->GetXmax();
+  double diffTTtrig = maxTTrig - minTTrig;
+  if ( minTTrig < 0 ) cout << " Min tech trig is less than 0: " << minTTrig;
+
   
   eventTimingInfoTree->SetBranchAddress("numberOfEBcrys",&TTreeMembers_.numEBcrys_);
   eventTimingInfoTree->SetBranchAddress("numberOfEEcrys",&TTreeMembers_.numEEcrys_);
@@ -1096,21 +1118,54 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   int nents = eventTimingInfoTree->GetEntries();
   cout << "nentries is " << nents << endl;
 
-  TH1F *hEBTimeEtaLess5 = new TH1F("hEBTimeEtaLess5","EB Timing |ieta|<5; Crystal Time (ns); Entries",100, -60.,60.);
-  TH1F *hEBPlusTime   = new TH1F("hEBPlusTime", "EB+ Timing; Crystal Time (ns); Entries",100, -60.,60.);
-  TH1F *hEBMinusTime  = new TH1F("hEBMinusTime","EB- Timing; Crystal Time (ns); Entries",100, -60.,60.);
-  TH2F *hEBPlus2Minus = new TH2F("hEBPlus2Minus","EB+ to EB- Timing; EB+ Average Time (ns); EB- Average Time (ns)",50, -60.,60.,50, -60.,60.);
-  TH2F *hEEPlus2Minus = new TH2F("hEEPlus2Minus","EE+ to EE- Timing; EE+ Average Time (ns); EE- Average Time (ns)",50, -75.,75.,50, -75.,75.);
+  double EBTimeMax = 60.;
+  double EETimeMax = 75.;
+
+  TH1F *hEBTimeEtaLess5 = new TH1F("hEBTimeEtaLess5","EB Timing |ieta|<5; Crystal Time (ns); Entries",100, -EBTimeMax, EBTimeMax);
+  TH1F *hEBPlusTime     = new TH1F("hEBPlusTime", "EB+ Timing; Crystal Time (ns); Entries",100, EBTimeMax, EBTimeMax);
+  TH1F *hEBMinusTime    = new TH1F("hEBMinusTime","EB- Timing; Crystal Time (ns); Entries",100, EBTimeMax, EBTimeMax);
+  TH2F *hEBPlus2Minus   = new TH2F("hEBPlus2Minus","EB+ to EB- Timing; EB+ Average Time (ns); EB- Average Time (ns)",50, -EBTimeMax,EBTimeMax,50, -EBTimeMax,EBTimeMax);
+  TH2F *hEEPlus2Minus   = new TH2F("hEEPlus2Minus","EE+ to EE- Timing; EE+ Average Time (ns); EE- Average Time (ns)",50, -EETimeMax, EBTimeMax, 50, -EBTimeMax, EBTimeMax);
+  TH1F *hAbsTime        = new TH1F("hAbsTime" ,     "Timing Occupancy ; Event Time Since Run Start (mins)",100, 0., diffTime);
+  TH1F *hBX             = new TH1F("hBX     " ,     "BX Occupancy ; BX of Event",3500, 0, 3500);
+  TH1F *hTriggers       = new TH1F("hTriggers",     "Trigger Occupancy; Active Trigger Bit",maxTrig, 0., maxTrig);
+  TH1F *hTechTriggers   = new TH1F("hTechTriggers", "Technical Trigger Occupancy; Active Technical Trigger Bit",maxTTrig, 0., maxTTrig);
+  TH2F *hAbsTimeVsEBPTime = new TH2F("hAbsTimeVsEBPTime","EB+ Average Timing vs. Absolute Time; EB+ Average Time (ns); Minutes since run start",50, -EBTimeMax, EBTimeMax, 50, 0., diffTime);
+  TH2F *hAbsTimeVsEBMTime = new TH2F("hAbsTimeVsEBMTime","EB- Average Timing vs. Absolute Time; EB- Average Time (ns); Minutes since run start",50, -EBTimeMax, EBTimeMax, 50, 0., diffTime);
+  TH2F *hAbsTimeVsEEPTime = new TH2F("hAbsTimeVsEEPTime","EE+ Average Timing vs. Absolute Time; EE+ Average Time (ns); Minutes since run start",50, -EETimeMax, EETimeMax, 50, 0., diffTime);
+  TH2F *hAbsTimeVsEEMTime = new TH2F("hAbsTimeVsEEMTime","EE- Average Timing vs. Absolute Time; EE- Average Time (ns); Minutes since run start",50, -EETimeMax, EETimeMax, 50, 0., diffTime);
+  TH2F *hTriggerVsEBPTime  = new TH2F("hTriggerVsEBPTime","EB+ Average Timing vs. Trigger; EB+ Average Time (ns); Active Trigger Bits",50, -EBTimeMax, EBTimeMax, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsEBPTime = new TH2F("hTTriggerVsEBPTime","EB+ Average Timing vs. Technical Trigger; EB+ Average Time (ns); Active Technical Trigger Bits",50, -EBTimeMax, EBTimeMax, maxTTrig, 0., maxTTrig);
+  TH2F *hTriggerVsEBMTime  = new TH2F("hTriggerVsEBMTime","EB- Average Timing vs. Trigger; EB- Average Time (ns); Active Trigger Bits",50, -EBTimeMax, EBTimeMax, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsEBMTime = new TH2F("hTTriggerVsEBMTime","EB- Average Timing vs. Technical Trigger; EB- Average Time (ns); Active Technical Trigger Bits",50, -EBTimeMax, EBTimeMax, maxTTrig, 0., maxTTrig);
+  TH2F *hTriggerVsEEPTime  = new TH2F("hTriggerVsEEPTime","EE+ Average Timing vs. Trigger; EE+ Average Time (ns); Active Trigger Bits",50, -EETimeMax, EETimeMax, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsEEPTime = new TH2F("hTTriggerVsEEPTime","EE+ Average Timing vs. Technical Trigger; EE+ Average Time (ns); Active Technical Trigger Bits",50, -EETimeMax, EETimeMax, maxTTrig, 0., maxTTrig);
+  TH2F *hTriggerVsEEMTime  = new TH2F("hTriggerVsEEMTime","EE- Average Timing vs. Trigger; EE- Average Time (ns); Active Trigger Bits",50, -EETimeMax, EETimeMax, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsEEMTime = new TH2F("hTTriggerVsEEMTime","EE- Average Timing vs. Technical Trigger; EE- Average Time (ns); Active Technical Trigger Bits",50, -EETimeMax, EETimeMax, maxTTrig, 0., maxTTrig);
+  TH2F *hBXVsEBPTime = new TH2F("hBXVsEBPTime","EB+ Average Timing vs. BX; EB+ Average Time (ns); BX",50, -EBTimeMax, EBTimeMax, 3500, 0., 3500);
+  TH2F *hBXVsEBMTime = new TH2F("hBXVsEBMTime","EB- Average Timing vs. BX; EB- Average Time (ns); BX",50, -EBTimeMax, EBTimeMax, 3500, 0., 3500);
+  TH2F *hBXVsEEPTime = new TH2F("hBXVsEEPTime","EE+ Average Timing vs. BX; EE+ Average Time (ns); BX",50, -EETimeMax, EETimeMax, 3500, 0., 3500);
+  TH2F *hBXVsEEMTime = new TH2F("hBXVsEEMTime","EE- Average Timing vs. BX; EE- Average Time (ns); BX",50, -EETimeMax, EETimeMax, 3500, 0., 3500);
+  TH2F *hTriggerVsAbsTime  = new TH2F("hTriggerVsAbsTime","Absolute Time vs. Trigger;Minutes Since Run Start ; Active Trigger Bits",50, 0, diffTime, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsAbsTime  = new TH2F("hTTriggerVsAbsTime","Absolute Time vs. Tech Trigger;Minutes Since Run Start ; Active Technical Trigger Bits",50, 0, diffTime, maxTTrig, 0., maxTTrig);
+  TH2F *hBXVsAbsTime   = new TH2F("hBXVsAbsTime","Absolute Time vs. BX;Minutes Since Run Start ; BX",50, 0, diffTime, 3500, 0., 3500);
+  TH2F *hTriggerVsBX   = new TH2F("hTriggerVsBX","BX vs. Trigger; BX; Active Trigger Bits",3500,0,3500, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsBX  = new TH2F("hTTriggerVsBX","BX vs. Technical Trigger; BX; Active Technical Trigger Bits",3500,0,3500, maxTTrig, 0., maxTTrig);
+  
 
   //Now I need to define a few histograms that I will later fill
 
   for (int i=0; i<nents;i++) {
      eventTimingInfoTree->GetEvent(i);
-     double EBave   = (TTreeMembers_.correctionToSample5EB_ -5.0)*25;
+     double EBaveO  = (TTreeMembers_.correctionToSample5EB_ -5.0)*25;
      double EEPaveO = (TTreeMembers_.correctionToSample5EEP_ -5.0)*25;
      double EEMaveO = (TTreeMembers_.correctionToSample5EEM_ -5.0)*25;
      double EBPave  = 0,EBMave = 0, EEPave  = 0, EEMave  = 0;
      double EBPn    = 0,EBMn   = 0, EEPn    = 0, EEMn    = 0;
+     double abstime = TTreeMembers_.absTime_/60. - minTime; //(puts thins in mins)
+     double NumTriggers  = TTreeMembers_.numTriggers_;
+     double NumTTriggers = TTreeMembers_.numTechTriggers_;
+     double BX =  TTreeMembers_.bx_;
 
      for (int ebx=0; ebx < TTreeMembers_.numEBcrys_; ebx++) {
          int crystalHashedIndicesEB = TTreeMembers_.cryHashesEB_[ebx];
@@ -1148,7 +1203,86 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
      double totnumb = EBPn + EBMn + EEPn + EEMn;
      if (totnumb < 0 ) continue;
  
+     if ( EBPn > 0.0 || EBMn > 0.0 )
+     {
+        double EBave = (EBPave + EBMave) / (EBPn+EBMn);
+        
+	
+     }
      
+     hAbsTime->Fill(abstime);
+     hBX->Fill(BX);
+     hBXVsAbsTime->Fill(abstime,BX);
+     
+     for ( int ti = 0; ti < NumTriggers; ++ti)
+     {
+         hTriggers->Fill(TTreeMembers_.triggers_[ti]);
+	 hTriggerVsAbsTime->Fill(abstime,TTreeMembers_.triggers_[ti]);
+	 hTriggerVsBX->Fill(BX,TTreeMembers_.triggers_[ti]);
+         
+     }
+     for ( int ti = 0; ti < NumTTriggers; ++ti)
+     {
+         hTechTriggers->Fill(TTreeMembers_.techtriggers_[ti]);
+         hTTriggerVsAbsTime->Fill(abstime,TTreeMembers_.techtriggers_[ti]);
+	 hTTriggerVsBX->Fill(BX,TTreeMembers_.techtriggers_[ti]);
+     }
+
+     if (EBPn > 0.0 )
+     {
+	hAbsTimeVsEBPTime->Fill(EBPave,abstime);
+        hBXVsEBPTime->Fill(EBPave,BX);
+        for ( int ti = 0; ti < NumTriggers; ++ti)
+        {
+            hTriggerVsEBPTime->Fill(EBPave, TTreeMembers_.triggers_[ti]);
+        }
+        for ( int ti = 0; ti < NumTTriggers; ++ti)
+        {
+            hTTriggerVsEBPTime->Fill(EBPave,TTreeMembers_.techtriggers_[ti]);
+        }
+     }
+
+     if (EBMn > 0.0 )
+     {
+	hAbsTimeVsEBMTime->Fill(EBMave,abstime);
+        hBXVsEBMTime->Fill(EBMave,BX);
+        for ( int ti = 0; ti < NumTriggers; ++ti)
+        {
+            hTriggerVsEBMTime->Fill(EBMave, TTreeMembers_.triggers_[ti]);
+        }
+        for ( int ti = 0; ti < NumTTriggers; ++ti)
+        {
+            hTTriggerVsEBMTime->Fill(EBMave,TTreeMembers_.techtriggers_[ti]);
+        }
+     }
+     if (EEPn > 0.0 )
+     {
+	hAbsTimeVsEEPTime->Fill(EEPave,abstime);
+        hBXVsEEPTime->Fill(EEPave,BX);
+	for ( int ti = 0; ti < NumTriggers; ++ti)
+        {
+            hTriggerVsEEPTime->Fill(EEPave, TTreeMembers_.triggers_[ti]);
+        }
+        for ( int ti = 0; ti < NumTTriggers; ++ti)
+        {
+            hTTriggerVsEEPTime->Fill(EEPave,TTreeMembers_.techtriggers_[ti]);
+        }
+     }
+
+     if (EEMn > 0.0 )
+     {
+	hAbsTimeVsEEMTime->Fill(EEMave,abstime);
+	hBXVsEEMTime->Fill(EEMave,BX);
+	for ( int ti = 0; ti < NumTriggers; ++ti)
+        {
+            hTriggerVsEEMTime->Fill(EEMave, TTreeMembers_.triggers_[ti]);
+        }
+        for ( int ti = 0; ti < NumTTriggers; ++ti)
+        {
+            hTTriggerVsEEMTime->Fill(EEMave,TTreeMembers_.techtriggers_[ti]);
+        }
+     }
+
   }
   //----------End of the fun looping stuff
 
@@ -1157,6 +1291,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   c[80]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
+  hEBTimeEtaLess5->Draw();
   if (hEBTimeEtaLess5->GetMean() != 0 && fit) hEBTimeEtaLess5->Fit("gaus");
   c[80]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBTimeEtaLess5_%i.%s",dirName,mType,runNumber,fileType); c[80]->Print(name); }
@@ -1164,6 +1299,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   c[81]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
+  hEBPlusTime->Draw();
   if (hEBPlusTime->GetMean() != 0 && fit ) hEBPlusTime->Fit("gaus");
   c[81]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlusTime_%i.%s",dirName,mType,runNumber,fileType); c[81]->Print(name); }
@@ -1171,6 +1307,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   c[82]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
+  hEBMinusTime->Draw();
   if (hEBMinusTime->GetMean() != 0 && fit) hEBMinusTime->Fit("gaus");
   c[82]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBMinusTime_%i.%s",dirName,mType,runNumber,fileType); c[82]->Print(name); }
@@ -1184,6 +1321,240 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   c[83]->SetGridy(0);
   //c[15]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlus2Minus_%i.%s",dirName,mType,runNumber,fileType); c[83]->Print(name); }
+
+  c[84]->cd();
+  gStyle->SetOptStat(111110);
+  hAbsTime->Draw();
+  c[84]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTime_%i.%s",dirName,mType,runNumber,fileType); c[84]->Print(name); }
+
+  c[85]->cd();
+  gStyle->SetOptStat(111110);
+  hBX->Draw();
+  c[85]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BX_%i.%s",dirName,mType,runNumber,fileType); c[85]->Print(name); }
+
+  c[86]->cd();
+  gStyle->SetOptStat(111110);
+  hTriggers->Draw();
+  c[86]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_Triggers_%i.%s",dirName,mType,runNumber,fileType); c[86]->Print(name); }
+
+  c[87]->cd();
+  gStyle->SetOptStat(111110);
+  hTechTriggers->Draw();
+  c[87]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggers_%i.%s",dirName,mType,runNumber,fileType); c[87]->Print(name); }
+
+  c[88]->cd();
+  gStyle->SetOptStat(10);
+  hAbsTimeVsEBPTime->Draw("colz");
+  c[88]->SetLogy(0);
+  c[88]->SetLogz(1);
+  c[88]->SetGridx(0);
+  c[88]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEBPTime_%i.%s",dirName,mType,runNumber,fileType); c[88]->Print(name); }
+
+  c[89]->cd();
+  gStyle->SetOptStat(10);
+  hAbsTimeVsEBMTime->Draw("colz");
+  c[89]->SetLogy(0);
+  c[89]->SetLogz(1);
+  c[89]->SetGridx(0);
+  c[89]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEBMTime_%i.%s",dirName,mType,runNumber,fileType); c[89]->Print(name); }
+
+  c[90]->cd();
+  gStyle->SetOptStat(10);
+  hAbsTimeVsEEPTime->Draw("colz");
+  c[90]->SetLogy(0);
+  c[90]->SetLogz(1);
+  c[90]->SetGridx(0);
+  c[90]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEEPTime_%i.%s",dirName,mType,runNumber,fileType); c[90]->Print(name); }
+
+  c[91]->cd();
+  gStyle->SetOptStat(10);
+  hAbsTimeVsEEMTime->Draw("colz");
+  c[91]->SetLogy(0);
+  c[91]->SetLogz(1);
+  c[91]->SetGridx(0);
+  c[91]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[91]->Print(name); }
+
+  c[92]->cd();
+  gStyle->SetOptStat(10);
+  hTriggerVsEBPTime->Draw("colz");
+  c[92]->SetLogy(0);
+  c[92]->SetLogz(1);
+  c[92]->SetGridx(0);
+  c[92]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEBPTime_%i.%s",dirName,mType,runNumber,fileType); c[92]->Print(name); }
+
+  c[93]->cd();
+  gStyle->SetOptStat(10);
+  hTTriggerVsEBPTime->Draw("colz");
+  c[93]->SetLogy(0);
+  c[93]->SetLogz(1);
+  c[93]->SetGridx(0);
+  c[93]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEBPTime_%i.%s",dirName,mType,runNumber,fileType); c[93]->Print(name); }
+
+  c[94]->cd();
+  gStyle->SetOptStat(10);
+  hTriggerVsEBMTime->Draw("colz");
+  c[94]->SetLogy(0);
+  c[94]->SetLogz(1);
+  c[94]->SetGridx(0);
+  c[94]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEBMTime_%i.%s",dirName,mType,runNumber,fileType); c[94]->Print(name); }
+
+  c[95]->cd();
+  gStyle->SetOptStat(10);
+  hTTriggerVsEBMTime->Draw("colz");
+  c[95]->SetLogy(0);
+  c[95]->SetLogz(1);
+  c[95]->SetGridx(0);
+  c[95]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEBMTime_%i.%s",dirName,mType,runNumber,fileType); c[95]->Print(name); }
+
+  c[96]->cd();
+  gStyle->SetOptStat(10);
+  hTriggerVsEEPTime->Draw("colz");
+  c[96]->SetLogy(0);
+  c[96]->SetLogz(1);
+  c[96]->SetGridx(0);
+  c[96]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEEPTime_%i.%s",dirName,mType,runNumber,fileType); c[96]->Print(name); }
+
+  c[97]->cd();
+  gStyle->SetOptStat(10);
+  hTTriggerVsEEPTime->Draw("colz");
+  c[97]->SetLogy(0);
+  c[97]->SetLogz(1);
+  c[97]->SetGridx(0);
+  c[97]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEEPTime_%i.%s",dirName,mType,runNumber,fileType); c[97]->Print(name); }
+
+  c[98]->cd();
+  gStyle->SetOptStat(10);
+  hTriggerVsEEMTime->Draw("colz");
+  c[98]->SetLogy(0);
+  c[98]->SetLogz(1);
+  c[98]->SetGridx(0);
+  c[98]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[98]->Print(name); }
+
+  c[99]->cd();
+  gStyle->SetOptStat(10);
+  hTTriggerVsEEMTime->Draw("colz");
+  c[99]->SetLogy(0);
+  c[99]->SetLogz(1);
+  c[99]->SetGridx(0);
+  c[99]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[99]->Print(name); }
+
+  c[100]->cd();
+  gStyle->SetOptStat(10);
+  hBXVsEBPTime->Draw("colz");
+  c[100]->SetLogy(0);
+  c[100]->SetLogz(1);
+  c[100]->SetGridx(0);
+  c[100]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEBPTime_%i.%s",dirName,mType,runNumber,fileType); c[100]->Print(name); }
+
+  c[101]->cd();
+  gStyle->SetOptStat(10);
+  hBXVsEBMTime->Draw("colz");
+  c[101]->SetLogy(0);
+  c[101]->SetLogz(1);
+  c[101]->SetGridx(0);
+  c[101]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEBMTime_%i.%s",dirName,mType,runNumber,fileType); c[101]->Print(name); }
+
+  c[102]->cd();
+  gStyle->SetOptStat(10);
+  hBXVsEEPTime->Draw("colz");
+  c[102]->SetLogy(0);
+  c[102]->SetLogz(1);
+  c[102]->SetGridx(0);
+  c[102]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEEPTime_%i.%s",dirName,mType,runNumber,fileType); c[102]->Print(name); }
+
+  c[103]->cd();
+  gStyle->SetOptStat(10);
+  hBXVsEEMTime->Draw("colz");
+  c[103]->SetLogy(0);
+  c[103]->SetLogz(1);
+  c[103]->SetGridx(0);
+  c[103]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[103]->Print(name); }
+
+  c[104]->cd();
+  gStyle->SetOptStat(10);
+  hTriggerVsAbsTime->Draw("colz");
+  c[104]->SetLogy(0);
+  c[104]->SetLogz(1);
+  c[104]->SetGridx(0);
+  c[104]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsAbsTime_%i.%s",dirName,mType,runNumber,fileType); c[104]->Print(name); }
+
+  c[105]->cd();
+  gStyle->SetOptStat(10);
+  hTTriggerVsAbsTime->Draw("colz");
+  c[105]->SetLogy(0);
+  c[105]->SetLogz(1);
+  c[105]->SetGridx(0);
+  c[105]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsAbsTime_%i.%s",dirName,mType,runNumber,fileType); c[105]->Print(name); }
+
+  c[106]->cd();
+  gStyle->SetOptStat(10);
+  hBXVsAbsTime->Draw("colz");
+  c[106]->SetLogy(0);
+  c[106]->SetLogz(1);
+  c[106]->SetGridx(0);
+  c[106]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_hBXVsAbsTime_%i.%s",dirName,mType,runNumber,fileType); c[106]->Print(name); }
+
+  c[107]->cd();
+  gStyle->SetOptStat(10);
+  hTriggerVsBX->Draw("colz");
+  c[107]->SetLogy(0);
+  c[107]->SetLogz(1);
+  c[107]->SetGridx(0);
+  c[107]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsBX_%i.%s",dirName,mType,runNumber,fileType); c[107]->Print(name); }
+
+  c[108]->cd();
+  gStyle->SetOptStat(10);
+  hTTriggerVsBX->Draw("colz");
+  c[108]->SetLogy(0);
+  c[108]->SetLogz(1);
+  c[108]->SetGridx(0);
+  c[108]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsBX_%i.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
 
   return;
 
