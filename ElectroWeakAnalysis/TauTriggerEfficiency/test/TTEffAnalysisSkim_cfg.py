@@ -21,86 +21,63 @@ from ElectroWeakAnalysis.TauTriggerEfficiency.MinimumBias_BeamCommissioning09_SD
 process.source = source
 #process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring(
-##	"file:reco.root"
-##	"rfio:/castor/cern.ch/user/s/slehti/reco.root"
 ##	"rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/SD_AllMinBias-Dec19thSkim_336p3_v1/0008/FC895826-E8F0-DE11-8E36-001D0967DA76.root"
 #    )
 #)
 
+# The proper luminosity sections
+process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(
+    '123596:2-123596:9999',   # OK
+    '123615:70-123615:9999',  # OK
+    '123732:62-123732:9999',  # 62 -9999 (Pixel off in 56-61)
+    '123815:8-123815:9999',   # 8 - 9999 ( why not 7 ?)
+    '123818:2-123818:42',     # OK
+    '123908:2-123908:12',     # 2 - 12 (why not 13 ?)
+    '124008:1-124008:1',      # OK
+    '124009:1-124009:68',     # OK
+    '124020:12-124020:94',    # OK
+    '124022:66-124022:179',   # OK
+    '124023:38-124023:9999',  # OK
+    '124024:2-124024:83',     # OK
+    '124025:5-124025:13',     # 5 - 13 (why not 3 & 4 ?)
+    '124027:24-124027:9999',  # OK
+    '124030:2-124030:9999',   # 2 - 9999 ( why not 1 ?)
+    '124120:1-124120:9999',   # OK
+    '124275:3-124275:30'
+)
 
-from ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff import *
-from ElectroWeakAnalysis.TauTriggerEfficiency.OfflineTauIDFilter_cff import *
+# This is for filtering on L1 technical trigger bit: MB and no beam halo
+process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
+process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
+process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
+process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39))')
 
-process.IncludedHLTs = IncludedHLTs
-process.IdentifiedTauFilter = IdentifiedTauFilter
-
-
-process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi")
-process.thisPFRecoTauDiscriminationByLeadingPionPtCut = cms.EDFilter("PFRecoTauDiscriminationByLeadingPionPtCut",
-#    PFTauProducer = cms.InputTag('pfRecoTauProducerHighEfficiency'),
-    PFTauProducer = cms.InputTag('shrinkingConePFTauProducer'),
-    MinPtLeadingPion = cms.double(3.0)
+process.scrapping = cms.EDFilter("FilterOutScraping",
+    	applyfilter = cms.untracked.bool(True),
+    	debugOn = cms.untracked.bool(False),
+        numtrack = cms.untracked.uint32(10),
+        thresh = cms.untracked.double(0.25)
 )
 
 process.PFTausSelected = cms.EDFilter("PFTauSelector",
     src = cms.InputTag("shrinkingConePFTauProducer"),
     discriminators = cms.VPSet(
-#	cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByTrackIsolationHighEfficiency"),selectionCut=cms.double(0.5))
-#	cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByLeadingPionPtCutHighEfficiency"),selectionCut=cms.double(-0.5))
-#       cms.PSet( discriminator=cms.InputTag("thisPFRecoTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.double(0.5))
-#	cms.PSet( discriminator=cms.InputTag("thisPFRecoTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.double(-0.5))
+#       cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByTrackIsolationHighEfficiency"),selectionCut$
+#       cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByLeadingPionPtCutHighEfficiency"),selectionC$
+#       cms.PSet( discriminator=cms.InputTag("thisPFRecoTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.dou$
+#       cms.PSet( discriminator=cms.InputTag("thisPFRecoTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.dou$
     )
-)# Now filtered the tau collection is made
-
-
-
-
-process.CounterAllEvents = cms.EDAnalyzer("EventCounter",
-	fileName = cms.untracked.string("skim.root"),
-	name = cms.string("All events")
-)
-process.CounterHTLEvents = cms.EDAnalyzer("EventCounter",
-	fileName = cms.untracked.string("skim.root"),
-	name = cms.string("Passed HLT")
-)
-process.CounterOfflineEvents = cms.EDAnalyzer("EventCounter",
-	fileName = cms.untracked.string("skim.root"),
-	name = cms.string("Offline tau")
-)
-process.CounterSavedEvents = cms.EDAnalyzer("EventCounter",
-	fileName = cms.untracked.string("skim.root"),
-	name = cms.string("Saved events")
 )
 
 process.tauFilter = cms.Path(
-	process.CounterAllEvents *
-#	process.IncludedHLTs *
-	process.CounterHTLEvents *
-#        process.thisPFRecoTauDiscriminationByLeadingPionPtCut*
-	process.PFTausSelected *
-	process.CounterOfflineEvents *
-        process.IdentifiedTauFilter *
-	process.CounterSavedEvents
+	process.hltLevel1GTSeed *
+	process.scrapping *
+	process.PFTausSelected
 )
-
-cms.VInputTag(cms.InputTag("ecalRecHit","EcalRecHitsEB"),
-cms.InputTag("ecalRecHit","EcalRecHitsEE"))
-
-process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
-GenParticles  = cms.untracked.InputTag("genParticles"),
-       ptMinTau      = cms.untracked.double(3),
-       ptMinMuon     = cms.untracked.double(3),
-       ptMinElectron = cms.untracked.double(3),
-       BosonID       = cms.untracked.vint32(23),
-       EtaMax         = cms.untracked.double(2.5)
-)
-
-##process.pmc  = cms.Path(process.TauMCProducer)
 
 from ElectroWeakAnalysis.TauTriggerEfficiency.eventContent_cfi import *
 process.output = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string("skim.root"),
-####    outputCommands = OutputCommands,
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('tauFilter')
     )
