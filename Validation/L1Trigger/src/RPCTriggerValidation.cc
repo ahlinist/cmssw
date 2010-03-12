@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.5 2010/03/01 11:21:50 dbart Exp $
+// $Id: RPCTriggerValidation.cc,v 1.6 2010/03/10 13:04:30 dbart Exp $
 //
 //
 
@@ -240,8 +240,10 @@ else{
      }
      
      
+// 	if(itGen->_l1cands.size()>1){
+//         std::cout << *itGen << std::endl;
+// 	}
 
-       //std::cout << *itGen << std::endl;
 	if (itGen->_l1cands.size()>0){
 	 nomEta->Fill(itGen->eta());
 	// if(itGen->eta()>etaMin && itGen->eta()<etaMax ) nomPt->Fill(itGen->pt());
@@ -277,7 +279,7 @@ namespace tmf {
                         const L1MuonCandLocalInfo & l2 ) 
   {
 
-     return l1.ptCode() < l2.ptCode();
+     return l1.ptCode() > l2.ptCode();
 
   }
 
@@ -285,7 +287,7 @@ namespace tmf {
                 const GenMuonLocalInfo & g2) 
   {
 
-     return g1.pt() < g2.pt();    
+     return g1.pt() > g2.pt();    
 
   } 
   
@@ -293,7 +295,7 @@ namespace tmf {
                         const L1MuonCandLocalInfo & l2 ) 
   {
 
-     return l1.quality() < l2.quality();    
+     return l1.quality() > l2.quality();    
 
   } 
 
@@ -393,7 +395,7 @@ std::ostream& operator<<( std::ostream& os, const RPCTriggerValidationStruct::Ge
                  << " ch " << g1.charge();
               if (g1._l1cands.size()>0){
                  os << "   first assigned l1: " << *(g1._l1cands.begin());
-              
+              os << "   last assigned l1: " << *(g1._l1cands.rbegin());
               }
                 
             
@@ -406,8 +408,9 @@ std::ostream& operator<<( std::ostream& os, const RPCTriggerValidationStruct::L1
                  << " eta "  << l1.eta()
                  << " bx "  << l1.bx()
                  << " ptCode " << l1.ptCode()
-                 << " ch " << l1.charge()
-                 << " tw " << l1.tower();
+		<<" quality "<<l1.quality();
+                // << " ch " << l1.charge()
+                // << " tw " << l1.tower();
               return os;      
 }
 

@@ -14,7 +14,7 @@ process.maxEvents = cms.untracked.PSet(
 process.load("DQMServices.Core.DQM_cfg")
 process.load("DQMServices.Components.test.dqm_onlineEnv_cfi")
 
-process.load("Validation.L1Trigger.RPCTriggerValidation_cfi")
+process.load("Validation.L1Trigger.rpcTriggerValidation_cfi")
 
 
 #process.RPCTriggerVal.MC  = cms.InputTag("genParticles")
@@ -48,7 +48,7 @@ process.dqmSaver.dirName = '.'
 process.dqmSaver.producer = 'DQM'
 process.dqmEnv.subSystemFolder = 'L1T'
 
-process.a = cms.Path(process.RPCTriggerVal*process.dqmEnv*process.dqmSaver)
+process.a = cms.Path(process.rpcTriggerValidation*process.dqmEnv*process.dqmSaver)
 
 
   

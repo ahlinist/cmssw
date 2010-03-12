@@ -11,7 +11,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 process.SelectRecoMuons = cms.EDFilter("CandSelector",
    filter = cms.bool(True),
    src = cms.InputTag("CloneRecoMuons"),
-   cut = cms.string("isGlobalMuon > 0")  # && combinedMuon.normalizedChi2<10 isGlobalMuon > 0
+  cut = cms.string("1")# cut = cms.string("isGlobalMuon > 0")  # && combinedMuon.normalizedChi2<10 isGlobalMuon > 0
   )
 
 

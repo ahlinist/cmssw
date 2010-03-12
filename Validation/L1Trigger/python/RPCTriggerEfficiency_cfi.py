@@ -10,7 +10,7 @@ RPCTriggerVal = cms.EDAnalyzer('RPCTriggerValidation',
       
       
       outputDirectory = cms.string("L1_RPC"),
-      outputFile=cms.string("RPC_validation.root"),
+      outputFile=cms.string("RPC_efficiency.root"),
       deltaRThreshold=cms.double(0.5),
       L1MuonFromReco=cms.bool(True),
       takeGMT = cms.bool(False),
