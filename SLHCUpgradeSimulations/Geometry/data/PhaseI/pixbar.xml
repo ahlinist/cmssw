@@ -9,7 +9,11 @@
  <Constant name="RinSupTubCab"      value="15.00*cm"/>
  <Constant name="Rout1"             value="21.80*cm"/>
  <Constant name="Rout2"             value="21.00*cm"/>
- <Constant name="Zv1"               value="30.00*cm"/>
+ <!-- <Constant name="Zv1"               value="30.00*cm"/> 
+ to avoid overlap with Phase 1 FPIX this should be set to
+ pixfwd:ZPixelForward + pixfwd:RootStartZ
+ -->
+ <Constant name="Zv1"               value="28.90*cm"/>
  <Constant name="Zv2"               value="56.00*cm"/>
  <Constant name="Zv3"               value="110.5*cm"/>
  <Constant name="Zv4"               value="282.0*cm"/>
