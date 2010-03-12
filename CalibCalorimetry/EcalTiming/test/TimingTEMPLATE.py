@@ -16,6 +16,19 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.GlobalTag.globaltag = 'GR10_P_V2::All'
 
+process.load("L1TriggerConfig.L1GtConfigProducers.L1GtConfig_cff")
+process.load("L1TriggerConfig.L1GtConfigProducers.Luminosity.startup.L1Menu_startup_v3_Unprescaled_cff")
+process.load("L1TriggerConfig.L1GtConfigProducers.L1GtBoardMapsConfig_cff")
+process.load("L1TriggerConfig.L1ScalesProducers.L1MuTriggerScalesConfig_cff")
+process.load("L1TriggerConfig.L1ScalesProducers.L1MuTriggerPtScaleConfig_cff")
+import FWCore.Modules.printContent_cfi
+process.dumpEv = FWCore.Modules.printContent_cfi.printContent.clone()
+import EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi
+process.gtDigis = EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi.l1GtUnpack.clone()
+process.gtDigis.DaqGtInputTag = 'source'
+
+
+
 # shaping our Message logger to suit our needs
 process.MessageLogger = cms.Service("MessageLogger",
     #suppressWarning = cms.untracked.vstring('ecalEBunpacker', 'ecalUncalibHit', 'ecalRecHit', 'ecalCosmicsHists'),
@@ -99,6 +112,7 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                                                              5., 5., 5., 5.),
                               hitProducerEE = cms.string('uncalibHitMaker'),
                               rhitProducerEE = cms.untracked.string('ecalRecHit'),
+                              GTRecordCollection = cms.string('gtDigis'),
                               amplThr = cms.untracked.double(15.0),
                               amplThrEE = cms.untracked.double(15.0),
                               SMCorrections = cms.untracked.vdouble(5.0, 5.0, 5.0, 5.0, 5.0,
@@ -133,5 +147,5 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                               )
 process.ecalDigis = process.ecalEBunpacker.clone()
 
-process.p = cms.Path(process.ecalDigis*process.ecalDccDigis*process.uncalibHitMaker*process.ecalDetIdToBeRecovered*process.ecalRecHit*process.timing)
+process.p = cms.Path(process.gtDigis*process.ecalDigis*process.ecalDccDigis*process.uncalibHitMaker*process.ecalDetIdToBeRecovered*process.ecalRecHit*process.timing)
 
