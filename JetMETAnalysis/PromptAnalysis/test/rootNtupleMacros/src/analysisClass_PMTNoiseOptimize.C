@@ -264,7 +264,7 @@ void analysisClass::Loop()
                       9999};
    
    // For S9/S1 flagging
-   double slopes[] = {0.0196446,0.0278163,0.0342744,0.0429757,0.0564848,0.0642055,0.0815315,0.0882627,0.102562,0.1231,0.095548,0.0630538};
+   double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.118896,0.0913756,0.0589927};
    
    int useS9oS1Algo = (int)getPreCutValue1("useS9oS1Algo");
 
@@ -482,7 +482,7 @@ void analysisClass::Loop()
                if( depth==2 ) S5oS1 = ( partenergy + sum4Short ) / energy; // S
 
                // For S9/S1 flagging
-               double slope = (0.297433-0.024976*abs(ieta)+0.000524259*ieta*ieta);
+               double slope = (0.3084-0.02577*abs(ieta)+0.0005351*ieta*ieta);
                if( abs(ieta)>39 ) slope = slopes[ieta-30];
                double intercept = -slope*log((162.4-10.19*abs(ieta)+0.21*ieta*ieta));
                 
@@ -496,7 +496,7 @@ void analysisClass::Loop()
                     else if( abs(ieta)>29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && S9oS1<(intercept+slope*log(energy)) ) ) isPMThit = true;
                  }
                }
-               else if( depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 ) isPMThit = true;
+               else if( depth==2 && energy>(129.9-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 ) isPMThit = true;
                
                if( depth==1 && isPMThit )
                  {
