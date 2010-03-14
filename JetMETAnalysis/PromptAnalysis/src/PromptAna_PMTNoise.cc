@@ -186,43 +186,43 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       HFRecHitCollection::const_iterator temp;
       // Long neighbors
-      // right/left cell (+/- 1 in iphi on the negative z-side, -/+ in iphi on the positive z-side)
+      // left/right cell (+/- 1 in iphi on the negative z-side, -/+ in iphi on the positive z-side)
       temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi-zside*shift)+72)%72,1));
-      if (temp!=hfhits->end()) rightlongenergy+=temp->energy();
-      temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi+zside*shift)+72)%72,1));
       if (temp!=hfhits->end()) leftlongenergy+=temp->energy();
+      temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi+zside*shift)+72)%72,1));
+      if (temp!=hfhits->end()) rightlongenergy+=temp->energy();
 
-      // top/bottom cell (+/- 1 in |ieta|)
-      temp=hfhits->find(HcalDetId(HcalForward,ieta+zside,(myiphi+72)%72,1));
-      if (temp!=hfhits->end()) toplongenergy+=temp->energy();
+      // top/bottom cell (-/+ 1 in |ieta|)
       temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,(iphi+72)%72,1));
+      if (temp!=hfhits->end()) toplongenergy+=temp->energy();
+      temp=hfhits->find(HcalDetId(HcalForward,ieta+zside,(myiphi+72)%72,1));
       if (temp!=hfhits->end()) bottomlongenergy+=temp->energy();
 
       // handle boundary condition for cells at |ieta|=40 by adding 1 more neighbor cell
       if (abs(ieta)==40)
         {
           temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,((iphi-2)+72)%72,1));
-          if (temp!=hfhits->end()) bottomlongenergy+=temp->energy();
+          if (temp!=hfhits->end()) toplongenergy+=temp->energy();
         }
 
       // Short neighbors
-      // right/left cell (+/- 1 in iphi on the negative z-side, -/+ in iphi on the positive z-side)
+      // left/right cell (+/- 1 in iphi on the negative z-side, -/+ in iphi on the positive z-side)
       temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi-zside*shift)+72)%72,2));
-      if (temp!=hfhits->end()) rightshortenergy+=temp->energy();
-      temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi+zside*shift)+72)%72,2));
       if (temp!=hfhits->end()) leftshortenergy+=temp->energy();
+      temp=hfhits->find(HcalDetId(HcalForward,ieta,((iphi+zside*shift)+72)%72,2));
+      if (temp!=hfhits->end()) rightshortenergy+=temp->energy();
 
-      // top/bottom cell (+/- 1 in |ieta|)
-      temp=hfhits->find(HcalDetId(HcalForward,ieta+zside,(myiphi+72)%72,2));
-      if (temp!=hfhits->end()) topshortenergy+=temp->energy();
+      // top/bottom cell (-/+ 1 in |ieta|)
       temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,(iphi+72)%72,2));
+      if (temp!=hfhits->end()) topshortenergy+=temp->energy();
+      temp=hfhits->find(HcalDetId(HcalForward,ieta+zside,(myiphi+72)%72,2));
       if (temp!=hfhits->end()) bottomshortenergy+=temp->energy();
 
       // handle boundary condition for cells at |ieta|=40 by adding 1 more neighbor cell
       if (abs(ieta)==40)
         {
           temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,((iphi-2)+72)%72,2));
-          if (temp!=hfhits->end()) bottomshortenergy+=temp->energy();
+          if (temp!=hfhits->end()) topshortenergy+=temp->energy();
         }
 
       if( depth==1 && energy>rightlongenergy && energy>leftlongenergy && energy>toplongenergy && energy>bottomlongenergy ) isSeed = 1;
