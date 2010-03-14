@@ -487,8 +487,15 @@ void analysisClass::Loop()
                double intercept = -slope*log((162.4-10.19*abs(ieta)+0.21*ieta*ieta));
                 
                //## identify HF spikes
-               if( depth==1 && useS9oS1Algo==0 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) ) isPMThit = true;
-               else if( depth==1 && useS9oS1Algo==1 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && S9oS1<(intercept+slope*log(energy)) ) ) isPMThit = true;
+               if( depth==1 ) {
+                 if( useS9oS1Algo==0 ) {
+                    if( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) isPMThit = true;
+                 }
+                 else if( useS9oS1Algo==1 ) {
+                    if( abs(ieta)==29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) ) isPMThit = true;
+                    else if( abs(ieta)>29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && S9oS1<(intercept+slope*log(energy)) ) ) isPMThit = true;
+                 }
+               }
                else if( depth==2 && energy>(130-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 ) isPMThit = true;
                
                if( depth==1 && isPMThit )
