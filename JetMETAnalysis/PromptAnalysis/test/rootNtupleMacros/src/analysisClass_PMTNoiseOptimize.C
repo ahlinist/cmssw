@@ -242,8 +242,75 @@ void analysisClass::Loop()
    
    TProfile * p_OccupancyHF_vs_SumEinHF = new TProfile ("p_OccupancyHF_vs_SumEinHF","p_OccupancyHF_vs_SumEinHF",100,0,5000.);
 
+   //Jet variables
+   int useJetVariables = (int)getPreCutValue1("useJetVariables");
+   float JetPtCut = getPreCutValue1("JetPtCut");
+
+   int Nbins_pt = 300;
+   float Min_pt = -0.5;
+   float Max_pt = 299.5;
+   int Nbins_default = 100; 
+   float Min_default = -0.5; 
+   float Max_default = 99.5; 
+
+   
+   TH1D *h_JetInHF_pT   = new TH1D ("h_JetInHF_pT","h_JetInHF_pT;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
+   TH1D *h_JetInHF_eta   = new TH1D ("h_JetInHF_eta","h_JetInHF_eta;jet #eta in HF",Nbins_default,-6,6);
+   TH1D *h_JetInHF_phi   = new TH1D ("h_JetInHF_phi","h_JetInHF_phi;jet #phi in HF",Nbins_default,-4,4);
+   TH1D *h_JetInHF_Njet   = new TH1D ("h_JetInHF_Njet","h_JetInHF_Njet;Number of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_Njet_ptcut   = new TH1D ("h_JetInHF_Njet_ptcut","h_JetInHF_Njet_ptcut;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_Nconst   = new TH1D ("h_JetInHF_Nconst","h_JetInHF_Nconst;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_N60   = new TH1D ("h_JetInHF_N60","h_JetInHF_N60;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_N90   = new TH1D ("h_JetInHF_N90","h_JetInHF_N90;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
+   
+   TH1D *h_JetInHF_pT_PET   = new TH1D ("h_JetInHF_pT_PET","h_JetInHF_pT_PET;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
+   TH1D *h_JetInHF_eta_PET   = new TH1D ("h_JetInHF_eta_PET","h_JetInHF_eta_PET;jet #eta in HF",Nbins_default,-6,6);
+   TH1D *h_JetInHF_phi_PET   = new TH1D ("h_JetInHF_phi_PET","h_JetInHF_phi_PET;jet #phi in HF",Nbins_default,-4,4);
+   TH1D *h_JetInHF_Njet_PET   = new TH1D ("h_JetInHF_Njet_PET","h_JetInHF_Njet_PET;Number of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_Njet_ptcut_PET   = new TH1D ("h_JetInHF_Njet_ptcut_PET","h_JetInHF_Njet_ptcut_PET;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_Nconst_PET   = new TH1D ("h_JetInHF_Nconst_PET","h_JetInHF_Nconst_PET;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_N60_PET   = new TH1D ("h_JetInHF_N60_PET","h_JetInHF_N60_PET;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_N90_PET   = new TH1D ("h_JetInHF_N90_PET","h_JetInHF_N90_PET;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
+   
+   TH1D *h_JetInHF_pT_S9S1   = new TH1D ("h_JetInHF_pT_S9S1","h_JetInHF_pT_S9S1;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
+   TH1D *h_JetInHF_eta_S9S1   = new TH1D ("h_JetInHF_eta_S9S1","h_JetInHF_eta_S9S1;jet #eta in HF",Nbins_default,-6,6);
+   TH1D *h_JetInHF_phi_S9S1   = new TH1D ("h_JetInHF_phi_S9S1","h_JetInHF_phi_S9S1;jet #phi in HF",Nbins_default,-4,4);
+   TH1D *h_JetInHF_Njet_S9S1   = new TH1D ("h_JetInHF_Njet_S9S1","h_JetInHF_Njet_S9S1;Number of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_Njet_ptcut_S9S1   = new TH1D ("h_JetInHF_Njet_ptcut_S9S1","h_JetInHF_Njet_ptcut_S9S1;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_Nconst_S9S1   = new TH1D ("h_JetInHF_Nconst_S9S1","h_JetInHF_Nconst_S9S1;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_N60_S9S1   = new TH1D ("h_JetInHF_N60_S9S1","h_JetInHF_N60_S9S1;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
+   TH1D *h_JetInHF_N90_S9S1   = new TH1D ("h_JetInHF_N90_S9S1","h_JetInHF_N90_S9S1;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
+
+   h_JetInHF_pT->Sumw2();
+   h_JetInHF_eta->Sumw2();
+   h_JetInHF_phi->Sumw2();
+   h_JetInHF_Njet->Sumw2();
+   h_JetInHF_Njet_ptcut->Sumw2();
+   h_JetInHF_Nconst->Sumw2();  
+   h_JetInHF_N60->Sumw2();  
+   h_JetInHF_N90->Sumw2(); 
+   
+   h_JetInHF_pT_PET->Sumw2();
+   h_JetInHF_eta_PET->Sumw2();
+   h_JetInHF_phi_PET->Sumw2();
+   h_JetInHF_Njet_PET->Sumw2();
+   h_JetInHF_Njet_ptcut_PET->Sumw2();
+   h_JetInHF_Nconst_PET->Sumw2();
+   h_JetInHF_N60_PET->Sumw2();
+   h_JetInHF_N90_PET->Sumw2();
+   
+   h_JetInHF_pT_S9S1->Sumw2();
+   h_JetInHF_eta_S9S1->Sumw2();
+   h_JetInHF_phi_S9S1->Sumw2();
+   h_JetInHF_Njet_S9S1->Sumw2();
+   h_JetInHF_Njet_ptcut_S9S1->Sumw2();
+   h_JetInHF_Nconst_S9S1->Sumw2();
+   h_JetInHF_N60_S9S1->Sumw2();
+   h_JetInHF_N90_S9S1->Sumw2();
+
    /////////initialize variables
-   int PrintOut = (int)getPreCutValue1("printout");
+
+   int printout  = (int) getPreCutValue1("printout");
 
    //////////////////////////////
    ///// Goood Run List  ////////
@@ -268,7 +335,6 @@ void analysisClass::Loop()
    double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.118896,0.0913756,0.0589927};
    
    int useS9oS1Algo = (int)getPreCutValue1("useS9oS1Algo");
-
 
    Long64_t nentries = fChain->GetEntriesFast();
    std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl;   
@@ -701,15 +767,97 @@ void analysisClass::Loop()
            h_CaloSumETHF_clean->Fill( sumetHF_clean );
            
            
-           if( PrintOut==1 && metHF_clean > 10 )
-             {
-               cout << "event: " << event << " " 
-                    << "ls: " << ls << " "
-                    << "run: " << run << "  "
-                    << "--  CaloMETinHFPt_clean : " <<  metHF_clean << " "
-                    << endl;
-             }
+	   if(printout)
+	     {
+	       if( metHF_clean > 10 )
+		 {
+		   cout << "event: " << event << " " 
+			<< "ls: " << ls << " "
+			<< "run: " << run << "  "
+			<< "--  CaloMETinHFPt_clean : " <<  metHF_clean << " "
+			<< endl;
+		 }
+	     }
            
+	   //## jet variables
+	   if(useJetVariables)
+	     {
+
+	       int NjetInHF=0;
+	       int NjetInHF_PET=0;
+	       int NjetInHF_S9S1=0;
+	       int NjetInHF_ptCut=0;
+	       int NjetInHF_ptCut_PET=0;
+	       int NjetInHF_ptCut_S9S1=0;
+
+	       //-- no cleaning --
+	       for(int jet=0; jet<ak5JetpT->size(); jet++)
+		 {		   
+		   //only jets in HF
+		   if(fabs(ak5JetEta->at(jet))<3.0)
+		     continue;
+		  
+		   NjetInHF++;
+		   if( ak5JetpT->at(jet) > JetPtCut )
+		     NjetInHF_ptCut++;
+
+		   h_JetInHF_pT->Fill( ak5JetpT->at(jet) );
+		   h_JetInHF_eta->Fill( ak5JetEta->at(jet) );
+		   h_JetInHF_phi->Fill( ak5JetPhi->at(jet) );
+		   h_JetInHF_Nconst->Fill( ak5JetNConstituents->at(jet) );
+		   h_JetInHF_N60->Fill( ak5JetN60->at(jet) );
+		   h_JetInHF_N90->Fill( ak5JetN90->at(jet) );		   
+		 }
+	       h_JetInHF_Njet->Fill(NjetInHF);
+	       h_JetInHF_Njet_ptcut->Fill(NjetInHF_ptCut);
+
+
+	       //-- PET cleaning --
+	       for(int jet=0; jet<ak5JetpTPET->size(); jet++)
+		 {		   
+		   //only jets in HF
+		   if(fabs(ak5JetEtaPET->at(jet))<3.0)
+		     continue;
+		  
+		   NjetInHF_PET++;
+		   if( ak5JetpTPET->at(jet) > JetPtCut )
+		     NjetInHF_ptCut_PET++;
+
+		   h_JetInHF_pT_PET->Fill( ak5JetpTPET->at(jet) );
+		   h_JetInHF_eta_PET->Fill( ak5JetEtaPET->at(jet) );
+		   h_JetInHF_phi_PET->Fill( ak5JetPhiPET->at(jet) );
+		   h_JetInHF_Nconst_PET->Fill( ak5JetNConstituentsPET->at(jet) );
+		   h_JetInHF_N60_PET->Fill( ak5JetN60PET->at(jet) );
+		   h_JetInHF_N90_PET->Fill( ak5JetN90PET->at(jet) );		   
+		 }
+	       h_JetInHF_Njet_PET->Fill(NjetInHF_PET);
+	       h_JetInHF_Njet_ptcut_PET->Fill(NjetInHF_ptCut_PET);
+
+
+	       //-- S9S1 cleaning --
+	       for(int jet=0; jet<ak5JetpTS9S1->size(); jet++)
+		 {		   
+		   //only jets in HF
+		   if(fabs(ak5JetEtaS9S1->at(jet))<3.0)
+		     continue;
+		  
+		   NjetInHF_S9S1++;
+		   if( ak5JetpTS9S1->at(jet) > JetPtCut )
+		     NjetInHF_ptCut_S9S1++;
+
+		   h_JetInHF_pT_S9S1->Fill( ak5JetpTS9S1->at(jet) );
+		   h_JetInHF_eta_S9S1->Fill( ak5JetEtaS9S1->at(jet) );
+		   h_JetInHF_phi_S9S1->Fill( ak5JetPhiS9S1->at(jet) );
+		   h_JetInHF_Nconst_S9S1->Fill( ak5JetNConstituentsS9S1->at(jet) );
+		   h_JetInHF_N60_S9S1->Fill( ak5JetN60S9S1->at(jet) );
+		   h_JetInHF_N90_S9S1->Fill( ak5JetN90S9S1->at(jet) );		   
+		 }
+	       h_JetInHF_Njet_S9S1->Fill(NjetInHF_S9S1);
+	       h_JetInHF_Njet_ptcut_S9S1->Fill(NjetInHF_ptCut_S9S1);
+
+	      
+	     }//end of jet variables
+
 	 }//end pass all cut level 0
 
        // retrieve value of previously filled variables (after making sure that they were filled)
@@ -849,6 +997,35 @@ void analysisClass::Loop()
    }
 
    p_OccupancyHF_vs_SumEinHF->Write();
+
+
+   h_JetInHF_pT->Write();
+   h_JetInHF_eta->Write();
+   h_JetInHF_phi->Write();
+   h_JetInHF_Njet->Write();
+   h_JetInHF_Njet_ptcut->Write();
+   h_JetInHF_Nconst->Write();  
+   h_JetInHF_N60->Write();  
+   h_JetInHF_N90->Write(); 
+   
+   h_JetInHF_pT_PET->Write();
+   h_JetInHF_eta_PET->Write();
+   h_JetInHF_phi_PET->Write();
+   h_JetInHF_Njet_PET->Write();
+   h_JetInHF_Njet_ptcut_PET->Write();
+   h_JetInHF_Nconst_PET->Write();
+   h_JetInHF_N60_PET->Write();
+   h_JetInHF_N90_PET->Write();
+   
+   h_JetInHF_pT_S9S1->Write();
+   h_JetInHF_eta_S9S1->Write();
+   h_JetInHF_phi_S9S1->Write();
+   h_JetInHF_Njet_S9S1->Write();
+   h_JetInHF_Njet_ptcut_S9S1->Write();
+   h_JetInHF_Nconst_S9S1->Write();
+   h_JetInHF_N60_S9S1->Write();
+   h_JetInHF_N90_S9S1->Write();
+   
    
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
