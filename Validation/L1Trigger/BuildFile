@@ -9,7 +9,6 @@
 <use name=Geometry/HcalTowerAlgo>
 <use name=CalibFormats/CaloTPG>
 <use name=CalibCalorimetry/EcalTPGTools>
-<use name=PhysicsTools/UtilAlgos>
 <use name=DataFormats/HepMCCandidate>
 <use name=root>
 <use name=L1Trigger/RPCTrigger>
@@ -25,5 +24,4 @@
    <use name=Geometry/HcalTowerAlgo>
    <use name=CalibFormats/CaloTPG>
    <use name=CalibCalorimetry/EcalTPGTools>
-   <use name=PhysicsTools/UtilAlgos>
 </export>
