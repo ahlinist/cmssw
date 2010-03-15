@@ -705,7 +705,7 @@ void analysisClass::Loop()
                cout << "event: " << event << " " 
                     << "ls: " << ls << " "
                     << "run: " << run << "  "
-                    << "--  CaloMetinHFPt_clean : " <<  metHF_clean << " "
+                    << "--  CaloMETinHFPt_clean : " <<  metHF_clean << " "
                     << endl;
              }
            
