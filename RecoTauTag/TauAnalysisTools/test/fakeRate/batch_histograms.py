@@ -23,6 +23,7 @@ parser = OptionParser()
 
 parser.add_option('-n', '--njobs', help="Specify how many jobs to split the input into", type="int")
 parser.add_option('-j', '--job', help="Specify the job index to run", type="int")
+parser.add_option('-l', '--ls', help="Only print out the number of events", action='store_true')
 parser.add_option('-s', '--source', help="Name of the ntuple source to use.  Currently configured: %s" % sources.keys())
 
 (options, args) = parser.parse_args()     
@@ -69,6 +70,7 @@ for source, source_info in to_build:
         print "Parsing %s logs" % location
         xSec, filterEff = source_info['sources'][location]
         nEvents = getNEvents(os.path.join(working_dir, "%s/*.stderr" % location), "path")
+        print "Found %i events for source %s" % (nEvents, source)
         weight = normalizeToOneInverseNanoBarn(
             xSec, nEvents, filterEff)
         # Update the info
@@ -83,14 +85,15 @@ for source, source_info in to_build:
         print "Loc: %s, nEvents: %i, weight %f" % (loc, nEvents, weight)
 
     # Build file list
-    files_and_weights = []
-    for loc, (xSec, filterEff, nEvents, weight) in source_info['sources'].iteritems():
-        # Loop over the files to use for this run
-        for file in nthOfEveryMItems(options.job, options.njobs, 
-                                     glob.glob(os.path.join(working_dir, "%s/*.root" % loc))):
-            files_and_weights.append((file, weight))
-    # Change the output filename to reflect the batch job
-    source_info['output_file'] = source_info['output_file'].replace( '.root', '_%i.root' % options.job)
-    source_info['output_file'] = os.path.join( working_dir, source_info['output_file'])
-    make_plots(files_and_weights, selections=makeCuts(denominator), **source_info)
+    if not options.ls:
+        files_and_weights = []
+        for loc, (xSec, filterEff, nEvents, weight) in source_info['sources'].iteritems():
+            # Loop over the files to use for this run
+            for file in nthOfEveryMItems(options.job, options.njobs, 
+                                         glob.glob(os.path.join(working_dir, "%s/*.root" % loc))):
+                files_and_weights.append((file, weight))
+        # Change the output filename to reflect the batch job
+        source_info['output_file'] = source_info['output_file'].replace( '.root', '_%i.root' % options.job)
+        source_info['output_file'] = os.path.join( working_dir, source_info['output_file'])
+        make_plots(files_and_weights, selections=makeCuts(denominator), **source_info)
 
