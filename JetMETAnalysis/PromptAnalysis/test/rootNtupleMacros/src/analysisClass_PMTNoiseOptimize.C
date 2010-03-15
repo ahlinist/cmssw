@@ -699,6 +699,16 @@ void analysisClass::Loop()
            h_CaloMEyHF_clean->Fill( meyHF_clean );
            h_CaloSumETHF_clean->Fill( sumetHF_clean );
            
+           
+           if( metHF_clean > 10 )
+             {
+               cout << "event: " << event << " " 
+                    << "ls: " << ls << " "
+                    << "run: " << run << "  "
+                    << "--  CaloMetinHFPt_clean : " <<  metHF_clean << " "
+                    << endl;
+             }
+           
 	 }//end pass all cut level 0
 
        // retrieve value of previously filled variables (after making sure that they were filled)
