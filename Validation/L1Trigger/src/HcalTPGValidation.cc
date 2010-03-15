@@ -13,86 +13,25 @@
 //
 // Original Author:  Ka Vang Tsang,8 R-004,+41227676479,
 //         Created:  Fri Mar 12 18:25:36 CET 2010
-// $Id$
+// $Id: HcalTPGValidation.cc,v 1.2 2010/03/15 01:14:27 kvtsang Exp $
 //
 //
 
 
 // system include files
+#include "Validation/L1Trigger/interface/HcalTPGValidation.h"
+
 #include <memory>
-
-// user include files
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-
 #include "SimDataFormats/CaloHit/interface/PCaloHitContainer.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "DataFormats/HcalDetId/interface/HcalTrigTowerDetId.h"
 #include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
-#include "Geometry/HcalTowerAlgo/interface/HcalTrigTowerGeometry.h"
 
 #include "FWCore/Framework/interface/ESHandle.h"                
 #include "CalibFormats/CaloTPG/interface/HcalTPGCompressor.h"   
 #include "CalibFormats/CaloTPG/interface/CaloTPGRecord.h"       
 #include "CalibFormats/CaloTPG/interface/CaloTPGTranscoder.h"   
 
-#include "DQMServices/Core/interface/DQMStore.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "DQMServices/Core/interface/MonitorElement.h"
-//#include "FWCore/ServiceRegistry/interface/Service.h"
-//#include "CommonTools/UtilAlgos/interface/TFileService.h"
-//#include "TH1F.h"
-//#include "TH2F.h"
-
-//
-// class declaration
-//
-
-class HcalTPGValidation : public edm::EDAnalyzer {
-   public:
-      explicit HcalTPGValidation(const edm::ParameterSet&);
-      ~HcalTPGValidation();
-
-
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-
-      // ----------member data ---------------------------
-      std::string dqm_folder_;
-      edm::InputTag simhits_label_;
-      edm::InputTag tp_label_;
-      double factor_HB_;
-      double factor_HE_;
-      double factor_HF1_;
-      double factor_HF2_;
-      double threshold_;
-      HcalTrigTowerGeometry geometry_;
-      std::map<int, double> cosh_ieta_;
-      DQMStore * dbe_;
-      MonitorElement* histo_Et_corr_HB;
-      MonitorElement* histo_Et_corr_HE;
-      MonitorElement* histo_Et_corr_HF;
-      MonitorElement* histo_Et_ratio_HB;
-      MonitorElement* histo_Et_ratio_HE;
-      MonitorElement* histo_Et_ratio_HF;
-};
-
-//
-// constants, enums and typedefs
-//
-
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
 HcalTPGValidation::HcalTPGValidation(const edm::ParameterSet& iConfig) :
    dqm_folder_(iConfig.getParameter<std::string>("DQMFolder")),
    simhits_label_(iConfig.getParameter<edm::InputTag>("SimHitsLabel")),
