@@ -142,6 +142,16 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         outputFileName          = cms.string("tteffAnalysis.root")
 )
 
+# One way for running multiple TTEffAnalyzers in one job such that
+# each analyzer loops over different collection and produces a
+# different output file
+#process.TTEffAnalysisL1Tau = process.TTEffAnalysis.clone()
+#process.TTEffAnalysisL1Tau.PFTauCollection = cms.InputTag("hltL1extraParticles", "Tau", "HLT2")
+#process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root");
+#process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
+#process.TTEffAnalysisL1Cen.PFTauCollection = cms.InputTag("hltL1extraParticles", "Central", "HLT2")
+#process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
+
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
 GenParticles  = cms.untracked.InputTag("genParticles"),
        ptMinTau      = cms.untracked.double(3),
@@ -160,6 +170,8 @@ process.runEDAna = cms.Path(
 #    process.thisPFTauDiscriminationAgainstMuon*
 #    process.tteffL1GTSeed*
     process.TTEffAnalysis
+#    process.TTEffAnalysisL1Tau *
+#    process.TTEffAnalysisL1Cen
 ) 
 
 #process.o1 = cms.OutputModule("PoolOutputModule",
