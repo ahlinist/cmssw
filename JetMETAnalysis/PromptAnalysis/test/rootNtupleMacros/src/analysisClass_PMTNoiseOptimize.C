@@ -243,6 +243,7 @@ void analysisClass::Loop()
    TProfile * p_OccupancyHF_vs_SumEinHF = new TProfile ("p_OccupancyHF_vs_SumEinHF","p_OccupancyHF_vs_SumEinHF",100,0,5000.);
 
    /////////initialize variables
+   int PrintOut = (int)getPreCutValue1("printout");
 
    //////////////////////////////
    ///// Goood Run List  ////////
@@ -700,7 +701,7 @@ void analysisClass::Loop()
            h_CaloSumETHF_clean->Fill( sumetHF_clean );
            
            
-           if( metHF_clean > 10 )
+           if( PrintOut==1 && metHF_clean > 10 )
              {
                cout << "event: " << event << " " 
                     << "ls: " << ls << " "
