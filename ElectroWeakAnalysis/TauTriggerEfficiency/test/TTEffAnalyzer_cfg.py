@@ -25,7 +25,6 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         "rfio:/castor/cern.ch/user/s/slehti/testData/skim_1054.root"
-#	"file:/tmp/slehti/tteffHLT_999.root"
     )
 )
 
@@ -84,7 +83,6 @@ process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected'
 process.thisPFTauDiscriminationByIsolation.MinPtLeadingPion = cms.double(3.0)
 process.thisPFTauDiscriminationByIsolation.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
 
-
 #copying the Discriminator against Muon
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
 process.thisPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgainstMuon)
@@ -95,7 +93,7 @@ process.thisPFTauDiscriminationAgainstMuon.Prediscriminants.leadPion.Producer = 
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
-        PFTauCollection         = cms.InputTag("PFTausSelected"),
+        LoopingOver	        = cms.InputTag("PFTausSelected"),
         PFTauIsoCollection      = cms.InputTag("thisPFTauDiscriminationByIsolation"),
         PFTauMuonRejectionCollection      = cms.InputTag("thisPFTauDiscriminationAgainstMuon"),
         # Check that Isolation collection below actually matched up with Tau Collection above
@@ -141,10 +139,10 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 # each analyzer loops over different collection and produces a
 # different output file
 #process.TTEffAnalysisL1Tau = process.TTEffAnalysis.clone()
-#process.TTEffAnalysisL1Tau.PFTauCollection = cms.InputTag("hltL1extraParticles", "Tau", "HLT2")
+#process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("hltL1extraParticles", "Tau", "HLT2")
 #process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root");
 #process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
-#process.TTEffAnalysisL1Cen.PFTauCollection = cms.InputTag("hltL1extraParticles", "Central", "HLT2")
+#process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("hltL1extraParticles", "Central", "HLT2")
 #process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
@@ -158,8 +156,6 @@ GenParticles  = cms.untracked.InputTag("genParticles"),
 
 process.runEDAna = cms.Path(
 #    process.TauMCProducer*
-#    process.HLT_SingleIsoTau20_Trk5*
-#    process.l1CaloSim *
 #    process.DoHLTJetsU * 
 #    process.DoHLTTau *
     process.thisPFTauDiscriminationByLeadingPionPtCut *
@@ -176,8 +172,8 @@ process.runEDAna = cms.Path(
 #process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau)
 #,process.PFTausSelected,process.runEDAna)
 
-process.o1 = cms.OutputModule("PoolOutputModule",
-    outputCommands = cms.untracked.vstring("keep *"),
-    fileName = cms.untracked.string('cmssw.root')
-)
-process.outpath = cms.EndPath(process.o1)
+#process.o1 = cms.OutputModule("PoolOutputModule",
+#    outputCommands = cms.untracked.vstring("keep *"),
+#    fileName = cms.untracked.string('cmssw.root')
+#)
+#process.outpath = cms.EndPath(process.o1)
