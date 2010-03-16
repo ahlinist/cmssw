@@ -7,6 +7,7 @@
 #include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h" 
 #include "DataFormats/Candidate/interface/Candidate.h" 
@@ -14,6 +15,8 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
+
+#include "TauAnalysis/CandidateTools/interface/SVMethodFitter.h"
 
 #include "TMath.h"
 #include "TF1.h"
@@ -45,7 +48,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   CompositePtrCandidateT1T2MEt<T1,T2> buildCompositePtrCandidate(const T1Ptr leg1, 
 								 const T2Ptr leg2, 
 								 const reco::CandidatePtr met,
-								 const reco::GenParticleCollection* genParticles)
+								 const reco::GenParticleCollection* genParticles,
+                                                                 const reco::Vertex* pv,
+                                                                 const reco::BeamSpot* beamSpot,
+                                                                 const TransientTrackBuilder* trackBuilder)
   {
     CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate(leg1, leg2, met);
   
@@ -77,6 +83,23 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setDPhi2MET(TMath::Abs(normalizedPhi(leg2->phi() - met->phi())));
 
       compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
+
+//--- SV method computation (if we have the PV and beamspot)
+      if( pv && beamSpot )
+      {
+         vector<TauVertex::Solution> fits = TauVertex::fitVertices<T1,T2>(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
+         // Get the best solution
+         TauVertex::Solution bestfit = fits[0];
+         compositePtrCandidate.setSVNLL(bestfit.nllOfFit);
+         compositePtrCandidate.setVertexLeg1(bestfit.sv1);
+         compositePtrCandidate.setVertexLeg2(bestfit.sv2);
+         compositePtrCandidate.setPV(bestfit.pv);
+         compositePtrCandidate.setNuSVLeg1(bestfit.leg1NuP4);
+         compositePtrCandidate.setNuSVLeg2(bestfit.leg2NuP4);
+         compositePtrCandidate.setVisSVLeg1(bestfit.leg1VisP4);
+         compositePtrCandidate.setVisSVLeg2(bestfit.leg2VisP4);
+         compositePtrCandidate.computeSVTotal();
+      }
     } else {
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false, 0);
     }
@@ -84,6 +107,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 //--- compute gen. level quantities
     if ( genParticles ) {
       compGenQuantities(compositePtrCandidate, genParticles);
+
     }
 
 //--- set compositePtr four-momentum
@@ -111,6 +135,13 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       }
     } else if ( recoMode_ == "" ) {
       compositePtrCandidate.setP4(compositePtrCandidate.p4Vis());
+    } else if ( recoMode_ == "secondaryVertexFit" ) {
+       if ( met.isNonnull() && pv && beamSpot )
+          compositePtrCandidate.setP4(compositePtrCandidate.p4SVFit());
+       else {
+          edm::LogError("buildCompositePtrCandidate") << "Failed to set four-momnetum"
+                          << " recoMode = " << recoMode_ << " requires MET, PrimaryVertex and Beamspot to be valid !!";
+       }
     } else {
       edm::LogError ("buildCompositePtrCandidate") << " Failed to set four-momentum:"
 						   << " recoMode = " << recoMode_ << " undefined !!";
@@ -125,6 +156,11 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   {
     const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1);
     if ( genLeg1 ) {
+       // TODO: is vertex defintion conistent??
+      // Setup PV 
+      compositePtrCandidate.setPVGen(genLeg1->vertex());
+      if(genLeg1->daughter(0))
+         compositePtrCandidate.setVertexLeg1Gen(genLeg1->daughter(0)->vertex());
       //std::cout << "genLeg1: Pt = " << genLeg1->pt() << ", eta = " << genLeg1->eta() << "," 
       //	  << " phi = " << genLeg1->phi()*180./TMath::Pi() << std::endl;
       compositePtrCandidate.setP4Leg1gen(genLeg1->p4());
@@ -133,6 +169,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     
     const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1);
     if ( genLeg2 ) {
+      if(genLeg2->daughter(0))
+         compositePtrCandidate.setVertexLeg2Gen(genLeg2->daughter(0)->vertex());
       //std::cout << "genLeg2: Pt = " << genLeg2->pt() << ", eta = " << genLeg2->eta() << "," 
       //	  << " phi = " << genLeg2->phi()*180./TMath::Pi() << std::endl;
       compositePtrCandidate.setP4Leg2gen(genLeg2->p4());
