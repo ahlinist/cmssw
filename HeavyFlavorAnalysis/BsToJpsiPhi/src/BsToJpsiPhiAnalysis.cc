@@ -195,7 +195,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       PVz= RecVtx.z();
       PVerrx=RecVtx.xError();
       PVerry=RecVtx.yError();
-      PVerry=RecVtx.zError();
+      PVerrz=RecVtx.zError();
     }
   else {
     PVx=BSx; 
