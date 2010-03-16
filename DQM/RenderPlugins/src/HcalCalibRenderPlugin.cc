@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.2 $
-  \date $Date: 2009/12/06 21:48:33 $
+  \version $Revision: 1.4 $
+  \date $Date: 2010/03/12 13:43:09 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -296,7 +296,6 @@ private:
 	  obj->SetMinimum(0);
       } // RecHitMonitor
 
-
   } // void preDrawTH1(...)
 
 
@@ -363,23 +362,58 @@ private:
 	  obj->SetMinimum(0.01); 
       }
 
-
     // Set Pedestal mean maximum to 2x nominal (3 ADC counts)
-    if (o.name.find("HcalCalib/HcalDetDiagPedestalMonitor/Summary Plots/HBHEHF pedestal mean map") !=std::string::npos)
+    if (o.name.find("DetDiagPedestalMonitor_Hcal/Summary Plots/")!=std::string::npos)
       {
-	//setColorScheme(obj,NCont_pedestal,pedestalColors);
-	obj->SetMinimum(0);
-	if (obj->GetMaximum()<6)
-	  obj->SetMaximum(6);
-      }
-    // Set Pedestal RMS maximum to 2x nominal
-    if (o.name.find("HcalCalib/HcalDetDiagPedestalMonitor/Summary Plots/HBHEHF pedestal rms map") !=std::string::npos)
+	if (
+	    (o.name.find("pedestal mean map") !=std::string::npos)
+	    )
+	  {
+	    obj->SetStats(0);
+	    obj->SetMaximum(5);
+	    obj->SetNdivisions(36,"Y");
+	    obj->Draw("COLZ");
+	  }
+	
+	else if (
+		 (o.name.find("pedestal rms map") !=std::string::npos) 
+		 )
+	  {
+	    obj->SetStats(0);
+	    obj->SetMaximum(2);
+	    obj->SetNdivisions(36,"Y");
+	    obj->Draw("COLZ");
+	  }
+      } // DetDiagPedestalMonitor_Hcal/Summary Plots/
+    else if (o.name.find("DetDiagLaserMonitor_Hcal/")!=std::string::npos)
       {
-	//setColorScheme(obj,NCont_pedestal,pedestalColors);
-	obj->SetMinimum(0);
-	if (obj->GetMaximum()<2)
-	  obj->SetMaximum(2);
-      }
+	if (
+	    (o.name.find("HBHEHF Laser (Timing-Ref)+1")!=std::string::npos) ||
+	    (o.name.find("HO Laser (Timing-Ref)+1") !=std::string::npos)
+	    )
+	  {
+	    obj->SetMinimum(0);
+	    obj->SetMaximum(2);
+	    obj->SetNdivisions(36,"Y");
+	  }
+	
+	else if (
+		 (o.name.find("HBHEHF Laser Energy_div_Ref")!=std::string::npos) ||
+		 (o.name.find("HO Laser Energy_div_Ref") !=std::string::npos)
+		 )
+	  {
+	    obj->SetMinimum(0.5);
+	    obj->SetMaximum(1.5);
+	    obj->SetNdivisions(36,"Y");
+	  }
+	else if ((o.name.find("Laser Timing HBHEHF")!=std::string::npos) ||
+		 (o.name.find("Laser Timing HO")!=std::string::npos) ||
+		 (o.name.find("Laser Energy HBHEHF")!=std::string::npos) ||
+		 (o.name.find("Laser Energy HO")!=std::string::npos) )
+	  {
+	    obj->SetNdivisions(36,"Y");
+	  }
+      } // DetDiagLaserMonitor_Hcal
   } // void preDrawTH2
 
   void preDrawTProfile ( TCanvas *, const VisDQMObject &o )
@@ -405,10 +439,25 @@ private:
     return;
   }
 
-  void postDrawTH1( TCanvas *, const VisDQMObject &o )
+  void postDrawTH1( TCanvas *c, const VisDQMObject &o )
   {
     TH1* obj = dynamic_cast<TH1*>( o.object ); 
     assert( obj ); 
+
+    if (o.name.find("DetDiagLaserMonitor_Hcal")!=std::string::npos)
+      {
+	if (o.name.find("RBX average Time-Ref")!=std::string::npos)
+	  {
+	    obj->SetMarkerStyle(22);
+	    obj->SetMarkerColor(kRed);
+	    obj->GetYaxis()->SetRangeUser(obj->GetMinimum()-1,obj->GetMaximum()+1);
+	    obj->GetXaxis()->SetNdivisions(520);
+	    obj->GetXaxis()->SetBit(TAxis::kLabelsVert);
+	    obj->GetXaxis()->SetLabelSize(0.05);
+	    c->SetBottomMargin(0.2);
+	    (obj->GetEntries()>0) ? obj->Draw("P") : obj->Draw();
+	  }
+      }  // DetDiagLaserMonitor_Hcal
   }
 
   void postDrawTH2( TCanvas *c, const VisDQMObject &o )
