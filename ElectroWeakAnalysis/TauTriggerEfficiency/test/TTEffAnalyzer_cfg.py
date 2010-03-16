@@ -24,82 +24,77 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        "rfio:/castor/cern.ch/user/s/slehti/testData/tteffHLT_999.root"
+        "rfio:/castor/cern.ch/user/s/slehti/testData/skim_1054.root"
 #	"file:/tmp/slehti/tteffHLT_999.root"
     )
 )
 
-#from ElectroWeakAnalysis.TauTriggerEfficiency.Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run5_cfg import *
-#process.source = source
 
-#process.PFTausSelected = cms.EDFilter("PFTauSelector",
-#   src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
-#   discriminator = cms.InputTag("pfRecoTauDiscriminationHighEfficiency")
-#)
+### Add HLT stuff
+#process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfg")
+#process.prefer("magfield")
+##from ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfg import *
+
+
+process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi")
+from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
+process.thisPFTauDiscriminationByLeadingPionPtCut = cms.EDFilter("PFRecoTauDiscriminationByLeadingObjectPtCut",
+
+    # Tau collection to discriminate
+    PFTauProducer = cms.InputTag('shrinkingConePFTauProducer'),
+
+    # no pre-reqs for this cut
+    Prediscriminants = noPrediscriminants,
+
+    # Allow either charged or neutral PFCandidates to meet this requirement
+    UseOnlyChargedHadrons = cms.bool(False),
+
+    MinPtLeadingObject = cms.double(3.0)
+)
+
+process.PFTausSelected = cms.EDFilter("PFTauSelector",
+    src = cms.InputTag("shrinkingConePFTauProducer"),
+    discriminators = cms.VPSet(
+	cms.PSet( discriminator=cms.InputTag("thisPFTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.double(-0.5))
+    )
+)
+
 
 process.load("L1Trigger/Configuration/L1Config_cff")
 ####process.load("Configuration/StandardSequences/L1TriggerDefaultMenu_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.GlobalTag.globaltag = 'MC_31X_V3::All'
-process.GlobalTag.globaltag = 'GR09_H_V6OFF::All'
+process.GlobalTag.globaltag = 'GR09_R_34X_V5::All'
 #process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1031/L1Menu_MC2009_v0_L1T_Scales_20080922_Imp0_Unprescaled_cff")
 process.load('L1TriggerConfig.L1GtConfigProducers.Luminosity.lumi1031.L1Menu_MC2009_v2_L1T_Scales_20090519_Imp0_Unprescaled_cff')
 
-#process.DQM = cms.Service( "DQM",)
-#process.DQMStore = cms.Service( "DQMStore",)
-#
-#process.HLTConfigVersion = cms.PSet(
-#  tableName = cms.string('/online/collisions/week49/HLT/V1')
-#)
-
-### Add HLTextra stuff
-#process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HLTextra_cff")
-
-#process.load("HLTrigger.Configuration.HLT_GRun_cff")
-#process.caloTowerB = cms.Path(
-#    process.CaloTowerConstituentsMapBuilder
-#)
-
-#process.load("RecoTauTag.L1CaloSim.l1calosim_cfi")
-#process.l1CaloSim.AlgorithmSource = "RecHits"
-#process.l1CaloSim.EmInputs = cms.VInputTag(cms.InputTag("ecalRecHit","EcalRecHitsEB"), cms.InputTag("ecalRecHit","EcalRecHitsEE"))
-#process.l1CaloSim.DoBitInfo = cms.bool(True)
-#process.l1CaloSim.EMActiveLevelIso = cms.double(4.0)
-#process.l1CaloSim.HadActiveLevelIso = cms.double(4.0)
-#process.l1CaloSim.IsolationEt = cms.double(2.0)
-###
 
 
-
-#process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
-#process.tteffL1GTSeed = copy.deepcopy(process.hltLevel1GTSeed)
-#process.tteffL1GTSeed.L1TechTriggerSeeding = cms.bool(False)
-#process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet30")
-##process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet60 OR L1_SingleJet100")
-#process.tteffL1GTSeed.L1GtReadoutRecordTag = cms.InputTag("hltGtDigis","","TTEff")
-#process.tteffL1GTSeed.L1GtObjectMapTag = cms.InputTag("hltL1GtObjectMap","","TTEff")
-#process.tteffL1GTSeed.L1CollectionsTag = cms.InputTag("hltL1extraParticles","","TTEff")
-#process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles","","TTEff")
 
 
 #copying the Discriminator by Isolation
+#prediscriminator
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackFinding_cfi import *
+process.thisPFTauDiscriminationByLeadingTrackFinding = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackFinding)
+process.thisPFTauDiscriminationByLeadingTrackFinding.PFTauProducer = 'PFTausSelected'
+
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolationUsingLeadingPion_cfi import *
 process.thisPFTauDiscriminationByIsolation = copy.deepcopy(pfRecoTauDiscriminationByIsolationUsingLeadingPion)
 process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected' 
 process.thisPFTauDiscriminationByIsolation.MinPtLeadingPion = cms.double(3.0)
+process.thisPFTauDiscriminationByIsolation.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
 
 
 #copying the Discriminator against Muon
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
 process.thisPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgainstMuon)
 process.thisPFTauDiscriminationAgainstMuon.PFTauProducer = 'PFTausSelected' 
-
+process.thisPFTauDiscriminationAgainstMuon.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
 
 
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
-        #PFTauCollection        = cms.InputTag("IdentifiedTaus"),
         PFTauCollection         = cms.InputTag("PFTausSelected"),
         PFTauIsoCollection      = cms.InputTag("thisPFTauDiscriminationByIsolation"),
         PFTauMuonRejectionCollection      = cms.InputTag("thisPFTauDiscriminationAgainstMuon"),
@@ -165,17 +160,24 @@ process.runEDAna = cms.Path(
 #    process.TauMCProducer*
 #    process.HLT_SingleIsoTau20_Trk5*
 #    process.l1CaloSim *
-##    process.PFTausSelected*
-#    process.thisPFTauDiscriminationByIsolation*
-#    process.thisPFTauDiscriminationAgainstMuon*
+#    process.DoHLTJetsU * 
+#    process.DoHLTTau *
+    process.thisPFTauDiscriminationByLeadingPionPtCut *
+    process.PFTausSelected *
+    process.thisPFTauDiscriminationByLeadingTrackFinding *
+    process.thisPFTauDiscriminationByIsolation *
+    process.thisPFTauDiscriminationAgainstMuon *
 #    process.tteffL1GTSeed*
     process.TTEffAnalysis
 #    process.TTEffAnalysisL1Tau *
 #    process.TTEffAnalysisL1Cen
 ) 
 
-#process.o1 = cms.OutputModule("PoolOutputModule",
-#    outputCommands = cms.untracked.vstring("keep *"),
-#    fileName = cms.untracked.string('tree_test.root')
-#)
-#process.outpath = cms.EndPath(process.o1)
+#process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau)
+#,process.PFTausSelected,process.runEDAna)
+
+process.o1 = cms.OutputModule("PoolOutputModule",
+    outputCommands = cms.untracked.vstring("keep *"),
+    fileName = cms.untracked.string('cmssw.root')
+)
+process.outpath = cms.EndPath(process.o1)
