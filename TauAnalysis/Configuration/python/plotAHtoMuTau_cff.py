@@ -45,7 +45,7 @@ addAHtoMuTau_centralJetBtag_AH_tautauSum = cms.EDAnalyzer("DQMHistAdder",
     )                          
 )
 
-addAHtoMuTau_AH_tautauSum = cms.Sequence(addAHtoMuTau_centralJetVeto_AH_tautauSum * addAHtoMuTau_centralJetVeto_AH_tautauSum)
+addAHtoMuTau_AH_tautauSum = cms.Sequence(addAHtoMuTau_centralJetVeto_AH_tautauSum * addAHtoMuTau_centralJetBtag_AH_tautauSum)
 
 addAHtoMuTau_centralJetVeto_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
@@ -132,11 +132,11 @@ plotAHtoMuTau_centralJetVeto = cms.EDAnalyzer("DQMHistPlotter",
             legendEntry = cms.string('QCD'),
             type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
         ),
-        AHtautauSum = cms.PSet(
-            dqmDirectory = cms.string('harvested/AHtautauSum'),
+        AH_tautauSum = cms.PSet(
+            dqmDirectory = cms.string('harvested/AH_tautauSum'),
             legendEntry = cms.string('A/H #rightarrow #tau^{+} #tau^{-}'),
             type = cms.string('bsmMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-        ),
+        )
     ),
 
     xAxes = cms.PSet(
@@ -177,7 +177,7 @@ plotAHtoMuTau_centralJetVeto = cms.EDAnalyzer("DQMHistPlotter",
             WplusJets = copy.deepcopy(drawOption_WplusJets),
             TTplusJets = copy.deepcopy(drawOption_TTplusJets),
             qcdSum = copy.deepcopy(drawOption_QCD),
-            AHtautauSum = copy.deepcopy(drawOption_AHbb),
+            AH_tautauSum = copy.deepcopy(drawOption_AHbb_separate),
         )
     ),
                               
@@ -188,13 +188,13 @@ plotAHtoMuTau_centralJetVeto = cms.EDAnalyzer("DQMHistPlotter",
 
     outputFilePath = cms.string('./plots/'),
     #outputFileName = cms.string('plotsAHtoMuTau_centralJetVeto.ps')
-    indOutputFileName = cms.string('plotAHtoMuTau_centralJetVeto_#PLOT#.eps')
+    indOutputFileName = cms.string('plotAHtoMuTau_centralJetVeto_#PLOT#.png')
 )
 
 plotAHtoMuTau_centralJetBtag = plotAHtoMuTau_centralJetVeto.clone(
     drawJobs = drawJobConfigurator_AHtoMuTau_centralJetBtag.configure(),
     #outputFileName = cms.string('plotsAHtoMuTau_centralJetBtag.ps')
-    indOutputFileName = cms.string('plotAHtoMuTau_centralJetBtag_#PLOT#.eps')
+    indOutputFileName = cms.string('plotAHtoMuTau_centralJetBtag_#PLOT#.png')
 )
 
 plotAHtoMuTau = cms.Sequence(plotAHtoMuTau_centralJetVeto * plotAHtoMuTau_centralJetBtag)

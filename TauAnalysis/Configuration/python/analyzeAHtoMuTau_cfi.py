@@ -638,7 +638,8 @@ muTauAnalysisSequence_centralJetVeto = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateZmumuHypothesisHistManagerForMuTau'
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'muPairHistManager'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
@@ -660,6 +661,8 @@ muTauAnalysisSequence_centralJetVeto = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'muPairHistManager',
             'jetHistManager',
         ),
         replace = cms.vstring(
@@ -1173,7 +1176,8 @@ muTauAnalysisSequence_centralJetBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateZmumuHypothesisHistManagerForMuTau'
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'muPairHistManager'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
@@ -1195,6 +1199,8 @@ muTauAnalysisSequence_centralJetBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'muPairHistManager',
             'jetHistManager',
         ),
         replace = cms.vstring(

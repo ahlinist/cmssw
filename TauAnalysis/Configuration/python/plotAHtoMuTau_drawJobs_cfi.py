@@ -362,7 +362,7 @@ drawJobConfigurator_AHtoMuTau.add(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_AHtoMuTau_centralJetVeto = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
-drawJobConfigurator_AHtoMuTau_centralJetVeto.dqmDirectory = '#PROCESSDIR#/ahMuTauAnalyzer_centralJetVeto/'
+drawJobConfigurator_AHtoMuTau_centralJetVeto.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_centralJetVeto/')
 
 drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauMt1MET,
@@ -375,16 +375,16 @@ drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
     )
 )
 
-drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
-    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
-    plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
-    )
-)
+##drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
+##    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+##    plot = drawJobConfigEntry(
+##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+##        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
+##        xAxis = 'Mass',
+##        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+##    )
+##)
 
 drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVeto,
@@ -393,7 +393,7 @@ drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
 	meName = 'JetQuantities/Jet#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
         title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis Veto)",
-        xAxis = '#PAR',
+        xAxis = '#PAR#',
         name = "cutFlowControlPlots_jet_afterZmumuMassHypothesisVeto"
     )
 )
@@ -403,7 +403,7 @@ drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_AHtoMuTau_centralJetBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
-drawJobConfigurator_AHtoMuTau_centralJetBtag.dqmDirectory = '#PROCESSDIR#/ahMuTauAnalyzer_centralJetBtag/'
+drawJobConfigurator_AHtoMuTau_centralJetBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_centralJetBtag/')
 
 drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauMt1MET,
@@ -427,16 +427,16 @@ drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
     )
 )
 
-drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
-    afterCut = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
-    plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after valid. collinear Approx. Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mZmumuHypothesis_afterValidCollinearApprox"
-    )
-)
+##drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
+##    afterCut = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
+##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+##    plot = drawJobConfigEntry(
+##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+##        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after valid. collinear Approx. Cut)",
+##        xAxis = 'Mass',
+##        name = "cutFlowControlPlots_mZmumuHypothesis_afterValidCollinearApprox"
+##    )
+##)
 
 drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVeto,
@@ -445,7 +445,7 @@ drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
 	meName = 'JetQuantities/Jet#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
         title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis Veto)",
-        xAxis = '#PAR',
+        xAxis = '#PAR#',
         name = "cutFlowControlPlots_jet_afterZmumuMassHypothesisVeto"
     )
 )
@@ -458,7 +458,7 @@ drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
             meName = 'JetQuantities/Jet#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
             title = "Jet (after Jet P{T} and #eta Cuts)",
-            xAxis = '#PAR',
+            xAxis = '#PAR#',
             name = "cutFlowControlPlots_jet_afterJetPtAndEta"
         ),
         drawJobConfigEntry(
@@ -608,7 +608,7 @@ finalSamplePlots = \
         meName = 'JetQuantities/Jet#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
         title = "Jet (final Event sample)",
-        xAxis = '#PAR',
+        xAxis = '#PAR#',
         name = "finalSamplePlots_jet"
     ),
     drawJobConfigEntry(
