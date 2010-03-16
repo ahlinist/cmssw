@@ -53,8 +53,8 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 #from HLTrigger.HLTfilters.hltLevel1GTSeed_cfi import hltLevel1GTSeed
 #process.bit40OR41 = hltLevel1GTSeed.clone(L1TechTriggerSeeding = cms.bool(True), L1SeedsLogicalExpression = cms.string('40 OR 41'))
 
-#from HLTrigger.HLTfilters.hltHighLevelDev_cfi import hltHighLevelDev
-#process.physDecl = hltHighLevelDev.clone(HLTPaths = ['HLT_PhysicsDeclared'], HLTPathsPrescales = [1])
+from HLTrigger.HLTfilters.hltHighLevelDev_cfi import hltHighLevelDev
+process.physDecl = hltHighLevelDev.clone(HLTPaths = ['HLT_PhysicsDeclared'], HLTPathsPrescales = [1])
 
 process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     outputCommands = cms.untracked.vstring(
@@ -79,7 +79,7 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     ))
 
 process.theBigNtuple = cms.Path(
-    #process.physDecl *
+    process.physDecl *
     #process.bit40OR41 *
     #process.BeamHaloId *
     (
