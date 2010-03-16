@@ -10,8 +10,8 @@
  *  tree of the selected variables, which it obtains from the EDM
  *  tree.  
  *
- *  $Date: 2009/11/22 00:03:47 $
- *  $Revision: 1.2 $
+ *  $Date: 2010/02/22 15:46:05 $
+ *  $Revision: 1.3 $
  *  \author Burt Betchart - University of Rochester <burton.andrew.betchart@cern.ch>
  */
 
@@ -20,7 +20,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include <string>
 #include <vector>
@@ -29,7 +29,6 @@
 
 class PromptAnaTree : public edm::EDAnalyzer {
 private:    
-/*   virtual void beginJob(const edm::EventSetup&); */
   virtual void beginJob();
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob(){}
