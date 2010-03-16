@@ -11,9 +11,9 @@ import copy
 #--------------------------------------------------------------------------------
 
 # uncomment next line to make plots for 10 TeV centre-of-mass energy
-from TauAnalysis.Configuration.plotZtoMuTau_processes_10TeV_cfi import *
+#from TauAnalysis.Configuration.plotZtoMuTau_processes_10TeV_cfi import *
 # uncomment next line to make plots for 7 TeV centre-of-mass energy
-#from TauAnalysis.Configuration.plotZtoMuTau_processes_7TeV_cfi import *
+from TauAnalysis.Configuration.plotZtoMuTau_processes_7TeV_cfi import *
 from TauAnalysis.Configuration.plotZtoMuTau_drawJobs_cfi import *
 from TauAnalysis.Configuration.plotZtoMuTau_cff import loadZtoMuTau
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
@@ -36,7 +36,7 @@ process.source = cms.Source("EmptySource")
 #--------------------------------------------------------------------------------
 process.loadBgEstFakeRateZtoMuTau_tauIdDiscr = cms.EDAnalyzer("DQMFileLoader",
     tauIdDiscr = cms.PSet(
-        inputFileNames = cms.vstring('rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/10TeV/plotsZtoMuTau_all.root'),
+        inputFileNames = cms.vstring('rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/7TeV/plotsZtoMuTau_all.root'),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('tauIdDiscr')
     )
@@ -47,7 +47,7 @@ reconfigDQMFileLoader(
     process.loadBgEstFakeRateZtoMuTau_tauFakeRate,
     dqmDirectory = 'tauFakeRate/#PROCESSDIR#'
 )
-process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/10TeVii/")
+process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/7TeV/")
 
 process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
@@ -59,7 +59,32 @@ process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdd
     )                          
 )
 
-process.addBgEstFakeRateZtoMuTau_tauFakeRate = cms.Sequence(process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate)
+process.addBgEstFakeRateZtoMuTau_smBgSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdder",
+    smBgSum = cms.PSet(
+        dqmDirectories_input = cms.vstring(
+            'tauFakeRate/harvested/Zmumu/',
+            'tauFakeRate/harvested/WplusJets/',
+            'tauFakeRate/harvested/TTplusJets/',
+            'tauFakeRate/harvested/qcdSum/'
+        ),
+        dqmDirectory_output = cms.string('tauFakeRate/harvested/smBgSum/')
+    )                          
+)
+
+process.addBgEstFakeRateZtoMuTau_smSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdder",
+    smSum = cms.PSet(
+        dqmDirectories_input = cms.vstring(
+            'tauFakeRate/harvested/Ztautau/',
+            'tauFakeRate/harvested/smBgSum/'
+        ),
+        dqmDirectory_output = cms.string('tauFakeRate/harvested/smSum/')
+    )                          
+)
+process.addBgEstFakeRateZtoMuTau_tauFakeRate = cms.Sequence(
+    process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate
+   + process.addBgEstFakeRateZtoMuTau_smBgSum_tauFakeRate
+   + process.addBgEstFakeRateZtoMuTau_smSum_tauFakeRate
+)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -118,6 +143,17 @@ process.compErrorBandsBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistErrorBandPr
                 #'tauFakeRate/harvested/qcdSum/zMuTauAnalyzer_gammaPlusJets'
             ),
             dqmDirectory_output = cms.string('tauFakeRate/harvested/qcdSum/frSysUncertainty'),
+            method = cms.string("min_max")
+        ),
+        cms.PSet(
+            dqmDirectories_inputVariance = cms.vstring(
+                'tauFakeRate/harvested/smBgSum/zMuTauAnalyzer_qcdMuEnriched',
+                'tauFakeRate/harvested/smBgSum/zMuTauAnalyzer_qcdDiJetLeadJet',
+                'tauFakeRate/harvested/smBgSum/zMuTauAnalyzer_qcdDiJetSecondLeadJet',
+                'tauFakeRate/harvested/smBgSum/zMuTauAnalyzer_WplusJets'
+                #'tauFakeRate/harvested/smBgSum/zMuTauAnalyzer_gammaPlusJets'
+            ),
+            dqmDirectory_output = cms.string('tauFakeRate/harvested/smBgSum/frSysUncertainty'),
             method = cms.string("min_max")
         )
     )
@@ -180,7 +216,7 @@ bgEstFakeRatePlots = [
     )     
 ]
 
-drawFakeRateHistConfiguratorZtoMuTau = drawFakeRateHistConfigurator(
+drawFakeRateHistConfiguratorZtoMuTau_background = drawFakeRateHistConfigurator(
     template = cms.PSet(
         xAxis = cms.string('unlabeled'),
         #yAxis = cms.string('numEntries_linear'),
@@ -201,18 +237,45 @@ drawFakeRateHistConfiguratorZtoMuTau = drawFakeRateHistConfigurator(
     ]
 )
 
-drawFakeRateHistConfiguratorZtoMuTau.addProcess("Ztautau", processZtoMuTau_Ztautau.config_dqmHistPlotter.dqmDirectory)
-drawFakeRateHistConfiguratorZtoMuTau.addProcess("Zmumu", processZtoMuTau_Zmumu.config_dqmHistPlotter.dqmDirectory)
-drawFakeRateHistConfiguratorZtoMuTau.addProcess("WplusJets", processZtoMuTau_WplusJets.config_dqmHistPlotter.dqmDirectory)
-drawFakeRateHistConfiguratorZtoMuTau.addProcess("TTplusJets", processZtoMuTau_TTplusJets.config_dqmHistPlotter.dqmDirectory)
-drawFakeRateHistConfiguratorZtoMuTau.addProcess("QCD", cms.string('harvested/qcdSum'))
+drawFakeRateHistConfiguratorZtoMuTau_background.addProcess("Zmumu", processZtoMuTau_Zmumu.config_dqmHistPlotter.dqmDirectory)
+drawFakeRateHistConfiguratorZtoMuTau_background.addProcess("WplusJets", processZtoMuTau_WplusJets.config_dqmHistPlotter.dqmDirectory)
+drawFakeRateHistConfiguratorZtoMuTau_background.addProcess("TTplusJets", processZtoMuTau_TTplusJets.config_dqmHistPlotter.dqmDirectory)
+drawFakeRateHistConfiguratorZtoMuTau_background.addProcess("QCD", cms.string('harvested/qcdSum'))
+drawFakeRateHistConfiguratorZtoMuTau_background.addProcess("smBackgroundSum", cms.string('harvested/smBgSum'))
 
-drawFakeRateHistConfiguratorZtoMuTau.addPlots(
+drawFakeRateHistConfiguratorZtoMuTau_background.addPlots(
     afterCut = evtSelDiMuPairZmumuHypothesisVeto,
     plots = bgEstFakeRatePlots
 )
 
-process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
+drawFakeRateHistConfiguratorZtoMuTau_signal = drawFakeRateHistConfigurator(
+    template = cms.PSet(
+        xAxis = cms.string('unlabeled'),
+        #yAxis = cms.string('numEntries_linear'),
+        yAxis = cms.string('numEntries_log'),
+        legend = cms.string('regular'),
+        labels = cms.vstring('mcNormScale')
+    ),
+    dqmDirectories = dqmDirectories,
+    legendEntries = legendEntries,
+    frTypes = [
+        "frQCDmuEnriched",
+        "frQCDdiJetLeadJet",
+        "frQCDdiJetSecondLeadJet",
+        "frWplusJets",
+        ##"frGammaPlusJets",
+        "frSysUncertainty"
+    ]
+)     
+
+drawFakeRateHistConfiguratorZtoMuTau_signal.addProcess("Ztautau", processZtoMuTau_Ztautau.config_dqmHistPlotter.dqmDirectory)
+
+drawFakeRateHistConfiguratorZtoMuTau_signal.addPlots(
+    afterCut = evtSelDiMuPairZmumuHypothesisVeto,
+    plots = bgEstFakeRatePlots
+)
+
+process.plotBgEstFakeRateZtoMuTau_background = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
         tauIdDiscr = cms.PSet(
             #dqmDirectory = cms.string(dqmDirectories["tauIdDiscr"]),
@@ -300,15 +363,58 @@ process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
         frSysUncertainty = copy.deepcopy(drawOption_uncertainty)
     ),
                               
-    drawJobs = drawFakeRateHistConfiguratorZtoMuTau.configure(),
+    drawJobs = drawFakeRateHistConfiguratorZtoMuTau_background.configure(),
 
     canvasSizeX = cms.int32(800),
-    canvasSizeY = cms.int32(640),                         
+    canvasSizeY = cms.int32(800), # quadratic plots
+    #canvasSizeY = cms.int32(640),  # rectangular (landscape) plots                      
 
     outputFilePath = cms.string('./plots/'),
     #outputFileName = cms.string('plotsBgEstFakeRateZtoMuTau.ps')
-    indOutputFileName = cms.string('plotBgEstFakeRateZtoMuTau_#PLOT#.png')
+    indOutputFileName = cms.string('plotBgEstFakeRateZtoMuTau_#PLOT#.eps')
 )
+
+process.plotBgEstFakeRateZtoMuTau_signal = process.plotBgEstFakeRateZtoMuTau_background.clone(
+    processes = cms.PSet(
+        frQCDmuEnriched = cms.PSet(
+            #dqmDirectory = cms.string(dqmDirectories["frQCDmuEnriched"]),
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string('frQCDmuEnriched'),
+            type = cms.string('smMC')
+        ),
+        frQCDdiJetLeadJet = cms.PSet(
+            #dqmDirectory = cms.string(dqmDirectories["frQCDdiJetLeadJet"]),
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string('frQCDdiJetLeadJet'),
+            type = cms.string('smMC')
+        ),
+        frQCDdiJetSecondLeadJet = cms.PSet(
+            #dqmDirectory = cms.string(dqmDirectories["frQCDdiJetSecondLeadJet"]),
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string('frQCDdiJetSecondLeadJet'),
+            type = cms.string('smMC')
+        ),
+        frWplusJets = cms.PSet(
+            #dqmDirectory = cms.string(dqmDirectories["frWplusJets"]),
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string('frWplusJets'),
+            type = cms.string('smMC')
+        ),
+        ##frGammaPlusJets = cms.PSet(
+        ##    #dqmDirectory = cms.string(dqmDirectories["frGammaPlusJets"]),
+        ##    dqmDirectory = cms.string(''),
+        ##    legendEntry = cms.string('frGammaPlusJets'),
+        ##    type = cms.string('smMC')
+        ##),
+        frSysUncertainty = cms.PSet(
+            #dqmDirectory = cms.string(dqmDirectories["frSysUncertainty"]),
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string('frSysUncertainty'),
+            type = cms.string('smMC')
+        )
+    ),
+    drawJobs = drawFakeRateHistConfiguratorZtoMuTau_signal.configure()
+)    
 
 drawTauIdEffHistConfiguratorZtoMuTau = drawFakeRateHistConfigurator(
     template = cms.PSet(
@@ -333,7 +439,7 @@ drawTauIdEffHistConfiguratorZtoMuTau.addPlots(
     plots = bgEstFakeRatePlots
 )
 
-process.plotTauIdEffZtoMuTau = process.plotBgEstFakeRateZtoMuTau.clone(
+process.plotTauIdEffZtoMuTau = process.plotBgEstFakeRateZtoMuTau_signal.clone(
     processes = cms.PSet(
         tauIdDiscr = cms.PSet(
             #dqmDirectory = cms.string(dqmDirectories["tauIdDiscr"]),
@@ -357,7 +463,7 @@ process.plotTauIdEffZtoMuTau = process.plotBgEstFakeRateZtoMuTau.clone(
     drawJobs = drawTauIdEffHistConfiguratorZtoMuTau.configure(),
 
     #outputFileName = cms.string('plotsBgEstFakeRateZtoMuTau_tauIdEff.ps')
-    indOutputFileName = cms.string('plotBgEstFakeRateZtoMuTau_tauIdEff_#PLOT#.png')
+    indOutputFileName = cms.string('plotBgEstFakeRateZtoMuTau_tauIdEff_#PLOT#.eps')
 )
 #--------------------------------------------------------------------------------
 
@@ -388,6 +494,7 @@ processSubDirectories["Zmumu"] = processZtoMuTau_Zmumu.config_dqmHistPlotter.dqm
 processSubDirectories["WplusJets"] = processZtoMuTau_WplusJets.config_dqmHistPlotter.dqmDirectory
 processSubDirectories["TTplusJets"] = processZtoMuTau_TTplusJets.config_dqmHistPlotter.dqmDirectory
 processSubDirectories["QCD"] = cms.string('harvested/qcdSum')
+processSubDirectories["smBackgroundSum"] = cms.string('harvested/smBgSum')
 
 dqmDirectory_frDataBinning = 'tauFakeRate/#PROCESSDIR#/#FAKERATEDIR#/afterEvtSelDiMuPairZmumuHypothesisVeto/dataBinningResults/'
 dqmDirectory_frFilterStatTable = 'tauFakeRate/#PROCESSDIR#/#FAKERATEDIR#/FilterStatistics/'
@@ -419,6 +526,14 @@ process.dumpBgEstFakeRateZtoMuTau = cms.Sequence(
 
 #--------------------------------------------------------------------------------
 
+##process.loadBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
+##    all = cms.PSet(
+##        inputFileNames = cms.vstring('rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/7TeV/plotsZtoMuTau_bgEstFakeRate.root'),
+##        scaleFactor = cms.double(1.),
+##        dqmDirectory_store = cms.string('')
+##    )
+##)
+
 process.saveBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoMuTau_bgEstFakeRate.root'),
     outputCommands = cms.vstring('drop tauIdDiscr/*')                                   
@@ -430,11 +545,12 @@ process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
     process.loadBgEstFakeRateZtoMuTau_tauIdDiscr
    + process.loadBgEstFakeRateZtoMuTau_tauFakeRate
    + process.addBgEstFakeRateZtoMuTau_tauFakeRate 
-  #+ process.dumpDQMStore
-   + process.compErrorBandsBgEstFakeRateZtoMuTau 
+   + process.compErrorBandsBgEstFakeRateZtoMuTau
+   ## process.loadBgEstFakeRateZtoMuTau
+   + process.dumpDQMStore
    + process.dumpZtoMuTau_frUnweighted
    + process.dumpBgEstFakeRateZtoMuTau 
-   + process.plotBgEstFakeRateZtoMuTau
+   + process.plotBgEstFakeRateZtoMuTau_background + process.plotBgEstFakeRateZtoMuTau_signal
    + process.plotTauIdEffZtoMuTau
    + process.saveBgEstFakeRateZtoMuTau
 )
