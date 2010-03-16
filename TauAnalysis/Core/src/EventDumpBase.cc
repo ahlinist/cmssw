@@ -19,8 +19,8 @@ EventDumpBase::EventDumpBase(const edm::ParameterSet& cfg)
   
     size_t posSeparator_filterName = cfgTriggerCondition_noWhiteSpace.find(":");
     if ( posSeparator_filterName == std::string::npos ) {
-      edm::LogError ("EventDumpBase::EventDumpBase") << " Failed to parse triggerCondition = " << (*cfgTriggerCondition)
-						     << " --> skipping !!";
+      edm::LogError ("EventDumpBase::EventDumpBase") 
+	<< " Failed to parse triggerCondition = " << (*cfgTriggerCondition) << " --> skipping !!";
       cfgError_ = 1;
       continue;
     }
@@ -101,8 +101,8 @@ bool isFulfilled(const std::string& filterName, const std::string& triggerCondit
       }
     }
     if ( filterResult_individual == filterResults_individual.end() ) {
-      edm::LogError ("isFulFilled") << " Failed to find filterResult_individual for filterName = " << filterName
-				    << " --> skipping !!";     
+      edm::LogError ("isFulFilled") 
+	<< " Failed to find filterResult_individual for filterName = " << filterName << " --> skipping !!";     
       continue;
     }
 
