@@ -14,7 +14,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("EmptySource")
 
 # define directory from which .root files containing the histograms get loaded
-#process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/10TeV/")
+#process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/10TeVii/")
 process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/7TeV/")
 #process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/l/lusito/ZtoMuTauAnalysis/")
 
@@ -26,7 +26,7 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
 process.makeZtoMuTauPlots = cms.Sequence(
     process.loadZtoMuTau
-  #+ process.dumpDQMStore
+   #+ process.dumpDQMStore
    + process.addZtoMuTau
    + process.saveZtoMuTau
    + process.dumpZtoMuTau
