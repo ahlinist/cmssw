@@ -7,6 +7,7 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
 from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
 from TauAnalysis.Configuration.analyzeWtoTauNu_cfi import *
+from TauAnalysis.Configuration.analyzeAHtoMuTau_cfi import *
 
 #--------------------------------------------------------------------------------
 # generic utility functions for factorization
@@ -348,7 +349,7 @@ def enableFactorization_makeZtoElecMuPlots(process,
     ]
 
     # define list of event selection criteria on "loose" muon isolation branch of the analysis,
-    # **after** applying factoAH_tautauSumrization of muon track + ECAL isolation efficiencies
+    # **after** applying factorization of muon track + ECAL isolation efficiencies
     evtSelZtoElecMu_factorizedLoose = [
         evtSelElectronTrk,
         evtSelElectronTrkIP,
@@ -625,26 +626,27 @@ def enableFactorization_makeZtoElecTauPlots(process):
         'harvested/QCD_EMenriched_Pt30to80_factorized',
         'harvested/QCD_EMenriched_Pt80to170_factorized'
     )
-    process.addZtoElecTau = cms.Sequence( process.scaleZtoElecTau_QCD_EMenriched_Pt20to30
-					 + process.scaleZtoElecTau_QCD_EMenriched_Pt30to80
-					 + process.scaleZtoElecTau_QCD_EMenriched_Pt80to170
-					 + process.scaleZtoElecTau_QCD_BCtoE_Pt20to30
-					 + process.scaleZtoElecTau_QCD_BCtoE_Pt30to80
-					 + process.scaleZtoElecTau_QCD_BCtoE_Pt80to170
-					 + process.scaleZtoElecTau_gammaPlusJets_Pt15to20
-					 + process.scaleZtoElecTau_gammaPlusJets_Pt20to30
-					 + process.scaleZtoElecTau_gammaPlusJets_Pt30to50
-                     + process.addZtoElecTau_qcdSum 
-					 + process.addZtoElecTau_gammaPlusJetsSum 
-					 + process.addZtoElecTau_smSum
-                                          )
+    process.addZtoElecTau = cms.Sequence(
+        process.scaleZtoElecTau_QCD_EMenriched_Pt20to30
+       + process.scaleZtoElecTau_QCD_EMenriched_Pt30to80
+       + process.scaleZtoElecTau_QCD_EMenriched_Pt80to170
+       + process.scaleZtoElecTau_QCD_BCtoE_Pt20to30
+       + process.scaleZtoElecTau_QCD_BCtoE_Pt30to80
+       + process.scaleZtoElecTau_QCD_BCtoE_Pt80to170
+       + process.scaleZtoElecTau_gammaPlusJets_Pt15to20
+       + process.scaleZtoElecTau_gammaPlusJets_Pt20to30
+       + process.scaleZtoElecTau_gammaPlusJets_Pt30to50
+       + process.addZtoElecTau_qcdSum 
+       + process.addZtoElecTau_gammaPlusJetsSum 
+       + process.addZtoElecTau_smSum
+   )
 	
 #--------------------------------------------------------------------------------
 # utility functions specific to factorization
 # of tau isolation efficiencies in W --> tau-jet + nu channel
 #--------------------------------------------------------------------------------
 
-def enableFactorization_runWtoTauNu(process):
+def enableFactorization_runWtoTauNu(process):    
     process.load("TauAnalysis.Configuration.selectWtoTauNu_factorized_cff")
     process.selectWtoTauNuEvents_factorized = cms.Sequence( process.selectWtoTauNuEvents
                                                            *process.selectWtoTauNuEventsLooseTauIsolation )
@@ -737,9 +739,10 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         dqmDirectoryIn_centralJetBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20/ahMuTauAnalyzer_centralJetBtag',
         dqmDirectoryOut_centralJetBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/ahMuTauAnalyzer_centralJetBtag',
         modName_addAHtoMuTau_AH_tautauSum = "addAHtoMuTau_AH_tautauSum",
-        modName_addAHtoMuTau_qcdSum = "addAHtoMuTau_qcdSum",
-        modName_addAHtoMuTau_smBgSum = "addAHtoMuTau_smBgSum",  
-        modName_addAHtoMuTau_smSum = "addAHtoMuTau_smSum",                                
+        modName_addAHtoMuTau_centralJetVeto_qcdSum = "addAHtoMuTau_centralJetVeto_qcdSum",
+        modName_addAHtoMuTau_centralJetBtag_qcdSum = "addAHtoMuTau_centralJetBtag_qcdSum",                                   
+        modName_addAHtoMuTau_smBgSum = "addAHtoMuTau_smBgSum",
+        modName_addAHtoMuTau_smSum = "addAHtoMuTau_smSum",                                   
         seqName_addAHtoMuTau = "addAHtoMuTau",
         pyObjectLabel = ""):
 
@@ -773,18 +776,19 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         evtSelTauProng,
         evtSelTauCharge,
         evtSelTauMuonVeto,
-        evtSelDiTauCandidateForMuTauAntiOverlapVeto,
-        evtSelDiTauCandidateForMuTauZeroCharge,
-        evtSelDiTauCandidateForMuTauMt1MET ]
+        evtSelTauElectronVeto,
+        evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
+        evtSelDiTauCandidateForAHtoMuTauZeroCharge,
+        evtSelDiTauCandidateForAHtoMuTauMt1MET ]
 
     evtSelAHtoMuTau_centralJetVeto_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
-    evtSelAHtoMuTau_centralJetVeto_factorizedLoose.append(evtSelDiTauCandidateForMuTauPzetaDiff)
+    evtSelAHtoMuTau_centralJetVeto_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauPzetaDiff)
     evtSelAHtoMuTau_centralJetVeto_factorizedLoose.append(evtSelDiMuPairZmumuHypothesisVeto)
     evtSelAHtoMuTau_centralJetVeto_factorizedLoose.append(evtSelCentralJetVeto)
 
     evtSelAHtoMuTau_centralJetBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
-    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelDiTauCandidateForMuTauNonBackToBack)
-    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelDiTauCandidateForMuTauValidCollinearApprox)  
+    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauNonBackToBack)
+    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox)  
     evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelDiMuPairZmumuHypothesisVeto)
     evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelCentralJetEt20)
     evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelCentralJetEt20bTag)
@@ -798,12 +802,12 @@ def enableFactorization_makeAHtoMuTauPlots(process,
     # (QCD background sample for Pt(hat) < 20 GeV region in phase-space)
     scaleAHtoMuTau_centralJetVeto_InclusivePPmuX = composeFactorizationSequence(
         process = process,
-        processName = "InclusivePPmuX" + "_" + pyObjectLabel,
+        processName = "InclusivePPmuX" + "_" + "centralJetVeto" + "_" + pyObjectLabel,
         dqmDirectoryIn_factorizedTightEvtSel = \
-          composeDirectoryName(dqmDirectoryIn_centralJetVeto_InclusivePPmuX, "factorizedWithMuonIsolation"),
+          dqmDirectoryIn_centralJetVeto_InclusivePPmuX + "_" + "factorizedWithMuonIsolation" + "/",
         evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
         dqmDirectoryIn_factorizedLooseEvtSel = \
-          composeDirectoryName(dqmDirectoryIn_centralJetVeto_InclusivePPmuX, "factorizedWithoutMuonIsolation"),
+          dqmDirectoryIn_centralJetVeto_InclusivePPmuX + "_" + "factorizedWithoutMuonIsolation" + "/",
         evtSel_factorizedLoose = evtSelAHtoMuTau_centralJetVeto_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
@@ -815,12 +819,12 @@ def enableFactorization_makeAHtoMuTauPlots(process,
 
     scaleAHtoMuTau_centralJetBtag_InclusivePPmuX = composeFactorizationSequence(
         process = process,
-        processName = "InclusivePPmuX" + "_" + pyObjectLabel,
+        processName = "InclusivePPmuX" + "_" + "centralJetBtag" + "_" + pyObjectLabel,
         dqmDirectoryIn_factorizedTightEvtSel = \
-          composeDirectoryName(dqmDirectoryIn_centralJetBtag_InclusivePPmuX, "factorizedWithMuonIsolation"),
+          dqmDirectoryIn_centralJetBtag_InclusivePPmuX + "_" + "factorizedWithMuonIsolation" + "/",
         evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
         dqmDirectoryIn_factorizedLooseEvtSel = \
-          composeDirectoryName(dqmDirectoryIn_centralJetBtag_InclusivePPmuX, "factorizedWithoutMuonIsolation"),
+          dqmDirectoryIn_centralJetBtag_InclusivePPmuX + "_" + "factorizedWithoutMuonIsolation" + "/",
         evtSel_factorizedLoose = evtSelAHtoMuTau_centralJetBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
@@ -834,12 +838,12 @@ def enableFactorization_makeAHtoMuTauPlots(process,
     # (QCD background sample for Pt(hat) > 20 GeV region in phase-space)
     scaleAHtoMuTau_centralJetVeto_PPmuXptGt20 = composeFactorizationSequence(
         process = process,
-        processName = "PPmuXptGt20" + "_" + pyObjectLabel,
+        processName = "PPmuXptGt20" + "_" + "centralJetVeto" + "_" + pyObjectLabel,
         dqmDirectoryIn_factorizedTightEvtSel = \
-          composeDirectoryName(dqmDirectoryIn_centralJetVeto_PPmuXptGt20, "factorizedWithMuonIsolation"),
+          dqmDirectoryIn_centralJetVeto_PPmuXptGt20 + "_" + "factorizedWithMuonIsolation" + "/",
         evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
         dqmDirectoryIn_factorizedLooseEvtSel = \
-          composeDirectoryName(dqmDirectoryIn_centralJetVeto_PPmuXptGt20, "factorizedWithoutMuonIsolation"),
+          dqmDirectoryIn_centralJetVeto_PPmuXptGt20 + "_" + "factorizedWithoutMuonIsolation" + "/",
         evtSel_factorizedLoose = evtSelAHtoMuTau_centralJetVeto_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
@@ -851,12 +855,12 @@ def enableFactorization_makeAHtoMuTauPlots(process,
 
     scaleAHtoMuTau_centralJetBtag_PPmuXptGt20 = composeFactorizationSequence(
         process = process,
-        processName = "PPmuXptGt20" + "_" + pyObjectLabel,
+        processName = "PPmuXptGt20" + "_" + "centralJetBtag" + "_" + pyObjectLabel,
         dqmDirectoryIn_factorizedTightEvtSel = \
-          composeDirectoryName(dqmDirectoryIn_centralJetBtag_PPmuXptGt20, "factorizedWithMuonIsolation"),
+          dqmDirectoryIn_centralJetBtag_PPmuXptGt20 + "_" + "factorizedWithMuonIsolation" + "/",
         evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
         dqmDirectoryIn_factorizedLooseEvtSel = \
-          composeDirectoryName(dqmDirectoryIn_centralJetBtag_PPmuXptGt20, "factorizedWithoutMuonIsolation"),
+          dqmDirectoryIn_centralJetBtag_PPmuXptGt20 + "_" + "factorizedWithoutMuonIsolation" + "/",
         evtSel_factorizedLoose = evtSelAHtoMuTau_centralJetBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
@@ -867,10 +871,15 @@ def enableFactorization_makeAHtoMuTauPlots(process,
     setattr(process, scaleAHtoMuTauName_centralJetBtag_PPmuXptGt20, scaleAHtoMuTau_centralJetBtag_PPmuXptGt20)
     
     # compute QCD background sum using factorized histograms and FilterStatistics objects
-    addAHtoMuTau_qcdSum = getattr(process, modName_addAHtoMuTau_qcdSum)
-    addAHtoMuTau_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
-        dqmDirectoryOut_InclusivePPmuX + '/',
-        dqmDirectoryOut_PPmuXptGt20 + '/'
+    addAHtoMuTau_centralJetVeto_qcdSum = getattr(process, modName_addAHtoMuTau_centralJetVeto_qcdSum)
+    addAHtoMuTau_centralJetVeto_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
+        dqmDirectoryOut_centralJetVeto_InclusivePPmuX + '/',
+        dqmDirectoryOut_centralJetVeto_PPmuXptGt20 + '/'
+    )
+    addAHtoMuTau_centralJetBtag_qcdSum = getattr(process, modName_addAHtoMuTau_centralJetBtag_qcdSum)
+    addAHtoMuTau_centralJetBtag_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
+        dqmDirectoryOut_centralJetBtag_InclusivePPmuX + '/',
+        dqmDirectoryOut_centralJetBtag_PPmuXptGt20 + '/'
     )
     addAHtoMuTau = cms.Sequence(
         getattr(process, scaleAHtoMuTauName_centralJetVeto_InclusivePPmuX)
@@ -878,15 +887,20 @@ def enableFactorization_makeAHtoMuTauPlots(process,
        + getattr(process, scaleAHtoMuTauName_centralJetVeto_PPmuXptGt20)
        + getattr(process, scaleAHtoMuTauName_centralJetBtag_PPmuXptGt20)
     )
-    addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_qcdSum)
+    addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_centralJetVeto_qcdSum)
+    addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_centralJetBtag_qcdSum)
     if hasattr(process, modName_addAHtoMuTau_AH_tautauSum):
         addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_AH_tautauSum)
     if hasattr(process, modName_addAHtoMuTau_smBgSum):
         addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_smBgSum)
     if hasattr(process, modName_addAHtoMuTau_smSum):
-        addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_smSum)
+        addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_smSum)    
     setattr(process, seqName_addAHtoMuTau, addAHtoMuTau)
 
-    if hasattr(process, "plotAHtoMuTau"):
-        process.plotAHtoMuTau.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
-        process.plotAHtoMuTau.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
+    if hasattr(process, "plotAHtoMuTau_centralJetVeto"):
+        process.plotAHtoMuTau_centralJetVeto.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
+        process.plotAHtoMuTau_centralJetVeto.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
+    if hasattr(process, "plotAHtoMuTau_centralJetBtag"):
+        process.plotAHtoMuTau_centralJetBtag.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
+        process.plotAHtoMuTau_centralJetBtag.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
+    
