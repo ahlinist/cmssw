@@ -14,13 +14,23 @@ from TauAnalysis.DQMTools.tools.composeSubDirectoryName import composeSubDirecto
 class drawJobConfigurator(cms._ParameterTypeBase):
 
     def __init__(self, template, dqmDirectory):
+
+        self.setTemplate(template)
+        self.setDQMdirectory(dqmDirectory)
+
+        self.dqmSubDirectories = []
+        self.plots = []
+        
+        self.drawJobs = cms.PSet()
+
+    def setTemplate(self, template):
         self.template = template
+
+    def setDQMdirectory(self, dqmDirectory):
         self.dqmDirectory = dqmDirectory
 
         if not self.dqmDirectory.endswith("/"):
             self.dqmDirectory += "/"
-
-        self.drawJobs = cms.PSet()
 
     def add(self, afterCut = None, beforeCut = None, plot = None, plots = None):
         # configure drawJob
@@ -41,27 +51,38 @@ class drawJobConfigurator(cms._ParameterTypeBase):
                 self.add(afterCut = afterCut, beforeCut = beforeCut, plot = plot)
             return
 
-        drawJob = copy.deepcopy(self.template)
-
-        dqmDirectory = self.dqmDirectory
-        dqmDirectory += composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut)
-        if not dqmDirectory.endswith("/"):
-            dqmDirectory += "/"
-
-        dqmMonitorElement = dqmDirectory + getattr(plot, "meName")
-
-        setattr(drawJob.plots, "dqmMonitorElements", cms.vstring([ dqmMonitorElement, ]))
-        if hasattr(plot, "PAR"):
-            setattr(drawJob, "parameter", cms.vstring(getattr(plot, "PAR")))
-        setattr(drawJob, "title", cms.string(getattr(plot, "title")))
-        setattr(drawJob, "xAxis", cms.string(getattr(plot, "xAxis")))
-
-        # add drawJob configuration to set of drawJobs
-        setattr(self.drawJobs, getattr(plot, "name"), drawJob)
-
+        dqmSubDirectory = composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut)
+        self.dqmSubDirectories.append(dqmSubDirectory)
+        
+        self.plots.append(plot)
+        
     def configure(self):
         # return configuration object
         # for set of drawJobs
+
+        for iPlot in range(len(self.plots)):
+
+            drawJob = copy.deepcopy(self.template)
+
+            dqmSubDirectory = self.dqmSubDirectories[iPlot]
+
+            dqmDirectory = self.dqmDirectory
+            dqmDirectory += dqmSubDirectory
+            if not dqmDirectory.endswith("/"):
+                dqmDirectory += "/"
+
+            plot = self.plots[iPlot]
+
+            dqmMonitorElement = dqmDirectory + getattr(plot, "meName")
+
+            setattr(drawJob.plots, "dqmMonitorElements", cms.vstring([ dqmMonitorElement, ]))
+            if hasattr(plot, "PAR"):
+                setattr(drawJob, "parameter", cms.vstring(getattr(plot, "PAR")))
+            setattr(drawJob, "title", cms.string(getattr(plot, "title")))
+            setattr(drawJob, "xAxis", cms.string(getattr(plot, "xAxis")))
+
+            # add drawJob configuration to set of drawJobs
+            setattr(self.drawJobs, getattr(plot, "name"), drawJob)
 
         return self.drawJobs
 
