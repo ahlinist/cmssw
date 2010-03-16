@@ -69,6 +69,7 @@ process.muCaloTauPairs = cms.EDProducer("DiCandidatePairProducer",
     dRmin12 = cms.double(0.),
     srcMET = cms.InputTag(''),
     recoMode = cms.string(""),
+    scaleFuncImprovedCollinearApprox = cms.string('1'),                                    
     verbosity = cms.untracked.int32(0)                                       
 )
 
@@ -85,6 +86,7 @@ process.muPFTauPairs = cms.EDProducer("DiCandidatePairProducer",
     dRmin12 = cms.double(0.),
     srcMET = cms.InputTag(''),
     recoMode = cms.string(""),
+    scaleFuncImprovedCollinearApprox = cms.string('1'),                                  
     verbosity = cms.untracked.int32(0)
 )
 
