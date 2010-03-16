@@ -910,7 +910,8 @@ muTauAnalysisSequence = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateZmumuHypothesisHistManagerForMuTau'
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'muPairHistManager'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
