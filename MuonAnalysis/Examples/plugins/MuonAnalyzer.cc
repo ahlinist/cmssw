@@ -1,8 +1,8 @@
 /** \class MuonAnalyzer
  *  Analyzer of the muon objects
  *
- *  $Date: 2009/06/26 12:49:42 $
- *  $Revision: 1.3 $
+ *  $Date: 2009/07/28 14:37:03 $
+ *  $Revision: 1.4 $
  *  \author R. Bellan - CERN <riccardo.bellan@cern.ch>
  */
 
@@ -15,7 +15,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
@@ -40,7 +40,7 @@ MuonAnalyzer::MuonAnalyzer(const ParameterSet& pset){
 MuonAnalyzer::~MuonAnalyzer(){
 }
 
-void MuonAnalyzer::beginJob(const EventSetup& eventSetup){
+void MuonAnalyzer::beginJob(){
 
   // Book histograms
   edm::Service<TFileService> fileService;
