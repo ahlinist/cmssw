@@ -4,8 +4,8 @@
 /** \class MuonAnalyzer
  *  Analyzer of the muon objects
  *
- *  $Date: 2009/06/18 16:38:18 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/06/22 13:33:37 $
+ *  $Revision: 1.2 $
  *  \author R. Bellan - CERN <riccardo.bellan@cern.ch>
  */
 
@@ -34,7 +34,7 @@ public:
 
   void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
 
-  virtual void beginJob(const edm::EventSetup& eventSetup) ;
+  virtual void beginJob() ;
   virtual void endJob() ;
 protected:
 
