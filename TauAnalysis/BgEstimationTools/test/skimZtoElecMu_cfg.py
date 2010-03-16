@@ -90,6 +90,7 @@ process.elecMuPairsBgEstPreselection = cms.EDProducer("PATElecMuPairProducer",
     dRmin12 = cms.double(0.7),
     srcMET = cms.InputTag('layer1METs'),
     recoMode = cms.string(""),
+    scaleFuncImprovedCollinearApprox = cms.string('1'),                                                  
     verbosity = cms.untracked.int32(0)
 )
 
