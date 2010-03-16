@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.37 2010/03/01 08:43:21 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.38 2010/03/01 08:49:33 mkortela Exp $
 //
 //
 
@@ -28,7 +28,7 @@ using namespace std;
 
 TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   DoMCTauEfficiency_(iConfig.getParameter<bool>("DoMCTauEfficiency")),
-  PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
+  PFTaus_(iConfig.getParameter<edm::InputTag>("LoopingOver")),
   PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
