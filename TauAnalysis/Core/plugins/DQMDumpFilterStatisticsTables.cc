@@ -183,15 +183,22 @@ void DQMDumpFilterStatisticsTables::endJob()
       if ( filterTitleColumn.size() != numFilters ) {
 	edm::LogError ("DQMDumpFilterStatisticsTables") 
 	  << " Number of entries in Filter Title columns do not match"
+	  << " (process = " << process << ": current = " << filterTitleColumn.size() << "," 
+	  << " reference = " << numFilters << ")"
 	  << " --> FilterStatistics summary Tables will NOT be printed-out !!";
+	std::cout << "filterTitleColumn = " << format_vstring(filterTitleColumn) << std::endl;
+	std::cout << "refFilterTitleColumn = " << format_vstring(refFilterTitleColumn) << std::endl;
 	return;
       } else {
 	for ( size_t iFilter = 0; iFilter < numFilters; ++iFilter ) {
 	  if ( filterTitleColumn[iFilter] != refFilterTitleColumn[iFilter] ) {
 	    edm::LogError ("DQMDumpFilterStatisticsTables") 
-	      << " Filter Title columns do not match"
-	      << " (current = " << filterTitleColumn[iFilter] << ", reference = " << refFilterTitleColumn[iFilter] << ")"
+	      << " Entries in Filter Title columns do not match"
+	      << " (process = " << process << ", row = " << iFilter << ":" 
+	      << " current = " << filterTitleColumn[iFilter] << ", reference = " << refFilterTitleColumn[iFilter] << ")"
 	      << " --> FilterStatistics summary Tables will NOT be printed-out !!";
+	    std::cout << "filterTitleColumn = " << format_vstring(filterTitleColumn) << std::endl;
+	    std::cout << "refFilterTitleColumn = " << format_vstring(refFilterTitleColumn) << std::endl;
 	    return;
 	  }
 	}
@@ -201,7 +208,11 @@ void DQMDumpFilterStatisticsTables::endJob()
       if ( column.size() != numFilters ) {
 	edm::LogError ("DQMDumpFilterStatisticsTables") 
 	  << " Number of entries in Title and Number columns do not match"
+	  << " (process = " << process << ": title entries = " << numFilters << ","
+	  << " number entries = " << column.size() << ")"
 	  << " --> FilterStatistics summary Tables will NOT be printed-out !!";
+	std::cout << "column = " << format_vdouble(column) << std::endl;
+	std::cout << "refFilterTitleColumn = " << format_vstring(refFilterTitleColumn) << std::endl;
 	return;
       }
 
