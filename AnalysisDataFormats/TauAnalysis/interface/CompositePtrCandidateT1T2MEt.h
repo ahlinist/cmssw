@@ -12,14 +12,15 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.4 2009/12/01 17:02:50 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.5 2010/03/08 08:35:52 akalinow Exp $
  *
  */
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h" 
 #include "DataFormats/Candidate/interface/Candidate.h" 
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Candidate/interface/LeafCandidate.h" 
 #include "DataFormats/Common/interface/Ptr.h"
 
@@ -156,6 +157,57 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     return out;
   }
 
+  ///***** SV VERTEX METHOD ****
+  double svMethodNLL() const { return svNLL_; };
+  /// Access to daughter vertices
+  const reco::Candidate::Point& vertexLeg1() const { return vertexLeg1_; };
+  const reco::Candidate::Point& vertexLeg2() const { return vertexLeg2_; };
+
+  /// Access to generator daughter vertices
+  const reco::Candidate::Point& vertexLeg1gen() const { return vertexLeg1gen_; };
+  const reco::Candidate::Point& vertexLeg2gen() const { return vertexLeg2gen_; };
+
+  /// Invisible four momenta computed by SV method
+  const reco::Candidate::LorentzVector& p4Leg1InvisFromSV() const { return p4NuSVLeg1_; };
+  const reco::Candidate::LorentzVector& p4Leg2InvisFromSV() const { return p4NuSVLeg2_; };
+
+  /// Visible four momenta computed by SV method.  The visible momentum 
+  /// is recomputed at the found secondary vertex
+  const reco::Candidate::LorentzVector& p4Leg1VisFromSV() const { return p4VisSVLeg1_; };
+  const reco::Candidate::LorentzVector& p4Leg2VisFromSV() const { return p4VisSVLeg2_; };
+
+  /// Get the total four vector as computed by the SVFit
+  const reco::Candidate::LorentzVector& p4SVFit() const { return p4SVmethod_; };
+
+  /// Compute three vector sum of missing energies
+  reco::Candidate::Vector mETFromSVTotal() const {
+     return p4Leg1InvisFromSV().Vect() + p4Leg2InvisFromSV().Vect(); };
+
+  /// Access to SV-fitted primary vertex
+  const reco::Candidate::Point& primaryVertex() const { return pv_; };
+
+  /// Access to true primary vertex
+  const reco::Candidate::Point& primaryVertexGen() const { return pvGen_; };
+
+  /// Compute total leg (vis + invis) direction
+  reco::Candidate::Vector p3Leg1TotalFromVertices() const { return (vertexLeg1_ - pv_); };
+  reco::Candidate::Vector p3Leg2TotalFromVertices() const { return (vertexLeg2_ - pv_); };
+
+  /// Compute total generator leg (vis + invis) direction
+  reco::Candidate::Vector p3Leg1TotalFromGenVertices() const { return (vertexLeg1gen_ - pvGen_); };
+  reco::Candidate::Vector p3Leg2TotalFromGenVertices() const { return (vertexLeg2gen_ - pvGen_); };
+
+  /// Get reconstructed flight distance of mother particle
+  double leg1DecayLength() const { return sqrt(p3Leg1TotalFromVertices().Mag2()); };
+  double leg2DecayLength() const { return sqrt(p3Leg2TotalFromVertices().Mag2()); };
+
+  double probLeg1DecayLength() const { return exp(-1.788*leg1DecayLength()/(8.711e-3*leg1()->p4().P())); };
+  double probLeg2DecayLength() const { return exp(-1.788*leg2DecayLength()/(8.711e-3*leg2()->p4().P())); };
+
+  /// Get true flight distance of mother particle
+  double leg1DecayLengthGen() const { return sqrt(p3Leg1TotalFromGenVertices().Mag2()); };
+  double leg2DecayLengthGen() const { return sqrt(p3Leg2TotalFromGenVertices().Mag2()); };
+
  private:
   
   /// allow only CompositePtrCandidateT1T2MEtAlgorithm to change values of data-members
@@ -266,6 +318,51 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// CDF-"zeta" variables
   double pZeta_;
   double pZetaVis_;
+
+
+  //// *** SV METHOD SUPPORT
+  void setVertexLeg1(const reco::Candidate::Point& vtx) { vertexLeg1_ = vtx; };
+  void setVertexLeg2(const reco::Candidate::Point& vtx) { vertexLeg2_ = vtx; };
+
+  void setVertexLeg1Gen(const reco::Candidate::Point& vtx) { vertexLeg1gen_ = vtx; };
+  void setVertexLeg2Gen(const reco::Candidate::Point& vtx) { vertexLeg2gen_ = vtx; };
+
+  void setPV(const reco::Candidate::Point& pv) { pv_ = pv; };
+  void setPVGen(const reco::Candidate::Point& pvGen) { pvGen_ = pvGen; };
+
+  void setNuSVLeg1(const reco::Candidate::LorentzVector& p4) { p4NuSVLeg1_ = p4; };
+  void setNuSVLeg2(const reco::Candidate::LorentzVector& p4) { p4NuSVLeg2_ = p4; };
+
+  // The SV method refits the momentum of the visible products at the vertex
+  void setVisSVLeg1(const reco::Candidate::LorentzVector& p4) { p4VisSVLeg1_ = p4; };
+  void setVisSVLeg2(const reco::Candidate::LorentzVector& p4) { p4VisSVLeg2_ = p4; };
+
+  void setSVNLL(double nll) { svNLL_ = nll; };
+
+  void computeSVTotal() { p4SVmethod_ = 
+     p4VisSVLeg1_ + p4NuSVLeg1_ +
+     p4VisSVLeg2_ + p4NuSVLeg2_; };
+
+  double svNLL_;
+  
+  // Secondary reconstructed vertices
+  reco::Candidate::Point vertexLeg1_;
+  reco::Candidate::Point vertexLeg2_;
+  reco::Candidate::Point pv_;
+
+  // Generator vertices
+  reco::Candidate::Point vertexLeg1gen_;
+  reco::Candidate::Point vertexLeg2gen_;
+  reco::Candidate::Point pvGen_;
+
+  reco::Candidate::LorentzVector p4NuSVLeg1_;
+  reco::Candidate::LorentzVector p4NuSVLeg2_;
+
+  reco::Candidate::LorentzVector p4VisSVLeg1_;
+  reco::Candidate::LorentzVector p4VisSVLeg2_;
+
+  reco::Candidate::LorentzVector p4SVmethod_;
+
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
