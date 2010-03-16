@@ -13,6 +13,7 @@ allElecMuPairs = cms.EDProducer("PATElecMuPairProducer",
     srcMET = cms.InputTag('layer1METs'),
     srcGenParticles = cms.InputTag('genParticles'),                                  
     recoMode = cms.string(""),
+    scaleFuncImprovedCollinearApprox = cms.string('1'),                            
     verbosity = cms.untracked.int32(0)
 )
 
@@ -32,6 +33,7 @@ allElecMuPairsLooseElectronIsolation = cms.EDProducer("PATElecMuPairProducer",
     srcMET = cms.InputTag('layer1METs'),
     srcGenParticles = cms.InputTag('genParticles'),                                                        
     recoMode = cms.string(""),
+    scaleFuncImprovedCollinearApprox = cms.string('1'),                                                  
     verbosity = cms.untracked.int32(0)
 )
 
