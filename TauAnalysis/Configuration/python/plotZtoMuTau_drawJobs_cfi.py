@@ -378,16 +378,16 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
-    plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
-    )
-)
+##drawJobConfigurator_ZtoMuTau.add(
+##    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+##    plot = drawJobConfigEntry(
+##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+##        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
+##        xAxis = 'Mass',
+##        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+##    )
+##)
 
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
