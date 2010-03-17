@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.57 2009/10/31 23:18:53 lat Exp $
+// $Id: DTRenderPlugin.cc,v 1.58 2010/01/07 12:56:15 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.57 $
-  \date $Date: 2009/10/31 23:18:53 $
+  \version $Revision: 1.58 $
+  \date $Date: 2010/01/07 12:56:15 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -100,8 +100,43 @@ public:
 
 private:
   // private functions...
-  void preDrawTProfile2D( TCanvas *, const VisDQMObject & )
+  void preDrawTProfile2D( TCanvas *c, const VisDQMObject &o)
     {
+      TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
+      assert( obj );
+
+      // This applies to all
+      gStyle->SetCanvasBorderMode(0);
+      gStyle->SetPadBorderMode(0);
+      gStyle->SetPadBorderSize(0);
+
+      gStyle->SetOptStat(0);
+      gStyle->SetPalette(1);
+
+      obj->SetStats(kFALSE);
+      obj->SetOption("colz");
+
+      //gStyle->SetLabelSize(0.7);
+      obj->GetXaxis()->SetLabelSize(0.05);
+      obj->GetYaxis()->SetLabelSize(0.05);
+
+      // Trigger
+      if(o.name.find("BXDiff") != std::string::npos) 
+      {
+        obj->GetXaxis()->SetNdivisions(13,true);
+        obj->GetYaxis()->SetNdivisions(5,true); //Phi Summary
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        c->SetGrid(1,1);
+        obj->GetXaxis()->LabelsOption("v");
+        c->SetBottomMargin(0.1);
+        c->SetLeftMargin(0.12);
+        c->SetRightMargin(0.12);
+	obj->SetOption("text");
+	obj->SetMarkerSize( 1.5 );
+	gStyle->SetPaintTextFormat("2.1f");
+        
+      } 
     }
 
   void preDrawTProfile( TCanvas *, const VisDQMObject & )
@@ -233,7 +268,8 @@ private:
 
         return;
       }
-      if(o.name.find("DataIntegritySummary") != std::string::npos)
+      if(o.name.find("DataIntegritySummary") != std::string::npos ||
+	 o.name.find("DataIntegrityTDCSummary") != std::string::npos)
       {
         obj->GetXaxis()->SetNdivisions(13,true);
         obj->GetYaxis()->SetNdivisions(6,true);
@@ -1196,6 +1232,18 @@ private:
         tdc3Label->Draw("same");
 
         return;
+      }
+
+      if(o.name.find("ROB_mean") != std::string::npos)
+      {
+	TH2F * histo =  dynamic_cast<TH2F*>( o.object );
+	if(histo->ProjectionY("",100,100,"")->Integral()>0)
+	{
+          TLatex *labelOverflow = new TLatex(0.5,0.5,"Overflow");
+          labelOverflow->SetTextColor(kRed);
+          labelOverflow->SetNDC();
+          labelOverflow->Draw("same");
+        }
       }
 
       if(o.name.find("Summary_W") != std::string::npos)
