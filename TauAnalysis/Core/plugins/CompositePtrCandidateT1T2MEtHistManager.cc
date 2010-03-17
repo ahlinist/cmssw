@@ -84,6 +84,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hDiTauCandidateCharge_ = book1D("DiTauCandidateCharge", "Composite Charge", 11, -5.5, +5.5);
   hDiTauCandidateMass_ = book1D("DiTauCandidateMass", "Composite Invariant Mass", 50, 0., 250.);
 
+  hSVMethodMass_ = book1D("SVMethodMass", "SV Method Mass", 50, 0., 250.);
+  hSVNLLvMass_ = book2D("SVMethodLikelihoodVersusMass", "Log likelihood versus mass", 100, -40, 60, 50, 0., 250.);
+  hSVDecayLengthLeg1Leg2_ = book2D("SVMethodLegDecayLength", "Probability of length or greater", 100, 0, 1, 100, 0., 1.);
+
   hLeg1PtVsLeg2Pt_ = book2D("Leg1PtVsLeg2Pt", "leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
   hLeg1EtaVsLeg2Eta_ = book2D("Leg1EtaVsLeg2Eta", "leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
   
@@ -180,6 +184,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hDiTauCandidatePhi_->Fill(diTauCandidate->phi(), weight);
     hDiTauCandidateCharge_->Fill(diTauCandidate->charge(), weight);
     hDiTauCandidateMass_->Fill(diTauCandidate->mass(), weight);
+
+    hSVMethodMass_->Fill(diTauCandidate->p4SVFit().mass(), weight);
+    hSVNLLvMass_->Fill(diTauCandidate->svMethodNLL(), diTauCandidate->p4SVFit().mass(), weight);
+    hSVDecayLengthLeg1Leg2_->Fill(diTauCandidate->probLeg1DecayLength(), diTauCandidate->probLeg2DecayLength(), weight);
 
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
     hLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->leg1()->eta(), diTauCandidate->leg2()->eta(), weight);
