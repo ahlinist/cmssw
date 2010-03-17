@@ -657,109 +657,10 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
  
 
 
-  c[62]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  eventTimingInfoTree->Draw("(correctionToSampleEEM-5.0)*25.-(correctionToSampleEEP-5.0)*25. >> hctEEMDEEP(tbins,tbinsL,tbinsH)","correctionToSampleEEP>0 && correctionToSampleEEM>0");
-   sprintf(mytitle,"%s EE- minus EE+ average time;(EEM - EEP) average time (ns)",runChar); 
-  hctEEMDEEP->SetTitle(mytitle);
-  hctEEMDEEP->GetXaxis()->SetNdivisions(512);
-  cout << "mean is " << hctEEMDEEP->GetMean() << endl;
-  if (hctEEMDEEP->GetMean() != 0 && fit) hctEEMDEEP->Fit("gaus");
-  //hctEEMEEP->SetMinimum(.5);
-  c[62]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[62]->Print(name); } 
-  
-  //Number of crystals vs amplitude
-  c[64]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("numberOfEEcrys:crystalAmplitudesEE >> hctEEcryamp(30,0,30,25,0,25)","numberOfEEcrys>0","colz");
-  sprintf(mytitle,"%s EE amplitudes vs number of crystals;Crystal Amp (GeV);Number EE crystals",runChar); 
-  hctEEcryamp->SetTitle(mytitle);
-  hctEEcryamp->GetXaxis()->SetNdivisions(512);
-  hctEEcryamp->SetMinimum(1);
-  c[64]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EECrysAmp_%i.%s",dirName,mType,runNumber,fileType); c[64]->Print(name); }
-
-  c[65]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("numberOfEBcrys:crystalAmplitudesEB >> hctEBcryamp(30,0,30,25,0,25)","numberOfEBcrys>0","colz");
-  sprintf(mytitle,"%s EB amplitudes vs number of crystals;Crystal Amp (GeV);Number EB crystals",runChar); 
-  hctEBcryamp->SetTitle(mytitle);
-  hctEBcryamp->GetXaxis()->SetNdivisions(512);
-  hctEBcryamp->SetMinimum(1);
-  c[65]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysAmp_%i.%s",dirName,mType,runNumber,fileType); c[65]->Print(name); }
-
+ 
   //NEW plots that take into account the new TTree variables.
 
-  //FINAL 1D timing number, by crystal by TT
-  c[66]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *tthistEB = HistFromTProfile2D(timeTTProfile,"tthistEB",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s Average TT Timing (EB);TT time average (ns)",runChar); 
-  tthistEB->SetTitle(mytitle);
-  tthistEB->GetXaxis()->SetNdivisions(512);
-  if (tthistEB->GetMean() != 0 && fit) tthistEB->Fit("gaus");
-  c[66]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[66]->Print(name); }
 
-  c[67]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *chhistEB = HistFromTProfile2D(timeCHProfile,"chhistEB",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s Average CH Timing (EB);CH time average (ns)",runChar); 
-  chhistEB->SetTitle(mytitle);
-  chhistEB->GetXaxis()->SetNdivisions(512);
-  if (chhistEB->GetMean() != 0 && fit ) chhistEB->Fit("gaus");
-  c[67]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
-
-  c[68]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *tthistEEP = HistFromTProfile2D(EEPtimeTTProfile,"tthistEEP",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s EE+ TT Timing;TT time average (ns)",runChar); 
-  tthistEEP->SetTitle(mytitle);
-  tthistEEP->GetXaxis()->SetNdivisions(512);
-  if (tthistEEP->GetMean() != 0 && fit) tthistEEP->Fit("gaus");
-  c[68]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[68]->Print(name); }
-
-  c[69]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *chhistEEP = HistFromTProfile2D(EEPtimeCHProfile,"chhistEEP",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s EE+ CH Timing;CH time average (ns)",runChar); 
-  chhistEEP->SetTitle(mytitle);
-  chhistEEP->GetXaxis()->SetNdivisions(512);
-  if (chhistEEP->GetMean() != 0 && fit) chhistEEP->Fit("gaus");
-  c[69]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[69]->Print(name); }
-
-  c[70]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *tthistEEM = HistFromTProfile2D(EEMtimeTTProfile,"tthistEEM",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s EE- TT Timing;TT time average (ns)",runChar); 
-  tthistEEM->SetTitle(mytitle);
-  tthistEEM->GetXaxis()->SetNdivisions(512);
-  if (tthistEEM->GetMean() != 0 && fit) tthistEEM->Fit("gaus");
-  c[70]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[70]->Print(name); }
-
-  c[71]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *chhistEEM = HistFromTProfile2D(EEMtimeCHProfile,"chhistEEM",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s EE- CH Timing;CH time average (ns)",runChar); 
-  chhistEEM->SetTitle(mytitle);
-  chhistEEM->GetXaxis()->SetNdivisions(512);
-  if (chhistEEM->GetMean() != 0 && fit) chhistEEM->Fit("gaus");
-  c[71]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[71]->Print(name); }
-  cout << name << endl;
 
   //NOW I do some more compliacted stuff by actually looping over the TTree the old fashioned way
   //eventTimingInfoTree->SetBranchStatus("*",1);
@@ -841,11 +742,18 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TH2F *hctEEpCryT  = new TH2F("hctEEpCryT",Form("%s EE Number of Crystals to EE+ average time;EE+ average time (ns);Number of EE+ crystals",runChar),50, -EETimeMax, EETimeMax,25,0,25);
   TH2F *hctEEmCryT  = new TH2F("hctEEmCryT",Form("%s EE Number of Crystals to EE- average time;EE- average time (ns);Number of EE- crystals",runChar),50, -EETimeMax, EETimeMax,25,0,25);
 
+  TH2F *hctEEMEEP      = new TH2F("hctEEMEEP",Form("%s EE+ average time to EE- average time;EE- average time (ns);EE+ average time (ns)",runChar),50, -EETimeMax, EETimeMax,50, -EETimeMax, EETimeMax);
+  TH2F *hctEEMDEEPcry  = new TH2F("hctEEMDEEPcry",Form("%s EE- minus EE+ average time vs EE crystals;(EEM - EEP) average time (ns);Number EE crystals",runChar),50, -EETimeMax/2., EETimeMax/2.,25,0, 25);
+  TH1F *hctEEMDEEP     = new TH1F("hctEEMDEEP",Form("%s EE- minus EE+ average time;(EEM - EEP) average time (ns)",runChar),100, -EETimeMax, EETimeMax);
   
-  
+  TH2F *hctEEcryamp   = new TH2F("hctEEcryamp",Form("%s EE amplitudes vs number of crystals;Crystal Amp (GeV);Number EE crystals",runChar),50,0.,50.,25,0., 25.);
+  TH2F *hctEBcryamp   = new TH2F("hctEBcryamp",Form("%s EB amplitudes vs number of crystals;Crystal Amp (GeV);Number EB crystals",runChar),50,0.,50.,25,0., 25.);
+
+   
+
   TH1F *hEBTimeEtaLess5 = new TH1F("hEBTimeEtaLess5","EB Timing |ieta|<5; Crystal Time (ns); Entries",100, -EBTimeMax, EBTimeMax);
-  TH1F *hEBPlusTime     = new TH1F("hEBPlusTime", "EB+ Timing; Crystal Time (ns); Entries",100, EBTimeMax, EBTimeMax);
-  TH1F *hEBMinusTime    = new TH1F("hEBMinusTime","EB- Timing; Crystal Time (ns); Entries",100, EBTimeMax, EBTimeMax);
+  TH1F *hEBPlusTime     = new TH1F("hEBPlusTime", "EB+ Timing; Crystal Time (ns); Entries",100, -EBTimeMax, EBTimeMax);
+  TH1F *hEBMinusTime    = new TH1F("hEBMinusTime","EB- Timing; Crystal Time (ns); Entries",100, -EBTimeMax, EBTimeMax);
   TH2F *hEBPlus2Minus   = new TH2F("hEBPlus2Minus","EB+ to EB- Timing; EB+ Average Time (ns); EB- Average Time (ns)",50, -EBTimeMax,EBTimeMax,50, -EBTimeMax,EBTimeMax);
   TH2F *hEEPlus2Minus   = new TH2F("hEEPlus2Minus","EE+ to EE- Timing; EE+ Average Time (ns); EE- Average Time (ns)",50, -EETimeMax, EBTimeMax, 50, -EBTimeMax, EBTimeMax);
   TH1F *hAbsTime        = new TH1F("hAbsTime" ,     "Timing Occupancy ; Event Time Since Run Start (mins)",100, 0., diffTime);
@@ -952,7 +860,13 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
      if (EEMn > 0.0 ) {EEMave /= EEMn; hctEEmCryT->Fill(EEMave, EEmnum);}
 
      if ( EBPn > 0.0 && EBMn > 0.0 ) { hEBPlus2Minus->Fill(EBPave,EBMave);}
-     if ( EEPn > 0.0 && EEMn > 0.0 ) hEEPlus2Minus->Fill(EEPave,EEMave);
+     if ( EEPn > 0.0 && EEMn > 0.0 ) 
+     {
+       hEEPlus2Minus->Fill(EEPave,EEMave); 
+       hctEEMEEP->Fill(EEMave,EEPave);
+       hctEEMDEEPcry->Fill(EEMave-EEPave,EEnum);
+       hctEEMDEEP->Fill(EEMave-EEPave);
+     }
 
      double totnumb = EBPn + EBMn + EEPn + EEMn;
      if (totnumb < 0 ) continue;
@@ -971,6 +885,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
          int iphi = mydet.iphi();
 	 hctEBtoAve->Fill(myt,EBave);
 	 hctEBtoAmpEvt->Fill(EBave,amp);
+         hctEBcryamp->Fill(amp,EBnum);
      }
      for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
          int crystalHashedIndicesEE = TTreeMembers_.cryHashesEE_[eex];
@@ -986,6 +901,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
          int iz = mydete.zside();
 	 hctEEtoAve->Fill(myt,EEave);
 	 hctEEtoAmpEvt->Fill(EEave,amp);
+	 hctEEcryamp->Fill(amp,EEnum);
      }
      
      hAbsTime->Fill(abstime);
@@ -1265,9 +1181,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   
   c[61]->cd();
   gStyle->SetOptStat(111110);
-  eventTimingInfoTree->Draw("(correctionToSampleEEM-5.0)*25.:(correctionToSampleEEP-5.0)*25. >> hctEEMEEP(tbins,tbinsL,tbinsH,tbins,tbinsL,tbinsH)","correctionToSampleEEP>0 && correctionToSampleEEM>0","colz");
-   sprintf(mytitle,"%s EE+ average time to EE- average time;EE- average time (ns);EE+ average time (ns)",runChar); 
-  hctEEMEEP->SetTitle(mytitle);
+  hctEEMEEP->Draw("colz");
   hctEEMEEP->GetXaxis()->SetNdivisions(512);
   hctEEMEEP->GetYaxis()->SetNdivisions(507);
   hctEEMEEP->SetMinimum(1);
@@ -1276,14 +1190,41 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
 
   c[63]->cd();
   gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("numberOfEEcrys:(correctionToSampleEEM-5.0)*25.-(correctionToSampleEEP-5.0)*25. >> hctEEMDEEPcry(25,-40,100,25,0,25)","correctionToSampleEEP>0 && correctionToSampleEEM>0","colz");
-  sprintf(mytitle,"%s EE- minus EE+ average time vs EE crystals;(EEM - EEP) average time (ns);Number EE crystals",runChar); 
-  hctEEMDEEPcry->SetTitle(mytitle);
+  hctEEMDEEPcry->Draw("colz");
   hctEEMDEEPcry->GetXaxis()->SetNdivisions(512);
   hctEEMDEEPcry->SetMinimum(1);
   c[63]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTimeCrys_%i.%s",dirName,mType,runNumber,fileType); c[63]->Print(name); }
   
+
+  c[62]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  hctEEMDEEP->Draw();
+  hctEEMDEEP->GetXaxis()->SetNdivisions(512);
+  cout << "mean is " << hctEEMDEEP->GetMean() << endl;
+  if (hctEEMDEEP->GetMean() != 0 && fit) hctEEMDEEP->Fit("gaus");
+  //hctEEMEEP->SetMinimum(.5);
+  c[62]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[62]->Print(name); } 
+  
+  //Number of crystals vs amplitude
+  c[64]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEcryamp->Draw("colz");
+  hctEEcryamp->GetXaxis()->SetNdivisions(512);
+  hctEEcryamp->SetMinimum(1);
+  c[64]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EECrysAmp_%i.%s",dirName,mType,runNumber,fileType); c[64]->Print(name); }
+
+  c[65]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBcryamp->Draw("colz");
+  hctEBcryamp->GetXaxis()->SetNdivisions(512);
+  hctEBcryamp->SetMinimum(1);
+  c[65]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysAmp_%i.%s",dirName,mType,runNumber,fileType); c[65]->Print(name); }
+
 
   c[80]->cd();
   gStyle->SetOptStat(111110);
@@ -1552,7 +1493,77 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[108]->SetGridy(0);
   //c[15]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsBX_%i.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
-  
+
+
+  //FINAL 1D timing number, by crystal by TT
+  c[66]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *tthistEB = HistFromTProfile2D(timeTTProfile,"tthistEB",200, -30., 40.,-5.,25.);
+  sprintf(mytitle,"%s Average TT Timing (EB);TT time average (ns)",runChar); 
+  tthistEB->SetTitle(mytitle);
+  tthistEB->GetXaxis()->SetNdivisions(512);
+  if (tthistEB->GetMean() != 0 && fit) tthistEB->Fit("gaus");
+  c[66]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[66]->Print(name); }
+
+  c[67]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *chhistEB = HistFromTProfile2D(timeCHProfile,"chhistEB",200, -30., 40.,-5.,25.);
+  sprintf(mytitle,"%s Average CH Timing (EB);CH time average (ns)",runChar); 
+  chhistEB->SetTitle(mytitle);
+  chhistEB->GetXaxis()->SetNdivisions(512);
+  if (chhistEB->GetMean() != 0 && fit ) chhistEB->Fit("gaus");
+  c[67]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+
+  c[68]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *tthistEEP = HistFromTProfile2D(EEPtimeTTProfile,"tthistEEP",200, -30., 40.,-5.,25.);
+  sprintf(mytitle,"%s EE+ TT Timing;TT time average (ns)",runChar); 
+  tthistEEP->SetTitle(mytitle);
+  tthistEEP->GetXaxis()->SetNdivisions(512);
+  if (tthistEEP->GetMean() != 0 && fit) tthistEEP->Fit("gaus");
+  c[68]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[68]->Print(name); }
+
+  c[69]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *chhistEEP = HistFromTProfile2D(EEPtimeCHProfile,"chhistEEP",200, -30., 40.,-5.,25.);
+  sprintf(mytitle,"%s EE+ CH Timing;CH time average (ns)",runChar); 
+  chhistEEP->SetTitle(mytitle);
+  chhistEEP->GetXaxis()->SetNdivisions(512);
+  if (chhistEEP->GetMean() != 0 && fit) chhistEEP->Fit("gaus");
+  c[69]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[69]->Print(name); }
+
+  c[70]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *tthistEEM = HistFromTProfile2D(EEMtimeTTProfile,"tthistEEM",200, -30., 40.,-5.,25.);
+  sprintf(mytitle,"%s EE- TT Timing;TT time average (ns)",runChar); 
+  tthistEEM->SetTitle(mytitle);
+  tthistEEM->GetXaxis()->SetNdivisions(512);
+  if (tthistEEM->GetMean() != 0 && fit) tthistEEM->Fit("gaus");
+  c[70]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[70]->Print(name); }
+
+  c[71]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *chhistEEM = HistFromTProfile2D(EEMtimeCHProfile,"chhistEEM",200, -30., 40.,-5.,25.);
+  sprintf(mytitle,"%s EE- CH Timing;CH time average (ns)",runChar); 
+  chhistEEM->SetTitle(mytitle);
+  chhistEEM->GetXaxis()->SetNdivisions(512);
+  if (chhistEEM->GetMean() != 0 && fit) chhistEEM->Fit("gaus");
+  c[71]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[71]->Print(name); }
+
+  cout << name << endl;
+
   cout << " The Starting Time is " << habsTime->GetXaxis()->GetXmin() << endl;
   return (habsTime->GetXaxis()->GetXmin()+ 1215192037.0); 
 
