@@ -636,7 +636,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   char ebfilter[500];
   char eefilter[3100];
   sprintf(ebfilter,"(%s) && (%s)",ebtimefilter,ebhashfilter);
-  sprintf(eefilter,"(%s) && (%s)",eetimefilter,eehashfilter);
+  sprintf(eefilter,"(%s) && (%s) && crystalAmplitudesEE > 1.0",eetimefilter,eehashfilter);
 
   char eepfilter[3200];
   char eemfilter[3200];
@@ -646,288 +646,17 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TTree* eventTimingInfoTree = ((TTree*) f->Get("eventTimingInfoTree"));
   if (!eventTimingInfoTree) { std::cout << " No TTree in the event, probalby expected" << std::endl; cout << name << endl; return 0;} 
   //Now, we will only do the below if there is a TTree in the event.
-  c[28]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimesEB-5.)*25. >> hctEB(tbins,tbinsL,tbinsH)",ebhashfilter);
-   sprintf(mytitle,"%s EB Crystal Times;Time (ns);Number of Crystals",runChar); 
-  hctEB->SetTitle(mytitle);
-  hctEB->GetXaxis()->SetNdivisions(512);
-  if ( fit ) hctEB->Fit("gaus");
-  gStyle->SetOptFit(111);
-  c[28]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMES_%i.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
-
-  eventTimingInfoTree->Draw("(crystalTimesEB-5.)*25. >> hctEBf(tbins,tbinsL,tbinsH)",ebfilter);
-   sprintf(mytitle,"%s EB Crystal Times (Error Filtered);Time (ns);Number of Crystals",runChar); 
-  hctEBf->SetTitle(mytitle);
-  hctEBf->GetXaxis()->SetNdivisions(512);
-  if ( fit ) hctEBf->Fit("gaus");
-  gStyle->SetOptFit(111);
-  c[28]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMESFILT_%i.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
+ 
   
-  c[29]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimesEE-5.)*25. >> hctEE(tbins,tbinsL,tbinsH)",eehashfilter);
-   sprintf(mytitle,"%s EE Crystal Times;Time (ns);Number of Crystals",runChar); 
-  hctEE->SetTitle(mytitle);
-  c[29]->SetLogy(1);
-  hctEE->GetXaxis()->SetNdivisions(512);
-  if ( fit ) hctEE->Fit("gaus");
-  gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMES_%i.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
-  eventTimingInfoTree->Draw("(crystalTimesEE-5.)*25. >> hctEEf(tbins,tbinsL,tbinsH)",eefilter);
-   sprintf(mytitle,"%s EE Crystal Times (Error Filtered);Time (ns);Number of Crystals",runChar); 
-  hctEEf->SetTitle(mytitle);
-  c[29]->SetLogy(1);
-  hctEEf->GetXaxis()->SetNdivisions(512);
-  if ( fit ) hctEEf->Fit("gaus");
-  gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESFILT_%i.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
-
-  c[54]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimesEE-5.)*25. >> hctEEp(tbins,tbinsL,tbinsH)",eepfilter);
-   sprintf(mytitle,"%s EE+ Crystal Times;Time (ns);Number of Crystals",runChar); 
-  hctEEp->SetTitle(mytitle);
-  c[54]->SetLogy(1);
-  hctEEp->GetXaxis()->SetNdivisions(512);
-  if ( fit ) hctEEp->Fit("gaus");
-  gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMES_%i.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
-
-  c[55]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimesEE-5.)*25. >> hctEEm(tbins,tbinsL,tbinsH)",eemfilter);
-   sprintf(mytitle,"%s EE- Crystal Times;Time (ns);Number of Crystals",runChar); 
-  hctEEm->SetTitle(mytitle);
-  c[55]->SetLogy(1);
-  hctEEm->GetXaxis()->SetNdivisions(512);
-  if ( fit ) hctEEm->Fit("gaus");
-  gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMES_%i.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
-
+ 
   
-  //Time to average event time
-  c[30]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(correctionToSampleEB-5.)*25.:(crystalTimesEE-5.)*25. >> hctEEtoAve(tbins,tbinsL,tbinsH,tbins,tbinsL,tbinsH)", eehashfilter, "COLZ");
-   sprintf(mytitle,"%s EE Crystal Times to Average Time;Crystal Time (ns);Average EB Event Time (ns)",runChar); 
-  //hctEEtoAve->Draw;
-  hctEEtoAve->SetTitle(mytitle);
-  hctEEtoAve->GetXaxis()->SetNdivisions(512);
-  hctEEtoAve->GetYaxis()->SetNdivisions(512);
-  c[30]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAverage_%i.%s",dirName,mType,runNumber,fileType); c[30]->Print(name); }
-  c[31]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(correctionToSampleEB-5.)*25.:(crystalTimesEB-5.)*25. >> hctEBtoAve(tbins,tbinsL,tbinsH,tbins,tbinsL,tbinsH)", ebhashfilter, "COLZ");
-   sprintf(mytitle,"%s EB Crystal Times to Average Time;Crystal Time (ns);Average EB Event Time (ns)",runChar); 
-  //hctEEtoAve->Draw;
-  hctEBtoAve->SetTitle(mytitle);
-  hctEBtoAve->GetXaxis()->SetNdivisions(512);
-  hctEBtoAve->GetYaxis()->SetNdivisions(512);
-  c[31]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAverage_%i.%s",dirName,mType,runNumber,fileType); c[31]->Print(name); }
-  
-  //Time to Time error
-  c[32]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimeErrorsEB)*25.:(crystalTimesEB-5.)*25. >> hctEBtoTerr(tbins,tbinsL,tbinsH,26,0.,tbinsH)",ebhashfilter,"COLZ");
-   sprintf(mytitle,"%s EB Crystal Times to Time Error;Crystal Time (ns);Crystal Time Error (ns)",runChar); 
-  hctEBtoTerr->SetTitle(mytitle);
-  hctEBtoTerr->GetXaxis()->SetNdivisions(512);
-  hctEBtoTerr->GetYaxis()->SetNdivisions(507);
-  c[32]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoTERR_%i.%s",dirName,mType,runNumber,fileType); c[32]->Print(name); }
-  c[33]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimeErrorsEE)*25.:(crystalTimesEE-5.)*25. >> hctEEtoTerr(tbins,tbinsL,tbinsH,26,0.,tbinsH)",eehashfilter,"COLZ");
-   sprintf(mytitle,"%s EE Crystal Times to Time Error;Crystal Time (ns);Crystal Time Error (ns)",runChar); 
-  hctEEtoTerr->SetTitle(mytitle);
-  hctEEtoTerr->GetXaxis()->SetNdivisions(512);
-  hctEEtoTerr->GetYaxis()->SetNdivisions(507);
-  c[33]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoTERR_%i.%s",dirName,mType,runNumber,fileType); c[33]->Print(name); }
-  
-  //Amplitude to time
-  c[34]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalAmplitudesEE:(crystalTimesEE-5.)*25. >> hctEEtoAmp(tbins,tbinsL,tbinsH,30,0.,30.)",eehashfilter,"COLZ");
-   sprintf(mytitle,"%s EE Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (GeV)",runChar); 
-  hctEEtoAmp->SetTitle(mytitle);
-  hctEEtoAmp->GetXaxis()->SetNdivisions(512);
-  hctEEtoAmp->GetYaxis()->SetNdivisions(507);
-  c[34]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[34]->Print(name); } 
-  c[35]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalAmplitudesEB:(crystalTimesEB-5.)*25. >> hctEBtoAmp(tbins,tbinsL,tbinsH,30,0.,30.)",ebhashfilter,"COLZ");
-   sprintf(mytitle,"%s EB Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (GeV)",runChar); 
-  hctEBtoAmp->SetTitle(mytitle);
-  hctEBtoAmp->GetXaxis()->SetNdivisions(512);
-  hctEBtoAmp->GetYaxis()->SetNdivisions(507);
-  c[35]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[35]->Print(name); } 
-  
-  //Amplitdue to ave event time
-  c[36]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalAmplitudesEB:(correctionToSampleEB-5.0)*25. >> hctEBtoAmpEvt(tbins,tbinsL,tbinsH,30,0.,30.)",ebhashfilter,"COLZ");
-   sprintf(mytitle,"%s EB Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (GeV)",runChar); 
-  hctEBtoAmpEvt->SetTitle(mytitle);
-  hctEBtoAmpEvt->GetXaxis()->SetNdivisions(512);
-  hctEBtoAmpEvt->GetYaxis()->SetNdivisions(507);
-  c[36]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[36]->Print(name); } 
-  c[37]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalAmplitudesEE:(correctionToSampleEB-5.0)*25. >> hctEEtoAmpEvt(tbins,tbinsL,tbinsH,30,0.,30.)",eehashfilter,"COLZ");
-   sprintf(mytitle,"%s EE Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (GeV)",runChar); 
-  hctEEtoAmpEvt->SetTitle(mytitle);
-  hctEEtoAmpEvt->GetXaxis()->SetNdivisions(512);
-  hctEEtoAmpEvt->GetYaxis()->SetNdivisions(507);
-  c[37]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[37]->Print(name); } 
-  
-  //Amplitude to time error.
-  c[38]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimeErrorsEE)*25.:crystalAmplitudesEE >> hctEEtoAmpErr(30,0.,30.,26,0.,26.)",eehashfilter,"COLZ");
-   sprintf(mytitle,"%s EE Time Error to Crystal Amplitudes;Crystal Amplitude (GeV);Time Error (ns)",runChar); 
-  hctEEtoAmpErr->SetTitle(mytitle);
-  hctEEtoAmpErr->GetXaxis()->SetNdivisions(512);
-  hctEEtoAmpErr->GetYaxis()->SetNdivisions(507);
-  c[38]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[38]->Print(name); } 
-  c[39]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimeErrorsEB)*25.:crystalAmplitudesEB >> hctEBtoAmpErr(30,0.,30.,26,0.,26.)",ebhashfilter,"COLZ");
-   sprintf(mytitle,"%s EB Time Error to Crystal Amplitudes;Crystal Amplitude (GeV);Time Error (ns)",runChar); 
-  hctEBtoAmpErr->SetTitle(mytitle);
-  hctEBtoAmpErr->GetXaxis()->SetNdivisions(512);
-  hctEBtoAmpErr->GetYaxis()->SetNdivisions(507);
-  c[39]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); } 
-
-  //Hashed Index's
-  c[50]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalHashedIndicesEB >> hctEBHashed(62000,0.,62000.)",ebhashfilter);
-   sprintf(mytitle,"%s EB Hashed Index Occupancy;Hashed Index",runChar); 
-  hctEBHashed->SetTitle(mytitle);
-  hctEBHashed->GetXaxis()->SetNdivisions(512);
-  c[50]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBHashed_%i.%s",dirName,mType,runNumber,fileType); c[50]->Print(name); } 
-  
-  c[51]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("crystalHashedIndicesEE >> hctEEHashed(15000,0.,15000.)",eehashfilter);
-   sprintf(mytitle,"%s EE Hashed Index Occupancy;Hashed Index",runChar); 
-  hctEEHashed->SetTitle(mytitle);
-  c[51]->SetLogy(1);
-  hctEEHashed->GetXaxis()->SetNdivisions(512);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEHashed_%i.%s",dirName,mType,runNumber,fileType); c[51]->Print(name); } 
+ 
   
   
-  //Time to Hashed Index
-  c[52]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimesEB-5.)*25.:crystalHashedIndicesEB >> hctEBtoHashed(2000,0.,62000.,52,-40.,100.)",ebhashfilter,"COLZ");
-   sprintf(mytitle,"%s EB Hashed Index to Time;Hashed Index;Time(ns)",runChar); 
-  hctEBtoHashed->SetTitle(mytitle);
-  hctEBtoHashed->GetXaxis()->SetNdivisions(512);
-  hctEBtoHashed->GetYaxis()->SetNdivisions(507);
-  hctEBtoHashed->SetMinimum(1);
-  c[52]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBHashedToTime_%i.%s",dirName,mType,runNumber,fileType); c[52]->Print(name); } 
-
-  c[53]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("(crystalTimesEE-5.)*25.:crystalHashedIndicesEE >> hctEEtoHashed(500,0.,15000.,52,-40.,100.)",eehashfilter,"COLZ");
-   sprintf(mytitle,"%s EE Hashed Index to Time;Hashed Index;Time(ns)",runChar); 
-  hctEEtoHashed->SetTitle(mytitle);
-  hctEEtoHashed->GetXaxis()->SetNdivisions(512);
-  hctEEtoHashed->GetYaxis()->SetNdivisions(507);
-  hctEEtoHashed->SetMinimum(1);
-  c[53]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEHashedToTime_%i.%s",dirName,mType,runNumber,fileType); c[53]->Print(name); } 
-
-  //1-D Number of crystal distributions
-  c[56]->cd();
-  gStyle->SetOptStat(111110);
-  eventTimingInfoTree->Draw("numberOfEBcrys >> hctEBCry(25,0.,25.)","");
-   sprintf(mytitle,"%s EB Number of Crystals;Number of EB crystals",runChar); 
-  hctEBCry->SetTitle(mytitle);
-  hctEBCry->GetXaxis()->SetNdivisions(512);
-  c[56]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrys_%i.%s",dirName,mType,runNumber,fileType); c[56]->Print(name); } 
   
-  c[57]->cd();
-  gStyle->SetOptStat(111110);
-  eventTimingInfoTree->Draw("numberOfEEcrys >> hctEECry(25,0.,25.)","");
-   sprintf(mytitle,"%s EB Number of Crystals;Number of EE crystals",runChar); 
-  hctEECry->SetTitle(mytitle);
-  hctEECry->GetXaxis()->SetNdivisions(512);
-  c[57]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EECrys_%i.%s",dirName,mType,runNumber,fileType); c[57]->Print(name); } 
+ 
 
 
-  //2-D crystal plots 
-  c[58]->cd();
-  gStyle->SetOptStat(111110);
-  eventTimingInfoTree->Draw("numberOfEBcrys:(correctionToSampleEB-5.0)*25. >> hctEBCryT(tbins,tbinsL,tbinsH,25,0.,25.)","numberOfEBcrys>0","colz");
-   sprintf(mytitle,"%s EB Number of Crystals to EB average time;EB average time (ns);Number of EB crystals",runChar); 
-  hctEBCryT->SetTitle(mytitle);
-  hctEBCryT->GetXaxis()->SetNdivisions(512);
-  hctEBCryT->GetYaxis()->SetNdivisions(507);
-  hctEBCryT->SetMinimum(1);
-  c[58]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[58]->Print(name); } 
-    
-  c[59]->cd();
-  gStyle->SetOptStat(111110);
-  eventTimingInfoTree->Draw("numberOfEEcrys:(correctionToSampleEEP-5.0)*25. >> hctEEPCryT(tbins,tbinsL,tbinsH,25,0.,25.)","numberOfEEcrys>0 && correctionToSampleEEP>0","colz");
-   sprintf(mytitle,"%s EE Number of Crystals to EE+ average time;EE+ average time (ns);Number of EE crystals",runChar); 
-  hctEEPCryT->SetTitle(mytitle);
-  hctEEPCryT->GetXaxis()->SetNdivisions(512);
-  hctEEPCryT->GetYaxis()->SetNdivisions(507);
-  hctEEPCryT->SetMinimum(1);
-  c[59]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[59]->Print(name); } 
-    
-  c[60]->cd();
-  gStyle->SetOptStat(111110);
-  eventTimingInfoTree->Draw("numberOfEEcrys:(correctionToSampleEEM-5.0)*25. >> hctEEMCryT(tbins,tbinsL,tbinsH,25,0.,25.)","numberOfEEcrys>0 && correctionToSampleEEM>0","colz");
-   sprintf(mytitle,"%s EE Number of Crystals to EE- average time;EE- average time (ns);Number of EE crystals",runChar); 
-  hctEEMCryT->SetTitle(mytitle);
-  hctEEMCryT->GetXaxis()->SetNdivisions(512);
-  hctEEMCryT->GetYaxis()->SetNdivisions(507);
-  hctEEMCryT->SetMinimum(1);
-  c[60]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[60]->Print(name); } 
-  
-  c[61]->cd();
-  gStyle->SetOptStat(111110);
-  eventTimingInfoTree->Draw("(correctionToSampleEEM-5.0)*25.:(correctionToSampleEEP-5.0)*25. >> hctEEMEEP(tbins,tbinsL,tbinsH,tbins,tbinsL,tbinsH)","correctionToSampleEEP>0 && correctionToSampleEEM>0","colz");
-   sprintf(mytitle,"%s EE+ average time to EE- average time;EE- average time (ns);EE+ average time (ns)",runChar); 
-  hctEEMEEP->SetTitle(mytitle);
-  hctEEMEEP->GetXaxis()->SetNdivisions(512);
-  hctEEMEEP->GetYaxis()->SetNdivisions(507);
-  hctEEMEEP->SetMinimum(1);
-  c[61]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTimeToEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[61]->Print(name); } 
-
-  c[63]->cd();
-  gStyle->SetOptStat(1110);
-  eventTimingInfoTree->Draw("numberOfEEcrys:(correctionToSampleEEM-5.0)*25.-(correctionToSampleEEP-5.0)*25. >> hctEEMDEEPcry(25,-40,100,25,0,25)","correctionToSampleEEP>0 && correctionToSampleEEM>0","colz");
-  sprintf(mytitle,"%s EE- minus EE+ average time vs EE crystals;(EEM - EEP) average time (ns);Number EE crystals",runChar); 
-  hctEEMDEEPcry->SetTitle(mytitle);
-  hctEEMDEEPcry->GetXaxis()->SetNdivisions(512);
-  hctEEMDEEPcry->SetMinimum(1);
-  c[63]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTimeCrys_%i.%s",dirName,mType,runNumber,fileType); c[63]->Print(name); }
-  
   c[62]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
@@ -1083,7 +812,37 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
 
   double EBTimeMax = 60.;
   double EETimeMax = 75.;
+   
+  TH1F *hctEB    = new TH1F("hctEB",  Form("%s EB Crystal Times;Time (ns);Number of Crystals",runChar),100, -EBTimeMax, EBTimeMax);
+  TH1F *hctEE    = new TH1F("hctEE",  Form("%s EE Crystal Times;Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
+  TH1F *hctEEp   = new TH1F("hctEEp", Form("%s EE+ Crystal Times;Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
+  TH1F *hctEEm   = new TH1F("hctEEm", Form("%s EE- Crystal Times;Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
+  
+  TH2F *hctEEtoAve  = new TH2F("hctEEtoAve", Form("%s EE Crystal Times to Average Time;Crystal Time (ns);Average EE Event Time (ns)",runChar),50, -EETimeMax, EETimeMax, 50, -EETimeMax, EETimeMax);
+  TH2F *hctEBtoAve  = new TH2F("hctEBtoAve", Form("%s EB Crystal Times to Average Time;Crystal Time (ns);Average EB Event Time (ns)",runChar),50, -EBTimeMax, EBTimeMax, 50, -EBTimeMax, EBTimeMax);
 
+  TH2F *hctEBtoTerr   = new TH2F("hctEBtoTerr", Form("%s EB Crystal Times to Time Error;Crystal Time (ns);Crystal Time Error (ns)",runChar),50, -EBTimeMax, EBTimeMax, 20, 0, 5.0);
+  TH2F *hctEEtoTerr   = new TH2F("hctEEtoTerr", Form("%s EE Crystal Times to Time Error;Crystal Time (ns);Crystal Time Error (ns)",runChar),50, -EETimeMax, EETimeMax, 20, 0, 5.0);
+  TH2F *hctEBtoAmp    = new TH2F("hctEBtoAmp", Form("%s EB Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (GeV)",runChar),50, -EBTimeMax, EBTimeMax, 50, 0, 50.);
+  TH2F *hctEEtoAmp    = new TH2F("hctEEtoAmp", Form("%s EE Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (GeV)",runChar),50, -EETimeMax, EETimeMax, 50, 0, 50.);
+  TH2F *hctEBtoAmpEvt = new TH2F("hctEBtoAmpEvt", Form("%s EB Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (GeV)",runChar),50, -EBTimeMax, EBTimeMax, 50, 0, 50.);
+  TH2F *hctEEtoAmpEvt = new TH2F("hctEEtoAmpEvt", Form("%s EE Event Time to Crystal Amplitudes;Average EE Event Time (ns);Crystal Amplitude (GeV)",runChar),50, -EETimeMax, EETimeMax, 50, 0, 50.);
+  TH2F *hctEEtoAmpErr = new TH2F("hctEEtoAmpErr", Form("%s EE Time Error to Crystal Amplitudes;Crystal Amplitude (GeV);Time Error (ns)",runChar),50, 0., 50., 20, 0., 5. );
+  TH2F *hctEBtoAmpErr = new TH2F("hctEBtoAmpErr", Form("%s EB Time Error to Crystal Amplitudes;Crystal Amplitude (GeV);Time Error (ns)",runChar),50, 0., 50., 20, 0., 5. );
+
+  TH1F *hctEBHashed   = new TH1F("hctEBHashed",Form("%s EB Hashed Index Occupancy;EB Hashed Index", runChar),62000,0.,62000.);
+  TH1F *hctEEHashed   = new TH1F("hctEEHashed",Form("%s EE Hashed Index Occupancy;EE Hashed Index", runChar),15000,0.,15000.);
+  TH2F *hctEBtoHashed = new TH2F("hctEBtoHashed",Form("%s EB Hashed Index to Time;EB Hashed Index;Time(ns)",runChar),62000,0.,62000., 50, -EBTimeMax, EBTimeMax);
+  TH2F *hctEEtoHashed = new TH2F("hctEEtoHashed",Form("%s EE Hashed Index to Time;EE Hashed Index;Time(ns)",runChar),15000,0.,15000., 50, -EETimeMax, EETimeMax);
+
+  TH1F *hctEBCry   = new TH1F("hctEBCry",Form("%s EB Number of Crystals;Number of EB crystals",runChar),25,0,25);
+  TH1F *hctEECry   = new TH1F("hctEECry",Form("%s EE Number of Crystals;Number of EE crystals",runChar),25,0,25);
+  TH2F *hctEBCryT  = new TH2F("hctEBCryT",Form("%s EB Number of Crystals to EB average time;EB average time (ns);Number of EB crystals",runChar),50, -EBTimeMax, EBTimeMax,25,0,25);
+  TH2F *hctEEpCryT  = new TH2F("hctEEpCryT",Form("%s EE Number of Crystals to EE+ average time;EE+ average time (ns);Number of EE+ crystals",runChar),50, -EETimeMax, EETimeMax,25,0,25);
+  TH2F *hctEEmCryT  = new TH2F("hctEEmCryT",Form("%s EE Number of Crystals to EE- average time;EE- average time (ns);Number of EE- crystals",runChar),50, -EETimeMax, EETimeMax,25,0,25);
+
+  
+  
   TH1F *hEBTimeEtaLess5 = new TH1F("hEBTimeEtaLess5","EB Timing |ieta|<5; Crystal Time (ns); Entries",100, -EBTimeMax, EBTimeMax);
   TH1F *hEBPlusTime     = new TH1F("hEBPlusTime", "EB+ Timing; Crystal Time (ns); Entries",100, EBTimeMax, EBTimeMax);
   TH1F *hEBMinusTime    = new TH1F("hEBMinusTime","EB- Timing; Crystal Time (ns); Entries",100, EBTimeMax, EBTimeMax);
@@ -1120,11 +879,13 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
 
   for (int i=0; i<nents;i++) {
      eventTimingInfoTree->GetEvent(i);
+     double EBave = -101.;
+     double EEave = -101.;
      double EBaveO  = (TTreeMembers_.correctionToSample5EB_ -5.0)*25;
      double EEPaveO = (TTreeMembers_.correctionToSample5EEP_ -5.0)*25;
      double EEMaveO = (TTreeMembers_.correctionToSample5EEM_ -5.0)*25;
-     double EBPave  = 0,EBMave = 0, EEPave  = 0, EEMave  = 0;
-     double EBPn    = 0,EBMn   = 0, EEPn    = 0, EEMn    = 0;
+     double EBPave  = 0,EBMave = 0, EEPave  = 0, EEMave  = 0, EBnum = 0;
+     double EBPn    = 0,EBMn   = 0, EEPn    = 0, EEMn    = 0, EEpnum = 0, EEmnum = 0, EEnum =0;
      double abstime = TTreeMembers_.absTime_/60. - minTime; //(puts thins in mins)
      double NumTriggers  = TTreeMembers_.numTriggers_;
      double NumTTriggers = TTreeMembers_.numTechTriggers_;
@@ -1136,11 +897,19 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
          mydet    = EBDetId::unhashIndex(crystalHashedIndicesEB);
          double myt     = (TTreeMembers_.cryTimesEB_[ebx] -5.0)*25;
          double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
+	 if (myterr > 5.0 ) continue;
+	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
          int ieta = mydet.ieta();
          int iphi = mydet.iphi();
          if ( ieta > 0 ) {EBPave += myt/myterr; EBPn += 1./myterr; hEBPlusTime->Fill(myt);}
          else {EBMave += myt/myterr; EBMn += 1./myterr; hEBMinusTime->Fill(myt);}
-
+	 EBnum++;
+         hctEB->Fill(myt);
+	 hctEBtoTerr->Fill(myt,myterr);
+	 hctEBtoAmp->Fill(myt,amp);
+	 hctEBtoAmpErr->Fill(amp,myterr);
+	 hctEBHashed->Fill(crystalHashedIndicesEB);
+	 hctEBtoHashed->Fill(crystalHashedIndicesEB,myt);
          if ( fabs(ieta) < 5 ) hEBTimeEtaLess5->Fill(myt);
      }
      for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
@@ -1149,16 +918,38 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
          mydete = mydete.unhashIndex(crystalHashedIndicesEE);
          double myt     = (TTreeMembers_.cryTimesEE_[eex] -5.0)*25;
          double myterr  = (TTreeMembers_.cryTimeErrorsEE_[eex])*25;
+	 if (myterr > 5.0 ) continue;
+	 double amp = TTreeMembers_.cryAmpsEE_[eex];
+	 if (amp < 1.0) continue;
          int ix = mydete.ix();
          int iy = mydete.iy();
          int iz = mydete.zside();
-         if ( iz> 0 ) {EEPave += myt/myterr; EEPn += 1./myterr;}
-         else {EEMave += myt/myterr; EEMn += 1./myterr;}
+	 hctEE->Fill(myt);
+	 hctEEtoTerr->Fill(myt,myterr);
+	 hctEEtoAmp->Fill(myt,amp);
+	 hctEEtoAmpErr->Fill(amp,myterr);
+	 hctEEHashed->Fill(crystalHashedIndicesEE);
+	 hctEEtoHashed->Fill(crystalHashedIndicesEE,myt);
+         if ( iz> 0 ) {EEPave += myt/myterr; EEPn += 1./myterr;EEpnum++; hctEEp->Fill(myt);}
+         else {EEMave += myt/myterr; EEMn += 1./myterr; EEmnum++; hctEEm->Fill(myt);}
      }
+     EEnum = EEpnum + EEmnum;
+     if ( EBPn > 0.0 || EBMn > 0.0 )
+     {
+        EBave = (EBPave + EBMave) / (EBPn+EBMn);
+	hctEBCry->Fill(EBnum);
+	hctEBCryT->Fill(EBave, EBnum);
+     }
+     if ( EEPn > 0.0 || EEMn > 0.0 )
+     {
+        EEave = (EEPave + EEMave) / (EEPn+EEMn);
+	hctEECry->Fill(EEnum);	
+     }
+     
      if (EBPn > 0.0 ) {EBPave /= EBPn; }
      if (EBMn > 0.0 ) {EBMave /= EBMn; }
-     if (EEPn > 0.0 ) {EEPave /= EEPn; }
-     if (EEMn > 0.0 ) {EEMave /= EEMn; }
+     if (EEPn > 0.0 ) {EEPave /= EEPn; hctEEpCryT->Fill(EEPave, EEpnum);}
+     if (EEMn > 0.0 ) {EEMave /= EEMn; hctEEmCryT->Fill(EEMave, EEmnum);}
 
      if ( EBPn > 0.0 && EBMn > 0.0 ) { hEBPlus2Minus->Fill(EBPave,EBMave);}
      if ( EEPn > 0.0 && EEMn > 0.0 ) hEEPlus2Minus->Fill(EEPave,EEMave);
@@ -1166,11 +957,35 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
      double totnumb = EBPn + EBMn + EEPn + EEMn;
      if (totnumb < 0 ) continue;
  
-     if ( EBPn > 0.0 || EBMn > 0.0 )
-     {
-        double EBave = (EBPave + EBMave) / (EBPn+EBMn);
-        
-	
+
+     
+     for (int ebx=0; ebx < TTreeMembers_.numEBcrys_; ebx++) {
+         int crystalHashedIndicesEB = TTreeMembers_.cryHashesEB_[ebx];
+         if (crystalHashedIndicesEB == 25822 || crystalHashedIndicesEB == 32705 || crystalHashedIndicesEB == 56473) continue;
+         mydet    = EBDetId::unhashIndex(crystalHashedIndicesEB);
+         double myt     = (TTreeMembers_.cryTimesEB_[ebx] -5.0)*25;
+         double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
+	 if (myterr > 5.0 ) continue;
+	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
+         int ieta = mydet.ieta();
+         int iphi = mydet.iphi();
+	 hctEBtoAve->Fill(myt,EBave);
+	 hctEBtoAmpEvt->Fill(EBave,amp);
+     }
+     for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
+         int crystalHashedIndicesEE = TTreeMembers_.cryHashesEE_[eex];
+         if (crystalHashedIndicesEE == 11658 || crystalHashedIndicesEE == 11742 || crystalHashedIndicesEE == 10224 || crystalHashedIndicesEE == 10225 || crystalHashedIndicesEE == 10226 || crystalHashedIndicesEE == 10310 || crystalHashedIndicesEE == 10311 || crystalHashedIndicesEE == 10394 || crystalHashedIndicesEE == 10395 || crystalHashedIndicesEE == 10875 || crystalHashedIndicesEE == 11316 || crystalHashedIndicesEE == 11659 || crystalHashedIndicesEE == 11660 || crystalHashedIndicesEE == 11661 || crystalHashedIndicesEE == 11743  || crystalHashedIndicesEE == 11744 || crystalHashedIndicesEE == 11744 || crystalHashedIndicesEE == 11745 || crystalHashedIndicesEE == 11932 || crystalHashedIndicesEE == 11746 || crystalHashedIndicesEE == 12702 || crystalHashedIndicesEE == 4252 || crystalHashedIndicesEE == 4335 || crystalHashedIndicesEE == 4337 || crystalHashedIndicesEE == 4419 || crystalHashedIndicesEE == 4423 || crystalHashedIndicesEE == 4785 || crystalHashedIndicesEE == 6181 || crystalHashedIndicesEE == 14613 || crystalHashedIndicesEE == 13726 || crystalHashedIndicesEE == 13727 || crystalHashedIndicesEE == 7717 || crystalHashedIndicesEE == 7778 || crystalHashedIndicesEE == 4420 || crystalHashedIndicesEE == 4421 || crystalHashedIndicesEE == 4423 || crystalHashedIndicesEE == 2946 || crystalHashedIndicesEE == 2900 || crystalHashedIndicesEE == 2902 || crystalHashedIndicesEE == 2901 || crystalHashedIndicesEE == 2903 || crystalHashedIndicesEE == 2904 || crystalHashedIndicesEE == 2905 || crystalHashedIndicesEE == 2986 || crystalHashedIndicesEE == 2987 || crystalHashedIndicesEE == 2988 || crystalHashedIndicesEE == 2989 || crystalHashedIndicesEE == 3070 || crystalHashedIndicesEE == 3071 || crystalHashedIndicesEE == 4252 || crystalHashedIndicesEE == 4253 || crystalHashedIndicesEE == 4254 || crystalHashedIndicesEE == 4255 || crystalHashedIndicesEE == 4256) continue;
+         mydete = mydete.unhashIndex(crystalHashedIndicesEE);
+         double myt     = (TTreeMembers_.cryTimesEE_[eex] -5.0)*25;
+         double myterr  = (TTreeMembers_.cryTimeErrorsEE_[eex])*25;
+	 if (myterr > 5.0 ) continue;
+	 double amp = TTreeMembers_.cryAmpsEE_[eex];
+	 if (amp < 1.0) continue;
+         int ix = mydete.ix();
+         int iy = mydete.iy();
+         int iz = mydete.zside();
+	 hctEEtoAve->Fill(myt,EEave);
+	 hctEEtoAmpEvt->Fill(EEave,amp);
      }
      
      hAbsTime->Fill(abstime);
@@ -1251,6 +1066,225 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
 
   // Now I need to print some of these new histograms and plots
   
+  c[28]->cd();
+  gStyle->SetOptStat(1110);
+  hctEB->Draw();
+  hctEB->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctEB->Fit("gaus");
+  gStyle->SetOptFit(111);
+  c[28]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMES_%i.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
+
+  c[29]->cd();
+  gStyle->SetOptStat(1110);
+  hctEE->Draw();
+  c[29]->SetLogy(1);
+  hctEE->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctEE->Fit("gaus");
+  gStyle->SetOptFit(111);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMES_%i.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
+
+  c[54]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEp->Draw();
+  c[54]->SetLogy(1);
+  hctEEp->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctEEp->Fit("gaus");
+  gStyle->SetOptFit(111);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMES_%i.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
+
+  c[55]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEm->Draw();
+  c[55]->SetLogy(1);
+  hctEEm->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctEEm->Fit("gaus");
+  gStyle->SetOptFit(111);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMES_%i.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
+  
+  //Time to average event time
+  c[30]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEtoAve->Draw("colz");
+  hctEEtoAve->GetXaxis()->SetNdivisions(512);
+  hctEEtoAve->GetYaxis()->SetNdivisions(512);
+  c[30]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAverage_%i.%s",dirName,mType,runNumber,fileType); c[30]->Print(name); }
+  
+  c[31]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBtoAve->Draw("colz");
+  hctEBtoAve->GetXaxis()->SetNdivisions(512);
+  hctEBtoAve->GetYaxis()->SetNdivisions(512);
+  c[31]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAverage_%i.%s",dirName,mType,runNumber,fileType); c[31]->Print(name); }
+
+  //Time to Time error
+  c[32]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBtoTerr->Draw("colz");
+  hctEBtoTerr->GetXaxis()->SetNdivisions(512);
+  hctEBtoTerr->GetYaxis()->SetNdivisions(507);
+  c[32]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoTERR_%i.%s",dirName,mType,runNumber,fileType); c[32]->Print(name); }
+  
+  c[33]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEtoTerr->Draw("colz");
+  hctEEtoTerr->GetXaxis()->SetNdivisions(512);
+  hctEEtoTerr->GetYaxis()->SetNdivisions(507);
+  c[33]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoTERR_%i.%s",dirName,mType,runNumber,fileType); c[33]->Print(name); }
+  
+  //Amplitude to time
+  c[34]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEtoAmp->Draw("colz");
+  hctEEtoAmp->GetXaxis()->SetNdivisions(512);
+  hctEEtoAmp->GetYaxis()->SetNdivisions(507);
+  c[34]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[34]->Print(name); } 
+  c[35]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBtoAmp->Draw("colz");
+  hctEBtoAmp->GetXaxis()->SetNdivisions(512);
+  hctEBtoAmp->GetYaxis()->SetNdivisions(507);
+  c[35]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[35]->Print(name); } 
+  
+   //Amplitdue to ave event time
+  c[36]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBtoAmpEvt->Draw("colz");
+  hctEBtoAmpEvt->GetXaxis()->SetNdivisions(512);
+  hctEBtoAmpEvt->GetYaxis()->SetNdivisions(507);
+  c[36]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[36]->Print(name); } 
+  c[37]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEtoAmpEvt->Draw("colz");
+  hctEEtoAmpEvt->GetXaxis()->SetNdivisions(512);
+  hctEEtoAmpEvt->GetYaxis()->SetNdivisions(507);
+  c[37]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[37]->Print(name); } 
+  
+  //Amplitude to time error.
+  c[38]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEtoAmpErr->Draw("colz");
+  hctEEtoAmpErr->GetXaxis()->SetNdivisions(512);
+  hctEEtoAmpErr->GetYaxis()->SetNdivisions(507);
+  c[38]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[38]->Print(name); } 
+  c[39]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBtoAmpErr->Draw("colz");
+  hctEBtoAmpErr->GetXaxis()->SetNdivisions(512);
+  hctEBtoAmpErr->GetYaxis()->SetNdivisions(507);
+  c[39]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); } 
+
+  //Hashed Index's
+  c[50]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBHashed->Draw();
+  hctEBHashed->GetXaxis()->SetNdivisions(512);
+  c[50]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBHashed_%i.%s",dirName,mType,runNumber,fileType); c[50]->Print(name); } 
+  
+  c[51]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEHashed->Draw();
+  c[51]->SetLogy(1);
+  hctEEHashed->GetXaxis()->SetNdivisions(512);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEHashed_%i.%s",dirName,mType,runNumber,fileType); c[51]->Print(name); } 
+  
+  
+  //Time to Hashed Index
+  c[52]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBtoHashed->Draw("colz");
+  hctEBtoHashed->GetXaxis()->SetNdivisions(512);
+  hctEBtoHashed->GetYaxis()->SetNdivisions(507);
+  hctEBtoHashed->SetMinimum(1);
+  c[52]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBHashedToTime_%i.%s",dirName,mType,runNumber,fileType); c[52]->Print(name); } 
+
+  c[53]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEtoHashed->Draw("colz");
+  hctEEtoHashed->GetXaxis()->SetNdivisions(512);
+  hctEEtoHashed->GetYaxis()->SetNdivisions(507);
+  hctEEtoHashed->SetMinimum(1);
+  c[53]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEHashedToTime_%i.%s",dirName,mType,runNumber,fileType); c[53]->Print(name); } 
+  
+   //1-D Number of crystal distributions
+  c[56]->cd();
+  gStyle->SetOptStat(111110);
+  hctEBCry->Draw();
+  hctEBCry->GetXaxis()->SetNdivisions(512);
+  c[56]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrys_%i.%s",dirName,mType,runNumber,fileType); c[56]->Print(name); } 
+  
+  c[57]->cd();
+  gStyle->SetOptStat(111110);
+  hctEECry->Draw();
+  hctEECry->GetXaxis()->SetNdivisions(512);
+  c[57]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EECrys_%i.%s",dirName,mType,runNumber,fileType); c[57]->Print(name); } 
+
+
+  //2-D crystal plots 
+  c[58]->cd();
+  gStyle->SetOptStat(111110);
+  hctEBCryT->Draw("colz");
+  hctEBCryT->GetXaxis()->SetNdivisions(512);
+  hctEBCryT->GetYaxis()->SetNdivisions(507);
+  hctEBCryT->SetMinimum(1);
+  c[58]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[58]->Print(name); } 
+    
+  c[59]->cd();
+  gStyle->SetOptStat(111110);
+  hctEEpCryT->Draw("colz");
+  hctEEpCryT->GetXaxis()->SetNdivisions(512);
+  hctEEpCryT->GetYaxis()->SetNdivisions(507);
+  hctEEpCryT->SetMinimum(1);
+  c[59]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[59]->Print(name); } 
+    
+  c[60]->cd();
+  gStyle->SetOptStat(111110);
+  hctEEmCryT->Draw("colz");
+  hctEEmCryT->GetXaxis()->SetNdivisions(512);
+  hctEEmCryT->GetYaxis()->SetNdivisions(507);
+  hctEEmCryT->SetMinimum(1);
+  c[60]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[60]->Print(name); } 
+  
+  c[61]->cd();
+  gStyle->SetOptStat(111110);
+  eventTimingInfoTree->Draw("(correctionToSampleEEM-5.0)*25.:(correctionToSampleEEP-5.0)*25. >> hctEEMEEP(tbins,tbinsL,tbinsH,tbins,tbinsL,tbinsH)","correctionToSampleEEP>0 && correctionToSampleEEM>0","colz");
+   sprintf(mytitle,"%s EE+ average time to EE- average time;EE- average time (ns);EE+ average time (ns)",runChar); 
+  hctEEMEEP->SetTitle(mytitle);
+  hctEEMEEP->GetXaxis()->SetNdivisions(512);
+  hctEEMEEP->GetYaxis()->SetNdivisions(507);
+  hctEEMEEP->SetMinimum(1);
+  c[61]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTimeToEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[61]->Print(name); } 
+
+  c[63]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("numberOfEEcrys:(correctionToSampleEEM-5.0)*25.-(correctionToSampleEEP-5.0)*25. >> hctEEMDEEPcry(25,-40,100,25,0,25)","correctionToSampleEEP>0 && correctionToSampleEEM>0","colz");
+  sprintf(mytitle,"%s EE- minus EE+ average time vs EE crystals;(EEM - EEP) average time (ns);Number EE crystals",runChar); 
+  hctEEMDEEPcry->SetTitle(mytitle);
+  hctEEMDEEPcry->GetXaxis()->SetNdivisions(512);
+  hctEEMDEEPcry->SetMinimum(1);
+  c[63]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTimeCrys_%i.%s",dirName,mType,runNumber,fileType); c[63]->Print(name); }
+  
+
   c[80]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
