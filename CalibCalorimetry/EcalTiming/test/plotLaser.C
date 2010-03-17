@@ -263,32 +263,13 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   timeCHProfile->Draw("colz");
    sprintf(mytitle,"%s %s",runChar,timeCHProfile->GetTitle()); 
   timeCHProfile->SetTitle(mytitle);
-  timeCHProfile->SetMinimum(4.0);
-  //timeCHProfile->SetMinimum(4.5);
-  //timeCHProfile->SetMaximum(5.5);
-  timeCHProfile->GetXaxis()->SetNdivisions(-18);
-  timeCHProfile->GetYaxis()->SetNdivisions(2);
 
-   c[15]->cd();
+  c[15]->cd();
   gStyle->SetOptStat(10);
   TProfile2D *timeCHProfilep = TProfToRelProf2D(timeCHProfile,"timeCHProfilep", -5., 25.);
   timeCHProfilep->Draw("colz");
    sprintf(mytitle,"%s in ns",timeCHProfile->GetTitle()); 
   timeCHProfilep->SetTitle(mytitle);
-  timeCHProfilep->SetMinimum(tlowc);
-  timeCHProfilep->SetMaximum(thighc);
-  //timeTTProfile->SetMinimum(5.85);
-  //timeTTProfile->SetMinimum(4.8);
-  //timeTTProfile->SetMaximum(6.45);
-  timeCHProfilep->GetXaxis()->SetNdivisions(-18);
-  timeCHProfilep->GetYaxis()->SetNdivisions(2);
-  c[15]->SetLogy(0);
-  c[15]->SetLogz(0);
-  c[15]->SetGridx(1);
-  c[15]->SetGridy(1);
-  gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
-  //TT by TT timing profile
   
   c[39]->cd();
   gStyle->SetOptStat(10);
@@ -782,6 +763,13 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TH2F *hTriggerVsBX   = new TH2F("hTriggerVsBX","BX vs. Trigger; BX; Active Trigger Bits",3500,0,3500, maxTrig, 0., maxTrig);
   TH2F *hTTriggerVsBX  = new TH2F("hTTriggerVsBX","BX vs. Technical Trigger; BX; Active Technical Trigger Bits",3500,0,3500, maxTTrig, 0., maxTTrig);
   
+  
+  TProfile2D* NtimeCHProfile = NewTProfile2D(timeCHProfile,"NtimeCHProfile");
+  TProfile2D* NtimeTTProfile = NewTProfile2D(timeTTProfile,"NtimeTTProfile");
+  TProfile2D* NEEPtimeCHProfile = NewTProfile2D(EEPtimeCHProfile,"NEEPtimeCHProfile");
+  TProfile2D* NEEPtimeTTProfile = NewTProfile2D(EEPtimeTTProfile,"NEEPtimeTTProfile");
+  TProfile2D* NEEMtimeCHProfile = NewTProfile2D(EEMtimeCHProfile,"NEEMtimeCHProfile");
+  TProfile2D* NEEMtimeTTProfile = NewTProfile2D(EEMtimeTTProfile,"NEEMtimeTTProfile");
 
   //Now I need to define a few histograms that I will later fill
 
@@ -818,6 +806,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
 	 hctEBtoAmpErr->Fill(amp,myterr);
 	 hctEBHashed->Fill(crystalHashedIndicesEB);
 	 hctEBtoHashed->Fill(crystalHashedIndicesEB,myt);
+         NtimeCHProfile->Fill(iphi,ieta,myt);
+         NtimeTTProfile->Fill(iphi,ieta,myt);
          if ( fabs(ieta) < 5 ) hEBTimeEtaLess5->Fill(myt);
      }
      for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
@@ -838,8 +828,18 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
 	 hctEEtoAmpErr->Fill(amp,myterr);
 	 hctEEHashed->Fill(crystalHashedIndicesEE);
 	 hctEEtoHashed->Fill(crystalHashedIndicesEE,myt);
-         if ( iz> 0 ) {EEPave += myt/myterr; EEPn += 1./myterr;EEpnum++; hctEEp->Fill(myt);}
-         else {EEMave += myt/myterr; EEMn += 1./myterr; EEmnum++; hctEEm->Fill(myt);}
+         if ( iz> 0 ) {
+            EEPave += myt/myterr; EEPn += 1./myterr;EEpnum++; 
+            hctEEp->Fill(myt);
+            NEEPtimeCHProfile->Fill(ix,iy,myt);
+            NEEPtimeTTProfile->Fill(ix,iy,myt);
+         }
+         else {
+            EEMave += myt/myterr; EEMn += 1./myterr; EEmnum++; 
+            hctEEm->Fill(myt);
+            NEEMtimeCHProfile->Fill(ix,iy,myt);
+            NEEMtimeTTProfile->Fill(ix,iy,myt);        
+         }
      }
      EEnum = EEpnum + EEmnum;
      if ( EBPn > 0.0 || EBMn > 0.0 )
@@ -1495,6 +1495,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsBX_%i.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
 
 
+
+
   //FINAL 1D timing number, by crystal by TT
   c[66]->cd();
   gStyle->SetOptStat(111110);
@@ -1561,6 +1563,178 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   if (chhistEEM->GetMean() != 0 && fit) chhistEEM->Fit("gaus");
   c[71]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[71]->Print(name); }
+
+  c[15]->cd();
+  gStyle->SetOptStat(10);
+  Scale0TProfile2D(NtimeCHProfile);
+  NtimeCHProfile->Draw("colz");
+  sprintf(mytitle,"%s in ns",timeCHProfile->GetTitle()); 
+  NtimeCHProfile->SetTitle(mytitle);
+  NtimeCHProfile->SetMinimum(tlowc);
+  NtimeCHProfile->SetMaximum(thighc);
+
+  NtimeCHProfile->GetXaxis()->SetNdivisions(-18);
+  NtimeCHProfile->GetYaxis()->SetNdivisions(2);
+  c[15]->SetLogy(0);
+  c[15]->SetLogz(0);
+  c[15]->SetGridx(1);
+  c[15]->SetGridy(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  //TT by TT timing profile
+  c[67]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *chhistEBN = HistNFromTProfile2D(NtimeCHProfile,"chhistEBN",200, -30., 40.);
+  sprintf(mytitle,"%s Average CH Timing (EB);CH time average (ns)",runChar); 
+  chhistEBN->SetTitle(mytitle);
+  chhistEBN->GetXaxis()->SetNdivisions(512);
+  if (chhistEBN->GetMean() != 0 && fit ) chhistEBN->Fit("gaus");
+  c[67]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+
+  c[15]->cd();
+  gStyle->SetOptStat(10);
+  Scale0TProfile2D(NtimeTTProfile);
+  NtimeTTProfile->Draw("colz");
+  sprintf(mytitle,"%s in ns",timeTTProfile->GetTitle()); 
+  NtimeTTProfile->SetTitle(mytitle);
+  NtimeTTProfile->SetMinimum(tlowc);
+  NtimeTTProfile->SetMaximum(thighc);
+
+  NtimeTTProfile->GetXaxis()->SetNdivisions(-18);
+  NtimeTTProfile->GetYaxis()->SetNdivisions(2);
+  c[15]->SetLogy(0);
+  c[15]->SetLogz(0);
+  c[15]->SetGridx(1);
+  c[15]->SetGridy(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  //TT by TT timing profile
+  c[67]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *tthistEBN = HistNFromTProfile2D(NtimeTTProfile,"tthistEBN",200, -30., 40.);
+  sprintf(mytitle,"%s Average TT Timing (EB);TT time average (ns)",runChar); 
+  tthistEBN->SetTitle(mytitle);
+  tthistEBN->GetXaxis()->SetNdivisions(512);
+  if (tthistEBN->GetMean() != 0 && fit ) tthistEBN->Fit("gaus");
+  c[67]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+
+  c[15]->cd();
+  gStyle->SetOptStat(10);
+  Scale0TProfile2D(NEEPtimeCHProfile);
+  NEEPtimeCHProfile->Draw("colz");
+  sprintf(mytitle,"%s in ns",EEPtimeCHProfile->GetTitle()); 
+  NEEPtimeCHProfile->SetTitle(mytitle);
+  NEEPtimeCHProfile->SetMinimum(tlowc);
+  NEEPtimeCHProfile->SetMaximum(thighc);
+
+  NEEPtimeCHProfile->GetXaxis()->SetNdivisions(18);
+  //NEEPtimeCHProfile->GetYaxis()->SetNdivisions(2);
+  c[15]->SetLogy(0);
+  c[15]->SetLogz(0);
+  c[15]->SetGridx(0);
+  c[15]->SetGridy(0);
+  drawEELines();
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  //TT by TT timing profile
+  c[67]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *chhistEEPN = HistNFromTProfile2D(NEEPtimeCHProfile,"chhistEEPN",200, -30., 40.);
+  sprintf(mytitle,"%s Average CH Timing (EE+);CH time average (ns)",runChar); 
+  chhistEEPN->SetTitle(mytitle);
+  chhistEEPN->GetXaxis()->SetNdivisions(512);
+  if (chhistEEPN->GetMean() != 0 && fit ) chhistEEPN->Fit("gaus");
+  c[67]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+
+  c[15]->cd();
+  gStyle->SetOptStat(10);
+  Scale0TProfile2D(NEEPtimeTTProfile);
+  NEEPtimeTTProfile->Draw("colz");
+  sprintf(mytitle,"%s in ns",EEPtimeTTProfile->GetTitle()); 
+  NEEPtimeTTProfile->SetTitle(mytitle);
+  NEEPtimeTTProfile->SetMinimum(tlowc);
+  NEEPtimeTTProfile->SetMaximum(thighc);
+
+  NEEPtimeTTProfile->GetXaxis()->SetNdivisions(18);
+  c[15]->SetLogy(0);
+  c[15]->SetLogz(0);
+  drawEELines();
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  //TT by TT timing profile
+  c[67]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *tthistEEPN = HistNFromTProfile2D(NEEPtimeTTProfile,"tthistEEPN",200, -30., 40.);
+  sprintf(mytitle,"%s Average TT Timing (EE+);TT time average (ns)",runChar); 
+  tthistEEPN->SetTitle(mytitle);
+  tthistEEPN->GetXaxis()->SetNdivisions(512);
+  if (tthistEEPN->GetMean() != 0 && fit ) tthistEEPN->Fit("gaus");
+  c[67]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+
+  c[15]->cd();
+  gStyle->SetOptStat(10);
+  Scale0TProfile2D(NEEMtimeCHProfile);
+  NEEMtimeCHProfile->Draw("colz");
+  sprintf(mytitle,"%s in ns",EEMtimeCHProfile->GetTitle()); 
+  NEEMtimeCHProfile->SetTitle(mytitle);
+  NEEMtimeCHProfile->SetMinimum(tlowc);
+  NEEMtimeCHProfile->SetMaximum(thighc);
+
+  NEEMtimeCHProfile->GetXaxis()->SetNdivisions(18);
+  //NEEMtimeCHProfile->GetYaxis()->SetNdivisions(2);
+  c[15]->SetLogy(0);
+  c[15]->SetLogz(0);
+  drawEELines();
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  //TT by TT timing profile
+  c[67]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *chhistEEMN = HistNFromTProfile2D(NEEMtimeCHProfile,"chhistEEMN",200, -30., 40.);
+  sprintf(mytitle,"%s Average CH Timing (EE-);CH time average (ns)",runChar); 
+  chhistEEMN->SetTitle(mytitle);
+  chhistEEMN->GetXaxis()->SetNdivisions(512);
+  if (chhistEEMN->GetMean() != 0 && fit ) chhistEEMN->Fit("gaus");
+  c[67]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+
+  c[15]->cd();
+  gStyle->SetOptStat(10);
+  Scale0TProfile2D(NEEMtimeTTProfile);
+  NEEMtimeTTProfile->Draw("colz");
+  sprintf(mytitle,"%s in ns",EEMtimeTTProfile->GetTitle()); 
+  NEEMtimeTTProfile->SetTitle(mytitle);
+  NEEMtimeTTProfile->SetMinimum(tlowc);
+  NEEMtimeTTProfile->SetMaximum(thighc);
+
+  NEEMtimeTTProfile->GetXaxis()->SetNdivisions(18);
+  //NEEMtimeTTProfile->GetYaxis()->SetNdivisions(2);
+  c[15]->SetLogy(0);
+  c[15]->SetLogz(0);
+  drawEELines();
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  //TT by TT timing profile
+  c[67]->cd();
+  gStyle->SetOptStat(111110);
+  gStyle->SetOptFit(111);
+  TH1F *tthistEEMN = HistNFromTProfile2D(NEEMtimeTTProfile,"tthistEEMN",200, -30., 40.);
+  sprintf(mytitle,"%s Average TT Timing (EE-);TT time average (ns)",runChar); 
+  tthistEEMN->SetTitle(mytitle);
+  tthistEEMN->GetXaxis()->SetNdivisions(512);
+  if (tthistEEMN->GetMean() != 0 && fit ) tthistEEMN->Fit("gaus");
+  c[67]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+
 
   cout << name << endl;
 
@@ -1644,6 +1818,17 @@ for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {
 }
 
 
+void Scale0TProfile2D(TProfile2D* myprof)
+{
+int nxbins = myprof->GetNbinsX();
+int nybins = myprof->GetNbinsY();
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       if (binents == 0 ) {binents =1.;myprof->SetBinEntries(i,1);myprof->SetBinContent(i,-150.); }
+}
+}
 
 
 TProfile2D* TProfToRelProf2D(TProfile2D *prof, const char * histname, double numb=0, double myScale = 1.0)
@@ -1718,6 +1903,45 @@ for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {
        temphist->Fill((oldcont+myfac)*myscale);
 }
 return temphist;
+}
+
+TH1F* HistNFromTProfile2D(TProfile2D *prof, const char * histname, Int_t xbins, Double_t xmin, Double_t xmax)
+{
+int nxbins = prof->GetNbinsX();
+int nybins = prof->GetNbinsY();
+
+TH1F *temphist = new TH1F(histname,histname,xbins,xmin,xmax);
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       Double_t oldcont = prof->GetBinContent(i);
+       Double_t binents = prof->GetBinEntries(i);
+       if (binents == 0 ) { continue; }
+       if (binents == 1 && oldcont < -99) {continue;}
+       temphist->Fill(oldcont);
+}
+return temphist;
+}
+
+TProfile2D* NewTProfile2D(TProfile2D *prof, const char * histname)
+{
+
+TProfile2D *myprof = prof->Clone(histname);
+EmptyTProfile2D(myprof);
+return myprof;
+}
+
+void EmptyTProfile2D(TProfile2D* myprof)
+{
+int nxbins = myprof->GetNbinsX();
+int nybins = myprof->GetNbinsY();
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       if (binents == 0 ) { continue; }
+       myprof->SetBinContent(i,0);
+       myprof->SetBinEntries(i,0);
+}
 }
 
 
