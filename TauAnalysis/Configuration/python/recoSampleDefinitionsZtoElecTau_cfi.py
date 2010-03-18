@@ -3479,7 +3479,13 @@ fileNamesZtoElecTau_TTplusJets_10TeV_part58 = cms.untracked.vstring(
 
 #--------------------------------------------------------------------------------
 
+
+##################
+#
 # 7 TeV samples
+#
+##################
+
 
 #--------------------------------------------------------------------------------
 # Z --> tau+ tau- sample generated with Pythia + Tauola (all decay modes)
@@ -3487,7 +3493,7 @@ fileNamesZtoElecTau_TTplusJets_10TeV_part58 = cms.untracked.vstring(
 #  7 TeV
 #  dataset = /Ztautau/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO	
 #  generated events = 2193025
-#  skimmed events = 261654
+#  skimmed events = 261654  (needs udpate)
 #
 intLumiZtoElecTau_Ztautau_7TeV = float(1686.9)
 corrFactorZtoElecTau_Ztautau_7TeV = float(1.)
@@ -3555,12 +3561,6 @@ fileNamesZtoElecTau_Ztautau_7TeV_part17 = cms.untracked.vstring(
 fileNamesZtoElecTau_Ztautau_7TeV_part18 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_18.root'
 )
-fileNamesZtoElecTau_Ztautau_7TeV_part19 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_19.root'
-)
-fileNamesZtoElecTau_Ztautau_7TeV_part20 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_20.root'
-)
 #--------------------------------------------------------------------------------
 
 
@@ -3570,11 +3570,11 @@ fileNamesZtoElecTau_Ztautau_7TeV_part20 = cms.untracked.vstring(
 #  7 TeV
 #  dataset = /Zee/Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/GEN-SIM-RECO	
 #  generated events = 2538855
-#  skimmed events = 1204636
+#  skimmed events = 1204636 (needs update)
 #
 intLumiZtoElecTau_Zee_7TeV = float(1953.0)
-# 1/53 skim output files missing
-corrFactorZtoElecTau_Zee_7TeV = float(1.019)
+# 3/131 skim output files missing
+corrFactorZtoElecTau_Zee_7TeV = float(1.023)
 
 patTupleOutputFileNameZtoElecTau_Zee_7TeV = cms.untracked.string('patTupleZtoElecTau_Zee_7TeV_partXX.root')
 
@@ -3588,160 +3588,136 @@ genPhaseSpaceCutZtoElecTau_Zee_7TeV = cms.PSet(
 )
 
 fileNamesZtoElecTau_Zee_7TeV_part01 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_1.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_01.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part02 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_2.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_02.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part03 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_3.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_03.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part04 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_4.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_04.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part05 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_5.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_05.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part06 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_6.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_06.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part07 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_7.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_07.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part08 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_8.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_08.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part09 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_9.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_09.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part10 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_10.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_10.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part11 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_11.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_11.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part12 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_12.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_12.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part13 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_13.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_13.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part14 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_14.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_14.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part15 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_15.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_15.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part16 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_16.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_16.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part17 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_17.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_17.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part18 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_18.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_18.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part19 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_19.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_19.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part20 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_20.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_20.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part21 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_21.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_21.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part22 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_22.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_22.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part23 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_23.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_23.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part24 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_24.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_24.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part25 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_25.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_25.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part26 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_26.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_26.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part27 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_27.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_27.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part28 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_28.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_28.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part29 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_29.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_29.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part30 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_30.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_30.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part31 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_31.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_31.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part32 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_32.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_32.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part33 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_33.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_33.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part34 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_34.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_34.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part35 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_35.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_35.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part36 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_36.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_36.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part37 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_37.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_37.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part38 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_38.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_38.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part39 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_39.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_39.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part40 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_40.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_40.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part41 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_42.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_41.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part42 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_43.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_42.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part43 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_44.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_43.root'
 )
 fileNamesZtoElecTau_Zee_7TeV_part44 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_45.root'
-)
-fileNamesZtoElecTau_Zee_7TeV_part45 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_46.root'
-)
-fileNamesZtoElecTau_Zee_7TeV_part46 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_47.root'
-)
-fileNamesZtoElecTau_Zee_7TeV_part47 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_48.root'
-)
-fileNamesZtoElecTau_Zee_7TeV_part48 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_49.root'
-)
-fileNamesZtoElecTau_Zee_7TeV_part49 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_50.root'
-)
-fileNamesZtoElecTau_Zee_7TeV_part50 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_51.root'
-)
-fileNamesZtoElecTau_Zee_7TeV_part51 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_52.root'
-)
-fileNamesZtoElecTau_Zee_7TeV_part52 = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_53.root'
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Zee_7TeV/skimElecTau_Zee_7TeV_44.root'
 )
 #--------------------------------------------------------------------------------
 
@@ -3752,11 +3728,11 @@ fileNamesZtoElecTau_Zee_7TeV_part52 = cms.untracked.vstring(
 #  7 TeV
 #  dataset = /QCD_EMenriched_Pt20to30/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO	
 #  generated events = 33880096
-#  events passing skim = 2973018
+#  events passing skim = 2973018 (needs update)
 #  integrated lumi = 19.71 pb^-1
 intLumiZtoElecTau_QCD_EMenriched_Pt20to30_7TeV = float(19.71)
-#  missing 10/700 skim output files
-corrFactorZtoElecTau_QCD_EMenriched_Pt20to30_7TeV = float(1.014)
+#  missing 29/1747 skim output files
+corrFactorZtoElecTau_QCD_EMenriched_Pt20to30_7TeV = float(1.017)
 
 patTupleOutputFileNameZtoElecTau_QCD_EMenriched_Pt20to30_7TeV = cms.untracked.string('patTupleZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_partXX.root')
 
@@ -4300,12 +4276,12 @@ fileNamesZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part174 = cms.untracked.vstring
 #  7 TeV
 #  dataset = /QCD_EMenriched_Pt30to80/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO	
 #  generated events = 42299325
-#  events passing skim = 7280086
+#  events passing skim = 7280086 (needs update)
 #  integrated lumi = 12.09 pb^-1
 intLumiZtoElecTau_QCD_EMenriched_Pt30to80_7TeV = float(12.09)
 #
-# 69/858 skim output files missing
-corrFactorZtoElecTau_QCD_EMenriched_Pt30to80_7TeV = float(1.088)
+# 96/2128 skim output files missing
+corrFactorZtoElecTau_QCD_EMenriched_Pt30to80_7TeV = float(1.047)
 
 patTupleOutputFileNameZtoElecTau_QCD_EMenriched_Pt30to80_7TeV = cms.untracked.string('patTupleZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_partXX.root')
 
@@ -4718,397 +4694,403 @@ fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part133 = cms.untracked.vstring
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_133.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part134 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_140.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_134.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part135 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_141.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_135.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part136 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_142.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_136.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part137 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_143.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_137.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part138 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_144.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_138.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part139 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_145.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_139.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part140 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_146.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_140.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part141 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_147.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_141.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part142 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_148.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_142.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part143 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_149.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_143.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part144 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_150.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_144.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part145 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_151.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_145.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part146 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_152.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_146.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part147 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_153.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_147.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part148 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_154.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_148.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part149 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_155.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_149.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part150 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_156.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_150.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part151 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_157.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_151.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part152 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_158.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_152.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part153 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_159.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_153.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part154 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_160.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_154.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part155 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_161.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_155.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part156 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_162.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_156.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part157 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_163.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_157.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part158 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_164.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_158.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part159 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_165.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_159.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part160 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_166.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_160.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part161 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_167.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_161.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part162 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_168.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_162.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part163 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_169.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_163.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part164 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_170.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_164.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part165 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_171.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_165.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part166 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_172.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_166.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part167 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_173.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_167.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part168 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_190.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_168.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part169 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_191.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_169.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part170 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_192.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_170.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part171 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_193.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_171.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part172 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_194.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_172.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part173 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_195.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_173.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part174 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_196.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_174.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part175 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_197.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_175.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part176 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_198.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_176.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part177 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_199.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_177.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part178 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_200.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_178.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part179 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_201.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_179.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part180 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_202.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_180.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part181 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_203.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_181.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part182 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_204.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_182.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part183 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_205.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_183.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part184 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_206.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_184.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part185 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_207.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_185.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part186 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_208.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_186.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part187 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_209.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_187.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part188 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_210.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_188.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part189 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_211.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_189.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part190 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_212.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_190.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part191 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_213.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_191.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part192 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_214.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_192.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part193 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_215.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_193.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part194 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_216.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_194.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part195 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_217.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_195.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part196 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_218.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_196.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part197 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_219.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_197.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part198 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_220.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_198.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part199 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_221.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_199.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part200 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_222.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_200.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part201 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_223.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_201.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part202 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_224.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_202.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part203 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_225.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_203.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part204 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_226.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_204.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part205 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_227.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_205.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part206 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_228.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_206.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part207 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_229.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_207.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part208 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_230.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_208.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part209 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_231.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_209.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part210 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_232.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_210.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part211 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_233.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_211.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part212 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_234.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_212.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part213 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_235.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_213.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part214 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_236.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_214.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part215 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_237.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_215.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part216 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_238.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_216.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part217 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_239.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_217.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part218 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_240.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_218.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part219 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_241.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_219.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part220 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_242.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_220.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part221 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_243.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_221.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part222 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_244.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_222.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part223 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_245.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_223.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part224 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_246.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_224.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part225 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_247.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_225.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part226 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_248.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_226.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part227 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_249.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_227.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part228 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_250.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_228.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part229 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_251.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_229.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part230 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_252.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_230.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part231 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_253.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_231.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part232 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_254.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_232.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part233 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_255.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_233.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part234 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_256.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_234.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part235 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_257.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_235.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part236 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_258.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_236.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part237 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_259.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_237.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part238 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_260.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_238.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part239 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_261.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_239.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part240 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_262.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_240.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part241 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_263.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_241.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part242 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_264.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_242.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part243 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_265.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_243.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part244 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_266.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_244.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part245 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_267.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_245.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part246 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_268.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_246.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part247 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_269.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_247.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part248 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_270.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_248.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part249 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_271.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_249.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part250 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_272.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_250.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part251 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_273.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_251.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part252 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_274.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_252.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part253 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_275.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_253.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part254 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_276.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_254.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part255 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_277.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_255.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part256 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_278.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_256.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part257 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_279.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_257.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part258 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_280.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_258.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part259 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_281.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_259.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part260 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_282.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_260.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part261 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_283.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_261.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part262 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_284.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_262.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part263 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_285.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_263.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part264 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_286.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_264.root'
+)
+fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part265 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_265.root'
+)
+fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part266 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt30to80_7TeV/skimElecTau_QCD_EMenriched_Pt30to80_7TeV_266.root'
 )
 
 #--------------------------------------------------------------------------------
@@ -5120,12 +5102,12 @@ fileNamesZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part264 = cms.untracked.vstring
 #  7TeV
 #  dataset = /QCD_EMenriched_Pt80to170/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO	
 #  generated events = 5551386
-#  events passing skim = 1915812
+#  events passing skim = 1915812 (needs update)
 #  integrated lumi = 41.40
 intLumiZtoElecTau_QCD_EMenriched_Pt80to170_7TeV = float(41.40)
 #
-# 1/158 files missing
-corrFactorZtoElecTau_QCD_EMenriched_Pt80to170_7TeV = float(1.006)
+# 4/315 files missing
+corrFactorZtoElecTau_QCD_EMenriched_Pt80to170_7TeV = float(1.013)
 
 patTupleOutputFileNameZtoElecTau_QCD_EMenriched_Pt80to170_7TeV = cms.untracked.string('patTupleZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_partXX.root')
 
@@ -5139,475 +5121,319 @@ genPhaseSpaceCutZtoElecTau_QCD_EMenriched_Pt80to170_7TeV = cms.PSet(
 )
 
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part01 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_1.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_01.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_2.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_02.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part03 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_3.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_03.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part04 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_4.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_04.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part05 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_5.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_05.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part06 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_6.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_06.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part07 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_7.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_07.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part08 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_8.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_08.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part09 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_9.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_09.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part10 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_10.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_10.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part11 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_11.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_11.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part12 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_12.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_12.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part13 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_13.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_13.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part14 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_14.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_14.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part15 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_15.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_15.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part16 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_16.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_16.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part17 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_17.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_17.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part18 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_18.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_18.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part19 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_19.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_19.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part20 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_20.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_20.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part21 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_21.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_21.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part22 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_22.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_22.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part23 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_23.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_23.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part24 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_24.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_24.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part25 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_25.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_25.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part26 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_26.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_26.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part27 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_27.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_27.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part28 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_28.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_28.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part29 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_29.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_29.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part30 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_30.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_30.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part31 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_31.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_31.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part32 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_32.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_32.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part33 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_33.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_33.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part34 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_34.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_34.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part35 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_35.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_35.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part36 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_36.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_36.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part37 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_37.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_37.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part38 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_38.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_38.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part39 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_39.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_39.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part40 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_40.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_40.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part41 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_41.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_41.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part42 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_42.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_42.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part43 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_43.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_43.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part44 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_44.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_44.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part45 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_45.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_45.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part46 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_46.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_46.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part47 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_47.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_47.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part48 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_48.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_48.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part49 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_49.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_49.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part50 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_50.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_50.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part51 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_51.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_51.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part52 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_52.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_52.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part53 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_53.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_53.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part54 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_54.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_54.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part55 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_55.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_55.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part56 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_56.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_56.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part57 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_57.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_57.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part58 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_58.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_58.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part59 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_59.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_59.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part60 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_60.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_60.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part61 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_61.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_61.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part62 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_62.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_62.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part63 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_63.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_63.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part64 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_64.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_64.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part65 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_65.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_65.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part66 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_66.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_66.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part67 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_67.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_67.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part68 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_68.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_68.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part69 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_69.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_69.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part70 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_70.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_70.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part71 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_71.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_71.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part72 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_72.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_72.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part73 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_73.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_73.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part74 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_74.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_74.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part75 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_75.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_75.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part76 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_76.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_76.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part77 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_77.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_77.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part78 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_78.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_78.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part79 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_79.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_79.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part80 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_80.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_80.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part81 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_82.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_81.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part82 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_83.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_82.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part83 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_84.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_83.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part84 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_85.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_84.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part85 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_86.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_85.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part86 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_87.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_86.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part87 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_88.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_87.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part88 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_89.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_88.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part89 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_90.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_89.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part90 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_91.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_90.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part91 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_92.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_91.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part92 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_93.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_92.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part93 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_94.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_93.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part94 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_95.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_94.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part95 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_96.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_95.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part96 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_97.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_96.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part97 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_98.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_97.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part98 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_99.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_98.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part99 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_100.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_99.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part100 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_101.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_100.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part101 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_102.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_101.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part102 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_103.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_102.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part103 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_104.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_103.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part104 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_105.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_104.root'
 )
 fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part105 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_106.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part106 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_107.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part107 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_108.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part108 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_109.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part109 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_110.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part110 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_111.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part111 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_112.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part112 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_113.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part113 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_114.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part114 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_115.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part115 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_116.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part116 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_117.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part117 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_118.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part118 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_119.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part119 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_120.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part120 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_121.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part121 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_122.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part122 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_123.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part123 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_124.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part124 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_125.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part125 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_126.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part126 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_127.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part127 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_128.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part128 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_129.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part129 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_130.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part130 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_131.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part131 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_132.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part132 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_133.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part133 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_134.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part134 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_135.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part135 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_136.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part136 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_137.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part137 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_138.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part138 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_139.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part139 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_140.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part140 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_141.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part141 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_142.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part142 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_143.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part143 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_144.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part144 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_145.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part145 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_146.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part146 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_147.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part147 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_148.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part148 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_149.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part149 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_150.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part150 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_151.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part151 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_152.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part152 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_153.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part153 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_154.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part154 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_155.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part155 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_156.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part156 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_157.root'
-)
-fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part157 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_158.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_EMenriched_Pt80to170_7TeV/skimElecTau_QCD_EMenriched_Pt80to170_7TeV_105.root'
 )
 
 #--------------------------------------------------------------------------------
@@ -5619,11 +5445,11 @@ fileNamesZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part157 = cms.untracked.vstrin
 #  7 TeV
 #  dataset = /QCD_BCtoE_Pt20to30/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO	
 #  generated events = 2752942
-#  events passing skim = 757875
+#  events passing skim = 757875 (needs update)
 #  integrated luminosity = 25.41 pb^-1
 # 
 intLumiZtoElecTau_QCD_BCtoE_Pt20to30_7TeV = float(25.41)
-# 0/57 files missing
+# 0/139 files missing
 corrFactorZtoElecTau_QCD_BCtoE_Pt20to30_7TeV = float(1.)
 
 patTupleOutputFileNameZtoElecTau_QCD_BCtoE_Pt20to30_7TeV = cms.untracked.string('patTupleZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_partXX.root')
@@ -5638,175 +5464,214 @@ genPhaseSpaceCutZtoElecTau_QCD_BCtoE_Pt20to30_7TeV = cms.PSet(
 )
 
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part01 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_1.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_01.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part02 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_2.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_02.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part03 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_3.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_03.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part04 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_4.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_04.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part05 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_5.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_05.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part06 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_6.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_06.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part07 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_7.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_07.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part08 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_8.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_08.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part09 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_9.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_09.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part10 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_10.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_10.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part11 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_11.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_11.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part12 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_12.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_12.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part13 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_13.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_13.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part14 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_14.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_14.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part15 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_15.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_15.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part16 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_16.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_16.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part17 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_17.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_17.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part18 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_18.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_18.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part19 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_19.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_19.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part20 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_20.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_20.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part21 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_21.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_21.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part22 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_22.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_22.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part23 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_23.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_23.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part24 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_24.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_24.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part25 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_25.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_25.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part26 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_26.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_26.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part27 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_27.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_27.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part28 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_28.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_28.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part29 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_29.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_29.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part30 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_30.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_30.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part31 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_31.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_31.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part32 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_32.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_32.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part33 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_33.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_33.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part34 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_34.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_34.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part35 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_35.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_35.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part36 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_36.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_36.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part37 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_37.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_37.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part38 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_38.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_38.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part39 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_39.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_39.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part40 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_40.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_40.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part41 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_41.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_41.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part42 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_42.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_42.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part43 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_43.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_43.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part44 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_44.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_44.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part45 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_45.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_45.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part46 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_46.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_46.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part47 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_47.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_47.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part48 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_48.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_48.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part49 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_49.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_49.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part50 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_50.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_50.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part51 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_51.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_51.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part52 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_52.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_52.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part53 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_53.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_53.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part54 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_54.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_54.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part55 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_55.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_55.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part56 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_56.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_56.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part57 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_57.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_57.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part58 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_58.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part59 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_59.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part60 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_60.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part61 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_61.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part62 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_62.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part63 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_63.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part64 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_64.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part65 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_65.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part66 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_66.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part67 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_67.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part68 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_68.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part69 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_69.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part70 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt20to30_7TeV/skimElecTau_QCD_BCtoE_Pt20to30_7TeV_70.root'
 )
 
 #--------------------------------------------------------------------------------
@@ -5818,12 +5683,12 @@ fileNamesZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part57 = cms.untracked.vstring(
 #  7 TeV
 #  dataset = /QCD_BCtoE_Pt30to80/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO	
 #  generated events = 2447285
-#  events passing skim = 1225335
+#  events passing skim = 1225335 (needs update)
 #  integrated luminosity = 17.64 pb^-1
 intLumiZtoElecTau_QCD_BCtoE_Pt30to80_7TeV = float(17.64)
 #
-# 5/64 files missing
-corrFactorZtoElecTau_QCD_BCtoE_Pt30to80_7TeV = float(1.085)
+# 0/137 files missing
+corrFactorZtoElecTau_QCD_BCtoE_Pt30to80_7TeV = float(1.)
 
 patTupleOutputFileNameZtoElecTau_QCD_BCtoE_Pt30to80_7TeV = cms.untracked.string('patTupleZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_partXX.root')
 
@@ -5837,181 +5702,142 @@ genPhaseSpaceCutZtoElecTau_QCD_BCtoE_Pt30to80_7TeV = cms.PSet(
 )
 
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part01 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_1.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_01.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part02 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_3.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_02.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part03 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_4.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_03.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part04 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_5.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_04.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part05 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_6.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_05.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part06 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_7.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_06.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part07 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_8.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_07.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part08 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_9.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_08.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part09 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_10.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_09.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part10 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_11.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_10.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part11 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_12.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_11.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part12 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_13.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_12.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part13 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_14.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_13.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part14 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_16.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_14.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part15 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_17.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_15.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part16 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_18.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_16.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part17 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_19.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_17.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part18 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_20.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_18.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part19 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_21.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_19.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part20 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_22.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_20.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part21 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_23.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_21.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part22 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_24.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_22.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part23 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_25.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_23.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part24 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_26.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_24.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part25 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_27.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_25.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part26 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_28.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_26.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part27 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_29.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_27.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part28 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_30.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_28.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part29 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_31.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_29.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part30 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_32.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_30.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part31 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_34.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_31.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part32 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_35.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_32.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part33 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_36.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_33.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part34 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_37.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_34.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part35 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_38.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_35.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part36 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_39.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_36.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part37 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_40.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_37.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part38 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_42.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_38.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part39 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_43.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_39.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part40 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_44.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_40.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part41 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_45.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_41.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part42 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_46.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_42.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part43 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_47.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_43.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part44 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_48.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_44.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part45 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_49.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_45.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part46 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_50.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part47 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_51.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part48 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_52.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part49 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_53.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part50 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_54.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part51 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_55.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part52 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_56.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part53 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_57.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part54 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_58.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part55 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_59.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part56 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_61.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part57 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_62.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part58 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_63.root'
-)
-fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part59 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_64.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt30to80_7TeV/skimElecTau_QCD_BCtoE_Pt30to80_7TeV_46.root'
 )
 
 
@@ -6024,11 +5850,12 @@ fileNamesZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part59 = cms.untracked.vstring(
 #  7 TeV
 #  dataset = /QCD_BCtoE_Pt80to170/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO	
 #  generated events = 1195625
-#  events passing skim = 893480
+#  events passing skim = 893480 (needs update)
 #  integrated luminosity = 126.89 pb^-1
 intLumiZtoElecTau_QCD_BCtoE_Pt80to170_7TeV = float(126.89)
 # 
-corrFactorZtoElecTau_QCD_BCtoE_Pt80to170_7TeV = float(1.030)
+# 2/70 files missing
+corrFactorZtoElecTau_QCD_BCtoE_Pt80to170_7TeV = float(1.029)
 
 patTupleOutputFileNameZtoElecTau_QCD_BCtoE_Pt80to170_7TeV = cms.untracked.string('patTupleZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_partXX.root')
 
@@ -6040,106 +5867,112 @@ genPhaseSpaceCutZtoElecTau_QCD_BCtoE_Pt80to170_7TeV = cms.PSet(
     src = cms.InputTag('genPhaseSpaceEventInfo'),
     cut = cms.string('')
 )
+
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part01 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_1.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_01.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part02 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_2.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_02.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part03 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_3.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_03.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part04 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_4.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_04.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part05 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_5.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_05.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part06 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_6.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_06.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part07 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_7.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_07.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part08 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_9.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_08.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part09 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_10.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_09.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part10 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_11.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_10.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part11 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_12.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_11.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part12 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_13.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_12.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part13 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_14.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_13.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part14 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_15.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_14.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part15 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_16.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_15.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part16 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_17.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_16.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part17 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_18.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_17.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part18 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_19.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_18.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part19 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_20.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_19.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part20 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_21.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_20.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part21 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_22.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_21.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part22 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_23.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_22.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part23 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_24.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_23.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part24 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_25.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_24.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part25 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_26.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_25.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part26 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_27.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_26.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part27 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_28.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_27.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part28 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_29.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_28.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part29 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_30.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_29.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part30 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_31.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_30.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part31 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_32.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_31.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part32 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_33.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_32.root'
 )
 fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part33 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_34.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_33.root'
 )
-
+fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part34 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_34.root'
+)
+fileNamesZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part35 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/QCD_BCtoE_Pt80to170_7TeV/skimElecTau_QCD_BCtoE_Pt80to170_7TeV_35.root'
+)
 
 #--------------------------------------------------------------------------------
 
@@ -6201,7 +6034,7 @@ patTupleOutputFileNameZtoElecTau_PhotonPlusJets_Pt30to50_7TeV = cms.untracked.st
 #  7 TeV
 #  dataset = /WJets-madgraph/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO	
 #  generated events = 11377412
-#  events passing skim = 806193
+#  events passing skim = 806193 (needs update)
 #  int lumi = 638.1 pb^-1
 #
 # 
@@ -6210,8 +6043,8 @@ patTupleOutputFileNameZtoElecTau_PhotonPlusJets_Pt30to50_7TeV = cms.untracked.st
 #        listed at https://twiki.cern.ch/twiki/bin/view/CMS/ProductionSummer2008 !!)
 #
 intLumiZtoElecTau_WplusJets_7TeV = float(638.1)
-#  9/571 skim output files missing
-corrFactorZtoElecTau_WplusJets_7TeV = float(1.002)
+#  0/571 skim output files missing
+corrFactorZtoElecTau_WplusJets_7TeV = float(1.)
 
 patTupleOutputFileNameZtoElecTau_WplusJets_7TeV = cms.untracked.string('patTupleZtoElecTau_WplusJets_7TeV_partXX.root')
 
@@ -6479,7 +6312,7 @@ fileNamesZtoElecTau_WplusJets_7TeV_part82 = cms.untracked.vstring(
 #
 #  dataset = /ZJets-madgraph/Summer09-MC_31X_V3_7TeV-v2/GEN-SIM-RECO	
 #  generated events = 1068735
-#  events passing skim = 293565
+#  events passing skim = 293565 (needs update)
 #  integrated luminosity = 454.8 pb^-1
 #
 # (NOTE: for Monte Carlo samples generated by Madgraph,

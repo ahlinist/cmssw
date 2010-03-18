@@ -30,7 +30,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         #genTauCut,
     
         # trigger selection
-        #evtSelTrigger,
+        evtSelTrigger,
         
         # primary event vertex selection
         evtSelPrimaryEventVertex,
