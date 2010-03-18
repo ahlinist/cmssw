@@ -21,62 +21,7 @@ inputFilePath = "rfio:" + outputFilePath
 #
 #--------------------------------------------------------------------------------
 
-# harvest Z --> tau tau 
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "Ztautau_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-
-# harvest Z --> e e
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "Zee_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-
-# harvest QCD_BCtoE 
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt20to30_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt30to80_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt80to170_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-
-# harvest QCD_EMenriched
-for i in range(2):
-    submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
-				  sample = "QCD_EMenriched_Pt20to30_10TeV" + "_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-                  job = "harvesting", queue = "8nh", outputFilePath = outputFilePath)
-for i in range(3):
-    submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
-				  sample = "QCD_EMenriched_Pt30to80_10TeV" + "_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-                  job = "harvesting", queue = "8nh", outputFilePath = outputFilePath)
-for i in range(2):
-    submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
-				  sample = "QCD_EMenriched_Pt80to170_10TeV" + "_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-                  job = "harvesting", queue = "8nh", outputFilePath = outputFilePath)
-
-# harvest W/Z + jets
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "WplusJets_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "ZtautauPlusJets_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "ZeePlusJets_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-
-# harvest TT + jets
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "TTplusJets_10TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
-
-
+# 7TeV samples
 
 # harvest Z --> tau tau 
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "Ztautau_7TeV",
@@ -132,3 +77,61 @@ submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTa
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "TTplusJets_7TeV",
               replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
               job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+
+# 10 TeV samples
+
+# harvest Z --> tau tau 
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "Ztautau_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+
+# harvest Z --> e e
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "Zee_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+
+# harvest QCD_BCtoE 
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt20to30_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt30to80_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt80to170_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+
+# harvest QCD_EMenriched
+for i in range(2):
+    submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
+				  sample = "QCD_EMenriched_Pt20to30_10TeV" + "_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+                  job = "harvesting", queue = "8nh", outputFilePath = outputFilePath)
+for i in range(3):
+    submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
+				  sample = "QCD_EMenriched_Pt30to80_10TeV" + "_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+                  job = "harvesting", queue = "8nh", outputFilePath = outputFilePath)
+for i in range(2):
+    submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
+				  sample = "QCD_EMenriched_Pt80to170_10TeV" + "_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+                  job = "harvesting", queue = "8nh", outputFilePath = outputFilePath)
+
+# harvest W/Z + jets
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "WplusJets_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "ZtautauPlusJets_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "ZeePlusJets_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+
+# harvest TT + jets
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "TTplusJets_10TeV",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath)
+
