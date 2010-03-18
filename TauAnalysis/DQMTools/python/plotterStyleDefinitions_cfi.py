@@ -400,17 +400,6 @@ drawOption_black_eff = cms.PSet(
     drawOptionLegend = cms.string('p')
 )
 
-drawOption_orange_eff = cms.PSet(
-    markerColor = color_orange,
-    markerSize = cms.double(1.),
-    markerStyle = cms.int32(20),
-    lineColor = color_orange,
-    lineStyle = cms.int32(1),
-    lineWidth = cms.int32(2),
-    drawOption = cms.string('e1p'),
-    drawOptionLegend = cms.string('p')
-)
-
 drawOption_red_eff = cms.PSet(
     markerColor = color_red,
     markerSize = cms.double(1.),
@@ -425,8 +414,41 @@ drawOption_red_eff = cms.PSet(
 drawOption_lightBlue_eff = cms.PSet(
     markerColor = color_lightBlue,
     markerSize = cms.double(1.),
-    markerStyle = cms.int32(21),
+    markerStyle = cms.int32(22),
     lineColor = color_lightBlue,
+    lineStyle = cms.int32(1),
+    lineWidth = cms.int32(2),
+    drawOption = cms.string('e1p'),
+    drawOptionLegend = cms.string('p')
+)
+
+drawOption_darkBlue_eff = cms.PSet(
+    markerColor = color_darkBlue,
+    markerSize = cms.double(1.),
+    markerStyle = cms.int32(26),
+    lineColor = color_darkBlue,        
+    lineStyle = cms.int32(1),         
+    lineWidth = cms.int32(2),         
+    drawOption = cms.string('e1p'),  
+    drawOptionLegend = cms.string('p') 
+)
+
+drawOption_yellow_eff = cms.PSet(
+    markerColor = color_yellow,
+    markerSize = cms.double(1.),
+    markerStyle = cms.int32(21),
+    lineColor = color_yellow,        
+    lineStyle = cms.int32(1),         
+    lineWidth = cms.int32(2),         
+    drawOption = cms.string('e1p'),  
+    drawOptionLegend = cms.string('p') 
+)
+
+drawOption_orange_eff = cms.PSet(
+    markerColor = color_orange,
+    markerSize = cms.double(1.),
+    markerStyle = cms.int32(25),
+    lineColor = color_orange,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
     drawOption = cms.string('e1p'),
@@ -436,7 +458,7 @@ drawOption_lightBlue_eff = cms.PSet(
 drawOption_green_eff = cms.PSet(
     markerColor = color_green,
     markerSize = cms.double(1.),
-    markerStyle = cms.int32(25),
+    markerStyle = cms.int32(23),
     lineColor = color_green,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
