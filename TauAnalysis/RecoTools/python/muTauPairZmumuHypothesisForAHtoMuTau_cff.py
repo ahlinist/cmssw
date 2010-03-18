@@ -8,57 +8,32 @@ from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
 # with hypothesis of being a pair of muons resulting from a Z --> mu+ mu- decay
 #--------------------------------------------------------------------------------
 
-muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto = muTauPairZmumuHypotheses.clone(
+muTauPairZmumuHypothesesForAHtoMuTau = muTauPairZmumuHypotheses.clone(
     diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative')
 )
 
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto = muTauPairVisMassHypotheses.clone(
-    diCandidatePairSource = muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto.diCandidatePairSource
+muTauPairVisMassHypothesesForAHtoMuTau = muTauPairVisMassHypotheses.clone(
+    diCandidatePairSource = muTauPairZmumuHypothesesForAHtoMuTau.diCandidatePairSource
 )
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto.ZllHypotheses[0].src = \
-  cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto')
-
-
-muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag = muTauPairZmumuHypotheses.clone(
-    diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative')
-)
-
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag = muTauPairVisMassHypotheses.clone(
-    diCandidatePairSource = muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag.diCandidatePairSource
-)
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag.ZllHypotheses[0].src = \
-  cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag')
+muTauPairVisMassHypothesesForAHtoMuTau.ZllHypotheses[0].src = \
+  cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTau')
 
 produceMuTauPairZmumuHypothesesForAHtoMuTau = cms.Sequence(
-   muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto
-  * muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto
-  * muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag
-  * muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag
+   muTauPairZmumuHypothesesForAHtoMuTau
+  * muTauPairVisMassHypothesesForAHtoMuTau
 )
 
-muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation = muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto.clone(
+muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation = muTauPairZmumuHypothesesForAHtoMuTau.clone(
     diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative')
 )
 
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation = muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto.clone(
-    diCandidatePairSource = muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation.diCandidatePairSource
+muTauPairVisMassHypothesesForAHtoMuTauLooseMuonIsolation = muTauPairVisMassHypothesesForAHtoMuTau.clone(
+    diCandidatePairSource = muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation.diCandidatePairSource
 )
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation.ZllHypotheses[0].src = \
-  cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation')
-
-muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation = muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag.clone(
-    diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxLooseMuonIsolationCumulative')
-)
-
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation = muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag.clone(
-    diCandidatePairSource = muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation.diCandidatePairSource
-)
-muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation.ZllHypotheses[0].src = \
-  cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation')
+muTauPairVisMassHypothesesForAHtoMuTauLooseMuonIsolation.ZllHypotheses[0].src = \
+  cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation')
 
 produceMuTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation = cms.Sequence(
-   muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation
-  * muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation
-  * muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation
-  * muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation
+   muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation
+  * muTauPairVisMassHypothesesForAHtoMuTauLooseMuonIsolation
 )
