@@ -70,8 +70,10 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		#'rfio:/castor/cern.ch/user/j/jkolb//eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_10TeV/skimElecTau_Ztautau_10TeV_01.root'
-        'rfio:/castor/cern.ch/user/j/jkolb//eTauSkims/Summer09_CMSSW_3_1_4/PhotonPlusJets_Pt30to50_7TeV/skimElecTau_PhotonPlusJets_Pt30to50_7TeV_01.root'
+		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_01.root'
+		#'rfio:/castor/cern.ch/user/j/jkolb/elecTauPatTuples/summer09/patTupleZtoElecTau_Ztautau_7TeV_part01.root'
+		'file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/summer09_3_1_4/patTuple/data/patTupleZtoElecTau_PhotonPlusJets_Pt15to20_7TeV.root'
+		#'file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/summer09_3_1_4/patTuple/data/patTupleZtoElecTau_Ztautau_7TeV_part01.root'
     )
     #skipBadFiles = cms.untracked.bool(True)    
 )

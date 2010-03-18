@@ -24,7 +24,96 @@ outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauPatTuples/summer09/"
 #
 #--------------------------------------------------------------------------------
 
+#
+# 7TeV samples
+#
+
+# Z --> tau tau jobs
+for i in range(18):
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
+		sample = "ZtoElecTau_Ztautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+
+# Z --> e e jobs
+for i in range(44):
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
+		sample = "ZtoElecTau_Zee_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+
+# Photon + jets jobs
+submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", sample = "ZtoElecTau_PhotonPlusJets_Pt15to20_7TeV",
+	replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+	job = "PatProduction", queue = "8nh", outputFilePath = outputFilePath)
+submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", sample = "ZtoElecTau_PhotonPlusJets_Pt20to30_7TeV",
+	replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+	job = "PatProduction", queue = "8nh", outputFilePath = outputFilePath)
+submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", sample = "ZtoElecTau_PhotonPlusJets_Pt30to50_7TeV",
+	replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+	job = "PatProduction", queue = "8nh", outputFilePath = outputFilePath)
+
+# QCD_BCtoE jobs
+for i in range(70):
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
+		sample = "ZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+for i in range(46):
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
+		sample = "ZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+for i in range(35):
+		submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
+		sample = "ZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)    
+
+# QCD_EMenriched jobs
+for i in range(174):
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
+		sample = "ZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+for i in range(266):    
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
+	sample = "ZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part%(i)02d" % {"i" : (i + 1)},
+	replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+	job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+for i in range(105):    
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
+		sample = "ZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)    
+
+# W/Z + jets jobs
+for i in range(82):
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
+		sample = "ZtoElecTau_WplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+
+for i in range(56):
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
+		sample = "ZtoElecTau_ZeePlusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
+		sample = "ZtoElecTau_ZtautauPlusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+
+# TT + jets jobs
+for i in range(56):
+	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
+		sample = "ZtoElecTau_TTplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
+		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
+
+#
 # 10TeV samples
+#
 
 # Z --> tau tau jobs
 for i in range(23):
@@ -106,92 +195,6 @@ for i in range(51):
 for i in range(58):
 	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
 		sample = "ZtoElecTau_TTplusJets_10TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-
-#
-# 7TeV samples
-	
-# Z --> tau tau jobs
-for i in range(20):
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
-		sample = "ZtoElecTau_Ztautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-
-# Z --> e e jobs
-for i in range(52):
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
-		sample = "ZtoElecTau_Zee_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-
-# Photon + jets jobs
-submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", sample = "ZtoElecTau_PhotonPlusJets_Pt15to20_7TeV",
-	replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-	job = "PatProduction", queue = "8nh", outputFilePath = outputFilePath)
-submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", sample = "ZtoElecTau_PhotonPlusJets_Pt20to30_7TeV",
-	replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-	job = "PatProduction", queue = "8nh", outputFilePath = outputFilePath)
-submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", sample = "ZtoElecTau_PhotonPlusJets_Pt30to50_7TeV",
-	replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-	job = "PatProduction", queue = "8nh", outputFilePath = outputFilePath)
-
-# QCD_BCtoE jobs
-for i in range(57):
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
-		sample = "ZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-for i in range(59):
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
-		sample = "ZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-for i in range(33):
-		submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
-		sample = "ZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)    
-
-# QCD_EMenriched jobs
-for i in range(174):
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
-		sample = "ZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-for i in range(264):    
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
-	sample = "ZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part%(i)02d" % {"i" : (i + 1)},
-	replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-	job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-for i in range(157):    
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
-		sample = "ZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)    
-
-# W/Z + jets jobs
-for i in range(82):
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
-		sample = "ZtoElecTau_WplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-
-for i in range(56):
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
-		sample = "ZtoElecTau_ZeePlusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
-		sample = "ZtoElecTau_ZtautauPlusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
-		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
-
-# TT + jets jobs
-for i in range(56):
-	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
-		sample = "ZtoElecTau_TTplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1",
 		job = "PatProduction", queue = "1nd", outputFilePath = outputFilePath)
 
