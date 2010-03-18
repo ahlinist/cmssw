@@ -213,6 +213,7 @@ selectedLayer1TausEta21.cut = cms.string("abs(eta) < 2.1")
 selectedLayer1TausPt20.cut = cut = cms.string("pt > 20.")
 selectedLayer1TausLeadTrk.cut = cms.string('tauID("leadingTrackFinding") > 0.5')
 selectedLayer1TausLeadTrkPt.cut = cms.string('tauID("leadingTrackPtCut") > 0.5')
+selectedLayer1TausTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
 selectedLayer1TausTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
 selectedLayer1TausEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
 selectedLayer1TausProng.cut = cms.string("signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3")
@@ -226,6 +227,7 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausPt20,
       selectedLayer1TausLeadTrk,
       selectedLayer1TausLeadTrkPt,
+      selectedLayer1TausTaNCdiscr,
       selectedLayer1TausTrkIso,
       selectedLayer1TausEcalIso,
       selectedLayer1TausProng,
@@ -251,6 +253,7 @@ selectedLayer1TausForElecTauEta21.cut = selectedLayer1TausEta21.cut
 selectedLayer1TausForElecTauPt20.cut = selectedLayer1TausPt20.cut
 selectedLayer1TausForElecTauLeadTrk.cut = selectedLayer1TausLeadTrk.cut
 selectedLayer1TausForElecTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
+selectedLayer1TausForElecTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
 selectedLayer1TausForElecTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForElecTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForElecTauProng.cut = selectedLayer1TausProng.cut
@@ -265,6 +268,7 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1TausForElecTauPt20,
       selectedLayer1TausForElecTauLeadTrk,
       selectedLayer1TausForElecTauLeadTrkPt,
+      selectedLayer1TausForElecTauTaNCdiscr,
       selectedLayer1TausForElecTauTrkIso,
       selectedLayer1TausForElecTauEcalIso,
       selectedLayer1TausForElecTauProng,
@@ -289,6 +293,7 @@ selectedLayer1TausForMuTauEta21.cut = selectedLayer1TausEta21.cut
 selectedLayer1TausForMuTauPt20.cut = selectedLayer1TausPt20.cut
 selectedLayer1TausForMuTauLeadTrk.cut = selectedLayer1TausLeadTrk.cut
 selectedLayer1TausForMuTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
+selectedLayer1TausForMuTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
 selectedLayer1TausForMuTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForMuTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForMuTauProng.cut = selectedLayer1TausProng.cut
@@ -302,6 +307,7 @@ patTauSelConfiguratorForMuTau = objSelConfigurator(
       selectedLayer1TausForMuTauPt20,
       selectedLayer1TausForMuTauLeadTrk,
       selectedLayer1TausForMuTauLeadTrkPt,
+      selectedLayer1TausForMuTauTaNCdiscr,
       selectedLayer1TausForMuTauTrkIso,
       selectedLayer1TausForMuTauEcalIso,
       selectedLayer1TausForMuTauProng,
@@ -322,6 +328,7 @@ selectedLayer1TausForDiTauEta21.cut = selectedLayer1TausEta21.cut
 selectedLayer1TausForDiTauPt20.cut = selectedLayer1TausPt20.cut
 selectedLayer1TausForDiTauLeadTrk.cut = selectedLayer1TausLeadTrk.cut
 selectedLayer1TausForDiTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
+selectedLayer1TausForDiTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
 selectedLayer1TausForDiTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForDiTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForDiTauProng.cut = selectedLayer1TausProng.cut
@@ -332,6 +339,7 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
       selectedLayer1TausForDiTauPt20,
       selectedLayer1TausForDiTauLeadTrk,
       selectedLayer1TausForDiTauLeadTrkPt,
+      selectedLayer1TausForDiTauTaNCdiscr,
       selectedLayer1TausForDiTauTrkIso,
       selectedLayer1TausForDiTauEcalIso,
       selectedLayer1TausForDiTauProng,
@@ -349,6 +357,7 @@ selectedLayer1TausForWTauNuEta21.cut = selectedLayer1TausEta21.cut
 selectedLayer1TausForWTauNuPt20.cut = selectedLayer1TausPt20.cut 
 selectedLayer1TausForWTauNuLeadTrk.cut = selectedLayer1TausLeadTrk.cut
 selectedLayer1TausForWTauNuLeadTrkPt.cut = cms.string("leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.")
+selectedLayer1TausForWTauNuTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
 selectedLayer1TausForWTauNuEcalIso.cut = cms.string('tauID("byIsolation") > 0.5')
 selectedLayer1TausForWTauNuTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut
@@ -362,6 +371,7 @@ patTauSelConfiguratorForWTauNu = objSelConfigurator(
       selectedLayer1TausForWTauNuPt20,
       selectedLayer1TausForWTauNuLeadTrk,
       selectedLayer1TausForWTauNuLeadTrkPt,
+      selectedLayer1TausForWTauNuTaNCdiscr,
       selectedLayer1TausForWTauNuEcalIso,
       selectedLayer1TausForWTauNuTrkIso,
       selectedLayer1TausForWTauNuProng,
@@ -376,11 +386,11 @@ patTauSelConfiguratorForWTauNu = objSelConfigurator(
 selectLayer1TausForWTauNu = patTauSelConfiguratorForWTauNu.configure(pyNameSpace = locals())
 
 # loose isolation selection
+selectedLayer1TausForWTauNuTaNCdiscrLooseIsolation.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
 selectedLayer1TausForWTauNuEcalIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<10")
 selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<10")
 selectedLayer1TausForWTauNuProngLooseIsolation.cut = selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut
 selectedLayer1TausForWTauNuChargeLooseIsolation.cut = selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut
-
 selectedLayer1TausForWTauNuMuonVetoLooseIsolation.cut = selectedLayer1TausForWTauNuMuonVeto.cut
 selectedLayer1TausForWTauNuElectronVetoLooseIsolation.cut = selectedLayer1TausForWTauNuElectronVeto.cut
 selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolation.cut = selectedLayer1TausForWTauNuEcalCrackVeto.cut
@@ -390,6 +400,7 @@ patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
       selectedLayer1TausForWTauNuPt20,
       selectedLayer1TausForWTauNuLeadTrk,
       selectedLayer1TausForWTauNuLeadTrkPt,
+      selectedLayer1TausForWTauNuTaNCdiscrLooseIsolation,
       selectedLayer1TausForWTauNuEcalIsoLooseIsolation,
       selectedLayer1TausForWTauNuTrkIsoLooseIsolation,
       selectedLayer1TausForWTauNuProngLooseIsolation,

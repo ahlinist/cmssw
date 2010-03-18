@@ -16,6 +16,9 @@ selectedLayer1TausForDiTauLeadTrk = copy.deepcopy(selectedLayer1TausLeadTrk)
 # require leading track of tau candidate to have Pt > 5. GeV
 selectedLayer1TausForDiTauLeadTrkPt = copy.deepcopy(selectedLayer1TausLeadTrkPt)
 
+# require tau candidate to pass TaNC discriminator
+selectedLayer1TausForDiTauTaNCdiscr = copy.deepcopy(selectedLayer1TausTaNCdiscr)
+
 # require tau candidate to have no tracks of Pt > 1. GeV
 # in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
 selectedLayer1TausForDiTauTrkIso = copy.deepcopy(selectedLayer1TausTrkIso)

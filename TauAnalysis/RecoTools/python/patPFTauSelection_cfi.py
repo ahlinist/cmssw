@@ -25,6 +25,12 @@ selectedLayer1TausLeadTrkPt = cms.EDFilter("PATTauSelector",
     filter = cms.bool(False)                                 
 )
 
+# require tau candidate to pass TaNC discriminator
+selectedLayer1TausTaNCdiscr = cms.EDFilter("PATTauSelector",
+    cut = cms.string('tauID("byTaNCfrQuarterPercent") > 0.5'),
+    filter = cms.bool(False)                                 
+)
+
 # require tau candidate to have no tracks of Pt > 1. GeV
 # in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
 selectedLayer1TausTrkIso = cms.EDFilter("PATTauSelector",
