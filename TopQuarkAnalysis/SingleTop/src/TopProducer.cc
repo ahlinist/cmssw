@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc $ 
+ *\version  $Id: TopProducer.cc,v 1.1 2010/03/09 16:33:07 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -48,6 +48,7 @@
 #include <vector>
 #include <memory>
 
+//#include "DataFormats/Math/interface/LorentzVector.h"
 
 
 using namespace pat;
@@ -136,7 +137,7 @@ iEvent.getByLabel(METsSrc_,mets);
    }
  }
 
- 
+
  for(size_t i = 0; i < muons->size(); ++i){
    for(size_t j = 0; j < jets->size(); ++j){
      for(size_t m = 0; m < mets->size(); ++m){
@@ -150,7 +151,10 @@ iEvent.getByLabel(METsSrc_,mets);
 
 
        Top.addDaughter(W,"W");
-       
+
+
+
+     
        W.setP4(muons->at(i).p4()+mets->at(m).p4());
        Top.setP4(W.p4()+jets->at(j).p4());
 
@@ -171,5 +175,48 @@ iEvent.put(newTopCandidate);
 }
 
 TopProducer::~TopProducer(){;}
+
+vector<TLorentzVector> TopProducer::Top4Momentum(const reco::Candidate & Lepton,const reco::Candidate & BJet,const reco::Candidate & MET){
+
+  double  mW = 80.38;
+
+  vector<TLorentzVector> result;
+  
+  //  double Wmt = sqrt(pow(Lepton.et()+MET.pt(),2) - pow(Lepton.px()+MET.px(),2) - pow(Lepton.py()+MET.py(),2) );
+    
+  double MisET2 = (MET.px()*MET.px() + MET.py()*MET.py());
+  double mu = (mW*mW)/2 + MET.px()*Lepton.px() + MET.py()*Lepton.py();
+  double a  = (mu*Lepton.pz())/(Lepton.energy()*Lepton.energy() - Lepton.pz()*Lepton.pz());
+  double a2 = TMath::Power(a,2);
+  double b  = (TMath::Power(Lepton.energy(),2.)*(MisET2) - TMath::Power(mu,2.))/(TMath::Power(Lepton.energy(),2) - TMath::Power(Lepton.pz(),2));
+  double pz1(0),pz2(0),pznu(0);
+  int nNuSol(0);
+
+  TLorentzVector p4nu_rec;
+  TLorentzVector p4W_rec;
+  TLorentzVector p4b_rec;
+  TLorentzVector p4Top_rec;
+  TLorentzVector p4lep_rec;    
+
+  if(a2-b > 0){
+    double root = sqrt(a2-b);
+    pz1 = a + root;
+    pz2 = a - root;
+    nNuSol = 2;     
+  }
+  pznu = pz1;
+
+ 
+  double Enu = sqrt(MisET2 + pznu*pznu);
+  
+  p4nu_rec.SetPxPyPzE(MET.px(), MET.py(), pznu, Enu);
+
+  p4lep_rec.SetPxPyPzE(Lepton.px(),Lepton.py(),Lepton.pz(),Lepton.energy());
+  p4W_rec = p4nu_rec + p4lep_rec;
+  p4b_rec.SetPxPyPzE(BJet.px(), BJet.py(), BJet.pz(), BJet.energy());  
+  p4Top_rec = p4b_rec + p4W_rec;
+
+  return result;
+}
 
 DEFINE_FWK_MODULE( TopProducer );
