@@ -96,11 +96,11 @@ genPhaseSpaceCut = cms.PSet(
 #)
 
 # trigger selection
-#evtSelTrigger = cms.PSet(
-#    pluginName = cms.string('evtSelTrigger'),
-#    pluginType = cms.string('BoolEventSelector'),
-#    src = cms.InputTag('Trigger')
-#)
+evtSelTrigger = cms.PSet(
+    pluginName = cms.string('evtSelTrigger'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('Trigger')
+)
 
 # primary event vertex selection
 evtSelPrimaryEventVertex = cms.PSet(
@@ -398,22 +398,22 @@ elecTauAnalysisSequence = cms.VPSet(
     #),
   
     # trigger selection
-    #cms.PSet(
-    #    filter = cms.string('evtSelTrigger'),
-    #    title = cms.string('Electron Trigger'),
-    #    saveRunEventNumbers = cms.vstring('')
-    #),
-    #cms.PSet(
-    #    analyzers = cms.vstring(
-    #        'genPhaseSpaceEventInfoHistManager',
-    #        'electronHistManager',
-    #        'tauHistManager',
-    #        'caloMEtHistManager',
-    #        'pfMEtHistManager',
-    #        'vertexHistManager',
-    #        'triggerHistManagerForElecTau'
-    #    )
-    #),
+    cms.PSet(
+        filter = cms.string('evtSelTrigger'),
+        title = cms.string('Electron Trigger'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'genPhaseSpaceEventInfoHistManager',
+            'electronHistManager',
+            'tauHistManager',
+            'caloMEtHistManager',
+            'pfMEtHistManager',
+            'vertexHistManager',
+            'triggerHistManagerForElecTau'
+        )
+    ),
 
     # primary event vertex selection
     cms.PSet(
@@ -622,7 +622,7 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelElectronConversionVeto'),
         title = cms.string('Electron Track conv. veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
     ),
     cms.PSet(
         analyzers = cms.vstring(
