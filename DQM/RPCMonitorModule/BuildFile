@@ -8,6 +8,8 @@
 <use name=DQMServices/Core>
 <use name=EventFilter/RPCRawToDigi>
 <use name=Geometry/RPCGeometry>
+<use name=Geometry/DTGeometry>
+<use name=Geometry/CSCGeometry>
 <use name=RecoMuon/DetLayers>
 <use name=FWCore/ServiceRegistry>
 <use name=boost>
