@@ -134,6 +134,14 @@ cfgTauLeadTrkPtCut = cms.PSet(
     systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
+cfgTauTaNCdiscrCut = cms.PSet(
+    pluginName = cms.string('tauTaNCdiscrCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1TausForMuTauTaNCdiscrCumulative'),
+    src_individual = cms.InputTag('selectedLayer1TausForMuTauTaNCdiscrIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
 cfgTauTrkIsoCut = cms.PSet(
     pluginName = cms.string('tauTrkIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -252,6 +260,7 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgMuonTrkIPcut,
       cfgTauLeadTrkCut,
       cfgTauLeadTrkPtCut,
+      cfgTauTaNCdiscrCut,
       cfgTauTrkIsoCut,
       cfgTauEcalIsoCut,
       cfgTauProngCut,
