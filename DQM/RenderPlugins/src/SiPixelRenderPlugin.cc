@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.30 $
-  \date $Date: 2009/12/09 08:38:02 $
+  \version $Revision: 1.31 $
+  \date $Date: 2010/03/09 10:41:25 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -225,7 +225,7 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
 	  o.name.find( "FedChLErrArray" ) != std::string::npos ||
 	  o.name.find( "FedChNErrArray" ) != std::string::npos ||
 	  o.name.find( "FedETypeNErrArray" ) != std::string::npos || 
-	  o.name.find( "HitEfficiency_L" ) != std::string::npos || 
+	  o.name.find( "HitEfficiency" ) != std::string::npos || 
 	  o.name.find( "sizeYvsEta" ) != std::string::npos) 
       {
         gStyle->SetPalette(1);
