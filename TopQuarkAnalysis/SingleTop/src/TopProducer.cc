@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc,v 1.1 2010/03/09 16:33:07 oiorio Exp $ 
+ *\version  $Id: TopProducer.cc,v 1.2 2010/03/18 11:34:08 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -176,11 +176,11 @@ iEvent.put(newTopCandidate);
 
 TopProducer::~TopProducer(){;}
 
-vector<TLorentzVector> TopProducer::Top4Momentum(const reco::Candidate & Lepton,const reco::Candidate & BJet,const reco::Candidate & MET){
+std::vector<TLorentzVector> TopProducer::Top4Momentum(const reco::Candidate & Lepton,const reco::Candidate & BJet,const reco::Candidate & MET){
 
   double  mW = 80.38;
 
-  vector<TLorentzVector> result;
+  std::vector<TLorentzVector> result;
   
   //  double Wmt = sqrt(pow(Lepton.et()+MET.pt(),2) - pow(Lepton.px()+MET.px(),2) - pow(Lepton.py()+MET.py(),2) );
     

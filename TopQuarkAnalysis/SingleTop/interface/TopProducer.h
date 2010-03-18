@@ -9,7 +9,7 @@
  * \Author A. Orso M. Iorio
  * 
  *
- *\version  $Id: TopProducer.h,v 1.1 2010/03/09 16:33:06 oiorio Exp $
+ *\version  $Id: TopProducer.h,v 1.2 2010/03/18 11:34:07 oiorio Exp $
  *
  *
 */
@@ -55,7 +55,7 @@
 #include "DataFormats/Candidate/interface/NamedCompositeCandidate.h"
 
 #include "TLorentzVector.h"
-#include "EquationSolver.h"
+//#include "EquationSolver.h"
 
 
 //class JetFlavourIdentifier;
@@ -72,7 +72,7 @@ namespace pat {
       virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
     //       static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
     private:
-    vector<TLorentzVector> Top4Momentum(const reco::Candidate & Lepton,const reco::Candidate & BJet,const reco::Candidate & MET);
+    std::vector<TLorentzVector> Top4Momentum(const reco::Candidate & Lepton,const reco::Candidate & BJet,const reco::Candidate & MET);
 
     edm::InputTag electronsSrc_,muonsSrc_,jetsSrc_,METsSrc_;
 
