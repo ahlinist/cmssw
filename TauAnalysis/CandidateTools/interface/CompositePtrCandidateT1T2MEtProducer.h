@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.6 2009/12/01 17:03:36 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.7 2010/03/16 23:57:30 friis Exp $
  *
  */
 
@@ -56,7 +56,9 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
  public:
 
   explicit CompositePtrCandidateT1T2MEtProducer(const edm::ParameterSet& cfg)
-    : algorithm_(cfg), cfgError_(0)
+    : algorithm_(cfg), 
+      doSVreco_(false), 
+      cfgError_(0)
   {
     useLeadingTausOnly_ = cfg.getParameter<bool>("useLeadingTausOnly");
     srcLeg1_ = cfg.getParameter<edm::InputTag>("srcLeg1");
@@ -73,24 +75,32 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 //    in case it is needed for the reconstruction mode 
 //    specified in the configuration parameter set
     if ( srcMET_.label() == "" && recoMode_ != "" ) {
-      edm::LogError ("ConfigError") << " Configuration Parameter srcMET undefined," 
-							     << " needed for recoMode = " << recoMode_ << " !!";
+      edm::LogError ("ConfigError") 
+	<< " Configuration Parameter srcMET undefined," 
+	<< " needed for recoMode = " << recoMode_ << " !!";
       cfgError_ = 1;
     }
 
-    if ( (srcMET_.label() == "" || srcBeamSpot_.label() == "" || srcPV_.label() == "") && recoMode_ == "secondaryVertexFit" ) {
-      edm::LogError ("ConfigError") << " One or more of configuration parameters srcMET(" << srcMET_.label() 
-                                    << "), srcBeamSpot(" << srcBeamSpot_.label() << ") , srcPrimaryVertex(" << srcPV_ << ") are undefined," 
-                                    << " and needed for recoMode = " << recoMode_ << " !!";
-      cfgError_ = 1;
-    }
+    if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" &&
+	 TauVertex::typeIsSupportedBySVFitter<T1>() &&
+	 TauVertex::typeIsSupportedBySVFitter<T2>() ) {
+      // CV: disable "secondaryVertexFit" reconstruction mode for now
+      //doSVreco_ = true;
+    } else if ( recoMode_ == "secondaryVertexFit" ) {
+      if ( !(srcMET_.label() == "" && srcBeamSpot_.label() != "" && srcPV_.label() != "") ) {
+	edm::LogError ("ConfigError") 
+	  << " One or more of configuration parameters srcMET(" << srcMET_.label() << "),"
+	  << " srcBeamSpot(" << srcBeamSpot_.label() << ") , srcPrimaryVertex(" << srcPV_ << ") are undefined," 
+	  << " and needed for recoMode = " << recoMode_ << " !!";
+      }
 
-    // Make sure the types are supported by SV fit if requested (i.e. not reco::Candidate)
-    if ( recoMode_ == "secondaryVertexFit" && 
-          (!TauVertex::typeIsSupportedBySVFitter<T1>() || !TauVertex::typeIsSupportedBySVFitter<T2>())) {
-       edm::LogError ("ConfigError") << " The input collection type (probably Candidate) is not supported " <<
-          " when using the secondaryVertexFit option";
-       cfgError_ = 1;
+      if ( !(TauVertex::typeIsSupportedBySVFitter<T1>() && TauVertex::typeIsSupportedBySVFitter<T2>()) ) {
+	edm::LogError ("ConfigError") 
+	  << " The input collection type (probably Candidate) is not supported" 
+	  << " when using the secondaryVertexFit option !!";
+      }
+
+      cfgError_ = 1;
     }
     
     produces<CompositePtrCandidateCollection>("");
@@ -103,8 +113,9 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 //--- print-out an error message and add an empty collection to the event 
 //    in case of erroneous configuration parameters
     if ( cfgError_ ) {
-      edm::LogError ("produce") << " Error in Configuration ParameterSet" 
-				<< " --> CompositePtrCandidateT1T2MEt collection will NOT be produced !!";
+      edm::LogError ("produce") 
+	<< " Error in Configuration ParameterSet" 
+	<< " --> CompositePtrCandidateT1T2MEt collection will NOT be produced !!";
       std::auto_ptr<CompositePtrCandidateCollection> emptyCompositePtrCandidateCollection(new CompositePtrCandidateCollection());
       evt.put(emptyCompositePtrCandidateCollection);
       return;
@@ -127,8 +138,9 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       if ( metCollection->size() == 1 ) {
 	metPtr = metCollection->ptrAt(0);
       } else {
-	edm::LogError ("produce") << " Found " << metCollection->size() << " MET objects in collection = " << srcMET_ << ","
-				  << " --> CompositePtrCandidateT1T2MEt collection will NOT be produced !!";
+	edm::LogError ("produce") 
+	  << " Found " << metCollection->size() << " MET objects in collection = " << srcMET_ << ","
+	  << " --> CompositePtrCandidateT1T2MEt collection will NOT be produced !!";
 	std::auto_ptr<CompositePtrCandidateCollection> emptyCompositePtrCandidateCollection(new CompositePtrCandidateCollection());
 	evt.put(emptyCompositePtrCandidateCollection);
 	return;
@@ -159,10 +171,13 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     }
 
     const TransientTrackBuilder* trackBuilder = NULL;
-    if ( recoMode_ == "secondaryVertexFit" ) {
+    if ( doSVreco_ ) {
        edm::ESHandle<TransientTrackBuilder> myTransientTrackBuilder;
-       es.get<TransientTrackRecord>().get("TransientTrackBuilder",myTransientTrackBuilder);
+       es.get<TransientTrackRecord>().get("TransientTrackBuilder", myTransientTrackBuilder);
        trackBuilder = myTransientTrackBuilder.product();
+       if ( !trackBuilder ) {
+	 edm::LogError ("produce") << " Failed to access TransientTrackBuilder !!";
+       }
     }
 
 //--- check if only one combination of tau decay products 
@@ -209,12 +224,14 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	T2Ptr leadingLeg2Ptr = leg2Collection->ptrAt(idxLeadingLeg2);
 	
 	CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
-	  algorithm_.buildCompositePtrCandidate(leadingLeg1Ptr, leadingLeg2Ptr, metPtr, genParticles, pv, beamSpot, trackBuilder);
+	  algorithm_.buildCompositePtrCandidate(leadingLeg1Ptr, leadingLeg2Ptr, metPtr, genParticles, 
+						pv, beamSpot, trackBuilder, doSVreco_);
 	compositePtrCandidateCollection->push_back(compositePtrCandidate);
       } else {
 	if ( verbosity_ >= 1 ) {
-	  edm::LogInfo ("produce") << " Found no combination of particles in Collections" 
-				   << " leg1 = " << srcLeg1_ << " and leg2 = " << srcLeg2_ << ".";
+	  edm::LogInfo ("produce") 
+	    << " Found no combination of particles in Collections" 
+	    << " leg1 = " << srcLeg1_ << " and leg2 = " << srcLeg2_ << ".";
 	}
       }
     } else {
@@ -238,7 +255,8 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	  if ( dR < dRmin12_ ) continue;
 	  
 	  CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
-	    algorithm_.buildCompositePtrCandidate(leg1Ptr, leg2Ptr, metPtr, genParticles, pv, beamSpot, trackBuilder);
+	    algorithm_.buildCompositePtrCandidate(leg1Ptr, leg2Ptr, metPtr, genParticles, 
+						  pv, beamSpot, trackBuilder, doSVreco_);
 	  compositePtrCandidateCollection->push_back(compositePtrCandidate);
 	}
       }
@@ -261,6 +279,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
   edm::InputTag srcPV_;
   edm::InputTag srcBeamSpot_;
   std::string recoMode_;
+  bool doSVreco_;
   int verbosity_;
 
   int cfgError_;
