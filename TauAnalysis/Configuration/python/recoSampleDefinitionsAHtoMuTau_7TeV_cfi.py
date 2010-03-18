@@ -309,12 +309,29 @@ patTupleOutputFileNameAHtoMuTau_AH_tautau_7TeV = cms.untracked.string('patTupleA
 #       corresponding to tan(beta) = 30
 #      (cf. CMS AN-2009/143, table 4)
 #
-intLumiAHtoMuTau_AHbb_tautau_7TeV = float(450.3)
-corrFactorAHtoMuTau_AHbb_tautau_7TeV = float(3.14)
+intLumiAHtoMuTau_AHbb_tautau_7TeV = float(1808.4)
+corrFactorAHtoMuTau_AHbb_tautau_7TeV = float(1.11)
 
-fileNamesAHtoMuTau_AHbb_tautau_7TeV = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/bbAtautau_M120/akalinow-SkimMuTau_7TeV_314_pass1/muTauSkim_2.root',
-    'rfio:/castor/cern.ch/user/a/akalinow/CMS/ZTauTauSkims/7TeV/bbAtautau_M120/akalinow-SkimMuTau_7TeV_314_pass1/muTauSkim_2.root'
+fileNamesAHtoMuTau_AHbb_tautau_7TeV_part01 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_1.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_3.root'
+)
+
+fileNamesAHtoMuTau_AHbb_tautau_7TeV_part02 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_4.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_5.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_6.root'
+)
+
+fileNamesAHtoMuTau_AHbb_tautau_7TeV_part03 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_7.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_8.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_9.root'
+)
+
+fileNamesAHtoMuTau_AHbb_tautau_7TeV_part04 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_10.root',
+    'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_11.root'
 )
 
 genPhaseSpaceCutAHtoMuTau_AHbb_tautau_7TeV = cms.PSet(
@@ -324,8 +341,8 @@ genPhaseSpaceCutAHtoMuTau_AHbb_tautau_7TeV = cms.PSet(
     cut = cms.string('')
 )
 
-plotsOutputFileNameAHtoMuTau_AHbb_tautau_7TeV = cms.string('plotsAHtoMuTau_AHbb_tautau_7TeV.root')
-patTupleOutputFileNameAHtoMuTau_AHbb_tautau_7TeV = cms.untracked.string('patTupleAHtoMuTau_AHbb_tautau_7TeV.root')
+plotsOutputFileNameAHtoMuTau_AHbb_tautau_7TeV = cms.string('plotsAHtoMuTau_AHbb_tautau_7TeV_partXX.root')
+patTupleOutputFileNameAHtoMuTau_AHbb_tautau_7TeV = cms.untracked.string('patTupleAHtoMuTau_AHbb_tautau_7TeV_partXX.root')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

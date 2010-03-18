@@ -3,9 +3,9 @@ import FWCore.ParameterSet.Config as cms
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeAHtoMuTau_cfi import *
 
-analyzeAHtoMuTauEvents_centralJetVeto = cms.EDAnalyzer("GenericAnalyzer",
+analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
   
-    name = cms.string('ahMuTauAnalyzer_centralJetVeto'), 
+    name = cms.string('ahMuTauAnalyzer_woBtag'), 
                             
     filters = cms.VPSet(
         # generator level phase-space selection
@@ -34,6 +34,7 @@ analyzeAHtoMuTauEvents_centralJetVeto = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauPt,
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
+        evtSelTauTaNCdiscr,
         evtSelTauTrkIso,
         evtSelTauEcalIso,
         evtSelTauProng,
@@ -46,14 +47,14 @@ analyzeAHtoMuTauEvents_centralJetVeto = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         evtSelDiTauCandidateForAHtoMuTauMt1MET,
         evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        evtSelDiTauCandidateForAHtoMuTauNonBackToBack,
-        evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
+        ##evtSelDiTauCandidateForAHtoMuTauNonBackToBack,
+        ##evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
 
         # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
         evtSelDiMuPairZmumuHypothesisVeto,
 
         # central jet veto/b-jet candidate selection
-        evtSelCentralJetVeto,
+        evtSelNonCentralJetEt20bTag,
         evtSelCentralJetEt20,
         evtSelCentralJetEt20bTag 
     ),
@@ -79,27 +80,28 @@ analyzeAHtoMuTauEvents_centralJetVeto = cms.EDAnalyzer("GenericAnalyzer",
     eventDumps = cms.VPSet(
         muTauEventDump.clone(
             diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
-            muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto'),
-            triggerConditions = cms.vstring("evtSelCentralJetVeto: passed_cumulative")
+            muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTau'),
+            triggerConditions = cms.vstring("evtSelNonCentralJetEt20bTag: passed_cumulative")
         )
     ),
    
-    analysisSequence = muTauAnalysisSequence_centralJetVeto
+    analysisSequence = muTauAnalysisSequence_woBtag
 )
 
-analyzeAHtoMuTauEvents_centralJetBtag = analyzeAHtoMuTauEvents_centralJetVeto.clone(
+analyzeAHtoMuTauEvents_wBtag = analyzeAHtoMuTauEvents_woBtag.clone(
   
-    name = cms.string('ahMuTauAnalyzer_centralJetBtag'), 
+    name = cms.string('ahMuTauAnalyzer_wBtag'), 
 
     eventDumps = cms.VPSet(
         muTauEventDump.clone(
-            diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative'),
-            muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag'),
+            ##diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative'),
+            diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
+            muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTau'),
             triggerConditions = cms.vstring("evtSelCentralJetEt20bTag: passed_cumulative")
         )
     ),
    
-    analysisSequence = muTauAnalysisSequence_centralJetBtag
+    analysisSequence = muTauAnalysisSequence_wBtag
 )
 
-analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_centralJetVeto * analyzeAHtoMuTauEvents_centralJetBtag)
+analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag * analyzeAHtoMuTauEvents_wBtag)

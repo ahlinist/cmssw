@@ -43,11 +43,11 @@ evtSelDiTauCandidateForAHtoMuTauValidCollinearApproxLooseMuonIsolation = evtSelD
 )    
 
 # central jet veto/b-jet candidate selection
-evtSelCentralJetVetoLooseMuonIsolation = cms.PSet(
-    pluginName = cms.string('evtSelCentralJetVeto'),
+evtSelNonCentralJetEt20bTagLooseMuonIsolation = cms.PSet(
+    pluginName = cms.string('evtSelNonCentralJetEt20bTag'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('centralJetVeto', 'cumulative'),
-    src_individual = cms.InputTag('centralJetVeto', 'individual')
+    src_cumulative = cms.InputTag('centralJetEt20bTagVeto', 'cumulative'),
+    src_individual = cms.InputTag('centralJetEt20bTagVeto', 'individual')
 )
 evtSelCentralJetEt20LooseMuonIsolation = cms.PSet(
     pluginName = cms.string('evtSelCentralJetEt20'),
@@ -102,25 +102,25 @@ inputTagReplacements = \
       "selectedMuTauPairsForAHtoMuTauNonBackToBackLooseMuonIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative",
       "selectedMuTauPairsForAHtoMuTauValidCollinearApproxLooseMuonIsolationCumulative" ],
-    [ "muTauPairZmumuHypothesesForAHtoMuTauCentralJetVeto",
-      "muTauPairZmumuHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation" ],
-    [ "muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtag",
-      "muTauPairZmumuHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation" ],    
-    [ "muTauPairVisMassHypothesesForAHtoMuTauCentralJetVeto",
-      "muTauPairVisMassHypothesesForAHtoMuTauCentralJetVetoLooseMuonIsolation" ],
-    [ "muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtag",
-      "muTauPairVisMassHypothesesForAHtoMuTauCentralJetBtagLooseMuonIsolation" ],    
+    [ "muTauPairZmumuHypothesesForAHtoMuTau",
+      "muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation" ],
+    [ "muTauPairZmumuHypothesesForAHtoMuTau",
+      "muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation" ],    
+    [ "muTauPairVisMassHypothesesForAHtoMuTauNonBtag",
+      "muTauPairVisMassHypothesesForAHtoMuTauNonBtagLooseMuonIsolation" ],
+    [ "muTauPairVisMassHypothesesForAHtoMuTauBtag",
+      "muTauPairVisMassHypothesesForAHtoMuTauBtagLooseMuonIsolation" ],    
     [ "selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative",
       "selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative" ],
     [ "selectedLayer1JetsForAHtoMuTauBtagCumulative", "selectedLayer1JetsForAHtoMuTauBtagCumulative" ] ]
 
 
-muTauAnalysisSequence_centralJetVeto_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence_centralJetVeto)
-replaceAnalyzerInputTags(muTauAnalysisSequence_centralJetVeto_factorizedWithoutMuonIsolation, inputTagReplacements)
+muTauAnalysisSequence_woBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence_woBtag)
+replaceAnalyzerInputTags(muTauAnalysisSequence_woBtag_factorizedWithoutMuonIsolation, inputTagReplacements)
 
-muTauAnalysisSequence_centralJetVeto_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence_centralJetVeto)
+muTauAnalysisSequence_woBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence_woBtag)
 
-muTauAnalysisSequence_centralJetBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence_centralJetBtag)
-replaceAnalyzerInputTags(muTauAnalysisSequence_centralJetBtag_factorizedWithoutMuonIsolation, inputTagReplacements)
+muTauAnalysisSequence_wBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence_wBtag)
+replaceAnalyzerInputTags(muTauAnalysisSequence_wBtag_factorizedWithoutMuonIsolation, inputTagReplacements)
 
-muTauAnalysisSequence_centralJetBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence_centralJetBtag)
+muTauAnalysisSequence_wBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence_wBtag)

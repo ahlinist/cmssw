@@ -730,17 +730,17 @@ def enableFactorization_runAHtoMuTau(process):
     process.p.replace(process.analyzeAHtoMuTauEvents, process.analyzeAHtoMuTauEvents_factorized)
 
 def enableFactorization_makeAHtoMuTauPlots(process,
-        dqmDirectoryIn_centralJetVeto_InclusivePPmuX = 'harvested/InclusivePPmuX/ahMuTauAnalyzer_centralJetVeto',
-        dqmDirectoryOut_centralJetVeto_InclusivePPmuX = 'harvested/InclusivePPmuX_factorized/ahMuTauAnalyzer_centralJetVeto',
-        dqmDirectoryIn_centralJetVeto_PPmuXptGt20 = 'harvested/PPmuXptGt20/ahMuTauAnalyzer_centralJetVeto',
-        dqmDirectoryOut_centralJetVeto_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/ahMuTauAnalyzer_centralJetVeto',
-        dqmDirectoryIn_centralJetBtag_InclusivePPmuX = 'harvested/InclusivePPmuX/ahMuTauAnalyzer_centralJetBtag',
-        dqmDirectoryOut_centralJetBtag_InclusivePPmuX = 'harvested/InclusivePPmuX_factorized/ahMuTauAnalyzer_centralJetBtag',
-        dqmDirectoryIn_centralJetBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20/ahMuTauAnalyzer_centralJetBtag',
-        dqmDirectoryOut_centralJetBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/ahMuTauAnalyzer_centralJetBtag',
+        dqmDirectoryIn_woBtag_InclusivePPmuX = 'harvested/InclusivePPmuX/ahMuTauAnalyzer_woBtag',
+        dqmDirectoryOut_woBtag_InclusivePPmuX = 'harvested/InclusivePPmuX_factorized/ahMuTauAnalyzer_woBtag',
+        dqmDirectoryIn_woBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20/ahMuTauAnalyzer_woBtag',
+        dqmDirectoryOut_woBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/ahMuTauAnalyzer_woBtag',
+        dqmDirectoryIn_wBtag_InclusivePPmuX = 'harvested/InclusivePPmuX/ahMuTauAnalyzer_wBtag',
+        dqmDirectoryOut_wBtag_InclusivePPmuX = 'harvested/InclusivePPmuX_factorized/ahMuTauAnalyzer_wBtag',
+        dqmDirectoryIn_wBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20/ahMuTauAnalyzer_wBtag',
+        dqmDirectoryOut_wBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/ahMuTauAnalyzer_wBtag',
         modName_addAHtoMuTau_AH_tautauSum = "addAHtoMuTau_AH_tautauSum",
-        modName_addAHtoMuTau_centralJetVeto_qcdSum = "addAHtoMuTau_centralJetVeto_qcdSum",
-        modName_addAHtoMuTau_centralJetBtag_qcdSum = "addAHtoMuTau_centralJetBtag_qcdSum",                                   
+        modName_addAHtoMuTau_woBtag_qcdSum = "addAHtoMuTau_woBtag_qcdSum",
+        modName_addAHtoMuTau_wBtag_qcdSum = "addAHtoMuTau_wBtag_qcdSum",                                   
         modName_addAHtoMuTau_smBgSum = "addAHtoMuTau_smBgSum",
         modName_addAHtoMuTau_smSum = "addAHtoMuTau_smSum",                                   
         seqName_addAHtoMuTau = "addAHtoMuTau",
@@ -771,6 +771,7 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         evtSelMuonTrkIP,
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
+        evtSelTauTaNCdiscr,
         evtSelTauTrkIso,
         evtSelTauEcalIso,
         evtSelTauProng,
@@ -779,19 +780,20 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         evtSelTauElectronVeto,
         evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
         evtSelDiTauCandidateForAHtoMuTauZeroCharge,
-        evtSelDiTauCandidateForAHtoMuTauMt1MET ]
+        evtSelDiTauCandidateForAHtoMuTauMt1MET,
+        evtSelDiTauCandidateForAHtoMuTauPzetaDiff
+    ]
 
-    evtSelAHtoMuTau_centralJetVeto_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
-    evtSelAHtoMuTau_centralJetVeto_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauPzetaDiff)
-    evtSelAHtoMuTau_centralJetVeto_factorizedLoose.append(evtSelDiMuPairZmumuHypothesisVeto)
-    evtSelAHtoMuTau_centralJetVeto_factorizedLoose.append(evtSelCentralJetVeto)
+    evtSelAHtoMuTau_woBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
+    evtSelAHtoMuTau_woBtag_factorizedLoose.append(evtSelDiMuPairZmumuHypothesisVeto)
+    evtSelAHtoMuTau_woBtag_factorizedLoose.append(evtSelNonCentralJetEt20bTag)
 
-    evtSelAHtoMuTau_centralJetBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
-    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauNonBackToBack)
-    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox)  
-    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelDiMuPairZmumuHypothesisVeto)
-    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelCentralJetEt20)
-    evtSelAHtoMuTau_centralJetBtag_factorizedLoose.append(evtSelCentralJetEt20bTag)
+    evtSelAHtoMuTau_wBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
+    ##evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauNonBackToBack)
+    ##evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox)  
+    evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelDiMuPairZmumuHypothesisVeto)
+    evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelCentralJetEt20)
+    evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelCentralJetEt20bTag)
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
@@ -800,95 +802,95 @@ def enableFactorization_makeAHtoMuTauPlots(process,
 
     # configure sequence for applying factorization to "InclusivePPmuX" process
     # (QCD background sample for Pt(hat) < 20 GeV region in phase-space)
-    scaleAHtoMuTau_centralJetVeto_InclusivePPmuX = composeFactorizationSequence(
+    scaleAHtoMuTau_woBtag_InclusivePPmuX = composeFactorizationSequence(
         process = process,
         processName = "InclusivePPmuX" + "_" + "centralJetVeto" + "_" + pyObjectLabel,
         dqmDirectoryIn_factorizedTightEvtSel = \
-          dqmDirectoryIn_centralJetVeto_InclusivePPmuX + "_" + "factorizedWithMuonIsolation" + "/",
+          dqmDirectoryIn_woBtag_InclusivePPmuX + "_" + "factorizedWithMuonIsolation" + "/",
         evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
         dqmDirectoryIn_factorizedLooseEvtSel = \
-          dqmDirectoryIn_centralJetVeto_InclusivePPmuX + "_" + "factorizedWithoutMuonIsolation" + "/",
-        evtSel_factorizedLoose = evtSelAHtoMuTau_centralJetVeto_factorizedLoose,
+          dqmDirectoryIn_woBtag_InclusivePPmuX + "_" + "factorizedWithoutMuonIsolation" + "/",
+        evtSel_factorizedLoose = evtSelAHtoMuTau_woBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
-        dqmDirectoryOut = dqmDirectoryOut_centralJetVeto_InclusivePPmuX + '/'
+        dqmDirectoryOut = dqmDirectoryOut_woBtag_InclusivePPmuX + '/'
     )
 
-    scaleAHtoMuTauName_centralJetVeto_InclusivePPmuX = "scaleAHtoMuTau_centralJetVeto_InclusivePPmuX" + "_" + pyObjectLabel
-    setattr(process, scaleAHtoMuTauName_centralJetVeto_InclusivePPmuX, scaleAHtoMuTau_centralJetVeto_InclusivePPmuX)
+    scaleAHtoMuTauName_woBtag_InclusivePPmuX = "scaleAHtoMuTau_woBtag_InclusivePPmuX" + "_" + pyObjectLabel
+    setattr(process, scaleAHtoMuTauName_woBtag_InclusivePPmuX, scaleAHtoMuTau_woBtag_InclusivePPmuX)
 
-    scaleAHtoMuTau_centralJetBtag_InclusivePPmuX = composeFactorizationSequence(
+    scaleAHtoMuTau_wBtag_InclusivePPmuX = composeFactorizationSequence(
         process = process,
         processName = "InclusivePPmuX" + "_" + "centralJetBtag" + "_" + pyObjectLabel,
         dqmDirectoryIn_factorizedTightEvtSel = \
-          dqmDirectoryIn_centralJetBtag_InclusivePPmuX + "_" + "factorizedWithMuonIsolation" + "/",
+          dqmDirectoryIn_wBtag_InclusivePPmuX + "_" + "factorizedWithMuonIsolation" + "/",
         evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
         dqmDirectoryIn_factorizedLooseEvtSel = \
-          dqmDirectoryIn_centralJetBtag_InclusivePPmuX + "_" + "factorizedWithoutMuonIsolation" + "/",
-        evtSel_factorizedLoose = evtSelAHtoMuTau_centralJetBtag_factorizedLoose,
+          dqmDirectoryIn_wBtag_InclusivePPmuX + "_" + "factorizedWithoutMuonIsolation" + "/",
+        evtSel_factorizedLoose = evtSelAHtoMuTau_wBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
-        dqmDirectoryOut = dqmDirectoryOut_centralJetBtag_InclusivePPmuX + '/'
+        dqmDirectoryOut = dqmDirectoryOut_wBtag_InclusivePPmuX + '/'
     )
 
-    scaleAHtoMuTauName_centralJetBtag_InclusivePPmuX = "scaleAHtoMuTau_centralJetBtag_InclusivePPmuX" + "_" + pyObjectLabel
-    setattr(process, scaleAHtoMuTauName_centralJetBtag_InclusivePPmuX, scaleAHtoMuTau_centralJetBtag_InclusivePPmuX)
+    scaleAHtoMuTauName_wBtag_InclusivePPmuX = "scaleAHtoMuTau_wBtag_InclusivePPmuX" + "_" + pyObjectLabel
+    setattr(process, scaleAHtoMuTauName_wBtag_InclusivePPmuX, scaleAHtoMuTau_wBtag_InclusivePPmuX)
     
     # configure sequence for applying factorization to "PPmuXPPmuXptGt20" process
     # (QCD background sample for Pt(hat) > 20 GeV region in phase-space)
-    scaleAHtoMuTau_centralJetVeto_PPmuXptGt20 = composeFactorizationSequence(
+    scaleAHtoMuTau_woBtag_PPmuXptGt20 = composeFactorizationSequence(
         process = process,
         processName = "PPmuXptGt20" + "_" + "centralJetVeto" + "_" + pyObjectLabel,
         dqmDirectoryIn_factorizedTightEvtSel = \
-          dqmDirectoryIn_centralJetVeto_PPmuXptGt20 + "_" + "factorizedWithMuonIsolation" + "/",
+          dqmDirectoryIn_woBtag_PPmuXptGt20 + "_" + "factorizedWithMuonIsolation" + "/",
         evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
         dqmDirectoryIn_factorizedLooseEvtSel = \
-          dqmDirectoryIn_centralJetVeto_PPmuXptGt20 + "_" + "factorizedWithoutMuonIsolation" + "/",
-        evtSel_factorizedLoose = evtSelAHtoMuTau_centralJetVeto_factorizedLoose,
+          dqmDirectoryIn_woBtag_PPmuXptGt20 + "_" + "factorizedWithoutMuonIsolation" + "/",
+        evtSel_factorizedLoose = evtSelAHtoMuTau_woBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
-        dqmDirectoryOut = dqmDirectoryOut_centralJetVeto_PPmuXptGt20 + '/'
+        dqmDirectoryOut = dqmDirectoryOut_woBtag_PPmuXptGt20 + '/'
     )
 
-    scaleAHtoMuTauName_centralJetVeto_PPmuXptGt20 = "scaleAHtoMuTau_centralJetVeto_PPmuXptGt20" + "_" + pyObjectLabel
-    setattr(process, scaleAHtoMuTauName_centralJetVeto_PPmuXptGt20, scaleAHtoMuTau_centralJetVeto_PPmuXptGt20)
+    scaleAHtoMuTauName_woBtag_PPmuXptGt20 = "scaleAHtoMuTau_woBtag_PPmuXptGt20" + "_" + pyObjectLabel
+    setattr(process, scaleAHtoMuTauName_woBtag_PPmuXptGt20, scaleAHtoMuTau_woBtag_PPmuXptGt20)
 
-    scaleAHtoMuTau_centralJetBtag_PPmuXptGt20 = composeFactorizationSequence(
+    scaleAHtoMuTau_wBtag_PPmuXptGt20 = composeFactorizationSequence(
         process = process,
         processName = "PPmuXptGt20" + "_" + "centralJetBtag" + "_" + pyObjectLabel,
         dqmDirectoryIn_factorizedTightEvtSel = \
-          dqmDirectoryIn_centralJetBtag_PPmuXptGt20 + "_" + "factorizedWithMuonIsolation" + "/",
+          dqmDirectoryIn_wBtag_PPmuXptGt20 + "_" + "factorizedWithMuonIsolation" + "/",
         evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
         dqmDirectoryIn_factorizedLooseEvtSel = \
-          dqmDirectoryIn_centralJetBtag_PPmuXptGt20 + "_" + "factorizedWithoutMuonIsolation" + "/",
-        evtSel_factorizedLoose = evtSelAHtoMuTau_centralJetBtag_factorizedLoose,
+          dqmDirectoryIn_wBtag_PPmuXptGt20 + "_" + "factorizedWithoutMuonIsolation" + "/",
+        evtSel_factorizedLoose = evtSelAHtoMuTau_wBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
-        dqmDirectoryOut = dqmDirectoryOut_centralJetBtag_PPmuXptGt20 + '/'
+        dqmDirectoryOut = dqmDirectoryOut_wBtag_PPmuXptGt20 + '/'
     )
 
-    scaleAHtoMuTauName_centralJetBtag_PPmuXptGt20 = "scaleAHtoMuTau_centralJetBtag_PPmuXptGt20" + "_" + pyObjectLabel
-    setattr(process, scaleAHtoMuTauName_centralJetBtag_PPmuXptGt20, scaleAHtoMuTau_centralJetBtag_PPmuXptGt20)
+    scaleAHtoMuTauName_wBtag_PPmuXptGt20 = "scaleAHtoMuTau_wBtag_PPmuXptGt20" + "_" + pyObjectLabel
+    setattr(process, scaleAHtoMuTauName_wBtag_PPmuXptGt20, scaleAHtoMuTau_wBtag_PPmuXptGt20)
     
     # compute QCD background sum using factorized histograms and FilterStatistics objects
-    addAHtoMuTau_centralJetVeto_qcdSum = getattr(process, modName_addAHtoMuTau_centralJetVeto_qcdSum)
-    addAHtoMuTau_centralJetVeto_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
-        dqmDirectoryOut_centralJetVeto_InclusivePPmuX + '/',
-        dqmDirectoryOut_centralJetVeto_PPmuXptGt20 + '/'
+    addAHtoMuTau_woBtag_qcdSum = getattr(process, modName_addAHtoMuTau_woBtag_qcdSum)
+    addAHtoMuTau_woBtag_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
+        dqmDirectoryOut_woBtag_InclusivePPmuX + '/',
+        dqmDirectoryOut_woBtag_PPmuXptGt20 + '/'
     )
-    addAHtoMuTau_centralJetBtag_qcdSum = getattr(process, modName_addAHtoMuTau_centralJetBtag_qcdSum)
-    addAHtoMuTau_centralJetBtag_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
-        dqmDirectoryOut_centralJetBtag_InclusivePPmuX + '/',
-        dqmDirectoryOut_centralJetBtag_PPmuXptGt20 + '/'
+    addAHtoMuTau_wBtag_qcdSum = getattr(process, modName_addAHtoMuTau_wBtag_qcdSum)
+    addAHtoMuTau_wBtag_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
+        dqmDirectoryOut_wBtag_InclusivePPmuX + '/',
+        dqmDirectoryOut_wBtag_PPmuXptGt20 + '/'
     )
     addAHtoMuTau = cms.Sequence(
-        getattr(process, scaleAHtoMuTauName_centralJetVeto_InclusivePPmuX)
-       + getattr(process, scaleAHtoMuTauName_centralJetBtag_InclusivePPmuX)
-       + getattr(process, scaleAHtoMuTauName_centralJetVeto_PPmuXptGt20)
-       + getattr(process, scaleAHtoMuTauName_centralJetBtag_PPmuXptGt20)
+        getattr(process, scaleAHtoMuTauName_woBtag_InclusivePPmuX)
+       + getattr(process, scaleAHtoMuTauName_wBtag_InclusivePPmuX)
+       + getattr(process, scaleAHtoMuTauName_woBtag_PPmuXptGt20)
+       + getattr(process, scaleAHtoMuTauName_wBtag_PPmuXptGt20)
     )
-    addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_centralJetVeto_qcdSum)
-    addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_centralJetBtag_qcdSum)
+    addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_woBtag_qcdSum)
+    addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_wBtag_qcdSum)
     if hasattr(process, modName_addAHtoMuTau_AH_tautauSum):
         addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_AH_tautauSum)
     if hasattr(process, modName_addAHtoMuTau_smBgSum):
@@ -897,10 +899,10 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_smSum)    
     setattr(process, seqName_addAHtoMuTau, addAHtoMuTau)
 
-    if hasattr(process, "plotAHtoMuTau_centralJetVeto"):
-        process.plotAHtoMuTau_centralJetVeto.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
-        process.plotAHtoMuTau_centralJetVeto.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
-    if hasattr(process, "plotAHtoMuTau_centralJetBtag"):
-        process.plotAHtoMuTau_centralJetBtag.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
-        process.plotAHtoMuTau_centralJetBtag.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
+    if hasattr(process, "plotAHtoMuTau_woBtag"):
+        process.plotAHtoMuTau_woBtag.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
+        process.plotAHtoMuTau_woBtag.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
+    if hasattr(process, "plotAHtoMuTau_wBtag"):
+        process.plotAHtoMuTau_wBtag.processes.InclusivePPmuX.dqmDirectory = cms.string('harvested/InclusivePPmuX_factorized')
+        process.plotAHtoMuTau_wBtag.processes.PPmuXptGt20.dqmDirectory = cms.string('harvested/PPmuXptGt20_factorized')
     

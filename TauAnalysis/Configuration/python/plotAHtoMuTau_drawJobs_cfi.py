@@ -242,12 +242,23 @@ drawJobConfigurator_AHtoMuTau.add(
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelTauLeadTrkPt,
+    beforeCut = evtSelTauTaNCdiscr,
+    plot = drawJobConfigEntry(
+        meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
+        title = "Tau TaNC discr. (after Tau lead. Track P_{T} Cut)",
+        xAxis = 'Pt',
+        name = "cutFlowControlPlots_tauTaNCdiscr_afterTauLeadTrkPt"
+    )
+)
+
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelTauTaNCdiscr,
     beforeCut = evtSelTauTrkIso,
     plot = drawJobConfigEntry(
         meName = 'TauQuantities/TauTrkIsoPt',
-        title = "Tau Track iso. (after Tau lead. Track P_{T} Cut)",
+        title = "Tau Track iso. (after Tau TaNC discr. Cut)",
         xAxis = 'Pt',
-        name = "cutFlowControlPlots_tauTrkIso_afterTauLeadTrkPt"
+        name = "cutFlowControlPlots_tauTrkIso_afterTauTaNCdiscr"
     )
 )
 
@@ -357,14 +368,7 @@ drawJobConfigurator_AHtoMuTau.add(
     )
 )
 
-#--------------------------------------------------------------------------------
-# define cut-flow control plots specific to "centralJetVeto" analysis path
-#--------------------------------------------------------------------------------
-
-drawJobConfigurator_AHtoMuTau_centralJetVeto = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
-drawJobConfigurator_AHtoMuTau_centralJetVeto.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_centralJetVeto/')
-
-drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
+drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauMt1MET,
     beforeCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
     plot = drawJobConfigEntry(
@@ -375,7 +379,14 @@ drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
     )
 )
 
-##drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
+#--------------------------------------------------------------------------------
+# define cut-flow control plots specific to "non-b-tag" analysis path
+#--------------------------------------------------------------------------------
+
+drawJobConfigurator_AHtoMuTau_woBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
+drawJobConfigurator_AHtoMuTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_woBtag/')
+
+##drawJobConfigurator_AHtoMuTau_woBtag.add(
 ##    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
 ##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
 ##    plot = drawJobConfigEntry(
@@ -386,9 +397,9 @@ drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
 ##    )
 ##)
 
-drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
+drawJobConfigurator_AHtoMuTau_woBtag.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVeto,
-    beforeCut = evtSelCentralJetVeto,
+    beforeCut = evtSelNonCentralJetEt20bTag,
     plot = drawJobConfigEntry(
 	meName = 'JetQuantities/Jet#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
@@ -399,36 +410,37 @@ drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
 )
 
 #--------------------------------------------------------------------------------
-# define cut-flow control plots specific to "centralJetBtag" analysis path
+# define cut-flow control plots specific to "b-tag" analysis path
 #--------------------------------------------------------------------------------
 
-drawJobConfigurator_AHtoMuTau_centralJetBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
-drawJobConfigurator_AHtoMuTau_centralJetBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_centralJetBtag/')
+drawJobConfigurator_AHtoMuTau_wBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
+drawJobConfigurator_AHtoMuTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_wBtag/')
 
-drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
-    afterCut = evtSelDiTauCandidateForAHtoMuTauMt1MET,
-    beforeCut = evtSelDiTauCandidateForAHtoMuTauNonBackToBack,
-    plot = drawJobConfigEntry(
-        meName = 'DiTauCandidateQuantities/DPhi12',
-        title = "#Delta#phi(Muon-Tau) (after transverse Mass Cut)",
-        xAxis = 'GeV',
-        name = "cutFlowControlPlots_dPhiMuonTau_afterMt1MET"
-    )
-)
+##drawJobConfigurator_AHtoMuTau_wBtag.add(
+##    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+##    beforeCut = evtSelDiTauCandidateForAHtoMuTauNonBackToBack,
+##    plot = drawJobConfigEntry(
+##        meName = 'DiTauCandidateQuantities/DPhi12',
+##        title = "#Delta#phi(Muon-Tau) (after transverse Mass Cut)",
+##        xAxis = 'GeV',
+##        name = "cutFlowControlPlots_dPhiMuonTau_afterMt1MET"
+##    )
+##)
 
-drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
-    afterCut = evtSelDiTauCandidateForAHtoMuTauNonBackToBack,
-    beforeCut = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
-    plot = drawJobConfigEntry(
-        meName = 'DiTauCandidateQuantities/DPhi12',
-        title = "#Delta#phi(Muon-Tau) (after Acoplanarity(Muon-Tau) Cut)",
-        xAxis = 'GeV',
-        name = "cutFlowControlPlots_dPhiMuonTau_afterAcoplanarityMuonTau"
-    )
-)
+##drawJobConfigurator_AHtoMuTau_wBtag.add(
+##    afterCut = evtSelDiTauCandidateForAHtoMuTauNonBackToBack,
+##    beforeCut = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
+##    plot = drawJobConfigEntry(
+##        meName = 'DiTauCandidateQuantities/DPhi12',
+##        title = "#Delta#phi(Muon-Tau) (after Acoplanarity(Muon-Tau) Cut)",
+##        xAxis = 'GeV',
+##        name = "cutFlowControlPlots_dPhiMuonTau_afterAcoplanarityMuonTau"
+##    )
+##)
 
-##drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
-##    afterCut = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
+##drawJobConfigurator_AHtoMuTau_wBtag.add(
+##    #afterCut = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
+##    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
 ##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
 ##    plot = drawJobConfigEntry(
 ##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
@@ -438,7 +450,7 @@ drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
 ##    )
 ##)
 
-drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
+drawJobConfigurator_AHtoMuTau_wBtag.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVeto,
     beforeCut = evtSelCentralJetEt20,
     plot = drawJobConfigEntry(
@@ -450,7 +462,7 @@ drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
     )
 )
 
-drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
+drawJobConfigurator_AHtoMuTau_wBtag.add(
     afterCut = evtSelCentralJetEt20,
     beforeCut = evtSelCentralJetEt20bTag,
     plots = [
@@ -625,12 +637,12 @@ finalSamplePlots = \
     )
 ]
 
-drawJobConfigurator_AHtoMuTau_centralJetVeto.add(
-    afterCut = evtSelCentralJetVeto,
+drawJobConfigurator_AHtoMuTau_woBtag.add(
+    afterCut = evtSelNonCentralJetEt20bTag,
     plots = finalSamplePlots
 )
 
-drawJobConfigurator_AHtoMuTau_centralJetBtag.add(
+drawJobConfigurator_AHtoMuTau_wBtag.add(
     afterCut = evtSelCentralJetEt20bTag,
     plots = finalSamplePlots
 )

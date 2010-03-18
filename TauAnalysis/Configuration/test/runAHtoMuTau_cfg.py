@@ -82,8 +82,8 @@ process.source = cms.Source("PoolSource",
 #
 #__process.source.fileNames = #inputFileNames#
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
-#__process.analyzeAHtoMuTauEvents_centralJetVeto.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
-#__process.analyzeAHtoMuTauEvents_centralJetBtag.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
+#__process.analyzeAHtoMuTauEvents_woBtag.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
+#__process.analyzeAHtoMuTauEvents_wBtag.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveAHtoMuTauPlots.outputFileName = #plotsOutputFileName#
 #__#isBatchMode#
 #__#disableEventDump#
@@ -125,6 +125,14 @@ addPFMet(process, correct = False)
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for changing cut values
+from TauAnalysis.Configuration.tools.changeCut import changeCut
+#
+# enable cut on TaNC output
+changeCut(process, "selectedLayer1TausForMuTauTaNCdiscr", "tauID('byTaNCfrQuarterPercent') > 0.5")
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
@@ -176,8 +184,8 @@ if not hasattr(process, "isBatchMode"):
 # disable event-dump output
 # in order to reduce size of log-files
 if hasattr(process, "disableEventDump"):
-    process.analyzeAHtoMuTauEvents_centralJetVeto.eventDumps = cms.VPSet()
-    process.analyzeAHtoMuTauEvents_centralJetBtag.eventDumps = cms.VPSet()
+    process.analyzeAHtoMuTauEvents_woBtag.eventDumps = cms.VPSet()
+    process.analyzeAHtoMuTauEvents_wBtag.eventDumps = cms.VPSet()
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

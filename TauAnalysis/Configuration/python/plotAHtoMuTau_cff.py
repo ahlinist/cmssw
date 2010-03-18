@@ -22,104 +22,104 @@ loadAHtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     PPmuXptGt20 = copy.deepcopy(processAHtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader),
     TTplusJets = copy.deepcopy(processAHtoMuTau_TTplusJetsSum.config_dqmFileLoader),
     AH_tautau = copy.deepcopy(processAHtoMuTau_AH_tautau.config_dqmFileLoader),
-    AHbb_tautau = copy.deepcopy(processAHtoMuTau_AHbb_tautau.config_dqmFileLoader)
+    AHbb_tautau = copy.deepcopy(processAHtoMuTau_AHbb_tautauSum.config_dqmFileLoader)
 )
 
-addAHtoMuTau_centralJetVeto_AH_tautauSum = cms.EDAnalyzer("DQMHistAdder",
+addAHtoMuTau_woBtag_AH_tautauSum = cms.EDAnalyzer("DQMHistAdder",
     AH_tautauSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/AH_tautau/ahMuTauAnalyzer_centralJetVeto',
-            'harvested/AHbb_tautau/ahMuTauAnalyzer_centralJetVeto'
+            'harvested/AH_tautau/ahMuTauAnalyzer_woBtag',
+            'harvested/AHbb_tautau/ahMuTauAnalyzer_woBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/AH_tautauSum/ahMuTauAnalyzer_centralJetVeto')
+        dqmDirectory_output = cms.string('harvested/AH_tautauSum/ahMuTauAnalyzer_woBtag')
     )                          
 )
 
-addAHtoMuTau_centralJetBtag_AH_tautauSum = cms.EDAnalyzer("DQMHistAdder",
+addAHtoMuTau_wBtag_AH_tautauSum = cms.EDAnalyzer("DQMHistAdder",
     AH_tautauSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/AH_tautau/ahMuTauAnalyzer_centralJetBtag',
-            'harvested/AHbb_tautau/ahMuTauAnalyzer_centralJetBtag'
+            'harvested/AH_tautau/ahMuTauAnalyzer_wBtag',
+            'harvested/AHbb_tautau/ahMuTauAnalyzer_wBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/AH_tautauSum/ahMuTauAnalyzer_centralJetBtag')
+        dqmDirectory_output = cms.string('harvested/AH_tautauSum/ahMuTauAnalyzer_wBtag')
     )                          
 )
 
-addAHtoMuTau_AH_tautauSum = cms.Sequence(addAHtoMuTau_centralJetVeto_AH_tautauSum * addAHtoMuTau_centralJetBtag_AH_tautauSum)
+addAHtoMuTau_AH_tautauSum = cms.Sequence(addAHtoMuTau_woBtag_AH_tautauSum * addAHtoMuTau_wBtag_AH_tautauSum)
 
-addAHtoMuTau_centralJetVeto_qcdSum = cms.EDAnalyzer("DQMHistAdder",
+addAHtoMuTau_woBtag_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/InclusivePPmuX/ahMuTauAnalyzer_centralJetVeto',
-            'harvested/PPmuXptGt20/ahMuTauAnalyzer_centralJetVeto'
+            'harvested/InclusivePPmuX/ahMuTauAnalyzer_woBtag',
+            'harvested/PPmuXptGt20/ahMuTauAnalyzer_woBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/qcdSum/ahMuTauAnalyzer_centralJetVeto')
+        dqmDirectory_output = cms.string('harvested/qcdSum/ahMuTauAnalyzer_woBtag')
     )                          
 )
 
-addAHtoMuTau_centralJetBtag_qcdSum = cms.EDAnalyzer("DQMHistAdder",
+addAHtoMuTau_wBtag_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/InclusivePPmuX/ahMuTauAnalyzer_centralJetBtag',
-            'harvested/PPmuXptGt20/ahMuTauAnalyzer_centralJetBtag'
+            'harvested/InclusivePPmuX/ahMuTauAnalyzer_wBtag',
+            'harvested/PPmuXptGt20/ahMuTauAnalyzer_wBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/qcdSum/ahMuTauAnalyzer_centralJetBtag')
+        dqmDirectory_output = cms.string('harvested/qcdSum/ahMuTauAnalyzer_wBtag')
     )                          
 )
 
-addAHtoMuTau_qcdSum = cms.Sequence(addAHtoMuTau_centralJetVeto_qcdSum * addAHtoMuTau_centralJetBtag_qcdSum)
+addAHtoMuTau_qcdSum = cms.Sequence(addAHtoMuTau_woBtag_qcdSum * addAHtoMuTau_wBtag_qcdSum)
 
-addAHtoMuTau_centralJetVeto_smBgSum = cms.EDAnalyzer("DQMHistAdder",
+addAHtoMuTau_woBtag_smBgSum = cms.EDAnalyzer("DQMHistAdder",
     smBgSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Zmumu/ahMuTauAnalyzer_centralJetVeto',
-            'harvested/WplusJets/ahMuTauAnalyzer_centralJetVeto',
-            'harvested/TTplusJets/ahMuTauAnalyzer_centralJetVeto',
-            'harvested/qcdSum/ahMuTauAnalyzer_centralJetVeto'
+            'harvested/Zmumu/ahMuTauAnalyzer_woBtag',
+            'harvested/WplusJets/ahMuTauAnalyzer_woBtag',
+            'harvested/TTplusJets/ahMuTauAnalyzer_woBtag',
+            'harvested/qcdSum/ahMuTauAnalyzer_woBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/smBgSum/ahMuTauAnalyzer_centralJetVeto')
+        dqmDirectory_output = cms.string('harvested/smBgSum/ahMuTauAnalyzer_woBtag')
     )
 )
 
-addAHtoMuTau_centralJetBtag_smBgSum = cms.EDAnalyzer("DQMHistAdder",
+addAHtoMuTau_wBtag_smBgSum = cms.EDAnalyzer("DQMHistAdder",
     smBgSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Zmumu/ahMuTauAnalyzer_centralJetBtag',
-            'harvested/WplusJets/ahMuTauAnalyzer_centralJetBtag',
-            'harvested/TTplusJets/ahMuTauAnalyzer_centralJetBtag',
-            'harvested/qcdSum/ahMuTauAnalyzer_centralJetBtag'
+            'harvested/Zmumu/ahMuTauAnalyzer_wBtag',
+            'harvested/WplusJets/ahMuTauAnalyzer_wBtag',
+            'harvested/TTplusJets/ahMuTauAnalyzer_wBtag',
+            'harvested/qcdSum/ahMuTauAnalyzer_wBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/smBgSum/ahMuTauAnalyzer_centralJetBtag')
+        dqmDirectory_output = cms.string('harvested/smBgSum/ahMuTauAnalyzer_wBtag')
     )
 )
 
-addAHtoMuTau_smBgSum = cms.Sequence(addAHtoMuTau_centralJetVeto_smBgSum * addAHtoMuTau_centralJetBtag_smBgSum)
+addAHtoMuTau_smBgSum = cms.Sequence(addAHtoMuTau_woBtag_smBgSum * addAHtoMuTau_wBtag_smBgSum)
 
-addAHtoMuTau_centralJetVeto_smSum = cms.EDAnalyzer("DQMHistAdder",
+addAHtoMuTau_woBtag_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Ztautau/ahMuTauAnalyzer_centralJetVeto',
-            'harvested/smBgSum/ahMuTauAnalyzer_centralJetVeto'
+            'harvested/Ztautau/ahMuTauAnalyzer_woBtag',
+            'harvested/smBgSum/ahMuTauAnalyzer_woBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/smSum/ahMuTauAnalyzer_centralJetVeto')
+        dqmDirectory_output = cms.string('harvested/smSum/ahMuTauAnalyzer_woBtag')
     )
 )
 
-addAHtoMuTau_centralJetBtag_smSum = cms.EDAnalyzer("DQMHistAdder",
+addAHtoMuTau_wBtag_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Ztautau/ahMuTauAnalyzer_centralJetBtag',
-            'harvested/smBgSum/ahMuTauAnalyzer_centralJetBtag'
+            'harvested/Ztautau/ahMuTauAnalyzer_wBtag',
+            'harvested/smBgSum/ahMuTauAnalyzer_wBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/smSum/ahMuTauAnalyzer_centralJetBtag')
+        dqmDirectory_output = cms.string('harvested/smSum/ahMuTauAnalyzer_wBtag')
     )
 )
 
-addAHtoMuTau_smSum = cms.Sequence(addAHtoMuTau_centralJetVeto_smSum * addAHtoMuTau_centralJetBtag_smSum)
+addAHtoMuTau_smSum = cms.Sequence(addAHtoMuTau_woBtag_smSum * addAHtoMuTau_wBtag_smSum)
 
 addAHtoMuTau = cms.Sequence(addAHtoMuTau_AH_tautauSum * addAHtoMuTau_qcdSum * addAHtoMuTau_smBgSum * addAHtoMuTau_smSum)
 
-plotAHtoMuTau_centralJetVeto = cms.EDAnalyzer("DQMHistPlotter",
+plotAHtoMuTau_woBtag = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
         Ztautau = copy.deepcopy(process_Ztautau.config_dqmHistPlotter),
         Zmumu = copy.deepcopy(process_Zmumu.config_dqmHistPlotter),
@@ -181,23 +181,23 @@ plotAHtoMuTau_centralJetVeto = cms.EDAnalyzer("DQMHistPlotter",
         )
     ),
                               
-    drawJobs = drawJobConfigurator_AHtoMuTau_centralJetVeto.configure(),
+    drawJobs = drawJobConfigurator_AHtoMuTau_woBtag.configure(),
 
     canvasSizeX = cms.int32(800),
     canvasSizeY = cms.int32(640),                         
 
     outputFilePath = cms.string('./plots/'),
-    #outputFileName = cms.string('plotsAHtoMuTau_centralJetVeto.ps')
-    indOutputFileName = cms.string('plotAHtoMuTau_centralJetVeto_#PLOT#.png')
+    #outputFileName = cms.string('plotsAHtoMuTau_woBtag.ps')
+    indOutputFileName = cms.string('plotAHtoMuTau_woBtag_#PLOT#.png')
 )
 
-plotAHtoMuTau_centralJetBtag = plotAHtoMuTau_centralJetVeto.clone(
-    drawJobs = drawJobConfigurator_AHtoMuTau_centralJetBtag.configure(),
-    #outputFileName = cms.string('plotsAHtoMuTau_centralJetBtag.ps')
-    indOutputFileName = cms.string('plotAHtoMuTau_centralJetBtag_#PLOT#.png')
+plotAHtoMuTau_wBtag = plotAHtoMuTau_woBtag.clone(
+    drawJobs = drawJobConfigurator_AHtoMuTau_wBtag.configure(),
+    #outputFileName = cms.string('plotsAHtoMuTau_wBtag.ps')
+    indOutputFileName = cms.string('plotAHtoMuTau_wBtag_#PLOT#.png')
 )
 
-plotAHtoMuTau = cms.Sequence(plotAHtoMuTau_centralJetVeto * plotAHtoMuTau_centralJetBtag)
+plotAHtoMuTau = cms.Sequence(plotAHtoMuTau_woBtag * plotAHtoMuTau_wBtag)
 
 saveAHtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsAHtoMuTau_all.root')
