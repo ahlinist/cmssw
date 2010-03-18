@@ -83,8 +83,17 @@ processAHtoMuTau_AH_tautau.config_dqmFileLoader.scaleFactor = cms.double(corrFac
 #--------------------------------------------------------------------------------
 processAHtoMuTau_AHbb_tautau = copy.deepcopy(process_AHbb_tautau)
 processAHtoMuTau_AHbb_tautau.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsAHtoMuTau_AHbb_tautau_7TeV.root'
+    'plotsAHtoMuTau_AHbb_tautau_7TeV_part01.root',
+    'plotsAHtoMuTau_AHbb_tautau_7TeV_part02.root',
+    'plotsAHtoMuTau_AHbb_tautau_7TeV_part03.root',
+    'plotsAHtoMuTau_AHbb_tautau_7TeV_part04.root'    
 )
-processAHtoMuTau_AHbb_tautau.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/AHbb_tautau')
 processAHtoMuTau_AHbb_tautau.config_dqmFileLoader.scaleFactor = cms.double(corrFactorAHtoMuTau_AHbb_tautau_7TeV*intLumiAHtoMuTau_Data_7TeV/intLumiAHtoMuTau_AHbb_tautau_7TeV)
+
+processAHtoMuTau_AHbb_tautauSum = copy.deepcopy(process_AHbb_tautau)
+processAHtoMuTau_AHbb_tautauSum.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsAHtoMuTau_AHbb_tautauSum.root'
+)
+processAHtoMuTau_AHbb_tautauSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
+processAHtoMuTau_AHbb_tautauSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 #--------------------------------------------------------------------------------

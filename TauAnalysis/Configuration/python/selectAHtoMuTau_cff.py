@@ -30,29 +30,29 @@ cfgDiTauCandidateForAHtoMuTauPzetaDiffCut = cfgDiTauCandidateForMuTauPzetaDiffCu
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffIndividual')
 )
-cfgDiTauCandidateForAHtoMuTauNonBackToBackCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForAHtoMuTauNonBackToBackCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonBackToBackCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonBackToBackIndividual'),
-    systematics = cms.vstring(muTauPairSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
-cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForAHtoMuTauValidCollinearApproxCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxIndividual'),
-    systematics = cms.vstring(muTauPairSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
+##cfgDiTauCandidateForAHtoMuTauNonBackToBackCut = cms.PSet(
+##    pluginName = cms.string('diTauCandidateForAHtoMuTauNonBackToBackCut'),
+##    pluginType = cms.string('PATCandViewMinEventSelector'),
+##    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonBackToBackCumulative'),
+##    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonBackToBackIndividual'),
+##    systematics = cms.vstring(muTauPairSystematics.keys()),
+##    minNumber = cms.uint32(1)
+##)
+##cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCut = cms.PSet(
+##    pluginName = cms.string('diTauCandidateForAHtoMuTauValidCollinearApproxCut'),
+##    pluginType = cms.string('PATCandViewMinEventSelector'),
+##    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative'),
+##    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxIndividual'),
+##    systematics = cms.vstring(muTauPairSystematics.keys()),
+##    minNumber = cms.uint32(1)
+##)
 
 # central jet veto/b-jet candidate selection
-cfgCentralJetVeto = cms.PSet(
-    pluginName = cms.string('centralJetVeto'),
+cfgCentralJetEt20bTagVeto = cms.PSet(
+    pluginName = cms.string('centralJetEt20bTagVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagCumulative'),
+    src_individual = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagIndividual'),
     maxNumber = cms.uint32(0)
 )
 cfgCentralJetEt20Cut = cms.PSet(
@@ -87,6 +87,7 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgMuonTrkIPcut,
       cfgTauLeadTrkCut,
       cfgTauLeadTrkPtCut,
+      cfgTauTaNCdiscrCut,
       cfgTauTrkIsoCut,
       cfgTauEcalIsoCut,
       cfgTauProngCut,
@@ -97,10 +98,10 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForAHtoMuTauZeroChargeCut,
       cfgDiTauCandidateForAHtoMuTauMt1METcut,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCut,
-      cfgDiTauCandidateForAHtoMuTauNonBackToBackCut,
-      cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCut,
+      ##cfgDiTauCandidateForAHtoMuTauNonBackToBackCut,
+      ##cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCut,
       cfgDiMuPairZmumuHypothesisVeto,
-      cfgCentralJetVeto,
+      cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,
       cfgCentralJetEt20bTagCut ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
@@ -119,7 +120,7 @@ selectAHtoMuTauEvents = ahToMuTauEventSelConfigurator.configure()
 ##        cms.InputTag('tauMuonVeto', 'cumulative'),
 ##        cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
 ##        cms.InputTag('diMuPairZmumuHypothesisVeto'),
-##        cms.InputTag('centralJetVeto', 'cumulative')
+##        cms.InputTag('centralJetEt20bTagVeto', 'cumulative')
 ##    )
 ##)
 
