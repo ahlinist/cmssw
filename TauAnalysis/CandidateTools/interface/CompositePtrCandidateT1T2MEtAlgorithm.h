@@ -51,7 +51,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 								 const reco::GenParticleCollection* genParticles,
                                                                  const reco::Vertex* pv,
                                                                  const reco::BeamSpot* beamSpot,
-                                                                 const TransientTrackBuilder* trackBuilder)
+                                                                 const TransientTrackBuilder* trackBuilder, 
+								 bool doSVreco)
   {
     CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate(leg1, leg2, met);
   
@@ -85,20 +86,22 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
 
 //--- SV method computation (if we have the PV and beamspot)
-      if( pv && beamSpot )
-      {
-         vector<TauVertex::Solution> fits = TauVertex::fitVertices<T1,T2>(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
-         // Get the best solution
-         TauVertex::Solution bestfit = fits[0];
-         compositePtrCandidate.setSVNLL(bestfit.nllOfFit);
-         compositePtrCandidate.setVertexLeg1(bestfit.sv1);
-         compositePtrCandidate.setVertexLeg2(bestfit.sv2);
-         compositePtrCandidate.setPV(bestfit.pv);
-         compositePtrCandidate.setNuSVLeg1(bestfit.leg1NuP4);
-         compositePtrCandidate.setNuSVLeg2(bestfit.leg2NuP4);
-         compositePtrCandidate.setVisSVLeg1(bestfit.leg1VisP4);
-         compositePtrCandidate.setVisSVLeg2(bestfit.leg2VisP4);
-         compositePtrCandidate.computeSVTotal();
+      if( pv && beamSpot && trackBuilder && doSVreco ) {
+	vector<TauVertex::Solution> fits = TauVertex::fitVertices<T1,T2>(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
+
+//--- get the best solution
+	TauVertex::Solution bestfit = fits[0];
+
+	compositePtrCandidate.setSVNLL(bestfit.nllOfFit);
+	compositePtrCandidate.setVertexLeg1(bestfit.sv1);
+	compositePtrCandidate.setVertexLeg2(bestfit.sv2);
+	compositePtrCandidate.setPV(bestfit.pv);
+	compositePtrCandidate.setNuSVLeg1(bestfit.leg1NuP4);
+	compositePtrCandidate.setNuSVLeg2(bestfit.leg2NuP4);
+	compositePtrCandidate.setVisSVLeg1(bestfit.leg1VisP4);
+	compositePtrCandidate.setVisSVLeg2(bestfit.leg2VisP4);
+
+	compositePtrCandidate.computeSVTotal();
       }
     } else {
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false, 0);
@@ -107,7 +110,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 //--- compute gen. level quantities
     if ( genParticles ) {
       compGenQuantities(compositePtrCandidate, genParticles);
-
     }
 
 //--- set compositePtr four-momentum
@@ -116,22 +118,33 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       if ( met.isNonnull() ) {
         compositePtrCandidate.setP4(compositePtrCandidate.p4CollinearApprox());
       } else {
-        edm::LogError ("buildCompositePtrCandidate") << " Failed to set four-momentum:"
-						     << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
+        edm::LogError ("buildCompositePtrCandidate")
+	  << " Failed to set four-momentum:"
+	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
       }
     } else if ( recoMode_ == "ImprovedCollinearApprox" ) {
       if ( met.isNonnull() ) {
 	compositePtrCandidate.setP4(compositePtrCandidate.p4ImprovedCollinearApprox());
       } else {
-	edm::LogError ("buildCompositePtrCandidate") << " Failed to set four-momentum:"
-						     << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
+	edm::LogError ("buildCompositePtrCandidate") 
+	  << " Failed to set four-momentum:"
+	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
       } 
+    }  else if ( recoMode_ == "secondaryVertexFit" ) {
+      if ( met.isNonnull() ) {
+	compositePtrCandidate.setP4(compositePtrCandidate.p4SVFit());
+      } else {
+	edm::LogError ("buildCompositePtrCandidate") 
+	  << " Failed to set four-momentum:"
+	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
+      }
     }  else if ( recoMode_ == "cdfMethod" ) {
       if ( met.isNonnull() ) {
 	compositePtrCandidate.setP4(compositePtrCandidate.p4CDFmethod());
       } else {
-	edm::LogError ("buildCompositePtrCandidate") << " Failed to set four-momentum:"
-						     << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
+	edm::LogError ("buildCompositePtrCandidate") 
+	  << " Failed to set four-momentum:"
+	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
       }
     } else if ( recoMode_ == "" ) {
       compositePtrCandidate.setP4(compositePtrCandidate.p4Vis());
@@ -139,12 +152,14 @@ class CompositePtrCandidateT1T2MEtAlgorithm
        if ( met.isNonnull() && pv && beamSpot )
           compositePtrCandidate.setP4(compositePtrCandidate.p4SVFit());
        else {
-          edm::LogError("buildCompositePtrCandidate") << "Failed to set four-momnetum"
-                          << " recoMode = " << recoMode_ << " requires MET, PrimaryVertex and Beamspot to be valid !!";
+          edm::LogError("buildCompositePtrCandidate") 
+	    << "Failed to set four-momnetum"
+	    << " recoMode = " << recoMode_ << " requires MET, PrimaryVertex and Beamspot to be valid !!";
        }
     } else {
-      edm::LogError ("buildCompositePtrCandidate") << " Failed to set four-momentum:"
-						   << " recoMode = " << recoMode_ << " undefined !!";
+      edm::LogError ("buildCompositePtrCandidate") 
+	<< " Failed to set four-momentum:"
+	<< " recoMode = " << recoMode_ << " undefined !!";
     }  
     
     return compositePtrCandidate;
@@ -156,7 +171,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   {
     const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1);
     if ( genLeg1 ) {
-       // TODO: is vertex defintion conistent??
+      // TODO: is vertex definition consistent ??
       // Setup PV 
       compositePtrCandidate.setPVGen(genLeg1->vertex());
       if(genLeg1->daughter(0))
