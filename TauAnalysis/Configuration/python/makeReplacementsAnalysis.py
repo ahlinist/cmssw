@@ -126,7 +126,7 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
         if not inputFilePath.endswith("/"):
             inputFilePath += "/"
         
-        inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample + ")"
+        inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample + ".value())"
         if sample.find("_part") != -1:
 	    inputFileNames = "cms.untracked.vstring(" + inputFileNames[:inputFileNames.rfind("_part")]
 	    inputFileNames += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "')))"
