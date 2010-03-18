@@ -5,7 +5,7 @@
  *
  * \Authors M.Merola, A. Orso M. Iorio
  * 
- * \ version $Id: SingleTopAnalyzer.h,v 1.1 2010/03/09 16:33:06 oiorio Exp $
+ * \ version $Id: SingleTopAnalyzer.h,v 1.2 2010/03/10 14:04:39 oiorio Exp $
  */
 
 
@@ -32,7 +32,6 @@
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Framework/interface/TriggerNamesService.h"
-#include "FWCore/ServiceRegistry/interface/Service.h" 
 
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -76,12 +75,12 @@ using namespace reco;
 class SingleTopAnalyzer : public edm::EDAnalyzer {
  public:
   explicit SingleTopAnalyzer(const edm::ParameterSet&);
-  ~SingleTopAnalyzer();
+  //  ~SingleTopAnalyzer();
   
   
  private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  void         EventInfo();
+  //void  EventInfo();
 
   string rootFileName;
   
@@ -106,6 +105,7 @@ class SingleTopAnalyzer : public edm::EDAnalyzer {
   //  InputTag      EventType;
   //  InputTag      AnaType;
   
+
   //Data Histos
   TH1F *h_nJets;
   TH1F *h_nLeptTop;

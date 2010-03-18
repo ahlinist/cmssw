@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopAnalyzer.cc,v 1.2 2010/03/10 14:04:39 oiorio Exp $ 
+*\version  $Id: SingleTopAnalyzer.cc,v 1.3 2010/03/11 10:10:08 oiorio Exp $ 
 */
 
 // =================================
@@ -67,8 +67,8 @@ SingleTopAnalyzer::SingleTopAnalyzer(const edm::ParameterSet& iConfig)
 #endif
   
   TFileDirectory SingleTop_tChannel = fs->mkdir( "SingleTopMC" );
-  
   TFileDirectory SingleTopData = fs->mkdir( "SingleTopData" );
+  
   
   h_nJets = SingleTopData.make<TH1F>("JetsNumber",      "number of jets", 21, -0.5, 20.5);
   h_nLeptTop= SingleTopData.make<TH1F>("LeptTopNumber","number of leptons from top",21,-0.5,20.5);
@@ -117,10 +117,9 @@ SingleTopAnalyzer::SingleTopAnalyzer(const edm::ParameterSet& iConfig)
 }
 
 
-SingleTopAnalyzer::~SingleTopAnalyzer()
-{
-  
-}
+//SingleTopAnalyzer::~SingleTopAnalyzer()
+//{
+//}
 
 void SingleTopAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
 {
@@ -210,14 +209,14 @@ void SingleTopAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
   double weight = 1;//*GenEventWeight;
   
   
-    vector<pat::Jet> const & Jet = *jetHa;
-    vector<pat::Jet>::const_iterator iter_jet;
+  vector<pat::Jet> const & Jet = *jetHa;
+  vector<pat::Jet>::const_iterator iter_jet;
     
-    vector<pat::Electron> const & El = *elHa;
-    vector<pat::Electron>::const_iterator iter_el;
+  vector<pat::Electron> const & El = *elHa;
+  vector<pat::Electron>::const_iterator iter_el;
     
-    vector<pat::Muon> const & Mu = *muHa;
-    vector<pat::Muon>::const_iterator iter_mu;
+  vector<pat::Muon> const & Mu = *muHa;
+  vector<pat::Muon>::const_iterator iter_mu;
     
   vector<reco::NamedCompositeCandidate> const & Top = *topHa;
   vector<reco::NamedCompositeCandidate>::const_iterator iter_top;
@@ -246,20 +245,27 @@ void SingleTopAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
     const Candidate * Lepton = iter_top->daughter("Lepton"); 
     const Candidate * MET    = iter_top->daughter("MET");          
     //    const Candidate * BJet   = iter_top->daughter("BJet");
-   
+    
     double Wmt = sqrt(pow(Lepton->et()+MET->pt(),2) - pow(Lepton->px()+MET->px(),2) - pow(Lepton->py()+MET->py(),2) );
     h_wTransverseMass->Fill(Wmt,weight);
   }
   
   for (iter_MCLep=MCLep.begin(); iter_MCLep!=MCLep.end(); iter_MCLep++){
-
+    
     const GenParticle  MCLepton   = *(iter_MCLep);
+   
 
-    h_MCLeptonPt->Fill(MCLepton.pt());
 
+     
+
+#if DEBUG
+     cout << "analyzer leptonpt" << MCLepton.pt() <<" n bins x "<< h_MCLeptonPt->GetNbinsX() << " content bin 3 should be 10: " << h_MCLeptonPt->GetBinContent(3) <<endl;
+#endif
+
+    
     for(iter_MCNu=MCNu.begin(); iter_MCNu!=MCNu.end(); iter_MCNu++){
-
-
+      
+      
       const GenParticle  MCNeutrino = *(iter_MCNu);
       double MCWmt = sqrt(pow(MCLepton.et()+MCNeutrino.pt(),2) - pow(MCLepton.px()+MCNeutrino.px(),2) - pow(MCLepton.py()+MCNeutrino.py(),2) );
       h_MCwTransverseMass->Fill(MCWmt,weight);
@@ -267,58 +273,56 @@ void SingleTopAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
     }
     
   }
-
-
+  
+  
   
 #if DEBUG
   cout << "analyzer 4" << endl;
 #endif
-
+  
   //  h_nLeptTop -> Fill(Lepton->size());  
   
   
-    for (iter_el=El.begin(); iter_el!=El.end(); iter_el++){
-      double relIso = iter_el->pt()/(iter_el->pt() + iter_el->trackIso()+ iter_el->caloIso());
-      h_eleRelIso->Fill(relIso,weight);
-      h_lepPt->Fill(iter_el->pt(),weight);
-    }
+  for (iter_el=El.begin(); iter_el!=El.end(); iter_el++){
+    double relIso = iter_el->pt()/(iter_el->pt() + iter_el->trackIso()+ iter_el->caloIso());
+    h_eleRelIso->Fill(relIso,weight);
+    h_lepPt->Fill(iter_el->pt(),weight);
+  }
+  
+  
+  for (iter_mu=Mu.begin(); iter_mu!=Mu.end(); iter_mu++){
+    double relIso = iter_mu->pt()/(iter_mu->pt() + iter_mu->trackIso()+ iter_mu->caloIso());
+    h_muRelIso->Fill(relIso,weight);
+    h_lepPt->Fill(iter_mu->pt(),weight);
+  }
   
 
-    for (iter_mu=Mu.begin(); iter_mu!=Mu.end(); iter_mu++){
-      double relIso = iter_mu->pt()/(iter_mu->pt() + iter_mu->trackIso()+ iter_mu->caloIso());
-      h_muRelIso->Fill(relIso,weight);
-      h_lepPt->Fill(iter_mu->pt(),weight);
-    }
-
-
-    for (iter_MCB=MCB.begin(); iter_MCB!=MCB.end(); iter_MCB++){
-      h_MCBQuarkPt->Fill(iter_MCB->pt());
-	h_MCBQuarkEta->Fill(iter_MCB->eta());
-
-    }
-
-    for (iter_MCLQ=MCLQ.begin(); iter_MCLQ!=MCLQ.end(); iter_MCLQ++){
-      h_MCLightQuarkPt->Fill(iter_MCLQ->pt());
-	h_MCLightQuarkEta->Fill(iter_MCLQ->eta());
-
-    }
-
+  for (iter_MCB=MCB.begin(); iter_MCB!=MCB.end(); iter_MCB++){
+    h_MCBQuarkPt->Fill(iter_MCB->pt());
+    h_MCBQuarkEta->Fill(iter_MCB->eta());
+    
+  }
+  
+  for (iter_MCLQ=MCLQ.begin(); iter_MCLQ!=MCLQ.end(); iter_MCLQ++){
+    h_MCLightQuarkPt->Fill(iter_MCLQ->pt());
+    h_MCLightQuarkEta->Fill(iter_MCLQ->eta());
+    
+  }
+  
 #if DEBUG
   cout << "analyzer 4 mc" << endl;
 #endif
-
-
-    std::string balgo="trackCountingHighPurBJetTags";
+  
+  
+  std::string balgo="trackCountingHighPurBJetTags";
   for (iter_jet=Jet.begin(); iter_jet!=Jet.end(); iter_jet++){
     h_bTagValueInsideEta->Fill(iter_jet->bDiscriminator(balgo),weight);
     h_jetsPt->Fill(iter_jet->pt(),weight);      
   }
-
-
-
+  
   h_nBTag->Fill(bJet.size(),weight);
   h_nFwdJets->Fill(fwdJet.size(),weight);
-
+  
   for (iter_bJet=bJet.begin(); iter_bJet!=bJet.end(); iter_bJet++){
     h_bJetsEta->Fill(iter_bJet->eta());   
   }
