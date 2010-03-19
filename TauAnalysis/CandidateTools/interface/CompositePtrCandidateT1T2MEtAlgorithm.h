@@ -87,10 +87,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
 //--- SV method computation (if we have the PV and beamspot)
       if( pv && beamSpot && trackBuilder && doSVreco ) {
-	std::vector<svMassReco::Solution> fits = svMassRecoFitter_.fitVertices(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
+	std::vector<svMassReco::Solution<T1,T2> > fits = svMassRecoFitter_.fitVertices(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
 
 //--- get the best solution
-	svMassReco::Solution bestfit = fits[0];
+	svMassReco::Solution<T1,T2> bestfit = fits[0];
 
 	compositePtrCandidate.setSVNLL(bestfit.nllOfFit);
 	compositePtrCandidate.setVertexLeg1(bestfit.sv1);
