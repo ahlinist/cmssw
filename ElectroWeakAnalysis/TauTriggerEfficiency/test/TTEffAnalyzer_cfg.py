@@ -130,18 +130,18 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         HLTPFTau                = cms.bool(False),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 	GenParticleCollection	= cms.InputTag("genParticles"),
-        outputFileName          = cms.string("tteffAnalysis.root")
+        outputFileName          = cms.string("tteffAnalysis-pftau.root")
 )
 
 # One way for running multiple TTEffAnalyzers in one job such that
 # each analyzer loops over different collection and produces a
 # different output file
-#process.TTEffAnalysisL1Tau = process.TTEffAnalysis.clone()
-#process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("hltL1extraParticles", "Tau", "TTEff")
-#process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root");
-#process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
-#process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("hltL1extraParticles", "Central", "TTEff")
-#process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
+process.TTEffAnalysisL1Tau = process.TTEffAnalysis.clone()
+process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("hltL1extraParticles", "Tau", "TTEff")
+process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root");
+process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
+process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("hltL1extraParticles", "Central", "TTEff")
+process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
 GenParticles  = cms.untracked.InputTag("genParticles"),
@@ -160,9 +160,9 @@ process.runEDAna = cms.Path(
     process.thisPFTauDiscriminationByIsolation *
     process.thisPFTauDiscriminationAgainstMuon *
 #    process.tteffL1GTSeed*
-    process.TTEffAnalysis
-#    process.TTEffAnalysisL1Tau *
-#    process.TTEffAnalysisL1Cen
+    process.TTEffAnalysis *
+    process.TTEffAnalysisL1Tau *
+    process.TTEffAnalysisL1Cen
 ) 
 
 #process.o1 = cms.OutputModule("PoolOutputModule",
