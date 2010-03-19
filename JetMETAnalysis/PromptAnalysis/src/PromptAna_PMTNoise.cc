@@ -178,7 +178,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // special case to find neighbor at boundary between 10, 20-degree cells
       // 20-degree cells have i%4==3 (3, 7, 11, ...)
       if (abs(ieta)==39)
-        (iphi%4==3) ? myiphi=iphi : myiphi=iphi+2;
+        (iphi%4==3) ? myiphi=iphi : myiphi=iphi-2;
 
       int shift=-99;
       //  channels at |ieta|<40 increment by +2 in iphi count
@@ -201,7 +201,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // handle boundary condition for cells at |ieta|=40 by adding 1 more neighbor cell
       if (abs(ieta)==40)
         {
-          temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,((iphi-2)+72)%72,1));
+          temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,((iphi+2)+72)%72,1));
           if (temp!=hfhits->end()) toplongenergy+=temp->energy();
         }
 
@@ -221,7 +221,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // handle boundary condition for cells at |ieta|=40 by adding 1 more neighbor cell
       if (abs(ieta)==40)
         {
-          temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,((iphi-2)+72)%72,2));
+          temp=hfhits->find(HcalDetId(HcalForward,ieta-zside,((iphi+2)+72)%72,2));
           if (temp!=hfhits->end()) topshortenergy+=temp->energy();
         }
 
