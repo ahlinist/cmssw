@@ -17,9 +17,6 @@
 #include "DataFormats/TauReco/interface/L2TauInfoAssociation.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
-#include "DataFormats/TauReco/interface/CaloTau.h"
-#include "DataFormats/TauReco/interface/CaloTauFwd.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
 //Calorimeter!!
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
@@ -58,9 +55,7 @@ class L2TauEfficiencyAnalyzer {
 
       void Setup(const edm::ParameterSet&,TTree*);
       void fill(const edm::Event&,const edm::EventSetup& ,const reco::PFTau&);
-      void fill(const edm::Event&,const edm::EventSetup& ,const reco::CaloTau&);
       void fill(const edm::Event&,const edm::EventSetup& ,const LV&);
-      void fill(const edm::Event&,const edm::EventSetup& ,const reco::GsfElectron&);
       void fill(const edm::Event&,const edm::EventSetup& ,const reco::Candidate&);
 
    private:

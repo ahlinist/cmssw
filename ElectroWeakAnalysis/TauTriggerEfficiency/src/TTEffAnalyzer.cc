@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.40 2010/03/19 11:24:22 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.41 2010/03/19 11:57:43 mkortela Exp $
 //
 //
 
@@ -108,8 +108,6 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-   edm::Handle<CaloTauCollection> caloTaus;
-   edm::Handle<reco::GsfElectronCollection> electronTaus;
    edm::Handle<edm::View<reco::Candidate> > genericTaus;
 
    if( DoMCTauEfficiency_ ) { // this is to calculate efficiencies per MC tau candidate
@@ -136,12 +134,6 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        iEvent.getByLabel(MCTaus_, mcTaus);
        iEvent.getByLabel(MCParticles_, mcParticles);
        loop(iEvent,iSetup,*PFTaus);
-     }
-     else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
-       loop(iEvent,iSetup, *caloTaus);
-     }
-     else if(iEvent.getByLabel(PFTaus_, electronTaus)) {
-       loop(iEvent,iSetup, *electronTaus);
      }
      else if(iEvent.getByLabel(PFTaus_, genericTaus)) {
        loop(iEvent,iSetup, *genericTaus);

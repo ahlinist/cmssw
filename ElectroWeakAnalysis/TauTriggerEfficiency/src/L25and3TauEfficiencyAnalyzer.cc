@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.4 2010/03/01 08:43:21 mkortela Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.5 2010/03/19 11:57:43 mkortela Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 using namespace edm;
@@ -46,18 +46,6 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Pa
 }
 
 void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Candidate& tau) {
-  fill(iEvent,tau.p4());
-}
-
-void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::GsfElectron& tau) {
-  fill(iEvent,tau.p4());
-}
-
-void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& tau) {
-  fill(iEvent,tau.p4());
-}
-
-void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::CaloTau& tau) {
   fill(iEvent,tau.p4());
 }
 
