@@ -3,6 +3,7 @@
 
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "Math/GenVector/VectorUtil.h"
 #include <iostream>
 #include <iomanip>
@@ -120,7 +121,7 @@ L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iS
   if(l2TauInfoAssoc.isValid()) {
     matchAndFillL2(tau,*l2TauInfoAssoc);
   } else {
-    std::cout<<"No L2TauInfoAssociation in event!"<<std::endl;
+    edm::LogWarning("TTEffAnalyzer") <<"No L2TauInfoAssociation in event!"<<std::endl;
   }
    
 

@@ -13,11 +13,12 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.39 2010/03/16 12:56:03 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.40 2010/03/19 11:24:22 mkortela Exp $
 //
 //
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/TTEffAnalyzer.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "Math/GenVector/VectorUtil.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElement.h"
@@ -124,11 +125,11 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      if(iEvent.getByLabel(PFTaus_, PFTaus)) {
        iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
        if(!thePFTauDiscriminatorByIsolation.isValid()) {
-	 cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;
+         edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;
        }
        iEvent.getByLabel(PFTauMuonRej_,thePFTauDiscriminatorAgainstMuon);
        if(!thePFTauDiscriminatorAgainstMuon.isValid()) {
-	 cout<<"No DiscriminatorAgainstMuon with label "<<PFTauMuonRej_<<" found!"<<endl;
+         edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstMuon with label "<<PFTauMuonRej_<<" found!"<<endl;
        }
        
 	 

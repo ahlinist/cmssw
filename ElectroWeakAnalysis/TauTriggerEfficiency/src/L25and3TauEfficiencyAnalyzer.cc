@@ -1,8 +1,9 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.3 2009/10/08 21:22:53 chinhan Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.4 2010/03/01 08:43:21 mkortela Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 using namespace edm;
 using namespace reco;
 using namespace std;
@@ -113,7 +114,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       } // tag loop
     }// non empty collection
     else {
-      std::cout<<"No L25Jetsource in event!"<<std::endl;
+      edm::LogWarning("TTEffAnalyzer") <<"No L25Jetsource in event!"<<std::endl;
     }
     if(ptJets.isValid()){ // Leading Pt Cut > X GeV/c applied, check HLT Config file
       for(unsigned int j = 0; j < ptJets->size(); j++){
@@ -126,7 +127,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }// for jet loop
     }// non empty collection
     else {
-      std::cout<<"No L25PtJetsource in event!"<<std::endl;
+      edm::LogWarning("TTEffAnalyzer") <<"No L25PtJetsource in event!"<<std::endl;
     }
     if(isoJets.isValid()){
       for(unsigned int j = 0; j < isoJets->size(); j++){
@@ -139,7 +140,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }
     }
     else {
-      std::cout<<"No L3IsoJetsource in event!"<<std::endl;
+      edm::LogWarning("TTEffAnalyzer") <<"No L3IsoJetsource in event!"<<std::endl;
     }
     
   }
@@ -196,7 +197,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }// for jet loop
     }// non empty collection
     else {
-      std::cout<<"No L25Jetsource in event!"<<std::endl;
+      edm::LogWarning("TTEffAnalyzer") <<"No L25Jetsource in event!"<<std::endl;
     }
     
     if(ptJets.isValid()){ // Leading Pt Cut > X GeV/c applied, check HLT Config file
@@ -210,7 +211,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }// for jet loop
     }// non empty collection
     else {
-      std::cout<<"No L25PtJetsource in event!"<<std::endl;
+      edm::LogWarning("TTEffAnalyzer") <<"No L25PtJetsource in event!"<<std::endl;
     }
     
     if(isoJets.isValid()){
@@ -224,7 +225,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }
     }
     else {
-      std::cout<<"No L3IsoJetsource in event!"<<std::endl;
+      edm::LogWarning("TTEffAnalyzer") <<"No L3IsoJetsource in event!"<<std::endl;
     }
     
   }
