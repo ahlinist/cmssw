@@ -488,7 +488,7 @@ void analysisClass::Loop()
                int ieta = PMTnoiseRecHitIeta->at(i);
                int iphi = PMTnoiseRecHitIphi->at(i);
                double phi = ((2*3.14159)/72) * iphi;
-               if(abs(ieta)>39) phi = ((2*3.14159)/72) * (iphi-1);
+               if(abs(ieta)>39) phi = ((2*3.14159)/72) * (iphi+1);
                int depth = PMTnoiseRecHitDepth->at(i);
 
 	       //eta regions
