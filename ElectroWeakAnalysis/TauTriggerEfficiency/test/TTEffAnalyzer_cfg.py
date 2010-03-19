@@ -9,11 +9,15 @@ process.maxEvents = cms.untracked.PSet(
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
 process.MessageLogger.destinations = cms.untracked.vstring("cout")
+process.MessageLogger.categories.append("TTEffAnalyzer")
 process.MessageLogger.cout = cms.untracked.PSet(
-#    threshold = cms.untracked.string("DEBUG")    # pring LogDebugs and above
-#    threshold = cms.untracked.string("INFO")     # print LogInfos and above
-    threshold = cms.untracked.string("WARNING")  # print LogWarnings and above
+#    threshold = cms.untracked.string("DEBUG"),   # pring LogDebugs and above
+#    threshold = cms.untracked.string("INFO"),    # print LogInfos and above
+    threshold = cms.untracked.string("WARNING"),  # print LogWarnings and above
+    TTEffAnalyzer = cms.untracked.PSet(
+        reportEvery = cms.untracked.int32(1)      # This will limit the number of warning messages from TTEffAnalyzer
     )
+)
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cout.FwkReport.reportEvery = 1
