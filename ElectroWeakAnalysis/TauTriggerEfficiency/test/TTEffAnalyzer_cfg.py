@@ -95,16 +95,16 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
         #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
 
-	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT2"),
-	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT2"),
+	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "TTEff"),
+	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "TTEff"),
 
-	L1extraMETSource	= cms.InputTag("hltL1extraParticles", "MET", "HLT2"),
-	L1extraMHTSource	= cms.InputTag("hltL1extraParticles", "MHT", "HLT2"),
+	L1extraMETSource	= cms.InputTag("hltL1extraParticles", "MET", "TTEff"),
+	L1extraMHTSource	= cms.InputTag("hltL1extraParticles", "MHT", "TTEff"),
 
 
-        L1CaloRegionSource      = cms.InputTag("hltGctDigis"), # "", "HLT2"),                               
-        L1GtReadoutRecord       = cms.InputTag("hltGtDigis","","HLT2"),
-        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","HLT2"),
+        L1CaloRegionSource      = cms.InputTag("hltGctDigis"), # "", "TTEff"),                               
+        L1GtReadoutRecord       = cms.InputTag("hltGtDigis","","TTEff"),
+        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","TTEff"),
         HltResults              = cms.InputTag("TriggerResults"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
@@ -133,10 +133,10 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 # each analyzer loops over different collection and produces a
 # different output file
 #process.TTEffAnalysisL1Tau = process.TTEffAnalysis.clone()
-#process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("hltL1extraParticles", "Tau", "HLT2")
+#process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("hltL1extraParticles", "Tau", "TTEff")
 #process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root");
 #process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
-#process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("hltL1extraParticles", "Central", "HLT2")
+#process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("hltL1extraParticles", "Central", "TTEff")
 #process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
