@@ -6,7 +6,6 @@
    <use name=CommonTools/UtilAlgos>
    <use name=DataFormats/CSCDigi>
    <use name=DataFormats/CSCRecHit>
-   <use name=Geometry/CSCGeometry>
    <use name=DataFormats/DetId>
    <use name=DataFormats/EcalDetId>
    <use name=DataFormats/EcalRecHit>
