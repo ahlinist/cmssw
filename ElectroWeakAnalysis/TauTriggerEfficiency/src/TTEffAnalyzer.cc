@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.38 2010/03/01 08:49:33 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.39 2010/03/16 12:56:03 slehti Exp $
 //
 //
 
@@ -114,6 +114,10 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    if( DoMCTauEfficiency_ ) { // this is to calculate efficiencies per MC tau candidate
      iEvent.getByLabel(MCTaus_, mcTaus);
      iEvent.getByLabel(PFTaus_, PFTaus);
+     if(!mcTaus.isValid()) {
+       throw cms::Exception("Configuration") << "MCTauCollection not found for label " << MCTaus_ << std::endl;
+     }
+
      loop(iEvent,iSetup, *mcTaus);
    } 
    else {
@@ -140,6 +144,9 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      }
      else if(iEvent.getByLabel(PFTaus_, genericTaus)) {
        loop(iEvent,iSetup, *genericTaus);
+     }
+     else {
+       throw cms::Exception("Configuration") << "LoopingOver collection not found for label " << PFTaus_ << std::endl;
      }
    }
    
