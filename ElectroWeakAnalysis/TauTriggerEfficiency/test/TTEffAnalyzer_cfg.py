@@ -8,19 +8,13 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
-process.MessageLogger.destinations = cms.untracked.vstring("cout")
 process.MessageLogger.categories.append("TTEffAnalyzer")
-process.MessageLogger.cout = cms.untracked.PSet(
-#    threshold = cms.untracked.string("DEBUG"),   # pring LogDebugs and above
-#    threshold = cms.untracked.string("INFO"),    # print LogInfos and above
-    threshold = cms.untracked.string("WARNING"),  # print LogWarnings and above
-    TTEffAnalyzer = cms.untracked.PSet(
-        reportEvery = cms.untracked.int32(100)    # This will limit the number of warning messages from TTEffAnalyzer
-    )
-)
-process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
-#process.MessageLogger.cout.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100 # print the event number for every 100th event
+process.MessageLogger.cerr.TTEffAnalyzer = cms.untracked.PSet(limit = cms.untracked.int32(100)) # print max 100 warnings from TTEffAnalyzer
+# process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
+# process.MessageLogger.cerr.threshold = cms.untracked.string("DEBUG")   # pring LogDebugs and above
+# process.MessageLogger.cerr.threshold = cms.untracked.string("INFO")    # print LogInfos and above
+# process.MessageLogger.cerr.threshold = cms.untracked.string("WARNING") # print LogWarnings and above
 
 #Mike needs Calo Geometry
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
