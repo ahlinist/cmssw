@@ -151,17 +151,6 @@ L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iS
 }
 
 void
-L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iSetup,const reco::CaloTau& tau)
-{
-  fill(iEvent,iSetup,tau.p4());
-}
-
-void
-L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iSetup,const reco::GsfElectron& tau) {
-  fill(iEvent,iSetup,tau.p4());
-}
-
-void
 L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iSetup,const reco::Candidate& tau) {
   fill(iEvent,iSetup,tau.p4());
 }
