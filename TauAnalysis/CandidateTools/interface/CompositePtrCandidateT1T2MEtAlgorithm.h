@@ -16,7 +16,7 @@
 
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
-#include "TauAnalysis/CandidateTools/interface/SVMethodFitter.h"
+#include "TauAnalysis/CandidateTools/interface/SVmassRecoFitter.h"
 
 #include "TMath.h"
 #include "TF1.h"
@@ -87,10 +87,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
 //--- SV method computation (if we have the PV and beamspot)
       if( pv && beamSpot && trackBuilder && doSVreco ) {
-	vector<TauVertex::Solution> fits = TauVertex::fitVertices<T1,T2>(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
+	std::vector<svMassReco::Solution> fits = svMassRecoFitter_.fitVertices(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
 
 //--- get the best solution
-	TauVertex::Solution bestfit = fits[0];
+	svMassReco::Solution bestfit = fits[0];
 
 	compositePtrCandidate.setSVNLL(bestfit.nllOfFit);
 	compositePtrCandidate.setVertexLeg1(bestfit.sv1);
@@ -404,6 +404,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   int verbosity_;
   std::string scaleFuncImprovedCollinearApprox_;
   TF1* scaleFunc_;
+  svMassReco::SVmassRecoFitter<T1,T2> svMassRecoFitter_;
 };
 
 #endif 

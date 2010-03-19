@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.8 2010/03/18 14:26:52 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.9 2010/03/19 09:17:39 veelken Exp $
  *
  */
 
@@ -90,12 +90,12 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       cfgError_ = 1;
     }
 
-    //std::cout << " TauVertex::typeIsSupportedBySVFitter<T1> = " << TauVertex::typeIsSupportedBySVFitter<T1>() << std::endl;
-    //std::cout << " TauVertex::typeIsSupportedBySVFitter<T2> = " << TauVertex::typeIsSupportedBySVFitter<T2>() << std::endl;
+    //std::cout << " svMassReco::typeIsSupportedBySVFitter<T1> = " << svMassReco::typeIsSupportedBySVFitter<T1>() << std::endl;
+    //std::cout << " svMassReco::typeIsSupportedBySVFitter<T2> = " << svMassReco::typeIsSupportedBySVFitter<T2>() << std::endl;
     
     if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" &&
-	 TauVertex::typeIsSupportedBySVFitter<T1>() &&
-	 TauVertex::typeIsSupportedBySVFitter<T2>() ) {
+	 svMassReco::typeIsSupportedBySVFitter<T1>() &&
+	 svMassReco::typeIsSupportedBySVFitter<T2>() ) {
       doSVreco_ = true;
     } else if ( recoMode_ == "secondaryVertexFit" ) {
       if ( !(srcMET_.label() == "" && srcBeamSpot_.label() != "" && srcPV_.label() != "") ) {
@@ -105,7 +105,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	  << " and needed for recoMode = " << recoMode_ << " !!";
       }
 
-      if ( !(TauVertex::typeIsSupportedBySVFitter<T1>() && TauVertex::typeIsSupportedBySVFitter<T2>()) ) {
+      if ( !(svMassReco::typeIsSupportedBySVFitter<T1>() && svMassReco::typeIsSupportedBySVFitter<T2>()) ) {
 	edm::LogError ("ConfigError") 
 	  << " The input collection type (probably Candidate) is not supported" 
 	  << " when using the secondaryVertexFit option !!";

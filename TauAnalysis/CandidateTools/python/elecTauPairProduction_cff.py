@@ -10,6 +10,8 @@ allElecTauPairs = cms.EDProducer("PATElecTauPairProducer",
     srcLeg2 = cms.InputTag('selectedLayer1TausForElecTauEcalCrackVetoCumulative'),
     dRmin12 = cms.double(0.3),
     srcMET = cms.InputTag('layer1METs'),
+    srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
+    srcBeamSpot = cms.InputTag("offlineBeamSpot"),                             
     srcGenParticles = cms.InputTag('genParticles'),                                   
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                             
@@ -24,16 +26,8 @@ produceElecTauPairs = cms.Sequence( allElecTauPairs )
 #        of electron isolation from other event selection criteria,
 #        in order to avoid problems with limited Monte Carlo statistics)
 
-allElecTauPairsLooseElectronIsolation = cms.EDProducer("PATElecTauPairProducer",
-    useLeadingTausOnly = cms.bool(False),
+allElecTauPairsLooseElectronIsolation = allElecTauPairs.clone(
     srcLeg1 = cms.InputTag('selectedLayer1ElectronsTrkIPlooseIsolationCumulative'),
-    srcLeg2 = cms.InputTag('selectedLayer1TausForElecTauEcalCrackVetoCumulative'),
-    dRmin12 = cms.double(0.3),
-    srcMET = cms.InputTag('layer1METs'),
-    srcGenParticles = cms.InputTag('genParticles'),                                                         
-    recoMode = cms.string(""),
-    scaleFuncImprovedCollinearApprox = cms.string('1'),                                                   
-    verbosity = cms.untracked.int32(0)
 )
 
 produceElecTauPairsLooseElectronIsolation = cms.Sequence( allElecTauPairsLooseElectronIsolation )
