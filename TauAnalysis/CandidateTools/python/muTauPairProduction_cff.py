@@ -33,16 +33,8 @@ produceMuTauPairs = muTauPairProdConfigurator.configure(pyNameSpace = locals())
 #        of muon isolation from other event selection criteria,
 #        in order to avoid problems with limited Monte Carlo statistics)
 
-allMuTauPairsLooseMuonIsolation = cms.EDProducer("PATMuTauPairProducer",
-    useLeadingTausOnly = cms.bool(False),
+allMuTauPairsLooseMuonIsolation = allMuTauPairs.clone(
     srcLeg1 = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationCumulative'),
-    srcLeg2 = cms.InputTag('selectedLayer1TausForMuTauElectronVetoCumulative'),                                                  
-    dRmin12 = cms.double(0.3),
-    srcMET = cms.InputTag('layer1METs'),
-    srcGenParticles = cms.InputTag('genParticles'),                                              
-    recoMode = cms.string(""),
-    scaleFuncImprovedCollinearApprox = cms.string('1'),                                             
-    verbosity = cms.untracked.int32(0)
 )
 
 muTauPairProdConfiguratorLooseMuonIsolation = objProdConfigurator(
