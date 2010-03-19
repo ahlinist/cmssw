@@ -33,7 +33,7 @@ double straighter(RPCDetId rpcId){
   bool ok = true; 	 
   RPCGeomServ rpcsrv(rpcId); 	 
   
-  if(rpcId.station()==2||rpcId.station()==1&&rpcId.ring()==2&&rpcsrv.segment()%2==0){ 	 
+  if( ((rpcId.station()==2) || (rpcId.station()==1)) && (rpcId.ring()==2) && (rpcsrv.segment()%2==0) ){ 	 
     ok=false; 	 
   } 	 
   
@@ -366,8 +366,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
   }
   
-  if(rpcDTPoints->begin()!=rpcDTPoints->end()){ //No Empty Predictions
-
+  if(rpcDTPoints.isValid()){ //No Empty Predictions
+  
     if(debug) std::cout<<"\t Getting the DT Segments"<<std::endl;
     edm::Handle<DTRecSegment4DCollection> all4DSegments;
     iEvent.getByLabel(dt4DSegments, all4DSegments);
@@ -614,8 +614,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   //From Now on CSC part!
 
-  if(rpcCSCPoints->begin()!=rpcCSCPoints->end()){ //No Empty Predictions
-
+  if(rpcCSCPoints.isValid()){//No Empty Predictions
+    
     if(debug) std::cout <<"\t Getting the CSC Segments"<<std::endl;
     edm::Handle<CSCSegmentCollection> allCSCSegments;
     iEvent.getByLabel(cscSegments, allCSCSegments);
