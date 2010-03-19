@@ -15,7 +15,7 @@ process.MessageLogger.cout = cms.untracked.PSet(
 #    threshold = cms.untracked.string("INFO"),    # print LogInfos and above
     threshold = cms.untracked.string("WARNING"),  # print LogWarnings and above
     TTEffAnalyzer = cms.untracked.PSet(
-        reportEvery = cms.untracked.int32(1)      # This will limit the number of warning messages from TTEffAnalyzer
+        reportEvery = cms.untracked.int32(100)    # This will limit the number of warning messages from TTEffAnalyzer
     )
 )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
