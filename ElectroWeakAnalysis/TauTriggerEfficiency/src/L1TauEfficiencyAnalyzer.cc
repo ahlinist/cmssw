@@ -2,6 +2,7 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "DataFormats/L1Trigger/interface/L1JetParticle.h"
 #include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
@@ -166,7 +167,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   Handle<L1JetParticleCollection> l1TauHandle;
   iEvent.getByLabel(L1extraTauJetSource, l1TauHandle);
   if(!l1TauHandle.isValid()) {
-    std::cout << "%L1TauEffAnalyzer -- No L1extra TauJet found! " << std::endl;
+    edm::LogError("TTEffAnalyzer") << "L1TauEffAnalyzer -- No L1extra TauJet found! " << std::endl;
     return;
   }
 
@@ -174,7 +175,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   Handle<L1EtMissParticleCollection> l1METHandle;
   iEvent.getByLabel(L1extraMETSource, l1METHandle);
   if(!l1METHandle.isValid()) {
-    std::cout << "%L1TauEffAnalyzer -- No L1extra MET found! " << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "%L1TauEffAnalyzer -- No L1extra MET found! " << std::endl;
     return;
   }
 
@@ -182,14 +183,14 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   Handle<L1EtMissParticleCollection> l1MHTHandle;
   iEvent.getByLabel(L1extraMHTSource, l1MHTHandle);
   if(!l1MHTHandle.isValid()) {
-    std::cout << "%L1TauEffAnalyzer -- No L1extra MHT found! " << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "%L1TauEffAnalyzer -- No L1extra MHT found! " << std::endl;
     return;
   }
 
   Handle<L1JetParticleCollection> l1CentralJetHandle;
   iEvent.getByLabel(L1extraCentralJetSource, l1CentralJetHandle);
   if(!l1CentralJetHandle.isValid()) {
-    std::cout << "%L1TauEffAnalyzer -- No L1extra central jet found! " << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "%L1TauEffAnalyzer -- No L1extra central jet found! " << std::endl;
     return;
   }
 
@@ -271,13 +272,13 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
 
   iEvent.getByLabel(L1GtReadoutRecordSource,l1GTRR);
   if(!l1GTRR.isValid()) {
-    std::cout << "%L1TauEffAnalyzer -- No L1GlobalTriggerReadouRecord found! " << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "%L1TauEffAnalyzer -- No L1GlobalTriggerReadouRecord found! " << std::endl;
     return;
   }
 
   iEvent.getByLabel(L1GtObjectMapRecordSource,l1GTOMRec);
   if(!l1GTOMRec.isValid()) {
-    std::cout << "%L1TauEffAnalyzer -- No L1GlobalTriggerObjectMapRecord found! " << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "%L1TauEffAnalyzer -- No L1GlobalTriggerObjectMapRecord found! " << std::endl;
     return;
   }
 
@@ -312,7 +313,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   edm::Handle<edm::TriggerResults> hltresults;
   iEvent.getByLabel(HLTResultsSource,hltresults);
   if(!hltresults.isValid()) {
-    std::cout << "%L1TauEffAnalyzer -- No HltResults found! " << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "%L1TauEffAnalyzer -- No HltResults found! " << std::endl;
     return;
   }
   else {
@@ -389,12 +390,12 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
 void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, unsigned regionId) {
   edm::Handle<std::vector<L1CaloRegion> > caloRegionHandle;
   if(!iEvent.getByLabel(L1CaloRegionSource, caloRegionHandle)) {
-    std::cout << "No L1CaloRegion! with label " << L1CaloRegionSource << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "No L1CaloRegion! with label " << L1CaloRegionSource << std::endl;
     return;
   }
 
   if(caloRegionHandle->size() == 0) {
-    std::cout << "L1CaloRegion size is zero!" << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "L1CaloRegion size is zero!" << std::endl;
     return;
   }
       
@@ -423,7 +424,7 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, unsigned 
     }
   }
   if(found == caloRegionHandle->end()) {
-    std::cout << "Didn't find matching L1CaloRegion" << std::endl;
+    edm::LogWarning("TTEffAnalyzer") << "Didn't find matching L1CaloRegion" << std::endl;
     return;
   }
 
