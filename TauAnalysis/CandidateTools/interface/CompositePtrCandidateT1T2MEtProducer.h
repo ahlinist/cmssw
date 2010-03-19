@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.7 2010/03/16 23:57:30 friis Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.8 2010/03/18 14:26:52 veelken Exp $
  *
  */
 
@@ -60,6 +60,8 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       doSVreco_(false), 
       cfgError_(0)
   {
+    //std::cout << "<CompositePtrCandidateT1T2MEtProducer::CompositePtrCandidateT1T2MEtProducer>:" << std::endl;
+
     useLeadingTausOnly_ = cfg.getParameter<bool>("useLeadingTausOnly");
     srcLeg1_ = cfg.getParameter<edm::InputTag>("srcLeg1");
     srcLeg2_ = cfg.getParameter<edm::InputTag>("srcLeg2");
@@ -71,6 +73,13 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     recoMode_ = cfg.getParameter<std::string>("recoMode");
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
 
+    //std::cout << " srcLeg1 = " << srcLeg1_ << std::endl;
+    //std::cout << " srcLeg2 = " << srcLeg2_ << std::endl;
+    //std::cout << " srcMET = " << srcMET_ << std::endl;
+    //std::cout << " srcPV_ = " << srcPV_ << std::endl;
+    //std::cout << " srcBeamSpot = " << srcBeamSpot_ << std::endl;
+    //std::cout << " recoMode = " << recoMode_ << std::endl;
+
 //--- check that InputTag for MET collection has been defined,
 //    in case it is needed for the reconstruction mode 
 //    specified in the configuration parameter set
@@ -81,11 +90,13 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       cfgError_ = 1;
     }
 
+    //std::cout << " TauVertex::typeIsSupportedBySVFitter<T1> = " << TauVertex::typeIsSupportedBySVFitter<T1>() << std::endl;
+    //std::cout << " TauVertex::typeIsSupportedBySVFitter<T2> = " << TauVertex::typeIsSupportedBySVFitter<T2>() << std::endl;
+    
     if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" &&
 	 TauVertex::typeIsSupportedBySVFitter<T1>() &&
 	 TauVertex::typeIsSupportedBySVFitter<T2>() ) {
-      // CV: disable "secondaryVertexFit" reconstruction mode for now
-      //doSVreco_ = true;
+      doSVreco_ = true;
     } else if ( recoMode_ == "secondaryVertexFit" ) {
       if ( !(srcMET_.label() == "" && srcBeamSpot_.label() != "" && srcPV_.label() != "") ) {
 	edm::LogError ("ConfigError") 
@@ -102,6 +113,8 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 
       cfgError_ = 1;
     }
+
+    //std::cout << " doSVreco = " << doSVreco_ << std::endl;
     
     produces<CompositePtrCandidateCollection>("");
   }
