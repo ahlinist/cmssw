@@ -30,9 +30,9 @@ process.source = cms.Source("PoolSource",
 
 
 ### Add HLT stuff
-#process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfg")
-#process.prefer("magfield")
-##from ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfg import *
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfg")
+process.prefer("magfield")
+process.hltGctDigis.hltMode = cms.bool(False) # Making L1CaloRegions
 
 
 process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi")
@@ -60,14 +60,9 @@ process.PFTausSelected = cms.EDFilter("PFTauSelector",
 
 
 process.load("L1Trigger/Configuration/L1Config_cff")
-####process.load("Configuration/StandardSequences/L1TriggerDefaultMenu_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.GlobalTag.globaltag = 'MC_31X_V3::All'
 process.GlobalTag.globaltag = 'GR09_R_34X_V5::All'
-#process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1031/L1Menu_MC2009_v0_L1T_Scales_20080922_Imp0_Unprescaled_cff")
-process.load('L1TriggerConfig.L1GtConfigProducers.Luminosity.lumi1031.L1Menu_MC2009_v2_L1T_Scales_20090519_Imp0_Unprescaled_cff')
-
-
 
 
 
@@ -114,11 +109,10 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
         L1IsolationThreshold    = cms.uint32(2), # count regions with "et() < threshold"
-#        L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
 	L2AssociationCollection = cms.InputTag("openhltL2TauIsolationProducer"),
         EERecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEE"),
         EBRecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEB"),
-        CaloTowers               = cms.untracked.InputTag("towerMaker"),
+        CaloTowers              = cms.untracked.InputTag("towerMaker"),
         outerCone               = cms.untracked.double(0.5),
         innerCone               = cms.untracked.double(0.15),
         crystalThresholdEB      = cms.untracked.double(0.15),
@@ -156,8 +150,6 @@ GenParticles  = cms.untracked.InputTag("genParticles"),
 
 process.runEDAna = cms.Path(
 #    process.TauMCProducer*
-#    process.DoHLTJetsU * 
-#    process.DoHLTTau *
     process.thisPFTauDiscriminationByLeadingPionPtCut *
     process.PFTausSelected *
     process.thisPFTauDiscriminationByLeadingTrackFinding *
@@ -169,11 +161,14 @@ process.runEDAna = cms.Path(
 #    process.TTEffAnalysisL1Cen
 ) 
 
-#process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau)
-#,process.PFTausSelected,process.runEDAna)
-
 #process.o1 = cms.OutputModule("PoolOutputModule",
 #    outputCommands = cms.untracked.vstring("keep *"),
 #    fileName = cms.untracked.string('cmssw.root')
 #)
 #process.outpath = cms.EndPath(process.o1)
+#process.outpath = cms.Path(process.o1)
+
+process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau,
+#                                ,process.PFTausSelected,
+#process.runEDAna,process.outpath)
+process.runEDAna)
