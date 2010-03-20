@@ -612,7 +612,14 @@ private:
 	    //setTimingColor(obj);
 	    // add color scheme later that plots t=0.0000 as white (indicating empty channels)
 	  }
-      }
+	else if ((o.name.find("RecHit Occupancy")!=std::string::npos)||
+		 (o.name.find("RecHit Average Energy")!=std::string::npos)
+		 )
+	  {
+	    if (obj->GetMaximum()>0 )// is this what we want?  Suppose average energy is <0?
+	      gPad->SetLogz();
+	  }
+      } // RecHitMonitor_Hcal
 
   } // void preDrawTH2
 
@@ -641,6 +648,7 @@ private:
       obj->SetMinimum(0); // do this for all TProfiles?
     if (lastnonzerobin-firstnonzerobin>1)
       obj->GetXaxis()->SetRange(firstnonzerobin,lastnonzerobin-1);
+    obj->SetMarkerStyle(20); // always show average as a closed circle
     return;
   }
 
