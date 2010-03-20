@@ -550,7 +550,7 @@ void analysisClass::Loop()
 
                // For S9/S1 flagging
                double slope = (0.3084-0.02577*abs(ieta)+0.0005351*ieta*ieta);
-               if( abs(ieta)>39 ) slope = slopes[ieta-30];
+               if( abs(ieta)>39 ) slope = slopes[abs(ieta)-30];
                double intercept = -slope*log((162.4-10.19*abs(ieta)+0.21*ieta*ieta));
                 
                //## identify HF spikes
