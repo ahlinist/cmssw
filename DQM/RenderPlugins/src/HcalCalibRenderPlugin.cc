@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.4 $
-  \date $Date: 2010/03/12 13:43:09 $
+  \version $Revision: 1.5 $
+  \date $Date: 2010/03/16 20:05:16 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -436,6 +436,7 @@ private:
       }
     if (lastnonzerobin-firstnonzerobin>1)
       obj->GetXaxis()->SetRange(firstnonzerobin,lastnonzerobin-1);
+    obj->SetMarkerStyle(20);  // always show average as closed circle
     return;
   }
 
