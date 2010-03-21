@@ -366,7 +366,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
   }
   
-  if(rpcDTPoints.isValid()){ //No Empty Predictions
+  if(rpcDTPoints.isValid()) if(rpcDTPoints->begin()!=rpcDTPoints->end() ){ //No Empty Predictions
   
     if(debug) std::cout<<"\t Getting the DT Segments"<<std::endl;
     edm::Handle<DTRecSegment4DCollection> all4DSegments;
@@ -614,7 +614,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   //From Now on CSC part!
 
-  if(rpcCSCPoints.isValid()){//No Empty Predictions
+  if(rpcCSCPoints.isValid()) if(rpcCSCPoints->begin()!=rpcCSCPoints->end()){//No Empty Predictions
     
     if(debug) std::cout <<"\t Getting the CSC Segments"<<std::endl;
     edm::Handle<CSCSegmentCollection> allCSCSegments;
