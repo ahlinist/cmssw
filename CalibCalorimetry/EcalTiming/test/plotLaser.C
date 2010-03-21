@@ -222,202 +222,32 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TGraph *TTMeanWithRMS_All_FEDS = (TGraph*) f->Get("TTMeanWithRMS_All_FEDS");
    sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS->GetTitle()); 
   TTMeanWithRMS_All_FEDS->SetTitle(mytitle);
-  TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(5.,6.);
+  TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(4.,6.);
   //TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(4.,6.);
   TTMeanWithRMS_All_FEDS->GetYaxis()->UnZoom();
   TTMeanWithRMS_All_FEDS->Draw("AP*");
   //c[13]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_TTMeanWithRMS_All_FEDS_%i.%s",dirName,mType,runNumber,fileType); c[13]->Print(name); }
-  
-  c[14]->cd();
-  gStyle->SetOptStat(111110);
-  TGraph *TTMeanWithRMS_All_FEDS_CHANGED = (TGraph*) f->Get("TTMeanWithRMS_All_FEDS_CHANGED");
-   sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS_CHANGED->GetTitle()); 
-  TTMeanWithRMS_All_FEDS_CHANGED->SetTitle(mytitle);
-  TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(-5.,5.);
-  //TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(4.,6.);
-  TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->UnZoom();
-  TTMeanWithRMS_All_FEDS_CHANGED->Draw("AP*");
-  //c[13]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TTMeanWithRMS_All_FEDS_Corrected_%i.%s",dirName,mType,runNumber,fileType); c[14]->Print(name); }
-  
-//2-D TGraphs/Profiles 
+ 
+  //2-D TGraphs/Profiles 
   //Ch by Ch timing profile
-  c[15]->cd();
-  gStyle->SetOptStat(10);
+ 
   TProfile2D *timeCHProfile = (TProfile2D*) f->Get("timeCHProfile");
-  timeCHProfile->Draw("colz");
-   sprintf(mytitle,"%s %s",runChar,timeCHProfile->GetTitle()); 
-  timeCHProfile->SetTitle(mytitle);
-
-  c[15]->cd();
-  gStyle->SetOptStat(10);
-  TProfile2D *timeCHProfilep = TProfToRelProf2D(timeCHProfile,"timeCHProfilep", -5., 25.);
-  timeCHProfilep->Draw("colz");
-   sprintf(mytitle,"%s in ns",timeCHProfile->GetTitle()); 
-  timeCHProfilep->SetTitle(mytitle);
-  
  
-  c[16]->cd();
-  gStyle->SetOptStat(10);
   TProfile2D *timeTTProfile = (TProfile2D*) f->Get("timeTTProfile");
-  timeTTProfile->Draw("colz");
-   sprintf(mytitle,"%s %s",runChar,timeTTProfile->GetTitle()); 
-  timeTTProfile->SetTitle(mytitle);
-  timeTTProfile->SetMinimum(4.0);
-  //timeTTProfile->SetMinimum(5.85);
-  //timeTTProfile->SetMinimum(4.8);
-  //timeTTProfile->SetMaximum(6.45);
-  timeTTProfile->GetXaxis()->SetNdivisions(-18);
-  timeTTProfile->GetYaxis()->SetNdivisions(2);
 
-  c[16]->cd();
-  gStyle->SetOptStat(10);
-  TProfile2D *timeTTProfilep = TProfToRelProf2D(timeTTProfile,"timeTTProfilep", -5., 25.);
-  timeTTProfilep->SetContour(10);
-  timeTTProfilep->Draw("colz");
-   sprintf(mytitle,"%s in ns",timeTTProfile->GetTitle()); 
-  timeTTProfilep->SetTitle(mytitle);
-  timeTTProfilep->SetMinimum(tlow);
-  timeTTProfilep->SetMaximum(thigh);
-
-
-  //timeTTProfile->SetMinimum(5.85);
-  //timeTTProfile->SetMinimum(4.8);
-  //timeTTProfile->SetMaximum(6.45);
-  timeTTProfilep->GetXaxis()->SetNdivisions(-18);
-  timeTTProfilep->GetYaxis()->SetNdivisions(2);
-  c[16]->SetLogy(0);
-  c[16]->SetLogz(0);
-  //c[16]->SetGridx(1);
-  //c[16]->SetGridy(1);
-  //gStyle->SetOptStat(0);
-  //if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[16]->Print(name); }
-
- //Ch by Ch timing profile EE+
-  c[17]->cd();
-  gStyle->SetOptStat(10);
+  //Ch by Ch timing profile EE+
   TProfile2D *EEPtimeCHProfile = (TProfile2D*) f->Get("EEPtimeCHProfile");
-  EEPtimeCHProfile->Draw("colz");
-   sprintf(mytitle,"%s %s",runChar,EEPtimeCHProfile->GetTitle()); 
-  EEPtimeCHProfile->SetTitle(mytitle);
-  EEPtimeCHProfile->SetMinimum(4.0);
-  //EEPtimeCHProfile->SetMinimum(4.5);
-  //EEPtimeCHProfile->SetMaximum(5.5);
-  EEPtimeCHProfile->GetXaxis()->SetNdivisions(18);
-
-  c[17]->cd();
-  gStyle->SetOptStat(10);
-  TProfile2D *EEPtimeCHProfilep = TProfToRelProf2D(EEPtimeCHProfile,"EEPtimeCHProfilep", -5., 25.);
-  EEPtimeCHProfilep->Draw("colz");
-   sprintf(mytitle,"%s in ns",EEPtimeCHProfilep->GetTitle()); 
-  EEPtimeCHProfilep->SetTitle(mytitle);
-  EEPtimeCHProfilep->SetMinimum(tlowc);
-  EEPtimeCHProfilep->SetMaximum(thighc);
-  //EEPtimeCHProfile->SetMinimum(4.5);
-  //EEPtimeCHProfile->SetMaximum(5.5);
-  //EEPtimeCHProfilep->GetXaxis()->SetNdivisions(18);
-  // c[17]->SetLogy(0);
-  //c[17]->SetLogz(0);
-  //drawEELines();
-  //c[15]->SetLogz(1);
-  //gStyle->SetOptStat(0);
-  //if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[17]->Print(name); }
  
-
-   //Ch by Ch timing profile EE+
-  c[18]->cd();
-  gStyle->SetOptStat(10);
+  //Ch by Ch timing profile EE+
   TProfile2D *EEMtimeCHProfile = (TProfile2D*) f->Get("EEMtimeCHProfile");
-  EEMtimeCHProfile->Draw("colz");
-   sprintf(mytitle,"%s %s",runChar,EEMtimeCHProfile->GetTitle()); 
-  EEMtimeCHProfile->SetTitle(mytitle);
-  EEMtimeCHProfile->SetMinimum(4.);
-  //EEMtimeCHProfile->SetMinimum(4.5);
-  //EEMtimeCHProfile->SetMaximum(5.5);
-  EEMtimeCHProfile->GetXaxis()->SetNdivisions(18);
-
- c[18]->cd();
-  gStyle->SetOptStat(10);
-  TProfile2D *EEMtimeCHProfilep = TProfToRelProf2D(EEMtimeCHProfile,"EEMtimeCHProfilep", -5., 25.);
-  EEMtimeCHProfilep->Draw("colz");
-   sprintf(mytitle,"%s in ns",EEMtimeCHProfilep->GetTitle()); 
-  EEMtimeCHProfilep->SetTitle(mytitle);
-  EEMtimeCHProfilep->SetMinimum(tlowc);
-  EEMtimeCHProfilep->SetMaximum(thighc);
-  EEMtimeCHProfilep->GetXaxis()->SetNdivisions(18);
-  // c[18]->SetLogy(0);
-  // c[18]->SetLogz(0);
-  //drawEELines();
-  //c[15]->SetLogz(1);
-  //gStyle->SetOptStat(0);
-  // if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[18]->Print(name); } 
   
-   //TT by TT timing profile EE+
-  c[19]->cd();
-  gStyle->SetOptStat(10);
+  //TT by TT timing profile EE+
   TProfile2D *EEPtimeTTProfile = (TProfile2D*) f->Get("EEPtimeTTProfile");
-  EEPtimeTTProfile->Draw("colz");
-   sprintf(mytitle,"%s %s",runChar,EEPtimeTTProfile->GetTitle()); 
-  EEPtimeTTProfile->SetTitle(mytitle);
-  EEPtimeTTProfile->SetMinimum(4.);
-  //EEPtimeTTProfile->SetMinimum(4.5);
-  //EEPtimeTTProfile->SetMaximum(5.5);
-  EEPtimeTTProfile->GetXaxis()->SetNdivisions(18);
-
-
-  c[19]->cd();
-  gStyle->SetOptStat(10);
-  TProfile2D *EEPtimeTTProfilep = TProfToRelProf2D(EEPtimeTTProfile,"EEPtimeTTProfilep", -5., 25.);
-  EEPtimeTTProfilep->SetContour(10);
-  EEPtimeTTProfilep->Draw("colz");
-   sprintf(mytitle,"%s in ns",EEPtimeTTProfile->GetTitle()); 
-  EEPtimeTTProfilep->SetTitle(mytitle);
-  EEPtimeTTProfilep->SetMinimum(tlow);
-  EEPtimeTTProfilep->SetMaximum(thigh);
-
-  //timeTTProfile->SetMinimum(5.85);
-  //timeTTProfile->SetMinimum(4.8);
-  //timeTTProfile->SetMaximum(6.45);
-  EEPtimeTTProfilep->GetXaxis()->SetNdivisions(18);
-  //EEPtimeTTProfilep->GetYaxis()->SetNdivisions(2);
-  // drawEELines();
-  //c[19]->SetLogy(0);
-  //c[19]->SetLogz(0);
-  // c[19]->SetGridx(1);
-  //c[19]->SetGridy(1);
-  // gStyle->SetOptStat(0);
-  // if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[19]->Print(name); }
  
   //TT by TT timing profile EE-
-  c[20]->cd();
-  gStyle->SetOptStat(10);
   TProfile2D *EEMtimeTTProfile = (TProfile2D*) f->Get("EEMtimeTTProfile");
-  EEMtimeTTProfile->Draw("colz");
-   sprintf(mytitle,"%s %s",runChar,EEMtimeTTProfile->GetTitle()); 
-  EEMtimeTTProfile->SetTitle(mytitle);
-  EEMtimeTTProfile->SetMinimum(4.);
-  //EEMtimeTTProfile->SetMinimum(4.5);
-  //EEMtimeTTProfile->SetMaximum(5.5);
-  EEMtimeTTProfile->GetXaxis()->SetNdivisions(18);
 
-  c[20]->cd();
-  gStyle->SetOptStat(10);
-  TProfile2D *EEMtimeTTProfilep = TProfToRelProf2D(EEMtimeTTProfile,"EEMtimeTTProfilep", -5., 25.);
-  
-  EEMtimeTTProfilep->Draw("colz");
-   sprintf(mytitle,"%s in ns",EEMtimeTTProfile->GetTitle()); 
-  EEMtimeTTProfilep->SetTitle(mytitle);
-  EEMtimeTTProfilep->SetContour(10);
-  EEMtimeTTProfilep->SetMinimum(tlow);
-  EEMtimeTTProfilep->SetMaximum(thigh);
-  EEMtimeTTProfilep->GetXaxis()->SetNdivisions(18);
-  c[20]->SetLogy(0);
-  c[20]->SetLogz(0);
-  // drawEELines();
-  // gStyle->SetOptStat(0);
-  // if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[20]->Print(name); }
- 
   //Eta Profiles by TT Normalized
  
   //+_+_+_+_+_+_+_+_+__-----------------------------+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
@@ -447,20 +277,6 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   if (!eventTimingInfoTree) { std::cout << " No TTree in the event, probalby expected" << std::endl; cout << name << endl; return 0;} 
   //Now, we will only do the below if there is a TTree in the event.
  
-  
- 
-  
- 
-  
-  
-  
- 
-
-
- 
-  //NEW plots that take into account the new TTree variables.
-
-
 
   //NOW I do some more compliacted stuff by actually looping over the TTree the old fashioned way
   //eventTimingInfoTree->SetBranchStatus("*",1);
