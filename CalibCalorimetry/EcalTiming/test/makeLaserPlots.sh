@@ -94,26 +94,6 @@ ttreestuff=""
 if [ "`ls ${plots_dir} |grep -c EBTIMES`" -gt "0" ]; then 
   ttreestuff="
  
-<h4><A name=\"TTree\">Time Comparison Plots</h4>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTimeToEEMTime_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTimeToEEMTime_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBPlus2Minus_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBPlus2Minus_${run_num}.png\"> </A>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPDiffEEMTime_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPDiffEEMTime_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPDiffEEMTimeCrys_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPDiffEEMTimeCrys_${run_num}.png\"> </A>
- 
-<h4><A name=\"TTree1d\">Advanced 1-D Timing Histograms</h4>
-  
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMES_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMES_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMES_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMES_${run_num}.png\"> </A>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTIMES_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTIMES_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTIMES_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTIMES_${run_num}.png\"> </A>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTimeEtaLess5_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTimeEtaLess5_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBPlusTime_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBPlusTime_${run_num}.png\"> </A>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBMinusTime_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBMinusTime_${run_num}.png\"> </A>
 
 <h4><A name=\"TTreeOccupancy\">${analy_type} Occupancy Plots</h4>
 
@@ -193,25 +173,6 @@ if [ "`ls ${plots_dir} |grep -c EBTIMES`" -gt "0" ]; then
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_TechTriggerVsBX_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_TechTriggerVsBX_${run_num}.png\"> </A>
 
-<h2><FONT color=\"Blue\"> Expert Technical Plots: </FONT></h2>
-<h4> Relating Average Crystal Time to Individual Crystal times and the timing errors</h4>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoAverage_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoAverage_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoAverage_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoAverage_${run_num}.png\"> </A>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoTERR_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoTERR_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoTERR_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoTERR_${run_num}.png\"> </A>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoAMP_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoAMP_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoAMP_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoAMP_${run_num}.png\"> </A>
-
-<h4>Expert Technical Plots, with Amplitdue and Time Error</h4>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBEvtTIMEStoAMP_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBEvtTIMEStoAMP_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEEvtTIMEStoAMP_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEEvtTIMEStoAMP_${run_num}.png\"> </A>
-
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMESErrtoAMP_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMESErrtoAMP_${run_num}.png\"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMESErrtoAMP_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMESErrtoAMP_${run_num}.png\"> </A>
-
 
 "
 fi
@@ -238,13 +199,14 @@ cat > ${plots_dir}/index.html <<EOF
 
 Jump to:<br>
 <FONT color="Blue"> 
-<A href="#EB">ECAL Barrel</A><BR>
-<A href="#EEM">ECAL Endcap Minus Side</A><BR>
+<A href="#TTree1d">Advanced 1-D Timing Histograms</A> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<A href="#TTree">EE+ to EE- and EB+ to EB- Comparison</A><BR>
+
+<A href="#EB">ECAL Barrel</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<A href="#EEM">ECAL Endcap Minus Side</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <A href="#EEP">ECAL Endcap Plus Side</A><BR>
 <A href="#ALL">ALL ECAL : EB+EE</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#SMPLOTS">Supermodule and LM Average Timings</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#TTree">EE+ to EE- and EB+ to EB- Comparison</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#TTree1d">Advanced 1-D Timing Histograms</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#TTreeOccupancy">Detailed Occupancy Plots</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#TTreeActive">Number of Active Crystal Plots</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#MyNewTTree">1-D Timing, BX, Trigger Plots</A><BR>
@@ -252,22 +214,49 @@ Jump to:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#TTreeTrigs">Triggers Active By Region</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#TTreeBX">BX By Region</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#TTreeMany">2-D Relationg of BX, Trigger and Absolute Time</A><BR>
-<A href="#ALL">Expert Technical Plots</A><BR>
+<A href="expert.html">Expert Technical Plots</A><BR>
 
 
 </FONT>
 <br>
 
-<h3><A name="EB"><FONT color="Blue">ECAL Barrel General Plots</FONT></A><BR></h3>
+<h4><A name="TTree1d">Advanced 1-D Timing Histograms</h4>
 
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeCHProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeCHProfileRel_${run_num}.png"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTProfileRel_${run_num}.png"> </A>
+<br>Timing from Each crystal in the selected regions  > 15 ADC && > 0.6 GeV (EB), > 15 ADC &&  1 GeV (EE), and timing error < 5ns. </br>
+  
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMES_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMES_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMES_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMES_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTIMES_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTIMES_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTIMES_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTIMES_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTimeEtaLess5_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTimeEtaLess5_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBPlusTime_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBPlusTime_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBMinusTime_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBMinusTime_${run_num}.png"> </A>
+
+
+<h4><A name="TTree">Time Comparison Plots</h4>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTimeToEEMTime_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTimeToEEMTime_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBPlus2Minus_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBPlus2Minus_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPDiffEEMTime_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPDiffEEMTime_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPDiffEEMTimeCrys_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPDiffEEMTimeCrys_${run_num}.png"> </A>
+ 
+<h4><A name="TTreeProfs">Time Projection Profiles</h4>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeCHAllFEDsEtaRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeCHAllFEDsEtaRel_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaRel_${run_num}.png"> </A>
 
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTTTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTTTIME_${run_num}.png"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBCHTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBCHTIME_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaEEMRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaEEMRel_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaEEPRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaEEPRel_${run_num}.png"> </A>
+
+
+<h3><A name="EB"><FONT color="Blue">ECAL Barrel General Plots</FONT></A><BR></h3>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeCHProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeCHProfileRel_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTProfileRel_${run_num}.png"> </A>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_fullAmpProfileEB_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_fullAmpProfileEB_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_OccuCHProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_OccuCHProfile_${run_num}.png"> </A>
@@ -280,9 +269,6 @@ Jump to:<br>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMtimeCHProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMtimeCHProfileRel_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMtimeTTProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMtimeTTProfileRel_${run_num}.png"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaEEMRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaEEMRel_${run_num}.png"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTTTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTTTIME_${run_num}.png"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMCHTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMCHTIME_${run_num}.png"> </A>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_fullAmpProfileEEM_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_fullAmpProfileEEM_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMOccuCHProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMOccuCHProfile_${run_num}.png"> </A>
@@ -293,14 +279,21 @@ Jump to:<br>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPtimeCHProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPtimeCHProfileRel_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPtimeTTProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPtimeTTProfileRel_${run_num}.png"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaEEPRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaEEPRel_${run_num}.png"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTTTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTTTIME_${run_num}.png"> </A>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPCHTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPCHTIME_${run_num}.png"> </A>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_fullAmpProfileEEP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_fullAmpProfileEEP_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPOccuCHProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPOccuCHProfile_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPOccuTTProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPOccuTTProfile_${run_num}.png"> </A>
 
+<h3><A name="XtalTTAVEs"><FONT color="Blue">Crystal and TT Average Times (over all events)</FONT></A><BR></h3>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTTTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTTTIME_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBCHTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBCHTIME_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTTTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTTTIME_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMCHTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMCHTIME_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTTTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTTTIME_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPCHTIME_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPCHTIME_${run_num}.png"> </A>
 
 
 <br>
@@ -317,6 +310,37 @@ Jump to:<br>
 
 
 ${ttreestuff}
+
+<br>
+<h2><A href="expert.html">Expert Technical Plots</A><BR></h2>
+
+<h4> ROOT File (download) </h4>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${root_file}> ${root_file} </A>
+
+</FONT>
+</BODY>
+</HTML>
+
+EOF
+
+cat > ${plots_dir}/expert.html <<EOF
+
+<HTML>
+
+<HEAD><TITLE>ECAL ${analy_type} Analysis Run ${run_num}</TITLE></HEAD>
+ 
+<BODY link="Red">
+<FONT color="Black">
+ 
+<Center>
+<h2><FONT color="Blue"> ECAL ${analy_type} Analysis: EXPERT ADDITIONAL PLOTS </FONT></h2>
+</Center>
+
+<Center>
+<h3> Run: <A href=http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=${run_num}>${run_num}</A></h3>
+<h3> Run Start Time Used ${mytime} </h3>
+</center>
+
 
 <h4> Expert Timing Plots </h4>
 
@@ -335,12 +359,25 @@ ${ttreestuff}
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_laserShift_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_laserShift_${run_num}.png"> </A>
 
 
-<h4> ROOT File (download) </h4>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${root_file}> ${root_file} </A>
+<h4> Relating Average Crystal Time to Individual Crystal times and the timing errors</h4>
 
-</FONT>
-</BODY>
-</HTML>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoAverage_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoAverage_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoAverage_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoAverage_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoTERR_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoTERR_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoTERR_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoTERR_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMEStoAMP_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMEStoAMP_${run_num}.png"> </A>
+
+<h4>Expert Technical Plots, with Amplitdue and Time Error</h4>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBEvtTIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBEvtTIMEStoAMP_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEEvtTIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEEvtTIMEStoAMP_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMESErrtoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EBTIMESErrtoAMP_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMESErrtoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EETIMESErrtoAMP_${run_num}.png"> </A>
+
+
 
 EOF
 
