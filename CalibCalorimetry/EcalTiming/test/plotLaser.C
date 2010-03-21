@@ -44,7 +44,7 @@ EEDetId mydete = 0;
 
 
 
-double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE, Char_t* fileType = "png", Char_t* dirName = ".", Bool_t doWait=kFALSE, Char_t* mType = "Laser")
+double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE, Char_t* fileType = "png", Char_t* dirName = ".", Bool_t doWait=kFALSE, Char_t* mType = "Laser", Char_t* plotfile = 0 )
 {
  
   cout << "Loading FW Lite setup." << endl;
@@ -91,17 +91,30 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   
   //TTree helpers
   int tbins = 52;
-  double tbinsL = -26.;
-  double tbinsH = 26.;
+  double MaxTime = 60.;
+  double tbinsL = -MaxTime;
+  double tbinsH = MaxTime;
   
-  double thigh = 36.;
-  double tlow  = -36.;
+  double thigh = MaxTime;
+  double tlow  = -MaxTime;
   
-  double thighc = 50.;
-  double tlowc  = -50.;
+  double thighc = MaxTime;
+  double tlowc  = -MaxTime;
   
-  double thight = 30.;
-  double tlowt  = -30.;
+  double thight = MaxTime;
+  double tlowt  = -MaxTime;
+
+  //double tbinsL = -26.;
+  //double tbinsH = 26.;
+  
+  //double thigh = 36.;
+  //double tlow  = -36.;
+  
+  //double thighc = 50.;
+  //double tlowc  = -50.;
+  
+  //double thight = 30.;
+  //double tlowt  = -30.;
   
 //First thing is do print the profiles
 
@@ -139,7 +152,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TH1F *LM_timingh = CorrectProfToHist(LM_timing,"LM_timingh",-5,25.0);
   customizeTHist(LM_timingh);
   LM_timingh->Draw("p");
-   sprintf(mytitle,"%s %s ;FED;Time (ns)",runChar,LM_timing->GetTitle()); 
+   sprintf(mytitle,"%s LM Timing ;LM Number;Time (ns)",runChar); 
   LM_timingh->SetMinimum(tlowt);
   LM_timingh->SetMaximum(thight);
   LM_timingh->SetTitle(mytitle);
@@ -222,7 +235,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TGraph *TTMeanWithRMS_All_FEDS = (TGraph*) f->Get("TTMeanWithRMS_All_FEDS");
    sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS->GetTitle()); 
   TTMeanWithRMS_All_FEDS->SetTitle(mytitle);
-  TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(4.,6.);
+  TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(3.5,6.5);
   //TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(4.,6.);
   TTMeanWithRMS_All_FEDS->GetYaxis()->UnZoom();
   TTMeanWithRMS_All_FEDS->Draw("AP*");
@@ -328,7 +341,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   cout << "nentries is " << nents << endl;
 
   double EBTimeMax = 60.;
-  double EETimeMax = 75.;
+  double EETimeMax = 60.;
    
   TH1F *hctEB    = new TH1F("hctEB",  Form("%s EB Crystal Times;Time (ns);Number of Crystals",runChar),100, -EBTimeMax, EBTimeMax);
   TH1F *hctEE    = new TH1F("hctEE",  Form("%s EE Crystal Times;Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
@@ -359,7 +372,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TH2F *hctEEmCryT  = new TH2F("hctEEmCryT",Form("%s EE Number of Crystals to EE- average time;EE- average time (ns);Number of EE- crystals",runChar),50, -EETimeMax, EETimeMax,25,0,25);
 
   TH2F *hctEEMEEP      = new TH2F("hctEEMEEP",Form("%s EE+ average time to EE- average time;EE- average time (ns);EE+ average time (ns)",runChar),50, -EETimeMax, EETimeMax,50, -EETimeMax, EETimeMax);
-  TH2F *hctEEMDEEPcry  = new TH2F("hctEEMDEEPcry",Form("%s EE- minus EE+ average time vs EE crystals;(EEM - EEP) average time (ns);Number EE crystals",runChar),50, -EETimeMax/2., EETimeMax/2.,25,0, 25);
+  TH2F *hctEEMDEEPcry  = new TH2F("hctEEMDEEPcry",Form("%s EE- minus EE+ average time vs EE crystals;(EEM - EEP) average time (ns);Number EE crystals",runChar),50, -EETimeMax, EETimeMax,25,0, 25);
   TH1F *hctEEMDEEP     = new TH1F("hctEEMDEEP",Form("%s EE- minus EE+ average time;(EEM - EEP) average time (ns)",runChar),100, -EETimeMax, EETimeMax);
   
   TH2F *hctEEcryamp   = new TH2F("hctEEcryamp",Form("%s EE amplitudes vs number of crystals;Crystal Amp (GeV);Number EE crystals",runChar),50,0.,50.,25,0., 25.);
@@ -367,36 +380,36 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
 
    
 
-  TH1F *hEBTimeEtaLess5 = new TH1F("hEBTimeEtaLess5","EB Timing |ieta|<5; Crystal Time (ns); Entries",100, -EBTimeMax, EBTimeMax);
-  TH1F *hEBPlusTime     = new TH1F("hEBPlusTime", "EB+ Timing; Crystal Time (ns); Entries",100, -EBTimeMax, EBTimeMax);
-  TH1F *hEBMinusTime    = new TH1F("hEBMinusTime","EB- Timing; Crystal Time (ns); Entries",100, -EBTimeMax, EBTimeMax);
-  TH2F *hEBPlus2Minus   = new TH2F("hEBPlus2Minus","EB+ to EB- Timing; EB+ Average Time (ns); EB- Average Time (ns)",50, -EBTimeMax,EBTimeMax,50, -EBTimeMax,EBTimeMax);
-  TH2F *hEEPlus2Minus   = new TH2F("hEEPlus2Minus","EE+ to EE- Timing; EE+ Average Time (ns); EE- Average Time (ns)",50, -EETimeMax, EBTimeMax, 50, -EBTimeMax, EBTimeMax);
-  TH1F *hAbsTime        = new TH1F("hAbsTime" ,     "Timing Occupancy ; Event Time Since Run Start (mins)",100, 0., diffTime);
-  TH1F *hBX             = new TH1F("hBX     " ,     "BX Occupancy ; BX of Event",3500, 0, 3500);
-  TH1F *hTriggers       = new TH1F("hTriggers",     "Trigger Occupancy; Active Trigger Bit",maxTrig, 0., maxTrig);
-  TH1F *hTechTriggers   = new TH1F("hTechTriggers", "Technical Trigger Occupancy; Active Technical Trigger Bit",maxTTrig, 0., maxTTrig);
-  TH2F *hAbsTimeVsEBPTime = new TH2F("hAbsTimeVsEBPTime","EB+ Average Timing vs. Absolute Time; EB+ Average Time (ns); Minutes since run start",50, -EBTimeMax, EBTimeMax, 50, 0., diffTime);
-  TH2F *hAbsTimeVsEBMTime = new TH2F("hAbsTimeVsEBMTime","EB- Average Timing vs. Absolute Time; EB- Average Time (ns); Minutes since run start",50, -EBTimeMax, EBTimeMax, 50, 0., diffTime);
-  TH2F *hAbsTimeVsEEPTime = new TH2F("hAbsTimeVsEEPTime","EE+ Average Timing vs. Absolute Time; EE+ Average Time (ns); Minutes since run start",50, -EETimeMax, EETimeMax, 50, 0., diffTime);
-  TH2F *hAbsTimeVsEEMTime = new TH2F("hAbsTimeVsEEMTime","EE- Average Timing vs. Absolute Time; EE- Average Time (ns); Minutes since run start",50, -EETimeMax, EETimeMax, 50, 0., diffTime);
-  TH2F *hTriggerVsEBPTime  = new TH2F("hTriggerVsEBPTime","EB+ Average Timing vs. Trigger; EB+ Average Time (ns); Active Trigger Bits",50, -EBTimeMax, EBTimeMax, maxTrig, 0., maxTrig);
-  TH2F *hTTriggerVsEBPTime = new TH2F("hTTriggerVsEBPTime","EB+ Average Timing vs. Technical Trigger; EB+ Average Time (ns); Active Technical Trigger Bits",50, -EBTimeMax, EBTimeMax, maxTTrig, 0., maxTTrig);
-  TH2F *hTriggerVsEBMTime  = new TH2F("hTriggerVsEBMTime","EB- Average Timing vs. Trigger; EB- Average Time (ns); Active Trigger Bits",50, -EBTimeMax, EBTimeMax, maxTrig, 0., maxTrig);
-  TH2F *hTTriggerVsEBMTime = new TH2F("hTTriggerVsEBMTime","EB- Average Timing vs. Technical Trigger; EB- Average Time (ns); Active Technical Trigger Bits",50, -EBTimeMax, EBTimeMax, maxTTrig, 0., maxTTrig);
-  TH2F *hTriggerVsEEPTime  = new TH2F("hTriggerVsEEPTime","EE+ Average Timing vs. Trigger; EE+ Average Time (ns); Active Trigger Bits",50, -EETimeMax, EETimeMax, maxTrig, 0., maxTrig);
-  TH2F *hTTriggerVsEEPTime = new TH2F("hTTriggerVsEEPTime","EE+ Average Timing vs. Technical Trigger; EE+ Average Time (ns); Active Technical Trigger Bits",50, -EETimeMax, EETimeMax, maxTTrig, 0., maxTTrig);
-  TH2F *hTriggerVsEEMTime  = new TH2F("hTriggerVsEEMTime","EE- Average Timing vs. Trigger; EE- Average Time (ns); Active Trigger Bits",50, -EETimeMax, EETimeMax, maxTrig, 0., maxTrig);
-  TH2F *hTTriggerVsEEMTime = new TH2F("hTTriggerVsEEMTime","EE- Average Timing vs. Technical Trigger; EE- Average Time (ns); Active Technical Trigger Bits",50, -EETimeMax, EETimeMax, maxTTrig, 0., maxTTrig);
-  TH2F *hBXVsEBPTime = new TH2F("hBXVsEBPTime","EB+ Average Timing vs. BX; EB+ Average Time (ns); BX",50, -EBTimeMax, EBTimeMax, 3500, 0., 3500);
-  TH2F *hBXVsEBMTime = new TH2F("hBXVsEBMTime","EB- Average Timing vs. BX; EB- Average Time (ns); BX",50, -EBTimeMax, EBTimeMax, 3500, 0., 3500);
-  TH2F *hBXVsEEPTime = new TH2F("hBXVsEEPTime","EE+ Average Timing vs. BX; EE+ Average Time (ns); BX",50, -EETimeMax, EETimeMax, 3500, 0., 3500);
-  TH2F *hBXVsEEMTime = new TH2F("hBXVsEEMTime","EE- Average Timing vs. BX; EE- Average Time (ns); BX",50, -EETimeMax, EETimeMax, 3500, 0., 3500);
-  TH2F *hTriggerVsAbsTime  = new TH2F("hTriggerVsAbsTime","Absolute Time vs. Trigger;Minutes Since Run Start ; Active Trigger Bits",50, 0, diffTime, maxTrig, 0., maxTrig);
-  TH2F *hTTriggerVsAbsTime  = new TH2F("hTTriggerVsAbsTime","Absolute Time vs. Tech Trigger;Minutes Since Run Start ; Active Technical Trigger Bits",50, 0, diffTime, maxTTrig, 0., maxTTrig);
-  TH2F *hBXVsAbsTime   = new TH2F("hBXVsAbsTime","Absolute Time vs. BX;Minutes Since Run Start ; BX",50, 0, diffTime, 3500, 0., 3500);
-  TH2F *hTriggerVsBX   = new TH2F("hTriggerVsBX","BX vs. Trigger; BX; Active Trigger Bits",3500,0,3500, maxTrig, 0., maxTrig);
-  TH2F *hTTriggerVsBX  = new TH2F("hTTriggerVsBX","BX vs. Technical Trigger; BX; Active Technical Trigger Bits",3500,0,3500, maxTTrig, 0., maxTTrig);
+  TH1F *hEBTimeEtaLess5 = new TH1F("hEBTimeEtaLess5",Form("%s EB Timing |ieta|<5; Crystal Time (ns); Entries",runChar),100, -EBTimeMax, EBTimeMax);
+  TH1F *hEBPlusTime     = new TH1F("hEBPlusTime", Form("%s EB+ Timing; Crystal Time (ns); Entries",runChar),100, -EBTimeMax, EBTimeMax);
+  TH1F *hEBMinusTime    = new TH1F("hEBMinusTime",Form("%s EB- Timing; Crystal Time (ns); Entries",runChar),100, -EBTimeMax, EBTimeMax);
+  TH2F *hEBPlus2Minus   = new TH2F("hEBPlus2Minus",Form("%s EB+ to EB- Timing; EB+ Average Time (ns); EB- Average Time (ns)",runChar),50, -EBTimeMax,EBTimeMax,50, -EBTimeMax,EBTimeMax);
+  TH2F *hEEPlus2Minus   = new TH2F("hEEPlus2Minus",Form("%s EE+ to EE- Timing; EE+ Average Time (ns); EE- Average Time (ns)",runChar),50, -EETimeMax, EBTimeMax, 50, -EBTimeMax, EBTimeMax);
+  TH1F *hAbsTime        = new TH1F("hAbsTime" ,     Form("%s Timing Occupancy ; Event Time Since Run Start (mins)",runChar),100, 0., diffTime);
+  TH1F *hBX             = new TH1F("hBX     " ,     Form("%s BX Occupancy ; BX of Event",runChar),3500, 0, 3500);
+  TH1F *hTriggers       = new TH1F("hTriggers",     Form("%s Trigger Occupancy; Active Trigger Bit",runChar),maxTrig, 0., maxTrig);
+  TH1F *hTechTriggers   = new TH1F("hTechTriggers", Form("%s Technical Trigger Occupancy; Active Technical Trigger Bit",runChar),maxTTrig, 0., maxTTrig);
+  TH2F *hAbsTimeVsEBPTime = new TH2F("hAbsTimeVsEBPTime",Form("%s EB+ Average Timing vs. Absolute Time; EB+ Average Time (ns); Minutes since run start",runChar),50, -EBTimeMax, EBTimeMax, 50, 0., diffTime);
+  TH2F *hAbsTimeVsEBMTime = new TH2F("hAbsTimeVsEBMTime",Form("%s EB- Average Timing vs. Absolute Time; EB- Average Time (ns); Minutes since run start",runChar),50, -EBTimeMax, EBTimeMax, 50, 0., diffTime);
+  TH2F *hAbsTimeVsEEPTime = new TH2F("hAbsTimeVsEEPTime",Form("%s EE+ Average Timing vs. Absolute Time; EE+ Average Time (ns); Minutes since run start",runChar),50, -EETimeMax, EETimeMax, 50, 0., diffTime);
+  TH2F *hAbsTimeVsEEMTime = new TH2F("hAbsTimeVsEEMTime",Form("%s EE- Average Timing vs. Absolute Time; EE- Average Time (ns); Minutes since run start",runChar),50, -EETimeMax, EETimeMax, 50, 0., diffTime);
+  TH2F *hTriggerVsEBPTime  = new TH2F("hTriggerVsEBPTime",Form("%s EB+ Average Timing vs. Trigger; EB+ Average Time (ns); Active Trigger Bits",runChar),50, -EBTimeMax, EBTimeMax, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsEBPTime = new TH2F("hTTriggerVsEBPTime",Form("%s EB+ Average Timing vs. Technical Trigger; EB+ Average Time (ns); Active Technical Trigger Bits",runChar),50, -EBTimeMax, EBTimeMax, maxTTrig, 0., maxTTrig);
+  TH2F *hTriggerVsEBMTime  = new TH2F("hTriggerVsEBMTime",Form("%s EB- Average Timing vs. Trigger; EB- Average Time (ns); Active Trigger Bits",runChar),50, -EBTimeMax, EBTimeMax, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsEBMTime = new TH2F("hTTriggerVsEBMTime",Form("%s EB- Average Timing vs. Technical Trigger; EB- Average Time (ns); Active Technical Trigger Bits",runChar),50, -EBTimeMax, EBTimeMax, maxTTrig, 0., maxTTrig);
+  TH2F *hTriggerVsEEPTime  = new TH2F("hTriggerVsEEPTime",Form("%s EE+ Average Timing vs. Trigger; EE+ Average Time (ns); Active Trigger Bits",runChar),50, -EETimeMax, EETimeMax, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsEEPTime = new TH2F("hTTriggerVsEEPTime",Form("%s EE+ Average Timing vs. Technical Trigger; EE+ Average Time (ns); Active Technical Trigger Bits",runChar),50, -EETimeMax, EETimeMax, maxTTrig, 0., maxTTrig);
+  TH2F *hTriggerVsEEMTime  = new TH2F("hTriggerVsEEMTime",Form("%s EE- Average Timing vs. Trigger; EE- Average Time (ns); Active Trigger Bits",runChar),50, -EETimeMax, EETimeMax, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsEEMTime = new TH2F("hTTriggerVsEEMTime",Form("%s EE- Average Timing vs. Technical Trigger; EE- Average Time (ns); Active Technical Trigger Bits",runChar),50, -EETimeMax, EETimeMax, maxTTrig, 0., maxTTrig);
+  TH2F *hBXVsEBPTime = new TH2F("hBXVsEBPTime",Form("%s EB+ Average Timing vs. BX; EB+ Average Time (ns); BX",runChar),50, -EBTimeMax, EBTimeMax, 3500, 0., 3500);
+  TH2F *hBXVsEBMTime = new TH2F("hBXVsEBMTime",Form("%s EB- Average Timing vs. BX; EB- Average Time (ns); BX",runChar),50, -EBTimeMax, EBTimeMax, 3500, 0., 3500);
+  TH2F *hBXVsEEPTime = new TH2F("hBXVsEEPTime",Form("%s EE+ Average Timing vs. BX; EE+ Average Time (ns); BX",runChar),50, -EETimeMax, EETimeMax, 3500, 0., 3500);
+  TH2F *hBXVsEEMTime = new TH2F("hBXVsEEMTime",Form("%s EE- Average Timing vs. BX; EE- Average Time (ns); BX",runChar),50, -EETimeMax, EETimeMax, 3500, 0., 3500);
+  TH2F *hTriggerVsAbsTime  = new TH2F("hTriggerVsAbsTime",Form("%s Absolute Time vs. Trigger;Minutes Since Run Start ; Active Trigger Bits",runChar),50, 0, diffTime, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsAbsTime  = new TH2F("hTTriggerVsAbsTime",Form("%s Absolute Time vs. Tech Trigger;Minutes Since Run Start ; Active Technical Trigger Bits",runChar),50, 0, diffTime, maxTTrig, 0., maxTTrig);
+  TH2F *hBXVsAbsTime   = new TH2F("hBXVsAbsTime",Form("%s Absolute Time vs. BX;Minutes Since Run Start ; BX",runChar),50, 0, diffTime, 3500, 0., 3500);
+  TH2F *hTriggerVsBX   = new TH2F("hTriggerVsBX",Form("%s BX vs. Trigger; BX; Active Trigger Bits",runChar),3500,0,3500, maxTrig, 0., maxTrig);
+  TH2F *hTTriggerVsBX  = new TH2F("hTTriggerVsBX",Form("%s BX vs. Technical Trigger; BX; Active Technical Trigger Bits",runChar),3500,0,3500, maxTTrig, 0., maxTTrig);
   
   
   TProfile2D* NtimeCHProfile = NewTProfile2D(timeCHProfile,"NtimeCHProfile");
@@ -1158,82 +1171,13 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsBX_%i.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
 
 
-
-
-  //FINAL 1D timing number, by crystal by TT
-  c[66]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *tthistEB = HistFromTProfile2D(timeTTProfile,"tthistEB",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s Average TT Timing (EB);TT time average (ns)",runChar); 
-  tthistEB->SetTitle(mytitle);
-  tthistEB->GetXaxis()->SetNdivisions(512);
-  if (tthistEB->GetMean() != 0 && fit) tthistEB->Fit("gaus");
-  c[66]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[66]->Print(name); }
-
-  c[67]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *chhistEB = HistFromTProfile2D(timeCHProfile,"chhistEB",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s Average CH Timing (EB);CH time average (ns)",runChar); 
-  chhistEB->SetTitle(mytitle);
-  chhistEB->GetXaxis()->SetNdivisions(512);
-  if (chhistEB->GetMean() != 0 && fit ) chhistEB->Fit("gaus");
-  c[67]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
-
-  c[68]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *tthistEEP = HistFromTProfile2D(EEPtimeTTProfile,"tthistEEP",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s EE+ TT Timing;TT time average (ns)",runChar); 
-  tthistEEP->SetTitle(mytitle);
-  tthistEEP->GetXaxis()->SetNdivisions(512);
-  if (tthistEEP->GetMean() != 0 && fit) tthistEEP->Fit("gaus");
-  c[68]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[68]->Print(name); }
-
-  c[69]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *chhistEEP = HistFromTProfile2D(EEPtimeCHProfile,"chhistEEP",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s EE+ CH Timing;CH time average (ns)",runChar); 
-  chhistEEP->SetTitle(mytitle);
-  chhistEEP->GetXaxis()->SetNdivisions(512);
-  if (chhistEEP->GetMean() != 0 && fit) chhistEEP->Fit("gaus");
-  c[69]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[69]->Print(name); }
-
-  c[70]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *tthistEEM = HistFromTProfile2D(EEMtimeTTProfile,"tthistEEM",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s EE- TT Timing;TT time average (ns)",runChar); 
-  tthistEEM->SetTitle(mytitle);
-  tthistEEM->GetXaxis()->SetNdivisions(512);
-  if (tthistEEM->GetMean() != 0 && fit) tthistEEM->Fit("gaus");
-  c[70]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[70]->Print(name); }
-
-  c[71]->cd();
-  gStyle->SetOptStat(111110);
-  gStyle->SetOptFit(111);
-  TH1F *chhistEEM = HistFromTProfile2D(EEMtimeCHProfile,"chhistEEM",200, -30., 40.,-5.,25.);
-  sprintf(mytitle,"%s EE- CH Timing;CH time average (ns)",runChar); 
-  chhistEEM->SetTitle(mytitle);
-  chhistEEM->GetXaxis()->SetNdivisions(512);
-  if (chhistEEM->GetMean() != 0 && fit) chhistEEM->Fit("gaus");
-  c[71]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[71]->Print(name); }
-
   //Like the Above section, these MUST be done before any Scal0TProfile2D function is called
   //Now I do the occupancy 
   c[39]->cd();
   gStyle->SetOptStat(10);
   TProfile2D *timeCHProfileO = TProfile2DOccupancyFromProf2D(NtimeCHProfile,"timeCHProfileO");
   timeCHProfileO->Draw("colz");
-  sprintf(mytitle,"CH occupancy"); 
+  sprintf(mytitle,Form("%s EB CH occupancy",runChar)); 
   timeCHProfileO->SetTitle(mytitle);
   timeCHProfileO->SetMinimum(1.);
   timeCHProfileO->GetXaxis()->SetNdivisions(-18);
@@ -1249,7 +1193,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   TProfile2D *timeTTProfileO = TProfile2DOccupancyFromProf2D(NtimeTTProfile,"timeTTProfileO");
   timeTTProfileO->Draw("colz");
-   sprintf(mytitle,"TT occupancy"); 
+  sprintf(mytitle,Form("%s EB TT occupancy",runChar)); 
   timeTTProfileO->SetTitle(mytitle);
   timeTTProfileO->SetMinimum(1.);
   timeTTProfileO->GetXaxis()->SetNdivisions(-18);
@@ -1265,9 +1209,10 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   TProfile2D *EEPtimeCHProfileO = TProfile2DOccupancyFromProf2D(NEEPtimeCHProfile,"EEPtimeCHProfileO");
   EEPtimeCHProfileO->Draw("colz");
-   sprintf(mytitle,"CH occupancy"); 
+  sprintf(mytitle,Form("%s EE+ CH occupancy",runChar)); 
   EEPtimeCHProfileO->SetTitle(mytitle);
   EEPtimeCHProfileO->SetMinimum(1.);
+  EEPtimeCHProfileO->SetNdivisions(18);
   c[41]->SetLogy(0);
   c[41]->SetLogz(1);
   drawEELines();
@@ -1278,9 +1223,10 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   TProfile2D *EEMtimeCHProfileO = TProfile2DOccupancyFromProf2D(NEEMtimeCHProfile,"EEMtimeCHProfileO");
   EEMtimeCHProfileO->Draw("colz");
-   sprintf(mytitle,"CH occupancy"); 
+  sprintf(mytitle,Form("%s EE- CH occupancy",runChar)); 
   EEMtimeCHProfileO->SetTitle(mytitle);
   EEMtimeCHProfileO->SetMinimum(1.);
+  EEMtimeCHProfileO->SetNdivisions(18);
   c[42]->SetLogy(0);
   c[42]->SetLogz(1);
   drawEELines();
@@ -1291,9 +1237,10 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   TProfile2D *EEPtimeTTProfileO = TProfile2DOccupancyFromProf2D(NEEPtimeTTProfile,"EEPtimeTTProfileO");
   EEPtimeTTProfileO->Draw("colz");
-   sprintf(mytitle,"TT occupancy"); 
+  sprintf(mytitle,Form("%s EE+ TT occupancy",runChar)); 
   EEPtimeTTProfileO->SetTitle(mytitle);
   EEPtimeTTProfileO->SetMinimum(1.);
+  EEPtimeTTProfileO->SetNdivisions(18);
   c[44]->SetLogy(0);
   c[44]->SetLogz(1);
   drawEELines();
@@ -1304,9 +1251,10 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   TProfile2D *EEMtimeTTProfileO = TProfile2DOccupancyFromProf2D(NEEMtimeTTProfile,"EEMtimeTTProfileO");
   EEMtimeTTProfileO->Draw("colz");
-   sprintf(mytitle,"TT occupancy"); 
+  sprintf(mytitle,Form("%s EE- TT occupancy",runChar)); 
   EEMtimeTTProfileO->SetTitle(mytitle);
   EEMtimeTTProfileO->SetMinimum(1.);
+  EEMtimeTTProfileO->SetNdivisions(18);
   c[43]->SetLogy(0);
   c[43]->SetLogz(1);
   drawEELines();
@@ -1332,6 +1280,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   NfullAmpProfileEEP->Draw("colz");
   if (NfullAmpProfileEEP->GetMaximum() > 0 ) {
      NfullAmpProfileEEP->SetMinimum(0.1);
+     NfullAmpProfileEEP->SetNdivisions(18);
      c[22]->SetLogy(0);
      c[22]->SetLogz(1);
   }
@@ -1343,6 +1292,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   NfullAmpProfileEEM->Draw("colz");
   if (NfullAmpProfileEEM->GetMaximum() > 0 ) {
      NfullAmpProfileEEM->SetMinimum(0.1);
+     NfullAmpProfileEEM->SetNdivisions(18);
      c[23]->SetLogy(0);
      c[23]->SetLogz(1);
   }
@@ -1359,7 +1309,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   Scale0TProfile2D(NtimeCHProfile);
   NtimeCHProfile->Draw("colz");
-  sprintf(mytitle,"%s in ns",timeCHProfile->GetTitle()); 
+  sprintf(mytitle,"%s Timing 2-D Profile in ns;i#phi,i#eta",runChar); 
   NtimeCHProfile->SetTitle(mytitle);
   NtimeCHProfile->SetMinimum(tlowc);
   NtimeCHProfile->SetMaximum(thighc);
@@ -1376,7 +1326,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[67]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
-  TH1F *chhistEBN = HistNFromTProfile2D(NtimeCHProfile,"chhistEBN",200, -30., 40.);
+  TH1F *chhistEBN = HistNFromTProfile2D(NtimeCHProfile,"chhistEBN",200, -EBTimeMax, EBTimeMax);
+  chhistEBN->Draw();
   sprintf(mytitle,"%s Average CH Timing (EB);CH time average (ns)",runChar); 
   chhistEBN->SetTitle(mytitle);
   chhistEBN->GetXaxis()->SetNdivisions(512);
@@ -1388,7 +1339,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   Scale0TProfile2D(NtimeTTProfile);
   NtimeTTProfile->Draw("colz");
-  sprintf(mytitle,"%s in ns",timeTTProfile->GetTitle()); 
+  sprintf(mytitle,"%s Timing 2-D Profile in ns (TT binning);i#phi,i#eta",runChar); 
   NtimeTTProfile->SetTitle(mytitle);
   NtimeTTProfile->SetMinimum(tlowc);
   NtimeTTProfile->SetMaximum(thighc);
@@ -1405,7 +1356,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[67]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
-  TH1F *tthistEBN = HistNFromTProfile2D(NtimeTTProfile,"tthistEBN",200, -30., 40.);
+  TH1F *tthistEBN = HistNFromTProfile2D(NtimeTTProfile,"tthistEBN",200, -EBTimeMax, EBTimeMax);
+  tthistEBN->Draw();
   sprintf(mytitle,"%s Average TT Timing (EB);TT time average (ns)",runChar); 
   tthistEBN->SetTitle(mytitle);
   tthistEBN->GetXaxis()->SetNdivisions(512);
@@ -1417,7 +1369,9 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   Scale0TProfile2D(NEEPtimeCHProfile);
   NEEPtimeCHProfile->Draw("colz");
-  sprintf(mytitle,"%s in ns",EEPtimeCHProfile->GetTitle()); 
+  //sprintf(mytitle,"%s in ns",EEPtimeCHProfile->GetTitle()); 
+  sprintf(mytitle,"%s EE+ Timing 2-D Profile in ns;ix,iy",runChar); 
+
   NEEPtimeCHProfile->SetTitle(mytitle);
   NEEPtimeCHProfile->SetMinimum(tlowc);
   NEEPtimeCHProfile->SetMaximum(thighc);
@@ -1435,7 +1389,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[67]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
-  TH1F *chhistEEPN = HistNFromTProfile2D(NEEPtimeCHProfile,"chhistEEPN",200, -30., 40.);
+  TH1F *chhistEEPN = HistNFromTProfile2D(NEEPtimeCHProfile,"chhistEEPN",200, -EBTimeMax, EBTimeMax);
+  chhistEEPN->Draw();
   sprintf(mytitle,"%s Average CH Timing (EE+);CH time average (ns)",runChar); 
   chhistEEPN->SetTitle(mytitle);
   chhistEEPN->GetXaxis()->SetNdivisions(512);
@@ -1447,7 +1402,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   Scale0TProfile2D(NEEPtimeTTProfile);
   NEEPtimeTTProfile->Draw("colz");
-  sprintf(mytitle,"%s in ns",EEPtimeTTProfile->GetTitle()); 
+  //sprintf(mytitle,"%s in ns",EEPtimeTTProfile->GetTitle());
+  sprintf(mytitle,"%s EE+ Timing 2-D Profile in ns (TT binning);ix,iy",runChar);
   NEEPtimeTTProfile->SetTitle(mytitle);
   NEEPtimeTTProfile->SetMinimum(tlowc);
   NEEPtimeTTProfile->SetMaximum(thighc);
@@ -1462,7 +1418,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[67]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
-  TH1F *tthistEEPN = HistNFromTProfile2D(NEEPtimeTTProfile,"tthistEEPN",200, -30., 40.);
+  TH1F *tthistEEPN = HistNFromTProfile2D(NEEPtimeTTProfile,"tthistEEPN",200, -EBTimeMax, EBTimeMax);
+  tthistEEPN->Draw();
   sprintf(mytitle,"%s Average TT Timing (EE+);TT time average (ns)",runChar); 
   tthistEEPN->SetTitle(mytitle);
   tthistEEPN->GetXaxis()->SetNdivisions(512);
@@ -1474,7 +1431,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   Scale0TProfile2D(NEEMtimeCHProfile);
   NEEMtimeCHProfile->Draw("colz");
-  sprintf(mytitle,"%s in ns",EEMtimeCHProfile->GetTitle()); 
+  //sprintf(mytitle,"%s in ns",EEMtimeCHProfile->GetTitle()); 
+  sprintf(mytitle,"%s EE- Timing 2-D Profile in ns;ix,iy",runChar);
   NEEMtimeCHProfile->SetTitle(mytitle);
   NEEMtimeCHProfile->SetMinimum(tlowc);
   NEEMtimeCHProfile->SetMaximum(thighc);
@@ -1490,7 +1448,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[67]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
-  TH1F *chhistEEMN = HistNFromTProfile2D(NEEMtimeCHProfile,"chhistEEMN",200, -30., 40.);
+  TH1F *chhistEEMN = HistNFromTProfile2D(NEEMtimeCHProfile,"chhistEEMN",200, -EBTimeMax, EBTimeMax);
+  chhistEEMN->Draw();
   sprintf(mytitle,"%s Average CH Timing (EE-);CH time average (ns)",runChar); 
   chhistEEMN->SetTitle(mytitle);
   chhistEEMN->GetXaxis()->SetNdivisions(512);
@@ -1502,7 +1461,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(10);
   Scale0TProfile2D(NEEMtimeTTProfile);
   NEEMtimeTTProfile->Draw("colz");
-  sprintf(mytitle,"%s in ns",EEMtimeTTProfile->GetTitle()); 
+  //sprintf(mytitle,"%s in ns",EEMtimeTTProfile->GetTitle()); 
+  sprintf(mytitle,"%s EE- Timing 2-D Profile in ns (5x5 binning);ix,iy",runChar);
   NEEMtimeTTProfile->SetTitle(mytitle);
   NEEMtimeTTProfile->SetMinimum(tlowc);
   NEEMtimeTTProfile->SetMaximum(thighc);
@@ -1518,7 +1478,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[67]->cd();
   gStyle->SetOptStat(111110);
   gStyle->SetOptFit(111);
-  TH1F *tthistEEMN = HistNFromTProfile2D(NEEMtimeTTProfile,"tthistEEMN",200, -30., 40.);
+  TH1F *tthistEEMN = HistNFromTProfile2D(NEEMtimeTTProfile,"tthistEEMN",200, -EBTimeMax, EBTimeMax);
+  tthistEEMN->Draw();
   sprintf(mytitle,"%s Average TT Timing (EE-);TT time average (ns)",runChar); 
   tthistEEMN->SetTitle(mytitle);
   tthistEEMN->GetXaxis()->SetNdivisions(512);
@@ -1560,11 +1521,113 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   gStyle->SetOptStat(100);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHAllFEDsEtaRel_%i.%s",dirName,mType,runNumber,fileType); c[27]->Print(name); }
  
-
-  cout << name << endl;
-
   cout << " The Starting Time is " << habsTime->GetXaxis()->GetXmin() << endl;
-  return (habsTime->GetXaxis()->GetXmin()+ 1215192037.0); 
+  double returntime=habsTime->GetXaxis()->GetXmin()+ 1215192037.0;
+  cout << name << endl;
+  TFile *pfile = new TFile(Form("%s/%s",dirName,plotfile),"RECREATE");
+  NtimeCHAllFEDsEta->Write();
+  NtimeTTAllFEDsEtaEEM->Write();
+  NtimeTTAllFEDsEtaEEP->Write();
+  NtimeTTAllFEDsEta->Write();
+  //SM_timing->Write();
+  SM_timingh->Write();
+  //LM_timing->Write();
+  LM_timingh->Write();
+  Inside_TT_timing->Write();
+  timeTTAllFEDsEta->Write();
+  timeTTAllFEDsEtaEEP->Write();
+  timeTTAllFEDsEtaEEM->Write();
+  timeCHAllFEDsEta->Write();
+  Rel_TimingSigma->Write();
+  XtalsPerEvt->Write();
+  laserShift->Write();
+  RelRMS_vs_AbsTime->Write();
+  TTMeanWithRMS_All_FEDS->Write();
+  hctEB->Write();
+  hctEE->Write();
+  hctEEp->Write();
+  hctEEm->Write();
+  hctEEtoAve->Write();
+  hctEBtoAve->Write();
+  hctEBtoTerr->Write();
+  hctEEtoTerr->Write();
+  hctEEtoAmp->Write();
+  hctEBtoAmp->Write();
+  hctEBtoAmpEvt->Write();
+  hctEEtoAmpEvt->Write();
+  hctEEtoAmpErr->Write();
+  hctEBtoAmpErr->Write();
+  hctEBHashed->Write();
+  hctEEHashed->Write();
+  hctEBtoHashed->Write();
+  hctEEtoHashed->Write();
+  hctEBCry->Write();
+  hctEECry->Write();
+  hctEBCryT->Write();
+  hctEEpCryT->Write();
+  hctEEmCryT->Write();
+  hctEEMEEP->Write();
+  hctEEMDEEPcry->Write();
+  hctEEMDEEP->Write();
+  hctEEcryamp->Write();
+  hctEBcryamp->Write();
+  hEBTimeEtaLess5->Write();
+  hEBPlusTime->Write();
+  hEBMinusTime->Write();
+  hEBPlus2Minus->Write();
+  hAbsTime->Write();
+  hBX->Write();   
+  hTriggers->Write();
+  hTechTriggers->Write();
+  hAbsTimeVsEBPTime->Write();
+  hAbsTimeVsEBMTime->Write();
+  hAbsTimeVsEEPTime->Write();
+  hAbsTimeVsEEMTime->Write();
+  hTriggerVsEBPTime->Write();
+  hTTriggerVsEBPTime->Write();
+  hTriggerVsEBMTime->Write();
+  hTTriggerVsEBMTime->Write();
+  hTriggerVsEEPTime->Write();
+  hTTriggerVsEEPTime->Write();
+  hTriggerVsEEMTime->Write();
+  hTTriggerVsEEMTime->Write();
+  hBXVsEBPTime->Write();
+  hBXVsEBMTime->Write();
+  hBXVsEEPTime->Write();
+  hBXVsEEMTime->Write();
+  hTriggerVsAbsTime->Write();
+  hTTriggerVsAbsTime->Write();
+  hBXVsAbsTime->Write();
+  hTriggerVsBX->Write();
+  hTTriggerVsBX->Write();
+  timeCHProfileO->Write();
+  timeTTProfileO->Write();
+  EEPtimeCHProfileO->Write();
+  EEMtimeCHProfileO->Write();
+  EEPtimeTTProfileO->Write();
+  EEMtimeTTProfileO->Write();
+  NfullAmpProfileEB->Write();
+  NfullAmpProfileEEP->Write();
+  NfullAmpProfileEEM->Write();
+  NtimeCHProfile->Write();
+  chhistEBN->Write();
+  NtimeTTProfile->Write();
+  tthistEBN->Write();
+  NEEPtimeCHProfile->Write();
+  chhistEEPN->Write();
+  NEEPtimeTTProfile->Write();
+  tthistEEPN->Write();
+  NEEMtimeCHProfile->Write();
+  chhistEEMN->Write();
+  NEEMtimeTTProfile->Write();
+  tthistEEMN->Write();
+  
+  pfile->Write();
+  pfile->Close();
+
+  //cout << " The Starting Time is " << habsTime->GetXaxis()->GetXmin() << endl;
+  cout << " the plot file is " << plotfile << endl;
+  return (returntime); 
 
 }
 
