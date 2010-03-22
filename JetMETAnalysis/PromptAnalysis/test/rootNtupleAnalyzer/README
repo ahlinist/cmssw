@@ -38,7 +38,9 @@ Instructions:
    IMPORTANT NOTE:	
    you need to add 
 
-   #include <vector.h>
+   #include <vector>
+   AND
+   using namespace std;
 
    to the file 
 
