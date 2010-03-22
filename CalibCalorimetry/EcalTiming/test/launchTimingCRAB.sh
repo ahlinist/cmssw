@@ -68,7 +68,14 @@ if [ "X"${data_set} == "X" ]
     data_set="/BeamHaloExpress/BeamCommissioning09-Express-v1/FEVT"
 fi
 
-echo 'Submitting CRAB Timing analysis jobs for' ${run_num} 'dataset' ${data_set}
+
+if [ "X"${file_name} == "X" ]
+    then
+    echo "You are using crab"
+    echo 'Submitting CRAB Timing analysis jobs for' ${run_num} 'dataset' ${data_set}
+else
+    echo "You are NOT using crab. You are directly running on a skimmed file" 
+fi
 
 #if [ "X"${output_dir} == "X" ]
 #    then
