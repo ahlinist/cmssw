@@ -822,6 +822,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEB,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
+       double rhtime = mytime;
 	   if ( rhits ) {
 	      EcalRecHitCollection::const_iterator itt = rhits->find(anid);
 		  if(itt==rhits->end()) continue;
@@ -832,13 +833,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	           rhFlag == EcalRecHit::kPoorCalib
 	           )
 	          ) continue;
-		  damp = (*itt).energy();	  
+		  damp = (*itt).energy();
+		  rhtime = (*itt).time();
 	   }
        if (correctAVE_) mytime += 5.0 - averagetimeEB;
        if (timingTree_)
 	 { 
 	   TTreeMembers_.cryHashesEB_[TTreeMembers_.numEBcrys_]=anid.hashedIndex();
-	   TTreeMembers_.cryTimesEB_[TTreeMembers_.numEBcrys_]=mytime;
+	   TTreeMembers_.cryTimesEB_[TTreeMembers_.numEBcrys_]=rhtime;
 	   TTreeMembers_.cryTimeErrorsEB_[TTreeMembers_.numEBcrys_]=ithit->chi2();
 	   TTreeMembers_.cryAmpsEB_[TTreeMembers_.numEBcrys_]=damp;
 	   TTreeMembers_.numEBcrys_++;
@@ -960,6 +962,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	   if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEE,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
+       double rhtime = mytime;
        //if (correctAVE_) mytime += 5.0 - averagetimeEE;
        if (correctAVE_) mytime += 5.0 - averagetimeEB; //ACK, a HACK by Jason to make things work 'his' way.
 	   if ( rhitsEE ) {
@@ -973,11 +976,12 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	           )
 	          ) continue;
 		  damp = (*itt).energy();	  
+		  rhtime = (*itt).time();
 	   }
        if (timingTree_)
 	 {
 	   TTreeMembers_.cryHashesEE_[TTreeMembers_.numEEcrys_]=SMind;
-	   TTreeMembers_.cryTimesEE_[TTreeMembers_.numEEcrys_]=mytime;
+	   TTreeMembers_.cryTimesEE_[TTreeMembers_.numEEcrys_]=rhtime;
 	   TTreeMembers_.cryTimeErrorsEE_[TTreeMembers_.numEEcrys_]=ithit->chi2();
 	   TTreeMembers_.cryAmpsEE_[TTreeMembers_.numEEcrys_]=damp;
 	   TTreeMembers_.numEEcrys_++;

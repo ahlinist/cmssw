@@ -278,7 +278,7 @@ process.source = cms.Source('PoolSource',
 fi
 
 path="
-process.p = cms.Path(process.ecalDigis*process.ecalDccDigis*process.uncalibHitMaker*process.ecalDetIdToBeRecovered*process.ecalRecHit*process.timing)
+process.p = cms.Path(process.gtDigis*process.ecalDigis*process.ecalDccDigis*process.uncalibHitMaker*process.ecalDetIdToBeRecovered*process.ecalRecHit*process.timing)
 "
 
 if [[ $from_file == "True" ]]; then
@@ -357,7 +357,19 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 #process.GlobalTag.globaltag = 'GR09_31X_V6P::All'
-process.GlobalTag.globaltag = 'GR10_P_V2::All'
+process.GlobalTag.globaltag = 'GR10_P_V4::All'
+
+process.load("L1TriggerConfig.L1GtConfigProducers.L1GtConfig_cff")
+process.load("L1TriggerConfig.L1GtConfigProducers.Luminosity.startup.L1Menu_startup_v3_Unprescaled_cff")
+process.load("L1TriggerConfig.L1GtConfigProducers.L1GtBoardMapsConfig_cff")
+process.load("L1TriggerConfig.L1ScalesProducers.L1MuTriggerScalesConfig_cff")
+process.load("L1TriggerConfig.L1ScalesProducers.L1MuTriggerPtScaleConfig_cff")
+import FWCore.Modules.printContent_cfi
+process.dumpEv = FWCore.Modules.printContent_cfi.printContent.clone()
+import EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi
+process.gtDigis = EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi.l1GtUnpack.clone()
+process.gtDigis.DaqGtInputTag = 'source'
+
 
 
 process.maxEvents = cms.untracked.PSet(
@@ -400,6 +412,7 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                                                              5., 5., 5., 5.),                                                                          
 				  hitProducerEE = cms.string('uncalibHitMaker'),
 				  rhitProducerEE = cms.untracked.string('ecalRecHit'),
+				  GTRecordCollection = cms.string('gtDigis'),
                                   amplThr = cms.untracked.double($threshold),
                                   SMCorrections = cms.untracked.vdouble(5.0, 5.0, 5.0, 5.0, 5.0,
                                                                         5.0, 5.0, 5.0, 5.0, 5.0,
