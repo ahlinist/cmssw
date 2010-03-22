@@ -230,45 +230,57 @@ void optimize(const string& fFile, const string& fPlot, const double fXmin, cons
 void plotGraphs() {
 
    double ieta[] = {30,31,32,33,34,35,36,37,38,39,40,41};
-   double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.118896,0.0913756,0.0589927};
-   double intercepts[] = {-0.0655561,-0.0951387,-0.122556,-0.154149,-0.21621,-0.251908,-0.332643,-0.36381,-0.435446,-0.527373,-0.411981,-0.27025};
+//    double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.118896,0.0913756,0.0589927};
+   double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.135313,0.136289,0.0589927};
+   
+   double ieta_fit[] = {30,31,32,33,34,35,36,37,38,40};
+   double slopes_fit[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.136289};
+   
+//    double intercepts[] = {-0.0655561,-0.0951387,-0.122556,-0.154149,-0.21621,-0.251908,-0.332643,-0.36381,-0.435446,-0.527373,-0.411981,-0.27025};
+   double intercepts[] = {-0.0655561,-0.0951387,-0.122556,-0.154149,-0.21621,-0.251908,-0.332643,-0.36381,-0.435446,-0.60019,-0.614481,-0.27025};
    
    TCanvas *c = new TCanvas("c","",1200,800);
 //    TCanvas *c = new TCanvas("c");
    c->cd();
    
-   TGraph* g1 = new TGraph(12,ieta,intercepts);
-//    g1->SetMarkerSize(2.);
-   g1->SetMarkerStyle(20);
-   g1->SetMarkerColor(kRed);
-   g1->GetXaxis()->SetTitle("i#eta");
-   g1->GetYaxis()->SetTitle("Intercept");
-   g1->Draw("AP");
+   TGraph* g = new TGraph(12,ieta,intercepts);
+//    g->SetMarkerSize(2.);
+   g->SetMarkerStyle(20);
+   g->SetMarkerColor(kBlue);
+   g->GetXaxis()->SetTitle("i#eta");
+   g->GetYaxis()->SetTitle("Intercept");
+   g->Draw("AP");
 
    c->SetGridx();
    c->SetGridy();
 //    c->SaveAs("intercepts.png");
    
-   delete g1;
+   delete g;
    
-   g1 = new TGraph(12,ieta,slopes);
-   g1->SetMarkerStyle(20);
-   g1->SetMarkerColor(kRed);
-   g1->SetMaximum(0.16);
-   g1->GetXaxis()->SetTitle("i#eta");
-   g1->GetYaxis()->SetTitle("Slope");
-   g1->Draw("AP");
+   g = new TGraph(12,ieta,slopes);
+   g->SetMarkerStyle(20);
+   g->SetMarkerColor(kBlue);
+   g->SetMaximum(0.19);
+   g->GetXaxis()->SetTitle("i#eta");
+   g->GetYaxis()->SetTitle("Slope");
+   g->Draw("AP");
+   
+   TGraph* g_fit = new TGraph(10,ieta_fit,slopes_fit);
+   g_fit->SetMarkerStyle(20);
+   g_fit->SetMarkerColor(kGreen+2);
+   g_fit->Draw("P");
+   
+   TF1* fit = new TF1("fit","pol2",29,40.5);
 
-   TF1* fit = new TF1("fit","pol2",29,39.5);
-   
-   g1->Fit("fit","R");
+   g_fit->Fit("fit","R");
    
    c->SetGridx();
    c->SetGridy();
    c->SaveAs("slopes.png");
    
    delete fit;
-   delete g1;
+   delete g;
+   delete g_fit;
    delete c;
 }
 
@@ -285,7 +297,8 @@ void plot2D(const string& fFile, const string& fPlot, const double fXmin, const 
    slope_func->SetParameter(1,-0.02577);
    slope_func->SetParameter(2,0.0005351);
    
-   double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.118896,0.0913756,0.0589927};
+//    double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.118896,0.0913756,0.0589927};
+   double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.135313,0.136289,0.0589927};
  
    TCanvas *c = new TCanvas("c","",1200,800);
 //    TCanvas *c = new TCanvas("c");
@@ -413,14 +426,14 @@ void makePlots() {
 
 //    optimize(MC_SinglePhotons, "h2_S9oS1_vs_E_L_ieta", 0.1, 630, -0.1, 0.5, 0.1, 0.001, 0.001, "E [GeV]", "S9/S1", "MC SinglePhotons", "MC_SinglePhotons_opt.png",1,0,1);
 
-//    plotGraphs();
+   plotGraphs();
 
-   plot2D(data_900, "h2_S9oS1_vs_E_L_Flagged_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "Collisions  #sqrt{s}=900 GeV", "Data_900GeV.png",1,0,1);
+//    plot2D(data_900, "h2_S9oS1_vs_E_L_Flagged_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "Collisions  #sqrt{s}=900 GeV", "Data_900GeV.png",1,0,1);
 //    plot2D(data_900_S9oS1, "h2_S9oS1_vs_E_L_Flagged_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "Collisions  #sqrt{s}=900 GeV", "Data_900GeV_S9oS1.png",1,0,1);
 //    plot2D(data_2360, "h2_S9oS1_vs_E_L_Flagged_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "Collisions  #sqrt{s}=2360 GeV", "Data_2360GeV.png",1,0,0);
 //    plot2D(data_2360_S9oS1, "h2_S9oS1_vs_E_L_Flagged_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "Collisions  #sqrt{s}=2360 GeV", "Data_2360GeV_S9oS1.png",1,0,0);
-   plot2D(MC_MB_7000, "h2_S9oS1_vs_E_L_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "MC MinBias  #sqrt{s}=7 TeV", "MC_MinBias_7TeV.png",1,0,1);
-   plot2D(MC_QCD_FlatPt_7000, "h2_S9oS1_vs_E_L_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "MC QCD FlatPt  #sqrt{s}=7 TeV", "MC_QCD_FlatPt_7TeV.png",1,0,1);
-   plot2D(MC_SinglePhotons, "h2_S9oS1_vs_E_L_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "MC SinglePhotons", "MC_SinglePhotons.png",1,0,1);
+//    plot2D(MC_MB_7000, "h2_S9oS1_vs_E_L_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "MC MinBias  #sqrt{s}=7 TeV", "MC_MinBias_7TeV.png",1,0,1);
+//    plot2D(MC_QCD_FlatPt_7000, "h2_S9oS1_vs_E_L_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "MC QCD FlatPt  #sqrt{s}=7 TeV", "MC_QCD_FlatPt_7TeV.png",1,0,1);
+//    plot2D(MC_SinglePhotons, "h2_S9oS1_vs_E_L_ieta", 0.1, 630, -0.1, 0.5, "E [GeV]", "S9/S1", "MC SinglePhotons", "MC_SinglePhotons.png",1,0,1);
 
 }
