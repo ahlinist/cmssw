@@ -1,5 +1,5 @@
 int Wait() {
-     cout << " Continue [<RET>|q]?  "; 
+     cout << " Continue [RET>|q]?  "; 
      char x;
      x = getchar();
      if ((x == 'q') || (x == 'Q')) return 1;
@@ -347,6 +347,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TH1F *hctEE    = new TH1F("hctEE",  Form("%s EE Crystal Times;Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
   TH1F *hctEEp   = new TH1F("hctEEp", Form("%s EE+ Crystal Times;Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
   TH1F *hctEEm   = new TH1F("hctEEm", Form("%s EE- Crystal Times;Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
+  TH1F *hctEEpB  = new TH1F("hctEEpB", Form("%s EE+ Crystal Times (When EE- has signal);Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
+  TH1F *hctEEmB  = new TH1F("hctEEmB", Form("%s EE- Crystal Times (When EE+ has signal);Time (ns);Number of Crystals",runChar),100, -EETimeMax, EETimeMax);
   
   TH2F *hctEEtoAve  = new TH2F("hctEEtoAve", Form("%s EE Crystal Times to Average Time;Crystal Time (ns);Average EE Event Time (ns)",runChar),50, -EETimeMax, EETimeMax, 50, -EETimeMax, EETimeMax);
   TH2F *hctEBtoAve  = new TH2F("hctEBtoAve", Form("%s EB Crystal Times to Average Time;Crystal Time (ns);Average EB Event Time (ns)",runChar),50, -EBTimeMax, EBTimeMax, 50, -EBTimeMax, EBTimeMax);
@@ -459,7 +461,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
          int crystalHashedIndicesEB = TTreeMembers_.cryHashesEB_[ebx];
          if (crystalHashedIndicesEB == 25822 || crystalHashedIndicesEB == 32705 || crystalHashedIndicesEB == 56473) continue;
          mydet    = EBDetId::unhashIndex(crystalHashedIndicesEB);
-         double myt     = (TTreeMembers_.cryTimesEB_[ebx] -5.0)*25;
+         //double myt     = (TTreeMembers_.cryTimesEB_[ebx] -5.0)*25;
+	 double myt     = TTreeMembers_.cryTimesEB_[ebx];
          double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
@@ -485,7 +488,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
          int crystalHashedIndicesEE = TTreeMembers_.cryHashesEE_[eex];
          if (crystalHashedIndicesEE == 11658 || crystalHashedIndicesEE == 11742 || crystalHashedIndicesEE == 10224 || crystalHashedIndicesEE == 10225 || crystalHashedIndicesEE == 10226 || crystalHashedIndicesEE == 10310 || crystalHashedIndicesEE == 10311 || crystalHashedIndicesEE == 10394 || crystalHashedIndicesEE == 10395 || crystalHashedIndicesEE == 10875 || crystalHashedIndicesEE == 11316 || crystalHashedIndicesEE == 11659 || crystalHashedIndicesEE == 11660 || crystalHashedIndicesEE == 11661 || crystalHashedIndicesEE == 11743  || crystalHashedIndicesEE == 11744 || crystalHashedIndicesEE == 11744 || crystalHashedIndicesEE == 11745 || crystalHashedIndicesEE == 11932 || crystalHashedIndicesEE == 11746 || crystalHashedIndicesEE == 12702 || crystalHashedIndicesEE == 4252 || crystalHashedIndicesEE == 4335 || crystalHashedIndicesEE == 4337 || crystalHashedIndicesEE == 4419 || crystalHashedIndicesEE == 4423 || crystalHashedIndicesEE == 4785 || crystalHashedIndicesEE == 6181 || crystalHashedIndicesEE == 14613 || crystalHashedIndicesEE == 13726 || crystalHashedIndicesEE == 13727 || crystalHashedIndicesEE == 7717 || crystalHashedIndicesEE == 7778 || crystalHashedIndicesEE == 4420 || crystalHashedIndicesEE == 4421 || crystalHashedIndicesEE == 4423 || crystalHashedIndicesEE == 2946 || crystalHashedIndicesEE == 2900 || crystalHashedIndicesEE == 2902 || crystalHashedIndicesEE == 2901 || crystalHashedIndicesEE == 2903 || crystalHashedIndicesEE == 2904 || crystalHashedIndicesEE == 2905 || crystalHashedIndicesEE == 2986 || crystalHashedIndicesEE == 2987 || crystalHashedIndicesEE == 2988 || crystalHashedIndicesEE == 2989 || crystalHashedIndicesEE == 3070 || crystalHashedIndicesEE == 3071 || crystalHashedIndicesEE == 4252 || crystalHashedIndicesEE == 4253 || crystalHashedIndicesEE == 4254 || crystalHashedIndicesEE == 4255 || crystalHashedIndicesEE == 4256) continue;
          mydete = mydete.unhashIndex(crystalHashedIndicesEE);
-         double myt     = (TTreeMembers_.cryTimesEE_[eex] -5.0)*25;
+         //double myt     = (TTreeMembers_.cryTimesEE_[eex] -5.0)*25;
+	 double myt     = (TTreeMembers_.cryTimesEE_[eex]);
          double myterr  = (TTreeMembers_.cryTimeErrorsEE_[eex])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEE_[eex];
@@ -541,6 +545,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
        hctEEMEEP->Fill(EEMave,EEPave);
        hctEEMDEEPcry->Fill(EEMave-EEPave,EEnum);
        hctEEMDEEP->Fill(EEMave-EEPave);
+       hctEEpB->Fill(EEPave);
+       hctEEmB->Fill(EEMave);
      }
 
      double totnumb = EBPn + EBMn + EEPn + EEMn;
@@ -552,7 +558,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
          int crystalHashedIndicesEB = TTreeMembers_.cryHashesEB_[ebx];
          if (crystalHashedIndicesEB == 25822 || crystalHashedIndicesEB == 32705 || crystalHashedIndicesEB == 56473) continue;
          mydet    = EBDetId::unhashIndex(crystalHashedIndicesEB);
-         double myt     = (TTreeMembers_.cryTimesEB_[ebx] -5.0)*25;
+         //double myt     = (TTreeMembers_.cryTimesEB_[ebx] -5.0)*25;
+	 double myt     = (TTreeMembers_.cryTimesEB_[ebx]);
          double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
@@ -566,7 +573,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
          int crystalHashedIndicesEE = TTreeMembers_.cryHashesEE_[eex];
          if (crystalHashedIndicesEE == 11658 || crystalHashedIndicesEE == 11742 || crystalHashedIndicesEE == 10224 || crystalHashedIndicesEE == 10225 || crystalHashedIndicesEE == 10226 || crystalHashedIndicesEE == 10310 || crystalHashedIndicesEE == 10311 || crystalHashedIndicesEE == 10394 || crystalHashedIndicesEE == 10395 || crystalHashedIndicesEE == 10875 || crystalHashedIndicesEE == 11316 || crystalHashedIndicesEE == 11659 || crystalHashedIndicesEE == 11660 || crystalHashedIndicesEE == 11661 || crystalHashedIndicesEE == 11743  || crystalHashedIndicesEE == 11744 || crystalHashedIndicesEE == 11744 || crystalHashedIndicesEE == 11745 || crystalHashedIndicesEE == 11932 || crystalHashedIndicesEE == 11746 || crystalHashedIndicesEE == 12702 || crystalHashedIndicesEE == 4252 || crystalHashedIndicesEE == 4335 || crystalHashedIndicesEE == 4337 || crystalHashedIndicesEE == 4419 || crystalHashedIndicesEE == 4423 || crystalHashedIndicesEE == 4785 || crystalHashedIndicesEE == 6181 || crystalHashedIndicesEE == 14613 || crystalHashedIndicesEE == 13726 || crystalHashedIndicesEE == 13727 || crystalHashedIndicesEE == 7717 || crystalHashedIndicesEE == 7778 || crystalHashedIndicesEE == 4420 || crystalHashedIndicesEE == 4421 || crystalHashedIndicesEE == 4423 || crystalHashedIndicesEE == 2946 || crystalHashedIndicesEE == 2900 || crystalHashedIndicesEE == 2902 || crystalHashedIndicesEE == 2901 || crystalHashedIndicesEE == 2903 || crystalHashedIndicesEE == 2904 || crystalHashedIndicesEE == 2905 || crystalHashedIndicesEE == 2986 || crystalHashedIndicesEE == 2987 || crystalHashedIndicesEE == 2988 || crystalHashedIndicesEE == 2989 || crystalHashedIndicesEE == 3070 || crystalHashedIndicesEE == 3071 || crystalHashedIndicesEE == 4252 || crystalHashedIndicesEE == 4253 || crystalHashedIndicesEE == 4254 || crystalHashedIndicesEE == 4255 || crystalHashedIndicesEE == 4256) continue;
          mydete = mydete.unhashIndex(crystalHashedIndicesEE);
-         double myt     = (TTreeMembers_.cryTimesEE_[eex] -5.0)*25;
+         //double myt     = (TTreeMembers_.cryTimesEE_[eex] -5.0)*25;
+	 double myt     = (TTreeMembers_.cryTimesEE_[eex]);
          double myterr  = (TTreeMembers_.cryTimeErrorsEE_[eex])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEE_[eex];
@@ -693,6 +701,24 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   if ( fit ) hctEEm->Fit("gaus");
   gStyle->SetOptFit(111);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMES_%i.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
+
+  c[54]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEpB->Draw();
+  c[54]->SetLogy(1);
+  hctEEpB->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctEEpB->Fit("gaus");
+  gStyle->SetOptFit(111);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMESB_%i.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
+
+  c[55]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEmB->Draw();
+  c[55]->SetLogy(1);
+  hctEEmB->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctEEmB->Fit("gaus");
+  gStyle->SetOptFit(111);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMESB_%i.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
   
   //Time to average event time
   c[30]->cd();
@@ -1547,6 +1573,8 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEE->Write();
   hctEEp->Write();
   hctEEm->Write();
+  hctEEpB->Write();
+  hctEEmB->Write();
   hctEEtoAve->Write();
   hctEBtoAve->Write();
   hctEBtoTerr->Write();
