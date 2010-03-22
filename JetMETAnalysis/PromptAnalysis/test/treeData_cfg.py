@@ -26,22 +26,24 @@ process.GlobalTag.globaltag ='GR09_R_34X_V5::All'
 # process.load("RecoMET/METProducers/HcalHaloData_cfi")
 # process.load("RecoMET/METProducers/GlobalHaloData_cfi")
 
-# process.GlobalTag.globaltag ='GR09_R_34X_V5::All'
-
 process.load("Configuration/StandardSequences/ReconstructionCosmics_cff")
 
 process.load("RecoMuon/Configuration/RecoMuon_cff")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
-                           fileName = cms.string( 'MinimumBias__BeamCommissioning09-BSCNOBEAMHALO-Jan23Skim-v1__RAW-RECO.root' ),
+fileName = cms.string("MinimumBias__BeamCommissioning09-BSCNOBEAMHALO-Jan23Skim-v1__RAW-RECO.root"),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
-        "/store/data/Commissioning10/MinimumBias/RECO/v4/000/130/910/1AACA102-D02F-DF11-A60F-0030487C6A66.root"
+    "/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec14thSkim_v1/0102/BABAF8C3-71EA-DE11-9D8C-0024E8768446.root"
+    #'/store/mc/Summer09/MinBias/GEN-SIM-RECO/STARTUP3X_V8D_900GeV-v1/0005/E4590360-4CD7-DE11-8CB4-002618943896.root'
+    #'/store/data/BeamCommissioning09/MinimumBias/RECO/rereco_GR09_P_V7_v1/0099/DABD5D6D-D4E2-DE11-8FFD-00261894387A.root'
+    #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/596/F82DED93-36E2-DE11-9316-000423D9870C.root"
+    #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/151/0E45A7CE-F5DD-DE11-9B2E-001617E30CC8.root"
     ),
     
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
@@ -80,7 +82,7 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanaak5calojet_*_*',
     'keep *_promptanaJPTak5_*_*',
     'keep *_promptanaak5pfjet_*_*',
-    #'keep *_promptanahalo_*_*',
+#    'keep *_promptanahalo_*_*',
     'keep *_promptanacalotowers_*_*',
     'keep *_promptanatrigger_*_*',
     'keep *_promptanavtx_*_*',
@@ -101,7 +103,7 @@ process.theBigNtuple = cms.Path(
     process.promptanapfmet   +
     process.promptananohf  +
     process.promptanaic5calojet +
-    process.promptanasc5calojet +
+    #process.promptanasc5calojet +
     #process.promptanakt4calojet +
     process.promptanaak5calojet +
     process.promptanaJPTak5 +
@@ -111,7 +113,7 @@ process.theBigNtuple = cms.Path(
     process.promptanatrigger +
     process.promptanavtx +
     process.promptanatrack +
-    process.promptanacleanup+
+    process.promptanacleanup +
     process.promptanaecalspikes+
     process.promptanaPMTnoise
     )
