@@ -125,6 +125,7 @@ patTupleEventContent.outputCommands.extend(
 patTupleEventContent.outputCommands.extend(
      [ 'keep *_TriggerResults_*_*',
        'keep *_hltGtDigis_*_*',
+       'keep *_gtDigis_*_*',
        'keep *_hltL1GtObjectMap_*_*' ]
 )
 
