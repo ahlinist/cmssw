@@ -86,7 +86,9 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
 
 //--- SV method computation (if we have the PV and beamspot)
-      if( pv && beamSpot && trackBuilder && doSVreco ) {
+      if( pv && beamSpot && trackBuilder && doSVreco 
+            && svMassReco::typeIsSupportedBySVFitter<T1>() 
+            && svMassReco::typeIsSupportedBySVFitter<T2>() ) {
 	std::vector<svMassReco::Solution<T1,T2> > fits = svMassRecoFitter_.fitVertices(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
 
 //--- get the best solution
