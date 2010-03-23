@@ -57,7 +57,7 @@ echo
 echo 'Going to make the plots, by running in ROOT:'
 echo
 echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/plotLaser.C'
-echo 'DrawLaserPlots("'${plots_dir}'/'${root_file}'",'${run_num}',kTRUE,"png","'${plots_dir}'",kFALSE,"${analy_type}","'${plot_file}'")'
+echo 'DrawLaserPlots("'${plots_dir}'/'${root_file}'","'${run_num}'",kTRUE,"png","'${plots_dir}'",kFALSE,"${analy_type}","'${plot_file}'")'
 echo
 
 #now I need to make a little python script to make my root plots
@@ -78,7 +78,7 @@ gROOT.LoadMacro(  '${my_cmssw_base}/CalibCalorimetry/EcalTiming/test/plotLaser.C
 #get my cute class
 from ROOT import DrawLaserPlots
 
-time=DrawLaserPlots("${plots_dir}/${root_file}",${run_num},True,"png","${plots_dir}",False,"${analy_type}", "${plot_file}")
+time=DrawLaserPlots("${plots_dir}/${root_file}","${run_num}",True,"png","${plots_dir}",False,"${analy_type}", "${plot_file}")
 print time
 
 EOF

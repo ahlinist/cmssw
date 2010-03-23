@@ -44,7 +44,7 @@ EEDetId mydete = 0;
 
 
 
-double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE, Char_t* fileType = "png", Char_t* dirName = ".", Bool_t doWait=kFALSE, Char_t* mType = "Laser", Char_t* plotfile = 0 )
+double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = kTRUE, Char_t* fileType = "png", Char_t* dirName = ".", Bool_t doWait=kFALSE, Char_t* mType = "Laser", Char_t* plotfile = 0 )
 {
  
   cout << "Loading FW Lite setup." << endl;
@@ -87,7 +87,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   }
 
   char runChar[50];
-  sprintf(runChar,"Run %i ",runNumber);
+  sprintf(runChar,"Run %s ",runNumber);
   
   //TTree helpers
   int tbins = 52;
@@ -136,7 +136,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   SM_timingh->SetMinimum(tlowt);
   SM_timingh->SetMaximum(thight);
   SM_timingh->SetTitle(mytitle);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_SM_timingCorrected_%i.%s",dirName,mType,runNumber,fileType); c[1]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_SM_timingCorrected_%s.%s",dirName,mType,runNumber,fileType); c[1]->Print(name); }
 
   //Timing by LM
   c[2]->cd();
@@ -156,7 +156,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   LM_timingh->SetMinimum(tlowt);
   LM_timingh->SetMaximum(thight);
   LM_timingh->SetTitle(mytitle);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_LM_timingCorrected_%i.%s",dirName,mType,runNumber,fileType); c[3]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_LM_timingCorrected_%s.%s",dirName,mType,runNumber,fileType); c[3]->Print(name); }
  
 
   //Timing within the towers
@@ -166,7 +166,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   Inside_TT_timing->Draw();
    sprintf(mytitle,"%s %s",runChar,Inside_TT_timing->GetTitle()); 
   Inside_TT_timing->SetTitle(mytitle);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_Inside_TT_timing_%i.%s",dirName,mType,runNumber,fileType); c[4]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_Inside_TT_timing_%s.%s",dirName,mType,runNumber,fileType); c[4]->Print(name); }
  
   //Eta Profiles by TT
   c[5]->cd();
@@ -198,7 +198,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
    sprintf(mytitle,"%s %s",runChar,Rel_TimingSigma->GetTitle()); 
   Rel_TimingSigma->SetTitle(mytitle);
   c[9]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_Rel_TimingSigma_%i.%s",dirName,mType,runNumber,fileType); c[9]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_Rel_TimingSigma_%s.%s",dirName,mType,runNumber,fileType); c[9]->Print(name); }
   
   c[10]->cd();
   gStyle->SetOptStat(111110);
@@ -208,7 +208,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
    sprintf(mytitle,"%s %s",runChar,XtalsPerEvt->GetTitle()); 
   XtalsPerEvt->SetTitle(mytitle);
   //c[10]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_XtalsPerEvt_%i.%s",dirName,mType,runNumber,fileType); c[10]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_XtalsPerEvt_%s.%s",dirName,mType,runNumber,fileType); c[10]->Print(name); }
   
   c[11]->cd();
   gStyle->SetOptStat(111110);
@@ -217,7 +217,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
    sprintf(mytitle,"%s %s",runChar,laserShift->GetTitle()); 
   laserShift->SetTitle(mytitle);
   c[11]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_laserShift_%i.%s",dirName,mType,runNumber,fileType); c[11]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_laserShift_%s.%s",dirName,mType,runNumber,fileType); c[11]->Print(name); }
   
 //2-D Histogram
   c[12]->cd();
@@ -227,7 +227,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
    sprintf(mytitle,"%s %s",runChar,RelRMS_vs_AbsTime->GetTitle()); 
   RelRMS_vs_AbsTime->SetTitle(mytitle);
   c[12]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_RelRMS_vs_AbsTime_%i.%s",dirName,mType,runNumber,fileType); c[12]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_RelRMS_vs_AbsTime_%s.%s",dirName,mType,runNumber,fileType); c[12]->Print(name); }
   
 //1-D TGraphs  
   c[13]->cd();
@@ -240,7 +240,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   TTMeanWithRMS_All_FEDS->GetYaxis()->UnZoom();
   TTMeanWithRMS_All_FEDS->Draw("AP*");
   //c[13]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TTMeanWithRMS_All_FEDS_%i.%s",dirName,mType,runNumber,fileType); c[13]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TTMeanWithRMS_All_FEDS_%s.%s",dirName,mType,runNumber,fileType); c[13]->Print(name); }
  
   //2-D TGraphs/Profiles 
   //Ch by Ch timing profile
@@ -673,7 +673,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   if ( fit ) hctEB->Fit("gaus");
   gStyle->SetOptFit(111);
   c[28]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMES_%i.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMES_%s.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
 
   c[29]->cd();
   gStyle->SetOptStat(1110);
@@ -682,7 +682,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEE->GetXaxis()->SetNdivisions(512);
   if ( fit ) hctEE->Fit("gaus");
   gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMES_%i.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMES_%s.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
 
   c[54]->cd();
   gStyle->SetOptStat(1110);
@@ -691,7 +691,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEp->GetXaxis()->SetNdivisions(512);
   if ( fit ) hctEEp->Fit("gaus");
   gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMES_%i.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMES_%s.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
 
   c[55]->cd();
   gStyle->SetOptStat(1110);
@@ -700,7 +700,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEm->GetXaxis()->SetNdivisions(512);
   if ( fit ) hctEEm->Fit("gaus");
   gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMES_%i.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMES_%s.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
 
   c[54]->cd();
   gStyle->SetOptStat(1110);
@@ -709,7 +709,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEpB->GetXaxis()->SetNdivisions(512);
   if ( fit ) hctEEpB->Fit("gaus");
   gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMESB_%i.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMESB_%s.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
 
   c[55]->cd();
   gStyle->SetOptStat(1110);
@@ -718,7 +718,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEmB->GetXaxis()->SetNdivisions(512);
   if ( fit ) hctEEmB->Fit("gaus");
   gStyle->SetOptFit(111);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMESB_%i.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMESB_%s.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
   
   //Time to average event time
   c[30]->cd();
@@ -727,7 +727,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEtoAve->GetXaxis()->SetNdivisions(512);
   hctEEtoAve->GetYaxis()->SetNdivisions(512);
   c[30]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAverage_%i.%s",dirName,mType,runNumber,fileType); c[30]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAverage_%s.%s",dirName,mType,runNumber,fileType); c[30]->Print(name); }
   
   c[31]->cd();
   gStyle->SetOptStat(1110);
@@ -735,7 +735,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEBtoAve->GetXaxis()->SetNdivisions(512);
   hctEBtoAve->GetYaxis()->SetNdivisions(512);
   c[31]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAverage_%i.%s",dirName,mType,runNumber,fileType); c[31]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAverage_%s.%s",dirName,mType,runNumber,fileType); c[31]->Print(name); }
 
   //Time to Time error
   c[32]->cd();
@@ -744,7 +744,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEBtoTerr->GetXaxis()->SetNdivisions(512);
   hctEBtoTerr->GetYaxis()->SetNdivisions(507);
   c[32]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoTERR_%i.%s",dirName,mType,runNumber,fileType); c[32]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoTERR_%s.%s",dirName,mType,runNumber,fileType); c[32]->Print(name); }
   
   c[33]->cd();
   gStyle->SetOptStat(1110);
@@ -752,7 +752,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEtoTerr->GetXaxis()->SetNdivisions(512);
   hctEEtoTerr->GetYaxis()->SetNdivisions(507);
   c[33]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoTERR_%i.%s",dirName,mType,runNumber,fileType); c[33]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoTERR_%s.%s",dirName,mType,runNumber,fileType); c[33]->Print(name); }
   
   //Amplitude to time
   c[34]->cd();
@@ -761,14 +761,14 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEtoAmp->GetXaxis()->SetNdivisions(512);
   hctEEtoAmp->GetYaxis()->SetNdivisions(507);
   c[34]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[34]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAMP_%s.%s",dirName,mType,runNumber,fileType); c[34]->Print(name); } 
   c[35]->cd();
   gStyle->SetOptStat(1110);
   hctEBtoAmp->Draw("colz");
   hctEBtoAmp->GetXaxis()->SetNdivisions(512);
   hctEBtoAmp->GetYaxis()->SetNdivisions(507);
   c[35]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[35]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAMP_%s.%s",dirName,mType,runNumber,fileType); c[35]->Print(name); } 
   
    //Amplitdue to ave event time
   c[36]->cd();
@@ -777,14 +777,14 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEBtoAmpEvt->GetXaxis()->SetNdivisions(512);
   hctEBtoAmpEvt->GetYaxis()->SetNdivisions(507);
   c[36]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[36]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBEvtTIMEStoAMP_%s.%s",dirName,mType,runNumber,fileType); c[36]->Print(name); } 
   c[37]->cd();
   gStyle->SetOptStat(1110);
   hctEEtoAmpEvt->Draw("colz");
   hctEEtoAmpEvt->GetXaxis()->SetNdivisions(512);
   hctEEtoAmpEvt->GetYaxis()->SetNdivisions(507);
   c[37]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[37]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEEvtTIMEStoAMP_%s.%s",dirName,mType,runNumber,fileType); c[37]->Print(name); } 
   
   //Amplitude to time error.
   c[38]->cd();
@@ -793,14 +793,14 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEtoAmpErr->GetXaxis()->SetNdivisions(512);
   hctEEtoAmpErr->GetYaxis()->SetNdivisions(507);
   c[38]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[38]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESErrtoAMP_%s.%s",dirName,mType,runNumber,fileType); c[38]->Print(name); } 
   c[39]->cd();
   gStyle->SetOptStat(1110);
   hctEBtoAmpErr->Draw("colz");
   hctEBtoAmpErr->GetXaxis()->SetNdivisions(512);
   hctEBtoAmpErr->GetYaxis()->SetNdivisions(507);
   c[39]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMESErrtoAMP_%s.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); } 
 
   //Hashed Index's
   c[50]->cd();
@@ -808,14 +808,14 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEBHashed->Draw();
   hctEBHashed->GetXaxis()->SetNdivisions(512);
   c[50]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBHashed_%i.%s",dirName,mType,runNumber,fileType); c[50]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBHashed_%s.%s",dirName,mType,runNumber,fileType); c[50]->Print(name); } 
   
   c[51]->cd();
   gStyle->SetOptStat(1110);
   hctEEHashed->Draw();
   c[51]->SetLogy(1);
   hctEEHashed->GetXaxis()->SetNdivisions(512);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEHashed_%i.%s",dirName,mType,runNumber,fileType); c[51]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEHashed_%s.%s",dirName,mType,runNumber,fileType); c[51]->Print(name); } 
   
   
   //Time to Hashed Index
@@ -826,7 +826,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEBtoHashed->GetYaxis()->SetNdivisions(507);
   hctEBtoHashed->SetMinimum(1);
   c[52]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBHashedToTime_%i.%s",dirName,mType,runNumber,fileType); c[52]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBHashedToTime_%s.%s",dirName,mType,runNumber,fileType); c[52]->Print(name); } 
 
   c[53]->cd();
   gStyle->SetOptStat(1110);
@@ -835,7 +835,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEtoHashed->GetYaxis()->SetNdivisions(507);
   hctEEtoHashed->SetMinimum(1);
   c[53]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEHashedToTime_%i.%s",dirName,mType,runNumber,fileType); c[53]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEHashedToTime_%s.%s",dirName,mType,runNumber,fileType); c[53]->Print(name); } 
   
    //1-D Number of crystal distributions
   c[56]->cd();
@@ -843,14 +843,14 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEBCry->Draw();
   hctEBCry->GetXaxis()->SetNdivisions(512);
   c[56]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrys_%i.%s",dirName,mType,runNumber,fileType); c[56]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrys_%s.%s",dirName,mType,runNumber,fileType); c[56]->Print(name); } 
   
   c[57]->cd();
   gStyle->SetOptStat(111110);
   hctEECry->Draw();
   hctEECry->GetXaxis()->SetNdivisions(512);
   c[57]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EECrys_%i.%s",dirName,mType,runNumber,fileType); c[57]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EECrys_%s.%s",dirName,mType,runNumber,fileType); c[57]->Print(name); } 
 
 
   //2-D crystal plots 
@@ -861,7 +861,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEBCryT->GetYaxis()->SetNdivisions(507);
   hctEBCryT->SetMinimum(1);
   c[58]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[58]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysToTime_%s.%s",dirName,mType,runNumber,fileType); c[58]->Print(name); } 
     
   c[59]->cd();
   gStyle->SetOptStat(111110);
@@ -870,7 +870,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEpCryT->GetYaxis()->SetNdivisions(507);
   hctEEpCryT->SetMinimum(1);
   c[59]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[59]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCrysToTime_%s.%s",dirName,mType,runNumber,fileType); c[59]->Print(name); } 
     
   c[60]->cd();
   gStyle->SetOptStat(111110);
@@ -879,7 +879,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEmCryT->GetYaxis()->SetNdivisions(507);
   hctEEmCryT->SetMinimum(1);
   c[60]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCrysToTime_%i.%s",dirName,mType,runNumber,fileType); c[60]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCrysToTime_%s.%s",dirName,mType,runNumber,fileType); c[60]->Print(name); } 
   
   c[61]->cd();
   gStyle->SetOptStat(111110);
@@ -888,7 +888,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEMEEP->GetYaxis()->SetNdivisions(507);
   hctEEMEEP->SetMinimum(1);
   c[61]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTimeToEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[61]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTimeToEEMTime_%s.%s",dirName,mType,runNumber,fileType); c[61]->Print(name); } 
 
   c[63]->cd();
   gStyle->SetOptStat(1110);
@@ -896,7 +896,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEMDEEPcry->GetXaxis()->SetNdivisions(512);
   hctEEMDEEPcry->SetMinimum(1);
   c[63]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTimeCrys_%i.%s",dirName,mType,runNumber,fileType); c[63]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTimeCrys_%s.%s",dirName,mType,runNumber,fileType); c[63]->Print(name); }
   
 
   c[62]->cd();
@@ -908,7 +908,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   if (hctEEMDEEP->GetMean() != 0 && fit) hctEEMDEEP->Fit("gaus");
   //hctEEMEEP->SetMinimum(.5);
   c[62]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[62]->Print(name); } 
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPDiffEEMTime_%s.%s",dirName,mType,runNumber,fileType); c[62]->Print(name); } 
   
   //Number of crystals vs amplitude
   c[64]->cd();
@@ -917,7 +917,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEEcryamp->GetXaxis()->SetNdivisions(512);
   hctEEcryamp->SetMinimum(1);
   c[64]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EECrysAmp_%i.%s",dirName,mType,runNumber,fileType); c[64]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EECrysAmp_%s.%s",dirName,mType,runNumber,fileType); c[64]->Print(name); }
 
   c[65]->cd();
   gStyle->SetOptStat(1110);
@@ -925,7 +925,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hctEBcryamp->GetXaxis()->SetNdivisions(512);
   hctEBcryamp->SetMinimum(1);
   c[65]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysAmp_%i.%s",dirName,mType,runNumber,fileType); c[65]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCrysAmp_%s.%s",dirName,mType,runNumber,fileType); c[65]->Print(name); }
 
 
   c[80]->cd();
@@ -934,7 +934,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hEBTimeEtaLess5->Draw();
   if (hEBTimeEtaLess5->GetMean() != 0 && fit) hEBTimeEtaLess5->Fit("gaus");
   c[80]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTimeEtaLess5_%i.%s",dirName,mType,runNumber,fileType); c[80]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTimeEtaLess5_%s.%s",dirName,mType,runNumber,fileType); c[80]->Print(name); }
 
   c[81]->cd();
   gStyle->SetOptStat(111110);
@@ -942,7 +942,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hEBPlusTime->Draw();
   if (hEBPlusTime->GetMean() != 0 && fit ) hEBPlusTime->Fit("gaus");
   c[81]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlusTime_%i.%s",dirName,mType,runNumber,fileType); c[81]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlusTime_%s.%s",dirName,mType,runNumber,fileType); c[81]->Print(name); }
 
   c[82]->cd();
   gStyle->SetOptStat(111110);
@@ -950,7 +950,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   hEBMinusTime->Draw();
   if (hEBMinusTime->GetMean() != 0 && fit) hEBMinusTime->Fit("gaus");
   c[82]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBMinusTime_%i.%s",dirName,mType,runNumber,fileType); c[82]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBMinusTime_%s.%s",dirName,mType,runNumber,fileType); c[82]->Print(name); }
 
   c[83]->cd();
   gStyle->SetOptStat(10);
@@ -960,31 +960,31 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[83]->SetGridx(0);
   c[83]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlus2Minus_%i.%s",dirName,mType,runNumber,fileType); c[83]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlus2Minus_%s.%s",dirName,mType,runNumber,fileType); c[83]->Print(name); }
 
   c[84]->cd();
   gStyle->SetOptStat(111110);
   hAbsTime->Draw();
   c[84]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTime_%i.%s",dirName,mType,runNumber,fileType); c[84]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTime_%s.%s",dirName,mType,runNumber,fileType); c[84]->Print(name); }
 
   c[85]->cd();
   gStyle->SetOptStat(111110);
   hBX->Draw();
   c[85]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_BX_%i.%s",dirName,mType,runNumber,fileType); c[85]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BX_%s.%s",dirName,mType,runNumber,fileType); c[85]->Print(name); }
 
   c[86]->cd();
   gStyle->SetOptStat(111110);
   hTriggers->Draw();
   c[86]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_Triggers_%i.%s",dirName,mType,runNumber,fileType); c[86]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_Triggers_%s.%s",dirName,mType,runNumber,fileType); c[86]->Print(name); }
 
   c[87]->cd();
   gStyle->SetOptStat(111110);
   hTechTriggers->Draw();
   c[87]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggers_%i.%s",dirName,mType,runNumber,fileType); c[87]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggers_%s.%s",dirName,mType,runNumber,fileType); c[87]->Print(name); }
 
   c[88]->cd();
   gStyle->SetOptStat(10);
@@ -994,7 +994,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[88]->SetGridx(0);
   c[88]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEBPTime_%i.%s",dirName,mType,runNumber,fileType); c[88]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEBPTime_%s.%s",dirName,mType,runNumber,fileType); c[88]->Print(name); }
 
   c[89]->cd();
   gStyle->SetOptStat(10);
@@ -1004,7 +1004,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[89]->SetGridx(0);
   c[89]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEBMTime_%i.%s",dirName,mType,runNumber,fileType); c[89]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEBMTime_%s.%s",dirName,mType,runNumber,fileType); c[89]->Print(name); }
 
   c[90]->cd();
   gStyle->SetOptStat(10);
@@ -1014,7 +1014,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[90]->SetGridx(0);
   c[90]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEEPTime_%i.%s",dirName,mType,runNumber,fileType); c[90]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEEPTime_%s.%s",dirName,mType,runNumber,fileType); c[90]->Print(name); }
 
   c[91]->cd();
   gStyle->SetOptStat(10);
@@ -1024,7 +1024,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[91]->SetGridx(0);
   c[91]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[91]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_AbsTimeVsEEMTime_%s.%s",dirName,mType,runNumber,fileType); c[91]->Print(name); }
 
   c[92]->cd();
   gStyle->SetOptStat(10);
@@ -1034,7 +1034,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[92]->SetGridx(0);
   c[92]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEBPTime_%i.%s",dirName,mType,runNumber,fileType); c[92]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEBPTime_%s.%s",dirName,mType,runNumber,fileType); c[92]->Print(name); }
 
   c[93]->cd();
   gStyle->SetOptStat(10);
@@ -1044,7 +1044,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[93]->SetGridx(0);
   c[93]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEBPTime_%i.%s",dirName,mType,runNumber,fileType); c[93]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEBPTime_%s.%s",dirName,mType,runNumber,fileType); c[93]->Print(name); }
 
   c[94]->cd();
   gStyle->SetOptStat(10);
@@ -1054,7 +1054,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[94]->SetGridx(0);
   c[94]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEBMTime_%i.%s",dirName,mType,runNumber,fileType); c[94]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEBMTime_%s.%s",dirName,mType,runNumber,fileType); c[94]->Print(name); }
 
   c[95]->cd();
   gStyle->SetOptStat(10);
@@ -1064,7 +1064,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[95]->SetGridx(0);
   c[95]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEBMTime_%i.%s",dirName,mType,runNumber,fileType); c[95]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEBMTime_%s.%s",dirName,mType,runNumber,fileType); c[95]->Print(name); }
 
   c[96]->cd();
   gStyle->SetOptStat(10);
@@ -1074,7 +1074,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[96]->SetGridx(0);
   c[96]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEEPTime_%i.%s",dirName,mType,runNumber,fileType); c[96]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEEPTime_%s.%s",dirName,mType,runNumber,fileType); c[96]->Print(name); }
 
   c[97]->cd();
   gStyle->SetOptStat(10);
@@ -1084,7 +1084,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[97]->SetGridx(0);
   c[97]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEEPTime_%i.%s",dirName,mType,runNumber,fileType); c[97]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEEPTime_%s.%s",dirName,mType,runNumber,fileType); c[97]->Print(name); }
 
   c[98]->cd();
   gStyle->SetOptStat(10);
@@ -1094,7 +1094,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[98]->SetGridx(0);
   c[98]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[98]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsEEMTime_%s.%s",dirName,mType,runNumber,fileType); c[98]->Print(name); }
 
   c[99]->cd();
   gStyle->SetOptStat(10);
@@ -1104,7 +1104,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[99]->SetGridx(0);
   c[99]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[99]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsEEMTime_%s.%s",dirName,mType,runNumber,fileType); c[99]->Print(name); }
 
   c[100]->cd();
   gStyle->SetOptStat(10);
@@ -1114,7 +1114,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[100]->SetGridx(0);
   c[100]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEBPTime_%i.%s",dirName,mType,runNumber,fileType); c[100]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEBPTime_%s.%s",dirName,mType,runNumber,fileType); c[100]->Print(name); }
 
   c[101]->cd();
   gStyle->SetOptStat(10);
@@ -1124,7 +1124,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[101]->SetGridx(0);
   c[101]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEBMTime_%i.%s",dirName,mType,runNumber,fileType); c[101]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEBMTime_%s.%s",dirName,mType,runNumber,fileType); c[101]->Print(name); }
 
   c[102]->cd();
   gStyle->SetOptStat(10);
@@ -1134,7 +1134,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[102]->SetGridx(0);
   c[102]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEEPTime_%i.%s",dirName,mType,runNumber,fileType); c[102]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEEPTime_%s.%s",dirName,mType,runNumber,fileType); c[102]->Print(name); }
 
   c[103]->cd();
   gStyle->SetOptStat(10);
@@ -1144,7 +1144,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[103]->SetGridx(0);
   c[103]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEEMTime_%i.%s",dirName,mType,runNumber,fileType); c[103]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_BXVsEEMTime_%s.%s",dirName,mType,runNumber,fileType); c[103]->Print(name); }
 
   c[104]->cd();
   gStyle->SetOptStat(10);
@@ -1154,7 +1154,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[104]->SetGridx(0);
   c[104]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsAbsTime_%i.%s",dirName,mType,runNumber,fileType); c[104]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsAbsTime_%s.%s",dirName,mType,runNumber,fileType); c[104]->Print(name); }
 
   c[105]->cd();
   gStyle->SetOptStat(10);
@@ -1164,7 +1164,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[105]->SetGridx(0);
   c[105]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsAbsTime_%i.%s",dirName,mType,runNumber,fileType); c[105]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsAbsTime_%s.%s",dirName,mType,runNumber,fileType); c[105]->Print(name); }
 
   c[106]->cd();
   gStyle->SetOptStat(10);
@@ -1174,7 +1174,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[106]->SetGridx(0);
   c[106]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_hBXVsAbsTime_%i.%s",dirName,mType,runNumber,fileType); c[106]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_hBXVsAbsTime_%s.%s",dirName,mType,runNumber,fileType); c[106]->Print(name); }
 
   c[107]->cd();
   gStyle->SetOptStat(10);
@@ -1184,7 +1184,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[107]->SetGridx(0);
   c[107]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsBX_%i.%s",dirName,mType,runNumber,fileType); c[107]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TriggerVsBX_%s.%s",dirName,mType,runNumber,fileType); c[107]->Print(name); }
 
   c[108]->cd();
   gStyle->SetOptStat(10);
@@ -1194,7 +1194,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[108]->SetGridx(0);
   c[108]->SetGridy(0);
   //c[15]->SetLogz(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsBX_%i.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsBX_%s.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
 
 
   //Like the Above section, these MUST be done before any Scal0TProfile2D function is called
@@ -1213,7 +1213,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[39]->SetGridx(1);
   c[39]->SetGridy(1);
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_OccuCHProfile_%i.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_OccuCHProfile_%s.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); }
  
   c[40]->cd();
   gStyle->SetOptStat(10);
@@ -1229,7 +1229,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[40]->SetGridx(1);
   c[40]->SetGridy(1);
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_OccuTTProfile_%i.%s",dirName,mType,runNumber,fileType); c[40]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_OccuTTProfile_%s.%s",dirName,mType,runNumber,fileType); c[40]->Print(name); }
  
   c[41]->cd();
   gStyle->SetOptStat(10);
@@ -1243,7 +1243,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[41]->SetLogz(1);
   drawEELines();
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPOccuCHProfile_%i.%s",dirName,mType,runNumber,fileType); c[41]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPOccuCHProfile_%s.%s",dirName,mType,runNumber,fileType); c[41]->Print(name); }
 
   c[42]->cd();
   gStyle->SetOptStat(10);
@@ -1257,7 +1257,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[42]->SetLogz(1);
   drawEELines();
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMOccuCHProfile_%i.%s",dirName,mType,runNumber,fileType); c[42]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMOccuCHProfile_%s.%s",dirName,mType,runNumber,fileType); c[42]->Print(name); }
 
   c[44]->cd();
   gStyle->SetOptStat(10);
@@ -1271,7 +1271,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[44]->SetLogz(1);
   drawEELines();
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPOccuTTProfile_%i.%s",dirName,mType,runNumber,fileType); c[44]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPOccuTTProfile_%s.%s",dirName,mType,runNumber,fileType); c[44]->Print(name); }
 
   c[43]->cd();
   gStyle->SetOptStat(10);
@@ -1285,7 +1285,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[43]->SetLogz(1);
   drawEELines();
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMOccuTTProfile_%i.%s",dirName,mType,runNumber,fileType); c[43]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMOccuTTProfile_%s.%s",dirName,mType,runNumber,fileType); c[43]->Print(name); }
 
 
   //Amplitude Profiles
@@ -1299,7 +1299,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
      c[21]->SetLogy(0);
      c[21]->SetLogz(1);
   }
-  if (printPics) { sprintf(name,"%s/%sAnalysis_fullAmpProfileEB_%i.%s",dirName,mType,runNumber,fileType); c[21]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_fullAmpProfileEB_%s.%s",dirName,mType,runNumber,fileType); c[21]->Print(name); }
   
   c[22]->cd();
   gStyle->SetOptStat(10);
@@ -1311,7 +1311,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
      c[22]->SetLogz(1);
   }
   drawEELines();
-  if (printPics) { sprintf(name,"%s/%sAnalysis_fullAmpProfileEEP_%i.%s",dirName,mType,runNumber,fileType); c[22]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_fullAmpProfileEEP_%s.%s",dirName,mType,runNumber,fileType); c[22]->Print(name); }
   
   c[23]->cd();
   gStyle->SetOptStat(10);
@@ -1323,7 +1323,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
      c[23]->SetLogz(1);
   }
   drawEELines();
-  if (printPics) { sprintf(name,"%s/%sAnalysis_fullAmpProfileEEM_%i.%s",dirName,mType,runNumber,fileType); c[23]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_fullAmpProfileEEM_%s.%s",dirName,mType,runNumber,fileType); c[23]->Print(name); }
    
   
   //AGAIN, the projects must be drawn BEFORE the Scale0TProfile2D is called
@@ -1347,7 +1347,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[15]->SetGridx(1);
   c[15]->SetGridy(1);
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHProfileRel_%s.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
   //TT by TT timing profile
   c[67]->cd();
   gStyle->SetOptStat(111110);
@@ -1359,7 +1359,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   chhistEBN->GetXaxis()->SetNdivisions(512);
   if (chhistEBN->GetMean() != 0 && fit ) chhistEBN->Fit("gaus");
   c[67]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBCHTIME_%s.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
 
   c[15]->cd();
   gStyle->SetOptStat(10);
@@ -1377,7 +1377,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[15]->SetGridx(1);
   c[15]->SetGridy(1);
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTProfileRel_%s.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
   //TT by TT timing profile
   c[67]->cd();
   gStyle->SetOptStat(111110);
@@ -1389,7 +1389,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   tthistEBN->GetXaxis()->SetNdivisions(512);
   if (tthistEBN->GetMean() != 0 && fit ) tthistEBN->Fit("gaus");
   c[67]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTTTIME_%s.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
 
   c[15]->cd();
   gStyle->SetOptStat(10);
@@ -1410,7 +1410,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[15]->SetGridy(0);
   drawEELines();
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeCHProfileRel_%s.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
   //TT by TT timing profile
   c[67]->cd();
   gStyle->SetOptStat(111110);
@@ -1422,7 +1422,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   chhistEEPN->GetXaxis()->SetNdivisions(512);
   if (chhistEEPN->GetMean() != 0 && fit ) chhistEEPN->Fit("gaus");
   c[67]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPCHTIME_%s.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
 
   c[15]->cd();
   gStyle->SetOptStat(10);
@@ -1439,7 +1439,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[15]->SetLogz(0);
   drawEELines();
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeTTProfileRel_%s.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
   //TT by TT timing profile
   c[67]->cd();
   gStyle->SetOptStat(111110);
@@ -1451,7 +1451,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   tthistEEPN->GetXaxis()->SetNdivisions(512);
   if (tthistEEPN->GetMean() != 0 && fit ) tthistEEPN->Fit("gaus");
   c[67]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTTTIME_%s.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
 
   c[15]->cd();
   gStyle->SetOptStat(10);
@@ -1469,7 +1469,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[15]->SetLogz(0);
   drawEELines();
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeCHProfileRel_%s.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
   //TT by TT timing profile
   c[67]->cd();
   gStyle->SetOptStat(111110);
@@ -1481,7 +1481,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   chhistEEMN->GetXaxis()->SetNdivisions(512);
   if (chhistEEMN->GetMean() != 0 && fit ) chhistEEMN->Fit("gaus");
   c[67]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMCHTIME_%s.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
 
   c[15]->cd();
   gStyle->SetOptStat(10);
@@ -1499,7 +1499,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   c[15]->SetLogz(0);
   drawEELines();
   gStyle->SetOptStat(0);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeTTProfileRel_%s.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
   //TT by TT timing profile
   c[67]->cd();
   gStyle->SetOptStat(111110);
@@ -1511,7 +1511,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   tthistEEMN->GetXaxis()->SetNdivisions(512);
   if (tthistEEMN->GetMean() != 0 && fit ) tthistEEMN->Fit("gaus");
   c[67]->SetLogy(1);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTTTIME_%i.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTTTIME_%s.%s",dirName,mType,runNumber,fileType); c[67]->Print(name); }
 
   c[24]->cd();
   customizeTProfile(NtimeTTAllFEDsEta);
@@ -1519,7 +1519,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   NtimeTTAllFEDsEta->SetMinimum(tlowt);
   NtimeTTAllFEDsEta->SetMaximum(thight);
   gStyle->SetOptStat(100);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaRel_%i.%s",dirName,mType,runNumber,fileType); c[24]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaRel_%s.%s",dirName,mType,runNumber,fileType); c[24]->Print(name); }
   
   c[25]->cd();
   customizeTProfile(NtimeTTAllFEDsEtaEEP);
@@ -1527,7 +1527,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   NtimeTTAllFEDsEtaEEP->SetMinimum(tlowt);
   NtimeTTAllFEDsEtaEEP->SetMaximum(thight);
   gStyle->SetOptStat(100);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEPRel_%i.%s",dirName,mType,runNumber,fileType); c[25]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEPRel_%s.%s",dirName,mType,runNumber,fileType); c[25]->Print(name); }
   
   c[26]->cd();
   customizeTProfile(NtimeTTAllFEDsEtaEEM);
@@ -1535,7 +1535,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   NtimeTTAllFEDsEtaEEM->SetMinimum(tlowt);
   NtimeTTAllFEDsEtaEEM->SetMaximum(thight);
   gStyle->SetOptStat(100);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEMRel_%i.%s",dirName,mType,runNumber,fileType); c[26]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEMRel_%s.%s",dirName,mType,runNumber,fileType); c[26]->Print(name); }
   
   //Eta profile by Ch
   c[27]->cd();
@@ -1545,7 +1545,7 @@ double DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTR
   NtimeCHAllFEDsEta->SetMinimum(tlowc);
   NtimeCHAllFEDsEta->SetMaximum(thighc);
   gStyle->SetOptStat(100);
-  if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHAllFEDsEtaRel_%i.%s",dirName,mType,runNumber,fileType); c[27]->Print(name); }
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHAllFEDsEtaRel_%s.%s",dirName,mType,runNumber,fileType); c[27]->Print(name); }
  
   cout << " The Starting Time is " << habsTime->GetXaxis()->GetXmin() << endl;
   double returntime=habsTime->GetXaxis()->GetXmin()+ 1215192037.0;
