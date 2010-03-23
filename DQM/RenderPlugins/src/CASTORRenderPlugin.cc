@@ -81,13 +81,14 @@ private:
         obj->GetXaxis()->CenterLabels();
         obj->GetYaxis()->CenterLabels();
         c->SetGrid(1,1);
-
+        //dqm::utils::reportSummaryMapPalette(obj);
+	obj->SetMinimum(-1.0);
+        obj->SetMaximum(+1.0);
 	int colorError1[3];
         colorError1[0] = 632;// kRed
         colorError1[1] = 400;// kYellow
 	colorError1[2] = 416;// kGreen
         gStyle->SetPalette(3, colorError1);
-
 
         return;
       }
@@ -98,8 +99,7 @@ private:
         obj->GetXaxis()->SetNdivisions(15,true);
         obj->GetYaxis()->SetNdivisions(17,true);
         obj->GetXaxis()->CenterLabels();
-        obj->GetYaxis()->CenterLabels();
-       
+        obj->GetYaxis()->CenterLabels();       
         gStyle->SetPalette(1);
         c->SetGrid(1,1); 
         return;
