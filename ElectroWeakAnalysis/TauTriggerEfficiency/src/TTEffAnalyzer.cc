@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.41 2010/03/19 11:57:43 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.42 2010/03/19 12:12:15 mkortela Exp $
 //
 //
 
@@ -44,6 +44,9 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree = new TTree("TTEffTree", "Tau Trigger Efficiency Tree");
 
   //reset vars
+  b_event = 0;
+  b_run = 0;
+  b_lumi = 0;
   PFPt = 0.;
   PFInvPt = 0.;
   PFEt = 0.;
@@ -61,6 +64,10 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   MCTauE = -1.;
   MCTauEta = -999.;
   MCTauPhi = -999.;
+
+  _TTEffTree->Branch("event", &b_event);
+  _TTEffTree->Branch("run", &b_run);
+  _TTEffTree->Branch("lumi", &b_lumi);
 
   _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
   _TTEffTree->Branch("PFTauInvPt", &PFInvPt, "PFTauInvPt/F");
@@ -107,6 +114,10 @@ void
 TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
+
+   b_event = iEvent.id().event();
+   b_run = iEvent.run();
+   b_lumi = iEvent.luminosityBlock();
 
    edm::Handle<edm::View<reco::Candidate> > genericTaus;
 
