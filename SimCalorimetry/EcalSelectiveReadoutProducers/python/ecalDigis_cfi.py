@@ -66,6 +66,12 @@ simEcalDigis = cms.EDProducer("EcalSelectiveReadoutProducer",
 
     #switch to run w/o trigger primitive. For debug use only
     trigPrimBypass = cms.bool(False),
+
+    # Mode selection for "Trig bypass" mode
+    # 0: TT thresholds applied on sum of crystal Et's
+    # 1: TT thresholds applies on compressed Et from Trigger primitive
+    # @ee trigPrimByPass_ switch
+    trigPrimBypassMode = cms.int32(0),
                               
     #for debug mode only:
     trigPrimBypassLTH = cms.double(1.0),
