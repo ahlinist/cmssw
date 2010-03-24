@@ -53,14 +53,11 @@ class EmuEventDisplay {
     TH2F* histo_zphi;
     TH2F* histo_xy;
 
-    std::vector<TPolyLine*> zrChambersUp;
-    std::vector<TPolyLine*> zrChambersDown;
+    std::vector<TPolyLine*> zrChambers;
     std::vector<TPolyLine*> zpChambers;
     std::vector<TPolyLine*> xyChambers;
 
     std::vector<TBox*> zrHits;
-    std::vector<TBox*> zrHitsUp;
-    std::vector<TBox*> zrHitsDown;
     std::vector<TBox*> zpHits;
     std::vector<TBox*> xyHits;
 
@@ -78,7 +75,7 @@ class EmuEventDisplay {
     EmuEventDisplay();
     ~EmuEventDisplay();
 
-    void drawEventDisplay_ZR(TH2* data, int histogramType);
+    void drawEventDisplay_ZR(TH2* data);
     void drawEventDisplay_ZPhi(TH2* data);
     void drawEventDisplay_XY(TH2* data);
 
