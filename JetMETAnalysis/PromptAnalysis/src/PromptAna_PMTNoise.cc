@@ -112,7 +112,6 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::ESHandle<HcalChannelQuality> p;
   iSetup.get<HcalChannelQualityRcd>().get(p);
   HcalChannelQuality* chanquality = new HcalChannelQuality(*p.product());
-  std::vector<DetId> mydetids = chanquality->getAllChannels();
 
   // Loop over rechits
   if (debug_>1) cout <<"\tRECHIT SIZE = "<<hfhits->size()<<endl;
@@ -246,7 +245,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (debug_>2) cout <<"\t\tsum4 long = "<<sum4long<<"\t sum4 short = "<<sum4short<<endl;
     } // loop on HF rechits
 
-  
+  delete chanquality;
+
   // -----------------------------------------------------------------------------------------
   // PART 2:  MET/SumET info
   
