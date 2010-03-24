@@ -332,7 +332,7 @@ void analysisClass::Loop()
                       9999};
    
    // For S9/S1 flagging
-   double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.118896,0.0913756,0.0589927};
+   double slopes[] = {0.0164905,0.0238698,0.0321383,0.041296,0.0513428,0.0622789,0.0741041,0.0868186,0.100422,0.135313,0.136289,0.0589927};
    
    int useS9oS1Algo = (int)getPreCutValue1("useS9oS1Algo");
 
@@ -549,8 +549,8 @@ void analysisClass::Loop()
                if( depth==2 ) S5oS1 = ( partenergy + sum4Short ) / energy; // S
 
                // For S9/S1 flagging
-               double slope = (0.3084-0.02577*abs(ieta)+0.0005351*ieta*ieta);
-               if( abs(ieta)>39 ) slope = slopes[abs(ieta)-30];
+               double slope = 0;
+               if(abs(ieta)>29) slope = slopes[abs(ieta)-30];
                double intercept = -slope*log((162.4-10.19*abs(ieta)+0.21*ieta*ieta));
                 
                //## identify HF spikes
