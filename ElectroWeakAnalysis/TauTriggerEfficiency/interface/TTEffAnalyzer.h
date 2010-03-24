@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.33 2010/03/01 08:49:33 mkortela Exp $
+// $Id: TTEffAnalyzer.h,v 1.34 2010/03/19 12:12:15 mkortela Exp $
 //
 //
 
@@ -85,6 +85,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       edm::Handle<reco::GenParticleCollection> mcParticles;
 
       // PF Variables
+      uint32_t b_event, b_run, b_lumi;
       int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch,PFTauMatch,PFMuonMatch,PFElectronMatch;
       float MCTauE,MCTauEt,MCTauEta,MCTauPhi;
       float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
