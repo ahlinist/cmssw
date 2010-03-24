@@ -5,6 +5,7 @@
  <Constant name="Ladders"           value="28"/>
  <Constant name="CoolDist"          value="6.8*cm"/>
  <Constant name="CoolWidth"         value="0.3432*cm"/>
+ <Constant name="OuterFirst"        value="1"/>
 </ConstantsSection>
 
 <Algorithm name="track:DDPixBarLayerUpgradeAlgo">
@@ -23,6 +24,7 @@
   <String name="LadderName"        value="pixbarladderfull:PixelBarrelLadderFull"/>
   <Numeric name="LadderWidth"      value="[pixbarladderfull:LadderWidth]"/>
   <Numeric name="LadderThick"      value="[pixbarladderfull:LadderThick]"/>
+  <Numeric name="OuterFirst"       value="[pixbarlayer1:OuterFirst]"/>
 
 </Algorithm>
 
