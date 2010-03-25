@@ -255,8 +255,9 @@ private:
       // rate histograms
       if ( (o.name.find("rate_algobit") != std::string::npos ||
 	    o.name.find("rate_ttbit") != std::string::npos ||
-	    o.name.find("Rate_TechBit") != std::string::npos ||
 	    o.name.find("Rate_AlgoBit") != std::string::npos ||
+	    o.name.find("Rate_TechBit") != std::string::npos ||
+	    o.name.find("Rate_Ratio") != std::string::npos ||
 	    o.name.find("Integral_TechBit") != std::string::npos ||
 	    o.name.find("Integral_AlgoBit") != std::string::npos) )
       {
@@ -288,7 +289,8 @@ private:
         obj->GetXaxis()->SetRange(minRange, maxRange);
 
 	if ( (o.name.find("Integral_TechBit") != std::string::npos ||
-	      o.name.find("Integral_AlgoBit") != std::string::npos) )
+	      o.name.find("Integral_AlgoBit") != std::string::npos ||
+	      o.name.find("Rate_Ratio") != std::string::npos) )
 	  {
 	    obj->GetYaxis()->SetTitle("");
 	  }
