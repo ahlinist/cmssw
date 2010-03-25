@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Photon.cc,v 1.6 2009/07/26 18:50:29 malik Exp $
+// $Id: PATValidation_Photon.cc,v 1.7 2010/02/17 09:30:38 kfjack Exp $
 //
 //
 
@@ -45,7 +45,7 @@
 #include "DQMOffline/EGamma/interface/PhotonAnalyzer.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"   
+#include "CommonTools/UtilAlgos/interface/TFileService.h"   
 
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
