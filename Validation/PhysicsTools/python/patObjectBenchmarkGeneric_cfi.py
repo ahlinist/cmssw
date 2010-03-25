@@ -9,7 +9,7 @@ patJetAK5Validation =cms.EDAnalyzer("PATValidation_Jet",
      recoJetRaw  = cms.InputTag('ak5CaloJets'),
      recoJetL2   = cms.InputTag('L2CorJetAK5Calo'),
      JetUncertaintyFile = cms.string('jetCorrFactorsL1.txt'),
-     patJet      = cms.InputTag('selectedLayer1Jets'),
+     patJet      = cms.InputTag('selectedPatJets'),
      BenchmarkLabel =cms.string('ak5CaloJets_Corr')
 )
 
@@ -17,7 +17,7 @@ patJetValidation = cms.EDAnalyzer("PATValidation_Jet",
      OutputFile  = cms.untracked.string('benchmark.root'),
 
      recoJet     = cms.InputTag('iterativeCone5CaloJets'),
-     patJet      = cms.InputTag('selectedLayer1Jets'),
+     patJet      = cms.InputTag('selectedPatJets'),
      BenchmarkLabel =cms.string('iterativeCone5CaloJets_Uncorr')
 )
 
@@ -25,7 +25,7 @@ patJetValidation = cms.EDAnalyzer("PATValidation_Jet",
 patJetIC5Validation =cms.EDAnalyzer("PATValidation_Jet",
      OutputFile  = cms.untracked.string('benchmark.root'),
      recoJet     = cms.InputTag('L2L3CorJetIC5Calo'), 
-      patJet      = cms.InputTag('selectedLayer1Jets'),
+      patJet      = cms.InputTag('selectedPatJets'),
      BenchmarkLabel =cms.string('iterativeCone5CaloJets_Corr')
 )
 
@@ -34,7 +34,7 @@ patJetIC5Validation =cms.EDAnalyzer("PATValidation_Jet",
 patJetSC5CorrValidation = cms.EDAnalyzer("PATValidation_Jet",
      OutputFile  = cms.untracked.string('benchmark.root'),
         recoJet     = cms.InputTag('L2L3CorJetSC5Calo'),
-        patJet      = cms.InputTag('selectedLayer1JetsSC5'),
+        patJet      = cms.InputTag('selectedPatJetsSC5'),
         BenchmarkLabel =cms.string('L2L3CorJetSC5Calo')
 )
 
@@ -42,7 +42,7 @@ patJetSC5CorrValidation = cms.EDAnalyzer("PATValidation_Jet",
 patJetSC7CorrValidation =cms.EDAnalyzer("PATValidation_Jet",
      OutputFile  = cms.untracked.string('benchmark.root'),
         recoJet     = cms.InputTag('L2L3CorJetSC7Calo'),
-        patJet      = cms.InputTag('selectedLayer1JetsSC7'), 
+        patJet      = cms.InputTag('selectedPatJetsSC7'), 
         BenchmarkLabel =cms.string('L2L3CorJetSC7Calo')
 )
 
@@ -53,7 +53,7 @@ patMuonValidation = cms.EDAnalyzer("PATValidation_Muon",
      OutputFile  = cms.untracked.string('benchmark.root'),
 
      recoMuon    = cms.InputTag('muons'),
-     patMuon     = cms.InputTag('allLayer1Muons'),
+     patMuon     = cms.InputTag('patMuons'),
      etaBin = cms.int32(100),
      etaMin = cms.double(-3.0),
      etaMax = cms.double(3.0),
@@ -95,8 +95,8 @@ patElectronValidation = cms.EDAnalyzer("PATValidation_Electron",
 #     recoElectron= cms.InputTag('pixelMatchGsfElectrons'),
 #      recoElectron= cms.InputTag('electronsNoDuplicates'), #/PatAlgos/python/producersLayer1/electronProducer_cfi.py
        recoElectron= cms.InputTag('gsfElectrons'),
-       patElectron = cms.InputTag('allLayer1Electrons'),
-#      patElectron = cms.InputTag('selectedLayer1Electrons'),
+       patElectron = cms.InputTag('patElectrons'),
+#      patElectron = cms.InputTag('selectedPatElectrons'),
        
     Nbinxyz = cms.int32(50),
     Nbineop2D = cms.int32(30),
@@ -149,9 +149,8 @@ patMETValidation = cms.EDAnalyzer("PATValidation_MET",
 #     recoMET     = cms.InputTag('met'),
 #      recoMET     = cms.InputTag('corMetType1Icone5Muons'), #PhysicsTools/ PatAlgos/ python/ cleaningLayer0/caloMetCleaner_cfi.py
        recoMET     = cms.InputTag('metJESCorAK5CaloJetMuons'), # CMSSW_3_3_0_pre4
-#      patMET      = cms.InputTag('allLayer1METs'),
-       patMET      = cms.InputTag('layer1METs'),
-#        patMET      =cms.InputTag('selectedLayer1METs'), 
+       patMET      = cms.InputTag('patMETs'),
+#        patMET      =cms.InputTag('selectedPatMETs'), 
       #
     # MET-related
     #                                                                   
@@ -177,9 +176,9 @@ patCaloMETValidation = cms.EDAnalyzer("PATValidation_CaloMET",
 #     recoMET     = cms.InputTag('met'),
 #      recoCaloMET     = cms.InputTag('corMetType1Icone5Muons'), #PhysicsTools/ PatAlgos/ python/ cleaningLayer0/caloMetCleaner_cfi.py
        recoCaloMET     = cms.InputTag('metJESCorAK5CaloJetMuons'), # CMSSW_3_3_0_pre4
-#      patMET      = cms.InputTag('allLayer1METs'),
-       patCaloMET      = cms.InputTag('layer1METs'),
-#        patMET      =cms.InputTag('selectedLayer1METs'),
+#      patMET      = cms.InputTag('patMETs'),
+       patCaloMET      = cms.InputTag('patMETs'),
+#        patMET      =cms.InputTag('selectedPatMETs'),
 #
     # For caloMET related
     #
@@ -212,8 +211,9 @@ patTauValidation = cms.EDAnalyzer("PATValidation_Tau",
 
 #     recoTau     = cms.InputTag('pfRecoTauProducer'),
 #     recoTau     = cms.InputTag('caloRecoTauProducer'),
-      recoTau     =cms.InputTag('fixedConePFTauProducer'),
-     patTau      = cms.InputTag('allLayer1Taus'),
+#     recoTau     =cms.InputTag('fixedConePFTauProducer'),
+     recoTau     =cms.InputTag('shrinkingConePFTauProducer'),
+     patTau      = cms.InputTag('patTaus'),
 
 	)
 
@@ -221,7 +221,7 @@ patPhotonValidation = cms.EDAnalyzer("PATValidation_Photon",
      OutputFile  = cms.untracked.string('benchmark.root'),
 
     recoPhoton  = cms.InputTag('photons'),
-    patPhoton   = cms.InputTag('allLayer1Photons'),
+    patPhoton   = cms.InputTag('patPhotons'),
 
     numberOfSteps = cms.int32(2),
     nPhoBin = cms.int32(10),

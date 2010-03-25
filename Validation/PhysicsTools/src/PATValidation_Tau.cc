@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Tau.cc,v 1.6 2009/10/29 04:37:14 kfjack Exp $
+// $Id: PATValidation_Tau.cc,v 1.7 2010/02/17 09:30:38 kfjack Exp $
 //
 //
 
@@ -41,7 +41,7 @@
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"   
+#include "CommonTools/UtilAlgos/interface/TFileService.h"   
 
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"

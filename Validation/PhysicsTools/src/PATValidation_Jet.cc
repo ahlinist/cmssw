@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Jet.cc,v 1.8 2009/12/18 03:45:51 kfjack Exp $
+// $Id: PATValidation_Jet.cc,v 1.9 2010/02/17 09:30:37 kfjack Exp $
 //
 //
 
@@ -41,7 +41,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"   
+#include "CommonTools/UtilAlgos/interface/TFileService.h"   
 
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
@@ -282,20 +282,20 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(recoJetL2_, recojetl2_hnd);
   
   // Prepare access to the uncertainty class
-  double uncertainty = 1.;//dummy value
-  JetCorrectionUncertainty * jtuncrt = 
-        new JetCorrectionUncertainty( uncertainty_file_ );  
+  //double uncertainty = 1.;//dummy value
+  //JetCorrectionUncertainty * jtuncrt = 
+  //      new JetCorrectionUncertainty( uncertainty_file_ );  
 
   for (candidateCollection::const_iterator  rjet = recojetraw_hnd->begin(); rjet != recojetraw_hnd->end(); rjet++) {
     if (rmPtRaw) rmPtRaw->Fill (rjet->pt());
     if (rmPtRaw_80) rmPtRaw_80->Fill (rjet->pt());
     if (rmPtRaw_3000) rmPtRaw_3000->Fill(rjet->pt());
 	    
-    uncertainty = jtuncrt->uncertaintyPtEta( rjet->pt(), rjet->eta(), "UP"); 
+    //uncertainty = jtuncrt->uncertaintyPtEta( rjet->pt(), rjet->eta(), "UP"); 
 
-    if (rmPtuncert) rmPtuncert->Fill ( rjet->pt()*(uncertainty+1.0) );//, uncertainty );    
-    if (rmPtuncert_80) rmPtuncert_80->Fill (rjet->pt()*(uncertainty+1.0));
-    if (rmPtuncert_3000) rmPtuncert_3000->Fill(rjet->pt()*(uncertainty+1.0));	    
+    //if (rmPtuncert) rmPtuncert->Fill ( rjet->pt()*(uncertainty+1.0) );//, uncertainty );    
+    //if (rmPtuncert_80) rmPtuncert_80->Fill (rjet->pt()*(uncertainty+1.0));
+    //if (rmPtuncert_3000) rmPtuncert_3000->Fill(rjet->pt()*(uncertainty+1.0));	    
   }  
     
   for (candidateCollection::const_iterator  rjet = recojetl2_hnd->begin(); rjet != recojetl2_hnd->end(); rjet++) {
@@ -436,7 +436,7 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   for (std::vector<pat::Jet>::const_iterator  jet = patjet_hnd->begin(); jet != patjet_hnd->end(); jet++) {
 
-    uncertainty = jet->relCorrUncert( "UP" ); 
+    //uncertainty = jet->relCorrUncert( "UP" ); 
 
     if (mEta) mEta->Fill(jet->eta());
     
@@ -458,9 +458,9 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if (mPt) mPt->Fill (jet->pt());
     if (mPt_80) mPt_80->Fill (jet->pt());
     if (mPt_3000) mPt_3000->Fill(jet->pt());
-    if (mPtuncert) mPtuncert->Fill ( jet->correctedJet("RAW").pt()*(uncertainty+1.0) );    
-    if (mPtuncert_80) mPtuncert_80->Fill (jet->correctedJet("RAW").pt()*(uncertainty+1.0));
-    if (mPtuncert_3000) mPtuncert_3000->Fill(jet->correctedJet("RAW").pt()*(uncertainty+1.0));
+    //if (mPtuncert) mPtuncert->Fill ( jet->correctedJet("RAW").pt()*(uncertainty+1.0) );    
+    //if (mPtuncert_80) mPtuncert_80->Fill (jet->correctedJet("RAW").pt()*(uncertainty+1.0));
+    //if (mPtuncert_3000) mPtuncert_3000->Fill(jet->correctedJet("RAW").pt()*(uncertainty+1.0));
 
     if (mMass) mMass->Fill (jet->mass());
     if (mMass_80) mMass_80->Fill(jet->mass());
