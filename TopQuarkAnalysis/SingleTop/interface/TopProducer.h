@@ -9,7 +9,7 @@
  * \Author A. Orso M. Iorio
  * 
  *
- *\version  $Id: TopProducer.h,v 1.2 2010/03/18 11:34:07 oiorio Exp $
+ *\version  $Id: TopProducer.h,v 1.3 2010/03/18 11:56:03 oiorio Exp $
  *
  *
 */
@@ -54,8 +54,8 @@
 
 #include "DataFormats/Candidate/interface/NamedCompositeCandidate.h"
 
-#include "TLorentzVector.h"
-//#include "EquationSolver.h"
+//#include "TLorentzVector.h"
+#include "EquationSolver.h"
 
 
 //class JetFlavourIdentifier;
@@ -72,25 +72,12 @@ namespace pat {
       virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
     //       static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
     private:
-    std::vector<TLorentzVector> Top4Momentum(const reco::Candidate & Lepton,const reco::Candidate & BJet,const reco::Candidate & MET);
-
-    edm::InputTag electronsSrc_,muonsSrc_,jetsSrc_,METsSrc_;
-
-    //Cuts for leptons
-    double relIsoCutElectrons_,relIsoCutMuons_,jetMuonsIsoCut_;
+    std::vector<math::XYZTLorentzVector> Nu4Momentum(const reco::Candidate & Lepton,const reco::Candidate & MET);
     
-    //Cuts for Jets
-    double jetPtCorrectedCut_;
+    edm::InputTag electronsSrc_,muonsSrc_,jetsSrc_,METsSrc_;
+    
+    bool useNegativeDeltaSolutions_,usePositiveDeltaSolutions_,usePzMinusSolutions_,usePzPlusSolutions_,usePzAbsValMinimumSolutions_,useMetForNegativeSolutions_;    
 
-    //Cuts for BTags
-    int nBtags_, nBtagVetos_;
-    double bTagCutLoose_, bTagCutTight_;
-
-    //Cuts for METs
-    double metPt_;
-
-    //Cuts for overall variables
-    double wMtCut_; 
  
 
 

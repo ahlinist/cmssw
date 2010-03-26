@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc,v 1.2 2010/03/18 11:34:08 oiorio Exp $ 
+ *\version  $Id: TopProducer.cc,v 1.3 2010/03/18 11:56:03 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -48,7 +48,7 @@
 #include <vector>
 #include <memory>
 
-//#include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
 
 
 using namespace pat;
@@ -61,11 +61,22 @@ TopProducer::TopProducer(const edm::ParameterSet& iConfig)
   muonsSrc_                 = iConfig.getParameter<edm::InputTag>	      ( "muonsSource" );
   jetsSrc_                 = iConfig.getParameter<edm::InputTag>	      ( "jetsSource" );
   METsSrc_                 = iConfig.getParameter<edm::InputTag>	      ( "METsSource" );
+  
+  useNegativeDeltaSolutions_ = iConfig.getUntrackedParameter<bool> ("useNegativeDeltaSolutions",true); 
+  usePositiveDeltaSolutions_ = iConfig.getUntrackedParameter<bool> ("usePositiveDeltaSolutions",true); 
+
+  usePzMinusSolutions_ = iConfig.getUntrackedParameter<bool> ("usePzMinusSolutions",false); 
+  usePzPlusSolutions_ = iConfig.getUntrackedParameter<bool> ("usePzPlusSolutions",false); 
+  usePzAbsValMinimumSolutions_ = iConfig.getUntrackedParameter<bool> ("usePzAbsValMinimumSolutions",true); 
+
+  useMetForNegativeSolutions_=iConfig.getUntrackedParameter<bool> ("useMetForNegativeSolutions",false);
 
 produces<std::vector<pat::Electron> >();
 produces<std::vector<pat::Muon> >();
 produces<std::vector<pat::Jet> >();
 produces<std::vector<pat::MET> >();
+
+
 
 //produces<std::vector< pat::TopLeptonic > >();
 produces<std::vector< reco::NamedCompositeCandidate > >();
@@ -73,6 +84,7 @@ produces<std::vector< reco::NamedCompositeCandidate > >();
 }
 
 void TopProducer::produce(edm::Event & iEvent, const edm::EventSetup & iEventSetup){
+
 
 edm::Handle<edm::View<pat::Electron> > electrons;
 iEvent.getByLabel(electronsSrc_,electrons);
@@ -90,48 +102,36 @@ edm::Handle<edm::View<pat::MET> > mets;
 iEvent.getByLabel(METsSrc_,mets);
 
 
-////TEST FOR DUMMIES
 
 
  std::vector< reco::NamedCompositeCandidate > * TopCandidates = new std::vector<reco::NamedCompositeCandidate>();
-// std::auto_ptr<pat::TopLeptonic> newTopLeptonic(new pat::TopLeptonic);
 
  
- if(electrons->size()>0 && jets->size()>0 && mets->size() > 0){
-
-  const pat::Electron e0 = electrons->at(0);
-  // const pat::Muon mu0 = Muons->at(0);
-  const pat::MET met0 = mets->at(0);
-  const pat::Jet j0 = jets->at(0);
-
-
-  reco::NamedCompositeCandidate TopDummy;
-
-  TopDummy.addDaughter(e0,"Lepton");
-  TopDummy.addDaughter(met0,"MET");
-  TopDummy.addDaughter(j0,"BJet");
-
-  //  TopCandidates->push_back(TopDummy);
-}
-
- //  int n = 0;
-
  for(size_t i = 0; i < electrons->size(); ++i){
    for(size_t j = 0; j < jets->size(); ++j){
      for(size_t m = 0; m < mets->size(); ++m){
        
-       reco::NamedCompositeCandidate Top,W;
+       reco::NamedCompositeCandidate Top,W,Nu;
 
        Top.addDaughter(electrons->at(i),"Lepton");
        Top.addDaughter(electrons->at(i),"Electron");
        Top.addDaughter(jets->at(j),"BJet");
        Top.addDaughter(mets->at(m),"MET");
        
+
+       std::vector<math::XYZTLorentzVector> NuMomenta = Nu4Momentum(electrons->at(i),mets->at(m));
+       
+       if(NuMomenta.size()>0){
+	 Nu.setP4((math::XYZTLorentzVector)NuMomenta.at(0));
+	 W.setP4(Nu.p4()+(electrons->at(i).p4()));
+	 Top.setP4(W.p4()+jets->at(j).p4());
+       }
+       else{W.setP4(electrons->at(i).p4()+mets->at(m).p4());}
+       
+
+
        Top.addDaughter(W,"W");
-       
-       W.setP4(electrons->at(i).p4()+mets->at(m).p4());
-       Top.setP4(W.p4()+jets->at(j).p4());
-       
+       Top.addDaughter(Nu,"RecoNu");
        TopCandidates->push_back(Top);
      }
    }
@@ -142,22 +142,33 @@ iEvent.getByLabel(METsSrc_,mets);
    for(size_t j = 0; j < jets->size(); ++j){
      for(size_t m = 0; m < mets->size(); ++m){
        
-       reco::NamedCompositeCandidate Top,W;
+       reco::NamedCompositeCandidate Top,W,Nu;
 
        Top.addDaughter(muons->at(i),"Lepton");
        Top.addDaughter(muons->at(i),"Muon");
        Top.addDaughter(jets->at(j),"BJet");
        Top.addDaughter(mets->at(m),"MET");
+ 
 
+
+
+       std::vector<math::XYZTLorentzVector> NuMomenta = Nu4Momentum(muons->at(i),mets->at(m));
+
+       //       W.setP4(muons->at(i).p4()+mets->at(m).p4());
+       if(NuMomenta.size()>0){
+	 Nu.setP4((math::XYZTLorentzVector)NuMomenta.at(0));
+	 W.setP4(Nu.p4()+(muons->at(i).p4()));
+	 Top.setP4(W.p4()+jets->at(j).p4());
+       }
+       else{W.setP4(muons->at(i).p4()+mets->at(m).p4());}
+     
+
+       /*       if(NuMomenta.size()>0)std::cout << "top mass is: "<< Top.mass()<< "RecoNuPt "<< Nu.pt()  <<std::endl;       
+       else{std::cout<< "no neutrino solution given!"  <<std::endl;}
+       */
 
        Top.addDaughter(W,"W");
-
-
-
-     
-       W.setP4(muons->at(i).p4()+mets->at(m).p4());
-       Top.setP4(W.p4()+jets->at(j).p4());
-
+       Top.addDaughter(Nu,"RecoNu");
        TopCandidates->push_back(Top);
      }
    }
@@ -176,11 +187,11 @@ iEvent.put(newTopCandidate);
 
 TopProducer::~TopProducer(){;}
 
-std::vector<TLorentzVector> TopProducer::Top4Momentum(const reco::Candidate & Lepton,const reco::Candidate & BJet,const reco::Candidate & MET){
+std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candidate & Lepton,const reco::Candidate & MET){
 
   double  mW = 80.38;
 
-  std::vector<TLorentzVector> result;
+  std::vector<math::XYZTLorentzVector> result;
   
   //  double Wmt = sqrt(pow(Lepton.et()+MET.pt(),2) - pow(Lepton.px()+MET.px(),2) - pow(Lepton.py()+MET.py(),2) );
     
@@ -192,31 +203,119 @@ std::vector<TLorentzVector> TopProducer::Top4Momentum(const reco::Candidate & Le
   double pz1(0),pz2(0),pznu(0);
   int nNuSol(0);
 
-  TLorentzVector p4nu_rec;
-  TLorentzVector p4W_rec;
-  TLorentzVector p4b_rec;
-  TLorentzVector p4Top_rec;
-  TLorentzVector p4lep_rec;    
+  math::XYZTLorentzVector p4nu_rec;
+  math::XYZTLorentzVector p4W_rec;
+  math::XYZTLorentzVector p4b_rec;
+  math::XYZTLorentzVector p4Top_rec;
+  math::XYZTLorentzVector p4lep_rec;    
 
-  if(a2-b > 0){
+
+  p4lep_rec.SetPxPyPzE(Lepton.px(),Lepton.py(),Lepton.pz(),Lepton.energy());
+
+  if(a2-b > 0 && usePositiveDeltaSolutions_){
     double root = sqrt(a2-b);
     pz1 = a + root;
     pz2 = a - root;
     nNuSol = 2;     
-  }
-  pznu = pz1;
+  
+  
+    
+    pznu = std::min(fabs(pz1),fabs(pz2));
 
- 
+    if(usePzPlusSolutions_)pznu = pz1;    
+    if(usePzMinusSolutions_)pznu = pz2;
+    if(usePzAbsValMinimumSolutions_)pznu = std::min(fabs(pz1),fabs(pz2));
+
+
+    
+
   double Enu = sqrt(MisET2 + pznu*pznu);
   
   p4nu_rec.SetPxPyPzE(MET.px(), MET.py(), pznu, Enu);
+    
+  //p4W_rec = p4nu_rec + p4lep_rec;
+  //p4Top_rec = p4b_rec + p4W_rec;
+  
+  result.push_back(p4nu_rec);
+  
+  } 
+  else{
+    if(!useNegativeDeltaSolutions_) return result;
+    //    double xprime = sqrt(mW;
 
-  p4lep_rec.SetPxPyPzE(Lepton.px(),Lepton.py(),Lepton.pz(),Lepton.energy());
-  p4W_rec = p4nu_rec + p4lep_rec;
-  p4b_rec.SetPxPyPzE(BJet.px(), BJet.py(), BJet.pz(), BJet.energy());  
-  p4Top_rec = p4b_rec + p4W_rec;
 
-  return result;
+    double ptlep = Lepton.pt(),pxlep=Lepton.px(),pylep=Lepton.py(),metpx=MET.px(),metpy=MET.py();
+
+    double EquationA = 1;
+    double EquationB = -3*pylep*mW/(ptlep);
+    double EquationC = mW*mW*(2*pylep*pylep)/(ptlep*ptlep)+mW*mW-4*pxlep*pxlep*pxlep*metpx/(ptlep*ptlep)-4*pxlep*pxlep*pylep*metpy/(ptlep*ptlep);
+    double EquationD = 4*pxlep*pxlep*mW*metpy/(ptlep)-pylep*mW*mW*mW/ptlep;
+
+    std::vector<long double> solutions = EquationSolve<long double>((long double)EquationA,(long double)EquationB,(long double)EquationC,(long double)EquationD);
+
+    std::vector<long double> solutions2 = EquationSolve<long double>((long double)EquationA,-(long double)EquationB,(long double)EquationC,-(long double)EquationD);
+
+    
+    double deltaMin = 14000*14000;
+    double zeroValue = -mW*mW/(4*pxlep); 
+    double minPx=0;
+    double minPy=0;
+
+    std::cout<<"a "<<EquationA << " b " << EquationB  <<" c "<< EquationC <<" d "<< EquationD << std::endl; 
+      
+    for( int i =0; i< (int)solutions.size();++i){
+      if(solutions[i]<0 ) continue;
+      double p_x = (solutions[i]*solutions[i]-mW*mW)/(4*pxlep); 
+      double p_y = ( mW*mW*pylep + 2*pxlep*pylep*p_x -mW*ptlep*solutions[i])/(2*pxlep*pxlep);
+      double Delta2 = (p_x-metpx)*(p_x-metpx)+(p_y-metpy)*(p_y-metpy); 
+
+      //      std::cout<<"intermediate solution1 met x "<<metpx << " min px " << p_x  <<" met y "<<metpy <<" min py "<< p_y << std::endl; 
+
+      if(Delta2< deltaMin && Delta2 > 0){deltaMin = Delta2;
+      minPx=p_x;
+      minPy=p_y;}
+
+
+       }
+    
+    for( int i =0; i< (int)solutions2.size();++i){
+      if(solutions2[i]<0 ) continue;
+      double p_x = (solutions2[i]*solutions2[i]-mW*mW)/(4*pxlep); 
+      double p_y = ( mW*mW*pylep + 2*pxlep*pylep*p_x +mW*ptlep*solutions2[i])/(2*pxlep*pxlep);
+      double Delta2 = (p_x-metpx)*(p_x-metpx)+(p_y-metpy)*(p_y-metpy); 
+
+      //  std::cout<<"intermediate solution2 met x "<<metpx << " min px " << minPx  <<" met y "<<metpy <<" min py "<< minPy << std::endl; 
+      
+      if(Delta2< deltaMin && Delta2 > 0){deltaMin = Delta2;
+      minPx=p_x;
+      minPy=p_y;}
+      
+      //      std::cout<<"solution2 met x "<<metpx << " min px " << minPx  <<" met y "<<metpy <<" min py "<< minPy << std::endl; 
+    }
+    
+    
+    double pyZeroValue= ( mW*mW*pxlep + 2*pxlep*pylep*zeroValue);
+    double delta2ZeroValue= (zeroValue-metpx)*(zeroValue-metpx) + (pyZeroValue-metpy)*(pyZeroValue-metpy);
+    
+    if(delta2ZeroValue < deltaMin){
+      deltaMin = delta2ZeroValue;
+      minPx=zeroValue;
+      minPy=pyZeroValue;}
+
+    //    std::cout<<" MtW2 from min py and min px "<< sqrt((minPy*minPy+minPx*minPx))*ptlep*2 -2*(pxlep*minPx + pylep*minPy)  <<std::endl;
+    ///    ////Y part   
+
+    pznu = a;
+    if(!useMetForNegativeSolutions_){
+      double Enu = sqrt(minPx*minPx+minPy*minPy + pznu*pznu);
+      p4nu_rec.SetPxPyPzE(minPx, minPy, pznu , Enu);
+    }
+    else{
+      double Enu = sqrt(metpx*metpx+metpy*metpy + pznu*pznu);
+      p4nu_rec.SetPxPyPzE(metpx, metpy, pznu , Enu);
+    }
+    result.push_back(p4nu_rec);}
+  return result;    
 }
 
 DEFINE_FWK_MODULE( TopProducer );
