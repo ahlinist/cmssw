@@ -8,6 +8,7 @@
 #include <set>
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 
 ClassImp(PidTable)
 

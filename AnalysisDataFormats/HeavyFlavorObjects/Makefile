@@ -87,7 +87,7 @@ examples:
 # ================================================================================
 ana00: $(addprefix obj/,$(ANA00))
 # ----------------------------------
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANA00)) -o lib/libAna00.so
+	$(CXX) $(SOFLAGS) $(GLIBS) $(addprefix obj/,$(ANA00)) -o lib/libAna00.so
 
 rootio/TAna01EventDict.cc: rootio/TAna01Event.hh 
 	cd rootio && $(ROOTCINT) -f TAna01EventDict.cc -c TAna01Event.hh && cd -
@@ -118,9 +118,9 @@ rootio/TGenMuonDict.cc: rootio/TGenMuon.hh
 
 
 # ================================================================================
-anaclasses: $(addprefix obj/,$(ANACLASSES))
+anaclasses: $(addprefix obj/,$(ANACLASSES)) util
 # ----------------------------------
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so
 
 tnp/anaTNP2Dict.cc: tnp/anaTNP2.hh 
 	$(ROOTSYS)/bin/rootcint  -f tnp/anaTNP2Dict.cc -c tnp/anaTNP2.hh 
@@ -129,7 +129,7 @@ tnp/anaTNP2Dict.cc: tnp/anaTNP2.hh
 # ================================================================================
 util: $(addprefix obj/,$(UTIL))
 # -----------------------------
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL)) -o lib/libUtil.so
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL)) $(GLIBS) -o lib/libUtil.so
 
 rootio/PidTableDict.cc: rootio/PidTable.hh
 	cd rootio && $(ROOTCINT) -f PidTableDict.cc -c PidTable.hh 
@@ -219,7 +219,7 @@ copy:
 
 # ================================================================================
 clean:
-	rm -f obj/*.o rootio/*Dict.* test/*Dict.* lib/libAna00.so
+	rm -f obj/*.o rootio/*Dict.* test/*Dict.* tnp/*Dict.* lib/libAna00.so
 
 # --------------------------------------------------------------------------------
 cleanall:
