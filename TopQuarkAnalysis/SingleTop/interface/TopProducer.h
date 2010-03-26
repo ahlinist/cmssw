@@ -9,7 +9,7 @@
  * \Author A. Orso M. Iorio
  * 
  *
- *\version  $Id: TopProducer.h,v 1.3 2010/03/18 11:56:03 oiorio Exp $
+ *\version  $Id: TopProducer.h,v 1.4 2010/03/26 15:41:57 oiorio Exp $
  *
  *
 */
@@ -55,7 +55,7 @@
 #include "DataFormats/Candidate/interface/NamedCompositeCandidate.h"
 
 //#include "TLorentzVector.h"
-#include "EquationSolver.h"
+#include "TopQuarkAnalysis/SingleTop/interface/EquationSolver.h"
 
 
 //class JetFlavourIdentifier;
