@@ -1,5 +1,6 @@
 #include "functions.hh"
 #include "TMath.h"
+#include <cmath>
 
 // ----------------------------------------------------------------------
 double f_expo(double *x, double *par) {
