@@ -416,7 +416,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    // passed phi mass window before fit
 	    if(bsRootTree_->iPassedCutIdent_   < 5 ) bsRootTree_->iPassedCutIdent_ = 5 ;
 	    
-
+	    if (abs(Jpsi.mass() - nominalJpsiMass) < JpsiMassWindowAfterFit_ && Jpsi.pt() > JpsiPtCut_) 
+	      bsRootTree_->PhiNumberOfCandidatesBeforeFit_++;	    
 	    
 	    // check on the overlap
 	    OverlapChecker overlap;
@@ -441,7 +442,6 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    // passed Bs mass cut before fit
 	    if(bsRootTree_->iPassedCutIdent_   < 8 ) bsRootTree_->iPassedCutIdent_ = 8 ;
 	    
-	    
 	    // start fit on the B candidates
 	    TrackRef trk1Ref = track1.get<TrackRef>();
 	    TrackRef trk2Ref = track2.get<TrackRef>();
@@ -455,6 +455,9 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    if (!trkMu1Ref.isNonnull() || !trkMu2Ref.isNonnull() || !trk1Ref.isNonnull() || !trk2Ref.isNonnull()) continue;
 	    // checked track references
 	    if(bsRootTree_->iPassedCutIdent_   < 9 ) bsRootTree_->iPassedCutIdent_ = 9 ;
+
+	    if (abs(Jpsi.mass() - nominalJpsiMass) < JpsiMassWindowAfterFit_ && Jpsi.pt() > JpsiPtCut_)
+	      bsRootTree_->BsNumberOfCandidatesBeforeFit_++;	    
 	    
 	    //call fit interface
 	    KinematicFitInterface Kfitter;
@@ -475,11 +478,12 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    // check if it is a valid candidate to be counted (verify passed AfterFit cuts)
 	    if (abs(Jpsi.mass() - nominalJpsiMass) < JpsiMassWindowAfterFit_ && Jpsi.pt() > JpsiPtCut_ &&
 		abs(PhiCand.mass() - nominalPhiMass) < PhiMassWindowAfterFit_ &&
-		fittedBsMass > BsLowerMassCutAfterFit_ && fittedBsMass < BsUpperMassCutAfterFit_  ) bsRootTree_->BsNumberOfCandidates_++;
+		fittedBsMass > BsLowerMassCutAfterFit_ && fittedBsMass < BsUpperMassCutAfterFit_  ) bsRootTree_->BsNumberOfCandidatesAfterFit_++;
 
 	    // store values in root tree if vtx probability is higher than already stored one
 	    if (vtxprob_Bs > minVtxP){
 	     
+	      bsRootTree_->BsNumberOfCandidatesAfterBestFit_++;
 	      if (abs(Jpsi.mass() - nominalJpsiMass) > JpsiMassWindowAfterFit_ || Jpsi.pt() < JpsiPtCut_) continue;
 	      // passed jpsi mass window after fit
 	      if(bsRootTree_->iPassedCutIdent_   < 11 ) bsRootTree_->iPassedCutIdent_ = 11 ;

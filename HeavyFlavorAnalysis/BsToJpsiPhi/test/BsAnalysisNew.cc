@@ -239,7 +239,7 @@ treefilenames.push_back("/nfs/data6/alschmid/BsJpsiPhi/CMSSW_3_3_6_patch3/src/He
 	      if(mySelector)mySelector->fill(); // **** filling root trees for fit here!
 	      //****************
 
-	      if(tree->BsDist2d_ /tree-> BsDist2dErr_ > decayLengthCut) {  // passed transverse decay length cut
+	      if(tree->BsCt_ /tree-> BsCtErr_ > decayLengthCut) {  // passed transverse decay length cut
 		increaseCountersByOne(iBsJPsiPhiSignalEventsDecayLengthCut, iBsJPsiKKSignalEventsDecayLengthCut, iBdJPsiKstarSignalEventsDecayLengthCut, 
 				      iBsOtherEventsDecayLengthCut, iBdOtherEventsDecayLengthCut, iOtherEventsDecayLengthCut,
 				      iBsJpsiEtaEventsDecayLengthCut, iBdJpsiK10EventsDecayLengthCut, iBdJpsiK0EventsDecayLengthCut, iBpJpsiKpEventsDecayLengthCut);
@@ -334,7 +334,7 @@ treefilenames.push_back("/nfs/data6/alschmid/BsJpsiPhi/CMSSW_3_3_6_patch3/src/He
 	      else if(KstarFlag == 2) fillHistograms(tree->BdFitM_Hyp2_,           vhBdMass_NoTimeCut);
 	      else {std::cout<<" error 2" << std::endl; exit(1);}
 	      
-	      if(tree->BdDist2d_/ tree->BdDist2dErr_ > decayLengthCut) { // passed transverse decay length cut
+	      if(tree->BdCt_/ tree->BdCtErr_ > decayLengthCut) { // passed transverse decay length cut
 		increaseCountersByOne(iBdAna_BsJPsiPhiSignalEventsDecayLengthCut, iBdAna_BsJPsiKKSignalEventsDecayLengthCut, iBdAna_BdJPsiKstarSignalEventsDecayLengthCut, 
 				      iBdAna_BsOtherEventsDecayLengthCut, iBdAna_BdOtherEventsDecayLengthCut, iBdAna_OtherEventsDecayLengthCut,
 				      iBdAna_BsJpsiEtaEventsDecayLengthCut, iBdAna_BdJpsiK10EventsDecayLengthCut, iBdAna_BdJpsiK0EventsDecayLengthCut, iBdAna_BpJpsiKpEventsDecayLengthCut);

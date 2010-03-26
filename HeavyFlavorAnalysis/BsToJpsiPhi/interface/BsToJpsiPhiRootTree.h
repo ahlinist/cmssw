@@ -162,8 +162,10 @@ public:
 	double BsErrY_;
 	double BsErrXY_;
 
-	int BsNumberOfCandidates_;
-
+	int PhiNumberOfCandidatesBeforeFit_;
+	int BsNumberOfCandidatesBeforeFit_;
+	int BsNumberOfCandidatesAfterFit_;
+	int BsNumberOfCandidatesAfterBestFit_;
 
         int     K1trkLay_;
         int     K1muDTh_;

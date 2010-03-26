@@ -123,7 +123,10 @@ bsTree_->Branch(  "BsLxy"			  , &BsLxy_,                            "BsLxy/D");
 bsTree_->Branch(  "BsCt"			  , &BsCt_,                             "BsCt/D");         
 bsTree_->Branch(  "BsLxyErr"			  , &BsLxyErr_,                            "BsLxyErr/D");                                                     
 bsTree_->Branch(  "BsCtErr"			  , &BsCtErr_,                             "BsCtErr/D");         
- bsTree_->Branch(  "BsNumberOfCandidates"          , &BsNumberOfCandidates_,            "BsNumberOfCandidates/I");
+ bsTree_->Branch(  "PhiNumberOfCandidatesBeforeFit"          , &PhiNumberOfCandidatesBeforeFit_,            "PhiNumberOfCandidatesBeforeFit/I");
+ bsTree_->Branch(  "BsNumberOfCandidatesBeforeFit"          , &BsNumberOfCandidatesBeforeFit_,            "BsNumberOfCandidatesBeforeFit/I");
+ bsTree_->Branch(  "BsNumberOfCandidatesAfterFit"          , &BsNumberOfCandidatesAfterFit_,            "BsNumberOfCandidatesAfterFit/I");
+ bsTree_->Branch(  "BsNumberOfCandidatesAfterBestFit"          , &BsNumberOfCandidatesAfterBestFit_,            "BsNumberOfCandidatesAfterBestFit/I");
 
 bsTree_->Branch(  "BsErrX"			  , &BsErrX_,                           "BsErrX/D");                                                    
 bsTree_->Branch(  "BsErrY"			  , &BsErrY_,                           "BsErrY/D");                                                    
@@ -388,7 +391,10 @@ void BsToJpsiPhiRootTree::resetEntries()
   BsFitChi2_ = -9999999;
   BsFitNdof_ = -9999999;
   BsFitVtxProb_ = -9999999;
-  BsNumberOfCandidates_ =  0;
+  PhiNumberOfCandidatesBeforeFit_ =  0;
+  BsNumberOfCandidatesBeforeFit_ =  0;
+  BsNumberOfCandidatesAfterFit_ =  0;
+  BsNumberOfCandidatesAfterBestFit_ =  0;
   BsFitM_ = -9999999;
   BsFitEta_ = -9999999;
   BsFitPt_ = -9999999;
@@ -802,7 +808,10 @@ bsTree_->SetBranchAddress(  "JpsiMuon2Cat_alone"		  , &JpsiMuon2Cat_alone_  );
 bsTree_->SetBranchAddress(  "BsFitChi2"			  , &BsFitChi2_  );                                            
 bsTree_->SetBranchAddress(  "BsFitNdof"			  , &BsFitNdof_  );                                           
 bsTree_->SetBranchAddress(  "BsFitVtxProb"		  , &BsFitVtxProb_  );                                         
-bsTree_->SetBranchAddress(  "BsNumberOfCandidates"        , &BsNumberOfCandidates_);
+bsTree_->SetBranchAddress(  "PhiNumberOfCandidatesBeforeFit"        , &PhiNumberOfCandidatesBeforeFit_);
+bsTree_->SetBranchAddress(  "BsNumberOfCandidatesBeforeFit"        , &BsNumberOfCandidatesBeforeFit_);
+bsTree_->SetBranchAddress(  "BsNumberOfCandidatesAfterFit"        , &BsNumberOfCandidatesAfterFit_);
+bsTree_->SetBranchAddress(  "BsNumberOfCandidatesAfterBestFit"        , &BsNumberOfCandidatesAfterBestFit_);
 
 bsTree_->SetBranchAddress(  "BsFitM"			  , &BsFitM_  );                                            
 bsTree_->SetBranchAddress(  "BsFitEta"			  , &BsFitEta_  );                                             
