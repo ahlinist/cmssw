@@ -233,11 +233,14 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
         url1 += profname
         url3 = "</a>"
         for iii,jjj in enumerate(fieldordered):
+          rowtxt=row[jjj]
+          rowtxt=rowtxt.replace(">","&gt;")
+          rowtxt=rowtxt.replace("<","&lt;")
           if (titleordered[iii] == "Line"):
             url2 = url1 + "/" + row[jjj] + "/" + "\">"
-            out.write("<td class=%s>%s%s%s</td>\n" % (classordered[iii],url2,row[jjj],url3))
+            out.write("<td class=%s>%s%s%s</td>\n" % (classordered[iii],url2,rowtxt,url3))
           else:
-            out.write("<td class=%s>%s</td>\n" % (classordered[iii],row[jjj]))
+            out.write("<td class=%s>%s</td>\n" % (classordered[iii],rowtxt))
         out.write("</tr>\n")
             
     rownum += 1
