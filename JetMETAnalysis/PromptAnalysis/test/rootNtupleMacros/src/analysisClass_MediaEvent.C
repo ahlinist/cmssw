@@ -217,6 +217,10 @@ void analysisClass::Loop()
                       9999, 83, 13, 9999, 9999/*,
 						9999*/};
 
+
+  // For S9/S1 flagging
+  double slopes[] = {0.0171519,0.0245339,0.0311146,0.0384983,0.0530911,0.0608012,0.0789118,0.084833,0.0998253,0.118896,0.0913756,0.0589927};
+
   Long64_t nentries = fChain->GetEntriesFast();
   std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl; 
 
@@ -444,6 +448,102 @@ void analysisClass::Loop()
 	    }
 	}
 
+
+ //## pass_HFPMTHitVeto from 2010 HCAL DPG studies - Reject anomalous events in HF due to PMT hits - 
+      int pass_HFPMTHitVeto_S9S1   = 1;
+      int pass_HFPMTHitVeto_PET   = 1;
+
+      for (int i = 0; i<int(PMTnoiseRecHitET->size()); i++)
+	{
+	  
+	  bool isPMThit = false;
+	  double energy = PMTnoiseRecHitEnergy->at(i);
+	  double ET = PMTnoiseRecHitET->at(i);
+	  double partenergy = PMTnoiseRecHitPartEnergy->at(i);
+	  double sum4Long = PMTnoiseRecHitSum4Long->at(i);
+	  double sum4Short = PMTnoiseRecHitSum4Short->at(i);
+	  int ieta = PMTnoiseRecHitIeta->at(i);
+	  int iphi = PMTnoiseRecHitIphi->at(i);
+	  double phi = ((2*3.14159)/72) * iphi;
+	  if(abs(ieta)>39) phi = ((2*3.14159)/72) * (iphi+1);
+	  int depth = PMTnoiseRecHitDepth->at(i);
+
+	  //skip the RecHit if it's just a pedestal noise
+	  if( (depth==1 && energy<1.2) || (depth==2 && energy<1.8) ) continue;
+               
+	  //--> NOTE : all crystals has been removed in 2010 --> check if there is some channel with black tape on the window
+	  //masked towers
+	  // HF(37,67,1): STATUS = 0x8040
+	  // HF(29,67,1): STATUS = 0x40
+	  // HF(35,67,1): STATUS = 0x8040
+	  // HF(29,67,2): STATUS = 0x40
+	  // HF(30,67,2): STATUS = 0x8040
+	  // HF(32,67,2): STATUS = 0x8040
+	  // HF(36,67,2): STATUS = 0x8040
+	  // HF(38,67,2): STATUS = 0x8040
+
+	  //tower masked
+	  int isLongMasked=0;
+	  int isShortMasked=0;
+	  if( (ieta==37 || ieta==29 || ieta==35) && iphi==67)
+	    isLongMasked = 1;
+
+	  if( (ieta==29 || ieta==30 || ieta==32 || ieta==36 || ieta==38) && iphi==67)
+	    isShortMasked = 1;
+               
+	  //skip the RecHit if it's in the tower with crystals mounted
+	  if( isLongMasked==1 || isShortMasked==1 ) continue;
+               
+	  //R = L-S/L+S
+	  double R = PMTnoiseRecHitRValue->at(i);
+               
+	  //S9/S1
+	  double S9oS1 = ( partenergy + sum4Long + sum4Short ) / energy;
+               
+	  // For S9/S1 flagging
+	  double slope = (0.3084-0.02577*abs(ieta)+0.0005351*ieta*ieta);
+	  if( abs(ieta)>39 ) slope = slopes[abs(ieta)-30];
+	  double intercept = -slope*log((162.4-10.19*abs(ieta)+0.21*ieta*ieta));
+                
+	  //## identify HF spikes
+
+	  //long fibers
+	  if( depth==1 ) 
+	    {
+
+	      //PET
+	      if( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) 
+		{ 
+		  isPMThit = true;
+		  pass_HFPMTHitVeto_PET = 0;
+		}
+	      
+	      //S9/S1
+	      if( abs(ieta)==29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) ) //special case (as PET)
+		{ 
+		  isPMThit = true;
+		  pass_HFPMTHitVeto_S9S1 = 0;		  
+		}
+	      else if( abs(ieta)>29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && S9oS1<(intercept+slope*log(energy)) ) )
+		{ 
+		  isPMThit = true;
+		  pass_HFPMTHitVeto_S9S1 = 0;		  
+		}
+	      
+	    }
+	  //short fibers (same cut, PET-based, for both PET and S9/S1 flags)
+	  else if( depth==2 && energy>(129.9-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 ) 
+	    {
+	      isPMThit = true;
+	      pass_HFPMTHitVeto_PET = 0;
+	      pass_HFPMTHitVeto_S9S1 = 0;
+	    }
+	  
+	}//end loop over HF rechits
+
+
+
+
       //ECAL spikes EB
       int pass_ECALSpikesVeto_tcMET = 1;
 
@@ -492,6 +592,10 @@ void analysisClass::Loop()
 
       fillVariableWithValue("pass_ECALSpikesVeto_tcMET", pass_ECALSpikesVeto_tcMET);
       fillVariableWithValue("pass_HFPMTHitVeto_tcMET", pass_HFPMTHitVeto_tcMET);
+
+      //HF cleaning - S9/S1 and PET - HCAL DPG 2010
+      fillVariableWithValue("pass_HFPMTHitVeto_S9S1", pass_HFPMTHitVeto_S9S1);
+      fillVariableWithValue("pass_HFPMTHitVeto_PET", pass_HFPMTHitVeto_PET);
 
       // Evaluate cuts (but do not apply them)
       evaluateCuts();
