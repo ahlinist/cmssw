@@ -282,6 +282,8 @@ void analysisClass::Loop()
   double barreleta =1.4;
   double endcapeta =2.6;
   double endcapeta_dijet =3.0;
+  double endcapeta_dijetJPT =2.0;
+  double endcapeta_dijetPF =3.0;
   double fhpdmax = 0.98;
   double n90hitsmin =1;
   double ntracksmin =1;
@@ -646,12 +648,12 @@ void analysisClass::Loop()
       int LS = ls;
       int runid = run;
 
+      /*
       bool goodrun=false;
-  
-
       if(isdata == 1 && !eventInGoodRunLumi(runid,LS)){
 	continue;
       }
+      */
 
       goodevts++;
       // ---------------------------------------------------------------
@@ -1016,7 +1018,7 @@ void analysisClass::Loop()
 	jcScale0=1;
 	jcScale1=1;
 
-	  if(fabs(JPTak5JetEta->at(index_JPTjet1))<endcapeta_dijet && (JPTak5JetpT->at(index_JPTjet1) * jcScale0 )>ptMinDiJPTjet && fabs(JPTak5JetEta->at(index_JPTjet2))<endcapeta_dijet && (JPTak5JetpT->at(index_JPTjet2) * jcScale1) >ptMinDiJPTjet){   //jc
+	  if(fabs(JPTak5JetEta->at(index_JPTjet1))<endcapeta_dijetJPT && (JPTak5JetpT->at(index_JPTjet1) * jcScale0 )>ptMinDiJPTjet && fabs(JPTak5JetEta->at(index_JPTjet2))<endcapeta_dijetJPT && (JPTak5JetpT->at(index_JPTjet2) * jcScale1) >ptMinDiJPTjet){   //jc
 	    //i increase 
 	    NindiJPTjets=+2;
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
@@ -1080,7 +1082,7 @@ void analysisClass::Loop()
 		  else {
 		    dijcScale = 1;
 		  }
-		  if((JPTak5JetpT->at(dj) * dijcScale) >ptMinDiJPTjet && JPTak5JetEta->at(dj)<endcapeta_dijet
+		  if((JPTak5JetpT->at(dj) * dijcScale) >ptMinDiJPTjet && JPTak5JetEta->at(dj)<endcapeta_dijetJPT
 		     && JetIdloose(JPTak5JetJIDresEMF->at(dj),JPTak5JetJIDfHPD->at(dj),JPTak5JetJIDn90Hits->at(dj),JPTak5JetEta->at(dj))){   ///
 		    NALLindiJPTjetsJetIDLoose++;
 		  }
@@ -1132,7 +1134,7 @@ void analysisClass::Loop()
 	  jcScale0=1;
 	  jcScale1=1;
 
-	  if(fabs(ak5PFJetEta->at(index_PFjet1))<endcapeta_dijet && (ak5PFJetpT->at(index_PFjet1) * jcScale0 )>ptMinDiPFjet && fabs(ak5PFJetEta->at(index_PFjet2))<endcapeta_dijet && (ak5PFJetpT->at(index_PFjet2) * jcScale1) >ptMinDiPFjet){   //jc
+	  if(fabs(ak5PFJetEta->at(index_PFjet1))<endcapeta_dijetPF && (ak5PFJetpT->at(index_PFjet1) * jcScale0 )>ptMinDiPFjet && fabs(ak5PFJetEta->at(index_PFjet2))<endcapeta_dijetPF && (ak5PFJetpT->at(index_PFjet2) * jcScale1) >ptMinDiPFjet){   //jc
 	    //i increase 
 	    NindiPFjets=+2;
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
@@ -1143,7 +1145,7 @@ void analysisClass::Loop()
 	    if(CHFjet1 && ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1)<1.0 && ak5PFJetChargedEmEnergyFraction->at(index_PFjet1)<1. && ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1)<1.) LooseIDjet1=true;
 	    if(CHFjet2 && ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2)<1.0 && ak5PFJetChargedEmEnergyFraction->at(index_PFjet2)<1. && ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2)<1.) LooseIDjet2=true;
 
-	    if(vPtEtaPhiE.size()>1 && (calometPt->at(0)/calometSumEt->at(0))<cut_metbysumet && LooseIDjet1 && LooseIDjet2){
+	    if(vPtEtaPhiE.size()>1 && (pfmetPt->at(0)/pfmetSumEt->at(0))<cut_metbysumet && LooseIDjet1 && LooseIDjet2){
 	      //fill the text file with interesting events 
 	      outfile<<runid<< "\t" << LS<< "\t"<< eventid << endl;
 	      std::vector<double> thrust_variables=Thrust_calculate(vPtEtaPhiE);
@@ -1196,7 +1198,7 @@ void analysisClass::Loop()
 		  LooseIDjetj=false;
 		   if(ak5PFJetChargedHadronEnergyFraction->at(dj)<0. && fabs(ak5PFJetEta->at(dj))<2.4) CHFjet1=false;
 	    if(CHFjetj && ak5PFJetNeutralHadronEnergyFraction->at(dj)<1.0 && ak5PFJetChargedEmEnergyFraction->at(dj)<1. && ak5PFJetNeutralEmEnergyFraction->at(dj)<1.) LooseIDjetj=true;
-		  if((ak5PFJetpT->at(dj) * dijcScale) >ptMinDiPFjet && ak5PFJetEta->at(dj)<endcapeta_dijet
+		  if((ak5PFJetpT->at(dj) * dijcScale) >ptMinDiPFjet && ak5PFJetEta->at(dj)<endcapeta_dijetPF
 		     &&LooseIDjetj){   ///
 		    NALLindiPFjetsJetIDLoose++;
 		  }
