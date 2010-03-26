@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.5 $
-  \date $Date: 2010/03/16 20:05:16 $
+  \version $Revision: 1.6 $
+  \date $Date: 2010/03/20 18:56:57 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -296,6 +296,13 @@ private:
 	  obj->SetMinimum(0);
       } // RecHitMonitor
 
+    else if ((o.name.find("DetDiagPedestalMonitor_Hcal")!=std::string::npos)&&
+	     (o.name.find("Pedestal-Reference Distribution")!=std::string::npos))
+      {
+	if (obj->GetMaximum()>0)
+	  gPad->SetLogy(1);
+      }
+
   } // void preDrawTH1(...)
 
 
@@ -447,7 +454,8 @@ private:
 
     if (o.name.find("DetDiagLaserMonitor_Hcal")!=std::string::npos)
       {
-	if (o.name.find("RBX average Time-Ref")!=std::string::npos)
+	if ((o.name.find("RBX average Time-Ref")!=std::string::npos)||
+	    (o.name.find("RoBox average Time-Ref")!=std::string::npos))
 	  {
 	    obj->SetMarkerStyle(22);
 	    obj->SetMarkerColor(kRed);
