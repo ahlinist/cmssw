@@ -2,7 +2,7 @@
  *\Authors:A.Giammanco, A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopTChannelMCProducer.cc $ 
+ *\version  $Id: SingleTopTChannelMCProducer.cc,v 1.1 2010/03/09 16:33:07 oiorio Exp $ 
  */
 
 // Single Top MC producer: 
@@ -79,8 +79,12 @@ SingleTopTChannelMCProducer::SingleTopTChannelMCProducer(const edm::ParameterSet
   produces<std::vector<reco::GenJet> >("bGenJets").setBranchAlias("bGenJets");
 
   produces<std::vector<reco::GenParticle> >("topLeptons").setBranchAlias("topLeptons");
+
   produces<std::vector<reco::GenParticle> >("topNeutrinos").setBranchAlias("topNeutrinos");
 
+  produces<std::vector<reco::GenParticle> >("tops").setBranchAlias("tops");
+  produces<std::vector<reco::GenParticle> >("pseudoRecoTops").setBranchAlias("pseudoRecoTops");
+  
 }
 
 void SingleTopTChannelMCProducer::produce(edm::Event & iEvent, const edm::EventSetup & iEventSetup){
@@ -114,6 +118,10 @@ std::auto_ptr< std::vector< reco::GenJet > > bGenJets( new std::vector<reco::Gen
 std::auto_ptr< std::vector< reco::GenParticle > > topLeptons( new std::vector<reco::GenParticle> );
 
 std::auto_ptr< std::vector< reco::GenParticle > > topNeutrinos( new std::vector<reco::GenParticle> );
+
+std::auto_ptr< std::vector< reco::GenParticle > > tops( new std::vector<reco::GenParticle> );
+
+std::auto_ptr< std::vector< reco::GenParticle > > pseudoRecoTops( new std::vector<reco::GenParticle> );
 
 #if DEBUG
   std::cout << "producer 3" << std::endl;
@@ -170,7 +178,7 @@ std::auto_ptr< std::vector< reco::GenParticle > > topNeutrinos( new std::vector<
   int btop_id   = 0;
 
   const Candidate *topMo=NULL, *top=NULL ,*W=NULL, *btop=NULL,
-    *lep=NULL, *nu=NULL, *recoilQuark=NULL, *bSecond=NULL;
+    *lep=NULL, *nu=NULL, *recoilQuark=NULL, *bSecond=NULL, *pseudoRecoTop=NULL;
 #if DEBUG
   std::cout << "producer 4" << std::endl;
 #endif
@@ -422,10 +430,22 @@ std::auto_ptr< std::vector< reco::GenParticle > > topNeutrinos( new std::vector<
   } // END: particle loop  
 
  
+
+if(top!= NULL)tops->push_back(*(dynamic_cast<const reco::GenParticle *>(top)));
 if(btop!= NULL)bGenParticles->push_back(*(dynamic_cast<const reco::GenParticle *>(btop)));
 if(lep!= NULL)topLeptons->push_back(*(dynamic_cast<const reco::GenParticle *>(lep)));
 if(nu!= NULL)topNeutrinos->push_back(*(dynamic_cast<const reco::GenParticle *>(nu)));
 if(recoilQuark!= NULL)singleTopRecoilQuark->push_back(*(dynamic_cast<const reco::GenParticle *>(recoilQuark)));
+
+ if(top!= NULL&&btop!= NULL&&lep!= NULL&&nu!= NULL){
+   //reco::GenParticle * tmp = (dynamic_cast<const reco::GenParticle *>(top));
+   //tmp->setP4((nu->p4()+lep->p4())+btop->p4());
+   pseudoRecoTop = new GenParticle();
+   //*pseudoRecoTop = *top;
+   //top;// *(dynamic_cast<const reco::GenParticle *>(top));
+   //pseudoRecoTop->setP4((nu->p4()+lep->p4())+btop.p4());
+   pseudoRecoTops->push_back(*(dynamic_cast<const reco::GenParticle *>(pseudoRecoTop)));
+}
 
   //Const reco::GenParticle * btopPart =  dynamic_cast<const reco::GenParticle *>(btop);
   //bGenParticles->push_back( * btopPart);
@@ -474,6 +494,8 @@ if(recoilQuark!= NULL)singleTopRecoilQuark->push_back(*(dynamic_cast<const reco:
  iEvent.put(bGenJets,"bGenJets");
  iEvent.put(topLeptons,"topLeptons");
  iEvent.put(topNeutrinos,"topNeutrinos");
+ iEvent.put(tops,"tops");
+ iEvent.put(pseudoRecoTops,"pseudoRecoTops");
 
 }
 
