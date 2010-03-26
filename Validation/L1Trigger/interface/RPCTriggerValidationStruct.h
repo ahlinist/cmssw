@@ -49,6 +49,9 @@ std::string changedot(double x)
 		return s;
 	  }
 
+ 
+
+
 struct L1MuonCandLocalInfo {
 	
 	
@@ -70,7 +73,14 @@ struct L1MuonCandLocalInfo {
   	_bx=cand.bx();
  	 _ptCode=cand.pt_packed();
   	_tower=cand.eta_packed();
-  	_phi=cand.phiValue();
+
+        //_phi=cand.phiValue();
+  	
+        if(cand.phiValue()<3.14159265) _phi=cand.phiValue();
+        else _phi=cand.phiValue()-2.*3.14159265;
+
+        //_phi=_const.phiFromSegmentNum(cand.phi_packed());
+
   	_eta=cand.etaValue();
   	_quality=cand.quality();
  	//_eta = -_eta;
@@ -132,6 +142,14 @@ struct GenMuonLocalInfo {
 
       };
        
+
+bool SortAssignedL1byBx(const L1MuonCandLocalInfo & l1, 
+                        const L1MuonCandLocalInfo & l2 ) 
+  {
+
+     return l1.bx() < l2.bx();    
+
+  }
       
 struct MEResolution {
         public:
@@ -142,7 +160,7 @@ struct MEResolution {
 	      
           {
 
-      
+      _meVec=new MonitorElement*[(2*(_NumberOfQuality+1))];
 	    
             
 	                for (  int it=0; it<(2*(_NumberOfQuality+1)) ; ++it  ) {
@@ -183,11 +201,11 @@ struct MEResolution {
           }
 	  
 	  
-	static int  _NumberOfQuality;
+	static int   _NumberOfQuality;
         private:
           float _etaL, _etaH, _ptL, _ptH;
           
-	  MonitorElement * _meVec[18];
+	  MonitorElement * * _meVec;
 
 
       
@@ -225,14 +243,27 @@ struct MEDistribution {
 	    _meVecEtaVsPhiGen[it]->setAxisTitle("#phi",2);
 	    
 	    } 
-	           std::stringstream name;
+	          { std::stringstream name;
 	    std::stringstream title;
 		name<<"Distribution_"<<_tag[1]<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
 	    title<<"RPCTrigger: Distribution "<<_tag[1]<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
 	    
             _meTowerVsPhiL1 = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
             _meTowerVsPhiL1->setAxisTitle("Tower",1);
-	    _meTowerVsPhiL1->setAxisTitle("#phi",2);                       
+	    _meTowerVsPhiL1->setAxisTitle("#phi",2);          
+            }
+             
+            {
+                     std::stringstream name;
+	    std::stringstream title;
+		name<<"Distribution_"<<"Bx"<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+	    title<<"RPCTrigger: Distribution "<<"Bx"<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
+	    
+            _meTowerVsPhiL1Bx = dqm->bookProfile2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi,-5,5); 
+            _meTowerVsPhiL1Bx->setAxisTitle("Tower",1);
+	    _meTowerVsPhiL1Bx->setAxisTitle("#phi",2);
+            }
+
           };
           
           void fill( GenMuonLocalInfo gl ) {
@@ -246,6 +277,7 @@ struct MEDistribution {
 	     _meVecEtaVsPhiGen[1]->Fill(gl.eta(),gl.phi());
 	     _meVecTowerVsPhiGen[1]->Fill(_const.towerNumFromEta(gl.eta()),gl.phi());
 	     _meTowerVsPhiL1->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi());
+             _meTowerVsPhiL1Bx->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi(),(std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx))->bx());
 	     }
 	    
 	    if(gl._l1cands.size()>1)  {
@@ -277,6 +309,7 @@ struct MEDistribution {
           MonitorElement* _meVecEtaVsPhiGen[4];
 	  MonitorElement* _meVecTowerVsPhiGen[4];
 	  MonitorElement * _meTowerVsPhiL1;
+          MonitorElement * _meTowerVsPhiL1Bx;
       	 static const std::string _tag[] ;
 	 
 
@@ -345,7 +378,60 @@ struct MEEfficieny {
       }; 
 
 
+	struct METiming {
+        public:
+          METiming(edm::ParameterSet ps, DQMStore * dqm): _ptL(ps.getParameter<double>("ptL")),
+                                              _ptH(ps.getParameter<double>("ptH"))
+	      
+          {
+		
+	std::stringstream name;
+	std::stringstream title;
+	
+	name<<"L1_Bx_Vs_eta_Pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+	title<<"RPCTrigger: RPC Bx Vs #eta Pt["<<_ptL<<","<<_ptH<<"]";
+	    
+        _meBx = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,7,-3,3);
+	    
+	 name<<"_Diffrenc";
+	 title<<" Diffrenc";
+	 
+   	//_meDiffBx = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,7,-3,3);
+	
+            //_meDiffBx->setAxisTitle("Tower",1);
+	    //_meDiffBx->setAxisTitle("Diff Bx",2);                       
+          };
+          
+          void fill( GenMuonLocalInfo gl ) 
+          {
+
+           if((gl.pt()>=_ptL)&&(gl.pt()<=_ptH)){
+	    
+
+	    if(gl._l1cands.size()>0) {
+	    //_meDiffBx->Fill(_const.towerNumFromEta(gl.eta()),(gl._l1cands.begin())->bx())-gl.;
+	    _meBx->Fill(_const.towerNumFromEta(gl.eta()),(gl._l1cands.begin())->bx());
+	    }
+	    
+	    if((gl._l1cands.size()>1)){
+	    //_meDiffBxGhost->Fill(_const.towerNumFromEta(gl.eta()),(gl._l1cands.begin())->bx());
+	    _meBxGhost->Fill(_const.towerNumFromEta(gl.eta()),(++gl._l1cands.begin())->bx());
+	    }
+	    
+	    }	
+          }
 	  
+	  
+	
+        private:
+          float  _ptL, _ptH;
+          
+	  //MonitorElement * _meDiffBx;
+	 MonitorElement * _meBx;	
+         //MonitorElement * _meDiffBxGhost;
+	 MonitorElement * _meBxGhost;	
+      
+      };  
 
       }
       

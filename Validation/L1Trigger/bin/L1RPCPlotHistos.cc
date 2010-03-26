@@ -53,13 +53,23 @@ int main(int argc, char ** argv)
                                     
                     
   
-    if(argc!=2)
+    if(argc!=3)
     {
-        std::cout<<"Usage: " << argv[0] <<" rootfile" <<std::endl;
+        std::cout<<"Usage: " << argv[0] <<" qualMax rootfile" <<std::endl;
         return 1;
     }
 
-    TFile * file = new TFile(argv[1]);
+    int qualMax;
+    std::stringstream ssQual;
+    ssQual<<argv[1];
+   if(! ssQual>>qualMax)
+   {
+        std::cout << "Wrong quality: " << argv[1] << std::endl;
+   }
+
+
+
+    TFile * file = new TFile(argv[2]);
     if (!file->IsOpen())
     {
         std::cout << "Problem with file: " << argv[1] << std::endl;
@@ -99,7 +109,7 @@ int main(int argc, char ** argv)
                 int qualVal = -1;
                 ss >> qualVal;
 
-                if ( qualVal != 4)
+                if ( qualVal != (qualMax+1))
                 {
                     std::string stackName = name.substr(0,pos) + "Stack" ;
                     std::cout   << name << " " << stackName << " " << qualVal << std::endl;
@@ -126,7 +136,7 @@ int main(int argc, char ** argv)
 
     }
 
-    TFile plots("plots.root", "recreate");
+    TFile plots("plots.root", "RECREATE");
     std::map<std::string, TStackAndLegend >::iterator it = stackMap.begin();
     std::map<std::string, TStackAndLegend >::iterator itE = stackMap.end();
     for (;it!=itE;++it)
