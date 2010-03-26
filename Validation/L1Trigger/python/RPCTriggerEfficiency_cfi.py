@@ -104,7 +104,8 @@ RPCTriggerVal = cms.EDAnalyzer('RPCTriggerValidation',
         cms.PSet(  ptL=cms.double(10.), ptH=cms.double(15.) ),
 	cms.PSet(  ptL=cms.double(15.), ptH=cms.double(20.) ),
         cms.PSet( ptL=cms.double(20.), ptH=cms.double(100.) ),
-        cms.PSet(  ptL=cms.double(100.), ptH=cms.double(1000.) )
+        cms.PSet(  ptL=cms.double(100.), ptH=cms.double(1000.) ),
+	cms.PSet(  ptL=cms.double(0.), ptH=cms.double(1000.) )
       ), 
       
 EtaRanges = cms.VPSet (

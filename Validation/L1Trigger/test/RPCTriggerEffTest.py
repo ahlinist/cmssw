@@ -23,7 +23,7 @@ process.CloneRecoMuons = cms.EDProducer("MuonShallowCloneProducer",
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(2000000)
+    input = cms.untracked.int32(200000000)
 )
 
 process.load("DQMServices.Core.DQM_cfg")
@@ -37,7 +37,13 @@ process.RPCTriggerVal.MC  = cms.InputTag("SelectRecoMuons")
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 
-           '/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/124/120/F08F782B-77E8-DE11-B1FC-0019B9F72BFF.root'
+          # '/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/124/120/F08F782B-77E8-DE11-B1FC-0019B9F72BFF.root'
+           '/store/data/BeamCommissioning09/MinimumBias/RECO/Jan21stPreProd_336p3_v1/0007/EC38C57D-0507-DF11-82E3-0024E8768CA5.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RECO/Jan21stPreProd_336p3_v1/0007/DC702D75-0507-DF11-8155-0024E8768CCC.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RECO/Jan21stPreProd_336p3_v1/0007/BC4E9469-0507-DF11-BCC0-00151796C1D0.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RECO/Jan21stPreProd_336p3_v1/0007/B8470049-0607-DF11-8FAE-00151796C0DC.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RECO/Jan21stPreProd_336p3_v1/0007/B0AFB674-0507-DF11-BA17-0015178C486C.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RECO/Jan21stPreProd_336p3_v1/0007/AAE4DF40-1307-DF11-80E2-00151796D4F0.root'
 
 
 

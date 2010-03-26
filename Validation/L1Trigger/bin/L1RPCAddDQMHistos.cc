@@ -29,7 +29,7 @@ int main(int argc, char ** argv) {
       return 1;
    }
   
-
+  std::string fOut = "histos.root";
 
   std::map<std::string, TH1F *> histoMap;
   
@@ -40,12 +40,24 @@ int main(int argc, char ** argv) {
     ++iFile; // we could use i aswell
   
     TFile * file = new TFile(argv[i]);
+
+    
+
     if (!file->IsOpen()){
       std::cout << "Problem with file: " << argv[i] << std::endl;
       continue;
     }
 
-    
+    if(file->GetDirectory("DQMData")==0){
+    std::cout << "Problem with file: " << argv[i] << std::endl;
+    continue;
+    }
+
+    if(file->GetDirectory("DQMData")->GetDirectory(argv[1])==0){
+    std::cout << "Problem with file: " << argv[i] << std::endl;
+    continue;
+    }
+
     TIter nextkey( file->GetDirectory("DQMData")->GetDirectory(argv[1])->GetListOfKeys()  );
     TKey *key;
     while ( (key = (TKey*)nextkey())) {
@@ -76,10 +88,10 @@ int main(int argc, char ** argv) {
   } // end file iteration
   std::cout << "Read " <<iFile << " files. " << std::endl;
   
-  std::string fOut = "histos.root";
+  
   std::cout << " Saving to " << fOut << std::endl;
 
-  TFile f(fOut.c_str(), "new");
+  TFile f(fOut.c_str(), "RECREATE");
   //f.Cd();
   std::map<std::string, TH1F *>::iterator it = histoMap.begin();
   std::map<std::string, TH1F *>::iterator itE = histoMap.end();
