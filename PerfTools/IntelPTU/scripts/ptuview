@@ -1,0 +1,297 @@
+#!/usr/bin/env python
+
+##############################################################################
+# CGI script to display CSV (comma separated value) files exported by the 
+# Intel Performance Tuning Utility (PTU), as html tables
+#
+# (Some code bits were swiped from igprof-navigator, from Giulio Eulisse)
+#
+# The expectation is that the script is put into a cgi-bin directory. If
+# you prefer it can be renamed w/o problems.
+#
+# You should export csv files from the PTU source view (any type of profile)
+# and also from the corresponding disassembly view of the source, with names
+#     somestring_src.csv
+#     somestring_asm.csv
+# The "somestring" part is up to you. These two files, with those names, 
+# should go into a "data" subdirectory of the directory where the cgi 
+# script is located. The corresponding URL's will then be:
+#
+#   http://x.y/z/cgi-bin/ptuview/src/somestring/
+#   http://x.y/z/cgi-bin/ptuview/asm/somestring/
+#
+# There are also cross links between the two using the source code line and
+# URL's like:
+#
+#   http://x.y/z/cgi-bin/ptuview/asm/somestring/78/
+#  
+# which highlight the particular source code line or the dissassembly which
+# corresponds to that source code line.
+#
+# Peter Elmer, Princeton University
+# 24 March, 2010
+##############################################################################
+
+from sys import exit
+import sys
+import os
+import csv
+import locale
+from locale import format
+from optparse import OptionParser
+import glob
+from os.path import join, normpath, exists, basename, isdir, dirname, getsize
+debug=False
+
+CSS="""
+<style>
+body {
+  font-family: sans-serif;
+} 
+
+table {
+  border: 1px solid black;
+}
+
+tr.hdr {
+  font-size: 70%;
+  background-color: #6699ff;  
+} 
+
+tr.srcline {
+  font-size: 70%;
+  background-color: #EEEEEE;  
+} 
+
+tr.blockline {
+  font-size: 70%;
+  border: 1px solid black;
+  background-color: #cccccc;  
+} 
+
+tr.highlight {
+  font-size: 70%;
+  border: 1px solid black;
+  background-color: #ffddcc;  
+} 
+
+    
+td {
+  font-size: 12px;
+  padding: 3px 10px;
+  font-family: monospace;
+  text-align: ;
+  margin: 0px;
+  border-width: 0px;
+  white-space: nowrap;
+}
+
+td.src {
+  text-align: left;
+  white-space:pre;
+}
+
+td.lineadr {
+  text-align: left;
+  background-color: #cccccc;
+}
+
+td.cntr {
+  text-align: right;
+}
+
+tbody.parents {
+  background-color: #9cc089;
+}
+
+tbody.children {
+  background-color: #d8f3c9;
+}
+tbody.mainrow {
+  font-weight: bold;
+  background-color: #fde8d7;
+}
+
+a {
+  color: #000000;
+}
+</style>
+"""
+
+# Preferred order for source annotation
+# xxxx,"INST_RETIRED.ANY","CPU_CLK_UNHALTED.CORE","Line", "Source"
+#  "CPU_CLK_UNHALTED.CORE max(lCPU)" should be suppressed if there
+#
+# Preferred order for disassembly annotation
+# xxxx,"INST_RETIRED.ANY","CPU_CLK_UNHALTED.CORE","Address","Line","Assembly"
+#  "CPU_CLK_UNHALTED.CORE max(lCPU)" should be suppressed if there
+
+def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
+  # Here the preferred order is given from right to left for simplicity,
+  # since anything "extra" we will eventually want on the left of these things.
+  # since the real constraint here is that the last thing should be the
+  # source lines, since they can be of arbitrary length.
+
+  srcorder = ["Source","Assembly","Line","Address","CPU_CLK_UNHALTED.CORE","INST_RETIRED.ANY"]
+  srcclass = ["src","src","lineadr","lineadr","cntr","cntr"]
+  srcclassother = "cntr"
+  srcsuppress = ["CPU_CLK_UNHALTED.CORE max(lCPU)"]
+
+  ifile  = open(mycsvfile, "rb")
+  reader = csv.reader(ifile)
+
+  rownum = 0
+  fieldordered = []
+  classordered = []
+  titleordered = []
+  hdrmap = {} 
+  for row in reader:
+    # The header row gets a different css class
+    # Figure out which column has the "Source", that should be
+    # at the end since the lines can be arbitrarily long
+    if rownum == 0:
+        header = row
+        
+        # Figure out which fields are in which location and determine
+        # the order of fields needed to meet the preferred order
+
+        linelength = len(header)
+        blackball = []
+        for iii in range(0,linelength):
+          blackball.append(0)
+
+        # First look for all fields explicitly listed as having a preferred
+        # order. Ignore the others for now.
+        for ifield, afield in enumerate(srcorder):
+          thefield = -1
+          theclass = ""
+          thetitle = ""
+          for jfield, bfield in enumerate(header):
+            if (afield == bfield):
+              thefield = jfield 
+              theclass = srcclass[ifield] 
+              thetitle = bfield 
+              # Deal also with a special case
+          if thefield != -1:
+              fieldordered.append(thefield)
+              classordered.append(theclass)
+              titleordered.append(thetitle)
+              blackball[thefield]=1
+
+        # Now look through the others, dropping those which were specified
+        # as part of the preferred order and those in the explicit suppression
+        # list
+        for afield in srcsuppress: 
+          for jfield, bfield in enumerate(header):
+            if afield == bfield:
+              blackball[jfield]=1
+        for kfield, cfield in enumerate(blackball):
+          if cfield == 0:
+            fieldordered.append(kfield)
+            classordered.append(srcclassother)
+            titleordered.append(header[kfield]) 
+
+        # Now reverse the order (to the left-to-right one)
+        fieldordered.reverse()
+        classordered.reverse()
+        titleordered.reverse()
+
+        # Retain also a map of the header fields to indices (assuming no 
+        # duplications!)
+        for jfield, bfield in enumerate(header):
+          hdrmap[bfield] = jfield
+
+        # Now actually print out the header line, in the correct order,
+        # and without any fields which were to be suppressed
+        out.write("<table>\n")
+        out.write("<tr class=hdr>\n")
+        linelength = len(header)
+        for iii in fieldordered:
+          out.write("<td>%s</td>\n" % header[iii])
+        out.write("</tr>\n")
+        out.write("<tbody class=>\n")
+    else:
+        colnum = 0
+
+        theclass="srcline"
+        # Deal with special "Block" lines in asm profile
+        if "Address" in hdrmap:
+          addressfield=hdrmap["Address"]
+          if "Block" in row[addressfield]:
+            theclass = "blockline"
+        # Deal also with lines to be highlighted (takes precedence)
+        if "Line" in hdrmap:
+          specialfield=hdrmap["Line"]
+          if row[specialfield] == hlline:
+            theclass = "highlight"
+        out.write("<tr class=%s>\n" % theclass )
+        url1 = "<a href=\"" + cgiscript
+        if (proftype == "src"):
+          url1 += "/asm/"
+        else: #(proftype == "asm")
+          url1 += "/src/"
+        url1 += profname
+        url3 = "</a>"
+        for iii,jjj in enumerate(fieldordered):
+          if (titleordered[iii] == "Line"):
+            url2 = url1 + "/" + row[jjj] + "/" + "\">"
+            out.write("<td class=%s>%s%s%s</td>\n" % (classordered[iii],url2,row[jjj],url3))
+          else:
+            out.write("<td class=%s>%s</td>\n" % (classordered[iii],row[jjj]))
+        out.write("</tr>\n")
+            
+    rownum += 1
+  ifile.close()
+  out.write("</tbody>\n")
+  out.write("</table>\n")
+  
+
+def buildReply(out):
+  out.write(CSS)
+  out.write("<html><body>\n")
+  if not "PATH_INFO" in os.environ or not "SCRIPT_FILENAME" in os.environ:
+    out.write("<h1>No vars:</h1>\n")
+  else:
+    relPath = os.environ["PATH_INFO"].replace(os.environ["SCRIPT_FILENAME"], "").lstrip("/")
+    # Tokenize the relPath. Ignore anything after the 3rd field.
+    # The first field must be "src" or "asm" at the moment.
+    # The second field is the "name" of the profile
+    # The thrid field flags line numbers to highlight
+    relargs = relPath.split('/')
+    if ((len(relargs) >= 2) and ((relargs[0] == "src") or (relargs[0] == "asm")) and (relargs[1] != "")):
+      proftype = relargs[0] 
+      profname = relargs[1] 
+      dataPath = join(os.getcwd(), "data")
+      mypath = normpath(dataPath)
+      mycsvfile = mypath + "/" + profname + "_" + proftype + ".csv"
+      out.write("<h1>%s profile - %s</h1>\n" % (proftype,profname))
+      cgiscript = "/" + os.environ["SCRIPT_FILENAME"].replace(os.environ["DOCUMENT_ROOT"],"")
+      hlline = -1
+      if (len(relargs) >= 3):
+        hlline = relargs[2] 
+      getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out)
+    else:
+      out.write("<h1>Invalid URL:</h1>\n")
+  out.write("</body></html>")
+
+
+###########################################################################
+
+if __name__ == "__main__":
+  # Uncomment in case of debugging needs
+  if debug:
+    cgitb.enable()
+  if "LC_ALL" in os.environ:
+    locale.setlocale(locale.LC_NUMERIC, os.environ["LC_ALL"])
+  else:
+    locale.setlocale(locale.LC_NUMERIC, "en_US.UTF-8")
+
+  parser = OptionParser(usage="igprof-navigator [file [options]] ")
+  parser.add_option("--port", "-p", dest="port", default=8080, type="int")
+  parser.add_option("--timeout", "-t", dest="timeout", default=60*15, type="int")
+  opts, args = parser.parse_args()
+
+  print "Content-Type: text/html"
+  print
+  buildReply(sys.stdout)
+
