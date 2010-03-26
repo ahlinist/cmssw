@@ -2002,3 +2002,11 @@ void anaTNP2::makeCanvas(int i) {
   }
 }
 
+// ----------------------------------------------------------------------
+int  anaTNP2::wait() {
+  cout << " Continue [<RET>|q]?  "; 
+  char x;
+  x = getchar();
+  if ((x == 'q') || (x == 'Q')) return 1;
+  return 0;
+}
