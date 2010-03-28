@@ -805,7 +805,7 @@ int main(int argc,  char * argv[]){
   TH1F *hctEEp   = new TH1F("hctEEp", Form("%s EE+ Crystal Times;Time (ns);Number of Crystals",runChar),200, -EETimeMax, EETimeMax);
   TH1F *hctEEm   = new TH1F("hctEEm", Form("%s EE- Crystal Times;Time (ns);Number of Crystals",runChar),200, -EETimeMax, EETimeMax);
   TH1F *hctEEpB  = new TH1F("hctEEpB", Form("%s EE+ (-10ns to 10ns) EE- (-10ns to 10ns) ;EE+ Time (ns);Number of Crystals",runChar),200, -EETimeMax, EETimeMax);
-  TH1F *hctEEmB  = new TH1F("hctEEmB", Form("%s EE- (-10ns tohctEEpB 10ns) EE+ (-10ns to 10ns) ;EE- Time (ns);Number of Crystals",runChar),200, -EETimeMax, EETimeMax);
+  TH1F *hctEEmB  = new TH1F("hctEEmB", Form("%s EE- (-10ns to 10ns) EE+ (-10ns to 10ns) ;EE- Time (ns);Number of Crystals",runChar),200, -EETimeMax, EETimeMax);
   TH1F *hctEEpBh = new TH1F("hctEEpBh", Form("%s EE+ (-10ns to 10ns) EE- (-30ns to -10ns) ;EE+ Time (ns);Number of Crystals",runChar),200, -EETimeMax, EETimeMax);
   TH1F *hctEEmBh = new TH1F("hctEEmBh", Form("%s EE- (-10ns to 10ns) EE+ (-30ns to -10ns) ;EE- Time (ns);Number of Crystals",runChar),200, -EETimeMax, EETimeMax);
   
