@@ -15,7 +15,13 @@ for i
   case "$i" in
       -r) shift; run_num=$2;shift;;
       -at) shift; analy_type=$2;shift;;
-  esac      
+      -bxs) shift; BXS=$2;shift;;
+      -orbits) shift; ORBITS=$2;shift;;
+      -times) shift; TIMES=$2;shift;;
+      -lumi) shift; LUMI=$2;shift;;
+      -trig) shift; TRIG=$2;shift;;
+      -ttrig) shift; TTRIG=$2;shift;;
+  esac       
 done
 
 if [ "X"${run_num} == "X" ]
@@ -33,6 +39,45 @@ else
     echo "using ${analy_type} type events  "
 fi
 
+APPENDIX=""
+OPTIONS=""
+
+if [ "X"${TRIG} != "X" ]
+    then
+    APPENDIX=$APPENDIX"_TRIG_"$TRIG
+    OPTIONS=$OPTIONS" -trig "$TRIG
+fi
+
+if [ "X"${TTRIG} != "X" ]
+    then
+    APPENDIX=$APPENDIX"_TTRIG_"$TTRIG
+    OPTIONS=$OPTIONS" -ttrig "$TTRIG
+fi
+
+if [ "X"${LUMI} != "X" ]
+    then
+    APPENDIX=$APPENDIX"_LUMI_"$LUMI
+    OPTIONS=$OPTIONS" -lumi "$LUMI
+fi
+
+if [ "X"${BXS} != "X" ]
+    then
+    APPENDIX=$APPENDIX"_BXS_"$BXS
+    OPTIONS=$OPTIONS" -bxs "$BXS
+fi
+
+if [ "X"${TIMES} != "X" ]
+    then
+    APPENDIX=$APPENDIX"_TIMES_"$TIMES
+    OPTIONS=$OPTIONS" -times "$TIMES
+fi
+
+if [ "X"${ORBITS} != "X" ]
+    then
+    APPENDIX=$APPENDIX"_ORBITS_"$ORBITS
+    OPTIONS=$OPTIONS" -orbits "$ORBITS
+fi
+
 echo 'Making Laser Webpages for ' ${run_num}  
   
 
@@ -40,8 +85,10 @@ echo 'Making Laser Webpages for ' ${run_num}
 #my_cmssw_base='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/ccecal/CRAFT_devel_321/src'
 my_cmssw_base=$CMSSW_BASE/src
 work_dir=${my_cmssw_base}/'CalibCalorimetry/EcalTiming/test'
+Nrun_num=${run_num}${APPENDIX}
 
-plots_dir=plots/${analy_type}/$run_num;
+
+plots_dir=plots/${analy_type}/$Nrun_num;
 mkdir $plots_dir
 
 crab_dir=`\ls -rt1 ${work_dir}/${analy_type}_${run_num} | grep "crab_" | tail -1 | awk '{print $NF}'`;
@@ -49,46 +96,52 @@ crab_dir=`\ls -rt1 ${work_dir}/${analy_type}_${run_num} | grep "crab_" | tail -1
 echo $crab_dir
 
 #root_file=${analy_type}_${run_num}_1.root
+Nroot_file=${analy_type}_${Nrun_num}.root
 root_file=${analy_type}_${run_num}.root
-plot_file=${analy_type}_${run_num}_plots.root
-cp ${work_dir}/${analy_type}_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}
+plot_file=${analy_type}_${Nrun_num}_plots.root
+cp ${work_dir}/${analy_type}_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}/${Nroot_file}
 
 echo
 echo 'Going to make the plots, by running in ROOT:'
 echo
 echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/plotLaser.C'
-echo 'DrawLaserPlots("'${plots_dir}'/'${root_file}'","'${run_num}'",kTRUE,"png","'${plots_dir}'",kFALSE,"${analy_type}","'${plot_file}'")'
+echo 'DrawLaserPlots("'${plots_dir}'/'${Nroot_file}'","'${Nrun_num}'",kTRUE,"png","'${plots_dir}'",kFALSE,"${analy_type}","'${plot_file}'")'
 echo
+
+EcalTimingTTreePlotter ${plots_dir}/${Nroot_file} ${Nrun_num} 1 png ${plots_dir} 0 ${analy_type} ${plot_file} $OPTIONS > ${plots_dir}/plotting.txt
 
 #now I need to make a little python script to make my root plots
 
-cat > ${plots_dir}/plot.py <<EOF
+#######cat > ${plots_dir}/plot.py <<EOF
 
 #from ROOT import gROOT
 #from ROOT import gSystem
-from ROOT import *
+#######from ROOT import *
 
 #load my macro
-gSystem.Load('libFWCoreFWLite.so')
-AutoLibraryLoader.enable();
-gSystem.Load('libDataFormatsFWLite.so')
-gSystem.Load('libDataFormatsPatCandidates.so')
-gROOT.LoadMacro(  '${my_cmssw_base}/CalibCalorimetry/EcalTiming/test/plotLaser.C')
+#######gSystem.Load('libFWCoreFWLite.so')
+#######AutoLibraryLoader.enable();
+#######gSystem.Load('libDataFormatsFWLite.so')
+#######gSystem.Load('libDataFormatsPatCandidates.so')
+#######gROOT.LoadMacro(  '${my_cmssw_base}/CalibCalorimetry/EcalTiming/test/plotLaser.C++')
+#gSystem.Load('plotLaser_C.so')
+#gROOT.ProcessLine(  '.L ${my_cmssw_base}/CalibCalorimetry/EcalTiming/test/plotLaser.C++')
 
 #get my cute class
-from ROOT import DrawLaserPlots
+#######from ROOT import DrawLaserPlots
 
-time=DrawLaserPlots("${plots_dir}/${root_file}","${run_num}",True,"png","${plots_dir}",False,"${analy_type}", "${plot_file}")
-print time
+#######time=DrawLaserPlots("${plots_dir}/${root_file}","${run_num}",True,"png","${plots_dir}",False,"${analy_type}", "${plot_file}")
+#######print time
 
-EOF
+####EOF
 
-python ${plots_dir}/plot.py -b > ${plots_dir}/plotting.txt
+#####python ${plots_dir}/plot.py -b > ${plots_dir}/plotting.txt
+run_num=${Nrun_num}
 mytimel=`tail -n 1 ${plots_dir}/plotting.txt`
 mytime=`date -ud @${mytimel}`
 echo "The Beginnig of the Run is  $mytime"
 
-rm ${plots_dir}/plot.py
+#####rm ${plots_dir}/plot.py
 
 ttreestuff=""
 
@@ -204,6 +257,9 @@ Jump to:<br>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTIMESB_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTIMESB_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTIMESB_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTIMESB_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTIMESBH_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEPTIMESBH_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTIMESBH_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${analy_type}Analysis_EEMTIMESBH_${run_num}.png"> </A>
+
 
 
 <br>
@@ -286,7 +342,7 @@ ${ttreestuff}
 <h2><A href="expert.html">Expert Technical Plots</A><BR></h2>
 
 <h4> ROOT File (download) </h4>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${root_file}> ${root_file} </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${Nroot_file}> ${Nroot_file} </A>
 <h4> Plot ROOT File (download) </h4>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/MWGR10/${run_num}/${plot_file}> ${plot_file} </A>
 
