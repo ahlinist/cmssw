@@ -1,10 +1,53 @@
+
+
+
+//gSystem->Load("libFWCoreFWLite.so");
+//AutoLibraryLoader::enable();
+//gSystem->Load("libDataFormatsFWLite.so");
+//gSystem->Load("libDataFormatsPatCandidates.so");
+#if !defined(__CINT__) && !defined(__MAKECINT__)
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+#endif
+EBDetId mydet = 0;
+EEDetId mydete = 0;
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <cmath>
+#include <map>
+#include <boost/tokenizer.hpp>
+#include <TTree.h>
+#include <TChain.h>
+#include <TFile.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TH3.h>
+#include <TProfile2D.h>
+#include <TProfile.h>
+#include <TCanvas.h>
+#include <TGraph.h>
+#include <TLine.h>
+#include <TROOT.h>
+#include <TStyle.h> 
+
+
+
+
+using namespace std;
+
 int Wait() {
-     cout << " Continue [RET>|q]?  "; 
+     std::cout << " Continue [RET>|q]?  "; 
      char x;
      x = getchar();
      if ((x == 'q') || (x == 'Q')) return 1;
      return 0;
 }
+
+
   
 struct TTreeMembers {
   int numEBcrys_;
@@ -31,20 +74,266 @@ struct TTreeMembers {
 } TTreeMembers_;
 
 
-//gSystem->Load("libFWCoreFWLite.so");
-//AutoLibraryLoader::enable();
-//gSystem->Load("libDataFormatsFWLite.so");
-//gSystem->Load("libDataFormatsPatCandidates.so");
-#if !defined(__CINT__) && !defined(__MAKECINT__)
-#include "DataFormats/EcalDetId/interface/EBDetId.h"
-#include "DataFormats/EcalDetId/interface/EEDetId.h"
-#endif
-EBDetId mydet = 0;
-EEDetId mydete = 0;
+std::vector<std::string> split(std::string msg, std::string separator)
+{
+  boost::char_separator<char> sep(separator.c_str());
+  boost::tokenizer<boost::char_separator<char> > tok(msg, sep );
+  std::vector<std::string> token ;
+  for ( boost::tokenizer<boost::char_separator<char> >::const_iterator i = tok.begin(); i != tok.end(); ++i ) {
+    token.push_back(std::string(*i)) ;
+  }
+  return token ;
+}
+
+void drawEELines() {
+
+  int ixSectorsEE[202] = {61, 61, 60, 60, 59, 59, 58, 58, 57, 57, 55, 55, 45, 45, 43, 43, 42, 42, 41, 41, 40, 40, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 45, 45, 55, 55, 57, 57, 58, 58, 59, 59, 60, 60, 61, 61, 0,100,100, 97, 97, 95, 95, 92, 92, 87, 87, 85, 85, 80, 80, 75, 75, 65, 65, 60, 60, 40, 40, 35, 35, 25, 25, 20, 20, 15, 15, 13, 13,  8,  8,  5,  5,  3,  3,  0,  0,  3,  3,  5,  5,  8,  8, 13, 13, 15, 15, 20, 20, 25, 25, 35, 35, 40, 40, 60, 60, 65, 65, 75, 75, 80, 80, 85, 85, 87, 87, 92, 92, 95, 95, 97, 97,100,100,  0, 61, 65, 65, 70, 70, 80, 80, 90, 90, 92,  0, 61, 65, 65, 90, 90, 97,  0, 57, 60, 60, 65, 65, 70, 70, 75, 75, 80, 80,  0, 50, 50,  0, 43, 40, 40, 35, 35, 30, 30, 25, 25, 20, 20,  0, 39, 35, 35, 10, 10,  3,  0, 39, 35, 35, 30, 30, 20, 20, 10, 10,  8,  0, 45, 45, 40, 40, 35, 35,  0, 55, 55, 60, 60, 65, 65};
+ 
+  int iySectorsEE[202] = {50, 55, 55, 57, 57, 58, 58, 59, 59, 60, 60, 61, 61, 60, 60, 59, 59, 58, 58, 57, 57, 55, 55, 45, 45, 43, 43, 42, 42, 41, 41, 40, 40, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 45, 45, 50,  0, 50, 60, 60, 65, 65, 75, 75, 80, 80, 85, 85, 87, 87, 92, 92, 95, 95, 97, 97,100,100, 97, 97, 95, 95, 92, 92, 87, 87, 85, 85, 80, 80, 75, 75, 65, 65, 60, 60, 40, 40, 35, 35, 25, 25, 20, 20, 15, 15, 13, 13,  8,  8,  5,  5,  3,  3,  0,  0,  3,  3,  5,  5,  8,  8, 13, 13, 15, 15, 20, 20, 25, 25, 35, 35, 40, 40, 50,  0, 45, 45, 40, 40, 35, 35, 30, 30, 25, 25,  0, 50, 50, 55, 55, 60, 60,  0, 60, 60, 65, 65, 70, 70, 75, 75, 85, 85, 87,  0, 61,100,  0, 60, 60, 65, 65, 70, 70, 75, 75, 85, 85, 87,  0, 50, 50, 55, 55, 60, 60,  0, 45, 45, 40, 40, 35, 35, 30, 30, 25, 25,  0, 39, 30, 30, 15, 15,  5,  0, 39, 30, 30, 15, 15,  5};
+
+
+ for ( int i=0; i<202; i++) {
+   ixSectorsEE[i] += 1;
+   iySectorsEE[i] += 1;
+//   std::cout << i << " " << ixSectorsEE[i] << " " << iySectorsEE[i] << std::endl;
+ }
+
+ TLine l;
+ l.SetLineWidth(1);
+ for ( int i=0; i<201; i=i+1) {
+   if ( (ixSectorsEE[i]!=1 || iySectorsEE[i]!=1) && 
+	(ixSectorsEE[i+1]!=1 || iySectorsEE[i+1]!=1) ) {
+     l.DrawLine(ixSectorsEE[i], iySectorsEE[i], 
+		ixSectorsEE[i+1], iySectorsEE[i+1]);
+   }
+ }
+
+}
+
+void customizeTProfile (TProfile* myTProfile) {
+  if (myTProfile) {
+    myTProfile->SetLineWidth(2);
+    myTProfile->SetMarkerStyle(kFullCircle);
+    myTProfile->SetMarkerSize(0.7);
+  }
+}
+
+void customizeTHist (TH1F* myTHist) {
+  if (myTHist) {
+    myTHist->SetLineWidth(2);
+    myTHist->SetMarkerStyle(kFullCircle);
+    myTHist->SetMarkerSize(0.7);
+  }
+}
+
+
+TH1F* CorrectProfToHist(TProfile *prof, const char * histname, double numb=0, double myScale = 1.0 )
+{
+  TH1F *temphist = new TH1F(histname,histname,prof->GetNbinsX(),prof->GetXaxis()->GetXmin(),prof->GetXaxis()->GetXmax());
+  for (int i = 1; i < prof->GetNbinsX()+1; ++i)
+  {
+    //std::cout << " bin " << i << " is " << temphist->GetBinContent(i) << std::endl;
+    if (prof->GetBinEntries(i) > 0 )
+        {
+          temphist->SetBinContent(i,prof->GetBinContent(i)+numb);
+          temphist->SetBinError(i,prof->GetBinError(i));
+        }
+	else {temphist->SetBinContent(i,-100.);}
+        //std::cout << " bin " << i  << " bin content before " << prof->GetBinContent(i) << " bin entries " << prof->GetBinEntries(i)  << " new bi\ncontent " << temphist->GetBinContent(i) << std::endl;
+  }
+  temphist->Sumw2();
+  temphist->Scale(myScale);
+  return temphist;
+}
+
+void ScaleTProfile2D(TProfile2D* myprof, Double_t myfac, Double_t myscale)
+{
+int nxbins = myprof->GetNbinsX();
+int nybins = myprof->GetNbinsY();
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       if (binents == 0 ) {binents =1.;myprof->SetBinEntries(i,1); }
+       myprof->SetBinContent(i,myscale*(oldcont+myfac)*binents);
+}
+}
+
+
+void Scale0TProfile2D(TProfile2D* myprof)
+{
+int nxbins = myprof->GetNbinsX();
+int nybins = myprof->GetNbinsY();
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       //Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       if (binents == 0 ) {binents =1.;myprof->SetBinEntries(i,1);myprof->SetBinContent(i,-150.); }
+}
+}
+
+
+TProfile2D* TProfToRelProf2D(TProfile2D *prof, const char * histname, double numb=0, double myScale = 1.0)
+{
+TProfile2D *myprof = (TProfile2D* )prof->Clone(histname);
+ScaleTProfile2D(myprof,numb,myScale);
+
+return myprof;
+}
+
+void ScaleTProfile(TProfile* myprof, Double_t myfac, Double_t myscale)
+{
+int nxbins = myprof->GetNbinsX();
+
+for (int i=1; i<(nxbins+1); i++ ) {   
+       Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       //Double_t binerrr = myprof->GetBinError(i);
+       
+       if (binents == 0 ) { continue; /*binents =1.;myprof->SetBinEntries(i,1);*/ }
+       myprof->SetBinContent(i,myscale*(oldcont+myfac)*binents);
+	   Double_t newentries = myprof->GetBinEntries(i);
+	   //Double_t newcont = myprof->GetBinContent(i);
+	   //cout << " cont " << oldcont << " ent " << binents << " err " << binerrr << " new err " << myprof->GetBinError(i);
+	   if ( newentries == 1) { myprof->SetBinError(i,5+fabs(myprof->GetBinContent(i)-myprof->GetBinContent(i)/2.5));}
+           //else {myprof->SetBinError(i,binerrr*myscale+1.0);}
+	   //cout << " newnew " << myprof->GetBinError(i) << std::endl;
+	   if (newentries != binents) {std::cout << "NONONO" << std::endl;}
+}
+}
+
+TProfile* TProfToRelProf(TProfile *prof, const char * histname, double numb=0, double myScale = 1.0)
+{
+TProfile *myprof = (TProfile* )prof->Clone(histname);
+ScaleTProfile(myprof,numb,myScale);
+
+return myprof;
+}
 
 
 
-double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = kTRUE, Char_t* fileType = "png", Char_t* dirName = ".", Bool_t doWait=kFALSE, Char_t* mType = "Laser", Char_t* plotfile = 0 )
+void EntryProfileFromTProfile2D(TProfile2D* myprof)
+{
+int nxbins = myprof->GetNbinsX();
+int nybins = myprof->GetNbinsY();
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       //Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       if (binents == 0 ) { continue; }
+       myprof->SetBinContent(i,binents*binents);
+}
+}
+
+
+TProfile2D* TProfile2DOccupancyFromProf2D(TProfile2D *prof, const char * histname)
+{
+TProfile2D *myprof =  (TProfile2D* ) prof->Clone(histname);
+EntryProfileFromTProfile2D(myprof);
+return myprof;
+}
+
+TH1F* HistFromTProfile2D(TProfile2D *prof, const char * histname, Int_t xbins, Double_t xmin, Double_t xmax, Double_t myfac, Double_t myscale)
+{
+int nxbins = prof->GetNbinsX();
+int nybins = prof->GetNbinsY();
+
+TH1F *temphist = new TH1F(histname,histname,xbins,xmin,xmax);
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       Double_t oldcont = prof->GetBinContent(i);
+       Double_t binents = prof->GetBinEntries(i);
+       if (binents == 0 ) { continue; }
+       temphist->Fill((oldcont+myfac)*myscale);
+}
+return temphist;
+}
+
+TH1F* HistNFromTProfile2D(TProfile2D *prof, const char * histname, Int_t xbins, Double_t xmin, Double_t xmax)
+{
+int nxbins = prof->GetNbinsX();
+int nybins = prof->GetNbinsY();
+
+TH1F *temphist = new TH1F(histname,histname,xbins,xmin,xmax);
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       Double_t oldcont = prof->GetBinContent(i);
+       Double_t binents = prof->GetBinEntries(i);
+       if (binents == 0 ) { continue; }
+       if (binents == 1 && oldcont < -99) {continue;}
+       temphist->Fill(oldcont);
+}
+return temphist;
+}
+
+void EmptyTProfile2D(TProfile2D* myprof)
+{
+int nxbins = myprof->GetNbinsX();
+int nybins = myprof->GetNbinsY();
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       //Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       if (binents == 0 ) { continue; }
+       myprof->SetBinContent(i,0);
+       myprof->SetBinEntries(i,0);
+}
+ myprof->SetEntries(0);
+}
+
+
+TProfile2D* NewTProfile2D(TProfile2D *prof, const char * histname)
+{
+
+TProfile2D *myprof =(TProfile2D* )  prof->Clone(histname);
+EmptyTProfile2D(myprof);
+return myprof;
+}
+
+TProfile2D* NewOTProfile2D(TProfile2D *prof, const char * histname)
+{
+
+TProfile2D *myprof = (TProfile2D* ) prof->Clone(histname);
+EmptyTProfile2D(myprof);
+return myprof;
+}
+
+void EmptyTProfile(TProfile* myprof)
+{
+  //int nxbins = myprof->GetNbinsX();
+
+  //for (int i=0; i<=(nxbins+1); i++ ) {   
+  //  Double_t oldcont = myprof->GetBinContent(i);
+  //  Double_t binents = myprof->GetBinEntries(i);
+  //  if (binents == 0 ) { cout << "when it is zero it isss " <<myprof->GetBinError(i) << endl;  continue; }
+  //  myprof->SetBinContent(i,0);
+  //  myprof->SetBinEntries(i,0);
+    //myprof->SetBinError(i,0);
+  //}
+  //myprof->SetEntries(0);
+  myprof->Reset();
+  //myprof->Sumw2();
+  myprof->BuildOptions(-100.,100.,"");
+  //myprof->SetMinimum(-100.);
+  //myprof->ResetStats();
+}
+
+
+TProfile* NewTProfile(TProfile *prof, const char * histname)
+{
+TProfile *myprof = (TProfile* ) prof->Clone(histname);
+EmptyTProfile(myprof);
+
+return myprof; 
+}
+
+
+
+
+
+double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = kTRUE, Char_t* fileType = "png", Char_t* dirName = ".", Bool_t doWait=kFALSE, 
+		            Char_t* mType = "Laser", Char_t* plotfile = 0,  Char_t* inBxs = 0, Char_t* inOrbits = 0, Char_t* inTrig = 0, Char_t* inTTrig = 0,
+		            Char_t* inLumi = 0, Char_t* inTimes = 0 )
 {
  
   cout << "Loading FW Lite setup." << endl;
@@ -55,7 +344,7 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
 
   if (!infile) {
     cout << " No input file specified !" << endl;
-    return;
+    return 0;
   }
  
   cout << "Producing Laser plots for: " << infile << endl;
@@ -63,7 +352,7 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
   TFile* f = new TFile(infile);
   f->cd(); //added by jason for completeness
 
-  int runNumber = 0;
+  Char_t* runNumber = 0;
   runNumber = runNum;
   bool fit = true;
 
@@ -90,13 +379,13 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
   sprintf(runChar,"Run %s ",runNumber);
   
   //TTree helpers
-  int tbins = 52;
+  //int tbins = 52;
   double MaxTime = 60.;
-  double tbinsL = -MaxTime;
-  double tbinsH = MaxTime;
+  //double tbinsL = -MaxTime;
+  //double tbinsH = MaxTime;
   
-  double thigh = MaxTime;
-  double tlow  = -MaxTime;
+  //double thigh = MaxTime;
+  //double tlow  = -MaxTime;
   
   double thighc = MaxTime;
   double tlowc  = -MaxTime;
@@ -115,6 +404,35 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
   
   //double thight = 30.;
   //double tlowt  = -30.;
+  
+  
+  ///NOW reading in a lot more stuff....
+  std::vector<int> vBxs ;
+  std::vector<std::string> vsBxs = split(inBxs,",") ;
+  for (uint i=0 ; i<vsBxs.size() ; i++) vBxs.push_back(atoi(vsBxs[i].c_str())) ;
+
+  std::vector<int> vTrig ;
+  std::vector<std::string> vsTrig = split(inTrig,",") ;
+  for (uint i=0 ; i<vsTrig.size() ; i++) vTrig.push_back(atoi(vsTrig[i].c_str())) ;
+
+  std::vector<int> vTTrig ;
+  std::vector<std::string> vsTTrig = split(inTTrig,",") ;
+  for (uint i=0 ; i<vsTTrig.size() ; i++) vTTrig.push_back(atoi(vsTTrig[i].c_str())) ;
+
+  std::vector<int> vLumi ;
+  std::vector<std::string> vsLumi = split(inLumi,",") ;
+  for (uint i=0 ; i<vsLumi.size() ; i++) vLumi.push_back(atoi(vsLumi[i].c_str())) ;
+
+  std::vector<int> vOrbits ;
+  std::vector<std::string> vsOrbits = split(inOrbits,",") ;
+  for (uint i=0 ; i<vsOrbits.size() ; i++) vOrbits.push_back(atoi(vsOrbits[i].c_str())) ;
+
+  std::vector<int> vTimes ;
+  std::vector<std::string> vsTimes = split(inTimes,",") ;
+  for (uint i=0 ; i<vsTimes.size() ; i++) vTimes.push_back(atoi(vsTimes[i].c_str())) ;
+
+  
+  ///Of of the initialization. 
   
 //First thing is do print the profiles
 
@@ -297,6 +615,10 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
 
   //Get the max and min times of the absolute time
 
+  TH1F *habsTime = 0;
+  TH1F *htriggers = 0;
+  TH1F *htechtriggers = 0;
+  
   eventTimingInfoTree->Draw("absTime >> habsTime","","");
   double minTime = habsTime->GetXaxis()->GetXmin()/60;
   double maxTime = habsTime->GetXaxis()->GetXmax()/60 + 1.;
@@ -306,13 +628,13 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
   eventTimingInfoTree->Draw("triggers >> htriggers","","");
   double minTrig = htriggers->GetXaxis()->GetXmin();
   double maxTrig = htriggers->GetXaxis()->GetXmax();
-  double diffTtrig = maxTrig - minTrig;
+  //double diffTtrig = maxTrig - minTrig;
   if ( minTrig < 0 ) cout << " Min trig is less than 0: " << minTrig;
 
   eventTimingInfoTree->Draw("techtriggers >> htechtriggers","","");
   double minTTrig = htechtriggers->GetXaxis()->GetXmin();
   double maxTTrig = htechtriggers->GetXaxis()->GetXmax();
-  double diffTTtrig = maxTTrig - minTTrig;
+  //double diffTTtrig = maxTTrig - minTTrig;
   if ( minTTrig < 0 ) cout << " Min tech trig is less than 0: " << minTTrig;
 
   
@@ -447,15 +769,28 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
      eventTimingInfoTree->GetEvent(i);
      double EBave = -101.;
      double EEave = -101.;
-     double EBaveO  = (TTreeMembers_.correctionToSample5EB_ -5.0)*25;
-     double EEPaveO = (TTreeMembers_.correctionToSample5EEP_ -5.0)*25;
-     double EEMaveO = (TTreeMembers_.correctionToSample5EEM_ -5.0)*25;
+     //double EBaveO  = (TTreeMembers_.correctionToSample5EB_ -5.0)*25;
+     //double EEPaveO = (TTreeMembers_.correctionToSample5EEP_ -5.0)*25;
+     //double EEMaveO = (TTreeMembers_.correctionToSample5EEM_ -5.0)*25;
      double EBPave  = 0,EBMave = 0, EEPave  = 0, EEMave  = 0, EBnum = 0;
      double EBPn    = 0,EBMn   = 0, EEPn    = 0, EEMn    = 0, EEpnum = 0, EEmnum = 0, EEnum =0;
      double abstime = TTreeMembers_.absTime_/60. - minTime; //(puts thins in mins)
      double NumTriggers  = TTreeMembers_.numTriggers_;
      double NumTTriggers = TTreeMembers_.numTechTriggers_;
      double BX =  TTreeMembers_.bx_;
+     
+     bool keepEvent = false ;
+
+     if ( vBxs.size() == 0)   keepEvent = true;
+     else if ( vBxs.size()>0 )
+     {
+        for (uint i=0 ; i<vBxs.size() ; i++)
+        {
+            if  (BX == vBxs[i])  keepEvent = true; 
+        }   
+     }
+     if (!keepEvent) continue;
+
 
      for (int ebx=0; ebx < TTreeMembers_.numEBcrys_; ebx++) {
          int crystalHashedIndicesEB = TTreeMembers_.cryHashesEB_[ebx];
@@ -563,8 +898,8 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
          double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
-         int ieta = mydet.ieta();
-         int iphi = mydet.iphi();
+         //int ieta = mydet.ieta();
+         //int iphi = mydet.iphi();
 	 hctEBtoAve->Fill(myt,EBave);
 	 hctEBtoAmpEvt->Fill(EBave,amp);
          hctEBcryamp->Fill(amp,EBnum);
@@ -579,9 +914,9 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEE_[eex];
 	 if (amp < 1.0) continue;
-         int ix = mydete.ix();
-         int iy = mydete.iy();
-         int iz = mydete.zside();
+         //int ix = mydete.ix();
+         //int iy = mydete.iy();
+         //int iz = mydete.zside();
 	 hctEEtoAve->Fill(myt,EEave);
 	 hctEEtoAmpEvt->Fill(EEave,amp);
 	 hctEEcryamp->Fill(amp,EEnum);
@@ -1659,241 +1994,4 @@ double DrawLaserPlots(Char_t* infile = 0, Char_t* runNum=0, Bool_t printPics = k
 
 }
 
-void drawEELines() {
 
-  int ixSectorsEE[202] = {61, 61, 60, 60, 59, 59, 58, 58, 57, 57, 55, 55, 45, 45, 43, 43, 42, 42, 41, 41, 40, 40, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 45, 45, 55, 55, 57, 57, 58, 58, 59, 59, 60, 60, 61, 61, 0,100,100, 97, 97, 95, 95, 92, 92, 87, 87, 85, 85, 80, 80, 75, 75, 65, 65, 60, 60, 40, 40, 35, 35, 25, 25, 20, 20, 15, 15, 13, 13,  8,  8,  5,  5,  3,  3,  0,  0,  3,  3,  5,  5,  8,  8, 13, 13, 15, 15, 20, 20, 25, 25, 35, 35, 40, 40, 60, 60, 65, 65, 75, 75, 80, 80, 85, 85, 87, 87, 92, 92, 95, 95, 97, 97,100,100,  0, 61, 65, 65, 70, 70, 80, 80, 90, 90, 92,  0, 61, 65, 65, 90, 90, 97,  0, 57, 60, 60, 65, 65, 70, 70, 75, 75, 80, 80,  0, 50, 50,  0, 43, 40, 40, 35, 35, 30, 30, 25, 25, 20, 20,  0, 39, 35, 35, 10, 10,  3,  0, 39, 35, 35, 30, 30, 20, 20, 10, 10,  8,  0, 45, 45, 40, 40, 35, 35,  0, 55, 55, 60, 60, 65, 65};
- 
-  int iySectorsEE[202] = {50, 55, 55, 57, 57, 58, 58, 59, 59, 60, 60, 61, 61, 60, 60, 59, 59, 58, 58, 57, 57, 55, 55, 45, 45, 43, 43, 42, 42, 41, 41, 40, 40, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 45, 45, 50,  0, 50, 60, 60, 65, 65, 75, 75, 80, 80, 85, 85, 87, 87, 92, 92, 95, 95, 97, 97,100,100, 97, 97, 95, 95, 92, 92, 87, 87, 85, 85, 80, 80, 75, 75, 65, 65, 60, 60, 40, 40, 35, 35, 25, 25, 20, 20, 15, 15, 13, 13,  8,  8,  5,  5,  3,  3,  0,  0,  3,  3,  5,  5,  8,  8, 13, 13, 15, 15, 20, 20, 25, 25, 35, 35, 40, 40, 50,  0, 45, 45, 40, 40, 35, 35, 30, 30, 25, 25,  0, 50, 50, 55, 55, 60, 60,  0, 60, 60, 65, 65, 70, 70, 75, 75, 85, 85, 87,  0, 61,100,  0, 60, 60, 65, 65, 70, 70, 75, 75, 85, 85, 87,  0, 50, 50, 55, 55, 60, 60,  0, 45, 45, 40, 40, 35, 35, 30, 30, 25, 25,  0, 39, 30, 30, 15, 15,  5,  0, 39, 30, 30, 15, 15,  5};
-
-
- for ( int i=0; i<202; i++) {
-   ixSectorsEE[i] += 1;
-   iySectorsEE[i] += 1;
-//   std::cout << i << " " << ixSectorsEE[i] << " " << iySectorsEE[i] << std::endl;
- }
-
- TLine l;
- l.SetLineWidth(1);
- for ( int i=0; i<201; i=i+1) {
-   if ( (ixSectorsEE[i]!=1 || iySectorsEE[i]!=1) && 
-	(ixSectorsEE[i+1]!=1 || iySectorsEE[i+1]!=1) ) {
-     l.DrawLine(ixSectorsEE[i], iySectorsEE[i], 
-		ixSectorsEE[i+1], iySectorsEE[i+1]);
-   }
- }
-
-}
-
-void customizeTProfile (TProfile* myTProfile) {
-  if (myTProfile) {
-    myTProfile->SetLineWidth(2);
-    myTProfile->SetMarkerStyle(kFullCircle);
-    myTProfile->SetMarkerSize(0.7);
-  }
-}
-
-void customizeTHist (TH1F* myTHist) {
-  if (myTHist) {
-    myTHist->SetLineWidth(2);
-    myTHist->SetMarkerStyle(kFullCircle);
-    myTHist->SetMarkerSize(0.7);
-  }
-}
-
-
-TH1F* CorrectProfToHist(TProfile *prof, const char * histname, double numb=0, double myScale = 1.0 )
-{
-  TH1F *temphist = new TH1F(histname,histname,prof->GetNbinsX(),prof->GetXaxis()->GetXmin(),prof->GetXaxis()->GetXmax());
-  for (int i = 1; i < prof->GetNbinsX()+1; ++i)
-  {
-    //std::cout << " bin " << i << " is " << temphist->GetBinContent(i) << std::endl;
-    if (prof->GetBinEntries(i) > 0 )
-        {
-          temphist->SetBinContent(i,prof->GetBinContent(i)+numb);
-          temphist->SetBinError(i,prof->GetBinError(i));
-        }
-	else {temphist->SetBinContent(i,-100.);}
-        //std::cout << " bin " << i  << " bin content before " << prof->GetBinContent(i) << " bin entries " << prof->GetBinEntries(i)  << " new bi\ncontent " << temphist->GetBinContent(i) << std::endl;
-  }
-  temphist->Sumw2();
-  temphist->Scale(myScale);
-  return temphist;
-}
-
-void ScaleTProfile2D(TProfile2D* myprof, Double_t myfac, Double_t myscale)
-{
-int nxbins = myprof->GetNbinsX();
-int nybins = myprof->GetNbinsY();
-
-for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
-       Double_t oldcont = myprof->GetBinContent(i);
-       Double_t binents = myprof->GetBinEntries(i);
-       if (binents == 0 ) {binents =1.;myprof->SetBinEntries(i,1); }
-       myprof->SetBinContent(i,myscale*(oldcont+myfac)*binents);
-}
-}
-
-
-void Scale0TProfile2D(TProfile2D* myprof)
-{
-int nxbins = myprof->GetNbinsX();
-int nybins = myprof->GetNbinsY();
-
-for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
-       Double_t oldcont = myprof->GetBinContent(i);
-       Double_t binents = myprof->GetBinEntries(i);
-       if (binents == 0 ) {binents =1.;myprof->SetBinEntries(i,1);myprof->SetBinContent(i,-150.); }
-}
-}
-
-
-TProfile2D* TProfToRelProf2D(TProfile2D *prof, const char * histname, double numb=0, double myScale = 1.0)
-{
-TProfile2D *myprof = prof->Clone(histname);
-ScaleTProfile2D(myprof,numb,myScale);
-
-return myprof;
-}
-
-TProfile* TProfToRelProf(TProfile *prof, const char * histname, double numb=0, double myScale = 1.0)
-{
-TProfile *myprof = prof->Clone(histname);
-ScaleTProfile(myprof,numb,myScale);
-
-return myprof;
-}
-
-void ScaleTProfile(TProfile* myprof, Double_t myfac, Double_t myscale)
-{
-int nxbins = myprof->GetNbinsX();
-
-for (int i=1; i<(nxbins+1); i++ ) {   
-       Double_t oldcont = myprof->GetBinContent(i);
-       Double_t binents = myprof->GetBinEntries(i);
-       Double_t binerrr = myprof->GetBinError(i);
-       
-       if (binents == 0 ) { continue; /*binents =1.;myprof->SetBinEntries(i,1);*/ }
-       myprof->SetBinContent(i,myscale*(oldcont+myfac)*binents);
-	   Double_t newentries = myprof->GetBinEntries(i);
-	   Double_t newcont = myprof->GetBinContent(i);
-	   //cout << " cont " << oldcont << " ent " << binents << " err " << binerrr << " new err " << myprof->GetBinError(i);
-	   if ( newentries == 1) { myprof->SetBinError(i,5+fabs(myprof->GetBinContent(i)-myprof->GetBinContent(i)/2.5));}
-           //else {myprof->SetBinError(i,binerrr*myscale+1.0);}
-	   //cout << " newnew " << myprof->GetBinError(i) << std::endl;
-	   if (newentries != binents) {std::cout << "NONONO" << std::endl;}
-}
-}
-
-void EntryProfileFromTProfile2D(TProfile2D* myprof)
-{
-int nxbins = myprof->GetNbinsX();
-int nybins = myprof->GetNbinsY();
-
-for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
-       Double_t oldcont = myprof->GetBinContent(i);
-       Double_t binents = myprof->GetBinEntries(i);
-       if (binents == 0 ) { continue; }
-       myprof->SetBinContent(i,binents*binents);
-}
-}
-
-
-TProfile2D* TProfile2DOccupancyFromProf2D(TProfile2D *prof, const char * histname)
-{
-TProfile2D *myprof = prof->Clone(histname);
-EntryProfileFromTProfile2D(myprof);
-return myprof;
-}
-
-TH1F* HistFromTProfile2D(TProfile2D *prof, const char * histname, Int_t xbins, Double_t xmin, Double_t xmax, Double_t myfac, Double_t myscale)
-{
-int nxbins = prof->GetNbinsX();
-int nybins = prof->GetNbinsY();
-
-TH1F *temphist = new TH1F(histname,histname,xbins,xmin,xmax);
-
-for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
-       Double_t oldcont = prof->GetBinContent(i);
-       Double_t binents = prof->GetBinEntries(i);
-       if (binents == 0 ) { continue; }
-       temphist->Fill((oldcont+myfac)*myscale);
-}
-return temphist;
-}
-
-TH1F* HistNFromTProfile2D(TProfile2D *prof, const char * histname, Int_t xbins, Double_t xmin, Double_t xmax)
-{
-int nxbins = prof->GetNbinsX();
-int nybins = prof->GetNbinsY();
-
-TH1F *temphist = new TH1F(histname,histname,xbins,xmin,xmax);
-
-for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
-       Double_t oldcont = prof->GetBinContent(i);
-       Double_t binents = prof->GetBinEntries(i);
-       if (binents == 0 ) { continue; }
-       if (binents == 1 && oldcont < -99) {continue;}
-       temphist->Fill(oldcont);
-}
-return temphist;
-}
-
-TProfile2D* NewTProfile2D(TProfile2D *prof, const char * histname)
-{
-
-TProfile2D *myprof = prof->Clone(histname);
-EmptyTProfile2D(myprof);
-return myprof;
-}
-
-TProfile2D* NewOTProfile2D(TProfile2D *prof, const char * histname)
-{
-
-TProfile2D *myprof = prof->Clone(histname);
-EmptyTProfile2D(myprof);
-return myprof;
-}
-
-void EmptyTProfile2D(TProfile2D* myprof)
-{
-int nxbins = myprof->GetNbinsX();
-int nybins = myprof->GetNbinsY();
-
-for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
-       Double_t oldcont = myprof->GetBinContent(i);
-       Double_t binents = myprof->GetBinEntries(i);
-       if (binents == 0 ) { continue; }
-       myprof->SetBinContent(i,0);
-       myprof->SetBinEntries(i,0);
-}
- myprof->SetEntries(0);
-}
-
-
-TProfile* NewTProfile(TProfile *prof, const char * histname)
-{
-TProfile *myprof = prof->Clone(histname);
-EmptyTProfile(myprof);
-
-return myprof;
-}
-
-void EmptyTProfile(TProfile* myprof)
-{
-  int nxbins = myprof->GetNbinsX();
-
-  //for (int i=0; i<=(nxbins+1); i++ ) {   
-  //  Double_t oldcont = myprof->GetBinContent(i);
-  //  Double_t binents = myprof->GetBinEntries(i);
-  //  if (binents == 0 ) { cout << "when it is zero it isss " <<myprof->GetBinError(i) << endl;  continue; }
-  //  myprof->SetBinContent(i,0);
-  //  myprof->SetBinEntries(i,0);
-    //myprof->SetBinError(i,0);
-  //}
-  //myprof->SetEntries(0);
-  myprof->Reset();
-  //myprof->Sumw2();
-  myprof->BuildOptions(-100.,100.,"");
-  //myprof->SetMinimum(-100.);
-  //myprof->ResetStats();
-}

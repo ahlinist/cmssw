@@ -89,9 +89,9 @@ EcalTimingCorrection::~EcalTimingCorrection()
 void
 EcalTimingCorrection::beginRun(edm::EventSetup const& eventSetup ) {
 //========================================================================
-   edm::ESHandle< EcalElectronicsMapping > handle;
-   eventSetup.get< EcalMappingRcd >().get(handle);
-   ecalElectronicsMap_ = handle.product();
+  // edm::ESHandle< EcalElectronicsMapping > handle;
+  // eventSetup.get< EcalMappingRcd >().get(handle);
+  // ecalElectronicsMap_ = handle.product();
 }
 //========================================================================
 
@@ -137,6 +137,50 @@ EcalTimingCorrection::analyze(  edm::Event const& iEvent,  edm::EventSetup const
    
    const CaloSubdetectorGeometry *geometry_pEB = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
    const CaloSubdetectorGeometry *geometry_pEE = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalEndcap);
+
+   EEDetId detIdM = EEDetId(50,98,1,EEDetId::XYMODE);
+   const CaloCellGeometry *thisCell = geometry_pEE->getGeometry(detIdM);
+   GlobalPoint position = thisCell->getPosition();
+
+   double speedlight = 0.299792458; //in meters/ns
+   double z = position.z()/100.;
+   double x = position.x()/100.;
+   double y = position.y()/100.;
+
+   double r = pow(x*x+y*y+z*z,0.5);
+   
+   double diffrz = r-z;
+   double difft = diffrz/speedlight;
+   double difftr = r/speedlight;
+   double difftz = z/speedlight;
+
+   std::cout << " ix=50, iy=98 " << std::endl;
+   std::cout << " X:Y:Z:R in m " << x << ":" << y << ":" << z << ":" << r << std::endl;
+   std::cout << " R Time: " << difftr << "   Z Time: " << difftz << "  Difference: " << -difft << std::endl; 
+
+   EEDetId NdetIdM = EEDetId(50,65,1,EEDetId::XYMODE);
+   const CaloCellGeometry *NthisCell = geometry_pEE->getGeometry(NdetIdM);
+   GlobalPoint Nposition = NthisCell->getPosition();
+
+   //double speedlight = 0.299792458; //in meters/ns
+   z = Nposition.z()/100.;
+   x = Nposition.x()/100.;
+   y = Nposition.y()/100.;
+
+   r = pow(x*x+y*y+z*z,0.5);
+
+   diffrz = r-z;
+   difft = diffrz/speedlight;
+   difftr = r/speedlight;
+   difftz = z/speedlight;
+
+   std::cout << " ix=50, iy=65 " << std::endl;
+   std::cout << " X:Y:Z:R in m " << x << ":" << y << ":" << z << ":" << r << std::endl;
+   std::cout << " R Time: " << difftr << "   Z Time: " << difftz << "  Difference: " << -difft << std::endl;
+
+
+
+   return;
 
    //First I need to loop over the DetId's and then get the timing values for teach TT
    for (int ieta = -83, inum=0; ieta < 84; ieta += 5,++inum)
