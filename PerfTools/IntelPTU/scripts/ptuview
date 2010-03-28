@@ -28,6 +28,15 @@
 # which highlight the particular source code line or the dissassembly which
 # corresponds to that source code line.
 #
+# In addition there is support for displaying the csv exported from the top
+# level function-by-function page from the profiles. These should also be
+# put in the "data" subdirectory and have names like:
+#    somestring_all.csv
+# where as before "somestring" is up to you. The URL will then be:
+#   http://x.y/z/cgi-bin/ptuview/all/somestring/
+#
+#  $Id:$
+#
 # Peter Elmer, Princeton University
 # 24 March, 2010
 ##############################################################################
@@ -132,8 +141,8 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
   # since the real constraint here is that the last thing should be the
   # source lines, since they can be of arbitrary length.
 
-  srcorder = ["Source","Assembly","Line","Address","CPU_CLK_UNHALTED.CORE","INST_RETIRED.ANY"]
-  srcclass = ["src","src","lineadr","lineadr","cntr","cntr"]
+  srcorder = ["RVA","Module","Function","Source","Assembly","Line","Address","CPU_CLK_UNHALTED.CORE","INST_RETIRED.ANY"]
+  srcclass = ["src","src","src","src","src","lineadr","lineadr","cntr","cntr"]
   srcclassother = "cntr"
   srcsuppress = ["CPU_CLK_UNHALTED.CORE max(lCPU)"]
 
@@ -261,7 +270,7 @@ def buildReply(out):
     # The second field is the "name" of the profile
     # The thrid field flags line numbers to highlight
     relargs = relPath.split('/')
-    if ((len(relargs) >= 2) and ((relargs[0] == "src") or (relargs[0] == "asm")) and (relargs[1] != "")):
+    if ((len(relargs) >= 2) and ((relargs[0] == "src") or (relargs[0] == "asm") or (relargs[0] == "all")) and (relargs[1] != "")):
       proftype = relargs[0] 
       profname = relargs[1] 
       dataPath = join(os.getcwd(), "data")
