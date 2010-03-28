@@ -672,7 +672,7 @@ int main(int argc,  char * argv[]){
 //2-D Histogram
   c[12]->cd();
   gStyle->SetOptStat(111110);
-  TH2F *RelRMS_vs_AbsTime = (TH2F*) f->Get("RelRMS_vs_AbsTime");
+  TH2F *RelRMS_vs_AbsTime= (TH2F*) f->Get("RelRMS_vs_AbsTime");
   RelRMS_vs_AbsTime->Draw("colz");
    sprintf(mytitle,"%s %s",runChar,RelRMS_vs_AbsTime->GetTitle()); 
   RelRMS_vs_AbsTime->SetTitle(mytitle);
@@ -1530,6 +1530,7 @@ int main(int argc,  char * argv[]){
   c[83]->cd();
   gStyle->SetOptStat(10);
   hEBPlus2Minus->Draw("colz");
+  hEBPlus2Minus->SetMinimum(1.0);
   c[83]->SetLogy(0);
   c[83]->SetLogz(0);
   c[83]->SetGridx(0);
@@ -1570,6 +1571,7 @@ int main(int argc,  char * argv[]){
   c[88]->cd();
   gStyle->SetOptStat(10);
   hAbsTimeVsEBPTime->Draw("colz");
+  hAbsTimeVsEBPTime->SetMinimum(1.0);
   c[88]->SetLogy(0);
   c[88]->SetLogz(1);
   c[88]->SetGridx(0);
@@ -1580,6 +1582,7 @@ int main(int argc,  char * argv[]){
   c[89]->cd();
   gStyle->SetOptStat(10);
   hAbsTimeVsEBMTime->Draw("colz");
+  hAbsTimeVsEBMTime->SetMinimum(1.0);
   c[89]->SetLogy(0);
   c[89]->SetLogz(1);
   c[89]->SetGridx(0);
@@ -1590,6 +1593,7 @@ int main(int argc,  char * argv[]){
   c[90]->cd();
   gStyle->SetOptStat(10);
   hAbsTimeVsEEPTime->Draw("colz");
+  hAbsTimeVsEEPTime->SetMinimum(1.0);
   c[90]->SetLogy(0);
   c[90]->SetLogz(1);
   c[90]->SetGridx(0);
@@ -1600,6 +1604,7 @@ int main(int argc,  char * argv[]){
   c[91]->cd();
   gStyle->SetOptStat(10);
   hAbsTimeVsEEMTime->Draw("colz");
+  hAbsTimeVsEEMTime->SetMinimum(1.0);
   c[91]->SetLogy(0);
   c[91]->SetLogz(1);
   c[91]->SetGridx(0);
@@ -1610,6 +1615,7 @@ int main(int argc,  char * argv[]){
   c[92]->cd();
   gStyle->SetOptStat(10);
   hTriggerVsEBPTime->Draw("colz");
+  hTriggerVsEBPTime->SetMinimum(1.0);
   c[92]->SetLogy(0);
   c[92]->SetLogz(1);
   c[92]->SetGridx(0);
@@ -1620,6 +1626,7 @@ int main(int argc,  char * argv[]){
   c[93]->cd();
   gStyle->SetOptStat(10);
   hTTriggerVsEBPTime->Draw("colz");
+  hTTriggerVsEBPTime->SetMinimum(1.0);
   c[93]->SetLogy(0);
   c[93]->SetLogz(1);
   c[93]->SetGridx(0);
@@ -1630,6 +1637,7 @@ int main(int argc,  char * argv[]){
   c[94]->cd();
   gStyle->SetOptStat(10);
   hTriggerVsEBMTime->Draw("colz");
+  hTriggerVsEBMTime->SetMinimum(1.0);
   c[94]->SetLogy(0);
   c[94]->SetLogz(1);
   c[94]->SetGridx(0);
@@ -1640,6 +1648,7 @@ int main(int argc,  char * argv[]){
   c[95]->cd();
   gStyle->SetOptStat(10);
   hTTriggerVsEBMTime->Draw("colz");
+  hTTriggerVsEBMTime->SetMinimum(1.0);
   c[95]->SetLogy(0);
   c[95]->SetLogz(1);
   c[95]->SetGridx(0);
@@ -1650,6 +1659,7 @@ int main(int argc,  char * argv[]){
   c[96]->cd();
   gStyle->SetOptStat(10);
   hTriggerVsEEPTime->Draw("colz");
+  hTriggerVsEEPTime->SetMinimum(1.0);
   c[96]->SetLogy(0);
   c[96]->SetLogz(1);
   c[96]->SetGridx(0);
@@ -1660,6 +1670,7 @@ int main(int argc,  char * argv[]){
   c[97]->cd();
   gStyle->SetOptStat(10);
   hTTriggerVsEEPTime->Draw("colz");
+  hTTriggerVsEEPTime->SetMinimum(1.0);
   c[97]->SetLogy(0);
   c[97]->SetLogz(1);
   c[97]->SetGridx(0);
@@ -1670,6 +1681,7 @@ int main(int argc,  char * argv[]){
   c[98]->cd();
   gStyle->SetOptStat(10);
   hTriggerVsEEMTime->Draw("colz");
+  hTriggerVsEEMTime->SetMinimum(1.0);
   c[98]->SetLogy(0);
   c[98]->SetLogz(1);
   c[98]->SetGridx(0);
@@ -1680,6 +1692,7 @@ int main(int argc,  char * argv[]){
   c[99]->cd();
   gStyle->SetOptStat(10);
   hTTriggerVsEEMTime->Draw("colz");
+  hTTriggerVsEEMTime->SetMinimum(1.0);
   c[99]->SetLogy(0);
   c[99]->SetLogz(1);
   c[99]->SetGridx(0);
@@ -1690,6 +1703,7 @@ int main(int argc,  char * argv[]){
   c[100]->cd();
   gStyle->SetOptStat(10);
   hBXVsEBPTime->Draw("colz");
+  hBXVsEBPTime->SetMinimum(1.0);
   c[100]->SetLogy(0);
   c[100]->SetLogz(1);
   c[100]->SetGridx(0);
@@ -1700,6 +1714,7 @@ int main(int argc,  char * argv[]){
   c[101]->cd();
   gStyle->SetOptStat(10);
   hBXVsEBMTime->Draw("colz");
+  hBXVsEBMTime->SetMinimum(1.0);
   c[101]->SetLogy(0);
   c[101]->SetLogz(1);
   c[101]->SetGridx(0);
@@ -1710,6 +1725,7 @@ int main(int argc,  char * argv[]){
   c[102]->cd();
   gStyle->SetOptStat(10);
   hBXVsEEPTime->Draw("colz");
+  hBXVsEEPTime->SetMinimum(1.0);
   c[102]->SetLogy(0);
   c[102]->SetLogz(1);
   c[102]->SetGridx(0);
@@ -1720,6 +1736,7 @@ int main(int argc,  char * argv[]){
   c[103]->cd();
   gStyle->SetOptStat(10);
   hBXVsEEMTime->Draw("colz");
+  hBXVsEEMTime->SetMinimum(1.0);
   c[103]->SetLogy(0);
   c[103]->SetLogz(1);
   c[103]->SetGridx(0);
@@ -1730,6 +1747,7 @@ int main(int argc,  char * argv[]){
   c[104]->cd();
   gStyle->SetOptStat(10);
   hTriggerVsAbsTime->Draw("colz");
+  hTriggerVsAbsTime->SetMinimum(1.0);
   c[104]->SetLogy(0);
   c[104]->SetLogz(1);
   c[104]->SetGridx(0);
@@ -1740,6 +1758,7 @@ int main(int argc,  char * argv[]){
   c[105]->cd();
   gStyle->SetOptStat(10);
   hTTriggerVsAbsTime->Draw("colz");
+  hTTriggerVsAbsTime->SetMinimum(1.0);
   c[105]->SetLogy(0);
   c[105]->SetLogz(1);
   c[105]->SetGridx(0);
@@ -1750,6 +1769,7 @@ int main(int argc,  char * argv[]){
   c[106]->cd();
   gStyle->SetOptStat(10);
   hBXVsAbsTime->Draw("colz");
+  hBXVsAbsTime->SetMinimum(1.0);
   c[106]->SetLogy(0);
   c[106]->SetLogz(1);
   c[106]->SetGridx(0);
@@ -1760,6 +1780,7 @@ int main(int argc,  char * argv[]){
   c[107]->cd();
   gStyle->SetOptStat(10);
   hTriggerVsBX->Draw("colz");
+  hTriggerVsBX->SetMinimum(1.0);
   c[107]->SetLogy(0);
   c[107]->SetLogz(1);
   c[107]->SetGridx(0);
@@ -1770,6 +1791,7 @@ int main(int argc,  char * argv[]){
   c[108]->cd();
   gStyle->SetOptStat(10);
   hTTriggerVsBX->Draw("colz");
+  hTTriggerVsBX->SetMinimum(1.0);
   c[108]->SetLogy(0);
   c[108]->SetLogz(1);
   c[108]->SetGridx(0);
