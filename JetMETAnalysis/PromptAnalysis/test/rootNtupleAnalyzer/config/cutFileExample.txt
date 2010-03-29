@@ -11,9 +11,16 @@
 # analysis. No cut is automatically evaluated on these variables and the cut level must be equal to -1. 
 # Variable names must be unique.
 #
-#VariableName                   value1 value2  value3  value4  level
-#------------  ------------    -------------   ------------    -------------   -----
-towerETcut     0.3     -       -       -       -1
+#VariableName         value1       value2               value3          value4          level
+#------------         ------------ -------------        ------------    -------------   -----
+towerETcut            0.3          -                    -               -               -1
+subDetTowerETcut      0.3          -                    -               -               -1
+applyhfpfcleaning     0		   -			-		-		-1
+HFEnergyCut	      3		   -			-		-		-1
+## NOTE: the code runs a factor of two faster if "applyhfpfcleaning" is set to 0
+printout	      1		   -			-		-		-1
+printoutCleaned       1            -                    -               -               -1
+## NOTE: if "printout" is set to 1 the macro will print info on high MET/SUMET events
 #
 #
 #--------------------------------- Cuts (level 0,1,2,3 ... n) below --------------------------------------------
@@ -31,38 +38,25 @@ towerETcut     0.3     -       -       -       -1
 # The level of the cut (0,1,2 ... n) is provided by the user and can be used in the code to easily determine if
 # groups of same-level cuts have passed or failed.
 #
-#VariableName        minValue1(<) maxValue1(>=)minValue2(<)    maxValue2(>=)   level   histoNbinsMinMax
-#------------        ------------ -------------------------    -------------   -----   ----------------
-calometPt                    -inf         +inf -       -       0       200 0 200
-calometPhi                   -inf         +inf -       -       0       50 -4 4
-calometPx                    -inf         +inf -       -       0       200 -100 100
-calometPy                    -inf         +inf -       -       0       200 -100 100    
-calometSig                   -inf       +inf -       -       0       50 0 10
-caloSumet                    -inf         +inf -              -     0  200 0 200
-my_calometPt                 -inf         +inf -       -       0       200 0 200
-my_calometPhi        -inf         +inf -       -       0       80 -4 4
-my_calometEMPt       -inf         +inf -       -       0       200 0 200
-my_calometEMPhi      -inf         +inf -       -       0       50 -4 4
-my_SumetEM                   -inf         +inf -       -       0       200 0 200
-my_calometXEM        -inf         +inf -       -       0       200 -100 100
-my_calometYEM        -inf         +inf -       -       0       200 -100 100    
-my_calometHADPt      -inf         +inf -       -       0       200 0 200
-my_calometHADPhi             -inf         +inf -       -       0       50 -4 4
-my_SumetHAD          -inf         +inf -       -       0       200 0 200
-my_calometXHAD       -inf         +inf -       -       0       200 -100 100
-my_calometYHAD       -inf         +inf -       -       0       200 -100 100    
-caloSumetEB          -inf         +inf -       -       0       200 0 200
-caloSumetEE          -inf         +inf -       -       0       200 0 200
-caloSumetHB          -inf         +inf -       -       0       200 0 200
-caloSumetHE          -inf         +inf -       -       0       200 0 200
-caloSumetHF          -inf         +inf -       -       0       200 0 200
-EEMF                      -inf    +inf -       -       0       80 0 2
-ECHF                      -inf    +inf -       -       0       80 0 2
-tcmetPt              -inf         +inf -       -       0       200 0 200
-tcmetPhi                     -inf         +inf -       -       0       50 -4 4
-tcmetPx                      -inf         +inf -       -       0       200 -100 100
-tcmetPy              -inf         +inf -       -       0       200 -100 100    
-tcmetSig                -inf      +inf -       -       0       50 0 10
-tcmetSumet           -inf         +inf -              -              0 200 0 200
-DPhiMET_J1           -inf         +inf -              -              0      64 0 3.2
-DPhiMET_J2           -inf         +inf -              -              0 64 0 3.2
+#VariableName                   minValue1(<) maxValue1(>=)      minValue2(<)    maxValue2(>=)   level   histoNbinsMinMax
+#------------                   ------------ -------------      ------------    -------------   -----   ----------------
+pass_BPTX                       0            1                  -               -               0       2 0 2
+pass_BSC_MB                     0            1                  -               -               0       2 0 2
+pass_BSC_BeamHaloVeto           0            1                  -               -               0       2 0 2
+#pass_PhysicsBit                0            1                  -               -               0       2 0 2
+pass_GoodRunList                0            1                  -               -               0       2 0 2
+pass_GoodVertex                 0            1                  -               -               0       2 0 2
+pass_MonsterTRKEventVeto        0            1                  -               -               0       2 0 2
+#pass_HFEnergyCut		0	     1			-		-		0	2 0 2
+pass_HFPMTHitVeto_tcMET		0	     1			-		-		1	2 0 2
+#pass_HFPMTHitVeto_S9S1		0	     1			-		-		1	2 0 2
+#pass_HFPMTHitVeto_PET		0	     1			-		-		1	2 0 2
+pass_ECALSpikesVeto_tcMET	0	     1			-		-               1	2 0 2 
+#
+#
+#pass_ECALSpikesVeto_caloMET	0	     1			-		-               1	2 0 2 
+#pass_HFPMTHitVeto_caloMET	0            1                  -               -               1       2 0 2
+#pass_HFPMTHitVeto_PFMET	0	     1			-		-		1	2 0 2
+#pass_HFPMTHitVeto_PF_LoS_HAD   0	     1			-		-		1	2 0 2
+#pass_HFPMTHitVeto_PF_S9oS1_HAD	0	     1			-		-		1	2 0 2
+#pass_HFPMTHitVeto_PF_S9oS1_EM	0	     1			-		-		1	2 0 2
