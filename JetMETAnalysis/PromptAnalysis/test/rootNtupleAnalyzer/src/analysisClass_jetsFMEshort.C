@@ -312,14 +312,14 @@ void analysisClass::Loop()
   double phiMax=Pi;   // -
   double phiMin=-1.*Pi;
 
-  int  dphiBin=36;  
+  int  dphiBin=72;  
 
   int  etaBin=20;
   double etaMax=3.;   //-
   double etaMin=-3.;
 
   int invmassBin=100;//30
-  double invmassMax=300.;
+  double invmassMax=600.;
 
   TH1D* h_phi_TA = new TH1D("phi_thrust_axis","",25,phiMin,phiMax);
   h_phi_TA->SetXTitle("#phi(TA)");
@@ -948,8 +948,8 @@ void analysisClass::Loop()
 		diJPTjetinvmassJIDtight->Fill(diJPTjetLorentzVector.M());
 	      }
 	      // basic di-jet variables 
-	      diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet1) * jcScale0);  //jc
-	      diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet2) * jcScale1);   //jc
+	      diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet1)*jcScale0);  //jc
+	      diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet2)*jcScale1);   //jc
       	      diJPTjeteta->Fill(JPTak5JetEta->at(index_JPTjet1));
 	      diJPTjeteta->Fill(JPTak5JetEta->at(index_JPTjet2));
 	      diJPTjetphi->Fill(JPTak5JetPhi->at(index_JPTjet1));
