@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.5 2010/03/08 08:35:52 akalinow Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.6 2010/03/16 23:59:00 friis Exp $
  *
  */
 
@@ -180,8 +180,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   const reco::Candidate::LorentzVector& p4SVFit() const { return p4SVmethod_; };
 
   /// Compute three vector sum of missing energies
-  reco::Candidate::Vector mETFromSVTotal() const {
-     return p4Leg1InvisFromSV().Vect() + p4Leg2InvisFromSV().Vect(); };
+  reco::Candidate::Vector mETFromSVTotal() const { return p4Leg1InvisFromSV().Vect() + p4Leg2InvisFromSV().Vect(); };
 
   /// Access to SV-fitted primary vertex
   const reco::Candidate::Point& primaryVertex() const { return pv_; };
