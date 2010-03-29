@@ -24,6 +24,8 @@
 
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTExtendedCand.h"
+#include <DataFormats/MuonReco/interface/MuonTime.h>
+#include <DataFormats/MuonReco/interface/Muon.h>
 
 #include <vector>
 #include <string>
@@ -123,15 +125,25 @@ struct GenMuonLocalInfo {
         GenMuonLocalInfo(reco::CandidateBaseRef ref) : _charge( ref->charge()), 
                                                        _pt( ref->pt()), 
                                                        _phi( ref->phi() ), 
-                                                       _eta( ref->eta()) {} ;
+                                                       _eta( ref->eta()) 
+{
+
+_tin=(dynamic_cast<const reco::Muon *>(&*ref) )->time().timeAtIpOutIn; 
+ _tout=(dynamic_cast<const reco::Muon *>(&*ref) )->time().timeAtIpInOut;
+
+} ;
         private:
           int _charge;
           float _pt;
           float _phi; 
           float _eta;
+	  float _tin; 
+          float _tout;
         public:
           float eta() const {return _eta;};
           float phi() const {return _phi;};
+	  float TIn() const {return _tin;};
+          float TOut() const {return _tout;};
           float pt() const {return _pt; };
           int charge() const {return _charge;};
      	  std::vector<L1MuonCandLocalInfo> _l1cands;
@@ -159,6 +171,11 @@ struct MEResolution {
                                               _ptH(ps.getParameter<double>("ptH"))
 	      
           {
+	std::stringstream dir;
+	dir<<dqm->pwd();
+	//std::cout<<dir.str()<<std::endl;
+	dir<<"/Resolution";
+	dqm->setCurrentFolder(dir.str());
 
       _meVec=new MonitorElement*[(2*(_NumberOfQuality+1))];
 	    
@@ -175,7 +192,11 @@ struct MEResolution {
             _meVec[it] = dqm->book1D(name.str(),title.str(), 32, -0.5, _const.m_PT_CODE_MAX+0.5); 
             _meVec[it]->setAxisTitle("Pt Code",1);
 	    _meVec[it]->setAxisTitle("Muons",2);
-	    }                               
+	    }
+		                               
+	dqm->goUp();
+
+ 
           };
           
           void fill( GenMuonLocalInfo gl ) 
@@ -198,7 +219,7 @@ struct MEResolution {
 	    }
 	    
 	    }
-          }
+          };
 	  
 	  
 	static int   _NumberOfQuality;
@@ -206,6 +227,7 @@ struct MEResolution {
           float _etaL, _etaH, _ptL, _ptH;
           
 	  MonitorElement * * _meVec;
+	  
 
 
       
@@ -218,7 +240,12 @@ struct MEDistribution {
                                               _ptH(ps.getParameter<double>("ptH")) 
           {
 	  
- 	
+	std::stringstream dir;
+	dir<<dqm->pwd();
+	//std::cout<<dir.str()<<std::endl;
+	dir<<"/Distribution";
+ 	dqm->setCurrentFolder(dir.str());
+
 	   float pi = 3.14159265;	
 	   
 	    for (  int it=0; it<4; ++it  ) {
@@ -263,7 +290,7 @@ struct MEDistribution {
             _meTowerVsPhiL1Bx->setAxisTitle("Tower",1);
 	    _meTowerVsPhiL1Bx->setAxisTitle("#phi",2);
             }
-
+		dqm->goUp();
           };
           
           void fill( GenMuonLocalInfo gl ) {
@@ -319,13 +346,24 @@ struct MEDistribution {
       };
            
 
-struct MEEfficieny {
+struct MEEfficiency {
         public:
-          MEEfficieny(edm::ParameterSet ps, DQMStore * dqm): 
+          MEEfficiency(edm::ParameterSet ps, DQMStore * dqm): 
                                               _etaL(ps.getParameter<double>("etaL")),
                                               _etaH(ps.getParameter<double>("etaH")) 
           {
-     
+
+        std::stringstream dir;
+	dir<<dqm->pwd();
+	//std::cout<<dir.str()<<std::endl;
+	dir<<"/Efficiency";
+	
+	dqm->setCurrentFolder(dir.str());
+	//std::cout<<dqm->pwd();
+	
+	//std::cout<<dqm->pwd();
+
+
 	std::stringstream name;
 	std::stringstream title;
 	
@@ -336,29 +374,49 @@ struct MEEfficieny {
 	    
 	 name<<"_Denom";
 	 title<<" Denom";
-	 
-   	_meDenomPt = dqm->book1D(name.str(),title.str(),32, -0.5, _const.m_PT_CODE_MAX+0.5);
+         _meDenomPt = dqm->book1D(name.str(),title.str(),32, -0.5, _const.m_PT_CODE_MAX+0.5);
+
+	name.str("");
+	title.str("");
+
+         name<<"EfficienyVsPtCut_eta_"<<changedot(_etaL)<<"_"<<changedot(_etaH);
+	title<<"RPCTrigger: Efficieny Vs Pt Cut #eta ["<<_etaL<<","<<_etaH<<"]";
+	    
+        _meEffVsPtCut = dqm->book1D(name.str(),title.str(),100, -0.5, 200.5);
+	name<<"_Denom";
+	 title<<" Denom";
+	 _meDenomEffVsPtCut = dqm->book1D(name.str(),title.str(),100, -0.5, 200.5);
+   	
 	
             _meNomPt->setAxisTitle("Pt Code",1);
-	    _meNomPt->setAxisTitle("Efficieny",2);                       
+	    _meNomPt->setAxisTitle("Efficieny",2);  
+
+             _meEffVsPtCut->setAxisTitle("Pt",1);
+	    _meEffVsPtCut->setAxisTitle("Efficieny Pt Cut",2);  
+                     
+		dqm->goUp();
           };
           
           void fill( GenMuonLocalInfo gl ) {
             
-            if((gl.eta()>=_etaL)&&(gl.eta()<=_etaH)){
+                 if((gl.eta()>=_etaL)&&(gl.eta()<=_etaH)){
 	    
-	    if(gl._l1cands.size()>0) _meNomPt->Fill(_const.iptFromPt(gl.pt()));
-	    _meDenomPt->Fill(_const.iptFromPt(gl.pt()));
-	    
-	    
-	   } 
+	                if(gl._l1cands.size()>0){
+                            _meNomPt->Fill(_const.iptFromPt(gl.pt()));
+	                   if(_const.iptFromPt(gl.pt())<=(gl._l1cands.begin()->ptCode())) _meEffVsPtCut->Fill(gl.pt());
+	    }
+                _meDenomPt->Fill(_const.iptFromPt(gl.pt()));
+		_meDenomEffVsPtCut->Fill(gl.pt());
+	   
+		
+	   
 	    
           }
-	  
+	  };
 	  void dev(  ) {
             
             _meNomPt->getTH1F()->Divide((_meDenomPt->getTH1F()));
-	    
+	    _meEffVsPtCut->getTH1F()->Divide((_meDenomEffVsPtCut->getTH1F()));
 	    
 	   } 
 	    
@@ -371,7 +429,9 @@ struct MEEfficieny {
 
 	  MonitorElement * _meDenomPt;
 	  MonitorElement * _meNomPt;
-	  
+	  MonitorElement * _meEffVsPtCut;
+	  MonitorElement * _meDenomEffVsPtCut;
+          
 
 	  
       	 
@@ -384,22 +444,33 @@ struct MEEfficieny {
                                               _ptH(ps.getParameter<double>("ptH"))
 	      
           {
-		
+
+        std::stringstream dir;
+	dir<<dqm->pwd();
+	//std::cout<<dir.str()<<std::endl;
+	dir<<"/Timing";
+ 	dqm->setCurrentFolder(dir.str());
+
+	{	
 	std::stringstream name;
 	std::stringstream title;
 	
-	name<<"L1_Bx_Vs_eta_Pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
-	title<<"RPCTrigger: RPC Bx Vs #eta Pt["<<_ptL<<","<<_ptH<<"]";
+	name<<"L1_Bx_Vs_TIn_Pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+	title<<"RPCTrigger: RPC Bx Vs TIn Pt["<<_ptL<<","<<_ptH<<"]";
 	    
-        _meBx = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,7,-3,3);
-	    
-	 name<<"_Diffrenc";
-	 title<<" Diffrenc";
-	 
-   	//_meDiffBx = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,7,-3,3);
+        _meBxVsTIn = dqm->book2D(name.str(),title.str(),100,-75,75,7,-3,3);
+	}
+	 {
+	std::stringstream name;
+	std::stringstream title;
 	
-            //_meDiffBx->setAxisTitle("Tower",1);
-	    //_meDiffBx->setAxisTitle("Diff Bx",2);                       
+	name<<"L1_Bx_Vs_TOut_Pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+	title<<"RPCTrigger: RPC Bx Vs TOut Pt["<<_ptL<<","<<_ptH<<"]";
+	    
+        _meBxVsTOut = dqm->book2D(name.str(),title.str(),100,-75,75,7,-3,3);
+	}   
+	 
+	dqm->goUp();
           };
           
           void fill( GenMuonLocalInfo gl ) 
@@ -410,13 +481,11 @@ struct MEEfficieny {
 
 	    if(gl._l1cands.size()>0) {
 	    //_meDiffBx->Fill(_const.towerNumFromEta(gl.eta()),(gl._l1cands.begin())->bx())-gl.;
-	    _meBx->Fill(_const.towerNumFromEta(gl.eta()),(gl._l1cands.begin())->bx());
+	    _meBxVsTIn->Fill(gl.TIn(),(std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx))->bx());
+	    _meBxVsTOut->Fill(gl.TOut(),(std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx))->bx());
 	    }
 	    
-	    if((gl._l1cands.size()>1)){
-	    //_meDiffBxGhost->Fill(_const.towerNumFromEta(gl.eta()),(gl._l1cands.begin())->bx());
-	    _meBxGhost->Fill(_const.towerNumFromEta(gl.eta()),(++gl._l1cands.begin())->bx());
-	    }
+	    
 	    
 	    }	
           }
@@ -427,9 +496,10 @@ struct MEEfficieny {
           float  _ptL, _ptH;
           
 	  //MonitorElement * _meDiffBx;
-	 MonitorElement * _meBx;	
+	 MonitorElement * _meBxVsTOut;	
+	MonitorElement * _meBxVsTIn;
          //MonitorElement * _meDiffBxGhost;
-	 MonitorElement * _meBxGhost;	
+	// MonitorElement * _meBxGhost;	
       
       };  
 

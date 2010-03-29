@@ -15,7 +15,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.h,v 1.5 2010/03/01 11:21:49 dbart Exp $
+// $Id: RPCTriggerValidation.h,v 1.6 2010/03/10 13:04:30 dbart Exp $
 //
 //
 
@@ -40,6 +40,8 @@
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "RPCTriggerValidationStruct.h"
+#include <DataFormats/MuonReco/interface/MuonTime.h>
+#include <DataFormats/MuonReco/interface/Muon.h>
 
 
 
@@ -73,7 +75,8 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
       MonitorElement * nomEta, * denomEta, * ghost, * unassigned,* nomPt, * denomPt;
       std::vector<MEResolution> _meResolutionVec; 
       std::vector<MEDistribution> _meDistributionVec;
-      std::vector<MEEfficieny> _meEfficienyVec;
+      std::vector<METiming> _meTimingVec;
+      std::vector<MEEfficiency> _meEfficiencyVec;
       
 
       
