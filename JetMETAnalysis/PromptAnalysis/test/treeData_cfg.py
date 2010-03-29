@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryExtended_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
 
-process.GlobalTag.globaltag ='GR09_R_34X_V5::All'
+process.GlobalTag.globaltag ='GR09_R_34X_V5::All'##make sure to check the GT from DBS
 ###########
 
 # process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
@@ -32,7 +32,7 @@ process.load("RecoMuon/Configuration/RecoMuon_cff")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
-fileName = cms.string("MinimumBias__BeamCommissioning09-BSCNOBEAMHALO-Jan23Skim-v1__RAW-RECO.root"),
+fileName = cms.string("MinimumBias__BeamCommissioning09-BSCNOBEAMHALO-Jan23Skim-v1__RAW-RECO.root"), ##give a name to the output file
                            closeFileFast = cms.untracked.bool(True)  ) )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
@@ -55,15 +55,16 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.default.limit = 100
 
 # jet corrections
-process.load("JetMETCorrections.Configuration.L2L3Corrections_900GeV_cff")
+process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_7TeV_ReReco332_cff")
+#process.load("JetMETCorrections.Configuration.L2L3Corrections_900GeV_cff")
 #process.load("JetMETCorrections.Configuration.L2L3Corrections_2360GeV_cff")
 
 # summary
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-#process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
-#from HLTrigger.HLTfilters.hltLevel1GTSeed_cfi import hltLevel1GTSeed
-#process.bit40OR41 = hltLevel1GTSeed.clone(L1TechTriggerSeeding = cms.bool(True), L1SeedsLogicalExpression = cms.string('40 OR 41'))
+process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
+from HLTrigger.HLTfilters.hltLevel1GTSeed_cfi import hltLevel1GTSeed
+process.bit40OR41 = hltLevel1GTSeed.clone(L1TechTriggerSeeding = cms.bool(True), L1SeedsLogicalExpression = cms.string('40 OR 41'))
 
 from HLTrigger.HLTfilters.hltHighLevelDev_cfi import hltHighLevelDev
 process.physDecl = hltHighLevelDev.clone(HLTPaths = ['HLT_PhysicsDeclared'], HLTPathsPrescales = [1])
@@ -94,7 +95,7 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
 
 process.theBigNtuple = cms.Path(
     process.physDecl *
-    #process.bit40OR41 *
+    process.bit40OR41 *
     #process.BeamHaloId *
     (
     process.promptanaevent +
