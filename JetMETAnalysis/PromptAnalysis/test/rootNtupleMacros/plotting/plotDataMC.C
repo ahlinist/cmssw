@@ -116,7 +116,7 @@ void plotDataMC(){
 void MoveStatsAndDraw (TH1 *data, TH1 *mc, char *dataTitle, char* mcTitle, char* firstline, char* secondline, int log, int col, bool stat, TString cut1, TString cut2, bool movepave){
   c->SetLogy(log);
   mc->Draw();
-  //  data->Draw("pesames");   
+  data->Draw("pesames");   
   gStyle->SetOptStat(00000000); 
   if(stat) gStyle->SetOptStat(1111111111); 
 
