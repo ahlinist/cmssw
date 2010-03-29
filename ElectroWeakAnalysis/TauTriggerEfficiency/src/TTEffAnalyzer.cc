@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.42 2010/03/19 12:12:15 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.43 2010/03/24 13:10:47 mkortela Exp $
 //
 //
 
@@ -65,6 +65,15 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   MCTauEta = -999.;
   MCTauPhi = -999.;
 
+  pfJetChargedEmEnergy = 0.;
+  pfJetChargedEmEnergyFraction = 0.;
+  pfJetChargedHadronEnergy = 0.;
+  pfJetChargedHadronEnergyFraction = 0.;
+  pfJetNeutralEmEnergy = 0.;
+  pfJetNeutralEmEnergyFraction = 0.;
+  pfJetNeutralHadronEnergy = 0.;
+  pfJetNeutralHadronEnergyFraction = 0.;
+
   _TTEffTree->Branch("event", &b_event);
   _TTEffTree->Branch("run", &b_run);
   _TTEffTree->Branch("lumi", &b_lumi);
@@ -84,6 +93,15 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFTauMatch", &PFTauMatch, "PFTauMatch/I");
   _TTEffTree->Branch("PFMuonMatch", &PFMuonMatch, "PFMuonMatch/I");  
   _TTEffTree->Branch("PFElectronMatch", &PFElectronMatch, "PFElectronMatch/I");
+
+  _TTEffTree->Branch("PFJetChargedEmEnergy",             &pfJetChargedEmEnergy);
+  _TTEffTree->Branch("PFJetChargedEmEnergyFraction",     &pfJetChargedEmEnergyFraction);
+  _TTEffTree->Branch("PFJetChargedHadronEnergy",         &pfJetChargedHadronEnergy);
+  _TTEffTree->Branch("PFJetChargedHadronEnergyFraction", &pfJetChargedHadronEnergyFraction);
+  _TTEffTree->Branch("PFJetNeutralEmEnergy",             &pfJetNeutralEmEnergy);
+  _TTEffTree->Branch("PFJetNeutralEmEnergyFraction",     &pfJetNeutralEmEnergyFraction);
+  _TTEffTree->Branch("PFJetNeutralHadronEnergy",         &pfJetNeutralHadronEnergy);
+  _TTEffTree->Branch("PFJetNeutralHadronEnergyFraction", &pfJetNeutralHadronEnergyFraction);
 
   _TTEffTree->Branch("MCMatch", &MCMatch, "MCMatch/I");
   _TTEffTree->Branch("MCTauEt", &MCTauEt, "MCTauEt/F");
@@ -191,6 +209,16 @@ using namespace reco;
   PFInvPt = 0.;
   PFIso = 0;
 
+  pfJetChargedEmEnergy = 0.;
+  pfJetChargedEmEnergyFraction = 0.;
+  pfJetChargedHadronEnergy = 0.;
+  pfJetChargedHadronEnergyFraction = 0.;
+  pfJetNeutralEmEnergy = 0.;
+  pfJetNeutralEmEnergyFraction = 0.;
+  pfJetNeutralHadronEnergy = 0.;
+  pfJetNeutralHadronEnergyFraction = 0.;
+
+
 // Here is workaround, though not beautiful, to access PFIso info with PFRef
 // While keeping the generic structure of loop method
   const PFTauRef thisTauRef(PFTaus,i);
@@ -254,6 +282,20 @@ using namespace reco;
   PFClusterEtaRMS = rms[0];
   PFClusterPhiRMS = rms[1];
   PFClusterDrRMS = rms[2];
+
+  // HCAL+ECAL energies and fractions
+  const reco::PFTauTagInfoRef& tauTagInfo = thisTauRef->pfTauTagInfoRef();
+  const reco::PFJetRef& tauJet = tauTagInfo->pfjetRef();
+  pfJetChargedEmEnergy             = tauJet->chargedEmEnergy();
+  pfJetChargedEmEnergyFraction     = tauJet->chargedEmEnergyFraction();
+  pfJetChargedHadronEnergy         = tauJet->chargedHadronEnergy();
+  pfJetChargedHadronEnergyFraction = tauJet->chargedHadronEnergyFraction();
+  pfJetNeutralEmEnergy             = tauJet->neutralEmEnergy();
+  pfJetNeutralEmEnergyFraction     = tauJet->neutralEmEnergyFraction();
+  pfJetNeutralHadronEnergy         = tauJet->neutralHadronEnergy();
+  pfJetNeutralHadronEnergyFraction = tauJet->neutralHadronEnergyFraction();
+
+
 }
 
 void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
