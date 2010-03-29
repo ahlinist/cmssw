@@ -2,13 +2,15 @@
 import os
 
 ## setup the output dir and input files
-output = "MC900_test"
-inputlist = "inputMC900GeV.txt"
+# output = "MC7TeV_MinBias-Summer09-START3X_V25"
+# inputlist = "inputMC7TeV_MinBias-Summer09-START3X_V25_short.txt"
+output = "MC7TeV_MinBias-START3X_V25B"
+inputlist = "inputMC7TeV_MinBias-START3X_V25B-v1_short.txt"
 
-settingfile = "config/cutFileExample.txt"
+settingfile = "config/cutTable_METNoteOnDec09Data.txt"
 # choose among cmst3 8nm 1nh 8nh 1nd 1nw 
 queue = "1nh"
-ijobmax = 35
+ijobmax = 25
 ################################################
 # to write on local disks
 ################################################
