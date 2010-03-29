@@ -753,7 +753,7 @@ void analysisClass::Loop()
 	  if(fabs(ak5JetEta->at(index_jet1))<endcapeta_dijet && (ak5JetpT->at(index_jet1) * jcScale0 )>ptMinDijet && fabs(ak5JetEta->at(index_jet2))<endcapeta_dijet && (ak5JetpT->at(index_jet2) * jcScale1) >ptMinDijet){   //jc
 	    if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1))&& JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
 	      //fill the text file with interesting events 
-	      outfile<<runid<< "\t" << LS<< "\t"<< eventid << "\t" << ak5JetpT->at(index_jet1)* jcScale0 << ak5JetpT->at(index_jet2)* jcScale1 << ak5JetEta->at(index_jet1) << ak5JetEta->at(index_jet2) << endl;
+	      outfile<<runid<< "\t" << LS<< "\t"<< eventid << "\t" << ak5JetpT->at(index_jet1)* jcScale0 << "\t"<<ak5JetpT->at(index_jet2)* jcScale1 << "\t"<<ak5JetEta->at(index_jet1) << "\t"<< ak5JetEta->at(index_jet2) << endl;
 	    }
 	    //i increase 
 	    Nindijets=+2;
