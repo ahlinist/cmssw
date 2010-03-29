@@ -18,10 +18,10 @@ PromptAna_ECALspikes::PromptAna_ECALspikes(const edm::ParameterSet& iConfig)
   produces <std::vector<float> >  ( prefix + "ECalEBSeedETop"  + suffix );
   produces <std::vector<float> >  ( prefix + "ECalEBSeedEBottom"  + suffix );
 
-  produces <std::vector<float> >  ( prefix + "ECalEBSeedChi2"  + suffix );
+  produces <std::vector<float> >  ( prefix + "ECalEBSeedChi2Prob"  + suffix );
   produces <std::vector<float> >  ( prefix + "ECalEBSeedTime"  + suffix );
   produces <std::vector<int> >    ( prefix + "ECalEBSeedRecoFlag"  + suffix );
-  //  produces <std::vector<float> >  ( prefix + "ECalEBUnCalSeedChi2"  + suffix );
+  //  produces <std::vector<float> >  ( prefix + "ECalEBUnCalSeedChi2Prob"  + suffix );
 
   produces <std::vector<float> >  ( prefix + "HCALenergyUp"   + suffix );
   produces <std::vector<float> >  ( prefix + "HCALenergy3x3"  + suffix );
@@ -47,10 +47,10 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
   std::auto_ptr<std::vector<float> >   ecalebseedentop    ( new std::vector<float>()  ) ;
   std::auto_ptr<std::vector<float> >   ecalebseedenbottom ( new std::vector<float>()  ) ;
 
-  std::auto_ptr<std::vector<float> >   ecalebseedchi2      ( new std::vector<float>() ) ;
+  std::auto_ptr<std::vector<float> >   ecalebseedchi2Prob      ( new std::vector<float>() ) ;
   std::auto_ptr<std::vector<float> >   ecalebseedtime      ( new std::vector<float>() ) ;
   std::auto_ptr<std::vector<int> >     ecalebseedflag      ( new std::vector<int>()   ) ;
-  //  std::auto_ptr<std::vector<float> >   ecalebuncalseedchi2 ( new std::vector<float>() ) ;
+  //  std::auto_ptr<std::vector<float> >   ecalebuncalseedchi2Prob ( new std::vector<float>() ) ;
 
   std::auto_ptr<std::vector<float> >   hcalenergyup        ( new std::vector<float>() ) ;
   std::auto_ptr<std::vector<float> >   hcalenergy3x3       ( new std::vector<float>() ) ;
@@ -128,25 +128,25 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
       float seedeta    =  posi.eta();
       float seedphi    = posi.phi();
       
-      //Get Chi2, time etc.
-      float seedchi2      = 0.;
+      //Get Chi2Prob, time etc.
+      float seedchi2Prob      = 0.;
       float seedtime      = 0.;
       int seedflag        = 0.;
-      //      float uncalseedchi2 = 0.;
+      //      float uncalseedchi2Prob = 0.;
 
       EcalRecHitCollection::const_iterator it = allEBRecHits->find( seedId );
       //      EcalUncalibratedRecHitCollection::const_iterator itUnCal = allEBUnCalRecHits->find( seedId );
       
       if ( it != allEBRecHits->end() ) 
 	{
-	  seedchi2 = (*it).chi2();
+	  seedchi2Prob = (*it).chi2Prob();
 	  seedtime = (*it).time();
 	  seedflag = (int)(*it).recoFlag();
 	}
       
 //       if( itUnCal != allEBUnCalRecHits->end() )
 // 	{
-// 	  uncalseedchi2    = (*itUnCal).chi2();
+// 	  uncalseedchi2Prob    = (*itUnCal).chi2Prob();
 // 	}
       
       //////////////////////////////////////////////
@@ -270,10 +270,10 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
       ecalebseedphi       ->push_back ( seedphi );
       ecalebseedenergy    ->push_back ( emax );
 
-      ecalebseedchi2      ->push_back ( seedchi2 );
+      ecalebseedchi2Prob      ->push_back ( seedchi2Prob );
       ecalebseedtime      ->push_back ( seedtime );
       ecalebseedflag      ->push_back ( seedflag );
-      //      ecalebuncalseedchi2 ->push_back ( uncalseedchi2 );
+      //      ecalebuncalseedchi2Prob ->push_back ( uncalseedchi2Prob );
 
       //store the values for each super cluster, to identify spikes
       ecalebseeden3x3    ->push_back ( EcalClusterTools::e3x3 ( *aClus , allEBRecHits, &(*topology) ) );
@@ -306,10 +306,10 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.put( ecalebseedentop        ,  prefix + "ECalEBSeedETop"  + suffix );
   iEvent.put( ecalebseedenbottom     ,  prefix + "ECalEBSeedEBottom"  + suffix );
 
-  iEvent.put( ecalebseedchi2         ,  prefix + "ECalEBSeedChi2"  + suffix );
+  iEvent.put( ecalebseedchi2Prob         ,  prefix + "ECalEBSeedChi2Prob"  + suffix );
   iEvent.put( ecalebseedtime         ,  prefix + "ECalEBSeedTime"  + suffix );
   iEvent.put( ecalebseedflag         ,  prefix + "ECalEBSeedRecoFlag"  + suffix );
-  //  iEvent.put( ecalebuncalseedchi2    ,  prefix + "ECalEBUnCalSeedChi2"  + suffix );
+  //  iEvent.put( ecalebuncalseedchi2Prob    ,  prefix + "ECalEBUnCalSeedChi2Prob"  + suffix );
 
   iEvent.put( hcalenergyup           ,  prefix + "HCALenergyUp"  + suffix );
   iEvent.put( hcalenergy3x3          ,  prefix + "HCALenergy3x3"  + suffix );
