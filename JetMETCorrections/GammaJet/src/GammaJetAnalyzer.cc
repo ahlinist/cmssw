@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.22 2010/02/23 19:14:21 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.23 2010/03/04 16:19:30 pandolf Exp $
 //
 //
 
@@ -1702,9 +1702,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      TLorentzVector p4HFHadrons;
      TLorentzVector p4HFEM;
 
-     vector<const PFCandidate*> pfCandidates = it->getPFConstituents();
+     vector<PFCandidatePtr> pfCandidates = it->getPFConstituents();
 
-     for (vector<const PFCandidate*>::const_iterator jt = pfCandidates.begin();
+
+     for (vector<PFCandidatePtr>::const_iterator jt = pfCandidates.begin();
           jt != pfCandidates.end(); ++jt) {
 
        PFCandidate::ParticleType id = (*jt)->particleId();
@@ -1859,9 +1860,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        TLorentzVector p4HFHadrons;
        TLorentzVector p4HFEM;
      
-       vector<const PFCandidate*> pfCandidates = it->getPFConstituents();
+       vector<PFCandidatePtr> pfCandidates = it->getPFConstituents();
      
-       for (vector<const PFCandidate*>::const_iterator jt = pfCandidates.begin();
+       for (vector<PFCandidatePtr>::const_iterator jt = pfCandidates.begin();
             jt != pfCandidates.end(); ++jt) {
      
          PFCandidate::ParticleType id = (*jt)->particleId();
@@ -2088,17 +2089,15 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-GammaJetAnalyzer::beginJob(const edm::EventSetup&)
+GammaJetAnalyzer::beginJob()
 {
-//   PtPhoton1st = fs_->make<TH1D>("PtPhoton1st", "Pt spectrum of the most energetic photon", 50, 0.0, 400.0);
-//   PtPhoton2st = fs_->make<TH1D>("PtPhoton2st", "Pt spectrum of the 2' most energetic photon", 50, 0.0, 400.0);
-//   PtPhoton3st = fs_->make<TH1D>("PtPhoton3st", "Pt spectrum of the 3' most energetic photon", 50, 0.0, 400.0);
-//   PtPhotonMC1st = fs_->make<TH1D>("PtPhotonMC1st", "Pt spectrum of the most energetic photonMC", 50, 0.0, 400.0);
-//   PtPhotonMC2st = fs_->make<TH1D>("PtPhotonMC2st", "Pt spectrum of the 2' most energetic photonMC", 50, 0.0, 400.0);
-//   PtPhotonMC3st = fs_->make<TH1D>("PtPhotonMC3st", "Pt spectrum of the 3' most energetic photonMC", 50, 0.0, 400.0);
 
-  m_tree = fs_->make<TTree>("pippo","Analysis tree");
-  //  m_tree = new TTree ("pippo","Analysis tree") ;
+  //m_tree = fs_->make<TTree>("pippo","Analysis tree");
+  outfile = TFile::Open("output.root", "RECREATE");
+  outfile->mkdir("myanalysis");
+  outfile->cd("myanalysis");
+
+  m_tree = new TTree ("pippo","Analysis tree") ;
   //  m_tree->SetAutoSave (10000000) ;
   m_tree->Branch("genpt",&genpt,"genpt/F");
 
@@ -2649,24 +2648,13 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
 // ------------ method called once each job just after ending the event loop  ------------
 void GammaJetAnalyzer::endJob() {
 
-//   PtPhoton1st->Write();
-//   PtPhoton2st->Write();
-//   PtPhoton3st->Write();
-//   PtPhotonMC1st->Write();
-//   PtPhotonMC2st->Write();
-//   PtPhotonMC3st->Write();
   
-//  m_tree->Write();
+  outfile->cd("myanalysis");
+  m_tree->Write();
+  outfile->Close();
   
 //   //avoid writing the tree second time (automatically)
 //  m_tree->Delete();
-
-//   PtPhoton1st->Delete();
-//   PtPhoton2st->Delete();
-//   PtPhoton3st->Delete();
-//   PtPhotonMC1st->Delete();
-//   PtPhotonMC2st->Delete();
-//   PtPhotonMC3st->Delete();
 
 }
 
