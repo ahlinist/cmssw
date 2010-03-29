@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryExtended_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
 
-process.GlobalTag.globaltag ='GR09_R_34X_V5::All'##make sure to check the GT from DBS
+process.GlobalTag.globaltag ='MC_3XY_V24::All'##make sure to check the GT from DBS
 ###########
 
 # process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
@@ -32,14 +32,14 @@ process.load("RecoMuon/Configuration/RecoMuon_cff")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
-fileName = cms.string("MinimumBias__BeamCommissioning09-BSCNOBEAMHALO-Jan23Skim-v1__RAW-RECO.root"), ##give a name to the output file
+fileName = cms.string("MinBias__Spring10-START3X_V25B-v1__GEN-SIM-RECO.root"), ##give a name to the output file
                            closeFileFast = cms.untracked.bool(True)  ) )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
-    "/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec14thSkim_v1/0102/BABAF8C3-71EA-DE11-9D8C-0024E8768446.root"
+    "/store/relval/CMSSW_3_5_4/RelValQCD_Pt_80_120/GEN-SIM-RECO/MC_3XY_V24-v1/0004/1E7B1D00-2D2C-DF11-A182-00261894386F.root"
     #'/store/mc/Summer09/MinBias/GEN-SIM-RECO/STARTUP3X_V8D_900GeV-v1/0005/E4590360-4CD7-DE11-8CB4-002618943896.root'
     #'/store/data/BeamCommissioning09/MinimumBias/RECO/rereco_GR09_P_V7_v1/0099/DABD5D6D-D4E2-DE11-8FFD-00261894387A.root'
     #"/store/express/BeamCommissioning09/ExpressPhysics/FEVT/v2/000/123/596/F82DED93-36E2-DE11-9316-000423D9870C.root"
