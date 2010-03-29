@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.9 2010/03/19 09:17:39 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.10 2010/03/19 17:20:21 veelken Exp $
  *
  */
 
@@ -90,27 +90,13 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       cfgError_ = 1;
     }
 
-    //std::cout << " svMassReco::typeIsSupportedBySVFitter<T1> = " << svMassReco::typeIsSupportedBySVFitter<T1>() << std::endl;
-    //std::cout << " svMassReco::typeIsSupportedBySVFitter<T2> = " << svMassReco::typeIsSupportedBySVFitter<T2>() << std::endl;
-    
-    if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" &&
-	 svMassReco::typeIsSupportedBySVFitter<T1>() &&
-	 svMassReco::typeIsSupportedBySVFitter<T2>() ) {
+    if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" ) {
       doSVreco_ = true;
     } else if ( recoMode_ == "secondaryVertexFit" ) {
-      if ( !(srcMET_.label() == "" && srcBeamSpot_.label() != "" && srcPV_.label() != "") ) {
-	edm::LogError ("ConfigError") 
-	  << " One or more of configuration parameters srcMET(" << srcMET_.label() << "),"
-	  << " srcBeamSpot(" << srcBeamSpot_.label() << ") , srcPrimaryVertex(" << srcPV_ << ") are undefined," 
-	  << " and needed for recoMode = " << recoMode_ << " !!";
-      }
-
-      if ( !(svMassReco::typeIsSupportedBySVFitter<T1>() && svMassReco::typeIsSupportedBySVFitter<T2>()) ) {
-	edm::LogError ("ConfigError") 
-	  << " The input collection type (probably Candidate) is not supported" 
-	  << " when using the secondaryVertexFit option !!";
-      }
-
+      edm::LogError ("ConfigError") 
+	<< " One or more of configuration parameters srcMET(" << srcMET_.label() << "),"
+	<< " srcBeamSpot(" << srcBeamSpot_.label() << ") , srcPrimaryVertex(" << srcPV_ << ") are undefined," 
+	<< " and needed for recoMode = " << recoMode_ << " !!";
       cfgError_ = 1;
     }
 
