@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.15 2010/01/15 23:57:26 wteo Exp $
+  $Id: HLTRenderPlugin.cc,v 1.16 2010/02/22 14:16:10 wittich Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.16  2010/02/22 14:16:10  wittich
+  updates for HLT Scalers
+
   Revision 1.15  2010/01/15 23:57:26  wteo
   show only non-empty bins for HLTMonBitSummary plots
 
@@ -309,7 +312,7 @@ private:
         }
 
 	      // rate histograms
-	      if( o.name.find("count_LS") != std::string::npos)
+	      if( o.name.find("_LS") != std::string::npos)
 	      {
 	        gPad->SetRightMargin(0.14);
 	        gPad->SetLeftMargin(0.24);
