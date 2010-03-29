@@ -10,7 +10,7 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include <PhysicsTools/UtilAlgos/interface/TFileService.h>
+//#include <CommonTools/UtilAlgos/interface/TFileService.h>
 
 #include "TH1.h"
 #include "TFile.h"
@@ -37,7 +37,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
 
 
    private:
-      virtual void beginJob(const edm::EventSetup&) ;
+      virtual void beginJob();
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
@@ -105,13 +105,9 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       string JetCorrector_pfakt5_; 
       string JetCorrector_pfakt7_; 
 
-/*       TH1D*       PtPhoton1st; */
-/*       TH1D*       PtPhoton2st; */
-/*       TH1D*       PtPhoton3st; */
-/*       TH1D*       PtPhotonMC1st; */
-/*       TH1D*       PtPhotonMC2st; */
-/*       TH1D*       PtPhotonMC3st; */
-      edm::Service<TFileService> fs_;
+//      edm::Service<TFileService> fs_;
+      TFile* outfile;
+
       // Tree with multiple info
       TTree * m_tree ;
 
