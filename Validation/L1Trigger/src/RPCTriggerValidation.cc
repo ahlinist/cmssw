@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.6 2010/03/10 13:04:30 dbart Exp $
+// $Id: RPCTriggerValidation.cc,v 1.7 2010/03/12 09:04:26 dbart Exp $
 //
 //
 
@@ -40,6 +40,8 @@
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include <DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTReadoutCollection.h>
 #include "DataFormats/Math/interface/deltaR.h"
+#include <DataFormats/MuonReco/interface/MuonTime.h>
+#include <DataFormats/MuonReco/interface/Muon.h>
 
 
 #include <algorithm>
@@ -71,7 +73,7 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
    }
    
    dqm->setCurrentFolder(m_outputDirectory);
-   nomEta = dqm->book1D("nomEta","RPCTrigger: Efficieny vs  #eta",100,-2.5,2.5);
+   nomEta = dqm->book1D("nomEta","RPCTrigger: Efficiency vs  #eta",100,-2.5,2.5);
    denomEta = dqm->book1D("denomEta","RPCTrigger: Efficiency vs #eta - denom",100,-2.5,2.5);
    //nomPt = dqm->book1D("nomPt","RPCTrigger: Efficieny vs  Pt",100,0,1500);
    //denomPt = dqm->book1D("denomPt","RPCTrigger: Efficiency vs  Pt - denom",100,0,1500);
@@ -95,7 +97,7 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
    for (;it!=itE;++it){
       
       _meDistributionVec.push_back( MEDistribution(*it,dqm) );     
-   
+      _meTimingVec.push_back( METiming(*it,dqm) );
    }
    
       std::vector<edm::ParameterSet> EtaRanges = iConfig.getParameter< std::vector<edm::ParameterSet> > ("EtaRanges");          
@@ -104,7 +106,7 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
   
    for (;it!=itE;++it){
       
-      _meEfficienyVec.push_back( MEEfficieny(*it,dqm) );     
+      _meEfficiencyVec.push_back( MEEfficiency(*it,dqm) );     
    
    }
   
@@ -184,7 +186,7 @@ void RPCTriggerValidation::analyze(const edm::Event& iEvent, const edm::EventSet
             ECItr != RPCTFCands->end() ;
             ++ECItr ) 
         {
-        	l1s.push_back(L1MuonCandLocalInfo(*ECItr) );
+        	if(!ECItr->empty()) l1s.push_back(L1MuonCandLocalInfo(*ECItr) );
         }
      }
 
@@ -232,9 +234,15 @@ else{
      for (;itDis!=itDisE; ++itDis){
       itDis->fill(*itGen);
      }
+
+     std::vector<METiming>::iterator itTim =  _meTimingVec.begin();
+     std::vector<METiming>::iterator itTimE =  _meTimingVec.end();
+     for (;itTim!=itTimE; ++itTim){
+      itTim->fill(*itGen);
+     }
      
-     std::vector<MEEfficieny>::iterator itEff =  _meEfficienyVec.begin();
-     std::vector<MEEfficieny>::iterator itEffE =  _meEfficienyVec.end();
+     std::vector<MEEfficiency>::iterator itEff =  _meEfficiencyVec.begin();
+     std::vector<MEEfficiency>::iterator itEffE =  _meEfficiencyVec.end();
      for (;itEff!=itEffE; ++itEff){
       itEff->fill(*itGen);
      }
@@ -371,8 +379,8 @@ RPCTriggerValidation::endJob() {
   nomEta->getTH1F()->Divide((denomEta->getTH1F()));
   //nomPt->getTH1F()->Divide((denomPt->getTH1F()));
   
-  std::vector<MEEfficieny>::iterator itEff =  _meEfficienyVec.begin();
-     std::vector<MEEfficieny>::iterator itEffE =  _meEfficienyVec.end();
+  std::vector<MEEfficiency>::iterator itEff =  _meEfficiencyVec.begin();
+     std::vector<MEEfficiency>::iterator itEffE =  _meEfficiencyVec.end();
      for (;itEff!=itEffE; ++itEff){
       itEff->dev();
      }
@@ -416,7 +424,7 @@ std::ostream& operator<<( std::ostream& os, const RPCTriggerValidationStruct::L1
 
 
 const std::string RPCTriggerValidationStruct::MEDistribution::_tag[4] = {
-     "NoL1Muon","L1Muon","L1GhostMuon","GenMuon"
+     "NoL1Muon","L1Muon","L1GhostMuon","RefMuon"
     }; 
 
 

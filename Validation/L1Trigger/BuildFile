@@ -12,6 +12,8 @@
 <use name=DataFormats/HepMCCandidate>
 <use name=root>
 <use name=L1Trigger/RPCTrigger>
+<use name=DataFormats/MuonReco>
+
 <export>
    <lib name=ValidationL1Trigger>
    <use name=FWCore/Framework>
