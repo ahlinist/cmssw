@@ -11,9 +11,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: PATLeptonIsoDepositSelector.h,v 1.2 2009/03/12 10:47:20 veelken Exp $
+ * $Id: PATLeptonIsoDepositSelector.h,v 1.3 2009/06/07 16:15:59 veelken Exp $
  *
  */
 
@@ -58,6 +58,9 @@ class PATLeptonIsoDepositSelector
   double sumPtMax_;
   int numMax_;
   
+  enum { kAbsoluteIso, kRelativeIso };
+  int sumPtMethod_;
+
   int cfgError_;
 };
 

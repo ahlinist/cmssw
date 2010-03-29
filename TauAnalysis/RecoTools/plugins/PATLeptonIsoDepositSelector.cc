@@ -18,9 +18,9 @@ std::string getString(double value)
 
 template <class T>
 PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::ParameterSet& cfg)
+  : sumPtMethod_(kAbsoluteIso),
+    cfgError_(0)
 {
-  cfgError_ = 0;
-
 //--- translate isolation "keys" from string to integer format
 //    (NOTE: the equivalence between strinsg and integers is defined in
 //           PhysicsTools/PatAlgos/src/MultiIsolator.cc )
@@ -40,7 +40,8 @@ PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::Parameter
   } else if ( isoDepositType_string == "pfGamma" ) {
     isoDepositType_ = pat::PfGammaIso;
   } else {
-    edm::LogError ("PATLeptonIsoDepositSelector") << " Type = " << isoDepositType_string << " not defined for IsoDeposits !!";
+    edm::LogError ("PATLeptonIsoDepositSelector") 
+      << " Type = " << isoDepositType_string << " not defined for IsoDeposits !!";
     cfgError_ = 1;
   }
 
@@ -73,8 +74,22 @@ PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::Parameter
   sumPtMax_ = cfg.exists("sumPtMax") ? cfg.getParameter<double>("sumPtMax") : -1.;
   numMax_ = cfg.exists("numMax") ? cfg.getParameter<int>("numMax") : -1;
   if ( !(cfg.exists("sumPtMax") || cfg.exists("numMax")) ) {
-    edm::LogError ("PATLeptonIsoDepositSelector") << " Need to specify either 'sumPtMax' or 'numMax' Parameters !!";
+    edm::LogError ("PATLeptonIsoDepositSelector") 
+      << " Need to specify either 'sumPtMax' or 'numMax' Parameters !!";
     cfgError_ = 1;
+  }
+
+  if ( cfg.exists("sumPtMethod") ) {
+    std::string sumPtMethod_string = cfg.getParameter<std::string>("sumPtMethod");
+    if ( sumPtMethod_string == "absolute" ) {
+      sumPtMethod_ = kAbsoluteIso;
+    } else if ( sumPtMethod_string == "relative" ) {
+      sumPtMethod_ = kRelativeIso;
+    } else {
+      edm::LogError("PATLeptonIsoDepositSelector") 
+	<< " Configuration parameter 'sumPtMethod' = " << sumPtMethod_string << " invalid !!";
+      cfgError_ = 1;
+    }
   }
 }
 
@@ -108,18 +123,25 @@ void PATLeptonIsoDepositSelector<T>::select(const edm::Handle<collection>& patLe
       double num = isoDeposit->countWithin(dRisoCone_, isoParam_);
       //std::cout << "num = " << num << std::endl;
 
-      if ( sumPtMin_ >  0. && sumPt < sumPtMin_ ) continue;
-      if ( numMin_   >= 0  && num   < numMin_   ) continue;
+      if ( sumPtMethod_ == kAbsoluteIso ) {
+	if ( sumPtMin_ >  0. && sumPt < sumPtMin_ ) continue;
+	if ( sumPtMax_ >  0. && sumPt > sumPtMax_ ) continue;
+      } else if ( sumPtMethod_ == kRelativeIso ) {
+	double relIso = ( patLepton->pt() > 1. ) ? (sumPt/patLepton->pt()) : sumPt;
+	if ( sumPtMin_ >  0. && relIso < sumPtMin_ ) continue;
+	if ( sumPtMax_ >  0. && relIso > sumPtMax_ ) continue;
+      }
 
-      if ( sumPtMax_ >  0. && sumPt > sumPtMax_ ) continue;
+      if ( numMin_   >= 0  && num   < numMin_   ) continue;
       if ( numMax_   >= 0  && num   > numMax_   ) continue;
 
       selected_.push_back(&(*patLepton)); 
     } else {
-      edm::LogError ("select") << " No IsoDeposit of type = " << isoDepositType_ << " associated to pat::Lepton with "
-			       << " Pt = " << patLepton->pt() << "," 
-			       << " theta = " << patLepton->theta() << "," 
-			       << " phi = " << patLepton->phi() << " --> pat::Lepton fails Selection !!";
+      edm::LogError ("select") 
+	<< " No IsoDeposit of type = " << isoDepositType_ << " associated to pat::Lepton with "
+	<< " Pt = " << patLepton->pt() << "," 
+	<< " theta = " << patLepton->theta() << "," 
+	<< " phi = " << patLepton->phi() << " --> pat::Lepton fails Selection !!";
       continue;
     }
   }

@@ -34,6 +34,7 @@ selectedLayer1MuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
     vetos = cms.vstring("0.01"),                          
     dRisoCone = cms.double(0.6),
     sumPtMax = cms.double(1.),
+    sumPtMethod = cms.string("absolute"),                                 
     filter = cms.bool(False)
 )
 
