@@ -11,3 +11,10 @@ Analyze the output root tree with the root macro BsAnalysisNew.cc:
 
 Display nicely formatted plots with MakePlots.cc:
   root [0]: .x MakePlots.cc++
+
+
+## run on real data
+
+1) cvs co DPGAnalysis/Skims
+2) scramv1 b
+3) cmsRun SkimReco_on_data.py
