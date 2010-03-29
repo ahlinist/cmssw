@@ -79,102 +79,102 @@ void analysisClass::Loop()
 
   //calomet
   TH1F *h_calometPt   = new TH1F ("h_calometPt","h_calometPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_calometPx   = new TH1F ("h_calometPx","h_calometPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_calometPy   = new TH1F ("h_calometPy","h_calometPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_calometPxy   = new TH1F ("h_calometPxy","h_calometPxy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_caloSumet   = new TH1F ("h_caloSumet","h_caloSumet",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_caloMetOSumet   = new TH1F ("h_caloMetOSumet","h_caloMetOSumet",50,0,1.);
 
   h_calometPt->Sumw2();
-  h_calometPx->Sumw2();
-  h_calometPy->Sumw2();
+  h_calometPxy->Sumw2();
   h_caloSumet->Sumw2();
+  h_caloMetOSumet->Sumw2();
 
   //calomet in dijets (loose)
   TH1F *h_dijetLoose_calometPt   = new TH1F ("h_dijetLoose_calometPt","h_dijetLoose_calometPt",0.5*Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_dijetLoose_calometPx   = new TH1F ("h_dijetLoose_calometPx","h_dijetLoose_calometPx",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_dijetLoose_calometPy   = new TH1F ("h_dijetLoose_calometPy","h_dijetLoose_calometPy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_dijetLoose_calometPxy   = new TH1F ("h_dijetLoose_calometPxy","h_dijetLoose_calometPxy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_dijetLoose_caloSumet   = new TH1F ("h_dijetLoose_caloSumet","h_dijetLoose_caloSumet",0.5*Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_dijetLoose_caloMetOSumet   = new TH1F ("h_dijetLoose_caloMetOSumet","h_dijetLoose_caloMetOSumet",50,0,1.);
 
   h_dijetLoose_calometPt->Sumw2();
-  h_dijetLoose_calometPx->Sumw2();
-  h_dijetLoose_calometPy->Sumw2();
+  h_dijetLoose_calometPxy->Sumw2();
   h_dijetLoose_caloSumet->Sumw2();
+  h_dijetLoose_caloMetOSumet->Sumw2();
 
   //calomet in dijets (tight)
   TH1F *h_dijetTight_calometPt   = new TH1F ("h_dijetTight_calometPt","h_dijetTight_calometPt",0.5*Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_dijetTight_calometPx   = new TH1F ("h_dijetTight_calometPx","h_dijetTight_calometPx",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_dijetTight_calometPy   = new TH1F ("h_dijetTight_calometPy","h_dijetTight_calometPy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_dijetTight_calometPxy   = new TH1F ("h_dijetTight_calometPxy","h_dijetTight_calometPxy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_dijetTight_caloSumet   = new TH1F ("h_dijetTight_caloSumet","h_dijetTight_caloSumet",0.5*Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_dijetTight_caloMetOSumet   = new TH1F ("h_dijetTight_caloMetOSumet","h_dijetTight_caloMetOSumet",50,0,1.);
 
   h_dijetTight_calometPt->Sumw2();
-  h_dijetTight_calometPx->Sumw2();
-  h_dijetTight_calometPy->Sumw2();
+  h_dijetTight_calometPxy->Sumw2();
   h_dijetTight_caloSumet->Sumw2();
+  h_dijetTight_caloMetOSumet->Sumw2();
 
   //tcmet
   TH1F *h_tcmetPt   = new TH1F ("h_tcmetPt","h_tcmetPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_tcmetPx   = new TH1F ("h_tcmetPx","h_tcmetPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_tcmetPy   = new TH1F ("h_tcmetPy","h_tcmetPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_tcmetPxy   = new TH1F ("h_tcmetPxy","h_tcmetPxy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_tcSumet   = new TH1F ("h_tcSumet","h_tcSumet",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_tcMetOSumet   = new TH1F ("h_tcMetOSumet","h_tcMetOSumet",50,0,1.);
 
   h_tcmetPt->Sumw2();
-  h_tcmetPx->Sumw2();
-  h_tcmetPy->Sumw2();
+  h_tcmetPxy->Sumw2();
   h_tcSumet->Sumw2();
+  h_tcMetOSumet->Sumw2();
 
   //tcmet in dijet (loose)
   TH1F *h_dijetLoose_tcmetPt   = new TH1F ("h_dijetLoose_tcmetPt","h_dijetLoose_tcmetPt",0.5*Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_dijetLoose_tcmetPx   = new TH1F ("h_dijetLoose_tcmetPx","h_dijetLoose_tcmetPx",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_dijetLoose_tcmetPy   = new TH1F ("h_dijetLoose_tcmetPy","h_dijetLoose_tcmetPy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_dijetLoose_tcmetPxy   = new TH1F ("h_dijetLoose_tcmetPxy","h_dijetLoose_tcmetPxy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_dijetLoose_tcSumet   = new TH1F ("h_dijetLoose_tcSumet","h_dijetLoose_tcSumet",0.5*Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_dijetLoose_tcMetOSumet   = new TH1F ("h_dijetLoose_tcMetOSumet","h_dijetLoose_tcMetOSumet",50,0,1.);
 
   h_dijetLoose_tcmetPt->Sumw2();
-  h_dijetLoose_tcmetPx->Sumw2();
-  h_dijetLoose_tcmetPy->Sumw2();
+  h_dijetLoose_tcmetPxy->Sumw2();
   h_dijetLoose_tcSumet->Sumw2();
+  h_dijetLoose_tcMetOSumet->Sumw2();
 
   //tcmet in dijet (tight)
   TH1F *h_dijetTight_tcmetPt   = new TH1F ("h_dijetTight_tcmetPt","h_dijetTight_tcmetPt",0.5*Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_dijetTight_tcmetPx   = new TH1F ("h_dijetTight_tcmetPx","h_dijetTight_tcmetPx",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_dijetTight_tcmetPy   = new TH1F ("h_dijetTight_tcmetPy","h_dijetTight_tcmetPy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_dijetTight_tcmetPxy   = new TH1F ("h_dijetTight_tcmetPxy","h_dijetTight_tcmetPxy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_dijetTight_tcSumet   = new TH1F ("h_dijetTight_tcSumet","h_dijetTight_tcSumet",0.5*Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_dijetTight_tcMetOSumet   = new TH1F ("h_dijetTight_tcMetOSumet","h_dijetTight_tcMetOSumet",50,0,1.);
 
   h_dijetTight_tcmetPt->Sumw2();
-  h_dijetTight_tcmetPx->Sumw2();
-  h_dijetTight_tcmetPy->Sumw2();
+  h_dijetTight_tcmetPxy->Sumw2();
   h_dijetTight_tcSumet->Sumw2();
+  h_dijetTight_tcMetOSumet->Sumw2();
 
   //pfmet
   TH1F *h_pfmetPt   = new TH1F ("h_pfmetPt","h_pfmetPt",Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_pfmetPx   = new TH1F ("h_pfmetPx","h_pfmetPx",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_pfmetPy   = new TH1F ("h_pfmetPy","h_pfmetPy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_pfmetPxy   = new TH1F ("h_pfmetPxy","h_pfmetPxy",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_pfSumet   = new TH1F ("h_pfSumet","h_pfSumet",Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_pfMetOSumet   = new TH1F ("h_pfMetOSumet","h_pfMetOSumet",50,0,1.);
 
   h_pfmetPt->Sumw2();
-  h_pfmetPx->Sumw2();
-  h_pfmetPy->Sumw2();
+  h_pfmetPxy->Sumw2();
   h_pfSumet->Sumw2();
+  h_pfMetOSumet->Sumw2();
 
   //pfmet in dijet (loose)
   TH1F *h_dijetLoose_pfmetPt   = new TH1F ("h_dijetLoose_pfmetPt","h_dijetLoose_pfmetPt",0.5*Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_dijetLoose_pfmetPx   = new TH1F ("h_dijetLoose_pfmetPx","h_dijetLoose_pfmetPx",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_dijetLoose_pfmetPy   = new TH1F ("h_dijetLoose_pfmetPy","h_dijetLoose_pfmetPy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_dijetLoose_pfmetPxy   = new TH1F ("h_dijetLoose_pfmetPxy","h_dijetLoose_pfmetPxy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_dijetLoose_pfSumet   = new TH1F ("h_dijetLoose_pfSumet","h_dijetLoose_pfSumet",0.5*Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_dijetLoose_pfMetOSumet   = new TH1F ("h_dijetLoose_pfMetOSumet","h_dijetLoose_pfMetOSumet",50,0,1.);
 
   h_dijetLoose_pfmetPt->Sumw2();
-  h_dijetLoose_pfmetPx->Sumw2();
-  h_dijetLoose_pfmetPy->Sumw2();
+  h_dijetLoose_pfmetPxy->Sumw2();
   h_dijetLoose_pfSumet->Sumw2();
+  h_dijetLoose_pfMetOSumet->Sumw2();
 
   //pfmet in dijet (tight)
   TH1F *h_dijetTight_pfmetPt   = new TH1F ("h_dijetTight_pfmetPt","h_dijetTight_pfmetPt",0.5*Nbins_METSumET,0,Max_METSumET);
-  TH1F *h_dijetTight_pfmetPx   = new TH1F ("h_dijetTight_pfmetPx","h_dijetTight_pfmetPx",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-  TH1F *h_dijetTight_pfmetPy   = new TH1F ("h_dijetTight_pfmetPy","h_dijetTight_pfmetPy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+  TH1F *h_dijetTight_pfmetPxy   = new TH1F ("h_dijetTight_pfmetPxy","h_dijetTight_pfmetPxy",0.5*Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
   TH1F *h_dijetTight_pfSumet   = new TH1F ("h_dijetTight_pfSumet","h_dijetTight_pfSumet",0.5*Nbins_METSumET,0,Max_METSumET);
+  TH1F *h_dijetTight_pfMetOSumet   = new TH1F ("h_dijetTight_pfMetOSumet","h_dijetTight_pfMetOSumet",50,0,1.);
 
   h_dijetTight_pfmetPt->Sumw2();
-  h_dijetTight_pfmetPx->Sumw2();
-  h_dijetTight_pfmetPy->Sumw2();
+  h_dijetTight_pfmetPxy->Sumw2();
   h_dijetTight_pfSumet->Sumw2();
+  h_dijetTight_pfMetOSumet->Sumw2();
 
   //Vertex
   TH1F *h_AllVertexZ    = new TH1F ("h_AllVertexZ","h_AllVertexZ",100,-100,100);
@@ -632,46 +632,50 @@ void analysisClass::Loop()
 	  //## inclusive MET
 	  //#########################
 	  h_calometPt->Fill( calometPt->at(0) );
-	  h_calometPx->Fill( calometPx->at(0) ); 
-	  h_calometPy->Fill( calometPy->at(0) ); 
+	  h_calometPxy->Fill( calometPx->at(0) ); 
+	  h_calometPxy->Fill( calometPy->at(0) ); 
 	  h_caloSumet->Fill( calometSumEt->at(0) ); 
+	  h_caloMetOSumet->Fill( calometPt->at(0) / calometSumEt->at(0) ); 
 
 	  h_tcmetPt->Fill( tcmetPt->at(0) );
-	  h_tcmetPx->Fill( tcmetPx->at(0) ); 
-	  h_tcmetPy->Fill( tcmetPy->at(0) ); 
+	  h_tcmetPxy->Fill( tcmetPx->at(0) ); 
+	  h_tcmetPxy->Fill( tcmetPy->at(0) ); 
 	  h_tcSumet->Fill( tcmetSumEt->at(0) ); 
+	  h_tcMetOSumet->Fill( tcmetPt->at(0) / tcmetSumEt->at(0) ); 
 
 	  h_pfmetPt->Fill( pfmetPt->at(0) );
-	  h_pfmetPx->Fill( pfmetPx->at(0) ); 
-	  h_pfmetPy->Fill( pfmetPy->at(0) ); 
+	  h_pfmetPxy->Fill( pfmetPx->at(0) ); 
+	  h_pfmetPxy->Fill( pfmetPy->at(0) ); 
 	  h_pfSumet->Fill( pfmetSumEt->at(0) ); 
+	  h_pfMetOSumet->Fill( pfmetPt->at(0) / pfmetSumEt->at(0) ); 
 
 	  ///////////////////////////////////////
 	  ///////// Print High MET events////////
 	  ///////////////////////////////////////
-	  if( calometPt->at(0) > 20 || tcmetPt->at(0) > 20 || pfmetPt->at(0) > 20. )
-	    {
-	      cout << "event: " << event << " " 
-		   << "ls: " << ls << " "
-		   << "run: " << run << "  "
-		   << "--  calometPt->at(0) : " <<  calometPt->at(0) << " "
-		   << "--  tcmetPt->at(0) : "   <<  tcmetPt->at(0)   <<" "
-		   << "--  pfmetPt->at(0) : "   <<  pfmetPt->at(0)   <<" "
-		   << endl;
-	    }
+	  if(isData==1)
+	    if( calometPt->at(0) > 20 || tcmetPt->at(0) > 20 || pfmetPt->at(0) > 20. )
+	      {
+		cout << "event: " << event << " " 
+		     << "ls: " << ls << " "
+		     << "run: " << run << "  "
+		     << "--  calometPt->at(0) : " <<  calometPt->at(0) << " "
+		     << "--  tcmetPt->at(0) : "   <<  tcmetPt->at(0)   <<" "
+		     << "--  pfmetPt->at(0) : "   <<  pfmetPt->at(0)   <<" "
+		     << endl;
+	      }
 
-	  if( calometSumEt->at(0) > 50 || tcmetSumEt->at(0) > 100 || pfmetSumEt->at(0) > 100 )
-	    {
-	      cout << "event: " << event << " " 
-		   << "ls: " << ls << " "
-		   << "run: " << run << "  "
-		   << "--  calometSumEt->at(0) : " <<  calometSumEt->at(0) << " "
-		   << "--  tcmetSumEt->at(0) : "   <<  tcmetSumEt->at(0) << " "
-		   << "--  pfmetSumEt->at(0) : "   <<  pfmetSumEt->at(0) << " "
-		   << endl;
-	    }
-
-
+	  if(isData==1)
+	    if( calometSumEt->at(0) > 50 || tcmetSumEt->at(0) > 100 || pfmetSumEt->at(0) > 100 )
+	      {
+		cout << "event: " << event << " " 
+		     << "ls: " << ls << " "
+		     << "run: " << run << "  "
+		     << "--  calometSumEt->at(0) : " <<  calometSumEt->at(0) << " "
+		     << "--  tcmetSumEt->at(0) : "   <<  tcmetSumEt->at(0) << " "
+		     << "--  pfmetSumEt->at(0) : "   <<  pfmetSumEt->at(0) << " "
+		     << endl;
+	      }
+	  
 	  //##########################
 	  //## MET in dijets (ak5)
 	  //##########################
@@ -765,19 +769,22 @@ void analysisClass::Loop()
 		       JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2)))
 		      {
 			h_dijetLoose_calometPt->Fill( calometPt->at(0) );
-			h_dijetLoose_calometPx->Fill( calometPx->at(0) ); 
-			h_dijetLoose_calometPy->Fill( calometPy->at(0) ); 
+			h_dijetLoose_calometPxy->Fill( calometPx->at(0) ); 
+			h_dijetLoose_calometPxy->Fill( calometPy->at(0) ); 
 			h_dijetLoose_caloSumet->Fill( calometSumEt->at(0) ); 
-			
+			h_dijetLoose_caloMetOSumet->Fill( calometPt->at(0) / calometSumEt->at(0) ); 
+
 			h_dijetLoose_tcmetPt->Fill( tcmetPt->at(0) );
-			h_dijetLoose_tcmetPx->Fill( tcmetPx->at(0) ); 
-			h_dijetLoose_tcmetPy->Fill( tcmetPy->at(0) ); 
+			h_dijetLoose_tcmetPxy->Fill( tcmetPx->at(0) ); 
+			h_dijetLoose_tcmetPxy->Fill( tcmetPy->at(0) ); 
 			h_dijetLoose_tcSumet->Fill( tcmetSumEt->at(0) ); 
-			
+			h_dijetLoose_tcMetOSumet->Fill( tcmetPt->at(0) / tcmetSumEt->at(0) ); 
+
 			h_dijetLoose_pfmetPt->Fill( pfmetPt->at(0) );
-			h_dijetLoose_pfmetPx->Fill( pfmetPx->at(0) ); 
-			h_dijetLoose_pfmetPy->Fill( pfmetPy->at(0) ); 
+			h_dijetLoose_pfmetPxy->Fill( pfmetPx->at(0) ); 
+			h_dijetLoose_pfmetPxy->Fill( pfmetPy->at(0) ); 
 			h_dijetLoose_pfSumet->Fill( pfmetSumEt->at(0) ); 
+			h_dijetLoose_pfMetOSumet->Fill( pfmetPt->at(0) / pfmetSumEt->at(0) ); 
 			
 			// both passed jet ID tight
 			if(
@@ -785,19 +792,22 @@ void analysisClass::Loop()
 			   JetIdtight(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDfRBX->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2)))
 			  {
 			    h_dijetTight_calometPt->Fill( calometPt->at(0) );
-			    h_dijetTight_calometPx->Fill( calometPx->at(0) ); 
-			    h_dijetTight_calometPy->Fill( calometPy->at(0) ); 
+			    h_dijetTight_calometPxy->Fill( calometPx->at(0) ); 
+			    h_dijetTight_calometPxy->Fill( calometPy->at(0) ); 
 			    h_dijetTight_caloSumet->Fill( calometSumEt->at(0) ); 
-			    
+			    h_dijetTight_caloMetOSumet->Fill( calometPt->at(0) / calometSumEt->at(0) ); 
+
 			    h_dijetTight_tcmetPt->Fill( tcmetPt->at(0) );
-			    h_dijetTight_tcmetPx->Fill( tcmetPx->at(0) ); 
-			    h_dijetTight_tcmetPy->Fill( tcmetPy->at(0) ); 
+			    h_dijetTight_tcmetPxy->Fill( tcmetPx->at(0) ); 
+			    h_dijetTight_tcmetPxy->Fill( tcmetPy->at(0) ); 
 			    h_dijetTight_tcSumet->Fill( tcmetSumEt->at(0) ); 
+			    h_dijetTight_tcMetOSumet->Fill( tcmetPt->at(0) / tcmetSumEt->at(0) ); 
 			    
 			    h_dijetTight_pfmetPt->Fill( pfmetPt->at(0) );
-			    h_dijetTight_pfmetPx->Fill( pfmetPx->at(0) ); 
-			    h_dijetTight_pfmetPy->Fill( pfmetPy->at(0) ); 
+			    h_dijetTight_pfmetPxy->Fill( pfmetPx->at(0) ); 
+			    h_dijetTight_pfmetPxy->Fill( pfmetPy->at(0) ); 
 			    h_dijetTight_pfSumet->Fill( pfmetSumEt->at(0) ); 
+			    h_dijetTight_pfMetOSumet->Fill( pfmetPt->at(0) / pfmetSumEt->at(0) ); 
 			  }
 		      }
 		  }//dphi cut
@@ -816,53 +826,53 @@ void analysisClass::Loop()
 
   //calomet
   h_calometPt->Write(); 
-  h_calometPx->Write(); 
-  h_calometPy->Write(); 
+  h_calometPxy->Write(); 
   h_caloSumet->Write(); 
+  h_caloMetOSumet->Write();
   
   //tcmet
   h_tcmetPt->Write(); 
-  h_tcmetPx->Write(); 
-  h_tcmetPy->Write(); 
+  h_tcmetPxy->Write(); 
   h_tcSumet->Write(); 
+  h_tcMetOSumet->Write();
 
   //pfmet
   h_pfmetPt->Write(); 
-  h_pfmetPx->Write(); 
-  h_pfmetPy->Write(); 
+  h_pfmetPxy->Write(); 
   h_pfSumet->Write(); 
+  h_pfMetOSumet->Write();
 
   //Dijets (loose)
   h_dijetLoose_calometPt->Write(); 
-  h_dijetLoose_calometPx->Write(); 
-  h_dijetLoose_calometPy->Write(); 
+  h_dijetLoose_calometPxy->Write(); 
   h_dijetLoose_caloSumet->Write(); 
-  
+  h_dijetLoose_caloMetOSumet->Write(); 
+ 
   h_dijetLoose_tcmetPt->Write(); 
-  h_dijetLoose_tcmetPx->Write(); 
-  h_dijetLoose_tcmetPy->Write(); 
-  h_dijetLoose_tcSumet->Write(); 
+  h_dijetLoose_tcmetPxy->Write(); 
+  h_dijetLoose_tcSumet->Write();
+  h_dijetLoose_tcMetOSumet->Write(); 
 		    
   h_dijetLoose_pfmetPt->Write(); 
-  h_dijetLoose_pfmetPx->Write(); 
-  h_dijetLoose_pfmetPy->Write(); 
+  h_dijetLoose_pfmetPxy->Write(); 
   h_dijetLoose_pfSumet->Write(); 
+  h_dijetLoose_pfMetOSumet->Write(); 
 
   //Dijets (tight)
   h_dijetTight_calometPt->Write(); 
-  h_dijetTight_calometPx->Write(); 
-  h_dijetTight_calometPy->Write(); 
+  h_dijetTight_calometPxy->Write(); 
   h_dijetTight_caloSumet->Write(); 
+  h_dijetTight_caloMetOSumet->Write(); 
   
   h_dijetTight_tcmetPt->Write(); 
-  h_dijetTight_tcmetPx->Write(); 
-  h_dijetTight_tcmetPy->Write(); 
+  h_dijetTight_tcmetPxy->Write(); 
   h_dijetTight_tcSumet->Write(); 
+  h_dijetTight_tcMetOSumet->Write(); 
 		    
   h_dijetTight_pfmetPt->Write(); 
-  h_dijetTight_pfmetPx->Write(); 
-  h_dijetTight_pfmetPy->Write(); 
+  h_dijetTight_pfmetPxy->Write(); 
   h_dijetTight_pfSumet->Write(); 
+  h_dijetTight_pfMetOSumet->Write(); 
 
   //Vertex
   h_AllVertexZ->Write();
