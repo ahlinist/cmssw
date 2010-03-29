@@ -5,16 +5,16 @@ void plotDataMC(){
    
   // specify the DATA/MC root file!!!
   // --------------------------------------------------------------------------
-  TFile *data = TFile::Open("../../rootNtupleAnalyzer/data/output/v22Short.root");
-  TFile *mc = TFile::Open("../../rootNtupleAnalyzer/data/output/MCALL.root");
+  TFile *data = TFile::Open("../../rootNtupleAnalyzer/data/output/MC7wrongquasitot.root");
+  TFile *mc = TFile::Open("../../rootNtupleAnalyzer/data/output/MC7wrongquasitot.root");
  //   TFile *data = TFile::Open("./datasumB.root");
 //    TFile *mc = TFile::Open("./mcsumB.root");
 
   char *legDataTitle = "Data";
   char *legMCTitle = "Simulation";
   TString dataset="";
-  TString overallTitle="CMS preliminary 2009";
-  TString CMen="#sqrt{s}=900GeV";
+  TString overallTitle="CMS preliminary 2010";
+  TString CMen="#sqrt{s}=7TeV";
   TString cuts1="";
   TString cuts2="";
   double rebin=4.;
@@ -36,6 +36,7 @@ void plotDataMC(){
   //
   TRegexp pt("pt");
   TRegexp dphi("dphi");
+  TRegexp mass("mass");
 
 
   int islog=1;
@@ -44,7 +45,7 @@ void plotDataMC(){
     isptplot=false;
     //determine wether it is a Calo/JPT or PF plots to make
     name=key->GetName();
-    if(name.Index(twodim)>-1) continue; //dont want comparisons for 2D histos
+    //    if(name.Index(twodim)>-1) continue; //dont want comparisons for 2D histos
     colour=5;
       cuts1="p_{T}(jet)> 10 GeV";
       cuts2="|#eta(jet)| < 3";
@@ -80,6 +81,11 @@ void plotDataMC(){
 	h_data->SetYTitle("Events");
 	h_mc->SetYTitle("Events");
       }
+      if(name.Index(mass)>-1){
+	h_data->SetYTitle("Events/GeV");
+	h_mc->SetYTitle("Events/GeV");
+	isptplot=true;
+      }
 
     TCanvas *c = new TCanvas("c","",600,600); 
     double scalefactor= h_data->Integral()/h_mc->Integral();
@@ -110,7 +116,7 @@ void plotDataMC(){
 void MoveStatsAndDraw (TH1 *data, TH1 *mc, char *dataTitle, char* mcTitle, char* firstline, char* secondline, int log, int col, bool stat, TString cut1, TString cut2, bool movepave){
   c->SetLogy(log);
   mc->Draw();
-  data->Draw("pesames");   
+  //  data->Draw("pesames");   
   gStyle->SetOptStat(00000000); 
   if(stat) gStyle->SetOptStat(1111111111); 
 
