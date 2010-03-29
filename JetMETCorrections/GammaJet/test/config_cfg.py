@@ -55,7 +55,7 @@ process.source = cms.Source("PoolSource",
 # fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_1_0_pre11/RelValZmumuJets_Pt_20_300_GEN/GEN-SIM-RECO/MC_31X_V1_LowLumiPileUp-v1/0001/FE549F7D-2C65-DE11-9B82-001D09F2AF1E.root')
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/PhotonJet_Pt80to120_Summer09-MC_31X_V3-v1_x100.root')
     fileNames = cms.untracked.vstring(
-'file:ZmumuJet_Pt20to30_Summer09_100ev.root'
+'file:events_MinBias09_Mar24ReReco.root'
 #'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124009.root',
 #'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124020.root',
 #'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124022.root',
@@ -122,8 +122,8 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 )
 
 # --- to recover the ak5 GenJets that are not re-recoed in 33X samples ---
-process.load('RecoJets.Configuration.GenJetParticles_cff')
-process.load("RecoJets.Configuration.RecoGenJets_cff")
+#process.load('RecoJets.Configuration.GenJetParticles_cff')
+#process.load("RecoJets.Configuration.RecoGenJets_cff")
 
 
 #from RecoJets.JetProducers.ak5GenJets_cfi import ak5GenJets
@@ -149,11 +149,11 @@ process.load("RecoJets.Configuration.RecoGenJets_cff")
 #newGenJets = cms.Sequence(process.genParticlesForJets* process.ak5GenJetsptmin1)
 
 # histogram service
-process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('output.root')
-)
+#process.TFileService = cms.Service("TFileService",
+#    fileName = cms.string('output.root')
+#)
 #process.p = cms.Path(process.myanalysis)
 # produce JPT jets before running analysis
 #process.p = cms.Path(process.ZSPJetCorrections*process.JetPlusTrackCorrections*process.myanalysis)
 #process.p = cms.Path(newGenJets*process.myanalysis)
-process.p = cms.Path(process.genParticlesForJets*process.ak5GenJets*process.ak7GenJets*process.myanalysis)
+process.p = cms.Path(process.myanalysis)
