@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.6 2010/03/16 23:59:00 friis Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.7 2010/03/29 10:46:45 veelken Exp $
  *
  */
 
@@ -157,55 +157,32 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     return out;
   }
 
-  ///***** SV VERTEX METHOD ****
-  double svMethodNLL() const { return svNLL_; };
-  /// Access to daughter vertices
-  const reco::Candidate::Point& vertexLeg1() const { return vertexLeg1_; };
-  const reco::Candidate::Point& vertexLeg2() const { return vertexLeg2_; };
-
-  /// Access to generator daughter vertices
-  const reco::Candidate::Point& vertexLeg1gen() const { return vertexLeg1gen_; };
-  const reco::Candidate::Point& vertexLeg2gen() const { return vertexLeg2gen_; };
-
-  /// Invisible four momenta computed by SV method
-  const reco::Candidate::LorentzVector& p4Leg1InvisFromSV() const { return p4NuSVLeg1_; };
-  const reco::Candidate::LorentzVector& p4Leg2InvisFromSV() const { return p4NuSVLeg2_; };
-
-  /// Visible four momenta computed by SV method.  The visible momentum 
-  /// is recomputed at the found secondary vertex
-  const reco::Candidate::LorentzVector& p4Leg1VisFromSV() const { return p4VisSVLeg1_; };
-  const reco::Candidate::LorentzVector& p4Leg2VisFromSV() const { return p4VisSVLeg2_; };
-
-  /// Get the total four vector as computed by the SVFit
-  const reco::Candidate::LorentzVector& p4SVFit() const { return p4SVmethod_; };
-
-  /// Compute three vector sum of missing energies
-  reco::Candidate::Vector mETFromSVTotal() const { return p4Leg1InvisFromSV().Vect() + p4Leg2InvisFromSV().Vect(); };
-
-  /// Access to SV-fitted primary vertex
-  const reco::Candidate::Point& primaryVertex() const { return pv_; };
-
-  /// Access to true primary vertex
-  const reco::Candidate::Point& primaryVertexGen() const { return pvGen_; };
-
-  /// Compute total leg (vis + invis) direction
-  reco::Candidate::Vector p3Leg1TotalFromVertices() const { return (vertexLeg1_ - pv_); };
-  reco::Candidate::Vector p3Leg2TotalFromVertices() const { return (vertexLeg2_ - pv_); };
-
-  /// Compute total generator leg (vis + invis) direction
-  reco::Candidate::Vector p3Leg1TotalFromGenVertices() const { return (vertexLeg1gen_ - pvGen_); };
-  reco::Candidate::Vector p3Leg2TotalFromGenVertices() const { return (vertexLeg2gen_ - pvGen_); };
-
-  /// Get reconstructed flight distance of mother particle
-  double leg1DecayLength() const { return sqrt(p3Leg1TotalFromVertices().Mag2()); };
-  double leg2DecayLength() const { return sqrt(p3Leg2TotalFromVertices().Mag2()); };
-
-  double probLeg1DecayLength() const { return exp(-1.788*leg1DecayLength()/(8.711e-3*leg1()->p4().P())); };
-  double probLeg2DecayLength() const { return exp(-1.788*leg2DecayLength()/(8.711e-3*leg2()->p4().P())); };
-
-  /// Get true flight distance of mother particle
-  double leg1DecayLengthGen() const { return sqrt(p3Leg1TotalFromGenVertices().Mag2()); };
-  double leg2DecayLengthGen() const { return sqrt(p3Leg2TotalFromGenVertices().Mag2()); };
+  /// secondary vertex based mass reconstruction
+  /// get visible four momenta computed by SV method
+  /// (recomputed at secondary vertex)
+  const reco::Candidate::LorentzVector& p4VisLeg1SVfit() const { return p4VisLeg1SVfit_; };
+  const reco::Candidate::LorentzVector& p4VisLeg2SVfit() const { return p4VisLeg2SVfit_; };
+  /// get scaling factors for momenta of visible decay products
+  /// computed by SV method
+  double x1SVfit() const { return x1SVfit_; }
+  double x2SVfit() const { return x2SVfit_; }
+  /// get four-momentum computed by SV method
+  const reco::Candidate::LorentzVector& p4SVfit() const { return p4SVmethod_; };
+  /// get positions of reconstructed primary event vertex 
+  /// and of reconstructed tau decay vertices
+  const reco::Candidate::Point& primaryVertexPosSVrefitted() const { return primaryVertexPosSVrefitted_; }
+  const reco::Candidate::Point& decayVertexPosLeg1SVfit() const { return decayVertexPosLeg1SVfit_; };
+  const reco::Candidate::Point& decayVertexPosLeg2SVfit() const { return decayVertexPosLeg2SVfit_; };
+  /// get "true" positions of primary event vertex 
+  /// and of tau decay vertices (generator level information)
+  const reco::Candidate::Point& primaryVertexPosGen() const { return primaryVertexPosGen_; }
+  const reco::Candidate::Point& decayVertexPosLeg1gen() const { return decayVertexPosLeg1gen_; };
+  const reco::Candidate::Point& decayVertexPosLeg2gen() const { return decayVertexPosLeg2gen_; };
+  /// get flag indicating whether or not solution for invariant mass 
+  /// computed by SV algorithm is valid or not
+  bool svFitSolutionIsValid() const { return svFitSolutionIsValid_; }
+  /// get log-likelihood value of solution
+  double svFitSolutionNLL() const { return svFitSolutionNLL_; }
 
  private:
   
@@ -265,6 +242,21 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void setPzeta(double pZeta) { pZeta_ = pZeta; }
   void setPzetaVis(double pZetaVis) { pZetaVis_ = pZetaVis; }
 
+  /// set variables computed by secondary vertex based mass reconstruction
+  void setSVfitP4VisLeg1(const reco::Candidate::LorentzVector& p4VisLeg1) { p4VisLeg1SVfit_ = p4VisLeg1; }
+  void setSVfitP4VisLeg2(const reco::Candidate::LorentzVector& p4VisLeg2) { p4VisLeg2SVfit_ = p4VisLeg2; }
+  void setSVfitX1(double x1) { x1SVfit_ = x1; }
+  void setSVfitX2(double x2) { x2SVfit_ = x2; }
+  void setP4SVfit(const reco::Candidate::LorentzVector& p4) { p4SVmethod_ = p4; }
+  void setSVrefittedPrimaryVertexPos(const reco::Candidate::Point& pos) { primaryVertexPosSVrefitted_ = pos; }
+  void setSVfitDecayVertexPosLeg1(const reco::Candidate::Point& pos) { decayVertexPosLeg1SVfit_ = pos; }
+  void setSVfitDecayVertexPosLeg2(const reco::Candidate::Point& pos) { decayVertexPosLeg2SVfit_ = pos; }
+  void setPrimaryVertexPosGen(const reco::Candidate::Point& pos) { primaryVertexPosGen_ = pos; }
+  void setDecayVertexPosLeg1gen(const reco::Candidate::Point& pos) { decayVertexPosLeg1gen_ = pos; }
+  void setDecayVertexPosLeg2gen(const reco::Candidate::Point& pos) { decayVertexPosLeg2gen_ = pos; }
+  void setSVfitSolutionIsValid(bool isValid) { svFitSolutionIsValid_ = isValid; }
+  void setSVfitSolutionNLL(double nll) { svFitSolutionNLL_ = nll; }
+
   /// references/pointers to decay products
   T1Ptr leg1_;
   T2Ptr leg2_;
@@ -294,7 +286,6 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double scaleFactor_;
   /// flag to discriminate which approximation is valid
   int validityCollinearApproxFlag_;
-  
 
   /// "pseudo" four-momentum computed by CDF method
   reco::Candidate::LorentzVector p4CDFmethod_;
@@ -318,50 +309,31 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double pZeta_;
   double pZetaVis_;
 
-
-  //// *** SV METHOD SUPPORT
-  void setVertexLeg1(const reco::Candidate::Point& vtx) { vertexLeg1_ = vtx; };
-  void setVertexLeg2(const reco::Candidate::Point& vtx) { vertexLeg2_ = vtx; };
-
-  void setVertexLeg1Gen(const reco::Candidate::Point& vtx) { vertexLeg1gen_ = vtx; };
-  void setVertexLeg2Gen(const reco::Candidate::Point& vtx) { vertexLeg2gen_ = vtx; };
-
-  void setPV(const reco::Candidate::Point& pv) { pv_ = pv; };
-  void setPVGen(const reco::Candidate::Point& pvGen) { pvGen_ = pvGen; };
-
-  void setNuSVLeg1(const reco::Candidate::LorentzVector& p4) { p4NuSVLeg1_ = p4; };
-  void setNuSVLeg2(const reco::Candidate::LorentzVector& p4) { p4NuSVLeg2_ = p4; };
-
-  // The SV method refits the momentum of the visible products at the vertex
-  void setVisSVLeg1(const reco::Candidate::LorentzVector& p4) { p4VisSVLeg1_ = p4; };
-  void setVisSVLeg2(const reco::Candidate::LorentzVector& p4) { p4VisSVLeg2_ = p4; };
-
-  void setSVNLL(double nll) { svNLL_ = nll; };
-
-  void computeSVTotal() { p4SVmethod_ = 
-     p4VisSVLeg1_ + p4NuSVLeg1_ +
-     p4VisSVLeg2_ + p4NuSVLeg2_; };
-
-  double svNLL_;
-  
-  // Secondary reconstructed vertices
-  reco::Candidate::Point vertexLeg1_;
-  reco::Candidate::Point vertexLeg2_;
-  reco::Candidate::Point pv_;
-
-  // Generator vertices
-  reco::Candidate::Point vertexLeg1gen_;
-  reco::Candidate::Point vertexLeg2gen_;
-  reco::Candidate::Point pvGen_;
-
-  reco::Candidate::LorentzVector p4NuSVLeg1_;
-  reco::Candidate::LorentzVector p4NuSVLeg2_;
-
-  reco::Candidate::LorentzVector p4VisSVLeg1_;
-  reco::Candidate::LorentzVector p4VisSVLeg2_;
-
+  /// secondary vertex based mass reconstruction
+  /// visible four momenta computed by SV method
+  /// (recomputed at secondary vertex)
+  reco::Candidate::LorentzVector p4VisLeg1SVfit_;
+  reco::Candidate::LorentzVector p4VisLeg2SVfit_;
+  /// scaling factors for momenta of visible decay products
+  double x1SVfit_;
+  double x2SVfit_;
+  /// four-momentum of di-tau system computed by SV method
   reco::Candidate::LorentzVector p4SVmethod_;
-
+  /// positions of reconstructed primary event vertex 
+  /// and of reconstructed tau decay vertices
+  reco::Candidate::Point primaryVertexPosSVrefitted_;
+  reco::Candidate::Point decayVertexPosLeg1SVfit_;
+  reco::Candidate::Point decayVertexPosLeg2SVfit_;
+  /// "true" positions of primary event vertex 
+  /// and of tau decay vertices (generator level information)
+  reco::Candidate::Point primaryVertexPosGen_;
+  reco::Candidate::Point decayVertexPosLeg1gen_;
+  reco::Candidate::Point decayVertexPosLeg2gen_;
+  /// flag indicating whether or not solution for invariant mass 
+  /// computed by SV algorithm is valid or not
+  bool svFitSolutionIsValid_;
+  /// log-likelihood value of solution
+  double svFitSolutionNLL_;
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
