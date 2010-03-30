@@ -155,7 +155,7 @@ void overlay_plots(const string& fFile0, const string& fFile1, const string& fPl
 
    h[0]->UseCurrentStyle();
    h[1]->UseCurrentStyle();
-   cout<<h[1]->GetTitle()<<" "<<h[1]->Integral()<<endl;
+   //   cout<<h[1]->GetTitle()<<" "<<h[1]->Integral()<<endl;
    
 //    double ymax = (h[0]->GetMaximum()>h[1]->GetMaximum()) ? h[0]->GetMaximum() : h[1]->GetMaximum();
    
@@ -234,7 +234,7 @@ void overlay_plots(const string& fFile0, const string& fFile1, const string& fPl
    l.SetTextFont(62);
    l.SetNDC();
 //    l.DrawLatex(0.15,0.88," #splitline{CMS Preliminary 2009}{#sqrt{s}=900 GeV}"); //Position for METx,y plots, or #sqrt{s}=2360 GeV
-     l.DrawLatex(0.55,0.88," #splitline{CMS Preliminary 2009}{#sqrt{s}=900 GeV}"); //Position for MET and SumET plots, or #sqrt{s}=2360 GeV
+     l.DrawLatex(0.55,0.88," #splitline{CMS Preliminary 2010}{#sqrt{s}=7 TeV}"); //Position for MET and SumET plots, or #sqrt{s}=2360 GeV
 
    if(logY==1)
      c->SetLogy();
@@ -256,65 +256,65 @@ void makePlots() {
    // root files
    //********************************************
    // *** MC ***
-    string MC = "$PWD/MC900_ME/root/MC900GeV.root";
+    string MC = "$PWD/MC7TeV_MinBias-START3X_V25B/root/MC7TeV_MinBias-START3X_V25B.root";
 //    // *** data ***
-    string data = "$PWD/DATA900_ME/root/DATA900GeV.root";
+    string data = "$PWD/MC7TeV_MinBias-START3X_V25B_v2/root/MC7TeV_MinBias-START3X_V25B_v2.root";
    //********************************************
    // make plots
    //********************************************
 
     //Inclusive MET plots CaloMET
-    overlay_plots(MC, data, "h_caloSumet", 0, 100, "Calo #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_caloSumet.eps",1, 5);
+    overlay_plots(MC, data, "h_caloSumet", 0, 300, "Calo #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_caloSumet.eps",1, 5);
     overlay_plots(MC, data, "h_calometPt", 0, 50, "Calo #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_calometPt.eps",1, 5);
-    overlay_plots(MC, data, "h_calometPx", -50, 50, "Calo #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_calometPx.eps",1, 5);
-    overlay_plots(MC, data, "h_calometPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_calometPy.eps",1, 5);
-    
+    overlay_plots(MC, data, "h_calometPxy", -50, 50, "Calo #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_calometPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_caloMetOSumet", 0, 1, "Calo #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_caloMetOSumet.eps",1, 5);
+
     //CaloMET plots in dijets: Loose jet ID
-    overlay_plots(MC, data, "h_dijetLoose_caloSumet", 0, 100, "Calo #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_caloSumet.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetLoose_caloSumet", 0, 300, "Calo #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_caloSumet.eps",1, 5);
     overlay_plots(MC, data, "h_dijetLoose_calometPt", 0, 50, "Calo #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_calometPt.eps",1, 5);
-    overlay_plots(MC, data, "h_dijetLoose_calometPx", -50, 50, "Calo #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_dijetLoose_calometPx.eps",1, 5);
-    overlay_plots(MC, data, "h_dijetLoose_calometPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_dijetLoose_calometPy.eps",1, 5);
-    
+    overlay_plots(MC, data, "h_dijetLoose_calometPxy", -50, 50, "Calo #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_dijetLoose_calometPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetLoose_caloMetOSumet", 0, 1, "Calo #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_dijetLoose_caloMetOSumet.eps",1, 5);
+	
     //CaloMET plots in dijets: Tight jet ID
-    overlay_plots(MC, data, "h_dijetTight_caloSumet", 0, 100, "Calo #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_caloSumet.eps",1, 5);
-    overlay_plots(MC, data, "h_dijetTight_calometPt", 0, 39, "Calo #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_calometPt.eps",1, 5);
-    overlay_plots(MC, data, "h_dijetTight_calometPx", -50, 50, "Calo #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_dijetTight_calometPx.eps",1, 5);
-    overlay_plots(MC, data, "h_dijetTight_calometPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_dijetTight_calometPy.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetTight_caloSumet", 0, 300, "Calo #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_caloSumet.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetTight_calometPt", 0, 50, "Calo #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_calometPt.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetTight_calometPxy", -50, 50, "Calo #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_dijetTight_calometPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetTight_caloMetOSumet", 0, 1, "Calo #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_dijetTight_caloMetOSumet.eps",1, 5);
 
     //Inclusive MET plots tcMET
-    overlay_plots(MC, data, "h_tcSumet", 0, 200, "Tc #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_tcSumet.eps",1, 6);
+    overlay_plots(MC, data, "h_tcSumet", 0, 400, "Tc #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_tcSumet.eps",1, 6);
     overlay_plots(MC, data, "h_tcmetPt", 0, 50, "Tc #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_tcmetPt.eps",1, 6);
-    overlay_plots(MC, data, "h_tcmetPx", -50, 50, "Tc #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_tcmetPx.eps",1, 6);
-    overlay_plots(MC, data, "h_tcmetPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_tcmetPy.eps",1, 6);
-   
+    overlay_plots(MC, data, "h_tcmetPxy", -50, 50, "Tc #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_tcmetPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_tcMetOSumet", 0, 1, "Tc #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_tcMetOSumet.eps",1, 5);
+
     //TcMET plots in dijets: Loose jet ID
-    overlay_plots(MC, data, "h_dijetLoose_tcSumet", 0, 200, "Tc #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_tcSumet.eps",1, 6);
+    overlay_plots(MC, data, "h_dijetLoose_tcSumet", 0, 400, "Tc #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_tcSumet.eps",1, 6);
     overlay_plots(MC, data, "h_dijetLoose_tcmetPt", 0, 50, "Tc #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_tcmetPt.eps",1, 6);
-    overlay_plots(MC, data, "h_dijetLoose_tcmetPx", -50, 50, "Tc #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_dijetLoose_tcmetPx.eps",1, 6);
-    overlay_plots(MC, data, "h_dijetLoose_tcmetPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_dijetLoose_tcmetPy.eps",1, 6);
-    
+    overlay_plots(MC, data, "h_dijetLoose_tcmetPxy", -50, 50, "Tc #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_dijetLoose_tcmetPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetLoose_tcMetOSumet", 0, 1, "Tc #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_dijetLoose_tcMetOSumet.eps",1, 5);
+
     //TcMET plots in dijets: Tight jet ID
-    overlay_plots(MC, data, "h_dijetTight_tcSumet", 0, 200, "Tc #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_tcSumet.eps",1, 6);
+    overlay_plots(MC, data, "h_dijetTight_tcSumet", 0, 400, "Tc #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_tcSumet.eps",1, 6);
     overlay_plots(MC, data, "h_dijetTight_tcmetPt", 0, 50, "Tc #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_tcmetPt.eps",1, 6);
-    overlay_plots(MC, data, "h_dijetTight_tcmetPx", -50, 50, "Tc #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_dijetTight_tcmetPx.eps",1, 6);
-    overlay_plots(MC, data, "h_dijetTight_tcmetPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_dijetTight_tcmetPy.eps",1, 6);
+    overlay_plots(MC, data, "h_dijetTight_tcmetPxy", -50, 50, "Tc #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_dijetTight_tcmetPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetTight_tcMetOSumet", 0, 1, "Tc #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_dijetTight_tcMetOSumet.eps",1, 5);
 
     //Inclusive MET plots PFMet
-    overlay_plots(MC, data, "h_pfSumet", 0, 100, "Pf #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_pfSumet.eps",1, 9);
+    overlay_plots(MC, data, "h_pfSumet", 0, 400, "Pf #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_pfSumet.eps",1, 9);
     overlay_plots(MC, data, "h_pfmetPt", 0, 50, "Pf #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_pfmetPt.eps",1, 9);
-    overlay_plots(MC, data, "h_pfmetPx", -50, 50, "Pf #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_pfmetPx.eps",1, 9);
-    overlay_plots(MC, data, "h_pfmetPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_pfmetPy.eps",1, 9);
+    overlay_plots(MC, data, "h_pfmetPxy", -50, 50, "Pf #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_pfmetPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_pfMetOSumet", 0, 1, "Pf #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_pfMetOSumet.eps",1, 5);
 
     //PFMET plots in dijets: Loose jet ID
-    overlay_plots(MC, data, "h_dijetLoose_pfSumet", 0, 200, "Pf #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_pfSumet.eps",1, 9);
+    overlay_plots(MC, data, "h_dijetLoose_pfSumet", 0, 400, "Pf #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_pfSumet.eps",1, 9);
     overlay_plots(MC, data, "h_dijetLoose_pfmetPt", 0, 50, "Pf #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_dijetLoose_pfmetPt.eps",1, 9);
-    overlay_plots(MC, data, "h_dijetLoose_pfmetPx", -50, 50, "Pf #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_dijetLoose_pfmetPx.eps",1, 9);
-    overlay_plots(MC, data, "h_dijetLoose_pfmetPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_dijetLoose_pfmetPy.eps",1, 9);
-    
+    overlay_plots(MC, data, "h_dijetLoose_pfmetPxy", -50, 50, "Pf #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_dijetLoose_pfmetPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetLoose_pfMetOSumet", 0, 1, "Pf #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_dijetLoose_pfMetOSumet.eps",1, 5);
+
     //PFMET plots in dijets: Tight jet ID
-    overlay_plots(MC, data, "h_dijetTight_pfSumet", 0, 200, "Pf #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_pfSumet.eps",1, 9);
+    overlay_plots(MC, data, "h_dijetTight_pfSumet", 0, 400, "Pf #SigmaE_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_pfSumet.eps",1, 9);
     overlay_plots(MC, data, "h_dijetTight_pfmetPt", 0, 50, "Pf #slash{E}_{T} [GeV]", "Number of Events / GeV", "h_dijetTight_pfmetPt.eps",1, 9);
-    overlay_plots(MC, data, "h_dijetTight_pfmetPx", -50, 50, "Pf #slash{E}_{T\,x} [GeV]", "Number of Events / GeV", "h_dijetTight_pfmetPx.eps",1, 9);
-    overlay_plots(MC, data, "h_dijetTight_pfmetPy", -50, 50, "#slash{E}_{T\,y} [GeV]", "Number of Events / GeV", "h_dijetTight_pfmetPy.eps",1, 9);
+    overlay_plots(MC, data, "h_dijetTight_pfmetPxy", -50, 50, "Pf #slash{E}_{x\,y} [GeV]", "2xNumber of Events / GeV", "h_dijetTight_pfmetPxy.eps",1, 5);
+    overlay_plots(MC, data, "h_dijetTight_pfMetOSumet", 0, 1, "Pf #slash{E}_{T}/#SigmaE_{T}", "Number of Events", "h_dijetTight_pfMetOSumet.eps",1, 5);
 
 }
