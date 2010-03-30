@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.156 2010/02/24 14:37:06 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.157 2010/02/28 15:45:43 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.156 $
-  \date $Date: 2010/02/24 14:37:06 $
+  \version $Revision: 1.157 $
+  \date $Date: 2010/02/28 15:45:43 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -944,7 +944,8 @@ private:
       if( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
 
       if( name.find( "timing" ) != std::string::npos ||
-          name.find( "rec hit thr" ) != std::string::npos ) gPad->SetLogy(kFALSE);
+          name.find( "rec hit thr" ) != std::string::npos ||
+          name.find( "invariant mass" ) != std::string::npos ) gPad->SetLogy(kFALSE);
 
       if( nbx == 10 || nbx == 850 )
       {
