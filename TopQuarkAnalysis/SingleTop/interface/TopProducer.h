@@ -9,7 +9,7 @@
  * \Author A. Orso M. Iorio
  * 
  *
- *\version  $Id: TopProducer.h,v 1.4 2010/03/26 15:41:57 oiorio Exp $
+ *\version  $Id: TopProducer.h,v 1.5 2010/03/26 15:48:21 oiorio Exp $
  *
  *
 */
@@ -61,7 +61,7 @@
 //class JetFlavourIdentifier;
 
 
-namespace pat {
+//namespace pat {
 
   class TopProducer : public edm::EDProducer {
 
@@ -76,7 +76,7 @@ namespace pat {
     
     edm::InputTag electronsSrc_,muonsSrc_,jetsSrc_,METsSrc_;
     
-    bool useNegativeDeltaSolutions_,usePositiveDeltaSolutions_,usePzMinusSolutions_,usePzPlusSolutions_,usePzAbsValMinimumSolutions_,useMetForNegativeSolutions_;    
+    bool useNegativeDeltaSolutions_,usePositiveDeltaSolutions_,usePzMinusSolutions_,usePzPlusSolutions_,usePzAbsValMinimumSolutions_,useMetForNegativeSolutions_,usePxMinusSolutions_,usePxPlusSolutions_;   
 
  
 
@@ -85,7 +85,7 @@ namespace pat {
    //std::vector<std::string> triggernames;
       
   };
-}
+//}
 
 
 #endif
