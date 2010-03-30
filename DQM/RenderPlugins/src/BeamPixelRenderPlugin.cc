@@ -68,7 +68,9 @@ private:
 	xa->SetLabelSize(0.03);
 	ya->SetLabelSize(0.03);
 
+	c->SetGrid();
 	obj->SetOption("colz");
+	gStyle->SetOptStat(1110);
       }
 
     if (o.name.find("fit results") != std::string::npos)
@@ -89,7 +91,7 @@ private:
 
     if (o.name.find("reportSummaryMap") != std::string::npos)
       {
-	c->SetGrid(kFALSE);
+	c->SetGrid(kFALSE, kFALSE);
 	obj->SetStats(kFALSE);
 // 	dqm::utils::reportSummaryMapPalette(obj);
 // 	obj->SetOption("colz");
@@ -105,6 +107,7 @@ private:
     gStyle->SetCanvasBorderMode(0);
     gStyle->SetPadBorderMode(0);
     gStyle->SetPadBorderSize(0);
+    gStyle->SetOptStat(111110);
 
     TAxis* xa = obj->GetXaxis();
     TAxis* ya = obj->GetYaxis();
@@ -128,7 +131,7 @@ private:
     gStyle->SetCanvasBorderMode(0);
     gStyle->SetPadBorderMode(0);
     gStyle->SetPadBorderSize(0);
-    gStyle->SetOptStat(11);
+    gStyle->SetOptStat(1110);
 
     TAxis* xa = obj->GetXaxis();
     TAxis* ya = obj->GetYaxis();
@@ -141,6 +144,8 @@ private:
 
     xa->SetLabelSize(0.03);    
     ya->SetLabelSize(0.03);
+
+    c->SetGrid();
   }
 
 };
