@@ -124,7 +124,7 @@ private:
     ya->SetLabelSize(0.03);
   }
 
-  void preDrawTProfile(TCanvas* , const VisDQMObject& o)
+  void preDrawTProfile(TCanvas* c, const VisDQMObject& o)
   {
     TProfile* obj = dynamic_cast<TProfile*>(o.object);
     assert(obj);
