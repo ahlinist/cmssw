@@ -57,7 +57,7 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
 void InclusiveJetTreeProducer::beginJob() 
 {
   mTree = fs->make<TTree>("InclusiveJetTree","InclusiveJetTree");
-  mFirstEventFlag = true;
+  //mFirstEventFlag = true;
   buildTree();
   
   //must be done at beginRun and not only at beginJob, because 
@@ -77,9 +77,6 @@ void InclusiveJetTreeProducer::beginJob()
             }
         }
     }
-
- 
-
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::endJob() 
@@ -189,11 +186,11 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
              mHLTTrigResults[i].fired=-1;
           }
           if (accept) {
-            mHLTNames->push_back(mTriggerNames[i]);
+            
             mHLTTrigResults[i].fired=1;
           }
-          if (mFirstEventFlag) 
-            cout << i << ": " << mTriggerNames[i] << " decision: " << accept << endl;
+          //if (mFirstEventFlag) 
+            //cout << i << ": " << mTriggerNames[i] << " decision: " << accept << endl;
         }
     }
   //===================== save L1 Trigger information ======================= 
@@ -233,11 +230,11 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
              mL1TrigResults[i].fired=-1;
           }
           if (algResult) {
-            mL1Names->push_back(mL1TriggerNames[i]);
+            
             mL1TrigResults[i].fired=1;
           }
-          if (mFirstEventFlag) 
-            cout << i << ": " << mL1TriggerNames[i] << " decision: " << algResult << endl;
+          //if (mFirstEventFlag) 
+            //cout << i << ": " << mL1TriggerNames[i] << " decision: " << algResult << endl;
         }
     }
   ////////////// MET //////
@@ -274,16 +271,23 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
            if ((*jets)[ind].pt() < mJetPtMin) continue;
            if (mIsMCarlo)
              {
-               float rmin(99);
+               float rmin(999);
+               unsigned int indMatchedGen(0);
                const reco::Candidate& rec = (*jets)[ind];
                for(unsigned int indGen=0;indGen<(*genjets).size();indGen++)
                  {
                    const reco::Candidate& gen = (*genjets)[indGen];
                    double deltaR = reco::deltaR(rec,gen);
                    if (deltaR < rmin)
-                     rmin = deltaR;
+                     {
+                       rmin = deltaR;
+                       indMatchedGen = indGen;
+                     }
                  }
-               mGenMatchR ->push_back(rmin);
+               mGenMatchR  ->push_back(rmin);
+               mGenMatchPt ->push_back((*genjets)[indMatchedGen].pt());
+               mGenMatchEta->push_back((*genjets)[indMatchedGen].eta());
+               mGenMatchPhi->push_back((*genjets)[indMatchedGen].phi());
              }
            LorentzVector TrkCaloP4 = JetExtendedAssociation::tracksAtCaloP4(*jetExtender,(*jets)[ind]);
            LorentzVector TrkVtxP4  = JetExtendedAssociation::tracksAtVertexP4(*jetExtender,(*jets)[ind]);
@@ -322,7 +326,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
     }
 
   if (preTreeFillCut()) mTree->Fill();
-  mFirstEventFlag=false;
+  //mFirstEventFlag=false;
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 InclusiveJetTreeProducer::~InclusiveJetTreeProducer() 
@@ -332,6 +336,9 @@ InclusiveJetTreeProducer::~InclusiveJetTreeProducer()
 void InclusiveJetTreeProducer::buildTree() 
 {
   mGenMatchR    = new std::vector<double>();
+  mGenMatchPt   = new std::vector<double>();
+  mGenMatchEta  = new std::vector<double>();
+  mGenMatchPhi  = new std::vector<double>();
   mPt           = new std::vector<double>();
   mEta          = new std::vector<double>();
   mEtaD         = new std::vector<double>();
@@ -360,11 +367,6 @@ void InclusiveJetTreeProducer::buildTree()
   mPVchi2       = new std::vector<double>();
   mPVndof       = new std::vector<double>();
   mPVntracks    = new std::vector<int>();
-
-// Haven't completely removed these yet, but did at least pull them out of
-// the tree.  
-  mHLTNames     = new std::vector<std::string>();
-  mL1Names      = new std::vector<std::string>();
   
   mTree->Branch("pt"                 ,"vector<double>"      ,&mPt);
   mTree->Branch("eta"                ,"vector<double>"      ,&mEta);
@@ -404,22 +406,15 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("sumetNoHF"          ,&mSumETnoHF           ,"mSumETnoHF/D");
   mTree->Branch("passLooseHcalNoise" ,&mLooseHcalNoise      ,"mLooseHcalNoise/I"); 	 
   mTree->Branch("passTightHcalNoise" ,&mTightHcalNoise      ,"mTightHcalNoise/I");
-//  mTree->Branch("hltNames"           ,"vector<string>"      ,&mHLTNames);
-//  mTree->Branch("l1Names"            ,"vector<string>"      ,&mL1Names);
-
-// The idea here is we get a branch named after each trigger path named
-// in the config -- whether it exists or not (since having them drop in and
-// out as they might when gathered from the data run by run would mean you
-// couldn't hadd the resulting trees together.
 
 
-  cout << "mTriggerNames: " << mTriggerNames.size() << endl;
+  //cout << "mTriggerNames: " << mTriggerNames.size() << endl;
   for (unsigned int jname=0;jname<mTriggerNames.size();jname++) {
      const char* branchname=mTriggerNames[jname].c_str();
      mTree->Branch(branchname,&mHLTTrigResults[jname],"prescale/I:fired/I");
      }
 
-  cout << "mL1TriggerNames: " << mL1TriggerNames.size() << endl;
+  //cout << "mL1TriggerNames: " << mL1TriggerNames.size() << endl;
   for (unsigned int jname=0;jname<mL1TriggerNames.size();jname++) {
      const char* branchname=mL1TriggerNames[jname].c_str();
      mTree->Branch(branchname,&mL1TrigResults[jname],"prescale/I:fired/I");
@@ -431,6 +426,9 @@ void InclusiveJetTreeProducer::buildTree()
       mTree->Branch("pthat"          ,&mPtHat               ,"mPtHat/D");
       mTree->Branch("weight"         ,&mWeight              ,"mWeight/D");
       mTree->Branch("genMatchR"      ,"vector<double>"      ,&mGenMatchR);
+      mTree->Branch("genMatchPt"     ,"vector<double>"      ,&mGenMatchPt);
+      mTree->Branch("genMatchEta"    ,"vector<double>"      ,&mGenMatchEta);
+      mTree->Branch("genMatchPhi"    ,"vector<double>"      ,&mGenMatchPhi);
     }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -454,34 +452,35 @@ return true;
 void InclusiveJetTreeProducer::clearTreeVectors() 
 {
   mGenMatchR  ->clear();
-  mPt        ->clear();
-  mEta       ->clear();
-  mEtaD      ->clear();
-  mY         ->clear();
-  mPhi       ->clear();
-  mE         ->clear();
-  mEmf       ->clear();
-  mEtaMoment ->clear();
-  mPhiMoment ->clear();
-  mNtrkVtx   ->clear();
-  mNtrkCalo  ->clear();
-  mTrkCaloPt ->clear();
-  mTrkCaloEta->clear();
-  mTrkCaloPhi->clear();
-  mTrkVtxPt  ->clear();
-  mTrkVtxEta ->clear();
-  mTrkVtxPhi ->clear();
-  mN90       ->clear(); 
-  mN90Hits   ->clear();
-  mfHPD      ->clear();
-  mfRBX      ->clear();
-  mfHcalNoise->clear();
-  mPVx       ->clear();
-  mPVy       ->clear();
-  mPVz       ->clear();
-  mPVndof    ->clear();
-  mPVchi2    ->clear();
-  mPVntracks ->clear();
-  mHLTNames  ->clear();
-  mL1Names   ->clear();
+  mGenMatchPt ->clear();
+  mGenMatchEta->clear();
+  mGenMatchPhi->clear();
+  mPt         ->clear();
+  mEta        ->clear();
+  mEtaD       ->clear();
+  mY          ->clear();
+  mPhi        ->clear();
+  mE          ->clear();
+  mEmf        ->clear();
+  mEtaMoment  ->clear();
+  mPhiMoment  ->clear();
+  mNtrkVtx    ->clear();
+  mNtrkCalo   ->clear();
+  mTrkCaloPt  ->clear();
+  mTrkCaloEta ->clear();
+  mTrkCaloPhi ->clear();
+  mTrkVtxPt   ->clear();
+  mTrkVtxEta  ->clear();
+  mTrkVtxPhi  ->clear();
+  mN90        ->clear(); 
+  mN90Hits    ->clear();
+  mfHPD       ->clear();
+  mfRBX       ->clear();
+  mfHcalNoise ->clear();
+  mPVx        ->clear();
+  mPVy        ->clear();
+  mPVz        ->clear();
+  mPVndof     ->clear();
+  mPVchi2     ->clear();
+  mPVntracks  ->clear();
 }

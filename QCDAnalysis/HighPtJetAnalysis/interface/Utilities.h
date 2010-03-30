@@ -33,7 +33,12 @@ typedef struct
   float sigmaPhi;
   float emf;
   float chf;
-  float dR;
+  float gendR;
+  float genPt;
+  float genEta;
+  float genPhi;
+  float corRsp;
+  float rawRsp;
 } JET_VAR;
 typedef struct 
 {
@@ -65,6 +70,17 @@ typedef struct
   float pthat;
   float weight;
 } EVENT_VAR;
+//  Each trigger path gets a branch with these guys in them
+//  fired should be: -1 if something bad happened (i.e. path doesn't exist)
+//                    0 existed but didn't fire
+//                    1 fired.
+//  prescale will be filled soon -- easy access exists but not yet part of
+//           a release yet.  Currently hardwired to 1.
+typedef struct 
+{
+  int prescale;
+  int fired;
+} TrigStruct;
 void fillHist(const TString& histName,map<TString, TH1*> HistNames, const double& x);
 void fillHist(const TString& histName,map<TString, TH2*> HistNames, const double& x, const double& y);
 void BinNormalization(TH1F *h);
