@@ -54,12 +54,12 @@ fi
 
 
 
-if [ ${run_num} -lt 68094 ]
-    then
-    fedcollection="source"
-else
-    fedcollection="hltCalibrationRaw"
-fi
+#if [ ${run_num} -lt 68094 ]
+#    then
+#    fedcollection="source"
+#else
+fedcollection="hltCalibrationRaw"
+#fi
 
 
 if [ "X"${data_set} == "X" ]

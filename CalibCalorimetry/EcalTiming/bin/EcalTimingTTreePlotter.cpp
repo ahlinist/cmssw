@@ -446,13 +446,69 @@ int main(int argc,  char * argv[]){
   
   
   ///NOW reading in a lot more stuff....
-  std::vector<int> vTrig ;
-  std::vector<std::string> vsTrig = split(inTrig,",") ;
-  for (uint i=0 ; i<vsTrig.size() ; i++) vTrig.push_back(atoi(vsTrig[i].c_str())) ;
+  //std::vector<int> vTrig ;
+  //std::vector<std::string> vsTrig = split(inTrig,",") ;
+  //for (uint i=0 ; i<vsTrig.size() ; i++) vTrig.push_back(atoi(vsTrig[i].c_str())) ;
 
-  std::vector<int> vTTrig ;
-  std::vector<std::string> vsTTrig = split(inTTrig,",") ;
-  for (uint i=0 ; i<vsTTrig.size() ; i++) vTTrig.push_back(atoi(vsTTrig[i].c_str())) ;
+  //std::vector<int> vTTrig ;
+  //std::vector<std::string> vsTTrig = split(inTTrig,",") ;
+  //for (uint i=0 ; i<vsTTrig.size() ; i++) vTTrig.push_back(atoi(vsTTrig[i].c_str())) ;
+
+  std::vector<std::string> ttrigRangeStringVector;
+  std::vector<double> ttrigRangeIntVector;
+  std::vector<std::vector<double> > ttrigIncludeVector ;
+  std::vector<std::vector<double> > ttrigExcludeVector ;
+
+  if(inTTrig != "-1"){
+    std::vector<std::string> ttrigStringVector = split(inTTrig,",") ;
+    
+    for (uint i=0 ; i<ttrigStringVector.size() ; i++) {
+      bool exclude = false;
+      
+      if(ttrigStringVector[i].at(0)=='x'){
+	exclude = true;
+	ttrigStringVector[i].erase(0,1);
+      }
+      ttrigRangeStringVector = split(ttrigStringVector[i],"-") ;
+      
+      ttrigRangeIntVector.clear();
+      for(uint j=0; j<ttrigRangeStringVector.size();j++) {
+	ttrigRangeIntVector.push_back(atof(ttrigRangeStringVector[j].c_str()));
+      }
+      if(exclude) ttrigExcludeVector.push_back(ttrigRangeIntVector);
+      else ttrigIncludeVector.push_back(ttrigRangeIntVector);
+      
+    }
+  }
+
+
+  std::vector<std::string> trigRangeStringVector;
+  std::vector<double> trigRangeIntVector;
+  std::vector<std::vector<double> > trigIncludeVector ;
+  std::vector<std::vector<double> > trigExcludeVector ;
+
+  if(inTrig != "-1"){
+    std::vector<std::string> trigStringVector = split(inTrig,",") ;
+    
+    for (uint i=0 ; i<trigStringVector.size() ; i++) {
+      bool exclude = false;
+      
+      if(trigStringVector[i].at(0)=='x'){
+	exclude = true;
+	trigStringVector[i].erase(0,1);
+      }
+      trigRangeStringVector = split(trigStringVector[i],"-") ;
+      
+      trigRangeIntVector.clear();
+      for(uint j=0; j<trigRangeStringVector.size();j++) {
+	trigRangeIntVector.push_back(atof(trigRangeStringVector[j].c_str()));
+      }
+      if(exclude) trigExcludeVector.push_back(trigRangeIntVector);
+      else trigIncludeVector.push_back(trigRangeIntVector);
+      
+    }
+  }
+
   
   std::vector<std::string> bxRangeStringVector;
   std::vector<double> bxRangeIntVector;
@@ -982,35 +1038,45 @@ int main(int argc,  char * argv[]){
        else if(orbitExcludeVector[i].size()==2 && (orbit>=orbitExcludeVector[i][0] && orbit<=orbitExcludeVector[i][1])) keepEvent=false;
      }
      if(!keepEvent) continue;
-     
-     
-     keepEvent = false ;
-     if ( vTrig.size() == 0)   keepEvent = true;
-     else if ( vTrig.size()>0 )
-     {
-        for ( int ti = 0; ti < NumTriggers; ++ti)
-	{
-	  for (uint i=0 ; i<vTrig.size() ; i++)
-          {
-            if  (TTreeMembers_.triggers_[ti] == vTrig[i])  keepEvent = true; 
-          }
-	}
+
+     keepEvent = false;
+     if(trigIncludeVector.size()==0) keepEvent = true;
+     for ( int ti = 0; ti < NumTriggers; ++ti) {
+       for(uint i=0; i!=trigIncludeVector.size();++i){
+         if(trigIncludeVector[i].size()==1 && TTreeMembers_.triggers_[ti]==trigIncludeVector[i][0]) keepEvent=true;
+         else if(trigIncludeVector[i].size()==2 && (TTreeMembers_.triggers_[ti]>=trigIncludeVector[i][0] && TTreeMembers_.triggers_[ti]<=trigIncludeVector[i][1])) keepEvent=true;
+       }
      }
-     if (!keepEvent) continue;
-     
-     keepEvent = false ;
-     if ( vTTrig.size() == 0)   keepEvent = true;
-     else if ( vTTrig.size()>0 )
-     {
-        for ( int ti = 0; ti < NumTTriggers; ++ti)
-	{
-	  for (uint i=0 ; i<vTTrig.size() ; i++)
-          {
-            if  (TTreeMembers_.techtriggers_[ti] == vTTrig[i])  keepEvent = true; 
-          }
-	}
+     if(!keepEvent) continue;
+
+     keepEvent = true;
+     for ( int ti = 0; ti < NumTriggers; ++ti) {
+       for(uint i=0; i!=trigExcludeVector.size();++i){
+         if(trigExcludeVector[i].size()==1 && TTreeMembers_.triggers_[ti]==trigExcludeVector[i][0]) keepEvent=false;
+         else if(trigExcludeVector[i].size()==2 && (TTreeMembers_.triggers_[ti]>=trigExcludeVector[i][0] && TTreeMembers_.triggers_[ti]<=trigExcludeVector[i][1])) keepEvent=false;
      }
-     if (!keepEvent) continue;
+     }
+     if(!keepEvent) continue;
+     
+     keepEvent = false;
+     if(ttrigIncludeVector.size()==0) keepEvent = true;
+     for ( int ti = 0; ti < NumTTriggers; ++ti) {
+       for(uint i=0; i!=ttrigIncludeVector.size();++i){
+         if(ttrigIncludeVector[i].size()==1 && TTreeMembers_.techtriggers_[ti]==ttrigIncludeVector[i][0]) keepEvent=true;
+         else if(ttrigIncludeVector[i].size()==2 && (TTreeMembers_.techtriggers_[ti]>=ttrigIncludeVector[i][0] && TTreeMembers_.techtriggers_[ti]<=ttrigIncludeVector[i][1])) keepEvent=true;
+       }
+     }
+     if(!keepEvent) continue;
+
+     keepEvent = true;
+     for ( int ti = 0; ti < NumTTriggers; ++ti) {
+       for(uint i=0; i!=ttrigExcludeVector.size();++i){
+         if(ttrigExcludeVector[i].size()==1 && TTreeMembers_.techtriggers_[ti]==ttrigExcludeVector[i][0]) keepEvent=false;
+         else if(ttrigExcludeVector[i].size()==2 && (TTreeMembers_.techtriggers_[ti]>=ttrigExcludeVector[i][0] && TTreeMembers_.techtriggers_[ti]<=ttrigExcludeVector[i][1])) keepEvent=false;
+     }
+     }
+     if(!keepEvent) continue;
+ 
 
 
      for (int ebx=0; ebx < TTreeMembers_.numEBcrys_; ebx++) {
@@ -2119,24 +2185,24 @@ int main(int argc,  char * argv[]){
   c[24]->cd();
   customizeTProfile(NtimeTTAllFEDsEta);
   NtimeTTAllFEDsEta->Draw("p");
-  NtimeTTAllFEDsEta->SetMinimum(tlowt);
-  NtimeTTAllFEDsEta->SetMaximum(thight);
+  NtimeTTAllFEDsEta->SetMinimum(tlowt/3.);
+  NtimeTTAllFEDsEta->SetMaximum(thight/3.);
   gStyle->SetOptStat(100);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaRel_%s.%s",dirName,mType,runNumber,fileType); c[24]->Print(name); }
   
   c[25]->cd();
   customizeTProfile(NtimeTTAllFEDsEtaEEP);
   NtimeTTAllFEDsEtaEEP->Draw("p");
-  NtimeTTAllFEDsEtaEEP->SetMinimum(tlowt);
-  NtimeTTAllFEDsEtaEEP->SetMaximum(thight);
+  NtimeTTAllFEDsEtaEEP->SetMinimum(tlowt/3.);
+  NtimeTTAllFEDsEtaEEP->SetMaximum(thight/3.);
   gStyle->SetOptStat(100);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEPRel_%s.%s",dirName,mType,runNumber,fileType); c[25]->Print(name); }
   
   c[26]->cd();
   customizeTProfile(NtimeTTAllFEDsEtaEEM);
   NtimeTTAllFEDsEtaEEM->Draw("p");
-  NtimeTTAllFEDsEtaEEM->SetMinimum(tlowt);
-  NtimeTTAllFEDsEtaEEM->SetMaximum(thight);
+  NtimeTTAllFEDsEtaEEM->SetMinimum(tlowt/3.);
+  NtimeTTAllFEDsEtaEEM->SetMaximum(thight/3.);
   gStyle->SetOptStat(100);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEMRel_%s.%s",dirName,mType,runNumber,fileType); c[26]->Print(name); }
   
@@ -2145,8 +2211,8 @@ int main(int argc,  char * argv[]){
   gStyle->SetOptStat(1111);
   customizeTProfile(NtimeCHAllFEDsEta);
   NtimeCHAllFEDsEta->Draw("p");
-  NtimeCHAllFEDsEta->SetMinimum(tlowc);
-  NtimeCHAllFEDsEta->SetMaximum(thighc);
+  NtimeCHAllFEDsEta->SetMinimum(tlowc/3.);
+  NtimeCHAllFEDsEta->SetMaximum(thighc/3.);
   gStyle->SetOptStat(100);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHAllFEDsEtaRel_%s.%s",dirName,mType,runNumber,fileType); c[27]->Print(name); }
  
