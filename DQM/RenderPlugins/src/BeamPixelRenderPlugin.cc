@@ -104,6 +104,8 @@ private:
     assert(obj);
 
     // This applies to all
+    c->SetGrid(kFALSE, kFALSE);
+
     gStyle->SetCanvasBorderMode(0);
     gStyle->SetPadBorderMode(0);
     gStyle->SetPadBorderSize(0);
