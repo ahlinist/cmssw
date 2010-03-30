@@ -32,16 +32,14 @@
 #include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
 #include "L1Trigger/GlobalTriggerAnalyzer/interface/L1GtUtils.h"
 
-
 //TFile Service 
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 class InclusiveJetTreeProducer : public edm::EDAnalyzer 
 {
   public:
     explicit InclusiveJetTreeProducer(edm::ParameterSet const& cfg);
-//    virtual void beginJob(edm::EventSetup const& iSetup);
     virtual void beginJob();
     virtual void analyze(edm::Event const& evt, edm::EventSetup const& iSetup);
     virtual void endJob();
@@ -57,7 +55,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     
     //---- configurable parameters --------  
     bool mIsMCarlo;
-    bool mFirstEventFlag;
+    //bool mFirstEventFlag;
     double mJetPtMin;
     std::string mJetsName;
     std::string mGenJetsName;
@@ -72,22 +70,14 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     edm::InputTag mHcalNoiseTag;
     edm::InputTag mTriggerResultsTag, mL1GTReadoutRcdSource, mL1GTObjectMapRcdSource;    
     HLTConfigProvider mHltConfig;   
-
-//  Each trigger path gets a branch with these guys in them
-//  fired should be: -1 if something bad happened (i.e. path doesn't exist)
-//                    0 existed but didn't fire
-//                    1 fired.
-//  prescale will be filled soon -- easy access exists but not yet part of
-//           a release yet.  Currently hardwired to 1. 
-    typedef struct {
+    
+    typedef struct 
+    {
       int prescale;
       int fired;
     } TrigStruct;
-
-//    typedef std::map<std::string,mTrigStruct> TrigMap;
-    
     const L1GtTriggerMenu* m_l1GtMenu;  
-
+    
     edm::Service<TFileService> fs;
     TTree *mTree;
     bool mFillHLT, mFillL1;
@@ -95,17 +85,13 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     int mRunNo, mEvtNo, mLumi, mBunch, mLooseHcalNoise, mTightHcalNoise;
     double mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
     std::vector<int>    *mNtrkVtx,*mNtrkCalo,*mN90,*mN90Hits,*mPVntracks;
-    std::vector<double> *mGenMatchR;
+    std::vector<double> *mGenMatchR,*mGenMatchPt,*mGenMatchEta,*mGenMatchPhi;
     std::vector<double> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
     std::vector<double> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
     std::vector<double> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
     std::vector<double> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
     std::vector<double> *mPVx,*mPVy,*mPVz,*mPVchi2,*mPVndof;
     std::vector<double> *mfHcalNoise;
-    std::vector<std::string> *mHLTNames;
-    std::vector<std::string> *mL1Names;
-    // since each trigger gets its own branch, it didn't make sense to have 
-    // these be vectors.
     TrigStruct mHLTTrigResults[100],mL1TrigResults[100];
 };
 #endif
