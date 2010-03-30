@@ -626,7 +626,7 @@ void analysisClass::Loop()
 	    }
 	}
       
-      if( passedCut("0") && pass_HFPMTHitVeto_tcMET == 1 )
+      if( passedCut("0") && pass_HFPMTHitVeto_tcMET == 1 && pass_ECALSpikesVeto_tcMET == 1 )
 	{
 	  //#########################
 	  //## inclusive MET
