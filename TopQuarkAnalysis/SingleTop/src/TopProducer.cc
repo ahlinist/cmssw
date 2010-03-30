@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc,v 1.3 2010/03/18 11:56:03 oiorio Exp $ 
+ *\version  $Id: TopProducer.cc,v 1.4 2010/03/26 15:41:27 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -42,7 +42,6 @@
 
 
 
-
 #include "TopQuarkAnalysis/SingleTop/interface/TopProducer.h"
 
 #include <vector>
@@ -51,7 +50,7 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 
-using namespace pat;
+//using namespace pat;
 
 
 TopProducer::TopProducer(const edm::ParameterSet& iConfig) 
@@ -70,6 +69,9 @@ TopProducer::TopProducer(const edm::ParameterSet& iConfig)
   usePzAbsValMinimumSolutions_ = iConfig.getUntrackedParameter<bool> ("usePzAbsValMinimumSolutions",true); 
 
   useMetForNegativeSolutions_=iConfig.getUntrackedParameter<bool> ("useMetForNegativeSolutions",false);
+
+  usePxMinusSolutions_ = iConfig.getUntrackedParameter<bool> ("usePxMinusSolutions",true); 
+  usePxPlusSolutions_ = iConfig.getUntrackedParameter<bool> ("usePxPlusSolutions",true); 
 
 produces<std::vector<pat::Electron> >();
 produces<std::vector<pat::Muon> >();
@@ -209,10 +211,16 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
   math::XYZTLorentzVector p4Top_rec;
   math::XYZTLorentzVector p4lep_rec;    
 
-
   p4lep_rec.SetPxPyPzE(Lepton.px(),Lepton.py(),Lepton.pz(),Lepton.energy());
+  
+  math::XYZTLorentzVector p40_rec(0,0,0,0);
 
-  if(a2-b > 0 && usePositiveDeltaSolutions_){
+  if(a2-b > 0 ){
+    if(!usePositiveDeltaSolutions_)
+      {
+	result.push_back(p40_rec);
+	return result;
+      }
     double root = sqrt(a2-b);
     pz1 = a + root;
     pz2 = a - root;
@@ -225,8 +233,6 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
     if(usePzPlusSolutions_)pznu = pz1;    
     if(usePzMinusSolutions_)pznu = pz2;
     if(usePzAbsValMinimumSolutions_)pznu = std::min(fabs(pz1),fabs(pz2));
-
-
     
 
   double Enu = sqrt(MisET2 + pznu*pznu);
@@ -238,9 +244,13 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
   
   result.push_back(p4nu_rec);
   
-  } 
+  }
   else{
-    if(!useNegativeDeltaSolutions_) return result;
+
+    if(!useNegativeDeltaSolutions_){
+      result.push_back(p40_rec);
+      return result;
+    }
     //    double xprime = sqrt(mW;
 
 
@@ -261,9 +271,10 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
     double minPx=0;
     double minPy=0;
 
-    std::cout<<"a "<<EquationA << " b " << EquationB  <<" c "<< EquationC <<" d "<< EquationD << std::endl; 
+    //    std::cout<<"a "<<EquationA << " b " << EquationB  <<" c "<< EquationC <<" d "<< EquationD << std::endl; 
       
-    for( int i =0; i< (int)solutions.size();++i){
+    if(usePxMinusSolutions_){
+      for( int i =0; i< (int)solutions.size();++i){
       if(solutions[i]<0 ) continue;
       double p_x = (solutions[i]*solutions[i]-mW*mW)/(4*pxlep); 
       double p_y = ( mW*mW*pylep + 2*pxlep*pylep*p_x -mW*ptlep*solutions[i])/(2*pxlep*pxlep);
@@ -274,29 +285,31 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
       if(Delta2< deltaMin && Delta2 > 0){deltaMin = Delta2;
       minPx=p_x;
       minPy=p_y;}
-
-
-       }
+      //     std::cout<<"solution1 met x "<<metpx << " min px " << minPx  <<" met y "<<metpy <<" min py "<< minPy << std::endl; 
+      }
+    } 
     
-    for( int i =0; i< (int)solutions2.size();++i){
-      if(solutions2[i]<0 ) continue;
-      double p_x = (solutions2[i]*solutions2[i]-mW*mW)/(4*pxlep); 
-      double p_y = ( mW*mW*pylep + 2*pxlep*pylep*p_x +mW*ptlep*solutions2[i])/(2*pxlep*pxlep);
-      double Delta2 = (p_x-metpx)*(p_x-metpx)+(p_y-metpy)*(p_y-metpy); 
-
-      //  std::cout<<"intermediate solution2 met x "<<metpx << " min px " << minPx  <<" met y "<<metpy <<" min py "<< minPy << std::endl; 
-      
-      if(Delta2< deltaMin && Delta2 > 0){deltaMin = Delta2;
-      minPx=p_x;
-      minPy=p_y;}
-      
-      //      std::cout<<"solution2 met x "<<metpx << " min px " << minPx  <<" met y "<<metpy <<" min py "<< minPy << std::endl; 
+    if(usePxPlusSolutions_){
+      for( int i =0; i< (int)solutions2.size();++i){
+	if(solutions2[i]<0 ) continue;
+	double p_x = (solutions2[i]*solutions2[i]-mW*mW)/(4*pxlep); 
+	double p_y = ( mW*mW*pylep + 2*pxlep*pylep*p_x +mW*ptlep*solutions2[i])/(2*pxlep*pxlep);
+	double Delta2 = (p_x-metpx)*(p_x-metpx)+(p_y-metpy)*(p_y-metpy); 
+	//  std::cout<<"intermediate solution2 met x "<<metpx << " min px " << minPx  <<" met y "<<metpy <<" min py "<< minPy << std::endl; 
+	if(Delta2< deltaMin && Delta2 > 0){deltaMin = Delta2;
+	  minPx=p_x;
+	  minPy=p_y;
+	}
+	//	std::cout<<"solution2 met x "<<metpx << " min px " << minPx  <<" met y "<<metpy <<" min py "<< minPy << std::endl; 
+      }
     }
-    
     
     double pyZeroValue= ( mW*mW*pxlep + 2*pxlep*pylep*zeroValue);
     double delta2ZeroValue= (zeroValue-metpx)*(zeroValue-metpx) + (pyZeroValue-metpy)*(pyZeroValue-metpy);
     
+    if(deltaMin==14000*14000)return result;    
+    //    else std::cout << " test " << std::endl;
+
     if(delta2ZeroValue < deltaMin){
       deltaMin = delta2ZeroValue;
       minPx=zeroValue;
@@ -304,6 +317,7 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
 
     //    std::cout<<" MtW2 from min py and min px "<< sqrt((minPy*minPy+minPx*minPx))*ptlep*2 -2*(pxlep*minPx + pylep*minPy)  <<std::endl;
     ///    ////Y part   
+
 
     pznu = a;
     if(!useMetForNegativeSolutions_){
