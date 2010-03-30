@@ -1,13 +1,28 @@
 #ifndef _Equation_Solver_h_
 #define _Equation_Solver_h_
 
+
 #include<cmath>
 #include<string>
 #include<iostream>
 #include<vector>
 #include<complex>
 
-//using namespace std;
+
+/**
+ *\Function EquationSolver:
+ *
+ *Solves 3rd degree equations
+ *
+ * \Author A. Orso M. Iorio
+ * 
+ *
+ *\version  $Id: EquationSolver.h, oiorio Exp $
+ *
+ *
+*/
+
+
 
 template <class T>
 std::vector< T > const EquationSolve(const T & a, const T & b,const T & c,const T & d){
