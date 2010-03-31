@@ -39,11 +39,6 @@
 #include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetUnit.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h" 
 
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetType.h"
 #include "Geometry/CommonTopologies/interface/StripTopology.h"
@@ -58,23 +53,14 @@ public:
 	~BsToJpsiPhiAnalysis();
 	
 	virtual void analyze(const edm::Event&, const edm::EventSetup&);
-	virtual void beginJob();
+	virtual void beginJob(edm::EventSetup const&);
 	virtual void endJob();
 
 	void fillMCInfo( edm::Handle<reco::GenParticleCollection> & genParticles);
-
-	void setFitParKK(RefCountedKinematicTree& myTree);
-	void setFitParHyp1(RefCountedKinematicTree& myTree);
-	void setFitParHyp2(RefCountedKinematicTree& myTree);
+	void fillMCInfoBd( edm::Handle<reco::GenParticleCollection> & genParticles);
 
 private:
-	bool MCmatching(const reco::Candidate & track1,  edm::Handle<reco::GenParticleCollection> & genParticles,
-			int &K1mcId, int &K1momId, int &K1gmomId,
-			int condMom, int condGMom);
 
-	reco::Vertex reVertex(const edm::Handle<reco::VertexCollection> &, const edm::Event &,const edm::EventSetup&, reco::TrackRef, 
-			      reco::TrackRef, reco::TrackRef, reco::TrackRef);
-	
 	BsToJpsiPhiRootTree * bsRootTree_;
 	
 	edm::ParameterSet theConfig_;
@@ -87,41 +73,80 @@ private:
 	edm::InputTag triggerTag_; 
 	edm::InputTag muonTag_; 
 	bool StoreDeDxInfo_;
-	bool saveL1DoubleMuOpenTriggeredOnly_;
-	bool verbose_;
-
-	const double nominalJpsiMass;
-	const double nominalPhiMass;
-	const double nominalMuonMass;
-	const double nominalKaonMass;
-	const double nominalPionMass;
-	const double nominalKstarMass;
-
 	double JpsiMassWindowBeforeFit_;
 	double JpsiMassWindowAfterFit_;
 	double JpsiPtCut_;
 	double KaonTrackPtCut_;
-	double BdKaonTrackPtCut_;
 	double PhiMassWindowAfterFit_;
 	double PhiMassWindowBeforeFit_;
 	double BsLowerMassCutBeforeFit_;
 	double BsUpperMassCutBeforeFit_;
 	double BsLowerMassCutAfterFit_ ;
 	double BsUpperMassCutAfterFit_ ;
-	double KstarMassWindowBeforeFit_;
-	double KstarMassWindowAfterFit_;
-	double BdLowerMassCutBeforeFit_;
-	double BdUpperMassCutBeforeFit_;
-	double BdLowerMassCutAfterFit_;
-	double BdUpperMassCutAfterFit_;
 
 	std::string outputFile_; // output file
 
 	int Mu1Truth;
-
+	int Mu2Truth;
+	int K1Truth;
+	int K2Truth;
+	int K3Truth;
+	int K4Truth;
+	int isMatched;
+	int isMatchedBd;
 
 	int event_counter_;
 
+	double BSx;
+	double BSy;
+	double BSz;
+	double PVx;
+	double PVy;
+	double PVz;
+	double PVerrx;
+	double PVerry;
+	double PVerrz;
+	
+	// single Jpsi
+
+	int MuCounter1;
+	int MuCounter2;
+
+	int TrkCounter1;
+	int TrkCounter2;
+	int K1mcId;
+	int K1momId;
+	int K1gmomId;
+	int K2mcId;
+	int K2momId;
+	int K2gmomId;
+	int Mu1mcId;
+	int Mu1momId;
+	int Mu1gmomId;
+	int Mu2mcId;
+	int Mu2momId;
+	int Mu2gmomId;
+
+	int K1mcIdBd;
+	int K1momIdBd;
+	int K1gmomIdBd;
+	int K2mcIdBd;
+	int K2momIdBd;
+	int K2gmomIdBd;
+	int Mu1mcIdBd;
+	int Mu1momIdBd;
+	int Mu1gmomIdBd;
+	int Mu2mcIdBd;
+	int Mu2momIdBd;
+	int Mu2gmomIdBd;
+	
+	double BLxy;
+	double BLxy2;
+	double BerrX;
+	double BerrY;
+	double BerrXY;
+	double Bsct1;
+	double Bsct2;
 
 	double angle_costheta;
 	double angle_phi;

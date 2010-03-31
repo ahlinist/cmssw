@@ -37,47 +37,41 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           genParticlesLabel  = cms.InputTag("genParticles"),
                                           TrackLabel_K = cms.InputTag("kTracks"),
                                           TrackLabel_pi = cms.InputTag("piTracks"),
-                                          TriggerTag = cms.InputTag("TriggerResults::HLT8E29"),
+                                          TriggerTag = cms.InputTag("TriggerResults::HLT"),
                                           MuonTag = cms.InputTag("muons"),
-                                          StoreDeDxInfo = cms.bool( True ), 
-                                          saveL1DoubleMuOpenTriggeredOnly = cms.bool( True ),
+                                          StoreDeDxInfo = cms.bool( False ),  #needs to be false on AODSIM, can be true on RECO
+                                          
                                           JpsiMassWindowBeforeFit = cms.double(0.150),
                                           JpsiMassWindowAfterFit = cms.double(0.150),
-                                          JpsiPtCut      = cms.double(0.5),
+                                          JpsiPtCut      = cms.double(3),
                                           KaonTrackPtCut = cms.double(0.5),
-                                          BdKaonTrackPtCut = cms.double(0.4),
                                           PhiMassWindowBeforeFit  = cms.double(0.05),
-                                          PhiMassWindowAfterFit  = cms.double(0.04),
+                                          PhiMassWindowAfterFit  = cms.double(0.02),
                                           BsLowerMassCutBeforeFit = cms.double(4.5),
                                           BsUpperMassCutBeforeFit = cms.double(6),
                                           BsLowerMassCutAfterFit  = cms.double(5.2),
                                           BsUpperMassCutAfterFit  = cms.double(5.7),
-                                          KstarMassWindowBeforeFit =cms.double(0.2),
-                                          KstarMassWindowAfterFit =cms.double(0.2),
-                                          BdLowerMassCutBeforeFit = cms.double(4.5),
-                                          BdUpperMassCutBeforeFit = cms.double(6),
-                                          BdLowerMassCutAfterFit = cms.double(4.9),
-                                          BdUpperMassCutAfterFit = cms.double(5.7),
-
-                                          verbose                = cms.bool( False ),
-                                          outputFile = cms.untracked.string("outputfile.root"),
+                                          
+                                          outputFile = cms.untracked.string("BsToJpsiPhi.root"),
                                          )
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
         )
 
+process.source = cms.Source("PoolSource",
+                              fileNames = cms.untracked.vstring(
+#                              'file:/test/mc/1/fromHLT/Bs2JpsiPhi_1.root',
+'file:/nfs/data5/cms/store/mc/Summer09/BtoJPsiMuMu/AODSIM/MC_31X_V3_AODSIM-v1/0021/465107F5-E988-DE11-BA12-003048C91B0E.root'
 
+                              ),
+)
 
-
+process.myout = cms.OutputModule("PoolOutputModule",
+                                 outputCommands = cms.untracked.vstring('drop *', 'keep *_*_*_ANALYSIS', 'keep *_muons_*_*'),
+                                 fileName = cms.untracked.string('test.root')
+                                 )
 
 process.p = cms.Path(process.mix*process.allPiTracks*process.allKTracks*process.kTracks*process.piTracks*process.bsVertexAnalysis)
 
-
-
-
-process.source = cms.Source("PoolSource",
-                              fileNames = cms.untracked.vstring(
-'file:test'
-))
-
+process.outpath = cms.EndPath(process.myout)
