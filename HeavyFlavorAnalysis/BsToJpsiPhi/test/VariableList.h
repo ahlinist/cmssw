@@ -1,328 +1,438 @@
-#ifndef BSJPSIPHIVARIABLELIST_H
-#define BSJPSIPHIVARIABLELIST_H
-
-//*************************
-// analysis code variables
-//*************************
-
-// definition of scale factors for 7TeV
-// normalizing to 1pb-1
-double scaleFactor_OtherEvents = 60;  // other events could be prompt in case of prompt sample
-//double scaleFactor_OtherEvents = 11;
-
-double scaleFactor_BsJPsiPhiSignalEvents = 31.;
-double scaleFactor_BdJpsiKstar = 54.;
-double scaleFactor_BsJpsiKK = 25;           
-double scaleFactor_BsOtherEvents = 31;      
-double scaleFactor_BdOtherEvents = 54;      
-double scaleFactor_BsJpsiEtaEvents   = 22;  
-double scaleFactor_BdJpsiK10Events = 60;    
-double scaleFactor_BdJpsiK0Events  = 67;    
-double scaleFactor_BpJpsiKpEvents  = 60;    
-   
-
-int entrycounter = 0;
-
-double iBsJPsiPhiSignalEvents = 0;
-double iBsJPsiKKSignalEvents = 0;
-double iBdJPsiKstarSignalEvents = 0;
-double iBsOtherEvents = 0;
-double iBdOtherEvents = 0;
-double iOtherEvents = 0;
-double iBsJpsiEtaEvents = 0;
-double iBdJpsiK10Events = 0;
-double iBdJpsiK0Events = 0;
-double iBpJpsiKpEvents =0;
-
-
-double iTriggered_DoubleMu3_BsJPsiPhiSignalEvents = 0;
-double iTriggered_DoubleMu3_BdJpsiKstar = 0;
-double iTriggered_DoubleMu3_BsJpsiKK = 0;
-double iTriggered_DoubleMu3_BsOtherEvents = 0;
-double iTriggered_DoubleMu3_BdOtherEvents = 0;
-double iTriggered_DoubleMu3_OtherEvents = 0;
-double iTriggered_DoubleMu3_BsJpsiEtaEvents   = 0;
-double iTriggered_DoubleMu3_BdJpsiK10Events = 0;
-double iTriggered_DoubleMu3_BdJpsiK0Events  = 0;
-double iTriggered_DoubleMu3_BpJpsiKpEvents  = 0;    
-
-double iTriggered_DoubleMu0_BsJPsiPhiSignalEvents = 0;
-double iTriggered_DoubleMu0_BdJpsiKstar = 0;
-double iTriggered_DoubleMu0_BsJpsiKK = 0;
-double iTriggered_DoubleMu0_BsOtherEvents = 0;
-double iTriggered_DoubleMu0_BdOtherEvents = 0;
-double iTriggered_DoubleMu0_OtherEvents = 0;
-double iTriggered_DoubleMu0_BsJpsiEtaEvents   = 0;
-double iTriggered_DoubleMu0_BdJpsiK10Events = 0;
-double iTriggered_DoubleMu0_BdJpsiK0Events  = 0;
-double iTriggered_DoubleMu0_BpJpsiKpEvents  = 0;
-
-double iTriggered_L1DoubleMuOpen_BsJPsiPhiSignalEvents = 0;
-double iTriggered_L1DoubleMuOpen_BdJpsiKstar = 0;
-double iTriggered_L1DoubleMuOpen_BsJpsiKK = 0;
-double iTriggered_L1DoubleMuOpen_BsOtherEvents = 0;
-double iTriggered_L1DoubleMuOpen_BdOtherEvents = 0;
-double iTriggered_L1DoubleMuOpen_OtherEvents = 0;
-double iTriggered_L1DoubleMuOpen_BsJpsiEtaEvents   = 0;
-double iTriggered_L1DoubleMuOpen_BdJpsiK10Events = 0;
-double iTriggered_L1DoubleMuOpen_BdJpsiK0Events  = 0;
-double iTriggered_L1DoubleMuOpen_BpJpsiKpEvents  = 0;        
-
-double iTriggered_DoubleMu0_OR_SingleMu3_BsJPsiPhiSignalEvents = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiKstar = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiKK = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_BsOtherEvents = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_BdOtherEvents = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_OtherEvents = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_BsJpsiEtaEvents   = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK10Events = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_BdJpsiK0Events  = 0;
-double iTriggered_DoubleMu0_OR_SingleMu3_BpJpsiKpEvents  = 0;    
-
-double iTriggered_SingleMu3_BsJPsiPhiSignalEvents = 0;
-double iTriggered_SingleMu3_BdJpsiKstar = 0;
-double iTriggered_SingleMu3_BsJpsiKK = 0;
-double iTriggered_SingleMu3_BsOtherEvents = 0;
-double iTriggered_SingleMu3_BdOtherEvents = 0;
-double iTriggered_SingleMu3_OtherEvents = 0;
-double iTriggered_SingleMu3_BsJpsiEtaEvents   = 0;
-double iTriggered_SingleMu3_BdJpsiK10Events = 0;
-double iTriggered_SingleMu3_BdJpsiK0Events  = 0;
-double iTriggered_SingleMu3_BpJpsiKpEvents  = 0;    
-
-double iBsJPsiPhiSignalEventsPreKinFit = 0;
-double iBsJPsiKKSignalEventsPreKinFit = 0;
-double iBdJPsiKstarSignalEventsPreKinFit = 0;
-double iBsOtherEventsPreKinFit = 0;
-double iBdOtherEventsPreKinFit = 0;
-double iOtherEventsPreKinFit = 0;
-double iBsJpsiEtaEventsPreKinFit= 0;
-double iBdJpsiK10EventsPreKinFit= 0;
-double iBdJpsiK0EventsPreKinFit= 0;
-double iBpJpsiKpEventsPreKinFit= 0;
+ int triggerbit_HLTmu3_;
+  int triggerbit_HLTmu5_;
+  int triggerbit_HLTmu9_;
+  int triggerbit_HLTdoubleIsoMu3_;
+  int triggerbit_HLTdoubleMu3_;
+  int triggerbit_HLTdoubleMu3_JPsi_;
   
-double iBsJPsiPhiSignalEventsOfflineSel1 = 0;
-double iBsJPsiKKSignalEventsOfflineSel1 = 0;
-double iBdJPsiKstarSignalEventsOfflineSel1 = 0;
-double iBsOtherEventsOfflineSel1 = 0;
-double iBdOtherEventsOfflineSel1 = 0;
-double iOtherEventsOfflineSel1 = 0;
-double iBsJpsiEtaEventsOfflineSel1 = 0;
-double iBdJpsiK10EventsOfflineSel1 = 0;
-double iBdJpsiK0EventsOfflineSel1 = 0;
-double iBpJpsiKpEventsOfflineSel1 = 0;
+  int momID_;
+  int nBsDau_;
+  int dau_1_ID_;
+  int dau_2_ID_;
 
-double iBsJPsiPhiSignalEventsProbVertex = 0;
-double iBsJPsiKKSignalEventsProbVertex = 0;
-double iBdJPsiKstarSignalEventsProbVertex = 0;
-double iBsOtherEventsProbVertex = 0;
-double iBdOtherEventsProbVertex = 0;
-double iOtherEventsProbVertex = 0;
-double iBsJpsiEtaEventsProbVertex = 0;
-double iBdJpsiK10EventsProbVertex = 0;
-double iBdJpsiK0EventsProbVertex = 0;
-double iBpJpsiKpEventsProbVertex = 0;
+  double BSx_ ;
+  double BSy_ ;
+  double BSz_ ;
+  double PVx_ ;
+  double PVy_ ;
+  double PVz_ ;
+  double PVerrx_ ;
+  double PVerry_ ;
+  double PVerrz_ ;
 
-double iBsJPsiPhiSignalEventsKaonPtCut = 0;
-double iBsJPsiKKSignalEventsKaonPtCut = 0;
-double iBdJPsiKstarSignalEventsKaonPtCut = 0;
-double iBsOtherEventsKaonPtCut = 0;
-double iBdOtherEventsKaonPtCut = 0;
-double iOtherEventsKaonPtCut = 0;
-double iBsJpsiEtaEventsKaonPtCut = 0;
-double iBdJpsiK10EventsKaonPtCut = 0;
-double iBdJpsiK0EventsKaonPtCut = 0;
-double iBpJpsiKpEventsKaonPtCut = 0;
+  double JpsiVtxProb_;
+  int MuCounter1_;
+  int MuCounter2_;
+  double JpsiM_alone_;
+  double JpsiPhi_alone_;
+  double JpsiEta_alone_;
+  double JpsiPt_alone_;
+  double JpsiMu1Pt_;
+  double JpsiMu2Pt_;
+  double JpsiMu1Phi_;
+  double JpsiMu2Phi_;
+  double JpsiMu1Eta_;
+  double JpsiMu2Eta_;
+  int JpsiMuon1Cat_;
+  int JpsiMuon2Cat_;
 
-double iBsJPsiPhiSignalEventsPhiMassCut = 0;
-double iBsJPsiKKSignalEventsPhiMassCut = 0;
-double iBdJPsiKstarSignalEventsPhiMassCut = 0;
-double iBsOtherEventsPhiMassCut = 0;
-double iBdOtherEventsPhiMassCut = 0;
-double iOtherEventsPhiMassCut = 0;
-double iBsJpsiEtaEventsPhiMassCut = 0;
-double iBdJpsiK10EventsPhiMassCut = 0;
-double iBdJpsiK0EventsPhiMassCut = 0;
-double iBpJpsiKpEventsPhiMassCut = 0;
+  double BsMass_before_;
+  double BsPhi_before_;
+  double BsEta_before_;
+  double BsPt_before_;
+  double BsPz_before_;
 
-double iBsJPsiPhiSignalEventsDecayLengthCut = 0;
-double iBsJPsiKKSignalEventsDecayLengthCut = 0;
-double iBdJPsiKstarSignalEventsDecayLengthCut = 0;
-double iBsOtherEventsDecayLengthCut = 0;
-double iBdOtherEventsDecayLengthCut = 0;
-double iOtherEventsDecayLengthCut = 0;
-double iBsJpsiEtaEventsDecayLengthCut = 0;
-double iBdJpsiK10EventsDecayLengthCut = 0;
-double iBdJpsiK0EventsDecayLengthCut = 0;
-double iBpJpsiKpEventsDecayLengthCut = 0;
+  double JpsiMass_before_;
+  double JpsiPhi_before_;
+  double JpsiEta_before_;
+  double JpsiPt_before_;
+  double JpsiPz_before_;
 
-double iBsJPsiPhiSignalEventsPointingCut = 0;
-double iBsJPsiKKSignalEventsPointingCut = 0;
-double iBdJPsiKstarSignalEventsPointingCut = 0;
-double iBsOtherEventsPointingCut = 0;
-double iBdOtherEventsPointingCut = 0;
-double iOtherEventsPointingCut = 0;
-double iBsJpsiEtaEventsPointingCut = 0;
-double iBdJpsiK10EventsPointingCut = 0;
-double iBdJpsiK0EventsPointingCut = 0;
-double iBpJpsiKpEventsPointingCut = 0;
+  double PhiMass_before_;
+  double PhiPhi_before_;
+  double PhiEta_before_;
+  double PhiPt_before_;
+  double PhiPz_before_;
 
+  double  K1Pt_before_;
+  double  K1Pz_before_;
+  double  K1Eta_before_;
+  double  K1Phi_before_;
+  double  K2Eta_before_;
+  double  K2Pt_before_;
+  double  K2Pz_before_;
+  double  K2Phi_before_;
 
-double iBdAna_BsJPsiPhiSignalEventsPreKinFit = 0;
-double iBdAna_BsJPsiKKSignalEventsPreKinFit = 0;
-double iBdAna_BdJPsiKstarSignalEventsPreKinFit = 0;
-double iBdAna_BsOtherEventsPreKinFit = 0;
-double iBdAna_BdOtherEventsPreKinFit = 0;
-double iBdAna_OtherEventsPreKinFit = 0;
-double iBdAna_BsJpsiEtaEventsPreKinFit= 0;
-double iBdAna_BdJpsiK10EventsPreKinFit= 0;
-double iBdAna_BdJpsiK0EventsPreKinFit= 0;
-double iBdAna_BpJpsiKpEventsPreKinFit= 0;
+  double chi2_Bs_;
+  int ndof_Bs_;
+
+  double BsVtxProb_;
+  double BsVtxProbKpi_;
+  double BsVtxProbpipi_;
+
+  double BfitM_KK_;
+  double BfitM_Kpi_;
+  double BfitM_pipi_;
+
+  double BsMass_after_;
+  double BsPhi_after_;
+  double BsEta_after_;
+  double BsPt_after_;
+  double BsPz_after_;
+
+  double JpsiMass_after_;
+  double JpsiPhi_after_;
+  double JpsiEta_after_;
+  double JpsiPt_after_;
+  double JpsiPz_after_;
+
+  double PhiMass_after_;
+  double PhiPhi_after_;
+  double PhiEta_after_;
+  double PhiPt_after_;
+  double PhiPz_after_;
+
+  double  K1Pt_after_;
+  double  K1Pz_after_;
+  double  K1Eta_after_;
+  double  K1Phi_after_;
+  double  K2Eta_after_;
+  double  K2Pt_after_;
+  double  K2Pz_after_;
+  double  K2Phi_after_;
+
+  double  K1Chi2_;
+  double     K1nHits_;
+  double  K2Chi2_;
+  double     K2nHits_;
+  double  K1pixH_;
+  double     K1trkH_;
+  double     K2pixH_;
+  double     K2trkH_;
+
+  double  Mu1Chi2_;
+  double     Mu1nHits_;
+  double  Mu2Chi2_;
+  double     Mu2nHits_;
+  double  Mu1pixH_;
+  double     Mu1trkH_;
+  double     Mu2pixH_;
+  double     Mu2trkH_;
   
-double iBdAna_BsJPsiPhiSignalEventsOfflineSel1 = 0;
-double iBdAna_BsJPsiKKSignalEventsOfflineSel1 = 0;
-double iBdAna_BdJPsiKstarSignalEventsOfflineSel1 = 0;
-double iBdAna_BsOtherEventsOfflineSel1 = 0;
-double iBdAna_BdOtherEventsOfflineSel1 = 0;
-double iBdAna_OtherEventsOfflineSel1 = 0;
-double iBdAna_BsJpsiEtaEventsOfflineSel1 = 0;
-double iBdAna_BdJpsiK10EventsOfflineSel1 = 0;
-double iBdAna_BdJpsiK0EventsOfflineSel1 = 0;
-double iBdAna_BpJpsiKpEventsOfflineSel1 = 0;
+  double costheta_;
+  double phi_;
+  double cospsi_;
+  double AngleBsDecayLength_;
 
-double iBdAna_BsJPsiPhiSignalEventsProbVertex = 0;
-double iBdAna_BsJPsiKKSignalEventsProbVertex = 0;
-double iBdAna_BdJPsiKstarSignalEventsProbVertex = 0;
-double iBdAna_BsOtherEventsProbVertex = 0;
-double iBdAna_BdOtherEventsProbVertex = 0;
-double iBdAna_OtherEventsProbVertex = 0;
-double iBdAna_BsJpsiEtaEventsProbVertex = 0;
-double iBdAna_BdJpsiK10EventsProbVertex = 0;
-double iBdAna_BdJpsiK0EventsProbVertex = 0;
-double iBdAna_BpJpsiKpEventsProbVertex = 0;
+  int isMatched_;
 
-double iBdAna_BsJPsiPhiSignalEventsKaonPtCut = 0;
-double iBdAna_BsJPsiKKSignalEventsKaonPtCut = 0;
-double iBdAna_BdJPsiKstarSignalEventsKaonPtCut = 0;
-double iBdAna_BsOtherEventsKaonPtCut = 0;
-double iBdAna_BdOtherEventsKaonPtCut = 0;
-double iBdAna_OtherEventsKaonPtCut = 0;
-double iBdAna_BsJpsiEtaEventsKaonPtCut = 0;
-double iBdAna_BdJpsiK10EventsKaonPtCut = 0;
-double iBdAna_BdJpsiK0EventsKaonPtCut = 0;
-double iBdAna_BpJpsiKpEventsKaonPtCut = 0;
+  double BmassC_;
+  double BLxy_;
+  double BLxy2_;
+  double BerrX_;
+  double BerrY_;
+  double BerrXY_;
+  double Bsct1_;
+  double Bsct2_;
 
-double iBdAna_BsJPsiPhiSignalEventsPhiMassCut = 0;
-double iBdAna_BsJPsiKKSignalEventsPhiMassCut = 0;
-double iBdAna_BdJPsiKstarSignalEventsPhiMassCut = 0;
-double iBdAna_BsOtherEventsPhiMassCut = 0;
-double iBdAna_BdOtherEventsPhiMassCut = 0;
-double iBdAna_OtherEventsPhiMassCut = 0;
-double iBdAna_BsJpsiEtaEventsPhiMassCut = 0;
-double iBdAna_BdJpsiK10EventsPhiMassCut = 0;
-double iBdAna_BdJpsiK0EventsPhiMassCut = 0;
-double iBdAna_BpJpsiKpEventsPhiMassCut = 0;
+  int     K1trkLay_;
+  int     K1muDTh_;
+  int     K1muCSCh_;
+  int     K1muRPCh_;
+  int     K2trkLay_;
+  int     K2muDTh_;
+  int     K2muCSCh_;
+  int     K2muRPCh_;
+  int     Mu1trkLay_;
+  int     Mu1muDTh_;
+  int     Mu1muCSCh_;
+  int     Mu1muRPCh_;
+  int     Mu2trkLay_;
+  int     Mu2muDTh_;
+  int     Mu2muCSCh_;
+  int     Mu2muRPCh_;
 
-double iBdAna_BsJPsiPhiSignalEventsDecayLengthCut = 0;
-double iBdAna_BsJPsiKKSignalEventsDecayLengthCut = 0;
-double iBdAna_BdJPsiKstarSignalEventsDecayLengthCut = 0;
-double iBdAna_BsOtherEventsDecayLengthCut = 0;
-double iBdAna_BdOtherEventsDecayLengthCut = 0;
-double iBdAna_OtherEventsDecayLengthCut = 0;
-double iBdAna_BsJpsiEtaEventsDecayLengthCut = 0;
-double iBdAna_BdJpsiK10EventsDecayLengthCut = 0;
-double iBdAna_BdJpsiK0EventsDecayLengthCut = 0;
-double iBdAna_BpJpsiKpEventsDecayLengthCut = 0;
+  int K1mcId_;
+  int K1momId_;
+  int K1gmomId_;
+  int K2mcId_;
+  int K2momId_;
+  int K2gmomId_;
+  int Mu1mcId_;
+  int Mu1momId_;
+  int Mu1gmomId_;
+  int Mu2mcId_;
+  int Mu2momId_;
+  int Mu2gmomId_;
+  int K1Truth_;
+  int K2Truth_;
+  int Mu1Truth_;
+  int Mu2Truth_;
 
-double iBdAna_BsJPsiPhiSignalEventsPointingCut = 0;
-double iBdAna_BsJPsiKKSignalEventsPointingCut = 0;
-double iBdAna_BdJPsiKstarSignalEventsPointingCut = 0;
-double iBdAna_BsOtherEventsPointingCut = 0;
-double iBdAna_BdOtherEventsPointingCut = 0;
-double iBdAna_OtherEventsPointingCut = 0;
-double iBdAna_BsJpsiEtaEventsPointingCut = 0;
-double iBdAna_BdJpsiK10EventsPointingCut = 0;
-double iBdAna_BdJpsiK0EventsPointingCut = 0;
-double iBdAna_BpJpsiKpEventsPointingCut = 0;
+  double Dist3d_;
+  double dDist3d_;
+  double Time3d_;
+  double dTime3d_;
+  double Dist_;
+  double dDist_;
+  double Time_;
+  double dTime_;
+
+  double dedxTrk_;
+  double errdedxTrk_;
+  int numdedxTrk_;
+
+  int iPassedCutIdent_;
+
+  //MC info
+  int isGenBsEvent_;
+  int GenNumberOfBsDaughters_;
+  int isGenBsJpsiPhiEvent_;
+  int isGenBsJpsiPhiMuMuKKEvent_;
+  int isGenBdEvent_;
+  int GenNumberOfBdDaughters_;
+  int isGenBdJpsiKstarEvent_;
+  int isGenBdJpsiKstarMuMuKpiEvent_;
+
+  double genBsM_, genBsPt_, genBsEta_, genBsPhi_;
+  double genJpsiM_, genJpsiPt_, genJpsiEta_, genJpsiPhi_;
+  double genPhiM_, genPhiPt_, genPhiEta_, genPhiPhi_;
+  double genMu1M_, genMu1Pt_, genMu1Eta_, genMu1Phi_;
+  double genMu2M_, genMu2Pt_, genMu2Eta_, genMu2Phi_;
+  double genK1M_, genK1Pt_, genK1Eta_, genK1Phi_;
+  double genK2M_, genK2Pt_, genK2Eta_, genK2Phi_;
+  double genBsPz_, genJpsiPz_, genPhiPz_, genMu1Pz_, genMu2Pz_, genK1Pz_, genK2Pz_;
+
+  double K1_kk_par0_;
+  double K1_kk_par1_;
+  double K1_kk_par2_;
+  double K1_kk_par3_;
+  double K1_kk_par4_;
+  double K1_kk_par5_;
+  double K1_kk_par6_;
+
+  double K2_kk_par0_;
+  double K2_kk_par1_;
+  double K2_kk_par2_;
+  double K2_kk_par3_;
+  double K2_kk_par4_;
+  double K2_kk_par5_;
+  double K2_kk_par6_;
+
+  double K1_kpi_par0_;
+  double K1_kpi_par1_;
+  double K1_kpi_par2_;
+  double K1_kpi_par3_;
+  double K1_kpi_par4_;
+  double K1_kpi_par5_;
+  double K1_kpi_par6_;
+
+  double K2_kpi_par0_;
+  double K2_kpi_par1_;
+  double K2_kpi_par2_;
+  double K2_kpi_par3_;
+  double K2_kpi_par4_;
+  double K2_kpi_par5_;
+  double K2_kpi_par6_;
+
+  double K1_pipi_par0_;
+  double K1_pipi_par1_;
+  double K1_pipi_par2_;
+  double K1_pipi_par3_;
+  double K1_pipi_par4_;
+  double K1_pipi_par5_;
+  double K1_pipi_par6_;
+
+  double K2_pipi_par0_;
+  double K2_pipi_par1_;
+  double K2_pipi_par2_;
+  double K2_pipi_par3_;
+  double K2_pipi_par4_;
+  double K2_pipi_par5_;
+  double K2_pipi_par6_;
+
+  double K1_kk_sigX_;
+  double K1_kk_sigY_;
+  double K1_kk_sigZ_;
+
+  double K1_kpi_sigX_;
+  double K1_kpi_sigY_;
+  double K1_kpi_sigZ_;
+
+  double K1_pipi_sigX_;
+  double K1_pipi_sigY_;
+  double K1_pipi_sigZ_;
+
+  double K2_kk_sigX_;
+  double K2_kk_sigY_;
+  double K2_kk_sigZ_;
+
+  double K2_kpi_sigX_;
+  double K2_kpi_sigY_;
+  double K2_kpi_sigZ_;
+
+  double K2_pipi_sigX_;
+  double K2_pipi_sigY_;
+  double K2_pipi_sigZ_;
+
+  double K1_kk_sigPX_;
+  double K1_kk_sigPY_;
+  double K1_kk_sigPZ_;
+
+  double K1_kpi_sigPX_;
+  double K1_kpi_sigPY_;
+  double K1_kpi_sigPZ_;
+
+  double K1_pipi_sigPX_;
+  double K1_pipi_sigPY_;
+  double K1_pipi_sigPZ_;
+
+  double K2_kk_sigPX_;
+  double K2_kk_sigPY_;
+  double K2_kk_sigPZ_;
+
+  double K2_kpi_sigPX_;
+  double K2_kpi_sigPY_;
+  double K2_kpi_sigPZ_;
+
+  double K2_pipi_sigPX_;
+  double K2_pipi_sigPY_;
+  double K2_pipi_sigPZ_;
+
+  double K1Pt_error_;
+  double K2Pt_error_;
+
+  int isGenBsJpsiKKEvent_;
+  int BdDausId_;
 
 
 
-int HLT = 0;
+ 
+
+
+
+//*****************************************
+// definition of counters
+//*****************************************
+
+ int entrycounter = 0;
+  
+  int iBsJPsiPhiSignalEvents = 0;
+  int iBsJPsiKKSignalEvents = 0;
+  int iBdJPsiKstarSignalEvents = 0;
+  int iBsOtherEvents = 0;
+  int iBdOtherEvents = 0;
+  int iOtherEvents = 0;
+  
+  int iTriggered_DoubleMu3_BsJPsiPhiSignalEvents = 0;
+  int iTriggered_DoubleMu3_BdJpsiKstar = 0;
+  int iTriggered_DoubleMu3_BsJpsiKK = 0;
+  int iTriggered_DoubleMu3_BsOtherEvents = 0;
+  int iTriggered_DoubleMu3_BdOtherEvents = 0;
+  int iTriggered_DoubleMu3_OtherEvents = 0;
+  
+  int iBsJPsiPhiSignalEventsPreKinFit = 0;
+  int iBsJPsiKKSignalEventsPreKinFit = 0;
+  int iBdJPsiKstarSignalEventsPreKinFit = 0;
+  int iBsOtherEventsPreKinFit = 0;
+  int iBdOtherEventsPreKinFit = 0;
+  int iOtherEventsPreKinFit = 0;
+  
+  int iBsJPsiPhiSignalEventsOfflineSel1 = 0;
+  int iBsJPsiKKSignalEventsOfflineSel1 = 0;
+  int iBdJPsiKstarSignalEventsOfflineSel1 = 0;
+  int iBsOtherEventsOfflineSel1 = 0;
+  int iBdOtherEventsOfflineSel1 = 0;
+  int iOtherEventsOfflineSel1 = 0;
+  
+  int iBsJPsiPhiSignalEventsProbVertex = 0;
+  int iBsJPsiKKSignalEventsProbVertex = 0;
+  int iBdJPsiKstarSignalEventsProbVertex = 0;
+  int iBsOtherEventsProbVertex = 0;
+  int iBdOtherEventsProbVertex = 0;
+  int iOtherEventsProbVertex = 0;
+  
+  int iBsJPsiPhiSignalEventsKaonPtCut = 0;
+  int iBsJPsiKKSignalEventsKaonPtCut = 0;
+  int iBdJPsiKstarSignalEventsKaonPtCut = 0;
+  int iBsOtherEventsKaonPtCut = 0;
+  int iBdOtherEventsKaonPtCut = 0;
+  int iOtherEventsKaonPtCut = 0;
+
+  int iBsJPsiPhiSignalEventsPhiMassCut = 0;
+  int iBsJPsiKKSignalEventsPhiMassCut = 0;
+  int iBdJPsiKstarSignalEventsPhiMassCut = 0;
+  int iBsOtherEventsPhiMassCut = 0;
+  int iBdOtherEventsPhiMassCut = 0;
+  int iOtherEventsPhiMassCut = 0;
+
+  int iBsJPsiPhiSignalEventsDecayLengthCut = 0;
+  int iBsJPsiKKSignalEventsDecayLengthCut = 0;
+  int iBdJPsiKstarSignalEventsDecayLengthCut = 0;
+  int iBsOtherEventsDecayLengthCut = 0;
+  int iBdOtherEventsDecayLengthCut = 0;
+  int iOtherEventsDecayLengthCut = 0;
+
+  int iBsJPsiPhiSignalEventsPointingCut = 0;
+  int iBsJPsiKKSignalEventsPointingCut = 0;
+  int iBdJPsiKstarSignalEventsPointingCut = 0;
+  int iBsOtherEventsPointingCut = 0;
+  int iBdOtherEventsPointingCut = 0;
+  int iOtherEventsPointingCut = 0;
+
+  int HLT = 0;
+
+
+
+
+
+
 
 //******************
 //declaration of histograms
 //********************
 
-vector<TH1F*> vhBsCt;
-vector<TH1F*> vhBsCtErr;
-
-vector<TH1F*> vhJPsiMass;
-TH1F * hJPsiMass_BsJpsiSignal            ;
+ TH1F * hJPsiMass_BsJpsiSignal            ;
  TH1F * hJPsiMass_BsOther                 ;
  TH1F * hJPsiMass_Other                   ;
-             
-vector<TH1F*> vhPhiMass    ;                     
+                                      
  TH1F * hPhiMass_BsJpsiSignal             ;
  TH1F * hPhiMass_BsOther                  ;
  TH1F * hPhiMass_Other                    ;
-                      
-vector<TH1F*> vhPhiMassFinal;           
+                                 
  TH1F * hPhiMassFinal_BsJpsiSignal        ;
  TH1F * hPhiMassFinal_BsOther             ;
  TH1F * hPhiMassFinal_Other               ;
-                             
-vector<TH1F*> vhBsMassFinal;          
+                                       
  TH1F * hBsMassFinal_BsJpsiSignal         ;
  TH1F * hBsMassFinal_BsOther              ;
  TH1F * hBsMassFinal_Other                ;
-                            
-vector<TH1F*> vhBsMassFinalAfterFit;            
+                                        
  TH1F * hBsMassFinalAfterFit_BsJpsiSignal ;
  TH1F * hBsMassFinalAfterFit_BsOther      ;
  TH1F * hBsMassFinalAfterFit_Other        ;
  TH1F * hBsMassFinalAfterFit_BsJpsiKK     ;
-                    
-vector<TH1F*> vhK1Pt;               
+                                   
  TH1F * hK1Pt_BsJpsiSignal                ;
  TH1F * hK1Pt_BsOther                     ;
  TH1F * hK1Pt_Other                       ;
-                     
-vector<TH1F*> vhK2Pt;          
+                               
  TH1F * hK2Pt_BsJpsiSignal                ;
  TH1F * hK2Pt_BsOther                     ;
  TH1F * hK2Pt_Other                       ;
-                     
-vector<TH1F*> vhDist3D;               
-TH1F * hDist3D_BsJpsiSignal              ;
+                                    
+ TH1F * hDist3D_BsJpsiSignal              ;
  TH1F * hDist3D_BsOther                   ;
  TH1F * hDist3D_Other                     ;
-                       
-vector<TH1F*> vhDistSign3D;       
+                              
  TH1F * hDistSign3D_BsJpsiSignal          ;
  TH1F * hDistSign3D_BsOther               ;
  TH1F * hDistSign3D_Other                 ;
-                           
-vector<TH1F*> vhDistSign1D;
+                                     
  TH1F * hDistSign1D_BsJpsiSignal          ;
  TH1F * hDistSign1D_BsOther               ;
  TH1F * hDistSign1D_Other                 ;
-                         
-vector<TH1F*> vhResoLxy;
-vector<TH1F*> vhResoRefitLxy;
-TH1F * hResoLxy_BsJpsiSignal;
-TH1F * hResoLxy_BsOther;
-TH1F * hResoLxy_Other;
-
-vector<TH1F*> vhResoTime;
-vector<TH1F*> vhResoRefitTime;
-TH1F * hResoTime_BsJpsiSignal;
-TH1F * hResoTime_BsOther;
-TH1F * hResoTime_Other;
-  
-vector<TH1F*> vhResoCt;
-vector<TH1F*> vhResoRefitCt;
-
-vector<TH1F*> vhPointingAngle;            
+                                       
  TH1F *hPointingAngle_BsJpsiSignal        ;
  TH1F *hPointingAngle_BsOther             ;
  TH1F *hPointingAngle_Other               ;
@@ -332,11 +442,7 @@ vector<TH1F*> vhPointingAngle;
                                          
  TH1F * hNEvents_vsGenJPsiPt              ;
  TH1F * hNTrigEvents_vsGenJPsiPt          ;
-                      
-vector<TH1F*> vhChi2;
-vector<TH1F*> vhChi2Ndof;
-vector<TH1F*> vhBsVtxProb;
-                  
+                                        
  TH1F *hChi2_BsJpsiSignal                 ;
  TH1F *hChi2Ndof_BsJpsiSignal             ;
  TH1F *hBsVtxProb_BsJpsiSignal            ;
@@ -348,73 +454,3 @@ vector<TH1F*> vhBsVtxProb;
  TH1F *hChi2_Other                        ;
  TH1F *hChi2Ndof_Other                    ;
  TH1F *hBsVtxProb_Other                   ;
-
-vector<TH1F*> vhTime;
-vector<TH1F*> vhBsMass_NoTimeCut;
-
-vector<TH1F*> vhBdChi2;
-vector<TH1F*> vhBdChi2Ndof;
-vector<TH1F*> vhBdVtxProb;
-vector<TH1F*> vhBdK1Pt;
-vector<TH1F*> vhBdK2Pt;
-vector<TH1F*> vhKstarMass;
-vector<TH1F*> vhBdDistSign3D;
-vector<TH1F*> vhBdDistSign1D;
-vector<TH1F*> vhBdDist3D;
-vector<TH1F*> vhBdTime;
-vector<TH1F*> vhBdMass_NoTimeCut;
-vector<TH1F*> vhBdMassFinal;
-vector<TH1F*> vhBdMassFinalAfterFit;
-vector<TH1F*> vhGenBCt;
-
-vector<TH1F*> vhBsNumCandidates;
-vector<TH1F*> vhBsFitPt;
-
- bool isGenBsJpsiPhiMuMuKKEvent_;
-  bool isGenBsJpsiKKEvent_;
-  bool isGenBdJpsiKstarMuMuKpiEvent_;
-  bool isGenBsEvent_;
-  bool isGenBdEvent_;
-bool isGenBsJpsiEtaEvent_ ;
-bool isGenBdJpsiK10Event_ ;
-bool isGenBdJpsiK0Event_  ;
-bool isGenBpJpsiKpEvent_  ;
-
-int indexOfBmesonWithJpsiDecay = -1;
-
-int sig1 = 0; int jpsikk1 = 0; int jpsikst1 = 0; int otherbs1 = 0; int otherbd1 = 0; int other1 = 0; int jpsieta1 = 0; int jpsik101 = 0; int jpsik01 = 0; 
-int jpsik1p1 = 0;
-int sig2 = 0; int jpsikk2 = 0; int jpsikst2 = 0; int otherbs2 = 0; int otherbd2 = 0; int other2 = 0; int jpsieta2 = 0; int jpsik102 = 0; int jpsik02 = 0; 
-int jpsik1p2 = 0;
-int sig3 = 0; int jpsikk3 = 0; int jpsikst3 = 0; int otherbs3 = 0; int otherbd3 = 0; int other3 = 0; int jpsieta3 = 0; int jpsik103 = 0; int jpsik03 = 0; 
-int jpsik1p3 = 0;
-int sig4 = 0; int jpsikk4 = 0; int jpsikst4 = 0; int otherbs4 = 0; int otherbd4 = 0; int other4 = 0; int jpsieta4 = 0; int jpsik104 = 0; int jpsik04 = 0; 
-int jpsik1p4 = 0;
-int sig5 = 0; int jpsikk5 = 0; int jpsikst5 = 0; int otherbs5 = 0; int otherbd5 = 0; int other5 = 0; int jpsieta5 = 0; int jpsik105 = 0; int jpsik05 = 0; 
-int jpsik1p5 = 0;
-int sig6 = 0; int jpsikk6 = 0; int jpsikst6 = 0; int otherbs6 = 0; int otherbd6 = 0; int other6 = 0; int jpsieta6 = 0; int jpsik106 = 0; int jpsik06 = 0; 
-int jpsik1p6 = 0;
-int sig7 = 0; int jpsikk7 = 0; int jpsikst7 = 0; int otherbs7 = 0; int otherbd7 = 0; int other7 = 0; int jpsieta7 = 0; int jpsik107 = 0; int jpsik07 = 0;
-int jpsik1p7 = 0;
-int sig8 = 0; int jpsikk8 = 0; int jpsikst8 = 0; int otherbs8 = 0; int otherbd8 = 0; int other8 = 0; int jpsieta8 = 0; int jpsik108 = 0; int jpsik08 = 0; 
-int jpsik1p8 = 0;
-int sig9 = 0; int jpsikk9 = 0; int jpsikst9 = 0; int otherbs9 = 0; int otherbd9 = 0; int other9 = 0; int jpsieta9 = 0; int jpsik109 = 0; int jpsik09 = 0; 
-int jpsik1p9 = 0;
-int sig10 = 0; int jpsikk10 = 0; int jpsikst10 = 0; int otherbs10 = 0; int otherbd10 = 0; int other10 = 0; int jpsieta10 = 0; int jpsik1010 = 0; int jpsik010 = 0;
-int jpsik1p10 = 0;
-int sig11 = 0; int jpsikk11 = 0; int jpsikst11 = 0; int otherbs11 = 0; int otherbd11 = 0; int other11 = 0; int jpsieta11 = 0; int jpsik1011 = 0; int jpsik011 = 0;
-int jpsik1p11 = 0;
-int sig12 = 0; int jpsikk12 = 0; int jpsikst12 = 0; int otherbs12 = 0; int otherbd12 = 0; int other12 = 0; int jpsieta12 = 0; int jpsik1012 = 0; int jpsik012 = 0;
-int jpsik1p12 = 0;
-int sig13 = 0; int jpsikk13 = 0; int jpsikst13 = 0; int otherbs13 = 0; int otherbd13 = 0; int other13 = 0; int jpsieta13 = 0; int jpsik1013 = 0; int jpsik013 = 0;
-int jpsik1p13 = 0;
-int sig14 = 0; int jpsikk14 = 0; int jpsikst14 = 0; int otherbs14 = 0; int otherbd14 = 0; int other14 = 0; int jpsieta14 = 0; int jpsik1014 = 0; int jpsik014 = 0;
-int jpsik1p14 = 0;
-int sig15 = 0; int jpsikk15 = 0; int jpsikst15 = 0; int otherbs15 = 0; int otherbd15 = 0; int other15 = 0; int jpsieta15 = 0; int jpsik1015 = 0; int jpsik015 = 0;
-int jpsik1p15 = 0;
-int sig16 = 0; int jpsikk16 = 0; int jpsikst16 = 0; int otherbs16 = 0; int otherbd16 = 0; int other16 = 0; int jpsieta16 = 0; int jpsik1016 = 0; int jpsik016 = 0;
-int jpsik1p16 = 0;
-
-
-
-#endif
