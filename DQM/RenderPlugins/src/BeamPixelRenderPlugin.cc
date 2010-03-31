@@ -51,7 +51,8 @@ private:
     gStyle->SetCanvasBorderMode(0);
     gStyle->SetPadBorderMode(0);
     gStyle->SetPadBorderSize(0);
-    
+    gStyle->SetOptStat(1110);
+
     TAxis* xa = obj->GetXaxis();
     TAxis* ya = obj->GetYaxis();
     	
@@ -68,7 +69,8 @@ private:
 
 	c->SetGrid();
 	obj->SetOption("colz");
-	gStyle->SetOptStat(1110);
+
+	return;
       }
 
     if (o.name.find("fit results") != std::string::npos)
@@ -85,14 +87,16 @@ private:
 	c->SetGrid();
 	obj->SetStats(kFALSE);
 	obj->SetMarkerSize(2.);
+	
+	return;
       }
 
     if (o.name.find("reportSummaryMap") != std::string::npos)
       {
 	c->SetGrid(kFALSE, kFALSE);
 	obj->SetStats(kFALSE);
-// 	dqm::utils::reportSummaryMapPalette(obj);
-// 	obj->SetOption("colz");
+	
+	return;
       }
   }
 
@@ -120,6 +124,15 @@ private:
 
     xa->SetLabelSize(0.03);
     ya->SetLabelSize(0.03);
+
+    if ((o.name.find("muX vs lumi") != std::string::npos) || (o.name.find("muY vs lumi") != std::string::npos) || (o.name.find("muZ vs lumi") != std::string::npos) ||
+	(o.name.find("sigmaX vs lumi") != std::string::npos) || (o.name.find("sigmaY vs lumi") != std::string::npos) || (o.name.find("sigmaZ vs lumi") != std::string::npos) ||
+	(o.name.find("dxdz vs lumi") != std::string::npos) || (o.name.find("dydz vs lumi") != std::string::npos))
+      {
+	gStyle->SetOptStat(10);
+
+	return;
+      }
   }
 
   void preDrawTProfile(TCanvas* c, const VisDQMObject& o)
