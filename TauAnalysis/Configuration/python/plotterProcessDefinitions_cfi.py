@@ -172,7 +172,22 @@ process_Wenu = cms.PSet(
     )
 )
 
-#QCD for W->TauNu
+# W/Z + c cbar/b bbar
+process_Vqq = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('Vqq')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/Vqq'),
+        legendEntry = cms.string('W/Z + c#bar{c}/b#bar{b} jets'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
+
+# QCD generated specifically for W --> tau nu
+# (preselected by requiring charged particle of Pt > 15 GeV on generator level)
 process_qcd_W = cms.PSet(
     config_dqmFileLoader = cms.PSet(
         inputFileNames = cms.vstring(''),
