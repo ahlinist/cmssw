@@ -7,6 +7,7 @@
 #include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h" 
@@ -87,31 +88,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
 //--- SV method computation (if we have the PV and beamspot)
       if( pv && beamSpot && trackBuilder && doSVreco ) {
-	std::vector<svMassReco::Solution> fits = svMassRecoFitter_.fitVertices(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
-
-//--- get the best solution
-	if ( fits.size() > 0 ) {
-	  svMassReco::Solution bestFit = fits[0];
-
-	  compositePtrCandidate.setSVfitSolutionIsValid(bestFit.solnIsValid);
-	  if ( bestFit.solnIsValid ) {
-            compositePtrCandidate.setSVfitSolutionNLL(bestFit.nllOfFit);
-	    compositePtrCandidate.setSVfitP4VisLeg1(bestFit.leg1VisP4);
-	    compositePtrCandidate.setSVfitP4VisLeg2(bestFit.leg2VisP4);
-	    reco::Candidate::LorentzVector p4Leg1 = bestFit.leg1VisP4 + bestFit.leg1NuP4;
-	    double x1 = ( p4Leg1.P() > 0. ) ? (bestFit.leg1VisP4.P()/p4Leg1.P()) : -1.;
-	    compositePtrCandidate.setSVfitX1(x1);
-	    reco::Candidate::LorentzVector p4Leg2 = bestFit.leg2VisP4 + bestFit.leg2NuP4;
-	    double x2 = ( p4Leg2.P() > 0. ) ? (bestFit.leg2VisP4.P()/p4Leg2.P()) : -1.;
-	    compositePtrCandidate.setSVfitX2(x2);
-	    compositePtrCandidate.setP4SVfit(p4Leg1 + p4Leg2);
-	    compositePtrCandidate.setSVrefittedPrimaryVertexPos(bestFit.pv);
-	    compositePtrCandidate.setSVfitDecayVertexPosLeg1(bestFit.sv1);
-	    compositePtrCandidate.setSVfitDecayVertexPosLeg2(bestFit.sv2);
-	  }
-	} else {
-	  compositePtrCandidate.setSVfitSolutionIsValid(false);
-	}
+	std::vector<SVmassRecoSolution> solutions = svMassRecoFitter_.fitVertices(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
+	compositePtrCandidate.setSVfitSolutions(solutions);
       }
     } else {
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false, 0);
@@ -141,8 +119,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
       } 
     }  else if ( recoMode_ == "secondaryVertexFit" ) {
-      if ( met.isNonnull() && pv && beamSpot ) {
-	compositePtrCandidate.setP4(compositePtrCandidate.p4SVfit());
+      if ( met.isNonnull() && pv && beamSpot && compositePtrCandidate.svFitSolutions().size() > 0 ) {
+	compositePtrCandidate.setP4(compositePtrCandidate.svFitSolutions().begin()->p4());
       } else {
 	edm::LogError ("buildCompositePtrCandidate") 
 	  << " Failed to set four-momentum:"

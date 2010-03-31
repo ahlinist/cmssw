@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.7 2010/03/29 10:46:45 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.8 2010/03/29 17:05:33 veelken Exp $
  *
  */
 
@@ -23,6 +23,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Candidate/interface/LeafCandidate.h" 
 #include "DataFormats/Common/interface/Ptr.h"
+
+#include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 
 template<typename T1, typename T2>
 class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate 
@@ -67,6 +69,12 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// energy ratio of visible gen. daughter/mother particles
   double x1gen() const { return ( p4Leg1gen_.energy() > 0. ) ? p4VisLeg1gen_.energy()/p4Leg1gen_.energy() : -1.; }
   double x2gen() const { return ( p4Leg2gen_.energy() > 0. ) ? p4VisLeg2gen_.energy()/p4Leg2gen_.energy() : -1.; }
+
+  /// get "true" positions of primary event vertex 
+  /// and of tau decay vertices (generator level information)
+  const reco::Candidate::Point& primaryVertexPosGen() const { return primaryVertexPosGen_; }
+  const reco::Candidate::Point& decayVertexPosLeg1gen() const { return decayVertexPosLeg1gen_; };
+  const reco::Candidate::Point& decayVertexPosLeg2gen() const { return decayVertexPosLeg2gen_; };
   
   /// return the number of source particle-like Candidates
   /// (the candidates used to construct this Candidate)       
@@ -157,32 +165,8 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     return out;
   }
 
-  /// secondary vertex based mass reconstruction
-  /// get visible four momenta computed by SV method
-  /// (recomputed at secondary vertex)
-  const reco::Candidate::LorentzVector& p4VisLeg1SVfit() const { return p4VisLeg1SVfit_; };
-  const reco::Candidate::LorentzVector& p4VisLeg2SVfit() const { return p4VisLeg2SVfit_; };
-  /// get scaling factors for momenta of visible decay products
-  /// computed by SV method
-  double x1SVfit() const { return x1SVfit_; }
-  double x2SVfit() const { return x2SVfit_; }
-  /// get four-momentum computed by SV method
-  const reco::Candidate::LorentzVector& p4SVfit() const { return p4SVmethod_; };
-  /// get positions of reconstructed primary event vertex 
-  /// and of reconstructed tau decay vertices
-  const reco::Candidate::Point& primaryVertexPosSVrefitted() const { return primaryVertexPosSVrefitted_; }
-  const reco::Candidate::Point& decayVertexPosLeg1SVfit() const { return decayVertexPosLeg1SVfit_; };
-  const reco::Candidate::Point& decayVertexPosLeg2SVfit() const { return decayVertexPosLeg2SVfit_; };
-  /// get "true" positions of primary event vertex 
-  /// and of tau decay vertices (generator level information)
-  const reco::Candidate::Point& primaryVertexPosGen() const { return primaryVertexPosGen_; }
-  const reco::Candidate::Point& decayVertexPosLeg1gen() const { return decayVertexPosLeg1gen_; };
-  const reco::Candidate::Point& decayVertexPosLeg2gen() const { return decayVertexPosLeg2gen_; };
-  /// get flag indicating whether or not solution for invariant mass 
-  /// computed by SV algorithm is valid or not
-  bool svFitSolutionIsValid() const { return svFitSolutionIsValid_; }
-  /// get log-likelihood value of solution
-  double svFitSolutionNLL() const { return svFitSolutionNLL_; }
+  /// get solutions computed by secondary vertex based mass reconstruction algorithm
+  const std::vector<SVmassRecoSolution>& svFitSolutions() const { return svFitSolutions_; }
 
  private:
   
@@ -194,6 +178,12 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void setP4Leg2gen(const reco::Candidate::LorentzVector& p4) { p4Leg2gen_ = p4; }
   void setP4VisLeg1gen(const reco::Candidate::LorentzVector& p4) { p4VisLeg1gen_ = p4; }
   void setP4VisLeg2gen(const reco::Candidate::LorentzVector& p4) { p4VisLeg2gen_ = p4; }
+
+  /// set "true" positions of primary event vertex 
+  /// and of tau decay vertices (generator level information)
+  void setPrimaryVertexPosGen(const reco::Candidate::Point& pos) { primaryVertexPosGen_ = pos; }
+  void setDecayVertexPosLeg1gen(const reco::Candidate::Point& pos) { decayVertexPosLeg1gen_ = pos; }
+  void setDecayVertexPosLeg2gen(const reco::Candidate::Point& pos) { decayVertexPosLeg2gen_ = pos; }
 
   /// set four-momentum of visible decay products
   void setP4Vis(const reco::Candidate::LorentzVector& p4) { p4Vis_ = p4; } 
@@ -242,20 +232,8 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void setPzeta(double pZeta) { pZeta_ = pZeta; }
   void setPzetaVis(double pZetaVis) { pZetaVis_ = pZetaVis; }
 
-  /// set variables computed by secondary vertex based mass reconstruction
-  void setSVfitP4VisLeg1(const reco::Candidate::LorentzVector& p4VisLeg1) { p4VisLeg1SVfit_ = p4VisLeg1; }
-  void setSVfitP4VisLeg2(const reco::Candidate::LorentzVector& p4VisLeg2) { p4VisLeg2SVfit_ = p4VisLeg2; }
-  void setSVfitX1(double x1) { x1SVfit_ = x1; }
-  void setSVfitX2(double x2) { x2SVfit_ = x2; }
-  void setP4SVfit(const reco::Candidate::LorentzVector& p4) { p4SVmethod_ = p4; }
-  void setSVrefittedPrimaryVertexPos(const reco::Candidate::Point& pos) { primaryVertexPosSVrefitted_ = pos; }
-  void setSVfitDecayVertexPosLeg1(const reco::Candidate::Point& pos) { decayVertexPosLeg1SVfit_ = pos; }
-  void setSVfitDecayVertexPosLeg2(const reco::Candidate::Point& pos) { decayVertexPosLeg2SVfit_ = pos; }
-  void setPrimaryVertexPosGen(const reco::Candidate::Point& pos) { primaryVertexPosGen_ = pos; }
-  void setDecayVertexPosLeg1gen(const reco::Candidate::Point& pos) { decayVertexPosLeg1gen_ = pos; }
-  void setDecayVertexPosLeg2gen(const reco::Candidate::Point& pos) { decayVertexPosLeg2gen_ = pos; }
-  void setSVfitSolutionIsValid(bool isValid) { svFitSolutionIsValid_ = isValid; }
-  void setSVfitSolutionNLL(double nll) { svFitSolutionNLL_ = nll; }
+  /// set solutions computed by secondary vertex based mass reconstruction algorithm
+  void setSVfitSolutions(const std::vector<SVmassRecoSolution>& solutions) { svFitSolutions_ = solutions; }
 
   /// references/pointers to decay products
   T1Ptr leg1_;
@@ -267,6 +245,12 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   reco::Candidate::LorentzVector p4Leg2gen_;
   reco::Candidate::LorentzVector p4VisLeg1gen_;
   reco::Candidate::LorentzVector p4VisLeg2gen_;
+
+  /// "true" positions of primary event vertex 
+  /// and of tau decay vertices (generator level information)
+  reco::Candidate::Point primaryVertexPosGen_;
+  reco::Candidate::Point decayVertexPosLeg1gen_;
+  reco::Candidate::Point decayVertexPosLeg2gen_;
 
   /// four-momentum of visible decay products
   reco::Candidate::LorentzVector p4Vis_;
@@ -309,31 +293,8 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double pZeta_;
   double pZetaVis_;
 
-  /// secondary vertex based mass reconstruction
-  /// visible four momenta computed by SV method
-  /// (recomputed at secondary vertex)
-  reco::Candidate::LorentzVector p4VisLeg1SVfit_;
-  reco::Candidate::LorentzVector p4VisLeg2SVfit_;
-  /// scaling factors for momenta of visible decay products
-  double x1SVfit_;
-  double x2SVfit_;
-  /// four-momentum of di-tau system computed by SV method
-  reco::Candidate::LorentzVector p4SVmethod_;
-  /// positions of reconstructed primary event vertex 
-  /// and of reconstructed tau decay vertices
-  reco::Candidate::Point primaryVertexPosSVrefitted_;
-  reco::Candidate::Point decayVertexPosLeg1SVfit_;
-  reco::Candidate::Point decayVertexPosLeg2SVfit_;
-  /// "true" positions of primary event vertex 
-  /// and of tau decay vertices (generator level information)
-  reco::Candidate::Point primaryVertexPosGen_;
-  reco::Candidate::Point decayVertexPosLeg1gen_;
-  reco::Candidate::Point decayVertexPosLeg2gen_;
-  /// flag indicating whether or not solution for invariant mass 
-  /// computed by SV algorithm is valid or not
-  bool svFitSolutionIsValid_;
-  /// log-likelihood value of solution
-  double svFitSolutionNLL_;
+  /// solutions of secondary vertex based mass reconstruction algorithm
+  std::vector<SVmassRecoSolution> svFitSolutions_;
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
