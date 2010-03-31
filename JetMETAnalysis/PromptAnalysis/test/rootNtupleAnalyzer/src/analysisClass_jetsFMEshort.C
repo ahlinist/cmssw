@@ -446,7 +446,7 @@ void analysisClass::Loop()
   TH1D *diPFjetptall = new TH1D("diPFjetptall","",ptBin, ptMinDiPFjet,ptMax);
   diPFjetptall->SetXTitle("p_{T}[GeV]");
   diPFjetptall->SetTitle(dataset);
-  TH1D *diPFjetdphi = new TH1D("diPFjetdphi","",phiBin, 0., Pi);
+  TH1D *diPFjetdphi = new TH1D("diPFjetdphi","",dphiBin, 0., Pi);
   diPFjetdphi->SetXTitle("#Delta #phi_{di-PFjet}");
   diPFjetdphi->SetTitle(dataset);
   TH1D *diPFjeteta = new TH1D("diPFjeteta","",etaBin,etaMin,etaMax);
@@ -468,7 +468,7 @@ void analysisClass::Loop()
   TH1D *diPFjetptallJIDloose = new TH1D("diPFjetptallJIDloose","",ptBin, ptMinDiPFjet,ptMax);
   diPFjetptallJIDloose->SetXTitle("p_{T}[GeV]");
   diPFjetptallJIDloose->SetTitle(dataset);
-  TH1D *diPFjetdphiJIDloose = new TH1D("diPFjetdphiJIDloose","",phiBin, 0., Pi);
+  TH1D *diPFjetdphiJIDloose = new TH1D("diPFjetdphiJIDloose","",dphiBin, 0., Pi);
   diPFjetdphiJIDloose->SetXTitle("#Delta #phi_{di-PFjet}");
   diPFjetdphiJIDloose->SetTitle(dataset);
   TH1D *diPFjetinvmassJIDloose = new TH1D("diPFjetinvmassJIDloose","",invmassBin,0.,invmassMax);
@@ -484,7 +484,7 @@ void analysisClass::Loop()
   TH1D *diPFjetptallJIDtight = new TH1D("diPFjetptallJIDtight","",ptBin, ptMinDiPFjet,ptMax);
   diPFjetptallJIDtight->SetXTitle("p_{T}[GeV]");
   diPFjetptallJIDtight->SetTitle(dataset);
-  TH1D *diPFjetdphiJIDtight = new TH1D("diPFjetdphiJIDtight","",phiBin, 0., Pi);
+  TH1D *diPFjetdphiJIDtight = new TH1D("diPFjetdphiJIDtight","",dphiBin, 0., Pi);
   diPFjetdphiJIDtight->SetXTitle("#Delta #phi_{di-PFjet}");
   diPFjetdphiJIDtight->SetTitle(dataset);
   TH1D *diPFjetinvmassJIDtight = new TH1D("diPFjetinvmassJIDtight","",invmassBin,0.,invmassMax);
@@ -1065,6 +1065,10 @@ void analysisClass::Loop()
 	  for (int j = 0; j<int(ak5PFJetpT->size()); j++){
 	    //check if jet is among hardest two
 	    //as jets are ordered in uncorrected pT: needs to be done only for corrected jets
+
+	    //temporary
+	    makeJetCorr=false;
+
 	    if(makeJetCorr == true) {
 	      if((ak5PFJetscaleL2L3->at(j)*ak5PFJetpT->at(j))>mypt1){
 		mypt2=mypt1;
