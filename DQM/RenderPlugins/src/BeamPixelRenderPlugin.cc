@@ -24,9 +24,9 @@ class BeamPixelRenderPlugin : public DQMRenderPlugin {
 public:
   virtual bool applies(const VisDQMObject& o, const VisDQMImgInfo& )
   {
-    if (o.name.find("BeamPixel/") == std::string::npos) return false;
-    
     if (o.name.find("/EventInfo/") != std::string::npos) return true;
+
+    if (o.name.find("BeamPixel/") != std::string::npos) return true;
     
     return false;
   }
