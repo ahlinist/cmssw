@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.157 2010/02/28 15:45:43 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.158 2010/03/30 14:29:06 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.157 $
-  \date $Date: 2010/02/28 15:45:43 $
+  \version $Revision: 1.158 $
+  \date $Date: 2010/03/30 14:29:06 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -666,7 +666,7 @@ private:
       }
 
       if( name.find( "EETMT timing vs amplitude" ) != std::string::npos ||
-          name.find( "EETMT timing min vs Et min" ) != std::string::npos )
+          name.find( "EETMT timing EE+ vs EE-" ) != std::string::npos )
       {
         if( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
         obj->SetMinimum(0.0);
@@ -1340,7 +1340,7 @@ private:
       std::string name = o.name.substr(o.name.rfind("/")+1);
 
       if( name.find( "EETMT timing vs amplitude" ) != std::string::npos ||
-          name.find( "EETMT timing min vs Et min") != std::string::npos )
+          name.find( "EETMT timing EE+ vs EE-") != std::string::npos )
         return;
 
       int nbx = obj->GetNbinsX();
