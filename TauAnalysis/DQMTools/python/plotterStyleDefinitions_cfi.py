@@ -504,6 +504,10 @@ drawOption_ZplusJets_stacked = copy.deepcopy(drawOption_lightBlue_stacked)
 drawOption_ZplusJets_separate = copy.deepcopy(drawOption_lightBlue_separate)
 drawOption_ZplusJets = drawOption_ZplusJets_stacked 
 
+drawOption_Vqq_stacked = copy.deepcopy(drawOption_yellow_stacked)
+drawOption_Vqq_separate = copy.deepcopy(drawOption_yellow_separate)
+drawOption_Vqq = drawOption_Vqq_stacked 
+
 drawOption_Wtaunu_stacked = copy.deepcopy(drawOption_red_stacked)
 drawOption_Wtaunu_separate = copy.deepcopy(drawOption_red_separate)
 drawOption_Wtaunu = drawOption_Wtaunu_stacked
