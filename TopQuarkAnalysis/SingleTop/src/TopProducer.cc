@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc,v 1.6 2010/03/31 09:51:46 oiorio Exp $ 
+ *\version  $Id: TopProducer.cc,v 1.7 2010/03/31 11:01:05 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -238,9 +238,6 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
   
   p4nu_rec.SetPxPyPzE(MET.px(), MET.py(), pznu, Enu);
     
-  //p4W_rec = p4nu_rec + p4lep_rec;
-  //p4Top_rec = p4b_rec + p4W_rec;
-  
   result.push_back(p4nu_rec);
   
   }
@@ -321,9 +318,7 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
     double a_Minimum  = (mu_Minimum*Lepton.pz())/(Lepton.energy()*Lepton.energy() - Lepton.pz()*Lepton.pz());
     pznu = a_Minimum;
     
-    std::cout << "pz before "<< a <<" pz after "<< a_Minimum << std::endl;
-    
- if(!useMetForNegativeSolutions_){
+    if(!useMetForNegativeSolutions_){
       double Enu = sqrt(minPx*minPx+minPy*minPy + pznu*pznu);
       p4nu_rec.SetPxPyPzE(minPx, minPy, pznu , Enu);
     }
