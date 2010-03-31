@@ -93,7 +93,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hSVfitMassVsLogLikelihood_ = book2D("SVfitMassVsLogLikelihood", "SVfit Mass vs. log-Likelihood", 20, -35., 25., 50, 0., 250.);
   hSVfitLogLikelihood_ = book1D("SVfitLogLikelihood", "SVfit log-Likelihood", 100, -50., 50.);
   hSVfitDecayTimeLeg1_ = book1D("SVfitDecayTimeLeg1", "SVfit leg_{1} Decay eigentime", 100, 0., 1000.);
-  hSVfitDecayTimeLeg2_ = book1D("SVfitDecayTimeLeg1", "SVfit leg_{1} Decay eigentime", 100, 0., 1000.);
+  hSVfitDecayTimeLeg2_ = book1D("SVfitDecayTimeLeg2", "SVfit leg_{2} Decay eigentime", 100, 0., 1000.);
   hSVfitStatus_ = book1D("SVfitStatus", "SVfit Status", 10, -2.5, 7.5);
   
   hLeg1PtVsLeg2Pt_ = book2D("Leg1PtVsLeg2Pt", "leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
