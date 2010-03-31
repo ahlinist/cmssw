@@ -49,7 +49,7 @@
    <use name=TrackingTools/Records>
 <flags EDM_PLUGIN=1>
 <export>
-   <lib name=JetMETAnalysisPromptAnalysis>
+   <lib name=UserCodeJetShapeNtupleMaker>
    <use name=DataFormats/CaloTowers>
    <use name=DataFormats/Common>
    <use name=DataFormats/CSCDigi>
