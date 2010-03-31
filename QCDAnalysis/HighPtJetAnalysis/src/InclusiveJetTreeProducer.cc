@@ -272,7 +272,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
            if (mIsMCarlo)
              {
                float rmin(999);
-               unsigned int indMatchedGen(0);
+               int indMatchedGen(-1);
                const reco::Candidate& rec = (*jets)[ind];
                for(unsigned int indGen=0;indGen<(*genjets).size();indGen++)
                  {
@@ -283,11 +283,21 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
                        rmin = deltaR;
                        indMatchedGen = indGen;
                      }
+                 } 
+               if (indMatchedGen >= 0)
+                 {
+                   mGenMatchR  ->push_back(rmin);
+                   mGenMatchPt ->push_back((*genjets)[indMatchedGen].pt());
+                   mGenMatchEta->push_back((*genjets)[indMatchedGen].eta());
+                   mGenMatchPhi->push_back((*genjets)[indMatchedGen].phi());
                  }
-               mGenMatchR  ->push_back(rmin);
-               mGenMatchPt ->push_back((*genjets)[indMatchedGen].pt());
-               mGenMatchEta->push_back((*genjets)[indMatchedGen].eta());
-               mGenMatchPhi->push_back((*genjets)[indMatchedGen].phi());
+               else
+                 {
+                   mGenMatchR  ->push_back(-999);
+                   mGenMatchPt ->push_back(-999);
+                   mGenMatchEta->push_back(-999);
+                   mGenMatchPhi->push_back(-999);
+                 } 
              }
            LorentzVector TrkCaloP4 = JetExtendedAssociation::tracksAtCaloP4(*jetExtender,(*jets)[ind]);
            LorentzVector TrkVtxP4  = JetExtendedAssociation::tracksAtVertexP4(*jetExtender,(*jets)[ind]);
