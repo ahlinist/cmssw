@@ -14,5 +14,5 @@ diTauCandidateHistManager = cms.PSet(
     requireGenMatch = cms.bool(False),
 
     #normalization = cms.string("diTauCandidates"),
-    normalization = cms.string("events"),
+    normalization = cms.string("events")
 )
