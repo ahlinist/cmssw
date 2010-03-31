@@ -22,30 +22,28 @@
 
 DEFINE_SEAL_MODULE();
 
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAnaTree.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_Event.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_MET.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_TcMET.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_PfMET.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_GenJet.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_Jet.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_JPT.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_PFJet.h"
-//#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_BeamHalo.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_CaloTowers.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_Trigger.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_CleanUp.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_Vertex.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_Track.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_PMTNoise.h"
-#include "UserCode/JetShapeNtupleMaker/interface/PromptAna_ECALspikes.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAnaTree.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Event.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_MET.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_TcMET.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PfMET.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Jet.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_JPT.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PFJet.h"
+//#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_BeamHalo.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CaloTowers.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Trigger.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CleanUp.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Vertex.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Track.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PMTNoise.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_ECALspikes.h"
 
 DEFINE_ANOTHER_FWK_MODULE(PromptAnaTree);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Event);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_MET);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_TcMET);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_PfMET);
-DEFINE_ANOTHER_FWK_MODULE(PromptAna_GenJet);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Jet);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_JPT);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_PFJet);
