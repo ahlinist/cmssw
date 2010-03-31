@@ -562,13 +562,13 @@ void analysisClass::Loop()
       int eventid = event;
       int LS = ls;
       int runid = run;
-      
+      /*
       //bool goodrun=false;
       if(isdata == 1 && !eventInGoodRunLumi(runid,LS)){
 	continue;
       }
       
-
+      */
       goodevts++;
       // ---------------------------------------------------------------
       //########## Trigger Selection - to be 100 % sure: 
@@ -621,9 +621,11 @@ void analysisClass::Loop()
 	    phybitjets+=ak5JetpT->size(); 
 	    }
 	}
-      else if(isData == 0)
+      else if(isData == 0) {
 	pass_PhysicsBit = 1;
+      }
     
+	pass_PhysicsBit = 1;
       if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
      // ---------------------------------------------------------------
      //# Reco-based Selection
@@ -764,15 +766,15 @@ void analysisClass::Loop()
 	    }
 	    // dphi
 	    dphi = DeltaPhi(ak5JetPhi->at(index_jet1),ak5JetPhi->at(index_jet2) );
-	    dijetdphi->Fill(dphi);
-	    if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) 
-	       && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
-	      dijetdphiJIDloose->Fill(dphi);
-	    }
-	    if(JetIdtight(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1), ak5JetJIDfRBX->at(index_jet1),ak5JetSigmaEta->at(index_jet1),ak5JetSigmaPhi->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) && JetIdtight(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDfRBX->at(index_jet2),ak5JetSigmaEta->at(index_jet2),ak5JetSigmaPhi->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
-	      dijetdphiJIDtight->Fill(dphi);
-	    }
-	    if (dphi >cut_CaloDiJetDeltaPhi_min) {	      
+	      dijetdphi->Fill(dphi);
+	      if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) 
+		 && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
+		dijetdphiJIDloose->Fill(dphi);
+	      }
+	      if(JetIdtight(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1), ak5JetJIDfRBX->at(index_jet1),ak5JetSigmaEta->at(index_jet1),ak5JetSigmaPhi->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) && JetIdtight(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDfRBX->at(index_jet2),ak5JetSigmaEta->at(index_jet2),ak5JetSigmaPhi->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
+		dijetdphiJIDtight->Fill(dphi);
+	      }
+	      if (dphi >cut_CaloDiJetDeltaPhi_min) {	      
 	      //calculate the invariant mass
 	      jet1LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet1)*jcScale0,ak5JetEta->at(index_jet1),ak5JetPhi->at(index_jet1),ak5JetEnergy->at(index_jet1)*jcScale0);
 	      jet2LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet2)*jcScale1,ak5JetEta->at(index_jet2),ak5JetPhi->at(index_jet2),ak5JetEnergy->at(index_jet2)*jcScale1);
@@ -945,6 +947,7 @@ void analysisClass::Loop()
 	    }
 	    // dphi
 	    dphi = DeltaPhi(JPTak5JetPhi->at(index_JPTjet1),JPTak5JetPhi->at(index_JPTjet2) );
+
 	    diJPTjetdphi->Fill(dphi);
 	    if(JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 	       && JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
@@ -955,14 +958,11 @@ void analysisClass::Loop()
 	      diJPTjetdphiJIDtight->Fill(dphi);
 	    }
 	    if (dphi >cut_CaloDiJetDeltaPhi_min) {	      
-	      diJPTjetdphi->Fill(dphi);
 	      //calculate the invariant mass
 	      JPTjet1LorentzVector.SetPtEtaPhiE(JPTak5JetpT->at(index_JPTjet1)*jcScale0,JPTak5JetEta->at(index_JPTjet1),JPTak5JetPhi->at(index_JPTjet1),JPTak5JetEnergy->at(index_JPTjet1)*jcScale0);
 	      JPTjet2LorentzVector.SetPtEtaPhiE(JPTak5JetpT->at(index_JPTjet2)*jcScale1,JPTak5JetEta->at(index_JPTjet2),JPTak5JetPhi->at(index_JPTjet2),JPTak5JetEnergy->at(index_JPTjet2)*jcScale1);
 	      diJPTjetLorentzVector=JPTjet1LorentzVector+JPTjet2LorentzVector;
 	      diJPTjetinvmass->Fill(diJPTjetLorentzVector.M());
-
-
 	      if(JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 		 && JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
 		diJPTjetinvmassJIDloose->Fill(diJPTjetLorentzVector.M());
