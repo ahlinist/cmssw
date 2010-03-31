@@ -63,7 +63,8 @@ private:
 	}
       }
       obj->GetXaxis()->SetRange(1,maxRange);
-      obj->GetYaxis()->SetRange(1,topBin-1);
+      //obj->GetYaxis()->SetRange(1,topBin-1);
+      obj->GetYaxis()->SetRange(1,topBin);
       gPad->SetGrid(1,1);
       gPad->SetLeftMargin(0.12);
 
