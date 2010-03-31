@@ -34,9 +34,9 @@ selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetA
 )
 
 # select jets passing b-tagging discriminator
-# (>= 5 tracks with impact parameter significance > 2.0)
+# (>= 3 tracks with impact parameter significance > 2.0)
 selectedLayer1JetsForAHtoMuTauBtag = cms.EDFilter("PATJetSelector",
-    cut = cms.string('bDiscriminator("trackCountingHighEffBJetTags") > 4.5'), 
+    cut = cms.string('bDiscriminator("trackCountingHighEffBJetTags") > 2.5'), 
     filter = cms.bool(False)
 )
 
