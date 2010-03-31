@@ -26,6 +26,12 @@
   <class name="edm::Ptr<reco::Track>"/>
   <class name="edm::Ptr<reco::GsfTrack>"/>
 
+  <!-- create dictionaries for SVmassRecoSolution objects -->
+  <class name="SVmassRecoSolution"/>
+  <class name="std::vector<SVmassRecoSolution>"/>
+  <!--class name="edm::Wrapper<SVmassRecoSolution>"/-->
+  <!--class name="edm::Wrapper<std::vector<SVmassRecoSolution> >"/-->
+
   <!-- create dictionaries for PATElecPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> >"/>

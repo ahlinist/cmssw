@@ -1,6 +1,7 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2Fwd.h"
@@ -59,6 +60,12 @@ namespace {
     /// as these dictionaries are not yet created in DataFormats/TrackReco/src/classes.h (DataFormats/GsfTrackReco/src/classes.h)
     edm::Ptr<reco::Track> dummyTrackPtr;
     edm::Ptr<reco::GsfTrack> dummyGsfTrackPtr;
+
+    /// create dictionaries for SVmassRecoSolution objects
+    SVmassRecoSolution dummySVmassRecoSolution;
+    //edm::Wrapper<SVmassRecoSolution> dummySVmassRecoSolutionWrapper;
+    std::vector<SVmassRecoSolution> dummySVmassRecoSolutionCollection;
+    //edm::Wrapper<std::vector<SVmassRecoSolution> > dummySVmassRecoSolutionCollectionWrapper;
 
     /// create dictionaries for PATElecPair objects
     PATElecPair dummyPATElecPair;
