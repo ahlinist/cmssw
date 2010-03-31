@@ -163,7 +163,7 @@ if [ "`ls ${plots_dir} |grep -c EBTIMES`" -gt "0" ]; then
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EECrysAmp_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EECrysAmp_${run_num}.png\"> </A>
 <br>
 
-<h4><A name=\"MyNewTTree\">${analy_type} TTree BX, Time, Trigger Occupancy</h4>
+<h4><A name=\"MyNewTTree\">${analy_type} TTree BX, Time, Trigger Occupancy, E1/E9, KSwissCross</h4>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_AbsTime_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_AbsTime_${run_num}.png\"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_BX_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_BX_${run_num}.png\"> </A>
@@ -171,6 +171,10 @@ if [ "`ls ${plots_dir} |grep -c EBTIMES`" -gt "0" ]; then
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_Triggers_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_Triggers_${run_num}.png\"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_TechTriggers_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_TechTriggers_${run_num}.png\"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_E1OE9EB_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_E1OE9EB_${run_num}.png\"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_KSwissCrossEB_${run_num}.png> <img height=\"200\" src=\"http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_KSwissCrossEB_${run_num}.png\"> </A>
+
 
 <h4><A name=\"TTreeAbs\"> Absolute Time to Average Event Timing </h4>
 
@@ -265,7 +269,10 @@ Jump to:<br>
 <br>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBPlus2Minus_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBPlus2Minus_${run_num}.png"> </A>
- 
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaRelBHP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaRelBHP_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaRelBHM_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_timeTTAllFEDsEtaRelBHM_${run_num}.png"> </A>
+
+
 <h4><A name="TTreeProfs">Time Projection Profiles</h4>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_timeCHAllFEDsEtaRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_timeCHAllFEDsEtaRel_${run_num}.png"> </A>
