@@ -17,35 +17,37 @@ from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 loadAHtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = copy.deepcopy(processAHtoMuTau_ZtautauSum.config_dqmFileLoader),
     Zmumu = copy.deepcopy(processAHtoMuTau_ZmumuSum.config_dqmFileLoader),
+    ZplusJets = copy.deepcopy(processAHtoMuTau_ZplusJetsSum.config_dqmFileLoader),
     WplusJets = copy.deepcopy(processAHtoMuTau_WplusJetsSum.config_dqmFileLoader),
+    Vqq = copy.deepcopy(processAHtoMuTau_VqqSum.config_dqmFileLoader),                           
     InclusivePPmuX = copy.deepcopy(processAHtoMuTau_InclusivePPmuXsum.config_dqmFileLoader),
     PPmuXptGt20 = copy.deepcopy(processAHtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader),
     TTplusJets = copy.deepcopy(processAHtoMuTau_TTplusJetsSum.config_dqmFileLoader),
-    AH_tautau = copy.deepcopy(processAHtoMuTau_AH_tautau.config_dqmFileLoader),
-    AHbb_tautau = copy.deepcopy(processAHtoMuTau_AHbb_tautauSum.config_dqmFileLoader)
+    AH120_tautau = copy.deepcopy(processAHtoMuTau_AH120_tautau.config_dqmFileLoader),
+    AHbb120_tautau = copy.deepcopy(processAHtoMuTau_AHbb120_tautauSum.config_dqmFileLoader)
 )
 
-addAHtoMuTau_woBtag_AH_tautauSum = cms.EDAnalyzer("DQMHistAdder",
-    AH_tautauSum = cms.PSet(
+addAHtoMuTau_woBtag_AH120_tautauSum = cms.EDAnalyzer("DQMHistAdder",
+    AH120_tautauSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/AH_tautau/ahMuTauAnalyzer_woBtag',
-            'harvested/AHbb_tautau/ahMuTauAnalyzer_woBtag'
+            'harvested/AH120_tautau/ahMuTauAnalyzer_woBtag',
+            'harvested/AHbb120_tautau/ahMuTauAnalyzer_woBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/AH_tautauSum/ahMuTauAnalyzer_woBtag')
+        dqmDirectory_output = cms.string('harvested/AH120_tautauSum/ahMuTauAnalyzer_woBtag')
     )                          
 )
 
-addAHtoMuTau_wBtag_AH_tautauSum = cms.EDAnalyzer("DQMHistAdder",
-    AH_tautauSum = cms.PSet(
+addAHtoMuTau_wBtag_AH120_tautauSum = cms.EDAnalyzer("DQMHistAdder",
+    AH120_tautauSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/AH_tautau/ahMuTauAnalyzer_wBtag',
-            'harvested/AHbb_tautau/ahMuTauAnalyzer_wBtag'
+            'harvested/AH120_tautau/ahMuTauAnalyzer_wBtag',
+            'harvested/AHbb120_tautau/ahMuTauAnalyzer_wBtag'
         ),
-        dqmDirectory_output = cms.string('harvested/AH_tautauSum/ahMuTauAnalyzer_wBtag')
+        dqmDirectory_output = cms.string('harvested/AH120_tautauSum/ahMuTauAnalyzer_wBtag')
     )                          
 )
 
-addAHtoMuTau_AH_tautauSum = cms.Sequence(addAHtoMuTau_woBtag_AH_tautauSum * addAHtoMuTau_wBtag_AH_tautauSum)
+addAHtoMuTau_AH120_tautauSum = cms.Sequence(addAHtoMuTau_woBtag_AH120_tautauSum * addAHtoMuTau_wBtag_AH120_tautauSum)
 
 addAHtoMuTau_woBtag_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
@@ -72,8 +74,11 @@ addAHtoMuTau_qcdSum = cms.Sequence(addAHtoMuTau_woBtag_qcdSum * addAHtoMuTau_wBt
 addAHtoMuTau_woBtag_smBgSum = cms.EDAnalyzer("DQMHistAdder",
     smBgSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
+            'harvested/Ztautau/ahMuTauAnalyzer_woBtag',
             'harvested/Zmumu/ahMuTauAnalyzer_woBtag',
+            #'harvested/ZplusJets/ahMuTauAnalyzer_woBtag',
             'harvested/WplusJets/ahMuTauAnalyzer_woBtag',
+            'harvested/Vqq/ahMuTauAnalyzer_woBtag',
             'harvested/TTplusJets/ahMuTauAnalyzer_woBtag',
             'harvested/qcdSum/ahMuTauAnalyzer_woBtag'
         ),
@@ -84,8 +89,11 @@ addAHtoMuTau_woBtag_smBgSum = cms.EDAnalyzer("DQMHistAdder",
 addAHtoMuTau_wBtag_smBgSum = cms.EDAnalyzer("DQMHistAdder",
     smBgSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
+            'harvested/Ztautau/ahMuTauAnalyzer_wBtag',
             'harvested/Zmumu/ahMuTauAnalyzer_wBtag',
+            #'harvested/ZplusJets/ahMuTauAnalyzer_wBtag',
             'harvested/WplusJets/ahMuTauAnalyzer_wBtag',
+            'harvested/Vqq/ahMuTauAnalyzer_wBtag',
             'harvested/TTplusJets/ahMuTauAnalyzer_wBtag',
             'harvested/qcdSum/ahMuTauAnalyzer_wBtag'
         ),
@@ -98,7 +106,7 @@ addAHtoMuTau_smBgSum = cms.Sequence(addAHtoMuTau_woBtag_smBgSum * addAHtoMuTau_w
 addAHtoMuTau_woBtag_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Ztautau/ahMuTauAnalyzer_woBtag',
+            ##'harvested/Ztautau/ahMuTauAnalyzer_woBtag',
             'harvested/smBgSum/ahMuTauAnalyzer_woBtag'
         ),
         dqmDirectory_output = cms.string('harvested/smSum/ahMuTauAnalyzer_woBtag')
@@ -108,7 +116,7 @@ addAHtoMuTau_woBtag_smSum = cms.EDAnalyzer("DQMHistAdder",
 addAHtoMuTau_wBtag_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Ztautau/ahMuTauAnalyzer_wBtag',
+            ##'harvested/Ztautau/ahMuTauAnalyzer_wBtag',
             'harvested/smBgSum/ahMuTauAnalyzer_wBtag'
         ),
         dqmDirectory_output = cms.string('harvested/smSum/ahMuTauAnalyzer_wBtag')
@@ -117,13 +125,15 @@ addAHtoMuTau_wBtag_smSum = cms.EDAnalyzer("DQMHistAdder",
 
 addAHtoMuTau_smSum = cms.Sequence(addAHtoMuTau_woBtag_smSum * addAHtoMuTau_wBtag_smSum)
 
-addAHtoMuTau = cms.Sequence(addAHtoMuTau_AH_tautauSum * addAHtoMuTau_qcdSum * addAHtoMuTau_smBgSum * addAHtoMuTau_smSum)
+addAHtoMuTau = cms.Sequence(addAHtoMuTau_AH120_tautauSum * addAHtoMuTau_qcdSum * addAHtoMuTau_smBgSum * addAHtoMuTau_smSum)
 
 plotAHtoMuTau_woBtag = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
         Ztautau = copy.deepcopy(process_Ztautau.config_dqmHistPlotter),
         Zmumu = copy.deepcopy(process_Zmumu.config_dqmHistPlotter),
+        #ZplusJets = copy.deepcopy(process_ZplusJets.config_dqmHistPlotter),
         WplusJets = copy.deepcopy(process_WplusJets.config_dqmHistPlotter),
+        Vqq = copy.deepcopy(process_Vqq.config_dqmHistPlotter),
         TTplusJets = copy.deepcopy(process_TTplusJets.config_dqmHistPlotter),
         InclusivePPmuX = copy.deepcopy(process_InclusivePPmuX.config_dqmHistPlotter),
         PPmuXptGt20 = copy.deepcopy(process_PPmuXptGt20.config_dqmHistPlotter),
@@ -132,8 +142,8 @@ plotAHtoMuTau_woBtag = cms.EDAnalyzer("DQMHistPlotter",
             legendEntry = cms.string('QCD'),
             type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
         ),
-        AH_tautauSum = cms.PSet(
-            dqmDirectory = cms.string('harvested/AH_tautauSum'),
+        AH120_tautauSum = cms.PSet(
+            dqmDirectory = cms.string('harvested/AH120_tautauSum'),
             legendEntry = cms.string('A/H #rightarrow #tau^{+} #tau^{-}'),
             type = cms.string('bsmMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
         )
@@ -174,10 +184,12 @@ plotAHtoMuTau_woBtag = cms.EDAnalyzer("DQMHistPlotter",
         default = cms.PSet(
             Ztautau = copy.deepcopy(drawOption_Ztautau),
             Zmumu = copy.deepcopy(drawOption_Zmumu),
+            #ZplusJets = copy.deepcopy(drawOption_ZplusJets),
             WplusJets = copy.deepcopy(drawOption_WplusJets),
+            Vqq = copy.deepcopy(drawOption_Vqq),
             TTplusJets = copy.deepcopy(drawOption_TTplusJets),
             qcdSum = copy.deepcopy(drawOption_QCD),
-            AH_tautauSum = copy.deepcopy(drawOption_AHbb_separate),
+            AH120_tautauSum = copy.deepcopy(drawOption_AHbb_separate),
         )
     ),
                               

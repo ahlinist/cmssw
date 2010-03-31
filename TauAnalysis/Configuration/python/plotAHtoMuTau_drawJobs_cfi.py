@@ -14,8 +14,10 @@ plots_AHtoMuTau = cms.PSet(
             'WplusJets',
             'TTplusJets',
             'qcdSum',
+            #'ZplusJets',
+            'Vqq',
             'Ztautau',
-            'AH_tautauSum',
+            'AH120_tautauSum'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -29,6 +31,8 @@ plots_AHtoMuTau = cms.PSet(
         'WplusJets',
         'TTplusJets',
         'qcdSum',
+        #'ZplusJets',
+        'Vqq',
         'Ztautau'
     )
 )
@@ -615,6 +619,12 @@ finalSamplePlots = \
         title = "M(Muon + Tau), collinear Approx. (final Event sample)",
         xAxis = 'Mass',
         name = "finalSamplePlots_mCollApprox"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/SVfitMass',
+        title = "M(Muon + Tau), SV method (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_mSVmethod"
     ),
     drawJobConfigEntry(
         meName = 'JetQuantities/Jet#PAR#',
