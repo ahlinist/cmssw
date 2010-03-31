@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc,v 1.4 2010/03/26 15:41:27 oiorio Exp $ 
+ *\version  $Id: TopProducer.cc,v 1.5 2010/03/30 15:05:24 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -151,7 +151,6 @@ iEvent.getByLabel(METsSrc_,mets);
        Top.addDaughter(jets->at(j),"BJet");
        Top.addDaughter(mets->at(m),"MET");
  
-
 
 
        std::vector<math::XYZTLorentzVector> NuMomenta = Nu4Momentum(muons->at(i),mets->at(m));
@@ -318,9 +317,11 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
     //    std::cout<<" MtW2 from min py and min px "<< sqrt((minPy*minPy+minPx*minPx))*ptlep*2 -2*(pxlep*minPx + pylep*minPy)  <<std::endl;
     ///    ////Y part   
 
-
-    pznu = a;
-    if(!useMetForNegativeSolutions_){
+    double mu_Minimum = (mW*mW)/2 + minPx*pxlep + minPy*pylep;
+    double a_Minimum  = (mu_Minimum*Lepton.pz())/(Lepton.energy()*Lepton.energy() - Lepton.pz()*Lepton.pz());
+    pznu = a_Minimum;
+    
+ if(!useMetForNegativeSolutions_){
       double Enu = sqrt(minPx*minPx+minPy*minPy + pznu*pznu);
       p4nu_rec.SetPxPyPzE(minPx, minPy, pznu , Enu);
     }
