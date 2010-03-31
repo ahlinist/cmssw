@@ -56,6 +56,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   MonitorElement* hGenLeg1PtVsLeg2Pt_;
   MonitorElement* hGenLeg1EtaVsLeg2Eta_;
+  MonitorElement* hGenLeg1DecayTime_;
+  MonitorElement* hGenLeg2DecayTime_;
 
   MonitorElement* hDiTauCandidatePt_;
   MonitorElement* hDiTauCandidateEta_;
@@ -64,7 +66,12 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDiTauCandidateMass_;
 
   MonitorElement* hSVfitMass_; 
-  MonitorElement* hSVfitNLLvsMass_; 
+  MonitorElement* hSVfitMassBestMatch_; 
+  MonitorElement* hSVfitMassVsLogLikelihood_; 
+  MonitorElement* hSVfitLogLikelihood_;
+  MonitorElement* hSVfitDecayTimeLeg1_;
+  MonitorElement* hSVfitDecayTimeLeg2_;
+  MonitorElement* hSVfitStatus_; 
 
   MonitorElement* hLeg1PtVsLeg2Pt_;
   MonitorElement* hLeg1EtaVsLeg2Eta_;

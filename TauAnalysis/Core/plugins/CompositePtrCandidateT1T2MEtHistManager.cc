@@ -15,6 +15,8 @@
 #include <TMath.h>
 
 const double epsilon = 0.01;
+const double speedOfLight = 3.e+10; // speed of light [cm/s]
+const double tauLeptonMass = 1.78; // tau lepton mass [GeV]
 
 template<typename T1, typename T2>
 bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate)
@@ -77,6 +79,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   
   hGenLeg1PtVsLeg2Pt_ = book2D("GenLeg1PtVsLeg2Pt", "gen. leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
   hGenLeg1EtaVsLeg2Eta_ = book2D("GenLeg1EtaVsLeg2Eta", "gen. leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
+  hGenLeg1DecayTime_ = book1D("GenLeg1DecayTime", "gen. leg_{1} Decay eigentime", 100, 0., 1000.);
+  hGenLeg2DecayTime_ = book1D("GenLeg2DecayTime", "gen. leg_{2} Decay eigentime", 100, 0., 1000.);
 
   hDiTauCandidatePt_ = book1D("DiTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
   hDiTauCandidateEta_ = book1D("DiTauCandidateEta", "Composite #eta", 100, -5., +5.);
@@ -84,9 +88,14 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hDiTauCandidateCharge_ = book1D("DiTauCandidateCharge", "Composite Charge", 11, -5.5, +5.5);
   hDiTauCandidateMass_ = book1D("DiTauCandidateMass", "Composite Invariant Mass", 50, 0., 250.);
 
-  hSVfitMass_ = book1D("SVfitMass", "SV Method Mass", 50, 0., 250.);
-  hSVfitNLLvsMass_ = book2D("SVfitNLLvsMass", "SV Method Mass vs. log-Likelihood", 100, -40, 60, 50, 0., 250.);
-
+  hSVfitMass_ = book1D("SVfitMass", "SVfit Mass", 50, 0., 250.);
+  hSVfitMassBestMatch_ = book1D("SVfitMassBestMatch", "SVfit Mass best matching gen. Mass", 50, 0., 250.);
+  hSVfitMassVsLogLikelihood_ = book2D("SVfitMassVsLogLikelihood", "SVfit Mass vs. log-Likelihood", 20, -35., 25., 50, 0., 250.);
+  hSVfitLogLikelihood_ = book1D("SVfitLogLikelihood", "SVfit log-Likelihood", 100, -50., 50.);
+  hSVfitDecayTimeLeg1_ = book1D("SVfitDecayTimeLeg1", "SVfit leg_{1} Decay eigentime", 100, 0., 1000.);
+  hSVfitDecayTimeLeg2_ = book1D("SVfitDecayTimeLeg1", "SVfit leg_{1} Decay eigentime", 100, 0., 1000.);
+  hSVfitStatus_ = book1D("SVfitStatus", "SVfit Status", 10, -2.5, 7.5);
+  
   hLeg1PtVsLeg2Pt_ = book2D("Leg1PtVsLeg2Pt", "leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
   hLeg1EtaVsLeg2Eta_ = book2D("Leg1EtaVsLeg2Eta", "leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
   
@@ -136,6 +145,14 @@ double CompositePtrCandidateT1T2MEtHistManager<T1,T2>::getDiTauCandidateWeight(c
   return (diTauLeg1Weight*diTauLeg2Weight);
 }
 
+double compDecayEigenTime(const reco::Candidate::Point& primaryVertexPos, const reco::Candidate::Point& decayVertexPos, 
+			  double tauLeptonEnergy)
+{
+  double decayDistance = TMath::Sqrt((decayVertexPos - primaryVertexPos).Mag2());
+  double gamma = tauLeptonEnergy/tauLeptonMass;
+  return decayDistance/(speedOfLight*gamma);
+}
+
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
@@ -176,6 +193,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
       hGenLeg1PtVsLeg2Pt_->Fill(diTauCandidate->p4VisLeg1gen().pt(), diTauCandidate->p4VisLeg2gen().pt(), weight);
       hGenLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->p4VisLeg1gen().eta(), diTauCandidate->p4VisLeg2gen().eta(), weight);
+
+      hGenLeg1DecayTime_->Fill(compDecayEigenTime(diTauCandidate->decayVertexPosLeg1gen(), 
+						  diTauCandidate->primaryVertexPosGen(), diTauCandidate->p4Leg1gen().energy()), weight);
+      hGenLeg2DecayTime_->Fill(compDecayEigenTime(diTauCandidate->decayVertexPosLeg2gen(), 
+						  diTauCandidate->primaryVertexPosGen(), diTauCandidate->p4Leg2gen().energy()), weight);
     }
 
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
@@ -184,10 +206,33 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hDiTauCandidateCharge_->Fill(diTauCandidate->charge(), weight);
     hDiTauCandidateMass_->Fill(diTauCandidate->mass(), weight);
 
-    if ( diTauCandidate->svFitSolutionIsValid() ) {
-      hSVfitMass_->Fill(diTauCandidate->p4SVfit().mass(), weight);
-      hSVfitNLLvsMass_->Fill(diTauCandidate->svFitSolutionNLL(), diTauCandidate->p4SVfit().mass(), weight);
+    double genDiTauMass = diTauCandidate->p4gen().mass();
+    double svFitMassBestMatch = 1.e+6;
+
+    const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
+    for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
+	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
+      if ( svFitSolution->isValidSolution() ) {
+	hSVfitMass_->Fill(svFitSolution->p4().mass(), weight);
+	hSVfitMassVsLogLikelihood_->Fill(svFitSolution->logLikelihood(), svFitSolution->p4().mass(), weight);
+	hSVfitLogLikelihood_->Fill(svFitSolution->logLikelihood(), svFitSolution->p4().mass(), weight);
+	double leg1TotEnergy = ( svFitSolution->x1() > 0 && svFitSolution->x1() <= 1 ) ?
+	  svFitSolution->p4VisLeg1().energy()/svFitSolution->x1() : svFitSolution->p4VisLeg1().energy();
+	hSVfitDecayTimeLeg1_->Fill(compDecayEigenTime(svFitSolution->decayVertexPosLeg1(), 
+						      svFitSolution->primaryVertexPosSVrefitted(), leg1TotEnergy), weight);
+	double leg2TotEnergy = ( svFitSolution->x2() > 0 && svFitSolution->x2() <= 1 ) ?
+	  svFitSolution->p4VisLeg2().energy()/svFitSolution->x2() : svFitSolution->p4VisLeg2().energy();
+	hSVfitDecayTimeLeg2_->Fill(compDecayEigenTime(svFitSolution->decayVertexPosLeg2(), 
+						      svFitSolution->primaryVertexPosSVrefitted(), leg2TotEnergy), weight);
+	hSVfitStatus_->Fill(svFitSolution->svFitStatus(), weight);
+
+	if ( TMath::Abs(svFitSolution->p4().mass() - genDiTauMass) < TMath::Abs(svFitMassBestMatch - genDiTauMass) ) {
+	  svFitMassBestMatch = svFitSolution->p4().mass();
+	}
+      }
     }
+
+    if ( svFitMassBestMatch != 1.e+6 ) hSVfitMassBestMatch_->Fill(svFitMassBestMatch, weight);
 
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
     hLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->leg1()->eta(), diTauCandidate->leg2()->eta(), weight);
