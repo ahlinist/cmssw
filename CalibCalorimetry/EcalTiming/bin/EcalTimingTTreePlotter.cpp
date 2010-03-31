@@ -67,6 +67,8 @@ struct TTreeMembers {
   float cryTimeErrorsEE_[14648];
   float cryAmpsEB_[61200];
   float cryAmpsEE_[14648];
+  float e1Oe9EB_[61200];
+  float kswisskEB_[61200];
   int numTriggers_;
   int numTechTriggers_;
   int triggers_[200];
@@ -395,8 +397,8 @@ int main(int argc,  char * argv[]){
   runNumber = runNum;
   bool fit = true;
 
-  char name[100];  
-  char mytitle[200];
+  char name[300];  
+  char mytitle[300];
 
   const int nHists1=130;
   const int nHists = nHists1;
@@ -404,7 +406,7 @@ int main(int argc,  char * argv[]){
   cout << nHists1 << " " << nHists << endl;;
 
   TCanvas* c[nHists];
-  char cname[100]; 
+  char cname[200]; 
 
   for (int i=0; i<nHists1; i++) {
     sprintf(cname,"c%i",i);
@@ -839,6 +841,8 @@ int main(int argc,  char * argv[]){
   eventTimingInfoTree->SetBranchAddress("crystalTimeErrorsEE",&(TTreeMembers_.cryTimeErrorsEE_[0]));
   eventTimingInfoTree->SetBranchAddress("crystalAmplitudesEB",&(TTreeMembers_.cryAmpsEB_[0]));
   eventTimingInfoTree->SetBranchAddress("crystalAmplitudesEE",&(TTreeMembers_.cryAmpsEE_[0]));
+  eventTimingInfoTree->SetBranchAddress("e1Oe9EB",&(TTreeMembers_.e1Oe9EB_[0]));
+  eventTimingInfoTree->SetBranchAddress("kswisskEB",&(TTreeMembers_.kswisskEB_[0]));
   eventTimingInfoTree->SetBranchAddress("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_);
   eventTimingInfoTree->SetBranchAddress("correctionToSampleEEP",&TTreeMembers_.correctionToSample5EEP_);
   eventTimingInfoTree->SetBranchAddress("correctionToSampleEEM",&TTreeMembers_.correctionToSample5EEM_);
@@ -896,7 +900,9 @@ int main(int argc,  char * argv[]){
   TH2F *hctEEcryamp   = new TH2F("hctEEcryamp",Form("%s EE amplitudes vs number of crystals;Crystal Amp (GeV);Number EE crystals",runChar),50,0.,50.,25,0., 25.);
   TH2F *hctEBcryamp   = new TH2F("hctEBcryamp",Form("%s EB amplitudes vs number of crystals;Crystal Amp (GeV);Number EB crystals",runChar),50,0.,50.,25,0., 25.);
 
-   
+  TH1F *hctE1OE9   = new TH1F("hctE1OE9",  Form("%s EB E1/E9; E1/E9",runChar),100,0.,1.2);
+  TH1F *hctKSwissK = new TH1F("hctKSwissK",Form("%s EB KSwissCross; KSwissCross (1-e4/e1)",runChar),100,-0.6,1.);
+
 
   TH1F *hEBTimeEtaLess5 = new TH1F("hEBTimeEtaLess5",Form("%s EB Timing |ieta|<5; Crystal Time (ns); Entries",runChar),100, -EBTimeMax, EBTimeMax);
   TH1F *hEBPlusTime     = new TH1F("hEBPlusTime", Form("%s EB+ Timing; Crystal Time (ns); Entries",runChar),100, -EBTimeMax, EBTimeMax);
@@ -947,6 +953,11 @@ int main(int argc,  char * argv[]){
 
   TProfile* NtimeTTAllFEDsEta    = NewTProfile(timeTTAllFEDsEta,"NtimeTTAllFEDsEta");
   NtimeTTAllFEDsEta->SetTitle(Form("%s EB Eta Time Profile TT bins;i#eta;Time (ns)",runChar));
+  TProfile* NtimeTTAllFEDsEtaBHP    = NewTProfile(timeTTAllFEDsEta,"NtimeTTAllFEDsEtaBHP");
+  NtimeTTAllFEDsEtaBHP->SetTitle(Form("%s EB Eta Time Profile TT bins EB+(-25 to -8ns) EB-(-10 to 10ns);i#eta;Time (ns)",runChar));
+  TProfile* NtimeTTAllFEDsEtaBHM    = NewTProfile(timeTTAllFEDsEta,"NtimeTTAllFEDsEtaBHM");
+  NtimeTTAllFEDsEtaBHM->SetTitle(Form("%s EB Eta Time Profile TT bins EB-(-25 to -8ns) EB+(-10 to 10ns);i#eta;Time (ns)",runChar));
+
   //TProfile* NtimeCHAllFEDsEta    = NewTProfile(timeCHAllFEDsEta,"NtimeCHAllFEDsEta");
   //NtimeCHAllFEDsEta->SetTitle(Form("%s EB Eta Time Profile CH bins;i#eta;Time (ns)",runChar));
   TProfile* NtimeTTAllFEDsEtaEEP = NewTProfile(timeTTAllFEDsEtaEEP,"NtimeTTAllFEDsEtaEEP");
@@ -975,6 +986,7 @@ int main(int argc,  char * argv[]){
      double BX =  TTreeMembers_.bx_;
      double lumi = TTreeMembers_.lumiSection_;
      double orbit = TTreeMembers_.orbit_;
+     
      
      
      bool keepEvent = false ;
@@ -1087,6 +1099,10 @@ int main(int argc,  char * argv[]){
 	 double myt     = TTreeMembers_.cryTimesEB_[ebx];
          double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
 	 if (myterr > 5.0 ) continue;
+	 double kswissk = TTreeMembers_.kswisskEB_[ebx];
+         double e1Oe9 =  TTreeMembers_.e1Oe9EB_[ebx];
+         if (e1Oe9 > 0.9) continue;
+	 if (kswissk > .85) continue; 
 	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
          int ieta = mydet.ieta();
          int iphi = mydet.iphi();
@@ -1104,6 +1120,8 @@ int main(int argc,  char * argv[]){
 	 NfullAmpProfileEB->Fill(iphi,ieta,amp);
 	 NtimeTTAllFEDsEta->Fill(ieta,myt);
 	 NtimeCHAllFEDsEta->Fill(ieta,myt);
+	 hctE1OE9->Fill(e1Oe9);
+	 hctKSwissK->Fill(kswissk);
          if ( fabs(ieta) < 5 ) hEBTimeEtaLess5->Fill(myt);
      }
      for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
@@ -1186,11 +1204,18 @@ int main(int argc,  char * argv[]){
          double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
-         //int ieta = mydet.ieta();
+         int ieta = mydet.ieta();
          //int iphi = mydet.iphi();
+	 double kswissk = TTreeMembers_.kswisskEB_[ebx];
+	 double e1Oe9 =  TTreeMembers_.e1Oe9EB_[ebx];
+         if (e1Oe9 > 0.9) continue;
+	 if (kswissk > 0.85) continue;
 	 hctEBtoAve->Fill(myt,EBave);
 	 hctEBtoAmpEvt->Fill(EBave,amp);
          hctEBcryamp->Fill(amp,EBnum);
+         if (EBPave > -25. && EBPave < -8. && EBMave > -10. && EBMave < 10.)  NtimeTTAllFEDsEtaBHP->Fill(ieta,myt);
+         else if (EBMave > -25. && EBMave < -8. && EBPave > -10. && EBPave < 10.)  NtimeTTAllFEDsEtaBHM->Fill(ieta,myt);
+
      }
      for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
          int crystalHashedIndicesEE = TTreeMembers_.cryHashesEE_[eex];
@@ -1598,11 +1623,26 @@ int main(int argc,  char * argv[]){
   hEBPlus2Minus->Draw("colz");
   hEBPlus2Minus->SetMinimum(1.0);
   c[83]->SetLogy(0);
-  c[83]->SetLogz(0);
+  c[83]->SetLogz(1);
   c[83]->SetGridx(0);
   c[83]->SetGridy(0);
   //c[15]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBPlus2Minus_%s.%s",dirName,mType,runNumber,fileType); c[83]->Print(name); }
+
+
+  c[84]->cd();
+  gStyle->SetOptStat(111110);
+  hctE1OE9->Draw();
+  c[84]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_E1OE9EB_%s.%s",dirName,mType,runNumber,fileType); c[84]->Print(name); }
+
+  c[84]->cd();
+  gStyle->SetOptStat(111110);
+  hctKSwissK->Draw();
+  c[84]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_KSwissCrossEB_%s.%s",dirName,mType,runNumber,fileType); c[84]->Print(name); }
+ 
+
 
   c[84]->cd();
   gStyle->SetOptStat(111110);
@@ -2189,6 +2229,24 @@ int main(int argc,  char * argv[]){
   NtimeTTAllFEDsEta->SetMaximum(thight/3.);
   gStyle->SetOptStat(100);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaRel_%s.%s",dirName,mType,runNumber,fileType); c[24]->Print(name); }
+
+  c[24]->cd();
+  customizeTProfile(NtimeTTAllFEDsEtaBHP);
+  NtimeTTAllFEDsEtaBHP->Draw("p");
+  NtimeTTAllFEDsEtaBHP->SetMinimum(tlowt/3.);
+  NtimeTTAllFEDsEtaBHP->SetMaximum(thight/3.);
+  gStyle->SetOptStat(100);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaRelBHP_%s.%s",dirName,mType,runNumber,fileType); c[24]->Print(name); }
+
+  c[24]->cd();
+  customizeTProfile(NtimeTTAllFEDsEtaBHM);
+  NtimeTTAllFEDsEtaBHM->Draw("p");
+  NtimeTTAllFEDsEtaBHM->SetMinimum(tlowt/3.);
+  NtimeTTAllFEDsEtaBHM->SetMaximum(thight/3.);
+  gStyle->SetOptStat(100);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaRelBHM_%s.%s",dirName,mType,runNumber,fileType); c[24]->Print(name); }
+
+
   
   c[25]->cd();
   customizeTProfile(NtimeTTAllFEDsEtaEEP);
@@ -2274,6 +2332,8 @@ int main(int argc,  char * argv[]){
   hEBPlusTime->Write();
   hEBMinusTime->Write();
   hEBPlus2Minus->Write();
+  hctE1OE9->Write();
+  hctKSwissK->Write();
   hAbsTime->Write();
   hBX->Write();   
   hLumi->Write();
@@ -2312,6 +2372,8 @@ int main(int argc,  char * argv[]){
   NtimeCHProfile->Write();
   chhistEBN->Write();
   NtimeTTProfile->Write();
+  NtimeTTAllFEDsEtaBHP->Write();
+  NtimeTTAllFEDsEtaBHM->Write();
   tthistEBN->Write();
   NEEPtimeCHProfile->Write();
   chhistEEPN->Write();
