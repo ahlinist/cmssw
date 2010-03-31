@@ -50,7 +50,7 @@ void wTauNuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
   bool matched = false;
   for( edm::View<reco::GenJet>::const_iterator genJet = genJetCollection->begin();genJet != genJetCollection->end(); ++genJet){
 	if(genJet->pt() > 10){
-	  if(abs(genJet->eta()) > 3)
+	  if(TMath::Abs(genJet->eta()) > 3)
 		*outputStream_<<"HIGH ETA GEN-JET!!! ";
 	  *outputStream_<<"gen-jet: Pt = "<<genJet->pt()<<", eta = "
 					<<genJet->eta()<<", phi = "
