@@ -25,6 +25,7 @@
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "CLHEP/Vector/LorentzVector.h"
 
 using namespace edm;
 using namespace reco;
@@ -38,6 +39,8 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mMetName                = cfg.getParameter<std::string>              ("met");
   mMetNoHFName            = cfg.getParameter<std::string>              ("metNoHF");
   mJetExtender            = cfg.getParameter<std::string>              ("jetExtender");
+  mJptZSPName             = cfg.getParameter<std::string>              ("jptZSP");
+  mJptCorName             = cfg.getParameter<std::string>              ("jptCorrector");
   mHcalNoiseTag           = cfg.getParameter<edm::InputTag>            ("hcalNoiseTag");
   mTriggerNames           = cfg.getParameter<std::vector<std::string> >("jetTriggerNames");
   mL1TriggerNames         = cfg.getParameter<std::vector<std::string> >("l1TriggerNames");   
@@ -156,6 +159,13 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   Handle<GenJetCollection> genjets;
   if (mIsMCarlo)
     event.getByLabel(mGenJetsName,genjets);
+
+  // get the zsp corrected jets
+  Handle<CaloJetCollection> zspjets;
+  event.getByLabel(mJptZSPName, zspjets);
+  // get JPT corrector
+  const JetCorrector* correctorJPT = JetCorrector::getJetCorrector (mJptCorName, iSetup);
+
   ////////////// Trigger //////
   //===================== save HLT Trigger information =======================
   Handle<TriggerResults> triggerResultsHandle;
@@ -266,7 +276,9 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   
   if ((*jets).size() > 0);
      {
-       for(unsigned int ind=0;ind<(*jets).size();ind++)
+       unsigned int ind=0;
+       //for(unsigned int ind=0;ind<(*jets).size();ind++)
+       for( CaloJetCollection::const_iterator cjet = jets->begin(); cjet != jets->end(); cjet++, ind++ )  
          {       
            if ((*jets)[ind].pt() < mJetPtMin) continue;
            if (mIsMCarlo)
@@ -283,22 +295,19 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
                        rmin = deltaR;
                        indMatchedGen = indGen;
                      }
-                 } 
-               if (indMatchedGen >= 0)
-                 {
-                   mGenMatchR  ->push_back(rmin);
-                   mGenMatchPt ->push_back((*genjets)[indMatchedGen].pt());
-                   mGenMatchEta->push_back((*genjets)[indMatchedGen].eta());
-                   mGenMatchPhi->push_back((*genjets)[indMatchedGen].phi());
                  }
-               else
-                 {
-                   mGenMatchR  ->push_back(-999);
-                   mGenMatchPt ->push_back(-999);
-                   mGenMatchEta->push_back(-999);
-                   mGenMatchPhi->push_back(-999);
-                 } 
-             }
+	       if(indMatchedGen>=0) {
+		 mGenMatchR  ->push_back(rmin);
+		 mGenMatchPt ->push_back((*genjets)[indMatchedGen].pt());
+		 mGenMatchEta->push_back((*genjets)[indMatchedGen].eta());
+		 mGenMatchPhi->push_back((*genjets)[indMatchedGen].phi());	
+	       } else {
+		 mGenMatchR  ->push_back(-1.0);
+		 mGenMatchPt ->push_back(-1.0);
+		 mGenMatchEta->push_back(-1.0);
+		 mGenMatchPhi->push_back(-1.0);
+	       }
+	     } // if MC
            LorentzVector TrkCaloP4 = JetExtendedAssociation::tracksAtCaloP4(*jetExtender,(*jets)[ind]);
            LorentzVector TrkVtxP4  = JetExtendedAssociation::tracksAtVertexP4(*jetExtender,(*jets)[ind]);
            RefToBase<Jet> jetRef(Ref<CaloJetCollection>(jets,ind));
@@ -332,8 +341,61 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
                  jetEneNoise += jTowers[itow]->energy();
              }
            mfHcalNoise->push_back(jetEneNoise/(*jets)[ind].energy());
-         }
-    }
+	     
+	   // find the ZSP jet corresponding to this calo jet
+	   CLHEP::HepLorentzVector cjetc(cjet->px(), cjet->py(), cjet->pz(), cjet->energy());
+
+	   CaloJetCollection::const_iterator zspjet;
+	   for( zspjet = zspjets->begin(); zspjet != zspjets->end(); ++zspjet ){ 
+	     CLHEP::HepLorentzVector zspjetc(zspjet->px(), zspjet->py(), zspjet->pz(), zspjet->energy());
+	     double dr = zspjetc.deltaR(cjetc);
+	     if(dr < 0.001) break;
+	   }
+
+	   // get the JPT correction to this ZSP jet 
+	   JetCorrector::LorentzVector p4;
+	   double scaleJPT                = correctorJPT->correction( (*zspjet), jetRef, event, iSetup, p4 );
+	   Jet::LorentzVector jetscaleJPT = Jet::LorentzVector( p4.Px(), p4.Py(), p4.Pz(), p4.E() );
+	   
+	   CaloJet cjetJPT(jetscaleJPT, cjet->getSpecific(), cjet->getJetConstituents());
+
+	   // number of tracks used in JPT correction
+	   jpt::MatchedTracks pions;
+	   jpt::MatchedTracks muons;
+	   jpt::MatchedTracks electrons;
+	   jptCorrector_ = dynamic_cast<const JetPlusTrackCorrector*>(correctorJPT);
+	   jptCorrector_->matchTracks((*zspjet),event,iSetup,pions,muons,electrons);
+	   int NtrkJPT = pions.inVertexOutOfCalo_.size() + pions.inVertexInCalo_.size();
+
+	   double pTtrkMax = 0.0, pTMax = 0.0, sumPt=0.0;
+	   for (reco::TrackRefVector::const_iterator iInConeVtxTrk = pions.inVertexOutOfCalo_.begin(); 
+		iInConeVtxTrk != pions.inVertexOutOfCalo_.end(); ++iInConeVtxTrk) {
+	     const double pt  = (*iInConeVtxTrk)->pt();
+	     sumPt += pt;
+	     if(pt > pTMax) {
+	       pTtrkMax = pt;
+	       pTMax    = pTtrkMax;
+	     }
+	   }
+	   for (reco::TrackRefVector::const_iterator iInConeVtxTrk = pions.inVertexInCalo_.begin(); 
+		iInConeVtxTrk != pions.inVertexInCalo_.end(); ++iInConeVtxTrk) {
+	     const double pt  = (*iInConeVtxTrk)->pt();
+	     sumPt += pt;
+	     if(pt > pTMax) {
+	       pTtrkMax = pt;
+	       pTMax = pTtrkMax;
+	     }
+	   }
+   
+	   mEJPT       ->push_back(cjetJPT.energy());
+	   mPtJPT      ->push_back(cjetJPT.pt()    );
+	   mEtaJPT     ->push_back(cjetJPT.eta()   );
+	   mPhiJPT     ->push_back(cjetJPT.phi()   );
+	   mTrkMaxPtJPT->push_back(pTtrkMax        );
+	   mTrkSumPtJPT->push_back(sumPt           );
+	   mNTrksJPT   ->push_back(NtrkJPT         );
+	 } // loop over caloJets     
+     }
 
   if (preTreeFillCut()) mTree->Fill();
   //mFirstEventFlag=false;
@@ -377,6 +439,13 @@ void InclusiveJetTreeProducer::buildTree()
   mPVchi2       = new std::vector<double>();
   mPVndof       = new std::vector<double>();
   mPVntracks    = new std::vector<int>();
+  mEJPT         = new std::vector<double>();
+  mPtJPT        = new std::vector<double>();
+  mEtaJPT       = new std::vector<double>();
+  mPhiJPT       = new std::vector<double>();
+  mTrkMaxPtJPT  = new std::vector<double>();
+  mTrkSumPtJPT  = new std::vector<double>();
+  mNTrksJPT     = new std::vector<int>();
   
   mTree->Branch("pt"                 ,"vector<double>"      ,&mPt);
   mTree->Branch("eta"                ,"vector<double>"      ,&mEta);
@@ -385,6 +454,13 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("phi"                ,"vector<double>"      ,&mPhi);
   mTree->Branch("e"                  ,"vector<double>"      ,&mE);
   mTree->Branch("emf"                ,"vector<double>"      ,&mEmf);
+  mTree->Branch("eJpt"               ,"vector<double>"      ,&mEJPT);
+  mTree->Branch("ptJpt"              ,"vector<double>"      ,&mPtJPT);
+  mTree->Branch("etaJpt"             ,"vector<double>"      ,&mEtaJPT);
+  mTree->Branch("phiJpt"             ,"vector<double>"      ,&mPhiJPT);
+  mTree->Branch("trkmaxptJpt"        ,"vector<double>"      ,&mTrkMaxPtJPT);
+  mTree->Branch("trksumptJpt"        ,"vector<double>"      ,&mTrkSumPtJPT);
+  mTree->Branch("ntrksJpt"           ,"vector<int>"         ,&mNTrksJPT);
   mTree->Branch("etaMoment"          ,"vector<double>"      ,&mEtaMoment);
   mTree->Branch("phiMoment"          ,"vector<double>"      ,&mPhiMoment);
   mTree->Branch("nTrkVtx"            ,"vector<int>"         ,&mNtrkVtx);
@@ -472,6 +548,13 @@ void InclusiveJetTreeProducer::clearTreeVectors()
   mPhi        ->clear();
   mE          ->clear();
   mEmf        ->clear();
+  mEJPT       ->clear();
+  mPtJPT      ->clear();
+  mEtaJPT     ->clear();
+  mPhiJPT     ->clear();
+  mTrkMaxPtJPT->clear();
+  mTrkSumPtJPT->clear();
+  mNTrksJPT   ->clear();
   mEtaMoment  ->clear();
   mPhiMoment  ->clear();
   mNtrkVtx    ->clear();
