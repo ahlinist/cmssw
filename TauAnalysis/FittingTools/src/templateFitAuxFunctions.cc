@@ -647,7 +647,7 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
   legend.Draw();
  
   TPaveText* plotLabel_pave = 0;
-  if ( plotLabel != "" ) {
+  if ( std::string(plotLabel) != "" ) {
     plotLabel_pave = new TPaveText(0.17, 0.77, 0.33, 0.88, "brNDC");
     plotLabel_pave->SetBorderSize(0);
     plotLabel_pave->SetFillColor(0);
@@ -928,7 +928,7 @@ void makeControlPlotsCovariance(const TVectorD& bestEstimate, const TVectorD& er
 
       double Sxy = errCov(iX, iY);
       std::string fileNameParam = std::string("corr_").append(labelX).append("_vs_").append(labelY);
-      if ( type != "" ) fileNameParam.append("_").append(type);
+      if ( std::string(type) != "" ) fileNameParam.append("_").append(type);
       
       int errorFlag = 0;
       std::string fileName = replace_string(controlPlotsFileName, plotKeyword, fileNameParam, 1, 1, errorFlag);
