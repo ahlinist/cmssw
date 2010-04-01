@@ -18,7 +18,7 @@ process.loadAHtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/ve
 
 # import utility function to enable factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeAHtoMuTauPlots
-enableFactorization_makeAHtoMuTauPlots(process)
+enableFactorization_makeAHtoMuTauPlots(process, modName_addAHtoMuTau_AHsum_tautau = "addAHtoMuTau_AHsum120_tautau")
 
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
@@ -34,4 +34,4 @@ process.makeAHtoMuTauPlots = cms.Sequence(
 process.p = cms.Path(process.makeAHtoMuTauPlots)
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
