@@ -36,6 +36,10 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+//Include JetCorrector for JPT Jets
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+#include "JetMETCorrections/Algorithms/interface/JetPlusTrackCorrector.h"
+
 class InclusiveJetTreeProducer : public edm::EDAnalyzer 
 {
   public:
@@ -53,6 +57,9 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     bool preTreeFillCut();
     void clearTreeVectors();
     
+    // JPT corrector
+    const JetPlusTrackCorrector* jptCorrector_;
+
     //---- configurable parameters --------  
     bool mIsMCarlo;
     //bool mFirstEventFlag;
@@ -61,6 +68,8 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::string mGenJetsName;
     std::string mJetsIDName;
     std::string mJetExtender;
+    std::string mJptZSPName;
+    std::string mJptCorName;
     std::string mMetName;
     std::string mMetNoHFName;
     std::string mTriggerProcessName;
@@ -92,6 +101,8 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<double> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
     std::vector<double> *mPVx,*mPVy,*mPVz,*mPVchi2,*mPVndof;
     std::vector<double> *mfHcalNoise;
+    std::vector<double> *mEJPT, *mPtJPT, *mEtaJPT, *mPhiJPT, *mTrkMaxPtJPT,  *mTrkSumPtJPT;
+    std::vector<int>    *mNTrksJPT;
     TrigStruct mHLTTrigResults[100],mL1TrigResults[100];
 };
 #endif

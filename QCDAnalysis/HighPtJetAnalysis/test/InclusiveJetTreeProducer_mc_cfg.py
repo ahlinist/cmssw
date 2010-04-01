@@ -3,30 +3,34 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("Ana")
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+process.load("Configuration.StandardSequences.Geometry_cff")
 process.load('RecoJets.JetAssociationProducers.ak7JTA_cff') 
 process.load('RecoJets.JetAssociationProducers.ak5JTA_cff')
 process.load('RecoJets.JetAssociationProducers.iterativeCone5JTA_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #############   Set the number of events #############
 process.maxEvents = cms.untracked.PSet(
-     input = cms.untracked.int32(-1)
+     input = cms.untracked.int32(1000)
 )
 #############   Define the source file ###############
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/relval/CMSSW_3_5_5/RelValQCD_FlatPt_15_3000/GEN-SIM-RECO/MC_3XY_V25-v1/0007/E0707AC5-0F38-DF11-B1FD-0026189437E8.root'
+     fileNames = cms.untracked.vstring('/store/mc/Spring10/MinBias/GEN-SIM-RECO/START3X_V25_356ReReco-v2/0123/F6B40C1A-AD3B-DF11-8DD2-001BFCDBD182.root')
 )
-)
+#############   ZSP + JPT Correction ##################
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+
 #############   inclusive jet tree producer ##################
-process.TFileService = cms.Service("TFileService",fileName = cms.string('InclusiveJetTreeMC.root'))
+process.TFileService = cms.Service("TFileService",fileName = cms.string('/uscms/home/seema/3DayLifetime/InclusiveJetTreeMC.root'))
 
 # Other statements
-process.GlobalTag.globaltag = 'START3X_V16D::All'
-
+process.GlobalTag.globaltag = 'START3X_V25B::All'
 
 process.ak5calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
     jets                   = cms.string('ak5CaloJets'), 
     jetsID                 = cms.string('ak5JetID'),
     jetExtender            = cms.string('ak5JetExtender'),
+    jptZSP                 = cms.string('ZSPJetCorJetAntiKt5'),
+    jptCorrector           = cms.string('JetPlusTrackZSPCorrectorAntiKt5'),
     met                    = cms.string('met'),
     metNoHF                = cms.string('metNoHF'),
     hcalNoiseTag           = cms.InputTag('hcalnoise'),
@@ -42,8 +46,8 @@ process.ak5calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
     genjets                = cms.untracked.string('ak5GenJets')
 )
 
-process.ak7calo = process.ak5calo.clone(jets = 'ak7CaloJets', jetsID = 'ak7JetID', jetExtender = 'ak7JetExtender', genjets='ak7GenJets')
-process.p = cms.Path(process.ak5JTA * process.ak5calo * process.ak7JTA * process.ak7calo)
+#process.ak7calo = process.ak5calo.clone(jets = 'ak7CaloJets', jetsID = 'ak7JetID', jetExtender = 'ak7JetExtender', genjets='ak7GenJets')
+process.p = cms.Path(process.ZSPJetCorrectionsAntiKt5 * process.ZSPrecoJetAssociationsAntiKt5 * process.ak5JTA * process.ak5calo)
 #############   Format MessageLogger #################
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
