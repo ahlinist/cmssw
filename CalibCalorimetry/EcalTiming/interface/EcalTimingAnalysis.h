@@ -58,6 +58,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       virtual void beginRun(edm::EventSetup const&);
       virtual void endJob();
       double timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id);
+      double myTheta(const CaloSubdetectorGeometry *geometry_p, DetId id);
  private:
       
       std::string rootfile_;
@@ -165,10 +166,14 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	    int cryHashesEE_[14648];
 	    float cryTimesEB_[61200];
 	    float cryTimesEE_[14648];
+	    float cryUTimesEB_[61200];
+	    float cryUTimesEE_[14648];
 	    float cryTimeErrorsEB_[61200];
 	    float cryTimeErrorsEE_[14648];
 	    float cryAmpsEB_[61200];
 	    float cryAmpsEE_[14648];
+	    float cryETEB_[61200];
+	    float cryETEE_[14648];
 	    float e1Oe9EB_[61200];
 	    float kswisskEB_[61200];
 	    int numTriggers_;

@@ -297,9 +297,13 @@ EcalTimingAnalysis::beginJob( ) {
 	eventTimingInfoTree_->Branch("crystalTimeErrorsEE",TTreeMembers_.cryTimeErrorsEE_,"crystalTimeErrorsEE[numberOfEEcrys]/F");
 	eventTimingInfoTree_->Branch("crystalAmplitudesEB",TTreeMembers_.cryAmpsEB_,"crystalAmplitudesEB[numberOfEBcrys]/F");
 	eventTimingInfoTree_->Branch("crystalAmplitudesEE",TTreeMembers_.cryAmpsEE_,"crystalAmplitudesEE[numberOfEEcrys]/F");
+	eventTimingInfoTree_->Branch("crystalETEB",TTreeMembers_.cryETEB_,"crystalETEB[numberOfEBcrys]/F");
+	eventTimingInfoTree_->Branch("crystalETEE",TTreeMembers_.cryETEE_,"crystalETEE[numberOfEEcrys]/F");
 	eventTimingInfoTree_->Branch("e1Oe9EB",TTreeMembers_.e1Oe9EB_,"e1Oe9EB[numberOfEBcrys]/F");
 	eventTimingInfoTree_->Branch("kswisskEB",TTreeMembers_.kswisskEB_,"kswisskEB[numberOfEBcrys]/F");
 	eventTimingInfoTree_->Branch("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_,"correctionToSample5EB/F");
+	eventTimingInfoTree_->Branch("crystalUncalibTimesEB",TTreeMembers_.cryUTimesEB_,"crystalUncalibTimesEB[numberOfEBcrys]/F");
+	eventTimingInfoTree_->Branch("crystalUncalibTimesEE",TTreeMembers_.cryUTimesEE_,"crystalUncalibTimesEE[numberOfEEcrys]/F");
 	eventTimingInfoTree_->Branch("correctionToSampleEEP",&TTreeMembers_.correctionToSample5EEP_,"correctionToSample5EEP/F");
 	eventTimingInfoTree_->Branch("correctionToSampleEEM",&TTreeMembers_.correctionToSample5EEM_,"correctionToSample5EEM/F");
 	eventTimingInfoTree_->Branch("numTriggers",&TTreeMembers_.numTriggers_,"numTriggers/I");
@@ -849,8 +853,10 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	 { 
 	   TTreeMembers_.cryHashesEB_[TTreeMembers_.numEBcrys_]=anid.hashedIndex();
 	   TTreeMembers_.cryTimesEB_[TTreeMembers_.numEBcrys_]=rhtime;
+	   TTreeMembers_.cryUTimesEB_[TTreeMembers_.numEBcrys_]=mytime;
 	   TTreeMembers_.cryTimeErrorsEB_[TTreeMembers_.numEBcrys_]=ithit->chi2();
 	   TTreeMembers_.cryAmpsEB_[TTreeMembers_.numEBcrys_]=damp;
+	   TTreeMembers_.cryETEB_[TTreeMembers_.numEBcrys_]=damp * sin(myTheta(geometry_pEB,anid));;
 	   TTreeMembers_.e1Oe9EB_[TTreeMembers_.numEBcrys_]=e1Oe9;
 	   TTreeMembers_.kswisskEB_[TTreeMembers_.numEBcrys_]=kswissk;
 	   TTreeMembers_.numEBcrys_++;
@@ -992,8 +998,10 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	 {
 	   TTreeMembers_.cryHashesEE_[TTreeMembers_.numEEcrys_]=SMind;
 	   TTreeMembers_.cryTimesEE_[TTreeMembers_.numEEcrys_]=rhtime;
+	   TTreeMembers_.cryUTimesEE_[TTreeMembers_.numEEcrys_]=mytime;
 	   TTreeMembers_.cryTimeErrorsEE_[TTreeMembers_.numEEcrys_]=ithit->chi2();
 	   TTreeMembers_.cryAmpsEE_[TTreeMembers_.numEEcrys_]=damp;
+	   TTreeMembers_.cryETEE_[TTreeMembers_.numEEcrys_]=damp * sin(myTheta(geometry_pEE,anid));
 	   TTreeMembers_.numEEcrys_++;
 	 }
        lasersPerEvt->Fill(ievt_);
@@ -1079,6 +1087,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      
        if (TTreeMembers_.numEEcrys_ > 0 || TTreeMembers_.numEBcrys_ > 0) eventTimingInfoTree_->Fill(); //Filling the TTree for Seth
      }
+}
+double EcalTimingAnalysis::myTheta(const CaloSubdetectorGeometry *geometry_p, DetId id)
+{
+	double theta = 0;
+        const CaloCellGeometry *thisCell = geometry_p->getGeometry(id);
+        GlobalPoint position = thisCell->getPosition();
+        theta = position.theta();
+	return theta;
 }
 
 double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id)
