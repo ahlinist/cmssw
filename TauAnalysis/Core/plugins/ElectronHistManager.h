@@ -86,6 +86,7 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronSeedClEnOverTrackMomEndcap_;
   MonitorElement* hElectronHadEnOverEmEn_;
   MonitorElement* hElectronSuperclShapeSigmaEtaEta_;
+  MonitorElement* hElectronSuperclShapeSigmaIetaIeta_;
   MonitorElement* hElectronDeltaPhiSuperclToExtrapolTrack_;
   MonitorElement* hElectronDeltaEtaSuperclToExtrapolTrack_;
   MonitorElement* hElectronBremsFraction_;
