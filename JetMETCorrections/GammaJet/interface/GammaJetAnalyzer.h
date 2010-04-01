@@ -104,6 +104,13 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       string recoProducer_; 
       string JetCorrector_pfakt5_; 
       string JetCorrector_pfakt7_; 
+      double genjetptthr_;
+      double calojetptthr_;
+      double pfjetptthr_;
+      //double jptjetptthr_;
+      int genjetnmin_;
+      int pfjetnmin_;
+      //int jptjetnmin_;
 
 //      edm::Service<TFileService> fs_;
       TFile* outfile;
