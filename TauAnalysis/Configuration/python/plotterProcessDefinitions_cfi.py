@@ -388,6 +388,10 @@ process_AHbb_tautau = cms.PSet(
     ) 
 )
 
+process_AHbb120_tautau = copy.deepcopy(process_AHbb_tautau)
+process_AHbb120_tautau.config_dqmFileLoader.dqmDirectory_store = cms.string('AHbb120_tautau')
+process_AHbb120_tautau.config_dqmHistPlotter.dqmDirectory = cms.string('AHbb120_tautau')
+
 process_AH115_tautau = cms.PSet(
     config_dqmFileLoader = cms.PSet(
         inputFileNames = cms.vstring(''),
@@ -426,3 +430,7 @@ process_AH_tautau = cms.PSet(
         type = cms.string('bsmMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     ) 
 )
+
+process_AH120_tautau = copy.deepcopy(process_AH_tautau)
+process_AH120_tautau.config_dqmFileLoader.dqmDirectory_store = cms.string('AH120_tautau')
+process_AH120_tautau.config_dqmHistPlotter.dqmDirectory = cms.string('AH120_tautau')

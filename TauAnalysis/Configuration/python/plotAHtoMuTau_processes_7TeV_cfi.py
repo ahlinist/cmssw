@@ -72,7 +72,7 @@ processAHtoMuTau_Vqq.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsAHtoMuTau_Vqq_7TeV_part07.root',
     'plotsAHtoMuTau_Vqq_7TeV_part08.root',
     'plotsAHtoMuTau_Vqq_7TeV_part09.root',
-    'plotsAHtoMuTau_Vqq_7TeV_part10.root',
+    #'plotsAHtoMuTau_Vqq_7TeV_part10.root',
     'plotsAHtoMuTau_Vqq_7TeV_part11.root',
     'plotsAHtoMuTau_Vqq_7TeV_part12.root',
     'plotsAHtoMuTau_Vqq_7TeV_part13.root',
@@ -83,7 +83,7 @@ processAHtoMuTau_Vqq.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsAHtoMuTau_Vqq_7TeV_part18.root',
     'plotsAHtoMuTau_Vqq_7TeV_part19.root',
     'plotsAHtoMuTau_Vqq_7TeV_part20.root',
-    'plotsAHtoMuTau_Vqq_7TeV_part21.root',
+    #'plotsAHtoMuTau_Vqq_7TeV_part21.root',
     'plotsAHtoMuTau_Vqq_7TeV_part22.root',
     'plotsAHtoMuTau_Vqq_7TeV_part23.root'
 )
@@ -131,7 +131,7 @@ processAHtoMuTau_TTplusJetsSum.config_dqmFileLoader.inputFileNames = \
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-processAHtoMuTau_AH120_tautau = copy.deepcopy(process_AH_tautau)
+processAHtoMuTau_AH120_tautau = copy.deepcopy(process_AH120_tautau)
 processAHtoMuTau_AH120_tautau.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsAHtoMuTau_AH120_tautau_7TeV_part01.root',
     'plotsAHtoMuTau_AH120_tautau_7TeV_part02.root',
@@ -144,7 +144,7 @@ processAHtoMuTau_AH120_tautau.config_dqmFileLoader.inputFileNames = cms.vstring(
 )
 processAHtoMuTau_AH120_tautau.config_dqmFileLoader.scaleFactor = cms.double(corrFactorAHtoMuTau_AH120_tautau_7TeV*intLumiAHtoMuTau_Data_7TeV/intLumiAHtoMuTau_AH120_tautau_7TeV)
 
-processAHtoMuTau_AH120_tautauSum = copy.deepcopy(process_AH_tautau)
+processAHtoMuTau_AH120_tautauSum = copy.deepcopy(process_AH120_tautau)
 processAHtoMuTau_AH120_tautauSum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsAHtoMuTau_AH120_tautauSum.root'
 )
@@ -153,7 +153,7 @@ processAHtoMuTau_AH120_tautauSum.config_dqmFileLoader.scaleFactor = cms.double(1
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-processAHtoMuTau_AHbb120_tautau = copy.deepcopy(process_AHbb_tautau)
+processAHtoMuTau_AHbb120_tautau = copy.deepcopy(process_AHbb120_tautau)
 processAHtoMuTau_AHbb120_tautau.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsAHtoMuTau_AHbb120_tautau_7TeV_part01.root',
     'plotsAHtoMuTau_AHbb120_tautau_7TeV_part02.root',
@@ -162,7 +162,7 @@ processAHtoMuTau_AHbb120_tautau.config_dqmFileLoader.inputFileNames = cms.vstrin
 )
 processAHtoMuTau_AHbb120_tautau.config_dqmFileLoader.scaleFactor = cms.double(corrFactorAHtoMuTau_AHbb120_tautau_7TeV*intLumiAHtoMuTau_Data_7TeV/intLumiAHtoMuTau_AHbb120_tautau_7TeV)
 
-processAHtoMuTau_AHbb120_tautauSum = copy.deepcopy(process_AHbb_tautau)
+processAHtoMuTau_AHbb120_tautauSum = copy.deepcopy(process_AHbb120_tautau)
 processAHtoMuTau_AHbb120_tautauSum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsAHtoMuTau_AHbb120_tautauSum.root'
 )
