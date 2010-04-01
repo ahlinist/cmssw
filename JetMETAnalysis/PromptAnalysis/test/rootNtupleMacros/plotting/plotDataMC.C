@@ -5,10 +5,8 @@ void plotDataMC(){
    
   // specify the DATA/MC root file!!!
   // --------------------------------------------------------------------------
-  TFile *data = TFile::Open("../../rootNtupleAnalyzer/data/output/MC7wrongquasitot.root");
-  TFile *mc = TFile::Open("../../rootNtupleAnalyzer/data/output/MC7wrongquasitot.root");
- //   TFile *data = TFile::Open("./datasumB.root");
-//    TFile *mc = TFile::Open("./mcsumB.root");
+  TFile *data = TFile::Open("V00-00-25-MinimumBias-Commissioning10-PromptReco-v7_test2/root/V00-00-25-MinimumBias-Commissioning10-PromptReco-v7_test2.root"); 
+  TFile *mc = TFile::Open("MCv25B_3/root/MCv25B_3.root");
 
   char *legDataTitle = "Data";
   char *legMCTitle = "Simulation";
@@ -58,7 +56,9 @@ void plotDataMC(){
       colour=38;
       cuts1="p_{T}(jet)> 8 GeV";
       cuts2="|#eta(jet)| < 3";
-    }
+
+    } 
+     
     islog=1;
     if(name.Index(eta)>-1||name.Index(phi)>-1||name.Index(hits)>-1) islog=0;
     TH1D * h_data= data->Get(key->GetName());
@@ -71,7 +71,8 @@ void plotDataMC(){
       if(name.Index(pt)>-1) {
 	h_data->SetYTitle("Jets/GeV");
 	h_mc->SetYTitle("Jets/GeV");
-	isptplot=true;
+	isptplot=true;  
+	//	cout << 	h_data->GetXaxis()->GetBinWidth(1)<< endl;  
       }
       if(name.Index(eta)>-1||name.Index(phi)>-1) {
 	h_data->SetYTitle("Jets");
@@ -108,6 +109,31 @@ void plotDataMC(){
     delete c;
     } //if Entries != 0 
   } // loop over keys
+
+
+  cout << "------ Calo Jets --------" <<endl;
+   TH1D * temp =data->Get("dijetptall");
+   cout << "CaloJets       " << temp->GetEntries() <<endl;
+   TH1D *temp2 =data->Get("dijetptallJIDloose");
+   cout << "Loose CaloJets " << temp2->GetEntries() <<endl;
+   TH1D *temp3 =data->Get("dijetptallJIDtight");
+   cout << "Tight CaloJets " << temp3->GetEntries() <<endl;
+  
+   cout << "------ PF Jets --------" <<endl;
+   TH1D * temp5 =data->Get("diPFjetptall");
+   cout << "PFJets       " << temp5->GetEntries() <<endl;
+   TH1D *temp6 =data->Get("diPFjetptallJIDloose");
+   cout << "Loose PFJets " << temp6->GetEntries() <<endl;
+   TH1D *temp7 =data->Get("diPFjetptallJIDtight");
+   cout << "Tight PFJets " << temp7->GetEntries() <<endl;  
+
+   cout << "------ JPT Jets --------" <<endl;
+   TH1D * temp8 =data->Get("diJPTjetptall");
+   cout << "JPTJets       " << temp8->GetEntries() <<endl;
+   TH1D *temp9 =data->Get("diJPTjetptallJIDloose");
+   cout << "Loose JPTJets " << temp9->GetEntries() <<endl;
+   TH1D *temp10 =data->Get("diJPTjetptallJIDtight");
+   cout << "Tight JPTJets " << temp10->GetEntries() <<endl;
 }
 
 
@@ -118,6 +144,7 @@ void MoveStatsAndDraw (TH1 *data, TH1 *mc, char *dataTitle, char* mcTitle, char*
   mc->Draw();
   data->Draw("pesames");   
   gStyle->SetOptStat(00000000); 
+  stat=1;xs  
   if(stat) gStyle->SetOptStat(1111111111); 
 
   /*  TPaveText *TITLE = new TPaveText(0.2,0.65,0.55,0.9,"blNDC");
