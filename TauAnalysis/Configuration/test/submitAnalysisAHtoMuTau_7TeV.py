@@ -5,8 +5,7 @@ from TauAnalysis.Configuration.makeReplacementsAnalysis import makeReplacementsA
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/AHtoMuTau/7TeV/"
-#outputFilePath = "/castor/cern.ch/user/l/lusito/ZMuTauAnalysis/"
+outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/AHtoMuTau/7TeVrelIso/"
 
 inputFileType = "RECO/AOD"
 #inputFileType = "PATTuple"
@@ -26,15 +25,19 @@ inputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/patTuples/AHtoMuTau/
 #--------------------------------------------------------------------------------
 
 # MSSM Higgs A/H --> tau+ tau- jobs
-submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau", sample = "AH_tautau_7TeV",
-              replFunction = makeReplacementsAnalysis, replacements =
-              "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
-              job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
-submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau", sample = "AHbb_tautau_7TeV",
-              replFunction = makeReplacementsAnalysis, replacements =
-              "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
-              job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
-
+for i in range(8):
+    submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
+                  sample = "AH120_tautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+for i in range(4):
+    submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
+                  sample = "AHbb120_tautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+    
 # Z --> tau+ tau- jobs
 for i in range(16):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
@@ -47,6 +50,38 @@ for i in range(16):
 for i in range(15):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "Zmumu_7TeV_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+
+# Z + jets jobs
+for i in range(8):
+    submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
+                  sample = "ZplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+
+# W + jets jobs
+for i in range(31):
+    submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
+                  sample = "WplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+
+# W/Z + c cbar/b bbar jobs
+for i in range(23):
+    submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
+                  sample = "Vqq_7TeV_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
+
+# ttbar + jets jobs
+for i in range(10):
+    submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
+                  sample = "TTplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
@@ -66,18 +101,3 @@ for i in range(71):
                   "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false; disableEventDump = true",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
-# W + jets jobs
-for i in range(31):
-    submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
-                  sample = "WplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
-                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
-
-# ttbar + jets jobs
-for i in range(10):
-    submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
-                  sample = "TTplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
-                  job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
