@@ -37,7 +37,6 @@ LIBS          = $(ROOTLIBS)
 #GLIBS         = $(ROOTGLIBS)
 GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
 
-
 # ======================================================================
 # -- Default rules
 $(addprefix obj/,%.o) : $(addprefix rootio/,%.cc )
@@ -52,22 +51,20 @@ $(addprefix obj/,%.o) : $(addprefix tnp/,%.cc )
 
 
 # ======================================================================
-ANA00   =    TAna01Event.o TAna01EventDict.o \
-             TGenCand.o TGenCandDict.o \
-             TAnaTrack.o TAnaTrackDict.o \
-             TAnaMuon.o TAnaMuonDict.o \
-             TTrgObj.o TTrgObjDict.o \
-             TAnaCand.o TAnaCandDict.o \
-             TAnaVertex.o TAnaVertexDict.o \
-             TAnaJet.o TAnaJetDict.o 
+ANA00 = TAna01Event.o TGenCand.o TAnaTrack.o TAnaMuon.o TTrgObj.o TAnaCand.o TAnaVertex.o TAnaJet.o
+ANA00_DICT = ${ANA00:.o=Dict.o}
+ANA00_DICT_SRCS = ${ANA00_DICT:.o=.cc}
 
-ANACLASSES = anaTNP2.o anaTNP2Dict.o 
+ANACLASSES = anaTNP2.o
+ANACLASSES_DICT = ${ANACLASSES:.o=Dict.o}
+ANACLASSES_DICT_SRCS = ${ANACLASSES_DICT:.o=.cc}
 
-UTIL       = PidTable.o PidTableDict.o \
-             PidData.o PidDataDict.o \
-             functions.o functionsDict.o \
-             hpl.o hplDict.o \
-             util.o utilDict.o
+UTIL = PidTable.o PidData.o
+UTIL_W_LINKDEF = functions.o util.o hpl.o
+UTIL_DICT = ${UTIL:.o=Dict.o}
+UTIL_W_LINKDEF_DICT = ${UTIL_W_LINKDEF:.o=Dict.o}
+UTIL_DICT_SRCS = ${UTIL_DICT:.o=.cc}
+UTIL_W_LINKDEF_DICT_SRCS = ${UTIL_W_LINKDEF_DICT:.o=.cc}
 
 
 # ================================================================================
@@ -85,67 +82,19 @@ examples:
 	@$(MAKE) runMyReader01
 
 # ================================================================================
-ana00: $(addprefix obj/,$(ANA00))
+ana00: $(addprefix rootio/,$(ANA00_DICT_SRCS)) $(addprefix obj/,$(ANA00) $(ANA00_DICT))
 # ----------------------------------
-	$(CXX) $(SOFLAGS) $(GLIBS) $(addprefix obj/,$(ANA00)) -o lib/libAna00.so
-
-rootio/TAna01EventDict.cc: rootio/TAna01Event.hh 
-	cd rootio && $(ROOTCINT) -f TAna01EventDict.cc -c TAna01Event.hh && cd -
-
-rootio/TGenCandDict.cc: rootio/TGenCand.hh 
-	cd rootio && $(ROOTCINT) -f TGenCandDict.cc -c TGenCand.hh  && cd - 
-
-rootio/TAnaTrackDict.cc: rootio/TAnaTrack.hh 
-	cd rootio && $(ROOTCINT) -f TAnaTrackDict.cc -c TAnaTrack.hh && cd - 
-
-rootio/TAnaMuonDict.cc: rootio/TAnaMuon.hh 
-	cd rootio && $(ROOTCINT) -f TAnaMuonDict.cc -c TAnaMuon.hh && cd - 
-
-rootio/TTrgObjDict.cc: rootio/TTrgObj.hh 
-	cd rootio && $(ROOTCINT) -f TTrgObjDict.cc -c TTrgObj.hh && cd - 
-
-rootio/TAnaVertexDict.cc: rootio/TAnaVertex.hh 
-	cd rootio && $(ROOTCINT) -f TAnaVertexDict.cc -c TAnaVertex.hh && cd - 
-
-rootio/TAnaCandDict.cc: rootio/TAnaCand.hh 
-	cd rootio && $(ROOTCINT) -f TAnaCandDict.cc -c TAnaCand.hh  && cd - 
-
-rootio/TAnaJetDict.cc: rootio/TAnaJet.hh 
-	cd rootio && $(ROOTCINT) -f TAnaJetDict.cc -c TAnaJet.hh && cd - 
-
-rootio/TGenMuonDict.cc: rootio/TGenMuon.hh 
-	cd rootio && $(ROOTCINT) -f TGenMuonDict.cc -c TGenMuon.hh && cd - 
-
+	$(CXX) $(SOFLAGS) $(GLIBS) $(addprefix obj/,$(ANA00) $(ANA00_DICT)) -o lib/libAna00.so
 
 # ================================================================================
-anaclasses: $(addprefix obj/,$(ANACLASSES)) util
+anaclasses: $(addprefix tnp/,$(ANACLASSES_DICT_SRCS)) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) util
 # ----------------------------------
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so
-
-tnp/anaTNP2Dict.cc: tnp/anaTNP2.hh 
-	$(ROOTSYS)/bin/rootcint  -f tnp/anaTNP2Dict.cc -c tnp/anaTNP2.hh 
-
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so
 
 # ================================================================================
-util: $(addprefix obj/,$(UTIL))
+util: $(addprefix rootio/,$(UTIL_DICT_SRCS) $(UTIL_W_LINKDEF_DICT_SRCS)) $(addprefix obj/,$(UTIL) $(UTIL_DICT) $(UTIL_W_LINKDEF))
 # -----------------------------
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL)) $(GLIBS) -o lib/libUtil.so
-
-rootio/PidTableDict.cc: rootio/PidTable.hh
-	cd rootio && $(ROOTCINT) -f PidTableDict.cc -c PidTable.hh 
-
-rootio/PidDataDict.cc: rootio/PidData.hh 
-	cd rootio && $(ROOTCINT) -f PidDataDict.cc -c PidData.hh 
-
-rootio/utilDict.cc: rootio/util.hh 
-	cd rootio && $(ROOTSYS)/bin/rootcint -f utilDict.cc -c util.hh utilLinkDef.h
-
-rootio/functionsDict.cc: rootio/functions.hh
-	cd rootio && $(ROOTSYS)/bin/rootcint -f functionsDict.cc -c functions.hh functionsLinkDef.h
-
-rootio/hplDict.cc: rootio/hpl.hh 
-	cd rootio && $(ROOTSYS)/bin/rootcint -f hplDict.cc -c hpl.hh hplLinkDef.h 
-
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(UTIL_DICT) $(UTIL_W_LINKDEF)) $(GLIBS) -o lib/libUtil.so
 
 
 # ======================================================================
@@ -230,3 +179,14 @@ cleanall:
 	rm -f ../../../lib/$(SCRAM_ARCH)/libUtil.so
 	rm -f ../../../lib/$(SCRAM_ARCH)/libAnaClasses.so
 
+
+.SECONDEXPANSION:
+$(addprefix rootio/,$(ANA00_DICT_SRCS) $(UTIL_DICT_SRCS)): $$(patsubst %Dict.cc,%.hh,$$@)
+	cd rootio && $(ROOTCINT) -f $(notdir $@) -c $(notdir $(patsubst %Dict.cc,%.hh,$@)) && cd -
+
+$(addprefix rootio/,$(UTIL_W_LINKDEF_DICT_SRCS)): $$(patsubst %Dict.cc,%.hh,$$@)
+	cd rootio && $(ROOTCINT) -f $(notdir $@) -c $(notdir $(patsubst %Dict.cc,%.hh,$@)) $(notdir $(patsubst %Dict.cc,%LinkDef.h,$@)) && cd -
+
+$(addprefix tnp/,$(ANACLASSES_DICT_SRCS)): $$(patsubst %Dict.cc,%.hh,$$@)
+	$(ROOTCINT) -f $@ -c $(patsubst %Dict.cc,%.hh,$@)
+#	cd tnp && $(ROOTCINT) -f $(notdir $@) -c $(notdir $(patsubst %Dict.cc,%.hh,$@)) && cd -
