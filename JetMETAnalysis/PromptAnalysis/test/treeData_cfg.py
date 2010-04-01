@@ -32,8 +32,7 @@ process.load("RecoMuon/Configuration/RecoMuon_cff")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
-#fileName = cms.string("ExpressPhysics__Commissioning10-Express-v4__FEVT.root"), ##give a name to the output file
-fileName = cms.string("MinimumBias__Commissioning10-PromptReco-v7__RECO.root"), ##give a name to the output file
+fileName = cms.string("ExpressPhysics__Commissioning10-Express-v4__FEVT.root"), ##give a name to the output file
                            closeFileFast = cms.untracked.bool(True)  ) )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
