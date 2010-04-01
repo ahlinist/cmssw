@@ -66,6 +66,7 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
     printTrackInfo(patElectron->gsfTrack(), patElectron->vertex(), true, false, outputStream_);
     *outputStream_ << " Supercluster Energy/Track Momentum = " << patElectron->eSuperClusterOverP() << std::endl;
     *outputStream_ << " electronID('eidRobustTight') = " << patElectron->electronID("eidRobustTight") << std::endl;
+    *outputStream_ << " electronID('eidRobustLoose') = " << patElectron->electronID("eidRobustLoose") << std::endl;
     *outputStream_ << " trackIso = " << patElectron->trackIso() << std::endl;
     *outputStream_ << " ecalIso = " << patElectron->ecalIso() << std::endl;
     *outputStream_ << " hcalIso = " << patElectron->hcalIso() << std::endl;
