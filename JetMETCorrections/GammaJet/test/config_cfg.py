@@ -55,6 +55,7 @@ process.source = cms.Source("PoolSource",
 # fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_1_0_pre11/RelValZmumuJets_Pt_20_300_GEN/GEN-SIM-RECO/MC_31X_V1_LowLumiPileUp-v1/0001/FE549F7D-2C65-DE11-9B82-001D09F2AF1E.root')
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/PhotonJet_Pt80to120_Summer09-MC_31X_V3-v1_x100.root')
     fileNames = cms.untracked.vstring(
+#'file:GammaJetSkim_132440_15.root'
 'file:events_MinBias09_Mar24ReReco.root'
 #'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124009.root',
 #'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124020.root',
@@ -70,6 +71,50 @@ process.source = cms.Source("PoolSource",
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
+
+#from JetMETCorrections.Configuration.JetCorrectionEra_cff import *
+#JetCorrectionEra.era = 'Summer09_7TeV_ReReco332' # applies to L2 & L3 only
+#process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+
+## produce JPT jets
+#process.load("Configuration.StandardSequences.Geometry_cff")
+#process.load("Configuration.StandardSequences.MagneticField_cff")
+#process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+#process.GlobalTag.globaltag = cms.string('STARTUP3X_V12::All')
+#process.load("JetMETCorrections.Configuration.ZSPJetCorrections332_cff")
+#process.load("JetMETCorrections.Configuration.JetPlusTrackCorrections_cff")
+
+###-------------- simplify the name of the JPT collection
+#process.ak5JPTJets = process.JetPlusTrackZSPCorJetAntiKt5.clone()
+
+#physics declared technical bit filter
+process.hltPhysicsDeclared = cms.EDFilter("HLTHighLevel",
+                                TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+                                HLTPaths = cms.vstring("HLT_PhysicsDeclared"
+                                                       ),
+                                eventSetupPathsKey = cms.string(''),
+                                andOr = cms.bool(True),
+                                throw = cms.bool(True)
+)
+
+#bsc technical bit filter
+process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
+process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
+process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
+process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('0 AND (40 OR 41) AND NOT ( 36 OR 37 OR 38 OR 39 )')
+
+
+#monster track event cleaning
+process.monster = cms.EDFilter(
+   "FilterOutScraping",
+   applyfilter = cms.untracked.bool(True),
+   debugOn = cms.untracked.bool(False),
+   numtrack = cms.untracked.uint32(10),
+   thresh = cms.untracked.double(0.2)
+)
+
+
+
 process.printTree = cms.EDFilter("ParticleTreeDrawer",
     status = cms.untracked.vint32(3),
     src = cms.InputTag("genParticleCandidates"),
@@ -94,7 +139,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('EcalRecHitsEB'),
     JetCorrectionService_pfakt5 = cms.string('L2L3JetCorrectorAK5PF'),
-    JetCorrectionService_pfakt7 = cms.string('L2L3JetCorrectorAK5PF'),
+    JetCorrectionService_pfakt7 = cms.string('L2L3JetCorrectorAK7PF'),
     jetsite = cms.untracked.InputTag("iterativeCone5CaloJets"),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
     jetskt6 = cms.untracked.InputTag("kt6CaloJets"),
@@ -118,7 +163,14 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsgensis5 = cms.untracked.InputTag("sisCone5GenJets"),
     jetsgensis7 = cms.untracked.InputTag("sisCone7GenJets"),
     TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
-    vertices = cms.untracked.InputTag("offlinePrimaryVertices")
+    vertices = cms.untracked.InputTag("offlinePrimaryVertices"),
+    genjetptthr = cms.double(5.),
+    calojetptthr = cms.double(3.),
+    pfjetptthr = cms.double(4.),
+    #jptjetptthr = cms.double(4.),
+    genjetnmin = cms.int32(10),
+    pfjetnmin = cms.int32(10),
+    #jptjetnmin = cms.int32(10)
 )
 
 # --- to recover the ak5 GenJets that are not re-recoed in 33X samples ---
@@ -156,4 +208,13 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 # produce JPT jets before running analysis
 #process.p = cms.Path(process.ZSPJetCorrections*process.JetPlusTrackCorrections*process.myanalysis)
 #process.p = cms.Path(newGenJets*process.myanalysis)
-process.p = cms.Path(process.myanalysis)
+#process.p = cms.Path(process.myanalysis)
+process.p = cms.Path(process.hltPhysicsDeclared*process.hltLevel1GTSeed*process.monster*process.myanalysis)
+#process.p = cms.Path(process.myanalysis)
+#process.p1 = cms.Path(
+#    process.ZSPJetCorrectionsAntiKt5 *
+#    process.ZSPrecoJetAssociationsAntiKt5 *
+#    process.ak5JPTJets *
+#    process.myanalysis
+#)
+

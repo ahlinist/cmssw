@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.23 2010/03/04 16:19:30 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.24 2010/03/29 10:13:45 pandolf Exp $
 //
 //
 
@@ -152,7 +152,6 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   Jetsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis5");
   Jetsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis7");
   //JetJPTsrcak5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsjptak5");
-  //Pfjetsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("pfjets");
   JetPFsrcite_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfite");
   JetPFsrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt4");
   JetPFsrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt6");
@@ -174,6 +173,13 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   recoProducer_      = iConfig.getParameter<std::string>("recoProducer");
   JetCorrector_pfakt5_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt5");
   JetCorrector_pfakt7_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt7");
+  genjetptthr_ = iConfig.getParameter<double>("genjetptthr");
+  calojetptthr_ = iConfig.getParameter<double>("calojetptthr");
+  pfjetptthr_ = iConfig.getParameter<double>("pfjetptthr");
+  //jptjetptthr_ = iConfig.getParameter<double>("jptjetptthr");
+  genjetnmin_ = iConfig.getParameter<int>("genjetnmin");
+  pfjetnmin_ = iConfig.getParameter<int>("pfjetnmin");
+  //jptjetnmin_ = iConfig.getParameter<int>("jptjetnmin");
 //   PtPhoton1st = new TH1D( "PtPhoton1st", "Pt spectrum of the most energetic photon", 50, 0.0, 400.0);
 //   PtPhoton2st = new TH1D( "PtPhoton2st", "Pt spectrum of the 2' most energetic photon", 50, 0.0, 400.0);
 //   PtPhoton3st = new TH1D( "PtPhoton3st", "Pt spectrum of the 3' most energetic photon", 50, 0.0, 400.0);
@@ -560,15 +566,15 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      } // loop particles
 
    
-     const double genjetptthr = 5.; // already implicit in GenJet reco
-     const int genjetnmin = 4;
+     //const double genjetptthr = 5.; // already implicit in GenJet reco
+     //const int genjetnmin = 4;
      // Loop over gen Jets
 
      for (GenJetCollection::const_iterator it = jetsgenite->begin(); 
         it != jetsgenite->end(); ++it) {
 
        if (nJetGen_ite>=100) {cout << "number of gen jets ite is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_ite < genjetnmin || it->pt() > genjetptthr) {
+       if (nJetGen_ite < genjetnmin_ || it->pt() > genjetptthr_) {
 
          ptJetGen_ite[nJetGen_ite] = it->pt();
          eJetGen_ite[nJetGen_ite] = it->energy();	 
@@ -583,7 +589,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         it != jetsgenkt4->end(); ++it) {
 
        if (nJetGen_kt4>=100) {cout << "number of gen jets kt 04 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_kt4 < genjetnmin || it->pt() > genjetptthr) {
+       if (nJetGen_kt4 < genjetnmin_ || it->pt() > genjetptthr_) {
 
          ptJetGen_kt4[nJetGen_kt4] = it->pt();
          eJetGen_kt4[nJetGen_kt4] = it->energy();	 
@@ -598,7 +604,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         it != jetsgenkt6->end(); ++it) {
 
        if (nJetGen_kt6>=100) {cout << "number of gen jets kt 06 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_kt6 < genjetnmin || it->pt() > genjetptthr) {
+       if (nJetGen_kt6 < genjetnmin_ || it->pt() > genjetptthr_) {
 
          ptJetGen_kt6[nJetGen_kt6] = it->pt();
          eJetGen_kt6[nJetGen_kt6] = it->energy();	 
@@ -759,7 +765,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         it != jetsgenakt5->end(); ++it) {
        
        if (nJetGen_akt5>=100) {cout << "number of gen jets kt 05 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_akt5 < genjetnmin || it->pt() > genjetptthr) {
+       if (nJetGen_akt5 < genjetnmin_ || it->pt() > genjetptthr_) {
          
        ptJetGen_akt5[nJetGen_akt5] = it->pt();	 
        eJetGen_akt5[nJetGen_akt5] = it->energy();	 
@@ -1136,7 +1142,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         it != jetsgensis5->end(); ++it) {
 
        if (nJetGen_sis5>=100) {cout << "number of gen jets sis 05 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_sis5 < genjetnmin || it->pt() > genjetptthr) {
+       if (nJetGen_sis5 < genjetnmin_ || it->pt() > genjetptthr_) {
 
          ptJetGen_sis5[nJetGen_sis5] = it->pt();
          eJetGen_sis5[nJetGen_sis5] = it->energy();	 
@@ -1151,7 +1157,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         it != jetsgensis7->end(); ++it) {
 
        if (nJetGen_sis7>=100) {cout << "number of gen jets sis 07 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_sis7 < genjetnmin || it->pt() > genjetptthr) {
+       if (nJetGen_sis7 < genjetnmin_ || it->pt() > genjetptthr_) {
 
          ptJetGen_sis7[nJetGen_sis7] = it->pt();
          eJetGen_sis7[nJetGen_sis7] = it->energy();	 
@@ -1499,18 +1505,18 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    } // i
    */
 
-   const double calojetptthr = 3.;
+   //const double calojetptthr = 3.;
    //const double jptjetptthr = 5.;
-   const double pfjetptthr = 5.;//6.;
+   //const double pfjetptthr = 5.;//6.;
    //const int pfminconst = 1; // minimum constituents for low pT
    //const int jptjetnmin = 4;
-   const int pfjetnmin = 4;
+   //const int pfjetnmin = 4;
 
    for (CaloJetCollection::const_iterator it = jetsite->begin(); 
 	 it != jetsite->end(); ++it) {
      
      if (nJet_ite>=100) {cout << "number of reco jets ite is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr) {
+     if (it->pt() > calojetptthr_) {
 
        ptJet_ite[nJet_ite] = it->pt();
        eJet_ite[nJet_ite] = it->energy();	 
@@ -1527,7 +1533,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != jetskt4->end(); ++it) {
      
      if (nJet_kt4>=100) {cout << "number of reco jets kt 04 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr) {
+     if (it->pt() > calojetptthr_) {
 
        ptJet_kt4[nJet_kt4] = it->pt();
        eJet_kt4[nJet_kt4] = it->energy();	 
@@ -1544,7 +1550,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != jetskt6->end(); ++it) {
      
      if (nJet_kt6>=100) {cout << "number of reco jets kt 06 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr) {
+     if (it->pt() > calojetptthr_) {
        
        ptJet_kt6[nJet_kt6] = it->pt(); 
        eJet_kt6[nJet_kt6] = it->energy();	 
@@ -1561,7 +1567,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != jetsakt5->end(); ++it) {
      
      if (nJet_akt5>=100) {cout << "number of reco jets akt 05 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr) {
+     if (it->pt() > calojetptthr_) {
        
        ptJet_akt5[nJet_akt5] = it->pt();	 
        eJet_akt5[nJet_akt5] = it->energy();	 
@@ -1592,7 +1598,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != jetssis5->end(); ++it) {
      
      if (nJet_sis5>=100) {cout << "number of reco jets sis 05 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr) {
+     if (it->pt() > calojetptthr_) {
        
        ptJet_sis5[nJet_sis5] = it->pt();
        eJet_sis5[nJet_sis5] = it->energy();	 
@@ -1609,7 +1615,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != jetssis7->end(); ++it) {
      
      if (nJet_sis7>=100) {cout << "number of reco jets sis 07 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr) {
+     if (it->pt() > calojetptthr_) {
        
        ptJet_sis7[nJet_sis7] = it->pt();
        eJet_sis7[nJet_sis7] = it->energy();	 
@@ -1626,7 +1632,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 //     it != jptjetsak5->end(); ++it) {
 //   
 //   if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
-//   if (nJet_jptak5 < jptjetnmin || it->pt() > jptjetptthr) {
+//   if (nJet_jptak5 < jptjetnmin_ || it->pt() > jptjetptthr_) {
 //     
 //     ptJet_jptak5[nJet_jptak5] = it->pt();	 
 //     eJet_jptak5[nJet_jptak5] = it->energy();	 
@@ -1642,7 +1648,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != pfjetsite->end(); ++it) {
      
      if (nJet_pfite>=100) {cout << "number of reco jets pfite is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfite < pfjetnmin || it->pt() > pfjetptthr) {
+     if (nJet_pfite < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
        ptJet_pfite[nJet_pfite] = it->pt();
        eJet_pfite[nJet_pfite] = it->energy();	 
@@ -1657,7 +1663,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != pfjetskt4->end(); ++it) {
      
      if (nJet_pfkt4>=100) {cout << "number of reco jets pfkt4 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfkt4 < pfjetnmin || it->pt() > pfjetptthr) {
+     if (nJet_pfkt4 < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
        ptJet_pfkt4[nJet_pfkt4] = it->pt();
        eJet_pfkt4[nJet_pfkt4] = it->energy();	 
@@ -1672,7 +1678,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != pfjetsakt5->end(); ++it) {
      
      if (nJet_pfakt5>=100) {cout << "number of reco jets pfakt5 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfakt5 < pfjetnmin || it->pt() > pfjetptthr) {
+     if (nJet_pfakt5 < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
      ptJet_pfakt5[nJet_pfakt5] = it->pt();
      eJet_pfakt5[nJet_pfakt5] = it->energy();	 
@@ -1830,7 +1836,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != pfjetsakt7->end(); ++it) {
      
      if (nJet_pfakt7>=100) {cout << "number of reco jets pfakt7 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfakt7 < pfjetnmin || it->pt() > pfjetptthr) {
+     if (nJet_pfakt7 < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
        ptJet_pfakt7[nJet_pfakt7] = it->pt();
        eJet_pfakt7[nJet_pfakt7] = it->energy();	 
@@ -1987,7 +1993,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != pfjetssis5->end(); ++it) {
      
      if (nJet_pfsis5>=100) {cout << "number of reco jets pfsis5 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfsis5 < pfjetnmin || it->pt() > pfjetptthr) {
+     if (nJet_pfsis5 < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
        ptJet_pfsis5[nJet_pfsis5] = it->pt();
        eJet_pfsis5[nJet_pfsis5] = it->energy();	 
@@ -2002,7 +2008,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != pfjetskt6->end(); ++it) {
      
      if (nJet_pfkt6>=100) {cout << "number of reco jets pfkt6 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfkt6 < pfjetnmin || it->pt() > pfjetptthr) {
+     if (nJet_pfkt6 < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
        ptJet_pfkt6[nJet_pfkt6] = it->pt();
        eJet_pfkt6[nJet_pfkt6] = it->energy();	 
@@ -2017,7 +2023,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 it != pfjetssis7->end(); ++it) {
      
      if (nJet_pfsis7>=100) {cout << "number of reco jets pfsis7 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfsis7 < pfjetnmin || it->pt() > pfjetptthr) {
+     if (nJet_pfsis7 < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
        ptJet_pfsis7[nJet_pfsis7] = it->pt();
        eJet_pfsis7[nJet_pfsis7] = it->energy();	 
@@ -2649,9 +2655,10 @@ GammaJetAnalyzer::beginJob()
 void GammaJetAnalyzer::endJob() {
 
   
-  outfile->cd("myanalysis");
+  //outfile->cd("myanalysis");
   m_tree->Write();
   outfile->Close();
+  outfile->Delete();
   
 //   //avoid writing the tree second time (automatically)
 //  m_tree->Delete();
