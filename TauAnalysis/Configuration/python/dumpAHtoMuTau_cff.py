@@ -15,7 +15,7 @@ dumpAHtoMuTau_woBtag = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
         TTplusJets = cms.string('harvested/TTplusJets/ahMuTauAnalyzer_woBtag/FilterStatistics/'),
         AH120_tautau = cms.string('harvested/AH120_tautau/ahMuTauAnalyzer_woBtag/FilterStatistics/'),
         AHbb120_tautau = cms.string('harvested/AHbb120_tautau/ahMuTauAnalyzer_woBtag/FilterStatistics/'),
-        AH120_tautauSum = cms.string('harvested/AH120_tautauSum/ahMuTauAnalyzer_woBtag/FilterStatistics/')
+        AHsum120_tautau = cms.string('harvested/AHsum120_tautau/ahMuTauAnalyzer_woBtag/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
 )
@@ -31,7 +31,7 @@ dumpAHtoMuTau_wBtag = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
         TTplusJets = cms.string('harvested/TTplusJets/ahMuTauAnalyzer_wBtag/FilterStatistics/'),
         AH120_tautau = cms.string('harvested/AH120_tautau/ahMuTauAnalyzer_wBtag/FilterStatistics/'),
         AHbb120_tautau = cms.string('harvested/AHbb120_tautau/ahMuTauAnalyzer_wBtag/FilterStatistics/'),
-        AH120_tautauSum = cms.string('harvested/AH120_tautauSum/ahMuTauAnalyzer_wBtag/FilterStatistics/')
+        AHsum120_tautau = cms.string('harvested/AHsum120_tautau/ahMuTauAnalyzer_wBtag/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
 )

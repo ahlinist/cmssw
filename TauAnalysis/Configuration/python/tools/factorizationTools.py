@@ -738,7 +738,7 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         dqmDirectoryOut_wBtag_InclusivePPmuX = 'harvested/InclusivePPmuX_factorized/ahMuTauAnalyzer_wBtag',
         dqmDirectoryIn_wBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20/ahMuTauAnalyzer_wBtag',
         dqmDirectoryOut_wBtag_PPmuXptGt20 = 'harvested/PPmuXptGt20_factorized/ahMuTauAnalyzer_wBtag',
-        modName_addAHtoMuTau_AH_tautauSum = "addAHtoMuTau_AH_tautauSum",
+        modName_addAHtoMuTau_AHsum_tautau = "addAHtoMuTau_AHsum120_tautau",
         modName_addAHtoMuTau_woBtag_qcdSum = "addAHtoMuTau_woBtag_qcdSum",
         modName_addAHtoMuTau_wBtag_qcdSum = "addAHtoMuTau_wBtag_qcdSum",                                   
         modName_addAHtoMuTau_smBgSum = "addAHtoMuTau_smBgSum",
@@ -891,8 +891,8 @@ def enableFactorization_makeAHtoMuTauPlots(process,
     )
     addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_woBtag_qcdSum)
     addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_wBtag_qcdSum)
-    if hasattr(process, modName_addAHtoMuTau_AH_tautauSum):
-        addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_AH_tautauSum)
+    if hasattr(process, modName_addAHtoMuTau_AHsum_tautau):
+        addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_AHsum_tautau)
     if hasattr(process, modName_addAHtoMuTau_smBgSum):
         addAHtoMuTau._seq = addAHtoMuTau._seq * getattr(process, modName_addAHtoMuTau_smBgSum)
     if hasattr(process, modName_addAHtoMuTau_smSum):

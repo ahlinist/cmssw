@@ -17,7 +17,7 @@ plots_AHtoMuTau = cms.PSet(
             #'ZplusJets',
             'Vqq',
             'Ztautau',
-            'AH120_tautauSum'
+            'AHsum120_tautau'
         )
     ),
     xAxis = cms.string('unlabeled'),
