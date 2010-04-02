@@ -378,9 +378,9 @@ private:
         o.name.find( "RctRegionsOccEtaPhi" ) != std::string::npos
          ) */
       if(
-        ( o.name.find( "Rct" ) != std::string::npos ||
-	  o.name.find( "Jet" ) != std::string::npos ||
-	  o.name.find( "IsoEm" ) != std::string::npos ) &&
+        ( o.name.find( "Rct" ) != std::string::npos &&
+	  (o.name.find( "Jet" ) != std::string::npos ||
+           o.name.find( "IsoEm" ) != std::string::npos )) &&
         o.name.find( "EtaPhi" ) != std::string::npos 
         )
       {
@@ -391,7 +391,100 @@ private:
         return;
       }
 
+      // GCT section
+      if (o.name.find("L1TGCT") != std::string::npos) {
 
+        // General style and stats
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        gPad->SetGrid(1,1);
+        gStyle->SetOptStat(11);
+
+        // Axis labels
+
+        // Eta phi 
+        if (o.name.find("EtaPhi") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT #eta");
+          obj->GetYaxis()->SetTitle("GCT #phi");
+          return;
+        }
+
+        // BX plots
+        if (o.name.find("Bx") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("BX");
+          obj->GetYaxis()->SetTitle("GCT E_{T}");
+          return;
+        }
+
+        // Jet and electron ET
+        if (o.name.find("Rank") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT E_{T}");
+          return;
+        }
+
+        // Energy sums overflow
+        if (o.name.find("Of") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("Overflow Bit");
+          return;
+        }
+
+        // Energy sums phi
+        if (o.name.find("HtMissPhi") != std::string::npos ||
+            o.name.find("EtMissPhi") != std::string::npos ||
+            ) {
+          obj->GetXaxis()->SetTitle("GCT #phi");
+          return;
+        }
+
+       // Energy sums MET and MHT correlations
+        if (o.name.find("EtMissHtMissCorr") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT EtMiss");
+          obj->GetYaxis()->SetTitle("GCT HtMiss");
+          return;
+        }
+
+       // Energy sums MET and MHT correlations
+        if (o.name.find("EtMissHtMissPhiCorr") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT EtMiss #phi");
+          obj->GetYaxis()->SetTitle("GCT HtMiss #phi");
+          return;
+        }
+
+        // Energy sums ET
+        if (o.name.find("HtMiss") != std::string::npos ||
+            o.name.find("EtMiss") != std::string::npos ||
+            o.name.find("EtHad") != std::string::npos ||
+            o.name.find("EtTotal") != std::string::npos ||
+            ) {
+          obj->GetXaxis()->SetTitle("GCT E_{T}");
+          return;
+        }
+
+        // HF Ring Counts
+        if (o.name.find("TowerCountNegEta") != std::string::npos ||
+            o.name.find("TowerCountPosEta") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT HF Ring Count");
+          return;
+        }        
+
+        // HF Ring Sums
+        if (o.name.find("ETSumNegEta") != std::string::npos ||
+            o.name.find("ETSumPosEta") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT HF Ring E_{T}");
+          return;
+        } 
+
+        // HF Ring correlations
+        if (o.name.find("TowerCountCorr") != std::string::npos ||
+            o.name.find("HFRing1Corr") != std::string::npos ||
+            o.name.find("HFRing2Corr") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT HF #eta +");
+          obj->GetYaxis()->SetTitle("GCT HF #eta -");
+          return;
+        } 
+
+        return;      
+      }
 
 
       if(o.name.find("Summary") != std::string::npos)
