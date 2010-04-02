@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.24 2010/03/29 10:13:45 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.25 2010/04/01 17:35:05 pandolf Exp $
 //
 //
 
@@ -2655,10 +2655,10 @@ GammaJetAnalyzer::beginJob()
 void GammaJetAnalyzer::endJob() {
 
   
-  //outfile->cd("myanalysis");
+  outfile->cd("myanalysis");
   m_tree->Write();
   outfile->Close();
-  outfile->Delete();
+  //outfile->Delete();
   
 //   //avoid writing the tree second time (automatically)
 //  m_tree->Delete();
