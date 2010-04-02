@@ -219,7 +219,7 @@ private:
 
 	obj->GetXaxis()->SetBinLabel(1,"CaloTower");
 	obj->GetXaxis()->SetBinLabel(2,"MET");
-	obj->GetXaxis()->SetBinLabel(2,"Jet");
+	obj->GetXaxis()->SetBinLabel(3,"Jet");
 	obj->GetXaxis()->SetLabelSize(0.1);
 
         obj->SetOption("col");
