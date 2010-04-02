@@ -156,7 +156,7 @@ private:
       assert (obj); // checks that object indeed exists
 
       gStyle->SetOptStat(111111);
-
+      
       // - top
       if(REMATCH("hltpath", o.name))
       {
@@ -179,24 +179,33 @@ private:
 		 REMATCH("Chi2", o.name)        ||
 		 REMATCH("Flag", o.name)        ||
 		 REMATCH("Frac", o.name)        ||
-		 REMATCH("_logx", o.name)       ||
+		 //REMATCH("_logx", o.name)       ||
 		 REMATCH("NHits", o.name)       ||
-		 REMATCH("NLayers", o.name)     ||
-		 REMATCH("CorrFactor", o.name)  ||
-		 REMATCH("Correction", o.name)
+		 REMATCH("NLayers", o.name)     //||
+		 //REMATCH("CorrFactor", o.name)  //||
+		 //REMATCH("Correction", o.name)
 		 )
 	       )
       {
 	if (obj->GetMaximum()>0.) gPad->SetLogy(1);
       }
-      //// - Jets
-      //else if(REMATCH("CaloEmEtInEB", o.name) ||
-      //	      REMATCH("CaloEmEtInEE", o.name))
-      //{
-      //	if (obj->GetMaximum()>0.) gPad->SetLogy(1);
-      //}
+      else obj->SetMinimum(0.);
 
+      if( o.name.find( "physdec" )  != std::string::npos)
+      {
+	obj->GetXaxis()->SetBinLabel(1,"All Events");
+	obj->GetXaxis()->SetBinLabel(2,"HLT_PhysicsDeclared");
+	//obj->GetXaxis()->SetLabelSize(0.075);
+	gPad->SetLogy(0);
+        obj->GetXaxis()->CenterLabels();
 
+      }
+      if( o.name.find( "CaloEmEtInEE" )  != std::string::npos)
+      {
+      	obj->GetXaxis()->SetTitle("EM Et [GeV]");
+      }
+
+      return;
     }
 
   void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
