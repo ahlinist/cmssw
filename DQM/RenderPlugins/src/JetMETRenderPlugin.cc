@@ -25,7 +25,9 @@
 #include "TLine.h"
 #include "TLegend.h"
 #include "TPRegexp.h"
+
 #include <cassert>
+#include <string>
 
 #define REMATCH(pat, str) (TPRegexp(pat).MatchB(str))
 
@@ -42,183 +44,197 @@ class JetMETRenderPlugin : public DQMRenderPlugin
 
 public:
   virtual void initialise (int, char **)
-    {
-      // same as RenderPlugin default for now (no special action taken)
+  {
+    // same as RenderPlugin default for now (no special action taken)
 
-      dummybox = new  TH2F("dummyJetMET","",22,-0.5,21.5,18,-0.5,17.5);
+    dummybox = new  TH2F("dummyJetMET","",22,-0.5,21.5,18,-0.5,17.5);
 
-      for(int i=0; i<22; i++)
+    for(int i=0; i<22; i++)
       {
         for(int j=0; j<18; j++)
-        {
-          dummybox->Fill(i,j,0.1);
-        }
+	  {
+	    dummybox->Fill(i,j,0.1);
+	  }
       }
 
-      for( int i=0; i<60; i++ ){
+    for( int i=0; i<60; i++ ){
 
-	if ( i < 15 ){
-	  l1t_rgb[i][0] = 1.00;
-	  l1t_rgb[i][1] = 1.00;
-	  l1t_rgb[i][2] = 1.00;
-	}
-	else if ( i < 30 ){
-	  l1t_rgb[i][0] = 0.50;
-	  l1t_rgb[i][1] = 0.80;
-	  l1t_rgb[i][2] = 1.00;
-	}
-	else if ( i < 40 ){
-	  l1t_rgb[i][0] = 1.00;
-	  l1t_rgb[i][1] = 1.00;
-	  l1t_rgb[i][2] = 1.00;
-	}
-	else if ( i < 57 ){
-	  l1t_rgb[i][0] = 0.80+0.01*(i-40);
-	  l1t_rgb[i][1] = 0.00+0.03*(i-40);
-	  l1t_rgb[i][2] = 0.00;
-	}
-	else if ( i < 59 ){
-	  l1t_rgb[i][0] = 0.80+0.01*(i-40);
-	  l1t_rgb[i][1] = 0.00+0.03*(i-40)+0.15+0.10*(i-17-40);
-	  l1t_rgb[i][2] = 0.00;
-	}
-	else if ( i == 59 ){
-	  l1t_rgb[i][0] = 0.00;
-	  l1t_rgb[i][1] = 0.80;
-	  l1t_rgb[i][2] = 0.00;
-	}
-
-	l1t_pcol[i] = 1901+i;
-
-	TColor* color = gROOT->GetColor( 1901+i );
-	if( ! color ) color = new TColor( 1901+i, 0, 0, 0, "" );
-	color->SetRGB( l1t_rgb[i][0], l1t_rgb[i][1], l1t_rgb[i][2] );
+      if ( i < 15 ){
+	l1t_rgb[i][0] = 1.00;
+	l1t_rgb[i][1] = 1.00;
+	l1t_rgb[i][2] = 1.00;
+      }
+      else if ( i < 30 ){
+	l1t_rgb[i][0] = 0.50;
+	l1t_rgb[i][1] = 0.80;
+	l1t_rgb[i][2] = 1.00;
+      }
+      else if ( i < 40 ){
+	l1t_rgb[i][0] = 1.00;
+	l1t_rgb[i][1] = 1.00;
+	l1t_rgb[i][2] = 1.00;
+      }
+      else if ( i < 57 ){
+	l1t_rgb[i][0] = 0.80+0.01*(i-40);
+	l1t_rgb[i][1] = 0.00+0.03*(i-40);
+	l1t_rgb[i][2] = 0.00;
+      }
+      else if ( i < 59 ){
+	l1t_rgb[i][0] = 0.80+0.01*(i-40);
+	l1t_rgb[i][1] = 0.00+0.03*(i-40)+0.15+0.10*(i-17-40);
+	l1t_rgb[i][2] = 0.00;
+      }
+      else if ( i == 59 ){
+	l1t_rgb[i][0] = 0.00;
+	l1t_rgb[i][1] = 0.80;
+	l1t_rgb[i][2] = 0.00;
       }
 
-      b_box_w = new TBox();
-      b_box_r = new TBox();
-      b_box_y = new TBox();
-      b_box_g = new TBox();
-      b_box_b = new TBox();
+      l1t_pcol[i] = 1901+i;
 
-      b_box_g->SetFillColor(1960);
-      b_box_y->SetFillColor(1959);
-      b_box_r->SetFillColor(1941);
-      b_box_w->SetFillColor(0);
-      b_box_b->SetFillColor(1923);
-
+      TColor* color = gROOT->GetColor( 1901+i );
+      if( ! color ) color = new TColor( 1901+i, 0, 0, 0, "" );
+      color->SetRGB( l1t_rgb[i][0], l1t_rgb[i][1], l1t_rgb[i][2] );
     }
+
+    b_box_w = new TBox();
+    b_box_r = new TBox();
+    b_box_y = new TBox();
+    b_box_g = new TBox();
+    b_box_b = new TBox();
+
+    b_box_g->SetFillColor(1960);
+    b_box_y->SetFillColor(1959);
+    b_box_r->SetFillColor(1941);
+    b_box_w->SetFillColor(0);
+    b_box_b->SetFillColor(1923);
+
+  }
 
   virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
-    {
-      // determine whether core object is an JetMET object
-      if (o.name.find( "JetMET/" ) != std::string::npos )
-        return true;
-      return false;
-    }
+  {
+    // determine whether core object is an JetMET object
+    if (o.name.find( "JetMET/" ) != std::string::npos )
+      return true;
+    return false;
+  }
 
   virtual void preDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
-    {
-      c->cd();
+  {
+    c->cd();
 
-      // object is TH2 histogram
-      if( dynamic_cast<TH2F*>( o.object ) )
+    // object is TH2 histogram
+    if( dynamic_cast<TH2F*>( o.object ) )
       {
         preDrawTH2F( c, o );
       }
-      // object is TH1 histogram
-      else if( dynamic_cast<TH1F*>( o.object ) )
+    // object is TH1 histogram
+    else if( dynamic_cast<TH1F*>( o.object ) )
       {
         preDrawTH1F( c, o );
       }
-    }
+  }
 
   virtual void postDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
-    {
-      // object is TH2 histogram
-      if( dynamic_cast<TH2F*>( o.object ) )
+  {
+    // object is TH2 histogram
+    if( dynamic_cast<TH2F*>( o.object ) )
       {
         postDrawTH2F( c, o );
       }
-      // object is TH1 histogram
-      else if( dynamic_cast<TH1F*>( o.object ) )
+    // object is TH1 histogram
+    else if( dynamic_cast<TH1F*>( o.object ) )
       {
         postDrawTH1F( c, o );
       }
-    }
+  }
 
 private:
   void preDrawTH1F ( TCanvas *, const VisDQMObject &o )
-    {
-      // Do we want to do anything special yet with TH1F histograms?
+  {
+    // Do we want to do anything special yet with TH1F histograms?
 
-      TH1F* obj = dynamic_cast<TH1F*>( o.object );
-      assert (obj); // checks that object indeed exists
+    TH1F* obj = dynamic_cast<TH1F*>( o.object );
+    assert (obj); // checks that object indeed exists
 
-      gStyle->SetOptStat(111111);
+    gStyle->SetOptStat(111111);
       
-      // - top
-      if(REMATCH("hltpath", o.name))
+    // - top
+    if(REMATCH("hltpath", o.name))
       {
 	obj->GetXaxis()->SetTitle("HLT Path");
 	return;
       }
-      else if(REMATCH("lumisec", o.name))
+    else if(REMATCH("lumisec", o.name))
       {
         obj->GetXaxis()->SetTitle("lumi section");
         return;
       }
-      // - MET
-      else if( !(REMATCH("D0", o.name)          ||
-		 REMATCH("Dz", o.name)          ||
-		 REMATCH("Dxy", o.name)         ||
-		 REMATCH("Phi", o.name)         ||
-		 REMATCH("Eta", o.name)         ||
-		 REMATCH("_LS", o.name)         ||
-		 REMATCH("Flag", o.name)        ||
-		 REMATCH("Chi2", o.name)        ||
-		 REMATCH("Flag", o.name)        ||
-		 REMATCH("Frac", o.name)        ||
-		 //REMATCH("_logx", o.name)       ||
-		 REMATCH("NHits", o.name)       ||
-		 REMATCH("NLayers", o.name)     //||
-		 //REMATCH("CorrFactor", o.name)  //||
-		 //REMATCH("Correction", o.name)
-		 )
+    // - MET
+    else if( !(REMATCH("D0", o.name)          ||
+	       REMATCH("Dz", o.name)          ||
+	       REMATCH("Dxy", o.name)         ||
+	       REMATCH("Phi", o.name)         ||
+	       REMATCH("Eta", o.name)         ||
+	       REMATCH("_LS", o.name)         ||
+	       REMATCH("Flag", o.name)        ||
+	       REMATCH("Chi2", o.name)        ||
+	       REMATCH("Flag", o.name)        ||
+	       REMATCH("Frac", o.name)        ||
+	       //REMATCH("_logx", o.name)       ||
+	       REMATCH("NHits", o.name)       ||
+	       REMATCH("NLayers", o.name)     //||
+	       //REMATCH("CorrFactor", o.name)  //||
+	       //REMATCH("Correction", o.name)
 	       )
+	     )
       {
 	if (obj->GetMaximum()>0.) gPad->SetLogy(1);
       }
-      else obj->SetMinimum(0.);
+    else obj->SetMinimum(0.);
 
-      if( o.name.find( "physdec" )  != std::string::npos)
+    if( o.name.find( "physdec" )  != std::string::npos)
       {
 	obj->GetXaxis()->SetBinLabel(1,"All Events");
 	obj->GetXaxis()->SetBinLabel(2,"HLT_PhysicsDeclared");
-	//obj->GetXaxis()->SetLabelSize(0.075);
 	gPad->SetLogy(0);
         obj->GetXaxis()->CenterLabels();
 
       }
-      if( o.name.find( "CaloEmEtInEE" )  != std::string::npos)
+    if( o.name.find( "CaloEmEtInEE" )  != std::string::npos)
       {
-      	obj->GetXaxis()->SetTitle("EM Et [GeV]");
+	obj->GetXaxis()->SetTitle("EM Et [GeV]");
+      }
+      
+    if( REMATCH("_Hi",o.name))
+      {
+	std::string title = obj->GetTitle();
+	std::string::iterator it = title.end();
+	title.replace(it-2,it,"(Pass Hi Pt Jet Trigger)");
+	obj->SetTitle(title.c_str());
+      }
+    if( REMATCH("_Lo",o.name))
+      {
+	std::string title = obj->GetTitle();
+	std::string::iterator it = title.end();
+	title.replace(it-2,it,"(Pass Low Pt Jet Trigger)");
+	obj->SetTitle(title.c_str());
       }
 
-      return;
-    }
+    return;
+  }
 
   void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
-    {
-      TH2F* obj = dynamic_cast<TH2F*>( o.object );
-      assert( obj );
+  {
+    TH2F* obj = dynamic_cast<TH2F*>( o.object );
+    assert( obj );
 
-      gStyle->SetOptStat(10);
+    gStyle->SetOptStat(10);
 
-      //put in preDrawTH2F
+    //put in preDrawTH2F
 
-      // ReportSummaryMap
-      if( o.name.find( "reportSummaryMap" )  != std::string::npos)
+    // ReportSummaryMap
+    if( o.name.find( "reportSummaryMap" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
 
@@ -240,33 +256,33 @@ private:
         return;
       }
 
-      gStyle->SetCanvasBorderMode( 0 );
-      gStyle->SetPadBorderMode( 0 );
-      gStyle->SetPadBorderSize( 0 );
+    gStyle->SetCanvasBorderMode( 0 );
+    gStyle->SetPadBorderMode( 0 );
+    gStyle->SetPadBorderSize( 0 );
 
-      // Use same labeling format as SiStripRenderPlugin.cc
-      TAxis* xa = obj->GetXaxis();
-      TAxis* ya = obj->GetYaxis();
+    // Use same labeling format as SiStripRenderPlugin.cc
+    TAxis* xa = obj->GetXaxis();
+    TAxis* ya = obj->GetYaxis();
 
-      xa->SetTitleOffset(0.7);
-      xa->SetTitleSize(0.05);
-      xa->SetLabelSize(0.04);
+    xa->SetTitleOffset(0.7);
+    xa->SetTitleSize(0.05);
+    xa->SetLabelSize(0.04);
 
-      ya->SetTitleOffset(0.7);
-      ya->SetTitleSize(0.05);
-      ya->SetLabelSize(0.04);
+    ya->SetTitleOffset(0.7);
+    ya->SetTitleSize(0.05);
+    ya->SetLabelSize(0.04);
 
-      // Now the important stuff -- set 2D hist drawing option to "colz"
-      gStyle->SetPalette(1);
-      obj->SetOption("colz");
+    // Now the important stuff -- set 2D hist drawing option to "colz"
+    gStyle->SetPalette(1);
+    obj->SetOption("colz");
 
-      gStyle->SetStatX(0.82);
-      gStyle->SetStatY(0.86);
-      gStyle->SetStatW(0.30);
-      gStyle->SetStatH(0.15);
+    gStyle->SetStatX(0.82);
+    gStyle->SetStatY(0.86);
+    gStyle->SetStatW(0.30);
+    gStyle->SetStatH(0.15);
 
-      // CaloTower Stuff
-      if( o.name.find( "CT_METPhivsieta" ) != std::string::npos )
+    // CaloTower Stuff
+    if( o.name.find( "CT_METPhivsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
         obj->SetTitle("CT-ieta vs METPhi");
@@ -274,7 +290,7 @@ private:
         obj->GetYaxis()->SetTitle("METphi (rad)");
         return;
       }
-      else if( o.name.find( "CT_METvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_METvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -283,7 +299,7 @@ private:
         obj->GetYaxis()->SetTitle("MET (GeV)");
         return;
       }
-      else if( o.name.find( "CT_MExvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_MExvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -292,7 +308,7 @@ private:
         obj->GetYaxis()->SetTitle("MEx (GeV)");
         return;
       }
-      else if( o.name.find( "CT_MEyvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_MEyvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -301,7 +317,7 @@ private:
         obj->GetYaxis()->SetTitle("MEy (GeV)");
         return;
       }
-      else if( o.name.find( "CT_Maxetvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_Maxetvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -310,7 +326,7 @@ private:
         obj->GetYaxis()->SetTitle("MaxEt (GeV)");
         return;
       }
-      else if( o.name.find( "CT_Minetvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_Minetvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -319,7 +335,7 @@ private:
         obj->GetYaxis()->SetTitle("MinEt (GeV)");
         return;
       }
-      else if( o.name.find( "CT_Occ_ieta_iphi" ) != std::string::npos )
+    else if( o.name.find( "CT_Occ_ieta_iphi" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -328,7 +344,7 @@ private:
         obj->GetYaxis()->SetTitle("iphi");
         return;
       }
-      else if( o.name.find( "CT_Occvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_Occvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -337,17 +353,17 @@ private:
         obj->GetYaxis()->SetTitle("Occupancy");
         return;
       }
-      else if( o.name.find( "CT_SETvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_SETvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
-        obj->SetTitle("CT Occupancy vs ieta");
+        obj->SetTitle("CT Sum Et vs ieta");
         obj->GetXaxis()->SetTitle("ieta");
         obj->GetYaxis()->SetTitle("SET (GeV)");
         return;
       }
-      // EM-ET
-      else if( o.name.find( "CT_emEt_ieta_iphi" ) != std::string::npos )
+    // EM-ET
+    else if( o.name.find( "CT_emEt_ieta_iphi" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -356,7 +372,7 @@ private:
         obj->GetYaxis()->SetTitle("iphi");
         return;
       }
-      else if( o.name.find( "CT_emEtvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_emEtvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -365,8 +381,8 @@ private:
         obj->GetYaxis()->SetTitle("EM Et (GeV)");
         return;
       }
-      // Total-ET
-      else if( o.name.find( "CT_et_ieta_iphi" ) != std::string::npos )
+    // Total-ET
+    else if( o.name.find( "CT_et_ieta_iphi" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -375,7 +391,7 @@ private:
         obj->GetYaxis()->SetTitle("iphi");
         return;
       }
-      else if( o.name.find( "CT_etvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_etvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -384,8 +400,8 @@ private:
         obj->GetYaxis()->SetTitle("Et (GeV)");
         return;
       }
-      // Had-ET
-      else if( o.name.find( "CT_hadEt_ieta_iphi" ) != std::string::npos )
+    // Had-ET
+    else if( o.name.find( "CT_hadEt_ieta_iphi" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -394,7 +410,7 @@ private:
         obj->GetYaxis()->SetTitle("iphi");
         return;
       }
-      else if( o.name.find( "CT_hadEtvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_hadEtvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -403,8 +419,8 @@ private:
         obj->GetYaxis()->SetTitle("Had Et (GeV)");
         return;
       }
-      // Outer-ET
-      else if( o.name.find( "CT_outerEt_ieta_iphi" ) != std::string::npos )
+    // Outer-ET
+    else if( o.name.find( "CT_outerEt_ieta_iphi" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -413,7 +429,7 @@ private:
         obj->GetYaxis()->SetTitle("iphi");
         return;
       }
-      else if( o.name.find( "CT_outerEtvsieta" ) != std::string::npos )
+    else if( o.name.find( "CT_outerEtvsieta" ) != std::string::npos )
       {
         gPad->SetGrid(1,1);
 	if (obj->GetMaximum()>0.) gPad->SetLogz(1);
@@ -423,27 +439,27 @@ private:
         return;
       }
 
-    }
+  }
 
   void postDrawTH1F( TCanvas *, const VisDQMObject & )
-    {
+  {
 
-    }
+  }
 
   void postDrawTH2F( TCanvas *, const VisDQMObject &o )
-    {
+  {
 
 
-      TH2F* obj = dynamic_cast<TH2F*>( o.object );
-      assert( obj );
+    TH2F* obj = dynamic_cast<TH2F*>( o.object );
+    assert( obj );
 
 
-      TBox* b_box = new TBox();
-      TLine* l_line = new TLine();
-      TText* t_text = new TText();
+    TBox* b_box = new TBox();
+    TLine* l_line = new TLine();
+    TText* t_text = new TText();
 
-      // ReportSummaryMap
-      if( o.name.find( "reportSummaryMap" )  != std::string::npos)
+    // ReportSummaryMap
+    if( o.name.find( "reportSummaryMap" )  != std::string::npos)
       {
         t_text->SetTextAlign(21);
 
@@ -488,7 +504,7 @@ private:
 
       }
 
-    }
+  }
 };
 
 static JetMETRenderPlugin instance;
