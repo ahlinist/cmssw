@@ -353,6 +353,7 @@ int main(int argc,  char * argv[]){
   std::string inBxs, inOrbits, inTrig, inTTrig, inLumi, inTimes;
   Char_t *infile, *runNum, *fileType, *dirName, *mType, *plotfile; 
   Bool_t printPics, doWait;
+  double minEBamp = 0.1, minEEamp = 0.1, minEBET = 0.1, minEEET = 0.1;
 
   infile = argv[1];
   runNum = argv[2];
@@ -370,6 +371,10 @@ int main(int argc,  char * argv[]){
     if (argv[i] == std::string("-bxs") && argc>i+1) inBxs =  std::string(argv[i+1]) ;
     if (argv[i] == std::string("-times") && argc>i+1) inTimes =  std::string(argv[i+1]) ;
     if (argv[i] == std::string("-orbits") && argc>i+1) inOrbits =  std::string(argv[i+1]) ;
+    if (argv[i] == std::string("-ebemin") && argc>i+1) minEBamp =  atof(argv[i+1]) ;
+    if (argv[i] == std::string("-eeemin") && argc>i+1) minEEamp =  atof(argv[i+1]) ;
+    if (argv[i] == std::string("-ebetmin") && argc>i+1) minEBET =  atof(argv[i+1]) ;
+    if (argv[i] == std::string("-eeetmin") && argc>i+1) minEEET =  atof(argv[i+1]) ;
   }
   
   std::cout << " Infile " << infile << " runNum " << runNum << " printPics " << printPics 
@@ -883,8 +888,10 @@ int main(int argc,  char * argv[]){
 
   TH2F *hctEBtoTerr   = new TH2F("hctEBtoTerr", Form("%s EB Crystal Times to Time Error;Crystal Time (ns);Crystal Time Error (ns)",runChar),50, -EBTimeMax, EBTimeMax, 20, 0, 5.0);
   TH2F *hctEEtoTerr   = new TH2F("hctEEtoTerr", Form("%s EE Crystal Times to Time Error;Crystal Time (ns);Crystal Time Error (ns)",runChar),50, -EETimeMax, EETimeMax, 20, 0, 5.0);
-  TH2F *hctEBtoAmp    = new TH2F("hctEBtoAmp", Form("%s EB Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (GeV)",runChar),50, -EBTimeMax, EBTimeMax, 50, 0, 50.);
-  TH2F *hctEEtoAmp    = new TH2F("hctEEtoAmp", Form("%s EE Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (GeV)",runChar),50, -EETimeMax, EETimeMax, 50, 0, 50.);
+  TH2F *hctEBtoAmp    = new TH2F("hctEBtoAmp", Form("%s EB Crystal Times to Amplitude;Crystal Time (ns);Crystal Amplitude (GeV)",runChar),50, -EBTimeMax, EBTimeMax, 50, 0, 50.);
+  TH2F *hctEEtoAmp    = new TH2F("hctEEtoAmp", Form("%s EE Crystal Times to Amplitude;Crystal Time (ns);Crystal Amplitude (GeV)",runChar),50, -EETimeMax, EETimeMax, 50, 0, 50.);
+  TH2F *hctEBtoET    = new TH2F("hctEBtoET", Form("%s EB Crystal Times to E_{T};Crystal Time (ns);Crystal E_{T} (GeV)",runChar),60, -EBTimeMax, EBTimeMax, 50, 0, 30.);
+  TH2F *hctEEtoET    = new TH2F("hctEEtoET", Form("%s EE Crystal Times to E_{T};Crystal Time (ns);Crystal E_{T} (GeV)",runChar),60, -EETimeMax, EETimeMax, 50, 0, 30.);
   TH2F *hctEBtoAmpEvt = new TH2F("hctEBtoAmpEvt", Form("%s EB Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (GeV)",runChar),50, -EBTimeMax, EBTimeMax, 50, 0, 50.);
   TH2F *hctEEtoAmpEvt = new TH2F("hctEEtoAmpEvt", Form("%s EE Event Time to Crystal Amplitudes;Average EE Event Time (ns);Crystal Amplitude (GeV)",runChar),50, -EETimeMax, EETimeMax, 50, 0, 50.);
   TH2F *hctEEtoAmpErr = new TH2F("hctEEtoAmpErr", Form("%s EE Time Error to Crystal Amplitudes;Crystal Amplitude (GeV);Time Error (ns)",runChar),50, 0., 50., 20, 0., 5. );
@@ -905,8 +912,8 @@ int main(int argc,  char * argv[]){
   TH2F *hctEEMDEEPcry  = new TH2F("hctEEMDEEPcry",Form("%s EE- minus EE+ average time vs EE crystals;(EEM - EEP) average time (ns);Number EE crystals",runChar),50, -EETimeMax, EETimeMax,25,0, 25);
   TH1F *hctEEMDEEP     = new TH1F("hctEEMDEEP",Form("%s EE- minus EE+ average time;(EEM - EEP) average time (ns)",runChar),100, -EETimeMax, EETimeMax);
   
-  TH2F *hctEEcryamp   = new TH2F("hctEEcryamp",Form("%s EE amplitudes vs number of crystals;Crystal Amp (GeV);Number EE crystals",runChar),50,0.,50.,25,0., 25.);
-  TH2F *hctEBcryamp   = new TH2F("hctEBcryamp",Form("%s EB amplitudes vs number of crystals;Crystal Amp (GeV);Number EB crystals",runChar),50,0.,50.,25,0., 25.);
+  TH2F *hctEEcryamp   = new TH2F("hctEEcryamp",Form("%s EE amplitudes vs number of crystals;Crystal Amp (GeV);Number EE crystals",runChar),50,0.,50.,25,0, 25);
+  TH2F *hctEBcryamp   = new TH2F("hctEBcryamp",Form("%s EB amplitudes vs number of crystals;Crystal Amp (GeV);Number EB crystals",runChar),50,0.,50.,25,0, 25);
 
   TH1F *hctE1OE9   = new TH1F("hctE1OE9",  Form("%s EB E1/E9; E1/E9",runChar),100,0.,1.2);
   TH1F *hctKSwissK = new TH1F("hctKSwissK",Form("%s EB KSwissCross; KSwissCross (1-e4/e1)",runChar),100,-0.6,1.);
@@ -943,6 +950,8 @@ int main(int argc,  char * argv[]){
   TH2F *hBXVsAbsTime   = new TH2F("hBXVsAbsTime",Form("%s Absolute Time vs. BX;Minutes Since Run Start ; BX",runChar),50, 0, diffTime, 3500, 0., 3500);
   TH2F *hTriggerVsBX   = new TH2F("hTriggerVsBX",Form("%s BX vs. Trigger; BX; Active Trigger Bits",runChar),3500,0,3500, maxTrig, 0., maxTrig);
   TH2F *hTTriggerVsBX  = new TH2F("hTTriggerVsBX",Form("%s BX vs. Technical Trigger; BX; Active Technical Trigger Bits",runChar),3500,0,3500, maxTTrig, 0., maxTTrig);
+
+ TH2F *hEBOccuBad = new TH2F("hEBOccuBad",Form("%s EB Occupancy for time < -9ns;i#phi;i#eta",runChar),360,1.,361.,171,-85.,86.);
   
   
   TProfile2D* NtimeCHProfile = NewTProfile2D(timeCHProfile,"NtimeCHProfile");
@@ -1109,9 +1118,12 @@ int main(int argc,  char * argv[]){
 	 if (myterr > 5.0 ) continue;
 	 double kswissk = TTreeMembers_.kswisskEB_[ebx];
          double e1Oe9 =  TTreeMembers_.e1Oe9EB_[ebx];
-         if (e1Oe9 > 0.9) continue;
-	 if (kswissk > .85) continue; 
+         if (e1Oe9 > 0.92) continue;
+	 if (kswissk > 0.95) continue; 
 	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
+         double et  = TTreeMembers_.cryETEB_[ebx];
+         if ( amp < minEBamp ) continue; 
+         if ( et < minEBET ) continue; 
          int ieta = mydet.ieta();
          int iphi = mydet.iphi();
          if ( ieta > 0 ) {EBPave += myt/myterr; EBPn += 1./myterr; hEBPlusTime->Fill(myt);}
@@ -1120,6 +1132,7 @@ int main(int argc,  char * argv[]){
          hctEB->Fill(myt);
 	 hctEBtoTerr->Fill(myt,myterr);
 	 hctEBtoAmp->Fill(myt,amp);
+	 hctEBtoET->Fill(myt,et);
 	 hctEBtoAmpErr->Fill(amp,myterr);
 	 hctEBHashed->Fill(crystalHashedIndicesEB);
 	 hctEBtoHashed->Fill(crystalHashedIndicesEB,myt);
@@ -1131,6 +1144,7 @@ int main(int argc,  char * argv[]){
 	 hctE1OE9->Fill(e1Oe9);
 	 hctKSwissK->Fill(kswissk);
          if ( fabs(ieta) < 5 ) hEBTimeEtaLess5->Fill(myt);
+         if ( myt < -9.) hEBOccuBad->Fill(iphi,ieta);
      }
      for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
          int crystalHashedIndicesEE = TTreeMembers_.cryHashesEE_[eex];
@@ -1141,13 +1155,17 @@ int main(int argc,  char * argv[]){
          double myterr  = (TTreeMembers_.cryTimeErrorsEE_[eex])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEE_[eex];
-	 if (amp < 1.0) continue;
+         double et  = TTreeMembers_.cryETEE_[eex];
+	 //if (amp < 1.0) continue;
+         if ( amp < minEEamp ) continue; 
+         if ( et < minEEET ) continue; 
          int ix = mydete.ix();
          int iy = mydete.iy();
          int iz = mydete.zside();
 	 hctEE->Fill(myt);
 	 hctEEtoTerr->Fill(myt,myterr);
 	 hctEEtoAmp->Fill(myt,amp);
+	 hctEEtoET->Fill(myt,et);
 	 hctEEtoAmpErr->Fill(amp,myterr);
 	 hctEEHashed->Fill(crystalHashedIndicesEE);
 	 hctEEtoHashed->Fill(crystalHashedIndicesEE,myt);
@@ -1168,7 +1186,7 @@ int main(int argc,  char * argv[]){
 	    NtimeTTAllFEDsEtaEEM->Fill(pow((ix-50)*(ix-50)+(iy-50)*(iy-50),0.5),myt);
 	 }
      }
-     EEnum = EEpnum + EEmnum;
+     EEnum = EEpnum + EEmnum; if (EEnum >17.0  ) cout << " yes it is 19? " << EEnum << endl;
      if ( EBPn > 0.0 || EBMn > 0.0 )
      {
         EBave = (EBPave + EBMave) / (EBPn+EBMn);
@@ -1212,12 +1230,15 @@ int main(int argc,  char * argv[]){
          double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEB_[ebx];
+         double et  = TTreeMembers_.cryETEB_[ebx];
+         if ( amp < minEBamp ) continue; 
+         if ( et < minEBET ) continue; 
          int ieta = mydet.ieta();
          //int iphi = mydet.iphi();
 	 double kswissk = TTreeMembers_.kswisskEB_[ebx];
 	 double e1Oe9 =  TTreeMembers_.e1Oe9EB_[ebx];
-         if (e1Oe9 > 0.9) continue;
-	 if (kswissk > 0.85) continue;
+         if (e1Oe9 > 0.92) continue;
+	 if (kswissk > 0.95) continue;
 	 hctEBtoAve->Fill(myt,EBave);
 	 hctEBtoAmpEvt->Fill(EBave,amp);
          hctEBcryamp->Fill(amp,EBnum);
@@ -1234,7 +1255,10 @@ int main(int argc,  char * argv[]){
          double myterr  = (TTreeMembers_.cryTimeErrorsEE_[eex])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEE_[eex];
-	 if (amp < 1.0) continue;
+         double et  = TTreeMembers_.cryETEE_[eex];
+	 //if (amp < 1.0) continue;
+         if ( amp < minEEamp ) continue; 
+         if ( et < minEEET ) continue; 
          //int ix = mydete.ix();
          //int iy = mydete.iy();
          //int iz = mydete.zside();
@@ -1434,6 +1458,7 @@ int main(int argc,  char * argv[]){
   hctEEtoAmp->Draw("colz");
   hctEEtoAmp->GetXaxis()->SetNdivisions(512);
   hctEEtoAmp->GetYaxis()->SetNdivisions(507);
+  hctEEtoAmp->SetMinimum(1.0);
   c[34]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAMP_%s.%s",dirName,mType,runNumber,fileType); c[34]->Print(name); } 
   c[35]->cd();
@@ -1441,15 +1466,34 @@ int main(int argc,  char * argv[]){
   hctEBtoAmp->Draw("colz");
   hctEBtoAmp->GetXaxis()->SetNdivisions(512);
   hctEBtoAmp->GetYaxis()->SetNdivisions(507);
+  hctEBtoAmp->SetMinimum(1.0);
   c[35]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAMP_%s.%s",dirName,mType,runNumber,fileType); c[35]->Print(name); } 
+
+  c[34]->cd();
+  gStyle->SetOptStat(1110);
+  hctEEtoET->Draw("colz");
+  hctEEtoET->GetXaxis()->SetNdivisions(512);
+  hctEEtoET->GetYaxis()->SetNdivisions(507);
+  hctEEtoET->SetMinimum(1.0);
+  c[34]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoET_%s.%s",dirName,mType,runNumber,fileType); c[34]->Print(name); } 
+  c[35]->cd();
+  gStyle->SetOptStat(1110);
+  hctEBtoET->Draw("colz");
+  hctEBtoET->GetXaxis()->SetNdivisions(512);
+  hctEBtoET->GetYaxis()->SetNdivisions(507);
+  hctEBtoET->SetMinimum(1.0);
+  c[35]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoET_%s.%s",dirName,mType,runNumber,fileType); c[35]->Print(name); } 
   
-   //Amplitdue to ave event time
+   //Amplitude to ave event time
   c[36]->cd();
   gStyle->SetOptStat(1110);
   hctEBtoAmpEvt->Draw("colz");
   hctEBtoAmpEvt->GetXaxis()->SetNdivisions(512);
   hctEBtoAmpEvt->GetYaxis()->SetNdivisions(507);
+  hctEBtoAmpEvt->SetMinimum(1.0);
   c[36]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBEvtTIMEStoAMP_%s.%s",dirName,mType,runNumber,fileType); c[36]->Print(name); } 
   c[37]->cd();
@@ -1457,6 +1501,7 @@ int main(int argc,  char * argv[]){
   hctEEtoAmpEvt->Draw("colz");
   hctEEtoAmpEvt->GetXaxis()->SetNdivisions(512);
   hctEEtoAmpEvt->GetYaxis()->SetNdivisions(507);
+  hctEEtoAmpEvt->SetMinimum(1.0);
   c[37]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEEvtTIMEStoAMP_%s.%s",dirName,mType,runNumber,fileType); c[37]->Print(name); } 
   
@@ -1466,6 +1511,7 @@ int main(int argc,  char * argv[]){
   hctEEtoAmpErr->Draw("colz");
   hctEEtoAmpErr->GetXaxis()->SetNdivisions(512);
   hctEEtoAmpErr->GetYaxis()->SetNdivisions(507);
+  hctEEtoAmpErr->SetMinimum(1.0);
   c[38]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESErrtoAMP_%s.%s",dirName,mType,runNumber,fileType); c[38]->Print(name); } 
   c[39]->cd();
@@ -1473,6 +1519,7 @@ int main(int argc,  char * argv[]){
   hctEBtoAmpErr->Draw("colz");
   hctEBtoAmpErr->GetXaxis()->SetNdivisions(512);
   hctEBtoAmpErr->GetYaxis()->SetNdivisions(507);
+  hctEBtoAmpErr->SetMinimum(1.0);
   c[39]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMESErrtoAMP_%s.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); } 
 
@@ -1931,6 +1978,19 @@ int main(int argc,  char * argv[]){
   c[39]->SetGridy(1);
   gStyle->SetOptStat(0);
   if (printPics) { sprintf(name,"%s/%sAnalysis_OccuCHProfile_%s.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); }
+
+  c[39]->cd();
+  gStyle->SetOptStat(10);
+  hEBOccuBad->Draw("colz");
+  hEBOccuBad->SetMinimum(1.);
+  hEBOccuBad->GetXaxis()->SetNdivisions(-18);
+  hEBOccuBad->GetYaxis()->SetNdivisions(2);
+  c[39]->SetLogy(0);
+  c[39]->SetLogz(1);
+  c[39]->SetGridx(1);
+  c[39]->SetGridy(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_OccuCHProfileBad_%s.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); }
  
   c[40]->cd();
   gStyle->SetOptStat(10);
@@ -2318,6 +2378,8 @@ int main(int argc,  char * argv[]){
   hctEEtoTerr->Write();
   hctEEtoAmp->Write();
   hctEBtoAmp->Write();
+  hctEBtoET->Write();
+  hctEEtoET->Write();
   hctEBtoAmpEvt->Write();
   hctEEtoAmpEvt->Write();
   hctEEtoAmpErr->Write();
@@ -2391,6 +2453,8 @@ int main(int argc,  char * argv[]){
   chhistEEMN->Write();
   NEEMtimeTTProfile->Write();
   tthistEEMN->Write();
+
+  hEBOccuBad->Write();
   
   pfile->Write();
   pfile->Close();
