@@ -430,8 +430,7 @@ private:
 
         // Energy sums phi
         if (o.name.find("HtMissPhi") != std::string::npos ||
-            o.name.find("EtMissPhi") != std::string::npos ||
-            ) {
+            o.name.find("EtMissPhi") != std::string::npos) {
           obj->GetXaxis()->SetTitle("GCT #phi");
           return;
         }
@@ -454,8 +453,7 @@ private:
         if (o.name.find("HtMiss") != std::string::npos ||
             o.name.find("EtMiss") != std::string::npos ||
             o.name.find("EtHad") != std::string::npos ||
-            o.name.find("EtTotal") != std::string::npos ||
-            ) {
+            o.name.find("EtTotal") != std::string::npos) {
           obj->GetXaxis()->SetTitle("GCT E_{T}");
           return;
         }
