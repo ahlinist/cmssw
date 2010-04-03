@@ -1,6 +1,11 @@
 #!/bin/bash
 
 usage='Usage: -r <run number>'
+   
+EBAMP=0.6
+EEAMP=1.0
+EBET=0.3
+EEET=0.5
 
 args=`getopt r: -- "$@"`
 if test $? != 0
@@ -21,6 +26,10 @@ for i
       -lumi) shift; LUMI=$2;shift;;
       -trig) shift; TRIG=$2;shift;;
       -ttrig) shift; TTRIG=$2;shift;;
+      -ebemin) shift; EBAMP=$2;shift;;
+      -eeemin) shift; EEAMP=$2;shift;;
+      -ebetmin) shift; EBET=$2;shift;;
+      -eeetmin) shift; EEET=$2;shift;;
   esac       
 done
 
@@ -78,6 +87,8 @@ if [ "X"${ORBITS} != "X" ]
     OPTIONS=$OPTIONS" -orbits "$ORBITS
 fi
 
+OPTIONS=$OPTIONS" -ebemin "$EBAMP" -eeemin "$EEAMP" -ebetmin "$EBET" -eeetmin "$EEET
+
 echo 'Making Laser Webpages for ' ${run_num}  
   
 
@@ -102,10 +113,10 @@ plot_file=${analy_type}_${Nrun_num}_plots.root
 cp ${work_dir}/${analy_type}_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}/${Nroot_file}
 
 echo
-echo 'Going to make the plots, by running in ROOT:'
-echo
-echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/plotLaser.C'
-echo 'DrawLaserPlots("'${plots_dir}'/'${Nroot_file}'","'${Nrun_num}'",kTRUE,"png","'${plots_dir}'",kFALSE,"${analy_type}","'${plot_file}'")'
+echo 'Going to make the plots, by running:'
+echo  'EcalTimingTTreePlotter '${plots_dir}'/'${Nroot_file}' '${Nrun_num}' 1 png '${plots_dir}' 0 '${analy_type}' '${plot_file}' '$OPTIONS' > '${plots_dir}'/plotting.txt'
+#echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/plotLaser.C'
+#echo 'DrawLaserPlots("'${plots_dir}'/'${Nroot_file}'","'${Nrun_num}'",kTRUE,"png","'${plots_dir}'",kFALSE,"${analy_type}","'${plot_file}'")'
 echo
 
 EcalTimingTTreePlotter ${plots_dir}/${Nroot_file} ${Nrun_num} 1 png ${plots_dir} 0 ${analy_type} ${plot_file} $OPTIONS > ${plots_dir}/plotting.txt
@@ -225,14 +236,15 @@ Jump to:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="#TTreeAbs">Abolute Time to Event Timing</A><BR>
 <A href="expert.html">Expert Technical Plots</A><BR>
 
-
 </FONT>
-<br>
+<br>Min Cuts for crystals. 
+<br>EB: Amp > 15 ADC && E > ${EBAMP} GeV  && ET > ${EBET} GeV && timing error < 5ns
+<br>EE: Amp > 15 ADC && E > ${EEAMP} GeV  && ET > ${EEET} GeV && timing error < 5ns
+
+
+
 
 <h4><A name="TTree1d">Advanced 1-D Timing Histograms</h4>
-
-<br>Timing from Each crystal in the selected regions  > 15 ADC && > 0.6 GeV (EB), > 15 ADC &&  1 GeV (EE), and timing error < 5ns. </br>
-  
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMES_${run_num}.png> <img height="150" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMES_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBPlusTime_${run_num}.png> <img height="150" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBPlusTime_${run_num}.png"> </A>
 
@@ -290,10 +302,12 @@ Jump to:<br>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_timeTTProfileRel_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_timeTTProfileRel_${run_num}.png"> </A>
 
 <br>
-
+    
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_fullAmpProfileEB_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_fullAmpProfileEB_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_OccuCHProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_OccuCHProfile_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_OccuTTProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_OccuTTProfile_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_OccuCHProfileBad_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_OccuCHProfileBad_${run_num}.png"> </A>
+
 
 
 <br>
@@ -431,6 +445,9 @@ cat > ${plots_dir}/expert.html <<EOF
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMEStoAMP_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EETIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EETIMEStoAMP_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMEStoET_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMEStoET_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EETIMEStoET_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EETIMEStoET_${run_num}.png"> </A>
 
 <h4><A name="TTreeExpertTech">Expert Technical Plots, with Amplitdue and Time Error</h4>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBEvtTIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBEvtTIMEStoAMP_${run_num}.png"> </A>
