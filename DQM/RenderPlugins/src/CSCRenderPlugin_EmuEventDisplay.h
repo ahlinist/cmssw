@@ -38,6 +38,7 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TPolyLine.h>
+#include <TLine.h>
 
 /**
  * @class EmuEventDisplay
@@ -57,6 +58,8 @@ class EmuEventDisplay {
     std::vector<TPolyLine*> zpChambers;
     std::vector<TPolyLine*> xyChambers;
 
+    std::vector<TLine*> zrLines;
+
     std::vector<TBox*> zrHits;
     std::vector<TBox*> zpHits;
     std::vector<TBox*> xyHits;
@@ -68,6 +71,14 @@ class EmuEventDisplay {
         delete t;
       }
       v.clear();
+    }
+
+    template<class T>
+    void drawItems(std::vector<T*> &v, const std::string& options) {
+      for (unsigned int i = 0; i < v.size(); i++) {
+        TObject* t = (TObject*) v.at(i);
+        t->Draw(options.c_str());
+      }
     }
 
   public:

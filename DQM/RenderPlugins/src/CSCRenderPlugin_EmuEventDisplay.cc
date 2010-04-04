@@ -18,14 +18,14 @@
 
 #include "CSCRenderPlugin_EmuEventDisplay.h"
 
-#define HIT_DELTA 0.005
+#define HIT_DELTA 0.01
 
 /**
  * @brief  Constructor
  */
 EmuEventDisplay::EmuEventDisplay() {
 
-  histo_zr = new TH2F("h1", "CSC event #x", 22, -11.0, 11.0, 14, -7.0, 7.0);
+  histo_zr = new TH2F("h1", "Events in #Zeta-R projection", 22, -11.0, 11.0, 14, -7.0, 7.0);
   histo_zr->GetXaxis()->SetTitle("#Zeta * 1000");
   histo_zr->GetXaxis()->SetTitleOffset(1.2);
   histo_zr->GetXaxis()->CenterTitle(true);
@@ -38,7 +38,7 @@ EmuEventDisplay::EmuEventDisplay() {
   histo_zr->GetYaxis()->SetLabelSize(0.02);
   histo_zr->SetStats(kFALSE);
 
-  histo_zphi = new TH2F("h2", "CSC events #x", 22, -11.0, 11.0, (int) (PI * 2 + 0.2), -0.2, PI * 2);
+  histo_zphi = new TH2F("h2", "Events in #Zeta-#phi projection", 22, -11.0, 11.0, (int) (PI * 2 + 0.2), -0.2, PI * 2);
   histo_zphi->GetXaxis()->SetTitle("#Zeta * 1000");
   histo_zphi->GetXaxis()->SetTitleOffset(1.2);
   histo_zphi->GetXaxis()->CenterTitle(true);
@@ -51,7 +51,7 @@ EmuEventDisplay::EmuEventDisplay() {
   histo_zphi->GetYaxis()->SetLabelSize(0.02);
   histo_zphi->SetStats(kFALSE);
 
-  histo_xy = new TH2F("h3", "CSC event #x", 19, -9.33, 9.33, 14, -7.0, 7.0);
+  histo_xy = new TH2F("h3", "Events in X-Y projection", 19, -9.33, 9.33, 14, -7.0, 7.0);
   histo_xy->GetXaxis()->SetTitle("X * 1000");
   histo_xy->GetXaxis()->SetTitleOffset(1.2);
   histo_xy->GetXaxis()->CenterTitle(true);
@@ -84,7 +84,7 @@ EmuEventDisplay::EmuEventDisplay() {
               double z2 = detector.Z_mm(side, station, ring, chamber, N_LAYERS);
               z2 = z2 / 1000.0 + (side == 1 ? HIT_DELTA : -HIT_DELTA);
 
-              {
+              { // Z-R plane elements
                 
                 double r1 = detector.R_mm(side, station, ring, part, 1, 1, 1);
                 r1 = r1 / 1000.0 - HIT_DELTA;
@@ -109,7 +109,8 @@ EmuEventDisplay::EmuEventDisplay() {
 
               }
 
-              {
+              { // Z-Phi plane elements
+
                 double r = detector.PhiRadChamberCenter(station, ring, chamber);
 
                 Double_t x[5] = { z1, z1, z2, z2, z1 };
@@ -123,7 +124,8 @@ EmuEventDisplay::EmuEventDisplay() {
 
               }
 
-              {
+              { // X-Y plane elements
+
                 double x1 = detector.X_mm(side, station, ring, part, chamber, 1, 1, 1);
                 x1 = x1 / 1000.0;
                 double x2 = detector.X_mm(side, station, ring, part, chamber, 1, 1, detector.NumberOfWiregroups(station, ring));
@@ -161,6 +163,23 @@ EmuEventDisplay::EmuEventDisplay() {
       }
     }
   }
+
+  {
+    TLine *line = new TLine(-11.0, 0, 11.0, 0);
+    line->SetLineColor(kRed - 10);
+    line->SetLineStyle(kDashed);
+    line->SetLineWidth(1);
+    zrLines.push_back(line);
+  }
+
+  {
+    TLine *line = new TLine(0, -7.0, 0, 7.0);
+    line->SetLineColor(kRed - 10);
+    line->SetLineStyle(kDashed);
+    line->SetLineWidth(1);
+    zrLines.push_back(line);
+  }
+
 }
 
 /**
@@ -180,6 +199,8 @@ EmuEventDisplay::~EmuEventDisplay() {
   deleteItems(zpHits);
   deleteItems(xyHits);
 
+  deleteItems(zrLines);
+  
 }
 
 /**
@@ -190,16 +211,12 @@ EmuEventDisplay::~EmuEventDisplay() {
 void EmuEventDisplay::drawEventDisplay_ZR(TH2* data) {
 
   deleteItems(zrHits);
-
-  TString histoTitle = Form("Event #%d", data->GetBinContent(1, 1));
-  histo_zr->SetTitle(histoTitle);
-  histo_zr->Draw();
   
-  for (std::vector<TPolyLine*>::iterator it = zrChambers.begin(); it != zrChambers.end(); it++) {
-    (*it)->Draw("l");
-  }
+  histo_zr->Draw();
+  drawItems(zrChambers, "l");
+  drawItems(zrLines, "l");
 
-  int chIndex = 2;
+  int chIndex = 1;
   for (unsigned int side = 1; side <= N_SIDES; side++) {
     for (unsigned int station = 1; station <= N_STATIONS; station++) {
       for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
@@ -284,15 +301,10 @@ void EmuEventDisplay::drawEventDisplay_ZPhi(TH2* data) {
   
   deleteItems(zpHits);
 
-  TString histoTitle = Form("Event #%d", data->GetBinContent(1, 1));
-  histo_zphi->SetTitle(histoTitle);
   histo_zphi->Draw();
+  drawItems(zpChambers, "l");
 
-  for (std::vector<TPolyLine*>::iterator it = zpChambers.begin(); it != zpChambers.end(); it++) {
-    (*it)->Draw("l");
-  }
-
-  int chIndex = 2;
+  int chIndex = 1;
   for (unsigned int side = 1; side <= N_SIDES; side++) {
     for (unsigned int station = 1; station <= N_STATIONS; station++) {
       for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
@@ -336,15 +348,10 @@ void EmuEventDisplay::drawEventDisplay_XY(TH2* data) {
   
   deleteItems(xyHits);
 
-  TString histoTitle = Form("Event #%d", data->GetBinContent(1, 1));
-  histo_xy->SetTitle(histoTitle);
   histo_xy->Draw();
+  drawItems(xyChambers, "l");
 
-  for (std::vector<TPolyLine*>::iterator it = xyChambers.begin(); it != xyChambers.end(); it++) {
-    (*it)->Draw("l");
-  }
-
-  int chIndex = 2;
+  int chIndex = 1;
   for (unsigned int side = 1; side <= N_SIDES; side++) {
     for (unsigned int station = 1; station <= N_STATIONS; station++) {
       for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
