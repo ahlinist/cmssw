@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.7 2010/03/12 09:04:26 dbart Exp $
+// $Id: RPCTriggerValidation.cc,v 1.8 2010/03/29 18:05:59 dbart Exp $
 //
 //
 
@@ -60,6 +60,8 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
       m_outputFile(iConfig.getParameter<std::string>("outputFile")),
       deltaRThreshold(iConfig.getParameter<double>("deltaRThreshold")),
       m_L1MuonFromReco(iConfig.getParameter<bool>("L1MuonFromReco")),
+      m_GlobalMuon(iConfig.getParameter<bool>("GlobalMuon")),
+      m_StandAloneMuon(iConfig.getParameter<bool>("StandAloneMuon")),
       m_takeGMT(iConfig.getParameter<bool>("takeGMT"))
       
       //etaMin(iConfig.getParameter<double>("etaMin")),
@@ -75,10 +77,10 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
    dqm->setCurrentFolder(m_outputDirectory);
    nomEta = dqm->book1D("nomEta","RPCTrigger: Efficiency vs  #eta",100,-2.5,2.5);
    denomEta = dqm->book1D("denomEta","RPCTrigger: Efficiency vs #eta - denom",100,-2.5,2.5);
-   //nomPt = dqm->book1D("nomPt","RPCTrigger: Efficieny vs  Pt",100,0,1500);
-   //denomPt = dqm->book1D("denomPt","RPCTrigger: Efficiency vs  Pt - denom",100,0,1500);
-   ghost = dqm->book1D("ghost","RPCTrigger: ghost",10,0,10);
-   unassigned = dqm->book1D("unassigned","RPCTrigger: Unassigned L1s",10,0,10);
+   trig = dqm->book1D("Trig","RPCTrigger: Trigger ",100,1,0);
+   alltrig = dqm->book1D("AllTrig","RPCTrigger: All Trigger ",100,1,0);
+   ghost = dqm->book1D("ghost","RPCTrigger: ghost",11,-0.5,10.5);
+   unassigned = dqm->book1D("unassigned","RPCTrigger: Unassigned L1s",11,-0.5,10.5);
               
    std::vector<edm::ParameterSet> etaPtRanges = iConfig.getParameter< std::vector<edm::ParameterSet> > ("etaPtRanges");          
    std::vector<edm::ParameterSet>::iterator it = etaPtRanges.begin(); 
@@ -97,7 +99,7 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
    for (;it!=itE;++it){
       
       _meDistributionVec.push_back( MEDistribution(*it,dqm) );     
-      _meTimingVec.push_back( METiming(*it,dqm) );
+     _meTimingVec.push_back( METiming(*it,dqm) );
    }
    
       std::vector<edm::ParameterSet> EtaRanges = iConfig.getParameter< std::vector<edm::ParameterSet> > ("EtaRanges");          
@@ -129,14 +131,19 @@ void RPCTriggerValidation::analyze(const edm::Event& iEvent, const edm::EventSet
 
    Handle<CandidateView> mcHandle; // can hold reco::Muon or genParticle
    iEvent.getByLabel(m_inColMC, mcHandle);
+	bool cut;
 
    std::vector<GenMuonLocalInfo> gens;
     //std::cout << "#######" << std::endl << std::endl;
    for(size_t i = 0; i < mcHandle->size(); ++i) {
+
       CandidateBaseRef ref = mcHandle->refAt(i);
-      //(ref->pdgId() == 13 || ref->pdgId() == -13)&&(ref->isGlobalMuon())
-      if (ref->pdgId() == 13 || ref->pdgId() == -13) {
-         gens.push_back(GenMuonLocalInfo(ref));
+
+	cut=( !m_GlobalMuon||ref->isGlobalMuon()) &&( !m_StandAloneMuon ||ref->isStandAloneMuon());
+
+      if((ref->pdgId() == 13 || ref->pdgId() == -13)&& cut){
+      //if (ref->pdgId() == 13 || ref->pdgId() == -13) {
+         gens.push_back(GenMuonLocalInfo(ref,iEvent));
    //      std::cout << ref->pdgId() << " " << gens.rbegin()->charge() << std::endl;
       }
    }
@@ -214,6 +221,8 @@ else{
    }
 
 }
+ alltrig->Fill(iEvent.run(),l1s.size()); //l1s.size()
+
    assignCandidatesToGens(gens,l1s); 
 
    //std::cout << "Assigned L1s: " << std::endl;
@@ -254,6 +263,7 @@ else{
 
 	if (itGen->_l1cands.size()>0){
 	 nomEta->Fill(itGen->eta());
+	 trig->Fill(iEvent.run());
 	// if(itGen->eta()>etaMin && itGen->eta()<etaMax ) nomPt->Fill(itGen->pt());
 	}
       denomEta->Fill(itGen->eta());
