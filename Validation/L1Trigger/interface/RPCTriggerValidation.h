@@ -15,7 +15,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.h,v 1.6 2010/03/10 13:04:30 dbart Exp $
+// $Id: RPCTriggerValidation.h,v 1.7 2010/03/29 18:05:59 dbart Exp $
 //
 //
 
@@ -72,7 +72,7 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
                                    std::vector<L1MuonCandLocalInfo> & l1cands);
 				   
 				   	
-      MonitorElement * nomEta, * denomEta, * ghost, * unassigned,* nomPt, * denomPt;
+      MonitorElement * nomEta, * denomEta, * ghost, * unassigned,* nomPt, * denomPt,*alltrig,*trig;
       std::vector<MEResolution> _meResolutionVec; 
       std::vector<MEDistribution> _meDistributionVec;
       std::vector<METiming> _meTimingVec;
@@ -88,7 +88,10 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
       double deltaRThreshold;
       
       bool m_L1MuonFromReco;
-       bool m_takeGMT;
+       
+	bool m_GlobalMuon;
+	bool m_StandAloneMuon;
+	bool m_takeGMT;
 };
 
 

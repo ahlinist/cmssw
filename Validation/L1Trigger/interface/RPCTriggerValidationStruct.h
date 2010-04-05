@@ -122,17 +122,26 @@ struct L1MuonCandLocalInfo {
       };
 
 struct GenMuonLocalInfo {
-        GenMuonLocalInfo(reco::CandidateBaseRef ref) : _charge( ref->charge()), 
+        GenMuonLocalInfo(reco::CandidateBaseRef ref,const edm::Event& iEvent) : _charge( ref->charge()), 
                                                        _pt( ref->pt()), 
                                                        _phi( ref->phi() ), 
                                                        _eta( ref->eta()) 
 {
-
-_tin=(dynamic_cast<const reco::Muon *>(&*ref) )->time().timeAtIpOutIn; 
- _tout=(dynamic_cast<const reco::Muon *>(&*ref) )->time().timeAtIpInOut;
-
+const reco::Muon * mu=dynamic_cast<const reco::Muon *>(&*ref);
+if(mu==NULL)
+{
+_tin=999; 
+_tout=999;
+}
+else
+{
+_tin=mu->time().timeAtIpOutIn;
+_tout=mu->time().timeAtIpInOut;
+}
+_run=iEvent.run();
 } ;
         private:
+	int _run;
           int _charge;
           float _pt;
           float _phi; 
@@ -140,6 +149,7 @@ _tin=(dynamic_cast<const reco::Muon *>(&*ref) )->time().timeAtIpOutIn;
 	  float _tin; 
           float _tout;
         public:
+	int run() const {return _run;};
           float eta() const {return _eta;};
           float phi() const {return _phi;};
 	  float TIn() const {return _tin;};
@@ -290,6 +300,42 @@ struct MEDistribution {
             _meTowerVsPhiL1Bx->setAxisTitle("Tower",1);
 	    _meTowerVsPhiL1Bx->setAxisTitle("#phi",2);
             }
+	
+	{
+                     std::stringstream name;
+	    std::stringstream title;
+		name<<"Distribution_"<<"quality"<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+	    title<<"RPCTrigger: Distribution "<<"quality"<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
+	    
+            _meTowerVsPhiL1Quality = dqm->bookProfile2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi,0,4); 
+            _meTowerVsPhiL1Quality->setAxisTitle("Tower",1);
+	    _meTowerVsPhiL1Quality->setAxisTitle("#phi",2);
+            }
+		            {
+                     std::stringstream name;
+	    std::stringstream title;
+		name<<"Distribution_"<<"Bx"<<"_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+	    title<<"RPCTrigger: Distribution "<<"Bx"<<" pt ["<<_ptL<<","<<_ptH<<"]";
+	    
+            _meL1Bx = dqm->book1D(name.str(),title.str(),7,-3.5,3.5); 
+            _meL1Bx->setAxisTitle("BX",1);
+	    _meL1Bx->setAxisTitle("Cand",2);
+            }
+
+	{
+            std::stringstream name;
+	    std::stringstream title;
+	    name<<"Distribution_"<<"Bx_All_Trig"<<"_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+	    title<<"RPCTrigger: Distribution All triggers "<<"Bx"<<" pt ["<<_ptL<<","<<_ptH<<"]";
+	    
+            _meL1BxAll = dqm->book1D(name.str(),title.str(),7,-3.5,3.5); 
+            _meL1BxAll->setAxisTitle("BX",1);
+	    _meL1BxAll->setAxisTitle("Cand",2);
+            }
+		
+
+
+
 		dqm->goUp();
           };
           
@@ -304,7 +350,18 @@ struct MEDistribution {
 	     _meVecEtaVsPhiGen[1]->Fill(gl.eta(),gl.phi());
 	     _meVecTowerVsPhiGen[1]->Fill(_const.towerNumFromEta(gl.eta()),gl.phi());
 	     _meTowerVsPhiL1->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi());
-             _meTowerVsPhiL1Bx->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi(),(std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx))->bx());
+             _meTowerVsPhiL1Bx->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi(),(std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx))->bx()+0.01);
+		_meTowerVsPhiL1Quality->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi(),gl._l1cands.begin()->quality());
+		_meL1Bx->Fill((std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx))->bx());
+		
+		for( std::vector<L1MuonCandLocalInfo>::iterator itL1 =gl._l1cands.begin() ;
+                                                      itL1 != gl._l1cands.end() ;
+                                                   itL1++ ) 
+                     {
+                        _meL1BxAll->Fill(itL1->bx());
+                     }
+
+
 	     }
 	    
 	    if(gl._l1cands.size()>1)  {
@@ -316,7 +373,8 @@ struct MEDistribution {
 	    _meVecTowerVsPhiGen[0]->Fill(_const.towerNumFromEta(gl.eta()),gl.phi());
 	   }
 	   } 
-	    
+	
+
           }
 	  
 	  void dev(  ) {
@@ -337,6 +395,9 @@ struct MEDistribution {
 	  MonitorElement* _meVecTowerVsPhiGen[4];
 	  MonitorElement * _meTowerVsPhiL1;
           MonitorElement * _meTowerVsPhiL1Bx;
+	MonitorElement * _meTowerVsPhiL1Quality;
+		MonitorElement * _meL1Bx;
+		MonitorElement * _meL1BxAll;
       	 static const std::string _tag[] ;
 	 
 
@@ -458,7 +519,7 @@ struct MEEfficiency {
 	name<<"L1_Bx_Vs_TIn_Pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
 	title<<"RPCTrigger: RPC Bx Vs TIn Pt["<<_ptL<<","<<_ptH<<"]";
 	    
-        _meBxVsTIn = dqm->book2D(name.str(),title.str(),100,-75,75,7,-3,3);
+        _meBxVsTIn = dqm->book2D(name.str(),title.str(),100,-75,75,7,-3.5,3.5);
 	}
 	 {
 	std::stringstream name;
@@ -467,7 +528,7 @@ struct MEEfficiency {
 	name<<"L1_Bx_Vs_TOut_Pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
 	title<<"RPCTrigger: RPC Bx Vs TOut Pt["<<_ptL<<","<<_ptH<<"]";
 	    
-        _meBxVsTOut = dqm->book2D(name.str(),title.str(),100,-75,75,7,-3,3);
+        _meBxVsTOut = dqm->book2D(name.str(),title.str(),100,-75,75,7,-3.5,3.5);
 	}   
 	 
 	dqm->goUp();
