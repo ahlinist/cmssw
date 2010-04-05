@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.8 2010/03/29 18:05:59 dbart Exp $
+// $Id: RPCTriggerValidation.cc,v 1.9 2010/04/05 16:14:52 dbart Exp $
 //
 //
 
@@ -436,6 +436,5 @@ std::ostream& operator<<( std::ostream& os, const RPCTriggerValidationStruct::L1
 const std::string RPCTriggerValidationStruct::MEDistribution::_tag[4] = {
      "NoL1Muon","L1Muon","L1GhostMuon","RefMuon"
     }; 
-
 
 DEFINE_FWK_MODULE(RPCTriggerValidation);

@@ -8,7 +8,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring()
+    fileNames = cms.untracked.vstring('/store/data/BeamCommissioning09/MinimumBias/RECO/v2/000/124/120/F08F782B-77E8-DE11-B1FC-0019B9F72BFF.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
