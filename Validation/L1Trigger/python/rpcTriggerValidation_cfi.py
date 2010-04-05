@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 
-
+				       
 rpcTriggerValidation = cms.EDAnalyzer('RPCTriggerValidation',
       L1CandsCollections = cms.VInputTag(cms.InputTag("gtDigis:RPCb"), cms.InputTag("gtDigis:RPCf") ),
       
