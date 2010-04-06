@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.25 2010/04/01 17:35:05 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.26 2010/04/02 14:03:56 pandolf Exp $
 //
 //
 
@@ -94,8 +94,6 @@
 #include <FWCore/Framework/interface/TriggerNames.h>
 #include <DataFormats/Common/interface/TriggerResults.h>
 #define MAXHLTBITS    200
-
-#include "RecoEgamma/EgammaTools/interface/ECALPositionCalculator.h"
 
 #include "SimDataFormats/Track/interface/SimTrack.h"
 #include "SimDataFormats/Track/interface/SimTrackContainer.h"
