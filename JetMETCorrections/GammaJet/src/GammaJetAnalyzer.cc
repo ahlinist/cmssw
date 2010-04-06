@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.26 2010/04/02 14:03:56 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.27 2010/04/06 16:22:46 pandolf Exp $
 //
 //
 
@@ -1198,6 +1198,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      ptPhot[nPhot] = it->pt();
      ePhot[nPhot] = it->energy();	 
      escPhot[nPhot] = it->superCluster()->energy();	 
+     eseedPhot[nPhot] = it->superCluster()->seed()->energy();	 
      etaPhot[nPhot] = it->eta();	 
      phiPhot[nPhot] = it->phi();	      
      
@@ -2149,6 +2150,7 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("ptPhot ",&ptPhot ,"ptPhot[nPhot]/F");
   m_tree->Branch("ePhot  ",&ePhot  ,"ePhot[nPhot]/F");
   m_tree->Branch("escPhot  ",&escPhot  ,"escPhot[nPhot]/F");
+  m_tree->Branch("eseedPhot  ",&eseedPhot  ,"eseedPhot[nPhot]/F");
   m_tree->Branch("etaPhot",&etaPhot,"etaPhot[nPhot]/F");
   m_tree->Branch("phiPhot",&phiPhot,"phiPhot[nPhot]/F");
 
