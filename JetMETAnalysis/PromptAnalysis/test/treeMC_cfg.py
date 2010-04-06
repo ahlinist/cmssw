@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryExtended_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
 
-process.GlobalTag.globaltag ='MC_3XY_V24::All'##make sure to check the GT from DBS
+process.GlobalTag.globaltag ='START3X_V26A::All'##make sure to check the GT from DBS
 ###########
 
 # process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
