@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.20 $
-  \date $Date: 2009/12/06 02:52:38 $
+  \version $Revision: 1.21 $
+  \date $Date: 2009/12/06 23:43:58 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -196,7 +196,7 @@ private:
       if( o.name.find( "Summary_MeanNumberOfClusters" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(0.07);
+        obj->SetMaximum(0.3);
         obj->SetMinimum(-0.001);
         return;
       }
@@ -404,10 +404,10 @@ private:
       {
         if (obj->GetEntries() > 10.0) c->SetLogy(1);
         c->SetGridy();
-        if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) tl1.DrawLine(xmin, 5.0,  xmax, 5.0);
-        if (name.find( "TotalNumberOfClusterProfile__TOB" ) != std::string::npos) tl1.DrawLine(xmin, 15.0, xmax, 15.0);
-        if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) tl1.DrawLine(xmin, 15.0, xmax,15.0);
-        if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) tl1.DrawLine(xmin, 3.0,  xmax, 3.0);
+        if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) tl1.DrawLine(xmin, 150.0, xmax, 150.0);
+        if (name.find( "TotalNumberOfClusterProfile__TOB" ) != std::string::npos) tl1.DrawLine(xmin, 150.0, xmax, 150.0);
+        if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) tl1.DrawLine(xmin, 300.0, xmax, 300.0);
+        if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) tl1.DrawLine(xmin, 100.0, xmax, 100.0);
         return;
       }
     }
