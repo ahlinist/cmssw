@@ -31,7 +31,6 @@ public:
   int            fDof, fValidHits;
   double         fChi2;
   int            fTrackQuality; 
-  // ?? Add the full information? 
   int            fAlgorithm;                    // see DataFormats/TrackReco/interface/TrackBase.h
   int            fHitPattern[20];               // see DataFormats/TrackReco/interface/HitPattern.h
 
@@ -40,9 +39,12 @@ public:
 
   int            fMuID, fMuIndex; 
 
+  double         fDeDx, fDeDx2; 
+  int            fDeDxNmeas, fDeDxNsat; 
+
   // -- reserve
-  int            fInt1,    fInt2;
-  double         fDouble1, fDouble2;
+  int            fInt1,    fInt2,    fInt3; 
+  double         fDouble1, fDouble2, fDouble3;
 
 
 

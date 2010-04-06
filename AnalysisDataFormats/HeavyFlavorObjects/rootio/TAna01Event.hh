@@ -65,7 +65,8 @@ public:
   virtual TTrgObj*    addTrgObj();
 
   // -- Primary vertices
-  int                 nPV() {return fnPV;}
+  int                 nPV()    {return fnPV;}
+  TAnaVertex*         bestPV() {return getPV(fBestPV); }
   TAnaVertex*         getPV(int n);
   virtual TAnaVertex* addPV();
 
@@ -91,6 +92,7 @@ public:
   int               fEventBits;
   int               fDetectorStatus; 
   int               fEventTag;
+  int               fBestPV;
 
   // -- MC event/generation information
   int               fProcessID;
@@ -116,7 +118,7 @@ public:
   //    NB: The simple-minded (more or less) constant arrays add about 1-3% filesize overhead 
   #define NL1T 4
   #define NL1TT 2
-  #define NHLT 4
+  #define NHLT 8
   // -- L1 trigger
   TString           fL1TNames[32*NL1T];
   int               fL1TWords[NL1T];
