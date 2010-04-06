@@ -63,7 +63,7 @@ void ReadRunLumilist(const char* filename){
 bool eventInGoodRunLumi(int run, int lumi){
 
 
-  ReadRunLumilist("../rootNtupleMacros/cutFile/goodRunLumiList.dat");
+  ReadRunLumilist("../rootNtupleMacros/cutFile/goodRunLumiListMarApr2010.dat");
 
   bool goodRunLumi=false;
 
@@ -253,9 +253,9 @@ bool JetIdtight(double JetJIDresEMF,double JetJIDfHPD,double JetJIDfRBX, double 
   double frbxmax = 0.98;
   double n90hitsmin =4;
   double emf_min = 0.01;
-  double weightedWidthMax=0.01;
+  double weightedWidthMin=0.01;
   if(fabs(JetEta)<2.6 && JetJIDresEMF<emf_min) jetidresEMF=false;
-  if(jetidresEMF && JetJIDfHPD<fhpdmax && JetJIDfRBX<fhpdmax&& JetJIDn90Hits>n90hitsmin && JetSigmaEta<weightedWidthMax && JetSigmaPhi<weightedWidthMax) {
+  if(jetidresEMF && JetJIDfHPD<fhpdmax && JetJIDfRBX<fhpdmax&& JetJIDn90Hits>n90hitsmin && JetSigmaEta>weightedWidthMin && JetSigmaPhi>weightedWidthMin) {
     jetidtight=true;
   }
   return jetidtight;
@@ -290,24 +290,25 @@ void analysisClass::Loop()
   double ptMin;
   double ptMinDijet;
   if (makeJetCorr==true) {
-    ptMin=15.;
+    ptMin=20.;
     ptMinDijet=10.;
   }
   if (makeJetCorr==false) {
     ptMin=7.;
     ptMinDijet=5.;
   }
+  double Pi=acos(-1.);
   // Binning 
-  double ptMax=100.;
-  int ptBin=50;
+  double ptMax=300.;
+  int ptBin=100;
   
-  int  phiBin=100;
-  double phiMax=3.2;   // -
-  double phiMin=-3.2;
+  int  phiBin=20;
+  double phiMax=Pi;   // -
+  double phiMin=-1.*Pi;
   
-  int  etaBin=100;
-  double etaMax=3.4;   //-
-  double etaMin=-3.4;
+  int  etaBin=20;
+  double etaMax=3.;   //-
+  double etaMin=-3.;
   // -------------------Basic distributions - all ak5 ----------------------------
    
   TH1I *njets = new TH1I("njets","",20,0,20);
@@ -316,26 +317,26 @@ void analysisClass::Loop()
   TH1I *nalljets = new TH1I("nalljets","",20,0,20);
   nalljets->SetXTitle("Number of jets per event");
   nalljets->SetTitle(dataset);
-  TH1I *nconst = new TH1I("nconst","",20,0,20);
+  TH1I *nconst = new TH1I("nconst","",30,0,30);
   nconst->SetXTitle("Number of constituents");
   nconst->SetTitle(dataset);
   TH1I *nJIDloosejets = new TH1I("nJIDloosejets","",20,0,20);
   nJIDloosejets->SetXTitle("Number of jets per event");
   nJIDloosejets->SetTitle(dataset);
-  TH1I *nconstJIDloose = new TH1I("nconstJIDloose","",20,0,20);
+  TH1I *nconstJIDloose = new TH1I("nconstJIDloose","",30,0,30);
   nconstJIDloose->SetXTitle("Number of constituents");
   nconstJIDloose->SetTitle(dataset);
 
   TH1I *nJIDtightjets = new TH1I("nJIDtightjets","",20,0,20);
   nJIDtightjets->SetXTitle("Number of jets per event");
   nJIDtightjets->SetTitle(dataset);
-  TH1I *nconstJIDtight = new TH1I("nconstJIDtight","",20,0,20);
+  TH1I *nconstJIDtight = new TH1I("nconstJIDtight","",30,0,30);
   nconstJIDtight->SetXTitle("Number of constituents");
   nconstJIDtight->SetTitle(dataset);
 
 
 
-  TH1D *ptall = new TH1D("ptall","",ptBin+8,0.,ptMax);
+  TH1D *ptall = new TH1D("ptall","",ptBin,0.,ptMax);
   ptall->SetXTitle("p_{T}[GeV]");
   ptall->SetTitle(dataset);
   TH1D *pt = new TH1D("pt","",ptBin,ptMin,ptMax);
@@ -592,6 +593,9 @@ void analysisClass::Loop()
   variousEffindijets->GetXaxis()->SetBinLabel(4,">1 Associated Tight Tracks at Calo");
   variousEffindijets->GetXaxis()->SetBinLabel(5,">1 Associated HighPurity Tracks at Vtx");
   variousEffindijets->GetXaxis()->SetBinLabel(6,">1 Associated Tight Tracks at Vtx");
+  //
+  TH1D *variousEffindijetsDEN = new TH1D("variousEffindijetsDEN","",6,0,6);
+
   TH1D *jetJIDlooseeffeta = new TH1D("jetJIDlooseeffeta","",etaBin, etaMin, etaMax);
   TH1D *jetJIDlooseeffphi = new TH1D("jetJIDlooseeffphi","",phiBin,phiMin,phiMax);
   TH1D *jetJIDtighteffeta = new TH1D("jetJIDtighteffeta","",etaBin, etaMin, etaMax);
@@ -606,7 +610,9 @@ void analysisClass::Loop()
   variousEff->GetXaxis()->SetBinLabel(4,">1 Ass. Tight Tracks at Calo");
   variousEff->GetXaxis()->SetBinLabel(5,">1 Ass. HighPurity Tracks at Vtx");
   variousEff->GetXaxis()->SetBinLabel(6,">1 Ass. Tight Tracks at Vtx");
-  
+  //
+  TH1D *variousEffDEN = new TH1D("variousEffDEN","",6,0,6);
+
   TH1D *evtNumber = new TH1D("evtNumber","",7,0,7);
   evtNumber->SetTitle(dataset);
   evtNumber->GetXaxis()->SetBinLabel(1,"Evt");
@@ -617,7 +623,7 @@ void analysisClass::Loop()
   evtNumber->GetXaxis()->SetBinLabel(6,"Monster");
   evtNumber->GetXaxis()->SetBinLabel(7,"PV");
 
-  
+ 
   TH1D *cutEff = new TH1D("cutEff","",7,0,7);
   cutEff->SetTitle(dataset);
   cutEff->GetXaxis()->SetBinLabel(1,"Good run evts");
@@ -812,6 +818,8 @@ void analysisClass::Loop()
 	    }
 	}
       else if(isData == 0)
+	pass_PhysicsBit = 1;
+
 	pass_PhysicsBit = 1;
     
       if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
@@ -1258,24 +1266,39 @@ void analysisClass::Loop()
 
    //--------------------------------------------------------------------------------------------------
 
+   cout<< NJetIDLooseTOT << " divided by "<< NJetsTOT << endl;
    //efficiency histos
    if(NJetsTOT>0){
      cout<<"events passed for thrust calculation: "<<finalDijetGoodEvents<<endl;
-     variousEff->SetBinContent(1,(1.*NJetIDLooseTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(2,(1.*NJetIDTightTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(3,(1.*NAssTrksHighPurityAtCaloTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(4,(1.*NAssTrksTightAtCaloTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(5,(1.*NAssTrksHighPurityAtVtxTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(6,(1.*NAssTrksTightAtVtxTOT/(1.*NJetsTOT)));
+     variousEff->SetBinContent(1,(1.*NJetIDLooseTOT));
+     variousEff->SetBinContent(2,(1.*NJetIDTightTOT));
+     variousEff->SetBinContent(3,(1.*NAssTrksHighPurityAtCaloTOT));
+     variousEff->SetBinContent(4,(1.*NAssTrksTightAtCaloTOT));
+     variousEff->SetBinContent(5,(1.*NAssTrksHighPurityAtVtxTOT));
+     variousEff->SetBinContent(6,(1.*NAssTrksTightAtVtxTOT));
+     //
+     variousEffDEN->SetBinContent(1,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(2,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(3,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(4,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(5,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(6,((1.*NJetsTOT)));
    }
    //efficiency histos
    if(NindijetsTOT>0){
-     variousEffindijets->SetBinContent(1,(1.*NindijetsJetIDLooseTOT/(1.*NindijetsTOT)));
-     variousEffindijets->SetBinContent(2,(1.*NindijetsJetIDTightTOT/(1.*NindijetsTOT)));
-     variousEffindijets->SetBinContent(3,(1.*NindijetsAssTrksHighPurityAtCaloTOT/(1.*NindijetsTOT)));
-     variousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksTightAtCaloTOT/(1.*NindijetsTOT)));
-     variousEffindijets->SetBinContent(5,(1.*NindijetsAssTrksHighPurityAtVtxTOT/(1.*NindijetsTOT)));
-     variousEffindijets->SetBinContent(6,(1.*NindijetsAssTrksTightAtVtxTOT/(1.*NindijetsTOT)));
+     variousEffindijets->SetBinContent(1,(1.*NindijetsJetIDLooseTOT));
+     variousEffindijets->SetBinContent(2,(1.*NindijetsJetIDTightTOT));
+     variousEffindijets->SetBinContent(3,(1.*NindijetsAssTrksHighPurityAtCaloTOT));
+     variousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksTightAtCaloTOT));
+     variousEffindijets->SetBinContent(5,(1.*NindijetsAssTrksHighPurityAtVtxTOT));
+     variousEffindijets->SetBinContent(6,(1.*NindijetsAssTrksTightAtVtxTOT));
+     //
+     variousEffindijetsDEN->SetBinContent(1,((1.*NindijetsTOT)));
+     variousEffindijetsDEN->SetBinContent(2,((1.*NindijetsTOT)));
+     variousEffindijetsDEN->SetBinContent(3,((1.*NindijetsTOT)));
+     variousEffindijetsDEN->SetBinContent(4,((1.*NindijetsTOT)));
+     variousEffindijetsDEN->SetBinContent(5,((1.*NindijetsTOT)));
+     variousEffindijetsDEN->SetBinContent(6,((1.*NindijetsTOT)));
    }
    if(goodevts>0){ 
      cutEff->SetMaximum(1.3);
@@ -1407,10 +1430,12 @@ void analysisClass::Loop()
    frbxdijets->Write();
    n90hitsdijets->Write();
    variousEff->Write();
+   variousEffDEN->Write();
    cutEff->Write();
    jetNumber->Write(); 
    evtNumber->Write();
    variousEffindijets->Write();
+   variousEffindijetsDEN->Write();
    resemffakejets->Write();
    fhpdfakejets->Write();
    n90hitsfakejets->Write();
