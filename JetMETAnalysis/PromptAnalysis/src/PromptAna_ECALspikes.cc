@@ -29,6 +29,7 @@ PromptAna_ECALspikes::PromptAna_ECALspikes(const edm::ParameterSet& iConfig)
   produces <std::vector<float> >  ( prefix + "HCALenergy7x7"  + suffix );
   produces <std::vector<float> >  ( prefix + "HCALenergy9x9"  + suffix );
 
+  produces <std::vector<float> >  ( prefix + "ECALenergy3x3"  + suffix );
   produces <std::vector<float> >  ( prefix + "ECALenergy5x5"  + suffix );
   produces <std::vector<float> >  ( prefix + "ECALenergy7x7"  + suffix );
   produces <std::vector<float> >  ( prefix + "ECALenergy9x9"  + suffix );
@@ -58,6 +59,7 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
   std::auto_ptr<std::vector<float> >   hcalenergy7x7       ( new std::vector<float>() ) ;
   std::auto_ptr<std::vector<float> >   hcalenergy9x9       ( new std::vector<float>() ) ;
 
+  std::auto_ptr<std::vector<float> >   ecalenergy3x3       ( new std::vector<float>() ) ;
   std::auto_ptr<std::vector<float> >   ecalenergy5x5       ( new std::vector<float>() ) ;
   std::auto_ptr<std::vector<float> >   ecalenergy7x7       ( new std::vector<float>() ) ;
   std::auto_ptr<std::vector<float> >   ecalenergy9x9       ( new std::vector<float>() ) ;
@@ -153,6 +155,7 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
       /////ECAL energies around ECAL seeds//////////
       //////////////////////////////////////////////
 
+      float ECALenergy3x3   = 0.;
       float ECALenergy5x5   = 0.;
       float ECALenergy7x7   = 0.;
       float ECALenergy9x9   = 0.;
@@ -162,6 +165,15 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
       //Sum up energy around spike crystal in ECAL
       CaloNavigator<DetId> cursorE = CaloNavigator<DetId>(seedId, theEBTopology );
       
+      //In a 3x3 matrix around the spike
+      for ( int ii = -1; ii <= 1; ++ii ) for ( int jj = -1; jj <= 1; ++jj ) 
+	  {
+	    cursorE.home();
+	    cursorE.offsetBy( ii, jj );
+	    if( recHitEnergyECAL( *cursorE, allEBRecHits ) > 0.3 )
+	      ECALenergy3x3 += recHitEnergyECAL( *cursorE, allEBRecHits );
+	  }
+
       //In a 5x5 matrix around the spike
       for ( int ii = -2; ii <= 2; ++ii ) for ( int jj = -2; jj <= 2; ++jj ) 
 	  {
@@ -289,6 +301,7 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
       hcalenergy7x7       ->push_back ( HCALenergy7x7);
       hcalenergy9x9       ->push_back ( HCALenergy9x9);
       
+      ecalenergy3x3       ->push_back ( ECALenergy3x3);
       ecalenergy5x5       ->push_back ( ECALenergy5x5);
       ecalenergy7x7       ->push_back ( ECALenergy7x7);
       ecalenergy9x9       ->push_back ( ECALenergy9x9);
@@ -317,6 +330,7 @@ void PromptAna_ECALspikes::produce(edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.put( hcalenergy7x7          ,  prefix + "HCALenergy7x7"  + suffix );
   iEvent.put( hcalenergy9x9          ,  prefix + "HCALenergy9x9"  + suffix );
 
+  iEvent.put( ecalenergy3x3          ,  prefix + "ECALenergy3x3"  + suffix );
   iEvent.put( ecalenergy5x5          ,  prefix + "ECALenergy5x5"  + suffix );
   iEvent.put( ecalenergy7x7          ,  prefix + "ECALenergy7x7"  + suffix );
   iEvent.put( ecalenergy9x9          ,  prefix + "ECALenergy9x9"  + suffix );
