@@ -447,13 +447,28 @@ struct MEEfficiency {
 	name<<"_Denom";
 	 title<<" Denom";
 	 _meDenomEffVsPtCut = dqm->book1D(name.str(),title.str(),100, -0.5, 200.5);
+
+
+	name.str("");
+	title.str("");
+
+         name<<"EfficienyVsPtCut7GeV_eta_"<<changedot(_etaL)<<"_"<<changedot(_etaH);
+	title<<"RPCTrigger: Efficieny Vs Pt Cut 7GeV #eta ["<<_etaL<<","<<_etaH<<"]";
+	    
+        _meEffVsPtCut7 = dqm->book1D(name.str(),title.str(),100, -0.5, 200.5);
+	name<<"_Denom";
+	 title<<" Denom";
+	 _meDenomEffVsPtCut7 = dqm->book1D(name.str(),title.str(),100, -0.5, 200.5);
    	
 	
-            _meNomPt->setAxisTitle("Pt Code",1);
+            _meNomPt->setAxisTitle("Pt ",1);
 	    _meNomPt->setAxisTitle("Efficieny",2);  
 
              _meEffVsPtCut->setAxisTitle("Pt",1);
-	    _meEffVsPtCut->setAxisTitle("Efficieny Pt Cut",2);  
+	    _meEffVsPtCut->setAxisTitle("Efficieny Pt Cut",2); 
+
+	     _meEffVsPtCut7->setAxisTitle("Pt",1);
+	    _meEffVsPtCut7->setAxisTitle("Efficieny  ",2); 
                      
 		dqm->goUp();
           };
@@ -465,9 +480,12 @@ struct MEEfficiency {
 	                if(gl._l1cands.size()>0){
                             _meNomPt->Fill(_const.iptFromPt(gl.pt()));
 	                   if(_const.iptFromPt(gl.pt())<=(gl._l1cands.begin()->ptCode())) _meEffVsPtCut->Fill(gl.pt());
+                           if(_const.iptFromPt(7.0)<=(gl._l1cands.begin()->ptCode())) _meEffVsPtCut7->Fill(gl.pt());
+
 	    }
                 _meDenomPt->Fill(_const.iptFromPt(gl.pt()));
 		_meDenomEffVsPtCut->Fill(gl.pt());
+		_meDenomEffVsPtCut7->Fill(gl.pt());
 	   
 		
 	   
@@ -478,6 +496,7 @@ struct MEEfficiency {
             
             _meNomPt->getTH1F()->Divide((_meDenomPt->getTH1F()));
 	    _meEffVsPtCut->getTH1F()->Divide((_meDenomEffVsPtCut->getTH1F()));
+            _meEffVsPtCut7->getTH1F()->Divide((_meDenomEffVsPtCut7->getTH1F()));
 	    
 	   } 
 	    
@@ -492,6 +511,8 @@ struct MEEfficiency {
 	  MonitorElement * _meNomPt;
 	  MonitorElement * _meEffVsPtCut;
 	  MonitorElement * _meDenomEffVsPtCut;
+	  MonitorElement * _meEffVsPtCut7;
+	  MonitorElement * _meDenomEffVsPtCut7;
           
 
 	  
