@@ -16,13 +16,8 @@ public:
   
   virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
   {
-    //return strncmp(o.name.c_str(), "YourSubsystemName/", 18) == 0;
-    if(!(o.name.find( "Alignment/Tracker/" ) != std::string::npos))return false;
-    TGaxis::SetMaxDigits(3);
-    return true;
-//    if(o.name.find( "/Pixel/" ) != std::string::npos)return true;
-//    if(o.name.find( "/Strip/" ) != std::string::npos)return true;
-//    return false;
+    if(o.name.find( "Alignment/Tracker/" ) != std::string::npos)return true;
+    else return false;
   }
   
   
