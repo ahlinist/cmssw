@@ -127,7 +127,7 @@ private:
 
     if ((o.name.find("muX vs lumi") != std::string::npos) || (o.name.find("muY vs lumi") != std::string::npos) || (o.name.find("muZ vs lumi") != std::string::npos) ||
 	(o.name.find("sigmaX vs lumi") != std::string::npos) || (o.name.find("sigmaY vs lumi") != std::string::npos) || (o.name.find("sigmaZ vs lumi") != std::string::npos) ||
-	(o.name.find("dxdz vs lumi") != std::string::npos) || (o.name.find("dydz vs lumi") != std::string::npos))
+	(o.name.find("dxdz vs lumi") != std::string::npos) || (o.name.find("dydz vs lumi") != std::string::npos) || (o.name.find("pixelHits vs lumi") != std::string::npos))
       {
 	gStyle->SetOptFit(1110);
 	gStyle->SetOptStat(10);
