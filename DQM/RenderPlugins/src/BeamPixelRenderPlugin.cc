@@ -51,7 +51,6 @@ private:
     gStyle->SetCanvasBorderMode(0);
     gStyle->SetPadBorderMode(0);
     gStyle->SetPadBorderSize(0);
-    gStyle->SetOptStat(1110);
 
     TAxis* xa = obj->GetXaxis();
     TAxis* ya = obj->GetYaxis();
@@ -69,6 +68,7 @@ private:
 
 	c->SetGrid();
 	obj->SetOption("colz");
+	gStyle->SetOptStat(1110);
 
 	return;
       }
