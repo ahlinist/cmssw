@@ -68,6 +68,8 @@ process.source = cms.Source("PoolSource",
 
 )
 
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
