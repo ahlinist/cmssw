@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryExtended_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
 
-process.GlobalTag.globaltag ='GR09_R_34X_V5::All'##make sure to check the GT from DBS
+process.GlobalTag.globaltag = 'GR_R_35X_V6::All'##make sure to check the GT from DBS
 ###########
 
 # process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
@@ -32,14 +32,14 @@ process.load("RecoMuon/Configuration/RecoMuon_cff")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
-fileName = cms.string("ExpressPhysics__Commissioning10-Express-v4__FEVT.root"), ##give a name to the output file
+fileName = cms.string("MinimumBias__Commissioning10-Apr1ReReco-v2__RECO.root"), ##give a name to the output file
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
-    "/store/express/Commissioning10/ExpressPhysics/FEVT/v4/000/130/527/4A51E76A-782C-DF11-A2BB-001D09F23D1D.root"
+   '/store/data/Commissioning10/MinimumBias/RECO/Apr1ReReco-v2/0140/FEAE8844-6E40-DF11-92E9-0026189438E8.root'
     #"/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec14thSkim_v1/0102/BABAF8C3-71EA-DE11-9D8C-0024E8768446.root"
     #'/store/mc/Summer09/MinBias/GEN-SIM-RECO/STARTUP3X_V8D_900GeV-v1/0005/E4590360-4CD7-DE11-8CB4-002618943896.root'
     #'/store/data/BeamCommissioning09/MinimumBias/RECO/rereco_GR09_P_V7_v1/0099/DABD5D6D-D4E2-DE11-8FFD-00261894387A.root'
