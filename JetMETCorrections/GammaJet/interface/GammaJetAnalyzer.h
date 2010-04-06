@@ -186,6 +186,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Int_t nPhot;
       Float_t ptPhot[40];
       Float_t ePhot[40];
+      Float_t eseedPhot[40];
       Float_t escPhot[40];
       Float_t etaPhot[40];
       Float_t phiPhot[40];
