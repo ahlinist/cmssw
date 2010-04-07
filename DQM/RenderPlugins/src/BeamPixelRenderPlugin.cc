@@ -57,6 +57,8 @@ private:
     	
     if ((o.name.find("vertex zx") != std::string::npos) || (o.name.find("vertex zy") != std::string::npos) || (o.name.find("vertex xy") != std::string::npos))
       {
+	gStyle->SetOptStat(1110);
+
 	xa->SetTitleOffset(1.15);
 	ya->SetTitleOffset(1.15);
 
@@ -67,8 +69,8 @@ private:
 	ya->SetLabelSize(0.03);
 
 	c->SetGrid();
+	obj->SetStats(kTRUE);
 	obj->SetOption("colz");
-	gStyle->SetOptStat(1110);
 
 	return;
       }
