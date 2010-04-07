@@ -6,6 +6,7 @@
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -32,6 +33,8 @@ JetHistManager::JetHistManager(const edm::ParameterSet& cfg)
 
   requireGenJetMatch_ = cfg.getParameter<bool>("requireGenJetMatch");
   //std::cout << " requireGenJetMatch = " << requireGenJetMatch_ << std::endl;
+
+  skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
 
   edm::ParameterSet cfgCentralJetsToBeVetoed = cfg.getParameter<edm::ParameterSet>("centralJetsToBeVetoed");  
   centralJetsToBeVetoedEtMin_ = cfgCentralJetsToBeVetoed.getParameter<vdouble>("etMin");
@@ -64,16 +67,18 @@ void JetHistManager::bookHistogramsImp()
   
   bookJetHistograms(hJetPt_, hJetEta_, hJetPhi_, "Jet");
   hJetPtVsEta_ = book2D("JetPtVsEta", "Jet #eta vs P_{T}", 24, -3., +3., 30, 0., 150.);
-  
+
   bookWeightHistograms(*dqmStore_, "JetWeight", "Jet Weight", 
 		       hJetWeightPosLog_, hJetWeightNegLog_, hJetWeightZero_, 
 		       hJetWeightLinear_);
 
+  hJetMatchingGenParticlePdgId_ = book1D("JetMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+  
   hJetAlpha_ = book1D("JetAlpha", "Jet #alpha", 102, -0.01, +1.01);
   hJetNumTracks_ = book1D("JetNumTracks", "Jet Track Multiplicity", 50, -0.5, 49.5);
   hJetTrkPt_ = book1D("JetTrkPt", "Jet All Tracks P_{T}", 100, 0., 50.);
   hJetLeadTrkPt_ = book1D("JetLeadTrkPt", "Jet Lead Track P_{T}", 75, 0., 75.);
-  
+
   for ( vdouble::const_iterator etMin = centralJetsToBeVetoedEtMin_.begin();
 	etMin != centralJetsToBeVetoedEtMin_.end(); ++etMin ) {
     for ( vdouble::const_iterator etaMax = centralJetsToBeVetoedEtaMax_.begin();
@@ -131,8 +136,10 @@ void JetHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   edm::Handle<pat::JetCollection> patJets;
   getCollection(evt, jetSrc_, patJets);
 
-  //std::cout << " patJets.size = " << patJets->size() << std::endl;
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  evt.getByLabel(genParticleSrc_, genParticles);
 
+  //std::cout << " patJets.size = " << patJets->size() << std::endl;
   hNumJets_->Fill(patJets->size(), evtWeight);
   
   double sumJetEt = 0.;
@@ -172,6 +179,15 @@ void JetHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 
     fillWeightHistograms(hJetWeightPosLog_, hJetWeightNegLog_, hJetWeightZero_, 
 			 hJetWeightLinear_, jetWeight);
+    
+    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patJet->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+    if ( matchingGenParticlePdgId == -1 ) {
+      hJetMatchingGenParticlePdgId_->Fill(-1, weight);
+    } else if ( abs(matchingGenParticlePdgId) > 22 ) {
+      hJetMatchingGenParticlePdgId_->Fill(24, weight);
+    } else {
+      hJetMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
+    }
 
     hJetAlpha_->Fill(jetAlphaExtractor_(*patJet), weight);
     unsigned numTracks = 0;
