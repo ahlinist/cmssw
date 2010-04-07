@@ -55,6 +55,10 @@ class TauIdEffZtoMuTauHistManager : public HistManagerBase
   MonitorElement* hDiTauChargeSign_;
   MonitorElement* hDiTauPtProj_;
   MonitorElement* hDiTauMEtProj_;
+  MonitorElement* hDiTauVisMassFromJetP4_;
+  MonitorElement* hDiTauVisMassFromTauJetP4_;
+  MonitorElement* hDiTauCollinearApproxMassFromJetP4_;
+  MonitorElement* hDiTauCollinearApproxMassFromTauJetP4_;
 
   MonitorElement* hNumCentralJets_;
   MonitorElement* hCentralJetPt_;
