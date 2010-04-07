@@ -102,7 +102,30 @@ void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
 
     std::string fitOption = ( isFirstFit ) ? "RB0" : "RB0Q";
     
-    model1dEntryBase_->fluctHistogram_->Fit(auxTF1Wrapper_->getTF1(), fitOption.data());
+    if ( cfgSmoothing_.exists("excludeBinsX") ) {
+      std::string histogramName = std::string(model1dEntryBase_->fluctHistogram_->GetName()).append("_cloned");
+      TH1* histogram_cloned = (TH1*)model1dEntryBase_->fluctHistogram_->Clone(histogramName.data());
+
+      int numBins = histogram_cloned->GetNbinsX();
+
+      typedef std::vector<double> vdouble;
+      vdouble excludedBinsX = cfgSmoothing_.getParameter<vdouble>("excludeBinsX");
+      for ( vdouble::const_iterator excludedBinX = excludedBinsX.begin();
+	    excludedBinX != excludedBinsX.end(); ++excludedBinX ) {
+	int binIndex = histogram_cloned->FindBin(*excludedBinX);
+	if ( binIndex > 0 && binIndex <= numBins ) {
+	  std::cout << "--> excluding bin " << binIndex << ":" 
+		    << " xCenter = " << histogram_cloned->GetBinCenter(binIndex) << " from fit." << std::endl;
+	  histogram_cloned->SetBinContent(binIndex, 0.);
+	  histogram_cloned->SetBinError(binIndex, 1.e+6);
+	}
+      }
+      
+      histogram_cloned->Fit(auxTF1Wrapper_->getTF1(), fitOption.data());
+      delete histogram_cloned;
+    } else {
+      model1dEntryBase_->fluctHistogram_->Fit(auxTF1Wrapper_->getTF1(), fitOption.data());
+    }
 
     delete pdf_;
     pdf_ = new RooTFnPdfBinding(pdfName_.data(), pdfName_.data(), auxTF1Wrapper_->getTF1(), RooArgList(*varRef_));
@@ -257,10 +280,11 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
 
     std::string name = cfgVariable.getParameter<std::string>("name");
     std::string title = ( cfgVariable.exists("title") ) ? cfgVariable.getParameter<std::string>("title") : name;
-    
-    // CV: use dummy range for now, to be initialized with correct values later,
-    //     once histograms that are fitted have been retrieved from DQMStore
-    fitVariables_[*varName] = new RooRealVar(name.data(), title.data(), 0., 1.);
+    double min = cfgVariable.getParameter<double>("min");
+    double max = cfgVariable.getParameter<double>("max");
+
+    std::cout << " range fitted for variable = " << (*varName) << ": " << min << ".." << max << std::endl;
+    fitVariables_[*varName] = new RooRealVar(name.data(), title.data(), min, max);
   }
 
 //--- read configuration parameters specifying signal and background templates
@@ -529,13 +553,21 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
   for ( vstring::const_iterator varName = varNames_.begin();
 	varName != varNames_.end(); ++varName ) {
     const TAxis* axis = dataNdEntry_->data1dEntries_[*varName]->histogram_->GetXaxis();
-    double min = axis->GetXmin();
-    double max = axis->GetXmax();
+    double axisMin = axis->GetXmin();
+    double axisMax = axis->GetXmax();
     if ( printLevel > 0 ) {
-      std::cout << " range fitted for variable = " << (*varName) << ": " << min << ".." << max << std::endl;
+      std::cout << " variable = " << (*varName) << ": axisMin = " << axisMin << ", axisMax =" << axisMax << std::endl;
     }
     
-    fitVariables_[*varName]->setRange(min, max);
+    if ( !(axisMin <= fitVariables_[*varName]->getMin() && axisMax >= fitVariables_[*varName]->getMax()) ) {
+      double fittedRangeMin = TMath::Max(axisMin, fitVariables_[*varName]->getMin());
+      double fittedRangeMax = TMath::Min(axisMax, fitVariables_[*varName]->getMax());
+      edm::LogWarning ("fitImp") 
+	<< " Fitted range set to interval " << fitVariables_[*varName]->getMin() << ".." << fitVariables_[*varName]->getMax() << ","
+	<< " but data available for range " << axisMin << ".." << axisMax 
+	<< " --> reducing fitted range to interval " << fittedRangeMin << ".." << fittedRangeMax << " !!";
+      fitVariables_[*varName]->setRange(fittedRangeMin, fittedRangeMax);
+    }
   }
   
 //--- configure categories used in simultaneous fits
@@ -624,6 +656,11 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
   fitOptions.Add(new RooCmdArg(RooFit::PrintLevel(printLevel)));
   fitOptions.Add(new RooCmdArg(RooFit::PrintEvalErrors(printWarnings)));
   fitOptions.Add(new RooCmdArg(RooFit::Warnings(printWarnings)));
+
+//--- set "precision" of fitted (pseudo)data 
+//    to precision which would be obtained with "real" data
+//    (unweighted events; works with "real" data as well)
+  fitOptions.Add(new RooCmdArg(RooFit::SumW2Error(false)));
 
 //--- perform fit
   RooFitResult* fitResult = fitModel_->fitTo(*fitData_, fitOptions);
@@ -733,6 +770,8 @@ void TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific()
 //    (and in particular effect of different statistical precision with which shape templates
 //     are determined for different background processes in background enriched samples)
 
+  std::cout << "<TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific>:" << std::endl;
+
   TCanvas canvas("TemplateFitAdapter_RooFit", "TemplateFitAdapter_RooFit", defaultCanvasSizeX, defaultCanvasSizeY);
   canvas.SetFillColor(10);
   canvas.SetFrameFillColor(10);
@@ -753,6 +792,8 @@ void TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific()
     
     for ( vstring::const_iterator varName = varNames_.begin();
 	  varName != varNames_.end(); ++varName ) {      
+      std::cout << " varName = " << (*varName) << std::endl;
+
       const model1dTypeRooFitSpecific* model1dEntryImpSpecific 
 	= getMapValue(modelNdEntryImpSpecific->model1dEntriesImpSpecific_, *varName);
 
@@ -764,12 +805,19 @@ void TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific()
       TH1* histogram_cloned = (TH1*)model1dEntryBase->fluctHistogram_->Clone(histogramName.data());
       histogram_cloned->SetStats(false);
       histogram_cloned->GetXaxis()->SetTitle(varName->data());
+      const char* xAxisLabel = model1dEntryBase->fitRanges_[0].title_.data();
+      histogram_cloned->GetXaxis()->SetTitle(xAxisLabel);
+      histogram_cloned->SetMarkerStyle(8);
+      histogram_cloned->SetMarkerColor(1);
       histogram_cloned->SetLineStyle(1);
       histogram_cloned->SetLineColor(1);
       histogram_cloned->SetLineWidth(2);
 
       std::string tf1Name = std::string(model1dEntryImpSpecific->auxTF1Wrapper_->getTF1()->GetName()).append("_cloned");
       TF1* tf1_cloned = (TF1*)model1dEntryImpSpecific->auxTF1Wrapper_->getTF1()->Clone(tf1Name.data());
+      double tf1Xmin = histogram_cloned->GetXaxis()->GetXmin();
+      double tf1Xmax = histogram_cloned->GetXaxis()->GetXmax();
+      tf1_cloned->SetRange(tf1Xmin, tf1Xmax);
       tf1_cloned->SetLineStyle(1);
       tf1_cloned->SetLineColor(2);
       tf1_cloned->SetLineWidth(2);
@@ -798,8 +846,8 @@ void TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific()
       if ( !errorFlag ) {
 	canvas.Print(fileName.data());
       } else {
-	edm::LogError("makeControlPlotsSmoothing") << " Failed to decode controlPlotsFileName = " 
-						   << controlPlotsFileName_ << " --> skipping !!";
+	edm::LogError("makeControlPlotsSmoothing") 
+	  << " Failed to decode controlPlotsFileName = " << controlPlotsFileName_ << " --> skipping !!";
 	return;
       }
 
