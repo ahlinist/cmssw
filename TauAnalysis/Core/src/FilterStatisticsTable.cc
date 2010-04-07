@@ -76,13 +76,13 @@ double FilterStatisticsRow::extractNumber(const std::string& columnLabel, bool w
 void printNumber(std::ostream& stream, unsigned width, double number)
 {
   stream << " ";
-  stream << std::setw(width) << std::setprecision(3) << std::fixed << std::right << number;
+  stream << std::setw(width) << std::fixed << std::setprecision(1) << std::right << number;
 } 
 
 void printPercentage(std::ostream& stream, unsigned width, double number)
 {
   stream << " ";
-  stream << std::setw(width - 1) << std::setprecision(3) << std::fixed << std::right << 100.*number << "%";
+  stream << std::setw(width - 1) << std::fixed << std::setprecision(1) << std::right << 100.*number << "%";
 } 
 
 void FilterStatisticsRow::print(std::ostream& stream, unsigned widthNameColumn, unsigned widthNumberColumns) const
