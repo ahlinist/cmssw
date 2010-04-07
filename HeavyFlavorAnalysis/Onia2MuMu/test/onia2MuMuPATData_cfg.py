@@ -11,17 +11,17 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 ### global tag
-process.GlobalTag.globaltag = "GR09_R_35X_V3::All"
+process.GlobalTag.globaltag = "GR_R_35X_V5::All"
 
 ### source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root'
-   ),
+   )
 )
 
 ### number of events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #############REAL DATA######################
 # this is for filtering on L1 technical trigger bit
@@ -100,7 +100,7 @@ process.p = cms.Path(
 
 ### output
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('onia2MuMuPAT_Data2009.root'),
+    fileName = cms.untracked.string('PAT_FirstData2010.root'),
     outputCommands = cms.untracked.vstring('drop *',
         'keep edmTriggerResults_TriggerResults_*_*',
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',

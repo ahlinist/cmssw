@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.19 2010/02/12 13:20:03 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.20 2010/02/12 13:57:11 covarell Exp $
 //
 //
 
@@ -299,10 +299,10 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   nEvents = 0;
   passedCandidates = 0;
 
-  JpsiMassMin = 0.;
-  JpsiMassMax = 12.;
-  JpsiMassMinSide = 2.0;
-  JpsiMassMaxSide = 4.0;
+  JpsiMassMin = 2.0;
+  JpsiMassMax = 4.0;
+  JpsiMassMinSide = 0.;
+  JpsiMassMaxSide = 12.0;
   JpsiCtMin = -1.0;
   JpsiCtMax = 3.5;
 
@@ -438,33 +438,33 @@ JPsiAnalyzerPAT::beginJob()
   // book histos
 
   // trigger passed 
-  QQMass2Glob_passmu3              = new TH1F("QQMass2Glob_passmu3",  "Invariant mass (2 global muons)", 100, JpsiMassMinSide,JpsiMassMaxSide);
-  QQMass1Glob1Trk_passmu3          = new TH1F("QQMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, JpsiMassMinSide,JpsiMassMaxSide);
-  QQMass1Glob1Cal_passmu3          = new TH1F("QQMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, JpsiMassMinSide,JpsiMassMaxSide);
-  QQMass2GlobPT6_passmu3           = new TH1F("QQMass2GlobPT6_passmu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  QQMass1Glob1TrkPT6_passmu3       = new TH1F("QQMass1Glob1TrkPT6_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  QQMass1Glob1CalPT6_passmu3       = new TH1F("QQMass1Glob1CalPT6_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-  // WSMass2Glob_passmu3              = new TH1F("WSMass2Glob_passmu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  // WSMass1Glob1Trk_passmu3          = new TH1F("WSMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  // WSMass1Glob1Cal_passmu3          = new TH1F("WSMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-  QQMass2Glob_passmu5              = new TH1F("QQMass2Glob_passmu5",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  QQMass1Glob1Trk_passmu5          = new TH1F("QQMass1Glob1Trk_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  QQMass1Glob1Cal_passmu5          = new TH1F("QQMass1Glob1Cal_passmu5",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.); 
-  // QQMass2Glob_passmu9              = new TH1F("QQMass2Glob_passmu9",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  // QQMass1Glob1Trk_passmu9          = new TH1F("QQMass1Glob1Trk_passmu9",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  // QQMass1Glob1Cal_passmu9          = new TH1F("QQMass1Glob1Cal_passmu9",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-  QQMass2GlobPT6_passmu5           = new TH1F("QQMass2GlobPT6_passmu5",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  QQMass1Glob1TrkPT6_passmu5       = new TH1F("QQMass1Glob1TrkPT6_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  QQMass1Glob1CalPT6_passmu5       = new TH1F("QQMass1Glob1CalPT6_passmu5",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-  QQMass2Glob_pass2mu3              = new TH1F("QQMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  QQMass1Glob1Trk_pass2mu3          = new TH1F("QQMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  QQMass1Glob1Cal_pass2mu3          = new TH1F("QQMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-  // WSMass2Glob_pass2mu3              = new TH1F("WSMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  // WSMass1Glob1Trk_pass2mu3          = new TH1F("WSMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  // WSMass1Glob1Cal_pass2mu3          = new TH1F("WSMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-  QQMass2Glob_pass2mu0              = new TH1F("QQMass2Glob_pass2mu0",  "Invariant mass (2 global muons)", 100, 0.,15.);
-  QQMass1Glob1Trk_pass2mu0          = new TH1F("QQMass1Glob1Trk_pass2mu0",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
-  QQMass1Glob1Cal_pass2mu0          = new TH1F("QQMass1Glob1Cal_pass2mu0",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
+  QQMass2Glob_passmu3              = new TH1F("QQMass2Glob_passmu3",  "Invariant mass (2 global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  QQMass1Glob1Trk_passmu3          = new TH1F("QQMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  QQMass1Glob1Cal_passmu3          = new TH1F("QQMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  QQMass2GlobPT6_passmu3           = new TH1F("QQMass2GlobPT6_passmu3",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  QQMass1Glob1TrkPT6_passmu3       = new TH1F("QQMass1Glob1TrkPT6_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  QQMass1Glob1CalPT6_passmu3       = new TH1F("QQMass1Glob1CalPT6_passmu3",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  // WSMass2Glob_passmu3              = new TH1F("WSMass2Glob_passmu3",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  // WSMass1Glob1Trk_passmu3          = new TH1F("WSMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  // WSMass1Glob1Cal_passmu3          = new TH1F("WSMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  QQMass2Glob_passmu5              = new TH1F("QQMass2Glob_passmu5",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  QQMass1Glob1Trk_passmu5          = new TH1F("QQMass1Glob1Trk_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  QQMass1Glob1Cal_passmu5          = new TH1F("QQMass1Glob1Cal_passmu5",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.); 
+  // QQMass2Glob_passmu9              = new TH1F("QQMass2Glob_passmu9",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  // QQMass1Glob1Trk_passmu9          = new TH1F("QQMass1Glob1Trk_passmu9",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  // QQMass1Glob1Cal_passmu9          = new TH1F("QQMass1Glob1Cal_passmu9",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  QQMass2GlobPT6_passmu5           = new TH1F("QQMass2GlobPT6_passmu5",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  QQMass1Glob1TrkPT6_passmu5       = new TH1F("QQMass1Glob1TrkPT6_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  QQMass1Glob1CalPT6_passmu5       = new TH1F("QQMass1Glob1CalPT6_passmu5",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  QQMass2Glob_pass2mu3              = new TH1F("QQMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  QQMass1Glob1Trk_pass2mu3          = new TH1F("QQMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  QQMass1Glob1Cal_pass2mu3          = new TH1F("QQMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  // WSMass2Glob_pass2mu3              = new TH1F("WSMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  // WSMass1Glob1Trk_pass2mu3          = new TH1F("WSMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  // WSMass1Glob1Cal_pass2mu3          = new TH1F("WSMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  QQMass2Glob_pass2mu0              = new TH1F("QQMass2Glob_pass2mu0",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  QQMass1Glob1Trk_pass2mu0          = new TH1F("QQMass1Glob1Trk_pass2mu0",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  QQMass1Glob1Cal_pass2mu0          = new TH1F("QQMass1Glob1Cal_pass2mu0",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
   			       
   // deltaR		       
   hMcRecoGlobMuDeltaR               = new TH1F("hMcRecoGlobMuDeltaR",  "MC-reco matching #Delta R (global muons)", 100, 0.,0.5);
@@ -482,11 +482,11 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongGlbMuFirstLayer          = new TH1F("hMcWrongGlbMuFirstLayer",  "first pixel layer hit - MC unmatched (global muons)", 4, -0.5, 3.5);
   			       
   // mc truth matching - global + global
-  hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC unmatched (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcPPGlbGlbMuMass                = new TH1F("hMcPPGlbGlbMuMass",  "Inv. mass - plus-plus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcMMGlbGlbMuMass                = new TH1F("hMcMMGlbGlbMuMass",  "Inv. mass - minus-minus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcSqrtGlbGlbMuMass              = new TH1F("hMcSqrtGlbGlbMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC unmatched (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcPPGlbGlbMuMass                = new TH1F("hMcPPGlbGlbMuMass",  "Inv. mass - plus-plus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcMMGlbGlbMuMass                = new TH1F("hMcMMGlbGlbMuMass",  "Inv. mass - minus-minus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcSqrtGlbGlbMuMass              = new TH1F("hMcSqrtGlbGlbMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
   hMcRightGlbGlbMuLife             = new TH1F("hMcRightGlbGlbMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
   hMcWrongGlbGlbMuLife             = new TH1F("hMcWrongGlbGlbMuLife",  "c #tau - MC unmatched (global+global muons)", 90, -1.0,3.5);
   hMcRightGlbGlbMuPt               = new TH1F("hMcRightGlbGlbMuPt",  "P_{T} - MC matched (global+global muons)", 60, 0.,60.);
@@ -519,11 +519,11 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongTrkMudz                  = new TH1F("hMcWrongTrkMudz",  "dz - MC unmatched (global muons)", 100, 0., 50.);
   			       
   // mc truth matching - global + trk
-  hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC unmatched (global+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcPPGlbTrkMuMass                = new TH1F("hMcPPGlbTrkMuMass",  "Inv. mass - plus-plus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcMMGlbTrkMuMass                = new TH1F("hMcMMGlbTrkMuMass",  "Inv. mass - minus-minus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcSqrtGlbTrkMuMass              = new TH1F("hMcSqrtGlbTrkMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC unmatched (global+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcPPGlbTrkMuMass                = new TH1F("hMcPPGlbTrkMuMass",  "Inv. mass - plus-plus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcMMGlbTrkMuMass                = new TH1F("hMcMMGlbTrkMuMass",  "Inv. mass - minus-minus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcSqrtGlbTrkMuMass              = new TH1F("hMcSqrtGlbTrkMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
   hMcRightGlbTrkMuLife            = new TH1F("hMcRightGlbTrkMuLife",  "c #tau - MC matched (global+tracker muons)", 90, -1.0,3.5);
   hMcWrongGlbTrkMuLife            = new TH1F("hMcWrongGlbTrkMuLife",  "c #tau - MC unmatched (global+tracker muons)", 90, -1.0,3.5);
   hMcRightGlbTrkMuPt               = new TH1F("hMcRightGlbTrkMuPt",  "P_{T} - MC matched (global+tracker muons)", 60, 0.,60.);
@@ -534,11 +534,11 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongGlbTrkMuVtxProb          = new TH1F("hMcWrongGlbTrkMuVtxProb",  "Vertex probability - MC unmatched (global+tracker muons)", 1000, 0.0,1.0);
   			       
   // mc truth matching - trk + trk
-  hMcRightTrkTrkMuMass            = new TH1F("hMcRightTrkTrkMuMass",  "Inv. mass - MC matched (tracker+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcWrongTrkTrkMuMass            = new TH1F("hMcWrongTrkTrkMuMass",  "Inv. mass - MC unmatched (tracker+tracker muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcPPTrkTrkMuMass                = new TH1F("hMcPPTrkTrkMuMass",  "Inv. mass - plus-plus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcMMTrkTrkMuMass                = new TH1F("hMcMMTrkTrkMuMass",  "Inv. mass - minus-minus (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
-  hMcSqrtTrkTrkMuMass              = new TH1F("hMcSqrtTrkTrkMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 100, JpsiMassMin,JpsiMassMax);
+  hMcRightTrkTrkMuMass            = new TH1F("hMcRightTrkTrkMuMass",  "Inv. mass - MC matched (tracker+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcWrongTrkTrkMuMass            = new TH1F("hMcWrongTrkTrkMuMass",  "Inv. mass - MC unmatched (tracker+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcPPTrkTrkMuMass                = new TH1F("hMcPPTrkTrkMuMass",  "Inv. mass - plus-plus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcMMTrkTrkMuMass                = new TH1F("hMcMMTrkTrkMuMass",  "Inv. mass - minus-minus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
+  hMcSqrtTrkTrkMuMass              = new TH1F("hMcSqrtTrkTrkMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
   hMcRightTrkTrkMuLife            = new TH1F("hMcRightTrkTrkMuLife",  "c #tau - MC matched (tracker+tracker muons)", 90, -1.0,3.5);
   hMcWrongTrkTrkMuLife            = new TH1F("hMcWrongTrkTrkMuLife",  "c #tau - MC unmatched (tracker+tracker muons)", 90, -1.0,3.5);
   hMcRightTrkTrkMuPt               = new TH1F("hMcRightTrkTrkMuPt",  "P_{T} - MC matched (tracker+tracker muons)", 60, 0.,60.);
@@ -782,7 +782,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 
   // Trigger passed
 
-  if (trigger.isValid()) {
+  /* if (trigger.isValid()) {
     if (hltBits[1] < 1000 && trigger->accept(hltBits[1])) { // pass Mu3
       if (muon1->charge()*muon2->charge() < 0) {
 	if (theCat == 0) QQMass2Glob_passmu3->Fill(theMass);          
@@ -827,7 +827,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     }  
   } else {
     cout << "TriggerResults not valid!" << endl;	
-  }
+    }*/
 	
   // Signal / background J/psi 	
   if (muon1->charge()*muon2->charge() < 0) {   
