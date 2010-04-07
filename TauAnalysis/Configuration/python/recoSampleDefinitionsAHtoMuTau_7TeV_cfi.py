@@ -405,8 +405,8 @@ patTupleOutputFileNameAHtoMuTau_TTplusJets_7TeV = cms.untracked.string('patTuple
 #       corresponding to tan(beta) = 30
 #      (cf. CMS AN-2009/143, table 4)
 #
-intLumiAHtoMuTau_AH120_tautau_7TeV = float(2335.9)
-corrFactorAHtoMuTau_AH120_tautau_7TeV = float(1.81)
+intLumiAHtoMuTau_AH120_tautau_7TeV = float(6197.7)
+corrFactorAHtoMuTau_AH120_tautau_7TeV = float(1.)
 
 fileNamesAHtoMuTau_AH120_tautau_7TeV_part01 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AH_M120SkimMT314/muTauSkim_1.root',
@@ -475,8 +475,8 @@ patTupleOutputFileNameAHtoMuTau_AH120_tautau_7TeV = cms.untracked.string('patTup
 #       corresponding to tan(beta) = 30
 #      (cf. CMS AN-2009/143, table 4)
 #
-intLumiAHtoMuTau_AHbb120_tautau_7TeV = float(1808.4)
-corrFactorAHtoMuTau_AHbb120_tautau_7TeV = float(1.11)
+intLumiAHtoMuTau_AHbb120_tautau_7TeV = float(1616.9)
+corrFactorAHtoMuTau_AHbb120_tautau_7TeV = float(1.)
 
 fileNamesAHtoMuTau_AHbb120_tautau_7TeV_part01 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_1.root',
