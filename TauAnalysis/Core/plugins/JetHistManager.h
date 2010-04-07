@@ -35,8 +35,12 @@ class JetHistManager : public HistManagerBase
 
 //--- configuration parameters
   edm::InputTag jetSrc_;
+  edm::InputTag genParticleSrc_;
 
   bool requireGenJetMatch_;
+
+  typedef std::vector<int> vint;
+  vint skipPdgIdsGenParticleMatch_;
 
   typedef std::vector<double> vdouble;
   vdouble centralJetsToBeVetoedEtMin_;
@@ -65,6 +69,8 @@ class JetHistManager : public HistManagerBase
   MonitorElement* hJetWeightNegLog_;
   MonitorElement* hJetWeightZero_;
   MonitorElement* hJetWeightLinear_;
+
+  MonitorElement* hJetMatchingGenParticlePdgId_;
   
   MonitorElement* hJetAlpha_;
   MonitorElement* hJetNumTracks_;

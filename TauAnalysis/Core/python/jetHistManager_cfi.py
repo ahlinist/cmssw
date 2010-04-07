@@ -5,11 +5,14 @@ jetHistManager = cms.PSet(
     pluginType = cms.string('JetHistManager'),
       
     jetSource = cms.InputTag('selectedLayer1JetsAntiOverlapWithLeptonsVetoCumulative'),
+    genParticleSource = cms.InputTag('genParticles'),
 
     dqmDirectory_store = cms.string('JetQuantities'),
 
     #requireGenJetMatch = cms.bool(True),
     requireGenJetMatch = cms.bool(False),
+
+    skipPdgIdsGenParticleMatch = cms.vint32( 12, 14, 16 ),
 
     centralJetsToBeVetoed = cms.PSet(
         etMin = cms.vdouble(10., 15., 20., 30.),
