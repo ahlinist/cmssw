@@ -48,6 +48,7 @@ reconfigDQMFileLoader(
     dqmDirectory = 'tauFakeRate/#PROCESSDIR#'
 )
 process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frSimple/7TeV/")
+#process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_frCDF/7TeV/")
 
 process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
@@ -248,33 +249,6 @@ drawFakeRateHistConfiguratorZtoMuTau_background.addPlots(
     plots = bgEstFakeRatePlots
 )
 
-drawFakeRateHistConfiguratorZtoMuTau_signal = drawFakeRateHistConfigurator(
-    template = cms.PSet(
-        xAxis = cms.string('unlabeled'),
-        #yAxis = cms.string('numEntries_linear'),
-        yAxis = cms.string('numEntries_log'),
-        legend = cms.string('regular'),
-        labels = cms.vstring('mcNormScale')
-    ),
-    dqmDirectories = dqmDirectories,
-    legendEntries = legendEntries,
-    frTypes = [
-        "frQCDmuEnriched",
-        "frQCDdiJetLeadJet",
-        "frQCDdiJetSecondLeadJet",
-        "frWplusJets",
-        ##"frGammaPlusJets",
-        "frSysUncertainty"
-    ]
-)     
-
-drawFakeRateHistConfiguratorZtoMuTau_signal.addProcess("Ztautau", processZtoMuTau_Ztautau.config_dqmHistPlotter.dqmDirectory)
-
-drawFakeRateHistConfiguratorZtoMuTau_signal.addPlots(
-    afterCut = evtSelDiMuPairZmumuHypothesisVeto,
-    plots = bgEstFakeRatePlots
-)
-
 process.plotBgEstFakeRateZtoMuTau_background = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
         tauIdDiscr = cms.PSet(
@@ -374,6 +348,32 @@ process.plotBgEstFakeRateZtoMuTau_background = cms.EDAnalyzer("DQMHistPlotter",
     indOutputFileName = cms.string('plotBgEstFakeRateZtoMuTau_#PLOT#.eps')
 )
 
+drawFakeRateHistConfiguratorZtoMuTau_signal = drawFakeRateHistConfigurator(
+    template = cms.PSet(
+        xAxis = cms.string('unlabeled'),
+        yAxis = cms.string('numEntries_linear'),
+        #yAxis = cms.string('numEntries_log'),
+        legend = cms.string('regular'),
+        labels = cms.vstring('mcNormScale')
+    ),
+    dqmDirectories = dqmDirectories,
+    legendEntries = legendEntries,
+    frTypes = [
+        "frQCDmuEnriched",
+        "frQCDdiJetLeadJet",
+        "frQCDdiJetSecondLeadJet",
+        "frWplusJets",
+        ##"frGammaPlusJets"
+    ]
+)     
+
+drawFakeRateHistConfiguratorZtoMuTau_signal.addProcess("Ztautau", processZtoMuTau_Ztautau.config_dqmHistPlotter.dqmDirectory)
+
+drawFakeRateHistConfiguratorZtoMuTau_signal.addPlots(
+    afterCut = evtSelDiMuPairZmumuHypothesisVeto,
+    plots = bgEstFakeRatePlots
+)
+
 process.plotBgEstFakeRateZtoMuTau_signal = process.plotBgEstFakeRateZtoMuTau_background.clone(
     processes = cms.PSet(
         frQCDmuEnriched = cms.PSet(
@@ -405,14 +405,30 @@ process.plotBgEstFakeRateZtoMuTau_signal = process.plotBgEstFakeRateZtoMuTau_bac
         ##    dqmDirectory = cms.string(''),
         ##    legendEntry = cms.string('frGammaPlusJets'),
         ##    type = cms.string('smMC')
-        ##),
-        frSysUncertainty = cms.PSet(
-            #dqmDirectory = cms.string(dqmDirectories["frSysUncertainty"]),
-            dqmDirectory = cms.string(''),
-            legendEntry = cms.string('frSysUncertainty'),
-            type = cms.string('smMC')
+        ##)
+    ),
+
+    legends = cms.PSet(
+        regular = cms.PSet(
+            posX = cms.double(0.60),            
+            posY = cms.double(0.11),             
+            sizeX = cms.double(0.29),        
+            sizeY = cms.double(0.25),            
+            header = cms.string(''),          
+            option = cms.string('brNDC'),       
+            borderSize = cms.int32(0),          
+            fillColor = cms.int32(0)             
         )
     ),
+
+    drawOptionEntries = cms.PSet(
+        frQCDmuEnriched = copy.deepcopy(drawOption_lightBlue_eff),
+        frQCDdiJetLeadJet = copy.deepcopy(drawOption_red_eff),
+        frQCDdiJetSecondLeadJet = copy.deepcopy(drawOption_orange_eff),
+        frWplusJets = copy.deepcopy(drawOption_green_eff),
+        ##frGammaPlusJets = copy.deepcopy(drawOption_yellow_eff)
+    ),
+    
     drawJobs = drawFakeRateHistConfiguratorZtoMuTau_signal.configure()
 )    
 

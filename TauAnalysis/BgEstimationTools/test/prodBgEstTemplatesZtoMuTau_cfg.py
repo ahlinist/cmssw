@@ -14,7 +14,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("EmptySource")
 
 # define directory from which .root files containing the histograms get loaded
-process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_bgEstTemplates/7TeV/")
+process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_bgEstTemplates/7TeViii/")
 
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
@@ -54,7 +54,8 @@ process.dumpZtoMuTau_bgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("DQMDumpFilterS
         Zmumu = cms.string('harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/FilterStatistics/'),
         WplusJets = cms.string('harvested/WplusJets/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/FilterStatistics/'),
         QCD = cms.string('harvested/qcdSum/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/FilterStatistics/'),
-        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/FilterStatistics/')
+        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/FilterStatistics/'),
+        smSum = cms.string('harvested/smSum/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed"),
     printSummaryTableOnly = cms.bool(True)                                                    
@@ -66,7 +67,8 @@ process.dumpZtoMuTau_bgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("DQMDumpFilter
         Zmumu = cms.string('harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/FilterStatistics/'),
         WplusJets = cms.string('harvested/WplusJets/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/FilterStatistics/'),
         QCD = cms.string('harvested/qcdSum/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/FilterStatistics/'),
-        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/FilterStatistics/')
+        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/FilterStatistics/'),
+        smSum = cms.string('harvested/smSum/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/FilterStatistics/'),
     ),
     columnsSummaryTable = cms.vstring("Passed"),
     printSummaryTableOnly = cms.bool(True)                                                    
@@ -78,7 +80,8 @@ process.dumpZtoMuTau_bgEstWplusJetsEnriched = cms.EDAnalyzer("DQMDumpFilterStati
         Zmumu = cms.string('harvested/Zmumu/BgEstTemplateAnalyzer_WplusJetsEnriched/FilterStatistics/'),
         WplusJets = cms.string('harvested/WplusJets/BgEstTemplateAnalyzer_WplusJetsEnriched/FilterStatistics/'),
         QCD = cms.string('harvested/qcdSum/BgEstTemplateAnalyzer_WplusJetsEnriched/FilterStatistics/'),
-        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_WplusJetsEnriched/FilterStatistics/')
+        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_WplusJetsEnriched/FilterStatistics/'),
+        smSum = cms.string('harvested/smSum/BgEstTemplateAnalyzer_WplusJetsEnriched/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed"),
     printSummaryTableOnly = cms.bool(True)       
@@ -90,7 +93,8 @@ process.dumpZtoMuTau_bgEstTTplusJetsEnriched = cms.EDAnalyzer("DQMDumpFilterStat
         Zmumu = cms.string('harvested/Zmumu/BgEstTemplateAnalyzer_TTplusJetsEnriched/FilterStatistics/'),
         WplusJets = cms.string('harvested/WplusJets/BgEstTemplateAnalyzer_TTplusJetsEnriched/FilterStatistics/'),
         QCD = cms.string('harvested/qcdSum/BgEstTemplateAnalyzer_TTplusJetsEnriched/FilterStatistics/'),
-        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_TTplusJetsEnriched/FilterStatistics/')
+        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_TTplusJetsEnriched/FilterStatistics/'),
+        smSum = cms.string('harvested/smSum/BgEstTemplateAnalyzer_TTplusJetsEnriched/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed"),
     printSummaryTableOnly = cms.bool(True)       
@@ -102,7 +106,8 @@ process.dumpZtoMuTau_bgEstQCDenriched = cms.EDAnalyzer("DQMDumpFilterStatisticsT
         Zmumu = cms.string('harvested/Zmumu/BgEstTemplateAnalyzer_QCDenriched/FilterStatistics/'),
         WplusJets = cms.string('harvested/WplusJets/BgEstTemplateAnalyzer_QCDenriched/FilterStatistics/'),
         QCD = cms.string('harvested/qcdSum/BgEstTemplateAnalyzer_QCDenriched/FilterStatistics/'),
-        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_QCDenriched/FilterStatistics/')
+        TTplusJets = cms.string('harvested/TTplusJets/BgEstTemplateAnalyzer_QCDenriched/FilterStatistics/'),
+        smSum = cms.string('harvested/smSum/BgEstTemplateAnalyzer_QCDenriched/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed"),
     printSummaryTableOnly = cms.bool(True)       
