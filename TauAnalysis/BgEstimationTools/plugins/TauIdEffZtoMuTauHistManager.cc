@@ -9,10 +9,12 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -73,6 +75,10 @@ void TauIdEffZtoMuTauHistManager::bookHistogramsImp()
   hDiTauChargeSign_ = book1D("DiTauChargeSign", "DiTauChargeSign", 3, -1.5, +1.5);  
   hDiTauPtProj_ = book1D("DiTauPtProj", "DiTauPtProj", 200, -100., +100.);
   hDiTauMEtProj_ = book1D("DiTauMEtProj", "DiTauMEtProj", 200, -100., +100.);
+  hDiTauVisMassFromJetP4_ = book1D("DiTauVisMassFromJetP4", "DiTauVisMassFromJetP4", 40, 0., 200.);
+  hDiTauVisMassFromTauJetP4_ = book1D("DiTauVisMassFromTauJetP4", "DiTauVisMassFromTauJetP4", 40, 0., 200.);
+  hDiTauCollinearApproxMassFromJetP4_ = book1D("DiTauCollinearApproxMassFromJetP4", "DiTauCollinearApproxMassFromJetP4", 50, 0., 250.);
+  hDiTauCollinearApproxMassFromTauJetP4_ = book1D("DiTauCollinearApproxMassFromTauJetP4", "DiTauCollinearApproxMassFromTauJetP4", 50, 0., 250.);
 
   hNumCentralJets_ = book1D("NumCentralJets", "NumCentralJets", 5, -0.5, 4.5);
   hCentralJetPt_ = book1D("CentralJetPt", "CentralJetPt", 75, 0., 150.);
@@ -106,6 +112,30 @@ double computeDiTauProj(const reco::Particle::LorentzVector& vProj, const reco::
     return (scalarProduct/vRef.pt());
   } else {
     return 0.;
+  }
+}
+
+void fillCollinearApproxMassHistogram(MonitorElement* h, 
+				      const reco::Candidate::LorentzVector& leg1, 
+				      const reco::Candidate::LorentzVector& leg2,
+				      double metPx, double metPy, 
+				      double weight)
+{
+  double x1_numerator = leg1.px()*leg2.py() - leg2.px()*leg1.py();
+  double x1_denominator = leg2.py()*(leg1.px() + metPx) - leg2.px()*(leg1.py() + metPy);
+  double x1 = ( x1_denominator != 0. ) ? x1_numerator/x1_denominator : -1.;
+  bool isX1withinPhysRange = true;
+  double x1phys = getPhysX(x1, isX1withinPhysRange);
+  
+  double x2_numerator = x1_numerator;
+  double x2_denominator = leg1.px()*(leg2.py() + metPy) - leg1.py()*(leg2.px() + metPx);
+  double x2 = ( x2_denominator != 0. ) ? x2_numerator/x2_denominator : -1.;
+  bool isX2withinPhysRange = true;
+  double x2phys = getPhysX(x2, isX2withinPhysRange);
+  
+  if ( x1phys != 0. && x2phys != 0. ) {
+    reco::Candidate::LorentzVector p4 = leg1/x1phys + leg2/x2phys;
+    h->Fill(p4.mass(), weight);
   }
 }
 
@@ -158,6 +188,17 @@ void TauIdEffZtoMuTauHistManager::fillHistogramsImp(const edm::Event& evt, const
 
     double diTauMEtProj = computeDiTauProj(diTau->met()->p4(), diTau->leg1()->p4());
     hDiTauMEtProj_->Fill(diTauMEtProj, evtWeight);
+
+    hDiTauVisMassFromJetP4_->Fill((diTau->leg1()->p4() + diTau->leg2()->pfTauTagInfoRef()->pfjetRef()->p4()).mass(), evtWeight);
+    hDiTauVisMassFromTauJetP4_->Fill((diTau->leg1()->p4() + diTau->leg2()->p4()).mass(), evtWeight);
+    //if ( (diTau->dPhi12()*180./TMath::Pi()) < 160. ) {
+      fillCollinearApproxMassHistogram(hDiTauCollinearApproxMassFromJetP4_,
+				       diTau->leg1()->p4(), diTau->leg2()->pfTauTagInfoRef()->pfjetRef()->p4(),
+				       diTau->met()->px(), diTau->met()->py(), evtWeight);
+      fillCollinearApproxMassHistogram(hDiTauCollinearApproxMassFromTauJetP4_,
+				       diTau->leg1()->p4(), diTau->leg2()->p4(),
+				       diTau->met()->px(), diTau->met()->py(), evtWeight);
+    //}
   }
 
   hNumCentralJets_->Fill(patCentralJets->size(), evtWeight);
