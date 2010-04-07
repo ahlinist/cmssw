@@ -98,7 +98,7 @@ void printSummaryTable(std::ostream& stream, unsigned widthNameColumn, unsigned 
     stream << std::setw(widthNameColumn) << std::left << filterTitles[iFilter];
     for ( size_t iProcess = 0; iProcess < numProcesses; ++iProcess ) {
       stream << " ";
-      stream << std::setw(widthNumberColumns) << std::setprecision(3) << std::right << table[iFilter][iProcess];
+      stream << std::setw(widthNumberColumns) << std::fixed << std::setprecision(1) << std::right << table[iFilter][iProcess];
     }
     stream << std::endl;
   } 
