@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.20 2010/02/12 13:57:11 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.21 2010/04/07 12:50:39 covarell Exp $
 //
 //
 
@@ -937,7 +937,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
           hMcWrongTrkBit5->Fill((int)thisMuon->muonID("TM2DCompatibilityTight"));
 	  hMcWrongTrkBit8->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtLoose"));
 	  hMcWrongTrkBit9->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtTight"));
-	  hMcRightTrkBitNew->Fill(int(thisMuon->muonID("TMLastStationAngTight")));
+	  hMcWrongTrkBitNew->Fill(int(thisMuon->muonID("TMLastStationAngTight")));
           hMcWrongTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
           hMcWrongTrkMuNhits->Fill(iTrack->found());
           hMcWrongTrkMud0->Fill(fabs(iTrack->d0()));
