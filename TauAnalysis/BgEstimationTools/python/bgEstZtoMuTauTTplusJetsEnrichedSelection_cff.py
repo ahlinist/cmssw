@@ -152,13 +152,6 @@ cfgJetEt60BgEstTTplusJetsEnriched = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-cfgDiMuonVetoBgEstTTplusJetsEnriched = cms.PSet(
-    pluginName = cms.string('diMuonVetoBgEstTTplusJetsEnriched'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
-    maxNumber = cms.uint32(1)
-)
-
 evtSelConfiguratorBgEstTTplusJetsEnriched = eventSelFlagProdConfigurator(
     [ cfgMuonTrkIsoCutBgEstTTplusJetsEnriched,
       cfgMuonEcalIsoCutBgEstTTplusJetsEnriched,
@@ -167,8 +160,7 @@ evtSelConfiguratorBgEstTTplusJetsEnriched = eventSelFlagProdConfigurator(
       cfgMuTauPairZeroChargeBgEstTTplusJetsEnriched,
       cfgJetsEt40BgEstTTplusJetsEnriched,
       cfgJetEt40bTagBgEstTTplusJetsEnriched,
-      cfgJetEt60BgEstTTplusJetsEnriched,
-      cfgDiMuonVetoBgEstTTplusJetsEnriched ],
+      cfgJetEt60BgEstTTplusJetsEnriched ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
@@ -271,11 +263,6 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('jetEt60BgEstTTplusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('jetEt60BgEstTTplusJetsEnriched')
-        ),
-        cms.PSet(
-            pluginName = cms.string('diMuonVetoBgEstTTplusJetsEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('diMuonVetoBgEstTTplusJetsEnriched')
         )
     ),
   
@@ -406,10 +393,6 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('jetEt60BgEstTTplusJetsEnriched'),
             title = cms.string('one E_{T} > 60 GeV Jet')
-        ),
-        cms.PSet(
-            filter = cms.string('diMuonVetoBgEstTTplusJetsEnriched'),
-            title = cms.string('di-Muon Veto')
         ),
         cms.PSet(
             analyzers = cms.vstring(
