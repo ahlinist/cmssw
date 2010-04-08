@@ -21,7 +21,43 @@
 
 class BeamPixelRenderPlugin : public DQMRenderPlugin {
 
+  int hcalRainbowColors[100];
+  int NCont_rainbow;
+
+
 public:
+ virtual void initialise (int, char **)
+  {
+   // Make rainbow colors. Assign colors positions 1101-1200
+    NCont_rainbow = 100; // Specify number of contours for rainbow
+
+    double stops_rainbow[] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+    double red_rainbow[]   = { 0.00, 0.00, 0.87, 1.00, 0.91 };
+    double green_rainbow[] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+    double blue_rainbow[]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+    int NRGBs_rainbow      = 5; // Specify number of RGB boundaries for rainbow
+    int nColorsGradient    = 0;
+    int highestIndex       = 0;
+
+    for (int g = 1; g < NRGBs_rainbow; g++)
+      {
+        nColorsGradient = (int) (floor(NCont_rainbow * stops_rainbow[g]) - floor(NCont_rainbow * stops_rainbow[g-1])); // specify number of gradients between stops (g-1) and (g)
+        for (int c = 0; c < nColorsGradient; c++)
+	  {
+	    hcalRainbowColors[highestIndex] = 1101 + highestIndex;
+	    TColor* color = gROOT->GetColor(1101 + highestIndex);
+	    // Make new color only if old color does not exist
+	    if (!color)
+	      color = new TColor(1101 + highestIndex,
+				 red_rainbow[g-1]   + c * (red_rainbow[g]   - red_rainbow[g-1])   / nColorsGradient,
+				 green_rainbow[g-1] + c * (green_rainbow[g] - green_rainbow[g-1]) / nColorsGradient,
+				 blue_rainbow[g-1]  + c * (blue_rainbow[g]  - blue_rainbow[g-1])  / nColorsGradient,
+				 "  ");
+	    highestIndex++;
+	  }
+      }
+  }
+
   virtual bool applies(const VisDQMObject& o, const VisDQMImgInfo& )
   {
     if (o.name.find("BeamPixel/") != std::string::npos) return true;
@@ -57,8 +93,6 @@ private:
     	
     if ((o.name.find("vertex zx") != std::string::npos) || (o.name.find("vertex zy") != std::string::npos) || (o.name.find("vertex xy") != std::string::npos))
       {
-	gStyle->SetOptStat(1110);
-
 	xa->SetTitleOffset(1.15);
 	ya->SetTitleOffset(1.15);
 
@@ -69,6 +103,9 @@ private:
 	ya->SetLabelSize(0.03);
 
 	c->SetGrid();
+	obj->SetContour(NCont_rainbow);
+	gStyle->SetPalette(NCont_rainbow, hcalRainbowColors);
+	gStyle->SetOptStat(1110);
 	obj->SetStats(kTRUE);
 	obj->SetOption("colz");
 
