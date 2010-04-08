@@ -48,8 +48,10 @@ class ChamberMap {
     TBox*  bBlank;
     TBox*  bCSC_box[2][4][3][36];
     TText* tCSC_label[2][4][3][36];
-    TBox*  bLegend[5];
-    TText* tLegend[5];
+    TBox*  bLegend[6];
+    TText* tLegend[6];
+    TText* tStatusTitle;
+    TText* tLegendTitle;
   
   public:
     
@@ -60,7 +62,7 @@ class ChamberMap {
 
   private:
     
-    void printLegendBox(unsigned int& number, const std::string title, int color);
+    void printLegendBox(const unsigned int& number, const std::string title, int color);
     float Xmin_local_derived_from_ChamberID(int side, int station, int ring, int chamber) const;
     float Xmax_local_derived_from_ChamberID(int side, int station, int ring, int chamber) const;
     float Ymin_local_derived_from_ChamberID(int side, int station, int ring, int chamber) const;
