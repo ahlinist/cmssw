@@ -212,6 +212,12 @@ private:
         obj->GetXaxis()->SetNdivisions(12);
         return;
       }
+      else if((o.name.find("BX_diff") != std::string::npos)){
+        obj->GetXaxis()->SetTitle("#Delta bx");
+        obj->GetXaxis()->SetNdivisions(9);
+	obj->GetXaxis()->CenterLabels();
+	return;
+      }
       else if(REMATCH("BX *", o.name))
       {
         obj->GetXaxis()->SetTitle("bx");
@@ -587,6 +593,51 @@ private:
         gStyle->SetOptStat(11);
         return;
       }
+      if(o.name.find("BX_diffvslumi") != std::string::npos)
+	{
+	  obj->GetYaxis()->SetTitle("#Delta bx");
+	  //obj->GetXaxis()->SetNdivisions(6,true);
+	  obj->GetYaxis()->SetNdivisions(9,true);
+	  obj->GetYaxis()->CenterLabels();
+	  //gPad->SetGrid(1,1);
+
+	  int nxbins = obj->GetNbinsX();
+	  int nybins = obj->GetNbinsY();
+	  int maxRange = nxbins;
+	  bool ynonempty = false;
+	  for ( int i = nxbins; i > 0; --i ){
+	    for ( int j = nybins; j > 0; --j ){
+	      if ( obj->GetBinContent(i,j) != 0 ){
+		ynonempty = true;
+		break;
+	      }
+	    }
+	    if(ynonempty){
+	      maxRange = i;
+	      break;		
+	    }
+	  }
+	  int minRange = 0;
+	  ynonempty = false;
+	  for ( int i = 0; i <= nxbins; ++i ){
+	    for ( int j = 0; j <= nybins; ++j ){
+	      if ( obj->GetBinContent(i,j) != 0 ){
+		ynonempty = true;
+		break;
+	      }
+	    }
+	    if(ynonempty){
+	      minRange = i;
+	      break;
+	    }
+	  }
+	  minRange = ( minRange>0 ) ? minRange-1 : 0;
+	  maxRange = ( nxbins>maxRange ) ? maxRange+1 : nxbins;
+	  
+	  obj->GetXaxis()->SetRange(minRange, maxRange);
+	  
+	  return;
+	}
 
 
     }
