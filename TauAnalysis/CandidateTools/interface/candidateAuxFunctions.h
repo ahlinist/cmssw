@@ -21,6 +21,7 @@ reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle*, const re
 reco::Candidate::LorentzVector getInvisMomentum(const std::vector<const reco::GenParticle*>&, int = 1);
 reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle*, const reco::GenParticleCollection*);
 
+void compX1X2byCollinearApprox(double&, double&, double, double, double, double, double, double);
 double getPhysX(double x, bool& isWithinPhysRange);
 
 #endif

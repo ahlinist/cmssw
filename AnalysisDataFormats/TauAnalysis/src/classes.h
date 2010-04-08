@@ -61,11 +61,14 @@ namespace {
     edm::Ptr<reco::Track> dummyTrackPtr;
     edm::Ptr<reco::GsfTrack> dummyGsfTrackPtr;
 
+    /// create dictionaries for CollinearApproxCompatibility objects
+    CollinearApproxCompatibility dummyCollinearApproxCompatibility;
+    std::vector<CollinearApproxCompatibility> dummyCollinearApproxCompatibilityCollection;
+    std::map<std::string, CollinearApproxCompatibility> dummyCollinearApproxCompatibilityMap;
+
     /// create dictionaries for SVmassRecoSolution objects
     SVmassRecoSolution dummySVmassRecoSolution;
-    //edm::Wrapper<SVmassRecoSolution> dummySVmassRecoSolutionWrapper;
     std::vector<SVmassRecoSolution> dummySVmassRecoSolutionCollection;
-    //edm::Wrapper<std::vector<SVmassRecoSolution> > dummySVmassRecoSolutionCollectionWrapper;
 
     /// create dictionaries for PATElecPair objects
     PATElecPair dummyPATElecPair;
