@@ -73,6 +73,8 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
 		   << " (gen. = " << diTauCandidate->x2gen() << ")" << std::endl;
     std::string collinearApproxStatus = ( diTauCandidate->collinearApproxIsValid() ) ? "valid" : "invalid";
     *outputStream_ << " (collinear Approx. " << collinearApproxStatus << ")" << std::endl;
+    const CollinearApproxCompatibility* collinearApproxCompatibility = diTauCandidate->collinearApproxCompatibility("mZ");
+    if ( collinearApproxCompatibility ) *outputStream_ << " Chi2(mZ) = " << collinearApproxCompatibility->minuitFitChi2() << std::endl;
     const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
     for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
 	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {

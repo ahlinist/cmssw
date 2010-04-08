@@ -29,8 +29,10 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
 //    inherited from HistManagerBase class
   void bookHistogramsImp();
   void bookMEtHistograms();
+  void bookCollinearApproxCompatibilityHistograms(const std::string&);
   void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
   void fillMEtHistograms(const edm::Event&, const CompositePtrCandidateT1T2MEt<T1,T2>&, double);
+  void fillCollinearApproxCompatibilityHistograms(const CompositePtrCandidateT1T2MEt<T1,T2>&, double);
 
 //--- auxiliary functions
   double getDiTauCandidateWeight(const CompositePtrCandidateT1T2MEt<T1,T2>&);
@@ -53,6 +55,9 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
   double collinearApproxMassDiTauPtIncr_;
   unsigned numCollinearApproxMassMEtPtBins_;
   double collinearApproxMassMEtPtIncr_;
+
+  typedef std::vector<std::string> vstring;
+  vstring collinearApproxMassCompatibilities_;
 
 //--- "helper" class for accessing weight values
 //    associated to tau decay products
@@ -90,6 +95,11 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
   MonitorElement* hCollinearApproxX2_;
   MonitorElement* hCollinearApproxX1vsX2_;
 
+  std::vector<MonitorElement*> hCollinearApproxCompatibilityFitStatus_;
+  std::vector<MonitorElement*> hCollinearApproxCompatibilityFitChi2_;
+  std::vector<MonitorElement*> hCollinearApproxCompatibilityX1pull_;
+  std::vector<MonitorElement*> hCollinearApproxCompatibilityX2pull_;
+  
 //--- distributions of invariant mass of the two tau leptons
 //    reconstructed via collinear approximation
 //    for different acoplanarity angles/Pt values of the visible decay products

@@ -62,6 +62,9 @@ CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::CompositePtrCandi
   collinearApproxMassDiTauPtIncr_ = 2.;
   numCollinearApproxMassMEtPtBins_ = 25;
   collinearApproxMassMEtPtIncr_ = 2.;
+
+  collinearApproxMassCompatibilities_ = cfg.exists("collinearApproxMassCompatibilities") ? 
+    cfg.getParameter<vstring>("collinearApproxMassCompatibilities") : vstring();
 }
 
 template<typename T1, typename T2>
@@ -149,6 +152,11 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::bookHistogra
   }
 
   bookMEtHistograms();
+
+  for ( vstring::const_iterator collinearApproxMassCompatibility = collinearApproxMassCompatibilities_.begin();
+	collinearApproxMassCompatibility != collinearApproxMassCompatibilities_.end(); ++collinearApproxMassCompatibility ) {
+    bookCollinearApproxCompatibilityHistograms(*collinearApproxMassCompatibility);
+  }
 }
 
 template<typename T1, typename T2>
@@ -182,6 +190,19 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::bookMEtHisto
     = book1D("MEtUnaccountedParallelZ", "unaccounted missing P_{T} || Z^{0} (should be zero)", 200, -50., +50.);
   hMEtUnaccountedPerpendicularZ_ 
     = book1D("MEtUnaccountedPerpendicularZ", "unaccounted missing P_{T} perp. Z^{0} (should be zero)", 200, -50., +50.);
+}
+
+template<typename T1, typename T2>
+void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::bookCollinearApproxCompatibilityHistograms(const std::string& hypothesis)
+{
+  std::string hFitStatusName = std::string("CollinearApproxCompatibilityFitStatus").append("_").append(hypothesis);
+  hCollinearApproxCompatibilityFitStatus_.push_back(book1D(hFitStatusName, hFitStatusName, 10, -2.5, +7.5));
+  std::string hFitChi2Name = std::string("CollinearApproxCompatibilityFitChi2").append("_").append(hypothesis);
+  hCollinearApproxCompatibilityFitChi2_.push_back(book1D(hFitChi2Name, hFitChi2Name, 101, -0.05, 10.05));
+  std::string hX1pullName = std::string("CollinearApproxCompatibilityX1pull").append("_").append(hypothesis);
+  hCollinearApproxCompatibilityX1pull_.push_back(book1D(hX1pullName, hX1pullName, 100, -5., +5.));
+  std::string hX2pullName = std::string("CollinearApproxCompatibilityX2pull").append("_").append(hypothesis);
+  hCollinearApproxCompatibilityX2pull_.push_back(book1D(hX2pullName, hX2pullName, 100, -5., +5.));
 }
 
 template<typename T1, typename T2>
@@ -285,6 +306,8 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
     }
     
     fillMEtHistograms(evt, *diTauCandidate, weight);
+
+    fillCollinearApproxCompatibilityHistograms(*diTauCandidate, weight);
   }
 }
 
@@ -437,6 +460,33 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillMEtHisto
     fillHistogram(hMEtUnaccountedParallelZ_, hMEtUnaccountedPerpendicularZ_, pxUnaccountedMEt, pyUnaccountedMEt, p4Zgen, weight);
   } else {
     edm::LogWarning ("fillMEtHistograms") << " Failed to find generated tau-leptons !!";
+  }
+}
+
+void fillPullHistogram(MonitorElement* h, double x, double xGen, double xErr, double weight)
+{
+  if ( xErr > 0. ) {
+    double xPull = (x - xGen)/xErr;
+    h->Fill(xPull, weight);
+  }
+}
+
+template<typename T1, typename T2>
+void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillCollinearApproxCompatibilityHistograms(const CompositePtrCandidateT1T2MEt<T1,T2>& diTauCandidate, double weight)
+{
+  unsigned numHypotheses = collinearApproxMassCompatibilities_.size();
+  for ( unsigned iHypothesis = 0; iHypothesis < numHypotheses; ++iHypothesis ) {
+    const std::string& hypothesis = collinearApproxMassCompatibilities_[iHypothesis];
+
+    const CollinearApproxCompatibility* collinearApproxCompatibility = diTauCandidate.collinearApproxCompatibility(hypothesis);
+    if ( collinearApproxCompatibility ) {
+      hCollinearApproxCompatibilityFitStatus_[iHypothesis]->Fill(collinearApproxCompatibility->minuitFitStatus(), weight);
+      hCollinearApproxCompatibilityFitChi2_[iHypothesis]->Fill(TMath::Min(collinearApproxCompatibility->minuitFitChi2(), 10.), weight);
+      fillPullHistogram(hCollinearApproxCompatibilityX1pull_[iHypothesis], 
+			collinearApproxCompatibility->x1(), diTauCandidate.x1gen(), collinearApproxCompatibility->x1Err(), weight);
+      fillPullHistogram(hCollinearApproxCompatibilityX2pull_[iHypothesis], 
+			collinearApproxCompatibility->x2(), diTauCandidate.x2gen(), collinearApproxCompatibility->x2Err(), weight);
+    }
   }
 }
 
