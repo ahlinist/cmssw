@@ -9,6 +9,7 @@
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
 #include "utils.h"
 
+#include "TROOT.h"
 #include "TProfile.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -17,6 +18,7 @@
 #include "TColor.h"
 #include "TText.h"
 #include <cassert>
+#include <math.h>
 
 
 class BeamPixelRenderPlugin : public DQMRenderPlugin {
