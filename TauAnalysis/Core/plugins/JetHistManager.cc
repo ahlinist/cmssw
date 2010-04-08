@@ -31,6 +31,14 @@ JetHistManager::JetHistManager(const edm::ParameterSet& cfg)
   jetSrc_ = cfg.getParameter<edm::InputTag>("jetSource");
   //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
+  genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
+  if ( genParticleSrc_.label() == "" ) {
+    edm::LogWarning("JetHistManager") 
+      << " Configuration parameter 'genParticleSource' not specified" 
+      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+  }
+  //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
+
   requireGenJetMatch_ = cfg.getParameter<bool>("requireGenJetMatch");
   //std::cout << " requireGenJetMatch = " << requireGenJetMatch_ << std::endl;
 
