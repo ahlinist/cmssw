@@ -12,18 +12,22 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.8 2010/03/29 17:05:33 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.9 2010/03/31 16:22:40 veelken Exp $
  *
  */
+
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h" 
 #include "DataFormats/Candidate/interface/Candidate.h" 
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Candidate/interface/LeafCandidate.h" 
+#include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/CollinearApproxCompatibility.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 
 template<typename T1, typename T2>
@@ -31,6 +35,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 {
   typedef edm::Ptr<T1> T1Ptr;
   typedef edm::Ptr<T2> T2Ptr;
+  typedef edm::Ptr<reco::MET> MEtPtr;
 
  public:
 
@@ -105,6 +110,19 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double x1CollinearApprox() const { return x1CollinearApprox_; }
   double x2CollinearApprox() const { return x2CollinearApprox_; }
   bool collinearApproxIsValid() const { return collinearApproxIsValid_; }
+
+  /// get compatibility of four-momentum computed by collinear approximation 
+  /// with different mass hypotheses
+  const CollinearApproxCompatibility* collinearApproxCompatibility(const std::string& hypothesis) const 
+  {
+    std::map<std::string, CollinearApproxCompatibility>::const_iterator it = collinearApproxCompatibilities_.find(hypothesis);
+    if ( it != collinearApproxCompatibilities_.end() ) {
+      return &it->second;
+    } else {
+      edm::LogWarning ("collinearApproxFitChi2") << " No value defined for hypothesis = " << hypothesis << " !!";
+      return 0;
+    }
+  }
 
   /// get the four-momentum and x1-x2 (xi = visible energy fraction of the ith-tau)
   /// computed by improved coll. approx.
@@ -197,6 +215,13 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     collinearApproxIsValid_ = isValid;
     validityCollinearApproxFlag_ = flag;
   }
+
+  /// set compatibilities of four-momentum computed by collinear approximation with different mass hypotheses
+  void setCollinearApproxCompatibilities(std::map<std::string, CollinearApproxCompatibility> collinearApproxCompatibilities)
+  {
+    collinearApproxCompatibilities_ = collinearApproxCompatibilities;
+  }
+  
   /// set four-momentum and scaling factors for momenta of visible decay products
   /// computed by Improved collinear approximation
   void setImprovedCollinearApproxQuantities(const reco::Candidate::LorentzVector& p4, double x1, double x2, double scaleFactor, bool isValid, int flag)
@@ -238,7 +263,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// references/pointers to decay products
   T1Ptr leg1_;
   T2Ptr leg2_;
-  reco::CandidatePtr met_;
+  MEtPtr met_;
 
   /// gen. four-momenta
   reco::Candidate::LorentzVector p4Leg1gen_;
@@ -259,6 +284,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   bool collinearApproxIsValid_;
   double x1CollinearApprox_;
   double x2CollinearApprox_;
+
+  /// compatibilities of four-momentum computed by collinear approximation with different mass hypotheses
+  std::map<std::string, CollinearApproxCompatibility> collinearApproxCompatibilities_;
 
   /// four-momentum of visible decay products
   reco::Candidate::LorentzVector p4ImprovedCollinearApprox_;

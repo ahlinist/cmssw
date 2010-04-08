@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.10 $
+ * \version $Revision: 1.11 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.10 2010/03/19 17:20:21 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.11 2010/03/29 17:07:14 veelken Exp $
  *
  */
 
@@ -42,6 +42,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/METReco/interface/MET.h"
 
 #include <string>
 
@@ -50,6 +51,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 {
   typedef edm::Ptr<T1> T1Ptr;
   typedef edm::Ptr<T2> T2Ptr;
+  typedef edm::Ptr<reco::MET> MEtPtr;
 
   typedef std::vector<CompositePtrCandidateT1T2MEt<T1,T2> > CompositePtrCandidateCollection;
   
@@ -127,9 +129,10 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     edm::Handle<T2View> leg2Collection;
     pf::fetchCollection(leg2Collection, srcLeg2_, evt);
 
-    reco::CandidatePtr metPtr;
+    MEtPtr metPtr;
     if ( srcMET_.label() != "" ) {
-      edm::Handle<reco::CandidateView> metCollection;
+      typedef edm::View<reco::MET> MEtView;
+      edm::Handle<MEtView> metCollection;
       pf::fetchCollection(metCollection, srcMET_, evt);
       
 //--- check that there is exactly one MET object in the event

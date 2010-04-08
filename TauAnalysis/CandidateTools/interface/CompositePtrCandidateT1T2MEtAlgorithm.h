@@ -7,6 +7,7 @@
 #include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/CollinearApproxCompatibility.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
@@ -14,9 +15,11 @@
 #include "DataFormats/Candidate/interface/Candidate.h" 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/METReco/interface/MET.h"
 
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
+#include "TauAnalysis/CandidateTools/interface/CollinearApproxFitter.h"
 #include "TauAnalysis/CandidateTools/interface/SVmassRecoFitter.h"
 
 #include "TMath.h"
@@ -29,6 +32,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 {
   typedef edm::Ptr<T1> T1Ptr;
   typedef edm::Ptr<T2> T2Ptr;
+  typedef edm::Ptr<reco::MET> MEtPtr;
 
  public:
 
@@ -36,19 +40,34 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   {
     recoMode_ = cfg.getParameter<std::string>("recoMode");
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
+    if ( cfg.exists("collinearApproxMassCompatibility") ) {
+      edm::ParameterSet cfgMassHypotheses = cfg.getParameter<edm::ParameterSet>("collinearApproxMassCompatibility");
+      typedef std::vector<std::string> vstring;
+      vstring massHypothesisNames = cfgMassHypotheses.getParameterNamesForType<edm::ParameterSet>();
+      for ( vstring::const_iterator massHypothesisName = massHypothesisNames.begin();
+	    massHypothesisName != massHypothesisNames.end(); ++massHypothesisName ) {
+	edm::ParameterSet cfgMassHypothesis = cfgMassHypotheses.getParameter<edm::ParameterSet>(*massHypothesisName);
+	CollinearApproxFitter* collinearApproxFitter = new CollinearApproxFitter(cfgMassHypothesis);
+	collinearApproxFitters_.insert(std::pair<std::string, CollinearApproxFitter*>(*massHypothesisName, collinearApproxFitter));
+      }
+    }
     scaleFuncImprovedCollinearApprox_ = cfg.getParameter<std::string>("scaleFuncImprovedCollinearApprox");
     /// compute the scale factor to weight the diTau mass
     /// computed in the improved collinear approximation;
     /// NO re-scaling of the p4 is made at this stage.
-    scaleFunc_ = new TF1("scaleFunc_",scaleFuncImprovedCollinearApprox_.c_str(),10,300);
+    scaleFunc_ = new TF1("scaleFunc_", scaleFuncImprovedCollinearApprox_.c_str(), 10, 300);
   }
   ~CompositePtrCandidateT1T2MEtAlgorithm() {
+    for ( std::map<std::string, CollinearApproxFitter*>::iterator it = collinearApproxFitters_.begin();
+	  it != collinearApproxFitters_.end(); ++it ) {
+      delete it->second;
+    }
     delete scaleFunc_;  
   }
 
   CompositePtrCandidateT1T2MEt<T1,T2> buildCompositePtrCandidate(const T1Ptr leg1, 
 								 const T2Ptr leg2, 
-								 const reco::CandidatePtr met,
+								 const MEtPtr met,
 								 const reco::GenParticleCollection* genParticles,
                                                                  const reco::Vertex* pv,
                                                                  const reco::BeamSpot* beamSpot,
@@ -76,6 +95,14 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compCollinearApprox(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
       // add a Improved collinear approximation
       compImprovedCollinearApprox(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
+
+      std::map<std::string, CollinearApproxCompatibility> collinearApproxCompatibilities;
+      for ( std::map<std::string, CollinearApproxFitter*>::iterator collinearApproxFitter = collinearApproxFitters_.begin();
+	    collinearApproxFitter != collinearApproxFitters_.end(); ++collinearApproxFitter ) {	
+	collinearApproxCompatibilities.insert(std::pair<std::string, CollinearApproxCompatibility>(
+	   collinearApproxFitter->first, collinearApproxFitter->second->fit(leg1->p4(), leg2->p4(), met)));
+      }
+      compositePtrCandidate.setCollinearApproxCompatibilities(collinearApproxCompatibilities);
 
       compositePtrCandidate.setP4CDFmethod(compP4CDFmethod(leg1->p4(), leg2->p4(), met->px(), met->py()));
       compositePtrCandidate.setMt12MET(compMt(leg1->p4(), leg2->p4(), met->px(), met->py()));    
@@ -174,18 +201,11 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 			   const reco::Candidate::LorentzVector& leg2,
 			   double metPx, double metPy)
   {
-    double x1_numerator = leg1.px()*leg2.py() - leg2.px()*leg1.py();
-    double x1_denominator = leg2.py()*(leg1.px() + metPx) - leg2.px()*(leg1.py() + metPy);
-    double x1 = ( x1_denominator != 0. ) ? x1_numerator/x1_denominator : -1.;
-    //std::cout << "x1 = " << x1 << std::endl;
-    bool isX1withinPhysRange = true;
-    double x1phys = getPhysX(x1, isX1withinPhysRange);
+    double x1, x2;
+    compX1X2byCollinearApprox(x1, x2, leg1.px(), leg1.py(), leg2.px(), leg2.py(), metPx, metPy);
 
-    double x2_numerator = x1_numerator;
-    double x2_denominator = leg1.px()*(leg2.py() + metPy) - leg1.py()*(leg2.px() + metPx);
-    double x2 = ( x2_denominator != 0. ) ? x2_numerator/x2_denominator : -1.;
-    //std::cout << "x2 = " << x2 << std::endl;
-    bool isX2withinPhysRange = true;
+    bool isX1withinPhysRange, isX2withinPhysRange;
+    double x1phys = getPhysX(x1, isX1withinPhysRange);
     double x2phys = getPhysX(x2, isX2withinPhysRange);
 
     if ( x1phys != 0. && x2phys != 0. ) {
@@ -199,19 +219,13 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   /// compute the diTau mass in improved collinear approximation;
   /// this new algorithm allows to recover events for which
   /// the collinear approximation fails
-
   void compImprovedCollinearApprox(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate,
 				   const reco::Candidate::LorentzVector& leg1,
 				   const reco::Candidate::LorentzVector& leg2,
 				   double metPx, double metPy)
     {
-      double x1_numerator = leg1.px()*leg2.py() - leg2.px()*leg1.py();
-      double x1_denominator = leg2.py()*(leg1.px() + metPx) - leg2.px()*(leg1.py() + metPy);
-      double x1 = ( x1_denominator != 0. ) ? x1_numerator/x1_denominator : -1.;
-      
-      double x2_numerator = x1_numerator;
-      double x2_denominator = leg1.px()*(leg2.py() + metPy) - leg1.py()*(leg2.px() + metPx);
-      double x2 = ( x2_denominator != 0. ) ? x2_numerator/x2_denominator : -1.;
+      double x1, x2;
+      compX1X2byCollinearApprox(x1, x2, leg1.px(), leg1.py(), leg2.px(), leg2.py(), metPx, metPy);
       
       /// define scalar products useful for later computations
       double sp1 = (leg1.px()*metPx + leg1.py()*metPy);
@@ -379,6 +393,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   std::string recoMode_;
   int verbosity_;
+  std::map<std::string, CollinearApproxFitter*> collinearApproxFitters_;
   std::string scaleFuncImprovedCollinearApprox_;
   TF1* scaleFunc_;
   svMassReco::SVmassRecoFitter<T1,T2> svMassRecoFitter_;

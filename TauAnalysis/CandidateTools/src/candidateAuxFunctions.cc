@@ -105,6 +105,19 @@ reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle* genLeg,
   return p4Invis;
 }
 
+void compX1X2byCollinearApprox(double& x1, double& x2, double pxLeg1, double pyLeg1, double pxLeg2, double pyLeg2, double pxMEt, double pyMEt)
+{
+  double x1_numerator = pxLeg1*pyLeg2 - pxLeg2*pyLeg1;
+  double x1_denominator = pyLeg2*(pxLeg1 + pxMEt) - pxLeg2*(pyLeg1 + pyMEt);
+  x1 = ( x1_denominator != 0. ) ? x1_numerator/x1_denominator : -1.;
+  //std::cout << "x1 = " << x1 << std::endl;
+  
+  double x2_numerator = x1_numerator;
+  double x2_denominator = pxLeg1*(pyLeg2 + pyMEt) - pyLeg1*(pxLeg2 + pxMEt);
+  x2 = ( x2_denominator != 0. ) ? x2_numerator/x2_denominator : -1.;
+  //std::cout << "x2 = " << x2 << std::endl;
+}
+
 double getPhysX(double x, bool& isWithinPhysRange)
 {
   double physX = x;
