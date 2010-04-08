@@ -61,8 +61,9 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
   if ( genParticleSrc_.label() == "" ) {
-    edm::LogWarning("MuonHistManager") << " Configuration parameter 'genParticleSource' not specified" 
-				       << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+    edm::LogWarning("MuonHistManager") 
+      << " Configuration parameter 'genParticleSource' not specified" 
+      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
   }
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
