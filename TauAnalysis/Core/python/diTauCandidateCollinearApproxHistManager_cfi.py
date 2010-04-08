@@ -47,6 +47,11 @@ diTauCandidateCollinearApproxHistManager = cms.PSet(
     genMEtSource = cms.InputTag('genMetTrue'),
     recoJetSource = cms.InputTag('iterativeCone5PFJets'),
 
+    collinearApproxMassCompatibilities = cms.vstring(
+        "mZ",
+        "mAH120"
+    ),
+
     dqmDirectory_store = cms.string('DiTauCandidateCollinearApproxQuantities'),
 
     #requireGenMatch = cms.bool(True),
