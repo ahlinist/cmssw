@@ -18,6 +18,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 #--------------------------------------------------------------------------------
 
 selectedLayer1ElectronsTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
+selectedLayer1ElectronsLooseId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
 selectedLayer1ElectronsAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
 selectedLayer1ElectronsEta21.cut = cms.string('abs(eta) < 2.1')
 selectedLayer1ElectronsPt15.cut = cms.string('pt > 15.')
@@ -65,31 +66,64 @@ patElectronSelConfiguratorLooseIsolation = objSelConfigurator(
 
 selectLayer1ElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.configure(pyNameSpace = locals())
 
-selectedLayer1ElectronsForElecTauConversionVeto.cotThetaCut = cms.double(0.045)
+#
+# select electrons for Z->electron + tau-jet analysis
+#
+
+selectedLayer1ElectronsForElecTauTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
+selectedLayer1ElectronsForElecTauLooseId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.4 & eSuperClusterOverP > 0.8) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.6 & eSuperClusterOverP > 0.8)')
+selectedLayer1ElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
+selectedLayer1ElectronsForElecTauEta21.cut = cms.string('abs(eta) < 2.1')
+selectedLayer1ElectronsForElecTauPt15.cut = cms.string('pt > 15.')
+selectedLayer1ElectronsForElecTauTrkIso.cut = cms.string('userIsolation("pat::TrackIso") < 1.')
+selectedLayer1ElectronsForElecTauEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & userIsolation("pat::EcalIso") < 2.5) | (abs(superCluster.eta) > 1.479 & userIsolation("pat::EcalIso") < 3.5)')
+selectedLayer1ElectronsForElecTauTrk.cut = cms.string('gsfTrack.isNonnull')
+selectedLayer1ElectronsForElecTauTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
+selectedLayer1ElectronsForElecTauTrkIP.IpMax = cms.double(0.05)
+selectedLayer1ElectronsForElecTauConversionVeto.cotThetaCut = cms.double(0.05)
 selectedLayer1ElectronsForElecTauConversionVeto.docaElecTrack = cms.double(0)
 selectedLayer1ElectronsForElecTauConversionVeto.dRElecTrack = cms.double(0.1)
 selectedLayer1ElectronsForElecTauConversionVeto.doPixCut = cms.bool(True)
 selectedLayer1ElectronsForElecTauConversionVeto.nTrkMax = cms.double(1)
+selectedLayer1ElectronsForElecTauConversionVeto.useConversionColl = cms.bool(True)
 
 patElectronSelConfiguratorForElecTau = objSelConfigurator(
-    [ selectedLayer1ElectronsForElecTauConversionVeto ],
-    src = "selectedLayer1ElectronsTrkIPcumulative",
+    [ selectedLayer1ElectronsForElecTauLooseId,
+      selectedLayer1ElectronsForElecTauAntiCrackCut,
+      selectedLayer1ElectronsForElecTauEta21,
+      selectedLayer1ElectronsForElecTauPt15,
+      selectedLayer1ElectronsForElecTauTrkIso,
+      selectedLayer1ElectronsForElecTauEcalIso,
+      selectedLayer1ElectronsForElecTauTrk,
+      selectedLayer1ElectronsForElecTauTrkIP,
+	  selectedLayer1ElectronsForElecTauConversionVeto ],
+    src = "cleanLayer1Electrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
 selectLayer1ElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(pyNameSpace = locals())
 
-selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecTauConversionVeto)
-
 patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
-    [ selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation ],
-    src = "selectedLayer1ElectronsTrkIPlooseIsolationCumulative",
+    [ selectedLayer1ElectronsForElecTauLooseId,
+      selectedLayer1ElectronsForElecTauAntiCrackCut,
+      selectedLayer1ElectronsForElecTauEta21,
+      selectedLayer1ElectronsForElecTauPt15,
+      selectedLayer1ElectronsForElecTauTrkIsoLooseIsolation,
+      selectedLayer1ElectronsForElecTauEcalIsoLooseIsolation,
+      selectedLayer1ElectronsForElecTauTrkLooseIsolation,
+      selectedLayer1ElectronsForElecTauTrkIPlooseIsolation,
+	  selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation ],
+    src = "cleanLayer1Electrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
 selectLayer1ElectronsForElecTauLooseIsolation = patElectronSelConfiguratorForElecTauLooseIsolation.configure(pyNameSpace = locals())
+
+#
+# select electrons for Z->electron + muon analysis
+#
 
 selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVeto.dRmin = cms.double(0.3)
 selectedLayer1ElectronsForElecMuTightId.cut = cms.string('electronID("eidRobustTight") > 0')
