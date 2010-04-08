@@ -14,6 +14,12 @@ selectedLayer1ElectronsTightId = cms.EDFilter("PATElectronSelector",
     filter = cms.bool(False)
 )
 
+# require electron candidate to pass the eidRobustLoose electron id. criteria
+selectedLayer1ElectronsLooseId = cms.EDFilter("PATElectronSelector",
+    cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.4 & eSuperClusterOverP > 0.8) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.6 & eSuperClusterOverP > 0.8)'),
+    filter = cms.bool(False)
+)
+
 # require electron candidate to not be within eta-crack
 # between Barrel and Encap ECAL calorimeter
 selectedLayer1ElectronsAntiCrackCut = cms.EDFilter("PATElectronSelector",
