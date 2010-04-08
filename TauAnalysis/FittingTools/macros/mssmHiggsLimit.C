@@ -1,3 +1,24 @@
+/** \macro mssmHiggsLimit
+ *
+ * Compute upper limits on:
+ *  o number of H/A --> tau+ tau- events
+ *  o A/H production cross-section times branching ration for A/H --> tau+ tau-
+ *  o tan(beta)
+ * in MSSM Higgs A/H --> tau+ tau- analysis.
+ * 
+ * NOTE: execute macro with
+ *        root
+ *        .x mssmHiggsLimit.C++
+ *       (requires ROOT version 5.26 or greater)     
+ *
+ * \authors Christian Veelken
+ *
+ * \version $Revision: 1.2 $
+ *
+ * $Id: mssmHiggsLimit.C,v 1.2 2009/10/25 12:38:15 veelken Exp $
+ *
+ */
+
 #include "RooStats/HybridCalculator.h"
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HybridPlot.h"
@@ -104,8 +125,7 @@ double compNumEvents_profileLikelihoodUpperLimit(RooDataHist* data, RooAddPdf* p
 
   RooStats::LikelihoodInterval* numEvents_AH120interval = significanceCalculator->GetInterval();
   double numEvents_AH120_upperLimit = numEvents_AH120interval->UpperLimit(*norm_AH120);
-  std::cout << "numEvents_AH120_upperLimit (profile-likelihood) = " << numEvents_AH120_upperLimit << std::endl;
-
+ 
   TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
   canvas->SetFillColor(10);
   canvas->SetLogy();
@@ -164,7 +184,7 @@ double compNumEvents_hybridUpperLimit(RooDataHist* data, RooAddPdf* pdf_BSM, Roo
  
   RooStats::HypoTestInverterResult* numEvents_AH120interval = limitCalculator->GetInterval();
   double numEvents_AH120_upperLimit = numEvents_AH120interval->UpperLimit();
-  std::cout << "numEvents_AH120_upperLimit (hybrid) = " << numEvents_AH120_upperLimit << std::endl;
+  //double numEvents_AH120_upperLimit = numEvents_AH120interval->LowerLimit();
  
   canvas->Clear();
 
@@ -193,7 +213,7 @@ void mssmHiggsLimit()
 //--- define observable used as fit variable
 //
 //    NOTE: when using the invariant mass of muon plus tau-jet reconstructed by collinear approximation,
-//          need to set eff_time_acc120 to 1.8% 
+//          need to set eff_time_acc120 to 1.0% 
 //          (mass reconstruction via collinear approximation yields "valid"/"physical" solution 
 //           for 55% of A/H --> tau+ tau- events passing all selection criteria 
 //           of final A/H --> tau+ tau- analysis only)
@@ -316,7 +336,7 @@ void mssmHiggsLimit()
 //--- compute upper limit on number of A/H --> tau+ tau- events
 //    based on distribution of fit variable observed in (pseudo)data sample 
   double numEvents_AH120_upperLimit = compNumEvents_profileLikelihoodUpperLimit(data, pdf_BSM, pdf_SM, norm_AH120);
-  //compNumEvents_hybridUpperLimit(data, pdf_BSM, pdf_SM, norm_AH120);
+  //double numEvents_AH120_upperLimit = compNumEvents_hybridUpperLimit(data, pdf_BSM, pdf_SM, norm_AH120);
   std::cout << "numEvents_AH120_upperLimit = " << numEvents_AH120_upperLimit << std::endl;
 
 //--- compute upper limit on A/H production cross-section 
