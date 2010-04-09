@@ -449,12 +449,19 @@ cat > ${plots_dir}/expert.html <<EOF
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMEStoET_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMEStoET_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EETIMEStoET_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EETIMEStoET_${run_num}.png"> </A>
 
-<h4><A name="TTreeExpertTech">Expert Technical Plots, with Amplitdue and Time Error</h4>
+<h4><A name="TTreeExpertTech">Expert Technical Plots, with Amplitude and Time Error and shape</h4>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBEvtTIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBEvtTIMEStoAMP_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EEEvtTIMEStoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EEEvtTIMEStoAMP_${run_num}.png"> </A>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMESErrtoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EBTIMESErrtoAMP_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EETIMESErrtoAMP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_EETIMESErrtoAMP_${run_num}.png"> </A>
+
+<br>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_E1OverE9VsEBTime_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_E1OverE9VsEBTime_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_KSwissCrossVsEBTime_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_KSwissCrossVsEBTime_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_SuperDiscrimVsEBTime_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/${analy_type}Analysis/Beam10/${run_num}/${analy_type}Analysis_SuperDiscrimVsEBTime_${run_num}.png"> </A>
 
 <h4><A name="TTreeTrigs">Triggers to Event Timing </h4>
 
