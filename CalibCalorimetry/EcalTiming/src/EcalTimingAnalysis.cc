@@ -104,7 +104,7 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    minxtals_           = iConfig.getUntrackedParameter<int>("MinEBXtals",-1); 
    mintime_           = iConfig.getUntrackedParameter<double>("MinTime",3.0);
    maxtime_           = iConfig.getUntrackedParameter<double>("MaxTime",9.0);     
-   gtRecordCollectionTag_ = iConfig.getParameter<std::string>("GTRecordCollection") ;
+   gtRecordCollectionTag_ = iConfig.getUntrackedParameter<std::string>("GTRecordCollection","NO") ;
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
    if (fromfile_) fromfilename_ = iConfig.getUntrackedParameter<std::string>("FromFileName","EMPTYFILE.root");
@@ -695,15 +695,17 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    TTreeMembers_.lumiSection_ = iEvent.luminosityBlock();
    TTreeMembers_.bx_ = iEvent.bunchCrossing();
    TTreeMembers_.orbit_ = iEvent.orbitNumber();
-
+   TTreeMembers_.numTriggers_ = 0 ;
+   TTreeMembers_.numTechTriggers_ = 0;
    //NOW I look into the trigger information
    //I (Jason) Decided ONLY to look at the L1 triggers that took part in the decision, not just the ACTIVE triggers
    // HOPEFULLY this wasn't a bad decision
+   if ( gtRecordCollectionTag_ != std::string("NO")) {   
    edm::Handle< L1GlobalTriggerReadoutRecord > gtRecord;
    iEvent.getByLabel( edm::InputTag(gtRecordCollectionTag_), gtRecord);
    DecisionWord dWord = gtRecord->decisionWord();   // this will get the decision word *before* masking disabled bits
    int iBit = -1;
-   TTreeMembers_.numTriggers_ = 0 ;
+   //TTreeMembers_.numTriggers_ = 0 ;
    for (std::vector<bool>::iterator itBit = dWord.begin(); itBit != dWord.end(); ++itBit) {        
      iBit++;
      if (*itBit) {
@@ -711,8 +713,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	TTreeMembers_.numTriggers_++ ;      
      }
    }
-    
-   TTreeMembers_.numTechTriggers_ = 0;
+ 
    TechnicalTriggerWord tw = gtRecord->technicalTriggerWord();
    if ( ! tw.empty() ) {
      // loop over dec. bit to get total rate (no overlap)
@@ -728,7 +729,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      }
    }
     
-
+   }
    //----------END LOOKING AT THE L1 Trigger information
    //std::cout << "Event Time " << eventtime << " High " <<timeStampHigh<< " low"<<timeStampLow <<" value " <<iEvent.time().value() << std::endl;
    // std::cout << " i0 " << std::endl; 
