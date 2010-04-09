@@ -10,10 +10,8 @@ July 2009
   <SpecParSection label="spec-pars2.xml">
 
     <SpecPar name="TrackerRecMaterialPixelBarrelLayer0" eval="true">
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer0/PixelBarrelLadderFull/PixelBarrelModuleBoxFull/PixelBarrelModuleFullPlus/PixelBarrelSensorFull/PixelBarrelActiveFull"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer0/PixelBarrelLadderFull/PixelBarrelModuleBoxFull/PixelBarrelModuleFullMinus/PixelBarrelSensorFull/PixelBarrelActiveFull"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer0/PixelBarrelLadderHalf/PixelBarrelModuleBoxHalf/PixelBarrelModuleHalfPlus/PixelBarrelSensorHalf/PixelBarrelActiveHalf"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer0/PixelBarrelLadderHalf/PixelBarrelModuleBoxHalf/PixelBarrelModuleHalfMinus/PixelBarrelSensorHalf/PixelBarrelActiveHalf"/>
+      <PartSelector path="//PixelBarrel/PixelBarrelLayer0/PixelBarrelLadderFull0/pixbarladderfull0:PixelBarrelModuleBoxFull/pixbarladderfull0:PixelBarrelModuleFullPlus/pixbarladderfull0:PixelBarrelSensorFull/PixelBarrelActiveFull0"/>
+      <PartSelector path="//PixelBarrel/PixelBarrelLayer0/PixelBarrelLadderFull0/pixbarladderfull0:PixelBarrelModuleBoxFull/pixbarladderfull0:PixelBarrelModuleFullMinus/pixbarladderfull0:PixelBarrelSensorFull/PixelBarrelActiveFull0"/>
       <Parameter name="TrackerRadLength" value="0.0112"/> <!-- 0.0250998-->
       <Parameter name="TrackerXi" value="2.367e-05"/> <!-- 5.30482e-05 -->
 <!--      <Parameter name="TrackerRadLength" value="0.0257"/>
@@ -21,10 +19,8 @@ July 2009
     </SpecPar>
 
     <SpecPar name="TrackerRecMaterialPixelBarrelLayer1" eval="true">
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer1/PixelBarrelLadderFull/PixelBarrelModuleBoxFull/PixelBarrelModuleFullPlus/PixelBarrelSensorFull/PixelBarrelActiveFull"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer1/PixelBarrelLadderFull/PixelBarrelModuleBoxFull/PixelBarrelModuleFullMinus/PixelBarrelSensorFull/PixelBarrelActiveFull"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer1/PixelBarrelLadderHalf/PixelBarrelModuleBoxHalf/PixelBarrelModuleHalfPlus/PixelBarrelSensorHalf/PixelBarrelActiveHalf"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer1/PixelBarrelLadderHalf/PixelBarrelModuleBoxHalf/PixelBarrelModuleHalfMinus/PixelBarrelSensorHalf/PixelBarrelActiveHalf"/>
+      <PartSelector path="//PixelBarrel/PixelBarrelLayer1/PixelBarrelLadderFull1/pixbarladderfull1:PixelBarrelModuleBoxFull/pixbarladderfull1:PixelBarrelModuleFullPlus/pixbarladderfull1:PixelBarrelSensorFull/PixelBarrelActiveFull1"/>
+      <PartSelector path="//PixelBarrel/PixelBarrelLayer1/PixelBarrelLadderFull1/pixbarladderfull1:PixelBarrelModuleBoxFull/pixbarladderfull1:PixelBarrelModuleFullMinus/pixbarladderfull1:PixelBarrelSensorFull/PixelBarrelActiveFull1"/>
       <Parameter name="TrackerRadLength" value="0.0112"/> 
       <Parameter name="TrackerXi" value="2.13e-05"/> 
 <!--      <Parameter name="TrackerRadLength" value="0.0233"/>
@@ -32,10 +28,8 @@ July 2009
     </SpecPar>
 
     <SpecPar name="TrackerRecMaterialPixelBarrelLayer2" eval="true">
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer2/PixelBarrelLadderFull/PixelBarrelModuleBoxFull/PixelBarrelModuleFullPlus/PixelBarrelSensorFull/PixelBarrelActiveFull"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer2/PixelBarrelLadderFull/PixelBarrelModuleBoxFull/PixelBarrelModuleFullMinus/PixelBarrelSensorFull/PixelBarrelActiveFull"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer2/PixelBarrelLadderHalf/PixelBarrelModuleBoxHalf/PixelBarrelModuleHalfPlus/PixelBarrelSensorHalf/PixelBarrelActiveHalf"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer2/PixelBarrelLadderHalf/PixelBarrelModuleBoxHalf/PixelBarrelModuleHalfMinus/PixelBarrelSensorHalf/PixelBarrelActiveHalf"/>
+      <PartSelector path="//PixelBarrel/PixelBarrelLayer2/PixelBarrelLadderFull2/pixbarladderfull2:PixelBarrelModuleBoxFull/pixbarladderfull2:PixelBarrelModuleFullPlus/pixbarladderfull2:PixelBarrelSensorFull/PixelBarrelActiveFull2"/>
+      <PartSelector path="//PixelBarrel/PixelBarrelLayer2/PixelBarrelLadderFull2/pixbarladderfull2:PixelBarrelModuleBoxFull/pixbarladderfull2:PixelBarrelModuleFullMinus/pixbarladderfull2:PixelBarrelSensorFull/PixelBarrelActiveFull2"/>
       <Parameter name="TrackerRadLength" value="0.0112"/> 
       <Parameter name="TrackerXi" value="2.13e-05"/> 
 <!--      <Parameter name="TrackerRadLength" value="0.0302"/>
@@ -43,10 +37,8 @@ July 2009
     </SpecPar>
 
     <SpecPar name="TrackerRecMaterialPixelBarrelLayer3" eval="true">
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer3/PixelBarrelLadderFull/PixelBarrelModuleBoxFull/PixelBarrelModuleFullPlus/PixelBarrelSensorFull/PixelBarrelActiveFull"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer3/PixelBarrelLadderFull/PixelBarrelModuleBoxFull/PixelBarrelModuleFullMinus/PixelBarrelSensorFull/PixelBarrelActiveFull"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer3/PixelBarrelLadderHalf/PixelBarrelModuleBoxHalf/PixelBarrelModuleHalfPlus/PixelBarrelSensorHalf/PixelBarrelActiveHalf"/>
-      <PartSelector path="//PixelBarrel/PixelBarrelLayer3/PixelBarrelLadderHalf/PixelBarrelModuleBoxHalf/PixelBarrelModuleHalfMinus/PixelBarrelSensorHalf/PixelBarrelActiveHalf"/>
+      <PartSelector path="//PixelBarrel/PixelBarrelLayer3/PixelBarrelLadderFull3/pixbarladderfull3:PixelBarrelModuleBoxFull/pixbarladderfull3:PixelBarrelModuleFullPlus/pixbarladderfull3:PixelBarrelSensorFull/PixelBarrelActiveFull3"/>
+      <PartSelector path="//PixelBarrel/PixelBarrelLayer3/PixelBarrelLadderFull3/pixbarladderfull3:PixelBarrelModuleBoxFull/pixbarladderfull3:PixelBarrelModuleFullMinus/pixbarladderfull3:PixelBarrelSensorFull/PixelBarrelActiveFull3"/>
       <Parameter name="TrackerRadLength" value="0.0112" />
       <Parameter name="TrackerXi" value="2.13e-05" />
 <!--      <Parameter name="TrackerRadLength" value="0.0302"/>

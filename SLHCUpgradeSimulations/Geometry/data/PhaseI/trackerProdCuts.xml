@@ -75,8 +75,10 @@ July 2009
   </SpecPar>
 
   <SpecPar name="tracker-sens-pixel">
-    <PartSelector path="//PixelBarrelActiveFull" />
-    <PartSelector path="//PixelBarrelActiveHalf" />
+    <PartSelector path="//PixelBarrelActiveFull0" />
+    <PartSelector path="//PixelBarrelActiveFull1" />
+    <PartSelector path="//PixelBarrelActiveFull2" />
+    <PartSelector path="//PixelBarrelActiveFull3" />
     <PartSelector path="//PixelForwardSensor" />
     <Parameter name="CMSCutsRegion" value="TrackerPixelSensRegion" eval="false"/>
     <Parameter name="ProdCutsForElectrons" value="0.01*mm"/>
