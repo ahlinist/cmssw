@@ -218,6 +218,8 @@ private:
 
     if ((o.name.find("vertex zx") != std::string::npos) || (o.name.find("vertex zy") != std::string::npos) || (o.name.find("vertex xy") != std::string::npos))
       {
+	c->SetGrid();
+
 	TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
 	if (pal != 0)
 	  {
