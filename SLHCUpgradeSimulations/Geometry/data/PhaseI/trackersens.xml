@@ -12,8 +12,10 @@ July 2009
 
 <SpecParSection label="spec-pars.xml">
   <SpecPar name="ROUHitsTrackerPixelBarrel">
-    <PartSelector path="//PixelBarrelActiveFull" />
-    <PartSelector path="//PixelBarrelActiveHalf" />
+    <PartSelector path="//PixelBarrelActiveFull0" />
+    <PartSelector path="//PixelBarrelActiveFull1" />
+    <PartSelector path="//PixelBarrelActiveFull2" />
+    <PartSelector path="//PixelBarrelActiveFull3" />
     <Parameter name="SensitiveDetector" value="TkAccumulatingSensitiveDetector" />
     <Parameter name="ReadOutName" value="TrackerHitsPixelBarrel" />
   </SpecPar>

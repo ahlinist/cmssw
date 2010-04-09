@@ -21,9 +21,9 @@
   <Numeric name="CoolDist"         value="[pixbarlayer2:CoolDist]"/>
   <String name="CoolMaterial"      value="materials:CO2_Upgrade"/>
   <String name="CoolTubeMaterial"  value="materials:Steel_Upgrade"/>
-  <String name="LadderName"        value="pixbarladderfull:PixelBarrelLadderFull"/>
-  <Numeric name="LadderWidth"      value="[pixbarladderfull:LadderWidth]"/>
-  <Numeric name="LadderThick"      value="[pixbarladderfull:LadderThick]"/>
+  <String name="LadderName"        value="pixbarladderfull2:PixelBarrelLadderFull2"/>
+  <Numeric name="LadderWidth"      value="[pixbarladderfull2:LadderWidth]"/>
+  <Numeric name="LadderThick"      value="[pixbarladderfull2:LadderThick]"/>
   <Numeric name="OuterFirst"       value="[pixbarlayer2:OuterFirst]"/>
 
 </Algorithm>
