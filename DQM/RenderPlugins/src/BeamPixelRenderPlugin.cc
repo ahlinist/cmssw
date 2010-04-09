@@ -17,6 +17,7 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TPaveStats.h"
 #include <cassert>
 #include <math.h>
 
@@ -76,6 +77,13 @@ public:
     if (dynamic_cast<TH1F*>(o.object)) preDrawTH1F(c, o);
 
     if (dynamic_cast<TProfile*>(o.object)) preDrawTProfile(c, o);
+  }
+
+  virtual void postDraw(TCanvas* c, const VisDQMObject& o, const VisDQMImgInfo& , VisDQMRenderInfo& )
+  {
+    c->cd();
+
+    if (dynamic_cast<TH2F*>(o.object)) postDrawTH2F(c, o);
   }
 
 
@@ -203,6 +211,24 @@ private:
     c->SetGrid();
   }
 
+  void postDrawTH2F(TCanvas* c, const VisDQMObject& o)
+  {
+    TH2F* obj = dynamic_cast<TH2F*>(o.object);
+    assert(obj);
+
+    if ((o.name.find("vertex zx") != std::string::npos) || (o.name.find("vertex zy") != std::string::npos) || (o.name.find("vertex xy") != std::string::npos))
+      {
+	TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
+	if (pal != 0)
+	  {
+	    pal->SetX1NDC(0.70);
+	    pal->SetY1NDC(0.66);	    
+	    pal->SetX2NDC(0.90);
+	    pal->SetY2NDC(0.90);	    
+	  }
+      }
+  }
+  
 };
 
 
