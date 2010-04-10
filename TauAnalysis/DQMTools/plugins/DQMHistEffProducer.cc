@@ -92,13 +92,13 @@ DQMHistEffProducer::DQMHistEffProducer(const edm::ParameterSet& cfg)
 	std::string modEfficiency = replace_string(meName_efficiency, parKeyword, *parameter_i, 1, 1, errorFlag);
 
 	if ( !errorFlag ) {
-	  cfgEntryPlot_.push_back(cfgEntryPlot(modNumerator, modDenominator, modEfficiency));
+	  cfgEntryPlots_.push_back(cfgEntryPlot(modNumerator, modDenominator, modEfficiency));
 	} else {
 	  edm::LogError("DQMHistEffProducer") << " Failed to decode histogram names --> skipping !!";
 	}
       }
     } else {
-      cfgEntryPlot_.push_back(cfgEntryPlot(*cfgPlot));
+      cfgEntryPlots_.push_back(cfgEntryPlot(*cfgPlot));
     }
   }
 }
@@ -235,8 +235,8 @@ void DQMHistEffProducer::endJob()
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-  for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntryPlot_.begin(); 
-        plot != cfgEntryPlot_.end(); ++plot ) {
+  for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntryPlots_.begin(); 
+        plot != cfgEntryPlots_.end(); ++plot ) {
     bool dqmError = false;
 
     std::vector<TH1*> histogramsNumerator = getHistograms(dqmStore, plot->meNames_numerator_, dqmError);
