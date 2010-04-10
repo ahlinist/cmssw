@@ -259,8 +259,8 @@ void GenericAnalyzer::addFilter(const std::string& filterName, const vstring& sa
       = new analysisSequenceEntry_filter(filterName, filterTitle, cfgFilter, estimateSysUncertainties_, cfgError_);
     analysisSequence_.push_back(entry);
   } else {
-    edm::LogError("GenericAnalyzer::addFilter") << " Failed to access configuration parameter for filter = " << filterName
-						<< " --> skipping !!";
+    edm::LogError("GenericAnalyzer::addFilter") 
+      << " Failed to access configuration parameter for filter = " << filterName << " --> skipping !!";
     cfgError_ = 1;
   }
 }
@@ -306,8 +306,8 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
 	  size_t posAssignmentOperator = replaceCommand_noKeyword.find("=");
 	  if ( posAssignmentOperator == std::string::npos ||
 	       !(posAssignmentOperator >= 1 && posAssignmentOperator < (replaceCommand_noKeyword.length() - 1)) ) {
-	    edm::LogError("GenericAnalyzer::addAnalyzers") << " Failed to parse replaceCommand = " << (*replaceCommand)
-							   << " --> skipping !!";
+	    edm::LogError("GenericAnalyzer::addAnalyzers") 
+	      << " Failed to parse replaceCommand = " << (*replaceCommand) << " --> skipping !!";
 	    cfgError_ = 1;
 	    continue;
 	  }
@@ -332,18 +332,18 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
 	    } else if ( rightHandSide == "False" || rightHandSide == "false" ) {
 	      rightHandSide_bool = false;
 	    } else {
-	      edm::LogError("GenericAnalyzer::addAnalyzers") << " Invalid value = " << rightHandSide << " for replacing"
-							     << " Configuration parameter = " << leftHandSide << " of boolean type;"
-							     << " valid values for Replacement = { 'True', 'true', 'False', 'false' }"
-							     << " --> skipping !!";
+	      edm::LogError("GenericAnalyzer::addAnalyzers") 
+		<< " Invalid value = " << rightHandSide << " for replacing"
+		<< " Configuration parameter = " << leftHandSide << " of boolean type;"
+		<< " valid values for Replacement = { 'True', 'true', 'False', 'false' }" << " --> skipping !!";
 	      cfgError_ = 1;
 	      continue;
 	    }
 	    cfgAnalyzer.addParameter<bool>(leftHandSide, rightHandSide_bool);
 	  } else {
-	    edm::LogError("GenericAnalyzer::addAnalyzers") << " Configuration parameter to be replaced = " << leftHandSide 
-							   << " does either not exist or is not of a supported type"
-							   << " --> skipping !!";
+	    edm::LogError("GenericAnalyzer::addAnalyzers") 
+	      << " Configuration parameter to be replaced = " << leftHandSide 
+	      << " does either not exist or is not of a supported type" << " --> skipping !!";
 	    cfgError_ = 1;
 	    continue;
 	  }
@@ -367,8 +367,8 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
 
       cfgAnalyzers.push_back(cfgAnalyzer);
     } else {
-      edm::LogError("GenericAnalyzer::addAnalyzers") << " Failed to access configuration parameter for analyzer = " << (*analyzerName)
-						     << " --> skipping !!";
+      edm::LogError("GenericAnalyzer::addAnalyzers") 
+	<< " Failed to access configuration parameter for analyzer = " << (*analyzerName) << " --> skipping !!";
       cfgError_ = 1;
       return;
     }
