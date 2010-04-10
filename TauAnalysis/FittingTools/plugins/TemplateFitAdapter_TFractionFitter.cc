@@ -92,7 +92,7 @@ void TemplateFitAdapter_TFractionFitter::fitImp(int, int)
 // to distribution observed in (pseudo)data using TFractionFitter algorithm
 //-------------------------------------------------------------------------------
 
-//--- build single concatenated histogram of all distribution observed in (pseudo)data
+//--- build single concatenated histogram of all distributions observed in (pseudo)data
   std::vector<const TH1*> data1dHistograms;
   std::vector<double> dataNormCorrFactors;
   

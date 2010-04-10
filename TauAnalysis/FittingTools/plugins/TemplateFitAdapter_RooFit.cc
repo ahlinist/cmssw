@@ -88,7 +88,7 @@ TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::~model1dTypeRooFitSpecific
 
 void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
 {
-  std::cout << "<model1dTypeRooFitSpecific::buildPdf>:" << std::endl;
+  //std::cout << "<model1dTypeRooFitSpecific::buildPdf>:" << std::endl;
 
   if ( applySmoothing_ ) {
     bool isFirstFit = (!auxTF1Wrapper_);
@@ -114,8 +114,8 @@ void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
 	    excludedBinX != excludedBinsX.end(); ++excludedBinX ) {
 	int binIndex = histogram_cloned->FindBin(*excludedBinX);
 	if ( binIndex > 0 && binIndex <= numBins ) {
-	  std::cout << "--> excluding bin " << binIndex << ":" 
-		    << " xCenter = " << histogram_cloned->GetBinCenter(binIndex) << " from fit." << std::endl;
+	  //std::cout << "--> excluding bin " << binIndex << ":" 
+	  //	      << " xCenter = " << histogram_cloned->GetBinCenter(binIndex) << " from fit." << std::endl;
 	  histogram_cloned->SetBinContent(binIndex, 0.);
 	  histogram_cloned->SetBinError(binIndex, 1.e+6);
 	}
@@ -408,7 +408,7 @@ std::string getCategoryName_template(const std::string& processName, const std::
 
 void TemplateFitAdapter_RooFit::buildFitData()
 {
-  std::cout << "<TemplateFitAdapter_RooFit::buildFitData>:" << std::endl;
+  //std::cout << "<TemplateFitAdapter_RooFit::buildFitData>:" << std::endl;
 
   std::string fitDataName = "fitData";
 
@@ -439,13 +439,13 @@ void TemplateFitAdapter_RooFit::buildFitData()
       }
     }
 
-    std::cout << "num. variables = " << varCollection.GetEntries() << std::endl;
+    //std::cout << "num. variables = " << varCollection.GetEntries() << std::endl;
     
-    for ( std::map<std::string, TH1*>::const_iterator histMapEntry = histMap.begin();
-	  histMapEntry != histMap.end(); ++histMapEntry ) {
-      std::cout << "histMap[" << histMapEntry->first << "] = " << histMapEntry->second->GetName() << ":"
-		<< " dimension = " << histMapEntry->second->GetDimension() << std::endl;
-    }
+    //for ( std::map<std::string, TH1*>::const_iterator histMapEntry = histMap.begin();
+    //      histMapEntry != histMap.end(); ++histMapEntry ) {
+    //  std::cout << "histMap[" << histMapEntry->first << "] = " << histMapEntry->second->GetName() << ":"
+    //		  << " dimension = " << histMapEntry->second->GetDimension() << std::endl;
+    //}
 
     // CV: RooFit seems to produce error message
     //    "ERROR: dimension of input histogram must match number of continuous variables"
@@ -466,7 +466,7 @@ void TemplateFitAdapter_RooFit::buildFitData()
 
 void TemplateFitAdapter_RooFit::buildFitModel()
 {
-  std::cout << "<TemplateFitAdapter_RooFit::buildFitModel>:" << std::endl;
+  //std::cout << "<TemplateFitAdapter_RooFit::buildFitModel>:" << std::endl;
 
   for ( vstring::const_iterator varName = varNames_.begin();
 	varName != varNames_.end(); ++varName ) {
@@ -556,7 +556,7 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
     double axisMin = axis->GetXmin();
     double axisMax = axis->GetXmax();
     if ( printLevel > 0 ) {
-      std::cout << " variable = " << (*varName) << ": axisMin = " << axisMin << ", axisMax =" << axisMax << std::endl;
+      std::cout << " variable = " << (*varName) << ": axisMin = " << axisMin << ", axisMax = " << axisMax << std::endl;
     }
     
     if ( !(axisMin <= fitVariables_[*varName]->getMin() && axisMax >= fitVariables_[*varName]->getMax()) ) {
@@ -792,7 +792,7 @@ void TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific()
     
     for ( vstring::const_iterator varName = varNames_.begin();
 	  varName != varNames_.end(); ++varName ) {      
-      std::cout << " varName = " << (*varName) << std::endl;
+      std::cout << " processName = " << (*processName) << ": varName = " << (*varName) << std::endl;
 
       const model1dTypeRooFitSpecific* model1dEntryImpSpecific 
 	= getMapValue(modelNdEntryImpSpecific->model1dEntriesImpSpecific_, *varName);

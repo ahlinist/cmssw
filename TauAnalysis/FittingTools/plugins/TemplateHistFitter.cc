@@ -168,7 +168,7 @@ void TemplateHistFitter::estimateUncertainties(bool fluctStat, bool fluctSys, in
     std::cout << "<TemplateHistFitter::estimateUncertainties>: iRndFluct = " << iRndFluct << std::endl;
 
 //--- fluctuate distributions observed in (pseudo)data
-    fitAlgorithm_->dataNdEntry_->fluctuate(true, false);
+    fitAlgorithm_->dataNdEntry_->fluctuate(fluctStat, false);
 
 //--- fluctuate template histograms fitted to the (pseudo)data  
 //
