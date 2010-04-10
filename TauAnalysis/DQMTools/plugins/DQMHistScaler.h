@@ -9,8 +9,8 @@
  *         of muon isolation from other event selection criteria,
  *         in order to avoid problems with limited Monte Carlo statistics)
  *
- *  $Date: 2009/08/25 14:11:39 $
- *  $Revision: 1.4 $
+ *  $Date: 2010/03/01 15:49:21 $
+ *  $Revision: 1.5 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -29,6 +29,34 @@
 
 class DQMHistScaler : public edm::EDAnalyzer
 {
+  typedef std::vector<std::string> vstring;
+
+  struct cfgEntryScaleJob
+  {
+    explicit cfgEntryScaleJob(const edm::ParameterSet&);
+
+    std::string meName_input_;
+    std::string meName_output_;
+
+    std::string dqmDirectory_input_;
+    vstring dqmSubDirectories_input_;
+
+    double scaleFactor_;
+    
+    std::string meNameScaleFactor_;
+    std::string meTypeScaleFactor_;
+    
+    std::string dqmDirectory_factorizedLooseSel_;
+    std::string dqmDirectory_factorizedTightSel_;
+    std::string meNameNumerator_;
+    std::string meNameDenominator_;
+    std::string meType_;
+    
+    std::string dqmDirectory_output_;
+    
+    int cfgError_;
+  };
+
  public:
   explicit DQMHistScaler(const edm::ParameterSet&);
   virtual ~DQMHistScaler();
@@ -36,26 +64,9 @@ class DQMHistScaler : public edm::EDAnalyzer
   virtual void endJob();  
 
  private:
-  std::string dqmDirectory_input_;
-  typedef std::vector<std::string> vstring;
-  vstring dqmSubDirectories_input_;
-
-  double scaleFactor_;
-  
-  std::string meNameScaleFactor_;
-  std::string meTypeScaleFactor_;
-
-  std::string dqmDirectory_factorizedLooseSel_;
-  std::string dqmDirectory_factorizedTightSel_;
-  std::string meNameNumerator_;
-  std::string meNameDenominator_;
-  std::string meType_;
-
-  std::string dqmDirectory_output_;
+  std::vector<cfgEntryScaleJob> cfgEntryScaleJobs_;
 
   vstring dqmDirectories_drop_;
-
-  int cfgError_;
 };
 
 #endif

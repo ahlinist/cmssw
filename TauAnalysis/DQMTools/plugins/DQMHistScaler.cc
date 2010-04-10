@@ -18,26 +18,16 @@
 
 const int verbosity = 0;
 
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
-
-DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
+DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
   : scaleFactor_(-1),
     meNameScaleFactor_(""),
-    meTypeScaleFactor_("")
+    meTypeScaleFactor_(""),
+    cfgError_()
 {
-  //std::cout << "<DQMHistScaler::DQMHistScaler>:" << std::endl;
-
-  cfgError_ = 0;
-
-  dqmDirectory_input_ = cfg.getParameter<std::string>("dqmDirectory_input");
-  //std::cout << " dqmDirectory_input = " << dqmDirectory_input_ << std::endl;
-  if ( cfg.exists("dqmSubDirectories_input") ) dqmSubDirectories_input_ = cfg.getParameter<vstring>("dqmSubDirectories_input");
-  //std::cout << " dqmSubDirectories_input = " << format_vstring(dqmSubDirectories_input_) << std::endl;
-
+  //std::cout << "<cfgEntryScaleJob::cfgEntryScaleJob>:" << std::endl;
+  
   unsigned numScales = 0;
-
+  
   if ( cfg.exists("scaleFactor") ) {
     scaleFactor_ = cfg.getParameter<double>("scaleFactor");
     ++numScales;
@@ -54,36 +44,48 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
 
   //std::cout << " meNameScaleFactor = " << meNameScaleFactor_ << std::endl;
   //std::cout << " meTypeScaleFactor = " << meTypeScaleFactor_ << std::endl;
+  
+  if ( cfg.exists("meName_input") &&
+       cfg.exists("meName_output") ) {
+    meName_input_ = cfg.getParameter<std::string>("meName_input");
+    meName_output_ = cfg.getParameter<std::string>("meName_output");
 
-  if ( cfg.exists("dqmDirectory_factorizedLooseSel") &&
-       cfg.exists("dqmDirectory_factorizedTightSel") &&
-       cfg.exists("meNameNumerator") && 
-       cfg.exists("meNameDenominator") && 
-       cfg.exists("meType") ) {
-    dqmDirectory_factorizedLooseSel_ = cfg.getParameter<std::string>("dqmDirectory_factorizedLooseSel");
-    dqmDirectory_factorizedTightSel_ = cfg.getParameter<std::string>("dqmDirectory_factorizedTightSel");
-    meNameNumerator_ = cfg.getParameter<std::string>("meNameNumerator");
-    meNameDenominator_ = cfg.getParameter<std::string>("meNameDenominator");
-    meType_ = cfg.getParameter<std::string>("meType");
-    ++numScales;
+    //std::cout << " meName_input = " << meName_input_ << std::endl;
+    //std::cout << " meName_output = " << meName_output_ << std::endl;
   } else {
-    dqmDirectory_factorizedLooseSel_ = "";
-    dqmDirectory_factorizedTightSel_ = "";
-    meNameNumerator_ = "";
-    meNameDenominator_ = "";
-    meType_ =  "";
+    dqmDirectory_input_ = cfg.getParameter<std::string>("dqmDirectory_input");
+    //std::cout << " dqmDirectory_input = " << dqmDirectory_input_ << std::endl;
+    if ( cfg.exists("dqmSubDirectories_input") ) dqmSubDirectories_input_ = cfg.getParameter<vstring>("dqmSubDirectories_input");
+    //std::cout << " dqmSubDirectories_input = " << format_vstring(dqmSubDirectories_input_) << std::endl;
+    
+    if ( cfg.exists("dqmDirectory_factorizedLooseSel") &&
+	 cfg.exists("dqmDirectory_factorizedTightSel") &&
+	 cfg.exists("meNameNumerator") && 
+	 cfg.exists("meNameDenominator") && 
+	 cfg.exists("meType") ) {
+      dqmDirectory_factorizedLooseSel_ = cfg.getParameter<std::string>("dqmDirectory_factorizedLooseSel");
+      dqmDirectory_factorizedTightSel_ = cfg.getParameter<std::string>("dqmDirectory_factorizedTightSel");
+      meNameNumerator_ = cfg.getParameter<std::string>("meNameNumerator");
+      meNameDenominator_ = cfg.getParameter<std::string>("meNameDenominator");
+      meType_ = cfg.getParameter<std::string>("meType");
+      ++numScales;
+    } else {
+      dqmDirectory_factorizedLooseSel_ = "";
+      dqmDirectory_factorizedTightSel_ = "";
+      meNameNumerator_ = "";
+      meNameDenominator_ = "";
+      meType_ =  "";
+    }
+    
+    //std::cout << " dqmDirectory_factorizedLooseSel = " << dqmDirectory_factorizedLooseSel_ << std::endl;
+    //std::cout << " dqmDirectory_factorizedTightSel = " << dqmDirectory_factorizedTightSel_ << std::endl;
+    //std::cout << " meNameNumerator = " << meNameNumerator_ << std::endl;
+    //std::cout << " meNameDenominator = " << meNameDenominator_ << std::endl;
+    //std::cout << " meType = " << meType_ << std::endl;
+    
+    dqmDirectory_output_ = cfg.getParameter<std::string>("dqmDirectory_output");
+    //std::cout << " dqmDirectory_output = " << dqmDirectory_output_ << std::endl;
   }
-
-  //std::cout << " dqmDirectory_factorizedLooseSel = " << dqmDirectory_factorizedLooseSel_ << std::endl;
-  //std::cout << " dqmDirectory_factorizedTightSel = " << dqmDirectory_factorizedTightSel_ << std::endl;
-  //std::cout << " meNameNumerator = " << meNameNumerator_ << std::endl;
-  //std::cout << " meNameDenominator = " << meNameDenominator_ << std::endl;
-  //std::cout << " meType = " << meType_ << std::endl;
- 
-  dqmDirectory_output_ = cfg.getParameter<std::string>("dqmDirectory_output");
-  //std::cout << " dqmDirectory_output = " << dqmDirectory_output_ << std::endl;
-
-  dqmDirectories_drop_ = cfg.exists("drop") ? cfg.getParameter<vstring>("drop") : vstring();
 
 //--- check that either:
 //     o scaleFactor
@@ -97,7 +99,29 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
       << " 'meNameNumerator', 'meNameDenominator' and 'meType' !!";
     cfgError_ = 1;
   } 
+}
 
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
+{
+  //std::cout << "<DQMHistScaler::DQMHistScaler>:" << std::endl;
+
+  if ( cfg.exists("config") ) {
+    typedef std::vector<edm::ParameterSet> vParameterSet;
+    vParameterSet cfgScaleJobs = cfg.getParameter<vParameterSet>("config");
+    for ( vParameterSet::const_iterator cfgScaleJob = cfgScaleJobs.begin();
+	  cfgScaleJob != cfgScaleJobs.end(); ++cfgScaleJob ) {
+      cfgEntryScaleJobs_.push_back(cfgEntryScaleJob(*cfgScaleJob));
+    }
+  } else {
+    cfgEntryScaleJobs_.push_back(cfgEntryScaleJob(cfg));
+  }
+  
+  dqmDirectories_drop_ = cfg.exists("drop") ? cfg.getParameter<vstring>("drop") : vstring();
+  
   //std::cout << "done." << std::endl;
 }
 
@@ -117,7 +141,6 @@ std::string dqmDirectoryName_full(const std::string& dqmDirectory, const std::st
   dqmDirectoryName_full = dqmDirectoryName(dqmDirectoryName_full).append(dqmSubDirectory);
   return dqmDirectoryName_full;
 }
-
 
 double getMonitorElementNorm(DQMStore& dqmStore, const std::string& dqmDirectory, 
 			     const std::string& meName, const std::string& meType, int& errorFlag)
@@ -166,12 +189,6 @@ void DQMHistScaler::endJob()
 {
   std::cout << "<DQMHistScaler::endJob>:" << std::endl;
 
-//--- check that configuration parameters contain no errors
-  if ( cfgError_ ) {
-    edm::LogError ("endJob") << " Error in Configuration ParameterSet --> histograms will NOT be scaled !!";
-    return;
-  }
-
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
     edm::LogError ("endJob") << " Failed to access dqmStore --> histograms will NOT be scaled !!";
@@ -181,79 +198,101 @@ void DQMHistScaler::endJob()
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
   
 //--- compute scale factor
-  double scaleFactor = 0.;
-  if ( scaleFactor_ != -1. ) {
-    scaleFactor = scaleFactor_;
-  } else if ( meNameScaleFactor_ != "" ) { 
-    int errorFlag = 0;
+  for ( std::vector<cfgEntryScaleJob>::const_iterator cfgScaleJob = cfgEntryScaleJobs_.begin();
+	cfgScaleJob != cfgEntryScaleJobs_.end(); ++cfgScaleJob ) {
 
-    std::string dqmDirectoryScaleFactor, meNameScaleFactor;
-    separateMonitorElementFromDirectoryName(meNameScaleFactor_, meNameScaleFactor, dqmDirectoryScaleFactor);
-    scaleFactor = getMonitorElementNorm(dqmStore, dqmDirectoryScaleFactor, meNameScaleFactor, meTypeScaleFactor_, errorFlag);
-
-    if ( errorFlag ) {
-      edm::LogError ("endJob") 
-	<< " Failed to access scale factor Monitor Element --> histograms will NOT be scaled !!";
-      return;
-    }
-  } else {
-    int errorFlag = 0;
-
-    double numeratorLooseSel = 
-      getMonitorElementNorm(dqmStore, dqmDirectory_factorizedLooseSel_, meNameNumerator_, meType_, errorFlag);
-    //std::cout << " numeratorLooseSel = " << numeratorLooseSel << std::endl;
-    double denominatorLooseSel = 
-      getMonitorElementNorm(dqmStore, dqmDirectory_factorizedLooseSel_, meNameDenominator_, meType_, errorFlag);
-    //std::cout << " denominatorLooseSel = " << denominatorLooseSel << std::endl;
-    double efficiencyLooseSel = ( denominatorLooseSel > 0. ) ? numeratorLooseSel/denominatorLooseSel : 0.;
-    //std::cout << " efficiencyLooseSel = " << efficiencyLooseSel << std::endl;
-
-    double numeratorTightSel = 
-      getMonitorElementNorm(dqmStore, dqmDirectory_factorizedTightSel_, meNameNumerator_, meType_, errorFlag);
-    //std::cout << " numeratorTightSel = " << numeratorTightSel << std::endl;
-    double denominatorTightSel = 
-      getMonitorElementNorm(dqmStore, dqmDirectory_factorizedTightSel_, meNameDenominator_, meType_, errorFlag);
-    //std::cout << " denominatorTightSel = " << denominatorTightSel << std::endl;
-    double efficiencyTightSel = ( denominatorTightSel > 0. ) ? numeratorTightSel/denominatorTightSel : 0.;
-    //std::cout << " efficiencyTightSel = " << efficiencyTightSel << std::endl;
-
-    if ( errorFlag ) {
-      edm::LogError ("endJob") 
-	<< " Failed to access numerator and denominator Monitor Elements --> histograms will NOT be scaled !!";
-      return;
+//--- check that configuration parameters contain no errors
+    if ( cfgScaleJob->cfgError_ ) {
+      edm::LogError ("endJob") << " Error in Configuration ParameterSet --> histograms will NOT be scaled !!";
+      continue;
     }
 
-    scaleFactor = ( efficiencyLooseSel > 0. ) ? efficiencyTightSel/efficiencyLooseSel : 0.;
-    //std::cout << " scaleFactor = " << scaleFactor << std::endl;
-  }
+//--- compute scale factor
+    double scaleFactor = 0.;
+    if ( cfgScaleJob->scaleFactor_ != -1. ) {
+      scaleFactor = cfgScaleJob->scaleFactor_;
+    } else if ( cfgScaleJob->meNameScaleFactor_ != "" ) { 
+      int errorFlag = 0;
+      
+      std::string dqmDirectoryScaleFactor, meNameScaleFactor;
+      separateMonitorElementFromDirectoryName(cfgScaleJob->meNameScaleFactor_, meNameScaleFactor, dqmDirectoryScaleFactor);
+      const std::string& meTypeScaleFactor = cfgScaleJob->meTypeScaleFactor_;
+      scaleFactor = getMonitorElementNorm(dqmStore, dqmDirectoryScaleFactor, meNameScaleFactor, meTypeScaleFactor, errorFlag);
+
+      if ( errorFlag ) {
+	edm::LogError ("endJob") 
+	  << " Failed to access scale factor Monitor Element --> histograms will NOT be scaled !!";
+	return;
+      }
+    } else {
+      int errorFlag = 0;
+      
+      const std::string& dqmDirectory_looseSel = cfgScaleJob->dqmDirectory_factorizedLooseSel_;
+      const std::string& dqmDirectory_tightSel = cfgScaleJob->dqmDirectory_factorizedTightSel_;
+      const std::string& meNameNumerator = cfgScaleJob->meNameNumerator_;
+      const std::string& meNameDenominator = cfgScaleJob->meNameDenominator_;
+      const std::string& meType = cfgScaleJob->meType_;
+
+      double numeratorLooseSel = getMonitorElementNorm(dqmStore, dqmDirectory_looseSel, meNameNumerator, meType, errorFlag);
+      //std::cout << " numeratorLooseSel = " << numeratorLooseSel << std::endl;
+      double denominatorLooseSel = getMonitorElementNorm(dqmStore, dqmDirectory_looseSel, meNameDenominator, meType, errorFlag);
+      //std::cout << " denominatorLooseSel = " << denominatorLooseSel << std::endl;
+      double efficiencyLooseSel = ( denominatorLooseSel > 0. ) ? numeratorLooseSel/denominatorLooseSel : 0.;
+      //std::cout << " efficiencyLooseSel = " << efficiencyLooseSel << std::endl;
+
+      double numeratorTightSel = getMonitorElementNorm(dqmStore, dqmDirectory_tightSel, meNameNumerator, meType, errorFlag);
+      //std::cout << " numeratorTightSel = " << numeratorTightSel << std::endl;
+      double denominatorTightSel = getMonitorElementNorm(dqmStore, dqmDirectory_tightSel, meNameDenominator, meType, errorFlag);
+      //std::cout << " denominatorTightSel = " << denominatorTightSel << std::endl;
+      double efficiencyTightSel = ( denominatorTightSel > 0. ) ? numeratorTightSel/denominatorTightSel : 0.;
+      //std::cout << " efficiencyTightSel = " << efficiencyTightSel << std::endl;
+
+      if ( errorFlag ) {
+	edm::LogError ("endJob") 
+	  << " Failed to access numerator and denominator Monitor Elements --> histograms will NOT be scaled !!";
+	return;
+      }
+
+      scaleFactor = ( efficiencyLooseSel > 0. ) ? efficiencyTightSel/efficiencyLooseSel : 0.;
+      //std::cout << " scaleFactor = " << scaleFactor << std::endl;
+    }
 
 //--- scale histograms;
 //    in case specific subdirectories have been specified in configuration parameters, 
 //    copy the specified subdirectories only, else copy all subdirectories 
 //    from dqmDirectory_input to dqmDirectory_output
-  //std::cout << "--> scaling histograms..." << std::endl;
-  if ( dqmSubDirectories_input_.size() > 0 ) {
-    for ( vstring::const_iterator dqmSubDirectory = dqmSubDirectories_input_.begin();
-	  dqmSubDirectory != dqmSubDirectories_input_.end(); ++dqmSubDirectory ) {
-
-      std::string inputDirectory = dqmDirectoryName_full(dqmDirectory_input_, *dqmSubDirectory);
-      std::string outputDirectory = dqmDirectoryName_full(dqmDirectory_output_, *dqmSubDirectory);
-
+    //std::cout << "--> scaling histograms..." << std::endl;
+    if ( cfgScaleJob->meName_input_ != "" && cfgScaleJob->meName_output_ != "" ) {
+      std::string meName_input, dqmDirectory_input;
+      separateMonitorElementFromDirectoryName(cfgScaleJob->meName_input_, meName_input, dqmDirectory_input);
+      
+      std::string meName_output, dqmDirectory_output;
+      separateMonitorElementFromDirectoryName(cfgScaleJob->meName_output_, meName_output, dqmDirectory_output);
+      
+      dqmCopyMonitorElement(dqmStore, dqmDirectory_input, meName_input, dqmDirectory_output, meName_output, scaleFactor);
+    } else if ( cfgScaleJob->dqmSubDirectories_input_.size() > 0 ) {
+      for ( vstring::const_iterator dqmSubDirectory = cfgScaleJob->dqmSubDirectories_input_.begin();
+	    dqmSubDirectory != cfgScaleJob->dqmSubDirectories_input_.end(); ++dqmSubDirectory ) {
+	
+	std::string inputDirectory = dqmDirectoryName_full(cfgScaleJob->dqmDirectory_input_, *dqmSubDirectory);
+	std::string outputDirectory = dqmDirectoryName_full(cfgScaleJob->dqmDirectory_output_, *dqmSubDirectory);
+	
+	std::cout << " scaling MonitorElements in input Directory = " << inputDirectory << ","
+		  << " copying scaled MonitorElements to output Directory = " << outputDirectory << std::endl;
+	
+	dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
+      }
+    } else {
+      //std::string inputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
+      std::string inputDirectory = dqmDirectoryName(cfgScaleJob->dqmDirectory_input_);
+      //std::string outputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
+      std::string outputDirectory = dqmDirectoryName(cfgScaleJob->dqmDirectory_output_);
+      
       std::cout << " scaling MonitorElements in input Directory = " << inputDirectory << ","
 		<< " copying scaled MonitorElements to output Directory = " << outputDirectory << std::endl;
       
       dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
     }
-  } else {
-    //std::string inputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
-    std::string inputDirectory = dqmDirectoryName(dqmDirectory_input_);
-    //std::string outputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
-    std::string outputDirectory = dqmDirectoryName(dqmDirectory_output_);
-
-    std::cout << " scaling MonitorElements in input Directory = " << inputDirectory << ","
-	      << " copying scaled MonitorElements to output Directory = " << outputDirectory << std::endl;
-      
-    dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
   }
 
 //--- delete all MonitorElements in input directories
