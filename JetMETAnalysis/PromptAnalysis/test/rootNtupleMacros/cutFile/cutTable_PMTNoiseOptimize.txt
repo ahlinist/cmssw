@@ -13,10 +13,10 @@
 #
 #VariableName         value1       value2               value3          value4          level
 #------------         ------------ -------------        ------------    -------------   -----
-useS9oS1Algo          0            -                    -               -               -1
-useJetVariables       0            -                    -               -               -1
+useS9oS1Algo          1            -                    -               -               -1
+useJetMETVariables    0            -                    -               -               -1
 JetPtCut	      5		   -			-		-		-1
-printout	      1		   -			-		-		-1
+printout	      0		   -			-		-		-1
 #
 #
 #--------------------------------- Cuts (level 0,1,2,3 ... n) below --------------------------------------------

@@ -242,8 +242,9 @@ void analysisClass::Loop()
    
    TProfile * p_OccupancyHF_vs_SumEinHF = new TProfile ("p_OccupancyHF_vs_SumEinHF","p_OccupancyHF_vs_SumEinHF",100,0,5000.);
 
+   // #### Validation plots ####
    //Jet variables
-   int useJetVariables = (int)getPreCutValue1("useJetVariables");
+   int useJetMETVariables = (int)getPreCutValue1("useJetMETVariables");
    float JetPtCut = getPreCutValue1("JetPtCut");
 
    int Nbins_pt = 300;
@@ -307,7 +308,44 @@ void analysisClass::Loop()
    h_JetInHF_Nconst_S9S1->Sumw2();
    h_JetInHF_N60_S9S1->Sumw2();
    h_JetInHF_N90_S9S1->Sumw2();
+   
+   //MET variables
+   TH1D *h_CaloMETinHF   = new TH1D ("h_CaloMETinHF","h_CaloMETinHF;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETPhiinHF  = new TH1D ("h_CaloMETPhiinHF","h_CaloMETPhiinHF;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_CaloMExinHF   = new TH1D ("h_CaloMExinHF","h_CaloMExinHF;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloMEyinHF   = new TH1D ("h_CaloMEyinHF","h_CaloMEyinHF;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloSumETinHF   = new TH1D ("h_CaloSumETinHF","h_CaloSumETinHF;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   
+   TH1D *h_CaloMETinHF_PET   = new TH1D ("h_CaloMETinHF_PET","h_CaloMETinHF_PET;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETPhiinHF_PET  = new TH1D ("h_CaloMETPhiinHF_PET","h_CaloMETPhiinHF_PET;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_CaloMExinHF_PET   = new TH1D ("h_CaloMExinHF_PET","h_CaloMExinHF_PET;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloMEyinHF_PET   = new TH1D ("h_CaloMEyinHF_PET","h_CaloMEyinHF_PET;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloSumETinHF_PET   = new TH1D ("h_CaloSumETinHF_PET","h_CaloSumETinHF_PET;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
 
+   TH1D *h_CaloMETinHF_S9S1   = new TH1D ("h_CaloMETinHF_S9S1","h_CaloMETinHF_S9S1;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_CaloMETPhiinHF_S9S1  = new TH1D ("h_CaloMETPhiinHF_S9S1","h_CaloMETPhiinHF_S9S1;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_CaloMExinHF_S9S1   = new TH1D ("h_CaloMExinHF_S9S1","h_CaloMExinHF_S9S1;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloMEyinHF_S9S1   = new TH1D ("h_CaloMEyinHF_S9S1","h_CaloMEyinHF_S9S1;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_CaloSumETinHF_S9S1   = new TH1D ("h_CaloSumETinHF_S9S1","h_CaloSumETinHF_S9S1;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   
+   h_CaloMETinHF->Sumw2();
+   h_CaloMETPhiinHF->Sumw2();
+   h_CaloMExinHF->Sumw2();
+   h_CaloMEyinHF->Sumw2();
+   h_CaloSumETinHF->Sumw2();
+
+   h_CaloMETinHF_PET->Sumw2();
+   h_CaloMETPhiinHF_PET->Sumw2();
+   h_CaloMExinHF_PET->Sumw2();
+   h_CaloMEyinHF_PET->Sumw2();
+   h_CaloSumETinHF_PET->Sumw2();
+   
+   h_CaloMETinHF_S9S1->Sumw2();
+   h_CaloMETPhiinHF_S9S1->Sumw2();
+   h_CaloMExinHF_S9S1->Sumw2();
+   h_CaloMEyinHF_S9S1->Sumw2();
+   h_CaloSumETinHF_S9S1->Sumw2();
+   
    /////////initialize variables
 
    int printout  = (int) getPreCutValue1("printout");
@@ -774,89 +812,122 @@ void analysisClass::Loop()
 		   cout << "event: " << event << " " 
 			<< "ls: " << ls << " "
 			<< "run: " << run << "  "
-			<< "--  CaloMETinHFPt_clean : " <<  metHF_clean << " "
+			<< "--  CaloMETinHF_clean : " <<  metHF_clean << " "
 			<< endl;
 		 }
 	     }
            
-	   //## jet variables
-	   if(useJetVariables)
+	   //## JetMET variables
+	   if(useJetMETVariables)
 	     {
 
-	       int NjetInHF=0;
-	       int NjetInHF_PET=0;
-	       int NjetInHF_S9S1=0;
-	       int NjetInHF_ptCut=0;
-	       int NjetInHF_ptCut_PET=0;
-	       int NjetInHF_ptCut_S9S1=0;
-
-	       //-- no cleaning --
-	       for(int jet=0; jet<ak5JetpT->size(); jet++)
-		 {		   
-		   //only jets in HF
-		   if(fabs(ak5JetEta->at(jet))<3.0)
-		     continue;
-		  
-		   NjetInHF++;
-		   if( ak5JetpT->at(jet) > JetPtCut )
-		     NjetInHF_ptCut++;
-
-		   h_JetInHF_pT->Fill( ak5JetpT->at(jet) );
-		   h_JetInHF_eta->Fill( ak5JetEta->at(jet) );
-		   h_JetInHF_phi->Fill( ak5JetPhi->at(jet) );
-		   h_JetInHF_Nconst->Fill( ak5JetNConstituents->at(jet) );
-		   h_JetInHF_N60->Fill( ak5JetN60->at(jet) );
-		   h_JetInHF_N90->Fill( ak5JetN90->at(jet) );		   
-		 }
-	       h_JetInHF_Njet->Fill(NjetInHF);
-	       h_JetInHF_Njet_ptcut->Fill(NjetInHF_ptCut);
-
-
-	       //-- PET cleaning --
-	       for(int jet=0; jet<ak5JetpTPET->size(); jet++)
-		 {		   
-		   //only jets in HF
-		   if(fabs(ak5JetEtaPET->at(jet))<3.0)
-		     continue;
-		  
-		   NjetInHF_PET++;
-		   if( ak5JetpTPET->at(jet) > JetPtCut )
-		     NjetInHF_ptCut_PET++;
-
-		   h_JetInHF_pT_PET->Fill( ak5JetpTPET->at(jet) );
-		   h_JetInHF_eta_PET->Fill( ak5JetEtaPET->at(jet) );
-		   h_JetInHF_phi_PET->Fill( ak5JetPhiPET->at(jet) );
-		   h_JetInHF_Nconst_PET->Fill( ak5JetNConstituentsPET->at(jet) );
-		   h_JetInHF_N60_PET->Fill( ak5JetN60PET->at(jet) );
-		   h_JetInHF_N90_PET->Fill( ak5JetN90PET->at(jet) );		   
-		 }
-	       h_JetInHF_Njet_PET->Fill(NjetInHF_PET);
-	       h_JetInHF_Njet_ptcut_PET->Fill(NjetInHF_ptCut_PET);
-
-
-	       //-- S9S1 cleaning --
-	       for(int jet=0; jet<ak5JetpTS9S1->size(); jet++)
-		 {		   
-		   //only jets in HF
-		   if(fabs(ak5JetEtaS9S1->at(jet))<3.0)
-		     continue;
-		  
-		   NjetInHF_S9S1++;
-		   if( ak5JetpTS9S1->at(jet) > JetPtCut )
-		     NjetInHF_ptCut_S9S1++;
-
-		   h_JetInHF_pT_S9S1->Fill( ak5JetpTS9S1->at(jet) );
-		   h_JetInHF_eta_S9S1->Fill( ak5JetEtaS9S1->at(jet) );
-		   h_JetInHF_phi_S9S1->Fill( ak5JetPhiS9S1->at(jet) );
-		   h_JetInHF_Nconst_S9S1->Fill( ak5JetNConstituentsS9S1->at(jet) );
-		   h_JetInHF_N60_S9S1->Fill( ak5JetN60S9S1->at(jet) );
-		   h_JetInHF_N90_S9S1->Fill( ak5JetN90S9S1->at(jet) );		   
-		 }
-	       h_JetInHF_Njet_S9S1->Fill(NjetInHF_S9S1);
-	       h_JetInHF_Njet_ptcut_S9S1->Fill(NjetInHF_ptCut_S9S1);
-
+// 	       int NjetInHF=0;
+// 	       int NjetInHF_PET=0;
+// 	       int NjetInHF_S9S1=0;
+// 	       int NjetInHF_ptCut=0;
+// 	       int NjetInHF_ptCut_PET=0;
+// 	       int NjetInHF_ptCut_S9S1=0;
+// 
+// 	       //-- no cleaning --
+// 	       for(int jet=0; jet<ak5JetpT->size(); jet++)
+// 		 {		   
+// 		   //only jets in HF
+// 		   if(fabs(ak5JetEta->at(jet))<3.0)
+// 		     continue;
+// 		  
+// 		   NjetInHF++;
+// 		   if( ak5JetpT->at(jet) > JetPtCut )
+// 		     NjetInHF_ptCut++;
+// 
+// 		   h_JetInHF_pT->Fill( ak5JetpT->at(jet) );
+// 		   h_JetInHF_eta->Fill( ak5JetEta->at(jet) );
+// 		   h_JetInHF_phi->Fill( ak5JetPhi->at(jet) );
+// 		   h_JetInHF_Nconst->Fill( ak5JetNConstituents->at(jet) );
+// 		   h_JetInHF_N60->Fill( ak5JetN60->at(jet) );
+// 		   h_JetInHF_N90->Fill( ak5JetN90->at(jet) );		   
+// 		 }
+// 	       h_JetInHF_Njet->Fill(NjetInHF);
+// 	       h_JetInHF_Njet_ptcut->Fill(NjetInHF_ptCut);
+// 
+//                double mexinHF = calometMETInmHF->at(0)*cos( calometMETPhiInmHF->at(0) ) + calometMETInpHF->at(0)*cos( calometMETPhiInpHF->at(0) );
+//                double meyinHF = calometMETInmHF->at(0)*sin( calometMETPhiInmHF->at(0) ) + calometMETInpHF->at(0)*sin( calometMETPhiInpHF->at(0) );
+//                double metinHF = sqrt( mexinHF * mexinHF + meyinHF * meyinHF );
+//                double metphiinHF = atan2( meyinHF, mexinHF );
+//                double sumetinHF = calometSETInmHF->at(0) + calometSETInpHF->at(0);
+//                
+//                h_CaloMETinHF->Fill( metinHF );
+//                h_CaloMETPhiinHF->Fill( metphiinHF );
+//                h_CaloMExinHF->Fill( mexinHF );
+//                h_CaloMEyinHF->Fill( meyinHF );
+//                h_CaloSumETinHF->Fill( sumetinHF );
+//                
+// 	       //-- PET cleaning --
+// 	       for(int jet=0; jet<ak5JetpTPET->size(); jet++)
+// 		 {		   
+// 		   //only jets in HF
+// 		   if(fabs(ak5JetEtaPET->at(jet))<3.0)
+// 		     continue;
+// 		  
+// 		   NjetInHF_PET++;
+// 		   if( ak5JetpTPET->at(jet) > JetPtCut )
+// 		     NjetInHF_ptCut_PET++;
+// 
+// 		   h_JetInHF_pT_PET->Fill( ak5JetpTPET->at(jet) );
+// 		   h_JetInHF_eta_PET->Fill( ak5JetEtaPET->at(jet) );
+// 		   h_JetInHF_phi_PET->Fill( ak5JetPhiPET->at(jet) );
+// 		   h_JetInHF_Nconst_PET->Fill( ak5JetNConstituentsPET->at(jet) );
+// 		   h_JetInHF_N60_PET->Fill( ak5JetN60PET->at(jet) );
+// 		   h_JetInHF_N90_PET->Fill( ak5JetN90PET->at(jet) );		   
+// 		 }
+// 	       h_JetInHF_Njet_PET->Fill(NjetInHF_PET);
+// 	       h_JetInHF_Njet_ptcut_PET->Fill(NjetInHF_ptCut_PET);
+// 
+//                mexinHF = calometMETInmHFPET->at(0)*cos( calometMETPhiInmHFPET->at(0) ) + calometMETInpHFPET->at(0)*cos( calometMETPhiInpHFPET->at(0) );
+//                meyinHF = calometMETInmHFPET->at(0)*sin( calometMETPhiInmHFPET->at(0) ) + calometMETInpHFPET->at(0)*sin( calometMETPhiInpHFPET->at(0) );
+//                metinHF = sqrt( mexinHF * mexinHF + meyinHF * meyinHF );
+//                metphiinHF = atan2( meyinHF, mexinHF );
+//                sumetinHF = calometSETInmHFPET->at(0) + calometSETInpHFPET->at(0);
+//                
+//                h_CaloMETinHF_PET->Fill( metinHF );
+//                h_CaloMETPhiinHF_PET->Fill( metphiinHF );
+//                h_CaloMExinHF_PET->Fill( mexinHF );
+//                h_CaloMEyinHF_PET->Fill( meyinHF );
+//                h_CaloSumETinHF_PET->Fill( sumetinHF );
+//                
+// 	       //-- S9S1 cleaning --
+// 	       for(int jet=0; jet<ak5JetpTS9S1->size(); jet++)
+// 		 {		   
+// 		   //only jets in HF
+// 		   if(fabs(ak5JetEtaS9S1->at(jet))<3.0)
+// 		     continue;
+// 		  
+// 		   NjetInHF_S9S1++;
+// 		   if( ak5JetpTS9S1->at(jet) > JetPtCut )
+// 		     NjetInHF_ptCut_S9S1++;
+// 
+// 		   h_JetInHF_pT_S9S1->Fill( ak5JetpTS9S1->at(jet) );
+// 		   h_JetInHF_eta_S9S1->Fill( ak5JetEtaS9S1->at(jet) );
+// 		   h_JetInHF_phi_S9S1->Fill( ak5JetPhiS9S1->at(jet) );
+// 		   h_JetInHF_Nconst_S9S1->Fill( ak5JetNConstituentsS9S1->at(jet) );
+// 		   h_JetInHF_N60_S9S1->Fill( ak5JetN60S9S1->at(jet) );
+// 		   h_JetInHF_N90_S9S1->Fill( ak5JetN90S9S1->at(jet) );		   
+// 		 }
+// 	       h_JetInHF_Njet_S9S1->Fill(NjetInHF_S9S1);
+// 	       h_JetInHF_Njet_ptcut_S9S1->Fill(NjetInHF_ptCut_S9S1);
+//                
+//                mexinHF = calometMETInmHFS9S1->at(0)*cos( calometMETPhiInmHFS9S1->at(0) ) + calometMETInpHFS9S1->at(0)*cos( calometMETPhiInpHFS9S1->at(0) );
+//                meyinHF = calometMETInmHFS9S1->at(0)*sin( calometMETPhiInmHFS9S1->at(0) ) + calometMETInpHFS9S1->at(0)*sin( calometMETPhiInpHFS9S1->at(0) );
+//                metinHF = sqrt( mexinHF * mexinHF + meyinHF * meyinHF );
+//                metphiinHF = atan2( meyinHF, mexinHF );
+//                sumetinHF = calometSETInmHFS9S1->at(0) + calometSETInpHFS9S1->at(0);
+//                
+//                h_CaloMETinHF_S9S1->Fill( metinHF );
+//                h_CaloMETPhiinHF_S9S1->Fill( metphiinHF );
+//                h_CaloMExinHF_S9S1->Fill( mexinHF );
+//                h_CaloMEyinHF_S9S1->Fill( meyinHF );
+//                h_CaloSumETinHF_S9S1->Fill( sumetinHF );
 	      
-	     }//end of jet variables
+	     }//end of JetMET variables
 
 	 }//end pass all cut level 0
 
@@ -1025,6 +1096,24 @@ void analysisClass::Loop()
    h_JetInHF_Nconst_S9S1->Write();
    h_JetInHF_N60_S9S1->Write();
    h_JetInHF_N90_S9S1->Write();
+   
+   h_CaloMETinHF->Write();
+   h_CaloMETPhiinHF->Write();
+   h_CaloMExinHF->Write();
+   h_CaloMEyinHF->Write();
+   h_CaloSumETinHF->Write();
+
+   h_CaloMETinHF_PET->Write();
+   h_CaloMETPhiinHF_PET->Write();
+   h_CaloMExinHF_PET->Write();
+   h_CaloMEyinHF_PET->Write();
+   h_CaloSumETinHF_PET->Write();
+   
+   h_CaloMETinHF_S9S1->Write();
+   h_CaloMETPhiinHF_S9S1->Write();
+   h_CaloMExinHF_S9S1->Write();
+   h_CaloMEyinHF_S9S1->Write();
+   h_CaloSumETinHF_S9S1->Write();
    
    
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
