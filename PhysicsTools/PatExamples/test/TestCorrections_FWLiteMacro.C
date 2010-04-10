@@ -47,6 +47,8 @@ void JetCorrFWLite()
 {
   
   
+  // The input file MYCOPY.root  is available at
+  //https://cms-service-sdtweb.web.cern.ch/cms-service-sdtweb/validation/physicstools/PATVALIDATION/MYCOPY.root
   
   TFile  *file = new TFile("MYCOPY.root");
   TFile  *outputfile    = new TFile("JetCorr.root","RECREATE");
