@@ -48,14 +48,14 @@ dqmDirectory_Ztautau_template = 'template/harvested/Ztautau_from_selZmumu/zMuTau
 dqmDirectory_Ztautau_systematics = processName + '/Ztautau/systematics'
 
 dqmDirectory_Zmumu_finalEvtSel = 'harvested/Zmumu/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto'
-dqmDirectory_Zmumu_correctedTemplateJetMisId_pure = 'template/harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched_reweighted/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'
-dqmDirectory_Zmumu_correctedTemplateJetMisId_data = 'template/harvested/smSum/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched_reweighted/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'
-dqmDirectory_Zmumu_uncorrectedTemplateJetMisId_pure = 'template/harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'
-dqmDirectory_Zmumu_uncorrectedTemplateJetMisId_data = 'template/harvested/smSum/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'
-dqmDirectory_Zmumu_templateMuonMisId_pure = 'template/harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/afterDiMuonPairBgEstZmumuMuonMisIdEnriched'
-dqmDirectory_Zmumu_templateMuonMisId_data = 'template/harvested/smSum/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/afterDiMuonPairBgEstZmumuMuonMisIdEnriched'
-dqmDirectory_Zmumu_systematicsJetMisId = processName + '/Zmumu/systematicsJetMisId'
-dqmDirectory_Zmumu_systematicsMuonMisId = processName + '/Zmumu/systematicsMuonMisId'
+dqmDirectory_ZmumuJetMisId_correctedTemplate_pure = 'template/harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched_reweighted/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'
+dqmDirectory_ZmumuJetMisId_correctedTemplate_data = 'template/harvested/smSum/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched_reweighted/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'
+dqmDirectory_ZmumuJetMisId_uncorrectedTemplate_pure = 'template/harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'
+dqmDirectory_ZmumuJetMisId_uncorrectedTemplate_data = 'template/harvested/smSum/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'
+dqmDirectory_ZmumuMuonMisId_template_pure = 'template/harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/afterDiMuonPairBgEstZmumuMuonMisIdEnriched'
+dqmDirectory_ZmumuMuonMisId_template_data = 'template/harvested/smSum/BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/afterDiMuonPairBgEstZmumuMuonMisIdEnriched'
+dqmDirectory_ZmumuJetMisId_systematics = processName + '/Zmumu/systematicsJetMisId'
+dqmDirectory_ZmumuMuonMisId_systematics = processName + '/Zmumu/systematicsMuonMisId'
 
 dqmDirectory_WplusJets_finalEvtSel = 'harvested/WplusJets/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto'
 dqmDirectory_WplusJets_correctedTemplate_pure = 'template/harvested/WplusJets/BgEstTemplateAnalyzer_WplusJetsEnriched_reweighted/afterDiMuonVetoBgEstWplusJetsEnriched'
@@ -108,7 +108,8 @@ process.loadTemplateHistZtoMuTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
 process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_bgEstTemplates/7TeViii/bgEstTemplatesZtoMuTau.root'
+            ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/bgEstPlots/ZtoMuTau_bgEstTemplates/7TeViii/bgEstTemplatesZtoMuTau.root'
+            'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_3_6_patch5/src/TauAnalysis/BgEstimationTools/test/bgEstTemplatesZtoMuTau.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('template')
@@ -127,28 +128,28 @@ process.normalizeTemplateHistZtoMuTau = cms.EDAnalyzer("DQMHistNormalizer",
             meNameOutput = cms.string(dqmDirectory_Ztautau_template + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
-            meNameInput = cms.string(dqmDirectory_Zmumu_correctedTemplateJetMisId_pure + '/' + meName_diTauMvis12),
-            meNameOutput = cms.string(dqmDirectory_Zmumu_correctedTemplateJetMisId_pure + '/' + meName_diTauMvis12_norm)
+            meNameInput = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_pure + '/' + meName_diTauMvis12),
+            meNameOutput = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_pure + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
-            meNameInput = cms.string(dqmDirectory_Zmumu_correctedTemplateJetMisId_data + '/' + meName_diTauMvis12),
-            meNameOutput = cms.string(dqmDirectory_Zmumu_correctedTemplateJetMisId_data + '/' + meName_diTauMvis12_norm)
+            meNameInput = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12),
+            meNameOutput = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
-            meNameInput = cms.string(dqmDirectory_Zmumu_uncorrectedTemplateJetMisId_pure + '/' + meName_diTauMvis12),
-            meNameOutput = cms.string(dqmDirectory_Zmumu_uncorrectedTemplateJetMisId_pure + '/' + meName_diTauMvis12_norm)
+            meNameInput = cms.string(dqmDirectory_ZmumuJetMisId_uncorrectedTemplate_pure + '/' + meName_diTauMvis12),
+            meNameOutput = cms.string(dqmDirectory_ZmumuJetMisId_uncorrectedTemplate_pure + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
-            meNameInput = cms.string(dqmDirectory_Zmumu_uncorrectedTemplateJetMisId_data + '/' + meName_diTauMvis12),
-            meNameOutput = cms.string(dqmDirectory_Zmumu_uncorrectedTemplateJetMisId_data + '/' + meName_diTauMvis12_norm)
+            meNameInput = cms.string(dqmDirectory_ZmumuJetMisId_uncorrectedTemplate_data + '/' + meName_diTauMvis12),
+            meNameOutput = cms.string(dqmDirectory_ZmumuJetMisId_uncorrectedTemplate_data + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
-            meNameInput = cms.string(dqmDirectory_Zmumu_templateMuonMisId_pure + '/' + meName_diTauMvis12),
-            meNameOutput = cms.string(dqmDirectory_Zmumu_templateMuonMisId_pure + '/' + meName_diTauMvis12_norm)
+            meNameInput = cms.string(dqmDirectory_ZmumuMuonMisId_template_pure + '/' + meName_diTauMvis12),
+            meNameOutput = cms.string(dqmDirectory_ZmumuMuonMisId_template_pure + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
-            meNameInput = cms.string(dqmDirectory_Zmumu_templateMuonMisId_data + '/' + meName_diTauMvis12),
-            meNameOutput = cms.string(dqmDirectory_Zmumu_templateMuonMisId_data + '/' + meName_diTauMvis12_norm)
+            meNameInput = cms.string(dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12),
+            meNameOutput = cms.string(dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
             meNameInput = cms.string(dqmDirectory_WplusJets_correctedTemplate_pure + '/' + meName_diTauMvis12),
@@ -267,8 +268,8 @@ drawTemplateHistConfiguratorZtoMuTau.add(
 
 drawTemplateHistConfiguratorZtoMuTau.add(
     meNames = [
-        dqmDirectory_Zmumu_correctedTemplateJetMisId_data + '/' + meName_diTauMvis12_norm,
-        dqmDirectory_Zmumu_correctedTemplateJetMisId_pure + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_correctedTemplate_pure + '/' + meName_diTauMvis12_norm,
         dqmDirectory_Zmumu_finalEvtSel + '/' + meName_diTauMvis12_norm
     ],
     name = "ZmumuJetMisId_corrected_diTauMvis12",
@@ -277,8 +278,8 @@ drawTemplateHistConfiguratorZtoMuTau.add(
 
 drawTemplateHistConfiguratorZtoMuTau.add(
     meNames = [
-        dqmDirectory_Zmumu_uncorrectedTemplateJetMisId_data + '/' + meName_diTauMvis12_norm,
-        dqmDirectory_Zmumu_uncorrectedTemplateJetMisId_pure + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_uncorrectedTemplate_data + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_uncorrectedTemplate_pure + '/' + meName_diTauMvis12_norm,
         dqmDirectory_Zmumu_finalEvtSel + '/' + meName_diTauMvis12_norm
     ],
     name = "ZmumuJetMisId_uncorrected_diTauMvis12",
@@ -287,8 +288,8 @@ drawTemplateHistConfiguratorZtoMuTau.add(
 
 drawTemplateHistConfiguratorZtoMuTau.add(
     meNames = [
-        dqmDirectory_Zmumu_templateMuonMisId_data + '/' + meName_diTauMvis12_norm,
-        dqmDirectory_Zmumu_templateMuonMisId_pure + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuMuonMisId_template_pure + '/' + meName_diTauMvis12_norm,
         dqmDirectory_Zmumu_finalEvtSel + '/' + meName_diTauMvis12_norm
     ],
     name = "ZmumuMuonMisId_diTauMvis12",
@@ -436,13 +437,13 @@ process.prodSysBiasHistZtoMuTau = cms.EDAnalyzer("DQMHistSubtractor",
         ),
         cms.PSet(
             meNameMinuend = cms.string(dqmDirectory_Zmumu_finalEvtSel + '/' + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_Zmumu_correctedTemplateJetMisId_data + '/' + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_Zmumu_systematicsJetMisId + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+            meNameSubtrahend = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12_norm),
+            meNameDifference = cms.string(dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
             meNameMinuend = cms.string(dqmDirectory_Zmumu_finalEvtSel + '/' + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_Zmumu_templateMuonMisId_data + '/' + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_Zmumu_systematicsMuonMisId + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+            meNameSubtrahend = cms.string(dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12_norm),
+            meNameDifference = cms.string(dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
             meNameMinuend = cms.string(dqmDirectory_WplusJets_finalEvtSel + '/' + meName_diTauMvis12_norm),
@@ -476,14 +477,14 @@ process.prodSysBgEnrichedSamplePurityHistZtoMuTau = cms.EDAnalyzer("DQMHistSubtr
             meNameDifference = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
-            meNameMinuend = cms.string(dqmDirectory_Zmumu_correctedTemplateJetMisId_data + '/' + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_Zmumu_correctedTemplateJetMisId_pure + '/' + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_Zmumu_systematicsJetMisId + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+            meNameMinuend = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12_norm),
+            meNameSubtrahend = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_pure + '/' + meName_diTauMvis12_norm),
+            meNameDifference = cms.string(dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
-            meNameMinuend = cms.string(dqmDirectory_Zmumu_templateMuonMisId_data + '/' + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_Zmumu_templateMuonMisId_pure + '/' + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_Zmumu_systematicsMuonMisId + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+            meNameMinuend = cms.string(dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12_norm),
+            meNameSubtrahend = cms.string(dqmDirectory_ZmumuMuonMisId_template_pure + '/' + meName_diTauMvis12_norm),
+            meNameDifference = cms.string(dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
         ),
         cms.PSet(
             meNameMinuend = cms.string(dqmDirectory_WplusJets_correctedTemplate_data + '/' + meName_diTauMvis12_norm),
@@ -504,6 +505,90 @@ process.prodSysBgEnrichedSamplePurityHistZtoMuTau = cms.EDAnalyzer("DQMHistSubtr
 )
 
 #--------------------------------------------------------------------------------
+# scale auxiliary histograms representing systematic uncertainties
+# to normalization of shape templates
+# (normalization is needed in order to combine systematic uncertainties
+#  with statistical uncertainties to total uncertainty on shape templates)
+#--------------------------------------------------------------------------------
+
+process.scaleSysHistZtoMuTau = cms.EDAnalyzer("DQMHistScaler",
+    config = cms.VPSet(
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bias' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_Ztautau_template + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_Ztautau_template + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_WplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_WplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_WplusJets_correctedTemplate_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_WplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_WplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_WplusJets_correctedTemplate_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_TTplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_TTplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_TTplusJets_template_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_TTplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_TTplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_TTplusJets_template_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_QCD_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_QCD_systematics + '/' + 'bias' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_QCD_template_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        ),
+        cms.PSet(
+            meName_input = cms.string(dqmDirectory_QCD_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm),
+            meName_output = cms.string(dqmDirectory_QCD_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12),
+            meNameScaleFactor = cms.string(dqmDirectory_QCD_template_data + '/' + meName_diTauMvis12),
+            meTypeScaleFactor = cms.string("hist")
+        )
+    )
+)
+
+#--------------------------------------------------------------------------------
 # fit template histograms to distribution of visible muon + tau-jet mass in (pseudo)Data,
 # in order to determine normalization factors of individual background processes
 #--------------------------------------------------------------------------------
@@ -511,7 +596,7 @@ process.prodSysBgEnrichedSamplePurityHistZtoMuTau = cms.EDAnalyzer("DQMHistSubtr
 # fit W + jets, ttbar + jets and QCD background templates
 # with Landau distribution convoluted with Gaussian
 diTauMvis12_smoothing = cms.PSet(
-    pluginName = cms.string("Landau convoluted with Gaussian"),
+    pluginName = cms.string("Landau_convoluted_with_Gaussian"),
     pluginType = cms.string("TF1landauXgausWrapper"), # defaults to TF1Wrapper
     xMin = cms.double(20.),
     xMax = cms.double(200.),
@@ -545,8 +630,8 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
         Ztautau = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_Ztautau_template + '/' + meName_diTauMvis12_norm),
-                    #meName = cms.string(dqmDirectory_Ztautau_finalEvtSel + '/' + meName_diTauMvis12_norm),
+                    meName = cms.string(dqmDirectory_Ztautau_template + '/' + meName_diTauMvis12),
+                    #meName = cms.string(dqmDirectory_Ztautau_finalEvtSel + '/' + meName_diTauMvis12),
                     smoothing = cms.PSet(
                         pluginName = cms.string("diTauMvis12SmoothingZtautau"),
                         pluginType = cms.string("TF1Wrapper"),
@@ -595,14 +680,14 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(1000.)
+                initial = cms.double(750.)
             ),
             drawOptions = drawOption_Ztautau_separate                
         ),
         ##Zmumu = cms.PSet(
         ##    templates = cms.PSet(
         ##        diTauMvis12 = cms.PSet(
-        ##            meName = cms.string(dqmDirectory_Zmumu_finalEvtSel + '/' + meName_diTauMvis12_norm)
+        ##            meName = cms.string(dqmDirectory_Zmumu_finalEvtSel + '/' + meName_diTauMvis12)
         ##        )
         ##    ),    
         ##    norm = cms.PSet(
@@ -613,7 +698,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
         ZmumuJetMisId = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_Zmumu_correctedTemplateJetMisId_data + '/' + meName_diTauMvis12_norm),
+                    meName = cms.string(dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12),
                     smoothing = diTauMvis12_smoothing.clone(
                         pluginName = cms.string("diTauMvis12SmoothingZmumuJetMisId"),
                         ##xMax = cms.double(80.),
@@ -629,7 +714,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
         ZmumuMuonMisId = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_Zmumu_templateMuonMisId_data + '/' + meName_diTauMvis12_norm),
+                    meName = cms.string(dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12),
                     smoothing = cms.PSet(
                         pluginName = cms.string("diTauMvis12SmoothingZmumuMuonMisId"),
                         pluginType = cms.string("TF1Wrapper"),
@@ -663,44 +748,45 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
         WplusJets = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_WplusJets_correctedTemplate_data + '/' + meName_diTauMvis12_norm),
-                    #meName = cms.string(dqmDirectory_WplusJets_finalEvtSel + '/' + meName_diTauMvis12_norm),
+                    meName = cms.string(dqmDirectory_WplusJets_correctedTemplate_data + '/' + meName_diTauMvis12),
+                    #meName = cms.string(dqmDirectory_WplusJets_finalEvtSel + '/' + meName_diTauMvis12),
                     smoothing = diTauMvis12_smoothing.clone(
                         pluginName = cms.string("diTauMvis12SmoothingWplusJets")
                     )
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(500.)
+                initial = cms.double(250.)
             ),
             drawOptions = drawOption_WplusJets_separate 
         ),
         TTplusJets = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_TTplusJets_template_data + '/' + meName_diTauMvis12_norm),
+                    meName = cms.string(dqmDirectory_TTplusJets_template_data + '/' + meName_diTauMvis12),
                     smoothing = diTauMvis12_smoothing.clone(
                         pluginName = cms.string("diTauMvis12SmoothingTTplusJets")
                     )
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(100.)
+                initial = cms.double(25.)
             ),
             drawOptions = drawOption_TTplusJets_separate 
         ),
         QCD = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_QCD_template_data + '/' + meName_diTauMvis12_norm),
-                    #meName = cms.string(dqmDirectory_QCD_finalEvtSel + '/' + meName_diTauMvis12_norm),
+                    meName = cms.string(dqmDirectory_QCD_template_data + '/' + meName_diTauMvis12),
+                    #meName = cms.string(dqmDirectory_QCD_finalEvtSel + '/' + meName_diTauMvis12),
                     smoothing = diTauMvis12_smoothing.clone(
-                        pluginName = cms.string("diTauMvis12SmoothingQCD")
+                        pluginName = cms.string("diTauMvis12SmoothingQCD"),
+                        xMax = cms.double(150.)
                     )
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(100.)
+                initial = cms.double(250.)
             ),
             drawOptions = drawOption_QCD_separate
         )
@@ -717,16 +803,16 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
 
     fit = cms.PSet(
         algorithm = cms.PSet(
-            pluginName = cms.string("fitTauIdEffZtoMuTauAlgorithm_tauIdPassed"),
-            #pluginType = cms.string("TemplateFitAdapter_TFractionFitter")
-            pluginType = cms.string("TemplateFitAdapter_RooFit")
+            pluginName = cms.string("fitBgEstTemplateZtoMuTauAlgorithm"),
+            pluginType = cms.string("TemplateFitAdapter_TFractionFitter")
+            #pluginType = cms.string("TemplateFitAdapter_RooFit")
         ),
         variables = cms.PSet(
             diTauMvis12 = cms.PSet(
                 name = cms.string("diTauMvis12"),
                 title = cms.string("M_{vis}^{#mu + #tau-jet}"),
                 min = cms.double(20.), # default:  20.
-                max = cms.double(150.) # default: 200.
+                max = cms.double(200.) # default: 200.
             )
         ),
         # constrain normalization of W + jets, ttbar + jets and QCD backgrounds
@@ -773,8 +859,8 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
     ),
 
     estStatUncertainties = cms.PSet(
-        numSamplings = cms.int32(0),
-        chi2redMax = cms.double(3.),
+        numSamplings = cms.int32(500),
+        chi2redMax = cms.double(5.),
         verbosity = cms.PSet(
             printLevel = cms.int32(-1),
             printWarnings = cms.bool(False)
@@ -786,22 +872,22 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
             bias = cms.PSet(
                 meNames = cms.PSet(
                     Ztautau = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bias' + '/' + meName_diTauMvis12)
                     ),
                     ZmumuJetMisId = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsJetMisId + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12)
                     ),
                     ZmumuMuonMisId = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsMuonMisId + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12)
                     ),
                     WplusJets = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_WplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_WplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12)
                     ),
                     TTplusJets = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_TTplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_TTplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12)
                     ),
                     QCD = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_QCD_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_QCD_systematics + '/' + 'bias' + '/' + meName_diTauMvis12)
                     )
                 ),
                 pullRMS = cms.double(1.),
@@ -812,22 +898,22 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
             bgSamplePurity = cms.PSet(
                 meNames = cms.PSet(
                     Ztautau = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_Ztautau_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12)
                     ),
                     ZmumuJetMisId = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsJetMisId + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12)
                     ),
                     ZmumuMuonMisId = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_Zmumu_systematicsMuonMisId + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12)
                     ),
                     WplusJets = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_WplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_WplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12)
                     ),
                     TTplusJets = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_TTplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_TTplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12)
                     ),
                     QCD = cms.PSet(
-                        diTauMvis12 = cms.string(dqmDirectory_QCD_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm)
+                        diTauMvis12 = cms.string(dqmDirectory_QCD_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12)
                     )
                 ),
                 pullRMS = cms.double(1.),
@@ -836,8 +922,8 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 mode = cms.string("coherent")
             )
         ),       
-        numSamplings = cms.int32(0),
-        chi2redMax = cms.double(3.),
+        numSamplings = cms.int32(500),
+        chi2redMax = cms.double(5.),
         verbosity = cms.PSet(
             printLevel = cms.int32(-1),
             printWarnings = cms.bool(False)
@@ -874,6 +960,7 @@ process.p = cms.Path(
    + process.normalizeAnalysisHistZtoMuTau
    + process.prodSysBiasHistZtoMuTau
    + process.prodSysBgEnrichedSamplePurityHistZtoMuTau
+   + process.scaleSysHistZtoMuTau
    #+ process.dumpDQMStore
    + process.plotTemplateHistZtoMuTau
    + process.fitZtoMuTau
