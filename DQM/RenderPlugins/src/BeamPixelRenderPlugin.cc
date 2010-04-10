@@ -29,6 +29,7 @@ class BeamPixelRenderPlugin : public DQMRenderPlugin {
 
 
 public:
+
  virtual void initialise (int, char **)
   {
    // Make rainbow colors. Assign colors positions 1101-1200
@@ -79,15 +80,9 @@ public:
     if (dynamic_cast<TProfile*>(o.object)) preDrawTProfile(c, o);
   }
 
-  virtual void postDraw(TCanvas* c, const VisDQMObject& o, const VisDQMImgInfo& , VisDQMRenderInfo& )
-  {
-    c->cd();
-
-    if (dynamic_cast<TH2F*>(o.object)) postDrawTH2F(c, o);
-  }
-
 
 private:
+
   void preDrawTH2F(TCanvas* c, const VisDQMObject& o)
   {  
     TH2F* obj = dynamic_cast<TH2F*>(o.object);
@@ -118,6 +113,15 @@ private:
 	gStyle->SetOptStat(1110);
 	obj->SetStats(kTRUE);
 	obj->SetOption("colz");
+
+	TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
+	if (pal != 0)
+	  {
+	    pal->SetX1NDC(0.70);
+	    pal->SetY1NDC(0.66);	    
+	    pal->SetX2NDC(0.90);
+	    pal->SetY2NDC(0.90);	    
+	  }
 
 	return;
       }
@@ -211,26 +215,6 @@ private:
     c->SetGrid();
   }
 
-  void postDrawTH2F(TCanvas* c, const VisDQMObject& o)
-  {
-    TH2F* obj = dynamic_cast<TH2F*>(o.object);
-    assert(obj);
-
-    if ((o.name.find("vertex zx") != std::string::npos) || (o.name.find("vertex zy") != std::string::npos) || (o.name.find("vertex xy") != std::string::npos))
-      {
-	c->SetGrid();
-
-	TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
-	if (pal != 0)
-	  {
-	    pal->SetX1NDC(0.70);
-	    pal->SetY1NDC(0.66);	    
-	    pal->SetX2NDC(0.90);
-	    pal->SetY2NDC(0.90);	    
-	  }
-      }
-  }
-  
 };
 
 
