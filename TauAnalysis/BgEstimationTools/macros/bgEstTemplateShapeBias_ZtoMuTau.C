@@ -10,7 +10,10 @@ void bgEstTemplateShapeBias_ZtoMuTau()
   //TString dqmDirectoryName = "DQMData/harvested/WplusJets/zMuTauAnalyzer/";
   //TString dqmDirectoryName = "DQMData/harvested/qcdSum/zMuTauAnalyzer/";
   //TString dqmDirectoryName = "DQMData/harvested/PPmuXptGt20_factorized/zMuTauAnalyzer/";
+/*
   TString dqmDirectoryName = "DQMData/harvested/Zmumu/BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/";
+ */
+  TString dqmDirectoryName = "DQMData/harvested/Zmumu/zMuTauAnalyzer/";
 
   TObjArray dqmSubDirectoryNames;
   //dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauAcoplanarity12_beforeEvtSelDiTauCandidateForMuTauMt1MET/"));
@@ -19,8 +22,12 @@ void bgEstTemplateShapeBias_ZtoMuTau()
   //dqmSubDirectoryNames.Add(new TObjString("afterEvtSelTauPt_beforeEvtSelMuonTrkIso/"));
   //dqmSubDirectoryNames.Add(new TObjString("afterEvtSelMuonTrkIso_beforeEvtSelMuonEcalIso/"));
   //dqmSubDirectoryNames.Add(new TObjString("afterEvtSelMuonEcalIso_beforeEvtSelMuonAntiPion/"));
+/*
   dqmSubDirectoryNames.Add(new TObjString("afterDiMuonPairZeroChargeBgEstZmumuJetMisIdEnriched_beforeDiMuonPairInvMassBgEstZmumuJetMisIdEnriched/"));
   dqmSubDirectoryNames.Add(new TObjString("afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched/"));
+ */
+  dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiTauCandidateForMuTauPzetaDiff_beforeEvtSelDiMuPairZmumuHypothesisVeto/"));
+  dqmSubDirectoryNames.Add(new TObjString("afterEvtSelDiMuPairZmumuHypothesisVeto/"));
 
   TObjArray legendLabels;
   //legendLabels.Add(new TObjString("before M_{T}^{#mu + MET} Cut"));
@@ -29,14 +36,18 @@ void bgEstTemplateShapeBias_ZtoMuTau()
   //legendLabels.Add(new TObjString("before Muon Track iso. Cut"));
   //legendLabels.Add(new TObjString("after Muon Track iso. Cut, before Cut on Muon ECAL iso."));
   //legendLabels.Add(new TObjString("after Cut on Muon ECAL iso."));
+/*
   legendLabels.Add(new TObjString("before 40 < M^{#mu^{+}#mu^{-}} < 100 GeV Cut"));
   legendLabels.Add(new TObjString("after 40 < M^{#mu^{+}#mu^{-}} < 100 GeV Cut"));
+ */
+  legendLabels.Add(new TObjString("before 80 < M^{#mu^{+}#mu^{-}} < 100 GeV Veto"));
+  legendLabels.Add(new TObjString("after 80 < M^{#mu^{+}#mu^{-}} < 100 GeV Veto"));
 
   TString outputFileName_unnormalized = "bgEstTemplateShapeBias_unnormalized.ps";
   TString outputFileName_normalized = "bgEstTemplateShapeBias_normalized.ps";
 
-  //TString inputFileName = "rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/7TeV/plotsZtoMuTau_all.root";
-  TString inputFileName = "../test/bgEstTemplatesZtoMuTau.root";
+  TString inputFileName = "rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/7TeV/plotsZtoMuTau_all.root";
+  //TString inputFileName = "../test/bgEstTemplatesZtoMuTau.root";
 
   //showTemplateShapeBias_i(inputFileName, dqmDirectoryName, dqmSubDirectoryNames, legendLabels, 
   //		  	    "DiTauCandidateQuantities/DPhi12", "#Delta#phi_{#mu#tau}", false, 
