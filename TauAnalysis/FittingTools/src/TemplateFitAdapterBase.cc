@@ -71,32 +71,28 @@ void TemplateFitAdapterBase::data1dType::initialize()
     return;
   }
 
-  std::cout << " integral = " << getIntegral(me_->getTH1()) << std::endl;
+  integral_ = getIntegral(me_->getTH1());
+  std::cout << " integral = " << integral_ << std::endl;
 
   TH1* histogram_subrange = makeSubrangeHistogram(me_->getTH1(), &fitRanges_);
   histogram_ = makeSerializedHistogram(histogram_subrange);
   delete histogram_subrange;
+  fittedIntegral_ = getIntegral(histogram_);
+  
+  fittedFraction_ = ( integral_ > 0. ) ? (fittedIntegral_/integral_) : 1.;
+  std::cout << " fitted fraction = " << fittedFraction_ << std::endl;
   
   fluctHistogram_ = (TH1*)histogram_->Clone();
-
-  compFittedFraction(fluctHistogram_);
-  std::cout << "fitted fraction = " << fittedFraction_ << std::endl;
-}
-
-void TemplateFitAdapterBase::data1dType::compFittedFraction(const TH1* histogram) 
-{
-  integral_ = getIntegral(me_->getTH1());
-  
-  fittedIntegral_ = getIntegral(histogram);
-
-  fittedFraction_ = ( integral_ > 0. ) ? (fittedIntegral_/integral_) : 1.;
 }
 
 void TemplateFitAdapterBase::data1dType::fluctuate(bool, bool, double numEntries)
 {  
+  //std::cout << "<data1dType::fluctuate>" << std::endl;
+  //std::cout << " numEntries = " << numEntries << std::endl;
+  //std::cout << " fittedFraction_ = " << fittedFraction_ << std::endl;
+
   sampleHistogram_stat(histogram_, fluctHistogram_, numEntries);
   makeHistogramPositive(fluctHistogram_);
-  compFittedFraction(fluctHistogram_);
 }
 
 //
@@ -138,13 +134,16 @@ void TemplateFitAdapterBase::dataNdType::initialize()
 
 void TemplateFitAdapterBase::dataNdType::fluctuate(bool, bool)
 {
+  //std::cout << "<dataNdType::fluctuate>:" << std::endl;
+
   double numEntries = 0.;
   bool isFirstFluctuation = true;
 
   for ( std::map<std::string, data1dType*>::iterator data1dEntry = data1dEntries_.begin();
 	data1dEntry != data1dEntries_.end(); ++data1dEntry ) {
     if ( isFirstFluctuation ) {
-      numEntries = templateFitAdapterBase::gRndNum.PoissonD(data1dEntry->second->me_->getTH1()->Integral());
+      numEntries = templateFitAdapterBase::gRndNum.PoissonD(data1dEntry->second->integral_);
+      //std::cout << " numEntries = " << numEntries << std::endl;
       isFirstFluctuation = false;
     }
 
@@ -176,6 +175,9 @@ void TemplateFitAdapterBase::model1dType::initialize()
 
   data1dType::initialize();
 
+  double fluctIntegral = getIntegral(fluctHistogram_);
+  if ( fluctIntegral != 0. ) fluctHistogram_->Scale(fittedFraction_/fluctIntegral);
+
   if ( error_ ) return;
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
@@ -195,8 +197,8 @@ void TemplateFitAdapterBase::model1dType::initialize()
 //--- check that histograms representing systematic uncertainties have the same binning
 //    as that representing expectation
     if ( !isCompatibleBinning(histogram_, sysErrFluctuation->histogram_) ) {
-      edm::LogError ("model1dType") << " Incompatible binning of histograms " << meName_ 
-				    << " and " << sysErrFluctuation->meName_ << " !!";
+      edm::LogError ("model1dType") 
+	<< " Incompatible binning of histograms " << meName_ << " and " << sysErrFluctuation->meName_ << " !!";
       error_ = 1;
       continue;
     }
@@ -228,7 +230,9 @@ void TemplateFitAdapterBase::model1dType::fluctuate(bool fluctStat, bool fluctSy
   }
 
   makeHistogramPositive(fluctHistogram_);
-  compFittedFraction(fluctHistogram_);
+  
+  double fluctIntegral = getIntegral(fluctHistogram_);
+  if ( fluctIntegral != 0. ) fluctHistogram_->Scale(fittedFraction_/fluctIntegral);
 }
 
 //
@@ -269,17 +273,20 @@ void TemplateFitAdapterBase::modelNdType::initialize()
 
 void TemplateFitAdapterBase::modelNdType::fluctuate(bool fluctStat, bool fluctSys)
 {
+  //std::cout << "<modelNdType::fluctuate>:" << std::endl;
+  
   double numEntries = 0.;
   bool isFirstFluctuation = true;
-
+  
   for ( std::map<std::string, model1dType*>::iterator model1dEntry = model1dEntries_.begin();
 	model1dEntry != model1dEntries_.end(); ++model1dEntry ) {
     if ( isFirstFluctuation ) {
-      numEntries = templateFitAdapterBase::gRndNum.PoissonD(model1dEntry->second->me_->getTH1()->Integral());
+      numEntries = templateFitAdapterBase::gRndNum.PoissonD(model1dEntry->second->integral_);
+      //std::cout << " numEntries = " << numEntries << std::endl;
       isFirstFluctuation = false;
     }
-
-    model1dEntry->second->fluctuate(fluctStat, fluctSys, numEntries*model1dEntry->second->fittedFraction_);
+    
+    model1dEntry->second->fluctuate(true, false, numEntries*model1dEntry->second->fittedFraction_);
   }
 }
 
@@ -450,8 +457,9 @@ TemplateFitAdapterBase::TemplateFitAdapterBase(const edm::ParameterSet& cfg)
       for ( vstring::iterator processName = processNames_.begin();
 	    processName != processNames_.end(); ++processName ) {
 	if ( !cfgProcesses.exists(*processName) ) {
-	  edm::LogError ("TemplateFitAdapterBase") << " No Estimate of systematic Uncertainty = " << (*sysErrName) 
-						   << " defined for process = " << (*processName) << " !!";
+	  edm::LogError ("TemplateFitAdapterBase") 
+	    << " No Estimate of systematic Uncertainty = " << (*sysErrName) 
+	    << " defined for process = " << (*processName) << " !!";
 	  error_ = 1;
 	  continue;
 	}
@@ -461,9 +469,9 @@ TemplateFitAdapterBase::TemplateFitAdapterBase(const edm::ParameterSet& cfg)
 	for ( vstring::const_iterator varName = varNames_.begin();
 	      varName != varNames_.end(); ++varName ) {
 	  if ( !cfgProcess.exists(*varName) ) {
-	    edm::LogError ("TemplateFitAdapterBase") << " No Estimate of systematic Uncertainty = " << (*sysErrName) 
-						     << " on variable = " << (*varName) 
-						     << " defined for process = " << (*processName) << " !!";
+	    edm::LogError ("TemplateFitAdapterBase") 
+	      << " No Estimate of systematic Uncertainty = " << (*sysErrName) 
+	      << " on variable = " << (*varName) << " defined for process = " << (*processName) << " !!";
 	    error_ = 1;
 	  }
 	  

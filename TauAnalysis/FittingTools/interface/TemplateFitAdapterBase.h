@@ -25,9 +25,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: TemplateFitAdapterBase.h,v 1.3 2009/11/30 11:39:32 veelken Exp $
+ * $Id: TemplateFitAdapterBase.h,v 1.4 2009/12/04 13:45:22 veelken Exp $
  *
  */
 
@@ -126,7 +126,6 @@ class TemplateFitAdapterBase
 
     virtual void initialize();
     virtual void fluctuate(bool, bool, double);
-    virtual void compFittedFraction(const TH1*);
 
     std::string processName_;
     std::string varName_;
@@ -135,11 +134,12 @@ class TemplateFitAdapterBase
 
     std::vector<fitRangeEntryType> fitRanges_;
 
-    TH1* histogram_;    
-    TH1* fluctHistogram_;
+    TH1* histogram_;   
     double integral_;
     double fittedIntegral_;
     double fittedFraction_;
+
+    TH1* fluctHistogram_;
 
     int error_;
   };
