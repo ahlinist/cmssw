@@ -10,14 +10,14 @@ using namespace edm;
 // constructors and destructor
 //
 RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
-  egamma_(iConfig.getParameter<edm::InputTag>("egamma")),
+  egamma_(iConfig.getParameter<edm::InputTag >("egamma")),
   genEGamma_(iConfig.getParameter<edm::InputTag>("genEGamma")),
   directory_(iConfig.getParameter<std::string>("directory")),  
   maxEt_(iConfig.getUntrackedParameter<double>("maxEt",100)),
   binsEt_(iConfig.getUntrackedParameter<int>("binsEt",20)),
   binsEta_(iConfig.getUntrackedParameter<int>("binsEta",30)),
   binsPhi_(iConfig.getUntrackedParameter<int>("binsPhi",32)),
-  matchDR_(iConfig.getUntrackedParameter<double>("matchDeltaR",0.3)),
+  matchDR_(iConfig.getUntrackedParameter<double>("matchDeltaR",0.38)),
   egammaThreshold_(iConfig.getUntrackedParameter<double>("gammaThreshold",5.))
 {
 
@@ -26,7 +26,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
   if(store)
     {
       store->setCurrentFolder(directory_);
-      egamma_rank         = store->book1D("rctEgammaRank","Rct e/#gamma rank",64,0,128);
+      egamma_rank         = store->book1D("rctEgammaRank","Rct e/#gamma rank",128,0,128);
       egamma_et           = store->book1D("rctEgammaEt","Rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
       egamma_eta          = store->book1D("rctEgammaEta","Rct e/#gamma #eta",binsEta_,-3.,3.);
       egamma_phi          = store->book1D("rctEgammaPhi","Rct e/#gamma #phi",binsPhi_,0.,3.2);
@@ -63,7 +63,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       isoegamma_phi_eff_num = store->book1D("rctIsoEgammaPhiEffNum","Rct isolated e/#gamma #phi",binsPhi_,0.,3.2);
       isoegamma_phi_eff_num->getTH1F()->Sumw2();
       
-      region_rank=store->book1D("rctRegionRank","Rct region ET",64,0,128);
+      region_rank=store->book1D("rctRegionRank","Rct region ET",128,0,128);
     }
 
 }
@@ -111,12 +111,14 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
   L1GctEmCandCollection gctEGammas;
 
   edm::Handle<L1CaloEmCollection> egamma;
-  if(iEvent.getByLabel(egamma_,egamma) && !egamma.failedToGet())
-    for(L1CaloEmCollection::const_iterator i=egamma->begin();i!=egamma->end();++i)
-      {
-	L1CaloEmCand rctEGamma = *i;
-	gctEGammas.push_back(L1GctEmCand(rctEGamma));
-      }
+
+
+    if(iEvent.getByLabel(egamma_,egamma) && !egamma.failedToGet())
+      for(L1CaloEmCollection::const_iterator i=egamma->begin();i!=egamma->end();++i)
+	{
+	  L1CaloEmCand rctEGamma = *i;
+	  gctEGammas.push_back(L1GctEmCand(rctEGamma));
+	}
 
  
   if(gctEGammas.size()>0)
@@ -154,24 +156,26 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	      double phi = caloGeom->emJetPhiBinCenter( i->phiIndex() ) ;
 	      double et = emScale->et( i->rank() ) ;
 	      et+=1e-6;//correction !
-	      math::PtEtaPhiMLorentzVector v(et,eta,phi,0.0);
+		  math::PtEtaPhiMLorentzVector v(et,eta,phi,0.0);
 	      double deltaR = ROOT::Math::VectorUtil::DeltaR(v,genEGamma->at(j).p4());
 	      //ok now match and do it over 10 GeV
-	      if(deltaR<matchDR_&&et>egammaThreshold_)
+	      if(deltaR<matchDR_&&et>=egammaThreshold_)
 		{
 		  egamma_et_eff_num->Fill(genEGamma->at(j).pt());
 		  egamma_eta_eff_num->Fill(genEGamma->at(j).eta());
 		  egamma_phi_eff_num->Fill(genEGamma->at(j).phi());
 		  egamma_et_eff_num2D->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-		  
+		  egamma_et_eff_num2D->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+	    
 		  if(i->isolated())
 		    {
 		      isoegamma_et_eff_num->Fill(genEGamma->at(j).pt());
 		      isoegamma_eta_eff_num->Fill(genEGamma->at(j).eta());
 		      isoegamma_phi_eff_num->Fill(genEGamma->at(j).phi());
 		      isoegamma_et_eff_num2D->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+		      isoegamma_et_eff_num2D->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 		    }
-      
+	    
 		  //scale -Do it outside the saturation and for egammas over 10 GeV 
 		  if(i->rank()<127)
 		    {
@@ -179,7 +183,8 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 		    }
 		}
 	    }
-    }
+      }
+ 
 
   //Now regions
   edm::Handle<L1CaloRegionCollection> regions;
