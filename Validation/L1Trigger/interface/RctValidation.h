@@ -69,7 +69,7 @@ protected:
 private:
   DQMStore* dbe_;  
 
-  edm::InputTag egamma_;
+  edm::InputTag egamma_; 
   edm::InputTag genEGamma_;
   std::string directory_;
 

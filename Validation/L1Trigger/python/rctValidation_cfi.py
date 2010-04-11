@@ -39,7 +39,7 @@ rctZeeVal = cms.EDAnalyzer('RctValidation',
 )                               
 
 rctInclusiveVal = cms.EDAnalyzer('RctValidation',
-                egamma = cms.InputTag('simRctDigis'),
+                egamma = cms.InputTag('simGctDigis'),
                 genEGamma = cms.InputTag("rctValEGammaAll"),
                 directory = cms.string("L1TEMU/RCTRelVal/allElectrons")
 )                               
@@ -48,7 +48,8 @@ rctInclusiveVal = cms.EDAnalyzer('RctValidation',
 rctValHarvesting = cms.EDAnalyzer('RctHarvesting',
                                   directories = cms.vstring(
                                       'L1TEMU/RCTRelVal/electronsFromZ',
-                                      'L1TEMU/RCTRelVal/allElectrons'
+                                      'L1TEMU/RCTRelVal/allElectrons',
+                                      'L1T/RCTPhotons/photons'
                                       )
 )                                  
 
