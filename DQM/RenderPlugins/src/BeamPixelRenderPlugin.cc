@@ -114,6 +114,7 @@ private:
 	obj->SetStats(kTRUE);
 	obj->SetOption("colz");
 
+	c->cd();
 	TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
 	if (pal != 0)
 	  {
@@ -190,6 +191,7 @@ private:
 
 	if ((o.name.find("dxdz vs lumi") == std::string::npos) && (o.name.find("dydz vs lumi") == std::string::npos) && (o.name.find("pixelHits vs lumi") == std::string::npos))
 	  {
+	    c->cd();
 	    TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
 	    if (pal != 0)
 	      {
