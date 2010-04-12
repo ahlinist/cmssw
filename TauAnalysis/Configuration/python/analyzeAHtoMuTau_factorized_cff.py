@@ -53,8 +53,7 @@ eventSelectionReplacements = \
     [ evtSelDiTauCandidateForAHtoMuTauZeroCharge, evtSelDiTauCandidateForAHtoMuTauZeroChargeLooseMuonIsolation ],
     [ evtSelDiTauCandidateForAHtoMuTauMt1MET, evtSelDiTauCandidateForAHtoMuTauMt1METlooseMuonIsolation ],
     [ evtSelDiTauCandidateForAHtoMuTauPzetaDiff, evtSelDiTauCandidateForAHtoMuTauPzetaDiffLooseMuonIsolation ],
-    [ evtSelDiTauCandidateForAHtoMuTauNonBackToBack, evtSelDiTauCandidateForAHtoMuTauNonBackToBackLooseMuonIsolation ],
-    [ evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox, evtSelDiTauCandidateForAHtoMuTauValidCollinearApproxLooseMuonIsolation ],
+    [ evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto, evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation ],
     [ evtSelNonCentralJetEt20bTag, evtSelNonCentralJetEt20bTagLooseMuonIsolation ],
     [ evtSelCentralJetEt20, evtSelCentralJetEt20LooseMuonIsolation ],
     [ evtSelCentralJetEt20bTag, evtSelCentralJetEt20bTagLooseMuonIsolation ] ]
