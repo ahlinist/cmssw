@@ -114,18 +114,11 @@ evtSelDiTauCandidateForAHtoMuTauPzetaDiff = evtSelDiTauCandidateForMuTauPzetaDif
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'individual')
 )
-evtSelDiTauCandidateForAHtoMuTauNonBackToBack = cms.PSet(
-    pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauNonBackToBack'),
+evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauNonBackToBackCut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauNonBackToBackCut', 'individual'),
-    systematics = cms.vstring(muTauPairSystematics.keys())
-)
-evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox = cms.PSet(
-    pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauValidCollinearApproxCut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauValidCollinearApproxCut', 'individual'),
+    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauCollinearApproxZmassVeto', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauCollinearApproxZmassVeto', 'individual'),
     systematics = cms.vstring(muTauPairSystematics.keys())
 )
 
@@ -662,13 +655,35 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau'
+        ),
+        replace = cms.vstring(
+            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'
+        )
+    ),
+
+    # veto events compatible with Z --> tau+ tau- hypothesis
+    # (based on invariant mass of di-tau pair reconstructed by collinear approximation fit)
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto'),
+        title = cms.string('#Chi^{2}( M(Muon-Tau) == M_{Z} ) > 1.'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager',
+            'diTauCandidateHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManager'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau'
         )
     ),
@@ -692,7 +707,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative',
             'jetHistManager.jetSource = selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
     ),
@@ -725,7 +740,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
             'jetHistManager.jetSource = selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
@@ -1199,54 +1214,39 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau'
+        ),
+        replace = cms.vstring(
+            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'
+        )
+    ),
+
+    # veto events compatible with Z --> tau+ tau- hypothesis
+    # (based on invariant mass of di-tau pair reconstructed by collinear approximation fit)
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto'),
+        title = cms.string('#Chi^{2}( M(Muon-Tau) == M_{Z} ) > 1.'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager',
+            'diTauCandidateHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManager'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau'
         )
     ),
-    ##cms.PSet(
-    ##    filter = cms.string('evtSelDiTauCandidateForAHtoMuTauNonBackToBack'),
-    ##    title = cms.string('dPhi(Muon,Tau) < 160 deg.'),
-    ##    saveRunEventNumbers = cms.vstring('passed_cumulative')
-    ##),
-    ##cms.PSet(
-    ##    analyzers = cms.vstring(
-    ##        'muonHistManager',
-    ##        'tauHistManager',
-    ##        'diTauCandidateHistManagerForMuTau'
-    ##    ),
-    ##    replace = cms.vstring(
-    ##        'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-    ##        'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-    ##        'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonBackToBackCumulative'
-    ##    )
-    ##),
-    ##cms.PSet(
-    ##    filter = cms.string('evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox'),
-    ##    title = cms.string('0 < x_1 < 1 && 0 < x_2 < 1'),
-    ##    saveRunEventNumbers = cms.vstring('passed_cumulative')
-    ##),
-    ##cms.PSet(
-    ##    analyzers = cms.vstring(
-    ##        'muonHistManager',
-    ##        'tauHistManager',
-    ##        'diTauCandidateHistManagerForMuTau',
-    ##        'diTauCandidateZmumuHypothesisHistManagerForMuTau',
-    ##        'muPairHistManager'
-    ##    ),
-    ##    replace = cms.vstring(
-    ##        'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-    ##        'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-    ##        'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative',
-    ##        'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau'
-    ##    )
-    ##),
-
+ 
     # veto events compatible with Z --> mu+ mu- hypothesis
     # (based on reconstructed invariant mass of di-muon pair)
     cms.PSet(
@@ -1266,9 +1266,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-            ##'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative',
             'jetHistManager.jetSource = selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
     ),
@@ -1289,8 +1287,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-            ##'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative',
             'jetHistManager.jetSource = selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
     ),
@@ -1320,8 +1317,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
-            ##'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
             'jetHistManager.jetSource = selectedLayer1JetsForAHtoMuTauBtagCumulative'

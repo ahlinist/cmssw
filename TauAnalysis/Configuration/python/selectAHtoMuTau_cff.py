@@ -30,22 +30,14 @@ cfgDiTauCandidateForAHtoMuTauPzetaDiffCut = cfgDiTauCandidateForMuTauPzetaDiffCu
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffIndividual')
 )
-##cfgDiTauCandidateForAHtoMuTauNonBackToBackCut = cms.PSet(
-##    pluginName = cms.string('diTauCandidateForAHtoMuTauNonBackToBackCut'),
-##    pluginType = cms.string('PATCandViewMinEventSelector'),
-##    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonBackToBackCumulative'),
-##    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonBackToBackIndividual'),
-##    systematics = cms.vstring(muTauPairSystematics.keys()),
-##    minNumber = cms.uint32(1)
-##)
-##cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCut = cms.PSet(
-##    pluginName = cms.string('diTauCandidateForAHtoMuTauValidCollinearApproxCut'),
-##    pluginType = cms.string('PATCandViewMinEventSelector'),
-##    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative'),
-##    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxIndividual'),
-##    systematics = cms.vstring(muTauPairSystematics.keys()),
-##    minNumber = cms.uint32(1)
-##)
+cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto = cms.PSet(    
+    pluginName = cms.string('diTauCandidateForAHtoMuTauCollinearApproxZmassVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoIndividual'),
+    systematics = cms.vstring(muTauPairSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
 
 # central jet veto/b-jet candidate selection
 cfgCentralJetEt20bTagVeto = cms.PSet(
@@ -98,8 +90,7 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForAHtoMuTauZeroChargeCut,
       cfgDiTauCandidateForAHtoMuTauMt1METcut,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCut,
-      ##cfgDiTauCandidateForAHtoMuTauNonBackToBackCut,
-      ##cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCut,
+      cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
       cfgDiMuPairZmumuHypothesisVeto,
       cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,

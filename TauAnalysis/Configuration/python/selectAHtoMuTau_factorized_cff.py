@@ -36,16 +36,11 @@ cfgDiTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation = cfgDiTauCandidateF
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationIndividual')
 )
-##cfgDiTauCandidateForAHtoMuTauNonBackToBackCutLooseMuonIsolation = cfgDiTauCandidateForAHtoMuTauNonBackToBackCut.clone(
-##    pluginName = cms.string('diTauCandidateForAHtoMuTauNonBackToBackCutLooseMuonIsolation'),
-##    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonBackToBackLooseMuonIsolationCumulative'),
-##    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonBackToBackLooseMuonIsolationIndividual')
-##)
-##cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCutLooseMuonIsolation = cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCut.clone(
-##    pluginName = cms.string('diTauCandidateForAHtoMuTauValidCollinearApproxCutLooseMuonIsolation'),
-##    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxLooseMuonIsolationCumulative'),
-##    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauValidCollinearApproxLooseMuonIsolationIndividual')
-##)
+cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation = cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto.clone(
+    pluginName = cms.string('diTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolationIndividual')
+)
 
 # central jet veto/b-jet candidate selection
 # for not not overlapping with loosely "isolated" muons
@@ -74,8 +69,7 @@ ahToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauMt1METcutLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation,
-      ##cfgDiTauCandidateForAHtoMuTauNonBackToBackCutLooseMuonIsolation,
-      ##cfgDiTauCandidateForAHtoMuTauValidCollinearApproxCutLooseMuonIsolation,
+      cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation,
       cfgCentralJetEt20bTagVetoLooseMuonIsolation,
       cfgCentralJetEt20CutLooseMuonIsolation,
       cfgCentralJetEt20bTagCutLooseMuonIsolation ],

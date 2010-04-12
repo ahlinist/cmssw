@@ -122,7 +122,7 @@ plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
 
     outputFilePath = cms.string('./plots/'),
     #outputFileName = cms.string('plotsZtoMuTau.ps')
-    indOutputFileName = cms.string('plotZtoMuTau_#PLOT#.png')
+    indOutputFileName = cms.string('plotZtoMuTau_#PLOT#.eps')
 )
 
 saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",

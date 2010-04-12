@@ -383,23 +383,35 @@ drawJobConfigurator_AHtoMuTau.add(
     )
 )
 
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+    beforeCut = evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
+    evtSelDiMuPairZmumuHypothesisVeto,
+    plot = drawJobConfigEntry(
+	meName = 'DiTauCandidateCollinearApproxQuantities/CollinearApproxCompatibilityFitChi2_mZ',
+        title = "#Chi^{2}( M(Muon-Tau) == M_{Z} ) (after P_{#zeta} Cut)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_chi2mZ_afterPzetaDiff"
+    )
+)
+
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+    plot = drawJobConfigEntry(
+	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after #Chi^{2}( M(Muon-Tau) == M_{Z} ) Cut)",
+        xAxis = 'Mass',
+        name = "cutFlowControlPlots_mZmumuHypothesis_afterChi2mZ"
+    )
+)
+
 #--------------------------------------------------------------------------------
 # define cut-flow control plots specific to "non-b-tag" analysis path
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_AHtoMuTau_woBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
 drawJobConfigurator_AHtoMuTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_woBtag/')
-
-##drawJobConfigurator_AHtoMuTau_woBtag.add(
-##    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
-##    plot = drawJobConfigEntry(
-##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
-##        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-##        xAxis = 'Mass',
-##        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
-##    )
-##)
 
 drawJobConfigurator_AHtoMuTau_woBtag.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVeto,
@@ -419,40 +431,6 @@ drawJobConfigurator_AHtoMuTau_woBtag.add(
 
 drawJobConfigurator_AHtoMuTau_wBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
 drawJobConfigurator_AHtoMuTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_wBtag/')
-
-##drawJobConfigurator_AHtoMuTau_wBtag.add(
-##    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-##    beforeCut = evtSelDiTauCandidateForAHtoMuTauNonBackToBack,
-##    plot = drawJobConfigEntry(
-##        meName = 'DiTauCandidateQuantities/DPhi12',
-##        title = "#Delta#phi(Muon-Tau) (after transverse Mass Cut)",
-##        xAxis = 'GeV',
-##        name = "cutFlowControlPlots_dPhiMuonTau_afterMt1MET"
-##    )
-##)
-
-##drawJobConfigurator_AHtoMuTau_wBtag.add(
-##    afterCut = evtSelDiTauCandidateForAHtoMuTauNonBackToBack,
-##    beforeCut = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
-##    plot = drawJobConfigEntry(
-##        meName = 'DiTauCandidateQuantities/DPhi12',
-##        title = "#Delta#phi(Muon-Tau) (after Acoplanarity(Muon-Tau) Cut)",
-##        xAxis = 'GeV',
-##        name = "cutFlowControlPlots_dPhiMuonTau_afterAcoplanarityMuonTau"
-##    )
-##)
-
-##drawJobConfigurator_AHtoMuTau_wBtag.add(
-##    #afterCut = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox,
-##    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
-##    plot = drawJobConfigEntry(
-##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
-##        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after valid. collinear Approx. Cut)",
-##        xAxis = 'Mass',
-##        name = "cutFlowControlPlots_mZmumuHypothesis_afterValidCollinearApprox"
-##    )
-##)
 
 drawJobConfigurator_AHtoMuTau_wBtag.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVeto,
@@ -619,6 +597,12 @@ finalSamplePlots = \
         title = "M(Muon + Tau), collinear Approx. (final Event sample)",
         xAxis = 'Mass',
         name = "finalSamplePlots_mCollApprox"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateCollinearApproxQuantities/CollinearApproxCompatibilityFitChi2_mZ',
+        title = "M(Muon + Tau) Compatibility with M_{Z}, collinear Approx. (final Event sample)",
+        xAxis = 'unlabeled',
+        name = "finalSamplePlots_mZcollApproxCompatibility"
     ),
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/SVfitMass',

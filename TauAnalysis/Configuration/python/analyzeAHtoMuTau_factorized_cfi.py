@@ -33,13 +33,9 @@ evtSelDiTauCandidateForAHtoMuTauPzetaDiffLooseMuonIsolation = evtSelDiTauCandida
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation', 'individual')
 )
-evtSelDiTauCandidateForAHtoMuTauNonBackToBackLooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauMt1MET.clone(
-    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauNonBackToBackCutLooseMuonIsolation', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauNonBackToBackCutLooseMuonIsolation', 'individual')
-)    
-evtSelDiTauCandidateForAHtoMuTauValidCollinearApproxLooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox.clone(
-    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauValidCollinearApproxCutLooseMuonIsolation', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauValidCollinearApproxCutLooseMuonIsolation', 'individual')
+evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto.clone(
+    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation', 'individual')
 )    
 
 # central jet veto/b-jet candidate selection
@@ -98,18 +94,12 @@ inputTagReplacements = \
       "selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative",
       "selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative" ],
-    [ "selectedMuTauPairsForAHtoMuTauNonBackToBackCumulative",
-      "selectedMuTauPairsForAHtoMuTauNonBackToBackLooseMuonIsolationCumulative" ],
-    [ "selectedMuTauPairsForAHtoMuTauValidCollinearApproxCumulative",
-      "selectedMuTauPairsForAHtoMuTauValidCollinearApproxLooseMuonIsolationCumulative" ],
+    [ "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative",
+      "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolationCumulative" ],
     [ "muTauPairZmumuHypothesesForAHtoMuTau",
       "muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation" ],
-    [ "muTauPairZmumuHypothesesForAHtoMuTau",
-      "muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation" ],    
-    [ "muTauPairVisMassHypothesesForAHtoMuTauNonBtag",
-      "muTauPairVisMassHypothesesForAHtoMuTauNonBtagLooseMuonIsolation" ],
-    [ "muTauPairVisMassHypothesesForAHtoMuTauBtag",
-      "muTauPairVisMassHypothesesForAHtoMuTauBtagLooseMuonIsolation" ],    
+    [ "muTauPairVisMassHypothesesForAHtoMuTau",
+      "muTauPairVisMassHypothesesForAHtoMuTauLooseMuonIsolation" ],
     [ "selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative",
       "selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative" ],
     [ "selectedLayer1JetsForAHtoMuTauBtagCumulative", "selectedLayer1JetsForAHtoMuTauBtagCumulative" ] ]
