@@ -290,7 +290,7 @@ void TauHistManager::bookHistogramsImp()
   } 
   
   hTauTrkIsoEnProfile_ = book1D("TauTrkIsoEnProfile", "All Isolation Tracks #Delta P", 100, 0., 10.);
-  hTauTrkIsoPtProfile_ = book1D("TauTrkIsoPtProfile", "All Isolation Tracks #Delta P_{T}", 100, 0., 10.);
+  hTauTrkIsoPtProfile_ = book1D("TauTrkIsoPtProfile", "All Isolation Tracks #P_{T}", 100, 0., 10.);
   hTauTrkIsoEtaDistProfile_ = book1D("TauTrkIsoEtaDistProfile", "All Isolation Tracks |#Delta#eta|", 15, 0., 1.5);
   hTauTrkIsoPhiDistProfile_ = book1D("TauTrkIsoPhiDistProfile", "All Isolation Tracks |#Delta#phi|", 15, 0., 1.5);
   
