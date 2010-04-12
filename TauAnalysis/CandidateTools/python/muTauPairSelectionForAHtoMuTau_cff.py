@@ -18,17 +18,8 @@ selectedMuTauPairsForAHtoMuTauMt1MET = copy.deepcopy(selectedMuTauPairsMt1MET)
 
 selectedMuTauPairsForAHtoMuTauPzetaDiff = copy.deepcopy(selectedMuTauPairsPzetaDiff)
 
-# require muon and tau-jet not to be back-to-back
-# (dPhi(muon-tau) < 160 degrees, such that collinear approximation provides good mass resolution)
-selectedMuTauPairsForAHtoMuTauNonBackToBack = cms.EDFilter("PATMuTauPairSelector",
-    cut = cms.string('dPhi12 < 2.79'),
-    filter = cms.bool(False)
-)
-
-# require missing transverse momentum to point
-# in the direction of visible tau decay products
-selectedMuTauPairsForAHtoMuTauValidCollinearApprox = cms.EDFilter("PATMuTauPairSelector",
-    cut = cms.string('collinearApproxIsValid()'),
+selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto = cms.EDFilter("PATMuTauPairSelector",
+    cut = cms.string('collinearApproxCompatibility("mZ").minuitFitChi2 > 1.'),
     filter = cms.bool(False)
 )
 
@@ -37,8 +28,7 @@ patMuTauPairSelConfiguratorForAHtoMuTau = objSelConfigurator(
       selectedMuTauPairsForAHtoMuTauZeroCharge,
       selectedMuTauPairsForAHtoMuTauMt1MET,
       selectedMuTauPairsForAHtoMuTauPzetaDiff,
-      selectedMuTauPairsForAHtoMuTauNonBackToBack,
-      selectedMuTauPairsForAHtoMuTauValidCollinearApprox ],
+      selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto ],
     src = "allMuTauPairs",
     pyModuleName = __name__,
     doSelIndividual = True
@@ -60,17 +50,15 @@ selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolation = copy.deepcopy(selectedM
 
 selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsForAHtoMuTauPzetaDiff)
 
-selectedMuTauPairsForAHtoMuTauNonBackToBackLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsForAHtoMuTauNonBackToBack)
 
-selectedMuTauPairsForAHtoMuTauValidCollinearApproxLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsForAHtoMuTauValidCollinearApprox)
+selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto)
 
 patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolation = objSelConfigurator(
     [ selectedMuTauPairsForAHtoMuTauAntiOverlapVetoLooseMuonIsolation,
       selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolation,
       selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolation,
       selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation,
-      selectedMuTauPairsForAHtoMuTauNonBackToBackLooseMuonIsolation,
-      selectedMuTauPairsForAHtoMuTauValidCollinearApproxLooseMuonIsolation ],
+      selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation ],
     src = "allMuTauPairsLooseMuonIsolation",
     pyModuleName = __name__,
     doSelIndividual = True
