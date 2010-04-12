@@ -10,14 +10,14 @@ plots_ZtoElecTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            #'Zee',
-			'ZeePlusJets',
+            'Zee',
+			#'ZeePlusJets',
 			'WplusJets',
 			'TTplusJets',
 			'qcdSum',
             'gammaPlusJetsSum',
-			#'Ztautau'
-            'ZtautauPlusJets'
+			'Ztautau'
+			#'ZtautauPlusJets'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -27,14 +27,14 @@ plots_ZtoElecTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-         #'Zee',
+         'Zee',
 		 'ZeePlusJets',
 		 'WplusJets',
 		 'TTplusJets',
 		 'qcdSum',
          'gammaPlusJetsSum',
-		 #'Ztautau'
-         'ZtautauPlusJets' 
+		 'Ztautau'
+		 #'ZtautauPlusJets' 
     )
 )
 
@@ -73,25 +73,51 @@ drawJobConfigurator_ZtoElecTau.add(
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelPrimaryEventVertexPosition,
-    beforeCut = evtSelTightElectronId,
-    plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/Electron#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Electron (after primary Event Vertex position Cut)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_electron_afterPrimaryEventVertexPosition"
-    )
+    beforeCut = evtSelLooseElectronId,
+    plots = [
+		drawJobConfigEntry(
+        	meName = 'ElectronQuantities/Electron#PAR#',
+        	PAR = [ 'Pt', 'Eta', 'Phi' ],
+        	title = "Electron (after primary Event Vertex position Cut)",
+        	xAxis = '#PAR#',
+        	name = "cutFlowControlPlots_electron_afterPrimaryEventVertexPosition"
+		),
+		drawJobConfigEntry(
+        	meName = 'ElectronQuantities/ElectronSuperclShapeSigmaIetaIeta',
+        	title = "Electron #sigma_{i#eta i#eta} (after primary Event Vertex position Cut)",
+        	xAxis = 'unlabeled',
+        	name = "cutFlowControlPlots_electronSigmaIetaIeta_afterPrimaryEventVertexPosition"
+		),
+		drawJobConfigEntry(
+        	meName = 'ElectronQuantities/ElectronHadEnOverEmEn',
+        	title = "Electron H/E (after primary Event Vertex position Cut)",
+        	xAxis = 'unlabeled',
+        	name = "cutFlowControlPlots_electronHadronicOverE_afterPrimaryEventVertexPosition"
+		),
+		drawJobConfigEntry(
+        	meName = 'ElectronQuantities/ElectronDeltaPhiSuperclToExtrapolTrack',
+        	title = "Electron #Delta#phi_{in}^{sc} (after primary Event Vertex position Cut)",
+        	xAxis = 'dPhi',
+        	name = "cutFlowControlPlots_electronDeltaPhiSuperClusterTrkAtVertex_afterPrimaryEventVertexPosition"
+		),
+		drawJobConfigEntry(
+        	meName = 'ElectronQuantities/ElectronDeltaEtaSuperclToExtrapolTrack',
+        	title = "Electron #Delta#eta_{in}^{sc} (after primary Event Vertex position Cut)",
+        	xAxis = 'unlabeled',
+        	name = "cutFlowControlPlots_electronDeltaEtaSuperClusterTrkAtVertex_afterPrimaryEventVertexPosition"
+		)
+	]
 )    
 
 drawJobConfigurator_ZtoElecTau.add(
-    afterCut = evtSelTightElectronId,
+    afterCut = evtSelLooseElectronId,
     beforeCut = evtSelElectronAntiCrack,
     plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/Electron#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
         title = "Electron (after Electron ID Cut)",
         xAxis = '#PAR#',
-        name = "cutFlowControlPlots_electron_afterTightElectronId"
+        name = "cutFlowControlPlots_electron_afterLooseElectronId"
     )
 )
 
@@ -373,12 +399,24 @@ drawJobConfigurator_ZtoElecTau.add(
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTauEcalCrackVeto,
+    beforeCut = evtSelTauMuonVeto,
+    plot = drawJobConfigEntry(
+        meName = 'TauQuantities/Tau#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Tau (after Tau ECAL Crack Veto)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_tau_afterTauEcalCrackVeto"
+    )
+)
+
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelTauMuonVeto,
     beforeCut = evtSelDiTauCandidateForElecTauAntiOverlapVeto,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DR12',
-        title = "#Delta R(Electron,Tau) (after Tau ECAL Crack Veto)",
+        title = "#Delta R(Electron,Tau) (after Tau anti-Muon Veto)",
         xAxis = 'dR',
-        name = "cutFlowControlPlots_dR12_afterTauEcalCrackVeto"
+        name = "cutFlowControlPlots_dR12_afterTauMuonVeto"
     )
 )
 
