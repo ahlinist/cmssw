@@ -6,8 +6,8 @@ import FWCore.ParameterSet.Config as cms
 
 allElecTauPairs = cms.EDProducer("PATElecTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-    srcLeg2 = cms.InputTag('selectedLayer1TausForElecTauEcalCrackVetoCumulative'),
+    srcLeg1 = cms.InputTag('selectedLayer1ElectronsForElecTauConversionVetoCumulative'),
+    srcLeg2 = cms.InputTag('selectedLayer1TausForElecTauMuonVetoCumulative'),
     dRmin12 = cms.double(0.3),
     srcMET = cms.InputTag('layer1METs'),
     srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
@@ -26,9 +26,8 @@ produceElecTauPairs = cms.Sequence( allElecTauPairs )
 #        of electron isolation from other event selection criteria,
 #        in order to avoid problems with limited Monte Carlo statistics)
 
-allElecTauPairsLooseElectronIsolation = allElecTauPairs.clone(
-    srcLeg1 = cms.InputTag('selectedLayer1ElectronsTrkIPlooseIsolationCumulative'),
-)
+allElecTauPairsLooseElectronIsolation = allElecTauPairs.clone()
+allElecTauPairsLooseElectronIsolation.srcLeg1 = cms.InputTag('selectedLayer1ElectronsForElecTauConversionVetoLooseIsolationCumulative')
 
 produceElecTauPairsLooseElectronIsolation = cms.Sequence( allElecTauPairsLooseElectronIsolation )
 
