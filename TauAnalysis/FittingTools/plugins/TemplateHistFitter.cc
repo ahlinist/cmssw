@@ -200,7 +200,7 @@ void TemplateHistFitter::estimateUncertainties(bool fluctStat, bool fluctSys, in
     }
     
     double chi2red = compChi2red(fitResult_tmp);
-    //std::cout << "Chi2red = " << chi2red << std::endl;
+    std::cout << "Chi2red = " << chi2red << std::endl;
     if ( !(chi2red < chi2redMax) ) continue;
     
     mean.update(fitValues);
