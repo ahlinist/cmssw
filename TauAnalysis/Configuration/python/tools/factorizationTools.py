@@ -28,9 +28,15 @@ def replaceEventSelections(analyzer, evtSel_replacements):
         evtSel_tight = evtSel_replacement[0]
         evtSel_loose = evtSel_replacement[1]
 
-        if evtSel_tight in analyzer.filters:
-            analyzer.filters.remove(evtSel_tight)
-            analyzer.filters.append(evtSel_loose)
+        for evtSel_i in analyzer.filters:
+            if getattr(evtSel_i, "pluginName").value() == getattr(evtSel_tight, "pluginName").value():
+
+                analyzer.filters.remove(evtSel_i)
+                analyzer.filters.append(evtSel_loose)
+
+                print("Replaced in " + getattr(analyzer, "name").value() + ": "
+                      + getattr(evtSel_tight, "pluginName").value() + " by " + getattr(evtSel_loose, "pluginName").value()
+                      + " (version with factorization enabled)")
 
 #
 #--------------------------------------------------------------------------------
@@ -781,17 +787,15 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
         evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         evtSelDiTauCandidateForAHtoMuTauMt1MET,
-        evtSelDiTauCandidateForAHtoMuTauPzetaDiff
+        evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+        evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
+        evtSelDiMuPairZmumuHypothesisVeto
     ]
 
     evtSelAHtoMuTau_woBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
-    evtSelAHtoMuTau_woBtag_factorizedLoose.append(evtSelDiMuPairZmumuHypothesisVeto)
     evtSelAHtoMuTau_woBtag_factorizedLoose.append(evtSelNonCentralJetEt20bTag)
 
     evtSelAHtoMuTau_wBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
-    ##evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauNonBackToBack)
-    ##evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelDiTauCandidateForAHtoMuTauValidCollinearApprox)  
-    evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelDiMuPairZmumuHypothesisVeto)
     evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelCentralJetEt20)
     evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelCentralJetEt20bTag)
 
@@ -813,7 +817,8 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         evtSel_factorizedLoose = evtSelAHtoMuTau_woBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
-        dqmDirectoryOut = dqmDirectoryOut_woBtag_InclusivePPmuX + '/'
+        dqmDirectoryOut = dqmDirectoryOut_woBtag_InclusivePPmuX + '/',
+        dropInputDirectories = False
     )
 
     scaleAHtoMuTauName_woBtag_InclusivePPmuX = "scaleAHtoMuTau_woBtag_InclusivePPmuX" + "_" + pyObjectLabel
@@ -830,7 +835,8 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         evtSel_factorizedLoose = evtSelAHtoMuTau_wBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
-        dqmDirectoryOut = dqmDirectoryOut_wBtag_InclusivePPmuX + '/'
+        dqmDirectoryOut = dqmDirectoryOut_wBtag_InclusivePPmuX + '/',
+        dropInputDirectories = False
     )
 
     scaleAHtoMuTauName_wBtag_InclusivePPmuX = "scaleAHtoMuTau_wBtag_InclusivePPmuX" + "_" + pyObjectLabel
@@ -849,7 +855,8 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         evtSel_factorizedLoose = evtSelAHtoMuTau_woBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
-        dqmDirectoryOut = dqmDirectoryOut_woBtag_PPmuXptGt20 + '/'
+        dqmDirectoryOut = dqmDirectoryOut_woBtag_PPmuXptGt20 + '/',
+        dropInputDirectories = False
     )
 
     scaleAHtoMuTauName_woBtag_PPmuXptGt20 = "scaleAHtoMuTau_woBtag_PPmuXptGt20" + "_" + pyObjectLabel
@@ -866,7 +873,8 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         evtSel_factorizedLoose = evtSelAHtoMuTau_wBtag_factorizedLoose,
         meName_numerator = meNameAHtoMuTau_numerator,
         meName_denominator = meNameAHtoMuTau_denominator,
-        dqmDirectoryOut = dqmDirectoryOut_wBtag_PPmuXptGt20 + '/'
+        dqmDirectoryOut = dqmDirectoryOut_wBtag_PPmuXptGt20 + '/',
+        dropInputDirectories = False
     )
 
     scaleAHtoMuTauName_wBtag_PPmuXptGt20 = "scaleAHtoMuTau_wBtag_PPmuXptGt20" + "_" + pyObjectLabel
