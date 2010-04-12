@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.6 $
-  \date $Date: 2010/03/20 18:56:57 $
+  \version $Revision: 1.7 $
+  \date $Date: 2010/03/26 09:29:12 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -379,7 +379,7 @@ private:
 	    obj->SetStats(0);
 	    obj->SetMaximum(5);
 	    obj->SetNdivisions(36,"Y");
-	    obj->Draw("COLZ");
+	    obj->SetOption("colz");
 	  }
 	
 	else if (
@@ -389,7 +389,7 @@ private:
 	    obj->SetStats(0);
 	    obj->SetMaximum(2);
 	    obj->SetNdivisions(36,"Y");
-	    obj->Draw("COLZ");
+	    obj->SetOption("colz");
 	  }
       } // DetDiagPedestalMonitor_Hcal/Summary Plots/
     else if (o.name.find("DetDiagLaserMonitor_Hcal/")!=std::string::npos)
@@ -464,7 +464,7 @@ private:
 	    obj->GetXaxis()->SetBit(TAxis::kLabelsVert);
 	    obj->GetXaxis()->SetLabelSize(0.05);
 	    c->SetBottomMargin(0.2);
-	    (obj->GetEntries()>0) ? obj->Draw("P") : obj->Draw();
+	    (obj->GetEntries()>0) ? obj->SetOption("P") : obj->SetOption("");
 	  }
       }  // DetDiagLaserMonitor_Hcal
   }
