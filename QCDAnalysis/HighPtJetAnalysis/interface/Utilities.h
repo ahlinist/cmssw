@@ -12,6 +12,7 @@ namespace
 {
 typedef struct 
 {
+  int   passLooseID;
   int   nTrkVtx;
   int   nTrkCalo;
   int   n90;
