@@ -6,9 +6,10 @@ from TauAnalysis.Configuration.submitToBatch import submitToBatch
 from TauAnalysis.Configuration.makeReplacementsMerge import makeReplacementsMerge
 
 #usage message
-if len(sys.argv) != 4:
-	print '\nUsage: creatAndSubmitMergeConfigs.py <sampleName> <total number of input files> <input files per output file>'
+if len(sys.argv) < 4:
+	print '\nUsage: creatAndSubmitMergeConfigs.py <sampleName> <total number of input files> <input files per output file> [submit]'
 	print 'e.g. sampleName = Ztautau, QCD_EMenriched_Pt20to30, etc.\n'
+	print 'by default, batch submission is made; [submit]="no" to disable \n'
 	print 'template config file mergeSkimOutput_cfg.py must exist and be editied appropriately\n'
 	sys.exit(1) 
 
@@ -16,6 +17,9 @@ if len(sys.argv) != 4:
 sampleName = str(sys.argv[1])
 numInputFiles = int(sys.argv[2])
 numInputFilesPerOutputFile = int(sys.argv[3])
+sub = "yes"
+if len(sys.argv) == 5 and str(sys.argv[4]) == "no":
+	sub = "no"
 
 # calculate file ranges
 numOutputFiles = numInputFiles/numInputFilesPerOutputFile
@@ -44,5 +48,5 @@ for i in range(0, numOutputFiles):
 	submitToBatch(configFile = "mergeSkimOutput_cfg.py", channel = "ZtoElecTau", sample = "%(sName)s_%(i)02d" % {"sName" : sampleName, "i" : (i + 1)},
 		replFunction = makeReplacementsMerge,
 		replacements = "part = %(i)02d; minFileNum = %(min)d; maxFileNum = %(max)d; maxEvents = -1; inputFileNameBase = %(inDir)s" % {"i" : (i + 1), "min" : min, "max" : max, "inDir" : inputFileNameBase },
-		job = "merge", queue = "8nh", outputFilePath = outputDirectory, resourceRequest = "", submit = "yes")
+		job = "merge", queue = "8nh", outputFilePath = outputDirectory, resourceRequest = "", submit = sub)
 
