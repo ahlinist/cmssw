@@ -59,4 +59,4 @@ muTauPairProdConfiguratorLooseMuonIsolation = objProdConfigurator(
 
 produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(pyNameSpace = locals())
 
-produceMuTauPairsAll = cms.Sequence( produceMuTauPairs * produceMuTauPairsLooseMuonIsolation )
+produceMuTauPairsAll = cms.Sequence(produceMuTauPairs * produceMuTauPairsLooseMuonIsolation)
