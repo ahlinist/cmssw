@@ -588,6 +588,51 @@ process.scaleSysHistZtoMuTau = cms.EDAnalyzer("DQMHistScaler",
     )
 )
 
+process.dumpSysHistZtoMuTau = cms.EDAnalyzer("DQMDumpHistogram",
+    meNames = cms.vstring(
+        dqmDirectory_Ztautau_finalEvtSel + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_Ztautau_template + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_Ztautau_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_Ztautau_systematics + '/' + 'bias' + '/' + meName_diTauMvis12,
+        dqmDirectory_Ztautau_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_Ztautau_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12,
+        dqmDirectory_Zmumu_finalEvtSel + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_correctedTemplate_data + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_correctedTemplate_pure + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12,
+        dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuJetMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12,
+        dqmDirectory_ZmumuMuonMisId_template_data + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuMuonMisId_template_pure + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bias' + '/' + meName_diTauMvis12,
+        dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_ZmumuMuonMisId_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12,
+        dqmDirectory_WplusJets_finalEvtSel + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_WplusJets_correctedTemplate_data + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_WplusJets_correctedTemplate_pure + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_WplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_WplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12,
+        dqmDirectory_WplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_WplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12,
+        dqmDirectory_TTplusJets_finalEvtSel + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_TTplusJets_template_data + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_TTplusJets_template_pure + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_TTplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_TTplusJets_systematics + '/' + 'bias' + '/' + meName_diTauMvis12,
+        dqmDirectory_TTplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_TTplusJets_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12,
+        dqmDirectory_QCD_finalEvtSel + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_QCD_template_data + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_QCD_template_pure + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_QCD_systematics + '/' + 'bias' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_QCD_systematics + '/' + 'bias' + '/' + meName_diTauMvis12,
+        dqmDirectory_QCD_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12_norm,
+        dqmDirectory_QCD_systematics + '/' + 'bgEnrichedSamplePurity' + '/' + meName_diTauMvis12,
+    )
+)                                             
+
 #--------------------------------------------------------------------------------
 # fit template histograms to distribution of visible muon + tau-jet mass in (pseudo)Data,
 # in order to determine normalization factors of individual background processes
@@ -804,8 +849,8 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
     fit = cms.PSet(
         algorithm = cms.PSet(
             pluginName = cms.string("fitBgEstTemplateZtoMuTauAlgorithm"),
-            pluginType = cms.string("TemplateFitAdapter_TFractionFitter")
-            #pluginType = cms.string("TemplateFitAdapter_RooFit")
+            #pluginType = cms.string("TemplateFitAdapter_TFractionFitter")
+            pluginType = cms.string("TemplateFitAdapter_RooFit")
         ),
         variables = cms.PSet(
             diTauMvis12 = cms.PSet(
@@ -859,8 +904,8 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
     ),
 
     estStatUncertainties = cms.PSet(
-        numSamplings = cms.int32(500),
-        chi2redMax = cms.double(5.),
+        numSamplings = cms.int32(10),
+        chi2redMax = cms.double(10.),
         verbosity = cms.PSet(
             printLevel = cms.int32(-1),
             printWarnings = cms.bool(False)
@@ -922,8 +967,8 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 mode = cms.string("coherent")
             )
         ),       
-        numSamplings = cms.int32(500),
-        chi2redMax = cms.double(5.),
+        numSamplings = cms.int32(10),
+        chi2redMax = cms.double(10.),
         verbosity = cms.PSet(
             printLevel = cms.int32(-1),
             printWarnings = cms.bool(False)
@@ -961,6 +1006,7 @@ process.p = cms.Path(
    + process.prodSysBiasHistZtoMuTau
    + process.prodSysBgEnrichedSamplePurityHistZtoMuTau
    + process.scaleSysHistZtoMuTau
+   #+ process.dumpSysHistZtoMuTau
    #+ process.dumpDQMStore
    + process.plotTemplateHistZtoMuTau
    + process.fitZtoMuTau
