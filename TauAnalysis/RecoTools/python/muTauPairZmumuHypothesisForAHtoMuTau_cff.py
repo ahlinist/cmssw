@@ -9,7 +9,7 @@ from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
 #--------------------------------------------------------------------------------
 
 muTauPairZmumuHypothesesForAHtoMuTau = muTauPairZmumuHypotheses.clone(
-    diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative')
+    diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative')
 )
 
 muTauPairVisMassHypothesesForAHtoMuTau = muTauPairVisMassHypotheses.clone(
@@ -24,7 +24,7 @@ produceMuTauPairZmumuHypothesesForAHtoMuTau = cms.Sequence(
 )
 
 muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation = muTauPairZmumuHypothesesForAHtoMuTau.clone(
-    diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative')
+    diCandidatePairSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolationCumulative')
 )
 
 muTauPairVisMassHypothesesForAHtoMuTauLooseMuonIsolation = muTauPairVisMassHypothesesForAHtoMuTau.clone(
