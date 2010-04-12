@@ -25,6 +25,8 @@ xAxis_ipZ.xAxisTitle = cms.string('IP_{z} / mm')
 
 xAxis_dPhi = copy.deepcopy(xAxis)
 xAxis_dPhi.xAxisTitle = cms.string('#Delta #phi / Rad')
+xAxis_dEta = copy.deepcopy(xAxis)
+xAxis_dEta.xAxisTitle = cms.string('#Delta #eta')
 xAxis_dR = copy.deepcopy(xAxis)
 xAxis_dR.xAxisTitle = cms.string('#Delta R')
 
