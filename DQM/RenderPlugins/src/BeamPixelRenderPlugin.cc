@@ -196,10 +196,10 @@ private:
 		double deltaX = pal->GetX2NDC() - pal->GetX1NDC();
 		double deltaY = pal->GetY2NDC() - pal->GetY1NDC();
 		
-		pal->SetX1NDC(0.10);
-		pal->SetY1NDC(0.15);	    
-		pal->SetX2NDC(0.10 + deltaX);
-		pal->SetY2NDC(0.15 + deltaY);	    
+		pal->SetX1NDC(0.13);
+		pal->SetY1NDC(0.13);	    
+		pal->SetX2NDC(0.13 + deltaX);
+		pal->SetY2NDC(0.13 + deltaY);	    
 	      }
 	  }
 
