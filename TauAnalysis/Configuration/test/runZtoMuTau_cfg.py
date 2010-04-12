@@ -153,6 +153,7 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#factorization#
+##enableFactorization_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
