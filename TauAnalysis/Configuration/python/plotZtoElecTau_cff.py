@@ -52,17 +52,17 @@ loadZtoElecTau_7TeV = cms.EDAnalyzer("DQMFileLoader",
 )
 
 addZtoElecTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
-    qcdSum = cms.PSet(
-	dqmDirectories_input = cms.vstring(
-            'harvested/QCD_BCtoE_Pt20to30',
-            'harvested/QCD_BCtoE_Pt30to80',
-            'harvested/QCD_BCtoE_Pt80to170',
-            'harvested/QCD_EMenriched_Pt20to30',
-            'harvested/QCD_EMenriched_Pt30to80',
-            'harvested/QCD_EMenriched_Pt80to170'
-        ),
-	dqmDirectory_output = cms.string('harvested/qcdSum')
-    )                          
+	qcdSum = cms.PSet(
+		dqmDirectories_input = cms.vstring(
+			'harvested/QCD_BCtoE_Pt20to30',
+			'harvested/QCD_BCtoE_Pt30to80',
+			'harvested/QCD_BCtoE_Pt80to170',
+			'harvested/QCD_EMenriched_Pt20to30',
+			'harvested/QCD_EMenriched_Pt30to80',
+			'harvested/QCD_EMenriched_Pt80to170'
+		),
+		dqmDirectory_output = cms.string('harvested/qcdSum')
+	)                          
 )
 
 addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
@@ -77,19 +77,19 @@ addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
 )
 
 addZtoElecTau_smSum = cms.EDAnalyzer("DQMHistAdder",
-    smSum = cms.PSet(
-        dqmDirectories_input = cms.vstring(
-	    #'harvested/Ztautau',
-            'harvested/ZtautauPlusJets',
-            'harvested/ZeePlusJets', 
-            #'harvested/Zee',
-            'harvested/gammaPlusJetsSum',
-            'harvested/qcdSum', 
-            'harvested/WplusJets',
-            'harvested/TTplusJets'
-	),
-        dqmDirectory_output = cms.string('harvested/smSum')
-    )
+	smSum = cms.PSet(
+		dqmDirectories_input = cms.vstring(
+			'harvested/Ztautau',
+			#'harvested/ZtautauPlusJets',
+			#'harvested/ZeePlusJets', 
+			'harvested/Zee',
+			'harvested/gammaPlusJetsSum',
+			'harvested/qcdSum', 
+			'harvested/WplusJets',
+			'harvested/TTplusJets'
+		),
+		dqmDirectory_output = cms.string('harvested/smSum')
+	)
 )
 
 addZtoElecTau = cms.Sequence(addZtoElecTau_qcdSum + addZtoElecTau_gammaPlusJetsSum + addZtoElecTau_smSum)

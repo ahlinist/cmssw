@@ -38,7 +38,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelPrimaryEventVertexPosition,
         
         # electron candidate selection
-        evtSelTightElectronId,
+        evtSelLooseElectronId,
         evtSelElectronAntiCrack,
         evtSelElectronEta,
         evtSelElectronPt,
@@ -60,6 +60,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauCharge,
         evtSelTauElectronVeto,
         evtSelTauEcalCrackVeto,
+        evtSelTauMuonVeto,
         
         # di-tau candidate selection
         evtSelDiTauCandidateForElecTauAntiOverlapVeto,
