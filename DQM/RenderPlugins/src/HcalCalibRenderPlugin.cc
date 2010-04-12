@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.7 $
-  \date $Date: 2010/03/26 09:29:12 $
+  \version $Revision: 1.8 $
+  \date $Date: 2010/04/12 09:12:01 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -464,7 +464,7 @@ private:
 	    obj->GetXaxis()->SetBit(TAxis::kLabelsVert);
 	    obj->GetXaxis()->SetLabelSize(0.05);
 	    c->SetBottomMargin(0.2);
-	    (obj->GetEntries()>0) ? obj->SetOption("P") : obj->SetOption("");
+	    (obj->GetEntries()>0) ? obj->Draw("P") : obj->Draw("");
 	  }
       }  // DetDiagLaserMonitor_Hcal
   }
