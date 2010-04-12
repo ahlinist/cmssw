@@ -190,7 +190,7 @@ void TemplateFitAdapterBase::model1dType::initialize()
       continue;
     }
 
-    TH1* histogram_subrange = makeSubrangeHistogram(me_->getTH1(), &fitRanges_);
+    TH1* histogram_subrange = makeSubrangeHistogram(sysErrFluctuation->me_->getTH1(), &fitRanges_);
     sysErrFluctuation->histogram_ = makeSerializedHistogram(histogram_subrange);
     delete histogram_subrange;
 
@@ -207,6 +207,13 @@ void TemplateFitAdapterBase::model1dType::initialize()
 
 void TemplateFitAdapterBase::model1dType::fluctuate(bool fluctStat, bool fluctSys, double numEntries)
 {
+  //std::cout << "<model1dType::fluctuate>:" << std::endl;
+  //std::cout << " processName = " << processName_ << ": varName = " << varName_ << std::endl;
+  //std::cout << " (meName = " << meName_ << ")" << std::endl;
+  //std::cout << " fluctStat = " << fluctStat << std::endl;
+  //std::cout << " fluctSys = " << fluctSys << std::endl;
+  //std::cout << " numEntries = " << numEntries << std::endl;
+
   if ( fluctStat ) {
     sampleHistogram_stat(histogram_, fluctHistogram_, numEntries);
   } else {
@@ -223,6 +230,7 @@ void TemplateFitAdapterBase::model1dType::fluctuate(bool fluctStat, bool fluctSy
   if ( fluctSys ) {
     for ( std::vector<sysErrType>::const_iterator sysErrFluctuation = sysErrFluctuations_.begin();
 	  sysErrFluctuation != sysErrFluctuations_.end(); ++sysErrFluctuation ) {
+      //std::cout << "--> processing fluctName = " << sysErrFluctuation->fluctName_ << "..." << std::endl;
       sampleHistogram_sys(fluctHistogram_, sysErrFluctuation->histogram_,  
 			  sysErrFluctuation->pullRMS_, sysErrFluctuation->pullMin_, sysErrFluctuation->pullMax_, 
 			  sysErrFluctuation->fluctMode_);
@@ -286,7 +294,7 @@ void TemplateFitAdapterBase::modelNdType::fluctuate(bool fluctStat, bool fluctSy
       isFirstFluctuation = false;
     }
     
-    model1dEntry->second->fluctuate(true, false, numEntries*model1dEntry->second->fittedFraction_);
+    model1dEntry->second->fluctuate(fluctStat, fluctSys, numEntries*model1dEntry->second->fittedFraction_);
   }
 }
 
