@@ -188,7 +188,7 @@ private:
 	gStyle->SetOptFit(1110);
 	gStyle->SetOptStat(10);
 
-	if (o.name.find("pixelHits vs lumi") == std::string::npos)
+	if ((o.name.find("dxdz vs lumi") == std::string::npos) && (o.name.find("dydz vs lumi") == std::string::npos) && (o.name.find("pixelHits vs lumi") == std::string::npos))
 	  {
 	    TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
 	    if (pal != 0)
