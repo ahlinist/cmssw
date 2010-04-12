@@ -83,6 +83,12 @@ void DQMDumpHistogram::endJob()
 	<< " Failed to access histogram associated to meName = " << (*meName) << " in DQMStore --> skipping !!";
       continue;
     }
+
+    std::cout << " integral = " << histogram->Integral() << std::endl;
+    std::cout << " numBinsX = " << histogram->GetNbinsX();
+    if ( histogram->GetDimension() >= 2 ) std::cout << ", numBinsY = " << histogram->GetNbinsY();
+    if ( histogram->GetDimension() >= 3 ) std::cout << ", numBinsZ = " << histogram->GetNbinsZ();
+    std::cout << std::endl;
     
     int numBinsX = histogram->GetNbinsX();
     for ( int iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
@@ -105,7 +111,7 @@ void DQMDumpHistogram::endJob()
 	  if ( histogram->GetDimension() >= 2 ) std::cout << ", Y = " << binCenterY;
 	  if ( histogram->GetDimension() >= 3 ) std::cout << ", Z = " << binCenterZ;
 	  std::cout << "):";
-	  std::cout << std::setprecision(3) << std::fixed << binContent << " +/- " << binError << std::endl;
+	  std::cout << " " << std::setprecision(3) << std::fixed << binContent << " +/- " << binError << std::endl;
 	}
       }
     }
