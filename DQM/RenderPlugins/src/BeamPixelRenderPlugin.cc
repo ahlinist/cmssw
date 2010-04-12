@@ -117,10 +117,13 @@ private:
 	TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
 	if (pal != 0)
 	  {
-	    pal->SetX1NDC(0.70);
-	    pal->SetY1NDC(0.66);	    
+	    double deltaX = pal->GetX2NDC() - pal->GetX1NDC();
+	    double deltaY = pal->GetY2NDC() - pal->GetY1NDC();
+
+	    pal->SetX1NDC(0.90 - deltaX);
+	    pal->SetY1NDC(0.90 - deltaY);
 	    pal->SetX2NDC(0.90);
-	    pal->SetY2NDC(0.90);	    
+	    pal->SetY2NDC(0.90);
 	  }
 
 	return;
@@ -184,6 +187,21 @@ private:
       {
 	gStyle->SetOptFit(1110);
 	gStyle->SetOptStat(10);
+
+	if (o.name.find("pixelHits vs lumi") == std::string::npos)
+	  {
+	    TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
+	    if (pal != 0)
+	      {
+		double deltaX = pal->GetX2NDC() - pal->GetX1NDC();
+		double deltaY = pal->GetY2NDC() - pal->GetY1NDC();
+		
+		pal->SetX1NDC(0.10);
+		pal->SetY1NDC(0.15);	    
+		pal->SetX2NDC(0.10 + deltaX);
+		pal->SetY2NDC(0.15 + deltaY);	    
+	      }
+	  }
 
 	return;
       }
