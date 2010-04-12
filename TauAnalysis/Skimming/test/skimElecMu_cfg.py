@@ -29,7 +29,7 @@ process.source = cms.Source("PoolSource",
 
 process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
     src = cms.InputTag("gsfElectrons"),
-    cut = cms.string("pt > 8 & abs(eta) < 2.5 & eSuperClusterOverP>0.8 & eSuperClusterOverP<1.25"),
+    cut = cms.string("pt > 8 & abs(eta) < 2.5"),
     filter = cms.bool(True)
 )
 
