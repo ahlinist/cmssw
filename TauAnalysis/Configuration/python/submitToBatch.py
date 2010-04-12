@@ -116,11 +116,7 @@ def submitToBatch(configFile = None, channel = None, sample = None,
     #  use 'rfcp' for copying to castor and 'scp' for copying to afs area)
     cp = None
     if outputFilePath.find("/castor") != -1:
-        cp = 'rfcp'
-    else:
-        cp = 'scp'
-        
-    script = """#!/bin/csh
+    	script = """#!/bin/csh
 limit vmem unlim
 cd %(subDir)s
 eval `scramv1 runtime -csh`
@@ -128,10 +124,24 @@ cd -
 cmsRun %(config)s
 set rootFiles=(`/bin/ls *.root`)
 foreach rootFile (${rootFiles})
-    echo "copying ${rootFile} to %(outDir)s"
-    %(cp)s ${rootFile} %(outDir)s
+	rfrm %(outDir)s/${rootFile}
+	echo "copying ${rootFile} to %(outDir)s"
+	rfcp ${rootFile} %(outDir)s
 end
-""" % {'subDir': submissionDirectory, 'config': configFile_mod, 'outDir':outputFilePath, 'cp':cp}
+""" % {'subDir': submissionDirectory, 'config': configFile_mod, 'outDir':outputFilePath}
+    else:
+    	script = """#!/bin/csh
+limit vmem unlim
+cd %(subDir)s
+eval `scramv1 runtime -csh`
+cd -
+cmsRun %(config)s
+set rootFiles=(`/bin/ls *.root`)
+foreach rootFile (${rootFiles})
+	echo "copying ${rootFile} to %(outDir)s"
+	scp ${rootFile} %(outDir)s
+end
+""" % {'subDir': submissionDirectory, 'config': configFile_mod, 'outDir':outputFilePath}
 
     scf = open(scriptFile,"w")
     scf.write(script)
