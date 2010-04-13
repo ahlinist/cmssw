@@ -91,6 +91,7 @@ private:
   double matchDR_;
   double egammaThreshold_;
   double tpgSumWindow_;
+  double thresholdForEtaPhi_;
  
   //MEs
 

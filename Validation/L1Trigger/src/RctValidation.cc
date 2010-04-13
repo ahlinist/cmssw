@@ -21,7 +21,8 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
   binsPhi_(iConfig.getUntrackedParameter<int>("binsPhi",32)),
   matchDR_(iConfig.getUntrackedParameter<double>("matchDeltaR",0.38)),
   egammaThreshold_(iConfig.getUntrackedParameter<double>("gammaThreshold",5.)),
-  tpgSumWindow_(iConfig.getUntrackedParameter<double>("tpgSumWindow",0.2))
+  tpgSumWindow_(iConfig.getUntrackedParameter<double>("tpgSumWindow",0.4)),
+  thresholdForEtaPhi_(iConfig.getUntrackedParameter<double>("thresholdForEtaPhi",4.))
 {
 
   geo = new TriggerTowerGeometry();
@@ -33,7 +34,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       store->setCurrentFolder(directory_);
       
       TPG_Resolution    = store->book1D("TPG_Resolution"," e/#gamma ET-ref e/#gamma E_[T}/Ref e/#gamma E_{T} ",100,-1.,1.);
-      RCT_Resolution    = store->book1D("TPG_Resolution"," e/#gamma ET-ref e/#gamma E_[T}/Ref e/#gamma E_{T} ",100,-1.,1.);
+      RCT_Resolution    = store->book1D("RCT_Resolution"," e/#gamma ET-ref e/#gamma E_[T}/Ref e/#gamma E_{T} ",100,-1.,1.);
 
       refPt     = store->book1D("refPt" ,"ref e/#gamma E_{T}",binsEt_,0.,maxEt_);
       refEta    = store->book1D("refEta","ref e/#gamma E_{T}",binsEta_,-2.5,2.5);
@@ -188,7 +189,9 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	refPt->Fill(genEGamma->at(j).pt());
 	refEta->Fill(genEGamma->at(j).eta());
 	refPhi->Fill(genEGamma->at(j).phi());
-	refEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+
+	if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+	  refEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 
 	//TPG Efficiency
 	
@@ -200,7 +203,8 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    tpgEffPt->Fill(genEGamma->at(j).pt());
 	    tpgEffEta->Fill(genEGamma->at(j).eta());
 	    tpgEffPhi->Fill(genEGamma->at(j).phi());
-	    tpgEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+	      tpgEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 	  }
 
 	if(tpgS<32.)
@@ -235,17 +239,19 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    rctEffPt->Fill(genEGamma->at(j).pt());
 	    rctEffEta->Fill(genEGamma->at(j).eta());
 	    rctEffPhi->Fill(genEGamma->at(j).phi());
-	    rctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+	      rctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 
 	    if(highestVec.pt()<32.)
-	      RCT_Resolution->Fill((tpgS-genEGamma->at(j).pt())/genEGamma->at(j).pt());
+	      RCT_Resolution->Fill((highestVec.pt()-genEGamma->at(j).pt())/genEGamma->at(j).pt());
 
 	    if(highestRCT.isolated())
 	      {
 		rctIsoEffPt->Fill(genEGamma->at(j).pt());
 		rctIsoEffEta->Fill(genEGamma->at(j).eta());
 		rctIsoEffPhi->Fill(genEGamma->at(j).phi());
-		rctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+		if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+		  rctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 	      }
 
 
@@ -286,7 +292,8 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    gctEffPt->Fill(genEGamma->at(j).pt());
 	    gctEffEta->Fill(genEGamma->at(j).eta());
 	    gctEffPhi->Fill(genEGamma->at(j).phi());
-	    gctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+	      gctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 
 	  }
 	}
@@ -320,13 +327,14 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    gctEffPt->Fill(genEGamma->at(j).pt());
 	    gctEffEta->Fill(genEGamma->at(j).eta());
 	    gctEffPhi->Fill(genEGamma->at(j).phi());
-	    gctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+	      gctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 
 	    gctIsoEffPt->Fill(genEGamma->at(j).pt());
 	    gctIsoEffEta->Fill(genEGamma->at(j).eta());
 	    gctIsoEffPhi->Fill(genEGamma->at(j).phi());
-	    gctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-
+	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+	      gctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 	  }
 
 	}
