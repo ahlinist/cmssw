@@ -184,8 +184,8 @@ class Detector {
     };
   
     // Wire Groups
-    double LocalYtoBeam(int station, int ring, int wgroup) const;
-    double LocalYtoBeam(int station, int ring, const std::string &part, int hstrip, int wgroup) const;
+    double LocalYtoBeam(int side, int station, int ring, int wgroup) const;
+    double LocalYtoBeam(int side, int station, int ring, const std::string &part, int hstrip, int wgroup) const;
     
     // strips and hstrips
     double stripStaggerInstripWidth(int station, int ring, int layer) const;
@@ -246,6 +246,9 @@ class Detector {
       return 180.0/PI*Theta_rad(side, station, ring, part, chamber, layer, hstrip, wgroup);
     };
 
+    void chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double* x, double* y) const;
+    void chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double scale, double* x, double* y) const;
+
   private:
 
     float Eta(float r, float z) const;
@@ -256,6 +259,7 @@ class Detector {
     float RMaxHV(const int station, const int ring, const int n_hv) const;
     float PhiMinCFEB(const int station, const int ring, const int chamber, const int cfeb) const;
     float PhiMaxCFEB(const int station, const int ring, const int chamber, const int cfeb) const;
+    void chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, int hs, int wg, double& x, double& y) const;
 
     /** Address boxes in epa/phi space */
     AddressBox boxes[N_ELEMENTS];

@@ -126,26 +126,10 @@ EmuEventDisplay::EmuEventDisplay() {
 
               { // X-Y plane elements
 
-                double x1 = detector.X_mm(side, station, ring, part, chamber, 1, 1, 1);
-                x1 = x1 / 1000.0;
-                double x2 = detector.X_mm(side, station, ring, part, chamber, 1, 1, detector.NumberOfWiregroups(station, ring));
-                x2 = x2 / 1000.0;
-                double x3 = detector.X_mm(side, station, ring, part, chamber, 1, detector.NumberOfHalfstrips(station, ring, part), 1);
-                x3 = x3 / 1000.0;
-                double x4 = detector.X_mm(side, station, ring, part, chamber, 1, detector.NumberOfHalfstrips(station, ring, part), detector.NumberOfWiregroups(station, ring));
-                x4 = x4 / 1000.0;
 
-                double y1 = detector.Y_mm(side, station, ring, part, chamber, 1, 1, 1);
-                y1 = y1 / 1000.0;
-                double y2 = detector.Y_mm(side, station, ring, part, chamber, 1, 1, detector.NumberOfWiregroups(station, ring));
-                y2 = y2 / 1000.0;
-                double y3 = detector.Y_mm(side, station, ring, part, chamber, 1, detector.NumberOfHalfstrips(station, ring, part), 1);
-                y3 = y3 / 1000.0;
-                double y4 = detector.Y_mm(side, station, ring, part, chamber, 1, detector.NumberOfHalfstrips(station, ring, part), detector.NumberOfWiregroups(station, ring));
-                y4 = y4 / 1000.0;
-
-                Double_t x[5] = { x1, x2, x4, x3, x1 };
-                Double_t y[5] = { y1, y2, y4, y3, y1 };
+                double x[5], y[5];
+                detector.chamberBoundsXY(side, station, ring, chamber, part, 0.001, x, y);
+                detector.chamberBoundsXY(side, station, ring, chamber, part, 0.001, x, y);
 
                 TPolyLine *pline = new TPolyLine(5, x, y);
                 pline->SetLineColor(kRed - 10);
