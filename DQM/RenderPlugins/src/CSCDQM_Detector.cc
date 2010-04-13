@@ -736,40 +736,40 @@ double Detector::PhiDegChamberCenter ( int station, int ring, int chamber ) cons
 }
 
 
-double Detector::LocalYtoBeam(int station, int ring, int wgroup) const {
+double Detector::LocalYtoBeam(int side, int station, int ring, int wgroup) const {
   double localYtoBeam = 100000.0; // Some default large value
   
-  localYtoBeam = LocalYtoBeam(station, ring, "b", 1, wgroup);
+  localYtoBeam = LocalYtoBeam(side, station, ring, "b", 1, wgroup);
   
   return localYtoBeam;
 }
 
-double Detector::LocalYtoBeam(int station, int ring, const std::string &part, int hstrip, int wgroup) const {
+double Detector::LocalYtoBeam(int side, int station, int ring, const std::string &part, int hstrip, int wgroup) const {
   double localYtoBeam = 100000.0; // Some default large value
   
   // Special case: ME1/1
   if( station == 1 && ring == 1) {
-    int side  = 1;
     int layer = 1;
     // Half strip angle w.r.t. horizontal line
     double localPhiRad = LocalPhiRadHstripToChamberCenter(side, station, ring, part, layer, hstrip);
     // Wire groups incline angle for ME1/1 = 29 degrees
-    double inclineAngleRad = 29.0 * 3.14159 / 180.0;
-    if( wgroup == 1 || wgroup == NumberOfWiregroups(1,1) ) inclineAngleRad = 0.5 * 29.0 * 3.14159 / 180.0;
+    double angle = (side == 1 ? -1.0 : 1.0) * 29.0;
+    double inclineAngleRad = angle * 3.14159 / 180.0;
+    if (wgroup == 1 || wgroup == NumberOfWiregroups(1,1)) inclineAngleRad = 0.5 * angle * 3.14159 / 180.0;
     
     localYtoBeam = ( RPin(station, ring) + dPinToWGCenter_ME1_1[wgroup - 1])
                    / ( 1 - tan(inclineAngleRad)*tan(localPhiRad) );
   }
   
-  // All other chambers
-  if( station == 1 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME1_2[wgroup - 1];
-  if( station == 1 && ring == 3) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME1_3[wgroup - 1];
-  if( station == 2 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME2_1[wgroup - 1];
-  if( station == 2 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
-  if( station == 3 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME3_1[wgroup - 1];
-  if( station == 3 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
-  if( station == 4 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME4_1[wgroup - 1];
-  if( station == 4 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
+    // All other chambers
+    else if (station == 1 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME1_2[wgroup - 1];
+    else if (station == 1 && ring == 3) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME1_3[wgroup - 1];
+    else if (station == 2 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME2_1[wgroup - 1];
+    else if (station == 2 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
+    else if (station == 3 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME3_1[wgroup - 1];
+    else if (station == 3 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
+    else if (station == 4 && ring == 1) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME4_1[wgroup - 1];
+    else if (station == 4 && ring == 2) localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME234_2[wgroup - 1];
   
   return localYtoBeam;
 }
@@ -938,7 +938,7 @@ double Detector::Phi_deg(int side, int station, int ring, const std::string &par
 double Detector::R_mm(int side, int station, int ring, const std::string &part, int layer, int hstrip, int wgroup) const {
   double r = 0.0;
   
-  r =   LocalYtoBeam(station, ring, part, hstrip, wgroup)
+  r =   LocalYtoBeam(side, station, ring, part, hstrip, wgroup)
       / cos( LocalPhiRadHstripToChamberCenter(side, station, ring, part, layer, hstrip) );
   
   return r;
@@ -967,5 +967,44 @@ double Detector::Y_mm(int side, int station, int ring, const std::string &part, 
     theta = atan( R_mm(side, station, ring, part, layer, hstrip, wgroup) / Z_mm(side, station, ring, chamber, layer) );
     return theta;
   }
+
+    void Detector::chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, int hs, int wg, double& x, double& y) const {
+      int LAYER = 1;
+
+      if (station == 1 && ring == 1) {
+
+        double localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME1_1[wg - 1];
+        double r = localYtoBeam /
+        cos(LocalPhiRadHstripToChamberCenter(side, station, ring, part, LAYER, hs));
+        x = r * cos(Phi_rad(side, station, ring, part, chamber, LAYER, hs));
+        y = r * sin(Phi_rad(side, station, ring, part, chamber, LAYER, hs));
+
+      } else {
+
+        x = X_mm(side, station, ring, part, chamber, LAYER, hs, wg);
+        y = Y_mm(side, station, ring, part, chamber, LAYER, hs, wg);
+
+      }
+    }
+
+    void Detector::chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double* x, double* y) const {
+        chamberBoundsXY(side, station, ring, chamber, part, 1.0, x, y);
+    }
+    
+    void Detector::chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double scale, double* x, double* y) const {
+      chamberBoundsXY(side, station, ring, chamber, part, 1, 1, x[0], y[0]);
+      chamberBoundsXY(side, station, ring, chamber, part, 1, NumberOfWiregroups(station, ring), x[1], y[1]);
+      chamberBoundsXY(side, station, ring, chamber, part, NumberOfHalfstrips(station, ring, part), NumberOfWiregroups(station, ring), x[2], y[2]);
+      chamberBoundsXY(side, station, ring, chamber, part, NumberOfHalfstrips(station, ring, part), 1, x[3], y[3]);
+
+      x[4] = x[0];
+      y[4] = y[0];
+
+      for (int i = 0; i < 5; i++) {
+          x[i] = x[i] * scale;
+          y[i] = y[i] * scale;
+      }
+
+    }
 
 }
