@@ -41,7 +41,7 @@ void analysisClass::Loop()
    float Max_Nspikes=10;
    int   Nbins_E = 320;
    float Min_E = -10.;
-   float Max_E = 630.;
+   float Max_E = 950.;
    int   Nbins_ET = 240;
    float Min_ET = -10.;
    float Max_ET = 230.;
@@ -125,17 +125,21 @@ void analysisClass::Loop()
    h_CaloMEy->Sumw2();
    h_CaloSumET->Sumw2();
    
-   TH1D *h_CaloMET_cleanECAL = new TH1D ("h_CaloMET_cleanECAL","h_CaloMET_cleanECAL;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1D *h_CaloMETPhi_cleanECAL  = new TH1D ("h_CaloMETPhi_cleanECAL","h_CaloMETPhi_cleanECAL;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1D *h_CaloMEx_cleanECAL   = new TH1D ("h_CaloMEx_cleanECAL","h_CaloMEx_cleanECAL;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1D *h_CaloMEy_cleanECAL   = new TH1D ("h_CaloMEy_cleanECAL","h_CaloMEy_cleanECAL;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1D *h_CaloSumET_cleanECAL   = new TH1D ("h_CaloSumET_cleanECAL","h_CaloSumET_cleanECAL;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
-
-   h_CaloMET_cleanECAL->Sumw2();
-   h_CaloMETPhi_cleanECAL->Sumw2();
-   h_CaloMEx_cleanECAL->Sumw2();
-   h_CaloMEy_cleanECAL->Sumw2();
-   h_CaloSumET_cleanECAL->Sumw2();
+   TH1D *h_CaloMEThcalNoise   = new TH1D ("h_CaloMEThcalNoise","h_CaloMEThcalNoise;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   
+   h_CaloMEThcalNoise->Sumw2();
+      
+//    TH1D *h_CaloMET_cleanECAL = new TH1D ("h_CaloMET_cleanECAL","h_CaloMET_cleanECAL;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+//    TH1D *h_CaloMETPhi_cleanECAL  = new TH1D ("h_CaloMETPhi_cleanECAL","h_CaloMETPhi_cleanECAL;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+//    TH1D *h_CaloMEx_cleanECAL   = new TH1D ("h_CaloMEx_cleanECAL","h_CaloMEx_cleanECAL;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+//    TH1D *h_CaloMEy_cleanECAL   = new TH1D ("h_CaloMEy_cleanECAL","h_CaloMEy_cleanECAL;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+//    TH1D *h_CaloSumET_cleanECAL   = new TH1D ("h_CaloSumET_cleanECAL","h_CaloSumET_cleanECAL;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+// 
+//    h_CaloMET_cleanECAL->Sumw2();
+//    h_CaloMETPhi_cleanECAL->Sumw2();
+//    h_CaloMEx_cleanECAL->Sumw2();
+//    h_CaloMEy_cleanECAL->Sumw2();
+//    h_CaloSumET_cleanECAL->Sumw2();
 
    TH1D *h_CaloMET_clean = new TH1D ("h_CaloMET_clean","h_CaloMET_clean;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
    TH1D *h_CaloMETPhi_clean  = new TH1D ("h_CaloMETPhi_clean","h_CaloMETPhi_clean;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
@@ -148,7 +152,43 @@ void analysisClass::Loop()
    h_CaloMEx_clean->Sumw2();
    h_CaloMEy_clean->Sumw2();
    h_CaloSumET_clean->Sumw2();
+   
+   TH1D *h_tcMET   = new TH1D ("h_tcMET","h_tcMET;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_tcMETPhi  = new TH1D ("h_tcMETPhi","h_tcMETPhi;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_tcMEx   = new TH1D ("h_tcMEx","h_tcMEx;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_tcMEy   = new TH1D ("h_tcMEy","h_tcMEy;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_tcSumET   = new TH1D ("h_tcSumET","h_tcSumET;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   
+   h_tcMET->Sumw2();
+   h_tcMETPhi->Sumw2();
+   h_tcMEx->Sumw2();
+   h_tcMEy->Sumw2();
+   h_tcSumET->Sumw2();
+   
+   TH1D *h_tcMET_clean = new TH1D ("h_tcMET_clean","h_tcMET_clean;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_tcMETPhi_clean  = new TH1D ("h_tcMETPhi_clean","h_tcMETPhi_clean;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_tcMEx_clean   = new TH1D ("h_tcMEx_clean","h_tcMEx_clean;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_tcMEy_clean   = new TH1D ("h_tcMEy_clean","h_tcMEy_clean;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_tcSumET_clean   = new TH1D ("h_tcSumET_clean","h_tcSumET_clean;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   
+   h_tcMET_clean->Sumw2();
+   h_tcMETPhi_clean->Sumw2();
+   h_tcMEx_clean->Sumw2();
+   h_tcMEy_clean->Sumw2();
+   h_tcSumET_clean->Sumw2();
 
+   TH1D *h_pfMET   = new TH1D ("h_pfMET","h_pfMET;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+   TH1D *h_pfMETPhi  = new TH1D ("h_pfMETPhi","h_pfMETPhi;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+   TH1D *h_pfMEx   = new TH1D ("h_pfMEx","h_pfMEx;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_pfMEy   = new TH1D ("h_pfMEy","h_pfMEy;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+   TH1D *h_pfSumET   = new TH1D ("h_pfSumET","h_pfSumET;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+   
+   h_pfMET->Sumw2();
+   h_pfMETPhi->Sumw2();
+   h_pfMEx->Sumw2();
+   h_pfMEy->Sumw2();
+   h_pfSumET->Sumw2();
+   
    TH1D *h_CaloMETHF   = new TH1D ("h_CaloMETHF","h_CaloMETHF;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
    TH1D *h_CaloMETPhiHF  = new TH1D ("h_CaloMETPhiHF","h_CaloMETPhiHF;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
    TH1D *h_CaloMExHF   = new TH1D ("h_CaloMExHF","h_CaloMExHF;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
@@ -196,6 +236,11 @@ void analysisClass::Loop()
    TH2D *h2_HFRecHitET_vs_R_L = new TH2D ("h2_HFRecHitET_vs_R_L","h2_HFRecHitET_vs_R_L;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
    TH2D *h2_HFRecHitET_vs_R_S = new TH2D ("h2_HFRecHitET_vs_R_S","h2_HFRecHitET_vs_R_S;R;E_{T} [GeV]",Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
    
+   map<UInt_t,TH2D*> h2_HFRecHitE_vs_R_L_ieta;
+   map<UInt_t,TH2D*> h2_HFRecHitE_vs_R_S_ieta;
+   map<UInt_t,TH2D*> h2_HFRecHitET_vs_R_L_ieta;
+   map<UInt_t,TH2D*> h2_HFRecHitET_vs_R_S_ieta;
+   
    TH2D *h2_R_vs_iphi_L  = new TH2D ("h2_R_vs_iphi_L","h2_R_vs_iphi_L;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
    TH2D *h2_R_vs_ieta_L  = new TH2D ("h2_R_vs_ieta_L","h2_R_vs_ieta_L;i#eta;R",13,28.5,41.5,Nbins_R,Min_R,Max_R);
    TH2D *h2_R_vs_iphi_S  = new TH2D ("h2_R_vs_iphi_S","h2_R_vs_iphi_S;i#phi;R",72,0.5,72.5,Nbins_R,Min_R,Max_R);
@@ -203,31 +248,36 @@ void analysisClass::Loop()
 
    TH2D *h2_S9oS1_vs_E_L  = new TH2D ("h2_S9oS1_vs_E_L","h2_S9oS1_vs_E_L;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
    TH2D *h2_S9oS1_vs_E_S  = new TH2D ("h2_S9oS1_vs_E_S","h2_S9oS1_vs_E_S;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2D *h2_S5oS1_vs_E_L  = new TH2D ("h2_S5oS1_vs_E_L","h2_S5oS1_vs_E_L;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2D *h2_S5oS1_vs_E_S  = new TH2D ("h2_S5oS1_vs_E_S","h2_S5oS1_vs_E_S;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S8oS1_vs_E_L  = new TH2D ("h2_S8oS1_vs_E_L","h2_S8oS1_vs_E_L;E [GeV];S8/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S8oS1_vs_E_S  = new TH2D ("h2_S8oS1_vs_E_S","h2_S8oS1_vs_E_S;E [GeV];S8/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
    TH2D *h2_S9oS1_vs_E_L_Flagged  = new TH2D ("h2_S9oS1_vs_E_L_Flagged","h2_S9oS1_vs_E_L_Flagged;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
    TH2D *h2_S9oS1_vs_E_S_Flagged  = new TH2D ("h2_S9oS1_vs_E_S_Flagged","h2_S9oS1_vs_E_S_Flagged;E [GeV];S9/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2D *h2_S5oS1_vs_E_L_Flagged  = new TH2D ("h2_S5oS1_vs_E_L_Flagged","h2_S5oS1_vs_E_L_Flagged;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-   TH2D *h2_S5oS1_vs_E_S_Flagged  = new TH2D ("h2_S5oS1_vs_E_S_Flagged","h2_S5oS1_vs_E_S_Flagged;E [GeV];S5/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S8oS1_vs_E_L_Flagged  = new TH2D ("h2_S8oS1_vs_E_L_Flagged","h2_S8oS1_vs_E_L_Flagged;E [GeV];S8/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+   TH2D *h2_S8oS1_vs_E_S_Flagged  = new TH2D ("h2_S8oS1_vs_E_S_Flagged","h2_S8oS1_vs_E_S_Flagged;E [GeV];S8/S1",Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
 
    map<UInt_t,TH2D*> h2_S9oS1_vs_E_L_ieta;
    map<UInt_t,TH2D*> h2_S9oS1_vs_E_S_ieta;
-   map<UInt_t,TH2D*> h2_S5oS1_vs_E_L_ieta;
-   map<UInt_t,TH2D*> h2_S5oS1_vs_E_S_ieta;
+   map<UInt_t,TH2D*> h2_S8oS1_vs_E_L_ieta;
+   map<UInt_t,TH2D*> h2_S8oS1_vs_E_S_ieta;
    map<UInt_t,TH2D*> h2_S9oS1_vs_E_L_Flagged_ieta;
    map<UInt_t,TH2D*> h2_S9oS1_vs_E_S_Flagged_ieta;
-   map<UInt_t,TH2D*> h2_S5oS1_vs_E_L_Flagged_ieta;
-   map<UInt_t,TH2D*> h2_S5oS1_vs_E_S_Flagged_ieta;
+   map<UInt_t,TH2D*> h2_S8oS1_vs_E_L_Flagged_ieta;
+   map<UInt_t,TH2D*> h2_S8oS1_vs_E_S_Flagged_ieta;
    
    for( uint i=29; i<=41; i++ ) {
+     h2_HFRecHitE_vs_R_L_ieta[i] = new TH2D(Form("h2_HFRecHitE_vs_R_L_ieta_%u",i),Form("h2_HFRecHitE_vs_R_L_ieta_%u;R;E [GeV]",i),Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+     h2_HFRecHitE_vs_R_S_ieta[i] = new TH2D(Form("h2_HFRecHitE_vs_R_S_ieta_%u",i),Form("h2_HFRecHitE_vs_R_S_ieta_%u;R;E [GeV]",i),Nbins_R,Min_R,Max_R,Nbins_E,Min_E,Max_E);
+     h2_HFRecHitET_vs_R_L_ieta[i] = new TH2D(Form("h2_HFRecHitET_vs_R_L_ieta_%u",i),Form("h2_HFRecHitET_vs_R_L_ieta_%u;R;E_{T} [GeV]",i),Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
+     h2_HFRecHitET_vs_R_S_ieta[i] = new TH2D(Form("h2_HFRecHitET_vs_R_S_ieta_%u",i),Form("h2_HFRecHitET_vs_R_S_ieta_%u;R;E_{T} [GeV]",i),Nbins_R,Min_R,Max_R,Nbins_ET,Min_ET,Max_ET);
+    
      h2_S9oS1_vs_E_L_ieta[i] = new TH2D(Form("h2_S9oS1_vs_E_L_ieta_%u",i),Form("h2_S9oS1_vs_E_L_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
      h2_S9oS1_vs_E_S_ieta[i] = new TH2D(Form("h2_S9oS1_vs_E_S_ieta_%u",i),Form("h2_S9oS1_vs_E_S_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S5oS1_vs_E_L_ieta[i] = new TH2D(Form("h2_S5oS1_vs_E_L_ieta_%u",i),Form("h2_S5oS1_vs_E_L_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S5oS1_vs_E_S_ieta[i] = new TH2D(Form("h2_S5oS1_vs_E_S_ieta_%u",i),Form("h2_S5oS1_vs_E_S_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S8oS1_vs_E_L_ieta[i] = new TH2D(Form("h2_S8oS1_vs_E_L_ieta_%u",i),Form("h2_S8oS1_vs_E_L_ieta_%u;E [GeV];S8/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S8oS1_vs_E_S_ieta[i] = new TH2D(Form("h2_S8oS1_vs_E_S_ieta_%u",i),Form("h2_S8oS1_vs_E_S_ieta_%u;E [GeV];S8/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
      h2_S9oS1_vs_E_L_Flagged_ieta[i] = new TH2D(Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
      h2_S9oS1_vs_E_S_Flagged_ieta[i] = new TH2D(Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S9oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S9/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S5oS1_vs_E_L_Flagged_ieta[i] = new TH2D(Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
-     h2_S5oS1_vs_E_S_Flagged_ieta[i] = new TH2D(Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S5oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S5/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S8oS1_vs_E_L_Flagged_ieta[i] = new TH2D(Form("h2_S8oS1_vs_E_L_Flagged_ieta_%u",i),Form("h2_S8oS1_vs_E_L_Flagged_ieta_%u;E [GeV];S8/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
+     h2_S8oS1_vs_E_S_Flagged_ieta[i] = new TH2D(Form("h2_S8oS1_vs_E_S_Flagged_ieta_%u",i),Form("h2_S8oS1_vs_E_S_Flagged_ieta_%u;E [GeV];S8/S1",i),Nbins_E,Min_E,Max_E,Nbins_S9oS1,Min_S9oS1,Max_S9oS1);
    }
    
    TProfile * p_NspikesInHF_vs_SumEinHF    = new TProfile ("p_NspikesInHF_vs_SumEinHF","p_NspikesInHF_vs_SumEinHF",100,0,5000.);
@@ -247,104 +297,104 @@ void analysisClass::Loop()
    int useJetMETVariables = (int)getPreCutValue1("useJetMETVariables");
    float JetPtCut = getPreCutValue1("JetPtCut");
 
-   int Nbins_pt = 300;
-   float Min_pt = -0.5;
-   float Max_pt = 299.5;
-   int Nbins_default = 100; 
-   float Min_default = -0.5; 
-   float Max_default = 99.5; 
-
-   
-   TH1D *h_JetInHF_pT   = new TH1D ("h_JetInHF_pT","h_JetInHF_pT;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
-   TH1D *h_JetInHF_eta   = new TH1D ("h_JetInHF_eta","h_JetInHF_eta;jet #eta in HF",Nbins_default,-6,6);
-   TH1D *h_JetInHF_phi   = new TH1D ("h_JetInHF_phi","h_JetInHF_phi;jet #phi in HF",Nbins_default,-4,4);
-   TH1D *h_JetInHF_Njet   = new TH1D ("h_JetInHF_Njet","h_JetInHF_Njet;Number of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_Njet_ptcut   = new TH1D ("h_JetInHF_Njet_ptcut","h_JetInHF_Njet_ptcut;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_Nconst   = new TH1D ("h_JetInHF_Nconst","h_JetInHF_Nconst;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_N60   = new TH1D ("h_JetInHF_N60","h_JetInHF_N60;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_N90   = new TH1D ("h_JetInHF_N90","h_JetInHF_N90;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
-   
-   TH1D *h_JetInHF_pT_PET   = new TH1D ("h_JetInHF_pT_PET","h_JetInHF_pT_PET;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
-   TH1D *h_JetInHF_eta_PET   = new TH1D ("h_JetInHF_eta_PET","h_JetInHF_eta_PET;jet #eta in HF",Nbins_default,-6,6);
-   TH1D *h_JetInHF_phi_PET   = new TH1D ("h_JetInHF_phi_PET","h_JetInHF_phi_PET;jet #phi in HF",Nbins_default,-4,4);
-   TH1D *h_JetInHF_Njet_PET   = new TH1D ("h_JetInHF_Njet_PET","h_JetInHF_Njet_PET;Number of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_Njet_ptcut_PET   = new TH1D ("h_JetInHF_Njet_ptcut_PET","h_JetInHF_Njet_ptcut_PET;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_Nconst_PET   = new TH1D ("h_JetInHF_Nconst_PET","h_JetInHF_Nconst_PET;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_N60_PET   = new TH1D ("h_JetInHF_N60_PET","h_JetInHF_N60_PET;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_N90_PET   = new TH1D ("h_JetInHF_N90_PET","h_JetInHF_N90_PET;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
-   
-   TH1D *h_JetInHF_pT_S9S1   = new TH1D ("h_JetInHF_pT_S9S1","h_JetInHF_pT_S9S1;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
-   TH1D *h_JetInHF_eta_S9S1   = new TH1D ("h_JetInHF_eta_S9S1","h_JetInHF_eta_S9S1;jet #eta in HF",Nbins_default,-6,6);
-   TH1D *h_JetInHF_phi_S9S1   = new TH1D ("h_JetInHF_phi_S9S1","h_JetInHF_phi_S9S1;jet #phi in HF",Nbins_default,-4,4);
-   TH1D *h_JetInHF_Njet_S9S1   = new TH1D ("h_JetInHF_Njet_S9S1","h_JetInHF_Njet_S9S1;Number of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_Njet_ptcut_S9S1   = new TH1D ("h_JetInHF_Njet_ptcut_S9S1","h_JetInHF_Njet_ptcut_S9S1;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_Nconst_S9S1   = new TH1D ("h_JetInHF_Nconst_S9S1","h_JetInHF_Nconst_S9S1;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_N60_S9S1   = new TH1D ("h_JetInHF_N60_S9S1","h_JetInHF_N60_S9S1;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
-   TH1D *h_JetInHF_N90_S9S1   = new TH1D ("h_JetInHF_N90_S9S1","h_JetInHF_N90_S9S1;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
-
-   h_JetInHF_pT->Sumw2();
-   h_JetInHF_eta->Sumw2();
-   h_JetInHF_phi->Sumw2();
-   h_JetInHF_Njet->Sumw2();
-   h_JetInHF_Njet_ptcut->Sumw2();
-   h_JetInHF_Nconst->Sumw2();  
-   h_JetInHF_N60->Sumw2();  
-   h_JetInHF_N90->Sumw2(); 
-   
-   h_JetInHF_pT_PET->Sumw2();
-   h_JetInHF_eta_PET->Sumw2();
-   h_JetInHF_phi_PET->Sumw2();
-   h_JetInHF_Njet_PET->Sumw2();
-   h_JetInHF_Njet_ptcut_PET->Sumw2();
-   h_JetInHF_Nconst_PET->Sumw2();
-   h_JetInHF_N60_PET->Sumw2();
-   h_JetInHF_N90_PET->Sumw2();
-   
-   h_JetInHF_pT_S9S1->Sumw2();
-   h_JetInHF_eta_S9S1->Sumw2();
-   h_JetInHF_phi_S9S1->Sumw2();
-   h_JetInHF_Njet_S9S1->Sumw2();
-   h_JetInHF_Njet_ptcut_S9S1->Sumw2();
-   h_JetInHF_Nconst_S9S1->Sumw2();
-   h_JetInHF_N60_S9S1->Sumw2();
-   h_JetInHF_N90_S9S1->Sumw2();
-   
-   //MET variables
-   TH1D *h_CaloMETinHF   = new TH1D ("h_CaloMETinHF","h_CaloMETinHF;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1D *h_CaloMETPhiinHF  = new TH1D ("h_CaloMETPhiinHF","h_CaloMETPhiinHF;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1D *h_CaloMExinHF   = new TH1D ("h_CaloMExinHF","h_CaloMExinHF;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1D *h_CaloMEyinHF   = new TH1D ("h_CaloMEyinHF","h_CaloMEyinHF;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1D *h_CaloSumETinHF   = new TH1D ("h_CaloSumETinHF","h_CaloSumETinHF;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
-   
-   TH1D *h_CaloMETinHF_PET   = new TH1D ("h_CaloMETinHF_PET","h_CaloMETinHF_PET;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1D *h_CaloMETPhiinHF_PET  = new TH1D ("h_CaloMETPhiinHF_PET","h_CaloMETPhiinHF_PET;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1D *h_CaloMExinHF_PET   = new TH1D ("h_CaloMExinHF_PET","h_CaloMExinHF_PET;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1D *h_CaloMEyinHF_PET   = new TH1D ("h_CaloMEyinHF_PET","h_CaloMEyinHF_PET;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1D *h_CaloSumETinHF_PET   = new TH1D ("h_CaloSumETinHF_PET","h_CaloSumETinHF_PET;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
-
-   TH1D *h_CaloMETinHF_S9S1   = new TH1D ("h_CaloMETinHF_S9S1","h_CaloMETinHF_S9S1;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
-   TH1D *h_CaloMETPhiinHF_S9S1  = new TH1D ("h_CaloMETPhiinHF_S9S1","h_CaloMETPhiinHF_S9S1;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
-   TH1D *h_CaloMExinHF_S9S1   = new TH1D ("h_CaloMExinHF_S9S1","h_CaloMExinHF_S9S1;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1D *h_CaloMEyinHF_S9S1   = new TH1D ("h_CaloMEyinHF_S9S1","h_CaloMEyinHF_S9S1;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
-   TH1D *h_CaloSumETinHF_S9S1   = new TH1D ("h_CaloSumETinHF_S9S1","h_CaloSumETinHF_S9S1;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
-   
-   h_CaloMETinHF->Sumw2();
-   h_CaloMETPhiinHF->Sumw2();
-   h_CaloMExinHF->Sumw2();
-   h_CaloMEyinHF->Sumw2();
-   h_CaloSumETinHF->Sumw2();
-
-   h_CaloMETinHF_PET->Sumw2();
-   h_CaloMETPhiinHF_PET->Sumw2();
-   h_CaloMExinHF_PET->Sumw2();
-   h_CaloMEyinHF_PET->Sumw2();
-   h_CaloSumETinHF_PET->Sumw2();
-   
-   h_CaloMETinHF_S9S1->Sumw2();
-   h_CaloMETPhiinHF_S9S1->Sumw2();
-   h_CaloMExinHF_S9S1->Sumw2();
-   h_CaloMEyinHF_S9S1->Sumw2();
-   h_CaloSumETinHF_S9S1->Sumw2();
+//    int Nbins_pt = 300;
+//    float Min_pt = -0.5;
+//    float Max_pt = 299.5;
+//    int Nbins_default = 100; 
+//    float Min_default = -0.5; 
+//    float Max_default = 99.5; 
+// 
+//    
+//    TH1D *h_JetInHF_pT   = new TH1D ("h_JetInHF_pT","h_JetInHF_pT;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
+//    TH1D *h_JetInHF_eta   = new TH1D ("h_JetInHF_eta","h_JetInHF_eta;jet #eta in HF",Nbins_default,-6,6);
+//    TH1D *h_JetInHF_phi   = new TH1D ("h_JetInHF_phi","h_JetInHF_phi;jet #phi in HF",Nbins_default,-4,4);
+//    TH1D *h_JetInHF_Njet   = new TH1D ("h_JetInHF_Njet","h_JetInHF_Njet;Number of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_Njet_ptcut   = new TH1D ("h_JetInHF_Njet_ptcut","h_JetInHF_Njet_ptcut;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_Nconst   = new TH1D ("h_JetInHF_Nconst","h_JetInHF_Nconst;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_N60   = new TH1D ("h_JetInHF_N60","h_JetInHF_N60;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_N90   = new TH1D ("h_JetInHF_N90","h_JetInHF_N90;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
+//    
+//    TH1D *h_JetInHF_pT_PET   = new TH1D ("h_JetInHF_pT_PET","h_JetInHF_pT_PET;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
+//    TH1D *h_JetInHF_eta_PET   = new TH1D ("h_JetInHF_eta_PET","h_JetInHF_eta_PET;jet #eta in HF",Nbins_default,-6,6);
+//    TH1D *h_JetInHF_phi_PET   = new TH1D ("h_JetInHF_phi_PET","h_JetInHF_phi_PET;jet #phi in HF",Nbins_default,-4,4);
+//    TH1D *h_JetInHF_Njet_PET   = new TH1D ("h_JetInHF_Njet_PET","h_JetInHF_Njet_PET;Number of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_Njet_ptcut_PET   = new TH1D ("h_JetInHF_Njet_ptcut_PET","h_JetInHF_Njet_ptcut_PET;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_Nconst_PET   = new TH1D ("h_JetInHF_Nconst_PET","h_JetInHF_Nconst_PET;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_N60_PET   = new TH1D ("h_JetInHF_N60_PET","h_JetInHF_N60_PET;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_N90_PET   = new TH1D ("h_JetInHF_N90_PET","h_JetInHF_N90_PET;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
+//    
+//    TH1D *h_JetInHF_pT_S9S1   = new TH1D ("h_JetInHF_pT_S9S1","h_JetInHF_pT_S9S1;jet p_{T} in HF [GeV]",Nbins_pt,Min_pt,Max_pt);
+//    TH1D *h_JetInHF_eta_S9S1   = new TH1D ("h_JetInHF_eta_S9S1","h_JetInHF_eta_S9S1;jet #eta in HF",Nbins_default,-6,6);
+//    TH1D *h_JetInHF_phi_S9S1   = new TH1D ("h_JetInHF_phi_S9S1","h_JetInHF_phi_S9S1;jet #phi in HF",Nbins_default,-4,4);
+//    TH1D *h_JetInHF_Njet_S9S1   = new TH1D ("h_JetInHF_Njet_S9S1","h_JetInHF_Njet_S9S1;Number of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_Njet_ptcut_S9S1   = new TH1D ("h_JetInHF_Njet_ptcut_S9S1","h_JetInHF_Njet_ptcut_S9S1;Number of jets in HF (p_{T} cut)",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_Nconst_S9S1   = new TH1D ("h_JetInHF_Nconst_S9S1","h_JetInHF_Nconst_S9S1;Number of constituents of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_N60_S9S1   = new TH1D ("h_JetInHF_N60_S9S1","h_JetInHF_N60_S9S1;N60 variable of jets in HF",Nbins_default,Min_default,Max_default);
+//    TH1D *h_JetInHF_N90_S9S1   = new TH1D ("h_JetInHF_N90_S9S1","h_JetInHF_N90_S9S1;N90 variable of jets in HF",Nbins_default,Min_default,Max_default);
+// 
+//    h_JetInHF_pT->Sumw2();
+//    h_JetInHF_eta->Sumw2();
+//    h_JetInHF_phi->Sumw2();
+//    h_JetInHF_Njet->Sumw2();
+//    h_JetInHF_Njet_ptcut->Sumw2();
+//    h_JetInHF_Nconst->Sumw2();  
+//    h_JetInHF_N60->Sumw2();  
+//    h_JetInHF_N90->Sumw2(); 
+//    
+//    h_JetInHF_pT_PET->Sumw2();
+//    h_JetInHF_eta_PET->Sumw2();
+//    h_JetInHF_phi_PET->Sumw2();
+//    h_JetInHF_Njet_PET->Sumw2();
+//    h_JetInHF_Njet_ptcut_PET->Sumw2();
+//    h_JetInHF_Nconst_PET->Sumw2();
+//    h_JetInHF_N60_PET->Sumw2();
+//    h_JetInHF_N90_PET->Sumw2();
+//    
+//    h_JetInHF_pT_S9S1->Sumw2();
+//    h_JetInHF_eta_S9S1->Sumw2();
+//    h_JetInHF_phi_S9S1->Sumw2();
+//    h_JetInHF_Njet_S9S1->Sumw2();
+//    h_JetInHF_Njet_ptcut_S9S1->Sumw2();
+//    h_JetInHF_Nconst_S9S1->Sumw2();
+//    h_JetInHF_N60_S9S1->Sumw2();
+//    h_JetInHF_N90_S9S1->Sumw2();
+//    
+//    //MET variables
+//    TH1D *h_CaloMETinHF   = new TH1D ("h_CaloMETinHF","h_CaloMETinHF;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+//    TH1D *h_CaloMETPhiinHF  = new TH1D ("h_CaloMETPhiinHF","h_CaloMETPhiinHF;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+//    TH1D *h_CaloMExinHF   = new TH1D ("h_CaloMExinHF","h_CaloMExinHF;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+//    TH1D *h_CaloMEyinHF   = new TH1D ("h_CaloMEyinHF","h_CaloMEyinHF;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+//    TH1D *h_CaloSumETinHF   = new TH1D ("h_CaloSumETinHF","h_CaloSumETinHF;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+//    
+//    TH1D *h_CaloMETinHF_PET   = new TH1D ("h_CaloMETinHF_PET","h_CaloMETinHF_PET;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+//    TH1D *h_CaloMETPhiinHF_PET  = new TH1D ("h_CaloMETPhiinHF_PET","h_CaloMETPhiinHF_PET;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+//    TH1D *h_CaloMExinHF_PET   = new TH1D ("h_CaloMExinHF_PET","h_CaloMExinHF_PET;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+//    TH1D *h_CaloMEyinHF_PET   = new TH1D ("h_CaloMEyinHF_PET","h_CaloMEyinHF_PET;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+//    TH1D *h_CaloSumETinHF_PET   = new TH1D ("h_CaloSumETinHF_PET","h_CaloSumETinHF_PET;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+// 
+//    TH1D *h_CaloMETinHF_S9S1   = new TH1D ("h_CaloMETinHF_S9S1","h_CaloMETinHF_S9S1;#slash{E}_{T} [GeV]",Nbins_METSumET,0,Max_METSumET);
+//    TH1D *h_CaloMETPhiinHF_S9S1  = new TH1D ("h_CaloMETPhiinHF_S9S1","h_CaloMETPhiinHF_S9S1;#phi",Nbins_Phi,-Max_Phi,Max_Phi);
+//    TH1D *h_CaloMExinHF_S9S1   = new TH1D ("h_CaloMExinHF_S9S1","h_CaloMExinHF_S9S1;#slash{E}_{x} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+//    TH1D *h_CaloMEyinHF_S9S1   = new TH1D ("h_CaloMEyinHF_S9S1","h_CaloMEyinHF_S9S1;#slash{E}_{y} [GeV]",Nbins_METSumET,-Max_METSumET/2,Max_METSumET/2);
+//    TH1D *h_CaloSumETinHF_S9S1   = new TH1D ("h_CaloSumETinHF_S9S1","h_CaloSumETinHF_S9S1;#SigmaE_{T}",Nbins_METSumET,0,Max_METSumET);
+//    
+//    h_CaloMETinHF->Sumw2();
+//    h_CaloMETPhiinHF->Sumw2();
+//    h_CaloMExinHF->Sumw2();
+//    h_CaloMEyinHF->Sumw2();
+//    h_CaloSumETinHF->Sumw2();
+// 
+//    h_CaloMETinHF_PET->Sumw2();
+//    h_CaloMETPhiinHF_PET->Sumw2();
+//    h_CaloMExinHF_PET->Sumw2();
+//    h_CaloMEyinHF_PET->Sumw2();
+//    h_CaloSumETinHF_PET->Sumw2();
+//    
+//    h_CaloMETinHF_S9S1->Sumw2();
+//    h_CaloMETPhiinHF_S9S1->Sumw2();
+//    h_CaloMExinHF_S9S1->Sumw2();
+//    h_CaloMEyinHF_S9S1->Sumw2();
+//    h_CaloSumETinHF_S9S1->Sumw2();
    
    /////////initialize variables
 
@@ -353,26 +403,41 @@ void analysisClass::Loop()
    //////////////////////////////
    ///// Goood Run List  ////////
    //////////////////////////////
-   int goodruns[] = {123596, 123615, 123732, 123815, 123818,
-		     123908, 124008, 124009, 124020, 124022,
-		     124023, 124024, 124025, 124027, 124030,
-		     124120};
-                     //124120 at 2360 GeV
+//    int goodruns[] = {123596, 123615, 123732, 123815, 123818,
+// 		     123908, 124008, 124009, 124020, 124022,
+// 		     124023, 124024, 124025, 124027, 124030,
+// 		     124120};
+//                      //124120 at 2360 GeV
+//    
+//    int goodLSmin[] = {2, 70, 62, 8, 2,
+//                       2, 1, 1, 12, 66,
+//                       38, 2, 5, 24, 2,
+//                       1};
+//    
+//    int goodLSmax[] = {9999, 9999, 109, 9999, 42,
+//                       12, 1, 68, 94, 179,
+//                       9999, 83, 13, 9999, 9999,
+//                       9999};
+
+   // 2010 runs at 7 TeV
+   int goodruns[] = {132440, 132440, 132473, 132599, 132601,
+                     132602, 132605, 132605, 132605, 132605,
+                     132606};
+
    
-   int goodLSmin[] = {2, 70, 62, 8, 2,
-                      2, 1, 1, 12, 66,
-                      38, 2, 5, 24, 2,
+   int goodLSmin[] = {85, 141, 1, 1, 261,
+                      1, 1, 446, 624, 831,
                       1};
    
-   int goodLSmax[] = {9999, 9999, 109, 9999, 42,
-                      12, 1, 68, 94, 179,
-                      9999, 83, 13, 9999, 9999,
-                      9999};
+   int goodLSmax[] = {138, 401, 29, 74, 1131,
+                      83, 444, 622, 829, 968,
+                      37};
    
    // For S9/S1 flagging
    const double slopes[] = {0.0164905,0.0238698,0.0321383,0.041296,0.0513428,0.0622789,0.0741041,0.0868186,0.100422,0.135313,0.136289,0.0589927};
    
    int useS9oS1Algo = (int)getPreCutValue1("useS9oS1Algo");
+   float metPrintoutCut = (float)getPreCutValue1("metPrintoutCut");
 
    Long64_t nentries = fChain->GetEntriesFast();
    std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl;   
@@ -443,13 +508,16 @@ void analysisClass::Loop()
              EBspikes_Py.push_back(py_);
 	 }       
 
+       //## Check if the event passes the hcal noise filter
+       int passHcalNoise = 0;
+       if( HcalNoiseFilterLoose ) passHcalNoise = 1;
+//        if( HcalNoiseFilterTight ) passHcalNoise = 1;
        //#################################################
        
        // Set the evaluation of the cuts to false and clear the variable values and filled status
        resetCuts();
        
        // Set the value of the variableNames listed in the cutFile to their current value
-       
 
        //## Fill variables for Event selection
        if(isData==1)
@@ -461,6 +529,7 @@ void analysisClass::Loop()
 	   fillVariableWithValue("passBeamScrap", PMTnoisePassesBeamScraping);
 	   fillVariableWithValue("passGoodPV", PMTnoiseisPrimaryVertex);
 	   fillVariableWithValue("passGoodRunList", pass_GoodRunList);
+           fillVariableWithValue("passHcalNoise", passHcalNoise);
 	 }
 
        if(isData==0)
@@ -472,6 +541,7 @@ void analysisClass::Loop()
 	   fillVariableWithValue("passBeamScrap", PMTnoisePassesBeamScraping);
 	   fillVariableWithValue("passGoodPV", PMTnoiseisPrimaryVertex);
 	   fillVariableWithValue("passGoodRunList", pass_GoodRunList);
+           fillVariableWithValue("passHcalNoise", passHcalNoise);
 	 }
 
        //## Fill other variables
@@ -535,7 +605,7 @@ void analysisClass::Loop()
 	       if(abs(ieta)>=30 && abs(ieta)<=33) index_eta = 2;
 	       if(abs(ieta)>=34 && abs(ieta)<=37) index_eta = 3;
 	       if(abs(ieta)>=38 && abs(ieta)<=40) index_eta = 4;
-	       if(abs(ieta)==41) index_eta = 5;	       
+	       if(abs(ieta)==41) index_eta = 5;
 
 	       //calculate sum of energy in HF (including spikes at this stage)
 	       SumEinHF = SumEinHF + energy;
@@ -555,10 +625,11 @@ void analysisClass::Loop()
                if( (depth==1 && energy<1.2) || (depth==2 && energy<1.8) ) continue;
                
                //masked towers
-               // HF(37,67,1): STATUS = 0x8040
                // HF(29,67,1): STATUS = 0x40
-               // HF(35,67,1): STATUS = 0x8040
                // HF(29,67,2): STATUS = 0x40
+               // only masked in 2009 runs
+               // HF(37,67,1): STATUS = 0x8040
+               // HF(35,67,1): STATUS = 0x8040
                // HF(30,67,2): STATUS = 0x8040
                // HF(32,67,2): STATUS = 0x8040
                // HF(36,67,2): STATUS = 0x8040
@@ -567,12 +638,17 @@ void analysisClass::Loop()
                //tower masked
                int isLongMasked=0;
                int isShortMasked=0;
-               if( (ieta==37 || ieta==29 || ieta==35) && iphi==67)
+//                if( (ieta==37 || ieta==29 || ieta==35) && iphi==67)
+//                  isLongMasked = 1;
+// 
+//                if( (ieta==29 || ieta==30 || ieta==32 || ieta==36 || ieta==38) && iphi==67)
+//                  isShortMasked = 1;
+               // for 2010 runs
+               if( ieta==29 && iphi==67) {
                  isLongMasked = 1;
-
-               if( (ieta==29 || ieta==30 || ieta==32 || ieta==36 || ieta==38) && iphi==67)
                  isShortMasked = 1;
-               
+               }
+
                //skip the RecHit if it's in the tower with crystals mounted
                if( isLongMasked==1 || isShortMasked==1 ) continue;
                
@@ -582,9 +658,8 @@ void analysisClass::Loop()
                //S9/S1
                double S9oS1 = ( partenergy + sum4Long + sum4Short ) / energy;
                
-               //S5/S1
-               double S5oS1 = ( partenergy + sum4Long ) / energy; // L
-               if( depth==2 ) S5oS1 = ( partenergy + sum4Short ) / energy; // S
+               //S8/S1
+               double S8oS1 = ( sum4Long + sum4Short ) / energy;
 
                // For S9/S1 flagging
                double slope = 0;
@@ -601,7 +676,7 @@ void analysisClass::Loop()
                     else if( abs(ieta)>29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && S9oS1<(intercept+slope*log(energy)) ) ) isPMThit = true;
                  }
                }
-               else if( depth==2 && energy>(129.9-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.98 ) isPMThit = true;
+               else if( depth==2 && energy>(129.9-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.9 ) isPMThit = true;
                
                if( depth==1 && isPMThit )
                  {
@@ -620,9 +695,9 @@ void analysisClass::Loop()
                    h_HFRecHitET_L_Flagged->Fill( ET );
                    h_HFRecHitET_L_Flagged_ieta[abs(ieta)]->Fill( ET );
                    h2_S9oS1_vs_E_L_Flagged->Fill( energy, S9oS1 );
-                   h2_S5oS1_vs_E_L_Flagged->Fill( energy, S5oS1 );
+                   h2_S8oS1_vs_E_L_Flagged->Fill( energy, S8oS1 );
                    h2_S9oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S9oS1 );
-                   h2_S5oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S5oS1 );
+                   h2_S8oS1_vs_E_L_Flagged_ieta[abs(ieta)]->Fill( energy, S8oS1 );
                  }
                else if( depth==2 && isPMThit )
                  {
@@ -641,14 +716,16 @@ void analysisClass::Loop()
                    h_HFRecHitET_S_Flagged->Fill( ET );
                    h_HFRecHitET_S_Flagged_ieta[abs(ieta)]->Fill( ET );
                    h2_S9oS1_vs_E_S_Flagged->Fill( energy, S9oS1 );
-                   h2_S5oS1_vs_E_S_Flagged->Fill( energy, S5oS1 );
+                   h2_S8oS1_vs_E_S_Flagged->Fill( energy, S8oS1 );
                    h2_S9oS1_vs_E_S_Flagged_ieta[abs(ieta)]->Fill( energy, S9oS1 );
-                   h2_S5oS1_vs_E_S_Flagged_ieta[abs(ieta)]->Fill( energy, S5oS1 );
+                   h2_S8oS1_vs_E_S_Flagged_ieta[abs(ieta)]->Fill( energy, S8oS1 );
                  }//## end of identify HF spikes
 
                if( depth==1 ) {
                  h2_HFRecHitE_vs_R_L->Fill( R, energy );
                  h2_HFRecHitET_vs_R_L->Fill( R, ET );
+                 h2_HFRecHitE_vs_R_L_ieta[abs(ieta)]->Fill( R, energy );
+                 h2_HFRecHitET_vs_R_L_ieta[abs(ieta)]->Fill( R, ET );
                  h2_HFRecHitE_L_vs_S->Fill( partenergy, energy );
                  h2_HFRecHitET_L_vs_S->Fill( partenergy*(ET/energy), ET );
                  h_HFRecHitE_L->Fill( energy );
@@ -658,14 +735,16 @@ void analysisClass::Loop()
                  h2_R_vs_iphi_L->Fill( iphi, R );
                  h2_R_vs_ieta_L->Fill( abs(ieta), R );
                  h2_S9oS1_vs_E_L->Fill( energy, S9oS1 );
-                 h2_S5oS1_vs_E_L->Fill( energy, S5oS1 );
+                 h2_S8oS1_vs_E_L->Fill( energy, S8oS1 );
                  h2_S9oS1_vs_E_L_ieta[abs(ieta)]->Fill( energy, S9oS1 );
-                 h2_S5oS1_vs_E_L_ieta[abs(ieta)]->Fill( energy, S5oS1 );
+                 h2_S8oS1_vs_E_L_ieta[abs(ieta)]->Fill( energy, S8oS1 );
                }
 
                if( depth==2 ) {
                  h2_HFRecHitE_vs_R_S->Fill( R, energy );
                  h2_HFRecHitET_vs_R_S->Fill( R, ET );
+                 h2_HFRecHitE_vs_R_S_ieta[abs(ieta)]->Fill( R, energy );
+                 h2_HFRecHitET_vs_R_S_ieta[abs(ieta)]->Fill( R, ET );
                  if(partenergy<1.2) h2_HFRecHitE_L_vs_S->Fill( energy, partenergy ); // if(...) necessary to avoid double-counting
                  if(partenergy<1.2) h2_HFRecHitET_L_vs_S->Fill( ET, partenergy*(ET/energy) ); // if(...) necessary to avoid double-counting
                  h_HFRecHitE_S->Fill( energy );
@@ -675,9 +754,9 @@ void analysisClass::Loop()
                  h2_R_vs_iphi_S->Fill( iphi, R );
                  h2_R_vs_ieta_S->Fill( abs(ieta), R );
                  h2_S9oS1_vs_E_S->Fill( energy, S9oS1 );
-                 h2_S5oS1_vs_E_S->Fill( energy, S5oS1 );
+                 h2_S8oS1_vs_E_S->Fill( energy, S8oS1 );
                  h2_S9oS1_vs_E_S_ieta[abs(ieta)]->Fill( energy, S9oS1 );
-                 h2_S5oS1_vs_E_S_ieta[abs(ieta)]->Fill( energy, S5oS1 );
+                 h2_S8oS1_vs_E_S_ieta[abs(ieta)]->Fill( energy, S8oS1 );
                }
                
                //## identify spikes a la caloMET
@@ -737,29 +816,53 @@ void analysisClass::Loop()
            double mey_clean = met_clean*sin(metphi_clean);
            double sumet_clean = PMTnoiseSUMET->at(0);
 
-           h_CaloMET->Fill( met_clean );
-           h_CaloMETPhi->Fill( metphi_clean );
-           h_CaloMEx->Fill( mex_clean );
-           h_CaloMEy->Fill( mey_clean );
-           h_CaloSumET->Fill( sumet_clean );
+           if( passedCut("all") ) {
+             h_CaloMET->Fill( met_clean );
+             h_CaloMETPhi->Fill( metphi_clean );
+             h_CaloMEx->Fill( mex_clean );
+             h_CaloMEy->Fill( mey_clean );
+             h_CaloSumET->Fill( sumet_clean );
+           }
+           // tcmet before cleaning
+           double tcmet_clean = tcmetPt->at(0);
+           double tcmetphi_clean = tcmetPhi->at(0);
+           double tcmex_clean = tcmetPx->at(0);
+           double tcmey_clean = tcmetPy->at(0);
+           double tcsumet_clean = tcmetSumEt->at(0);
+
+           if( passedCut("all") ) {
+             h_tcMET->Fill( tcmet_clean );
+             h_tcMETPhi->Fill( tcmetphi_clean );
+             h_tcMEx->Fill( tcmex_clean );
+             h_tcMEy->Fill( tcmey_clean );
+             h_tcSumET->Fill( tcsumet_clean );
+           }
+           // pfmet
+           if( passedCut("all") ) {
+             h_pfMET->Fill( pfmetPt->at(0) );
+             h_pfMETPhi->Fill( pfmetPhi->at(0) );
+             h_pfMEx->Fill( pfmetPx->at(0) );
+             h_pfMEy->Fill( pfmetPy->at(0) );
+             h_pfSumET->Fill( pfmetSumEt->at(0) );
+           }
            
-           //## clean ECAL spikes
-           for (int i=0; i<EBspikes_ET.size(); i++)
-             {
-               mex_clean += EBspikes_Px[i];
-               mey_clean += EBspikes_Py[i];
-               sumet_clean -= EBspikes_ET[i]; 
-             }
-           
-           //## re-calculate met pt and phi after ECAL spike cleaning
-           met_clean = sqrt( mex_clean * mex_clean + mey_clean * mey_clean );
-           metphi_clean = atan2( mey_clean, mex_clean );
-           
-           h_CaloMET_cleanECAL->Fill( met_clean );
-           h_CaloMETPhi_cleanECAL->Fill( metphi_clean );
-           h_CaloMEx_cleanECAL->Fill( mex_clean );
-           h_CaloMEy_cleanECAL->Fill( mey_clean );
-           h_CaloSumET_cleanECAL->Fill( sumet_clean );
+           //## clean ECAL spikes (in CMSSW_3_5_X>=3_5_6 this is done in standard reco)
+//            for (int i=0; i<EBspikes_ET.size(); i++)
+//              {
+//                mex_clean += EBspikes_Px[i];
+//                mey_clean += EBspikes_Py[i];
+//                sumet_clean -= EBspikes_ET[i]; 
+//              }
+//            
+//            //## re-calculate met pt and phi after ECAL spike cleaning
+//            met_clean = sqrt( mex_clean * mex_clean + mey_clean * mey_clean );
+//            metphi_clean = atan2( mey_clean, mex_clean );
+//            
+//            h_CaloMET_cleanECAL->Fill( met_clean );
+//            h_CaloMETPhi_cleanECAL->Fill( metphi_clean );
+//            h_CaloMEx_cleanECAL->Fill( mex_clean );
+//            h_CaloMEy_cleanECAL->Fill( mey_clean );
+//            h_CaloSumET_cleanECAL->Fill( sumet_clean );
 
            double mexHF_clean = PMTnoiseMETHFM->at(0)*cos( PMTnoiseMETphiHFM->at(0) ) + PMTnoiseMETHFP->at(0)*cos( PMTnoiseMETphiHFP->at(0) );
            double meyHF_clean = PMTnoiseMETHFM->at(0)*sin( PMTnoiseMETphiHFM->at(0) ) + PMTnoiseMETHFP->at(0)*sin( PMTnoiseMETphiHFP->at(0) );
@@ -767,18 +870,23 @@ void analysisClass::Loop()
            double metphiHF_clean = atan2( meyHF_clean, mexHF_clean );
            double sumetHF_clean = PMTnoiseSUMETHFM->at(0) + PMTnoiseSUMETHFP->at(0);
            
-           h_CaloMETHF->Fill( metHF_clean );
-           h_CaloMETPhiHF->Fill( metphiHF_clean );
-           h_CaloMExHF->Fill( mexHF_clean );
-           h_CaloMEyHF->Fill( meyHF_clean );
-           h_CaloSumETHF->Fill( sumetHF_clean );
-           
+           if( passedCut("all") ) {
+             h_CaloMETHF->Fill( metHF_clean );
+             h_CaloMETPhiHF->Fill( metphiHF_clean );
+             h_CaloMExHF->Fill( mexHF_clean );
+             h_CaloMEyHF->Fill( meyHF_clean );
+             h_CaloSumETHF->Fill( sumetHF_clean );
+           }
            //## clean HF spikes
            for (int i=0; i<HFspikes_ET.size(); i++)
              {
                mex_clean += HFspikes_Px[i];
                mey_clean += HFspikes_Py[i];
                sumet_clean -= HFspikes_ET[i];
+               
+               tcmex_clean += HFspikes_Px[i];
+               tcmey_clean += HFspikes_Py[i];
+               tcsumet_clean -= HFspikes_ET[i];
                
                mexHF_clean += HFspikes_Px[i];
                meyHF_clean += HFspikes_Py[i];
@@ -789,30 +897,51 @@ void analysisClass::Loop()
            met_clean = sqrt( mex_clean * mex_clean + mey_clean * mey_clean );
            metphi_clean = atan2( mey_clean, mex_clean );
            
+           tcmet_clean = sqrt( tcmex_clean * tcmex_clean + tcmey_clean * tcmey_clean );
+           tcmetphi_clean = atan2( tcmey_clean, tcmex_clean );
+           
            metHF_clean = sqrt( mexHF_clean * mexHF_clean + meyHF_clean * meyHF_clean );
            metphiHF_clean = atan2( meyHF_clean, mexHF_clean );
            
-           h_CaloMET_clean->Fill( met_clean );
-           h_CaloMETPhi_clean->Fill( metphi_clean );
-           h_CaloMEx_clean->Fill( mex_clean );
-           h_CaloMEy_clean->Fill( mey_clean );
-           h_CaloSumET_clean->Fill( sumet_clean );
+           if( passedCut("all") ) {
+             h_CaloMET_clean->Fill( met_clean );
+             h_CaloMETPhi_clean->Fill( metphi_clean );
+             h_CaloMEx_clean->Fill( mex_clean );
+             h_CaloMEy_clean->Fill( mey_clean );
+             h_CaloSumET_clean->Fill( sumet_clean );
+             
+             h_tcMET_clean->Fill( tcmet_clean );
+             h_tcMETPhi_clean->Fill( tcmetphi_clean );
+             h_tcMEx_clean->Fill( tcmex_clean );
+             h_tcMEy_clean->Fill( tcmey_clean );
+             h_tcSumET_clean->Fill( tcsumet_clean );
+             
+             h_CaloMETHF_clean->Fill( metHF_clean );
+             h_CaloMETPhiHF_clean->Fill( metphiHF_clean );
+             h_CaloMExHF_clean->Fill( mexHF_clean );
+             h_CaloMEyHF_clean->Fill( meyHF_clean );
+             h_CaloSumETHF_clean->Fill( sumetHF_clean );
+           }
            
-           h_CaloMETHF_clean->Fill( metHF_clean );
-           h_CaloMETPhiHF_clean->Fill( metphiHF_clean );
-           h_CaloMExHF_clean->Fill( mexHF_clean );
-           h_CaloMEyHF_clean->Fill( meyHF_clean );
-           h_CaloSumETHF_clean->Fill( sumetHF_clean );
-           
-           
+           // CaloMET for events rejected by HcalNoiseSummary object
+           if( printout && !passedCut("passHcalNoise") ) 
+             {
+               h_CaloMEThcalNoise->Fill( met_clean );
+               cout << "event: " << event << " " 
+                    << "ls: " << ls << " "
+                    << "run: " << run << "  "
+                    << "--  CaloMEThcalNoise : " <<  met_clean << " "
+                    << endl;
+             }
+            
 	   if(printout)
 	     {
-	       if( metHF_clean > 10 )
+	       if( met_clean > metPrintoutCut )
 		 {
 		   cout << "event: " << event << " " 
 			<< "ls: " << ls << " "
 			<< "run: " << run << "  "
-			<< "--  CaloMETinHF_clean : " <<  metHF_clean << " "
+			<< "--  CaloMET_clean : " <<  met_clean << " "
 			<< endl;
 		 }
 	     }
@@ -1001,17 +1130,37 @@ void analysisClass::Loop()
    h_CaloMEy->Write();
    h_CaloSumET->Write();
    
-   h_CaloMET_cleanECAL->Write();
-   h_CaloMETPhi_cleanECAL->Write();
-   h_CaloMEx_cleanECAL->Write();
-   h_CaloMEy_cleanECAL->Write();
-   h_CaloSumET_cleanECAL->Write();
+   h_CaloMEThcalNoise->Write();
+   
+//    h_CaloMET_cleanECAL->Write();
+//    h_CaloMETPhi_cleanECAL->Write();
+//    h_CaloMEx_cleanECAL->Write();
+//    h_CaloMEy_cleanECAL->Write();
+//    h_CaloSumET_cleanECAL->Write();
    
    h_CaloMET_clean->Write();
    h_CaloMETPhi_clean->Write();
    h_CaloMEx_clean->Write();
    h_CaloMEy_clean->Write();
    h_CaloSumET_clean->Write();
+   
+   h_tcMET->Write();
+   h_tcMETPhi->Write();
+   h_tcMEx->Write();
+   h_tcMEy->Write();
+   h_tcSumET->Write();
+   
+   h_tcMET_clean->Write();
+   h_tcMETPhi_clean->Write();
+   h_tcMEx_clean->Write();
+   h_tcMEy_clean->Write();
+   h_tcSumET_clean->Write();
+   
+   h_pfMET->Write();
+   h_pfMETPhi->Write();
+   h_pfMEx->Write();
+   h_pfMEy->Write();
+   h_pfSumET->Write();
    
    h_CaloMETHF->Write();
    h_CaloMETPhiHF->Write();
@@ -1035,6 +1184,11 @@ void analysisClass::Loop()
    h2_HFRecHitET_vs_R_L->Write();
    h2_HFRecHitET_vs_R_S->Write();
    
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_HFRecHitE_vs_R_L_ieta.begin(); it != h2_HFRecHitE_vs_R_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_HFRecHitE_vs_R_S_ieta.begin(); it != h2_HFRecHitE_vs_R_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_HFRecHitET_vs_R_L_ieta.begin(); it != h2_HFRecHitET_vs_R_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_HFRecHitET_vs_R_S_ieta.begin(); it != h2_HFRecHitET_vs_R_S_ieta.end(); it++) it->second->Write();
+   
    h2_R_vs_iphi_L->Write();
    h2_R_vs_ieta_L->Write();
    h2_R_vs_iphi_S->Write();
@@ -1042,21 +1196,21 @@ void analysisClass::Loop()
 
    h2_S9oS1_vs_E_L->Write();
    h2_S9oS1_vs_E_S->Write();
-   h2_S5oS1_vs_E_L->Write();
-   h2_S5oS1_vs_E_S->Write();
+   h2_S8oS1_vs_E_L->Write();
+   h2_S8oS1_vs_E_S->Write();
    h2_S9oS1_vs_E_L_Flagged->Write();
    h2_S9oS1_vs_E_S_Flagged->Write();
-   h2_S5oS1_vs_E_L_Flagged->Write();
-   h2_S5oS1_vs_E_S_Flagged->Write();
+   h2_S8oS1_vs_E_L_Flagged->Write();
+   h2_S8oS1_vs_E_S_Flagged->Write();
    
    for(map<UInt_t,TH2D*>::const_iterator it = h2_S9oS1_vs_E_L_ieta.begin(); it != h2_S9oS1_vs_E_L_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH2D*>::const_iterator it = h2_S9oS1_vs_E_S_ieta.begin(); it != h2_S9oS1_vs_E_S_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2D*>::const_iterator it = h2_S5oS1_vs_E_L_ieta.begin(); it != h2_S5oS1_vs_E_L_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2D*>::const_iterator it = h2_S5oS1_vs_E_S_ieta.begin(); it != h2_S5oS1_vs_E_S_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S8oS1_vs_E_L_ieta.begin(); it != h2_S8oS1_vs_E_L_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S8oS1_vs_E_S_ieta.begin(); it != h2_S8oS1_vs_E_S_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH2D*>::const_iterator it = h2_S9oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
    for(map<UInt_t,TH2D*>::const_iterator it = h2_S9oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S9oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2D*>::const_iterator it = h2_S5oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
-   for(map<UInt_t,TH2D*>::const_iterator it = h2_S5oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S5oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S8oS1_vs_E_L_Flagged_ieta.begin(); it != h2_S8oS1_vs_E_L_Flagged_ieta.end(); it++) it->second->Write();
+   for(map<UInt_t,TH2D*>::const_iterator it = h2_S8oS1_vs_E_S_Flagged_ieta.begin(); it != h2_S8oS1_vs_E_S_Flagged_ieta.end(); it++) it->second->Write();
 
    h_SumEinHF->Write();
    p_NspikesInHF_vs_SumEinHF->Write(); 
@@ -1070,50 +1224,50 @@ void analysisClass::Loop()
    p_OccupancyHF_vs_SumEinHF->Write();
 
 
-   h_JetInHF_pT->Write();
-   h_JetInHF_eta->Write();
-   h_JetInHF_phi->Write();
-   h_JetInHF_Njet->Write();
-   h_JetInHF_Njet_ptcut->Write();
-   h_JetInHF_Nconst->Write();  
-   h_JetInHF_N60->Write();  
-   h_JetInHF_N90->Write(); 
-   
-   h_JetInHF_pT_PET->Write();
-   h_JetInHF_eta_PET->Write();
-   h_JetInHF_phi_PET->Write();
-   h_JetInHF_Njet_PET->Write();
-   h_JetInHF_Njet_ptcut_PET->Write();
-   h_JetInHF_Nconst_PET->Write();
-   h_JetInHF_N60_PET->Write();
-   h_JetInHF_N90_PET->Write();
-   
-   h_JetInHF_pT_S9S1->Write();
-   h_JetInHF_eta_S9S1->Write();
-   h_JetInHF_phi_S9S1->Write();
-   h_JetInHF_Njet_S9S1->Write();
-   h_JetInHF_Njet_ptcut_S9S1->Write();
-   h_JetInHF_Nconst_S9S1->Write();
-   h_JetInHF_N60_S9S1->Write();
-   h_JetInHF_N90_S9S1->Write();
-   
-   h_CaloMETinHF->Write();
-   h_CaloMETPhiinHF->Write();
-   h_CaloMExinHF->Write();
-   h_CaloMEyinHF->Write();
-   h_CaloSumETinHF->Write();
-
-   h_CaloMETinHF_PET->Write();
-   h_CaloMETPhiinHF_PET->Write();
-   h_CaloMExinHF_PET->Write();
-   h_CaloMEyinHF_PET->Write();
-   h_CaloSumETinHF_PET->Write();
-   
-   h_CaloMETinHF_S9S1->Write();
-   h_CaloMETPhiinHF_S9S1->Write();
-   h_CaloMExinHF_S9S1->Write();
-   h_CaloMEyinHF_S9S1->Write();
-   h_CaloSumETinHF_S9S1->Write();
+//    h_JetInHF_pT->Write();
+//    h_JetInHF_eta->Write();
+//    h_JetInHF_phi->Write();
+//    h_JetInHF_Njet->Write();
+//    h_JetInHF_Njet_ptcut->Write();
+//    h_JetInHF_Nconst->Write();  
+//    h_JetInHF_N60->Write();  
+//    h_JetInHF_N90->Write(); 
+//    
+//    h_JetInHF_pT_PET->Write();
+//    h_JetInHF_eta_PET->Write();
+//    h_JetInHF_phi_PET->Write();
+//    h_JetInHF_Njet_PET->Write();
+//    h_JetInHF_Njet_ptcut_PET->Write();
+//    h_JetInHF_Nconst_PET->Write();
+//    h_JetInHF_N60_PET->Write();
+//    h_JetInHF_N90_PET->Write();
+//    
+//    h_JetInHF_pT_S9S1->Write();
+//    h_JetInHF_eta_S9S1->Write();
+//    h_JetInHF_phi_S9S1->Write();
+//    h_JetInHF_Njet_S9S1->Write();
+//    h_JetInHF_Njet_ptcut_S9S1->Write();
+//    h_JetInHF_Nconst_S9S1->Write();
+//    h_JetInHF_N60_S9S1->Write();
+//    h_JetInHF_N90_S9S1->Write();
+//    
+//    h_CaloMETinHF->Write();
+//    h_CaloMETPhiinHF->Write();
+//    h_CaloMExinHF->Write();
+//    h_CaloMEyinHF->Write();
+//    h_CaloSumETinHF->Write();
+// 
+//    h_CaloMETinHF_PET->Write();
+//    h_CaloMETPhiinHF_PET->Write();
+//    h_CaloMExinHF_PET->Write();
+//    h_CaloMEyinHF_PET->Write();
+//    h_CaloSumETinHF_PET->Write();
+//    
+//    h_CaloMETinHF_S9S1->Write();
+//    h_CaloMETPhiinHF_S9S1->Write();
+//    h_CaloMExinHF_S9S1->Write();
+//    h_CaloMEyinHF_S9S1->Write();
+//    h_CaloSumETinHF_S9S1->Write();
    
    
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
