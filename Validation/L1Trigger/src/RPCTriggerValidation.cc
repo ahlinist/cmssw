@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.9 2010/04/05 16:14:52 dbart Exp $
+// $Id: RPCTriggerValidation.cc,v 1.10 2010/04/05 23:05:27 dbart Exp $
 //
 //
 
@@ -40,10 +40,12 @@
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include <DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTReadoutCollection.h>
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
+//#include <PhysicsTools/Utilities/interface/Sqrt.h>
 #include <DataFormats/MuonReco/interface/MuonTime.h>
 #include <DataFormats/MuonReco/interface/Muon.h>
 
-
+#include <math.h>
 #include <algorithm>
 
 using namespace RPCTriggerValidationStruct;
@@ -58,12 +60,13 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
       m_inColMC(iConfig.getParameter<edm::InputTag >("MCCollection")),
       m_outputDirectory(iConfig.getParameter<std::string >("outputDirectory")),
       m_outputFile(iConfig.getParameter<std::string>("outputFile")),
-      deltaRThreshold(iConfig.getParameter<double>("deltaRThreshold")),
+      m_deltaEtaThreshold(iConfig.getParameter<double>("deltaEtaThreshold")),
+      m_deltaPhiThreshold(iConfig.getParameter<double>("deltaPhiThreshold")),
       m_L1MuonFromReco(iConfig.getParameter<bool>("L1MuonFromReco")),
       m_GlobalMuon(iConfig.getParameter<bool>("GlobalMuon")),
       m_StandAloneMuon(iConfig.getParameter<bool>("StandAloneMuon")),
-      m_takeGMT(iConfig.getParameter<bool>("takeGMT"))
-      
+      m_takeGMT(iConfig.getParameter<bool>("takeGMT")),
+      m_dev(iConfig.getParameter<bool>("dev"))
       //etaMin(iConfig.getParameter<double>("etaMin")),
       //etaMax(iConfig.getParameter<double>("etaMax"))
 {
@@ -75,12 +78,12 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
    }
    
    dqm->setCurrentFolder(m_outputDirectory);
-   nomEta = dqm->book1D("nomEta","RPCTrigger: Efficiency vs  #eta",100,-2.5,2.5);
-   denomEta = dqm->book1D("denomEta","RPCTrigger: Efficiency vs #eta - denom",100,-2.5,2.5);
+   nomEta = dqm->book1D("Eta","RPCTrigger: Efficiency vs  #eta",100,-2.5,2.5);
+   denomEta = dqm->book1D("Eta_Denom","RPCTrigger: Efficiency vs #eta - denom",100,-2.5,2.5);
    trig = dqm->book1D("Trig","RPCTrigger: Trigger ",100,1,0);
    alltrig = dqm->book1D("AllTrig","RPCTrigger: All Trigger ",100,1,0);
-   ghost = dqm->book1D("ghost","RPCTrigger: ghost",11,-0.5,10.5);
-   unassigned = dqm->book1D("unassigned","RPCTrigger: Unassigned L1s",11,-0.5,10.5);
+   ghost = dqm->book1D("assign","RPCTrigger: Number of assign candidates",11,-0.5,10.5);
+   unassigned = dqm->book1D("unassigned","RPCTrigger: Number of unassigned candidates",11,-0.5,10.5);
               
    std::vector<edm::ParameterSet> etaPtRanges = iConfig.getParameter< std::vector<edm::ParameterSet> > ("etaPtRanges");          
    std::vector<edm::ParameterSet>::iterator it = etaPtRanges.begin(); 
@@ -325,7 +328,7 @@ void RPCTriggerValidation::assignCandidatesToGens( std::vector<GenMuonLocalInfo>
                                                    std::vector<L1MuonCandLocalInfo> & l1cands)
 {
 
-
+   if(gens.size()==0) return;
   //sort both vectors wrt pt
   std::sort(gens.begin(),gens.end(), tmf::SortGens);
   std::sort(l1cands.begin(), l1cands.end(), tmf::SortL1Candidates);
@@ -345,7 +348,8 @@ void RPCTriggerValidation::assignCandidatesToGens( std::vector<GenMuonLocalInfo>
      itGenE = gens.end();
     for (;itGen!=itGenE;++itGen)
     {
-       double dr = reco::deltaR(*itGen,*it);
+       //double dr = reco::deltaR(*itGen,*it);
+	double dr = std::sqrt(100*(itGen->eta()-it->eta())*(itGen->eta()-it->eta())+(itGen->phi()-it->phi())*(itGen->phi()-it->phi()));
        //std::cout << "))))))))))->" << drMin  << " " << dr << std::endl; 
        if (dr < drMin || drMin < 0) { 
          drMin = dr;
@@ -357,7 +361,8 @@ void RPCTriggerValidation::assignCandidatesToGens( std::vector<GenMuonLocalInfo>
     // Problem:  {a,b} - L1 cands, {C,D} - Gens, what if both a and b got assigned to C? How to handle this
     // TODO make this configurable
     //  std::cout << "))))))))))->" << drMin << std::endl; 
-    if (drMin < deltaRThreshold && drMin > 0 ) {
+    
+    if (std::abs(itGenMin->eta()-it->eta())< m_deltaEtaThreshold && std::abs(itGenMin->phi()-it->phi())< m_deltaPhiThreshold ) {
        itGenMin->_l1cands.push_back(*it);
        it = l1cands.erase(it);
     } else {
@@ -386,10 +391,12 @@ RPCTriggerValidation::beginJob()
 void 
 RPCTriggerValidation::endJob() {
 
-  nomEta->getTH1F()->Divide((denomEta->getTH1F()));
+
+if(m_dev){
+     nomEta->getTH1F()->Divide((denomEta->getTH1F()));
   //nomPt->getTH1F()->Divide((denomPt->getTH1F()));
   
-  std::vector<MEEfficiency>::iterator itEff =  _meEfficiencyVec.begin();
+     std::vector<MEEfficiency>::iterator itEff =  _meEfficiencyVec.begin();
      std::vector<MEEfficiency>::iterator itEffE =  _meEfficiencyVec.end();
      for (;itEff!=itEffE; ++itEff){
       itEff->dev();
@@ -401,8 +408,8 @@ RPCTriggerValidation::endJob() {
      for (;itDis!=itDisE; ++itDis){
       itDis->dev();
      }
-    
-    if (m_outputFile.size() != 0 && dqm ) dqm -> save(m_outputFile);            
+    }
+     if (m_outputFile.size() != 0 && dqm ) dqm -> save(m_outputFile);            
 }
 
 

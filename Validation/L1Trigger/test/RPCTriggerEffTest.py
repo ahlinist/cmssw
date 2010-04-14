@@ -35,7 +35,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(200)
+    input = cms.untracked.int32(200000000)
 )
 
 process.load("DQMServices.Core.DQM_cfg")
@@ -44,8 +44,8 @@ process.load("DQMServices.Components.test.dqm_onlineEnv_cfi")
 process.load("Validation.L1Trigger.RPCTriggerEfficiency_cfi")
 
 process.RPCTriggerVal.MCCollection  = cms.InputTag("SelectRecoMuons")
-process.RPCTriggerVal.deltaRThreshold=cms.double(2.5)
-
+process.RPCTriggerVal.deltaEtaThreshold=cms.double(0.4)
+process.RPCTriggerVal.deltaPhiThreshold=cms.double(1.6)
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 	
