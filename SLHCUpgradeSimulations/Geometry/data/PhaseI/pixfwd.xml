@@ -47,17 +47,17 @@
 <PosPartSection label="pixfwd.xml">
   <PosPart copyNumber="1">
     <rParent name="pixfwd:PixelForward"/>
-    <rChild name="pixfwdDisks:PixelForwardDisk"/>
+    <rChild name="pixfwdDisks:PixelForwardDisk1"/>
     <Translation x="0." y="0." z="[AnchorZ]+[Disk1Z]"/>
   </PosPart>
-  <PosPart copyNumber="2">
+  <PosPart copyNumber="1">
     <rParent name="pixfwd:PixelForward"/>
-    <rChild name="pixfwdDisks:PixelForwardDisk"/>
+    <rChild name="pixfwdDisks:PixelForwardDisk2"/>
     <Translation x="0." y="0." z="[AnchorZ]+[Disk2Z]"/>
   </PosPart>
-  <PosPart copyNumber="3">
+  <PosPart copyNumber="1">
     <rParent name="pixfwd:PixelForward"/>
-    <rChild name="pixfwdDisks:PixelForwardDisk"/>
+    <rChild name="pixfwdDisks:PixelForwardDisk3"/>
     <Translation x="0." y="0." z="[AnchorZ]+ [Disk3Z]" />
   </PosPart>
 
