@@ -15,7 +15,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.h,v 1.7 2010/03/29 18:05:59 dbart Exp $
+// $Id: RPCTriggerValidation.h,v 1.8 2010/04/05 16:14:52 dbart Exp $
 //
 //
 
@@ -85,13 +85,15 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
       std::string m_outputDirectory; /// where to put DQM histos
       std::string m_outputFile;
       DQMStore * dqm;
-      double deltaRThreshold;
+      double m_deltaEtaThreshold;
+      double m_deltaPhiThreshold;
       
       bool m_L1MuonFromReco;
        
 	bool m_GlobalMuon;
 	bool m_StandAloneMuon;
 	bool m_takeGMT;
+        bool m_dev;
 };
 
 

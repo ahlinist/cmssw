@@ -8,3 +8,5 @@
 <bin   file="L1RPCPlotHistos.cc">
   <use   name="rootgraphics"/>
 </bin>
+<bin   file="L1RPCEffMerge.cc">
+</bin>

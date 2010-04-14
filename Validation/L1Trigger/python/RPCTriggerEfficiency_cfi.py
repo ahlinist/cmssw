@@ -11,7 +11,8 @@ RPCTriggerVal = cms.EDAnalyzer("RPCTriggerValidation",
       
       outputDirectory = cms.string("L1_RPC"),
       outputFile=cms.string("RPC_efficiency.root"),
-      deltaRThreshold=cms.double(0.5),
+      deltaEtaThreshold=cms.double(0.2),
+      deltaPhiThreshold=cms.double(1.0),
       L1MuonFromReco=cms.bool(True),
       takeGMT = cms.bool(False),
       GlobalMuon= cms.bool(True),
@@ -19,7 +20,7 @@ RPCTriggerVal = cms.EDAnalyzer("RPCTriggerValidation",
       NumberOfQuality=cms.int32(4),
       etaMax=cms.double(1.61),
       etaMin=cms.double(-1.61),
-
+      dev= cms.bool(True),
 # etaPtRanges = cms.VPSet (
 #         cms.PSet( etaL=cms.double(-1.61), etaH=cms.double(-1.24), ptL=cms.double(0.0), ptH=cms.double(10.0) ),
 #         cms.PSet( etaL=cms.double(-1.61), etaH=cms.double(-1.24), ptL=cms.double(10.0), ptH=cms.double(100.) ),

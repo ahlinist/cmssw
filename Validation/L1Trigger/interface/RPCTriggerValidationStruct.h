@@ -282,7 +282,7 @@ struct MEDistribution {
 	    } 
 	          { std::stringstream name;
 	    std::stringstream title;
-		name<<"Distribution_"<<_tag[1]<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
+		name<<"Distribution_"<<"Bx"<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH)<<"_Denom";
 	    title<<"RPCTrigger: Distribution "<<_tag[1]<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
 	    
             _meTowerVsPhiL1 = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
@@ -296,7 +296,7 @@ struct MEDistribution {
 		name<<"Distribution_"<<"Bx"<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
 	    title<<"RPCTrigger: Distribution "<<"Bx"<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
 	    
-            _meTowerVsPhiL1Bx = dqm->bookProfile2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi,-5,5); 
+            _meTowerVsPhiL1Bx = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
             _meTowerVsPhiL1Bx->setAxisTitle("Tower",1);
 	    _meTowerVsPhiL1Bx->setAxisTitle("#phi",2);
             }
@@ -307,7 +307,7 @@ struct MEDistribution {
 		name<<"Distribution_"<<"quality"<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
 	    title<<"RPCTrigger: Distribution "<<"quality"<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
 	    
-            _meTowerVsPhiL1Quality = dqm->bookProfile2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi,0,4); 
+            _meTowerVsPhiL1Quality = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
             _meTowerVsPhiL1Quality->setAxisTitle("Tower",1);
 	    _meTowerVsPhiL1Quality->setAxisTitle("#phi",2);
             }
@@ -343,16 +343,23 @@ struct MEDistribution {
             
             if((gl.pt()>=_ptL)&&(gl.pt()<=_ptH)){
 	    
+            std::vector<L1MuonCandLocalInfo>::iterator itL1BxMin=std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx);
+
 	    _meVecEtaVsPhiGen[3]->Fill(gl.eta(),gl.phi());
 	    _meVecTowerVsPhiGen[3]->Fill(_const.towerNumFromEta(gl.eta()),gl.phi());
 	    
 	    if(gl._l1cands.size()>0) {
 	     _meVecEtaVsPhiGen[1]->Fill(gl.eta(),gl.phi());
+
 	     _meVecTowerVsPhiGen[1]->Fill(_const.towerNumFromEta(gl.eta()),gl.phi());
-	     _meTowerVsPhiL1->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi());
-             _meTowerVsPhiL1Bx->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi(),(std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx))->bx()+0.01);
-		_meTowerVsPhiL1Quality->Fill(gl._l1cands.begin()->tower(),gl._l1cands.begin()->phi(),gl._l1cands.begin()->quality());
-		_meL1Bx->Fill((std::min_element(gl._l1cands.begin(),gl._l1cands.end(),SortAssignedL1byBx))->bx());
+
+	     _meTowerVsPhiL1->Fill(itL1BxMin->tower(),itL1BxMin->phi());
+
+             _meTowerVsPhiL1Bx->Fill(itL1BxMin->tower(),itL1BxMin->phi(),itL1BxMin->bx()+0.01);
+
+		_meTowerVsPhiL1Quality->Fill(itL1BxMin->tower(),gl._l1cands.begin()->phi(),gl._l1cands.begin()->quality());
+
+		_meL1Bx->Fill(itL1BxMin->bx());
 		
 		for( std::vector<L1MuonCandLocalInfo>::iterator itL1 =gl._l1cands.begin() ;
                                                       itL1 != gl._l1cands.end() ;
@@ -383,7 +390,7 @@ struct MEDistribution {
             _meVecTowerVsPhiGen[0]->getTH2F()->Divide((_meVecTowerVsPhiGen[3]->getTH2F()));
 	    _meVecTowerVsPhiGen[1]->getTH2F()->Divide((_meVecTowerVsPhiGen[3]->getTH2F()));
 	    _meVecTowerVsPhiGen[2]->getTH2F()->Divide((_meVecTowerVsPhiGen[3]->getTH2F()));
-             
+             _meTowerVsPhiL1Bx->getTH2F()->Divide((_meTowerVsPhiL1->getTH2F()));
 	    
 	    
 	   } 	  
@@ -413,6 +420,11 @@ struct MEEfficiency {
                                               _etaL(ps.getParameter<double>("etaL")),
                                               _etaH(ps.getParameter<double>("etaH")) 
           {
+
+	double *PtBins;
+          PtBins= new double[_const.m_PT_CODE_MAX+1];
+	for(int i=0 ;i<_const.m_PT_CODE_MAX+1;i++) PtBins[i]=_const.ptFromIpt(i);
+
 
         std::stringstream dir;
 	dir<<dqm->pwd();
