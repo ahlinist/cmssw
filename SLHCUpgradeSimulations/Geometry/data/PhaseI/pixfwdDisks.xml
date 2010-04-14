@@ -8,13 +8,26 @@
 </ConstantsSection>
  
 <SolidSection label="pixfwdDisks.xml">
- <Tubs name="PixelForwardDisk"  startPhi="0."  deltaPhi="360*deg"
+ <Tubs name="PixelForwardDisk1"  startPhi="0."  deltaPhi="360*deg"
+       rMin="[DiskRmin]" rMax="[DiskRmax]" dz="[DiskHalfWidth]"/> 
+ <Tubs name="PixelForwardDisk2"  startPhi="0."  deltaPhi="360*deg"
+       rMin="[DiskRmin]" rMax="[DiskRmax]" dz="[DiskHalfWidth]"/> 
+ <Tubs name="PixelForwardDisk3"  startPhi="0."  deltaPhi="360*deg"
        rMin="[DiskRmin]" rMax="[DiskRmax]" dz="[DiskHalfWidth]"/> 
 </SolidSection>
  
 <LogicalPartSection label="pixfwdDisks.xml">
- <LogicalPart name="PixelForwardDisk" category="envelope">
-  <rSolid name="PixelForwardDisk"/>
+ <LogicalPart name="pixfwdDisks:PixelForwardDisk1" category="envelope">
+  <rSolid name="pixfwdDisks:PixelForwardDisk1"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+ <LogicalPart name="pixfwdDisks:PixelForwardDisk2" category="envelope">
+  <rSolid name="pixfwdDisks:PixelForwardDisk2"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+
+ <LogicalPart name="pixfwdDisks:PixelForwardDisk3" category="envelope">
+  <rSolid name="pixfwdDisks:PixelForwardDisk3"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
 </LogicalPartSection>

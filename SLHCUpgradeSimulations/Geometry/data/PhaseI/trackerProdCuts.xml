@@ -79,7 +79,9 @@ July 2009
     <PartSelector path="//PixelBarrelActiveFull1" />
     <PartSelector path="//PixelBarrelActiveFull2" />
     <PartSelector path="//PixelBarrelActiveFull3" />
-    <PartSelector path="//PixelForwardSensor" />
+    <PartSelector path="//PixelForwardSensor1" />
+    <PartSelector path="//PixelForwardSensor2" />
+    <PartSelector path="//PixelForwardSensor3" />
     <Parameter name="CMSCutsRegion" value="TrackerPixelSensRegion" eval="false"/>
     <Parameter name="ProdCutsForElectrons" value="0.01*mm"/>
     <Parameter name="ProdCutsForPositrons" value="0.01*mm"/>
