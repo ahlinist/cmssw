@@ -80,13 +80,6 @@ public:
     if (dynamic_cast<TProfile*>(o.object)) preDrawTProfile(c, o);
   }
 
-  virtual void postDraw(TCanvas* c, const VisDQMObject& o, const VisDQMImgInfo& , VisDQMRenderInfo& )
-  {
-    c->cd();
-
-    if (dynamic_cast<TH2F*>(o.object)) postDrawTH2F(c, o);
-  }
-
 
 private:
 
@@ -120,19 +113,8 @@ private:
 	gStyle->SetOptStat(1110);
 	obj->SetStats(kTRUE);
 	obj->SetOption("colz");
-
-// 	c->cd();
-// 	TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
-// 	if (pal != 0)
-// 	  {
-// 	    double deltaX = pal->GetX2NDC() - pal->GetX1NDC();
-// 	    double deltaY = pal->GetY2NDC() - pal->GetY1NDC();
-
-// 	    pal->SetX1NDC(0.90 - deltaX);
-// 	    pal->SetY1NDC(0.90 - deltaY);
-// 	    pal->SetX2NDC(0.90);
-// 	    pal->SetY2NDC(0.90);
-// 	  }
+	gStyle->SetStatX(0.9);
+	gStyle->SetStatY(0.9);
 
 	return;
       }
@@ -196,22 +178,6 @@ private:
 	gStyle->SetOptFit(1110);
 	gStyle->SetOptStat(10);
 
-// 	if ((o.name.find("dxdz vs lumi") == std::string::npos) && (o.name.find("dydz vs lumi") == std::string::npos) && (o.name.find("pixelHits vs lumi") == std::string::npos))
-// 	  {
-// 	    c->cd();
-// 	    TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
-// 	    if (pal != 0)
-// 	      {
-// 		double deltaX = pal->GetX2NDC() - pal->GetX1NDC();
-// 		double deltaY = pal->GetY2NDC() - pal->GetY1NDC();
-		
-// 		pal->SetX1NDC(0.13);
-// 		pal->SetY1NDC(0.13);	    
-// 		pal->SetX2NDC(0.13 + deltaX);
-// 		pal->SetY2NDC(0.13 + deltaY);	    
-// 	      }
-// 	  }
-
 	return;
       }
   }
@@ -240,30 +206,6 @@ private:
     ya->SetLabelSize(0.03);
 
     c->SetGrid();
-  }
-
-  void postDrawTH2F(TCanvas* c, const VisDQMObject& o)
-  {  
-    TH2F* obj = dynamic_cast<TH2F*>(o.object);
-    assert(obj);
-    
-    c->cd();
-    if ((o.name.find("vertex zx") != std::string::npos) || (o.name.find("vertex zy") != std::string::npos) || (o.name.find("vertex xy") != std::string::npos))
-      {
-	TPaveStats* pal = (TPaveStats*)obj->GetListOfFunctions()->FindObject("stats");
-	if (pal != 0)
-	  {
-	    double deltaX = pal->GetX2NDC() - pal->GetX1NDC();
-	    double deltaY = pal->GetY2NDC() - pal->GetY1NDC();
-
-	    pal->SetX1NDC(0.90 - deltaX);
-	    pal->SetY1NDC(0.90 - deltaY);
-	    pal->SetX2NDC(0.90);
-	    pal->SetY2NDC(0.90);
-	  }
-
-	return;
-      }
   }
 
 };
