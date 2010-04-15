@@ -7,7 +7,7 @@ goodGlobalMuons = muonSelection.clone()
 goodGlobalMuons.cut = cms.string('isGlobalMuon & pt > 0 & innerTrack().found() >= 15')
 
 goodGlobalAndTrackerMuons = muonSelection.clone()
-goodGlobalAndTrackermuons.cut = cms.string('isGlobalMuon | isTrackerMuon & pt > 0 & innerTrack().found() >= 15')
+goodGlobalAndTrackerMuons.cut = cms.string('isGlobalMuon | isTrackerMuon & pt > 0 & innerTrack().found() >= 15')
 
 #Electron Selection
 from ElectroWeakAnalysis.MultiBosons.ElectronSelection_cfi import *
@@ -40,9 +40,9 @@ ZEEGammaCandidates.decay = cms.string('ZEECandidates photons')
 ZEEGammaCandidates.cut = cms.string('mass > 0')
 
 #setup sequences
-ZGammaWorkflowChargedLeptons = cms.Sequence(ZMuMuCandidates*ZMuMUGammaCandidates+
+ZGammaWorkflowChargedLeptons = cms.Sequence(ZMuMuCandidates*ZMuMuGammaCandidates+
                                             ZEECandidates*ZEEGammaCandidates)
 
-VGammaAnalysis = cms.Sequence(ZGammaWorkFlowChargedLeptons)
+VGammaAnalysis = cms.Sequence(ZGammaWorkflowChargedLeptons)
                              
 
