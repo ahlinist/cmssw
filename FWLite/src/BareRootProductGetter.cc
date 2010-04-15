@@ -106,9 +106,6 @@ BareRootProductGetter::getIt(edm::ProductID const& iID) const  {
     buffer = createNewBuffer(iID);
     // std::cout << "buffer " << buffer << std::endl;
     if( 0 == buffer ) {
-       throw cms::Exception("NoBuffer")
-	  <<"Failed to create a buffer to hold the data item"
-	  <<"\n Please contact developer since this message should not happen";
       return 0;
     }
   } else {
@@ -168,9 +165,7 @@ BareRootProductGetter::createNewBuffer(const edm::ProductID& iID) const
 
   TBranch* branch= branchMap_.getEventTree()->GetBranch( bdesc.branchName().c_str() );
   if( 0 == branch) {
-    throw cms::Exception("MissingBranch") 
-       <<"could not find branch named '"<<bdesc.branchName()<<"'"
-       <<"\n Perhaps the data being requested was not saved in this file?";
+     //we do not thrown on missing branches since 'getIt' should not throw under that condition
     return 0;
   }
   //find the class type
