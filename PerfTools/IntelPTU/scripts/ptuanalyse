@@ -1,0 +1,295 @@
+#!/usr/bin/env python
+
+##############################################################################
+#
+# Script for producing the "all", "src" and "asm" PTU reports in CSV
+# format. The output format should be compatible with the default CSV
+# format of Eclipse+PTU. The output is intended to be viewed with the
+# ptuview script
+#
+# The script uses the vtsaview program from the Intel PTU.
+#
+#
+#  $Id:  $
+#
+# Matti Kortelainen, Helsinki Institute of Physics
+# 15 April 2010
+##############################################################################
+
+import sys
+import subprocess
+import re
+import csv
+import xml.dom.minidom
+from optparse import OptionParser
+
+class Function:
+    def __init__(self, name, module, source, rva):
+        self.name = name
+        self.module = module
+        self.source = source
+        self.rva = rva
+
+    def __str__(self):
+        return "%s: %s %d" % (self.name, self.module, self.rva)
+
+    def hasSource(self):
+        return self.source != "<unknown(s)>"
+
+class Vtsa:
+    def __init__(self, opts):
+        self.expdir = opts.expdir
+        self.command = "/opt/intel/ptu32_001_lin_intel64/bin/vtsaview"
+#        self.options = {"common": "-cpu total -t=95 -n=1000000 --granularity=function --show-events-as=samples --threads-match=time -er --filter process,cmsRun",
+        self.options = {"common": ["-cpu", "total", "-t=%d" % opts.threshold,
+                                   "-n=1000000", "--granularity=function", "--show-events-as=samples", "--threads-match=time", "-er", "--filter", "process,cmsRun"],
+                        "all": ["--aggregate=e", "--csv"],
+                        "src": ["--aggregate=p", "--sv", "-ds", "windows", "--xml"]}
+
+        self.dataDescriptionIndex_re = re.compile("//@dataDescriptions\.(?P<index>\d+)")
+        self.sourceLine_re = re.compile("//@sourceFiles\.0/@sourceLines\.(?P<line>\d+)")
+        self.asmLine_re = re.compile("//@modules\.0/@asmLines\.(?P<line>\d+)")
+        self.branchTarget_re = re.compile("//@modules\.0/@basicBlockGraph/@basicBlocks\.(?P<target>\d+)")
+        self.jump_re = re.compile("(?P<jump>\S+\s+)\S+")
+
+        self.functions = []
+
+    def buildCmd(self, report):
+        cmd = [self.command, self.expdir]
+        cmd.extend(self.options["common"])
+        cmd.extend(self.options[report])
+        return cmd
+
+    def execute(self, cmd):
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+
+        ret_out = []
+        ret_err = []
+
+        for line in p.stdout:
+            ret_out.append(line.replace("\n", ""))
+
+        for line in p.stderr:
+            ret_err.append(line.replace("\n", ""))
+
+        return (ret_out, ret_err)
+
+    def formatRow(self, row):
+        return ','.join(['"%s"' % x for x in row])
+
+    def checkError(self, error):
+        warnings = []
+        errors = []
+        for line in error:
+            if line.find("Source View, Error") >= 0:
+                warnings.append(line)
+            elif line.find("Could not view the data") >= 0 or line.find("SVDP error") >= 0:
+                errors.append(line)
+            elif line.find("error") >= 0:
+                print "Unknown error: ", line
+
+#        for line in warnings:
+#            print "Warning: ", line
+#        for line in errors:
+#            print "ERROR: ", line
+
+        return len(errors) == 0
+
+    def buildAllReport(self, file):
+        # It looks to me that it's much easier to parse the CSV output
+        # for the all report than XML
+        cmd = self.buildCmd("all")
+        (input, error) = self.execute(cmd)
+        ok = self.checkError(error)
+        if not ok:
+            return
+        
+        output = open(file, "w")
+
+        self.functions = []
+
+        rownum = 0
+        rvaindex = -1
+        functionindex = -1
+        moduleindex = -1
+        sourceindex = -1
+        reader = csv.reader(input.__iter__(), delimiter='\t')
+        for row in reader:
+            # Header
+            if rownum == 0:
+                for i in xrange(0, len(row)):
+                    if row[i] == "rva":
+                        rvaindex = i
+                        row[i] = row[i].upper()
+                    elif row[i] == "function":
+                        functionindex = i
+                        row[i] = row[i].capitalize()
+                    elif row[i] == "module":
+                        moduleindex = i
+                        row[i] = row[i].capitalize()
+                    elif row[i] == "source":
+                        sourceindex = i
+            # Body    
+            else:
+                rva = str(int(row[rvaindex], 16))
+                row[rvaindex] = rva
+                self.functions.append(Function(row[functionindex], row[moduleindex], row[sourceindex], rva))
+
+            # Remove source column from the output    
+            del row[sourceindex]    
+            output.write(self.formatRow(row)+"\n")
+            rownum += 1
+
+        output.close()    
+        #print "\n".join(str(x) for x in self.functions)
+
+    def addData(self, dst, size, element):
+        data = ["0"] * size
+        datas = element.getElementsByTagName("data")
+        for d in datas:
+            m = self.dataDescriptionIndex_re.search(d.getAttribute("description"))
+            if not m:
+                continue
+
+            index = int(m.group("index"))
+            value = d.getAttribute("value")
+            data[index] = value
+
+        for i in xrange(0, size):
+            dst += ',"%s"' % data[i]
+
+        return dst    
+
+    def buildSrcReport(self, function):
+        cmd = self.buildCmd("src")
+        cmd.extend(["--bin", function.module, "--addr", function.rva])
+        (input, error) = self.execute(cmd)
+        ok = self.checkError(error)
+        if not ok:
+#            print "%s : vtsaview error (probably no src), skipping" % function.name
+            return (None, None)
+
+        dom = xml.dom.minidom.parseString("\n".join(input))
+        
+        # Header for src and asm report
+        src = '"Line","Source"'
+        asm = '"Address","Line","Assembly"'
+        dataDescriptions = dom.getElementsByTagName("dataDescriptions")
+        dataSize = len(dataDescriptions)
+        for d in dataDescriptions:
+            column = d.getAttribute("name")
+            src += ',"%s"' % column
+            asm += ',"%s"' % column
+        src += "\n"
+        asm += "\n"
+
+        # Contents for src report
+        sourceFile = dom.getElementsByTagName("sourceFiles")[0]
+        sourceLines = sourceFile.getElementsByTagName("sourceLines")
+        for line in sourceLines:
+            # Line number and line contents
+            contents = line.getElementsByTagName("contents")[0]
+            lineNumber = contents.getAttribute("lineNumber")
+            lineContents = contents.getAttribute("lineContents").replace('"', '""')
+            src += '"%s","%s"' % (lineNumber, lineContents)
+
+            
+            # Counter values
+            src = self.addData(src, dataSize, line)
+            src += "\n"
+
+        # Contents for asm report
+        modules = dom.getElementsByTagName("modules")[0]
+        asmLines = modules.getElementsByTagName("asmLines")
+
+        basicBlockGraph  = dom.getElementsByTagName("basicBlockGraph")[0]
+        basicBlocks = basicBlockGraph.getElementsByTagName("basicBlocks")
+        for block in basicBlocks:
+            # First put basic block data
+            id = block.getAttribute("id")
+            lines = []
+            for line in block.getAttribute("asmLines").split(" "):
+                m = self.asmLine_re.search(line)
+                if m:
+                    lines.append(int(m.group("line")))
+
+            asm += ('"Block %s","0",""' % id)
+            asm = self.addData(asm, dataSize, block)
+            asm += "\n"
+
+            # Check for branch target
+            branchTarget = ""
+            if block.hasAttribute("branchTarget"):
+                m = self.branchTarget_re.search(block.getAttribute("branchTarget"))
+                if m:
+                    branchTarget = m.group("target")
+
+            # Find the assembly lines of this lbock        
+            for i in xrange(0, len(lines)):
+                # Contents of asm line
+                l = lines[i]
+                aline = asmLines[l]
+                sourceLine = "0"
+                if aline.hasAttribute("sourceLine"):
+                    m = self.sourceLine_re.search(aline.getAttribute("sourceLine"))
+                    if m:
+                        contents = sourceLines[int(m.group("line"))].getElementsByTagName("contents")[0]
+                        sourceLine = contents.getAttribute("lineNumber")
+
+                contents = aline.getElementsByTagName("contents")[0]
+                address = hex(int(contents.getAttribute("address"))).upper().replace("X", "x")
+                lineContents = contents.getAttribute("lineContents")
+
+                # Transform the possible branch target to "Block N"
+                if branchTarget != "" and i == len(lines)-1:
+                    lineContents = self.jump_re.sub("\g<jump>Block %s" % branchTarget, lineContents)
+
+                # Add asm line to CSV    
+                asm += ('"%s","%s","%s"' % (address, sourceLine, lineContents))
+                asm = self.addData(asm, dataSize, aline)
+                asm += "\n"
+
+        print "  %s : built src and asm reports" % function.name
+        return (src, asm)
+    
+    def buildFunctionReports(self, prefix=""):
+        for i in xrange(0, len(self.functions)):
+            func = self.functions[i]
+            if not func.hasSource():
+                continue
+
+            (src, asm) = self.buildSrcReport(func)
+
+            if src != None:
+                file = open(prefix+"%d_src.csv" % i, "w")
+                file.write(src)
+                file.close()
+
+            if asm != None:
+                file = open(prefix+"%d_asm.csv" % i, "w")
+                file.write(asm)
+                file.close()
+
+if __name__ == "__main__":
+    parser = OptionParser(usage="Usage: %prog [options]")
+    parser.add_option("--experiment", "-e", dest="expdir", type="string",
+                      help="PTU Experiment directory")
+    parser.add_option("--all", "-a", dest="allname", type="string", default="basic_sampling",
+                      help='Name of "all" report (default: "basic_sampling"')
+    parser.add_option("--prefix", "-p", dest="prefix", type="string", default="",
+                      help='Prefix of report files (default: "")')
+    parser.add_option("--threshold", "-t", dest="threshold", type="int", default=95,
+                      help='Threshold for displayed hotspots (see the same option of vtsaview)  (default: 95)')
+    (opts, args) = parser.parse_args()
+
+    if opts.expdir == None:
+        parser.error("The PTU experiment directory must be given (-e)")
+
+    all_file = opts.prefix + opts.allname + "_all.csv"
+
+    vtsa = Vtsa(opts)
+    print "Building all report"
+    vtsa.buildAllReport(all_file)
+    print "Building function reports"
+    vtsa.buildFunctionReports(opts.prefix)
+    print "Done"
