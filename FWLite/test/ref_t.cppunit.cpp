@@ -32,6 +32,8 @@ class testRefInROOT: public CppUnit::TestFixture
   CPPUNIT_TEST_EXCEPTION(failOneBadFile,std::exception);
   CPPUNIT_TEST(testGoodChain);
   CPPUNIT_TEST(testTwoGoodFiles);
+  CPPUNIT_TEST(testMissingRef);
+
   // CPPUNIT_TEST_EXCEPTION(failChainWithMissingFile,std::exception);
   //failTwoDifferentFiles
   CPPUNIT_TEST_EXCEPTION(failDidNotCallGetEntryForEvents,std::exception);
@@ -65,6 +67,8 @@ public:
   void testGoodChain();
   // void failChainWithMissingFile();
   void failDidNotCallGetEntryForEvents();
+  void testMissingRef();
+
 
  private:
   static bool sWasRun_;
@@ -215,6 +219,34 @@ void testRefInROOT::testGoodChain()
   }
   
 }
+
+void testRefInROOT::testMissingRef()
+{
+   TFile file("other_only.root");
+   TTree* events = dynamic_cast<TTree*>(file.Get(edm::poolNames::eventTreeName().c_str()));
+   
+   edm::Wrapper<edmtest::OtherThingCollection> *pOthers = 0;
+   TBranch* otherBranch = events->GetBranch("edmtestOtherThings_OtherThing_testUserTag_TEST.");
+   
+   CPPUNIT_ASSERT( otherBranch != 0);
+   
+   int nev = events->GetEntries();
+   for( int ev=0; ev<nev; ++ev) {
+      
+      events->GetEntry(ev,0);
+      otherBranch->SetAddress(&pOthers);
+      otherBranch->GetEntry(ev);
+      
+      for(edmtest::OtherThingCollection::const_iterator itOther = pOthers->product()->begin(), 
+          itEnd=pOthers->product()->end();
+          itOther != itEnd; ++itOther) {
+         CPPUNIT_ASSERT(not itOther->ref.isAvailable());
+         CPPUNIT_ASSERT_THROW(itOther->ref.get(), cms::Exception);
+      }
+      
+   }   
+}
+
 /*
 void testRefInROOT::failChainWithMissingFile()
 {
