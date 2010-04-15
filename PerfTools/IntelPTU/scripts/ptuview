@@ -741,15 +741,22 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
           url1 += "/asm/"
         else: #(proftype == "asm")
           url1 += "/src/"
-        url1 += profname
         url3 = "</a>"
         for iii,jjj in enumerate(fieldordered):
           rowtxt=row[jjj]
           rowtxt=rowtxt.replace(">","&gt;")
           rowtxt=rowtxt.replace("<","&lt;")
           if (titleordered[iii] == "Line"):
-            url2 = url1 + "/" + row[jjj] + "/#" + row[jjj] + "\">"
+            url2 = url1 + profname + "/" + row[jjj] + "/#" + row[jjj] + "\">"
             out.write("<td class=%s id=%s>%s%s%s</td>\n" % (classordered[iii],row[jjj],url2,rowtxt,url3))
+          elif (titleordered[iii] == "Function"):
+            funcnum = rownum-1
+            reportfile = os.path.join("data", "%d_src.csv" % funcnum)
+            if os.path.exists(reportfile):
+              url2 = url1 + str(funcnum) + "\">"
+              out.write("<td class=%s>%s%s%s</td>\n" % (classordered[iii],url2,rowtxt,url3))
+            else:
+              out.write("<td class=%s>%s</td>\n" % (classordered[iii],rowtxt))
           else:
             out.write("<td class=%s>%s</td>\n" % (classordered[iii],rowtxt))
         out.write("</tr>\n")
