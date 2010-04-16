@@ -5,13 +5,13 @@ goodGlobalMuons = muonSelection.clone()
 goodGlobalMuons.cut = cms.string('isGlobalMuon & pt > 0')
 
 goodGlobalMuonsTkTrackRequirement = muonSelection.clone()
-goodGlobalMuonsTkTrackRequirement.cut = cms.string('innerTrack().found() >= 15')
+goodGlobalMuonsTkTrackRequirement.cut = cms.string('innerTrack().found() >= 10')
 
 goodGlobalAndTrackerMuons = muonSelection.clone()
-goodGlobalAndTrackerMuons.cut = cms.string('isGlobalMuon | isTrackerMuon & pt > 0 & innerTrack().found() >= 15')
+goodGlobalAndTrackerMuons.cut = cms.string('isGlobalMuon | isTrackerMuon & pt > 0')
 
 goodGlobalAndTrackerMuonsTkTrackRequirement = muonSelection.clone()
-goodGlobalAndTrackerMuonsTkTrackRequirement.cut = cms.string('innerTrack().found() >= 15')
+goodGlobalAndTrackerMuonsTkTrackRequirement.cut = cms.string('innerTrack().found() >= 10')
 
 muonSelectionSeq = cms.Sequence(goodGlobalMuons*goodGlobalMuonsTkTrackRequirement+
                                 goodGlobalAndTrackerMuons*goodGlobalAndTrackerMuonsTkTrackRequirement)
