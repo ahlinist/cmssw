@@ -87,11 +87,11 @@ process.selectedEvents = cms.EDFilter("CandViewCountFilter",
 
 ### path
 process.p = cms.Path(
-        process.hltLevel1GTSeed +
+        # process.hltLevel1GTSeed +
         process.hltPhysicsDeclared +
         process.hltMinBiasBSC +
-        process.primaryVertexFilter +
-        process.scrapingFilter +
+        # process.primaryVertexFilter +
+        # process.scrapingFilter +
         process.patMuonSequence +     # produce PAT muons for Onia2MuMu (includes merging with CaloMuons)
         process.onia2MuMuPatTrkTrk +  # make J/Psi's (inclusively down to tracker+tracker)
         process.selectedEvents        # select events with J/Psi's
