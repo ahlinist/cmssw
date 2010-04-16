@@ -37,7 +37,7 @@
 # where as before "somestring" is up to you. The URL will then be:
 #   http://x.y/z/cgi-bin/ptuview/all/somestring/
 #
-#  $Id: ptuview,v 1.4 2010/04/14 12:02:10 elmer Exp $
+#  $Id: ptuview,v 1.6 2010/04/15 09:45:46 mkortela Exp $
 #
 # Peter Elmer, Princeton University
 # 24 March, 2010
@@ -646,7 +646,14 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
   srcorder = ["RVA","Module","Function","Source","Assembly","Line","Address","CPU_CLK_UNHALTED.CORE","INST_RETIRED.ANY"]
   srcclass = ["src","src","src","src","src","lineadr","lineadr","cntr","cntr"]
   srcclassother = "cntr"
-  srcsuppress = ["CPU_CLK_UNHALTED.CORE max(lCPU)"]
+  srcsuppress = ["FirstLine", "CPU_CLK_UNHALTED.CORE max(lCPU)"]
+
+  # In "all" report we don't want the Source column to be shown
+  if proftype == "all":
+    i = srcorder.index("Source")
+    del srcorder[i]
+    del srcclass[i]
+    srcsuppress.append("Source")
 
   ifile  = open(mycsvfile, "rb")
   reader = csv.reader(ifile)
@@ -753,7 +760,15 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
             funcnum = rownum-1
             reportfile = os.path.join("data", "%d_src.csv" % funcnum)
             if os.path.exists(reportfile):
-              url2 = url1 + str(funcnum) + "\">"
+              lineno = ""
+              if hdrmap.has_key("FirstLine"):
+                lineno = row[hdrmap["FirstLine"]]
+                if lineno != "":
+                  no = int(lineno)
+                  if no > 10:
+                    no -= 5
+                  lineno = "/#%d" % no
+              url2 = url1 + str(funcnum) + ("%s\">" % lineno)
               out.write("<td class=%s>%s%s%s</td>\n" % (classordered[iii],url2,rowtxt,url3))
             else:
               out.write("<td class=%s>%s</td>\n" % (classordered[iii],rowtxt))
