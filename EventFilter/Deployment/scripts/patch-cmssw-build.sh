@@ -12,6 +12,11 @@ LOCAL_CODE_PATCHES_TOP=$4   # absolute path to the area where extra code to be c
 # set the RMP build architecture
 BUILD_ARCH=$(uname -i)      # "i386" for SLC4, "x86_64" for SLC5
 
+# check that scram is available
+if ! which scram >& /dev/null; then
+  source /opt/cmssw/cmsset_default.sh
+fi
+
 # set environment variables
 export PATH=$PATH:$PWD/EventFilter/Deployment/scripts
 export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
