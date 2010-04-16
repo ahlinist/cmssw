@@ -10,7 +10,7 @@
 # The script uses the vtsaview program from the Intel PTU.
 #
 #
-#  $Id:  $
+#  $Id: ptuanalyse,v 1.1 2010/04/15 09:43:03 mkortela Exp $
 #
 # Matti Kortelainen, Helsinki Institute of Physics
 # 15 April 2010
@@ -29,12 +29,19 @@ class Function:
         self.module = module
         self.source = source
         self.rva = rva
+        self.firstLine = ""
 
     def __str__(self):
         return "%s: %s %d" % (self.name, self.module, self.rva)
 
     def hasSource(self):
         return self.source != "<unknown(s)>"
+
+    def setFirstLine(self, line):
+        self.firstLine = line
+
+    def getFirstLine(self):
+        return self.firstLine
 
 class Vtsa:
     def __init__(self, opts):
@@ -51,8 +58,6 @@ class Vtsa:
         self.asmLine_re = re.compile("//@modules\.0/@asmLines\.(?P<line>\d+)")
         self.branchTarget_re = re.compile("//@modules\.0/@basicBlockGraph/@basicBlocks\.(?P<target>\d+)")
         self.jump_re = re.compile("(?P<jump>\S+\s+)\S+")
-
-        self.functions = []
 
     def buildCmd(self, report):
         cmd = [self.command, self.expdir]
@@ -95,7 +100,7 @@ class Vtsa:
 
         return len(errors) == 0
 
-    def buildAllReport(self, file):
+    def buildAllReport(self, file, prefix=""):
         # It looks to me that it's much easier to parse the CSV output
         # for the all report than XML
         cmd = self.buildCmd("all")
@@ -104,46 +109,45 @@ class Vtsa:
         if not ok:
             return
         
-        output = open(file, "w")
+        output = open(prefix+file, "w")
 
-        self.functions = []
+        # The headers of "all" input which are needed for per-function
+        # reports. Define also (string) transformations to be done for
+        # these column headers and a map of header -> index in row
+        hdrcolumns = ["rva", "function", "module", "source"]
+        hdrtrans = [lambda x: x.upper()] + [lambda x: x.capitalize()]*3
+        hdrmap = {}
 
         rownum = 0
-        rvaindex = -1
-        functionindex = -1
-        moduleindex = -1
-        sourceindex = -1
         reader = csv.reader(input.__iter__(), delimiter='\t')
         for row in reader:
-            # Header
+            # Header of "all" report
             if rownum == 0:
-                for i in xrange(0, len(row)):
-                    if row[i] == "rva":
-                        rvaindex = i
-                        row[i] = row[i].upper()
-                    elif row[i] == "function":
-                        functionindex = i
-                        row[i] = row[i].capitalize()
-                    elif row[i] == "module":
-                        moduleindex = i
-                        row[i] = row[i].capitalize()
-                    elif row[i] == "source":
-                        sourceindex = i
-            # Body    
+                for i, value in enumerate(row):
+                    if value in hdrcolumns:
+                        hdrmap[value] = i
+                        j = hdrcolumns.index(value)
+                        row[i] = hdrtrans[j](value)
+                row.append("FirstLine")        
+            # Body of "all" report    
             else:
-                rva = str(int(row[rvaindex], 16))
-                row[rvaindex] = rva
-                self.functions.append(Function(row[functionindex], row[moduleindex], row[sourceindex], rva))
+                # Transform the rva from hex -> dec
+                rva = str(int(row[hdrmap["rva"]], 16))
+                row[hdrmap["rva"]] = rva
 
-            # Remove source column from the output    
-            del row[sourceindex]    
+                # Build the src+asm reports for a function, take first
+                # line with any counter being > 0
+                function = Function(row[hdrmap["function"]], row[hdrmap["module"]], row[hdrmap["source"]], rva)
+                self.buildFunctionReport(prefix, function, rownum-1)
+                row.append(function.getFirstLine())
+
             output.write(self.formatRow(row)+"\n")
             rownum += 1
 
         output.close()    
-        #print "\n".join(str(x) for x in self.functions)
 
     def addData(self, dst, size, element):
+        # Default values for counter data
         data = ["0"] * size
         datas = element.getElementsByTagName("data")
         for d in datas:
@@ -155,8 +159,9 @@ class Vtsa:
             value = d.getAttribute("value")
             data[index] = value
 
-        for i in xrange(0, size):
-            dst += ',"%s"' % data[i]
+        # Transform to string
+        for d in data:
+            dst += ',"%s"' % d
 
         return dst    
 
@@ -186,6 +191,7 @@ class Vtsa:
         # Contents for src report
         sourceFile = dom.getElementsByTagName("sourceFiles")[0]
         sourceLines = sourceFile.getElementsByTagName("sourceLines")
+        firstLineFound = False
         for line in sourceLines:
             # Line number and line contents
             contents = line.getElementsByTagName("contents")[0]
@@ -193,6 +199,9 @@ class Vtsa:
             lineContents = contents.getAttribute("lineContents").replace('"', '""')
             src += '"%s","%s"' % (lineNumber, lineContents)
 
+            if not firstLineFound and len(line.getElementsByTagName("data")) > 0:
+                firstLineFound = True
+                function.setFirstLine(lineNumber)
             
             # Counter values
             src = self.addData(src, dataSize, line)
@@ -217,18 +226,17 @@ class Vtsa:
             asm = self.addData(asm, dataSize, block)
             asm += "\n"
 
-            # Check for branch target
+            # Check for possible branch target
             branchTarget = ""
             if block.hasAttribute("branchTarget"):
                 m = self.branchTarget_re.search(block.getAttribute("branchTarget"))
                 if m:
                     branchTarget = m.group("target")
 
-            # Find the assembly lines of this lbock        
-            for i in xrange(0, len(lines)):
+            # Find the assembly lines of this block        
+            for i, alineno in enumerate(lines):
                 # Contents of asm line
-                l = lines[i]
-                aline = asmLines[l]
+                aline = asmLines[alineno]
                 sourceLine = "0"
                 if aline.hasAttribute("sourceLine"):
                     m = self.sourceLine_re.search(aline.getAttribute("sourceLine"))
@@ -251,45 +259,49 @@ class Vtsa:
 
         print "  %s : built src and asm reports" % function.name
         return (src, asm)
+
+    def buildFunctionReport(self, prefix, function, i):
+        # Don't even try to run vtsaview if the "all" report doesn't
+        # have a source file for the function. I guess this means that
+        # the code of the function was not compiled with "-g" and
+        # therefore vtsaview --sv will most probably fail. Avoiding
+        # unnecessary vtsaview calls saves some time.
+        if not function.hasSource():
+            return
+
+        (src, asm) = self.buildSrcReport(function)
+
+        if src != None:
+            file = open(prefix+"%d_src.csv" % i, "w")
+            file.write(src)
+            file.close()
+
+        if asm != None:
+            file = open(prefix+"%d_asm.csv" % i, "w")
+            file.write(asm)
+            file.close()
     
-    def buildFunctionReports(self, prefix=""):
-        for i in xrange(0, len(self.functions)):
-            func = self.functions[i]
-            if not func.hasSource():
-                continue
-
-            (src, asm) = self.buildSrcReport(func)
-
-            if src != None:
-                file = open(prefix+"%d_src.csv" % i, "w")
-                file.write(src)
-                file.close()
-
-            if asm != None:
-                file = open(prefix+"%d_asm.csv" % i, "w")
-                file.write(asm)
-                file.close()
 
 if __name__ == "__main__":
     parser = OptionParser(usage="Usage: %prog [options]")
     parser.add_option("--experiment", "-e", dest="expdir", type="string",
                       help="PTU Experiment directory")
     parser.add_option("--all", "-a", dest="allname", type="string", default="basic_sampling",
-                      help='Name of "all" report (default: "basic_sampling"')
+                      help='Name of "all" report; _all.csv is appended to the name (default: "basic_sampling"')
     parser.add_option("--prefix", "-p", dest="prefix", type="string", default="",
                       help='Prefix of report files (default: "")')
     parser.add_option("--threshold", "-t", dest="threshold", type="int", default=95,
                       help='Threshold for displayed hotspots (see the same option of vtsaview)  (default: 95)')
+    parser.add_option("--filter", dest="filter", type="string", default="cmsRun",
+                      help='Filter the given process (default: "cmsRun")')
     (opts, args) = parser.parse_args()
 
     if opts.expdir == None:
         parser.error("The PTU experiment directory must be given (-e)")
 
-    all_file = opts.prefix + opts.allname + "_all.csv"
+    all_file = opts.allname + "_all.csv"
 
     vtsa = Vtsa(opts)
-    print "Building all report"
-    vtsa.buildAllReport(all_file)
     print "Building function reports"
-    vtsa.buildFunctionReports(opts.prefix)
+    vtsa.buildAllReport(all_file, opts.prefix)
     print "Done"
