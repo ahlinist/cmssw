@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.21 2010/04/07 12:50:39 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.22 2010/04/07 14:36:14 covarell Exp $
 //
 //
 
@@ -94,12 +94,12 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *QQMass2GlobPT6_passmu5;
       TH1F *QQMass1Glob1TrkPT6_passmu5;
       TH1F *QQMass1Glob1CalPT6_passmu5;
-      TH1F *QQMass2Glob_pass2mu3;
-      TH1F *QQMass1Glob1Trk_pass2mu3;
-      TH1F *QQMass1Glob1Cal_pass2mu3;
-  // TH1F *WSMass2Glob_pass2mu3;
-  // TH1F *WSMass1Glob1Trk_pass2mu3;
-  // TH1F *WSMass1Glob1Cal_pass2mu3;
+      TH1F *QQMass2Glob_pass2muOpen;
+      TH1F *QQMass1Glob1Trk_pass2muOpen;
+      TH1F *QQMass1Glob1Cal_pass2muOpen;
+  // TH1F *WSMass2Glob_pass2muOpen;
+  // TH1F *WSMass1Glob1Trk_pass2muOpen;
+  // TH1F *WSMass1Glob1Cal_pass2muOpen;
       TH1F *QQMass2Glob_pass2mu0;             
       TH1F *QQMass1Glob1Trk_pass2mu0; 
       TH1F *QQMass1Glob1Cal_pass2mu0;
@@ -299,8 +299,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   nEvents = 0;
   passedCandidates = 0;
 
-  JpsiMassMin = 2.0;
-  JpsiMassMax = 4.0;
+  JpsiMassMin = 2.6;
+  JpsiMassMax = 3.6;
   JpsiMassMinSide = 0.;
   JpsiMassMaxSide = 12.0;
   JpsiCtMin = -1.0;
@@ -456,12 +456,12 @@ JPsiAnalyzerPAT::beginJob()
   QQMass2GlobPT6_passmu5           = new TH1F("QQMass2GlobPT6_passmu5",  "Invariant mass (2 global muons)", 120, 0.,15.);
   QQMass1Glob1TrkPT6_passmu5       = new TH1F("QQMass1Glob1TrkPT6_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
   QQMass1Glob1CalPT6_passmu5       = new TH1F("QQMass1Glob1CalPT6_passmu5",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  QQMass2Glob_pass2mu3              = new TH1F("QQMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  QQMass1Glob1Trk_pass2mu3          = new TH1F("QQMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  QQMass1Glob1Cal_pass2mu3          = new TH1F("QQMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  // WSMass2Glob_pass2mu3              = new TH1F("WSMass2Glob_pass2mu3",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  // WSMass1Glob1Trk_pass2mu3          = new TH1F("WSMass1Glob1Trk_pass2mu3",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  // WSMass1Glob1Cal_pass2mu3          = new TH1F("WSMass1Glob1Cal_pass2mu3",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  QQMass2Glob_pass2muOpen              = new TH1F("QQMass2Glob_pass2muOpen",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  QQMass1Glob1Trk_pass2muOpen          = new TH1F("QQMass1Glob1Trk_pass2muOpen",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  QQMass1Glob1Cal_pass2muOpen          = new TH1F("QQMass1Glob1Cal_pass2muOpen",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  // WSMass2Glob_pass2muOpen              = new TH1F("WSMass2Glob_pass2muOpen",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  // WSMass1Glob1Trk_pass2muOpen          = new TH1F("WSMass1Glob1Trk_pass2muOpen",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  // WSMass1Glob1Cal_pass2muOpen          = new TH1F("WSMass1Glob1Cal_pass2muOpen",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
   QQMass2Glob_pass2mu0              = new TH1F("QQMass2Glob_pass2mu0",  "Invariant mass (2 global muons)", 120, 0.,15.);
   QQMass1Glob1Trk_pass2mu0          = new TH1F("QQMass1Glob1Trk_pass2mu0",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
   QQMass1Glob1Cal_pass2mu0          = new TH1F("QQMass1Glob1Cal_pass2mu0",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
@@ -607,12 +607,12 @@ JPsiAnalyzerPAT::endJob() {
   // QQMass2Glob_passmu9        -> Write();
   // QQMass1Glob1Trk_passmu9    -> Write();
   // QQMass1Glob1Cal_passmu9    -> Write();
-  QQMass2Glob_pass2mu3          -> Write();
-  QQMass1Glob1Trk_pass2mu3      -> Write();
-  QQMass1Glob1Cal_pass2mu3      -> Write();
-  // WSMass2Glob_pass2mu3          -> Write();
-  // WSMass1Glob1Trk_pass2mu3      -> Write();
-  // WSMass1Glob1Cal_pass2mu3      -> Write();
+  QQMass2Glob_pass2muOpen          -> Write();
+  QQMass1Glob1Trk_pass2muOpen      -> Write();
+  QQMass1Glob1Cal_pass2muOpen      -> Write();
+  // WSMass2Glob_pass2muOpen          -> Write();
+  // WSMass1Glob1Trk_pass2muOpen      -> Write();
+  // WSMass1Glob1Cal_pass2muOpen      -> Write();
   QQMass2Glob_pass2mu0          -> Write();  
   QQMass1Glob1Trk_pass2mu0      -> Write();  
   QQMass1Glob1Cal_pass2mu0      -> Write();  
@@ -759,76 +759,81 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   bool isMatched = (genJpsi.isAvailable() && genJpsi->pdgId() == 443);
   if (isMatched && _removeSignal) return;
 
-  // Trigger Results inspection
-  
-  static const unsigned int NTRIGGERS = 5;
-  string HLTbitNames[NTRIGGERS] = {"HLT_L1MuOpen", "HLT_Mu3", "HLT_Mu5", "HLT_DoubleMu0", "HLT_DoubleMu3"};
-  unsigned int hltBits[NTRIGGERS];
+  // PAT trigger matches (new way)
 
-  HLTConfigProvider hltConfig;
-  if (hltConfig.init(_triggerresults.process())) {
-    // check if trigger name in config
-    const unsigned int n(hltConfig.size());
-    for (unsigned int ihlt = 0; ihlt < NTRIGGERS; ihlt++) {
-      hltBits[ihlt] = 1000;
-      unsigned int triggerIndex( hltConfig.triggerIndex(HLTbitNames[ihlt]) );
-      if (triggerIndex>=n) {
-	cout << "TriggerName " << HLTbitNames[ihlt] << " not available in config!" << endl;
-      } else {
-	hltBits[ihlt] = triggerIndex;
-      }
+  // PUT HERE THE *LAST FILTERS* OF THE BITS YOU LIKE
+  static const unsigned int NTRIGGERS = 5;
+  // MC 8E29
+  bool isTriggerMatched[NTRIGGERS];
+  string HLTLastFilters[NTRIGGERS] = {"hltDoubleMuLevel1PathL1OpenFiltered", // BIT HLT_L1DoubleMuOpen 
+				      "hltSingleMu3L3Filtered3",             // BIT HLT_Mu3  
+				      "hltSingleMu5L3Filtered5",             // BIT HLT_Mu5 
+				      "hltDiMuonL3PreFiltered0",             // BIT HLT_DoubleMu0 
+				      "hltDiMuonL3PreFiltered"};             // BIT HLT_DoubleMu3
+  // early data
+  /* string HLTLastFilters[NTRIGGERS] = {"hltDoubleMuLevel1PathL1OpenFiltered", // BIT HLT_L1DoubleMuOpen 
+                                      "hltL2Mu0L2Filtered0",                 // BIT HLT_L2Mu0
+				      "hltSingleMu3L2Filtered3",             // BIT HLT_L2Mu3  
+				      "hltMu0L1MuOpenL3Filtered0",           // BIT HLT_Mu0_L1MuOpen
+				      "hltMu0TrackJpsiTrackMassFiltered"};   // BIT HLT_Mu0_Track0_Jpsi */
+  
+   // Trigger passed
+
+  for (unsigned int iTr = 0; iTr<NTRIGGERS; iTr++ ) {
+    const pat::TriggerObjectStandAloneCollection mu1HLTMatches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[iTr] ); 
+    const pat::TriggerObjectStandAloneCollection mu2HLTMatches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[iTr] );
+    bool pass1 = mu1HLTMatches.size() > 0;
+    bool pass2 = mu2HLTMatches.size() > 0;
+    if (iTr == 1 || iTr == 2) {  // single triggers here
+      isTriggerMatched[iTr] = pass1 || pass2;
+    } else {                     // double triggers here
+      isTriggerMatched[iTr] = pass1 && pass2;
     }
   }
 
-  // Trigger passed
-
-  /* if (trigger.isValid()) {
-    if (hltBits[1] < 1000 && trigger->accept(hltBits[1])) { // pass Mu3
-      if (muon1->charge()*muon2->charge() < 0) {
-	if (theCat == 0) QQMass2Glob_passmu3->Fill(theMass);          
-	if (theCat == 1) QQMass1Glob1Trk_passmu3->Fill(theMass);
-	if (theCat == 3) QQMass1Glob1Cal_passmu3->Fill(theMass);    
-	if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(theMass);     
-	if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(theMass);
-	if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(theMass);
-	// } else {
-	// if (theCat == 0) WSMass2Glob_passmu3->Fill(theMass);          
-	// if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(theMass);
-	// if (theCat == 3) WSMass1Glob1Cal_passmu3->Fill(theMass);       
-      }
+  if (isTriggerMatched[1]) { // pass Bit 1
+    if (muon1->charge()*muon2->charge() < 0) {
+      if (theCat == 0) QQMass2Glob_passmu3->Fill(theMass);          
+      if (theCat == 1) QQMass1Glob1Trk_passmu3->Fill(theMass);
+      if (theCat == 3) QQMass1Glob1Cal_passmu3->Fill(theMass);    
+      if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(theMass);     
+      if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(theMass);
+      if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(theMass);
+      // } else {
+      // if (theCat == 0) WSMass2Glob_passmu3->Fill(theMass);          
+      // if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(theMass);
+      // if (theCat == 3) WSMass1Glob1Cal_passmu3->Fill(theMass);       
     }
-    if (hltBits[2] < 1000 && trigger->accept(hltBits[2])) { // pass Mu5
-      if (muon1->charge()*muon2->charge() < 0) {
-	if (theCat == 0) QQMass2Glob_passmu5->Fill(theMass);          
-	if (theCat == 1) QQMass1Glob1Trk_passmu5->Fill(theMass);
-	if (theCat == 3) QQMass1Glob1Cal_passmu5->Fill(theMass);    
-	if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu5->Fill(theMass);     
-	if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu5->Fill(theMass);
-	if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(theMass);
-      } 
+  }
+  if (isTriggerMatched[2]) { // pass Bit 2
+    if (muon1->charge()*muon2->charge() < 0) {
+      if (theCat == 0) QQMass2Glob_passmu5->Fill(theMass);          
+      if (theCat == 1) QQMass1Glob1Trk_passmu5->Fill(theMass);
+      if (theCat == 3) QQMass1Glob1Cal_passmu5->Fill(theMass);    
+      if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu5->Fill(theMass);     
+      if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu5->Fill(theMass);
+      if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(theMass);
+    } 
+  }
+  if (isTriggerMatched[0]) { // pass Bit 0
+    if (muon1->charge()*muon2->charge() < 0) {
+      if (theCat == 0) QQMass2Glob_pass2muOpen->Fill(theMass);          
+      if (theCat == 1) QQMass1Glob1Trk_pass2muOpen->Fill(theMass);
+      if (theCat == 3) QQMass1Glob1Cal_pass2muOpen->Fill(theMass);    
+      // } else {
+      // if (theCat == 0) WSMass2Glob_pass2muOpen->Fill(theMass);          
+      // if (theCat == 1) WSMass1Glob1Trk_pass2muOpen->Fill(theMass);
+      // if (theCat == 3) WSMass1Glob1Cal_pass2muOpen->Fill(theMass);       
     }
-    if (hltBits[3] < 1000 && trigger->accept(hltBits[3])) { // pass 2Mu3
-      if (muon1->charge()*muon2->charge() < 0) {
-	if (theCat == 0) QQMass2Glob_pass2mu3->Fill(theMass);          
-	if (theCat == 1) QQMass1Glob1Trk_pass2mu3->Fill(theMass);
-	if (theCat == 3) QQMass1Glob1Cal_pass2mu3->Fill(theMass);    
-	// } else {
-	// if (theCat == 0) WSMass2Glob_pass2mu3->Fill(theMass);          
-	// if (theCat == 1) WSMass1Glob1Trk_pass2mu3->Fill(theMass);
-	// if (theCat == 3) WSMass1Glob1Cal_pass2mu3->Fill(theMass);       
-      }
+  }
+  if (isTriggerMatched[3]) { // pass Bit 3
+    if (muon1->charge()*muon2->charge() < 0) {
+      if (theCat == 0) QQMass2Glob_pass2mu0->Fill(theMass);          
+      if (theCat == 1) QQMass1Glob1Trk_pass2mu0->Fill(theMass);
+      if (theCat == 3) QQMass1Glob1Cal_pass2mu0->Fill(theMass);    
     }
-    if (hltBits[4] < 1000 && trigger->accept(hltBits[4])) { // pass 2Mu0
-      if (muon1->charge()*muon2->charge() < 0) {
-	if (theCat == 0) QQMass2Glob_pass2mu0->Fill(theMass);          
-	if (theCat == 1) QQMass1Glob1Trk_pass2mu0->Fill(theMass);
-	if (theCat == 3) QQMass1Glob1Cal_pass2mu0->Fill(theMass);    
-      }
-    }  
-  } else {
-    cout << "TriggerResults not valid!" << endl;	
-    }*/
-	
+  }  
+  
   // Signal / background J/psi 	
   if (muon1->charge()*muon2->charge() < 0) {   
     if (isMatched) {
@@ -973,6 +978,8 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   if (_storeefficiency) {
     // to be done
   }
+
+  // if (!(trigger->accept(hltBits[0]))) return;
 
   if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
       theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
