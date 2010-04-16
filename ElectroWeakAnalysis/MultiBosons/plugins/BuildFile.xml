@@ -12,4 +12,5 @@
   <use   name="CommonTools/CandAlgos"/>
   <use   name="CommonTools/CandUtils"/>
   <use   name="AnalysisDataFormats/EWK"/>
+  <use   name="DataFormats/Common"/>
 </library>
