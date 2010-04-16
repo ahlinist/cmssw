@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
   ifstream *inputFile = new ifstream(inputFileName);
 
   /// WEIGHTS HERE
-  float weights[] = {1.,10.};
+  float weights[] = {0.000841,0.909};
   ///
   /// CATEGORIES HERE
   RooCategory MCType("MCType","Category of MC");
@@ -71,8 +71,8 @@ int main(int argc, char* argv[]) {
 	  RooCategory* myMatched = (RooCategory*)thisRow->find("matchType");
 	  int isMatched = (int)(myMatched->getIndex());
           int theMCType = 2;
-          if (isMatched && strstr(MyRootFile,"prompt")) theMCType = 0; 
-	  if (isMatched && strstr(MyRootFile,"nonpr")) theMCType = 1;
+          if (isMatched && strstr(MyRootFile,"Jpsi")) theMCType = 0; 
+	  if (isMatched && strstr(MyRootFile,"MB")) theMCType = 1;
 
           MCType.setIndex(theMCType);
 	  MCweight->setVal(weights[nfiles]);          

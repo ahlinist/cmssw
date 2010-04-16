@@ -9,7 +9,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
     fileNames = cms.untracked.vstring(
-      'file:myfile.root'
+       'file:myfile.root'
     )
 )
 
@@ -28,20 +28,19 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     histFileName = cms.string("Histos.root"),		
     dataSetName = cms.string("DataSet.root"),
                               
-    # pTBinRanges = cms.vdouble(3.0, 5.0, 6.0, 7.0, 8.0, 9.0, 11.0, 14.0, 18.0, 25.0, 35.0, 60.0),
-    pTBinRanges = cms.vdouble(0.5, 3.0, 6.0, 8.0, 10.0, 15.0, 35.0),
-    # etaBinRanges = cms.vdouble(0.0, 1.1, 2.5),
-    etaBinRanges = cms.vdouble(0.0, 2.5),
+    pTBinRanges = cms.vdouble(3.0, 6.0, 8.0, 9.0, 10.0, 12.0, 15.0, 40.0),
+    # pTBinRanges = cms.vdouble(0.5, 40.0),
+    etaBinRanges = cms.vdouble(0.0, 1.6, 2.5),
+    # etaBinRanges = cms.vdouble(0.0, 2.5),
     onlyTheBest = cms.bool(True),		
     applyCuts = cms.bool(True),			
     storeEfficiency = cms.bool(False),	
-    useBeamSpot = cms.bool(False),
+    useBeamSpot = cms.bool(True),
+    useRapidity = cms.bool(True),
     useCaloMuons = cms.untracked.bool(False),
     removeSignalEvents = cms.untracked.bool(False),
-    storeWrongSign = cms.untracked.bool(True),
-    TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT")           
-    # For Summer09 only 
-    # TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT8E29")
+    removeTrueMuons = cms.untracked.bool(False),
+    storeWrongSign = cms.untracked.bool(True)
 )
 
 

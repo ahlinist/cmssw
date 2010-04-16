@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.22 2010/04/07 14:36:14 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.23 2010/04/16 09:43:30 covarell Exp $
 //
 //
 
@@ -216,6 +216,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       RooRealVar* JpsiPt;
       RooRealVar* JpsiEta; 
       RooRealVar* Jpsict;
+      RooRealVar* JpsictErr;
       RooRealVar* JpsictTrue;
       RooRealVar* TNPeff;
       RooRealVar* TNPefferr;       			
@@ -230,7 +231,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 
       Handle<pat::CompositeCandidateCollection > collAll;
       Handle<pat::CompositeCandidateCollection > collCalo;
-      Handle<TriggerResults> trigger;
+      // Handle<TriggerResults> trigger;
 
       // data members
       InputTag       _patJpsi;
@@ -243,10 +244,12 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _applycuts;
       bool           _storeefficiency;
       bool           _useBS;
+      bool           _useRapidity;
       bool           _useCalo;
       bool           _removeSignal;
+      bool           _removeMuons;
       bool           _storeWs;
-      InputTag       _triggerresults;
+      // InputTag       _triggerresults;
       vector<unsigned int>                     _thePassedCats[3];
       vector<const pat::CompositeCandidate*>   _thePassedCands[3];
 
@@ -290,10 +293,12 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _applycuts(iConfig.getParameter<bool>("applyCuts")),			
   _storeefficiency(iConfig.getParameter<bool>("storeEfficiency")),	
   _useBS(iConfig.getParameter<bool>("useBeamSpot")),
+  _useRapidity(iConfig.getParameter<bool>("useRapidity")),
   _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),
   _removeSignal(iConfig.getUntrackedParameter<bool>("removeSignalEvents",false)),
-  _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false)),
-  _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
+  _removeMuons(iConfig.getUntrackedParameter<bool>("removeTrueMuons",false)),
+  _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false))
+  // _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
   nEvents = 0;
@@ -348,6 +353,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   JpsiPt = new RooRealVar("JpsiPt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
   JpsiEta = new RooRealVar("JpsiEta","J/psi eta",-JpsiEtaMax,JpsiEtaMax);
   Jpsict = new RooRealVar("Jpsict","J/psi ctau",JpsiCtMin,JpsiCtMax,"mm");
+  JpsictErr = new RooRealVar("JpsictErr","J/psi ctau error",-1.,1.,"mm");
   JpsictTrue = new RooRealVar("JpsictTrue","J/psi ctau true",-100.,JpsiCtMax,"mm");
   TNPeff = new RooRealVar("TNPeff","Tag and probe efficiency",0.,1.);
   TNPefferr = new RooRealVar("TNPefferr","Tag and probe efficiency uncertainty",0.,1.);  		
@@ -356,7 +362,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   varlist.add(*JpsictTrue);
   varlist.add(*JpsiPtType);
   varlist.add(*JpsiEtaType);
-  
+  varlist.add(*JpsictErr);
+
   data = new RooDataSet("data","A sample",varlist);
 
 }
@@ -381,7 +388,7 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 {
    nEvents++;
 
-   iEvent.getByLabel(_triggerresults,trigger);
+   // iEvent.getByLabel(_triggerresults,trigger);
 
    // try {iEvent.getByLabel("onia2MuMuPatGlbGlb",collGG);} 
    // catch (...) {cout << "Global-global J/psi not present in event!" << endl;}
@@ -750,14 +757,29 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
   
   float theMass = aCand->mass();
+
+  float theRapidity = aCand->rapidity();
+  if (!_useRapidity) theRapidity = theRapidity;
+
   float theCtau; 
   if (_useBS) {theCtau = 10.*aCand->userFloat("ppdlBS");}
   else {theCtau = 10.*aCand->userFloat("ppdlPV");}
+
+  float theCtauErr; 
+  if (_useBS) {theCtauErr = 10.*aCand->userFloat("ppdlErrBS");}
+  else {theCtauErr = 10.*aCand->userFloat("ppdlErrPV");}
 
   // MC matching
   reco::GenParticleRef genJpsi = aCand->genParticleRef();
   bool isMatched = (genJpsi.isAvailable() && genJpsi->pdgId() == 443);
   if (isMatched && _removeSignal) return;
+
+  reco::GenParticleRef genMu1 = muon1->genParticleRef();
+  reco::GenParticleRef genMu2 = muon2->genParticleRef();
+  isMatched = (genMu1.isAvailable() && genMu2.isAvailable() && 
+	       genMu1->pdgId()*genMu2->pdgId() == -169 && 
+	       genMu1->momentum().rho() > 2.5 && genMu2->momentum().rho() > 2.5);
+  if (isMatched && _removeMuons) return;
 
   // PAT trigger matches (new way)
 
@@ -842,19 +864,19 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 	hMcRightGlbGlbMuMass->Fill(theMass);       
 	hMcRightGlbGlbMuLife->Fill(theCtau);
         hMcRightGlbGlbMuPt->Fill(aCand->pt());
-        hMcRightGlbGlbMuEta->Fill(aCand->eta());             
+        hMcRightGlbGlbMuEta->Fill(theRapidity);             
 	hMcRightGlbGlbMuVtxProb->Fill(aCand->userFloat("vProb")); 
       } else if (theCat == 1) {
         hMcRightGlbTrkMuMass->Fill(theMass);       
 	hMcRightGlbTrkMuLife->Fill(theCtau);
 	hMcRightGlbTrkMuPt->Fill(aCand->pt());
-        hMcRightGlbTrkMuEta->Fill(aCand->eta());
+        hMcRightGlbTrkMuEta->Fill(theRapidity);
 	hMcRightGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb")); 
       } else if (theCat == 2) {
         hMcRightTrkTrkMuMass->Fill(theMass);       
 	hMcRightTrkTrkMuLife->Fill(theCtau);
 	hMcRightTrkTrkMuPt->Fill(aCand->pt());
-        hMcRightTrkTrkMuEta->Fill(aCand->eta());
+        hMcRightTrkTrkMuEta->Fill(theRapidity);
 	hMcRightTrkTrkMuVtxProb->Fill(aCand->userFloat("vProb"));    
       } else if (theCat == 3) {
         hMcRightCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
@@ -870,19 +892,19 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 	hMcWrongGlbGlbMuMass->Fill(theMass);       
 	hMcWrongGlbGlbMuLife->Fill(theCtau);
         hMcWrongGlbGlbMuPt->Fill(aCand->pt());
-        hMcWrongGlbGlbMuEta->Fill(aCand->eta());             
+        hMcWrongGlbGlbMuEta->Fill(theRapidity);             
 	hMcWrongGlbGlbMuVtxProb->Fill(aCand->userFloat("vProb")); 
       } else if (theCat == 1) {
         hMcWrongGlbTrkMuMass->Fill(theMass);       
 	hMcWrongGlbTrkMuLife->Fill(theCtau);
 	hMcWrongGlbTrkMuPt->Fill(aCand->pt());
-        hMcWrongGlbTrkMuEta->Fill(aCand->eta());
+        hMcWrongGlbTrkMuEta->Fill(theRapidity);
 	hMcWrongGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb")); 
       } else if (theCat == 2) {
         hMcWrongTrkTrkMuMass->Fill(theMass);       
 	hMcWrongTrkTrkMuLife->Fill(theCtau);
 	hMcWrongTrkTrkMuPt->Fill(aCand->pt());
-        hMcWrongTrkTrkMuEta->Fill(aCand->eta());
+        hMcWrongTrkTrkMuEta->Fill(theRapidity);
 	hMcWrongTrkTrkMuVtxProb->Fill(aCand->userFloat("vProb"));    
       } else if (theCat == 3) {    
 	hMcWrongCalGlbMuMass->Fill(theMass);           
@@ -984,15 +1006,16 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
       theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
       aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
-      fabs(aCand->eta()) > JpsiEtaMin && fabs(aCand->eta()) < JpsiEtaMax) {
+      fabs(theRapidity) > JpsiEtaMin && fabs(theRapidity) < JpsiEtaMax) {
 	
     passedCandidates++;
     
     JpsiPt->setVal(aCand->pt()); 
-    JpsiEta->setVal(aCand->eta()); 
+    JpsiEta->setVal(theRapidity); 
     JpsiMass->setVal(theMass);
     Jpsict->setVal(theCtau);
-    // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << aCand->eta() << endl;
+    JpsictErr->setVal(theCtauErr);
+    // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << theRapidity << endl;
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
     JpsictTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
@@ -1005,14 +1028,16 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     TNPefferr->setVal(tnpefferr);
     
     JpsiPtType->setIndex(getJpsiVarType(aCand->pt(),_ptbinranges),kTRUE);
-    JpsiEtaType->setIndex(getJpsiVarType(fabs(aCand->eta()),_etabinranges),kTRUE);
-    // cout << "JpsiPtType = " << getJpsiVarType(aCand->pt(),_ptbinranges) << " JpsiEtaType = " << getJpsiVarType(fabs(aCand->eta()),_etabinranges) << endl;
+    JpsiEtaType->setIndex(getJpsiVarType(fabs(theRapidity),_etabinranges),kTRUE);
+    // cout << "JpsiPtType = " << getJpsiVarType(aCand->pt(),_ptbinranges) << " JpsiEtaType = " << getJpsiVarType(fabs(theRapidity),_etabinranges) << endl;
     
     // Fill RooDataSet
-    RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
+    //  RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
+    RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*JpsiType,*matchType);   // temporarily remove tag-and-probe weights
     varlist_tmp.add(*JpsictTrue);
     varlist_tmp.add(*JpsiPtType);
     varlist_tmp.add(*JpsiEtaType);
+    varlist_tmp.add(*JpsictErr);
     
     data->add(varlist_tmp);
     
