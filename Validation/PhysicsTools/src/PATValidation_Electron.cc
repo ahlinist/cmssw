@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Electron.cc,v 1.5 2010/02/17 09:30:37 kfjack Exp $
+// $Id: PATValidation_Electron.cc,v 1.6 2010/03/25 16:30:23 kfjack Exp $
 //
 //
 
@@ -303,7 +303,7 @@ PATValidation_Electron::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
 
     // Loop over Reco Electrons
-     for (int i = 0; i != RECOELE.size(); ++i) {
+     for (int i = 0; i != (int)RECOELE.size(); ++i) {
       me["RecoElectron_pt"]->Fill(RECOELE[i].pt());
 //      nRecoElectrons++;
 //      cout << "RecoElectron pt " << RECOELE[i].pt() << endl;
@@ -311,7 +311,7 @@ PATValidation_Electron::analyze(const edm::Event& iEvent, const edm::EventSetup&
       me["RecoElectron_phi"]->Fill(RECOELE[i].phi());
 
 
-      for (int j = i+1; j != RECOELE.size(); ++j) {
+      for (int j = i+1; j != (int)RECOELE.size(); ++j) {
       math::XYZTLorentzVector p12 = (RECOELE[i]).p4()+(RECOELE[j]).p4();
       float mee2 = p12.Dot(p12);
       me["Recodielecmass"]->Fill(sqrt(mee2));
@@ -396,7 +396,7 @@ PATValidation_Electron::analyze(const edm::Event& iEvent, const edm::EventSetup&
      iEvent.getByLabel(patElectron_, patele_hnd);
      std::vector<pat::Electron> const & PATELE = *patele_hnd;
    // Loop over Pat Electrons
-     for (int i = 0; i != PATELE.size(); ++i) {
+     for (int i = 0; i != (int)PATELE.size(); ++i) {
 	me["PatElectron_pt"]->Fill(PATELE[i].pt());
 //        nPatElectrons++;
 //        cout << "PatElectron pt " << PATELE[i].pt() << endl;
@@ -404,7 +404,7 @@ PATValidation_Electron::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	me["PatElectron_phi"]->Fill(PATELE[i].phi()); 
 
 
- for (int j = i+1; j != PATELE.size(); ++j) {
+ for (int j = i+1; j != (int)PATELE.size(); ++j) {
       math::XYZTLorentzVector p12 = (PATELE[i]).p4()+(PATELE[j]).p4();
       float mee2 = p12.Dot(p12);
       me["Patdielecmass"]->Fill(sqrt(mee2));

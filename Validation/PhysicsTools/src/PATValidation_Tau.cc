@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Tau.cc,v 1.7 2010/02/17 09:30:38 kfjack Exp $
+// $Id: PATValidation_Tau.cc,v 1.8 2010/03/25 16:30:24 kfjack Exp $
 //
 //
 
@@ -164,7 +164,7 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      iEvent.getByLabel(recoTau_, recotau_hnd);
      const candidateCollection & RECOTAU =*recotau_hnd;
     // Loop over Reco Taus
-     for (int i = 0; i != RECOTAU.size(); ++i) {
+     for (int i = 0; i != (int)RECOTAU.size(); ++i) {
         me["RecoTau_pt"]->Fill(RECOTAU[i].pt());
         nRecoTaus++;
 	me["RecoTau_eta"]->Fill(RECOTAU[i].eta());
@@ -202,7 +202,7 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      iEvent.getByLabel(patTau_, pattau_hnd);
      std::vector<pat::Tau> const & PATTAU = *pattau_hnd;
    // Loop over Pat Taus
-     for (int i = 0; i != PATTAU.size(); ++i) {
+     for (int i = 0; i != (int)PATTAU.size(); ++i) {
         me["PatTau_pt"]->Fill(PATTAU[i].pt());
        nPatTaus++;
 	me["PatTau_eta"]->Fill(PATTAU[i].eta());

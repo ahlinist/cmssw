@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Muon.cc,v 1.6 2010/02/17 09:30:38 kfjack Exp $
+// $Id: PATValidation_Muon.cc,v 1.7 2010/03/25 16:30:23 kfjack Exp $
 //
 //
 */
@@ -399,7 +399,7 @@ PATValidation_Muon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
      iEvent.getByLabel(recoMuon_, recomuon_hnd);
      const RecoMuonCollection & RECOMUON =*recomuon_hnd;
     // Loop over Reco Muons
-     for (int i = 0; i != RECOMUON.size(); ++i) {
+     for (int i = 0; i != (int)RECOMUON.size(); ++i) {
       me["RecoMuon_pt"]->Fill(RECOMUON[i].pt());
       me["RecoMuon_eta"]->Fill(RECOMUON[i].eta());
       me["RecoMuon_phi"]->Fill(RECOMUON[i].phi()); 
@@ -593,7 +593,7 @@ if(RECOMUON[i].isTrackerMuon() && !(RECOMUON[i].isGlobalMuon())) {
      iEvent.getByLabel(patMuon_, patmuon_hnd);
      std::vector<pat::Muon> const & PATMUON = *patmuon_hnd;
     // Loop over Pat Muons
-     for (int j = 0; j != PATMUON.size(); ++j) {
+     for (int j = 0; j != (int)PATMUON.size(); ++j) {
      me["PatMuon_pt"]->Fill(PATMUON[j].pt());
      me["PatMuon_eta"]->Fill(PATMUON[j].eta());
      me["PatMuon_phi"]->Fill(PATMUON[j].phi());   

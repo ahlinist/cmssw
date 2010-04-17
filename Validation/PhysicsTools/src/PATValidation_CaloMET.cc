@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_CaloMET.cc,v 1.2 2010/02/17 09:30:37 kfjack Exp $
+// $Id: PATValidation_CaloMET.cc,v 1.3 2010/03/25 16:30:23 kfjack Exp $
 //
 //
 
@@ -216,7 +216,7 @@ PATValidation_CaloMET::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      iEvent.getByLabel(recoCaloMET_, recomet_hnd);
      const candidateCollection & RECOMET =*recomet_hnd;
     // Loop over Reco Mets
-     for (int i = 0; i != RECOMET.size(); ++i) {
+     for (int i = 0; i != (int)RECOMET.size(); ++i) {
       me["RecoMet_pt"]->Fill(RECOMET[i].pt());
 	 nRecoCaloMET++;
 //     cout << "RecoMET pt is = " << RECOMET[i].pt() << endl;
@@ -266,7 +266,7 @@ PATValidation_CaloMET::analyze(const edm::Event& iEvent, const edm::EventSetup& 
      iEvent.getByLabel(patCaloMET_, patmet_hnd);
      std::vector<pat::MET> const & PATMET = *patmet_hnd;
    // Loop over Pat Mets
-     for (int i = 0; i != PATMET.size(); ++i) {
+     for (int i = 0; i != (int)PATMET.size(); ++i) {
      me["PatMet_pt"]->Fill(PATMET[i].pt());
      nPatCaloMET++;
   //      cout << "PatMET pt is " << PATMET[i].pt() << endl;
