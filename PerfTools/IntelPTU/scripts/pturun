@@ -11,6 +11,27 @@
 # them as HTML.
 #
 #
+# After everything necessary (PTU, CMSSW) are in the environment, one
+# can run the basic_sampling profile by
+#
+# $ ptuanalyse -e basic_sampling01 cmsRun conf_cfg.py
+#   or
+# $ ptuanalyse -e basic_sampling01 --events basic_sampling cmsRun conf_cfg.py
+#   or
+# $ ptuanalyse -e basic_sampling01 --events CPU_CLK_UNHALTED.CORE:sa=2000000,INST_RETIRED.ANY:sa=2000000 cmsRun conf_cfg.py
+#
+# This will create a directory "basic_sampling01" under the working
+# directory and run the profile of cmsRun with the conf_cfg.py
+# configuration. 
+#
+# If the ptuanalyse script is used to process the profile data, one
+# should use the same experiment directory was used here.
+#
+# A short help of the parameters is shown with '-h'.
+#
+#
+#  $Id: ptuview,v 1.7 2010/04/16 13:21:21 mkortela Exp $
+#
 # Matti Kortelainen, Helsinki Institute of Physics
 # 16 April 2010
 ##############################################################################

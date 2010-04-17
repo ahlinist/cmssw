@@ -9,8 +9,38 @@
 #
 # The script uses the vtsaview program from the Intel PTU.
 #
+# The simplest form of usage for CMSSW is 
+# $ ptuanalyse -e basic_sampling01
 #
-#  $Id: ptuanalyse,v 1.1 2010/04/15 09:43:03 mkortela Exp $
+# This will use basic_sampling01 as the experiment directory (it is
+# the one produced by pturun, in case of Eclipse the directory is
+# found under the workspace, e.g. 'workspace/360/Basic Sampling (...)')
+#
+# It produces a set of csv files to the working directory (it could be
+# a good idea to clean possible old files before running the script).
+# One of the files (basic_sampling_all.csv by default) has the top
+# level function-by-function "all" profile, the rest of the files
+# (N_src.csv and N_asm.csv) have the source/assembly level profiles of
+# the functions (only for which source was found, i.e. -g was used).
+# The N in the file name corresponds to the index of the function in
+# the "all" profile (starting from 0).
+#
+# 
+# The number of functions to report can be reduced by 
+# $ ptuanalyse -e basic_samplint01 -t 50
+#
+# By default the threshold is 95 % (-t 95), which means to "view
+# hotspots contributing at least 95 % of the experiment in total".
+#
+# 
+# The script can be used to filter the counters of other programs than
+# cmsRun by
+# $ ptuanalyse -e basic_sampling01 --filter program
+#
+# A short help of the parameters is shown with '-h'.
+#
+#
+#  $Id: ptuanalyse,v 1.2 2010/04/16 13:23:12 mkortela Exp $
 #
 # Matti Kortelainen, Helsinki Institute of Physics
 # 15 April 2010
