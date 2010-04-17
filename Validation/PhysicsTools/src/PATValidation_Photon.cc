@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Photon.cc,v 1.7 2010/02/17 09:30:38 kfjack Exp $
+// $Id: PATValidation_Photon.cc,v 1.8 2010/03/25 16:30:23 kfjack Exp $
 //
 //
 
@@ -513,7 +513,7 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
        const photonCollection & RECOPHO =*recopho_hnd; 
 
     // Loop over Reco Taus 
-     for (int i = 0; i != RECOPHO.size(); ++i) { 
+     for (int i = 0; i != (int)RECOPHO.size(); ++i) { 
         me["RecoPhoton_pt"]->Fill(RECOPHO[i].pt());
         nRecoPhotons++;
 	me["RecoPhoton_eta"]->Fill(RECOPHO[i].eta());
@@ -732,7 +732,7 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
      iEvent.getByLabel(patPhoton_, patpho_hnd);
      std::vector<pat::Photon> const & PATPHO = *patpho_hnd;
    // Loop over Pat Photons
-     for (int j = 0; j != PATPHO.size(); ++j) {
+     for (int j = 0; j != (int)PATPHO.size(); ++j) {
 
       //////////////////////////////////////////////////////////////////////////////
 

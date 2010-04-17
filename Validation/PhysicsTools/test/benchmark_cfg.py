@@ -12,10 +12,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_5_4/RelValTTbar/GEN-SIM-RECO/START3X_V24-v1/0003/0060E652-822B-DF11-BA47-002618943972.root',
-        'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_5_4/RelValTTbar/GEN-SIM-RECO/START3X_V24-v1/0003/2099CCE3-7F2B-DF11-8F1E-003048679076.root',
-        'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_5_4/RelValTTbar/GEN-SIM-RECO/START3X_V24-v1/0003/420EA375-7B2B-DF11-AA9C-00261894396F.root',
-        'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_5_4/RelValTTbar/GEN-SIM-RECO/START3X_V24-v1/0003/948BEDFA-862B-DF11-B7F3-003048678B36.root'
+	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_0_pre5/RelValTTbar/GEN-SIM-RECO/START36_V3-v1/0009/0A36A3F4-D63D-DF11-8B35-002354EF3BE4.root',
+	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_0_pre5/RelValTTbar/GEN-SIM-RECO/START36_V3-v1/0009/164EB76A-C93D-DF11-8F22-0018F3D09644.root',
+	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_0_pre5/RelValTTbar/GEN-SIM-RECO/START36_V3-v1/0009/3EEC34FF-D23D-DF11-B086-003048678F6C.root',
+	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_0_pre5/RelValTTbar/GEN-SIM-RECO/START36_V3-v1/0009/4E43F20D-D23D-DF11-93DB-002618943935.root'
     )
 )
 ## Maximal Number of Events
@@ -41,28 +41,21 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 #                    doType1MET       = True,            
 #                    genJetCollection = cms.InputTag("ak5GenJets")
 #                    ) 
+process.makePatJets.remove(process.secondaryVertexNegativeTagInfos)
+process.makePatJets.remove(process.simpleSecondaryVertexNegativeBJetTags)
+process.patJets.addBTagInfo = False
 
 process.load("Validation.PhysicsTools.patObjectBenchmarkGeneric_cfi")
 
-process.L2JetCorrectorAK5Calo = cms.ESSource("L2RelativeCorrectionService",
-    tagName = cms.string('Summer09_L2Relative_AK5Calo'),
-    label = cms.string('L2RelativeJetCorrectorAK5Calo')
-)
-process.L3JetCorrectorAK5Calo = cms.ESSource("L3AbsoluteCorrectionService",
-    tagName = cms.string('Summer09_L3Absolute_AK5Calo'),
-    label = cms.string('L3AbsoluteJetCorrectorAK5Calo')
-)
-process.L2L3JetCorrectorAK5Calo = cms.ESSource("JetCorrectionServiceChain",
-    correctors = cms.vstring('L2RelativeJetCorrectorAK5Calo','L3AbsoluteJetCorrectorAK5Calo'),
-    label = cms.string('L2L3JetCorrectorAK5Calo')
-)
+from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+
 process.L2CorJetAK5Calo = cms.EDProducer("CaloJetCorrectionProducer",
     src = cms.InputTag("ak5CaloJets"),
-    correctors = cms.vstring('L2RelativeJetCorrectorAK5Calo')
+    correctors = cms.vstring('ak5CaloL2Relative')
 )
 process.L2L3CorJetAK5Calo = cms.EDProducer("CaloJetCorrectionProducer",
     src = cms.InputTag("ak5CaloJets"),
-    correctors = cms.vstring('L2L3JetCorrectorAK5Calo')
+    correctors = cms.vstring('ak5CaloL2L3')
 )
 
 process.p =cms.Path(
