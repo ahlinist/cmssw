@@ -66,6 +66,8 @@ MHTJetEventSelector::select (const edm::Event& event) const
     ++iJet;
   }
   double metPhi = HT.Phi();
+  if(metPhi > 0) metPhi -= TMath::Pi();
+  else metPhi +=  TMath::Pi();
 
   // MET "isolation" (calculated on at most nJetsMetIso_ jets)
   float metIso = 100.;
