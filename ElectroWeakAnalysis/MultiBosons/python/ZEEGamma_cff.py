@@ -8,7 +8,7 @@ goodElectrons.cut = cms.string('et > 0')
 from ElectroWeakAnalysis.MultiBosons.ZSelectionChargedLeptons_cfi import *
 
 #Z -> E E
-ZEECandidates = ZSelection.clone()
+ZEECandidates = ZSelectionChargedLeptons.clone()
 ZEECandidates.decay = cms.string('goodElectrons@+ goodElectrons@-')
 ZEECandidates.cut = cms.string('mass > 0')
 
