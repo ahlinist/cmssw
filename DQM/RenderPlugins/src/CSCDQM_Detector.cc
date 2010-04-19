@@ -970,10 +970,32 @@ double Detector::Y_mm(int side, int station, int ring, const std::string &part, 
 
     void Detector::chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, int hs, int wg, double& x, double& y) const {
       int LAYER = 1;
+      double ME11_STRIP_CUT = 440.0;
+      double ME11_LOWER_BOUND = 5.0;
+      double ME11_UPPER_DELTA = 10.0;
 
       if (station == 1 && ring == 1) {
 
-        double localYtoBeam = RPin(station, ring) + dPinToWGCenter_ME1_1[wg - 1];
+        double pinToWGCenter = dPinToWGCenter_ME1_1[wg - 1];
+        if (wg == 1) {
+            pinToWGCenter = ME11_LOWER_BOUND;
+        }
+
+        // Handle strip cut at ME11_STRIP_CUT
+        if (part == "a") {
+            if (wg == NumberOfWiregroups(station, ring)) {
+                pinToWGCenter = ME11_STRIP_CUT;
+            }
+        } else {
+            if (wg == 1) {
+                pinToWGCenter = ME11_STRIP_CUT;
+            } else {
+                pinToWGCenter += ME11_UPPER_DELTA;
+            }
+        }
+
+        double localYtoBeam = RPin(station, ring) + pinToWGCenter;
+
         double r = localYtoBeam /
         cos(LocalPhiRadHstripToChamberCenter(side, station, ring, part, LAYER, hs));
         x = r * cos(Phi_rad(side, station, ring, part, chamber, LAYER, hs));
@@ -986,25 +1008,12 @@ double Detector::Y_mm(int side, int station, int ring, const std::string &part, 
 
       }
     }
-
-    void Detector::chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double* x, double* y) const {
-        chamberBoundsXY(side, station, ring, chamber, part, 1.0, x, y);
-    }
     
-    void Detector::chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double scale, double* x, double* y) const {
+    void Detector::chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double* x, double* y) const {
       chamberBoundsXY(side, station, ring, chamber, part, 1, 1, x[0], y[0]);
       chamberBoundsXY(side, station, ring, chamber, part, 1, NumberOfWiregroups(station, ring), x[1], y[1]);
       chamberBoundsXY(side, station, ring, chamber, part, NumberOfHalfstrips(station, ring, part), NumberOfWiregroups(station, ring), x[2], y[2]);
       chamberBoundsXY(side, station, ring, chamber, part, NumberOfHalfstrips(station, ring, part), 1, x[3], y[3]);
-
-      x[4] = x[0];
-      y[4] = y[0];
-
-      for (int i = 0; i < 5; i++) {
-          x[i] = x[i] * scale;
-          y[i] = y[i] * scale;
-      }
-
     }
 
 }

@@ -247,7 +247,6 @@ class Detector {
     };
 
     void chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double* x, double* y) const;
-    void chamberBoundsXY(int side, int station, int ring, int chamber, const std::string& part, double scale, double* x, double* y) const;
 
   private:
 
