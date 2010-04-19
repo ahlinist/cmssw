@@ -313,6 +313,7 @@ EcalTimingAnalysis::beginJob( ) {
 	eventTimingInfoTree_->Branch("absTime",&TTreeMembers_.absTime_,"absTime/F");
 	eventTimingInfoTree_->Branch("lumiSection",&TTreeMembers_.lumiSection_,"lumiSection/I");
 	eventTimingInfoTree_->Branch("bx",&TTreeMembers_.bx_,"bx/I");
+	eventTimingInfoTree_->Branch("run",&TTreeMembers_.run_,"run/I");
 	eventTimingInfoTree_->Branch("orbit",&TTreeMembers_.orbit_,"orbit/I");
       }
     }
@@ -695,6 +696,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    TTreeMembers_.lumiSection_ = iEvent.luminosityBlock();
    TTreeMembers_.bx_ = iEvent.bunchCrossing();
    TTreeMembers_.orbit_ = iEvent.orbitNumber();
+   TTreeMembers_.run_ = (int)iEvent.run();
    TTreeMembers_.numTriggers_ = 0 ;
    TTreeMembers_.numTechTriggers_ = 0;
    //NOW I look into the trigger information
