@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.35 2010/03/24 13:10:47 mkortela Exp $
+// $Id: TTEffAnalyzer.h,v 1.36 2010/03/29 07:46:04 mkortela Exp $
 //
 //
 
@@ -54,7 +54,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
    private:
       typedef math::XYZTLorentzVector LorentzVector;
 
-      virtual void beginJob(const edm::EventSetup&) ;
+      virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 

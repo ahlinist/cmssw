@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.43 2010/03/24 13:10:47 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.44 2010/03/29 07:46:05 mkortela Exp $
 //
 //
 
@@ -358,7 +358,7 @@ using namespace reco;
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-TTEffAnalyzer::beginJob(const edm::EventSetup&)
+TTEffAnalyzer::beginJob()
 {
 }
 
