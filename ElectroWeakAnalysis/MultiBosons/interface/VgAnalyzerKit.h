@@ -31,9 +31,9 @@ public:
   
 protected:
 
-  virtual void beginJob(const EventSetup&) ;
+  virtual void beginJob();
   virtual void produce( Event &, const EventSetup & );
-  virtual void endJob() ;
+  virtual void endJob();
 
   bool saveHistograms_;
   bool saveHLTInfo_;
@@ -44,6 +44,8 @@ protected:
   InputTag tracklabel_;
   InputTag trgResults_;
   InputTag caloTowerlabel_;
+  InputTag tcMETlabel_;
+  InputTag pfMETlabel_;
   InputTag ebReducedRecHitCollection_;
   InputTag eeReducedRecHitCollection_;
 
@@ -101,6 +103,22 @@ protected:
   double uncorrMET_[3];
   double uncorrMETPhi_[3];
   double uncorrMETSumEt_[3];
+  // tcMET
+  double tcMET_;
+  double tcMETx_;
+  double tcMETy_;
+  double tcMETPhi_;
+  double tcMETsumEt_;
+  double tcMETmEtSig_;
+  double tcMETSig_;
+  // pfMET
+  double pfMET_;
+  double pfMETx_;
+  double pfMETy_;
+  double pfMETPhi_;
+  double pfMETsumEt_;
+  double pfMETmEtSig_;
+  double pfMETSig_;
   // Electron
   int    nEle_;
   bool   eleID_[maxP][5];
