@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.31 $
-  \date $Date: 2010/03/09 10:41:25 $
+  \version $Revision: 1.32 $
+  \date $Date: 2010/03/18 08:11:56 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -233,7 +233,12 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
         return;
       }
       
-      
+      if( o.name.find( "FedETypeNErrArray" ) != std::string::npos )
+      {
+        gPad->SetGrid();
+	gPad->SetLeftMargin(0.3);
+	return;
+      }
       
       TH2F* obj2 = dynamic_cast<TH2F*>( o.object );
 
