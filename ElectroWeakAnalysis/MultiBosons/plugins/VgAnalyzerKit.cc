@@ -2,14 +2,14 @@
 
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Framework/interface/TriggerNames.h"
-
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HepMCCandidate/interface/PdfInfo.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
-
-#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 
 using namespace std;
 using namespace pat;
@@ -22,6 +22,11 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);  
   trgResults_     = ps.getParameter<InputTag>("triggerResults");
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
+  gtdigilabel_    = ps.getParameter<InputTag>("GTDigiLabel");
+  vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
+  caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
+  tracklabel_     = ps.getParameter<InputTag>("TrackLabel");
+
   ebReducedRecHitCollection_ = ps.getParameter<InputTag>("ebReducedRecHitCollection");
   eeReducedRecHitCollection_ = ps.getParameter<InputTag>("eeReducedRecHitCollection");
 
@@ -32,8 +37,23 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
 
   tree_->Branch("run", &run_, "run/I");
   tree_->Branch("event", &event_, "event/I");
-  tree_->Branch("isData", &isData, "isData/O");
+  tree_->Branch("orbit", &orbit_, "orbit/I");
+  tree_->Branch("bx", &bx_, "bx/I");
+  tree_->Branch("lumis", &lumis_, "lumis/I");
+  tree_->Branch("isData", &isData_, "isData/O");
+  tree_->Branch("ttbit", ttbit_, "ttbit[64]/I");
   tree_->Branch("HLT", HLT_, "HLT[102]/I");
+  tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
+  tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
+  tree_->Branch("nVtx", &nVtx_, "nVtx/I");
+  tree_->Branch("vtx", vtx_, "vtx[nVtx][3]/D");
+  tree_->Branch("vtxNTrk", vtxNTrk_, "vtxNTrk[nVtx]/I");
+  tree_->Branch("vtxNDF", vtxNDF_, "vtxNDF[nVtx]/I");
+  tree_->Branch("vtxD0", vtxD0_, "vtxD0[nVtx]/D");
+  tree_->Branch("IsVtxGood", &IsVtxGood_, "IsVtxGood/I");
+  tree_->Branch("nTrk", &nTrk_, "nTrk/I");
+  tree_->Branch("nGoodTrk", &nGoodTrk_, "nGoodTrk/I");
+  tree_->Branch("IsTracksGood", &IsTracksGood_, "IsTracksGood/I");
   if (doGenParticles_) {
     tree_->Branch("pdf", pdf_, "pdf[7]/D"); 
     tree_->Branch("processID", &processID_, "processID/D");
@@ -69,40 +89,65 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("uncorrMETSumEt", uncorrMETSumEt_, "uncorrMETSumEt[3]/D"); 
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleID", eleID, "eleID[nEle][5]/O"); // [0]: eidRobustLoose, [1]: eidRobustTight, [2]: eidLoose, [3]: eidTight, [4]: eidRobustHighEnergy
-  tree_->Branch("eleClass", eleClass, "eleClass[nEle]/I");
-  tree_->Branch("eleCharge", eleCharge, "eleCharge[nEle]/I");
-  tree_->Branch("eleEn", eleEn, "eleEn[nEle]/D");
-  tree_->Branch("elePt", elePt, "elePt[nEle]/D");
-  tree_->Branch("elePz", elePz, "elePz[nEle]/D");
-  tree_->Branch("eleEta", eleEta, "eleEta[nEle]/D");
-  tree_->Branch("elePhi", elePhi, "elePhi[nEle]/D");
-  tree_->Branch("eleSCEta", eleSCEta, "eleSCEta[nEle]/D");
-  tree_->Branch("eleSCPhi", eleSCPhi, "eleSCPhi[nEle]/D");
-  tree_->Branch("eleSCRawEn", eleSCRawEn, "eleSCRawEn[nEle]/D");
-  tree_->Branch("eleE3x3", eleE3x3, "eleE3x3[nEle]/D");
-  tree_->Branch("eleHoverE", eleHoverE, "eleHoverE[nEle]/D");
-  tree_->Branch("eleEoverP", eleEoverP, "eleEoverP[nEle]/D");
-  tree_->Branch("elePin", elePin, "elePin[nEle]/D");
-  tree_->Branch("elePout", elePout, "elePout[nEle]/D");
-  tree_->Branch("eleBrem", eleBrem, "eleBrem[nEle]/D");
-  tree_->Branch("eledEtaAtVtx", eledEtaAtVtx, "eledEtaAtVtx[nEle]/D");
-  tree_->Branch("eledPhiAtVtx", eledPhiAtVtx, "eledPhiAtVtx[nEle]/D");
-  tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta, "eleSigmaEtaEta[nEle]/D");
-  tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta, "eleSigmaIEtaIEta[nEle]/D");
+  tree_->Branch("eleID", eleID_, "eleID[nEle][5]/O"); // [0]: eidRobustLoose, [1]: eidRobustTight, [2]: eidLoose, [3]: eidTight, [4]: eidRobustHighEnergy
+  tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
+  tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
+  tree_->Branch("eleEn", eleEn_, "eleEn[nEle]/D");
+  tree_->Branch("eleSCEta", eleSCEta_, "eleSCEta[nEle]/D");
+  tree_->Branch("eleSCPhi", eleSCPhi_, "eleSCPhi[nEle]/D");
+  tree_->Branch("eleSCRawEn", eleSCRawEn_, "eleSCRawEn[nEle]/D");
+  tree_->Branch("eleESEn", eleESEn_, "eleESEn[nEle]/D");
+  tree_->Branch("eleSCEn", eleSCEn_, "eleSCEn[nEle]/D");
+  tree_->Branch("elePt", elePt_, "elePt[nEle]/D");
+  tree_->Branch("elePz", elePz_, "elePz[nEle]/D");
+  tree_->Branch("eleEta", eleEta_, "eleEta[nEle]/D");
+  tree_->Branch("elePhi", elePhi_, "elePhi[nEle]/D");
+  tree_->Branch("eleSCEta", eleSCEta_, "eleSCEta[nEle]/D");
+  tree_->Branch("eleSCPhi", eleSCPhi_, "eleSCPhi[nEle]/D");
+  tree_->Branch("eleSCEtaWidth", eleSCEtaWidth_, "eleSCEtaWidth[nEle]/D");
+  tree_->Branch("eleSCPhiWidth", eleSCPhiWidth_, "eleSCPhiWidth[nEle]/D");
+  tree_->Branch("eleVtx", eleVtx_, "eleVtxX[nEle][3]/D");
+  tree_->Branch("eleCaloPos", eleCaloPos_ ,"eleCaloPos[nEle][3]/D");
+  tree_->Branch("eleSCPos", eleSCPos_, "eleSCPos[nEle][3]/D");
+  tree_->Branch("eleHoverE", eleHoverE_, "eleHoverE[nEle]/D");
+  tree_->Branch("eleHoverE1", eleHoverE1_, "eleHoverE1[nEle]/D");
+  tree_->Branch("eleHoverE2", eleHoverE2_, "eleHoverE2[nEle]/D");
+  tree_->Branch("eleEoverP", eleEoverP_, "eleEoverP[nEle]/D");
+  tree_->Branch("elePin", elePin_, "elePin[nEle]/D");
+  tree_->Branch("elePout", elePout_, "elePout[nEle]/D");
+  tree_->Branch("eleBrem", eleBrem_, "eleBrem[nEle]/D");
+  tree_->Branch("eledEtaAtVtx", eledEtaAtVtx_, "eledEtaAtVtx[nEle]/D");
+  tree_->Branch("eledPhiAtVtx", eledPhiAtVtx_, "eledPhiAtVtx[nEle]/D");
+  tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/D");
+  tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/D");
+  tree_->Branch("eleEMax", eleEMax_, "eleEMax_[nEle]/D");
+  tree_->Branch("eleE2nd", eleE2nd_, "eleE2nd_[nEle]/D");
+  tree_->Branch("eleE2x2", eleE2x2_, "eleE2x2_[nEle]/D");
+  tree_->Branch("eleE3x2", eleE3x2_, "eleE3x2_[nEle]/D");
+  tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3_[nEle]/D");
+  tree_->Branch("eleE4x4", eleE4x4_, "eleE4x4_[nEle]/D");
+  tree_->Branch("eleE5x5", eleE5x5_, "eleE5x5_[nEle]/D");
+  tree_->Branch("eleE2x5Right", eleE2x5Right_, "eleE2x5Right_[nEle]/D");
+  tree_->Branch("eleE2x5Left", eleE2x5Left_, "eleE2x5Left_[nEle]/D");
+  tree_->Branch("eleE2x5Top", eleE2x5Top_, "eleE2x5Top_[nEle]/D");
+  tree_->Branch("eleE2x5Bottom", eleE2x5Bottom_, "eleE2x5Bottom_[nEle]/D");
+  tree_->Branch("eleERight", eleERight_, "eleERight_[nEle]/D");
+  tree_->Branch("eleELeft", eleELeft_, "eleELeft_[nEle]/D");
+  tree_->Branch("eleETop", eleETop_, "eleETop_[nEle]/D");
+  tree_->Branch("eleEBottom", eleEBottom_, "eleEBottom_[nEle]/D");
   if (doGenParticles_) {
-    tree_->Branch("eleGenIndex", eleGenIndex, "eleGenIndex[nEle]/I");
-    tree_->Branch("eleGenGMomPID", eleGenGMomPID, "eleGenGMomPID[nEle]/I");
-    tree_->Branch("eleGenMomPID", eleGenMomPID, "eleGenMomPID[nEle]/I");
-    tree_->Branch("eleGenMomPt", eleGenMomPt, "eleGenMomPt[nEle]/D");
+    tree_->Branch("eleGenIndex", eleGenIndex_, "eleGenIndex[nEle]/I");
+    tree_->Branch("eleGenGMomPID", eleGenGMomPID_, "eleGenGMomPID[nEle]/I");
+    tree_->Branch("eleGenMomPID", eleGenMomPID_, "eleGenMomPID[nEle]/I");
+    tree_->Branch("eleGenMomPt", eleGenMomPt_, "eleGenMomPt[nEle]/D");
   }
-  tree_->Branch("eleIsoTrkDR03", eleIsoTrkDR03, "eleIsoTrkDR03[nEle]/D");
-  tree_->Branch("eleIsoEcalDR03", eleIsoEcalDR03, "eleIsoEcalDR03[nEle]/D");
-  tree_->Branch("eleIsoHcalDR03", eleIsoHcalDR03, "eleIsoHcalDR03[nEle]/D");
-  tree_->Branch("eleIsoTrkDR04", eleIsoTrkDR04, "eleIsoTrkDR04[nEle]/D");
-  tree_->Branch("eleIsoEcalDR04", eleIsoEcalDR04, "eleIsoEcalDR04[nEle]/D");
-  tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04, "eleIsoHcalDR04[nEle]/D");
-  tree_->Branch("eleChi2NDF", eleChi2NDF, "eleChi2NDF[nEle]/D");
+  tree_->Branch("eleIsoTrkDR03", eleIsoTrkDR03_, "eleIsoTrkDR03[nEle]/D");
+  tree_->Branch("eleIsoEcalDR03", eleIsoEcalDR03_, "eleIsoEcalDR03[nEle]/D");
+  tree_->Branch("eleIsoHcalDR03", eleIsoHcalDR03_, "eleIsoHcalDR03[nEle]/D");
+  tree_->Branch("eleIsoTrkDR04", eleIsoTrkDR04_, "eleIsoTrkDR04[nEle]/D");
+  tree_->Branch("eleIsoEcalDR04", eleIsoEcalDR04_, "eleIsoEcalDR04[nEle]/D");
+  tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04_, "eleIsoHcalDR04[nEle]/D");
+  tree_->Branch("eleChi2NDF", eleChi2NDF_, "eleChi2NDF[nEle]/D");
   tree_->Branch("eleD0", eleD0_, "eleD0[nEle]/D");
   tree_->Branch("eleNumberOfValidHits", eleNumberOfValidHits_, "eleNumberOfValidHits[nEle]/I");
   // Photon
@@ -127,9 +172,27 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoEcalIsoDR04", phoEcalIsoDR04_, "phoEcalIsoDR04[nPho]/D");
   tree_->Branch("phoHcalIsoDR04", phoHcalIsoDR04_, "phoHcalIsoDR04[nPho]/D");
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/D");
+  tree_->Branch("phoHoverE1", phoHoverE1_, "phoHoverE1[nPho]/D");
+  tree_->Branch("phoHoverE2", phoHoverE2_, "phoHoverE2[nPho]/D");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/D");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/D");
+  tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/D");
   tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
+  tree_->Branch("phoEMax", phoEMax_, "phoEMax_[nPho]/D");
+  tree_->Branch("phoE2nd", phoE2nd_, "phoE2nd_[nPho]/D");
+  tree_->Branch("phoE2x2", phoE2x2_, "phoE2x2_[nPho]/D");
+  tree_->Branch("phoE3x2", phoE3x2_, "phoE3x2_[nPho]/D");
+  tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3_[nPho]/D");
+  tree_->Branch("phoE4x4", phoE4x4_, "phoE4x4_[nPho]/D");
+  tree_->Branch("phoE5x5", phoE5x5_, "phoE5x5_[nPho]/D");
+  tree_->Branch("phoE2x5Right", phoE2x5Right_, "phoE2x5Right_[nPho]/D");
+  tree_->Branch("phoE2x5Left", phoE2x5Left_, "phoE2x5Left_[nPho]/D");
+  tree_->Branch("phoE2x5Top", phoE2x5Top_, "phoE2x5Top_[nPho]/D");
+  tree_->Branch("phoE2x5Bottom", phoE2x5Bottom_, "phoE2x5Bottom_[nPho]/D");
+  tree_->Branch("phoERight", phoERight_, "phoERight_[nPho]/D");
+  tree_->Branch("phoELeft", phoELeft_, "phoELeft_[nPho]/D");
+  tree_->Branch("phoETop", phoETop_, "phoETop_[nPho]/D");
+  tree_->Branch("phoEBottom", phoEBottom_, "phoEBottom_[nPho]/D");
   if (doGenParticles_) {
     tree_->Branch("phoGenIndex", phoGenIndex_, "phoGenIndex[nPho]/I");
     tree_->Branch("phoGenGMomPID", phoGenGMomPID, "phoGenGMomPID[nPho]/I");
@@ -232,9 +295,95 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   //e.getByLabel("genEventProcID", genProcessID);
   //processID_ = *genProcessID;
   
-  run_   = e.id().run();
-  event_ = e.id().event();
-  isData = e.isRealData();
+  run_    = e.id().run();
+  event_  = e.id().event();
+  orbit_  = e.orbitNumber();
+  bx_     = e.bunchCrossing();
+  lumis_  = e.luminosityBlock();
+  isData_ = e.isRealData();
+
+  // technical trigger
+  Handle< L1GlobalTriggerReadoutRecord > gtReadoutRecord;
+  if (e.getByLabel(gtdigilabel_, gtReadoutRecord) ) {
+
+    const TechnicalTriggerWord&  technicalTriggerWordBeforeMask = gtReadoutRecord->technicalTriggerWord();
+
+    for (int i=0; i<64; ++i) {
+      if (technicalTriggerWordBeforeMask.at(i)) ttbit_[i] = 1;
+      else ttbit_[i] = 0;     
+    }
+  }
+
+  // Get CaloTower information
+  edm::Handle<CaloTowerCollection> pCaloTower;
+  e.getByLabel(caloTowerlabel_, pCaloTower);
+
+  const CaloTowerCollection* CaloTowers = pCaloTower.product();
+  
+  nHFTowersP_ = 0;
+  nHFTowersN_ = 0;
+  for (CaloTowerCollection::const_iterator aCalo = CaloTowers->begin(); aCalo != CaloTowers->end(); aCalo++) {
+    
+    if (aCalo->energy() > 3) {
+      for (size_t i = 0; i < aCalo->constituentsSize(); ++i) {
+	const DetId caloId = aCalo->constituent(i);
+	
+	if (caloId.det() != DetId::Hcal) continue;
+	
+	HcalSubdetector hcalsubdet = (HcalSubdetector(caloId.subdetId()));
+	
+	if (hcalsubdet != HcalForward) continue;
+	if (aCalo->eta() < 3) nHFTowersP_++;
+	if (aCalo->eta() > -3) nHFTowersN_++;
+      }
+    }
+  }
+
+  // vertex
+  nVtx_ = 0;
+  IsVtxGood_ = 0;
+  Int_t nGoodVtx = 0;
+  Handle<VertexCollection> recVtxs;
+  if (e.getByLabel(vtxlabel_, recVtxs)) {
+    
+    for (size_t i=0; i<recVtxs->size(); ++i) 
+      if (!((*recVtxs)[i].isFake())) {
+	vtx_[nVtx_][0] = (*recVtxs)[i].x();
+	vtx_[nVtx_][1] = (*recVtxs)[i].y();
+	vtx_[nVtx_][2] = (*recVtxs)[i].z();
+	vtxNTrk_[nVtx_] = (*recVtxs)[i].tracksSize();
+	vtxNDF_[nVtx_] = (*recVtxs)[i].ndof();
+	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho(); 
+	nVtx_++;
+
+	if (vtxNDF_[nVtx_] > 4 && fabs(vtx_[nVtx_][2]) <= 15 && vtxD0_[nVtx_] <= 2) nGoodVtx++;
+      }
+  }
+  if (nGoodVtx > 0) IsVtxGood_ = 1;  
+
+  // track quality
+  TrackBase::TrackQuality trkQuality_;
+  Handle<reco::TrackCollection> Tracks;
+  if (e.getByLabel(tracklabel_, Tracks)) {
+
+    const reco::TrackCollection *track = Tracks.product();
+    
+    trkQuality_ = reco::TrackBase::qualityByName("highPurity");
+    
+    nTrk_ = 0;
+    nGoodTrk_ = 0;
+    for (reco::TrackCollection::const_iterator aTrk = track->begin(); aTrk != track->end(); ++aTrk) {
+      
+      if (aTrk->quality(trkQuality_)) nGoodTrk_++;
+      nTrk_++;
+    }
+  }
+  IsTracksGood_ = 0;
+  if (nTrk_ > 10) {
+    if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 0;
+  } else {
+    IsTracksGood_ = 0;
+  }
 
   // PDF information
   if (doGenParticles_) {
@@ -373,50 +522,81 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
    
     if (iEle->pt()<10) continue;
 
-    if (iEle->electronID("eidRobustLoose")==1) eleID[nEle_][0] = 1;
-    else eleID[nEle_][0] = 0;
-    if (iEle->electronID("eidRobustTight")==1)  eleID[nEle_][1] = 1;
-    else eleID[nEle_][1] = 0;
-    if (iEle->electronID("eidLoose")==1)  eleID[nEle_][2] = 1;
-    else eleID[nEle_][2] = 0;
-    if (iEle->electronID("eidTight")==1)  eleID[nEle_][3] = 1;
-    else eleID[nEle_][3] = 0;
-    if (iEle->electronID("eidRobustHighEnergy")==1)  eleID[nEle_][4] = 1;
-    else eleID[nEle_][4] = 0;
-    eleClass[nEle_] = iEle->classification();
-    eleCharge[nEle_] = iEle->charge();
-    eleEn[nEle_]  = iEle->energy();
-    elePt[nEle_]  = iEle->pt();
-    elePz[nEle_]  = iEle->pz();
-    eleEta[nEle_]  = iEle->eta();
-    elePhi[nEle_]  = iEle->phi();
-    eleHoverE[nEle_] = iEle->hadronicOverEm();
-    eleEoverP[nEle_] = iEle->eSuperClusterOverP();
+    for (int i=0; i<5; ++i) eleID_[nEle_][i] = 0;
+    if (iEle->electronID("eidRobustLoose")==1) eleID_[nEle_][0] = 1;
+    if (iEle->electronID("eidRobustTight")==1)  eleID_[nEle_][1] = 1;
+    if (iEle->electronID("eidLoose")==1)  eleID_[nEle_][2] = 1;
+    if (iEle->electronID("eidTight")==1)  eleID_[nEle_][3] = 1;
+    if (iEle->electronID("eidRobustHighEnergy")==1)  eleID_[nEle_][4] = 1;
 
-    elePin[nEle_] = iEle->trackMomentumAtVtx().R();
-    elePout[nEle_] = iEle->trackMomentumOut().R();
+    eleClass_[nEle_]   = iEle->classification();
+    eleCharge_[nEle_]  = iEle->charge();
+    eleEn_[nEle_]      = iEle->energy();
+    elePt_[nEle_]      = iEle->pt();
+    elePz_[nEle_]      = iEle->pz();
+    eleEta_[nEle_]     = iEle->eta();
+    elePhi_[nEle_]     = iEle->phi();
+    eleHoverE_[nEle_]  = iEle->hadronicOverEm();
+    eleHoverE1_[nEle_] = iEle->hadronicOverEm1();
+    eleHoverE2_[nEle_] = iEle->hadronicOverEm2();
+    eleEoverP_[nEle_]  = iEle->eSuperClusterOverP();
 
-    eleBrem[nEle_] = (elePin[nEle_] - elePout[nEle_]) / elePin[nEle_];
+    elePin_[nEle_]  = iEle->trackMomentumAtVtx().R();
+    elePout_[nEle_] = iEle->trackMomentumOut().R();
 
-    eledEtaAtVtx[nEle_] = iEle->deltaEtaSuperClusterTrackAtVtx();
-    eledPhiAtVtx[nEle_] = iEle->deltaPhiSuperClusterTrackAtVtx();
+    eleBrem_[nEle_] = (elePin_[nEle_] - elePout_[nEle_]) / elePin_[nEle_];
+
+    eledEtaAtVtx_[nEle_] = iEle->deltaEtaSuperClusterTrackAtVtx();
+    eledPhiAtVtx_[nEle_] = iEle->deltaPhiSuperClusterTrackAtVtx();
 
     // Acess super cluster
-    eleSCEta[nEle_] = iEle->superCluster()->eta();
-    eleSCPhi[nEle_] = iEle->superCluster()->phi();
-    eleSCRawEn[nEle_] = iEle->superCluster()->rawEnergy();    
+    eleSCEta_[nEle_]   = iEle->superCluster()->eta();
+    eleSCPhi_[nEle_]   = iEle->superCluster()->phi();
+    eleSCRawEn_[nEle_] = iEle->superCluster()->rawEnergy();    
+    eleSCEn_[nEle_]    = iEle->superCluster()->energy();
+    eleESEn_[nEle_]    = iEle->superCluster()->preshowerEnergy();
+    eleSCEtaWidth_[nEle_] = iEle->superCluster()->etaWidth();
+    eleSCPhiWidth_[nEle_] = iEle->superCluster()->phiWidth();
+
+    eleVtx_[nEle_][0] = iEle->trackPositionAtVtx().x();
+    eleVtx_[nEle_][1] = iEle->trackPositionAtVtx().y();
+    eleVtx_[nEle_][2] = iEle->trackPositionAtVtx().z();
+
+    eleCaloPos_[nEle_][0] = iEle->trackPositionAtCalo().x();
+    eleCaloPos_[nEle_][1] = iEle->trackPositionAtCalo().y();
+    eleCaloPos_[nEle_][2] = iEle->trackPositionAtCalo().z();
+
+    eleSCPos_[nEle_][0] = iEle->superCluster()->x();
+    eleSCPos_[nEle_][1] = iEle->superCluster()->y();
+    eleSCPos_[nEle_][2] = iEle->superCluster()->z();
 
     const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
-    eleE3x3[nEle_] = lazyTool.e3x3(*eleSeed);
+
+    eleEMax_[nEle_] = lazyTool.eMax(*eleSeed);
+    eleE2nd_[nEle_] = lazyTool.e2nd(*eleSeed);
+    eleE2x2_[nEle_] = lazyTool.e2x2(*eleSeed);
+    eleE3x2_[nEle_] = lazyTool.e3x2(*eleSeed);
+    eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
+    eleE4x4_[nEle_] = lazyTool.e4x4(*eleSeed);
+    eleE5x5_[nEle_] = lazyTool.e5x5(*eleSeed);
+
+    eleE2x5Right_[nEle_]  = lazyTool.e2x5Right(*eleSeed);
+    eleE2x5Left_[nEle_]   = lazyTool.e2x5Left(*eleSeed);
+    eleE2x5Top_[nEle_]    = lazyTool.e2x5Top(*eleSeed);
+    eleE2x5Bottom_[nEle_] = lazyTool.e2x5Bottom(*eleSeed);
+    eleERight_[nEle_]     = lazyTool.eRight(*eleSeed);
+    eleELeft_[nEle_]      = lazyTool.eLeft(*eleSeed);
+    eleETop_[nEle_]       = lazyTool.eTop(*eleSeed);
+    eleEBottom_[nEle_]    = lazyTool.eBottom(*eleSeed);
 
     // Gen Particle
-    eleGenIndex[nEle_] = -1;
+    eleGenIndex_[nEle_] = -1;
     int EleGenIndex = 0;
     if (doGenParticles_) {
       if ((*iEle).genLepton()) {
 	 for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
 	   if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
-              eleGenIndex[nEle_] = EleGenIndex;
+              eleGenIndex_[nEle_] = EleGenIndex;
 	    
 	      EleGenIndex++;
 
@@ -424,27 +604,27 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
               for (size_t j=0; j<elep->numberOfMothers(); ++j) {
                 elemom = elep->mother(j);
-                eleGenMomPID[nEle_] = elemom->pdgId();
-                eleGenMomPt[nEle_] = elemom->pt();
-                if (elemom->mother()) eleGenGMomPID[nEle_] = elemom->mother()->pdgId();
+                eleGenMomPID_[nEle_] = elemom->pdgId();
+                eleGenMomPt_[nEle_] = elemom->pt();
+                if (elemom->mother()) eleGenGMomPID_[nEle_] = elemom->mother()->pdgId();
               }
            }
 	 }
       }
     }
  
-    eleSigmaEtaEta[nEle_] = iEle->scSigmaEtaEta();
-    eleSigmaIEtaIEta[nEle_] = iEle->scSigmaIEtaIEta();
+    eleSigmaEtaEta_[nEle_]   = iEle->scSigmaEtaEta();
+    eleSigmaIEtaIEta_[nEle_] = iEle->scSigmaIEtaIEta();
 
-    eleIsoTrkDR03[nEle_] = iEle->dr03TkSumPt();
-    eleIsoEcalDR03[nEle_] = iEle->dr03EcalRecHitSumEt();
-    eleIsoHcalDR03[nEle_] = iEle->dr03HcalTowerSumEt();
+    eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
+    eleIsoEcalDR03_[nEle_] = iEle->dr03EcalRecHitSumEt();
+    eleIsoHcalDR03_[nEle_] = iEle->dr03HcalTowerSumEt();
 
-    eleIsoTrkDR04[nEle_] = iEle->dr04TkSumPt();
-    eleIsoEcalDR04[nEle_] = iEle->dr04EcalRecHitSumEt();
-    eleIsoHcalDR04[nEle_] = iEle->dr04HcalTowerSumEt();
+    eleIsoTrkDR04_[nEle_]  = iEle->dr04TkSumPt();
+    eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
+    eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
 
-    eleChi2NDF[nEle_] = iEle->gsfTrack()->normalizedChi2();
+    eleChi2NDF_[nEle_] = iEle->gsfTrack()->normalizedChi2();
 
     eleD0_[nEle_] = (*iEle).gsfTrack()->d0();
     eleNumberOfValidHits_[nEle_] = (*iEle).gsfTrack()->numberOfValidHits();
@@ -480,6 +660,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
 
     phoHoverE_[nPho_]        = iPho->hadronicOverEm();
+    phoHoverE1_[nPho_]       = iPho->hadronicDepth1OverEm();
+    phoHoverE2_[nPho_]       = iPho->hadronicDepth2OverEm();
     phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
     phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
 
@@ -492,6 +674,35 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     if (iPho->isEBGap() == true) phoPos_[nPho_] = 2;
     if (iPho->isEEGap() == true) phoPos_[nPho_] = 3;
     if (iPho->isEBEEGap() == true) phoPos_[nPho_] = 4;
+
+    phoSeedTime_[nPho_] = -999.;
+    const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
+    DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first; 
+
+    if (iPho->isEB()) { 
+      EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoSeedDetId);
+      if ( ebrhit != EBReducedRecHits->end() ) { phoSeedTime_[nPho_] = ebrhit->time(); }
+    } else {
+      EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoSeedDetId);
+      if ( eerhit != EEReducedRecHits->end() ) { phoSeedTime_[nPho_] = eerhit->time(); }
+    }
+
+    phoEMax_[nPho_] = lazyTool.eMax(*phoSeed);
+    phoE2nd_[nPho_] = lazyTool.e2nd(*phoSeed);
+    phoE2x2_[nPho_] = lazyTool.e2x2(*phoSeed);
+    phoE3x2_[nPho_] = lazyTool.e3x2(*phoSeed);
+    phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
+    phoE4x4_[nPho_] = lazyTool.e4x4(*phoSeed);
+    phoE5x5_[nPho_] = lazyTool.e5x5(*phoSeed);
+
+    phoE2x5Right_[nPho_]  = lazyTool.e2x5Right(*phoSeed);
+    phoE2x5Left_[nPho_]   = lazyTool.e2x5Left(*phoSeed);
+    phoE2x5Top_[nPho_]    = lazyTool.e2x5Top(*phoSeed);
+    phoE2x5Bottom_[nPho_] = lazyTool.e2x5Bottom(*phoSeed);
+    phoERight_[nPho_]     = lazyTool.eRight(*phoSeed);
+    phoELeft_[nPho_]      = lazyTool.eLeft(*phoSeed);
+    phoETop_[nPho_]       = lazyTool.eTop(*phoSeed);
+    phoEBottom_[nPho_]    = lazyTool.eBottom(*phoSeed);
 
     // Gen Particle
     phoGenIndex_[nPho_]  = -999; 
