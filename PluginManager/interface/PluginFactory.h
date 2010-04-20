@@ -205,5 +205,3 @@ namespace edmplugin {\
 #define DEFINE_EDM_PLUGIN(factory,type,name) \
 static factory::PMaker<type> EDM_PLUGIN_SYM(s_maker , __LINE__ ) (name)
 
-//for backwards compatiblity
-#include "FWCore/PluginManager/interface/ModuleDef.h"
