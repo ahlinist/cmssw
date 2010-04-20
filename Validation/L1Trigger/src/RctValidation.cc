@@ -24,8 +24,13 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
   tpgSumWindow_(iConfig.getUntrackedParameter<double>("tpgSumWindow",0.4)),
   thresholdForEtaPhi_(iConfig.getUntrackedParameter<double>("thresholdForEtaPhi",4.))
 {
-
   geo = new TriggerTowerGeometry();
+
+    std::cout << "***********************************************************************\n";
+    for ( int i = -10; i < 20; ++i )
+    {
+        printf("iEta(%g) = %d\n",i*0.05,geo->iEta(i*0.05)); 
+    }
 
   //Get General Monitoring Parameters
   DQMStore *store = &*edm::Service<DQMStore>();
@@ -97,9 +102,10 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       gctIsoEffEta->getTH1F()->Sumw2();
       gctIsoEffPhi->getTH1F()->Sumw2();
 
-
+      rctEtaCorr = store->bookProfile("rctEtaCorr", "RCT #eta corrections", binsEta_,-3,3, 50, 0, 2); 
+      rctEtaCorrIEta = store->bookProfile("rctEtaCorrIEta", "RCT #eta corrections", 65, -32, 32, 50, 0, 2);
+      rctEtaCorrAbsIEta = store->bookProfile("rctEtaCorrAbsIEta", "RCT |#eta| corrections", 33, 0, 32, 50, 0, 2);
     }
-
 }
 
 RctValidation::~RctValidation()
@@ -242,8 +248,8 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
 	      rctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
 
-	    if(highestVec.pt()<32.)
-	      RCT_Resolution->Fill((highestVec.pt()-genEGamma->at(j).pt())/genEGamma->at(j).pt());
+	    if(highestRCT.rank()<127)  // only for non-saturating
+	      RCT_Resolution->Fill(( highestVec.pt()-genEGamma->at(j).pt())/genEGamma->at(j).pt() );
 
 	    if(highestRCT.isolated())
 	      {
@@ -252,6 +258,13 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 		rctIsoEffPhi->Fill(genEGamma->at(j).phi());
 		if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
 		  rctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+                  
+                  if( highestRCT.rank() < 127 )  // only for non-saturating
+                  {
+                    rctEtaCorr->Fill( highestVec.eta(), genEGamma->at(j).pt()/highestVec.pt() );
+                    rctEtaCorrIEta->Fill( geo->iEta(highestVec.eta()), genEGamma->at(j).pt()/highestVec.pt() );
+                    rctEtaCorrAbsIEta->Fill( fabs(geo->iEta(highestVec.eta())), genEGamma->at(j).pt()/highestVec.pt() );
+                  }
 	      }
 
 
