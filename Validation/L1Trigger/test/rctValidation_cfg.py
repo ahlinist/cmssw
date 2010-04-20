@@ -57,8 +57,8 @@ process.EGB2 = cms.EDAnalyzer('RctValidation',
                 ),                          
                 genEGamma = cms.InputTag("highestBarrelPhoton"),
                 directory = cms.string("L1T/RCTPhotons/EG2_Barrel"),
-                maxEt = cms.untracked.double(20),
-                binsEt = cms.untracked.int32(20),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
                 gammaThreshold = cms.untracked.double(2.)              
 
 )                               
@@ -71,8 +71,8 @@ process.EGE2 = cms.EDAnalyzer('RctValidation',
                 ),                          
                 genEGamma = cms.InputTag("highestEndcapPhoton"),
                 directory = cms.string("L1T/RCTPhotons/EG2_Endcap"),
-                maxEt = cms.untracked.double(20),
-                binsEt = cms.untracked.int32(20),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
                 gammaThreshold = cms.untracked.double(2.)              
 
 )                               
@@ -85,8 +85,8 @@ process.EGB5 = cms.EDAnalyzer('RctValidation',
                 ),                          
                 genEGamma = cms.InputTag("highestBarrelPhoton"),
                 directory = cms.string("L1T/RCTPhotons/EG5_Barrel"),
-                maxEt = cms.untracked.double(20),
-                binsEt = cms.untracked.int32(20),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
                 gammaThreshold = cms.untracked.double(5.)              
 
 )                               
@@ -99,8 +99,8 @@ process.EGE5 = cms.EDAnalyzer('RctValidation',
                 ),                          
                 genEGamma = cms.InputTag("highestEndcapPhoton"),
                 directory = cms.string("L1T/RCTPhotons/EG5_Endcap"),
-                maxEt = cms.untracked.double(20),
-                binsEt = cms.untracked.int32(20),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
                 gammaThreshold = cms.untracked.double(5.)              
 
 )                               
@@ -113,8 +113,8 @@ process.EG2 = cms.EDAnalyzer('RctValidation',
                 ),                          
                 genEGamma = cms.InputTag("highestPhoton"),
                 directory = cms.string("L1T/RCTPhotons/EG2"),
-                maxEt = cms.untracked.double(20),
-                binsEt = cms.untracked.int32(20),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
                 gammaThreshold = cms.untracked.double(2.)              
 )
 
@@ -126,8 +126,8 @@ process.EG5 = cms.EDAnalyzer('RctValidation',
                 ),                          
                 genEGamma = cms.InputTag("highestPhoton"),
                 directory = cms.string("L1T/RCTPhotons/EG5"),
-                maxEt = cms.untracked.double(20),
-                binsEt = cms.untracked.int32(20),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
                 gammaThreshold = cms.untracked.double(5.)              
 )
 #Reconfigure Environment and saver
