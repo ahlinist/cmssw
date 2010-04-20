@@ -8,6 +8,10 @@
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
+#include "DataFormats/METReco/interface/METCollection.h"
+#include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/METReco/interface/PFMETCollection.h"
+#include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 
@@ -26,6 +30,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
   caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
   tracklabel_     = ps.getParameter<InputTag>("TrackLabel");
+  tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
+  pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
 
   ebReducedRecHitCollection_ = ps.getParameter<InputTag>("ebReducedRecHitCollection");
   eeReducedRecHitCollection_ = ps.getParameter<InputTag>("eeReducedRecHitCollection");
@@ -87,6 +93,22 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("uncorrMET", uncorrMET_, "uncorrMET[3]/D"); // [0]: uncorrALL, [1]: uncorrJES, [2]: uncorrMUON
   tree_->Branch("uncorrMETPhi", uncorrMETPhi_, "uncorrMETPhi[3]/D"); 
   tree_->Branch("uncorrMETSumEt", uncorrMETSumEt_, "uncorrMETSumEt[3]/D"); 
+  // tcMET
+  tree_->Branch("tcMET", &tcMET_, "tcMET/D");
+  tree_->Branch("tcMETx", &tcMETx_, "tcMETx/D");
+  tree_->Branch("tcMETy", &tcMETy_, "tcMETy/D");
+  tree_->Branch("tcMETPhi", &tcMETPhi_, "tcMETPhi/D");
+  tree_->Branch("tcMETsumEt", &tcMETsumEt_, "tcMETsumEt/D");
+  tree_->Branch("tcMETmEtSig", &tcMETmEtSig_, "tcMETmEtSig/D");
+  tree_->Branch("tcMETSig", &tcMETSig_, "tcMETSig/D");
+  // pfMET
+  tree_->Branch("pfMET", &pfMET_, "pfMET/D");
+  tree_->Branch("pfMETx", &pfMETx_, "pfMETx/D");
+  tree_->Branch("pfMETy", &pfMETy_, "pfMETy/D");
+  tree_->Branch("pfMETPhi", &pfMETPhi_, "pfMETPhi/D");
+  tree_->Branch("pfMETsumEt", &pfMETsumEt_, "pfMETsumEt/D");
+  tree_->Branch("pfMETmEtSig", &pfMETmEtSig_, "pfMETmEtSig/D");
+  tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/D");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][5]/O"); // [0]: eidRobustLoose, [1]: eidRobustTight, [2]: eidLoose, [3]: eidTight, [4]: eidRobustHighEnergy
@@ -386,7 +408,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // PDF information
-  if (doGenParticles_) {
+  if (!isData_) {
     Handle<PdfInfo> pdfInfoHandle;
     bool pdfInfo = e.getByLabel("genEventPdfInfo", pdfInfoHandle);
     if (pdfInfo) {
@@ -404,7 +426,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   nMC_ = 0;
   int genIndex = 0;
   const Candidate *mom = 0;
-  if (doGenParticles_) {
+
+  if (!isData_) {
     for (vector<GenParticle>::const_iterator ip = genParticlesHandle_->begin(); ip != genParticlesHandle_->end(); ++ip) {
       
       genIndex++;
@@ -484,7 +507,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
   }
 
-  // Gen & Reco MET
+  // Gen & PAT MET (caloMET)
   int nMET = 0;
   for (vector<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
     MET_      = iMET->pt();
@@ -505,7 +528,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     uncorrMETSumEt_[1]  = iMET->corSumEt(pat::MET::uncorrJES);
     uncorrMETSumEt_[2]  = iMET->corSumEt(pat::MET::uncorrMUON);
 
-    if (doGenParticles_) {
+    if (!isData_) {
       genMET_    = (*iMET).genMET()->pt();
       genMETx_   = (*iMET).genMET()->px();
       genMETy_   = (*iMET).genMET()->py();
@@ -513,6 +536,38 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
 
     nMET++;
+  }
+
+  // tcMET
+  Handle<reco::METCollection> tcMETcoll;
+  if (e.getByLabel(tcMETlabel_, tcMETcoll)) {
+    const reco::METCollection *tcMETcol = tcMETcoll.product();
+    const reco::MET *tcMET;
+    tcMET = &(tcMETcol->front());
+
+    tcMET_       = tcMET->pt();
+    tcMETx_      = tcMET->px();
+    tcMETy_      = tcMET->py();
+    tcMETPhi_    = tcMET->phi();
+    tcMETsumEt_  = tcMET->sumEt();
+    tcMETmEtSig_ = tcMET->mEtSig();
+    tcMETSig_    = tcMET->significance();
+  }
+
+  // pfMET
+  Handle<reco::PFMETCollection> pfMETcoll;
+  if (e.getByLabel(pfMETlabel_, pfMETcoll)) {
+    const reco::PFMETCollection *pfMETcol = pfMETcoll.product();
+    const reco::PFMET *pfMET;
+    pfMET = &(pfMETcol->front());
+
+    pfMET_       = pfMET->pt();
+    pfMETx_      = pfMET->px();
+    pfMETy_      = pfMET->py();
+    pfMETPhi_    = pfMET->phi();
+    pfMETsumEt_  = pfMET->sumEt();
+    pfMETmEtSig_ = pfMET->mEtSig();
+    pfMETSig_    = pfMET->significance();
   }
 
   // Electron
@@ -592,7 +647,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     // Gen Particle
     eleGenIndex_[nEle_] = -1;
     int EleGenIndex = 0;
-    if (doGenParticles_) {
+    if (!isData_) {
       if ((*iEle).genLepton()) {
 	 for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
 	   if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
@@ -710,7 +765,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     phoGenMomPt[nPho_]   = -999;
     phoGenGMomPID[nPho_] = -999;
     int phoGenIndex = 0;
-    if (doGenParticles_) {
+    if (!isData_) {
       if ((*iPho).genPhoton()) {
 	for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
 	  
@@ -792,7 +847,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     
     muGenIndex_[nMu_] = -1;
     int MuGenIndex = 0;
-    if (doGenParticles_) {
+    if (!isData_) {
       if ((*iMu).genLepton()) {
 	if (fabs((*iMu).genLepton()->pdgId())==13) {
 	  for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen !=
@@ -850,7 +905,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     jetGenPartonID_[nJet_] = 0;
     jetGenPartonMomID_[nJet_] = 0;
     int JetGenIndex = 0;
-    if (doGenParticles_) {
+    if (!isData_) {
       if ((*iJet).genParton()) {
 	jetGenPartonID_[nJet_] = (*iJet).genParton()->pdgId();
 	jetGenEn_[nJet_] = (*iJet).genParton()->energy();
@@ -888,7 +943,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   tree_->Fill();
 }
 
-void VgAnalyzerKit::beginJob(const edm::EventSetup&) {
+void VgAnalyzerKit::beginJob() {
 }
 
 void VgAnalyzerKit::endJob() {
