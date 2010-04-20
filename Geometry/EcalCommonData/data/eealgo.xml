@@ -49,7 +49,8 @@
    <Numeric name="EESCHLength" value="60.20*mm"/>
    <Numeric name="EESCHSide"   value="154.20*mm"/>
 
-<!-- Supercrystal profiles -->
+<!-- Supercrystal profiles: number of crystals in each column -->
+<!--                        (-ve => counting from the top)    -->
    <Numeric name="EEnSCTypes" value="6"/> <!-- Number of SC types -->
 
    <Vector name="EESCProf" type="numeric" nEntries="30">
@@ -57,7 +58,7 @@
       -4,-4,-4,-4,-4, 0,0,-1,-2,-3, 0,5,5,5,5
    </Vector>
 
-<!-- Endcap quadrant profile -->
+<!-- Endcap quadrant profile: lowest and highest SC in each column -->
    <Numeric name="EEnColumns" value="10"/> <!-- Number of endcap columns -->
    <Vector name="EEShape" type="numeric" nEntries="20">
       3,10,  2,10, 1,10, 1,9, 1,9, 1,9, 1,8, 1,7, 1,6, 1,3
@@ -86,6 +87,9 @@
 
    <Numeric name="EEnSCquad" value="78"/>
 
+<!-- EESCCtrs gives positions of centres of front and rear SC faces in CMS coordinates -->
+<!-- Column headings for EESCCtrs vector                                               -->
+<!-- IX  IY   Xfront         Xrear        Yfront       Yrear        Zfront       Zrear -->
     <Vector name="EESCCtrs" type="numeric" nEntries="624">
       1,  3,  73.99*mm,     79.436*mm,  367.857*mm,  395.056*mm, 3183.583*mm, 3529.157*mm,
       1,  4,  73.99*mm,     79.436*mm,  515.672*mm,  553.7125*mm,3185.869*mm, 3530.4185*mm,
@@ -171,6 +175,14 @@
 
      <Numeric name="EEnCRSC" value="25"/>
 
+
+<!-- EECRCtrs gives positions of centres of front and rear CR faces in SC coordinates  -->
+<!-- Note: for historical reasons, "front" and "rear" in this table are reversed with  -->
+<!--       respect to the EESCStrs definition - the CRs are rotated correctly in the   -->
+<!--       C++ code which creates the endcap geometry.                                 -->
+
+<!-- Column headings for EECRCtrs vector                                                          -->
+<!-- IX  IY   Xfront           Xrear            Yfront        Yrear          Zfront         Zrear -->
     <Vector name="EECRCtrs" type="numeric" nEntries="200">
       1, 1, -59.27878125*mm, -59.96993625*mm, -59.96718*mm, -59.276025*mm, 110.333615*mm,-109.666385*mm,
       1, 2, -59.27878125*mm, -59.96993625*mm, -30.84865*mm, -28.77521*mm,  110.24371*mm,-109.74761*mm,
