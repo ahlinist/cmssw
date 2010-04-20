@@ -420,24 +420,27 @@ void analysisClass::Loop()
 //                       9999};
 
    // 2010 runs at 7 TeV
-   int goodruns[] = {132440, 132440, 132473, 132599, 132601,
-                     132602, 132605, 132605, 132605, 132605,
-                     132606};
+   int goodruns[] = {132440, 132440, 132599, 132599, 132601,
+                     132601, 132601, 132602, 132605, 132605,
+                     132605, 132605, 132606};
 
    
-   int goodLSmin[] = {85, 141, 1, 1, 261,
-                      1, 1, 446, 624, 831,
-                      1};
+   int goodLSmin[] = {85,  141, 1, 381,   1,
+                      209, 261, 1,   1, 446,
+                      624, 831, 1};
    
-   int goodLSmax[] = {138, 401, 29, 74, 1131,
-                      83, 444, 622, 829, 968,
-                      37};
+   int goodLSmax[] = {138,  401, 379, 538, 207,
+                      259, 1131,  83, 444, 622,
+                      829,  968,  37};
    
    // For S9/S1 flagging
    const double slopes[] = {0.0164905,0.0238698,0.0321383,0.041296,0.0513428,0.0622789,0.0741041,0.0868186,0.100422,0.135313,0.136289,0.0589927};
    
    int useS9oS1Algo = (int)getPreCutValue1("useS9oS1Algo");
-   float metPrintoutCut = (float)getPreCutValue1("metPrintoutCut");
+   double Rshort =  (double)getPreCutValue1("Rshort");
+   double Rlong29 = (double)getPreCutValue1("Rlong29");
+   double Rlong =   (double)getPreCutValue1("Rlong");
+   double metPrintoutCut = (double)getPreCutValue1("metPrintoutCut");
 
    Long64_t nentries = fChain->GetEntriesFast();
    std::cout << "analysisClass::Loop(): nentries = " << nentries << std::endl;   
@@ -669,14 +672,19 @@ void analysisClass::Loop()
                //## identify HF spikes
                if( depth==1 ) {
                  if( useS9oS1Algo==0 ) {
-                    if( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) isPMThit = true;
+                    if( abs(ieta)==29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>Rlong29 ) ) isPMThit = true;
+                    else if( abs(ieta)>29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>Rlong ) ) isPMThit = true;
                  }
                  else if( useS9oS1Algo==1 ) {
-                    if( abs(ieta)==29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>0.98 ) ) isPMThit = true;
+                    if( abs(ieta)==29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>Rlong29 ) ) isPMThit = true;
                     else if( abs(ieta)>29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && S9oS1<(intercept+slope*log(energy)) ) ) isPMThit = true;
                  }
+                 else if( useS9oS1Algo==2 ) {
+                    if( abs(ieta)==29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && R>Rlong29 ) ) isPMThit = true;
+                    else if( abs(ieta)>29 && ( energy>(162.4-10.19*abs(ieta)+0.21*ieta*ieta) && S9oS1<(0.09*log(energy/55.)) ) ) isPMThit = true;
+                 }
                }
-               else if( depth==2 && energy>(129.9-6.61*abs(ieta)+0.1153*ieta*ieta) && R<-0.9 ) isPMThit = true;
+               else if( depth==2 && energy>(129.9-6.61*abs(ieta)+0.1153*ieta*ieta) && R<Rshort ) isPMThit = true;
                
                if( depth==1 && isPMThit )
                  {
@@ -945,6 +953,18 @@ void analysisClass::Loop()
 			<< endl;
 		 }
 	     }
+	     
+	   if(printout)
+             {
+               if( tcmet_clean > (metPrintoutCut+10.) )
+                 {
+                   cout << "event: " << event << " " 
+                        << "ls: " << ls << " "
+                        << "run: " << run << "  "
+                        << "--  tcMET_clean : " <<  tcmet_clean << " "
+                        << endl;
+                 }
+             }
            
 	   //## JetMET variables
 	   if(useJetMETVariables)
