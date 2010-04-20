@@ -1,0 +1,43 @@
+import FWCore.ParameterSet.Config as cms
+from ElectroWeakAnalysis.MultiBosons.kinAxis_cfi  import *
+
+VgAnalyzerKit = cms.EDProducer("VgAnalyzerKit",
+                               ntuplize = cms.string('none'),
+                               outputTextName = cms.string('VgAnalyzerKit_output.txt'),
+                               enable = cms.string(''),
+                               disable = cms.string(''),
+                               doMuon         = cms.bool(True),
+                               doElectron     = cms.bool(True),
+                               doTau          = cms.bool(True),
+                               doJet          = cms.bool(True),
+                               doMET          = cms.bool(True),
+                               doPhoton       = cms.bool(True),
+                               doTrack        = cms.bool(True),
+                               doGenParticles = cms.bool(True),
+                               electronSrc = cms.InputTag("cleanLayer1Electrons"),
+                               tauSrc = cms.InputTag("cleanLayer1Taus"),
+                               muonSrc = cms.InputTag("cleanLayer1Muons"),
+                               jetSrc = cms.InputTag("cleanLayer1Jets"),
+                               photonSrc = cms.InputTag("cleanLayer1Photons"),
+                               METSrc = cms.InputTag("layer1METs"),
+                               trackSrc = cms.InputTag("allTrackCandidates"),
+                               genParticleSrc = cms.InputTag("genParticles"),
+                               L1GTReadoutRecord =cms.InputTag("hltGtDigis"),
+                               triggerResults = cms.InputTag("TriggerResults::HLT"),
+                               GTDigiLabel = cms.InputTag(""),
+                               VtxLabel = cms.InputTag(""),
+                               CaloTowerLabel = cms.InputTag(""),
+                               TrackLabel = cms.InputTag(""),   
+                               ebReducedRecHitCollection = cms.InputTag("reducedEcalRecHitsEB"),
+                               eeReducedRecHitCollection = cms.InputTag("reducedEcalRecHitsEE"),
+                               muonAxis     = kinAxis(0, 200, 0, 200),
+                               electronAxis = kinAxis(0, 200, 0, 200),
+                               tauAxis      = kinAxis(0, 200, 0, 200),
+                               jetAxis      = kinAxis(0, 200, 0, 200),
+                               METAxis      = kinAxis(0, 200, 0, 200),
+                               photonAxis   = kinAxis(0, 200, 0, 200),
+                               trackAxis    = kinAxis(0, 200, 0, 200),
+                               genParticleAxis = kinAxis(0, 200, 0, 200)
+                               )
+
+
