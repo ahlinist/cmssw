@@ -132,6 +132,11 @@ private:
   MonitorElement* gctIsoEffPhi;
   MonitorElement* gctIsoEffEtaPhi;
 
+
+  MonitorElement* rctEtaCorr;
+  MonitorElement* rctEtaCorrIEta;
+  MonitorElement* rctEtaCorrAbsIEta;
+
   math::PtEtaPhiMLorentzVector rctLorentzVector(const L1GctEmCand&,const L1CaloGeometry* ,const  L1CaloEtScale *);
 
   double tpgSum(const math::XYZVector& direction,const EcalTrigPrimDigiCollection& ecalDigis,const L1CaloGeometry* geom ,const  L1CaloEcalScale* scale,double deltaR);
@@ -168,6 +173,10 @@ private:
 	mappingEta_[26] = 0.178;
 	mappingEta_[27] = 0.15;
 	mappingEta_[28] = 0.35;
+
+        mappingIEta_.push_back(0.087);
+        for (int i=2;i<=28;++i)
+            mappingIEta_.push_back(mappingIEta_.back() + mappingEta_[i]);
       }
     
     double eta(int iEta)
@@ -182,6 +191,22 @@ private:
       if(iEta>0) return eta;
       else
 	return -eta;
+    }
+
+    int iEta(double eta)
+    {
+        int iEta = 1;
+
+        std::vector<double>::iterator itr;
+        for ( itr = mappingIEta_.begin(); itr < mappingIEta_.end(); ++itr )
+        {
+            if ( fabs(eta) < *itr )
+                break;
+
+            ++iEta;
+        }
+
+        return (eta>0)? iEta : -iEta ;
     }
     
     double phi(int iPhi)
@@ -200,7 +225,8 @@ private:
   }
   
   private:
-  std::map<int,double> mappingEta_;
+    std::map<int,double> mappingEta_;
+    std::vector<double> mappingIEta_;
   };
 
   TriggerTowerGeometry *geo;
