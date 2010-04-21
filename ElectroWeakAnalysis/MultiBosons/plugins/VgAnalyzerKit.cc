@@ -509,7 +509,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   // Gen & PAT MET (caloMET)
   int nMET = 0;
-  for (vector<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
+  for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
     MET_      = iMET->pt();
     METx_     = iMET->px();
     METy_     = iMET->py(); 
@@ -539,11 +539,11 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // tcMET
-  Handle<reco::METCollection> tcMETcoll;
+  Handle<edm::View<reco::MET> > tcMETcoll;
   if (e.getByLabel(tcMETlabel_, tcMETcoll)) {
-    const reco::METCollection *tcMETcol = tcMETcoll.product();
+    //const reco::METCollection *tcMETcol = tcMETcoll.product();
     const reco::MET *tcMET;
-    tcMET = &(tcMETcol->front());
+    tcMET = &(tcMETcoll->front());
 
     tcMET_       = tcMET->pt();
     tcMETx_      = tcMET->px();
@@ -555,11 +555,11 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // pfMET
-  Handle<reco::PFMETCollection> pfMETcoll;
+  Handle<View<reco::PFMET> > pfMETcoll;
   if (e.getByLabel(pfMETlabel_, pfMETcoll)) {
-    const reco::PFMETCollection *pfMETcol = pfMETcoll.product();
+    //const reco::PFMETCollection *pfMETcol = pfMETcoll.product();
     const reco::PFMET *pfMET;
-    pfMET = &(pfMETcol->front());
+    pfMET = &(pfMETcoll->front());
 
     pfMET_       = pfMET->pt();
     pfMETx_      = pfMET->px();
@@ -573,7 +573,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // Electron
   nEle_ = 0;
   const Candidate *elemom = 0;
-  for (vector<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
+  for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
    
     //if (iEle->pt()<10) continue;
 
@@ -689,7 +689,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // Photon
   const Candidate *phomom = 0;
   nPho_ = 0;
-  for (vector<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
+  for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
 
     phoIsPhoton_[nPho_] = iPho->isPhoton();
     phoE_[nPho_]   = iPho->energy();
@@ -801,7 +801,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   // Muon
   nMu_ = 0;
-  for (vector<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
+  for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
     if (!iMu->isGlobalMuon()) continue;
     //if (iMu->pt()<10) continue;
@@ -865,7 +865,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   // Jet
   nJet_ = 0;
-  for (vector<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
+  for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
 
     if ( iJet->pt() < 15 ) continue;
 
