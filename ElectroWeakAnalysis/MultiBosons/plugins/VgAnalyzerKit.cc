@@ -653,8 +653,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	   if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
               eleGenIndex_[nEle_] = EleGenIndex;
 	    
-	      EleGenIndex++;
-
               const Candidate *elep = (const Candidate*)&(*iGen);
 
               for (size_t j=0; j<elep->numberOfMothers(); ++j) {
@@ -664,6 +662,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
                 if (elemom->mother()) eleGenGMomPID_[nEle_] = elemom->mother()->pdgId();
               }
            }
+	   EleGenIndex++;
 	 }
       }
     }
