@@ -1065,12 +1065,12 @@ void HistoMuon::fill( const reco::ShallowClonePtrCandidate *pshallow, uint iMu, 
 
 }
 
-void HistoMuon::fillCollection( const std::vector<Muon> & coll, double weight )
+void HistoMuon::fillCollection( const edm::View<Muon> & coll, double weight )
 {
 
   h_size_->fill( coll.size(), 1, weight );     //! Save the size of the collection.
 
-  std::vector<Muon>::const_iterator
+  edm::View<Muon>::const_iterator
     iobj = coll.begin(),
     iend = coll.end();
 

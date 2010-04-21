@@ -332,12 +332,12 @@ void HistoElectron::fill( const reco::ShallowClonePtrCandidate * pshallow, uint 
 }
 
 
-void HistoElectron::fillCollection( const std::vector<Electron> & coll,double weight ) 
+void HistoElectron::fillCollection( const edm::View<Electron> & coll,double weight ) 
 {
  
   h_size_->fill( coll.size(), 1, weight );     //! Save the size of the collection.
 
-  std::vector<Electron>::const_iterator
+  edm::View<Electron>::const_iterator
     iobj = coll.begin(),
     iend = coll.end();
 

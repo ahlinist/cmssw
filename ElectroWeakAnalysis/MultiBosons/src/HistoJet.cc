@@ -295,12 +295,12 @@ void HistoJet::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iJet,
 }
 
 
-void HistoJet::fillCollection( const std::vector<Jet> & coll, double weight ) 
+void HistoJet::fillCollection( const edm::View<Jet> & coll, double weight ) 
 {
  
   h_size_->fill( coll.size(), 1, weight );     //! Save the size of the collection.
 
-  std::vector<Jet>::const_iterator
+  edm::View<Jet>::const_iterator
     iobj = coll.begin(),
     iend = coll.end();
 

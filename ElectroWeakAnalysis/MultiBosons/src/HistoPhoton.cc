@@ -1006,12 +1006,12 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
 }
 
 
-void HistoPhoton::fillCollection( const std::vector<Photon> & coll, double weight ) 
+void HistoPhoton::fillCollection( const edm::View<Photon> & coll, double weight ) 
 {
 
   h_size_->fill( coll.size(), 1, weight );     //! Save the size of the collection.
 
-  std::vector<Photon>::const_iterator
+  edm::View<Photon>::const_iterator
     iobj = coll.begin(),
     iend = coll.end();
 
