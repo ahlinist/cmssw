@@ -82,6 +82,7 @@ struct TTreeMembers {
   int lumiSection_;
   int bx_;
   int orbit_; 
+  int run_;
   float correctionToSample5EB_;
   float correctionToSample5EEP_;
   float correctionToSample5EEM_;
@@ -892,6 +893,10 @@ int main(int argc,  char * argv[]){
   TH1F *hctEE    = new TH1F("hctEE",  Form("%s EE Crystal Times;Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
   TH1F *hctEEp   = new TH1F("hctEEp", Form("%s EE+ Crystal Times;Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
   TH1F *hctEEm   = new TH1F("hctEEm", Form("%s EE- Crystal Times;Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
+  TH1F *hctUEB    = new TH1F("hctUEB",  Form("%s EB Crystal Uncalib Times;Time (ns);Number of Crystals",runChar),500, -EBTimeMax, EBTimeMax);
+  TH1F *hctUEE    = new TH1F("hctUEE",  Form("%s EE Crystal Uncalib Times;Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
+  TH1F *hctUEEp   = new TH1F("hctUEEp", Form("%s EE+ Crystal Uncalib Times;Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
+  TH1F *hctUEEm   = new TH1F("hctUEEm", Form("%s EE- Crystal Uncalib Times;Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
   TH1F *hctEEpB  = new TH1F("hctEEpB", Form("%s EE+ (-10ns to 10ns) EE- (-10ns to 10ns) ;EE+ Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
   TH1F *hctEEmB  = new TH1F("hctEEmB", Form("%s EE- (-10ns to 10ns) EE+ (-10ns to 10ns) ;EE- Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
   TH1F *hctEEpBh = new TH1F("hctEEpBh", Form("%s EE+ (-10ns to 10ns) EE- (-30ns to -10ns) ;EE+ Time (ns);Number of Crystals",runChar),500, -EETimeMax, EETimeMax);
@@ -1132,14 +1137,14 @@ int main(int argc,  char * argv[]){
      if(!keepEvent) continue;
 
      keepEvent = true;
-     if ( abstime > 53200 )
+     if ( abstime > 53120 )
        {
-	 if( abstime < 53300 ) timediff = 2.0;
+	 if( abstime < 53250 ) timediff = 2.0;
        } 
      if(!keepEvent) continue;
  
      keepEvent = true;
-     if ( abstime > 58100 )
+     if ( abstime > 58220 )
        {
 	 if( abstime < 58500 ) keepEvent=false;
        } 
@@ -1155,14 +1160,14 @@ int main(int argc,  char * argv[]){
      keepEvent = true;
      if ( abstime > 60370 )
        {
-	 if( abstime < 60620 ) keepEvent=false;//DOUBLE CHECK This number
+	 if( abstime < 60615 ) keepEvent=false;//DOUBLE CHECK This number
        } 
      if(!keepEvent) continue;
 
      keepEvent = true;
      if ( abstime > 62370 )
        {
-	 if( abstime < 62620 ) keepEvent=false;//DOUBLE CHECK This number
+	 if( abstime < 62605 ) keepEvent=false;//DOUBLE CHECK This number
        } 
      if(!keepEvent) continue;
 
@@ -1172,6 +1177,7 @@ int main(int argc,  char * argv[]){
          mydet    = EBDetId::unhashIndex(crystalHashedIndicesEB);
          //double myt     = (TTreeMembers_.cryTimesEB_[ebx] -5.0)*25;
 	 double myt     = TTreeMembers_.cryTimesEB_[ebx]+timediff;
+	 double myut    = TTreeMembers_.cryUTimesEB_[ebx]+timediff;
          double myterr  = (TTreeMembers_.cryTimeErrorsEB_[ebx])*25;
 	 if (myterr > 5.0 ) continue;
 	 double kswissk = TTreeMembers_.kswisskEB_[ebx];
@@ -1184,10 +1190,12 @@ int main(int argc,  char * argv[]){
          if ( et < minEBET ) continue; 
          int ieta = mydet.ieta();
          int iphi = mydet.iphi();
+	 if ( myt < -4.0 || myt > 4.0 ) continue;
          if ( ieta > 0 ) {EBPave += myt/myterr; EBPn += 1./myterr; hEBPlusTime->Fill(myt);}
          else {EBMave += myt/myterr; EBMn += 1./myterr; hEBMinusTime->Fill(myt);}
 	 EBnum++;
          hctEB->Fill(myt);
+	 hctUEB->Fill(myut);
 	 hctEBtoTerr->Fill(myt,myterr);
 	 hctEBtoAmp->Fill(myt,amp);
 	 hctEBtoET->Fill(myt,et);
@@ -1210,6 +1218,7 @@ int main(int argc,  char * argv[]){
          mydete = mydete.unhashIndex(crystalHashedIndicesEE);
          //double myt     = (TTreeMembers_.cryTimesEE_[eex] -5.0)*25;
 	 double myt     = (TTreeMembers_.cryTimesEE_[eex])+timediff;
+	 double myut     = (TTreeMembers_.cryUTimesEE_[eex])+timediff;
          double myterr  = (TTreeMembers_.cryTimeErrorsEE_[eex])*25;
 	 if (myterr > 5.0 ) continue;
 	 double amp = TTreeMembers_.cryAmpsEE_[eex];
@@ -1221,6 +1230,7 @@ int main(int argc,  char * argv[]){
          int iy = mydete.iy();
          int iz = mydete.zside();
 	 hctEE->Fill(myt);
+	 hctUEE->Fill(myut);
 	 hctEEtoTerr->Fill(myt,myterr);
 	 hctEEtoAmp->Fill(myt,amp);
 	 hctEEtoET->Fill(myt,et);
@@ -1230,6 +1240,7 @@ int main(int argc,  char * argv[]){
          if ( iz> 0 ) {
             EEPave += myt/myterr; EEPn += 1./myterr;EEpnum++; 
             hctEEp->Fill(myt);
+	    hctUEEp->Fill(myut);
             NEEPtimeCHProfile->Fill(ix,iy,myt);
             NEEPtimeTTProfile->Fill(ix,iy,myt);
 	    NfullAmpProfileEEP->Fill(ix,iy,amp);
@@ -1238,6 +1249,7 @@ int main(int argc,  char * argv[]){
          else {
             EEMave += myt/myterr; EEMn += 1./myterr; EEmnum++; 
             hctEEm->Fill(myt);
+	    hctUEEm->Fill(myut);
             NEEMtimeCHProfile->Fill(ix,iy,myt);
             NEEMtimeTTProfile->Fill(ix,iy,myt);   
 	    NfullAmpProfileEEM->Fill(ix,iy,amp);
@@ -1297,6 +1309,7 @@ int main(int argc,  char * argv[]){
 	 double e1Oe9 =  TTreeMembers_.e1Oe9EB_[ebx];
          if (e1Oe9 > 0.92) continue;
 	 if (kswissk > 0.95) continue;
+	 if ( myt < -4.0 || myt > 4.0 ) continue;
 	 hctEBtoAve->Fill(myt,EBave);
 	 hctEBtoAmpEvt->Fill(EBave,amp);
          hctEBcryamp->Fill(amp,EBnum);
@@ -1413,6 +1426,17 @@ int main(int argc,  char * argv[]){
   c[28]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMES_%s.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
 
+  c[28]->cd();
+  gStyle->SetOptStat(1110);
+  hctUEB->Draw();
+  hctUEB->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctUEB->Fit("gauss","R");
+  gStyle->SetOptFit(111);
+  c[28]->SetLogy(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBUTIMES_%s.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
+
+
+
   c[29]->cd();
   gStyle->SetOptStat(1110);
   hctEE->Draw();
@@ -1421,6 +1445,15 @@ int main(int argc,  char * argv[]){
   if ( fit ) hctEE->Fit("gauss","R");
   gStyle->SetOptFit(111);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMES_%s.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
+
+  c[29]->cd();
+  gStyle->SetOptStat(1110);
+  hctUEE->Draw();
+  c[29]->SetLogy(1);
+  hctUEE->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctUEE->Fit("gauss","R");
+  gStyle->SetOptFit(111);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEUTIMES_%s.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
 
   c[54]->cd();
   gStyle->SetOptStat(1110);
@@ -1431,6 +1464,15 @@ int main(int argc,  char * argv[]){
   gStyle->SetOptFit(111);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEPTIMES_%s.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
 
+ c[54]->cd();
+  gStyle->SetOptStat(1110);
+  hctUEEp->Draw();
+  c[54]->SetLogy(1);
+  hctUEEp->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctUEEp->Fit("gauss","R");
+  gStyle->SetOptFit(111);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPUTIMES_%s.%s",dirName,mType,runNumber,fileType); c[54]->Print(name); }
+
   c[55]->cd();
   gStyle->SetOptStat(1110);
   hctEEm->Draw();
@@ -1439,6 +1481,17 @@ int main(int argc,  char * argv[]){
   if ( fit ) hctEEm->Fit("gauss","R");
   gStyle->SetOptFit(111);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMTIMES_%s.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
+
+
+  c[55]->cd();
+  gStyle->SetOptStat(1110);
+  hctUEEm->Draw();
+  c[55]->SetLogy(1);
+  hctUEEm->GetXaxis()->SetNdivisions(512);
+  if ( fit ) hctUEEm->Fit("gauss","R");
+  gStyle->SetOptFit(111);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMUTIMES_%s.%s",dirName,mType,runNumber,fileType); c[55]->Print(name); }
+
 
   c[54]->cd();
   gStyle->SetOptStat(1110);
@@ -2423,9 +2476,13 @@ int main(int argc,  char * argv[]){
   RelRMS_vs_AbsTime->Write();
   TTMeanWithRMS_All_FEDS->Write();
   hctEB->Write();
+  hctUEB->Write();
   hctEE->Write();
+  hctUEE->Write();
   hctEEp->Write();
+  hctUEEp->Write();
   hctEEm->Write();
+  hctUEEm->Write();
   hctEEpB->Write();
   hctEEmB->Write();
   hctEEpBh->Write();
