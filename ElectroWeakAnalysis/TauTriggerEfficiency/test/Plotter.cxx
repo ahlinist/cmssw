@@ -34,7 +34,7 @@ public:
 
   TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection);
   TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2);
-  void DrawDistribution(const char* varexp, const TCut& selection);
+  TH1 *DrawDistribution(const char* varexp, const TCut& selection);
   void SetXTitle(const char* title) {plotXtitle   = title;}
   void SetYTitle(const char* title) {plotYtitle   = title;}
   void SetFileName(TString name){plotFileName = name;}
@@ -104,10 +104,8 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
 
   std::string s_varexp(varexp);
 
-  size_t posbegin = s_varexp.find(">>");
-  size_t posend   = s_varexp.find("(", posbegin);
-
-  s_varexp = s_varexp.substr(0,posbegin+2) + "hden" + s_varexp.substr(posend,s_varexp.length()-posend);
+  size_t posbegin = s_varexp.find("hnum");
+  s_varexp.replace(posbegin, 4, "hden");
 
   const char* varexp2 = s_varexp.c_str();
 
@@ -139,10 +137,11 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
     else
       gPad->SaveAs(plotFileName);
   }
+
   return heff;
 }
 
-void Plotter::DrawDistribution(const char* varexp, const TCut& selection){
+TH1 *Plotter::DrawDistribution(const char* varexp, const TCut& selection){
 
   const char* varexp1 = varexp;
   tree->Draw(varexp1,selection);
@@ -162,4 +161,5 @@ void Plotter::DrawDistribution(const char* varexp, const TCut& selection){
     else
       gPad->SaveAs(plotFileName);
   }
+  return hnum;
 }
