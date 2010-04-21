@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("RCTVAL")
@@ -48,6 +49,19 @@ process.highestPhoton = cms.EDProducer("LargestPtCandViewSelector",
                            maxNumber = cms.uint32(1)
                          )
 
+## EG2
+process.EG2 = cms.EDAnalyzer('RctValidation',
+                ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
+                rctEGamma = cms.InputTag('gctDigis'),
+                gctEGamma = cms.VInputTag(cms.InputTag('gctDigis','isoEm'),
+                                          cms.InputTag('gctDigis','nonIsoEm')
+                ),                          
+                genEGamma = cms.InputTag("highestPhoton"),
+                directory = cms.string("L1T/RCTPhotons/EG2"),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
+                gammaThreshold = cms.untracked.double(2.)              
+)
 
 process.EGB2 = cms.EDAnalyzer('RctValidation',
                 ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
@@ -77,6 +91,20 @@ process.EGE2 = cms.EDAnalyzer('RctValidation',
 
 )                               
 
+## EG5
+process.EG5 = cms.EDAnalyzer('RctValidation',
+                ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
+                rctEGamma = cms.InputTag('gctDigis'),
+                gctEGamma = cms.VInputTag(cms.InputTag('gctDigis','isoEm'),
+                                          cms.InputTag('gctDigis','nonIsoEm')
+                ),                          
+                genEGamma = cms.InputTag("highestPhoton"),
+                directory = cms.string("L1T/RCTPhotons/EG5"),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
+                gammaThreshold = cms.untracked.double(5.)              
+)
+
 process.EGB5 = cms.EDAnalyzer('RctValidation',
                 ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
                 rctEGamma = cms.InputTag('gctDigis'),
@@ -105,31 +133,50 @@ process.EGE5 = cms.EDAnalyzer('RctValidation',
 
 )                               
 
-process.EG2 = cms.EDAnalyzer('RctValidation',
+## EG8
+process.EG8 = cms.EDAnalyzer('RctValidation',
                 ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
                 rctEGamma = cms.InputTag('gctDigis'),
                 gctEGamma = cms.VInputTag(cms.InputTag('gctDigis','isoEm'),
                                           cms.InputTag('gctDigis','nonIsoEm')
                 ),                          
                 genEGamma = cms.InputTag("highestPhoton"),
-                directory = cms.string("L1T/RCTPhotons/EG2"),
+                directory = cms.string("L1T/RCTPhotons/EG8"),
                 maxEt = cms.untracked.double(40),
                 binsEt = cms.untracked.int32(40),
-                gammaThreshold = cms.untracked.double(2.)              
+                gammaThreshold = cms.untracked.double(8.)              
 )
 
-process.EG5 = cms.EDAnalyzer('RctValidation',
+process.EGB8 = cms.EDAnalyzer('RctValidation',
                 ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
                 rctEGamma = cms.InputTag('gctDigis'),
                 gctEGamma = cms.VInputTag(cms.InputTag('gctDigis','isoEm'),
                                           cms.InputTag('gctDigis','nonIsoEm')
                 ),                          
-                genEGamma = cms.InputTag("highestPhoton"),
-                directory = cms.string("L1T/RCTPhotons/EG5"),
+                genEGamma = cms.InputTag("highestBarrelPhoton"),
+                directory = cms.string("L1T/RCTPhotons/EG8_Barrel"),
                 maxEt = cms.untracked.double(40),
                 binsEt = cms.untracked.int32(40),
-                gammaThreshold = cms.untracked.double(5.)              
-)
+                gammaThreshold = cms.untracked.double(8.)              
+
+)                               
+
+process.EGE8 = cms.EDAnalyzer('RctValidation',
+                ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
+                rctEGamma = cms.InputTag('gctDigis'),
+                gctEGamma = cms.VInputTag(cms.InputTag('gctDigis','isoEm'),
+                                          cms.InputTag('gctDigis','nonIsoEm')
+                ),                          
+                genEGamma = cms.InputTag("highestEndcapPhoton"),
+                directory = cms.string("L1T/RCTPhotons/EG8_Endcap"),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
+                gammaThreshold = cms.untracked.double(8.)              
+
+)                               
+
+
+
 #Reconfigure Environment and saver
 #process.dqmEnv.subSystemFolder = cms.untracked.string('HLT/HLTTAU')
 #process.DQM.collectorPort = 9091
@@ -172,14 +219,16 @@ process.p1 = cms.Path(process.RawToDigi+
                      process.selectedPhotonsEndcap+
                      process.highestEndcapPhoton+
                      process.EGE2+
-                     process.EGE5
+                     process.EGE5+
+                     process.EGE8
 )
 
 process.p2 = cms.Path(process.RawToDigi+
                      process.selectedPhotonsBarrel+
                      process.highestBarrelPhoton+
                      process.EGB2+
-                     process.EGB5
+                     process.EGB5+
+                     process.EGB8
 
 )
 
@@ -187,7 +236,8 @@ process.p3 = cms.Path(process.RawToDigi+
                      process.selectedPhotons+
                      process.highestPhoton+
                      process.EG2+
-                     process.EG5
+                     process.EG5+
+                     process.EG8
 
 )
 
