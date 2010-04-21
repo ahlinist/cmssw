@@ -37,6 +37,8 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/HistoGroup.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/HistoTrack.h"
 
+#include "DataFormats/Common/interface/View.h"
+
 // CMSSW include files
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
@@ -69,7 +71,7 @@ namespace pat {
     virtual void fill( const reco::ShallowClonePtrCandidate &tau, uint iPart = 1, double weight = 1.0 )
     { fill(&tau, iPart, weight); }
 
-    virtual void fillCollection( const std::vector<Tau> & coll, double weight = 1.0 );
+    virtual void fillCollection( const edm::View<Tau> & coll, double weight = 1.0 );
 
     // Clear ntuple cache
     void clearVec();
