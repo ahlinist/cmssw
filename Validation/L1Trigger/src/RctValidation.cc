@@ -26,12 +26,6 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 {
   geo = new TriggerTowerGeometry();
 
-    std::cout << "***********************************************************************\n";
-    for ( int i = -10; i < 20; ++i )
-    {
-        printf("iEta(%g) = %d\n",i*0.05,geo->iEta(i*0.05)); 
-    }
-
   //Get General Monitoring Parameters
   DQMStore *store = &*edm::Service<DQMStore>();
   if(store)
