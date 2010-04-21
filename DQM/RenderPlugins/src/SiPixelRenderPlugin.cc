@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.32 $
-  \date $Date: 2010/03/18 08:11:56 $
+  \version $Revision: 1.33 $
+  \date $Date: 2010/04/20 13:31:20 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -222,7 +222,6 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
           o.name.find( "Occupancy" ) != std::string::npos ||
 	  o.name.find( "position_siPixelClusters" ) != std::string::npos ||
 	  (o.name.find( "TRKMAP" ) != std::string::npos && o.name.find( "Layer" ) != std::string::npos) ||
-	  o.name.find( "FedChLErrArray" ) != std::string::npos ||
 	  o.name.find( "FedChNErrArray" ) != std::string::npos ||
 	  o.name.find( "FedETypeNErrArray" ) != std::string::npos || 
 	  o.name.find( "HitEfficiency" ) != std::string::npos || 
@@ -233,11 +232,24 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
         return;
       }
       
+      if( o.name.find( "FedChLErrArray" ) != std::string::npos )
+      {
+        gPad->SetGrid();
+	obj->SetOption("text");
+      }
+      
       if( o.name.find( "FedETypeNErrArray" ) != std::string::npos )
       {
         gPad->SetGrid();
 	gPad->SetLeftMargin(0.3);
+	gPad->SetRightMargin(0.15);
 	return;
+      }
+      
+      if( o.name.find( "FedChNErrArray" ) != std::string::npos )
+      {
+        gPad->SetGrid();
+	gPad->SetRightMargin(0.15);
       }
       
       TH2F* obj2 = dynamic_cast<TH2F*>( o.object );
