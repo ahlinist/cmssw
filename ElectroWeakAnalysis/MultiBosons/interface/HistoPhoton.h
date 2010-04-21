@@ -38,6 +38,8 @@
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/HistoGroup.h"
 
+#include "DataFormats/Common/interface/View.h"
+
 // STL include files
 #include <string>
 
@@ -66,7 +68,7 @@ namespace pat {
     virtual void fill( const reco::ShallowClonePtrCandidate &photon, uint iPart = 1, double weight = 1.0 )
     { fill(&photon, iPart, weight); }
 
-    virtual void fillCollection( const std::vector<Photon> & coll, double weight = 1.0 );
+    virtual void fillCollection( const edm::View<Photon> & coll, double weight = 1.0 );
 
     // Clear ntuple cache
     void clearVec();

@@ -39,6 +39,7 @@
 // CMSSW include files
 #include "DataFormats/PatCandidates/interface/Muon.h"
 
+#include "DataFormats/Common/interface/View.h"
 
 // STL include files
 #include <string>
@@ -68,7 +69,7 @@ namespace pat {
     virtual void fill( const reco::ShallowClonePtrCandidate &muon, uint iPart = 1, double weight = 1.0 )
     { fill(&muon, iPart,weight); }
 
-    virtual void fillCollection( const std::vector<Muon> & coll, double weight = 1.0 );
+    virtual void fillCollection( const edm::View<Muon> & coll, double weight = 1.0 );
 
     // Clear ntuple cache
     void clearVec();

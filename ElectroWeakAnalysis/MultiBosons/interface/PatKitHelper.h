@@ -8,7 +8,7 @@
 //
 // Original Author:  Salvatore Rappoccio
 //         Created:  Mon Jul  7 10:37:27 CDT 2008
-// $Id: PatKitHelper.h,v 1.1 2010/04/08 15:12:04 cmkuo Exp $
+// $Id: PatKitHelper.h,v 1.1 2010/04/19 12:46:26 lgray Exp $
 //
 // Revision History:
 //       -  Sal Rappoccio, Mon Jul  7 10:37:27 CDT 2008
@@ -26,6 +26,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/EDProducer.h"
+#include "DataFormats/Common/interface/View.h"
 
 
 namespace pat {
@@ -45,12 +46,12 @@ namespace pat {
 
     // Get handles
     void getHandles( edm::Event  & event,
-		     edm::Handle<std::vector<pat::Muon> > &     muonHandle,
-		     edm::Handle<std::vector<pat::Electron> > & electronHandle,
-		     edm::Handle<std::vector<pat::Tau> > &      tauHandle,
-		     edm::Handle<std::vector<pat::Jet> > &      jetHandle,
-		     edm::Handle<std::vector<pat::MET> > &      METHandle,
-		     edm::Handle<std::vector<pat::Photon> > &   photonHandle,
+		     edm::Handle<edm::View<pat::Muon> > &     muonHandle,
+		     edm::Handle<edm::View<pat::Electron> > & electronHandle,
+		     edm::Handle<edm::View<pat::Tau> > &      tauHandle,
+		     edm::Handle<edm::View<pat::Jet> > &      jetHandle,
+		     edm::Handle<edm::View<pat::MET> > &      METHandle,
+		     edm::Handle<edm::View<pat::Photon> > &   photonHandle,
 		     edm::Handle<std::vector<reco::RecoChargedCandidate> > &   trackHandle,
 		     edm::Handle<std::vector<reco::GenParticle> > & genParticles
 		     );
@@ -58,12 +59,12 @@ namespace pat {
     
     // fill histograms
     void fillHistograms( edm::Event & event,
-			 edm::Handle<std::vector<pat::Muon> > &     muonHandle,
-			 edm::Handle<std::vector<pat::Electron> > & electronHandle,
-			 edm::Handle<std::vector<pat::Tau> > &      tauHandle,
-			 edm::Handle<std::vector<pat::Jet> > &      jetHandle,
-			 edm::Handle<std::vector<pat::MET> > &      METHandle,
-			 edm::Handle<std::vector<pat::Photon> > &   photonHandle,
+			 edm::Handle<edm::View<pat::Muon> > &     muonHandle,
+			 edm::Handle<edm::View<pat::Electron> > & electronHandle,
+			 edm::Handle<edm::View<pat::Tau> > &      tauHandle,
+			 edm::Handle<edm::View<pat::Jet> > &      jetHandle,
+			 edm::Handle<edm::View<pat::MET> > &      METHandle,
+			 edm::Handle<edm::View<pat::Photon> > &   photonHandle,
 			 edm::Handle<std::vector<reco::RecoChargedCandidate> > &   trackHandle,
 			 edm::Handle<std::vector<reco::GenParticle> > & genParticles
 			 );

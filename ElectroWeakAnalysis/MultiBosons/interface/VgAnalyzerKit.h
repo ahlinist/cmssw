@@ -16,6 +16,8 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Utils/interface/TFileDirectory.h"
 
+#include "DataFormats/Common/interface/View.h"
+
 #include "TTree.h"
 
 using namespace edm;
@@ -298,12 +300,12 @@ protected:
   double jetGenPhi_[maxP];
 
   // Physics objects handles
-  Handle<std::vector<pat::Muon> >                  muonHandle_;
-  Handle<std::vector<pat::Electron> >              electronHandle_;
-  Handle<std::vector<pat::Tau> >                   tauHandle_;
-  Handle<std::vector<pat::Jet> >                   jetHandle_;
-  Handle<std::vector<pat::MET> >                   METHandle_;
-  Handle<std::vector<pat::Photon> >                photonHandle_;
+  Handle<View<pat::Muon> >                  muonHandle_;
+  Handle<View<pat::Electron> >              electronHandle_;
+  Handle<View<pat::Tau> >                   tauHandle_;
+  Handle<View<pat::Jet> >                   jetHandle_;
+  Handle<View<pat::MET> >                   METHandle_;
+  Handle<View<pat::Photon> >                photonHandle_;
   Handle<std::vector<reco::RecoChargedCandidate> > trackHandle_;
   Handle<std::vector<reco::GenParticle> >          genParticlesHandle_;
 

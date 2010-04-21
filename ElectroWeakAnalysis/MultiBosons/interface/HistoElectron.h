@@ -37,6 +37,7 @@
 // CMSSW include files
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/HistoGroup.h"
+#include "DataFormats/Common/interface/View.h"
 
 // STL include files
 #include <string>
@@ -66,7 +67,7 @@ namespace pat {
     virtual void fill( const reco::ShallowClonePtrCandidate &electron, uint iPart = 1, double weight = 1.0 )
     { fill(&electron, iPart,weight); }
 
-    virtual void fillCollection( const std::vector<Electron> & coll, double weight = 1.0 );
+    virtual void fillCollection( const edm::View<Electron> & coll, double weight = 1.0 );
 
     // Clear ntuple cache
     void clearVec();

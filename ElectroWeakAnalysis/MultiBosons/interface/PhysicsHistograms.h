@@ -44,6 +44,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "DataFormats/Common/interface/View.h"
+
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Utils/interface/TFileDirectory.h"
 
@@ -107,32 +109,32 @@ public:
 
   //--- Process a whole collection of Muons...
   //
-  inline void fillCollection( const std::vector<pat::Muon> & coll, double w = 1.0 )
+  inline void fillCollection( const edm::View<pat::Muon> & coll, double w = 1.0 )
     { muonHistograms_->fillCollection(coll,w); }
 
   //--- ... or Electrons...
   //
-  inline void fillCollection( const std::vector<pat::Electron> & coll, double w = 1.0 )
+  inline void fillCollection( const edm::View<pat::Electron> & coll, double w = 1.0 )
     { electronHistograms_->fillCollection(coll,w); }
 
   //--- ... or Taus...
   //
-  inline void fillCollection( const std::vector<pat::Tau> & coll, double w = 1.0 )
+  inline void fillCollection( const edm::View<pat::Tau> & coll, double w = 1.0 )
     { tauHistograms_->fillCollection(coll,w); }
 
   //--- ... or Jets...
   //
-  inline void fillCollection( const std::vector<pat::Jet> & coll, double w = 1.0 )
+  inline void fillCollection( const edm::View<pat::Jet> & coll, double w = 1.0 )
     { jetHistograms_->fillCollection(coll,w); }
 
   //--- ... or MET.
   //
-  inline void fillCollection( const std::vector<pat::MET> & coll, double w = 1.0 )
+  inline void fillCollection( const edm::View<pat::MET> & coll, double w = 1.0 )
     { metHistograms_->fillCollection(coll,w); }
 
   //--- ... or Photon.
   //
-  inline void fillCollection( const std::vector<pat::Photon> & coll, double w = 1.0 )
+  inline void fillCollection( const edm::View<pat::Photon> & coll, double w = 1.0 )
     { photonHistograms_->fillCollection(coll,w); }
 
   //--- ... or Track.
