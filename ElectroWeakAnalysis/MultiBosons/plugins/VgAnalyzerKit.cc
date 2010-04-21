@@ -575,7 +575,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   const Candidate *elemom = 0;
   for (vector<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
    
-    if (iEle->pt()<10) continue;
+    //if (iEle->pt()<10) continue;
 
     for (int i=0; i<5; ++i) eleID_[nEle_][i] = 0;
     if (iEle->electronID("eidRobustLoose")==1) eleID_[nEle_][0] = 1;
@@ -805,7 +805,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   for (vector<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
     if (!iMu->isGlobalMuon()) continue;
-    if (iMu->pt()<10) continue;
+    //if (iMu->pt()<10) continue;
 
     if (iMu->isGood("AllArbitrated")==1) muID[nMu_][0] = 1;
     else muID[nMu_][0] = 0;
