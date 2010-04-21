@@ -77,7 +77,7 @@ class EmuHit : public EmuDrawable {
             hit->SetFillColor(1);
         }
 
-        ~EmuHit() {
+        virtual ~EmuHit() {
             delete hit;
         }
 
@@ -179,7 +179,7 @@ class EmuChamber : public EmuDrawable {
             return this;
         }
 
-        ~EmuChamber() {
+        virtual ~EmuChamber() {
             if (bounds) {
                 delete bounds;
             }
