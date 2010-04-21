@@ -100,12 +100,12 @@ void PatKitHelper::bookHistos(edm::EDProducer * producer)
 
 
 void PatKitHelper::getHandles( edm::Event & event,
-			       edm::Handle<std::vector<pat::Muon> > &     muonHandle,
-			       edm::Handle<std::vector<pat::Electron> > & electronHandle,
-			       edm::Handle<std::vector<pat::Tau> > &      tauHandle,
-			       edm::Handle<std::vector<pat::Jet> > &      jetHandle,
-			       edm::Handle<std::vector<pat::MET> > &      METHandle,
-			       edm::Handle<std::vector<pat::Photon> > &   photonHandle,
+			       edm::Handle<edm::View<pat::Muon> > &     muonHandle,
+			       edm::Handle<edm::View<pat::Electron> > & electronHandle,
+			       edm::Handle<edm::View<pat::Tau> > &      tauHandle,
+			       edm::Handle<edm::View<pat::Jet> > &      jetHandle,
+			       edm::Handle<edm::View<pat::MET> > &      METHandle,
+			       edm::Handle<edm::View<pat::Photon> > &   photonHandle,
 			       edm::Handle<std::vector<reco::RecoChargedCandidate> > &   trackHandle,
 			       edm::Handle<std::vector<reco::GenParticle> > & genParticlesHandle
 			       )
@@ -145,12 +145,12 @@ void PatKitHelper::getHandles( edm::Event & event,
 
 
 void PatKitHelper::fillHistograms(edm::Event & event,
-				  edm::Handle<std::vector<pat::Muon> > &     muonHandle,
-				  edm::Handle<std::vector<pat::Electron> > & electronHandle,
-				  edm::Handle<std::vector<pat::Tau> > &      tauHandle,
-				  edm::Handle<std::vector<pat::Jet> > &      jetHandle,
-				  edm::Handle<std::vector<pat::MET> > &      METHandle,
-				  edm::Handle<std::vector<pat::Photon> > &   photonHandle,
+				  edm::Handle<edm::View<pat::Muon> > &     muonHandle,
+				  edm::Handle<edm::View<pat::Electron> > & electronHandle,
+				  edm::Handle<edm::View<pat::Tau> > &      tauHandle,
+				  edm::Handle<edm::View<pat::Jet> > &      jetHandle,
+				  edm::Handle<edm::View<pat::MET> > &      METHandle,
+				  edm::Handle<edm::View<pat::Photon> > &   photonHandle,
 				  edm::Handle<std::vector<reco::RecoChargedCandidate> > &   trackHandle,
 				  edm::Handle<std::vector<reco::GenParticle> > & genParticlesHandle
 				  )

@@ -159,12 +159,12 @@ void HistoTau::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iTau,
 }
 
 
-void HistoTau::fillCollection( const std::vector<Tau> & coll, double weight ) 
+void HistoTau::fillCollection( const edm::View<Tau> & coll, double weight ) 
 {
 
   h_size_->fill( coll.size(), 1, weight );     //! Save the size of the collection.
 
-  std::vector<Tau>::const_iterator
+  edm::View<Tau>::const_iterator
     iobj = coll.begin(),
     iend = coll.end();
 

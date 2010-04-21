@@ -165,12 +165,12 @@ void HistoMET::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iPart
 }
 
 
-void HistoMET::fillCollection( const std::vector<MET> & coll, double weight ) 
+void HistoMET::fillCollection( const edm::View<MET> & coll, double weight ) 
 {
  
   h_size_->fill( coll.size(), 1, weight );     //! Save the size of the collection.
 
-  std::vector<MET>::const_iterator
+  edm::View<MET>::const_iterator
     iobj = coll.begin(),
     iend = coll.end();
 
