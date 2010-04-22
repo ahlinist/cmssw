@@ -1,14 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 
-from JetMETAnalysis.HcalReflagging.hcalrechitreflaggerJETMET_cfi import *
+from JetMETAnalysis.HcalReflagging.hfrechitreflaggerJETMET_cfi import *
 from copy import deepcopy
 from math import log
 
 # v1 = "Loose conditions" -- same as default
-HFrechitreflaggerJETMET_v1 = deepcopy(hcalrechitReflaggerJETMET)
+HFrechitreflaggerJETMET_v1 = deepcopy(hfrechitreflaggerJETMET)
 
 # v2 = "Medium conditions"  -- short R cut set to 0.8, rather than 0.98
-HFrechitreflaggerJETMET_v2 = deepcopy(hcalrechitReflaggerJETMET)
+HFrechitreflaggerJETMET_v2 = deepcopy(hfrechitreflaggerJETMET)
 HFrechitreflaggerJETMET_v2.hf_Short_Rcut=cms.PSet(
     hf_Short_Rcut_parameterizeET=cms.untracked.bool(False),
     hf_Short_Rcut_values29=cms.vdouble([0.8]),
@@ -28,7 +28,7 @@ HFrechitreflaggerJETMET_v2.hf_Short_Rcut=cms.PSet(
 
 # v3 = "Tight conditions"  -- short R cut set to 0.8
 # long S9S1 cut set to:  slope = 0.09, int = -0.09*log(55)
-HFrechitreflaggerJETMET_v3 = deepcopy(hcalrechitReflaggerJETMET)
+HFrechitreflaggerJETMET_v3 = deepcopy(hfrechitreflaggerJETMET)
 HFrechitreflaggerJETMET_v3.hf_Short_Rcut=cms.PSet(
     hf_Short_Rcut_parameterizeET=cms.untracked.bool(False),
     hf_Short_Rcut_values29=cms.vdouble([0.8]),
