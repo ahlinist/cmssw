@@ -17,7 +17,7 @@ from Configuration.PyReleaseValidation.ConfigBuilder import Options
 from Configuration.PyReleaseValidation.ConfigBuilder import defaultOptions
 from Configuration.PyReleaseValidation.ConfigBuilder import installFilteredStream
 from Configuration.PyReleaseValidation.ConfigBuilder import addOutputModule
-from Configuration.GlobalRuns.reco_TLR import reco_TLR
+from Configuration.DataProcessing.RecoTLR import customisePPData
 
 class hcalnzs(Scenario):
     """
@@ -66,7 +66,7 @@ class hcalnzs(Scenario):
           addOutputModule(process, tier, tier)        
 
         #add the former top level patches here
-        reco_TLR(process)
+        customisePPData(process)
         
         return process
 
@@ -111,7 +111,7 @@ class hcalnzs(Scenario):
         #//
         
         #add the former top level patches here
-        reco_TLR(process)
+        customisePPData(process)
 
         return process
     
