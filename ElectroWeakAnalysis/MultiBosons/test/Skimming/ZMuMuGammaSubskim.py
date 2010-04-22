@@ -39,12 +39,23 @@ process.out.outputCommands = (zMuMuSubskimOutputModule.outputCommands +
 # process.GlobalTag.globaltag = 'START3X_V26::All'
 # relvalPath = '/castor/cern.ch/cms/store/relval/CMSSW_3_5_7/RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012'
 # process.source.fileNames = ['rfio:' + relvalPath + '/10B71379-4549-DF11-9D80-003048D15D22.root']
+process.options.wantSummary = False        ##  (to suppress the long output at the end of the job)
 
 # process.maxEvents.input = 10
-process.maxEvents = cms.untracked.PSet(output = cms.untracked.int32(10) )
-process.countPatPhotons.minNumber = 1
+process.maxEvents = cms.untracked.PSet(output = cms.untracked.int32(2) )
+process.countPatPhotons.minNumber = 0
+process.MuMuGammasCountFilter.minNumber = 0
+process.MuMuGammasOneTrackCountFilter.minNumber = 0
 
 process.out.fileName = 'testZMuMuGammaSubskim.root'
+
+process.vgMuons = cms.EDProducer("ZMuMuAdapter",
+  src = cms.InputTag("dimuons")
+)
+
+process.vgMuonsPath = process.dimuonsPath.copy()
+process.vgMuonsPath *= process.vgMuons
+process.out.outputCommands += cms.untracked.vstring('keep *_vgMuons_*_*')
 
 ## Add tab-completion during the inspection
 if __name__ == "__main__":
