@@ -57,7 +57,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1
 # New SeverityLevelComputer that forces RecHits with UserDefinedBit0 set to be excluded from new rechit collection
 import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
 process.hcalRecAlgos=RemoveAddSevLevel.RemoveFlag(process.hcalRecAlgos,"HFLongShort")
-process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"UserDefinedBit0")
+process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"UserDefinedBit0",10)
 
 # HF RecHit reflagger
 process.load("JetMETAnalysis/HcalReflagging/HFrechitreflaggerJETMET_cff")
