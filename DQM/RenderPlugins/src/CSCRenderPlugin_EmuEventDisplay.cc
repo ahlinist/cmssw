@@ -62,74 +62,60 @@ EmuEventDisplay::EmuEventDisplay() {
     histo_xy->GetYaxis()->SetLabelSize(0.02);
     histo_xy->SetStats(kFALSE);
 
-    for (unsigned int side = 1; side <= N_SIDES; side++) {
-        for (unsigned int station = 1; station <= N_STATIONS; station++) {
-            for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
 
-                double rd = (detector.NumberOfStrips(station, ring) * detector.stripDPhiRad(station, ring)) / 2;
+    EmuChamberPart chPart;
+    while (chPart.next(detector)) {
 
-                for (unsigned int chamber = 1; chamber <= detector.NumberOfChambers(station, ring); chamber++) {
+        double rd = (detector.NumberOfStrips(chPart.station, chPart.ring) * detector.stripDPhiRad(chPart.station, chPart.ring)) / 2;
 
-                    if (detector.isChamberInstalled(side, station, ring, chamber)) {
+        double z1 = detector.Z_mm(chPart.side, chPart.station, chPart.ring, chPart.chamber, 1);
+        double z2 = detector.Z_mm(chPart.side, chPart.station, chPart.ring, chPart.chamber, N_LAYERS);
 
-                        for (int ipart = 1; ipart <= detector.NumberOfChamberParts(station, ring); ipart++) {
-                            std::string part = detector.ChamberPart(ipart);
+        { // Z-R plane elements
 
-                            double z1 = detector.Z_mm(side, station, ring, chamber, 1);
-                            double z2 = detector.Z_mm(side, station, ring, chamber, N_LAYERS);
+            double r1 = detector.R_mm(chPart.side, chPart.station, chPart.ring, chPart.part, 1, 1, 1);
+            double r2 = detector.R_mm(chPart.side, chPart.station, chPart.ring, chPart.part, N_LAYERS, detector.NumberOfHalfstrips(chPart.station, chPart.ring, chPart.part), detector.NumberOfWiregroups(chPart.station, chPart.ring));
 
-                            { // Z-R plane elements
-
-                                double r1 = detector.R_mm(side, station, ring, part, 1, 1, 1);
-                                double r2 = detector.R_mm(side, station, ring, part, N_LAYERS, detector.NumberOfHalfstrips(station, ring, part), detector.NumberOfWiregroups(station, ring));
-
-                                // Switch lower chambers to minus projection
-                                if (chamber > (detector.NumberOfChambers(station, ring) / 2)) {
-                                    r1 = -r1;
-                                    r2 = -r2;
-                                }
-
-                                EmuChamber* ch = new EmuChamber();
-                                ch->setX(0, z1)->setX(1, z1)->setX(2, z2)->setX(3, z2);
-                                ch->setY(0, r1)->setY(1, r2)->setY(2, r2)->setY(3, r1);
-
-                                zrChambers.push_back(ch);
-
-                            }
-
-                            { // Z-Phi plane elements
-
-                                double r = detector.PhiRadChamberCenter(station, ring, chamber);
-
-                                EmuChamber* ch = new EmuChamber();
-                                ch->setX(0, z1)->setX(1, z1)->setX(2, z2)->setX(3, z2);
-                                ch->setY(0, r + rd, false)->setY(1, r - rd, false)->setY(2, r - rd, false)->setY(3, r + rd, false);
-
-                                zpChambers.push_back(ch);
-
-                            }
-
-                            { // X-Y plane elements
-
-
-                                EmuChamber* ch = new EmuChamber();
-
-                                double x[4], y[4];
-                                detector.chamberBoundsXY(side, station, ring, chamber, part, x, y);
-                                ch->setX(0, x[0])->setX(1, x[1])->setX(2, x[2])->setX(3, x[3]);
-                                ch->setY(0, y[0])->setY(1, y[1])->setY(2, y[2])->setY(3, y[3]);
-
-                                xyChambers.push_back(ch);
-
-                            }
-
-                        }
-
-                    }
-
-                }
+            // Switch lower chambers to minus projection
+            if (chPart.chamber > (detector.NumberOfChambers(chPart.station, chPart.ring) / 2)) {
+                r1 = -r1;
+                r2 = -r2;
             }
+
+            EmuChamber* ch = new EmuChamber();
+            ch->setX(0, z1)->setX(1, z1)->setX(2, z2)->setX(3, z2);
+            ch->setY(0, r1)->setY(1, r2)->setY(2, r2)->setY(3, r1);
+
+            zrChambers.push_back(ch);
+
         }
+
+        { // Z-Phi plane elements
+
+            double r = detector.PhiRadChamberCenter(chPart.station, chPart.ring, chPart.chamber);
+
+            EmuChamber* ch = new EmuChamber(true, false);
+            ch->setX(0, z1)->setX(1, z1)->setX(2, z2)->setX(3, z2);
+            ch->setY(0, r + rd)->setY(1, r - rd)->setY(2, r - rd)->setY(3, r + rd);
+
+            zpChambers.push_back(ch);
+
+        }
+
+        { // X-Y plane elements
+
+
+            EmuChamber* ch = new EmuChamber();
+
+            double x[4], y[4];
+            detector.chamberBoundsXY(chPart.side, chPart.station, chPart.ring, chPart.chamber, chPart.part, x, y);
+            ch->setX(0, x[0])->setX(1, x[1])->setX(2, x[2])->setX(3, x[3]);
+            ch->setY(0, y[0])->setY(1, y[1])->setY(2, y[2])->setY(3, y[3]);
+
+            xyChambers.push_back(ch);
+
+        }
+
     }
 
     {
@@ -184,43 +170,35 @@ void EmuEventDisplay::drawEventDisplay_ZR(TH2* data) {
     drawItems(zrChambers);
     drawItems(zrLines);
 
-    int chIndex = 1;
-    for (unsigned int side = 1; side <= N_SIDES; side++) {
-        for (unsigned int station = 1; station <= N_STATIONS; station++) {
-            for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
-                for (unsigned int chamber = 1; chamber <= detector.NumberOfChambers(station, ring); chamber++) {
-                    if (detector.isChamberInstalled(side, station, ring, chamber)) {
+    EmuChamberPart chPart;
+    while (chPart.next(detector)) {
 
-                        EmuRawHits hits;
-                        if (readHistogramHits(data, station, ring, chIndex, hits)) {
+        EmuRawHits hits;
+        if (readHistogramHits(data, chPart, hits)) {
 
-                            std::vector<EmuLayerHits> layerHits;
-                            if (hits.getLayerHits(detector, station, ring, layerHits)) {
-                                for (unsigned int i = 0; i < layerHits.size(); i++) {
+            std::vector<EmuLayerHit> layerHits;
+            if (hits.getLayerHits(chPart, layerHits)) {
+                for (unsigned int i = 0; i < layerHits.size(); i++) {
 
-                                    EmuLayerHits layerHit = layerHits[i];
-                                    double z = detector.Z_mm(side, station, ring, chamber, layerHit.layer + 1);
-                                    double r = detector.R_mm(side, station, ring, layerHit.part, layerHit.layer + 1, layerHit.hs, layerHit.wg);
+                    EmuLayerHit layerHit = layerHits[i];
+                    double z = detector.Z_mm(chPart.side, chPart.station, chPart.ring, chPart.chamber, layerHit.layer + 1);
+                    double r = detector.R_mm(chPart.side, chPart.station, chPart.ring, layerHit.part, layerHit.layer + 1, layerHit.hs, layerHit.wg);
 
-                                    // Lower chamber numbers go down
-                                    if (chamber > (detector.NumberOfChambers(station, ring) / 2)) {
-                                        r = -r;
-                                    }
-
-                                    EmuHit* hit = new EmuHit(z, r);
-                                    zrHits.push_back(hit);
-
-                                }
-                            }
-
-                        }
-
-                        chIndex += 1;
-
+                    // Lower chamber numbers go down
+                    if (chPart.chamber > (detector.NumberOfChambers(chPart.station, chPart.ring) / 2)) {
+                        r = -r;
                     }
+
+                    if (zrChambers.at(chPart.partIndex)->hitInBounds(z, r)) {
+                        EmuHit* hit = new EmuHit(z, r);
+                        zrHits.push_back(hit);
+                    }
+
                 }
             }
+
         }
+
     }
 
     drawItems(zrHits);
@@ -234,38 +212,28 @@ void EmuEventDisplay::drawEventDisplay_ZPhi(TH2* data) {
     histo_zphi->Draw();
     drawItems(zpChambers);
 
-    int chIndex = 1;
-    for (unsigned int side = 1; side <= N_SIDES; side++) {
-        for (unsigned int station = 1; station <= N_STATIONS; station++) {
-            for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
-                for (unsigned int chamber = 1; chamber <= detector.NumberOfChambers(station, ring); chamber++) {
+    EmuChamberPart chPart;
+    while (chPart.next(detector)) {
 
-                    if (detector.isChamberInstalled(side, station, ring, chamber)) {
+        double r = detector.PhiRadChamberCenter(chPart.station, chPart.ring, chPart.chamber);
 
-                        double r = detector.PhiRadChamberCenter(station, ring, chamber);
+        for (int strip = 1; strip <= detector.NumberOfStrips(chPart.station, chPart.ring); strip++) {
+            int layerBitset = (int) data->GetBinContent(chPart.chIndex, strip);
+            if (layerBitset > 0) {
+                for (int layer = 0; layer < N_LAYERS; layer++) {
+                    if (layerBitset & (1 << layer)) {
+                        double z = detector.Z_mm(chPart.side, chPart.station, chPart.ring, chPart.chamber, layer + 1);
+                        double pd = detector.LocalPhiRadStripToChamberCenter(chPart.side, chPart.station, chPart.ring, layer + 1, strip);
 
-                        for (int strip = 1; strip <= detector.NumberOfStrips(station, ring); strip++) {
-                            int layerBitset = (int) data->GetBinContent(chIndex, strip);
-                            if (layerBitset > 0) {
-                                for (int layer = 0; layer < N_LAYERS; layer++) {
-                                    if (layerBitset & (1 << layer)) {
-                                        double z = detector.Z_mm(side, station, ring, chamber, layer + 1);
-                                        double pd = detector.LocalPhiRadStripToChamberCenter(side, station, ring, layer + 1, strip);
-
-                                        EmuHit* hit = new EmuHit(z, r + pd, true, false);
-                                        zpHits.push_back(hit);
-
-                                    }
-                                }
-                            }
+                        if (zpChambers.at(chPart.partIndex)->hitInBounds(z, r + pd)) {
+                            EmuHit* hit = new EmuHit(z, r + pd, true, false);
+                            zpHits.push_back(hit);
                         }
-
-                        chIndex += 1;
-
                     }
                 }
             }
         }
+
     }
 
     drawItems(zpHits);
@@ -279,47 +247,42 @@ void EmuEventDisplay::drawEventDisplay_XY(TH2* data) {
     histo_xy->Draw();
     drawItems(xyChambers);
 
-    int chIndex = 1;
-    for (unsigned int side = 1; side <= N_SIDES; side++) {
-        for (unsigned int station = 1; station <= N_STATIONS; station++) {
-            for (unsigned int ring = 1; ring <= detector.NumberOfRings(station); ring++) {
-                for (unsigned int chamber = 1; chamber <= detector.NumberOfChambers(station, ring); chamber++) {
-                    if (detector.isChamberInstalled(side, station, ring, chamber)) {
+    EmuChamberPart chPart;
+    while (chPart.next(detector)) {
 
-                        EmuRawHits hits;
-                        if (readHistogramHits(data, station, ring, chIndex, hits)) {
+        EmuRawHits hits;
+        if (readHistogramHits(data, chPart, hits)) {
 
-                            std::vector<EmuLayerHits> layerHits;
-                            if (hits.getLayerHits(detector, station, ring, layerHits)) {
-                                for (unsigned int i = 0; i < layerHits.size(); i++) {
+            std::vector<EmuLayerHit> layerHits;
+            if (hits.getLayerHits(chPart, layerHits)) {
+                for (unsigned int i = 0; i < layerHits.size(); i++) {
 
-                                    EmuLayerHits layerHit = layerHits[i];
-                                    double cx = detector.X_mm(side, station, ring, layerHit.part, chamber, layerHit.layer + 1, layerHit.hs, layerHit.wg);
-                                    double cy = detector.Y_mm(side, station, ring, layerHit.part, chamber, layerHit.layer + 1, layerHit.hs, layerHit.wg);
-
-                                    EmuHit* hit = new EmuHit(cx, cy);
-                                    xyHits.push_back(hit);
-                                }
-                            }
-                        }
-
-                        chIndex += 1;
-
+                    EmuLayerHit layerHit = layerHits[i];
+                    double cx = detector.X_mm(chPart.side, chPart.station, chPart.ring, layerHit.part, chPart.chamber, layerHit.layer + 1, layerHit.hs, layerHit.wg);
+                    double cy = detector.Y_mm(chPart.side, chPart.station, chPart.ring, layerHit.part, chPart.chamber, layerHit.layer + 1, layerHit.hs, layerHit.wg);
+                    if (xyChambers.at(chPart.partIndex)->hitInBounds(cx, cy)) {
+                        EmuHit* hit = new EmuHit(cx, cy);
+                        xyHits.push_back(hit);
                     }
                 }
             }
         }
+
     }
 
     drawItems(xyHits);
 
 }
 
-bool EmuEventDisplay::readHistogramHits(TH2* data, unsigned int station, unsigned int ring, int chIndex, EmuRawHits& hits) {
+bool EmuEventDisplay::readHistogramHits(TH2* data, EmuChamberPart& chPart, EmuRawHits& hits) {
+    unsigned int HALF_STRIP_START = 160;
+    unsigned int IPART_SECOND = 2;
+    int IPART_SECOND_LENGTH = 16;
     bool is_wgs = false, is_hss = false;
 
-    for (int wg = 1; wg <= detector.NumberOfWiregroups(station, ring); wg++) {
-        int wgBitset = (int) data->GetBinContent(chIndex, wg);
+    // Reading wiregroups
+    for (int wg = 1; wg <= detector.NumberOfWiregroups(chPart.station, chPart.ring); wg++) {
+        int wgBitset = (int) data->GetBinContent(chPart.chIndex, wg);
         if (wgBitset > 0) {
             for (int layer = 0; layer < N_LAYERS; layer++) {
                 if (wgBitset & (1 << layer)) {
@@ -330,18 +293,34 @@ bool EmuEventDisplay::readHistogramHits(TH2* data, unsigned int station, unsigne
         }
     }
 
-    for (int hs = 1; hs <= detector.NumberOfHalfstrips(station, ring); hs++) {
-        int hsBitset = (int) data->GetBinContent(chIndex, 160 + hs);
+    // Move strips forward if it is a second "a" part
+    unsigned int prevPartStrips = 0;
+    if (chPart.ipart == IPART_SECOND) {
+        prevPartStrips = detector.NumberOfHalfstrips(chPart.station, chPart.ring, chPart.part);
+    }
+
+    // Reading halfstrips
+    for (int hs = 1; hs <= detector.NumberOfHalfstrips(chPart.station, chPart.ring, chPart.part); hs++) {
+        int hsBitset = (int) data->GetBinContent(chPart.chIndex, HALF_STRIP_START + prevPartStrips + hs);
         if (hsBitset > 0) {
             for (int layer = 0; layer < N_LAYERS; layer++) {
                 if (hsBitset & (1 << layer)) {
+
                     hits.addHsHit(layer, hs);
+
+                    // Exceptional case for second "a" part
+                    // adding hits for hs = hs + 16 and hs = hs + 32
+                    if (chPart.ipart == IPART_SECOND && hs <= IPART_SECOND_LENGTH) {
+                        hits.addHsHit(layer, hs + 16);
+                        hits.addHsHit(layer, hs + 32);
+                    }
+
                     is_hss = true;
                 }
             }
         }
     }
-
+    
     return (is_wgs && is_hss);
 
 }
