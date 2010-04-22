@@ -115,8 +115,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
   tree_->Branch("eleEn", eleEn_, "eleEn[nEle]/D");
-  tree_->Branch("eleSCEta", eleSCEta_, "eleSCEta[nEle]/D");
-  tree_->Branch("eleSCPhi", eleSCPhi_, "eleSCPhi[nEle]/D");
+  //tree_->Branch("eleSCEta", eleSCEta_, "eleSCEta[nEle]/D");
+  //tree_->Branch("eleSCPhi", eleSCPhi_, "eleSCPhi[nEle]/D");
   tree_->Branch("eleSCRawEn", eleSCRawEn_, "eleSCRawEn[nEle]/D");
   tree_->Branch("eleESEn", eleESEn_, "eleESEn[nEle]/D");
   tree_->Branch("eleSCEn", eleSCEn_, "eleSCEn[nEle]/D");
