@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 maxevents = 100
 isMC = False
 version = 2   # version 1 = default (loose), version 2 = (medium), version 3 = (tight)
+# VERSION 2 is the currently recommended version, as of 22 April 2010.
 
 process = cms.Process('USER')
 
