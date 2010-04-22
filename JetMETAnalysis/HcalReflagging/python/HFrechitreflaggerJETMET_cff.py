@@ -27,7 +27,7 @@ HFrechitreflaggerJETMET_v2.hf_Short_Rcut=cms.PSet(
 )
 
 # v3 = "Tight conditions"  -- short R cut set to 0.8
-# long S9S1 cut set to:  slope = 0.9, int = -0.09*log(55)
+# long S9S1 cut set to:  slope = 0.09, int = -0.09*log(55)
 HFrechitreflaggerJETMET_v3 = deepcopy(hcalrechitReflaggerJETMET)
 HFrechitreflaggerJETMET_v3.hf_Short_Rcut=cms.PSet(
     hf_Short_Rcut_parameterizeET=cms.untracked.bool(False),
