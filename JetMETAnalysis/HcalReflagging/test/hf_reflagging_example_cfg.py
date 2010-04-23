@@ -63,11 +63,11 @@ process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"UserDefined
 # HF RecHit reflagger
 process.load("JetMETAnalysis/HcalReflagging/HFrechitreflaggerJETMET_cff")
 if version==1:
-    process.hfrecoReflagged = process.HFrechitreflaggerJETMET_v1.clone()
+    process.hfrecoReflagged = process.HFrechitreflaggerJETMETv1.clone()
 elif version==2:
-    process.hfrecoReflagged = process.HFrechitreflaggerJETMET_v2.clone()
+    process.hfrecoReflagged = process.HFrechitreflaggerJETMETv2.clone()
 elif version==3:
-    process.hfrecoReflagged = process.HFrechitreflaggerJETMET_v3.clone()
+    process.hfrecoReflagged = process.HFrechitreflaggerJETMETv3.clone()
 
 # Use the reflagged HF RecHits to make the CaloTowers
 process.towerMaker.hfInput = cms.InputTag("hfrecoReflagged")
