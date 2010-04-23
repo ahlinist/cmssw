@@ -34,9 +34,13 @@ analysisClass::~analysisClass()
   double cut_PVtxndof_min;
   double cut_PVtxz_max;
   double cut_fracHighpurityTracks_min;
-  double cut_sumet_max;
-  double cut_CaloDiJetDeltaPhi_min;
+  double cut_DiJetDeltaPhi_min;
   double cut_metbysumet;
+  float makeJetCorr;
+  double endcapeta;
+  double endcapeta_dijet;
+  double ptMin_PF;
+  double ptMinDijet_PF;
 
 void ReadRunLumilist(const char* filename){
 	ifstream IN(filename);
@@ -85,36 +89,59 @@ void ReadCleaningParameters(const char* filename){
 	//cout << "Reading object selection from " << filename << endl;
 	char ParName[100];
 	float ParValue;
-	bool ok(false);
+	unsigned int cut_counter=0;
 	while( IN.getline(buffer, 200, '\n') ){
-	  ok = false;
 	  if (buffer[0] == '#') {continue;} // Skip lines commented with '#'
 	  //scans lines first string, then double
 	  sscanf(buffer, "%s %f", ParName, &ParValue);
-	  // Calo jets cutoffs
-	  if( !strcmp(ParName, "CaloDiDeltaPhi") ){
-	    cut_CaloDiJetDeltaPhi_min = double(ParValue); ok = true;
+	  //general variables
+	  if( !strcmp(ParName, "useCorrJets") ){
+	    cut_counter+=1;
+	    makeJetCorr = ParValue;
+	  }
+	  if( !strcmp(ParName, "PFJetPt") ){
+	    cut_counter+=1;
+	    ptMin_PF = double(ParValue); 
+	  }
+	  if( !strcmp(ParName, "PFJetEta") ){
+	    cut_counter+=1;
+	    endcapeta = double(ParValue); 
+	  }
+	  if( !strcmp(ParName, "PFDiJetPt") ){
+	    cut_counter+=1;
+	    ptMinDijet_PF = double(ParValue); 
+	  }
+	  if( !strcmp(ParName, "PFDiJetEta") ){
+	    cut_counter+=1;
+	    endcapeta_dijet = double(ParValue); 
+	  }
+	  if( !strcmp(ParName, "DijetDeltaPhi") ){
+	    cut_counter+=1;
+	    cut_DiJetDeltaPhi_min = double(ParValue);
 	  }
 	  if( !strcmp(ParName, "MetbySumEt") ){
-	    cut_metbysumet = double(ParValue); ok = true;
-	  }
-	  if( !strcmp(ParName, "SumEt") ){
-	    cut_sumet_max = double(ParValue); ok = true;
+	    cut_counter+=1;
+	    cut_metbysumet = double(ParValue);
 	  }
 	  if( !strcmp(ParName, "FracHighPurityTracks") ){
-	   cut_fracHighpurityTracks_min = double(ParValue); ok = true;
+	    cut_counter+=1;
+	    cut_fracHighpurityTracks_min = double(ParValue);
 	  }
 	  if( !strcmp(ParName, "Pvtxz") ){
-	   cut_PVtxz_max = double(ParValue); ok = true;
+	    cut_counter+=1;
+	    cut_PVtxz_max = double(ParValue);
 	  } 
  	  if( !strcmp(ParName, "Pvtxndof") ){
-	    cut_PVtxndof_min = double(ParValue); ok = true;
+	    cut_counter+=1;
+	    cut_PVtxndof_min = double(ParValue);
 	  }  
 	}
-	if(!ok){
-	  cout<<"one cleaning cut value is NOT properly set: "<<ok<<endl;
+	if(cut_counter!=10){
+	  cout<<"at least one cleaning cut value is NOT properly set: "<<cut_counter<<endl;
+	}else{
+	  cout<<"cuts inc PFJetPt/PFJetEta/dijet PFJetPt/PFJetEta/deltaPhiDijet: "<<ptMin_PF<<"/"<<endcapeta<<"/"<<ptMinDijet_PF<<"/"<<endcapeta_dijet<<"/"<<cut_DiJetDeltaPhi_min<<endl;
+	  cout<<"cuts PVz/PVndof/MonsterEventCut/MetbySumEt/useCorrJet: "<<cut_PVtxz_max<<"/"<<cut_PVtxndof_min<<"/"<<cut_fracHighpurityTracks_min<<"/"<<cut_metbysumet<<"/"<<makeJetCorr<<endl;
 	}
-
 }
 
 
@@ -174,7 +201,6 @@ std::vector<double> Thrust_calculate (std::vector<TLorentzVector> Input_PtEtaPhi
     //per default beam axis b = (0,0,1)   
     p_pt_beam_calc[0] = Input_PtEtaPhiE[k].Py()*1; 
     p_pt_beam_calc[1] = - Input_PtEtaPhiE[k].Px()*1;
-    p_pt_beam_calc[3] = 0.;
     for(unsigned int i=0;i<length_thrust_calc;i++){
       if(i!=k){
 	if((Input_PtEtaPhiE[i].Px()*p_pt_beam_calc[0]+Input_PtEtaPhiE[i].Py()*p_pt_beam_calc[1])>=0){
@@ -234,9 +260,9 @@ double DeltaPhi(double jetPhi1,double jetPhi2){
 //bool PFJetIDloose(float CHF, float NHF, float CEF, float NEF,double eta){
 bool pass_PFJetIDloose(double CHF, double NHF, double CEF, double NEF, double eta){
   bool pass_result = false;
-  if( fabs(eta)<2.4 &&(CHF>0.0)&&(NHF<1.0)&&(CEF<1.00)&&(NEF<1.00)){
-    pass_result = true;
-  }else if(fabs(eta)>=2.4 && NHF<1.0 && CEF<1.00 && NEF<1.00){
+  bool jetidCHF=true;
+  if(fabs(eta)<2.4 && CHF<=0.0){jetidCHF=false;}
+  if( jetidCHF &&(NHF<1.0)&&(CEF<1.00)&&(NEF<1.00)){
     pass_result = true;
   }
 
@@ -245,9 +271,9 @@ bool pass_PFJetIDloose(double CHF, double NHF, double CEF, double NEF, double et
 
 bool pass_PFJetIDtight(double CHF, double NHF, double CEF, double NEF, double eta){
   bool pass_result = false;
-  if(fabs(eta)<2.4 && (CHF>0.0)&&(NHF<0.90)&&(CEF<1.00)&&(NEF<0.90)){
-    pass_result = true;
-  }else if (fabs(eta)>=2.4 && NHF<0.90 && CEF<1.00 && NEF<0.90){
+  bool jetidCHF=true;
+  if(fabs(eta)<2.4 && CHF<=0.0){jetidCHF=false;}
+  if(jetidCHF &&(NHF<0.90)&&(CEF<1.00)&&(NEF<0.90)){
     pass_result = true;
   }
   return pass_result;
@@ -266,31 +292,17 @@ void analysisClass::Loop()
   //read preliminary version of cleaning parameters
   ReadCleaningParameters("../rootNtupleMacros/cutFile/cutsSTARTUP.dat");
   // decide wether you want to apply jet corrections or not
-  cout<<"phidijet: "<<cut_CaloDiJetDeltaPhi_min<<endl;
-  bool makeJetCorr = true;
-  // cut values
-  double barreleta =1.4;
-  double endcapeta =2.6;
-  double endcapeta_dijet =3.0;
+  cout<<"phidijet: "<<cut_DiJetDeltaPhi_min<<endl;
+
+
   double fhpdmax = 0.98;
   double n90hitsmin =1;
   double ntracksmin =1;
   double emffrac = 0.01;
-  // minimum pt cuts (depending on jet corrections)
-  double ptMin_PF;
-  double ptMinDijet_PF;
-  if (makeJetCorr==true) {
-    ptMin_PF=10. ;
-    ptMinDijet_PF=8. ;
-  }
-  if (makeJetCorr==false) {
-    ptMin_PF=7.;
-    ptMinDijet_PF=5.;
-  }
   // Binning 
   double ptMax=100.;
   int ptBin=50;
-  
+  double barreleta=1.4;
   int  phiBin=100;
   double phiMax=3.2;   // -
   double phiMin=-3.2;
@@ -298,47 +310,55 @@ void analysisClass::Loop()
   int  etaBin=100;
   double etaMax=3.4;   //-
   double etaMin=-3.4;
+
+  int invmassBin=100;//30
+  double invmassMax=600.;
+
+   TLorentzVector PFjet1LorentzVector(0.,0.,0.,0.);
+   TLorentzVector PFjet2LorentzVector(0.,0.,0.,0.);
+   TLorentzVector PFdijetLorentzVector(0.,0.,0.,0.); 
+
   // -------------------Basic distributions - all ak5 ----------------------------
    
-  TH1I *nPFJets = new TH1I("nPFJets","",20,0,20);
+  TH1I *nPFJets = new TH1I("nPFJets","",10,0,10);
   nPFJets->SetXTitle("Number of PFJets per event");
   nPFJets->SetTitle(dataset);
-  TH1I *nallPFJets = new TH1I("nallPFJets","",20,0,20);
+  TH1I *nallPFJets = new TH1I("nallPFJets","",10,0,10);
   nallPFJets->SetXTitle("Number of PFJets per event");
   nallPFJets->SetTitle(dataset);
-  TH1I *nPFconst = new TH1I("nPFconst","",20,0,20);
+  TH1I *nPFconst = new TH1I("nPFconst","",50,0,50);
   nPFconst->SetXTitle("Number of PFJet constituents");
   nPFconst->SetTitle(dataset);
 
-  TH1I *PFJetnJIDloose = new TH1I("PFJetnJIDloose","",20,0,20);
+  TH1I *PFJetnJIDloose = new TH1I("PFJetnJIDloose","",10,0,10);
   PFJetnJIDloose->SetXTitle("Number of PFJets per event");
   PFJetnJIDloose->SetTitle(dataset);
-  TH1I *PFJetconstJIDloose = new TH1I("PFJetnconstJIDloose","",20,0,20);
+  TH1I *PFJetconstJIDloose = new TH1I("PFJetnconstJIDloose","",50,0,50);
   PFJetconstJIDloose->SetXTitle("Number of PFJet constituents");
   PFJetconstJIDloose->SetTitle(dataset);
-  TH1I *PFJetMuMultJIDloose = new TH1I("PFMuMultJIDloose","",20,0,20);
+  TH1I *PFJetMuMultJIDloose = new TH1I("PFMuMultJIDloose","",10,0,10);
   PFJetMuMultJIDloose->SetXTitle("Number of PFJet Muon multiplicity");
   PFJetMuMultJIDloose->SetTitle(dataset);
-  TH1I *PFJetNeutMultJIDloose = new TH1I("PFNeutMultJIDloose","",20,0,20);
+  TH1I *PFJetNeutMultJIDloose = new TH1I("PFNeutMultJIDloose","",50,0,50);
   PFJetNeutMultJIDloose->SetXTitle("Number of PFJet Neutral Multiplicity");
   PFJetNeutMultJIDloose->SetTitle(dataset);
-  TH1I *PFJetCHMultJIDloose = new TH1I("PFJetCHMultJIDloose","",20,0,20);
+  TH1I *PFJetCHMultJIDloose = new TH1I("PFJetCHMultJIDloose","",50,0,50);
   PFJetCHMultJIDloose->SetXTitle("Number of PFJet charged Multiplicity");
   PFJetCHMultJIDloose->SetTitle(dataset);
 
-  TH1I *PFJetnJIDtight = new TH1I("PFJetnJIDtight","",20,0,20);
+  TH1I *PFJetnJIDtight = new TH1I("PFJetnJIDtight","",10,0,10);
   PFJetnJIDtight->SetXTitle("Number of PFJets per event");
   PFJetnJIDtight->SetTitle(dataset);
-  TH1I *PFJetconstJIDtight = new TH1I("PFJetconstJIDtight","",20,0,20);
+  TH1I *PFJetconstJIDtight = new TH1I("PFJetconstJIDtight","",50,0,50);
   PFJetconstJIDtight->SetXTitle("Number of PFJet constituents");
   PFJetconstJIDtight->SetTitle(dataset);
-  TH1I *PFJetMuMultJIDtight = new TH1I("PFJetMuMultJIDtight","",20,0,20);
+  TH1I *PFJetMuMultJIDtight = new TH1I("PFJetMuMultJIDtight","",10,0,10);
   PFJetMuMultJIDtight->SetXTitle("Number of PFJet Muon multiplicity");
   PFJetMuMultJIDtight->SetTitle(dataset);
-  TH1I *PFJetNeutMultJIDtight = new TH1I("PFJetNeutMultJIDtight","",20,0,20);
+  TH1I *PFJetNeutMultJIDtight = new TH1I("PFJetNeutMultJIDtight","",50,0,50);
   PFJetNeutMultJIDtight->SetXTitle("Number of PFJet Neutral Multiplicity");
   PFJetNeutMultJIDtight->SetTitle(dataset);
-  TH1I *PFJetCHMultJIDtight = new TH1I("PFJetCHMultJIDtight","",20,0,20);
+  TH1I *PFJetCHMultJIDtight = new TH1I("PFJetCHMultJIDtight","",50,0,50);
   PFJetCHMultJIDtight->SetXTitle("Number of PFJet charged Multiplicity");
   PFJetCHMultJIDtight->SetTitle(dataset);
 
@@ -404,7 +424,7 @@ void analysisClass::Loop()
   PFJetEendcapJIDtight->SetTitle(dataset);
   
   // Jet Cleaning related variables
-  TH1I *PFJetMuMult = new TH1I("PFJetMuMult","",50,0,50);
+  TH1I *PFJetMuMult = new TH1I("PFJetMuMult","",10,0,10);
   PFJetMuMult->SetXTitle("Number of Muons in PFJet");
   PFJetMuMult->SetTitle(dataset);
   TH1I *PFJetCHMult = new TH1I("PFJetCHMult","",50,0,50);
@@ -413,7 +433,7 @@ void analysisClass::Loop()
   TH1I *PFJetNeutMult = new TH1I("PFJetNeutMult","",50,0,50);
   PFJetNeutMult->SetXTitle("Number of neutral particles in PFJet");
   PFJetNeutMult->SetTitle(dataset);
-  TH1I *PFJetMuMultBarrel = new TH1I("PFJetMuMultBarrel","",50,0,50);
+  TH1I *PFJetMuMultBarrel = new TH1I("PFJetMuMultBarrel","",10,0,10);
   PFJetMuMultBarrel->SetXTitle("Number of Muons in barrel PFJet");
   PFJetMuMultBarrel->SetTitle(dataset);
   TH1I *PFJetCHMultBarrel = new TH1I("PFJetCHMultBarrel","",50,0,50);
@@ -477,6 +497,9 @@ void analysisClass::Loop()
   PFJetmapJIDtight->SetTitle(dataset);
 
   // ------------------------PF Dijets - all dijets are   ----------------------
+  TH1D *PFdijetinvmass = new TH1D("PFdijetinvmass","",invmassBin,0.,invmassMax);
+  PFdijetinvmass->SetXTitle("m_{j1j2}[GeV]");
+  PFdijetinvmass->SetTitle(dataset);
   TH1D *PFdijetptall1 = new TH1D("PFdijetptall1","",ptBin, ptMinDijet_PF,ptMax);
   PFdijetptall1->SetXTitle("p_{T}[GeV]");
   PFdijetptall1->SetTitle(dataset);
@@ -512,7 +535,7 @@ void analysisClass::Loop()
   PFJetmapalldijets->SetXTitle("#eta_{jet}");
   PFJetmapalldijets->SetYTitle("#phi_{jet}");
   PFJetmapalldijets->SetTitle(dataset);
-  TH1I *PFJetMuMultdijets = new TH1I("PFJetMuMultdijets","",50,0,50);
+  TH1I *PFJetMuMultdijets = new TH1I("PFJetMuMultdijets","",10,0,10);
   PFJetMuMultdijets->SetXTitle("Number of muons in PFJet");
   PFJetMuMultdijets->SetTitle(dataset);
   TH1I *PFJetCHMultdijets = new TH1I("PFJetCHMultdijets","",50,0,50);
@@ -545,6 +568,12 @@ void analysisClass::Loop()
   TH1D *PFdijetptall1JIDloose = new TH1D("PFdijetptall1JIDloose","",ptBin, ptMinDijet_PF,ptMax);
   PFdijetptall1JIDloose->SetXTitle("p_{T}[GeV]");
   PFdijetptall1JIDloose->SetTitle(dataset);
+  TH1D *PFdijetinvmassJIDloose = new TH1D("PFdijetinvmassJIDloose","",invmassBin,0.,invmassMax);
+  PFdijetinvmassJIDloose->SetXTitle("m_{j1j2}[GeV]");
+  PFdijetinvmassJIDloose->SetTitle(dataset);
+  TH1D *PFdijetinvmassJIDtight = new TH1D("PFdijetinvmassJIDtight","",invmassBin,0.,invmassMax);
+  PFdijetinvmassJIDtight->SetXTitle("m_{j1j2}[GeV]");
+  PFdijetinvmassJIDtight->SetTitle(dataset);
   TH1D *PFdijetptall2JIDloose = new TH1D("PFdijetptall2JIDloose","",ptBin, ptMinDijet_PF ,ptMax);
   PFdijetptall2JIDloose->SetXTitle("p_{T}[GeV]");
   PFdijetptall2JIDloose->SetTitle(dataset);
@@ -558,7 +587,7 @@ void analysisClass::Loop()
   PFJetmapalldijetsJIDloose->SetXTitle("#eta_{jet}");
   PFJetmapalldijetsJIDloose->SetYTitle("#phi_{jet}");
   PFJetmapalldijetsJIDloose->SetTitle(dataset);
-  TH1I *PFJetsindijetsJIDloose = new TH1I("PFJetsindijetsJIDloose","",20,0,20);
+  TH1I *PFJetsindijetsJIDloose = new TH1I("PFJetsindijetsJIDloose","",10,0,10);
   PFJetsindijetsJIDloose->SetXTitle("Number of loose PFJets per dijet-event");
   PFJetsindijetsJIDloose->SetTitle(dataset);
 
@@ -659,10 +688,10 @@ void analysisClass::Loop()
   TH1D *fakePFJetptall1 = new TH1D("fakePFJetptall1","",ptBin, 0,50);
   fakePFJetptall1->SetXTitle("p_{T}[GeV]");
   fakePFJetptall1->SetTitle(dataset);
-  TH1D *fakePFJetetaall1 = new TH1D("fakePFJetetaall1","",ptBin, 0,50);
+  TH1D *fakePFJetetaall1 = new TH1D("fakePFJetetaall1","",etaBin, etaMin,etaMax);
   fakePFJetetaall1->SetXTitle("#eta");
   fakePFJetetaall1->SetTitle(dataset);
-  TH1D *fakePFJetphiall1 = new TH1D("fakePFJetphiall1","",ptBin, 0,50);
+  TH1D *fakePFJetphiall1 = new TH1D("fakePFJetphiall1","",phiBin, phiMin,phiMax);
   fakePFJetphiall1->SetXTitle("#phi");
   fakePFJetphiall1->SetTitle(dataset);
 
@@ -714,7 +743,7 @@ void analysisClass::Loop()
        if (ientry < 0) break;
        nb = fChain->GetEntry(jentry);   
       
-      if(jentry < 10 || jentry%1000 == 0) std::cout << "analysisClass::Loop(): jentry = " << jentry << std::endl;   
+      if(jentry < 10 || jentry%10000 == 0) std::cout << "analysisClass::Loop(): jentry = " << jentry << std::endl;   
    
       // --------------------------------------------------------------------
       int isdata = isData;
@@ -725,6 +754,7 @@ void analysisClass::Loop()
       bool goodrun=false;
   
       //for 7TeV event we for sure want the run to be analysed right away
+      //goodRunList check not in per default
       //if(isdata == 1 && !eventInGoodRunLumi(runid,LS)){
       //continue;
       //}
@@ -746,47 +776,28 @@ void analysisClass::Loop()
   	    bptxevt++;
 	    bptxPFJets+=ak5PFJetpT->size();
 	}
-      else if(isData==0)
+      else if(isData==0){
 	pass_BPTX = 1;
+	bptxevt++;
+	bptxPFJets+=ak5PFJetpT->size();
+      }
       //BSC trigger and BEAMHALOVETO already set in ntuple production
-      /*
+      
       //## pass_BSC_MB - BSC MinBias triggers firing (both Data and MC)
+      //already set in DATA - but check anyway
       if( l1techbits->at(40)==1 || l1techbits->at(41)==1 ) {	
 	pass_BSC_MB = 1;
 	bscevt++;
         bscPFJets+=ak5PFJetpT->size();
-	}
-
-      //## pass_BSC_BeamHaloVeto - Veto on BSC Beam Halo Triggers firing
-      if(isData==1)
-	{
-	  pass_BSC_BeamHaloVeto = 1;
-	  if( l1techbits->at(36) == 1 || l1techbits->at(37) == 1 || l1techbits->at(38) == 1 || l1techbits->at(39) == 1 )
-	  pass_BSC_BeamHaloVeto = 0;	
-	  
-	  if (pass_BSC_BeamHaloVeto==1){
-	    beamhaloevt++;
-	    beamhaloPFJets+=ak5PFJetpT->size();
-	    }
-	  
-	}
-      else if(isData == 0)
-	pass_BSC_BeamHaloVeto = 1;      
-      */
+      }
+      //comment out - only checked in data and already skimmed for that 
+      //in data
+  
       //## pass_PhysicsBit - HLT Physics Declared bit set 
       if(isData==1)
 	{
-	  /* if(hltbits->at(116)==1)
-	    {pass_PhysicsBit = 1;
-	    phybitevt++;
-	    phybitPFJets+=ak5PFJetpT->size(); 
-	    }*/
-
-	  //maybe reformulate: BSC/BEAMHALOVETO + PhysicsDeclared already 
-	  //used in preproduction of ntuples
-	  pass_BSC_MB = 1;
-	  bscevt++;
-	  bscPFJets+=ak5PFJetpT->size();
+	  //maybe reformulate: BEAMHALOVETO + PhysicsDeclared already 
+	  //used in preproduction of ntuples for DATA
 	  pass_PhysicsBit=1;
 	  phybitevt++;
 	  phybitPFJets+=ak5PFJetpT->size();
@@ -794,9 +805,14 @@ void analysisClass::Loop()
 	  beamhaloevt++;
 	  beamhaloPFJets+=ak5PFJetpT->size();
 	}
-      else if(isData == 0)
+      else if(isData == 0){
 	pass_PhysicsBit = 1;
-    
+	phybitevt++;
+	phybitPFJets+=ak5PFJetpT->size();
+	pass_BSC_BeamHaloVeto =1;
+	beamhaloevt++;
+	beamhaloPFJets+=ak5PFJetpT->size();
+      }
       if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
      // ---------------------------------------------------------------
      //# Reco-based Selection
@@ -836,12 +852,19 @@ void analysisClass::Loop()
 
       //goodPVtx(double pvtxndof,double pvtxz){
 
-      if(pass_MonsterTRKEventVeto && goodPVtx(vertexNDF->at(0),vertexZ->at(0)) && vertexisValid->at(0)==true && calometSumEt->at(0)<cut_sumet_max){    // "newest" event selection
-
+      if(pass_MonsterTRKEventVeto && goodPVtx(vertexNDF->at(0),vertexZ->at(0)) && vertexisValid->at(0)==true){    // "newest" event selection
+ 
 	pvevt++;
 	pvPFJets+=ak5PFJetpT->size(); 	
 	// --------------------------------------------------------------------
 	
+	bool pass_dphi_cut=false;
+	
+	int index_PFjet1=-10;
+	int index_PFjet2=-10;
+	double mypt1_PF=-10;
+	double mypt2_PF=-10;
+
 	//counters   
 	int PFJets=0;
 	int PFJetIDLoose=0;
@@ -858,11 +881,6 @@ void analysisClass::Loop()
 	int PFJetindijetsMuonMult=0;
 	nallPFJets->Fill(ak5PFJetpT->size());
 
-	int index_PFjet1=-10;
-	int index_PFjet2=-10;
-	double mypt1_PF=-10;
-	double mypt2_PF=-10;
-
 
 	//define TLorentzvector/fill all good PFJets/require two hardest PFJets to be good+met_by_etsum<0.5->Fill thrust histos.
 
@@ -876,7 +894,7 @@ void analysisClass::Loop()
 	for (int j = 0; j<int(ak5PFJetpT->size()); j++){
 	  //check if jet is among hardest two
 	  //as PFJets are ordered in uncorrected pT: needs to be done only for corrected PFJets
-	  if(makeJetCorr == true) {
+	  if(makeJetCorr == 1) {
 	    if((ak5PFJetscaleL2L3->at(j)*ak5PFJetpT->at(j))>mypt1_PF){
 	      mypt2_PF=mypt1_PF;
 	      index_PFjet2=index_PFjet1;
@@ -886,12 +904,16 @@ void analysisClass::Loop()
 	      mypt2_PF=ak5PFJetscaleL2L3->at(j)*ak5PFJetpT->at(j);
 	      index_PFjet2=j;
 	    }
+	  }else{
+	    index_PFjet1=0;
+	    index_PFjet2=1;
 	  }
+
 	  // ----------------------
 	  // JET CORRECTION
 	  // ----------------------
 	  double jcScale_PF=1;    
-	  if(makeJetCorr){ 
+	  if(makeJetCorr==1){ 
 	    jcScale_PF = ak5PFJetscaleL2L3->at(j);
 	  }
 	  PFJetptall->Fill(ak5PFJetpT->at(j) * jcScale_PF);   
@@ -904,7 +926,7 @@ void analysisClass::Loop()
 	    vPtEtaPhiE_PF.push_back(PtEtaPhiE4Dlorentzvector2);
 	  }
 	  //Loop over Inclusive PFJets ----- 
-	  if(ak5PFJetpT->at(j) * jcScale_PF >ptMin_PF && fabs(ak5PFJetEta->at(j))<endcapeta_dijet){    //jc
+	  if((ak5PFJetpT->at(j) * jcScale_PF) >ptMin_PF && fabs(ak5PFJetEta->at(j))<endcapeta_dijet){    //jc
 	    PFJets++;	    
 	    nPFconst->Fill(ak5PFJetNConstituents->at(j));
 	    PFJetpt->Fill(ak5PFJetpT->at(j) * jcScale_PF);    //jc 
@@ -925,7 +947,7 @@ void analysisClass::Loop()
 	    PFJetMUF->Fill(ak5PFJetChargedMuEnergyFraction->at(j));
 	    PFJetNEF->Fill(ak5PFJetNeutralEmEnergyFraction->at(j));
 	    PFJetNHF->Fill(ak5PFJetNeutralHadronEnergyFraction->at(j));
-	    if(ak5PFJetEta->at(j)<barreleta){
+	    if(fabs(ak5PFJetEta->at(j))<barreleta){
 	      PFJetChFracBarrel->Fill(ak5PFJetChargedHadronEnergyFraction->at(j)+ak5PFJetChargedEmEnergyFraction->at(j)+ak5PFJetChargedMuEnergyFraction->at(j));
 	      PFJetCEFBarrel->Fill(ak5PFJetChargedEmEnergyFraction->at(j));
 	      PFJetCHFBarrel->Fill(ak5PFJetChargedHadronEnergyFraction->at(j));
@@ -996,13 +1018,14 @@ void analysisClass::Loop()
 
 	//dijet
 	if(int(ak5PFJetpT->size())>=2){
-	  if(makeJetCorr){
+	  if(index_PFjet1==-10 || index_PFjet2==-10){
+	    cout<<"error in indices "<<index_PFjet1<<"/"<<index_PFjet2<<endl;
+	  }
+	  if(makeJetCorr==1){
 	    jcScale0_PF=ak5PFJetscaleL2L3->at(index_PFjet1);
 	    jcScale1_PF=ak5PFJetscaleL2L3->at(index_PFjet2);
-	  }//indices are determined before
+	  }
 	  if(fabs(ak5PFJetEta->at(index_PFjet1))<endcapeta_dijet && (ak5PFJetpT->at(index_PFjet1) * jcScale0_PF )>ptMinDijet_PF && fabs(ak5PFJetEta->at(index_PFjet2))<endcapeta_dijet && (ak5PFJetpT->at(index_PFjet2) * jcScale1_PF) >ptMinDijet_PF){   //jc
-	    //i increase 
-	    PFJetindijets=+2;
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
 	    //fill only 
 	    if(vPtEtaPhiE_PF.size()>1 && (pfmetPt->at(0)/pfmetSumEt->at(0))<cut_metbysumet 
@@ -1026,9 +1049,34 @@ void analysisClass::Loop()
 	       && pass_PFJetIDtight(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2),ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2),ak5PFJetChargedEmEnergyFraction->at(index_PFjet2),ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2),ak5PFJetEta->at(index_PFjet2))){
 	      PFdijetdphiJIDtight->Fill(dphi_PF);
 	    }
-	    if (dphi_PF >cut_CaloDiJetDeltaPhi_min) {
+	    if (dphi_PF >cut_DiJetDeltaPhi_min) {
 	      double dijcScale_PF=1;
-	      
+	      pass_dphi_cut=true;
+	      //i increase 
+	      PFJetindijets=+2;
+	      //now loop on PFJets and count how many PFJets with pT>ptmin_dijets and fabs(eta)<eta_max_dijets are in each event
+	      for (int dj = 0; dj<int(ak5PFJetpT->size()); dj++){
+		if(makeJetCorr==1) {
+		  dijcScale_PF = ak5PFJetscaleL2L3->at(dj);
+		}
+		else {
+		  dijcScale_PF = 1;
+		}
+		if((ak5PFJetpT->at(dj) * dijcScale_PF) >ptMinDijet_PF && fabs(ak5PFJetEta->at(dj))<endcapeta_dijet){   ///
+		  PFJetALLindijets++;
+		}//only JIDloose jets
+		if((ak5PFJetpT->at(dj) * dijcScale_PF) >ptMinDijet_PF && fabs(ak5PFJetEta->at(dj))<endcapeta_dijet
+		   && pass_PFJetIDloose(ak5PFJetChargedHadronEnergyFraction->at(dj),ak5PFJetNeutralHadronEnergyFraction->at(dj),ak5PFJetChargedEmEnergyFraction->at(dj),ak5PFJetNeutralEmEnergyFraction->at(dj),ak5PFJetEta->at(dj))){   ///
+		  PFJetALLindijetsJetIDLoose++;
+		}//only JIDtight jets
+		if((ak5PFJetpT->at(dj) * dijcScale_PF) >ptMinDijet_PF && fabs(ak5PFJetEta->at(dj))<endcapeta_dijet
+		   && pass_PFJetIDtight(ak5PFJetChargedHadronEnergyFraction->at(dj),ak5PFJetNeutralHadronEnergyFraction->at(dj),ak5PFJetChargedEmEnergyFraction->at(dj),ak5PFJetNeutralEmEnergyFraction->at(dj),ak5PFJetEta->at(dj))){   ///
+		  PFJetALLindijetsJetIDTight++;
+		}
+	      }
+	      PFjet1LorentzVector.SetPtEtaPhiE(ak5PFJetpT->at(index_PFjet1)*jcScale0_PF,ak5PFJetEta->at(index_PFjet1),ak5PFJetPhi->at(index_PFjet1),ak5PFJetEnergy->at(index_PFjet1)*jcScale0_PF);
+	      PFjet2LorentzVector.SetPtEtaPhiE(ak5PFJetpT->at(index_PFjet2)*jcScale1_PF,ak5PFJetEta->at(index_PFjet2),ak5PFJetPhi->at(index_PFjet2),ak5PFJetEnergy->at(index_PFjet2)*jcScale1_PF);
+	      PFdijetLorentzVector=PFjet1LorentzVector+PFjet2LorentzVector;
 	      // basic di-jet variables 
 	      PFdijetptall1->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0_PF);  //jc
 	      PFdijetptall2->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1_PF);   //jc
@@ -1036,6 +1084,7 @@ void analysisClass::Loop()
 	      PFJetmapalldijets->Fill(ak5PFJetEta->at(index_PFjet1),ak5PFJetPhi->at(index_PFjet1));
 	      PFJetmapalldijets->Fill(ak5PFJetEta->at(index_PFjet2),ak5PFJetPhi->at(index_PFjet2));
       	      PFdijeteta->Fill(ak5PFJetEta->at(index_PFjet1));
+	      PFdijetinvmass->Fill(PFdijetLorentzVector.M());
 	      PFdijeteta->Fill(ak5PFJetEta->at(index_PFjet2));
 	      PFdijetphi->Fill(ak5PFJetPhi->at(index_PFjet1));
 	      PFdijetphi->Fill(ak5PFJetPhi->at(index_PFjet2));
@@ -1062,6 +1111,7 @@ void analysisClass::Loop()
 		 && pass_PFJetIDloose(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2),ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2),ak5PFJetChargedEmEnergyFraction->at(index_PFjet2),ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2),ak5PFJetEta->at(index_PFjet2))){
 		PFdijetptall1JIDloose->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0_PF);   //jc
 		PFdijetptall2JIDloose->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1_PF);   //jc
+		PFdijetinvmassJIDloose->Fill(PFdijetLorentzVector.M());
 		PFdijetdetaJIDloose->Fill(fabs(ak5PFJetEta->at(index_PFjet1)-ak5PFJetEta->at(index_PFjet2)));
 		PFJetmapalldijetsJIDloose->Fill(ak5PFJetEta->at(index_PFjet1),ak5PFJetPhi->at(index_PFjet1));
 		PFJetmapalldijetsJIDloose->Fill(ak5PFJetEta->at(index_PFjet2),ak5PFJetPhi->at(index_PFjet2));
@@ -1069,30 +1119,10 @@ void analysisClass::Loop()
 		PFdijetetaJIDloose->Fill(ak5PFJetEta->at(index_PFjet2));
 		PFdijetphiJIDloose->Fill(ak5PFJetPhi->at(index_PFjet1));
 		PFdijetphiJIDloose->Fill(ak5PFJetPhi->at(index_PFjet2));
-		//now loop on PFJets and count how many JIDLOOSE PFJets with pT>8 are in each event
-		for (int dj = 0; dj<int(ak5PFJetpT->size()); dj++){
-		  if(makeJetCorr==true) {
-		    dijcScale_PF = ak5PFJetscaleL2L3->at(dj);
-		  }
-		  else {
-		    dijcScale_PF = 1;
-		  }
-		  if((ak5PFJetpT->at(dj) * dijcScale_PF) >ptMinDijet_PF && ak5PFJetEta->at(dj)<endcapeta_dijet
-		     && pass_PFJetIDloose(ak5PFJetChargedHadronEnergyFraction->at(dj),ak5PFJetNeutralHadronEnergyFraction->at(dj),ak5PFJetChargedEmEnergyFraction->at(dj),ak5PFJetNeutralEmEnergyFraction->at(dj),ak5PFJetEta->at(dj))){   ///
-		    PFJetALLindijets++;
-		  }
-		  if((ak5PFJetpT->at(dj) * dijcScale_PF) >ptMinDijet_PF && ak5PFJetEta->at(dj)<endcapeta_dijet
-		     && pass_PFJetIDloose(ak5PFJetChargedHadronEnergyFraction->at(dj),ak5PFJetNeutralHadronEnergyFraction->at(dj),ak5PFJetChargedEmEnergyFraction->at(dj),ak5PFJetNeutralEmEnergyFraction->at(dj),ak5PFJetEta->at(dj))){   ///
-		    PFJetALLindijetsJetIDLoose++;
-		  }
-		  if((ak5PFJetpT->at(dj) * dijcScale_PF) >ptMinDijet_PF && ak5PFJetEta->at(dj)<endcapeta_dijet
-		     && pass_PFJetIDtight(ak5PFJetChargedHadronEnergyFraction->at(dj),ak5PFJetNeutralHadronEnergyFraction->at(dj),ak5PFJetChargedEmEnergyFraction->at(dj),ak5PFJetNeutralEmEnergyFraction->at(dj),ak5PFJetEta->at(dj))){   ///
-		    PFJetALLindijetsJetIDTight++;
-		  }
-		}
 	      } //end  both passed loose jet cleaning
 	      // both passed tight jet cleaning
 	      if(pass_PFJetIDtight(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1),ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1),ak5PFJetChargedEmEnergyFraction->at(index_PFjet1),ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1),ak5PFJetEta->at(index_PFjet1))  &&  pass_PFJetIDtight(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2),ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2),ak5PFJetChargedEmEnergyFraction->at(index_PFjet2),ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2),ak5PFJetEta->at(index_PFjet2))){
+		PFdijetinvmassJIDtight->Fill(PFdijetLorentzVector.M());
 		PFdijetptall1JIDtight->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0_PF);   //jc
 		PFdijetptall2JIDtight->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1_PF);   //jc
 		PFdijetdetaJIDtight->Fill(fabs(ak5PFJetEta->at(index_PFjet1)-ak5PFJetEta->at(index_PFjet2)));
@@ -1137,9 +1167,13 @@ void analysisClass::Loop()
 	nPFJets->Fill(PFJets);     
 	PFJetnJIDloose->Fill(PFJetIDLoose);
 	PFJetnJIDtight->Fill(PFJetIDTight);
-	PFJetsindijetsJIDloose->Fill(PFJetALLindijetsJetIDLoose);
-	PFJetsindijetsJIDtight->Fill(PFJetALLindijetsJetIDTight);
-	PFJetsindijets->Fill(PFJetALLindijets);	
+	//if the hardest two jets are inside the dijet region and 
+	//their dphi is back-to-back
+	if((PFJetindijets>0)&& pass_dphi_cut) {
+	  PFJetsindijetsJIDloose->Fill(PFJetALLindijetsJetIDLoose);
+	  PFJetsindijetsJIDtight->Fill(PFJetALLindijetsJetIDTight);
+	  PFJetsindijets->Fill(PFJetALLindijets);
+	}	
 	//Counting PFJets
 	PFJetsTOT+=PFJets;
 	PFJetIDLooseTOT+=PFJetIDLoose;
@@ -1295,6 +1329,9 @@ void analysisClass::Loop()
    PFdijetptall2JIDtight->Write();
    PFdijetdphiJIDtight->Write();
    PFdijetdetaJIDtight->Write();
+   PFdijetinvmass->Write();
+   PFdijetinvmassJIDloose->Write();
+   PFdijetinvmassJIDtight->Write();
    PFJetmapalldijetsJIDtight->Write();
    PFJetsindijetsJIDtight->Write();
    PFJetsindijets->Write();
