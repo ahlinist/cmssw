@@ -72,17 +72,40 @@ allTopJets = cms.EDProducer("SingleTopJetsProducer",
                                  jetsSource = cms.InputTag("preselectedJets"),
                                  )
 
-topElectrons = cms.EDFilter("PATElectronSelector",
-                            src = cms.InputTag("preselectedElectrons"),
-                            cut = cms.string('pt>0'),
-                            filter = cms.bool(False)
-                            )
+topMuons = cms.EDProducer("PATMuonCleaner",
+                          src= cms.InputTag("preselectedMuons"),
+                          preselection = cms.string(''),
+                          checkOverlaps = cms.PSet(
+    myJets = cms.PSet(
+    src = cms.InputTag("preselectedJets"),
+    preselection = cms.string('pt > 20'),
+    algorithm = cms.string('byDeltaR'),
+    deltaR = cms.double(0.3), 
+    checkRecoComponents = cms.bool(False),
+    pairCut =cms.string(""),
+    requireNoOverlaps = cms.bool(False),
+    ),
+    ),
+   finalCut = cms.string(''),
+)
 
-topMuons = cms.EDFilter("PATMuonSelector",
-                            src = cms.InputTag("preselectedMuons"),
-                            cut = cms.string('pt>0'),
-                            filter = cms.bool(False)
-                            )
+
+topElectrons = cms.EDProducer("PATElectronCleaner",
+                              src= cms.InputTag("preselectedElectrons"),
+                              preselection = cms.string(''),
+                              checkOverlaps = cms.PSet(
+    myJets = cms.PSet(
+    src = cms.InputTag("preselectedJets"),
+    preselection = cms.string('pt > 20'),
+    algorithm = cms.string('byDeltaR'),
+    deltaR = cms.double(0.3), 
+    checkRecoComponents = cms.bool(False),
+    pairCut =cms.string(""),
+    requireNoOverlaps = cms.bool(False),
+    )
+    ),
+                              finalCut = cms.string(''),
+                              )
 
 
 bJets = cms.EDFilter("PATJetSelector",
