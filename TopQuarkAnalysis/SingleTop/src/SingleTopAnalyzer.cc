@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopAnalyzer.cc,v 1.3 2010/03/11 10:10:08 oiorio Exp $ 
+*\version  $Id: SingleTopAnalyzer.cc,v 1.4 2010/03/18 11:34:08 oiorio Exp $ 
 */
 
 // =================================
@@ -22,9 +22,10 @@
 
 #include "TopQuarkAnalysis/SingleTop/interface/SingleTopAnalyzer.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 //#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+//#include "FWCore/Framework/interface/TriggerNames.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "DataFormats/Candidate/interface/NamedCompositeCandidate.h"
 
