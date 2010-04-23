@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 
 # This is the HF PMT window reflagger
-hfrechitReflaggerJETMET = cms.EDProducer('HFRecHitReflaggerJETMET',
+hfrechitreflaggerJETMET = cms.EDProducer('HFRecHitReflaggerJETMET',
     debug          = cms.untracked.int32(0),
     hfInputLabel       = cms.untracked.InputTag("hfreco"),
     hfFlagBit          = cms.untracked.int32(31),  # bit 31 is UserDefinedBit0; see RecoLocalCalo/HcalRecAlgos/interface/HcalCaloFlagLabels.h for full list
