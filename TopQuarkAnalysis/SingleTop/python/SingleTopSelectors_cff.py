@@ -16,10 +16,11 @@ countMuons = cms.EDFilter("PATCandViewCountFilter",
                           )
 
 countLeptons = cms.EDFilter("CandOrCounter",
-                          src1 = cms.InputTag("topMuons"),
-                          src2 = cms.InputTag("topElectrons"),
-                          minNumber = cms.int32(1),
-                          maxNumber = cms.int32(9999),
+                            src1 = cms.InputTag("preselectedMuons"),
+                            src2 = cms.InputTag("preselectedElectrons"),
+                            
+                            minNumber = cms.int32(1),
+                            maxNumber = cms.int32(9999),
                             )
 
 
