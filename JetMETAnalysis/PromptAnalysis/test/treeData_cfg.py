@@ -35,7 +35,7 @@ process.add_( cms.Service( "TFileService",
 fileName = cms.string("MinimumBias__Commissioning10-Apr1ReReco-v2__RECO.root"), ##give a name to the output file
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
@@ -56,7 +56,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.default.limit = 100
 
 # jet corrections
-process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_7TeV_ReReco332_cff")
+#process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_7TeV_ReReco332_cff")
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 #process.load("JetMETCorrections.Configuration.L2L3Corrections_900GeV_cff")
 #process.load("JetMETCorrections.Configuration.L2L3Corrections_2360GeV_cff")
 

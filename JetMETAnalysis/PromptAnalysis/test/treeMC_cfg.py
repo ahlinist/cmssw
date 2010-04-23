@@ -35,7 +35,7 @@ process.add_( cms.Service( "TFileService",
 fileName = cms.string("MinBias__Spring10-START3X_V25B-v1__GEN-SIM-RECO.root"), ##give a name to the output file
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
@@ -55,7 +55,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.default.limit = 100
 
 # jet corrections
-process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_7TeV_ReReco332_cff")
+#process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_7TeV_ReReco332_cff")
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+
 #process.load("JetMETCorrections.Configuration.L2L3Corrections_900GeV_cff")
 #process.load("JetMETCorrections.Configuration.L2L3Corrections_2360GeV_cff")
 
@@ -103,7 +105,7 @@ process.theBigNtuple = cms.Path(
     process.promptanatcmet   +
     process.promptanapfmet   +
     process.promptananohf  +
-    process.promptanaic5calojet +
+   process.promptanaic5calojet +
     #process.promptanasc5calojet +
     #process.promptanakt4calojet +
     process.promptanaak5calojet +

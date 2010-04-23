@@ -16,9 +16,35 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
+//jets
+#include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/CaloJetCollection.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+#include "JetMETCorrections/Algorithms/interface/JetPlusTrackCorrector.h"
+#include "DataFormats/JetReco/interface/JetExtendedAssociation.h"
+#include "DataFormats/JetReco/interface/JetID.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+
+#include "FWCore/Framework/interface/Event.h"
+#include "DataFormats/Common/interface/Handle.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/InputTag.h"
+// candidates
+#include "DataFormats/Candidate/interface/LeafCandidate.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Candidate/interface/CandidateFwd.h"
+
+
 #include <string>
 #include <memory>
 #include <vector>
+using namespace reco;
 
 namespace jptJetAnalysis {
 
@@ -88,9 +114,10 @@ class JPTPromptAnaTrackVariables
 };
 
 PromptAna_JPT::PromptAna_JPT(const edm::ParameterSet& iConfig) 
-  : inputTag(iConfig.getParameter<edm::InputTag>("InputTag"))
+  : inputTag(iConfig.getParameter<edm::InputTag>("InputTag"))  
   , jptCorrectorName(iConfig.getParameter<std::string>("JPTCorrectorName"))
-  , zspCorrectorName(iConfig.getParameter<std::string>("ZSPCorrectorName"))
+  , zspCorrectorName(iConfig.getParameter<std::string>("ZSPCorrectorName"))  
+  , jetCorrectionService(iConfig.getParameter<std::string>  ("JetCorrectionService"  ))
   , prefix  (iConfig.getParameter<std::string>  ("Prefix"  ))
   , suffix  (iConfig.getParameter<std::string>  ("Suffix"  ))
   , allVariables  (iConfig.getParameter<bool>  ("AllVariables"  ))
@@ -132,7 +159,8 @@ PromptAna_JPT::PromptAna_JPT(const edm::ParameterSet& iConfig)
   //produces <std::vector<double> > ( prefix + "EtaFirst"  + suffix );
   //produces <std::vector<double> > ( prefix + "PhiFirst"  + suffix );
   //JPT specific
-  produces <std::vector<double> > ( prefix + "RawPt" + suffix );
+  produces <std::vector<double> > ( prefix + "RawPt" + suffix );    
+  produces <std::vector<double> > ( prefix + "scaleL2L3"  + suffix ); 
   produces <std::vector<double> > ( prefix + "RawE" + suffix );
   produces <std::vector<double> > ( prefix + "RawEta" + suffix );
   produces <std::vector<double> > ( prefix + "RawPhi" + suffix );
@@ -265,7 +293,8 @@ void PromptAna_JPT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> >  energyFractionHadronic ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  towersArea   ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  maxEInEmTowers   ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<double> >  maxEInHadTowers   ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> >  maxEInHadTowers   ( new std::vector<double>()  ) ;  
+  std::auto_ptr<std::vector<double> > scaleL2L3   ( new std::vector<double>()  ); 
   //std::auto_ptr<std::vector<double> >  hadEnergyInHB   ( new std::vector<double>()  ) ;
   //std::auto_ptr<std::vector<double> >  hadEnergyInHE   ( new std::vector<double>()  ) ;
   //std::auto_ptr<std::vector<double> >  hadEnergyInHO   ( new std::vector<double>()  ) ;
@@ -321,20 +350,27 @@ void PromptAna_JPT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   jptJetAnalysis::TrackPropagatorToCalo trackPropagator;
   trackPropagator.update(iSetup);
   
-  int clj=0;
+  int clj=0;       int jc = 0;
+
   //Fill the variables
   for(reco::CaloJetCollection::const_iterator it = jetcollection->begin(); it != jetcollection->end() ; ++it ){
-    const reco::CaloJet& rawJet = *it;
+    const reco::CaloJet& rawJet = *it; 
+    edm::RefToBase<Jet> jetRef(edm::Ref<reco::CaloJetCollection>(jetcollection,jc));
+
     //make corrected jet
-    const double factorZSP = zspCorrector->correction(rawJet,iEvent,iSetup);
+    const double factorZSP = zspCorrector->correction(rawJet,jetRef,iEvent,iSetup);
     JetPlusTrackCorrector::P4 correctedDirectionOnRaw;
-    const double factorJPTonRaw = jptCorrector->correction(rawJet,iEvent,iSetup,correctedDirectionOnRaw);
+    const double factorJPTonRaw = jptCorrector->correction(rawJet,jetRef,iEvent,iSetup,correctedDirectionOnRaw);
+  
     const double factorZSPJPT = factorZSP + factorJPTonRaw - 1.0;
     const double factorJPT = factorZSPJPT / factorZSP;
     JetPlusTrackCorrector::P4 jptCorrectedVector(0,0,0,0);
     if (correctedDirectionOnRaw.energy()) jptCorrectedVector = correctedDirectionOnRaw * ( (rawJet.energy()*factorZSPJPT) / correctedDirectionOnRaw.energy() );
     assert((jptCorrectedVector.energy() - rawJet.energy()*factorZSPJPT) < 1e-6);
-    const reco::CaloJet jptCorrectedJet(jptCorrectedVector, rawJet.getSpecific(), rawJet.getJetConstituents() );
+    const reco::CaloJet jptCorrectedJet(jptCorrectedVector, rawJet.getSpecific(), rawJet.getJetConstituents() );   
+    
+    const JetCorrector* corrector = JetCorrector::getJetCorrector (jetCorrectionService,iSetup);
+    scaleL2L3->push_back( corrector->correction(jptCorrectedJet.p4()) );
     //get tracks
     jpt::MatchedTracks pions;
     jpt::MatchedTracks muons;
@@ -427,6 +463,8 @@ void PromptAna_JPT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     OutCaloInVertexElectrons.set(electrons.inVertexOutOfCalo_,rawJet,&trackPropagator);
     InCaloOutVertexElectrons.set(electrons.outOfVertexInCalo_,rawJet,&trackPropagator);
     }
+ 	 jc++;
+
   }
   ncleanedjets->push_back(clj);
 
@@ -472,7 +510,8 @@ void PromptAna_JPT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( jptZspCorrFactor, prefix + "JPTZSPCorrFactor" + suffix );
   iEvent.put( zspCorrFactor, prefix + "ZSPCorrFactor" + suffix );
   iEvent.put( jptCorrFactor, prefix + "JPTCorrFactor" + suffix );
-  iEvent.put( ptFractionInCone, prefix + "PtFractionInCone" + suffix );
+  iEvent.put( ptFractionInCone, prefix + "PtFractionInCone" + suffix );  
+  iEvent.put( scaleL2L3,  prefix + "scaleL2L3"  + suffix );
   if (allVariables) {
   AllPions.put(iEvent);
   InCaloInVertexPions.put(iEvent);
