@@ -39,17 +39,18 @@ class ChamberMap {
   
   private:
 
-    static const unsigned short COLOR_WHITE = 0;
-    static const unsigned short COLOR_GREEN = 3;
-    static const unsigned short COLOR_RED   = 2;
-    static const unsigned short COLOR_BLUE  = 4;
-    static const unsigned short COLOR_GREY  = 17;
+    static const unsigned short COLOR_WHITE  = 0;
+    static const unsigned short COLOR_GREEN  = 3;
+    static const unsigned short COLOR_RED    = 2;
+    static const unsigned short COLOR_BLUE   = 4;
+    static const unsigned short COLOR_GREY   = 17;
+    static const unsigned short COLOR_YELLOW = 5;
 
     TBox*  bBlank;
     TBox*  bCSC_box[2][4][3][36];
     TText* tCSC_label[2][4][3][36];
-    TBox*  bLegend[6];
-    TText* tLegend[6];
+    TBox*  bLegend[10];
+    TText* tLegend[10];
     TText* tStatusTitle;
     TText* tLegendTitle;
   

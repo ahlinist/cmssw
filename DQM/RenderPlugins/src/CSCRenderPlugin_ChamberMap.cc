@@ -321,22 +321,32 @@ void ChamberMap::drawStats(TH2*& me) {
                     status_all += 1;
 
                     switch (fillColor) {
+                        // No data, no error
                         case 0:
                             fillColor = COLOR_WHITE;
                             break;
+                        // Data, no error
                         case 1:
                             fillColor = COLOR_GREEN;
                             break;
+                        // Error, hot
                         case 2:
                             fillColor = COLOR_RED;
                             status_bad += 1;
                             break;
+                        // Cold
                         case 3:
                             fillColor = COLOR_BLUE;
                             status_bad += 1;
                             break;
+                        // Masked
                         case 4:
                             fillColor = COLOR_GREY;
+                            break;
+                        // Standby
+                        case 5:
+                            fillColor = COLOR_YELLOW;
+                            status_bad += 1;
                             break;
                     }
 
@@ -362,32 +372,46 @@ void ChamberMap::drawStats(TH2*& me) {
         }
     }
 
+    unsigned int legendBoxIndex = 2;
+    std::string meTitle(me->GetTitle());
 
-    double status = 1.0;
+    if (legend == 0x10) {
 
-    if (status_all > 0) {
-        status = status - (1.0 * status_bad) / (1.0 * status_all);
-        std::string meTitle(me->GetTitle());
-        meTitle.append(" (%4.1f%%)");
-        TString statusStr = Form(meTitle.c_str(), status * 100.0);
-        me->SetTitle(statusStr);
-    }
+        meTitle.append(" (STANDBY)");
+        me->SetTitle(meTitle.c_str());
 
-    tStatusTitle->Draw();
-
-    if (status >= 0.75) {
-        printLegendBox(0, "GOOD", COLOR_GREEN);
-    } else {
         printLegendBox(0, "BAD", COLOR_RED);
-    }
+        printLegendBox(legendBoxIndex++, "Standby", COLOR_YELLOW);
 
-    tLegendTitle->Draw();
-    unsigned int n = 2;
-    if (legend.test(0)) printLegendBox(n++, "OK/No Data", COLOR_WHITE);
-    if (legend.test(1)) printLegendBox(n++, "OK/Data", COLOR_GREEN);
-    if (legend.test(2)) printLegendBox(n++, "Error/Hot", COLOR_RED);
-    if (legend.test(3)) printLegendBox(n++, "Cold", COLOR_BLUE);
-    if (legend.test(4)) printLegendBox(n++, "Masked", COLOR_GREY);
+    } else {
+
+
+        double status = 1.0;
+
+        if (status_all > 0) {
+            status = status - (1.0 * status_bad) / (1.0 * status_all);
+            meTitle.append(" (%4.1f%%)");
+            TString statusStr = Form(meTitle.c_str(), status * 100.0);
+            me->SetTitle(statusStr);
+        }
+
+        tStatusTitle->Draw();
+
+        if (status >= 0.75) {
+            printLegendBox(0, "GOOD", COLOR_GREEN);
+        } else {
+            printLegendBox(0, "BAD", COLOR_RED);
+        }
+
+        tLegendTitle->Draw();
+    
+        if (legend.test(0)) printLegendBox(legendBoxIndex++, "OK/No Data", COLOR_WHITE);
+        if (legend.test(1)) printLegendBox(legendBoxIndex++, "OK/Data", COLOR_GREEN);
+        if (legend.test(2)) printLegendBox(legendBoxIndex++, "Error/Hot", COLOR_RED);
+        if (legend.test(3)) printLegendBox(legendBoxIndex++, "Cold", COLOR_BLUE);
+        if (legend.test(4)) printLegendBox(legendBoxIndex++, "Masked", COLOR_GREY);
+        if (legend.test(5)) printLegendBox(legendBoxIndex++, "Standby", COLOR_YELLOW);
+    }
 
 }
 
