@@ -13,9 +13,10 @@ promptanaJPTak5 = cms.EDProducer("PromptAna_JPT",
   InputTag = cms.InputTag('ak5CaloJets'),
   JPTCorrectorName = cms.string('JetPlusTrackZSPCorrectorAntiKt5ForDQM'),
   ZSPCorrectorName = cms.string('ZSPJetCorrectorAntiKt5'),
+  JetCorrectionService = cms.string('ak5JPTL2L3'),
   Prefix = cms.string('JPTak5Jet'),
   Suffix = cms.string(''),
-  AllVariables = cms.bool(False),
+  AllVariables = cms.bool(True),
   # Jet ID configuration
   jetID = cms.PSet(
     useRecHits = cms.bool(True),
