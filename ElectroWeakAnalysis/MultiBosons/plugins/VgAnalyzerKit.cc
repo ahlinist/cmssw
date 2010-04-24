@@ -8,12 +8,14 @@
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
+#include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 #include "DataFormats/METReco/interface/METCollection.h"
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/METReco/interface/PFMETCollection.h"
 #include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include "PhysicsTools/CandUtils/interface/AddFourMomenta.h"
 
 using namespace std;
 using namespace pat;
@@ -115,8 +117,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
   tree_->Branch("eleEn", eleEn_, "eleEn[nEle]/D");
-  //tree_->Branch("eleSCEta", eleSCEta_, "eleSCEta[nEle]/D");
-  //tree_->Branch("eleSCPhi", eleSCPhi_, "eleSCPhi[nEle]/D");
   tree_->Branch("eleSCRawEn", eleSCRawEn_, "eleSCRawEn[nEle]/D");
   tree_->Branch("eleESEn", eleESEn_, "eleESEn[nEle]/D");
   tree_->Branch("eleSCEn", eleSCEn_, "eleSCEn[nEle]/D");
@@ -293,7 +293,22 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("jetTrackCountHiPurBJetTags", jetTrackCountHiPurBJetTags_, "jetTrackCountHiPurBJetTags[nJet]/D");
   tree_->Branch("jetJetLRval", jetJetLRval_, "jetJetLRval[nJet]/D");
   tree_->Branch("jetJetProb", jetJetProb_, "jetJetProb[nJet]/D");
-
+  // Zee candiate
+  tree_->Branch("nZee", &nZee_, "nZee/I");
+  tree_->Branch("ZeeMass", ZeeMass_, "ZeeMass[nZee]/D");
+  tree_->Branch("ZeePt", ZeePt_, "ZeePt[nZee]/D");
+  tree_->Branch("ZeeEta", ZeeEta_, "ZeeEta[nZee]/D");
+  tree_->Branch("ZeePhi", ZeePhi_, "ZeePhi[nZee]/D");
+  tree_->Branch("ZeeLeg1Index", ZeeLeg1Index_, "ZeeLeg1Index[nZee]/I");
+  tree_->Branch("ZeeLeg2Index", ZeeLeg2Index_, "ZeeLeg2Index[nZee]/I");
+  // Zmumu candiate
+  tree_->Branch("nZmumu", &nZmumu_, "nZmumu/I");
+  tree_->Branch("ZmumuMass", ZmumuMass_, "ZmumuMass[nZmumu]/D");
+  tree_->Branch("ZmumuPt", ZmumuPt_, "ZmumuPt[nZmumu]/D");
+  tree_->Branch("ZmumuEta", ZmumuEta_, "ZmumuEta[nZmumu]/D");
+  tree_->Branch("ZmumuPhi", ZmumuPhi_, "ZmumuPhi[nZmumu]/D");
+  tree_->Branch("ZmumuLeg1Index", ZmumuLeg1Index_, "ZmumuLeg1Index[nZmumu]/I");
+  tree_->Branch("ZmumuLeg2Index", ZmumuLeg2Index_, "ZmumuLeg2Index[nZmumu]/I");
 }
 
 VgAnalyzerKit::~VgAnalyzerKit() {
@@ -541,7 +556,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // tcMET
   Handle<edm::View<reco::MET> > tcMETcoll;
   if (e.getByLabel(tcMETlabel_, tcMETcoll)) {
-    //const reco::METCollection *tcMETcol = tcMETcoll.product();
+
     const reco::MET *tcMET;
     tcMET = &(tcMETcoll->front());
 
@@ -557,7 +572,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // pfMET
   Handle<View<reco::PFMET> > pfMETcoll;
   if (e.getByLabel(pfMETlabel_, pfMETcoll)) {
-    //const reco::PFMETCollection *pfMETcol = pfMETcoll.product();
+
     const reco::PFMET *pfMET;
     pfMET = &(pfMETcoll->front());
 
@@ -939,6 +954,76 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
     nJet_++;
   }
+
+  // Zee candidate
+  nZee_ = 0;
+  int leg1Index = 0;
+  int leg2Index = 0;
+  if (electronHandle_->size() > 1) {
+    for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end()-1; ++iEle) {
+
+      leg2Index = leg1Index + 1;
+      for (View<pat::Electron>::const_iterator jEle = iEle+1; jEle != electronHandle_->end(); ++jEle) {
+	
+	if (iEle->charge() * jEle->charge() < 0 ) {
+	  pat::CompositeCandidate Zee;
+	  Zee.addDaughter(*iEle, "ele1");
+	  Zee.addDaughter(*jEle, "ele2");
+	  
+	  AddFourMomenta addZee;
+	  addZee.set(Zee);
+	  ZeeMass_[nZee_]      = Zee.mass();
+	  ZeePt_[nZee_]        = Zee.pt();
+	  ZeeEta_[nZee_]       = Zee.eta();
+	  ZeePhi_[nZee_]       = Zee.phi();
+	  ZeeLeg1Index_[nZee_] = leg1Index;
+	  ZeeLeg2Index_[nZee_] = leg2Index;
+
+	  nZee_++;
+	}
+	
+	leg2Index++;
+      }
+      
+      leg1Index++;
+    }
+  }
+
+  // Zmumu candidate
+  nZmumu_ = 0;
+  leg1Index = 0;
+  leg2Index = 0;
+  if (muonHandle_->size() > 1) {
+    for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end()-1; ++iMu) {
+
+      leg2Index = leg1Index + 1;
+      for (View<pat::Muon>::const_iterator jMu = iMu+1; jMu != muonHandle_->end(); ++jMu) {
+	
+	if (iMu->charge() * jMu->charge() < 0 ) {
+	  pat::CompositeCandidate Zmumu;
+	  Zmumu.addDaughter(*iMu, "ele1");
+	  Zmumu.addDaughter(*jMu, "ele2");
+	  
+	  AddFourMomenta addZmumu;
+	  addZmumu.set(Zmumu);
+	  ZmumuMass_[nZmumu_]      = Zmumu.mass();
+	  ZmumuPt_[nZmumu_]        = Zmumu.pt();
+	  ZmumuEta_[nZmumu_]       = Zmumu.eta();
+	  ZmumuPhi_[nZmumu_]       = Zmumu.phi();
+	  ZmumuLeg1Index_[nZmumu_] = leg1Index;
+	  ZmumuLeg2Index_[nZmumu_] = leg2Index;
+
+	  nZmumu_++;
+	}
+	
+	leg2Index++;
+      }
+      
+      leg1Index++;
+    }
+  }
+
+
   tree_->Fill();
 }
 

@@ -298,6 +298,22 @@ protected:
   double jetGenPt_[maxP];
   double jetGenEta_[maxP];
   double jetGenPhi_[maxP];
+  // Zee candidate
+  int    nZee_;
+  double ZeeMass_[maxP];
+  double ZeePt_[maxP];
+  double ZeeEta_[maxP];
+  double ZeePhi_[maxP];
+  double ZeeLeg1Index_[maxP];
+  double ZeeLeg2Index_[maxP];
+  // Zmumu candidate
+  int    nZmumu_;
+  double ZmumuMass_[maxP];
+  double ZmumuPt_[maxP];
+  double ZmumuEta_[maxP];
+  double ZmumuPhi_[maxP];
+  double ZmumuLeg1Index_[maxP];
+  double ZmumuLeg2Index_[maxP];
 
   // Physics objects handles
   Handle<View<pat::Muon> >                  muonHandle_;
