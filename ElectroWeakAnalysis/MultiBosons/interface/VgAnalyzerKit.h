@@ -53,6 +53,7 @@ protected:
   InputTag pfMETlabel_;
   InputTag ebReducedRecHitCollection_;
   InputTag eeReducedRecHitCollection_;
+  InputTag beamSpotCollection_;
 
   int verbosity_;
 
@@ -252,9 +253,9 @@ protected:
   double muEmVeto_[maxP];
   double muHadVeto_[maxP];
   int    muType_[maxP];
-  bool   muID[maxP][6];
+  bool   muID_[maxP][6];
   double muD0_[maxP];
-  int    muNumberOfValidHits_[maxP];
+  int    muNumberOfValidTrkHits_[maxP];
   // Jet
   int    nJet_;
   int    jetAlgo_[maxP];
