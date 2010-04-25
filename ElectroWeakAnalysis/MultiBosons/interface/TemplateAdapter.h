@@ -14,7 +14,7 @@
 //
 // Original Author:  Jan Veverka,32 3-A13,+41227677936,
 //         Created:  Sat Apr 24 10:51:03 CEST 2010
-// $Id: TemplateAdapter.h,v 1.1 Sat Apr 24 10:51:03 CEST 2010 veverka Exp $
+// $Id: TemplateAdapter.h,v 1.1 2010/04/24 16:31:51 veverka Exp $
 //
 //
 
@@ -65,5 +65,63 @@ private:
   edm::InputTag src_;
 };
 
+// Constructor
+template<typename TCollection>
+TemplateAdapter<TCollection>::TemplateAdapter(const edm::ParameterSet& iConfig) :
+  src_(iConfig.getParameter<edm::InputTag>("src") )
+{
+  //register product
+  produces<TRefVector>();
+}
+
+
+template<typename TCollection>
+void
+TemplateAdapter<TCollection>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+{
+  // retreive the source collection
+  edm::Handle<reco::CandidateView> src;
+  iEvent.getByLabel(src_, src);
+
+  // create the buffer collection
+  std::auto_ptr<TRefCollection> buffer(new TRefCollection);
+  buffer->reserve( 2 * src->size() );
+
+  // loop over the source collection
+  for (reco::CandidateView::const_iterator mother = src->begin();
+      mother != src->end(); ++mother)
+  {
+    // loop over the daughters
+    for (reco::Candidate::const_iterator daughter = mother->begin();
+        daughter != mother->end(); ++daughter)
+    {
+      // if (!daughter->hasMasterClone() ) continue; // better to throw than do something undefined
+      TRef tRef = daughter->masterClone().castTo<TRef>();
+      // Check that tRef is not in buffer.
+      if (std::find(buffer->begin(), buffer->end(), tRef) == buffer->end() )
+      {
+        // This tRef is not in the buffer yet, fill it.
+        buffer->push_back(tRef);
+      } // Check that tRef is not in buffer.
+    } // loop over daughters
+  } // loop over source collection
+
+  // Sort buffer by pt.
+  vgamma::GreaterByPtRef<TRef> ptComparator;
+  std::sort(buffer->begin(), buffer->end(), ptComparator);
+
+  // create the output product
+  std::auto_ptr<TRefVector> output(new TRefVector);
+  
+  // copy the buffer in the output
+  for (typename TRefCollection::const_iterator item = buffer->begin();
+       item != buffer->end(); ++item)
+  {
+    output->push_back(*item);
+  }
+  
+  // save the output
+  iEvent.put(output);
+}
 
 #endif
