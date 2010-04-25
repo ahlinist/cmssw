@@ -309,6 +309,28 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ZmumuPhi", ZmumuPhi_, "ZmumuPhi[nZmumu]/D");
   tree_->Branch("ZmumuLeg1Index", ZmumuLeg1Index_, "ZmumuLeg1Index[nZmumu]/I");
   tree_->Branch("ZmumuLeg2Index", ZmumuLeg2Index_, "ZmumuLeg2Index[nZmumu]/I");
+  // Wenu candidate
+  tree_->Branch("nWenu", &nWenu_, "nWenu/I");
+  tree_->Branch("WenuMassTCaloMET", WenuMassTCaloMET_, "WenuMassTCaloMET[nWenu]/D");
+  tree_->Branch("WenuEtCaloMET", WenuEtCaloMET_, "WenuEtCaloMET[nWenu]/D");
+  tree_->Branch("WenuACopCaloMET", WenuACopCaloMET_, "WenuACopCaloMET[nWenu]/D");
+  tree_->Branch("WenuMassTTcMET", WenuMassTTcMET_, "WenuMassTTcMET[nWenu]/D");
+  tree_->Branch("WenuEtTcMET", WenuEtTcMET_, "WenuEtTcMET[nWenu]/D");
+  tree_->Branch("WenuACopTcMET", WenuACopTcMET_, "WenuACopTcMET[nWenu]/D");
+  tree_->Branch("WenuMassTPfMET", WenuMassTPfMET_, "WenuMassTPfMET[nWenu]/D");
+  tree_->Branch("WenuEtPfMET", WenuEtPfMET_, "WenuEtPfMET[nWenu]/D");
+  tree_->Branch("WenuACopPfMET", WenuACopPfMET_, "WenuACopPfMET[nWenu]/D");
+  // Wmunu candidate
+  tree_->Branch("nWmunu", &nWmunu_, "nWmunu/I");
+  tree_->Branch("WmunuMassTCaloMET", WmunuMassTCaloMET_, "WmunuMassTCaloMET[nWmunu]/D");
+  tree_->Branch("WmunuEtCaloMET", WmunuEtCaloMET_, "WmunuEtCaloMET[nWmunu]/D");
+  tree_->Branch("WmunuACopCaloMET", WmunuACopCaloMET_, "WmunuACopCaloMET[nWmunu]/D");
+  tree_->Branch("WmunuMassTTcMET", WmunuMassTTcMET_, "WmunuMassTTcMET[nWmunu]/D");
+  tree_->Branch("WmunuEtTcMET", WmunuEtTcMET_, "WmunuEtTcMET[nWmunu]/D");
+  tree_->Branch("WmunuACopTcMET", WmunuACopTcMET_, "WmunuACopTcMET[nWmunu]/D");
+  tree_->Branch("WmunuMassTPfMET", WmunuMassTPfMET_, "WmunuMassTPfMET[nWmunu]/D");
+  tree_->Branch("WmunuEtPfMET", WmunuEtPfMET_, "WmunuEtPfMET[nWmunu]/D");
+  tree_->Branch("WmunuACopPfMET", WmunuACopPfMET_, "WmunuACopPfMET[nWmunu]/D");
 }
 
 VgAnalyzerKit::~VgAnalyzerKit() {
@@ -555,9 +577,9 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   // tcMET
   Handle<edm::View<reco::MET> > tcMETcoll;
+  const reco::MET *tcMET = 0;
   if (e.getByLabel(tcMETlabel_, tcMETcoll)) {
 
-    const reco::MET *tcMET;
     tcMET = &(tcMETcoll->front());
 
     tcMET_       = tcMET->pt();
@@ -571,9 +593,9 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   // pfMET
   Handle<View<reco::PFMET> > pfMETcoll;
+  const reco::PFMET *pfMET = 0;
   if (e.getByLabel(pfMETlabel_, pfMETcoll)) {
 
-    const reco::PFMET *pfMET;
     pfMET = &(pfMETcoll->front());
 
     pfMET_       = pfMET->pt();
@@ -819,6 +841,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
     if (!iMu->isGlobalMuon()) continue;
+    if (iMu->globalTrack().isNull()) continue;
+    if (iMu->innerTrack().isNull()) continue;
     //if (iMu->pt()<10) continue;
 
     if (iMu->isGood("AllArbitrated")==1) muID[nMu_][0] = 1;
@@ -969,7 +993,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	  pat::CompositeCandidate Zee;
 	  Zee.addDaughter(*iEle, "ele1");
 	  Zee.addDaughter(*jEle, "ele2");
-	  
+
 	  AddFourMomenta addZee;
 	  addZee.set(Zee);
 	  ZeeMass_[nZee_]      = Zee.mass();
@@ -996,13 +1020,21 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   if (muonHandle_->size() > 1) {
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end()-1; ++iMu) {
 
+      if (!iMu->isGlobalMuon()) continue;
+      if (iMu->globalTrack().isNull()) continue;
+      if (iMu->innerTrack().isNull()) continue;
+
       leg2Index = leg1Index + 1;
       for (View<pat::Muon>::const_iterator jMu = iMu+1; jMu != muonHandle_->end(); ++jMu) {
 	
+	if (!jMu->isGlobalMuon()) continue;
+	if (jMu->globalTrack().isNull()) continue;
+	if (jMu->innerTrack().isNull()) continue;
+
 	if (iMu->charge() * jMu->charge() < 0 ) {
 	  pat::CompositeCandidate Zmumu;
-	  Zmumu.addDaughter(*iMu, "ele1");
-	  Zmumu.addDaughter(*jMu, "ele2");
+	  Zmumu.addDaughter(*iMu, "mu1");
+	  Zmumu.addDaughter(*jMu, "mu2");
 	  
 	  AddFourMomenta addZmumu;
 	  addZmumu.set(Zmumu);
@@ -1023,6 +1055,87 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
   }
 
+  // Wenu candiate
+  nWenu_ = 0; 
+  for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
+
+    for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
+      
+      pat::CompositeCandidate Wenu;
+      Wenu.addDaughter(*iEle, "ele");
+      Wenu.addDaughter(*iMET, "met");
+      
+      AddFourMomenta addWenu;
+      addWenu.set(Wenu);
+      WenuMassTCaloMET_[nWenu_] = massT(iEle->pt(), iMET->pt(), Wenu.px(), Wenu.py());
+      WenuEtCaloMET_[nWenu_]    = eT(iEle->pt(), iMET->pt());
+      WenuACopCaloMET_[nWenu_]  = acop(iEle->phi(), iMET->phi());      
+    }
+
+    pat::CompositeCandidate WenuTcMET;
+    WenuTcMET.addDaughter(*iEle, "ele");
+    WenuTcMET.addDaughter(*tcMET, "met");
+
+    AddFourMomenta addWenuTcMET;
+    addWenuTcMET.set(WenuTcMET);
+    WenuMassTTcMET_[nWenu_] = massT(iEle->pt(), tcMET->pt(), WenuTcMET.px(), WenuTcMET.py());
+    WenuEtTcMET_[nWenu_]    = eT(iEle->pt(), tcMET->pt());
+    WenuACopTcMET_[nWenu_]  = acop(iEle->phi(), tcMET->phi());      
+    
+    pat::CompositeCandidate WenuPfMET;
+    WenuPfMET.addDaughter(*iEle, "ele");
+    WenuPfMET.addDaughter(*pfMET, "met");
+
+    AddFourMomenta addWenuPfMET;
+    addWenuPfMET.set(WenuPfMET);
+    WenuMassTPfMET_[nWenu_] = massT(iEle->pt(), pfMET->pt(), WenuPfMET.px(), WenuPfMET.py());
+    WenuEtPfMET_[nWenu_]    = eT(iEle->pt(), pfMET->pt());
+    WenuACopPfMET_[nWenu_]  = acop(iEle->phi(), pfMET->phi());      
+
+    nWenu_++;
+  }
+
+  // Wmunu candiate
+  nWmunu_ = 0; 
+  for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
+
+    if (!iMu->isGlobalMuon()) continue;
+
+    for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
+      
+      pat::CompositeCandidate Wmunu;
+      Wmunu.addDaughter(*iMu, "mu");
+      Wmunu.addDaughter(*iMET, "met");
+      
+      AddFourMomenta addWmunu;
+      addWmunu.set(Wmunu);
+      WmunuMassTCaloMET_[nWmunu_] = massT(iMu->pt(), iMET->pt(), Wmunu.px(), Wmunu.py());
+      WmunuEtCaloMET_[nWmunu_]    = eT(iMu->pt(), iMET->pt());
+      WmunuACopCaloMET_[nWmunu_]  = acop(iMu->phi(), iMET->phi());      
+    }
+
+    pat::CompositeCandidate WmunuTcMET;
+    WmunuTcMET.addDaughter(*iMu, "mu");
+    WmunuTcMET.addDaughter(*tcMET, "met");
+
+    AddFourMomenta addWmunuTcMET;
+    addWmunuTcMET.set(WmunuTcMET);
+    WmunuMassTTcMET_[nWmunu_] = massT(iMu->pt(), tcMET->pt(), WmunuTcMET.px(), WmunuTcMET.py());
+    WmunuEtTcMET_[nWmunu_]    = eT(iMu->pt(), tcMET->pt());
+    WmunuACopTcMET_[nWmunu_]  = acop(iMu->phi(), tcMET->phi());      
+    
+    pat::CompositeCandidate WmunuPfMET;
+    WmunuPfMET.addDaughter(*iMu, "mu");
+    WmunuPfMET.addDaughter(*pfMET, "met");
+
+    AddFourMomenta addWmunuPfMET;
+    addWmunuPfMET.set(WmunuPfMET);
+    WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), pfMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
+    WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), pfMET->pt());
+    WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), pfMET->phi());      
+
+    nWmunu_++;
+  }
 
   tree_->Fill();
 }
@@ -1031,6 +1144,25 @@ void VgAnalyzerKit::beginJob() {
 }
 
 void VgAnalyzerKit::endJob() {
+}
+
+double VgAnalyzerKit::eT(double pt1, double pt2) const {
+  double et = pt1 + pt2;
+  return et;
+}
+
+double VgAnalyzerKit::massT(double pt1, double pt2, double wpx, double wpy) const {
+  double mt = eT(pt1, pt2)*eT(pt1, pt2) - wpx*wpx - wpy*wpy;
+  mt = (mt>0) ? sqrt(mt) : 0;
+  return mt; 
+}
+
+double VgAnalyzerKit::acop(double phi1, double phi2) const {
+  Geom::Phi<double> deltaphi(phi1-phi2);
+  double acop = deltaphi.value();
+  if (acop<0) acop = - acop;
+  acop = M_PI - acop;
+  return acop;
 }
 
 DEFINE_FWK_MODULE(VgAnalyzerKit);
