@@ -36,6 +36,9 @@ protected:
   virtual void beginJob();
   virtual void produce( Event &, const EventSetup & );
   virtual void endJob();
+  double eT(double pt1, double pt2) const;
+  double massT(double pt1, double pt2, double wpx, double wpy) const;
+  double acop(double phi1, double phi2) const;
 
   bool saveHistograms_;
   bool saveHLTInfo_;
@@ -304,16 +307,38 @@ protected:
   double ZeePt_[maxP];
   double ZeeEta_[maxP];
   double ZeePhi_[maxP];
-  double ZeeLeg1Index_[maxP];
-  double ZeeLeg2Index_[maxP];
+  int    ZeeLeg1Index_[maxP];
+  int    ZeeLeg2Index_[maxP];
   // Zmumu candidate
   int    nZmumu_;
   double ZmumuMass_[maxP];
   double ZmumuPt_[maxP];
   double ZmumuEta_[maxP];
   double ZmumuPhi_[maxP];
-  double ZmumuLeg1Index_[maxP];
-  double ZmumuLeg2Index_[maxP];
+  int    ZmumuLeg1Index_[maxP];
+  int    ZmumuLeg2Index_[maxP];
+  // Wenu candidate
+  int    nWenu_;
+  double WenuMassTCaloMET_[maxP];
+  double WenuEtCaloMET_[maxP];
+  double WenuACopCaloMET_[maxP];
+  double WenuMassTTcMET_[maxP];
+  double WenuEtTcMET_[maxP];
+  double WenuACopTcMET_[maxP];
+  double WenuMassTPfMET_[maxP];
+  double WenuEtPfMET_[maxP];
+  double WenuACopPfMET_[maxP];
+  // Wmunu candidate
+  int    nWmunu_;
+  double WmunuMassTCaloMET_[maxP];
+  double WmunuEtCaloMET_[maxP];
+  double WmunuACopCaloMET_[maxP];
+  double WmunuMassTTcMET_[maxP];
+  double WmunuEtTcMET_[maxP];
+  double WmunuACopTcMET_[maxP];
+  double WmunuMassTPfMET_[maxP];
+  double WmunuEtPfMET_[maxP];
+  double WmunuACopPfMET_[maxP];
 
   // Physics objects handles
   Handle<View<pat::Muon> >                  muonHandle_;
