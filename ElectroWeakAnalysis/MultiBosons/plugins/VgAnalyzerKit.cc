@@ -3,6 +3,7 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Framework/interface/TriggerNames.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HepMCCandidate/interface/PdfInfo.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
@@ -37,6 +38,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
 
   ebReducedRecHitCollection_ = ps.getParameter<InputTag>("ebReducedRecHitCollection");
   eeReducedRecHitCollection_ = ps.getParameter<InputTag>("eeReducedRecHitCollection");
+  beamSpotCollection_        = ps.getParameter<InputTag>("BeamSpotCollection");
 
   if (saveHistograms_) helper_.bookHistos(this);
 
@@ -244,10 +246,10 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muEmVeto", muEmVeto_, "muEmVeto[nMu]/D");
   tree_->Branch("muHadVeto", muHadVeto_, "muHadVeto[nMu]/D");
   tree_->Branch("muType", muType_, "muType[nMu]/I");
-  tree_->Branch("muID", muID, "muID[nMu][6]/O");
+  tree_->Branch("muID", muID_, "muID[nMu][6]/O");
   // [0]: AllArbitrated, [1]: GlobalMuonPromptTight, [2]: TMLSLoose, [3]: TMLSTight, [4]: TM2DCompatLoose, [5]: TM2DCompatTight
   tree_->Branch("muD0", muD0_, "muD0[nMu]/D");
-  tree_->Branch("muNumberOfValidHits", muNumberOfValidHits_, "muNumberOfValidHits[nMu]/I");
+  tree_->Branch("muNumberOfValidTrkHits", muNumberOfValidTrkHits_, "muNumberOfValidTrkHits[nMu]/I");
   // Jet
   tree_->Branch("nJet", &nJet_, "nJet/I");
   tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/D");
@@ -350,6 +352,9 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   e.getByLabel(eeReducedRecHitCollection_, EEReducedRecHits);
   EcalClusterLazyTools lazyTool(e, es, ebReducedRecHitCollection_, eeReducedRecHitCollection_ );
   
+  Handle<reco::BeamSpot> beamSpotHandle;
+  e.getByLabel(beamSpotCollection_, beamSpotHandle);
+
   //Handle<int> genProcessID;
   //e.getByLabel("genEventProcID", genProcessID);
   //processID_ = *genProcessID;
@@ -841,30 +846,26 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
     if (!iMu->isGlobalMuon()) continue;
+    if (!iMu->isTrackerMuon()) continue;
     if (iMu->globalTrack().isNull()) continue;
     if (iMu->innerTrack().isNull()) continue;
     //if (iMu->pt()<10) continue;
 
-    if (iMu->isGood("AllArbitrated")==1) muID[nMu_][0] = 1;
-    else muID[nMu_][0] = 0;
-    if (iMu->isGood("GlobalMuonPromptTight")==1) muID[nMu_][1] = 1;
-    else muID[nMu_][1] = 0;
-    if (iMu->isGood("TMLastStationLoose")==1) muID[nMu_][2] = 1;
-    else muID[nMu_][2] = 0;
-    if (iMu->isGood("TMLastStationTight")==1) muID[nMu_][3] = 1;
-    else muID[nMu_][3] = 0;
-    if (iMu->isGood("TM2DCompatibilityLoose")==1) muID[nMu_][4] = 1;
-    else muID[nMu_][4] = 0;
-    if (iMu->isGood("TM2DCompatibilityTight")==1) muID[nMu_][5] = 1;
-    else muID[nMu_][5] = 0;
+    for (int i=0; i<6; ++i) muID_[nMu_][i] = 0;
+    if (iMu->isGood("AllArbitrated")==1) muID_[nMu_][0] = 1;
+    if (iMu->isGood("GlobalMuonPromptTight")==1) muID_[nMu_][1] = 1;
+    if (iMu->isGood("TMLastStationLoose")==1) muID_[nMu_][2] = 1;
+    if (iMu->isGood("TMLastStationTight")==1) muID_[nMu_][3] = 1;
+    if (iMu->isGood("TM2DCompatibilityLoose")==1) muID_[nMu_][4] = 1;
+    if (iMu->isGood("TM2DCompatibilityTight")==1) muID_[nMu_][5] = 1;
 
-    const reco::TrackRef trkr = iMu->track();
+    const reco::TrackRef trkr = iMu->globalTrack();
     if (trkr.isNull()) {
       muD0_[nMu_] = -99.;
-      muNumberOfValidHits_[nMu_] = -99;
+      muNumberOfValidTrkHits_[nMu_] = -99;
     } else {
-      muD0_[nMu_] = (*iMu).innerTrack()->d0();
-      muNumberOfValidHits_[nMu_] = (*iMu).innerTrack()->numberOfValidHits();
+      muD0_[nMu_] = trkr->dxy(beamSpotHandle->position());
+      muNumberOfValidTrkHits_[nMu_] = trkr->hitPattern().numberOfValidTrackerHits();
     }
 
     muEta_[nMu_] = iMu->eta();
@@ -1021,6 +1022,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end()-1; ++iMu) {
 
       if (!iMu->isGlobalMuon()) continue;
+      if (!iMu->isTrackerMuon()) continue;
       if (iMu->globalTrack().isNull()) continue;
       if (iMu->innerTrack().isNull()) continue;
 
@@ -1028,6 +1030,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       for (View<pat::Muon>::const_iterator jMu = iMu+1; jMu != muonHandle_->end(); ++jMu) {
 	
 	if (!jMu->isGlobalMuon()) continue;
+	if (!jMu->isTrackerMuon()) continue;
 	if (jMu->globalTrack().isNull()) continue;
 	if (jMu->innerTrack().isNull()) continue;
 
