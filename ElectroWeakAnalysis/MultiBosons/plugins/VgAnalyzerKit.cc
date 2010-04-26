@@ -1,7 +1,7 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/VgAnalyzerKit.h"
 
 #include "FWCore/ParameterSet/interface/InputTag.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
@@ -418,14 +418,13 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	vtxNTrk_[nVtx_] = (*recVtxs)[i].tracksSize();
 	vtxNDF_[nVtx_] = (*recVtxs)[i].ndof();
 	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho(); 
-	//nVtx_++;
-
+	
 	if (vtxNDF_[nVtx_] > 4 && fabs(vtx_[nVtx_][2]) <= 15 && vtxD0_[nVtx_] <= 2) nGoodVtx++;
-        nVtx_++;
+	nVtx_++;
       }
   }
   if (nGoodVtx > 0) IsVtxGood_ = 1;  
-
+  
   // track quality
   TrackBase::TrackQuality trkQuality_;
   Handle<reco::TrackCollection> Tracks;
@@ -538,7 +537,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   if (saveHLTInfo_) {
     Handle<TriggerResults> trgResultsHandle;
     e.getByLabel(trgResults_, trgResultsHandle);
-    TriggerNames trgNames(*trgResultsHandle);
+    const TriggerNames &trgNames = e.triggerNames(*trgResultsHandle);
     vector<string> hlNames_ = trgNames.triggerNames();
     for (size_t i=0; i<trgNames.size(); ++i) {
       //int hltBits[20] = {6, 7, 8, 9, 10, 11, 12, 44, 45, 46, 47, 48, 49, 50, 76, 77, 78, 83, 84, 85};
