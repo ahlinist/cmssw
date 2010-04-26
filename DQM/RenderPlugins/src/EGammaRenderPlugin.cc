@@ -25,7 +25,7 @@ public:
         return false;
            
       // electrons
-      if ( o.name.find( "/Electrons/ele") != std::string::npos )
+      if ( o.name.find( "/Electrons/Ele") != std::string::npos )
         return true;
            
       // photons
@@ -56,14 +56,14 @@ public:
       c->cd();
 
       // electrons
-      if ( o.name.find( "/Electrons/ele") != std::string::npos )
+      if ( o.name.find( "/Electrons/Ele") != std::string::npos )
        {
         TH1 * histo = dynamic_cast<TH1*>(o.object) ;
         assert(histo) ;
         
         TString histo_option = histo->GetOption() ;
-        if (histo_option.Contains("ELE_LOGY")==kTRUE)
-         { c->SetLogy(1) ; }
+        if ((histo_option.Contains("ELE_LOGY")==kTRUE)&&(histo->GetMaximum()>0))
+        { c->SetLogy(1) ; }
          
         if ( dynamic_cast<TH2*>(o.object) )
          {
@@ -99,7 +99,7 @@ public:
       c->cd();
       
       // electrons : do nothing
-      if ( o.name.find( "/Electrons/ele") != std::string::npos )
+      if ( o.name.find( "/Electrons/Ele") != std::string::npos )
        { return ; }
              
       // photons
