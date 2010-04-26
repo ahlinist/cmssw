@@ -431,7 +431,8 @@ void analysisClass::Loop()
   JPTEendcapJIDloose->SetXTitle("E_{endcap} [GeV]");
   JPTEendcapJIDloose->SetTitle(dataset);
 
-  TH1D *JPTresemf = new TH1D("JPTresemf","",101,-0.005,1.005);
+//   TH1D *JPTresemf = new TH1D("JPTresemf","",101,-0.005,1.005);
+  TH1D *JPTresemf = new TH1D("JPTresemf","",31,-0.005,1.005);
   JPTresemf->SetXTitle("restricted emf");
   JPTresemf->SetTitle(dataset);
   TH1D *JPTfhpd = new TH1D("JPTfhpd","",101,-0.005,1.005);
@@ -541,6 +542,7 @@ void analysisClass::Loop()
 
 
   // ---------------------- Basic Lepton (and others) Distributions ----------------------------------
+  // inclusive
   TH1I *JPTelectronNumber = new TH1I("JPTelectronNumber","",10,0,10);
   JPTelectronNumber->SetXTitle("Electron number");
   JPTelectronNumber->SetTitle(dataset);
@@ -568,6 +570,36 @@ void analysisClass::Loop()
   TH1I *JPTtrackPt = new TH1I("JPTtrackPt","",10,0,10);
   JPTtrackPt->SetXTitle("Track p_{t}");
   JPTtrackPt->SetTitle(dataset);
+
+  // di-jets
+  TH1I *dijetJPTelectronNumberIDloose = new TH1I("dijetJPTelectronNumber","",10,0,10);
+  dijetJPTelectronNumberIDloose->SetXTitle("Electron number");
+  dijetJPTelectronNumberIDloose->SetTitle(dataset);
+  TH1I *dijetJPTelectronPtIDloose = new TH1I("dijetJPTelectronPt","",25,0,50);
+  dijetJPTelectronPtIDloose->SetXTitle("Electron p_{t}");
+  dijetJPTelectronPtIDloose->SetTitle(dataset);
+
+  TH1I *dijetJPTmuonNumberIDloose = new TH1I("dijetJPTmuonNumber","",10,0,10);
+  dijetJPTmuonNumberIDloose->SetXTitle("Muon number");
+  dijetJPTmuonNumberIDloose->SetTitle(dataset);
+  TH1I *dijetJPTmuonPtIDloose = new TH1I("dijetJPTmuonPt","",25,0,50);
+  dijetJPTmuonPtIDloose->SetXTitle("Muon p_{t}");
+  dijetJPTmuonPtIDloose->SetTitle(dataset);
+
+  TH1I *dijetJPTpionNumberIDloose = new TH1I("dijetJPTpionNumber","",200,0,200);
+  dijetJPTpionNumberIDloose->SetXTitle("Pion number");
+  dijetJPTpionNumberIDloose->SetTitle(dataset);
+  TH1I *dijetJPTpionPtIDloose = new TH1I("dijetJPTpionPt","",25,0,50);
+  dijetJPTpionPtIDloose->SetXTitle("Pion p_{t}");
+  dijetJPTpionPtIDloose->SetTitle(dataset);
+
+  TH1I *dijetJPTtrackNumberIDloose = new TH1I("dijetJPTtrackNumber","",200,0,200);
+  dijetJPTtrackNumberIDloose->SetXTitle("Track number");
+  dijetJPTtrackNumberIDloose->SetTitle(dataset);
+  TH1I *dijetJPTtrackPtIDloose = new TH1I("dijetJPTtrackPt","",10,0,10);
+  dijetJPTtrackPtIDloose->SetXTitle("Track p_{t}");
+  dijetJPTtrackPtIDloose->SetTitle(dataset);
+
 
 
   // -----------------------Efficiency ---------------------------------------------------
@@ -894,7 +926,7 @@ void analysisClass::Loop()
 	    JPTnconst->Fill(JPTak5JetNConstituents->at(j));
 	    JPTpt->Fill(JPTak5JetpT->at(j) * jcScale);    //jc 
 
-	    // fill the leptons and pions
+	    // fill the leptons and pions (inclusive)
 	    int numberOfJPTtracks=0;
 	    // electrons
 	    JPTelectronNumber->Fill(JPTak5JetAllElectronsPt->size());
@@ -912,7 +944,7 @@ void analysisClass::Loop()
 	      JPTpionPt->Fill(JPTak5JetAllPionsPt->at(i));
 	    }
 	    // tracks
-	    cout<<"+++"<<(JPTak5JetAllElectronsPt->size())<<"/"<<(JPTak5JetAllMuonsPt->size())<<"/"<<(JPTak5JetAllPionsPt->size())<<endl;
+// 	    cout<<"+++"<<(JPTak5JetAllElectronsPt->size())<<"/"<<(JPTak5JetAllMuonsPt->size())<<"/"<<(JPTak5JetAllPionsPt->size())<<endl;
 	    numberOfJPTtracks=(JPTak5JetAllElectronsPt->size())+(JPTak5JetAllMuonsPt->size())+(JPTak5JetAllPionsPt->size());
 	    JPTtrackNumber->Fill(numberOfJPTtracks);
 	    for(unsigned int i=0; i<JPTak5JetAllElectronsPt->size();i++) {
@@ -1063,6 +1095,42 @@ void analysisClass::Loop()
 		dijetJPTetaJIDloose->Fill(JPTak5JetEta->at(index_jet2));
 		dijetJPTphiJIDloose->Fill(JPTak5JetPhi->at(index_jet1));
 		dijetJPTphiJIDloose->Fill(JPTak5JetPhi->at(index_jet2));
+
+
+		// fill the leptons and pions (loose di-jets)
+		int numberOfJPTtracks=0;
+		// electrons
+		dijetJPTelectronNumberIDloose->Fill(JPTak5JetAllElectronsPt->size());
+		for(unsigned int i=0; i<JPTak5JetAllElectronsPt->size();i++) {
+		  dijetJPTelectronPtIDloose->Fill(JPTak5JetAllElectronsPt->at(i));
+		}
+		// muons
+		dijetJPTmuonNumberIDloose->Fill(JPTak5JetAllMuonsPt->size());
+		for(unsigned int i=0; i<JPTak5JetAllMuonsPt->size();i++) {
+		  dijetJPTmuonPtIDloose->Fill(JPTak5JetAllMuonsPt->at(i));
+		}
+		// pions
+		dijetJPTpionNumberIDloose->Fill(JPTak5JetAllPionsPt->size());
+		for(unsigned int i=0; i<JPTak5JetAllPionsPt->size();i++) {
+		  dijetJPTpionPtIDloose->Fill(JPTak5JetAllPionsPt->at(i));
+		}
+		// tracks
+		// 	    cout<<"+++"<<(JPTak5JetAllElectronsPt->size())<<"/"<<(JPTak5JetAllMuonsPt->size())<<"/"<<(JPTak5JetAllPionsPt->size())<<endl;
+		numberOfJPTtracks=(JPTak5JetAllElectronsPt->size())+(JPTak5JetAllMuonsPt->size())+(JPTak5JetAllPionsPt->size());
+		dijetJPTtrackNumberIDloose->Fill(numberOfJPTtracks);
+		for(unsigned int i=0; i<JPTak5JetAllElectronsPt->size();i++) {
+		  dijetJPTtrackPtIDloose->Fill(JPTak5JetAllElectronsPt->at(i));
+		}
+		for(unsigned int i=0; i<JPTak5JetAllMuonsPt->size();i++) {
+		  dijetJPTtrackPtIDloose->Fill(JPTak5JetAllMuonsPt->at(i));
+		}
+		for(unsigned int i=0; i<JPTak5JetAllPionsPt->size();i++) {
+		  dijetJPTtrackPtIDloose->Fill(JPTak5JetAllPionsPt->at(i));
+		}
+
+
+
+
 		//now loop on jets and count how many JIDLOOSE jets with pT>8 are in each event
 		for (int dj = 0; dj<int(JPTak5JetpT->size()); dj++){
 		  if(makeJetCorr==1) {
@@ -1266,6 +1334,15 @@ void analysisClass::Loop()
    JPTpionPt->Write();
    JPTtrackNumber->Write();
    JPTtrackPt->Write();
+
+   dijetJPTelectronNumberIDloose->Write();
+   dijetJPTelectronPtIDloose->Write();
+   dijetJPTmuonNumberIDloose->Write();
+   dijetJPTmuonPtIDloose->Write();
+   dijetJPTpionNumberIDloose->Write();
+   dijetJPTpionPtIDloose->Write();
+   dijetJPTtrackNumberIDloose->Write();
+   dijetJPTtrackPtIDloose->Write();
 
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
