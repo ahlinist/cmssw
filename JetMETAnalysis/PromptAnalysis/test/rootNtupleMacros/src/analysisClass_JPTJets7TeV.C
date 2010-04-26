@@ -297,17 +297,18 @@ void analysisClass::Loop()
     ptMin=7.;
     ptMinDijet=5.;
   }
+  double Pi=acos(-1.);
   // Binning 
-  double ptMax=100.;
-  int ptBin=50;
+  double ptMax=300.;
+  int ptBin=100;
+ 
+  int  phiBin=20;
+  double phiMax=Pi;   // -
+  double phiMin=-1.*Pi;
   
-  int  phiBin=100;
-  double phiMax=3.2;   // -
-  double phiMin=-3.2;
-  
-  int  etaBin=100;
-  double etaMax=3.4;   //-
-  double etaMin=-3.4;
+  int  etaBin=20;
+  double etaMax=3.;   //-
+  double etaMin=-3.;
   // -------------------Basic distributions - all ak5 ----------------------------
    
   TH1I *JPTnjets = new TH1I("JPTnjets","",20,0,20);
@@ -374,13 +375,13 @@ void analysisClass::Loop()
   JPTEendcapJIDloose->SetXTitle("E_{endcap} [GeV]");
   JPTEendcapJIDloose->SetTitle(dataset);
 
-  TH1D *JPTresemf = new TH1D("JPTresemf","",101,-0.005,1.005);
+  TH1D *JPTresemf = new TH1D("JPTresemf","",30,0.,1.);
   JPTresemf->SetXTitle("restricted emf");
   JPTresemf->SetTitle(dataset);
-  TH1D *JPTfhpd = new TH1D("JPTfhpd","",101,-0.005,1.005);
+  TH1D *JPTfhpd = new TH1D("JPTfhpd","",30,0.,1.);
   JPTfhpd->SetXTitle("f_{HPD}");
   JPTfhpd->SetTitle(dataset);
-  TH1D *JPTfrbx = new TH1D("JPTfrbx","",101,-0.005,1.005);
+  TH1D *JPTfrbx = new TH1D("JPTfrbx","",30,0.,1.);
   JPTfrbx->SetXTitle("f_{RBX}");
   JPTfrbx->SetTitle(dataset);
   TH1I *JPTn90hits = new TH1I("JPTn90hits","",50,0,50);

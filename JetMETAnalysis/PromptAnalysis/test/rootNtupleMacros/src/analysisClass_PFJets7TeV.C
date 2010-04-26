@@ -299,17 +299,21 @@ void analysisClass::Loop()
   double n90hitsmin =1;
   double ntracksmin =1;
   double emffrac = 0.01;
+
+  double Pi=acos(-1.);
   // Binning 
-  double ptMax=100.;
-  int ptBin=50;
+  double ptMax=300.;
+  int ptBin=100;
+
   double barreleta=1.4;
-  int  phiBin=100;
-  double phiMax=3.2;   // -
-  double phiMin=-3.2;
+
+  int  phiBin=20;
+  double phiMax=Pi;   // -
+  double phiMin=-1.*Pi;
   
-  int  etaBin=100;
-  double etaMax=3.4;   //-
-  double etaMin=-3.4;
+  int  etaBin=20;
+  double etaMax=3.;   //-
+  double etaMin=-3.;
 
   int invmassBin=100;//30
   double invmassMax=600.;
@@ -442,40 +446,40 @@ void analysisClass::Loop()
   TH1I *PFJetNeutMultBarrel = new TH1I("PFJetNeutMultBarrel","",50,0,50);
   PFJetNeutMultBarrel->SetXTitle("Number of neutral particles in barrel PFJet");
   PFJetNeutMultBarrel->SetTitle(dataset);
-  TH1D *PFJetChFracBarrel = new TH1D("PFJetChFracBarrel","",101,-0.005,1.005);
+  TH1D *PFJetChFracBarrel = new TH1D("PFJetChFracBarrel","",30,0.,1.);
   PFJetChFracBarrel->SetXTitle("charged fraction for barrel PFJets");
   PFJetChFracBarrel->SetTitle(dataset);
-  TH1D *PFJetChFrac = new TH1D("PFJetChFrac","",101,-0.005,1.005);
+  TH1D *PFJetChFrac = new TH1D("PFJetChFrac","",30,0.,1.);
   PFJetChFrac->SetXTitle("charged fraction for PFJets");
   PFJetChFrac->SetTitle(dataset);
-  TH1D *PFJetCHFBarrel = new TH1D("PFJetCHFBarrel","",101,-0.005,1.005);
+  TH1D *PFJetCHFBarrel = new TH1D("PFJetCHFBarrel","",30,0.,1.);
   PFJetCHFBarrel->SetXTitle("charged hadron fraction for barrel PFJets");
   PFJetCHFBarrel->SetTitle(dataset);
-  TH1D *PFJetCHF = new TH1D("PFJetCHF","",101,-0.005,1.005);
+  TH1D *PFJetCHF = new TH1D("PFJetCHF","",30,0.,1.);
   PFJetCHF->SetXTitle("charged hadron fraction for PFJets");
   PFJetCHF->SetTitle(dataset);
-  TH1D *PFJetCEFBarrel = new TH1D("PFJetCEFBarrel","",101,-0.005,1.005);
+  TH1D *PFJetCEFBarrel = new TH1D("PFJetCEFBarrel","",30,0.,1.);
   PFJetCEFBarrel->SetXTitle("charged EM fraction (electrons) for barrel PFJets");
   PFJetCEFBarrel->SetTitle(dataset);
-  TH1D *PFJetCEF = new TH1D("PFJetCEF","",101,-0.005,1.005);
+  TH1D *PFJetCEF = new TH1D("PFJetCEF","",30,0.,1.);
   PFJetCEF->SetXTitle("charged EM fraction (electrons) for PFJets");
   PFJetCEF->SetTitle(dataset);
-  TH1D *PFJetNEF = new TH1D("PFJetNEF","",101,-0.005,1.005);
+  TH1D *PFJetNEF = new TH1D("PFJetNEF","",30,0.,1.);
   PFJetNEF->SetXTitle("neutral EM fraction (photons) for PFJets");
   PFJetNEF->SetTitle(dataset);
-  TH1D *PFJetNEFBarrel = new TH1D("PFJetNEFBarrel","",101,-0.005,1.005);
+  TH1D *PFJetNEFBarrel = new TH1D("PFJetNEFBarrel","",30,0.,1.);
   PFJetNEFBarrel->SetXTitle("neutral EM fraction (photons) for PFJets");
   PFJetNEFBarrel->SetTitle(dataset);
-  TH1D *PFJetNHF = new TH1D("PFJetNHF","",101,-0.005,1.005);
+  TH1D *PFJetNHF = new TH1D("PFJetNHF","",30,0.,1.);
   PFJetNHF->SetXTitle("neutral hadronic fraction for PFJets");
   PFJetNHF->SetTitle(dataset);
-  TH1D *PFJetNHFBarrel = new TH1D("PFJetNHFBarrel","",101,-0.005,1.005);
+  TH1D *PFJetNHFBarrel = new TH1D("PFJetNHFBarrel","",30,0.,1.);
   PFJetNHFBarrel->SetXTitle("neutral hadronic fraction for PFJets");
   PFJetNHFBarrel->SetTitle(dataset);
-  TH1D *PFJetMUFBarrel = new TH1D("PFJetMUFBarrel","",101,-0.005,1.005);
+  TH1D *PFJetMUFBarrel = new TH1D("PFJetMUFBarrel","",30,0.,1.);
   PFJetMUFBarrel->SetXTitle("muon fraction for barrel PFJets");
   PFJetMUFBarrel->SetTitle(dataset);
-  TH1D *PFJetMUF = new TH1D("PFJetMUF","",101,-0.005,1.005);
+  TH1D *PFJetMUF = new TH1D("PFJetMUF","",30,0.,1.);
   PFJetMUF->SetXTitle("muon fraction for PFJets");
   PFJetMUF->SetTitle(dataset);
 
@@ -544,22 +548,22 @@ void analysisClass::Loop()
   TH1I *PFJetNeutMultdijets = new TH1I("PFJetNeutMultdijets","",50,0,50);
   PFJetNeutMultdijets->SetXTitle("Number of neutral particles in PFJet");
   PFJetNeutMultdijets->SetTitle(dataset);
-  TH1D *PFJetChFracdijets = new TH1D("PFJetChFracdijets","",101,-0.005,1.005);
+  TH1D *PFJetChFracdijets = new TH1D("PFJetChFracdijets","",30,0.,1.);
   PFJetChFracdijets->SetXTitle("charged fraction");
   PFJetChFracdijets->SetTitle(dataset);
-  TH1D *PFJetCHFdijets = new TH1D("PFJetCHFdijets","",101,-0.005,1.005);
+  TH1D *PFJetCHFdijets = new TH1D("PFJetCHFdijets","",30,0.,1.);
   PFJetCHFdijets->SetXTitle("charged hadron fraction");
   PFJetCHFdijets->SetTitle(dataset);
-  TH1D *PFJetCEFdijets = new TH1D("PFJetCEFdijets","",101,-0.005,1.005);
+  TH1D *PFJetCEFdijets = new TH1D("PFJetCEFdijets","",30,0.,1.);
   PFJetCEFdijets->SetXTitle("charged em fraction");
   PFJetCEFdijets->SetTitle(dataset);
-  TH1D *PFJetNHFdijets = new TH1D("PFJetNHFdijets","",101,-0.005,1.005);
+  TH1D *PFJetNHFdijets = new TH1D("PFJetNHFdijets","",30,0.,1.);
   PFJetNHFdijets->SetXTitle("neutral hadron fraction");
   PFJetNHFdijets->SetTitle(dataset);
-  TH1D *PFJetNEFdijets = new TH1D("PFJetNEFdijets","",101,-0.005,1.005);
+  TH1D *PFJetNEFdijets = new TH1D("PFJetNEFdijets","",30,0.,1.);
   PFJetNEFdijets->SetXTitle("neutral em fraction");
   PFJetNEFdijets->SetTitle(dataset);
-  TH1D *PFJetMUFdijets = new TH1D("PFJetMUFdijets","",101,-0.005,1.005);
+  TH1D *PFJetMUFdijets = new TH1D("PFJetMUFdijets","",30,0.,1.);
   PFJetMUFdijets->SetXTitle("charged muon fraction");
   PFJetMUFdijets->SetTitle(dataset);
   TH1I *PFJetsindijets = new TH1I("PFJetsindijets","",20,0,20);
@@ -670,19 +674,19 @@ void analysisClass::Loop()
  
  
   // fake PFJets -----------------------
-  TH1D *CHFfakePFJets = new TH1D("CHFfakePFJets","",101,-0.005,1.005);
+  TH1D *CHFfakePFJets = new TH1D("CHFfakePFJets","",30,0.,1.);
   CHFfakePFJets->SetXTitle("CHF");
   CHFfakePFJets->SetTitle(dataset);
-  TH1D *CEFfakePFJets = new TH1D("CEFfakePFJets","",101,-0.005,1.005);
+  TH1D *CEFfakePFJets = new TH1D("CEFfakePFJets","",30,0.,1.);
   CEFfakePFJets->SetXTitle("CEF");
   CEFfakePFJets->SetTitle(dataset);
-  TH1D *NHFfakePFJets = new TH1D("NHFfakePFJets","",101,-0.005,1.005);
+  TH1D *NHFfakePFJets = new TH1D("NHFfakePFJets","",30,0.,1.);
   NHFfakePFJets->SetXTitle("NHF");
   NHFfakePFJets->SetTitle(dataset);
-  TH1D *NEFfakePFJets = new TH1D("NEFfakePFJets","",101,-0.005,1.005);
+  TH1D *NEFfakePFJets = new TH1D("NEFfakePFJets","",30,0.,1.);
   NEFfakePFJets->SetXTitle("NEF");
   NEFfakePFJets->SetTitle(dataset);
-  TH1D *MUFfakePFJets = new TH1D("MUFfakePFJets","",101,-0.005,1.005);
+  TH1D *MUFfakePFJets = new TH1D("MUFfakePFJets","",30,0.,1.);
   MUFfakePFJets->SetXTitle("MUF");
   MUFfakePFJets->SetTitle(dataset);
   TH1D *fakePFJetptall1 = new TH1D("fakePFJetptall1","",ptBin, 0,50);
