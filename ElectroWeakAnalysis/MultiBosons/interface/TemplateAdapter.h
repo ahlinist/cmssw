@@ -14,7 +14,7 @@
 //
 // Original Author:  Jan Veverka,32 3-A13,+41227677936,
 //         Created:  Sat Apr 24 10:51:03 CEST 2010
-// $Id: TemplateAdapter.h,v 1.5 2010/04/26 12:09:37 lgray Exp $
+// $Id: TemplateAdapter.h,v 1.6 2010/04/26 13:46:53 lgray Exp $
 //
 //
 
@@ -113,7 +113,6 @@ template<typename InputCollection, typename OutputCollection>
 	    if(daughter->hasMasterClone())
 	      try { // attempt cast up of master clone	    
 		TRef tRef;
-		std::string TRefType(typeid(TRef).name()); 
 		
 		tRef = daughter->masterClone().castTo<TRef>(); // just cast to whatever or throw
 		
