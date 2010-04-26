@@ -91,13 +91,12 @@ bool eventInGoodRunLumi(int run, int lumi){
 void ReadCleaningParameters(const char* filename){
 	ifstream IN(filename);
 	char buffer[200];
-	//cout << "Reading object selection from " << filename << endl;
+	cout << "Reading object selection from " << filename << endl;
 	char ParName[100];
 	float ParValue;
 	unsigned int cut_counter=0;
-	bool ok(false);
 	while( IN.getline(buffer, 200, '\n') ){
-	  ok = false;
+
 	  if (buffer[0] == '#') {continue;} // Skip lines commented with '#'
 	  //scans lines first string, then double
 	  sscanf(buffer, "%s %f", ParName, &ParValue);
@@ -164,13 +163,10 @@ void ReadCleaningParameters(const char* filename){
 	if(cut_counter!=14){
 	  cout<<"at least one cleaning cut value is NOT properly set: "<<cut_counter<<endl;
 	}else{
-	  cout<<"cuts inc CaloJetPt/CaloJetEta/dijet CaloJetPt/CaloJetEta/deltaPhiDijet: "<<ptMin<<"/"<<endcapeta<<"/"<<ptMinDijet<<"/"<<endcapeta_dijet<<"/"<<cut_DiJetDeltaPhi_min<<endl;
+	  cout<<"cuts inc CaloJetPt/CaloJetEta/dijet CaloJetPt/CaloJetEta/deltaPhiDijet: "<<ptMin<<"/"<<endcapeta<<"/"<<ptMinDijet<<"/"<<endcapeta_dijet<<"/"<<cut_DiJetDeltaPhi_min<<endl;	  
+	  cout<<"cuts inc PFDiJetPt/PFDiJetEta/JPT DiJetPt/JPT Di JetEta "<<ptMinDiPFjet <<"/"<< endcapeta_dijetPF  <<"/"<<  ptMinDiJPTjet   <<"/"<< endcapeta_dijetPF  <<"/"<<cut_DiJetDeltaPhi_min<<endl;
 	  cout<<"cuts PVz/PVndof/MonsterEventCut/MetbySumEt/useCorrJet: "<<cut_PVtxz_max<<"/"<<cut_PVtxndof_min<<"/"<<cut_fracHighpurityTracks_min<<"/"<<cut_metbysumet<<"/"<<makeJetCorr<<endl;
-	}
-
-	if(!ok){
-	  cout<<"one cleaning cut value is NOT properly set: "<<ok<<endl;
-	}
+	}	
 
 }
 
@@ -658,8 +654,8 @@ void analysisClass::Loop()
     
 
       pass_PhysicsBit = 1;
-      //      if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
-      if (pass_PhysicsBit==1) { //all this already requested during ntuple creation!
+      if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
+	//     if (pass_PhysicsBit==1) { //all this already requested during ntuple creation!
      // ---------------------------------------------------------------
      //# Reco-based Selection
       //## pass_MonsterTRKEventVeto - "Monster Events" Tracker Filter
@@ -809,7 +805,8 @@ void analysisClass::Loop()
 		dijetdphiJIDtight->Fill(dphi);
 	      }
 	      if (dphi > cut_DiJetDeltaPhi_min) {	      
-	      //calculate the invariant mass
+	      //calculate the invariant mass 
+		NindijetsTOT++;
 	      jet1LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet1)*jcScale0,ak5JetEta->at(index_jet1),ak5JetPhi->at(index_jet1),ak5JetEnergy->at(index_jet1)*jcScale0);
 	      jet2LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet2)*jcScale1,ak5JetEta->at(index_jet2),ak5JetPhi->at(index_jet2),ak5JetEnergy->at(index_jet2)*jcScale1);
 	      dijetLorentzVector=jet1LorentzVector+jet2LorentzVector;
@@ -847,7 +844,7 @@ void analysisClass::Loop()
 		  else {
 		    dijcScale = 1;
 		  }
-		  if((ak5JetpT->at(dj) * dijcScale) >ptMinDijet && ak5JetEta->at(dj)<endcapeta_dijet
+		  if((ak5JetpT->at(dj) * dijcScale) >ptMinDijet && fabs (ak5JetEta->at(dj))<endcapeta_dijet
 		     && JetIdloose(ak5JetJIDresEMF->at(dj),ak5JetJIDfHPD->at(dj),ak5JetJIDn90Hits->at(dj),ak5JetEta->at(dj))){   ///
 		    NALLindijetsJetIDLoose++;
 		  }
@@ -890,7 +887,7 @@ void analysisClass::Loop()
 	      if(ak5JetNAssoTrksAtVtxHighPurity->at(index_jet2)>=ntracksmin){
 		NindijetsAssTrksHighPurityAtVtx++;
 	      }
-	    }//dphi cut
+	      }//dphi cut
 	  }//eta/pt cuts on dijets
 	}//di jets >= 2 jets
 	
@@ -992,6 +989,7 @@ void analysisClass::Loop()
 	    }
 	    if (dphi > cut_DiJetDeltaPhi_min) {	      
 	      //calculate the invariant mass
+	      NindiJPTjetsTOT++;
 	      JPTjet1LorentzVector.SetPtEtaPhiE(JPTak5JetpT->at(index_JPTjet1)*jcScale0,JPTak5JetEta->at(index_JPTjet1),JPTak5JetPhi->at(index_JPTjet1),JPTak5JetEnergy->at(index_JPTjet1)*jcScale0);
 	      JPTjet2LorentzVector.SetPtEtaPhiE(JPTak5JetpT->at(index_JPTjet2)*jcScale1,JPTak5JetEta->at(index_JPTjet2),JPTak5JetPhi->at(index_JPTjet2),JPTak5JetEnergy->at(index_JPTjet2)*jcScale1);
 	      diJPTjetLorentzVector=JPTjet1LorentzVector+JPTjet2LorentzVector;
@@ -1005,6 +1003,7 @@ void analysisClass::Loop()
 		diJPTjetinvmassJIDtight->Fill(diJPTjetLorentzVector.M());
 	      }
 	      // basic di-jet variables 
+	     
 	      diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet1)*jcScale0);  //jc
 	      diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet2)*jcScale1);   //jc
       	      diJPTjeteta->Fill(JPTak5JetEta->at(index_JPTjet1));
@@ -1159,6 +1158,7 @@ void analysisClass::Loop()
 	    }
 	    if (dphi > cut_DiJetDeltaPhi_min) {	     
 	      //calculate the invariant mass
+	      NindiPFjetsTOT++;
 	      PFjet1LorentzVector.SetPtEtaPhiE(ak5PFJetpT->at(index_PFjet1)*jcScale0,ak5PFJetEta->at(index_PFjet1),ak5PFJetPhi->at(index_PFjet1),ak5PFJetEnergy->at(index_PFjet1)*jcScale0);
 	      PFjet2LorentzVector.SetPtEtaPhiE(ak5PFJetpT->at(index_PFjet2)*jcScale1,ak5PFJetEta->at(index_PFjet2),ak5PFJetPhi->at(index_PFjet2),ak5PFJetEnergy->at(index_PFjet2)*jcScale1);
 	      diPFjetLorentzVector=PFjet1LorentzVector+PFjet2LorentzVector;
@@ -1238,7 +1238,11 @@ void analysisClass::Loop()
      variousEffindijets->SetBinContent(2,(1.*NindijetsJetIDTightTOT/(1.*NindijetsTOT)));
      variousEffindijets->SetBinContent(3,(1.*NindijetsAssTrksHighPurityAtCaloTOT/(1.*NindijetsTOT)));
      variousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksHighPurityAtVtxTOT/(1.*NindijetsTOT)));
-   }  
+   }       
+   cout <<"###################################"       << endl;
+   cout <<"Good Events " << goodevts      <<" Selected events="<< pvevt<< " Calo dijet "<<  	NindijetsTOT <<  " PF dijet "<<  NindiPFjetsTOT <<  " JPT dijet "<<  NindiJPTjetsTOT << endl;
+   cout <<"###################################"       << endl;
+
    //////////write histos for calojets
    dijetptall->Write();
    dijetdphi->Write();
