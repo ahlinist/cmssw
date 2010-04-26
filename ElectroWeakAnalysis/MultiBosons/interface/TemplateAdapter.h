@@ -14,7 +14,7 @@
 //
 // Original Author:  Jan Veverka,32 3-A13,+41227677936,
 //         Created:  Sat Apr 24 10:51:03 CEST 2010
-// $Id: TemplateAdapter.h,v 1.4 2010/04/26 11:45:26 lgray Exp $
+// $Id: TemplateAdapter.h,v 1.5 2010/04/26 12:09:37 lgray Exp $
 //
 //
 
@@ -110,30 +110,20 @@ template<typename InputCollection, typename OutputCollection>
 	    if (!daughter->hasMasterClone() && !daughter->hasMasterClonePtr())
 	      edm::Exception::throwThis(edm::errors::InvalidReference,"Daughter does not have Master Clone!");
 	    
-	    try { // attempt cast up of master clone	    
-	      TRef tRef;
-	      std::string TRefType(typeid(TRef).name()); 
-	      
-	      // some code in case we want to use PtrVector and original persistent references are edm::Refs & not edm::Ptrs
-	      if(TRefType.find("edm3Ptr") != std::string::npos) { // this is a really really bad type checking hack
-		try{
-		  edm::Ref<std::vector<ProductType> >  tempRef = 
-		    daughter->masterClone().castTo<edm::Ref<std::vector<ProductType> > >(); // try cast to Ref
-		  tRef = edm::refToPtr<std::vector<ProductType> >(tempRef); // turn ref into Ptr
-		} catch( edm::Exception& e) {
-		  tRef = daughter->masterClone().castTo<TRef>(); // if that throws, try cast to Ptr or throw
-		}
-	      } else {
+	    if(daughter->hasMasterClone())
+	      try { // attempt cast up of master clone	    
+		TRef tRef;
+		std::string TRefType(typeid(TRef).name()); 
+		
 		tRef = daughter->masterClone().castTo<TRef>(); // just cast to whatever or throw
-	      } // end bad typecheck hack
-	      
-	      if (std::find(buffer->begin(), buffer->end(), tRef) == buffer->end() )
-		{
-		  // This tRef is not in the buffer yet, fill it.
-		  buffer->push_back(tRef);
-		} // Check that tRef is not in buffer.
-	    } catch ( edm::Exception& e) {} // If this exception happens for all daughters of a candidate, an exception is thrown later
-	  } // loop over daughters
+		
+		if (std::find(buffer->begin(), buffer->end(), tRef) == buffer->end() )
+		  {
+		    // This tRef is not in the buffer yet, fill it.
+		    buffer->push_back(tRef);
+		  } // Check that tRef is not in buffer.
+	      } catch ( edm::Exception& e) {} // If this exception happens for all daughters of a candidate, an exception is thrown later
+	} // loop over daughters
       } // loop over source collection
     if(src->size()) ++non_zero_sources;
   } // loop over collections
