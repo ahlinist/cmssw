@@ -90,6 +90,12 @@ void plotDataMC(){
 
     TCanvas *c = new TCanvas("c","",600,600); 
     double scalefactor= h_data->Integral()/h_mc->Integral();
+    if (isptplot) { //ACHTUNG: it only works for histos with constant bin width!
+      // h_mc->Sumw2(); //for some reason it doesnt plot this one if i do sumw2, so i comment it out. anyhow we dont see its errors, but to be checked!
+      h_data->Sumw2();
+      h_mc->Scale(1./h_mc->GetBinWidth(1));
+      h_data->Scale(1./h_data->GetBinWidth(1));
+    }
     h_mc->Scale(scalefactor);
     //    h_mc->Rebin(rebin);
     //    h_data->Rebin(rebin);
@@ -101,6 +107,7 @@ void plotDataMC(){
     std::cout << "Plotting: " << key->GetName()  <<  std::endl;
     h_mc->SetMinimum(0.01);
     h_data->SetMinimum(0.01);
+
     //draw title
     MoveStatsAndDraw(h_data , h_mc, legDataTitle, legMCTitle, overallTitle, CMen, islog, colour, false, cuts1, cuts2,isptplot);
     char histname [256];
