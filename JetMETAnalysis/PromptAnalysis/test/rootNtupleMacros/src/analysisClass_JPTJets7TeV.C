@@ -34,9 +34,15 @@ analysisClass::~analysisClass()
   double cut_PVtxndof_min;
   double cut_PVtxz_max;
   double cut_fracHighpurityTracks_min;
+  double cut_DiJetDeltaPhi_min;
   double cut_sumet_max;
   double cut_CaloDiJetDeltaPhi_min;
   double cut_metbysumet;
+  float makeJetCorr;
+  double endcapeta;
+  double endcapeta_dijet;
+  double ptMin;
+  double ptMinDijet;
 
 void ReadRunLumilist(const char* filename){
 	ifstream IN(filename);
@@ -63,7 +69,8 @@ void ReadRunLumilist(const char* filename){
 bool eventInGoodRunLumi(int run, int lumi){
 
 
-  ReadRunLumilist("../rootNtupleMacros/cutFile/goodRunLumiList.dat");
+//   ReadRunLumilist("../rootNtupleMacros/cutFile/goodRunLumiList.dat");
+  ReadRunLumilist("../rootNtupleMacros/cutFile/goodRunLumiListMarApr2010.dat");
 
   bool goodRunLumi=false;
 
@@ -86,35 +93,72 @@ void ReadCleaningParameters(const char* filename){
 	char ParName[100];
 	float ParValue;
 	bool ok(false);
+	int cut_counter=0;
 	while( IN.getline(buffer, 200, '\n') ){
 	  ok = false;
 	  if (buffer[0] == '#') {continue;} // Skip lines commented with '#'
 	  //scans lines first string, then double
 	  sscanf(buffer, "%s %f", ParName, &ParValue);
 	  // Calo jets cutoffs
-	  if( !strcmp(ParName, "CaloDiDeltaPhi") ){
-	    cut_CaloDiJetDeltaPhi_min = double(ParValue); ok = true;
+
+	  if( !strcmp(ParName, "useCorrJets") ){
+	    cut_counter+=1;
+	    makeJetCorr = ParValue;
 	  }
+	  if( !strcmp(ParName, "JPTJetPt") ){
+	    cut_counter+=1;
+	    ptMin = double(ParValue); 
+	  }
+	  if( !strcmp(ParName, "JPTJetEta") ){
+	    cut_counter+=1;
+	    endcapeta = double(ParValue); 
+	  }
+	  if( !strcmp(ParName, "JPTDiJetPt") ){
+	    cut_counter+=1;
+	    ptMinDijet = double(ParValue); 
+	  }
+	  if( !strcmp(ParName, "JPTDiJetEta") ){
+	    cut_counter+=1;
+	    endcapeta_dijet = double(ParValue); 
+	  }
+	  if( !strcmp(ParName, "DijetDeltaPhi") ){
+	    cut_counter+=1;
+	    cut_DiJetDeltaPhi_min = double(ParValue);
+	  }	    
+// 	  if( !strcmp(ParName, "CaloDiDeltaPhi") ){
+// 	    cut_CaloDiJetDeltaPhi_min = double(ParValue); ok = true;
+// 	  }
 	  if( !strcmp(ParName, "MetbySumEt") ){
-	    cut_metbysumet = double(ParValue); ok = true;
+	    cut_counter+=1;
+	    cut_metbysumet = double(ParValue); // ok = true;
 	  }
-	  if( !strcmp(ParName, "SumEt") ){
-	    cut_sumet_max = double(ParValue); ok = true;
-	  }
+// 	  if( !strcmp(ParName, "SumEt") ){
+// 	    cut_counter+=1;
+// 	    cut_sumet_max = double(ParValue); // ok = true;
+// 	  }
 	  if( !strcmp(ParName, "FracHighPurityTracks") ){
-	   cut_fracHighpurityTracks_min = double(ParValue); ok = true;
+	    cut_counter+=1;
+	    cut_fracHighpurityTracks_min = double(ParValue); // ok = true;
 	  }
 	  if( !strcmp(ParName, "Pvtxz") ){
-	   cut_PVtxz_max = double(ParValue); ok = true;
+	    cut_counter+=1;
+	    cut_PVtxz_max = double(ParValue); // ok = true;
 	  } 
  	  if( !strcmp(ParName, "Pvtxndof") ){
-	    cut_PVtxndof_min = double(ParValue); ok = true;
+	    cut_counter+=1;
+	    cut_PVtxndof_min = double(ParValue); // ok = true;
 	  }  
 	}
-	if(!ok){
-	  cout<<"one cleaning cut value is NOT properly set: "<<ok<<endl;
-	}
+// 	if(!ok){
+// 	  cout<<"one cleaning cut value is NOT properly set: "<<ok<<endl;
+// 	}
 
+	if(cut_counter!=10){
+	  cout<<"at least one cleaning cut value is NOT properly set: "<<cut_counter<<endl;
+	}else{
+	  cout<<"cuts inc CaloJetPt/CaloJetEta/dijet CaloJetPt/CaloJetEta/deltaPhiDijet: "<<ptMin<<"/"<<endcapeta<<"/"<<ptMinDijet<<"/"<<endcapeta_dijet<<"/"<<cut_DiJetDeltaPhi_min<<endl;
+	  cout<<"cuts PVz/PVndof/MonsterEventCut/MetbySumEt/useCorrJet: "<<cut_PVtxz_max<<"/"<<cut_PVtxndof_min<<"/"<<cut_fracHighpurityTracks_min<<"/"<<cut_metbysumet<<"/"<<makeJetCorr<<endl;
+	}
 }
 
 
@@ -253,9 +297,9 @@ bool JetIdtight(double JetJIDresEMF,double JetJIDfHPD,double JetJIDfRBX, double 
   double frbxmax = 0.98;
   double n90hitsmin =4;
   double emf_min = 0.01;
-  double weightedWidthMax=0.01;
+  double weightedWidthMin=0.01;
   if(fabs(JetEta)<2.6 && JetJIDresEMF<emf_min) jetidresEMF=false;
-  if(jetidresEMF && JetJIDfHPD<fhpdmax && JetJIDfRBX<fhpdmax&& JetJIDn90Hits>n90hitsmin && JetSigmaEta<weightedWidthMax && JetSigmaPhi<weightedWidthMax) {
+  if(jetidresEMF && JetJIDfHPD<fhpdmax && JetJIDfRBX<fhpdmax&& JetJIDn90Hits>n90hitsmin && JetSigmaEta<weightedWidthMin && JetSigmaPhi<weightedWidthMin) {
     jetidtight=true;
   }
   return jetidtight;
@@ -277,7 +321,7 @@ void analysisClass::Loop()
   ReadCleaningParameters("../rootNtupleMacros/cutFile/cutsSTARTUP.dat");
   // decide wether you want to apply jet corrections or not
   cout<<"phidijet: "<<cut_CaloDiJetDeltaPhi_min<<endl;
-  bool makeJetCorr = true;
+//   bool makeJetCorr = true;
   // cut values
   double barreleta =1.4;
   double endcapeta =2.6;
@@ -287,28 +331,40 @@ void analysisClass::Loop()
   double ntracksmin =1;
   double emffrac = 0.01;
   // minimum pt cuts (depending on jet corrections)
-  double ptMin;
-  double ptMinDijet;
-  if (makeJetCorr==true) {
-    ptMin=15.;
-    ptMinDijet=10.;
-  }
-  if (makeJetCorr==false) {
-    ptMin=7.;
-    ptMinDijet=5.;
-  }
   double Pi=acos(-1.);
+
+//   double ptMin;
+//   double ptMinDijet;
+//   if (makeJetCorr==true) {
+//     ptMin=15.;
+//     ptMinDijet=10.;
+//   }
+//   if (makeJetCorr==false) {
+//     ptMin=7.;
+//     ptMinDijet=5.;
+//   }
+
+
+
   // Binning 
   double ptMax=300.;
   int ptBin=100;
- 
+  
   int  phiBin=20;
   double phiMax=Pi;   // -
-  double phiMin=-1.*Pi;
+  double phiMin=-1*Pi;
   
   int  etaBin=20;
   double etaMax=3.;   //-
   double etaMin=-3.;
+
+  int invmassBin=100;//30
+  double invmassMax=600.;
+  
+  TLorentzVector Calojet1LorentzVector(0.,0.,0.,0.);
+  TLorentzVector Calojet2LorentzVector(0.,0.,0.,0.);
+  TLorentzVector CalodijetLorentzVector(0.,0.,0.,0.); 
+  
   // -------------------Basic distributions - all ak5 ----------------------------
    
   TH1I *JPTnjets = new TH1I("JPTnjets","",20,0,20);
@@ -317,17 +373,17 @@ void analysisClass::Loop()
   TH1I *JPTnalljets = new TH1I("JPTnalljets","",20,0,20);
   JPTnalljets->SetXTitle("Number of JPT jets per event");
   JPTnalljets->SetTitle(dataset);
-  TH1I *JPTnconst = new TH1I("JPTnconst","",20,0,20);
+  TH1I *JPTnconst = new TH1I("JPTnconst","",30,0,30);
   JPTnconst->SetXTitle("Number of JPT constituents");
   JPTnconst->SetTitle(dataset);
-  TH1I *JPTnJIDloosejets = new TH1I("JPTnJIDloosejets","",20,0,20);
+  TH1I *JPTnJIDloosejets = new TH1I("JPTnJIDloosejets","",30,0,30);
   JPTnJIDloosejets->SetXTitle("Number of JPT jets per event");
   JPTnJIDloosejets->SetTitle(dataset);
-  TH1I *JPTnconstJIDloose = new TH1I("JPTnconstJIDloose","",20,0,20);
+  TH1I *JPTnconstJIDloose = new TH1I("JPTnconstJIDloose","",30,0,30);
   JPTnconstJIDloose->SetXTitle("Number of constituents");
   JPTnconstJIDloose->SetTitle(dataset);
 
-  TH1D *JPTptall = new TH1D("JPTptall","",ptBin+8,0.,ptMax);
+  TH1D *JPTptall = new TH1D("JPTptall","",ptBin,0,ptMax);
   JPTptall->SetXTitle("p_{T}[GeV]");
   JPTptall->SetTitle(dataset);
   TH1D *JPTpt = new TH1D("JPTpt","",ptBin,ptMin,ptMax);
@@ -375,13 +431,13 @@ void analysisClass::Loop()
   JPTEendcapJIDloose->SetXTitle("E_{endcap} [GeV]");
   JPTEendcapJIDloose->SetTitle(dataset);
 
-  TH1D *JPTresemf = new TH1D("JPTresemf","",30,0.,1.);
+  TH1D *JPTresemf = new TH1D("JPTresemf","",101,-0.005,1.005);
   JPTresemf->SetXTitle("restricted emf");
   JPTresemf->SetTitle(dataset);
-  TH1D *JPTfhpd = new TH1D("JPTfhpd","",30,0.,1.);
+  TH1D *JPTfhpd = new TH1D("JPTfhpd","",101,-0.005,1.005);
   JPTfhpd->SetXTitle("f_{HPD}");
   JPTfhpd->SetTitle(dataset);
-  TH1D *JPTfrbx = new TH1D("JPTfrbx","",30,0.,1.);
+  TH1D *JPTfrbx = new TH1D("JPTfrbx","",101,-0.005,1.005);
   JPTfrbx->SetXTitle("f_{RBX}");
   JPTfrbx->SetTitle(dataset);
   TH1I *JPTn90hits = new TH1I("JPTn90hits","",50,0,50);
@@ -429,6 +485,20 @@ void analysisClass::Loop()
   dijetJPTphiJIDloose->SetXTitle("#phi");
   dijetJPTphiJIDloose->SetTitle(dataset);
 
+
+
+  // ------------------------------------------
+  TH1D *JPTdijetinvmass = new TH1D("JPTdijetinvmass","",invmassBin,0.,invmassMax);
+  JPTdijetinvmass->SetXTitle("m_{j1j2}[GeV]");
+  JPTdijetinvmass->SetTitle(dataset);
+  TH1D *JPTdijetinvmassJIDloose = new TH1D("JPTdijetinvmassJIDloose","",invmassBin,0.,invmassMax);
+  JPTdijetinvmassJIDloose->SetXTitle("m_{j1j2}[GeV]");
+  JPTdijetinvmassJIDloose->SetTitle(dataset);
+  
+
+
+
+
   TH2D *JPTmapalldijets = new TH2D("JPTmapalldijets","",25,etaMin,etaMax,24,-3.2,3.2);
   JPTmapalldijets->SetXTitle("#eta_{jet}");
   JPTmapalldijets->SetYTitle("#phi_{jet}");
@@ -469,6 +539,37 @@ void analysisClass::Loop()
   JPTnjetsindijetsJIDloose->SetXTitle("Number of jets per event");
   JPTnjetsindijetsJIDloose->SetTitle(dataset);
 
+
+  // ---------------------- Basic Lepton (and others) Distributions ----------------------------------
+  TH1I *JPTelectronNumber = new TH1I("JPTelectronNumber","",10,0,10);
+  JPTelectronNumber->SetXTitle("Electron number");
+  JPTelectronNumber->SetTitle(dataset);
+  TH1I *JPTelectronPt = new TH1I("JPTelectronPt","",25,0,50);
+  JPTelectronPt->SetXTitle("Electron p_{t}");
+  JPTelectronPt->SetTitle(dataset);
+
+  TH1I *JPTmuonNumber = new TH1I("JPTmuonNumber","",10,0,10);
+  JPTmuonNumber->SetXTitle("Muon number");
+  JPTmuonNumber->SetTitle(dataset);
+  TH1I *JPTmuonPt = new TH1I("JPTmuonPt","",25,0,50);
+  JPTmuonPt->SetXTitle("Muon p_{t}");
+  JPTmuonPt->SetTitle(dataset);
+
+  TH1I *JPTpionNumber = new TH1I("JPTpionNumber","",200,0,200);
+  JPTpionNumber->SetXTitle("Pion number");
+  JPTpionNumber->SetTitle(dataset);
+  TH1I *JPTpionPt = new TH1I("JPTpionPt","",25,0,50);
+  JPTpionPt->SetXTitle("Pion p_{t}");
+  JPTpionPt->SetTitle(dataset);
+
+  TH1I *JPTtrackNumber = new TH1I("JPTtrackNumber","",200,0,200);
+  JPTtrackNumber->SetXTitle("Track number");
+  JPTtrackNumber->SetTitle(dataset);
+  TH1I *JPTtrackPt = new TH1I("JPTtrackPt","",10,0,10);
+  JPTtrackPt->SetXTitle("Track p_{t}");
+  JPTtrackPt->SetTitle(dataset);
+
+
   // -----------------------Efficiency ---------------------------------------------------
 
   TH1D *variousEffindijets = new TH1D("variousEffindijets","",6,0,6);
@@ -479,6 +580,9 @@ void analysisClass::Loop()
   variousEffindijets->GetXaxis()->SetBinLabel(4,">1 Associated Tight Tracks at Calo");
   variousEffindijets->GetXaxis()->SetBinLabel(5,">1 Associated HighPurity Tracks at Vtx");
   variousEffindijets->GetXaxis()->SetBinLabel(6,">1 Associated Tight Tracks at Vtx");
+
+  TH1D *variousEffindijetsDEN = new TH1D("variousEffindijetsDEN","",6,0,6);
+
   TH1D *jetJIDlooseeffJPTeta = new TH1D("jetJIDlooseeffJPTeta","",etaBin, etaMin, etaMax);
   TH1D *jetJIDlooseeffJPTphi = new TH1D("jetJIDlooseeffJPTphi","",phiBin,phiMin,phiMax);
   
@@ -491,6 +595,8 @@ void analysisClass::Loop()
   variousEff->GetXaxis()->SetBinLabel(5,">1 Ass. HighPurity Tracks at Vtx");
   variousEff->GetXaxis()->SetBinLabel(6,">1 Ass. Tight Tracks at Vtx");
   
+  TH1D *variousEffDEN = new TH1D("variousEffDEN","",6,0,6);
+
   TH1D *evtNumber = new TH1D("evtNumber","",7,0,7);
   evtNumber->SetTitle(dataset);
   evtNumber->GetXaxis()->SetBinLabel(1,"Evt");
@@ -593,8 +699,8 @@ void analysisClass::Loop()
        if (ientry < 0) break;
        nb = fChain->GetEntry(jentry);   
       
-      if(jentry < 10 || jentry%1000 == 0) std::cout << "analysisClass::Loop(): jentry = " << jentry << std::endl;   
-   
+       if(jentry < 10 || jentry%10000 == 0) std::cout << "analysisClass::Loop(): jentry = " << jentry << std::endl; 
+
       // --------------------------------------------------------------------
       int isdata = isData;
       int eventid = event;
@@ -655,14 +761,16 @@ void analysisClass::Loop()
       //## pass_PhysicsBit - HLT Physics Declared bit set 
       if(isData==1)
 	{
-	  if(hltbits->at(116)==1)
-	    {pass_PhysicsBit = 1;
+	  if(hltbits->at(116)==1) {
+	    pass_PhysicsBit = 1;
 	    phybitevt++;
 	    phybitjets+=ak5JetpT->size(); 
-	    }
+	  }
 	}
       else if(isData == 0)
 	pass_PhysicsBit = 1;
+
+
     
       if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
      // ---------------------------------------------------------------
@@ -702,9 +810,9 @@ void analysisClass::Loop()
 
 
       //goodPVtx(double pvtxndof,double pvtxz){
-
-      if(pass_MonsterTRKEventVeto && goodPVtx(vertexNDF->at(0),vertexZ->at(0)) && vertexisValid->at(0)==true && calometSumEt->at(0)<cut_sumet_max){    // "newest" event selection
-
+      
+//       if(pass_MonsterTRKEventVeto && goodPVtx(vertexNDF->at(0),vertexZ->at(0)) && vertexisValid->at(0)==true && calometSumEt->at(0)<cut_sumet_max){    // "newest" event selection
+	if(pass_MonsterTRKEventVeto && goodPVtx(vertexNDF->at(0),vertexZ->at(0)) && vertexisValid->at(0)==true){    // "newest" event selection
 	pvevt++;
 	pvjets+=ak5JetpT->size(); 	
 	// --------------------------------------------------------------------
@@ -746,7 +854,7 @@ void analysisClass::Loop()
 	for (int j = 0; j<int(JPTak5JetpT->size()); j++){
 	  //check if jet is among hardest two
 	  //as jets are ordered in uncorrected calo jet pt
-	  if(makeJetCorr == true) {
+	  if(makeJetCorr == 1) {
 	    if(JPTak5JetpT->at(j)>mypt1){
 	      mypt2=mypt1;
 	      index_jet2=index_jet1;
@@ -761,8 +869,8 @@ void analysisClass::Loop()
 	  // JET CORRECTION
 	  // ----------------------
 	  double jcScale;    
-	  if(makeJetCorr==true) jcScale = 1; //ak5JetscaleL2L3->at(j);
-	  else jcScale = 1;	    
+	  if(makeJetCorr == 1) jcScale = JPTak5JetscaleL2L3->at(j);
+	  else jcScale = 1;
 	  JPTptall->Fill(JPTak5JetpT->at(j) * jcScale);   
 	  JPTmapall->Fill(JPTak5JetEta->at(j),JPTak5JetPhi->at(j));
 	  //after jc - fill TLorentzVector with all good jets
@@ -773,10 +881,50 @@ void analysisClass::Loop()
 	    vPtEtaPhiE.push_back(PtEtaPhiE4Dlorentzvector2);
 	  }
 	  //Loop over Inclusive jets ----- 
+
+	  cout<<jcScale<<endl;
+	  cout<<JPTak5JetpT->at(j)<<endl;
+	  cout<<JPTak5JetpT->at(j)* jcScale<<endl;
+	  cout<<"---------------"<<endl;
+
 	  if(JPTak5JetpT->at(j) * jcScale >ptMin && fabs(JPTak5JetEta->at(j))<endcapeta){    //jc
 	    NJPTJets++;	    
 	    JPTnconst->Fill(JPTak5JetNConstituents->at(j));
 	    JPTpt->Fill(JPTak5JetpT->at(j) * jcScale);    //jc 
+
+	    // fill the leptons and pions
+	    int numberOfJPTtracks=0;
+	    // electrons
+	    JPTelectronNumber->Fill(JPTak5JetAllElectronsPt->size());
+	    for(unsigned int i=0; i<JPTak5JetAllElectronsPt->size();i++) {
+	      JPTelectronPt->Fill(JPTak5JetAllElectronsPt->at(i));
+	    }
+	    // muons
+	    JPTmuonNumber->Fill(JPTak5JetAllMuonsPt->size());
+	    for(unsigned int i=0; i<JPTak5JetAllMuonsPt->size();i++) {
+	      JPTmuonPt->Fill(JPTak5JetAllMuonsPt->at(i));
+	    }
+	    // pions
+	    JPTpionNumber->Fill(JPTak5JetAllPionsPt->size());
+	    for(unsigned int i=0; i<JPTak5JetAllPionsPt->size();i++) {
+	      JPTpionPt->Fill(JPTak5JetAllPionsPt->at(i));
+	    }
+	    // tracks
+	    cout<<"+++"<<(JPTak5JetAllElectronsPt->size())<<"/"<<(JPTak5JetAllMuonsPt->size())<<"/"<<(JPTak5JetAllPionsPt->size())<<endl;
+	    numberOfJPTtracks=(JPTak5JetAllElectronsPt->size())+(JPTak5JetAllMuonsPt->size())+(JPTak5JetAllPionsPt->size());
+	    JPTtrackNumber->Fill(numberOfJPTtracks);
+	    for(unsigned int i=0; i<JPTak5JetAllElectronsPt->size();i++) {
+	      JPTtrackPt->Fill(JPTak5JetAllElectronsPt->at(i));
+	    }
+	    for(unsigned int i=0; i<JPTak5JetAllMuonsPt->size();i++) {
+	      JPTtrackPt->Fill(JPTak5JetAllMuonsPt->at(i));
+	    }
+	    for(unsigned int i=0; i<JPTak5JetAllPionsPt->size();i++) {
+	      JPTtrackPt->Fill(JPTak5JetAllPionsPt->at(i));
+	    }
+
+
+
 	    if(fabs(JPTak5JetEta->at(j))<barreleta){
 	      JPTEbarrel->Fill(JPTak5JetEnergy->at(j) * jcScale);  //jc
 	    } else {
@@ -828,9 +976,9 @@ void analysisClass::Loop()
 	    cout<<"index should be set ERROR: "<<index_jet2<<"/"<<index_jet1<<endl;
 	  }
 	  // both passed pT and eta cuts
-	  if(makeJetCorr == true) {
-	    jcScale0 = 1; //ak5JetscaleL2L3->at(index_jet1);
-	    jcScale1 = 1; //ak5JetscaleL2L3->at(index_jet2);
+	  if(makeJetCorr == 1) {
+	    jcScale0 = JPTak5JetscaleL2L3->at(index_jet1);
+	    jcScale1 = JPTak5JetscaleL2L3->at(index_jet2);
 	  }
 	  else {
 	    index_jet1=0;
@@ -866,8 +1014,8 @@ void analysisClass::Loop()
 	      // fake jet study
 	      double dijcScale;
 	      for (int dj = 0; dj<int(JPTak5JetpT->size()); dj++){
-		if(makeJetCorr==true) {
-		  dijcScale = 1; //ak5JetscaleL2L3->at(dj);
+		if(makeJetCorr==1) {
+		  dijcScale = JPTak5JetscaleL2L3->at(dj);
 		}
 		else {
 		  dijcScale = 1;
@@ -915,8 +1063,8 @@ void analysisClass::Loop()
 		dijetJPTphiJIDloose->Fill(JPTak5JetPhi->at(index_jet2));
 		//now loop on jets and count how many JIDLOOSE jets with pT>8 are in each event
 		for (int dj = 0; dj<int(JPTak5JetpT->size()); dj++){
-		  if(makeJetCorr==true) {
-		    dijcScale = 1; //ak5JetscaleL2L3->at(dj);
+		  if(makeJetCorr==1) {
+		    dijcScale = JPTak5JetscaleL2L3->at(dj);
 		  }
 		  else {
 		    dijcScale = 1;
@@ -974,7 +1122,16 @@ void analysisClass::Loop()
      variousEff->SetBinContent(4,(1.*NAssTrksTightAtCaloTOT/(1.*NJetsTOT)));
      variousEff->SetBinContent(5,(1.*NAssTrksHighPurityAtVtxTOT/(1.*NJetsTOT)));
      variousEff->SetBinContent(6,(1.*NAssTrksTightAtVtxTOT/(1.*NJetsTOT)));
+
+     variousEffDEN->SetBinContent(1,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(2,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(3,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(4,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(5,((1.*NJetsTOT)));
+     variousEffDEN->SetBinContent(6,((1.*NJetsTOT)));
+
    }
+
    //efficiency histos
    if(NJPTindijetsTOT>0){
      variousEffindijets->SetBinContent(1,(1.*NJPTindijetsJetIDLooseTOT/(1.*NJPTindijetsTOT)));
@@ -983,6 +1140,15 @@ void analysisClass::Loop()
      variousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksTightAtCaloTOT/(1.*NJPTindijetsTOT)));
      variousEffindijets->SetBinContent(5,(1.*NindijetsAssTrksHighPurityAtVtxTOT/(1.*NJPTindijetsTOT)));
      variousEffindijets->SetBinContent(6,(1.*NindijetsAssTrksTightAtVtxTOT/(1.*NJPTindijetsTOT)));
+
+     variousEffindijetsDEN->SetBinContent(1,((1.*NJetsTOT)));
+     variousEffindijetsDEN->SetBinContent(2,((1.*NJetsTOT)));
+     variousEffindijetsDEN->SetBinContent(3,((1.*NJetsTOT)));
+     variousEffindijetsDEN->SetBinContent(4,((1.*NJetsTOT)));
+     variousEffindijetsDEN->SetBinContent(5,((1.*NJetsTOT)));
+     variousEffindijetsDEN->SetBinContent(6,((1.*NJetsTOT)));
+
+
    }
    if(goodevts>0){ 
      cutEff->SetMaximum(1.3);
@@ -1072,10 +1238,12 @@ void analysisClass::Loop()
    JPTfrbxdijets->Write();
    JPTn90hitsdijets->Write();
    variousEff->Write();
+   variousEffDEN->Write();
    cutEff->Write();
    jetNumber->Write(); 
    evtNumber->Write();
    variousEffindijets->Write();
+   variousEffindijetsDEN->Write();
    JPTresemffakejets->Write();
    JPTfhpdfakejets->Write();
    JPTn90hitsfakejets->Write();
@@ -1087,7 +1255,16 @@ void analysisClass::Loop()
    jetJIDlooseeffJPTeta->Write();
    jetJIDlooseeffJPTphi->Write();
    jetNumber->Write();
+
+   JPTelectronNumber->Write();
+   JPTelectronPt->Write();
+   JPTmuonNumber->Write();
+   JPTmuonPt->Write();
+   JPTpionNumber->Write();
+   JPTpionPt->Write();
+   JPTtrackNumber->Write();
+   JPTtrackPt->Write();
+
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
-
 
