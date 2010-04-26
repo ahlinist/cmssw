@@ -11,12 +11,13 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 ### global tag
-process.GlobalTag.globaltag = "GR_R_35X_V5::All"
+process.GlobalTag.globaltag = "GR_R_35X_V7::All"
 
 ### source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root'
+        #'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root'
+        'root://pcmssd12.cern.ch//data/gpetrucc/7TeV/jpsi/CS_Onia_Run133321_26238844-9749-DF11-B896-003048D47A64.root'
    )
 )
 
@@ -88,7 +89,7 @@ process.selectedEvents = cms.EDFilter("CandViewCountFilter",
 ### path
 process.p = cms.Path(
         # process.hltLevel1GTSeed +
-        process.hltPhysicsDeclared +
+        # process.hltPhysicsDeclared +
         process.hltMinBiasBSC +
         # process.primaryVertexFilter +
         # process.scrapingFilter +
@@ -102,9 +103,12 @@ process.p = cms.Path(
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('PAT_FirstData2010.root'),
     outputCommands = cms.untracked.vstring('drop *',
-        'keep edmTriggerResults_TriggerResults_*_*',
-        'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',
-        'keep patCompositeCandidates_*__SkimmingOnia2MuMuPAT'
+        'keep patCompositeCandidates_*__SkimmingOnia2MuMuPAT', ## PAT di-muons
+        'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',        ## All PAT muons (note: not necessary if you use only the di-muons)
+        'keep *_offlinePrimaryVertices_*_*',                   ## Primary vertices: you want these to compute impact parameters
+        'keep edmTriggerResults_TriggerResults_*_*',           ## HLT info, per path (cheap)
+        'keep l1extraL1MuonParticles_l1extraParticles_*_*',    ## L1 info (cheap)
+        #'keep *_patTrigger_*_*',                               ## HLT info, per object (BIG. Keep only when debugging trigger match)
     ),
     ## Uncomment to activate skimming!
     SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
