@@ -156,7 +156,7 @@ void ReadCleaningParameters(const char* filename){
 	if(cut_counter!=10){
 	  cout<<"at least one cleaning cut value is NOT properly set: "<<cut_counter<<endl;
 	}else{
-	  cout<<"cuts inc CaloJetPt/CaloJetEta/dijet CaloJetPt/CaloJetEta/deltaPhiDijet: "<<ptMin<<"/"<<endcapeta<<"/"<<ptMinDijet<<"/"<<endcapeta_dijet<<"/"<<cut_DiJetDeltaPhi_min<<endl;
+	  cout<<"cuts in JPTJetPt/JPTJetEta/dijet JPTJetPt/JPTJetEta/deltaPhiDijet: "<<ptMin<<"/"<<endcapeta<<"/"<<ptMinDijet<<"/"<<endcapeta_dijet<<"/"<<cut_DiJetDeltaPhi_min<<endl;
 	  cout<<"cuts PVz/PVndof/MonsterEventCut/MetbySumEt/useCorrJet: "<<cut_PVtxz_max<<"/"<<cut_PVtxndof_min<<"/"<<cut_fracHighpurityTracks_min<<"/"<<cut_metbysumet<<"/"<<makeJetCorr<<endl;
 	}
 }
@@ -853,18 +853,20 @@ void analysisClass::Loop()
 	// Inclusive  Jets -----------------------------------------------------------------------
 	for (int j = 0; j<int(JPTak5JetpT->size()); j++){
 	  //check if jet is among hardest two
-	  //as jets are ordered in uncorrected calo jet pt
+	  //as jets are ordered in uncorrected pt. sort only for corrected jets...
 	  if(makeJetCorr == 1) {
-	    if(JPTak5JetpT->at(j)>mypt1){
+	    if(JPTak5JetpT->at(j) * JPTak5JetscaleL2L3->at(j)>mypt1){
 	      mypt2=mypt1;
 	      index_jet2=index_jet1;
-	      mypt1=JPTak5JetpT->at(j);
+	      mypt1=JPTak5JetpT->at(j) * JPTak5JetscaleL2L3->at(j);
 	      index_jet1=j;
-	    }else if(JPTak5JetpT->at(j)>mypt2){
-	      mypt2=JPTak5JetpT->at(j);
+	    }else if(JPTak5JetpT->at(j) * JPTak5JetscaleL2L3->at(j)>mypt2){
+	      mypt2=JPTak5JetpT->at(j) * JPTak5JetscaleL2L3->at(j);
 	      index_jet2=j;
 	    }
 	  }
+
+
 	  // ----------------------
 	  // JET CORRECTION
 	  // ----------------------
@@ -882,10 +884,10 @@ void analysisClass::Loop()
 	  }
 	  //Loop over Inclusive jets ----- 
 
-	  cout<<jcScale<<endl;
-	  cout<<JPTak5JetpT->at(j)<<endl;
-	  cout<<JPTak5JetpT->at(j)* jcScale<<endl;
-	  cout<<"---------------"<<endl;
+// 	  cout<<jcScale<<endl;
+// 	  cout<<JPTak5JetpT->at(j)<<endl;
+// 	  cout<<JPTak5JetpT->at(j)* jcScale<<endl;
+// 	  cout<<"---------------"<<endl;
 
 	  if(JPTak5JetpT->at(j) * jcScale >ptMin && fabs(JPTak5JetEta->at(j))<endcapeta){    //jc
 	    NJPTJets++;	    
