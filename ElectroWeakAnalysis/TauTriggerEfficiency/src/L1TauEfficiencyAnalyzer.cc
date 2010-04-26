@@ -118,7 +118,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
 
   // Setup branches
   l1tree->Branch("L1JetPt", &jetPt);
-  l1tree->Branch("L1JetEt", &jetPt);
+  l1tree->Branch("L1JetEt", &jetEt);
   l1tree->Branch("L1JetEta", &jetEta);
   l1tree->Branch("L1JetPhi", &jetPhi);
   l1tree->Branch("L1JetMatchDR", &jetMinDR);
