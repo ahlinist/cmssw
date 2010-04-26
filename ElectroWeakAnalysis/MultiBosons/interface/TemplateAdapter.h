@@ -14,7 +14,7 @@
 //
 // Original Author:  Jan Veverka,32 3-A13,+41227677936,
 //         Created:  Sat Apr 24 10:51:03 CEST 2010
-// $Id: TemplateAdapter.h,v 1.3 2010/04/26 11:32:16 lgray Exp $
+// $Id: TemplateAdapter.h,v 1.4 2010/04/26 11:45:26 lgray Exp $
 //
 //
 
@@ -66,14 +66,18 @@ private:
   virtual void endJob(){}
 
   // ----------member data ---------------------------
-  edm::InputTag src_;
+  std::vector<edm::InputTag> src_;
 };
 
 // Constructor
 template<typename InputCollection, typename OutputCollection>
-  TemplateAdapter<InputCollection,OutputCollection>::TemplateAdapter(const edm::ParameterSet& iConfig) :
-  src_(iConfig.getParameter<edm::InputTag>("src") )
+  TemplateAdapter<InputCollection,OutputCollection>::TemplateAdapter(const edm::ParameterSet& iConfig)    
 {
+  if(iConfig.existsAs<std::vector<edm::InputTag> >("src")) {
+    src_ = iConfig.getParameter<std::vector<edm::InputTag> >("src");
+  } else {    
+    src_.push_back(iConfig.getParameter<edm::InputTag>("src"));
+  }
   //register product
   produces<OutputCollection>();
 }
@@ -83,53 +87,58 @@ template<typename InputCollection, typename OutputCollection>
   void
   TemplateAdapter<InputCollection,OutputCollection>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  // retreive the source collection
-  edm::Handle<InputCollection> src;
-  iEvent.getByLabel(src_, src);
+  // counter for non-zero-sized sources
+  unsigned non_zero_sources(0);
 
   // create the buffer collection
   std::auto_ptr<TRefCollection> buffer(new TRefCollection);
-  buffer->reserve( 2 * src->size() );
+  buffer->reserve(0);
 
-  // loop over the source collection
-  for (typename InputCollection::const_iterator mother = src->begin();
-       mother != src->end(); ++mother)
-    {
-      // loop over the daughters
-      for (reco::Candidate::const_iterator daughter = mother->begin();
-	   daughter != mother->end(); ++daughter)
-	{      
-	  if (!daughter->hasMasterClone() && !daughter->hasMasterClonePtr())
-	    edm::Exception::throwThis(edm::errors::InvalidReference,"Daughter does not have Master Clone!");
-	  
-	  try {
-	    
-	    TRef tRef;
-	    std::string TRefType(typeid(TRef).name()); 
-	    
-	    // some code in case we want to use PtrVector and original persistent references are edm::Refs & not edm::Ptrs
-	    if(TRefType.find("edm3Ptr") != std::string::npos) { // this is a really really bad type checking hack
-	      try{
-		edm::Ref<std::vector<ProductType> >  tempRef = 
-		  daughter->masterClone().castTo<edm::Ref<std::vector<ProductType> > >(); // try cast to Ref
-		tRef = edm::refToPtr<std::vector<ProductType> >(tempRef); // turn ref into Ptr
-	      } catch( edm::Exception& e) {
-		tRef = daughter->masterClone().castTo<TRef>(); // if that throws, try cast to Ptr
-	      }
-	    } else {
-	      tRef = daughter->masterClone().castTo<TRef>(); // just cast to whatever
-	    } // end bad typecheck hack
-	    
-	    if (std::find(buffer->begin(), buffer->end(), tRef) == buffer->end() )
-	      {
-		// This tRef is not in the buffer yet, fill it.
-		buffer->push_back(tRef);
-	      } // Check that tRef is not in buffer.
-	  } catch ( edm::Exception& e) {} // If this exception happens for all daughters of a candidate, an exception is thrown later
-	} // loop over daughters
-    } // loop over source collection
+  for(std::vector<edm::InputTag>::const_iterator isrc = src_.begin(); isrc != src_.end(); ++isrc) { //loop over inputs
 
-  if(!buffer->size() && src->size()) // Throw exception if no daughters found and there are input candidates
+    // retreive the source collection
+    edm::Handle<InputCollection> src;
+    iEvent.getByLabel(*isrc, src);    
+    
+    buffer->reserve( buffer->size() + 2 * src->size() );
+
+    // loop over the source collection
+    for (typename InputCollection::const_iterator mother = src->begin();
+	 mother != src->end(); ++mother) { // loop over source collection	
+	for (reco::Candidate::const_iterator daughter = mother->begin();
+	     daughter != mother->end(); ++daughter) { // loop over the daughters     
+	    if (!daughter->hasMasterClone() && !daughter->hasMasterClonePtr())
+	      edm::Exception::throwThis(edm::errors::InvalidReference,"Daughter does not have Master Clone!");
+	    
+	    try { // attempt cast up of master clone	    
+	      TRef tRef;
+	      std::string TRefType(typeid(TRef).name()); 
+	      
+	      // some code in case we want to use PtrVector and original persistent references are edm::Refs & not edm::Ptrs
+	      if(TRefType.find("edm3Ptr") != std::string::npos) { // this is a really really bad type checking hack
+		try{
+		  edm::Ref<std::vector<ProductType> >  tempRef = 
+		    daughter->masterClone().castTo<edm::Ref<std::vector<ProductType> > >(); // try cast to Ref
+		  tRef = edm::refToPtr<std::vector<ProductType> >(tempRef); // turn ref into Ptr
+		} catch( edm::Exception& e) {
+		  tRef = daughter->masterClone().castTo<TRef>(); // if that throws, try cast to Ptr or throw
+		}
+	      } else {
+		tRef = daughter->masterClone().castTo<TRef>(); // just cast to whatever or throw
+	      } // end bad typecheck hack
+	      
+	      if (std::find(buffer->begin(), buffer->end(), tRef) == buffer->end() )
+		{
+		  // This tRef is not in the buffer yet, fill it.
+		  buffer->push_back(tRef);
+		} // Check that tRef is not in buffer.
+	    } catch ( edm::Exception& e) {} // If this exception happens for all daughters of a candidate, an exception is thrown later
+	  } // loop over daughters
+      } // loop over source collection
+    if(src->size()) ++non_zero_sources;
+  } // loop over collections
+  
+  if(!buffer->size() && non_zero_sources) // Throw exception if no daughters found and there are input candidates from any source
 	edm::Exception::throwThis(edm::errors::ProductNotFound,
 				  "No daughters of specified type found. Please provide proper input!");
 
@@ -142,8 +151,7 @@ template<typename InputCollection, typename OutputCollection>
   
   // copy the buffer in the output
   for (typename TRefCollection::const_iterator item = buffer->begin();
-       item != buffer->end(); ++item)
-  {
+       item != buffer->end(); ++item) {
     output->push_back(*item);
   }
   
