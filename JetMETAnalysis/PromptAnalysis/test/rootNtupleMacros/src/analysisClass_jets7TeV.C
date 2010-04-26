@@ -458,13 +458,13 @@ void analysisClass::Loop()
   TH1D *ChFracTight = new TH1D("ChFracTight","",101,-0.005,1.005);
   ChFracTight->SetXTitle("charged fraction (tight tracks)");
   ChFracTight->SetTitle(dataset); 
-  TH1D *resemf = new TH1D("resemf","",101,-0.005,1.005);
+  TH1D *resemf = new TH1D("resemf","",30,0.,1.);
   resemf->SetXTitle("restricted emf");
   resemf->SetTitle(dataset);
-  TH1D *fhpd = new TH1D("fhpd","",101,-0.005,1.005);
+  TH1D *fhpd = new TH1D("fhpd","",30,0.,1.);
   fhpd->SetXTitle("f_{HPD}");
   fhpd->SetTitle(dataset);
-  TH1D *frbx = new TH1D("frbx","",101,-0.005,1.005);
+  TH1D *frbx = new TH1D("frbx","",30,0.,1.);
   frbx->SetXTitle("f_{RBX}");
   frbx->SetTitle(dataset);
   TH1I *n90hits = new TH1I("n90hits","",50,0,50);
