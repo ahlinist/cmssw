@@ -5,9 +5,9 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: MetEventSelector.h,v 1.6 2008/07/30 14:22:35 fronga Exp $
+/// $Id: MetEventSelector.h,v 1.7 2008/10/20 12:55:15 adamwo Exp $
 
-//if uncorrNumber = 
+//if uncorrNumber =
   //0: bare uncorrected MET
   //1: MET uncorrected for JES
   //2: MET uncorrected for Muons
@@ -37,7 +37,8 @@ public:
 private:
   edm::InputTag metTag_;      ///< tag for input collection
   float minMet_;              ///< lower cut on MET
- 
+  float maxMet_;              ///< upper cut on MET
+
   pat::MET::UncorrectionType uncorrType_;
 };
 #endif
