@@ -14,7 +14,7 @@
 //
 // Original Author:  Jan Veverka,32 3-A13,+41227677936,
 //         Created:  Sat Apr 24 10:51:03 CEST 2010
-// $Id: TemplateAdapter.h,v 1.2 2010/04/25 09:58:07 lgray Exp $
+// $Id: TemplateAdapter.h,v 1.3 2010/04/26 11:32:16 lgray Exp $
 //
 //
 
@@ -117,7 +117,7 @@ template<typename InputCollection, typename OutputCollection>
 		tRef = daughter->masterClone().castTo<TRef>(); // if that throws, try cast to Ptr
 	      }
 	    } else {
-	      tRef = daughter->masterClone().castTo<TRef>(); /// just cast to a Ref
+	      tRef = daughter->masterClone().castTo<TRef>(); // just cast to whatever
 	    } // end bad typecheck hack
 	    
 	    if (std::find(buffer->begin(), buffer->end(), tRef) == buffer->end() )
