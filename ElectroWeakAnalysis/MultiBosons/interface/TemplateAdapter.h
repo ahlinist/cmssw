@@ -14,7 +14,7 @@
 //
 // Original Author:  Jan Veverka,32 3-A13,+41227677936,
 //         Created:  Sat Apr 24 10:51:03 CEST 2010
-// $Id: TemplateAdapter.h,v 1.1 2010/04/24 16:31:51 veverka Exp $
+// $Id: TemplateAdapter.h,v 1.2 2010/04/25 09:58:07 lgray Exp $
 //
 //
 
@@ -27,11 +27,15 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Common/interface/RefToBaseVector.h"
+#include "DataFormats/Common/interface/RefToPtr.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "FWCore/Utilities/interface/EDMException.h"
+
 
 namespace vgamma {
   template<typename T>
@@ -45,13 +49,13 @@ namespace vgamma {
 //
 // class declaration
 //
-template<typename TCollection>
+template<typename InputCollection,typename OutputCollection>
 class TemplateAdapter : public edm::EDProducer {
 private:
-  typedef edm::Ref<TCollection> TRef;
+  typedef typename OutputCollection::value_type TRef;
+  typedef typename TRef::value_type ProductType;
   typedef std::vector<TRef> TRefCollection;
-  typedef edm::RefVector<TCollection> TRefVector;
-
+  
 public:
   explicit TemplateAdapter(const edm::ParameterSet&);
   ~TemplateAdapter(){}
@@ -66,21 +70,21 @@ private:
 };
 
 // Constructor
-template<typename TCollection>
-TemplateAdapter<TCollection>::TemplateAdapter(const edm::ParameterSet& iConfig) :
+template<typename InputCollection, typename OutputCollection>
+  TemplateAdapter<InputCollection,OutputCollection>::TemplateAdapter(const edm::ParameterSet& iConfig) :
   src_(iConfig.getParameter<edm::InputTag>("src") )
 {
   //register product
-  produces<TRefVector>();
+  produces<OutputCollection>();
 }
 
 
-template<typename TCollection>
-void
-TemplateAdapter<TCollection>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+template<typename InputCollection, typename OutputCollection>
+  void
+  TemplateAdapter<InputCollection,OutputCollection>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   // retreive the source collection
-  edm::Handle<reco::CandidateView> src;
+  edm::Handle<InputCollection> src;
   iEvent.getByLabel(src_, src);
 
   // create the buffer collection
@@ -88,30 +92,53 @@ TemplateAdapter<TCollection>::produce(edm::Event& iEvent, const edm::EventSetup&
   buffer->reserve( 2 * src->size() );
 
   // loop over the source collection
-  for (reco::CandidateView::const_iterator mother = src->begin();
-      mother != src->end(); ++mother)
-  {
-    // loop over the daughters
-    for (reco::Candidate::const_iterator daughter = mother->begin();
-        daughter != mother->end(); ++daughter)
+  for (typename InputCollection::const_iterator mother = src->begin();
+       mother != src->end(); ++mother)
     {
-      // if (!daughter->hasMasterClone() ) continue; // better to throw than do something undefined
-      TRef tRef = daughter->masterClone().castTo<TRef>();
-      // Check that tRef is not in buffer.
-      if (std::find(buffer->begin(), buffer->end(), tRef) == buffer->end() )
-      {
-        // This tRef is not in the buffer yet, fill it.
-        buffer->push_back(tRef);
-      } // Check that tRef is not in buffer.
-    } // loop over daughters
-  } // loop over source collection
+      // loop over the daughters
+      for (reco::Candidate::const_iterator daughter = mother->begin();
+	   daughter != mother->end(); ++daughter)
+	{      
+	  if (!daughter->hasMasterClone() && !daughter->hasMasterClonePtr())
+	    edm::Exception::throwThis(edm::errors::InvalidReference,"Daughter does not have Master Clone!");
+	  
+	  try {
+	    
+	    TRef tRef;
+	    std::string TRefType(typeid(TRef).name()); 
+	    
+	    // some code in case we want to use PtrVector and original persistent references are edm::Refs & not edm::Ptrs
+	    if(TRefType.find("edm3Ptr") != std::string::npos) { // this is a really really bad type checking hack
+	      try{
+		edm::Ref<std::vector<ProductType> >  tempRef = 
+		  daughter->masterClone().castTo<edm::Ref<std::vector<ProductType> > >(); // try cast to Ref
+		tRef = edm::refToPtr<std::vector<ProductType> >(tempRef); // turn ref into Ptr
+	      } catch( edm::Exception& e) {
+		tRef = daughter->masterClone().castTo<TRef>(); // if that throws, try cast to Ptr
+	      }
+	    } else {
+	      tRef = daughter->masterClone().castTo<TRef>(); /// just cast to a Ref
+	    } // end bad typecheck hack
+	    
+	    if (std::find(buffer->begin(), buffer->end(), tRef) == buffer->end() )
+	      {
+		// This tRef is not in the buffer yet, fill it.
+		buffer->push_back(tRef);
+	      } // Check that tRef is not in buffer.
+	  } catch ( edm::Exception& e) {} // If this exception happens for all daughters of a candidate, an exception is thrown later
+	} // loop over daughters
+    } // loop over source collection
+
+  if(!buffer->size() && src->size()) // Throw exception if no daughters found and there are input candidates
+	edm::Exception::throwThis(edm::errors::ProductNotFound,
+				  "No daughters of specified type found. Please provide proper input!");
 
   // Sort buffer by pt.
   vgamma::GreaterByPtRef<TRef> ptComparator;
   std::sort(buffer->begin(), buffer->end(), ptComparator);
 
   // create the output product
-  std::auto_ptr<TRefVector> output(new TRefVector);
+  std::auto_ptr<OutputCollection> output(new OutputCollection);
   
   // copy the buffer in the output
   for (typename TRefCollection::const_iterator item = buffer->begin();
