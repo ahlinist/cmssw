@@ -66,31 +66,63 @@ patTrigger.onlyStandAlone = True
 from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import muonTriggerMatchHLTMu3
 muonTriggerMatchHLTMu3.src = 'patMuonsWithoutTrigger'
 muonTriggerMatchHLTMu3.andOr = False # i.e. 'AND'
-
-muonMatchHLTMu3       = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3" ])
-muonMatchHLTMu5       = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5" ])
-muonMatchHLTDoubleMu0 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_DoubleMu0" ])
-muonMatchHLTDoubleMu3  = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_DoubleMu3" ])
-muonMatchHLTOniaMu = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltL3MuonCandidates::HLT'   ] )
-muonMatchHLTOniaPx = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltOniaPixelTrackCands::HLT'] )
-muonMatchHLTOniaTk = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia" ], collectionTags = ['hltOniaCtfTrackCands::HLT'  ] )
-muonMatchHLTOniaMu8E29 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltL3MuonCandidates::HLT'       ] )
-muonMatchHLTOniaPx8E29 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltOniaPixelTrackCands8E29::HLT'] )
-muonMatchHLTOniaTk8E29 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Onia_8E29" ], collectionTags = ['hltOniaCtfTrackCands8E29::HLT'  ] )
-
 ### == For HLT triggers which are just L1s, we need a different matcher
 from MuonAnalysis.MuonAssociators.muonHLTL1Match_cfi import muonHLTL1Match
-
-muonMatchHLTL1MuOpen = muonHLTL1Match.clone(
-    # Input
+muonMatchL1 = muonHLTL1Match.clone(
     src     = muonTriggerMatchHLTMu3.src,
     matched = muonTriggerMatchHLTMu3.matched,
-    # Matching criteria
     maxDeltaR   = cms.double(0.3),
-    # Which trigger to use
-    pathName = cms.string('HLT_L1MuOpen'),
 )
-muonMatchHLTL1DoubleMuOpen = muonMatchHLTL1MuOpen.clone(pathName = 'HLT_L1DoubleMuOpen')
+
+### Single Mu L1
+muonMatchHLTL1MuOpen = muonMatchL1.clone(pathNames = [ 'HLT_L1MuOpen' ], filterLabels = ['hltL1MuOpenL1Filtered0' ])
+### Single Mu L2
+muonMatchHLTL2Mu0 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_L2Mu0" ], filterLabels = ['hltL2Mu0L2Filtered0'] )
+muonMatchHLTL2Mu3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_L2Mu3" ], filterLabels = ['hltSingleMu3L2Filtered3'] )
+### Single Mu L3
+muonMatchHLTMu3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3" ], filterLabels = ['hltSingleMu3L3Filtered3'] )
+muonMatchHLTMu5 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5" ], filterLabels = ['hltSingleMu5L3Filtered5'] )
+
+### Double Mu L1
+muonMatchHLTL1DoubleMuOpen = muonMatchL1.clone(pathNames = [ 'HLT_L1DoubleMuOpen' ], filterLabels = ['hltDoubleMuLevel1PathL1OpenFiltered' ])
+### Double Mu L2
+muonMatchHLTL2DoubleMu0 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_L2DoubleMu0" ], filterLabels = ['hltDiMuonL2PreFiltered0'] )
+### Double Mu L3
+muonMatchHLTDoubleMu0 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_DoubleMu0" ], filterLabels = ['hltDiMuonL3PreFiltered0'] )
+muonMatchHLTDoubleMu3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_DoubleMu3" ], filterLabels = ['hltDiMuonL3PreFiltered']  )
+
+### Mu L3 + L1MuOpen: 
+#---- L3 part
+muonMatchHLTMu0L1MuOpenL3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu0_L1MuOpen" ], filterLabels = [ 'hltMu0L1MuOpenL3Filtered0' ])
+muonMatchHLTMu3L1MuOpenL3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3_L1MuOpen" ], filterLabels = [ 'hltMu3L1MuOpenL3Filtered3' ])
+muonMatchHLTMu5L1MuOpenL3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5_L1MuOpen" ], filterLabels = [ 'hltMu5L1MuOpenL3Filtered5' ])
+#---- L1 part
+muonMatchHLTMu0L1MuOpenL1 = muonMatchL1.clone(pathNames = [ 'HLT_Mu0_L1MuOpen' ], filterLabels = ['hltMu0L1MuOpenL1Filtered0' ])
+muonMatchHLTMu3L1MuOpenL1 = muonMatchL1.clone(pathNames = [ 'HLT_Mu3_L1MuOpen' ], filterLabels = ['hltMu3L1MuOpenL1Filtered0' ])
+muonMatchHLTMu5L1MuOpenL1 = muonMatchL1.clone(pathNames = [ 'HLT_Mu5_L1MuOpen' ], filterLabels = ['hltMu5L1MuOpenL1Filtered0' ])
+
+### Mu L3 + L2Mu0
+#---- L3 part
+muonMatchHLTMu0L2Mu0L3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu0_L2Mu0" ], filterLabels = [ 'hltMu0L2Mu0L3Filtered0' ])
+muonMatchHLTMu3L2Mu0L3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3_L2Mu0" ], filterLabels = [ 'hltMu3L2Mu0L3Filtered0' ])
+muonMatchHLTMu5L2Mu0L3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5_L2Mu0" ], filterLabels = [ 'hltMu5L2Mu0L3Filtered0' ])
+#---- L2 part (actually, they're all the same (L2DoubleMu0)
+muonMatchHLTMu0L2Mu0L2 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu0_L2Mu0" ], filterLabels = [ 'hltDiMuonL2PreFiltered0' ])
+muonMatchHLTMu3L2Mu0L2 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3_L2Mu0" ], filterLabels = [ 'hltDiMuonL2PreFiltered0' ])
+muonMatchHLTMu5L2Mu0L2 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5_L2Mu0" ], filterLabels = [ 'hltDiMuonL2PreFiltered0' ])
+
+### Mu L3 + Track
+#---- muon part
+muonMatchHLTMu0Tk0Mu  = muonTriggerMatchHLTMu3.clone(
+    pathNames      = [ "HLT_Mu0_Track0_JPsi" ], 
+    filterLabels   = [ 'hltMu0TrackJpsiTrackMassFiltered' ], 
+    collectionTags = [ 'hltL3MuonCandidates::HLT' ] 
+)
+muonMatchHLTMu3Tk0Mu = muonMatchHLTMu0Tk0Mu.clone(pathNames = [ "HLT_Mu3_Track0_JPsi" ], filterLabels = [ 'hltMu3TrackJpsiTrackMassFiltered' ])
+muonMatchHLTMu5Tk0Mu = muonMatchHLTMu0Tk0Mu.clone(pathNames = [ "HLT_Mu5_Track0_JPsi" ], filterLabels = [ 'hltMu5TrackJpsiTrackMassFiltered' ])
+#---- track part 
+# v-- this works and it's easier --v
+muonMatchHLTCtfTrack  = muonTriggerMatchHLTMu3.clone(pathNames = [ "*" ], collectionTags = ['hltMuTrackJpsiCtfTrackCands::HLT'])
 
 
 ## ==== Embed ====
@@ -98,20 +130,35 @@ patMuonsWithTrigger = cms.EDProducer( "PATTriggerMatchMuonEmbedder",
     src     = cms.InputTag(  "patMuonsWithoutTrigger" ),
     matches = cms.VInputTag( 
         # HLT Matches
+        cms.InputTag('muonMatchHLTL1MuOpen','propagatedReco'), # fake, will match if and only if he muon did propagate to station 2
+        cms.InputTag('muonMatchHLTL1MuOpen'),
+        cms.InputTag('muonMatchHLTL2Mu0'),
+        cms.InputTag('muonMatchHLTL2Mu3'),
         cms.InputTag('muonMatchHLTMu3'),
         cms.InputTag('muonMatchHLTMu5'),
+        cms.InputTag('muonMatchHLTL1DoubleMuOpen'),
+        cms.InputTag('muonMatchHLTL2DoubleMu0'),
         cms.InputTag('muonMatchHLTDoubleMu0'),
         cms.InputTag('muonMatchHLTDoubleMu3'),
-        cms.InputTag('muonMatchHLTOniaMu'),
-        cms.InputTag('muonMatchHLTOniaPx'),
-        cms.InputTag('muonMatchHLTOniaTk'),
-        cms.InputTag('muonMatchHLTOniaMu8E29'),
-        cms.InputTag('muonMatchHLTOniaPx8E29'),
-        cms.InputTag('muonMatchHLTOniaTk8E29'),
-        # L1 Matches
-        cms.InputTag('muonMatchHLTL1MuOpen','propagatedReco'), # will match if the muon did propagate to station 2
-        cms.InputTag('muonMatchHLTL1MuOpen'),
-        cms.InputTag('muonMatchHLTL1DoubleMuOpen'),
+        cms.InputTag('muonMatchHLTMu0L1MuOpenL3'),
+        cms.InputTag('muonMatchHLTMu3L1MuOpenL3'),
+        cms.InputTag('muonMatchHLTMu5L1MuOpenL3'),
+        cms.InputTag('muonMatchHLTMu0L1MuOpenL1'),
+        cms.InputTag('muonMatchHLTMu3L1MuOpenL1'),
+        cms.InputTag('muonMatchHLTMu5L1MuOpenL1'),
+        cms.InputTag('muonMatchHLTMu0L2Mu0L3'),
+        cms.InputTag('muonMatchHLTMu3L2Mu0L3'),
+        cms.InputTag('muonMatchHLTMu5L2Mu0L3'),
+        cms.InputTag('muonMatchHLTMu0L2Mu0L2'),
+        cms.InputTag('muonMatchHLTMu3L2Mu0L2'),
+        cms.InputTag('muonMatchHLTMu5L2Mu0L2'),
+        cms.InputTag('muonMatchHLTMu0Tk0Mu'),
+        cms.InputTag('muonMatchHLTMu3Tk0Mu'),
+        cms.InputTag('muonMatchHLTMu5Tk0Mu'),
+        #cms.InputTag('muonMatchHLTMu0Tk0Tk'),
+        #cms.InputTag('muonMatchHLTMu3Tk0Tk'),
+        #cms.InputTag('muonMatchHLTMu5Tk0Tk'),
+        cms.InputTag('muonMatchHLTCtfTrack'),
     )
 
 )
@@ -120,17 +167,37 @@ patMuonsWithTrigger = cms.EDProducer( "PATTriggerMatchMuonEmbedder",
 patTriggerMatching = cms.Sequence(
     patTrigger * 
     ( muonMatchHLTL1MuOpen   +
+      muonMatchHLTL2Mu0      +
+      muonMatchHLTL2Mu3      +
       muonMatchHLTMu3        +
       muonMatchHLTMu5        +
-      muonMatchHLTL1DoubleMuOpen  +
-      muonMatchHLTDoubleMu0  +
-      muonMatchHLTDoubleMu3  +
-      muonMatchHLTOniaMu     +
-      muonMatchHLTOniaPx     +
-      muonMatchHLTOniaTk     +
-      muonMatchHLTOniaMu8E29 +
-      muonMatchHLTOniaPx8E29 +
-      muonMatchHLTOniaTk8E29 
+      # symmetric double muons
+      muonMatchHLTL1DoubleMuOpen +
+      muonMatchHLTL2DoubleMu0    +
+      muonMatchHLTDoubleMu0      +
+      muonMatchHLTDoubleMu3      +
+      # mu + l1 mu
+      muonMatchHLTMu0L1MuOpenL3 + 
+      muonMatchHLTMu3L1MuOpenL3 + 
+      muonMatchHLTMu5L1MuOpenL3 + 
+      muonMatchHLTMu0L1MuOpenL1 + 
+      muonMatchHLTMu3L1MuOpenL1 + 
+      muonMatchHLTMu5L1MuOpenL1 + 
+      # mu + l2 mu
+      muonMatchHLTMu0L2Mu0L3 + 
+      muonMatchHLTMu3L2Mu0L3 + 
+      muonMatchHLTMu5L2Mu0L3 + 
+      muonMatchHLTMu0L2Mu0L2 + 
+      muonMatchHLTMu3L2Mu0L2 + 
+      muonMatchHLTMu5L2Mu0L2 + 
+      # mu + track
+      muonMatchHLTMu0Tk0Mu + 
+      muonMatchHLTMu3Tk0Mu + 
+      muonMatchHLTMu5Tk0Mu + 
+      #muonMatchHLTMu0Tk0Tk + 
+      #muonMatchHLTMu3Tk0Tk + 
+      #muonMatchHLTMu5Tk0Tk  
+      muonMatchHLTCtfTrack
     ) *
     patMuonsWithTrigger
 )
