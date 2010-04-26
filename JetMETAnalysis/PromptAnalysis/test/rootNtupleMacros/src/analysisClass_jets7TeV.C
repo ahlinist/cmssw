@@ -89,9 +89,8 @@ void ReadCleaningParameters(const char* filename){
 	//cout << "Reading object selection from " << filename << endl;
 	char ParName[100];
 	float ParValue;
-	bool ok(false);
+	unsigned int cut_counter=0;
 	while( IN.getline(buffer, 200, '\n') ){
-	  ok = false;
 	  if (buffer[0] == '#') {continue;} // Skip lines commented with '#'
 	  //scans lines first string, then double
 	  sscanf(buffer, "%s %f", ParName, &ParValue);
@@ -102,7 +101,7 @@ void ReadCleaningParameters(const char* filename){
 	  }
 	  if( !strcmp(ParName, "CaloJetPt") ){
 	    cut_counter+=1;
-	    ptMin_PF = double(ParValue); 
+	    ptMin = double(ParValue); 
 	  }
 	  if( !strcmp(ParName, "CaloJetEta") ){
 	    cut_counter+=1;
@@ -110,7 +109,7 @@ void ReadCleaningParameters(const char* filename){
 	  }
 	  if( !strcmp(ParName, "CaloDiJetPt") ){
 	    cut_counter+=1;
-	    ptMinDijet_PF = double(ParValue); 
+	    ptMinDijet = double(ParValue); 
 	  }
 	  if( !strcmp(ParName, "CaloDiJetEta") ){
 	    cut_counter+=1;
@@ -792,9 +791,9 @@ void analysisClass::Loop()
       bool goodrun=false;
   
 
-      if(isdata == 1 && !eventInGoodRunLumi(runid,LS)){
-	continue;
-      }
+      //if(isdata == 1 && !eventInGoodRunLumi(runid,LS)){
+      //continue;
+      //}
 
       goodevts++;
       alljets+=ak5JetpT->size();
@@ -840,21 +839,7 @@ void analysisClass::Loop()
 		pass_BSC_BeamHaloVeto = 1; 
       
 
-      //## pass_PhysicsBit - HLT Physics Declared bit set 
-      if(isData==1)
-	{
-	  if(hltbits->at(116)==1){
-	    pass_PhysicsBit = 1;
-	    phybitevt++;
-	    phybitjets+=ak5JetpT->size(); 
-	  }
-	}
-      else if(isData == 0)
-	pass_PhysicsBit = 1;
-
-	pass_PhysicsBit = 1;
-    
-      if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
+      if (pass_BPTX && 	pass_BSC_MB && pass_BSC_BeamHaloVeto) {
      // ---------------------------------------------------------------
      //# Reco-based Selection
       //## pass_MonsterTRKEventVeto - "Monster Events" Tracker Filter
@@ -1097,7 +1082,7 @@ void analysisClass::Loop()
 	      dijetdphiJIDtight->Fill(dphi);
 	    }
 
-	    if (dphi >cut_CaloDiJetDeltaPhi_min) {
+	    if (dphi >cut_DiJetDeltaPhi_min) {
 	      // fake jet study
 	      double dijcScale;
 	      for (int dj = 0; dj<int(ak5JetpT->size()); dj++){
@@ -1116,8 +1101,8 @@ void analysisClass::Loop()
 		  fakejetptall1 ->Fill(ak5JetpT->at(dj));
 		}
 	      }
-	      Calojet1LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet1)*jcScale0_,ak5JetEta->at(index_jet1),ak5JetPhi->at(index_jet1),ak5JetEnergy->at(index_jet1)*jcScale0);
-	      Calojet2LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet2)*jcScale1_,ak5JetEta->at(index_jet2),ak5JetPhi->at(index_jet2),ak5JetEnergy->at(index_jet2)*jcScale1);
+	      Calojet1LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet1)*jcScale0,ak5JetEta->at(index_jet1),ak5JetPhi->at(index_jet1),ak5JetEnergy->at(index_jet1)*jcScale0);
+	      Calojet2LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet2)*jcScale1,ak5JetEta->at(index_jet2),ak5JetPhi->at(index_jet2),ak5JetEnergy->at(index_jet2)*jcScale1);
 	      CalodijetLorentzVector=Calojet1LorentzVector+Calojet2LorentzVector;
 	      // basic di-jet variables 
 	      dijetptall1->Fill(ak5JetpT->at(index_jet1) * jcScale0);  //jc
