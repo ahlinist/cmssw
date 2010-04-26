@@ -625,8 +625,10 @@ void analysisClass::Loop()
 	pass_PhysicsBit = 1;
       }
     
-	pass_PhysicsBit = 1;
-      if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
+
+      pass_PhysicsBit = 1;
+      //      if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
+      if (pass_PhysicsBit==1) { //all this already requested during ntuple creation!
      // ---------------------------------------------------------------
      //# Reco-based Selection
       //## pass_MonsterTRKEventVeto - "Monster Events" Tracker Filter
@@ -662,7 +664,8 @@ void analysisClass::Loop()
       //PV event selection - cut on vertex for now. l1 tech bits already asked at skimming step
       //https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe   
 
-      if(pass_MonsterTRKEventVeto && goodPVtx(vertexNDF->at(0),vertexZ->at(0)) && vertexisValid->at(0)==true && calometSumEt->at(0)<cut_sumet_max){    // "newest" event selection
+      if(pass_MonsterTRKEventVeto && goodPVtx(vertexNDF->at(0),vertexZ->at(0)) && vertexisValid->at(0)==true ){    // "newest" event selection //&& calometSumEt->at(0)<cut_sumet_max
+
 
 	pvevt++;
 	pvjets+=ak5JetpT->size(); 	
