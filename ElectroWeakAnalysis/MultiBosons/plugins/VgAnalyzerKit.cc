@@ -18,15 +18,18 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "PhysicsTools/CandUtils/interface/AddFourMomenta.h"
 
+#include <iostream>
+
 using namespace std;
 using namespace pat;
 using namespace edm;
 using namespace reco;
 
 VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helper_(ps) {
+  // cout << "VgAnalyzerKit: entering ctor ..." << endl;
 
   saveHistograms_ = ps.getUntrackedParameter<bool>("saveHistograms", false);
-  saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);  
+  saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);
   trgResults_     = ps.getParameter<InputTag>("triggerResults");
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
   gtdigilabel_    = ps.getParameter<InputTag>("GTDigiLabel");
@@ -41,6 +44,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   beamSpotCollection_        = ps.getParameter<InputTag>("BeamSpotCollection");
 
   if (saveHistograms_) helper_.bookHistos(this);
+
+  // cout << "VgAnalyzerKit: making output tree" << endl;
 
   Service<TFileService> fs;
   tree_ = fs->make<TTree>("EventTree", "Event data");
@@ -65,7 +70,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("nGoodTrk", &nGoodTrk_, "nGoodTrk/I");
   tree_->Branch("IsTracksGood", &IsTracksGood_, "IsTracksGood/I");
   if (doGenParticles_) {
-    tree_->Branch("pdf", pdf_, "pdf[7]/D"); 
+    tree_->Branch("pdf", pdf_, "pdf[7]/D");
     tree_->Branch("processID", &processID_, "processID/D");
     // genParticle
     tree_->Branch("nMC", &nMC_, "nMC/I");
@@ -82,7 +87,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("mcMomPhi", mcMomPhi, "mcMomPhi[nMC]/D");
     tree_->Branch("mcIndex", mcIndex, "mcIndex[nMC]/I");
     tree_->Branch("mcDecayType", mcDecayType, "mcDecayType[nMC]/I"); //-999:non W or Z, 1:hardronic, 2:e, 3:mu, 4:tau
-    // Gen MET 
+    // Gen MET
     tree_->Branch("genMET", &genMET_, "genMET/D");
     tree_->Branch("genMETx", &genMETx_, "genMETx/D");
     tree_->Branch("genMETy", &genMETy_, "genMETy/D");
@@ -95,8 +100,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("METPhi", &METPhi_, "METPhi/D");
   tree_->Branch("METsumEt", &METsumEt_, "METsumEt/D");
   tree_->Branch("uncorrMET", uncorrMET_, "uncorrMET[3]/D"); // [0]: uncorrALL, [1]: uncorrJES, [2]: uncorrMUON
-  tree_->Branch("uncorrMETPhi", uncorrMETPhi_, "uncorrMETPhi[3]/D"); 
-  tree_->Branch("uncorrMETSumEt", uncorrMETSumEt_, "uncorrMETSumEt[3]/D"); 
+  tree_->Branch("uncorrMETPhi", uncorrMETPhi_, "uncorrMETPhi[3]/D");
+  tree_->Branch("uncorrMETSumEt", uncorrMETSumEt_, "uncorrMETSumEt[3]/D");
   // tcMET
   tree_->Branch("tcMET", &tcMET_, "tcMET/D");
   tree_->Branch("tcMETx", &tcMETx_, "tcMETx/D");
@@ -339,6 +344,7 @@ VgAnalyzerKit::~VgAnalyzerKit() {
 }
 
 void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
+  // cout << "VgAnalyzerKit: entering produce() ..." << endl;
 
   helper_.getHandles(e, muonHandle_, electronHandle_, tauHandle_, jetHandle_, METHandle_, photonHandle_, trackHandle_, genParticlesHandle_);
   if (saveHistograms_) helper_.fillHistograms(e, muonHandle_, electronHandle_, tauHandle_, jetHandle_, METHandle_, photonHandle_, trackHandle_, genParticlesHandle_);
@@ -351,14 +357,15 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   Handle<EcalRecHitCollection> EEReducedRecHits;
   e.getByLabel(eeReducedRecHitCollection_, EEReducedRecHits);
   EcalClusterLazyTools lazyTool(e, es, ebReducedRecHitCollection_, eeReducedRecHitCollection_ );
-  
+
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
 
   //Handle<int> genProcessID;
   //e.getByLabel("genEventProcID", genProcessID);
   //processID_ = *genProcessID;
-  
+  // cout << "VgAnalyzerKit: produce: event info ..." << endl;
+
   run_    = e.id().run();
   event_  = e.id().event();
   orbit_  = e.orbitNumber();
@@ -367,6 +374,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   isData_ = e.isRealData();
 
   // technical trigger
+  // cout << "VgAnalyzerKit: produce: technical trigger ..." << endl;
   Handle< L1GlobalTriggerReadoutRecord > gtReadoutRecord;
   if (e.getByLabel(gtdigilabel_, gtReadoutRecord) ) {
 
@@ -374,34 +382,35 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
     for (int i=0; i<64; ++i) {
       if (technicalTriggerWordBeforeMask.at(i)) ttbit_[i] = 1;
-      else ttbit_[i] = 0;     
+      else ttbit_[i] = 0;
     }
   }
 
   // Get CaloTower information
   edm::Handle<CaloTowerCollection> pCaloTower;
-  e.getByLabel(caloTowerlabel_, pCaloTower);
+  if ( e.getByLabel(caloTowerlabel_, pCaloTower) ) {
 
-  const CaloTowerCollection* CaloTowers = pCaloTower.product();
-  
-  nHFTowersP_ = 0;
-  nHFTowersN_ = 0;
-  for (CaloTowerCollection::const_iterator aCalo = CaloTowers->begin(); aCalo != CaloTowers->end(); aCalo++) {
-    
-    if (aCalo->energy() > 3) {
-      for (size_t i = 0; i < aCalo->constituentsSize(); ++i) {
-	const DetId caloId = aCalo->constituent(i);
-	
-	if (caloId.det() != DetId::Hcal) continue;
-	
-	HcalSubdetector hcalsubdet = (HcalSubdetector(caloId.subdetId()));
-	
-	if (hcalsubdet != HcalForward) continue;
-	if (aCalo->eta() < 3) nHFTowersP_++;
-	if (aCalo->eta() > -3) nHFTowersN_++;
+    const CaloTowerCollection* CaloTowers = pCaloTower.product();
+
+    nHFTowersP_ = 0;
+    nHFTowersN_ = 0;
+    for (CaloTowerCollection::const_iterator aCalo = CaloTowers->begin(); aCalo != CaloTowers->end(); aCalo++) {
+
+      if (aCalo->energy() > 3) {
+        for (size_t i = 0; i < aCalo->constituentsSize(); ++i) {
+          const DetId caloId = aCalo->constituent(i);
+
+          if (caloId.det() != DetId::Hcal) continue;
+
+          HcalSubdetector hcalsubdet = (HcalSubdetector(caloId.subdetId()));
+
+          if (hcalsubdet != HcalForward) continue;
+          if (aCalo->eta() < 3) nHFTowersP_++;
+          if (aCalo->eta() > -3) nHFTowersN_++;
+        }
       }
     }
-  }
+  } // pCalotower.isValid()
 
   // vertex
   nVtx_ = 0;
@@ -409,8 +418,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   Int_t nGoodVtx = 0;
   Handle<VertexCollection> recVtxs;
   if (e.getByLabel(vtxlabel_, recVtxs)) {
-    
-    for (size_t i=0; i<recVtxs->size(); ++i) 
+
+    for (size_t i=0; i<recVtxs->size(); ++i)
       if (!((*recVtxs)[i].isFake())) {
 	vtx_[nVtx_][0] = (*recVtxs)[i].x();
 	vtx_[nVtx_][1] = (*recVtxs)[i].y();
@@ -431,13 +440,13 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   if (e.getByLabel(tracklabel_, Tracks)) {
 
     const reco::TrackCollection *track = Tracks.product();
-    
+
     trkQuality_ = reco::TrackBase::qualityByName("highPurity");
-    
+
     nTrk_ = 0;
     nGoodTrk_ = 0;
     for (reco::TrackCollection::const_iterator aTrk = track->begin(); aTrk != track->end(); ++aTrk) {
-      
+
       if (aTrk->quality(trkQuality_)) nGoodTrk_++;
       nTrk_++;
     }
@@ -450,6 +459,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // PDF information
+  // cout << "VgAnalyzerKit: produce: PDF information..." << endl;
   if (!isData_) {
     Handle<PdfInfo> pdfInfoHandle;
     bool pdfInfo = e.getByLabel("genEventPdfInfo", pdfInfoHandle);
@@ -461,30 +471,32 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       pdf_[4] = pdfInfoHandle->pdf1;     // PDF weight for parton #1
       pdf_[5] = pdfInfoHandle->pdf2;     // PDF weight for parton #2
       pdf_[6] = pdfInfoHandle->scalePDF; // scale of the hard interaction
-    } 
+    }
   }
 
   // GenParticle
-  nMC_ = 0;
-  int genIndex = 0;
-  const Candidate *mom = 0;
+  // cout << "VgAnalyzerKit: produce: GenParticle... " << endl;
+  if (!isData_ && genParticlesHandle_.isValid() ) {
 
-  if (!isData_) {
+    nMC_ = 0;
+    int genIndex = 0;
+    const Candidate *mom = 0;
+
     for (vector<GenParticle>::const_iterator ip = genParticlesHandle_->begin(); ip != genParticlesHandle_->end(); ++ip) {
-      
+
       genIndex++;
-      
+
       if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24 || fabs(ip->pdgId())==7 || fabs(ip->pdgId())==4)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 && fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
-	
+
 	const Candidate *p = (const Candidate*)&(*ip);
 
 	if (!p->mother()) continue;
-	
+
 	if (fabs(p->pdgId())==4 && fabs(p->mother()->pdgId())!=7) continue;
 	if ((genIndex-1)>20 && ip->pdgId()==22) continue;
 	if (fabs(p->pdgId())==12 && fabs(p->mother()->pdgId())>100) continue;
 	if (fabs(p->pdgId())==14 && fabs(p->mother()->pdgId())>100) continue;
-	
+
 	mcPID[nMC_] = p->pdgId();
 	mcPt[nMC_] = p->pt();
 	mcMass[nMC_] = p->mass();
@@ -497,7 +509,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	mcMomEta[nMC_] = -999;
 	mcMomPhi[nMC_] = -999;
 	mcDecayType[nMC_] = -999;
-	
+
 	for (size_t j=0; j<p->numberOfMothers(); ++j) {
 	  mom = p->mother(j);
 	  mcMomPID[nMC_] = mom->pdgId();
@@ -508,32 +520,34 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	  if (mom->mother()) mcGMomPID[nMC_] = mom->mother()->pdgId();
 	}
 	mcIndex[nMC_] = genIndex-1;
-	
+
 	// if genParticle is W or Z, check its decay type
 	if (ip->pdgId()==23 || fabs(ip->pdgId())==24) {
 	  for (size_t k=0; k<p->numberOfDaughters(); ++k) {
-	    
+
 	    const Candidate *dp = p->daughter(k);
-	    
-	    if (fabs(dp->pdgId())<=6) 
+
+	    if (fabs(dp->pdgId())<=6)
 	      mcDecayType[nMC_] = 1;
-	    else if (fabs(dp->pdgId())==11 || fabs(dp->pdgId())==12) 
+	    else if (fabs(dp->pdgId())==11 || fabs(dp->pdgId())==12)
 	      mcDecayType[nMC_] = 2;
-	    else if (fabs(dp->pdgId())==13 || fabs(dp->pdgId())==14) 
+	    else if (fabs(dp->pdgId())==13 || fabs(dp->pdgId())==14)
 	      mcDecayType[nMC_] = 3;
-	    else if (fabs(dp->pdgId())==15 || fabs(dp->pdgId())==16) 
+	    else if (fabs(dp->pdgId())==15 || fabs(dp->pdgId())==16)
 	      mcDecayType[nMC_] = 4;
-	    
+
 	  }
 	}
-	
+
 	nMC_++;
       }
-      
+
     }
+
   }
 
   // HLT
+  // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
   if (saveHLTInfo_) {
     Handle<TriggerResults> trgResultsHandle;
     e.getByLabel(trgResults_, trgResultsHandle);
@@ -550,37 +564,40 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // Gen & PAT MET (caloMET)
+  // cout << "VgAnalyzerKit: produce: Gen & PAT MET (caloMET) ..." << endl;
   int nMET = 0;
-  for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
-    MET_      = iMET->pt();
-    METx_     = iMET->px();
-    METy_     = iMET->py(); 
-    METPhi_   = iMET->phi();
-    METsumEt_ = iMET->sumEt();
+  if( METHandle_.isValid() )
+    for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
+      MET_      = iMET->pt();
+      METx_     = iMET->px();
+      METy_     = iMET->py();
+      METPhi_   = iMET->phi();
+      METsumEt_ = iMET->sumEt();
 
-    uncorrMET_[0]    = iMET->uncorrectedPt(pat::MET::uncorrALL);
-    uncorrMET_[1]    = iMET->uncorrectedPt(pat::MET::uncorrJES);
-    uncorrMET_[2]    = iMET->uncorrectedPt(pat::MET::uncorrMUON);
+      uncorrMET_[0]    = iMET->uncorrectedPt(pat::MET::uncorrALL);
+      uncorrMET_[1]    = iMET->uncorrectedPt(pat::MET::uncorrJES);
+      uncorrMET_[2]    = iMET->uncorrectedPt(pat::MET::uncorrMUON);
 
-    uncorrMETPhi_[0] = iMET->uncorrectedPhi(pat::MET::uncorrALL);
-    uncorrMETPhi_[1] = iMET->uncorrectedPhi(pat::MET::uncorrJES);
-    uncorrMETPhi_[2] = iMET->uncorrectedPhi(pat::MET::uncorrMUON);
+      uncorrMETPhi_[0] = iMET->uncorrectedPhi(pat::MET::uncorrALL);
+      uncorrMETPhi_[1] = iMET->uncorrectedPhi(pat::MET::uncorrJES);
+      uncorrMETPhi_[2] = iMET->uncorrectedPhi(pat::MET::uncorrMUON);
 
-    uncorrMETSumEt_[0]  = iMET->corSumEt(pat::MET::uncorrALL);
-    uncorrMETSumEt_[1]  = iMET->corSumEt(pat::MET::uncorrJES);
-    uncorrMETSumEt_[2]  = iMET->corSumEt(pat::MET::uncorrMUON);
+      uncorrMETSumEt_[0]  = iMET->corSumEt(pat::MET::uncorrALL);
+      uncorrMETSumEt_[1]  = iMET->corSumEt(pat::MET::uncorrJES);
+      uncorrMETSumEt_[2]  = iMET->corSumEt(pat::MET::uncorrMUON);
 
-    if (!isData_) {
-      genMET_    = (*iMET).genMET()->pt();
-      genMETx_   = (*iMET).genMET()->px();
-      genMETy_   = (*iMET).genMET()->py();
-      genMETPhi_ = (*iMET).genMET()->phi();
+      if (!isData_) {
+	genMET_    = (*iMET).genMET()->pt();
+	genMETx_   = (*iMET).genMET()->px();
+	genMETy_   = (*iMET).genMET()->py();
+	genMETPhi_ = (*iMET).genMET()->phi();
+      }
+
+      nMET++;
     }
 
-    nMET++;
-  }
-
   // tcMET
+  // cout << "VgAnalyzerKit: produce: tcMET ..." << endl;
   Handle<edm::View<reco::MET> > tcMETcoll;
   const reco::MET *tcMET = 0;
   if (e.getByLabel(tcMETlabel_, tcMETcoll)) {
@@ -597,6 +614,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // pfMET
+  // cout << "VgAnalyzerKit: produce: pfMET ..." << endl;
   Handle<View<reco::PFMET> > pfMETcoll;
   const reco::PFMET *pfMET = 0;
   if (e.getByLabel(pfMETlabel_, pfMETcoll)) {
@@ -613,383 +631,400 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // Electron
+  // cout << "VgAnalyzerKit: produce: Electron ..." << endl;
+
   nEle_ = 0;
   const Candidate *elemom = 0;
-  for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
-   
-    //if (iEle->pt()<10) continue;
+  if ( electronHandle_.isValid() )
+    for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
-    for (int i=0; i<5; ++i) eleID_[nEle_][i] = 0;
-    if (iEle->electronID("eidRobustLoose")==1) eleID_[nEle_][0] = 1;
-    if (iEle->electronID("eidRobustTight")==1)  eleID_[nEle_][1] = 1;
-    if (iEle->electronID("eidLoose")==1)  eleID_[nEle_][2] = 1;
-    if (iEle->electronID("eidTight")==1)  eleID_[nEle_][3] = 1;
-    if (iEle->electronID("eidRobustHighEnergy")==1)  eleID_[nEle_][4] = 1;
+      //if (iEle->pt()<10) continue;
 
-    eleClass_[nEle_]   = iEle->classification();
-    eleCharge_[nEle_]  = iEle->charge();
-    eleEn_[nEle_]      = iEle->energy();
-    elePt_[nEle_]      = iEle->pt();
-    elePz_[nEle_]      = iEle->pz();
-    eleEta_[nEle_]     = iEle->eta();
-    elePhi_[nEle_]     = iEle->phi();
-    eleHoverE_[nEle_]  = iEle->hadronicOverEm();
-    eleHoverE1_[nEle_] = iEle->hadronicOverEm1();
-    eleHoverE2_[nEle_] = iEle->hadronicOverEm2();
-    eleEoverP_[nEle_]  = iEle->eSuperClusterOverP();
+      for (int i=0; i<5; ++i) eleID_[nEle_][i] = 0;
+      if (iEle->electronID("eidRobustLoose")==1) eleID_[nEle_][0] = 1;
+      if (iEle->electronID("eidRobustTight")==1)  eleID_[nEle_][1] = 1;
+      if (iEle->electronID("eidLoose")==1)  eleID_[nEle_][2] = 1;
+      if (iEle->electronID("eidTight")==1)  eleID_[nEle_][3] = 1;
+      if (iEle->electronID("eidRobustHighEnergy")==1)  eleID_[nEle_][4] = 1;
 
-    elePin_[nEle_]  = iEle->trackMomentumAtVtx().R();
-    elePout_[nEle_] = iEle->trackMomentumOut().R();
+      eleClass_[nEle_]   = iEle->classification();
+      eleCharge_[nEle_]  = iEle->charge();
+      eleEn_[nEle_]      = iEle->energy();
+      elePt_[nEle_]      = iEle->pt();
+      elePz_[nEle_]      = iEle->pz();
+      eleEta_[nEle_]     = iEle->eta();
+      elePhi_[nEle_]     = iEle->phi();
+      eleHoverE_[nEle_]  = iEle->hadronicOverEm();
+      eleHoverE1_[nEle_] = iEle->hadronicOverEm1();
+      eleHoverE2_[nEle_] = iEle->hadronicOverEm2();
+      eleEoverP_[nEle_]  = iEle->eSuperClusterOverP();
 
-    eleBrem_[nEle_] = (elePin_[nEle_] - elePout_[nEle_]) / elePin_[nEle_];
+      elePin_[nEle_]  = iEle->trackMomentumAtVtx().R();
+      elePout_[nEle_] = iEle->trackMomentumOut().R();
 
-    eledEtaAtVtx_[nEle_] = iEle->deltaEtaSuperClusterTrackAtVtx();
-    eledPhiAtVtx_[nEle_] = iEle->deltaPhiSuperClusterTrackAtVtx();
+      eleBrem_[nEle_] = (elePin_[nEle_] - elePout_[nEle_]) / elePin_[nEle_];
 
-    // Acess super cluster
-    eleSCEta_[nEle_]   = iEle->superCluster()->eta();
-    eleSCPhi_[nEle_]   = iEle->superCluster()->phi();
-    eleSCRawEn_[nEle_] = iEle->superCluster()->rawEnergy();    
-    eleSCEn_[nEle_]    = iEle->superCluster()->energy();
-    eleESEn_[nEle_]    = iEle->superCluster()->preshowerEnergy();
-    eleSCEtaWidth_[nEle_] = iEle->superCluster()->etaWidth();
-    eleSCPhiWidth_[nEle_] = iEle->superCluster()->phiWidth();
+      eledEtaAtVtx_[nEle_] = iEle->deltaEtaSuperClusterTrackAtVtx();
+      eledPhiAtVtx_[nEle_] = iEle->deltaPhiSuperClusterTrackAtVtx();
 
-    eleVtx_[nEle_][0] = iEle->trackPositionAtVtx().x();
-    eleVtx_[nEle_][1] = iEle->trackPositionAtVtx().y();
-    eleVtx_[nEle_][2] = iEle->trackPositionAtVtx().z();
+      // Acess super cluster
+      eleSCEta_[nEle_]   = iEle->superCluster()->eta();
+      eleSCPhi_[nEle_]   = iEle->superCluster()->phi();
+      eleSCRawEn_[nEle_] = iEle->superCluster()->rawEnergy();
+      eleSCEn_[nEle_]    = iEle->superCluster()->energy();
+      eleESEn_[nEle_]    = iEle->superCluster()->preshowerEnergy();
+      eleSCEtaWidth_[nEle_] = iEle->superCluster()->etaWidth();
+      eleSCPhiWidth_[nEle_] = iEle->superCluster()->phiWidth();
 
-    eleCaloPos_[nEle_][0] = iEle->trackPositionAtCalo().x();
-    eleCaloPos_[nEle_][1] = iEle->trackPositionAtCalo().y();
-    eleCaloPos_[nEle_][2] = iEle->trackPositionAtCalo().z();
+      eleVtx_[nEle_][0] = iEle->trackPositionAtVtx().x();
+      eleVtx_[nEle_][1] = iEle->trackPositionAtVtx().y();
+      eleVtx_[nEle_][2] = iEle->trackPositionAtVtx().z();
 
-    eleSCPos_[nEle_][0] = iEle->superCluster()->x();
-    eleSCPos_[nEle_][1] = iEle->superCluster()->y();
-    eleSCPos_[nEle_][2] = iEle->superCluster()->z();
+      eleCaloPos_[nEle_][0] = iEle->trackPositionAtCalo().x();
+      eleCaloPos_[nEle_][1] = iEle->trackPositionAtCalo().y();
+      eleCaloPos_[nEle_][2] = iEle->trackPositionAtCalo().z();
 
-    const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
+      eleSCPos_[nEle_][0] = iEle->superCluster()->x();
+      eleSCPos_[nEle_][1] = iEle->superCluster()->y();
+      eleSCPos_[nEle_][2] = iEle->superCluster()->z();
 
-    eleEMax_[nEle_] = lazyTool.eMax(*eleSeed);
-    eleE2nd_[nEle_] = lazyTool.e2nd(*eleSeed);
-    eleE2x2_[nEle_] = lazyTool.e2x2(*eleSeed);
-    eleE3x2_[nEle_] = lazyTool.e3x2(*eleSeed);
-    eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
-    eleE4x4_[nEle_] = lazyTool.e4x4(*eleSeed);
-    eleE5x5_[nEle_] = lazyTool.e5x5(*eleSeed);
+      const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
 
-    eleE2x5Right_[nEle_]  = lazyTool.e2x5Right(*eleSeed);
-    eleE2x5Left_[nEle_]   = lazyTool.e2x5Left(*eleSeed);
-    eleE2x5Top_[nEle_]    = lazyTool.e2x5Top(*eleSeed);
-    eleE2x5Bottom_[nEle_] = lazyTool.e2x5Bottom(*eleSeed);
-    eleERight_[nEle_]     = lazyTool.eRight(*eleSeed);
-    eleELeft_[nEle_]      = lazyTool.eLeft(*eleSeed);
-    eleETop_[nEle_]       = lazyTool.eTop(*eleSeed);
-    eleEBottom_[nEle_]    = lazyTool.eBottom(*eleSeed);
+      eleEMax_[nEle_] = lazyTool.eMax(*eleSeed);
+      eleE2nd_[nEle_] = lazyTool.e2nd(*eleSeed);
+      eleE2x2_[nEle_] = lazyTool.e2x2(*eleSeed);
+      eleE3x2_[nEle_] = lazyTool.e3x2(*eleSeed);
+      eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
+      eleE4x4_[nEle_] = lazyTool.e4x4(*eleSeed);
+      eleE5x5_[nEle_] = lazyTool.e5x5(*eleSeed);
 
-    // Gen Particle
-    eleGenIndex_[nEle_] = -1;
-    int EleGenIndex = 0;
-    if (!isData_) {
-      if ((*iEle).genLepton()) {
-	 for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
-	   if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
-              eleGenIndex_[nEle_] = EleGenIndex;
-	    
-              const Candidate *elep = (const Candidate*)&(*iGen);
+      eleE2x5Right_[nEle_]  = lazyTool.e2x5Right(*eleSeed);
+      eleE2x5Left_[nEle_]   = lazyTool.e2x5Left(*eleSeed);
+      eleE2x5Top_[nEle_]    = lazyTool.e2x5Top(*eleSeed);
+      eleE2x5Bottom_[nEle_] = lazyTool.e2x5Bottom(*eleSeed);
+      eleERight_[nEle_]     = lazyTool.eRight(*eleSeed);
+      eleELeft_[nEle_]      = lazyTool.eLeft(*eleSeed);
+      eleETop_[nEle_]       = lazyTool.eTop(*eleSeed);
+      eleEBottom_[nEle_]    = lazyTool.eBottom(*eleSeed);
 
-              for (size_t j=0; j<elep->numberOfMothers(); ++j) {
-                elemom = elep->mother(j);
-                eleGenMomPID_[nEle_] = elemom->pdgId();
-                eleGenMomPt_[nEle_] = elemom->pt();
-                if (elemom->mother()) eleGenGMomPID_[nEle_] = elemom->mother()->pdgId();
-              }
-           }
-	   EleGenIndex++;
-	 }
+      // Gen Particle
+      eleGenIndex_[nEle_] = -1;
+      int EleGenIndex = 0;
+      if (!isData_) {
+        if ((*iEle).genLepton() && genParticlesHandle_.isValid() ) {
+          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
+            if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
+                eleGenIndex_[nEle_] = EleGenIndex;
+
+                const Candidate *elep = (const Candidate*)&(*iGen);
+
+                for (size_t j=0; j<elep->numberOfMothers(); ++j) {
+                  elemom = elep->mother(j);
+                  eleGenMomPID_[nEle_] = elemom->pdgId();
+                  eleGenMomPt_[nEle_] = elemom->pt();
+                  if (elemom->mother()) eleGenGMomPID_[nEle_] = elemom->mother()->pdgId();
+                }
+            }
+            EleGenIndex++;
+          }
+        }
       }
+
+      eleSigmaEtaEta_[nEle_]   = iEle->scSigmaEtaEta();
+      eleSigmaIEtaIEta_[nEle_] = iEle->scSigmaIEtaIEta();
+
+      eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
+      eleIsoEcalDR03_[nEle_] = iEle->dr03EcalRecHitSumEt();
+      eleIsoHcalDR03_[nEle_] = iEle->dr03HcalTowerSumEt();
+
+      eleIsoTrkDR04_[nEle_]  = iEle->dr04TkSumPt();
+      eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
+      eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
+
+      eleChi2NDF_[nEle_] = iEle->gsfTrack()->normalizedChi2();
+
+      eleD0_[nEle_] = (*iEle).gsfTrack()->d0();
+      eleNumberOfValidHits_[nEle_] = (*iEle).gsfTrack()->numberOfValidHits();
+
+      nEle_++;
     }
- 
-    eleSigmaEtaEta_[nEle_]   = iEle->scSigmaEtaEta();
-    eleSigmaIEtaIEta_[nEle_] = iEle->scSigmaIEtaIEta();
-
-    eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
-    eleIsoEcalDR03_[nEle_] = iEle->dr03EcalRecHitSumEt();
-    eleIsoHcalDR03_[nEle_] = iEle->dr03HcalTowerSumEt();
-
-    eleIsoTrkDR04_[nEle_]  = iEle->dr04TkSumPt();
-    eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
-    eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
-
-    eleChi2NDF_[nEle_] = iEle->gsfTrack()->normalizedChi2();
-
-    eleD0_[nEle_] = (*iEle).gsfTrack()->d0();
-    eleNumberOfValidHits_[nEle_] = (*iEle).gsfTrack()->numberOfValidHits();
-
-    nEle_++;
-  }
 
   // Photon
+  // cout << "VgAnalyzerKit: produce: Photon..." << endl;
   const Candidate *phomom = 0;
   nPho_ = 0;
-  for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
+  if ( photonHandle_.isValid() )
+    for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
 
-    phoIsPhoton_[nPho_] = iPho->isPhoton();
-    phoE_[nPho_]   = iPho->energy();
-    phoEt_[nPho_]  = iPho->et();       
-    phoPz_[nPho_]  = iPho->pz();
-    phoEta_[nPho_] = iPho->eta();
-    phoPhi_[nPho_] = iPho->phi();
+      phoIsPhoton_[nPho_] = iPho->isPhoton();
+      phoE_[nPho_]   = iPho->energy();
+      phoEt_[nPho_]  = iPho->et();
+      phoPz_[nPho_]  = iPho->pz();
+      phoEta_[nPho_] = iPho->eta();
+      phoPhi_[nPho_] = iPho->phi();
 
-    phoR9_[nPho_]          = iPho->r9();
-    phoTrkIsoSolidDR03_[nPho_]  = iPho->trkSumPtSolidConeDR03();
-    phoTrkIsoHollowDR03_[nPho_] = iPho->trkSumPtHollowConeDR03();
-    phoNTrkSolidDR03_[nPho_]    = iPho->nTrkSolidConeDR03();
-    phoNTrkHollowDR03_[nPho_]   = iPho->nTrkHollowConeDR03();
-    phoEcalIsoDR03_[nPho_]      = iPho->ecalRecHitSumEtConeDR03();
-    phoHcalIsoDR03_[nPho_]      = iPho->hcalTowerSumEtConeDR03();
+      phoR9_[nPho_]          = iPho->r9();
+      phoTrkIsoSolidDR03_[nPho_]  = iPho->trkSumPtSolidConeDR03();
+      phoTrkIsoHollowDR03_[nPho_] = iPho->trkSumPtHollowConeDR03();
+      phoNTrkSolidDR03_[nPho_]    = iPho->nTrkSolidConeDR03();
+      phoNTrkHollowDR03_[nPho_]   = iPho->nTrkHollowConeDR03();
+      phoEcalIsoDR03_[nPho_]      = iPho->ecalRecHitSumEtConeDR03();
+      phoHcalIsoDR03_[nPho_]      = iPho->hcalTowerSumEtConeDR03();
 
-    phoTrkIsoSolidDR04_[nPho_]  = iPho->trkSumPtSolidConeDR04();
-    phoTrkIsoHollowDR04_[nPho_] = iPho->trkSumPtHollowConeDR04();
-    phoNTrkSolidDR04_[nPho_]    = iPho->nTrkSolidConeDR04();
-    phoNTrkHollowDR04_[nPho_]   = iPho->nTrkHollowConeDR04();
-    phoEcalIsoDR04_[nPho_]      = iPho->ecalRecHitSumEtConeDR04();
-    phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
+      phoTrkIsoSolidDR04_[nPho_]  = iPho->trkSumPtSolidConeDR04();
+      phoTrkIsoHollowDR04_[nPho_] = iPho->trkSumPtHollowConeDR04();
+      phoNTrkSolidDR04_[nPho_]    = iPho->nTrkSolidConeDR04();
+      phoNTrkHollowDR04_[nPho_]   = iPho->nTrkHollowConeDR04();
+      phoEcalIsoDR04_[nPho_]      = iPho->ecalRecHitSumEtConeDR04();
+      phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
 
-    phoHoverE_[nPho_]        = iPho->hadronicOverEm();
-    phoHoverE1_[nPho_]       = iPho->hadronicDepth1OverEm();
-    phoHoverE2_[nPho_]       = iPho->hadronicDepth2OverEm();
-    phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
-    phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
+      phoHoverE_[nPho_]        = iPho->hadronicOverEm();
+      phoHoverE1_[nPho_]       = iPho->hadronicDepth1OverEm();
+      phoHoverE2_[nPho_]       = iPho->hadronicDepth2OverEm();
+      phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
+      phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
 
-    phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
+      phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
 
-    // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
-    phoPos_[nPho_] = -1; 
-    if (iPho->isEB() == true) phoPos_[nPho_] = 0;
-    if (iPho->isEE() == true) phoPos_[nPho_] = 1;
-    if (iPho->isEBGap() == true) phoPos_[nPho_] = 2;
-    if (iPho->isEEGap() == true) phoPos_[nPho_] = 3;
-    if (iPho->isEBEEGap() == true) phoPos_[nPho_] = 4;
+      // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
+      phoPos_[nPho_] = -1;
+      if (iPho->isEB() == true) phoPos_[nPho_] = 0;
+      if (iPho->isEE() == true) phoPos_[nPho_] = 1;
+      if (iPho->isEBGap() == true) phoPos_[nPho_] = 2;
+      if (iPho->isEEGap() == true) phoPos_[nPho_] = 3;
+      if (iPho->isEBEEGap() == true) phoPos_[nPho_] = 4;
 
-    phoSeedTime_[nPho_] = -999.;
-    const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
-    DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first; 
+      phoSeedTime_[nPho_] = -999.;
+      const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
+      DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first;
 
-    if (iPho->isEB()) { 
-      EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoSeedDetId);
-      if ( ebrhit != EBReducedRecHits->end() ) { phoSeedTime_[nPho_] = ebrhit->time(); }
-    } else {
-      EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoSeedDetId);
-      if ( eerhit != EEReducedRecHits->end() ) { phoSeedTime_[nPho_] = eerhit->time(); }
-    }
-
-    phoEMax_[nPho_] = lazyTool.eMax(*phoSeed);
-    phoE2nd_[nPho_] = lazyTool.e2nd(*phoSeed);
-    phoE2x2_[nPho_] = lazyTool.e2x2(*phoSeed);
-    phoE3x2_[nPho_] = lazyTool.e3x2(*phoSeed);
-    phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
-    phoE4x4_[nPho_] = lazyTool.e4x4(*phoSeed);
-    phoE5x5_[nPho_] = lazyTool.e5x5(*phoSeed);
-
-    phoE2x5Right_[nPho_]  = lazyTool.e2x5Right(*phoSeed);
-    phoE2x5Left_[nPho_]   = lazyTool.e2x5Left(*phoSeed);
-    phoE2x5Top_[nPho_]    = lazyTool.e2x5Top(*phoSeed);
-    phoE2x5Bottom_[nPho_] = lazyTool.e2x5Bottom(*phoSeed);
-    phoERight_[nPho_]     = lazyTool.eRight(*phoSeed);
-    phoELeft_[nPho_]      = lazyTool.eLeft(*phoSeed);
-    phoETop_[nPho_]       = lazyTool.eTop(*phoSeed);
-    phoEBottom_[nPho_]    = lazyTool.eBottom(*phoSeed);
-
-    // Gen Particle
-    phoGenIndex_[nPho_]  = -999; 
-    phoGenMomPID[nPho_]  = -999;
-    phoGenMomPt[nPho_]   = -999;
-    phoGenGMomPID[nPho_] = -999;
-    int phoGenIndex = 0;
-    if (!isData_) {
-      if ((*iPho).genPhoton()) {
-	for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
-	  
-	  if (iGen->p4() == (*iPho).genPhoton()->p4() && iGen->pdgId() == (*iPho).genPhoton()->pdgId() && iGen->status() == (*iPho).genPhoton()->status()) {
-	    
-	    phoGenIndex_[nPho_] = phoGenIndex;
-	    
-	    const Candidate *phop = (const Candidate*)&(*iGen);
-	    
-	    for (size_t j=0; j<phop->numberOfMothers(); ++j) {
-	      phomom = phop->mother(j);
-	      phoGenMomPID[nPho_] = phomom->pdgId();
-	      phoGenMomPt[nPho_] = phomom->pt();
-	      if (phomom->mother()) phoGenGMomPID[nPho_] = phomom->mother()->pdgId();
-	    }
-	    
-	  }
-	  
-	  phoGenIndex++;
-	}
+      if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
+        EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoSeedDetId);
+        if ( ebrhit != EBReducedRecHits->end() ) { phoSeedTime_[nPho_] = ebrhit->time(); }
+      } else if ( EEReducedRecHits.isValid() ) {
+        EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoSeedDetId);
+        if ( eerhit != EEReducedRecHits->end() ) { phoSeedTime_[nPho_] = eerhit->time(); }
       }
-    }
-  
-    // Super Cluster
-    phoSCE_[nPho_]   = (*iPho).superCluster()->energy();
-    phoSCEta_[nPho_] = (*iPho).superCluster()->eta();
-    phoSCPhi_[nPho_] = (*iPho).superCluster()->phi();
-    phoSCEt_[nPho_]  = (*iPho).superCluster()->energy()/cosh(phoSCEta_[nPho_]);
-    phoSCEtaWidth_[nPho_] = (*iPho).superCluster()->etaWidth();
-    phoSCPhiWidth_[nPho_] = (*iPho).superCluster()->phiWidth();
 
-    nPho_++; 
-  }
+      // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " lazyTool.eMax ..." << endl;
+      phoEMax_[nPho_] = lazyTool.eMax(*phoSeed);
+      // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " lazyTool.e2nd ..." << endl;
+      phoE2nd_[nPho_] = lazyTool.e2nd(*phoSeed);
+      phoE2x2_[nPho_] = lazyTool.e2x2(*phoSeed);
+      phoE3x2_[nPho_] = lazyTool.e3x2(*phoSeed);
+      phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
+      phoE4x4_[nPho_] = lazyTool.e4x4(*phoSeed);
+      phoE5x5_[nPho_] = lazyTool.e5x5(*phoSeed);
+
+      // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " lazyTool.e2x5Right ..." << endl;
+      phoE2x5Right_[nPho_]  = lazyTool.e2x5Right(*phoSeed);
+      phoE2x5Left_[nPho_]   = lazyTool.e2x5Left(*phoSeed);
+      phoE2x5Top_[nPho_]    = lazyTool.e2x5Top(*phoSeed);
+      phoE2x5Bottom_[nPho_] = lazyTool.e2x5Bottom(*phoSeed);
+      phoERight_[nPho_]     = lazyTool.eRight(*phoSeed);
+      phoELeft_[nPho_]      = lazyTool.eLeft(*phoSeed);
+      phoETop_[nPho_]       = lazyTool.eTop(*phoSeed);
+      phoEBottom_[nPho_]    = lazyTool.eBottom(*phoSeed);
+
+      // Gen Particle
+      // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " gen match ..." << endl;
+      phoGenIndex_[nPho_]  = -999;
+      phoGenMomPID[nPho_]  = -999;
+      phoGenMomPt[nPho_]   = -999;
+      phoGenGMomPID[nPho_] = -999;
+      int phoGenIndex = 0;
+      if ( !isData_ && genParticlesHandle_.isValid() ) {
+        if ((*iPho).genPhoton()) {
+          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
+
+            if (iGen->p4() == (*iPho).genPhoton()->p4() && iGen->pdgId() == (*iPho).genPhoton()->pdgId() && iGen->status() == (*iPho).genPhoton()->status()) {
+
+              phoGenIndex_[nPho_] = phoGenIndex;
+
+              const Candidate *phop = (const Candidate*)&(*iGen);
+
+              for (size_t j=0; j<phop->numberOfMothers(); ++j) {
+                phomom = phop->mother(j);
+                phoGenMomPID[nPho_] = phomom->pdgId();
+                phoGenMomPt[nPho_] = phomom->pt();
+                if (phomom->mother()) phoGenGMomPID[nPho_] = phomom->mother()->pdgId();
+              }
+
+            }
+
+            phoGenIndex++;
+          }
+        }
+      }
+
+      // Super Cluster
+      phoSCE_[nPho_]   = (*iPho).superCluster()->energy();
+      phoSCEta_[nPho_] = (*iPho).superCluster()->eta();
+      phoSCPhi_[nPho_] = (*iPho).superCluster()->phi();
+      phoSCEt_[nPho_]  = (*iPho).superCluster()->energy()/cosh(phoSCEta_[nPho_]);
+      phoSCEtaWidth_[nPho_] = (*iPho).superCluster()->etaWidth();
+      phoSCPhiWidth_[nPho_] = (*iPho).superCluster()->phiWidth();
+
+      nPho_++;
+    }
 
   // Muon
+  // cout << "VgAnalyzerKit: produce: Muon..." << endl;
   nMu_ = 0;
-  for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
+  if( muonHandle_.isValid() ) {
+    // cout << "VgAnalyzerKit: produce: number of muons: " << muonHandle_->size() << endl;
+    for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
-    if (!iMu->isGlobalMuon()) continue;
-    if (!iMu->isTrackerMuon()) continue;
-    if (iMu->globalTrack().isNull()) continue;
-    if (iMu->innerTrack().isNull()) continue;
-    //if (iMu->pt()<10) continue;
+//       if (!iMu->isGlobalMuon()) continue;
+//       if (!iMu->isTrackerMuon()) continue;
+//       if (iMu->globalTrack().isNull()) continue;
+//       if (iMu->innerTrack().isNull()) continue;
+      //if (iMu->pt()<10) continue;
 
-    for (int i=0; i<6; ++i) muID_[nMu_][i] = 0;
-    if (iMu->isGood("AllArbitrated")==1) muID_[nMu_][0] = 1;
-    if (iMu->isGood("GlobalMuonPromptTight")==1) muID_[nMu_][1] = 1;
-    if (iMu->isGood("TMLastStationLoose")==1) muID_[nMu_][2] = 1;
-    if (iMu->isGood("TMLastStationTight")==1) muID_[nMu_][3] = 1;
-    if (iMu->isGood("TM2DCompatibilityLoose")==1) muID_[nMu_][4] = 1;
-    if (iMu->isGood("TM2DCompatibilityTight")==1) muID_[nMu_][5] = 1;
+      for (int i=0; i<6; ++i) muID_[nMu_][i] = 0;
+      if (iMu->isGood("AllArbitrated")==1) muID_[nMu_][0] = 1;
+      if (iMu->isGood("GlobalMuonPromptTight")==1) muID_[nMu_][1] = 1;
+      if (iMu->isGood("TMLastStationLoose")==1) muID_[nMu_][2] = 1;
+      if (iMu->isGood("TMLastStationTight")==1) muID_[nMu_][3] = 1;
+      if (iMu->isGood("TM2DCompatibilityLoose")==1) muID_[nMu_][4] = 1;
+      if (iMu->isGood("TM2DCompatibilityTight")==1) muID_[nMu_][5] = 1;
 
-    const reco::TrackRef trkr = iMu->globalTrack();
-    if (trkr.isNull()) {
-      muD0_[nMu_] = -99.;
-      muNumberOfValidTrkHits_[nMu_] = -99;
-    } else {
-      muD0_[nMu_] = trkr->dxy(beamSpotHandle->position());
-      muNumberOfValidTrkHits_[nMu_] = trkr->hitPattern().numberOfValidTrackerHits();
-    }
-
-    muEta_[nMu_] = iMu->eta();
-    muPhi_[nMu_] = iMu->phi();
-    muCharge_[nMu_] = iMu->charge();
-    muPt_[nMu_] = iMu->pt();
-    muPz_[nMu_] = iMu->pz();
-    
-    muType_[nMu_] = iMu->type();
-
-    muIsoTrk_[nMu_] = iMu->trackIso();
-    muIsoCalo_[nMu_] = iMu->caloIso();
-    muIsoEcal_[nMu_] = iMu->ecalIso();
-    muIsoHcal_[nMu_] = iMu->hcalIso();
-
-    muEmVeto_[nMu_]  = iMu->isolationR03().emVetoEt;
-    muHadVeto_[nMu_] = iMu->isolationR03().hadVetoEt;
-    
-    muGenIndex_[nMu_] = -1;
-    int MuGenIndex = 0;
-    if (!isData_) {
-      if ((*iMu).genLepton()) {
-	if (fabs((*iMu).genLepton()->pdgId())==13) {
-	  for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen !=
-		 genParticlesHandle_->end(); ++iGen) {
-	    
-	    if (iGen->p4() == (*iMu).genLepton()->p4() && iGen->pdgId() == (*iMu).genLepton()->pdgId() && iGen->status() == (*iMu).genLepton()->status()) muGenIndex_[nMu_] = MuGenIndex;
-	    MuGenIndex++;
-	  }
-	}
+      const reco::TrackRef trkr = iMu->globalTrack();
+      if (trkr.isNull()) {
+        muD0_[nMu_] = -99.;
+        muNumberOfValidTrkHits_[nMu_] = -99;
+      } else {
+        muD0_[nMu_] = trkr->dxy(beamSpotHandle->position());
+        muNumberOfValidTrkHits_[nMu_] = trkr->hitPattern().numberOfValidTrackerHits();
       }
+
+      muEta_[nMu_] = iMu->eta();
+      muPhi_[nMu_] = iMu->phi();
+      muCharge_[nMu_] = iMu->charge();
+      muPt_[nMu_] = iMu->pt();
+      muPz_[nMu_] = iMu->pz();
+
+      muType_[nMu_] = iMu->type();
+
+      muIsoTrk_[nMu_] = iMu->trackIso();
+      muIsoCalo_[nMu_] = iMu->caloIso();
+      muIsoEcal_[nMu_] = iMu->ecalIso();
+      muIsoHcal_[nMu_] = iMu->hcalIso();
+
+      muEmVeto_[nMu_]  = iMu->isolationR03().emVetoEt;
+      muHadVeto_[nMu_] = iMu->isolationR03().hadVetoEt;
+
+      muGenIndex_[nMu_] = -1;
+      int MuGenIndex = 0;
+      if (!isData_) {
+        if ( (*iMu).genLepton() && genParticlesHandle_.isValid() ) {
+          if (fabs((*iMu).genLepton()->pdgId())==13) {
+            for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen !=
+                  genParticlesHandle_->end(); ++iGen) {
+
+              if (iGen->p4() == (*iMu).genLepton()->p4() && iGen->pdgId() == (*iMu).genLepton()->pdgId() && iGen->status() == (*iMu).genLepton()->status()) muGenIndex_[nMu_] = MuGenIndex;
+              MuGenIndex++;
+            }
+          }
+        }
+      }
+
+      nMu_++;
+
     }
-
-    nMu_++;
-
   }
-
   // Jet
+  // cout << "VgAnalyzerKit: produce: Jet..." << endl;
   nJet_ = 0;
-  for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
+  if ( jetHandle_.isValid() )
+    for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
 
-    if ( iJet->pt() < 15 ) continue;
+      if ( iJet->pt() < 15 ) continue;
 
-    jetEn_[nJet_]     = iJet->energy();
-    jetPt_[nJet_]     = iJet->pt();
-    jetEta_[nJet_]    = iJet->eta();
-    jetPhi_[nJet_]    = iJet->phi();
-    jetMass_[nJet_]   = iJet->mass();
-    jetCharge_[nJet_] = iJet->jetCharge();
-    jetEt_[nJet_]     = iJet->et();
-    jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
-    jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
-    jetpartonFlavour_[nJet_] = iJet->partonFlavour();
+      jetEn_[nJet_]     = iJet->energy();
+      jetPt_[nJet_]     = iJet->pt();
+      jetEta_[nJet_]    = iJet->eta();
+      jetPhi_[nJet_]    = iJet->phi();
+      jetMass_[nJet_]   = iJet->mass();
+      jetCharge_[nJet_] = iJet->jetCharge();
+      jetEt_[nJet_]     = iJet->et();
+      jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
+      jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
+      jetpartonFlavour_[nJet_] = iJet->partonFlavour();
 
-    // b tagging information
-    jetCombinedSVBJetTags_[nJet_] = iJet->bDiscriminator("combinedSecondaryVertexBJetTags");
-    jetCombinedSVMVABJetTags_[nJet_] = iJet->bDiscriminator("combinedSecondaryVertexMVABJetTags");
-    jetConeIsoTauJetTags_[nJet_] = iJet->bDiscriminator("coneIsolationTauJetTags");
-    jetImpactParaMVABJetTags_[nJet_] = iJet->bDiscriminator("impactParameterMVABJetTags");
-    jetJetBProbBJetTags_[nJet_] = iJet->bDiscriminator("jetBProbabilityBJetTags");
-    jetJetProbBJetTags_[nJet_] = iJet->bDiscriminator("jetProbabilityBJetTags");
-    jetSimpleSVBJetTags_[nJet_] = iJet->bDiscriminator("simpleSecondaryVertexBJetTags");
-    jetSoftElecBJetTags_[nJet_] = iJet->bDiscriminator("softElectronBJetTags");
-    jetSoftMuonBJetTags_[nJet_] = iJet->bDiscriminator("softMuonBJetTags");
-    jetSoftMuonNoIPBJetTags_[nJet_] = iJet->bDiscriminator("softMuonNoIPBJetTags");
-    jetTrackCountHiEffBJetTags_[nJet_] = iJet->bDiscriminator("trackCountingHighEffBJetTags");
-    jetTrackCountHiPurBJetTags_[nJet_] = iJet->bDiscriminator("trackCountingHighPurBJetTags");
-    // End of b-tagging information
-    
-    jetmaxEInEmTowers_[nJet_] = iJet->maxEInEmTowers();
-    jetmaxEInHadTowers_[nJet_] = iJet->maxEInHadTowers();
-    jetenergyFractionHadronic_[nJet_] = iJet->energyFractionHadronic();
-    jetemEnergyFraction_[nJet_] = iJet->emEnergyFraction();
+      // b tagging information
+      jetCombinedSVBJetTags_[nJet_] = iJet->bDiscriminator("combinedSecondaryVertexBJetTags");
+      jetCombinedSVMVABJetTags_[nJet_] = iJet->bDiscriminator("combinedSecondaryVertexMVABJetTags");
+      jetConeIsoTauJetTags_[nJet_] = iJet->bDiscriminator("coneIsolationTauJetTags");
+      jetImpactParaMVABJetTags_[nJet_] = iJet->bDiscriminator("impactParameterMVABJetTags");
+      jetJetBProbBJetTags_[nJet_] = iJet->bDiscriminator("jetBProbabilityBJetTags");
+      jetJetProbBJetTags_[nJet_] = iJet->bDiscriminator("jetProbabilityBJetTags");
+      jetSimpleSVBJetTags_[nJet_] = iJet->bDiscriminator("simpleSecondaryVertexBJetTags");
+      jetSoftElecBJetTags_[nJet_] = iJet->bDiscriminator("softElectronBJetTags");
+      jetSoftMuonBJetTags_[nJet_] = iJet->bDiscriminator("softMuonBJetTags");
+      jetSoftMuonNoIPBJetTags_[nJet_] = iJet->bDiscriminator("softMuonNoIPBJetTags");
+      jetTrackCountHiEffBJetTags_[nJet_] = iJet->bDiscriminator("trackCountingHighEffBJetTags");
+      jetTrackCountHiPurBJetTags_[nJet_] = iJet->bDiscriminator("trackCountingHighPurBJetTags");
+      // End of b-tagging information
 
-    jetGenIndex_[nJet_] = -1;
-    jetGenPartonID_[nJet_] = 0;
-    jetGenPartonMomID_[nJet_] = 0;
-    int JetGenIndex = 0;
-    if (!isData_) {
-      if ((*iJet).genParton()) {
-	jetGenPartonID_[nJet_] = (*iJet).genParton()->pdgId();
-	jetGenEn_[nJet_] = (*iJet).genParton()->energy();
-	jetGenPt_[nJet_] = (*iJet).genParton()->pt();
-	jetGenEta_[nJet_] = (*iJet).genParton()->eta();
-	jetGenPhi_[nJet_] = (*iJet).genParton()->phi();
-	for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
-	  if (iGen->p4() == (*iJet).genParticle()->p4() && iGen->pdgId() == (*iJet).genParticle()->pdgId() && iGen->status() ==  (*iJet).genParticle()->status()) {
-	    jetGenIndex_[nJet_] = JetGenIndex;
-	    if (iGen->mother()) jetGenPartonMomID_[nJet_] = iGen->mother()->pdgId();
-	  }
-	  JetGenIndex++;
-	}
+      jetmaxEInEmTowers_[nJet_] = iJet->maxEInEmTowers();
+      jetmaxEInHadTowers_[nJet_] = iJet->maxEInHadTowers();
+      jetenergyFractionHadronic_[nJet_] = iJet->energyFractionHadronic();
+      jetemEnergyFraction_[nJet_] = iJet->emEnergyFraction();
+
+      jetGenIndex_[nJet_] = -1;
+      jetGenPartonID_[nJet_] = 0;
+      jetGenPartonMomID_[nJet_] = 0;
+      int JetGenIndex = 0;
+      if (!isData_) {
+        if ((*iJet).genParton()) {
+          jetGenPartonID_[nJet_] = (*iJet).genParton()->pdgId();
+          jetGenEn_[nJet_] = (*iJet).genParton()->energy();
+          jetGenPt_[nJet_] = (*iJet).genParton()->pt();
+          jetGenEta_[nJet_] = (*iJet).genParton()->eta();
+          jetGenPhi_[nJet_] = (*iJet).genParton()->phi();
+          if ( genParticlesHandle_.isValid() ) {
+            for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
+              if (iGen->p4() == (*iJet).genParticle()->p4() && iGen->pdgId() == (*iJet).genParticle()->pdgId() && iGen->status() ==  (*iJet).genParticle()->status()) {
+                jetGenIndex_[nJet_] = JetGenIndex;
+                if (iGen->mother()) jetGenPartonMomID_[nJet_] = iGen->mother()->pdgId();
+              }
+              JetGenIndex++;
+            }
+          }
+        }
       }
+
+      jetGenJetIndex_[nJet_] = -1;
+      jetGenJetEn_[nJet_] = -1.0;
+      jetGenJetPt_[nJet_] = -99999;
+      jetGenJetEta_[nJet_] = -999;
+      jetGenJetPhi_[nJet_] = -999;
+      jetGenJetMass_[nJet_] = -999;
+
+      if ((*iJet).genJet()) {
+        jetGenJetIndex_[nJet_] = 1;
+        jetGenJetEn_[nJet_] = (*iJet).genJet()->energy();
+        jetGenJetPt_[nJet_] = (*iJet).genJet()->pt();
+        jetGenJetEta_[nJet_] = (*iJet).genJet()->eta();
+        jetGenJetPhi_[nJet_] = (*iJet).genJet()->phi();
+        jetGenJetMass_[nJet_] = (*iJet).genJet()->mass();
+      }
+
+      nJet_++;
     }
-
-    jetGenJetIndex_[nJet_] = -1;
-    jetGenJetEn_[nJet_] = -1.0;
-    jetGenJetPt_[nJet_] = -99999;
-    jetGenJetEta_[nJet_] = -999;
-    jetGenJetPhi_[nJet_] = -999;
-    jetGenJetMass_[nJet_] = -999;
-
-    if ((*iJet).genJet()) {
-      jetGenJetIndex_[nJet_] = 1;
-      jetGenJetEn_[nJet_] = (*iJet).genJet()->energy();
-      jetGenJetPt_[nJet_] = (*iJet).genJet()->pt();
-      jetGenJetEta_[nJet_] = (*iJet).genJet()->eta();
-      jetGenJetPhi_[nJet_] = (*iJet).genJet()->phi();
-      jetGenJetMass_[nJet_] = (*iJet).genJet()->mass();
-    }
-
-    nJet_++;
-  }
 
   // Zee candidate
+  // cout << "VgAnalyzerKit: produce: Zee candidate..." << endl;
   nZee_ = 0;
   int leg1Index = 0;
   int leg2Index = 0;
-  if (electronHandle_->size() > 1) {
+  if (electronHandle_.isValid() && electronHandle_->size() > 1) {
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end()-1; ++iEle) {
 
       leg2Index = leg1Index + 1;
       for (View<pat::Electron>::const_iterator jEle = iEle+1; jEle != electronHandle_->end(); ++jEle) {
-	
+
 	if (iEle->charge() * jEle->charge() < 0 ) {
 	  pat::CompositeCandidate Zee;
 	  Zee.addDaughter(*iEle, "ele1");
@@ -1006,19 +1041,21 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
 	  nZee_++;
 	}
-	
+
 	leg2Index++;
       }
-      
+
       leg1Index++;
     }
   }
 
   // Zmumu candidate
+  // cout << "VgAnalyzerKit: produce: Zmumu candidate..." << endl;
+
   nZmumu_ = 0;
   leg1Index = 0;
   leg2Index = 0;
-  if (muonHandle_->size() > 1) {
+  if (muonHandle_.isValid() && muonHandle_->size() > 1) {
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end()-1; ++iMu) {
 
       if (!iMu->isGlobalMuon()) continue;
@@ -1028,7 +1065,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
       leg2Index = leg1Index + 1;
       for (View<pat::Muon>::const_iterator jMu = iMu+1; jMu != muonHandle_->end(); ++jMu) {
-	
+
 	if (!jMu->isGlobalMuon()) continue;
 	if (!jMu->isTrackerMuon()) continue;
 	if (jMu->globalTrack().isNull()) continue;
@@ -1038,7 +1075,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	  pat::CompositeCandidate Zmumu;
 	  Zmumu.addDaughter(*iMu, "mu1");
 	  Zmumu.addDaughter(*jMu, "mu2");
-	  
+
 	  AddFourMomenta addZmumu;
 	  addZmumu.set(Zmumu);
 	  ZmumuMass_[nZmumu_]      = Zmumu.mass();
@@ -1050,97 +1087,112 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
 	  nZmumu_++;
 	}
-	
+
 	leg2Index++;
       }
-      
+
       leg1Index++;
     }
   }
 
   // Wenu candiate
-  nWenu_ = 0; 
-  for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
+  // cout << "VgAnalyzerKit: produce: Wenu candiate..." << endl;
+  nWenu_ = 0;
+  if (electronHandle_.isValid() &&
+      electronHandle_->size() > 0 &&
+      METHandle_.isValid() &&
+      METHandle_->size() > 0) {
+    for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
-    for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
-      
-      pat::CompositeCandidate Wenu;
-      Wenu.addDaughter(*iEle, "ele");
-      Wenu.addDaughter(*iMET, "met");
-      
-      AddFourMomenta addWenu;
-      addWenu.set(Wenu);
-      WenuMassTCaloMET_[nWenu_] = massT(iEle->pt(), iMET->pt(), Wenu.px(), Wenu.py());
-      WenuEtCaloMET_[nWenu_]    = eT(iEle->pt(), iMET->pt());
-      WenuACopCaloMET_[nWenu_]  = acop(iEle->phi(), iMET->phi());      
+      for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
+
+        pat::CompositeCandidate Wenu;
+        Wenu.addDaughter(*iEle, "ele");
+        Wenu.addDaughter(*iMET, "met");
+
+        AddFourMomenta addWenu;
+        addWenu.set(Wenu);
+        WenuMassTCaloMET_[nWenu_] = massT(iEle->pt(), iMET->pt(), Wenu.px(), Wenu.py());
+        WenuEtCaloMET_[nWenu_]    = eT(iEle->pt(), iMET->pt());
+        WenuACopCaloMET_[nWenu_]  = acop(iEle->phi(), iMET->phi());
+      }
+
+      pat::CompositeCandidate WenuTcMET;
+      WenuTcMET.addDaughter(*iEle, "ele");
+      WenuTcMET.addDaughter(*tcMET, "met");
+
+      AddFourMomenta addWenuTcMET;
+      addWenuTcMET.set(WenuTcMET);
+      WenuMassTTcMET_[nWenu_] = massT(iEle->pt(), tcMET->pt(), WenuTcMET.px(), WenuTcMET.py());
+      WenuEtTcMET_[nWenu_]    = eT(iEle->pt(), tcMET->pt());
+      WenuACopTcMET_[nWenu_]  = acop(iEle->phi(), tcMET->phi());
+
+      pat::CompositeCandidate WenuPfMET;
+      WenuPfMET.addDaughter(*iEle, "ele");
+      WenuPfMET.addDaughter(*pfMET, "met");
+
+      AddFourMomenta addWenuPfMET;
+      addWenuPfMET.set(WenuPfMET);
+      WenuMassTPfMET_[nWenu_] = massT(iEle->pt(), pfMET->pt(), WenuPfMET.px(), WenuPfMET.py());
+      WenuEtPfMET_[nWenu_]    = eT(iEle->pt(), pfMET->pt());
+      WenuACopPfMET_[nWenu_]  = acop(iEle->phi(), pfMET->phi());
+
+      nWenu_++;
     }
-
-    pat::CompositeCandidate WenuTcMET;
-    WenuTcMET.addDaughter(*iEle, "ele");
-    WenuTcMET.addDaughter(*tcMET, "met");
-
-    AddFourMomenta addWenuTcMET;
-    addWenuTcMET.set(WenuTcMET);
-    WenuMassTTcMET_[nWenu_] = massT(iEle->pt(), tcMET->pt(), WenuTcMET.px(), WenuTcMET.py());
-    WenuEtTcMET_[nWenu_]    = eT(iEle->pt(), tcMET->pt());
-    WenuACopTcMET_[nWenu_]  = acop(iEle->phi(), tcMET->phi());      
-    
-    pat::CompositeCandidate WenuPfMET;
-    WenuPfMET.addDaughter(*iEle, "ele");
-    WenuPfMET.addDaughter(*pfMET, "met");
-
-    AddFourMomenta addWenuPfMET;
-    addWenuPfMET.set(WenuPfMET);
-    WenuMassTPfMET_[nWenu_] = massT(iEle->pt(), pfMET->pt(), WenuPfMET.px(), WenuPfMET.py());
-    WenuEtPfMET_[nWenu_]    = eT(iEle->pt(), pfMET->pt());
-    WenuACopPfMET_[nWenu_]  = acop(iEle->phi(), pfMET->phi());      
-
-    nWenu_++;
   }
 
   // Wmunu candiate
-  nWmunu_ = 0; 
-  for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
+  // cout << "VgAnalyzerKit: produce: Wmunu candiate..." << endl;
+  nWmunu_ = 0;
+  if (muonHandle_.isValid() &&
+      muonHandle_->size() > 0 &&
+      METHandle_.isValid() &&
+      METHandle_->size() > 0) {
+    for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
-    if (!iMu->isGlobalMuon()) continue;
+      if (!iMu->isGlobalMuon()) continue;
 
-    for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
-      
-      pat::CompositeCandidate Wmunu;
-      Wmunu.addDaughter(*iMu, "mu");
-      Wmunu.addDaughter(*iMET, "met");
-      
-      AddFourMomenta addWmunu;
-      addWmunu.set(Wmunu);
-      WmunuMassTCaloMET_[nWmunu_] = massT(iMu->pt(), iMET->pt(), Wmunu.px(), Wmunu.py());
-      WmunuEtCaloMET_[nWmunu_]    = eT(iMu->pt(), iMET->pt());
-      WmunuACopCaloMET_[nWmunu_]  = acop(iMu->phi(), iMET->phi());      
+      for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
+
+        pat::CompositeCandidate Wmunu;
+        Wmunu.addDaughter(*iMu, "mu");
+        Wmunu.addDaughter(*iMET, "met");
+
+        AddFourMomenta addWmunu;
+        addWmunu.set(Wmunu);
+        WmunuMassTCaloMET_[nWmunu_] = massT(iMu->pt(), iMET->pt(), Wmunu.px(), Wmunu.py());
+        WmunuEtCaloMET_[nWmunu_]    = eT(iMu->pt(), iMET->pt());
+        WmunuACopCaloMET_[nWmunu_]  = acop(iMu->phi(), iMET->phi());
+      }
+
+      pat::CompositeCandidate WmunuTcMET;
+      WmunuTcMET.addDaughter(*iMu, "mu");
+      WmunuTcMET.addDaughter(*tcMET, "met");
+
+      AddFourMomenta addWmunuTcMET;
+      addWmunuTcMET.set(WmunuTcMET);
+      WmunuMassTTcMET_[nWmunu_] = massT(iMu->pt(), tcMET->pt(), WmunuTcMET.px(), WmunuTcMET.py());
+      WmunuEtTcMET_[nWmunu_]    = eT(iMu->pt(), tcMET->pt());
+      WmunuACopTcMET_[nWmunu_]  = acop(iMu->phi(), tcMET->phi());
+
+      pat::CompositeCandidate WmunuPfMET;
+      WmunuPfMET.addDaughter(*iMu, "mu");
+      WmunuPfMET.addDaughter(*pfMET, "met");
+
+      AddFourMomenta addWmunuPfMET;
+      addWmunuPfMET.set(WmunuPfMET);
+      WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), pfMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
+      WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), pfMET->pt());
+      WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), pfMET->phi());
+
+      nWmunu_++;
     }
-
-    pat::CompositeCandidate WmunuTcMET;
-    WmunuTcMET.addDaughter(*iMu, "mu");
-    WmunuTcMET.addDaughter(*tcMET, "met");
-
-    AddFourMomenta addWmunuTcMET;
-    addWmunuTcMET.set(WmunuTcMET);
-    WmunuMassTTcMET_[nWmunu_] = massT(iMu->pt(), tcMET->pt(), WmunuTcMET.px(), WmunuTcMET.py());
-    WmunuEtTcMET_[nWmunu_]    = eT(iMu->pt(), tcMET->pt());
-    WmunuACopTcMET_[nWmunu_]  = acop(iMu->phi(), tcMET->phi());      
-    
-    pat::CompositeCandidate WmunuPfMET;
-    WmunuPfMET.addDaughter(*iMu, "mu");
-    WmunuPfMET.addDaughter(*pfMET, "met");
-
-    AddFourMomenta addWmunuPfMET;
-    addWmunuPfMET.set(WmunuPfMET);
-    WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), pfMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
-    WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), pfMET->pt());
-    WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), pfMET->phi());      
-
-    nWmunu_++;
   }
+  // cout << "VgAnalyzerKit: produce: tree_->Fill()... " << endl;
 
   tree_->Fill();
+
+  // cout << "VgAnalyzerKit: exiting produce... " << endl;
 }
 
 void VgAnalyzerKit::beginJob() {
@@ -1157,7 +1209,7 @@ double VgAnalyzerKit::eT(double pt1, double pt2) const {
 double VgAnalyzerKit::massT(double pt1, double pt2, double wpx, double wpy) const {
   double mt = eT(pt1, pt2)*eT(pt1, pt2) - wpx*wpx - wpy*wpy;
   mt = (mt>0) ? sqrt(mt) : 0;
-  return mt; 
+  return mt;
 }
 
 double VgAnalyzerKit::acop(double phi1, double phi2) const {
