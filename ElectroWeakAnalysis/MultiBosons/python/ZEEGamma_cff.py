@@ -1,27 +1,18 @@
-#Electron Selection
-from ElectroWeakAnalysis.MultiBosons.ElectronSelection_cfi import *
+import FWCore.ParameterSet.Config as cms
 
-goodElectrons = electronSelection.clone()
-goodElectrons.cut = cms.string('et > 0')
+#Retrieve Z selection from inclusive analysis (when they put it in CVS?)
 
-#define and configure Z selection
-from ElectroWeakAnalysis.MultiBosons.ZSelectionChargedLeptons_cfi import *
-
-#Z -> E E
-ZEECandidates = ZSelectionChargedLeptons.clone()
-ZEECandidates.decay = cms.string('goodElectrons@+ goodElectrons@-')
-ZEECandidates.cut = cms.string('mass > 0')
-
-ZEECandidatesSeq = cms.Sequence(ZEECandidates)
+#Retrieve Photon Selection
+from ElectroWeakAnalysis.MultiBosons.PhotonSelection_cff import *
 
 #define and configure Zgamma Selection
-from ElectroWeakAnalysis.MultiBosons.ZGammaSelectionChargedLeptons_cfi import *
+from ElectroWeakAnalysis.MultiBosons.VGammaSelection_cfi import *
 
-ZEEGammaCandidates = ZGammaSelectionChargedLeptons.clone()
+ZEEGammaCandidates = VGammaSelection.clone()
 ZEEGammaCandidates.decay = cms.string('ZEECandidates photons')
 ZEEGammaCandidates.cut = cms.string('mass > 0')
 
 ZEEGammaCandidatesSeq = cms.Sequence(ZEEGammaCandidates)
 
 #setup sequences
-ZEEGammaWorkflow = cms.Sequence(ZEECandidatesSeq*ZEEGammaCandidatesSeq)
+ZEEGammaWorkflow = cms.Sequence(vGammaPhotonSequence*ZEEGammaCandidatesSeq)
