@@ -350,7 +350,7 @@ void analysisClass::Loop()
   double phiMax=Pi;   // -
   double phiMin=-1.*Pi;
 
-  int  dphiBin=72;  
+  int  dphiBin=20;  
 
   int  etaBin=20;
   double etaMax=3.;   //-
@@ -427,7 +427,16 @@ void analysisClass::Loop()
   variousEffindijets->GetXaxis()->SetBinLabel(3,">1 Associated HighPurity Tracks at Calo");
   variousEffindijets->GetXaxis()->SetBinLabel(4,">1 Associated HighPurity Tracks at Vtx");
 
-
+ TH1D *Ndijets = new TH1D("Ndijets","",9,0,9);
+  Ndijets->SetTitle(dataset);
+  Ndijets->GetXaxis()->SetBinLabel(1,"Good Events");
+  Ndijets->GetXaxis()->SetBinLabel(2,"Selected Events"); 
+  Ndijets->GetXaxis()->SetBinLabel(3,"CaloDiJets");
+  Ndijets->GetXaxis()->SetBinLabel(4,"Loose Calo DiJets"); 
+  Ndijets->GetXaxis()->SetBinLabel(5,"PFDiJets");
+  Ndijets->GetXaxis()->SetBinLabel(6,"Loose PF DiJets");
+  Ndijets->GetXaxis()->SetBinLabel(7,"JPTDiJets");
+  Ndijets->GetXaxis()->SetBinLabel(8,"Loose JPT DiJets");
   ///JPT jets: just stupidly copy the same histos as for calojets
 
   // ------------------------Di Jets  ----------------------
@@ -778,13 +787,15 @@ void analysisClass::Loop()
 	    jcScale1=1;
 	  }
 	  
-	  if(fabs(ak5JetEta->at(index_jet1))<endcapeta_dijet && (ak5JetpT->at(index_jet1) * jcScale0 )>ptMinDijet && fabs(ak5JetEta->at(index_jet2))<endcapeta_dijet && (ak5JetpT->at(index_jet2) * jcScale1) >ptMinDijet){   //jc
+	  if(fabs(ak5JetEta->at(index_jet1))<endcapeta_dijet && (ak5JetpT->at(index_jet1) * jcScale0 )>ptMinDijet && fabs(ak5JetEta->at(index_jet2))<endcapeta_dijet && (ak5JetpT->at(index_jet2) * jcScale1) >ptMinDijet){ 
+ Nindijets=+2;
+	    //jc
 	    if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1))&& JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
 	      //fill the text file with interesting events 
 	      outfile<<runid<< "\t" << LS<< "\t"<< eventid << "\t" << ak5JetpT->at(index_jet1)* jcScale0 << "\t"<<ak5JetpT->at(index_jet2)* jcScale1 << "\t"<<ak5JetEta->at(index_jet1) << "\t"<< ak5JetEta->at(index_jet2) << endl;
 	    }
 	    //i increase 
-	    Nindijets=+2;
+	 
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
 	    //fill only 
 	    if(vPtEtaPhiE.size()>1 && (calometPt->at(0)/calometSumEt->at(0))<cut_metbysumet 
@@ -904,68 +915,58 @@ void analysisClass::Loop()
 	//#################################################################################
 	//#################################################################################
 
-	//we still dont have corrections for JPT jets available
-       
-	for (int j = 0; j<int(JPTak5JetpT->size()); j++){
-	  //check if jet is among hardest two
-	  //as jets are ordered in uncorrected pT: needs to be done only for corrected jets
-	  if(makeJetCorr == true) {
-	    if((JPTak5JetscaleL2L3->at(j)*JPTak5JetpT->at(j))>mypt1JPT){
-	      mypt2JPT=mypt1JPT;
-	      index_JPTjet2=index_JPTjet1;
-	      mypt1JPT=ak5JetscaleL2L3->at(j)*JPTak5JetpT->at(j);
-	      index_JPTjet1=j;
-	    }else if((ak5JetscaleL2L3->at(j)*JPTak5JetpT->at(j))>mypt2JPT){
-	      mypt2JPT=ak5JetscaleL2L3->at(j)*JPTak5JetpT->at(j);
-	      index_JPTjet2=j;
+	  
+	if(int(JPTak5JetpT->size())>=2){
+	  
+	
+	  jcScale0=1.;
+	  jcScale1=1.;
+	  mypt1=-10;
+	  mypt2=-10;
+
+
+	  //loop for pfjets
+	  for (int j = 0; j<int(JPTak5JetpT->size()); j++){
+	    //check if jet is among hardest two
+	    //as jets are ordered in uncorrected pT: needs to be done only for corrected jets
+
+	    //temporary
+	    ///	    makeJetCorr=false;
+
+	    if(makeJetCorr == true) {
+	      if((JPTak5JetscaleL2L3->at(j)*JPTak5JetpT->at(j))>mypt1){
+		mypt2=mypt1;
+		index_JPTjet2=index_JPTjet1;
+		mypt1=JPTak5JetscaleL2L3->at(j)*JPTak5JetpT->at(j);
+		index_JPTjet1=j;
+	      }else if((JPTak5JetscaleL2L3->at(j)*JPTak5JetpT->at(j))>mypt2){
+		mypt2=JPTak5JetscaleL2L3->at(j)*JPTak5JetpT->at(j);
+		index_JPTjet2=j;
+	      }
 	    }
 	  }
-	}
-       
-	// JET CORRECTION
-	// --------------------
-	//dijet
-	if(int(JPTak5JetpT->size())>=2){
-	 
-	    if((index_JPTjet2==-10)||(index_JPTjet1==-10)){
-	    cout<<"index should be set ERROR: "<<index_JPTjet2<<"/"<<index_JPTjet1<<endl; 
-            }
-	 
+	  // JET CORRECTION
+	  // --------------------
+	  //dijet
+	  
+	  if((index_JPTjet2==-10)||(index_JPTjet1==-10)){
+	    cout<<"index should be set ERROR: "<<index_JPTjet2<<"/"<<index_JPTjet1<<endl;
+	  }
 	  // both passed pT and eta cuts
 	  if(makeJetCorr == true) {
 	    jcScale0 = JPTak5JetscaleL2L3->at(index_JPTjet1);
 	    jcScale1 = JPTak5JetscaleL2L3->at(index_JPTjet2);
-	    }
-	    else {
+	  }
+	  else {
 	    index_JPTjet1=0;
 	    index_JPTjet2=1;
 	    jcScale0=1;
 	    jcScale1=1;
-	    }
-       
-	  index_JPTjet1=0;
-	  index_JPTjet2=1;
-	  jcScale0=1;
-	  jcScale1=1;
-	  
-	  //there exist no L2L3 jet corrections BUT the ordering of the jpt-jets is before applying the ZSP+JPT corrections
-	  for (int j = 0; j<int(JPTak5JetpT->size()); j++){
-	    //check if jet is among hardest two
-	    //as jets are ordered in uncorrected pT: needs to be done only for corrected jets
-	    if(JPTak5JetpT->at(j)>mypt1JPT){
-	      mypt2JPT=mypt1JPT;
-	      index_JPTjet2=index_JPTjet1;
-	      mypt1JPT=JPTak5JetpT->at(j);
-	      index_JPTjet1=j;
-	    }else if(JPTak5JetpT->at(j)>mypt2JPT){
-	      mypt2JPT=JPTak5JetpT->at(j);
-	      index_JPTjet2=j;
-	    }
-	  }   	 
+	  }
  
 	  if(fabs(JPTak5JetEta->at(index_JPTjet1))<endcapeta_dijetJPT && (JPTak5JetpT->at(index_JPTjet1) * jcScale0 )>ptMinDiJPTjet && fabs(JPTak5JetEta->at(index_JPTjet2))<endcapeta_dijetJPT && (JPTak5JetpT->at(index_JPTjet2) * jcScale1) >ptMinDiJPTjet){   //jc
 	    //i increase 
-	    NindiJPTjets=+2;
+	    //  NindiJPTjets=+2;
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
 	    //fill only 
 	    if(vPtEtaPhiE.size()>1 && (calometPt->at(0)/calometSumEt->at(0))<cut_metbysumet 
@@ -1050,7 +1051,7 @@ void analysisClass::Loop()
 	      }
 	      if(JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
 		NindiJPTjetsJetIDLoose++;
-	      }	    	      
+	      }    	      
 	      //how many of the jets in dijets events pass the tight JetID (look only at the two leading jets)
 	    }//dphi cut
 	  }//eta/pt cuts on diJPTjets
@@ -1062,7 +1063,7 @@ void analysisClass::Loop()
 
 	//#################################################################################
 	//#################################################################################
-	//#####################               PF                ###########################
+	//#####################               JPT                ###########################
 	//#################################################################################
 	//#################################################################################
 
@@ -1238,9 +1239,21 @@ void analysisClass::Loop()
      variousEffindijets->SetBinContent(2,(1.*NindijetsJetIDTightTOT/(1.*NindijetsTOT)));
      variousEffindijets->SetBinContent(3,(1.*NindijetsAssTrksHighPurityAtCaloTOT/(1.*NindijetsTOT)));
      variousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksHighPurityAtVtxTOT/(1.*NindijetsTOT)));
-   }       
+   }  
+
+  
+   Ndijets->Fill(1,goodevts);
+   Ndijets->Fill(2,pvevt);
+   Ndijets->Fill(3,NindijetsTOT);
+   Ndijets->Fill(4,NindijetsJetIDLooseTOT/2);
+   Ndijets->Fill(5,NindiPFjetsTOT); 
+   Ndijets->Fill(6,NindiPFjetsJetIDLooseTOT/2);
+   Ndijets->Fill(7,NindiJPTjetsTOT);
+   Ndijets->Fill(8,NindiJPTjetsJetIDLooseTOT/2);
+   
    cout <<"###################################"       << endl;
    cout <<"Good Events " << goodevts      <<" Selected events="<< pvevt<< " Calo dijet "<<  	NindijetsTOT <<  " PF dijet "<<  NindiPFjetsTOT <<  " JPT dijet "<<  NindiJPTjetsTOT << endl;
+   cout << " Calo dijet Loose "<<  NindijetsJetIDLooseTOT/2	 <<  " PF dijet "<<NindiPFjetsJetIDLooseTOT/2 <<  " JPT dijet "<< NindiJPTjetsJetIDLooseTOT/2 << endl;
    cout <<"###################################"       << endl;
 
    //////////write histos for calojets
@@ -1249,6 +1262,7 @@ void analysisClass::Loop()
    dijeteta->Write();
    dijetphi->Write();
    dijetinvmass->Write();
+    Ndijets->Write();
    //
    dijetptallJIDloose->Write();
    dijetdphiJIDloose->Write();
