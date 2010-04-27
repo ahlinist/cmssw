@@ -121,13 +121,11 @@ void ReadCleaningParameters(const char* filename){
 	    cut_counter+=1;
 	    endcapeta_dijet = double(ParValue); 
 	  }
+	  
 	  if( !strcmp(ParName, "DijetDeltaPhi") ){
 	    cut_counter+=1;
 	    cut_DiJetDeltaPhi_min = double(ParValue);
-	  }	    
-// 	  if( !strcmp(ParName, "CaloDiDeltaPhi") ){
-// 	    cut_CaloDiJetDeltaPhi_min = double(ParValue); ok = true;
-// 	  }
+	  }
 	  if( !strcmp(ParName, "MetbySumEt") ){
 	    cut_counter+=1;
 	    cut_metbysumet = double(ParValue); // ok = true;
@@ -320,7 +318,8 @@ void analysisClass::Loop()
   //read preliminary version of cleaning parameters
   ReadCleaningParameters("../rootNtupleMacros/cutFile/cutsSTARTUP.dat");
   // decide wether you want to apply jet corrections or not
-  cout<<"phidijet: "<<cut_CaloDiJetDeltaPhi_min<<endl;
+  cout<<"phidijet: "<<   cut_DiJetDeltaPhi_min 
+<<endl;
 //   bool makeJetCorr = true;
   // cut values
   double barreleta =1.4;
@@ -1002,7 +1001,7 @@ void analysisClass::Loop()
 	double jcScale0;
 	double jcScale1;
 
-
+	NJPTindijets=0;
 	
 	//dijet
 	if(int(JPTak5JetpT->size())>=2){
@@ -1023,7 +1022,7 @@ void analysisClass::Loop()
 	  
 	  if(fabs(JPTak5JetEta->at(index_jet1))<endcapeta_dijet && (JPTak5JetpT->at(index_jet1) * jcScale0 )>ptMinDijet && fabs(JPTak5JetEta->at(index_jet2))<endcapeta_dijet && (JPTak5JetpT->at(index_jet2) * jcScale1) >ptMinDijet){   //jc
 	    //i increase 
-	    NJPTindijets=+2;
+	    //  NJPTindijets=+2;
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
 	    //fill only 
 	    if(vPtEtaPhiE.size()>1 && (tcmetPt->at(0)/tcmetSumEt->at(0))<cut_metbysumet 
@@ -1044,7 +1043,8 @@ void analysisClass::Loop()
 	      dijetJPTdphiJIDloose->Fill(JPTdphi);
 	    }
 
-	    if (JPTdphi >cut_CaloDiJetDeltaPhi_min) {
+	    if (JPTdphi > cut_DiJetDeltaPhi_min){
+	      NJPTindijets=+2;
 	      // fake jet study
 	      double dijcScale;
 	      for (int dj = 0; dj<int(JPTak5JetpT->size()); dj++){
@@ -1254,7 +1254,7 @@ void analysisClass::Loop()
    // jetNumber->SetBinContent(4,NindijetsJetIDLooseTOT );
       cout <<"###################################"       << endl;
       cout <<"Good Events " << goodevts      <<" Selected events="<< pvevt<<  endl;
-
+      cout <<" NJPTindijets " <<  NJPTindijetsTOT /2 << "  NJPTindijetsLoose" <<NJPTindijetsJetIDLooseTOT /2<< endl;
       cout <<"###################################"       << endl;
 
    // cleaning efficiencies

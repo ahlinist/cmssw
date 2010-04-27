@@ -1058,7 +1058,7 @@ void analysisClass::Loop()
 	  
 	  if(fabs(ak5JetEta->at(index_jet1))<endcapeta_dijet && (ak5JetpT->at(index_jet1) * jcScale0 )>ptMinDijet && fabs(ak5JetEta->at(index_jet2))<endcapeta_dijet && (ak5JetpT->at(index_jet2) * jcScale1) >ptMinDijet){   //jc
 	    //i increase 
-	    Nindijets=+2;
+	    //	    Nindijets=+2;
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
 	    //fill only 
 	    if(vPtEtaPhiE.size()>1 && (calometPt->at(0)/calometSumEt->at(0))<cut_metbysumet 
@@ -1078,12 +1078,17 @@ void analysisClass::Loop()
 	       && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
 	      dijetdphiJIDloose->Fill(dphi);
 	    }
+
+
+
+
 	    if(JetIdtight(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1), ak5JetJIDfRBX->at(index_jet1),ak5JetSigmaEta->at(index_jet1),ak5JetSigmaPhi->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) && JetIdtight(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDfRBX->at(index_jet2),ak5JetSigmaEta->at(index_jet2),ak5JetSigmaPhi->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
 	      dijetdphiJIDtight->Fill(dphi);
 	    }
 
 	    if (dphi >cut_DiJetDeltaPhi_min) {
 	      // fake jet study
+	        Nindijets=+2;
 	      double dijcScale;
 	      for (int dj = 0; dj<int(ak5JetpT->size()); dj++){
 		if(makeJetCorr==1) {
@@ -1355,9 +1360,10 @@ void analysisClass::Loop()
    //  jetNumber->SetBinContent(3,NindijetsTOT ) ;
    // jetNumber->SetBinContent(4,NindijetsJetIDLooseTOT );
       cout <<"###################################"       << endl;
-      cout <<"Good Events " << goodevts      <<" Selected events="<< pvevt<<  endl;
+      cout <<"Good Events " << goodevts      <<" Selected events="<< pvevt<< " dijet "<<  	NindijetsTOT <<
+	"loose dijets" << NindijetsJetIDLooseTOT<< endl;
 
-      cout <<"###################################"       << endl;
+      cout <<"###################################"       << endl; 
 
    // cleaning efficiencies
    jetJIDlooseeffeta->Add(etaJIDloose);
