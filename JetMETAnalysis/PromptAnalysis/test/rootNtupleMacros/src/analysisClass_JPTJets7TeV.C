@@ -44,7 +44,7 @@ analysisClass::~analysisClass()
   double cut_fracHighpurityTracks_min;
   double cut_DiJetDeltaPhi_min;
   double cut_sumet_max;
-  double cut_CaloDiJetDeltaPhi_min;
+//   double cut_CaloDiJetDeltaPhi_min;
   double cut_metbysumet;
   float makeJetCorr;
   double endcapeta;
@@ -321,7 +321,7 @@ void analysisClass::Loop()
   //read preliminary version of cleaning parameters
   ReadCleaningParameters("../rootNtupleMacros/cutFile/cutsSTARTUP.dat");
   // decide wether you want to apply jet corrections or not
-  cout<<"phidijet: "<<cut_CaloDiJetDeltaPhi_min<<endl;
+  cout<<"phidijet: "<<cut_DiJetDeltaPhi_min<<endl;
 //   bool makeJetCorr = true;
   // cut values
   double barreleta =1.4;
@@ -533,6 +533,15 @@ void analysisClass::Loop()
   TH1D *dijetJPTptall2JIDloose = new TH1D("dijetJPTptall2JIDloose","",ptBin, ptMinDijet ,ptMax);
   dijetJPTptall2JIDloose->SetXTitle("p_{T}[GeV]");
   dijetJPTptall2JIDloose->SetTitle(dataset);
+
+  TH1D *dijetJPTptFirstTwo = new TH1D("dijetJPTptFirstTwo","",ptBin, ptMinDijet ,ptMax);
+  dijetJPTptFirstTwo->SetXTitle("p_{T}[GeV]");
+  dijetJPTptFirstTwo->SetTitle(dataset);
+  TH1D *dijetJPTptFirstTwoJIDloose = new TH1D("dijetJPTptFirstTwoJIDloose","",ptBin, ptMinDijet ,ptMax);
+  dijetJPTptFirstTwoJIDloose->SetXTitle("p_{T}[GeV]");
+  dijetJPTptFirstTwoJIDloose->SetTitle(dataset);
+
+
   TH1D *dijetJPTdphiJIDloose = new TH1D("dijetJPTdphiJIDloose","",phiBin, 0., 3.5);
   dijetJPTdphiJIDloose->SetXTitle("#Delta #phi_{di-jet}");
   dijetJPTdphiJIDloose->SetTitle(dataset);
@@ -1065,13 +1074,15 @@ void analysisClass::Loop()
 	    }
 	    // JPTdphi
 	    double JPTdphi = DeltaPhi(JPTak5JetPhi->at(index_jet1),JPTak5JetPhi->at(index_jet2) );
-	    dijetJPTdphi->Fill(JPTdphi);
+
+ 	    dijetJPTdphi->Fill(JPTdphi);
+
 	    if(JetIdloose(JPTak5JetJIDresEMF->at(index_jet1),JPTak5JetJIDfHPD->at(index_jet1),JPTak5JetJIDn90Hits->at(index_jet1),JPTak5JetEta->at(index_jet1)) 
 	       && JetIdloose(JPTak5JetJIDresEMF->at(index_jet2),JPTak5JetJIDfHPD->at(index_jet2),JPTak5JetJIDn90Hits->at(index_jet2),JPTak5JetEta->at(index_jet2))){
-	      dijetJPTdphiJIDloose->Fill(JPTdphi);
+ 	      dijetJPTdphiJIDloose->Fill(JPTdphi);
 	    }
 
-	    if (JPTdphi >cut_CaloDiJetDeltaPhi_min) {
+	    if (JPTdphi >cut_DiJetDeltaPhi_min) {
 	      NJPTindijets=+2;
 	      // fake jet study
 	      double dijcScale;
@@ -1102,6 +1113,10 @@ void analysisClass::Loop()
 	      // basic di-jet variables 
 	      dijetJPTptall1->Fill(JPTak5JetpT->at(index_jet1) * jcScale0);  //jc
 	      dijetJPTptall2->Fill(JPTak5JetpT->at(index_jet2) * jcScale1);   //jc
+
+	      dijetJPTptFirstTwo->Fill(JPTak5JetpT->at(index_jet1) * jcScale0);
+	      dijetJPTptFirstTwo->Fill(JPTak5JetpT->at(index_jet2) * jcScale1);
+
 	      dijetdJPTeta->Fill(fabs(JPTak5JetEta->at(index_jet1)-JPTak5JetEta->at(index_jet2)));
 	      JPTmapalldijets->Fill(JPTak5JetEta->at(index_jet1),JPTak5JetPhi->at(index_jet1));
 	      JPTmapalldijets->Fill(JPTak5JetEta->at(index_jet2),JPTak5JetPhi->at(index_jet2));
@@ -1123,6 +1138,10 @@ void analysisClass::Loop()
 		 && JetIdloose(JPTak5JetJIDresEMF->at(index_jet2),JPTak5JetJIDfHPD->at(index_jet2),JPTak5JetJIDn90Hits->at(index_jet2),JPTak5JetEta->at(index_jet2))){
 		dijetJPTptall1JIDloose->Fill(JPTak5JetpT->at(index_jet1) * jcScale0);   //jc
 		dijetJPTptall2JIDloose->Fill(JPTak5JetpT->at(index_jet2) * jcScale1);   //jc
+
+		dijetJPTptFirstTwoJIDloose->Fill(JPTak5JetpT->at(index_jet1) * jcScale0);
+		dijetJPTptFirstTwoJIDloose->Fill(JPTak5JetpT->at(index_jet2) * jcScale1);
+
 		dijetJPTdetaJIDloose->Fill(fabs(JPTak5JetEta->at(index_jet1)-JPTak5JetEta->at(index_jet2)));
 		JPTmapalldijetsJIDloose->Fill(JPTak5JetEta->at(index_jet1),JPTak5JetPhi->at(index_jet1));
 		JPTmapalldijetsJIDloose->Fill(JPTak5JetEta->at(index_jet2),JPTak5JetPhi->at(index_jet2));
@@ -1332,11 +1351,13 @@ void analysisClass::Loop()
    JPTetaJIDloose->Write(); 
    dijetJPTptall1->Write();
    dijetJPTptall2->Write();
+   dijetJPTptFirstTwo->Write();
    dijetJPTdphi->Write();
    dijetdJPTeta->Write();
    JPTmapalldijets->Write();
    dijetJPTptall1JIDloose->Write();
    dijetJPTptall2JIDloose->Write();
+   dijetJPTptFirstTwoJIDloose->Write();
    dijetJPTdphiJIDloose->Write();
    dijetJPTdetaJIDloose->Write();
    JPTmapalldijetsJIDloose->Write();
@@ -1391,3 +1412,4 @@ void analysisClass::Loop()
 
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
+
