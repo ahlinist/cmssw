@@ -6,7 +6,7 @@
 ///   and cuts on it. HT is defined as scalar sum of the 
 ///   the transverse jet energies.
 ///
-/// $Id: HTEventSelector.h,v 1.4 2008/10/03 14:34:06 adamwo Exp $
+/// $Id: MyMHTEventSelector.h,v 1.1 2010/02/24 11:10:52 thomsen Exp $
 
 // system include files
 #include <memory>
@@ -29,5 +29,9 @@ private:
   float minMHT_;          ///< lower HT cut 
   float minPt_;          ///< minimum Pt of jets taken into account
   float maxEta_;         ///< maximum Eta of jets taken into account
+  double minFem_;
+  double maxFem_;
+  int minN90_;
+  double minfHPD_;
 };
 #endif

@@ -12,7 +12,10 @@ JetEventSelector::JetEventSelector (const edm::ParameterSet& pset) :
   corrFlavour_( pset.getParameter<std::string>("flavour")    ),
   minPt_(  pset.getParameter< std::vector<double> >("minPt"        ) ),
   maxEta_( pset.getParameter< std::vector<double> >("maxEta"       ) ),
-  maxFem_( pset.getParameter< std::vector<double> >("maxEMFraction") )
+  minFem_( pset.getParameter< std::vector<double> >("minEMFraction") ),
+  maxFem_( pset.getParameter< std::vector<double> >("maxEMFraction") ),
+  minN90_( pset.getParameter<int>("minTowersN90")),
+  minfHPD_(pset.getParameter<double>("minfHPD"))
 {
 
   /// definition of variables to be cached
@@ -86,18 +89,28 @@ JetEventSelector::select (const edm::Event& event) const
     if ((*jetHandle)[j].isCaloJet()) EMFRAC=(*jetHandle)[j].emEnergyFraction();
     if ((*jetHandle)[j].isPFJet()) EMFRAC=(*jetHandle)[j].neutralEmEnergyFraction()+
       (*jetHandle)[j].chargedEmEnergyFraction();
-    if ( correctedPts[j]<minPt_[i] ||
-	 fabs((*jetHandle)[j].eta())>maxEta_[i]||
-	 EMFRAC>maxFem_[i] ) {
-      LogTrace("JetEventSelector") << "JetEventSelector: failed at jet " << (i+1);
-      result = false;
-     }
-    setVariable(3*i+1,correctedPts[j]);
-    setVariable(3*i+2,(*jetHandle)[j].eta());
-    setVariable(3*i+3,EMFRAC);
-   }
-   LogTrace("JetEventSelector") << "JetEventSelector: all jets passed";
-   return result;
+    
+    
+    if((*jetHandle)[j].jetID().n90Hits <= minN90_)  continue;
+    if((*jetHandle)[j].jetID().fHPD >= minfHPD_ ) continue;
+    
+    if (  correctedPts[j]>=minPt_[i] &&
+	 fabs((*jetHandle)[j].eta())<=maxEta_[i] && 
+	 ((EMFRAC<=maxFem_[i] && EMFRAC>=minFem_[i]) || fabs((*jetHandle)[j].eta()) > 2.6))      //check EMF only |eta|<2.6
+      {
+	setVariable(3*i+1,correctedPts[j]);
+	setVariable(3*i+2,(*jetHandle)[j].eta());
+	setVariable(3*i+3,EMFRAC);
+	++i;
+      }
+    if (i==minPt_.size()) {
+      result=true;
+      break;
+    }
+  }
+  if (result) LogTrace("JetEventSelector") << "JetEventSelector: all jets passed";
+  else        LogTrace("JetEventSelector") << "JetEventSelector: failed";
+  return result;
 }
 
 //________________________________________________________________________________________
