@@ -40,7 +40,8 @@ process.source = cms.Source("PoolSource",
 )
 
 # Output definition
-process.output = cms.OutputModule("PoolOutputModule",
+process.output = cms.OutputModule(
+    "PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.RECOEventContent.outputCommands,
     fileName = cms.untracked.string('output_file.root'),
@@ -49,6 +50,7 @@ process.output = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     )
 )
+
 
 # Other statements
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
@@ -60,7 +62,17 @@ process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"UserDefined
 # HBHE RecHit reflagger
 process.load("JetMETAnalysis/HcalReflagging/hbherechitreflaggerJETMET_cfi")
 process.hbherecoReflagged = process.hbherechitreflaggerJETMET.clone()
+process.hbherecoReflagged.debug=0
 
+# Set energy threshold for identifying noise
+#process.hbherecoReflagged.Ethresh=0.5
+# Set number of channels/hpd that must be above threshold in order for the HPD to be marked noisy
+#process.hbherecoReflagged.Nhits=14
+# Turn this on to check # of hits per RBX, rather than per HPD
+#process.hbherecoReflagged.RBXflag=False
+
+process.output.outputCommands.append("keep *_hbherecoReflagged_*_*")
+#new rechit collection name is:  HBHERecHitsSorted_hbherecoReflagged__USER
 
 # Use the reflagged HBHE RecHits to make the CaloTowers
 process.towerMaker.hbheInput = cms.InputTag("hbherecoReflagged")
@@ -73,4 +85,6 @@ process.rereco_step = cms.Path(process.caloTowersRec*(process.recoJets*process.r
 process.out_step = cms.EndPath(process.output)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.reflagging_step,process.rereco_step,process.out_step)
+process.schedule = cms.Schedule(process.reflagging_step,
+                                #process.rereco_step,
+                                process.out_step)

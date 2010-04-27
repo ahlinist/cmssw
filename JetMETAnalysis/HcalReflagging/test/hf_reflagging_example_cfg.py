@@ -69,6 +69,9 @@ elif version==2:
 elif version==3:
     process.hfrecoReflagged = process.HFrechitreflaggerJETMETv3.clone()
 
+process.output.outputCommands.append("keep *_hfrecoReflagged_*_*")
+#new rechit collection name is:  HFRecHitsSorted_hfrecoReflagged__USER
+
 # Use the reflagged HF RecHits to make the CaloTowers
 process.towerMaker.hfInput = cms.InputTag("hfrecoReflagged")
 process.towerMakerWithHO.hfInput = cms.InputTag("hfrecoReflagged")
