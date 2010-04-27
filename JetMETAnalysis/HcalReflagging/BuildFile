@@ -27,6 +27,9 @@
    <use name=DataFormats/VertexReco>
    <use name=DetectorDescription/Core>
    <use name=Geometry/CSCGeometry>
+   <use   name=CalibFormats/HcalObjects>
+   <use   name=CalibCalorimetry/HcalAlgos>
+
    <use name=root>
    <use name=RecoEcal/EgammaClusterAlgos>
    <use name=RecoEgamma/EgammaMCTools>
