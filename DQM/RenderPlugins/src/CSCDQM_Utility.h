@@ -80,7 +80,6 @@ namespace cscdqm {
       static int getCSCTypeBin(const std::string& cstr);
       static const std::string getCSCTypeLabel(int endcap, int station, int ring);
       static int tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = " ");
-      static void splitString(std::string str, const std::string delim, std::vector<std::string>& results);
       static void trimString(std::string& str);
       static uint32_t fastHash(const char * data, int len);
       static uint32_t fastHash(const char * data) { return fastHash(data, strlen(data)); }

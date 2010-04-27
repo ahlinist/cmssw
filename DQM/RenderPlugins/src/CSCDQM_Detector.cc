@@ -571,7 +571,7 @@ namespace cscdqm {
   bool Detector::AddressFromString(const std::string str_address, Address& adr) const {
     
     std::vector<std::string> tokens;
-    Utility::splitString(str_address, ",", tokens);
+    Utility::tokenize(str_address, tokens, ",");
   
     if (tokens.size() != ADDR_SIZE) return false;
   

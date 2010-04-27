@@ -98,26 +98,6 @@ namespace cscdqm {
   }
   
   /**
-   * @brief  Split string according to delimiter
-   * @param  str String to split
-   * @param  delim Delimiter
-   * @param  results Vector to write results to
-   * @return 
-   */
-  void Utility::splitString(std::string str, const std::string delim, std::vector<std::string>& results) {
-    size_t cutAt;
-    while ((cutAt = str.find_first_of(delim)) != str.npos) {
-      if(cutAt > 0) {
-        results.push_back(str.substr(0, cutAt));
-      }
-      str = str.substr(cutAt + 1);
-    }
-    if(str.length() > 0) {
-      results.push_back(str);
-    }
-  }
-  
-  /**
    * @brief  Trim string
    * @param  str string to trim
    */
