@@ -117,6 +117,7 @@ process.out = cms.OutputModule("PoolOutputModule",
         'keep patCompositeCandidates_*__SkimmingOnia2MuMuPAT', ## PAT di-muons
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',        ## All PAT muons (note: not necessary if you use only the di-muons)
         'keep *_offlinePrimaryVertices_*_*',                   ## Primary vertices: you want these to compute impact parameters
+        'keep *_offlineBeamSpot_*_*',                          ## Beam spot: you want this for the same reason
         'keep edmTriggerResults_TriggerResults_*_*',           ## HLT info, per path (cheap)
         'keep l1extraL1MuonParticles_l1extraParticles_*_*',    ## L1 info (cheap)
         #'keep *_patTrigger_*_*',                               ## HLT info, per object (BIG. Keep only when debugging trigger match)
