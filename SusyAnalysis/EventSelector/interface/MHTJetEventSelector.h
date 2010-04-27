@@ -36,6 +36,10 @@ private:
   unsigned int nJetsMHTIso_; ///<  Nr. of jets for MET isolation
   float minPt_;          ///< minimum Pt of jets taken into account
   float maxEta_;         ///< maximum Eta of jets taken into account
+  double minFem_;
+  double maxFem_;
+  int minN90_;
+  double minfHPD_;
 
 };
 #endif

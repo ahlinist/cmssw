@@ -6,7 +6,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: JetEventSelector.h,v 1.5 2009/01/16 09:18:06 fronga Exp $
+/// $Id: JetEventSelector.h,v 1.6 2009/10/29 13:20:26 auterman Exp $
 
 // system include files
 #include <memory>
@@ -34,7 +34,10 @@ private:
   std::string corrFlavour_;    ///< jet correction flavour (ditto)
   std::vector<double> minPt_;  ///< lower Et cuts (also defines min. #jets)
   std::vector<double> maxEta_; ///< upper |eta| cuts (also defines min. #jets)
+  std::vector<double> minFem_; ///< lower cut on EM fraction
   std::vector<double> maxFem_; ///< upper cut on EM fraction
+  int minN90_;
+  double minfHPD_;
 
   template <class C>
   struct IndexSorter {

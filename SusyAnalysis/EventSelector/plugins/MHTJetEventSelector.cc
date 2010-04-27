@@ -21,7 +21,11 @@ MHTJetEventSelector::MHTJetEventSelector (const edm::ParameterSet& pset) :
   rDistJetsMin_  ( pset.getParameter<double>("rDistJetsMin")   ),
   nJetsMHTIso_(pset.getParameter<unsigned int>("NJets_mhtIso") ),
   minPt_ ( pset.getParameter<double>("minPt") ),
-  maxEta_ ( pset.getParameter<double>("maxEta") )
+  maxEta_ ( pset.getParameter<double>("maxEta") ),
+  minFem_( pset.getParameter<double>("minEMFraction") ),
+  maxFem_( pset.getParameter<double>("maxEMFraction") ),
+  minN90_( pset.getParameter<int>("minTowersN90")),
+  minfHPD_(pset.getParameter<double>("minfHPD"))
 {
   // Define all variables we want to cache (and eventually plot...)
   defineVariable("mhtDphi");
@@ -62,6 +66,10 @@ MHTJetEventSelector::select (const edm::Event& event) const
 
   edm::View<pat::Jet>::const_iterator iJet = jets->begin();
   while ( iJet != jets->end() ) {
+    if(iJet->emEnergyFraction()<= minFem_  && fabs(iJet->eta())<2.6 ) continue;
+    if(iJet->emEnergyFraction()>= maxFem_  && fabs(iJet->eta())<2.6 ) continue;
+    if(iJet->jetID().n90Hits <= minN90_)  continue;
+    if(iJet->jetID().fHPD >= minfHPD_ ) continue;
     if ( iJet->pt()>minPt_ && fabs(iJet->eta())<maxEta_ ) HT += iJet->correctedP4("abs");
     ++iJet;
   }

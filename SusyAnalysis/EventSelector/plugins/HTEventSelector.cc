@@ -10,7 +10,11 @@ HTEventSelector::HTEventSelector (const edm::ParameterSet& pset) :
   jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
   minHT_ ( pset.getParameter<double>("minHT") ),
   minPt_ ( pset.getParameter<double>("minPt") ),
-  maxEta_ ( pset.getParameter<double>("maxEta") )
+  maxEta_ ( pset.getParameter<double>("maxEta") ),
+  minFem_( pset.getParameter<double>("minEMFraction") ),
+  maxFem_( pset.getParameter<double>("maxEMFraction") ),
+  minN90_( pset.getParameter<int>("minTowersN90")),
+  minfHPD_(pset.getParameter<double>("minfHPD"))
 { 
 
   // Store computed HT
@@ -36,6 +40,10 @@ HTEventSelector::select (const edm::Event& event) const
   float myHT = 0.0;
   edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
   while ( iJet != jetHandle->end() ) {
+    if(iJet->emEnergyFraction()<= minFem_  && fabs(iJet->eta())<2.6 ) continue;
+    if(iJet->emEnergyFraction()>= maxFem_  && fabs(iJet->eta())<2.6 ) continue;
+    if(iJet->jetID().n90Hits <= minN90_)  continue;
+    if(iJet->jetID().fHPD >= minfHPD_ ) continue;
     if ( iJet->pt()>minPt_ && fabs(iJet->eta())<maxEta_ ) myHT += iJet->et();
     ++iJet;
   }
