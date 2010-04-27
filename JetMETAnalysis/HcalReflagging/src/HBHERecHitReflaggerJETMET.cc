@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HBHERecHitReflaggerJETMET.cc,v 1.1 2010/04/22 09:40:25 temple Exp $
+// $Id: HBHERecHitReflaggerJETMET.cc,v 1.1 2010/04/27 13:45:38 temple Exp $
 //
 //
 
@@ -171,6 +171,7 @@ HBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
    // initial loop on rechits to determine number of channels> threshold in each HPD, RBX
 
+
    for (HBHERecHitCollection::const_iterator recHit=hbheRecHits->begin(); recHit!=hbheRecHits->end(); ++recHit) 
      {
        if (recHit->energy()<Ethresh_) continue; // impose energy requirement
@@ -184,7 +185,6 @@ HBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iS
    for (HBHERecHitCollection::const_iterator recHit=hbheRecHits->begin(); recHit!=hbheRecHits->end(); ++recHit) 
      {
        HBHERecHit newhit = (HBHERecHit)(*recHit);
-       
        HcalDetId id(newhit.detid().rawId());
        //int depth = newhit.id().depth();
        //int ieta  = newhit.id().ieta();
@@ -199,8 +199,9 @@ HBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iS
 	 {
 	   newhit.setFlagField(1,hbheFlagBit_);
 	   if (debug_>1) cout <<"HBHE Noise Flag Bit "<<hbheFlagBit_<<" set for Channel "<<newhit.id()<<endl;
-	   if (debug_>5) cout <<"HBHE Noise Flag Bit for "<<newhit.id()<<"  = "<<newhit.flagField(hbheFlagBit_)<<endl;
 	 }
+       if (debug_>5) cout <<"HBHE Noise Flag Bit for "<<newhit.id()<<"  = "<<newhit.flagField(hbheFlagBit_)<<endl;
+	
        pOut->push_back(newhit);
      }
 
