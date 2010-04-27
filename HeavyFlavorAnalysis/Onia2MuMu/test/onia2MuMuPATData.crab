@@ -1,0 +1,26 @@
+[CRAB]
+jobtype = cmssw
+scheduler = glite
+#server_name = cern
+
+[CMSSW]
+datasetpath = /MinimumBias/Commissioning10-CS_Onia-v9/USER
+#runselection = 132440
+pset=onia2MuMuPATData_cfg.py
+total_number_of_events = -1
+number_of_jobs = 10
+output_file = onia2MuMuPATData.root
+
+[USER]
+return_data = 1
+copy_data = 0
+ui_working_dir = onia2MuMuPATData
+storage_element = T2_CH_CAF
+user_remote_dir = onia2MuMuPATData
+
+[GRID]
+se_white_list = T2_CH_CSCS
+ce_white_list = T2_CH_CSCS
+
+
+
