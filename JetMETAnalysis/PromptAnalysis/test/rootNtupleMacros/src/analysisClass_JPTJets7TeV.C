@@ -1,3 +1,11 @@
+// remarks:
+// met / sumet is only implemented for inclusive jes with njets >=1 and
+// for loose IDed dijets (not for non IDed di-jets)
+// the same is true for the invariant mass... 
+// maybe one should add the other histos...
+
+
+
 #define analysisClass_cxx
 #include "analysisClass.h"
 #include <TH2.h>
@@ -121,19 +129,14 @@ void ReadCleaningParameters(const char* filename){
 	    cut_counter+=1;
 	    endcapeta_dijet = double(ParValue); 
 	  }
-	  
 	  if( !strcmp(ParName, "DijetDeltaPhi") ){
 	    cut_counter+=1;
 	    cut_DiJetDeltaPhi_min = double(ParValue);
-	  }
+	  }	    
 	  if( !strcmp(ParName, "MetbySumEt") ){
 	    cut_counter+=1;
 	    cut_metbysumet = double(ParValue); // ok = true;
 	  }
-// 	  if( !strcmp(ParName, "SumEt") ){
-// 	    cut_counter+=1;
-// 	    cut_sumet_max = double(ParValue); // ok = true;
-// 	  }
 	  if( !strcmp(ParName, "FracHighPurityTracks") ){
 	    cut_counter+=1;
 	    cut_fracHighpurityTracks_min = double(ParValue); // ok = true;
@@ -318,13 +321,12 @@ void analysisClass::Loop()
   //read preliminary version of cleaning parameters
   ReadCleaningParameters("../rootNtupleMacros/cutFile/cutsSTARTUP.dat");
   // decide wether you want to apply jet corrections or not
-  cout<<"phidijet: "<<   cut_DiJetDeltaPhi_min 
-<<endl;
+  cout<<"phidijet: "<<cut_CaloDiJetDeltaPhi_min<<endl;
 //   bool makeJetCorr = true;
   // cut values
   double barreleta =1.4;
-  double endcapeta =2.6;
-  double endcapeta_dijet =3.0;
+  double endcapeta =2; //2.6;
+  double endcapeta_dijet =2; //3.0;
   double fhpdmax = 0.98;
   double n90hitsmin =1;
   double ntracksmin =1;
@@ -360,9 +362,9 @@ void analysisClass::Loop()
   int invmassBin=100;//30
   double invmassMax=600.;
   
-  TLorentzVector Calojet1LorentzVector(0.,0.,0.,0.);
-  TLorentzVector Calojet2LorentzVector(0.,0.,0.,0.);
-  TLorentzVector CalodijetLorentzVector(0.,0.,0.,0.); 
+  TLorentzVector JPTjet1LorentzVector(0.,0.,0.,0.);
+  TLorentzVector JPTjet2LorentzVector(0.,0.,0.,0.);
+  TLorentzVector JPTdijetLorentzVector(0.,0.,0.,0.); 
   
   // -------------------Basic distributions - all ak5 ----------------------------
    
@@ -488,14 +490,20 @@ void analysisClass::Loop()
 
 
   // ------------------------------------------
-  TH1D *JPTdijetinvmass = new TH1D("JPTdijetinvmass","",invmassBin,0.,invmassMax);
+  TH1D *JPTdijetinvmass = new TH1D("dijetJPTinvmass","",invmassBin,0.,invmassMax);
   JPTdijetinvmass->SetXTitle("m_{j1j2}[GeV]");
   JPTdijetinvmass->SetTitle(dataset);
-  TH1D *JPTdijetinvmassJIDloose = new TH1D("JPTdijetinvmassJIDloose","",invmassBin,0.,invmassMax);
-  JPTdijetinvmassJIDloose->SetXTitle("m_{j1j2}[GeV]");
-  JPTdijetinvmassJIDloose->SetTitle(dataset);
+  TH1D *JPTdijetinvmassIDloose = new TH1D("dijetJPTinvmassIDloose","",invmassBin,0.,invmassMax);
+  JPTdijetinvmassIDloose->SetXTitle("m_{j1j2}[GeV]");
+  JPTdijetinvmassIDloose->SetTitle(dataset);
   
 
+  TH1D *JPTmetOverSumEt = new TH1D("JPTmetOverSumEt","",30,0.,1.);
+  JPTmetOverSumEt->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  JPTmetOverSumEt->SetTitle(dataset);
+  TH1D *dijetJPTmetOverSumEtIDloose = new TH1D("dijetJPTmetOverSumEtIDloose","",30,0.,1.);
+  dijetJPTmetOverSumEtIDloose->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  dijetJPTmetOverSumEtIDloose->SetTitle(dataset);
 
 
 
@@ -574,93 +582,99 @@ void analysisClass::Loop()
   TH1I *dijetJPTelectronNumberIDloose = new TH1I("dijetJPTelectronNumber","",10,0,10);
   dijetJPTelectronNumberIDloose->SetXTitle("Electron number");
   dijetJPTelectronNumberIDloose->SetTitle(dataset);
-  TH1I *dijetJPTelectronPtIDloose = new TH1I("dijetJPTelectronPt","",25,0,50);
+  TH1D *dijetJPTelectronPtIDloose = new TH1D("dijetJPTelectronPt","",25,0,50);
   dijetJPTelectronPtIDloose->SetXTitle("Electron p_{t}");
   dijetJPTelectronPtIDloose->SetTitle(dataset);
 
   TH1I *dijetJPTmuonNumberIDloose = new TH1I("dijetJPTmuonNumber","",10,0,10);
   dijetJPTmuonNumberIDloose->SetXTitle("Muon number");
   dijetJPTmuonNumberIDloose->SetTitle(dataset);
-  TH1I *dijetJPTmuonPtIDloose = new TH1I("dijetJPTmuonPt","",25,0,50);
+  TH1D *dijetJPTmuonPtIDloose = new TH1D("dijetJPTmuonPt","",25,0,50);
   dijetJPTmuonPtIDloose->SetXTitle("Muon p_{t}");
   dijetJPTmuonPtIDloose->SetTitle(dataset);
 
   TH1I *dijetJPTpionNumberIDloose = new TH1I("dijetJPTpionNumber","",200,0,200);
   dijetJPTpionNumberIDloose->SetXTitle("Pion number");
   dijetJPTpionNumberIDloose->SetTitle(dataset);
-  TH1I *dijetJPTpionPtIDloose = new TH1I("dijetJPTpionPt","",25,0,50);
+  TH1D *dijetJPTpionPtIDloose = new TH1D("dijetJPTpionPt","",25,0,50);
   dijetJPTpionPtIDloose->SetXTitle("Pion p_{t}");
   dijetJPTpionPtIDloose->SetTitle(dataset);
 
   TH1I *dijetJPTtrackNumberIDloose = new TH1I("dijetJPTtrackNumber","",200,0,200);
   dijetJPTtrackNumberIDloose->SetXTitle("Track number");
   dijetJPTtrackNumberIDloose->SetTitle(dataset);
-  TH1I *dijetJPTtrackPtIDloose = new TH1I("dijetJPTtrackPt","",10,0,10);
+  TH1D *dijetJPTtrackPtIDloose = new TH1D("dijetJPTtrackPt","",10,0,10);
   dijetJPTtrackPtIDloose->SetXTitle("Track p_{t}");
   dijetJPTtrackPtIDloose->SetTitle(dataset);
 
+//   TH1D *JPTdijetinvmass = new TH1D("dijetJPTinvMass","",100,0.,600);
+//   JPTdijetinvmass->SetXTitle("m_{j1j2}[GeV]");
+//   JPTdijetinvmass->SetTitle(dataset);
+//   TH1D *JPTdijetinvmassIDloose = new TH1D("dijetJPTinvMassIDloose","",100,0.,600);
+//   JPTdijetinvmassIDloose->SetXTitle("m_{j1j2}[GeV]");
+//   JPTdijetinvmassIDloose->SetTitle(dataset);
 
 
   // -----------------------Efficiency ---------------------------------------------------
 
-  TH1D *variousEffindijets = new TH1D("variousEffindijets","",6,0,6);
-  variousEffindijets->SetTitle(dataset);
-  variousEffindijets->GetXaxis()->SetBinLabel(1,"Loose JetID");
-  variousEffindijets->GetXaxis()->SetBinLabel(2,"Tight JetID");
-  variousEffindijets->GetXaxis()->SetBinLabel(3,">1 Associated HighPurity Tracks at Calo");
-  variousEffindijets->GetXaxis()->SetBinLabel(4,">1 Associated Tight Tracks at Calo");
-  variousEffindijets->GetXaxis()->SetBinLabel(5,">1 Associated HighPurity Tracks at Vtx");
-  variousEffindijets->GetXaxis()->SetBinLabel(6,">1 Associated Tight Tracks at Vtx");
+  TH1D *JPTvariousEffindijets = new TH1D("JPTvariousEffindijets","",6,0,6);
+  JPTvariousEffindijets->SetTitle(dataset);
+  JPTvariousEffindijets->GetXaxis()->SetBinLabel(1,"Loose JetID");
+  JPTvariousEffindijets->GetXaxis()->SetBinLabel(2,"Tight JetID");
+  JPTvariousEffindijets->GetXaxis()->SetBinLabel(3,">1 Associated HighPurity Tracks at Calo");
+  JPTvariousEffindijets->GetXaxis()->SetBinLabel(4,">1 Associated Tight Tracks at Calo");
+  JPTvariousEffindijets->GetXaxis()->SetBinLabel(5,">1 Associated HighPurity Tracks at Vtx");
+  JPTvariousEffindijets->GetXaxis()->SetBinLabel(6,">1 Associated Tight Tracks at Vtx");
 
-  TH1D *variousEffindijetsDEN = new TH1D("variousEffindijetsDEN","",6,0,6);
+  TH1D *JPTvariousEffindijetsDEN = new TH1D("JPTvariousEffindijetsDEN","",6,0,6);
 
   TH1D *jetJIDlooseeffJPTeta = new TH1D("jetJIDlooseeffJPTeta","",etaBin, etaMin, etaMax);
   TH1D *jetJIDlooseeffJPTphi = new TH1D("jetJIDlooseeffJPTphi","",phiBin,phiMin,phiMax);
   
-  TH1D *variousEff = new TH1D("variousEff","",6,0,6);
-  variousEff->SetTitle(dataset);
-  variousEff->GetXaxis()->SetBinLabel(1,"Loose JetID");
-  variousEff->GetXaxis()->SetBinLabel(2,"Tight JetID");
-  variousEff->GetXaxis()->SetBinLabel(3,">1 Ass. HighPurity Tracks at Calo");
-  variousEff->GetXaxis()->SetBinLabel(4,">1 Ass. Tight Tracks at Calo");
-  variousEff->GetXaxis()->SetBinLabel(5,">1 Ass. HighPurity Tracks at Vtx");
-  variousEff->GetXaxis()->SetBinLabel(6,">1 Ass. Tight Tracks at Vtx");
+  TH1D *JPTvariousEff = new TH1D("JPTvariousEff","",6,0,6);
+  JPTvariousEff->SetTitle(dataset);
+  JPTvariousEff->GetXaxis()->SetBinLabel(1,"Loose JetID");
+  JPTvariousEff->GetXaxis()->SetBinLabel(2,"Tight JetID");
+  JPTvariousEff->GetXaxis()->SetBinLabel(3,">1 Ass. HighPurity Tracks at Calo");
+  JPTvariousEff->GetXaxis()->SetBinLabel(4,">1 Ass. Tight Tracks at Calo");
+  JPTvariousEff->GetXaxis()->SetBinLabel(5,">1 Ass. HighPurity Tracks at Vtx");
+  JPTvariousEff->GetXaxis()->SetBinLabel(6,">1 Ass. Tight Tracks at Vtx");
   
-  TH1D *variousEffDEN = new TH1D("variousEffDEN","",6,0,6);
+  TH1D *JPTvariousEffDEN = new TH1D("JPTvariousEffDEN","",6,0,6);
 
-  TH1D *evtNumber = new TH1D("evtNumber","",7,0,7);
-  evtNumber->SetTitle(dataset);
-  evtNumber->GetXaxis()->SetBinLabel(1,"Evt");
-  evtNumber->GetXaxis()->SetBinLabel(2,"BPTX");
-  evtNumber->GetXaxis()->SetBinLabel(3,"BSC");
-  evtNumber->GetXaxis()->SetBinLabel(4,"HALO");
-  evtNumber->GetXaxis()->SetBinLabel(5,"PHYSBIT");
-  evtNumber->GetXaxis()->SetBinLabel(6,"Monster");
-  evtNumber->GetXaxis()->SetBinLabel(7,"PV");
+  TH1D *JPTevtNumber = new TH1D("JPTevtNumber","",7,0,7);
+  JPTevtNumber->SetTitle(dataset);
+  JPTevtNumber->GetXaxis()->SetBinLabel(1,"evt");
+  JPTevtNumber->GetXaxis()->SetBinLabel(2,"BPTX");
+  JPTevtNumber->GetXaxis()->SetBinLabel(3,"BSC");
+  JPTevtNumber->GetXaxis()->SetBinLabel(4,"HALO");
+  JPTevtNumber->GetXaxis()->SetBinLabel(5,"PHYSBIT");
+  JPTevtNumber->GetXaxis()->SetBinLabel(6,"Monster");
+  JPTevtNumber->GetXaxis()->SetBinLabel(7,"PV");
 
   
-  TH1D *cutEff = new TH1D("cutEff","",7,0,7);
-  cutEff->SetTitle(dataset);
-  cutEff->GetXaxis()->SetBinLabel(1,"Good run evts");
-  cutEff->GetXaxis()->SetBinLabel(2,"BPTX");
-  cutEff->GetXaxis()->SetBinLabel(3,"BSC");
-  cutEff->GetXaxis()->SetBinLabel(4,"HALO");
-  cutEff->GetXaxis()->SetBinLabel(5,"PHYSBIT");
-  cutEff->GetXaxis()->SetBinLabel(6,"Monster");
-  cutEff->GetXaxis()->SetBinLabel(7,"PV"); 
+  TH1D *JPTcutEff = new TH1D("JPTcutEff","",7,0,7);
+  JPTcutEff->SetTitle(dataset);
+  JPTcutEff->GetXaxis()->SetBinLabel(1,"Good run evts");
+  JPTcutEff->GetXaxis()->SetBinLabel(2,"BPTX");
+  JPTcutEff->GetXaxis()->SetBinLabel(3,"BSC");
+  JPTcutEff->GetXaxis()->SetBinLabel(4,"HALO");
+  JPTcutEff->GetXaxis()->SetBinLabel(5,"PHYSBIT");
+  JPTcutEff->GetXaxis()->SetBinLabel(6,"Monster");
+  JPTcutEff->GetXaxis()->SetBinLabel(7,"PV"); 
   
-  TH1D *jetNumber = new TH1D("jetNumber","",9,0,9);
-  jetNumber->SetTitle(dataset);
-  jetNumber->GetXaxis()->SetBinLabel(1,"Jet");
-  jetNumber->GetXaxis()->SetBinLabel(2,"BPTX");
-  jetNumber->GetXaxis()->SetBinLabel(3,"BSC");
-  jetNumber->GetXaxis()->SetBinLabel(4,"HALO");
-  jetNumber->GetXaxis()->SetBinLabel(5,"PHYSBIT");
-  jetNumber->GetXaxis()->SetBinLabel(6,"Monster");
-  jetNumber->GetXaxis()->SetBinLabel(7,"PV");
+  TH1D *JPTjetNumber = new TH1D("JPTjetNumber","",9,0,9);
+  JPTjetNumber->SetTitle(dataset);
+  JPTjetNumber->GetXaxis()->SetBinLabel(1,"Jet");
+  JPTjetNumber->GetXaxis()->SetBinLabel(2,"BPTX");
+  JPTjetNumber->GetXaxis()->SetBinLabel(3,"BSC");
+  JPTjetNumber->GetXaxis()->SetBinLabel(4,"HALO");
+  JPTjetNumber->GetXaxis()->SetBinLabel(5,"PHYSBIT");
+  JPTjetNumber->GetXaxis()->SetBinLabel(6,"Monster");
+  JPTjetNumber->GetXaxis()->SetBinLabel(7,"PV");
   // after all trigger/PV/Monster .
-  jetNumber->GetXaxis()->SetBinLabel(8,"All + #eta, p_{T} cuts");
-  jetNumber->GetXaxis()->SetBinLabel(9,"All + Lose Cleaning");
+  JPTjetNumber->GetXaxis()->SetBinLabel(8,"All + #eta, p_{T} cuts");
+  JPTjetNumber->GetXaxis()->SetBinLabel(9,"All + Lose Cleaning");
  
  
   // fake jets -----------------------
@@ -726,6 +740,12 @@ void analysisClass::Loop()
    
    for (Long64_t jentry=0; jentry<nentries;jentry++) 
      {
+       
+
+       // ATTENTION!!!
+       // remove this again for full stats...
+//        if(jentry>90000) break;
+
        Long64_t ientry = LoadTree(jentry);
        if (ientry < 0) break;
        nb = fChain->GetEntry(jentry);   
@@ -803,7 +823,9 @@ void analysisClass::Loop()
 
 
     
-      if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
+       if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
+
+
      // ---------------------------------------------------------------
      //# Reco-based Selection
       //## pass_MonsterTRKEventVeto - "Monster Events" Tracker Filter
@@ -956,6 +978,10 @@ void analysisClass::Loop()
 	      JPTtrackPt->Fill(JPTak5JetAllPionsPt->at(i));
 	    }
 
+	    // fill the MET/sumEt
+	    if(int(JPTak5JetpT->size())>=1) {
+	      JPTmetOverSumEt->Fill(tcmetPt->at(0)/tcmetSumEt->at(0));
+	    }
 
 
 	    if(fabs(JPTak5JetEta->at(j))<barreleta){
@@ -1022,7 +1048,9 @@ void analysisClass::Loop()
 	  
 	  if(fabs(JPTak5JetEta->at(index_jet1))<endcapeta_dijet && (JPTak5JetpT->at(index_jet1) * jcScale0 )>ptMinDijet && fabs(JPTak5JetEta->at(index_jet2))<endcapeta_dijet && (JPTak5JetpT->at(index_jet2) * jcScale1) >ptMinDijet){   //jc
 	    //i increase 
-	    //  NJPTindijets=+2;
+
+// 	    NJPTindijets=+2;
+
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
 	    //fill only 
 	    if(vPtEtaPhiE.size()>1 && (tcmetPt->at(0)/tcmetSumEt->at(0))<cut_metbysumet 
@@ -1043,7 +1071,7 @@ void analysisClass::Loop()
 	      dijetJPTdphiJIDloose->Fill(JPTdphi);
 	    }
 
-	    if (JPTdphi > cut_DiJetDeltaPhi_min){
+	    if (JPTdphi >cut_CaloDiJetDeltaPhi_min) {
 	      NJPTindijets=+2;
 	      // fake jet study
 	      double dijcScale;
@@ -1064,6 +1092,13 @@ void analysisClass::Loop()
 		}
 	      }
 	      
+	      // calculate the invariant mass of the di-jet system
+	      JPTjet1LorentzVector.SetPtEtaPhiE(JPTak5JetpT->at(index_jet1)*jcScale0,JPTak5JetEta->at(index_jet1),JPTak5JetPhi->at(index_jet1),JPTak5JetEnergy->at(index_jet1)*jcScale0);
+	      JPTjet2LorentzVector.SetPtEtaPhiE(JPTak5JetpT->at(index_jet2)*jcScale1,JPTak5JetEta->at(index_jet2),JPTak5JetPhi->at(index_jet2),JPTak5JetEnergy->at(index_jet2)*jcScale1);
+	      JPTdijetLorentzVector=JPTjet1LorentzVector+JPTjet2LorentzVector;
+	      
+ 	      JPTdijetinvmass->Fill(JPTdijetLorentzVector.M());
+
 	      // basic di-jet variables 
 	      dijetJPTptall1->Fill(JPTak5JetpT->at(index_jet1) * jcScale0);  //jc
 	      dijetJPTptall2->Fill(JPTak5JetpT->at(index_jet2) * jcScale1);   //jc
@@ -1128,7 +1163,11 @@ void analysisClass::Loop()
 		  dijetJPTtrackPtIDloose->Fill(JPTak5JetAllPionsPt->at(i));
 		}
 
+		// invariant mass
+ 		JPTdijetinvmassIDloose->Fill(JPTdijetLorentzVector.M());
 
+		// fill the MET/sumEt
+		dijetJPTmetOverSumEtIDloose->Fill(tcmetPt->at(0)/tcmetSumEt->at(0));
 
 
 		//now loop on jets and count how many JIDLOOSE jets with pT>8 are in each event
@@ -1175,8 +1214,8 @@ void analysisClass::Loop()
 	NJPTindijetsTOT+=NJPTindijets;
 	NJPTindijetsJetIDLooseTOT+=NJPTindijetsJetIDLoose;
 
-      } //vertex monster event
-      }// techbits
+	} //vertex monster event
+       }// techbits
      } // End loop over events
    
 
@@ -1186,72 +1225,72 @@ void analysisClass::Loop()
    //efficiency histos
    if(NJetsTOT>0){
      cout<<"events passed for thrust calculation: "<<finalDijetGoodEvents<<endl;
-     variousEff->SetBinContent(1,(1.*NJPTJetIDLooseTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(2,(1.*NJPTJetIDTightTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(3,(1.*NAssTrksHighPurityAtCaloTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(4,(1.*NAssTrksTightAtCaloTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(5,(1.*NAssTrksHighPurityAtVtxTOT/(1.*NJetsTOT)));
-     variousEff->SetBinContent(6,(1.*NAssTrksTightAtVtxTOT/(1.*NJetsTOT)));
+     JPTvariousEff->SetBinContent(1,(1.*NJPTJetIDLooseTOT/(1.*NJetsTOT)));
+     JPTvariousEff->SetBinContent(2,(1.*NJPTJetIDTightTOT/(1.*NJetsTOT)));
+     JPTvariousEff->SetBinContent(3,(1.*NAssTrksHighPurityAtCaloTOT/(1.*NJetsTOT)));
+     JPTvariousEff->SetBinContent(4,(1.*NAssTrksTightAtCaloTOT/(1.*NJetsTOT)));
+     JPTvariousEff->SetBinContent(5,(1.*NAssTrksHighPurityAtVtxTOT/(1.*NJetsTOT)));
+     JPTvariousEff->SetBinContent(6,(1.*NAssTrksTightAtVtxTOT/(1.*NJetsTOT)));
 
-     variousEffDEN->SetBinContent(1,((1.*NJetsTOT)));
-     variousEffDEN->SetBinContent(2,((1.*NJetsTOT)));
-     variousEffDEN->SetBinContent(3,((1.*NJetsTOT)));
-     variousEffDEN->SetBinContent(4,((1.*NJetsTOT)));
-     variousEffDEN->SetBinContent(5,((1.*NJetsTOT)));
-     variousEffDEN->SetBinContent(6,((1.*NJetsTOT)));
+     JPTvariousEffDEN->SetBinContent(1,((1.*NJetsTOT)));
+     JPTvariousEffDEN->SetBinContent(2,((1.*NJetsTOT)));
+     JPTvariousEffDEN->SetBinContent(3,((1.*NJetsTOT)));
+     JPTvariousEffDEN->SetBinContent(4,((1.*NJetsTOT)));
+     JPTvariousEffDEN->SetBinContent(5,((1.*NJetsTOT)));
+     JPTvariousEffDEN->SetBinContent(6,((1.*NJetsTOT)));
 
    }
 
    //efficiency histos
    if(NJPTindijetsTOT>0){
-     variousEffindijets->SetBinContent(1,(1.*NJPTindijetsJetIDLooseTOT/(1.*NJPTindijetsTOT)));
-     variousEffindijets->SetBinContent(2,(1.*NindijetsJetIDTightTOT/(1.*NJPTindijetsTOT)));
-     variousEffindijets->SetBinContent(3,(1.*NindijetsAssTrksHighPurityAtCaloTOT/(1.*NJPTindijetsTOT)));
-     variousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksTightAtCaloTOT/(1.*NJPTindijetsTOT)));
-     variousEffindijets->SetBinContent(5,(1.*NindijetsAssTrksHighPurityAtVtxTOT/(1.*NJPTindijetsTOT)));
-     variousEffindijets->SetBinContent(6,(1.*NindijetsAssTrksTightAtVtxTOT/(1.*NJPTindijetsTOT)));
+     JPTvariousEffindijets->SetBinContent(1,(1.*NJPTindijetsJetIDLooseTOT/(1.*NJPTindijetsTOT)));
+     JPTvariousEffindijets->SetBinContent(2,(1.*NindijetsJetIDTightTOT/(1.*NJPTindijetsTOT)));
+     JPTvariousEffindijets->SetBinContent(3,(1.*NindijetsAssTrksHighPurityAtCaloTOT/(1.*NJPTindijetsTOT)));
+     JPTvariousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksTightAtCaloTOT/(1.*NJPTindijetsTOT)));
+     JPTvariousEffindijets->SetBinContent(5,(1.*NindijetsAssTrksHighPurityAtVtxTOT/(1.*NJPTindijetsTOT)));
+     JPTvariousEffindijets->SetBinContent(6,(1.*NindijetsAssTrksTightAtVtxTOT/(1.*NJPTindijetsTOT)));
 
-     variousEffindijetsDEN->SetBinContent(1,((1.*NJetsTOT)));
-     variousEffindijetsDEN->SetBinContent(2,((1.*NJetsTOT)));
-     variousEffindijetsDEN->SetBinContent(3,((1.*NJetsTOT)));
-     variousEffindijetsDEN->SetBinContent(4,((1.*NJetsTOT)));
-     variousEffindijetsDEN->SetBinContent(5,((1.*NJetsTOT)));
-     variousEffindijetsDEN->SetBinContent(6,((1.*NJetsTOT)));
+     JPTvariousEffindijetsDEN->SetBinContent(1,((1.*NJetsTOT)));
+     JPTvariousEffindijetsDEN->SetBinContent(2,((1.*NJetsTOT)));
+     JPTvariousEffindijetsDEN->SetBinContent(3,((1.*NJetsTOT)));
+     JPTvariousEffindijetsDEN->SetBinContent(4,((1.*NJetsTOT)));
+     JPTvariousEffindijetsDEN->SetBinContent(5,((1.*NJetsTOT)));
+     JPTvariousEffindijetsDEN->SetBinContent(6,((1.*NJetsTOT)));
 
 
    }
    if(goodevts>0){ 
-     cutEff->SetMaximum(1.3);
-     cutEff->SetBinContent(1,1 );
-     cutEff->SetBinContent(2,(1.*bptxevt)/(1*goodevts));
-     cutEff->SetBinContent(3,(1.*bscevt)/(1*goodevts));
-     cutEff->SetBinContent(4,(1.*beamhaloevt)/(1*goodevts));
-     cutEff->SetBinContent(5,(1.*phybitevt)/(1*goodevts));
-     cutEff->SetBinContent(6,(1.*trckevt)/(1 *goodevts));
-     cutEff->SetBinContent(7,(1.*pvevt)/(1*goodevts)); 
+     JPTcutEff->SetMaximum(1.3);
+     JPTcutEff->SetBinContent(1,1 );
+     JPTcutEff->SetBinContent(2,(1.*bptxevt)/(1*goodevts));
+     JPTcutEff->SetBinContent(3,(1.*bscevt)/(1*goodevts));
+     JPTcutEff->SetBinContent(4,(1.*beamhaloevt)/(1*goodevts));
+     JPTcutEff->SetBinContent(5,(1.*phybitevt)/(1*goodevts));
+     JPTcutEff->SetBinContent(6,(1.*trckevt)/(1 *goodevts));
+     JPTcutEff->SetBinContent(7,(1.*pvevt)/(1*goodevts)); 
    }
    
   
-   jetNumber->SetBinContent(1,  alljets );
-   jetNumber->SetBinContent(2,   bptxjets);
-   jetNumber->SetBinContent(3,   bscjets );
-   jetNumber->SetBinContent(4,   beamhalojets );
-   jetNumber->SetBinContent(5,   phybitjets );
-   jetNumber->SetBinContent(6,   trckjets );
-   jetNumber->SetBinContent(7,   pvjets ); 
-   jetNumber->SetBinContent(8,NJetsTOT );
-   jetNumber->SetBinContent(9,NJPTJetIDLooseTOT );
+   JPTjetNumber->SetBinContent(1,  alljets );
+   JPTjetNumber->SetBinContent(2,   bptxjets);
+   JPTjetNumber->SetBinContent(3,   bscjets );
+   JPTjetNumber->SetBinContent(4,   beamhalojets );
+   JPTjetNumber->SetBinContent(5,   phybitjets );
+   JPTjetNumber->SetBinContent(6,   trckjets );
+   JPTjetNumber->SetBinContent(7,   pvjets ); 
+   JPTjetNumber->SetBinContent(8,NJetsTOT );
+   JPTjetNumber->SetBinContent(9,NJPTJetIDLooseTOT );
    
-   evtNumber->SetBinContent(1,  goodevts );
-   evtNumber->SetBinContent(2,   bptxevt);
-   evtNumber->SetBinContent(3,   bscevt );
-   evtNumber->SetBinContent(4,   beamhaloevt );
-   evtNumber->SetBinContent(5,   phybitevt );
-   evtNumber->SetBinContent(6,   trckevt );
-   evtNumber->SetBinContent(7,   pvevt ); 
+   JPTevtNumber->SetBinContent(1,  goodevts );
+   JPTevtNumber->SetBinContent(2,   bptxevt);
+   JPTevtNumber->SetBinContent(3,   bscevt );
+   JPTevtNumber->SetBinContent(4,   beamhaloevt );
+   JPTevtNumber->SetBinContent(5,   phybitevt );
+   JPTevtNumber->SetBinContent(6,   trckevt );
+   JPTevtNumber->SetBinContent(7,   pvevt ); 
 
-   //  jetNumber->SetBinContent(3,NindijetsTOT ) ;
-   // jetNumber->SetBinContent(4,NindijetsJetIDLooseTOT );
+   //  JPTjetNumber->SetBinContent(3,NindijetsTOT ) ;
+   // JPTjetNumber->SetBinContent(4,NindijetsJetIDLooseTOT );
       cout <<"###################################"       << endl;
       cout <<"Good Events " << goodevts      <<" Selected events="<< pvevt<<  endl;
       cout <<" NJPTindijets " <<  NJPTindijetsTOT /2 << "  NJPTindijetsLoose" <<NJPTindijetsJetIDLooseTOT /2<< endl;
@@ -1307,13 +1346,13 @@ void analysisClass::Loop()
    JPTfhpddijets->Write();
    JPTfrbxdijets->Write();
    JPTn90hitsdijets->Write();
-   variousEff->Write();
-   variousEffDEN->Write();
-   cutEff->Write();
-   jetNumber->Write(); 
-   evtNumber->Write();
-   variousEffindijets->Write();
-   variousEffindijetsDEN->Write();
+   JPTvariousEff->Write();
+   JPTvariousEffDEN->Write();
+   JPTcutEff->Write();
+   JPTjetNumber->Write(); 
+   JPTevtNumber->Write();
+   JPTvariousEffindijets->Write();
+   JPTvariousEffindijetsDEN->Write();
    JPTresemffakejets->Write();
    JPTfhpdfakejets->Write();
    JPTn90hitsfakejets->Write();
@@ -1324,7 +1363,7 @@ void analysisClass::Loop()
    dijetJPTphiJIDloose->Write();
    jetJIDlooseeffJPTeta->Write();
    jetJIDlooseeffJPTphi->Write();
-   jetNumber->Write();
+   JPTjetNumber->Write();
 
    JPTelectronNumber->Write();
    JPTelectronPt->Write();
@@ -1344,6 +1383,11 @@ void analysisClass::Loop()
    dijetJPTtrackNumberIDloose->Write();
    dijetJPTtrackPtIDloose->Write();
 
+   JPTdijetinvmass->Write();
+   JPTdijetinvmassIDloose->Write();
+   JPTmetOverSumEt->Write();
+   dijetJPTmetOverSumEtIDloose->Write();
+
+
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
-
