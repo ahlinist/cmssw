@@ -17,7 +17,8 @@ process.GlobalTag.globaltag = "GR_R_35X_V7::All"
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root'
-        'root://pcmssd12.cern.ch//data/gpetrucc/7TeV/jpsi/CS_Onia_Run133321_26238844-9749-DF11-B896-003048D47A64.root'
+        #'root://pcmssd12.cern.ch//data/gpetrucc/7TeV/jpsi/CS_Onia_Run133321_26238844-9749-DF11-B896-003048D47A64.root'
+        '/store/data/Commissioning10/MinimumBias/USER/v8/000/133/321/269F73D7-9C49-DF11-9251-003048D46236.root',
    )
 )
 
@@ -31,6 +32,8 @@ process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
 process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
 # bsc minbias and veto on beam halo
 process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39)')
+# set the L1MinBiasVetoBeamHalo bit
+process.L1MinBiasVetoBeamHalo = cms.Path(process.hltLevel1GTSeed)
 
 # this is for filtering on HLT physics bit
 process.hltPhysicsDeclared = cms.EDFilter("HLTHighLevel",
@@ -41,6 +44,8 @@ process.hltPhysicsDeclared = cms.EDFilter("HLTHighLevel",
                                  andOr = cms.bool(True),
                                  throw = cms.bool(False)  # Avoid crashes if the job happens to process runs that don't have the HLT_PhysicsDeclared (e.g. 122294)
                                  )
+# copy the PhysicsDeclared bit
+process.PhysicsDeclared = cms.Path(process.hltPhysicsDeclared)
 
 # this is for filtering on HLT MinBiasBSC bit
 process.hltMinBiasBSC = cms.EDFilter("HLTHighLevel",
@@ -51,6 +56,8 @@ process.hltMinBiasBSC = cms.EDFilter("HLTHighLevel",
                                      andOr = cms.bool(True),
                                      throw = cms.bool(True)
                                      )
+# copy the MinBiasBSC bit
+process.MinBiasBSC = cms.Path(process.hltMinBiasBSC)
 
 # filter on good vertex
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
@@ -59,7 +66,9 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            maxAbsZ = cms.double(15),	
                                            maxd0 = cms.double(2)	
                                            )
-
+# set the PrimaryVertex bit
+process.PrimaryVertex = cms.Path(process.primaryVertexFilter)
+ 
 # filter to remove scraping ("monster") events
 process.scrapingFilter = cms.EDFilter("FilterOutScraping",
                                       applyfilter = cms.untracked.bool(True),
@@ -67,6 +76,8 @@ process.scrapingFilter = cms.EDFilter("FilterOutScraping",
                                       numtrack = cms.untracked.uint32(10),
                                       thresh = cms.untracked.double(0.25)
                                       )
+# set the Scraping bit
+process.Scraping = cms.Path(process.scrapingFilter)
 
 ###############################################
 
@@ -87,10 +98,10 @@ process.selectedEvents = cms.EDFilter("CandViewCountFilter",
 ) 
 
 ### path
-process.p = cms.Path(
+process.Onia2MuMuPatTrkTrk = cms.Path(
         # process.hltLevel1GTSeed +
         # process.hltPhysicsDeclared +
-        process.hltMinBiasBSC +
+        # process.hltMinBiasBSC +
         # process.primaryVertexFilter +
         # process.scrapingFilter +
         process.patMuonSequence +     # produce PAT muons for Onia2MuMu (includes merging with CaloMuons)
@@ -101,7 +112,7 @@ process.p = cms.Path(
 
 ### output
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('PAT_FirstData2010.root'),
+    fileName = cms.untracked.string('onia2MuMuPATData.root'),
     outputCommands = cms.untracked.vstring('drop *',
         'keep patCompositeCandidates_*__SkimmingOnia2MuMuPAT', ## PAT di-muons
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',        ## All PAT muons (note: not necessary if you use only the di-muons)
@@ -111,7 +122,7 @@ process.out = cms.OutputModule("PoolOutputModule",
         #'keep *_patTrigger_*_*',                               ## HLT info, per object (BIG. Keep only when debugging trigger match)
     ),
     ## Uncomment to activate skimming!
-    SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
+    SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('Onia2MuMuPatTrkTrk') )
 )
 process.e = cms.EndPath(process.out)
 
