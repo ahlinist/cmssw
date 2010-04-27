@@ -375,7 +375,11 @@ void ChamberMap::drawStats(TH2*& me) {
     unsigned int legendBoxIndex = 2;
     std::string meTitle(me->GetTitle());
 
-    if (legend == 0x10) {
+    tStatusTitle->Draw();
+    tLegendTitle->Draw();
+    
+    // Only standby plus possibly masked?
+    if (legend == 0x20 || legend == 0x30) {
 
         meTitle.append(" (STANDBY)");
         me->SetTitle(meTitle.c_str());
@@ -395,16 +399,12 @@ void ChamberMap::drawStats(TH2*& me) {
             me->SetTitle(statusStr);
         }
 
-        tStatusTitle->Draw();
-
         if (status >= 0.75) {
             printLegendBox(0, "GOOD", COLOR_GREEN);
         } else {
             printLegendBox(0, "BAD", COLOR_RED);
         }
 
-        tLegendTitle->Draw();
-    
         if (legend.test(0)) printLegendBox(legendBoxIndex++, "OK/No Data", COLOR_WHITE);
         if (legend.test(1)) printLegendBox(legendBoxIndex++, "OK/Data", COLOR_GREEN);
         if (legend.test(2)) printLegendBox(legendBoxIndex++, "Error/Hot", COLOR_RED);
