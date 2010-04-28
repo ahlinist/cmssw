@@ -10,9 +10,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: BoolEventSelector.h,v 1.2 2009/02/24 14:18:31 veelken Exp $
+ * $Id: BoolEventSelector.h,v 1.1 2009/04/13 13:57:50 veelken Exp $
  *
  */
 
@@ -20,7 +20,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 class BoolEventSelector : public EventSelectorBase
 {

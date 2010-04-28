@@ -7,9 +7,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.1 $
+  * \version $Revision: 1.2 $
   *
-  * $Id: NotEventSelector.h,v 1.1 2009/03/20 17:05:18 veelken Exp $
+  * $Id: NotEventSelector.h,v 1.2 2010/01/07 13:12:12 veelken Exp $
   *
   */
 
@@ -17,7 +17,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 class NotEventSelector : public EventSelectorBase
 {
