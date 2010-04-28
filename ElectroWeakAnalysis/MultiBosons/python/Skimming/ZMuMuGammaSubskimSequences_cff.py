@@ -23,3 +23,9 @@ MuMuGammasOneTrackSequence = cms.Sequence(
   MuMuGammasOneTrack *
   MuMuGammasOneTrackCountFilter
 )
+
+MuMuGammasAllSequence = cms.Sequence(
+  MuMuGammasSequence +
+  MuMuGammasGlobalSequence +
+  MuMuGammasOneTrackSequence
+)
