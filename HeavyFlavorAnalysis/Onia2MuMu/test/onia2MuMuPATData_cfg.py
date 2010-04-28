@@ -12,13 +12,12 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 ### global tag
 process.GlobalTag.globaltag = "GR_R_35X_V7::All"
+#process.GlobalTag.globaltag = "GR10_P_V5::All"
 
 ### source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root'
-        #'root://pcmssd12.cern.ch//data/gpetrucc/7TeV/jpsi/CS_Onia_Run133321_26238844-9749-DF11-B896-003048D47A64.root'
-        '/store/data/Commissioning10/MinimumBias/USER/v8/000/133/321/269F73D7-9C49-DF11-9251-003048D46236.root',
+        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root'
    )
 )
 
@@ -31,7 +30,7 @@ process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_
 process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
 process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
 # bsc minbias and veto on beam halo
-process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39)')
+process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39) AND NOT ((42 AND NOT 43) OR (43 AND NOT 42))')
 # set the L1MinBiasVetoBeamHalo bit
 process.L1MinBiasVetoBeamHalo = cms.Path(process.hltLevel1GTSeed)
 
@@ -99,11 +98,11 @@ process.selectedEvents = cms.EDFilter("CandViewCountFilter",
 
 ### path
 process.Onia2MuMuPatTrkTrk = cms.Path(
-        # process.hltLevel1GTSeed +
-        # process.hltPhysicsDeclared +
-        # process.hltMinBiasBSC +
-        # process.primaryVertexFilter +
-        # process.scrapingFilter +
+        process.hltLevel1GTSeed +
+        process.hltPhysicsDeclared +
+        process.hltMinBiasBSC +
+        process.primaryVertexFilter +
+        process.scrapingFilter +
         process.patMuonSequence +     # produce PAT muons for Onia2MuMu (includes merging with CaloMuons)
         process.onia2MuMuPatTrkTrk +  # make J/Psi's (inclusively down to tracker+tracker)
         process.selectedEvents        # select events with J/Psi's
@@ -112,12 +111,12 @@ process.Onia2MuMuPatTrkTrk = cms.Path(
 
 ### output
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('onia2MuMuPATData.root'),
+    fileName = cms.untracked.string('myfile.root'),
     outputCommands = cms.untracked.vstring('drop *',
         'keep patCompositeCandidates_*__SkimmingOnia2MuMuPAT', ## PAT di-muons
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',        ## All PAT muons (note: not necessary if you use only the di-muons)
         'keep *_offlinePrimaryVertices_*_*',                   ## Primary vertices: you want these to compute impact parameters
-        'keep *_offlineBeamSpot_*_*',                          ## Beam spot: you want this for the same reason
+        'keep *_offlineBeamSpot_*_*',                          ## Beam spot: you want this for the same reason                                   
         'keep edmTriggerResults_TriggerResults_*_*',           ## HLT info, per path (cheap)
         'keep l1extraL1MuonParticles_l1extraParticles_*_*',    ## L1 info (cheap)
         #'keep *_patTrigger_*_*',                               ## HLT info, per object (BIG. Keep only when debugging trigger match)
