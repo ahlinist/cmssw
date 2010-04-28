@@ -3,7 +3,6 @@
 <use name=FWCore/Framework>
 <use name=FWCore/PluginManager>
 <use name=FWCore/ParameterSet>
-<use name=SimDataFormats/HepMCProduct>
 <use name=SimTracker/TrackAssociation>
 <use name=DataFormats/Candidate>
 <use name=DataFormats/TrackReco>
@@ -18,19 +17,20 @@
 <use name=DataFormats/HLTReco>
 <use name=DataFormats/L1Trigger>
 <use name=DataFormats/L1GlobalTrigger>
-<use name=hepmc> 
-<use name=heppdt>
-<use name=root>
 <use name=TrackingTools/IPTools>
 <use name=TrackingTools/Records>
+<use name=SimTracker/Records>
 <use name=TrackingTools/TransientTrack>
+<use name=RecoVertex/TrimmedKalmanVertexFinder> 
+<use name="CondFormats/DataRecord">
+<use name="CondFormats/L1TObjects">
+<use name="CondFormats/RunInfo">
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=HeavyFlavorAnalysisInclB>
    <use name=FWCore/Framework>
    <use name=FWCore/PluginManager>
    <use name=FWCore/ParameterSet>
-   <use name=SimDataFormats/HepMCProduct>
    <use name=DataFormats/Candidate>
    <use name=DataFormats/TrackReco>
    <use name=DataFormats/TrackingRecHit>
@@ -46,10 +46,17 @@
    <use name=DataFormats/HLTReco>
    <use name=DataFormats/L1Trigger>
    <use name=DataFormats/L1GlobalTrigger>
+   <use name="CondFormats/DataRecord">
+   <use name="CondFormats/L1TObjects">
+   <use name="CondFormats/RunInfo">
+   <use name=RecoVertex/TrimmedKalmanVertexFinder>
    <use name=hepmc>
    <use name=heppdt> 
    <use name=clhep>
    <use name=TrackingTools/IPTools>
    <use name=TrackingTools/Records>
+   <use name=SimTracker/Records>
    <use name=TrackingTools/TransientTrack>
 </export>
+
+
