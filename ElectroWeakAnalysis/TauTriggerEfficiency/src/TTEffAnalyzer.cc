@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.44 2010/03/29 07:46:05 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.45 2010/04/19 08:29:41 slehti Exp $
 //
 //
 
@@ -183,7 +183,7 @@ void TTEffAnalyzer::loop(const edm::Event& iEvent,const edm::EventSetup& iSetup,
     fill(*particle,i);
 
     // Call individual analyzers
-    _L1analyzer.fill(iEvent, *particle);
+    _L1analyzer.fill(iEvent,iSetup, *particle);
     _L2analyzer.fill(iEvent,iSetup, *particle);
     _L25and3analyzer.fill(iEvent, *particle);
 

@@ -1,6 +1,7 @@
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -26,6 +27,8 @@
 #include "DataFormats/L1GlobalCaloTrigger/interface/L1GctJetCand.h"
 #include "DataFormats/L1CaloTrigger/interface/L1CaloRegion.h"
 
+#include "CondFormats/L1TObjects/interface/L1GctJetFinderParams.h"
+#include "CondFormats/DataRecord/interface/L1GctJetFinderParamsRcd.h"
 
 #include <TTree.h>
 #include <TF1.h>
@@ -138,11 +141,11 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   _HltEvtCnt = 0;
 }
 
-void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Candidate& tau) {
-        fill(iEvent,tau.p4());
+void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup& iSetup, const reco::Candidate& tau) {
+  fill(iEvent, iSetup, tau.p4());
 }
 
-void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector& tau) {
+void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup& iSetup, const LorentzVector& tau) {
 
   // Reset variables
   jetPt = 0.0;
@@ -262,8 +265,10 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
     }
   }
 
-  if(hasL1Jet)
-    fillCaloRegion(iEvent, jetRegionId);
+  if(hasL1Jet) {
+    //std::cout << "L1Analyzer " << __LINE__ << ": L1 jet et " << jetEt << std::endl;
+    fillCaloRegion(iEvent, iSetup, jetRegionId);
+  }
       
 
   // Store L1 trigger bits
@@ -387,7 +392,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
 
 } 
 
-void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, unsigned regionId) {
+void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm::EventSetup& iSetup, unsigned regionId) {
   edm::Handle<std::vector<L1CaloRegion> > caloRegionHandle;
   if(!iEvent.getByLabel(L1CaloRegionSource, caloRegionHandle)) {
     edm::LogWarning("TTEffAnalyzer") << "No L1CaloRegion! with label " << L1CaloRegionSource << std::endl;
@@ -428,6 +433,22 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, unsigned 
     return;
   }
 
+  // Effectively this is what is done in L1Trigger/GlobalCaloTrigger/src/L1GctHardwareJetFinder.cc
+  // and L1Trigger/GlobalCaloTrigger/plugins/L1GctEmulator.cc
+  edm::ESHandle< L1GctJetFinderParams > jfPars ;
+  iSetup.get< L1GctJetFinderParamsRcd >().get(jfPars);
+  double threshold = isolationThreshold/jfPars->getRgnEtLsbGeV(); // transform GeV to gct internal units
+  /*
+  std::cout << "L1Analyzer " << __LINE__ 
+            << ": threshold gct " << jfPars->getTauIsoEtThresholdGct()
+            << " GeV " << jfPars->getTauIsoEtThresholdGeV()
+            << " rgnEtLsb " << jfPars->getRgnEtLsbGeV()
+            << " our threshold GeV " << isolationThreshold
+            << " gct " << static_cast<unsigned>(isolationThreshold/jfPars->getRgnEtLsbGeV())
+            << std::endl;
+  */
+
+
   hasTauVeto = found->tauVeto();
 
   unsigned eta = found->gctEta();
@@ -455,7 +476,7 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, unsigned 
                 << " tauVeto " << iter->tauVeto()
                 << std::endl;
       */
-      if(iter->et() < isolationThreshold)
+      if(iter->et() < threshold)
         ++l1Isolation;
       hasTauVeto = hasTauVeto || found->tauVeto();
     }
