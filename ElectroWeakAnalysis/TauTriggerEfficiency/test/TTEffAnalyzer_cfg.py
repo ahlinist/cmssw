@@ -3,6 +3,14 @@ import copy
 
 process = cms.Process("TTEff")
 
+### Add HLT stuff (it may contain maxEvents and MessageLogger, so it
+### should be loaded first before or maxEvents nad MessageLogger would
+### be reset)
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfg")
+process.prefer("magfield")
+process.hltGctDigis.hltMode = cms.bool(False) # Making L1CaloRegions
+
+
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(1000)
 )
@@ -26,13 +34,6 @@ process.source = cms.Source("PoolSource",
 	'/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/133/532/EC93873A-D74B-DF11-A1B9-00E08179185D.root'
     )
 )
-
-
-### Add HLT stuff
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfg")
-process.prefer("magfield")
-process.hltGctDigis.hltMode = cms.bool(False) # Making L1CaloRegions
-
 
 process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi")
 from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
