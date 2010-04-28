@@ -3,11 +3,16 @@
 
 void ntplValidation(){
 
-	TFile* fIN = TFile::Open("tteffAnalysis-pftau.root");
+//	TFile* fIN = TFile::Open("tteffAnalysis-pftau.root");
+//	TFile* fIN = TFile::Open("/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis-pftau_MinimumBias_Commissioning10_GOODCOLL_v8_RAW_RECO_run2.root");
+	TFile* fIN = TFile::Open("tteffAnalysis-l1cen.root");
 	fIN->ls();
 	cout << " TTEffTree entries " << TTEffTree->GetEntries() << endl;
 
 	TTree* TTEffTree = (TTree*)fIN->Get("TTEffTree");
+
+	int runMin = 0,
+            runMax = 0;
 
 	TObjArray* branches = TTEffTree->GetListOfBranches();
 	//GetNbranches()
@@ -41,6 +46,10 @@ void ntplValidation(){
 			if(htemp->GetBinContent(iBin) != 0) {
 				nFilledBins++;
 				iNonEmptyBin = iBin;
+				if(string(branches->At(i)->GetName()) == "run"){
+					if(runMin == 0) runMin = htemp->GetBinLowEdge(iBin);
+					runMax = htemp->GetBinLowEdge(iBin);
+				}
 			}
 		}
 		if(nFilledBins < 2){
@@ -50,5 +59,6 @@ void ntplValidation(){
 		}
 		cout << "Ok." << endl;
 	}
+	cout << "Run range " << runMin << " - " << runMax << endl;
 	exit(0);
 }
