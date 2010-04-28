@@ -383,17 +383,16 @@ drawJobConfigurator_AHtoMuTau.add(
     )
 )
 
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-    beforeCut = evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
-    evtSelDiMuPairZmumuHypothesisVeto,
-    plot = drawJobConfigEntry(
-	meName = 'DiTauCandidateCollinearApproxQuantities/CollinearApproxCompatibilityFitChi2_mZ',
-        title = "#Chi^{2}( M(Muon-Tau) == M_{Z} ) (after P_{#zeta} Cut)",
-        xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_chi2mZ_afterPzetaDiff"
-    )
-)
+##drawJobConfigurator_AHtoMuTau.add(
+##    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+##    beforeCut = evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
+##    plot = drawJobConfigEntry(
+##	meName = 'DiTauCandidateCollinearApproxQuantities/CollinearApproxCompatibilityFitChi2_mZ',
+##        title = "#Chi^{2}( M(Muon-Tau) == M_{Z} ) (after P_{#zeta} Cut)",
+##        xAxis = 'unlabeled',
+##        name = "cutFlowControlPlots_chi2mZ_afterPzetaDiff"
+##    )
+##)
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
