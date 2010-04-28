@@ -5,7 +5,7 @@
  * \class PFTauEfficiencyAssociator created : Wed Aug  5 11:34:55 PDT 2009
  * revised : , \author Evan K. Friis, (UC Davis)
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
  * Set of classes to produce a set of ValueMaps mapping pat::LookupTableRecords
  * containing estimated efficiency/fake rate to PFTaus for a collection of
@@ -13,7 +13,7 @@
  * jet width.  The methods to access the efficiencySource are abstract, and
  * must be implemented in the subclass. 
  *
- * $Id: PFTauEfficiencyAssociator.h,v 1.1 2009/11/04 21:53:12 friis Exp $
+ * $Id: PFTauEfficiencyAssociator.h,v 1.2 2009/11/20 23:18:20 friis Exp $
  *
  */
 
@@ -43,7 +43,6 @@ class PFTauEfficiencyAssociator : public EDProducer {
       virtual ~PFTauEfficiencyAssociator(){}
 
       void beginJob();
-      void beginJob(const EventSetup&); //22X compability 
       void produce(Event&, const EventSetup&);
 
       // Retrieve the expected efficiency for source _i given the kinematic variables.
