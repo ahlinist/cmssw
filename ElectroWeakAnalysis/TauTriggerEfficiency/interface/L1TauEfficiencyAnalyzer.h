@@ -32,12 +32,12 @@ class L1TauEfficiencyAnalyzer {
         ~L1TauEfficiencyAnalyzer();
 
         void Setup(const edm::ParameterSet&,TTree *l1tree);
-        void fill(const edm::Event&, const LorentzVector&);
-        void fill(const edm::Event&, const reco::Candidate&);
+        void fill(const edm::Event&, const edm::EventSetup&, const LorentzVector&);
+        void fill(const edm::Event&, const edm::EventSetup&, const reco::Candidate&);
 	double L1JetEtUncorr(const double corPt);
 
    private:
-        void fillCaloRegion(const edm::Event& iEvent, unsigned regionId);
+        void fillCaloRegion(const edm::Event& iEvent, const edm::EventSetup& iSetup, unsigned regionId);
 
         // Input parameters
         edm::InputTag L1extraTauJetSource;
