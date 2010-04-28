@@ -34,6 +34,7 @@
 #include <TF1.h>
 
 #include <string>
+#include<algorithm>
 
 namespace {
   class EtaPhiHelper {
@@ -115,7 +116,11 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   L1TauTriggerSource = iConfig.getParameter<edm::InputTag>("L1TauTriggerSource");
 
   jetMatchingCone = iConfig.getParameter<double>("L1JetMatchingCone");
-  isolationThreshold = iConfig.getParameter<unsigned>("L1IsolationThreshold");
+  isolationThresholds = iConfig.getParameter<std::vector<unsigned> >("L1IsolationThresholds");
+
+  if(isolationThresholds.size() == 0)
+    throw cms::Exception("Configuration") << "At least one item in L1IsolationThresholds is needed!" << std::endl;
+
 
   l1tree = trigtree;
 
@@ -126,12 +131,18 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("L1JetPhi", &jetPhi);
   l1tree->Branch("L1JetMatchDR", &jetMinDR);
   l1tree->Branch("L1TauVeto", &hasTauVeto);
-  l1tree->Branch("L1IsolationRegions", &l1Isolation);
   l1tree->Branch("hasMatchedL1Jet", &hasL1Jet);
   l1tree->Branch("hasMatchedL1TauJet", &hasL1TauJet);
   l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet);
   l1tree->Branch("L1MET", &met);
   l1tree->Branch("L1MHT", &mht);
+
+  l1Isolations.resize(isolationThresholds.size(), 0);
+  thresholds.resize(isolationThresholds.size(), 0.);
+  for(size_t i=0; i<isolationThresholds.size(); ++i) {
+    l1tree->Branch(Form("L1IsolationRegions_%uGeV", isolationThresholds[i]), &(l1Isolations[i]));
+  }
+
 
   l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet);
   l1tree->Branch("hasTriggeredAndMatchedL1CenJet", &hasTriggeredL1CenJet);
@@ -158,7 +169,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
   hasL1TauJet = false;
   hasL1CenJet = false;
   hasTauVeto = false;
-  l1Isolation = 0;
+  std::fill(l1Isolations.begin(), l1Isolations.end(), 0);
   hasTriggeredL1TauJet = false;
   hasTriggeredL1CenJet = false;
   met=0.;
@@ -437,14 +448,16 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
   // and L1Trigger/GlobalCaloTrigger/plugins/L1GctEmulator.cc
   edm::ESHandle< L1GctJetFinderParams > jfPars ;
   iSetup.get< L1GctJetFinderParamsRcd >().get(jfPars);
-  double threshold = isolationThreshold/jfPars->getRgnEtLsbGeV(); // transform GeV to gct internal units
+  for(size_t i=0; i<isolationThresholds.size(); ++i) {
+    thresholds[i] = isolationThresholds[i]/jfPars->getRgnEtLsbGeV(); // transform GeV to gct internal units
+  }
   /*
   std::cout << "L1Analyzer " << __LINE__ 
             << ": threshold gct " << jfPars->getTauIsoEtThresholdGct()
             << " GeV " << jfPars->getTauIsoEtThresholdGeV()
             << " rgnEtLsb " << jfPars->getRgnEtLsbGeV()
-            << " our threshold GeV " << isolationThreshold
-            << " gct " << static_cast<unsigned>(isolationThreshold/jfPars->getRgnEtLsbGeV())
+            << " our threshold GeV " << isolationThresholds[0]
+            << " gct " << static_cast<unsigned>(isolationThresholds[0]/jfPars->getRgnEtLsbGeV())
             << std::endl;
   */
 
@@ -476,12 +489,14 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
                 << " tauVeto " << iter->tauVeto()
                 << std::endl;
       */
-      if(iter->et() < threshold)
-        ++l1Isolation;
+      for(size_t i=0; i<thresholds.size(); ++i) {
+        if(iter->et() < thresholds[i])
+          ++(l1Isolations[i]);
+      }
       hasTauVeto = hasTauVeto || found->tauVeto();
     }
   }
-  //std::cout << "L1Analyzer " << __LINE__ << ": L1 isolation " << l1Isolation << " (number of adjacent cells with Et < " << isolationThreshold << " GeV; should be 7/8 for tau)" << std::endl;
+  //std::cout << "L1Analyzer " << __LINE__ << ": L1 isolation " << l1Isolations[0] << " (number of adjacent cells with Et < " << isolationThresholds[0] << " GeV; should be 7/8 for tau)" << std::endl;
 }
 
 
