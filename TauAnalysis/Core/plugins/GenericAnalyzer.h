@@ -9,9 +9,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.8 $
+  * \version $Revision: 1.9 $
   *
-  * $Id: GenericAnalyzer.h,v 1.8 2010/01/18 12:53:06 veelken Exp $
+  * $Id: GenericAnalyzer.h,v 1.9 2010/02/12 17:38:00 veelken Exp $
   *
   */
 
@@ -21,7 +21,7 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 #include "TauAnalysis/Core/interface/AnalyzerPluginBase.h"
 #include "TauAnalysis/Core/interface/EventDumpBase.h"

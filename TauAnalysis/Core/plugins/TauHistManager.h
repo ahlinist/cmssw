@@ -92,7 +92,6 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauMatchingGenParticlePdgId_;
   MonitorElement* hTauMatchingGenTauDecayMode_;
 
-  typedef std::vector<int> vint;
   vint skipPdgIdsGenParticleMatch_;
 
   MonitorElement* hTauNumTracksSignalCone_;

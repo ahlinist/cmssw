@@ -5,6 +5,8 @@
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
+#include <limits.h>
+
 EventDumpBase::EventDumpBase(const edm::ParameterSet& cfg)
   : cfgError_(false)
 {

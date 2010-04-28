@@ -22,7 +22,7 @@ bool BoolEventSelector::operator()(edm::Event& evt, const edm::EventSetup&)
 
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, BoolEventSelector, "BoolEventSelector");      
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorAdapter.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorAdapter.h"
 
 typedef EventSelectorAdapter<BoolEventSelector> BoolEventFilter;
 
