@@ -24,11 +24,12 @@ class HFDumpSignal : public edm::EDAnalyzer {
   ~HFDumpSignal();
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
   int         fVerbose;
+  int         fUseJetForIP;
   double      fJetMatch;
   double      fJetEtMin; 
   std::string fMuonLabel; 

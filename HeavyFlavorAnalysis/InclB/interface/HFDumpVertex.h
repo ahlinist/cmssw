@@ -22,13 +22,14 @@ class HFDumpVertex : public edm::EDAnalyzer {
   ~HFDumpVertex();
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
 
   int           fVerbose;
   std::string   fVertexLabel;
+  std::string   fVertexTracksLabel;
 
   int nevt;
 

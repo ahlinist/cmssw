@@ -23,14 +23,14 @@ class HFTree : public edm::EDAnalyzer {
   ~HFTree();
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   
   TFile        *fFile; 
   TTree        *fTree;
   TAna00Event  *fEvent;
-  TH1          *fHisto_ptvspthat; 
+ 
  
   int nevt;
 };

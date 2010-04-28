@@ -1,5 +1,5 @@
-#ifndef _HFDUMPTRACKS_h_
-#define _HFDUMPTRACKS_h_
+#ifndef _HFDUMPSIMTRACKS_h_
+#define _HFDUMPSIMTRACKS_h_
 
 #include <memory>
 #include <utility>
@@ -32,26 +32,23 @@ class TAna00Event;
 class TrackAssociatorBase;
 
 // ----------------------------------------------------------------------
-class HFDumpTracks : public edm::EDAnalyzer {
+class HFDumpSimTracks : public edm::EDAnalyzer {
  public:
-  explicit HFDumpTracks(const edm::ParameterSet&);
-  ~HFDumpTracks();
+  explicit HFDumpSimTracks(const edm::ParameterSet&);
+  ~HFDumpSimTracks();
   
  private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  std::string          fTracksLabel, fTracksLabel2, fTrackCandsLabel;
-  std::string          fGenParticlesLabel,fAssociatorLabel3, fTrackingParticlesLabel; 
-  std::string          fVertexLabel, fJetsLabel;
-  edm::InputTag        fMuonsLabel; 
+  std::string          fTracksLabel; 
 
   typedef math::XYZPoint Point; 
   void selectVertices ( const reco::VertexCollection &vtxs, std::vector<Point> &points);
   
   int                  nevt; 
-  int                  fVerbose, fDoTruthMatching;
+  int                  fVerbose;
 
   TrackAssociatorBase *fAssociator;
 };

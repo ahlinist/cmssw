@@ -11,6 +11,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 class TFile;
+class TH1;
 class TTree;
 class TAna00Event;
 
@@ -22,13 +23,13 @@ class HFDumpTrigger : public edm::EDAnalyzer {
   ~HFDumpTrigger();
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
   int           fVerbose;
+  int           doL1, doHLT;
   std::string   fGlobalTriggerLabel;
-  std::string   fL1MapLabel;
   std::string   fL1MuLabel;
   std::string   fL1TriggerName; 
   std::string   fL1w1; 
@@ -36,7 +37,7 @@ class HFDumpTrigger : public edm::EDAnalyzer {
   std::string   fL1w3; 
   std::string   fL1w4;
   edm::InputTag fHLTriggerLabel; 
-  std::string   fHLTriggerObjectLabel;
+  edm::InputTag fHLTriggerObjectLabel;
   std::string   fHLTriggerName; 
   std::string   fHLTw1; 
   std::string   fHLTw2; 
@@ -49,6 +50,12 @@ class HFDumpTrigger : public edm::EDAnalyzer {
   std::string   fHLTFilterObject2;
   std::string   fHLTFilterObject3;
 
-  int           fNevt;
+
+  int           nevt; 
+
+  TFile        *fFile; 
+  TH1          *fHistoL1;
+  TH1          *fHistoHLT;
+  TH1          *fHistoHLT_on;
 
 };

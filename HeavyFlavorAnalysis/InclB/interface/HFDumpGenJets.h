@@ -25,7 +25,7 @@ class HFDumpGenJets : public edm::EDAnalyzer {
   ~HFDumpGenJets();
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
