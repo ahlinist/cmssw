@@ -13,7 +13,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: EventSelPluginFilter.h,v 1.1 2009/01/22 14:02:08 veelken Exp $
+ * $Id: EventSelPluginFilter.h,v 1.1 2009/05/26 12:34:38 veelken Exp $
  *
  */
 
@@ -22,7 +22,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 class EventSelPluginFilter : public edm::EDFilter 
 {
