@@ -11,26 +11,44 @@ from PhysicsTools.PatAlgos.cleaningLayer1.muonCleaner_cfi import *
 #--------------------------------------------------------------------------------
 
 # add HLT electron trigger to PAT trigger match sequence
-patTriggerMuonMatcher += muonTriggerMatchHLTIsoMu11
-patTriggerEvent.patTriggerMatches.append("muonTriggerMatchHLTIsoMu11")
-cleanLayer1MuonsTriggerMatch.matches = cms.VInputTag("muonTriggerMatchHLTIsoMu11")
+#patTriggerMatcherMuon += muonTriggerMatchHLTIsoMu11
+#patTriggerEvent.patTriggerMatches.append("muonTriggerMatchHLTIsoMu11")
+#cleanLayer1MuonsTriggerMatch.matches = cms.VInputTag("muonTriggerMatchHLTIsoMu11")
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 muon configuration parameters
 #--------------------------------------------------------------------------------
 
 # increase size of muon isolation cone from default of deltaR = 0.3 to 0.6
-allLayer1Muons.userIsolation.tracker.deltaR = cms.double(0.6)
-allLayer1Muons.userIsolation.ecal.deltaR = cms.double(0.6)
-allLayer1Muons.userIsolation.hcal.deltaR = cms.double(0.6)
-allLayer1Muons.userIsolation.user[0].deltaR = cms.double(0.6)
-allLayer1Muons.userIsolation.user[1].deltaR = cms.double(0.6)
+patMuons.userIsolation = cms.PSet()
+patMuons.userIsolation.tracker = cms.PSet(
+	deltaR = cms.double(0.6),
+	src = cms.InputTag("muIsoDepositTk")
+)
+patMuons.userIsolation.ecal = cms.PSet(
+	deltaR = cms.double(0.6),
+	src = cms.InputTag("muIsoDepositCalByAssociatorTowers","ecal")
+)
+patMuons.userIsolation.hcal = cms.PSet(
+	deltaR = cms.double(0.6),
+	src = cms.InputTag("muIsoDepositCalByAssociatorTowers","hcal")
+)
+patMuons.userIsolation.user = cms.VPSet(
+	cms.PSet( 
+		src = cms.InputTag("muIsoDepositCalByAssociatorTowers","ho"),
+		deltaR = cms.double(0.6)
+	), 
+	cms.PSet(
+		src = cms.InputTag("muIsoDepositJets"),
+		deltaR = cms.double(0.6)
+	)
+)
 
 # add IsoDeposit objects for Track, ECAL and HCAL based isolation
-allLayer1Muons.isoDeposits = cms.PSet(
-   tracker          = allLayer1Muons.userIsolation.tracker.src,
-   ecal             = allLayer1Muons.userIsolation.ecal.src,
-   hcal             = allLayer1Muons.userIsolation.hcal.src,
+patMuons.isoDeposits = cms.PSet(
+   tracker          = patMuons.userIsolation.tracker.src,
+   ecal             = patMuons.userIsolation.ecal.src,
+   hcal             = patMuons.userIsolation.hcal.src,
    particle         = cms.InputTag("pfmuIsoDepositPFCandidates"),
    pfChargedHadrons = cms.InputTag("pfmuIsoChDepositPFCandidates"),
    pfNeutralHadrons = cms.InputTag("pfmuIsoNeDepositPFCandidates"),
@@ -39,13 +57,13 @@ allLayer1Muons.isoDeposits = cms.PSet(
 
 # embed Pixel + SiStrip track reference in pat::Muon
 # (so that analysis can access "inner" track information if running on PAT-tuples)
-allLayer1Muons.embedTrack = cms.bool(True)
+patMuons.embedTrack = cms.bool(True)
 
 # enable matching to HLT trigger information;
 # match offline reconstructed muons to isolated and non-isolated HLT muon paths
-allLayer1Muons.embedHighLevelSelection = cms.bool(True)
+patMuons.embedHighLevelSelection = cms.bool(True)
 
 # enable matching to generator level information
-allLayer1Muons.addGenMatch = cms.bool(True)
+patMuons.addGenMatch = cms.bool(True)
 
 

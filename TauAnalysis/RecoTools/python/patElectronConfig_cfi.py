@@ -14,9 +14,9 @@ from PhysicsTools.PatAlgos.cleaningLayer1.electronCleaner_cfi import *
 #--------------------------------------------------------------------------------
 
 # add HLT electron trigger to PAT trigger match sequence
-patTriggerElectronMatcher += electronTriggerMatchHLTIsoEle15LWL1I
-patTriggerEvent.patTriggerMatches.append("electronTriggerMatchHLTIsoEle15LWL1I")
-cleanLayer1ElectronsTriggerMatch.matches = cms.VInputTag("electronTriggerMatchHLTIsoEle15LWL1I")
+#patTriggerMatcherElectron += electronTriggerMatchHLTIsoEle15LWL1I
+#patTriggerEvent.patTriggerMatches.append("electronTriggerMatchHLTIsoEle15LWL1I")
+#cleanLayer1ElectronsTriggerMatch.matches = cms.VInputTag("electronTriggerMatchHLTIsoEle15LWL1I")
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 electron configuration parameters
@@ -25,39 +25,45 @@ cleanLayer1ElectronsTriggerMatch.matches = cms.VInputTag("electronTriggerMatchHL
 #
 # Track isolation
 #
-allLayer1Electrons.userIsolation.tracker.src = cms.InputTag("eleIsoDepositTk")
-allLayer1Electrons.userIsolation.tracker.deltaR = cms.double(0.6)
-allLayer1Electrons.userIsolation.tracker.vetos = cms.vstring(
-    '0.015',         # inner radius veto cone 
-    'Threshold(0.3)' # threshold on individual track pt
+patElectrons.userIsolation.tracker = cms.PSet(
+	src = cms.InputTag("eleIsoDepositTk"),
+	deltaR = cms.double(0.6),
+	vetos = cms.vstring(
+    	'0.015',         # inner radius veto cone 
+    	'Threshold(0.3)' # threshold on individual track pt
+	),
+	skipDefaultVeto = cms.bool(True)
 )
-allLayer1Electrons.userIsolation.tracker.skipDefaultVeto = cms.bool(True)
 #
 # ECAL isolation
 #
-allLayer1Electrons.userIsolation.ecal.src = cms.InputTag("eleIsoDepositEcalFromHits")
-allLayer1Electrons.userIsolation.ecal.deltaR = cms.double(0.6)
-allLayer1Electrons.userIsolation.ecal.vetos = cms.vstring(
-    'EcalBarrel:0.045', 
-    'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)',
-    'EcalEndcaps:0.1',                          # default: 0.07
-    'EcalEndcaps:RectangularEtaPhiVeto(-0.05,0.05,-0.5,0.5)',
-    'EcalBarrel:ThresholdFromTransverse(0.12)', # default: 0.08
-    'EcalEndcaps:ThresholdFromTransverse(0.3)'
+patElectrons.userIsolation.ecal = cms.PSet(
+	src = cms.InputTag("eleIsoDepositEcalFromHits"),
+	deltaR = cms.double(0.6),
+	vetos = cms.vstring(
+		'EcalBarrel:0.045', 
+		'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)',
+		'EcalEndcaps:0.1',                          # default: 0.07
+		'EcalEndcaps:RectangularEtaPhiVeto(-0.05,0.05,-0.5,0.5)',
+		'EcalBarrel:ThresholdFromTransverse(0.12)', # default: 0.08
+		'EcalEndcaps:ThresholdFromTransverse(0.3)'
+	),
+	skipDefaultVeto = cms.bool(True)
 )
-allLayer1Electrons.userIsolation.ecal.skipDefaultVeto = cms.bool(True)
 #
 # HCAL isolation
 #
-allLayer1Electrons.userIsolation.hcal.src = cms.InputTag("eleIsoDepositHcalFromTowers")
-allLayer1Electrons.userIsolation.hcal.deltaR = cms.double(0.6)
+patElectrons.userIsolation.hcal = cms.PSet(
+	src = cms.InputTag("eleIsoDepositHcalFromTowers"),
+	deltaR = cms.double(0.6)
+)
 #
 # add IsoDeposit objects for Track, ECAL and HCAL based isolation
 #
-allLayer1Electrons.isoDeposits = cms.PSet(
-   tracker          = allLayer1Electrons.userIsolation.tracker.src,
-   ecal             = allLayer1Electrons.userIsolation.ecal.src,
-   hcal             = allLayer1Electrons.userIsolation.hcal.src,
+patElectrons.isoDeposits = cms.PSet(
+   tracker          = patElectrons.userIsolation.tracker.src,
+   ecal             = patElectrons.userIsolation.ecal.src,
+   hcal             = patElectrons.userIsolation.hcal.src,
    particle         = cms.InputTag("pfeleIsoDepositPFCandidates"),
    pfChargedHadrons = cms.InputTag("pfeleIsoChDepositPFCandidates"),
    pfNeutralHadrons = cms.InputTag("pfeleIsoNeDepositPFCandidates"),
@@ -66,18 +72,18 @@ allLayer1Electrons.isoDeposits = cms.PSet(
 #
 # add electron Id. flags
 #
-allLayer1Electrons.addElectronID = cms.bool(True)
+patElectrons.addElectronID = cms.bool(True)
 #
 # enable matching to HLT trigger information
 #
-allLayer1Electrons.embedHighLevelSelection = cms.bool(True)
+patElectrons.embedHighLevelSelection = cms.bool(True)
 #
 # enable matching to generator level information
 #
-allLayer1Electrons.addGenMatch = cms.bool(True)
+patElectrons.addGenMatch = cms.bool(True)
 
-allLayer1Electrons.genParticleMatch = cms.InputTag("electronMatch")
+patElectrons.genParticleMatch = cms.InputTag("electronMatch")
 
 # do not remove electrons overlapping with muons
 # (instead, leave this removal to the subsequent selector stage)
-cleanLayer1Electrons.checkOverlaps = cms.PSet()
+cleanPatElectrons.checkOverlaps = cms.PSet()

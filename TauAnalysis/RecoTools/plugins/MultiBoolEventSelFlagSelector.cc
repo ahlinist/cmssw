@@ -66,7 +66,7 @@ bool MultiBoolEventSelFlagSelector::operator()(edm::Event& evt, const edm::Event
 
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, MultiBoolEventSelFlagSelector, "MultiBoolEventSelFlagSelector");
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorAdapter.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorAdapter.h"
 
 typedef EventSelectorAdapter<MultiBoolEventSelFlagSelector> MultiBoolEventSelFlagFilter;
 

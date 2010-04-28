@@ -13,6 +13,7 @@ process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'MC_31X_V2::All'
 
+
 #--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
@@ -47,7 +48,9 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_17.root'
+		'rfio:/castor/cern.ch/cms/store/caf/user/meridian/EGMPromptFilter_Beam10/132959/EGMPromptFilter_Electrons_132959_19315724_1_1.root'
+		#'file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/data10/skimElecTau_133029_133082.root'
+		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_17.root'
 	)
 	#skipBadFiles = cms.untracked.bool(True)    
 )
@@ -60,6 +63,19 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.savePatTuple.fileName = #patTupleOutputFileName#
 #
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# add patElectronIsolation, which was removed from standard pat sequence in CMSSW_3_4
+from TauAnalysis.Configuration.tools.producePatElectronIsolation import *
+producePatElectronIsolation(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import function to remove MC-specific modules 
+from TauAnalysis.Configuration.tools.switchToData import switchToData
+# uncomment to run over data
+switchToData(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -82,8 +98,11 @@ switchToPFTauShrinkingCone(process)
 # import utility function for managing pat::Jets
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
+# switchJetCollection complains if this doesn't exist
+process.jetCorrFactors = cms.PSet()
+
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, "iterativeCone5PFJets")
+switchJetCollection(process, cms.InputTag("iterativeCone5PFJets") )
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

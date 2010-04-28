@@ -64,7 +64,7 @@ void PATLeptonIpSelector<T>::select(const edm::Handle<collection>& patLeptonColl
   }
 }
 
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 typedef ObjectSelector<PATLeptonIpSelector<pat::Electron> > PATElectronIpSelector;
 typedef ObjectSelector<PATLeptonIpSelector<pat::Muon> > PATMuonIpSelector;

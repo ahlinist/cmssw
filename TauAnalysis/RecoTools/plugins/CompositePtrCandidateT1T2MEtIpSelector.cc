@@ -71,7 +71,7 @@ void CompositePtrCandidateT1T2MEtIpSelector<T1,T2>::select(const edm::Handle<col
   }
 }
 
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Electron, pat::Tau> > PATElecTauPairIpSelector;
 typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Muon, pat::Muon> > PATMuTauPairIpSelector;

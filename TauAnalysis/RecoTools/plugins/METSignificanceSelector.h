@@ -1,5 +1,5 @@
 //
-// $Id: PATLeptonRecoilEnergySelector.h,v 1.1 2009/07/29 13:03:39 veelken Exp $
+// $Id: METSignificanceSelector.h,v 1.1 2010/01/29 15:16:42 liis Exp $
 //
 
 #ifndef TauAnalysis_RecoTools_METSignificanceSelector_h
@@ -7,10 +7,10 @@
 
 #include "DataFormats/Common/interface/RefVector.h"
 
-#include "PhysicsTools/UtilAlgos/interface/StringCutObjectSelector.h"
-#include "PhysicsTools/UtilAlgos/interface/SingleObjectSelector.h"
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
-#include "PhysicsTools/UtilAlgos/interface/SingleElementCollectionSelector.h"
+#include "CommonTools/UtilAlgos/interface/StringCutObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/SingleObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/SingleElementCollectionSelector.h"
 
 #include "DataFormats/METReco/interface/CaloMET.h"
 

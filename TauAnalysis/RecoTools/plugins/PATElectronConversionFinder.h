@@ -16,8 +16,8 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 //Tracker tracks
 #include "DataFormats/TrackReco/interface/TrackFwd.h"

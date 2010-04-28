@@ -10,7 +10,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import objSelConfigurat
 
 #------------------------------------- met --------------------------------------#
 #******* custom reco ********
-layer1METs.metSource  = cms.InputTag("corMetType1Icone5Muons") #no tau jet specific correction
+patMETs.metSource  = cms.InputTag("corMetType1Icone5Muons") #no tau jet specific correction
 #***** custom selection *****
 selectedMETMax = cms.EDFilter("PATMETSelector",
      cut = cms.string('et < 60'),
@@ -18,7 +18,7 @@ selectedMETMax = cms.EDFilter("PATMETSelector",
 )
 patMETSelConfigurator = objSelConfigurator(
     [ selectedMETMax ],
-    src = "layer1METs",
+    src = "patMETs",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -26,10 +26,10 @@ selectLayer1METs = patMETSelConfigurator.configure(pyNameSpace = locals())
 
 #---------------------------------- electrons -----------------------------------#
 #******* custom reco ********
-allLayer1Electrons.userIsolation.tracker.deltaR = cms.double(0.3)
-allLayer1Electrons.userIsolation.tracker.vetos = cms.vstring('0.015','Threshold(1.0)')
-allLayer1Electrons.userIsolation.ecal.deltaR = cms.double(0.4)
-allLayer1Electrons.userIsolation.ecal.vetos = cms.vstring(
+patElectrons.userIsolation.tracker.deltaR = cms.double(0.3)
+patElectrons.userIsolation.tracker.vetos = cms.vstring('0.015','Threshold(1.0)')
+patElectrons.userIsolation.ecal.deltaR = cms.double(0.4)
+patElectrons.userIsolation.ecal.vetos = cms.vstring(
     'EcalBarrel:0.045', #0.045 #egamma default
     'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)', #-0.02,0.02,-0.5,0.5
     'EcalEndcaps:0.1', #0.07
@@ -37,7 +37,7 @@ allLayer1Electrons.userIsolation.ecal.vetos = cms.vstring(
     'EcalBarrel:ThresholdFromTransverse(0.12)', #0.08
     'EcalEndcaps:ThresholdFromTransverse(0.3)'
 )
-allLayer1Electrons.userIsolation.hcal.deltaR = cms.double(0.4)
+patElectrons.userIsolation.hcal.deltaR = cms.double(0.4)
 #***** custom selection *****
 selectedLayer1ElectronsId = selectedLayer1ElectronsTightId.clone()
 selectedLayer1ElectronsId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
@@ -158,10 +158,10 @@ selectLayer1Electrons = patElectronSelConfigurator.configure(pyNameSpace = local
 
 #------------------------------------ muons -------------------------------------#
 #******* custom reco ********
-allLayer1Muons.userIsolation.tracker.deltaR = cms.double(0.3)
-allLayer1Muons.userIsolation.ecal.deltaR = cms.double(0.3)
-allLayer1Muons.userIsolation.hcal.deltaR = cms.double(0.3)
-allLayer1Muons.userIsolation.user.deltaR = cms.double(0.3)
+patMuons.userIsolation.tracker.deltaR = cms.double(0.3)
+patMuons.userIsolation.ecal.deltaR = cms.double(0.3)
+patMuons.userIsolation.hcal.deltaR = cms.double(0.3)
+patMuons.userIsolation.user.deltaR = cms.double(0.3)
 #***** custom selection *****
 selectedLayer1MuonsEta = selectedLayer1MuonsEta21.clone(cut = cms.string('abs(eta) < 2.4'))
 selectedLayer1MuonsPt = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 10.'))
@@ -268,8 +268,8 @@ produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + selectLayer1Muo
 #                                        +selectLayer1Muons + produceLayer1SelMuons )
 
 #----------------------------- electron + muon pairs ----------------------------#
-allElecMuPairs.srcLeg1 = cms.InputTag('allLayer1Electrons')#CHECK!!!!!
-allElecMuPairs.srcLeg2 = cms.InputTag('allLayer1Muons')
+allElecMuPairs.srcLeg1 = cms.InputTag('patElectrons')#CHECK!!!!!
+allElecMuPairs.srcLeg2 = cms.InputTag('patMuons')
 allElecMuPairs.useLeadingTausOnly = cms.bool(True)
 # require missing transverse momentum to point either in direction of the electron
 # or in direction of the muon in the transverse plane

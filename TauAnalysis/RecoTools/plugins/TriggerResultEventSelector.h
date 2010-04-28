@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: TriggerResultEventSelector.h,v 1.1 2009/01/23 14:58:12 veelken Exp $
+ * $Id: TriggerResultEventSelector.h,v 1.2 2009/02/24 14:18:31 veelken Exp $
  *
  */
 
@@ -18,7 +18,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 class TriggerResultEventSelector : public EventSelectorBase
 {

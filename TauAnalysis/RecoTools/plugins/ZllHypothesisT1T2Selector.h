@@ -1,5 +1,5 @@
 //
-// $Id: ZllHypothesisT1T2Selector.h,v 1.1 2009/10/10 12:32:16 veelken Exp $
+// $Id: ZllHypothesisT1T2Selector.h,v 1.2 2009/10/25 12:38:23 veelken Exp $
 //
 
 #ifndef TauAnalysis_RecoTools_ZllHypothesisT1T2Selector_h
@@ -7,7 +7,7 @@
 
 #include "DataFormats/Common/interface/RefVector.h"
 
-#include "PhysicsTools/UtilAlgos/interface/StringCutObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/StringCutObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/SingleObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/SingleElementCollectionSelector.h"

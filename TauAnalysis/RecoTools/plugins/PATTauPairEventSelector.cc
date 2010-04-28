@@ -1,9 +1,10 @@
 #include "TauAnalysis/RecoTools/plugins/PATTauPairEventSelector.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+/*
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATElecTauPairMinEventSelector, "PATElecTauPairMinEventSelector");
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATMuTauPairMinEventSelector, "PATMuTauPairMinEventSelector");
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATDiTauPairMinEventSelector, "PATDiTauPairMinEventSelector");
@@ -18,4 +19,4 @@ DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATElecTauPairCountEventSelector, 
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATMuTauPairCountEventSelector, "PATMuTauPairCountEventSelector");
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATDiTauPairCountEventSelector, "PATDiTauPairCountEventSelector");
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATElecMuPairCountEventSelector, "PATElecMuPairCountEventSelector");
-
+*/

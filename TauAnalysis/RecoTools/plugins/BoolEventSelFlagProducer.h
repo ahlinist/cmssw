@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: BoolEventSelFlagProducer.h,v 1.2 2009/04/14 19:17:27 veelken Exp $
+ * $Id: BoolEventSelFlagProducer.h,v 1.3 2009/09/01 06:59:54 veelken Exp $
  *
  */
 
@@ -19,7 +19,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 #include <string>
 #include <vector>
