@@ -13,19 +13,28 @@
 
 #include "FWCore/Framework/interface/ESHandle.h"
 
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAna00Event.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaTrack.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaCand.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TGenCand.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaVertex.hh"
 
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMenuFwd.h"
+
 
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
+
+#include <TROOT.h>
+#include <TFile.h>
+#include <TTree.h>
+#include <TH2D.h>
 
 // -- Yikes!
 extern TAna00Event *gHFEvent;
@@ -39,8 +48,9 @@ using namespace trigger;
 // ----------------------------------------------------------------------
 HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
+  doL1(iConfig.getUntrackedParameter<int>("dol1", 1)),
+  doHLT(iConfig.getUntrackedParameter<int>("dohlt", 1)),
   fGlobalTriggerLabel(iConfig.getUntrackedParameter< std::string > ("GlobalTriggerLabel")),
-  fL1MapLabel(iConfig.getUntrackedParameter< std::string > ("L1MapLabel")),
   fL1MuLabel(iConfig.getUntrackedParameter< std::string > ("L1MuLabel")),
   fL1TriggerName(iConfig.getUntrackedParameter<string>("L1TriggerName", string("L1_SingleMu7"))), 
   fL1w1(iConfig.getUntrackedParameter<string>("L1w1", string("L1_SingleMu3"))), 
@@ -48,7 +58,7 @@ HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
   fL1w3(iConfig.getUntrackedParameter<string>("L1w3", string("L1_SingleMu7"))), 
   fL1w4(iConfig.getUntrackedParameter<string>("L1w4", string("L1_SingleMu10"))),
   fHLTriggerLabel(iConfig.getParameter<edm::InputTag>("hltLabel")),
-  fHLTriggerObjectLabel(iConfig.getUntrackedParameter<string>("hltobjectLabel", string("hltTriggerSummaryAOD"))),
+  fHLTriggerObjectLabel(iConfig.getParameter<edm::InputTag>("hltobjectLabel")),
   fHLTriggerName(iConfig.getUntrackedParameter<string>("HLTriggerName",  string("HLT_Mu15"))), 
   fHLTw1(iConfig.getUntrackedParameter<string>("HLTw1", string("HLT_Mu3"))), 
   fHLTw2(iConfig.getUntrackedParameter<string>("HLTw2", string("HLT_Mu5"))),
@@ -64,177 +74,202 @@ HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
   cout << "--- HFDumpTrigger constructor" << endl;
   cout << "--- Verbose          : " << fVerbose << endl;
   cout << "--- Global Trigger   : " << fGlobalTriggerLabel.c_str() << endl;
-  cout << "--- L1 Map Label     : " << fL1MapLabel.c_str() << endl;
   cout << "--- L1 Mu Label      : " << fL1MuLabel.c_str() << endl;
   cout << "--- L1 Trigger Name  : " << fL1TriggerName.c_str() << endl;
   cout << "--- HLT Label        : " << fHLTriggerLabel.encode() << endl;
+  cout << "--- HLT Object Label : " << fHLTriggerObjectLabel.encode() << endl;
   cout << "--- HLT Trigger Name : " << fHLTriggerName.c_str() << endl;
   cout << "--- HLT Filter Objects : " 
        << fHLTFilterObject2.c_str() << ", "
        << fHLTFilterObject3.c_str() << endl;
   cout << "----------------------------------------------------------------------" << endl;
-
-  fNevt = 0; 
+  fFile       = new TFile(iConfig.getParameter<string>("fileName").c_str(), "RECREATE");
+  fHistoL1          = new TH1I("l1triggerbits", "L1 trigger bits", 200, 0., 200.);
+  fHistoHLT         = new TH1I("hlttriggerbits", "HLT trigger bits", 150, 0., 150.);
+  fHistoHLT_on      = new TH1I("hlttriggerbitson", "HLT trigger bits on", 150, 0., 150.);
+ 
   
 }
 
 
 // ----------------------------------------------------------------------
 HFDumpTrigger::~HFDumpTrigger() {
-  
+ 
+  // -- Save output
+  fFile->cd();
+  fHistoL1->Write(); 
+  fHistoHLT->Write();
+  fHistoHLT_on->Write();
+  fFile->Write();
+  fFile->Close();
+  delete fFile;
 }
 
 
 // ----------------------------------------------------------------------
 void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
+  nevt++;
  
-  fNevt++;
   int index = gHFEvent->nSigTracks(); 
   
    TAnaTrack *pTrack;
 
+ //   if (iEvent.id().event()==2161318 || iEvent.id().event()==15098933 || iEvent.id().event()==5224518 ||  iEvent.id().event()==6094468 ||iEvent.id().event()==3182865 ){
+//      fVerbose = 1;
+//      cout << "====> Event " << iEvent.id().event() << endl;
+//    }
+
   //   // -- L1 trigger
   // 
-  if ( fVerbose ) cout << endl << "============================ L1 Trigger ===================================" << endl; 
-
-  gHFEvent->fL1Decision=0;
-  gHFEvent->fL1w1=0; gHFEvent->fL1w2=0; gHFEvent->fL1w3=0; gHFEvent->fL1w4=0; 
-
-  edm::Handle<L1GlobalTriggerReadoutRecord> l1GtRR;
-  edm::Handle<L1GlobalTriggerObjectMapRecord> l1GtOMRec; 
-
-  try {
-    iEvent.getByLabel(fGlobalTriggerLabel,l1GtRR);
-
-  } catch (Exception event) { 
-    if (gHFEvent->fEventBits < 2048) gHFEvent->fEventBits = gHFEvent->fEventBits + 2048;
-    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1GlobalTriggerReadoutRecord (fError=" << gHFEvent->fEventBits << ")" << endl;
-  }
-  try {
-    iEvent.getByLabel(fL1MapLabel,l1GtOMRec);
-
-  } catch (Exception event) { 
-    if (gHFEvent->fEventBits < 2048) gHFEvent->fEventBits = gHFEvent->fEventBits + 2048;
-    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1GlobalTriggerObjectMapRecord (fError=" << gHFEvent->fEventBits << ")" << endl;
-  }
-
-  const L1GlobalTriggerReadoutRecord& L1GTRR = *l1GtRR;
-  const L1GlobalTriggerObjectMapRecord& L1GTOMRec = *l1GtOMRec;
-
-  TString algoBitToName[128];
-  DecisionWord gtDecisionWord = L1GTRR.decisionWord();
-  const unsigned int numberTriggerBits(gtDecisionWord.size());
-  // 1st event : Book as many branches as trigger paths provided in the input...
-  int *l1flag;
-  l1flag = new int[10000];
-  if ((&L1GTRR) && (&L1GTOMRec)) {  
-   
-    // get ObjectMaps from ObjectMapRecord
-    const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  L1GTOMRec.gtObjectMap();
- 
-    std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap;
-    for (itMap = objMapVec.begin(); itMap != objMapVec.end(); ++itMap) {
-      // Get trigger bits
-      int itrig = (*itMap).algoBitNumber();
-      // Get trigger names
-      algoBitToName[itrig] = TString( (*itMap).algoName() );
-    }
-    
-    for (unsigned int iBit = 0; iBit < numberTriggerBits; ++iBit) {     
-      // ...Fill the corresponding accepts in branch-variables
-      int l1flag = gtDecisionWord[iBit];
-      if (fVerbose > 0) cout << "L1 TD: "<<iBit<<" "<<algoBitToName[iBit]<<" "<<gtDecisionWord[iBit]<< std::endl;
-
-
-      if ( !strcmp(algoBitToName[iBit], fL1TriggerName.c_str()) ) {
-	if ( fVerbose ) cout << " =============>  L1 decision set to " << l1flag << endl;
-	gHFEvent->fL1Decision = l1flag;      
-      }
-      if ( !strcmp(algoBitToName[iBit], fL1w1.c_str()) ) {
-	if ( fVerbose ) cout << " =============>  L1 w1 " << l1flag << endl;
-	gHFEvent->fL1w1 = l1flag;      
-      }
-      if ( !strcmp(algoBitToName[iBit], fL1w2.c_str()) ) {
-	if ( fVerbose ) cout << " =============>  L1 w2 " << l1flag << endl;
-	gHFEvent->fL1w2 = l1flag;      
-      }
-      if ( !strcmp(algoBitToName[iBit], fL1w3.c_str()) ) {
-	if ( fVerbose ) cout << " =============>  L1 w3 " << l1flag << endl;
-	gHFEvent->fL1w3 = l1flag;      
-      }
-      if ( !strcmp(algoBitToName[iBit], fL1w4.c_str()) ) {
-	if ( fVerbose ) cout << " =============>  L1 w4 " << l1flag << endl;
-	gHFEvent->fL1w4 = l1flag;      
-      } 
- 
-
-    
+   if (doL1>0) {
+     if ( fVerbose ) cout << endl << "============================ L1 Trigger ===================================" << endl; 
      
-    }
-  }
-  else {
-    if (gHFEvent->fEventBits < 2048) gHFEvent->fEventBits = gHFEvent->fEventBits + 2048;
-    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: L1GlobalTriggerReadoutRecord or L1GlobalTriggerObjectMapRecord not valid (fError=" << gHFEvent->fEventBits << ")" << endl;
-    
-  }
+     gHFEvent->fL1Decision=0;
+     gHFEvent->fL1w1=0; gHFEvent->fL1w2=0; gHFEvent->fL1w3=0; gHFEvent->fL1w4=0; 
+     
+     edm::Handle<L1GlobalTriggerReadoutRecord> l1GtRR;
+     edm::ESHandle<L1GtTriggerMenu> hL1GtMenu; 
+        
+     try {
+       iEvent.getByLabel(fGlobalTriggerLabel,l1GtRR);
+       
+     } catch (Exception event) { 
+       if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1GlobalTriggerReadoutRecord " << endl;
+     }
+     const L1GlobalTriggerReadoutRecord& L1GTRR = *l1GtRR; 
 
-  // -- adding the whole L1 muons collection to signal block
-  edm::Handle<l1extra::L1MuonParticleCollection> l1extmu;
+     TString algoBitToName[128];
+     DecisionWord gtDecisionWord = L1GTRR.decisionWord();
+     const unsigned int numberTriggerBits(gtDecisionWord.size());
+     //const TechnicalTriggerWord&  technicalTriggerWordBeforeMask = l1GtRR->technicalTriggerWord();
+     
+     try {
+       iSetup.get<L1GtTriggerMenuRcd>().get(hL1GtMenu);
+       
+     } catch (Exception event) { 
+       if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1GtTriggerMenuRcd "  << endl;
+     }
+     
+     const L1GtTriggerMenu* l1GtMenu = hL1GtMenu.product();
+     
+     if (l1GtRR.isValid()) {  
 
-  try {
-    iEvent.getByLabel(fL1MuLabel,l1extmu);
-
-  } catch (Exception event) { 
-    if (gHFEvent->fEventBits < 4096) gHFEvent->fEventBits = gHFEvent->fEventBits + 4096;
-    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1Mu object (fError=" << gHFEvent->fEventBits << ")" << endl;
-  }
-
-  const l1extra::L1MuonParticleCollection& L1ExtMu = *l1extmu;
-  if (&L1ExtMu) {
-
-    if ( fVerbose ) cout << "==>HFDumpTrigger>nL1Muons = " << L1ExtMu.size() << endl;
-      
+       //technical trigger bits///////////////////////////
+//        for (CItAlgo techTrig = l1GtMenu->gtTechnicalTriggerMap().begin(); techTrig != l1GtMenu->gtTechnicalTriggerMap().end(); ++techTrig) {
+// 	 int number = (techTrig->second).algoBitNumber();
+// 	 cout << (techTrig->second).algoBitNumber() << " : " << (techTrig->second).algoName() << " decision " << technicalTriggerWordBeforeMask.at(number) << std::endl;
+// 	
+//        }
+       //////////////////////////////////////////////////
+       
+       const AlgorithmMap& algorithmMap = l1GtMenu->gtAlgorithmMap();
+       for (CItAlgo itAlgo = algorithmMap.begin(); itAlgo !=algorithmMap.end(); itAlgo++) {
+	 std::string aName = itAlgo->first;
+	 int algBitNumber = (itAlgo->second).algoBitNumber();
+	 // Get trigger names
+	 algoBitToName[algBitNumber] = TString( aName );
+       }
+       
+       for (unsigned int iBit = 0; iBit < numberTriggerBits; ++iBit) {
+	 
+	 // ...Fill the corresponding accepts in branch-variables
+	 int l1flag = gtDecisionWord[iBit];
+	 if (fVerbose > 0) cout << "L1 TD: "<<iBit<<" "<<algoBitToName[iBit]<<" "<<gtDecisionWord[iBit]<< std::endl;
+	 
+	 //fill histogram 
+	 int binvalue = int(fHistoL1->GetBinContent(iBit+1));
+	 fHistoL1->SetBinContent(iBit+1,binvalue+l1flag);
+	 fHistoL1->GetXaxis()->SetBinLabel(iBit+1, algoBitToName[iBit]);
+	 
+	 //fill muon trigger bits
+	 if ( !strcmp(algoBitToName[iBit], fL1TriggerName.c_str()) ) {
+	   if ( fVerbose ) cout << " =============>  L1 decision set to " << l1flag << endl;
+	   gHFEvent->fL1Decision = l1flag;      
+	 }
+	 if ( !strcmp(algoBitToName[iBit], fL1w1.c_str()) ) {
+	   if ( fVerbose ) cout << " =============>  L1 w1 set to " << l1flag << endl;
+	   gHFEvent->fL1w1 = l1flag;      
+	 }
+	 if ( !strcmp(algoBitToName[iBit], fL1w2.c_str()) ) {
+	   if ( fVerbose ) cout << " =============>  L1 w2 set to " << l1flag << endl;
+	   gHFEvent->fL1w2 = l1flag;      
+	 }
+	 if ( !strcmp(algoBitToName[iBit], fL1w3.c_str()) ) {
+	   if ( fVerbose ) cout << " =============>  L1 w3 set to " << l1flag << endl;
+	   gHFEvent->fL1w3 = l1flag;      
+	 }
+	 if ( !strcmp(algoBitToName[iBit], fL1w4.c_str()) ) {
+	   if ( fVerbose ) cout << " =============>  L1 w4 set to " << l1flag << endl;
+	   gHFEvent->fL1w4 = l1flag;      
+	 } 
+	 
+       }
+     }
+     else {
+       if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: L1GlobalTriggerReadoutRecord or L1GlobalTriggerObjectMapRecord not valid"  << endl;
+       
+     }
+       
+       
+       
+       //   try { 
+       //     // -- adding the whole L1 muons collection to signal block
+       //     edm::Handle<l1extra::L1MuonParticleCollection> l1extmu;
+       //     iEvent.getByLabel(fL1MuLabel,l1extmu);
+       //     const l1extra::L1MuonParticleCollection& L1ExtMu = *l1extmu;
+       //     if (&L1ExtMu) {
+       
+       //       if ( fVerbose ) cout << "==>HFDumpTrigger>nL1Muons = " << L1ExtMu.size() << endl;
+       
+       
+       //       for (l1extra::L1MuonParticleCollection::const_iterator muItr = L1ExtMu.begin(); muItr != L1ExtMu.end(); ++muItr) {
+       
+       // 	L1MuGMTExtendedCand gmtCand = muItr->gmtMuonCand();
+       
+       // 	if ( fVerbose ) {
+       
+       // 	  cout << "==> L1Muon " << index << endl;
+       // 	  cout << "pt " << muItr->pt() << " e " << muItr->energy() << " eta " << muItr->eta() 
+       // 	       << " phi " << muItr->phi() << " .... quality " << gmtCand.quality() << endl;
+       // 	}
+       
+       // 	pTrack   = gHFEvent->addSigTrack();
+       // 	pTrack->fMuType   = 1;
+       // 	pTrack->fMCID     = muItr->charge()*-13; 
+       // 	pTrack->fIndex    = index;
+       // 	pTrack->fGenIndex = -1; 
+       // 	pTrack->fQ        = gmtCand.quality();
+       // 	pTrack->fPlab.SetPtEtaPhi(muItr->pt(),
+       // 				  muItr->eta(),
+       // 				  muItr->phi()
+       // 				  );
+       
+       // 	pTrack->fLip     = gmtCand.useInSingleMuonTrigger(); 
+       // 	pTrack->fLipE    = gmtCand.isMatchedCand();
+       // 	pTrack->fTip     = gmtCand.isHaloCand();
+       // 	pTrack->fTipE    = muItr->isIsolated();
+       
+       // 	index++;
+       //       }
+       //     }
+       //     else {
+       
+       //       if ( fVerbose ) cout << "==>HFDumpTrigger>ERROR: L1Mu object NOT valid" << endl;
+       //     }
+       
+       //   } catch (Exception event) { 
+       
+       //     if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1Mu object"<< endl;
+       //   }
+     
+   }
    
-    for (l1extra::L1MuonParticleCollection::const_iterator muItr = L1ExtMu.begin(); muItr != L1ExtMu.end(); ++muItr) {
-   
-      L1MuGMTExtendedCand gmtCand = muItr->gmtMuonCand();
-
-      if ( fVerbose ) {
-
-	cout << "==> L1Muon " << index << endl;
-	cout << "pt " << muItr->pt() << " e " << muItr->energy() << " eta " << muItr->eta() 
-	     << " phi " << muItr->phi() << " .... quality " << gmtCand.quality() << endl;
-      }
-
-      pTrack   = gHFEvent->addSigTrack();
-      pTrack->fMuType   = 1;
-      pTrack->fMCID     = muItr->charge()*-13; 
-      pTrack->fIndex    = index;
-      pTrack->fGenIndex = -1; 
-      pTrack->fQ        = gmtCand.quality();
-      pTrack->fPlab.SetPtEtaPhi(muItr->pt(),
-				muItr->eta(),
-				muItr->phi()
-				);
-
-      pTrack->fLip     = gmtCand.useInSingleMuonTrigger(); 
-      pTrack->fLipE    = gmtCand.isMatchedCand();
-      pTrack->fTip     = gmtCand.isHaloCand();
-      pTrack->fTipE    = muItr->isIsolated();
- 
-      index++;
-    }
-  }
-  else {
-    if (gHFEvent->fEventBits < 4096) gHFEvent->fEventBits = gHFEvent->fEventBits + 4096;
-    if ( fVerbose ) cout << "==>HFDumpTrigger>ERROR: L1Mu object NOT valid" << endl;
-  }
-
+   if (doHLT) {
   //   // -- HLT trigger
   //   if ( fVerbose ) cout << endl << "============================ HL Trigger ===================================" << endl; 
   gHFEvent->fHLTDecision=0;
-  gHFEvent->fHLTw1=0; gHFEvent->fHLTw2=0; gHFEvent->fHLTw3=0; gHFEvent->fHLTw4=0; 
+  gHFEvent->fHLTw1=0; gHFEvent->fHLTw2=0; gHFEvent->fHLTw3=0; gHFEvent->fHLTw4=0;  gHFEvent->fHLTw5=0; gHFEvent->fHLTw6=0; gHFEvent->fHLTw7=0; 
 
   edm::Handle<edm::TriggerResults> hltresults;
  
@@ -262,21 +297,18 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
       TString trigName = triggerNames_.triggerName(itrig);
       int hltflag = (*hltresults)[itrig].accept();
-      int wasrun  = (*hltresults)[itrig].wasrun();
+      int wasrun  = (*hltresults)[itrig].wasrun(); 
+
+      int binvalue = int(fHistoHLT->GetBinContent(itrig+1));
+      fHistoHLT->SetBinContent(itrig+1,binvalue+hltflag);
+      fHistoHLT->GetXaxis()->SetBinLabel(itrig+1, trigName);
+
+      int binvalueon = int(fHistoHLT_on->GetBinContent(itrig+1));
+      fHistoHLT_on->SetBinContent(itrig+1,binvalueon+wasrun);
+      fHistoHLT_on->GetXaxis()->SetBinLabel(itrig+1, trigName);
 
       if ( fVerbose ) cout << "HLT  :"  << setw(3) << itrig << setw(30)  <<  trigName
 			   << " was run " << wasrun  << ", decision " << hltflag << endl;
-      
-    //    if (itrig < 32 && hltflag) {
-// 	gHFEvent->fHLTw1 |= (0x1 << itrig);
-//       } else if (itrig < 64 && hltflag) {
-// 	gHFEvent->fHLTw2 |= (0x1 << itrig);
-//       } else if (itrig < 96 && hltflag) {
-// 	gHFEvent->fHLTw3 |= (0x1 << itrig);
-//       } else if (itrig < 128 && hltflag) {
-// 	gHFEvent->fHLTw4 |= (0x1 << itrig);
-//       }
-
 
       if ( !strcmp(trigName, fHLTriggerName.c_str() ) ) {     
 	if ( fVerbose ) cout << " =============>  HLT decision set to " << hltflag << endl;
@@ -318,7 +350,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   if ( fVerbose ) cout << "TriggerSummaryAnalyzerAOD: content of TriggerEvent: " << endl;
 
   Handle<TriggerEvent> triggerhandle;
-  iEvent.getByLabel(fHLTriggerObjectLabel.c_str(),triggerhandle);
+  iEvent.getByLabel(fHLTriggerObjectLabel,triggerhandle);
   if (triggerhandle.isValid()) {
     const size_type nC(triggerhandle->sizeCollections());
     if ( fVerbose ) {
@@ -453,19 +485,21 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }
 
 
- 
+   }
 
 }
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void  HFDumpTrigger::beginJob(const edm::EventSetup& setup) {
+void  HFDumpTrigger::beginJob() {
+  nevt = 0;
 
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void  HFDumpTrigger::endJob() {
-
+  cout << "HFDumpTrigger>    Summary: Events processed: " << nevt << endl;
+  
 }
 
 //define this as a plug-in

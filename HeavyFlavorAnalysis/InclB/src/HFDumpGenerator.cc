@@ -5,19 +5,22 @@
 #include "HeavyFlavorAnalysis/InclB/interface/HFDumpGenerator.h"
 
 #include "HepMC/GenVertex.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "SimDataFormats/HepMCProduct/interface/GenInfoProduct.h"
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAna00Event.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaTrack.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaCand.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TGenCand.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaVertex.hh"
+
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
+
+
 
 // -- Yikes!
 extern TAna00Event *gHFEvent;
@@ -60,8 +63,8 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   // neuen Event der alte (weggefilterte) GenBlock auch noch drin sein.
 
 
-  static int nevt(0); 
-  ++nevt;
+ 
+  nevt++;
   if (fVerbose > 0) cout << "==>HFDumpGenerator> new  event  " << nevt << endl; 
 
 
@@ -73,51 +76,30 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   gHFEvent->fFilterEff    = -99999;
   gHFEvent->fEventWeight  = 1; 
 
+
   try {
-    Handle<HepMCProduct> mc;
-    iEvent.getByLabel(fGenEventLabel.c_str(), mc);
-    const HepMC::GenEvent * genEvt = mc->GetEvent();
-    
-    gHFEvent->fPtHat     = genEvt->event_scale(); 
-    gHFEvent->fProcessID = genEvt->signal_process_id();
-    if (fVerbose > 0) cout << "==>HFDumpGenerator> pthat = " << gHFEvent->fPtHat << endl;
+    Handle<GenEventInfoProduct> evt_info;
+    iEvent.getByType(evt_info);
+    gHFEvent->fPtHat     = evt_info->qScale();
+    gHFEvent->fProcessID = evt_info->signalProcessID();
+    if (fVerbose > 0) cout << "==>HFDumpGenerator> pthat      = " << gHFEvent->fPtHat << endl;
     if (fVerbose > 0) cout << "==>HFDumpGenerator> process ID = " << gHFEvent->fProcessID << endl;
-    
-    
-  } catch (cms::Exception &ex) {
-    
-    try {
-      edm::Handle<double> genEventScaleHandle;
-      iEvent.getByLabel(fGenEventScale.c_str(), genEventScaleHandle);
-      gHFEvent->fPtHat = *genEventScaleHandle;
-      if (fVerbose > 0) cout << "==>HFDumpGenerator> pthat = " << gHFEvent->fPtHat << endl;
-      
-    } catch (cms::Exception &ex) {
-      gHFEvent->fEventBits = gHFEvent->fEventBits+2;
-      if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genEventScale not found (fError=" << gHFEvent->fEventBits << ")" << endl;
-    }
-    try {
-      edm::Handle< int > genProcessID;
-      iEvent.getByLabel(fGenEventProcID.c_str(), genProcessID );
-      gHFEvent->fProcessID = *genProcessID; 
 
-      if (fVerbose > 0) cout << "==>HFDumpGenerator> process ID = " << gHFEvent->fProcessID << endl;
-      
-    } catch (cms::Exception &ex) {
-      gHFEvent->fEventBits = gHFEvent->fEventBits+4;
-      if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genProcessID not found (fError=" << gHFEvent->fEventBits << ")" << endl;      
-    } 
+  } catch (cms::Exception &ex) {
+    if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: GenEventInfoProduct not found" << endl;
   } 
+
+
   try {
-    edm::Handle<double> genEventWeight;
-    iEvent.getByLabel(fGenEventWeight.c_str(), genEventWeight );
-    gHFEvent->fEventWeight = *genEventWeight; 
-
-    if (fVerbose > 0) cout << "==>HFDumpGenerator> event weight = " << gHFEvent->fEventWeight << endl;
-
-  } catch (cms::Exception &ex) {
-    gHFEvent->fEventBits = gHFEvent->fEventBits+8;
-    if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genEventWeight not found (fError=" << gHFEvent->fEventBits << ")" << endl; 
+    edm::Handle< GenRunInfoProduct > genInfoProduct;
+    iEvent.getRun().getByType(genInfoProduct ); 
+    gHFEvent->fXsec      = genInfoProduct->crossSection();
+    gHFEvent->fFilterEff = genInfoProduct->filterEfficiency(); 
+    if (fVerbose > 0) cout << "==>HFDumpGenerator> xsec       = " << gHFEvent->fXsec << endl;
+    if (fVerbose > 0) cout << "==>HFDumpGenerator> filtereff  = " << gHFEvent->fFilterEff << endl;
+  }
+  catch (cms::Exception &ex) {
+    if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: GenRunInfoProduct not found" << endl;
   } 
 
   // ======================= GENERATOR BLOCK =============================
@@ -204,11 +186,15 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void  HFDumpGenerator::beginJob(const EventSetup& setup) {
+//void  HFDumpGenerator::beginJob(const EventSetup& setup) {
+void  HFDumpGenerator::beginJob() {
+  nevt = 0;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void  HFDumpGenerator::endJob() {
+
+  cout << "HFDumpGenerator>  Summary: Events processed: " << nevt << endl;
 }
 
 //define this as a plug-in

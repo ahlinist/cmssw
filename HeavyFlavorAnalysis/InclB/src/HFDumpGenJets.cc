@@ -28,12 +28,12 @@
 
 #include "FWCore/Framework/interface/ESHandle.h"
 
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaJet.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAna00Event.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaTrack.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaJet.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaCand.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TGenCand.hh"
+#include "HeavyFlavorAnalysis/InclB/rootio/TAnaVertex.hh"
 
 
 // -- Yikes!
@@ -96,8 +96,7 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   if (fVerbose > 0) cout << "==>HFDumpGenJets> nGenJets =" << genJets->size() << endl;
   if (genJets->size() != theTagByRef->size()) {
-     gHFEvent->fEventBits =  gHFEvent->fEventBits + 2;
-    if (fVerbose > 0) cout << "==>HFDumpGenJets> ERROR: Different Size of JetCollections (fError=" <<  gHFEvent->fEventBits << ")" << endl;
+    if (fVerbose > 0) cout << "==>HFDumpGenJets> ERROR: Different Size of JetCollections" << endl;
   }
   
   //Loop over GenJets (with Jet Flavor Tagging)
@@ -110,8 +109,7 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     const MatchedPartons aMatch = (*j).second;  
 
     if (gen->eta() != aJet->eta()) {
-       gHFEvent->fEventBits =  gHFEvent->fEventBits + 512;
-      if (fVerbose > 0) cout << "==>HFDumpGenJets> ERROR: Different jets in JetCollections (fError=" <<  gHFEvent->fEventBits << ")" << endl;
+      if (fVerbose > 0) cout << "==>HFDumpGenJets> ERROR: Different jets in JetCollections" << endl;
     }
 
     pGenJet = gHFEvent->addGenJet(); 
@@ -141,8 +139,8 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     pGenJet->fJetFlavorEne     = -9999;
 
     pGenJet->fD1               = -9999; //
-    pGenJet->fD2               = -9999; //fJetFalvorNear2
-    pGenJet->fD3               = -9999; //fJetFalvorNear3
+    pGenJet->fD2               = -9999; //fJetFlavorNear2
+    pGenJet->fD3               = -9999; //fJetFlavorNear3
     pGenJet->fD4               = -9999; //fJetFlavorHeavy
     pGenJet->fD5               = -9999; //not used
     pGenJet->fD6               = -9999; //not used
@@ -263,13 +261,15 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void  HFDumpGenJets::beginJob(const edm::EventSetup& setup) {
+//void  HFDumpGenJets::beginJob(const edm::EventSetup& setup) {
+void  HFDumpGenJets::beginJob() {
   nevt=0;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void  HFDumpGenJets::endJob() { 
-  cout << "HFDumpGenJet> Summary: Events processed: " << nevt << endl;
+  cout << "HFDumpGenJet>     Summary: Events processed: " << nevt << endl;  
+ 
 }
 
 //define this as a plug-in
