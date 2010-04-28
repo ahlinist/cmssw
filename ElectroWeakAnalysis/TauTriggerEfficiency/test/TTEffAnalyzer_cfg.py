@@ -22,7 +22,8 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        "rfio:/castor/cern.ch/user/s/slehti/testData/skim_1054.root"
+#        "rfio:/castor/cern.ch/user/s/slehti/testData/skim_1054.root"
+	'/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/133/532/EC93873A-D74B-DF11-A1B9-00E08179185D.root'
     )
 )
 
@@ -60,7 +61,7 @@ process.PFTausSelected = cms.EDFilter("PFTauSelector",
 process.load("L1Trigger/Configuration/L1Config_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.GlobalTag.globaltag = 'MC_31X_V3::All'
-process.GlobalTag.globaltag = 'GR09_R_34X_V5::All'
+process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 
 
@@ -146,7 +147,12 @@ GenParticles  = cms.untracked.InputTag("genParticles"),
        EtaMax         = cms.untracked.double(2.5)
 )
 
+#Physics bit ON
+process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
+process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
+
 process.runEDAna = cms.Path(
+    process.hltPhysicsDeclared+
 #    process.TauMCProducer*
     process.thisPFTauDiscriminationByLeadingPionPtCut *
     process.PFTausSelected *
