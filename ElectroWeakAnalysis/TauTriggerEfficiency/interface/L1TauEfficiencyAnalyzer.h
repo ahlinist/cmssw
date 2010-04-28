@@ -17,6 +17,8 @@
 
 #include "DataFormats/Math/interface/LorentzVector.h"
 
+#include<vector>
+
 // Forward declarations
 namespace reco {
         class Candidate;
@@ -53,7 +55,8 @@ class L1TauEfficiencyAnalyzer {
         edm::InputTag L1TauTriggerSource;
 
 	double   jetMatchingCone;
-        unsigned isolationThreshold;
+        std::vector<unsigned> isolationThresholds;
+        std::vector<double> thresholds;
 
         // Output tree and related variables
         TTree *l1tree;
@@ -61,7 +64,7 @@ class L1TauEfficiencyAnalyzer {
         float jetPt, jetEt, jetUncorrEt, jetEta, jetPhi, jetMinDR;
         bool hasL1Jet, hasL1TauJet, hasL1CenJet;
         bool hasTauVeto;
-        int l1Isolation;
+        std::vector<int> l1Isolations;
 	bool hasTriggeredL1TauJet;
  	bool hasTriggeredL1CenJet;
 
