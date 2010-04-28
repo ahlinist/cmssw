@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.23 2010/04/16 09:43:30 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.24 2010/04/16 15:19:59 covarell Exp $
 //
 //
 
@@ -776,10 +776,10 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 
   reco::GenParticleRef genMu1 = muon1->genParticleRef();
   reco::GenParticleRef genMu2 = muon2->genParticleRef();
-  isMatched = (genMu1.isAvailable() && genMu2.isAvailable() && 
-	       genMu1->pdgId()*genMu2->pdgId() == -169 && 
-	       genMu1->momentum().rho() > 2.5 && genMu2->momentum().rho() > 2.5);
-  if (isMatched && _removeMuons) return;
+  bool isMuMatched = (genMu1.isAvailable() && genMu2.isAvailable() && 
+		      genMu1->pdgId()*genMu2->pdgId() == -169 && 
+		      genMu1->momentum().rho() > 2.5 && genMu2->momentum().rho() > 2.5);
+  if (isMuMatched && _removeMuons) return;
 
   // PAT trigger matches (new way)
 
