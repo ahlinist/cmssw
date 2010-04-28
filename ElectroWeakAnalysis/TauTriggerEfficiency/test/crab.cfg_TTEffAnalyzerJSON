@@ -1,0 +1,46 @@
+[CRAB]
+
+jobtype                 = cmssw
+scheduler               = glite
+
+####server_name            = Bari
+
+[CMSSW]
+
+#datasetpath             = /MinimumBias/pflow-tau-TauTriggerEff_MinimumBias_BeamCommissioning09_SD_AllMinBias_Dec19thSkim_336p3_v1_RAW_RECO_Skim_HLT_run5-94221530a20769b99a891101c0b08cf7/USER
+#datasetpath		= /MinimumBias/pflow-tau-TauTriggerEff_BeamCommissioning09_SD_AllMinBias_Feb9Skim_v1_RAW_RECO_Skim_run1-816fe9826634866d3a805f8ca1ac2dd3/USER
+datasetpath             = /MinimumBias/Commissioning10-GOODCOLL-v8/RAW-RECO
+
+
+pset                    = TTEffAnalyzer_cfg.py
+#total_number_of_events  = 200
+#events_per_job          = 100
+lumi_mask               = tteff.json
+total_number_of_lumis   = -1
+lumis_per_job           = 1
+#output_file             = tteffAnalysis.root
+
+# Example for multiple output file retrieval, this probably doesn't
+# work if output is going to SE
+output_file             = tteffAnalysis-pftau.root, tteffAnalysis-l1tau.root, tteffAnalysis-l1cen.root
+
+####dbs_url 		= https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet
+
+[USER]
+return_data             = 1
+copy_data 		= 0
+
+use_central_bossDB      = 0
+use_boss_rt             = 0
+
+
+[GRID]
+rb                      = CERN 
+proxy_server            = myproxy.cern.ch 
+virtual_organization    = cms
+retry_count             = 2
+lcg_catalog_type        = lfc
+lfc_host                = lfc-cms-test.cern.ch
+lfc_home                = /grid/cms
+
+#CE_white_list = T2_IT_Pisa
