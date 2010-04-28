@@ -56,7 +56,7 @@ process.source.fileNames = ['rfio:' + relvalPath + '/' + file for file in fileLi
 
 process.source.skipEvents = cms.untracked.uint32(0)
 process.maxEvents.input = 100
-process.out.fileName = '/tmp/veverka/testZMuMuGammaSubskim_nofilter_globalMuons_1.root'
+process.out.fileName = 'testZMuMuGammaSubskim.root'
 
 #process.maxEvents = cms.untracked.PSet(output = cms.untracked.int32(1000) )
 process.countPatPhotons.minNumber = 1
