@@ -30,14 +30,6 @@ PFTauEfficiencyAssociator::PFTauEfficiencyAssociator(const ParameterSet& iConfig
 }
 
 void
-PFTauEfficiencyAssociator::beginJob(const edm::EventSetup& es)
-{
-   // 22X compatability layer
-   beginJob();
-}
-   
-
-void
 PFTauEfficiencyAssociator::beginJob()
 {
 }
