@@ -385,7 +385,7 @@ void analysisClass::Loop()
   TH1D *dijetinvmass = new TH1D("dijetinvmass","",invmassBin,0.,invmassMax);
   dijetinvmass->SetXTitle("m_{j1j2}[GeV]");
   dijetinvmass->SetTitle(dataset);
-  TH1D *dijetresEMF = new TH1D("dijetresEMF","",30,0.,1.);
+  TH1D *dijetresEMF = new TH1D("dijetresEMF","",30,-0.005,1.005);
   dijetresEMF->SetXTitle("Jet EMF");
   dijetresEMF->SetTitle(dataset);
   TH1I *dijetnconst = new TH1I("dijetnconst","",50,0,50);
@@ -407,7 +407,7 @@ void analysisClass::Loop()
   TH1D *dijetinvmassJIDloose = new TH1D("dijetinvmassJIDloose","",invmassBin,0.,invmassMax);
   dijetinvmassJIDloose->SetXTitle("m_{j1,j2}[GeV]");
   dijetinvmassJIDloose->SetTitle(dataset);
-  TH1D *dijetresEMFJIDloose = new TH1D("dijetresEMFJIDloose","",30,0.,1.);
+  TH1D *dijetresEMFJIDloose = new TH1D("dijetresEMFJIDloose","",30,-0.005,1.005);
   dijetresEMFJIDloose->SetXTitle("Jet EMF");
   dijetresEMFJIDloose->SetTitle(dataset);
   TH1I *dijetnconstJIDloose = new TH1I("dijetnconstJIDloose","",50,0,50);
@@ -429,7 +429,7 @@ void analysisClass::Loop()
   TH1D *dijetinvmassJIDtight = new TH1D("dijetinvmassJIDtight","",invmassBin,0.,invmassMax);
   dijetinvmassJIDtight->SetXTitle("m_{j1,j2}[GeV]");
   dijetinvmassJIDtight->SetTitle(dataset);
-  TH1D *dijetresEMFJIDtight = new TH1D("dijetresEMFJIDtight","",30,0.,1.);
+  TH1D *dijetresEMFJIDtight = new TH1D("dijetresEMFJIDtight","",30,-0.005,1.005);
   dijetresEMFJIDtight->SetXTitle("Jet EMF");
   dijetresEMFJIDtight->SetTitle(dataset);
   TH1I *dijetnconstJIDtight = new TH1I("dijetnconstJIDtight","",50,0,50);
@@ -473,7 +473,7 @@ void analysisClass::Loop()
   TH1D *diJPTjetinvmass = new TH1D("diJPTjetinvmass","",invmassBin,0.,invmassMax);
   diJPTjetinvmass->SetXTitle("m_{j1j2}[GeV]");
   diJPTjetinvmass->SetTitle(dataset);
-  TH1D *diJPTjetresEMF = new TH1D("diJPTjetresEMF","",30,0.,1.);
+  TH1D *diJPTjetresEMF = new TH1D("diJPTjetresEMF","",30,-0.005,1.005);
   diJPTjetresEMF->SetXTitle("Jet EMF");
   diJPTjetresEMF->SetTitle(dataset);
   TH1I *diJPTjettrkmulti = new TH1I("diJPTjettrkmulti","",50,0,50);
@@ -496,7 +496,7 @@ void analysisClass::Loop()
   TH1D *diJPTjetinvmassJIDloose = new TH1D("diJPTjetinvmassJIDloose","",invmassBin,0.,invmassMax);
   diJPTjetinvmassJIDloose->SetXTitle("m_{j1,j2}[GeV]");
   diJPTjetinvmassJIDloose->SetTitle(dataset);
-  TH1D *diJPTjetresEMFJIDloose = new TH1D("diJPTjetresEMFJIDloose","",30,0.,1.);
+  TH1D *diJPTjetresEMFJIDloose = new TH1D("diJPTjetresEMFJIDloose","",30,-0.005,1.005);
   diJPTjetresEMFJIDloose->SetXTitle("Jet EMF");
   diJPTjetresEMFJIDloose->SetTitle(dataset);
   TH1I *diJPTjettrkmultiJIDloose = new TH1I("diJPTjettrkmultiJIDloose","",50,0,50);
@@ -518,7 +518,7 @@ void analysisClass::Loop()
   TH1D *diJPTjetinvmassJIDtight = new TH1D("diJPTjetinvmassJIDtight","",invmassBin,0.,invmassMax);
   diJPTjetinvmassJIDtight->SetXTitle("m_{j1,j2}[GeV]");
   diJPTjetinvmassJIDtight->SetTitle(dataset);
-  TH1D *diJPTjetresEMFJIDtight = new TH1D("diJPTjetresEMFJIDtight","",30,0.,1.);
+  TH1D *diJPTjetresEMFJIDtight = new TH1D("diJPTjetresEMFJIDtight","",30,-0.005,1.005);
   diJPTjetresEMFJIDtight->SetXTitle("Jet EMF");
   diJPTjetresEMFJIDtight->SetTitle(dataset);
   TH1I *diJPTjettrkmultiJIDtight = new TH1I("diJPTjettrkmultiJIDtight","",50,0,50);
@@ -545,13 +545,13 @@ void analysisClass::Loop()
   TH1I *diPFjetnconst = new TH1I("diPFjetnconst","",50,0,50);
   diPFjetnconst->SetXTitle("number of jet constituents");
   diPFjetnconst->SetTitle(dataset);
-  TH1D *diPFjetCHF = new TH1D("diPFjetCHF","",30,0.,1.);
+  TH1D *diPFjetCHF = new TH1D("diPFjetCHF","",30,-0.005,1.005);
   diPFjetCHF->SetXTitle("charged hadron fraction for diPFjets");
   diPFjetCHF->SetTitle(dataset);
-  TH1D *diPFjetNHF = new TH1D("diPFjetNHF","",30,0.,1.);
+  TH1D *diPFjetNHF = new TH1D("diPFjetNHF","",30,-0.005,1.005);
   diPFjetNHF->SetXTitle("neutral hadronic fraction for diPFjets");
   diPFjetNHF->SetTitle(dataset);
-  TH1D *diPFjetNEF = new TH1D("diPFjetNEF","",30,0.,1.);
+  TH1D *diPFjetNEF = new TH1D("diPFjetNEF","",30,-0.005,1.005);
   diPFjetNEF->SetXTitle("neutral EM fraction (photons) for diPFjets");
   diPFjetNEF->SetTitle(dataset);
   //loose
@@ -573,13 +573,13 @@ void analysisClass::Loop()
   TH1I *diPFjetnconstJIDloose = new TH1I("diPFjetnconstJIDloose","",50,0,50);
   diPFjetnconstJIDloose->SetXTitle("number of jet constituents");
   diPFjetnconstJIDloose->SetTitle(dataset);
-  TH1D *diPFjetCHFJIDloose = new TH1D("diPFjetCHFJIDloose","",30,0.,1.);
+  TH1D *diPFjetCHFJIDloose = new TH1D("diPFjetCHFJIDloose","",30,-0.005,1.005);
   diPFjetCHFJIDloose->SetXTitle("charged hadron fraction for diPFjets");
   diPFjetCHFJIDloose->SetTitle(dataset);
-  TH1D *diPFjetNHFJIDloose = new TH1D("diPFjetNHFJIDloose","",30,0.,1.);
+  TH1D *diPFjetNHFJIDloose = new TH1D("diPFjetNHFJIDloose","",30,-0.005,1.005);
   diPFjetNHFJIDloose->SetXTitle("neutral hadronic fraction for diPFjets");
   diPFjetNHFJIDloose->SetTitle(dataset);
-  TH1D *diPFjetNEFJIDloose = new TH1D("diPFjetNEFJIDloose","",30,0.,1.);
+  TH1D *diPFjetNEFJIDloose = new TH1D("diPFjetNEFJIDloose","",30,-0.005,1.005);
   diPFjetNEFJIDloose->SetXTitle("neutral EM fraction (photons) for diPFjets");
   diPFjetNEFJIDloose->SetTitle(dataset);
   //tight
@@ -601,13 +601,13 @@ void analysisClass::Loop()
   TH1I *diPFjetnconstJIDtight = new TH1I("diPFjetnconstJIDtight","",50,0,50);
   diPFjetnconstJIDtight->SetXTitle("number of jet constituents");
   diPFjetnconstJIDtight->SetTitle(dataset);
-  TH1D *diPFjetCHFJIDtight = new TH1D("diPFjetCHFJIDtight","",30,0.,1.);
+  TH1D *diPFjetCHFJIDtight = new TH1D("diPFjetCHFJIDtight","",30,-0.005,1.005);
   diPFjetCHFJIDtight->SetXTitle("charged hadron fraction for diPFjets");
   diPFjetCHFJIDtight->SetTitle(dataset);
-  TH1D *diPFjetNHFJIDtight = new TH1D("diPFjetNHFJIDtight","",30,0.,1.);
+  TH1D *diPFjetNHFJIDtight = new TH1D("diPFjetNHFJIDtight","",30,-0.005,1.005);
   diPFjetNHFJIDtight->SetXTitle("neutral hadronic fraction for diPFjets");
   diPFjetNHFJIDtight->SetTitle(dataset);
-  TH1D *diPFjetNEFJIDtight = new TH1D("diPFjetNEFJIDtight","",30,0.,1.);
+  TH1D *diPFjetNEFJIDtight = new TH1D("diPFjetNEFJIDtight","",30,-0.005,1.005);
   diPFjetNEFJIDtight->SetXTitle("neutral EM fraction (photons) for diPFjets");
   diPFjetNEFJIDtight->SetTitle(dataset);
 
