@@ -45,7 +45,7 @@ void PATJetAlphaSelectorImp::select(const edm::Handle<collection>& patJetCollect
   }
 }
 
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 typedef ObjectSelector<PATJetAlphaSelectorImp> PATJetAlphaSelector;
 

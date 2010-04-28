@@ -55,7 +55,7 @@ void PATObjectAntiOverlapSelector<T>::select(const edm::Handle<collection>& part
   }
 }
 
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"

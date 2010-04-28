@@ -147,7 +147,7 @@ void PATLeptonIsoDepositSelector<T>::select(const edm::Handle<collection>& patLe
   }
 }
 
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"

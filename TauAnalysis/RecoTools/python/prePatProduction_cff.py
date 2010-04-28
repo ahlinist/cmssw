@@ -33,6 +33,7 @@ from RecoJets.Configuration.RecoGenJets_cff import *
 # produce MET significance values
 from RecoMET.METProducers.CaloMETSignif_cfi import *
 metsignificance.METType = cms.string('CaloMET')
+metsignificance.calculateSignificance = cms.bool(False)
 
 # produce event-shape variables
 from PhysicsTools.CandAlgos.EventShapeVars_cff import *

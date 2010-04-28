@@ -28,4 +28,4 @@ patMETCorrections._seq = patMETCorrections._seq * MetTauCorrections
 # change input for pat::MET production to reco::MET collection
 # containing the tau-jet specific corrections
 # (comment-out the next line in case you prefer to **not** apply the tau-jet specific MET corrections)
-layer1METs.metSource  = cms.InputTag("tauMetCorr")
+patMETs.metSource  = cms.InputTag("tauMetCorr")

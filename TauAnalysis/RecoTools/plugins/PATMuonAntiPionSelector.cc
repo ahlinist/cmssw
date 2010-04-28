@@ -24,7 +24,7 @@ void PATMuonAntiPionSelectorImp::select(const edm::Handle<collection>& patMuonCo
   }
 }
 
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
+#include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 

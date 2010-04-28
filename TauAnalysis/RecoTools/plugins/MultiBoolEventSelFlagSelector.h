@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: MultiBoolEventSelFlagSelector.h,v 1.2 2009/07/30 15:28:02 veelken Exp $
+ * $Id: MultiBoolEventSelFlagSelector.h,v 1.1 2010/01/15 17:34:21 veelken Exp $
  *
  */
 
@@ -19,7 +19,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 #include <vector>
 

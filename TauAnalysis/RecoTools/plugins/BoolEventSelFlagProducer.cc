@@ -5,7 +5,8 @@
 BoolEventSelFlagProducer::BoolEventSelFlagProducer(const edm::ParameterSet& cfg)
   : cfgError_(0)
 { 
-  //std::cout << "<BoolEventSelFlagProducer::BoolEventSelFlagProducer>:" << std::endl;
+
+//std::cout << "<BoolEventSelFlagProducer::BoolEventSelFlagProducer>:" << std::endl;
 
 //--- check if configuration parameters contain only one
 //    or multiple definitions of plugins derrived from EventSelectorBase

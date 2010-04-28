@@ -56,7 +56,7 @@ bool TriggerResultEventSelector::operator()(edm::Event& evt, const edm::EventSet
 
 DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, TriggerResultEventSelector, "TriggerResultEventSelector");      
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorAdapter.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorAdapter.h"
 
 typedef EventSelectorAdapter<TriggerResultEventSelector> TriggerResultFilter;
 
