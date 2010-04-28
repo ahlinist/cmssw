@@ -73,8 +73,8 @@ process.output.outputCommands.append("keep *_hfrecoReflagged_*_*")
 #new rechit collection name is:  HFRecHitsSorted_hfrecoReflagged__USER
 
 # Use the reflagged HF RecHits to make the CaloTowers
-process.towerMaker.hfInput = cms.InputTag("hfrecoReflagged")
-process.towerMakerWithHO.hfInput = cms.InputTag("hfrecoReflagged")
+process.towerMaker.hfInput = "hfrecoReflagged"
+process.towerMakerWithHO.hfInput = "hfrecoReflagged"
 
 # Path and EndPath definitions
 process.reflagging_step = cms.Path(process.hfrecoReflagged)
