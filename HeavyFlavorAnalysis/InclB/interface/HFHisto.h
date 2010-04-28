@@ -21,14 +21,13 @@ class HFHisto : public edm::EDAnalyzer {
   ~HFHisto();
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   
   TFile        *fFile; 
   TH1          *fHisto;
-  TH1          *fErrorHisto;
-
+ 
   int nevt;
 };
 

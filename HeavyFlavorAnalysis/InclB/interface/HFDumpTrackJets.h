@@ -26,11 +26,12 @@ class HFDumpTrackJets : public edm::EDAnalyzer {
   ~HFDumpTrackJets();
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  int           fVerbose; 
+  int           fVerbose;
+  int           fDoFlavorTagging;
   std::string   fJetsLabel;
   std::string   fTracksLabel;
   std::string   fGenCandidatesLabel;

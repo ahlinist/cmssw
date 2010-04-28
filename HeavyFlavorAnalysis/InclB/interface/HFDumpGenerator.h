@@ -25,7 +25,7 @@ class HFDumpGenerator : public edm::EDAnalyzer {
   ~HFDumpGenerator();
   
  private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
@@ -33,7 +33,7 @@ class HFDumpGenerator : public edm::EDAnalyzer {
   std::string fGenCandidatesLabel, fGenEventLabel;
   std::string fGenEventScale, fGenEventProcID, fGenEventWeight;
  
-  
+  int nevt;
 
 };
 
