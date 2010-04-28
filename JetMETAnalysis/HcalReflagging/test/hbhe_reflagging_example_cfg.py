@@ -75,8 +75,8 @@ process.output.outputCommands.append("keep *_hbherecoReflagged_*_*")
 #new rechit collection name is:  HBHERecHitsSorted_hbherecoReflagged__USER
 
 # Use the reflagged HBHE RecHits to make the CaloTowers
-process.towerMaker.hbheInput = cms.InputTag("hbherecoReflagged")
-process.towerMakerWithHO.hbheInput = cms.InputTag("hbherecoReflagged")
+process.towerMaker.hbheInput = "hbherecoReflagged"
+process.towerMakerWithHO.hbheInput = "hbherecoReflagged"
 
 # Path and EndPath definitions
 process.reflagging_step = cms.Path(process.hbherecoReflagged)
