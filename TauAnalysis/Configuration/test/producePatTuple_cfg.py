@@ -48,9 +48,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-		#'rfio:/castor/cern.ch/cms/store/caf/user/meridian/EGMPromptFilter_Beam10/132959/EGMPromptFilter_Electrons_132959_19315724_1_1.root'
-		'file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/data10/skimElecTau_132959_132968.root',
-		'file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/data10/skimElecTau_133029_133082.root'
+		'rfio:/castor/cern.ch/cms/store/caf/user/meridian/EGMPromptFilter_Beam10/132959/EGMPromptFilter_Electrons_132959_19315724_1_1.root'
 		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_17.root'
 	)
 	#skipBadFiles = cms.untracked.bool(True)    
@@ -76,7 +74,7 @@ producePatElectronIsolation(process)
 # import function to remove MC-specific modules 
 from TauAnalysis.Configuration.tools.switchToData import switchToData
 # uncomment to run over data
-switchToData(process)
+##switchToData(process)#
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
