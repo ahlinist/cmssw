@@ -14,10 +14,10 @@ patTupleEventContent = cms.PSet(
 # keep clean leptons and jets
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_cleanLayer1Electrons*_*_*',
-      'keep *_cleanLayer1Muons*_*_*',
-      'keep *_cleanLayer1Taus*_*_*',
-      'keep *_cleanLayer1Jets*_*_*' ]
+    [ 'keep *_cleanPatElectrons*_*_*',
+      'keep *_cleanPatMuons*_*_*',
+      'keep *_cleanPatTaus*_*_*',
+      'keep *_cleanPatJets*_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ patTupleEventContent.outputCommands.extend(
       [ 'keep *_generalTracks_*_*',
 		'keep *_gsfElectrons_*_*',
 		'keep *_electronGsfTracks_*_*',
-		'keep *_cleanLayer1Photons*_*_*',
+		'keep *_cleanPatPhotons*_*_*',
 		'keep *_photonCore_*_*',
 		'keep *_photons_*_*',
 		'keep *_conversions_*_*',
@@ -93,7 +93,7 @@ patTupleEventContent.outputCommands.extend(
 # required by jetHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_selectedLayer1JetsAntiOverlapWithLeptonsVetoCumulative_*_*' ]
+    [ 'keep *_selectedPatJetsAntiOverlapWithLeptonsVetoCumulative_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
