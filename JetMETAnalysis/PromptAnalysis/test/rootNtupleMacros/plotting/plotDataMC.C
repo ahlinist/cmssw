@@ -90,11 +90,13 @@ void plotDataMC(){
 
     TCanvas *c = new TCanvas("c","",600,600); 
     double scalefactor= h_data->Integral()/h_mc->Integral();
-    if (isptplot) { //ACHTUNG: it only works for histos with constant bin width!
+    if (isptplot) { 
       // h_mc->Sumw2(); //for some reason it doesnt plot this one if i do sumw2, so i comment it out. anyhow we dont see its errors, but to be checked!
       h_data->Sumw2();
-      h_mc->Scale(1./h_mc->GetBinWidth(1));
-      h_data->Scale(1./h_data->GetBinWidth(1));
+      for(int j=0 ; j<=h_mc->GetNbinsX(); ++j){
+	h_mc->SetBinContent(j,h_mc->GetBinContent(j)/h_mc->GetBinWidth(j));
+	h_data->SetBinContent(j,h_data->GetBinContent(j)/h_data->GetBinWidth(j));
+      }
     }
     h_mc->Scale(scalefactor);
     //    h_mc->Rebin(rebin);
