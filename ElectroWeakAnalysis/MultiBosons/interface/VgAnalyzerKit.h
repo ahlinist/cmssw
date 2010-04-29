@@ -69,7 +69,8 @@ protected:
   int    ttbit_[64];
   double pdf_[7];
   double processID_;
-  int    HLT_[102];
+  int    nHLT_;
+  int    HLT_[maxP];
   int    nHFTowersP_;
   int    nHFTowersN_;
   int    nVtx_;
