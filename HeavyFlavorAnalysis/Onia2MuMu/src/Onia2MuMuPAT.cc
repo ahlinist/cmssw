@@ -27,6 +27,7 @@ Onia2MuMuPAT::Onia2MuMuPAT(const edm::ParameterSet& iConfig):
   thePVs_(iConfig.getParameter<edm::InputTag>("primaryVertexTag")),
   higherPuritySelection_(iConfig.getParameter<std::string>("higherPuritySelection")),
   lowerPuritySelection_(iConfig.getParameter<std::string>("lowerPuritySelection")),
+  dimuonSelection_(iConfig.existsAs<std::string>("dimuonSelection") ? iConfig.getParameter<std::string>("dimuonSelection") : ""),
   addCommonVertex_(iConfig.getParameter<bool>("addCommonVertex")),
   addMuonlessPrimaryVertex_(iConfig.getParameter<bool>("addMuonlessPrimaryVertex")),
   addMCTruth_(iConfig.getParameter<bool>("addMCTruth"))
@@ -104,7 +105,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       myCand.setP4(jpsi);
       myCand.setCharge(it->charge()+it2->charge());
 
-     
+      // ---- apply the dimuon cut ----
+      if(!dimuonSelection_(myCand)) continue;
+
       // ---- fit vertex using Tracker tracks (if they have tracks) ----
       if (it->track().isNonnull() && it2->track().isNonnull()) {
 
