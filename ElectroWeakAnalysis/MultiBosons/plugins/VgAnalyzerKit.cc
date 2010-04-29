@@ -548,6 +548,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // HLT
+  nHLT_ = 0;
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
   if (saveHLTInfo_) {
     Handle<TriggerResults> trgResultsHandle;
@@ -560,6 +561,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       //HLT_[i] = (trgResultsHandle->accept(hltBits[i]) == true) ? 1:0; 
       //cout<<"HLT bit = "<<hltBits[i]<<"   "<<hlNames_[hltBits[i]]<<" "<<HLT_[i]<<endl;
       HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0; 
+      nHLT_ += 1;
       //cout<<"HLT bit = "<<i<<"   "<<hlNames_[i]<<endl;
     }
   }
