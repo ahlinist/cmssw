@@ -95,5 +95,7 @@ for source, source_info in to_build:
         # Change the output filename to reflect the batch job
         source_info['output_file'] = source_info['output_file'].replace( '.root', '_%i.root' % options.job)
         source_info['output_file'] = os.path.join( working_dir, source_info['output_file'])
-        make_plots(files_and_weights, selections=makeCuts(denominator), **source_info)
+        # Temporarily switch back to jetpt/eta
+        make_plots(files_and_weights, selections=makeCuts(denominator), 
+                   x_expr="$jetPt", y_expr="abs($jetEta)", **source_info)
 
