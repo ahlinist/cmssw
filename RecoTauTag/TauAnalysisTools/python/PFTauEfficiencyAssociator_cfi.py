@@ -20,8 +20,8 @@ disc_configs = makeCuts(denominator="1")
 
 protoEffciencyAssociator = cms.EDProducer("PFTauEfficiencyAssociatorFromTH3",
        PFTauProducer = cms.InputTag("shrinkingConePFTauProducer"),
-       xAxisFunction = common_expressions.pt,
-       yAxisFunction = cms.string("abs(%s)" % common_expressions.eta.value()),
+       xAxisFunction = pftau_expressions.jetPt,
+       yAxisFunction = cms.string("abs(%s)" % pftau_expressions.jetEta.value()),
        zAxisFunction = pftau_expressions.jetWidth,
        efficiencySources = cms.PSet(
            filename = cms.string("/afs/cern.ch/user/f/friis/public/TauPeformance_QCD_BCtoMu.root"),
@@ -37,7 +37,7 @@ MuEnrichedQCDEffSources = add_eff_sources(prefix="fr",
 shrinkingConeMuEnrichedQCDAssociator = protoEffciencyAssociator.clone()
 shrinkingConeMuEnrichedQCDAssociator.efficiencySources = cms.PSet(
         MuEnrichedQCDEffSources,
-        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateMar11/ppmux_histograms.root")
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateApr29_VersusJetPt/ppmux_histograms.root")
 )
 
 DiJetHighPtEffSources = add_eff_sources(prefix="fr",
@@ -46,7 +46,7 @@ DiJetHighPtEffSources = add_eff_sources(prefix="fr",
 shrinkingConeDiJetHighPt = protoEffciencyAssociator.clone()
 shrinkingConeDiJetHighPt.efficiencySources = cms.PSet(
         DiJetHighPtEffSources,
-        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateMar11/dijet_highpt_histograms.root")
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateApr29_VersusJetPt/dijet_highpt_histograms.root")
 )
 
 DiJetSecondPtEffSources = add_eff_sources(prefix="fr",
@@ -55,7 +55,7 @@ DiJetSecondPtEffSources = add_eff_sources(prefix="fr",
 shrinkingConeDiJetSecondPt = protoEffciencyAssociator.clone()
 shrinkingConeDiJetSecondPt.efficiencySources = cms.PSet(
         DiJetSecondPtEffSources,
-        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateMar11/dijet_secondpt_histograms.root")
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateApr29_VersusJetPt/dijet_secondpt_histograms.root")
 )
 
 WJetsEffSources = add_eff_sources(prefix="fr",
@@ -64,7 +64,7 @@ WJetsEffSources = add_eff_sources(prefix="fr",
 shrinkingConeWJets = protoEffciencyAssociator.clone()
 shrinkingConeWJets.efficiencySources = cms.PSet(
         WJetsEffSources,
-        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateMar11/wjets_histograms.root")
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateApr29_VersusJetPt/wjets_histograms.root")
 )
 
 ZTTEffSimSources = add_eff_sources(prefix="eff",
@@ -73,7 +73,7 @@ ZTTEffSimSources = add_eff_sources(prefix="eff",
 shrinkingConeZTTEffSimAssociator = protoEffciencyAssociator.clone()
 shrinkingConeZTTEffSimAssociator.efficiencySources = cms.PSet(
         ZTTEffSimSources,
-        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateMar11/ztt_histograms.root")
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/TauFakeRateApr29_VersusJetPt/ztt_histograms.root")
 )
 
 associateTauFakeRates = cms.Sequence(shrinkingConeZTTEffSimAssociator*
