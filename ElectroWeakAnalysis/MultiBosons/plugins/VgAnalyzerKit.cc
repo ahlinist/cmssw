@@ -57,8 +57,9 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("lumis", &lumis_, "lumis/I");
   tree_->Branch("isData", &isData_, "isData/O");
   tree_->Branch("ttbit", ttbit_, "ttbit[64]/I");
-  tree_->Branch("HLT", HLT_, "HLT[102]/I");
-  tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
+  tree_->Branch("nHLT", &nHLT_, "nHLT/I");
+  tree_->Branch("HLT", HLT_, "HLT[nHLT]/I"); 
+  tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I"); 
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
   tree_->Branch("vtx", vtx_, "vtx[nVtx][3]/D");
