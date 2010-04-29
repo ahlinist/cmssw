@@ -360,7 +360,7 @@ void analysisClass::Loop()
   double invmassMax=800.;
 
   //Eventual cut for jets to be considered for histograms filling only
-  double MinPttoFillHisto=50.; //can be put to 50.
+  double MinPttoFillHisto=25.; //can be put to 50.
 
   TH1D* h_phi_TA = new TH1D("phi_thrust_axis","",25,phiMin,phiMax);
   h_phi_TA->SetXTitle("#phi(TA)");
