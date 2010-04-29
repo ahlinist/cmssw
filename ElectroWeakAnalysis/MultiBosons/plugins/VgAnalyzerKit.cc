@@ -454,7 +454,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
   IsTracksGood_ = 0;
   if (nTrk_ > 10) {
-    if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 0;
+    if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 1;
   } else {
     IsTracksGood_ = 0;
   }
