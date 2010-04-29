@@ -28,7 +28,7 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
 ## Load the ZMuMu Subskim paths - this may overwrite some of the PAT modules
-process.load("ElectroWeakAnalysis.Skimming.dimuons_SkimPaths_cff")
+process.load("ElectroWeakAnalysis.Skimming.zMuMu_SubskimPathsWithMCTruth_cff")
 ## Turn off the ZMuMu filters
 process.dimuonsFilter.minNumber = 0
 process.dimuonsOneTrackFilter.minNumber = 0
