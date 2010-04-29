@@ -7,39 +7,65 @@ process.load('JetMETAnalysis.PromptAnalysis.ntuple_cff')
 process.load("Configuration/StandardSequences/Geometry_cff")
 process.load("Configuration/StandardSequences/MagneticField_cff")
 
-###########
-process.load('Configuration.StandardSequences.Services_cff')
+# ###########
+# process.load('Configuration.StandardSequences.Services_cff')
+# process.load('Configuration/StandardSequences/GeometryExtended_cff')
+# process.load('Configuration/StandardSequences/Reconstruction_cff')
+# process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
+
+######################
+# HF PMT cleaning; VERSION 2 is the currently recommended version, as of 22 April 2010.
+version = 2   # version 1 = default (loose), version 2 = (medium), version 3 = (tight)
+
+# import of standard configurations
+process.load('Configuration/StandardSequences/Services_cff')
+process.load('FWCore/MessageService/MessageLogger_cfi')
 process.load('Configuration/StandardSequences/GeometryExtended_cff')
+#process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.load('Configuration/EventContent/EventContent_cff')
 
 process.GlobalTag.globaltag = 'GR_R_35X_V6::All'##make sure to check the GT from DBS
-###########
 
-# process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
-# process.load("Configuration/StandardSequences/RawToDigi_Data_cff")
-# process.load("L1Trigger/Configuration/L1RawToDigi_cff")
-# process.load("RecoMET/Configuration/RecoMET_BeamHaloId_cff")
-# process.load("RecoMET/METProducers/BeamHaloSummary_cfi")
-# process.load("RecoMET/METProducers/CSCHaloData_cfi")
-# process.load("RecoMET/METProducers/EcalHaloData_cfi")
-# process.load("RecoMET/METProducers/HcalHaloData_cfi")
-# process.load("RecoMET/METProducers/GlobalHaloData_cfi")
+# New SeverityLevelComputer that forces RecHits with UserDefinedBit0 set to be excluded from new rechit collection
+import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
+process.hcalRecAlgos=RemoveAddSevLevel.RemoveFlag(process.hcalRecAlgos,"HFLongShort")
+process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"UserDefinedBit0",10)
 
-process.load("Configuration/StandardSequences/ReconstructionCosmics_cff")
+# HF RecHit reflagger
+process.load("JetMETAnalysis/HcalReflagging/HFrechitreflaggerJETMET_cff")
+if version==1:
+    process.hfrecoReflagged = process.HFrechitreflaggerJETMETv1.clone()
+elif version==2:
+    process.hfrecoReflagged = process.HFrechitreflaggerJETMETv2.clone()
+elif version==3:
+    process.hfrecoReflagged = process.HFrechitreflaggerJETMETv3.clone()
 
-process.load("RecoMuon/Configuration/RecoMuon_cff")
+# Use the reflagged HF RecHits to make the CaloTowers
+process.towerMaker.hfInput = cms.InputTag("hfrecoReflagged")
+process.towerMakerWithHO.hfInput = cms.InputTag("hfrecoReflagged")
 
-process.load('Configuration.StandardSequences.Services_cff')
+# Path and EndPath definitions
+process.reflagging_step = cms.Path(process.hfrecoReflagged)
+process.rereco_step = cms.Path(process.caloTowersRec*(process.recoJets*process.recoJetIds+process.recoTrackJets)*process.recoJetAssociations*process.metreco) # re-reco jets and met
+#process.rereco_step = cms.Path(process.towerMaker*process.ak5CaloJets*process.met) # a simpler use case
+#process.out_step = cms.EndPath(process.output)
+######################
+
 process.add_( cms.Service( "TFileService",
-fileName = cms.string("MinimumBias__Commissioning10-Apr1ReReco-v2__RECO.root"), ##give a name to the output file
+fileName = cms.string("WZ.root"), ##give a name to the output file
                            closeFileFast = cms.untracked.bool(True)  ) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
-   '/store/data/Commissioning10/MinimumBias/RECO/Apr1ReReco-v2/0140/FEAE8844-6E40-DF11-92E9-0026189438E8.root'
+#         "/store/caf/user/meridian/InterestingEvents/133874/EGMExpressFilterInteresting_133874_358_1_1.root",
+#         "/store/caf/user/meridian/InterestingEvents/133885/EGMExpressFilterInteresting_133885_62_1_1.root",
+        "/store/caf/user/meridian/InterestingEvents/133877/EGMExpressFilterInteresting_133877_443_1_1.root"
+    #'/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/132/601/F65A94F7-4141-DF11-9F4E-003048D47A80.root'
+    #'/store/data/Commissioning10/MinimumBias/RECO/Apr1ReReco-v2/0140/FEAE8844-6E40-DF11-92E9-0026189438E8.root'
     #"/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Dec14thSkim_v1/0102/BABAF8C3-71EA-DE11-9D8C-0024E8768446.root"
     #'/store/mc/Summer09/MinBias/GEN-SIM-RECO/STARTUP3X_V8D_900GeV-v1/0005/E4590360-4CD7-DE11-8CB4-002618943896.root'
     #'/store/data/BeamCommissioning09/MinimumBias/RECO/rereco_GR09_P_V7_v1/0099/DABD5D6D-D4E2-DE11-8FFD-00261894387A.root'
@@ -51,7 +77,6 @@ process.source = cms.Source (
     
     secondaryFileNames = cms.untracked.vstring())
 
-process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.default.limit = 100
 
@@ -121,4 +146,6 @@ process.theBigNtuple = cms.Path(
     process.promptanaPMTnoise
     )
     * process.promptanaTree )
+
+process.schedule = cms.Schedule(process.reflagging_step,process.rereco_step,process.theBigNtuple)
 
