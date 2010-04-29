@@ -181,7 +181,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleNumberOfValidHits", eleNumberOfValidHits_, "eleNumberOfValidHits[nEle]/I");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton/O");
+  tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/D");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/D");
   tree_->Branch("phoPz", phoPz_, "phoPz[nPho]/D");
