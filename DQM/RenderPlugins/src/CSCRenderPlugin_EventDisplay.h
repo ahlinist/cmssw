@@ -52,7 +52,7 @@ class EventDisplay {
     TText* tTitle;
     TText* tLayer;
     TText* tYLabel[6];
-    TText* tXTitle;
+    TText* tXTitle[3];
     TText* tXLabel[3][160];
     TBox*  bBlank;
     TBox*  bBox[3][6][160];
