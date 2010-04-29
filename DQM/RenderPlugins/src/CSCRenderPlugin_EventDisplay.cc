@@ -81,7 +81,10 @@ EventDisplay::EventDisplay() {
   }
 
   tLayer = 0;
-  tXTitle = 0;
+  
+  tXTitle[0] = 0;
+  tXTitle[1] = 0;
+  tXTitle[2] = 0;
 
 }
 
@@ -94,6 +97,10 @@ EventDisplay::~EventDisplay() {
   delete histos[1];
   delete histos[2];
   delete bBlank;
+
+  if (tXTitle[0]) delete tXTitle[0];
+  if (tXTitle[1]) delete tXTitle[1];
+  if (tXTitle[2]) delete tXTitle[2];
 
   delete greyscaleExec;
   delete normalExec;
@@ -341,15 +348,13 @@ void EventDisplay::drawEventDisplayGrid(int hnum, TH2* data, int data_first_col,
   }
   tLayer->Draw();
 
-  if (tXTitle == 0) {
-    tXTitle = new TText(HISTO_WIDTH, -0.7, title_x);
-    tXTitle->SetTextAlign(32);
-    tXTitle->SetTextFont(42);
-    tXTitle->SetTextSize(0.05);
-  } else {
-    tXTitle->SetText(HISTO_WIDTH, -0.7, title_x);
+  if (tXTitle[hnum] == 0) {
+    tXTitle[hnum] = new TText(HISTO_WIDTH, -0.7, title_x);
+    tXTitle[hnum]->SetTextAlign(32);
+    tXTitle[hnum]->SetTextFont(42);
+    tXTitle[hnum]->SetTextSize(0.05);
   }
-  tXTitle->Draw();
+  tXTitle[hnum]->Draw();
 
   for (int i = 0; i < p_post_draw; i++) {
     post_draw[i]->Draw("l");
