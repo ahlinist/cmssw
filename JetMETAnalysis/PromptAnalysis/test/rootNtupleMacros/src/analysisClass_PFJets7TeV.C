@@ -419,7 +419,6 @@ void analysisClass::Loop()
   fakePFJetptall1->SetXTitle("p_{T}[GeV]");
   fakePFJetptall1->SetTitle(dataset);
 
-
   TH1D *PFJeteta = new TH1D("PFJeteta","",etaBin,etaMin,etaMax);
   PFJeteta->SetXTitle("#eta");
   PFJeteta->SetTitle(dataset);
@@ -991,7 +990,7 @@ void analysisClass::Loop()
 	    vPtEtaPhiE_PF.push_back(PtEtaPhiE4Dlorentzvector2);
 	  }
 	  //Loop over Inclusive PFJets ----- 
-	  if((ak5PFJetpT->at(j) * jcScale_PF) >ptMin_PF && fabs(ak5PFJetEta->at(j))<endcapeta_dijet){    //jc
+	  if((ak5PFJetpT->at(j) * jcScale_PF) >ptMin_PF && fabs(ak5PFJetEta->at(j))<endcapeta){    //jc
 	    PFJets++;	    
 	    nPFconst->Fill(ak5PFJetNConstituents->at(j));
 	    PFJetpt->Fill(ak5PFJetpT->at(j) * jcScale_PF);    //jc 
