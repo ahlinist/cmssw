@@ -316,7 +316,7 @@ void analysisClass::Loop()
   double etaMin=-3.;
 
   int invmassBin=100;//30
-  double invmassMax=600.;
+  double invmassMax=800.;
 
    TLorentzVector PFjet1LorentzVector(0.,0.,0.,0.);
    TLorentzVector PFjet2LorentzVector(0.,0.,0.,0.);
@@ -333,6 +333,19 @@ void analysisClass::Loop()
   TH1I *nPFconst = new TH1I("nPFconst","",50,0,50);
   nPFconst->SetXTitle("Number of PFJet constituents");
   nPFconst->SetTitle(dataset);
+
+  TH1D *PFMETbySumEt = new TH1D("PFMETbySumET","",30,0.,1.);
+  PFMETbySumEt->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  PFMETbySumEt->SetTitle(dataset);
+  TH1D *PFMETbySumEtJIDloose = new TH1D("PFMETbySumETJIDloose","",30,0.,1.);
+  PFMETbySumEtJIDloose->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  PFMETbySumEtJIDloose->SetTitle(dataset);
+  TH1D *PFdijetMETbySumET = new TH1D("PFdijetMETbySumET","",30,0,1.0);
+  PFdijetMETbySumET->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  PFdijetMETbySumET->SetTitle(dataset);
+  TH1D *PFdijetMETbySumETJIDloose = new TH1D("PFdijetMETbySumETJIDloose","",30,0,1.0);
+  PFdijetMETbySumETJIDloose->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  PFdijetMETbySumETJIDloose->SetTitle(dataset);
 
   TH1I *PFJetnJIDloose = new TH1I("PFJetnJIDloose","",10,0,10);
   PFJetnJIDloose->SetXTitle("Number of PFJets per event");
@@ -367,19 +380,46 @@ void analysisClass::Loop()
   PFJetCHMultJIDtight->SetTitle(dataset);
 
 
+  const int bin=30;
+  Double_t Lower[bin] ={25, 27, 29 ,31 ,33 ,35 ,37, 39, 41 ,43 ,45, 47, 50, 55, 60, 65, 70 ,75 ,80 ,85, 90, 95, 100 ,110, 120, 130, 140, 150 ,175, 200};
 
-  TH1D *PFJetptall = new TH1D("PFJetptall","",ptBin+8,0.,ptMax);
+  TH1D *PFJetptall = new TH1D("PFJetptall","",(bin-1),Lower);
   PFJetptall->SetXTitle("PFJet p_{T}[GeV]");
   PFJetptall->SetTitle(dataset);
-  TH1D *PFJetpt = new TH1D("PFJetpt","",ptBin,ptMin_PF,ptMax);
+  TH1D *PFJetpt = new TH1D("PFJetpt","",(bin-1),Lower);
   PFJetpt->SetXTitle("PFJet p_{T}[GeV]");
   PFJetpt->SetTitle(dataset);
-  TH1D *PFJetptJIDloose = new TH1D("PFJetptJIDloose","",ptBin,ptMin_PF,ptMax);
+  TH1D *PFJetptJIDloose = new TH1D("PFJetptJIDloose","",(bin-1),Lower);
   PFJetptJIDloose->SetXTitle("p_{T}[GeV]");
   PFJetptJIDloose->SetTitle(dataset);
-  TH1D *PFJetptJIDtight = new TH1D("PFJetptJIDtight","",ptBin,ptMin_PF,ptMax);
+  TH1D *PFJetptJIDtight = new TH1D("PFJetptJIDtight","",(bin-1),Lower);
   PFJetptJIDtight->SetXTitle("p_{T}[GeV]");
   PFJetptJIDtight->SetTitle(dataset);
+
+  //dijet pt-histos
+  TH1D *PFdijetptall1 = new TH1D("PFdijetptall1","",(bin-1),Lower);
+  PFdijetptall1->SetXTitle("p_{T}[GeV]");
+  PFdijetptall1->SetTitle(dataset);
+  TH1D *PFdijetptall2 = new TH1D("PFdijetptall2","",(bin-1),Lower);
+  PFdijetptall2->SetXTitle("p_{T}[GeV]");
+  PFdijetptall2->SetTitle(dataset);
+  TH1D *PFdijetptall1JIDloose = new TH1D("PFdijetptall1JIDloose","",(bin-1),Lower);
+  PFdijetptall1JIDloose->SetXTitle("p_{T}[GeV]");
+  PFdijetptall1JIDloose->SetTitle(dataset);
+  TH1D *PFdijetptall1JIDtight = new TH1D("PFdijetptall1JIDtight","",(bin-1),Lower);
+  PFdijetptall1JIDtight->SetXTitle("p_{T}[GeV]");
+  PFdijetptall1JIDtight->SetTitle(dataset);
+  TH1D *PFdijetptall2JIDloose = new TH1D("PFdijetptall2JIDloose","",(bin-1),Lower);
+  PFdijetptall2JIDloose->SetXTitle("p_{T}[GeV]");
+  PFdijetptall2JIDloose->SetTitle(dataset);
+  TH1D *PFdijetptall2JIDtight = new TH1D("PFdijetptall2JIDtight","",(bin-1),Lower);
+  PFdijetptall2JIDtight->SetXTitle("p_{T}[GeV]");
+  PFdijetptall2JIDtight->SetTitle(dataset);
+  TH1D *fakePFJetptall1 = new TH1D("fakePFJetptall1","",(bin-1),Lower);
+  fakePFJetptall1->SetXTitle("p_{T}[GeV]");
+  fakePFJetptall1->SetTitle(dataset);
+
+
   TH1D *PFJeteta = new TH1D("PFJeteta","",etaBin,etaMin,etaMax);
   PFJeteta->SetXTitle("#eta");
   PFJeteta->SetTitle(dataset);
@@ -437,6 +477,42 @@ void analysisClass::Loop()
   TH1I *PFJetNeutMult = new TH1I("PFJetNeutMult","",50,0,50);
   PFJetNeutMult->SetXTitle("Number of neutral particles in PFJet");
   PFJetNeutMult->SetTitle(dataset);
+  TH1D *PFJetCEF = new TH1D("PFJetCEF","",30,-0.005,1.005);
+  PFJetCEF->SetXTitle("charged EM fraction (electrons) for PFJets");
+  PFJetCEF->SetTitle(dataset);
+  TH1D *PFJetNEF = new TH1D("PFJetNEF","",30,-0.005,1.005);
+  PFJetNEF->SetXTitle("neutral EM fraction (photons) for PFJets");
+  PFJetNEF->SetTitle(dataset);
+  TH1D *PFJetCHF = new TH1D("PFJetCHF","",30,-0.005,1.005);
+  PFJetCHF->SetXTitle("charged hadron fraction for PFJets");
+  PFJetCHF->SetTitle(dataset);
+  TH1D *PFJetMUF = new TH1D("PFJetMUF","",30,-0.005,1.005);
+  PFJetMUF->SetXTitle("muon fraction for PFJets");
+  PFJetMUF->SetTitle(dataset);
+  TH1D *PFJetNHF = new TH1D("PFJetNHF","",30,-0.005,1.005);
+  PFJetNHF->SetXTitle("neutral hadronic fraction for PFJets");
+  PFJetNHF->SetTitle(dataset);
+
+  TH1D *PFJetCEFJIDloose = new TH1D("PFJetCEFJIDloose ","",30,-0.005,1.005);
+  PFJetCEFJIDloose ->SetXTitle("charged EM fraction (electrons) for PFJets");
+  PFJetCEFJIDloose ->SetTitle(dataset);
+  TH1D *PFJetNEFJIDloose  = new TH1D("PFJetNEFJIDloose ","",30,-0.005,1.005);
+  PFJetNEFJIDloose ->SetXTitle("neutral EM fraction (photons) for PFJets");
+  PFJetNEFJIDloose ->SetTitle(dataset);
+  TH1D *PFJetCHFJIDloose  = new TH1D("PFJetCHFJIDloose ","",30,-0.005,1.005);
+  PFJetCHFJIDloose ->SetXTitle("charged hadron fraction for PFJets");
+  PFJetCHFJIDloose ->SetTitle(dataset);
+  TH1D *PFJetMUFJIDloose  = new TH1D("PFJetMUFJIDloose ","",30,-0.005,1.005);
+  PFJetMUFJIDloose ->SetXTitle("muon fraction for PFJets");
+  PFJetMUFJIDloose ->SetTitle(dataset);
+  TH1D *PFJetNHFJIDloose  = new TH1D("PFJetNHFJIDloose ","",30,-0.005,1.005);
+  PFJetNHFJIDloose ->SetXTitle("neutral hadronic fraction for PFJets");
+  PFJetNHFJIDloose ->SetTitle(dataset);
+
+
+  TH1D *PFJetChFrac = new TH1D("PFJetChFrac","",30,-0.005,1.005);
+  PFJetChFrac->SetXTitle("charged fraction for PFJets");
+  PFJetChFrac->SetTitle(dataset);
   TH1I *PFJetMuMultBarrel = new TH1I("PFJetMuMultBarrel","",10,0,10);
   PFJetMuMultBarrel->SetXTitle("Number of Muons in barrel PFJet");
   PFJetMuMultBarrel->SetTitle(dataset);
@@ -446,42 +522,24 @@ void analysisClass::Loop()
   TH1I *PFJetNeutMultBarrel = new TH1I("PFJetNeutMultBarrel","",50,0,50);
   PFJetNeutMultBarrel->SetXTitle("Number of neutral particles in barrel PFJet");
   PFJetNeutMultBarrel->SetTitle(dataset);
-  TH1D *PFJetChFracBarrel = new TH1D("PFJetChFracBarrel","",30,0.,1.);
+  TH1D *PFJetChFracBarrel = new TH1D("PFJetChFracBarrel","",30,-0.005,1.005);
   PFJetChFracBarrel->SetXTitle("charged fraction for barrel PFJets");
   PFJetChFracBarrel->SetTitle(dataset);
-  TH1D *PFJetChFrac = new TH1D("PFJetChFrac","",30,0.,1.);
-  PFJetChFrac->SetXTitle("charged fraction for PFJets");
-  PFJetChFrac->SetTitle(dataset);
-  TH1D *PFJetCHFBarrel = new TH1D("PFJetCHFBarrel","",30,0.,1.);
+  TH1D *PFJetCHFBarrel = new TH1D("PFJetCHFBarrel","",30,-0.005,1.005);
   PFJetCHFBarrel->SetXTitle("charged hadron fraction for barrel PFJets");
   PFJetCHFBarrel->SetTitle(dataset);
-  TH1D *PFJetCHF = new TH1D("PFJetCHF","",30,0.,1.);
-  PFJetCHF->SetXTitle("charged hadron fraction for PFJets");
-  PFJetCHF->SetTitle(dataset);
-  TH1D *PFJetCEFBarrel = new TH1D("PFJetCEFBarrel","",30,0.,1.);
+  TH1D *PFJetCEFBarrel = new TH1D("PFJetCEFBarrel","",30,-0.005,1.005);
   PFJetCEFBarrel->SetXTitle("charged EM fraction (electrons) for barrel PFJets");
   PFJetCEFBarrel->SetTitle(dataset);
-  TH1D *PFJetCEF = new TH1D("PFJetCEF","",30,0.,1.);
-  PFJetCEF->SetXTitle("charged EM fraction (electrons) for PFJets");
-  PFJetCEF->SetTitle(dataset);
-  TH1D *PFJetNEF = new TH1D("PFJetNEF","",30,0.,1.);
-  PFJetNEF->SetXTitle("neutral EM fraction (photons) for PFJets");
-  PFJetNEF->SetTitle(dataset);
-  TH1D *PFJetNEFBarrel = new TH1D("PFJetNEFBarrel","",30,0.,1.);
+  TH1D *PFJetNEFBarrel = new TH1D("PFJetNEFBarrel","",30,-0.005,1.005);
   PFJetNEFBarrel->SetXTitle("neutral EM fraction (photons) for PFJets");
   PFJetNEFBarrel->SetTitle(dataset);
-  TH1D *PFJetNHF = new TH1D("PFJetNHF","",30,0.,1.);
-  PFJetNHF->SetXTitle("neutral hadronic fraction for PFJets");
-  PFJetNHF->SetTitle(dataset);
-  TH1D *PFJetNHFBarrel = new TH1D("PFJetNHFBarrel","",30,0.,1.);
+  TH1D *PFJetNHFBarrel = new TH1D("PFJetNHFBarrel","",30,-0.005,1.005);
   PFJetNHFBarrel->SetXTitle("neutral hadronic fraction for PFJets");
   PFJetNHFBarrel->SetTitle(dataset);
-  TH1D *PFJetMUFBarrel = new TH1D("PFJetMUFBarrel","",30,0.,1.);
+  TH1D *PFJetMUFBarrel = new TH1D("PFJetMUFBarrel","",30,-0.005,1.005);
   PFJetMUFBarrel->SetXTitle("muon fraction for barrel PFJets");
   PFJetMUFBarrel->SetTitle(dataset);
-  TH1D *PFJetMUF = new TH1D("PFJetMUF","",30,0.,1.);
-  PFJetMUF->SetXTitle("muon fraction for PFJets");
-  PFJetMUF->SetTitle(dataset);
 
   TH2D *PFJetmapall = new TH2D("PFJetmapall","",50,-5.,5.,24,-3.2,3.2);
   PFJetmapall->SetXTitle("#eta_{jet}");
@@ -504,13 +562,7 @@ void analysisClass::Loop()
   TH1D *PFdijetinvmass = new TH1D("PFdijetinvmass","",invmassBin,0.,invmassMax);
   PFdijetinvmass->SetXTitle("m_{j1j2}[GeV]");
   PFdijetinvmass->SetTitle(dataset);
-  TH1D *PFdijetptall1 = new TH1D("PFdijetptall1","",ptBin, ptMinDijet_PF,ptMax);
-  PFdijetptall1->SetXTitle("p_{T}[GeV]");
-  PFdijetptall1->SetTitle(dataset);
-  TH1D *PFdijetptall2 = new TH1D("PFdijetptall2","",ptBin, ptMinDijet_PF ,ptMax);
-  PFdijetptall2->SetXTitle("p_{T}[GeV]");
-  PFdijetptall2->SetTitle(dataset);
-  TH1D *PFdijetdphi = new TH1D("PFdijetdphi","",phiBin, 0., 3.5);
+  TH1D *PFdijetdphi = new TH1D("PFdijetdphi","",phiBin, 0., M_PI);
 //   dijetdphi->SetXTitle("p_{T}[GeV]");
   PFdijetdphi->SetXTitle("#Delta #phi_{di-jet}");
   PFdijetdphi->SetTitle(dataset);
@@ -548,40 +600,57 @@ void analysisClass::Loop()
   TH1I *PFJetNeutMultdijets = new TH1I("PFJetNeutMultdijets","",50,0,50);
   PFJetNeutMultdijets->SetXTitle("Number of neutral particles in PFJet");
   PFJetNeutMultdijets->SetTitle(dataset);
-  TH1D *PFJetChFracdijets = new TH1D("PFJetChFracdijets","",30,0.,1.);
+  TH1D *PFJetChFracdijets = new TH1D("PFJetChFracdijets","",30,-0.005,1.005);
   PFJetChFracdijets->SetXTitle("charged fraction");
   PFJetChFracdijets->SetTitle(dataset);
-  TH1D *PFJetCHFdijets = new TH1D("PFJetCHFdijets","",30,0.,1.);
+  TH1D *PFJetCHFdijets = new TH1D("PFJetCHFdijets","",30,-0.005,1.005);
   PFJetCHFdijets->SetXTitle("charged hadron fraction");
   PFJetCHFdijets->SetTitle(dataset);
-  TH1D *PFJetCEFdijets = new TH1D("PFJetCEFdijets","",30,0.,1.);
+  TH1D *PFJetCEFdijets = new TH1D("PFJetCEFdijets","",30,-0.005,1.005);
   PFJetCEFdijets->SetXTitle("charged em fraction");
   PFJetCEFdijets->SetTitle(dataset);
-  TH1D *PFJetNHFdijets = new TH1D("PFJetNHFdijets","",30,0.,1.);
+  TH1D *PFJetNHFdijets = new TH1D("PFJetNHFdijets","",30,-0.005,1.005);
   PFJetNHFdijets->SetXTitle("neutral hadron fraction");
   PFJetNHFdijets->SetTitle(dataset);
-  TH1D *PFJetNEFdijets = new TH1D("PFJetNEFdijets","",30,0.,1.);
+  TH1D *PFJetNEFdijets = new TH1D("PFJetNEFdijets","",30,-0.005,1.005);
   PFJetNEFdijets->SetXTitle("neutral em fraction");
   PFJetNEFdijets->SetTitle(dataset);
-  TH1D *PFJetMUFdijets = new TH1D("PFJetMUFdijets","",30,0.,1.);
+  TH1D *PFJetMUFdijets = new TH1D("PFJetMUFdijets","",30,-0.005,1.005);
   PFJetMUFdijets->SetXTitle("charged muon fraction");
   PFJetMUFdijets->SetTitle(dataset);
+
+  TH1D *PFJetCEFdijetsJIDloose = new TH1D("PFJetCEFdijetsJIDloose ","",30,-0.005,1.005);
+  PFJetCEFdijetsJIDloose ->SetXTitle("charged EM fraction (electrons) for PFJets");
+  PFJetCEFdijetsJIDloose ->SetTitle(dataset);
+  TH1D *PFJetNEFdijetsJIDloose  = new TH1D("PFJetNEFdijetsJIDloose ","",30,-0.005,1.005);
+  PFJetNEFdijetsJIDloose ->SetXTitle("neutral EM fraction (photons) for PFJets");
+  PFJetNEFdijetsJIDloose ->SetTitle(dataset);
+  TH1D *PFJetCHFdijetsJIDloose  = new TH1D("PFJetCHFdijetsJIDloose ","",30,-0.005,1.005);
+  PFJetCHFdijetsJIDloose ->SetXTitle("charged hadron fraction for PFJets");
+  PFJetCHFdijetsJIDloose ->SetTitle(dataset);
+  TH1D *PFJetMUFdijetsJIDloose  = new TH1D("PFJetMUFdijetsJIDloose ","",30,-0.005,1.005);
+  PFJetMUFdijetsJIDloose ->SetXTitle("muon fraction for PFJets");
+  PFJetMUFdijetsJIDloose ->SetTitle(dataset);
+  TH1D *PFJetNHFdijetsJIDloose  = new TH1D("PFJetNHFdijetsJIDloose ","",30,-0.005,1.005);
+  PFJetNHFdijetsJIDloose ->SetXTitle("neutral hadronic fraction for PFJets");
+  PFJetNHFdijetsJIDloose ->SetTitle(dataset);
+  TH1I *PFJetCHMultdijetsJIDloose = new TH1I("PFJetCHMultdijetsJIDloose","",50,0,50);
+  PFJetCHMultdijetsJIDloose->SetXTitle("Number of charged particles in PFJet");
+  PFJetCHMultdijetsJIDloose->SetTitle(dataset);
+  TH1I *PFJetNeutMultdijetsJIDloose = new TH1I("PFJetNeutMultdijetsJIDloose","",50,0,50);
+  PFJetNeutMultdijetsJIDloose->SetXTitle("Number of neutral particles in PFJet");
+  PFJetNeutMultdijetsJIDloose->SetTitle(dataset);
+
   TH1I *PFJetsindijets = new TH1I("PFJetsindijets","",20,0,20);
   PFJetsindijets->SetXTitle("Number of PFJets per dijet-event");
   PFJetsindijets->SetTitle(dataset); 
-  TH1D *PFdijetptall1JIDloose = new TH1D("PFdijetptall1JIDloose","",ptBin, ptMinDijet_PF,ptMax);
-  PFdijetptall1JIDloose->SetXTitle("p_{T}[GeV]");
-  PFdijetptall1JIDloose->SetTitle(dataset);
   TH1D *PFdijetinvmassJIDloose = new TH1D("PFdijetinvmassJIDloose","",invmassBin,0.,invmassMax);
   PFdijetinvmassJIDloose->SetXTitle("m_{j1j2}[GeV]");
   PFdijetinvmassJIDloose->SetTitle(dataset);
   TH1D *PFdijetinvmassJIDtight = new TH1D("PFdijetinvmassJIDtight","",invmassBin,0.,invmassMax);
   PFdijetinvmassJIDtight->SetXTitle("m_{j1j2}[GeV]");
   PFdijetinvmassJIDtight->SetTitle(dataset);
-  TH1D *PFdijetptall2JIDloose = new TH1D("PFdijetptall2JIDloose","",ptBin, ptMinDijet_PF ,ptMax);
-  PFdijetptall2JIDloose->SetXTitle("p_{T}[GeV]");
-  PFdijetptall2JIDloose->SetTitle(dataset);
-  TH1D *PFdijetdphiJIDloose = new TH1D("PFdijetdphiJIDloose","",phiBin, 0., 3.5);
+  TH1D *PFdijetdphiJIDloose = new TH1D("PFdijetdphiJIDloose","",phiBin, 0., M_PI);
   PFdijetdphiJIDloose->SetXTitle("#Delta #phi_{di-jet}");
   PFdijetdphiJIDloose->SetTitle(dataset);
   TH1D *PFdijetdetaJIDloose = new TH1D("PFdijetdetaJIDloose","",phiBin, 0., 6.0);
@@ -595,13 +664,8 @@ void analysisClass::Loop()
   PFJetsindijetsJIDloose->SetXTitle("Number of loose PFJets per dijet-event");
   PFJetsindijetsJIDloose->SetTitle(dataset);
 
-  TH1D *PFdijetptall1JIDtight = new TH1D("PFdijetptall1JIDtight","",ptBin, ptMinDijet_PF,ptMax);
-  PFdijetptall1JIDtight->SetXTitle("p_{T}[GeV]");
-  PFdijetptall1JIDtight->SetTitle(dataset);
-  TH1D *PFdijetptall2JIDtight = new TH1D("PFdijetptall2JIDtight","",ptBin, ptMinDijet_PF ,ptMax);
-  PFdijetptall2JIDtight->SetXTitle("p_{T}[GeV]");
-  PFdijetptall2JIDtight->SetTitle(dataset);
-  TH1D *PFdijetdphiJIDtight = new TH1D("PFdijetdphiJIDtight","",phiBin, 0., 3.5);
+
+  TH1D *PFdijetdphiJIDtight = new TH1D("PFdijetdphiJIDtight","",phiBin, 0., M_PI );
   PFdijetdphiJIDtight->SetXTitle("#Delta #phi_{di-jet}");
   PFdijetdphiJIDtight->SetTitle(dataset);
   TH1D *PFdijetdetaJIDtight = new TH1D("PFdijetdetaJIDtight","",phiBin, 0., 6.0);
@@ -674,24 +738,21 @@ void analysisClass::Loop()
  
  
   // fake PFJets -----------------------
-  TH1D *CHFfakePFJets = new TH1D("CHFfakePFJets","",30,0.,1.);
+  TH1D *CHFfakePFJets = new TH1D("CHFfakePFJets","",30,-0.005,1.005);
   CHFfakePFJets->SetXTitle("CHF");
   CHFfakePFJets->SetTitle(dataset);
-  TH1D *CEFfakePFJets = new TH1D("CEFfakePFJets","",30,0.,1.);
+  TH1D *CEFfakePFJets = new TH1D("CEFfakePFJets","",30,-0.005,1.005);
   CEFfakePFJets->SetXTitle("CEF");
   CEFfakePFJets->SetTitle(dataset);
-  TH1D *NHFfakePFJets = new TH1D("NHFfakePFJets","",30,0.,1.);
+  TH1D *NHFfakePFJets = new TH1D("NHFfakePFJets","",30,-0.005,1.005);
   NHFfakePFJets->SetXTitle("NHF");
   NHFfakePFJets->SetTitle(dataset);
-  TH1D *NEFfakePFJets = new TH1D("NEFfakePFJets","",30,0.,1.);
+  TH1D *NEFfakePFJets = new TH1D("NEFfakePFJets","",30,-0.005,1.005);
   NEFfakePFJets->SetXTitle("NEF");
   NEFfakePFJets->SetTitle(dataset);
-  TH1D *MUFfakePFJets = new TH1D("MUFfakePFJets","",30,0.,1.);
+  TH1D *MUFfakePFJets = new TH1D("MUFfakePFJets","",30,-0.005,1.005);
   MUFfakePFJets->SetXTitle("MUF");
   MUFfakePFJets->SetTitle(dataset);
-  TH1D *fakePFJetptall1 = new TH1D("fakePFJetptall1","",ptBin, 0,50);
-  fakePFJetptall1->SetXTitle("p_{T}[GeV]");
-  fakePFJetptall1->SetTitle(dataset);
   TH1D *fakePFJetetaall1 = new TH1D("fakePFJetetaall1","",etaBin, etaMin,etaMax);
   fakePFJetetaall1->SetXTitle("#eta");
   fakePFJetetaall1->SetTitle(dataset);
@@ -977,6 +1038,14 @@ void analysisClass::Loop()
 	      PFJetetaJIDloose->Fill(ak5PFJetEta->at(j));
 	      PFJetphiJIDloose->Fill(ak5PFJetPhi->at(j));
 	      
+	      PFJetCHMultJIDloose->Fill(ak5PFJetChargedMultiplicity->at(j));
+	      PFJetNeutMultJIDloose->Fill(ak5PFJetNeutralMultiplicity->at(j));
+	      PFJetCEFJIDloose->Fill(ak5PFJetChargedEmEnergyFraction->at(j));
+	      PFJetCHFJIDloose->Fill(ak5PFJetChargedHadronEnergyFraction->at(j));
+	      PFJetMUFJIDloose->Fill(ak5PFJetChargedMuEnergyFraction->at(j));
+	      PFJetNEFJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(j));
+	      PFJetNHFJIDloose->Fill(ak5PFJetNeutralHadronEnergyFraction->at(j));
+
 	      if(fabs(ak5PFJetEta->at(j))<barreleta){
 		PFJetEbarrelJIDloose->Fill(ak5PFJetEnergy->at(j)*jcScale_PF);
 	      } else {
@@ -1013,6 +1082,13 @@ void analysisClass::Loop()
 	  } //pt min/ eta 
 	} //loop on inclusive ak5 PFJets 
 	
+	//we have at least one (good) jet
+	if(PFJets>0){
+	  PFMETbySumEt->Fill(pfmetPt->at(0)/pfmetSumEt->at(0));
+	}
+	if(PFJetIDLoose>0){
+	  PFMETbySumEtJIDloose->Fill(pfmetPt->at(0)/pfmetSumEt->at(0));
+	}
 	   
 	// --------------------DiPFJets---------------------------------------------------------------------   
 	// JET CORRECTION
@@ -1084,6 +1160,7 @@ void analysisClass::Loop()
 	      // basic di-jet variables 
 	      PFdijetptall1->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0_PF);  //jc
 	      PFdijetptall2->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1_PF);   //jc
+	      PFdijetMETbySumET->Fill(pfmetPt->at(0)/pfmetSumEt->at(0));
 	      PFdijetdeta->Fill(fabs(ak5PFJetEta->at(index_PFjet1)-ak5PFJetEta->at(index_PFjet2)));
 	      PFJetmapalldijets->Fill(ak5PFJetEta->at(index_PFjet1),ak5PFJetPhi->at(index_PFjet1));
 	      PFJetmapalldijets->Fill(ak5PFJetEta->at(index_PFjet2),ak5PFJetPhi->at(index_PFjet2));
@@ -1113,6 +1190,7 @@ void analysisClass::Loop()
 	      // both passed loose jet cleaning
 	      if(pass_PFJetIDloose(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1),ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1),ak5PFJetChargedEmEnergyFraction->at(index_PFjet1),ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1),ak5PFJetEta->at(index_PFjet1))
 		 && pass_PFJetIDloose(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2),ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2),ak5PFJetChargedEmEnergyFraction->at(index_PFjet2),ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2),ak5PFJetEta->at(index_PFjet2))){
+		PFdijetMETbySumETJIDloose->Fill(pfmetPt->at(0)/pfmetSumEt->at(0));
 		PFdijetptall1JIDloose->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0_PF);   //jc
 		PFdijetptall2JIDloose->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1_PF);   //jc
 		PFdijetinvmassJIDloose->Fill(PFdijetLorentzVector.M());
@@ -1123,6 +1201,21 @@ void analysisClass::Loop()
 		PFdijetetaJIDloose->Fill(ak5PFJetEta->at(index_PFjet2));
 		PFdijetphiJIDloose->Fill(ak5PFJetPhi->at(index_PFjet1));
 		PFdijetphiJIDloose->Fill(ak5PFJetPhi->at(index_PFjet2));
+		PFJetCHMultdijetsJIDloose->Fill(ak5PFJetChargedMultiplicity->at(index_PFjet1));
+		PFJetNeutMultdijetsJIDloose->Fill(ak5PFJetNeutralMultiplicity->at(index_PFjet1));
+		PFJetCEFdijetsJIDloose->Fill(ak5PFJetChargedEmEnergyFraction->at(index_PFjet1));
+		PFJetCHFdijetsJIDloose->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1));
+		PFJetMUFdijetsJIDloose->Fill(ak5PFJetChargedMuEnergyFraction->at(index_PFjet1));
+		PFJetNEFdijetsJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
+		PFJetNHFdijetsJIDloose->Fill(ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1));
+
+		PFJetCHMultdijetsJIDloose->Fill(ak5PFJetChargedMultiplicity->at(index_PFjet2));
+		PFJetNeutMultdijetsJIDloose->Fill(ak5PFJetNeutralMultiplicity->at(index_PFjet2));
+		PFJetCEFdijetsJIDloose->Fill(ak5PFJetChargedEmEnergyFraction->at(index_PFjet2));
+		PFJetCHFdijetsJIDloose->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2));
+		PFJetMUFdijetsJIDloose->Fill(ak5PFJetChargedMuEnergyFraction->at(index_PFjet2));
+		PFJetNEFdijetsJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
+		PFJetNHFdijetsJIDloose->Fill(ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
 	      } //end  both passed loose jet cleaning
 	      // both passed tight jet cleaning
 	      if(pass_PFJetIDtight(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1),ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1),ak5PFJetChargedEmEnergyFraction->at(index_PFjet1),ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1),ak5PFJetEta->at(index_PFjet1))  &&  pass_PFJetIDtight(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2),ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2),ak5PFJetChargedEmEnergyFraction->at(index_PFjet2),ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2),ak5PFJetEta->at(index_PFjet2))){
@@ -1300,10 +1393,18 @@ void analysisClass::Loop()
    PFJetCHF->Write();
    PFJetNHF->Write();
    PFJetMUF->Write();
+   PFJetNeutMultJIDloose->Write();
+   PFJetCHMultJIDloose->Write();
+   PFJetCEFJIDloose->Write();
+   PFJetNEFJIDloose->Write();
+   PFJetCHFJIDloose->Write();
+   PFJetNHFJIDloose->Write();
+   PFJetMUFJIDloose->Write();
+
    PFJetMuMultBarrel->Write();
+   PFJetChFracBarrel->Write();
    PFJetNeutMultBarrel->Write();
    PFJetCHMultBarrel->Write();
-   PFJetChFracBarrel->Write();
    PFJetCEFBarrel->Write();
    PFJetNEFBarrel->Write();
    PFJetCHFBarrel->Write();
@@ -1323,6 +1424,15 @@ void analysisClass::Loop()
    PFJetNEFdijets->Write();
    PFJetCHFdijets->Write();
    PFJetMUFdijets->Write();
+
+   PFJetNeutMultdijetsJIDloose->Write();
+   PFJetCHMultdijetsJIDloose->Write();
+   PFJetCHFdijetsJIDloose->Write();
+   PFJetCEFdijetsJIDloose->Write();
+   PFJetNEFdijetsJIDloose->Write();
+   PFJetCHFdijetsJIDloose->Write();
+   PFJetMUFdijetsJIDloose->Write();
+
    PFdijetptall1JIDloose->Write();
    PFdijetptall2JIDloose->Write();
    PFdijetdphiJIDloose->Write();
@@ -1362,6 +1472,11 @@ void analysisClass::Loop()
    PFJetJIDlooseeffphi->Write();
    PFJetJIDtighteffeta->Write();
    PFJetJIDtighteffphi->Write();
+
+   PFdijetMETbySumET->Write();
+   PFdijetMETbySumETJIDloose->Write();
+   PFMETbySumEtJIDloose->Write();
+   PFMETbySumEt->Write();
    std::cout << "analysisClass::Loop() ends" <<std::endl;
    
 }
