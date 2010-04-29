@@ -359,6 +359,9 @@ void analysisClass::Loop()
   int invmassBin=100;//30
   double invmassMax=800.;
 
+  //Eventual cut for jets to be considered for histograms filling only
+  double MinPttoFillHisto=50.; //can be put to 50.
+
   TH1D* h_phi_TA = new TH1D("phi_thrust_axis","",25,phiMin,phiMax);
   h_phi_TA->SetXTitle("#phi(TA)");
   h_phi_TA->SetTitle(dataset);
@@ -903,42 +906,42 @@ void analysisClass::Loop()
 	      jet2LorentzVector.SetPtEtaPhiE(ak5JetpT->at(index_jet2)*jcScale1,ak5JetEta->at(index_jet2),ak5JetPhi->at(index_jet2),ak5JetEnergy->at(index_jet2)*jcScale1);
 	      dijetLorentzVector=jet1LorentzVector+jet2LorentzVector;
 	      dijetinvmass->Fill(dijetLorentzVector.M());
-	      dijetresEMF->Fill(ak5JetJIDresEMF->at(index_jet1));
-	      dijetresEMF->Fill(ak5JetJIDresEMF->at(index_jet2));
-	      dijetnconst->Fill(ak5JetNConstituents->at(index_jet1));
-	      dijetnconst->Fill(ak5JetNConstituents->at(index_jet2));
+	      if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetresEMF->Fill(ak5JetJIDresEMF->at(index_jet1));
+	      if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetresEMF->Fill(ak5JetJIDresEMF->at(index_jet2));
+	      if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetnconst->Fill(ak5JetNConstituents->at(index_jet1));
+	      if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetnconst->Fill(ak5JetNConstituents->at(index_jet2));
 	      //
 	      if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) 
 		 && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
 		dijetinvmassJIDloose->Fill(dijetLorentzVector.M());
-		dijetresEMFJIDloose->Fill(ak5JetJIDresEMF->at(index_jet1));
-		dijetresEMFJIDloose->Fill(ak5JetJIDresEMF->at(index_jet2));
-		dijetnconstJIDloose->Fill(ak5JetNConstituents->at(index_jet1));
-		dijetnconstJIDloose->Fill(ak5JetNConstituents->at(index_jet2));
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetresEMFJIDloose->Fill(ak5JetJIDresEMF->at(index_jet1));
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetresEMFJIDloose->Fill(ak5JetJIDresEMF->at(index_jet2));
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetnconstJIDloose->Fill(ak5JetNConstituents->at(index_jet1));
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetnconstJIDloose->Fill(ak5JetNConstituents->at(index_jet2));
 	      }
 	      if(JetIdtight(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1), ak5JetJIDfRBX->at(index_jet1),ak5JetSigmaEta->at(index_jet1),ak5JetSigmaPhi->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) && JetIdtight(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDfRBX->at(index_jet2),ak5JetSigmaEta->at(index_jet2),ak5JetSigmaPhi->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
 		dijetinvmassJIDtight->Fill(dijetLorentzVector.M());
-		dijetresEMFJIDtight->Fill(ak5JetJIDresEMF->at(index_jet1));
-		dijetresEMFJIDtight->Fill(ak5JetJIDresEMF->at(index_jet2));
-		dijetnconstJIDtight->Fill(ak5JetNConstituents->at(index_jet1));
-		dijetnconstJIDtight->Fill(ak5JetNConstituents->at(index_jet2));
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetresEMFJIDtight->Fill(ak5JetJIDresEMF->at(index_jet1));
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetresEMFJIDtight->Fill(ak5JetJIDresEMF->at(index_jet2));
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetnconstJIDtight->Fill(ak5JetNConstituents->at(index_jet1));
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetnconstJIDtight->Fill(ak5JetNConstituents->at(index_jet2));
 	      }
 	      // basic di-jet variables 
-	      dijetptall->Fill(ak5JetpT->at(index_jet1) * jcScale0);  //jc
-	      dijetptall->Fill(ak5JetpT->at(index_jet2) * jcScale1);   //jc
-      	      dijeteta->Fill(ak5JetEta->at(index_jet1));
-	      dijeteta->Fill(ak5JetEta->at(index_jet2));
-	      dijetphi->Fill(ak5JetPhi->at(index_jet1));
-	      dijetphi->Fill(ak5JetPhi->at(index_jet2));
+	      if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetptall->Fill(ak5JetpT->at(index_jet1) * jcScale0);  //jc
+	      if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetptall->Fill(ak5JetpT->at(index_jet2) * jcScale1);   //jc
+      	      if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijeteta->Fill(ak5JetEta->at(index_jet1));
+	      if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijeteta->Fill(ak5JetEta->at(index_jet2));
+	      if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetphi->Fill(ak5JetPhi->at(index_jet1));
+	      if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetphi->Fill(ak5JetPhi->at(index_jet2));
 	      // both passed loose jet cleaning
 	      if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) 
 		 && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
-		dijetptallJIDloose->Fill(ak5JetpT->at(index_jet1) * jcScale0);   //jc
-		dijetptallJIDloose->Fill(ak5JetpT->at(index_jet2) * jcScale1);   //jc
-		dijetetaJIDloose->Fill(ak5JetEta->at(index_jet1));
-		dijetetaJIDloose->Fill(ak5JetEta->at(index_jet2));
-		dijetphiJIDloose->Fill(ak5JetPhi->at(index_jet1));
-		dijetphiJIDloose->Fill(ak5JetPhi->at(index_jet2));
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetptallJIDloose->Fill(ak5JetpT->at(index_jet1) * jcScale0);   //jc
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetptallJIDloose->Fill(ak5JetpT->at(index_jet2) * jcScale1);   //jc
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetetaJIDloose->Fill(ak5JetEta->at(index_jet1));
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetetaJIDloose->Fill(ak5JetEta->at(index_jet2));
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetphiJIDloose->Fill(ak5JetPhi->at(index_jet1));
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetphiJIDloose->Fill(ak5JetPhi->at(index_jet2));
 		//now loop on jets and count how many JIDLOOSE jets with pT>8 are in each event
 		for (int dj = 0; dj<int(ak5JetpT->size()); dj++){
 		  double dijcScale;
@@ -956,12 +959,12 @@ void analysisClass::Loop()
 	      } //end  both passed loose jet cleaning
 	      // both passed tight jet cleaning
 	    if(JetIdtight(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1), ak5JetJIDfRBX->at(index_jet1),ak5JetSigmaEta->at(index_jet1),ak5JetSigmaPhi->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) && JetIdtight(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDfRBX->at(index_jet2),ak5JetSigmaEta->at(index_jet2),ak5JetSigmaPhi->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
-		dijetptallJIDtight->Fill(ak5JetpT->at(index_jet1) * jcScale0);   //jc
-		dijetptallJIDtight->Fill(ak5JetpT->at(index_jet2) * jcScale1);   //jc
-		dijetetaJIDtight->Fill(ak5JetEta->at(index_jet1));
-		dijetetaJIDtight->Fill(ak5JetEta->at(index_jet2));
-		dijetphiJIDtight->Fill(ak5JetPhi->at(index_jet1));
-		dijetphiJIDtight->Fill(ak5JetPhi->at(index_jet2));
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetptallJIDtight->Fill(ak5JetpT->at(index_jet1) * jcScale0);   //jc
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetptallJIDtight->Fill(ak5JetpT->at(index_jet2) * jcScale1);   //jc
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetetaJIDtight->Fill(ak5JetEta->at(index_jet1));
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetetaJIDtight->Fill(ak5JetEta->at(index_jet2));
+		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetphiJIDtight->Fill(ak5JetPhi->at(index_jet1));
+		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetphiJIDtight->Fill(ak5JetPhi->at(index_jet2));
 	    }
 	      //how many of the jets in dijets events pass the loose JetID (look only at the two leading jets)
 	      if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1))){
@@ -1093,32 +1096,32 @@ void analysisClass::Loop()
 	      if(JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 		 && JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
 		diJPTjetinvmassJIDloose->Fill(diJPTjetLorentzVector.M());
-		diJPTjetresEMFJIDloose->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
-		diJPTjetresEMFJIDloose->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
+		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetresEMFJIDloose->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
+		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetresEMFJIDloose->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
 	      }
 	      if(JetIdtight(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDfRBX->at(index_JPTjet1),0.5,0.5,JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 		 && JetIdtight(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDfRBX->at(index_JPTjet2),0.5,0.5,JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
 		diJPTjetinvmassJIDtight->Fill(diJPTjetLorentzVector.M());
-		diJPTjetresEMFJIDtight->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
-		diJPTjetresEMFJIDtight->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
+		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetresEMFJIDtight->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
+		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetresEMFJIDtight->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
 	      }
 	      // basic di-jet variables 
 	     
-	      diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet1)*jcScale0);  //jc
-	      diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet2)*jcScale1);   //jc
-      	      diJPTjeteta->Fill(JPTak5JetEta->at(index_JPTjet1));
-	      diJPTjeteta->Fill(JPTak5JetEta->at(index_JPTjet2));
-	      diJPTjetphi->Fill(JPTak5JetPhi->at(index_JPTjet1));
-	      diJPTjetphi->Fill(JPTak5JetPhi->at(index_JPTjet2));
+	      if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet1)*jcScale0);  //jc
+	      if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetptall->Fill(JPTak5JetpT->at(index_JPTjet2)*jcScale1);   //jc
+      	      if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjeteta->Fill(JPTak5JetEta->at(index_JPTjet1));
+	      if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjeteta->Fill(JPTak5JetEta->at(index_JPTjet2));
+	      if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetphi->Fill(JPTak5JetPhi->at(index_JPTjet1));
+	      if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetphi->Fill(JPTak5JetPhi->at(index_JPTjet2));
 	      // both passed loose JPTjet cleaning
 	      if(JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 		 && JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
-		diJPTjetptallJIDloose->Fill(JPTak5JetpT->at(index_JPTjet1) * jcScale0);   //jc
-		diJPTjetptallJIDloose->Fill(JPTak5JetpT->at(index_JPTjet2) * jcScale1);   //jc
-		diJPTjetetaJIDloose->Fill(JPTak5JetEta->at(index_JPTjet1));
-		diJPTjetetaJIDloose->Fill(JPTak5JetEta->at(index_JPTjet2));
-		diJPTjetphiJIDloose->Fill(JPTak5JetPhi->at(index_JPTjet1));
-		diJPTjetphiJIDloose->Fill(JPTak5JetPhi->at(index_JPTjet2));
+		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetptallJIDloose->Fill(JPTak5JetpT->at(index_JPTjet1) * jcScale0);   //jc
+		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetptallJIDloose->Fill(JPTak5JetpT->at(index_JPTjet2) * jcScale1);   //jc
+		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetetaJIDloose->Fill(JPTak5JetEta->at(index_JPTjet1));
+		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetetaJIDloose->Fill(JPTak5JetEta->at(index_JPTjet2));
+		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetphiJIDloose->Fill(JPTak5JetPhi->at(index_JPTjet1));
+		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetphiJIDloose->Fill(JPTak5JetPhi->at(index_JPTjet2));
 		//now loop on jets and count how many JIDLOOSE jets with pT>8 are in each event
 		for (int dj = 0; dj<int(JPTak5JetpT->size()); dj++){
 		  double dijcScale;
@@ -1137,12 +1140,12 @@ void analysisClass::Loop()
 	      // both passed tight jet cleaning
 	      if(JetIdtight(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDfRBX->at(index_JPTjet1),0.5,0.5,JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 		 && JetIdtight(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDfRBX->at(index_JPTjet2),0.5,0.5,JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
-		diJPTjetptallJIDtight->Fill(JPTak5JetpT->at(index_JPTjet1) * jcScale0);   //jc
-		diJPTjetptallJIDtight->Fill(JPTak5JetpT->at(index_JPTjet2) * jcScale1);   //jc
-		diJPTjetetaJIDtight->Fill(JPTak5JetEta->at(index_JPTjet1));
-		diJPTjetetaJIDtight->Fill(JPTak5JetEta->at(index_JPTjet2));
-		diJPTjetphiJIDtight->Fill(JPTak5JetPhi->at(index_JPTjet1));
-		diJPTjetphiJIDtight->Fill(JPTak5JetPhi->at(index_JPTjet2));
+		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetptallJIDtight->Fill(JPTak5JetpT->at(index_JPTjet1) * jcScale0);   //jc
+		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetptallJIDtight->Fill(JPTak5JetpT->at(index_JPTjet2) * jcScale1);   //jc
+		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetetaJIDtight->Fill(JPTak5JetEta->at(index_JPTjet1));
+		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetetaJIDtight->Fill(JPTak5JetEta->at(index_JPTjet2));
+		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetphiJIDtight->Fill(JPTak5JetPhi->at(index_JPTjet1));
+		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetphiJIDtight->Fill(JPTak5JetPhi->at(index_JPTjet2));
 	      }
 	      //how many of the JPTjets in diJPTjets events pass the loose JetID (look only at the two leading JPTjets)
 	      if(JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1))){
@@ -1263,54 +1266,54 @@ void analysisClass::Loop()
 	      PFjet2LorentzVector.SetPtEtaPhiE(ak5PFJetpT->at(index_PFjet2)*jcScale1,ak5PFJetEta->at(index_PFjet2),ak5PFJetPhi->at(index_PFjet2),ak5PFJetEnergy->at(index_PFjet2)*jcScale1);
 	      diPFjetLorentzVector=PFjet1LorentzVector+PFjet2LorentzVector;
 	      diPFjetinvmass->Fill(diPFjetLorentzVector.M());
-	      diPFjetnconst->Fill(ak5PFJetNConstituents->at(index_PFjet1));
-	      diPFjetnconst->Fill(ak5PFJetNConstituents->at(index_PFjet2));
-	      diPFjetCHF->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1));
-	      diPFjetCHF->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2));
-	      diPFjetNHF->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1));
-	      diPFjetNHF->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
-	      diPFjetNEF->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
-	      diPFjetNEF->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
+	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetnconst->Fill(ak5PFJetNConstituents->at(index_PFjet1));
+	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetnconst->Fill(ak5PFJetNConstituents->at(index_PFjet2));
+	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetCHF->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1));
+	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetCHF->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2));
+	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNHF->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1));
+	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNHF->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
+	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNEF->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
+	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNEF->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
 
 	      //
 	      if(LooseIDjet1 && LooseIDjet2){
 		diPFjetdphiJIDloose->Fill(dphi);
 		diPFjetinvmassJIDloose->Fill(diPFjetLorentzVector.M());
-		diPFjetnconstJIDloose->Fill(ak5PFJetNConstituents->at(index_PFjet1));
-		diPFjetnconstJIDloose->Fill(ak5PFJetNConstituents->at(index_PFjet2));
-		diPFjetCHFJIDloose->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1));
-		diPFjetCHFJIDloose->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2));
-		diPFjetNHFJIDloose->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1));
-		diPFjetNHFJIDloose->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
-		diPFjetNEFJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
-		diPFjetNEFJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetnconstJIDloose->Fill(ak5PFJetNConstituents->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetnconstJIDloose->Fill(ak5PFJetNConstituents->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetCHFJIDloose->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetCHFJIDloose->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNHFJIDloose->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNHFJIDloose->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNEFJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNEFJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
 	      }
 	      if(TightIDjet1 && TightIDjet2){
 		diPFjetinvmassJIDtight->Fill(diPFjetLorentzVector.M());
-		diPFjetnconstJIDtight->Fill(ak5PFJetNConstituents->at(index_PFjet1));
-		diPFjetnconstJIDtight->Fill(ak5PFJetNConstituents->at(index_PFjet2));
-		diPFjetCHFJIDtight->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1));
-		diPFjetCHFJIDtight->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2));
-		diPFjetNHFJIDtight->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1));
-		diPFjetNHFJIDtight->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
-		diPFjetNEFJIDtight->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
-		diPFjetNEFJIDtight->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetnconstJIDtight->Fill(ak5PFJetNConstituents->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetnconstJIDtight->Fill(ak5PFJetNConstituents->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetCHFJIDtight->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetCHFJIDtight->Fill(ak5PFJetChargedHadronEnergyFraction->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNHFJIDtight->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNHFJIDtight->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNEFJIDtight->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNEFJIDtight->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
 	      }
 	      // basic di-jet variables 
-	      diPFjetptall->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0);  //jc
-	      diPFjetptall->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1);   //jc
-      	      diPFjeteta->Fill(ak5PFJetEta->at(index_PFjet1));
-	      diPFjeteta->Fill(ak5PFJetEta->at(index_PFjet2));
-	      diPFjetphi->Fill(ak5PFJetPhi->at(index_PFjet1));
-	      diPFjetphi->Fill(ak5PFJetPhi->at(index_PFjet2));
+	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetptall->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0);  //jc
+	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetptall->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1);   //jc
+      	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjeteta->Fill(ak5PFJetEta->at(index_PFjet1));
+	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjeteta->Fill(ak5PFJetEta->at(index_PFjet2));
+	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetphi->Fill(ak5PFJetPhi->at(index_PFjet1));
+	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetphi->Fill(ak5PFJetPhi->at(index_PFjet2));
 	      // both passed loose PFjet cleaning
 	      if(LooseIDjet1 && LooseIDjet2){
-		diPFjetptallJIDloose->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0);   //jc
-		diPFjetptallJIDloose->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1);   //jc
-		diPFjetetaJIDloose->Fill(ak5PFJetEta->at(index_PFjet1));
-		diPFjetetaJIDloose->Fill(ak5PFJetEta->at(index_PFjet2));
-		diPFjetphiJIDloose->Fill(ak5PFJetPhi->at(index_PFjet1));
-		diPFjetphiJIDloose->Fill(ak5PFJetPhi->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetptallJIDloose->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0);   //jc
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetptallJIDloose->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1);   //jc
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetetaJIDloose->Fill(ak5PFJetEta->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetetaJIDloose->Fill(ak5PFJetEta->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetphiJIDloose->Fill(ak5PFJetPhi->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetphiJIDloose->Fill(ak5PFJetPhi->at(index_PFjet2));
 		//now loop on jets and count how many JIDLOOSE jets with pT>8 are in each event
 		for (int dj = 0; dj<int(ak5PFJetpT->size()); dj++){
 		  double dijcScale=1;//lazy viola just to modify the calojet code as less as possible
@@ -1326,12 +1329,12 @@ void analysisClass::Loop()
 	      } //end  both passed loose jet cleaning
 	      // both passed tight jet cleaning
 	      if(TightIDjet1 && TightIDjet2){
-		diPFjetptallJIDtight->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0);   //jc
-		diPFjetptallJIDtight->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1);   //jc
-		diPFjetetaJIDtight->Fill(ak5PFJetEta->at(index_PFjet1));
-		diPFjetetaJIDtight->Fill(ak5PFJetEta->at(index_PFjet2));
-		diPFjetphiJIDtight->Fill(ak5PFJetPhi->at(index_PFjet1));
-		diPFjetphiJIDtight->Fill(ak5PFJetPhi->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetptallJIDtight->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0);   //jc
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetptallJIDtight->Fill(ak5PFJetpT->at(index_PFjet2) * jcScale1);   //jc
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetetaJIDtight->Fill(ak5PFJetEta->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetetaJIDtight->Fill(ak5PFJetEta->at(index_PFjet2));
+		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetphiJIDtight->Fill(ak5PFJetPhi->at(index_PFjet1));
+		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetphiJIDtight->Fill(ak5PFJetPhi->at(index_PFjet2));
 	      }
 	      //how many of the PFjets in diPFjets events pass the loose JetID (look only at the two leading PFjets)
 	      if(LooseIDjet1){
