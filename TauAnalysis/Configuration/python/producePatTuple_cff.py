@@ -24,6 +24,11 @@ from TauAnalysis.RecoTools.patPFTauConfig_cfi import *
 from PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff import *
 patCandidates.remove(patCandidateSummary)
 #
+# enable PAT trigger matching
+from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff import *
+from PhysicsTools.PatAlgos.patSequences_cff import *
+patDefaultSequence += patTriggerSequence
+#
 # produce TauAnalysis specific objects not related to PAT sequences
 # (reconstruction of generator level information and selection of primary event vertex)
 #
