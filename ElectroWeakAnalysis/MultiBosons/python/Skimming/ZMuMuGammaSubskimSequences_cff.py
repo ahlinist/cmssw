@@ -16,6 +16,12 @@ MuMuGammasGlobalSequence = cms.Sequence(
   MuMuGammasGlobalCountFilter
 )
 
+from ElectroWeakAnalysis.MultiBosons.Skimming.MuMuGammasOneStandAloneMuon_cfi import *
+
+MuMuGammasOneStandAloneMuonSequence = cms.Sequence(
+  MuMuGammasOneStandAloneMuon
+)
+
 from ElectroWeakAnalysis.MultiBosons.Skimming.MuMuGammasOneTrack_cfi import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.MuMuGammasOneTrackCountFilter_cfi import *
 
@@ -27,5 +33,6 @@ MuMuGammasOneTrackSequence = cms.Sequence(
 MuMuGammasAllSequence = cms.Sequence(
   MuMuGammasSequence +
   MuMuGammasGlobalSequence +
+  MuMuGammasOneStandAloneMuonSequence +
   MuMuGammasOneTrackSequence
 )
