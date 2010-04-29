@@ -242,6 +242,10 @@ onia2MuMuPatTrkCal = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT
 onia2MuMuPatTrkCal.higherPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon")
 onia2MuMuPatTrkCal.lowerPuritySelection   = cms.string("isGlobalMuon || isTrackerMuon || (track.isNonnull && isCaloMuon)")
 
+onia2MuMuPatArbTrkTrk = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
+onia2MuMuPatArbTrkTrk.higherPuritySelection  = cms.string("isGlobalMuon || (isTrackerMuon && muonID('TrackerMuonArbitrated'))")
+onia2MuMuPatArbTrkTrk.lowerPuritySelection   = cms.string("isGlobalMuon || (isTrackerMuon && muonID('TrackerMuonArbitrated'))")
+
 ##    _____           _     
 ##   |_   _|__   ___ | |___ 
 ##     | |/ _ \ / _ \| / __|
