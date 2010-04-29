@@ -35,55 +35,60 @@
 #
 #--------------------------------------------------------------------------------
 
-def makeReplacementsPatProduction(channel = None, sample = None, replacements = None):
+def makeReplacementsPatProduction(channel = None, sample = None, type = None, replacements = None):
 
-    # check that channel, sample and replacements parameters are defined and non-empty
-    if channel is None:
-        raise ValueError("Undefined channel Parameter !!")
-    if sample is None:
-        raise ValueError("Undefined sample Parameter !!")
-    if replacements is None:
-        raise ValueError("Undefined replacements Parameter !!")
+	# check that channel, sample, type, and replacements parameters are defined and non-empty
+	if channel is None:
+		raise ValueError("Undefined channel Parameter !!")
+	if sample is None:
+		raise ValueError("Undefined sample Parameter !!")
+	if (type != "mc" and type != "data") :
+		raise ValueError("Undefined type Parameter !!")
+	if replacements is None:
+		raise ValueError("Undefined replacements Parameter !!")
 
-    # remove all white-space characters from replacements parameter string
-    replacements = replacements.replace(" ", "")
+	# remove all white-space characters from replacements parameter string
+	replacements = replacements.replace(" ", "")
 
-    # split replacements string into list of individual replace statements
-    # (separated by ";" character)
-    replaceStatements = replacements.split(";")
+	# split replacements string into list of individual replace statements
+	# (separated by ";" character)
+	replaceStatements = replacements.split(";")
 
-    replaceStatements_retVal = []
+	replaceStatements_retVal = []
 
-    for replaceStatement in replaceStatements:
+	for replaceStatement in replaceStatements:
 
-        # split replacement string into name, value pairs
-        paramNameValuePair = replaceStatement.split("=")
+		# split replacement string into name, value pairs
+		paramNameValuePair = replaceStatement.split("=")
 
-        # check that replacement string matches 'paramName=paramValue' format
-        if len(paramNameValuePair) != 2:
-            raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
+		# check that replacement string matches 'paramName=paramValue' format
+		if len(paramNameValuePair) != 2:
+			raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
 
-        # extract name and value to be used for replacement
-        paramName = paramNameValuePair[0]
-        paramValue = paramNameValuePair[1]
+		# extract name and value to be used for replacement
+		paramName = paramNameValuePair[0]
+		paramValue = paramNameValuePair[1]
 
-        if paramName == "maxEvents":
-            replaceStatements_retVal.append(replaceStatement)
+		if paramName == "maxEvents":
+			replaceStatements_retVal.append(replaceStatement)
 
-    # replace inputFileName parameter
-    inputFileNames = "fileNames" + sample
-    replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
-    
-    # replace patTupleOutputFileName parameter
-    # (ommit "_part.." suffix of sample name in case of processes split
-    #  into multiple cmsRun job parts, in order to avoid having to specify
-    #  patTupleOutputFileName again and again for each part)
-    patTupleOutputFileName = "patTupleOutputFileName" + sample
-    if sample.find("_part") != -1:
-        patTupleOutputFileName = "cms.untracked.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")]
-        patTupleOutputFileName += ".value().replace('_partXX', '" + sample[sample.rfind("_part"):] + "'))"
-    replaceStatements_retVal.append("patTupleOutputFileName = " + patTupleOutputFileName)
+	# replace inputFileName parameter
+	inputFileNames = "fileNames" + sample
+	replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
 
-    replacements_retVal = "; ".join(replaceStatements_retVal)
+	# replace patTupleOutputFileName parameter
+	# (ommit "_part.." suffix of sample name in case of processes split
+	#  into multiple cmsRun job parts, in order to avoid having to specify
+	#  patTupleOutputFileName again and again for each part)
+	patTupleOutputFileName = "patTupleOutputFileName" + sample
+	if sample.find("_part") != -1:
+		patTupleOutputFileName = "cms.untracked.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")]
+		patTupleOutputFileName += ".value().replace('_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+	replaceStatements_retVal.append("patTupleOutputFileName = " + patTupleOutputFileName)
 
-    return replacements_retVal
+	if type is "data":
+		replaceStatements_retVal.append("#switchToData(process) = switchToData(process)")
+
+	replacements_retVal = "; ".join(replaceStatements_retVal)
+
+	return replacements_retVal
