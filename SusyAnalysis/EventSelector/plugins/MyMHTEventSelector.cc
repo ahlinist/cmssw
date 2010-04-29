@@ -28,7 +28,6 @@ bool
 MyMHTEventSelector::select (const edm::Event& event) const
 {
   // reset cached variables
-
   math::XYZTLorentzVector HT;
 
   resetVariables();
@@ -43,10 +42,10 @@ MyMHTEventSelector::select (const edm::Event& event) const
   // Sum over jet Ets (with cut on min. pt)
   edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
   while ( iJet != jetHandle->end() ) {
-    if(iJet->emEnergyFraction()<= minFem_  && fabs(iJet->eta())<2.6 ) continue;
-    if(iJet->emEnergyFraction()>= maxFem_  && fabs(iJet->eta())<2.6 ) continue;
-    if(iJet->jetID().n90Hits <= minN90_)  continue;
-    if(iJet->jetID().fHPD >= minfHPD_ ) continue;
+    if(iJet->emEnergyFraction()<= minFem_  && fabs(iJet->eta())<2.6 ) {++iJet; continue;}
+    if(iJet->emEnergyFraction()>= maxFem_  && fabs(iJet->eta())<2.6 ) {++iJet; continue;}
+    if(iJet->jetID().n90Hits <= minN90_)  {++iJet; continue;}
+    if(iJet->jetID().fHPD >= minfHPD_ ) {++iJet; continue;}
     if ( iJet->pt()>minPt_ && fabs(iJet->eta())<maxEta_ ) HT += iJet->correctedP4("abs");
     ++iJet;
   }
