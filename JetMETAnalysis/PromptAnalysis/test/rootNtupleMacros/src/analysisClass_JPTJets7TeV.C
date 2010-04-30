@@ -39,6 +39,9 @@ analysisClass::~analysisClass()
   std::vector<int> lumis_min;
   std::vector<int> lumis_max;
 
+int debug=0;
+int debug2=0;
+
   double cut_PVtxndof_min;
   double cut_PVtxz_max;
   double cut_fracHighpurityTracks_min;
@@ -325,8 +328,8 @@ void analysisClass::Loop()
 //   bool makeJetCorr = true;
   // cut values
   double barreleta =1.4;
-  double endcapeta =2; //2.6;
-  double endcapeta_dijet =2; //3.0;
+//   double endcapeta =2; //2.6;
+//   double endcapeta_dijet =2; //3.0;
   double fhpdmax = 0.98;
   double n90hitsmin =1;
   double ntracksmin =1;
@@ -360,7 +363,11 @@ void analysisClass::Loop()
   double etaMin=-3.;
 
   int invmassBin=100;//30
-  double invmassMax=600.;
+  double invmassMax=800.;
+
+  const int bin=30;
+  Double_t Lower[bin] ={25, 27, 29 ,31 ,33 ,35 ,37, 39, 41 ,43 ,45, 47, 50, 55, 60, 65, 70 ,75 ,80 ,85, 90, 95, 100 ,110, 120, 130, 140, 150 ,175, 200};
+
   
   TLorentzVector JPTjet1LorentzVector(0.,0.,0.,0.);
   TLorentzVector JPTjet2LorentzVector(0.,0.,0.,0.);
@@ -384,14 +391,17 @@ void analysisClass::Loop()
   JPTnconstJIDloose->SetXTitle("Number of constituents");
   JPTnconstJIDloose->SetTitle(dataset);
 
-  TH1D *JPTptall = new TH1D("JPTptall","",ptBin,0,ptMax);
+//   TH1D *JPTptall = new TH1D("JPTptall","",ptBin,0,ptMax);
+  TH1D *JPTptall = new TH1D("JPTptall","",(bin-1), Lower);
   JPTptall->SetXTitle("p_{T}[GeV]");
   JPTptall->SetTitle(dataset);
-  TH1D *JPTpt = new TH1D("JPTpt","",ptBin,ptMin,ptMax);
+//   TH1D *JPTpt = new TH1D("JPTpt","",ptBin,ptMin,ptMax);
+  TH1D *JPTpt = new TH1D("JPTpt","",(bin-1), Lower);
   JPTpt->SetXTitle("p_{T}[GeV]");
   JPTpt->SetTitle(dataset);
 
-  TH1D *JPTptJIDloose = new TH1D("JPTptJIDloose","",ptBin,ptMin,ptMax);
+//   TH1D *JPTptJIDloose = new TH1D("JPTptJIDloose","",ptBin,ptMin,ptMax);
+  TH1D *JPTptJIDloose = new TH1D("JPTptJIDloose","",(bin-1), Lower);
   JPTptJIDloose->SetXTitle("p_{T}[GeV]");
   JPTptJIDloose->SetTitle(dataset);
 
@@ -433,13 +443,13 @@ void analysisClass::Loop()
   JPTEendcapJIDloose->SetTitle(dataset);
 
 //   TH1D *JPTresemf = new TH1D("JPTresemf","",101,-0.005,1.005);
-  TH1D *JPTresemf = new TH1D("JPTresemf","",31,-0.005,1.005);
+  TH1D *JPTresemf = new TH1D("JPTresemf","",30,-0.005,1.005);
   JPTresemf->SetXTitle("restricted emf");
   JPTresemf->SetTitle(dataset);
-  TH1D *JPTfhpd = new TH1D("JPTfhpd","",101,-0.005,1.005);
+  TH1D *JPTfhpd = new TH1D("JPTfhpd","",30,-0.005,1.005);
   JPTfhpd->SetXTitle("f_{HPD}");
   JPTfhpd->SetTitle(dataset);
-  TH1D *JPTfrbx = new TH1D("JPTfrbx","",101,-0.005,1.005);
+  TH1D *JPTfrbx = new TH1D("JPTfrbx","",30,-0.005,1.005);
   JPTfrbx->SetXTitle("f_{RBX}");
   JPTfrbx->SetTitle(dataset);
   TH1I *JPTn90hits = new TH1I("JPTn90hits","",50,0,50);
@@ -461,10 +471,12 @@ void analysisClass::Loop()
   JPTmapJIDloose->SetTitle(dataset);
 
   // ------------------------Di Jets - all dijets are   ----------------------
-  TH1D *dijetJPTptall1 = new TH1D("dijetJPTptall1","",ptBin, ptMinDijet,ptMax);
+//   TH1D *dijetJPTptall1 = new TH1D("dijetJPTptall1","",ptBin, ptMinDijet,ptMax);
+  TH1D *dijetJPTptall1 = new TH1D("dijetJPTptall1","",(bin-1), Lower);
   dijetJPTptall1->SetXTitle("p_{T}[GeV]");
   dijetJPTptall1->SetTitle(dataset);
-  TH1D *dijetJPTptall2 = new TH1D("dijetJPTptall2","",ptBin, ptMinDijet ,ptMax);
+//   TH1D *dijetJPTptall2 = new TH1D("dijetJPTptall2","",ptBin, ptMinDijet ,ptMax);
+  TH1D *dijetJPTptall2 = new TH1D("dijetJPTptall2","",(bin-1), Lower);
   dijetJPTptall2->SetXTitle("p_{T}[GeV]");
   dijetJPTptall2->SetTitle(dataset);
   TH1D *dijetJPTdphi = new TH1D("dijetJPTdphi","",phiBin, 0., 3.5);
@@ -512,13 +524,13 @@ void analysisClass::Loop()
   JPTmapalldijets->SetYTitle("#phi_{jet}");
   JPTmapalldijets->SetTitle(dataset);
 
-  TH1D *JPTresemfdijets = new TH1D("JPTresemfdijets","",101,-0.005,1.005);
+  TH1D *JPTresemfdijets = new TH1D("JPTresemfdijets","",30,-0.005,1.005);
   JPTresemfdijets->SetXTitle("restricted emf");
   JPTresemfdijets->SetTitle(dataset);
-  TH1D *JPTfhpddijets = new TH1D("JPTfhpddijets","",101,-0.005,1.005);
+  TH1D *JPTfhpddijets = new TH1D("JPTfhpddijets","",30,-0.005,1.005);
   JPTfhpddijets->SetXTitle("f_{HPD}");
   JPTfhpddijets->SetTitle(dataset);
-  TH1D *JPTfrbxdijets = new TH1D("JPTfrbxdijets","",101,-0.005,1.005);
+  TH1D *JPTfrbxdijets = new TH1D("JPTfrbxdijets","",30,-0.005,1.005);
   JPTfrbxdijets->SetXTitle("f_{RBX}");
   JPTfrbxdijets->SetTitle(dataset);
   TH1I *JPTn90hitsdijets = new TH1I("JPTn90hitsdijets","",50,0,50);
@@ -527,17 +539,21 @@ void analysisClass::Loop()
   TH1I *njetsindijets = new TH1I("njetsindijets","",20,0,20);
   njetsindijets->SetXTitle("Number of jets per event");
   njetsindijets->SetTitle(dataset); 
-  TH1D *dijetJPTptall1JIDloose = new TH1D("dijetJPTptall1JIDloose","",ptBin, ptMinDijet,ptMax);
+//   TH1D *dijetJPTptall1JIDloose = new TH1D("dijetJPTptall1JIDloose","",ptBin, ptMinDijet,ptMax);
+  TH1D *dijetJPTptall1JIDloose = new TH1D("dijetJPTptall1JIDloose","",(bin-1), Lower);
   dijetJPTptall1JIDloose->SetXTitle("p_{T}[GeV]");
   dijetJPTptall1JIDloose->SetTitle(dataset);
-  TH1D *dijetJPTptall2JIDloose = new TH1D("dijetJPTptall2JIDloose","",ptBin, ptMinDijet ,ptMax);
+//   TH1D *dijetJPTptall2JIDloose = new TH1D("dijetJPTptall2JIDloose","",ptBin, ptMinDijet ,ptMax);
+  TH1D *dijetJPTptall2JIDloose = new TH1D("dijetJPTptall2JIDloose","",(bin-1), Lower);
   dijetJPTptall2JIDloose->SetXTitle("p_{T}[GeV]");
   dijetJPTptall2JIDloose->SetTitle(dataset);
 
-  TH1D *dijetJPTptFirstTwo = new TH1D("dijetJPTptFirstTwo","",ptBin, ptMinDijet ,ptMax);
+//   TH1D *dijetJPTptFirstTwo = new TH1D("dijetJPTptFirstTwo","",ptBin, ptMinDijet ,ptMax);
+  TH1D *dijetJPTptFirstTwo = new TH1D("dijetJPTptFirstTwo","",(bin-1), Lower);
   dijetJPTptFirstTwo->SetXTitle("p_{T}[GeV]");
   dijetJPTptFirstTwo->SetTitle(dataset);
-  TH1D *dijetJPTptFirstTwoJIDloose = new TH1D("dijetJPTptFirstTwoJIDloose","",ptBin, ptMinDijet ,ptMax);
+//   TH1D *dijetJPTptFirstTwoJIDloose = new TH1D("dijetJPTptFirstTwoJIDloose","",ptBin, ptMinDijet ,ptMax);
+  TH1D *dijetJPTptFirstTwoJIDloose = new TH1D("dijetJPTptFirstTwoJIDloose","",(bin-1), Lower);
   dijetJPTptFirstTwoJIDloose->SetXTitle("p_{T}[GeV]");
   dijetJPTptFirstTwoJIDloose->SetTitle(dataset);
 
@@ -776,6 +792,8 @@ void analysisClass::Loop()
 
       goodevts++;
       alljets+=ak5JetpT->size();
+
+
       // ---------------------------------------------------------------
       //########## Trigger Selection - to be 100 % sure: 
       int pass_BPTX              = 0;
@@ -786,6 +804,7 @@ void analysisClass::Loop()
       //## pass_BPTX - Two beams crossing at CMS (only Data)
       if(isData==1)
 	{
+
 	  if(l1techbits->at(0)==1)
 	    pass_BPTX = 1; 
   	    bptxevt++;
@@ -828,11 +847,11 @@ void analysisClass::Loop()
 	  }
 	}
       else if(isData == 0)
-	pass_PhysicsBit = 1;
+	pass_BSC_BeamHaloVeto = 1; 
 
-
+      pass_PhysicsBit = 1;
     
-       if (pass_BPTX && 	pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
+       if (pass_BPTX && pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto) {
 
 
      // ---------------------------------------------------------------
@@ -938,7 +957,7 @@ void analysisClass::Loop()
 	  JPTptall->Fill(JPTak5JetpT->at(j) * jcScale);   
 	  JPTmapall->Fill(JPTak5JetEta->at(j),JPTak5JetPhi->at(j));
 	  //after jc - fill TLorentzVector with all good jets
-	  if((JPTak5JetpT->at(j) * jcScale) >ptMinDijet && fabs(JPTak5JetEta->at(j))<endcapeta_dijet
+	  if((JPTak5JetpT->at(j) * jcScale) >ptMinDijet && fabs(JPTak5JetEta->at(j))<endcapeta/*_dijet*/
 	     && JetIdloose(JPTak5JetJIDresEMF->at(j),JPTak5JetJIDfHPD->at(j),JPTak5JetJIDn90Hits->at(j),JPTak5JetEta->at(j))){ 
 	    TLorentzVector PtEtaPhiE4Dlorentzvector2=TLorentzVector(0,0,0,0);
 	    PtEtaPhiE4Dlorentzvector2.SetPtEtaPhiE(JPTak5JetpT->at(j)*jcScale,JPTak5JetEta->at(j),JPTak5JetPhi->at(j),JPTak5JetEnergy->at(j)*jcScale);
@@ -1037,13 +1056,16 @@ void analysisClass::Loop()
 	double jcScale1;
 
 	NJPTindijets=0;
+
 	
 	//dijet
-	if(int(JPTak5JetpT->size())>=2){
+	if(int(JPTak5JetpT->size())>=2) {
+
+
 	  if((index_jet2==-10)||(index_jet1==-10)){
 	    cout<<"index should be set ERROR: "<<index_jet2<<"/"<<index_jet1<<endl;
 	  }
-	  // both passed pT and eta cuts
+
 	  if(makeJetCorr == 1) {
 	    jcScale0 = JPTak5JetscaleL2L3->at(index_jet1);
 	    jcScale1 = JPTak5JetscaleL2L3->at(index_jet2);
@@ -1056,9 +1078,8 @@ void analysisClass::Loop()
 	  }
 	  
 	  if(fabs(JPTak5JetEta->at(index_jet1))<endcapeta_dijet && (JPTak5JetpT->at(index_jet1) * jcScale0 )>ptMinDijet && fabs(JPTak5JetEta->at(index_jet2))<endcapeta_dijet && (JPTak5JetpT->at(index_jet2) * jcScale1) >ptMinDijet){   //jc
-	    //i increase 
-
-// 	    NJPTindijets=+2;
+	    // i increase 
+	    // NJPTindijets=+2;
 
 	    //not only dijet events wanted: cut on met/sumet for event cleanup
 	    //fill only 
@@ -1077,9 +1098,14 @@ void analysisClass::Loop()
 
  	    dijetJPTdphi->Fill(JPTdphi);
 
+	    debug++;
+
 	    if(JetIdloose(JPTak5JetJIDresEMF->at(index_jet1),JPTak5JetJIDfHPD->at(index_jet1),JPTak5JetJIDn90Hits->at(index_jet1),JPTak5JetEta->at(index_jet1)) 
 	       && JetIdloose(JPTak5JetJIDresEMF->at(index_jet2),JPTak5JetJIDfHPD->at(index_jet2),JPTak5JetJIDn90Hits->at(index_jet2),JPTak5JetEta->at(index_jet2))){
  	      dijetJPTdphiJIDloose->Fill(JPTdphi);
+
+	      debug2++;
+
 	    }
 
 	    if (JPTdphi >cut_DiJetDeltaPhi_min) {
@@ -1313,6 +1339,8 @@ void analysisClass::Loop()
       cout <<"###################################"       << endl;
       cout <<"Good Events " << goodevts      <<" Selected events="<< pvevt<<  endl;
       cout <<" NJPTindijets " <<  NJPTindijetsTOT /2 << "  NJPTindijetsLoose" <<NJPTindijetsJetIDLooseTOT /2<< endl;
+      cout<<"debug= "<<debug<<endl;
+      cout<<"debug2= "<<debug2<<endl;
       cout <<"###################################"       << endl;
 
    // cleaning efficiencies
