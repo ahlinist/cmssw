@@ -328,7 +328,7 @@ void analysisClass::Loop()
   double invmassMax=800.;
 
   //Eventual cut for jets to be considered for histograms filling only
-  double MinPttoFillHisto=50.; //can be put to 50.
+  double MinPttoFillHisto=25.; //can be put to 50.
 
 
    TLorentzVector Calojet1LorentzVector(0.,0.,0.,0.);
@@ -365,7 +365,9 @@ void analysisClass::Loop()
   nconstJIDtight->SetTitle(dataset);
 
 
-
+  TH1D *METoverSumET = new TH1D("METoverSumET","",25,-0.005,1.005);
+  METoverSumET->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumET->SetTitle(dataset);
   TH1D *ptall = new TH1D("ptall","",ptBin,0.,ptMax);
   ptall->SetXTitle("p_{T}[GeV]");
   ptall->SetTitle(dataset);
@@ -373,10 +375,16 @@ void analysisClass::Loop()
   pt->SetXTitle("p_{T}[GeV]");
   pt->SetTitle(dataset);
 
+  TH1D *METoverSumETJIDloose = new TH1D("METoverSumETJIDloose","",25,-0.005,1.005);
+  METoverSumETJIDloose->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETJIDloose->SetTitle(dataset);
   TH1D *ptJIDloose = new TH1D("ptJIDloose","",(bin-1), Lower);
   ptJIDloose->SetXTitle("p_{T}[GeV]");
   ptJIDloose->SetTitle(dataset);
 
+  TH1D *METoverSumETJIDtight = new TH1D("METoverSumETJIDtight","",25,-0.005,1.005);
+  METoverSumETJIDtight->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETJIDtight->SetTitle(dataset);
   TH1D *ptJIDtight = new TH1D("ptJIDtight","",(bin-1), Lower);
   ptJIDtight->SetXTitle("p_{T}[GeV]");
   ptJIDtight->SetTitle(dataset);
@@ -501,6 +509,9 @@ void analysisClass::Loop()
 
 
   // ------------------------Di Jets - all dijets are   ----------------------
+  TH1D *METoverSumETdijet = new TH1D("METoverSumETdijet","",25,-0.005,1.005);
+  METoverSumETdijet->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdijet->SetTitle(dataset);
   TH1D *dijetptall1 = new TH1D("dijetptall1","",(bin-1), Lower);
   dijetptall1->SetXTitle("p_{T}[GeV]");
   dijetptall1->SetTitle(dataset);
@@ -520,12 +531,20 @@ void analysisClass::Loop()
   TH1D *dijetphi = new TH1D("dijetphi","",25,phiMin,phiMax);
   dijetphi->SetXTitle("#phi");
   dijetphi->SetTitle(dataset);
+  //loose
+  TH1D *METoverSumETdijetJIDloose = new TH1D("METoverSumETdijetJIDloose","",25,-0.005,1.005);
+  METoverSumETdijetJIDloose->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdijetJIDloose->SetTitle(dataset);
   TH1D *dijetetaJIDloose = new TH1D("dijetetaJIDloose","",25,etaMin,etaMax);
   dijetetaJIDloose->SetXTitle("#eta");
   dijetetaJIDloose->SetTitle(dataset);
   TH1D *dijetphiJIDloose = new TH1D("dijetphiJIDloose","",25,phiMin,phiMax);
   dijetphiJIDloose->SetXTitle("#phi");
   dijetphiJIDloose->SetTitle(dataset);
+  //
+  TH1D *METoverSumETdijetJIDtight = new TH1D("METoverSumETdijetJIDtight","",25,-0.005,1.005);
+  METoverSumETdijetJIDtight->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdijetJIDtight->SetTitle(dataset);
   TH1D *dijetetaJIDtight = new TH1D("dijetetaJIDtight","",25,etaMin,etaMax);
   dijetetaJIDtight->SetXTitle("#eta");
   dijetetaJIDtight->SetTitle(dataset);
@@ -1038,7 +1057,9 @@ void analysisClass::Loop()
 	  } //pt min/ eta 
 	} //loop on inclusive ak5 jets 
 	
-	   
+	if(NJets>0) METoverSumET->Fill(calometPt->at(0)/calometSumEt->at(0));
+	if(NJetIDLoose>0) METoverSumETJIDloose->Fill(calometPt->at(0)/calometSumEt->at(0));
+	if(NJetIDTight>0) METoverSumETJIDtight->Fill(calometPt->at(0)/calometSumEt->at(0));
 	// --------------------DiJets---------------------------------------------------------------------   
 	// JET CORRECTION
 	// --------------------
@@ -1147,6 +1168,7 @@ void analysisClass::Loop()
 	      if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   n90hitsdijets->Fill(ak5JetJIDn90Hits->at(index_jet1));
 	      if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   n90hitsdijets->Fill(ak5JetJIDn90Hits->at(index_jet2));
 	      // both passed loose jet cleaning
+	      METoverSumETdijet->Fill(calometPt->at(0)/calometSumEt->at(0));
 	      if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) 
 		 && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
 		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetptall1JIDloose->Fill(ak5JetpT->at(index_jet1) * jcScale0);   //jc
@@ -1159,6 +1181,7 @@ void analysisClass::Loop()
 		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetetaJIDloose->Fill(ak5JetEta->at(index_jet2));
 		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetphiJIDloose->Fill(ak5JetPhi->at(index_jet1));
 		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetphiJIDloose->Fill(ak5JetPhi->at(index_jet2));
+		METoverSumETdijetJIDloose->Fill(calometPt->at(0)/calometSumEt->at(0));
 		//now loop on jets and count how many JIDLOOSE jets with pT>8 are in each event
 		for (int dj = 0; dj<int(ak5JetpT->size()); dj++){
 		  if(makeJetCorr==1) {
@@ -1185,6 +1208,7 @@ void analysisClass::Loop()
 		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetetaJIDtight->Fill(ak5JetEta->at(index_jet2));
 		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetphiJIDtight->Fill(ak5JetPhi->at(index_jet1));
 		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetphiJIDtight->Fill(ak5JetPhi->at(index_jet2));
+		METoverSumETdijetJIDtight->Fill(calometPt->at(0)/calometSumEt->at(0));
 	    }
 	      //how many of the jets in dijets events pass the loose jetID (look only at the two leading jets)
 	      if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1))){
@@ -1386,6 +1410,9 @@ void analysisClass::Loop()
    h_thrust->Write();
    h_phi_TA->Write();
    ptall->Write();
+   METoverSumET->Write();
+   METoverSumETJIDloose->Write();
+   METoverSumETJIDtight->Write();
    pt->Write();
    ptJIDloose->Write();
    ptJIDtight->Write();
@@ -1429,6 +1456,10 @@ void analysisClass::Loop()
    ChFracTight->Write();
    ChFracHighPurityBarrel->Write();
    ChFracTightBarrel->Write();
+   //dijets
+   METoverSumETdijet->Write();
+   METoverSumETdijetJIDloose->Write();
+   METoverSumETdijetJIDtight->Write();
    dijetptall1->Write();
    dijetptall2->Write();
    dijetdphi->Write();
