@@ -32,7 +32,7 @@ MuMuGammasOneTrackSequence = cms.Sequence(
   MuMuGammasOneTrackCountFilter
 )
 
-AllMuMuGammasSequences = cms.Sequence(
+allMuMuGammasSequences = cms.Sequence(
   MuMuGammasSequence +
   MuMuGammasGlobalSequence +
   MuMuGammasOneStandAloneMuonSequence +
