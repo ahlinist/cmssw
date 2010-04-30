@@ -7,3 +7,8 @@ vgMuons = cms.EDProducer("ZMuMuAdapter",
 vgMuonsGlobal = cms.EDProducer("ZMuMuAdapter",
   src = cms.InputTag("dimuonsGlobal")
 )
+
+vgMuonsOneStandAloneMuon = cms.EDProducer("ZMuMuAdapter",
+  src = cms.InputTag("dimuonsOneStandAloneMuon")
+)
+
