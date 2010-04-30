@@ -1,12 +1,12 @@
 ## V-gamma Z(->mumu)gamma subskim + Vg Ntupelizer
-## Based on 
+## Based on
 ##   ElectroWeakAnalysis/Skimming/test/EWK_ZMuMuSubskim.py,
 ##   PhysicsTools/PatAlgos/python/patTemplate_cfg.py and
 ##   ElectroWeakAnalysis/MultiBosons/test/Skimming/ZMuMuGammaSubskim.py
 
 import FWCore.ParameterSet.Config as cms
 
-from ElectroWeakAnalysis.MultiBosons.Skimming.ZMuMuGammaSubskim_cfi import *
+from ElectroWeakAnalysis.MultiBosons.Skimming.ZMuMuGammaSubskimMC_cfi import *
 
 ## Manipulate the PAT sequences here
 from PhysicsTools.PatAlgos.tools.coreTools import *
@@ -64,7 +64,7 @@ process.source.fileNames = [relvalPath + '/' + file for file in fileList]
 
 process.source.skipEvents = cms.untracked.uint32(0)
 #process.maxEvents.input = 20
-process.maxEvents = cms.untracked.PSet(output = cms.untracked.int32(2) )
+process.maxEvents = cms.untracked.PSet(output = cms.untracked.int32(10) )
 
 # process.countPatPhotons.minNumber = 1  # 1: rejects events w/o photons
 # process.MuMuGammasCountFilter.minNumber = 0 # 1: rejects events w/o dimuons
