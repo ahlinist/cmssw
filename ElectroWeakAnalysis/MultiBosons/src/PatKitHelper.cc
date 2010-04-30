@@ -56,15 +56,15 @@ void PatKitHelper::bookHistos(edm::EDProducer * producer)
   physHistos_->configure( histos_to_disable, histos_to_enable );
 
   // PhysicsHistograms takes ownership of the memory for these histograms here
-  physHistos_->addHisto( h_runNumber_ = 
+  physHistos_->addHisto( h_runNumber_ =
 			new PhysVarHisto( "runNumber", "Run Number",
-					  10000, 0, 10000, 
-					  &summary ,"", "I") 
+					  10000, 0, 10000,
+					  &summary ,"", "I")
 			);
-  physHistos_->addHisto( h_eventNumber_ = 
+  physHistos_->addHisto( h_eventNumber_ =
 			new PhysVarHisto( "eventNumber", "Event Number",
-					  10000, 0, 10000, 
-					  &summary ,"", "I") 
+					  10000, 0, 10000,
+					  &summary ,"", "I")
 			);
 
   // Be sure to make the histograms!
@@ -107,7 +107,8 @@ void PatKitHelper::getHandles( edm::Event & event,
 			       edm::Handle<edm::View<pat::MET> > &      METHandle,
 			       edm::Handle<edm::View<pat::Photon> > &   photonHandle,
 			       edm::Handle<std::vector<reco::RecoChargedCandidate> > &   trackHandle,
-			       edm::Handle<std::vector<reco::GenParticle> > & genParticlesHandle
+			       edm::Handle<std::vector<reco::GenParticle> > & genParticlesHandle,
+			       edm::Handle<reco::CandidateView>  &      zmumuHandle
 			       )
 {
 
@@ -119,8 +120,9 @@ void PatKitHelper::getHandles( edm::Event & event,
   bool doPhoton       = parameters_.getParameter<bool>("doPhoton");
   bool doTrack        = parameters_.getParameter<bool>("doTrack");
   bool doGenParticles = parameters_.getParameter<bool>("doGenParticles");
-  
-  
+  bool doZmumu        = parameters_.getParameter<bool>("doZmumu");
+
+
   edm::InputTag muonName         = parameters_.getParameter<edm::InputTag>("muonSrc"    );
   edm::InputTag electronName     = parameters_.getParameter<edm::InputTag>("electronSrc");
   edm::InputTag tauName          = parameters_.getParameter<edm::InputTag>("tauSrc"     );
@@ -129,8 +131,9 @@ void PatKitHelper::getHandles( edm::Event & event,
   edm::InputTag photonName       = parameters_.getParameter<edm::InputTag>("photonSrc"  );
   edm::InputTag trackName        = parameters_.getParameter<edm::InputTag>("trackSrc"   );
   edm::InputTag genParticlesName = parameters_.getParameter<edm::InputTag>("genParticleSrc");
+  edm::InputTag zmumuName        = parameters_.getParameter<edm::InputTag>("zmumuSrc"  );
 
-  
+
 
   if ( doMuon         ) event.getByLabel(muonName        , muonHandle);
   if ( doElectron     ) event.getByLabel(electronName    , electronHandle);
@@ -140,6 +143,7 @@ void PatKitHelper::getHandles( edm::Event & event,
   if ( doPhoton       ) event.getByLabel(photonName      , photonHandle);
   if ( doTrack        ) event.getByLabel(trackName       , trackHandle);
   if ( doGenParticles ) event.getByLabel(genParticlesName, genParticlesHandle );
+  if ( doZmumu        ) event.getByLabel(zmumuName       , zmumuHandle);
 
 }
 

@@ -16,6 +16,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Utils/interface/TFileDirectory.h"
 
+#include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/View.h"
 
 #include "TTree.h"
@@ -30,7 +31,7 @@ public:
 
   explicit VgAnalyzerKit(const ParameterSet&);
   virtual ~VgAnalyzerKit();
-  
+
 protected:
 
   virtual void beginJob();
@@ -351,6 +352,7 @@ protected:
   Handle<View<pat::Photon> >                photonHandle_;
   Handle<std::vector<reco::RecoChargedCandidate> > trackHandle_;
   Handle<std::vector<reco::GenParticle> >          genParticlesHandle_;
+  Handle<reco::CandidateView>               zmumuHandle_;
 
 };
 

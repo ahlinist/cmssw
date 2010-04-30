@@ -16,30 +16,32 @@ process.maxEvents = cms.untracked.PSet(
     )
 
 process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring(['testZMuMuGammaSubskim.root']),
+  fileNames = cms.untracked.vstring(['file:testZMuMuGammaSubskim.root']),
   noEventSort = cms.untracked.bool(True),
   duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 )
 
 process.load("ElectroWeakAnalysis.MultiBosons.VgAnalyzerKit_cfi")
 #process.VgAnalyzerKit.saveHLTInfo = cms.untracked.bool(False);
-process.VgAnalyzerKit.doPhoton       = True
-process.VgAnalyzerKit.doElectron     = False
-process.VgAnalyzerKit.doMuon         = True
-process.VgAnalyzerKit.doTau          = False
-process.VgAnalyzerKit.doJet          = False
-process.VgAnalyzerKit.doMET          = False
-process.VgAnalyzerKit.doTrack        = False
-process.VgAnalyzerKit.doGenParticles = False
-process.VgAnalyzerKit.photonSrc = "selectedPatPhotons"
-process.VgAnalyzerKit.electronSrc = "selectedPatElectrons"
+# process.VgAnalyzerKit.doPhoton       = True
+# process.VgAnalyzerKit.doElectron     = False
+# process.VgAnalyzerKit.doMuon         = True
+# process.VgAnalyzerKit.doTau          = False
+# process.VgAnalyzerKit.doJet          = False
+# process.VgAnalyzerKit.doMET          = False
+# process.VgAnalyzerKit.doTrack        = False
+# process.VgAnalyzerKit.doGenParticles = False
+process.VgAnalyzerKit.doZmumu = True
+# process.VgAnalyzerKit.photonSrc = "selectedPatPhotons"
+# process.VgAnalyzerKit.electronSrc = "selectedPatElectrons"
 # process.VgAnalyzerKit.muonSrc = "selectedPatMuons"
-process.VgAnalyzerKit.muonSrc   = "vgMuons"
-process.VgAnalyzerKit.tauSrc = "selectedPatTaus"
-process.VgAnalyzerKit.jetSrc = "selectedPatJets"
+process.VgAnalyzerKit.muonSrc   = "vgMuonsGlobal"
+# process.VgAnalyzerKit.tauSrc = "selectedPatTaus"
+# process.VgAnalyzerKit.jetSrc = "selectedPatJets"
+process.VgAnalyzerKit.zmumuSrc   = "dimuonsGlobal"
 
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string('vgtree_vgMuons.root'))
+process.TFileService = cms.Service("TFileService", fileName = cms.string('vgtree.root'))
 
 process.p = cms.Path(process.VgAnalyzerKit)
 

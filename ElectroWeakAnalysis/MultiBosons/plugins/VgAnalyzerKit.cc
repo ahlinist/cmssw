@@ -2,8 +2,10 @@
 
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Common/interface/TriggerNames.h"
+#include "FWCore/Utilities/interface/EDMException.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HepMCCandidate/interface/PdfInfo.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
@@ -57,9 +59,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("lumis", &lumis_, "lumis/I");
   tree_->Branch("isData", &isData_, "isData/O");
   tree_->Branch("ttbit", ttbit_, "ttbit[64]/I");
-  tree_->Branch("nHLT", &nHLT_, "nHLT/I");
-  tree_->Branch("HLT", HLT_, "HLT[nHLT]/I"); 
-  tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I"); 
+  tree_->Branch("HLT", HLT_, "HLT[102]/I");
+  tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
   tree_->Branch("vtx", vtx_, "vtx[nVtx][3]/D");
@@ -182,7 +183,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleNumberOfValidHits", eleNumberOfValidHits_, "eleNumberOfValidHits[nEle]/I");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
+  tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/D");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/D");
   tree_->Branch("phoPz", phoPz_, "phoPz[nPho]/D");
@@ -347,8 +348,25 @@ VgAnalyzerKit::~VgAnalyzerKit() {
 void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // cout << "VgAnalyzerKit: entering produce() ..." << endl;
 
-  helper_.getHandles(e, muonHandle_, electronHandle_, tauHandle_, jetHandle_, METHandle_, photonHandle_, trackHandle_, genParticlesHandle_);
-  if (saveHistograms_) helper_.fillHistograms(e, muonHandle_, electronHandle_, tauHandle_, jetHandle_, METHandle_, photonHandle_, trackHandle_, genParticlesHandle_);
+  helper_.getHandles(e,
+                     muonHandle_,
+                     electronHandle_,
+                     tauHandle_,
+                     jetHandle_,
+                     METHandle_,
+                     photonHandle_,
+                     trackHandle_,
+                     genParticlesHandle_,
+                     zmumuHandle_);
+  if (saveHistograms_) helper_.fillHistograms(e,
+                                              muonHandle_,
+                                              electronHandle_,
+                                              tauHandle_,
+                                              jetHandle_,
+                                              METHandle_,
+                                              photonHandle_,
+                                              trackHandle_,
+                                              genParticlesHandle_);
 
   Handle<edm::View<reco::RecoCandidate> > others;
   e.getByLabel("cleanLayer1Electrons", others);
@@ -427,14 +445,14 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	vtx_[nVtx_][2] = (*recVtxs)[i].z();
 	vtxNTrk_[nVtx_] = (*recVtxs)[i].tracksSize();
 	vtxNDF_[nVtx_] = (*recVtxs)[i].ndof();
-	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho(); 
-	
+	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho();
+
 	if (vtxNDF_[nVtx_] > 4 && fabs(vtx_[nVtx_][2]) <= 15 && vtxD0_[nVtx_] <= 2) nGoodVtx++;
 	nVtx_++;
       }
   }
-  if (nGoodVtx > 0) IsVtxGood_ = 1;  
-  
+  if (nGoodVtx > 0) IsVtxGood_ = 1;
+
   // track quality
   TrackBase::TrackQuality trkQuality_;
   Handle<reco::TrackCollection> Tracks;
@@ -454,7 +472,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
   IsTracksGood_ = 0;
   if (nTrk_ > 10) {
-    if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 1;
+    if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 0;
   } else {
     IsTracksGood_ = 0;
   }
@@ -548,7 +566,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // HLT
-  nHLT_ = 0;
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
   if (saveHLTInfo_) {
     Handle<TriggerResults> trgResultsHandle;
@@ -558,10 +575,9 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     for (size_t i=0; i<trgNames.size(); ++i) {
       //int hltBits[20] = {6, 7, 8, 9, 10, 11, 12, 44, 45, 46, 47, 48, 49, 50, 76, 77, 78, 83, 84, 85};
       //for (int i=0; i<20; ++i) {
-      //HLT_[i] = (trgResultsHandle->accept(hltBits[i]) == true) ? 1:0; 
+      //HLT_[i] = (trgResultsHandle->accept(hltBits[i]) == true) ? 1:0;
       //cout<<"HLT bit = "<<hltBits[i]<<"   "<<hlNames_[hltBits[i]]<<" "<<HLT_[i]<<endl;
-      HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0; 
-      nHLT_ += 1;
+      HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
       //cout<<"HLT bit = "<<i<<"   "<<hlNames_[i]<<endl;
     }
   }
@@ -1058,7 +1074,59 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   nZmumu_ = 0;
   leg1Index = 0;
   leg2Index = 0;
-  if (muonHandle_.isValid() && muonHandle_->size() > 1) {
+  if (zmumuHandle_.isValid() ) {
+    // Store Zmumu candidates from the source.
+    leg1Index = leg2Index = -1; // index -1 indicates an error
+    // Loop over source Zmumu candidates
+    for(CandidateView::const_iterator Zmumu = zmumuHandle_->begin();
+        Zmumu != zmumuHandle_->end(); ++Zmumu) {
+      ZmumuMass_[nZmumu_] = Zmumu->mass();
+      ZmumuPt_  [nZmumu_] = Zmumu->pt();
+      ZmumuEta_ [nZmumu_] = Zmumu->eta();
+      ZmumuPhi_ [nZmumu_] = Zmumu->phi();
+      // Get the leg indexes using pointer arithmetics.
+      if (muonHandle_.isValid()) {
+        // Get the pointer to the first muon
+        const pat::Muon * muBegin = &*muonHandle_->begin();
+        // Jump through 3 loops to get pointers to the daughters.
+        const Candidate * dau1 = Zmumu->daughter(0);
+        const Candidate * dau2 = Zmumu->daughter(1);
+        if (dau1 == 0 || dau2 == 0)
+          throw Exception(errors::InvalidReference) <<
+            "One of the two daughters does not exist.\n";
+        // Jump through the 2nd loop - get the master of the shallow clones.
+        if (dau1->hasMasterClone() && dau2->hasMasterClone() ) {
+          dau1 = dau1->masterClone().get();
+          dau2 = dau2->masterClone().get();
+        } else {
+          throw Exception(errors::InvalidReference) <<
+            "One of the two daughters is not a shallow clone.\n";
+        }
+        // Jump throught the 3rd loop - cast up the pointers.
+        const pat::Muon * mu1 = dynamic_cast<const pat::Muon*>(dau1);
+        const pat::Muon * mu2 = dynamic_cast<const pat::Muon*>(dau2);
+        if (mu1 == 0 || mu2 == 0)
+          throw Exception(errors::InvalidReference) <<
+            "One of the two daughters is not a pat::Muon.\n";
+        // Use pointer arithmetics to get the indexes.
+        leg1Index = mu1 - muBegin;
+        leg2Index = mu2 - muBegin;
+        // Check if the indexes make sense.
+        if (leg1Index < 0  || (int) muonHandle_->size() <= leg1Index ||
+            leg2Index < 0  || (int) muonHandle_->size() <= leg2Index)
+          throw Exception(errors::InvalidReference)
+            << "One of the two daughters has illegal index.\n"
+            << "  daughter 1 index: " << leg1Index << endl
+            << "  daughter 2 index: " << leg2Index << endl
+            << "  muon source size: " << muonHandle_->size() << endl;
+      } // Get the leg indexes using pointer arithmetics.
+      ZmumuLeg1Index_[nZmumu_] = leg1Index;
+      ZmumuLeg2Index_[nZmumu_] = leg2Index;
+      ++nZmumu_;
+    } // Loop over source Zmumu candidates
+  } // Store Zmumu candidates from the source.
+  else if (muonHandle_.isValid() && muonHandle_->size() > 1) {
+    // Build Zmumu candidate on the fly based on the source muons
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end()-1; ++iMu) {
 
       if (!iMu->isGlobalMuon()) continue;
@@ -1096,7 +1164,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
       leg1Index++;
     }
-  }
+  } // Build Zmumu candidate on the fly based on the source muons
 
   // Wenu candiate
   // cout << "VgAnalyzerKit: produce: Wenu candiate..." << endl;
