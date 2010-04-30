@@ -59,7 +59,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("lumis", &lumis_, "lumis/I");
   tree_->Branch("isData", &isData_, "isData/O");
   tree_->Branch("ttbit", ttbit_, "ttbit[64]/I");
-  tree_->Branch("HLT", HLT_, "HLT[102]/I");
+  tree_->Branch("nHLT", &nHLT_, "nHLT/I");
+  tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -183,7 +184,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleNumberOfValidHits", eleNumberOfValidHits_, "eleNumberOfValidHits[nEle]/I");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton/O");
+  tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/D");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/D");
   tree_->Branch("phoPz", phoPz_, "phoPz[nPho]/D");
@@ -472,7 +473,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
   IsTracksGood_ = 0;
   if (nTrk_ > 10) {
-    if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 0;
+    if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 1;
   } else {
     IsTracksGood_ = 0;
   }
@@ -578,6 +579,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       //HLT_[i] = (trgResultsHandle->accept(hltBits[i]) == true) ? 1:0;
       //cout<<"HLT bit = "<<hltBits[i]<<"   "<<hlNames_[hltBits[i]]<<" "<<HLT_[i]<<endl;
       HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
+      nHLT_ += 1;
       //cout<<"HLT bit = "<<i<<"   "<<hlNames_[i]<<endl;
     }
   }
