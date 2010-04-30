@@ -16,7 +16,7 @@ process.maxEvents = cms.untracked.PSet(
     )
 
 process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring(['file:/tmp/veverka/testZMuMuGammaSubskim_nofilter_%d.root' % i for i in range(1,2)]),
+  fileNames = cms.untracked.vstring(['testZMuMuGammaSubskim.root']),
   noEventSort = cms.untracked.bool(True),
   duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 )
