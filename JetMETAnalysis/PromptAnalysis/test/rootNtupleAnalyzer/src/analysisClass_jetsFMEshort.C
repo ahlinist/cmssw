@@ -376,8 +376,11 @@ void analysisClass::Loop()
   //define histos for CaloJets
   // ------------------------Di Jets  ----------------------
   //  TH1D *dijetptall = new TH1D("dijetptall","",ptBin, ptMinDijet,ptMax);
-  TH1D *dijetptall = new TH1D("dijetptall","",(bin-1), Lower);
 
+  TH1D *METoverSumETdijet = new TH1D("METoverSumETdijet","",25,-0.005,1.005);
+  METoverSumETdijet->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdijet->SetTitle(dataset);
+  TH1D *dijetptall = new TH1D("dijetptall","",(bin-1), Lower);
   dijetptall->SetXTitle("p_{T}[GeV]");
   dijetptall->SetTitle(dataset);
   TH1D *dijetdphi = new TH1D("dijetdphi","",dphiBin, 0., Pi);
@@ -400,6 +403,9 @@ void analysisClass::Loop()
   dijetnconst->SetTitle(dataset);
   //loose
   //  TH1D *dijetptallJIDloose = new TH1D("dijetptallJIDloose","",ptBin, ptMinDijet,ptMax);
+  TH1D *METoverSumETdijetJIDloose = new TH1D("METoverSumETdijetJIDloose","",25,-0.005,1.005);
+  METoverSumETdijetJIDloose->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdijetJIDloose->SetTitle(dataset);
   TH1D *dijetptallJIDloose = new TH1D("dijetptallJIDloose","",(bin-1),Lower);
   dijetptallJIDloose->SetXTitle("p_{T}[GeV]");
   dijetptallJIDloose->SetTitle(dataset);
@@ -422,6 +428,9 @@ void analysisClass::Loop()
   dijetnconstJIDloose->SetXTitle("number of jet constituents");
   dijetnconstJIDloose->SetTitle(dataset);
   //tight
+  TH1D *METoverSumETdijetJIDtight = new TH1D("METoverSumETdijetJIDtight","",25,-0.005,1.005);
+  METoverSumETdijetJIDtight->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdijetJIDtight->SetTitle(dataset);
   TH1D *dijetetaJIDtight = new TH1D("dijetetaJIDtight","",etaBin,etaMin,etaMax);
   dijetetaJIDtight->SetXTitle("#eta");
   dijetetaJIDtight->SetTitle(dataset);
@@ -468,6 +477,9 @@ void analysisClass::Loop()
 
   // ------------------------Di Jets  ----------------------
   //  TH1D *diJPTjetptall = new TH1D("diJPTjetptall","",ptBin, ptMinDiJPTjet,ptMax);(bin-1),Lower)
+  TH1D *METoverSumETdiJPTjet = new TH1D("METoverSumETdiJPTjet","",25,-0.005,1.005);
+  METoverSumETdiJPTjet->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdiJPTjet->SetTitle(dataset);
   TH1D *diJPTjetptall = new TH1D("diJPTjetptall","",(bin-1),Lower);
   diJPTjetptall->SetXTitle("p_{T}[GeV]");
   diJPTjetptall->SetTitle(dataset);
@@ -489,8 +501,13 @@ void analysisClass::Loop()
   TH1I *diJPTjettrkmulti = new TH1I("diJPTjettrkmulti","",50,0,50);
   diJPTjettrkmulti->SetXTitle("Jet track multiplicity");
   diJPTjettrkmulti->SetTitle(dataset);
-
+  TH1I *diJPTjettrackNumber = new TH1I("diJPTjettrackNumber","",200,0,200);
+  diJPTjettrackNumber->SetXTitle("Track number");
+  diJPTjettrackNumber->SetTitle(dataset);
   //loose
+  TH1D *METoverSumETdiJPTjetJIDloose = new TH1D("METoverSumETdiJPTjetJIDloose","",25,-0.005,1.005);
+  METoverSumETdiJPTjetJIDloose->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdiJPTjetJIDloose->SetTitle(dataset);
   TH1D *diJPTjetetaJIDloose = new TH1D("diJPTjetetaJIDloose","",etaBin,etaMin,etaMax);
   diJPTjetetaJIDloose->SetXTitle("#eta");
   diJPTjetetaJIDloose->SetTitle(dataset);
@@ -513,7 +530,14 @@ void analysisClass::Loop()
   TH1I *diJPTjettrkmultiJIDloose = new TH1I("diJPTjettrkmultiJIDloose","",50,0,50);
   diJPTjettrkmultiJIDloose->SetXTitle("Jet track multiplicity");
   diJPTjettrkmultiJIDloose->SetTitle(dataset);
+  TH1I *diJPTjettrackNumberJIDloose = new TH1I("diJPTjettrackNumberJIDloose","",200,0,200);
+  diJPTjettrackNumberJIDloose->SetXTitle("Track number");
+  diJPTjettrackNumberJIDloose->SetTitle(dataset);
+
   //tight
+  TH1D *METoverSumETdiJPTjetJIDtight = new TH1D("METoverSumETdiJPTjetJIDtight","",25,-0.005,1.005);
+  METoverSumETdiJPTjetJIDtight->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdiJPTjetJIDtight->SetTitle(dataset);
   TH1D *diJPTjetetaJIDtight = new TH1D("diJPTjetetaJIDtight","",etaBin,etaMin,etaMax);
   diJPTjetetaJIDtight->SetXTitle("#eta");
   diJPTjetetaJIDtight->SetTitle(dataset);
@@ -535,10 +559,15 @@ void analysisClass::Loop()
   TH1I *diJPTjettrkmultiJIDtight = new TH1I("diJPTjettrkmultiJIDtight","",50,0,50);
   diJPTjettrkmultiJIDtight->SetXTitle("Jet track multiplicity");
   diJPTjettrkmultiJIDtight->SetTitle(dataset);
-
+  TH1I *diJPTjettrackNumberJIDtight = new TH1I("diJPTjettrackNumberJIDtight","",200,0,200);
+  diJPTjettrackNumberJIDtight->SetXTitle("Track number");
+  diJPTjettrackNumberJIDtight->SetTitle(dataset);
   ///PF jets
   // ------------------------Di Jets  ----------------------
   //TH1D *diPFjetptall = new TH1D("diPFjetptall","",ptBin, ptMinDiPFjet,ptMax); 
+  TH1D *METoverSumETdiPFjet = new TH1D("METoverSumETdiPFjet","",25,-0.005,1.005);
+  METoverSumETdiPFjet->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdiPFjet->SetTitle(dataset);
   TH1D *diPFjetptall = new TH1D("diPFjetptall","",(bin-1),Lower);
   diPFjetptall->SetXTitle("p_{T}[GeV]");
   diPFjetptall->SetTitle(dataset);
@@ -567,6 +596,9 @@ void analysisClass::Loop()
   diPFjetNEF->SetXTitle("neutral EM fraction (photons) for diPFjets");
   diPFjetNEF->SetTitle(dataset);
   //loose
+  TH1D *METoverSumETdiPFjetJIDloose = new TH1D("METoverSumETdiPFjetJIDloose","",25,-0.005,1.005);
+  METoverSumETdiPFjetJIDloose->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdiPFjetJIDloose->SetTitle(dataset);
   TH1D *diPFjetetaJIDloose = new TH1D("diPFjetetaJIDloose","",etaBin,etaMin,etaMax);
   diPFjetetaJIDloose->SetXTitle("#eta");
   diPFjetetaJIDloose->SetTitle(dataset);
@@ -595,6 +627,9 @@ void analysisClass::Loop()
   diPFjetNEFJIDloose->SetXTitle("neutral EM fraction (photons) for diPFjets");
   diPFjetNEFJIDloose->SetTitle(dataset);
   //tight
+  TH1D *METoverSumETdiPFjetJIDtight = new TH1D("METoverSumETdiPFjetJIDtight","",25,-0.005,1.005);
+  METoverSumETdiPFjetJIDtight->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
+  METoverSumETdiPFjetJIDtight->SetTitle(dataset);
   TH1D *diPFjetetaJIDtight = new TH1D("diPFjetetaJIDtight","",etaBin,etaMin,etaMax);
   diPFjetetaJIDtight->SetXTitle("#eta");
   diPFjetetaJIDtight->SetTitle(dataset);
@@ -910,6 +945,7 @@ void analysisClass::Loop()
 	      if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetresEMF->Fill(ak5JetJIDresEMF->at(index_jet2));
 	      if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetnconst->Fill(ak5JetNConstituents->at(index_jet1));
 	      if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetnconst->Fill(ak5JetNConstituents->at(index_jet2));
+	      METoverSumETdijet->Fill(calometPt->at(0)/calometSumEt->at(0));
 	      //
 	      if(JetIdloose(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) 
 		 && JetIdloose(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
@@ -918,6 +954,7 @@ void analysisClass::Loop()
 		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetresEMFJIDloose->Fill(ak5JetJIDresEMF->at(index_jet2));
 		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetnconstJIDloose->Fill(ak5JetNConstituents->at(index_jet1));
 		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetnconstJIDloose->Fill(ak5JetNConstituents->at(index_jet2));
+		METoverSumETdijetJIDloose->Fill(calometPt->at(0)/calometSumEt->at(0));
 	      }
 	      if(JetIdtight(ak5JetJIDresEMF->at(index_jet1),ak5JetJIDfHPD->at(index_jet1), ak5JetJIDfRBX->at(index_jet1),ak5JetSigmaEta->at(index_jet1),ak5JetSigmaPhi->at(index_jet1),ak5JetJIDn90Hits->at(index_jet1),ak5JetEta->at(index_jet1)) && JetIdtight(ak5JetJIDresEMF->at(index_jet2),ak5JetJIDfHPD->at(index_jet2),ak5JetJIDfRBX->at(index_jet2),ak5JetSigmaEta->at(index_jet2),ak5JetSigmaPhi->at(index_jet2),ak5JetJIDn90Hits->at(index_jet2),ak5JetEta->at(index_jet2))){
 		dijetinvmassJIDtight->Fill(dijetLorentzVector.M());
@@ -925,6 +962,7 @@ void analysisClass::Loop()
 		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetresEMFJIDtight->Fill(ak5JetJIDresEMF->at(index_jet2));
 		if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetnconstJIDtight->Fill(ak5JetNConstituents->at(index_jet1));
 		if(ak5JetpT->at(index_jet2)*jcScale1>MinPttoFillHisto)   dijetnconstJIDtight->Fill(ak5JetNConstituents->at(index_jet2));
+		METoverSumETdijetJIDtight->Fill(calometPt->at(0)/calometSumEt->at(0));
 	      }
 	      // basic di-jet variables 
 	      if(ak5JetpT->at(index_jet1)*jcScale0>MinPttoFillHisto)   dijetptall->Fill(ak5JetpT->at(index_jet1) * jcScale0);  //jc
@@ -1093,17 +1131,20 @@ void analysisClass::Loop()
 	      diJPTjetinvmass->Fill(diJPTjetLorentzVector.M());
 	      diJPTjetresEMF->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
 	      diJPTjetresEMF->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
+	      METoverSumETdiJPTjet->Fill(tcmetPt->at(0)/tcmetSumEt->at(0));
 	      if(JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 		 && JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
 		diJPTjetinvmassJIDloose->Fill(diJPTjetLorentzVector.M());
 		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetresEMFJIDloose->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
 		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetresEMFJIDloose->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
+		METoverSumETdiJPTjetJIDloose->Fill(tcmetPt->at(0)/tcmetSumEt->at(0));
 	      }
 	      if(JetIdtight(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDfRBX->at(index_JPTjet1),0.5,0.5,JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 		 && JetIdtight(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDfRBX->at(index_JPTjet2),0.5,0.5,JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
 		diJPTjetinvmassJIDtight->Fill(diJPTjetLorentzVector.M());
 		if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto)   diJPTjetresEMFJIDtight->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
 		if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto)   diJPTjetresEMFJIDtight->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
+		METoverSumETdiJPTjetJIDtight->Fill(tcmetPt->at(0)/tcmetSumEt->at(0));
 	      }
 	      // basic di-jet variables 
 	     
@@ -1274,7 +1315,7 @@ void analysisClass::Loop()
 	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNHF->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
 	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNEF->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
 	      if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNEF->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
-
+	      METoverSumETdiPFjet->Fill(pfmetPt->at(0)/pfmetSumEt->at(0));
 	      //
 	      if(LooseIDjet1 && LooseIDjet2){
 		diPFjetdphiJIDloose->Fill(dphi);
@@ -1287,6 +1328,7 @@ void analysisClass::Loop()
 		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNHFJIDloose->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
 		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNEFJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
 		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNEFJIDloose->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
+		METoverSumETdiPFjetJIDloose->Fill(pfmetPt->at(0)/pfmetSumEt->at(0));
 	      }
 	      if(TightIDjet1 && TightIDjet2){
 		diPFjetinvmassJIDtight->Fill(diPFjetLorentzVector.M());
@@ -1298,6 +1340,7 @@ void analysisClass::Loop()
 		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNHFJIDtight->Fill( ak5PFJetNeutralHadronEnergyFraction->at(index_PFjet2));
 		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetNEFJIDtight->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet1));
 		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetNEFJIDtight->Fill(ak5PFJetNeutralEmEnergyFraction->at(index_PFjet2));
+		METoverSumETdiPFjetJIDtight->Fill(pfmetPt->at(0)/pfmetSumEt->at(0));
 	      }
 	      // basic di-jet variables 
 	      if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetptall->Fill(ak5PFJetpT->at(index_PFjet1) * jcScale0);  //jc
@@ -1384,6 +1427,7 @@ void analysisClass::Loop()
    cout <<"###################################"       << endl;
 
    //////////write histos for calojets
+   METoverSumETdijet->Write();
    dijetptall->Write();
    dijetdphi->Write();
    dijeteta->Write();
@@ -1393,6 +1437,7 @@ void analysisClass::Loop()
     dijetresEMF->Write();
     dijetnconst->Write();
    //
+    METoverSumETdijetJIDloose->Write();
    dijetptallJIDloose->Write();
    dijetdphiJIDloose->Write();
    dijetetaJIDloose->Write();
@@ -1401,6 +1446,7 @@ void analysisClass::Loop()
    dijetresEMFJIDloose->Write();
    dijetnconstJIDloose->Write();
    //
+   METoverSumETdijetJIDtight->Write();
    dijetetaJIDtight->Write();
    dijetphiJIDtight->Write();
    dijetptallJIDtight->Write();
@@ -1409,6 +1455,7 @@ void analysisClass::Loop()
    dijetresEMFJIDtight->Write();
    dijetnconstJIDtight->Write();
    //////////write histos for JPT jets
+   METoverSumETdiJPTjet->Write();
    diJPTjetptall->Write();
    diJPTjetdphi->Write();
    diJPTjeteta->Write();
@@ -1416,7 +1463,9 @@ void analysisClass::Loop()
    diJPTjetinvmass->Write();
    diJPTjetresEMF->Write();
    diJPTjettrkmulti->Write();
+   diJPTjettrackNumber->Write();
    //
+   METoverSumETdiJPTjetJIDloose->Write();
    diJPTjetptallJIDloose->Write();
    diJPTjetdphiJIDloose->Write();
    diJPTjetetaJIDloose->Write();
@@ -1424,7 +1473,9 @@ void analysisClass::Loop()
    diJPTjetinvmassJIDloose->Write();
    diJPTjetresEMFJIDloose->Write();
    diJPTjettrkmultiJIDloose->Write();
+   diJPTjettrackNumberJIDloose->Write();
    //
+   METoverSumETdiJPTjetJIDtight->Write();
    diJPTjetptallJIDtight->Write();
    diJPTjetdphiJIDtight->Write();
    diJPTjetetaJIDtight->Write();
@@ -1432,7 +1483,9 @@ void analysisClass::Loop()
    diJPTjetinvmassJIDtight->Write();
    diJPTjetresEMFJIDtight->Write();
    diJPTjettrkmultiJIDtight->Write();
+   diJPTjettrackNumberJIDtight->Write();
 
+   METoverSumETdiPFjet->Write();
    diPFjetptall->Write();
    diPFjetdphi->Write();
    diPFjeteta->Write();
@@ -1443,6 +1496,7 @@ void analysisClass::Loop()
    diPFjetNHF->Write();
    diPFjetNEF->Write();
    //
+   METoverSumETdiPFjetJIDloose->Write();
    diPFjetptallJIDloose->Write();
    diPFjetdphiJIDloose->Write();
    diPFjetetaJIDloose->Write();
@@ -1453,6 +1507,7 @@ void analysisClass::Loop()
    diPFjetNHFJIDloose->Write();
    diPFjetNEFJIDloose->Write();
    //
+   METoverSumETdiPFjetJIDtight->Write();
    diPFjetptallJIDtight->Write();
    diPFjetdphiJIDtight->Write();
    diPFjetetaJIDtight->Write();
