@@ -27,7 +27,7 @@ else
   endif
 endif
 
-CXXFLAGS      = -g -Wall -fPIC -pipe
+CXXFLAGS      = -g -Os -Wall -fPIC -pipe
 LD            = $(CXX)
 LDFLAGS       = -g
 SOFLAGS       = -shared
