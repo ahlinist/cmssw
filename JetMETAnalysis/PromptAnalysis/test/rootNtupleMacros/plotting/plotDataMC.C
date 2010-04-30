@@ -5,8 +5,8 @@ void plotDataMC(){
    
   // specify the DATA/MC root file!!!
   // --------------------------------------------------------------------------
-  TFile *data = TFile::Open("V00-00-25-MinimumBias-Commissioning10-PromptReco-v7_test2/root/V00-00-25-MinimumBias-Commissioning10-PromptReco-v7_test2.root"); 
-  TFile *mc = TFile::Open("MCv25B_3/root/MCv25B_3.root");
+  TFile *data = TFile::Open("ALLDATAseriously.root"); 
+  TFile *mc = TFile::Open("MC_7Tev_DIJETS.root");
 
   char *legDataTitle = "Data";
   char *legMCTitle = "Simulation";
@@ -36,6 +36,13 @@ void plotDataMC(){
   TRegexp dphi("dphi");
   TRegexp mass("mass");
 
+  TRegexp emf("emf");
+  TRegexp CHF("CHF");
+  TRegexp NHF("NHF");
+  TRegexp NEF("NEF");
+  TRegexp METover("METover");
+  TRegexp dijet("DiJet");
+  TRegexp cons("cons");
 
   int islog=1;
 
@@ -43,24 +50,24 @@ void plotDataMC(){
     isptplot=false;
     //determine wether it is a Calo/JPT or PF plots to make
     name=key->GetName();
-    //    if(name.Index(twodim)>-1) continue; //dont want comparisons for 2D histos
+    if(name.Index(twodim)>-1) continue; //dont want comparisons for 2D histos
     colour=5;
-      cuts1="p_{T}(jet)> 10 GeV";
+      cuts1="p_{T}(jet)> 25 GeV";
       cuts2="|#eta(jet)| < 3";
     if(name.Index(jpt)>-1) {
       colour=896;
-      cuts1="p_{T}(jet)> 8 GeV";
-      cuts2="|#eta(jet)| < 2";
+      cuts1="p_{T}(jet)> 25 GeV";
+      cuts2="|#eta(jet)| < 3";
     }
     if(name.Index(pf)>-1){
       colour=38;
-      cuts1="p_{T}(jet)> 8 GeV";
+      cuts1="p_{T}(jet)> 25 GeV";
       cuts2="|#eta(jet)| < 3";
 
     } 
      
     islog=1;
-    if(name.Index(eta)>-1||name.Index(phi)>-1||name.Index(hits)>-1) islog=0;
+    if(name.Index(eta)>-1||name.Index(phi)>-1||name.Index(hits)>-1 || name.Index(emf)>-1 || name.Index(CHF)>-1 || name.Index(NHF)>-1|| name.Index(NEF)>-1||name.Index(cons)>-1) islog=0;
     TH1D * h_data= data->Get(key->GetName());
     TH1D * h_mc=mc->Get(key->GetName());; 
     // only for filled histos
@@ -92,8 +99,10 @@ void plotDataMC(){
     double scalefactor= h_data->Integral()/h_mc->Integral();
     if (isptplot) { 
       // h_mc->Sumw2(); //for some reason it doesnt plot this one if i do sumw2, so i comment it out. anyhow we dont see its errors, but to be checked!
-      h_data->Sumw2();
+      //      h_data->Sumw2();
       for(int j=0 ; j<=h_mc->GetNbinsX(); ++j){
+	h_data->SetBinError(j,sqrt(h_data->GetBinContent(j))/h_data->GetBinWidth(j));
+	//
 	h_mc->SetBinContent(j,h_mc->GetBinContent(j)/h_mc->GetBinWidth(j));
 	h_data->SetBinContent(j,h_data->GetBinContent(j)/h_data->GetBinWidth(j));
       }
@@ -113,7 +122,7 @@ void plotDataMC(){
     //draw title
     MoveStatsAndDraw(h_data , h_mc, legDataTitle, legMCTitle, overallTitle, CMen, islog, colour, false, cuts1, cuts2,isptplot);
     char histname [256];
-    sprintf (histname, "%s.gif", key->GetName());
+    sprintf (histname, "%s.pdf", key->GetName());
     c->Print (histname);
     delete c;
     } //if Entries != 0 
@@ -153,7 +162,7 @@ void MoveStatsAndDraw (TH1 *data, TH1 *mc, char *dataTitle, char* mcTitle, char*
   mc->Draw();
   data->Draw("pesames");   
   gStyle->SetOptStat(00000000); 
-  stat=1;xs  
+  stat=0;  
   if(stat) gStyle->SetOptStat(1111111111); 
 
   /*  TPaveText *TITLE = new TPaveText(0.2,0.65,0.55,0.9,"blNDC");
