@@ -4,7 +4,7 @@
 
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("VGAMMASKIM")
+process = cms.Process("SUBSKIM")
 
 ## Message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -28,7 +28,7 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
 ## Load the ZMuMu Subskim paths - this may overwrite some of the PAT modules
-process.load("ElectroWeakAnalysis.Skimming.zMuMu_SubskimPathsWithMCTruth_cff")
+process.load("ElectroWeakAnalysis.Skimming.dimuons_SkimPaths_cff")
 ## Turn off the ZMuMu filters
 process.dimuonsFilter.minNumber = 0
 process.dimuonsOneTrackFilter.minNumber = 0
@@ -37,11 +37,12 @@ process.dimuonsOneTrackFilter.minNumber = 0
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZMuMuGammaSubskimSequences_cff")
 
 ## Import the output module configuration from the ZMuMu
-from ElectroWeakAnalysis.Skimming.dimuonsOutputModule_cfi import dimuonsOutputModule
-process.out = dimuonsOutputModule.clone(
+from ElectroWeakAnalysis.Skimming.dimuonsOutputModule_cfi \
+  import dimuonsOutputModule as zMuMuSubskimOutputModule
+process.out = zMuMuSubskimOutputModule.clone(
   fileName = 'ZMuMuGammaPAT.root',
   SelectEvents = cms.untracked.PSet(
-    SelectEvents = cms.vstring("MuMuGammas*")
+    SelectEvents = cms.vstring("MuMuGammasGlobal")
   )
 )
 

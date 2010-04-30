@@ -23,12 +23,20 @@ process.countVgMuons = cms.EDAnalyzer("CandViewCountAnalyzer",
   src = cms.untracked.InputTag("vgMuons")
 )
 
+process.countVgMuonsGlobal = cms.EDAnalyzer("CandViewCountAnalyzer",
+  src = cms.untracked.InputTag("vgMuonsGlobal")
+)
+
 process.countDimuons = cms.EDAnalyzer("CandViewCountAnalyzer",
   src = cms.untracked.InputTag("dimuons")
 )
 
+process.countDimuonsGlobal = cms.EDAnalyzer("CandViewCountAnalyzer",
+  src = cms.untracked.InputTag("dimuonsGlobal")
+)
+
 process.countPatMuons = cms.EDAnalyzer("CandViewCountAnalyzer",
-  src = cms.untracked.InputTag("selectedPatMuons")
+  src = cms.untracked.InputTag("cleanPatMuons")
 )
 
 process.eca = cms.EDAnalyzer("EventContentAnalyzer")
@@ -36,6 +44,8 @@ process.eca = cms.EDAnalyzer("EventContentAnalyzer")
 process.p = cms.Path(
 #    process.eca +
     process.countVgMuons +
+    process.countVgMuonsGlobal +
     process.countDimuons +
+    process.countDimuonsGlobal +
     process.countPatMuons
 )
