@@ -475,7 +475,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   if (nTrk_ > 10) {
     if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 1;
   } else {
-    IsTracksGood_ = 0;
+    IsTracksGood_ = 1;
   }
 
   // PDF information
@@ -568,18 +568,19 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   // HLT
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
+  nHLT_ = 0;
   if (saveHLTInfo_) {
     Handle<TriggerResults> trgResultsHandle;
     e.getByLabel(trgResults_, trgResultsHandle);
     const TriggerNames &trgNames = e.triggerNames(*trgResultsHandle);
     vector<string> hlNames_ = trgNames.triggerNames();
+    nHLT_ = trgNames.size();
     for (size_t i=0; i<trgNames.size(); ++i) {
       //int hltBits[20] = {6, 7, 8, 9, 10, 11, 12, 44, 45, 46, 47, 48, 49, 50, 76, 77, 78, 83, 84, 85};
       //for (int i=0; i<20; ++i) {
       //HLT_[i] = (trgResultsHandle->accept(hltBits[i]) == true) ? 1:0;
       //cout<<"HLT bit = "<<hltBits[i]<<"   "<<hlNames_[hltBits[i]]<<" "<<HLT_[i]<<endl;
       HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
-      nHLT_ += 1;
       //cout<<"HLT bit = "<<i<<"   "<<hlNames_[i]<<endl;
     }
   }
