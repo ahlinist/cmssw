@@ -659,6 +659,15 @@ void analysisClass::Loop()
   diPFjetNEFJIDtight->SetTitle(dataset);
 
   // -----------------------Efficiency ---------------------------------------------------
+  TH1D *evtNumber = new TH1D("evtNumber","",7,0,7);
+  evtNumber->SetTitle(dataset);
+  evtNumber->GetXaxis()->SetBinLabel(1,"Evt");
+  evtNumber->GetXaxis()->SetBinLabel(2,"BPTX");
+  evtNumber->GetXaxis()->SetBinLabel(3,"BSC");
+  evtNumber->GetXaxis()->SetBinLabel(4,"HALO");
+  evtNumber->GetXaxis()->SetBinLabel(5,"PHYSBIT");
+  evtNumber->GetXaxis()->SetBinLabel(6,"Monster");
+  evtNumber->GetXaxis()->SetBinLabel(7,"PV");
 
 
   ofstream  outfile;
@@ -1128,10 +1137,12 @@ void analysisClass::Loop()
 	      JPTjet1LorentzVector.SetPtEtaPhiE(JPTak5JetpT->at(index_JPTjet1)*jcScale0,JPTak5JetEta->at(index_JPTjet1),JPTak5JetPhi->at(index_JPTjet1),JPTak5JetEnergy->at(index_JPTjet1)*jcScale0);
 	      JPTjet2LorentzVector.SetPtEtaPhiE(JPTak5JetpT->at(index_JPTjet2)*jcScale1,JPTak5JetEta->at(index_JPTjet2),JPTak5JetPhi->at(index_JPTjet2),JPTak5JetEnergy->at(index_JPTjet2)*jcScale1);
 	      diJPTjetLorentzVector=JPTjet1LorentzVector+JPTjet2LorentzVector;
+	   
+	      if(JPTak5JetpT->at(index_JPTjet1)*jcScale0>MinPttoFillHisto) diJPTjetresEMF->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
+	      if(JPTak5JetpT->at(index_JPTjet2)*jcScale1>MinPttoFillHisto) diJPTjetresEMF->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
+	     
+	      METoverSumETdiJPTjet->Fill(tcmetPt->at(0)/tcmetSumEt->at(0)); 
 	      diJPTjetinvmass->Fill(diJPTjetLorentzVector.M());
-	      diJPTjetresEMF->Fill(JPTak5JetJIDresEMF->at(index_JPTjet1));
-	      diJPTjetresEMF->Fill(JPTak5JetJIDresEMF->at(index_JPTjet2));
-	      METoverSumETdiJPTjet->Fill(tcmetPt->at(0)/tcmetSumEt->at(0));
 	      if(JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet1),JPTak5JetJIDfHPD->at(index_JPTjet1),JPTak5JetJIDn90Hits->at(index_JPTjet1),JPTak5JetEta->at(index_JPTjet1)) 
 		 && JetIdloose(JPTak5JetJIDresEMF->at(index_JPTjet2),JPTak5JetJIDfHPD->at(index_JPTjet2),JPTak5JetJIDn90Hits->at(index_JPTjet2),JPTak5JetEta->at(index_JPTjet2))){
 		diJPTjetinvmassJIDloose->Fill(diJPTjetLorentzVector.M());
@@ -1411,7 +1422,13 @@ void analysisClass::Loop()
      variousEffindijets->SetBinContent(4,(1.*NindijetsAssTrksHighPurityAtVtxTOT/(1.*NindijetsTOT)));
    }  
 
-  
+   evtNumber->SetBinContent(1,  goodevts );
+   evtNumber->SetBinContent(2,   bptxevt);
+   evtNumber->SetBinContent(3,   bscevt );
+   evtNumber->SetBinContent(4,   beamhaloevt );
+   evtNumber->SetBinContent(5,   phybitevt );
+   evtNumber->SetBinContent(6,   trckevt );
+   evtNumber->SetBinContent(7,   pvevt ); 
    Ndijets->Fill(1,goodevts);
    Ndijets->Fill(2,pvevt);
    Ndijets->Fill(3,NindijetsTOT);
@@ -1436,6 +1453,7 @@ void analysisClass::Loop()
     Ndijets->Write();
     dijetresEMF->Write();
     dijetnconst->Write();
+    evtNumber->Write();
    //
     METoverSumETdijetJIDloose->Write();
    dijetptallJIDloose->Write();
