@@ -1,11 +1,12 @@
 // -*- C++ -*-
 //
-// Package:    GenParticleAnalyzer
-// Class:      GenParticleAnalyzer
+// Package:    ElectroWeakAnalysis/MultiBosons
+// Class:      CandViewCountAnalyzer
 //
-/**\class CandViewCountAnalyzer CandViewCountAnalyzer.cc Sherpa/CandViewCountAnalyzer/src/CandViewCountAnalyzer.cc
+/**\class CandViewCountAnalyzer CandViewCountAnalyzer.cc ElectroWeakAnalysis/MultiBosons/plugins/CandViewCountAnalyzer.cc
 
- Description: Analyzer GenParticles from Sherpa
+ Description: Takes a list of product labels and produces histograms of their
+  sizes / event multiplicities
 
  Implementation:
      [Notes on implementation]
@@ -13,7 +14,7 @@
 //
 // Original Author:  Jan Veverka,32 3-A13,+41227677936,
 //         Created:  Mon Mar 22 05:44:30 CET 2010
-// $Id: CandViewCountAnalyzer.cc,v 1.1 2010/03/31 23:23:46 veverka Exp $
+// $Id: CandViewCountAnalyzer.cc,v 1.1 2010/04/28 09:51:51 veverka Exp $
 //
 //
 
@@ -24,15 +25,12 @@
 #include <string>
 
 #include "TH1.h"
-#include "TH2.h"
-#include "TGraph.h"
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-// #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 //
 // class declaration
 //
@@ -53,8 +51,13 @@ private:
   // histograms are booked in the beginJob()
   // method
   std::map<std::string,TH1F*> h1Container_;
-  // input tags
-  edm::InputTag src_;
+  // input parameteres
+  uint nbins_;
+  typedef std::vector<edm::ParameterSet> VPSet;
+  VPSet histograms_;
+  // other member data
+  std::vector<std::string> histoNames_;
+  std::vector<edm::InputTag> srcTags_;
 };
 
 //
@@ -69,8 +72,11 @@ private:
 //
 CandViewCountAnalyzer::CandViewCountAnalyzer(const edm::ParameterSet& iConfig):
   h1Container_(),
-  src_(iConfig.getUntrackedParameter<edm::InputTag>("src"))
+  nbins_(iConfig.getUntrackedParameter<uint>("nbins")),
+  histograms_(iConfig.getUntrackedParameter<VPSet>("histograms"))
 {
+  histoNames_.reserve(histograms_.size());
+  srcTags_.reserve(histograms_.size());
 }
 
 
@@ -90,15 +96,13 @@ CandViewCountAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 {
    using namespace edm;
    using namespace reco;
-  // get gen. particle collection
-  Handle<View<Candidate> > collection;
-  iEvent.getByLabel(src_, collection);
 
-  std::string histoName = src_.label() + "_" + src_.instance() + "_Count";
-
-  // std::cout << collection->size() << std::endl;
-
-  h1Container_[histoName]->Fill( collection->size() );
+  // loop over histograms
+  for (uint i = 0; i < histograms_.size(); ++i) {
+    Handle<CandidateView> collection;
+    iEvent.getByLabel(srcTags_[i], collection);
+    h1Container_[ histoNames_[i] ]->Fill( collection->size() );
+  }
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -111,9 +115,12 @@ CandViewCountAnalyzer::beginJob()
   edm::Service<TFileService> fs;
 
   // book histograms:
-  std::string histoName = src_.label() + "_" + src_.instance() + "_Count";
-  std::string histoTitle = src_.label() + " " + src_.instance() + " event multiplicity";
-  h1Container_[histoName]=fs->make<TH1F>(histoName.c_str(), histoTitle.c_str(), 101, -0.5,  100.5);
+  for (uint i=0; i < histograms_.size(); ++i) {
+    srcTags_.push_back( histograms_[i].getUntrackedParameter<edm::InputTag>("src") );
+    histoNames_.push_back( srcTags_[i].label() + "_" + srcTags_[i].instance() + "_Count" );
+    std::string histoTitle = srcTags_[i].label() + " " + srcTags_[i].instance() + " event multiplicity";
+    h1Container_[ histoNames_[i] ]=fs->make<TH1F>( histoNames_[i].c_str(), histoTitle.c_str(), nbins_, -0.5,  -0.5 + nbins_ );
+  }
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -121,6 +128,6 @@ void
 CandViewCountAnalyzer::endJob() {
 }
 
-//define this as a plug-in
+// define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(CandViewCountAnalyzer);
