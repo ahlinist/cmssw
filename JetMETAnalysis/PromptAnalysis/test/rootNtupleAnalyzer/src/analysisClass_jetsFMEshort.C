@@ -1330,7 +1330,6 @@ void analysisClass::Loop()
 	        if ((ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto) || (ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto) )  METoverSumETdiPFjet->Fill(pfmetPt->at(0)/pfmetSumEt->at(0));
 	      //
 	      if(LooseIDjet1 && LooseIDjet2){
-		if ((ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto) || (ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto) )  	diPFjetdphiJIDloose->Fill(dphi);
 		if ((ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto) || (ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto) )  	diPFjetinvmassJIDloose->Fill(diPFjetLorentzVector.M());
 		if(ak5PFJetpT->at(index_PFjet1)*jcScale0>MinPttoFillHisto)   diPFjetnconstJIDloose->Fill(ak5PFJetNConstituents->at(index_PFjet1));
 		if(ak5PFJetpT->at(index_PFjet2)*jcScale1>MinPttoFillHisto)   diPFjetnconstJIDloose->Fill(ak5PFJetNConstituents->at(index_PFjet2));
