@@ -34,14 +34,15 @@ process.load("ElectroWeakAnalysis.MultiBosons.VgAnalyzerKit_cfi")
 process.VgAnalyzerKit.doZmumu = True
 # process.VgAnalyzerKit.photonSrc = "selectedPatPhotons"
 # process.VgAnalyzerKit.electronSrc = "selectedPatElectrons"
-# process.VgAnalyzerKit.muonSrc = "selectedPatMuons"
-process.VgAnalyzerKit.muonSrc   = "vgMuonsGlobal"
+process.VgAnalyzerKit.muonSrc = "cleanPatMuons"                    # default PAT collection
+#process.VgAnalyzerKit.muonSrc   = "vgMuonsGlobal"                 # adapter output
+#process.VgAnalyzerKit.muonSrc   = "selectedPatMuonsTriggerMatch"  # Zmumu subskim collection
 # process.VgAnalyzerKit.tauSrc = "selectedPatTaus"
 # process.VgAnalyzerKit.jetSrc = "selectedPatJets"
 process.VgAnalyzerKit.zmumuSrc   = "dimuonsGlobal"
 
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string('vgtree.root'))
+process.TFileService = cms.Service("TFileService", fileName = cms.string('vgtree_dimuonsGlobal_cleanPatMuons.root'))
 
 process.p = cms.Path(process.VgAnalyzerKit)
 
