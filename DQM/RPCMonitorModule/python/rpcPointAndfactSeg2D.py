@@ -56,7 +56,9 @@ process.museg = cms.EDFilter("MuonSegmentEff",
 
     manualalignment = cms.untracked.bool(True),
     AliFileName = cms.untracked.string('/afs/cern.ch/user/c/carrillo/endcap/CMSSW_3_0_0_pre10/src/DQM/RPCMonitorModule/data/Alignment69912.dat'),
-	
+
+    BlackListFile = cms.untracked.string('/afs/cern.ch/user/c/carrillo/endcap/blacklist.dat'),
+                             
     rangestrips = cms.untracked.double(4.),
 
 ##  cscSegments = cms.untracked.string('hltCscSegments'),
