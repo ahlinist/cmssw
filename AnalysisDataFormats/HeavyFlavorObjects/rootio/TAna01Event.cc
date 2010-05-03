@@ -7,10 +7,10 @@ using namespace std;
 
 // ----------------------------------------------------------------------
 TAna01Event::TAna01Event(Int_t Option) {
-  fGenCands        = new TClonesArray("TGenCand", 1000);
+  fGenCands        = new TClonesArray("TGenCand", 10000);
   fnGenCands       = 0;
 
-  fRecTracks       = new TClonesArray("TAnaTrack", 1000);
+  fRecTracks       = new TClonesArray("TAnaTrack", 10000);
   fnRecTracks      = 0;
 
   fMuons           = new TClonesArray("TAnaMuon", 1000);
@@ -19,7 +19,7 @@ TAna01Event::TAna01Event(Int_t Option) {
   fTrgObj          = new TClonesArray("TTrgObj", 1000);
   fnTrgObj         = 0;
 
-  fSigTracks       = new TClonesArray("TAnaTrack", 1000);
+  fSigTracks       = new TClonesArray("TAnaTrack", 100000);
   fnSigTracks      = 0;
 
   fCaloJets        = new TClonesArray("TAnaJet", 1000);
@@ -31,7 +31,7 @@ TAna01Event::TAna01Event(Int_t Option) {
   fTrackJets       = new TClonesArray("TAnaJet", 1000);
   fnTrackJets      = 0;
 
-  fCandidates      = new TClonesArray("TAnaCand", 1000);
+  fCandidates      = new TClonesArray("TAnaCand", 100000);
   fnCandidates     = 0;
 
   fPV              = new TClonesArray("TAnaVertex", 100);
