@@ -46,7 +46,10 @@ MyMHTEventSelector::select (const edm::Event& event) const
     if(iJet->emEnergyFraction()>= maxFem_  && fabs(iJet->eta())<2.6 ) {++iJet; continue;}
     if(iJet->jetID().n90Hits <= minN90_)  {++iJet; continue;}
     if(iJet->jetID().fHPD >= minfHPD_ ) {++iJet; continue;}
-    if ( iJet->pt()>minPt_ && fabs(iJet->eta())<maxEta_ ) HT += iJet->correctedP4("abs");
+    if ( iJet->pt()>minPt_ && fabs(iJet->eta())<maxEta_ ){
+      math::XYZTLorentzVector p4(iJet->px(),iJet->py(),iJet->pz(),iJet->energy());//   iJet->correctedP4("abs");
+      HT += p4;
+    }
     ++iJet;
   }
   float myMHT = HT.pt();
