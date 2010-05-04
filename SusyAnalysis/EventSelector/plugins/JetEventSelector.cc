@@ -8,8 +8,6 @@
 JetEventSelector::JetEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
   jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
-  corrStep_(    pset.getParameter<std::string>("correction") ),
-  corrFlavour_( pset.getParameter<std::string>("flavour")    ),
   minPt_(  pset.getParameter< std::vector<double> >("minPt"        ) ),
   maxEta_( pset.getParameter< std::vector<double> >("maxEta"       ) ),
   minFem_( pset.getParameter< std::vector<double> >("minEMFraction") ),
@@ -65,48 +63,36 @@ JetEventSelector::select (const edm::Event& event) const
   setVariable(0,jetHandle->size());
   if ( jetHandle->size()<minPt_.size() )  return false;
   //
-  // sort jets by corrected Et,
-  // 
-  std::vector<float> correctedPts;
-  correctedPts.reserve(jetHandle->size());
-  for ( size_t i=0; i<jetHandle->size(); ++i ) {
-    const pat::Jet& jet = (*jetHandle)[i];
-    float pt = jet.pt();
-    std::string corrstep = corrStep_;
-    if ( corrStep_ != jet.corrStep() || corrFlavour_ != jet.corrFlavour() )
-      pt *= jet.corrFactor( corrstep, corrFlavour_ );
-    correctedPts.push_back(pt);
-  }
-  std::vector<size_t> ptSorted = 
-    IndexSorter< std::vector<float> >(correctedPts,true)();
-  //
   // check cuts (assume that jets are sorted by Et)
   //
-  bool result(true);
+  bool result(false);
+  int j =0;
   for ( unsigned int i=0; i<minPt_.size(); ++i ) {
-    unsigned int j = ptSorted[i];
+
+    //not re-sorted at the momont!
     float EMFRAC=0;
-    if ((*jetHandle)[j].isCaloJet()) EMFRAC=(*jetHandle)[j].emEnergyFraction();
-    if ((*jetHandle)[j].isPFJet()) EMFRAC=(*jetHandle)[j].neutralEmEnergyFraction()+
-      (*jetHandle)[j].chargedEmEnergyFraction();
+    if ((*jetHandle)[i].isCaloJet()) EMFRAC=(*jetHandle)[i].emEnergyFraction();
+    if ((*jetHandle)[i].isPFJet()) EMFRAC=(*jetHandle)[i].neutralEmEnergyFraction()+
+      (*jetHandle)[i].chargedEmEnergyFraction();
     
     
-    if((*jetHandle)[j].jetID().n90Hits <= minN90_)  continue;
-    if((*jetHandle)[j].jetID().fHPD >= minfHPD_ ) continue;
+    if((*jetHandle)[i].jetID().n90Hits <= minN90_)  continue;
+    if((*jetHandle)[i].jetID().fHPD >= minfHPD_ ) continue;
     
-    if (  correctedPts[j]>=minPt_[i] &&
-	 fabs((*jetHandle)[j].eta())<=maxEta_[i] && 
-	 ((EMFRAC<=maxFem_[i] && EMFRAC>=minFem_[i]) || fabs((*jetHandle)[j].eta()) > 2.6))      //check EMF only |eta|<2.6
+    if (  (*jetHandle)[i].pt()>=minPt_[i] &&
+	 fabs((*jetHandle)[i].eta())<=maxEta_[i] && 
+	 ((EMFRAC<=maxFem_[i] && EMFRAC>=minFem_[i]) || fabs((*jetHandle)[i].eta()) > 2.6))      //check EMF only |eta|<2.6
       {
-	setVariable(3*i+1,correctedPts[j]);
-	setVariable(3*i+2,(*jetHandle)[j].eta());
-	setVariable(3*i+3,EMFRAC);
-	++i;
+	setVariable(3*j+1,(*jetHandle)[i].pt());
+	setVariable(3*j+2,(*jetHandle)[i].eta());
+	setVariable(3*j+3,EMFRAC);
+	++j;
       }
     if (i==minPt_.size()) {
       result=true;
       break;
     }
+
   }
   if (result) LogTrace("JetEventSelector") << "JetEventSelector: all jets passed";
   else        LogTrace("JetEventSelector") << "JetEventSelector: failed";
