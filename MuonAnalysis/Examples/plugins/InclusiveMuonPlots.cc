@@ -24,6 +24,9 @@
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 
 #include <TH1.h>
+#include <TProfile.h>
+#include <TObjString.h>
+#include <TDirectory.h>
 
 #include <map>
 #include <string>
@@ -47,6 +50,9 @@ class InclusiveMuonPlots: public edm::EDAnalyzer {
         void book(const TFileService &fs, const edm::ParameterSet &pset, const std::string &name, const std::string &basename) ;
         void book(const TFileService &fs, const edm::ParameterSet &pset, const std::string &name) { book(fs,pset,name,name); }
 
+        void bookProf(const TFileService &fs, const edm::ParameterSet &pset, const std::string &name, const std::string &basename) ;
+        void bookProf(const TFileService &fs, const edm::ParameterSet &pset, const std::string &name) { bookProf(fs,pset,name,name); }
+
     private:
         edm::InputTag muons_;
         StringCutObjectSelector<pat::Muon> selector_;
@@ -55,7 +61,8 @@ class InclusiveMuonPlots: public edm::EDAnalyzer {
         edm::InputTag normalization_;
 
         // we don't care too much about performance
-        std::map<std::string, TH1*> plots;
+        std::map<std::string, TH1*>      plots;
+        std::map<std::string, TProfile*> profiles;
 
         TH1D *luminosity;
 };
@@ -69,6 +76,12 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
 {
 
     edm::Service<TFileService> fs;
+
+    TFileDirectory md = fs->mkdir("metadata");
+    TDirectory *md_dir = md.cd();
+    md_dir->WriteTObject(new TObjString(muons_.encode().c_str()), "muons");
+    md_dir->WriteTObject(new TObjString(pset.getParameter<std::string>("selection").c_str()), "selection");
+
     book(*fs, pset, "p"); 
     book(*fs, pset, "pt"); 
     book(*fs, pset, "eta"); 
@@ -81,9 +94,13 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "dzFine");
 
     book(*fs, pset, "pixelHits");
+    book(*fs, pset, "pixelLayers");
     book(*fs, pset, "trackerHits");
+    book(*fs, pset, "trackerLostHitsInner",  "trackerLostHits");
+    book(*fs, pset, "trackerLostHitsMiddle", "trackerLostHits");
+    book(*fs, pset, "trackerLostHitsOuter",  "trackerLostHits");
     book(*fs, pset, "muonHits");
-    book(*fs, pset, "muonBadHits", "muonHits");
+    book(*fs, pset, "muonBadHits");
     book(*fs, pset, "globalHits");
     book(*fs, pset, "trackerChi2n");
     book(*fs, pset, "muonChi2n");
@@ -95,6 +112,15 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "trackIso03", "isolation");
     book(*fs, pset, "ecalIso03",  "isolation");
     book(*fs, pset, "hcalIso03",  "isolation");
+    book(*fs, pset, "combRelIso03", "relIso");
+    book(*fs, pset, "combRelIso05", "relIso");
+
+    book(*fs, pset, "segmentMatchesArb",     "segmentMatches"); 
+    book(*fs, pset, "segmentMatchesNoArb",   "segmentMatches"); 
+    book(*fs, pset, "segmentMatchesFailArb", "segmentMatches"); 
+    book(*fs, pset, "segmentCompatArb",      "segmentCompat"); 
+    book(*fs, pset, "segmentCompatNoArb",    "segmentCompat"); 
+    book(*fs, pset, "caloCompat",            "caloCompat"); 
 
     if (pset.existsAs<edm::InputTag>("normalization")) {
         normalization_ = pset.getParameter<edm::InputTag>("normalization");
@@ -123,6 +149,21 @@ void InclusiveMuonPlots::book(const TFileService &fs, const edm::ParameterSet &p
     }
 }
 
+void InclusiveMuonPlots::bookProf(const TFileService &fs, const edm::ParameterSet &pset, const std::string &name, const std::string &basename) 
+{
+    typedef std::vector<double> vdouble;
+    if (pset.existsAs<vdouble>(basename+"Bins")) {
+        vdouble bins = pset.getParameter<vdouble>(basename+"Bins");
+        profiles[name] = fs.make<TProfile>(name.c_str(), name.c_str(), bins.size()-1, &bins[0]);
+    } else {
+        uint32_t nbins = pset.getParameter<uint32_t>(basename+"Bins");
+        vdouble  range = pset.getParameter<vdouble>(basename+"Range");
+        if (range.size() != 2) throw cms::Exception("Configuration") << "parameter '" << basename << "Range' is not of the form (min, max).\n";
+        profiles[name] = fs.make<TProfile>(name.c_str(), name.c_str(), nbins, range[0], range[1]);
+    }
+}
+
+
 void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup& eventSetup){
     using namespace edm;
     using namespace std;
@@ -147,7 +188,11 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
 
         if (mu.innerTrack().isNonnull()) {
             plots["pixelHits"  ]->Fill(mu.innerTrack()->hitPattern().numberOfValidPixelHits());
+            plots["pixelLayers"]->Fill(mu.innerTrack()->hitPattern().pixelLayersWithMeasurement());
             plots["trackerHits"]->Fill(mu.innerTrack()->hitPattern().numberOfValidHits());
+            plots["trackerLostHitsMiddle"]->Fill(mu.innerTrack()->hitPattern().numberOfLostHits());
+            plots["trackerLostHitsInner"]->Fill(mu.innerTrack()->trackerExpectedHitsInner().numberOfLostHits());
+            plots["trackerLostHitsOuter"]->Fill(mu.innerTrack()->trackerExpectedHitsOuter().numberOfLostHits());
             plots["trackerChi2n"]->Fill(mu.innerTrack()->normalizedChi2());
 
             if (!vertices->empty() && !vertices->front().isFake()) {
@@ -175,7 +220,22 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
             plots["trackIso03"]->Fill(mu.isolationR03().sumPt);
             plots[ "ecalIso03"]->Fill(mu.isolationR03().emEt);
             plots[ "hcalIso03"]->Fill(mu.isolationR03().hadEt);
+            plots[ "combRelIso03"]->Fill( (mu.isolationR03().sumPt + mu.isolationR03().emEt + mu.isolationR03().hadEt) / mu.pt() );
+            plots[ "combRelIso05"]->Fill( (mu.isolationR05().sumPt + mu.isolationR05().emEt + mu.isolationR05().hadEt) / mu.pt() );
         }
+        
+        if (mu.isMatchesValid()) {
+            plots["segmentMatchesArb"    ]->Fill(mu.numberOfMatches(reco::Muon::SegmentAndTrackArbitration));
+            plots["segmentMatchesNoArb"  ]->Fill(mu.numberOfMatches(reco::Muon::SegmentArbitration));
+            plots["segmentMatchesFailArb"]->Fill(mu.numberOfMatches(reco::Muon::SegmentArbitration) - mu.numberOfMatches(reco::Muon::SegmentAndTrackArbitration));
+            plots["segmentCompatArb"     ]->Fill(muon::segmentCompatibility(mu, reco::Muon::SegmentAndTrackArbitration));
+            plots["segmentCompatNoArb"   ]->Fill(muon::segmentCompatibility(mu, reco::Muon::SegmentArbitration));
+        }
+
+        if (mu.isCaloCompatibilityValid()) {
+            plots["caloCompat"]->Fill(mu.caloCompatibility());
+        }
+
 
     }
 }
