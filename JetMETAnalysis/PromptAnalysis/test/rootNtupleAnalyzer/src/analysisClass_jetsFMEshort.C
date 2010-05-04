@@ -658,6 +658,13 @@ void analysisClass::Loop()
   TH1D *diPFjetNEFJIDtight = new TH1D("diPFjetNEFJIDtight","",30,-0.005,1.005);
   diPFjetNEFJIDtight->SetXTitle("neutral EM fraction (photons) for diPFjets");
   diPFjetNEFJIDtight->SetTitle(dataset);
+   int run1=132440;
+   int run2 =133336;
+   //int run1=1;
+   //int run2=3;
+  int bins=run2 -run1;   
+  TH2I *LSvsRun = new TH2I("LSvsRun","LSvsRun",bins,run1, run2,10000,0,10000);
+  LSvsRun->SetXTitle("Runs");
 
   // -----------------------Efficiency ---------------------------------------------------
   TH1D *evtNumber = new TH1D("evtNumber","",7,0,7);
@@ -738,7 +745,8 @@ void analysisClass::Loop()
       int isdata = isData;
       int eventid = event;
       int LS = ls;
-      int runid = run;
+      int runid = run;   
+      LSvsRun->Fill(runid,ls);
       /*
       //bool goodrun=false;
       if(isdata == 1 && !eventInGoodRunLumi(runid,LS)){
@@ -1536,7 +1544,7 @@ void analysisClass::Loop()
    diPFjetCHFJIDtight->Write();
    diPFjetNHFJIDtight->Write();
    diPFjetNEFJIDtight->Write();
-
+   LSvsRun->Write();
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
 
