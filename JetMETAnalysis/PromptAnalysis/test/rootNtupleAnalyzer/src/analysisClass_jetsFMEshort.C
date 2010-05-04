@@ -360,8 +360,8 @@ void analysisClass::Loop()
   double invmassMax=800.;
 
   //Eventual cut for jets to be considered for histograms filling only
-  //double MinPttoFillHisto=25.; //can be put to 50.
-  double MinPttoFillHisto=50;
+  double MinPttoFillHisto=25.; //can be put to 50.
+  //  double MinPttoFillHisto=50;
   TH1D* h_phi_TA = new TH1D("phi_thrust_axis","",25,phiMin,phiMax);
   h_phi_TA->SetXTitle("#phi(TA)");
   h_phi_TA->SetTitle(dataset);
@@ -371,7 +371,8 @@ void analysisClass::Loop()
   h_thrust->SetTitle(dataset);
   const int bin=30;
   Double_t Lower[bin] ={25, 27, 29 ,31 ,33 ,35 ,37, 39, 41 ,43 ,45, 47, 50, 55, 60, 65, 70 ,75 ,80 ,85, 90, 95, 100 ,110, 120, 130, 140, 150 ,175, 200};
-
+  const int binIM=25;
+  Double_t LowerIM[binIM] ={0.,50.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,225,250.,275.,300.,350.,400.,500.,650.,800.};
 
   //define histos for CaloJets
   // ------------------------Di Jets  ----------------------
@@ -392,7 +393,7 @@ void analysisClass::Loop()
   TH1D *dijetphi = new TH1D("dijetphi","",phiBin,phiMin,phiMax);
   dijetphi->SetXTitle("#phi");
   dijetphi->SetTitle(dataset);
-  TH1D *dijetinvmass = new TH1D("dijetinvmass","",invmassBin,0.,invmassMax);
+  TH1D *dijetinvmass = new TH1D("dijetinvmass","",(binIM-1), LowerIM);
   dijetinvmass->SetXTitle("m_{j1j2}[GeV]");
   dijetinvmass->SetTitle(dataset);
   TH1D *dijetresEMF = new TH1D("dijetresEMF","",30,-0.005,1.005);
@@ -418,7 +419,7 @@ void analysisClass::Loop()
   TH1D *dijetphiJIDloose = new TH1D("dijetphiJIDloose","",phiBin,phiMin,phiMax);
   dijetphiJIDloose->SetXTitle("#phi");
   dijetphiJIDloose->SetTitle(dataset);
-  TH1D *dijetinvmassJIDloose = new TH1D("dijetinvmassJIDloose","",invmassBin,0.,invmassMax);
+  TH1D *dijetinvmassJIDloose = new TH1D("dijetinvmassJIDloose","",(binIM-1), LowerIM);
   dijetinvmassJIDloose->SetXTitle("m_{j1,j2}[GeV]");
   dijetinvmassJIDloose->SetTitle(dataset);
   TH1D *dijetresEMFJIDloose = new TH1D("dijetresEMFJIDloose","",30,-0.005,1.005);
@@ -444,7 +445,7 @@ void analysisClass::Loop()
   TH1D *dijetdphiJIDtight = new TH1D("dijetdphiJIDtight","",dphiBin, 0., Pi);
   dijetdphiJIDtight->SetXTitle("#Delta #phi_{di-jet}");
   dijetdphiJIDtight->SetTitle(dataset);
-  TH1D *dijetinvmassJIDtight = new TH1D("dijetinvmassJIDtight","",invmassBin,0.,invmassMax);
+  TH1D *dijetinvmassJIDtight = new TH1D("dijetinvmassJIDtight","",(binIM-1), LowerIM);
   dijetinvmassJIDtight->SetXTitle("m_{j1,j2}[GeV]");
   dijetinvmassJIDtight->SetTitle(dataset);
   TH1D *dijetresEMFJIDtight = new TH1D("dijetresEMFJIDtight","",30,-0.005,1.005);
@@ -492,7 +493,7 @@ void analysisClass::Loop()
   TH1D *diJPTjetphi = new TH1D("diJPTjetphi","",phiBin,phiMin,phiMax);
   diJPTjetphi->SetXTitle("#phi");
   diJPTjetphi->SetTitle(dataset);
-  TH1D *diJPTjetinvmass = new TH1D("diJPTjetinvmass","",invmassBin,0.,invmassMax);
+  TH1D *diJPTjetinvmass = new TH1D("diJPTjetinvmass","",(binIM-1), LowerIM);
   diJPTjetinvmass->SetXTitle("m_{j1j2}[GeV]");
   diJPTjetinvmass->SetTitle(dataset);
   TH1D *diJPTjetresEMF = new TH1D("diJPTjetresEMF","",30,-0.005,1.005);
@@ -521,7 +522,7 @@ void analysisClass::Loop()
   TH1D *diJPTjetdphiJIDloose = new TH1D("diJPTjetdphiJIDloose","",dphiBin, 0., Pi);
   diJPTjetdphiJIDloose->SetXTitle("#Delta #phi_{di-JPTjet}");
   diJPTjetdphiJIDloose->SetTitle(dataset);
-  TH1D *diJPTjetinvmassJIDloose = new TH1D("diJPTjetinvmassJIDloose","",invmassBin,0.,invmassMax);
+  TH1D *diJPTjetinvmassJIDloose = new TH1D("diJPTjetinvmassJIDloose","",(binIM-1), LowerIM);
   diJPTjetinvmassJIDloose->SetXTitle("m_{j1,j2}[GeV]");
   diJPTjetinvmassJIDloose->SetTitle(dataset);
   TH1D *diJPTjetresEMFJIDloose = new TH1D("diJPTjetresEMFJIDloose","",30,-0.005,1.005);
@@ -550,7 +551,7 @@ void analysisClass::Loop()
   TH1D *diJPTjetdphiJIDtight = new TH1D("diJPTjetdphiJIDtight","",dphiBin, 0., Pi);
   diJPTjetdphiJIDtight->SetXTitle("#Delta #phi_{di-JPTjet}");
   diJPTjetdphiJIDtight->SetTitle(dataset);
-  TH1D *diJPTjetinvmassJIDtight = new TH1D("diJPTjetinvmassJIDtight","",invmassBin,0.,invmassMax);
+  TH1D *diJPTjetinvmassJIDtight = new TH1D("diJPTjetinvmassJIDtight","",(binIM-1), LowerIM);
   diJPTjetinvmassJIDtight->SetXTitle("m_{j1,j2}[GeV]");
   diJPTjetinvmassJIDtight->SetTitle(dataset);
   TH1D *diJPTjetresEMFJIDtight = new TH1D("diJPTjetresEMFJIDtight","",30,-0.005,1.005);
@@ -580,7 +581,7 @@ void analysisClass::Loop()
   TH1D *diPFjetphi = new TH1D("diPFjetphi","",phiBin,phiMin,phiMax);
   diPFjetphi->SetXTitle("#phi");
   diPFjetphi->SetTitle(dataset);
-  TH1D *diPFjetinvmass = new TH1D("diPFjetinvmass","",invmassBin,0.,invmassMax);
+  TH1D *diPFjetinvmass = new TH1D("diPFjetinvmass","",(binIM-1), LowerIM);
   diPFjetinvmass->SetXTitle("m_{j1j2}[GeV]");
   diPFjetinvmass->SetTitle(dataset);
   TH1I *diPFjetnconst = new TH1I("diPFjetnconst","",50,0,50);
@@ -611,7 +612,7 @@ void analysisClass::Loop()
   TH1D *diPFjetdphiJIDloose = new TH1D("diPFjetdphiJIDloose","",dphiBin, 0., Pi);
   diPFjetdphiJIDloose->SetXTitle("#Delta #phi_{di-PFjet}");
   diPFjetdphiJIDloose->SetTitle(dataset);
-  TH1D *diPFjetinvmassJIDloose = new TH1D("diPFjetinvmassJIDloose","",invmassBin,0.,invmassMax);
+  TH1D *diPFjetinvmassJIDloose = new TH1D("diPFjetinvmassJIDloose","",(binIM-1), LowerIM);
   diPFjetinvmassJIDloose->SetXTitle("m_{j1,j2}[GeV]");
   diPFjetinvmassJIDloose->SetTitle(dataset);
   TH1I *diPFjetnconstJIDloose = new TH1I("diPFjetnconstJIDloose","",50,0,50);
@@ -642,7 +643,7 @@ void analysisClass::Loop()
   TH1D *diPFjetdphiJIDtight = new TH1D("diPFjetdphiJIDtight","",dphiBin, 0., Pi);
   diPFjetdphiJIDtight->SetXTitle("#Delta #phi_{di-PFjet}");
   diPFjetdphiJIDtight->SetTitle(dataset);
-  TH1D *diPFjetinvmassJIDtight = new TH1D("diPFjetinvmassJIDtight","",invmassBin,0.,invmassMax);
+  TH1D *diPFjetinvmassJIDtight = new TH1D("diPFjetinvmassJIDtight","",(binIM-1), LowerIM);
   diPFjetinvmassJIDtight->SetXTitle("m_{j1,j2}[GeV]");
   diPFjetinvmassJIDtight->SetTitle(dataset);
   TH1I *diPFjetnconstJIDtight = new TH1I("diPFjetnconstJIDtight","",50,0,50);
