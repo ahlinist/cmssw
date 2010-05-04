@@ -66,7 +66,7 @@ JetEventSelector::select (const edm::Event& event) const
   // check cuts (assume that jets are sorted by Et)
   //
   bool result(false);
-  int j =0;
+  unsigned int j =0;
   for ( unsigned int i=0; i<minPt_.size(); ++i ) {
 
     //not re-sorted at the momont!
@@ -79,16 +79,16 @@ JetEventSelector::select (const edm::Event& event) const
     if((*jetHandle)[i].jetID().n90Hits <= minN90_)  continue;
     if((*jetHandle)[i].jetID().fHPD >= minfHPD_ ) continue;
     
-    if (  (*jetHandle)[i].pt()>=minPt_[i] &&
-	 fabs((*jetHandle)[i].eta())<=maxEta_[i] && 
-	 ((EMFRAC<=maxFem_[i] && EMFRAC>=minFem_[i]) || fabs((*jetHandle)[i].eta()) > 2.6))      //check EMF only |eta|<2.6
+    if (  (*jetHandle)[i].pt()>=minPt_[j] &&
+	 fabs((*jetHandle)[i].eta())<=maxEta_[j] && 
+	 ((EMFRAC<=maxFem_[i] && EMFRAC>=minFem_[j]) || fabs((*jetHandle)[i].eta()) > 2.6))      //check EMF only |eta|<2.6
       {
 	setVariable(3*j+1,(*jetHandle)[i].pt());
 	setVariable(3*j+2,(*jetHandle)[i].eta());
 	setVariable(3*j+3,EMFRAC);
 	++j;
       }
-    if (i==minPt_.size()) {
+    if (j==minPt_.size()) {
       result=true;
       break;
     }
