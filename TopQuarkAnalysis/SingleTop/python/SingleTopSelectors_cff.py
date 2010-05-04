@@ -1,5 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 
+#####Primary vertex filter
+PVFilter = cms.EDFilter(
+    'VertexSelector',
+    src = cms.InputTag("offlinePrimaryVertices"),
+    cut = cms.string('!isFake & position().Rho() < 2.0 & abs(z) < 15 & ndof < 4.')
+    )
+
+
+
 ######### Part of selection: Particle counting ##########
 countElectrons = cms.EDFilter("PATCandViewCountFilter",
                               src = cms.InputTag("topElectrons"),
