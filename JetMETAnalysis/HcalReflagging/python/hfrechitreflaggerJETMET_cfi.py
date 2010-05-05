@@ -3,8 +3,12 @@ import FWCore.ParameterSet.Config as cms
 
 # This is the HF PMT window reflagger
 hfrechitreflaggerJETMET = cms.EDProducer('HFRecHitReflaggerJETMET',
-    debug          = cms.untracked.int32(0),
-    hfInputLabel       = cms.untracked.InputTag("hfreco"),
+                                         debug          = cms.untracked.int32(0),
+                                         hfInputLabel       = cms.untracked.InputTag("hfreco"),
+
+                                         # Define first PSet to store topological cut parameters
+                                         TopoFlag=cms.PSet(
+    useFlag            = cms.untracked.bool(True),
     hfFlagBit          = cms.untracked.int32(31),  # bit 31 is UserDefinedBit0; see RecoLocalCalo/HcalRecAlgos/interface/HcalCaloFlagLabels.h for full list
     hfBitAlwaysOn      = cms.untracked.bool(False),
     hfBitAlwaysOff     = cms.untracked.bool(False),
@@ -268,5 +272,26 @@ hfrechitreflaggerJETMET = cms.EDProducer('HFRecHitReflaggerJETMET',
         hf_Long_S9S1_SlopeIntercept39=cms.vdouble([0.135313]),
         hf_Long_S9S1_SlopeIntercept40=cms.vdouble([0.136289]),
         hf_Long_S9S1_SlopeIntercept41=cms.vdouble([0.0589927]),
-    )
+        ),
+    ),  # TopFlag PSet
+                                         TimeFlag=cms.PSet(
+    # Every PSet should have the following parameters.
+    # If hfFlagBit is the same as for the previous PSet, an 'OR' is performed when making the flag
+    useFlag            = cms.untracked.bool(False),
+    hfFlagBit          = cms.untracked.int32(31),  # bit 31 is UserDefinedBit0; see RecoLocalCalo/HcalRecAlgos/interface/HcalCaloFlagLabels.h for full list
+    hfBitAlwaysOn      = cms.untracked.bool(False),
+    hfBitAlwaysOff     = cms.untracked.bool(False),
+
+    # Energy parameterized in ieta
+    hfLong_Ethresh  = cms.vdouble([40.]),
+    #Min, max time parameterized in energy
+    hfLong_Mintime  = cms.vdouble([-8.]),
+    hfLong_Maxtime  = cms.vdouble([10.]),
+    # Energy parameterized in ieta
+    hfShort_Ethresh  = cms.vdouble([40.]),
+    #Min, max time parameterized in energy
+    hfShort_Mintime  = cms.vdouble([-8.]),
+    hfShort_Maxtime  = cms.vdouble([10.]),
+    ),  # TimeFlag PSet
+    
 )
