@@ -40,6 +40,10 @@ public:
   void        eventProcessing();
   void        fillHist();
   void        readCuts(TString filename, int dump = 1);
+  int         pq, tq;
+  float	      pp, pf, pe, pm, pP, tp, tP, tf, te, dR; 
+  float	      up, uf, ue, um;
+  int  	      fRes;
 
 };
 
