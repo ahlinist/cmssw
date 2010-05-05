@@ -11,7 +11,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'MC_31X_V2::All'
+process.GlobalTag.globaltag = 'GR10_P_V5::All'
 
 
 #--------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/cms/store/caf/user/meridian/EGMPromptFilter_Beam10/132959/EGMPromptFilter_Electrons_132959_19315724_1_1.root'
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_24_0.root'
 		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_17.root'
 	)
 	#skipBadFiles = cms.untracked.bool(True)    
