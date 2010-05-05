@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HFRecHitReflaggerJETMET.cc,v 1.3 2010/04/20 20:43:46 temple Exp $
+// $Id: HFRecHitReflaggerJETMET.cc,v 1.1 2010/04/22 09:40:25 temple Exp $
 //
 //
 
@@ -76,10 +76,13 @@ private:
   // ----------member data ---------------------------
   int debug_;
   edm::InputTag hfInputLabel_;
-  int  hfFlagBit_;
+  
+  // Specify parameters for topological cuts
+  bool useTopoFlag_;
+  int  hfTopoFlagBit_;
   // Select the test you wish to run
-  bool hfBitAlwaysOn_;
-  bool hfBitAlwaysOff_;
+  bool hfTopoBitAlwaysOn_;
+  bool hfTopoBitAlwaysOff_;
 
   // Short fibers
   std::vector<int> hf_Short_Use_PET_;
@@ -96,10 +99,25 @@ private:
   std::vector< std::vector<double> > hf_Long_PET_Energy_Thresh_; // runs from |ieta|=29 to 41
   std::vector< std::vector<double> > hf_Long_PET_ET_Thresh_;
   bool hf_Long_Rcut_parameterizeET_;
-std::vector< std::vector<double> > hf_Long_Rcut_values_;
+  std::vector< std::vector<double> > hf_Long_Rcut_values_;
   std::vector< std::vector<double> > hf_Long_S9S1_Energy_Thresh_;
   std::vector< std::vector<double> > hf_Long_S9S1_ET_Thresh_;
   std::vector< std::vector<double> > hf_Long_S9S1_Slope_Intercept_;
+
+
+  // Specify parameters for Time cuts
+  bool useTimeFlag_;
+  bool hfTimeFlagBit_;
+  bool hfTimeBitAlwaysOn_;
+  bool hfTimeBitAlwaysOff_;
+  std::vector< double > hfLong_Ethresh_;
+  std::vector< double > hfLong_Mintime_;
+  std::vector< double > hfLong_Maxtime_;
+  
+  std::vector< double > hfShort_Ethresh_;
+  std::vector< double > hfShort_Mintime_;
+  std::vector< double > hfShort_Maxtime_;
+
 
   // Store channels marked as bad in the channel status map
   std::map<HcalDetId, unsigned int> badstatusmap;
@@ -126,144 +144,176 @@ HFRecHitReflaggerJETMET::HFRecHitReflaggerJETMET(const edm::ParameterSet& ps)
    produces<HFRecHitCollection>();
    debug_               = ps.getUntrackedParameter<int>("debug",0);
    hfInputLabel_        = ps.getUntrackedParameter<InputTag>("hfInputLabel",edm::InputTag("hfreco"));
-   hfFlagBit_           = ps.getUntrackedParameter<int>("hfFlagBit",HcalCaloFlagLabels::HFLongShort); 
-      
-   // sanity check bits -- turn bit on or off always
-   hfBitAlwaysOn_       = ps.getUntrackedParameter<bool>("hfBitAlwaysOn",false);
-   hfBitAlwaysOff_      = ps.getUntrackedParameter<bool>("hfBitAlwaysOff",false);
 
-   stringstream name;
-   
-   // Short Fiber Parameters
-   hf_Short_Use_PET_    = ps.getParameter<std::vector<int> >("hf_Short_Use_PET");
-   name.str("");
-   const edm::ParameterSet& HF_Short_PET_Energy_Thresh = ps.getParameter<edm::ParameterSet>("hf_Short_PET_Energy_Thresh");
-   //std::vector<double> junk=(HF_Short_PET_Energy_Thresh.getParameter<std::vector<double> >("hf_Short_PET_energyThresh29"));
-   for (int i=29;i<=41;++i)
+   // Get all parameters for Topological flag
+   useTopoFlag_=false;
+   const edm::ParameterSet& TOPO=ps.getParameter<edm::ParameterSet>("TopoFlag");
+   if (TOPO.getUntrackedParameter<bool>("useFlag",false))
      {
-       name<<"hf_Short_PET_energyThresh"<<i;
-       std::vector<double> junk=(HF_Short_PET_Energy_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Short_PET_Energy_Thresh_.push_back(junk);
-
+       useTopoFlag_             = true;
+       hfTopoFlagBit_           = TOPO.getUntrackedParameter<int>("hfFlagBit",HcalCaloFlagLabels::HFLongShort); 
+       
+       // sanity check bits -- turn bit on or off always
+       hfTopoBitAlwaysOn_       = TOPO.getUntrackedParameter<bool>("hfBitAlwaysOn",false);
+       hfTopoBitAlwaysOff_      = TOPO.getUntrackedParameter<bool>("hfBitAlwaysOff",false);
+       
+       stringstream name;
+       
+       // Short Fiber Parameters
+       hf_Short_Use_PET_    = TOPO.getParameter<std::vector<int> >("hf_Short_Use_PET");
        name.str("");
-     }
-   
-   const edm::ParameterSet& HF_Short_PET_ET_Thresh = ps.getParameter<edm::ParameterSet>("hf_Short_PET_ET_Thresh");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Short_PET_ETThresh"<<i;
-       std::vector<double> junk=(HF_Short_PET_ET_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Short_PET_ET_Thresh_.push_back(junk);
-       name.str("");
-     }
-   const edm::ParameterSet&  HF_Short_Rcut = ps.getParameter<edm::ParameterSet>("hf_Short_Rcut");
-   hf_Short_Rcut_parameterizeET_=HF_Short_Rcut.getUntrackedParameter<bool>("hf_Short_Rcut_parameterizeET",false);
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Short_Rcut_values"<<i;
-       std::vector<double> junk=(HF_Short_Rcut.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Short_Rcut_values_.push_back(junk);
-       name.str("");
-     }
-
-   const edm::ParameterSet& HF_Short_S9S1_Energy_Thresh = ps.getParameter<edm::ParameterSet>("hf_Short_S9S1_Energy_Thresh");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Short_S9S1_energyThresh"<<i;
-       std::vector<double> junk=(HF_Short_S9S1_Energy_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Short_S9S1_Energy_Thresh_.push_back(junk);
-       name.str("");
-     }
-
-   const edm::ParameterSet& HF_Short_S9S1_ET_Thresh = ps.getParameter<edm::ParameterSet>("hf_Short_S9S1_ET_Thresh");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Short_S9S1_ETThresh"<<i;
-       std::vector<double> junk=(HF_Short_S9S1_ET_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Short_S9S1_ET_Thresh_.push_back(junk);
-       name.str("");
-     }
-   
-   const edm::ParameterSet& HF_Short_S9S1_Slope_Intercept = ps.getParameter<edm::ParameterSet>("hf_Short_S9S1_Slope_Intercept");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Short_S9S1_SlopeIntercept"<<i;
-       std::vector<double> junk=(HF_Short_S9S1_Slope_Intercept.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Short_S9S1_Slope_Intercept_.push_back(junk);
-       name.str("");
-     }
-
-   for (unsigned int i=0;i<hf_Short_S9S1_Slope_Intercept_.size();++i)
-     {
-       if (hf_Short_S9S1_Slope_Intercept_[i].size()==1) // no intercept specified; only slope.  Set intercept = -1*(slope)*log(E_thresh)
+       const edm::ParameterSet& HF_Short_PET_Energy_Thresh = TOPO.getParameter<edm::ParameterSet>("hf_Short_PET_Energy_Thresh");
+       //std::vector<double> junk=(HF_Short_PET_Energy_Thresh.getParameter<std::vector<double> >("hf_Short_PET_energyThresh29"));
+       for (int i=29;i<=41;++i)
 	 {
-	   hf_Short_S9S1_Slope_Intercept_[i].push_back(-1*hf_Short_S9S1_Slope_Intercept_[i][0]*log(GetThreshold(int(29+i),hf_Short_PET_Energy_Thresh_[i])));
+	   name<<"hf_Short_PET_energyThresh"<<i;
+	   std::vector<double> junk=(HF_Short_PET_Energy_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Short_PET_Energy_Thresh_.push_back(junk);
+	   
+	   name.str("");
 	 }
-     }
-
-   // Repeat for long fibers
-   hf_Long_Use_PET_    = ps.getParameter<std::vector<int> >("hf_Long_Use_PET");
-   name.str("");
-   const edm::ParameterSet& HF_Long_PET_Energy_Thresh = ps.getParameter<edm::ParameterSet>("hf_Long_PET_Energy_Thresh");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Long_PET_energyThresh"<<i;
-       std::vector<double> junk=(HF_Long_PET_Energy_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Long_PET_Energy_Thresh_.push_back(junk);
-       name.str("");
-     }
-   const edm::ParameterSet& HF_Long_PET_ET_Thresh = ps.getParameter<edm::ParameterSet>("hf_Long_PET_ET_Thresh");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Long_PET_ETThresh"<<i;
-       std::vector<double> junk=(HF_Long_PET_ET_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Long_PET_ET_Thresh_.push_back(junk);
-       name.str("");
-     }
-   const edm::ParameterSet&  HF_Long_Rcut = ps.getParameter<edm::ParameterSet>("hf_Long_Rcut");
-   hf_Long_Rcut_parameterizeET_=HF_Long_Rcut.getUntrackedParameter<bool>("hf_Long_Rcut_parameterizeET",false);
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Long_Rcut_values"<<i;
-      std::vector<double> junk= (HF_Long_Rcut.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Long_Rcut_values_.push_back(junk);
-       name.str("");
-     }
-
-   const edm::ParameterSet& HF_Long_S9S1_Energy_Thresh = ps.getParameter<edm::ParameterSet>("hf_Long_S9S1_Energy_Thresh");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Long_S9S1_energyThresh"<<i;
-       std::vector<double> junk=(HF_Long_S9S1_Energy_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Long_S9S1_Energy_Thresh_.push_back(junk);
-       name.str("");
-     }
-   
-   const edm::ParameterSet& HF_Long_S9S1_ET_Thresh = ps.getParameter<edm::ParameterSet>("hf_Long_S9S1_ET_Thresh");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Long_S9S1_ETThresh"<<i;
-       std::vector<double> junk=(HF_Long_S9S1_ET_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Long_S9S1_ET_Thresh_.push_back(junk);
-       name.str("");
-     }
-   
-   const edm::ParameterSet& HF_Long_S9S1_Slope_Intercept = ps.getParameter<edm::ParameterSet>("hf_Long_S9S1_Slope_Intercept");
-   for (int i=29;i<=41;++i)
-     {
-       name<<"hf_Long_S9S1_SlopeIntercept"<<i;
-       std::vector<double> junk=(HF_Long_S9S1_Slope_Intercept.getParameter<std::vector<double> >(name.str().c_str()));
-       hf_Long_S9S1_Slope_Intercept_.push_back(junk);
-       name.str("");
-     }
-
-   for (unsigned int i=0;i<hf_Long_S9S1_Slope_Intercept_.size();++i)
-     {
-       if (hf_Long_S9S1_Slope_Intercept_[i].size()==1) // no intercept specified; only slope.  Set intercept = -1*(slope)*log(E_thresh)
+       
+       const edm::ParameterSet& HF_Short_PET_ET_Thresh = TOPO.getParameter<edm::ParameterSet>("hf_Short_PET_ET_Thresh");
+       for (int i=29;i<=41;++i)
 	 {
-	   hf_Long_S9S1_Slope_Intercept_[i].push_back(-1*hf_Long_S9S1_Slope_Intercept_[i][0]*log(GetThreshold(int(29+i),hf_Long_PET_Energy_Thresh_[i])));
+	   name<<"hf_Short_PET_ETThresh"<<i;
+	   std::vector<double> junk=(HF_Short_PET_ET_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Short_PET_ET_Thresh_.push_back(junk);
+	   name.str("");
 	 }
-     }
+       const edm::ParameterSet&  HF_Short_Rcut = TOPO.getParameter<edm::ParameterSet>("hf_Short_Rcut");
+       hf_Short_Rcut_parameterizeET_=HF_Short_Rcut.getUntrackedParameter<bool>("hf_Short_Rcut_parameterizeET",false);
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Short_Rcut_values"<<i;
+	   std::vector<double> junk=(HF_Short_Rcut.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Short_Rcut_values_.push_back(junk);
+	   name.str("");
+	 }
+       
+       const edm::ParameterSet& HF_Short_S9S1_Energy_Thresh = TOPO.getParameter<edm::ParameterSet>("hf_Short_S9S1_Energy_Thresh");
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Short_S9S1_energyThresh"<<i;
+	   std::vector<double> junk=(HF_Short_S9S1_Energy_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Short_S9S1_Energy_Thresh_.push_back(junk);
+	   name.str("");
+	 }
+
+       const edm::ParameterSet& HF_Short_S9S1_ET_Thresh = TOPO.getParameter<edm::ParameterSet>("hf_Short_S9S1_ET_Thresh");
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Short_S9S1_ETThresh"<<i;
+	   std::vector<double> junk=(HF_Short_S9S1_ET_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Short_S9S1_ET_Thresh_.push_back(junk);
+	   name.str("");
+	 }
+   
+       const edm::ParameterSet& HF_Short_S9S1_Slope_Intercept = TOPO.getParameter<edm::ParameterSet>("hf_Short_S9S1_Slope_Intercept");
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Short_S9S1_SlopeIntercept"<<i;
+	   std::vector<double> junk=(HF_Short_S9S1_Slope_Intercept.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Short_S9S1_Slope_Intercept_.push_back(junk);
+	   name.str("");
+	 }
+
+       for (unsigned int i=0;i<hf_Short_S9S1_Slope_Intercept_.size();++i)
+	 {
+	   if (hf_Short_S9S1_Slope_Intercept_[i].size()==1) // no intercept specified; only slope.  Set intercept = -1*(slope)*log(E_thresh)
+	     {
+	       hf_Short_S9S1_Slope_Intercept_[i].push_back(-1*hf_Short_S9S1_Slope_Intercept_[i][0]*log(GetThreshold(int(29+i),hf_Short_PET_Energy_Thresh_[i])));
+	     }
+	 }
+
+       // Repeat for long fibers
+       hf_Long_Use_PET_    = TOPO.getParameter<std::vector<int> >("hf_Long_Use_PET");
+       name.str("");
+       const edm::ParameterSet& HF_Long_PET_Energy_Thresh = TOPO.getParameter<edm::ParameterSet>("hf_Long_PET_Energy_Thresh");
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Long_PET_energyThresh"<<i;
+	   std::vector<double> junk=(HF_Long_PET_Energy_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Long_PET_Energy_Thresh_.push_back(junk);
+	   name.str("");
+	 }
+       const edm::ParameterSet& HF_Long_PET_ET_Thresh = TOPO.getParameter<edm::ParameterSet>("hf_Long_PET_ET_Thresh");
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Long_PET_ETThresh"<<i;
+	   std::vector<double> junk=(HF_Long_PET_ET_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Long_PET_ET_Thresh_.push_back(junk);
+	   name.str("");
+	 }
+       const edm::ParameterSet&  HF_Long_Rcut = TOPO.getParameter<edm::ParameterSet>("hf_Long_Rcut");
+       hf_Long_Rcut_parameterizeET_=HF_Long_Rcut.getUntrackedParameter<bool>("hf_Long_Rcut_parameterizeET",false);
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Long_Rcut_values"<<i;
+	   std::vector<double> junk= (HF_Long_Rcut.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Long_Rcut_values_.push_back(junk);
+	   name.str("");
+	 }
+
+       const edm::ParameterSet& HF_Long_S9S1_Energy_Thresh = TOPO.getParameter<edm::ParameterSet>("hf_Long_S9S1_Energy_Thresh");
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Long_S9S1_energyThresh"<<i;
+	   std::vector<double> junk=(HF_Long_S9S1_Energy_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Long_S9S1_Energy_Thresh_.push_back(junk);
+	   name.str("");
+	 }
+   
+       const edm::ParameterSet& HF_Long_S9S1_ET_Thresh = TOPO.getParameter<edm::ParameterSet>("hf_Long_S9S1_ET_Thresh");
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Long_S9S1_ETThresh"<<i;
+	   std::vector<double> junk=(HF_Long_S9S1_ET_Thresh.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Long_S9S1_ET_Thresh_.push_back(junk);
+	   name.str("");
+	 }
+   
+       const edm::ParameterSet& HF_Long_S9S1_Slope_Intercept = TOPO.getParameter<edm::ParameterSet>("hf_Long_S9S1_Slope_Intercept");
+       for (int i=29;i<=41;++i)
+	 {
+	   name<<"hf_Long_S9S1_SlopeIntercept"<<i;
+	   std::vector<double> junk=(HF_Long_S9S1_Slope_Intercept.getParameter<std::vector<double> >(name.str().c_str()));
+	   hf_Long_S9S1_Slope_Intercept_.push_back(junk);
+	   name.str("");
+	 }
+
+       for (unsigned int i=0;i<hf_Long_S9S1_Slope_Intercept_.size();++i)
+	 {
+	   if (hf_Long_S9S1_Slope_Intercept_[i].size()==1) // no intercept specified; only slope.  Set intercept = -1*(slope)*log(E_thresh)
+	     {
+	       hf_Long_S9S1_Slope_Intercept_[i].push_back(-1*hf_Long_S9S1_Slope_Intercept_[i][0]*log(GetThreshold(int(29+i),hf_Long_PET_Energy_Thresh_[i])));
+	     }
+	 }
+     } // if (TOPO!=0)
+
+   
+   useTimeFlag_=false;
+   const edm::ParameterSet& TIME=ps.getParameter<edm::ParameterSet>("TimeFlag");
+   if (TIME.getUntrackedParameter<bool>("useFlag",false))
+   {
+
+     useTimeFlag_             = true;
+     hfTimeFlagBit_           = TIME.getUntrackedParameter<int>("hfFlagBit",HcalCaloFlagLabels::HFLongShort); 
+     
+     // sanity check bits -- turn bit on or off always
+     hfTimeBitAlwaysOn_       = TIME.getUntrackedParameter<bool>("hfBitAlwaysOn",false);
+     hfTimeBitAlwaysOff_      = TIME.getUntrackedParameter<bool>("hfBitAlwaysOff",false);
+     
+     hfLong_Ethresh_         = TIME.getParameter<std::vector<double> >("hfLong_Ethresh");
+     hfLong_Mintime_         = TIME.getParameter<std::vector<double> >("hfLong_Mintime");
+     hfLong_Maxtime_         = TIME.getParameter<std::vector<double> >("hfLong_Maxtime");
+
+     hfShort_Ethresh_         = TIME.getParameter<std::vector<double> >("hfShort_Ethresh");
+     hfShort_Mintime_         = TIME.getParameter<std::vector<double> >("hfShort_Mintime");
+     hfShort_Maxtime_         = TIME.getParameter<std::vector<double> >("hfShort_Maxtime");
+
+   }
+
 }  //HFRecHitReflaggerJETMET::HFRecHitReflaggerJETMET()
 
 
@@ -314,60 +364,104 @@ HFRecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iSet
    std::auto_ptr<HFRecHitCollection> pOut(new HFRecHitCollection());
    
    // loop over rechits, and set the new bit you wish to use
-   for (HFRecHitCollection::const_iterator recHit=hfRecHits->begin(); recHit!=hfRecHits->end(); ++recHit) {
-     HFRecHit newhit = (HFRecHit)(*recHit);
-     // Set bit to be on for all hits
-     if (hfBitAlwaysOn_)
-       newhit.setFlagField(1,hfFlagBit_);
+   for (HFRecHitCollection::const_iterator recHit=hfRecHits->begin(); recHit!=hfRecHits->end(); ++recHit) 
+     {
+       
+       HFRecHit newhit = (HFRecHit)(*recHit);
 
-     // Set bit to be off for all hits
-     else if (hfBitAlwaysOff_)
-       newhit.setFlagField(0,hfFlagBit_);
+       HcalDetId id(newhit.detid().rawId());
+       int depth = newhit.id().depth();
+       int ieta  = newhit.id().ieta();
 
-     else
-       {
-	 HcalDetId id(newhit.detid().rawId());
-	 int depth = newhit.id().depth();
-	 int ieta  = newhit.id().ieta();
-	 int flagvalue=-1;
+       // Set all 'reflag' flags to false by default
+       if (useTopoFlag_)  newhit.setFlagField(0,hfTopoFlagBit_); 
+       if (useTimeFlag_)  newhit.setFlagField(0,hfTimeFlagBit_);
 
-	 // For each ieta ring, one may specify whether to use PET or S9S1.
-	 // Note that S9S1 doesn't behave sensibly for short fibers,
-	 // and PET doesn't perform optimally for long fibers (except at |ieta|=29).
-	 if (depth==2)  // Short fiber tests
-	   {
-	     // Run either PET or S9S1 tests, depending on input configurable for the given ieta ring
-	     if (hf_Short_Use_PET_[abs(ieta)-29]==1)
-	       CheckPET(newhit)==true  ? flagvalue = 1 : flagvalue = 0;
-	     else
-	       CheckS9S1(newhit)==true ? flagvalue = 1 : flagvalue = 0;
-	   }
-	 else if (depth==1) // Long fiber tests
-	   {
-	     // Run either PET or S9S1 tests, depending on input configurable for the given ieta ring
-	     if (hf_Long_Use_PET_[abs(ieta)-29]==1)
-	       CheckPET(newhit)==true  ? flagvalue = 1 : flagvalue = 0;
-	     else
-	       CheckS9S1(newhit)==true ? flagvalue = 1 : flagvalue = 0;
-	   }
+       // Run topological tests
+       if (useTopoFlag_)
+	 {
+	   newhit.setFlagField(0,hfTopoFlagBit_); // Set bit off by default
+	   // Set bit to be on for all hits
+	   if (hfTopoBitAlwaysOn_)
+	     newhit.setFlagField(1,hfTopoFlagBit_);
 
-	 // Set flag bit based on test; if no tests set, don't change flag
-	 if (flagvalue!=-1)
-	   newhit.setFlagField(flagvalue, hfFlagBit_);
+	   // Set bit to be off for all hits
+	   else if (hfTopoBitAlwaysOff_)
+	     newhit.setFlagField(0,hfTopoFlagBit_);
 
-	 if (debug_>0 && flagvalue==1)
-	   cout <<"FOUND NOISY HF!  "<<id<<"  Energy= "<<newhit.energy()<<"  Run = "<< iEvent.run()<<"  Event = "<<iEvent.id().event()<<endl;
+	   else
+	     {
+	       int flagvalue=-1;
 
-       } // hfBitAlwaysOn/Off bits not set; run other tests
+	       // For each ieta ring, one may specify whether to use PET or S9S1.
+	       // Note that S9S1 doesn't behave sensibly for short fibers,
+	       // and PET doesn't perform optimally for long fibers (except at |ieta|=29).
+	       if (depth==2)  // Short fiber tests
+		 {
+		   // Run either PET or S9S1 tests, depending on input configurable for the given ieta ring
+		   if (hf_Short_Use_PET_[abs(ieta)-29]==1)
+		     CheckPET(newhit)==true  ? flagvalue = 1 : flagvalue = 0;
+		   else
+		     CheckS9S1(newhit)==true ? flagvalue = 1 : flagvalue = 0;
+		 }
+	       else if (depth==1) // Long fiber tests
+		 {
+		   // Run either PET or S9S1 tests, depending on input configurable for the given ieta ring
+		   if (hf_Long_Use_PET_[abs(ieta)-29]==1)
+		     CheckPET(newhit)==true  ? flagvalue = 1 : flagvalue = 0;
+		   else
+		     CheckS9S1(newhit)==true ? flagvalue = 1 : flagvalue = 0;
+		 }
 
-     // Add rechit to collection
-     pOut->push_back(newhit);
-   }
+	       // If flag is high, set flag on.  Otherwise, it remains off, as set at the beginning of the if statement (newhit.setFlagField(0,hfTopoFlagBit_))
+	       if (flagvalue==1)
+		 newhit.setFlagField(flagvalue, hfTopoFlagBit_);
+
+	       if (debug_>0 && flagvalue==1)
+		 cout <<"FOUND NOISY HF!  "<<id<<"  Energy= "<<newhit.energy()<<"  Run = "<< iEvent.run()<<"  Event = "<<iEvent.id().event()<<endl;
+
+	     } // hfTopoBitAlwaysOn/Off bits not set; run other tests
+	 } // if (useTopoFlag_)
+
+       if (useTimeFlag_)
+	 {
+	   double energyThresh=0;
+	   double mintime=-999999;
+	   double maxtime=999999;
+	   if (depth==1)
+	     {
+	       energyThresh=GetThreshold(abs(ieta),hfLong_Ethresh_);
+	       mintime=GetThreshold(fabs(newhit.energy()),hfLong_Mintime_);
+	       maxtime=GetThreshold(fabs(newhit.energy()),hfLong_Maxtime_);
+	     }
+	   else if (depth==2)
+	     {
+	       energyThresh=GetThreshold(abs(ieta),hfShort_Ethresh_);
+	       mintime=GetThreshold(fabs(newhit.energy()),hfShort_Mintime_);
+	       maxtime=GetThreshold(fabs(newhit.energy()),hfShort_Maxtime_);
+	     }
+	   if (debug_>2)
+	     cout <<"RECHIT ENERGY = "<<newhit.energy()<<"  IETA = "<<ieta<<"  ENERGY THRESHOLD = "<<energyThresh<<"\n\t RECHIT TIME = "<<newhit.time()<<"  MIN TIME = "<<mintime<<"  MAX TIME = "<<maxtime<<endl;
+	   if (newhit.energy()>energyThresh &&
+	       (newhit.time()<mintime || newhit.time()>maxtime)
+	       )
+	     {
+	       newhit.setFlagField(1, hfTimeFlagBit_);
+	       if (debug_>0) 
+		 {
+		   cout <<"FOUND HF RECHIT OUTSIDE OF TIME WINDOW!"<<endl;
+		   cout <<"\t ENERGY = "<<newhit.energy()<<"  TIME = "<<newhit.time()<<endl;
+		 }
+	     }
+	 }
+   
+       // Add rechit to collection
+       pOut->push_back(newhit);
+     } // loop on original rechit collection
    
    // put the re-flagged HF RecHit collection into the Event
    iEvent.put(pOut);
- 
-}
+} // HFRecHitReflaggerJETMET::produce(....)
 
 // ------------ method called once each job just before starting event loop  ------------
 void 

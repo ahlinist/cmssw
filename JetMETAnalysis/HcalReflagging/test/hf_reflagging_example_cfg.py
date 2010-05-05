@@ -68,6 +68,8 @@ elif version==2:
     process.hfrecoReflagged = process.HFrechitreflaggerJETMETv2.clone()
 elif version==3:
     process.hfrecoReflagged = process.HFrechitreflaggerJETMETv3.clone()
+elif version==4:
+    process.hfrecoReflagged = process.HFrechitreflaggerJETMETv4.clone()
 
 process.output.outputCommands.append("keep *_hfrecoReflagged_*_*")
 #new rechit collection name is:  HFRecHitsSorted_hfrecoReflagged__USER
