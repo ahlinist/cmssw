@@ -2,6 +2,7 @@
 #include "utils.h"
 
 #include "TH2F.h"
+#include "TH3F.h"
 #include "TStyle.h"
 #include "TCanvas.h"
 #include "TColor.h"
@@ -41,7 +42,8 @@ class CASTORRenderPlugin : public DQMRenderPlugin
         ( o.name.find("Castor Pulse Shape for sector=15 (in all 14 modules)") != std::string::npos) ||
         ( o.name.find("CastorRecHit Energy in modules- above threshold") != std::string::npos)      ||         
         ( o.name.find("CastorRecHit Energy in sectors- above threshold") != std::string::npos)      ||
-        ( o.name.find("CASTOR average pulse in bunch crossings") != std::string::npos)
+        ( o.name.find("CASTOR 3D hits- cumulative") != std::string::npos)                           ||
+        ( o.name.find("CASTOR 3D hits- event with the largest deposited E") != std::string::npos)  
 
 
         )
@@ -58,6 +60,11 @@ class CASTORRenderPlugin : public DQMRenderPlugin
   virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &) {
 
       c->cd();
+
+     ////---- TH3 
+      if( dynamic_cast<TH3*>( o.object ) ) {
+        preDrawTH3( c, o );
+      }
 
       ////---- TH2 
       if( dynamic_cast<TH2*>( o.object ) ) {
@@ -78,6 +85,12 @@ class CASTORRenderPlugin : public DQMRenderPlugin
   virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &){
       c->cd();
 
+
+      ////--- TH3 
+      if( dynamic_cast<TH3*>( o.object ) ) {
+        postDrawTH3( c, o );
+      }
+
       ////--- TH2 
       if( dynamic_cast<TH2*>( o.object ) ) {
         postDrawTH2( c, o );
@@ -94,6 +107,60 @@ class CASTORRenderPlugin : public DQMRenderPlugin
 
 
 private:
+
+
+  //==========================================================//
+  //==================== preDrawTH3 ==========================//
+  //==========================================================//
+
+  void preDrawTH3( TCanvas *c, const VisDQMObject &o ) {
+
+      TH3F* obj = dynamic_cast<TH3F*>( o.object );
+      assert( obj );
+
+      gStyle->SetCanvasBorderMode(0);
+      gStyle->SetPadBorderMode(0);
+      gStyle->SetPadBorderSize(0);
+
+      obj->GetXaxis()->SetLabelSize(0.04);
+      obj->GetYaxis()->SetLabelSize(0.04);
+      obj->GetZaxis()->SetLabelSize(0.04);
+      obj->GetXaxis()->SetTitle("Z [cm]"); //swap z and y axis and x and y
+      obj->GetYaxis()->SetTitle("X [cm]"); 
+      obj->GetZaxis()->SetTitle("Y [cm]");
+      obj->GetXaxis()->SetTitleOffset(0.12);
+      obj->GetYaxis()->SetTitleOffset(0.12);
+      obj->GetZaxis()->SetTitleOffset(0.12);
+     
+
+      if(o.name.find("CASTOR 3D hits- cumulative") != std::string::npos) {
+      gStyle->SetOptStat(0);
+      obj->SetStats(kFALSE);
+      c->SetGrid(1);
+      return;
+      }
+
+      if(o.name.find("CASTOR 3D hits- event with the largest deposited E") != std::string::npos) {
+       //gStyle->SetPalette(1);
+       obj->SetStats(kTRUE);
+       obj->SetOption("LEGO");
+       c->SetGrid(1);
+       return;
+      }
+      
+  }
+
+  //==========================================================//
+  //==================== postDrawTH3 ==========================//
+  //==========================================================//
+
+  void postDrawTH3( TCanvas *, const VisDQMObject &o ) {
+   
+   if(o.name.find("testOccupancy3D") != std::string::npos) {
+     //-- leave it empty for the moment
+     return;
+    }
+  }
 
   //==========================================================//
   //==================== preDrawTH2 ==========================//
@@ -220,7 +287,7 @@ private:
     }
 
   //==========================================================//
-  //==================== preDrawTH2 ==========================//
+  //==================== postDrawTH2 ==========================//
   //==========================================================//
 
   void postDrawTH2( TCanvas *, const VisDQMObject &o )
