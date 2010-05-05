@@ -371,8 +371,8 @@ void analysisClass::Loop()
   h_thrust->SetTitle(dataset);
   const int bin=30;
   Double_t Lower[bin] ={25, 27, 29 ,31 ,33 ,35 ,37, 39, 41 ,43 ,45, 47, 50, 55, 60, 65, 70 ,75 ,80 ,85, 90, 95, 100 ,110, 120, 130, 140, 150 ,175, 200};
-  const int binIM=26;
-  Double_t LowerIM[binIM] ={0.,49.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,225,250.,275.,300.,350.,400.,500.,650.,800.}; //the first one to 49 just not to catch entries at 50
+  const int binIM=29;
+  Double_t LowerIM[binIM] ={0.,20.,30.,40.,50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,225,250.,275.,300.,350.,400.,500.,650.,800.}; //the first one to 49 just not to catch entries at 50
 
   //define histos for CaloJets
   // ------------------------Di Jets  ----------------------
