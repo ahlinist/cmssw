@@ -286,12 +286,12 @@ hfrechitreflaggerJETMET = cms.EDProducer('HFRecHitReflaggerJETMET',
     hfLong_Ethresh  = cms.vdouble([40.]),
     #Min, max time parameterized in 1./energy
     hfLong_Mintime  = cms.vdouble([-10.]),
-    hfLong_Maxtime  = cms.vdouble([8.]),
+    hfLong_Maxtime  = cms.vdouble([10.]),
     # Energy parameterized in ieta
     hfShort_Ethresh  = cms.vdouble([40.]),
     #Min, max time parameterized in 1./energy
-    hfShort_Mintime  = cms.vdouble([-10.]),
-    hfShort_Maxtime  = cms.vdouble([8.]),
+    hfShort_Mintime  = cms.vdouble([-12.]),
+    hfShort_Maxtime  = cms.vdouble([10.]),
     ),  # TimeFlag PSet
     
 )
