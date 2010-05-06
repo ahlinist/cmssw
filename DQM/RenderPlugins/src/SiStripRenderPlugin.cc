@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.21 $
-  \date $Date: 2009/12/06 23:43:58 $
+  \version $Revision: 1.22 $
+  \date $Date: 2010/04/06 08:21:31 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -278,7 +278,8 @@ private:
       std::string name = o.name.substr(o.name.rfind("/")+1);
 
       if( name.find( "NumberOfTracks_" ) != std::string::npos ||
-          name.find( "Chi2overDoF_" ) != std::string::npos )
+          name.find( "Chi2oNDF_" ) != std::string::npos ||
+          name.find( "TrackPt_" ) != std::string::npos )
 	{
           if (obj->GetEntries() > 10.0) c->SetLogy(1);
 	  c->SetGridy();
