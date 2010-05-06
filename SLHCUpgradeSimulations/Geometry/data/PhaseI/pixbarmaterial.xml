@@ -190,6 +190,12 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="Pix_Bar_Cable_Upgrade" density="0.55876*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="Pix_Bar_Cable"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
   <CompositeMaterial name="Flange_with_Manifold_Layer1" density="5.00093*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.1636">
       <rMaterial name="materials:T_FR4"/>
@@ -283,6 +289,12 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="FlangeOuter_Layer3_Upgrade" density="0.14381*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="FlangeOuter_Layer3"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
  <CompositeMaterial name="cable_endring_to_tube" density="1.94299*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.10301">
       <rMaterial name="materials:T_Kapton"/>
@@ -307,6 +319,12 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="cable_endring_to_tube_Upgrade" density="0.64766*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="cable_endring_to_tube"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
   <CompositeMaterial name="Layer1_2_EndringPrints" density="1.16836*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.01765">
       <rMaterial name="materials:Lead"/>
@@ -328,6 +346,12 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="Layer1_2_EndringPrints_Upgrade" density="0.38945*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="Layer1_2_EndringPrints"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
   <CompositeMaterial name="Layer3_EndringPrints" density="1.08648*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.01766">
       <rMaterial name="materials:Lead"/>
@@ -346,6 +370,12 @@
     </MaterialFraction>
     <MaterialFraction fraction="0.41396">
       <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="Layer3_EndringPrints_Upgrade" density="0.36216*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="Layer3_EndringPrints"/>
     </MaterialFraction>
   </CompositeMaterial>
 
@@ -469,6 +499,12 @@
     </MaterialFraction>
     <MaterialFraction fraction="0.01264">
       <rMaterial name="materials:Nomex"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="SectorC_Upgrade" density="0.19652*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="SectorC"/>
     </MaterialFraction>
   </CompositeMaterial>
 
