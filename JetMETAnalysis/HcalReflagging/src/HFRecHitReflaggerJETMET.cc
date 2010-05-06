@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HFRecHitReflaggerJETMET.cc,v 1.1 2010/04/22 09:40:25 temple Exp $
+// $Id: HFRecHitReflaggerJETMET.cc,v 1.2 2010/05/05 15:03:10 temple Exp $
 //
 //
 
@@ -296,7 +296,6 @@ HFRecHitReflaggerJETMET::HFRecHitReflaggerJETMET(const edm::ParameterSet& ps)
    const edm::ParameterSet& TIME=ps.getParameter<edm::ParameterSet>("TimeFlag");
    if (TIME.getUntrackedParameter<bool>("useFlag",false))
    {
-
      useTimeFlag_             = true;
      hfTimeFlagBit_           = TIME.getUntrackedParameter<int>("hfFlagBit",HcalCaloFlagLabels::HFLongShort); 
      
@@ -431,14 +430,14 @@ HFRecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 	   if (depth==1)
 	     {
 	       energyThresh=GetThreshold(abs(ieta),hfLong_Ethresh_);
-	       mintime=GetThreshold(fabs(newhit.energy()),hfLong_Mintime_);
-	       maxtime=GetThreshold(fabs(newhit.energy()),hfLong_Maxtime_);
+	       mintime=GetThreshold(fabs(1./newhit.energy()),hfLong_Mintime_);
+	       maxtime=GetThreshold(fabs(1./newhit.energy()),hfLong_Maxtime_);
 	     }
 	   else if (depth==2)
 	     {
 	       energyThresh=GetThreshold(abs(ieta),hfShort_Ethresh_);
-	       mintime=GetThreshold(fabs(newhit.energy()),hfShort_Mintime_);
-	       maxtime=GetThreshold(fabs(newhit.energy()),hfShort_Maxtime_);
+	       mintime=GetThreshold(fabs(1./newhit.energy()),hfShort_Mintime_);
+	       maxtime=GetThreshold(fabs(1./newhit.energy()),hfShort_Maxtime_);
 	     }
 	   if (debug_>2)
 	     cout <<"RECHIT ENERGY = "<<newhit.energy()<<"  IETA = "<<ieta<<"  ENERGY THRESHOLD = "<<energyThresh<<"\n\t RECHIT TIME = "<<newhit.time()<<"  MIN TIME = "<<mintime<<"  MAX TIME = "<<maxtime<<endl;
