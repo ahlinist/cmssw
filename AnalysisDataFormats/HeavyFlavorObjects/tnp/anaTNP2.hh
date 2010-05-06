@@ -52,12 +52,12 @@ public:
   void readPidTables(const char *sample = "jpsi");
 
   void addBackground(vector<TH1D> &vec, double s2b = 2., double p0 = 1., double p1 = 0.);
-  void fitJpsi();
-  void fitUpsilon();
+  void fitJpsi(int mode);
+  void fitUpsilon(int mode);
   void McpYields(); 
   void fillPidTables();
 
-
+  void integerEntries(TH1D  *h);
   void validation();
   void projections();
   void allDifferences(int jpsiOnly = 0); 
@@ -105,7 +105,7 @@ public:
     *fPtMmbNeg, *fPtMmbPos;
 
   // -- functions
-  TF1 *f0, *f1, *f2, *f3, *f4, *f5, *f6, *f7, *f8, *f9; 
+  TF1 *f0, *f1, *f2, *f3, *f4, *f5, *f6, *f7, *f8, *f9, *f10, *f11, *f12, *f13; 
 
   int fMode; 
 
