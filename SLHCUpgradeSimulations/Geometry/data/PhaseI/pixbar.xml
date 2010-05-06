@@ -24,9 +24,9 @@
  <Constant name="SupportT"          value="0.350*cm"/>
  <Constant name="SupportY"          value="19.00*cm"/>
  <Constant name="ShieldL"           value="55.40*cm"/>
- <Constant name="Shield1Rin"        value="3.700*cm"/>
- <Constant name="Shield1Rout"       value="3.705*cm"/>
- <Constant name="Shield2Rout"       value="3.730*cm"/>
+ <Constant name="Shield1Rin"        value="3.200*cm"/>
+ <Constant name="Shield1Rout"       value="3.205*cm"/>
+ <Constant name="Shield2Rout"       value="3.230*cm"/>
  <Constant name="Shield3Rin"        value="18.470*cm"/>
  <Constant name="Shield3Rout"       value="18.475*cm"/>
  <Constant name="FlangeRin"         value="10.600*cm"/>
@@ -219,7 +219,7 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelFlange" category="unspecified">
   <rSolid name="PixelBarrelFlange"/>
-  <rMaterial name="pixbarmaterial:FlangeOuter_Layer3"/>
+  <rMaterial name="pixbarmaterial:FlangeOuter_Layer3_Upgrade"/>
  </LogicalPart>
 <!-- <LogicalPart name="PixelBarrelFlangIn" category="unspecified">
   <rSolid name="PixelBarrelFlangIn"/>
@@ -231,15 +231,15 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelCable1" category="unspecified">
   <rSolid name="PixelBarrelCable1"/>
-  <rMaterial name="pixbarmaterial:Pix_Bar_Cable"/>
+  <rMaterial name="pixbarmaterial:Pix_Bar_Cable_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCable2" category="unspecified">
   <rSolid name="PixelBarrelCable2"/>
-  <rMaterial name="pixbarmaterial:Pix_Bar_Cable"/>
+  <rMaterial name="pixbarmaterial:Pix_Bar_Cable_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCable3" category="unspecified">
   <rSolid name="PixelBarrelCable3"/>
-  <rMaterial name="pixbarmaterial:Pix_Bar_Cable"/>
+  <rMaterial name="pixbarmaterial:Pix_Bar_Cable_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCool1" category="unspecified">
   <rSolid name="PixelBarrelCool1"/>
@@ -259,23 +259,23 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelConn1" category="unspecified">
   <rSolid name="PixelBarrelConn1"/>
-  <rMaterial name="pixbarmaterial:Layer3_EndringPrints"/>
+  <rMaterial name="pixbarmaterial:Layer3_EndringPrints_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelConn2" category="unspecified">
   <rSolid name="PixelBarrelConn2"/>
-  <rMaterial name="pixbarmaterial:Layer1_2_EndringPrints"/>
+  <rMaterial name="pixbarmaterial:Layer1_2_EndringPrints_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelConnToST" category="unspecified">
   <rSolid name="PixelBarrelConnToST"/>
-  <rMaterial name="pixbarmaterial:cable_endring_to_tube"/>
+  <rMaterial name="pixbarmaterial:cable_endring_to_tube_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelConn3" category="unspecified">
   <rSolid name="PixelBarrelConn3"/>
-  <rMaterial name="pixbarmaterial:SectorC"/>
+  <rMaterial name="materials:Carbon_fibre_str_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelConn4" category="unspecified">
   <rSolid name="PixelBarrelConn4"/>
-  <rMaterial name="pixbarmaterial:SectorB"/>
+  <rMaterial name="pixbarmaterial:SectorC"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelService" category="unspecified">
   <rSolid name="PixelBarrelService"/>

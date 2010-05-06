@@ -132,19 +132,19 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelCable1Full" category="unspecified">
   <rSolid name="pixbarladderfull2:PixelBarrelCable1Full"/>
-  <rMaterial name="pixbarmaterial:Pix_Bar_Cable"/>
+  <rMaterial name="pixbarmaterial:Pix_Bar_Cable_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCable2Full" category="unspecified">
   <rSolid name="pixbarladderfull2:PixelBarrelCable2Full"/>
-  <rMaterial name="pixbarmaterial:Pix_Bar_Cable"/>
+  <rMaterial name="pixbarmaterial:Pix_Bar_Cable_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCable3Full" category="unspecified">
   <rSolid name="pixbarladderfull2:PixelBarrelCable3Full"/>
-  <rMaterial name="pixbarmaterial:Pix_Bar_Cable"/>
+  <rMaterial name="pixbarmaterial:Pix_Bar_Cable_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCable4Full" category="unspecified">
   <rSolid name="pixbarladderfull2:PixelBarrelCable4Full"/>
-  <rMaterial name="pixbarmaterial:Pix_Bar_Cable"/>
+  <rMaterial name="pixbarmaterial:Pix_Bar_Cable_Upgrade"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCFStripHoleFull" category="unspecified">
   <rSolid name="pixbarladderfull2:PixelBarrelCFStripHoleFull"/>
