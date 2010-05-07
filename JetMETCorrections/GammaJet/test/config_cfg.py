@@ -22,72 +22,34 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-
 process.load("PhysicsTools.HepMCCandAlgos.genParticleCandidates_cfi")
-
 process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
-
 process.load("Geometry.CaloEventSetup.CaloGeometry_cfi")
-
-#process.load("MagneticField.Engine.uniformMagneticField_cfi")
-
 process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
-
 process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
-
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 
-# produce JPT jets
-#rocess.load("Configuration.StandardSequences.Geometry_cff")
-#rocess.load("Configuration.StandardSequences.MagneticField_cff")
-#rocess.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#rocess.GlobalTag.globaltag = cms.string('MC_31X_V3::All')
-#rocess.load("JetMETCorrections.Configuration.ZSPJetCorrections219_cff")
-#rocess.load("JetMETCorrections.Configuration.JetPlusTrackCorrections_cff")
 
 process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck")
 
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
-# fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_1_0_pre11/RelValZmumuJets_Pt_20_300_GEN/GEN-SIM-RECO/MC_31X_V1_LowLumiPileUp-v1/0001/FE549F7D-2C65-DE11-9B82-001D09F2AF1E.root')
-#    fileNames = cms.untracked.vstring('file:/cmsrm/pc17/pandolf/eventi_PhotonJetPt170_Summer09_10TeV.root')
-#    fileNames = cms.untracked.vstring('file:/cmsrm/pc17/delre/7A62C541-37A0-DE11-BF0C-00215E221098.root')
-# fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_1_0_pre11/RelValZmumuJets_Pt_20_300_GEN/GEN-SIM-RECO/MC_31X_V1_LowLumiPileUp-v1/0001/FE549F7D-2C65-DE11-9B82-001D09F2AF1E.root')
-#    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/PhotonJet_Pt80to120_Summer09-MC_31X_V3-v1_x100.root')
     fileNames = cms.untracked.vstring(
-#'file:GammaJetSkim_132440_15.root'
-'file:events_MinBias09_Mar24ReReco.root'
-#'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124009.root',
-#'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124020.root',
-#'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124022.root',
-#'file:/cmsrm/pc18/pandolf/data/DiJetFilter5/DiJetSkim_124023_124024.root'
+'file:events_run133611.root'
 )
-#    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_Pt80_Summer09-MC_31X_V3-v1_x100.root')
-#    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3-v1_x100.root')
-#    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3-v1_x100.root')
 
 )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(10000)
 )
 
-#from JetMETCorrections.Configuration.JetCorrectionEra_cff import *
-#JetCorrectionEra.era = 'Summer09_7TeV_ReReco332' # applies to L2 & L3 only
-#process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+#process.options = cms.untracked.PSet(
+#    SkipEvent = cms.untracked.vstring('ProductNotFound')
+#)
 
-## produce JPT jets
-#process.load("Configuration.StandardSequences.Geometry_cff")
-#process.load("Configuration.StandardSequences.MagneticField_cff")
-#process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = cms.string('STARTUP3X_V12::All')
-#process.load("JetMETCorrections.Configuration.ZSPJetCorrections332_cff")
-#process.load("JetMETCorrections.Configuration.JetPlusTrackCorrections_cff")
-
-###-------------- simplify the name of the JPT collection
-#process.ak5JPTJets = process.JetPlusTrackZSPCorJetAntiKt5.clone()
 
 #physics declared technical bit filter
 process.hltPhysicsDeclared = cms.EDFilter("HLTHighLevel",
@@ -124,6 +86,51 @@ process.printTree = cms.EDFilter("ParticleTreeDrawer",
 )
 
 
+###########  EB SPIKE CLEANING BEGIN #####################
+
+process.load('Configuration/StandardSequences/Services_cff')
+process.load('Configuration/StandardSequences/GeometryExtended_cff')
+process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
+process.load('Configuration/StandardSequences/RawToDigi_Data_cff')
+process.load('Configuration/StandardSequences/Reconstruction_cff')
+process.load('Configuration/StandardSequences/EndOfProcess_cff')
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.load('Configuration/EventContent/EventContent_cff')
+#process.load('TrackingTools/Configuration/TrackingTools_cff')
+#process.load('RecoEgamma/EgammaElectronProducers/gsfElectronSequence_cff')
+
+process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
+#process.GlobalTag.globaltag = cms.string('START3X_V26::All')
+
+from RecoEcal.EgammaClusterProducers.ecalRecHitFlags_cfi import *
+from RecoEcal.EgammaClusterProducers.hybridSuperClusters_cfi import *
+from RecoEgamma.EgammaPhotonProducers.photons_cfi import *
+hybridSuperClusters.RecHitFlagToBeExcluded = ( ecalRecHitFlag_kFaultyHardware,
+                                             ecalRecHitFlag_kPoorCalib,
+                                             #ecalRecHitFlag_kOutOfTime,
+                                             ecalRecHitFlag_kDead)
+hybridSuperClusters.RecHitSeverityToBeExcluded = (3,4)
+hybridSuperClusters.severityRecHitThreshold = 4.
+hybridSuperClusters.severitySpikeId = 2
+hybridSuperClusters.severitySpikeThreshold = 0.95
+hybridSuperClusters.excludeFlagged = True
+
+process.ecalCleanClustering = cms.Sequence(process.hybridClusteringSequence*process.photonSequence*process.photonIDSequence)
+
+
+###########  EB SPIKE CLEANING END   #####################
+
+
+## produce JPT jets
+process.load('Configuration.StandardSequences.Geometry_cff')
+process.load('JetMETCorrections.Configuration.ZSPJetCorrections332_cff')
+process.load('JetMETCorrections.Configuration.JetPlusTrackCorrections_cff')
+process.ak5JPTJetsSequence = cms.Sequence(
+   process.ZSPJetCorrectionsAntiKt5*
+   process.JetPlusTrackCorrectionsAntiKt5
+   )
+
+
 
 #############   Include the jet corrections ##########
 process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_7TeV_ReReco332_cff")
@@ -148,7 +155,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsakt5 = cms.untracked.InputTag("ak5CaloJets"),
     jetssis5 = cms.untracked.InputTag("sisCone5CaloJets"),
     jetssis7 = cms.untracked.InputTag("sisCone7CaloJets"),
-    #jetsjptak5 = cms.untracked.InputTag("JetPlusTrackZSPCorJetIcone5"),
+    jetsjptak5 = cms.untracked.InputTag("JetPlusTrackCorrectionsAntiKt5"),
     jetspfite = cms.untracked.InputTag("iterativeCone5PFJets"),
     jetspfkt4 = cms.untracked.InputTag("kt4PFJets"),
     jetspfkt6 = cms.untracked.InputTag("kt6PFJets"),
@@ -160,8 +167,8 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsgenite = cms.untracked.InputTag("iterativeCone5GenJets"),
     jetsgenkt4 = cms.untracked.InputTag("kt4GenJets"),
     jetsgenkt6 = cms.untracked.InputTag("kt6GenJets"),
-    jetsgenakt5 = cms.untracked.InputTag("ak5GenJets"),
-    jetsgenakt7 = cms.untracked.InputTag("ak7GenJets"),
+    jetsgenakt5 = cms.untracked.InputTag("ak5GenJetsptmin1"),
+    jetsgenakt7 = cms.untracked.InputTag("ak7GenJetsptmin1"),
     jetsgensis5 = cms.untracked.InputTag("sisCone5GenJets"),
     jetsgensis7 = cms.untracked.InputTag("sisCone7GenJets"),
     TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
@@ -169,54 +176,11 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     genjetptthr = cms.double(5.),
     calojetptthr = cms.double(3.),
     pfjetptthr = cms.double(4.),
-    #jptjetptthr = cms.double(4.),
+    jptjetptthr = cms.double(4.),
     genjetnmin = cms.int32(10),
     pfjetnmin = cms.int32(10),
-    #jptjetnmin = cms.int32(10)
+    jptjetnmin = cms.int32(10)
 )
 
-# --- to recover the ak5 GenJets that are not re-recoed in 33X samples ---
-#process.load('RecoJets.Configuration.GenJetParticles_cff')
-#process.load("RecoJets.Configuration.RecoGenJets_cff")
 
-
-#from RecoJets.JetProducers.ak5GenJets_cfi import ak5GenJets
-#process.ak5GenJetsptmin1 = ak5GenJets.clone()
-#process.ak5GenJetsptmin1.jetPtMin = cms.double(1.0)
-
-#process.genParticlesForJets = cms.EDFilter("InputGenJetsParticleSelector",
-#    src = cms.InputTag("genParticles"),
-#    ignoreParticleIDs = cms.vuint32(
-#         1000022,
-#         1000012, 1000014, 1000016,
-#         2000012, 2000014, 2000016,
-#         1000039, 5100039,
-#         4000012, 4000014, 4000016,
-#         9900012, 9900014, 9900016,
-#         39),
-#    partonicFinalState = cms.bool(False),
-#    excludeResonances = cms.bool(True),
-#    excludeFromResonancePids = cms.vuint32(12, 13, 14, 16),
-#    tausAsJets = cms.bool(False)
-#)
-
-#newGenJets = cms.Sequence(process.genParticlesForJets* process.ak5GenJetsptmin1)
-
-# histogram service
-#process.TFileService = cms.Service("TFileService",
-#    fileName = cms.string('output.root')
-#)
-#process.p = cms.Path(process.myanalysis)
-# produce JPT jets before running analysis
-#process.p = cms.Path(process.ZSPJetCorrections*process.JetPlusTrackCorrections*process.myanalysis)
-#process.p = cms.Path(newGenJets*process.myanalysis)
-#process.p = cms.Path(process.myanalysis)
-process.p = cms.Path(process.hltPhysicsDeclared*process.hltLevel1GTSeed*process.monster*process.myanalysis)
-#process.p = cms.Path(process.myanalysis)
-#process.p1 = cms.Path(
-#    process.ZSPJetCorrectionsAntiKt5 *
-#    process.ZSPrecoJetAssociationsAntiKt5 *
-#    process.ak5JPTJets *
-#    process.myanalysis
-#)
-
+process.p = cms.Path(process.hltPhysicsDeclared*process.hltLevel1GTSeed*process.monster*process.ecalCleanClustering*process.ak5JPTJetsSequence*process.myanalysis)
