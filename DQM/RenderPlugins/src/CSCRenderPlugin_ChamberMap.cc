@@ -318,25 +318,28 @@ void ChamberMap::drawStats(TH2*& me) {
 
                     if (fillColor < 0 || fillColor > 5) fillColor = 0;
                     legend.set(fillColor);
-                    status_all += 1;
 
                     switch (fillColor) {
                         // No data, no error
                         case 0:
                             fillColor = COLOR_WHITE;
+                            status_all += 1;
                             break;
                         // Data, no error
                         case 1:
                             fillColor = COLOR_GREEN;
+                            status_all += 1;
                             break;
                         // Error, hot
                         case 2:
                             fillColor = COLOR_RED;
+                            status_all += 1;
                             status_bad += 1;
                             break;
                         // Cold
                         case 3:
                             fillColor = COLOR_BLUE;
+                            status_all += 1;
                             status_bad += 1;
                             break;
                         // Masked
@@ -346,6 +349,7 @@ void ChamberMap::drawStats(TH2*& me) {
                         // Standby
                         case 5:
                             fillColor = COLOR_YELLOW;
+                            status_all += 1;
                             status_bad += 1;
                             break;
                     }
