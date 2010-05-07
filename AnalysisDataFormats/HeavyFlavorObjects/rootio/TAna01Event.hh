@@ -109,33 +109,31 @@ public:
   
   unsigned int      fTimeLo, fTimeHi; 
 
-  // ?? Add prescales anywhere ?? Or only with an external application?
-
-  // -- Global trigger
-  int               fL1Decision, fHLTDecision;
-
-  // -- The number of trigger words (32 bits each)
-  //    NB: The simple-minded (more or less) constant arrays add about 1-3% filesize overhead 
-  #define NL1T 4
-  #define NL1TT 2
-  #define NHLT 8
+  // -- Trigger words
+  bool              fL1TDecision, fHLTDecision; 
+  #define NL1T 128
+  #define NLTT 64
+  #define NHLT 256
   // -- L1 trigger
-  TString           fL1TNames[32*NL1T];
-  int               fL1TWords[NL1T];
-  int               fL1TWasRun[NL1T];
-  long int          fL1TPrescale[32*NL1T];
+  TString           fL1TNames[NL1T];
+  int               fL1TPrescale[NL1T];
+  bool              fL1TResult[NL1T];
+  bool              fL1TMask[NL1T];
+  bool              fL1TError[NL1T];
 
   // -- L1 technical trigger
-  TString           fL1TTNames[32*NL1TT];
-  int               fL1TTWords[NL1TT];
-  int               fL1TTWasRun[NL1TT];
-  long int          fL1TTPrescale[32*NL1TT];
+  TString           fLTTNames[NLTT];
+  int               fLTTPrescale[NLTT];
+  bool              fLTTResult[NLTT];
+  bool              fLTTMask[NLTT];
+  bool              fLTTError[NLTT];
 
   // -- HLT
-  TString           fHLTNames[32*NHLT];
-  int               fHLTWords[NHLT];
-  int               fHLTWasRun[NHLT];
-  long int          fHLTPrescale[32*NL1T];
+  TString           fHLTNames[NHLT];
+  int               fHLTPrescale[NHLT];
+  bool              fHLTResult[NHLT];
+  bool              fHLTWasRun[NHLT];
+  bool              fHLTError[NHLT];
 
   // -- MET
   TVector3          fGenMET, fMET0, fMET1;  // only x and y component are relevant. z could contain type information. 

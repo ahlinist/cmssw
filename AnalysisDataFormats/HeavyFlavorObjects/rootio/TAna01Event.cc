@@ -5,37 +5,50 @@ ClassImp(TAna01Event)
  
 using namespace std;
 
+#define NGENCAND 100000
+#define NRECTRACK 50000
+#define NMUON 1000
+#define NTRGOBJ 1000
+#define NSIGTRACK 500000
+#define NCALOJET 1000
+#define NGENJET 1000
+#define NTRACKJET 1000
+#define NCANDIDATES 200000
+#define NVERTEX 1000
+
 // ----------------------------------------------------------------------
 TAna01Event::TAna01Event(Int_t Option) {
-  fGenCands        = new TClonesArray("TGenCand", 10000);
+  fGenCands        = new TClonesArray("TGenCand", NGENCAND);
   fnGenCands       = 0;
 
-  fRecTracks       = new TClonesArray("TAnaTrack", 10000);
+  fRecTracks       = new TClonesArray("TAnaTrack", NRECTRACK);
   fnRecTracks      = 0;
 
-  fMuons           = new TClonesArray("TAnaMuon", 1000);
+  fMuons           = new TClonesArray("TAnaMuon", NMUON);
   fnMuons          = 0;
 
-  fTrgObj          = new TClonesArray("TTrgObj", 1000);
+  fTrgObj          = new TClonesArray("TTrgObj", NTRGOBJ);
   fnTrgObj         = 0;
 
-  fSigTracks       = new TClonesArray("TAnaTrack", 100000);
+  fSigTracks       = new TClonesArray("TAnaTrack", NSIGTRACK);
   fnSigTracks      = 0;
 
-  fCaloJets        = new TClonesArray("TAnaJet", 1000);
+  fCaloJets        = new TClonesArray("TAnaJet", NCALOJET);
   fnCaloJets       = 0;
 
-  fGenJets         = new TClonesArray("TAnaJet", 1000);
+  fGenJets         = new TClonesArray("TAnaJet", NGENJET);
   fnGenJets        = 0;
 
-  fTrackJets       = new TClonesArray("TAnaJet", 1000);
+  fTrackJets       = new TClonesArray("TAnaJet", NTRACKJET);
   fnTrackJets      = 0;
 
-  fCandidates      = new TClonesArray("TAnaCand", 100000);
+  fCandidates      = new TClonesArray("TAnaCand", NCANDIDATES);
   fnCandidates     = 0;
 
-  fPV              = new TClonesArray("TAnaVertex", 100);
+  fPV              = new TClonesArray("TAnaVertex", NVERTEX);
   fnPV             = 0;
+
+  Clear();
 
 }
 
@@ -70,30 +83,20 @@ void TAna01Event::Clear(Option_t *option) {
   fnTrgObj = 0;
 
   for (int i = 0; i < NL1T; ++i) {
-    for (int j = 0; j < 32; ++j) {
-      fL1TNames[i*32+j] = ""; 
-    }
-    
-    fL1TWords[i]  = 0; 
-    fL1TWasRun[i] = 0; 
+    fL1TPrescale[i] = 0; 
+    fL1TResult[i] = fL1TMask[i] = fL1TError[i] = false; 
   }
 
-  for (int i = 0; i < NL1TT; ++i) {
-    for (int j = 0; j < 32; ++j) {
-      fL1TTNames[i*32+j] = ""; 
-    }
-    
-    fL1TTWords[i]  = 0; 
-    fL1TTWasRun[i] = 0; 
+  for (int i = 0; i < NLTT; ++i) {
+    fLTTPrescale[i] = 0; 
+    fLTTResult[i] = fLTTMask[i] = fLTTError[i] = false; 
   }
 
   for (int i = 0; i < NHLT; ++i) {
-    for (int j = 0; j < 32; ++j) {
-      fHLTNames[i*32+j] = ""; 
-    }
-    fHLTWords[i] = 0; 
-    fHLTWords[i] = 0; 
+    fHLTPrescale[i] = 0; 
+    fHLTResult[i] = fHLTWasRun[i] = fHLTError[i] = false; 
   }
+
 
   TAnaTrack *pSigTrack;
   for (int i = 0; i < fnSigTracks; i++) {
@@ -395,24 +398,17 @@ void TAna01Event::dump() {
     pPV->dump();
   }
   
-  for (int j = 0; j < 32; ++j) {
-    for (int i = 0; i < NL1T; ++i) {
-      cout << Form("%15s %2d ", fL1TNames[32*i+j].Data(), (fL1TWords[i] & (0x1<<j)? 1: 0)); 
-    }
-    cout << endl;
+  for (int j = 0; j < NL1T; ++j) {
+    cout << Form("%15s %2d ", fL1TNames[j].Data(), (fL1TResult[j]? 1: 0)) << endl; 
+  }
 
-    for (int i = 0; i < NL1TT; ++i) {
-      cout << Form("%15s %2d ", fL1TTNames[32*i+j].Data(), (fL1TTWords[i] & (0x1<<j)? 1: 0)); 
-    }
-    cout << endl;
-  }    
+  for (int i = 0; i < NLTT; ++i) {
+    cout << Form("%15s %2d ", fLTTNames[i].Data(), (fLTTResult[i]? 1: 0)) << endl; 
+  }
 
-  for (int j = 0; j < 32; ++j) {
-    for (int i = 0; i < NHLT; ++i) {
-      cout << Form("%15s %2d ", fHLTNames[32*i+j].Data(), (fHLTWords[i] & (0x1<<j)? 1: 0)); 
-    }
-    cout << endl;
-  }    
+  for (int i = 0; i < NHLT; ++i) {
+    cout << Form("%15s %2d ", fHLTNames[i].Data(), (fHLTResult[i]? 1: 0)); 
+  }
 
   TGenCand *pGenCand;
   for (int i = 0; i < fnGenCands; i++) {

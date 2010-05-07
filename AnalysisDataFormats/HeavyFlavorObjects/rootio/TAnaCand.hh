@@ -21,7 +21,8 @@ public:
   int         fMom;          // mother in Cand block
   int         fDau1, fDau2;  // daughters in Cand block
 
-  int         fType;
+  int         fType, fQ;
+  int         fIndex; 
   double      fMass;
 
   double      fVar1;

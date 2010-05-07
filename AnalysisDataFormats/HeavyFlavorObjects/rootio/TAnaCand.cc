@@ -14,12 +14,15 @@ TAnaCand::~TAnaCand() {
 
 
 void TAnaCand::clear() {
-  fMass = -1.;
-  fMom  = -1;
-  fDau1 = -1;
-  fDau2 = -1;
-  fSig1 = -1;
-  fSig2 = -1;
+  fMass  = -1.;
+  fMom   = -1;
+  fDau1  = -1;
+  fDau2  = -1;
+  fSig1  = -1;
+  fSig2  = -1;
+  fQ     = -99; 
+  fIndex = -99; 
+  fVar1  = fVar2 = fVar3 = -99.;
   fVtx.clear();
 }
 
