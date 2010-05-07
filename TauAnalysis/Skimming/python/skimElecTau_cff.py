@@ -141,7 +141,7 @@ def addElecTauSkimm(process):
                                                      tauAnalysisEventContent,
                                                      elecTauEventSelection,
                                                      dataset = cms.untracked.PSet(
-      filterName = cms.untracked.string('elecMuSkim')
+      filterName = cms.untracked.string('elecTauSkim')
       ),
                                                      fileName = cms.untracked.string('skimElecTau.root')
                                                      )
