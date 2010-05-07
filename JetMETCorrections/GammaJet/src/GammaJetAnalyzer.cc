@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.27 2010/04/06 16:22:46 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.28 2010/04/06 16:39:56 pandolf Exp $
 //
 //
 
@@ -149,7 +149,7 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   //Jetsrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsakt7");
   Jetsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis5");
   Jetsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis7");
-  //JetJPTsrcak5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsjptak5");
+  JetJPTsrcak5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsjptak5");
   JetPFsrcite_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfite");
   JetPFsrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt4");
   JetPFsrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt6");
@@ -174,10 +174,10 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   genjetptthr_ = iConfig.getParameter<double>("genjetptthr");
   calojetptthr_ = iConfig.getParameter<double>("calojetptthr");
   pfjetptthr_ = iConfig.getParameter<double>("pfjetptthr");
-  //jptjetptthr_ = iConfig.getParameter<double>("jptjetptthr");
+  jptjetptthr_ = iConfig.getParameter<double>("jptjetptthr");
   genjetnmin_ = iConfig.getParameter<int>("genjetnmin");
   pfjetnmin_ = iConfig.getParameter<int>("pfjetnmin");
-  //jptjetnmin_ = iConfig.getParameter<int>("jptjetnmin");
+  jptjetnmin_ = iConfig.getParameter<int>("jptjetnmin");
 //   PtPhoton1st = new TH1D( "PtPhoton1st", "Pt spectrum of the most energetic photon", 50, 0.0, 400.0);
 //   PtPhoton2st = new TH1D( "PtPhoton2st", "Pt spectrum of the 2' most energetic photon", 50, 0.0, 400.0);
 //   PtPhoton3st = new TH1D( "PtPhoton3st", "Pt spectrum of the 3' most energetic photon", 50, 0.0, 400.0);
@@ -206,7 +206,7 @@ void
 GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    nMC = nPhot = nconvPhot = nJet_ite = nJet_kt4 = nJet_akt5 = nJet_sis5 = nJet_kt6 = nJet_sis7 = nJet_pfite = nJet_pfkt4 = nJet_pfakt5 = nJet_pfsis5 = nJet_pfkt6 = nJet_pfsis7 = nJetGen_ite = nJetGen_kt4 = nJetGen_akt5 = nJetGen_sis5 = nJetGen_kt6 = nJetGen_sis7 = 0;
-   //nJet_jptak5  = 0;
+   nJet_jptak5  = 0;
    nJet_pfakt7 = nJetGen_akt7 = 0;
    nSIM = nPF = 0;
 
@@ -289,8 +289,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel(Jetsrcsis7_, jetssis7);
 
    // get JPT collection
-   //Handle<CaloJetCollection> jptjetsak5;
-   //iEvent.getByLabel(JetJPTsrcak5_, jptjetsak5);
+   Handle<CaloJetCollection> jptjetsak5;
+   iEvent.getByLabel(JetJPTsrcak5_, jptjetsak5);
 
    // get PF jets collection
    Handle<PFJetCollection> pfjetsite;
@@ -1352,31 +1352,31 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      hcalovecal1Phot[nPhot] = hcalEnergy/it->energy(); 
      hcalEnergy = 0; 
  
+
+     CaloClusterPtr SCseed = it->superCluster()->seed();
+
      // calculate ECAL isolation 
 
-     // ecal isolation with SC rechits removal
+     // ecal isolation with SC seed rechits removal
      SuperClusterHitsEcalIsolation scBasedIsolation(rhits,rhitsee);
      scBasedIsolation.setExtRadius(0.1);
      scBasedIsolation.excludeHalo(false);
-     ecaliso01Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     ecaliso01Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*SCseed));
      scBasedIsolation.setExtRadius(0.15);
-     ecaliso015Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     ecaliso015Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*SCseed));
      scBasedIsolation.setExtRadius(0.4);
-     ecaliso04Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     ecaliso04Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*SCseed));
      scBasedIsolation.setExtRadius(0.5);
-     ecaliso05Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     ecaliso05Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*SCseed));
      scBasedIsolation.setExtRadius(0.7);
-     ecaliso07Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     ecaliso07Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*SCseed));
      scBasedIsolation.setExtRadius(1.);
-     ecaliso1Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     ecaliso1Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*SCseed));
 
      // cluster shape variables
      
-     //     BasicClusterRef tempCluster = it->superCluster()->seed();
-     CaloClusterPtr tempCluster = it->superCluster()->seed();
-
-     if (TMath::Abs(tempCluster->eta())<1.47){
-       reco::ClusterShape tempShape=algo.Calculate(*tempCluster, rhits, &(*geometry_p), &(*topology_p),4.7);
+     if (TMath::Abs(SCseed->eta())<1.47){
+       reco::ClusterShape tempShape=algo.Calculate(*SCseed, rhits, &(*geometry_p), &(*topology_p),4.7);
        sMajMajPhot[nPhot]=tempShape.sMajMaj();
        sMinMinPhot[nPhot]=tempShape.sMinMin();
        FisherPhot[nPhot]=tempShape.fisher();
@@ -1393,16 +1393,16 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        alphaPhot[nPhot]=-100.;
        sEtaEtaPhot[nPhot] = it->sigmaEtaEta();//-100.;
        sPhiPhiPhot[nPhot]=-100.;
-       E1Phot[nPhot] = it->superCluster()->seed()->energy();//-100.;
+       E1Phot[nPhot] = SCseed->energy();//-100.;
        E9Phot[nPhot] = it->e3x3();//-100.;
        E25Phot[nPhot] = it->e5x5();//-100.;
      }
 
-     if (_debug && fabs(tempCluster->eta())<1.47 &&
+     if (_debug && fabs(SCseed->eta())<1.47 &&
 	 fabs(it->maxEnergyXtal()-387)>1 && // weird bug in 31X?
 	 (fabs(sEtaEtaPhot[nPhot]-it->sigmaEtaEta())>1e-4 ||
 	  //fabs(E1Phot[nPhot]-it->maxEnergyXtal())>1e-4 ||
-	  fabs(E1Phot[nPhot]-it->superCluster()->seed()->energy())>1e-4 ||
+	  fabs(E1Phot[nPhot]-SCseed->energy())>1e-4 ||
 	  fabs(E9Phot[nPhot]-it->e3x3())>1e-4 ||
 	  fabs(E25Phot[nPhot]-it->e5x5())>1e-4)) {
        cout << Form("Eta %1.3g\n"
@@ -1410,9 +1410,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 		    "E1      %1.3g vs %1.3g\n"
 		    "E9      %1.3g vs %1.3g\n"
 		    "E25     %1.3g vs %1.3g\n",
-		    tempCluster->eta(),
+		    SCseed->eta(),
 		    sEtaEtaPhot[nPhot], it->sigmaEtaEta(),
-		    E1Phot[nPhot], it->superCluster()->seed()->energy(),
+		    E1Phot[nPhot], SCseed->energy(),
 		    E9Phot[nPhot], it->e3x3(),
 		    E25Phot[nPhot], it->e5x5());
      }
@@ -1504,12 +1504,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    } // i
    */
 
-   //const double calojetptthr = 3.;
-   //const double jptjetptthr = 5.;
-   //const double pfjetptthr = 5.;//6.;
-   //const int pfminconst = 1; // minimum constituents for low pT
-   //const int jptjetnmin = 4;
-   //const int pfjetnmin = 4;
 
    for (CaloJetCollection::const_iterator it = jetsite->begin(); 
 	 it != jetsite->end(); ++it) {
@@ -1627,21 +1621,21 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      }
    }
    
-// for (CaloJetCollection::const_iterator it = jptjetsak5->begin(); 
-//     it != jptjetsak5->end(); ++it) {
-//   
-//   if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
-//   if (nJet_jptak5 < jptjetnmin_ || it->pt() > jptjetptthr_) {
-//     
-//     ptJet_jptak5[nJet_jptak5] = it->pt();	 
-//     eJet_jptak5[nJet_jptak5] = it->energy();	 
-//     etaJet_jptak5[nJet_jptak5] = it->eta();	 
-//     phiJet_jptak5[nJet_jptak5] = it->phi();	      
-//     emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
-//     
-//     nJet_jptak5++;
-//   }
-// }
+   for (CaloJetCollection::const_iterator it = jptjetsak5->begin(); 
+       it != jptjetsak5->end(); ++it) {
+     
+     if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
+     if (nJet_jptak5 < jptjetnmin_ || it->pt() > jptjetptthr_) {
+       
+       ptJet_jptak5[nJet_jptak5] = it->pt();	 
+       eJet_jptak5[nJet_jptak5] = it->energy();	 
+       etaJet_jptak5[nJet_jptak5] = it->eta();	 
+       phiJet_jptak5[nJet_jptak5] = it->phi();	      
+       emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
+       
+       nJet_jptak5++;
+     }
+   }
 
    for (PFJetCollection::const_iterator it = pfjetsite->begin(); 
 	 it != pfjetsite->end(); ++it) {
@@ -2311,12 +2305,12 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("phiJet_sis7",&phiJet_sis7,"phiJet_sis7[nJet_sis7]/F");
   m_tree->Branch("emfJet_sis7",&emfJet_sis7,"emfJet_kt4[nJet_sis7]/F");
 
-//m_tree->Branch("nJet_jptak5",&nJet_jptak5,"nJet_jptak5/I");
-//m_tree->Branch("ptJet_jptak5 ",&ptJet_jptak5 ,"ptJet_jptak5[nJet_jptak5]/F");
-//m_tree->Branch("eJet_jptak5  ",&eJet_jptak5  ,"eJet_jptak5[nJet_jptak5]/F");
-//m_tree->Branch("etaJet_jptak5",&etaJet_jptak5,"etaJet_jptak5[nJet_jptak5]/F");
-//m_tree->Branch("phiJet_jptak5",&phiJet_jptak5,"phiJet_jptak5[nJet_jptak5]/F");
-//m_tree->Branch("emfJet_jptak5",&emfJet_jptak5,"emfJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("nJet_jptak5",&nJet_jptak5,"nJet_jptak5/I");
+  m_tree->Branch("ptJet_jptak5 ",&ptJet_jptak5 ,"ptJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("eJet_jptak5  ",&eJet_jptak5  ,"eJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("etaJet_jptak5",&etaJet_jptak5,"etaJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("phiJet_jptak5",&phiJet_jptak5,"phiJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("emfJet_jptak5",&emfJet_jptak5,"emfJet_jptak5[nJet_jptak5]/F");
 
   m_tree->Branch("nJet_pfite",&nJet_pfite,"nJet_pfite/I");
   m_tree->Branch("ptJet_pfite ",&ptJet_pfite ,"ptJet_pfite[nJet_pfite]/F");
