@@ -16,6 +16,26 @@ void TAnaTrack::clear() {
   fMuIndex  = -1;
   fMuID     = -1;
   fAlgorithm= -1; 
+
+  fQ = -99; 
+
+  fDof = fValidHits = -99; 
+  fChi2 = -99.;
+  fTrackQuality = -99; 
+  fAlgorithm = -99;
+
+  fdz = fdzE = fd0 = fd0E = -99.;
+  fLip = fLipE = fTip = fTipE = -99.; 
+
+  fMuID = 0; 
+  fMuIndex = -99; 
+
+  fDeDx = fDeDx2 = -99.; 
+  fDeDxNmeas = fDeDxNsat = -99; 
+
+  fInt1 = fInt2 = fInt3 -99; 
+  fDouble1 = fDouble2 = fDouble3 = -99;
+  
 }
 
 
