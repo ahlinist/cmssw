@@ -81,7 +81,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       //edm::InputTag Jetsrcakt7_; 
       edm::InputTag Jetsrcsis5_; 
       edm::InputTag Jetsrcsis7_; 
-      //edm::InputTag JetJPTsrcak5_;
+      edm::InputTag JetJPTsrcak5_;
       edm::InputTag JetPFsrcite_;
       edm::InputTag JetPFsrckt4_;
       edm::InputTag JetPFsrcakt5_;
@@ -107,10 +107,10 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       double genjetptthr_;
       double calojetptthr_;
       double pfjetptthr_;
-      //double jptjetptthr_;
+      double jptjetptthr_;
       int genjetnmin_;
       int pfjetnmin_;
-      //int jptjetnmin_;
+      int jptjetnmin_;
 
 //      edm::Service<TFileService> fs_;
       TFile* outfile;
@@ -318,12 +318,12 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t phiJet_sis7[100];
       Float_t emfJet_sis7[100];
 
-    //Int_t nJet_jptak5;
-    //Float_t ptJet_jptak5[100];
-    //Float_t eJet_jptak5[100];
-    //Float_t etaJet_jptak5[100];
-    //Float_t phiJet_jptak5[100];
-    //Float_t emfJet_jptak5[100];
+      Int_t nJet_jptak5;
+      Float_t ptJet_jptak5[100];
+      Float_t eJet_jptak5[100];
+      Float_t etaJet_jptak5[100];
+      Float_t phiJet_jptak5[100];
+      Float_t emfJet_jptak5[100];
 
       Int_t nJet_pfite;
       Float_t ptJet_pfite[100];
