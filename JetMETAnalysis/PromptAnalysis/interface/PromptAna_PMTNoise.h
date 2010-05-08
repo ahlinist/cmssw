@@ -27,6 +27,7 @@
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GtFdlWord.h"
 
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
@@ -65,21 +66,18 @@ class PromptAna_PMTNoise : public edm::EDProducer {
   void produce( edm::Event &, const edm::EventSetup & );
 
   
-  bool isPrimaryVertex(edm::Event& iEvent);
-  bool isPhysDeclared(edm::Event& iEvent,
-		      const edm::EventSetup& iSetup);
+  bool isPrimaryVertex(const edm::Event& iEvent);
+  bool isPhysDeclared(const L1GlobalTriggerReadoutRecord& gtRecord);
 
-  void  BSCTriggers(edm::Event& iEvent,
-		    L1GlobalTriggerReadoutRecord gtRecord,
-		    auto_ptr<bool>& isbscminbias,
-		    auto_ptr<bool>& isbschalo  
-		    );
-  void BPTXTriggers(edm::Event& iEvent,
-		    L1GlobalTriggerReadoutRecord gtRecord,
-		    const L1GtTriggerMenu menu,
-		    auto_ptr<bool>& isbptx0,  
-		    auto_ptr<bool>& isbptxplus,     
-		    auto_ptr<bool>& isbptxminus);
+  void  BSCTriggers(const L1GlobalTriggerReadoutRecord& gtRecord,
+                    auto_ptr<bool>& isbscminbias,
+                    auto_ptr<bool>& isbschalo  
+                    );
+  void BPTXTriggers(const L1GlobalTriggerReadoutRecord& gtRecord,
+                    const L1GtTriggerMenu& menu,
+                    auto_ptr<bool>& isbptx0,  
+                    auto_ptr<bool>& isbptxplus,     
+                    auto_ptr<bool>& isbptxminus);
 
   
   const edm::InputTag   HFRecHitTag, METTag, TrackTag;
