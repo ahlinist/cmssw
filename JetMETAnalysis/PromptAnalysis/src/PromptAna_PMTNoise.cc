@@ -127,9 +127,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       const HcalChannelStatus* origstatus=chanquality->getValues(hf->id());
       rechitchanstat->push_back(origstatus->getValue());
       if (origstatus->getValue()!=0  && debug_>2)
-	cout <<"\t\t Non-normal status for RecHit HF("
-	     <<ieta<<", "<<iphi<<", "<<depth<<")  status = "
-	     <<origstatus->getValue()<<endl;
+        cout <<"\t\t Non-normal status for RecHit HF("
+             <<ieta<<", "<<iphi<<", "<<depth<<")  status = "
+             <<origstatus->getValue()<<endl;
       rechitieta->push_back(ieta);
       rechitiphi->push_back(iphi);
       rechitdepth->push_back(depth);
@@ -140,17 +140,17 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       rechitET->push_back(energy/cosh(eta));
 
       if (debug_>2) cout <<"\t\tSearching for partner for HF("
-			 <<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
+                         <<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
       // Search for partner rechit
       HcalDetId pId(HcalForward, ieta, iphi,3-depth);
       HFRecHitCollection::const_iterator part=hfhits->find(pId);
       if ( part!=hfhits->end() )
-	{
-	  partenergy=part->energy();
+        {
+          partenergy=part->energy();
           if( energy>0 && partenergy<0 ) R=1.;
           else if(energy>0 && partenergy>=0) R=(energy-partenergy)/(energy+partenergy);
           else R=-999.;
-	}
+        }
       if (depth==2)
         R*=-1;
       rechitRvalue->push_back(R);
@@ -169,8 +169,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       double sum4short=0;
       
       if (debug_>2) cout <<"\t\tR value = "<<R
-			 <<"\n\t\tSearching for neighbors for HF("
-			 <<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
+                         <<"\n\t\tSearching for neighbors for HF("
+                         <<ieta<<", "<<iphi<<", "<<depth<<")"<<endl;
       int myiphi=iphi;
       int zside=ieta/abs(ieta);
       
@@ -301,7 +301,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // evaluate primary vertex, phys declared; assume others false until evaluated
   
   *isprimaryvertex.get()=isPrimaryVertex(iEvent);
-  *isphysdeclared.get()=isPhysDeclared(iEvent,iSetup);
+  *isphysdeclared.get()=false;
   *BSaccept.get()=false;
   *isbscminbias.get()=false;
   *isbschalo.get()=false;
@@ -344,8 +344,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<L1GlobalTriggerReadoutRecord> gtRecord;
   if (iEvent.getByLabel(L1Triggers_,gtRecord) && gtRecord.isValid())
     {
-      BSCTriggers(iEvent,  *gtRecord, isbscminbias, isbschalo);
-      BPTXTriggers(iEvent, *gtRecord, *menu, isbptx0, isbptxplus, isbptxminus);
+      *isphysdeclared.get()=isPhysDeclared(*gtRecord);
+      BSCTriggers(*gtRecord, isbscminbias, isbschalo);
+      BPTXTriggers(*gtRecord, *menu, isbptx0, isbptxplus, isbptxminus);
     }
 
   // -----------------------------------------------------------------------------------------
@@ -509,7 +510,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
 
-bool PromptAna_PMTNoise::isPrimaryVertex(edm::Event& iEvent)
+bool PromptAna_PMTNoise::isPrimaryVertex(const edm::Event& iEvent)
 {
 
   if (debug_>0) cout <<"\tRUNNING isPrimaryVertex"<<endl;
@@ -540,11 +541,9 @@ bool PromptAna_PMTNoise::isPrimaryVertex(edm::Event& iEvent)
 }  // bool PromptAna_PMTNoise::isPrimaryVertex
 
 
-void PromptAna_PMTNoise::BSCTriggers(edm::Event& iEvent,
-		  L1GlobalTriggerReadoutRecord gtRecord,
-		  auto_ptr<bool>& isbscminbias,
-		  auto_ptr<bool>& isbschalo  
-		  )
+void PromptAna_PMTNoise::BSCTriggers(const L1GlobalTriggerReadoutRecord& gtRecord,
+                                     auto_ptr<bool>& isbscminbias,
+                                     auto_ptr<bool>& isbschalo)
 {
   if (debug_>0) cout <<"\tRUNNING BSCTriggers"<<endl;
 
@@ -566,12 +565,11 @@ void PromptAna_PMTNoise::BSCTriggers(edm::Event& iEvent,
 } // void PromptAna_PMTNoise::BSCTriggers
 
 
-void PromptAna_PMTNoise::BPTXTriggers(edm::Event& iEvent,
-				      L1GlobalTriggerReadoutRecord gtRecord,
-				      const L1GtTriggerMenu menu,
-				      auto_ptr<bool>& isbptx0,  
-				      auto_ptr<bool>& isbptxplus,     
-				      auto_ptr<bool>& isbptxminus)
+void PromptAna_PMTNoise::BPTXTriggers(const L1GlobalTriggerReadoutRecord& gtRecord,
+                                      const L1GtTriggerMenu& menu,
+                                      auto_ptr<bool>& isbptx0,
+                                      auto_ptr<bool>& isbptxplus,
+                                      auto_ptr<bool>& isbptxminus)
 {
   // get BPTX triggers
    if (debug_>0) cout <<"\tRUNNING BPTXTriggers"<<endl;
@@ -589,38 +587,18 @@ void PromptAna_PMTNoise::BPTXTriggers(edm::Event& iEvent,
   return;
 }    // void PromptAna_PMTNoise::BPTXTriggers
 
-bool PromptAna_PMTNoise::isPhysDeclared(edm::Event& iEvent,
-					const edm::EventSetup& iSetup) 
+bool PromptAna_PMTNoise::isPhysDeclared(const L1GlobalTriggerReadoutRecord& gtRecord)
 {
 
-  // Try to get HLT_PhysicsDeclared bit.  Hopefully this works.
+  // Try to get PhysicsDeclared bit.
 
   if (debug_>0) cout <<"\tRUNNING isPhysDeclared"<<endl;
- 
-  edm::Handle<edm::TriggerResults> trh;
-  iEvent.getByLabel(hlTriggerResults_, trh);
-  if (!(trh.isValid())) 
-    {
-      if (debug_>1) cout <<"\t\tTriggerResults object with tag '"<<hlTriggerResults_<<"' is not valid!"<<endl;
-      return false;
-    }
 
-
-  triggerNames_.init(*trh);
-  hlNames_=triggerNames_.triggerNames();
-    
   bool physdeclared=false;
-  string mytrig="HLT_PhysicsDeclared";
 
-  for (unsigned int i=0;i<hlNames_.size();++i)
-    {
-      if (debug_>2) cout <<"\t\t Checking trigger #"<<i<<"  name "<<hlNames_[i]<<endl;
-      if (hlNames_[i]==mytrig && trh->accept(i))
-	{
-	  physdeclared=true;
-	  if (debug_>0) cout <<"\t\t isPhysDeclared bit is TRUE!"<<endl;
-	  break;
-	}
-    }
+  L1GtFdlWord fdlWord = gtRecord.gtFdlWord();
+  if (fdlWord.physicsDeclared() == 1)
+      physdeclared = true;
+
   return physdeclared;
 } // bool PromptAna_PMTNoise::isPhysDeclared
