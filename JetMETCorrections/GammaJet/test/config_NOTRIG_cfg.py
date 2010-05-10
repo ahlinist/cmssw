@@ -45,19 +45,12 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
-process.options = cms.untracked.PSet(
-    SkipEvent = cms.untracked.vstring('ProductNotFound')
-    #wantSummary = cms.untracked.bool(True)
-)
+#process.options = cms.untracked.PSet(
+#    SkipEvent = cms.untracked.vstring('ProductNotFound')
+#    #wantSummary = cms.untracked.bool(True)
+#)
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-
-process.printTree = cms.EDFilter("ParticleTreeDrawer",
-    status = cms.untracked.vint32(3),
-    src = cms.InputTag("genParticleCandidates"),
-    printIndex = cms.untracked.bool(True)
-)
-
 
 
 #############   Include the jet corrections ##########
@@ -107,10 +100,11 @@ process.ecalCleanClustering = cms.Sequence(process.hybridClusteringSequence*proc
 ## produce JPT jets
 process.load('JetMETCorrections.Configuration.ZSPJetCorrections332_cff')
 process.load('JetMETCorrections.Configuration.JetPlusTrackCorrections_cff')
+process.ak5JPTJets = process.JetPlusTrackZSPCorJetAntiKt5.clone()
 process.ak5JPTJetsSequence = cms.Sequence(
-   process.ZSPJetCorrectionsAntiKt5*
-   process.JetPlusTrackCorrectionsAntiKt5
-   )
+   process.ZSPJetCorrectionsAntiKt5*process.ZSPrecoJetAssociationsAntiKt5*process.ak5JPTJets
+
+)
 
 
 
@@ -131,7 +125,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsakt5 = cms.untracked.InputTag("ak5CaloJets"),
     jetssis5 = cms.untracked.InputTag("sisCone5CaloJets"),
     jetssis7 = cms.untracked.InputTag("sisCone7CaloJets"),
-    jetsjptak5 = cms.untracked.InputTag("JetPlusTrackZSPCorJetAntiKt5"),
+    jetsjptak5 = cms.untracked.InputTag("ak5JPTJets"),
     jetspfite = cms.untracked.InputTag("iterativeCone5PFJets"),
     jetspfkt4 = cms.untracked.InputTag("kt4PFJets"),
     jetspfkt6 = cms.untracked.InputTag("kt6PFJets"),
@@ -158,39 +152,5 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jptjetnmin = cms.int32(10)
 )
 
-# --- to recover the ak5 GenJets:
-process.load("RecoJets.Configuration.GenJetParticles_cff")
-#process.load("RecoJets.JetProducers.ak5GenJets_cfi")
-process.load("RecoJets.Configuration.RecoGenJets_cff")
 
-
-from RecoJets.JetProducers.ak5GenJets_cfi import ak5GenJets
-process.ak5GenJetsptmin2 = ak5GenJets.clone()
-process.ak5GenJetsptmin2.jetPtMin = cms.double(2.0)
-
-process.genParticlesForJets = cms.EDFilter("InputGenJetsParticleSelector",
-    src = cms.InputTag("genParticles"),
-    ignoreParticleIDs = cms.vuint32(
-         1000022,
-         1000012, 1000014, 1000016,
-         2000012, 2000014, 2000016,
-         1000039, 5100039,
-         4000012, 4000014, 4000016,
-         9900012, 9900014, 9900016,
-         39),
-    partonicFinalState = cms.bool(False),
-    excludeResonances = cms.bool(True),
-    excludeFromResonancePids = cms.vuint32(12, 13, 14, 16),
-    tausAsJets = cms.bool(False)
-)
-
-process.new_ak5GenJets = cms.Sequence(process.genParticlesForJets* process.ak5GenJetsptmin2)
-
-# --- to recover the ak7 GenJets:
-process.ak7GenJetsptmin2 = ak5GenJets.clone()
-process.ak7GenJetsptmin2.rParam = cms.double(0.7)
-process.ak7GenJetsptmin2.jetPtMin = cms.double(2.0)
-
-process.new_ak7GenJets = cms.Sequence(process.genParticlesForJets* process.ak7GenJetsptmin2)
-
-process.p = cms.Path(process.new_ak5GenJets*process.new_ak7GenJets*process.ecalCleanClustering*process.ak5JPTJetsSequence*process.myanalysis)
+process.p = cms.Path(process.ecalCleanClustering*process.ak5JPTJetsSequence*process.myanalysis)
