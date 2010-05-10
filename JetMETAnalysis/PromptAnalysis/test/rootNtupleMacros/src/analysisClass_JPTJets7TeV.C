@@ -351,8 +351,8 @@ void analysisClass::Loop()
 
 
   // Binning 
-  double ptMax=300.;
-  int ptBin=100;
+  //double ptMax=300.;
+  //int ptBin=100;
   
   int  phiBin=20;
   double phiMax=Pi;   // -
@@ -362,11 +362,13 @@ void analysisClass::Loop()
   double etaMax=3.;   //-
   double etaMin=-3.;
 
-  int invmassBin=100;//30
-  double invmassMax=800.;
+  // int invmassBin=100;//30
+  // double invmassMax=800.;
 
   const int bin=30;
   Double_t Lower[bin] ={25, 27, 29 ,31 ,33 ,35 ,37, 39, 41 ,43 ,45, 47, 50, 55, 60, 65, 70 ,75 ,80 ,85, 90, 95, 100 ,110, 120, 130, 140, 150 ,175, 200};
+  const int binIM=29;
+  Double_t LowerIM[binIM] ={0.,20.,30.,40.,50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,225,250.,275.,300.,350.,400.,500.,650.,800.};
 
   
   TLorentzVector JPTjet1LorentzVector(0.,0.,0.,0.);
@@ -428,17 +430,17 @@ void analysisClass::Loop()
   JPTphiJIDloose->SetXTitle("#phi");
   JPTphiJIDloose->SetTitle(dataset);
 
-  TH1D *JPTEbarrel = new TH1D("JPTEbarrel","",ptBin,ptMin,ptMax);
+  TH1D *JPTEbarrel = new TH1D("JPTEbarrel","",(bin-1),Lower);
   JPTEbarrel->SetXTitle("E_{barrel} [GeV]");
   JPTEbarrel->SetTitle(dataset);
-  TH1D *JPTEbarrelJIDloose = new TH1D("JPTEbarrelJIDloose","",ptBin,ptMin,ptMax);
+  TH1D *JPTEbarrelJIDloose = new TH1D("JPTEbarrelJIDloose","",(bin-1),Lower);
   JPTEbarrelJIDloose->SetXTitle("E_{barrel} [GeV]");
   JPTEbarrelJIDloose->SetTitle(dataset);
 
-  TH1D *JPTEendcap = new TH1D("JPTEendcap","",292,ptMin,300);
+  TH1D *JPTEendcap = new TH1D("JPTEendcap","",(bin-1),Lower);
   JPTEendcap->SetXTitle("E_{endcap} [GeV]");
   JPTEendcap->SetTitle(dataset);
-  TH1D *JPTEendcapJIDloose = new TH1D("JPTEendcapJIDloose","",ptBin,ptMin,ptMax);
+  TH1D *JPTEendcapJIDloose = new TH1D("JPTEendcapJIDloose","",(bin-1),Lower);
   JPTEendcapJIDloose->SetXTitle("E_{endcap} [GeV]");
   JPTEendcapJIDloose->SetTitle(dataset);
 
@@ -502,13 +504,14 @@ void analysisClass::Loop()
 
 
   // ------------------------------------------
-  TH1D *JPTdijetinvmass = new TH1D("dijetJPTinvmass","",invmassBin,0.,invmassMax);
+   TH1D *JPTdijetinvmass = new TH1D("JPTdijetinvmassJIDloose","",(binIM-1) ,LowerIM);
   JPTdijetinvmass->SetXTitle("m_{j1j2}[GeV]");
   JPTdijetinvmass->SetTitle(dataset);
-  TH1D *JPTdijetinvmassIDloose = new TH1D("dijetJPTinvmassIDloose","",invmassBin,0.,invmassMax);
+
+  TH1D *JPTdijetinvmassIDloose = new TH1D("dijetJPTinvmassIDloose","",(binIM-1) ,LowerIM);
   JPTdijetinvmassIDloose->SetXTitle("m_{j1j2}[GeV]");
   JPTdijetinvmassIDloose->SetTitle(dataset);
-  
+
 
   TH1D *JPTmetOverSumEt = new TH1D("JPTmetOverSumEt","",30,0.,1.);
   JPTmetOverSumEt->SetXTitle("#slash{E}_{T}/#Sigma E_{T}");
@@ -712,7 +715,7 @@ void analysisClass::Loop()
   TH1D *JPTresemffakejets = new TH1D("JPTresemffakejets","",101,-0.005,1.005);
   JPTresemffakejets->SetXTitle("restricted emf");
   JPTresemffakejets->SetTitle(dataset);
-  TH1D *fakejetJPTptall1 = new TH1D("fakejetJPTptall1","",ptBin, 0,50);
+  TH1D *fakejetJPTptall1 = new TH1D("fakejetJPTptall1","",100, 0,50);
   fakejetJPTptall1->SetXTitle("p_{T}[GeV]");
   fakejetJPTptall1->SetTitle(dataset);
 
