@@ -95,22 +95,24 @@ echo 'Making Laser Webpages for ' ${run_num}
 # specify directories here
 #my_cmssw_base='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/ccecal/CRAFT_devel_321/src'
 my_cmssw_base=$CMSSW_BASE/src
-work_dir=${my_cmssw_base}/'CalibCalorimetry/EcalTiming/test'
+work_dir=/castor/cern.ch/user/c/ccecal/Timing
+#work_dir=${my_cmssw_base}/'CalibCalorimetry/EcalTiming/test'
 Nrun_num=${run_num}${APPENDIX}
 
 
 plots_dir=plots/${analy_type}/$Nrun_num;
 mkdir $plots_dir
 
-crab_dir=`\ls -rt1 ${work_dir}/${analy_type}_${run_num} | grep "crab_" | tail -1 | awk '{print $NF}'`;
-
+#crab_dir=`\ls -rt1 ${work_dir}/${analy_type}_${run_num} | grep "crab_" | tail -1 | awk '{print $NF}'`;
+crab_dir=/castor/cern.ch/user/c/ccecal/Timing
 echo $crab_dir
 
 #root_file=${analy_type}_${run_num}_1.root
 Nroot_file=${analy_type}_${Nrun_num}.root
 root_file=${analy_type}_${run_num}.root
 plot_file=${analy_type}_${Nrun_num}_plots.root
-cp ${work_dir}/${analy_type}_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}/${Nroot_file}
+#cp ${work_dir}/${analy_type}_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}/${Nroot_file}
+rfcp ${work_dir}/${root_file} ${plots_dir}/${Nroot_file}
 
 echo
 echo 'Going to make the plots, by running:'

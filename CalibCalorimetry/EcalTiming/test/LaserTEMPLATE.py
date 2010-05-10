@@ -25,10 +25,10 @@ process.source = cms.Source("PoolSource",
                                 #debugVebosity = cms.untracked.uint32(10),
 #                                skipEvents = cms.untracked.uint32(1200000),
                                 skipEvents = cms.untracked.uint32(0),
-                                fileNames = cms.untracked.vstring('/store/data/Commissioning08/TestEnables/RAW/v1/000/064/735/8868E0F8-8594-DD11-9EC6-000423D98930.root',
-                                                                          '/store/data/Commissioning08/TestEnables/RAW/v1/000/064/735/9A01DEFD-8794-DD11-A1F5-001617E30F48.root',
-                                                                          '/store/data/Commissioning08/TestEnables/RAW/v1/000/064/735/C0427F8D-8694-DD11-8E98-001617DBCF1E.root')
+                                fileNames = cms.untracked.vstring('MYINPUTFILETYPE')
                             )
+
+process.source.duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 
 #process.src1 = cms.ESSource("EcalTrivialConditionRetriever",
 #                                jittWeights = cms.untracked.vdouble(0.04, 0.04, 0.04, 0.0, 1.32,
