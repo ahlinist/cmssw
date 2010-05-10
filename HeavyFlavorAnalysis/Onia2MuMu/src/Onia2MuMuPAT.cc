@@ -158,6 +158,11 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	  vtx.SetXYZ(myVertex.position().x(),myVertex.position().y(),0);
 	  TVector3 pperp(jpsi.px(), jpsi.py(), 0);
+	  AlgebraicVector vpperp(3);
+	  vpperp[0] = pperp.x();
+	  vpperp[1] = pperp.y();
+	  vpperp[2] = 0.;
+
           
 	  // lifetime using PV
           pvtx.SetXYZ(thePrimaryV->position().x(),thePrimaryV->position().y(),0);
@@ -165,7 +170,11 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  double cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
 	  Measurement1D distXY = vdistXY.distance(reco::Vertex(myVertex), *thePrimaryV);
 	  double ctauPV = distXY.value()*cosAlpha*3.09688/pperp.Perp();
-          double ctauErrPV = distXY.error()*cosAlpha*3.09688/pperp.Perp();
+	  GlobalError v1e=(reco::Vertex(myVertex)).error();
+	  GlobalError v2e=(*thePrimaryV).error();
+          AlgebraicSymMatrix vXYe = v1e.matrix()+ v2e.matrix();
+	  double ctauErrPV= sqrt(vXYe.similarity(vpperp))*3.09688/(pperp.Perp2());
+	  
 	  myCand.addUserFloat("ppdlPV",ctauPV);
           myCand.addUserFloat("ppdlErrPV",ctauErrPV);
 	  myCand.addUserFloat("cosAlpha",cosAlpha);
@@ -176,7 +185,11 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
 	  distXY = vdistXY.distance(reco::Vertex(myVertex), *theBeamSpotV);
 	  double ctauBS = distXY.value()*cosAlpha*3.09688/pperp.Perp();
-          double ctauErrBS = distXY.error()*cosAlpha*3.09688/pperp.Perp();
+	  GlobalError v1eB=(reco::Vertex(myVertex)).error();
+	  GlobalError v2eB=(*theBeamSpotV).error();
+          AlgebraicSymMatrix vXYeB = v1eB.matrix()+ v2eB.matrix();
+	  double ctauErrBS= sqrt(vXYeB.similarity(vpperp))*3.09688/(pperp.Perp2());
+	  
 	  myCand.addUserFloat("ppdlBS",ctauBS);
           myCand.addUserFloat("ppdlErrBS",ctauErrBS);
 	  
