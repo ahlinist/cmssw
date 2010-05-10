@@ -9,6 +9,8 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include <L1Trigger/RPCTrigger/interface/RPCConst.h>
@@ -21,11 +23,34 @@
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
+#include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
+#include "TrackingTools/GeomPropagators/interface/Propagator.h"
+
+#include "DataFormats/GeometrySurface/interface/BoundCylinder.h"
+#include "DataFormats/GeometrySurface/interface/SimpleCylinderBounds.h"
+#include "DataFormats/GeometrySurface/interface/BoundDisk.h"
+#include "DataFormats/GeometrySurface/interface/SimpleDiskBounds.h"
 
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTExtendedCand.h"
 #include <DataFormats/MuonReco/interface/MuonTime.h>
 #include <DataFormats/MuonReco/interface/Muon.h>
+#include "DataFormats/Math/interface/deltaPhi.h"
+//#include <DataFormats/GeometrySurface/interface/Surface.h>
+#include <DataFormats/GeometrySurface/interface/ReferenceCounted.h>
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+
+#include "Geometry/CommonDetUnit/interface/GlobalTrackingGeometry.h"
+#include "Geometry/Records/interface/GlobalTrackingGeometryRecord.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+
+#include "HLTriggerOffline/Muon/interface/PropagateToMuon.h"
 
 #include <vector>
 #include <string>
@@ -122,23 +147,50 @@ struct L1MuonCandLocalInfo {
       };
 
 struct GenMuonLocalInfo {
-        GenMuonLocalInfo(reco::CandidateBaseRef ref,const edm::Event& iEvent) : _charge( ref->charge()), 
-                                                       _pt( ref->pt()), 
-                                                       _phi( ref->phi() ), 
-                                                       _eta( ref->eta()) 
+        GenMuonLocalInfo(reco::CandidateBaseRef ref,const edm::Event& iEvent,const edm::EventSetup& iSetup) : _charge( ref->charge()), 
+                                                       _pt( ref->pt()) 
+                                                       //,_phi( ref->phi() ), 
+                                                       //_eta( ref->eta()) 
 {
 const reco::Muon * mu=dynamic_cast<const reco::Muon *>(&*ref);
-if(mu==NULL)
-{
-_tin=999; 
-_tout=999;
-}
-else
-{
-_tin=mu->time().timeAtIpOutIn;
-_tout=mu->time().timeAtIpInOut;
-}
-_run=iEvent.run();
+ if(mu==NULL){
+
+    _tin=999; 
+    _tout=999;
+
+ } else { 
+
+   _tin=mu->time().timeAtIpOutIn;
+   _tout=mu->time().timeAtIpInOut;
+
+ }
+
+  _run=iEvent.run();
+edm::ParameterSet pset; 
+std::string str("none");
+pset.addParameter("useTrack", str);
+pset.addParameter("useState", "atVertex");
+
+pset.addParameter("useSimpleGeometry", true);
+//pset.addParameter("useSimpleGeometry", 1);
+
+    PropagateToMuon propagatorToMuon(pset);
+
+     propagatorToMuon.init(iSetup);
+
+     TrajectoryStateOnSurface trackAtRPC=propagatorToMuon.extrapolate(*ref);
+
+        if (trackAtRPC.isValid()) {
+         _phi = trackAtRPC.globalPosition().phi();
+         _eta = trackAtRPC.globalPosition().eta();
+       }else{
+    _phi=ref->phi(); 
+    _eta=ref->eta(); 
+    }
+
+
+
+
 } ;
         private:
 	int _run;
@@ -264,7 +316,7 @@ struct MEDistribution {
 		name<<"Distribution_"<<_tag[it]<<"_TowerVsPhi_pt_"<<(int)_ptL<<"_"<<(int)_ptH;
 	    title<<"RPCTrigger: Distribution "<<_tag[it]<<" Tower Vs #phi pt ["<<_ptL<<","<<_ptH<<"]";
 	    
-            _meVecTowerVsPhiGen[it] = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
+            _meVecTowerVsPhiGen[it] = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG+1,-pi,pi); 
             _meVecTowerVsPhiGen[it]->setAxisTitle("Tower",1);
 	    _meVecTowerVsPhiGen[it]->setAxisTitle("#phi",2);
 	    
@@ -275,7 +327,7 @@ struct MEDistribution {
 		name<<"Distribution_"<<_tag[it]<<"_EtaVsPhi_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
 	    title<<"RPCTrigger: Distribution "<<_tag[it]<<" #eta Vs #phi pt ["<<_ptL<<","<<_ptH<<"]";
 	    
-            _meVecEtaVsPhiGen[it] = dqm->book2D(name.str(),title.str(), 100, -2.15, 2.15,RPCConst::NSEG,-pi,pi); 
+            _meVecEtaVsPhiGen[it] = dqm->book2D(name.str(),title.str(), 100, -2.15, 2.15,RPCConst::NSEG+1,-pi,pi); 
             _meVecEtaVsPhiGen[it]->setAxisTitle("#eta",1);
 	    _meVecEtaVsPhiGen[it]->setAxisTitle("#phi",2);
 	    
@@ -285,7 +337,7 @@ struct MEDistribution {
 		name<<"Distribution_"<<"Bx"<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH)<<"_Denom";
 	    title<<"RPCTrigger: Distribution "<<_tag[1]<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
 	    
-            _meTowerVsPhiL1 = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
+            _meTowerVsPhiL1 = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG+1,-pi,pi); 
             _meTowerVsPhiL1->setAxisTitle("Tower",1);
 	    _meTowerVsPhiL1->setAxisTitle("#phi",2);          
             }
@@ -296,7 +348,7 @@ struct MEDistribution {
 		name<<"Distribution_"<<"Bx"<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
 	    title<<"RPCTrigger: Distribution "<<"Bx"<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
 	    
-            _meTowerVsPhiL1Bx = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
+            _meTowerVsPhiL1Bx = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG+1,-pi,pi); 
             _meTowerVsPhiL1Bx->setAxisTitle("Tower",1);
 	    _meTowerVsPhiL1Bx->setAxisTitle("#phi",2);
             }
@@ -307,7 +359,7 @@ struct MEDistribution {
 		name<<"Distribution_"<<"quality"<<"_TowerL1VsPhiL1_pt_"<<changedot(_ptL)<<"_"<<changedot(_ptH);
 	    title<<"RPCTrigger: Distribution "<<"quality"<<" TowerL1 Vs PhiL1 pt ["<<_ptL<<","<<_ptH<<"]";
 	    
-            _meTowerVsPhiL1Quality = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG,-pi,pi); 
+            _meTowerVsPhiL1Quality = dqm->book2D(name.str(),title.str(), 2*_const.m_TOWER_COUNT,-1* _const.m_TOWER_COUNT+1,_const.m_TOWER_COUNT,RPCConst::NSEG+1,-pi,pi); 
             _meTowerVsPhiL1Quality->setAxisTitle("Tower",1);
 	    _meTowerVsPhiL1Quality->setAxisTitle("#phi",2);
             }
@@ -333,7 +385,17 @@ struct MEDistribution {
 	    _meL1BxAll->setAxisTitle("Cand",2);
             }
 		
+  
+	{
+            
+	    
+            _meDeltaPhi = dqm->book1D("deltaPhi","RPCTrigger: delta #phi",100,-3,3); 
+            _meDeltaPhi->setAxisTitle("delta #phi",1);
+	   
 
+             _meDeltaEta = dqm->book1D("deltaEta","RPCTrigger: delta #eta",100,-1.5,1.5); 
+            _meDeltaEta->setAxisTitle("delta #eta",1);
+            }
 
 
 		dqm->goUp();
@@ -366,6 +428,10 @@ struct MEDistribution {
                                                    itL1++ ) 
                      {
                         _meL1BxAll->Fill(itL1->bx());
+                        _meDeltaPhi->Fill(reco::deltaPhi(gl.phi(),itL1->phi()));
+	                _meDeltaEta->Fill(gl.eta()-itL1->eta());
+
+            
                      }
 
 
@@ -402,9 +468,11 @@ struct MEDistribution {
 	  MonitorElement* _meVecTowerVsPhiGen[4];
 	  MonitorElement * _meTowerVsPhiL1;
           MonitorElement * _meTowerVsPhiL1Bx;
-	MonitorElement * _meTowerVsPhiL1Quality;
-		MonitorElement * _meL1Bx;
-		MonitorElement * _meL1BxAll;
+	  MonitorElement * _meTowerVsPhiL1Quality;
+	  MonitorElement * _meL1Bx;
+	  MonitorElement * _meL1BxAll;
+          MonitorElement * _meDeltaPhi;
+	  MonitorElement * _meDeltaEta;
       	 static const std::string _tag[] ;
 	 
 
@@ -532,7 +600,7 @@ struct MEEfficiency {
       }; 
 
 
-	struct METiming {
+struct METiming {
         public:
           METiming(edm::ParameterSet ps, DQMStore * dqm): _ptL(ps.getParameter<double>("ptL")),
                                               _ptH(ps.getParameter<double>("ptH"))

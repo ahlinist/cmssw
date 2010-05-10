@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.10 2010/04/05 23:05:27 dbart Exp $
+// $Id: RPCTriggerValidation.cc,v 1.11 2010/04/14 16:54:00 dbart Exp $
 //
 //
 
@@ -44,6 +44,8 @@
 //#include <PhysicsTools/Utilities/interface/Sqrt.h>
 #include <DataFormats/MuonReco/interface/MuonTime.h>
 #include <DataFormats/MuonReco/interface/Muon.h>
+
+#include "HLTriggerOffline/Muon/interface/PropagateToMuon.h"
 
 #include <math.h>
 #include <algorithm>
@@ -84,6 +86,10 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
    alltrig = dqm->book1D("AllTrig","RPCTrigger: All Trigger ",100,1,0);
    ghost = dqm->book1D("assign","RPCTrigger: Number of assign candidates",11,-0.5,10.5);
    unassigned = dqm->book1D("unassigned","RPCTrigger: Number of unassigned candidates",11,-0.5,10.5);
+   unassignedVsRef = dqm->book2D("unassignedVsRef","RPCTrigger: Number of unassigned candidates vs Ref candidat",11,-0.5,10.5,11,-0.5,10.5);
+
+
+
               
    std::vector<edm::ParameterSet> etaPtRanges = iConfig.getParameter< std::vector<edm::ParameterSet> > ("etaPtRanges");          
    std::vector<edm::ParameterSet>::iterator it = etaPtRanges.begin(); 
@@ -146,7 +152,7 @@ void RPCTriggerValidation::analyze(const edm::Event& iEvent, const edm::EventSet
 
       if((ref->pdgId() == 13 || ref->pdgId() == -13)&& cut){
       //if (ref->pdgId() == 13 || ref->pdgId() == -13) {
-         gens.push_back(GenMuonLocalInfo(ref,iEvent));
+         gens.push_back(GenMuonLocalInfo(ref,iEvent,iSetup));
    //      std::cout << ref->pdgId() << " " << gens.rbegin()->charge() << std::endl;
       }
    }
@@ -281,7 +287,7 @@ else{
        }*/
    }
 	unassigned->Fill(l1s.size());
-
+        unassignedVsRef->Fill(l1s.size(),gens.size());
   /*
      std::cout << "Unassigned L1s: " << std::endl;
      std::vector<L1MuonCandLocalInfo>::iterator it = l1s.begin();
@@ -348,8 +354,8 @@ void RPCTriggerValidation::assignCandidatesToGens( std::vector<GenMuonLocalInfo>
      itGenE = gens.end();
     for (;itGen!=itGenE;++itGen)
     {
-       //double dr = reco::deltaR(*itGen,*it);
-	double dr = std::sqrt(100*(itGen->eta()-it->eta())*(itGen->eta()-it->eta())+(itGen->phi()-it->phi())*(itGen->phi()-it->phi()));
+       double dr = reco::deltaR(*itGen,*it);
+	//double dr = std::sqrt(100*(itGen->eta()-it->eta())*(itGen->eta()-it->eta())+(itGen->phi()-it->phi())*(itGen->phi()-it->phi()));
        //std::cout << "))))))))))->" << drMin  << " " << dr << std::endl; 
        if (dr < drMin || drMin < 0) { 
          drMin = dr;
@@ -362,7 +368,7 @@ void RPCTriggerValidation::assignCandidatesToGens( std::vector<GenMuonLocalInfo>
     // TODO make this configurable
     //  std::cout << "))))))))))->" << drMin << std::endl; 
     
-    if (std::abs(itGenMin->eta()-it->eta())< m_deltaEtaThreshold && std::abs(itGenMin->phi()-it->phi())< m_deltaPhiThreshold ) {
+    if (std::abs(itGenMin->eta()-it->eta())< m_deltaEtaThreshold && reco::deltaPhi(itGenMin->phi(),it->phi())< m_deltaPhiThreshold ) {
        itGenMin->_l1cands.push_back(*it);
        it = l1cands.erase(it);
     } else {

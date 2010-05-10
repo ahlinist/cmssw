@@ -1,6 +1,6 @@
 #!/bin/sh
 
-wdir=/afs/cern.ch/user/d/dbart/scratch0/CMSSW_3_5_0/src/Validation/L1Trigger/test/
+wdir=/afs/cern.ch/user/d/dbart/scratch0/CMSSW_3_6_0_pre4/src/Validation/L1Trigger/test/
 #wdir=/afs/cern.ch/user/f/fruboes/scratch0/2010.03.GMTProblem/CMSSW_3_5_0/src/Validation/L1Trigger/test/
 
 file=$1

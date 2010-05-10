@@ -29,7 +29,7 @@ for f in `python $DBSCMD_HOME/dbsCommandLine.py --noheader -c search --query="$q
      bsub -q 8nm runsingle.sh $castorBase/$f ${release}_$globalTag $i
      let i+=1
    else 
-#     stager_get -M $castorBase/$f
+     stager_get -M $castorBase/$f
      echo \# $f has wrong castor status - \"$status\"
    fi
 done

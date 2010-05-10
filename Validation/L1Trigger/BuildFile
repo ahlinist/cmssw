@@ -13,6 +13,15 @@
 <use name=root>
 <use name=L1Trigger/RPCTrigger>
 <use name=DataFormats/MuonReco>
+<use name=DataFormats/TrackReco>
+<use name=TrackingTools/TrajectoryState>
+<use name=TrackingTools/GeomPropagators>
+<use name=TrackingTools/Records>
+<use name=MagneticField/Records>
+<use name=MagneticField/Engine>
+<use name=HLTriggerOffline/Muon>
+<use name=MuonAnalysis/MuonAssociators>
+
 
 <export>
    <lib name=ValidationL1Trigger>

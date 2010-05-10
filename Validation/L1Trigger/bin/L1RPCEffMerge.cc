@@ -145,7 +145,25 @@ int main(int argc, char ** argv) {
     std::cout << itTH2->first << std::endl;
     itTH2->second->Write();
      }else {
-          itTH2->second->Divide(histoTH2Map.find(itTH2->first + "_Denom")->second);
+          //itTH2->second->Divide(histoTH2Map.find(itTH2->first + "_Denom")->second);
+         Int_t nbinsx = itTH2->second->GetNbinsX();
+         Int_t nbinsy = itTH2->second->GetNbinsY();
+         Int_t bin, binx, biny;
+         Double_t b1,b2,w;
+         for (biny=0;biny<=nbinsy+1;biny++) {
+         for (binx=0;binx<=nbinsx+1;binx++) {
+            bin = binx +(nbinsx+2)*(biny);
+            b1  = itTH2->second->GetBinContent(bin);
+            b2  = histoTH2Map.find(itTH2->first + "_Denom")->second->GetBinContent(bin);
+            if (b2) {w = b1/(b2);
+	    itTH2->second->SetBinContent(bin,w);}
+            
+            
+            }
+	}
+
+
+
           std::cout << itTH2->first << " / "<< histoTH2Map.find(itTH2->first + "_Denom")-> first << std::endl;
           itTH2->second->Write();
      }
