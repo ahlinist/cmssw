@@ -109,7 +109,8 @@ int main(int argc, char ** argv)
                 int qualVal = -1;
                 ss >> qualVal;
 
-                if ( qualVal != (qualMax+1))
+
+                if ( qualVal != (qualMax)+1) //+1
                 {
                     std::string stackName = name.substr(0,pos) + "Stack" ;
                     std::cout   << name << " " << stackName << " " << qualVal << std::endl;

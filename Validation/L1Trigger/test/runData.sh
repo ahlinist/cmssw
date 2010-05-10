@@ -1,7 +1,7 @@
 #! /bin/bash
 
 wdir=/afs/cern.ch/user/d/dbart/scratch0/CMSSW_3_6_0_pre4/src/Validation/L1Trigger/test/
-destdir=/afs/cern.ch/user/d/dbart/scratch0/Out598-606newMaching/
+
 pyCfg=RPCTriggerEffTest.py
 castorBase="/castor/cern.ch/cms"
 release=*
@@ -9,7 +9,8 @@ release=*
 #release=CMSSW_3_5_4
 
 
-dataset="/MinimumBias/Commissioning10-Muon_skim-v8/RAW-RECO"
+dataset="/MinimumBias/Commissioning10-Muon_skim-v9/RAW-RECO"
+#dataset="/MinimumBias/Commissioning10-PromptReco-v9/RECO"
 
 pwd=`pwd`
 cd $wdir
@@ -28,13 +29,13 @@ query="find file where run = $l and release = $release and dataset = $dataset an
 
 for f in `python $DBSCMD_HOME/dbsCommandLine.py --noheader -c search --query="$query"`; do
    
-   status=`stager_qry -M $castorBase/$f | awk '{print $3}'`
+   status=`stager_qry -M $castorBase$f | awk '{print $3}'`
    if [  "$status" == "STAGED" ]; then
      echo  $f OK
 
      
    else 
-     stager_get -M $castorBase/$f
+     stager_get -M $castorBase$f
      echo \# $f has wrong castor status - \"$status\"
 	let OK=0
    fi
@@ -61,7 +62,7 @@ for f in `python $DBSCMD_HOME/dbsCommandLine.py --noheader -c search --query="$q
    echo "####################" 
    status=`stager_qry -M $castorBase/$f | awk '{print $3}'`
    if [  "$status" == "STAGED" ]; then
-     bsub -q 8mn runRPCEffsingle.sh $castorBase/$f $dataset $i
+     bsub -q cmscaf1nh runRPCEffsingle.sh $castorBase/$f $dataset $i
      let i+=1
    else 
 
@@ -70,4 +71,3 @@ for f in `python $DBSCMD_HOME/dbsCommandLine.py --noheader -c search --query="$q
 done
 
 done
-
