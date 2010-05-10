@@ -176,6 +176,10 @@ EcalTimingAnalysis::beginJob( ) {
       sprintf(profName,"SM_%d_chi2_prof_%d",fed,l+1);
       sprintf(profTit," SM_%d profile of chi2 for lambda laser %d;xtal;chi2",fed,l+1);
       Chi2ProfileConv_[dcc-1][l]= fromfile_ ? ((TProfile*) tf->Get(Form("SM_%d/%s",fed,profName)))  : (new TProfile(profName,profTit,numXtals-1, 1, numXtals, 0,50000));
+      sprintf(profName,"SM_%d_timingAll_%d",fed,l+1);
+      sprintf(profTit," SM_%d Timing for lambda laser %d;time (ns)",fed,l+1);
+      timeCry[dcc-1][l]=fromfile_ ? ((TH1F*) tf->Get(Form("SM_%d/%s",fed,profName))) : (new TH1F(profName,profTit,600,0.,250.));
+
     }
     sprintf(profName,"SM_%d_rel_timing_prof_conv_blu",fed);
     sprintf(profTit,"SM_%d_profile of converged relative timing for the blu laser;xtal;Relative Time from fitted pulse (1 clock = 25 ns)",fed);
@@ -540,29 +544,33 @@ void EcalTimingAnalysis::endJob() {
     TDirectory* hist = gDirectory->mkdir(Form("SM_%d",fed));
     hist->cd();
     for(int l=0; l<4; ++l) {
-      if(l==0 || l==4 || l==2){
-        amplProfileConv_[dcc-1][l]->Write();
-        absoluteTimingConv_[dcc-1][l]->Write();
-        //amplProfileAll_[l]->Write();
-        absoluteTimingAll_[dcc-1][l]->Write();
-        Chi2ProfileConv_[dcc-1][l]->Write();
-      }
+      if ( l==0 && timingTree_ ) {amplProfileConv_[dcc-1][l]->Write(); continue;}
+      amplProfileConv_[dcc-1][l]->Write();
+      absoluteTimingConv_[dcc-1][l]->Write();
+      //amplProfileAll_[l]->Write();
+      absoluteTimingAll_[dcc-1][l]->Write();
+      Chi2ProfileConv_[dcc-1][l]->Write();
+      timeCry[dcc-1][l]->Write();
+      
     }
     relativeTimingBlueConv_[dcc-1]->Write();
     absTT[dcc-1]->Write();absCh[dcc-1]->Write();absTTRMS[dcc-1]->Write();
     relTT[dcc-1]->Write();relCh[dcc-1]->Write();relTTRMS[dcc-1]->Write();
-    timeCry2[dcc-1]->Write();
-    timeCry1[dcc-1]->Write();
-    timeRelCry2[dcc-1]->Write();
-    timeRelCry1[dcc-1]->Write();
-    ttTiming_[dcc-1]->Write();
-    ttTimingRel_[dcc-1]->Write();
-    ttTime[dcc-1]->Write();
-    ttRTime[dcc-1]->Write();
-    aveRelXtalTimebyDCC_[dcc-1]->Write();
-    lasershiftLM_[dcc-1]->Write();
-    lasershiftVsTime_[dcc-1]->Write();
-    lasershiftVsTimehist_[dcc-1]->Write();
+    if (! timingTree_ )
+      {
+	timeCry2[dcc-1]->Write();
+	timeCry1[dcc-1]->Write();
+	timeRelCry2[dcc-1]->Write();
+	timeRelCry1[dcc-1]->Write();
+	ttTiming_[dcc-1]->Write();
+	ttTimingRel_[dcc-1]->Write();
+	ttTime[dcc-1]->Write();
+	ttRTime[dcc-1]->Write();
+	aveRelXtalTimebyDCC_[dcc-1]->Write();
+	lasershiftLM_[dcc-1]->Write();
+	lasershiftVsTime_[dcc-1]->Write();
+	lasershiftVsTimehist_[dcc-1]->Write();
+      }
   }
   f->cd();
   lasersPerEvt->Write();
@@ -746,8 +754,10 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
     LogDebug("EcalTimingAnalysis") << " Lambda " << lambda; //hmm... this isn't good, I should keep a record of the wavelength in the headers as an inactive SM might have a different wavelength for this field and make this not go through.
   }
   ///std::cout << " i3 " << std::endl;
-  ///if(lambda <0 || lambda > 3){LogDebug ("EcalTimingAnalysis")<<"Stopping: Wrong value for laser wavelength: "<<lambda<<std::endl; return;}//TAKEN OUT TO RUN ON TEST PULSES
-  lambda=0; ///ADDED TO USE TESTPULSES
+  if(lambda <0 || lambda > 3) lambda=0; ///ADDED TO USE TESTPULSES & REAL DATA
+
+///{LogDebug ("EcalTimingAnalysis")<<"Stopping: Wrong value for laser wavelength: "<<lambda<<std::endl; return;}//TAKEN OUT TO RUN ON TEST PULSES
+  /// ambda=0; ///ADDED TO USE TESTPULSES
   Handle<EcalUncalibratedRecHitCollection> phits;
   float absTime[54][numXtals];
   for(int dcc=1;dcc<55;++dcc){for(int i=0;i<numXtals;i++){absTime[dcc-1][i]=-10;}}
@@ -777,7 +787,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
   const EcalRecHitCollection* rhits = (validrh) ?  prhits.product() : 0; // get a ptr to the product
    
    
-   if(ievt_%100 ==0){LogInfo("EcalTimingAnalysis") <<"Event: "<<ievt_<< "# of EcalUncalibratedRecHits hits: " << hits->size();}
+  if(ievt_%100 ==0){LogInfo("EcalTimingAnalysis") <<"Event: "<<ievt_<< "# of EcalUncalibratedRecHits hits: " << hits->size();}
    //std::cout <<  "# of EcalUncalibratedRecHits hits: " << hits->size() << std::endl;
    //Add the ability to calculate the average for each event, _ONLY_ if desired as this takes time
    double averagetimeEB = 0.0;
@@ -878,6 +888,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        }  
        if(SMind == 648  ){timeCry2[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
        else if(SMind == 653  ){timeCry1[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
+       timeCry[DCCid-1][lambda]->Fill((ithit->jitter()+5.0)*25.);
      }
      
      amplProfileAll_[DCCid-1][lambda]->Fill(SMind,damp);
@@ -1034,6 +1045,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        }  
        if(SMind == 648  ){timeCry2[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
        else if(SMind == 653  ){timeCry1[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
+       timeCry[DCCid-1][lambda]->Fill((ithit->jitter()+5.0)*25.);
      }
      
      amplProfileAll_[DCCid-1][lambda]->Fill(SMind,damp);

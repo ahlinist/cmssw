@@ -952,7 +952,9 @@ int main(int argc,  char * argv[]){
   TH2F *hTTriggerVsBX  = new TH2F("hTTriggerVsBX",Form("%s BX vs. Technical Trigger; BX; Active Technical Trigger Bits",runChar),3500,0,3500, maxTTrig, 0., maxTTrig);
 
  TH2F *hEBOccuBad = new TH2F("hEBOccuBad",Form("%s EB Occupancy for time < -9ns;i#phi;i#eta",runChar),360,1.,361.,171,-85.,86.);
-  
+ TH2F *hE19VsEBTime = new TH2F("hE19VsEBMTime",Form("%s EB Timing vs. E1/E9; Time (ns); E1/E9",runChar),50, -EBTimeMax, EBTimeMax, 100, 0.0, 1.2);
+ TH2F *hKSCVsEBTime = new TH2F("hKSCVsEEPTime",Form("%s EB Timing vs. 1-E4/E1; Time (ns); 1-E4/E1",runChar),50, -EBTimeMax, EBTimeMax, 100, -0.6, 1.0);
+ TH2F *hSuperDiscriminatorEB = new TH2F("hSuperDiscriminatorEB",Form("%s Super Descriminator vs. EB Times; Time (ns); (E1/E9)*(E1/(E1+E4))*(timeerror/5) ",runChar), 50, -EBTimeMax, EBTimeMax, 100, 0., 1.0);
   
   TProfile2D* NtimeCHProfile = NewTProfile2D(timeCHProfile,"NtimeCHProfile");
   TProfile2D* NtimeTTProfile = NewTProfile2D(timeTTProfile,"NtimeTTProfile");
@@ -1143,7 +1145,10 @@ int main(int argc,  char * argv[]){
 	 NtimeCHAllFEDsEta->Fill(ieta,myt);
 	 hctE1OE9->Fill(e1Oe9);
 	 hctKSwissK->Fill(kswissk);
+	 hE19VsEBTime->Fill(myt,e1Oe9);
+	 hKSCVsEBTime->Fill(myt,kswissk);
          if ( fabs(ieta) < 5 ) hEBTimeEtaLess5->Fill(myt);
+         if ( fabs(ieta) != 85 ) hSuperDiscriminatorEB->Fill(myt,e1Oe9*(-1./(kswissk-2.))*myterr/5.0);
          if ( myt < -9.) hEBOccuBad->Fill(iphi,ieta);
      }
      for (int eex=0; eex < TTreeMembers_.numEEcrys_; eex++) {
@@ -1960,6 +1965,39 @@ int main(int argc,  char * argv[]){
   //c[15]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_TechTriggerVsBX_%s.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
 
+  c[108]->cd();
+  gStyle->SetOptStat(10);
+  hE19VsEBTime->Draw("colz");
+  hE19VsEBTime->SetMinimum(1.0);
+  c[108]->SetLogy(0);
+  c[108]->SetLogz(1);
+  c[108]->SetGridx(0);
+  c[108]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_E1OverE9VsEBTime_%s.%s",dirName,mType,runNumber,fileType); c[108]->Print(name) ; }
+
+  c[108]->cd();
+  gStyle->SetOptStat(10);
+  hKSCVsEBTime->Draw("colz");
+  hKSCVsEBTime->SetMinimum(1.0);
+  c[108]->SetLogy(0);
+  c[108]->SetLogz(1);
+  c[108]->SetGridx(0);
+  c[108]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_KSwissCrossVsEBTime_%s.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
+
+  c[108]->cd();
+  gStyle->SetOptStat(10);
+  hSuperDiscriminatorEB->Draw("colz");
+  hSuperDiscriminatorEB->SetMinimum(1.0);
+  c[108]->SetLogy(0);
+  c[108]->SetLogz(1);
+  c[108]->SetGridx(0);
+  c[108]->SetGridy(0);
+  //c[15]->SetLogz(1);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_SuperDiscrimVsEBTime_%s.%s",dirName,mType,runNumber,fileType); c[108]->Print(name); }
+
 
   //Like the Above section, these MUST be done before any Scal0TProfile2D function is called
   //Now I do the occupancy 
@@ -2453,9 +2491,10 @@ int main(int argc,  char * argv[]){
   chhistEEMN->Write();
   NEEMtimeTTProfile->Write();
   tthistEEMN->Write();
-
+  hE19VsEBTime->Write();
+  hKSCVsEBTime->Write();
   hEBOccuBad->Write();
-  
+  hSuperDiscriminatorEB->Write();
   pfile->Write();
   pfile->Close();
 
