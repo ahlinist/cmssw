@@ -35,7 +35,7 @@ process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck")
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
     fileNames = cms.untracked.vstring(
-'file:events_run133611.root'
+'file:eventi_132601.root'
 )
 
 )
@@ -122,13 +122,12 @@ process.ecalCleanClustering = cms.Sequence(process.hybridClusteringSequence*proc
 
 
 ## produce JPT jets
-process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('JetMETCorrections.Configuration.ZSPJetCorrections332_cff')
 process.load('JetMETCorrections.Configuration.JetPlusTrackCorrections_cff')
+process.ak5JPTJets = process.JetPlusTrackZSPCorJetAntiKt5.clone()
 process.ak5JPTJetsSequence = cms.Sequence(
-   process.ZSPJetCorrectionsAntiKt5*
-   process.JetPlusTrackCorrectionsAntiKt5
-   )
+   process.ZSPJetCorrectionsAntiKt5*process.ZSPrecoJetAssociationsAntiKt5*process.ak5JPTJets
+)
 
 
 
@@ -155,7 +154,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsakt5 = cms.untracked.InputTag("ak5CaloJets"),
     jetssis5 = cms.untracked.InputTag("sisCone5CaloJets"),
     jetssis7 = cms.untracked.InputTag("sisCone7CaloJets"),
-    jetsjptak5 = cms.untracked.InputTag("JetPlusTrackCorrectionsAntiKt5"),
+    jetsjptak5 = cms.untracked.InputTag("ak5JPTJets"),
     jetspfite = cms.untracked.InputTag("iterativeCone5PFJets"),
     jetspfkt4 = cms.untracked.InputTag("kt4PFJets"),
     jetspfkt6 = cms.untracked.InputTag("kt6PFJets"),
