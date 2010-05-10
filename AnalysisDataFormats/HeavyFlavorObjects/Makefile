@@ -37,65 +37,108 @@ LIBS          = $(ROOTLIBS)
 #GLIBS         = $(ROOTGLIBS)
 GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
 
-# ======================================================================
-# -- Default rules
-$(addprefix obj/,%.o) : $(addprefix rootio/,%.cc )
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+#########
+# FILES #
+#########
 
-$(addprefix obj/,%.o) : $(addprefix test/,%.cc )
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+#used by all targets
+ROOTIO_HEADERS = PidData.hh TAna00Event.hh TAnaCand.hh TAnaMuon.hh TAnaVertex.hh TTrgObj.hh hpl.hh PidTable.hh TAna01Event.hh TAnaJet.hh TAnaTrack.hh TGenCand.hh functions.hh util.hh
+TNP_HEADERS = anaTNP2.hh
 
-$(addprefix obj/,%.o) : $(addprefix tnp/,%.cc ) 
-	$(CXX) $(CXXFLAGS) -c $< -I. -o $@
-# ======================================================================
-
-
-# ======================================================================
+# Ana00 compilation
 ANA00 = TAna01Event.o TGenCand.o TAnaTrack.o TAnaMuon.o TTrgObj.o TAnaCand.o TAnaVertex.o TAnaJet.o
 ANA00_DICT = ${ANA00:.o=Dict.o}
-ANA00_DICT_SRCS = ${ANA00_DICT:.o=.cc}
 
+# util compilation
+UTIL = PidTable.o PidData.o functions.o util.o hpl.o
+UTIL_DICT = ${UTIL:.o=Dict.o}
+
+# Anaclasses compilation
 ANACLASSES = anaTNP2.o
 ANACLASSES_DICT = ${ANACLASSES:.o=Dict.o}
-ANACLASSES_DICT_SRCS = ${ANACLASSES_DICT:.o=.cc}
 
-UTIL = PidTable.o PidData.o
-UTIL_W_LINKDEF = functions.o util.o hpl.o
-UTIL_DICT = ${UTIL:.o=Dict.o}
-UTIL_W_LINKDEF_DICT = ${UTIL_W_LINKDEF:.o=Dict.o}
-UTIL_DICT_SRCS = ${UTIL_DICT:.o=.cc}
-UTIL_W_LINKDEF_DICT_SRCS = ${UTIL_W_LINKDEF_DICT:.o=.cc}
+#################
+# PATTERN RULES #
+#################
+
+# Default rule compiling c++ files
+obj/%.o : rootio/%.cc $(addprefix rootio/,$(ROOTIO_HEADERS))
+	$(CXX) $(CXXFLAGS) -I. -c $< -o $@
+
+obj/%.o : tnp/%.cc $(addprefix tnp/,$(TNP_HEADERS))
+	$(CXX) $(CXXFLAGS) -I. -c $< -o $@
+
+# Default rules creating dictionaries
+rootio/%Dict.cc : rootio/%.hh rootio/%LinkDef.h
+	$(ROOTCINT) -f $@ -c $^
+
+rootio/%Dict.cc : rootio/%.hh
+	$(ROOTCINT) -f $@ -c $<
+
+tnp/%Dict.cc : tnp/%.hh tnp/%LinkDef.h
+	$(ROOTCINT) -f $@ -c $^
+
+tnp/%Dict.cc : tnp/%.hh
+	$(ROOTCINT) -f $@ -c $<
 
 
-# ================================================================================
-all: 
-# --
+###########
+# TARGETS #
+###########
+
+all:
 	@$(MAKE) ana00
 	@$(MAKE) util
 	@$(MAKE) anaclasses
 	@$(MAKE) links
+
+
+ana00: $(addprefix obj/, $(ANA00) $(ANA00_DICT))
+	$(CXX) $(SOFLAGS) $(GLIBS) $(addprefix obj/,$(ANA00) $(ANA00_DICT)) -o lib/libAna00.so
+
+util: $(addprefix obj/,$(UTIL) $(UTIL_DICT))
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(UTIL_DICT)) $(GLIBS) -o lib/libUtil.so
+
+anaclasses: $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT))
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so
+
+
+# ================================================================================
+links:
+	mkdir -p ../../../lib/$(SCRAM_ARCH)
+	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && ln -s ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so && cd -
+	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libUtil.so && ln -s ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libUtil.so && cd -
+
+copy:
+	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && cp ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so . && cd -
+	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libUtil.so && cp ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libUtil.so . && cd -
+
+# ================================================================================
+clean:
+	rm -f obj/*.o rootio/*Dict.* test/*Dict.* tnp/*Dict.* lib/libAna00.so
+
+# --------------------------------------------------------------------------------
+cleanall:
+	@$(MAKE) clean
+	rm -f bin/writeA01Event bin/readA01Event
+	rm -f lib/lib*.so
+	rm -f ../../../lib/$(SCRAM_ARCH)/libAna00.so
+	rm -f ../../../lib/$(SCRAM_ARCH)/libUtil.so
+	rm -f ../../../lib/$(SCRAM_ARCH)/libAnaClasses.so
+
+
+
+
+
+##################
+# LEGACY TARGETS #
+##################
 
 examples: 
 	@$(MAKE) writeA01Event
 	@$(MAKE) readA01Event
 	@$(MAKE) runTreeReader01
 	@$(MAKE) runMyReader01
-
-# ================================================================================
-ana00: $(addprefix rootio/,$(ANA00_DICT_SRCS)) $(addprefix obj/,$(ANA00) $(ANA00_DICT))
-# ----------------------------------
-	$(CXX) $(SOFLAGS) $(GLIBS) $(addprefix obj/,$(ANA00) $(ANA00_DICT)) -o lib/libAna00.so
-
-# ================================================================================
-anaclasses: $(addprefix tnp/,$(ANACLASSES_DICT_SRCS)) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) util
-# ----------------------------------
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so
-
-# ================================================================================
-util: $(addprefix rootio/,$(UTIL_DICT_SRCS) $(UTIL_W_LINKDEF_DICT_SRCS)) $(addprefix obj/,$(UTIL) $(UTIL_DICT) $(UTIL_W_LINKDEF))
-# -----------------------------
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(UTIL_DICT) $(UTIL_W_LINKDEF)) $(GLIBS) -o lib/libUtil.so
-
 
 # ======================================================================
 writeA01Event: test/writeA01Event.cc
@@ -153,40 +196,3 @@ ana: test/ana.cc
 	cd test && $(ROOTCINT)  -f anaDict.cc -c ana.hh && cd ..
 	cd test && $(CXX) $(CXXFLAGS) -c anaDict.cc -o ../obj/anaDict.o  && cd ..
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so
-
-
-
-# ================================================================================
-links:
-	mkdir -p ../../../lib/$(SCRAM_ARCH)
-	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && ln -s ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so && cd -
-	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libUtil.so && ln -s ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libUtil.so && cd -
-
-copy:
-	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && cp ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so . && cd -
-	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libUtil.so && cp ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libUtil.so . && cd -
-
-# ================================================================================
-clean:
-	rm -f obj/*.o rootio/*Dict.* test/*Dict.* tnp/*Dict.* lib/libAna00.so
-
-# --------------------------------------------------------------------------------
-cleanall:
-	@$(MAKE) clean
-	rm -f bin/writeA01Event bin/readA01Event
-	rm -f lib/lib*.so
-	rm -f ../../../lib/$(SCRAM_ARCH)/libAna00.so
-	rm -f ../../../lib/$(SCRAM_ARCH)/libUtil.so
-	rm -f ../../../lib/$(SCRAM_ARCH)/libAnaClasses.so
-
-
-.SECONDEXPANSION:
-$(addprefix rootio/,$(ANA00_DICT_SRCS) $(UTIL_DICT_SRCS)): $$(patsubst %Dict.cc,%.hh,$$@)
-	cd rootio && $(ROOTCINT) -f $(notdir $@) -c $(notdir $(patsubst %Dict.cc,%.hh,$@)) && cd -
-
-$(addprefix rootio/,$(UTIL_W_LINKDEF_DICT_SRCS)): $$(patsubst %Dict.cc,%.hh,$$@)
-	cd rootio && $(ROOTCINT) -f $(notdir $@) -c $(notdir $(patsubst %Dict.cc,%.hh,$@)) $(notdir $(patsubst %Dict.cc,%LinkDef.h,$@)) && cd -
-
-$(addprefix tnp/,$(ANACLASSES_DICT_SRCS)): $$(patsubst %Dict.cc,%.hh,$$@)
-	$(ROOTCINT) -f $@ -c $(patsubst %Dict.cc,%.hh,$@)
-#	cd tnp && $(ROOTCINT) -f $(notdir $@) -c $(notdir $(patsubst %Dict.cc,%.hh,$@)) && cd -
