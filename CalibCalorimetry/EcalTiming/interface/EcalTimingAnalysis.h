@@ -92,6 +92,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       TProfile* absoluteTimingAll_[54][4];
       
       TProfile* Chi2ProfileConv_[54][4];
+      TH1F* timeCry[54][4];
       
       TProfile* relativeTimingBlueConv_[54];
 
@@ -184,6 +185,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	    int lumiSection_;
 	    int bx_;
 	    int orbit_;
+	    int run_;
 	    float correctionToSample5EB_;
 	    float correctionToSample5EEP_;
 	    float correctionToSample5EEM_;
