@@ -29,7 +29,8 @@ fi
 # setup crab environment
 source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh;
 eval `scramv1 runtime -sh`;
-source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh;
+source /afs/cern.ch/cms/ccs/wm/scripts/Crab/CRAB_2_7_1/crab.sh;
+#source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh;
 
 cd ${run_num};
 
