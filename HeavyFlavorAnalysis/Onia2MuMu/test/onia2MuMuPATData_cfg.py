@@ -98,14 +98,14 @@ process.selectedEvents = cms.EDFilter("CandViewCountFilter",
 
 ### path
 process.Onia2MuMuPatTrkTrk = cms.Path(
-        process.hltLevel1GTSeed +
-        process.hltPhysicsDeclared +
-        process.hltMinBiasBSC +
-        process.primaryVertexFilter +
-        process.scrapingFilter +
+        # process.hltLevel1GTSeed +
+        # process.hltPhysicsDeclared +
+        # process.hltMinBiasBSC +
+        # process.primaryVertexFilter +
+        # process.scrapingFilter +
         process.patMuonSequence +     # produce PAT muons for Onia2MuMu (includes merging with CaloMuons)
-        process.onia2MuMuPatTrkTrk +  # make J/Psi's (inclusively down to tracker+tracker)
-        process.selectedEvents        # select events with J/Psi's
+        process.onia2MuMuPatTrkTrk # +  # make J/Psi's (inclusively down to tracker+tracker)
+        # process.selectedEvents        # select events with J/Psi's
 )
 
 
@@ -122,14 +122,11 @@ process.out = cms.OutputModule("PoolOutputModule",
         #'keep *_patTrigger_*_*',                               ## HLT info, per object (BIG. Keep only when debugging trigger match)
     ),
     ## Uncomment to activate skimming!
-    SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('Onia2MuMuPatTrkTrk') )
+    # SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('Onia2MuMuPatTrkTrk') )
 )
 process.e = cms.EndPath(process.out)
 
 ##This is real data:
 from HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cff import onia2MuMu_isNotMC
 onia2MuMu_isNotMC(process)
-
-## If this is Summer09 MC
-#process.patTrigger.processName    = "HLT8E29" 
 
