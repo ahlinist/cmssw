@@ -145,6 +145,18 @@ recoTops = cms.EDProducer("TopProducer",
                                   METsSource = cms.InputTag("preselectedMETs"),
                                 )
 
+boostedTops = cms.EDProducer(
+    'NamedCompositeCandidateBooster',
+    src = cms.InputTag('recoTops'),
+    boostSrc = cms.InputTag('recoTops')
+    )
+
+boostedForwardJets = cms.EDProducer(
+    'PATJetBooster',
+    src = cms.InputTag('forwardJets'),
+    boostSrc = cms.InputTag('recoTops')
+    )
+
 #Part of MC Truth particles production
 MCTruthParticles = cms.EDProducer("SingleTopTChannelMCProducer",
                                           genParticlesSource = cms.InputTag("genParticles")
