@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.13 $
  *
- * $Id: GenericEventDump.h,v 1.12 2010/02/05 14:05:30 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.13 2010/03/05 11:12:15 veelken Exp $
  *
  */
 
@@ -31,94 +31,96 @@
 
 class GenericEventDump : public EventDumpBase
 {
- public:
-  // constructor 
-  explicit GenericEventDump(const edm::ParameterSet&);
-  
-  // destructor
-  virtual ~GenericEventDump();
+	public:
+		// constructor 
+		explicit GenericEventDump(const edm::ParameterSet&);
 
-  // derrived-class method for print-out of event level information
-  virtual void analyze(const edm::Event&, const edm::EventSetup&, 
-		       const EventDumpBase::filterResults_type&, const EventDumpBase::filterResults_type&, double);
+		// destructor
+		virtual ~GenericEventDump();
 
- protected:
-//--- function to count types of particles faking reconstructed electrons,
-//    muons and tau-jets
-  void countFakeParticles(const edm::Event&);
+		// derrived-class method for print-out of event level information
+		virtual void analyze(const edm::Event&, const edm::EventSetup&, 
+				const EventDumpBase::filterResults_type&, const EventDumpBase::filterResults_type&, double);
 
-//--- print functions to be used by derrived classes
-  virtual void printEventHeaderInfo(const edm::Event&, double) const;
-  virtual void printEventTriggerInfo(const edm::Event&) const;
+	protected:
+		//--- function to count types of particles faking reconstructed electrons,
+		//    muons and tau-jets
+		void countFakeParticles(const edm::Event&);
 
-  virtual void printMissingEtInfo(const edm::Event&) const;
+		//--- print functions to be used by derrived classes
+		virtual void printEventHeaderInfo(const edm::Event&, double) const;
+		virtual void printEventTriggerInfo(const edm::Event&) const;
 
-  virtual void printJetInfo(const edm::Event&) const;
+		virtual void printMissingEtInfo(const edm::Event&) const;
 
-//--- configuration parameters
-  edm::InputTag l1GtReadoutRecordSource_;
-  edm::InputTag l1GtObjectMapRecordSource_;
-  edm::InputTag hltResultsSource_;
+		virtual void printJetInfo(const edm::Event&) const;
 
-  typedef std::vector<std::string> vstring;
-  vstring l1BitsToPrint_;
-  vstring hltPathsToPrint_;
+		//--- configuration parameters
+		edm::InputTag l1GtReadoutRecordSource_;
+		edm::InputTag l1GtObjectMapRecordSource_;
+		edm::InputTag hltResultsSource_;
 
-  edm::InputTag genParticleSource_;
-  edm::InputTag genJetSource_;
-  edm::InputTag genTauJetSource_;
-  edm::InputTag genEventInfoSource_;
+		typedef std::vector<std::string> vstring;
+		vstring l1BitsToPrint_;
+		vstring hltPathsToPrint_;
 
-  edm::InputTag patElectronSource_;
-  edm::InputTag patMuonSource_;
-  edm::InputTag patTauSource_;
-  bool printTauIdEfficiencies_;
-  edm::InputTag patJetSource_;
+		edm::InputTag genParticleSource_;
+		edm::InputTag genJetSource_;
+		edm::InputTag genTauJetSource_;
+		edm::InputTag genEventInfoSource_;
 
-  edm::InputTag diTauCandidateSource_;
+		edm::InputTag patElectronSource_;
+		edm::InputTag patMuonSource_;
+		edm::InputTag patTauSource_;
+		bool printTauIdEfficiencies_;
+		edm::InputTag patJetSource_;
 
-  edm::InputTag patCaloMEtSource_;
-  edm::InputTag patPFMEtSource_;
-  edm::InputTag genMEtSource_;
+		edm::InputTag diTauCandidateSource_;
 
-  std::vector<int> skipPdgIdsGenParticleMatch_;
+		edm::InputTag patCaloMEtSource_;
+		edm::InputTag patPFMEtSource_;
+		edm::InputTag genMEtSource_;
 
-  edm::InputTag recoTrackSource_;
-  edm::InputTag recoVertexSource_;
+		std::vector<int> skipPdgIdsGenParticleMatch_;
 
-  edm::InputTag pfChargedHadronSource_;
-  edm::InputTag pfGammaSource_;
-  edm::InputTag pfNeutralHadronSource_;
-  edm::InputTag pfCandidateSource_;
+		edm::InputTag recoTrackSource_;
+		edm::InputTag recoVertexSource_;
 
-//--- count different types of particles faking reconstructed electrons,
-//    muons and tau-jets
-  unsigned numRecoElectronsMatchingGenMuons_;
-  unsigned numRecoElectronsMatchingGenElectrons_;
-  unsigned numRecoElectronsMatchingGenTauJets_;
-  unsigned numRecoElectronsMatchingGenBottomQuarks_;
-  unsigned numRecoElectronsMatchingGenCharmQuarks_;
-  unsigned numRecoElectronsMatchingGenGluons_;
-  unsigned numRecoElectronsMatchingGenLightQuarks_;
-  unsigned numRecoElectronsUndeterminedGenMatch_;
+		edm::InputTag pfChargedHadronSource_;
+		edm::InputTag pfGammaSource_;
+		edm::InputTag pfNeutralHadronSource_;
+		edm::InputTag pfCandidateSource_;
 
-  unsigned numRecoMuonsMatchingGenMuons_;
-  unsigned numRecoMuonsMatchingGenElectrons_;
-  unsigned numRecoMuonsMatchingGenTauJets_;
-  unsigned numRecoMuonsMatchingGenBottomQuarks_;
-  unsigned numRecoMuonsMatchingGenCharmQuarks_;
-  unsigned numRecoMuonsMatchingGenGluons_;
-  unsigned numRecoMuonsMatchingGenLightQuarks_;
-  unsigned numRecoMuonsUndeterminedGenMatch_;
+		bool doGenInfo_;
 
-  unsigned numRecoTauJetsMatchingGenMuons_;
-  unsigned numRecoTauJetsMatchingGenElectrons_;
-  unsigned numRecoTauJetsMatchingGenTauJets_;
-  unsigned numRecoTauJetsMatchingGenBottomQuarks_;
-  unsigned numRecoTauJetsMatchingGenCharmQuarks_;
-  unsigned numRecoTauJetsMatchingGenGluons_;
-  unsigned numRecoTauJetsMatchingGenLightQuarks_;
-  unsigned numRecoTauJetsUndeterminedGenMatch_;
+			//--- count different types of particles faking reconstructed electrons,
+			//    muons and tau-jets
+			unsigned numRecoElectronsMatchingGenMuons_;
+		unsigned numRecoElectronsMatchingGenElectrons_;
+		unsigned numRecoElectronsMatchingGenTauJets_;
+		unsigned numRecoElectronsMatchingGenBottomQuarks_;
+		unsigned numRecoElectronsMatchingGenCharmQuarks_;
+		unsigned numRecoElectronsMatchingGenGluons_;
+		unsigned numRecoElectronsMatchingGenLightQuarks_;
+		unsigned numRecoElectronsUndeterminedGenMatch_;
+
+		unsigned numRecoMuonsMatchingGenMuons_;
+		unsigned numRecoMuonsMatchingGenElectrons_;
+		unsigned numRecoMuonsMatchingGenTauJets_;
+		unsigned numRecoMuonsMatchingGenBottomQuarks_;
+		unsigned numRecoMuonsMatchingGenCharmQuarks_;
+		unsigned numRecoMuonsMatchingGenGluons_;
+		unsigned numRecoMuonsMatchingGenLightQuarks_;
+		unsigned numRecoMuonsUndeterminedGenMatch_;
+
+		unsigned numRecoTauJetsMatchingGenMuons_;
+		unsigned numRecoTauJetsMatchingGenElectrons_;
+		unsigned numRecoTauJetsMatchingGenTauJets_;
+		unsigned numRecoTauJetsMatchingGenBottomQuarks_;
+		unsigned numRecoTauJetsMatchingGenCharmQuarks_;
+		unsigned numRecoTauJetsMatchingGenGluons_;
+		unsigned numRecoTauJetsMatchingGenLightQuarks_;
+		unsigned numRecoTauJetsUndeterminedGenMatch_;
 };
 
 #endif       

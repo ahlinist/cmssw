@@ -167,7 +167,7 @@ muTauEventDump = cms.PSet(
     genTauJetSource = cms.InputTag('tauGenJets'),
     genEventInfoSource = cms.InputTag('generator'),
     
-    electronSource = cms.InputTag('cleanLayer1Electrons'),
+    electronSource = cms.InputTag('cleanPatElectrons'),
     muonSource = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationCumulative'),
     tauSource = cms.InputTag('selectedLayer1TausForMuTauElectronVetoCumulative'),
     printTauIdEfficiencies = cms.bool(True),

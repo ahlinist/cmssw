@@ -22,7 +22,7 @@ jetHistManager.centralJetsToBeVetoed.etMin = cms.vdouble()
 jetHistManager.centralJetsToBeVetoed.etaMax = cms.vdouble()
 jetHistManager.centralJetsToBeVetoed.alphaMin = cms.vdouble()
 #jetHistManager.jetSource = cms.InputTag('selectedLayer1JetsEtaCumulative')
-jetHistManager.jetSource = cms.InputTag('cleanLayer1Jets')
+jetHistManager.jetSource = cms.InputTag('cleanPatJets')
 
 # import config for missing-Et histogram managers
 from TauAnalysis.Core.caloMEtHistManager_cfi import *
@@ -312,9 +312,9 @@ elecMuEventDump = cms.PSet(
 
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
-    electronSource = cms.InputTag('cleanLayer1Electrons'),
+    electronSource = cms.InputTag('cleanPatElectrons'),
     #electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-    muonSource = cms.InputTag('cleanLayer1Muons'),
+    muonSource = cms.InputTag('cleanPatMuons'),
     #muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
     #tauSource = cms.InputTag('allLayer1Taus'),
     diTauCandidateSource = cms.InputTag('allElecMuPairs'),

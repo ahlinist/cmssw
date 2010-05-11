@@ -118,12 +118,12 @@ patElectronSelConfigurator = objSelConfigurator(
       #selectedLayer1ElectronsHcalIso,
       selectedLayer1ElectronsTrk,
       selectedLayer1ElectronsTrkIP ],
-    src = "cleanLayer1Electrons",
+    src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 selectLayer1Electrons = patElectronSelConfigurator.configure(pyNameSpace = locals())
-#cleanLayer1ElectronsSel.selFlags = cms.PSet(
+#cleanPatElectronsSel.selFlags = cms.PSet(
 #    tauAnalysisSelElectronIdGlobal = cms.PSet(
 #      src = cms.InputTag('selectedLayer1ElectronsIdIndividual')
 #    ),
@@ -227,12 +227,12 @@ patMuonSelConfigurator = objSelConfigurator(
       selectedLayer1MuonsPionVeto,
       selectedLayer1MuonsTrk,
       selectedLayer1MuonsTrkIP ],
-    src = "cleanLayer1Muons",
+    src = "cleanPatMuons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 selectLayer1Muons = patMuonSelConfigurator.configure(pyNameSpace = locals())
-#cleanLayer1MuonsSel.selFlags = cms.PSet(
+#cleanPatMuonsSel.selFlags = cms.PSet(
 #    tauAnalysisSelMuonGlobal = cms.PSet(
 #      src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
 #    ),
@@ -343,7 +343,7 @@ patJetSelConfigurator = objSelConfigurator(
       selectedLayer1JetsAntiOverlapWithLeptonsVeto,
       selectedLayer1JetsEta,
       selectedLayer1JetsBtag ],
-    src = "cleanLayer1Jets",
+    src = "cleanPatJets",
     pyModuleName = __name__,
     doSelIndividual = False
 )

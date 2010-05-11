@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 from TauAnalysis.RecoTools.patJetSelection_cff import *
 
 jetsEta21ForBgEst = cms.EDFilter("PATJetSelector",
-    src = cms.InputTag("cleanLayer1Jets"),        
+    src = cms.InputTag("cleanPatJets"),        
     cut = cms.string('abs(eta) < 2.1'),
     filter = cms.bool(False)
 )

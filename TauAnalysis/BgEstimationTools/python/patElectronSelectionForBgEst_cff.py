@@ -5,13 +5,13 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 electronsLooseIdForBgEst = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("cleanLayer1Electrons"),                     
+    src = cms.InputTag("cleanPatElectrons"),                     
     cut = cms.string('electronID("loose") > 0'),
     filter = cms.bool(False)
 )
 
 electronsRobustIdForBgEst = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("cleanLayer1Electrons"),                     
+    src = cms.InputTag("cleanPatElectrons"),                     
     cut = cms.string('electronID("robust") > 0'),
     filter = cms.bool(False)
 )

@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
+process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -70,11 +70,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_01.root'
-		#'rfio:/castor/cern.ch/user/j/jkolb/elecTauPatTuples/summer09/patTupleZtoElecTau_Ztautau_7TeV_part01.root'
-		'file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/summer09_3_1_4/patTuple/data/patTupleZtoElecTau_PhotonPlusJets_Pt15to20_7TeV.root'
-		#'file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/summer09_3_1_4/patTuple/data/patTupleZtoElecTau_Ztautau_7TeV_part01.root'
-    )
+    	'rfio:/castor/cern.ch/user/j/jkolb/elecTauPatTuples/data/patTupleZtoElecTau_data_7TeV.root'
+	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
 
@@ -108,10 +105,13 @@ switchToPFTauShrinkingCone(process)
 
 #--------------------------------------------------------------------------------
 # import utility function for managing pat::Jets
-from PhysicsTools.PatAlgos.tools.jetTools import *
+#from PhysicsTools.PatAlgos.tools.jetTools import *
+
+# have to add this empty PSet or switchJetCollection complains
+#process.jetCorrFactors = cms.PSet()
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, "iterativeCone5PFJets")
+#switchJetCollection(process, cms.InputTag("iterativeCone5PFJets"))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -124,7 +124,15 @@ addPFMet(process, correct = False)
 
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
-replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
+replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility to remove modules operating on GEN-level collections
+from TauAnalysis.Configuration.tools.switchToData import *
+#
+# uncomment when running over DATA samples
+##switchToData(process)#
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
@@ -170,14 +178,12 @@ if not hasattr(process, "isBatchMode"):
 
 #--------------------------------------------------------------------------------
 #
-process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
-#
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-if not hasattr(process, "isBatchMode"):
-    process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
+#if not hasattr(process, "isBatchMode"):
+	#process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
