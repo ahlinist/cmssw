@@ -4,7 +4,7 @@ pfMEtHistManager = cms.PSet(
     pluginName = cms.string('pfMEtHistManager'),
     pluginType = cms.string('PFMEtHistManager'),
       
-    metSource = cms.InputTag('layer1PFMETs'),
+    metSource = cms.InputTag('patPFMETs'),
     metSignificanceSource = cms.InputTag(''),
     
     dqmDirectory_store = cms.string('PFMEtQuantities')

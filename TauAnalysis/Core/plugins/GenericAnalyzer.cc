@@ -680,7 +680,7 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
   }
 }
 
-void GenericAnalyzer::beginJob(const edm::EventSetup&)
+void GenericAnalyzer::beginJob()
 {
   //std::cout << "<GenericAnalyzer::beginJob>:" << std::endl;
 

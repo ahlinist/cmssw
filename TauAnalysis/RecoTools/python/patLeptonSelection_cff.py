@@ -37,7 +37,7 @@ patElectronSelConfigurator = objSelConfigurator(
       selectedLayer1ElectronsEcalIso,
       selectedLayer1ElectronsTrk,
       selectedLayer1ElectronsTrkIP ],
-    src = "cleanLayer1Electrons",
+    src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -59,7 +59,7 @@ patElectronSelConfiguratorLooseIsolation = objSelConfigurator(
       selectedLayer1ElectronsEcalIsoLooseIsolation,
       selectedLayer1ElectronsTrkLooseIsolation,
       selectedLayer1ElectronsTrkIPlooseIsolation ],
-    src = "cleanLayer1Electrons",
+    src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -97,7 +97,7 @@ patElectronSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1ElectronsForElecTauTrk,
       selectedLayer1ElectronsForElecTauTrkIP,
 	  selectedLayer1ElectronsForElecTauConversionVeto ],
-    src = "cleanLayer1Electrons",
+    src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -114,7 +114,7 @@ patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
       selectedLayer1ElectronsForElecTauTrkLooseIsolation,
       selectedLayer1ElectronsForElecTauTrkIPlooseIsolation,
 	  selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation ],
-    src = "cleanLayer1Electrons",
+    src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -146,7 +146,7 @@ patElectronSelConfiguratorForElecMu = objSelConfigurator(
       selectedLayer1ElectronsForElecMuEcalIso,
       selectedLayer1ElectronsForElecMuTrk,
       selectedLayer1ElectronsForElecMuTrkIP ],
-    src = "cleanLayer1Electrons",
+    src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -169,7 +169,7 @@ patElectronSelConfiguratorForElecMuLooseIsolation = objSelConfigurator(
       selectedLayer1ElectronsForElecMuEcalIsoLooseIsolation,
       selectedLayer1ElectronsForElecMuTrkLooseIsolation,
       selectedLayer1ElectronsForElecMuTrkIPlooseIsolation ],
-    src = "cleanLayer1Electrons",
+    src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -205,7 +205,7 @@ patMuonSelConfigurator = objSelConfigurator(
       selectedLayer1MuonsPionVeto,
       selectedLayer1MuonsTrk,
       selectedLayer1MuonsTrkIP ],
-    src = "cleanLayer1Muons",
+    src = "cleanPatMuons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -233,7 +233,7 @@ patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
       selectedLayer1MuonsPionVetoLooseIsolation,
       selectedLayer1MuonsTrkLooseIsolation,
       selectedLayer1MuonsTrkIPlooseIsolation ],
-    src = "cleanLayer1Muons",
+    src = "cleanPatMuons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -271,7 +271,7 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausMuonVeto,
       selectedLayer1TausElectronVeto,
       selectedLayer1TausEcalCrackVeto ],
-    src = "cleanLayer1Taus",
+    src = "cleanPatTaus",
     pyModuleName = __name__,
     doSelCumulative = True,
     doSelIndividual = True
@@ -312,7 +312,7 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1TausForElecTauElectronVeto,
       selectedLayer1TausForElecTauEcalCrackVeto,
       selectedLayer1TausForElecTauMuonVeto ],
-    src = "cleanLayer1Taus",
+    src = "cleanPatTaus",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -350,7 +350,7 @@ patTauSelConfiguratorForMuTau = objSelConfigurator(
       selectedLayer1TausForMuTauCharge,
       selectedLayer1TausForMuTauMuonVeto,
       selectedLayer1TausForMuTauElectronVeto ],
-    src = "cleanLayer1Taus",
+    src = "cleanPatTaus",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -380,7 +380,7 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
       selectedLayer1TausForDiTauEcalIso,
       selectedLayer1TausForDiTauProng,
       selectedLayer1TausForDiTauCharge ],
-    src = "cleanLayer1Taus",
+    src = "cleanPatTaus",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -415,7 +415,7 @@ patTauSelConfiguratorForWTauNu = objSelConfigurator(
       selectedLayer1TausForWTauNuMuonVeto,
       selectedLayer1TausForWTauNuElectronVeto,
       selectedLayer1TausForWTauNuEcalCrackVeto ],
-    src = "cleanLayer1Taus",
+    src = "cleanPatTaus",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -444,7 +444,7 @@ patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
       selectedLayer1TausForWTauNuMuonVetoLooseIsolation,
       selectedLayer1TausForWTauNuElectronVetoLooseIsolation,
       selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolation ],
-    src = "cleanLayer1Taus",
+    src = "cleanPatTaus",
     pyModuleName = __name__,
     doSelIndividual = True
 )

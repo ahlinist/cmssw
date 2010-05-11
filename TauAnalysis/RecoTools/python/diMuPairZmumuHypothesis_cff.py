@@ -9,7 +9,7 @@ import FWCore.ParameterSet.Config as cms
 # to be reconstructed in muon system
 # (with or without a track reconstructed in Pixel/SiStrip tracking detectors linked to it)
 selectedLayer1MuonsForZmumuHypotheses = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("cleanLayer1Muons"),
+    src = cms.InputTag("cleanPatMuons"),
     cut = cms.string('isGlobalMuon() | isStandAloneMuon()'),
     filter = cms.bool(False)
 )

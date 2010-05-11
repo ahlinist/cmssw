@@ -61,11 +61,11 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
-  if ( genParticleSrc_.label() == "" ) {
-    edm::LogWarning("TauHistManager") 
-      << " Configuration parameter 'genParticleSource' not specified" 
-      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
-  }
+  //if ( genParticleSrc_.label() == "" ) {
+  //  edm::LogWarning("TauHistManager") 
+  //    << " Configuration parameter 'genParticleSource' not specified" 
+  //    << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+  //}
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   tauJetWeightExtractors_ = getTauJetWeightExtractors<pat::Tau>(cfg, "tauJetWeightSource");
@@ -350,7 +350,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   getCollection(evt, jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSrc_, genParticles);
+  if( genParticleSrc_.label() != "") evt.getByLabel(genParticleSrc_, genParticles);
 
   double tauJetWeightSum = 0.;
   int patTauIndex = 0;
@@ -418,7 +418,9 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauPhiCompToGen_->Fill(patTau->phi() - patTau->genJet()->phi(), weight);
     }
 
-    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+    int matchingGenParticlePdgId = -1;
+    if( genParticles.isValid() )
+		matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
     if ( matchingGenParticlePdgId == -1 ) {
       hTauMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {
