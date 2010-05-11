@@ -5,8 +5,8 @@ recoDiTau = diTauProducer.clone()
 #Be careful in standard PAT_v2 'selectedLayer1' collections are not cleaned
 recoDiTau.srcLeg1 = 'selectedPatMuons'
 recoDiTau.srcLeg2 = 'selectedPatTaus'
-#Be careful in standard PAT_v2 MET collection is called 'layer1METs'
-recoDiTau.srcMET = 'layer1METs'
+#Be careful in standard PAT_v2 MET collection is called 'patMETs'
+recoDiTau.srcMET = 'patMETs'
 
 # PAT filters
 from PhysicsTools.PatAlgos.selectionLayer1.tauCountFilter_cfi import countPatTaus

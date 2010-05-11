@@ -32,11 +32,11 @@ JetHistManager::JetHistManager(const edm::ParameterSet& cfg)
   //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
-  if ( genParticleSrc_.label() == "" ) {
-    edm::LogWarning("JetHistManager") 
-      << " Configuration parameter 'genParticleSource' not specified" 
-      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
-  }
+  //if ( genParticleSrc_.label() == "" ) {
+  //  edm::LogWarning("JetHistManager") 
+  //    << " Configuration parameter 'genParticleSource' not specified" 
+  //    << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+  //}
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   requireGenJetMatch_ = cfg.getParameter<bool>("requireGenJetMatch");
@@ -145,7 +145,7 @@ void JetHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   getCollection(evt, jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSrc_, genParticles);
+  if( genParticleSrc_.label() != "") evt.getByLabel(genParticleSrc_, genParticles);
 
   //std::cout << " patJets.size = " << patJets->size() << std::endl;
   hNumJets_->Fill(patJets->size(), evtWeight);
@@ -188,7 +188,9 @@ void JetHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     fillWeightHistograms(hJetWeightPosLog_, hJetWeightNegLog_, hJetWeightZero_, 
 			 hJetWeightLinear_, jetWeight);
     
-    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patJet->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+    int matchingGenParticlePdgId = -1;
+    if( genParticles.isValid() )
+		matchingGenParticlePdgId = getMatchingGenParticlePdgId(patJet->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
     if ( matchingGenParticlePdgId == -1 ) {
       hJetMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {

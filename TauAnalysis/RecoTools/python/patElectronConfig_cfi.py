@@ -16,7 +16,7 @@ from PhysicsTools.PatAlgos.cleaningLayer1.electronCleaner_cfi import *
 # add HLT electron trigger to PAT trigger match sequence
 #patTriggerMatcherElectron += electronTriggerMatchHLTIsoEle15LWL1I
 #patTriggerEvent.patTriggerMatches.append("electronTriggerMatchHLTIsoEle15LWL1I")
-#cleanLayer1ElectronsTriggerMatch.matches = cms.VInputTag("electronTriggerMatchHLTIsoEle15LWL1I")
+#cleanPatElectronsTriggerMatch.matches = cms.VInputTag("electronTriggerMatchHLTIsoEle15LWL1I")
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 electron configuration parameters

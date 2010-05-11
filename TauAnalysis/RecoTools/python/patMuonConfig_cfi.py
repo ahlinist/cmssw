@@ -13,7 +13,7 @@ from PhysicsTools.PatAlgos.cleaningLayer1.muonCleaner_cfi import *
 # add HLT electron trigger to PAT trigger match sequence
 #patTriggerMatcherMuon += muonTriggerMatchHLTIsoMu11
 #patTriggerEvent.patTriggerMatches.append("muonTriggerMatchHLTIsoMu11")
-#cleanLayer1MuonsTriggerMatch.matches = cms.VInputTag("muonTriggerMatchHLTIsoMu11")
+#cleanPatMuonsTriggerMatch.matches = cms.VInputTag("muonTriggerMatchHLTIsoMu11")
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 muon configuration parameters

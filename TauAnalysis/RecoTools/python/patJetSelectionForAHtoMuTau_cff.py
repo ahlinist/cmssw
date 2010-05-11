@@ -45,7 +45,7 @@ patJetSelConfiguratorForAHtoMuTau = objSelConfigurator(
       selectedLayer1JetsForAHtoMuTauEt20,
       selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVeto,
       selectedLayer1JetsForAHtoMuTauBtag ],
-    src = "cleanLayer1Jets",
+    src = "cleanPatJets",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -73,7 +73,7 @@ patJetSelConfiguratorForAHtoMuTauLooseMuonIsolation = objSelConfigurator(
       selectedLayer1JetsForAHtoMuTauEt20,
       selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolation,
       selectedLayer1JetsForAHtoMuTauBtagLooseMuonIsolation ],
-    src = "cleanLayer1Jets",
+    src = "cleanPatJets",
     pyModuleName = __name__,
     doSelIndividual = True
 )

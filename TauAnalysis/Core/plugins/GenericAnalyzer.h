@@ -9,9 +9,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.9 $
+  * \version $Revision: 1.10 $
   *
-  * $Id: GenericAnalyzer.h,v 1.9 2010/02/12 17:38:00 veelken Exp $
+  * $Id: GenericAnalyzer.h,v 1.10 2010/04/28 14:44:07 jkolb Exp $
   *
   */
 
@@ -94,7 +94,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
   explicit GenericAnalyzer(const edm::ParameterSet&);
   ~GenericAnalyzer();
   
-  void beginJob(const edm::EventSetup&);
+  void beginJob();
   void analyze(const edm::Event&, const edm::EventSetup&);
   void endJob();
 

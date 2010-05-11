@@ -36,7 +36,7 @@ patJetSelConfiguratorForWTauNu = objSelConfigurator(
       selectedLayer1JetsEta21ForWTauNu,
       selectedLayer1JetsEt15ForWTauNu,
       selectedLayer1JetsEt20ForWTauNu ],
-    src = "cleanLayer1Jets",
+    src = "cleanPatJets",
     pyModuleName = __name__,
     doSelIndividual = False
     )
@@ -68,7 +68,7 @@ patJetSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
       selectedLayer1JetsEta21ForWTauNuLooseIsolation,
       selectedLayer1JetsEt15ForWTauNuLooseIsolation,
       selectedLayer1JetsEt20ForWTauNuLooseIsolation ],
-    src = "cleanLayer1Jets",
+    src = "cleanPatJets",
     pyModuleName = __name__,
     doSelIndividual = False
     )

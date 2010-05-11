@@ -10,7 +10,7 @@ import copy
 
 # require at least 25 GeV missing transverse energy in the event
 selectedLayer1METsPt25 = cms.EDFilter("PATMETSelector",
-    src = cms.InputTag("layer1METs"),                                 
+    src = cms.InputTag("patMETs"),                                 
     cut = cms.string('pt > 25.'),
     filter = cms.bool(False)
 )
