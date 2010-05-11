@@ -42,7 +42,7 @@ selectMuonsBgEstZmumuEnriched = muonSelConfiguratorBgEstZmumuEnriched.configure(
 #--------------------------------------------------------------------------------
 
 muonsBgEstZmumuMuonMisIdEnrichedStandalone = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag('cleanLayer1Muons'),                                   
+    src = cms.InputTag('cleanPatMuons'),                                   
     cut = cms.string('isStandAloneMuon()'),
     filter = cms.bool(False)
 )

@@ -8,7 +8,7 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 # shell script for submission of cmsRun job to the CERN batch system,
 # then submit the job
 #
-# NOTE: Function needs to be passed the first eight of the following ten arguments
+# NOTE: Function needs to be passed the first nine of the following eleven arguments
 #       (arguments nine and ten are optional parameters)
 #
 #      (1) configFile
@@ -25,7 +25,7 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 #                TauAnalysis/Configuration/python/recoSampleDefinitionsZtoElecTau_cfi.py
 #                TauAnalysis/Configuration/python/recoSampleDefinitionsZtoMuTau_cfi.py
 #                ...
-#          (e.g. ZtautauPlusJets_part1)
+#          (e.g. ZtautauPlusJets_part01)
 #      (4) replFunction
 #          (python) function to be called for processing of replacements parameter string,
 #          depending of type of cmsRun job
@@ -100,7 +100,7 @@ def submitToBatch(configFile = None, channel = None, sample = None,
 
     if replFunction is not None:
         replacements = replFunction(channel = channel, sample = sample, type = type, replacements = replacements)
-
+	
     # delete previous version of modified config file if it exists
     if os.path.exists(configFile_mod):
         os.remove(configFile_mod)

@@ -7,10 +7,10 @@ import copy
 
 allDiTauPairs = cms.EDProducer("PATDiTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('cleanLayer1Taus'),
-    srcLeg2 = cms.InputTag('cleanLayer1Taus'),
+    srcLeg1 = cms.InputTag('cleanPatTaus'),
+    srcLeg2 = cms.InputTag('cleanPatTaus'),
     dRmin12 = cms.double(0.3),
-    srcMET = cms.InputTag('layer1METs'),
+    srcMET = cms.InputTag('patMETs'),
     srcGenParticles = cms.InputTag('genParticles'),                                 
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                           

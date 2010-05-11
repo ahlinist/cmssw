@@ -32,7 +32,19 @@ inputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauPatTuples/summer09/"
 #--------------------------------------------------------------------------------
 
 #
-# 7 TeV samples
+# 7 TeV data samples
+#
+
+for i in range(1):
+    submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
+		  sample = "data_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
+		  job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "data",
+		  resourceRequest = None, submit = "no")
+
+#
+# 7 TeV MC samples
 #
 
 # Z --> tau tau jobs
@@ -142,7 +154,7 @@ for i in range(56):
 
 	
 #
-# 10 TeV samples
+# 10 TeV MC samples
 #
 
 # Z --> tau tau jobs

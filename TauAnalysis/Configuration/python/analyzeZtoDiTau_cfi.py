@@ -291,9 +291,9 @@ diTauEventDump = cms.PSet(
     genTauJetSource = cms.InputTag('tauGenJets'),
     genEventInfoSource = cms.InputTag('generator'),
     
-    electronSource = cms.InputTag('cleanLayer1Electrons'),
-    muonSource = cms.InputTag('cleanLayer1Muons'),
-    tauSource = cms.InputTag('cleanLayer1Taus'),
+    electronSource = cms.InputTag('cleanPatElectrons'),
+    muonSource = cms.InputTag('cleanPatMuons'),
+    tauSource = cms.InputTag('cleanPatTaus'),
     diTauCandidateSource = cms.InputTag('allDiTauPairs'),
     jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
     caloMEtSource = cms.InputTag('layer1METs'),

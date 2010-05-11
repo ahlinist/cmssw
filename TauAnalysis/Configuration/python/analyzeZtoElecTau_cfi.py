@@ -58,8 +58,9 @@ triggerHistManagerForElecTau.l1Bits = cms.vstring(
 )
 
 triggerHistManagerForElecTau.hltPaths = cms.vstring(    
-    'HLT_Ele15_SW_EleId_L1R',
-    'HLT_Ele15_SW_LooseTrackIso_L1R'
+	#'HLT_Ele15_SW_EleId_L1R',
+	#'HLT_Ele15_SW_LooseTrackIso_L1R',
+	'HLT_Ele15_LW_L1R'
 )
 
 # import config for event weight histogram manager
@@ -319,14 +320,14 @@ elecTauEventDump = cms.PSet(
     genTauJetSource = cms.InputTag('tauGenJets'),
     genEventInfoSource = cms.InputTag('generator'),
     
-    electronSource = cms.InputTag('cleanLayer1Electrons'),
+    electronSource = cms.InputTag('cleanPatElectrons'),
     #electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
     tauSource = cms.InputTag('selectedLayer1TausPt20Cumulative'),
     #tauSource = cms.InputTag('selectedLayer1TausForElecTauElectronVetoCumulative'),
     diTauCandidateSource = cms.InputTag('allElecTauPairs'),
     jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    caloMEtSource = cms.InputTag('layer1METs'),
-    pfMEtSource = cms.InputTag('layer1PFMETs'),
+    caloMEtSource = cms.InputTag('patMETs'),
+    pfMEtSource = cms.InputTag('patPFMETs'),
     genMEtSource = cms.InputTag('genMetTrue'),
 
     #output = cms.string("elecTauEventDump.txt"),

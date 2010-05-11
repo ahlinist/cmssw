@@ -100,8 +100,8 @@ patTupleEventContent.outputCommands.extend(
 # required by metHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_layer1METs_*_*',
-      'keep *_layer1PFMETs_*_*',
+    [ 'keep *_patMETs_*_*',
+      'keep *_patPFMETs_*_*',
       'keep *_metsignificance_*_*' ]
 )
 
@@ -134,4 +134,11 @@ patTupleEventContent.outputCommands.extend(
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
      [ 'keep *_genMetTrue_*_*' ]
+)
+
+#--------------------------------------------------------------------------------
+# required by di-tau producer plugins
+#--------------------------------------------------------------------------------
+patTupleEventContent.outputCommands.extend(
+     [ 'keep *_offlineBeamSpot_*_*' ]
 )

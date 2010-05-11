@@ -63,19 +63,21 @@ void ElecTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iS
 
   printEventSelectionInfo(filterResults_cumulative, filterResults_individual, outputStream_);
 
-  *outputStream_ << ">>GENERATOR LEVEL INFORMATION<<" << std::endl;
+  if( doGenInfo_ ) {
+  	*outputStream_ << ">>GENERATOR LEVEL INFORMATION<<" << std::endl;
 
-  edm::Handle<GenEventInfoProduct> genEventInfo;
-  iEvent.getByLabel(genEventInfoSource_, genEventInfo);
-  if ( genEventInfo.isValid() && genEventInfo->hasBinningValues() ) {
-    std::cout << "Pt(hat) = " << genEventInfo->binningValues()[0] << std::endl;
+  	edm::Handle<GenEventInfoProduct> genEventInfo;
+  	iEvent.getByLabel(genEventInfoSource_, genEventInfo);
+  	if ( genEventInfo.isValid() && genEventInfo->hasBinningValues() ) {
+    	std::cout << "Pt(hat) = " << genEventInfo->binningValues()[0] << std::endl;
+  	}
+
+  	edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
+  	iEvent.getByLabel(genParticleSource_, genParticleCollection);
+  	edm::Handle<edm::View<reco::GenJet> > genTauJetCollection;
+  	iEvent.getByLabel(genTauJetSource_, genTauJetCollection);
+  	printGenParticleInfo(genParticleCollection, genTauJetCollection, outputStream_);
   }
-
-  edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
-  iEvent.getByLabel(genParticleSource_, genParticleCollection);
-  edm::Handle<edm::View<reco::GenJet> > genTauJetCollection;
-  iEvent.getByLabel(genTauJetSource_, genTauJetCollection);
-  printGenParticleInfo(genParticleCollection, genTauJetCollection, outputStream_);
 
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 
@@ -85,7 +87,8 @@ void ElecTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iS
 
   elecTauDump_->print(iEvent, iSetup);
 
-  printZeeInfo(iEvent);
+  if( doGenInfo_ )
+  	printZeeInfo(iEvent);
 
   printMissingEtInfo(iEvent);
 

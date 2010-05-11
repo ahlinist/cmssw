@@ -61,11 +61,11 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
-  if ( genParticleSrc_.label() == "" ) {
-    edm::LogWarning("ElectronHistManager") 
-      << " Configuration parameter 'genParticleSource' not specified" 
-      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
-  }
+  //if ( genParticleSrc_.label() == "" ) {
+  //  edm::LogWarning("ElectronHistManager") 
+  //    << " Configuration parameter 'genParticleSource' not specified" 
+  //    << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+  //}
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   requireGenElectronMatch_ = cfg.getParameter<bool>("requireGenElectronMatch");
@@ -221,7 +221,7 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
   getCollection(evt, jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSrc_, genParticles);
+  if( genParticleSrc_.label() != "") evt.getByLabel(genParticleSrc_, genParticles);
 
   //std::cout << " patElectrons.size = " << patElectrons->size() << std::endl;
   hNumElectrons_->Fill(patElectrons->size(), evtWeight);
@@ -263,8 +263,11 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
       hElectronPhiCompToGen_->Fill(patElectron->phi() - patElectron->genLepton()->phi(), weight);
     }
 
-    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patElectron->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
-    if ( matchingGenParticlePdgId == -1 ) {
+    int matchingGenParticlePdgId = -1;
+	if( genParticles.isValid() ) 
+    	matchingGenParticlePdgId = getMatchingGenParticlePdgId(patElectron->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+    
+	if ( matchingGenParticlePdgId == -1 ) {
       hElectronMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {
       hElectronMatchingGenParticlePdgId_->Fill(24, weight);
