@@ -89,6 +89,7 @@ private:
   int    binsEta_;
   int    binsPhi_;
   double matchDR_;
+  double isoDR_;
   double egammaThreshold_;
   double tpgSumWindow_;
   double thresholdForEtaPhi_;
@@ -111,12 +112,14 @@ private:
 
 
   MonitorElement* rctEffPt;
+  MonitorElement* rctEffPtHighest;
   MonitorElement* rctEffEta;
   MonitorElement* rctEffPhi;
   MonitorElement* rctEffEtaPhi;
 
 
   MonitorElement* rctIsoEffPt;
+  MonitorElement* rctIsoEffPtHighest;
   MonitorElement* rctIsoEffEta;
   MonitorElement* rctIsoEffPhi;
   MonitorElement* rctIsoEffEtaPhi;
@@ -136,6 +139,7 @@ private:
   MonitorElement* rctEtaCorr;
   MonitorElement* rctEtaCorrIEta;
   MonitorElement* rctEtaCorrAbsIEta;
+ 
 
   math::PtEtaPhiMLorentzVector rctLorentzVector(const L1GctEmCand&,const L1CaloGeometry* ,const  L1CaloEtScale *);
 
