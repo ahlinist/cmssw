@@ -2,6 +2,8 @@
 #include "Math/GenVector/VectorUtil.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+#include <algorithm>
+
 using namespace std;
 using namespace reco;
 using namespace edm;
@@ -19,12 +21,16 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
   binsEt_(iConfig.getUntrackedParameter<int>("binsEt",20)),
   binsEta_(iConfig.getUntrackedParameter<int>("binsEta",30)),
   binsPhi_(iConfig.getUntrackedParameter<int>("binsPhi",32)),
-  matchDR_(iConfig.getUntrackedParameter<double>("matchDeltaR",0.38)),
+  matchDR_(iConfig.getUntrackedParameter<double>("matchDeltaR",0.35)),
+  isoDR_(iConfig.getUntrackedParameter<double>("isoDeltaR",0.0)),
   egammaThreshold_(iConfig.getUntrackedParameter<double>("gammaThreshold",5.)),
   tpgSumWindow_(iConfig.getUntrackedParameter<double>("tpgSumWindow",0.4)),
   thresholdForEtaPhi_(iConfig.getUntrackedParameter<double>("thresholdForEtaPhi",4.))
 {
   geo = new TriggerTowerGeometry();
+  
+  if ( isoDR_ < matchDR_ )
+    cout << "WARNING - RctValidation : Isolation cone smaller than matching cone; will not use\n"; 
 
   //Get General Monitoring Parameters
   DQMStore *store = &*edm::Service<DQMStore>();
@@ -60,10 +66,13 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       rctEffEta    = store->book1D("rctEffEta","rct e/#gamma E_{T}",binsEta_,-2.5,2.5);
       rctEffPhi    = store->book1D("rctEffPhi","rct e/#gamma E_{T}",binsPhi_,0.,3.2);
       rctEffEtaPhi = store->book2D("rctEffEtaPhi","rct e/#gamma #eta #phi",binsEta_,-2.5,2.5,binsPhi_,0,3.2);
+      
+      rctEffPtHighest = store->book1D("rctEffPtHighest" ,"rct e/#gamma E_{T}",80,0.,40); // fixed for now
 
       rctEffPt->getTH1F()->Sumw2();
       rctEffEta->getTH1F()->Sumw2();
       rctEffPhi->getTH1F()->Sumw2();
+      rctEffPtHighest->getTH1F()->Sumw2();
       //      rctEffEtaPhi->getTH1F()->Sumw2();
 
       rctIsoEffPt     = store->book1D("rctIsoEffPt" ,"rctIso e/#gamma E_{T}",binsEt_,0.,maxEt_);
@@ -71,9 +80,12 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       rctIsoEffPhi    = store->book1D("rctIsoEffPhi","rctIso e/#gamma E_{T}",binsPhi_,0.,3.2);
       rctIsoEffEtaPhi = store->book2D("rctIsoEffEtaPhi","rctIso e/#gamma #eta #phi",binsEta_,-2.5,2.5,binsPhi_,0,3.2);
 
+      rctIsoEffPtHighest = store->book1D("rctIsoEffPtHighest" ,"rct e/#gamma E_{T}",80,0.,40); // fixed for now
+      
       rctIsoEffPt->getTH1F()->Sumw2();
       rctIsoEffEta->getTH1F()->Sumw2();
       rctIsoEffPhi->getTH1F()->Sumw2();
+      rctIsoEffPtHighest->getTH1F()->Sumw2();
       //      rctIsoEffEtaPhi->getTH1F()->Sumw2();
 
 
@@ -128,12 +140,11 @@ void RctValidation::beginLuminosityBlock(const LuminosityBlock& lumiSeg,
 // ----------------------------------------------------------
 void 
 RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
-{  
+{
   //Get The Geometry and the scale
   ESHandle< L1CaloGeometry > caloGeomESH ;
   iSetup.get< L1CaloGeometryRecord >().get( caloGeomESH ) ;
   const L1CaloGeometry* caloGeom = caloGeomESH.product();
-
 
   // get energy scale to convert input from ECAL
   edm::ESHandle<L1CaloEcalScale> ecalScale;
@@ -154,18 +165,27 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
   if(!gotECALTPs)
     printf("NO ECAL TPs found\n");
 
-
   //Get Egammas from RCT
+  double highestEG = 0;
+  double highestEGiso = 0;
   L1GctEmCandCollection rctEGammas;
   edm::Handle<L1CaloEmCollection> egamma;
   if(iEvent.getByLabel(rctEGammas_,egamma) && !egamma.failedToGet())
     for(L1CaloEmCollection::const_iterator i=egamma->begin();i!=egamma->end();++i)
-      {
-	L1CaloEmCand rctEGamma = *i;
-	rctEGammas.push_back(L1GctEmCand(rctEGamma));
-      }
+    {
+      L1CaloEmCand rctEGamma = *i;
+      rctEGammas.push_back(L1GctEmCand(rctEGamma));
+      highestEG = max(highestEG, emS->et(rctEGamma.rank()));
+      
+      if ( rctEGamma.isolated() )
+        highestEGiso = max(highestEGiso, emS->et(rctEGamma.rank()));
+    }
 
-    
+  if ( highestEG > 0 )
+    rctEffPtHighest->Fill(highestEG);
+
+  if ( highestEGiso > 0 )
+    rctIsoEffPtHighest->Fill(highestEGiso);
 
   //Get Egammas from GCT
   L1GctEmCandCollection gctEGammas;
@@ -173,184 +193,183 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
   if(iEvent.getByLabel(gctEGammas_[0],gctEgamma))
     gctEGammas = *gctEgamma;
 
-
+  //Get Isolated Egammas from GCT
   L1GctEmCandCollection gctIsoEGammas;
   edm::Handle<L1GctEmCandCollection> gctIsoEgamma;
   if(iEvent.getByLabel(gctEGammas_[1],gctIsoEgamma))
     gctIsoEGammas = *gctIsoEgamma;
 
-
- 
+  
   //OK Now Efficiency calculations
   if(gotRef)
     for(unsigned int j=0;j<genEGamma->size();++j) 
+    {
+      refPt->Fill(genEGamma->at(j).pt());
+      refEta->Fill(genEGamma->at(j).eta());
+      refPhi->Fill(genEGamma->at(j).phi());
+
+      if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+        refEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+
+      //TPG Efficiency
+      //get TPG Sum
+      double tpgS = tpgSum(genEGamma->at(j).p4().Vect(),*ecalTPGs,caloGeom,eS,tpgSumWindow_);
+      //If there is significant ecal energy over threshold passes:
+      if(tpgS> egammaThreshold_)
       {
-
-	refPt->Fill(genEGamma->at(j).pt());
-	refEta->Fill(genEGamma->at(j).eta());
-	refPhi->Fill(genEGamma->at(j).phi());
-
-	if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
-	  refEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-
-	//TPG Efficiency
-	
-	//get TPG Sum
-	double tpgS = tpgSum(genEGamma->at(j).p4().Vect(),*ecalTPGs,caloGeom,eS,tpgSumWindow_);
-	//If there is significant ecal energy over threshold passes:
-	if(tpgS> egammaThreshold_)
-	  {
-	    tpgEffPt->Fill(genEGamma->at(j).pt());
-	    tpgEffEta->Fill(genEGamma->at(j).eta());
-	    tpgEffPhi->Fill(genEGamma->at(j).phi());
-	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
-	      tpgEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-	  }
-
-	if(tpgS<32.)
-	  TPG_Resolution->Fill((tpgS-genEGamma->at(j).pt())/genEGamma->at(j).pt());
-
-	//get RCT Efficiency-Find the highest object near the ref
-	L1GctEmCandCollection rctNearReference;
-
-	if(rctEGammas.size()>0)
-	  for(L1GctEmCandCollection::const_iterator i=rctEGammas.begin();i!=rctEGammas.end();++i)
-	  if(i->rank()>0)
-	    {
-	      //create lorenzt vector
-	      math::PtEtaPhiMLorentzVector rctVec = rctLorentzVector(*i,caloGeom,emS);
-	      double deltaR = ROOT::Math::VectorUtil::DeltaR(rctVec,genEGamma->at(j).p4());
-	      //ok now match and do it over 10 GeV
-	      if(deltaR<matchDR_&&rctVec.pt()>=egammaThreshold_)
-		{
-		  rctNearReference.push_back(*i);
-		}
-	    }
-
-	if(rctNearReference.size()>0) {
-	  //Ok find the highest matched rct cand
-	  RCTEmSorter sorter;
-	  std::sort(rctNearReference.begin(),rctNearReference.end(),sorter);
-	  L1GctEmCand highestRCT = rctNearReference.at(0);
-	  //get its LV
-	  math::PtEtaPhiMLorentzVector highestVec = rctLorentzVector(highestRCT,caloGeom,emS);
-	  //ask for threshold
-	  if(highestVec.pt()>egammaThreshold_) {
-	    rctEffPt->Fill(genEGamma->at(j).pt());
-	    rctEffEta->Fill(genEGamma->at(j).eta());
-	    rctEffPhi->Fill(genEGamma->at(j).phi());
-	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
-	      rctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-
-	    if(highestRCT.rank()<127)  // only for non-saturating
-	      RCT_Resolution->Fill(( highestVec.pt()-genEGamma->at(j).pt())/genEGamma->at(j).pt() );
-
-	    if(highestRCT.isolated())
-	      {
-		rctIsoEffPt->Fill(genEGamma->at(j).pt());
-		rctIsoEffEta->Fill(genEGamma->at(j).eta());
-		rctIsoEffPhi->Fill(genEGamma->at(j).phi());
-		if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
-		  rctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-                  
-                  if( highestRCT.rank() < 127 )  // only for non-saturating
-                  {
-                    rctEtaCorr->Fill( highestVec.eta(), genEGamma->at(j).pt()/highestVec.pt() );
-                    rctEtaCorrIEta->Fill( geo->iEta(highestVec.eta()), genEGamma->at(j).pt()/highestVec.pt() );
-                    rctEtaCorrAbsIEta->Fill( fabs(geo->iEta(highestVec.eta())), genEGamma->at(j).pt()/highestVec.pt() );
-                  }
-	      }
-
-
-	  }
-	}
-
-
-
-
-	//Now THE GCT Efficiency
-
-	L1GctEmCandCollection gctNearReference;
-
-
-	if(gctEGammas.size()>0)
-	  for(L1GctEmCandCollection::const_iterator i=gctEGammas.begin();i!=gctEGammas.end();++i)
-	  if(i->rank()>0)
-	    {
-	      //create lorenzt vector
-	      math::PtEtaPhiMLorentzVector gctVec = rctLorentzVector(*i,caloGeom,emS);
-	      double deltaR = ROOT::Math::VectorUtil::DeltaR(gctVec,genEGamma->at(j).p4());
-	      //ok now match and do it over 10 GeV
-	      if(deltaR<matchDR_&&gctVec.pt()>=egammaThreshold_)
-		{
-		  gctNearReference.push_back(*i);
-		}
-	    }
-
-	if(gctNearReference.size()>0) {
-	  //Ok find the highest matched gct cand
-	  RCTEmSorter gsorter;
-	  std::sort(gctNearReference.begin(),gctNearReference.end(),gsorter);
-	  L1GctEmCand highestGCT = gctNearReference.at(0);
-	  //get its LV
-	  math::PtEtaPhiMLorentzVector highestVec = rctLorentzVector(highestGCT,caloGeom,emS);
-	  //ask for threshold
-	  if(highestVec.pt()>egammaThreshold_) {
-	    gctEffPt->Fill(genEGamma->at(j).pt());
-	    gctEffEta->Fill(genEGamma->at(j).eta());
-	    gctEffPhi->Fill(genEGamma->at(j).phi());
-	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
-	      gctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-
-	  }
-	}
-
-
-	L1GctEmCandCollection gctIsoNearReference;
-
-	if(gctIsoEGammas.size()>0)
-	  for(L1GctEmCandCollection::const_iterator i=gctIsoEGammas.begin();i!=gctIsoEGammas.end();++i)
-	  if(i->rank()>0)
-	    {
-	      //create lorenzt vector
-	      math::PtEtaPhiMLorentzVector gctIsoVec = rctLorentzVector(*i,caloGeom,emS);
-	      double deltaR = ROOT::Math::VectorUtil::DeltaR(gctIsoVec,genEGamma->at(j).p4());
-	      //ok now match and do it over 10 GeV
-	      if(deltaR<matchDR_&&gctIsoVec.pt()>=egammaThreshold_)
-		{
-		  gctIsoNearReference.push_back(*i);
-		}
-	    }
-
-	if(gctIsoNearReference.size()>0) {
-	  //Ok find the highest matched gctIso cand
-	  RCTEmSorter ggsorter;
-	  std::sort(gctIsoNearReference.begin(),gctIsoNearReference.end(),ggsorter);
-	  L1GctEmCand highestGCTISO = gctIsoNearReference.at(0);
-	  //get its LV
-	  math::PtEtaPhiMLorentzVector highestVec = rctLorentzVector(highestGCTISO,caloGeom,emS);
-	  //ask for threshold
-	  if(highestVec.pt()>egammaThreshold_) {
-	    gctEffPt->Fill(genEGamma->at(j).pt());
-	    gctEffEta->Fill(genEGamma->at(j).eta());
-	    gctEffPhi->Fill(genEGamma->at(j).phi());
-	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
-	      gctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-
-	    gctIsoEffPt->Fill(genEGamma->at(j).pt());
-	    gctIsoEffEta->Fill(genEGamma->at(j).eta());
-	    gctIsoEffPhi->Fill(genEGamma->at(j).phi());
-	    if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
-	      gctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
-	  }
-
-	}
-      
-
+        tpgEffPt->Fill(genEGamma->at(j).pt());
+        tpgEffEta->Fill(genEGamma->at(j).eta());
+        tpgEffPhi->Fill(genEGamma->at(j).phi());
+        if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+          tpgEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
       }
 
- 
+      if(tpgS<32.)
+        TPG_Resolution->Fill((tpgS-genEGamma->at(j).pt())/genEGamma->at(j).pt());
 
+      //get RCT Efficiency-Find the highest object near the ref
+      L1GctEmCandCollection rctNearReference;
+      unsigned int rctLargeConeCands = ( isoDR_ > matchDR_ ? 0 : 1); // if valid isolation cone 0; else force 1
+
+      if(rctEGammas.size()>0)
+        for(L1GctEmCandCollection::const_iterator i=rctEGammas.begin();i!=rctEGammas.end();++i)
+          if(i->rank()>0)
+          {
+            //create lorenzt vector
+            math::PtEtaPhiMLorentzVector rctVec = rctLorentzVector(*i,caloGeom,emS);
+            double deltaR = ROOT::Math::VectorUtil::DeltaR(rctVec,genEGamma->at(j).p4());
+            //ok now match and do it over threshold
+            if( deltaR < matchDR_ && rctVec.pt() >= egammaThreshold_ )
+              rctNearReference.push_back(*i);
+
+            if ( isoDR_ > matchDR_ )  // if valid isolation cone
+              for(unsigned int k=0;k<genEGamma->size();++k) 
+              {
+                double deltaRthis = ROOT::Math::VectorUtil::DeltaR(rctVec, genEGamma->at(k).p4());
+
+                if ( deltaRthis < isoDR_ && rctVec.pt() >= egammaThreshold_ )
+                  ++rctLargeConeCands;
+              }
+          }
+
+      if(rctNearReference.size()>0) 
+      {
+        //Ok find the highest matched rct cand
+        RCTEmSorter sorter;
+        std::sort(rctNearReference.begin(),rctNearReference.end(),sorter);
+        L1GctEmCand highestRCT = rctNearReference.at(0);
+        //get its LV
+        math::PtEtaPhiMLorentzVector highestVec = rctLorentzVector(highestRCT,caloGeom,emS);
+        //ask for threshold
+        if(highestVec.pt()>egammaThreshold_) 
+        {
+          rctEffPt->Fill(genEGamma->at(j).pt());
+          rctEffEta->Fill(genEGamma->at(j).eta());
+          rctEffPhi->Fill(genEGamma->at(j).phi());
+          if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+            rctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+
+          if(highestRCT.rank()<127)  // only for non-saturating
+            RCT_Resolution->Fill(( highestVec.pt()-genEGamma->at(j).pt())/genEGamma->at(j).pt() );
+
+          if(highestRCT.isolated())
+          {
+            rctIsoEffPt->Fill(genEGamma->at(j).pt());
+            rctIsoEffEta->Fill(genEGamma->at(j).eta());
+            rctIsoEffPhi->Fill(genEGamma->at(j).phi());
+            if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+              rctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+                
+            if( rctLargeConeCands == 1 && highestRCT.rank() < 127 )  // only for non-saturating & for exactly one candidate in cone
+            {
+              rctEtaCorr->Fill( highestVec.eta(), genEGamma->at(j).pt()/highestVec.pt() );
+              rctEtaCorrIEta->Fill( geo->iEta(highestVec.eta()), genEGamma->at(j).pt()/highestVec.pt() );
+              rctEtaCorrAbsIEta->Fill( fabs(geo->iEta(highestVec.eta())), genEGamma->at(j).pt()/highestVec.pt() );
+            }
+          }
+        }
+      }
+
+
+      //Now THE GCT Efficiency
+
+      L1GctEmCandCollection gctNearReference;
+
+      if(gctEGammas.size()>0)
+        for(L1GctEmCandCollection::const_iterator i=gctEGammas.begin();i!=gctEGammas.end();++i)
+          if(i->rank()>0)
+          {
+            //create lorenzt vector
+            math::PtEtaPhiMLorentzVector gctVec = rctLorentzVector(*i,caloGeom,emS);
+            double deltaR = ROOT::Math::VectorUtil::DeltaR(gctVec,genEGamma->at(j).p4());
+            //ok now match and do it over 10 GeV
+            if(deltaR<matchDR_&&gctVec.pt()>=egammaThreshold_)
+            {
+              gctNearReference.push_back(*i);
+            }
+          }
+
+      if(gctNearReference.size()>0) 
+      {
+        //Ok find the highest matched gct cand
+        RCTEmSorter gsorter;
+        std::sort(gctNearReference.begin(),gctNearReference.end(),gsorter);
+        L1GctEmCand highestGCT = gctNearReference.at(0);
+        //get its LV
+        math::PtEtaPhiMLorentzVector highestVec = rctLorentzVector(highestGCT,caloGeom,emS);
+        //ask for threshold
+        if(highestVec.pt()>egammaThreshold_) 
+        {
+          gctEffPt->Fill(genEGamma->at(j).pt());
+          gctEffEta->Fill(genEGamma->at(j).eta());
+          gctEffPhi->Fill(genEGamma->at(j).phi());
+          if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+            gctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+        }
+      }
+
+
+      L1GctEmCandCollection gctIsoNearReference;
+
+      if(gctIsoEGammas.size()>0)
+        for(L1GctEmCandCollection::const_iterator i=gctIsoEGammas.begin();i!=gctIsoEGammas.end();++i)
+          if(i->rank()>0)
+          {
+              //create lorenzt vector
+              math::PtEtaPhiMLorentzVector gctIsoVec = rctLorentzVector(*i,caloGeom,emS);
+              double deltaR = ROOT::Math::VectorUtil::DeltaR(gctIsoVec,genEGamma->at(j).p4());
+              //ok now match and do it over 10 GeV
+              if(deltaR<matchDR_&&gctIsoVec.pt()>=egammaThreshold_)
+              {
+                gctIsoNearReference.push_back(*i);
+              }
+          }
+
+      if(gctIsoNearReference.size()>0) 
+      {
+        //Ok find the highest matched gctIso cand
+        RCTEmSorter ggsorter;
+        std::sort(gctIsoNearReference.begin(),gctIsoNearReference.end(),ggsorter);
+        L1GctEmCand highestGCTISO = gctIsoNearReference.at(0);
+        //get its LV
+        math::PtEtaPhiMLorentzVector highestVec = rctLorentzVector(highestGCTISO,caloGeom,emS);
+        //ask for threshold
+        if(highestVec.pt()>egammaThreshold_) 
+        {
+          gctEffPt->Fill(genEGamma->at(j).pt());
+          gctEffEta->Fill(genEGamma->at(j).eta());
+          gctEffPhi->Fill(genEGamma->at(j).phi());
+          if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+            gctEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+
+          gctIsoEffPt->Fill(genEGamma->at(j).pt());
+          gctIsoEffEta->Fill(genEGamma->at(j).eta());
+          gctIsoEffPhi->Fill(genEGamma->at(j).phi());
+          if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
+            gctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
+        }
+      }
+    }
 }
 
 
