@@ -114,12 +114,12 @@ muonMatchHLTMu5L2Mu0L2 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5_L2M
 ### Mu L3 + Track
 #---- muon part
 muonMatchHLTMu0Tk0Mu  = muonTriggerMatchHLTMu3.clone(
-    pathNames      = [ "HLT_Mu0_Track0_JPsi" ], 
+    pathNames      = [ "HLT_Mu0_Track0_Jpsi" ], 
     filterLabels   = [ 'hltMu0TrackJpsiTrackMassFiltered' ], 
     collectionTags = [ 'hltL3MuonCandidates::HLT' ] 
 )
-muonMatchHLTMu3Tk0Mu = muonMatchHLTMu0Tk0Mu.clone(pathNames = [ "HLT_Mu3_Track0_JPsi" ], filterLabels = [ 'hltMu3TrackJpsiTrackMassFiltered' ])
-muonMatchHLTMu5Tk0Mu = muonMatchHLTMu0Tk0Mu.clone(pathNames = [ "HLT_Mu5_Track0_JPsi" ], filterLabels = [ 'hltMu5TrackJpsiTrackMassFiltered' ])
+muonMatchHLTMu3Tk0Mu = muonMatchHLTMu0Tk0Mu.clone(pathNames = [ "HLT_Mu3_Track0_Jpsi" ], filterLabels = [ 'hltMu3TrackJpsiTrackMassFiltered' ])
+muonMatchHLTMu5Tk0Mu = muonMatchHLTMu0Tk0Mu.clone(pathNames = [ "HLT_Mu5_Track0_Jpsi" ], filterLabels = [ 'hltMu5TrackJpsiTrackMassFiltered' ])
 #---- track part 
 # v-- this works and it's easier --v
 muonMatchHLTCtfTrack  = muonTriggerMatchHLTMu3.clone(pathNames = [ "*" ], collectionTags = ['hltMuTrackJpsiCtfTrackCands::HLT'])
