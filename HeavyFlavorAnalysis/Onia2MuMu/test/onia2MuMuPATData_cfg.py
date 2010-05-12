@@ -11,14 +11,15 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 ### global tag
-process.GlobalTag.globaltag = "GR_R_35X_V7::All"
+process.GlobalTag.globaltag = "GR_R_35X_V8B::All"
+#process.GlobalTag.globaltag = "GR_R_35X_V7::All"
 #process.GlobalTag.globaltag = "GR10_P_V5::All"
 
 ### source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/data/BeamCommissioning09/MinimumBias/RAW-RECO/BSCNOBEAMHALO-Mar3rdSkim_v2/0000/EC865CF0-1A2B-DF11-91F4-001CC47A52B6.root'
-   )
+        '/store/data/Commissioning10/MinimumBias/USER/v9/000/134/721/7CF8C522-7F56-DF11-94EA-003048D46066.root',
+    )
 )
 
 ### number of events
@@ -111,7 +112,7 @@ process.Onia2MuMuPatTrkTrk = cms.Path(
 
 ### output
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('myfile.root'),
+    fileName = cms.untracked.string('onia2MuMuPATData.root'),
     outputCommands = cms.untracked.vstring('drop *',
         'keep patCompositeCandidates_*__SkimmingOnia2MuMuPAT', ## PAT di-muons
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',        ## All PAT muons (note: not necessary if you use only the di-muons)
