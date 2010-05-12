@@ -29,6 +29,10 @@
    <use name=Geometry/CSCGeometry>
    <use   name=CalibFormats/HcalObjects>
    <use   name=CalibCalorimetry/HcalAlgos>
+   <use name=RecoLocalCalo/HcalRecAlgos>
+   <use name=RecoLocalCalo/EcalRecAlgos>
+   <use name=CondFormats/EcalObjects>
+   <use name=TrackingTools/TrackAssociator>
 
    <use name=root>
    <use name=RecoEcal/EgammaClusterAlgos>
