@@ -13,12 +13,13 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.24 2010/04/16 15:19:59 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.25 2010/04/28 07:57:30 covarell Exp $
 //
 //
 
 // system include files
 #include <memory>
+#include <fstream>
 
 // ROOT/Roofit include files
 #include <TStyle.h>
@@ -46,6 +47,9 @@
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/Common/interface/TriggerResults.h>
 #include <DataFormats/Math/interface/deltaR.h>
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include <DataFormats/VertexReco/interface/VertexFwd.h>
+#include <DataFormats/BeamSpot/interface/BeamSpot.h>
 
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
@@ -69,7 +73,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       virtual void endJob() ;
       void makeCuts(int sign) ;
       pair< unsigned int, const pat::CompositeCandidate* > theBestQQ(int sign);
-      void fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand);
+      void fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event&);
       bool selGlobalMuon(const pat::Muon* aMuon);
       bool selTrackerMuon(const pat::Muon* aMuon);
       bool selCaloMuon(const pat::Muon* aMuon);
@@ -108,14 +112,16 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcRecoTrkMuDeltaR;  
       TH1F *hMcRecoCalMuDeltaR;  
       
-      TH1F *hMcRightGlbMunPixHits; 
-      TH1F *hMcWrongGlbMunPixHits; 
-      TH1F *hMcRightGlbMud0;       
-      TH1F *hMcWrongGlbMud0;       
-      TH1F *hMcRightGlbMudz;       
-      TH1F *hMcWrongGlbMudz;       
-      TH1F *hMcRightGlbMuFirstLayer;
-      TH1F *hMcWrongGlbMuFirstLayer;
+      TH1F *hMcRightMunPixHits; 
+      TH1F *hMcWrongMunPixHits; 
+      TH1F *hMcRightMud0;       
+      TH1F *hMcWrongMud0;       
+      TH1F *hMcRightMudz;       
+      TH1F *hMcWrongMudz;       
+      TH1F *hMcRightGlbMuGlobalchi2;
+      TH1F *hMcWrongGlbMuGlobalchi2;
+      TH1F *hMcRightGlbMunMuHits;
+      TH1F *hMcWrongGlbMunMuHits;
 
       TH1F *hMcRightGlbGlbMuLife;              
       TH1F *hMcWrongGlbGlbMuLife;
@@ -131,8 +137,10 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcRightGlbGlbMuVtxProb;
       TH1F *hMcWrongGlbGlbMuVtxProb;
 
-      TH1F *hMcRightTrkMuPt;
-      TH1F *hMcWrongTrkMuPt;
+      TH1F *hMcRightMuPt;
+      TH1F *hMcWrongMuPt;
+      TH1F *hMcRightMuP;
+      TH1F *hMcWrongMuP;
       TH1F *hMcRightTrkBit4;
       TH1F *hMcWrongTrkBit4;
       TH1F *hMcRightTrkBit5;
@@ -145,12 +153,10 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *hMcWrongTrkBitNew;
       TH1F *hMcRightTrkMuChi2;   
       TH1F *hMcWrongTrkMuChi2; 
-      TH1F *hMcRightTrkMuNhits;
-      TH1F *hMcWrongTrkMuNhits;
-      TH1F *hMcRightTrkMud0;       
-      TH1F *hMcWrongTrkMud0;       
-      TH1F *hMcRightTrkMudz;       
-      TH1F *hMcWrongTrkMudz;
+      TH1F *hMcRightMuNhits;
+      TH1F *hMcWrongMuNhits;
+      TH1F *hMcRightTrkMuCaloComp;         
+      TH1F *hMcWrongTrkMuCaloComp;
 
       TH1F *hMcRightGlbTrkMuLife;              
       TH1F *hMcWrongGlbTrkMuLife;
@@ -249,6 +255,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _removeSignal;
       bool           _removeMuons;
       bool           _storeWs;
+      bool           _writeOutCands;
       // InputTag       _triggerresults;
       vector<unsigned int>                     _thePassedCats[3];
       vector<const pat::CompositeCandidate*>   _thePassedCands[3];
@@ -268,6 +275,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       float JpsiPtMax;           // DEFINITION
       float JpsiEtaMin;          // OF BIN
       float JpsiEtaMax;          // LIMITS 
+
+      math::XYZPoint RefVtx;
+      ofstream* theTextFile;
 
 };    
       
@@ -297,7 +307,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),
   _removeSignal(iConfig.getUntrackedParameter<bool>("removeSignalEvents",false)),
   _removeMuons(iConfig.getUntrackedParameter<bool>("removeTrueMuons",false)),
-  _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false))
+  _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false)),
+  _writeOutCands(iConfig.getUntrackedParameter<bool>("writeOutCandidates",false))
   // _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
@@ -365,6 +376,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   varlist.add(*JpsictErr);
 
   data = new RooDataSet("data","A sample",varlist);
+  if (_writeOutCands) theTextFile = new ofstream("passedCandidates.txt");
 
 }
 
@@ -374,7 +386,7 @@ JPsiAnalyzerPAT::~JPsiAnalyzerPAT()
  
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
-
+  if (_writeOutCands) theTextFile->close();
 }
 
 
@@ -395,6 +407,26 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    
    // try {iEvent.getByLabel("onia2MuMuPatGlbTrk",collGT);}
    // catch (...) {cout << "Global-tracker J/psi not present in event!" << endl;}
+   
+   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+   iEvent.getByLabel("offlineBeamSpot",recoBeamSpotHandle);
+   reco::BeamSpot bs = *recoBeamSpotHandle;
+
+   if (_useBS) {
+     RefVtx = bs.position();
+   } else {
+
+     Handle<reco::VertexCollection> privtxs;
+     iEvent.getByLabel("offlinePrimaryVertices", privtxs);
+     VertexCollection::const_iterator privtx;
+
+     if ( privtxs->begin() != privtxs->end() ) {
+       privtx=privtxs->begin();
+       RefVtx = privtx->position();
+     } else {
+       RefVtx = bs.position();
+     }
+   }
 
    try {iEvent.getByLabel(_patJpsi,collAll);} 
    catch (...) {cout << "J/psi not present in event!" << endl;}
@@ -423,14 +455,14 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
      for (int iSign = 0; iSign <= lastSign; iSign++) {
        pair< unsigned int, const pat::CompositeCandidate* > theBest = theBestQQ(iSign);
-       if (theBest.first < 10) fillHistosAndDS(theBest.first, theBest.second);
+       if (theBest.first < 10) fillHistosAndDS(theBest.first, theBest.second, iEvent);
      }
 
    } else {   // no, fill all candidates passing cuts (possibly wrong-sign)
 
      for (int iSign = 0; iSign <= lastSign; iSign++) {
        for( unsigned int count = 0; count < _thePassedCands[iSign].size(); count++) { 
-	 fillHistosAndDS(_thePassedCats[iSign].at(count), _thePassedCands[iSign].at(count)); 
+	 fillHistosAndDS(_thePassedCats[iSign].at(count), _thePassedCands[iSign].at(count),iEvent); 
        }
      }
 
@@ -479,15 +511,17 @@ JPsiAnalyzerPAT::beginJob()
   hMcRecoCalMuDeltaR                = new TH1F("hMcRecoCalMuDeltaR",  "MC-reco matching #Delta R (calo muons)", 100, 0.,0.5);
   			       
   // mc-truth matching (global)
-  hMcRightGlbMunPixHits            = new TH1F("hMcRightGlbMunPixHits",  "number of pixel hits - MC matched (global muons)", 8, -0.5, 7.5);
-  hMcWrongGlbMunPixHits            = new TH1F("hMcWrongGlbMunPixHits",  "number of pixel hits - MC unmatched (global muons)", 8, -0.5, 7.5);
-  hMcRightGlbMud0                  = new TH1F("hMcRightGlbMud0",  "d0 - MC matched (global muons)", 100, 0., 30.);
-  hMcWrongGlbMud0                  = new TH1F("hMcWrongGlbMud0",  "d0 - MC unmatched (global muons)", 100, 0., 30.);
-  hMcRightGlbMudz                  = new TH1F("hMcRightGlbMudz",  "dz - MC matched (global muons)", 100, 0., 50.);
-  hMcWrongGlbMudz                  = new TH1F("hMcWrongGlbMudz",  "dz - MC unmatched (global muons)", 100, 0., 50.);
-  hMcRightGlbMuFirstLayer          = new TH1F("hMcRightGlbMuFirstLayer",  "first pixel layer hit - MC matched (global muons)", 4, -0.5, 3.5);
-  hMcWrongGlbMuFirstLayer          = new TH1F("hMcWrongGlbMuFirstLayer",  "first pixel layer hit - MC unmatched (global muons)", 4, -0.5, 3.5);
-  			       
+  hMcRightMunPixHits            = new TH1F("hMcRightMunPixHits",  "number of pixel hits - MC matched (muons)", 6, -0.5, 5.5);
+  hMcWrongMunPixHits            = new TH1F("hMcWrongMunPixHits",  "number of pixel hits - MC unmatched (muons)", 6, -0.5, 5.5);
+  hMcRightMud0                  = new TH1F("hMcRightMud0",  "d0 - MC matched (muons)", 100, 0., 10.);
+  hMcWrongMud0                  = new TH1F("hMcWrongMud0",  "d0 - MC unmatched (muons)", 100, 0., 10.);
+  hMcRightMudz                  = new TH1F("hMcRightMudz",  "dz - MC matched (muons)", 100, 0., 50.);
+  hMcWrongMudz                  = new TH1F("hMcWrongMudz",  "dz - MC unmatched (muons)", 100, 0., 50.);
+  hMcRightGlbMuGlobalchi2          = new TH1F("hMcRightGlbMuGlobalchi2",  "global chi2 - MC matched (global muons)", 100, -0.5, 30.);
+  hMcWrongGlbMuGlobalchi2          = new TH1F("hMcWrongGlbMuGlobalchi2",  "global chi2 - MC unmatched (global muons)", 100, -0.5, 30.);
+  hMcRightGlbMunMuHits          = new TH1F("hMcRightGlbMunMuHits",  "number of muon hits - MC matched (global muons)", 100, -0.5, 99.5);
+  hMcWrongGlbMunMuHits          = new TH1F("hMcWrongGlbMunMuHits",  "number of muon hits - MC matched (global muons)", 100, -0.5, 99.5);
+
   // mc truth matching - global + global
   hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
   hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC unmatched (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
@@ -504,12 +538,16 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongGlbGlbMuVtxProb          = new TH1F("hMcWrongGlbGlbMuVtxProb",  "Vertex probability - MC unmatched (global+global muons)", 1000, 0.0,1.0);
   			       
   // mc truth matching - trk   
-  hMcRightTrkMuPt                  = new TH1F("hMcRightTrkMuPt",  "pT  - MC matched (tracker muons)", 50, 0.,5.0);
-  hMcWrongTrkMuPt                  = new TH1F("hMcWrongTrkMuPt",  "pT - MC unmatched (tracker muons)", 50, 0.,5.0);
+  hMcRightMuPt                  = new TH1F("hMcRightMuPt",  "pT  - MC matched (muons)", 50, 0.,10.);
+  hMcWrongMuPt                  = new TH1F("hMcWrongMuPt",  "pT - MC unmatched (muons)", 50, 0.,10.);
+  hMcRightMuP                  = new TH1F("hMcRightMuP",  "p  - MC matched (muons)", 100, 0.,20.);
+  hMcWrongMuP                  = new TH1F("hMcWrongMuP",  "p - MC unmatched (muons)", 100, 0.,20.);
+  hMcRightTrkMuCaloComp            = new TH1F("hMcRightTrkMuCaloComp",  "calo compatibility - MC matched (tracker muons)", 60, 0.5,1.1);
+  hMcWrongTrkMuCaloComp            = new TH1F("hMcWrongTrkMuCaloComp",  "calo compatibility - MC unmatched (tracker muons)", 60, 0.5,1.1);
   hMcRightTrkMuChi2                = new TH1F("hMcRightTrkMuChi2",  "chi2  - MC matched (tracker muons)", 50, -0.5, 6.5);
   hMcWrongTrkMuChi2                = new TH1F("hMcWrongTrkMuChi2",  "chi2 - MC unmatched (tracker muons)", 50, -0.5,6.5);
-  hMcRightTrkMuNhits               = new TH1F("hMcRightTrkMuNhits",  "chi2  - MC matched (tracker muons)", 30, 0.5, 30.5);
-  hMcWrongTrkMuNhits               = new TH1F("hMcWrongTrkMuNhits",  "chi2 - MC unmatched (tracker muons)", 30, 0.5,30.5);
+  hMcRightMuNhits               = new TH1F("hMcRightMuNhits",  "chi2  - MC matched (tracker muons)", 30, 0.5, 30.5);
+  hMcWrongMuNhits               = new TH1F("hMcWrongMuNhits",  "chi2 - MC unmatched (tracker muons)", 30, 0.5,30.5);
   hMcRightTrkBit4                  = new TH1F("hMcRightTrkBit4",  "2DCompatibilityLoose bit - MC matched (tracker muons)", 4, -1.5,2.5);
   hMcWrongTrkBit4                  = new TH1F("hMcWrongTrkBit4",  "2DCompatibilityLoose bit - MC unmatched (tracker muons)", 4, -1.5,2.5);
   hMcRightTrkBit5                  = new TH1F("hMcRightTrkBit5",  "2DCompatibilityTight bit - MC matched (tracker muons)", 4, -1.5,2.5);
@@ -520,10 +558,6 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongTrkBit9                  = new TH1F("hMcWrongTrkBit9",  "StationOptimizedLowPtTight bit - MC unmatched (tracker muons)", 4, -1.5,2.5);
   hMcRightTrkBitNew                = new TH1F("hMcRightTrkBitNew",  "TMLastStationAngTight bit - MC matched (tracker muons)", 4, -1.5,2.5);
   hMcWrongTrkBitNew                = new TH1F("hMcWrongTrkBitNew",  "TMLastStationAngTight - MC unmatched (tracker muons)", 4, -1.5,2.5);
-  hMcRightTrkMud0                  = new TH1F("hMcRightTrkMud0",  "d0 - MC matched (global muons)", 100, 0., 30.);
-  hMcWrongTrkMud0                  = new TH1F("hMcWrongTrkMud0",  "d0 - MC unmatched (global muons)", 100, 0., 30.);
-  hMcRightTrkMudz                  = new TH1F("hMcRightTrkMudz",  "dz - MC matched (global muons)", 100, 0., 50.);
-  hMcWrongTrkMudz                  = new TH1F("hMcWrongTrkMudz",  "dz - MC unmatched (global muons)", 100, 0., 50.);
   			       
   // mc truth matching - global + trk
   hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
@@ -628,14 +662,16 @@ JPsiAnalyzerPAT::endJob() {
   hMcRecoTrkMuDeltaR            -> Write();   
   hMcRecoCalMuDeltaR            -> Write();
   			     
-  hMcRightGlbMunPixHits         -> Write(); 
-  hMcWrongGlbMunPixHits         -> Write(); 
-  hMcRightGlbMud0               -> Write(); 
-  hMcWrongGlbMud0               -> Write(); 
-  hMcRightGlbMudz               -> Write(); 
-  hMcWrongGlbMudz               -> Write(); 
-  hMcRightGlbMuFirstLayer       -> Write(); 
-  hMcWrongGlbMuFirstLayer       -> Write();
+  hMcRightMunPixHits         -> Write(); 
+  hMcWrongMunPixHits         -> Write(); 
+  hMcRightMud0               -> Write(); 
+  hMcWrongMud0               -> Write(); 
+  hMcRightMudz               -> Write(); 
+  hMcWrongMudz               -> Write(); 
+  hMcRightGlbMuGlobalchi2       -> Write(); 
+  hMcWrongGlbMuGlobalchi2       -> Write();
+  hMcRightGlbMunMuHits          -> Write(); 
+  hMcWrongGlbMunMuHits          -> Write();
   			     
   hMcRightGlbGlbMuMass          -> Write(); 
   hMcWrongGlbGlbMuMass          -> Write(); 
@@ -650,8 +686,10 @@ JPsiAnalyzerPAT::endJob() {
   hMcRightGlbGlbMuVtxProb       -> Write(); 
   hMcWrongGlbGlbMuVtxProb       -> Write(); 
   			     
-  hMcRightTrkMuPt               -> Write(); 
-  hMcWrongTrkMuPt               -> Write(); 
+  hMcRightMuPt               -> Write(); 
+  hMcWrongMuPt               -> Write(); 
+  hMcRightMuP               -> Write(); 
+  hMcWrongMuP               -> Write(); 
   hMcRightTrkBit4               -> Write(); 
   hMcWrongTrkBit4               -> Write(); 
   hMcRightTrkBit5               -> Write(); 
@@ -664,8 +702,10 @@ JPsiAnalyzerPAT::endJob() {
   hMcWrongTrkBitNew             -> Write();
   hMcRightTrkMuChi2             -> Write();   
   hMcWrongTrkMuChi2             -> Write(); 
-  hMcRightTrkMuNhits            -> Write(); 
-  hMcWrongTrkMuNhits            -> Write();
+  hMcRightMuNhits            -> Write(); 
+  hMcWrongMuNhits            -> Write();
+  hMcRightTrkMuCaloComp         -> Write();   
+  hMcWrongTrkMuCaloComp         -> Write(); 
 
   hMcRightGlbTrkMuMass          -> Write();
   hMcWrongGlbTrkMuMass        	-> Write();
@@ -697,10 +737,6 @@ JPsiAnalyzerPAT::endJob() {
   hMcWrongCalMuChi2             -> Write(); 
   hMcRightCalMuNhits            -> Write(); 
   hMcWrongCalMuNhits            -> Write(); 
-  hMcRightTrkMud0               -> Write(); 
-  hMcWrongTrkMud0               -> Write(); 
-  hMcRightTrkMudz               -> Write(); 
-  hMcWrongTrkMudz               -> Write(); 
   hMcRightCalMuCaloComp         -> Write();   
   hMcWrongCalMuCaloComp         -> Write(); 
   hMcRightCalMuPt               -> Write(); 
@@ -751,12 +787,18 @@ JPsiAnalyzerPAT::endJob() {
 }
 
 void 
-JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand){
+JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event& iEvent){
   
   const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon1"));
   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
   
   float theMass = aCand->mass();
+
+  // Only sidebands
+  /* if (aCand->mass() < 2.3 || aCand->mass() > 6.5  ||
+      (aCand->mass() < 3.3 && aCand->mass() > 2.9) ||
+      (aCand->mass() < 3.9 && aCand->mass() > 3.5)) 
+      return;*/
 
   float theRapidity = aCand->rapidity();
   if (!_useRapidity) theRapidity = theRapidity;
@@ -882,7 +924,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
         hMcRightCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
 	hMcRightCalGlbMuMass->Fill(theMass);           
 	hMcRightCalGlbMuVtxChi2->Fill(aCand->userFloat("vNChi2"));  
-	hMcRightCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
+	hMcRightCalGlbMuS->Fill(sqrt(pow(muon1->track()->dxy(RefVtx)/muon1->track()->d0Error(),2) + pow(muon2->track()->dxy(RefVtx)/muon2->track()->d0Error(),2)));
 	hMcRightCalGlbMucosAlpha->Fill(aCand->userFloat("cosAlpha"));
       }   
 
@@ -909,7 +951,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       } else if (theCat == 3) {    
 	hMcWrongCalGlbMuMass->Fill(theMass);           
 	hMcWrongCalGlbMuVtxChi2->Fill(aCand->userFloat("vNChi2"));  
-	hMcWrongCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
+	hMcWrongCalGlbMuS->Fill(sqrt(pow(muon1->track()->dxy(RefVtx)/muon1->track()->d0Error(),2) + pow(muon2->track()->dxy(RefVtx)/muon2->track()->d0Error(),2)));
 	hMcWrongCalGlbMucosAlpha->Fill(aCand->userFloat("cosAlpha"));
       }   
 
@@ -927,48 +969,55 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       const reco::HitPattern& p = iTrack->hitPattern();
 
       if (isMatched) {
+	hMcRightMunPixHits->Fill(p.pixelLayersWithMeasurement());
+	hMcRightMud0->Fill(fabs(iTrack->dxy(RefVtx)));
+	hMcRightMudz->Fill(fabs(iTrack->dz(RefVtx)));
+	hMcRightMuNhits->Fill(iTrack->found());
+	hMcRightMuPt->Fill(thisMuon->pt());
+        hMcRightMuP->Fill(thisMuon->p());
 	if (thisMuon->isGlobalMuon()) { 
+          TrackRef gTrack = thisMuon->globalTrack();
+          const reco::HitPattern& q = gTrack->hitPattern();
 	  if (genMu.isNonnull()) hMcRecoGlobMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
-	  hMcRightGlbMunPixHits->Fill(p.numberOfValidPixelHits());
-	  hMcRightGlbMud0->Fill(fabs(iTrack->d0()));
-	  hMcRightGlbMudz->Fill(fabs(iTrack->dz()));
-	  hMcRightGlbMuFirstLayer->Fill(p.getLayer(p.getHitPattern(0)));
+	  hMcRightGlbMuGlobalchi2->Fill(gTrack->chi2()/gTrack->ndof());
+          hMcRightGlbMunMuHits->Fill(q.numberOfValidMuonHits());
 	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!  
 	  if (genMu.isNonnull()) hMcRecoTrkMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
-          hMcRightTrkMuPt->Fill(thisMuon->pt());
+          hMcRightMunPixHits->Fill(p.pixelLayersWithMeasurement());
           hMcRightTrkBit4->Fill(int(thisMuon->muonID("TM2DCompatibilityLoose")));
           hMcRightTrkBit5->Fill(int(thisMuon->muonID("TM2DCompatibilityTight")));
 	  hMcRightTrkBit8->Fill(int(thisMuon->muonID("TMLastStationOptimizedLowPtLoose")));
 	  hMcRightTrkBit9->Fill(int(thisMuon->muonID("TMLastStationOptimizedLowPtTight")));
           hMcRightTrkBitNew->Fill(int(thisMuon->muonID("TMLastStationAngTight")));
           hMcRightTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
-          hMcRightTrkMuNhits->Fill(iTrack->found());
-          hMcRightTrkMud0->Fill(fabs(iTrack->d0()));
-	  hMcRightTrkMudz->Fill(fabs(iTrack->dz()));
+	  hMcRightTrkMuCaloComp->Fill(thisMuon->caloCompatibility()); 
 	} else if (thisMuon->isCaloMuon()) {
 	  if (genMu.isNonnull()) hMcRecoCalMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
 	  hMcRightCalMuPt->Fill(thisMuon->pt());
           hMcRightCalMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
           hMcRightCalMuNhits->Fill(iTrack->found());    
-	  hMcRightCalMuCaloComp->Fill(thisMuon->caloCompatibility());                    
+	  hMcRightCalMuCaloComp->Fill(thisMuon->caloCompatibility());   
 	}
       } else {
-	if (thisMuon->isGlobalMuon()) { 
-	  hMcWrongGlbMunPixHits->Fill(p.numberOfValidPixelHits());
-	  hMcWrongGlbMud0->Fill(fabs(iTrack->d0()));
-	  hMcWrongGlbMudz->Fill(fabs(iTrack->dz()));
-	  hMcWrongGlbMuFirstLayer->Fill(p.getLayer(p.getHitPattern(0)));
-	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!  
-          hMcWrongTrkMuPt->Fill(thisMuon->pt());
+	hMcWrongMunPixHits->Fill(p.pixelLayersWithMeasurement());
+        hMcWrongMud0->Fill(fabs(iTrack->dxy(RefVtx)));
+	hMcWrongMudz->Fill(fabs(iTrack->dz(RefVtx)));
+        hMcWrongMuNhits->Fill(iTrack->found());
+        hMcWrongMuPt->Fill(thisMuon->pt());
+	hMcWrongMuP->Fill(thisMuon->p());
+	if (thisMuon->isGlobalMuon()) {
+	  TrackRef gTrack = thisMuon->globalTrack();
+          const reco::HitPattern& q = gTrack->hitPattern();
+	  hMcWrongGlbMuGlobalchi2->Fill(gTrack->chi2()/gTrack->ndof());
+          hMcWrongGlbMunMuHits->Fill(q.numberOfValidMuonHits());
+	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!
           hMcWrongTrkBit4->Fill((int)thisMuon->muonID("TM2DCompatibilityLoose"));
           hMcWrongTrkBit5->Fill((int)thisMuon->muonID("TM2DCompatibilityTight"));
 	  hMcWrongTrkBit8->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtLoose"));
 	  hMcWrongTrkBit9->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtTight"));
 	  hMcWrongTrkBitNew->Fill(int(thisMuon->muonID("TMLastStationAngTight")));
           hMcWrongTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
-          hMcWrongTrkMuNhits->Fill(iTrack->found());
-          hMcWrongTrkMud0->Fill(fabs(iTrack->d0()));
-	  hMcWrongTrkMudz->Fill(fabs(iTrack->dz()));
+	  hMcWrongTrkMuCaloComp->Fill(thisMuon->caloCompatibility());
 	} else if (thisMuon->isCaloMuon()) {
 	  hMcWrongCalMuPt->Fill(thisMuon->pt());
           hMcWrongCalMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
@@ -1001,15 +1050,16 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     // to be done
   }
 
-  // if (!(trigger->accept(hltBits[0]))) return;
-
-  if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
+  if (muon1->charge()*muon2->charge() < 0 &&
+      theMass > JpsiMassMin && theMass < JpsiMassMax && 
       theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
       aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
       fabs(theRapidity) > JpsiEtaMin && fabs(theRapidity) < JpsiEtaMax) {
 	
     passedCandidates++;
     
+    if (_writeOutCands) *theTextFile << iEvent.id().run() << "\t" << iEvent.luminosityBlock() << "\t" << iEvent.id().event() << "\t" << theMass << "\n";
+
     JpsiPt->setVal(aCand->pt()); 
     JpsiEta->setVal(theRapidity); 
     JpsiMass->setVal(theMass);
@@ -1055,9 +1105,6 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
       // cout << "Now checking candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
       const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
       const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
-      
-      // Remove non-quarkonia region
-      // if (cand->mass() < 1.5 && cand->mass() > 15.) continue;
  
       bool thisSign = (sign == 0 && muon1->charge() + muon2->charge() == 0) || 
 	(sign == 1 && muon1->charge() + muon2->charge() == 2) || 
@@ -1204,13 +1251,18 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
 
-  return (iTrack->found() > 11 &&
+  return (
+	  //aMuon->pt() > 1.0 && aMuon->p() > 2.5 &&
+	  iTrack->found() > 11 &&
 	  aMuon->globalTrack()->chi2()/aMuon->globalTrack()->ndof() < 20.0 &&
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
+          iTrack->chi2()/iTrack->ndof() < 5.0 &&
+	  aMuon->muonID("TrackerMuonArbitrated") &&
+	  aMuon->muonID("TMLastStationAngTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
-	  fabs(iTrack->d0()) < 5.0 &&
-          fabs(iTrack->dz()) < 20.0 );
+	  fabs(iTrack->dxy(RefVtx)) < 5.0 &&
+          fabs(iTrack->dz(RefVtx)) < 20.0 );
 }
 
 bool 
@@ -1219,15 +1271,19 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
 
-  return (iTrack->found() > 11 &&
+  return (
+	  //aMuon->pt() > 1.0 && aMuon->p() > 2.5
+	  iTrack->found() > 11 &&
 	  iTrack->chi2()/iTrack->ndof() < 5.0 &&
-	  //   aMuon->muonID("TrackerMuonArbitrated") &&
+	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMLastStationAngTight") &&
+          // aMuon->muonID("TM2DCompatibilityTight") &&
+          // aMuon->muonID("TMLastStationOptimizedLowPtTight") &&
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
           p.pixelLayersWithMeasurement() > 1 &&
-	  fabs(iTrack->d0()) < 5.0 &&
-          fabs(iTrack->dz()) < 20.0 );
+	  fabs(iTrack->dxy(RefVtx)) < 5.0 &&
+          fabs(iTrack->dz(RefVtx)) < 20.0 );
 }
 
 bool 
@@ -1242,8 +1298,8 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
           p.pixelLayersWithMeasurement() > 1 &&
-	  fabs(iTrack->d0()) < 5.0 &&
-          fabs(iTrack->dz()) < 20.0 );
+	  fabs(iTrack->dxy(RefVtx)) < 5.0 &&
+          fabs(iTrack->dz(RefVtx)) < 20.0 );
 }
 
 int 

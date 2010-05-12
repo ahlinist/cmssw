@@ -29,8 +29,9 @@ int main(int argc, char* argv[]) {
   std::cout << "input: " << inputFileName << std::endl;
   ifstream *inputFile = new ifstream(inputFileName);
 
-  /// WEIGHTS HERE
-  float weights[] = {0.000841,0.909};
+  /// WEIGHTS AND SCALE HERE
+  float weights[] = {0.23,0.08,8.19,0.542};
+  int scaleStats = 10;
   ///
   /// CATEGORIES HERE
   RooCategory MCType("MCType","Category of MC");
@@ -45,9 +46,11 @@ int main(int argc, char* argv[]) {
   TFile theOutput("totalDataSet.root","RECREATE");
 
   RooDataSet* thisData;
+  RooDataSet* newData;
   RooDataSet* finalData;
 
   int nfiles=0;
+  int nevents=0;
 
   while( !(inputFile->eof()) ){
 
@@ -62,30 +65,35 @@ int main(int argc, char* argv[]) {
       RooDataSet* addVars = new RooDataSet("addVars","Weight and type",
 					   RooArgList(*MCweight,MCType));
 
-      const RooArgSet* thisRow;     
+      const RooArgSet* thisRow = thisData->get(0);   
+      newData = new RooDataSet("data","new data",*thisRow);
 
       for (Int_t iSamp = 0; iSamp < thisData->numEntries(); iSamp++)
 	{
-	  thisRow = thisData->get(iSamp);
-
-	  RooCategory* myMatched = (RooCategory*)thisRow->find("matchType");
-	  int isMatched = (int)(myMatched->getIndex());
-          int theMCType = 2;
-          if (isMatched && strstr(MyRootFile,"Jpsi")) theMCType = 0; 
-	  if (isMatched && strstr(MyRootFile,"MB")) theMCType = 1;
-
-          MCType.setIndex(theMCType);
-	  MCweight->setVal(weights[nfiles]);          
-           
-	  addVars->add(RooArgSet(*MCweight,MCType));
+          nevents++;
+          if (nevents%scaleStats == 0) {
+	    thisRow = thisData->get(iSamp);
+	    
+	    RooCategory* myMatched = (RooCategory*)thisRow->find("matchType");
+	    int isMatched = (int)(myMatched->getIndex());
+	    int theMCType = 2;
+	    if (isMatched && strstr(MyRootFile,"prompt")) theMCType = 0; 
+	    if (isMatched && strstr(MyRootFile,"nonpr")) theMCType = 1;
+	    
+	    MCType.setIndex(theMCType);
+	    MCweight->setVal(weights[nfiles]);          
+	    
+	    newData->add(*thisRow);
+	    addVars->add(RooArgSet(*MCweight,MCType));
+	  }
 	}
 
-      thisData->merge(addVars);
+      newData->merge(addVars);
 
       if (nfiles == 0) {
-	finalData = new RooDataSet(*thisData);
+	finalData = new RooDataSet(*newData);
       } else {
-	finalData->append(*thisData);
+	finalData->append(*newData);
       }
 
       nfiles++;

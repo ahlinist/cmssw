@@ -261,3 +261,8 @@ def onia2MuMu_isNotMC(process):
     process.onia2MuMuPatGlbTrk.addMCTruth = False
     process.onia2MuMuPatTrkTrk.addMCTruth = False
     process.onia2MuMuPatTrkCal.addMCTruth = False
+ #   process.onia2MuMuPatGlbGlb.addMuonlessPrimaryVertex = False
+ #   process.onia2MuMuPatGlbCal.addMuonlessPrimaryVertex = False
+ #   process.onia2MuMuPatGlbTrk.addMuonlessPrimaryVertex = False
+ #   process.onia2MuMuPatTrkTrk.addMuonlessPrimaryVertex = False
+ #   process.onia2MuMuPatTrkCal.addMuonlessPrimaryVertex = False
