@@ -557,7 +557,7 @@ void PromptAna_PMTNoise::BSCTriggers(const L1GlobalTriggerReadoutRecord& gtRecor
     *isbscminbias.get()=false;
 
   // BeamHalo
-  if (tWord.at(36) || tWord.at(37) || tWord.at(38) || tWord.at(39))
+  if ((tWord.at(36) || tWord.at(37) || tWord.at(38) || tWord.at(39)) || ((tWord.at(42) && !tWord.at(43)) || (tWord.at(43) && !tWord.at(42))))
     *isbschalo.get()=true;
   else
     *isbschalo.get()=false;
