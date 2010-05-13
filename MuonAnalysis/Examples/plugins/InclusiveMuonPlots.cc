@@ -15,7 +15,9 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "MuonAnalysis/Examples/interface/muonStations.h"
 
 // for "luminosity"
 #include "DataFormats/Common/interface/MergeableCounter.h"
@@ -88,6 +90,11 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "phi"); 
     book(*fs, pset, "charge"); 
 
+    book(*fs, pset, "pSta",   "p"); 
+    book(*fs, pset, "ptSta",  "pt"); 
+    book(*fs, pset, "etaSta", "eta"); 
+    book(*fs, pset, "phiSta", "phi"); 
+
     book(*fs, pset, "dxyCoarse");
     book(*fs, pset, "dxyFine");
     book(*fs, pset, "dzCoarse");
@@ -115,6 +122,14 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "combRelIso03", "relIso");
     book(*fs, pset, "combRelIso05", "relIso");
 
+    book(*fs, pset, "muonStationsValid",    "muonStations");
+    book(*fs, pset, "muonStationsAny",      "muonStations");
+    book(*fs, pset, "muonStationsDTValid",  "muonStations");
+    book(*fs, pset, "muonStationsDTAny",    "muonStations");
+    book(*fs, pset, "muonStationsCSCValid", "muonStations");
+    book(*fs, pset, "muonStationsCSCAny",   "muonStations");
+    book(*fs, pset, "muonStationsRPCValid", "muonStations");
+    book(*fs, pset, "muonStationsRPCAny",   "muonStations");
     book(*fs, pset, "segmentMatchesArb",     "segmentMatches"); 
     book(*fs, pset, "segmentMatchesNoArb",   "segmentMatches"); 
     book(*fs, pset, "segmentMatchesFailArb", "segmentMatches"); 
@@ -204,9 +219,34 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
             }
         }
         if (mu.outerTrack().isNonnull()) {
+            plots["pSta"  ]->Fill(mu.outerTrack()->p());
+            plots["ptSta" ]->Fill(mu.outerTrack()->pt());
+            plots["etaSta"]->Fill(mu.outerTrack()->eta());
+            plots["phiSta"]->Fill(mu.outerTrack()->phi());
+
             plots["muonHits"]->Fill(mu.outerTrack()->numberOfValidHits());
             plots["muonBadHits"]->Fill(mu.outerTrack()->recHitsSize() - mu.outerTrack()->numberOfValidHits());
             plots["muonChi2n"]->Fill(mu.outerTrack()->normalizedChi2());
+
+            if ( ( mu.outerTrack()->extra().isAvailable()   ) && 
+                 ( mu.outerTrack()->recHitsSize() > 0       ) &&
+                 ( mu.outerTrack()->recHit(0).isAvailable() )     ) {
+                plots["muonStationsValid"]->Fill(muon::muonStations(mu.outerTrack(), 0, true));
+                plots["muonStationsAny"  ]->Fill(muon::muonStations(mu.outerTrack(), 0, false));
+                float abseta = std::abs(mu.outerTrack()->eta());
+                if (abseta <= 1.2) {
+                    plots["muonStationsDTValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::DT, true));
+                    plots["muonStationsDTAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::DT, false));
+                } 
+                if (abseta <= 1.6) {
+                    plots["muonStationsRPCValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::RPC, true));
+                    plots["muonStationsRPCAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::RPC, false));
+                } 
+                if (abseta >= 0.8) {
+                    plots["muonStationsCSCValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::CSC, true));
+                    plots["muonStationsCSCAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::CSC, false));
+                }
+            }
         }
         if (mu.globalTrack().isNonnull()) {
             plots["globalHits"]->Fill(mu.globalTrack()->numberOfValidHits());
