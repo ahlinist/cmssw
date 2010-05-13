@@ -50,7 +50,7 @@
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 
-#include "HLTriggerOffline/Muon/interface/PropagateToMuon.h"
+#include "MuonAnalysis/MuonAssociators/interface/PropagateToMuon.h"
 
 #include <vector>
 #include <string>

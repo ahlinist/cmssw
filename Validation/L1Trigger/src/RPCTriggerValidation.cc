@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.11 2010/04/14 16:54:00 dbart Exp $
+// $Id: RPCTriggerValidation.cc,v 1.12 2010/05/10 20:31:14 dbart Exp $
 //
 //
 
@@ -45,7 +45,7 @@
 #include <DataFormats/MuonReco/interface/MuonTime.h>
 #include <DataFormats/MuonReco/interface/Muon.h>
 
-#include "HLTriggerOffline/Muon/interface/PropagateToMuon.h"
+#include "MuonAnalysis/MuonAssociators/interface/PropagateToMuon.h"
 
 #include <math.h>
 #include <algorithm>
