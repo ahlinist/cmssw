@@ -87,10 +87,10 @@ public:
 
   virtual ~JetIDStudiesSelector() {}
 
-  virtual bool operator()( edm::EventBase const & event, std::strbitset & ret){
+  virtual bool operator()( edm::EventBase const & event, pat::strbitset & ret){
 
-    std::strbitset retCaloJet = jetSel_->getBitTemplate();
-    std::strbitset retPFJet = pfJetSel_->getBitTemplate();
+    pat::strbitset retCaloJet = jetSel_->getBitTemplate();
+    pat::strbitset retPFJet = pfJetSel_->getBitTemplate();
 
 
     if ( considerCut("Calo Cuts") ) {
@@ -352,10 +352,10 @@ int main (int argc, char* argv[])
 
     if ( nev % 10000 == 0 ) cout << "Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
-    std::strbitset retCalo = caloSelector.getBitTemplate();
+    pat::strbitset retCalo = caloSelector.getBitTemplate();
     bool passedCalo = caloSelector( event, retCalo );
 
-    std::strbitset retPF = pfSelector.getBitTemplate();
+    pat::strbitset retPF = pfSelector.getBitTemplate();
     bool passedPF = pfSelector( event, retPF );
 
     ///------------------
