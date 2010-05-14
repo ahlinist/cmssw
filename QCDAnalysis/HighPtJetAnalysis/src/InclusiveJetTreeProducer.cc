@@ -13,7 +13,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
@@ -174,7 +174,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
         //  throw  cms::Exception("Configuration",errorMessage);
         }
 
-      triggerNames.init (*(triggerResultsHandle.product()));
+     // triggerNames.init (*(triggerResultsHandle.product())); //deprecated in CMSSW_3_6_X
 
 
       for(unsigned int i=0;i<mTriggerNames.size();i++) 
@@ -357,75 +357,75 @@ InclusiveJetTreeProducer::~InclusiveJetTreeProducer()
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::buildTree() 
 {
-  mGenMatchR    = new std::vector<double>();
-  mGenMatchPt   = new std::vector<double>();
-  mGenMatchEta  = new std::vector<double>();
-  mGenMatchPhi  = new std::vector<double>();
-  mPt           = new std::vector<double>();
-  mEta          = new std::vector<double>();
-  mEtaD         = new std::vector<double>();
-  mY            = new std::vector<double>();
-  mPhi          = new std::vector<double>();
-  mE            = new std::vector<double>();
-  mEmf          = new std::vector<double>();
-  mEtaMoment    = new std::vector<double>();
-  mPhiMoment    = new std::vector<double>();
+  mGenMatchR    = new std::vector<float>();
+  mGenMatchPt   = new std::vector<float>();
+  mGenMatchEta  = new std::vector<float>();
+  mGenMatchPhi  = new std::vector<float>();
+  mPt           = new std::vector<float>();
+  mEta          = new std::vector<float>();
+  mEtaD         = new std::vector<float>();
+  mY            = new std::vector<float>();
+  mPhi          = new std::vector<float>();
+  mE            = new std::vector<float>();
+  mEmf          = new std::vector<float>();
+  mEtaMoment    = new std::vector<float>();
+  mPhiMoment    = new std::vector<float>();
   mNtrkVtx      = new std::vector<int>   ();
   mNtrkCalo     = new std::vector<int>   ();
-  mTrkCaloPt    = new std::vector<double>();
-  mTrkCaloEta   = new std::vector<double>();
-  mTrkCaloPhi   = new std::vector<double>();
-  mTrkVtxPt     = new std::vector<double>();
-  mTrkVtxEta    = new std::vector<double>();
-  mTrkVtxPhi    = new std::vector<double>();
+  mTrkCaloPt    = new std::vector<float>();
+  mTrkCaloEta   = new std::vector<float>();
+  mTrkCaloPhi   = new std::vector<float>();
+  mTrkVtxPt     = new std::vector<float>();
+  mTrkVtxEta    = new std::vector<float>();
+  mTrkVtxPhi    = new std::vector<float>();
   mN90          = new std::vector<int>   ();
   mN90Hits      = new std::vector<int>   ();
-  mfHPD         = new std::vector<double>();
-  mfRBX         = new std::vector<double>();
-  mfHcalNoise   = new std::vector<double>();
-  mPVx          = new std::vector<double>();
-  mPVy          = new std::vector<double>();
-  mPVz          = new std::vector<double>();
-  mPVchi2       = new std::vector<double>();
-  mPVndof       = new std::vector<double>();
+  mfHPD         = new std::vector<float>();
+  mfRBX         = new std::vector<float>();
+  mfHcalNoise   = new std::vector<float>();
+  mPVx          = new std::vector<float>();
+  mPVy          = new std::vector<float>();
+  mPVz          = new std::vector<float>();
+  mPVchi2       = new std::vector<float>();
+  mPVndof       = new std::vector<float>();
   mPVntracks    = new std::vector<int>();
   
-  mTree->Branch("pt"                 ,"vector<double>"      ,&mPt);
-  mTree->Branch("eta"                ,"vector<double>"      ,&mEta);
-  mTree->Branch("etaDetector"        ,"vector<double>"      ,&mEtaD);
-  mTree->Branch("y"                  ,"vector<double>"      ,&mY);
-  mTree->Branch("phi"                ,"vector<double>"      ,&mPhi);
-  mTree->Branch("e"                  ,"vector<double>"      ,&mE);
-  mTree->Branch("emf"                ,"vector<double>"      ,&mEmf);
-  mTree->Branch("etaMoment"          ,"vector<double>"      ,&mEtaMoment);
-  mTree->Branch("phiMoment"          ,"vector<double>"      ,&mPhiMoment);
+  mTree->Branch("pt"                 ,"vector<float>"      ,&mPt);
+  mTree->Branch("eta"                ,"vector<float>"      ,&mEta);
+  mTree->Branch("etaDetector"        ,"vector<float>"      ,&mEtaD);
+  mTree->Branch("y"                  ,"vector<float>"      ,&mY);
+  mTree->Branch("phi"                ,"vector<float>"      ,&mPhi);
+  mTree->Branch("e"                  ,"vector<float>"      ,&mE);
+  mTree->Branch("emf"                ,"vector<float>"      ,&mEmf);
+  mTree->Branch("etaMoment"          ,"vector<float>"      ,&mEtaMoment);
+  mTree->Branch("phiMoment"          ,"vector<float>"      ,&mPhiMoment);
   mTree->Branch("nTrkVtx"            ,"vector<int>"         ,&mNtrkVtx);
   mTree->Branch("nTrkCalo"           ,"vector<int>"         ,&mNtrkCalo);
-  mTree->Branch("TrkCaloPt"          ,"vector<double>"      ,&mTrkCaloPt);
-  mTree->Branch("TrkCaloEta"         ,"vector<double>"      ,&mTrkCaloEta);
-  mTree->Branch("TrkCaloPhi"         ,"vector<double>"      ,&mTrkCaloPhi);
-  mTree->Branch("TrkVtxPt"           ,"vector<double>"      ,&mTrkVtxPt);
-  mTree->Branch("TrkVtxEta"          ,"vector<double>"      ,&mTrkVtxEta);
-  mTree->Branch("TrkVtxPhi"          ,"vector<double>"      ,&mTrkVtxPhi);
+  mTree->Branch("TrkCaloPt"          ,"vector<float>"      ,&mTrkCaloPt);
+  mTree->Branch("TrkCaloEta"         ,"vector<float>"      ,&mTrkCaloEta);
+  mTree->Branch("TrkCaloPhi"         ,"vector<float>"      ,&mTrkCaloPhi);
+  mTree->Branch("TrkVtxPt"           ,"vector<float>"      ,&mTrkVtxPt);
+  mTree->Branch("TrkVtxEta"          ,"vector<float>"      ,&mTrkVtxEta);
+  mTree->Branch("TrkVtxPhi"          ,"vector<float>"      ,&mTrkVtxPhi);
   mTree->Branch("n90"                ,"vector<int>"         ,&mN90);
   mTree->Branch("n90hits"            ,"vector<int>"         ,&mN90Hits);
-  mTree->Branch("fHPD"               ,"vector<double>"      ,&mfHPD);
-  mTree->Branch("fRBX"               ,"vector<double>"      ,&mfRBX);  
-  mTree->Branch("fHcalNoise"         ,"vector<double>"      ,&mfHcalNoise);
-  mTree->Branch("PVx"                ,"vector<double>"      ,&mPVx);
-  mTree->Branch("PVy"                ,"vector<double>"      ,&mPVy);
-  mTree->Branch("PVz"                ,"vector<double>"      ,&mPVz);
-  mTree->Branch("PVchi2"             ,"vector<double>"      ,&mPVchi2);
-  mTree->Branch("PVndof"             ,"vector<double>"      ,&mPVndof);
+  mTree->Branch("fHPD"               ,"vector<float>"      ,&mfHPD);
+  mTree->Branch("fRBX"               ,"vector<float>"      ,&mfRBX);  
+  mTree->Branch("fHcalNoise"         ,"vector<float>"      ,&mfHcalNoise);
+  mTree->Branch("PVx"                ,"vector<float>"      ,&mPVx);
+  mTree->Branch("PVy"                ,"vector<float>"      ,&mPVy);
+  mTree->Branch("PVz"                ,"vector<float>"      ,&mPVz);
+  mTree->Branch("PVchi2"             ,"vector<float>"      ,&mPVchi2);
+  mTree->Branch("PVndof"             ,"vector<float>"      ,&mPVndof);
   mTree->Branch("PVntracks"          ,"vector<int>"         ,&mPVntracks);
   mTree->Branch("evtNo"              ,&mEvtNo               ,"mEvtNo/I");
   mTree->Branch("runNo"              ,&mRunNo               ,"mRunNo/I");
   mTree->Branch("lumi"               ,&mLumi                ,"mLumi/I");
   mTree->Branch("bunch"              ,&mBunch               ,"mBunch/I");
-  mTree->Branch("met"                ,&mMET                 ,"mMET/D");
-  mTree->Branch("sumet"              ,&mSumET               ,"mSumET/D");
-  mTree->Branch("metNoHF"            ,&mMETnoHF             ,"mMETnoHF/D");
-  mTree->Branch("sumetNoHF"          ,&mSumETnoHF           ,"mSumETnoHF/D");
+  mTree->Branch("met"                ,&mMET                 ,"mMET/F");
+  mTree->Branch("sumet"              ,&mSumET               ,"mSumET/F");
+  mTree->Branch("metNoHF"            ,&mMETnoHF             ,"mMETnoHF/F");
+  mTree->Branch("sumetNoHF"          ,&mSumETnoHF           ,"mSumETnoHF/F");
   mTree->Branch("passLooseHcalNoise" ,&mLooseHcalNoise      ,"mLooseHcalNoise/I"); 	 
   mTree->Branch("passTightHcalNoise" ,&mTightHcalNoise      ,"mTightHcalNoise/I");
 
@@ -445,12 +445,12 @@ void InclusiveJetTreeProducer::buildTree()
 
   if(mIsMCarlo)
     {
-      mTree->Branch("pthat"          ,&mPtHat               ,"mPtHat/D");
-      mTree->Branch("weight"         ,&mWeight              ,"mWeight/D");
-      mTree->Branch("genMatchR"      ,"vector<double>"      ,&mGenMatchR);
-      mTree->Branch("genMatchPt"     ,"vector<double>"      ,&mGenMatchPt);
-      mTree->Branch("genMatchEta"    ,"vector<double>"      ,&mGenMatchEta);
-      mTree->Branch("genMatchPhi"    ,"vector<double>"      ,&mGenMatchPhi);
+      mTree->Branch("pthat"          ,&mPtHat               ,"mPtHat/F");
+      mTree->Branch("weight"         ,&mWeight              ,"mWeight/F");
+      mTree->Branch("genMatchR"      ,"vector<float>"      ,&mGenMatchR);
+      mTree->Branch("genMatchPt"     ,"vector<float>"      ,&mGenMatchPt);
+      mTree->Branch("genMatchEta"    ,"vector<float>"      ,&mGenMatchEta);
+      mTree->Branch("genMatchPhi"    ,"vector<float>"      ,&mGenMatchPhi);
     }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -462,7 +462,7 @@ bool InclusiveJetTreeProducer::preTreeFillCut()
 
 
 // If there ain't any jets there isn't a lot we can do!
-// if ((*mPt).size() < 1) return false;
+if ((*mPt).size() < 1) return false;
 
 return true;
 }
