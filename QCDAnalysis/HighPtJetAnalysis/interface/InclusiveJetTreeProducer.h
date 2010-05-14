@@ -83,15 +83,15 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     bool mFillHLT, mFillL1;
     //---- TREE variables --------
     int mRunNo, mEvtNo, mLumi, mBunch, mLooseHcalNoise, mTightHcalNoise;
-    double mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
+    float mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
     std::vector<int>    *mNtrkVtx,*mNtrkCalo,*mN90,*mN90Hits,*mPVntracks;
-    std::vector<double> *mGenMatchR,*mGenMatchPt,*mGenMatchEta,*mGenMatchPhi;
-    std::vector<double> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
-    std::vector<double> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
-    std::vector<double> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
-    std::vector<double> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
-    std::vector<double> *mPVx,*mPVy,*mPVz,*mPVchi2,*mPVndof;
-    std::vector<double> *mfHcalNoise;
+    std::vector<float> *mGenMatchR,*mGenMatchPt,*mGenMatchEta,*mGenMatchPhi;
+    std::vector<float> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
+    std::vector<float> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
+    std::vector<float> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
+    std::vector<float> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
+    std::vector<float> *mPVx,*mPVy,*mPVz,*mPVchi2,*mPVndof;
+    std::vector<float> *mfHcalNoise;
     TrigStruct mHLTTrigResults[100],mL1TrigResults[100];
 };
 #endif
