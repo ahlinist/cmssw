@@ -250,9 +250,9 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
     }
   }
 
-  // If not found, match PF tau and L1extra central jet
-  if(!hasL1Jet) {
-    for(iJet = l1CentralJetHandle->begin(); iJet != l1CentralJetHandle->end(); ++iJet) {
+  // Match L1 central jets, if L1TauJet was found insidet
+  // jetMatchingCone, jetMinDR holds the DR in there.
+  for(iJet = l1CentralJetHandle->begin(); iJet != l1CentralJetHandle->end(); ++iJet) {
       //if(iJet->et() <= 5.)
       //  continue;
 
@@ -273,7 +273,6 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
                   << std::endl;
         */
       }
-    }
   }
 
   if(hasL1Jet) {
