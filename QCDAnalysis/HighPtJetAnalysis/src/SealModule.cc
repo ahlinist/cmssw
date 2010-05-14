@@ -15,33 +15,33 @@
 #include "DataFormats/METReco/interface/GenMET.h"
 using namespace reco;
 
-DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_MODULE(InclusiveJetTreeProducer);
-DEFINE_ANOTHER_FWK_MODULE(InclusiveJetAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(DijetAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(JetTriggerFilter);
-DEFINE_ANOTHER_FWK_MODULE(CaloDijetTreeProducer);
+//DEFINE_SEAL_MODULE();
+DEFINE_FWK_MODULE(InclusiveJetTreeProducer);
+DEFINE_FWK_MODULE(InclusiveJetAnalyzer);
+DEFINE_FWK_MODULE(DijetAnalyzer);
+DEFINE_FWK_MODULE(JetTriggerFilter);
+DEFINE_FWK_MODULE(CaloDijetTreeProducer);
 
 typedef SimpleInclusiveJetAnalyzer<CaloJet> SimpleInclusiveCaloJetAnalyzer;
-DEFINE_ANOTHER_FWK_MODULE(SimpleInclusiveCaloJetAnalyzer);
+DEFINE_FWK_MODULE(SimpleInclusiveCaloJetAnalyzer);
 
 typedef SimpleInclusiveJetAnalyzer<GenJet> SimpleInclusiveGenJetAnalyzer;
-DEFINE_ANOTHER_FWK_MODULE(SimpleInclusiveGenJetAnalyzer);
+DEFINE_FWK_MODULE(SimpleInclusiveGenJetAnalyzer);
 
 typedef MultiJetAnalyzer<CaloJet> MultiCaloJetAnalyzer;
-DEFINE_ANOTHER_FWK_MODULE(MultiCaloJetAnalyzer);
+DEFINE_FWK_MODULE(MultiCaloJetAnalyzer);
 
 typedef MultiJetAnalyzer<GenJet> MultiGenJetAnalyzer;
-DEFINE_ANOTHER_FWK_MODULE(MultiGenJetAnalyzer);
+DEFINE_FWK_MODULE(MultiGenJetAnalyzer);
 
 typedef METFilter<CaloMET> CaloMETFilter;
-DEFINE_ANOTHER_FWK_MODULE(CaloMETFilter);
+DEFINE_FWK_MODULE(CaloMETFilter);
 
 typedef METFilter<GenMET> GenMETFilter;
-DEFINE_ANOTHER_FWK_MODULE(GenMETFilter);
+DEFINE_FWK_MODULE(GenMETFilter);
 
 typedef MultiJetFilter<CaloJet> MultiCaloJetFilter;
-DEFINE_ANOTHER_FWK_MODULE(MultiCaloJetFilter);
+DEFINE_FWK_MODULE(MultiCaloJetFilter);
 
 typedef MultiJetFilter<GenJet> MultiGenJetFilter;
-DEFINE_ANOTHER_FWK_MODULE(MultiGenJetFilter);
+DEFINE_FWK_MODULE(MultiGenJetFilter);
