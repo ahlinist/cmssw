@@ -137,6 +137,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       rechitenergy->push_back(energy);
       rechitflag->push_back(hf->flags());
       double eta=0.5*(theHFEtaBounds[abs(ieta)-29]+theHFEtaBounds[abs(ieta)-28]);
+      if( abs(ieta)==29 ) eta=0.5*(theHFEtaBounds[1]+theHFEtaBounds[2]); // HF RecHits at ieta=29 are added to CaloTowers at ieta=30
       rechitET->push_back(energy/cosh(eta));
 
       if (debug_>2) cout <<"\t\tSearching for partner for HF("
