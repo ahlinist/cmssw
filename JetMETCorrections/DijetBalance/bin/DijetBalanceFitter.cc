@@ -27,7 +27,7 @@ int main(int argc, char**argv)
    
   char name[1024];
   int ptbin,etabin,i;
-  double mPt,ePt,sPt,mB,eB,sB,seB,r,e;
+  double mPt,ePt,sPt,mB,eB,sB,r,e;
   const int MAX_NETA = 83;
   const int MAX_NPT = 21;
   int NPT = DijetPtBnd.size()-1;
