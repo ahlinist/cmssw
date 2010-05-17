@@ -1,3 +1,6 @@
+# for the list of used tags please see:
+# https://twiki.cern.ch/twiki/bin/view/CMS/Onia2MuMuSamples
+
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("SkimmingOnia2MuMuPAT")
