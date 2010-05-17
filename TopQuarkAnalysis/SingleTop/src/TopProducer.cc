@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc,v 1.7 2010/03/31 11:01:05 oiorio Exp $ 
+ *\version  $Id: TopProducer.cc,v 1.8 2010/03/31 12:30:22 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -227,11 +227,13 @@ std::vector<math::XYZTLorentzVector> TopProducer::Nu4Momentum(const reco::Candid
   
   
     
-    pznu = std::min(fabs(pz1),fabs(pz2));
 
     if(usePzPlusSolutions_)pznu = pz1;    
     if(usePzMinusSolutions_)pznu = pz2;
-    if(usePzAbsValMinimumSolutions_)pznu = std::min(fabs(pz1),fabs(pz2));
+    if(usePzAbsValMinimumSolutions_){
+      pznu = pz1;
+      if(fabs(pz1)>fabs(pz2)) pznu = pz2;
+    }
     
 
   double Enu = sqrt(MisET2 + pznu*pznu);
