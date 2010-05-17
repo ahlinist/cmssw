@@ -1,17 +1,15 @@
 <flags EDM_PLUGIN=1>
-<use name=root>
-	
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
+<use name=FWCore/ServiceRegistry>
 <use name=DataFormats/JetReco>
-
+<use name=DataFormats/Candidate>
+<use name=DataFormats/HepMCCandidate>
+<use name=DataFormats/Common>
+<use name=SimDataFormats/GeneratorProducts>
+<use name=clhep> 
+<use name=root>
 <use name=HLTrigger/HLTcore>
 <export>
-  <lib name=JetMETCorrections/DijetBalance>
-  <use name=root>
-  
-  <use name=FWCore/Framework>
-  <use name=FWCore/ParameterSet>
-  
-  <use name=HLTrigger/HLTcore>
+  <lib name=JetMETCorrectionsDijetBalance>
 </export>
