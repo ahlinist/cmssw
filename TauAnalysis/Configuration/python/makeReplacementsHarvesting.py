@@ -24,7 +24,9 @@
 #                TauAnalysis/Configuration/python/plotZtoMuTau_processes_cfi.py
 #                ...
 #          (e.g. ZtautauPlusJets)
-#      (3) replacements
+#      (3) type
+#          dummy parameter (needed for switching analysis jobs between Monte Carlo and data)
+#      (4) replacements
 #          list of replace statements
 #
 #       The replacements string given as function argument will be extended by statements
@@ -35,7 +37,7 @@
 #
 #--------------------------------------------------------------------------------
 
-def makeReplacementsHarvesting(channel = None, sample = None, replacements = None):
+def makeReplacementsHarvesting(channel = None, sample = None, type = None, replacements = None):
 
     # check that channel, sample and replacements parameters are defined and non-empty
     if channel is None:
