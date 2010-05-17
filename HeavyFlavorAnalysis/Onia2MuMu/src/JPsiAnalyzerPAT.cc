@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.25 2010/04/28 07:57:30 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.26 2010/05/12 09:50:33 covarell Exp $
 //
 //
 
@@ -256,6 +256,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _removeMuons;
       bool           _storeWs;
       bool           _writeOutCands;
+      bool           _inclPsiP;
       // InputTag       _triggerresults;
       vector<unsigned int>                     _thePassedCats[3];
       vector<const pat::CompositeCandidate*>   _thePassedCands[3];
@@ -308,7 +309,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _removeSignal(iConfig.getUntrackedParameter<bool>("removeSignalEvents",false)),
   _removeMuons(iConfig.getUntrackedParameter<bool>("removeTrueMuons",false)),
   _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false)),
-  _writeOutCands(iConfig.getUntrackedParameter<bool>("writeOutCandidates",false))
+  _writeOutCands(iConfig.getUntrackedParameter<bool>("writeOutCandidates",false)),
+  _inclPsiP(iConfig.getUntrackedParameter<bool>("includePsiPrime",false))
   // _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
@@ -316,7 +318,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   passedCandidates = 0;
 
   JpsiMassMin = 2.6;
-  JpsiMassMax = 3.6;
+  JpsiMassMax = 3.5;
+  if (_inclPsiP) JpsiMassMax = 4.2;
   JpsiMassMinSide = 0.;
   JpsiMassMaxSide = 12.0;
   JpsiCtMin = -1.0;
@@ -408,25 +411,25 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    // try {iEvent.getByLabel("onia2MuMuPatGlbTrk",collGT);}
    // catch (...) {cout << "Global-tracker J/psi not present in event!" << endl;}
    
-   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
-   iEvent.getByLabel("offlineBeamSpot",recoBeamSpotHandle);
-   reco::BeamSpot bs = *recoBeamSpotHandle;
+   // edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+   // iEvent.getByLabel("offlineBeamSpot",recoBeamSpotHandle);
+   // reco::BeamSpot bs = *recoBeamSpotHandle;
 
-   if (_useBS) {
-     RefVtx = bs.position();
+   // if (_useBS) {
+   //  RefVtx = bs.position();
+   // } else {
+
+   Handle<reco::VertexCollection> privtxs;
+   iEvent.getByLabel("offlinePrimaryVertices", privtxs);
+   VertexCollection::const_iterator privtx;
+
+   if ( privtxs->begin() != privtxs->end() ) {
+     privtx=privtxs->begin();
+     RefVtx = privtx->position();
    } else {
-
-     Handle<reco::VertexCollection> privtxs;
-     iEvent.getByLabel("offlinePrimaryVertices", privtxs);
-     VertexCollection::const_iterator privtx;
-
-     if ( privtxs->begin() != privtxs->end() ) {
-       privtx=privtxs->begin();
-       RefVtx = privtx->position();
-     } else {
-       RefVtx = bs.position();
-     }
+     RefVtx.SetXYZ(0.,0.,0.);
    }
+   // }
 
    try {iEvent.getByLabel(_patJpsi,collAll);} 
    catch (...) {cout << "J/psi not present in event!" << endl;}
