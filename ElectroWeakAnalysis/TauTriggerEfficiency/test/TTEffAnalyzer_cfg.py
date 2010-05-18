@@ -24,6 +24,10 @@ process.MessageLogger.cerr.TTEffAnalyzer = cms.untracked.PSet(limit = cms.untrac
 # process.MessageLogger.cerr.threshold = cms.untracked.string("INFO")    # print LogInfos and above
 # process.MessageLogger.cerr.threshold = cms.untracked.string("WARNING") # print LogWarnings and above
 
+process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True)
+)
+
 #Mike needs Calo Geometry
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
@@ -31,7 +35,7 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #        "rfio:/castor/cern.ch/user/s/slehti/testData/skim_1054.root"
-	'/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/133/532/EC93873A-D74B-DF11-A1B9-00E08179185D.root'
+	'/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/133/510/C024B5CF-A04B-DF11-9CD4-001A64789D28.root'
     )
 )
 
@@ -95,17 +99,17 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
         #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
 
-	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT"),
-	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT"),
+	L1extraTauJetSource	= cms.InputTag("l1extraParticles", "Tau"),
+	L1extraCentralJetSource	= cms.InputTag("l1extraParticles", "Central"),
 
-	L1extraMETSource	= cms.InputTag("hltL1extraParticles", "MET", "HLT"),
-	L1extraMHTSource	= cms.InputTag("hltL1extraParticles", "MHT", "HLT"),
+	L1extraMETSource	= cms.InputTag("l1extraParticles", "MET"),
+	L1extraMHTSource	= cms.InputTag("l1extraParticles", "MHT"),
 
 
         L1CaloRegionSource      = cms.InputTag("hltGctDigis"), # "", "TTEff"),                               
-        L1GtReadoutRecord       = cms.InputTag("hltGtDigis","","HLT"),
+        L1GtReadoutRecord       = cms.InputTag("gtDigis",""),
         L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","HLT"),
-        HltResults              = cms.InputTag("TriggerResults"),
+        HltResults              = cms.InputTag("TriggerResults","","HLT"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
         L1IsolationThresholds   = cms.vuint32(1,2,3,4), # count regions with "et() < threshold", these are in GeV
@@ -133,10 +137,10 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 # each analyzer loops over different collection and produces a
 # different output file
 process.TTEffAnalysisL1Tau = process.TTEffAnalysis.clone()
-process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("hltL1extraParticles", "Tau", "HLT")
+process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("l1extraParticles", "Tau")
 process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root");
 process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
-process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("hltL1extraParticles", "Central", "HLT")
+process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("l1extraParticles", "Central")
 process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
@@ -170,10 +174,9 @@ process.runEDAna = cms.Path(
 #    outputCommands = cms.untracked.vstring("keep *"),
 #    fileName = cms.untracked.string('cmssw.root')
 #)
-#process.outpath = cms.EndPath(process.o1)
 #process.outpath = cms.Path(process.o1)
 
 process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau,
-#                                ,process.PFTausSelected,
-#process.runEDAna,process.outpath)
-process.runEDAna)
+#                               process.PFTausSelected,
+#                               process.runEDAna,process.outpath)
+                                process.runEDAna)
