@@ -82,6 +82,7 @@ process.source = cms.Source("PoolSource",
 #__process.analyzeZtoElecMuEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoElecMuPlots.outputFileName = #plotsOutputFileName#
 #__#isBatchMode#
+#__process.GlobalTag.globaltag = '#globalTag#'
 #
 #--------------------------------------------------------------------------------
 
