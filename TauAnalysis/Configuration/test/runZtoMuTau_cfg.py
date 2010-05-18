@@ -87,6 +87,7 @@ process.source = cms.Source("PoolSource",
 #__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
 #__#isBatchMode#
 #__#disableEventDump#
+#__process.GlobalTag.globaltag = '#globalTag#'
 #
 #--------------------------------------------------------------------------------
 
