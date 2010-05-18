@@ -100,7 +100,8 @@ def submitToBatch(configFile = None, channel = None, sample = None,
 
     if replFunction is not None:
         replacements = replFunction(channel = channel, sample = sample, type = type, replacements = replacements)
-	
+	#print replacements
+
     # delete previous version of modified config file if it exists
     if os.path.exists(configFile_mod):
         os.remove(configFile_mod)
@@ -128,6 +129,7 @@ cd -
 cmsRun %(config)s
 set rootFiles=(`/bin/ls *.root`)
 foreach rootFile (${rootFiles})
+	echo "Checking for pre-existing file:"
 	rfrm %(outDir)s/${rootFile}
 	echo "copying ${rootFile} to %(outDir)s"
 	rfcp ${rootFile} %(outDir)s

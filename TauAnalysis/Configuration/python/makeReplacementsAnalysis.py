@@ -79,6 +79,8 @@ def makeReplacementsAnalysis(channel = None, sample = None, type = None, replace
 			inputFileType = paramValue
 		if paramName == "maxEvents":
 			replaceStatements_retVal.append(replaceStatement)
+		if paramName == "globalTag":
+			replaceStatements_retVal.append(replaceStatement)
 		if paramName == "applyFactorization":
 			if paramValue.lower() == "false":
 				factorization = ""
