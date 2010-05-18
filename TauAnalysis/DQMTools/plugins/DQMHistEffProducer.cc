@@ -113,48 +113,6 @@ void DQMHistEffProducer::analyze(const edm::Event&, const edm::EventSetup&)
 //--- nothing to be done yet
 }
 
-float* getBinning(const TAxis* axis)
-{
-  unsigned numBins = axis->GetNbins();
-
-  float* binEdges_float = new float[numBins + 1];
-
-  for ( unsigned iBin = 0; iBin < numBins; ++iBin ) {
-    binEdges_float[iBin] = axis->GetBinLowEdge(iBin + 1);
-  }
-
-  binEdges_float[numBins] = axis->GetBinUpEdge(numBins);
-
-  return binEdges_float;
-}
-
-std::vector<TH1*> getHistograms(DQMStore& dqmStore, const std::vector<std::string>& meNames, bool& dqmError)
-{
-  std::vector<TH1*> histograms;
-
-  for ( std::vector<std::string>::const_iterator meName = meNames.begin();
-	meName != meNames.end(); ++meName ) {
-    std::string histogramName, histogramDirectory;
-    separateMonitorElementFromDirectoryName(*meName, histogramName, histogramDirectory);
-
-    MonitorElement* me = dqmStore.get(std::string(histogramDirectory).append(dqmSeparator).append(histogramName));
-
-    TH1* histogram = ( me != NULL ) ? me->getTH1() : NULL;
-    //std::cout << "meName = " << (*meName) << ": integral = " << histogram->Integral() << std::endl;
-
-    if ( histogram ) {
-      if ( !histogram->GetSumw2N() ) histogram->Sumw2();
-
-      histograms.push_back(histogram);
-    } else {
-      edm::LogError("DQMHistEffProducer") << " Failed to retrieve MonitorElement = " << (*meName) << " --> skipping !!";
-      dqmError = true;
-    }
-  } 
-
-  return histograms;
-}
-
 TH1* computeHistogramProd(const std::vector<TH1*>& histograms, bool& isOwned)
 {
   if ( histograms.size() == 0 ) {
@@ -223,6 +181,21 @@ TH1* computeHistogramProd(const std::vector<TH1*>& histograms, bool& isOwned)
   }
 }
 
+float* getBinning(const TAxis* axis)
+{
+  unsigned numBins = axis->GetNbins();
+
+  float* binEdges_float = new float[numBins + 1];
+
+  for ( unsigned iBin = 0; iBin < numBins; ++iBin ) {
+    binEdges_float[iBin] = axis->GetBinLowEdge(iBin + 1);
+  }
+
+  binEdges_float[numBins] = axis->GetBinUpEdge(numBins);
+
+  return binEdges_float;
+}
+
 void DQMHistEffProducer::endJob()
 {
   //std::cout << "<DQMHistEffProducer::endJob>:" << std::endl;
@@ -237,13 +210,13 @@ void DQMHistEffProducer::endJob()
 
   for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntryPlots_.begin(); 
         plot != cfgEntryPlots_.end(); ++plot ) {
-    bool dqmError = false;
 
+    bool dqmError = false;
     std::vector<TH1*> histogramsNumerator = getHistograms(dqmStore, plot->meNames_numerator_, dqmError);
     std::vector<TH1*> histogramsDenominator = getHistograms(dqmStore, plot->meNames_denominator_, dqmError);
     
     if ( !dqmError ) {
-      std::string effHistogramName, effHistogramDirectory, dummy;
+      std::string effHistogramName, effHistogramDirectory;
       separateMonitorElementFromDirectoryName(plot->meName_efficiency_, effHistogramName, effHistogramDirectory);
       dqmStore.setCurrentFolder(effHistogramDirectory);
 
@@ -253,9 +226,14 @@ void DQMHistEffProducer::endJob()
 	int numDimensions_i = (*histogramNumerator)->GetDimension();
 	if ( numDimensions == -1 ) numDimensions = numDimensions_i;
 	if ( numDimensions != -1 && numDimensions_i != numDimensions ) {
-	  edm::LogError("endJob") << " Mismatch in Histogram dimensionality !!";
+	  edm::LogError("DQMHistEffProducer::endJob") << " Mismatch in Histogram dimensionality !!";
 	  std::cout << "(found = " << numDimensions_i << ", expected = " << numDimensions << ")" << std::endl;
 	}
+      }
+
+      if ( !(numDimensions == 1 || numDimensions == 2) ) {
+	edm::LogError("DQMHistEffProducer::endJob") << " Unsupported Histogram dimensionality = " << numDimensions << " !!";
+	continue;
       }
 
       bool histogramProdNumerator_isOwned;
@@ -278,7 +256,7 @@ void DQMHistEffProducer::endJob()
 	histogramEfficiency->getTH2F()->Divide(histogramProdNumerator, histogramProdDenominator, 1., 1., "B");
 	delete[] binEdgesX;
 	delete[] binEdgesY;
-      } 
+      }
 
       if ( histogramProdNumerator_isOwned   ) delete histogramProdNumerator;
       if ( histogramProdDenominator_isOwned ) delete histogramProdDenominator;
