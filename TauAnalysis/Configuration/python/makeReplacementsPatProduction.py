@@ -71,6 +71,8 @@ def makeReplacementsPatProduction(channel = None, sample = None, type = None, re
 
 		if paramName == "maxEvents":
 			replaceStatements_retVal.append(replaceStatement)
+		if paramName == "globalTag":
+			replaceStatements_retVal.append(replaceStatement)
 
 	# replace inputFileName parameter
 	inputFileNames = "fileNames" + sample
