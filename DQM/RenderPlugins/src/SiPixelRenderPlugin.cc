@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.34 $
-  \date $Date: 2010/04/21 17:10:01 $
+  \version $Revision: 1.35 $
+  \date $Date: 2010/04/21 21:41:15 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -234,7 +234,9 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       if( o.name.find( "FedChLErrArray" ) != std::string::npos )
       {
         gPad->SetGrid();
-	obj->SetOption("text");
+	gPad->SetRightMargin(0.15);
+        gStyle->SetPalette(1);
+	obj->SetOption("colztext");
       }
       
       if( o.name.find( "FedETypeNErrArray" ) != std::string::npos )
@@ -243,7 +245,8 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
 	gPad->SetLeftMargin(0.3);
 	gPad->SetRightMargin(0.15);
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
+        obj->SetOption("colztext");
+	if( obj->GetEntries() > 0. ) gPad->SetLogz(1);
 	return;
       }
       
@@ -252,7 +255,8 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
         gPad->SetGrid();
 	gPad->SetRightMargin(0.15);
         gStyle->SetPalette(1);
-        obj->SetOption("colz");
+        obj->SetOption("colztext");
+	if( obj->GetEntries() > 0. ) gPad->SetLogz(1);
       }
       
       TH2F* obj2 = dynamic_cast<TH2F*>( o.object );
