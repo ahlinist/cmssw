@@ -7,7 +7,7 @@
  *  given number of events tested (denominator) and passed (numerator)
  *  in form of two MonitorElements of type float
  *
- *  $Date: 2009/11/20 15:28:02 $
+ *  $Date: 2009/11/27 18:36:05 $
  *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
@@ -34,7 +34,7 @@ class DQMBinErrorCalculator : public edm::EDAnalyzer
 
     std::string label_;
 
-    mutable int error_;
+    mutable bool error_;
   };
 
  public:
