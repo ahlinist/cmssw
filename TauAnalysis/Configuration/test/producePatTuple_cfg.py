@@ -11,7 +11,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'GR10_P_V5::All'
+process.GlobalTag.globaltag = 'START3X_V27::All'
 
 
 #--------------------------------------------------------------------------------
@@ -43,12 +43,13 @@ process.savePatTuple = cms.OutputModule("PoolOutputModule",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-	input = cms.untracked.int32(10)    
+	input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_24_0.root'
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_100_1.root'
+		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_24_0.root'
 		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_17.root'
 	)
 	#skipBadFiles = cms.untracked.bool(True)    
@@ -61,6 +62,7 @@ process.source = cms.Source("PoolSource",
 #__process.source.fileNames = #inputFileNames#
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.savePatTuple.fileName = #patTupleOutputFileName#
+#__process.GlobalTag.globaltag = '#globalTag#'
 #
 #--------------------------------------------------------------------------------
 

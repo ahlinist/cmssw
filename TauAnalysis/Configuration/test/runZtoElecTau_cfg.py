@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
+process.GlobalTag.globaltag = cms.string('')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -84,6 +84,7 @@ process.source = cms.Source("PoolSource",
 #__process.analyzeZtoElecTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoElecTauPlots.outputFileName = #plotsOutputFileName#
 #__#isBatchMode#
+#__process.GlobalTag.globaltag = "#globalTag#"
 #
 #--------------------------------------------------------------------------------
 
