@@ -100,7 +100,7 @@ util: $(addprefix obj/,$(UTIL) $(UTIL_DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(UTIL_DICT)) $(GLIBS) -o lib/libUtil.so
 
 anaclasses: $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT))
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so -lMinuit
 
 
 # ================================================================================
