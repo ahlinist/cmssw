@@ -124,9 +124,9 @@ pfEleIsoNeDeposit.deposits.src = 'pfeleIsoNeDepositPFCandidates'
 pfEleIsoGaDeposit = pfEleIsoDeposit.clone()
 pfEleIsoGaDeposit.deposits.src = 'pfeleIsoGaDepositPFCandidates'
 
-electronIsoDeposits =  cms.Sequence( pfEleIsoDeposit
+pfElectronIsoDeposits =  cms.Sequence( pfEleIsoDeposit
                                      * pfEleIsoChDeposit
                                      * pfEleIsoNeDeposit
                                      * pfEleIsoGaDeposit )
 
-recoElectronIsolation = cms.Sequence( pfElectronIsolCandidates * electronIsoDeposits )
+recoElectronIsolation = cms.Sequence( electronIsoDeposits + pfElectronIsolCandidates * pfElectronIsoDeposits  )
