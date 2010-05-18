@@ -4,7 +4,9 @@
 #include "DQMServices/Core/interface/DQMStore.h"
 
 #include <TPRegexp.h>
+#include <TAxis.h>
 
+#include <vector>
 #include <string>
 
 const std::string parKeyword = "#PAR#";
@@ -15,6 +17,11 @@ const std::string processDirKeyword = "#PROCESSDIR#";
 enum { kKeep, kDrop };
 
 typedef std::pair<int, TPRegexp> outputCommandEntry;
+
+TH1* getHistogram(DQMStore&, const std::string&, bool&);
+std::vector<TH1*> getHistograms(DQMStore&, const std::vector<std::string>&, bool&);
+
+double getValue(DQMStore&, const std::string&, bool&);
 
 std::string dqmDirectoryName(const std::string&);
 std::string dqmSubDirectoryName(const std::string&, const std::string&);

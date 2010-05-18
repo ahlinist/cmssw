@@ -14,6 +14,60 @@
 
 #include <iostream>
 
+TH1* getHistogram(DQMStore& dqmStore, const std::string& meName, bool& dqmError)
+{
+  std::string histogramName, histogramDirectory;
+  separateMonitorElementFromDirectoryName(meName, histogramName, histogramDirectory);
+
+  MonitorElement* me = dqmStore.get(std::string(histogramDirectory).append(dqmSeparator).append(histogramName));
+
+  TH1* histogram = ( me != NULL ) ? me->getTH1() : NULL;
+  //std::cout << "meName = " << meName << ": integral = " << histogram->Integral() << std::endl;
+
+  if ( histogram ) {
+    if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+  } else {
+    edm::LogError("getHistogram") << " Failed to retrieve MonitorElement = " << meName << " !!";
+    dqmError = true;
+  }
+
+  return histogram;
+}
+
+std::vector<TH1*> getHistograms(DQMStore& dqmStore, const std::vector<std::string>& meNames, bool& dqmError)
+{
+  std::vector<TH1*> histograms;
+
+  for ( std::vector<std::string>::const_iterator meName = meNames.begin();
+	meName != meNames.end(); ++meName ) {
+    TH1* histogram = getHistogram(dqmStore, *meName, dqmError);
+
+    if ( histogram ) histograms.push_back(histogram);
+  } 
+
+  return histograms;
+}
+
+double getValue(DQMStore& dqmStore, const std::string& meName_full, bool& error)
+{
+  std::string meName, dqmDirectory;
+  separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
+  MonitorElement* me = dqmStore.get(std::string(dqmDirectory).append(dqmSeparator).append(meName));
+  if ( me ) {
+    if ( me->kind() == MonitorElement::DQM_KIND_REAL ) return me->getFloatValue();
+    else if ( me->kind() == MonitorElement::DQM_KIND_INT  ) return me->getIntValue();
+    else {
+      edm::LogError ("getValue") << " MonitorElement = " << meName_full << " is of invalid Type !!";
+      error = true;
+    }
+  } else {
+    edm::LogError ("getValue") << " Failed to retrieve MonitorElement = " << meName_full << " !!";
+    error = true;
+  }
+  
+  return -1.;
+}
+
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
