@@ -5,7 +5,7 @@ from TauAnalysis.Configuration.makeReplacementsAnalysis import makeReplacementsA
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/summer09/hists/"
+outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/spring10/hists/"
 #outputFilePath = "/castor/cern.ch/user/v/veelken/plots/ZtoElecTau/"
 
 #inputFileType = "RECO/AOD"
@@ -46,6 +46,14 @@ for i in range(1):
 #
 # 7 TeV MC samples
 #
+
+# Spring10 MinBias
+for i in range(21):
+    submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
+		  sample = "MinBias_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		  replFunction = makeReplacementsAnalysis, replacements =
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
+		  job = "analysis", queue = "8nh", outputFilePath = outputFilePath)
 
 # Z --> tau tau jobs
 for i in range(18):
