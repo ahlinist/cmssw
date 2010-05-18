@@ -19,7 +19,7 @@
 #include <iostream>
 
 DQMBinErrorCalculator::cfgEntryBinError::cfgEntryBinError(const edm::ParameterSet& cfg)
-  : error_(0)
+  : error_(false)
 {
   //std::cout << "<cfgEntryBinError::cfgEntryBinError>:" << std::endl;
   
@@ -56,26 +56,6 @@ DQMBinErrorCalculator::~DQMBinErrorCalculator()
 void DQMBinErrorCalculator::analyze(const edm::Event&, const edm::EventSetup&)
 {
 //--- nothing to be done yet
-}
-
-double getValue(DQMStore& dqmStore, const std::string& meName_full, int& error)
-{
-  std::string meName, dqmDirectory;
-  separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
-  MonitorElement* me = dqmStore.get(std::string(dqmDirectory).append(dqmSeparator).append(meName));
-  if ( me ) {
-    if ( me->kind() == MonitorElement::DQM_KIND_REAL ) return me->getFloatValue();
-    else if ( me->kind() == MonitorElement::DQM_KIND_INT  ) return me->getIntValue();
-    else {
-      edm::LogError ("endJob") << " MonitorElement = " << meName_full << " is of invalid Type !!";
-      error = 1;
-    }
-  } else {
-    edm::LogError ("endJob") << " Failed to retrieve MonitorElement = " << meName_full << " !!";
-    error = 1;
-  }
-  
-  return -1.;
 }
 
 void DQMBinErrorCalculator::endJob()
