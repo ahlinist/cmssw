@@ -26,22 +26,33 @@ public:
   virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an Info object
-      if( o.name.find( "Info/EventInfo/reportSummary" ) != std::string::npos)
+      if ( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos
+        || o.name.find( "Info/LhcInfo/") != std::string::npos )
         return true;
       return false;
     }
 
   virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
+
       c->cd();
       gPad->SetLogy(0);
-
-      // object is TH2 histogram
-      if ( dynamic_cast<TH2F*>( o.object ) ) 
+      
+      if ( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos )
       {
-         gPad->SetLogy(0);
-         preDrawTH2F( c, o );
+        // object is TH2 histogram
+        if ( dynamic_cast<TH2F*>( o.object ) ) 
+        {
+           gPad->SetLogy(0);
+           preDrawTH2F( c, o );
+        }
       }
+      else if ( o.name.find( "Info/LhcInfo/") != std::string::npos )
+        if ( dynamic_cast<TH1F*>( o.object ) )
+	{
+	   gPad->SetLogy(0);
+	   preDrawTH1F( c, o);
+	}
     }
 
 private:
@@ -90,6 +101,39 @@ private:
       obj->SetMaximum(1.0);
       obj->SetOption("colz");
 
+      return;
+
+    }
+
+  void preDrawTH1F ( TCanvas *, const VisDQMObject &o )
+    {
+      TH1F* obj = dynamic_cast<TH1F*>( o.object );
+      assert( obj );
+
+      int nbins = obj->GetNbinsX();
+      int maxRange = nbins;
+      for ( int i = nbins; i > 0; --i )
+      {
+	if ( obj->GetBinContent(i) != -1 )
+	{
+	   maxRange = i+1;
+	   break;
+	}
+      }
+      obj->GetXaxis()->SetRange(1,maxRange);
+      obj->SetStats( kFALSE );
+      obj->SetMinimum(-1.e-15);
+
+      if ( o.name.find( "Info/LhcInfo/beamMode") != std::string::npos )
+      {
+        obj->SetMaximum(22.);
+        obj->SetMinimum(0.);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetGrid(1,1);
+      }
+      
+      // FIXME: put in last value as text
+      
       return;
 
     }
