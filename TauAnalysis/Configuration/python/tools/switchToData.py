@@ -13,9 +13,6 @@ from TauAnalysis.RecoTools.postPatProduction_cff import produceGenObjects
 from TauAnalysis.Configuration.tools.analysisSequenceTools import removeAnalyzer
 
 def switchToData(process):
-	
-	# correct global conditions tag
-	process.GlobalTag.globaltag = 'GR10_P_V4::All'
 
 	# remove MC matching from standard PAT sequences
 	removeMCMatching(process, ["All"])
