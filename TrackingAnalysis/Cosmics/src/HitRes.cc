@@ -516,10 +516,10 @@ HitRes::analyze (const Trajectory& trajectory,
     // get cluster size
     if (subDet1>2) { //strip
       const TransientTrackingRecHit::ConstRecHitPointer thit1=(*iol).first->recHit();
-      const SiStripRecHit2D* hit1=dynamic_cast<const SiStripRecHit2D*>((*thit1).hit());
+      const SiStripRecHit1D* hit1=dynamic_cast<const SiStripRecHit1D*>((*thit1).hit());
       if (hit1) {
 	//check cluster width
-	const SiStripRecHit2D::ClusterRef & cluster1=hit1->cluster();
+	const SiStripRecHit1D::ClusterRef & cluster1=hit1->cluster();
 	clusterSize_[0] = (cluster1->amplitudes()).size();
 	clusterWidthX_[0] = (cluster1->amplitudes()).size();
 	clusterWidthY_[0] = -1;
@@ -541,11 +541,11 @@ HitRes::analyze (const Trajectory& trajectory,
 	}
 	clusterCharge_[0] = charge;
       } else
-	cout << "Couldn't find sistriprechit2d first" << endl;
+	cout << "Couldn't find SiStripRecHit1D first" << endl;
       const TransientTrackingRecHit::ConstRecHitPointer thit2=(*iol).second->recHit();
-      const SiStripRecHit2D* hit2=dynamic_cast<const SiStripRecHit2D*>((*thit2).hit());
+      const SiStripRecHit1D* hit2=dynamic_cast<const SiStripRecHit1D*>((*thit2).hit());
       if (hit2) {
-	const SiStripRecHit2D::ClusterRef & cluster2=hit2->cluster();
+	const SiStripRecHit1D::ClusterRef & cluster2=hit2->cluster();
 	clusterSize_[1] = (cluster2->amplitudes()).size();
 	clusterWidthX_[1] = (cluster2->amplitudes()).size();
 	clusterWidthY_[1] = -1;
@@ -567,7 +567,7 @@ HitRes::analyze (const Trajectory& trajectory,
 	clusterCharge_[1] = charge;
 	
       } else
-	cout << "Couldn't find sistriprechit2d second" << endl;
+	cout << "Couldn't find SiStripRecHit1D second" << endl;
       //cout << "strip cluster size2 = " << clusterWidthX_[0] << "  and size 2 = " << clusterWidthX_[1] << endl;
     }
     
