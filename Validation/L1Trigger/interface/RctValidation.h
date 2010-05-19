@@ -89,7 +89,6 @@ private:
   int    binsEta_;
   int    binsPhi_;
   double matchDR_;
-  double isoDR_;
   double egammaThreshold_;
   double tpgSumWindow_;
   double thresholdForEtaPhi_;
