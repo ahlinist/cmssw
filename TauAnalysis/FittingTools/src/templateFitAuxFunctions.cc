@@ -1034,6 +1034,9 @@ void drawErrorEllipse(double x0, double y0, double errX0, double errY0, double S
   }
 
 //--- create dummy histogram  
+//
+//    CV: need to swap labels of x-axis and y-axis ??
+//
   TH2F dummyHistogram("dummyHistogram", "dummyHistogram", 5, minX, maxX, 5, minY, maxY);
   dummyHistogram.SetTitle("");
   dummyHistogram.SetStats(false);
