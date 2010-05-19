@@ -9,8 +9,10 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/AssociationVector.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/Math/interface/angle.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -38,6 +40,9 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
 
   diTauCandidateSrc_ = cfg.getParameter<edm::InputTag>("diTauCandidateSource");
   //std::cout << " diTauCandidateSrc = " << diTauCandidateSrc_ << std::endl;
+
+  genParticleSrc_ = cfg.getParameter<edm::InputTag>("genParticleSource");
+  //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
@@ -79,9 +84,36 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   
   hGenLeg1PtVsLeg2Pt_ = book2D("GenLeg1PtVsLeg2Pt", "gen. leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
   hGenLeg1EtaVsLeg2Eta_ = book2D("GenLeg1EtaVsLeg2Eta", "gen. leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
+  hGenDeltaRleg1VisNu_ = book1D("GenDeltaRleg1VisNu", "gen. leg_{1} dR(pVis, pNu)", 102, -0.01, 1.01);
+  hGenDeltaRleg2VisNu_ = book1D("GenDeltaRleg2VisNu", "gen. leg_{2} dR(pVis, pNu)", 102, -0.01, 1.01);
   hGenLeg1DecayTime_ = book1D("GenLeg1DecayTime", "gen. leg_{1} Decay eigentime", 100, 0., 1000.);
   hGenLeg2DecayTime_ = book1D("GenLeg2DecayTime", "gen. leg_{2} Decay eigentime", 100, 0., 1000.);
 
+  hGenLeg1TauPlusDecayAngleLepton_ = book1D("GenLeg1TauPlusDecayAngleLepton", 
+					    "gen. leg_{1} #theta(#tau, #ell) for lep. Tau+ decays", 36, 0., TMath::Pi());
+  hGenLeg1TauPlusDecayAngleOneProng_ = book1D("GenLeg1TauPlusDecayAngleOneProng", 
+					      "gen. leg_{1} #theta(#tau, #nu) for had. one-prong Tau+ decays", 36, 0., TMath::Pi());
+  hGenLeg1TauPlusDecayAngleThreeProng_ = book1D("GenLeg1TauPlusDecayAngleThreeProng", 
+					      "gen. leg_{1} #theta(#tau, #nu) for had. three-prong Tau+ decays", 36, 0., TMath::Pi());
+  hGenLeg1TauMinusDecayAngleLepton_ = book1D("GenLeg1TauMinusDecayAngleLepton", 
+					     "gen. leg_{1} #theta(#tau, #ell) for lep. Tau- decays", 36, 0., TMath::Pi());
+  hGenLeg1TauMinusDecayAngleOneProng_ = book1D("GenLeg1TauMinusDecayAngleOneProng", 
+					       "gen. leg_{1} #theta(#tau, #nu) for had. one-prong Tau- decays", 36, 0., TMath::Pi());
+  hGenLeg1TauMinusDecayAngleThreeProng_ = book1D("GenLeg1TauMinusDecayAngleThreeProng", 
+						 "gen. leg_{1} #theta(#tau, #nu) for had. three-prong Tau- decays", 36, 0., TMath::Pi());
+  hGenLeg2TauPlusDecayAngleLepton_ = book1D("GenLeg2TauPlusDecayAngleLepton", 
+					    "gen. leg_{2} #theta(#tau, #ell) for lep. Tau+ decays", 36, 0., TMath::Pi());
+  hGenLeg2TauPlusDecayAngleOneProng_ = book1D("GenLeg2TauPlusDecayAngleOneProng", 
+					      "gen. leg_{2} #theta(#tau, #nu) for had. one-prong Tau+ decays", 36, 0., TMath::Pi());
+  hGenLeg2TauPlusDecayAngleThreeProng_ = book1D("GenLeg2TauPlusDecayAngleThreeProng", 
+					      "gen. leg_{2} #theta(#tau, #nu) for had. three-prong Tau+ decays", 36, 0., TMath::Pi());
+  hGenLeg2TauMinusDecayAngleLepton_ = book1D("GenLeg2TauMinusDecayAngleLepton", 
+					     "gen. leg_{2} #theta(#tau, #ell) for lep. Tau- decays", 36, 0., TMath::Pi());
+  hGenLeg2TauMinusDecayAngleOneProng_ = book1D("GenLeg2TauMinusDecayAngleOneProng", 
+					       "gen. leg_{2} #theta(#tau, #nu) for had. one-prong Tau- decays", 36, 0., TMath::Pi());
+  hGenLeg2TauMinusDecayAngleThreeProng_ = book1D("GenLeg2TauMinusDecayAngleThreeProng", 
+						 "gen. leg_{2} #theta(#tau, #nu) for had. three-prong Tau- decays", 36, 0., TMath::Pi());
+  
   hDiTauCandidatePt_ = book1D("DiTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
   hDiTauCandidateEta_ = book1D("DiTauCandidateEta", "Composite #eta", 100, -5., +5.);
   hDiTauCandidatePhi_ = book1D("DiTauCandidatePhi", "Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
@@ -151,12 +183,144 @@ double CompositePtrCandidateT1T2MEtHistManager<T1,T2>::getDiTauCandidateWeight(c
   return (diTauLeg1Weight*diTauLeg2Weight);
 }
 
+void fillDeltaRvisNuHistogram(MonitorElement* h, 
+			      const reco::Candidate::LorentzVector& p4, const reco::Candidate::LorentzVector& p4Vis, double weight)
+{
+  reco::Candidate::LorentzVector p4Nu = p4 - p4Vis;
+  double dR = deltaR(p4Vis, p4Nu);
+  h->Fill(TMath::Min(dR, 1.), weight);
+}
+
 double compDecayEigenTime(const reco::Candidate::Point& primaryVertexPos, const reco::Candidate::Point& decayVertexPos, 
 			  double tauLeptonEnergy)
 {
   double decayDistance = TMath::Sqrt((decayVertexPos - primaryVertexPos).Mag2());
   double gamma = tauLeptonEnergy/tauLeptonMass;
   return decayDistance/(speedOfLight*gamma);
+}
+
+std::string getGenTauDecayMode(const std::vector<const reco::GenParticle*>& genTauDecayProducts) 
+{  
+//--- determine generator level tau decay mode
+//
+//    NOTE: function implements logic defined in PhysicsTools/JetMCUtils/src/JetMCTag::genTauDecayMode
+//          for different type of argument
+//
+
+  int numElectrons = 0;
+  int numMuons = 0;
+  int numChargedHadrons = 0;
+  int numNeutralHadrons = 0;
+  int numPhotons = 0;
+  
+  for ( std::vector<const reco::GenParticle*>::const_iterator genTauDecayProduct = genTauDecayProducts.begin();
+	genTauDecayProduct != genTauDecayProducts.end(); ++genTauDecayProduct ) {
+    
+    int pdgId = abs((*genTauDecayProduct)->pdgId());
+    
+    switch ( pdgId ) {
+    case 22: 
+      numPhotons++;
+      break;
+    case 11:
+      numElectrons++;
+      break;
+    case 13:
+      numMuons++;
+      break;
+    default : 
+      if ( (*genTauDecayProduct)->charge() != 0 ) {
+	numChargedHadrons++; 
+      } else {
+	numNeutralHadrons++; 
+      }
+    }
+  }
+  
+  if ( numElectrons == 1 ) {
+    return std::string("electron");
+  } else if ( numMuons == 1 ) {
+    return std::string("muon");
+  } else {
+    switch ( numChargedHadrons ) {
+    case 1 : 
+      if ( numNeutralHadrons != 0 ) return std::string("oneProngOther");
+      switch ( numPhotons ) {
+      case 0:
+	return std::string("oneProng0Pi0");
+      case 2:
+	return std::string("oneProng1Pi0");
+      case 4:
+	return std::string("oneProng2Pi0");
+      default:
+	return std::string("oneProngOther");
+      }
+    case 3 : 
+      if ( numNeutralHadrons != 0 ) return std::string("threeProngOther");
+      switch ( numPhotons ) {
+      case 0:
+	return std::string("threeProng0Pi0");
+      case 2:
+	return std::string("threeProng1Pi0");
+      default:
+	return std::string("threeProngOther");
+      }
+    default:
+      return std::string("rare");
+    }
+  }
+}
+
+void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton, 
+			  MonitorElement* hGenTauPlusDecayAngleOneProng, 
+			  MonitorElement* hGenTauPlusDecayAngleThreeProng,
+			  MonitorElement* hGenTauMinusDecayAngleLepton, 
+			  MonitorElement* hGenTauMinusDecayAngleOneProng, 
+			  MonitorElement* hGenTauMinusDecayAngleThreeProng,
+			  const reco::Candidate::LorentzVector& genTauMomentum, 
+			  const reco::GenParticleCollection& genParticles,
+			  double weight)
+{
+  //std::cout << "<fillGenTauHistograms>:" << std::endl;
+
+  const reco::GenParticle* genTau = findGenParticle(genTauMomentum, genParticles);
+  //std::cout << " genTau = " << genTau << std::endl;
+
+  if ( genTau ) {
+    std::vector<const reco::GenParticle*> genTauDecayProducts;
+    findDaughters(genTau, genTauDecayProducts);
+
+    reco::Candidate::LorentzVector genTauVisMomentum = getVisMomentum(genTauDecayProducts);
+    reco::Candidate::LorentzVector genTauInvisMomentum = getInvisMomentum(genTauDecayProducts);
+    
+    reco::Candidate::LorentzVector genTauVisMomentum_restframe = boostToRestFrame(genTauVisMomentum, genTauMomentum);
+    reco::Candidate::LorentzVector genTauInvisMomentum_restframe = boostToRestFrame(genTauInvisMomentum, genTauMomentum);
+
+    std::string genTauDecayMode = getGenTauDecayMode(genTauDecayProducts);
+    //std::cout << " genTauDecayMode = " << genTauDecayMode << std::endl;
+
+    if ( genTauDecayMode == "electron" || 
+	 genTauDecayMode == "muon" ) {	  
+      double genTauVisDecayAngle = angle(genTauVisMomentum_restframe, genTau->p4());
+      if ( genTau->pdgId() == -15 ) hGenTauPlusDecayAngleLepton->Fill(genTauVisDecayAngle, weight);
+      if ( genTau->pdgId() == +15 ) hGenTauMinusDecayAngleLepton->Fill(genTauVisDecayAngle, weight);
+    }
+	
+    if ( genTauDecayMode == "oneProng0Pi0" ||
+	 genTauDecayMode == "oneProng1Pi0" ||
+	 genTauDecayMode == "oneProng2Pi0" ) {
+      double genTauInvisDecayAngle = angle(genTauInvisMomentum_restframe, genTau->p4());
+      if ( genTau->pdgId() == -15 ) hGenTauPlusDecayAngleOneProng->Fill(genTauInvisDecayAngle, weight);
+      if ( genTau->pdgId() == +15 ) hGenTauMinusDecayAngleOneProng->Fill(genTauInvisDecayAngle, weight);
+    }
+	
+    if ( genTauDecayMode == "threeProng0Pi0" ||
+	 genTauDecayMode == "threeProng1Pi0" ) {
+      double genTauInvisDecayAngle = angle(genTauInvisMomentum_restframe, genTau->p4());
+      if ( genTau->pdgId() == -15 ) hGenTauPlusDecayAngleThreeProng->Fill(genTauInvisDecayAngle, weight);
+      if ( genTau->pdgId() == +15 ) hGenTauMinusDecayAngleThreeProng->Fill(genTauInvisDecayAngle, weight);
+    }
+  }
 }
 
 void fillSVmassRecoSolutionHistogram(unsigned iSolution, MonitorElement* h, 
@@ -177,6 +341,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
   getCollection(evt, diTauCandidateSrc_, diTauCandidates);
 
   //std::cout << " diTauCandidates.size = " << diTauCandidates->size() << std::endl;
+
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  evt.getByLabel(genParticleSrc_, genParticles);
 
   edm::Handle<std::vector<reco::Vertex> > recoVertices;
   evt.getByLabel(vertexSrc_, recoVertices);
@@ -208,10 +375,20 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
       hGenLeg1PtVsLeg2Pt_->Fill(diTauCandidate->p4VisLeg1gen().pt(), diTauCandidate->p4VisLeg2gen().pt(), weight);
       hGenLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->p4VisLeg1gen().eta(), diTauCandidate->p4VisLeg2gen().eta(), weight);
 
+      fillDeltaRvisNuHistogram(hGenDeltaRleg1VisNu_, diTauCandidate->p4Leg1gen(), diTauCandidate->p4VisLeg1gen(), weight);
+      fillDeltaRvisNuHistogram(hGenDeltaRleg2VisNu_, diTauCandidate->p4Leg2gen(), diTauCandidate->p4VisLeg2gen(), weight);
+
       hGenLeg1DecayTime_->Fill(compDecayEigenTime(diTauCandidate->decayVertexPosLeg1gen(), 
 						  diTauCandidate->primaryVertexPosGen(), diTauCandidate->p4Leg1gen().energy()), weight);
       hGenLeg2DecayTime_->Fill(compDecayEigenTime(diTauCandidate->decayVertexPosLeg2gen(), 
 						  diTauCandidate->primaryVertexPosGen(), diTauCandidate->p4Leg2gen().energy()), weight);
+
+      fillGenTauHistograms(hGenLeg1TauPlusDecayAngleLepton_, hGenLeg1TauPlusDecayAngleOneProng_, hGenLeg1TauPlusDecayAngleThreeProng_,
+			   hGenLeg1TauMinusDecayAngleLepton_, hGenLeg1TauMinusDecayAngleOneProng_, hGenLeg1TauMinusDecayAngleThreeProng_,
+			   diTauCandidate->p4Leg1gen(), *genParticles, weight);
+      fillGenTauHistograms(hGenLeg2TauPlusDecayAngleLepton_, hGenLeg2TauPlusDecayAngleOneProng_, hGenLeg2TauPlusDecayAngleThreeProng_,
+			   hGenLeg2TauMinusDecayAngleLepton_, hGenLeg2TauMinusDecayAngleOneProng_, hGenLeg2TauMinusDecayAngleThreeProng_,
+			   diTauCandidate->p4Leg2gen(), *genParticles, weight);
     }
 
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
