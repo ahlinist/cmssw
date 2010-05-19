@@ -29,8 +29,10 @@ std::string dqmSubDirectoryName(const std::string&, const std::string&);
 void dqmCheckExistence(DQMStore&, const std::string&, const std::string&, int, int&);
 void dqmRegisterHistogram(DQMStore&, TH1*, const std::string&);
 
-void dqmCopyMonitorElement(DQMStore&, const std::string&, const std::string&, const std::string&, const std::string&, double, int = 1);
-void dqmCopyRecursively(DQMStore&, const std::string&, const std::string&, double, int, bool, std::vector<outputCommandEntry>* = 0);
+void dqmCopyMonitorElement(DQMStore&, const std::string&, const std::string&, const std::string&, const std::string&, 
+			   double, double, int = 1);
+void dqmCopyRecursively(DQMStore&, const std::string&, const std::string&, 
+			double, double, int, bool, std::vector<outputCommandEntry>* = 0);
 
 const std::string dqmSeparator = "/";
 const std::string dqmSeparator2 = std::string(dqmSeparator).append(dqmSeparator);
