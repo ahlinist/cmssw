@@ -22,16 +22,12 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
   binsEta_(iConfig.getUntrackedParameter<int>("binsEta",30)),
   binsPhi_(iConfig.getUntrackedParameter<int>("binsPhi",32)),
   matchDR_(iConfig.getUntrackedParameter<double>("matchDeltaR",0.35)),
-  isoDR_(iConfig.getUntrackedParameter<double>("isoDeltaR",0.0)),
   egammaThreshold_(iConfig.getUntrackedParameter<double>("gammaThreshold",5.)),
   tpgSumWindow_(iConfig.getUntrackedParameter<double>("tpgSumWindow",0.4)),
   thresholdForEtaPhi_(iConfig.getUntrackedParameter<double>("thresholdForEtaPhi",4.))
 {
   geo = new TriggerTowerGeometry();
   
-  if ( isoDR_ < matchDR_ )
-    cout << "WARNING - RctValidation : Isolation cone smaller than matching cone; will not use\n"; 
-
   //Get General Monitoring Parameters
   DQMStore *store = &*edm::Service<DQMStore>();
   if(store)
@@ -67,7 +63,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       rctEffPhi    = store->book1D("rctEffPhi","rct e/#gamma E_{T}",binsPhi_,0.,3.2);
       rctEffEtaPhi = store->book2D("rctEffEtaPhi","rct e/#gamma #eta #phi",binsEta_,-2.5,2.5,binsPhi_,0,3.2);
       
-      rctEffPtHighest = store->book1D("rctEffPtHighest" ,"rct e/#gamma E_{T}",80,0.,40); // fixed for now
+      rctEffPtHighest = store->book1D("rctEffPtHighest" ,"rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
 
       rctEffPt->getTH1F()->Sumw2();
       rctEffEta->getTH1F()->Sumw2();
@@ -80,7 +76,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       rctIsoEffPhi    = store->book1D("rctIsoEffPhi","rctIso e/#gamma E_{T}",binsPhi_,0.,3.2);
       rctIsoEffEtaPhi = store->book2D("rctIsoEffEtaPhi","rctIso e/#gamma #eta #phi",binsEta_,-2.5,2.5,binsPhi_,0,3.2);
 
-      rctIsoEffPtHighest = store->book1D("rctIsoEffPtHighest" ,"rct e/#gamma E_{T}",80,0.,40); // fixed for now
+      rctIsoEffPtHighest = store->book1D("rctIsoEffPtHighest" ,"rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
       
       rctIsoEffPt->getTH1F()->Sumw2();
       rctIsoEffEta->getTH1F()->Sumw2();
@@ -229,7 +225,6 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 
       //get RCT Efficiency-Find the highest object near the ref
       L1GctEmCandCollection rctNearReference;
-      unsigned int rctLargeConeCands = ( isoDR_ > matchDR_ ? 0 : 1); // if valid isolation cone 0; else force 1
 
       if(rctEGammas.size()>0)
         for(L1GctEmCandCollection::const_iterator i=rctEGammas.begin();i!=rctEGammas.end();++i)
@@ -241,15 +236,6 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
             //ok now match and do it over threshold
             if( deltaR < matchDR_ && rctVec.pt() >= egammaThreshold_ )
               rctNearReference.push_back(*i);
-
-            if ( isoDR_ > matchDR_ )  // if valid isolation cone
-              for(unsigned int k=0;k<genEGamma->size();++k) 
-              {
-                double deltaRthis = ROOT::Math::VectorUtil::DeltaR(rctVec, genEGamma->at(k).p4());
-
-                if ( deltaRthis < isoDR_ && rctVec.pt() >= egammaThreshold_ )
-                  ++rctLargeConeCands;
-              }
           }
 
       if(rctNearReference.size()>0) 
@@ -280,7 +266,7 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
             if(genEGamma->at(j).pt()>thresholdForEtaPhi_)
               rctIsoEffEtaPhi->Fill(genEGamma->at(j).eta(),genEGamma->at(j).phi());
                 
-            if( rctLargeConeCands == 1 && highestRCT.rank() < 127 )  // only for non-saturating & for exactly one candidate in cone
+            if( highestRCT.rank() < 127 )  // only for non-saturating
             {
               rctEtaCorr->Fill( highestVec.eta(), genEGamma->at(j).pt()/highestVec.pt() );
               rctEtaCorrIEta->Fill( geo->iEta(highestVec.eta()), genEGamma->at(j).pt()/highestVec.pt() );
