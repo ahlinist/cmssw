@@ -256,7 +256,7 @@ void DQMFileLoader::endJob()
 //    add histograms in inputFile to those in outputDirectory afterwards;
 //    clear inputDirectory once finished processing all inputFiles.
 	    int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 2;
-	    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, mode, true);
+	    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, 0., mode, true);
 	  }
 	}
       }

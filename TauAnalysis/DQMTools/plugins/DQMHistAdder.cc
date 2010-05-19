@@ -105,7 +105,7 @@ void DQMHistAdder::endJob()
 //    afterwards, add histograms in inputDirectory to those in outputDirectory
       int mode = ( dqmDirectory_input == addJob->second.dqmDirectories_input_.begin() ) ? 1 : 2;
       //std::cout << " mode = " << mode << std::endl;
-      dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, 1., mode, false);
+      dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, 1., 0., mode, false);
     }
   }
 
