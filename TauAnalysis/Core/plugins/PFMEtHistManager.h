@@ -41,18 +41,26 @@ class PFMEtHistManager : public HistManagerBase
 
   MonitorElement* hMEtPtDiffGen_;
   MonitorElement* hMEtPtResGen_;
+
+  MonitorElement* hMEtPxDiffGen_;
+  MonitorElement* hMEtPxResGen_;
+  MonitorElement* hMEtPyDiffGen_;
+  MonitorElement* hMEtPyResGen_;
+  MonitorElement* hMEtPparlDiffGen_;
+  MonitorElement* hMEtPparlResGen_;
+  MonitorElement* hMEtPperpDiffGen_;
+  MonitorElement* hMEtPperpResGen_;
+
   MonitorElement* hMEtPtRecVsGen_;
   MonitorElement* hMEtPhiDiffGen_;
   MonitorElement* hMEtPhiRecVsGen_;
+  MonitorElement* hMEtSumEtRecVsGen_;
 
   MonitorElement* hGenMEtPt_;
   MonitorElement* hGenMEtPhi_;
 
   MonitorElement* hMEtPtDiffVsGenMEtPt_;
   MonitorElement* hMEtPhiDiffVsGenMEtPt_;
-
-  MonitorElement* hMEtParallelDiffGen_;
-  MonitorElement* hMEtPerpendicularDiffGen_; 
 };
 
 #endif
