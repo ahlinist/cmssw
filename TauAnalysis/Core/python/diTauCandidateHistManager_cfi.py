@@ -7,6 +7,7 @@ diTauCandidateHistManager = cms.PSet(
     diTauCandidateSource = cms.InputTag(''),
 
     vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    genParticleSource = cms.InputTag('genParticles'),
 
     dqmDirectory_store = cms.string('DiTauCandidateQuantities'),
 

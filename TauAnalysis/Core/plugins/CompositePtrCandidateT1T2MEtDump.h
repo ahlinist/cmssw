@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.1 $
  *
- * $Id: CompositePtrCandidateT1T2MEtDump.h,v 1.12 2010/02/05 14:05:30 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtDump.h,v 1.1 2010/02/12 17:18:02 veelken Exp $
  *
  */
 
@@ -35,6 +35,7 @@ class CompositePtrCandidateT1T2MEtDump : public ObjectDumpBase
 
  private:
   edm::InputTag diTauCandidateSource_;
+  edm::InputTag genParticleSource_;
 };
 
 #endif  
