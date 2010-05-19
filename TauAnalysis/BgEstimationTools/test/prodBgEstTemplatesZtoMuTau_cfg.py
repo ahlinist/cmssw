@@ -21,7 +21,7 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 process.addZtoMuTauBgEstTemplates_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/InclusivePPmuX/',
+            ##'harvested/InclusivePPmuX/',
             'harvested/PPmuXptGt20/'
         ),
         dqmDirectory_output = cms.string('harvested/qcdSum/')
