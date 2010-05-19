@@ -20,47 +20,84 @@ import copy
 #
 ##################
 
-intLumiZtoElecTau_Data = float(200.) # in 1/pb
+# dataset = /MinimumBias/Commissioning10-SD_EG-v9/RECO
+# 
 
-corrFactorZtoElecTau_data_7TeV = float(1.)
-patTupleOutputFileNameZtoElecTau_data_7TeV = cms.untracked.string('patTupleZtoElecTau_data_7TeV.root')
-plotsOutputFileNameZtoElecTau_data_7TeV = cms.string('plotsZtoElecTau_data_7TeV.root')
+intLumiZtoElecTau_Data = float(0.0049) # in 1/pb
 
-genPhaseSpaceCutZtoElecTau_data_7TeV = cms.PSet(
+corrFactorZtoElecTau_Data_7TeV = float(1.)
+patTupleOutputFileNameZtoElecTau_Data_7TeV = cms.untracked.string('patTupleZtoElecTau_Data_7TeV_partXX.root')
+plotsOutputFileNameZtoElecTau_Data_7TeV = cms.string('plotsZtoElecTau_Data_7TeV_partXX.root')
+
+genPhaseSpaceCutZtoElecTau_Data_7TeV = cms.PSet(
     pluginName = cms.string('genPhaseSpaceCut'),
     pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
     src = cms.InputTag('genPhaseSpaceEventInfo'),
     cut = cms.string('')
 )
 
-fileNamesZtoElecTau_data_7TeV = cms.untracked.vstring(
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_1_1.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_2_1.root',
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_3_1.root',
-    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_4_0.root'
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_5_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_6_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_7_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_8_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_9_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_10_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_11_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_12_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_13_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_14_0.root',
-#	#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_15_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_16_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_17_0.root',
-#	#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_18_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_19_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_20_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_21_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_22_0.root',
-#	#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_23_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_24_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_25_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_26_0.root',
-#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_27_0.root'
+fileNamesZtoElecTau_Data_7TeV_part01 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_1_1.root'
+	#	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_2_1.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part02 = cms.untracked.vstring(
+		#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_3_1.root',
+		#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_4_1.root'
+		#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_5_1.root',
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_6_1.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part03 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_7_0.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part04 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_8_0.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part05 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_9_1.root',
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_10_1.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part06 = cms.untracked.vstring(
+#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_11_1.root',
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_12_1.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part07 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_13_1.root',
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_14_0.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part08 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_15_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_16_0.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part09 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_17_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_18_0.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part10 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_19_0.root',
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_20_0.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part11 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_21_0.root'
+#    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_22_1.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part12 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_23_1.root',	
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_24_1.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part13 = cms.untracked.vstring(
+#	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_25_1.root',
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_26_1.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part14 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_27_1.root',
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_28_0.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part15 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_29_0.root',
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_30_0.root'
+)
+fileNamesZtoElecTau_Data_7TeV_part16 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD_take5/skimElecTau_31_1.root'
 )
 
 #--------------------------------------------------------------------------------
@@ -70,6 +107,292 @@ fileNamesZtoElecTau_data_7TeV = cms.untracked.vstring(
 # 7 TeV MC samples
 #
 ##################
+
+# Minimum bias - 7TeV
+# 
+# dataset = /MinBias/Spring10-START3X_V26A_356ReReco-v1/GEN-SIM-RECO
+# 
+
+intLumiZtoElecTau_MinBias_7TeV = float(0.000154) # in 1/pb
+
+corrFactorZtoElecTau_MinBias_7TeV = float(1.)
+patTupleOutputFileNameZtoElecTau_MinBias_7TeV = cms.untracked.string('patTupleZtoElecTau_MinBias_7TeV_partXX.root')
+plotsOutputFileNameZtoElecTau_MinBias_7TeV = cms.string('plotsZtoElecTau_MinBias_7TeV_partXX.root')
+
+genPhaseSpaceCutZtoElecTau_MinBias_7TeV = cms.PSet(
+    pluginName = cms.string('genPhaseSpaceCut'),
+    pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
+    src = cms.InputTag('genPhaseSpaceEventInfo'),
+    cut = cms.string('')
+)
+
+fileNamesZtoElecTau_MinBias_7TeV_part01 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_100_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_101_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_102_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_103_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_104_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_105_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_106_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_107_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_108_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_109_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_10_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part02 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_110_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_111_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_112_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_113_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_114_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_115_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_116_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_117_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_118_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_119_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_11_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part03 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_120_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_121_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_122_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_123_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_124_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_125_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_126_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_127_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_128_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_129_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_12_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part04 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_130_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_131_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_132_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_133_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_134_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_135_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_136_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_137_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_138_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_139_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_13_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part05 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_140_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_141_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_142_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_143_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_144_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_145_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_146_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_147_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_148_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_149_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_14_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part06 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_150_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_151_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_152_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_153_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_154_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_155_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_156_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_157_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_158_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_159_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_15_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part07 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_160_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_161_0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_162_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_163_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_164_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_165_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_166_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_167_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_168_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_169_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_16_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part08 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_170_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_171_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_172_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_173_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_174_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_175_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_176_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_177_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_178_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_179_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_17_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part09 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_180_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_181_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_182_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_183_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_184_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_185_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_186_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_187_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_188_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_189_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_18_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part10 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_190_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_191_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_192_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_193_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_194_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_195_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_196_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_197_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_198_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_199_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_19_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part11 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_1_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_200_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_201_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_202_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_203_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_204_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_205_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_206_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_207_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_208_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_209_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_20_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part12 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_210_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_211_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_212_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_213_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_214_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_215_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_216_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_217_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_218_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_219_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_21_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part13 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_220_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_221_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_222_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_223_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_224_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_225_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part14 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_22_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_23_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_24_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_25_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_26_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_27_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_28_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_29_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_2_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part15 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_30_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_31_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_32_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_33_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_34_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_35_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_36_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_37_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_38_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_39_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_3_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part16 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_40_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_41_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_42_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_43_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_44_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_45_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_46_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_47_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_48_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_49_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_4_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part17 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_50_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_51_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_52_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_53_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_54_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_55_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_56_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_57_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_58_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_59_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_5_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part18 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_60_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_61_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_62_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_63_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_64_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_65_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_66_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_67_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_68_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_69_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_6_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part19 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_70_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_71_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_72_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_73_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_74_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_75_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_76_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_77_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_78_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_79_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_7_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part20 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_80_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_81_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_82_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_83_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_84_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_85_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_86_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_87_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_88_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_89_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_8_1.root'
+)
+fileNamesZtoElecTau_MinBias_7TeV_part21 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_90_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_91_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_92_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_93_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_94_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_95_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_96_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_97_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_98_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_99_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_9_1.root'
+)
 
 
 #--------------------------------------------------------------------------------
