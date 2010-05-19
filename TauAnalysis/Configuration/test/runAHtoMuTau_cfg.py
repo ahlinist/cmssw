@@ -70,10 +70,11 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         ##'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root',
         ##'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
-        ##'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        ##'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
-        'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_1.root',
-        'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_3.root'
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        ##'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_1.root',
+        ##'rfio:/castor/cern.ch/user/v/veelken/SkimOctober09/AHbb_M120SkimMT314/muTauSkim_3.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/skims/selEvents_AHtoMuTau_Ztautau_7TeV_all.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -147,6 +148,13 @@ changeCut(process, "selectedLayer1MuonsEcalIsoLooseIsolation", "(ecalIso/pt) < 0
 
 # enable cut on TaNC output
 changeCut(process, "selectedLayer1TausForMuTauTaNCdiscr", "tauID('byTaNCfrQuarterPercent') > 0.5")
+
+# enable/disable cut on Z mass veto
+##changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto", "collinearApproxCompatibility('mZ').minuitFitChi2 > 2.")
+changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto", "collinearApproxCompatibility('mZ').minuitFitChi2 > -1.")
+
+##changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation", "collinearApproxCompatibility('mZ').minuitFitChi2 > 2.")
+changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation", "collinearApproxCompatibility('mZ').minuitFitChi2 > -1.")
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
