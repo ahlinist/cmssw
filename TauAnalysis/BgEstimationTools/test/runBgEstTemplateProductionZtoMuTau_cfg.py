@@ -100,6 +100,42 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
 #--------------------------------------------------------------------------------
 
+process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
+from TauAnalysis.Configuration.tools.analysisSequenceTools import removeAnalyzer
+
+process.analyzeZtoMuTauEvents.name = cms.string('BgEstTemplateAnalyzer_Ztautau')
+process.analyzeZtoMuTauEvents.eventDumps = cms.VPSet()
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'genPhaseSpaceEventInfoHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'eventWeightHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'muonHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'tauHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxHistManagerBinnedForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxBinnerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateZmumuHypothesisHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'muPairHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'jetHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'caloMEtHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'pfMEtHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'particleMultiplicityHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'vertexHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'triggerHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'dataBinner')
+process.diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
+process.diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('muTauPairVisMassHypotheses')
+addAnalyzer(process.analyzeZtoMuTauEvents, process.diTauCandidateHistManagerForMuTau, 'evtSelDiMuPairZmumuHypothesisVeto')
+process.sysUncertaintyHistManager = cms.PSet(
+    histManagers = cms.VPSet(
+        process.diTauCandidateHistManagerForMuTau
+    ),
+    systematics = getSysUncertaintyNames(
+        [ muonSystematics,
+          tauSystematics ]
+    )
+)
+addAnalyzer(process.analyzeZtoMuTauEvents, process.sysUncertaintyHistManager, 'evtSelDiMuPairZmumuHypothesisVeto')
+    
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauTTplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauZmumuEnrichedSelection_cff')
@@ -108,6 +144,7 @@ process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cf
 # set generator level phase-space selection
 # (to avoid overlap of different  Monte Carlo samples in simulated phase-space)
 if hasattr(process, "isBatchMode"):
+    process.analyzeZtoMuTauEvents.filters[0] = getattr(process, "genPhaseSpaceCut")
     process.analyzeEventsBgEstWplusJetsEnriched.filters[0] = getattr(process, "genPhaseSpaceCut")
     process.analyzeEventsBgEstTTplusJetsEnriched.filters[0] = getattr(process, "genPhaseSpaceCut")
     process.analyzeEventsBgEstZmumuJetMisIdEnriched.filters[0] = getattr(process, "genPhaseSpaceCut")
@@ -174,6 +211,7 @@ setattr(process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted, "eventWeight
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
   + process.selectZtoMuTauEvents
+  + process.analyzeZtoMuTauEvents
   + process.bgEstWplusJetsEnrichedAnalysisSequence
   + process.kineEventReweightBgEstTemplateWplusJets + process.analyzeEventsBgEstWplusJetsEnriched_reweighted
   + process.bgEstTTplusJetsEnrichedAnalysisSequence
@@ -184,10 +222,20 @@ process.p = cms.Path(
 )
 
 #--------------------------------------------------------------------------------
-# disable estimation of systematic uncertainties
-from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoMuTau
+# import utility function for disabling estimation of systematic uncertainties
 #
-disableSysUncertainties_runZtoMuTau(process)
+# NOTE: per default, estimation of systematic uncertainties is **enabled** per default
+#
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoMuTau
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runZtoMuTau
+#
+# define "hook" for keeping enabled/disabling estimation of systematic uncertainties
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#__#systematics#
+if not hasattr(process, "isBatchMode"):
+    disableSysUncertainties_runZtoMuTau(process)
+    #enableSysUncertainties_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
