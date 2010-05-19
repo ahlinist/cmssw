@@ -34,6 +34,12 @@ const bool defaultStereo[2] = {
 	true // stereo
 };
 
+const bool adjSelect[2] = {
+	true, // R/Parallel
+	true // Z/Perpendic
+};
+
+
 const bool allPlots = true;
 
 class OverlapHistos {
@@ -187,7 +193,7 @@ private:
   std::vector< vector<double> > dxdzE_;
   std::vector< vector<double> > dydz_;
   std::vector< vector<double> > dydzE_;
-  std::vector< vector<double> > dd_;
+  std::vector< vector<double> > dd_, ddY_;
   std::vector< vector<double> > ddE_;
 
 #endif
