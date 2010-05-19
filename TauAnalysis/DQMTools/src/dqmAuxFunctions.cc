@@ -186,7 +186,8 @@ double getPower_add(const std::string& meName)
 }
 
 void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory, const std::string& meName_input,
-			   const std::string& outputDirectory, const std::string& meName_output, double scaleFactor, int mode)
+			   const std::string& outputDirectory, const std::string& meName_output, 
+			   double scaleFactor, double scaleFactorErr, int mode)
 {
   //std::cout << "<dqmCopyMonitorElement>:" << std::endl;
   //std::cout << " inputDirectory = " << inputDirectory << std::endl;
@@ -194,6 +195,7 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
   //std::cout << " outputDirectory = " << outputDirectory << std::endl;
   //std::cout << " meName_output = " << meName_output << std::endl;
   //std::cout << " scaleFactor = " << scaleFactor << std::endl;
+  //std::cout << " scaleFactorErr = " << scaleFactorErr << std::endl;
 
   std::string meName_full = dqmDirectoryName(inputDirectory).append(meName_input);
   //std::cout << " meName_full = " <<  meName_full << std::endl;
@@ -244,7 +246,25 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
     }
 	
     std::auto_ptr<TH1> clone(dynamic_cast<TH1*>(histogram->Clone()));
-    clone->Scale(scaleFactor);
+    if ( scaleFactorErr > 0. ) {
+      unsigned numBinsX = clone->GetNbinsX();
+      for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
+	unsigned numBinsY = clone->GetNbinsY();
+	for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
+	  unsigned numBinsZ = clone->GetNbinsZ();
+	  for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
+	    double binContent = clone->GetBinContent(iBinX, iBinY, iBinZ);
+	    double binError = clone->GetBinError(iBinX, iBinY, iBinZ);
+	    
+	    clone->SetBinContent(iBinX, iBinY, iBinZ, scaleFactor*binContent);
+	    clone->SetBinError(iBinX, iBinY, iBinZ, 
+			       TMath::Sqrt(TMath::Power(scaleFactor*binError, 2) + TMath::Power(scaleFactorErr*binContent, 2)));
+	  }
+	}
+      }
+    } else {
+      clone->Scale(scaleFactor);
+    }
 	
     dqmStore.setCurrentFolder(outputDirectory);
 	
@@ -328,12 +348,14 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
 }
 
 void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, const std::string& outputDirectory, 
-			double scaleFactor, int mode, bool rmInputDirectory, std::vector<outputCommandEntry>* outputCommands)
+			double scaleFactor, double scaleFactorErr, int mode, 
+			bool rmInputDirectory, std::vector<outputCommandEntry>* outputCommands)
 {
   //std::cout << "<dqmCopyRecursively>:" << std::endl;
   //std::cout << " inputDirectory = " << inputDirectory << std::endl;
   //std::cout << " outputDirectory = " << outputDirectory << std::endl;
   //std::cout << " scaleFactor = " << scaleFactor << std::endl;
+  //std::cout << " scaleFactorErr = " << scaleFactorErr << std::endl;
   //std::cout << " rmInputDirectory = " << rmInputDirectory << std::endl;
 
   dqmStore.setCurrentFolder(inputDirectory);
@@ -351,7 +373,8 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
       TPRegexp& dqmDirectory_regexp = outputCommand->second;
       //std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp.GetPattern() << std::endl;
 
-      //std::cout << "--> dqmDirectory_regexp.Match(inputDirectory_tstring) = " << dqmDirectory_regexp.Match(inputDirectory_tstring) << std::endl;
+      //std::cout << "--> dqmDirectory_regexp.Match(inputDirectory_tstring) = " 
+      //          << dqmDirectory_regexp.Match(inputDirectory_tstring) << std::endl;
 
       if ( dqmDirectory_regexp.Match(inputDirectory_tstring) == 1 ) {
 	if ( statement == kKeep ) copyMonitorElements = true;
@@ -366,7 +389,7 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
     std::vector<std::string> meNames = dqmStore.getMEs();
     for ( std::vector<std::string>::const_iterator meName = meNames.begin();
 	  meName != meNames.end(); ++meName ) {
-      dqmCopyMonitorElement(dqmStore, inputDirectory, *meName, outputDirectory, *meName, scaleFactor, mode);
+      dqmCopyMonitorElement(dqmStore, inputDirectory, *meName, outputDirectory, *meName, scaleFactor, scaleFactorErr, mode);
       meInput_copied = true;
     }
   }
@@ -381,7 +404,8 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
     std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);
     std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
 
-    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, scaleFactor, mode, rmInputDirectory, outputCommands);
+    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, 
+		       scaleFactor, scaleFactorErr, mode, rmInputDirectory, outputCommands);
   }
 
 //--- delete inputDirectory 
