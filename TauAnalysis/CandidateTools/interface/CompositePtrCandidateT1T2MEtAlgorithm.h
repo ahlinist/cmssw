@@ -100,7 +100,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       for ( std::map<std::string, CollinearApproxFitter*>::iterator collinearApproxFitter = collinearApproxFitters_.begin();
 	    collinearApproxFitter != collinearApproxFitters_.end(); ++collinearApproxFitter ) {	
 	collinearApproxCompatibilities.insert(std::pair<std::string, CollinearApproxCompatibility>(
-	   collinearApproxFitter->first, collinearApproxFitter->second->fit(leg1->p4(), leg2->p4(), met)));
+	  collinearApproxFitter->first, collinearApproxFitter->second->fit(leg1->p4(), leg2->p4(), met)));
       }
       compositePtrCandidate.setCollinearApproxCompatibilities(collinearApproxCompatibilities);
 
