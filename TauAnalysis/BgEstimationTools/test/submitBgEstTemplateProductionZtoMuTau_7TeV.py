@@ -29,7 +29,7 @@ for i in range(16):
     submitToBatch(configFile = "runBgEstTemplateProductionZtoMuTau_cfg.py", channel = "ZtoMuTau",
                   sample = "Ztautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = true; disableEventDump = true",
                   job = "bgEstTemplateProduction", queue = "1nd", outputFilePath = outputFilePath)
 
 # Z --> mu+ mu- jobs
