@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HFRecHitReflaggerJETMET.cc,v 1.2 2010/05/05 15:03:10 temple Exp $
+// $Id: HFRecHitReflaggerJETMET.cc,v 1.3 2010/05/06 14:16:30 temple Exp $
 //
 //
 
@@ -107,7 +107,7 @@ private:
 
   // Specify parameters for Time cuts
   bool useTimeFlag_;
-  bool hfTimeFlagBit_;
+  int hfTimeFlagBit_;
   bool hfTimeBitAlwaysOn_;
   bool hfTimeBitAlwaysOff_;
   std::vector< double > hfLong_Ethresh_;
@@ -298,7 +298,7 @@ HFRecHitReflaggerJETMET::HFRecHitReflaggerJETMET(const edm::ParameterSet& ps)
    {
      useTimeFlag_             = true;
      hfTimeFlagBit_           = TIME.getUntrackedParameter<int>("hfFlagBit",HcalCaloFlagLabels::HFLongShort); 
-     
+
      // sanity check bits -- turn bit on or off always
      hfTimeBitAlwaysOn_       = TIME.getUntrackedParameter<bool>("hfBitAlwaysOn",false);
      hfTimeBitAlwaysOff_      = TIME.getUntrackedParameter<bool>("hfBitAlwaysOff",false);
