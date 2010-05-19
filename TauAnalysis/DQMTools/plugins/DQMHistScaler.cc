@@ -20,8 +20,11 @@ const int verbosity = 0;
 
 DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
   : scaleFactor_(-1),
+    scaleFactorErr_(0.),
     meNameScaleFactor_(""),
     meTypeScaleFactor_(""),
+    meNameScaleFactorErr_(""),
+    meTypeScaleFactorErr_(""),
     cfgError_()
 {
   //std::cout << "<cfgEntryScaleJob::cfgEntryScaleJob>:" << std::endl;
@@ -30,6 +33,8 @@ DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
   
   if ( cfg.exists("scaleFactor") ) {
     scaleFactor_ = cfg.getParameter<double>("scaleFactor");
+    scaleFactorErr_ = ( cfg.exists("scaleFactorErr") ) ? cfg.getParameter<double>("scaleFactorErr") : 0.;
+
     ++numScales;
   } 
 
@@ -39,11 +44,20 @@ DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
        cfg.exists("meTypeScaleFactor") ) {
     meNameScaleFactor_ = cfg.getParameter<std::string>("meNameScaleFactor"); 
     meTypeScaleFactor_ = cfg.getParameter<std::string>("meTypeScaleFactor"); 
+
+    if ( cfg.exists("meNameScaleFactorErr") &&
+	 cfg.exists("meTypeScaleFactorErr") ) {
+      meNameScaleFactorErr_ = cfg.getParameter<std::string>("meNameScaleFactorErr"); 
+      meTypeScaleFactorErr_ = cfg.getParameter<std::string>("meTypeScaleFactorErr");
+    }
+
     ++numScales;
   }
 
   //std::cout << " meNameScaleFactor = " << meNameScaleFactor_ << std::endl;
   //std::cout << " meTypeScaleFactor = " << meTypeScaleFactor_ << std::endl;
+  //std::cout << " meNameScaleFactorErr = " << meNameScaleFactorErr_ << std::endl;
+  //std::cout << " meTypeScaleFactorErr = " << meTypeScaleFactorErr_ << std::endl;
   
   if ( cfg.exists("meName_input") &&
        cfg.exists("meName_output") ) {
@@ -185,6 +199,13 @@ double getMonitorElementNorm(DQMStore& dqmStore, const std::string& dqmDirectory
   }
 }
 
+double getMonitorElementNorm(DQMStore& dqmStore, const std::string& meName_full, const std::string& meType, int& errorFlag)
+{
+  std::string meName, dqmDirectory;
+  separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
+  return getMonitorElementNorm(dqmStore, dqmDirectory, meName, meType, errorFlag);
+}
+
 void DQMHistScaler::endJob()
 {
   std::cout << "<DQMHistScaler::endJob>:" << std::endl;
@@ -209,15 +230,16 @@ void DQMHistScaler::endJob()
 
 //--- compute scale factor
     double scaleFactor = 0.;
+    double scaleFactorErr = 0.;
     if ( cfgScaleJob->scaleFactor_ != -1. ) {
       scaleFactor = cfgScaleJob->scaleFactor_;
+      scaleFactorErr = cfgScaleJob->scaleFactorErr_;
     } else if ( cfgScaleJob->meNameScaleFactor_ != "" ) { 
       int errorFlag = 0;
       
-      std::string dqmDirectoryScaleFactor, meNameScaleFactor;
-      separateMonitorElementFromDirectoryName(cfgScaleJob->meNameScaleFactor_, meNameScaleFactor, dqmDirectoryScaleFactor);
-      const std::string& meTypeScaleFactor = cfgScaleJob->meTypeScaleFactor_;
-      scaleFactor = getMonitorElementNorm(dqmStore, dqmDirectoryScaleFactor, meNameScaleFactor, meTypeScaleFactor, errorFlag);
+      scaleFactor = getMonitorElementNorm(dqmStore, cfgScaleJob->meNameScaleFactor_, cfgScaleJob->meTypeScaleFactor_, errorFlag);
+      if ( cfgScaleJob->meNameScaleFactorErr_ != "" ) scaleFactorErr 
+	= getMonitorElementNorm(dqmStore, cfgScaleJob->meNameScaleFactorErr_, cfgScaleJob->meTypeScaleFactorErr_, errorFlag);
 
       if ( errorFlag ) {
 	edm::LogError ("endJob") 
@@ -269,7 +291,7 @@ void DQMHistScaler::endJob()
       std::string meName_output, dqmDirectory_output;
       separateMonitorElementFromDirectoryName(cfgScaleJob->meName_output_, meName_output, dqmDirectory_output);
       
-      dqmCopyMonitorElement(dqmStore, dqmDirectory_input, meName_input, dqmDirectory_output, meName_output, scaleFactor);
+      dqmCopyMonitorElement(dqmStore, dqmDirectory_input, meName_input, dqmDirectory_output, meName_output, scaleFactor, scaleFactorErr);
     } else if ( cfgScaleJob->dqmSubDirectories_input_.size() > 0 ) {
       for ( vstring::const_iterator dqmSubDirectory = cfgScaleJob->dqmSubDirectories_input_.begin();
 	    dqmSubDirectory != cfgScaleJob->dqmSubDirectories_input_.end(); ++dqmSubDirectory ) {
@@ -280,7 +302,7 @@ void DQMHistScaler::endJob()
 	std::cout << " scaling MonitorElements in input Directory = " << inputDirectory << ","
 		  << " copying scaled MonitorElements to output Directory = " << outputDirectory << std::endl;
 	
-	dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
+	dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, scaleFactorErr, 1, false);
       }
     } else {
       //std::string inputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
@@ -291,7 +313,7 @@ void DQMHistScaler::endJob()
       std::cout << " scaling MonitorElements in input Directory = " << inputDirectory << ","
 		<< " copying scaled MonitorElements to output Directory = " << outputDirectory << std::endl;
       
-      dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
+      dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, scaleFactorErr, 1, false);
     }
   }
 
