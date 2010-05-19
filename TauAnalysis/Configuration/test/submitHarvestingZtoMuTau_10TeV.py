@@ -5,7 +5,7 @@ from TauAnalysis.Configuration.makeReplacementsHarvesting import makeReplacement
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/10TeV/"
+outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/plots/ZtoMuTau/10TeVii/"
 #outputFilePath = "/castor/cern.ch/user/l/lusito/ZtoMuTauAnalysis/"
 
 inputFilePath = "rfio:" + outputFilePath
