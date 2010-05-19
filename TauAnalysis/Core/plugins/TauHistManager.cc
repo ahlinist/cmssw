@@ -429,8 +429,9 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
     }
 
-    if ( patTau->genJet() != 0 ) 
+    if ( patTau->genJet() != 0 ) {
       hTauMatchingGenTauDecayMode_->getTH1()->Fill(JetMCTagUtils::genTauDecayMode(*patTau->genJet()).data(), weight);
+    }
 
     hTauNumTracksSignalCone_->Fill(patTau->signalTracks().size(), weight);
     hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size(), weight);

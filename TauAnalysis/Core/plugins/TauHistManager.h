@@ -69,7 +69,7 @@ class TauHistManager : public HistManagerBase
   std::vector<FakeRateJetWeightExtractor<pat::Tau>*> tauJetWeightExtractors_;
 
 //--- histograms
-  MonitorElement* hNumTaus_;
+   MonitorElement* hNumTaus_;
 
   MonitorElement* hTauPt_;
   MonitorElement* hTauEta_;
