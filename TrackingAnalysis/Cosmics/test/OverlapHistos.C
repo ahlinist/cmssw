@@ -95,6 +95,12 @@ void OverlapHistos::Loop(int redEntries){
     DetIdPair idPair(min(detids[0],detids[1]),
 		     max(detids[0],detids[1]));
     //if (!checkAdjacent(idPair.first, idPair.second, path)) continue;
+    AdjacentType type = checkAdjacentType(idPair.first, idPair.second);
+    if (type == parallelToStrips) {
+      if (!adjSelect[0]) continue;
+    } else {
+      if (!adjSelect[1]) continue;
+    }
     
     //cout << "first pass "<<min(detids[0],detids[1])<<" "<< max(detids[0],detids[1])<<" \n";
     std::map<DetIdPair,iiPair>::iterator it = overlapCounter.find(idPair);
@@ -292,6 +298,7 @@ void OverlapHistos::Loop(int redEntries){
       localY_.push_back(vector<double>());
       localYE_.push_back(vector<double>());
       dd_.push_back(vector<double>());
+      ddY_.push_back(vector<double>());
       ddE_.push_back(vector<double>());
       dxdz_.push_back(vector<double>());
       dxdzE_.push_back(vector<double>());
@@ -443,6 +450,7 @@ void OverlapHistos::Loop(int redEntries){
     dydz_[ind].push_back(predDY[0]);
     dydzE_[ind].push_back(predEDY[0]);
     dd_[ind].push_back(deltaHit-deltaPred);
+    ddY_[ind].push_back(deltaHitY-deltaPredY);
     ddE_[ind].push_back(predEDeltaX);
 
   }
@@ -490,6 +498,10 @@ void OverlapHistos::Loop(int redEntries){
   TH1* meanDiffs = new TH1F(hn,hn,n,-0.5,n-0.5);
   meanDiffs->GetXaxis()->SetTitle("module pair index");
   meanDiffs->GetYaxis()->SetTitle("<#Deltax_{hit}-#Deltax_{pred}> [#mum]");
+  sprintf(hn,"meanY");
+  TH1* meanDiffsY = new TH1F(hn,hn,n,-0.5,n-0.5);
+  meanDiffsY->GetXaxis()->SetTitle("module pair index");
+  meanDiffsY->GetYaxis()->SetTitle("<#Deltay_{hit}-#Deltay_{pred}> [#mum]");
   sprintf(hn,"width");
   TH1* sigmaDiffs = new TH1F(hn,hn,n,-0.5,n-0.5);
   sigmaDiffs->GetXaxis()->SetTitle("module pair index");
@@ -497,7 +509,7 @@ void OverlapHistos::Loop(int redEntries){
   sprintf(hn,"widthY");
   TH1* sigmaDiffsY = new TH1F(hn,hn,n,-0.5,n-0.5);
   sigmaDiffsY->GetXaxis()->SetTitle("module pair index");
-  sigmaDiffsY->GetYaxis()->SetTitle("fitted width #Deltax_{hit}-#Deltax_{pred} [#mum]");
+  sigmaDiffsY->GetYaxis()->SetTitle("fitted width #Deltay_{hit}-#Deltay_{pred} [#mum]");
   TH1* hitErrMeans = new TH1F("hitSigX","hitSigX",n,-0.5,n-0.5);
   TH1* hitErrMeansY = new TH1F("hitSigY","hitSigY",n,-0.5,n-0.5);
   TH1* dxdzMeans = new TH1F("dxdz","dxdz",n,-0.5,n-0.5);
@@ -663,6 +675,9 @@ void OverlapHistos::Loop(int redEntries){
 	double mDiff = resHisto->GetFunction("gaus")->GetParameter(1);
 	double emDiff = resHisto->GetFunction("gaus")->GetParError(1);
 	meanDiffs->SetBinContent(i+1,10000*mDiff);
+//	  	  meanDiffs->SetBinContent(i+1,10000*resHisto->GetMean());
+// 	  	  meanDiffs->SetBinContent(i+1,10000*getMedian(dd_[i]));
+// 		  cout << "Mean / Median X : "<<10000*mDiff <<" "<<10000*getMedian(dd_[i])<<endl;
 	meanDiffs->SetBinError(i+1,10000*emDiff);
 	double sDiff = resHisto->GetFunction("gaus")->GetParameter(2);
 	double esDiff = resHisto->GetFunction("gaus")->GetParError(2);
@@ -675,9 +690,13 @@ void OverlapHistos::Loop(int redEntries){
       double sum = resHistoY->Integral();
       if ( sum>0.00001 ) {
 	//resHistoY->Fit("gaus","Q0R","",resHistoY->GetMean()-3*resHistoY->GetRMS(),resHistoY->GetMean()+3*resHistoY->GetRMS());
-	
-	
 	resHistoY->Fit("gaus","Q0RL");
+      double mDiff = resHistoY->GetFunction("gaus")->GetParameter(1);
+      double emDiff = resHistoY->GetFunction("gaus")->GetParError(1);
+      meanDiffsY->SetBinContent(i+1,10000*mDiff);
+//       meanDiffs->SetBinContent(i+1,10000*getMedian(ddY_[i]));
+// 		  cout << "Mean / Median Y : "<<10000*mDiff <<" "<<10000*getMedian(resHisto)<<endl;
+      //meanDiffsY->SetBinError(i+1,10000*emDiff);
 	double sDiffY = resHistoY->GetFunction("gaus")->GetParameter(2);
 	double esDiffY = resHistoY->GetFunction("gaus")->GetParError(2);
 	//cout << "sDiffY = " << sDiffY << "  and esDiffY = " << esDiffY << endl;
