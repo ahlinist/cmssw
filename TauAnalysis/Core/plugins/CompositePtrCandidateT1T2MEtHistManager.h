@@ -35,6 +35,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
 //--- configuration parameters
   edm::InputTag diTauCandidateSrc_;
+  edm::InputTag genParticleSrc_;
   edm::InputTag vertexSrc_;
   edm::InputTag visMassHypothesisSrc_;
 
@@ -56,8 +57,23 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   MonitorElement* hGenLeg1PtVsLeg2Pt_;
   MonitorElement* hGenLeg1EtaVsLeg2Eta_;
+  MonitorElement* hGenDeltaRleg1VisNu_;
+  MonitorElement* hGenDeltaRleg2VisNu_;
   MonitorElement* hGenLeg1DecayTime_;
   MonitorElement* hGenLeg2DecayTime_;
+
+  MonitorElement* hGenLeg1TauPlusDecayAngleLepton_;
+  MonitorElement* hGenLeg1TauPlusDecayAngleOneProng_;
+  MonitorElement* hGenLeg1TauPlusDecayAngleThreeProng_;
+  MonitorElement* hGenLeg1TauMinusDecayAngleLepton_;
+  MonitorElement* hGenLeg1TauMinusDecayAngleOneProng_;
+  MonitorElement* hGenLeg1TauMinusDecayAngleThreeProng_;
+  MonitorElement* hGenLeg2TauPlusDecayAngleLepton_;
+  MonitorElement* hGenLeg2TauPlusDecayAngleOneProng_;
+  MonitorElement* hGenLeg2TauPlusDecayAngleThreeProng_;
+  MonitorElement* hGenLeg2TauMinusDecayAngleLepton_;
+  MonitorElement* hGenLeg2TauMinusDecayAngleOneProng_;
+  MonitorElement* hGenLeg2TauMinusDecayAngleThreeProng_;
 
   MonitorElement* hDiTauCandidatePt_;
   MonitorElement* hDiTauCandidateEta_;
