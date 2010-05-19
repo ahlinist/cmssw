@@ -43,8 +43,11 @@ process.source = cms.Source("EmptySource")
 
 dqmDirectory_Ztautau_finalEvtSel = 'harvested/Ztautau/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto'
 ##dqmDirectory_Ztautau_template = 'template/harvested/Ztautau_from_selZmumu/pure/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto'
-dqmDirectory_Ztautau_template = 'template/harvested/Ztautau_from_selZmumu/zMuTauAnalyzer/afterEvtSelDiTauCandidateForMuTauPzetaDiff'
-#dqmDirectory_Ztautau_template = dqmDirectory_Ztautau_finalEvtSel
+##dqmDirectory_Ztautau_template = 'template/harvested/Ztautau_from_selZmumu/zMuTauAnalyzer/afterEvtSelDiTauCandidateForMuTauPzetaDiff'
+dqmDirectory_Ztautau_template = 'template/harvested/Ztautau/BgEstTemplateAnalyzer_Ztautau/'
+dqmDirectory_Ztautau_templateSysTauEnUp = 'template/harvested/Ztautau/BgEstTemplateAnalyzer_Ztautau/' <-- NEEDS TO BE UPDATED !!!
+dqmDirectory_Ztautau_templateSysTauEnDown = 'template/harvested/Ztautau/BgEstTemplateAnalyzer_Ztautau/' <-- NEEDS TO BE UPDATED !!!
+
 dqmDirectory_Ztautau_systematics = processName + '/Ztautau/systematics'
 
 dqmDirectory_Zmumu_finalEvtSel = 'harvested/Zmumu/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto'
@@ -985,12 +988,22 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
     )                                      
 )                          
 
+process.fitZtoMuTauSysTauEnUp = process.fitZtoMuTau.clone(
+    processes.Ztautau.templates.diTauMvis12.meName = cms.string(dqmDirectory_Ztautau_templateSysTauEnUp + '/' + meName_diTauMvis12),
+    output.controlPlots.fileName = cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnUp.eps")
+)
+
+process.fitZtoMuTauSysTauEnDown = process.fitZtoMuTau.clone(
+    processes.Ztautau.templates.diTauMvis12.meName = cms.string(dqmDirectory_Ztautau_templateSysTauEnDown + '/' + meName_diTauMvis12),
+    output.controlPlots.fileName = cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnDown.eps")
+)
+
 process.saveFitResultsZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('fitBgEstTemplateZtoMuTau_results.root'),
     outputCommands = cms.vstring(
         'drop harvested/*',
         'keep template/*',
-        'keep harvested/Ztautau/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto/*'
+        'keep harvested/*/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVeto/*'
     )
 )
 
@@ -1009,7 +1022,7 @@ process.p = cms.Path(
    #+ process.dumpSysHistZtoMuTau
    #+ process.dumpDQMStore
    + process.plotTemplateHistZtoMuTau
-   + process.fitZtoMuTau
+   + process.fitZtoMuTau + process.fitZtoMuTauSysTauEnUp + process.fitZtoMuTauSysTauEnDown
    + process.saveFitResultsZtoMuTau
 )
 
