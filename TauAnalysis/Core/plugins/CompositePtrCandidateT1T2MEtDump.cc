@@ -4,18 +4,23 @@
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "DataFormats/Math/interface/angle.h"
+
 #include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
 
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtDump<T1,T2>::CompositePtrCandidateT1T2MEtDump(const edm::ParameterSet& cfg)
   : ObjectDumpBase(cfg),
-    diTauCandidateSource_(cfg.getParameter<edm::InputTag>("diTauCandidateSource"))
+    diTauCandidateSource_(cfg.getParameter<edm::InputTag>("diTauCandidateSource")),
+    genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource"))
 {
 //--- nothing to be done yet...
 }
@@ -24,6 +29,24 @@ template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtDump<T1,T2>::~CompositePtrCandidateT1T2MEtDump()
 {
 //--- nothing to be done yet...
+}
+
+double compDeltaRlegNu(const reco::Candidate::LorentzVector& p4leg, const reco::GenParticleCollection& genParticles)
+{
+  std::vector<int> tauLeptonPdgIds;
+  tauLeptonPdgIds.push_back(+15);
+  tauLeptonPdgIds.push_back(-15);
+
+  const reco::GenParticle* genTauLepton = findGenParticle(p4leg, genParticles);
+
+  if ( genTauLepton ) {
+    reco::Candidate::LorentzVector genVisMomentum = getVisMomentum(genTauLepton, &genParticles);
+    reco::Candidate::LorentzVector genInvisMomentum = getInvisMomentum(genTauLepton, &genParticles);
+
+    return angle(genVisMomentum, genInvisMomentum)*180./TMath::Pi();
+  }
+
+  return -1.;
 }
 
 template<typename T1, typename T2>
@@ -40,6 +63,9 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
   typedef std::vector<CompositePtrCandidateT1T2MEt<T1,T2> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> diTauCandidates;
   evt.getByLabel(diTauCandidateSource_, diTauCandidates);
+
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  evt.getByLabel(genParticleSource_, genParticles);
       
   unsigned iDiTauCandidate = 0;
   for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
@@ -75,6 +101,8 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
     *outputStream_ << " (collinear Approx. " << collinearApproxStatus << ")" << std::endl;
     const CollinearApproxCompatibility* collinearApproxCompatibility = diTauCandidate->collinearApproxCompatibility("mZ");
     if ( collinearApproxCompatibility ) *outputStream_ << " Chi2(mZ) = " << collinearApproxCompatibility->minuitFitChi2() << std::endl;
+    *outputStream_ << " dR(leg1, nu1) = " << compDeltaRlegNu(diTauCandidate->leg1()->p4(), *genParticles) << std::endl;
+    *outputStream_ << " dR(leg2, nu2) = " << compDeltaRlegNu(diTauCandidate->leg2()->p4(), *genParticles) << std::endl;
     const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
     for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
 	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
