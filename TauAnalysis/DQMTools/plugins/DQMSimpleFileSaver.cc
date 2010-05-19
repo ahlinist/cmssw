@@ -113,8 +113,8 @@ void DQMSimpleFileSaver::endJob()
 //    and save MonitorElements contained in temporary directory into ROOT file only;
 //    else save all MonitorElements into ROOT file
   if ( outputCommands_ ) {
-    dqmCopyRecursively(dqmStore, dqmRootDirectory, dqmDirectory_temp, 1.0, 1, true);
-    dqmCopyRecursively(dqmStore, dqmDirectory_temp, dqmRootDirectory, 1.0, 1, false, outputCommands_);
+    dqmCopyRecursively(dqmStore, dqmRootDirectory, dqmDirectory_temp, 1.0, 0., 1, true);
+    dqmCopyRecursively(dqmStore, dqmDirectory_temp, dqmRootDirectory, 1.0, 0., 1, false, outputCommands_);
 
     dqmStore.setCurrentFolder(dqmRootDirectory);
     dqmStore.rmdir(dqmDirectory_temp);

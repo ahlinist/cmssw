@@ -275,7 +275,7 @@ void DQMHistErrorBandProducer::endJob()
 
 //--- compute central values
     if ( dqmDirectory_inputCentralValue != "" ) {
-      dqmCopyRecursively(dqmStore, dqmDirectory_inputCentralValue, dqmDirectory_output, 1., 1, false);
+      dqmCopyRecursively(dqmStore, dqmDirectory_inputCentralValue, dqmDirectory_output, 1., 0., 1, false);
       nDoF = dqmDirectories_inputVariance.size();
     } else if ( dqmDirectories_inputVariance.size() > 0. ) {
       double scaleFactor = 1./dqmDirectories_inputVariance.size();
@@ -285,7 +285,7 @@ void DQMHistErrorBandProducer::endJob()
 //    afterwards, add histograms in inputDirectory to those in outputDirectory
         int mode = ( dqmDirectory_input == dqmDirectories_inputVariance.begin() ) ? 1 : 2;
         //std::cout << " mode = " << mode << std::endl;
-	dqmCopyRecursively(dqmStore, *dqmDirectory_input, dqmDirectory_output, scaleFactor, mode, false);
+	dqmCopyRecursively(dqmStore, *dqmDirectory_input, dqmDirectory_output, scaleFactor, 0., mode, false);
       }
       nDoF = dqmDirectories_inputVariance.size() - 1;
     } else {
