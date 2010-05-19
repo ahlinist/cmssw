@@ -109,6 +109,7 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "muonHits");
     book(*fs, pset, "muonBadHits");
     book(*fs, pset, "globalHits");
+    book(*fs, pset, "globalMuonHits","muonHits");
     book(*fs, pset, "trackerChi2n");
     book(*fs, pset, "muonChi2n");
     book(*fs, pset, "globalChi2n");
@@ -250,6 +251,7 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
         }
         if (mu.globalTrack().isNonnull()) {
             plots["globalHits"]->Fill(mu.globalTrack()->numberOfValidHits());
+            plots["globalMuonHits"]->Fill(mu.globalTrack()->hitPattern().numberOfValidMuonHits());
             plots["globalChi2n"]->Fill(mu.globalTrack()->normalizedChi2());
         }
 
