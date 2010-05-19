@@ -8,7 +8,7 @@
  *  determined independently by template and fake-rate method
  *  into single "best" estimate
  *
- *  $Date: 2009/11/27 18:36:05 $
+ *  $Date: 2010/05/18 09:48:17 $
  *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
@@ -24,18 +24,12 @@
 
 class DQMHistCombiner : public edm::EDAnalyzer
 {
-  struct cfgEntryHist
-  {
-    explicit cfgEntryHist(const edm::ParameterSet&);
-    std::string meNameInputShape_;
-    std::string meNameInputNorm_;
-    std::string meNameInputNormErr_;
-  };
+  typedef std::vector<std::string> vstring;
 
-  struct cfgEntryCombJob
+  struct cfgEntryPlot
   {
-    explicit cfgEntryCombJob(const edm::ParameterSet&);
-    std::vector<cfgEntryHist> cfgEntriesHist_;
+    explicit cfgEntryPlot(const edm::ParameterSet&);
+    vstring meNamesInput_;
     std::string meNameOutputShape_;
     std::string meNameOutputNorm_;
     std::string meNameOutputNormErr_;
@@ -48,7 +42,7 @@ class DQMHistCombiner : public edm::EDAnalyzer
   virtual void endJob();  
 
 private:
-  std::vector<cfgEntryCombJob> cfgEntriesCombJob_;
+  std::vector<cfgEntryPlot> cfgEntriesPlot_;
 };
 
 #endif

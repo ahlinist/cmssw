@@ -18,31 +18,11 @@
 
 #include <iostream>
 
-DQMHistCombiner::cfgEntryHist::cfgEntryHist(const edm::ParameterSet& cfg)
+DQMHistCombiner::cfgEntryPlot::cfgEntryPlot(const edm::ParameterSet& cfg)
 {
-  //std::cout << "<cfgEntryHist::cfgEntryHist>:" << std::endl;
-  
-  meNameInputShape_ = cfg.getParameter<std::string>("meNameShape");
+  //std::cout << "<cfgEntryPlot::cfgEntryPlot>:" << std::endl;
 
-  if ( cfg.exists("meNameNorm") && cfg.exists("meNameNormErr") ) {
-    meNameInputNorm_ = cfg.getParameter<std::string>("meNameNorm");
-    meNameInputNormErr_ = cfg.getParameter<std::string>("meNameNormErr");
-  } else {
-    meNameInputNorm_ = meNameInputShape_;
-    meNameInputNormErr_ = meNameInputShape_;
-  }
-}
-
-DQMHistCombiner::cfgEntryCombJob::cfgEntryCombJob(const edm::ParameterSet& cfg)
-{
-  //std::cout << "<cfgEntryCombJob::cfgEntryCombJob>:" << std::endl;
-
-  typedef std::vector<edm::ParameterSet> vParameterSet;
-  vParameterSet cfgInputs = cfg.getParameter<vParameterSet>("inputs");
-  for ( vParameterSet::const_iterator cfgInput = cfgInputs.begin();
-	cfgInput != cfgInputs.end(); ++cfgInput ) {
-    cfgEntriesHist_.push_back(cfgEntryHist(*cfgInput));
-  }
+  meNamesInput_ = cfg.getParameter<vstring>("inputs");
 
   const edm::ParameterSet& cfgOutput = cfg.getParameter<edm::ParameterSet>("output");
   meNameOutputShape_ = cfgOutput.getParameter<std::string>("meNameShape");
@@ -65,13 +45,13 @@ DQMHistCombiner::DQMHistCombiner(const edm::ParameterSet& cfg)
   
   if ( cfg.exists("config") ) {
     typedef std::vector<edm::ParameterSet> vParameterSet;
-    vParameterSet cfgCombJobs = cfg.getParameter<vParameterSet>("config");
-    for ( vParameterSet::const_iterator cfgCombJob = cfgCombJobs.begin();
-	  cfgCombJob != cfgCombJobs.end(); ++cfgCombJob ) {
-      cfgEntriesCombJob_.push_back(cfgEntryCombJob(*cfgCombJob));
+    vParameterSet cfgPlots = cfg.getParameter<vParameterSet>("config");
+    for ( vParameterSet::const_iterator cfgPlot = cfgPlots.begin();
+	  cfgPlot != cfgPlots.end(); ++cfgPlot ) {
+      cfgEntriesPlot_.push_back(cfgEntryPlot(*cfgPlot));
     }
   } else {
-    cfgEntriesCombJob_.push_back(cfgEntryCombJob(cfg));
+    cfgEntriesPlot_.push_back(cfgEntryPlot(cfg));
   }
 }
 
@@ -101,28 +81,16 @@ float* getBinning(const TAxis* axis)
 }
 
 void getBinContentErr2(DQMStore& dqmStore, const std::string& meName_shape, unsigned iBinX, unsigned iBinY,
-		       const std::string& meName_norm, const std::string& meName_normErr, double& binContent, double& binError2)
+		       double& binContent, double& binError2)
 {
-  bool error = false;
-  const TH1* histogramShape = getHistogram(dqmStore, meName_shape, error);
+  bool dqmError;
+  const TH1* histogramShape = getHistogram(dqmStore, meName_shape, dqmError);
 
   if ( histogramShape ) {
-    double binContent_shape = histogramShape->GetBinContent(iBinX, iBinY);
-    double binError_shape = histogramShape->GetBinError(iBinX, iBinY);
-    
-    if ( meName_norm != "" && meName_normErr != "" ) {
-      double norm = getValue(dqmStore, meName_norm, error);
-      double normErr = getValue(dqmStore, meName_normErr, error);
-   
-      binContent = binContent_shape*norm;
-      binError2 = (binError_shape*norm)*(binError_shape*norm) + (binContent_shape*normErr)*(binContent_shape*normErr);
-    } else {
-      binContent = binContent_shape;
-      binError2 = binError_shape*binError_shape;
-    }
-  }
-
-  if ( error ) {
+    binContent = histogramShape->GetBinContent(iBinX, iBinY);
+    double binError = histogramShape->GetBinError(iBinX, iBinY);
+    binError2 = binError*binError;
+  } else {
     edm::LogError("getBinContentErr2") 
       << " Failed to to compute binContent, binError2 for MonitorElement = " << meName_shape << " !!";
     binContent = -1.;
@@ -152,22 +120,16 @@ void DQMHistCombiner::endJob()
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-  for ( std::vector<cfgEntryCombJob>::const_iterator plot = cfgEntriesCombJob_.begin(); 
-	plot != cfgEntriesCombJob_.end(); ++plot ) {
-
-    std::vector<std::string> meNamesInputShape;
-    for ( std::vector<cfgEntryHist>::const_iterator cfgEntryHist = plot->cfgEntriesHist_.begin();
-	  cfgEntryHist != plot->cfgEntriesHist_.end(); ++cfgEntryHist ) {
-      meNamesInputShape.push_back(cfgEntryHist->meNameInputShape_);
-    }
+  for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntriesPlot_.begin(); 
+	plot != cfgEntriesPlot_.end(); ++plot ) {
 
     bool dqmError = false;
-    std::vector<TH1*> inputShapes = getHistograms(dqmStore, meNamesInputShape, dqmError);
+    std::vector<TH1*> inputHistograms = getHistograms(dqmStore, plot->meNamesInput_, dqmError);
 
     int numDimensions = -1;
-    for ( std::vector<TH1*>::const_iterator inputShape = inputShapes.begin();
-	  inputShape != inputShapes.end(); ++inputShape ) {
-      int numDimensions_i = (*inputShape)->GetDimension();
+    for ( std::vector<TH1*>::const_iterator inputHistogram = inputHistograms.begin();
+	  inputHistogram != inputHistograms.end(); ++inputHistogram ) {
+      int numDimensions_i = (*inputHistogram)->GetDimension();
       if ( numDimensions == -1 ) numDimensions = numDimensions_i;
       if ( numDimensions != -1 && numDimensions_i != numDimensions ) {
 	edm::LogError("DQMHistCombiner::endJob") << " Mismatch in Histogram dimensionality !!";
@@ -187,15 +149,15 @@ void DQMHistCombiner::endJob()
     MonitorElement* meShapeOutput = 0;
 
     if ( numDimensions == 1 ) {
-      unsigned numBins = inputShapes.front()->GetXaxis()->GetNbins();
-      float* binEdges = getBinning(inputShapes.front()->GetXaxis());
+      unsigned numBins = inputHistograms.front()->GetXaxis()->GetNbins();
+      float* binEdges = getBinning(inputHistograms.front()->GetXaxis());
       meShapeOutput = dqmStore.book1D(outputShapeName, outputShapeName, numBins, binEdges);
       delete[] binEdges;
     } else if ( numDimensions == 2 ) {
-      unsigned numBinsX = inputShapes.front()->GetXaxis()->GetNbins();
-      float* binEdgesX = getBinning(inputShapes.front()->GetXaxis());
-      unsigned numBinsY = inputShapes.front()->GetYaxis()->GetNbins();
-      float* binEdgesY = getBinning(inputShapes.front()->GetYaxis());
+      unsigned numBinsX = inputHistograms.front()->GetXaxis()->GetNbins();
+      float* binEdgesX = getBinning(inputHistograms.front()->GetXaxis());
+      unsigned numBinsY = inputHistograms.front()->GetYaxis()->GetNbins();
+      float* binEdgesY = getBinning(inputHistograms.front()->GetYaxis());
       meShapeOutput = dqmStore.book2D(outputShapeName, outputShapeName, numBinsX, binEdgesX, numBinsY, binEdgesY);
       delete[] binEdgesX;
       delete[] binEdgesY;
@@ -203,59 +165,58 @@ void DQMHistCombiner::endJob()
 
     if ( !meShapeOutput ) continue;
     
-    TH1* outputShape = meShapeOutput->getTH1();
+    TH1* outputHistogram = meShapeOutput->getTH1();
 
-    unsigned numBinsX = outputShape->GetNbinsX();
+    unsigned numBinsX = outputHistogram->GetNbinsX();
     for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
 
-      unsigned numBinsY = outputShape->GetNbinsY();
+      unsigned numBinsY = outputHistogram->GetNbinsY();
       for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
-	double outputShapeBinContent = 0.;
-	double outputShapeBinInvErr2 = 0.;
+	double outputHistogramBinContent = 0.;
+	double outputHistogramBinInvErr2 = 0.;
 	
-	for ( std::vector<cfgEntryHist>::const_iterator cfgEntryHist = plot->cfgEntriesHist_.begin();
-	      cfgEntryHist != plot->cfgEntriesHist_.end(); ++cfgEntryHist ) {
+	for ( vstring::const_iterator meNameInput = plot->meNamesInput_.begin();
+	      meNameInput != plot->meNamesInput_.end(); ++meNameInput ) {
 	  double binContent_i, binErr2_i;
-	  getBinContentErr2(dqmStore, cfgEntryHist->meNameInputShape_, iBinX, iBinY,
-			    cfgEntryHist->meNameInputNorm_, cfgEntryHist->meNameInputNormErr_, binContent_i, binErr2_i);
+	  getBinContentErr2(dqmStore, *meNameInput, iBinX, iBinY, binContent_i, binErr2_i);
 	  
 	  if ( binErr2_i > 0. ) {
-	    outputShapeBinContent += (1./binErr2_i)*binContent_i;
-	    outputShapeBinInvErr2 += (1./binErr2_i);
+	    outputHistogramBinContent += (1./binErr2_i)*binContent_i;
+	    outputHistogramBinInvErr2 += (1./binErr2_i);
 	  }
 	}
 
-	if ( outputShapeBinInvErr2 > 0. ) {
-	  outputShapeBinContent /= outputShapeBinInvErr2;
-	  double outputShapeBinErr2 = 1./outputShapeBinInvErr2;
+	if ( outputHistogramBinInvErr2 > 0. ) {
+	  outputHistogramBinContent /= outputHistogramBinInvErr2;
+	  double outputHistogramBinErr2 = 1./outputHistogramBinInvErr2;
 
-	  outputShape->SetBinContent(iBinX, iBinY, outputShapeBinContent);
-	  outputShape->SetBinError(iBinX, iBinY, TMath::Sqrt(outputShapeBinErr2));
+	  outputHistogram->SetBinContent(iBinX, iBinY, outputHistogramBinContent);
+	  outputHistogram->SetBinError(iBinX, iBinY, TMath::Sqrt(outputHistogramBinErr2));
 	}
       }
     }
 
     if ( plot->meNameOutputNorm_ != "" && plot->meNameOutputNormErr_ != "" ) {
       
-      double outputShapeIntegral = 0.;
-      double outputShapeIntegralErr2 = 0.;
+      double outputHistogramIntegral = 0.;
+      double outputHistogramIntegralErr2 = 0.;
 
-      unsigned numBinsX = outputShape->GetNbinsX();
+      unsigned numBinsX = outputHistogram->GetNbinsX();
       for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
 	
-	unsigned numBinsY = outputShape->GetNbinsY();
+	unsigned numBinsY = outputHistogram->GetNbinsY();
 	for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
 
-	  outputShapeIntegral += outputShape->GetBinContent(iBinX, iBinY);
-	  double outputShapeIntegralErr = outputShape->GetBinError(iBinX, iBinY);
-	  outputShapeIntegralErr2 += (outputShapeIntegralErr*outputShapeIntegralErr);
+	  outputHistogramIntegral += outputHistogram->GetBinContent(iBinX, iBinY);
+	  double outputHistogramIntegralErr = outputHistogram->GetBinError(iBinX, iBinY);
+	  outputHistogramIntegralErr2 += (outputHistogramIntegralErr*outputHistogramIntegralErr);
 	}
       }
 
-      bookMonitorElement(dqmStore, plot->meNameOutputNorm_, outputShapeIntegral);
-      bookMonitorElement(dqmStore, plot->meNameOutputNormErr_, TMath::Sqrt(outputShapeIntegralErr2));
+      bookMonitorElement(dqmStore, plot->meNameOutputNorm_, outputHistogramIntegral);
+      bookMonitorElement(dqmStore, plot->meNameOutputNormErr_, TMath::Sqrt(outputHistogramIntegralErr2));
 
-      outputShape->Scale(1./outputShape->Integral());
+      //outputHistogram->Scale(1./outputHistogram->Integral());
     }
   }
 }
