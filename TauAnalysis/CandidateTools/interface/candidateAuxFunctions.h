@@ -24,4 +24,6 @@ reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle*, const 
 void compX1X2byCollinearApprox(double&, double&, double, double, double, double, double, double);
 double getPhysX(double x, bool& isWithinPhysRange);
 
+reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
+
 #endif

@@ -3,6 +3,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TMath.h"
+#include "TLorentzVector.h"
 
 const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& direction, 
 					 const reco::GenParticleCollection& genParticles, double dRmax, int status,
@@ -135,5 +136,19 @@ double getPhysX(double x, bool& isWithinPhysRange)
   }
 
   return physX;
+}
+
+reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVector& p4daughter, 
+						const reco::Candidate::LorentzVector& p4mother)
+{
+  TLorentzVector p4mother_tlorentzvector(p4mother.px(), p4mother.py(), p4mother.pz(), p4mother.energy());
+
+  TVector3 boostVector = -(p4mother_tlorentzvector.BoostVector());
+
+  TLorentzVector p4daughter_tlorentzvector(p4daughter.px(), p4daughter.py(), p4daughter.pz(), p4daughter.energy());
+  p4daughter_tlorentzvector.Boost(boostVector);
+
+  return reco::Candidate::LorentzVector(p4daughter_tlorentzvector.Px(), p4daughter_tlorentzvector.Py(), p4daughter_tlorentzvector.Pz(), 
+					p4daughter_tlorentzvector.Energy());
 }
 
