@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.15 2009/09/01 10:22:23 kaulmer Exp $
+// $Id: HitRes.cc,v 1.16 2009/11/04 19:40:27 kaulmer Exp $
 //
 //
 
@@ -38,7 +38,8 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
 #include "CommonTools/Statistics/interface/ChiSquaredProbability.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "CalibTracker/SiStripCommon/interface/SiStripDetInfoFileReader.h"
@@ -98,7 +99,6 @@ public:
 
 private:
   typedef TransientTrackingRecHit::ConstRecHitPointer ConstRecHitPointer;
-  virtual void beginJob(const edm::EventSetup&) ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
@@ -182,6 +182,41 @@ HitRes::HitRes(const edm::ParameterSet& iConfig) :
   acceptLayer[StripSubdetector::TID] = iConfig.getParameter<bool>("useTID") ;
   acceptLayer[StripSubdetector::TEC] = iConfig.getParameter<bool>("useTEC") ;
   barrelOnly_ = iConfig.getParameter<bool>("barrelOnly");
+
+  edm::Service<TFileService> fs;
+  //
+  // root output
+  //
+  rootTree_ = fs->make<TTree>("Overlaps","Overlaps");
+  rootTree_->Branch("hitCounts",hitCounts_,"found/s:lost/s");
+  rootTree_->Branch("chi2",chi2_,"chi2/F:ndf/F");
+  rootTree_->Branch("path",&overlapPath_,"path/F");
+  rootTree_->Branch("layer",&layer_,"layer/i");
+  rootTree_->Branch("detids",overlapIds_,"id[2]/i");
+  rootTree_->Branch("predPos",predictedPositions_,"gX[2]/F:gY[2]/F:gZ[2]/F");
+  rootTree_->Branch("predPar",predictedLocalParameters_,
+		    "predQP[2]/F:predDX[2]/F:predDY[2]/F:predX[2]/F:predY[2]/F");
+  rootTree_->Branch("predErr",predictedLocalErrors_,
+		    "predEQP[2]/F:predEDX[2]/F:predEDY[2]/F:predEX[2]/F:predEY[2]/F");
+  rootTree_->Branch("predEDeltaX",&predictedDeltaXError_,"sigDeltaX/F");
+  rootTree_->Branch("predEDeltaY",&predictedDeltaYError_,"sigDeltaY/F"); 
+  rootTree_->Branch("relSignX",&relativeXSign_,"relSignX/B");
+  rootTree_->Branch("relSignY",&relativeYSign_,"relSignY/B");
+  rootTree_->Branch("hitX",hitPositions_,"hitX[2]/F");
+  rootTree_->Branch("hitEX",hitErrors_,"hitEX[2]/F");
+  rootTree_->Branch("hitY",hitPositionsY_,"hitY[2]/F");
+  rootTree_->Branch("hitEY",hitErrorsY_,"hitEY[2]/F");
+  rootTree_->Branch("simX",simHitPositions_,"simX[2]/F");
+  rootTree_->Branch("simY",simHitPositionsY_,"simY[2]/F");
+  rootTree_->Branch("clusterSize",clusterSize_,"clusterSize[2]/F");
+  rootTree_->Branch("clusterWidthX",clusterWidthX_,"clusterWidthX[2]/F");
+  rootTree_->Branch("clusterWidthY",clusterWidthY_,"clusterWidthY[2]/F");
+  rootTree_->Branch("clusterCharge",clusterCharge_,"clusterCharge[2]/i");
+  rootTree_->Branch("edge",edge_,"edge[2]/I");
+  rootTree_->Branch("momentum",&momentum_,"momentum/F");
+  rootTree_->Branch("run",&run_,"run/i");
+  rootTree_->Branch("event",&event_,"event/i");
+
 }
 
 
@@ -240,7 +275,7 @@ HitRes::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //
   // loop over trajectories from refit
-
+cout << "Tracks: " << trajectoryCollection->size()<<endl;
   for ( TrajectoryCollection::const_iterator it=trajectoryCollection->begin();
 	it!=trajectoryCollection->end(); ++it )  analyze(*it,propagator,*associator);
   
@@ -735,46 +770,6 @@ HitRes::layerFromId (const DetId& id) const
   return -1;
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-void 
-HitRes::beginJob(const edm::EventSetup&)
-{
-  edm::Service<TFileService> fs;
-  //
-  // root output
-  //
-  rootTree_ = fs->make<TTree>("Overlaps","Overlaps");
-  rootTree_->Branch("hitCounts",hitCounts_,"found/s:lost/s");
-  rootTree_->Branch("chi2",chi2_,"chi2/F:ndf/F");
-  rootTree_->Branch("path",&overlapPath_,"path/F");
-  rootTree_->Branch("layer",&layer_,"layer/i");
-  rootTree_->Branch("detids",overlapIds_,"id[2]/i");
-  rootTree_->Branch("predPos",predictedPositions_,"gX[2]/F:gY[2]/F:gZ[2]/F");
-  rootTree_->Branch("predPar",predictedLocalParameters_,
-		    "predQP[2]/F:predDX[2]/F:predDY[2]/F:predX[2]/F:predY[2]/F");
-  rootTree_->Branch("predErr",predictedLocalErrors_,
-		    "predEQP[2]/F:predEDX[2]/F:predEDY[2]/F:predEX[2]/F:predEY[2]/F");
-  rootTree_->Branch("predEDeltaX",&predictedDeltaXError_,"sigDeltaX/F");
-  rootTree_->Branch("predEDeltaY",&predictedDeltaYError_,"sigDeltaY/F"); 
-  rootTree_->Branch("relSignX",&relativeXSign_,"relSignX/B");
-  rootTree_->Branch("relSignY",&relativeYSign_,"relSignY/B");
-  rootTree_->Branch("hitX",hitPositions_,"hitX[2]/F");
-  rootTree_->Branch("hitEX",hitErrors_,"hitEX[2]/F");
-  rootTree_->Branch("hitY",hitPositionsY_,"hitY[2]/F");
-  rootTree_->Branch("hitEY",hitErrorsY_,"hitEY[2]/F");
-  rootTree_->Branch("simX",simHitPositions_,"simX[2]/F");
-  rootTree_->Branch("simY",simHitPositionsY_,"simY[2]/F");
-  rootTree_->Branch("clusterSize",clusterSize_,"clusterSize[2]/F");
-  rootTree_->Branch("clusterWidthX",clusterWidthX_,"clusterWidthX[2]/F");
-  rootTree_->Branch("clusterWidthY",clusterWidthY_,"clusterWidthY[2]/F");
-  rootTree_->Branch("clusterCharge",clusterCharge_,"clusterCharge[2]/i");
-  rootTree_->Branch("edge",edge_,"edge[2]/I");
-  rootTree_->Branch("momentum",&momentum_,"momentum/F");
-  rootTree_->Branch("run",&run_,"run/i");
-  rootTree_->Branch("event",&event_,"event/i");
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
 void 
 HitRes::endJob() {
   if ( rootTree_ ) {
