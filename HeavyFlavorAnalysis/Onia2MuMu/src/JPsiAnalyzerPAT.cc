@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.26 2010/05/12 09:50:33 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.27 2010/05/17 10:47:09 covarell Exp $
 //
 //
 
@@ -1258,14 +1258,15 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 	  //aMuon->pt() > 1.0 && aMuon->p() > 2.5 &&
 	  iTrack->found() > 11 &&
 	  aMuon->globalTrack()->chi2()/aMuon->globalTrack()->ndof() < 20.0 &&
+          p.numberOfValidMuonHits() > 0 &&
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
-          iTrack->chi2()/iTrack->ndof() < 5.0 &&
+          iTrack->chi2()/iTrack->ndof() < 4.0 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMLastStationAngTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
-	  fabs(iTrack->dxy(RefVtx)) < 5.0 &&
-          fabs(iTrack->dz(RefVtx)) < 20.0 );
+	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
+          fabs(iTrack->dz(RefVtx)) < 15.0 );
 }
 
 bool 
@@ -1277,7 +1278,7 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
   return (
 	  //aMuon->pt() > 1.0 && aMuon->p() > 2.5
 	  iTrack->found() > 11 &&
-	  iTrack->chi2()/iTrack->ndof() < 5.0 &&
+	  iTrack->chi2()/iTrack->ndof() < 4.0 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMLastStationAngTight") &&
           // aMuon->muonID("TM2DCompatibilityTight") &&
@@ -1285,8 +1286,8 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
           p.pixelLayersWithMeasurement() > 1 &&
-	  fabs(iTrack->dxy(RefVtx)) < 5.0 &&
-          fabs(iTrack->dz(RefVtx)) < 20.0 );
+	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
+          fabs(iTrack->dz(RefVtx)) < 15.0 );
 }
 
 bool 
@@ -1297,12 +1298,12 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
 
   return (aMuon->caloCompatibility() > 0.89 &&
 	  iTrack->found() > 11 &&
-	  iTrack->chi2()/iTrack->ndof() < 5.0 &&
+	  iTrack->chi2()/iTrack->ndof() < 4.0 &&
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
           p.pixelLayersWithMeasurement() > 1 &&
-	  fabs(iTrack->dxy(RefVtx)) < 5.0 &&
-          fabs(iTrack->dz(RefVtx)) < 20.0 );
+	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
+          fabs(iTrack->dz(RefVtx)) < 15.0 );
 }
 
 int 
