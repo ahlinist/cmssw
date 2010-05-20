@@ -16,6 +16,7 @@
 #include "TStyle.h"
 #include "TCanvas.h"
 #include "TColor.h"
+#include "TText.h"
 #include <cassert>
 #include "TROOT.h"
 
@@ -54,7 +55,117 @@ public:
 	   preDrawTH1F( c, o);
 	}
     }
+ 
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
+    {
+    
+      c->cd();
+      if ( o.name.find( "Info/LhcInfo/beamMode") != std::string::npos )
+      {
+	 TH1F* obj = dynamic_cast<TH1F*>( o.object );
+	 assert( obj );
 
+	 std::string smode[22] = 
+	 {
+	  "",
+	  "no mode",
+	  "setup",
+	  "inj pilot",
+	  "inj intr",
+	  "inj nomn",
+	  "pre ramp",
+	  "ramp",
+	  "flat top",
+	  "squeeze",
+	  "adjust",
+	  "stable beams",
+	  "unstable",
+	  "beam dump",
+	  "ramp down",
+	  "recovery",
+	  "inj dump",
+	  "circ dump",
+	  "abort",
+	  "cycling",
+	  "warn beam dump",
+	  "no beam"
+	 };
+	 
+	 int ibin=0;
+	 for ( int i = obj->GetNbinsX(); i > 0; --i )
+	 {
+	   if ( obj->GetBinContent(i) != 0 )
+	   {
+	      ibin = obj->GetBinContent(i);
+	      break;
+	   }
+	 }
+
+         if (ibin!=0)
+	 {
+           const char* s = smode[ibin].c_str();
+           TText tt;
+	   tt.SetTextSize(0.08);
+           tt.SetTextColor(2);
+	   if (ibin == 11)
+	     tt.SetTextColor(3);
+	   tt.DrawTextNDC(0.3,0.5,s);
+	 }
+      }
+
+      if ( o.name.find( "Info/LhcInfo/lhcFill") != std::string::npos )
+      {
+	 TH1F* obj = dynamic_cast<TH1F*>( o.object );
+	 assert( obj );
+
+	 int y=0;
+	 for ( int i = obj->GetNbinsX(); i > 0; --i )
+	 {
+	   if ( obj->GetBinContent(i) != 0 )
+	   {
+	      y = obj->GetBinContent(i);
+	      break;
+	   }
+	 }
+
+         if (y!=0 && y<9999) 
+	 {
+           char s[25];
+	   sprintf (s,"LHC Fill: %d",y);
+           TText tt;
+	   tt.SetTextSize(0.06);
+	   tt.SetTextColor(4);
+	   tt.DrawTextNDC(0.2,0.5,const_cast<char*>(s));
+	 }
+      }
+
+      if ( o.name.find( "Info/LhcInfo/momentum") != std::string::npos )
+      {
+	 TH1F* obj = dynamic_cast<TH1F*>( o.object );
+	 assert( obj );
+
+	 int y=0;
+	 for ( int i = obj->GetNbinsX(); i > 0; --i )
+	 {
+	   if ( obj->GetBinContent(i) != 0 )
+	   {
+	      y = obj->GetBinContent(i);
+	      break;
+	   }
+	 }
+
+         if (y!=0 && y<9999)
+	 {
+           char s[25];
+	   sprintf (s,"Beam Energy: %d GeV",y);
+           TText tt;
+	   tt.SetTextSize(0.06);
+	   tt.SetTextColor(4);
+	   tt.DrawTextNDC(0.2,0.5,const_cast<char*>(s));
+	 }
+      }
+
+    } 
 private:
   void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
     {
@@ -62,14 +173,14 @@ private:
       assert( obj );
 
       
-      int topBin = 26;
+      int topBin = 27;
       int nbins = obj->GetNbinsX();
       int maxRange = nbins;
       for ( int i = nbins; i > 0; --i )
       {
 	if ( obj->GetBinContent(i,topBin) != 0 )
 	{
-	   maxRange = i+1;
+	   maxRange = i;
 	   break;
 	}
       }
@@ -114,7 +225,7 @@ private:
       int maxRange = nbins;
       for ( int i = nbins; i > 0; --i )
       {
-	if ( obj->GetBinContent(i) != -1 )
+	if ( obj->GetBinContent(i) != 0 )
 	{
 	   maxRange = i+1;
 	   break;
