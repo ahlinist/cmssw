@@ -9,8 +9,8 @@ jetsAntiOverlapWithLeptonsVetoForElecTauBgEstZeeEnriched = cms.EDFilter("PATJetA
     src = cms.InputTag("jetsEt20ForBgEst"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
         "electronsTrkTightIsolationForBgEst",
-        "selectedLayer1MuonsTrkIPcumulative",
-        "selectedLayer1TausChargeCumulative"
+        "selectedPatMuonsTrkIPcumulative",
+        "selectedPatTausChargeCumulative"
     ),
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           
@@ -32,7 +32,7 @@ jetsAntiOverlapWithLeptonsVetoForElecTauBgEstWplusJetsEnriched = cms.EDFilter("P
     src = cms.InputTag("jetsEt20ForBgEst"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
         "electronsTrkTightIsolationForBgEst",
-        "selectedLayer1MuonsTrkIPcumulative",
+        "selectedPatMuonsTrkIPcumulative",
         "tausAntiOverlapWithElectronsVetoLooseIsolationForBgEst"
     ),
     dRmin = cms.double(0.7),
@@ -52,8 +52,8 @@ jetsAntiOverlapWithLeptonsVetoForElecTauBgEstTTplusJetsEnriched = cms.EDFilter("
     src = cms.InputTag("jetsEt20ForBgEst"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
         "electronsTrkTightIsolationForBgEst",
-        "selectedLayer1MuonsTrkIPcumulative",
-        "selectedLayer1TausForElecTauElectronVetoCumulative"
+        "selectedPatMuonsTrkIPcumulative",
+        "selectedPatTausForElecTauElectronVetoCumulative"
     ),
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           

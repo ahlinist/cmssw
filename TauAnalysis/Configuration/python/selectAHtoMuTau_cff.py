@@ -43,22 +43,22 @@ cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto = cms.PSet(
 cfgCentralJetEt20bTagVeto = cms.PSet(
     pluginName = cms.string('centralJetEt20bTagVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagCumulative'),
-    src_individual = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagIndividual'),
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauBtagCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauBtagIndividual'),
     maxNumber = cms.uint32(0)
 )
 cfgCentralJetEt20Cut = cms.PSet(
     pluginName = cms.string('centralJetEt20Cut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgCentralJetEt20bTagCut = cms.PSet(
     pluginName = cms.string('centralJetEt20bTagCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagCumulative'),
-    src_individual = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagIndividual'),
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauBtagCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauBtagIndividual'),
     minNumber = cms.uint32(1)
 )
 

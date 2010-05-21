@@ -6,40 +6,40 @@ from TauAnalysis.RecoTools.patElectronSelection_cfi import *
 # require electron candidate not to overlap with selected muons
 # (in order to avoid double-counting one and the same physical particle
 #  as muon and as electron candidate)
-selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVeto = cms.EDFilter("PATElectronAntiOverlapSelector",
-    srcNotToBeFiltered = cms.VInputTag("selectedLayer1MuonsGlobalIndividual"),
+selectedPatElectronsForElecMuAntiOverlapWithMuonsVeto = cms.EDFilter("PATElectronAntiOverlapSelector",
+    srcNotToBeFiltered = cms.VInputTag("selectedPatMuonsGlobalIndividual"),
     dRmin = cms.double(0.3),
     filter = cms.bool(False)                                           
 )
 
 # require electron candidate to pass the tight electron id. criteria
-selectedLayer1ElectronsForElecMuTightId = copy.deepcopy(selectedLayer1ElectronsTightId)
+selectedPatElectronsForElecMuTightId = copy.deepcopy(selectedPatElectronsTightId)
 
 # require electron candidate to not be within eta-crack
 # between Barrel and Encap ECAL calorimeter
-selectedLayer1ElectronsForElecMuAntiCrackCut = copy.deepcopy(selectedLayer1ElectronsAntiCrackCut)
+selectedPatElectronsForElecMuAntiCrackCut = copy.deepcopy(selectedPatElectronsAntiCrackCut)
 
 # require electron candidate to be within geometric acceptance of electron trigger
-selectedLayer1ElectronsForElecMuEta21 = copy.deepcopy(selectedLayer1ElectronsEta21)
+selectedPatElectronsForElecMuEta21 = copy.deepcopy(selectedPatElectronsEta21)
 
 # require electron candidate to have transverse momentum above threshold
-selectedLayer1ElectronsForElecMuPt15 = copy.deepcopy(selectedLayer1ElectronsPt15)
+selectedPatElectronsForElecMuPt15 = copy.deepcopy(selectedPatElectronsPt15)
 
 # require electron candidate to be isolated
 # with respect to tracks (of Pt >~ 0.3 GeV)
-selectedLayer1ElectronsForElecMuTrkIso = copy.deepcopy(selectedLayer1ElectronsTrkIso)
+selectedPatElectronsForElecMuTrkIso = copy.deepcopy(selectedPatElectronsTrkIso)
 
 # require electron candidate to be isolated
 # with respect to energy deposits in ECAL
 # (not associated to electron candidate)
-selectedLayer1ElectronsForElecMuEcalIso = copy.deepcopy(selectedLayer1ElectronsEcalIso)
+selectedPatElectronsForElecMuEcalIso = copy.deepcopy(selectedPatElectronsEcalIso)
 
 # require electron candidate to be linked to (GSF) track
-selectedLayer1ElectronsForElecMuTrk = copy.deepcopy(selectedLayer1ElectronsTrk)
+selectedPatElectronsForElecMuTrk = copy.deepcopy(selectedPatElectronsTrk)
 
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
-selectedLayer1ElectronsForElecMuTrkIP = copy.deepcopy(selectedLayer1ElectronsTrkIP)
+selectedPatElectronsForElecMuTrkIP = copy.deepcopy(selectedPatElectronsTrkIP)
 
 #--------------------------------------------------------------------------------
 # define additional collections of electron candidates
@@ -50,13 +50,13 @@ selectedLayer1ElectronsForElecMuTrkIP = copy.deepcopy(selectedLayer1ElectronsTrk
 #        in order to avoid problems with limited Monte Carlo statistics)
 #--------------------------------------------------------------------------------
 
-selectedLayer1ElectronsForElecMuTrkIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecMuTrkIso)
-selectedLayer1ElectronsForElecMuTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
+selectedPatElectronsForElecMuTrkIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecMuTrkIso)
+selectedPatElectronsForElecMuTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
 
-selectedLayer1ElectronsForElecMuEcalIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecMuEcalIso)
-selectedLayer1ElectronsForElecMuEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedPatElectronsForElecMuEcalIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecMuEcalIso)
+selectedPatElectronsForElecMuEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
 
-selectedLayer1ElectronsForElecMuTrkLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecMuTrk)
+selectedPatElectronsForElecMuTrkLooseIsolation = copy.deepcopy(selectedPatElectronsForElecMuTrk)
 
-selectedLayer1ElectronsForElecMuTrkIPlooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecMuTrkIP)
+selectedPatElectronsForElecMuTrkIPlooseIsolation = copy.deepcopy(selectedPatElectronsForElecMuTrkIP)
 

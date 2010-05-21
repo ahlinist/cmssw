@@ -21,20 +21,20 @@ from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 #       of opposite sign - same sign muon and tau-jet combinations.
 #      (SS/OS ratio is close to one for QCD background; significant charge asymmetry expected for W + jets background)
 #    
-muonsBgEstWplusJetsEnrichedPt = copy.deepcopy(selectedLayer1MuonsPt15)
+muonsBgEstWplusJetsEnrichedPt = copy.deepcopy(selectedPatMuonsPt15)
 muonsBgEstWplusJetsEnrichedPt.cut = cms.string('pt > 15.')
 
-muonsBgEstWplusJetsEnrichedTrkIso = copy.deepcopy(selectedLayer1MuonsTrkIso)
+muonsBgEstWplusJetsEnrichedTrkIso = copy.deepcopy(selectedPatMuonsTrkIso)
 muonsBgEstWplusJetsEnrichedTrkIso.sumPtMax = cms.double(1.)
 
-muonsBgEstWplusJetsEnrichedEcalIso = copy.deepcopy(selectedLayer1MuonsEcalIso)
+muonsBgEstWplusJetsEnrichedEcalIso = copy.deepcopy(selectedPatMuonsEcalIso)
 muonsBgEstWplusJetsEnrichedEcalIso.cut = cms.string('userIsolation("pat::EcalIso") < 1.')
 
 muonSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
     [ muonsBgEstWplusJetsEnrichedPt,
       muonsBgEstWplusJetsEnrichedTrkIso,
       muonsBgEstWplusJetsEnrichedEcalIso ],
-    src = "selectedLayer1MuonsEta21Cumulative",
+    src = "selectedPatMuonsEta21Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
 )
@@ -55,21 +55,21 @@ from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 #       or correct for template shape distortion by reweighting
 #      (would gain a factor of about 2.5 in event statistics; reweighting of tauPt distribution not implemented yet, however)
 #   
-tausBgEstWplusJetsEnrichedTrkIso = copy.deepcopy(selectedLayer1TausTrkIso)
+tausBgEstWplusJetsEnrichedTrkIso = copy.deepcopy(selectedPatTausTrkIso)
 #tausBgEstWplusJetsEnrichedTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5 | chargedHadronIso < 8.')
 tausBgEstWplusJetsEnrichedTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
 
-tausBgEstWplusJetsEnrichedEcalIso = copy.deepcopy(selectedLayer1TausEcalIso)
+tausBgEstWplusJetsEnrichedEcalIso = copy.deepcopy(selectedPatTausEcalIso)
 #tausBgEstWplusJetsEnrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5 | photonIso < 8.')
 tausBgEstWplusJetsEnrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
 
-tausBgEstWplusJetsEnrichedMuonVeto = copy.deepcopy(selectedLayer1TausMuonVeto)
+tausBgEstWplusJetsEnrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
 tauSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
     [ tausBgEstWplusJetsEnrichedTrkIso,
       tausBgEstWplusJetsEnrichedEcalIso,
       tausBgEstWplusJetsEnrichedMuonVeto ],
-    src = "selectedLayer1TausForMuTauLeadTrkPtCumulative",
+    src = "selectedPatTausForMuTauLeadTrkPtCumulative",
     pyModuleName = __name__,
     doSelIndividual = False
 )
@@ -85,7 +85,7 @@ muTauPairsBgEstWplusJetsEnriched = cms.EDProducer("PATMuTauPairProducer",
     srcLeg1 = cms.InputTag('muonsBgEstWplusJetsEnrichedEcalIsoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstWplusJetsEnrichedMuonVetoCumulative'),
     dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('layer1METs'),
+    srcMET = cms.InputTag('patMETs'),
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                                              
     verbosity = cms.untracked.int32(0)
@@ -105,9 +105,9 @@ selectMuTauPairsBgEstWplusJetsEnriched = cms.Sequence(muTauPairsBgEstWplusJetsEn
 #--------------------------------------------------------------------------------
 
 jetsBgEstWplusJetsEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
-    src = cms.InputTag("selectedLayer1JetsEt20Cumulative"),                                                                  
+    src = cms.InputTag("selectedPatJetsEt20Cumulative"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
-        "selectedLayer1ElectronsTrkIPcumulative",
+        "selectedPatElectronsTrkIPcumulative",
         "muonsBgEstWplusJetsEnrichedEcalIsoCumulative",
         "tausBgEstWplusJetsEnrichedMuonVetoCumulative"
     ),
@@ -185,7 +185,7 @@ cfgCentralJetVetoBgEstWplusJetsEnriched = cms.PSet(
 cfgDiMuonVetoBgEstWplusJetsEnriched = cms.PSet(
     pluginName = cms.string('diMuonVetoBgEstWplusJetsEnriched'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
+    src = cms.InputTag('selectedPatMuonsGlobalIndividual'),
     maxNumber = cms.uint32(1)
 )
 

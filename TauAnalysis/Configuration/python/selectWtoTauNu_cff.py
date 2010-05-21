@@ -26,101 +26,101 @@ cfgPrimaryEventVertexPosition = cms.PSet(
 cfgTauEtaCut = cms.PSet(
     pluginName = cms.string('tauEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuEta21Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuEta21Individual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuEta21Cumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuEta21Individual'),
     minNumber = cms.uint32(1)
 )
 cfgTauPtCut = cms.PSet(
     pluginName = cms.string('tauPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuPt20Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuPt20Individual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuPt20Cumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuPt20Individual'),
     minNumber = cms.uint32(1)
 )
 
 cfgMetPt = cms.PSet(
     pluginName = cms.string('metPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedLayer1METsPt25'),
+    src = cms.InputTag('selectedPatMETsPt25'),
     minNumber = cms.uint32(1)
 )
 
 cfgPFMetPt = cms.PSet(
     pluginName = cms.string('PFmetPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedLayer1PFMETsPt25'),
+    src = cms.InputTag('selectedPatPFMETsPt25'),
     minNumber = cms.uint32(1)
 )
 
 cfgTauLeadTrk = cms.PSet(
     pluginName = cms.string('tauLeadTrkCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuLeadTrkCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuLeadTrkIndividual'),
     minNumber = cms.uint32(1)
 )
 
 cfgTauLeadTrkPt = cms.PSet(
     pluginName = cms.string('tauLeadTrkPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkPtCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkPtIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuLeadTrkPtCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuLeadTrkPtIndividual'),
     minNumber = cms.uint32(1)
 )
 
 cfgTauEcalIso = cms.PSet(
     pluginName = cms.string('tauEcalIso'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuEcalIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuEcalIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuEcalIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 
 cfgTauTrkIso = cms.PSet(
     pluginName = cms.string('tauTrkIso'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuTrkIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuTrkIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuTrkIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 
 cfgTauMuonVeto = cms.PSet(
     pluginName = cms.string('tauMuonVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuMuonVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuMuonVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuMuonVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuMuonVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 
 cfgTauElectronVeto = cms.PSet(
     pluginName = cms.string('tauElectronVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuElectronVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuElectronVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuElectronVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuElectronVetoIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauEcalCrackVeto = cms.PSet(
     pluginName = cms.string('tauEcalCrackVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 
 cfgTauProngCut = cms.PSet(
     pluginName = cms.string('tauProngCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuProngCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuProngIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuProngCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuProngIndividual'),
     minNumber = cms.uint32(1)
 )
 
 cfgTauChargeCut = cms.PSet(
     pluginName = cms.string('tauChargeCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuChargeCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuChargeIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuChargeCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuChargeIndividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -128,7 +128,7 @@ cfgTauChargeCut = cms.PSet(
 cfgCentralJetVeto = cms.PSet(
     pluginName = cms.string('centralJetVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt20ForWTauNuCumulative'), 
+    src = cms.InputTag('selectedPatJetsEt20ForWTauNuCumulative'), 
     maxNumber = cms.uint32(0)                                                      
 )
 

@@ -46,18 +46,18 @@ cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation = cfgDiT
 # for not not overlapping with loosely "isolated" muons
 cfgCentralJetEt20bTagVetoLooseMuonIsolation = cfgCentralJetEt20bTagVeto.clone(
     pluginName = cms.string('centralJetEt20bTagVetoLooseMuonIsolation'),
-    src_cumulative = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagLooseMuonIsolationCumulative'),
-    src_individual = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagLooseMuonIsolationIndividual')
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauBtagLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauBtagLooseMuonIsolationIndividual')
 )
 cfgCentralJetEt20CutLooseMuonIsolation = cfgCentralJetEt20Cut.clone(
     pluginName = cms.string('centralJetEt20CutLooseMuonIsolation'),
-    src_cumulative = cms.InputTag('selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative'),
-    src_individual = cms.InputTag('selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationIndividual')
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationIndividual')
 )
 cfgCentralJetEt20bTagCutLooseMuonIsolation = cfgCentralJetEt20bTagCut.clone(
     pluginName = cms.string('centralJetEt20bTagCutLooseMuonIsolation'),
-    src_cumulative = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagLooseMuonIsolationCumulative'),
-    src_individual = cms.InputTag('selectedLayer1JetsForAHtoMuTauBtagLooseMuonIsolationIndividual')
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauBtagLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauBtagLooseMuonIsolationIndividual')
 )
 
 ahToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(

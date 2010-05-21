@@ -16,23 +16,23 @@ from TauAnalysis.Configuration.selectZtoElecMu_cff import *
 # electron candidate selection with "loose" electron isolation criteria applied
 cfgElectronTrkIsoCutLooseIsolation = copy.deepcopy(cfgElectronTrkIsoCut)
 cfgElectronTrkIsoCutLooseIsolation.pluginName = "electronTrkIsoCutLooseIsolation"
-cfgElectronTrkIsoCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIsoLooseIsolationCumulative')
-cfgElectronTrkIsoCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1ElectronsTrkIsoLooseIsolationIndividual')
+cfgElectronTrkIsoCutLooseIsolation.src_cumulative = cms.InputTag('selectedPatElectronsTrkIsoLooseIsolationCumulative')
+cfgElectronTrkIsoCutLooseIsolation.src_individual = cms.InputTag('selectedPatElectronsTrkIsoLooseIsolationIndividual')
 
 cfgElectronEcalIsoCutLooseIsolation = copy.deepcopy(cfgElectronEcalIsoCut)
 cfgElectronEcalIsoCutLooseIsolation.pluginName = "electronEcalIsoCutLooseIsolation"
-cfgElectronEcalIsoCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1ElectronsEcalIsoLooseIsolationCumulative')
-cfgElectronEcalIsoCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1ElectronsEcalIsoLooseIsolationIndividual')
+cfgElectronEcalIsoCutLooseIsolation.src_cumulative = cms.InputTag('selectedPatElectronsEcalIsoLooseIsolationCumulative')
+cfgElectronEcalIsoCutLooseIsolation.src_individual = cms.InputTag('selectedPatElectronsEcalIsoLooseIsolationIndividual')
 
 cfgElectronTrkCutLooseIsolation = copy.deepcopy(cfgElectronTrkCut)
 cfgElectronTrkCutLooseIsolation.pluginName = "electronTrkCutLooseIsolation"
-cfgElectronTrkCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkLooseIsolationCumulative')
-cfgElectronTrkCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1ElectronsTrkLooseIsolationIndividual')
+cfgElectronTrkCutLooseIsolation.src_cumulative = cms.InputTag('selectedPatElectronsTrkLooseIsolationCumulative')
+cfgElectronTrkCutLooseIsolation.src_individual = cms.InputTag('selectedPatElectronsTrkLooseIsolationIndividual')
 
 cfgElectronTrkIPcutLooseIsolation = copy.deepcopy(cfgElectronTrkIPcut)
 cfgElectronTrkIPcutLooseIsolation.pluginName = "electronTrkIPcutLooseIsolation"
-cfgElectronTrkIPcutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIPlooseIsolationCumulative')
-cfgElectronTrkIPcutLooseIsolation.src_individual = cms.InputTag('selectedLayer1ElectronsTrkIPlooseIsolationIndividual')
+cfgElectronTrkIPcutLooseIsolation.src_cumulative = cms.InputTag('selectedPatElectronsTrkIPlooseIsolationCumulative')
+cfgElectronTrkIPcutLooseIsolation.src_individual = cms.InputTag('selectedPatElectronsTrkIPlooseIsolationIndividual')
 
 # selection of di-tau candidates composed of combination of muon with "loosely" isolated electron
 cfgDiTauCandidateForElecMuAntiOverlapVetoLooseElectronIsolation = copy.deepcopy(cfgDiTauCandidateForElecMuAntiOverlapVeto)

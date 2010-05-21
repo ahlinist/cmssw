@@ -6,7 +6,7 @@ genMatrixBinningZtoMuTau = cms.PSet(
         cms.PSet(
             extractor = cms.PSet(
                 pluginType = cms.string("PATMuonValExtractor"),
-                src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
+                src = cms.InputTag('selectedPatMuonsEcalIsoLooseIsolationCumulative'),
                 value = cms.string("trackIso + ecalIso")
             ),
             branchName = cms.string('muonIso'),

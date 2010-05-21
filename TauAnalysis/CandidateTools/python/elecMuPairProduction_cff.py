@@ -7,8 +7,8 @@ import copy
 
 allElecMuPairs = cms.EDProducer("PATElecMuPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIPcumulative'),
-    srcLeg2 = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
+    srcLeg1 = cms.InputTag('selectedPatElectronsForElecMuTrkIPcumulative'),
+    srcLeg2 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
     dRmin12 = cms.double(-1.),
     srcMET = cms.InputTag('patMETs'),
     srcGenParticles = cms.InputTag('genParticles'),                                  
@@ -27,8 +27,8 @@ produceElecMuPairs = cms.Sequence( allElecMuPairs )
 
 allElecMuPairsLooseElectronIsolation = cms.EDProducer("PATElecMuPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIPlooseIsolationCumulative'),
-    srcLeg2 = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
+    srcLeg1 = cms.InputTag('selectedPatElectronsForElecMuTrkIPlooseIsolationCumulative'),
+    srcLeg2 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
     dRmin12 = cms.double(-1.),
     srcMET = cms.InputTag('patMETs'),
     srcGenParticles = cms.InputTag('genParticles'),                                                        

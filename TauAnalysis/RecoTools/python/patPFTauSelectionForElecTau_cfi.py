@@ -6,48 +6,48 @@ from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 # require tau candidate not to overlap with selected electrons
 # (in order to avoid double-counting one and the same physical particle
 #  as electron and as tau candidate)
-selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto = cms.EDFilter("PATTauAntiOverlapSelector",
-    srcNotToBeFiltered = cms.VInputTag("selectedLayer1ElectronsTrkIPcumulative"),
+selectedPatTausForElecTauAntiOverlapWithElectronsVeto = cms.EDFilter("PATTauAntiOverlapSelector",
+    srcNotToBeFiltered = cms.VInputTag("selectedPatElectronsTrkIPcumulative"),
     dRmin = cms.double(0.3),
     filter = cms.bool(False)                                           
 )
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
-selectedLayer1TausForElecTauEta21 = copy.deepcopy(selectedLayer1TausEta21)
+selectedPatTausForElecTauEta21 = copy.deepcopy(selectedPatTausEta21)
 
 # require tau candidate to have transverse energy above threshold
-selectedLayer1TausForElecTauPt20 = copy.deepcopy(selectedLayer1TausPt20)
+selectedPatTausForElecTauPt20 = copy.deepcopy(selectedPatTausPt20)
 
 # require tau candidate to have a leading track
 # (track of Pt > 1. GeV within matching cone of size dR = 0.2 around jet-axis)
-selectedLayer1TausForElecTauLeadTrk = copy.deepcopy(selectedLayer1TausLeadTrk)
+selectedPatTausForElecTauLeadTrk = copy.deepcopy(selectedPatTausLeadTrk)
 
 # require leading track of tau candidate to have Pt > 5. GeV
-selectedLayer1TausForElecTauLeadTrkPt = copy.deepcopy(selectedLayer1TausLeadTrkPt)
+selectedPatTausForElecTauLeadTrkPt = copy.deepcopy(selectedPatTausLeadTrkPt)
 
 # require tau candidate to pass TaNC discriminator
-selectedLayer1TausForElecTauTaNCdiscr = copy.deepcopy(selectedLayer1TausTaNCdiscr)
+selectedPatTausForElecTauTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
 
 # require tau candidate to have no tracks of Pt > 1. GeV
 # in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
-selectedLayer1TausForElecTauTrkIso = copy.deepcopy(selectedLayer1TausTrkIso)
+selectedPatTausForElecTauTrkIso = copy.deepcopy(selectedPatTausTrkIso)
 
 # require tau candidate to be isolated
 # with respect to energy deposits in ECAL
-selectedLayer1TausForElecTauEcalIso = copy.deepcopy(selectedLayer1TausEcalIso)
+selectedPatTausForElecTauEcalIso = copy.deepcopy(selectedPatTausEcalIso)
 
 # require tau candidate to have either one or three tracks within signal cone
-selectedLayer1TausForElecTauProng = copy.deepcopy(selectedLayer1TausProng)
+selectedPatTausForElecTauProng = copy.deepcopy(selectedPatTausProng)
 
 # require tau candidate to have charge either +1 or -1
 # (computed as sum of charges of tracks within signal cone)
-selectedLayer1TausForElecTauCharge = copy.deepcopy(selectedLayer1TausCharge)
+selectedPatTausForElecTauCharge = copy.deepcopy(selectedPatTausCharge)
 
 # require tau candidate to pass electron veto
-selectedLayer1TausForElecTauElectronVeto = copy.deepcopy(selectedLayer1TausElectronVeto)
+selectedPatTausForElecTauElectronVeto = copy.deepcopy(selectedPatTausElectronVeto)
 
 # require tau candidate not to be in ECAL barrel/endcap crack
-selectedLayer1TausForElecTauEcalCrackVeto = copy.deepcopy(selectedLayer1TausEcalCrackVeto)
+selectedPatTausForElecTauEcalCrackVeto = copy.deepcopy(selectedPatTausEcalCrackVeto)
 
 # require tau candidate to pass muon veto
-selectedLayer1TausForElecTauMuonVeto = copy.deepcopy(selectedLayer1TausMuonVeto)
+selectedPatTausForElecTauMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)

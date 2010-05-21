@@ -116,7 +116,7 @@ addPFMet(process, False)
 
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
-replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
+replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 
 from TauAnalysis.Configuration.tools.sysUncertaintyTools import *
 # uncomment to disable produceSysErrGenEventReweights sequence from PAT post-production

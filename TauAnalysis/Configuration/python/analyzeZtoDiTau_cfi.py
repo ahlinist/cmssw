@@ -295,9 +295,9 @@ diTauEventDump = cms.PSet(
     muonSource = cms.InputTag('cleanPatMuons'),
     tauSource = cms.InputTag('cleanPatTaus'),
     diTauCandidateSource = cms.InputTag('allDiTauPairs'),
-    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    caloMEtSource = cms.InputTag('layer1METs'),
-    pfMEtSource = cms.InputTag('layer1PFMETs'),
+    jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
+    caloMEtSource = cms.InputTag('patMETs'),
+    pfMEtSource = cms.InputTag('patPFMETs'),
     genMEtSource = cms.InputTag('genMetTrue'),
     
     #output = cms.string("diTauEventDump.txt"),
@@ -388,7 +388,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauEta21Cumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauEta21Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelFirstTauPt'),
@@ -397,7 +397,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauPt20Cumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauPt20Cumulative')
     ),
 
     # acceptance cuts on second tau-jet
@@ -408,8 +408,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauPt20Cumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauEta21Cumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauPt20Cumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauEta21Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelSecondTauPt'),
@@ -418,8 +418,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauPt20Cumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauPt20Cumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauPt20Cumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauPt20Cumulative')
     ),
     
     # selection of first tau-jet candidate (id.)
@@ -430,7 +430,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauLeadTrkCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauLeadTrkCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelFirstTauLeadTrkPt'),
@@ -439,7 +439,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauLeadTrkPtCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauLeadTrkPtCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelFirstTauTrkIso'),
@@ -448,7 +448,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauTrkIsoCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauTrkIsoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelFirstTauEcalIso'),
@@ -457,7 +457,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauEcalIsoCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauEcalIsoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelFirstTauProng'),
@@ -466,7 +466,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauProngCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauProngCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelFirstTauCharge'),
@@ -475,7 +475,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative')
     ),
 
     # selection of second tau-jet candidate (id.)
@@ -486,8 +486,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauLeadTrkCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauLeadTrkCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelSecondTauLeadTrkPt'),
@@ -496,8 +496,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauLeadTrkPtCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauLeadTrkPtCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelSecondTauTrkIso'),
@@ -506,8 +506,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauTrkIsoCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauTrkIsoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelSecondTauEcalIso'),
@@ -516,8 +516,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauEcalIsoCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauEcalIsoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelSecondTauProng'),
@@ -526,8 +526,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauProngCumulative')
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauProngCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelSecondTauCharge'),
@@ -536,7 +536,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager2.tauSource = selectedLayer1TausForDiTauChargeCumulative')
+        replace = cms.vstring('tauHistManager2.tauSource = selectedPatTausForDiTauChargeCumulative')
     ),
 
     #selection of tau-jet + tau-jet combinations
@@ -547,8 +547,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauChargeCumulative',
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauChargeCumulative',
                               'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsAntiOverlapVetoCumulative')
     ),  
     cms.PSet(
@@ -558,8 +558,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauChargeCumulative',
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauChargeCumulative',
                               'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsAcoplanarityCumulative')
     ),
     cms.PSet(
@@ -569,8 +569,8 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauChargeCumulative',
+        replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+                              'tauHistManager2.tauSource = selectedPatTausForDiTauChargeCumulative',
                               'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsZeroChargeCumulative')
     #),
 
@@ -582,8 +582,8 @@ diTauAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = muTauHistManagers,
-    #    replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauChargeCumulative',
-    #                          'tauHistManager2.tauSource = selectedLayer1TausForDiTauChargeCumulative',
+    #    replace = cms.vstring('tauHistManager1.tauSource = selectedPatTausForDiTauChargeCumulative',
+    #                          'tauHistManager2.tauSource = selectedPatTausForDiTauChargeCumulative',
     #                          'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsZeroChargeCumulative')
   )
 )

@@ -177,7 +177,7 @@ cfgDiTauCandidateForDiTauZeroChargeCut = cms.PSet(
 cfgCentralJetVeto = cms.PSet(
     pluginName = cms.string('centralJetVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+    src = cms.InputTag('selectedPatJetsEt20Cumulative'),
     maxNumber = cms.uint32(0)
 )
 

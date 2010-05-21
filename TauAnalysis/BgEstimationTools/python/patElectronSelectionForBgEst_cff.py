@@ -17,13 +17,13 @@ electronsRobustIdForBgEst = cms.EDFilter("PATElectronSelector",
 )
 
 electronsTrkLooseIsolationForBgEst = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag('selectedLayer1ElectronsEcalIsoLooseIsolationCumulative'),                                        
+    src = cms.InputTag('selectedPatElectronsEcalIsoLooseIsolationCumulative'),                                        
     cut = cms.string('gsfTrack.isNonnull'),
     filter = cms.bool(False)
 )
 
 electronsTrkIsoForBgEst = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag('selectedLayer1ElectronsPt15Cumulative'),
+    src = cms.InputTag('selectedPatElectronsPt15Cumulative'),
     cut = cms.string('trackIso < 2.'),
     filter = cms.bool(False)
 )

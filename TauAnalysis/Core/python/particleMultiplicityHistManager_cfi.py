@@ -11,7 +11,7 @@ particleMultiplicityHistManager = cms.PSet(
             numBinsX = cms.uint32(10),
             xMin = cms.double(-0.5),
             xMax = cms.double(9.5),
-            src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
+            src = cms.InputTag('selectedPatMuonsGlobalIndividual')
         ),
         cms.PSet(
             name = cms.string("NumTightIdElectrons"),
@@ -19,7 +19,7 @@ particleMultiplicityHistManager = cms.PSet(
             numBinsX = cms.uint32(10),
             xMin = cms.double(-0.5),
             xMax = cms.double(9.5),
-            src = cms.InputTag('selectedLayer1ElectronsTightIdIndividual')
+            src = cms.InputTag('selectedPatElectronsTightIdIndividual')
         )
     ),
 

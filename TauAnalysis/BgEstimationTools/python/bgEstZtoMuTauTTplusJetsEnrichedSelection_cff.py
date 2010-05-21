@@ -14,19 +14,19 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 
-muonsBgEstTTplusJetsEnrichedTrkIso = copy.deepcopy(selectedLayer1MuonsTrkIso)
+muonsBgEstTTplusJetsEnrichedTrkIso = copy.deepcopy(selectedPatMuonsTrkIso)
 muonsBgEstTTplusJetsEnrichedTrkIso.sumPtMax = cms.double(2.)
 
-muonsBgEstTTplusJetsEnrichedEcalIso = copy.deepcopy(selectedLayer1MuonsEcalIso)
+muonsBgEstTTplusJetsEnrichedEcalIso = copy.deepcopy(selectedPatMuonsEcalIso)
 muonsBgEstTTplusJetsEnrichedEcalIso.cut = cms.string('userIsolation("pat::EcalIso") < 2.')
 
-muonsBgEstTTplusJetsEnrichedPionVeto = copy.deepcopy(selectedLayer1MuonsPionVeto)
+muonsBgEstTTplusJetsEnrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
 
 muonSelConfiguratorBgEstTTplusJetsEnriched = objSelConfigurator(
     [ muonsBgEstTTplusJetsEnrichedTrkIso,
       muonsBgEstTTplusJetsEnrichedEcalIso,
       muonsBgEstTTplusJetsEnrichedPionVeto ],
-    src = "selectedLayer1MuonsPt15Cumulative",
+    src = "selectedPatMuonsPt15Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
 )
@@ -40,9 +40,9 @@ selectMuonsBgEstTTplusJetsEnriched = muonSelConfiguratorBgEstTTplusJetsEnriched.
 muTauPairsBgEstTTplusJetsEnriched = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
     srcLeg1 = cms.InputTag('muonsBgEstTTplusJetsEnrichedPionVetoCumulative'),
-    srcLeg2 = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
+    srcLeg2 = cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
     dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('layer1METs'),
+    srcMET = cms.InputTag('patMETs'),
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                                               
     verbosity = cms.untracked.int32(0)
@@ -62,11 +62,11 @@ selectMuTauPairsBgEstTTplusJetsEnriched = cms.Sequence(muTauPairsBgEstTTplusJets
 #--------------------------------------------------------------------------------
 
 jetsBgEstTTplusJetsEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
-    src = cms.InputTag("selectedLayer1JetsEt20Cumulative"),                                                                  
+    src = cms.InputTag("selectedPatJetsEt20Cumulative"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
-        "selectedLayer1ElectronsTrkCumulative",
+        "selectedPatElectronsTrkCumulative",
         "muonsBgEstTTplusJetsEnrichedPionVetoCumulative",
-        "selectedLayer1TausForMuTauMuonVetoCumulative"
+        "selectedPatTausForMuTauMuonVetoCumulative"
     ),
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           
@@ -179,7 +179,7 @@ muonHistManagerBgEstTTplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstTTpl
 
 tauHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(tauHistManager)
 tauHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('tauHistManagerBgEstTTplusJetsEnriched')
-tauHistManagerBgEstTTplusJetsEnriched.tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative')
+tauHistManagerBgEstTTplusJetsEnriched.tauSource = cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative')
 
 diTauCandidateHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(diTauCandidateHistManagerForMuTau)
 diTauCandidateHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('diTauCandidateHistManagerBgEstTTplusJetsEnriched')
@@ -194,7 +194,7 @@ from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 tauIdEffHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstTTplusJetsEnriched')
 tauIdEffHistManagerBgEstTTplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstTTplusJetsEnrichedEcalIsoCumulative')
-tauIdEffHistManagerBgEstTTplusJetsEnriched.tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative')
+tauIdEffHistManagerBgEstTTplusJetsEnriched.tauSource = cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative')
 tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauSource = cms.InputTag('muTauPairsBgEstTTplusJetsEnrichedZeroCharge')
 tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauSource
 

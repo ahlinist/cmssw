@@ -10,34 +10,34 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 # on how to use the cut-string parser
 
 # select central jets
-selectedLayer1JetsEta21 = cms.EDFilter("PATJetSelector",
+selectedPatJetsEta21 = cms.EDFilter("PATJetSelector",
     cut = cms.string('abs(eta) < 2.1'),
     filter = cms.bool(False)
 )
 
 # select jets with Et > 20 GeV
-selectedLayer1JetsEt20 = cms.EDFilter("PATJetSelector",
+selectedPatJetsEt20 = cms.EDFilter("PATJetSelector",
     cut = cms.string('et > 20.'), 
     filter = cms.bool(False)
 )
 
 # select jets not identified as electron, muon or tau-jets
-selectedLayer1JetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
+selectedPatJetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
     srcNotToBeFiltered = cms.VInputTag(
-        "selectedLayer1ElectronsTrkIPcumulative",
-        "selectedLayer1MuonsTrkIPcumulative",
-        "selectedLayer1TausProngCumulative"
+        "selectedPatElectronsTrkIPcumulative",
+        "selectedPatMuonsTrkIPcumulative",
+        "selectedPatTausProngCumulative"
     ),                                                           
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           
 )
 
 patJetSelConfigurator = objSelConfigurator(
-    [ selectedLayer1JetsEta21,
-      selectedLayer1JetsEt20,
-      selectedLayer1JetsAntiOverlapWithLeptonsVeto ],
+    [ selectedPatJetsEta21,
+      selectedPatJetsEt20,
+      selectedPatJetsAntiOverlapWithLeptonsVeto ],
     src = "cleanPatJets",
     pyModuleName = __name__,
     doSelIndividual = False
 )
-selectLayer1Jets = patJetSelConfigurator.configure(pyNameSpace = locals())
+selectPatJets = patJetSelConfigurator.configure(pyNameSpace = locals())

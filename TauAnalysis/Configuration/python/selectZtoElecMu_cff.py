@@ -38,64 +38,64 @@ cfgPrimaryEventVertexPosition = cms.PSet(
 cfgElectronAntiOverlapWithMuonsVeto = cms.PSet(
     pluginName = cms.string('electronAntiOverlapWithMuonsVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuAntiOverlapWithMuonsVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuAntiOverlapWithMuonsVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgTightElectronIdCut = cms.PSet(
     pluginName = cms.string('tightElectronIdCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuTightIdCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuTightIdIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuTightIdCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuTightIdIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronAntiCrackCut = cms.PSet(
     pluginName = cms.string('electronAntiCrackCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuAntiCrackCutCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuAntiCrackCutIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuAntiCrackCutCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuAntiCrackCutIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronEtaCut = cms.PSet(
     pluginName = cms.string('electronEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuEta21Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuEta21Individual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuEta21Cumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuEta21Individual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronPtCut = cms.PSet(
     pluginName = cms.string('electronPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuPt15Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuPt15Individual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuPt15Cumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuPt15Individual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronTrkIsoCut = cms.PSet(
     pluginName = cms.string('electronTrkIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuTrkIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuTrkIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronEcalIsoCut = cms.PSet(
     pluginName = cms.string('electronEcalIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuEcalIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuEcalIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuEcalIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronTrkCut = cms.PSet(
     pluginName = cms.string('electronTrkCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuTrkCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuTrkCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuTrkIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronTrkIPcut = cms.PSet(
     pluginName = cms.string('electronTrkIPcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIPcumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIPindividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuTrkIPcumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecMuTrkIPindividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -103,50 +103,50 @@ cfgElectronTrkIPcut = cms.PSet(
 cfgGlobalMuonCut = cms.PSet(
     pluginName = cms.string('globalMuonCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsGlobalCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsGlobalCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsGlobalIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgMuonEtaCut = cms.PSet(
     pluginName = cms.string('muonEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsEta21Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsEta21Individual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsEta21Cumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsEta21Individual'),
     minNumber = cms.uint32(1)
 )
 cfgMuonPtCut = cms.PSet(
     pluginName = cms.string('muonPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsPt15Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsPt15Individual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsPt15Cumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsPt15Individual'),
     minNumber = cms.uint32(1)
 )
 cfgMuonTrkIsoCut = cms.PSet(
     pluginName = cms.string('muonTrkIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsTrkIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsTrkIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgMuonEcalIsoCut = cms.PSet(
     pluginName = cms.string('muonEcalIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsEcalIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsEcalIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgMuonAntiPionCut = cms.PSet(
     pluginName = cms.string('muonAntiPionCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsPionVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsPionVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsPionVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgMuonTrkIPcut = cms.PSet(
     pluginName = cms.string('muonTrkIPcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsTrkIPindividual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsTrkIPindividual'),
     minNumber = cms.uint32(1)
 )
 
