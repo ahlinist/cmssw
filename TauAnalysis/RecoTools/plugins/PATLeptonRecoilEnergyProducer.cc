@@ -9,5 +9,5 @@ typedef PATLeptonRecoilEnergyProducer<pat::Tau, CaloTower> PATTauRecoilEnergyFro
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_ANOTHER_FWK_MODULE(PATTauRecoilEnergyFromJetsProducer);
-DEFINE_ANOTHER_FWK_MODULE(PATTauRecoilEnergyFromCaloTowersProducer);
+DEFINE_FWK_MODULE(PATTauRecoilEnergyFromJetsProducer);
+DEFINE_FWK_MODULE(PATTauRecoilEnergyFromCaloTowersProducer);

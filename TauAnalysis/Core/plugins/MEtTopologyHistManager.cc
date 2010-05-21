@@ -57,4 +57,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, MEtTopologyHistManager, "MEtTopology
 
 typedef HistManagerAdapter<MEtTopologyHistManager> MEtTopologyAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(MEtTopologyAnalyzer);
+DEFINE_FWK_MODULE(MEtTopologyAnalyzer);

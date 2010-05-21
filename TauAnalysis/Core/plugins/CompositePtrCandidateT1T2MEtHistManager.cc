@@ -557,9 +557,9 @@ typedef HistManagerAdapter<PATMuTauPairHistManager> PATMuTauPairAnalyzer;
 typedef HistManagerAdapter<PATDiTauPairHistManager> PATDiTauPairAnalyzer;
 typedef HistManagerAdapter<PATElecMuPairHistManager> PATElecMuPairAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(DiCandidatePairAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(PATElecTauPairAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(PATMuTauPairAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(PATDiTauPairAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(PATElecMuPairAnalyzer);
+DEFINE_FWK_MODULE(DiCandidatePairAnalyzer);
+DEFINE_FWK_MODULE(PATElecTauPairAnalyzer);
+DEFINE_FWK_MODULE(PATMuTauPairAnalyzer);
+DEFINE_FWK_MODULE(PATDiTauPairAnalyzer);
+DEFINE_FWK_MODULE(PATElecMuPairAnalyzer);
 

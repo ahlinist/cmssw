@@ -175,4 +175,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, GenPhaseSpaceEventInfoHistManager, "
 
 typedef HistManagerAdapter<GenPhaseSpaceEventInfoHistManager> GenPhaseSpaceEventInfoAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(GenPhaseSpaceEventInfoAnalyzer);
+DEFINE_FWK_MODULE(GenPhaseSpaceEventInfoAnalyzer);

@@ -491,4 +491,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, ElectronHistManager, "ElectronHistMa
 
 typedef HistManagerAdapter<ElectronHistManager> ElectronAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(ElectronAnalyzer);
+DEFINE_FWK_MODULE(ElectronAnalyzer);

@@ -8,7 +8,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
@@ -132,8 +132,7 @@ void EwkElecMuValHistManager::fillHistograms(const edm::Event& evt, const edm::E
 		readError, "Failed to access Trigger results");
   if ( readError ) return;
   
-  edm::TriggerNames triggerNames;
-  triggerNames.init(*hltDecision);
+  const edm::TriggerNames& triggerNames = evt.triggerNames(*hltDecision);
    
   bool isTriggered = false;
   for ( vstring::const_iterator hltPath = hltPaths_.begin();

@@ -70,4 +70,4 @@ DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, MultiBoolEventSelFlagSelector, "Mu
 
 typedef EventSelectorAdapter<MultiBoolEventSelFlagSelector> MultiBoolEventSelFlagFilter;
 
-DEFINE_ANOTHER_FWK_MODULE(MultiBoolEventSelFlagFilter);
+DEFINE_FWK_MODULE(MultiBoolEventSelFlagFilter);

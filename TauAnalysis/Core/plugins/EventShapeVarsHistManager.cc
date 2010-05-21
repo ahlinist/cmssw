@@ -73,4 +73,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, EventShapeVarsHistManager, "EventSha
 
 typedef HistManagerAdapter<EventShapeVarsHistManager> EventShapeVarsAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(EventShapeVarsAnalyzer);
+DEFINE_FWK_MODULE(EventShapeVarsAnalyzer);

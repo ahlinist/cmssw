@@ -72,6 +72,6 @@ typedef ObjectSelector<PATLeptonIpSelector<pat::Tau> > PATTauIpSelector;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_ANOTHER_FWK_MODULE(PATElectronIpSelector);
-DEFINE_ANOTHER_FWK_MODULE(PATMuonIpSelector);
-DEFINE_ANOTHER_FWK_MODULE(PATTauIpSelector);
+DEFINE_FWK_MODULE(PATElectronIpSelector);
+DEFINE_FWK_MODULE(PATMuonIpSelector);
+DEFINE_FWK_MODULE(PATTauIpSelector);

@@ -454,4 +454,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, MuonHistManager, "MuonHistManager");
 
 typedef HistManagerAdapter<MuonHistManager> MuonAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(MuonAnalyzer);
+DEFINE_FWK_MODULE(MuonAnalyzer);

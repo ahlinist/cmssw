@@ -22,5 +22,5 @@ typedef SingleObjectSelector<
 
 #include "FWCore/Framework/interface/MakerMacros.h"
  
-DEFINE_ANOTHER_FWK_MODULE(CaloMEtSelector);
-DEFINE_ANOTHER_FWK_MODULE(PFMEtSelector);
+DEFINE_FWK_MODULE(CaloMEtSelector);
+DEFINE_FWK_MODULE(PFMEtSelector);

@@ -222,7 +222,7 @@ typedef HistManagerAdapter<ZllHypothesisMuTauHistManager> ZllHypothesisMuTauAnal
 typedef HistManagerAdapter<ZllHypothesisDiTauHistManager> ZllHypothesisDiTauAnalyzer;
 typedef HistManagerAdapter<ZllHypothesisElecMuHistManager> ZllHypothesisElecMuAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(ZllHypothesisElecTauAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(ZllHypothesisMuTauAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(ZllHypothesisDiTauAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(ZllHypothesisElecMuAnalyzer);
+DEFINE_FWK_MODULE(ZllHypothesisElecTauAnalyzer);
+DEFINE_FWK_MODULE(ZllHypothesisMuTauAnalyzer);
+DEFINE_FWK_MODULE(ZllHypothesisDiTauAnalyzer);
+DEFINE_FWK_MODULE(ZllHypothesisElecMuAnalyzer);

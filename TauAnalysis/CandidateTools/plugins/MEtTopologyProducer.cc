@@ -57,7 +57,7 @@ void MEtTopologyProducer::produce(edm::Event& evt, const edm::EventSetup& es)
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_ANOTHER_FWK_MODULE(MEtTopologyProducer);
+DEFINE_FWK_MODULE(MEtTopologyProducer);
 
 
 

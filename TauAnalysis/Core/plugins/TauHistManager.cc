@@ -683,4 +683,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, TauHistManager, "TauHistManager");
 
 typedef HistManagerAdapter<TauHistManager> TauAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(TauAnalyzer);
+DEFINE_FWK_MODULE(TauAnalyzer);

@@ -63,4 +63,4 @@ void
 METRecalculator::endJob()
 {}
 
-DEFINE_ANOTHER_FWK_MODULE(METRecalculator);
+DEFINE_FWK_MODULE(METRecalculator);

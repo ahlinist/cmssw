@@ -30,6 +30,6 @@ void PATMuonAntiPionSelectorImp::select(const edm::Handle<collection>& patMuonCo
 
 typedef ObjectSelector<PATMuonAntiPionSelectorImp> PATMuonAntiPionSelector;
 
-DEFINE_ANOTHER_FWK_MODULE(PATMuonAntiPionSelector);
+DEFINE_FWK_MODULE(PATMuonAntiPionSelector);
 
 

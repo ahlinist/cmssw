@@ -106,4 +106,4 @@ void EwkTauValidation::bookHistograms(edm::RunNumber_t runNumber)
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_ANOTHER_FWK_MODULE(EwkTauValidation);
+DEFINE_FWK_MODULE(EwkTauValidation);

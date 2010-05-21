@@ -253,5 +253,5 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, CaloMEtHistManager, "CaloMEtHistMana
 
 typedef HistManagerAdapter<CaloMEtHistManager> CaloMEtAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(CaloMEtAnalyzer);
+DEFINE_FWK_MODULE(CaloMEtAnalyzer);
 

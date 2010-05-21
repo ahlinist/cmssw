@@ -133,6 +133,6 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PATTauNuHistManager, "PATTauNuHistMa
 
 typedef HistManagerAdapter<PATTauNuHistManager> PATTauNuAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(PATTauNuAnalyzer);
+DEFINE_FWK_MODULE(PATTauNuAnalyzer);
 
 

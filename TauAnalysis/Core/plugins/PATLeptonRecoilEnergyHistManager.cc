@@ -115,5 +115,5 @@ typedef HistManagerAdapter<TauRecoilEnergyFromCaloTowersHistManager> TauRecoilEn
 typedef HistManagerAdapter<TauRecoilEnergyFromCaloTowersHistManager> TauRecoilEnergyFromCentralCaloTowersAnalyzer;
 
 
-DEFINE_ANOTHER_FWK_MODULE(TauRecoilEnergyFromJetsAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(TauRecoilEnergyFromCaloTowersAnalyzer);
+DEFINE_FWK_MODULE(TauRecoilEnergyFromJetsAnalyzer);
+DEFINE_FWK_MODULE(TauRecoilEnergyFromCaloTowersAnalyzer);

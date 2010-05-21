@@ -69,7 +69,7 @@ typedef ObjectSelector<PATObjectAntiOverlapSelector<pat::Jet> > PATJetAntiOverla
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_ANOTHER_FWK_MODULE(PATElectronAntiOverlapSelector);
-DEFINE_ANOTHER_FWK_MODULE(PATMuonAntiOverlapSelector);
-DEFINE_ANOTHER_FWK_MODULE(PATTauAntiOverlapSelector);
-DEFINE_ANOTHER_FWK_MODULE(PATJetAntiOverlapSelector);
+DEFINE_FWK_MODULE(PATElectronAntiOverlapSelector);
+DEFINE_FWK_MODULE(PATMuonAntiOverlapSelector);
+DEFINE_FWK_MODULE(PATTauAntiOverlapSelector);
+DEFINE_FWK_MODULE(PATJetAntiOverlapSelector);

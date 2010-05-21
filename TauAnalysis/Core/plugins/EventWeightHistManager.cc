@@ -45,4 +45,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, EventWeightHistManager, "EventWeight
 
 typedef HistManagerAdapter<EventWeightHistManager> EventWeightAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(EventWeightAnalyzer);
+DEFINE_FWK_MODULE(EventWeightAnalyzer);

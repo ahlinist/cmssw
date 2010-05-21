@@ -8,7 +8,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
@@ -143,10 +143,9 @@ void EwkMuTauValHistManager::fillHistograms(const edm::Event& evt, const edm::Ev
   readEventData(evt, triggerResultsSource_, hltDecision, numWarningsTriggerResults_, maxNumWarnings_, 
 		readError, "Failed to access Trigger results");
   if ( readError ) return;
+
+  const edm::TriggerNames& triggerNames = evt.triggerNames(*hltDecision);
   
-  edm::TriggerNames triggerNames;
-  triggerNames.init(*hltDecision);
-   
   bool isTriggered = false;
   for ( vstring::const_iterator hltPath = hltPaths_.begin();
 	hltPath != hltPaths_.end(); ++hltPath ) {

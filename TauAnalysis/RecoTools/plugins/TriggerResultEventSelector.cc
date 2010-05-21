@@ -1,7 +1,7 @@
 #include "TauAnalysis/RecoTools/plugins/TriggerResultEventSelector.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 
@@ -21,8 +21,7 @@ bool TriggerResultEventSelector::operator()(edm::Event& evt, const edm::EventSet
   edm::Handle<edm::TriggerResults> triggerResults;
   evt.getByLabel(src_, triggerResults);
 
-  edm::TriggerNames triggerNames;
-  triggerNames.init(*triggerResults);
+  const edm::TriggerNames& triggerNames = evt.triggerNames(*triggerResults);
 
   for ( vstring::const_iterator triggerPath = triggerPaths_.begin();
 	triggerPath != triggerPaths_.end(); ++triggerPath ) {
@@ -60,4 +59,4 @@ DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, TriggerResultEventSelector, "Trigg
 
 typedef EventSelectorAdapter<TriggerResultEventSelector> TriggerResultFilter;
 
-DEFINE_ANOTHER_FWK_MODULE(TriggerResultFilter);
+DEFINE_FWK_MODULE(TriggerResultFilter);

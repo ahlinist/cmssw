@@ -98,4 +98,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PFCandidateHistManager, "PFCandidate
 
 typedef HistManagerAdapter<PFCandidateHistManager> PFCandidateAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(PFCandidateAnalyzer);
+DEFINE_FWK_MODULE(PFCandidateAnalyzer);

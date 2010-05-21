@@ -1,5 +1,5 @@
-#ifndef TauAnalysis_BgEstimationTools_StringObjValExtractor_h  
-#define TauAnalysis_BgEstimationTools_StringObjValExtractor_h
+#ifndef TauAnalysis_BgEstimationTools_StringObjVectorValExtractor_h  
+#define TauAnalysis_BgEstimationTools_StringObjVectorValExtractor_h
 
 /** \class StringObjVectorValExtractor
  *
@@ -14,9 +14,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: StringObjVectorValExtractor.h,v 1.1 2009/09/08 15:56:26 gfball Exp $
+ * $Id: StringObjVectorValExtractor.h,v 1.2 2009/10/25 12:38:14 veelken Exp $
  *
  */
 
@@ -36,9 +36,7 @@ class StringObjVectorValExtractor : public ObjValVectorExtractorBase
   
   explicit StringObjVectorValExtractor(const edm::ParameterSet&);
   ~StringObjVectorValExtractor();
-  
-  unsigned int size() const;
-  
+    
   std::vector<double> operator()(const edm::Event&) const;
 
  private:
