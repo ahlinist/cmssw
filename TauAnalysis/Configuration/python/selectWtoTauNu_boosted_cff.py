@@ -26,108 +26,108 @@ cfgPrimaryEventVertexPositionBoosted = cms.PSet(
 cfgTauEtaCutBoosted = cms.PSet(
     pluginName = cms.string('tauEtaCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuEta21Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuEta21Individual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuEta21Cumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuEta21Individual'),
     minNumber = cms.uint32(1)
     )
 cfgTauPtCutBoosted = cms.PSet(
     pluginName = cms.string('tauPtCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuPt20Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuPt20Individual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuPt20Cumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuPt20Individual'),
     minNumber = cms.uint32(1)
     )
 
 cfgMetPtBoosted = cms.PSet(
     pluginName = cms.string('metPtCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedLayer1METsPt25'),
+    src = cms.InputTag('selectedPatMETsPt25'),
     minNumber = cms.uint32(1)
     )
 
 cfgPFMetPtBoosted = cms.PSet(
     pluginName = cms.string('PFmetPtCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedLayer1PFMETsPt40'),
+    src = cms.InputTag('selectedPatPFMETsPt40'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauLeadTrkBoosted = cms.PSet(
     pluginName = cms.string('tauLeadTrkCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuLeadTrkCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuLeadTrkIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauLeadTrkPtBoosted = cms.PSet(
     pluginName = cms.string('tauLeadTrkPtCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkPtCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkPtIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuLeadTrkPtCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuLeadTrkPtIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauEcalIsoBoosted = cms.PSet(
     pluginName = cms.string('tauEcalIsoBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuEcalIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuEcalIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuEcalIsoIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauTrkIsoBoosted = cms.PSet(
     pluginName = cms.string('tauTrkIsoBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuTrkIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuTrkIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuTrkIsoIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauMuonVetoBoosted = cms.PSet(
     pluginName = cms.string('tauMuonVetoBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuMuonVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuMuonVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuMuonVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuMuonVetoIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauElectronVetoBoosted = cms.PSet(
     pluginName = cms.string('tauElectronVetoBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuElectronVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuElectronVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuElectronVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuElectronVetoIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauEcalCrackVetoBoosted = cms.PSet(
     pluginName = cms.string('tauEcalCrackVetoBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauProngCutBoosted = cms.PSet(
     pluginName = cms.string('tauProngCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuProngCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuProngIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuProngCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuProngIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgTauChargeCutBoosted = cms.PSet(
     pluginName = cms.string('tauChargeCutBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuChargeCumulative'),
-    src_individual = cms.InputTag('selectedLayer1TausForWTauNuChargeIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuChargeCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuChargeIndividual'),
     minNumber = cms.uint32(1)
     )
 
 cfgRecoilJetBoosted = cms.PSet(
     pluginName = cms.string('recoilJetBoosted'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt15ForWTauNuCumulative'),
+    src = cms.InputTag('selectedPatJetsEt15ForWTauNuCumulative'),
     minNumber = cms.uint32(1)
     )
 
@@ -135,7 +135,7 @@ cfgRecoilJetBoosted = cms.PSet(
 cfgCentralJetVetoBoosted = cms.PSet(
     pluginName = cms.string('centralJetVetoBoosted'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt15ForWTauNuCumulative'),
+    src = cms.InputTag('selectedPatJetsEt15ForWTauNuCumulative'),
     maxNumber = cms.uint32(1)
     )
 cfgPhiMetTauBoosted = cms.PSet(

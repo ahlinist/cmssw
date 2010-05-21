@@ -58,7 +58,7 @@ process.genPhaseSpaceFilter = cms.EDFilter("EventSelPluginFilter",
 )
 
 process.electronsBgEstPreselection = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag('selectedLayer1ElectronsEcalIsoLooseIsolationCumulative'),                                        
+    src = cms.InputTag('selectedPatElectronsEcalIsoLooseIsolationCumulative'),                                        
     cut = cms.string('gsfTrack.isNonnull'),
     filter = cms.bool(False)
 )
@@ -71,7 +71,7 @@ process.electronTrkCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer
 )
 
 process.muonsBgEstPreselection = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),                                        
+    src = cms.InputTag('selectedPatMuonsEcalIsoLooseIsolationCumulative'),                                        
     cut = cms.string('innerTrack.isNonnull'),
     filter = cms.bool(False)
 )

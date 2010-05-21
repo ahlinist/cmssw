@@ -128,26 +128,26 @@ def enableSysUncertainties_runZtoMuTau(process):
     process.selectLayer1TausForMuTau = patTauSelConfiguratorForMuTau.configure(process = process)
 
     setattr(muTauPairProdConfigurator, "systematics", {
-        "sysMuonPtUp"           : { "srcLeg1" : "selectedLayer1MuonsTrkIPsysMuonPtUpCumulative" },
-        "sysMuonPtDown"         : { "srcLeg1" : "selectedLayer1MuonsTrkIPsysMuonPtDownCumulative" },
-        "sysTauJetEnUp"         : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetEnUpCumulative" },
-        "sysTauJetEnDown"       : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetEnDownCumulative" }, 
-        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetThetaUpCumulative" }, 
-        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetThetaDownCumulative" }, 
-        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetPhiUpCumulative" }, 
-        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetPhiDownCumulative" }
+        "sysMuonPtUp"           : { "srcLeg1" : "selectedPatMuonsTrkIPsysMuonPtUpCumulative" },
+        "sysMuonPtDown"         : { "srcLeg1" : "selectedPatMuonsTrkIPsysMuonPtDownCumulative" },
+        "sysTauJetEnUp"         : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative" },
+        "sysTauJetEnDown"       : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative" }, 
+        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative" }, 
+        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative" }, 
+        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative" }, 
+        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative" }
     })
     process.produceMuTauPairs = muTauPairProdConfigurator.configure(process = process)
 
     setattr(muTauPairProdConfiguratorLooseMuonIsolation, "systematics", {
-        "sysMuonPtUp"           : { "srcLeg1" : "selectedLayer1MuonsTrkIPlooseIsolationSysMuonPtUpCumulative" },
-        "sysMuonPtDown"         : { "srcLeg1" : "selectedLayer1MuonsTrkIPlooseIsolationSysMuonPtDownCumulative" },
-        "sysTauJetEnUp"         : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetEnUpCumulative" },
-        "sysTauJetEnDown"       : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetEnDownCumulative" }, 
-        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetThetaUpCumulative" }, 
-        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetThetaDownCumulative" }, 
-        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetPhiUpCumulative" }, 
-        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedLayer1TausForMuTauMuonVetoSysTauJetPhiDownCumulative" }
+        "sysMuonPtUp"           : { "srcLeg1" : "selectedPatMuonsTrkIPlooseIsolationSysMuonPtUpCumulative" },
+        "sysMuonPtDown"         : { "srcLeg1" : "selectedPatMuonsTrkIPlooseIsolationSysMuonPtDownCumulative" },
+        "sysTauJetEnUp"         : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative" },
+        "sysTauJetEnDown"       : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative" }, 
+        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative" }, 
+        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative" }, 
+        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative" }, 
+        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative" }
     })
     process.produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(process = process)
 

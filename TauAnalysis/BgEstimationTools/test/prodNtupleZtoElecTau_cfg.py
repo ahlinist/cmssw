@@ -295,7 +295,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         ),
         numTightIdElectrons = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1ElectronsTightIdIndividual')
+            src = cms.InputTag('selectedPatElectronsTightIdIndividual')
         ),
 
         # variables used for template shape extraction

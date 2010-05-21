@@ -149,22 +149,22 @@ if addCaloTaus:
 
     process.makeAllLayer1Taus += process.makeAllCaloLayer1Taus
     process.allLayer1Summary.candidates += [cms.InputTag("allLayer1CaloTaus")]
-    process.selectedLayer1CaloTaus = process.selectedLayer1Taus.clone() 
-    process.selectedLayer1CaloTaus.src = cms.InputTag("allLayer1CaloTaus")
+    process.selectedPatCaloTaus = process.selectedPatTaus.clone() 
+    process.selectedPatCaloTaus.src = cms.InputTag("allLayer1CaloTaus")
     process.pfTauMatchedLayer1CaloTaus = cms.EDFilter(
         "PATTauAntiOverlapSelector",
-        src = cms.InputTag("selectedLayer1CaloTaus"),
-        srcNotToBeFiltered = cms.VInputTag("selectedLayer1Taus"),
+        src = cms.InputTag("selectedPatCaloTaus"),
+        srcNotToBeFiltered = cms.VInputTag("selectedPatTaus"),
         dRmin = cms.double(0.3),
         invert = cms.untracked.bool(True),
         filter = cms.bool(False)                                           
     )
 
-    process.selectedLayer1Objects.replace(process.selectedLayer1Taus,
-                                          process.selectedLayer1Taus +
-                                          process.selectedLayer1CaloTaus +
+    process.selectedPatObjects.replace(process.selectedPatTaus,
+                                          process.selectedPatTaus +
+                                          process.selectedPatCaloTaus +
                                           process.pfTauMatchedLayer1CaloTaus)
-    process.selectedLayer1Summary.candidates += [cms.InputTag("selectedLayer1CaloTaus"),
+    process.selectedPatSummary.candidates += [cms.InputTag("selectedPatCaloTaus"),
                                                  cms.InputTag("pfTauMatchedLayer1CaloTaus")]
 
 #######
@@ -192,7 +192,7 @@ if addCaloMet:
 if addTcMet:
     process.out.outputCommands.extend(cms.untracked.vstring('keep *_layer1TCMETs_*_*') )
 if addCaloTaus:
-    process.out.outputCommands.extend(cms.untracked.vstring('keep *_selectedLayer1CaloTaus_*_*',
+    process.out.outputCommands.extend(cms.untracked.vstring('keep *_selectedPatCaloTaus_*_*',
                                                             'keep *_pfTauMatchedLayer1CaloTaus_*_*') )
 if addRunData:
     process.out.outputCommands.extend(cms.untracked.vstring('keep LHERunInfoProduct_*_*_*',
