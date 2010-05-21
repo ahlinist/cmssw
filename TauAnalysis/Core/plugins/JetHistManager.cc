@@ -292,4 +292,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, JetHistManager, "JetHistManager");
 
 typedef HistManagerAdapter<JetHistManager> JetAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(JetAnalyzer);
+DEFINE_FWK_MODULE(JetAnalyzer);

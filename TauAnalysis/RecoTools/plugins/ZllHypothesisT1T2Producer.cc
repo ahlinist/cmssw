@@ -57,10 +57,10 @@ typedef ZllHypothesisT1T2Producer<pat::Muon, pat::Tau> ZllHypothesisMuTauProduce
 typedef ZllHypothesisT1T2Producer<pat::Tau, pat::Tau> ZllHypothesisDiTauProducer;
 typedef ZllHypothesisT1T2Producer<pat::Electron, pat::Muon> ZllHypothesisElecMuProducer;
 
-DEFINE_ANOTHER_FWK_MODULE(ZllHypothesisElecTauProducer);
-DEFINE_ANOTHER_FWK_MODULE(ZllHypothesisMuTauProducer);
-DEFINE_ANOTHER_FWK_MODULE(ZllHypothesisDiTauProducer);
-DEFINE_ANOTHER_FWK_MODULE(ZllHypothesisElecMuProducer);
+DEFINE_FWK_MODULE(ZllHypothesisElecTauProducer);
+DEFINE_FWK_MODULE(ZllHypothesisMuTauProducer);
+DEFINE_FWK_MODULE(ZllHypothesisDiTauProducer);
+DEFINE_FWK_MODULE(ZllHypothesisElecMuProducer);
 
 
 

@@ -220,4 +220,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, TauIdEffZtoMuTauHistManager, "TauIdE
 
 typedef HistManagerAdapter<TauIdEffZtoMuTauHistManager> TauIdEffZtoMuTauAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(TauIdEffZtoMuTauAnalyzer);
+DEFINE_FWK_MODULE(TauIdEffZtoMuTauAnalyzer);

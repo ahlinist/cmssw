@@ -100,10 +100,10 @@ typedef ZtautauVisMassHypothesisT1T2Producer<pat::Muon, pat::Tau> ZtautauVisMass
 typedef ZtautauVisMassHypothesisT1T2Producer<pat::Tau, pat::Tau> ZtautauVisMassHypothesisDiTauProducer;
 typedef ZtautauVisMassHypothesisT1T2Producer<pat::Electron, pat::Muon> ZtautauVisMassHypothesisElecMuProducer;
 
-DEFINE_ANOTHER_FWK_MODULE(ZtautauVisMassHypothesisElecTauProducer);
-DEFINE_ANOTHER_FWK_MODULE(ZtautauVisMassHypothesisMuTauProducer);
-DEFINE_ANOTHER_FWK_MODULE(ZtautauVisMassHypothesisDiTauProducer);
-DEFINE_ANOTHER_FWK_MODULE(ZtautauVisMassHypothesisElecMuProducer);
+DEFINE_FWK_MODULE(ZtautauVisMassHypothesisElecTauProducer);
+DEFINE_FWK_MODULE(ZtautauVisMassHypothesisMuTauProducer);
+DEFINE_FWK_MODULE(ZtautauVisMassHypothesisDiTauProducer);
+DEFINE_FWK_MODULE(ZtautauVisMassHypothesisElecMuProducer);
 
 
 

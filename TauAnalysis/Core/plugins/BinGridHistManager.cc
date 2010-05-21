@@ -105,4 +105,4 @@ DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, BinGridHistManager, "BinGridHistManager
 
 typedef HistManagerAdapter<BinGridHistManager> BinGridAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(BinGridAnalyzer);
+DEFINE_FWK_MODULE(BinGridAnalyzer);

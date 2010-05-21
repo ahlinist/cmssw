@@ -169,5 +169,5 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PFMEtHistManager, "PFMEtHistManager"
 
 typedef HistManagerAdapter<PFMEtHistManager> PFMEtAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(PFMEtAnalyzer);
+DEFINE_FWK_MODULE(PFMEtAnalyzer);
 

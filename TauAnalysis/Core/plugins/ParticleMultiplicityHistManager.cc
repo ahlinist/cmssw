@@ -75,4 +75,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, ParticleMultiplicityHistManager, "Pa
 
 typedef HistManagerAdapter<ParticleMultiplicityHistManager> ParticleMultiplicityAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(ParticleMultiplicityAnalyzer);
+DEFINE_FWK_MODULE(ParticleMultiplicityAnalyzer);

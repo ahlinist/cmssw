@@ -16,11 +16,6 @@ StringObjVectorValExtractor<T>::~StringObjVectorValExtractor()
 }
 
 template<typename T>
-unsigned int StringObjVectorValExtractor<T>::size() const {
-  return 0;
-}
-
-template<typename T>
 std::vector<double> StringObjVectorValExtractor<T>::operator()(const edm::Event& evt) const
 {
   std::vector<double> vec;
@@ -28,10 +23,12 @@ std::vector<double> StringObjVectorValExtractor<T>::operator()(const edm::Event&
   edm::Handle<patCollectionType> patObjects;
   evt.getByLabel(src_, patObjects);
 
-  for (unsigned i=0; i<patObjects->size();i++) {
+  unsigned numPatObjects = patObjects->size();
+  for ( unsigned i = 0; i < numPatObjects; ++i ) {
     edm::Ptr<T> patObjectPtr = patObjects->ptrAt(i);
     vec.push_back(stringObjFunction_(*patObjectPtr));
   }
+
   return vec;
 }
 

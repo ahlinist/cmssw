@@ -6,4 +6,4 @@ typedef CompositePtrCandidateT1T2MEtProducer<reco::Candidate, reco::Candidate> D
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_ANOTHER_FWK_MODULE(DiCandidatePairProducer);
+DEFINE_FWK_MODULE(DiCandidatePairProducer);

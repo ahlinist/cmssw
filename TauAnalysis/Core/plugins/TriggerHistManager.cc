@@ -2,7 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
@@ -101,8 +101,7 @@ void TriggerHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Eve
     edm::Handle<edm::TriggerResults> hltResults;
     evt.getByLabel(hltResultsSrc_, hltResults);
 
-    edm::TriggerNames triggerNames;
-    triggerNames.init(*hltResults);
+    const edm::TriggerNames& triggerNames = evt.triggerNames(*hltResults);
     
     for ( vstring::const_iterator hltPath = hltPaths_.begin();
 	  hltPath != hltPaths_.end(); ++hltPath ) {
@@ -127,4 +126,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, TriggerHistManager, "TriggerHistMana
 
 typedef HistManagerAdapter<TriggerHistManager> TriggerAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(TriggerAnalyzer);
+DEFINE_FWK_MODULE(TriggerAnalyzer);

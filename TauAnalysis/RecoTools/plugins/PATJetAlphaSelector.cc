@@ -51,5 +51,5 @@ typedef ObjectSelector<PATJetAlphaSelectorImp> PATJetAlphaSelector;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_ANOTHER_FWK_MODULE(PATJetAlphaSelector);
+DEFINE_FWK_MODULE(PATJetAlphaSelector);
 

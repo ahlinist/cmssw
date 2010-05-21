@@ -75,4 +75,4 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, VertexHistManager, "VertexHistManage
 
 typedef HistManagerAdapter<VertexHistManager> VertexAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(VertexAnalyzer);
+DEFINE_FWK_MODULE(VertexAnalyzer);

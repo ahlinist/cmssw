@@ -1,7 +1,7 @@
 //
 // Original Author:  Konstantinos A. Petridis
 //         Created:  Wed Oct 15 21:33:34 CEST 2008
-// $Id: PATElectronConversionFinder.cc,v 1.1 2009/03/26 10:20:52 kap01 Exp $
+// $Id: PATElectronConversionFinder.cc,v 1.4 2010/02/24 10:25:12 jkolb Exp $
 //
 //
 
@@ -298,7 +298,8 @@ double PATElectronConversionFinderImp::GetDocaBetweenTracks(const edm::Event& ev
   return 0;
 }
 
-
 typedef ObjectSelector<PATElectronConversionFinderImp> PATElectronConversionFinder;
+
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_ANOTHER_FWK_MODULE(PATElectronConversionFinder);
+
+DEFINE_FWK_MODULE(PATElectronConversionFinder);

@@ -26,4 +26,4 @@ DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, BoolEventSelector, "BoolEventSelec
 
 typedef EventSelectorAdapter<BoolEventSelector> BoolEventFilter;
 
-DEFINE_ANOTHER_FWK_MODULE(BoolEventFilter);
+DEFINE_FWK_MODULE(BoolEventFilter);

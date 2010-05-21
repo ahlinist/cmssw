@@ -96,4 +96,4 @@ DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, SysUncertaintyHistManager, "SysUncertai
 
 typedef HistManagerAdapter<SysUncertaintyHistManager> SysUncertaintyAnalyzer;
 
-DEFINE_ANOTHER_FWK_MODULE(SysUncertaintyAnalyzer);
+DEFINE_FWK_MODULE(SysUncertaintyAnalyzer);

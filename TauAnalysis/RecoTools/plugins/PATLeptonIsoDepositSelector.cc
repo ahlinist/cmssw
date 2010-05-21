@@ -159,6 +159,6 @@ typedef ObjectSelector<PATLeptonIsoDepositSelector<pat::Tau> > PATTauIsoDepositS
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_ANOTHER_FWK_MODULE(PATElectronIsoDepositSelector);
-DEFINE_ANOTHER_FWK_MODULE(PATMuonIsoDepositSelector);
-DEFINE_ANOTHER_FWK_MODULE(PATTauIsoDepositSelector);
+DEFINE_FWK_MODULE(PATElectronIsoDepositSelector);
+DEFINE_FWK_MODULE(PATMuonIsoDepositSelector);
+DEFINE_FWK_MODULE(PATTauIsoDepositSelector);
