@@ -12,7 +12,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
+process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
 
 # import configuration parameters for submission of jobs to CERN batch system
 from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_7TeV_cfi import *
@@ -68,7 +68,6 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root'
         'rfio:/castor/cern.ch/user/l/liis/SkimNov09/Wtaunu7TeV_PFCaloTauMet/wTauNuSkim_1.root'
         #'rfio:/castor/cern.ch/user/l/liis/CMSSW_31X/SelEvents/MinBias_RawPlusReco_10.root'
     )
@@ -107,7 +106,7 @@ switchToPFTauShrinkingCone(process)
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, "iterativeCone5PFJets")
+switchJetCollection(process, cms.InputTag("iterativeCone5PFJets"))
 #--------------------------------------------------------------------------------
 
 #------------------------Switching to PF-MET and raw Calo-MET----------------------------------
@@ -120,8 +119,8 @@ addPFMet(process, correct = False)
 # replace caloMET by pfMET in all tau-Nu objects
 process.load("TauAnalysis.CandidateTools.tauNuPairProduction_cff")
 replaceMETforTauNu(process,
-                                        cms.InputTag('layer1METs'),
-                                        cms.InputTag('layer1PFMETs'))
+                                        cms.InputTag('patMETs'),
+                                        cms.InputTag('patPFMETs'))
 
 # comment-out to add genMET with mu's to layer1MET (caloMET)
 #process.layer1METs.genMETSource = cms.InputTag('genMetTrue')
