@@ -1,7 +1,6 @@
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
 
 #include "DataFormats/TrackReco/interface/HitPattern.h"
 
