@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: ObjValVectorExtractorBase.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: ObjValVectorExtractorBase.h,v 1.1 2009/06/11 07:23:28 veelken Exp $
  *
  */
 
@@ -27,10 +27,7 @@ class ObjValVectorExtractorBase
   // destructor
   virtual ~ObjValVectorExtractorBase() {}
 
-  // number of components in vector of extracted scalar values
-  virtual unsigned size() const = 0;
-
-  // method for extracting scalar value
+  // abstract method for extracting scalar value
   virtual std::vector<double> operator()(const edm::Event&) const = 0;
 };
 
