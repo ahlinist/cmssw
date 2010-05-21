@@ -26,48 +26,48 @@ from PhysicsTools.PatAlgos.cleaningLayer1.electronCleaner_cfi import *
 # Track isolation
 #
 patElectrons.userIsolation.tracker = cms.PSet(
-	src = cms.InputTag("eleIsoDepositTk"),
-	deltaR = cms.double(0.6),
-	vetos = cms.vstring(
+    src = cms.InputTag("eleIsoDepositTk"),
+    deltaR = cms.double(0.6),
+    vetos = cms.vstring(
     	'0.015',         # inner radius veto cone 
     	'Threshold(0.3)' # threshold on individual track pt
-	),
-	skipDefaultVeto = cms.bool(True)
+    ),
+    skipDefaultVeto = cms.bool(True)
 )
 #
 # ECAL isolation
 #
 patElectrons.userIsolation.ecal = cms.PSet(
-	src = cms.InputTag("eleIsoDepositEcalFromHits"),
-	deltaR = cms.double(0.6),
-	vetos = cms.vstring(
-		'EcalBarrel:0.045', 
-		'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)',
-		'EcalEndcaps:0.1',                          # default: 0.07
-		'EcalEndcaps:RectangularEtaPhiVeto(-0.05,0.05,-0.5,0.5)',
-		'EcalBarrel:ThresholdFromTransverse(0.12)', # default: 0.08
-		'EcalEndcaps:ThresholdFromTransverse(0.3)'
-	),
-	skipDefaultVeto = cms.bool(True)
+    src = cms.InputTag("eleIsoDepositEcalFromHits"),
+    deltaR = cms.double(0.6),
+    vetos = cms.vstring(
+        'EcalBarrel:0.045', 
+        'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)',
+        'EcalEndcaps:0.1',                          # default: 0.07
+        'EcalEndcaps:RectangularEtaPhiVeto(-0.05,0.05,-0.5,0.5)',
+        'EcalBarrel:ThresholdFromTransverse(0.12)', # default: 0.08
+        'EcalEndcaps:ThresholdFromTransverse(0.3)'
+    ),
+    skipDefaultVeto = cms.bool(True)
 )
 #
 # HCAL isolation
 #
 patElectrons.userIsolation.hcal = cms.PSet(
-	src = cms.InputTag("eleIsoDepositHcalFromTowers"),
-	deltaR = cms.double(0.6)
+    src = cms.InputTag("eleIsoDepositHcalFromTowers"),
+    deltaR = cms.double(0.6)
 )
 #
 # add IsoDeposit objects for Track, ECAL and HCAL based isolation
 #
 patElectrons.isoDeposits = cms.PSet(
-   tracker          = patElectrons.userIsolation.tracker.src,
-   ecal             = patElectrons.userIsolation.ecal.src,
-   hcal             = patElectrons.userIsolation.hcal.src,
-   particle         = cms.InputTag("pfeleIsoDepositPFCandidates"),
-   pfChargedHadrons = cms.InputTag("pfeleIsoChDepositPFCandidates"),
-   pfNeutralHadrons = cms.InputTag("pfeleIsoNeDepositPFCandidates"),
-   pfPhotons        = cms.InputTag("pfeleIsoGaDepositPFCandidates")
+    tracker          = patElectrons.userIsolation.tracker.src,
+    ecal             = patElectrons.userIsolation.ecal.src,
+    hcal             = patElectrons.userIsolation.hcal.src,
+    pfAllParticles   = cms.InputTag("pfeleIsoDepositPFCandidates"),
+    pfChargedHadrons = cms.InputTag("pfeleIsoChDepositPFCandidates"),
+    pfNeutralHadrons = cms.InputTag("pfeleIsoNeDepositPFCandidates"),
+    pfPhotons        = cms.InputTag("pfeleIsoGaDepositPFCandidates")
 )
 #
 # add electron Id. flags
