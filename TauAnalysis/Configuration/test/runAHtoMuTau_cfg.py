@@ -68,10 +68,10 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -124,7 +124,7 @@ addPFMet(process, correct = False)
 
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
-replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
+replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -133,18 +133,18 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 #
 # change muon track and ECAL isolation requirements
 # to relative isolation (sum Pt of tracks/ECAL energy deposits within isolation cone divided by muon Pt)
-changeCut(process, "selectedLayer1MuonsTrkIso", 0.4, attribute = "dRisoCone")
-changeCut(process, "selectedLayer1MuonsTrkIso", 0.09, attribute = "sumPtMax")
-changeCut(process, "selectedLayer1MuonsTrkIso", "relative", attribute = "sumPtMethod")
-changeCut(process, "selectedLayer1MuonsEcalIso", "(ecalIso/pt) < 0.09")
+changeCut(process, "selectedPatMuonsTrkIso", 0.4, attribute = "dRisoCone")
+changeCut(process, "selectedPatMuonsTrkIso", 0.09, attribute = "sumPtMax")
+changeCut(process, "selectedPatMuonsTrkIso", "relative", attribute = "sumPtMethod")
+changeCut(process, "selectedPatMuonsEcalIso", "(ecalIso/pt) < 0.09")
 
-changeCut(process, "selectedLayer1MuonsTrkIsoLooseIsolation", 0.4, attribute = "dRisoCone")
-changeCut(process, "selectedLayer1MuonsTrkIsoLooseIsolation", 0.25, attribute = "sumPtMax")
-changeCut(process, "selectedLayer1MuonsTrkIsoLooseIsolation", "relative", attribute = "sumPtMethod")
-changeCut(process, "selectedLayer1MuonsEcalIsoLooseIsolation", "(ecalIso/pt) < 0.25")
+changeCut(process, "selectedPatMuonsTrkIsoLooseIsolation", 0.4, attribute = "dRisoCone")
+changeCut(process, "selectedPatMuonsTrkIsoLooseIsolation", 0.25, attribute = "sumPtMax")
+changeCut(process, "selectedPatMuonsTrkIsoLooseIsolation", "relative", attribute = "sumPtMethod")
+changeCut(process, "selectedPatMuonsEcalIsoLooseIsolation", "(ecalIso/pt) < 0.25")
 
 # enable cut on TaNC output
-changeCut(process, "selectedLayer1TausForMuTauTaNCdiscr", "tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCfrQuarterPercent') > 0.5")
 
 # enable/disable cut on Z mass veto
 ##changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto", "collinearApproxCompatibility('mZ').minuitFitChi2 > 2.")

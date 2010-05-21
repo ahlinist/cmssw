@@ -30,10 +30,10 @@ from TauAnalysis.CandidateTools.diTauPairProduction_cff import *
 from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 
 producePatTupleZtoDiTauSpecific = cms.Sequence(
-    selectLayer1Muons
-   + selectLayer1Electrons
-   + selectLayer1Taus + selectLayer1TausForDiTau
+    selectPatMuons
+   + selectPatElectrons
+   + selectPatTaus + selectPatTausForDiTau
    + produceDiTauPairs
    + selectDiTauPairs
-   + selectLayer1Jets
+   + selectPatJets
 )

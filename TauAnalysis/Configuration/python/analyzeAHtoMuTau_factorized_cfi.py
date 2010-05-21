@@ -80,10 +80,10 @@ muTauEventDump_factorizedWithMuonIsolation = muTauEventDump.clone(
 #--------------------------------------------------------------------------------
 
 inputTagReplacements = \
-  [ [ "selectedLayer1MuonsTrkIsoCumulative", "selectedLayer1MuonsTrkIsoLooseIsolationCumulative" ],
-    [ "selectedLayer1MuonsEcalIsoCumulative", "selectedLayer1MuonsEcalIsoLooseIsolationCumulative" ],
-    [ "selectedLayer1MuonsPionVetoCumulative", "selectedLayer1MuonsPionVetoLooseIsolationCumulative" ],
-    [ "selectedLayer1MuonsTrkIPcumulative", "selectedLayer1MuonsTrkIPlooseIsolationCumulative" ],
+  [ [ "selectedPatMuonsTrkIsoCumulative", "selectedPatMuonsTrkIsoLooseIsolationCumulative" ],
+    [ "selectedPatMuonsEcalIsoCumulative", "selectedPatMuonsEcalIsoLooseIsolationCumulative" ],
+    [ "selectedPatMuonsPionVetoCumulative", "selectedPatMuonsPionVetoLooseIsolationCumulative" ],
+    [ "selectedPatMuonsTrkIPcumulative", "selectedPatMuonsTrkIPlooseIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauAntiOverlapVetoCumulative",
       "selectedMuTauPairsForAHtoMuTauAntiOverlapVetoLooseMuonIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauZeroChargeCumulative",
@@ -100,9 +100,9 @@ inputTagReplacements = \
       "muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation" ],
     [ "muTauPairVisMassHypothesesForAHtoMuTau",
       "muTauPairVisMassHypothesesForAHtoMuTauLooseMuonIsolation" ],
-    [ "selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative",
-      "selectedLayer1JetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative" ],
-    [ "selectedLayer1JetsForAHtoMuTauBtagCumulative", "selectedLayer1JetsForAHtoMuTauBtagCumulative" ] ]
+    [ "selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative",
+      "selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative" ],
+    [ "selectedPatJetsForAHtoMuTauBtagCumulative", "selectedPatJetsForAHtoMuTauBtagCumulative" ] ]
 
 
 muTauAnalysisSequence_woBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence_woBtag)
