@@ -3,11 +3,11 @@ import copy
 
 # import config for electron histogram manager
 from TauAnalysis.Core.electronHistManager_cfi import *
-electronHistManager.electronSource = cms.InputTag('selectedLayer1ElectronsIdCumulative') #no crappy electrons in plots!
+electronHistManager.electronSource = cms.InputTag('selectedPatElectronsIdCumulative') #no crappy electrons in plots!
 
 # import config for muon histogram manager
 from TauAnalysis.Core.muonHistManager_cfi import *
-muonHistManager.muonSource = cms.InputTag('selectedLayer1MuonsGlobalCumulative') #no crappy muons in plots!
+muonHistManager.muonSource = cms.InputTag('selectedPatMuonsGlobalCumulative') #no crappy muons in plots!
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
@@ -21,7 +21,7 @@ from TauAnalysis.Core.jetHistManager_cfi import *
 jetHistManager.centralJetsToBeVetoed.etMin = cms.vdouble()
 jetHistManager.centralJetsToBeVetoed.etaMax = cms.vdouble()
 jetHistManager.centralJetsToBeVetoed.alphaMin = cms.vdouble()
-#jetHistManager.jetSource = cms.InputTag('selectedLayer1JetsEtaCumulative')
+#jetHistManager.jetSource = cms.InputTag('selectedPatJetsEtaCumulative')
 jetHistManager.jetSource = cms.InputTag('cleanPatJets')
 
 # import config for missing-Et histogram managers
@@ -313,14 +313,14 @@ elecMuEventDump = cms.PSet(
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
     electronSource = cms.InputTag('cleanPatElectrons'),
-    #electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
+    #electronSource = cms.InputTag('selectedPatElectronsTrkIPcumulative'),
     muonSource = cms.InputTag('cleanPatMuons'),
-    #muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
+    #muonSource = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
     #tauSource = cms.InputTag('allLayer1Taus'),
     diTauCandidateSource = cms.InputTag('allElecMuPairs'),
     metSource = cms.InputTag('layer1METs'),
     genMEtSource = cms.InputTag('genMetTrue'),
-    #jetSource = cms.InputTag('selectedLayer1JetsEtaCumulative'),
+    #jetSource = cms.InputTag('selectedPatJetsEtaCumulative'),
     recoTrackSource = cms.InputTag('generalTracks'),
     pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
     pfGammaSource = cms.InputTag('pfAllPhotons'),
@@ -396,7 +396,7 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsIdCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsIdCumulative')
     ),
     #cms.PSet(
     #    filter = cms.string('evtSelElectronIdMax'),
@@ -405,7 +405,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsIdCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsIdCumulative')
     #),
     cms.PSet(
         filter = cms.string('evtSelGlobalMuonMin'),
@@ -414,8 +414,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsIdCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsIdCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsGlobalCumulative')
     ),
     #cms.PSet(
     #    filter = cms.string('evtSelGlobalMuonMax'),
@@ -424,8 +424,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsIdCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsIdCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsGlobalCumulative')
     #),
 
     # kinematic cuts
@@ -436,8 +436,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsAntiCrackCutCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsAntiCrackCutCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsGlobalCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronEta'),
@@ -446,8 +446,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEtaCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsEtaCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsGlobalCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonEta'),
@@ -456,8 +456,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEtaCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsEtaCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsEtaCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsEtaCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronPt'),
@@ -466,8 +466,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsPtCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsEtaCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsPtCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsEtaCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonPt'),
@@ -476,8 +476,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEtaCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPtCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsEtaCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPtCumulative')
     ),
 
     #electron isolation
@@ -488,8 +488,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsIsoCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPtCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsIsoCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPtCumulative')
     ),
     #cms.PSet(
     #    filter = cms.string('evtSelElectronTrkIso'),
@@ -498,8 +498,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIsoCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsPtCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkIsoCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsPtCumulative')
     #),
     #cms.PSet(
     #    filter = cms.string('evtSelElectronEcalIso'),
@@ -508,8 +508,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEcalIsoCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsPtCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsEcalIsoCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsPtCumulative')
     #),
     #cms.PSet(
     #    filter = cms.string('evtSelElectronHcalIso'),
@@ -518,8 +518,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsHcalIsoCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsPtCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsHcalIsoCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsPtCumulative')
     #),
     cms.PSet(
         filter = cms.string('evtSelElectronTrk'),
@@ -528,8 +528,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPtCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPtCumulative')
     ),
     #cms.PSet(
     #    filter = cms.string('evtSelElectronTrkIP'),
@@ -538,8 +538,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsPtCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkIPcumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsPtCumulative')
     #),
 
     # muon isolation
@@ -550,8 +550,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsIsoCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsIsoCumulative')
     ),
     #cms.PSet(
     #    filter = cms.string('evtSelMuonTrkIso'),
@@ -560,8 +560,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsTrkIsoCumulative')
     #),
     #cms.PSet(
     #    filter = cms.string('evtSelMuonEcalIso'),
@@ -570,8 +570,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsEcalIsoCumulative')
     #),
     #cms.PSet(
     #    filter = cms.string('evtSelMuonHcalIso'),
@@ -580,8 +580,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsHcalIsoCumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsHcalIsoCumulative')
     #),
     cms.PSet(
         filter = cms.string('evtSelMuonAntiPion'),
@@ -590,8 +590,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative')
     ),
     #cms.PSet(
     #    filter = cms.string('evtSelMuonTrkIP'),
@@ -600,8 +600,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative')
     #),
 
     #selection of electron + muon combinations
@@ -612,8 +612,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsZeroChargeCumulative')
     ),
 ##     cms.PSet(
@@ -623,8 +623,8 @@ elecMuAnalysisSequence = cms.VPSet(
 ##     ),
 ##     cms.PSet(
 ##         analyzers = elecMuHistManagers,
-##         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-##                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+##         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+##                               'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
 ##                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative')
 ##     ),
     cms.PSet(
@@ -635,8 +635,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
        analyzers = elecMuHistManagers,
-       replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                             'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+       replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                             'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative')
     ),
     #cms.PSet(
@@ -646,8 +646,8 @@ elecMuAnalysisSequence = cms.VPSet(
     #),
     #cms.PSet(
     #    analyzers = elecMuHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-    #                          'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
     #                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative')
     #),
     cms.PSet(
@@ -657,8 +657,8 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
        analyzers = elecMuHistManagers,
-       replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                             'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+       replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                             'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsOneLegPtCumulative')
     ),
     
@@ -671,10 +671,10 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsOneLegPtCumulative',
-                              #'jetHistManager.jetSource = selectedLayer1JetsBtagCumulative',
+                              #'jetHistManager.jetSource = selectedPatJetsBtagCumulative',
                               'metHistManager.metSource = selectedMETMaxCumulative')
     ),
 
@@ -686,10 +686,10 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsOneLegPtCumulative',
-                              'jetHistManager.jetSource = selectedLayer1JetsEt20Cumulative')
+                              'jetHistManager.jetSource = selectedPatJetsEt20Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelJetMax'),
@@ -698,11 +698,11 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsOneLegPtCumulative',
                               'metHistManager.metSource = selectedMETMaxCumulative',
-                              'jetHistManager.jetSource = selectedLayer1JetsEt20Cumulative')
+                              'jetHistManager.jetSource = selectedPatJetsEt20Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelJetBtagMin'),
@@ -711,11 +711,11 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsOneLegPtCumulative',
                               'metHistManager.metSource = selectedMETMaxCumulative',
-                              'jetHistManager.jetSource = selectedLayer1JetsBtagCumulative')
+                              'jetHistManager.jetSource = selectedPatJetsBtagCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelJetBtagMax'),
@@ -724,11 +724,11 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsOneLegPtCumulative',
                               'metHistManager.metSource = selectedMETMaxCumulative',
-                              'jetHistManager.jetSource = selectedLayer1JetsBtagCumulative')
+                              'jetHistManager.jetSource = selectedPatJetsBtagCumulative')
     )
 
 )

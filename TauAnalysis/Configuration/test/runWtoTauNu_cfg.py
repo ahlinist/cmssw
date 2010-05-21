@@ -127,11 +127,11 @@ replaceMETforTauNu(process,
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.tools.changeCut import *
-changeCut(process,"selectedLayer1TausForWTauNuPt20","pt > 25. & pt < 60.")
-changeCut(process,"selectedLayer1TausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
-changeCut(process,"selectedLayer1TausForWTauNuTrkIso","tauID('byIsolation') > 0.5")
-changeCut(process, "selectedLayer1TausForWTauNuLeadTrkPt","leadTrack().isNonnull() & leadTrack().pt() > 20.")
-changeCut(process, "selectedLayer1ElectronsTightId","electronID('eidRobustTight') > 0")
+changeCut(process,"selectedPatTausForWTauNuPt20","pt > 25. & pt < 60.")
+changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byIsolation') > 0.5")
+changeCut(process, "selectedPatTausForWTauNuLeadTrkPt","leadTrack().isNonnull() & leadTrack().pt() > 20.")
+changeCut(process, "selectedPatElectronsTightId","electronID('eidRobustTight') > 0")
 
 process.p = cms.Path( 
 #    process.CastorTowerReco

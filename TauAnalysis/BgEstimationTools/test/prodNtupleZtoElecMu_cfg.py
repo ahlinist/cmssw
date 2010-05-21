@@ -352,7 +352,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         ),
         numGlobalMuons = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
+            src = cms.InputTag('selectedPatMuonsGlobalIndividual')
         ),
 
         # variables used for template shape extraction

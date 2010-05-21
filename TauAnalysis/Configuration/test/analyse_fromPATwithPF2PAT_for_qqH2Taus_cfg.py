@@ -53,10 +53,10 @@ process.particleListDrawer.printOnlyHardInteraction = True
 
 # reco level analysis 
 process.load("TauAnalysis.RecoTools.recoDiTauReconstruction_cff")
-process.recoDiTau.srcLeg1 = 'selectedLayer1Muons'
-process.recoDiTau.srcLeg2 = 'selectedLayer1Taus'
+process.recoDiTau.srcLeg1 = 'selectedPatMuons'
+process.recoDiTau.srcLeg2 = 'selectedPatTaus'
 process.recoCaloTauDiTau = process.recoDiTau.clone()
-process.recoCaloTauDiTau.srcLeg2 = 'selectedLayer1CaloTaus'
+process.recoCaloTauDiTau.srcLeg2 = 'selectedPatCaloTaus'
 process.recoCaloMetDiTau = process.recoDiTau.clone()
 process.recoCaloMetDiTau.srcMET = 'layer1CaloMETs'
 process.recoTcMetDiTau = process.recoDiTau.clone()
@@ -107,8 +107,8 @@ process.out.outputCommands.extend( process.TauAnalysisRecoToolsEC.outputCommands
 process.load("TauAnalysis.GenSimTools.genEventContent_cff")
 process.out.outputCommands.extend( process.TauAnalysisGenSimToolsEC.outputCommands )
 #process.out.outputCommands.extend(cms.untracked.vstring('keep *_genEventAnalysisProducer_*_*') )
-process.out.outputCommands.extend(cms.untracked.vstring('keep *_selectedLayer1Jets_*_*') )
-process.out.outputCommands.extend(cms.untracked.vstring('keep *_selectedLayer1CaloTaus_*_*',
+process.out.outputCommands.extend(cms.untracked.vstring('keep *_selectedPatJets_*_*') )
+process.out.outputCommands.extend(cms.untracked.vstring('keep *_selectedPatCaloTaus_*_*',
                                                         'keep *_pfTauMatchedLayer1CaloTaus_*_*',
                                                         'keep *_layer1CaloMETs_*_*',
                                                         'keep *_layer1TCMETs_*_*') )
