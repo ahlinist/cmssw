@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.recoLayer0.jetMETCorrections_cff import *
 
-from PhysicsTools.PatAlgos.producersLayer1.metProducer_cfi import *
+from PhysicsTools.PatAlgos.producersLayer1.metProducer_cff import *
 
 from JetMETCorrections.Type1MET.TauMetCorrections_cff import * 
 
@@ -13,11 +13,11 @@ from JetMETCorrections.Type1MET.TauMetCorrections_cff import *
 # apply tau-jet specific corrections to reco::MET per default
 # (comment-out the next line in case you prefer to **not** apply the tau-jet specific MET corrections)
 
-tauMetCorr.InputCaloJetsLabel = metJESCorIC5CaloJet.inputUncorJetsLabel
-tauMetCorr.jetPTthreshold = metJESCorIC5CaloJet.jetPTthreshold
-tauMetCorr.jetEMfracLimit = metJESCorIC5CaloJet.jetEMfracLimit
-tauMetCorr.correctorLabel = metJESCorIC5CaloJet.corrector
-tauMetCorr.InputMETLabel = cms.string('metJESCorIC5CaloJetMuons')
+tauMetCorr.InputCaloJetsLabel = metJESCorAK5CaloJet.inputUncorJetsLabel
+tauMetCorr.jetPTthreshold = metJESCorAK5CaloJet.jetPTthreshold
+tauMetCorr.jetEMfracLimit = metJESCorAK5CaloJet.jetEMfracLimit
+tauMetCorr.correctorLabel = metJESCorAK5CaloJet.corrector
+tauMetCorr.InputMETLabel = cms.string('metJESCorAK5CaloJet')
 
 patMETCorrections._seq = patMETCorrections._seq * MetTauCorrections
 
