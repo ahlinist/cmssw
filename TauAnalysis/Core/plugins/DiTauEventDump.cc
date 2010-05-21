@@ -17,7 +17,7 @@ DiTauEventDump::DiTauEventDump(const edm::ParameterSet& cfg)
   electronDump_ = makeObjectDump(cfg, "PATElectronDump");
   muonDump_ = makeObjectDump(cfg, "PATMuonDump");
   tauDump_ = makeObjectDump(cfg, "PATTauDump");  
-  diTauDump_ = makeObjectDump(cfg, "PADiTauPairDump");
+  diTauDump_ = makeObjectDump(cfg, "PATDiTauPairDump");
 }
 
 DiTauEventDump::~DiTauEventDump()
