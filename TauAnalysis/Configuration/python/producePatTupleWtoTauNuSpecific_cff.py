@@ -24,18 +24,18 @@ from TauAnalysis.CandidateTools.metTopology_cfi import *
 
 
 producePatTupleWtoTauNuSpecific = cms.Sequence(
-    selectLayer1TausForWTauNu+
-    selectLayer1TausForWTauNuLooseIsolation+
-    selectLayer1SelJetsForWTauNu+
-    selectLayer1METs+
-    selectLayer1PFMETs+
+    selectPatTausForWTauNu+
+    selectPatTausForWTauNuLooseIsolation+
+    selectPatSelJetsForWTauNu+
+    selectPatMETs+
+    selectPatPFMETs+
     produceTauNuPairs+
     selectTauNuPairs+
     selectTauNuPairsLooseIsolation+
     produceTauRecoilEnergy+
     produceMEtTopology+
-    selectLayer1Muons+
-    selectLayer1Electrons+    
-    selectLayer1Taus+
-    selectLayer1Jets
+    selectPatMuons+
+    selectPatElectrons+    
+    selectPatTaus+
+    selectPatJets
 )
