@@ -9,7 +9,7 @@ import copy
 # on how to use the cut-string parser
 
 # require at least 25 GeV missing transverse energy in the event
-selectedLayer1METsPt25 = cms.EDFilter("PATMETSelector",
+selectedPatMETsPt25 = cms.EDFilter("PATMETSelector",
     src = cms.InputTag("patMETs"),                                 
     cut = cms.string('pt > 25.'),
     filter = cms.bool(False)
@@ -21,5 +21,5 @@ selectedMetSignificance15 = cms.EDFilter("METSignificanceSelector",
     filter = cms.bool(False)
 )
 
-selectLayer1METs = cms.Sequence(selectedLayer1METsPt25 * selectedMetSignificance15)
+selectPatMETs = cms.Sequence(selectedPatMETsPt25 * selectedMetSignificance15)
 

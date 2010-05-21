@@ -36,12 +36,12 @@ from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 from TauAnalysis.RecoTools.elecMuPairZmumuHypothesis_cff import *
 
 producePatTupleZtoElecMuSpecific = cms.Sequence(
-    selectLayer1Muons + selectLayer1MuonsLooseIsolation
-   + selectLayer1Electrons + selectLayer1ElectronsLooseIsolation
-   + selectLayer1ElectronsForElecMu + selectLayer1ElectronsForElecMuLooseIsolation
-   + selectLayer1Taus  
+    selectPatMuons + selectPatMuonsLooseIsolation
+   + selectPatElectrons + selectPatElectronsLooseIsolation
+   + selectPatElectronsForElecMu + selectPatElectronsForElecMuLooseIsolation
+   + selectPatTaus  
    + produceElecMuPairs + produceElecMuPairsLooseElectronIsolation
    + selectElecMuPairs + selectElecMuPairsLooseElectronIsolation
    + produceElecMuPairZmumuHypotheses
-   + selectLayer1Jets
+   + selectPatJets
 )

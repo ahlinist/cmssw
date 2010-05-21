@@ -27,5 +27,5 @@ producePatTupleAHtoMuTauSpecific = cms.Sequence(
     producePatTupleZtoMuTauSpecific
    + selectMuTauPairsForAHtoMuTau + selectMuTauPairsForAHtoMuTauLooseMuonIsolation
    + produceMuTauPairZmumuHypothesesForAHtoMuTau + produceMuTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation
-   + selectLayer1JetsForAHtoMuTau + selectLayer1JetsForAHtoMuTauLooseMuonIsolation
+   + selectPatJetsForAHtoMuTau + selectPatJetsForAHtoMuTauLooseMuonIsolation
 )

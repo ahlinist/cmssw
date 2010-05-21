@@ -49,12 +49,12 @@ from TauAnalysis.RecoTools.diMuPairZmumuHypothesis_cff import *
 producePatTupleZtoMuTauSpecific = cms.Sequence(
     prodSmearedMuons
    + prodSmearedTaus
-   + selectLayer1Muons + selectLayer1MuonsLooseIsolation
-   + selectLayer1Electrons
-   + selectLayer1Taus + selectLayer1TausForMuTau
+   + selectPatMuons + selectPatMuonsLooseIsolation
+   + selectPatElectrons
+   + selectPatTaus + selectPatTausForMuTau
    + produceMuTauPairs + produceMuTauPairsLooseMuonIsolation
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
    + produceMuTauPairZmumuHypotheses
    + produceDiMuPairs
-   + selectLayer1Jets
+   + selectPatJets
 )

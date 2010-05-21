@@ -14,20 +14,20 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 
-muonsBgEstQCDenrichedTrkIso = copy.deepcopy(selectedLayer1MuonsTrkIso)
+muonsBgEstQCDenrichedTrkIso = copy.deepcopy(selectedPatMuonsTrkIso)
 muonsBgEstQCDenrichedTrkIso.sumPtMin = cms.double(4.)
 muonsBgEstQCDenrichedTrkIso.sumPtMax = cms.double(8.)
 
-muonsBgEstQCDenrichedEcalIso = copy.deepcopy(selectedLayer1MuonsEcalIso)
+muonsBgEstQCDenrichedEcalIso = copy.deepcopy(selectedPatMuonsEcalIso)
 muonsBgEstQCDenrichedEcalIso.cut = cms.string('userIsolation("pat::EcalIso") > 4. & userIsolation("pat::EcalIso") < 8.')
 
-muonsBgEstQCDenrichedPionVeto = copy.deepcopy(selectedLayer1MuonsPionVeto)
+muonsBgEstQCDenrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
 
 muonSelConfiguratorBgEstQCDenriched = objSelConfigurator(
     [ muonsBgEstQCDenrichedTrkIso,
       muonsBgEstQCDenrichedEcalIso,
       muonsBgEstQCDenrichedPionVeto ],
-    src = "selectedLayer1MuonsPt15Cumulative",
+    src = "selectedPatMuonsPt15Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
 )
@@ -48,21 +48,21 @@ from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 #       or correct for template shape distortion by reweighting
 #      (--> see TauAnalysis/BgEstimationTools/python/bgEstZtoMuTauWplusJetsEnrichedSelection_cff.py also)
 #   
-tausBgEstQCDenrichedTrkIso = copy.deepcopy(selectedLayer1TausTrkIso)
+tausBgEstQCDenrichedTrkIso = copy.deepcopy(selectedPatTausTrkIso)
 #tausBgEstQCDenrichedTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5 | chargedHadronIso < 8.')
 tausBgEstQCDenrichedTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
 
-tausBgEstQCDenrichedEcalIso = copy.deepcopy(selectedLayer1TausEcalIso)
+tausBgEstQCDenrichedEcalIso = copy.deepcopy(selectedPatTausEcalIso)
 #tausBgEstQCDenrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5 | photonIso < 8.')
 tausBgEstQCDenrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
 
-tausBgEstQCDenrichedMuonVeto = copy.deepcopy(selectedLayer1TausMuonVeto)
+tausBgEstQCDenrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
 tauSelConfiguratorBgEstQCDenriched = objSelConfigurator(
     [ tausBgEstQCDenrichedTrkIso,
       tausBgEstQCDenrichedEcalIso,
       tausBgEstQCDenrichedMuonVeto ],
-    src = "selectedLayer1TausForMuTauLeadTrkPtCumulative",
+    src = "selectedPatTausForMuTauLeadTrkPtCumulative",
     pyModuleName = __name__,
     doSelIndividual = False
 )
@@ -78,7 +78,7 @@ muTauPairsBgEstQCDenriched = cms.EDProducer("PATMuTauPairProducer",
     srcLeg1 = cms.InputTag('muonsBgEstQCDenrichedPionVetoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstQCDenrichedMuonVetoCumulative'),
     dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('layer1METs'),
+    srcMET = cms.InputTag('patMETs'),
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                                        
     verbosity = cms.untracked.int32(0)
@@ -127,7 +127,7 @@ cfgMuTauPairBgEstQCDenriched = cms.PSet(
 cfgDiMuonVetoBgEstQCDenriched = cms.PSet(
     pluginName = cms.string('diMuonVetoBgEstQCDenriched'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
+    src = cms.InputTag('selectedPatMuonsGlobalIndividual'),
     maxNumber = cms.uint32(1)
 )
 

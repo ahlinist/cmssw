@@ -10,26 +10,26 @@ import copy
 
 # require muon candidate to be a global muon
 # (track in muon system linked to track in Pixel + SiTracker detectors)
-selectedLayer1MuonsGlobal = cms.EDFilter("PATMuonSelector",
+selectedPatMuonsGlobal = cms.EDFilter("PATMuonSelector",
     cut = cms.string('isGlobalMuon()'),
     filter = cms.bool(False)
 )
 
 # require muon candidate to be within geometric acceptance of muon trigger
-selectedLayer1MuonsEta21 = cms.EDFilter("PATMuonSelector",
+selectedPatMuonsEta21 = cms.EDFilter("PATMuonSelector",
     cut = cms.string('abs(eta) < 2.1'),
     filter = cms.bool(False)
 )
 
 # require muon candidate to have transverse momentum above threshold
-selectedLayer1MuonsPt15 = cms.EDFilter("PATMuonSelector",
+selectedPatMuonsPt15 = cms.EDFilter("PATMuonSelector",
     cut = cms.string('pt > 15.'),
     filter = cms.bool(False)
 )
 
 # require muon candidate to be isolated
 # with respect to tracks (of Pt >~ 0.3 GeV)
-selectedLayer1MuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
+selectedPatMuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
     type = cms.string('tracker'),
     vetos = cms.vstring("0.01"),                          
     dRisoCone = cms.double(0.6),
@@ -41,13 +41,13 @@ selectedLayer1MuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
 # require muon candidate to be isolated
 # with respect to energy deposits in ECAL
 # (not associated to muon candidate)
-selectedLayer1MuonsEcalIso = cms.EDFilter("PATMuonSelector",
+selectedPatMuonsEcalIso = cms.EDFilter("PATMuonSelector",
     cut = cms.string('userIsolation("pat::EcalIso") < 1.'),
     filter = cms.bool(False)
 )
 
 # require muon candidate to pass pion veto
-selectedLayer1MuonsPionVeto = cms.EDFilter("PATMuonAntiPionSelector",
+selectedPatMuonsPionVeto = cms.EDFilter("PATMuonAntiPionSelector",
     CaloCompCoefficient = cms.double(0.8),
     SegmCompCoefficient = cms.double(1.2),
     AntiPionCut = cms.double(1.0),
@@ -58,14 +58,14 @@ selectedLayer1MuonsPionVeto = cms.EDFilter("PATMuonAntiPionSelector",
 # (all global muons should be linked to tracks in the "inner" tracking detectors;
 #  in case the muon is not linked to an "inner" track,
 #  the track impact parameter selection will cause processing of the entire event to be skipped !!)
-selectedLayer1MuonsTrk = cms.EDFilter("PATMuonSelector",
+selectedPatMuonsTrk = cms.EDFilter("PATMuonSelector",
     cut = cms.string('innerTrack.isNonnull'),
     filter = cms.bool(False)
 )
 
 # require track of muon candidate to have small transverse impact parameter
 # (in order to veto muons resulting from b-quark decays)
-selectedLayer1MuonsTrkIP = cms.EDFilter("PATMuonIpSelector",
+selectedPatMuonsTrkIP = cms.EDFilter("PATMuonIpSelector",
     vertexSource = cms.InputTag("selectedPrimaryVertexPosition"),
     IpMax = cms.double(0.05),
     filter = cms.bool(False)                                               
@@ -80,16 +80,16 @@ selectedLayer1MuonsTrkIP = cms.EDFilter("PATMuonIpSelector",
 #        in order to avoid problems with limited Monte Carlo statistics)
 #--------------------------------------------------------------------------------
 
-selectedLayer1MuonsTrkIsoLooseIsolation = copy.deepcopy(selectedLayer1MuonsTrkIso)
-selectedLayer1MuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
-selectedLayer1MuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
-selectedLayer1MuonsTrkIsoLooseIsolation.sumPtMax = cms.double(8.)
+selectedPatMuonsTrkIsoLooseIsolation = copy.deepcopy(selectedPatMuonsTrkIso)
+selectedPatMuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
+selectedPatMuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
+selectedPatMuonsTrkIsoLooseIsolation.sumPtMax = cms.double(8.)
 
-selectedLayer1MuonsEcalIsoLooseIsolation = copy.deepcopy(selectedLayer1MuonsEcalIso)
-selectedLayer1MuonsEcalIsoLooseIsolation.cut = cms.string('userIsolation("pat::EcalIso") < 8.')
+selectedPatMuonsEcalIsoLooseIsolation = copy.deepcopy(selectedPatMuonsEcalIso)
+selectedPatMuonsEcalIsoLooseIsolation.cut = cms.string('userIsolation("pat::EcalIso") < 8.')
 
-selectedLayer1MuonsPionVetoLooseIsolation = copy.deepcopy(selectedLayer1MuonsPionVeto)
+selectedPatMuonsPionVetoLooseIsolation = copy.deepcopy(selectedPatMuonsPionVeto)
 
-selectedLayer1MuonsTrkLooseIsolation = copy.deepcopy(selectedLayer1MuonsTrk)
+selectedPatMuonsTrkLooseIsolation = copy.deepcopy(selectedPatMuonsTrk)
 
-selectedLayer1MuonsTrkIPlooseIsolation = copy.deepcopy(selectedLayer1MuonsTrkIP)
+selectedPatMuonsTrkIPlooseIsolation = copy.deepcopy(selectedPatMuonsTrkIP)

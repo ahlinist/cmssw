@@ -391,14 +391,14 @@ muTauEventDump = cms.PSet(
     
     electronSource = cms.InputTag('cleanPatElectrons'),
     muonSource = cms.InputTag('cleanPatMuons'),
-    tauSource = cms.InputTag('selectedLayer1TausPt20Cumulative'),
+    tauSource = cms.InputTag('selectedPatTausPt20Cumulative'),
     printTauIdEfficiencies = cms.bool(True),
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypotheses'),
-    jetSource = cms.InputTag('allLayer1Jets'),
-    caloMEtSource = cms.InputTag('layer1METs'),
-    pfMEtSource = cms.InputTag('layer1PFMETs'),
+    jetSource = cms.InputTag('patJets'),
+    caloMEtSource = cms.InputTag('patMETs'),
+    pfMEtSource = cms.InputTag('patPFMETs'),
     genMEtSource = cms.InputTag('genMetTrue'),
     
     #output = cms.string("muTauEventDump.txt"),
@@ -556,7 +556,7 @@ muTauAnalysisSequence = cms.VPSet(
             'pfMEtHistManager',
             'vertexHistManager'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsGlobalCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonEta'),
@@ -571,7 +571,7 @@ muTauAnalysisSequence = cms.VPSet(
             'pfMEtHistManager',
             'vertexHistManager'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsEta21Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonPt'),
@@ -587,7 +587,7 @@ muTauAnalysisSequence = cms.VPSet(
             'vertexHistManager',
             'triggerHistManagerForMuTau'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPt15Cumulative')
     ),
 
     # tau acceptance cuts
@@ -605,8 +605,8 @@ muTauAnalysisSequence = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauAntiOverlapWithMuonsVetoCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauAntiOverlapWithMuonsVetoCumulative'
         )
     ),
     cms.PSet(
@@ -623,8 +623,8 @@ muTauAnalysisSequence = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring(
-           'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative',
-           'tauHistManager.tauSource = selectedLayer1TausForMuTauEta21Cumulative'
+           'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
+           'tauHistManager.tauSource = selectedPatTausForMuTauEta21Cumulative'
         )
     ),
     cms.PSet(
@@ -642,8 +642,8 @@ muTauAnalysisSequence = cms.VPSet(
             'triggerHistManagerForMuTau'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauPt20Cumulative'
+            'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauPt20Cumulative'
         )
     ),
     
@@ -658,7 +658,7 @@ muTauAnalysisSequence = cms.VPSet(
         analyzers = cms.vstring(
             'muonHistManager'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsTrkIsoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonEcalIso'),
@@ -669,7 +669,7 @@ muTauAnalysisSequence = cms.VPSet(
         analyzers = cms.vstring(
             'muonHistManager'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsEcalIsoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonAntiPion'),
@@ -680,7 +680,7 @@ muTauAnalysisSequence = cms.VPSet(
         analyzers = cms.vstring(
             'muonHistManager'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonTrkIP'),
@@ -696,7 +696,7 @@ muTauAnalysisSequence = cms.VPSet(
             'vertexHistManager',
             'triggerHistManagerForMuTau'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative')
     ),
     
     # selection of tau-jet candidate (id.)
@@ -712,8 +712,8 @@ muTauAnalysisSequence = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauLeadTrkCumulative'
         )
     ),
     cms.PSet(
@@ -727,8 +727,8 @@ muTauAnalysisSequence = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkPtCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauLeadTrkPtCumulative'
         )
     ),
     cms.PSet(
@@ -742,8 +742,8 @@ muTauAnalysisSequence = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauTrkIsoCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauTrkIsoCumulative'
         )
     ),
     cms.PSet(
@@ -757,8 +757,8 @@ muTauAnalysisSequence = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauEcalIsoCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauEcalIsoCumulative'
         )
     ),
     cms.PSet(
@@ -772,8 +772,8 @@ muTauAnalysisSequence = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauProngCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauProngCumulative'
         )
     ),
     cms.PSet(
@@ -787,8 +787,8 @@ muTauAnalysisSequence = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauChargeCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauChargeCumulative'
         )
     ),    
     cms.PSet(
@@ -802,8 +802,8 @@ muTauAnalysisSequence = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauChargeCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauChargeCumulative'
         )
     ),  
     cms.PSet(
@@ -822,8 +822,8 @@ muTauAnalysisSequence = cms.VPSet(
             'triggerHistManagerForMuTau'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative'
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative'
         )
     ),
 
@@ -844,8 +844,8 @@ muTauAnalysisSequence = cms.VPSet(
             'triggerHistManagerForMuTau'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoCumulative'
         )
     ),
@@ -861,8 +861,8 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateHistManagerForMuTau'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative'
         ),
     ),
@@ -878,8 +878,8 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateHistManagerForMuTau'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAcoplanarity12Cumulative'
         )
     ),
@@ -895,8 +895,8 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateHistManagerForMuTau'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METcumulative'
         )
     ),
@@ -914,8 +914,8 @@ muTauAnalysisSequence = cms.VPSet(
             'muPairHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative'
         )
     ),
@@ -948,8 +948,8 @@ muTauAnalysisSequence = cms.VPSet(
             'dataBinner'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedLayer1TausForMuTauElectronVetoCumulative',
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses'

@@ -6,7 +6,7 @@ electronHistManager = cms.PSet(
       
     electronSource = cms.InputTag('cleanPatElectrons'),
     vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
-    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+    jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),
 
     dqmDirectory_store = cms.string('ElectronQuantities'),

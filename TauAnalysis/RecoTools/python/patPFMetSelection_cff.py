@@ -10,16 +10,16 @@ import copy
 # see https://twiki.cern.ch/twiki/bin/view/CMS/SWGuidePhysicsCutParser
 # on how to use the cut-string parser
 
-selectedLayer1PFMETsPt25 = cms.EDFilter("PATMETSelector",
-                                        src = cms.InputTag("layer1PFMETs"),
+selectedPatPFMETsPt25 = cms.EDFilter("PATMETSelector",
+                                        src = cms.InputTag("patPFMETs"),
                                         cut = cms.string('pt > 25.'),
                                         filter = cms.bool(False)
                                         )
-selectedLayer1PFMETsPt40 = cms.EDFilter("PATMETSelector",
-                                        src = cms.InputTag("layer1PFMETs"),
+selectedPatPFMETsPt40 = cms.EDFilter("PATMETSelector",
+                                        src = cms.InputTag("patPFMETs"),
                                         cut = cms.string('pt > 40'),
                                         filter = cms.bool(False)
                                         )
 
-selectLayer1PFMETs = cms.Sequence(selectedLayer1PFMETsPt25
-                                  *selectedLayer1PFMETsPt40)
+selectPatPFMETs = cms.Sequence(selectedPatPFMETsPt25
+                                  *selectedPatPFMETsPt40)

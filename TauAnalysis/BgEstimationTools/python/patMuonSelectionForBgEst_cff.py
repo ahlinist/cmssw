@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 muonsPionVetoLooseIsolationForBgEst = cms.EDFilter("PATMuonAntiPionSelector",
-    src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),                                  
+    src = cms.InputTag('selectedPatMuonsEcalIsoLooseIsolationCumulative'),                                  
     CaloCompCoefficient = cms.double(0.8),
     SegmCompCoefficient = cms.double(1.2),
     AntiPionCut = cms.double(1.0),
@@ -21,7 +21,7 @@ muonsTrkLooseIsolationForBgEst = cms.EDFilter("PATMuonSelector",
 #--------------------------------------------------------------------------------
 
 muonsPionVetoNoIsolationForBgEst = cms.EDFilter("PATMuonAntiPionSelector",
-    src = cms.InputTag('selectedLayer1MuonsPt15Cumulative'),                                  
+    src = cms.InputTag('selectedPatMuonsPt15Cumulative'),                                  
     CaloCompCoefficient = cms.double(0.8),
     SegmCompCoefficient = cms.double(1.2),
     AntiPionCut = cms.double(1.0),
@@ -37,7 +37,7 @@ muonsTrkNoIsolationForBgEst = cms.EDFilter("PATMuonSelector",
 #--------------------------------------------------------------------------------
 
 muonsTrkIsoForBgEst = cms.EDFilter("PATMuonIsoDepositSelector",
-    src = cms.InputTag('selectedLayer1MuonsPt15Cumulative'),                                
+    src = cms.InputTag('selectedPatMuonsPt15Cumulative'),                                
     type = cms.string('tracker'),
     #vetos = cms.vstring("0.01", "Threshold(0.9)"),
     vetos = cms.vstring("0.01"),                          

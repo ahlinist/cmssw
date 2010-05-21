@@ -6,8 +6,8 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 tauRecoilEnergyFromJets = cms.EDProducer("PATTauRecoilEnergyFromJetsProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
-    srcEnergyObjects = cms.InputTag('allLayer1Jets'),
+    srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
+    srcEnergyObjects = cms.InputTag('allPatJets'),
     etaMin = cms.double(-2.5),
     etaMax = cms.double(+2.5),
     etMin = cms.double(0.),
@@ -22,7 +22,7 @@ tauRecoilEnergyFromJetsPt1 = cms.EDFilter("PATTauRecoilEnergyFromJetsSelector",
 )                                      
 
 tauRecoilEnergyFromCaloTowers = cms.EDProducer("PATTauRecoilEnergyFromCaloTowersProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
+    srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
     srcEnergyObjects = cms.InputTag('towerMaker'),
     etaMin = cms.double(0.),
     etaMax = cms.double(+5.),
@@ -32,7 +32,7 @@ tauRecoilEnergyFromCaloTowers = cms.EDProducer("PATTauRecoilEnergyFromCaloTowers
 )
 
 tauRecoilEnergyFromCentralCaloTowers = cms.EDProducer("PATTauRecoilEnergyFromCaloTowersProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
+    srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
     srcEnergyObjects = cms.InputTag('towerMaker'),
     etaMin = cms.double(0.),
     etaMax = cms.double(+3.),
@@ -42,7 +42,7 @@ tauRecoilEnergyFromCentralCaloTowers = cms.EDProducer("PATTauRecoilEnergyFromCal
 )
 
 tauRecoilEnergyFromForwardCaloTowers = cms.EDProducer("PATTauRecoilEnergyFromCaloTowersProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
+    srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
     srcEnergyObjects = cms.InputTag('towerMaker'),
     etaMin = cms.double(+3.),
     etaMax = cms.double(+5.),
@@ -78,8 +78,8 @@ tauRecoilEnergyFromForwardCaloTowersPt5 = cms.EDFilter("PATTauRecoilEnergyFromCa
 
 # -------- Loose isolation selection -----------------# 
 tauRecoilEnergyFromJetsLooseIsolation = cms.EDProducer("PATTauRecoilEnergyFromJetsProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
-    srcEnergyObjects = cms.InputTag('allLayer1Jets'),
+    srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
+    srcEnergyObjects = cms.InputTag('allPatJets'),
     etaMin = cms.double(-2.5),
     etaMax = cms.double(+2.5),
     etMin = cms.double(0.),
@@ -94,7 +94,7 @@ tauRecoilEnergyFromJetsPt1LooseIsolation = cms.EDFilter("PATTauRecoilEnergyFromJ
 )                                      
 
 tauRecoilEnergyFromCaloTowersLooseIsolation = cms.EDProducer("PATTauRecoilEnergyFromCaloTowersProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
+    srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
     srcEnergyObjects = cms.InputTag('towerMaker'),
     etaMin = cms.double(0.),
     etaMax = cms.double(+5.),
@@ -117,7 +117,7 @@ tauRecoilEnergyFromCaloTowersPt10LooseIsolation = cms.EDFilter("PATTauRecoilEner
 
 
 tauRecoilEnergyFromCentralCaloTowersLooseIsolation = cms.EDProducer("PATTauRecoilEnergyFromCaloTowersProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
+    srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
     srcEnergyObjects = cms.InputTag('towerMaker'),
     etaMin = cms.double(0.),
     etaMax = cms.double(+3.),
@@ -133,7 +133,7 @@ tauRecoilEnergyFromCentralCaloTowersPt5LooseIsolation = cms.EDFilter("PATTauReco
 )  
 
 tauRecoilEnergyFromForwardCaloTowersLooseIsolation = cms.EDProducer("PATTauRecoilEnergyFromCaloTowersProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
+    srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
     srcEnergyObjects = cms.InputTag('towerMaker'),
     etaMin = cms.double(+3.),
     etaMax = cms.double(+5.),

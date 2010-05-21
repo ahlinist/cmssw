@@ -77,10 +77,10 @@ muTauEventDump_factorizedWithMuonIsolation = muTauEventDump.clone(
 
 muTauAnalysisSequence_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
 replaceAnalyzerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation,
-    [ [ "selectedLayer1MuonsTrkIsoCumulative", "selectedLayer1MuonsTrkIsoLooseIsolationCumulative" ],
-      [ "selectedLayer1MuonsEcalIsoCumulative", "selectedLayer1MuonsEcalIsoLooseIsolationCumulative" ],
-      [ "selectedLayer1MuonsPionVetoCumulative", "selectedLayer1MuonsPionVetoLooseIsolationCumulative" ],
-      [ "selectedLayer1MuonsTrkIPcumulative", "selectedLayer1MuonsTrkIPlooseIsolationCumulative" ],
+    [ [ "selectedPatMuonsTrkIsoCumulative", "selectedPatMuonsTrkIsoLooseIsolationCumulative" ],
+      [ "selectedPatMuonsEcalIsoCumulative", "selectedPatMuonsEcalIsoLooseIsolationCumulative" ],
+      [ "selectedPatMuonsPionVetoCumulative", "selectedPatMuonsPionVetoLooseIsolationCumulative" ],
+      [ "selectedPatMuonsTrkIPcumulative", "selectedPatMuonsTrkIPlooseIsolationCumulative" ],
       [ "selectedMuTauPairsAntiOverlapVetoCumulative", "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative" ],
       [ "selectedMuTauPairsZeroChargeCumulative", "selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative" ],
       [ "selectedMuTauPairsAcoplanarity12Cumulative", "selectedMuTauPairsAcoplanarity12LooseMuonIsolationCumulative" ],

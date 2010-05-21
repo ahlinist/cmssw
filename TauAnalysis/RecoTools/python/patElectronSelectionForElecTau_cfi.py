@@ -9,50 +9,50 @@ from TauAnalysis.RecoTools.patElectronSelection_cfi import *
 #--------------------------------------------------------------------------------
 
 # require electron candidate to pass the tight electron id. criteria
-selectedLayer1ElectronsForElecTauTightId = copy.deepcopy(selectedLayer1ElectronsTightId)
+selectedPatElectronsForElecTauTightId = copy.deepcopy(selectedPatElectronsTightId)
 
 # require electron candidate to pass the loose electron id. criteria
-selectedLayer1ElectronsForElecTauLooseId = copy.deepcopy(selectedLayer1ElectronsLooseId)
+selectedPatElectronsForElecTauLooseId = copy.deepcopy(selectedPatElectronsLooseId)
 
 # require electron candidate to not be within eta-crack
 # between Barrel and Encap ECAL calorimeter
-selectedLayer1ElectronsForElecTauAntiCrackCut = copy.deepcopy(selectedLayer1ElectronsAntiCrackCut)
+selectedPatElectronsForElecTauAntiCrackCut = copy.deepcopy(selectedPatElectronsAntiCrackCut)
 
 # require electron candidate to be within geometric acceptance of electron trigger
-selectedLayer1ElectronsForElecTauEta21 = copy.deepcopy(selectedLayer1ElectronsEta21)
+selectedPatElectronsForElecTauEta21 = copy.deepcopy(selectedPatElectronsEta21)
 
 # require electron candidate to have transverse momentum above threshold
-selectedLayer1ElectronsForElecTauPt15 = copy.deepcopy(selectedLayer1ElectronsPt15)
+selectedPatElectronsForElecTauPt15 = copy.deepcopy(selectedPatElectronsPt15)
 
 # require electron candidate to be isolated
 # with respect to tracks (of Pt >~ 0.3 GeV)
-selectedLayer1ElectronsForElecTauTrkIso = copy.deepcopy(selectedLayer1ElectronsTrkIso)
+selectedPatElectronsForElecTauTrkIso = copy.deepcopy(selectedPatElectronsTrkIso)
 
 # require electron candidate to be isolated
 # with respect to energy deposits in ECAL
 # (not associated to electron candidate)
-selectedLayer1ElectronsForElecTauEcalIso = copy.deepcopy(selectedLayer1ElectronsEcalIso)
+selectedPatElectronsForElecTauEcalIso = copy.deepcopy(selectedPatElectronsEcalIso)
 
 # require electron candidate to be linked to (GSF) track
-selectedLayer1ElectronsForElecTauTrk = copy.deepcopy(selectedLayer1ElectronsTrk)
+selectedPatElectronsForElecTauTrk = copy.deepcopy(selectedPatElectronsTrk)
 
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
-selectedLayer1ElectronsForElecTauTrkIP = copy.deepcopy(selectedLayer1ElectronsTrkIP)
+selectedPatElectronsForElecTauTrkIP = copy.deepcopy(selectedPatElectronsTrkIP)
 
-selectedLayer1ElectronsForElecTauTrkIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecTauTrkIso)
-selectedLayer1ElectronsForElecTauTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
+selectedPatElectronsForElecTauTrkIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIso)
+selectedPatElectronsForElecTauTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
 
-selectedLayer1ElectronsForElecTauEcalIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecTauEcalIso)
-selectedLayer1ElectronsForElecTauEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedPatElectronsForElecTauEcalIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauEcalIso)
+selectedPatElectronsForElecTauEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
 
-selectedLayer1ElectronsForElecTauTrkLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecTauTrk)
+selectedPatElectronsForElecTauTrkLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrk)
 
-selectedLayer1ElectronsForElecTauTrkIPlooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecTauTrkIP)
+selectedPatElectronsForElecTauTrkIPlooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIP)
 
 
 # require electrons not to originate from photon conversions
-selectedLayer1ElectronsForElecTauConversionVeto = cms.EDFilter("PATElectronConversionFinder",
+selectedPatElectronsForElecTauConversionVeto = cms.EDFilter("PATElectronConversionFinder",
     trackSource = cms.InputTag('generalTracks'),
     conversionSource = cms.InputTag('conversions'),
 	photonSource = cms.InputTag('photons'),
@@ -67,5 +67,5 @@ selectedLayer1ElectronsForElecTauConversionVeto = cms.EDFilter("PATElectronConve
     doHists = cms.bool(False)
 )
 
-selectedLayer1ElectronsForElecTauConversionVetoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsForElecTauConversionVeto)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauConversionVeto)
 

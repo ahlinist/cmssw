@@ -8,7 +8,7 @@ import FWCore.ParameterSet.Config as cms
 # require muon candidates considered for Z --> mu+ mu- hypothesis
 # to be reconstructed in muon system
 # (with or without a track reconstructed in Pixel/SiStrip tracking detectors linked to it)
-selectedLayer1MuonsForZmumuHypotheses = cms.EDFilter("PATMuonSelector",
+selectedPatMuonsForZmumuHypotheses = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("cleanPatMuons"),
     cut = cms.string('isGlobalMuon() | isStandAloneMuon()'),
     filter = cms.bool(False)
@@ -16,8 +16,8 @@ selectedLayer1MuonsForZmumuHypotheses = cms.EDFilter("PATMuonSelector",
 
 allDiMuPairZmumuHypotheses = cms.EDProducer("DiCandidatePairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1MuonsForZmumuHypotheses'),
-    srcLeg2 = cms.InputTag('selectedLayer1MuonsForZmumuHypotheses'),
+    srcLeg1 = cms.InputTag('selectedPatMuonsForZmumuHypotheses'),
+    srcLeg2 = cms.InputTag('selectedPatMuonsForZmumuHypotheses'),
     dRmin12 = cms.double(0.5),
     srcMET = cms.InputTag(''),
     recoMode = cms.string(""),
@@ -31,4 +31,4 @@ selectedDiMuPairZmumuHypotheses = cms.EDFilter("DiCandidatePairSelector",
     filter = cms.bool(False)
 )
 
-produceDiMuPairs = cms.Sequence( selectedLayer1MuonsForZmumuHypotheses * allDiMuPairZmumuHypotheses * selectedDiMuPairZmumuHypotheses )
+produceDiMuPairs = cms.Sequence( selectedPatMuonsForZmumuHypotheses * allDiMuPairZmumuHypotheses * selectedDiMuPairZmumuHypotheses )

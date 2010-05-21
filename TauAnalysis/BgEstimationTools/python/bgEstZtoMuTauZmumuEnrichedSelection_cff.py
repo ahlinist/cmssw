@@ -14,17 +14,17 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 
-muonsBgEstZmumuEnrichedTrkIso = copy.deepcopy(selectedLayer1MuonsTrkIso)
+muonsBgEstZmumuEnrichedTrkIso = copy.deepcopy(selectedPatMuonsTrkIso)
 muonsBgEstZmumuEnrichedTrkIso.sumPtMax = cms.double(2.)
 
-muonsBgEstZmumuEnrichedEcalIso = copy.deepcopy(selectedLayer1MuonsEcalIso)
+muonsBgEstZmumuEnrichedEcalIso = copy.deepcopy(selectedPatMuonsEcalIso)
 muonsBgEstZmumuEnrichedEcalIso.cut = cms.string('userIsolation("pat::EcalIso") < 2.')
 
-muonsBgEstZmumuEnrichedPionVeto = copy.deepcopy(selectedLayer1MuonsPionVeto)
+muonsBgEstZmumuEnrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
 
-muonsBgEstZmumuEnrichedTrk = copy.deepcopy(selectedLayer1MuonsTrk)
+muonsBgEstZmumuEnrichedTrk = copy.deepcopy(selectedPatMuonsTrk)
 
-muonsBgEstZmumuEnrichedTrkIP = copy.deepcopy(selectedLayer1MuonsTrkIP)
+muonsBgEstZmumuEnrichedTrkIP = copy.deepcopy(selectedPatMuonsTrkIP)
 
 muonSelConfiguratorBgEstZmumuEnriched = objSelConfigurator(
     [ muonsBgEstZmumuEnrichedTrkIso,
@@ -32,7 +32,7 @@ muonSelConfiguratorBgEstZmumuEnriched = objSelConfigurator(
       muonsBgEstZmumuEnrichedPionVeto,
       muonsBgEstZmumuEnrichedTrk,
       muonsBgEstZmumuEnrichedTrkIP ],
-    src = "selectedLayer1MuonsPt15Cumulative",
+    src = "selectedPatMuonsPt15Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
 )
@@ -56,11 +56,11 @@ selectMuonsBgEstZmumuEnriched._seq = selectMuonsBgEstZmumuEnriched._seq * muonsB
 from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 
-tausBgEstZmumuJetMisIdEnrichedMuonVeto = copy.deepcopy(selectedLayer1TausMuonVeto)
-tausBgEstZmumuJetMisIdEnrichedMuonVeto.src = cms.InputTag('selectedLayer1TausForMuTauEcalIsoCumulative')
+tausBgEstZmumuJetMisIdEnrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
+tausBgEstZmumuJetMisIdEnrichedMuonVeto.src = cms.InputTag('selectedPatTausForMuTauEcalIsoCumulative')
 
 tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag('selectedLayer1TausEcalIsoCumulative'),                                              
+    src = cms.InputTag('selectedPatTausEcalIsoCumulative'),                                              
     cut = cms.string('tauID("againstMuon") < 0.5'),
     filter = cms.bool(False)                                 
 )
@@ -73,10 +73,10 @@ selectTausBgEstZmumuEnriched = cms.Sequence(tausBgEstZmumuJetMisIdEnrichedMuonVe
 
 muTauPairsBgEstZmumuJetMisIdEnriched = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1MuonsPionVetoCumulative'),
+    srcLeg1 = cms.InputTag('selectedPatMuonsPionVetoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedMuonVeto'),
     dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('layer1METs'),
+    srcMET = cms.InputTag('patMETs'),
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                                                  
     verbosity = cms.untracked.int32(0)
@@ -86,10 +86,10 @@ muTauPairsBgEstZmumuJetMisIdEnriched = cms.EDProducer("PATMuTauPairProducer",
 
 muTauPairsBgEstZmumuMuonMisIdEnriched = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1MuonsPionVetoCumulative'),
+    srcLeg1 = cms.InputTag('selectedPatMuonsPionVetoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto'),
     dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('layer1METs'),
+    srcMET = cms.InputTag('patMETs'),
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                                                   
     verbosity = cms.untracked.int32(0)
@@ -114,8 +114,8 @@ selectMuTauPairsBgEstZmumuEnriched = cms.Sequence(
 
 diMuonPairsBgEstZmumuJetMisIdEnriched = cms.EDProducer("DiCandidatePairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-    srcLeg2 = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
+    srcLeg1 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
+    srcLeg2 = cms.InputTag('selectedPatMuonsGlobalIndividual'),
     dRmin12 = cms.double(0.5),
     srcMET = cms.InputTag(''),
     recoMode = cms.string(""),
@@ -142,7 +142,7 @@ diMuonPairsInvMassBgEstZmumuJetMisIdEnriched = cms.EDFilter("DiCandidatePairSele
 
 diMuonPairsBgEstZmumuMuonMisIdEnriched = cms.EDProducer("DiCandidatePairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
+    srcLeg1 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
     srcLeg2 = cms.InputTag('muonsBgEstZmumuMuonMisIdEnrichedStandalone'),
     dRmin12 = cms.double(0.5),
     srcMET = cms.InputTag(''),
@@ -210,42 +210,42 @@ cfgMuonStandaloneZmumuMuonMisIdEnriched = cms.PSet(
 
 cfgTauEtaBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauEtaCut)
 cfgTauEtaBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauEtaBgEstZmumuMuonMisIdEnriched')
-cfgTauEtaBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedLayer1TausEta21Cumulative')
+cfgTauEtaBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausEta21Cumulative')
 cfgTauEtaBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauPtBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauPtCut)
 cfgTauPtBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauPtBgEstZmumuMuonMisIdEnriched')
-cfgTauPtBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedLayer1TausPt20Cumulative')
+cfgTauPtBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausPt20Cumulative')
 cfgTauPtBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauLeadTrkBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauLeadTrkCut)
 cfgTauLeadTrkBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauLeadTrkBgEstZmumuMuonMisIdEnriched')
-cfgTauLeadTrkBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedLayer1TausLeadTrkCumulative')
+cfgTauLeadTrkBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausLeadTrkCumulative')
 cfgTauLeadTrkBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauLeadTrkPtBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauLeadTrkPtCut)
 cfgTauLeadTrkPtBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauLeadTrkPtBgEstZmumuMuonMisIdEnriched')
-cfgTauLeadTrkPtBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedLayer1TausLeadTrkPtCumulative')
+cfgTauLeadTrkPtBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausLeadTrkPtCumulative')
 cfgTauLeadTrkPtBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauTrkIsoCut)
 cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauTrkIsoBgEstZmumuMuonMisIdEnriched')
-cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedLayer1TausTrkIsoCumulative')
+cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausTrkIsoCumulative')
 cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauEcalIsoCut)
 cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauEcalIsoBgEstZmumuMuonMisIdEnriched')
-cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedLayer1TausEcalIsoCumulative')
+cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausEcalIsoCumulative')
 cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauProngBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauProngCut)
 cfgTauProngBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauProngBgEstZmumuMuonMisIdEnriched')
-cfgTauProngBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedLayer1TausProngCumulative')
+cfgTauProngBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausProngCumulative')
 cfgTauProngBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauChargeBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauChargeCut)
 cfgTauChargeBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauChargeBgEstZmumuMuonMisIdEnriched')
-cfgTauChargeBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedLayer1TausChargeCumulative')
+cfgTauChargeBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausChargeCumulative')
 cfgTauChargeBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauAntiMuonVetoBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauMuonVeto)
@@ -310,7 +310,7 @@ from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 
 muonHistManagerBgEstZmumuEnriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstZmumuEnriched.pluginName = cms.string('muonHistManagerBgEstZmumuEnriched')
-muonHistManagerBgEstZmumuEnriched.muonSource = cms.InputTag('selectedLayer1MuonsPionVetoCumulative')
+muonHistManagerBgEstZmumuEnriched.muonSource = cms.InputTag('selectedPatMuonsPionVetoCumulative')
 
 dataBinnerBgEstZmumuEnriched = copy.deepcopy(dataBinner)
 dataBinnerBgEstZmumuEnriched.pluginName = cms.string('dataBinnerBgEstZmumuEnriched')
@@ -328,7 +328,7 @@ diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.visMassHypothesisSource = cm
 
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuJetMisIdEnriched')
-tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.muonSource = cms.InputTag('selectedLayer1MuonsPionVetoCumulative')
+tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPionVetoCumulative')
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.tauSource = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedMuonVeto')
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauSource = cms.InputTag('muTauPairsBgEstZmumuJetMisIdEnriched')
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauSource
@@ -525,7 +525,7 @@ diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.visMassHypothesisSource = c
 
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched')
-tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.muonSource = cms.InputTag('selectedLayer1MuonsPionVetoCumulative')
+tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPionVetoCumulative')
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.tauSource = cms.InputTag('tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto')
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauSource = cms.InputTag('muTauPairsBgEstZmumuMuonMisIdEnrichedZeroCharge')
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauSource

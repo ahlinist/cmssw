@@ -16,26 +16,26 @@ from TauAnalysis.Configuration.selectZtoMuTau_cff import *
 # muon candidate selection with "loose" muon isolation criteria applied
 cfgMuonTrkIsoCutLooseIsolation = cfgMuonTrkIsoCut.clone(
     pluginName = cms.string('muonTrkIsoCutLooseIsolation'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationIndividual')
+    src_cumulative = cms.InputTag('selectedPatMuonsTrkIsoLooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsTrkIsoLooseIsolationIndividual')
 )    
 
 cfgMuonEcalIsoCutLooseIsolation = cfgMuonEcalIsoCut.clone(
     pluginName = cms.string('muonEcalIsoCutLooseIsolation'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationIndividual')
+    src_cumulative = cms.InputTag('selectedPatMuonsEcalIsoLooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsEcalIsoLooseIsolationIndividual')
 )
 
 cfgMuonAntiPionCutLooseIsolation = cfgMuonAntiPionCut.clone(
     pluginName = cms.string('muonAntiPionCutLooseIsolation'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationIndividual')
+    src_cumulative = cms.InputTag('selectedPatMuonsPionVetoLooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsPionVetoLooseIsolationIndividual')
 )    
 
 cfgMuonTrkIPcutLooseIsolation = cfgMuonTrkIPcut.clone(
     pluginName = cms.string('muonTrkIPcutLooseIsolation'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationIndividual')
+    src_cumulative = cms.InputTag('selectedPatMuonsTrkIPlooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsTrkIPlooseIsolationIndividual')
 )    
 
 # selection of di-tau candidates composed of combination of tau-jet with "loosely" isolated muon 

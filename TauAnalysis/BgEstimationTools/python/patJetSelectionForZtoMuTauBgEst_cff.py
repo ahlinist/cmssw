@@ -8,9 +8,9 @@ import FWCore.ParameterSet.Config as cms
 jetsAntiOverlapWithLeptonsVetoForMuTauBgEstZmumuEnriched = cms.EDFilter("PATJetAntiOverlapSelector",
     src = cms.InputTag("jetsEt20ForBgEst"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
-        "selectedLayer1ElectronsTrkIPcumulative",
+        "selectedPatElectronsTrkIPcumulative",
         "muonsTrkTightIsolationForBgEst",
-        "selectedLayer1TausChargeCumulative"
+        "selectedPatTausChargeCumulative"
     ),
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           
@@ -31,7 +31,7 @@ selectJetsForMuTauBgEstZmumuEnriched = cms.Sequence( jetsAntiOverlapWithLeptonsV
 jetsAntiOverlapWithLeptonsVetoForMuTauBgEstWplusJetsEnriched = cms.EDFilter("PATJetAntiOverlapSelector",
     src = cms.InputTag("jetsEt20ForBgEst"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
-        "selectedLayer1ElectronsTrkIPcumulative",
+        "selectedPatElectronsTrkIPcumulative",
         "muonsTrkTightIsolationForBgEst",
         "tausAntiOverlapWithMuonsVetoLooseIsolationForBgEst"
     ),
@@ -51,9 +51,9 @@ selectJetsForMuTauBgEstWplusJetsEnriched = cms.Sequence( jetsAntiOverlapWithLept
 jetsAntiOverlapWithLeptonsVetoForMuTauBgEstTTplusJetsEnriched = cms.EDFilter("PATJetAntiOverlapSelector",
     src = cms.InputTag("jetsEt20ForBgEst"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
-        "selectedLayer1ElectronsTrkIPcumulative",
+        "selectedPatElectronsTrkIPcumulative",
         "muonsTrkTightIsolationForBgEst",
-        "selectedLayer1TausForMuTauMuonVetoCumulative"
+        "selectedPatTausForMuTauMuonVetoCumulative"
     ),
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           

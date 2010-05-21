@@ -7,13 +7,13 @@ process = cms.Process('runZtoElecTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('')
+process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -70,8 +70,10 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    	'rfio:/castor/cern.ch/user/j/jkolb/elecTauPatTuples/data/patTupleZtoElecTau_data_7TeV.root'
-	)
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_01.root'
+    )
     #skipBadFiles = cms.untracked.bool(True)    
 )
 
@@ -106,13 +108,10 @@ switchToPFTauShrinkingCone(process)
 
 #--------------------------------------------------------------------------------
 # import utility function for managing pat::Jets
-#from PhysicsTools.PatAlgos.tools.jetTools import *
-
-# have to add this empty PSet or switchJetCollection complains
-#process.jetCorrFactors = cms.PSet()
+from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-#switchJetCollection(process, cms.InputTag("iterativeCone5PFJets"))
+switchJetCollection(process, jetCollection = cms.InputTag("iterativeCone5PFJets"))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -183,8 +182,8 @@ if not hasattr(process, "isBatchMode"):
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-#if not hasattr(process, "isBatchMode"):
-	#process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
+if not hasattr(process, "isBatchMode"):
+    process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information

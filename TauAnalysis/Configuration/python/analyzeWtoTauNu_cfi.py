@@ -184,9 +184,9 @@ wTauNuEventDump = cms.PSet(
     genTauJetSource = cms.InputTag('tauGenJets'),
     genEventInfoSource = cms.InputTag('generator'),
     
-    tauSource = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
-    metSource = cms.InputTag('layer1METs'),
-    jetSource = cms.InputTag('selectedLayer1JetsEt20ForWTauNuCumulative'),
+    tauSource = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
+    metSource = cms.InputTag('patMETs'),
+    jetSource = cms.InputTag('selectedPatJetsEt20ForWTauNuCumulative'),
     genMEtSource = cms.InputTag('genMetTrue'),
     recoTrackSource = cms.InputTag('generalTracks'),
     pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
@@ -197,8 +197,8 @@ wTauNuEventDump = cms.PSet(
 )
 
 #replace met with pfmet for met-plots and event dump
-#metHistManager.metSource = cms.InputTag("layer1PFMETs")
-#wTauNuEventDump.metSource = cms.InputTag('layer1PFMETs')
+#metHistManager.metSource = cms.InputTag("patPFMETs")
+#wTauNuEventDump.metSource = cms.InputTag('patPFMETs')
 
 #--------------------------------------------------------------------------------
 # define analysis sequence
@@ -245,7 +245,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuEta21Cumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuEta21Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelTauPt'),
@@ -254,7 +254,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuPt20Cumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuPt20Cumulative')
 	), 
     cms.PSet(
         filter = cms.string('evtSelPFMetPt'),
@@ -272,7 +272,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('metHistManager.metSource = selectedLayer1METsPt15')
+        replace = cms.vstring('metHistManager.metSource = selectedPatMETsPt15')
 	), 
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrk'),
@@ -281,7 +281,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuLeadTrkCumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuLeadTrkCumulative')
 	), 
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
@@ -290,7 +290,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuLeadTrkPtCumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuLeadTrkPtCumulative')
 	), 
     cms.PSet(
         filter = cms.string('evtSelTauIso'),
@@ -299,7 +299,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuEcalIsoCumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuEcalIsoCumulative')
 	),
     cms.PSet(
         filter = cms.string('evtSelTauTaNC'),
@@ -308,7 +308,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuTrkIsoCumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuTrkIsoCumulative')
 	),
     cms.PSet(
         filter = cms.string('evtSelTauProng'),
@@ -317,7 +317,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuProngCumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuProngCumulative')
 	),
     cms.PSet(
         filter = cms.string('evtSelTauCharge'),
@@ -326,7 +326,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuChargeCumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuChargeCumulative')
 	),
     cms.PSet(
         filter = cms.string('evtSelTauMuonVeto'),
@@ -335,7 +335,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuMuonVetoCumulative')	
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuMuonVetoCumulative')	
 	),
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
@@ -344,7 +344,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuElectronVetoCumulative')	
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuElectronVetoCumulative')	
 	),
    
     cms.PSet(
@@ -354,8 +354,8 @@ wTauNuAnalysisSequence = cms.VPSet(
         ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuEcalCrackVetoCumulative',
-                              'jetHistManager.jetSource = selectedLayer1JetsEt15ForWTauNuCumulative',
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuEcalCrackVetoCumulative',
+                              'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
                               'tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
                               'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
                               'tauRecoilEnergyFromCentralCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCentralCaloTowers',
@@ -370,7 +370,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = wTauNuHistManagers,
         replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
-                              'jetHistManager.jetSource = selectedLayer1JetsEt15ForWTauNuCumulative',
+                              'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
                               'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
                               'tauRecoilEnergyFromCentralCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCentralCaloTowers',
                               'tauRecoilEnergyFromForwardCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromForwardCaloTowers',
@@ -384,7 +384,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = wTauNuHistManagers,
         replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
-                              'jetHistManager.jetSource = selectedLayer1JetsEt15ForWTauNuCumulative',
+                              'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
                               'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
                               'tauRecoilEnergyFromCentralCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCentralCaloTowers',
                               'tauRecoilEnergyFromForwardCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromForwardCaloTowers',
@@ -397,7 +397,7 @@ wTauNuAnalysisSequence = cms.VPSet(
         ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('jetHistManager.jetSource = selectedLayer1JetsEt15ForWTauNuCumulative',
+        replace = cms.vstring('jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
                               'tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets',
                               'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
                               'tauRecoilEnergyFromCentralCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCentralCaloTowers',

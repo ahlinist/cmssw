@@ -21,7 +21,7 @@ PATDiTauLeptonIsolationExtractor<T1,T2>::PATDiTauLeptonIsolationExtractor(const 
 
   typedef std::vector<std::string> vstring;
   vstring isoTypes_string;
-  if (  cfg.exists("sum") && cfg.exists("count") ||
+  if ( (cfg.exists("sum") && cfg.exists("count")) ||
       !(cfg.exists("sum") || cfg.exists("count")) ) {
     edm::LogError("PATDiTauLeptonIsolationExtractor") << " Need to specify either 'sum' or 'count' Configuration parameters !!";
     error_ = 1;

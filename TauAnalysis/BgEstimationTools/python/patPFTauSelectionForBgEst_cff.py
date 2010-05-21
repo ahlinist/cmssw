@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 tausTrkIsoLooseIsolationForBgEst = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag('selectedLayer1TausLeadTrkPtCumulative'),                                        
+    src = cms.InputTag('selectedPatTausLeadTrkPtCumulative'),                                        
     cut = cms.string('tauID("trackIsolation") > 0.5 | chargedHadronIso < 8.'),
     filter = cms.bool(False)
 )
@@ -18,20 +18,20 @@ tausEcalIsoLooseIsolationForBgEst = cms.EDFilter("PATTauSelector",
 
 tausAntiOverlapWithMuonsVetoLooseIsolationForBgEst = cms.EDFilter("PATTauAntiOverlapSelector",
     src = cms.InputTag('tausEcalIsoLooseIsolationForBgEst'),                                              
-    srcNotToBeFiltered = cms.VInputTag("selectedLayer1MuonsGlobalIndividual"),
+    srcNotToBeFiltered = cms.VInputTag("selectedPatMuonsGlobalIndividual"),
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           
 )
 
 tausAntiOverlapWithElectronsVetoLooseIsolationForBgEst = cms.EDFilter("PATTauAntiOverlapSelector",
     src = cms.InputTag('tausEcalIsoLooseIsolationForBgEst'),                                              
-    srcNotToBeFiltered = cms.VInputTag("selectedLayer1ElectronsTightIdIndividual"),
+    srcNotToBeFiltered = cms.VInputTag("selectedPatElectronsTightIdIndividual"),
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           
 )
 
 tausNoIsolationForBgEst = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag('selectedLayer1TausForMuTauPt20Cumulative'),                                        
+    src = cms.InputTag('selectedPatTausForMuTauPt20Cumulative'),                                        
     cut = cms.string('tauID("againstMuon") > 0.5'),
     filter = cms.bool(False)
 )

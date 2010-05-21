@@ -6,7 +6,7 @@ tauHistManager = cms.PSet(
       
     tauSource = cms.InputTag('cleanPatTaus'),
     vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
-    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+    jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),
   
     tauIndicesToPlot = cms.string('all'),
