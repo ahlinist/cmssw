@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.12 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.11 2010/03/29 17:07:14 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.12 2010/04/08 16:51:25 veelken Exp $
  *
  */
 
@@ -93,7 +93,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     }
 
     if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" ) {
-      doSVreco_ = true;
+      doSVreco_ = ( cfg.exists("doSVreco") ) ? cfg.getParameter<bool>("doSVreco") : true;
     } else if ( recoMode_ == "secondaryVertexFit" ) {
       edm::LogError ("ConfigError") 
 	<< " One or more of configuration parameters srcMET(" << srcMET_.label() << "),"

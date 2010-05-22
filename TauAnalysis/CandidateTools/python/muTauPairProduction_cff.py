@@ -17,6 +17,7 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     srcBeamSpot = cms.InputTag("offlineBeamSpot"),
     srcGenParticles = cms.InputTag('genParticles'),                  
     recoMode = cms.string(""),
+    doSVreco = cms.bool(True),                          
     collinearApproxMassCompatibility = cms.PSet(
         mZ = cms.PSet(
             resonanceMass = cms.double(91.2),
