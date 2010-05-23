@@ -10,15 +10,9 @@
 #include <TMath.h>
 
 CaloMEtHistManager::CaloMEtHistManager(const edm::ParameterSet& cfg)
-  : HistManagerBase(cfg)
+  : MEtHistManager(cfg)
 {
   //std::cout << "<CaloMEtHistManager::CaloMEtHistManager>:" << std::endl;
-
-  metSrc_ = cfg.getParameter<edm::InputTag>("metSource");
-  //std::cout << " metSrc = " << metSrc_ << std::endl;
-  
-  if ( cfg.exists("metSignificanceSource") ) metSignificanceSrc_ = cfg.getParameter<edm::InputTag>("metSignificanceSource");
-  //std::cout << " metSignificanceSrc = " << metSignificanceSrc_ << std::endl;
 }
 
 CaloMEtHistManager::~CaloMEtHistManager()
@@ -30,6 +24,8 @@ void CaloMEtHistManager::bookHistogramsImp()
 {
   //std::cout << "<CaloMEtHistManager::bookHistogramsImp>:" << std::endl;
   
+  MEtHistManager::bookHistogramsImp();
+
   hRAWplusJESplusMUONplusTAU_MEtPt_ = book1D("RAWplusJESplusMUONplusTAU_MEtPt", "RAWplusJESplusMUONplusTAU_MEtPt", 75, 0., 150.);
   hRAWplusJESplusMUONplusTAU_MEtPhi_ = book1D("RAWplusJESplusMUONplusTAU_MEtPhi", "RAWplusJESplusMUONplusTAU_MEtPhi", 36, -TMath::Pi(), +TMath::Pi());
   hRAWplusJESplusMUONplusTAU_MEtPx_ = book1D("RAWplusJESplusMUONplusTAU_MEtPx", "RAWplusJESplusMUONplusTAU_MEtPx", 150, -150., 150.);
@@ -107,15 +103,14 @@ void CaloMEtHistManager::bookHistogramsImp()
   hGenMEtDeltaRAWMEt_Phi_ = book1D("GenMEtDeltaRAWMEt_Phi", "GenMEtDeltaRAWMEt_Phi", 36, -TMath::Pi(), +TMath::Pi());
   hGenMEtDeltaRAWMEt_Px_ = book1D("GenMEtDeltaRAWMEt_Px", "GenMEtDeltaRAWMEt_Px", 150, -150.0, 150.0);
   hGenMEtDeltaRAWMEt_Py_ = book1D("GenMEtDeltaRAWMEt_Py", "GenMEtDeltaRAWMEt_Py", 150, -150.0, 150.0);
-  
-  hGenMEt_Pt_ = book1D("GenMEt_Pt", "GenMEt_Pt", 75, 0., 150.);
-  hGenMEt_Phi_ = book1D("GenMEt_Phi", "GenMEt_Phi", 36, -TMath::Pi(), +TMath::Pi());
 }
 
 void CaloMEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
   //std::cout << "<CaloMEtHistManager::fillHistogramsImp>:" << std::endl; 
+
+  MEtHistManager::fillHistogramsImp(evt, es, evtWeight);
 
   edm::Handle<std::vector<pat::MET> > patMETs;
   getCollection(evt, metSrc_, patMETs);
@@ -235,9 +230,6 @@ void CaloMEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Eve
       hGenMEtDeltaRAWplusJESplusMUONMEt_Phi_->Fill(RAWplusJESplusMUON_MEtPhi - theEventMET.genMET()->phi(), evtWeight);
       hGenMEtDeltaRAWplusJESMEt_Phi_->Fill(RAWplusJES_MEtPhi - theEventMET.genMET()->phi(), evtWeight);
       hGenMEtDeltaRAWMEt_Phi_->Fill(RAW_MEtPhi - theEventMET.genMET()->phi(), evtWeight);
-
-      hGenMEt_Pt_->Fill(theEventMET.genMET()->pt(), evtWeight);
-      hGenMEt_Phi_->Fill(theEventMET.genMET()->phi(), evtWeight);
     }
   } else {
     edm::LogError ("CaloMEtHistManager::fillHistograms") << " Exactly one MET object expected per event --> skipping !!";

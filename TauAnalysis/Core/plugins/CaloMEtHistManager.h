@@ -1,3 +1,4 @@
+
 #ifndef TauAnalysis_Core_CaloMEtHistManager_h  
 #define TauAnalysis_Core_CaloMEtHistManager_h
 
@@ -5,7 +6,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "TauAnalysis/Core/interface/HistManagerBase.h"
+#include "TauAnalysis/Core/interface/MEtHistManager.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
@@ -16,7 +17,7 @@
 #include <vector>
 #include <string>
 
-class CaloMEtHistManager : public HistManagerBase 
+class CaloMEtHistManager : public MEtHistManager
 {
  public:  
   explicit CaloMEtHistManager(const edm::ParameterSet&);
@@ -27,10 +28,6 @@ class CaloMEtHistManager : public HistManagerBase
 //    inherited from HistManagerBase class
   void bookHistogramsImp();
   void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
-
-//--- configuration parameters
-  edm::InputTag metSrc_;
-  edm::InputTag metSignificanceSrc_;
 
 //--- histograms
   MonitorElement* hRAWplusJESplusMUONplusTAU_MEtPt_;
@@ -96,8 +93,6 @@ class CaloMEtHistManager : public HistManagerBase
   MonitorElement* hGenMEtDeltaRAWMEt_Phi_;
   MonitorElement* hGenMEtDeltaRAWMEt_Px_;
   MonitorElement* hGenMEtDeltaRAWMEt_Py_;
-  MonitorElement* hGenMEt_Pt_;
-  MonitorElement* hGenMEt_Phi_;
 };
 
 #endif
