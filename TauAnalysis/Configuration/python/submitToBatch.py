@@ -62,7 +62,7 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 def submitToBatch(configFile = None, channel = None, sample = None,
                   replFunction = None, replacements = "",
                   job = "job", queue = "1nd", outputFilePath = None,
-                  type = None, resourceRequest = None, submit = "yes"):
+                  type = "mc", resourceRequest = None, submit = "yes"):
     # check that configFile, channel, sample, outputFilePath, and type
     # parameters are defined and non-empty
     if configFile is None:
