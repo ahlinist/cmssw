@@ -22,6 +22,14 @@
 #   http://x.y/z/cgi-bin/ptuview/src/somestring/
 #   http://x.y/z/cgi-bin/ptuview/asm/somestring/
 #
+# The CSV files can also be in some subdirectory of "data", in which
+# case the URL's will be
+#
+#   http://x.y/z/cgi-bin/ptuview/foo/src/somestring/
+#   http://x.y/z/cgi-bin/ptuview/foo/asm/somestring/
+#
+# for files in "data/foo" directory.
+#
 # There are also cross links between the two using the source code line and
 # URL's like:
 #
@@ -37,7 +45,7 @@
 # where as before "somestring" is up to you. The URL will then be:
 #   http://x.y/z/cgi-bin/ptuview/all/somestring/
 #
-#  $Id: ptuview,v 1.6 2010/04/15 09:45:46 mkortela Exp $
+#  $Id: ptuview,v 1.7 2010/04/16 13:21:21 mkortela Exp $
 #
 # Peter Elmer, Princeton University
 # 24 March, 2010
@@ -758,7 +766,7 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
             out.write("<td class=%s id=%s>%s%s%s</td>\n" % (classordered[iii],row[jjj],url2,rowtxt,url3))
           elif (titleordered[iii] == "Function"):
             funcnum = rownum-1
-            reportfile = os.path.join("data", "%d_src.csv" % funcnum)
+            reportfile = os.path.join(dirname(mycsvfile), "%d_src.csv" % funcnum)
             if os.path.exists(reportfile):
               lineno = ""
               if hdrmap.has_key("FirstLine"):
@@ -780,7 +788,21 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
   ifile.close()
   out.write("</tbody>\n")
   out.write("</table>\n")
-  
+
+
+def findReportType(args):
+  for t in ["src", "asm", "all"]:
+    try:
+      i = args.index(t)
+      return (i, t)
+    except ValueError:
+      pass
+
+  return (None, None)  
+
+def printError(out):
+  out.write("<h1>Invalid URL:</h1>\n")
+  out.write("</body></html>")
 
 def buildReply(out):
   out.write("<html>\n")
@@ -796,22 +818,36 @@ def buildReply(out):
     # The second field is the "name" of the profile
     # The thrid field flags line numbers to highlight
     relargs = relPath.split('/')
-    if ((len(relargs) >= 2) and ((relargs[0] == "src") or (relargs[0] == "asm") or (relargs[0] == "all")) and (relargs[1] != "")):
-      proftype = relargs[0] 
-      profname = relargs[1] 
+
+    (index, proftype) = findReportType(relargs)
+    
+    if index != None and (len(relargs) >= index+2) and (relargs[index+1] != ""):
+      profname = relargs[index+1] 
       dataPath = join(os.getcwd(), "data")
       mypath = normpath(dataPath)
+      subdir = ""
+      if index > 0:
+        subdir = normpath("/".join(relargs[0:index]))
+        mypath = os.path.join(dataPath, subdir)
+        #out.write("<p>%s</p>"%mypath) 
+        #out.write("<p>%s</p>"%subdir) 
+        if mypath.find(dataPath) < 0:
+          printError(out)
+          return
+              
       mycsvfile = mypath + "/" + profname + "_" + proftype + ".csv"
       out.write("<h1>%s profile - %s</h1>\n" % (proftype,profname))
       cgiscript = "/" + os.environ["SCRIPT_FILENAME"].replace(os.environ["DOCUMENT_ROOT"],"")
+      if len(subdir) > 0:
+        cgiscript += "/" + subdir
+      
       hlline = -1
-      if (len(relargs) >= 3):
-        hlline = relargs[2] 
+      if (len(relargs) >= index+3):
+        hlline = relargs[index+2] 
       getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out)
+      out.write("</body></html>")
     else:
-      out.write("<h1>Invalid URL:</h1>\n")
-  out.write("</body></html>")
-
+      printError(out)
 
 ###########################################################################
 
