@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.22 $
-  \date $Date: 2010/04/06 08:21:31 $
+  \version $Revision: 1.23 $
+  \date $Date: 2010/05/06 18:06:40 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -237,6 +237,10 @@ private:
         obj->SetStats( kFALSE );
         gStyle->SetPalette(1,0);
         obj->SetOption("colz");
+        if (o.name.find( "TkHMap_FractionOfBadChannels" )  != std::string::npos) {
+          obj->SetMinimum(0.0001);
+          obj->SetMaximum(1.0);
+        }
         return;
       }
       return;
@@ -340,78 +344,98 @@ private:
         return;
       }
     }
-
   void postDrawTProfile( TCanvas *c, const VisDQMObject &o )
-    {
-      TProfile* obj = dynamic_cast<TProfile*>( o.object );
-      assert( obj );
+  {
+    TProfile* obj = dynamic_cast<TProfile*>( o.object );
+    assert( obj );
 
-      std::string name = o.name.substr(o.name.rfind("/")+1);
+    std::string name = o.name.substr(o.name.rfind("/")+1);
 
-      TLine tl1; 
-      tl1.SetLineColor(3);
-      tl1.SetLineWidth(3);
+    TLine tl1;
+    tl1.SetLineColor(3);
+    tl1.SetLineWidth(3);
 
-      TLine tl2; 
-      tl2.SetLineColor(4);
-      tl2.SetLineWidth(3);
+    TLine tl2;
+    tl2.SetLineColor(4);
+    tl2.SetLineWidth(3);
 
-      float xmin = 0.0;
-      float xmax = obj->GetXaxis()->GetXmax();
-      float ymax = obj->GetMaximum()*1.2;
-        
-      float TIBLimit1 = 900.0;
-      float TOBLimit1 = 2000.0;
-      float TECLimit1 = 2250.0;
-      float TIDLimit1 = 320.0;
+    float xmin = 0.0;
+    float xmax = obj->GetXaxis()->GetXmax();
+    float ymax = obj->GetMaximum()*1.2;
 
-      float TIBLimit2 = 1787904.0;
-      float TOBLimit2 = 3303936.0;
-      float TECLimit2 = 3866624.0;
-      float TIDLimit2 = 565248.0;
+    float TIBLimit1 = 2500.0;
+    float TOBLimit1 = 3000.0;
+    float TECLimit1 = 2500.0;
+    float TIDLimit1 = 500.0;
 
-      if( name.find( "TotalNumberOfDigiProfile__" ) != std::string::npos )
-      {
-	if (obj->GetEntries() > 10.0) c->SetLogy(1);
-        c->SetGridy();
-        if (name.find( "TotalNumberOfDigiProfile__TIB" ) != std::string::npos) {
-          tl1.DrawLine(xmin, TIBLimit1,  xmax, TIBLimit1);
-          tl2.DrawLine(xmin, TIBLimit2*0.0001, xmax, TIBLimit2*0.0001);
-          tl2.DrawLine(xmin, TIBLimit2*0.001,  xmax, TIBLimit2*0.001);
-          obj->SetMinimum(TIBLimit1*0.1);           
-          obj->SetMaximum(TMath::Max(ymax, TIBLimit1*50));           
-        } else if (name.find( "TotalNumberOfDigiProfile__TOB" ) != std::string::npos) {
-          tl1.DrawLine(xmin, TOBLimit1,  xmax, TOBLimit1);
-          tl2.DrawLine(xmin, TOBLimit2*0.0001, xmax, TOBLimit2*0.0001);
-          tl2.DrawLine(xmin, TOBLimit2*0.001,  xmax, TOBLimit2*0.001);
-          obj->SetMinimum(TOBLimit1*0.1);
-          obj->SetMaximum(TMath::Max(ymax, TOBLimit1*50));                      
-        } else if (name.find( "TotalNumberOfDigiProfile__TEC" ) != std::string::npos) {
-          tl1.DrawLine(xmin, TECLimit1,  xmax, TECLimit1);
-          tl2.DrawLine(xmin, TECLimit2*0.0001, xmax, TECLimit2*0.0001);
-          tl2.DrawLine(xmin, TECLimit2*0.001,  xmax, TECLimit2*0.001);
-          obj->SetMinimum(TECLimit1*0.1);
-          obj->SetMaximum(TMath::Max(ymax, TECLimit1*50));                      
-        } else if (name.find( "TotalNumberOfDigiProfile__TID" ) != std::string::npos) { 
-          tl1.DrawLine(xmin, TIDLimit1,  xmax, TIDLimit1);
-          tl2.DrawLine(xmin, TIDLimit2*0.0001, xmax, TIDLimit2*0.0001);
-          tl2.DrawLine(xmin, TIDLimit2*0.001,  xmax, TIDLimit2*0.001);
-          obj->SetMinimum(TIDLimit1*0.1);
-          obj->SetMaximum(TMath::Max(ymax, TIDLimit1*50));                      
-       }
-        return;
-      }
-      if( name.find( "TotalNumberOfClusterProfile__" ) != std::string::npos )
+    float TIBLimit2 = 300.0;
+    float TOBLimit2 = 250.0;
+    float TECLimit2 = 400.0;
+    float TIDLimit2 = 80.0;
+    if( name.find( "TotalNumberOfDigiProfile__" ) != std::string::npos )
       {
         if (obj->GetEntries() > 10.0) c->SetLogy(1);
         c->SetGridy();
-        if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) tl1.DrawLine(xmin, 150.0, xmax, 150.0);
-        if (name.find( "TotalNumberOfClusterProfile__TOB" ) != std::string::npos) tl1.DrawLine(xmin, 150.0, xmax, 150.0);
-        if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) tl1.DrawLine(xmin, 300.0, xmax, 300.0);
-        if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) tl1.DrawLine(xmin, 100.0, xmax, 100.0);
+        if (name.find( "TotalNumberOfDigiProfile__TIB" ) != std::string::npos) {
+	  tl1.DrawLine(xmin, TIBLimit1,     xmax, TIBLimit1);
+          tl2.DrawLine(xmin, TIBLimit1*0.5, xmax, TIBLimit1*0.5);
+          tl2.DrawLine(xmin, TIBLimit1*2.0, xmax, TIBLimit1*2.0);
+          obj->SetMinimum(TIBLimit1*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TIBLimit1*50));
+        } else if (name.find( "TotalNumberOfDigiProfile__TOB" ) != std::string::npos) {
+          tl1.DrawLine(xmin, TOBLimit1,     xmax, TOBLimit1);
+          tl2.DrawLine(xmin, TOBLimit1*0.5, xmax, TOBLimit1*0.5);
+          tl2.DrawLine(xmin, TOBLimit1*2.0, xmax, TOBLimit1*2.0);
+          obj->SetMinimum(TOBLimit1*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TOBLimit1*50));
+        } else if (name.find( "TotalNumberOfDigiProfile__TEC" ) != std::string::npos) {
+          tl1.DrawLine(xmin, TECLimit1,     xmax, TECLimit1);
+          tl2.DrawLine(xmin, TECLimit1*0.5, xmax, TECLimit1*0.5);
+          tl2.DrawLine(xmin, TECLimit1*2.0, xmax, TECLimit1*2.0);
+          obj->SetMinimum(TECLimit1*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TECLimit1*50));
+        } else if (name.find( "TotalNumberOfDigiProfile__TID" ) != std::string::npos) {
+          tl1.DrawLine(xmin, TIDLimit1,     xmax, TIDLimit1);
+          tl2.DrawLine(xmin, TIDLimit1*0.5, xmax, TIDLimit1*0.5);
+          tl2.DrawLine(xmin, TIDLimit1*2.0, xmax, TIDLimit1*2.0);
+          obj->SetMinimum(TIDLimit1*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TIDLimit1*50));
+	}
         return;
       }
-    }
+    if( name.find( "TotalNumberOfClusterProfile__" ) != std::string::npos )
+      {
+        if (obj->GetEntries() > 10.0) c->SetLogy(1);
+        c->SetGridy();
+        if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) {
+          tl1.DrawLine(xmin, TIBLimit2,     xmax, TIBLimit2);
+          tl2.DrawLine(xmin, TIBLimit2*0.5, xmax, TIBLimit2*0.5);
+          tl2.DrawLine(xmin, TIBLimit2*2.0, xmax, TIBLimit2*2.0);
+          obj->SetMinimum(TIBLimit2*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TIBLimit2*50));
+        } else if (name.find( "TotalNumberOfClusterProfile__TOB" ) != std::string::npos) {
+          tl1.DrawLine(xmin, TOBLimit2,     xmax, TOBLimit2);
+          tl2.DrawLine(xmin, TOBLimit2*0.5, xmax, TOBLimit2*0.5);
+          tl2.DrawLine(xmin, TOBLimit2*2.0, xmax, TOBLimit2*2.0);
+          obj->SetMinimum(TOBLimit2*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TOBLimit2*50));
+        } else if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) {
+          tl1.DrawLine(xmin, TECLimit2,     xmax, TECLimit2);
+          tl2.DrawLine(xmin, TECLimit2*0.5, xmax, TECLimit2*0.5);
+          tl2.DrawLine(xmin, TECLimit2*2.0, xmax, TECLimit2*2.0);
+          obj->SetMinimum(TECLimit2*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TECLimit2*50));
+        }  else if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) {
+          tl1.DrawLine(xmin, TIDLimit2,     xmax, TIDLimit2);
+          tl2.DrawLine(xmin, TIDLimit2*0.5, xmax, TIDLimit2*0.5);
+          tl2.DrawLine(xmin, TIDLimit2*2.0, xmax, TIDLimit2*2.0);
+          obj->SetMinimum(TIDLimit2*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TIDLimit2*50));
+        }
+        return;
+      }
+  }
+
 };
 
 static SiStripRenderPlugin instance;
