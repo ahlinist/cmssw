@@ -27,10 +27,17 @@
 #
 # 
 # The number of functions to report can be reduced by 
-# $ ptuanalyse -e basic_samplint01 -t 50
+# $ ptuanalyse -e basic_sampling01 -t 50
 #
 # By default the threshold is 95 % (-t 95), which means to "view
 # hotspots contributing at least 95 % of the experiment in total".
+#
+#
+# By default the output CSV files are written to CWD. Some other
+# directory can be given by
+# $ ptuanalyse -e basic_sampling01 -o basic_csv_dir
+#
+# If the directory doesn't exist, it is created.
 #
 # 
 # The script can be used to filter the counters of other programs than
@@ -40,12 +47,13 @@
 # A short help of the parameters is shown with '-h'.
 #
 #
-#  $Id: ptuanalyse,v 1.2 2010/04/16 13:23:12 mkortela Exp $
+#  $Id: ptuanalyse,v 1.3 2010/04/17 07:40:53 mkortela Exp $
 #
 # Matti Kortelainen, Helsinki Institute of Physics
 # 15 April 2010
 ##############################################################################
 
+import os
 import sys
 import subprocess
 import re
@@ -73,6 +81,13 @@ class Function:
     def getFirstLine(self):
         return self.firstLine
 
+class VtsaError:
+    def __init__(self, err):
+        self.err = err
+
+    def __str__(self):
+        return self.err
+
 class Vtsa:
     def __init__(self, opts):
         self.expdir = opts.expdir
@@ -82,6 +97,13 @@ class Vtsa:
                                    "-n=1000000", "--granularity=function", "--show-events-as=samples", "--threads-match=time", "-er", "--filter", "process,cmsRun"],
                         "all": ["--aggregate=e", "--csv"],
                         "src": ["--aggregate=p", "--sv", "-ds", "windows", "--xml"]}
+
+        self.directory = opts.output
+        if len(self.directory) > 0:
+            if not os.path.exists(self.directory):
+                os.makedirs(self.directory)            
+            elif not os.path.isdir(self.directory):
+                raise VtsaError("Not a directory '%s'" % self.directory) 
 
         self.dataDescriptionIndex_re = re.compile("//@dataDescriptions\.(?P<index>\d+)")
         self.sourceLine_re = re.compile("//@sourceFiles\.0/@sourceLines\.(?P<line>\d+)")
@@ -139,7 +161,7 @@ class Vtsa:
         if not ok:
             return
         
-        output = open(prefix+file, "w")
+        output = open(os.path.join(self.directory, prefix+file), "w")
 
         # The headers of "all" input which are needed for per-function
         # reports. Define also (string) transformations to be done for
@@ -302,12 +324,12 @@ class Vtsa:
         (src, asm) = self.buildSrcReport(function)
 
         if src != None:
-            file = open(prefix+"%d_src.csv" % i, "w")
+            file = open(os.path.join(self.directory, prefix+"%d_src.csv" % i), "w")
             file.write(src)
             file.close()
 
         if asm != None:
-            file = open(prefix+"%d_asm.csv" % i, "w")
+            file = open(os.path.join(self.directory, prefix+"%d_asm.csv" % i), "w")
             file.write(asm)
             file.close()
     
@@ -318,12 +340,14 @@ if __name__ == "__main__":
                       help="PTU Experiment directory")
     parser.add_option("--all", "-a", dest="allname", type="string", default="basic_sampling",
                       help='Name of "all" report; _all.csv is appended to the name (default: "basic_sampling"')
-    parser.add_option("--prefix", "-p", dest="prefix", type="string", default="",
-                      help='Prefix of report files (default: "")')
+#    parser.add_option("--prefix", "-p", dest="prefix", type="string", default="",
+#                      help='Prefix of report files (default: "")')
     parser.add_option("--threshold", "-t", dest="threshold", type="int", default=95,
                       help='Threshold for displayed hotspots (see the same option of vtsaview)  (default: 95)')
     parser.add_option("--filter", dest="filter", type="string", default="cmsRun",
                       help='Filter the given process (default: "cmsRun")')
+    parser.add_option("--output", "-o", dest="output", default="",
+                      help='Destination directory (default: CWD)')
     (opts, args) = parser.parse_args()
 
     if opts.expdir == None:
@@ -331,7 +355,12 @@ if __name__ == "__main__":
 
     all_file = opts.allname + "_all.csv"
 
-    vtsa = Vtsa(opts)
-    print "Building function reports"
-    vtsa.buildAllReport(all_file, opts.prefix)
-    print "Done"
+    try:
+        vtsa = Vtsa(opts)
+        print "Building function reports"
+        vtsa.buildAllReport(all_file, opts.prefix)
+        print "Done"
+    except OSError, e:
+        print e
+    except VtsaError, e:
+        print e
