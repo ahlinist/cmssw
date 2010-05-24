@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.27 2010/05/17 10:47:09 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.28 2010/05/20 13:19:50 covarell Exp $
 //
 //
 
@@ -827,7 +827,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   if (isMuMatched && _removeMuons) return;
 
   // PAT trigger matches (new way)
-
+  
   // PUT HERE THE *LAST FILTERS* OF THE BITS YOU LIKE
   static const unsigned int NTRIGGERS = 5;
   // MC 8E29
@@ -902,9 +902,8 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   }  
   
   // Signal / background J/psi 	
-  if (muon1->charge()*muon2->charge() < 0) {   
+  if (muon1->charge()*muon2->charge() < 0) { 
     if (isMatched) {
-
       if (theCat == 0) {
 	hMcRightGlbGlbMuMass->Fill(theMass);       
 	hMcRightGlbGlbMuLife->Fill(theCtau);
@@ -1254,11 +1253,14 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
 
+  TrackRef gTrack = aMuon->globalTrack();
+  const reco::HitPattern& q = gTrack->hitPattern();
+
   return (
 	  //aMuon->pt() > 1.0 && aMuon->p() > 2.5 &&
 	  iTrack->found() > 11 &&
-	  aMuon->globalTrack()->chi2()/aMuon->globalTrack()->ndof() < 20.0 &&
-          p.numberOfValidMuonHits() > 0 &&
+	  gTrack->chi2()/gTrack->ndof() < 20.0 &&
+          q.numberOfValidMuonHits() > 0 &&
 	  // (p.numberOfValidPixelHits() > 2 || 
 	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
           iTrack->chi2()/iTrack->ndof() < 4.0 &&
