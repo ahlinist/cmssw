@@ -221,4 +221,11 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
+#
+# NOTE: need to delete empty sequence produced by call to "switchJetCollection"
+#       in order to avoid error when calling "process.dumpPython"
+#      ( cf. https://hypernews.cern.ch/HyperNews/CMS/get/physTools/1688/1/1/1/1/1.html )
+#
+#del process.patJetMETCorrections
 #print process.dumpPython()
+
