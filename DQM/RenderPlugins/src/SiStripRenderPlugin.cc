@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.23 $
-  \date $Date: 2010/05/06 18:06:40 $
+  \version $Revision: 1.24 $
+  \date $Date: 2010/05/24 18:30:32 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -189,14 +189,14 @@ private:
       if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(2.0);
+        obj->SetMaximum(2.5);
         obj->SetMinimum(-0.1);
         return;
       }
       if( o.name.find( "Summary_MeanNumberOfClusters" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(0.3);
+        obj->SetMaximum(1.0);
         obj->SetMinimum(-0.001);
         return;
       }
