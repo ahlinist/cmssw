@@ -11,7 +11,10 @@ process.load('Configuration.StandardSequences.GeometryExtended_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
+process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True),
+    fileMode = cms.untracked.string('MERGE'),
+)
 
 ### global tag
 process.GlobalTag.globaltag = "GR_R_35X_V8B::All"
@@ -20,6 +23,7 @@ process.GlobalTag.globaltag = "GR_R_35X_V8B::All"
 
 ### source
 process.source = cms.Source("PoolSource",
+    inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMConverter_*_*"),
     fileNames = cms.untracked.vstring(
         '/store/data/Commissioning10/MinimumBias/USER/v9/000/134/721/7CF8C522-7F56-DF11-94EA-003048D46066.root',
     )
