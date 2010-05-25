@@ -3,11 +3,11 @@ import copy
 
 from TauAnalysis.DQMTools.tools.composeSubDirectoryName import composeSubDirectoryName
 
-from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
-from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
-from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
-from TauAnalysis.Configuration.analyzeWtoTauNu_cfi import *
-from TauAnalysis.Configuration.analyzeAHtoMuTau_cfi import *
+##from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
+##from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
+##from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
+##from TauAnalysis.Configuration.analyzeWtoTauNu_cfi import *
+##from TauAnalysis.Configuration.analyzeAHtoMuTau_cfi import *
 
 #--------------------------------------------------------------------------------
 # generic utility functions for factorization
