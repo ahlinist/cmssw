@@ -48,6 +48,7 @@ typedef struct
   int   lumi;
   int   bunch;
   int   njets;
+  int   njetsHt;
   int   passLooseHcalNoise;
   int   passTightHcalNoise;
   int   nPV;
@@ -68,6 +69,7 @@ typedef struct
   float met_over_sumet_NoHF;
   float eemf;
   float echf;
+  float ht;
   float pthat;
   float weight;
 } EVENT_VAR;
