@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: SmoothGenericPdfWrapper.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
+ * $Id: SmoothGenericPdfWrapper.h,v 1.1 2010/05/26 15:00:27 veelken Exp $
  *
  */
 
@@ -34,9 +34,6 @@ class SmoothGenericPdfWrapper : public SmoothPdfWrapperBase
 
  private:
   std::string formula_;
-
-  std::map<std::string, RooRealVar*> parameter_;
-  std::map<std::string, double> parameter0_;
 };
 
 #endif  

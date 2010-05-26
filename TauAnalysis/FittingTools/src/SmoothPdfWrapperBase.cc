@@ -17,9 +17,9 @@ SmoothPdfWrapperBase::SmoothPdfWrapperBase(const edm::ParameterSet& cfg)
     pdf_(0),
     templateHist_(0)
 {
-  fitOptions.Add(new RooCmdArg(RooFit::PrintLevel(-1)));
-  fitOptions.Add(new RooCmdArg(RooFit::PrintEvalErrors(false)));
-  fitOptions.Add(new RooCmdArg(RooFit::Warnings(false)));
+  fitOptions_.Add(new RooCmdArg(RooFit::PrintLevel(-1)));
+  fitOptions_.Add(new RooCmdArg(RooFit::PrintEvalErrors(false)));
+  fitOptions_.Add(new RooCmdArg(RooFit::Warnings(false)));
 }
 
 SmoothPdfWrapperBase::~SmoothPdfWrapperBase()
@@ -29,12 +29,12 @@ SmoothPdfWrapperBase::~SmoothPdfWrapperBase()
   delete pdf_;
 }
 
-void RooRealVar* SmoothPdfWrapperBase::makeRooRealVar(const char* name, const char* title, const edm::ParameterSet& cfg)
+RooRealVar* SmoothPdfWrapperBase::makeRooRealVar(const char* name, const char* title, const edm::ParameterSet& cfg)
 {
 //--- check that parameter does not already exist
   if ( parameters_.find("name") != parameters_.end() ) {
     edm::LogError ("makeRooRealVar") << " Parameter with name = " << name << " already exists !!";
-    return parameters_[name];
+    return parameters_[name]->pdfCoeff_;
   }
 
   double initial = cfg.getParameter<double>("initial");
@@ -64,11 +64,11 @@ void SmoothPdfWrapperBase::fit()
     return;
   }
 
-  pdf_->fitTo(*templateHist_, fitOptions);
+  pdf_->fitTo(*templateHist_, fitOptions_);
 
   if ( !fitSimultaneously_ ) {
     for ( std::map<std::string, parameterType*>::iterator parameter = parameters_.begin();
-	  parameter != parameters_.end(); ++paremeter ) {
+	  parameter != parameters_.end(); ++parameter ) {
       if ( parameter->second->uncertainty_ <= 0. ) parameter->second->pdfCoeff_->setConstant();
     }
   }
@@ -77,7 +77,7 @@ void SmoothPdfWrapperBase::fit()
 void SmoothPdfWrapperBase::reinitializeParameter()
 {
   for ( std::map<std::string, parameterType*>::iterator parameter = parameters_.begin();
-	parameter != parameters_.end(); ++paremeter ) {
+	parameter != parameters_.end(); ++parameter ) {
     parameter->second->pdfCoeff_->setVal(parameter->second->initial_);
   }
 }

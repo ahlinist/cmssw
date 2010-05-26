@@ -22,7 +22,7 @@ SmoothGenericPdfWrapper::SmoothGenericPdfWrapper(const edm::ParameterSet& cfg)
 
 SmoothGenericPdfWrapper::~SmoothGenericPdfWrapper()
 {
-  for ( std::map<std::string, parameterType*>::iterator it = parameters_.begin();
+  for ( std::map<std::string, SmoothPdfWrapperBase::parameterType*>::iterator it = parameters_.begin();
 	it != parameters_.end(); ++it ) {
     delete it->second;
   }
@@ -31,9 +31,10 @@ SmoothGenericPdfWrapper::~SmoothGenericPdfWrapper()
 void SmoothGenericPdfWrapper::initialize()
 {
   TObjArray pdfCoeffCollection;
-  for ( std::map<std::string, RooRealVar*>::iterator parameter = parameter_.begin();
-	parameter != parameter_.end(); ++parameter ) {
-    pdfCoeffCollection.Add(parameter->second);
+  
+  for ( std::map<std::string, SmoothPdfWrapperBase::parameterType*>::iterator parameter = parameters_.begin();
+	parameter != parameters_.end(); ++parameter ) {
+    pdfCoeffCollection.Add(parameter->second->pdfCoeff_);
   }
 
   pdfCoeffCollection.Add(x_);
