@@ -538,10 +538,16 @@ finalSamplePlots = \
         name = "finalSamplePlots_dPhiMuonTau"
     ),
     drawJobConfigEntry(
-        meName = 'CaloMEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
-        title = "MET (final Event sample)",
+        meName = 'CaloMEtQuantities/MEtPt',
+        title = "CaloMET (final Event sample)",
         xAxis = 'Pt',
-        name = "finalSamplePlots_met"
+        name = "finalSamplePlots_caloMEt"
+    ),
+    drawJobConfigEntry(
+        meName = 'PFMEtQuantities/MEtPt',
+        title = "PFMET (final Event sample)",
+        xAxis = 'Pt',
+        name = "finalSamplePlots_pfMEt"
     ),
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/PzetaDiff',
