@@ -64,10 +64,10 @@ processAHtoMuTau_WplusJetsSum.config_dqmFileLoader.inputFileNames = \
 processAHtoMuTau_Vqq = copy.deepcopy(process_Vqq)
 processAHtoMuTau_Vqq.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsAHtoMuTau_Vqq_7TeV_part01.root',
-    'plotsAHtoMuTau_Vqq_7TeV_part02.root',
+    #'plotsAHtoMuTau_Vqq_7TeV_part02.root',
     'plotsAHtoMuTau_Vqq_7TeV_part03.root',
     'plotsAHtoMuTau_Vqq_7TeV_part04.root',
-    'plotsAHtoMuTau_Vqq_7TeV_part05.root',
+    #'plotsAHtoMuTau_Vqq_7TeV_part05.root',
     'plotsAHtoMuTau_Vqq_7TeV_part06.root',
     'plotsAHtoMuTau_Vqq_7TeV_part07.root',
     'plotsAHtoMuTau_Vqq_7TeV_part08.root',
@@ -78,7 +78,7 @@ processAHtoMuTau_Vqq.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsAHtoMuTau_Vqq_7TeV_part13.root',
     'plotsAHtoMuTau_Vqq_7TeV_part14.root',
     'plotsAHtoMuTau_Vqq_7TeV_part15.root',
-    'plotsAHtoMuTau_Vqq_7TeV_part16.root',
+    #'plotsAHtoMuTau_Vqq_7TeV_part16.root',
     'plotsAHtoMuTau_Vqq_7TeV_part17.root',
     'plotsAHtoMuTau_Vqq_7TeV_part18.root',
     'plotsAHtoMuTau_Vqq_7TeV_part19.root',
