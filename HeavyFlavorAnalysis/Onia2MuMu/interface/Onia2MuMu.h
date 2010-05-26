@@ -51,7 +51,7 @@
 #include "DataFormats/L1Trigger/interface/L1MuonParticleFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "DataFormats/RecoCandidate/interface/RecoChargedCandidate.h"
 #include "DataFormats/RecoCandidate/interface/RecoChargedCandidateFwd.h"
