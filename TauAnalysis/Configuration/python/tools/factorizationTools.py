@@ -3,12 +3,6 @@ import copy
 
 from TauAnalysis.DQMTools.tools.composeSubDirectoryName import composeSubDirectoryName
 
-##from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
-##from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
-##from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
-##from TauAnalysis.Configuration.analyzeWtoTauNu_cfi import *
-##from TauAnalysis.Configuration.analyzeAHtoMuTau_cfi import *
-
 #--------------------------------------------------------------------------------
 # generic utility functions for factorization
 # usable for all channels
@@ -206,44 +200,45 @@ def enableFactorization_makeZtoMuTauPlots(process,
         modName_addZtoMuTau_smSum = "addZtoMuTau_smSum",                                
         seqName_addZtoMuTau = "addZtoMuTau",
         pyObjectLabel = ""):
+    process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cfi")
 
     # define list of event selection criteria on "tight" muon isolation branch of the analysis,
     # **before** applying factorization of muon track + ECAL isolation efficiencies
     evtSelZtoMuTau_factorizedTight = [
-        genPhaseSpaceCut,
-        evtSelTrigger,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-        evtSelGlobalMuon,
-        evtSelMuonEta,
-        evtSelMuonPt,
-        evtSelTauAntiOverlapWithMuonsVeto,
-        evtSelTauEta,
-        evtSelTauPt,
-        evtSelMuonTrkIso,
-        evtSelMuonEcalIso
+        process.genPhaseSpaceCut,
+        process.evtSelTrigger,
+        process.evtSelPrimaryEventVertex,
+        process.evtSelPrimaryEventVertexQuality,
+        process.evtSelPrimaryEventVertexPosition,
+        process.evtSelGlobalMuon,
+        process.evtSelMuonEta,
+        process.evtSelMuonPt,
+        process.evtSelTauAntiOverlapWithMuonsVeto,
+        process.evtSelTauEta,
+        process.evtSelTauPt,
+        process.evtSelMuonTrkIso,
+        process.evtSelMuonEcalIso
     ]
 
     # define list of event selection criteria on "loose" muon isolation branch of the analysis,
     # **after** applying factorization of muon track + ECAL isolation efficiencies
     evtSelZtoMuTau_factorizedLoose = [
-        evtSelMuonAntiPion,
-        evtSelMuonTrkIP,
-        evtSelTauLeadTrk,
-        evtSelTauLeadTrkPt,
-        evtSelTauTrkIso,
-        evtSelTauEcalIso,
-        evtSelTauProng,
-        evtSelTauCharge,
-        evtSelTauMuonVeto,
-        evtSelTauElectronVeto,
-        evtSelDiTauCandidateForMuTauAntiOverlapVeto,
-        evtSelDiTauCandidateForMuTauZeroCharge,
-        evtSelDiTauCandidateForMuTauAcoplanarity12,
-        evtSelDiTauCandidateForMuTauMt1MET,
-        evtSelDiTauCandidateForMuTauPzetaDiff,
-        evtSelDiMuPairZmumuHypothesisVeto
+        process.evtSelMuonAntiPion,
+        process.evtSelMuonTrkIP,
+        process.evtSelTauLeadTrk,
+        process.evtSelTauLeadTrkPt,
+        process.evtSelTauTrkIso,
+        process.evtSelTauEcalIso,
+        process.evtSelTauProng,
+        process.evtSelTauCharge,
+        process.evtSelTauMuonVeto,
+        process.evtSelTauElectronVeto,
+        process.evtSelDiTauCandidateForMuTauAntiOverlapVeto,
+        process.evtSelDiTauCandidateForMuTauZeroCharge,
+        process.evtSelDiTauCandidateForMuTauAcoplanarity12,
+        process.evtSelDiTauCandidateForMuTauMt1MET,
+        process.evtSelDiTauCandidateForMuTauPzetaDiff,
+        process.evtSelDiMuPairZmumuHypothesisVeto
     ]
 
     # defines names of MonitorElements used as numerator and denominator
@@ -334,41 +329,42 @@ def enableFactorization_makeZtoElecMuPlots(process,
         modName_addZtoElecMu_smSum = "addZtoElecMu_smSum",                                
         seqName_addZtoElecMu = "addZtoElecMu",
         pyObjectLabel = ""):
-
+    process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cfi")
+    
     # define list of event selection criteria on "tight" muon isolation branch of the analysis,
     # **before** applying factorization of muon track + ECAL isolation efficiencies
     evtSelZtoElecMu_factorizedTight = [
-        genPhaseSpaceCut,
-        evtSelTrigger,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-        evtSelTightElectronId,
-        evtSelElectronAntiCrack,
-        evtSelElectronEta,
-        evtSelElectronPt,
-        evtSelGlobalMuon,
-        evtSelMuonEta,
-        evtSelMuonPt,
-        evtSelElectronTrkIso,
-        evtSelElectronEcalIso
+        process.genPhaseSpaceCut,
+        process.evtSelTrigger,
+        process.evtSelPrimaryEventVertex,
+        process.evtSelPrimaryEventVertexQuality,
+        process.evtSelPrimaryEventVertexPosition,
+        process.evtSelTightElectronId,
+        process.evtSelElectronAntiCrack,
+        process.evtSelElectronEta,
+        process.evtSelElectronPt,
+        process.evtSelGlobalMuon,
+        process.evtSelMuonEta,
+        process.evtSelMuonPt,
+        process.evtSelElectronTrkIso,
+        process.evtSelElectronEcalIso
     ]
 
     # define list of event selection criteria on "loose" muon isolation branch of the analysis,
     # **after** applying factorization of muon track + ECAL isolation efficiencies
     evtSelZtoElecMu_factorizedLoose = [
-        evtSelElectronTrk,
-        evtSelElectronTrkIP,
-        evtSelMuonTrkIso,
-        evtSelMuonEcalIso,
-        evtSelMuonAntiPion,
-        evtSelMuonTrkIP,
-        evtSelDiTauCandidateForElecMuAntiOverlapVeto,
-        evtSelDiTauCandidateForElecMuZeroCharge,
-        evtSelDiTauCandidateForElecMuAcoplanarity12,
-        evtSelDiTauCandidateForElecMuMt1MET,
-        evtSelDiTauCandidateForElecMuMt2MET,
-        evtSelDiTauCandidateForElecMuPzetaDiff
+        process.evtSelElectronTrk,
+        process.evtSelElectronTrkIP,
+        process.evtSelMuonTrkIso,
+        process.evtSelMuonEcalIso,
+        process.evtSelMuonAntiPion,
+        process.evtSelMuonTrkIP,
+        process.evtSelDiTauCandidateForElecMuAntiOverlapVeto,
+        process.evtSelDiTauCandidateForElecMuZeroCharge,
+        process.evtSelDiTauCandidateForElecMuAcoplanarity12,
+        process.evtSelDiTauCandidateForElecMuMt1MET,
+        process.evtSelDiTauCandidateForElecMuMt2MET,
+        process.evtSelDiTauCandidateForElecMuPzetaDiff
     ]
 
     # defines names of MonitorElements used as numerator and denominator
@@ -445,47 +441,48 @@ def enableFactorization_runZtoElecTau(process):
     process.p.replace(process.analyzeZtoElecTauEvents, process.analyzeZtoElecTauEvents_factorized)
 
 def enableFactorization_makeZtoElecTauPlots(process):
-
+    process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cfi")
+    
     # define list of event selection criteria on "tight" electron isolation branch of the analysis,
     # **before** applying factorization of electron track + ECAL isolation efficiencies
     evtSelZtoElecTau_factorizedTight = [
-        genPhaseSpaceCut,
-        evtSelTrigger,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-        evtSelTightElectronId,
-        evtSelElectronAntiCrack,
-        evtSelElectronEta,
-        evtSelElectronPt,
-        evtSelTauAntiOverlapWithElectronsVeto,
-        evtSelTauEta,
-        evtSelTauPt,
-        evtSelElectronTrkIso,
-        evtSelElectronEcalIso
+        process.genPhaseSpaceCut,
+        process.evtSelTrigger,
+        process.evtSelPrimaryEventVertex,
+        process.evtSelPrimaryEventVertexQuality,
+        process.evtSelPrimaryEventVertexPosition,
+        process.evtSelTightElectronId,
+        process.evtSelElectronAntiCrack,
+        process.evtSelElectronEta,
+        process.evtSelElectronPt,
+        process.evtSelTauAntiOverlapWithElectronsVeto,
+        process.evtSelTauEta,
+        process.evtSelTauPt,
+        process.evtSelElectronTrkIso,
+        process.evtSelElectronEcalIso
     ]
 
     # define list of event selection criteria on "loose" electron isolation branch of the analysis,
     # **after** applying factorization of electron track + ECAL isolation efficiencies
     evtSelZtoElecTau_factorizedLoose = [
-        evtSelElectronTrk,
-        evtSelElectronTrkIP,
-        evtSelElectronConversionVeto,
-        evtSelTauLeadTrk,
-        evtSelTauLeadTrkPt,
-        evtSelTauTrkIso,
-        evtSelTauEcalIso,
-        evtSelTauProng,
-        evtSelTauCharge,
-        evtSelTauElectronVeto,
-        evtSelTauEcalCrackVeto,
-        evtSelTauMuonVeto,
-        evtSelDiTauCandidateForElecTauAntiOverlapVeto,
-        evtSelDiTauCandidateForElecTauZeroCharge,
-        evtSelDiTauCandidateForElecTauAcoplanarity12,
-        evtSelDiTauCandidateForElecTauMt1MET,
-        evtSelDiTauCandidateForElecTauPzetaDiff,
-        evtSelElecTauPairZeeHypothesisVeto
+        process.evtSelElectronTrk,
+        process.evtSelElectronTrkIP,
+        process.evtSelElectronConversionVeto,
+        process.evtSelTauLeadTrk,
+        process.evtSelTauLeadTrkPt,
+        process.evtSelTauTrkIso,
+        process.evtSelTauEcalIso,
+        process.evtSelTauProng,
+        process.evtSelTauCharge,
+        process.evtSelTauElectronVeto,
+        process.evtSelTauEcalCrackVeto,
+        process.evtSelTauMuonVeto,
+        process.evtSelDiTauCandidateForElecTauAntiOverlapVeto,
+        process.evtSelDiTauCandidateForElecTauZeroCharge,
+        process.evtSelDiTauCandidateForElecTauAcoplanarity12,
+        process.evtSelDiTauCandidateForElecTauMt1MET,
+        process.evtSelDiTauCandidateForElecTauPzetaDiff,
+        process.evtSelElecTauPairZeeHypothesisVeto
     ]
 
     # defines names of MonitorElements used as numerator and denominator
@@ -663,32 +660,33 @@ def enableFactorization_runWtoTauNu(process):
     process.p.replace(process.analyzeWtoTauNuEvents, process.analyzeWtoTauNuEvents_factorized)
 
 def enableFactorization_makeWtoTauNuPlots(process):
+    process.load("TauAnalysis.Configuration.analyzeWtoTauNu_cfi")
 
     # define list of event selection criteria on "tight" tau isolation branch of the analysis,
     # **before** applying factorization of tauTaNC+prong+charge efficiencies
     evtSelWtoTauNu_factorizedTight = [
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-        evtSelTauEta,
-        evtSelTauPt,
-        evtSelMetPt,
-        evtSelTauLeadTrk,
-        evtSelTauLeadTrkPt,
-        evtSelTauTaNC,
-        evtSelTauProng,
-        evtSelTauCharge
-        ]
+        process.evtSelPrimaryEventVertex,
+        process.evtSelPrimaryEventVertexQuality,
+        process.evtSelPrimaryEventVertexPosition,
+        process.evtSelTauEta,
+        process.evtSelTauPt,
+        process.evtSelMetPt,
+        process.evtSelTauLeadTrk,
+        process.evtSelTauLeadTrkPt,
+        process.evtSelTauTaNC,
+        process.evtSelTauProng,
+        process.evtSelTauCharge
+    ]
 
     # define list of event selection criteria on "loose" muon isolation branch of the analysis,
     # **after** applying factorization of muon track + ECAL isolation efficiencies
     evtSelWtoTauNu_factorizedLoose = [
-        evtSelTauMuonVeto,
-        evtSelTauElectronVeto,
-        evtSelTauEcalCrackVeto,
-        evtSelCentralJetVeto,
-        evtSelExplicitElectronVeto,
-        evtSelRecoilEnergyFromCaloTowers
+        process.evtSelTauMuonVeto,
+        process.evtSelTauElectronVeto,
+        process.evtSelTauEcalCrackVeto,
+        process.evtSelCentralJetVeto,
+        process.evtSelExplicitElectronVeto,
+        process.evtSelRecoilEnergyFromCaloTowers
     ]
 
     # defines names of MonitorElements used as numerator and denominator
@@ -751,45 +749,46 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         modName_addAHtoMuTau_smSum = "addAHtoMuTau_smSum",                                   
         seqName_addAHtoMuTau = "addAHtoMuTau",
         pyObjectLabel = ""):
+    process.load("TauAnalysis.Configuration.analyzeAHtoMuTau_cfi")
 
     # define list of event selection criteria on "tight" muon isolation branch of the analysis,
     # **before** applying factorization of muon track + ECAL isolation efficiencies
     evtSelAHtoMuTau_factorizedTight = [
-        genPhaseSpaceCut,
-        evtSelTrigger,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-        evtSelGlobalMuon,
-        evtSelMuonEta,
-        evtSelMuonPt,
-        evtSelTauAntiOverlapWithMuonsVeto,
-        evtSelTauEta,
-        evtSelTauPt,
-        evtSelMuonTrkIso,
-        evtSelMuonEcalIso
+        process.genPhaseSpaceCut,
+        process.evtSelTrigger,
+        process.evtSelPrimaryEventVertex,
+        process.evtSelPrimaryEventVertexQuality,
+        process.evtSelPrimaryEventVertexPosition,
+        process.evtSelGlobalMuon,
+        process.evtSelMuonEta,
+        process.evtSelMuonPt,
+        process.evtSelTauAntiOverlapWithMuonsVeto,
+        process.evtSelTauEta,
+        process.evtSelTauPt,
+        process.evtSelMuonTrkIso,
+        process.evtSelMuonEcalIso
     ]
 
     # define list of event selection criteria on "loose" muon isolation branch of the analysis,
     # **after** applying factorization of muon track + ECAL isolation efficiencies
     evtSelAHtoMuTau_factorizedLoose = [
-        evtSelMuonAntiPion,
-        evtSelMuonTrkIP,
-        evtSelTauLeadTrk,
-        evtSelTauLeadTrkPt,
-        evtSelTauTaNCdiscr,
-        evtSelTauTrkIso,
-        evtSelTauEcalIso,
-        evtSelTauProng,
-        evtSelTauCharge,
-        evtSelTauMuonVeto,
-        evtSelTauElectronVeto,
-        evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
-        evtSelDiTauCandidateForAHtoMuTauZeroCharge,
-        evtSelDiTauCandidateForAHtoMuTauMt1MET,
-        evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
-        evtSelDiMuPairZmumuHypothesisVeto
+        process.evtSelMuonAntiPion,
+        process.evtSelMuonTrkIP,
+        process.evtSelTauLeadTrk,
+        process.evtSelTauLeadTrkPt,
+        process.evtSelTauTaNCdiscr,
+        process.evtSelTauTrkIso,
+        process.evtSelTauEcalIso,
+        process.evtSelTauProng,
+        process.evtSelTauCharge,
+        process.evtSelTauMuonVeto,
+        process.evtSelTauElectronVeto,
+        process.evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
+        process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
+        process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
+        process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+        process.evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
+        process.evtSelDiMuPairZmumuHypothesisVeto
     ]
 
     evtSelAHtoMuTau_woBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
