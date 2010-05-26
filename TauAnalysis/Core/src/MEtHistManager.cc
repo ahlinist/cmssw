@@ -62,10 +62,10 @@ void MEtHistManager::bookHistogramsImp()
   hMEtPyDiff_ = book1D("MEtPyDiff", "MEtPyDiff", 100, -50., +50.);
   hMEtPyPull_ = book1D("MEtPyPull", "MEtPyPull", 100, -5.0, +5.0);
 
-  hMEtPparlGenMEtDiff_ = book1D("MEtPparlGenMEtDiff", "MEtParlGenMEtDiff", 100, -50., +50.);
-  hMEtPparlGenMEtPull_ = book1D("MEtPparlGenMEtPull", "MEtParlGenMEtPull", 100, -5.0, +5.0);
-  hMEtPperpGenMEtDiff_ = book1D("MEtPerpGenMEtDiff", "MEtPerpGenMEtDiff", 100, -50., +50.);
-  hMEtPperpGenMEtPull_ = book1D("MEtPerpGenMEtPull", "MEtPerpGenMEtPull", 100, -5.0, +5.0);
+  hMEtPparlGenMEtDiff_ = book1D("MEtPparlGenMEtDiff", "MEtPparlGenMEtDiff", 100, -50., +50.);
+  hMEtPparlGenMEtPull_ = book1D("MEtPparlGenMEtPull", "MEtPparlGenMEtPull", 100, -5.0, +5.0);
+  hMEtPperpGenMEtDiff_ = book1D("MEtPperpGenMEtDiff", "MEtPperpGenMEtDiff", 100, -50., +50.);
+  hMEtPperpGenMEtPull_ = book1D("MEtPperpGenMEtPull", "MEtPperpGenMEtPull", 100, -5.0, +5.0);
   
   hMEtPparlBisectorLeg1Leg2Diff_ = book1D("MEtPparlBisectorLeg1Leg2Diff", "MEtPparlBisectorLeg1Leg2Diff", 100, -50., +50.);
   hMEtPparlBisectorLeg1Leg2Pull_ = book1D("MEtPparlBisectorLeg1Leg2Pull", "MEtPparlBisectorLeg1Leg2Pull", 100, -5.0, +5.0);
