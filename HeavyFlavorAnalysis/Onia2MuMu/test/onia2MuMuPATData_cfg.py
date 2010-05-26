@@ -13,7 +13,7 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True),
-    fileMode = cms.untracked.string('MERGE'),
+#    fileMode = cms.untracked.string('MERGE'),
 )
 
 ### global tag
