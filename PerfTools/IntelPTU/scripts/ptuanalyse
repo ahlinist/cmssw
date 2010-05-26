@@ -47,7 +47,7 @@
 # A short help of the parameters is shown with '-h'.
 #
 #
-#  $Id: ptuanalyse,v 1.3 2010/04/17 07:40:53 mkortela Exp $
+#  $Id: ptuanalyse,v 1.4 2010/05/24 11:03:39 mkortela Exp $
 #
 # Matti Kortelainen, Helsinki Institute of Physics
 # 15 April 2010
@@ -152,7 +152,7 @@ class Vtsa:
 
         return len(errors) == 0
 
-    def buildAllReport(self, file, prefix=""):
+    def buildAllReport(self, file):
         # It looks to me that it's much easier to parse the CSV output
         # for the all report than XML
         cmd = self.buildCmd("all")
@@ -161,7 +161,7 @@ class Vtsa:
         if not ok:
             return
         
-        output = open(os.path.join(self.directory, prefix+file), "w")
+        output = open(os.path.join(self.directory, file), "w")
 
         # The headers of "all" input which are needed for per-function
         # reports. Define also (string) transformations to be done for
@@ -190,7 +190,7 @@ class Vtsa:
                 # Build the src+asm reports for a function, take first
                 # line with any counter being > 0
                 function = Function(row[hdrmap["function"]], row[hdrmap["module"]], row[hdrmap["source"]], rva)
-                self.buildFunctionReport(prefix, function, rownum-1)
+                self.buildFunctionReport(function, rownum-1)
                 row.append(function.getFirstLine())
 
             output.write(self.formatRow(row)+"\n")
@@ -312,7 +312,7 @@ class Vtsa:
         print "  %s : built src and asm reports" % function.name
         return (src, asm)
 
-    def buildFunctionReport(self, prefix, function, i):
+    def buildFunctionReport(self, function, i):
         # Don't even try to run vtsaview if the "all" report doesn't
         # have a source file for the function. I guess this means that
         # the code of the function was not compiled with "-g" and
@@ -324,12 +324,12 @@ class Vtsa:
         (src, asm) = self.buildSrcReport(function)
 
         if src != None:
-            file = open(os.path.join(self.directory, prefix+"%d_src.csv" % i), "w")
+            file = open(os.path.join(self.directory, "%d_src.csv" % i), "w")
             file.write(src)
             file.close()
 
         if asm != None:
-            file = open(os.path.join(self.directory, prefix+"%d_asm.csv" % i), "w")
+            file = open(os.path.join(self.directory, "%d_asm.csv" % i), "w")
             file.write(asm)
             file.close()
     
@@ -340,8 +340,6 @@ if __name__ == "__main__":
                       help="PTU Experiment directory")
     parser.add_option("--all", "-a", dest="allname", type="string", default="basic_sampling",
                       help='Name of "all" report; _all.csv is appended to the name (default: "basic_sampling"')
-#    parser.add_option("--prefix", "-p", dest="prefix", type="string", default="",
-#                      help='Prefix of report files (default: "")')
     parser.add_option("--threshold", "-t", dest="threshold", type="int", default=95,
                       help='Threshold for displayed hotspots (see the same option of vtsaview)  (default: 95)')
     parser.add_option("--filter", dest="filter", type="string", default="cmsRun",
@@ -358,7 +356,7 @@ if __name__ == "__main__":
     try:
         vtsa = Vtsa(opts)
         print "Building function reports"
-        vtsa.buildAllReport(all_file, opts.prefix)
+        vtsa.buildAllReport(all_file)
         print "Done"
     except OSError, e:
         print e
