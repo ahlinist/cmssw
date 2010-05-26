@@ -13,14 +13,21 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("EmptySource")
 
-# define directory from which .root files containing the histograms get loaded
-process.loadAHtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/plots/AHtoMuTau/7TeV/")
+# define directory from which .root files containing histograms for individual processes get loaded
+process.loadAHtoMuTau.inputFilePath = cms.string(
+    "rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/plots/AHtoMuTau/7TeV/"
+)
 
 # import utility function to enable factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeAHtoMuTauPlots
 enableFactorization_makeAHtoMuTauPlots(process, modName_addAHtoMuTau_AHsum_tautau = "addAHtoMuTau_AHsum120_tautau")
 
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
+
+# define name and directory in which .root file containing all histograms gets saved
+##process.saveAHtoMuTau.outputFileName = cms.string(
+##    "/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/plots/AHtoMuTau/7TeV/plotsAHtoMuTau_all.root"
+##)
 
 process.makeAHtoMuTauPlots = cms.Sequence(
     process.loadAHtoMuTau
