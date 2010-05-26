@@ -9,7 +9,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: SmoothPdfWrapperBase.h,v 1.1 2009/11/27 15:46:32 veelken Exp $
+ * $Id: SmoothPdfWrapperBase.h,v 1.1 2010/05/26 15:00:26 veelken Exp $
  *
  */
 
@@ -34,7 +34,7 @@ class SmoothPdfWrapperBase
   //  in order to be compatible with plugin mechanism)
   void setName(const char* name) { name_ = name; }
   void setTitle(const char* title) { title_ = title; }
-  void setTemplateHist(const RooDataHist* hist) { templateHist_ = hist; }
+  void setTemplateHist(RooDataHist* hist) { templateHist_ = hist; }
   void setX(RooRealVar& x) { x_ = &x; }
   
   // function to "build" RooAbsPdf object
@@ -74,7 +74,7 @@ class SmoothPdfWrapperBase
   RooLinkedList fitOptions_;
   bool fitSimultaneously_;
 
-  std::map<std::string, parameterType> parameters_;
+  std::map<std::string, parameterType*> parameters_;
 
   // name, title
   const char* name_;
