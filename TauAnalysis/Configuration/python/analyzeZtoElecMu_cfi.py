@@ -29,7 +29,11 @@ from TauAnalysis.Core.jetHistManager_cfi import *
 
 # import config for missing-Et histogram managers
 from TauAnalysis.Core.caloMEtHistManager_cfi import *
+caloMEtHistManager.leg1Source = cms.InputTag('selectedPatElectronsForElecMuTrkIPcumulative')
+caloMEtHistManager.leg2Source = cms.InputTag('selectedPatMuonsTrkIPcumulative')
 from TauAnalysis.Core.pfMEtHistManager_cfi import *
+pfMEtHistManager.leg1Source = cms.InputTag('selectedPatElectronsForElecMuTrkIPcumulative')
+pfMEtHistManager.leg2Source = cms.InputTag('selectedPatMuonsTrkIPcumulative')
 
 # import config for particle multiplicity histogram manager
 from TauAnalysis.Core.particleMultiplicityHistManager_cfi import *
