@@ -43,7 +43,7 @@ class Onia2MuMuPAT : public edm::EDProducer {
   StringCutObjectSelector<pat::Muon> lowerPuritySelection_; 
   StringCutObjectSelector<reco::Candidate, true> dimuonSelection_;
   bool addCommonVertex_, addMuonlessPrimaryVertex_;
-  
+  bool resolveAmbiguity_;
   bool addMCTruth_;
   GreaterByPt<pat::CompositeCandidate> pTComparator_;
 

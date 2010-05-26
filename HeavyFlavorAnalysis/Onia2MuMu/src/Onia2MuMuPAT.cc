@@ -30,6 +30,7 @@ Onia2MuMuPAT::Onia2MuMuPAT(const edm::ParameterSet& iConfig):
   dimuonSelection_(iConfig.existsAs<std::string>("dimuonSelection") ? iConfig.getParameter<std::string>("dimuonSelection") : ""),
   addCommonVertex_(iConfig.getParameter<bool>("addCommonVertex")),
   addMuonlessPrimaryVertex_(iConfig.getParameter<bool>("addMuonlessPrimaryVertex")),
+  resolveAmbiguity_(iConfig.getParameter<bool>("resolvePileUpAmbiguity")),
   addMCTruth_(iConfig.getParameter<bool>("addMCTruth"))
 {  
     produces<pat::CompositeCandidateCollection>();  
@@ -95,6 +96,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (!(higherPuritySelection_(*it) || higherPuritySelection_(*it2))) continue;
 
       pat::CompositeCandidate myCand;
+      vector<TransientVertex> pvs;
 
       // ---- no explicit order defined ----
       myCand.addDaughter(*it, "muon1");
@@ -114,8 +116,10 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	// Make a PV with everything else
 	if (addMuonlessPrimaryVertex_) {
 	  VertexReProducer revertex(priVtxs, iEvent);
-	  Handle<TrackCollection> pvtracks;   iEvent.getByLabel(revertex.inputTracks(),   pvtracks);
-	  Handle<BeamSpot>        pvbeamspot; iEvent.getByLabel(revertex.inputBeamSpot(), pvbeamspot);
+	  Handle<TrackCollection> pvtracks;   
+	  iEvent.getByLabel(revertex.inputTracks(),   pvtracks);
+	  Handle<BeamSpot>        pvbeamspot; 
+	  iEvent.getByLabel(revertex.inputBeamSpot(), pvbeamspot);
 	  if (pvbeamspot.id() != theBeamSpot.id()) edm::LogWarning("Inconsistency") << "The BeamSpot used for PV reco is not the same used in this analyzer.";
 	  // I need to go back to the reco::Muon object, as the TrackRef in the pat::Muon can be an embedded ref.
 	  const reco::Muon *rmu1 = dynamic_cast<const reco::Muon *>(it->originalObject());
@@ -131,10 +135,10 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      if (i == rmu2->track().key()) continue;
 	      muonLess.push_back((*pvtracks)[i]);
 	    }
-	    vector<TransientVertex> pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
+	    pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
 	    if (!pvs.empty()) {
 	      reco::Vertex muonLessPV = reco::Vertex(pvs.front());
-	      myCand.addUserData("muonlessPV",muonLessPV);
+	      // myCand.addUserData("muonlessPV",muonLessPV);
               thePrimaryV = &muonLessPV;
 	    }
 	  }
@@ -163,7 +167,34 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  vpperp[1] = pperp.y();
 	  vpperp[2] = 0.;
 
-          
+	  if (resolveAmbiguity_) {
+            float minDz = 999999.;
+	    if (!addMuonlessPrimaryVertex_) {
+	      for(VertexCollection::const_iterator itv = priVtxs->begin(), itvend = priVtxs->end(); itv != itvend; ++itv){
+		float deltaZ = fabs(myVertex.position().z() - itv->position().z()) ;
+		if ( deltaZ < minDz ) {
+		  minDz = deltaZ;    
+		  thePrimaryV = new Vertex(*itv);
+		}
+	      }
+	    } else {
+	      for(vector<TransientVertex>::iterator itv2 = pvs.begin(), itvend2 = pvs.end(); itv2 != itvend2; ++itv2){
+		float deltaZ = fabs(myVertex.position().z() - itv2->position().z()) ;
+		if ( deltaZ < minDz ) {
+		  minDz = deltaZ;    
+		  reco::Vertex muonLessPV = reco::Vertex(*itv2); 
+		  thePrimaryV = &muonLessPV;
+		}
+	      }
+	    }
+	  }
+         
+          if (addMuonlessPrimaryVertex_) {
+            myCand.addUserData("muonlessPV",*thePrimaryV);
+	  } else {
+	    myCand.addUserData("PVwithmuons",*thePrimaryV);
+	  }
+
 	  // lifetime using PV
           pvtx.SetXYZ(thePrimaryV->position().x(),thePrimaryV->position().y(),0);
 	  TVector3 vdiff = vtx - pvtx;
@@ -207,6 +238,12 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if (addCommonVertex_) {
 	    myCand.addUserData("commonVertex",reco::Vertex());
 	  }
+	  if (addMuonlessPrimaryVertex_) {
+            myCand.addUserData("muonlessPV",reco::Vertex());
+	  } else {
+	    myCand.addUserData("PVwithmuons",reco::Vertex());
+	  }
+
 	}
 	
       }
