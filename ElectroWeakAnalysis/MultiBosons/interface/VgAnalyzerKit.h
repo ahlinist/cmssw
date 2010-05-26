@@ -168,11 +168,14 @@ protected:
   float  eleE3x2_[maxP];
   float  eleE3x3_[maxP];
   float  eleE4x4_[maxP];
+  float  eleE1x4_[maxP];
+  float  eleE1x5_[maxP];
   float  eleE5x5_[maxP];
   float  eleE2x5Right_[maxP];
   float  eleE2x5Left_[maxP];
   float  eleE2x5Top_[maxP];
   float  eleE2x5Bottom_[maxP];
+  float  eleE2x5Max_[maxP];
   float  eleERight_[maxP];
   float  eleELeft_[maxP];
   float  eleETop_[maxP];
@@ -190,6 +193,13 @@ protected:
   float  eleChi2NDF_[maxP];
   float  eleD0_[maxP];
   int    eleNumberOfValidHits_[maxP];
+  int    eleValidHitInFirstPXB_[maxP];
+  int    eleTrkExpectHitsInner_[maxP];
+  float  eleDist_[maxP];
+  float  eleDcot_[maxP];
+  float  eleConvRadius_[maxP];
+  float  eleConvPoint_[maxP][3];
+
   // Photon
   int    nPho_;
   bool   phoIsPhoton_[maxP];
@@ -224,11 +234,13 @@ protected:
   float  phoE3x2_[maxP];
   float  phoE3x3_[maxP];
   float  phoE4x4_[maxP];
+  float  phoE1x5_[maxP];
   float  phoE5x5_[maxP];
   float  phoE2x5Right_[maxP];
   float  phoE2x5Left_[maxP];
   float  phoE2x5Top_[maxP];
   float  phoE2x5Bottom_[maxP];
+  float  phoE2x5Max_[maxP];
   float  phoERight_[maxP];
   float  phoELeft_[maxP];
   float  phoETop_[maxP];
@@ -256,12 +268,15 @@ protected:
   float  muIsoCalo_[maxP];
   float  muIsoEcal_[maxP];
   float  muIsoHcal_[maxP];
+  float  muChi2NDF_[maxP];
   float  muEmVeto_[maxP];
   float  muHadVeto_[maxP];
   int    muType_[maxP];
   bool   muID_[maxP][6];
   float  muD0_[maxP];
   int    muNumberOfValidTrkHits_[maxP];
+  int    muNumberOfValidPixelHits_[maxP];
+  int    muNumberOfValidMuonHits_[maxP];
   // Jet
   int    nJet_;
   int    jetAlgo_[maxP];
@@ -275,6 +290,9 @@ protected:
   float  jetmaxEInHadTowers_[maxP];
   float  jetenergyFractionHadronic_[maxP];
   float  jetemEnergyFraction_[maxP];
+  float	 jetfHPD_[maxP];
+  int	 jetN60_[maxP] ;
+  int	 jetN90_[maxP] ;
   int    jetGenIndex_[maxP];
   int    jetGenJetIndex_[maxP];
   float  jetGenJetEn_[maxP];
@@ -324,6 +342,7 @@ protected:
   float  ZmumuPhi_[maxP];
   int    ZmumuLeg1Index_[maxP];
   int    ZmumuLeg2Index_[maxP];
+
   // Wenu candidate
   int    nWenu_;
   float  WenuMassTCaloMET_[maxP];
@@ -335,6 +354,8 @@ protected:
   float  WenuMassTPfMET_[maxP];
   float  WenuEtPfMET_[maxP];
   float  WenuACopPfMET_[maxP];
+  int    WenuEleIndex_[maxP];
+
   // Wmunu candidate
   int    nWmunu_;
   float  WmunuMassTCaloMET_[maxP];
@@ -346,6 +367,7 @@ protected:
   float  WmunuMassTPfMET_[maxP];
   float  WmunuEtPfMET_[maxP];
   float  WmunuACopPfMET_[maxP];
+  int    WmunuMuIndex_[maxP];
 
   // Physics objects handles
   Handle<View<pat::Muon> >                  muonHandle_;
