@@ -20,6 +20,14 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "PhysicsTools/CandUtils/interface/AddFourMomenta.h"
 
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "DataFormats/Scalers/interface/DcsStatus.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackExtra.h"
+
 #include <iostream>
 
 using namespace std;
@@ -162,11 +170,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleE3x2", eleE3x2_, "eleE3x2_[nEle]/F");
   tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3_[nEle]/F");
   tree_->Branch("eleE4x4", eleE4x4_, "eleE4x4_[nEle]/F");
+  tree_->Branch("eleE1x5", eleE1x5_, "eleE1x5_[nEle]/F");
   tree_->Branch("eleE5x5", eleE5x5_, "eleE5x5_[nEle]/F");
   tree_->Branch("eleE2x5Right", eleE2x5Right_, "eleE2x5Right_[nEle]/F");
   tree_->Branch("eleE2x5Left", eleE2x5Left_, "eleE2x5Left_[nEle]/F");
   tree_->Branch("eleE2x5Top", eleE2x5Top_, "eleE2x5Top_[nEle]/F");
   tree_->Branch("eleE2x5Bottom", eleE2x5Bottom_, "eleE2x5Bottom_[nEle]/F");
+  tree_->Branch("eleE2x5Max", eleE2x5Max_, "eleE2x5Max_[nEle]/F");
   tree_->Branch("eleERight", eleERight_, "eleERight_[nEle]/F");
   tree_->Branch("eleELeft", eleELeft_, "eleELeft_[nEle]/F");
   tree_->Branch("eleETop", eleETop_, "eleETop_[nEle]/F");
@@ -186,6 +196,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleChi2NDF", eleChi2NDF_, "eleChi2NDF[nEle]/F");
   tree_->Branch("eleD0", eleD0_, "eleD0[nEle]/F");
   tree_->Branch("eleNumberOfValidHits", eleNumberOfValidHits_, "eleNumberOfValidHits[nEle]/I");
+  tree_->Branch("eleValidHitInFirstPXB",eleValidHitInFirstPXB_,"eleValidHitInFirstPXB[nEle]/I");
+  tree_->Branch("eleTrkExpectHitsInner",eleTrkExpectHitsInner_,"eleTrkExpectHitsInner[nEle]/I");
+  tree_->Branch("eleDist",eleDist_,"eleDist[nEle]/F");
+  tree_->Branch("eleDcot",eleDcot_,"eleDcot[nEle]/F");
+  tree_->Branch("eleConvRadius",eleConvRadius_,"eleConvRadius[nEle]/F");
+  tree_->Branch("eleConvPoint",eleConvPoint_,"eleConvPoint[nEle][3]/F");
+
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
@@ -220,11 +237,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoE3x2", phoE3x2_, "phoE3x2_[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3_[nPho]/F");
   tree_->Branch("phoE4x4", phoE4x4_, "phoE4x4_[nPho]/F");
+  tree_->Branch("phoE1x5", phoE1x5_, "phoE1x5_[nEle]/F");
   tree_->Branch("phoE5x5", phoE5x5_, "phoE5x5_[nPho]/F");
   tree_->Branch("phoE2x5Right", phoE2x5Right_, "phoE2x5Right_[nPho]/F");
   tree_->Branch("phoE2x5Left", phoE2x5Left_, "phoE2x5Left_[nPho]/F");
   tree_->Branch("phoE2x5Top", phoE2x5Top_, "phoE2x5Top_[nPho]/F");
   tree_->Branch("phoE2x5Bottom", phoE2x5Bottom_, "phoE2x5Bottom_[nPho]/F");
+  tree_->Branch("phoE2x5Max", phoE2x5Max_, "phoE2x5Max_[nEle]/F");
   tree_->Branch("phoERight", phoERight_, "phoERight_[nPho]/F");
   tree_->Branch("phoELeft", phoELeft_, "phoELeft_[nPho]/F");
   tree_->Branch("phoETop", phoETop_, "phoETop_[nPho]/F");
@@ -255,6 +274,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muIsoCalo", muIsoCalo_, "muIsoCalo[nMu]/F");
   tree_->Branch("muIsoEcal", muIsoEcal_, "muIsoEcal[nMu]/F");
   tree_->Branch("muIsoHcal", muIsoHcal_, "muIsoHcal[nMu]/F");
+  tree_->Branch("muChi2NDF", muChi2NDF_, "muChi2NDF[nMu]/F");
   tree_->Branch("muEmVeto", muEmVeto_, "muEmVeto[nMu]/F");
   tree_->Branch("muHadVeto", muHadVeto_, "muHadVeto[nMu]/F");
   tree_->Branch("muType", muType_, "muType[nMu]/I");
@@ -262,6 +282,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // [0]: AllArbitrated, [1]: GlobalMuonPromptTight, [2]: TMLSLoose, [3]: TMLSTight, [4]: TM2DCompatLoose, [5]: TM2DCompatTight
   tree_->Branch("muD0", muD0_, "muD0[nMu]/F");
   tree_->Branch("muNumberOfValidTrkHits", muNumberOfValidTrkHits_, "muNumberOfValidTrkHits[nMu]/I");
+  tree_->Branch("muNumberOfValidPixelHits", muNumberOfValidPixelHits_, "muNumberOfValidPixelHits[nMu]/I");
+  tree_->Branch("muNumberOfValidMuonHits", muNumberOfValidMuonHits_, "muNumberOfValidMuonHits[nMu]/I");
   // Jet
   tree_->Branch("nJet", &nJet_, "nJet/I");
   tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
@@ -284,6 +306,9 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("jetGenJetMass", jetGenJetMass_, "jetGenJetMass[nJet]/F");
     tree_->Branch("jetGenPartonID", jetGenPartonID_, "jetGenPartonID[nJet]/I");
     tree_->Branch("jetGenPartonMomID", jetGenPartonMomID_, "jetGenPartonMomID[nJet]/I");
+    tree_->Branch("jetfHPD", jetfHPD_, "jetfHPD[nJet]/F");
+    tree_->Branch("jetN60", jetN60_, "jetN60[nJet]/I");
+    tree_->Branch("jetN90", jetN90_, "jetN90[nJet]/I");
     tree_->Branch("jetGenEn", jetGenEn_, "jetGenEn[nJet]/F");
     tree_->Branch("jetGenPt", jetGenPt_, "jetGenPt[nJet]/F");
     tree_->Branch("jetGenEta", jetGenEta_, "jetGenEta[nJet]/F");
@@ -334,6 +359,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("WenuMassTPfMET", WenuMassTPfMET_, "WenuMassTPfMET[nWenu]/F");
   tree_->Branch("WenuEtPfMET", WenuEtPfMET_, "WenuEtPfMET[nWenu]/F");
   tree_->Branch("WenuACopPfMET", WenuACopPfMET_, "WenuACopPfMET[nWenu]/F");
+  tree_->Branch("WenuEleIndex", WenuEleIndex_, "WenuEleIndex[nWenu]/I");
+
   // Wmunu candidate
   tree_->Branch("nWmunu", &nWmunu_, "nWmunu/I");
   tree_->Branch("WmunuMassTCaloMET", WmunuMassTCaloMET_, "WmunuMassTCaloMET[nWmunu]/F");
@@ -345,6 +372,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("WmunuMassTPfMET", WmunuMassTPfMET_, "WmunuMassTPfMET[nWmunu]/F");
   tree_->Branch("WmunuEtPfMET", WmunuEtPfMET_, "WmunuEtPfMET[nWmunu]/F");
   tree_->Branch("WmunuACopPfMET", WmunuACopPfMET_, "WmunuACopPfMET[nWmunu]/F");
+  tree_->Branch("WmunuMuIndex", WmunuMuIndex_, "WmunuMuIndex[nWenu]/I");
 }
 
 VgAnalyzerKit::~VgAnalyzerKit() {
@@ -658,15 +686,37 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // Electron
+
   // cout << "VgAnalyzerKit: produce: Electron ..." << endl;
 
+  //++++
+
+  edm::Handle<DcsStatusCollection> dcsHandle;
+  e.getByLabel("scalersRawToDigi", dcsHandle);
+  double evt_bField;
+  
+  if (isData_) {
+    // scale factor = 3.801/18166.0 which are
+    // average values taken over a stable two
+    // week period
+    float currentToBFieldScaleFactor = 2.09237036221512717e-04;
+    float current = (*dcsHandle)[0].magnetCurrent();
+    evt_bField = current*currentToBFieldScaleFactor;
+  } else {
+      
+    ESHandle<MagneticField> magneticField;
+    es.get<IdealMagneticFieldRecord>().get(magneticField);
+        
+    evt_bField = magneticField->inTesla(GlobalPoint(0.,0.,0.)).z();
+  }
+  // cout<< "BField:"<< evt_bField <<endl;
+  //=====
   nEle_ = 0;
   const Candidate *elemom = 0;
   if ( electronHandle_.isValid() )
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
       //if (iEle->pt()<10) continue;
-
       for (int i=0; i<5; ++i) eleID_[nEle_][i] = 0;
       if (iEle->electronID("eidRobustLoose")==1) eleID_[nEle_][0] = 1;
       if (iEle->electronID("eidRobustTight")==1)  eleID_[nEle_][1] = 1;
@@ -723,17 +773,30 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       eleE3x2_[nEle_] = lazyTool.e3x2(*eleSeed);
       eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
       eleE4x4_[nEle_] = lazyTool.e4x4(*eleSeed);
+      eleE1x5_[nEle_] = lazyTool.e1x5(*eleSeed);
       eleE5x5_[nEle_] = lazyTool.e5x5(*eleSeed);
 
       eleE2x5Right_[nEle_]  = lazyTool.e2x5Right(*eleSeed);
       eleE2x5Left_[nEle_]   = lazyTool.e2x5Left(*eleSeed);
       eleE2x5Top_[nEle_]    = lazyTool.e2x5Top(*eleSeed);
       eleE2x5Bottom_[nEle_] = lazyTool.e2x5Bottom(*eleSeed);
+      eleE2x5Max_[nEle_] 	= lazyTool.e2x5Max(*eleSeed);
       eleERight_[nEle_]     = lazyTool.eRight(*eleSeed);
       eleELeft_[nEle_]      = lazyTool.eLeft(*eleSeed);
       eleETop_[nEle_]       = lazyTool.eTop(*eleSeed);
       eleEBottom_[nEle_]    = lazyTool.eBottom(*eleSeed);
 
+      //For electron concersion rejection
+
+      ConversionFinder convFinder;
+      ConversionInfo convInfo = convFinder.getConversionInfo(*iEle , Tracks, evt_bField);
+
+      eleDist_[nEle_] = convInfo.dist();
+      eleDcot_[nEle_] = convInfo.dcot();
+      eleConvRadius_[nEle_]    = convInfo.radiusOfConversion();
+      eleConvPoint_[nEle_][0]  = convInfo.pointOfConversion().x();
+      eleConvPoint_[nEle_][1]  = convInfo.pointOfConversion().y();
+      eleConvPoint_[nEle_][2]  = convInfo.pointOfConversion().z();
       // Gen Particle
       eleGenIndex_[nEle_] = -1;
       int EleGenIndex = 0;
@@ -771,7 +834,9 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       eleChi2NDF_[nEle_] = iEle->gsfTrack()->normalizedChi2();
 
       eleD0_[nEle_] = (*iEle).gsfTrack()->d0();
-      eleNumberOfValidHits_[nEle_] = (*iEle).gsfTrack()->numberOfValidHits();
+      eleNumberOfValidHits_[nEle_]  = (*iEle).gsfTrack()->numberOfValidHits();
+      eleValidHitInFirstPXB_[nEle_] = iEle->gsfTrack()->hitPattern().hasValidHitInFirstPixelBarrel();
+      eleTrkExpectHitsInner_[nEle_] = iEle->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
 
       nEle_++;
     }
@@ -841,6 +906,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       phoE3x2_[nPho_] = lazyTool.e3x2(*phoSeed);
       phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
       phoE4x4_[nPho_] = lazyTool.e4x4(*phoSeed);
+      phoE1x5_[nPho_] = lazyTool.e1x5(*phoSeed);
       phoE5x5_[nPho_] = lazyTool.e5x5(*phoSeed);
 
       // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " lazyTool.e2x5Right ..." << endl;
@@ -848,6 +914,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       phoE2x5Left_[nPho_]   = lazyTool.e2x5Left(*phoSeed);
       phoE2x5Top_[nPho_]    = lazyTool.e2x5Top(*phoSeed);
       phoE2x5Bottom_[nPho_] = lazyTool.e2x5Bottom(*phoSeed);
+      phoE2x5Max_[nPho_] = lazyTool.e2x5Max(*phoSeed);
       phoERight_[nPho_]     = lazyTool.eRight(*phoSeed);
       phoELeft_[nPho_]      = lazyTool.eLeft(*phoSeed);
       phoETop_[nPho_]       = lazyTool.eTop(*phoSeed);
@@ -919,10 +986,16 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       const reco::TrackRef trkr = iMu->globalTrack();
       if (trkr.isNull()) {
         muD0_[nMu_] = -99.;
-        muNumberOfValidTrkHits_[nMu_] = -99;
-      } else {
+		muNumberOfValidTrkHits_[nMu_] = -99;
+		muNumberOfValidPixelHits_[nMu_] = -99;
+		muNumberOfValidMuonHits_[nMu_] = -99;
+		muChi2NDF_[nMu_] = -99;
+	  } else {
         muD0_[nMu_] = trkr->dxy(beamSpotHandle->position());
         muNumberOfValidTrkHits_[nMu_] = trkr->hitPattern().numberOfValidTrackerHits();
+        muNumberOfValidPixelHits_[nMu_] = trkr->hitPattern().numberOfValidPixelHits();
+        muNumberOfValidMuonHits_[nMu_] = trkr->hitPattern().numberOfValidMuonHits();
+	  	muChi2NDF_[nMu_] = trkr->normalizedChi2();
       }
 
       muEta_[nMu_] = iMu->eta();
@@ -993,6 +1066,11 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       jetTrackCountHiEffBJetTags_[nJet_] = iJet->bDiscriminator("trackCountingHighEffBJetTags");
       jetTrackCountHiPurBJetTags_[nJet_] = iJet->bDiscriminator("trackCountingHighPurBJetTags");
       // End of b-tagging information
+
+	  // Jet Id related
+	  jetfHPD_[nJet_] = iJet->jetID().fHPD;
+	  jetN60_[nJet_] = iJet->n60();
+	  jetN90_[nJet_] = iJet->n90();
 
       jetmaxEInEmTowers_[nJet_] = iJet->maxEInEmTowers();
       jetmaxEInHadTowers_[nJet_] = iJet->maxEInHadTowers();
@@ -1177,6 +1255,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // Wenu candiate
   // cout << "VgAnalyzerKit: produce: Wenu candiate..." << endl;
   nWenu_ = 0;
+  leg1Index = 0;
   if (electronHandle_.isValid() &&
       electronHandle_->size() > 0 &&
       METHandle_.isValid() &&
@@ -1215,7 +1294,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       WenuMassTPfMET_[nWenu_] = massT(iEle->pt(), pfMET->pt(), WenuPfMET.px(), WenuPfMET.py());
       WenuEtPfMET_[nWenu_]    = eT(iEle->pt(), pfMET->pt());
       WenuACopPfMET_[nWenu_]  = acop(iEle->phi(), pfMET->phi());
-
+      WenuEleIndex_[nWenu_]   = leg1Index;
+      leg1Index++;
       nWenu_++;
     }
   }
@@ -1223,13 +1303,14 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // Wmunu candiate
   // cout << "VgAnalyzerKit: produce: Wmunu candiate..." << endl;
   nWmunu_ = 0;
+  leg1Index = 0;
   if (muonHandle_.isValid() &&
       muonHandle_->size() > 0 &&
       METHandle_.isValid() &&
       METHandle_->size() > 0) {
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
-      if (!iMu->isGlobalMuon()) continue;
+      //if (!iMu->isGlobalMuon()) continue;
 
       for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
 
@@ -1263,12 +1344,12 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), pfMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
       WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), pfMET->pt());
       WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), pfMET->phi());
-
+      WmunuMuIndex_[nWmunu_]    = leg1Index;
       nWmunu_++;
+      leg1Index++;
     }
   }
   // cout << "VgAnalyzerKit: produce: tree_->Fill()... " << endl;
-
   tree_->Fill();
 
   // cout << "VgAnalyzerKit: exiting produce... " << endl;
