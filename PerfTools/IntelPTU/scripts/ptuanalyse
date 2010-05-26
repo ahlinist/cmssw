@@ -47,7 +47,7 @@
 # A short help of the parameters is shown with '-h'.
 #
 #
-#  $Id: ptuanalyse,v 1.4 2010/05/24 11:03:39 mkortela Exp $
+#  $Id: ptuanalyse,v 1.5 2010/05/26 06:03:10 mkortela Exp $
 #
 # Matti Kortelainen, Helsinki Institute of Physics
 # 15 April 2010
@@ -92,9 +92,9 @@ class Vtsa:
     def __init__(self, opts):
         self.expdir = opts.expdir
         self.command = "/opt/intel/ptu32_001_lin_intel64/bin/vtsaview"
-#        self.options = {"common": "-cpu total -t=95 -n=1000000 --granularity=function --show-events-as=samples --threads-match=time -er --filter process,cmsRun",
+#        self.options = {"common": "-cpu total -t=95 -n=1000000 --granularity=function --show-events-as=samples --threads-match=time -er --filter process,"+opts.filter,
         self.options = {"common": ["-cpu", "total", "-t=%d" % opts.threshold,
-                                   "-n=1000000", "--granularity=function", "--show-events-as=samples", "--threads-match=time", "-er", "--filter", "process,cmsRun"],
+                                   "-n=1000000", "--granularity=function", "--show-events-as=samples", "--threads-match=time", "-er", "--filter", "process,"+opts.filter ],
                         "all": ["--aggregate=e", "--csv"],
                         "src": ["--aggregate=p", "--sv", "-ds", "windows", "--xml"]}
 
