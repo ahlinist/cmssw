@@ -35,7 +35,7 @@ patDefaultSequence += patTriggerSequence
 from TauAnalysis.RecoTools.postPatProduction_cff import *
 
 producePatTuple = cms.Sequence(
-	producePrePat       # comment-out if running on "officially" produced PAT-tuples
-	+patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
-	+producePostPat
+    producePrePat       # comment-out if running on "officially" produced PAT-tuples
+   + patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
+   + producePostPat
 )
