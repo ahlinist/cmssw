@@ -19,13 +19,13 @@ selectedMEtTopology04 = cms.EDFilter("MEtTopologySelector",
     filter = cms.bool(False)
 )
 
-selectedMEtTopology02 = cms.EDFilter("MEtTopologySelector",
+selectedMEtTopology025 = cms.EDFilter("MEtTopologySelector",
     src = cms.InputTag('metTopologies'),
-    cut = cms.string('Vanti()/Vparallel() < 0.2'),
+    cut = cms.string('Vanti()/Vparallel() < 0.25'),
     filter = cms.bool(False)
 )
 
 
 produceMEtTopology = cms.Sequence( metTopologies
                                    *selectedMEtTopology04
-                                   *selectedMEtTopology02)
+                                   *selectedMEtTopology025)
