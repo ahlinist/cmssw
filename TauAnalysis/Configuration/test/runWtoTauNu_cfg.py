@@ -110,7 +110,7 @@ switchJetCollection(process, cms.InputTag("iterativeCone5PFJets"))
 #--------------------------------------------------------------------------------
 
 #------------------------Switching to PF-MET and raw Calo-MET----------------------------------
-process.layer1METs.metSource = cms.InputTag('met')
+process.patMETs.metSource = cms.InputTag('met')
 
 from TauAnalysis.Configuration.tools.metTools import *
 
