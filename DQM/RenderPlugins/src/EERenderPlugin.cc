@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.159 2010/03/31 14:32:30 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.160 2010/05/17 10:46:54 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.159 $
-  \date $Date: 2010/03/31 14:32:30 $
+  \version $Revision: 1.160 $
+  \date $Date: 2010/05/17 10:46:54 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -521,7 +521,7 @@ private:
       }
 
       obj->SetMinimum(0.0);
-      gStyle->SetPalette(10, pCol4);
+      gStyle->SetPalette(1);
       gPad->SetRightMargin(0.15);
       if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
     }
