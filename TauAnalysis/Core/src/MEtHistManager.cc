@@ -189,29 +189,35 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 				    metDiffPx, metDiffPy, genMEtPhi, metRes1d, evtWeight);
       }
 
-      for ( edm::View<reco::Candidate>::const_iterator leg1Particle = leg1Particles->begin();
-	    leg1Particle != leg1Particles->end(); ++leg1Particle ) {
-	if ( leg1Particle->pt() > 5. )
-	  fillMEtProjectionHistograms(hMEtPparlLeg1Diff_, hMEtPparlLeg1Pull_, 0, 0,
-				      metDiffPx, metDiffPy, leg1Particle->phi(), metRes1d, evtWeight);
+      if ( leg1Src_.label() != "" ) {
+	for ( edm::View<reco::Candidate>::const_iterator leg1Particle = leg1Particles->begin();
+	      leg1Particle != leg1Particles->end(); ++leg1Particle ) {
+	  if ( leg1Particle->pt() > 5. )
+	    fillMEtProjectionHistograms(hMEtPparlLeg1Diff_, hMEtPparlLeg1Pull_, 0, 0,
+					metDiffPx, metDiffPy, leg1Particle->phi(), metRes1d, evtWeight);
+	}
       }
 
-      for ( edm::View<reco::Candidate>::const_iterator leg2Particle = leg2Particles->begin();
-	    leg2Particle != leg2Particles->end(); ++leg2Particle ) {
-	if ( leg2Particle->pt() > 5. )
-	  fillMEtProjectionHistograms(hMEtPparlLeg2Diff_, hMEtPparlLeg2Pull_, 0, 0,
-				      metDiffPx, metDiffPy, leg2Particle->phi(), metRes1d, evtWeight);
-      }
-
-      for ( edm::View<reco::Candidate>::const_iterator leg1Particle = leg1Particles->begin();
-	    leg1Particle != leg1Particles->end(); ++leg1Particle ) {
+      if ( leg2Src_.label() != "" ) {
 	for ( edm::View<reco::Candidate>::const_iterator leg2Particle = leg2Particles->begin();
-	    leg2Particle != leg2Particles->end(); ++leg2Particle ) {
-	  if ( leg1Particle->pt() > 5. && leg2Particle->pt() > 5. && 
-	       reco::deltaR(leg1Particle->p4(), leg2Particle->p4()) > 0.7 ) {
-	    double phiBisectorLeg1Leg2 = TMath::ACos(TMath::Cos(leg1Particle->phi() - leg2Particle->phi()));
-	    fillMEtProjectionHistograms(hMEtPparlBisectorLeg1Leg2Diff_, hMEtPparlBisectorLeg1Leg2Pull_, 0, 0,
-					metDiffPx, metDiffPy, phiBisectorLeg1Leg2, metRes1d, evtWeight);
+	      leg2Particle != leg2Particles->end(); ++leg2Particle ) {
+	  if ( leg2Particle->pt() > 5. )
+	    fillMEtProjectionHistograms(hMEtPparlLeg2Diff_, hMEtPparlLeg2Pull_, 0, 0,
+					metDiffPx, metDiffPy, leg2Particle->phi(), metRes1d, evtWeight);
+	}
+      }
+
+      if ( leg1Src_.label() != "" && leg2Src_.label() != "" ) {
+	for ( edm::View<reco::Candidate>::const_iterator leg1Particle = leg1Particles->begin();
+	      leg1Particle != leg1Particles->end(); ++leg1Particle ) {
+	  for ( edm::View<reco::Candidate>::const_iterator leg2Particle = leg2Particles->begin();
+		leg2Particle != leg2Particles->end(); ++leg2Particle ) {
+	    if ( leg1Particle->pt() > 5. && leg2Particle->pt() > 5. && 
+		 reco::deltaR(leg1Particle->p4(), leg2Particle->p4()) > 0.7 ) {
+	      double phiBisectorLeg1Leg2 = TMath::ACos(TMath::Cos(leg1Particle->phi() - leg2Particle->phi()));
+	      fillMEtProjectionHistograms(hMEtPparlBisectorLeg1Leg2Diff_, hMEtPparlBisectorLeg1Leg2Pull_, 0, 0,
+					  metDiffPx, metDiffPy, phiBisectorLeg1Leg2, metRes1d, evtWeight);
+	    }
 	  }
 	}
       }
