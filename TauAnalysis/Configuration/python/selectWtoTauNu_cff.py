@@ -140,6 +140,15 @@ cfgRecoilEnergyFromCaloTowersCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
+# MET topology cut
+cfgMetTopologyCut = cms.PSet(
+    pluginName = cms.string('metTopologyCut'),
+    pluginType = cms.string('MEtTopologyMinEventSelector'),
+    src = cms.InputTag('selectedMEtTopology025'),
+    minNumber = cms.uint32(1)
+    )
+
+
 wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
     [ 
 	cfgPrimaryEventVertex,
@@ -159,7 +168,8 @@ wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
 	cfgTauElectronVeto,
         cfgTauEcalCrackVeto,
         cfgCentralJetVeto,
-	cfgRecoilEnergyFromCaloTowersCut
+	cfgRecoilEnergyFromCaloTowersCut,
+        cfgMetTopologyCut
     ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
