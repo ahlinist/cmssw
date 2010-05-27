@@ -81,7 +81,7 @@
 <LogicalPartSection label="tidringpar.xml">
  <LogicalPart name="TIDManifoldFix" category="unspecified">
    <rSolid name="TIDManifoldFix"/>
-   <rMaterial name="materials:Aluminium"/>
+   <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TIDModuleFix" category="unspecified">
   <rSolid name="TIDModuleFix"/>

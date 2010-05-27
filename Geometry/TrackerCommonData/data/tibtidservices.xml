@@ -217,11 +217,11 @@
 <LogicalPartSection label="tibtidservices.xml">
  <LogicalPart name="TIDSupport" category="unspecified">
   <rSolid name="TIDSupport"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TIDSupportIn" category="unspecified">
   <rSolid name="TIDSupportIn"/>
-  <rMaterial name="materials:Nomex"/>
+  <rMaterial name="trackermaterial:T_Nomex"/>
  </LogicalPart>
  <LogicalPart name="TIBFlange" category="unspecified">
   <rSolid name="TIBFlange"/>
@@ -233,7 +233,7 @@
  </LogicalPart>
  <LogicalPart name="TIBTIDPxlFlange" category="unspecified">
   <rSolid name="PixelSupportFlange"/>
-  <rMaterial name="materials:T_FR4"/>
+  <rMaterial name="trackermaterial:T_FR4"/>
  </LogicalPart>
 
  <LogicalPart name="TIBTIDOpticalPanel" category="unspecified">

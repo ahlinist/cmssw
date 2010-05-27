@@ -173,7 +173,7 @@
  </LogicalPart>
  <LogicalPart name="TOBModCoolComp2" category="unspecified">
   <rSolid name="TOBModCoolComp2"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TOBInactive" category="unspecified">
   <rSolid name="TOBInactive"/>
@@ -185,7 +185,7 @@
  </LogicalPart>
  <LogicalPart name="TOBSiBackEncaps" category="unspecified">
   <rSolid name="TOBEncapsulant2"/>
-  <rMaterial name="materials:Silicone_Gel"/>
+  <rMaterial name="trackermaterial:T_Silicone_Gel"/>
  </LogicalPart>
 </LogicalPartSection>
 

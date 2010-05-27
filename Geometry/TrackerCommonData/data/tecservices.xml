@@ -200,11 +200,11 @@
    </LogicalPart>
    <LogicalPart name="TECCoolantS" category="unspecified">
     <rSolid name="tecservices:TECCoolantS"/>
-    <rMaterial name="materials:C6F14_F2_-30C"/>
+    <rMaterial name="trackermaterial:T_C6F14_F2_-30C"/>
    </LogicalPart>
    <LogicalPart name="TECCoolantL" category="unspecified">
     <rSolid name="tecservices:TECCoolantL"/>
-    <rMaterial name="materials:C6F14_F2_-30C"/>
+    <rMaterial name="trackermaterial:T_C6F14_F2_-30C"/>
    </LogicalPart>
 
    <LogicalPart name="TECCable86B" category="unspecified">

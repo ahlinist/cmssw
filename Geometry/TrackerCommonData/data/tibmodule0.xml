@@ -93,11 +93,11 @@
 <LogicalPartSection label="tibmodule0.xml">
  <LogicalPart name="TIBModCFFrameSter" category="unspecified">
   <rSolid name="tibmodpar:TIBModCFFrame"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TIBModCFFrameHybSter" category="unspecified">
   <rSolid name="tibmodule0:TIBModCFFrameHybSter"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TIBHybrid0" category="unspecified">
   <rSolid name="tibmodpar:TIBHybrid"/>
@@ -113,7 +113,7 @@
  </LogicalPart>
  <LogicalPart name="TIBLedgeSter" category="unspecified">
   <rSolid name="tibmodule0:TIBLedgeSter"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TIBSpacerLedge" category="unspecified">
   <rSolid name="tibmodule0:TIBSpacerLedge"/>
@@ -121,7 +121,7 @@
  </LogicalPart>
  <LogicalPart name="TIBLedgeSide" category="unspecified">
   <rSolid name="tibmodule0:TIBLedgeSide"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TIBSpacerHyb" category="unspecified">
   <rSolid name="tibmodule0:TIBSpacerHyb"/>

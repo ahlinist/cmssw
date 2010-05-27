@@ -162,11 +162,11 @@
  </LogicalPart>
  <LogicalPart name="TECRailsInsertA" category="unspecified">
   <rSolid name="tec:TECRailsInsertA"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TECRailsInsertB" category="unspecified">
   <rSolid name="tec:TECRailsInsertB"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
 </LogicalPartSection>
 

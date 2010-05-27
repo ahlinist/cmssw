@@ -47,7 +47,7 @@
  </LogicalPart>
  <LogicalPart name="TECBackDiskGroundingRing" category="unspecified">
   <rSolid name="tecwheel:TECGroundingRing"/>
-  <rMaterial name="materials:Copper"/>
+  <rMaterial name="trackermaterial:T_Copper"/>
  </LogicalPart>
 
 

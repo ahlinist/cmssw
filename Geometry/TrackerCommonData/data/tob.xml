@@ -404,19 +404,19 @@
  </LogicalPart>
  <LogicalPart name="TOBAlPiece1" category="unspecified">
   <rSolid name="TOBAlPiece1"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBAlPiece2" category="unspecified">
   <rSolid name="TOBAlPiece2"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBAlPiece3" category="unspecified">
   <rSolid name="TOBAlPiece3"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBAlPiece4" category="unspecified">
   <rSolid name="TOBAlPiece4"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBCFTube1" category="unspecified">
   <rSolid name="TOBCFTube1"/>
@@ -516,7 +516,7 @@
  </LogicalPart>
  <LogicalPart name="TOBAlConnect1" category="unspecified">
   <rSolid name="TOBAlConnect1"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBConnect2" category="unspecified">
   <rSolid name="TOBConnect2"/>
@@ -524,7 +524,7 @@
  </LogicalPart>
  <LogicalPart name="TOBAlConnect2" category="unspecified">
   <rSolid name="TOBAlConnect2"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBConnect3" category="unspecified">
   <rSolid name="TOBConnect3"/>
@@ -532,7 +532,7 @@
  </LogicalPart>
  <LogicalPart name="TOBAlConnect3" category="unspecified">
   <rSolid name="TOBAlConnect3"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBConnect4" category="unspecified">
   <rSolid name="TOBConnect4"/>
@@ -540,7 +540,7 @@
  </LogicalPart>
  <LogicalPart name="TOBAlConnect4" category="unspecified">
   <rSolid name="TOBAlConnect4"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBConnect5" category="unspecified">
   <rSolid name="TOBConnect5"/>
@@ -548,7 +548,7 @@
  </LogicalPart>
  <LogicalPart name="TOBAlConnect5" category="unspecified">
   <rSolid name="TOBAlConnect5"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TOBConnect6" category="unspecified">
   <rSolid name="TOBConnect6"/>
@@ -556,7 +556,7 @@
  </LogicalPart>
  <LogicalPart name="TOBAlConnect6" category="unspecified">
   <rSolid name="TOBAlConnect6"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
 
  <LogicalPart name="TOBMidRib0" category="unspecified">
@@ -1284,8 +1284,8 @@
    [Layer0CoolRr], [Layer1CoolRr], [Layer2CoolRr], 
    [Layer3CoolRr], [Layer4CoolRr], [Layer5CoolRr]
   </Vector>
-  <String  name="CoolMaterial1" value="materials:CuNi"/>
-  <String  name="CoolMaterial2" value="materials:C6F14_F2_-30C"/>
+  <String  name="CoolMaterial1" value="trackermaterial:T_CuNi"/>
+  <String  name="CoolMaterial2" value="trackermaterial:T_C6F14_F2_-30C"/>
   <Vector name="RingName" type="string" nEntries="6">
    1, 2, 3, 4, 5, 6
   </Vector>

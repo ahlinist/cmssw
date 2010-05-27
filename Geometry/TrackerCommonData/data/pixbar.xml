@@ -189,27 +189,27 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelSuppTub" category="unspecified">
   <rSolid name="PixelBarrelSuppTub"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelSuppBox" category="unspecified">
   <rSolid name="PixelBarrelSuppBox"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelShield1" category="unspecified">
   <rSolid name="PixelBarrelShield1"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelShield2" category="unspecified">
   <rSolid name="PixelBarrelShield2"/>
-  <rMaterial name="materials:Kevlar"/>
+  <rMaterial name="trackermaterial:T_Kevlar"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelShield3" category="unspecified">
   <rSolid name="PixelBarrelShield3"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelShield4" category="unspecified">
   <rSolid name="PixelBarrelShield4"/>
-  <rMaterial name="materials:Kevlar"/>
+  <rMaterial name="trackermaterial:T_Kevlar"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelFlange" category="unspecified">
   <rSolid name="PixelBarrelFlange"/>

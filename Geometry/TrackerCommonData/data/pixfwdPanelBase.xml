@@ -360,15 +360,15 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 
    <LogicalPart name="PixelForwardPanelBaseMainBe" category = "support">
       <rSolid name="PixelForwardPanelBaseMainBe"/>
-      <rMaterial name="materials:Beryllium"/>
+      <rMaterial name="trackermaterial:T_Beryllium"/>
    </LogicalPart>
    <LogicalPart name="PixelForwardPanelBaseNoseBe" category = "support">
       <rSolid name="PixelForwardPanelBaseNoseBe"/>
-      <rMaterial name="materials:Beryllium"/>
+      <rMaterial name="trackermaterial:T_Beryllium"/>
    </LogicalPart>
    <LogicalPart name="PixelForwardPanelBaseEarBe" category = "support">
       <rSolid name="PixelForwardPanelBaseEarBe"/>
-      <rMaterial name="materials:Beryllium"/>
+      <rMaterial name="trackermaterial:T_Beryllium"/>
    </LogicalPart>
 
   <!-- Film -->

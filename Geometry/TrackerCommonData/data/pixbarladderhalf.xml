@@ -102,7 +102,7 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelCFStripHalf" category="unspecified">
   <rSolid name="PixelBarrelCFStripHalf"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCableBoxHalf" category="unspecified">
   <rSolid name="PixelBarrelCableBoxHalf"/>
@@ -154,7 +154,7 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelCapacitorHalf" category="unspecified">
   <rSolid name="PixelBarrelCapacitorHalf"/>
-  <rMaterial name="materials:Barium_Titanate"/>
+  <rMaterial name="trackermaterial:T_Barium_Titanate"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCapacitorStripHalf" category="unspecified">
   <rSolid name="PixelBarrelCapacitorStripHalf"/>
