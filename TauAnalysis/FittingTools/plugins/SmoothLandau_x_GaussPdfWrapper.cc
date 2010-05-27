@@ -25,7 +25,10 @@ SmoothLandau_x_GaussPdfWrapper::~SmoothLandau_x_GaussPdfWrapper()
 
 void SmoothLandau_x_GaussPdfWrapper::initialize()
 {
+  delete pdf_;
   pdf_ = new SmoothLandau_x_GaussPdf(name_, title_, *x_, *width_, *mp_, *area_, *gsigma_);
+
+  fit();
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

@@ -42,7 +42,10 @@ void SmoothGenericPdfWrapper::initialize()
   std::string pdfCoeffArgName = std::string(name_).append("_pdfCoeffArgs");
   RooArgList pdfCoeffArgs(pdfCoeffCollection, pdfCoeffArgName.data());
 
+  delete pdf_;
   pdf_ = new RooGenericPdf(name_, title_, formula_.data(), pdfCoeffArgs);
+
+  fit();
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
