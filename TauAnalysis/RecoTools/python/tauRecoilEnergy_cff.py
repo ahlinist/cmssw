@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 
 tauRecoilEnergyFromJets = cms.EDProducer("PATTauRecoilEnergyFromJetsProducer",
     srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
-    srcEnergyObjects = cms.InputTag('allPatJets'),
+    srcEnergyObjects = cms.InputTag('patJets'),
     etaMin = cms.double(-2.5),
     etaMax = cms.double(+2.5),
     etMin = cms.double(0.),
@@ -79,7 +79,7 @@ tauRecoilEnergyFromForwardCaloTowersPt5 = cms.EDFilter("PATTauRecoilEnergyFromCa
 # -------- Loose isolation selection -----------------# 
 tauRecoilEnergyFromJetsLooseIsolation = cms.EDProducer("PATTauRecoilEnergyFromJetsProducer",
     srcLeptons = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
-    srcEnergyObjects = cms.InputTag('allPatJets'),
+    srcEnergyObjects = cms.InputTag('patJets'),
     etaMin = cms.double(-2.5),
     etaMax = cms.double(+2.5),
     etMin = cms.double(0.),
