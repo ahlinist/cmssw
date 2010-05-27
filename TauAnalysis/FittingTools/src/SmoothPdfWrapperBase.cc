@@ -10,12 +10,49 @@
 #include <vector>
 #include <string>
 
+SmoothPdfWrapperBase::parameterType::parameterType(
+  const char* name, const char* title, double initial, double min, double max, double uncertainty)
+  : name_(name), 
+    title_(title), 
+    initial_(initial), 
+    uncertainty_(uncertainty),
+    meanExternalConstraintName_(std::string(name).append("_meanExternalConstraint")),
+    meanExternalConstraint_(0),
+    sigmaExternalConstraintName_(std::string(name).append("_sigmaExternalConstraint")),
+    sigmaExternalConstraint_(0),
+    pdfExternalConstraintName_(std::string(name).append("_pdfExternalConstraint")),
+    pdfExternalConstraint_(0)
+{
+  pdfCoeff_ = new RooRealVar(name, title, initial, min, max);
+  
+  if ( uncertainty > 0. ) {
+    meanExternalConstraint_ = new RooConstVar(meanExternalConstraintName_.data(), meanExternalConstraintName_.data(), initial);
+    sigmaExternalConstraint_ = new RooConstVar(sigmaExternalConstraintName_.data(), sigmaExternalConstraintName_.data(), uncertainty);
+    pdfExternalConstraint_ = new RooGaussian(pdfExternalConstraintName_.data(), pdfExternalConstraintName_.data(), 
+					     *pdfCoeff_, *meanExternalConstraint_, *sigmaExternalConstraint_);
+  }
+}
+
+SmoothPdfWrapperBase::parameterType::~parameterType()
+{
+  delete pdfCoeff_;
+  
+  delete meanExternalConstraint_;
+  delete sigmaExternalConstraint_; 
+  delete pdfExternalConstraint_;
+}
+
+//
+//-------------------------------------------------------------------------------
+//
+
 SmoothPdfWrapperBase::SmoothPdfWrapperBase(const edm::ParameterSet& cfg)
   : name_(""),
     title_(""),
     x_(0),
     pdf_(0),
-    templateHist_(0)
+    templateHist_(0),
+    externalConstraints_(0)
 {
   fitOptions_.Add(new RooCmdArg(RooFit::PrintLevel(-1)));
   fitOptions_.Add(new RooCmdArg(RooFit::PrintEvalErrors(false)));
@@ -24,9 +61,9 @@ SmoothPdfWrapperBase::SmoothPdfWrapperBase(const edm::ParameterSet& cfg)
 
 SmoothPdfWrapperBase::~SmoothPdfWrapperBase()
 {
- 
-
   delete pdf_;
+  
+  delete externalConstraints_;
 }
 
 RooRealVar* SmoothPdfWrapperBase::makeRooRealVar(const char* name, const char* title, const edm::ParameterSet& cfg)
@@ -43,7 +80,8 @@ RooRealVar* SmoothPdfWrapperBase::makeRooRealVar(const char* name, const char* t
   double uncertainty = ( cfg.exists("uncertainty") ) ? cfg.getParameter<double>("uncertainty") : -1.;
 
 //--- create new parameter  
-  parameterType* parameter = new parameterType(name, title, initial, min, max, uncertainty);
+  std::string parameterName = std::string(name_).append("name");
+  parameterType* parameter = new parameterType(parameterName.data(), title, initial, min, max, uncertainty);
 
 //--- add parameter to list of existing parameters
   parameters_[name] = parameter;
@@ -80,6 +118,20 @@ void SmoothPdfWrapperBase::reinitializeParameter()
 	parameter != parameters_.end(); ++parameter ) {
     parameter->second->pdfCoeff_->setVal(parameter->second->initial_);
   }
+}
+
+TObjArray* SmoothPdfWrapperBase::getExternalConstraints()
+{
+  if ( !externalConstraints_ ) {
+    externalConstraints_ = new TObjArray();
+    
+    for ( std::map<std::string, parameterType*>::iterator parameter = parameters_.begin();
+	  parameter != parameters_.end(); ++parameter ) {
+      if ( parameter->second->pdfExternalConstraint_ ) externalConstraints_->Add(parameter->second->pdfExternalConstraint_);
+    }
+  }
+  
+  return externalConstraints_;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

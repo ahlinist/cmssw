@@ -20,16 +20,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: TemplateFitAdapter_RooFit.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
+ * $Id: TemplateFitAdapter_RooFit.h,v 1.2 2009/11/29 15:25:15 veelken Exp $
  *
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/FittingTools/interface/TemplateFitAdapterBase.h"
-#include "TauAnalysis/FittingTools/interface/TF1WrapperBase.h"
+#include "TauAnalysis/FittingTools/interface/SmoothPdfWrapperBase.h"
 
 #include <RooDataHist.h>
 #include <RooHistPdf.h>
@@ -64,7 +64,8 @@ class TemplateFitAdapter_RooFit : public TemplateFitAdapterBase
 //--- auxiliary data-structures specific to RooFit algorithms
   struct model1dTypeRooFitSpecific 
   {
-    model1dTypeRooFitSpecific(const std::string&, const std::string&, RooRealVar*, RooRealVar*, bool, bool, const edm::ParameterSet&,
+    model1dTypeRooFitSpecific(const std::string&, const std::string&, RooRealVar*, RooRealVar*, bool, 
+			      bool, const edm::ParameterSet&, bool, const edm::ParameterSet&, 
 			      const TemplateFitAdapterBase::model1dType*);
     ~model1dTypeRooFitSpecific();
 
@@ -100,7 +101,29 @@ class TemplateFitAdapter_RooFit : public TemplateFitAdapterBase
 //    in template fits
     bool applySmoothing_;
     edm::ParameterSet cfgSmoothing_;
-    TF1WrapperBase* auxTF1Wrapper_;
+    SmoothPdfWrapperBase* auxSmoothPdfWrapper_;
+    std::string auxSmoothHistName_;
+    TH1* auxSmoothHist_;
+    std::string auxSmoothDataHistName_;
+    RooDataHist* auxSmoothDataHist_;
+
+//--- data-members for "horizontal morphing" of template histograms
+//    between two endpoints, using "linear interpolation of histograms" 
+//    algorithm by Alex Read (NIM A 425 (1999) 357-369)
+    bool applyHorizontalMorphing_;
+    edm::ParameterSet cfgHorizontalMorphing_;
+    TH1* auxMorphHist_upperBound_;
+    std::string auxMorphDataHistName_upperBound_;
+    RooDataHist* auxMorphDataHist_upperBound_;
+    std::string auxMorphHistPdfName_upperBound_;
+    RooHistPdf* auxMorphHistPdf_upperBound_;
+    TH1* auxMorphHist_lowerBound_;
+    std::string auxMorphDataHistName_lowerBound_;
+    RooDataHist* auxMorphDataHist_lowerBound_;
+    std::string auxMorphHistPdfName_lowerBound_;
+    RooHistPdf* auxMorphHistPdf_lowerBound_;
+    std::string auxMorphPdfCoeffName_;
+    RooAbsReal* auxMorphPdfCoeff_;
 
 //--- data-members for simultaneous fits 
 //    of templates and distributions observed in data
@@ -115,7 +138,8 @@ class TemplateFitAdapter_RooFit : public TemplateFitAdapterBase
     modelNdTypeRooFitSpecific(const std::string&, double, bool, double, double);
     ~modelNdTypeRooFitSpecific();
 
-    void addVar(const std::string&, RooRealVar*, bool, bool, const edm::ParameterSet&,
+    void addVar(const std::string&, RooRealVar*, bool, 
+		bool, const edm::ParameterSet&, bool, const edm::ParameterSet&,
 		const TemplateFitAdapterBase::model1dType*);
 
     std::string processName_;

@@ -26,9 +26,9 @@
 #include <RooFit.h>
 #include <RooLinkedList.h>
 #include <RooCmdArg.h>
-#include <RooTFnPdfBinding.h>
 #include <RooParametricStepFunction.h>
 #include <RooFormulaVar.h>
+#include <RooIntegralMorph.h>
 
 #include <iostream>
 #include <fstream>
@@ -43,8 +43,9 @@ const int fitStatus_converged_RooFit = 0;
 
 TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::model1dTypeRooFitSpecific(
   const std::string& processName, const std::string& varName,
-  RooRealVar* var, RooRealVar* norm,
-  bool fitSimultaneously, bool applySmoothing, const edm::ParameterSet& cfgSmoothing,
+  RooRealVar* var, RooRealVar* norm, bool fitSimultaneously, 
+  bool applySmoothing, const edm::ParameterSet& cfgSmoothing,
+  bool applyHorizontalMorphing, const edm::ParameterSet& cfgHorizontalMorphing,
   const TemplateFitAdapterBase::model1dType* model1dEntryBase)
   : processName_(processName),
     varName_(varName),
@@ -66,7 +67,21 @@ TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::model1dTypeRooFitSpecific(
     dataHist_(0),
     applySmoothing_(applySmoothing), 
     cfgSmoothing_(cfgSmoothing),
-    auxTF1Wrapper_(0),
+    auxSmoothPdfWrapper_(0),
+    auxSmoothHistName_(std::string(processName_).append("_").append(varName_).append("_auxSmoothHist")),
+    auxSmoothHist_(0),
+    auxSmoothDataHistName_(std::string(processName_).append("_").append(varName_).append("_auxSmoothDataHist")),
+    auxSmoothDataHist_(0),
+    applyHorizontalMorphing_(applyHorizontalMorphing),
+    cfgHorizontalMorphing_(cfgHorizontalMorphing),
+    auxMorphHist_upperBound_(0),
+    auxMorphHistPdfName_upperBound_(std::string(processName_).append("_").append(varName_).append("_auxMorphHistPdf_upperBound")),
+    auxMorphHistPdf_upperBound_(0),
+    auxMorphHist_lowerBound_(0),
+    auxMorphHistPdfName_lowerBound_(std::string(processName_).append("_").append(varName_).append("_auxMorphHistPdf_lowerBound")),
+    auxMorphHistPdf_lowerBound_(0),
+    auxMorphPdfCoeffName_(std::string(processName_).append("_").append(varName_).append("_auxMorphPdfCoeff")),
+    auxMorphPdfCoeff_(0),
     pdfBinning_(0),
     pdfCoeffCollection_(0),
     pdfCoeffArgs_(0)
@@ -80,10 +95,38 @@ TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::~model1dTypeRooFitSpecific
   delete auxNormTemplateShape_;
   delete auxPdfTemplateShapeSum_;
   delete dataHist_;
-  delete auxTF1Wrapper_;
+  delete auxSmoothPdfWrapper_;
+  delete auxSmoothHist_;
+  delete auxSmoothDataHist_;
+  delete auxMorphHist_upperBound_;
+  delete auxMorphDataHist_upperBound_;
+  delete auxMorphHistPdf_upperBound_;
+  delete auxMorphHist_lowerBound_;
+  delete auxMorphDataHist_lowerBound_;
+  delete auxMorphHistPdf_lowerBound_;
+  delete auxMorphPdfCoeff_;
   delete pdfBinning_;
   delete pdfCoeffCollection_;
   delete pdfCoeffArgs_;
+}
+
+void buildMorphHistPdf_endpoint(DQMStore& dqmStore, const std::string& meName, 
+				TH1*& auxMorphHist, 
+				RooAbsReal* x,
+				RooDataHist*& auxMorphDataHist, const std::string& auxMorphDataHistName,
+				RooHistPdf*& auxMorphHistPdf, const std::string& auxMorphHistPdfName)
+{
+  MonitorElement* me = dqmStore.get(meName);
+  
+  auxMorphHist = ( me ) ? me->getTH1() : 0;
+  if ( !auxMorphHist ) {
+    edm::LogError ("buildMorphHistPdf_endpoint") << " Failed to access dqmMonitorElement = " << meName << " !!";
+    return;
+  }
+  
+  auxMorphDataHist = new RooDataHist(auxMorphDataHistName.data(), auxMorphDataHistName.data(), *x, auxMorphHist);
+  
+  auxMorphHistPdf = new RooHistPdf(auxMorphHistPdfName.data(), auxMorphHistPdfName.data(), *x, *auxMorphDataHist);
 }
 
 void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
@@ -91,44 +134,48 @@ void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
   //std::cout << "<model1dTypeRooFitSpecific::buildPdf>:" << std::endl;
 
   if ( applySmoothing_ ) {
-    bool isFirstFit = (!auxTF1Wrapper_);
+    bool isFirstFit = (!auxSmoothPdfWrapper_);
     
     if ( isFirstFit ) {
-      std::string pluginTypeTF1Wrapper = cfgSmoothing_.getParameter<std::string>("pluginType");
-      auxTF1Wrapper_ = TF1WrapperPluginFactory::get()->create(pluginTypeTF1Wrapper, cfgSmoothing_);
+      std::string pluginTypeSmoothPdfWrapper = cfgSmoothing_.getParameter<std::string>("pluginType");
+      auxSmoothPdfWrapper_ = SmoothPdfWrapperPluginFactory::get()->create(pluginTypeSmoothPdfWrapper, cfgSmoothing_);
+      std::string auxSmoothPdfWrapperName 
+	= std::string(processName_).append("_").append(varName_).append("_").append("auxSmoothPdfWrapper");
+      auxSmoothPdfWrapper_->setName(auxSmoothPdfWrapperName.data());
+      auxSmoothPdfWrapper_->setTitle(auxSmoothPdfWrapperName.data());
+      auxSmoothPdfWrapper_->setX(*varRef_);
     } else {
-      auxTF1Wrapper_->reinitializeTF1Parameter();
+      auxSmoothPdfWrapper_->reinitializeParameter();
     }
-
-    std::string fitOption = ( isFirstFit ) ? "RB0" : "RB0Q";
     
-    if ( cfgSmoothing_.exists("excludeBinsX") ) {
-      std::string histogramName = std::string(model1dEntryBase_->fluctHistogram_->GetName()).append("_cloned");
-      TH1* histogram_cloned = (TH1*)model1dEntryBase_->fluctHistogram_->Clone(histogramName.data());
+    delete auxSmoothHist_;
+    auxSmoothHist_ = (TH1*)model1dEntryBase_->fluctHistogram_->Clone(auxSmoothHistName_.data());
 
-      int numBins = histogram_cloned->GetNbinsX();
+    if ( cfgSmoothing_.exists("excludeBinsX") ) {
+      int numBins = auxSmoothHist_->GetNbinsX();
 
       typedef std::vector<double> vdouble;
       vdouble excludedBinsX = cfgSmoothing_.getParameter<vdouble>("excludeBinsX");
       for ( vdouble::const_iterator excludedBinX = excludedBinsX.begin();
 	    excludedBinX != excludedBinsX.end(); ++excludedBinX ) {
-	int binIndex = histogram_cloned->FindBin(*excludedBinX);
+	int binIndex = auxSmoothHist_->FindBin(*excludedBinX);
 	if ( binIndex > 0 && binIndex <= numBins ) {
 	  //std::cout << "--> excluding bin " << binIndex << ":" 
-	  //	      << " xCenter = " << histogram_cloned->GetBinCenter(binIndex) << " from fit." << std::endl;
-	  histogram_cloned->SetBinContent(binIndex, 0.);
-	  histogram_cloned->SetBinError(binIndex, 1.e+6);
+	  //	      << " xCenter = " << auxSmoothHist_->GetBinCenter(binIndex) << " from fit." << std::endl;
+	  auxSmoothHist_->SetBinContent(binIndex, 0.);
+	  auxSmoothHist_->SetBinError(binIndex, 1.e+6);
 	}
       }
-      
-      histogram_cloned->Fit(auxTF1Wrapper_->getTF1(), fitOption.data());
-      delete histogram_cloned;
-    } else {
-      model1dEntryBase_->fluctHistogram_->Fit(auxTF1Wrapper_->getTF1(), fitOption.data());
     }
+      
+    delete auxSmoothDataHist_;
+    auxSmoothDataHist_ = new RooDataHist(auxSmoothDataHistName_.data(), auxSmoothDataHistName_.data(), *varRef_, auxSmoothHist_);
 
-    delete pdf_;
-    pdf_ = new RooTFnPdfBinding(pdfName_.data(), pdfName_.data(), auxTF1Wrapper_->getTF1(), RooArgList(*varRef_));
+    auxSmoothPdfWrapper_->setTemplateHist(auxSmoothDataHist_);
+
+    auxSmoothPdfWrapper_->initialize();
+
+    pdf_ = auxSmoothPdfWrapper_->getPDF();
   } else if ( fitSimultaneously_ ) {
     bool isFirstFit = (!pdfCoeffCollection_);
 
@@ -174,6 +221,27 @@ void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
     
     delete pdf_;
     pdf_ = new RooParametricStepFunction(pdfName_.data(), pdfName_.data(), *varRef_, *pdfCoeffArgs_, *pdfBinning_, numBins);
+  } else if ( applyHorizontalMorphing_ ) {
+    bool isFirstFit = (!auxMorphPdfCoeff_);
+    
+    if ( isFirstFit ) {
+      DQMStore& dqmStore = (*edm::Service<DQMStore>());
+      
+      std::string meName_upperBound = cfgHorizontalMorphing_.getParameter<std::string>("meName_upperBound");
+      buildMorphHistPdf_endpoint(dqmStore, meName_upperBound, auxMorphHist_upperBound_, varRef_, 
+				 auxMorphDataHist_upperBound_, auxMorphDataHistName_upperBound_,
+				 auxMorphHistPdf_upperBound_, auxMorphHistPdfName_upperBound_);
+      
+      std::string meName_lowerBound = cfgHorizontalMorphing_.getParameter<std::string>("meName_lowerBound");
+      buildMorphHistPdf_endpoint(dqmStore, meName_lowerBound, auxMorphHist_lowerBound_, varRef_, 
+				 auxMorphDataHist_lowerBound_, auxMorphDataHistName_lowerBound_,
+				 auxMorphHistPdf_lowerBound_, auxMorphHistPdfName_lowerBound_);
+      
+      auxMorphPdfCoeff_ = new RooRealVar(auxMorphPdfCoeffName_.data(), auxMorphPdfCoeffName_.data(), 0.5, 0.0, 1.0);
+      
+      pdf_ = new RooIntegralMorph(pdfName_.data(), pdfName_.data(), 
+				  *auxMorphHistPdf_lowerBound_, *auxMorphHistPdf_upperBound_, *varRef_, *auxMorphPdfCoeff_);
+    }
   } else {
     delete dataHist_;
     dataHist_ = new RooDataHist(dataHistName_.data(), dataHistName_.data(), *varRef_, model1dEntryBase_->fluctHistogram_);
@@ -236,13 +304,16 @@ TemplateFitAdapter_RooFit::modelNdTypeRooFitSpecific::~modelNdTypeRooFitSpecific
   delete sigmaNormConstraint_;
 }
 
-void TemplateFitAdapter_RooFit::modelNdTypeRooFitSpecific::addVar(const std::string& varName, RooRealVar* var,
-								  bool fitSimultaneously, 
-								  bool applySmoothing, const edm::ParameterSet& cfgSmoothing,
-								  const TemplateFitAdapterBase::model1dType* model1dEntryBase)
+void TemplateFitAdapter_RooFit::modelNdTypeRooFitSpecific::addVar(
+   const std::string& varName, RooRealVar* var, bool fitSimultaneously, 
+   bool applySmoothing, const edm::ParameterSet& cfgSmoothing,
+   bool applyHorizontalMorphing, const edm::ParameterSet& cfgHorizontalMorphing,
+   const TemplateFitAdapterBase::model1dType* model1dEntryBase)
 {
   model1dEntriesImpSpecific_[varName] 
-    = new model1dTypeRooFitSpecific(processName_, varName, var, norm_, fitSimultaneously, applySmoothing, cfgSmoothing, model1dEntryBase);
+    = new model1dTypeRooFitSpecific(processName_, varName, var, norm_, fitSimultaneously, 
+				    applySmoothing, cfgSmoothing, applyHorizontalMorphing, cfgHorizontalMorphing, 
+				    model1dEntryBase);
 }
 
 //
@@ -322,8 +393,8 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
     for ( vstring::const_iterator varName = varNames_.begin();
 	  varName != varNames_.end(); ++varName ) {
       if ( !cfgTemplates.exists(*varName) ) {
-	edm::LogError ("TemplateFitAdapter_RooFit") << " No Template of variable = " << (*varName) 
-						    << " defined for process = " << (*processName) << " !!";
+	edm::LogError ("TemplateFitAdapter_RooFit") 
+	  << " No Template of variable = " << (*varName) << " defined for process = " << (*processName) << " !!";
 	error_ = 1;
 	continue;
       }
@@ -339,16 +410,23 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
       edm::ParameterSet cfgSmoothing = ( applySmoothing ) ? 
 	cfgTemplate.getParameter<edm::ParameterSet>("smoothing") : edm::ParameterSet();
 
-      if ( fitSimultaneously && applySmoothing ) {
-	edm::LogError ("TemplateFitAdapter_RooFit") << " Parameters 'fitSimultaneously' and 'applySmoothing' are mutually exclusive !!";
+      bool applyHorizontalMorphing = cfgTemplate.exists("interpolation");
+      edm::ParameterSet cfgHorizontalMorphing = ( applyHorizontalMorphing ) ? 
+	cfgTemplate.getParameter<edm::ParameterSet>("interpolation") : edm::ParameterSet();
+      
+      if ( (fitSimultaneously && applySmoothing)          || 
+	   (fitSimultaneously && applyHorizontalMorphing) ||
+	   (applySmoothing    && applyHorizontalMorphing) ) {
+	edm::LogError ("TemplateFitAdapter_RooFit") 
+	  << " Parameters 'fitSimultaneously', 'applySmoothing' and 'applyHorizontalMorphing' are mutually exclusive !!";
 	error_ = 1;
 	continue;
       }
 
       const TemplateFitAdapterBase::model1dType* model1dEntryBase = getMapValue(modelNdEntryBase->model1dEntries_, *varName);
       if ( model1dEntryBase ) {
-	modelNdEntryImpSpecific->addVar(*varName, fitVariables_[*varName], 
-					fitSimultaneously, applySmoothing, cfgSmoothing, model1dEntryBase);
+	modelNdEntryImpSpecific->addVar(*varName, fitVariables_[*varName], fitSimultaneously, 
+					applySmoothing, cfgSmoothing, applyHorizontalMorphing, cfgHorizontalMorphing, model1dEntryBase);
       } else {
 	error_ = 1;
       }
@@ -634,18 +712,29 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
 //--- check if "external" constraints exist on normalization factors to be determined by fit
 //    (specified by Gaussian probability density functions with mean and sigma obtained
 //     e.g. by level of agreement between Monte Carlo simulation and number of events observed in background enriched samples)
-  TObjArray normConstraints_pdfCollection;
+  TObjArray externalConstraints_pdfCollection;
   for ( modelNdEntryMapImpSpecific::iterator modelNdEntryImpSpecific = modelNdEntriesImpSpecific_.begin();
 	modelNdEntryImpSpecific != modelNdEntriesImpSpecific_.end(); ++modelNdEntryImpSpecific ) {
     if ( modelNdEntryImpSpecific->second->applyNormConstraint_ ) 
-      normConstraints_pdfCollection.Add(modelNdEntryImpSpecific->second->pdfNormConstraint_);
+      externalConstraints_pdfCollection.Add(modelNdEntryImpSpecific->second->pdfNormConstraint_);
   }
 
-  if ( normConstraints_pdfCollection.GetEntries() > 0 ) {
-    std::string normConstraints_pdfArgName = std::string("normConstraints").append("_pdfArgs");
-    RooArgSet normConstraints_pdfArgs(normConstraints_pdfCollection, normConstraints_pdfArgName.data());
+  for ( modelNdEntryMapImpSpecific::iterator modelNdEntry = modelNdEntriesImpSpecific_.begin();
+	modelNdEntry != modelNdEntriesImpSpecific_.end(); ++modelNdEntry ) {
+    typedef std::map<std::string, model1dTypeRooFitSpecific*> model1dEntryMapImpSpecific;
+    for ( model1dEntryMapImpSpecific::iterator model1dEntry = modelNdEntry->second->model1dEntriesImpSpecific_.begin();
+	  model1dEntry != modelNdEntry->second->model1dEntriesImpSpecific_.end(); ++model1dEntry ) {
+      if ( model1dEntry->second->applySmoothing_ && !model1dEntry->second->fitSimultaneously_ ) {
+	externalConstraints_pdfCollection.AddAll(model1dEntry->second->auxSmoothPdfWrapper_->getExternalConstraints());
+      }
+    }
+  }
+
+  if ( externalConstraints_pdfCollection.GetEntries() > 0 ) {
+    std::string externalConstraints_pdfArgName = std::string("externalConstraints").append("_pdfArgs");
+    RooArgSet externalConstraints_pdfArgs(externalConstraints_pdfCollection, externalConstraints_pdfArgName.data());
     
-    fitOptions.Add(new RooCmdArg(RooFit::ExternalConstraints(normConstraints_pdfArgs)));
+    fitOptions.Add(new RooCmdArg(RooFit::ExternalConstraints(externalConstraints_pdfArgs)));
   }
 
 //--- save results of fit for later analysis
@@ -801,42 +890,22 @@ void TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific()
 
       const TemplateFitAdapterBase::model1dType* model1dEntryBase = model1dEntryImpSpecific->model1dEntryBase_;
 
-      std::string histogramName = std::string(model1dEntryBase->fluctHistogram_->GetName()).append("_cloned");
-      TH1* histogram_cloned = (TH1*)model1dEntryBase->fluctHistogram_->Clone(histogramName.data());
-      histogram_cloned->SetStats(false);
-      histogram_cloned->GetXaxis()->SetTitle(varName->data());
+      SmoothPdfWrapperBase* smoothPdfWrapper = model1dEntryImpSpecific->auxSmoothPdfWrapper_;
+
+      RooPlot* frame = smoothPdfWrapper->getX()->frame();
+      std::string frameTitle = std::string("processName = ").append(*processName).append(": varName = ").append(*varName);
+      frame->SetTitle(frameTitle.data());
+      frame->SetStats(false);
       const char* xAxisLabel = model1dEntryBase->fitRanges_[0].title_.data();
-      histogram_cloned->GetXaxis()->SetTitle(xAxisLabel);
-      histogram_cloned->SetMarkerStyle(8);
-      histogram_cloned->SetMarkerColor(1);
-      histogram_cloned->SetLineStyle(1);
-      histogram_cloned->SetLineColor(1);
-      histogram_cloned->SetLineWidth(2);
+      frame->GetXaxis()->SetTitle(xAxisLabel);
 
-      std::string tf1Name = std::string(model1dEntryImpSpecific->auxTF1Wrapper_->getTF1()->GetName()).append("_cloned");
-      TF1* tf1_cloned = (TF1*)model1dEntryImpSpecific->auxTF1Wrapper_->getTF1()->Clone(tf1Name.data());
-      double tf1Xmin = histogram_cloned->GetXaxis()->GetXmin();
-      double tf1Xmax = histogram_cloned->GetXaxis()->GetXmax();
-      tf1_cloned->SetRange(tf1Xmin, tf1Xmax);
-      tf1_cloned->SetLineStyle(1);
-      tf1_cloned->SetLineColor(2);
-      tf1_cloned->SetLineWidth(2);
-      
-      histogram_cloned->SetMinimum(0.);
-      double yMax = histogram_cloned->GetMaximum();
-      histogram_cloned->SetMaximum(1.4*yMax);
+      smoothPdfWrapper->getTemplateHist()->plotOn(
+	frame, RooFit::LineStyle(1), RooFit::LineColor(1), RooFit::LineWidth(2),RooFit::MarkerStyle(8), RooFit::MarkerColor(1));
 
-      TLegend legend(0.63, 0.38, 0.89, 0.54);
-      legend.SetBorderSize(0);
-      legend.SetFillColor(0);
+      smoothPdfWrapper->getPDF()->plotOn(
+        frame, RooFit::LineStyle(1), RooFit::LineColor(2), RooFit::LineWidth(2));
 
-      legend.AddEntry(histogram_cloned, "Template Histogram", "p");
-      legend.AddEntry(tf1_cloned, "Smoothing Function", "l");
-
-      histogram_cloned->Draw("e1p");
-      tf1_cloned->Draw("lsame");
-      
-      //legend.Draw();
+      frame->Draw();
 
       canvas.Update();
 
@@ -850,9 +919,6 @@ void TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific()
 	  << " Failed to decode controlPlotsFileName = " << controlPlotsFileName_ << " --> skipping !!";
 	return;
       }
-
-      delete histogram_cloned;
-      delete tf1_cloned;
     }
   }
 

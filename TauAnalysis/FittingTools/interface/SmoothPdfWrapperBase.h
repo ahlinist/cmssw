@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: SmoothPdfWrapperBase.h,v 1.1 2010/05/26 15:00:26 veelken Exp $
+ * $Id: SmoothPdfWrapperBase.h,v 1.2 2010/05/26 15:26:07 veelken Exp $
  *
  */
 
@@ -17,8 +17,14 @@
 
 #include <RooAbsPdf.h>
 #include <RooRealVar.h>
+#include <RooConstVar.h>
+#include <RooGaussian.h>
 #include <RooLinkedList.h>
 #include <RooDataHist.h>
+
+#include <TObjArray.h>
+
+#include <string>
 
 class SmoothPdfWrapperBase
 {
@@ -45,25 +51,40 @@ class SmoothPdfWrapperBase
   // set parameter values of RooAbsPdf object to initial values
   virtual void reinitializeParameter();
 
+  // method for accessing "dependent" variable x
+  const RooRealVar* getX() const { return x_; }
+  RooRealVar* getX() { return x_; }
+
+  // method for accessing template histogram
+  const RooDataHist* getTemplateHist() const { return templateHist_; }
+  RooDataHist* getTemplateHist() { return templateHist_; }
+
   // method for accessing RooAbsPdf object
   const RooAbsPdf* getPDF() const { return pdf_; }
   RooAbsPdf* getPDF() { return pdf_; }
   
+  TObjArray* getExternalConstraints();
+
  protected:
   struct parameterType 
   {
-    parameterType(const char* name, const char* title, double initial, double min, double max, double uncertainty)
-      : initial_(initial), uncertainty_(uncertainty)
-    {
-      pdfCoeff_ = new RooRealVar(name, title, initial, min, max);
-    }
-    ~parameterType()
-    {
-      delete pdfCoeff_;
-    }
+    parameterType(const char*, const char*, double, double, double, double);
+    ~parameterType();
+
+    std::string name_;
+    std::string title_;
+
     RooRealVar* pdfCoeff_; // pointer to PDF coefficient (RooRealVar object "owned" by classes derrived from SmoothPdfWrapperBase)
+
     double initial_;
     double uncertainty_;
+
+    std::string meanExternalConstraintName_;
+    RooConstVar* meanExternalConstraint_;
+    std::string sigmaExternalConstraintName_;
+    RooConstVar* sigmaExternalConstraint_; 
+    std::string pdfExternalConstraintName_;
+    RooAbsPdf* pdfExternalConstraint_;
   };
   
   RooRealVar* makeRooRealVar(const char*, const char*, const edm::ParameterSet&);
@@ -88,6 +109,8 @@ class SmoothPdfWrapperBase
 
   // pointer to template histogram
   RooDataHist* templateHist_;
+
+  TObjArray* externalConstraints_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"
