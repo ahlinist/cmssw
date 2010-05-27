@@ -96,7 +96,7 @@ public:
 	 {
 	   if ( obj->GetBinContent(i) != 0 )
 	   {
-	      ibin = obj->GetBinContent(i);
+	      ibin = (int)obj->GetBinContent(i);
 	      break;
 	   }
 	 }
@@ -123,7 +123,7 @@ public:
 	 {
 	   if ( obj->GetBinContent(i) != 0 )
 	   {
-	      y = obj->GetBinContent(i);
+	      y = (int)obj->GetBinContent(i);
 	      break;
 	   }
 	 }
@@ -149,7 +149,7 @@ public:
 	 {
 	   if ( obj->GetBinContent(i) != 0 )
 	   {
-	      y = obj->GetBinContent(i);
+	      y = (int)obj->GetBinContent(i);
 	      break;
 	   }
 	 }
