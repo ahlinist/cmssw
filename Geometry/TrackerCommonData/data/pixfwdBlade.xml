@@ -231,27 +231,27 @@ This seems to be a problem for visualization only, not for tracking at simulatio
 <LogicalPartSection label="Body">
   <LogicalPart name="PixelForwardBladeBody01_Left" category="support">
     <rSolid name="PixelForwardBladeBody01"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeBody01_Right" category="support">
     <rSolid name="PixelForwardBladeBody01"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeBody02" category="support">
     <rSolid name="PixelForwardBladeBody02"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeBody03_Left" category="support">
     <rSolid name="PixelForwardBladeBody03"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeBody03_Right" category="support">
     <rSolid name="PixelForwardBladeBody03"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeBody04" category="support">
     <rSolid name="PixelForwardBladeBody04"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeBody05" category="support">
     <rSolid name="PixelForwardBladeBody05"/>
@@ -400,27 +400,27 @@ This seems to be a problem for visualization only, not for tracking at simulatio
 <LogicalPartSection label="Cover">
   <LogicalPart name="PixelForwardBladeCover01_Left" category="support">
     <rSolid name="PixelForwardBladeCover01"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeCover01_Right" category="support">
     <rSolid name="PixelForwardBladeCover01"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeCover02" category="support">
     <rSolid name="PixelForwardBladeCover02"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeCover03_Left" category="support">
     <rSolid name="PixelForwardBladeCover03"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeCover03_Right" category="support">
     <rSolid name="PixelForwardBladeCover03"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
   <LogicalPart name="PixelForwardBladeCover04" category="support">
     <rSolid name="PixelForwardBladeCover04"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
 </LogicalPartSection>
 
@@ -521,7 +521,7 @@ This seems to be a problem for visualization only, not for tracking at simulatio
 <LogicalPartSection label="Tip">
   <LogicalPart name="PixelForwardBladeTip01" category="support">
     <rSolid name="PixelForwardBladeTip01"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="trackermaterial:T_Aluminium"/>
   </LogicalPart>
 </LogicalPartSection>
 

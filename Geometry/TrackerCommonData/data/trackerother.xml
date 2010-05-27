@@ -133,7 +133,7 @@
  </LogicalPart>
  <LogicalPart name="TrackerThermalScreenFoam" category="unspecified">
   <rSolid name="TrackerThermalScreenFoam"/>
-  <rMaterial name="materials:Rohacell"/>
+  <rMaterial name="trackermaterial:T_Rohacell"/>
  </LogicalPart>
  <LogicalPart name="TrackerThermalScreenShield" category="unspecified">
   <rSolid name="TrackerThermalScreenShield"/>
@@ -145,7 +145,7 @@
  </LogicalPart>
  <LogicalPart name="TrackerThermalScreenPlaceholder" category="unspecified">
   <rSolid name="TrackerThermalScreenPlaceholder"/>
-  <rMaterial name="materials:StainlessSteel"/>
+  <rMaterial name="trackermaterial:T_StainlessSteel"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTube" category="unspecified">
   <rSolid name="TrackerSupportTube"/>
@@ -153,39 +153,39 @@
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeCFSkin1" category="unspecified">
   <rSolid name="TrackerSupportTubeCFSkin1"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeNomex" category="unspecified">
   <rSolid name="TrackerSupportTubeNomex"/>
-  <rMaterial name="materials:Nomex"/>
+  <rMaterial name="trackermaterial:T_Nomex"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeCFSkin2" category="unspecified">
   <rSolid name="TrackerSupportTubeCFSkin2"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeShield" category="unspecified">
   <rSolid name="TrackerSupportTubeShield"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="trackermaterial:T_Aluminium"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeInsert" category="unspecified">
   <rSolid name="TrackerSupportTubeInsert"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeInsertCFSkin1" category="unspecified">
   <rSolid name="TrackerSupportTubeInsertCFSkin1"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeInsertNomex" category="unspecified">
   <rSolid name="TrackerSupportTubeInsertNomex"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeInsertCFSkin2" category="unspecified">
   <rSolid name="TrackerSupportTubeInsertCFSkin2"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerSupportTubeInsertShield" category="unspecified">
   <rSolid name="TrackerSupportTubeInsertShield"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerRail" category="unspecified">
   <rSolid name="TrackerRail"/>
@@ -193,23 +193,23 @@
  </LogicalPart>
  <LogicalPart name="TrackerRailNomex" category="unspecified">
   <rSolid name="TrackerRailNomex"/>
-  <rMaterial name="materials:Nomex"/>
+  <rMaterial name="trackermaterial:T_Nomex"/>
  </LogicalPart>
  <LogicalPart name="TrackerRailCFSkin1" category="unspecified">
   <rSolid name="TrackerRailCFSkin1"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerRailCFSkin2" category="unspecified">
   <rSolid name="TrackerRailCFSkin2"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TrackerRailCF" category="unspecified">
   <rSolid name="TrackerRailCF"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TOBRail" category="unspecified">
   <rSolid name="TOBRail"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
 
 </LogicalPartSection>

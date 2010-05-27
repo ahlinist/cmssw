@@ -226,7 +226,7 @@ than they are on the drawings.
     
     <LogicalPart name="PixelForwardNippleSleeve" category="cooling">
       <rSolid name="PixelForwardNippleSleeve"/>
-      <rMaterial name="materials:Aluminium"/>
+      <rMaterial name="trackermaterial:T_Aluminium"/>
     </LogicalPart>
     
     <LogicalPart name="PixelForwardNippleEpoxyCover" category="cooling">
@@ -322,7 +322,7 @@ than they are on the drawings.
   
     <LogicalPart name="PixelForwardNippleCoverZPlus" category="cooling">
       <rSolid name="PixelForwardNippleCoverZPlus"/>
-      <rMaterial name="materials:Aluminium"/>
+      <rMaterial name="trackermaterial:T_Aluminium"/>
     </LogicalPart>
     <LogicalPart name="PixelForwardNippleCoverCoolantZPlus" category="cooling">
       <rSolid name="PixelForwardNippleCoverCoolantZPlus"/>
@@ -331,7 +331,7 @@ than they are on the drawings.
     
     <LogicalPart name="PixelForwardNippleCoverZMinus" category="cooling">
       <rSolid name="PixelForwardNippleCoverZMinus"/>
-      <rMaterial name="materials:Aluminium"/>
+      <rMaterial name="trackermaterial:T_Aluminium"/>
     </LogicalPart>
     <LogicalPart name="PixelForwardNippleCoverCoolantZMinus" category="cooling">
       <rSolid name="PixelForwardNippleCoverCoolantZMinus"/>
@@ -407,7 +407,7 @@ than they are on the drawings.
   
     <LogicalPart name="PixelForwardNippleBodyZPlus" category="cooling">
       <rSolid name="PixelForwardNippleBodyZPlus"/>
-      <rMaterial name="materials:Aluminium"/>
+      <rMaterial name="trackermaterial:T_Aluminium"/>
     </LogicalPart>
     <LogicalPart name="PixelForwardNippleBodyCoolantZPlus" category="cooling">
       <rSolid name="PixelForwardNippleBodyCoolantZPlus"/>
@@ -416,7 +416,7 @@ than they are on the drawings.
     
     <LogicalPart name="PixelForwardNippleBodyZMinus" category="cooling">
       <rSolid name="PixelForwardNippleBodyZMinus"/>
-      <rMaterial name="materials:Aluminium"/>
+      <rMaterial name="trackermaterial:T_Aluminium"/>
     </LogicalPart>
     <LogicalPart name="PixelForwardNippleBodyCoolantZMinus" category="cooling">
       <rSolid name="PixelForwardNippleBodyCoolantZMinus"/>

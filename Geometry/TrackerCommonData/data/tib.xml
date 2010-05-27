@@ -27,7 +27,7 @@
  </LogicalPart>
  <LogicalPart name="TIBOutSupport" category="unspecified">
   <rSolid name="TIBOutSupport"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
 </LogicalPartSection>
 

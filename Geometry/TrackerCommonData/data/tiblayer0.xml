@@ -40,10 +40,10 @@
   36.88*mm, 4.*mm, [MFRingInR], [MFRingInR]+[tiblayerpar:MFRingT]
   </Vector>
 
-  <String  name="FillerMaterial"    value="materials:T_G10"/>
+  <String  name="FillerMaterial"    value="trackermaterial:T_G10"/>
   <Numeric name="FillerDeltaz"      value="10*mm"/>
 
-  <String name="RibMaterial"        value="materials:Carbon fibre str."/>
+  <String name="RibMaterial"        value="trackermaterial:T_CarbonFibreStr"/>
   <Vector name="RibWidth" type="numeric" nEntries="6">
    [tiblayerpar:RibWidth1], [tiblayerpar:RibWidth2], [tiblayerpar:RibWidth2], 
    [tiblayerpar:RibWidth1], [tiblayerpar:RibWidth2], [tiblayerpar:RibWidth2] 

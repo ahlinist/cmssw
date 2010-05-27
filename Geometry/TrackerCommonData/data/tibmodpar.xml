@@ -160,11 +160,11 @@
 <LogicalPartSection label="tibmodpar.xml">
  <LogicalPart name="TIBModCFFrameRPhi" category="unspecified">
   <rSolid name="tibmodpar:TIBModCFFrame"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TIBModCFFrameHybRPhi" category="unspecified">
   <rSolid name="tibmodpar:TIBModCFFrameHybRPhi"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TIBModCFFrameHole" category="unspecified">
   <rSolid name="tibmodpar:TIBModCFFrameHole"/>

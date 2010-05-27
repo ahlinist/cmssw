@@ -59,7 +59,7 @@
  </LogicalPart>
  <LogicalPart name="TOBModCoolComp02" category="unspecified">
   <rSolid name="TOBModCoolComp02"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
 </LogicalPartSection>
 

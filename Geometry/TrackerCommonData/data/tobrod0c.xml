@@ -29,19 +29,19 @@
 <LogicalPartSection label="tobrod0c.xml">
  <LogicalPart name="TOBSideCoolTube0" category="unspecified">
   <rSolid name="TOBSideCoolTube0"/>
-  <rMaterial name="materials:CuNi"/>
+  <rMaterial name="trackermaterial:T_CuNi"/>
  </LogicalPart>
  <LogicalPart name="TOBSideCoolFluid0" category="unspecified">
   <rSolid name="TOBSideCoolFluid0"/>
-  <rMaterial name="materials:C6F14_F2_-30C"/>
+  <rMaterial name="trackermaterial:T_C6F14_F2_-30C"/>
  </LogicalPart>
  <LogicalPart name="TOBEndCoolTube0" category="unspecified">
   <rSolid name="TOBEndCoolTube0"/>
-  <rMaterial name="materials:CuNi"/>
+  <rMaterial name="trackermaterial:T_CuNi"/>
  </LogicalPart>
  <LogicalPart name="TOBEndCoolFluid0" category="unspecified">
   <rSolid name="TOBEndCoolFluid0"/>
-  <rMaterial name="materials:C6F14_F2_-30C"/>
+  <rMaterial name="trackermaterial:T_C6F14_F2_-30C"/>
  </LogicalPart>
  <LogicalPart name="TOBOptFibre0" category="unspecified">
   <rSolid name="TOBOptFibre0"/>

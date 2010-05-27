@@ -77,19 +77,19 @@
 <LogicalPartSection label="tid.xml">
  <LogicalPart name="TIDSupport" category="unspecified">
   <rSolid name="TIDSupport"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
  </LogicalPart>
  <LogicalPart name="TIDSupportIn" category="unspecified">
   <rSolid name="TIDSupportIn"/>
-  <rMaterial name="materials:Nomex"/>
+  <rMaterial name="trackermaterial:T_Nomex"/>
  </LogicalPart>
  <LogicalPart name="TIDSideDisk" category="unspecified">
   <rSolid name="TIDSideDisk"/>
-  <rMaterial name="materials:Carbon fibre str."/>
+  <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
   </LogicalPart>
  <LogicalPart name="TIDSideDiskIn" category="unspecified">
   <rSolid name="TIDSideDiskIn"/>
-  <rMaterial name="materials:Nomex"/>
+  <rMaterial name="trackermaterial:T_Nomex"/>
   </LogicalPart>
  <LogicalPart name="TIDWheelFixCutted" category="unspecified">
   <rSolid name="TIDWheelFixCutted"/>
