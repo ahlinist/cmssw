@@ -9,3 +9,15 @@ cvs update -r V00-02-15 CommonTools/RecoAlgos/BuildFile
 cvs co -r V00-11-02-03 RecoLocalCalo/EcalRecAlgos
 scramv1 b -j10
 
+#How to get the cleaned MET after re-reco:
+Make sure that in your config file or in the EDAnalyzer you get 
+the correct MET collection. For example:
+
+  //Get the MET Collection
+  edm::Handle<reco::CaloMETCollection> metcollection;
+  iEvent.getByLabel('met::USER', metcollection);
+
+The example above will retrieve the newly created CaloMET collection, which was 
+re-recoed on the fly with the new cleaning. To retrieve the default
+CaloMET collection, replace 'met::USER' with 'met::RECO'. Similarly, for tcMET
+the methods would be 'tcMet::USER' and 'tcMet::RECO'
