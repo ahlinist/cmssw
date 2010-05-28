@@ -7,7 +7,7 @@
 ///
 /// \author Frederic Ronga - Fri May 23 14:21:31 CEST 2008
 ///
-/// $Id: MeffSelector.h,v 1.4 2008/07/30 14:22:35 fronga Exp $
+/// $Id: MeffSelector.h,v 1.5 2008/10/20 12:55:15 adamwo Exp $
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -15,18 +15,19 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
-class MeffSelector : public SusyEventSelector {
+class MeffSelector: public SusyEventSelector {
 public:
-  MeffSelector (const edm::ParameterSet&);
-  virtual bool select(const edm::Event&) const;
-  virtual ~MeffSelector () {}
+   MeffSelector(const edm::ParameterSet&);
+   virtual bool select(const edm::Event&) const;
+   virtual ~MeffSelector() {
+   }
 
- private:
-  edm::InputTag jetTag_; ///< tag for input jet collection
-  edm::InputTag metTag_; ///< tag for input MET collection
+private:
+   edm::InputTag jetTag_; ///< tag for input jet collection
+   edm::InputTag metTag_; ///< tag for input MET collection
 
-  double minMeff_;   ///< Cut on minimum M_eff
+   double minMeff_; ///< Cut on minimum M_eff
 
-  pat::MET::UncorrectionType uncorrType_;  ///< uncorrection type for MET
+   pat::MET::UncorrectionType uncorrType_; ///< uncorrection type for MET
 };
 #endif

@@ -7,7 +7,7 @@
 ///
 /// Original author: M. Weinberg - Fri Jul 18 11:55:50 CEST 2008
 ///
-/// $Id: MuonEventSelector.h, v 1.3 2008/07/18, weinberg$
+/// $Id: MuonEventSelector.h,v 1.1 2008/07/28 14:17:32 weinberg Exp $
 
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -17,18 +17,19 @@
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
 
-class MuonEventSelector : public SusyEventSelector {
+class MuonEventSelector: public SusyEventSelector {
 public:
-  MuonEventSelector (const edm::ParameterSet&);
-  virtual bool select(const edm::Event&) const;
-  virtual ~MuonEventSelector () {}
+   MuonEventSelector(const edm::ParameterSet&);
+   virtual bool select(const edm::Event&) const;
+   virtual ~MuonEventSelector() {
+   }
 
- private:
-  // Define parameters here
-  edm::InputTag       muonTag_; // tag for input collection
-  std::vector<double> minPt_;   // lower pT cuts (also defines min # of jets)
-  std::vector<double> maxEta_;  // uper |eta| cuts (also defines min # of jets)
-  std::vector<double> minIso_;  // lower isolation cut (also defines min # of jets)
+private:
+   // Define parameters here
+   edm::InputTag muonTag_; // tag for input collection
+   std::vector<double> minPt_; // lower pT cuts (also defines min # of jets)
+   std::vector<double> maxEta_; // uper |eta| cuts (also defines min # of jets)
+   std::vector<double> minIso_; // lower isolation cut (also defines min # of jets)
 };
 
 #endif

@@ -19,43 +19,47 @@
 // class declaration
 //
 
-class EventSelectorFilter : public edm::EDFilter {
+class EventSelectorFilter: public edm::EDFilter {
 public:
-  EventSelectorFilter () : selector_(0) {}
-  explicit EventSelectorFilter (const edm::ParameterSet& pset);
-  ~EventSelectorFilter () {delete selector_;}
+   EventSelectorFilter() :
+      selector_(0) {
+   }
+   explicit EventSelectorFilter(const edm::ParameterSet& pset);
+   ~EventSelectorFilter() {
+      delete selector_;
+   }
 
 private:
-  virtual void beginJob (const edm::EventSetup&) {}
-  virtual bool filter (edm::Event& iEvent, const edm::EventSetup& iSetup) {
-    return selector_ ? selector_->select(iEvent) : false;
-  }
-  virtual void endJob() {}
-      
+   virtual void beginJob(const edm::EventSetup&) {
+   }
+   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+      return selector_ ? selector_->select(iEvent) : false;
+   }
+   virtual void endJob() {
+   }
+
 private:
-  SusyEventSelector* selector_;
+   SusyEventSelector* selector_;
 };
 
-EventSelectorFilter::EventSelectorFilter (const edm::ParameterSet& pset)
-{
-  // definition of the selector(s)
-  edm::ParameterSet selectors = pset.getParameter<edm::ParameterSet>("selectors");
-  // name of the selector
-  std::string name = pset.getParameter<std::string>("selector");
+EventSelectorFilter::EventSelectorFilter(const edm::ParameterSet& pset) {
+   // definition of the selector(s)
+   edm::ParameterSet selectors = pset.getParameter<edm::ParameterSet> ("selectors");
+   // name of the selector
+   std::string name = pset.getParameter<std::string> ("selector");
 
-  // retrieve configuration of the selector
-  edm::ParameterSet selectorPSet = selectors.getParameter<edm::ParameterSet>(name);
-  // get selector type
-  std::string selectorType = selectorPSet.getParameter<std::string>("selector");
-  // add name
-  selectorPSet.addUntrackedParameter<std::string>("name",name);
-  edm::LogInfo("EventSelectorFilter") << "creating selector of type " << selectorType
-				      << " with name " << name;
-  // add full list of selectors (for combined selectors)
-  selectorPSet.addParameter<edm::ParameterSet>("_AllFilters",selectors);
-  // create selector
-  selector_ = EventSelectorFactory::get()->create(selectorType,selectorPSet);
+   // retrieve configuration of the selector
+   edm::ParameterSet selectorPSet = selectors.getParameter<edm::ParameterSet> (name);
+   // get selector type
+   std::string selectorType = selectorPSet.getParameter<std::string> ("selector");
+   // add name
+   selectorPSet.addUntrackedParameter<std::string> ("name", name);
+   edm::LogInfo("EventSelectorFilter") << "creating selector of type " << selectorType << " with name " << name;
+   // add full list of selectors (for combined selectors)
+   selectorPSet.addParameter<edm::ParameterSet> ("_AllFilters", selectors);
+   // create selector
+   selector_ = EventSelectorFactory::get()->create(selectorType, selectorPSet);
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(EventSelectorFilter);
+DEFINE_FWK_MODULE( EventSelectorFilter);

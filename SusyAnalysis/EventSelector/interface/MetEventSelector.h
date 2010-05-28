@@ -5,13 +5,13 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: MetEventSelector.h,v 1.7 2008/10/20 12:55:15 adamwo Exp $
+/// $Id: MetEventSelector.h,v 1.8 2010/04/26 13:41:59 csander Exp $
 
 //if uncorrNumber =
-  //0: bare uncorrected MET
-  //1: MET uncorrected for JES
-  //2: MET uncorrected for Muons
- //>2: totally corrected MET
+//0: bare uncorrected MET
+//1: MET uncorrected for JES
+//2: MET uncorrected for Muons
+//>2: totally corrected MET
 //T. Rommerskirchen /27/06/08
 
 // system include files
@@ -28,17 +28,18 @@
 #include <vector>
 #include <string>
 
-class MetEventSelector : public SusyEventSelector {
+class MetEventSelector: public SusyEventSelector {
 public:
-  MetEventSelector (const edm::ParameterSet&);
-  virtual bool select (const edm::Event&) const;
-  virtual ~MetEventSelector () {}
+   MetEventSelector(const edm::ParameterSet&);
+   virtual bool select(const edm::Event&) const;
+   virtual ~MetEventSelector() {
+   }
 
 private:
-  edm::InputTag metTag_;      ///< tag for input collection
-  float minMet_;              ///< lower cut on MET
-  float maxMet_;              ///< upper cut on MET
+   edm::InputTag metTag_; ///< tag for input collection
+   float minMet_; ///< lower cut on MET
+   float maxMet_; ///< upper cut on MET
 
-  pat::MET::UncorrectionType uncorrType_;
+   pat::MET::UncorrectionType uncorrType_;
 };
 #endif

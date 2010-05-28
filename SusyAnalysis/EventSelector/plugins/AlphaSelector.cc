@@ -4,49 +4,45 @@
 #include <DataFormats/Candidate/interface/Particle.h>
 
 //________________________________________________________________________________________
-AlphaSelector::AlphaSelector (const edm::ParameterSet& pset ) :
-  SusyEventSelector(pset),
-  jetTag_ (pset.getParameter<edm::InputTag>("jetTag") ), 
-  minAlpha_ ( pset.getParameter<double>("minAlpha") )
-{
-  // Define variables to store
-  defineVariable("twoJetMass");
-  defineVariable("jet2Et");
-  defineVariable("AlphaLisa");
+AlphaSelector::AlphaSelector(const edm::ParameterSet& pset) :
+   SusyEventSelector(pset), jetTag_(pset.getParameter<edm::InputTag> ("jetTag")), minAlpha_(pset.getParameter<double> (
+            "minAlpha")) {
+   // Define variables to store
+   defineVariable("twoJetMass");
+   defineVariable("jet2Et");
+   defineVariable("AlphaLisa");
 }
 
 //________________________________________________________________________________________
-bool
-AlphaSelector::select (const edm::Event& event) const
-{
+bool AlphaSelector::select(const edm::Event& event) const {
 
-  // Reset cached variables
-  resetVariables();
+   // Reset cached variables
+   resetVariables();
 
-  // Check input collections
-  edm::Handle< edm::View<pat::Jet> > jetHandle;
-  event.getByLabel(jetTag_, jetHandle);
-  if ( !jetHandle.isValid() ) {
-    edm::LogWarning("AlphaSelector") << "No Jet results for InputTag " << jetTag_;
-    return false;
-  }
-  if(jetHandle->size()<2)  {
-    edm::LogWarning("AlphaSelector") << "Too few jets to calculate dijet alpha";
-    return false;
-  }
+   // Check input collections
+   edm::Handle<edm::View<pat::Jet> > jetHandle;
+   event.getByLabel(jetTag_, jetHandle);
+   if (!jetHandle.isValid()) {
+      edm::LogWarning("AlphaSelector") << "No Jet results for InputTag " << jetTag_;
+      return false;
+   }
+   if (jetHandle->size() < 2) {
+      edm::LogWarning("AlphaSelector") << "Too few jets to calculate dijet alpha";
+      return false;
+   }
 
-  // Compute variables
-  float jet2Et = (*jetHandle)[1].et();
-  float twoJetMass = ( (*jetHandle)[0].p4()+(*jetHandle)[1].p4() ).mass();
-  float aAlpha = jet2Et/twoJetMass;
+   // Compute variables
+   float jet2Et = (*jetHandle)[1].et();
+   float twoJetMass = ((*jetHandle)[0].p4() + (*jetHandle)[1].p4()).mass();
+   float aAlpha = jet2Et / twoJetMass;
 
-  // Store variables
-  setVariable("jet2Et",jet2Et);
-  setVariable("twoJetMass",twoJetMass);
-  setVariable("AlphaLisa",aAlpha);
+   // Store variables
+   setVariable("jet2Et", jet2Et);
+   setVariable("twoJetMass", twoJetMass);
+   setVariable("AlphaLisa", aAlpha);
 
-  // Return selection
-  return (aAlpha > minAlpha_);
+   // Return selection
+   return (aAlpha > minAlpha_);
 
 }
 
