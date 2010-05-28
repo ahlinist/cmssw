@@ -13,7 +13,8 @@
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+//#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 
 #include "DataFormats/Math/interface/LorentzVector.h"
 
@@ -76,7 +77,7 @@ class L1TauEfficiencyAnalyzer {
 	bool *_l1Flag;
 	bool *_hltFlag;
 
-	edm::TriggerNames _triggerNames;
-
+	//edm::TriggerNames _triggerNames;
+	std::vector<std::string> _triggerNames;
 };
 #endif
