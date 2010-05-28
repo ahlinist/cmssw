@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.28 2010/05/20 13:19:50 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.29 2010/05/24 15:13:28 covarell Exp $
 //
 //
 
@@ -74,6 +74,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       void makeCuts(int sign) ;
       pair< unsigned int, const pat::CompositeCandidate* > theBestQQ(int sign);
       void fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event&);
+      bool isMuonInAccept(const pat::Muon* aMuon);
       bool selGlobalMuon(const pat::Muon* aMuon);
       bool selTrackerMuon(const pat::Muon* aMuon);
       bool selCaloMuon(const pat::Muon* aMuon);
@@ -1248,6 +1249,15 @@ JPsiAnalyzerPAT::theBestQQ(int sign) {
 }
 
 bool
+JPsiAnalyzerPAT::isMuonInAccept(const pat::Muon* aMuon) {
+  
+  return (fabs(aMuon->eta()) < 2.4 &&
+	  ((fabs(aMuon->eta()) < 1.3 && aMuon->pt() > 3.3) ||
+	   (fabs(aMuon->eta()) > 1.3 && fabs(aMuon->eta()) < 2.2 && aMuon->p() > 2.9) ||
+	   (fabs(aMuon->eta()) > 2.2 && aMuon->pt() > 0.8)));
+}
+
+bool
 JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 
   TrackRef iTrack = aMuon->innerTrack();
@@ -1256,8 +1266,7 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
   TrackRef gTrack = aMuon->globalTrack();
   const reco::HitPattern& q = gTrack->hitPattern();
 
-  return (
-	  //aMuon->pt() > 1.0 && aMuon->p() > 2.5 &&
+  return (isMuonInAccept(aMuon) &&
 	  iTrack->found() > 11 &&
 	  gTrack->chi2()/gTrack->ndof() < 20.0 &&
           q.numberOfValidMuonHits() > 0 &&
@@ -1277,8 +1286,7 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
 
-  return (
-	  //aMuon->pt() > 1.0 && aMuon->p() > 2.5
+  return (isMuonInAccept(aMuon) &&
 	  iTrack->found() > 11 &&
 	  iTrack->chi2()/iTrack->ndof() < 4.0 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
@@ -1298,7 +1306,8 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
 
-  return (aMuon->caloCompatibility() > 0.89 &&
+  return (isMuonInAccept(aMuon) &&
+	  aMuon->caloCompatibility() > 0.89 &&
 	  iTrack->found() > 11 &&
 	  iTrack->chi2()/iTrack->ndof() < 4.0 &&
 	  // (p.numberOfValidPixelHits() > 2 || 
