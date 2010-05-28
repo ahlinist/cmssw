@@ -150,7 +150,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleSCPhi", eleSCPhi_, "eleSCPhi[nEle]/F");
   tree_->Branch("eleSCEtaWidth", eleSCEtaWidth_, "eleSCEtaWidth[nEle]/F");
   tree_->Branch("eleSCPhiWidth", eleSCPhiWidth_, "eleSCPhiWidth[nEle]/F");
-  tree_->Branch("eleVtx", eleVtx_, "eleVtxX[nEle][3]/F");
+  tree_->Branch("eleVtx", eleVtx_, "eleVtx[nEle][3]/F");
   tree_->Branch("eleCaloPos", eleCaloPos_ ,"eleCaloPos[nEle][3]/F");
   tree_->Branch("eleSCPos", eleSCPos_, "eleSCPos[nEle][3]/F");
   tree_->Branch("eleHoverE", eleHoverE_, "eleHoverE[nEle]/F");
@@ -237,13 +237,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoE3x2", phoE3x2_, "phoE3x2_[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3_[nPho]/F");
   tree_->Branch("phoE4x4", phoE4x4_, "phoE4x4_[nPho]/F");
-  tree_->Branch("phoE1x5", phoE1x5_, "phoE1x5_[nEle]/F");
+  tree_->Branch("phoE1x5", phoE1x5_, "phoE1x5_[nPho]/F");
   tree_->Branch("phoE5x5", phoE5x5_, "phoE5x5_[nPho]/F");
   tree_->Branch("phoE2x5Right", phoE2x5Right_, "phoE2x5Right_[nPho]/F");
   tree_->Branch("phoE2x5Left", phoE2x5Left_, "phoE2x5Left_[nPho]/F");
   tree_->Branch("phoE2x5Top", phoE2x5Top_, "phoE2x5Top_[nPho]/F");
   tree_->Branch("phoE2x5Bottom", phoE2x5Bottom_, "phoE2x5Bottom_[nPho]/F");
-  tree_->Branch("phoE2x5Max", phoE2x5Max_, "phoE2x5Max_[nEle]/F");
+  tree_->Branch("phoE2x5Max", phoE2x5Max_, "phoE2x5Max_[nPho]/F");
   tree_->Branch("phoERight", phoERight_, "phoERight_[nPho]/F");
   tree_->Branch("phoELeft", phoELeft_, "phoELeft_[nPho]/F");
   tree_->Branch("phoETop", phoETop_, "phoETop_[nPho]/F");
@@ -261,6 +261,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoSCEtaWidth", phoSCEtaWidth_, "phoSCEtaWidth[nPho]/F");
   tree_->Branch("phoSCPhiWidth", phoSCPhiWidth_, "phoSCPhiWidth[nPho]/F");
   tree_->Branch("phoOverlap", phoOverlap_, "phoOverlap[nPho]/I");
+  tree_->Branch("phohasPixelSeed", phohasPixelSeed_, "phohasPixelSeed[nPho]/I");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
@@ -838,6 +839,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       eleValidHitInFirstPXB_[nEle_] = iEle->gsfTrack()->hitPattern().hasValidHitInFirstPixelBarrel();
       eleTrkExpectHitsInner_[nEle_] = iEle->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
 
+      
       nEle_++;
     }
 
@@ -877,7 +879,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
 
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
-
+      phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
+      
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;

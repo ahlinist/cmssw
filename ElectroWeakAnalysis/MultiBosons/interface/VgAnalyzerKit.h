@@ -256,6 +256,7 @@ protected:
   float  phoSCEtaWidth_[maxP];
   float  phoSCPhiWidth_[maxP];
   int    phoOverlap_[maxP];
+  int    phohasPixelSeed_[maxP];
   // Muon
   int    nMu_;
   float  muEta_[maxP];
