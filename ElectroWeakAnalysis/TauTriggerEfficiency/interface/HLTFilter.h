@@ -18,7 +18,11 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+//#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/TriggerNamesService.h"
 
 #include <string>
 
@@ -36,6 +40,8 @@ class HLTFilter : public edm::EDFilter {
    private:
 	InputTag	 HLTResults;
 	vector<InputTag> HLTSelection;
+
+	vector<string> hlNames;
 
         int nEvents,
             nSelectedEvents;

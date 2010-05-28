@@ -2,6 +2,8 @@
 
 HLTFilter::HLTFilter(const edm::ParameterSet& iConfig) {
 
+	hlNames = edm::Service<edm::service::TriggerNamesService>()->getTrigPaths();
+
 	HLTResults   = iConfig.getParameter<InputTag>("HLTResults");
 	HLTSelection = iConfig.getParameter<vector<InputTag> >("HLTSelection");
 
@@ -26,9 +28,9 @@ bool HLTFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup ){
         if(hltHandle.isValid()){
                 //cout << "trigger table size " << hltHandle->size() << endl;
 
-                TriggerNames triggerNames;
-                triggerNames.init(*hltHandle);
-                vector<string> hlNames = triggerNames.triggerNames();
+//                TriggerNames triggerNames;
+//                triggerNames.init(*hltHandle);
+//                vector<string> hlNames = triggerNames.triggerNames();
                 int n = 0;
                 for(vector<string>::const_iterator i = hlNames.begin();
                                                    i!= hlNames.end(); i++){

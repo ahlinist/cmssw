@@ -123,5 +123,4 @@ double ElectronProducer::ElectronTrkIsolation(const reco::TrackCollection* ctfTr
   return isolation_value_ele;
 }
 
-
-DEFINE_ANOTHER_FWK_MODULE(ElectronProducer);
+DEFINE_FWK_MODULE(ElectronProducer);

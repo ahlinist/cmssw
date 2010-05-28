@@ -30,6 +30,9 @@
 #include "CondFormats/L1TObjects/interface/L1GctJetFinderParams.h"
 #include "CondFormats/DataRecord/interface/L1GctJetFinderParamsRcd.h"
 
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/TriggerNamesService.h"
+
 #include <TTree.h>
 #include <TF1.h>
 
@@ -103,6 +106,9 @@ L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
 
 void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
+
+  _triggerNames = edm::Service<edm::service::TriggerNamesService>()->getTrigPaths();
+
   L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
   L1extraMETSource = iConfig.getParameter<edm::InputTag>("L1extraMETSource");
   L1extraMHTSource = iConfig.getParameter<edm::InputTag>("L1extraMHTSource");
@@ -333,19 +339,21 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
   }
   else {
     int ntrigs = hltresults->size();
-    _triggerNames.init(* hltresults);
+    //_triggerNames.init(* hltresults);
 
     // 1st event : Book as many branches as trigger paths provided in the input...
     if (_HltEvtCnt==0){
       for (int itrig = 0; itrig != ntrigs; ++itrig) {
-        TString trigName = _triggerNames.triggerName(itrig);
+        //TString trigName = _triggerNames.triggerName(itrig);
+	TString trigName = _triggerNames[itrig];
         l1tree->Branch(trigName, _hltFlag+itrig);
       }
       _HltEvtCnt++;
     }
     // ...Fill the corresponding accepts in branch-variables
     for (int itrig = 0; itrig != ntrigs; ++itrig){
-      string trigName=_triggerNames.triggerName(itrig);
+      //string trigName=_triggerNames.triggerName(itrig);
+      string trigName=_triggerNames[itrig];
       bool accept = hltresults->accept(itrig);
 
       _hltFlag[itrig] = accept;

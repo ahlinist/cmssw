@@ -66,8 +66,7 @@ process.PFTausSelected = cms.EDFilter("PFTauSelector",
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.GlobalTag.globaltag = 'MC_31X_V3::All'
-process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
-
+process.GlobalTag.globaltag = 'GR_R_36X_V11A::All'
 
 
 #copying the Discriminator by Isolation

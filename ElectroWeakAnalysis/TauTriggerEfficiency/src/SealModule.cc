@@ -6,10 +6,10 @@
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/TTEffAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/EventCounter.h"
 
-DEFINE_SEAL_MODULE();
+//DEFINE_SEAL_MODULE();
 //DEFINE_ANOTHER_FWK_MODULE(L1TauEfficiencyAnalyzer);
 //DEFINE_ANOTHER_FWK_MODULE(L2TauEfficiencyAnalyzer);
 //DEFINE_ANOTHER_FWK_MODULE(L25and3TauEfficiencyAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(TTEffAnalyzer);
-DEFINE_ANOTHER_FWK_MODULE(EventCounter);
+DEFINE_FWK_MODULE(TTEffAnalyzer);
+DEFINE_FWK_MODULE(EventCounter);
 
