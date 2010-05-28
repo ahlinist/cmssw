@@ -8,54 +8,49 @@
 #include <vector>
 
 //________________________________________________________________________________________
-HemisphereSelector::HemisphereSelector (const edm::ParameterSet& pset) :
-  SusyEventSelector(pset),
-  hemisphereTag_( pset.getParameter<edm::InputTag>("hemisphereTag") ),
-  dPhiHemispheresMin_( pset.getParameter<double>("dPhiHemispheresMin") ),
-  dPhiHemispheresMax_( pset.getParameter<double>("dPhiHemispheresMax")   )
-{
+HemisphereSelector::HemisphereSelector(const edm::ParameterSet& pset) :
+   SusyEventSelector(pset), hemisphereTag_(pset.getParameter<edm::InputTag> ("hemisphereTag")), dPhiHemispheresMin_(
+            pset.getParameter<double> ("dPhiHemispheresMin")), dPhiHemispheresMax_(pset.getParameter<double> (
+            "dPhiHemispheresMax")) {
 
-  // Define all variables we want to cache (and eventually plot...)
-  defineVariable("dPhiHemispheres");
- 
+   // Define all variables we want to cache (and eventually plot...)
+   defineVariable("dPhiHemispheres");
 
 }
 
 //________________________________________________________________________________________
-bool
-HemisphereSelector::select (const edm::Event& event) const
-{
+bool HemisphereSelector::select(const edm::Event& event) const {
 
-  // Reset cached variables
-  resetVariables();
+   // Reset cached variables
+   resetVariables();
 
+   // Get the hemispheres
+   edm::Handle<edm::View<pat::Hemisphere> > hemisphereHandle;
+   event.getByLabel(hemisphereTag_, hemisphereHandle);
+   if (!hemisphereHandle.isValid()) {
+      edm::LogWarning("HemisphereSelector") << "No Hemisphere results for InputTag " << hemisphereTag_;
+      return false;
+   }
+   const edm::View<pat::Hemisphere>& hemispheres = (*hemisphereHandle); // For simplicity...
 
-  // Get the hemispheres
-  edm::Handle< edm::View<pat::Hemisphere> > hemisphereHandle;
-  event.getByLabel(hemisphereTag_, hemisphereHandle);
-  if ( !hemisphereHandle.isValid() ) {
-    edm::LogWarning("HemisphereSelector") << "No Hemisphere results for InputTag " << hemisphereTag_;
-    return false;
-  }
-  const edm::View<pat::Hemisphere>& hemispheres = (*hemisphereHandle); // For simplicity...
-
-  //
-  // Compute variables
-  //
+   //
+   // Compute variables
+   //
 
 
-  //delta Phi between Hemisphere Axis
-  double dPhiHemispheres = fabs( reco::deltaPhi(hemispheres[0].phi(),hemispheres[1].phi()) ); 
-  setVariable("dPhiHemispheres",dPhiHemispheres); 
- 
+   //delta Phi between Hemisphere Axis
+   double dPhiHemispheres = fabs(reco::deltaPhi(hemispheres[0].phi(), hemispheres[1].phi()));
+   setVariable("dPhiHemispheres", dPhiHemispheres);
 
-  //
-  // Perform final selection
-  //
-  if ( dPhiHemispheres      < dPhiHemispheresMin_     ) return false;
-  if ( dPhiHemispheres      > dPhiHemispheresMax_     ) return false;
- 
-  return true;
+   //
+   // Perform final selection
+   //
+   if (dPhiHemispheres < dPhiHemispheresMin_)
+      return false;
+   if (dPhiHemispheres > dPhiHemispheresMax_)
+      return false;
+
+   return true;
 
 }
 

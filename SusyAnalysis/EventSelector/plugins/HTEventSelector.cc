@@ -5,52 +5,57 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 
 //__________________________________________________________________________________________________
-HTEventSelector::HTEventSelector (const edm::ParameterSet& pset) :
-  SusyEventSelector(pset),
-  jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
-  minHT_ ( pset.getParameter<double>("minHT") ),
-  minPt_ ( pset.getParameter<double>("minPt") ),
-  maxEta_ ( pset.getParameter<double>("maxEta") ),
-  minFem_( pset.getParameter<double>("minEMFraction") ),
-  maxFem_( pset.getParameter<double>("maxEMFraction") ),
-  minN90_( pset.getParameter<int>("minTowersN90")),
-  minfHPD_(pset.getParameter<double>("minfHPD"))
-{ 
+HTEventSelector::HTEventSelector(const edm::ParameterSet& pset) :
+   SusyEventSelector(pset), jetTag_(pset.getParameter<edm::InputTag> ("jetTag")), minHT_(pset.getParameter<double> (
+            "minHT")), minPt_(pset.getParameter<double> ("minPt")), maxEta_(pset.getParameter<double> ("maxEta")),
+            minFem_(pset.getParameter<double> ("minEMFraction")), maxFem_(pset.getParameter<double> ("maxEMFraction")),
+            minN90_(pset.getParameter<int> ("minTowersN90")), maxfHPD_(pset.getParameter<double> ("maxfHPD")) {
 
-  // Store computed HT
-  defineVariable("HT");
+   // Store computed HT
+   defineVariable("HT");
 
 }
 
 //__________________________________________________________________________________________________
-bool
-HTEventSelector::select (const edm::Event& event) const
-{
-  // reset cached variables
-  resetVariables();
-  // Get the jets
-  edm::Handle< edm::View<pat::Jet> > jetHandle;
-  event.getByLabel(jetTag_, jetHandle);
-  if ( !jetHandle.isValid() ) {
-    edm::LogWarning("HTEventSelector") << "No Jet results for InputTag " << jetTag_;
-    return false;
-  }
+bool HTEventSelector::select(const edm::Event& event) const {
+   // reset cached variables
+   resetVariables();
+   // Get the jets
+   edm::Handle<edm::View<pat::Jet> > jetHandle;
+   event.getByLabel(jetTag_, jetHandle);
+   if (!jetHandle.isValid()) {
+      edm::LogWarning("HTEventSelector") << "No Jet results for InputTag " << jetTag_;
+      return false;
+   }
 
-  // Sum over jet Ets (with cut on min. pt)
-  float myHT = 0.0;
-  edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
-  while ( iJet != jetHandle->end() ) {
-    if(iJet->emEnergyFraction()<= minFem_  && fabs(iJet->eta())<2.6 ) {++iJet; continue;}
-    if(iJet->emEnergyFraction()>= maxFem_  && fabs(iJet->eta())<2.6 ) {++iJet; continue;}
-    if(iJet->jetID().n90Hits <= minN90_)  {++iJet; continue;}
-    if(iJet->jetID().fHPD >= minfHPD_ ) {++iJet; continue;}
-    if ( iJet->pt()>minPt_ && fabs(iJet->eta())<maxEta_ ) myHT += iJet->et();
-    ++iJet;
-  }
+   // Sum over jet Ets (with cut on min. pt)
+   float myHT = 0.0;
+   edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
+   while (iJet != jetHandle->end()) {
+      if (iJet->emEnergyFraction() <= minFem_ && fabs(iJet->eta()) < 2.6) {
+         ++iJet;
+         continue;
+      }
+      if (iJet->emEnergyFraction() >= maxFem_ && fabs(iJet->eta()) < 2.6) {
+         ++iJet;
+         continue;
+      }
+      if (iJet->jetID().n90Hits <= minN90_) {
+         ++iJet;
+         continue;
+      }
+      if (iJet->jetID().fHPD >= maxfHPD_) {
+         ++iJet;
+         continue;
+      }
+      if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_)
+         myHT += iJet->et();
+      ++iJet;
+   }
+   //std::cout << myHT << std::endl;
+   setVariable("HT", myHT);
 
-  setVariable("HT",myHT);
-
-  return myHT>minHT_;
+   return myHT > minHT_;
 
 }
 

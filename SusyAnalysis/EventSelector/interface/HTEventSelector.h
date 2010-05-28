@@ -3,10 +3,10 @@
 /// Selector for HT
 ///
 /// Computes HT from jets after selection on pT and |eta|
-///   and cuts on it. HT is defined as scalar sum of the 
+///   and cuts on it. HT is defined as scalar sum of the
 ///   the transverse jet energies.
 ///
-/// $Id: HTEventSelector.h,v 1.4 2008/10/03 14:34:06 adamwo Exp $
+/// $Id: HTEventSelector.h,v 1.5 2010/04/27 17:09:45 thomsen Exp $
 
 // system include files
 #include <memory>
@@ -18,20 +18,21 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
-class HTEventSelector : public SusyEventSelector {
+class HTEventSelector: public SusyEventSelector {
 public:
-  HTEventSelector (const edm::ParameterSet&);
-  virtual bool select (const edm::Event&) const;
-  virtual ~HTEventSelector () {}
+   HTEventSelector(const edm::ParameterSet&);
+   virtual bool select(const edm::Event&) const;
+   virtual ~HTEventSelector() {
+   }
 
 private:
-  edm::InputTag jetTag_; ///< tag for input collection
-  float minHT_;          ///< lower HT cut 
-  float minPt_;          ///< minimum Pt of jets taken into account
-  float maxEta_;         ///< maximum Eta of jets taken into account
-  double minFem_;
-  double maxFem_;
-  int minN90_;
-  double minfHPD_;
+   edm::InputTag jetTag_; ///< tag for input collection
+   float minHT_; ///< lower HT cut
+   float minPt_; ///< minimum Pt of jets taken into account
+   float maxEta_; ///< maximum Eta of jets taken into account
+   double minFem_;
+   double maxFem_;
+   int minN90_;
+   double maxfHPD_;
 };
 #endif

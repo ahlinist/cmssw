@@ -4,33 +4,28 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 //________________________________________________________________________________________
-PrimaryVertexEventSelector::PrimaryVertexEventSelector (const edm::ParameterSet& pset) :
-  SusyEventSelector(pset),
-  vertexTag_( pset.getParameter<edm::InputTag>("vertexTag") )
-{ 
+PrimaryVertexEventSelector::PrimaryVertexEventSelector(const edm::ParameterSet& pset) :
+   SusyEventSelector(pset), vertexTag_(pset.getParameter<edm::InputTag> ("vertexTag")) {
 
-  defineVariable("numberOfVertices");
+   defineVariable("numberOfVertices");
 
 }
 
 //________________________________________________________________________________________
-bool
-PrimaryVertexEventSelector::select (const edm::Event& event) const
-{
-  // reset cached variables
-  resetVariables();
-  // Get the vertices
-  edm::Handle< edm::View<reco::Vertex> > vertexHandle;
-  event.getByLabel(vertexTag_, vertexHandle);
-  if ( !vertexHandle.isValid() ) {
-    edm::LogWarning("PrimaryVertexEventSelector") 
-      << "No Vertex results for InputTag " << vertexTag_;
-    return false;
-  }
+bool PrimaryVertexEventSelector::select(const edm::Event& event) const {
+   // reset cached variables
+   resetVariables();
+   // Get the vertices
+   edm::Handle<edm::View<reco::Vertex> > vertexHandle;
+   event.getByLabel(vertexTag_, vertexHandle);
+   if (!vertexHandle.isValid()) {
+      edm::LogWarning("PrimaryVertexEventSelector") << "No Vertex results for InputTag " << vertexTag_;
+      return false;
+   }
 
-  setVariable( "numberOfVertices", (*vertexHandle).size() );
+   setVariable("numberOfVertices", (*vertexHandle).size());
 
-  return (*vertexHandle).size()>=1;
+   return (*vertexHandle).size() >= 1;
 
 }
 

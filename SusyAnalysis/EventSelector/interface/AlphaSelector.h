@@ -4,24 +4,25 @@
 /// AlphaSelector
 ///
 /// Computes the "alpha" variable in di-jet events
-/// 
+///
 /// \author mstoye - Tue Jun  3 15:42:09 CEST 2008
 ///
-/// $Id: $
+/// $Id: AlphaSelector.h,v 1.1 2008/06/04 13:39:39 fronga Exp $
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 
-class AlphaSelector : public SusyEventSelector {
+class AlphaSelector: public SusyEventSelector {
 public:
-  AlphaSelector (const edm::ParameterSet&);
-  virtual bool select(const edm::Event&) const;
-  virtual ~AlphaSelector () {}
+   AlphaSelector(const edm::ParameterSet&);
+   virtual bool select(const edm::Event&) const;
+   virtual ~AlphaSelector() {
+   }
 
- private:
-  // Define parameters here
-  edm::InputTag jetTag_;
-  double minAlpha_;
+private:
+   // Define parameters here
+   edm::InputTag jetTag_;
+   double minAlpha_;
 };
 #endif

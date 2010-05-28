@@ -4,7 +4,7 @@
 ///
 /// Performs a number of selections based on delta Phi between the Hemisphereaxis:
 /// - minimum delta-phi
-/// - maximum delta-phi  
+/// - maximum delta-phi
 
 ///
 /// $Id $
@@ -20,18 +20,19 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
-class HemisphereSelector : public SusyEventSelector {
+class HemisphereSelector: public SusyEventSelector {
 public:
-  HemisphereSelector (const edm::ParameterSet&);
-  virtual bool select (const edm::Event&) const;
-  virtual ~HemisphereSelector () {}
+   HemisphereSelector(const edm::ParameterSet&);
+   virtual bool select(const edm::Event&) const;
+   virtual ~HemisphereSelector() {
+   }
 private:
-  edm::InputTag hemisphereTag_; ///< tag for input collection
+   edm::InputTag hemisphereTag_; ///< tag for input collection
 
-  
-  float dPhiHemispheresMin_;     ///< Minimum distance between two Hemisphere axis
-  float dPhiHemispheresMax_; ///< Maximum distance between two Hemisphere axis
- 
+
+   float dPhiHemispheresMin_; ///< Minimum distance between two Hemisphere axis
+   float dPhiHemispheresMax_; ///< Maximum distance between two Hemisphere axis
+
 
 };
 #endif

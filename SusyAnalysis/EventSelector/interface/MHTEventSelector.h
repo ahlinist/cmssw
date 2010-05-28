@@ -4,7 +4,7 @@
 ///
 /// Computes MHT from all jets and cuts on it
 ///
-/// $Id: MHTEventSelector.h,v 1.2 2009/06/05 18:11:04 xshi Exp $
+/// $Id: MHTEventSelector.h,v 1.3 2010/04/26 13:41:59 csander Exp $
 
 // system include files
 #include <memory>
@@ -16,17 +16,18 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
-class MHTEventSelector : public SusyEventSelector {
+class MHTEventSelector: public SusyEventSelector {
 public:
-  MHTEventSelector (const edm::ParameterSet&);
-  virtual bool select (const edm::Event&) const;
-  virtual ~MHTEventSelector () {}
+   MHTEventSelector(const edm::ParameterSet&);
+   virtual bool select(const edm::Event&) const;
+   virtual ~MHTEventSelector() {
+   }
 
 private:
-  edm::InputTag jetTag_; ///< tag for input collection
-  edm::InputTag mhtTag_; ///< tag for input collection
-  float minMHT_;          ///< lower MHT cut
-  float maxMHT_;          ///< upper MHT cut
-  float minPt_;          ///< minimum Pt of jets taken into account
+   edm::InputTag jetTag_; ///< tag for input collection
+   edm::InputTag mhtTag_; ///< tag for input collection
+   float minMHT_; ///< lower MHT cut
+   float maxMHT_; ///< upper MHT cut
+   float minPt_; ///< minimum Pt of jets taken into account
 };
 #endif

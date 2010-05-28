@@ -10,7 +10,7 @@ JetEventSelector::JetEventSelector(const edm::ParameterSet& pset) :
             double> > ("minPt")), maxEta_(pset.getParameter<std::vector<double> > ("maxEta")), minFem_(
             pset.getParameter<std::vector<double> > ("minEMFraction")), maxFem_(
             pset.getParameter<std::vector<double> > ("maxEMFraction")),
-            minN90_(pset.getParameter<int> ("minTowersN90")), minfHPD_(pset.getParameter<double> ("minfHPD")) {
+            minN90_(pset.getParameter<int> ("minTowersN90")), maxfHPD_(pset.getParameter<double> ("maxfHPD")) {
 
    /// definition of variables to be cached
    defineVariable("NumberOfJets");
@@ -67,12 +67,10 @@ bool JetEventSelector::select(const edm::Event& event) const {
          EMFRAC = (*jetHandle)[i].emEnergyFraction();
       if ((*jetHandle)[i].isPFJet())
          EMFRAC = (*jetHandle)[i].neutralEmEnergyFraction() + (*jetHandle)[i].chargedEmEnergyFraction();
-
       if ((*jetHandle)[i].jetID().n90Hits <= minN90_)
          continue;
-      if ((*jetHandle)[i].jetID().fHPD >= minfHPD_)
+      if ((*jetHandle)[i].jetID().fHPD >= maxfHPD_)
          continue;
-
       if ((*jetHandle)[i].pt() >= minPt_[j] && fabs((*jetHandle)[i].eta()) <= maxEta_[j] && ((EMFRAC <= maxFem_[i]
                && EMFRAC >= minFem_[j]) || fabs((*jetHandle)[i].eta()) > 2.6)) //check EMF only |eta|<2.6
       {

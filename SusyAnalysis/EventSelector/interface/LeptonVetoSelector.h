@@ -16,33 +16,30 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
-class LeptonVetoSelector : public SusyEventSelector {
+class LeptonVetoSelector: public SusyEventSelector {
 public:
-  LeptonVetoSelector (const edm::ParameterSet&);
-  virtual bool select (const edm::Event&) const;
-  virtual ~LeptonVetoSelector () {}
+   LeptonVetoSelector(const edm::ParameterSet&);
+   virtual bool select(const edm::Event&) const;
+   virtual ~LeptonVetoSelector() {
+   }
 private:
-  edm::InputTag electronTag_;///< tag for electron input collection	    
-  edm::InputTag muonTag_    ;///< tag for muon     input collection
-  edm::InputTag beamSpot_    ;///< tag for beamSpot	    
-  double minPtEle_   ;	     ///< minimum pt for electrons to be checked   
-  double maxEtaEle_  ;	     ///< max abs(eta) 
-  double eleIso_     ;	     ///< limit on relative electron isolation (trackIso+ecalIso+hcalIso)/pt
-  double eleDxy_     ;       ///< max dxy from beamSpot position 
-  double minPtMuon_  ;       ///< minimum pt for muons
-  double maxEtaMuon_ ;       ///< max abs(eta
-  double muonIso_    ;       ///< limit on relative muon isolation (trackIso+ecalIso+hcalIso)/pt
-  unsigned int muonHits_;    ///< min number of hits
-  double muonDxy_    ;       ///< max dxy from beamSpot position 
+   edm::InputTag electronTag_;///< tag for electron input collection
+   edm::InputTag muonTag_;///< tag for muon     input collection
+   edm::InputTag beamSpot_;///< tag for beamSpot
+   double minPtEle_; ///< minimum pt for electrons to be checked
+   double maxEtaEle_; ///< max abs(eta)
+   double eleIso_; ///< limit on relative electron isolation (trackIso+ecalIso+hcalIso)/pt
+   double eleDxy_; ///< max dxy from beamSpot position
+   double minPtMuon_; ///< minimum pt for muons
+   double maxEtaMuon_; ///< max abs(eta
+   double muonIso_; ///< limit on relative muon isolation (trackIso+ecalIso+hcalIso)/pt
+   unsigned int muonHits_; ///< min number of hits
+   double muonDxy_; ///< max dxy from beamSpot position
 
 
-
-
-
-
-//   edm::InputTag tauTag_;      ///< tag for tau      input collection
-//   float minEtTau_;            ///< minimum et for taus to be checked
-//   float tauIso_;              ///< limit on relative tau isolation (pt sum)
+   //   edm::InputTag tauTag_;      ///< tag for tau      input collection
+   //   float minEtTau_;            ///< minimum et for taus to be checked
+   //   float tauIso_;              ///< limit on relative tau isolation (pt sum)
 
 };
 #endif

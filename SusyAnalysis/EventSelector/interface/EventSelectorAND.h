@@ -5,7 +5,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: EventSelectorAND.h,v 1.2 2008/05/22 08:10:01 fronga Exp $
+/// $Id: EventSelectorAND.h,v 1.2 2008/05/23 15:48:21 fronga Exp $
 
 // system include files
 #include <memory>
@@ -22,14 +22,15 @@
 
 class SelectorSequence;
 
-class EventSelectorAND : public CombinedEventSelector {
+class EventSelectorAND: public CombinedEventSelector {
 public:
-  EventSelectorAND ();
-  EventSelectorAND (const edm::ParameterSet&);
-  virtual ~EventSelectorAND () {}
+   EventSelectorAND();
+   EventSelectorAND(const edm::ParameterSet&);
+   virtual ~EventSelectorAND() {
+   }
 
-  /// Selection: AND of all selectors
-  virtual bool select (const edm::Event&) const;
+   /// Selection: AND of all selectors
+   virtual bool select(const edm::Event&) const;
 
 };
 #endif

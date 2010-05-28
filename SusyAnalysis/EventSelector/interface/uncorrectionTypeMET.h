@@ -11,9 +11,8 @@
 /// See also https://twiki.cern.ch/twiki/bin/view/CMS/SWGuidePATLayer1#MET
 
 namespace pat {
-  /// pat::MET uncorrection type from string (uncorrMAXN = corrected MET)
-  pat::MET::UncorrectionType
-  uncorrectionTypeMET (const std::string& uncorrectionName);
+/// pat::MET uncorrection type from string (uncorrMAXN = corrected MET)
+pat::MET::UncorrectionType uncorrectionTypeMET(const std::string& uncorrectionName);
 }
 
 #endif
