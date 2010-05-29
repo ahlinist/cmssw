@@ -135,7 +135,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleID", eleID_, "eleID[nEle][5]/O"); // [0]: eidRobustLoose, [1]: eidRobustTight, [2]: eidLoose, [3]: eidTight, [4]: eidRobustHighEnergy
+  // ELECTRON ID
+  tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
   tree_->Branch("eleEn", eleEn_, "eleEn[nEle]/F");
@@ -717,13 +718,44 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   if ( electronHandle_.isValid() )
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
-      //if (iEle->pt()<10) continue;
-      for (int i=0; i<5; ++i) eleID_[nEle_][i] = 0;
-      if (iEle->electronID("eidRobustLoose")==1) eleID_[nEle_][0] = 1;
-      if (iEle->electronID("eidRobustTight")==1)  eleID_[nEle_][1] = 1;
-      if (iEle->electronID("eidLoose")==1)  eleID_[nEle_][2] = 1;
-      if (iEle->electronID("eidTight")==1)  eleID_[nEle_][3] = 1;
-      if (iEle->electronID("eidRobustHighEnergy")==1)  eleID_[nEle_][4] = 1;
+      //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
+      //        The value map returns a double with the following meaning:
+      //        0: fails
+      //	1: passes electron ID only
+      //	2: passes electron Isolation only
+      //	3: passes electron ID and Isolation only
+      //	4: passes conversion rejection
+      //	5: passes conversion rejection and ID
+      //	6: passes conversion rejection and Isolation
+      //	7: passes the whole selection
+
+      for (int i=0; i<12; ++i) eleID_[nEle_][i] = -1;
+
+      // ID sources are following, numbers are simbolic and correspond to WEnu signal efficiency.
+      // 0  simpleEleId60cIso
+      // 1  simpleEleId70cIso
+      // 2  simpleEleId80cIso
+      // 3  simpleEleId85cIso
+      // 4  simpleEleId90cIso
+      // 5  simpleEleId95cIso
+      // 6  simpleEleId60relIso
+      // 7  simpleEleId70relIso
+      // 8  simpleEleId80relIso
+      // 9  simpleEleId85relIso
+      // 10 simpleEleId90relIso
+      // 11 simpleEleId95relIso
+      eleID_[nEle_][0] = int (iEle->electronID("simpleEleId60cIso"));
+      eleID_[nEle_][1] = int (iEle->electronID("simpleEleId70cIso"));
+      eleID_[nEle_][2] = int (iEle->electronID("simpleEleId80cIso"));
+      eleID_[nEle_][3] = int (iEle->electronID("simpleEleId85cIso"));
+      eleID_[nEle_][4] = int (iEle->electronID("simpleEleId90cIso"));
+      eleID_[nEle_][5] = int (iEle->electronID("simpleEleId95cIso"));
+      eleID_[nEle_][6] = int (iEle->electronID("simpleEleId60relIso"));
+      eleID_[nEle_][7] = int (iEle->electronID("simpleEleId70relIso"));
+      eleID_[nEle_][8] = int (iEle->electronID("simpleEleId80relIso"));
+      eleID_[nEle_][9] = int (iEle->electronID("simpleEleId85relIso"));
+      eleID_[nEle_][10]= int (iEle->electronID("simpleEleId90relIso"));
+      eleID_[nEle_][11]= int (iEle->electronID("simpleEleId95relIso"));
 
       eleClass_[nEle_]   = iEle->classification();
       eleCharge_[nEle_]  = iEle->charge();
@@ -787,8 +819,11 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       eleETop_[nEle_]       = lazyTool.eTop(*eleSeed);
       eleEBottom_[nEle_]    = lazyTool.eBottom(*eleSeed);
 
-      //For electron concersion rejection
 
+      /*
+      //For electron concersion rejection
+      // if need a ID optimisation need to use correct tags for later releases 3_6_1_patch2?
+      
       ConversionFinder convFinder;
       ConversionInfo convInfo = convFinder.getConversionInfo(*iEle , Tracks, evt_bField);
 
@@ -798,6 +833,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       eleConvPoint_[nEle_][0]  = convInfo.pointOfConversion().x();
       eleConvPoint_[nEle_][1]  = convInfo.pointOfConversion().y();
       eleConvPoint_[nEle_][2]  = convInfo.pointOfConversion().z();
+      */
+
       // Gen Particle
       eleGenIndex_[nEle_] = -1;
       int EleGenIndex = 0;
@@ -972,10 +1009,10 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     // cout << "VgAnalyzerKit: produce: number of muons: " << muonHandle_->size() << endl;
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
-//       if (!iMu->isGlobalMuon()) continue;
-//       if (!iMu->isTrackerMuon()) continue;
-//       if (iMu->globalTrack().isNull()) continue;
-//       if (iMu->innerTrack().isNull()) continue;
+      //       if (!iMu->isGlobalMuon()) continue;
+      //       if (!iMu->isTrackerMuon()) continue;
+      //       if (iMu->globalTrack().isNull()) continue;
+      //       if (iMu->innerTrack().isNull()) continue;
       //if (iMu->pt()<10) continue;
 
       for (int i=0; i<6; ++i) muID_[nMu_][i] = 0;
