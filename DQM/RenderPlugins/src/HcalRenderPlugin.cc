@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.36 $
-  \date $Date: 2010/02/19 06:21:30 $
+  \version $Revision: 1.38 $
+  \date $Date: 2010/03/20 19:01:09 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -933,8 +933,18 @@ private:
 	      (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
 	      (o.name.find("RecHitMonitor_Hcal/problem_rechits")!= std::string::npos ) ||
 	      (o.name.find("BeamMonitor_Hcal/ ProblemBeamMonitor")!= std::string::npos ) ||
-	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor")!= std::string::npos ) //||
-	      //(o.name.find("DataFormatMonitor/ HardwareWatchCells") != std::string::npos)
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor")!= std::string::npos ) ||
+	      //(o.name.find("DataFormatMonitor/ HardwareWatchCells") != std::string::npos) ||
+	      (o.name.find("BeamMonitor_Hcal/ Problem BeamMonitor")!= std::string::npos ) ||
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos )  ||
+	      (o.name.find("TrigPrimMonitor_Hcal/ ProblemTriggerPrimitives")  != std::string::npos) ||
+	      (o.name.find("TrigPrimMonitor_Hcal/problem_triggerprimitives")  != std::string::npos) ||
+	      (o.name.find("NZSMonitor_Hcal/ ProblemNZS")  != std::string::npos) ||
+	      (o.name.find("NZSMonitor_Hcal/problem_NZS/") != std::string::npos) ||
+	      (o.name.find("RawDataMonitor_Hcal/ ProblemRawData")   != std::string::npos) ||
+	      (o.name.find("RawDataMonitor_Hcal/problem_rawdata/") != std::string::npos) ||
+	      (o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos) 
+
 	      )
       {
         if ((obj->GetEntries()==0) ||
