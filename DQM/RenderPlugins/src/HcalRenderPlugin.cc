@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.38 $
-  \date $Date: 2010/03/20 19:01:09 $
+  \version $Revision: 1.39 $
+  \date $Date: 2010/05/30 19:05:59 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -481,6 +481,15 @@ private:
 	obj->SetMarkerSize(3); // set font size to 3x normal
         obj->SetOption("text90colz"); // draw marker at 90 degrees
 	// Set min, max values to -1, 1
+	obj->SetMinimum(-1.);
+	obj->SetMaximum(1.);
+      }
+    else if (o.name.find("HcalInfo/CertificationMap")!=std::string::npos)
+      {
+	c->SetLeftMargin(0.20);
+	obj->SetContour(100);
+        setSummaryColor(obj);
+	obj->SetOption("textcolz");
 	obj->SetMinimum(-1.);
 	obj->SetMaximum(1.);
       }
