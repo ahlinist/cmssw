@@ -390,11 +390,11 @@ selectPatTausForDiTau = patTauSelConfiguratorForDiTau.configure(pyNameSpace = lo
 # define collections of pat::(PF)Taus used in W->tau-jet + nu channel
 
 selectedPatTausForWTauNuEta21.cut = selectedPatTausEta21.cut
-selectedPatTausForWTauNuPt20.cut = selectedPatTausPt20.cut 
+selectedPatTausForWTauNuPt20.cut = cms.string("pt > 25. & pt < 60.")
 selectedPatTausForWTauNuLeadTrk.cut = selectedPatTausLeadTrk.cut
-selectedPatTausForWTauNuLeadTrkPt.cut = cms.string("leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.")
-selectedPatTausForWTauNuTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
-selectedPatTausForWTauNuEcalIso.cut = cms.string('tauID("byIsolation") > 0.5')
+selectedPatTausForWTauNuLeadTrkPt.cut = cms.string("leadTrack().isNonnull() & leadTrack().pt() > 20.")
+selectedPatTausForWTauNuTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') 
+selectedPatTausForWTauNuEcalIso.cut = selectedPatTausEcalIso.cut
 selectedPatTausForWTauNuTrkIso.cut = selectedPatTausTrkIso.cut
 selectedPatTausForWTauNuProng.cut = selectedPatTausProng.cut
 selectedPatTausForWTauNuCharge.cut = selectedPatTausCharge.cut
@@ -422,20 +422,22 @@ patTauSelConfiguratorForWTauNu = objSelConfigurator(
 selectPatTausForWTauNu = patTauSelConfiguratorForWTauNu.configure(pyNameSpace = locals())
 
 # loose isolation selection
+selectedPatTausForWTauNuLeadTrkPtLooseIsolation.cut = cms.string("leadTrack().isNonnull() & leadTrack().pt() > 15.")
 selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
-selectedPatTausForWTauNuEcalIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<10")
-selectedPatTausForWTauNuTrkIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<10")
+selectedPatTausForWTauNuEcalIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<6")
+selectedPatTausForWTauNuTrkIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<6")
 selectedPatTausForWTauNuProngLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
 selectedPatTausForWTauNuChargeLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
-selectedPatTausForWTauNuMuonVetoLooseIsolation.cut = selectedPatTausForWTauNuMuonVeto.cut
-selectedPatTausForWTauNuElectronVetoLooseIsolation.cut = selectedPatTausForWTauNuElectronVeto.cut
-selectedPatTausForWTauNuEcalCrackVetoLooseIsolation.cut = selectedPatTausForWTauNuEcalCrackVeto.cut
+selectedPatTausForWTauNuMuonVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
+selectedPatTausForWTauNuElectronVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
+selectedPatTausForWTauNuEcalCrackVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
+
 
 patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
     [ selectedPatTausForWTauNuEta21,
       selectedPatTausForWTauNuPt20,
       selectedPatTausForWTauNuLeadTrk,
-      selectedPatTausForWTauNuLeadTrkPt,
+      selectedPatTausForWTauNuLeadTrkPtLooseIsolation,
       selectedPatTausForWTauNuTaNCdiscrLooseIsolation,
       selectedPatTausForWTauNuEcalIsoLooseIsolation,
       selectedPatTausForWTauNuTrkIsoLooseIsolation,
