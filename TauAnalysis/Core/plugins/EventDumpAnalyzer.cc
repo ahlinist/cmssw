@@ -6,11 +6,15 @@ EventDumpAnalyzer::EventDumpAnalyzer(const edm::ParameterSet& cfg)
 {
   //std::cout << "<EventDumpAnalyzer::EventDumpAnalyzer>:" << std::endl;
 
-  evtSelFlags_ = cfg.getParameter<vInputTag>("evtSelFlags");
-
 //--- configure eventDumps
   edm::ParameterSet cfgPlugin = cfg.getParameter<edm::ParameterSet>("plugin");
-  cfgPlugin.addParameter<bool>("triggerAlways", true);
+
+  if ( cfg.exists("evtSelFlags") ) {
+    evtSelFlags_ = cfg.getParameter<vInputTag>("evtSelFlags");
+  } else {
+    cfgPlugin.addParameter<bool>("triggerAlways", true);
+  }
+
   std::string pluginType = cfgPlugin.getParameter<std::string>("pluginType");
   plugin_ = EventDumpPluginFactory::get()->create(pluginType, cfgPlugin);
 }
