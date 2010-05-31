@@ -16,6 +16,7 @@ selectedPatTausForWTauNuMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 selectedPatTausForWTauNuElectronVeto = copy.deepcopy(selectedPatTausElectronVeto)
 selectedPatTausForWTauNuEcalCrackVeto = copy.deepcopy(selectedPatTausEcalCrackVeto)
 
+selectedPatTausForWTauNuLeadTrkPtLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuLeadTrkPt)
 selectedPatTausForWTauNuTaNCdiscrLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuTaNCdiscr)
 selectedPatTausForWTauNuTrkIsoLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuTrkIso)
 selectedPatTausForWTauNuEcalIsoLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuEcalIso)
