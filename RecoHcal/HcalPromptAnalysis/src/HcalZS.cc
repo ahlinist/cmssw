@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.9 2009/10/09 09:17:46 santanas Exp $
+// $Id: HcalZS.cc,v 1.10 2009/10/25 10:54:46 santanas Exp $
 //
 //
 
@@ -71,7 +71,7 @@
 
 //TFile Service
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 //
 #include "TH1.h"

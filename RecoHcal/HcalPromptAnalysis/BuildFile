@@ -27,7 +27,7 @@
 <use name=TrackingTools/TransientTrack>
 <use name=DataFormats/L1GlobalTrigger>
 <use name=DataFormats/L1GlobalMuonTrigger>
-<use name=PhysicsTools/UtilAlgos>
+<use name=CommonTools/UtilAlgos>
 <use name=FWCore/ServiceRegistry>
 <use name=CalibFormats/HcalObjects>
 <use name=CalibCalorimetry/HcalAlgos>

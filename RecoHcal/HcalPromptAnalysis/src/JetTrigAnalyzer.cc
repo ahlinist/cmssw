@@ -13,7 +13,7 @@
 //
 // Original Author:  "Sertac Ozturk"
 //         Created:  Mon Jul 27 11:09:40 CDT 2009
-// $Id: JetTrigAnalyzer.cc,v 1.2 2009/09/01 20:41:11 sertac Exp $
+// $Id: JetTrigAnalyzer.cc,v 1.3 2009/10/08 12:20:08 santanas Exp $
 //
 //
 
@@ -61,7 +61,7 @@
 
 //TFile Service
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 //L1 Particle jets
 #include "DataFormats/L1Trigger/interface/L1JetParticle.h"
