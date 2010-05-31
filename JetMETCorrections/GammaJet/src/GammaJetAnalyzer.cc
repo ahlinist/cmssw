@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.28 2010/04/06 16:39:56 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.29 2010/05/07 17:19:37 pandolf Exp $
 //
 //
 
@@ -482,24 +482,24 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        } // stable photon
        
 
-       int motherIDMC = -1;
-       if (p->numberOfMothers() > 0) { 
-         const Candidate * mom = p->mother();
-         for (size_t j = 0; j != genParticles->size(); ++j) {
-         const Candidate * ref = &((*genParticles)[j]);
-         //if (mom->px() == ref->px() && mom->py() == ref->py()
-         //&& mom->pz() == ref->pz() && mom->status() == ref->status()
-         //&& mom->pdgId()==ref->pdgId()) {
+//     int motherIDMC = -1;
+//     if (p->numberOfMothers() > 0) { 
+//       const Candidate * mom = p->mother();
+//       for (size_t j = 0; j != genParticles->size(); ++j) {
+//       const Candidate * ref = &((*genParticles)[j]);
+//       //if (mom->px() == ref->px() && mom->py() == ref->py()
+//       //&& mom->pz() == ref->pz() && mom->status() == ref->status()
+//       //&& mom->pdgId()==ref->pdgId()) {
 
-           //assert(mom==ref); // address of the candidate is the same?
-           //above works in about 99.7% of events
+//         //assert(mom==ref); // address of the candidate is the same?
+//         //above works in about 99.7% of events
 
-         if (mom==ref) {
-           //motherIDMC[nMC] = j;
-           motherIDMC = j;
-         }
-         }
-       }
+//       if (mom==ref) {
+//         //motherIDMC[nMC] = j;
+//         motherIDMC = j;
+//       }
+//       }
+//     }
 
        // Select only a subset of particles to reduce size:
        // All the partons (8)
@@ -529,12 +529,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
          eMC[nMC] = p->energy();	 
          etaMC[nMC] = p->eta();	 
          phiMC[nMC] = p->phi();	 
+         motherIDMC[nMC] = (p->mother()!=0) ? p->mother()->pdgId() : -1;	 
          
          mapMC[&(*p)] = nMC;
          ++nMC; 
 
          // if stable photon/electron, find parent
-         if (p->status() == 1 && motherIDMC != -1
+         if (p->status() == 1 && motherIDMC[nMC] != -1
              //&& (pdgIdMC[nMC] == kPhoton || pdgIdMC[nMC] == kElectron)) {//bug
              && (p->pdgId() == kPhoton || p->pdgId() == kElectron)) {
              
@@ -542,9 +543,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
            const GenParticle *mom = (const GenParticle*)p->mother();
            if (mom->status() == 2
                && (mom->pdgId()<81 || mom->pdgId()>100) // remove MC internal 
-               && mothers.find(motherIDMC) == mothers.end()) {
+               && mothers.find(motherIDMC[nMC]) == mothers.end()) {
 
-           mothers.insert(motherIDMC);
+           mothers.insert(motherIDMC[nMC]);
            
            if (nMC>=nMaxMC) {continue;}  // to reduce the root file size
            pdgIdMC[nMC] = mom->pdgId();
@@ -2114,7 +2115,7 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("nMC",&nMC,"nMC/I");
   m_tree->Branch("pdgIdMC",&pdgIdMC,"pdgIdMC[nMC]/I");
   m_tree->Branch("statusMC",&statusMC,"statusMC[nMC]/I");
-  //m_tree->Branch("motherIDMC",&motherIDMC,"motherIDMC[nMC]/I");
+  m_tree->Branch("motherIDMC",&motherIDMC,"motherIDMC[nMC]/I");
   // Most MC particles have mass, but why do photons (status=1 and 3) have mass?
   //m_tree->Branch("massMC ",&massMC ,"massMC[nMC]/F");
   //to a good approximation, m = sqrt(e^2 - (pt*cosh(eta))^2), when m>1e-6 GeV
