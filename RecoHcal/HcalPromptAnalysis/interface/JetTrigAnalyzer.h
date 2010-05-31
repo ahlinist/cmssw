@@ -13,7 +13,7 @@
 //
 // Original Author:  "Sertac Ozturk"
 //         Created:  Mon Jul 27 11:09:40 CDT 2009
-// $Id: JetTrigAnalyzer.h,v 1.1 2009/07/28 18:56:05 sertac Exp $
+// $Id: JetTrigAnalyzer.h,v 1.1 2009/09/01 20:34:55 sertac Exp $
 //
 //
 
@@ -28,7 +28,7 @@
 
 //TFile Service
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Framework/interface/TriggerNames.h"

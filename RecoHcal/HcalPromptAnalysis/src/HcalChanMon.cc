@@ -16,7 +16,7 @@
 // The code takes as input N HCAL Channels (ieta,iphi,depth,detector)
 // and produces diagnostic histograms of RAW, DIGItized and REConstructed data      
 //         Created:  Thu Jun  4 13:12:17 CDT 2009
-// $Id$
+// $Id: HcalChanMon.cc,v 1.1 2009/08/31 09:54:55 nsaoulid Exp $
 //
 //
 
@@ -55,7 +55,11 @@ void HcalChanMon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   using namespace edm;
   using namespace std;
   evt++;
-   
+  
+  edm::ESHandle<HcalDbService> pSetup;
+  iSetup.get<HcalDbRecord>().get(pSetup);
+  readoutMap_ = pSetup->getHcalMapping();
+  
   if (runBegin < 0){         
    runBegin = iEvent.id().run();
    bookHistograms();
@@ -77,9 +81,6 @@ void HcalChanMon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      int ieta	  = channelsd[count].ieta();
      int iphi	  = channelsd[count].iphi();
      int depth	  = channelsd[count].depth();
-     int errbit;
-     
-     
   
     // get dcc data
      const FEDRawData &raw = fedraw->FEDData(700 + cit->dccid());
@@ -92,15 +93,15 @@ void HcalChanMon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       
      int dccid      = cit->dccid();
      int spigot     = cit->spigot();
-     int dccslot    = 9;
+//      int dccslot    = 9;
      
-     int htrfiber   = cit->htrChanId();
-     int htrtb      = cit->htrTopBottom() ;
-     int htrslot    = cit->htrSlot();
-     int crate      = cit->readoutVMECrateId();
+//      int htrfiber   = cit->htrChanId();
+//      int htrtb      = cit->htrTopBottom() ;
+//      int htrslot    = cit->htrSlot();
+//      int crate      = cit->readoutVMECrateId();
      
-     int fiberchan  = cit->fiberChanId();
-     int fiberindx  = cit->fiberIndex();
+//      int fiberchan  = cit->fiberChanId();
+//      int fiberindx  = cit->fiberIndex();
      
      HcalHTRData htr;
      dccHeader->getSpigotData(cit->spigot(), htr, raw.size());     
@@ -164,9 +165,9 @@ void HcalChanMon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      histo1D[channel]->Fill(1.);
     //Check that there are zeros following the HTR Status words.
     int SpigotPad = HcalDCCHeader::SPIGOT_COUNT;
-    if (  ((uint64_t) dccHeader->getSpigotSummary(SpigotPad)  ) 
+    if ( ( ((uint64_t) dccHeader->getSpigotSummary(SpigotPad)  ) 
   	  | ((uint64_t) dccHeader->getSpigotSummary(SpigotPad+1)) 
-  	  | ((uint64_t) dccHeader->getSpigotSummary(SpigotPad+2))  != 0)
+  	  | ((uint64_t) dccHeader->getSpigotSummary(SpigotPad+2)) ) != 0)
      histo1D[channel]->Fill(2.);
      //Check that there are zeros following the HTR Payloads, if needed.
     int nHTR32BitWords=0;
@@ -833,14 +834,11 @@ for(std::vector<HcalDetId>::const_iterator cit = channelsd.begin(); cit!=channel
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void HcalChanMon::beginJob(const edm::EventSetup&iSetup){
+void HcalChanMon::beginJob(){
 
-  edm::ESHandle<HcalDbService> pSetup;
-  iSetup.get<HcalDbRecord>().get(pSetup);
-  readoutMap_ = pSetup->getHcalMapping();
   evt         = 0;
   evts        = 0;
-  
+
 }
 
 //********************************************************************************************************
@@ -848,7 +846,7 @@ TH1D *HcalChanMon::book1DHistogram(TFileDirectory & fDir, const std::string & fN
 				int fNbins, double fXmin, double fXmax) const {
   char title[1024];
 
-  sprintf(title, "%s RUN:%ld ", fTitle.c_str(), runBegin);
+  sprintf(title, "%s RUN:%d ", fTitle.c_str(), runBegin);
   return fDir.make < TH1D > (fName.c_str(), title, fNbins, fXmin, fXmax);
 }
 //********************************************************************************************************
@@ -856,7 +854,7 @@ TH2D *HcalChanMon::book2DHistogram(TFileDirectory & fDir, const std::string & fN
 				int fNbinsX, double fXmin, double fXmax, int fNbinsY, double fYmin, double fYmax) const {
   char title[1024];
 
-  sprintf(title, "%s [RUN:%ld]", fTitle.c_str(), runBegin);
+  sprintf(title, "%s [RUN:%d]", fTitle.c_str(), runBegin);
   return fDir.make < TH2D > (fName.c_str(), title, fNbinsX, fXmin, fXmax, fNbinsY, fYmin, fYmax);
 }
 //********************************************************************************************************
@@ -1324,7 +1322,7 @@ void HcalChanMon::endJob() {
    pos4  = chan.find("QIE_");
  
  
-   TH1D *histon;
+   TH1D *histon = 0;
  
    for(map<std::string, TH1D*>::iterator itn=histo1DNormRaw.begin();itn!=histo1DNormRaw.end();itn++){
     std::string chann  = itn->first; // here tra la la 
@@ -1334,7 +1332,7 @@ void HcalChanMon::endJob() {
     if(chan3==chan2) histon       = itn->second;     
    }
      
-   if(pos4>0 && pos4 <200  && histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1)); 
+   if(histon && pos4>0 && pos4 <200  && histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1)); 
    else       histo ->Scale(1./evt); 
   
   
@@ -1359,7 +1357,7 @@ void HcalChanMon::endJob() {
    pos2   = chan.find("DetId");    // position of "DetId" in str
    chan2  = chan.substr(pos2);     // get from "DetId" to the end
    
-   TH1D *histon;
+   TH1D *histon = 0;
  
    for(map<std::string, TH1D*>::iterator itdn=histo1DNormDigit.begin();itdn!=histo1DNormDigit.end();itdn++){
     std::string chann  = itdn->first; // here tra la la 
@@ -1369,7 +1367,7 @@ void HcalChanMon::endJob() {
     if(chan3==chan2) histon       = itdn->second;     
    }
      
-   if(histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1)); 
+   if(histon && histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1)); 
   
  }  
 
@@ -1392,7 +1390,7 @@ void HcalChanMon::endJob() {
    pos2   = chan.find("DetId");    // position of "DetId" in str
    chan2  = chan.substr(pos2);     // get from "DetId" to the end
    
-   TH1D *histon;
+   TH1D *histon = 0;
  
    for(map<std::string, TH1D*>::iterator itdn=histo1DNormDigit_np.begin();itdn!=histo1DNormDigit_np.end();itdn++){
     std::string chann  = itdn->first; // here tra la la 
@@ -1402,7 +1400,7 @@ void HcalChanMon::endJob() {
     if(chan3==chan2) histon       = itdn->second;     
    }
      
-   if(histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1)); 
+   if(histon && histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1)); 
   
  }  
 
@@ -1426,7 +1424,7 @@ void HcalChanMon::endJob() {
    pos2   = chan.find("DetId");    // position of "DetId" in str
    chan2  = chan.substr(pos2);     // get from "DetId" to the end
 
-   TH1D *histon;
+   TH1D *histon = 0;
 
    for(map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit.begin();itdn!=histo1DNormRecHit.end();itdn++){
     std::string chann  = itdn->first; // here tra la la
@@ -1436,7 +1434,7 @@ void HcalChanMon::endJob() {
     if(chan3==chan2) histon       = itdn->second;
    }
 
-   if(histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1));
+   if(histon && histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1));
 
  }
 
@@ -1459,7 +1457,7 @@ void HcalChanMon::endJob() {
    pos2   = chan.find("DetId");    // position of "DetId" in str
    chan2  = chan.substr(pos2);     // get from "DetId" to the end
 
-   TH1D *histon;
+   TH1D *histon = 0;
 
    for(map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit_np.begin();itdn!=histo1DNormRecHit_np.end();itdn++){
     std::string chann  = itdn->first; // here tra la la
@@ -1469,7 +1467,7 @@ void HcalChanMon::endJob() {
     if(chan3==chan2) histon       = itdn->second;
    }
 
-   if(histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1));
+   if(histon && histon->GetBinContent(1)>0) histo ->Scale(1./histon->GetBinContent(1));
 
  }
 

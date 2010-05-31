@@ -19,7 +19,7 @@
 
 //TFile Service
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 class TH1F;
 class TH2F;

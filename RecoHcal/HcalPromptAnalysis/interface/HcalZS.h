@@ -16,7 +16,7 @@
 //
 // Original Author: Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalZS.h,v 1.6 2009/10/09 09:17:46 santanas Exp $
+// $Id: HcalZS.h,v 1.7 2009/10/25 10:54:46 santanas Exp $
 //
 //
 
@@ -30,7 +30,7 @@
 
 //TFile Service
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 
 //Mapping stuff
