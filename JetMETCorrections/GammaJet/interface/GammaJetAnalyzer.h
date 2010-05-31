@@ -150,7 +150,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Int_t pdgIdMC[nMaxMC];
       Int_t statusMC[nMaxMC];
       //Float_t massMC[nMaxMC];
-      //Int_t motherIDMC[nMaxMC];
+      Int_t motherIDMC[nMaxMC];
       Float_t ptMC[nMaxMC];
       Float_t eMC[nMaxMC];
       Float_t etaMC[nMaxMC];
