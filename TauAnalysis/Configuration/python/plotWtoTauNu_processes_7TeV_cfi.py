@@ -27,6 +27,26 @@ processWtoTauNu_WtaunuSum.config_dqmFileLoader.dqmDirectory_store = cms.string('
 processWtoTauNu_WtaunuSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 #--------------------------------------------------------------------------------
+
+processWtoTauNu_ZplusJets = copy.deepcopy(process_ZplusJets)
+processWtoTauNu_ZplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsWtoTauNu_ZplusJets_7TeV_part01.root',
+    'plotsWtoTauNu_ZplusJets_7TeV_part02.root',
+    'plotsWtoTauNu_ZplusJets_7TeV_part03.root',    
+    'plotsWtoTauNu_ZplusJets_7TeV_part04.root',    
+    'plotsWtoTauNu_ZplusJets_7TeV_part05.root'    
+)
+
+processWtoTauNu_ZplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorWtoTauNu_ZplusJets_7TeV*intLumiWtoTauNu_Data_7TeV/intLumiWtoTauNu_ZplusJets_7TeV)
+
+processWtoTauNu_ZplusJetsSum = copy.deepcopy(process_ZplusJets)
+processWtoTauNu_ZplusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsWtoTauNu_ZplusJetsSum.root'
+)
+processWtoTauNu_ZplusJetsSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
+processWtoTauNu_ZplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+
+#--------------------------------------------------------------------------------
 processWtoTauNu_Wenu = copy.deepcopy(process_Wenu)
 processWtoTauNu_Wenu.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsWtoTauNu_Wenu_7TeV_part01.root',
