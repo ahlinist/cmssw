@@ -38,135 +38,142 @@ LeptonVetoSelector::LeptonVetoSelector(const edm::ParameterSet& pset) :
 //__________________________________________________________________________________________________
 bool LeptonVetoSelector::select(const edm::Event& event) const {
 
-   // Input collections
-   edm::Handle<std::vector<pat::Electron> > eleHandle;
-   event.getByLabel(electronTag_, eleHandle);
-   edm::Handle<std::vector<pat::Muon> > muonHandle;
-   event.getByLabel(muonTag_, muonHandle);
+  // Input collections
+  edm::Handle<std::vector<pat::Electron> > eleHandle;
+  event.getByLabel(electronTag_, eleHandle);
+  edm::Handle<std::vector<pat::Muon> > muonHandle;
+  event.getByLabel(muonTag_, muonHandle);
 
-   edm::Handle<reco::BeamSpot> beamSpotHandle;
-   event.getByLabel(beamSpot_, beamSpotHandle);
-   reco::BeamSpot myBeamSpot = *beamSpotHandle;
+  edm::Handle<reco::BeamSpot> beamSpotHandle;
+  event.getByLabel(beamSpot_, beamSpotHandle);
+  reco::BeamSpot myBeamSpot = *beamSpotHandle;
 
-   const math::XYZPointD & myPosition = myBeamSpot.position();
+  const math::XYZPointD & myPosition = myBeamSpot.position();
 
-   //  edm::Handle< std::vector<pat::Tau> > tauHandle;
-   //  event.getByLabel(tauTag_, tauHandle);
+  //  edm::Handle< std::vector<pat::Tau> > tauHandle;
+  //  event.getByLabel(tauTag_, tauHandle);
 
-   resetVariables();
+  resetVariables();
 
-   int nElectrons = 0, nMuons = 0, nTaus = 0; // Counters
+  int nElectrons = 0, nMuons = 0, nTaus = 0; // Counters
 
-   //
-   // electrons
-   //
-   if (eleHandle.isValid())
-      for (std::vector<pat::Electron>::const_iterator ie = (*eleHandle).begin(); ie != (*eleHandle).end(); ++ie) {
+  //
+  // electrons
+  //
+  if ( ! eleHandle.isValid()) {
+    edm::LogWarning("LeptonVetoSelector") << "No results for InputTag " << electronTag_;
+    return false;
+  }
 
-         if (ie->electronID("eidLoose") < 1)
-            continue;
+  for (std::vector<pat::Electron>::const_iterator ie = (*eleHandle).begin(); ie != (*eleHandle).end(); ++ie) {
 
-         if (ie->pt() < minPtEle_)
-            continue;
+    if (ie->electronID("eidLoose") < 1)
+      continue;
 
-         if (fabs(ie->eta()) > maxEtaEle_)
-            continue;
+    if (ie->pt() < minPtEle_)
+      continue;
 
-         if ((ie->trackIso() + ie->ecalIso() + ie->hcalIso()) / ie->pt() > eleIso_)
-            continue;
+    if (fabs(ie->eta()) > maxEtaEle_)
+      continue;
 
-         if (fabs(ie->gsfTrack()->dxy(myPosition)) > eleDxy_)
-            continue;
+    if ((ie->trackIso() + ie->ecalIso() + ie->hcalIso()) / ie->pt() > eleIso_)
+      continue;
 
-         //       std::cout << "PAT electron"<<std::endl;
-         //       std::cout <<"electronID? "<<ie->electronID("eidLoose") <<std::endl;
-         //       std::cout << "eta: "<<      ie->eta()<<std::endl;
-         //       std::cout << "pt: "<< ie->pt()<<std::endl;
-         //       std::cout <<"dxy: "<<ie->gsfTrack()->dxy()<<std::endl;
-         //       std::cout << "trackIso: "<<ie->trackIso()<<std::endl;
-         //       std::cout << "ecalIso: "<<	ie->ecalIso()<<std::endl;
-         //       std::cout << "hcalIso: "<<	ie->hcalIso()<<std::endl;
-         //       std::cout << "relIso: "<<(ie->trackIso()+ie->ecalIso()+ie->hcalIso())/ie->pt()<<std::endl;
-         //       std::cout << "-----------electron end"<<std::endl;
+    if (fabs(ie->gsfTrack()->dxy(myPosition)) > eleDxy_)
+      continue;
 
-
-         LogDebug("LeptonVetoSelector") << "Isolated electron found";
-         ++nElectrons;
-
-      }
-   setVariable("nElectrons", nElectrons);
-
-   //
-   // muons
-   //
+    //       std::cout << "PAT electron"<<std::endl;
+    //       std::cout <<"electronID? "<<ie->electronID("eidLoose") <<std::endl;
+    //       std::cout << "eta: "<<      ie->eta()<<std::endl;
+    //       std::cout << "pt: "<< ie->pt()<<std::endl;
+    //       std::cout <<"dxy: "<<ie->gsfTrack()->dxy()<<std::endl;
+    //       std::cout << "trackIso: "<<ie->trackIso()<<std::endl;
+    //       std::cout << "ecalIso: "<<	ie->ecalIso()<<std::endl;
+    //       std::cout << "hcalIso: "<<	ie->hcalIso()<<std::endl;
+    //       std::cout << "relIso: "<<(ie->trackIso()+ie->ecalIso()+ie->hcalIso())/ie->pt()<<std::endl;
+    //       std::cout << "-----------electron end"<<std::endl;
 
 
-   if (muonHandle.isValid())
-      for (std::vector<pat::Muon>::const_iterator im = (*muonHandle).begin(); im != (*muonHandle).end(); ++im) {
+    LogDebug("LeptonVetoSelector") << "Isolated electron found";
+    ++nElectrons;
+  }
+      
+  setVariable("nElectrons", nElectrons);
 
-         //if( im->isGood(reco::Muon::GlobalMuonPromptTight) == false ) continue;
-         if (!im->isGlobalMuon())
-            continue;
+  //
+  // muons
+  //
 
-         if (im->pt() < minPtMuon_)
-            continue;
+  if ( ! muonHandle.isValid()) {
+    edm::LogWarning("LeptonVetoSelector") << "No results for InputTag " << muonTag_;
+    return false;
+  }
 
-         if (fabs(im->eta()) > maxEtaMuon_)
-            continue;
+  for (std::vector<pat::Muon>::const_iterator im = (*muonHandle).begin(); im != (*muonHandle).end(); ++im) {
 
-         if ((im->trackIso() + im->ecalIso() + im->hcalIso()) / im->pt() > muonIso_)
-            continue;
+    //if( im->isGood(reco::Muon::GlobalMuonPromptTight) == false ) continue;
+    if (!im->isGlobalMuon())
+      continue;
 
-         if (fabs(im->innerTrack()->dxy(myPosition)) > muonDxy_)
-            continue;
+    if (im->pt() < minPtMuon_)
+      continue;
 
-         if (im->innerTrack()->numberOfValidHits() < muonHits_)
-            continue;
+    if (fabs(im->eta()) > maxEtaMuon_)
+      continue;
 
-         //       std::cout << "PAT muon"<<std::endl;
-         //       std::cout << "eta: "<<      im->eta()<<std::endl;
-         //       std::cout << "pt: "<< im->pt()<<std::endl;
-         //       std::cout << "GlobalMuonPromptTight? " << im->isGood(reco::Muon::GlobalMuonPromptTight) <<std::endl;
-         //       std::cout << "GlobalMuon? " << im->isGlobalMuon() <<std::endl;
-         //       std::cout << "Chi2: "<< im->combinedMuon()->normalizedChi2()<<std::endl;
-         //       std::cout <<"dxy: "<<im->innerTrack()->dxy()<<std::endl;
-         //       std::cout <<"hits: "<<	 im->innerTrack()->numberOfValidHits()<<std::endl;
-         //       std::cout << "trackIso: "<<im->trackIso()<<std::endl;
-         //       std::cout << "ecalIso: "<<	im->ecalIso()<<std::endl;
-         //       std::cout << "hcalIso: "<<	im->hcalIso()<<std::endl;
-         //       std::cout << "relIso: "<<(im->trackIso()+im->ecalIso()+im->hcalIso())/im->pt()<<std::endl;
-         //       std::cout << "-----------muon end"<<std::endl;
+    if ((im->trackIso() + im->ecalIso() + im->hcalIso()) / im->pt() > muonIso_)
+      continue;
+
+    if (fabs(im->innerTrack()->dxy(myPosition)) > muonDxy_)
+      continue;
+
+    if (im->innerTrack()->numberOfValidHits() < muonHits_)
+      continue;
+
+    //       std::cout << "PAT muon"<<std::endl;
+    //       std::cout << "eta: "<<      im->eta()<<std::endl;
+    //       std::cout << "pt: "<< im->pt()<<std::endl;
+    //       std::cout << "GlobalMuonPromptTight? " << im->isGood(reco::Muon::GlobalMuonPromptTight) <<std::endl;
+    //       std::cout << "GlobalMuon? " << im->isGlobalMuon() <<std::endl;
+    //       std::cout << "Chi2: "<< im->combinedMuon()->normalizedChi2()<<std::endl;
+    //       std::cout <<"dxy: "<<im->innerTrack()->dxy()<<std::endl;
+    //       std::cout <<"hits: "<<	 im->innerTrack()->numberOfValidHits()<<std::endl;
+    //       std::cout << "trackIso: "<<im->trackIso()<<std::endl;
+    //       std::cout << "ecalIso: "<<	im->ecalIso()<<std::endl;
+    //       std::cout << "hcalIso: "<<	im->hcalIso()<<std::endl;
+    //       std::cout << "relIso: "<<(im->trackIso()+im->ecalIso()+im->hcalIso())/im->pt()<<std::endl;
+    //       std::cout << "-----------muon end"<<std::endl;
 
 
-         LogDebug("LeptonVetoSelector") << "Isolated muon found";
-         ++nMuons;
+    LogDebug("LeptonVetoSelector") << "Isolated muon found";
+    ++nMuons;
 
-      }
-   setVariable("nMuons", nMuons);
+  }
+  setVariable("nMuons", nMuons);
 
-   //  //
-   //  // taus
-   //  //
-   //  if ( tauHandle.isValid() )
-   //    for ( std::vector<pat::Tau>::const_iterator it=(*tauHandle).begin();
-   //	  it!=(*tauHandle).end(); ++it ) {
-   //      // Only taus above Et cut
-   //      if ( it->et() > minEtTau_
-   //           && (it->trackIso()+it->et())/it->et() < tauIso_ ) {
-   //        LogDebug("LeptonVetoSelector") << "Isolated tau found";
-   //        ++nTaus;
-   //      }
-   //    }
-   //  setVariable("nTaus",nTaus);
+  //  //
+  //  // taus
+  //  //
+  //  if ( tauHandle.isValid() )
+  //    for ( std::vector<pat::Tau>::const_iterator it=(*tauHandle).begin();
+  //	  it!=(*tauHandle).end(); ++it ) {
+  //      // Only taus above Et cut
+  //      if ( it->et() > minEtTau_
+  //           && (it->trackIso()+it->et())/it->et() < tauIso_ ) {
+  //        LogDebug("LeptonVetoSelector") << "Isolated tau found";
+  //        ++nTaus;
+  //      }
+  //    }
+  //  setVariable("nTaus",nTaus);
 
-   // Selection
-   if (nElectrons > 0 || nMuons > 0 || nTaus > 0)
-      return false;
+  // Selection
+  if (nElectrons > 0 || nMuons > 0 || nTaus > 0)
+    return false;
 
-   //
-   // all electrons, muons and taus are below Et cut or not isolated: event passes
-   //
-   return true;
+  //
+  // all electrons, muons and taus are below Et cut or not isolated: event passes
+  //
+  return true;
 
 }
 
