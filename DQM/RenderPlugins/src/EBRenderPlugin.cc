@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.137 2010/02/28 15:45:43 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.138 2010/03/30 14:29:06 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.137 $
-  \date $Date: 2010/02/28 15:45:43 $
+  \version $Revision: 1.138 $
+  \date $Date: 2010/03/30 14:29:06 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -492,11 +492,15 @@ private:
           obj->GetXaxis()->LabelsOption("v");
           obj->GetYaxis()->SetRangeUser(0.1, 0.608*68);
         }
-        obj->SetMinimum(0.0);
 
         std::string zAxisTitle(obj->GetZaxis()->GetTitle());
-
-        if( zAxisTitle.find("rate") != std::string::npos ) obj->SetMaximum(1.0);
+        if( zAxisTitle.find("rate") != std::string::npos )
+        {
+          double xmin = obj->GetMinimum(0);
+          double xmax = obj->GetMaximum();
+          double eps = 1.e-9;
+          if( xmax-xmin > eps ) obj->GetZaxis()->SetRangeUser(xmin, xmax);
+        }
 
         gStyle->SetPalette(1);
         gPad->SetRightMargin(0.15);
