@@ -649,7 +649,7 @@ def enableFactorization_makeZtoElecTauPlots(process):
 # of tau isolation efficiencies in W --> tau-jet + nu channel
 #--------------------------------------------------------------------------------
 
-def enableFactorization_runWtoTauNu(process):    
+def enableFactorization_runWtoTauNu(process):
     process.load("TauAnalysis.Configuration.selectWtoTauNu_factorized_cff")
     process.selectWtoTauNuEvents_factorized = cms.Sequence( process.selectWtoTauNuEvents
                                                            *process.selectWtoTauNuEventsLooseTauIsolation )
@@ -659,9 +659,14 @@ def enableFactorization_runWtoTauNu(process):
                                                             *process.analyzeWtoTauNuEvents_factorizedWithTauIsolation )
     process.p.replace(process.analyzeWtoTauNuEvents, process.analyzeWtoTauNuEvents_factorized)
 
-def enableFactorization_makeWtoTauNuPlots(process):
+def enableFactorization_makeWtoTauNuPlots(process,
+      dqmDirectoryIn_qcd_W = 'harvested/qcd_W/wTauNuAnalyzer',
+      dqmDirectoryOut_qcd_W = 'harvested/qcd_W_factorized/wTauNuAnalyzer',
+      modName_addWtoTauNu_qcd = "addWtoTauNu_qcd",
+     # modName_addWtoTauNu_smSum = "addWtoTauNu_smSum",
+      seqName_addWtoTauNu = "addWtoTauNu",
+      pyObjectLabel = ""):
     process.load("TauAnalysis.Configuration.analyzeWtoTauNu_cfi")
-
     # define list of event selection criteria on "tight" tau isolation branch of the analysis,
     # **before** applying factorization of tauTaNC+prong+charge efficiencies
     evtSelWtoTauNu_factorizedTight = [
@@ -670,48 +675,61 @@ def enableFactorization_makeWtoTauNuPlots(process):
         process.evtSelPrimaryEventVertexPosition,
         process.evtSelTauEta,
         process.evtSelTauPt,
+        process.evtSelPFMetPt,
         process.evtSelMetPt,
         process.evtSelTauLeadTrk,
         process.evtSelTauLeadTrkPt,
+        process.evtSelTauIso,
         process.evtSelTauTaNC,
         process.evtSelTauProng,
-        process.evtSelTauCharge
-    ]
+        process.evtSelTauCharge,
+        process.evtSelTauMuonVeto,
+        process.evtSelTauElectronVeto,
+        process.evtSelTauEcalCrackVeto
+        ]
 
     # define list of event selection criteria on "loose" muon isolation branch of the analysis,
     # **after** applying factorization of muon track + ECAL isolation efficiencies
     evtSelWtoTauNu_factorizedLoose = [
-        process.evtSelTauMuonVeto,
-        process.evtSelTauElectronVeto,
-        process.evtSelTauEcalCrackVeto,
         process.evtSelCentralJetVeto,
-        process.evtSelExplicitElectronVeto,
-        process.evtSelRecoilEnergyFromCaloTowers
+        process.evtSelRecoilEnergyFromCaloTowers,
+        process.evtSelMetTopology
     ]
 
-    # defines names of MonitorElements used as numerator and denominator
+  # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameWtoTauNu_numerator = "evtSelTauProng/passed_cumulative_numWeighted"
-    meNameWtoTauNu_denominator = "evtSelTauTaNC/processed_cumulative_numWeighted"
+    meNameWtoTauNu_numerator = "evtSelTauEcalCrackVeto/passed_cumulative_numWeighted"
+    meNameWtoTauNu_denominator = "evtSelTauLeadTrkPt/processed_cumulative_numWeighted"
+
 
    # configure sequence for applying factorization to "qcd_W" process (QCD background sample for Pt(hat) > 15 GeV)
-    process.scaleWtoTauNu_qcd_W = composeFactorizationSequence(
+    scaleWtoTauNu_qcd_W = composeFactorizationSequence(
         process = process,
-        processName = "qcd_W",
-        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/qcd_W/wTauNuAnalyzer_factorizedWithTauIsolation/',
+        processName = "qcd_W" + "_" + pyObjectLabel,
+        dqmDirectoryIn_factorizedTightEvtSel = "harvested/qcd_W/wTauNuAnalyzer_factorizedWithTauIsolation/",
         evtSel_factorizedTight = evtSelWtoTauNu_factorizedTight,
-        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/qcd_W/wTauNuAnalyzer_factorizedWithoutTauIsolation/',
+        dqmDirectoryIn_factorizedLooseEvtSel = "harvested/qcd_W/wTauNuAnalyzer_factorizedWithoutTauIsolation/",
         evtSel_factorizedLoose = evtSelWtoTauNu_factorizedLoose,
         meName_numerator = meNameWtoTauNu_numerator,
         meName_denominator = meNameWtoTauNu_denominator,
-        dqmDirectoryOut = 'harvested/qcd_W_factorized/wTauNuAnalyzer/'
+        dqmDirectoryOut = dqmDirectoryOut_qcd_W + '/'
     )
 
-    process.addWtoTauNu_qcd.qcd.dqmDirectories_input = cms.vstring(
-        'harvested/qcd_W_factorized'
-        )
+    scaleWtoTauNuName_qcd_W = "scaleWtoTauNu_qcd_W" + "_" + pyObjectLabel
+    setattr(process,scaleWtoTauNuName_qcd_W, scaleWtoTauNu_qcd_W)
 
-    process.addWtoTauNu = cms.Sequence( process.scaleWtoTauNu_qcd_W + process.addWtoTauNu_qcd + process.addWtoTauNu_smSum  )
+    addWtoTauNu_qcd = getattr(process, modName_addWtoTauNu_qcd)
+    addWtoTauNu_qcd.qcd.dqmDirectories_input = cms.vstring(
+        dqmDirectoryOut_qcd_W + '/'
+        )
+    addWtoTauNu = cms.Sequence(
+        getattr(process, scaleWtoTauNuName_qcd_W)
+        )
+    addWtoTauNu._seq = addWtoTauNu._seq * getattr(process, modName_addWtoTauNu_qcd)
+#    if hasattr(process, modName_addWtoTauNu_smSum):
+#        addWtoTauNu._seq = addWtoTauNu._seq * getattr(process,modName_addWtoTauNu_smSum)
+    setattr(process,seqName_addWtoTauNu, addWtoTauNu)
+  
     process.plotWtoTauNu.processes.qcd_W.dqmDirectory = cms.string('harvested/qcd_W_factorized')
 
 #--------------------------------------------------------------------------------
