@@ -102,6 +102,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       edm::InputTag HBhitsrc_; 
       string recoCollection_; 
       string recoProducer_; 
+      string JetCorrector_akt5_; 
       string JetCorrector_pfakt5_; 
       string JetCorrector_pfakt7_; 
       double genjetptthr_;
@@ -292,6 +293,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
 
       Int_t nJet_akt5;
       Float_t ptJet_akt5[100];
+      Float_t ptCorrJet_akt5[100];
       Float_t eJet_akt5[100];
       Float_t etaJet_akt5[100];
       Float_t phiJet_akt5[100];
