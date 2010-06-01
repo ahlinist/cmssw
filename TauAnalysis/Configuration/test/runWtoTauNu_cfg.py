@@ -63,7 +63,7 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 #--------------------------------------------------------------------------------
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(1000)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -126,11 +126,13 @@ replaceMETforTauNu(process,
 #process.layer1METs.genMETSource = cms.InputTag('genMetTrue')
 #--------------------------------------------------------------------------------
 
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstElectron_cfi import *
+pfRecoTauDiscriminationAgainstElectron.ApplyCut_EmFraction = cms.bool(False)
+pfRecoTauDiscriminationAgainstElectron.EmFraction_maxValue  = cms.double(0.85)
+
 from TauAnalysis.Configuration.tools.changeCut import *
-changeCut(process,"selectedPatTausForWTauNuPt20","pt > 25. & pt < 60.")
 changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byIsolation') > 0.5")
-changeCut(process, "selectedPatTausForWTauNuLeadTrkPt","leadTrack().isNonnull() & leadTrack().pt() > 20.")
+changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byTaNCfrQuarterPercent') > 0.5")
 changeCut(process, "selectedPatElectronsTightId","electronID('eidRobustTight') > 0")
 
 process.p = cms.Path( 
@@ -141,14 +143,14 @@ process.p = cms.Path(
 #    +process.printEventContent    # dump of event content after PAT-tuple production
     +process.selectWtoTauNuEvents
     +process.analyzeWtoTauNuEvents
-    +process.selectWtoTauNuEventsBoosted
-    +process.analyzeWtoTauNuEventsBoosted
+#    +process.selectWtoTauNuEventsBoosted
+#    +process.analyzeWtoTauNuEventsBoosted
     +process.saveWtoTauNuPlots 
 )
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
-#from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runWtoTauNu
+from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runWtoTauNu
 #enableFactorization_runWtoTauNu(process)
 #from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runWtoTauNu_boosted
 #enableFactorization_runWtoTauNu_boosted(process)
@@ -159,11 +161,14 @@ process.p = cms.Path(
 # (needs to be done after process.p has been defined)
 #__#factorization#
 #--------------------------------------------------------------------------------
+process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleWtoTauNuSpecific)
+
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-process.p.replace(process.producePatTupleWtoTauNuSpecific, process.producePatTuple+process.producePatTupleWtoTauNuSpecific)
+if not hasattr(process, "isBatchMode"):   
+    process.p.replace(process.producePatTupleWtoTauNuSpecific, process.producePatTuple+process.producePatTupleWtoTauNuSpecific)
 #--------------------------------------------------------------------------------
 
 #replace reco->aod. Necessary for fast-sim produced qcd sample
