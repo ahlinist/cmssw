@@ -294,10 +294,11 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("jetPhi", jetPhi_, "jetPhi[nJet]/F");
   tree_->Branch("jetMass", jetMass_, "jetMass[nJet]/F");
   tree_->Branch("jetEt", jetEt_, "jetEt[nJet]/F");
-  tree_->Branch("jetmaxEInEmTowers", jetmaxEInEmTowers_, "jetmaxEInEmTowers[nJet]/F");
-  tree_->Branch("jetmaxEInHadTowers", jetmaxEInHadTowers_, "jetmaxEInHadTowers[nJet]/F");
   tree_->Branch("jetenergyFractionHadronic", jetenergyFractionHadronic_, "jetenergyFractionHadronic[nJet]/F");
   tree_->Branch("jetemEnergyFraction", jetemEnergyFraction_, "jetemEnergyFraction[nJet]/F");
+  tree_->Branch("jetfHPD", jetfHPD_, "jetfHPD[nJet]/F");
+  tree_->Branch("jetN60", jetN60_, "jetN60[nJet]/I");
+  tree_->Branch("jetN90", jetN90_, "jetN90[nJet]/I");
   if (doGenParticles_) {
     tree_->Branch("jetGenIndex", jetGenIndex_, "jetGenIndex[nJet]/I");
     tree_->Branch("jetGenJetIndex", jetGenJetIndex_, "jetGenJetIndex[nJet]/I");
@@ -308,9 +309,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("jetGenJetMass", jetGenJetMass_, "jetGenJetMass[nJet]/F");
     tree_->Branch("jetGenPartonID", jetGenPartonID_, "jetGenPartonID[nJet]/I");
     tree_->Branch("jetGenPartonMomID", jetGenPartonMomID_, "jetGenPartonMomID[nJet]/I");
-    tree_->Branch("jetfHPD", jetfHPD_, "jetfHPD[nJet]/F");
-    tree_->Branch("jetN60", jetN60_, "jetN60[nJet]/I");
-    tree_->Branch("jetN90", jetN90_, "jetN90[nJet]/I");
     tree_->Branch("jetGenEn", jetGenEn_, "jetGenEn[nJet]/F");
     tree_->Branch("jetGenPt", jetGenPt_, "jetGenPt[nJet]/F");
     tree_->Branch("jetGenEta", jetGenEta_, "jetGenEta[nJet]/F");
@@ -1108,12 +1106,10 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       // End of b-tagging information
 
 	  // Jet Id related
-	  jetfHPD_[nJet_] = iJet->jetID().fHPD;
-	  jetN60_[nJet_] = iJet->n60();
-	  jetN90_[nJet_] = iJet->n90();
+      jetfHPD_[nJet_] = iJet->jetID().fHPD;
+      jetN60_[nJet_]  = iJet->n60();
+      jetN90_[nJet_]  = iJet->n90();
 
-      jetmaxEInEmTowers_[nJet_] = iJet->maxEInEmTowers();
-      jetmaxEInHadTowers_[nJet_] = iJet->maxEInHadTowers();
       jetenergyFractionHadronic_[nJet_] = iJet->energyFractionHadronic();
       jetemEnergyFraction_[nJet_] = iJet->emEnergyFraction();
 
