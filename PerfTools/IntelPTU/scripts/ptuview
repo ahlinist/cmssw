@@ -45,7 +45,7 @@
 # where as before "somestring" is up to you. The URL will then be:
 #   http://x.y/z/cgi-bin/ptuview/all/somestring/
 #
-#  $Id: ptuview,v 1.7 2010/04/16 13:21:21 mkortela Exp $
+#  $Id: ptuview,v 1.8 2010/05/24 11:05:04 mkortela Exp $
 #
 # Peter Elmer, Princeton University
 # 24 March, 2010
@@ -763,7 +763,7 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
           rowtxt=rowtxt.replace("<","&lt;")
           if (titleordered[iii] == "Line"):
             url2 = url1 + profname + "/" + row[jjj] + "/#" + row[jjj] + "\">"
-            out.write("<td class=%s id=%s>%s%s%s</td>\n" % (classordered[iii],row[jjj],url2,rowtxt,url3))
+            out.write("<td class=%s><a name=\"%s\">%s%s%s</a></td>\n" % (classordered[iii],row[jjj],url2,rowtxt,url3))
           elif (titleordered[iii] == "Function"):
             funcnum = rownum-1
             reportfile = os.path.join(dirname(mycsvfile), "%d_src.csv" % funcnum)
