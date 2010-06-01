@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.161 2010/05/27 08:48:53 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.162 2010/06/01 15:12:59 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.161 $
-  \date $Date: 2010/05/27 08:48:53 $
+  \version $Revision: 1.162 $
+  \date $Date: 2010/06/01 15:12:59 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -622,6 +622,7 @@ private:
 
         std::string zAxisTitle(obj->GetZaxis()->GetTitle());
         if( zAxisTitle.find("rate") != std::string::npos )
+        {
           double xmin = obj->GetMinimum(0);
           double xmax = obj->GetMaximum();
           double eps = 1.e-9;
