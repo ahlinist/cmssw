@@ -6,9 +6,9 @@ import copy
 #--------------------------------------------------------------------------------
 
 # uncomment next line to make plots for 10 TeV centre-of-mass energy
-from TauAnalysis.Configuration.plotWtoTauNu_processes_10TeV_cfi import *
+#from TauAnalysis.Configuration.plotWtoTauNu_processes_10TeV_cfi import *
 # uncomment next line to make plots for 7 TeV centre-of-mass energy
-#from TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi import *
+from TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi import *
 
 from TauAnalysis.Configuration.plotWtoTauNu_drawJobs_cfi import *
 from TauAnalysis.Configuration.plotWtoTauNu_drawJobs_boosted_cfi import *
@@ -18,8 +18,8 @@ loadWtoTauNu = cms.EDAnalyzer("DQMFileLoader",
     Wtaunu = copy.deepcopy(processWtoTauNu_WtaunuSum.config_dqmFileLoader),
     qcd_W = copy.deepcopy(processWtoTauNu_qcd_WSum.config_dqmFileLoader),
     Wmunu = copy.deepcopy(processWtoTauNu_WmunuSum.config_dqmFileLoader),
-    Wenu = copy.deepcopy(processWtoTauNu_WenuSum.config_dqmFileLoader)
-#    ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJetsSum.config_dqmFileLoader),
+    Wenu = copy.deepcopy(processWtoTauNu_WenuSum.config_dqmFileLoader),
+    ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJetsSum.config_dqmFileLoader)
 )
 
 #addWtoTauNu_smSum = cms.EDAnalyzer("DQMHistAdder",
@@ -75,7 +75,7 @@ plotWtoTauNu = cms.EDAnalyzer("DQMHistPlotter",
         qcd_W = copy.deepcopy(processWtoTauNu_qcd_W.config_dqmHistPlotter),        
         Wmunu = copy.deepcopy(processWtoTauNu_Wmunu.config_dqmHistPlotter),
         Wenu = copy.deepcopy(processWtoTauNu_Wenu.config_dqmHistPlotter),
-        #ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJets.config_dqmHistPlotter),
+        ZplusJets = copy.deepcopy(processWtoTauNu_ZplusJets.config_dqmHistPlotter),
         ),
 
     xAxes = cms.PSet(
@@ -115,7 +115,7 @@ plotWtoTauNu = cms.EDAnalyzer("DQMHistPlotter",
             qcd_W = copy.deepcopy(drawOption_QCD),
             Wmunu = copy.deepcopy(drawOption_Wmunu),
             Wenu = copy.deepcopy(drawOption_Wenu),
-          #  ZplusJets = copy.deepcopy(drawOption_ZplusJets),
+            ZplusJets = copy.deepcopy(drawOption_ZplusJets),
             )
     ),
                               
@@ -175,7 +175,7 @@ plotWtoTauNu_boosted = cms.EDAnalyzer("DQMHistPlotter",
             qcd_W = copy.deepcopy(drawOption_QCD),
             Wmunu = copy.deepcopy(drawOption_Wmunu),
             Wenu = copy.deepcopy(drawOption_Wenu),
-          #  ZplusJets = copy.deepcopy(drawOption_ZplusJets),
+            ZplusJets = copy.deepcopy(drawOption_ZplusJets),
             )
     ),
                               
