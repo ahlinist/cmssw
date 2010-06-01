@@ -15,7 +15,7 @@ MyMHTEventSelector::MyMHTEventSelector(const edm::ParameterSet& pset) :
             maxfHPD_(pset.getParameter<double> ("maxfHPD")) {
 
    // Store computed HT
-   defineVariable("myMHT");
+   defineVariable("MHT");
 }
 
 //__________________________________________________________________________________________________
@@ -128,7 +128,7 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
    float myMHT = HT.pt();
    //std::cout << myMHT << std::endl;
 
-   setVariable("myMHT", myMHT);
+   setVariable("MHT", myMHT);
 
    //
    // apply cut
