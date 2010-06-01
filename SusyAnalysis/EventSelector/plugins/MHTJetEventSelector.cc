@@ -26,6 +26,7 @@ MHTJetEventSelector::MHTJetEventSelector(const edm::ParameterSet& pset) :
    defineVariable("numberOfJets");
    defineVariable("dPhiJet1MHT");
    defineVariable("dPhiJet2MHT");
+   defineVariable("dPhiJet3MHT");
    defineVariable("R1");
    defineVariable("R2");
 
@@ -100,6 +101,8 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
    setVariable("dPhiJet1MHT", dPhiJet1Met);
    double dPhiJet2Met = fabs(reco::deltaPhi((*jets)[1].phi(), metPhi));
    setVariable("dPhiJet2MHT", dPhiJet2Met);
+   double dPhiJet3Met = fabs(reco::deltaPhi((*jets)[2].phi(), metPhi));
+   setVariable("dPhiJet3MHT", dPhiJet3Met);
 
    // R1 & R2
    float R1 = sqrt(TMath::Power(dPhiJet2Met, 2) + TMath::Power(dPhiJet1Met - TMath::Pi(), 2));
