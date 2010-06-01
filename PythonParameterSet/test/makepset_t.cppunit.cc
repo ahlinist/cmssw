@@ -221,7 +221,10 @@ void testmakepset::fileinpathAux()
   edm::FileInPath ufip = innerps.getUntrackedParameter<edm::FileInPath>("ufip");
   CPPUNIT_ASSERT( innerps.existsAs<int>("extraneous") );
   CPPUNIT_ASSERT( !innerps.existsAs<int>("absent") );
-  CPPUNIT_ASSERT( fip.isLocal() == true );
+  if(0!=getenv("CMSSW_RELEASE_BASE")) {
+    //if the above is not true then local becomes release and the following is false
+    CPPUNIT_ASSERT( fip.isLocal() == true );
+  }
   CPPUNIT_ASSERT( fip.relativePath()  == "FWCore/ParameterSet/python/Config.py" );
   CPPUNIT_ASSERT( ufip.relativePath() == "FWCore/ParameterSet/python/Types.py" );
   std::string fullpath = fip.fullPath();
