@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-intLumiWtoTauNu_Data_7TeV = float(100.)
+intLumiWtoTauNu_Data_7TeV = float(50.)
 
 #--------------------------------------------------------------------------------
 #Grouping done so that each group contains < 20 files and 20-50k events
@@ -40,6 +40,41 @@ fileNamesWtoTauNu_Wtaunu_7TeV_part05 = cms.untracked.vstring(
 
 plotsOutputFileNameWtoTauNu_Wtaunu_7TeV = cms.string('plotsWtoTauNu_Wtaunu_7TeV_partXX.root')
 patTupleOutputFileNameWtoTauNu_Wtaunu_7TeV = cms.string('patTupleWtoTauNu_Wtaunu_7TeV_partXX.root')
+
+#Z+jets skimmed sample (in total 196531 events)
+intLumiWtoTauNu_ZplusJets_7TeV = float(435.88) # NrEventsSkimmed/sigma_WZplusJets = 1046123/2400
+corrFactorWtoTauNu_ZplusJets_7TeV = float(1.) # NrSkimmed/NrRun
+
+fileNamesWtoTauNu_ZplusJets_7TeV_part01 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_1_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_2_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_3_1.root'
+    )
+fileNamesWtoTauNu_ZplusJets_7TeV_part02 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_4_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_5_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_6_1.root'
+    )
+fileNamesWtoTauNu_ZplusJets_7TeV_part03 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_7_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_8_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_9_1.root'
+    )
+fileNamesWtoTauNu_ZplusJets_7TeV_part04 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_10_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_11_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_12_1.root'
+    )
+fileNamesWtoTauNu_ZplusJets_7TeV_part05 = cms.untracked.vstring(
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_13_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_14_1.root',
+    'rfio:/castor/cern.ch/user/l/liis/SkimNov09/ZplusJets7TeV_PFCaloTauMet/zPlusJetsSkim_15_1.root'
+    )
+
+plotsOutputFileNameWtoTauNu_ZplusJets_7TeV = cms.string('plotsWtoTauNu_ZplusJets_7TeV_partXX.root')
+patTupleOutputFileNameWtoTauNu_ZplusJets_7TeV = cms.string('patTupleWtoTauNu_ZplusJets_7TeV_partXX.root')
+
+
 
 
 #W --> e nu skimmed sample (in total 196531 events)
