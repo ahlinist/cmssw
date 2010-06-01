@@ -6,7 +6,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: JetEventSelector.h,v 1.7 2010/04/27 17:09:45 thomsen Exp $
+/// $Id: JetEventSelector.h,v 1.8 2010/05/28 08:01:48 csander Exp $
 
 // system include files
 #include <memory>
@@ -40,6 +40,7 @@ private:
    std::vector<double> maxFem_; ///< upper cut on EM fraction
    int minN90_;
    double maxfHPD_;
+   bool useJetID_;
 
    template<class C>
    struct IndexSorter {

@@ -41,6 +41,7 @@ private:
    double maxFem_;
    int minN90_;
    double maxfHPD_;
+   bool useJetID_;
 
 };
 #endif

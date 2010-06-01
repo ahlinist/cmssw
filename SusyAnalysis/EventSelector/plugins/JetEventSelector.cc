@@ -6,11 +6,16 @@
 
 //________________________________________________________________________________________
 JetEventSelector::JetEventSelector(const edm::ParameterSet& pset) :
-   SusyEventSelector(pset), jetTag_(pset.getParameter<edm::InputTag> ("jetTag")), minPt_(pset.getParameter<std::vector<
-            double> > ("minPt")), maxEta_(pset.getParameter<std::vector<double> > ("maxEta")), minFem_(
-            pset.getParameter<std::vector<double> > ("minEMFraction")), maxFem_(
-            pset.getParameter<std::vector<double> > ("maxEMFraction")),
-            minN90_(pset.getParameter<int> ("minTowersN90")), maxfHPD_(pset.getParameter<double> ("maxfHPD")) {
+  SusyEventSelector(pset), 
+  jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
+  minPt_(pset.getParameter<std::vector<double> > ("minPt")),
+  maxEta_(pset.getParameter<std::vector<double> > ("maxEta")),
+  minFem_(pset.getParameter<std::vector<double> > ("minEMFraction")),
+  maxFem_(pset.getParameter<std::vector<double> > ("maxEMFraction")),
+  minN90_(pset.getParameter<int> ("minTowersN90")),
+  maxfHPD_(pset.getParameter<double> ("maxfHPD")),
+  useJetID_(pset.getParameter<bool> ("useJetID"))
+ {
 
    /// definition of variables to be cached
    defineVariable("NumberOfJets");
@@ -58,33 +63,43 @@ bool JetEventSelector::select(const edm::Event& event) const {
    // check cuts (assume that jets are sorted by Et)
    //
    bool result(false);
-   unsigned int j = 0;
+   unsigned int numPassed = 0;
+
    for (unsigned int i = 0; i < minPt_.size(); ++i) {
 
-      //not re-sorted at the momont!
+      //not re-sorted at the moment!
       float EMFRAC = 0;
       if ((*jetHandle)[i].isCaloJet())
          EMFRAC = (*jetHandle)[i].emEnergyFraction();
       if ((*jetHandle)[i].isPFJet())
          EMFRAC = (*jetHandle)[i].neutralEmEnergyFraction() + (*jetHandle)[i].chargedEmEnergyFraction();
-      if ((*jetHandle)[i].jetID().n90Hits <= minN90_)
+
+      setVariable(3* numPassed + 1, (*jetHandle)[i].pt());
+      setVariable(3* numPassed + 2, (*jetHandle)[i].eta());
+      setVariable(3* numPassed + 3, EMFRAC);
+      if ((*jetHandle)[i].pt() < minPt_[numPassed])
+	continue;
+      if (fabs((*jetHandle)[i].eta()) > maxEta_[numPassed])
+	continue;
+      if(EMFRAC > maxFem_[i] && fabs((*jetHandle)[i].eta()) < 2.6 && useJetID_)
+	continue;
+      if(EMFRAC < minFem_[i] && fabs((*jetHandle)[i].eta()) < 2.6 && useJetID_)
+	continue;
+      if ((*jetHandle)[i].jetID().n90Hits <= minN90_ && useJetID_)
          continue;
-      if ((*jetHandle)[i].jetID().fHPD >= maxfHPD_)
+      if ((*jetHandle)[i].jetID().fHPD >= maxfHPD_ && useJetID_)
          continue;
-      if ((*jetHandle)[i].pt() >= minPt_[j] && fabs((*jetHandle)[i].eta()) <= maxEta_[j] && ((EMFRAC <= maxFem_[i]
-               && EMFRAC >= minFem_[j]) || fabs((*jetHandle)[i].eta()) > 2.6)) //check EMF only |eta|<2.6
-      {
-         setVariable(3* j + 1, (*jetHandle)[i].pt());
-         setVariable(3* j + 2, (*jetHandle)[i].eta());
-         setVariable(3* j + 3, EMFRAC);
-         ++j;
-      }
-      if (j == minPt_.size()) {
+
+      ++numPassed;
+
+      if (numPassed == minPt_.size()) {
          result = true;
          break;
       }
 
    }
+
+
    if (result)
       LogTrace("JetEventSelector") << "JetEventSelector: all jets passed";
    else
