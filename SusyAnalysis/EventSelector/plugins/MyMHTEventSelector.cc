@@ -8,11 +8,17 @@
 
 //__________________________________________________________________________________________________
 MyMHTEventSelector::MyMHTEventSelector(const edm::ParameterSet& pset) :
-   SusyEventSelector(pset), jetTag_(pset.getParameter<edm::InputTag> ("jetTag")), minMHT_(pset.getParameter<double> (
-            "minMHT")), maxMHT_(pset.getParameter<double> ("maxMHT")), minPt_(pset.getParameter<double> ("minPt")),
-            maxEta_(pset.getParameter<double> ("maxEta")), minFem_(pset.getParameter<double> ("minEMFraction")),
-            maxFem_(pset.getParameter<double> ("maxEMFraction")), minN90_(pset.getParameter<int> ("minTowersN90")),
-            maxfHPD_(pset.getParameter<double> ("maxfHPD")) {
+  SusyEventSelector(pset),
+  jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
+  minMHT_(pset.getParameter<double> ("minMHT")),
+  maxMHT_(pset.getParameter<double> ("maxMHT")),
+  minPt_(pset.getParameter<double> ("minPt")),
+  maxEta_(pset.getParameter<double> ("maxEta")),
+  minFem_(pset.getParameter<double> ("minEMFraction")),
+  maxFem_(pset.getParameter<double> ("maxEMFraction")),
+  minN90_(pset.getParameter<int> ("minTowersN90")),
+  maxfHPD_(pset.getParameter<double> ("maxfHPD")),
+  useJetID_(pset.getParameter<bool> ("useJetID"))  {
 
    // Store computed HT
    defineVariable("MHT");
@@ -63,19 +69,19 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
          //         std::cout << "pat::Jet (pt, eta, phi, emf, n90, fHPD): " << jet->pt() << ", " << jet->eta() << ", "
          //                  << jet->phi() << ", " << jet->emEnergyFraction() << ", " << jet->jetID().n90Hits << ", "
          //                  << jet->jetID().fHPD << std::endl;
-         if (jet->emEnergyFraction() <= minFem_ && fabs(jet->eta()) < 2.6) {
+         if (jet->emEnergyFraction() <= minFem_ && fabs(jet->eta()) < 2.6 && useJetID_) {
             ++iJet;
             continue;
          }
-         if (jet->emEnergyFraction() >= maxFem_ && fabs(jet->eta()) < 2.6) {
+         if (jet->emEnergyFraction() >= maxFem_ && fabs(jet->eta()) < 2.6 && useJetID_) {
             ++iJet;
             continue;
          }
-         if (jet->jetID().n90Hits <= minN90_) {
+         if (jet->jetID().n90Hits <= minN90_ && useJetID_) {
             ++iJet;
             continue;
          }
-         if (jet->jetID().fHPD >= maxfHPD_) {
+         if (jet->jetID().fHPD >= maxfHPD_ && useJetID_) {
             ++iJet;
             continue;
          }

@@ -6,7 +6,7 @@
 ///   and cuts on it. HT is defined as scalar sum of the
 ///   the transverse jet energies.
 ///
-/// $Id: HTEventSelector.h,v 1.5 2010/04/27 17:09:45 thomsen Exp $
+/// $Id: HTEventSelector.h,v 1.6 2010/05/28 08:01:48 csander Exp $
 
 // system include files
 #include <memory>
@@ -34,5 +34,6 @@ private:
    double maxFem_;
    int minN90_;
    double maxfHPD_;
+   bool useJetID_;
 };
 #endif
