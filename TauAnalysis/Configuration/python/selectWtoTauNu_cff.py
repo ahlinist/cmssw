@@ -41,14 +41,14 @@ cfgTauPtCut = cms.PSet(
 cfgMetPt = cms.PSet(
     pluginName = cms.string('metPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedPatMETsPt25'),
+    src = cms.InputTag('selectedPatMETsPt15'),
     minNumber = cms.uint32(1)
 )
 
 cfgPFMetPt = cms.PSet(
     pluginName = cms.string('PFmetPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedPatPFMETsPt25'),
+    src = cms.InputTag('selectedPatPFMETsPt30'),
     minNumber = cms.uint32(1)
 )
 
@@ -128,7 +128,7 @@ cfgTauChargeCut = cms.PSet(
 cfgCentralJetVeto = cms.PSet(
     pluginName = cms.string('centralJetVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedPatJetsEt20ForWTauNuCumulative'), 
+    src = cms.InputTag('selectedPatJetsEt15ForWTauNuCumulative'), 
     maxNumber = cms.uint32(0)                                                      
 )
 
