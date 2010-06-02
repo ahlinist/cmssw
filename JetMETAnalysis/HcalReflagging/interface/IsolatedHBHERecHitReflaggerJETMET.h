@@ -356,16 +356,25 @@ class IsolatedHBHERecHitReflaggerJETMET : public edm::EDProducer {
   edm::InputTag metLabel_;
   edm::InputTag caloTowerLabel_;
 
-  double rbxMinE_;
-  int rbxMinHits_;
-  double rbxMinTrkFidE_, rbxMaxHcalIsol_, rbxMaxEcalIsol_, rbxMaxTrackIsol_;
-  double hpdMinE_;
-  int hpdMinHits_;
-  double hpdMinTrkFidE_, hpdMaxHcalIsol_, hpdMaxEcalIsol_, hpdMaxTrackIsol_;
-  double dihitMinE_;
-  double dihitMinTrkFidE_, dihitMaxHcalIsol_, dihitMaxEcalIsol_, dihitMaxTrackIsol_;
-  double monohitMinE_;
-  double monohitMinTrkFidE_, monohitMaxHcalIsol_, monohitMaxEcalIsol_, monohitMaxTrackIsol_;
+  double LooseHcalIsol_;
+  double LooseEcalIsol_;
+  double LooseTrackIsol_;
+  double TightHcalIsol_;
+  double TightEcalIsol_;
+  double TightTrackIsol_;
+  
+  double LooseRBXEne1_, LooseRBXEne2_;
+  int LooseRBXHits1_, LooseRBXHits2_;
+  double TightRBXEne1_, TightRBXEne2_;
+  int TightRBXHits1_, TightRBXHits2_;
+  double LooseHPDEne1_, LooseHPDEne2_;
+  int LooseHPDHits1_, LooseHPDHits2_;
+  double TightHPDEne1_, TightHPDEne2_;
+  int TightHPDHits1_, TightHPDHits2_;
+  double LooseDiHitEne_;
+  double TightDiHitEne_;
+  double LooseMonoHitEne_;
+  double TightMonoHitEne_;
   
   int hbheFlagBit_;
 

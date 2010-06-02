@@ -43,28 +43,37 @@ IsolatedHBHERecHitReflaggerJETMET::IsolatedHBHERecHitReflaggerJETMET(const edm::
   trackLabel_(iConfig.getParameter<edm::InputTag>("trackInput")),
   metLabel_(iConfig.getParameter<edm::InputTag>("metInput")),
   caloTowerLabel_(iConfig.getParameter<edm::InputTag>("caloTowerInput")),
-  rbxMinE_(iConfig.getParameter<double>("rbxMinE")),
-  rbxMinHits_(iConfig.getParameter<int>("rbxMinHits")),
-  rbxMinTrkFidE_(iConfig.getParameter<double>("rbxMinTrkFidE")),
-  rbxMaxHcalIsol_(iConfig.getParameter<double>("rbxMaxHcalIsol")),
-  rbxMaxEcalIsol_(iConfig.getParameter<double>("rbxMaxEcalIsol")),
-  rbxMaxTrackIsol_(iConfig.getParameter<double>("rbxMaxTrackIsol")),
-  hpdMinE_(iConfig.getParameter<double>("hpdMinE")),
-  hpdMinHits_(iConfig.getParameter<int>("hpdMinHits")),
-  hpdMinTrkFidE_(iConfig.getParameter<double>("hpdMinTrkFidE")),
-  hpdMaxHcalIsol_(iConfig.getParameter<double>("hpdMaxHcalIsol")),
-  hpdMaxEcalIsol_(iConfig.getParameter<double>("hpdMaxEcalIsol")),
-  hpdMaxTrackIsol_(iConfig.getParameter<double>("hpdMaxTrackIsol")),
-  dihitMinE_(iConfig.getParameter<double>("dihitMinE")),
-  dihitMinTrkFidE_(iConfig.getParameter<double>("dihitMinTrkFidE")),
-  dihitMaxHcalIsol_(iConfig.getParameter<double>("dihitMaxHcalIsol")),
-  dihitMaxEcalIsol_(iConfig.getParameter<double>("dihitMaxEcalIsol")),
-  dihitMaxTrackIsol_(iConfig.getParameter<double>("dihitMaxTrackIsol")),
-  monohitMinE_(iConfig.getParameter<double>("monohitMinE")),
-  monohitMinTrkFidE_(iConfig.getParameter<double>("monohitMinTrkFidE")),
-  monohitMaxHcalIsol_(iConfig.getParameter<double>("monohitMaxHcalIsol")),
-  monohitMaxEcalIsol_(iConfig.getParameter<double>("monohitMaxEcalIsol")),
-  monohitMaxTrackIsol_(iConfig.getParameter<double>("monohitMaxTrackIsol")),
+
+  LooseHcalIsol_(iConfig.getParameter<double>("LooseHcalIsol")),
+  LooseEcalIsol_(iConfig.getParameter<double>("LooseEcalIsol")),
+  LooseTrackIsol_(iConfig.getParameter<double>("LooseTrackIsol")),
+  TightHcalIsol_(iConfig.getParameter<double>("TightHcalIsol")),
+  TightEcalIsol_(iConfig.getParameter<double>("TightEcalIsol")),
+  TightTrackIsol_(iConfig.getParameter<double>("TightTrackIsol")),
+
+  LooseRBXEne1_(iConfig.getParameter<double>("LooseRBXEne1")),
+  LooseRBXEne2_(iConfig.getParameter<double>("LooseRBXEne2")),
+  LooseRBXHits1_(iConfig.getParameter<int>("LooseRBXHits1")),
+  LooseRBXHits2_(iConfig.getParameter<int>("LooseRBXHits2")),
+  TightRBXEne1_(iConfig.getParameter<double>("TightRBXEne1")),
+  TightRBXEne2_(iConfig.getParameter<double>("TightRBXEne2")),
+  TightRBXHits1_(iConfig.getParameter<int>("TightRBXHits1")),
+  TightRBXHits2_(iConfig.getParameter<int>("TightRBXHits2")),
+
+  LooseHPDEne1_(iConfig.getParameter<double>("LooseHPDEne1")),
+  LooseHPDEne2_(iConfig.getParameter<double>("LooseHPDEne2")),
+  LooseHPDHits1_(iConfig.getParameter<int>("LooseHPDHits1")),
+  LooseHPDHits2_(iConfig.getParameter<int>("LooseHPDHits2")),
+  TightHPDEne1_(iConfig.getParameter<double>("TightHPDEne1")),
+  TightHPDEne2_(iConfig.getParameter<double>("TightHPDEne2")),
+  TightHPDHits1_(iConfig.getParameter<int>("TightHPDHits1")),
+  TightHPDHits2_(iConfig.getParameter<int>("TightHPDHits2")),
+
+  LooseDiHitEne_(iConfig.getParameter<double>("LooseDiHitEne")),
+  TightDiHitEne_(iConfig.getParameter<double>("TightDiHitEne")),
+  LooseMonoHitEne_(iConfig.getParameter<double>("LooseMonoHitEne")),
+  TightMonoHitEne_(iConfig.getParameter<double>("TightMonoHitEne")),
+
   hbheFlagBit_(iConfig.getParameter<int>("hbheFlagBit")),
   objvalidator_(iConfig),
   trackAssociator_()
@@ -152,10 +161,11 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
   std::vector<HBHEHitMap> hpds;
   std::vector<HBHEHitMap> dihits;
   std::vector<HBHEHitMap> monohits;
-  organizer.getRBXs(rbxs, rbxMinTrkFidE_);
-  organizer.getHPDs(hpds, hpdMinTrkFidE_);
-  organizer.getDiHits(dihits, dihitMinTrkFidE_);
-  organizer.getMonoHits(monohits, monohitMinTrkFidE_);
+  double minenergy=10.0;
+  organizer.getRBXs(rbxs, minenergy);
+  organizer.getHPDs(hpds, minenergy);
+  organizer.getDiHits(dihits, minenergy);
+  organizer.getMonoHits(monohits, minenergy);
 
   // determine which hits are noisy
   std::set<const HBHERecHit*> noisehits;
@@ -166,9 +176,11 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
     double isolhcale=rbxs[i].hcalEnergySameTowers()+rbxs[i].hcalEnergyNeighborTowers();
     double isolecale=rbxs[i].ecalEnergySameTowers();
     double isoltrke=rbxs[i].trackEnergySameTowers()+rbxs[i].trackEnergyNeighborTowers();
-    if(nhits>=rbxMinHits_ && (ene>rbxMinE_ || trkfide>rbxMinTrkFidE_) && isolhcale/ene<rbxMaxHcalIsol_ && isolecale/ene<rbxMaxEcalIsol_ && isoltrke/trkfide<rbxMaxTrackIsol_)
+    if((isolhcale/ene<LooseHcalIsol_ && isolecale/ene<LooseEcalIsol_ && isoltrke/ene<LooseTrackIsol_ && ((trkfide>LooseRBXEne1_ && nhits>=LooseRBXHits1_) || (trkfide>LooseRBXEne2_ && nhits>=LooseRBXHits2_))) ||
+       (isolhcale/ene<TightHcalIsol_ && isolecale/ene<TightEcalIsol_ && isoltrke/ene<TightTrackIsol_ && ((trkfide>TightRBXEne1_ && nhits>=TightRBXHits1_) || (trkfide>TightRBXEne2_ && nhits>=TightRBXHits2_)))) {
       for(HBHEHitMap::hitmap_const_iterator it=rbxs[i].beginHits(); it!=rbxs[i].endHits(); ++it)
 	noisehits.insert(it->first);
+    }
   }
 
   for(int i=0; i<static_cast<int>(hpds.size()); i++) {
@@ -178,9 +190,11 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
     double isolhcale=hpds[i].hcalEnergySameTowers()+hpds[i].hcalEnergyNeighborTowers();
     double isolecale=hpds[i].ecalEnergySameTowers();
     double isoltrke=hpds[i].trackEnergySameTowers()+hpds[i].trackEnergyNeighborTowers();
-    if(nhits>=hpdMinHits_ && (ene>hpdMinE_ || trkfide>hpdMinTrkFidE_) && isolhcale/ene<hpdMaxHcalIsol_ && isolecale/ene<hpdMaxEcalIsol_ && isoltrke/trkfide<hpdMaxTrackIsol_)
+    if((isolhcale/ene<LooseHcalIsol_ && isolecale/ene<LooseEcalIsol_ && isoltrke/ene<LooseTrackIsol_ && ((trkfide>LooseHPDEne1_ && nhits>=LooseHPDHits1_) || (trkfide>LooseHPDEne2_ && nhits>=LooseHPDHits2_))) ||
+       (isolhcale/ene<TightHcalIsol_ && isolecale/ene<TightEcalIsol_ && isoltrke/ene<TightTrackIsol_ && ((trkfide>TightHPDEne1_ && nhits>=TightHPDHits1_) || (trkfide>TightHPDEne2_ && nhits>=TightHPDHits2_)))) {
       for(HBHEHitMap::hitmap_const_iterator it=hpds[i].beginHits(); it!=hpds[i].endHits(); ++it)
 	noisehits.insert(it->first);
+    }
   }
 
   for(int i=0; i<static_cast<int>(dihits.size()); i++) {
@@ -189,20 +203,24 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
     double isolhcale=dihits[i].hcalEnergySameTowers()+dihits[i].hcalEnergyNeighborTowers();
     double isolecale=dihits[i].ecalEnergySameTowers();
     double isoltrke=dihits[i].trackEnergySameTowers()+dihits[i].trackEnergyNeighborTowers();
-    if((ene>dihitMinE_ || trkfide>dihitMinTrkFidE_) && isolhcale/ene<dihitMaxHcalIsol_ && isolecale/ene<dihitMaxEcalIsol_ && isoltrke/trkfide<dihitMaxTrackIsol_)
+    if((isolhcale/ene<LooseHcalIsol_ && isolecale/ene<LooseEcalIsol_ && isoltrke/ene<LooseTrackIsol_ && trkfide>0.99*ene && trkfide>LooseDiHitEne_) ||
+       (isolhcale/ene<TightHcalIsol_ && isolecale/ene<TightEcalIsol_ && isoltrke/ene<TightTrackIsol_ && ene>TightDiHitEne_)) {
       for(HBHEHitMap::hitmap_const_iterator it=dihits[i].beginHits(); it!=dihits[i].endHits(); ++it)
 	noisehits.insert(it->first);
+    }
   }
-
+  
   for(int i=0; i<static_cast<int>(monohits.size()); i++) {
     double ene=monohits[i].hitEnergy();
     double trkfide=monohits[i].hitEnergyTrackFiducial();
     double isolhcale=monohits[i].hcalEnergySameTowers()+monohits[i].hcalEnergyNeighborTowers();
     double isolecale=monohits[i].ecalEnergySameTowers();
     double isoltrke=monohits[i].trackEnergySameTowers()+monohits[i].trackEnergyNeighborTowers();
-    if((ene>monohitMinE_ || trkfide>monohitMinTrkFidE_) && isolhcale/ene<monohitMaxHcalIsol_ && isolecale/ene<monohitMaxEcalIsol_ && isoltrke/trkfide<monohitMaxTrackIsol_)
+    if((isolhcale/ene<LooseHcalIsol_ && isolecale/ene<LooseEcalIsol_ && isoltrke/ene<LooseTrackIsol_ && trkfide>0.99*ene && trkfide>LooseMonoHitEne_) ||
+       (isolhcale/ene<TightHcalIsol_ && isolecale/ene<TightEcalIsol_ && isoltrke/ene<TightTrackIsol_ && ene>TightMonoHitEne_)) {
       for(HBHEHitMap::hitmap_const_iterator it=monohits[i].beginHits(); it!=monohits[i].endHits(); ++it)
 	noisehits.insert(it->first);
+    }
   }
 
    // prepare the output HBHE RecHit collection
