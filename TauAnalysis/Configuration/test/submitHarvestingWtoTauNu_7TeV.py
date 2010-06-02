@@ -18,12 +18,17 @@ inputFilePath = "rfio:" + outputFilePath
 #--------------------------------------------------------------------------------
 
 # harvest W --> tau nu
-#submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", sample = "Wtaunu",
-#              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi", job = "harvesting", queue = "1nh", outputFilePath = outputFilePath )
+submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", sample = "Wtaunu",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi", job = "harvesting", queue = "1nh", outputFilePath = outputFilePath )
+
+# harvest Z+jets
+submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", sample = "ZplusJets",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi", job = "harvesting", queue = "1nh", outputFilePath = outputFilePath )
+
 
 # harvest W --> mu nu
-#submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", sample = "Wmunu",
-#              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi", job = "harvesting", queue = "1nh", outputFilePath = outputFilePath )
+submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", sample = "Wmunu",
+             replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi", job = "harvesting", queue = "1nh", outputFilePath = outputFilePath )
 
 # harvest W --> e nu
 submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", sample = "Wenu",
