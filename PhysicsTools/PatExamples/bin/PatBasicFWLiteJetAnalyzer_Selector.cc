@@ -353,10 +353,11 @@ int main (int argc, char* argv[])
     if ( nev % 10000 == 0 ) cout << "Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
     pat::strbitset retCalo = caloSelector.getBitTemplate();
-    // bool passedCalo = caloSelector( event, retCalo );
+    caloSelector( event, retCalo );
+
 
     pat::strbitset retPF = pfSelector.getBitTemplate();
-    // bool passedPF = pfSelector( event, retPF );
+    pfSelector( event, retPF );
 
     ///------------------
     /// CALO JETS
