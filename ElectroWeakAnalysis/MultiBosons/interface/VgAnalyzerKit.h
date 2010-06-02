@@ -57,6 +57,9 @@ protected:
   InputTag beamSpotCollection_;
 
   int verbosity_;
+  int leadingElePtCut_;
+  int leadingMuPtCut_;
+  int leadingPhoPtCut_;
 
   pat::PatKitHelper helper_;
   TTree *tree_;
