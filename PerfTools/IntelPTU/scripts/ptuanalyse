@@ -47,7 +47,7 @@
 # A short help of the parameters is shown with '-h'.
 #
 #
-#  $Id: ptuanalyse,v 1.5 2010/05/26 06:03:10 mkortela Exp $
+#  $Id: ptuanalyse,v 1.6 2010/05/26 06:06:40 mkortela Exp $
 #
 # Matti Kortelainen, Helsinki Institute of Physics
 # 15 April 2010
@@ -109,7 +109,7 @@ class Vtsa:
         self.sourceLine_re = re.compile("//@sourceFiles\.0/@sourceLines\.(?P<line>\d+)")
         self.asmLine_re = re.compile("//@modules\.0/@asmLines\.(?P<line>\d+)")
         self.branchTarget_re = re.compile("//@modules\.0/@basicBlockGraph/@basicBlocks\.(?P<target>\d+)")
-        self.jump_re = re.compile("(?P<jump>\S+\s+)\S+")
+        self.jump_re = re.compile("(?P<jump>j\S+\s+)\S+")
 
     def buildCmd(self, report):
         cmd = [self.command, self.expdir]
