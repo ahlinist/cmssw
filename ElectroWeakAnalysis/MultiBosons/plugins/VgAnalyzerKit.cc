@@ -62,6 +62,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // cout << "VgAnalyzerKit: making output tree" << endl;
 
   Service<TFileService> fs;
+  hEvents_ = fs->make<TH1F>("hEvents", "total processed and skimmed events", 2, 0, 2);
   tree_ = fs->make<TTree>("EventTree", "Event data");
 
   tree_->Branch("run", &run_, "run/I");
@@ -335,7 +336,8 @@ VgAnalyzerKit::~VgAnalyzerKit() {
 }
 
 void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
-  // cout << "VgAnalyzerKit: entering produce() ..." << endl;
+
+  hEvents_->Fill(0.5);
 
   helper_.getHandles(e,
                      muonHandle_,
@@ -495,7 +497,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
       genIndex++;
 
-      if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24 || fabs(ip->pdgId())==7 || fabs(ip->pdgId())==4)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 && fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
+      if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 && fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
 	const Candidate *p = (const Candidate*)&(*ip);
 
@@ -831,7 +833,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       eleNumberOfValidHits_[nEle_]  = (*iEle).gsfTrack()->numberOfValidHits();
       eleValidHitInFirstPXB_[nEle_] = iEle->gsfTrack()->hitPattern().hasValidHitInFirstPixelBarrel();
       eleTrkExpectHitsInner_[nEle_] = iEle->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-
       
       nEle_++;
     }
@@ -1263,7 +1264,10 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
   }
 
-  if (nElePassCut > 0 || nMuPassCut > 0) tree_->Fill();
+  if (nElePassCut > 0 || nMuPassCut > 0) {
+    hEvents_->Fill(1.5);
+    tree_->Fill();
+  }
 
 }
 
