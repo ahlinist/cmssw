@@ -148,10 +148,10 @@ class PhysicsTowerOrganizer {
 
   PhysicsTowerOrganizer(const edm::Event& iEvent,
 			const edm::EventSetup& evSetup,
-			const HBHERecHitCollection& hbhehitcoll,
-			const EcalRecHitCollection& ebhitcoll,
-			const EcalRecHitCollection& eehitcoll,
-			const reco::TrackCollection& trackcoll,
+			const edm::Handle<HBHERecHitCollection>& hbhehitcoll_h,
+			const edm::Handle<EcalRecHitCollection>& ebhitcoll_h,
+			const edm::Handle<EcalRecHitCollection>& eehitcoll_h,
+			const edm::Handle<reco::TrackCollection>& trackcoll_h,
 			const ObjectValidatorAbs& objectvalidator,
 			const CaloTowerConstituentsMap& ctcm,
 			TrackDetectorAssociator& trackAssociator,
@@ -310,7 +310,7 @@ class HBHEHitMap {
 class HBHEHitMapOrganizer
 {
  public:
-  HBHEHitMapOrganizer(const HBHERecHitCollection& hbhehitcoll,
+  HBHEHitMapOrganizer(const edm::Handle<HBHERecHitCollection>& hbhehitcoll_h,
 		      const ObjectValidatorAbs& objvalidator,
 		      const PhysicsTowerOrganizer& pto);
 
@@ -353,8 +353,6 @@ class IsolatedHBHERecHitReflaggerJETMET : public edm::EDProducer {
   edm::InputTag hbheLabel_;
   std::vector<edm::InputTag> ecalLabels_;
   edm::InputTag trackLabel_;
-  edm::InputTag metLabel_;
-  edm::InputTag caloTowerLabel_;
 
   double LooseHcalIsol_;
   double LooseEcalIsol_;

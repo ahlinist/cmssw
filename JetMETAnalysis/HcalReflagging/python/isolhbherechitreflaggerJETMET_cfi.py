@@ -6,8 +6,6 @@ isolhbherechitreflaggerJETMET = cms.EDProducer(
     hbheInput = cms.InputTag('hbhereco'),
     ecalInputs = cms.VInputTag(cms.InputTag("ecalRecHit","EcalRecHitsEB"), cms.InputTag("ecalRecHit","EcalRecHitsEE")),
     trackInput = cms.InputTag('generalTracks'),
-    metInput = cms.InputTag('met'),
-    caloTowerInput = cms.InputTag('towerMaker'),
 
     # isolation cuts
     LooseHcalIsol = cms.double(0.08),
@@ -40,6 +38,7 @@ isolhbherechitreflaggerJETMET = cms.EDProducer(
     LooseMonoHitEne = cms.double(35.0),
     TightMonoHitEne = cms.double(25.0),
 
+    # which status bit to set when a hit is bad
     hbheFlagBit = cms.int32(31),
 
     # used by the object validator
