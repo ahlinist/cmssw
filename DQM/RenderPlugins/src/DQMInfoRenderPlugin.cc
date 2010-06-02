@@ -173,7 +173,7 @@ private:
       assert( obj );
 
       
-      int topBin = 27;
+      int topBin = 28;
       int nbins = obj->GetNbinsX();
       int maxRange = nbins;
       for ( int i = nbins; i > 0; --i )
