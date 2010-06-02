@@ -278,55 +278,6 @@ protected:
   int    muNumberOfValidTrkHits_[maxP];
   int    muNumberOfValidPixelHits_[maxP];
   int    muNumberOfValidMuonHits_[maxP];
-  // Jet
-  int    nJet_;
-  int    jetAlgo_[maxP];
-  float  jetEn_[maxP];
-  float  jetPt_[maxP];
-  float  jetEta_[maxP];
-  float  jetPhi_[maxP];
-  float  jetMass_[maxP];
-  float  jetEt_[maxP];
-  float  jetmaxEInEmTowers_[maxP];
-  float  jetmaxEInHadTowers_[maxP];
-  float  jetenergyFractionHadronic_[maxP];
-  float  jetemEnergyFraction_[maxP];
-  float	 jetfHPD_[maxP];
-  int	 jetN60_[maxP] ;
-  int	 jetN90_[maxP] ;
-  int    jetGenIndex_[maxP];
-  int    jetGenJetIndex_[maxP];
-  float  jetGenJetEn_[maxP];
-  float  jetGenJetPt_[maxP];
-  float  jetGenJetEta_[maxP];
-  float  jetGenJetPhi_[maxP];
-  float  jetGenJetMass_[maxP];
-  int    jetGenPartonID_[maxP];
-  int    jetGenPartonMomID_[maxP];
-  int    jetpartonFlavour_[maxP];
-  float  jetRawPt_[maxP];
-  float  jetRawEn_[maxP];
-  float  jetCharge_[maxP];
-  // b-tagging information
-  float  jetCombinedSVBJetTags_[maxP];
-  float  jetCombinedSVMVABJetTags_[maxP];
-  float  jetConeIsoTauJetTags_[maxP];
-  float  jetImpactParaMVABJetTags_[maxP];
-  float  jetJetBProbBJetTags_[maxP];
-  float  jetJetProbBJetTags_[maxP];
-  float  jetSimpleSVBJetTags_[maxP];
-  float  jetSoftElecBJetTags_[maxP];
-  float  jetSoftMuonBJetTags_[maxP];
-  float  jetSoftMuonNoIPBJetTags_[maxP];
-  float  jetTrackCountHiEffBJetTags_[maxP];
-  float  jetTrackCountHiPurBJetTags_[maxP];
-  float  jetJetLRval_[maxP];
-  float  jetJetProb_[maxP];
-  // End of b-tagging information
-  float  jetGenEn_[maxP];
-  float  jetGenPt_[maxP];
-  float  jetGenEta_[maxP];
-  float  jetGenPhi_[maxP];
   // Zee candidate
   int    nZee_;
   float  ZeeMass_[maxP];
