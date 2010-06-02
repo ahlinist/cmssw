@@ -49,6 +49,10 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
 
+  leadingElePtCut_ = ps.getParameter<double>("LeadingElePtCut");
+  leadingMuPtCut_  = ps.getParameter<double>("LeadingMuPtCut");
+  leadingPhoPtCut_ = ps.getParameter<double>("LeadingPhoPtCut");
+
   ebReducedRecHitCollection_ = ps.getParameter<InputTag>("ebReducedRecHitCollection");
   eeReducedRecHitCollection_ = ps.getParameter<InputTag>("eeReducedRecHitCollection");
   beamSpotCollection_        = ps.getParameter<InputTag>("BeamSpotCollection");
@@ -203,7 +207,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleDcot",eleDcot_,"eleDcot[nEle]/F");
   tree_->Branch("eleConvRadius",eleConvRadius_,"eleConvRadius[nEle]/F");
   tree_->Branch("eleConvPoint",eleConvPoint_,"eleConvPoint[nEle][3]/F");
-
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
@@ -314,7 +317,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("WenuEtPfMET", WenuEtPfMET_, "WenuEtPfMET[nWenu]/F");
   tree_->Branch("WenuACopPfMET", WenuACopPfMET_, "WenuACopPfMET[nWenu]/F");
   tree_->Branch("WenuEleIndex", WenuEleIndex_, "WenuEleIndex[nWenu]/I");
-
   // Wmunu candidate
   tree_->Branch("nWmunu", &nWmunu_, "nWmunu/I");
   tree_->Branch("WmunuMassTCaloMET", WmunuMassTCaloMET_, "WmunuMassTCaloMET[nWmunu]/F");
@@ -665,10 +667,13 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
   // cout<< "BField:"<< evt_bField <<endl;
   //=====
+  int nElePassCut = 0;
   nEle_ = 0;
   const Candidate *elemom = 0;
   if ( electronHandle_.isValid() )
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
+
+      if (iEle->pt() > leadingElePtCut_) nElePassCut++;
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -770,7 +775,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       eleELeft_[nEle_]      = lazyTool.eLeft(*eleSeed);
       eleETop_[nEle_]       = lazyTool.eTop(*eleSeed);
       eleEBottom_[nEle_]    = lazyTool.eBottom(*eleSeed);
-
 
       /*
       //For electron concersion rejection
@@ -955,11 +959,13 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
 
   // Muon
-  // cout << "VgAnalyzerKit: produce: Muon..." << endl;
+  int nMuPassCut = 0;
   nMu_ = 0;
   if( muonHandle_.isValid() ) {
     // cout << "VgAnalyzerKit: produce: number of muons: " << muonHandle_->size() << endl;
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
+
+      if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
 
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
@@ -1256,10 +1262,9 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       leg1Index++;
     }
   }
-  // cout << "VgAnalyzerKit: produce: tree_->Fill()... " << endl;
-  tree_->Fill();
 
-  // cout << "VgAnalyzerKit: exiting produce... " << endl;
+  if (nElePassCut > 0 || nMuPassCut > 0) tree_->Fill();
+
 }
 
 void VgAnalyzerKit::beginJob() {
