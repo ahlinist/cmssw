@@ -20,6 +20,7 @@
 #include "DataFormats/Common/interface/View.h"
 
 #include "TTree.h"
+#include "TH1F.h"
 
 using namespace edm;
 
@@ -63,6 +64,7 @@ protected:
 
   pat::PatKitHelper helper_;
   TTree *tree_;
+  TH1F  *hEvents_; 
 
   int    run_;
   int    event_;
