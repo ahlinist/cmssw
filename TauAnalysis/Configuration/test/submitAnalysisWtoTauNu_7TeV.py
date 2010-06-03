@@ -23,28 +23,28 @@ inputFilePath = "/castor/cern.ch/user/l/liis/SkimNov09/"
 # W --> tau nu jobs
 for i in range(5):
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "Wtaunu_7TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization = false; estimateSysUncertainties = false",
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 # W --> mu nu jobs
 for i in range(12):
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "Wmunu_7TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization = false; estimateSysUncertainties = false",
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 # W --> e nu jobs
 for i in range(10):
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "Wenu_7TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization = false; estimateSysUncertainties = false",
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # Z+jets jobs
 for i in range(5):
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "ZplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization = false; estimateSysUncertainties = false",
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization = false; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
     
 
 # qcd jobs
 for i in range(14):#14
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "qcd_W_7TeV_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization =true; estimateSysUncertainties = false",
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = "+inputFileType+";inputFilePath = "+inputFilePath+"; applyFactorization =true; estimateSysUncertainties = false",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
