@@ -36,7 +36,7 @@ process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck")
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
     fileNames = cms.untracked.vstring(
-'file:Spring10_TTbar_preprod.root'
+'file:eventi_136097.root'
 )
 
 )
@@ -61,6 +61,14 @@ process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_7TeV_ReRe
 # set the record's IOV. Must be defined once. Choose ANY correction service. #
 process.prefer("L2L3JetCorrectorAK5PF") 
 
+#monster track event cleaning
+process.monster = cms.EDFilter(
+   "FilterOutScraping",
+   applyfilter = cms.untracked.bool(True),
+   debugOn = cms.untracked.bool(False),
+   numtrack = cms.untracked.uint32(10),
+   thresh = cms.untracked.double(0.2)
+)
 
 
 ###########  EB SPIKE CLEANING BEGIN #####################
@@ -117,6 +125,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     tracks = cms.untracked.InputTag("generalTracks"),
     Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('EcalRecHitsEB'),
+    JetCorrectionService_akt5 = cms.string('L2L3JetCorrectorAK5Calo'),
     JetCorrectionService_pfakt5 = cms.string('L2L3JetCorrectorAK5PF'),
     JetCorrectionService_pfakt7 = cms.string('L2L3JetCorrectorAK7PF'),
     jetsite = cms.untracked.InputTag("iterativeCone5CaloJets"),
@@ -137,8 +146,8 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsgenite = cms.untracked.InputTag("iterativeCone5GenJets"),
     jetsgenkt4 = cms.untracked.InputTag("kt4GenJets"),
     jetsgenkt6 = cms.untracked.InputTag("kt6GenJets"),
-    jetsgenakt5 = cms.untracked.InputTag("ak5GenJetsptmin2"),
-    jetsgenakt7 = cms.untracked.InputTag("ak7GenJetsptmin2"),
+    jetsgenakt5 = cms.untracked.InputTag("ak5GenJets"),
+    jetsgenakt7 = cms.untracked.InputTag("ak7GenJets"),
     jetsgensis5 = cms.untracked.InputTag("sisCone5GenJets"),
     jetsgensis7 = cms.untracked.InputTag("sisCone7GenJets"),
     TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
@@ -153,4 +162,4 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 )
 
 
-process.p = cms.Path(process.ecalCleanClustering*process.ak5JPTJetsSequence*process.myanalysis)
+process.p = cms.Path(process.monster*process.ecalCleanClustering*process.ak5JPTJetsSequence*process.myanalysis)
