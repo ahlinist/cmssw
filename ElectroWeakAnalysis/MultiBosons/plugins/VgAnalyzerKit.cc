@@ -222,14 +222,14 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
   tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
-  tree_->Branch("phoEMax", phoEMax_, "phoEMax_[nPho]/F");
-  tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3_[nPho]/F");
-  tree_->Branch("phoERight", phoERight_, "phoERight_[nPho]/F");
-  tree_->Branch("phoELeft", phoELeft_, "phoELeft_[nPho]/F");
-  tree_->Branch("phoETop", phoETop_, "phoETop_[nPho]/F");
-  tree_->Branch("phoEBottom", phoEBottom_, "phoEBottom_[nPho]/F");
-  tree_->Branch("phoRoundness", phoRoundness_, "phoRoundness_[nPho]/F");
-  tree_->Branch("phoAngle", phoAngle_, "phoAngle_[nPho]/F");
+  tree_->Branch("phoEMax", phoEMax_, "phoEMax[nPho]/F");
+  tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3[nPho]/F");
+  tree_->Branch("phoERight", phoERight_, "phoERight[nPho]/F");
+  tree_->Branch("phoELeft", phoELeft_, "phoELeft[nPho]/F");
+  tree_->Branch("phoETop", phoETop_, "phoETop[nPho]/F");
+  tree_->Branch("phoEBottom", phoEBottom_, "phoEBottom[nPho]/F");
+  tree_->Branch("phoRoundness", phoRoundness_, "phoRoundness[nPho]/F");
+  tree_->Branch("phoAngle", phoAngle_, "phoAngle[nPho]/F");
   if (doGenParticles_) {
     tree_->Branch("phoGenIndex", phoGenIndex_, "phoGenIndex[nPho]/I");
     tree_->Branch("phoGenGMomPID", phoGenGMomPID, "phoGenGMomPID[nPho]/I");
