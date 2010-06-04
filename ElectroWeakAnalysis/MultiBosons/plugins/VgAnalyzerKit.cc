@@ -170,7 +170,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/F");
   tree_->Branch("eleEMax", eleEMax_, "eleEMax_[nEle]/F");
-  tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3_[nPho]/F");
+  tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3_[nEle]/F");
   tree_->Branch("eleERight", eleERight_, "eleERight_[nEle]/F");
   tree_->Branch("eleELeft", eleELeft_, "eleELeft_[nEle]/F");
   tree_->Branch("eleETop", eleETop_, "eleETop_[nEle]/F");
@@ -804,12 +804,14 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
 
   // Photon
-  // cout << "VgAnalyzerKit: produce: Photon..." << endl;
   const Candidate *phomom = 0;
+  int nPhoPassCut = 0;
   nPho_ = 0;
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
-
+      
+      if (iPho->pt() > leadingPhoPtCut_) nPhoPassCut++;
+      
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
       phoEt_[nPho_]  = iPho->et();
@@ -817,7 +819,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       phoEta_[nPho_] = iPho->eta();
       phoPhi_[nPho_] = iPho->phi();
 
-      phoR9_[nPho_]          = iPho->r9();
+      phoR9_[nPho_]               = iPho->r9();
       phoTrkIsoSolidDR03_[nPho_]  = iPho->trkSumPtSolidConeDR03();
       phoTrkIsoHollowDR03_[nPho_] = iPho->trkSumPtHollowConeDR03();
       phoNTrkSolidDR03_[nPho_]    = iPho->nTrkSolidConeDR03();
@@ -1224,7 +1226,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
   }
 
-  if (nElePassCut > 0 || nMuPassCut > 0) {
+  if ((nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
     hEvents_->Fill(1.5);
     tree_->Fill();
   }
