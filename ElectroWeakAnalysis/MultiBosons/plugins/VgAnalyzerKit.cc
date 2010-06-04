@@ -329,7 +329,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("WmunuMassTPfMET", WmunuMassTPfMET_, "WmunuMassTPfMET[nWmunu]/F");
   tree_->Branch("WmunuEtPfMET", WmunuEtPfMET_, "WmunuEtPfMET[nWmunu]/F");
   tree_->Branch("WmunuACopPfMET", WmunuACopPfMET_, "WmunuACopPfMET[nWmunu]/F");
-  tree_->Branch("WmunuMuIndex", WmunuMuIndex_, "WmunuMuIndex[nWenu]/I");
+  tree_->Branch("WmunuMuIndex", WmunuMuIndex_, "WmunuMuIndex[nWmunu]/I");
 }
 
 VgAnalyzerKit::~VgAnalyzerKit() {
@@ -1134,7 +1134,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       if (iMu->globalTrack().isNull()) continue;
       if (iMu->innerTrack().isNull()) continue;
 
-      leg2Index = leg1Index + 1;
       for (View<pat::Muon>::const_iterator jMu = iMu+1; jMu != muonHandle_->end(); ++jMu) {
 
 	if (!jMu->isGlobalMuon()) continue;
@@ -1153,16 +1152,16 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	  ZmumuPt_[nZmumu_]        = Zmumu.pt();
 	  ZmumuEta_[nZmumu_]       = Zmumu.eta();
 	  ZmumuPhi_[nZmumu_]       = Zmumu.phi();
-	  ZmumuLeg1Index_[nZmumu_] = leg1Index;
-	  ZmumuLeg2Index_[nZmumu_] = leg2Index;
+
+          leg1Index = iMu-(muonHandle_->begin());
+          leg2Index = jMu-(muonHandle_->begin());
+
+          ZmumuLeg1Index_[nZmumu_] = leg1Index;
+          ZmumuLeg2Index_[nZmumu_] = leg2Index;
 
 	  nZmumu_++;
 	}
-
-	leg2Index++;
       }
-
-      leg1Index++;
     }
   } // Build Zmumu candidate on the fly based on the source muons
 
@@ -1224,7 +1223,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       METHandle_->size() > 0) {
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
-      //if (!iMu->isGlobalMuon()) continue;
+      if (!iMu->isGlobalMuon()) continue;
 
       for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
 
@@ -1258,9 +1257,11 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), pfMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
       WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), pfMET->pt());
       WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), pfMET->phi());
+
+      leg1Index = iMu-(muonHandle_->begin());
+      
       WmunuMuIndex_[nWmunu_]    = leg1Index;
       nWmunu_++;
-      leg1Index++;
     }
   }
 
