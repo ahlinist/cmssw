@@ -161,8 +161,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleCaloPos", eleCaloPos_ ,"eleCaloPos[nEle][3]/F");
   tree_->Branch("eleSCPos", eleSCPos_, "eleSCPos[nEle][3]/F");
   tree_->Branch("eleHoverE", eleHoverE_, "eleHoverE[nEle]/F");
-  tree_->Branch("eleHoverE1", eleHoverE1_, "eleHoverE1[nEle]/F");
-  tree_->Branch("eleHoverE2", eleHoverE2_, "eleHoverE2[nEle]/F");
   tree_->Branch("eleEoverP", eleEoverP_, "eleEoverP[nEle]/F");
   tree_->Branch("elePin", elePin_, "elePin[nEle]/F");
   tree_->Branch("elePout", elePout_, "elePout[nEle]/F");
@@ -172,18 +170,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/F");
   tree_->Branch("eleEMax", eleEMax_, "eleEMax_[nEle]/F");
-  tree_->Branch("eleE2nd", eleE2nd_, "eleE2nd_[nEle]/F");
-  tree_->Branch("eleE2x2", eleE2x2_, "eleE2x2_[nEle]/F");
-  tree_->Branch("eleE3x2", eleE3x2_, "eleE3x2_[nEle]/F");
-  tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3_[nEle]/F");
-  tree_->Branch("eleE4x4", eleE4x4_, "eleE4x4_[nEle]/F");
-  tree_->Branch("eleE1x5", eleE1x5_, "eleE1x5_[nEle]/F");
-  tree_->Branch("eleE5x5", eleE5x5_, "eleE5x5_[nEle]/F");
-  tree_->Branch("eleE2x5Right", eleE2x5Right_, "eleE2x5Right_[nEle]/F");
-  tree_->Branch("eleE2x5Left", eleE2x5Left_, "eleE2x5Left_[nEle]/F");
-  tree_->Branch("eleE2x5Top", eleE2x5Top_, "eleE2x5Top_[nEle]/F");
-  tree_->Branch("eleE2x5Bottom", eleE2x5Bottom_, "eleE2x5Bottom_[nEle]/F");
-  tree_->Branch("eleE2x5Max", eleE2x5Max_, "eleE2x5Max_[nEle]/F");
+  tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3_[nPho]/F");
   tree_->Branch("eleERight", eleERight_, "eleERight_[nEle]/F");
   tree_->Branch("eleELeft", eleELeft_, "eleELeft_[nEle]/F");
   tree_->Branch("eleETop", eleETop_, "eleETop_[nEle]/F");
@@ -231,25 +218,12 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoEcalIsoDR04", phoEcalIsoDR04_, "phoEcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoDR04", phoHcalIsoDR04_, "phoHcalIsoDR04[nPho]/F");
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
-  tree_->Branch("phoHoverE1", phoHoverE1_, "phoHoverE1[nPho]/F");
-  tree_->Branch("phoHoverE2", phoHoverE2_, "phoHoverE2[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
   tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
   tree_->Branch("phoEMax", phoEMax_, "phoEMax_[nPho]/F");
-  tree_->Branch("phoE2nd", phoE2nd_, "phoE2nd_[nPho]/F");
-  tree_->Branch("phoE2x2", phoE2x2_, "phoE2x2_[nPho]/F");
-  tree_->Branch("phoE3x2", phoE3x2_, "phoE3x2_[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3_[nPho]/F");
-  tree_->Branch("phoE4x4", phoE4x4_, "phoE4x4_[nPho]/F");
-  tree_->Branch("phoE1x5", phoE1x5_, "phoE1x5_[nPho]/F");
-  tree_->Branch("phoE5x5", phoE5x5_, "phoE5x5_[nPho]/F");
-  tree_->Branch("phoE2x5Right", phoE2x5Right_, "phoE2x5Right_[nPho]/F");
-  tree_->Branch("phoE2x5Left", phoE2x5Left_, "phoE2x5Left_[nPho]/F");
-  tree_->Branch("phoE2x5Top", phoE2x5Top_, "phoE2x5Top_[nPho]/F");
-  tree_->Branch("phoE2x5Bottom", phoE2x5Bottom_, "phoE2x5Bottom_[nPho]/F");
-  tree_->Branch("phoE2x5Max", phoE2x5Max_, "phoE2x5Max_[nPho]/F");
   tree_->Branch("phoERight", phoERight_, "phoERight_[nPho]/F");
   tree_->Branch("phoELeft", phoELeft_, "phoELeft_[nPho]/F");
   tree_->Branch("phoETop", phoETop_, "phoETop_[nPho]/F");
@@ -729,8 +703,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       eleEta_[nEle_]     = iEle->eta();
       elePhi_[nEle_]     = iEle->phi();
       eleHoverE_[nEle_]  = iEle->hadronicOverEm();
-      eleHoverE1_[nEle_] = iEle->hadronicOverEm1();
-      eleHoverE2_[nEle_] = iEle->hadronicOverEm2();
       eleEoverP_[nEle_]  = iEle->eSuperClusterOverP();
 
       elePin_[nEle_]  = iEle->trackMomentumAtVtx().R();
@@ -765,19 +737,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
 
       eleEMax_[nEle_] = lazyTool.eMax(*eleSeed);
-      eleE2nd_[nEle_] = lazyTool.e2nd(*eleSeed);
-      eleE2x2_[nEle_] = lazyTool.e2x2(*eleSeed);
-      eleE3x2_[nEle_] = lazyTool.e3x2(*eleSeed);
       eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
-      eleE4x4_[nEle_] = lazyTool.e4x4(*eleSeed);
-      eleE1x5_[nEle_] = lazyTool.e1x5(*eleSeed);
-      eleE5x5_[nEle_] = lazyTool.e5x5(*eleSeed);
 
-      eleE2x5Right_[nEle_]  = lazyTool.e2x5Right(*eleSeed);
-      eleE2x5Left_[nEle_]   = lazyTool.e2x5Left(*eleSeed);
-      eleE2x5Top_[nEle_]    = lazyTool.e2x5Top(*eleSeed);
-      eleE2x5Bottom_[nEle_] = lazyTool.e2x5Bottom(*eleSeed);
-      eleE2x5Max_[nEle_] 	= lazyTool.e2x5Max(*eleSeed);
       eleERight_[nEle_]     = lazyTool.eRight(*eleSeed);
       eleELeft_[nEle_]      = lazyTool.eLeft(*eleSeed);
       eleETop_[nEle_]       = lazyTool.eTop(*eleSeed);
@@ -872,8 +833,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
 
       phoHoverE_[nPho_]        = iPho->hadronicOverEm();
-      phoHoverE1_[nPho_]       = iPho->hadronicDepth1OverEm();
-      phoHoverE2_[nPho_]       = iPho->hadronicDepth2OverEm();
       phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
       phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
 
@@ -900,23 +859,9 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
         if ( eerhit != EEReducedRecHits->end() ) { phoSeedTime_[nPho_] = eerhit->time(); }
       }
 
-      // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " lazyTool.eMax ..." << endl;
       phoEMax_[nPho_] = lazyTool.eMax(*phoSeed);
-      // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " lazyTool.e2nd ..." << endl;
-      phoE2nd_[nPho_] = lazyTool.e2nd(*phoSeed);
-      phoE2x2_[nPho_] = lazyTool.e2x2(*phoSeed);
-      phoE3x2_[nPho_] = lazyTool.e3x2(*phoSeed);
       phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
-      phoE4x4_[nPho_] = lazyTool.e4x4(*phoSeed);
-      phoE1x5_[nPho_] = lazyTool.e1x5(*phoSeed);
-      phoE5x5_[nPho_] = lazyTool.e5x5(*phoSeed);
 
-      // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " lazyTool.e2x5Right ..." << endl;
-      phoE2x5Right_[nPho_]  = lazyTool.e2x5Right(*phoSeed);
-      phoE2x5Left_[nPho_]   = lazyTool.e2x5Left(*phoSeed);
-      phoE2x5Top_[nPho_]    = lazyTool.e2x5Top(*phoSeed);
-      phoE2x5Bottom_[nPho_] = lazyTool.e2x5Bottom(*phoSeed);
-      phoE2x5Max_[nPho_] = lazyTool.e2x5Max(*phoSeed);
       phoERight_[nPho_]     = lazyTool.eRight(*phoSeed);
       phoELeft_[nPho_]      = lazyTool.eLeft(*phoSeed);
       phoETop_[nPho_]       = lazyTool.eTop(*phoSeed);
