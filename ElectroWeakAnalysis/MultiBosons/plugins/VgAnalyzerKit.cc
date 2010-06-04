@@ -169,12 +169,12 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eledPhiAtVtx", eledPhiAtVtx_, "eledPhiAtVtx[nEle]/F");
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/F");
-  tree_->Branch("eleEMax", eleEMax_, "eleEMax_[nEle]/F");
-  tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3_[nEle]/F");
-  tree_->Branch("eleERight", eleERight_, "eleERight_[nEle]/F");
-  tree_->Branch("eleELeft", eleELeft_, "eleELeft_[nEle]/F");
-  tree_->Branch("eleETop", eleETop_, "eleETop_[nEle]/F");
-  tree_->Branch("eleEBottom", eleEBottom_, "eleEBottom_[nEle]/F");
+  tree_->Branch("eleEMax", eleEMax_, "eleEMax[nEle]/F");
+  tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3[nEle]/F");
+  tree_->Branch("eleERight", eleERight_, "eleERight[nEle]/F");
+  tree_->Branch("eleELeft", eleELeft_, "eleELeft[nEle]/F");
+  tree_->Branch("eleETop", eleETop_, "eleETop[nEle]/F");
+  tree_->Branch("eleEBottom", eleEBottom_, "eleEBottom[nEle]/F");
   if (doGenParticles_) {
     tree_->Branch("eleGenIndex", eleGenIndex_, "eleGenIndex[nEle]/I");
     tree_->Branch("eleGenGMomPID", eleGenGMomPID_, "eleGenGMomPID[nEle]/I");
