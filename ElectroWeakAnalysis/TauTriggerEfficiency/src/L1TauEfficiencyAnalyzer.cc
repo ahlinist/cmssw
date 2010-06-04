@@ -106,9 +106,6 @@ L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
 
 void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
-
-  _triggerNames = edm::Service<edm::service::TriggerNamesService>()->getTrigPaths();
-
   L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
   L1extraMETSource = iConfig.getParameter<edm::InputTag>("L1extraMETSource");
   L1extraMHTSource = iConfig.getParameter<edm::InputTag>("L1extraMHTSource");
@@ -343,6 +340,10 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
 
     // 1st event : Book as many branches as trigger paths provided in the input...
     if (_HltEvtCnt==0){
+      edm::TriggerResults tr = *hltresults;
+      bool fromPSetRegistry;
+      Service<service::TriggerNamesService> tns;
+      tns->getTrigPaths(tr, _triggerNames, fromPSetRegistry);
       for (int itrig = 0; itrig != ntrigs; ++itrig) {
         //TString trigName = _triggerNames.triggerName(itrig);
 	TString trigName = _triggerNames[itrig];
