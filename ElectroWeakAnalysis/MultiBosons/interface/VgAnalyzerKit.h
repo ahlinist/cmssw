@@ -250,6 +250,8 @@ protected:
   float  phoELeft_[maxP];
   float  phoETop_[maxP];
   float  phoEBottom_[maxP];
+  float  phoRoundness_[maxP];
+  float  phoAngle_[maxP];
   int    phoGenIndex_[maxP];
   int    phoGenGMomPID[maxP];
   int    phoGenMomPID[maxP];
