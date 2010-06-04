@@ -68,6 +68,7 @@ process.scrapingVeto = cms.EDFilter("FilterOutScraping",
 ######################################################
 
 #is it MC or DATA
+#WARNING: FOR MC turn isMC = True, otherwise the v4 of HF cleaning will be used, which includes timing cut. Timing is not modeled well in MC
 isMC = False
 useHBHEcleaning = True
 useHBHEfilter = False
@@ -77,7 +78,7 @@ HFPMTcleaningversion = 4   # version 1 = (loose), version 2 = (medium), version 
 
 if useHBHEfilter == True:
     process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
-    process.p = cms.Path(process.HBHENoiseFilter)
+    process.hbhefilter = cms.Path(process.HBHENoiseFilter)
     
 # New SeverityLevelComputer that forces RecHits with UserDefinedBit0 set to be excluded from new rechit collection
 import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
@@ -189,4 +190,8 @@ process.ntuple_step=cms.Path(
     *process.promptanaTree
 )
 
-process.schedule = cms.Schedule(process.reflagging_step, process.rereco_step, process.hbheflag, process.ntuple_step)
+# Schedule definition
+if useHBHEfilter == True:
+  process.schedule = cms.Schedule(process.hbhefilter, process.reflagging_step,process.rereco_step, process.ntuple_step)
+else:
+  process.schedule = cms.Schedule(process.reflagging_step, process.rereco_step, process.hbheflag, process.ntuple_step)
