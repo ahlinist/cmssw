@@ -27,6 +27,7 @@
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 
 #include <iostream>
 
@@ -253,6 +254,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoELeft", phoELeft_, "phoELeft_[nPho]/F");
   tree_->Branch("phoETop", phoETop_, "phoETop_[nPho]/F");
   tree_->Branch("phoEBottom", phoEBottom_, "phoEBottom_[nPho]/F");
+  tree_->Branch("phoRoundness", phoRoundness_, "phoRoundness_[nPho]/F");
+  tree_->Branch("phoAngle", phoAngle_, "phoAngle_[nPho]/F");
   if (doGenParticles_) {
     tree_->Branch("phoGenIndex", phoGenIndex_, "phoGenIndex[nPho]/I");
     tree_->Branch("phoGenGMomPID", phoGenGMomPID, "phoGenGMomPID[nPho]/I");
@@ -367,6 +370,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   Handle<EcalRecHitCollection> EEReducedRecHits;
   e.getByLabel(eeReducedRecHitCollection_, EEReducedRecHits);
   EcalClusterLazyTools lazyTool(e, es, ebReducedRecHitCollection_, eeReducedRecHitCollection_ );
+  Handle<EcalRecHitCollection> EBRecHits;
+  e.getByLabel("ecalRecHit","EcalRecHitsEB",EBRecHits);
 
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
@@ -916,6 +921,15 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       phoELeft_[nPho_]      = lazyTool.eLeft(*phoSeed);
       phoETop_[nPho_]       = lazyTool.eTop(*phoSeed);
       phoEBottom_[nPho_]    = lazyTool.eBottom(*phoSeed);
+
+      if(iPho->isEB()==true && EBRecHits.isValid()){
+            std::vector<float> RoundAndAngle = EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
+            phoRoundness_[nPho_] = RoundAndAngle[0];
+            phoAngle_[nPho_] = RoundAndAngle[1];
+      } else{
+            phoRoundness_[nPho_] = -999;
+            phoAngle_[nPho_] = -999;
+      }
 
       // Gen Particle
       // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " gen match ..." << endl;
