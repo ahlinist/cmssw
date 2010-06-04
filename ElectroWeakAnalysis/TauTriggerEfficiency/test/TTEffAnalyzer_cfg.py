@@ -1,18 +1,19 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+isData = 1
+
 process = cms.Process("TTEff")
 
 ### Add HLT stuff (it may contain maxEvents and MessageLogger, so it
 ### should be loaded first before or maxEvents nad MessageLogger would
 ### be reset)
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfg")
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffAnalysisHLT_cfi")
 process.prefer("magfield")
 process.hltGctDigis.hltMode = cms.bool(False) # Making L1CaloRegions
 
-
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(1000)
+        input = cms.untracked.int32(100)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
@@ -31,13 +32,18 @@ process.options = cms.untracked.PSet(
 #Mike needs Calo Geometry
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
-
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-#        "rfio:/castor/cern.ch/user/s/slehti/testData/skim_1054.root"
-	'/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/133/510/C024B5CF-A04B-DF11-9CD4-001A64789D28.root'
+if(isData):
+    process.source = cms.Source("PoolSource",
+        fileNames = cms.untracked.vstring(
+	    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/133/510/C024B5CF-A04B-DF11-9CD4-001A64789D28.root'
+        )
     )
-)
+else:
+    process.source = cms.Source("PoolSource",
+        fileNames = cms.untracked.vstring(
+            'rfio:/castor/cern.ch/user/s/slehti/CMSSW_Data_1_1.root'
+        )
+    )
 
 process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi")
 from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
@@ -65,8 +71,17 @@ process.PFTausSelected = cms.EDFilter("PFTauSelector",
 
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-#process.GlobalTag.globaltag = 'MC_31X_V3::All'
-process.GlobalTag.globaltag = 'GR_R_36X_V11A::All'
+if (isData):
+    #process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
+    process.GlobalTag.globaltag = 'GR_R_36X_V11::All'
+    #process.GlobalTag.globaltag = 'MC_3XY_V26::All'
+else:
+    #process.GlobalTag.globaltag = 'START3X_V26A::All'
+    process.GlobalTag.globaltag = 'MC_36Y_V9::All'
+
+print process.GlobalTag.globaltag
+
+#process.prefer("magfield")
 
 
 #copying the Discriminator by Isolation
@@ -155,19 +170,33 @@ GenParticles  = cms.untracked.InputTag("genParticles"),
 process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
 process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
 
-process.runEDAna = cms.Path(
-    process.hltPhysicsDeclared+
-#    process.TauMCProducer*
-    process.thisPFTauDiscriminationByLeadingPionPtCut *
-    process.PFTausSelected *
-    process.thisPFTauDiscriminationByLeadingTrackFinding *
-    process.thisPFTauDiscriminationByIsolation *
-    process.thisPFTauDiscriminationAgainstMuon *
-#    process.tteffL1GTSeed*
-    process.TTEffAnalysis *
-    process.TTEffAnalysisL1Tau *
-    process.TTEffAnalysisL1Cen
-) 
+if(isData):
+    process.runEDAna = cms.Path(
+    	process.hltPhysicsDeclared+
+    	process.thisPFTauDiscriminationByLeadingPionPtCut *
+    	process.PFTausSelected *
+    	process.thisPFTauDiscriminationByLeadingTrackFinding *
+    	process.thisPFTauDiscriminationByIsolation *
+    	process.thisPFTauDiscriminationAgainstMuon *
+#    	process.tteffL1GTSeed*
+    	process.TTEffAnalysis *
+    	process.TTEffAnalysisL1Tau *
+    	process.TTEffAnalysisL1Cen
+    )
+else:
+    process.runEDAna = cms.Path(
+        process.hltPhysicsDeclared+
+	process.TauMCProducer*
+        process.thisPFTauDiscriminationByLeadingPionPtCut *
+        process.PFTausSelected *
+        process.thisPFTauDiscriminationByLeadingTrackFinding *
+        process.thisPFTauDiscriminationByIsolation *
+        process.thisPFTauDiscriminationAgainstMuon *
+#       process.tteffL1GTSeed*
+        process.TTEffAnalysis *
+        process.TTEffAnalysisL1Tau *
+        process.TTEffAnalysisL1Cen
+    ) 
 
 #process.o1 = cms.OutputModule("PoolOutputModule",
 #    outputCommands = cms.untracked.vstring("keep *"),
@@ -179,3 +208,13 @@ process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau,
 #                               process.PFTausSelected,
 #                               process.runEDAna,process.outpath)
                                 process.runEDAna)
+
+if (isData):  # replace all instances of "rawDataCollector" with "source" in In$
+    from FWCore.ParameterSet import Mixins
+    for module in process.__dict__.itervalues():
+        if isinstance(module, Mixins._Parameterizable):
+            for parameter in module.__dict__.itervalues():
+                if isinstance(parameter, cms.InputTag):
+                    if parameter.moduleLabel == 'rawDataCollector':
+                        parameter.moduleLabel = 'source'
+
