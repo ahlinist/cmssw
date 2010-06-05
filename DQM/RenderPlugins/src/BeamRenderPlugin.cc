@@ -2,8 +2,8 @@
   \File BeamRenderPlugin
   \Display Plugin for BeamSpot DQM Histograms
   \author 
-  \version $Revision: 1.8 $
-  \date $Date: 2010/03/03 08:49:58 $
+  \version $Revision: 1.9 $
+  \date $Date: 2010/06/04 07:11:25 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -104,7 +104,7 @@ private:
 
     if ( o.name.find( "fitResults" )  != std::string::npos ||
 	 o.name.find( "pvResults" )  != std::string::npos ||
-	 o.name.find( "_bx" ) ) {
+	 o.name.find( "_bx" )  != std::string::npos ) {
       c->SetGrid();
       obj->SetStats( kFALSE );
       obj->SetMarkerSize(2.);
@@ -144,7 +144,8 @@ private:
       return;
     }
 
-    if( o.name.find( "trkPt" )  != std::string::npos) {
+    if( o.name.find( "trkPt" )  != std::string::npos ||
+	o.name.find( "cutFlowTable" )  != std::string::npos) {
       c->SetLogy();
       return;
     }
