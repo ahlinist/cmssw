@@ -41,6 +41,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
   public:
     explicit InclusiveJetTreeProducer(edm::ParameterSet const& cfg);
     virtual void beginJob();
+    virtual void beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup);
     virtual void analyze(edm::Event const& evt, edm::EventSetup const& iSetup);
     virtual void endJob();
     virtual ~InclusiveJetTreeProducer();
@@ -63,7 +64,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::string mJetExtender;
     std::string mMetName;
     std::string mMetNoHFName;
-    std::string mTriggerProcessName;
+    //std::string mTriggerProcessName;
     std::vector<std::string> mTriggerNames;
     std::vector<std::string> mL1TriggerNames;
     std::vector<unsigned int> mTriggerIndex;
