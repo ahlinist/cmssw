@@ -42,7 +42,6 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mHcalNoiseTag           = cfg.getParameter<edm::InputTag>            ("hcalNoiseTag");
   mTriggerNames           = cfg.getParameter<std::vector<std::string> >("jetTriggerNames");
   mL1TriggerNames         = cfg.getParameter<std::vector<std::string> >("l1TriggerNames");   
-  mTriggerProcessName     = cfg.getParameter<std::string>              ("triggerProcessName"); 
   mTriggerResultsTag      = cfg.getParameter<edm::InputTag>            ("triggerResultsTag");               
   mL1GTReadoutRcdSource   = cfg.getParameter<edm::InputTag>            ("L1GTReadoutRcdSource");
   mL1GTObjectMapRcdSource = cfg.getParameter<edm::InputTag>            ("L1GTObjectMapRcdSource");
@@ -60,29 +59,47 @@ void InclusiveJetTreeProducer::beginJob()
   mTree = fs->make<TTree>("InclusiveJetTree","InclusiveJetTree");
   //mFirstEventFlag = true;
   buildTree();
-  
-  //must be done at beginRun and not only at beginJob, because 
-  //trigger names are allowed to change by run.
-  if (mFillHLT)
-    {
-      mHltConfig.init(mTriggerProcessName);
-      for(unsigned int i=0;i<mTriggerNames.size();i++)  
-        {
-          mTriggerIndex.push_back(mHltConfig.triggerIndex(mTriggerNames[i]));
-          if (mTriggerIndex[i] == mHltConfig.size())
-            {
-	      string errorMessage = "Requested TriggerName does not exist! -- "+mTriggerNames[i]+"\n";
-//            now handle this with an error flag in the tree rather than 
-//            aborting the entire job.  Will likely remove this whole section 
-//	      throw  cms::Exception("Configuration",errorMessage);
-            }
-        }
-    }
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::endJob() 
 {
-  
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+void InclusiveJetTreeProducer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
+{
+   if (mFillHLT)
+     {
+       bool changed(true);
+       if (mHltConfig.init(iRun,iSetup,mTriggerResultsTag.process(),changed)) 
+         {
+            // if init returns TRUE, initialisation has succeeded!
+            mTriggerIndex.clear();
+            for(unsigned int i=0;i<mTriggerNames.size();i++)
+              {
+                std::cout<<mTriggerNames[i]<<" "<<mHltConfig.triggerIndex(mTriggerNames[i])<<std::endl;
+                mTriggerIndex.push_back(mHltConfig.triggerIndex(mTriggerNames[i]));
+                if (mTriggerIndex[i] == mHltConfig.size())
+                  {
+                    string errorMessage="Requested TriggerName does not exist! -- "+mTriggerNames[i]+"\n";
+                    //throw  cms::Exception("Configuration",errorMessage);
+                  }
+              }
+            if (changed) 
+              {
+                // The HLT config has actually changed wrt the previous Run, hence rebook your
+                // histograms or do anything else dependent on the revised HLT config
+                std::cout<<"Run: "<<iRun.run()<<".....Changed HLTConfig"<<std::endl;
+              }
+         } 
+       else 
+         {
+           // if init returns FALSE, initialisation has NOT succeeded, which indicates a problem
+           // with the file and/or code and needs to be investigated!
+           std::cout << " HLT config extraction failure with process name " << mTriggerResultsTag.process()<<std::endl;
+           // In this case, all access methods will return empty values!
+         }
+     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup const& iSetup) 
