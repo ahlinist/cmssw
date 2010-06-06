@@ -1,9 +1,15 @@
 def Main(fileName):
-    f = ROOT.TFile(fileName,"READ")
+
+    f = ROOT.TFile.Open(fileName,"READ")
     tree  = f.Get("VgAnalyzerKit/EventTree")
-    print "\n\n==============\n", fileToRun, tree
-    
+        
+    print "\n\n==============\n", fileName, tree
+
     # output file for histos
+    if "rfio" in fileName:
+        fileName = fileName.split("/")[-1]
+
+
     f_out = ROOT.TFile("histos_%s"%fileName,"RECREATE")
     f_out.cd()
     
@@ -32,10 +38,23 @@ def Main(fileName):
         Leg2Pt[channel]  =   ROOT.TH1F("%s_ZLeg2Pt"%channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
         GammaEt[channel] =   ROOT.TH1F("%s_GammaEt"%channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
 
+        ZMass[channel]   =   ROOT.TH1F("%s_ZMass"  %channel,"",30,50,130)
+
+        Leg1Pt[channel].Sumw2()
+        Leg2Pt[channel].Sumw2()
+        GammaEt[channel].Sumw2()
+        ZMass[channel].Sumw2()
+
     for channel in Wchannels:
         LegPt[channel]   =   ROOT.TH1F("%s_WLegPt" %channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
-        MET[channel]     =   ROOT.TH1F("%s_METt"   %channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
+        MET[channel]     =   ROOT.TH1F("%s_MET"    %channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
         GammaEt[channel] =   ROOT.TH1F("%s_GammaEt"%channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
+
+        WtMass[channel]  =   ROOT.TH1F("%s_WtMass"  %channel,"",30,50,130)
+
+        LegPt[channel].Sumw2()
+        MET[channel].Sumw2()
+        GammaEt[channel].Sumw2()
         
     # ===============
     # CODE =============================
@@ -44,13 +63,14 @@ def Main(fileName):
     for entry in range (0, Nentries):
         
         if entry % 10000 == 0 : print entry # coffee counter
-        #if (entry > 1000): break # analyse only fraction of events
+        #if (entry > 15000): break # analyse only fraction of events
         
         tree.GetEntry(entry) # if there are many files for the single dataset use TChain to process them in one go
         
         # =================================
         # PHOTONS
         # =================================
+        #print entry
         goodPhoInd=[]
         dRcut = 0.7 # used later in seperation of g from a lepton
         for iPho in range (0, tree.nPho): # identify good photons
@@ -66,6 +86,8 @@ def Main(fileName):
                 goodPhoInd.append(iPho)
                 
         if goodPhoInd.__len__() == 0: continue
+
+        #print goodPhoInd
 
         # =================================
         # assuming Zee will be similar to https://twiki.cern.ch/twiki/bin/view/CMS/VbtfZMuMuBaselineSelection
@@ -92,10 +114,11 @@ def Main(fileName):
                     passEle2PhoDR = delRcalculator( tree.phoEta[iPho], tree.phoPhi[iPho], tree.eleEta[leg2Ind], tree.elePhi[leg2Ind]) > dRcut
                 
                     if passEle1PhoDR and passEle2PhoDR:
+                        #print "filled ZeeGamma"
                         Leg1Pt["ZeeGamma"].Fill (tree.elePt[leg1Ind])
                         Leg2Pt["ZeeGamma"].Fill (tree.elePt[leg2Ind])
                         GammaEt["ZeeGamma"].Fill(tree.phoEt[iPho])
-                        
+                        Zmass["ZeeGamma"].Fill(tree.ZeeMass[iZee])
 
         # =================================
         # https://twiki.cern.ch/twiki/bin/view/CMS/VbtfZMuMuBaselineSelection
@@ -137,10 +160,8 @@ def Main(fileName):
                             Leg1Pt["ZMuMuGamma"].Fill (tree.muPt[leg1Ind])
                             Leg2Pt["ZMuMuGamma"].Fill (tree.muPt[leg2Ind])
                             GammaEt["ZMuMuGamma"].Fill(tree.phoEt[iPho])
+                            Zmass["ZMuMuGamma"].Fill(tree.ZmumuMass[iZmumu])
                             
-
-
-
 
         # =================================
         # https://twiki.cern.ch/twiki/bin/view/CMS/VbtfZMuMuBaselineSelection
@@ -149,8 +170,6 @@ def Main(fileName):
         # =================================
 
         for iWmunu in range ( 0, tree.nWmunu):
-            #print tree.WmunuMuIndex.__len__(), tree.nWmunu
-            if tree.WmunuMuIndex.__len__() < tree.nWmunu: continue # there must be bug somewhere, for some entries I get 0 length for WmunuMuIndex while having none zero Wmunu candidates
             leptonInd = int (tree.WmunuMuIndex[iWmunu])
             
             # Wmunu selection from https://twiki.cern.ch/twiki/bin/view/CMS/VbtfWmunuBaselineSelection
@@ -176,7 +195,8 @@ def Main(fileName):
                 if tree.nMu >= 2:
                     if tree.muPt[0] > 20. and tree.muPt[1] > 10.:
                         passRejectDY = False
-                        # NOTE from VBTF twiki - We are rejecting events with two global muons satisfying: ptmu1>20 GeV, ptmu2>10 GeV, where ptmu1 is the highest muon pt and ptmu2 is the second highest muon pt in the event.
+                        # ATTENTION!!!
+                        # from VBTF twiki - We are rejecting events with two global muons satisfying: ptmu1>20 GeV, ptmu2>10 GeV, where ptmu1 is the highest muon pt and ptmu2 is the second highest muon pt in the event.
                         # looks like in nTupliser we are require muons to be Global + Tracker... needs to be fixed to be coherent with VBTF...
                 
                 # now we should have Wmunu candidate
@@ -190,7 +210,34 @@ def Main(fileName):
                             LegPt["WmunuGamma"].Fill(tree.muPt[leptonInd])
                             MET["WmunuGamma"].Fill(tree.pfMET)
                             GammaEt["WmunuGamma"].Fill(tree.phoEt[iPho])
-                            
+                            WtMass["WmunuGamma"].Fill(tree.WmunuMassTPfMET[iWmunu])
+
+        for iWenu in range ( 0, tree.nWenu):
+            leptonInd = int (tree.WenuEleIndex[iWenu])
+            
+            # assuming W selectrion similar to Wenu https://twiki.cern.ch/twiki/bin/view/CMS/VbtfWenuBaselineSelection
+            # need to add HLT requirement
+            passPtCut          = tree.elePt[leptonInd]          >    25.
+            passMet            = tree.pfMET                     >    50.
+            passAcop           = tree.WenuACopPfMET[iWenu]      <    2.
+            passID             = tree.eleID[(leptonInd+1)*12-1] >    2     # 95% eff. from egamma
+            passRejectDY = True
+            if tree.nEle >= 2:
+                if tree.elePt[0] > 20. and tree.elePt[1] > 10.:
+                    passRejectDY = False
+                    
+            # now we should have Wenu candidate
+            if passPtCut and passMet and passAcop and passID and passRejectDY:
+                # check that good photon is seperated from W electron
+                for iPho in goodPhoInd:
+                    passWelePhoDR = delRcalculator( tree.phoEta[iPho], tree.phoPhi[iPho], tree.eleEta[leptonInd], tree.elePhi[leptonInd]) > dRcut
+                    
+                    if passWelePhoDR:
+                        LegPt["WenuGamma"].Fill(tree.elePt[leptonInd])
+                        MET["WenuGamma"].Fill(tree.pfMET)
+                        GammaEt["WenuGamma"].Fill(tree.phoEt[iPho])
+                        WtMass["WenuGamma"].Fill(tree.WenuMassTPfMET[iWenu])
+                        
     # END OF CODE PART
     
     # ===================
