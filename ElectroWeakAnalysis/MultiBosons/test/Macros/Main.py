@@ -28,7 +28,9 @@ def Main(fileName):
     LegPt   = {}
     MET     = {}
     GammaEt = {}
-
+    ZMass   = {}
+    WtMass   = {}
+    
     ptHistoNBINS = 30
     ptHistoMin   = 0
     ptHistoMax   = 150
@@ -38,7 +40,7 @@ def Main(fileName):
         Leg2Pt[channel]  =   ROOT.TH1F("%s_ZLeg2Pt"%channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
         GammaEt[channel] =   ROOT.TH1F("%s_GammaEt"%channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
 
-        ZMass[channel]   =   ROOT.TH1F("%s_ZMass"  %channel,"",30,50,130)
+        ZMass[channel]   =   ROOT.TH1F("%s_ZMass"  %channel,"",12,50,130)
 
         Leg1Pt[channel].Sumw2()
         Leg2Pt[channel].Sumw2()
@@ -50,7 +52,7 @@ def Main(fileName):
         MET[channel]     =   ROOT.TH1F("%s_MET"    %channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
         GammaEt[channel] =   ROOT.TH1F("%s_GammaEt"%channel,"",ptHistoNBINS, ptHistoMin, ptHistoMax)
 
-        WtMass[channel]  =   ROOT.TH1F("%s_WtMass"  %channel,"",30,50,130)
+        WtMass[channel]  =   ROOT.TH1F("%s_WtMass"  %channel,"",12,50,130)
 
         LegPt[channel].Sumw2()
         MET[channel].Sumw2()
@@ -118,7 +120,7 @@ def Main(fileName):
                         Leg1Pt["ZeeGamma"].Fill (tree.elePt[leg1Ind])
                         Leg2Pt["ZeeGamma"].Fill (tree.elePt[leg2Ind])
                         GammaEt["ZeeGamma"].Fill(tree.phoEt[iPho])
-                        Zmass["ZeeGamma"].Fill(tree.ZeeMass[iZee])
+                        ZMass["ZeeGamma"].Fill(tree.ZeeMass[iZee])
 
         # =================================
         # https://twiki.cern.ch/twiki/bin/view/CMS/VbtfZMuMuBaselineSelection
@@ -160,7 +162,7 @@ def Main(fileName):
                             Leg1Pt["ZMuMuGamma"].Fill (tree.muPt[leg1Ind])
                             Leg2Pt["ZMuMuGamma"].Fill (tree.muPt[leg2Ind])
                             GammaEt["ZMuMuGamma"].Fill(tree.phoEt[iPho])
-                            Zmass["ZMuMuGamma"].Fill(tree.ZmumuMass[iZmumu])
+                            ZMass["ZMuMuGamma"].Fill(tree.ZmumuMass[iZmumu])
                             
 
         # =================================
@@ -255,6 +257,7 @@ def Main(fileName):
         GammaEt[channel].Write()
         Leg1Pt[channel].Write()
         Leg2Pt[channel].Write()
+        ZMass[channel].Write()
 
     for channel in Wchannels:
         # stylise histos
@@ -267,6 +270,7 @@ def Main(fileName):
         GammaEt[channel].Write()
         LegPt[channel].Write()
         MET[channel].Write()
+        WtMass[channel].Write()
         
     f_out.Close()
     f.Close()
