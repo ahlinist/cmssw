@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.9 2010/03/31 16:22:40 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.10 2010/04/08 16:50:20 veelken Exp $
  *
  */
 
@@ -60,6 +60,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// access to gen. momenta
   reco::Candidate::LorentzVector p4gen() const { return p4Leg1gen() + p4Leg2gen(); }
   reco::Candidate::LorentzVector p4VisGen() const { return p4VisLeg1gen() + p4VisLeg2gen(); }
+  reco::Candidate::LorentzVector p4InvisGen() const { return p4gen()-p4VisGen(); }
 
   /// access to gen. mother particles
   /// (undecayed tau leptons)
@@ -70,6 +71,10 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// (electrons, muons, kaons, charged and neutral pions produced in tau decay)
   const reco::Candidate::LorentzVector& p4VisLeg1gen() const { return p4VisLeg1gen_; }
   const reco::Candidate::LorentzVector& p4VisLeg2gen() const { return p4VisLeg2gen_; }
+
+  /// access to invisible gen daughter particles
+  reco::Candidate::LorentzVector p4InvisLeg1gen() const { return p4Leg1gen_ - p4VisLeg1gen_; }
+  reco::Candidate::LorentzVector p4InvisLeg2gen() const { return p4Leg2gen_ - p4VisLeg2gen_; }
 
   /// energy ratio of visible gen. daughter/mother particles
   double x1gen() const { return ( p4Leg1gen_.energy() > 0. ) ? p4VisLeg1gen_.energy()/p4Leg1gen_.energy() : -1.; }
@@ -185,6 +190,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// get solutions computed by secondary vertex based mass reconstruction algorithm
   const std::vector<SVmassRecoSolution>& svFitSolutions() const { return svFitSolutions_; }
+  /// get individual solution at given index (to support StringParser extraction)
+  SVmassRecoSolution svFitSolution(size_t index) const { 
+     if(svFitSolutions_.size() > index) return svFitSolutions_.at(index); else return SVmassRecoSolution(); }
 
  private:
   
