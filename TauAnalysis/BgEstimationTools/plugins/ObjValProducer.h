@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.1 $
  *
- * $Id: ObjValProducer.h,v 1.4 2009/09/08 15:56:26 gfball Exp $
+ * $Id: ObjValProducer.h,v 1.1 2010/02/19 17:39:51 veelken Exp $
  *
  */
 
@@ -33,7 +33,7 @@ class ObjValProducer : public edm::EDProducer
   
  private:
 
-  void beginJob(const edm::EventSetup&) {}
+  void beginJob() {}
   void produce(edm::Event&, const edm::EventSetup&);
   void endJob() {}
 
