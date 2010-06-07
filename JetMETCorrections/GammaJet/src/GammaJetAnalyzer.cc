@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.30 2010/05/31 17:33:44 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.31 2010/06/01 18:10:10 pandolf Exp $
 //
 //
 
@@ -484,24 +484,24 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        } // stable photon
        
 
-//     int motherIDMC = -1;
-//     if (p->numberOfMothers() > 0) { 
-//       const Candidate * mom = p->mother();
-//       for (size_t j = 0; j != genParticles->size(); ++j) {
-//       const Candidate * ref = &((*genParticles)[j]);
-//       //if (mom->px() == ref->px() && mom->py() == ref->py()
-//       //&& mom->pz() == ref->pz() && mom->status() == ref->status()
-//       //&& mom->pdgId()==ref->pdgId()) {
+       int motherIDMC = -1;
+       if (p->numberOfMothers() > 0) { 
+         const Candidate * mom = p->mother();
+         for (size_t j = 0; j != genParticles->size(); ++j) {
+         const Candidate * ref = &((*genParticles)[j]);
+         //if (mom->px() == ref->px() && mom->py() == ref->py()
+         //&& mom->pz() == ref->pz() && mom->status() == ref->status()
+         //&& mom->pdgId()==ref->pdgId()) {
 
-//         //assert(mom==ref); // address of the candidate is the same?
-//         //above works in about 99.7% of events
+           //assert(mom==ref); // address of the candidate is the same?
+           //above works in about 99.7% of events
 
-//       if (mom==ref) {
-//         //motherIDMC[nMC] = j;
-//         motherIDMC = j;
-//       }
-//       }
-//     }
+         if (mom==ref) {
+           //motherIDMC[nMC] = j;
+           motherIDMC = j;
+         }
+         }
+       }
 
        // Select only a subset of particles to reduce size:
        // All the partons (8)
@@ -531,7 +531,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
          eMC[nMC] = p->energy();	 
          etaMC[nMC] = p->eta();	 
          phiMC[nMC] = p->phi();	 
-         motherIDMC[nMC] = (p->mother()!=0) ? p->mother()->pdgId() : -1;	 
          
          mapMC[&(*p)] = nMC;
          ++nMC; 
