@@ -42,10 +42,10 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -85,6 +85,13 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
 switchJetCollection(process, cms.InputTag("iterativeCone5PFJets"))
+#
+# NOTE: need to delete empty sequence produced by call to "switchJetCollection"
+#       in order to avoid error when calling "process.dumpPython"
+#      ( cf. https://hypernews.cern.ch/HyperNews/CMS/get/physTools/1688/1/1/1/1/1.html )
+#       and utility functions like sysUncertaintyTools
+#
+del process.patJetMETCorrections
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -101,7 +108,8 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
-from TauAnalysis.Configuration.tools.analysisSequenceTools import removeAnalyzer
+from TauAnalysis.Configuration.tools.analysisSequenceTools import addAnalyzer, addSysAnalyzer, removeAnalyzer
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 
 process.analyzeZtoMuTauEvents.name = cms.string('BgEstTemplateAnalyzer_Ztautau')
 process.analyzeZtoMuTauEvents.eventDumps = cms.VPSet()
@@ -123,18 +131,25 @@ removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'vertexHistManage
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'triggerHistManagerForMuTau')
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'dataBinner')
 process.diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
-process.diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('muTauPairVisMassHypotheses')
+process.diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
 addAnalyzer(process.analyzeZtoMuTauEvents, process.diTauCandidateHistManagerForMuTau, 'evtSelDiMuPairZmumuHypothesisVeto')
+
 process.sysUncertaintyHistManager = cms.PSet(
+    pluginName = cms.string('sysUncertaintyHistManager'),
+    pluginType = cms.string('SysUncertaintyHistManager'),
     histManagers = cms.VPSet(
-        process.diTauCandidateHistManagerForMuTau
+        cms.PSet(
+            config = process.diTauCandidateHistManagerForMuTau,
+            systematics = cms.PSet(
+                diTauCandidateSource = getSysUncertaintyParameterSets(
+                    [ muTauPairSystematics, ]
+                )
+            )
+        )
     ),
-    systematics = getSysUncertaintyNames(
-        [ muonSystematics,
-          tauSystematics ]
-    )
+    dqmDirectory_store = cms.string('sysUncertaintyHistManagerResults')
 )
-addAnalyzer(process.analyzeZtoMuTauEvents, process.sysUncertaintyHistManager, 'evtSelDiMuPairZmumuHypothesisVeto')
+addSysAnalyzer(process.analyzeZtoMuTauEvents, process.sysUncertaintyHistManager, 'evtSelDiMuPairZmumuHypothesisVeto')
     
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauTTplusJetsEnrichedSelection_cff')
@@ -252,3 +267,4 @@ if not hasattr(process, "isBatchMode"):
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
+
