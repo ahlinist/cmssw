@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.31 2010/06/01 18:10:10 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.32 2010/06/07 15:00:19 pandolf Exp $
 //
 //
 
@@ -484,7 +484,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        } // stable photon
        
 
-       int motherIDMC = -1;
+       //int motherIDMC = -1;
        if (p->numberOfMothers() > 0) { 
          const Candidate * mom = p->mother();
          for (size_t j = 0; j != genParticles->size(); ++j) {
@@ -497,8 +497,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
            //above works in about 99.7% of events
 
          if (mom==ref) {
-           //motherIDMC[nMC] = j;
-           motherIDMC = j;
+           motherIDMC[nMC] = j;
+           //motherIDMC = j;
          }
          }
        }
@@ -896,7 +896,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
              nPhotonsGen += 1;
              p4PhotonsGen += p4;
              //save photons and later check for conversions:
-             shortPtcls.push_back(*iPart); //(only if eta<3)
+             //shortPtcls.push_back(*iPart); //(only if eta<3)
            } else {
              nHFEMGen += 1;
              p4HFEMGen += p4;
