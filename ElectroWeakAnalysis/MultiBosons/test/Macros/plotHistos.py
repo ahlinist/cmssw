@@ -10,11 +10,11 @@ def plotHistos():
 
     calculateWeightFor = 200 #pb
     histoFiles = []
-    #      NAME                  COLOR        XS       Filter     Events
-    arr = ["histos_Wgamma.root" ,ROOT.kCyan,  23.2  ,  1.     ,   107050   ]; histoFiles.append(arr)
-    arr = ["histos_Zgamma.root" ,ROOT.kRed,   7.3   ,  1.     ,   100470   ]; histoFiles.append(arr)
-    arr = ["histos_Zee.root"    ,ROOT.kBlue,  1300  ,  1.     ,   2411575  ]; histoFiles.append(arr)
-    arr = ["histos_Wenu.root"   ,ROOT.kGreen, 7899  ,  0.779  ,   2087865  ]; histoFiles.append(arr)
+    #      NAME                  COLOR        XS       Filter     Events    legendLabel
+    arr = ["histos_Wgamma.root" ,ROOT.kCyan,  23.2  ,  1.     ,   107050   , "W#gamma"             ]; histoFiles.append(arr)
+    arr = ["histos_Zgamma.root" ,ROOT.kRed,   7.3   ,  1.     ,   100470   , "Z#gamma"             ]; histoFiles.append(arr)
+    arr = ["histos_Zee.root"    ,ROOT.kBlue,  1300  ,  1.     ,   2411575  , "Z#rightarrowee"      ]; histoFiles.append(arr)
+    arr = ["histos_Wenu.root"   ,ROOT.kGreen, 7899  ,  0.779  ,   2087865  , "W#rightarrowe#nu "   ]; histoFiles.append(arr)
     
     Histos={}     # dump all histos in single map
     channels =[]  # read what channels are written
@@ -47,7 +47,7 @@ def plotHistos():
                 Histos["%s__%s"%(processName,name)].SetFillColor(file[1])
                 Histos["%s__%s"%(processName,name)].Scale(weight)
                 if not addedToLeg:
-                    legend.AddEntry(Histos["%s__%s"%(processName,name)],processName,"f")
+                    legend.AddEntry(Histos["%s__%s"%(processName,name)],file[5],"f")
                     addedToLeg = True
                 if not gotList:
                     tempArray.append(name1)
@@ -88,7 +88,7 @@ def plotHistos():
             stack["%s_%s"%(channel,plot)].Draw()
             stack["%s_%s"%(channel,plot)].GetXaxis().SetTitle(plot)
             stack["%s_%s"%(channel,plot)].SetTitle(channel)
-            stack["%s_%s"%(channel,plot)].Draw()
+            stack["%s_%s"%(channel,plot)].Draw("histo")
             
             legend.Draw()
             #stack["%s_%s"%(channel,plot)].Draw("E")
