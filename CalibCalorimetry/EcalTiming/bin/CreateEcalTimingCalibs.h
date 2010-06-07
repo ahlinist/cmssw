@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <boost/tokenizer.hpp>
+#include "TTree.h"
 
 // ****************************************************************
 class TimingEvent
