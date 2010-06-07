@@ -15,9 +15,7 @@ SysUncertaintyHistManager::SysUncertaintyHistManager(const edm::ParameterSet& cf
 {
   //std::cout << "<SysUncertaintyHistManager::SysUncertaintyHistManager>:" << std::endl;
 
-  cfgHistManagers_ = cfg.getParameter<vParameterSet>("histManagers");
-
-  systematics_ = cfg.getParameter<vstring>("systematics");
+  cfgHistManagerEntries_ = cfg.getParameter<vParameterSet>("histManagers");
 }
 
 SysUncertaintyHistManager::~SysUncertaintyHistManager()
@@ -35,21 +33,66 @@ void SysUncertaintyHistManager::bookHistogramsImp()
 {
   //std::cout << "<SysUncertaintyHistManager::bookHistogramsImp>:" << std::endl;
 
-  for ( vstring::const_iterator sysName = systematics_.begin();
-	sysName != systematics_.end(); ++sysName ) {
-    std::string dqmDirectory_systematic = dqmDirectoryName(dqmDirectory_store_).append(*sysName);
-    //std::cout << " dqmDirectory_systematic = " << dqmDirectory_systematic << std::endl;
+  for ( vParameterSet::const_iterator cfgHistManagerEntry = cfgHistManagerEntries_.begin();
+	cfgHistManagerEntry != cfgHistManagerEntries_.end(); ++cfgHistManagerEntry ) {
+    edm::ParameterSet cfgHistManager = cfgHistManagerEntry->getParameter<edm::ParameterSet>("config");
 
-    for ( vParameterSet::const_iterator cfgHistManager = cfgHistManagers_.begin();
-	  cfgHistManager != cfgHistManagers_.end(); ++cfgHistManager ) {
-      std::string histManagerType = cfgHistManager->getParameter<std::string>("pluginType");
-      //std::cout << " histManagerType = " << histManagerType << std::endl;
+    std::string histManagerType = cfgHistManager.getParameter<std::string>("pluginType");
+    //std::cout << " histManagerType = " << histManagerType << std::endl;
 
-      std::string dqmDirectory_histmanager = cfgHistManager->getParameter<std::string>("dqmDirectory_store");
+    std::string dqmDirectory_histmanager = cfgHistManager.getParameter<std::string>("dqmDirectory_store");
+
+//--- get list of all systematic uncertainties
+//    relevant for this histogram manager
+    std::set<std::string> sysNames;
+    sysNames.insert(SysUncertaintyService::getNameCentralValue());
+
+    edm::ParameterSet cfgSystematics = cfgHistManagerEntry->getParameter<edm::ParameterSet>("systematics");
+    typedef std::vector<std::string> vstring;
+    vstring srcNames = cfgSystematics.getParameterNamesForType<vParameterSet>();
+    for ( vstring::const_iterator srcName = srcNames.begin(); 
+	  srcName != srcNames.end(); ++srcName ) {
+      //std::cout << " srcName = " << (*srcName) << std::endl;
+
+      vParameterSet cfgSysDefinitions = cfgSystematics.getParameter<vParameterSet>(*srcName);
+
+      for ( vParameterSet::const_iterator cfgSysDefinition = cfgSysDefinitions.begin();
+	    cfgSysDefinition != cfgSysDefinitions.end(); ++cfgSysDefinition ) {
+	std::string sysName = cfgSysDefinition->getParameter<std::string>("name");
+	//std::cout << "--> adding sysName = " << sysName << std::endl;
+	sysNames.insert(sysName);
+      }
+    }
+
+//--- create one instance of this histogram manager
+//    per relevant systematic uncertainty
+    for ( std::set<std::string>::const_iterator sysName = sysNames.begin();
+	  sysName != sysNames.end(); ++sysName ) {     
+      //std::cout << " sysName = " << (*sysName) << std::endl;
+
+      edm::ParameterSet cfgHistManager_systematic(cfgHistManager);
+
+      for ( vstring::const_iterator srcName = srcNames.begin(); 
+	    srcName != srcNames.end(); ++srcName ) {
+	//std::cout << " srcName = " << (*srcName) << std::endl;
+
+	vParameterSet cfgSysDefinitions = cfgSystematics.getParameter<vParameterSet>(*srcName);
+	
+	for ( vParameterSet::const_iterator cfgSysDefinition = cfgSysDefinitions.begin();
+	      cfgSysDefinition != cfgSysDefinitions.end(); ++cfgSysDefinition ) {
+	  std::string sysName_definition = cfgSysDefinition->getParameter<std::string>("name");
+	  //std::cout << " sysName_definition = " << sysName_definition << std::endl;
+	  edm::InputTag srcValue = cfgSysDefinition->getParameter<edm::InputTag>("src");
+	  //std::cout << " srcValue = " << srcValue.label() << std::endl;
+
+	  if ( sysName_definition == (*sysName) ) cfgHistManager_systematic.addParameter<edm::InputTag>(*srcName, srcValue);
+	}
+      }
+
+      std::string dqmDirectory_systematic = dqmDirectoryName(dqmDirectory_store_).append(*sysName);
+      //std::cout << " dqmDirectory_systematic = " << dqmDirectory_systematic << std::endl;
       std::string dqmDirectory_store = dqmDirectoryName(dqmDirectory_systematic).append(dqmDirectory_histmanager);
       //std::cout << " dqmDirectory_store = " << dqmDirectory_store << std::endl;
-
-      edm::ParameterSet cfgHistManager_systematic(*cfgHistManager);
       cfgHistManager_systematic.addParameter<std::string>("dqmDirectory_store", dqmDirectory_store);
 
       HistManagerBase* histManager = HistManagerPluginFactory::get()->create(histManagerType, cfgHistManager_systematic);
@@ -72,19 +115,15 @@ void SysUncertaintyHistManager::fillHistogramsImp(const edm::Event& evt, const e
   const SysUncertaintyService* sysUncertaintyService = &(*edm::Service<SysUncertaintyService>());
 
   const std::string& currentSystematic = sysUncertaintyService->getCurrentSystematic();
+  //std::cout << " currentSystematic = " << currentSystematic << std::endl;
 
-//--- fill collection of histograms corresponding to current systematic;
-//    print error message if no histogram managers defined for current systematic
+//--- fill collection of histograms dependent upon current systematic
   std::map<std::string, vHistManager>::iterator histManagerList = histManagers_.find(currentSystematic);
-  if ( histManagerList == histManagers_.end() ) {
-    edm::LogError ("fillHistogramsImp") << " No histogram Managers defined for systematic = " << currentSystematic
-					<< " --> skipping !!";
-    return;
-  }
-
-  for ( vHistManager::iterator histManager = histManagerList->second.begin();
-	histManager != histManagerList->second.end(); ++histManager ) {
-    (*histManager)->analyze(evt, es, evtWeight);
+  if ( histManagerList != histManagers_.end() ) {
+    for ( vHistManager::iterator histManager = histManagerList->second.begin();
+	  histManager != histManagerList->second.end(); ++histManager ) {
+      (*histManager)->analyze(evt, es, evtWeight);
+    }
   }
 }
 

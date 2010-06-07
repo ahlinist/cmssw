@@ -25,10 +25,7 @@ class SysUncertaintyHistManager : public HistManagerBase
 
 //--- configuration parameters
   typedef std::vector<edm::ParameterSet> vParameterSet;
-  vParameterSet cfgHistManagers_;
-
-  typedef std::vector<std::string> vstring;
-  vstring systematics_;
+  vParameterSet cfgHistManagerEntries_;
 
 //--- histograms managers
   typedef std::vector<HistManagerBase*> vHistManager;
