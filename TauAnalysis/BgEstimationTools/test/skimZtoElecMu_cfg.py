@@ -88,7 +88,7 @@ process.elecMuPairsBgEstPreselection = cms.EDProducer("PATElecMuPairProducer",
     srcLeg1 = cms.InputTag('electronsBgEstPreselection'),
     srcLeg2 = cms.InputTag('muonsBgEstPreselection'),
     dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('layer1METs'),
+    srcMET = cms.InputTag('patMETs'),
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                                                  
     verbosity = cms.untracked.int32(0)
@@ -150,8 +150,8 @@ addPFMet(process, True, False)
 
 # uncomment to replce caloMET by pfMET in all di-tau objects
 #replaceMETforDiTaus(process,
-#                    cms.InputTag('layer1METs'),
-#                    cms.InputTag('layer1PFMETs'))
+#                    cms.InputTag('patMETs'),
+#                    cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
 from PhysicsTools.PatAlgos.tools.tauTools import * 
