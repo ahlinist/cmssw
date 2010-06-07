@@ -32,6 +32,7 @@ class Onia2MuMuPAT : public edm::EDProducer {
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   bool isAbHadron(int pdgID);
+  bool isAMixedbHadron(int pdgID, int momPdgID);
   std::pair<int, float> findJpsiMCInfo(reco::GenParticleRef genJpsi);
 
   // ----------member data ---------------------------

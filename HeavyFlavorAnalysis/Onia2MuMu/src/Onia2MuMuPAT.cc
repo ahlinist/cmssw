@@ -292,6 +292,16 @@ Onia2MuMuPAT::isAbHadron(int pdgID) {
 
 }
 
+bool 
+Onia2MuMuPAT::isAMixedbHadron(int pdgID, int momPdgID) {
+
+  if ((abs(pdgID) == 511 && abs(momPdgID) == 511 && pdgID*momPdgID < 0) || 
+      (abs(pdgID) == 531 && abs(momPdgID) == 531 && pdgID*momPdgID < 0)) 
+      return true;
+  return false;
+
+}
+
 std::pair<int, float>  
 Onia2MuMuPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
 
@@ -306,27 +316,31 @@ Onia2MuMuPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
   trueP.SetXYZ(genJpsi->momentum().x(),genJpsi->momentum().y(),genJpsi->momentum().z());
 	    
   bool aBhadron = false;
+  reco::GenParticleRef finalMom;
   reco::GenParticleRef Jpsimom = genJpsi->motherRef();       // find mothers
   if (Jpsimom.isNull()) {
     std::pair<int, float> result = make_pair(momJpsiID, trueLife);
     return result;
   } else {
     if (isAbHadron(Jpsimom->pdgId())) {
-      momJpsiID = Jpsimom->pdgId();
-      trueVtxMom.SetXYZ(Jpsimom->vertex().x(),Jpsimom->vertex().y(),Jpsimom->vertex().z());
+      reco::GenParticleRef Jpsigrandmom = Jpsimom->motherRef();
+      if (Jpsigrandmom.isNonnull() && isAMixedbHadron(Jpsimom->pdgId(),Jpsigrandmom->pdgId())) finalMom = Jpsigrandmom;
+      else finalMom = Jpsimom;
       aBhadron = true;
     } else {
-      reco::GenParticleRef Jpsigrandmom = Jpsimom->motherRef();
-      if (Jpsigrandmom.isNonnull() && isAbHadron(Jpsigrandmom->pdgId())) {
-	momJpsiID = Jpsigrandmom->pdgId();
-	trueVtxMom.SetXYZ(Jpsigrandmom->vertex().x(),Jpsigrandmom->vertex().y(),Jpsigrandmom->vertex().z());
+      reco::GenParticleRef JpsiGrandmom = Jpsimom->motherRef();
+      if (JpsiGrandmom.isNonnull() && isAbHadron(JpsiGrandmom->pdgId())) {
+	reco::GenParticleRef JpsiGrandgrandmom = JpsiGrandmom->motherRef();
+	if (JpsiGrandgrandmom.isNonnull() && isAMixedbHadron(JpsiGrandmom->pdgId(),JpsiGrandgrandmom->pdgId())) finalMom = JpsiGrandgrandmom;
+	else finalMom = JpsiGrandmom;
 	aBhadron = true;
       }
     }
     if (!aBhadron) {
-      momJpsiID = Jpsimom->pdgId();
-      trueVtxMom.SetXYZ(Jpsimom->vertex().x(),Jpsimom->vertex().y(),Jpsimom->vertex().z());
+      finalMom = Jpsimom;
     }
+    momJpsiID = finalMom->pdgId();
+    trueVtxMom.SetXYZ(finalMom->vertex().x(),finalMom->vertex().y(),finalMom->vertex().z());
     TVector3 vdiff = trueVtx - trueVtxMom;
     trueLife = vdiff.Perp()*3.09688/trueP.Perp();
   } 
