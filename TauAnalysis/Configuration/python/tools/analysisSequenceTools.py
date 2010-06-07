@@ -10,23 +10,23 @@ def switchAnalyzers(analysisSequence, analyzers):
     for pset in analysisSequence:
         if hasattr(pset, "analyzers") : setattr(pset, "analyzers", analyzers)
 
-def addAnalyzer(genAnalyzerModule, analyzer, afterCutName, replaceStatement = None):
+def addAnalyzer_generic(genAnalyzerModule, analyersConfigName = None, analyzer = None, afterCutName = None, replaceStatement = None):
     
     # add configuration parameterset of analyzer to genAnalyzerModule
     # in case it is not alread added
     analyzerName = getattr(analyzer, "pluginName").value()
     analyzer_isDefined = False
     
-    genAnalyzerModule_analyzers = getattr(genAnalyzerModule, "analyzers")
+    genAnalyzerModule_analyzers = getattr(genAnalyzerModule, analyersConfigName)
     for genAnalyzerModule_analyzer in genAnalyzerModule_analyzers:
         genAnalyzerModule_analyzerName = getattr(genAnalyzerModule_analyzer, "pluginName").value()
         if genAnalyzerModule_analyzerName == analyzerName:
             analyzer_isDefined = True
 
     if not analyzer_isDefined:
-        analyzers = getattr(genAnalyzerModule, "analyzers").value()
+        analyzers = genAnalyzerModule_analyzers.value()
         analyzers.append(analyzer)
-        setattr(genAnalyzerModule, "analyzers", analyzers)
+        setattr(genAnalyzerModule, analyersConfigName, analyzers)
 
     # insert analyzer into analysis sequence
     # at position after cut passed as function argument has been applied
@@ -63,7 +63,30 @@ def addAnalyzer(genAnalyzerModule, analyzer, afterCutName, replaceStatement = No
 
         analysisSequence_mod.append(pset)
 
+    # define special handling for case that new analyzer
+    # is to be inserted at end of analysis sequence (after all filters)
+    # and no other analyzer exists yet at that stage of the analysis sequence
+    if insert:
+        pset_analyzers = cms.PSet(
+            analyzers = cms.vstring(analyzerName)
+        )
+        
+        if replaceStatement is not None:
+            setattr(pset_analyzers, "replace", cms.vstring(replaceStatement))
+
+        analysisSequence_mod.append(pset_analyzers)
+
     setattr(genAnalyzerModule, "analysisSequence", cms.VPSet(analysisSequence_mod))
+
+def addAnalyzer(genAnalyzerModule, analyzer = None, afterCutName = None, replaceStatement = None):
+
+    addAnalyzer_generic(genAnalyzerModule = genAnalyzerModule, analyersConfigName = "analyzers",
+                        analyzer = analyzer, afterCutName = afterCutName, replaceStatement = replaceStatement)
+
+def addSysAnalyzer(genAnalyzerModule, analyzer, afterCutName, replaceStatement = None):
+
+    addAnalyzer_generic(genAnalyzerModule = genAnalyzerModule, analyersConfigName = "analyzers_systematic",
+                        analyzer = analyzer, afterCutName = afterCutName, replaceStatement = replaceStatement)
 
 def replaceAnalyzerInputTags(analysisSequence, replacements):
     # check that replacement is a list of type [ replace_1, replace_2 .. replace_N ]
@@ -113,10 +136,12 @@ def replaceAnalyzerTitles(analysisSequence, replacements):
 
 def removeAnalyzer(analysisSequence, analyzerName):
     # remove all analyzers with name given as function argument from analysisSequence object
+    
     for pset in analysisSequence:
         if hasattr(pset, "analyzers"):
             analyzers = getattr(pset, "analyzers")
 
             if analyzers.count(analyzerName) > 0:
                 analyzers.remove(analyzerName)
-
+                if len(analyzers) == 0:
+                    analysisSequence.remove(pset)
