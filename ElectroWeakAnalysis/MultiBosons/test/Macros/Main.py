@@ -116,7 +116,6 @@ def Main(fileName):
                     passEle2PhoDR = delRcalculator( tree.phoEta[iPho], tree.phoPhi[iPho], tree.eleEta[leg2Ind], tree.elePhi[leg2Ind]) > dRcut
                 
                     if passEle1PhoDR and passEle2PhoDR:
-                        #print "filled ZeeGamma"
                         Leg1Pt["ZeeGamma"].Fill (tree.elePt[leg1Ind])
                         Leg2Pt["ZeeGamma"].Fill (tree.elePt[leg2Ind])
                         GammaEt["ZeeGamma"].Fill(tree.phoEt[iPho])
@@ -137,7 +136,7 @@ def Main(fileName):
             passMuD0             = tree.muD0[leg1Ind]                     < 0.2 and  tree.muD0[leg2Ind]                     < 0.2
             passChi2             = tree.muChi2NDF[leg1Ind]                < 10. and  tree.muChi2NDF[leg2Ind]                < 10.
             passPixelHits        = tree.muNumberOfValidPixelHits[leg1Ind] > 0.  and  tree.muNumberOfValidPixelHits[leg2Ind] > 0.
-            passStripHits        = tree.muNumberOfValidTrkHits[leg1Ind]   > 10. and  tree.muNumberOfValidTrkHits[leg2Ind]   > 0.
+            passStripHits        = tree.muNumberOfValidTrkHits[leg1Ind]   > 10. and  tree.muNumberOfValidTrkHits[leg2Ind]   > 10.
             passMuonHits         = tree.muNumberOfValidMuonHits[leg1Ind]  > 0.  and  tree.muNumberOfValidMuonHits[leg2Ind]  > 0.
             
             # Iso
@@ -251,7 +250,8 @@ def Main(fileName):
         beautify( Leg1Pt[channel]  , ROOT.kRed    , "", "Z lepton pT", "events / 5 GeV")
         beautify( Leg2Pt[channel]  , ROOT.kBlue   , "", "Z lepton pT", "events / 5 GeV")
         beautify( GammaEt[channel] , ROOT.kGreen  , "", "#gamma Et"  , "events / 5 GeV")
-        
+        beautify( ZMass[channel]   , ROOT.kCyan   , "", "Z mass"     , "events / 5 GeV")
+
         f_out.mkdir(channel)
         f_out.cd(channel)
         GammaEt[channel].Write()
@@ -264,6 +264,7 @@ def Main(fileName):
         beautify( LegPt[channel]   , ROOT.kRed    , "", "W lepton pT", "events / 5 GeV")
         beautify( MET[channel]     , ROOT.kBlue   , "", "pf MET"     , "events / 5 GeV")
         beautify( GammaEt[channel] , ROOT.kGreen  , "", "#gamma Et"  , "events / 5 GeV")
+        beautify( WtMass[channel]  , ROOT.kCyan   , "", "Wt mass"    , "events / 5 GeV")
         
         f_out.mkdir(channel)
         f_out.cd(channel)
@@ -274,7 +275,7 @@ def Main(fileName):
         
     f_out.Close()
     f.Close()
-    
+    print "\n=======================\nFile %s done\n================"%f_out.GetName()
 
 
 
