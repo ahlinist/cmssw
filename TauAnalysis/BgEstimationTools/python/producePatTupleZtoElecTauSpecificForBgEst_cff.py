@@ -16,7 +16,7 @@ from TauAnalysis.BgEstimationTools.patJetSelectionForZtoElecTauBgEst_cff import 
 
 producePatTupleZtoElecTauSpecificForBgEst = cms.Sequence(
     selectElectronsForBgEst
-#   * selectLayer1MuonsLooseIsolation * selectMuonsForBgEst
+#   * selectPatMuonsLooseIsolation * selectMuonsForBgEst
    * selectTausForBgEst
    * produceElecTauPairsForBgEst
    * selectJetsForBgEst * selectJetsForZtoElecTauBgEst

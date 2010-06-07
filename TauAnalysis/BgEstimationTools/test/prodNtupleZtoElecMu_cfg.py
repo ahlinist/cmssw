@@ -346,7 +346,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         # "global" variables not specific to any particular background
         metPt = cms.PSet(
             pluginType = cms.string("PATMetValExtractor"),
-            src = cms.InputTag('layer1METs'),
+            src = cms.InputTag('patMETs'),
             value = cms.string("pt"),
             indices = cms.vuint32(0)
         ),
