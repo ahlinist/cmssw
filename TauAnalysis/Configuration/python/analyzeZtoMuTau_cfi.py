@@ -128,13 +128,15 @@ sysUncertaintyBinnerForMuTau.binnerPlugins = cms.VPSet(
     modelBinnerForMuTauGenTauLeptonPairAcc,
     modelBinnerForMuTauWrtGenTauLeptonPairAcc
 )
-sysUncertaintyBinnerForMuTau.systematics = cms.vstring(
+sysUncertaintyNames = [ "CENTRAL_VALUE", ]
+sysUncertaintyNames.extend(
     getSysUncertaintyNames(
         [ muonSystematics,
           tauSystematics,
           theorySystematics ]
     )
-)
+)    
+sysUncertaintyBinnerForMuTau.systematics = cms.vstring(sysUncertaintyNames)
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
