@@ -116,16 +116,16 @@ def enableSysUncertainties_runZtoMuTau(process):
     pyNameSpace = None
 
     setattr(patMuonSelConfigurator, "systematics", muonSystematics)
-    process.selectLayer1Muons = patMuonSelConfigurator.configure(process = process)
+    process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
 
     setattr(patMuonSelConfiguratorLooseIsolation, "systematics", muonSystematics)
-    process.selectLayer1MuonsLooseIsolation = patMuonSelConfiguratorLooseIsolation.configure(process = process)
+    process.selectPatMuonsLooseIsolation = patMuonSelConfiguratorLooseIsolation.configure(process = process)
 
     setattr(patTauSelConfigurator, "systematics", tauSystematics)
-    process.selectLayer1Taus = patTauSelConfigurator.configure(process = process)
+    process.selectPatTaus = patTauSelConfigurator.configure(process = process)
 
     setattr(patTauSelConfiguratorForMuTau, "systematics", tauSystematics)
-    process.selectLayer1TausForMuTau = patTauSelConfiguratorForMuTau.configure(process = process)
+    process.selectPatTausForMuTau = patTauSelConfiguratorForMuTau.configure(process = process)
 
     setattr(muTauPairProdConfigurator, "systematics", {
         "sysMuonPtUp"           : { "srcLeg1" : "selectedPatMuonsTrkIPsysMuonPtUpCumulative" },
@@ -163,7 +163,7 @@ def enableSysUncertainties_runZtoMuTau(process):
               tauSystematics ]
         )
         addBoolEventSelFlagProducer(process, "isRecZtoMuTau", expSysUncertainties, "selectZtoMuTauEvents")
-    
+
     if hasattr(process, "analyzeZtoMuTauEvents"):
         process.analyzeZtoMuTauEvents.estimateSysUncertainties = cms.bool(True)
     if hasattr(process, "analyzeZtoMuTauEvents_factorizedWithMuonIsolation"):
