@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.32 2010/06/07 15:00:19 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.33 2010/06/07 15:07:09 pandolf Exp $
 //
 //
 
@@ -896,7 +896,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
              nPhotonsGen += 1;
              p4PhotonsGen += p4;
              //save photons and later check for conversions:
-             //shortPtcls.push_back(*iPart); //(only if eta<3)
+             shortPtcls.push_back(*iPart); //(only if eta<3)
            } else {
              nHFEMGen += 1;
              p4HFEMGen += p4;
