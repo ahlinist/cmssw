@@ -158,13 +158,16 @@ int main(int argc, char* argv[])
   float minAmpEB, minAmpEE;
   float minEtEB, minEtEE;
   float maxE1E9, maxSwissCrossNoise;  // EB only, no spikes seen in EE
+  float maxHitTimeEB, minHitTimeEB;
   // init to sensible defaults
   avgTimeMin = -5.01; // in BX's
   avgTimeMax = 5.01; // in BX's
-  minAmpEB = 15; // ADC
-  minAmpEE = 15; // ADC
+  minAmpEB = 15; // GeV
+  minAmpEE = 15; // GeV
   minEtEB = 0.3; // GeV
   minEtEE = 0.5; // GeV
+  maxHitTimeEB = 5; // ns
+  minHitTimeEB = -5; // ns
   maxE1E9 = 0.95; // EB only
   maxSwissCrossNoise = 0.95; // EB only
   inBxs = "-1";
@@ -196,6 +199,8 @@ int main(int argc, char* argv[])
     if (argv[i] == std::string("-swisskmax") && argc>i+1) maxSwissCrossNoise = atof(argv[i+1]);
     if (argv[i] == std::string("-avgtimemin") && argc>i+1) avgTimeMin = atof(argv[i+1]);
     if (argv[i] == std::string("-avgtimemax") && argc>i+1) avgTimeMax = atof(argv[i+1]);
+    if (argv[i] == std::string("-ebhittimemax") && argc>i+1) maxHitTimeEB = atof(argv[i+1]);
+    if (argv[i] == std::string("-ebhittimemin") && argc>i+1) minHitTimeEB = atof(argv[i+1]);
   }
 
   TFile* f = TFile::Open(infile);
@@ -207,11 +212,12 @@ int main(int argc, char* argv[])
   }
   else
   {
-    cout << "Loaded tree. "<< endl << "Running with options: "
+    cout << "Loaded tree: " << infile << endl << "Running with options: "
       << "avgTimeMin: " << avgTimeMin << " avgTimeMax: " << avgTimeMax
       << " minAmpEB: " << minAmpEB << " minAmpEE: " << minAmpEE
       << " minEtEB: " << minEtEB << " minEtEE: " << minEtEE
       << " maxE1E9 (EB): " << maxE1E9 << " maxSwissCrossNoise (EB): " << maxSwissCrossNoise
+      << " maxHitTimeEB: " << maxHitTimeEB << " minHitTimeEB: " << minHitTimeEB                                                                   
       << " inTrig: " << inTrig << " inTTrig: " << inTTrig << " inLumi: " << inLumi 
       << " inBxs: " << inBxs << " inTimes: " << inTimes << " inOrbits: " << inOrbits
       << endl;
@@ -385,7 +391,9 @@ int main(int argc, char* argv[])
       bool keepHit = cryAmp >= minAmpEB
         && cryEt >= minEtEB
         && cryE1E9 < maxE1E9
-        && crySwissCrossNoise < maxSwissCrossNoise;
+        && crySwissCrossNoise < maxSwissCrossNoise
+        && cryTime > minHitTimeEB
+        && cryTime < maxHitTimeEB;
       if(!keepHit)
         continue;
 

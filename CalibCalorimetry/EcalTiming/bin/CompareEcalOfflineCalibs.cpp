@@ -253,6 +253,7 @@ int main(int argc, char* argv[])
   }
   
 // ***
+  cout << "Doing " << infile1 << " - " << infile2 << endl;
 
   TFile* outputTFile = new TFile("compareCalibs.root","RECREATE");
 
@@ -280,6 +281,7 @@ int main(int argc, char* argv[])
   TDirectory* calibDiffHists = gDirectory->mkdir("calibDiffHistsInEta");
   calibDiffHists->cd();
 
+  TProfile* calibDiffByEta = new TProfile("calibDiffIeta","#Delta(calib) by i#eta",172,-86,86);
   TProfile* calibDiffSigmaByEta = new TProfile("calibDiffSigmaIeta","Sigma of #Delta(calib) by i#eta",172,-86,86);
 
   map<int,double> cryHashToDeltaCalibEB;
@@ -290,6 +292,15 @@ int main(int argc, char* argv[])
   // *** EB
   cout << "INFO: size of EBmap1: " << timingCalibMapEB1.size() <<
      " size of EBmap2: " << timingCalibMapEB2.size() << endl;
+
+  double deltaCalibInIEta[171]; // make ieta==-85 --> 0 here; then ieta==85-->170
+  int numCrysInIEta[171];
+  for(int i=0; i<171; ++i)
+  {
+    deltaCalibInIEta[i]=0;
+    numCrysInIEta[i]=0;
+  }
+
   // Loop over calibTimingMap1EB and find the corresponding entries in map2
   for(std::map<int,double>::const_iterator map1Itr = timingCalibMapEB1.begin();
       map1Itr != timingCalibMapEB1.end(); ++map1Itr)
@@ -318,6 +329,14 @@ int main(int argc, char* argv[])
     cryHashToDeltaCalibEB.insert(std::make_pair(map1Itr->first,deltaCalib));
     calib1Map->Fill(iphi,ieta,map1Itr->second);
     calib2Map->Fill(iphi,ieta,map2Itr->second);
+    deltaCalibInIEta[ieta+85]+=deltaCalib;
+    numCrysInIEta[ieta+85]++;
+  }
+
+  for(int i=0;i<171;++i)
+  {
+    if(numCrysInIEta[i]>0)
+      calibDiffByEta->Fill(i-85,deltaCalibInIEta[i]/numCrysInIEta[i]);
   }
   
   // *** EE
@@ -377,6 +396,7 @@ int main(int argc, char* argv[])
   scatterHist->Write();
 
   can4.cd();
+  differenceByEtaProfile->SetXTitle("i#eta");
   differenceByEtaProfile->Draw();
   //can4.Print("differenceByEtaEB.png");
   differenceByEtaProfile->Write();
@@ -413,6 +433,8 @@ int main(int argc, char* argv[])
 
   calibDiffSigmaByEta->SetXTitle("i#eta");
   calibDiffSigmaByEta->Write();
+  calibDiffByEta->SetXTitle("i#eta");
+  calibDiffByEta->Write();
 
   //outputTFile->Write();
   outputTFile->Close();

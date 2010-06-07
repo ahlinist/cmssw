@@ -10,11 +10,20 @@
 #include "TError.h"
 #include "TTree.h"
 #include "TGraphErrors.h"
+
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
+
+#include "CondFormats/EcalObjects/interface/EcalTimeCalibConstants.h"
+#include "CondFormats/EcalObjects/interface/EcalTimeCalibErrors.h"
+//#include "CondTools/Ecal/interface/EcalTimeCalibConstantsXMLTranslator.h"
+//#include "CondTools/Ecal/interface/EcalTimeCalibErrorsXMLTranslator.h"
+#include "CondTools/Ecal/interface/EcalCondHeader.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
 #include "CreateEcalTimingCalibs.h"
 
 // ****************************************************************
@@ -123,7 +132,6 @@ void SetEStyle() {
   EStyle->cd();
 }
 
-
 // ****************************************************************
 std::string intToString(int num)
 {
@@ -137,7 +145,37 @@ std::string intToString(int num)
 //XXX: main
 int main(int argc, char* argv[])
 {
+  //
+  // **** May 20 2010 update ****
+  // Usage: CreateEcalTimingCalibsEB fileWithTree options...
+  //
+
   using namespace std;
+
+  // For selection cuts
+  string inBxs, inOrbits, inTrig, inTTrig, inLumi, inTimes;
+  float avgTimeMin, avgTimeMax;
+  float minAmpEB, minAmpEE;
+  float minEtEB, minEtEE;
+  float maxE1E9, maxSwissCrossNoise;  // EB only, no spikes seen in EE
+  float maxHitTimeEE, minHitTimeEE;
+  // init to sensible defaults
+  avgTimeMin = -5.01; // in BX's
+  avgTimeMax = 5.01; // in BX's
+  minAmpEB = 1; // GeV
+  minAmpEE = 1; // GeV
+  minEtEB = 0.3; // GeV
+  minEtEE = 0.5; // GeV
+  maxHitTimeEE = 5; // ns
+  minHitTimeEE = -5; // ns
+  maxE1E9 = 0.95; // EB only
+  maxSwissCrossNoise = 0.95; // EB only
+  inBxs = "-1";
+  inOrbits = "-1";
+  inTrig = "-1";
+  inTTrig = "-1";
+  inLumi = "-1";
+  inTimes = "-1";
 
   char* infile = argv[1];
   if (!infile)
@@ -146,47 +184,75 @@ int main(int argc, char* argv[])
     return -1;
   }
 
-  TFile* f = new TFile(infile);
+  for (int i=2 ; i<argc ; i++) {
+    if (argv[i] == std::string("-bxs") && argc>i+1) inBxs = std::string(argv[i+1]);
+    if (argv[i] == std::string("-orbits") && argc>i+1) inOrbits = std::string(argv[i+1]);
+    if (argv[i] == std::string("-trig") && argc>i+1) inTrig = std::string(argv[i+1]);
+    if (argv[i] == std::string("-ttrig") && argc>i+1) inTTrig = std::string(argv[i+1]);
+    if (argv[i] == std::string("-lumi") && argc>i+1) inLumi = std::string(argv[i+1]);
+    if (argv[i] == std::string("-times") && argc>i+1) inTimes = std::string(argv[i+1]);
+    if (argv[i] == std::string("-ebampmin") && argc>i+1) minAmpEB = atof(argv[i+1]);
+    if (argv[i] == std::string("-eeampmin") && argc>i+1) minAmpEE = atof(argv[i+1]);
+    if (argv[i] == std::string("-ebetmin") && argc>i+1) minEtEB = atof(argv[i+1]);
+    if (argv[i] == std::string("-eeetmin") && argc>i+1) minEtEE = atof(argv[i+1]);
+    if (argv[i] == std::string("-e1e9max") && argc>i+1) maxE1E9 = atof(argv[i+1]);
+    if (argv[i] == std::string("-swisskmax") && argc>i+1) maxSwissCrossNoise = atof(argv[i+1]);
+    if (argv[i] == std::string("-avgtimemin") && argc>i+1) avgTimeMin = atof(argv[i+1]);
+    if (argv[i] == std::string("-avgtimemax") && argc>i+1) avgTimeMax = atof(argv[i+1]);
+    if (argv[i] == std::string("-eehittimemax") && argc>i+1) maxHitTimeEE = atof(argv[i+1]);
+    if (argv[i] == std::string("-eehittimemin") && argc>i+1) minHitTimeEE = atof(argv[i+1]);
+  }
+
+  TFile* f = TFile::Open(infile);
   TTree* myTree = (TTree*)f->Get("eventTimingInfoTree");
   if(!myTree)
   {
     std::cout << "Couldn't find tree eventTimingInfoTree" << std::endl;
     return -1;
   }
-  
+  else
+  {
+    cout << "Loaded tree: "<< infile << endl << "Running with options: "
+      << "avgTimeMin: " << avgTimeMin << " avgTimeMax: " << avgTimeMax
+      << " minAmpEB: " << minAmpEB << " minAmpEE: " << minAmpEE
+      << " minEtEB: " << minEtEB << " minEtEE: " << minEtEE
+      << " maxE1E9 (EB): " << maxE1E9 << " maxSwissCrossNoise (EB): " << maxSwissCrossNoise
+      << " maxHitTimeEE: " << maxHitTimeEE << " minHitTimeEE: " << minHitTimeEE                                                                   
+      << " inTrig: " << inTrig << " inTTrig: " << inTTrig << " inLumi: " << inLumi 
+      << " inBxs: " << inBxs << " inTimes: " << inTimes << " inOrbits: " << inOrbits
+      << endl;
+  }
+
   SetEStyle();
   // Ignore warnings
   gErrorIgnoreLevel = 2001;
 
-  int numEBcrys;
-  int numEEcrys;
-  int hashedIndicesEB[61200];
-  int hashedIndicesEE[14648];
-  float cryTimesEB[61200];
-  float cryTimesEE[14648];
-  float cryTimeErrorsEB[61200];
-  float cryTimeErrorsEE[14648];
-  float cryAmpsEB[61200];
-  float cryAmpsEE[14648];
-  float correctionToSample5EB;
-  float correctionToSample5EEP;
-  float correctionToSample5EEM;
-  myTree->SetBranchAddress("numberOfEBcrys",&numEBcrys);
-  myTree->SetBranchAddress("numberOfEEcrys",&numEEcrys);
-  myTree->SetBranchAddress("crystalHashedIndicesEB",hashedIndicesEB);
-  myTree->SetBranchAddress("crystalHashedIndicesEE",hashedIndicesEE);
-  myTree->SetBranchAddress("crystalTimesEB",cryTimesEB);
-  myTree->SetBranchAddress("crystalTimesEE",cryTimesEE);
-  myTree->SetBranchAddress("crystalTimeErrorsEB",cryTimeErrorsEB);
-  myTree->SetBranchAddress("crystalTimeErrorsEE",cryTimeErrorsEE);
-  myTree->SetBranchAddress("crystalAmplitudesEB",cryAmpsEB);
-  myTree->SetBranchAddress("crystalAmplitudesEE",cryAmpsEE);
-  myTree->SetBranchAddress("correctionToSampleEB",&correctionToSample5EB);
-  myTree->SetBranchAddress("correctionToSampleEEM",&correctionToSample5EEM);
-  myTree->SetBranchAddress("correctionToSampleEEP",&correctionToSample5EEP);
+  TTreeMembers myTreeMembers;
+  setBranchAddresses(myTree,myTreeMembers);
 
+  // Generate all the vectors for skipping selections
+  std::vector<std::vector<double> > bxIncludeVector;
+  std::vector<std::vector<double> > bxExcludeVector;
+  std::vector<std::vector<double> > orbitIncludeVector;
+  std::vector<std::vector<double> > orbitExcludeVector;
+  std::vector<std::vector<double> > trigIncludeVector;
+  std::vector<std::vector<double> > trigExcludeVector;
+  std::vector<std::vector<double> > ttrigIncludeVector;
+  std::vector<std::vector<double> > ttrigExcludeVector;
+  std::vector<std::vector<double> > lumiIncludeVector;
+  std::vector<std::vector<double> > lumiExcludeVector;
+  std::vector<std::vector<double> > timeIncludeVector;
+  std::vector<std::vector<double> > timeExcludeVector;
+  //recall: string inBxs, inOrbits, inTrig, inTTrig, inLumi, inTimes;
+  genIncludeExcludeVectors(inBxs,bxIncludeVector,bxExcludeVector);
+  genIncludeExcludeVectors(inOrbits,orbitIncludeVector,orbitExcludeVector);
+  genIncludeExcludeVectors(inTrig,trigIncludeVector,trigExcludeVector);
+  genIncludeExcludeVectors(inTTrig,ttrigIncludeVector,ttrigExcludeVector);
+  genIncludeExcludeVectors(inLumi,lumiIncludeVector,lumiExcludeVector);
+  genIncludeExcludeVectors(inTimes,timeIncludeVector,timeExcludeVector);
+
+  // Open output file and book hists
   string fileNameBeg = "timingCalibsEE";
-  
   string rootFilename = fileNameBeg+".root";
   TFile* outfile = new TFile(rootFilename.c_str(),"RECREATE");
   outfile->cd();
@@ -245,6 +311,14 @@ int main(int argc, char* argv[])
   calibMapEEM->Sumw2();
   calibMapEEP->Sumw2();
 
+  TProfile* ampProfileEEM = new TProfile("ampProfileEEM","Amp. profile EEM;hashedIndex",14648,0,14648);
+  TProfile* ampProfileEEP = new TProfile("ampProfileEEP","Amp. profile EEP;hashedIndex",14648,0,14648);
+  TProfile2D* ampProfileMapEEP = new TProfile2D("ampProfileMapEEP","Amp. profile EEP;ix;iy",100,1,101,100,1,101);
+  TProfile2D* ampProfileMapEEM = new TProfile2D("ampProfileMapEEM","Amp. profile EEM;ix;iy",100,1,101,100,1,101);
+  TH2F* hitsPerCryMapEEM = new TH2F("hitsPerCryMapEEM","Hits per cry EEM;ix;iy",100,1,101,100,1,101);
+  TH2F* hitsPerCryMapEEP = new TH2F("hitsPerCryMapEEP","Hits per cry EEP;ix;iy",100,1,101,100,1,101);
+  TH1F* hitsPerCryHistEEM = new TH1F("hitsPerCryHistEEM","Hits per cry EEM;hashedIndex",14648,0,14648);
+  TH1F* hitsPerCryHistEEP = new TH1F("hitsPerCryHistEEP","Hits per cry EEP;hashedIndex",14648,0,14648);
   //TH1C* eventsEEMHist = new TH1C("numEventsEEM","Number of events, EEM",100,0,100);
   //TH1C* eventsEEPHist = new TH1C("numEventsEEP","Number of events, EEP",100,0,100);
 
@@ -285,7 +359,7 @@ int main(int argc, char* argv[])
   }
   outfile->cd();
   
-  cout << "Making calibs...";
+  cout << "Making calibs..." << endl;
 
   CrystalCalibration* eeCryCalibs[14648];
   //XXX: Making calibs with weighted/unweighted mean
@@ -294,7 +368,10 @@ int main(int argc, char* argv[])
     eeCryCalibs[i] = new CrystalCalibration(); //use weighted mean!
     //eeCryCalibs[i] = new CrystalCalibration(false); //don't use weighted mean!
 
+  cout << "Looping over TTree...";
+
   // Loop over the TTree
+  int numEventsUsed = 0;
   int nEntries = myTree->GetEntries();
 
   for(int entry = 0; entry < nEntries; ++entry)
@@ -302,37 +379,72 @@ int main(int argc, char* argv[])
     myTree->GetEntry(entry);
     //debug
     //cout << "Number of EE crys in event: " << numEEcrys << endl;
+
     // Loop once to calculate average event time
     float sumTime = 0;
-    for(int cryIndex=0; cryIndex < numEEcrys; ++cryIndex)
+    for(int cryIndex=0; cryIndex < myTreeMembers.numEEcrys_; ++cryIndex)
     {
-      float cryTime = cryTimesEE[cryIndex];
+      float cryTime = myTreeMembers.cryUTimesEE_[cryIndex];
       sumTime+=cryTime;
     }
-    if(sumTime/numEEcrys > 5.21 || sumTime/numEEcrys < 5.19)
+    //XXX: Event cuts
+    if(sumTime/myTreeMembers.numEEcrys_ > avgTimeMax || sumTime/myTreeMembers.numEEcrys_ < avgTimeMin)
     {
-      cout << "Average event time: " << sumTime/numEEcrys  << " so event rejected." << endl;
+      //cout << "Average event time: " << sumTime/numEBcrys  << " so event rejected." << endl;
       continue;
     }
+    bool keepEvent = includeEvent(myTreeMembers.bx_,bxIncludeVector,bxExcludeVector)
+      && includeEvent(myTreeMembers.orbit_,orbitIncludeVector,orbitExcludeVector)
+      && includeEvent(myTreeMembers.triggers_,myTreeMembers.numTriggers_,trigIncludeVector,trigExcludeVector)
+      && includeEvent(myTreeMembers.techtriggers_,myTreeMembers.numTechTriggers_,ttrigIncludeVector,ttrigExcludeVector)
+      && includeEvent(myTreeMembers.lumiSection_,lumiIncludeVector,lumiExcludeVector)
+      && includeEvent(myTreeMembers.absTime_,timeIncludeVector,timeExcludeVector);
+    if(!keepEvent)
+      continue;
+      
+    numEventsUsed++;
 
     // Loop over the EE crys and fill the map
-    for(int cryIndex=0; cryIndex < numEEcrys; ++cryIndex)
+    for(int cryIndex=0; cryIndex < myTreeMembers.numEEcrys_; ++cryIndex)
     {
-      int hashedIndex = hashedIndicesEE[cryIndex];
-      float cryTime = 25*(cryTimesEE[cryIndex]-5);
-      float cryTimeError = 25*cryTimeErrorsEE[cryIndex];
-      float cryAmp = cryAmpsEE[cryIndex];
+      int hashedIndex = myTreeMembers.cryHashesEE_[cryIndex];
+      float cryTime = 25*(myTreeMembers.cryUTimesEE_[cryIndex]-5);
+      float cryTimeError = 25*myTreeMembers.cryTimeErrorsEE_[cryIndex];
+      float cryAmp = myTreeMembers.cryAmpsEE_[cryIndex];
+      float cryEt = myTreeMembers.cryETEE_[cryIndex];
+      //cout << "STUPID DEBUG: " << hashedIndex << " cryTime: " << cryTime << " ctyTimeError: " << cryTimeError << " cryAmp: " << cryAmp << endl;
       
       EEDetId det = EEDetId::unhashIndex(hashedIndex);
-      if(det==EEDetId())
+      if(det==EEDetId()) // make sure DetId is valid
         continue;
-      //ebCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,cryTimeError,true);
-      //XXX: SIC Turn this back on when we're done with the fitter
+
+      int ix = det.ix();
+      int iy = det.iy();
+      int zside = det.zside();
+
+      //XXX: RecHit cuts
+      bool keepHit = cryAmp >= minAmpEE
+        && cryEt >= minEtEE
+        && cryTime > minHitTimeEE
+        && cryTime < maxHitTimeEE;
+      if(!keepHit)
+        continue;
+
       eeCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,cryTimeError,true);
-      //eeCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,35/(cryAmp/2.0),true);
-      //debug
-      //cout << "event inserted for cry with hash: " << hashedIndex << " det: "
-      //  << det << endl;
+      //SIC Use when we don't have time_error available
+      //ebCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,35/(cryAmp/1.2),true);
+      if(zside > 0)
+      {
+        ampProfileEEP->Fill(hashedIndex,cryAmp);
+        ampProfileMapEEP->Fill(ix,iy,cryAmp);
+      }
+      else
+      {
+        ampProfileEEM->Fill(hashedIndex,cryAmp);
+        ampProfileMapEEM->Fill(ix,iy,cryAmp);
+      }
+      //if(cryTime > 33 || cryTime < -33)
+      //  cout << "Crystal: " << det << " event time is over/underflow: " << cryTime << endl;
     }
   }
 
@@ -355,8 +467,15 @@ int main(int argc, char* argv[])
     return -1;
   }
 
+  // Create calibration container objects
+  EcalTimeCalibConstants timeCalibConstants;
+  EcalTimeCalibErrors timeCalibErrors;
+
+  cout << "Using " << numEventsUsed << " out of " << nEntries << " in the tree." << endl;
+  cout << "Creating calibs..." << endl;
   //Loop over all the crys
   for(int hashedIndex=0; hashedIndex < 14648; ++hashedIndex)
+      
   {
     EEDetId det = EEDetId::unhashIndex(hashedIndex);
     if(det==EEDetId())
@@ -365,19 +484,13 @@ int main(int argc, char* argv[])
     int x = det.ix();
     int y = det.iy();
 
-    //debug
-    //cout << "Making calibs for cry" << hashedIndex << " : " << det 
-    //  << " with entries: " << cryCalib.timingEvents.size() << endl;
-
     //chiSquaredTotalHist->Fill(cryCalib.totalChi2);
-    //expectedStatPresHistEEM->Fill(sqrt(1/expectedPresSumEEM));
-    //expectedStatPresVsObservedMeanErrHistEEM->Fill(sigmaM,sqrt(1/expectedPresSumEEM));
+    //expectedStatPresHistEB->Fill(sqrt(1/expectedPresSumEB));
+    //expectedStatPresVsObservedMeanErrHistEB->Fill(sigmaM,sqrt(1/expectedPresSumEB));
 
-    //Filter events at default 0.5*sigma threshold
-    //XXX: SIC Oct 2 2009 testing -- turn it off
+    //XXX: Filter events at default 0.5*sigma threshold
     cryCalib.filterOutliers();
-    //cout << "Filtering of outlier events enabled." << endl;
-
+    
     //numPointsErasedHist->Fill(numPointsErased);
     
     //Write cryTimingHists
@@ -407,10 +520,22 @@ int main(int argc, char* argv[])
       cryTimingHistsEEP[x-1][y-1]->Write();
     }
     outfile->cd();
+
+    if(det.zside() < 0)
+    {
+      hitsPerCryHistEEM->SetBinContent(hashedIndex+1,cryCalib.timingEvents.size());
+      hitsPerCryMapEEM->Fill(x,y,cryCalib.timingEvents.size());
+    }
+    else
+    {
+      hitsPerCryHistEEP->SetBinContent(hashedIndex+1,cryCalib.timingEvents.size());
+      hitsPerCryMapEEP->Fill(x,y,cryCalib.timingEvents.size());
+    }
     
     // Make timing calibs
     float p1 = cryCalib.mean;
     float p1err = cryCalib.sigma;
+    //cout << "cry ieta: " << ieta << " cry iphi: " << iphi << " p1: " << p1 << " p1err: " << p1err << endl;
     //XXX: SIC Oct. 2 2009 hardcoding sigma for testing...
     //XXX: Turn it back on
     //float p1err = 0.1;
@@ -466,6 +591,21 @@ int main(int argc, char* argv[])
   
   fileStream.close();
   fileStreamProb.close();
+
+  cout << "Cleaning up." << endl;
+  //Write XML files
+  //EcalCondHeader header;
+  //header.method_="testmethod";
+  //header.version_="testversion";
+  //header.datasource_="testdata";
+  //header.since_=123;
+  //header.tag_="testtag";
+  //header.date_="Mar 24 1973";
+  //string timeCalibFile = "EcalTimeCalibsEB.xml";
+  //string timeCalibErrFile = "EcalTimeCalibErrorsEB.xml";
+  //XXX TODO ADD LATER
+  //EcalTimeCalibConstantsXMLTranslator::writeXML(timeCalibFile,header,timeCalibConstants);
+  //EcalTimeCalibErrorsXMLTranslator::writeXML(timeCalibErrFile,header,timeCalibErrors);
 
   outfile->cd();
   calibHistEEM->SetXTitle("timingCalib [ns]");
@@ -541,7 +681,15 @@ int main(int argc, char* argv[])
   expectedStatPresEachEventHistEEP->Write();
   //ampEachEventHist->Write();
   //numPointsErasedHist->Write();
-
+  hitsPerCryHistEEP->Write();
+  hitsPerCryMapEEP->Write();
+  hitsPerCryHistEEM->Write();
+  hitsPerCryMapEEM->Write();
+  ampProfileEEP->Write();
+  ampProfileMapEEP->Write();
+  ampProfileEEM->Write();
+  ampProfileMapEEM->Write();
+  
   //cout << "All done!  Close input." << endl;
   f->Close();
   //cout << "Close output and quit!" << endl;
