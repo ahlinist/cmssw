@@ -634,6 +634,7 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     //std::cout << " eventWeight_systematic = " << eventWeight_systematic << std::endl;
 
     bool isSystematicApplied = ( (*sysName) == SysUncertaintyService::getNameCentralValue() ) ? false : true;
+    //std::cout << " isSystematicApplied = " << isSystematicApplied << std::endl;
 
 //--- call analyze method of each analyzerPlugin
 //    (fill histograms, compute binning results,...)
@@ -644,19 +645,24 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     for ( std::list<analysisSequenceEntry*>::iterator entry = analysisSequence_.begin();
 	  entry != analysisSequence_.end(); ++entry ) {
       
+      //std::cout << " analysisSequenceEntry: name = " << (*entry)->name_ << std::endl;
+
       if ( (*entry)->type() == analysisSequenceEntry::kFilter ) {
 	bool filterPassed_cumulative = (*entry)->filter_cumulative(evt, es, sysUncertaintyService);
+	//std::cout << " filter: passed_cumulative = " << filterPassed_cumulative << std::endl;
 	
 	filterResults_cumulative.push_back(std::pair<std::string, bool>((*entry)->name_, filterPassed_cumulative));
 	
 	if ( !filterPassed_cumulative ) previousFiltersPassed = false;
 	
 	bool filterPassed_individual = (*entry)->filter_individual(evt, es, sysUncertaintyService);
+	//std::cout << " filter: passed_individual = " << filterPassed_individual << std::endl;
 	
 	filterResults_individual.push_back(std::pair<std::string, bool>((*entry)->name_, filterPassed_individual));
       }
 
       if ( (*entry)->type() == analysisSequenceEntry::kAnalyzer ) {
+	//std::cout << " analyzer: previousFiltersPassed = " << previousFiltersPassed << std::endl;
 	if ( previousFiltersPassed ) (*entry)->analyze(evt, es, eventWeight_systematic, isSystematicApplied);
       }
     }
