@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.40 2010/02/10 14:10:32 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.41 2010/02/12 01:23:23 carrillo Exp $
 //
 //
 
@@ -109,7 +109,11 @@ public:
   TH1F * residualDiskm2Ring3;
   TH1F * residualDiskm3Ring2;
   TH1F * residualDiskm3Ring3;
-  
+
+  TH1F * EffBarrel_black; //Average
+  TH1F * DoubleGapBarrel_black; //Double GapEff
+  TH1F * CentralEffBarrel_black; //Central Zone  
+
   TH1F * EffBarrel; //Average
   TH1F * DoubleGapBarrel; //Double GapEff
   TH1F * CentralEffBarrel; //Central Zone
@@ -139,6 +143,10 @@ public:
   TH1F * DoubleGapDistroW0far;
   TH1F * DoubleGapDistroW1far;
   TH1F * DoubleGapDistroW2far;
+
+  TH1F * EffEndCap_black; //Average
+  TH1F * DoubleGapEndCap_black; //Double Gap
+  TH1F * CentralEffEndCap_black; //Central Zone
 
   TH1F * EffEndCap; //Average
   TH1F * DoubleGapEndCap; //Double Gap
@@ -514,9 +522,9 @@ public:
   TPaveText * pave;
 
 private:
-  virtual void beginJob(const edm::EventSetup&) ;
+  virtual void beginRun(const edm::Run&, const edm::EventSetup&);
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void endRun() ;
   std::string file;
   std::string fileout;
   std::ofstream RollYEff;
@@ -550,6 +558,15 @@ int rollY(std::string shortname,std::map<int,std::string> rollNames){
   }
   return myy;
 }
+
+bool IsBadRoll(uint32_t rawId,std::vector<uint32_t> thelist){
+  bool isBadRoll = false;
+  if(!(find(thelist.begin(),thelist.end(),rawId)==thelist.end())){
+    isBadRoll=true;
+  }
+  return isBadRoll;
+}
+
 
 bool HasBadRoll(int region,uint32_t station,uint32_t ring,int k,std::vector<uint32_t> thelist){
   uint32_t sector = (k-1)/6+1;
@@ -593,7 +610,7 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
 
 RPCMonitorEfficiency::~RPCMonitorEfficiency(){}
 
-void RPCMonitorEfficiency::beginJob(const edm::EventSetup&){
+void RPCMonitorEfficiency::beginRun(const edm::Run&,const edm::EventSetup&){
   if(debug) std::cout <<"Begin Job"<<std::endl;
   theFile = new TFile(file.c_str());
   if(!theFile)if(debug) std::cout<<"The File Doesn't exist"<<std::endl;
@@ -615,7 +632,7 @@ void RPCMonitorEfficiency::beginJob(const edm::EventSetup&){
     }
   }
   
-  if(debug) std::cout<<"Black list has "<<blacklist.size()<<" rolls"<<std::endl;
+  std::cout<<"Black list has "<<blacklist.size()<<" rolls"<<std::endl;
   ifin.close();
 
 }
@@ -659,6 +676,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   signal_bxendcap= new TH2F ("signal_BXEndCap","Signal BX Distribution for the End Cap",51,-5.0,5.0,51,0.,4.);
   signal_bxbarrel= new TH2F ("signal_BXBarrel","Signal BX Distribution for the Barrel",51,-5.0,5.0,51,0.,4.);
+
+  EffBarrel_black = new TH1F ("EffBarrel_black","Efficiency Distribution For All The Barrel",51,-1,101);
+  DoubleGapBarrel_black = new TH1F ("DoubleGapBarrel_black","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
+  CentralEffBarrel_black = new TH1F ("CentralEffBarrel_black","Efficiency in central part For All The Barrel",51,-1,101);
   
   EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",51,-1,101);
   DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
@@ -689,6 +710,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   DoubleGapDistroW0far= new TH1F ("DoubleGapDistroW0far","DoubleGapEfficiency Distribution For Far Side Wheel 0",20,0.5,100.5);
   DoubleGapDistroW1far= new TH1F ("DoubleGapDistroW1far","DoubleGapEfficiency Distribution For Far Side Wheel 1",20,0.5,100.5);
   DoubleGapDistroW2far= new TH1F ("DoubleGapDistroW2far","DoubleGapEfficiency Distribution For Far Side Wheel 2",20,0.5,100.5);
+
+  EffEndCap_black= new TH1F ("EffDistroEndCap_black ","Efficiency Distribution For All The EndCaps",51,-1,101);
+  DoubleGapEndCap_black = new TH1F ("DoubleGapEndCap_black","Double Gap Efficiency Distribution For All The EndCaps",51,-1,101);
+  CentralEffEndCap_black = new TH1F ("CentralEffEndCap_black","Efficiency in central part For All The EndCaps",51,-1,101);
 
   EffEndCap= new TH1F ("EffDistroEndCap ","Efficiency Distribution For All The EndCaps",51,-1,101);
   DoubleGapEndCap = new TH1F ("DoubleGapEndCap","Double Gap Efficiency Distribution For All The EndCaps",51,-1,101);
@@ -753,14 +778,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   CLSW2layer = new TH1F ("ClusterSizeW2","Cluster Size Wheel 2 per layer",12,0.5,12.5);
   
   for(int k=1;k<=6;k++){
-    meId <<"ClusterSizeWm2Layer"<<k; 
-    title <<"Cluster Size Wheel - 2 Layer "<<k; 
+    meId <<"ClusterSizeWm2Layer"<<k;
+    title <<"Cluster Size Wheel - 2 Layer "<<k;
     layerCLSWm2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
-    meId <<"ClusterSizeWm1Layer"<<k; 
-    title <<"Cluster Size Wheel - 1 Layer "<<k; 
+    meId <<"ClusterSizeWm1Layer"<<k;
+    title <<"Cluster Size Wheel - 1 Layer "<<k;
     layerCLSWm1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
-    meId <<"ClusterSizeW0Layer"<<k; 
-    title <<"Cluster Size Wheel 0 Layer "<<k; 
+    meId <<"ClusterSizeW0Layer"<<k;
+    title <<"Cluster Size Wheel 0 Layer "<<k;
     layerCLSW0[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
     meId <<"ClusterSizeW1Layer"<<k;
     title <<"Cluster Size Wheel 1 Layer "<<k;
@@ -1721,9 +1746,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    RollYEff<<name<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float(nstrips))*100.<<" "<<doublegaperrexp<<" "<<doublegaperrocc<<std::endl;
 	    
 	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
-	    if(NumberStripsPointed!=0) DoubleGapBarrel->Fill(doublegapeff);
-	    if(NumberStripsPointed!=0) CentralEffBarrel->Fill(pinoeff);
-	    if(NumberStripsPointed!=0) EffBarrel->Fill(averageeff);
+	    
+	    if(NumberStripsPointed!=0){
+	      if(!IsBadRoll(rpcId.rawId(),blacklist)){
+		DoubleGapBarrel->Fill(doublegapeff);
+		CentralEffBarrel->Fill(pinoeff);
+		EffBarrel->Fill(averageeff);
+	      }else{
+		DoubleGapBarrel_black->Fill(doublegapeff);
+		CentralEffBarrel_black->Fill(pinoeff);
+		EffBarrel_black->Fill(averageeff);
+	      }
+
+	    }
 
 	    if(fabs(BXDistribution->GetMean())<0.5 && BXDistribution->GetRMS()<1.&& BXDistribution->GetMean()!=0) BXEffBarrel->Fill(pinoeff);
 	    else badBXEffBarrel->Fill(pinoeff);
@@ -1968,21 +2003,25 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  if(region ==0){
 	    int layer = 0;
-	    
+	  	    
 	    if(rpcId.station()==1&&rpcId.layer()==1) layer = 1;
 	    else if(rpcId.station()==1&&rpcId.layer()==2) layer = 2;
 	    else if(rpcId.station()==2&&rpcId.layer()==1) layer = 3;
 	    else if(rpcId.station()==2&&rpcId.layer()==2)  layer = 4;
 	    else if(rpcId.station()==3) layer = 5;
 	    else if(rpcId.station()==4) layer = 6;
-	    
-	    if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o); sectorCLSWm2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
-	    else if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o); sectorCLSWm1[sector]->Add(histoCLS);layerCLSWm1[layer]->Add(histoCLS);}
-	    else if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o); sectorCLSW0[sector]->Add(histoCLS);layerCLSW0[layer]->Add(histoCLS);}
-	    else if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o); sectorCLSW1[sector]->Add(histoCLS);layerCLSW1[layer]->Add(histoCLS);}
-	    else if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o); sectorCLSW2[sector]->Add(histoCLS);layerCLSW2[layer]->Add(histoCLS);}
-	  }
 
+	    if(!IsBadRoll(rpcId.rawId(),blacklist)){
+	      if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o); sectorCLSWm2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
+	      else if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o); sectorCLSWm1[sector]->Add(histoCLS);layerCLSWm1[layer]->Add(histoCLS);}
+	      else if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o); sectorCLSW0[sector]->Add(histoCLS);layerCLSW0[layer]->Add(histoCLS);}
+	      else if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o); sectorCLSW1[sector]->Add(histoCLS);layerCLSW1[layer]->Add(histoCLS);}
+	      else if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o); sectorCLSW2[sector]->Add(histoCLS);layerCLSW2[layer]->Add(histoCLS);}
+	    }else{
+	      if(debug) std::cout<<"blacklist skeeping roll "<<rpcId<<std::endl;
+	    }
+	  }
+	  
 	  delete histoCLS;
 	  
 	  std::string camera = name.c_str();
@@ -2674,9 +2713,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
 	    
-	    if(NumberStripsPointed!=0) DoubleGapEndCap->Fill(doublegapeff);
-	    if(NumberStripsPointed!=0) CentralEffEndCap->Fill(pinoeff);
-	    if(NumberStripsPointed!=0) EffEndCap->Fill(averageeff);
+	     if(NumberStripsPointed!=0){
+	       if(!IsBadRoll(rpcId.rawId(),blacklist)){
+		 DoubleGapEndCap->Fill(doublegapeff);
+		 CentralEffEndCap->Fill(pinoeff);
+		 EffEndCap->Fill(averageeff);
+	       }else{
+		 DoubleGapEndCap_black->Fill(doublegapeff);
+		 CentralEffEndCap_black->Fill(pinoeff);
+		 EffEndCap_black->Fill(averageeff);
+	       }
+	     }
 	    if(fabs(BXDistribution->GetMean())<0.5 && BXDistribution->GetRMS()<1.&& BXDistribution->GetMean()!=0){
 	      BXEffEndCap->Fill(pinoeff);
 	      if(rpcId.region()==1) BXEffPositiveEndCap->Fill(pinoeff);
@@ -2926,22 +2973,26 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  //ojo aca!
 
-	  if(rpcId.region()==1){
-	    if(rpcId.station()==1 && rpcId.ring()==2){ ExGregD1R2->Fill(rpcsrv.segment(),pinoexpected);OcGregD1R2->Fill(rpcsrv.segment(),pinoobserved); if(debug) std::cout<<name<<"GREG Filling D1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
-	    if(rpcId.station()==1 && rpcId.ring()==3){ ExGregD1R3->Fill(rpcsrv.segment(),pinoexpected);OcGregD1R3->Fill(rpcsrv.segment(),pinoobserved); if(debug) std::cout<<name<<"GREG Filling D1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
-	    if(rpcId.station()==2 && rpcId.ring()==2){ ExGregD2R2->Fill(rpcsrv.segment(),pinoexpected);OcGregD2R2->Fill(rpcsrv.segment(),pinoobserved);}
-	    if(rpcId.station()==2 && rpcId.ring()==3){ ExGregD2R3->Fill(rpcsrv.segment(),pinoexpected);OcGregD2R3->Fill(rpcsrv.segment(),pinoobserved);}
-	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregD3R2->Fill(rpcsrv.segment(),pinoexpected);OcGregD3R2->Fill(rpcsrv.segment(),pinoobserved);}
-	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregD3R3->Fill(rpcsrv.segment(),pinoexpected);OcGregD3R3->Fill(rpcsrv.segment(),pinoobserved);}
-	  }else if(rpcId.region()==-1){
-	    if(rpcId.station()==1 && rpcId.ring()==2){ ExGregDm1R2->Fill(rpcsrv.segment(),pinoexpected);OcGregDm1R2->Fill(rpcsrv.segment(),pinoobserved); if(debug) std::cout<<name<<"GREG Filling Dm1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
-	    if(rpcId.station()==1 && rpcId.ring()==3){ ExGregDm1R3->Fill(rpcsrv.segment(),pinoexpected);OcGregDm1R3->Fill(rpcsrv.segment(),pinoobserved); if(debug) std::cout<<name<<"GREG Filling Dm1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
-	    if(rpcId.station()==2 && rpcId.ring()==2){ ExGregDm2R2->Fill(rpcsrv.segment(),pinoexpected);OcGregDm2R2->Fill(rpcsrv.segment(),pinoobserved);}
-	    if(rpcId.station()==2 && rpcId.ring()==3){ ExGregDm2R3->Fill(rpcsrv.segment(),pinoexpected);OcGregDm2R3->Fill(rpcsrv.segment(),pinoobserved);}
-	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregDm3R2->Fill(rpcsrv.segment(),pinoexpected);OcGregDm3R2->Fill(rpcsrv.segment(),pinoobserved);}
-	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregDm3R3->Fill(rpcsrv.segment(),pinoexpected);OcGregDm3R3->Fill(rpcsrv.segment(),pinoobserved);}
-	  }
 	  
+	  if(!IsBadRoll(rpcId.rawId(),blacklist)){
+	    if(rpcId.region()==1){
+	      if(rpcId.station()==1 && rpcId.ring()==2){ ExGregD1R2->Fill(rpcsrv.segment(),pinoexpected);OcGregD1R2->Fill(rpcsrv.segment(),pinoobserved); if(debug) std::cout<<name<<"GREG Filling D1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	      if(rpcId.station()==1 && rpcId.ring()==3){ ExGregD1R3->Fill(rpcsrv.segment(),pinoexpected);OcGregD1R3->Fill(rpcsrv.segment(),pinoobserved); if(debug) std::cout<<name<<"GREG Filling D1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	      if(rpcId.station()==2 && rpcId.ring()==2){ ExGregD2R2->Fill(rpcsrv.segment(),pinoexpected);OcGregD2R2->Fill(rpcsrv.segment(),pinoobserved);}
+	      if(rpcId.station()==2 && rpcId.ring()==3){ ExGregD2R3->Fill(rpcsrv.segment(),pinoexpected);OcGregD2R3->Fill(rpcsrv.segment(),pinoobserved);}
+	      if(rpcId.station()==3 && rpcId.ring()==2){ ExGregD3R2->Fill(rpcsrv.segment(),pinoexpected);OcGregD3R2->Fill(rpcsrv.segment(),pinoobserved);}
+	      if(rpcId.station()==3 && rpcId.ring()==3){ ExGregD3R3->Fill(rpcsrv.segment(),pinoexpected);OcGregD3R3->Fill(rpcsrv.segment(),pinoobserved);}
+	    }else if(rpcId.region()==-1){
+	      if(rpcId.station()==1 && rpcId.ring()==2){ ExGregDm1R2->Fill(rpcsrv.segment(),pinoexpected);OcGregDm1R2->Fill(rpcsrv.segment(),pinoobserved); if(debug) std::cout<<name<<"GREG Filling Dm1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	      if(rpcId.station()==1 && rpcId.ring()==3){ ExGregDm1R3->Fill(rpcsrv.segment(),pinoexpected);OcGregDm1R3->Fill(rpcsrv.segment(),pinoobserved); if(debug) std::cout<<name<<"GREG Filling Dm1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	      if(rpcId.station()==2 && rpcId.ring()==2){ ExGregDm2R2->Fill(rpcsrv.segment(),pinoexpected);OcGregDm2R2->Fill(rpcsrv.segment(),pinoobserved);}
+	      if(rpcId.station()==2 && rpcId.ring()==3){ ExGregDm2R3->Fill(rpcsrv.segment(),pinoexpected);OcGregDm2R3->Fill(rpcsrv.segment(),pinoobserved);}
+	      if(rpcId.station()==3 && rpcId.ring()==2){ ExGregDm3R2->Fill(rpcsrv.segment(),pinoexpected);OcGregDm3R2->Fill(rpcsrv.segment(),pinoobserved);}
+	      if(rpcId.station()==3 && rpcId.ring()==3){ ExGregDm3R3->Fill(rpcsrv.segment(),pinoexpected);OcGregDm3R3->Fill(rpcsrv.segment(),pinoobserved);}
+	    }
+	  }else{
+	    std::cout<<"blacklist skeeping roll "<<rpcId<<std::endl;
+	  }
 
 	  delete histoCLS;
 	  
@@ -3423,7 +3474,55 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     }
   }
 
+  //Just one number for Negative EndCap
+
+  float ExEndCapN = 
+    ExGregDm3R3->Integral()+  
+    ExGregDm2R3->Integral()+
+    ExGregDm1R3->Integral()+
+    ExGregDm3R2->Integral()+  
+    ExGregDm2R2->Integral()+
+    ExGregDm1R2->Integral();
+
+  float OcEndCapN = 
+    OcGregDm3R3->Integral()+  
+    OcGregDm2R3->Integral()+
+    OcGregDm1R3->Integral()+
+    OcGregDm3R2->Integral()+  
+    OcGregDm2R2->Integral()+
+    OcGregDm1R2->Integral();
+
+  float effEndCapN = 0;
+  if(ExEndCapN!=0){
+    effEndCapN = OcEndCapN/ExEndCapN; float errEndCapN = sqrt(effEndCapN*(1-effEndCapN)/ExEndCapN);
+    RollYEff.precision(2);
+    RollYEff<<"effEndCapN "<<effEndCapN<<" "<<errEndCapN<<std::endl;
+  }
+
+  //Just one number for Positive EndCap
   
+  float ExEndCapP = 
+    ExGregD3R3->Integral()+  
+    ExGregD2R3->Integral()+
+    ExGregD1R3->Integral()+
+    ExGregD3R2->Integral()+  
+    ExGregD2R2->Integral()+
+    ExGregD1R2->Integral();
+
+  float OcEndCapP = 
+    OcGregD3R3->Integral()+  
+    OcGregD2R3->Integral()+
+    OcGregD1R3->Integral()+
+    OcGregD3R2->Integral()+  
+    OcGregD2R2->Integral()+
+    OcGregD1R2->Integral();
+
+  float effEndCapP = 0;
+  if(ExEndCapP!=0){
+    effEndCapP = OcEndCapP/ExEndCapP; float errEndCapP = sqrt(effEndCapP*(1-effEndCapP)/ExEndCapP);
+    RollYEff<<"effEndCapP "<<effEndCapP<<" "<<errEndCapP<<std::endl;
+  }
+ 
   std::cout<<"Doing Summary per disk"<<std::endl;
 
   TH1F * EfficiencyPerRing = new TH1F("EfficiencyPerRing","Efficiency per Ring in the whole endcap",12,0.5,12.5);
@@ -3514,11 +3613,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EfficiencyPerRing->SetBinContent(12,eff);
   EfficiencyPerRing->SetBinError(12,err);
   
+  
   for(k=1;k<=12;k++){
     err=0; eff=0; N=ExsectorEffWm2->GetBinContent(k);
     if(N!=0.){ eff = OcsectorEffWm2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     sectorEffWm2->SetBinContent(k,eff); sectorEffWm2->SetBinError(k,err);
-
+    
     err=0; eff=0; N=ExsectorEffWm1->GetBinContent(k);
     if(N!=0.){ eff = OcsectorEffWm1->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     sectorEffWm1->SetBinContent(k,eff); sectorEffWm1->SetBinError(k,err);
@@ -3536,6 +3636,45 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     sectorEffW2->SetBinContent(k,eff); sectorEffW2->SetBinError(k,err);
   }
 
+  float effWm2 = 0;
+  float effWm1 = 0;
+  float effW0 = 0;
+  float effW1 = 0;
+  float effW2 = 0;
+
+  float errWm2 = 0;
+  float errWm1 = 0;
+  float errW0 = 0;
+  float errW1 = 0;
+  float errW2 = 0;
+
+  if(ExsectorEffWm2->Integral()!=0) { effWm2= OcsectorEffWm2->Integral()/ExsectorEffWm2->Integral(); errWm2 = sqrt(effWm2*(1-effWm2)/ExsectorEffWm2->Integral());RollYEff<<" effwheelm2 "<<effWm2<<" "<<errWm2<<std::endl;}
+  if(ExsectorEffWm1->Integral()!=0) { effWm1= OcsectorEffWm1->Integral()/ExsectorEffWm1->Integral(); errWm1 = sqrt(effWm1*(1-effWm1)/ExsectorEffWm1->Integral());RollYEff<<" effwheelm1 "<<effWm1<<" "<<errWm1<<std::endl;}
+  if(ExsectorEffW0->Integral()!=0) {effW0  = OcsectorEffW0->Integral()/ExsectorEffW0->Integral();    errW0 = sqrt(effW0*(1-effW0)/ExsectorEffW0->Integral());    RollYEff<<" effwheel0 "<<effW0<<" "<<errW0<<std::endl;   }
+  if(ExsectorEffW1->Integral()!=0) {effW1  = OcsectorEffW1->Integral()/ExsectorEffW1->Integral();    errW1 = sqrt(effW1*(1-effW1)/ExsectorEffW1->Integral());    RollYEff<<" effwheel1 "<<effW1<<" "<<errW1<<std::endl;   }
+  if(ExsectorEffW2->Integral()!=0) {  effW2  = OcsectorEffW2->Integral()/ExsectorEffW2->Integral();  errW2 = sqrt(effW2*(1-effW2)/ExsectorEffW2->Integral());    RollYEff<<" effwheel2 "<<effW2<<" "<<errW2<<std::endl;   }
+  
+  float ExBarrel = 
+    ExsectorEffWm2->Integral()+  
+    ExsectorEffWm1->Integral()+
+    ExsectorEffW0->Integral()+
+    ExsectorEffW1->Integral()+
+    ExsectorEffW2->Integral();
+
+  float OcBarrel = 
+    OcsectorEffWm2->Integral()+  
+    OcsectorEffWm1->Integral()+
+    OcsectorEffW0->Integral()+
+    OcsectorEffW1->Integral()+
+    OcsectorEffW2->Integral();
+
+  float effBarrel = 0;
+  if(ExBarrel!=0){
+    effBarrel = OcBarrel/ExBarrel; float errBarrel = sqrt(effBarrel*(1-effBarrel)/ExBarrel);
+    RollYEff.precision(2);
+    RollYEff<<"effBarrel "<<effBarrel<<" "<<errBarrel<<std::endl;
+  }
+  
   for(int sector = 1;sector <=12 ; sector++){
     CLSWm2->SetBinContent(sector,sectorCLSWm2[sector]->GetMean());
     if(sectorCLSWm2[sector]->GetEntries()!=0) CLSWm2->SetBinError(sector,sectorCLSWm2[sector]->GetRMS()/sectorCLSWm2[sector]->GetEntries());
@@ -5596,10 +5735,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  if(barrel){
   
    Ca1->Clear();
-  
-   EffBarrel->GetXaxis()->SetTitle("%"); EffBarrel->Draw(); Ca1->SaveAs("Distro/EffDistroBarrel.png");
-   DoubleGapBarrel->GetXaxis()->SetTitle("%"); DoubleGapBarrel->Draw(); Ca1->SaveAs("Distro/DoubleGapBarrel.png");
-   CentralEffBarrel->GetXaxis()->SetTitle("%"); CentralEffBarrel->Draw(); Ca1->SaveAs("Distro/CentralEffBarrel.png");
+   EffBarrel_black->SetFillColor(4); EffBarrel->GetXaxis()->SetTitle("%"); EffBarrel->Draw(); EffBarrel_black->Draw("same"); Ca1->SaveAs("Distro/EffDistroBarrel.png");
+   
+   Ca1->Clear();
+   DoubleGapBarrel_black->SetFillColor(4); DoubleGapBarrel->GetXaxis()->SetTitle("%"); DoubleGapBarrel->Draw();  DoubleGapBarrel_black->Draw("same"); Ca1->SaveAs("Distro/DoubleGapBarrel.png");
+   
+   Ca1->Clear();
+   CentralEffBarrel_black->SetFillColor(4); CentralEffBarrel->GetXaxis()->SetTitle("%"); CentralEffBarrel->Draw(); CentralEffBarrel_black->Draw("same"); Ca1->SaveAs("Distro/CentralEffBarrel.png");
+
+   Ca1->Clear();
    BXEffBarrel->GetXaxis()->SetTitle("%"); BXEffBarrel->Draw(); Ca1->SaveAs("Distro/BXEffDistroBarrel.png");
    badBXEffBarrel->GetXaxis()->SetTitle("%"); badBXEffBarrel->Draw(); Ca1->SaveAs("Distro/badBXEffDistroBarrel.png");
    
@@ -5648,9 +5792,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  }
 
  if(endcap){
-   EffEndCap->GetXaxis()->SetTitle("%"); EffEndCap->Draw(); Ca1->SaveAs("Distro/EffDistroEndCap.png");EffEndCap->Write();
-   DoubleGapEndCap->GetXaxis()->SetTitle("%"); DoubleGapEndCap->Draw(); Ca1->SaveAs("Distro/DoubleGapEndCap.png");  DoubleGapEndCap->Write();
-   CentralEffEndCap->GetXaxis()->SetTitle("%"); CentralEffEndCap->Draw(); Ca1->SaveAs("Distro/CentralEffEndCap.png");CentralEffEndCap->Write();
+   
+   EffEndCap_black->SetFillColor(4); EffEndCap->GetXaxis()->SetTitle("%"); EffEndCap->Draw(); EffEndCap_black->Draw("same"); Ca1->SaveAs("Distro/EffDistroEndCap.png");EffEndCap->Write();EffEndCap_black->Write();
+   Ca1->Clear();
+   DoubleGapEndCap_black->SetFillColor(4); DoubleGapEndCap->GetXaxis()->SetTitle("%"); DoubleGapEndCap->Draw(); DoubleGapEndCap_black->Draw("same"); Ca1->SaveAs("Distro/DoubleGapEndCap.png");DoubleGapEndCap->Write();DoubleGapEndCap_black->Write();
+   Ca1->Clear();
+   CentralEffEndCap_black->SetFillColor(4); CentralEffEndCap->GetXaxis()->SetTitle("%"); CentralEffEndCap->Draw(); CentralEffEndCap_black->Draw("same"); Ca1->SaveAs("Distro/CentralEffEndCap.png");CentralEffEndCap->Write();CentralEffEndCap_black->Write();
+   Ca1->Clear();
    BXEffEndCap->GetXaxis()->SetTitle("%"); BXEffEndCap->Draw(); Ca1->SaveAs("Distro/BXEffDistroEndCap.png");BXEffEndCap->Write();
    badBXEffEndCap->GetXaxis()->SetTitle("%"); badBXEffEndCap->Draw(); Ca1->SaveAs("Distro/badBXEffDistroEndCap.png");badBXEffEndCap->Write();
 
@@ -5720,6 +5868,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  DoubleGapDistroW0far->Write();
  DoubleGapDistroW1far->Write();
  DoubleGapDistroW2far->Write();
+
+ EffBarrel_black->Write();
+ DoubleGapBarrel_black->Write();
+ CentralEffBarrel_black->Write();
 
  EffBarrel->Write();
  DoubleGapBarrel->Write();
@@ -5961,7 +6113,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 } 
 
 void 
-RPCMonitorEfficiency::endJob(){
+RPCMonitorEfficiency::endRun(){
   
 }
 
