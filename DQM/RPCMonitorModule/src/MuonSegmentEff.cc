@@ -28,6 +28,33 @@ camilo.carrilloATcern.ch
 #include "TAxis.h"
 #include "TString.h"
 
+bool isW1far(RPCDetId rpcId){ 
+  if((rpcId.region()==0) && (rpcId.ring()==1) && ( 
+						  rpcId.sector()==4 ||
+						  rpcId.sector()==5 ||
+						  rpcId.sector()==6 ||
+						  rpcId.sector()==7 ||
+						  rpcId.sector()==8 ||
+						  rpcId.sector()==9 )
+     ) return true;
+  else return false;
+}
+
+bool skipExtrapolation(int run, RPCDetId rpcId){
+  if((run == 133873 
+      || run == 133874
+      || run == 133875
+      || run == 133876
+      || run == 133877
+      || run == 133881
+      || run == 133885
+      || run == 133887
+      || run == 133926
+      || run == 133928) && isW1far(rpcId)
+     )return true;
+  else return false;
+}
+
 double straighter(RPCDetId rpcId){ 	 
   
   bool ok = true; 	 
@@ -325,6 +352,29 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   //-------------Filling Other Histograms for correlations -----------
 
+  if(debug) std::cout<<"\t Getting the DT Segments"<<std::endl;
+  edm::Handle<DTRecSegment4DCollection> all4DSegments;
+  iEvent.getByLabel(dt4DSegments, all4DSegments);
+  if(debug) std::cout<<"I got the segments"<<std::endl;
+  
+  if(debug) std::cout <<"\t Getting the CSC Segments"<<std::endl;
+  edm::Handle<CSCSegmentCollection> allCSCSegments;
+  iEvent.getByLabel(cscSegments, allCSCSegments);
+  if(debug) std::cout<<"I got the segments"<<std::endl;
+  
+  if(all4DSegments->size()==0 && allCSCSegments->size()==0) 
+    std::cout<<"event without segments"<<iEvent.id()<<std::endl;
+
+  if(all4DSegments->size()!=0 && all4DSegments->size()<=16){
+    statistics->Fill(2);
+    statistics->Fill(all4DSegments->size()+2);
+  }
+  
+  if(allCSCSegments->size()!=0 && allCSCSegments->size()<=16){
+    statistics->Fill(18);
+    statistics->Fill(allCSCSegments->size()+18);
+  }
+  
   if(debug) std::cout <<"\t Getting the RPC RecHits"<<std::endl;
   Handle<RPCRecHitCollection> rpcHits;
   iEvent.getByLabel(rpcRecHitsLabel,rpcHits);
@@ -366,23 +416,15 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
   }
   
-  if(rpcDTPoints.isValid()) if(rpcDTPoints->begin()!=rpcDTPoints->end() ){ //No Empty Predictions
+  if(rpcDTPoints.isValid()) if(rpcDTPoints->begin()!=rpcDTPoints->end()){ //No Empty Predictions
   
-    if(debug) std::cout<<"\t Getting the DT Segments"<<std::endl;
-    edm::Handle<DTRecSegment4DCollection> all4DSegments;
-    iEvent.getByLabel(dt4DSegments, all4DSegments);
-    if(debug) std::cout<<"I got the segments"<<std::endl;
-
-    if(all4DSegments->size()<=16){
-      statistics->Fill(2);
-      statistics->Fill(all4DSegments->size()+2);
-    }
-
     RPCRecHitCollection::const_iterator rpcPoint;
   
     for(rpcPoint = rpcDTPoints->begin(); rpcPoint != rpcDTPoints->end(); rpcPoint++){
       LocalPoint PointExtrapolatedRPCFrame = rpcPoint->localPosition();
       RPCDetId  rpcId = rpcPoint->rpcId();
+      
+      if(skipExtrapolation(iEvent.id().run(),rpcId)) continue;
 
       if(debug) std::cout<<rpcId.rawId()<<" "<<PointExtrapolatedRPCFrame.x()<<" "<<PointExtrapolatedRPCFrame.y()<<std::endl;
             
@@ -616,16 +658,6 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   if(rpcCSCPoints.isValid()) if(rpcCSCPoints->begin()!=rpcCSCPoints->end()){//No Empty Predictions
     
-    if(debug) std::cout <<"\t Getting the CSC Segments"<<std::endl;
-    edm::Handle<CSCSegmentCollection> allCSCSegments;
-    iEvent.getByLabel(cscSegments, allCSCSegments);
-    if(debug) std::cout<<"I got the segments"<<std::endl;
-
-    if(allCSCSegments->size()<=14){
-      statistics->Fill(18);
-      statistics->Fill(allCSCSegments->size()+18);
-    }
-
     RPCRecHitCollection::const_iterator rpcPoint;
   
     for(rpcPoint = rpcCSCPoints->begin(); rpcPoint != rpcCSCPoints->end(); rpcPoint++){
@@ -720,7 +752,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	countRecHits++;
 	LocalPoint recHitPos=recHit->localPosition();
 	float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();//*straighter(rollasociated->id());//Corrections to the wrong orientations
-	if(manualalignment) res = res - alignmentinfo[rpcId.rawId()];
+	//if(manualalignment) res = res - alignmentinfo[rpcId.rawId()];
 	if(debug) std::cout<<"CSC  \t \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 	if(fabs(res)<fabs(minres)){
 	  minres=res;
