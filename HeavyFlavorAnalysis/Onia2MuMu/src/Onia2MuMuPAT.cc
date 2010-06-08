@@ -61,21 +61,21 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::auto_ptr<pat::CompositeCandidateCollection> oniaOutput(new pat::CompositeCandidateCollection);
   
-  Vertex* thePrimaryV;
-  Vertex* theBeamSpotV; 
+  Vertex thePrimaryV;
+  Vertex theBeamSpotV; 
 
   Handle<BeamSpot> theBeamSpot;
   iEvent.getByLabel(thebeamspot_,theBeamSpot);
   BeamSpot bs = *theBeamSpot;
-  theBeamSpotV = new Vertex(bs.position(), bs.covariance3D());
+  theBeamSpotV = Vertex(bs.position(), bs.covariance3D());
 
   Handle<VertexCollection> priVtxs;
   iEvent.getByLabel(thePVs_, priVtxs);
   if ( priVtxs->begin() != priVtxs->end() ) {
-    thePrimaryV = new Vertex(*(priVtxs->begin()));
+    thePrimaryV = Vertex(*(priVtxs->begin()));
   }
   else {
-    thePrimaryV = new Vertex(bs.position(), bs.covariance3D());
+    thePrimaryV = Vertex(bs.position(), bs.covariance3D());
   }
 
   Handle< View<pat::Muon> > muons;
@@ -137,9 +137,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    }
 	    pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
 	    if (!pvs.empty()) {
-	      reco::Vertex muonLessPV = reco::Vertex(pvs.front());
+	      Vertex muonLessPV = Vertex(pvs.front());
 	      myCand.addUserData("muonlessPV",muonLessPV);
-              thePrimaryV = &muonLessPV;
+              thePrimaryV = muonLessPV;
 	    }
 	  }
 	}
@@ -167,14 +167,14 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  vpperp[1] = pperp.y();
 	  vpperp[2] = 0.;
 
-	  /* if (resolveAmbiguity_) {
+	  if (resolveAmbiguity_) {
             float minDz = 999999.;
 	    if (!addMuonlessPrimaryVertex_) {
 	      for(VertexCollection::const_iterator itv = priVtxs->begin(), itvend = priVtxs->end(); itv != itvend; ++itv){
 		float deltaZ = fabs(myVertex.position().z() - itv->position().z()) ;
 		if ( deltaZ < minDz ) {
 		  minDz = deltaZ;    
-		  thePrimaryV = new Vertex(*itv);
+		  thePrimaryV = Vertex(*itv);
 		}
 	      }
 	    } else {
@@ -182,50 +182,50 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		float deltaZ = fabs(myVertex.position().z() - itv2->position().z()) ;
 		if ( deltaZ < minDz ) {
 		  minDz = deltaZ;    
-		  reco::Vertex muonLessPV = reco::Vertex(*itv2); 
-		  thePrimaryV = &muonLessPV;
+		  Vertex muonLessPV = Vertex(*itv2); 
+		  thePrimaryV = muonLessPV;
 		}
 	      }
 	    }
 	  } 
          
           if (addMuonlessPrimaryVertex_) {
-            myCand.addUserData("muonlessPV",reco::Vertex(*thePrimaryV));
+            myCand.addUserData("muonlessPV",Vertex(thePrimaryV));
 	  } else {
-	    myCand.addUserData("PVwithmuons",*thePrimaryV);
-	    }*/
+	    myCand.addUserData("PVwithmuons",thePrimaryV);
+	    }
 
 	  // lifetime using PV
-          pvtx.SetXYZ(thePrimaryV->position().x(),thePrimaryV->position().y(),0);
+          pvtx.SetXYZ(thePrimaryV.position().x(),thePrimaryV.position().y(),0);
 	  TVector3 vdiff = vtx - pvtx;
 	  double cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
-	  Measurement1D distXY = vdistXY.distance(reco::Vertex(myVertex), *thePrimaryV);
+	  Measurement1D distXY = vdistXY.distance(Vertex(myVertex), thePrimaryV);
 	  double ctauPV = distXY.value()*cosAlpha*3.09688/pperp.Perp();
-	  GlobalError v1e=(reco::Vertex(myVertex)).error();
-	  GlobalError v2e=(*thePrimaryV).error();
+	  GlobalError v1e = (Vertex(myVertex)).error();
+	  GlobalError v2e = thePrimaryV.error();
           AlgebraicSymMatrix vXYe = v1e.matrix()+ v2e.matrix();
-	  double ctauErrPV= sqrt(vXYe.similarity(vpperp))*3.09688/(pperp.Perp2());
+	  double ctauErrPV = sqrt(vXYe.similarity(vpperp))*3.09688/(pperp.Perp2());
 	  
 	  myCand.addUserFloat("ppdlPV",ctauPV);
           myCand.addUserFloat("ppdlErrPV",ctauErrPV);
 	  myCand.addUserFloat("cosAlpha",cosAlpha);
 
 	  // lifetime using BS
-          pvtx.SetXYZ(theBeamSpotV->position().x(),theBeamSpotV->position().y(),0);
+          pvtx.SetXYZ(theBeamSpotV.position().x(),theBeamSpotV.position().y(),0);
 	  vdiff = vtx - pvtx;
 	  cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
-	  distXY = vdistXY.distance(reco::Vertex(myVertex), *theBeamSpotV);
+	  distXY = vdistXY.distance(Vertex(myVertex), theBeamSpotV);
 	  double ctauBS = distXY.value()*cosAlpha*3.09688/pperp.Perp();
-	  GlobalError v1eB=(reco::Vertex(myVertex)).error();
-	  GlobalError v2eB=(*theBeamSpotV).error();
+	  GlobalError v1eB = (Vertex(myVertex)).error();
+	  GlobalError v2eB = theBeamSpotV.error();
           AlgebraicSymMatrix vXYeB = v1eB.matrix()+ v2eB.matrix();
-	  double ctauErrBS= sqrt(vXYeB.similarity(vpperp))*3.09688/(pperp.Perp2());
+	  double ctauErrBS = sqrt(vXYeB.similarity(vpperp))*3.09688/(pperp.Perp2());
 	  
 	  myCand.addUserFloat("ppdlBS",ctauBS);
           myCand.addUserFloat("ppdlErrBS",ctauErrBS);
 	  
 	  if (addCommonVertex_) {
-	    myCand.addUserData("commonVertex",reco::Vertex(myVertex));
+	    myCand.addUserData("commonVertex",Vertex(myVertex));
 	  }
 	} else {
 	  myCand.addUserFloat("vNChi2",-1);
@@ -236,12 +236,12 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  myCand.addUserFloat("ppdlBS",-100);
           myCand.addUserFloat("ppdlErrBS",-100);
 	  if (addCommonVertex_) {
-	    myCand.addUserData("commonVertex",reco::Vertex());
+	    myCand.addUserData("commonVertex",Vertex());
 	  }
 	  /* if (addMuonlessPrimaryVertex_) {
-            myCand.addUserData("muonlessPV",reco::Vertex());
+            myCand.addUserData("muonlessPV",Vertex());
 	  } else {
-	    myCand.addUserData("PVwithmuons",reco::Vertex());
+	    myCand.addUserData("PVwithmuons",Vertex());
 	    }*/
 
 	}
