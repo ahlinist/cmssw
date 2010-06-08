@@ -14,7 +14,7 @@ def plotHistos():
     arr = ["histos_35x_Wgamma_Pythia.root" ,ROOT.kBlue     , 23.2  ,  1.     ,   107050   , "W#gamma"             ]; histoFiles.append(arr)
     arr = ["histos_35x_Zgamma_Pythia.root" ,ROOT.kRed      , 7.3   ,  1.     ,   100470   , "Z#gamma"             ]; histoFiles.append(arr)
     arr = ["histos_35x_WW_Pythia.root"     ,ROOT.kOrange   , 28    ,  1.     ,   122980   , "WW"                  ]; histoFiles.append(arr)
-    arr = ["histos_35x_WZ_Pythia.root"     ,ROOT.kPink     , 10.5  ,  1.     ,   118120   , "WZ"                  ]; histoFiles.append(arr)
+    arr = ["histos_35x_WZ_Pythia.root"     ,ROOT.kRed-9    , 10.5  ,  1.     ,   118120   , "WZ"                  ]; histoFiles.append(arr)
     arr = ["histos_35x_ZZ_Pythia.root"     ,ROOT.kMagenta  , 4.3   ,  1.     ,   145368   , "ZZ"                  ]; histoFiles.append(arr)
     arr = ["histos_35x_Wenu_Pythia.root"   ,ROOT.kGreen    , 7899  ,  0.779  ,   2087865  , "W#rightarrowe#nu "   ]; histoFiles.append(arr)
     arr = ["histos_35x_Zee_Pythia.root"    ,ROOT.kCyan     , 1300  ,  1.     ,   2411575  , "Z#rightarrowee"      ]; histoFiles.append(arr)
