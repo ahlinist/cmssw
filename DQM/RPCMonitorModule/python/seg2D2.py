@@ -18,6 +18,8 @@ process.demo = cms.EDFilter("RPCMonitorEfficiency",
     fileName = cms.untracked.string('/tmp/carrillo/prodimages/-RUN-/eff-RUN-.root'),
     fileOut = cms.untracked.string('/tmp/carrillo/prodimages/-RUN-/sec-RUN-.root'),
 
+    BlackListFile = cms.untracked.string('/afs/cern.ch/user/c/carrillo/endcap/blacklist.dat'),
+
     debug = cms.untracked.bool(False),
 
     makehtml = cms.untracked.bool(False),
