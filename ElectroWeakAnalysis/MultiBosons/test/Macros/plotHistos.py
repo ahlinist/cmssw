@@ -10,11 +10,14 @@ def plotHistos():
 
     calculateWeightFor = 200 #pb
     histoFiles = []
-    #      NAME                  COLOR        XS       Filter     Events    legendLabel
-    arr = ["histos_Wgamma.root" ,ROOT.kCyan,  23.2  ,  1.     ,   107050   , "W#gamma"             ]; histoFiles.append(arr)
-    arr = ["histos_Zgamma.root" ,ROOT.kRed,   7.3   ,  1.     ,   100470   , "Z#gamma"             ]; histoFiles.append(arr)
-    arr = ["histos_Zee.root"    ,ROOT.kBlue,  1300  ,  1.     ,   2411575  , "Z#rightarrowee"      ]; histoFiles.append(arr)
-    arr = ["histos_Wenu.root"   ,ROOT.kGreen, 7899  ,  0.779  ,   2087865  , "W#rightarrowe#nu "   ]; histoFiles.append(arr)
+    #      NAME                             COLOR            XS       Filter     Events    legendLabel
+    arr = ["histos_35x_Wgamma_Pythia.root" ,ROOT.kBlue     , 23.2  ,  1.     ,   107050   , "W#gamma"             ]; histoFiles.append(arr)
+    arr = ["histos_35x_Zgamma_Pythia.root" ,ROOT.kRed      , 7.3   ,  1.     ,   100470   , "Z#gamma"             ]; histoFiles.append(arr)
+    arr = ["histos_35x_WW_Pythia.root"     ,ROOT.kOrange   , 28    ,  1.     ,   122980   , "WW"                  ]; histoFiles.append(arr)
+    arr = ["histos_35x_WZ_Pythia.root"     ,ROOT.kPink     , 10.5  ,  1.     ,   118120   , "WZ"                  ]; histoFiles.append(arr)
+    arr = ["histos_35x_ZZ_Pythia.root"     ,ROOT.kMagenta  , 4.3   ,  1.     ,   145368   , "ZZ"                  ]; histoFiles.append(arr)
+    arr = ["histos_35x_Wenu_Pythia.root"   ,ROOT.kGreen    , 7899  ,  0.779  ,   2087865  , "W#rightarrowe#nu "   ]; histoFiles.append(arr)
+    arr = ["histos_35x_Zee_Pythia.root"    ,ROOT.kCyan     , 1300  ,  1.     ,   2411575  , "Z#rightarrowee"      ]; histoFiles.append(arr)
     
     Histos={}     # dump all histos in single map
     channels =[]  # read what channels are written
@@ -26,8 +29,9 @@ def plotHistos():
     for file in histoFiles:
         addedToLeg = False
         f=ROOT.TFile(file[0],"READ")
-        processName = f.GetName().split('histos_')[-1].split('.root')[0]
-
+        processName = f.GetName().split('histos_35x_')[-1].split('_Pythia.root')[0]
+        print processName
+        
         weight = file[2] * file[3] * calculateWeightFor / file[4]
         
         dirs = f.GetListOfKeys()
