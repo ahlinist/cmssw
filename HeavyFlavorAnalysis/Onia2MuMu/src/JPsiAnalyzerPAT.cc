@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.29 2010/05/24 15:13:28 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.30 2010/05/28 10:12:59 covarell Exp $
 //
 //
 
@@ -231,6 +231,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       RooCategory* JpsiPtType;
       RooCategory* JpsiEtaType;
       RooCategory* matchType;
+      RooCategory* trigger0;
+      RooCategory* trigger1;
 
       // handles
       // Handle<pat::CompositeCandidateCollection > collGG;
@@ -364,6 +366,14 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   matchType->defineType("unmatched",0);
   matchType->defineType("matched",1);
 
+  trigger0 = new RooCategory("trigger0","Match with trigger bit 0");
+  trigger1 = new RooCategory("trigger1","Match with trigger bit 1"); 
+
+  trigger0->defineType("unmatched",0);
+  trigger0->defineType("matched",1);
+  trigger1->defineType("unmatched",0);
+  trigger1->defineType("matched",1);
+
   JpsiMass = new RooRealVar("JpsiMass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");
   JpsiPt = new RooRealVar("JpsiPt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
   JpsiEta = new RooRealVar("JpsiEta","J/psi eta",-JpsiEtaMax,JpsiEtaMax);
@@ -374,10 +384,9 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   TNPefferr = new RooRealVar("TNPefferr","Tag and probe efficiency uncertainty",0.,1.);  		
 
   RooArgList varlist(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
-  varlist.add(*JpsictTrue);
-  varlist.add(*JpsiPtType);
-  varlist.add(*JpsiEtaType);
-  varlist.add(*JpsictErr);
+  varlist.add(*JpsictTrue);   varlist.add(*JpsiPtType);
+  varlist.add(*JpsiEtaType);  varlist.add(*JpsictErr);
+  varlist.add(*trigger0);     varlist.add(*trigger1);
 
   data = new RooDataSet("data","A sample",varlist);
   if (_writeOutCands) theTextFile = new ofstream("passedCandidates.txt");
@@ -1069,8 +1078,11 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     Jpsict->setVal(theCtau);
     JpsictErr->setVal(theCtauErr);
     // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << theRapidity << endl;
+    cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
+    trigger0->setIndex((int)isTriggerMatched[0],kTRUE);
+    trigger1->setIndex((int)isTriggerMatched[1],kTRUE);
     JpsictTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
      
     if (_storeefficiency) {
@@ -1087,11 +1099,10 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     // Fill RooDataSet
     //  RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
     RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*JpsiType,*matchType);   // temporarily remove tag-and-probe weights
-    varlist_tmp.add(*JpsictTrue);
-    varlist_tmp.add(*JpsiPtType);
-    varlist_tmp.add(*JpsiEtaType);
-    varlist_tmp.add(*JpsictErr);
-    
+    varlist_tmp.add(*JpsictTrue);   varlist_tmp.add(*JpsiPtType);
+    varlist_tmp.add(*JpsiEtaType);  varlist_tmp.add(*JpsictErr);
+    varlist_tmp.add(*trigger0);     varlist_tmp.add(*trigger1); 
+
     data->add(varlist_tmp);
     
   }
