@@ -343,7 +343,6 @@ Onia2MuMuPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
   if (finalMom.pdgId() != 0) {
     momJpsiID = finalMom.pdgId();
     trueVtxMom.SetXYZ(finalMom.vertex().x(),finalMom.vertex().y(),finalMom.vertex().z());
-    std::cout << "Dio porco " << finalMom.pdgId() << " " << finalMom.vertex().x() << std::endl;
     TVector3 vdiff = trueVtx - trueVtxMom;
     trueLife = vdiff.Perp()*3.09688/trueP.Perp();
   }
