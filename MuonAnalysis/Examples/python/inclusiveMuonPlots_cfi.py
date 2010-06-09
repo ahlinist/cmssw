@@ -42,6 +42,8 @@ def makeInclusiveMuonPlots(rebinFactor=1):
         segmentMatchesBins = _nBins(8,0,8),
         segmentCompatBins  = _evenBins(0, 1 + 0.1*rebinFactor, 0.1 * rebinFactor), # need one bin for ">= 1.0"
         caloCompatBins     = _evenBins(0, 1 + 0.1*rebinFactor, 0.1 * rebinFactor), # need one bin for ">= 1.0"
+        # ---- Phi at MB/ME 1 Surface ----
+        trkPhiAtSurfaceBins = _nBins(37,-3.23,3.23)
     )
 
 inclusiveMuonPlots = cms.EDAnalyzer("InclusiveMuonPlots",
