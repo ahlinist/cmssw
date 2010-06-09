@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.16 2010/02/22 14:16:10 wittich Exp $
+  $Id: HLTRenderPlugin.cc,v 1.17 2010/03/29 09:16:26 rekovic Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.17  2010/03/29 09:16:26  rekovic
+  Extend Renders from counts_LS to _LS plots
+
   Revision 1.16  2010/02/22 14:16:10  wittich
   updates for HLT Scalers
 
@@ -172,7 +175,8 @@ private:
 
 
       // FourVector eff histograms
-      if ( o.name.find("FourVector/client") != std::string::npos)
+      if ( o.name.find("FourVector/paths/") != std::string::npos
+       && o.name.find("custom-eff") != std::string::npos)
       {
         gStyle->SetOptStat(10);
         obj->SetMinimum(-0.05);
@@ -183,7 +187,8 @@ private:
         if ( o.name.find("onEt_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("HLT P_{T}");
         if ( o.name.find("offEt_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("RECO P_{T}");
       }
-      if ( o.name.find("FourVector/source") != std::string::npos)
+      if ( o.name.find("FourVector/paths") != std::string::npos
+       && o.name.find("custom-eff") == std::string::npos)
       {
 
         if ( o.name.find("l1Et") != std::string::npos) obj->GetXaxis()->SetTitle("L1 P_{T}");
@@ -201,6 +206,36 @@ private:
           gPad->SetBottomMargin(0.16);
           gPad->SetLogy(1);
         }
+	      // rate histograms
+	      if( o.name.find("_LS") != std::string::npos)
+	      {
+	        gStyle->SetOptStat(11);
+	        obj->GetXaxis()->SetTitle("Luminosity Segment");
+	        int nbins = obj->GetNbinsX();
+	
+	        int maxRange = nbins;
+	        for ( int i = nbins; i > 0; --i )
+	        {
+	          if ( obj->GetBinContent(i) != 0 )
+	          {
+	            maxRange = i+1;
+	            break;
+	          }
+	        }
+	
+	        int minRange = 0;
+	        for ( int i = 0; i <= nbins; ++i )
+	        {
+	          if ( obj->GetBinContent(i) != 0 )
+	          {
+	            minRange = i-1;
+	            break;
+	          }
+	        }
+	
+	        obj->GetXaxis()->SetRange(minRange, maxRange);
+	      }
+      }
       }
       if ( o.name.find("FourVector/PathsSummary/Filters Counts") != std::string::npos)
       {
@@ -287,7 +322,8 @@ private:
         if ( o.name.find("offEta") != std::string::npos) {obj->GetXaxis()->SetTitle("RECO #eta");obj->GetYaxis()->SetTitle("RECO #phi");}
       }
       
-      if( o.name.find( "FourVector/client" )  != std::string::npos) {
+      if( o.name.find( "FourVector/paths/" )  != std::string::npos
+       && o.name.find("custom-eff") != std::string::npos) {
        obj->SetMinimum(0);
        obj->SetMaximum(1.2);
       }
