@@ -25,6 +25,20 @@
 // for selection cut
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 
+// for tracker muon propagation
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "RecoMuon/DetLayers/interface/MuonDetLayerGeometry.h"
+#include "DataFormats/GeometrySurface/interface/BoundCylinder.h"
+#include "DataFormats/GeometrySurface/interface/BoundDisk.h"
+#include "RecoMuon/Records/interface/MuonRecoGeometryRecord.h"
+#include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "TrackingTools/DetLayers/interface/DetLayer.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
+#include "TrackPropagation/SteppingHelixPropagator/interface/SteppingHelixPropagator.h"
+
+
 #include <TH1.h>
 #include <TProfile.h>
 #include <TObjString.h>
@@ -65,6 +79,15 @@ class InclusiveMuonPlots: public edm::EDAnalyzer {
         // we don't care too much about performance
         std::map<std::string, TH1*>      plots;
         std::map<std::string, TProfile*> profiles;
+
+        // stuff for track propagation
+        edm::ESHandle<MagneticField> bField;
+        edm::ESHandle<Propagator> propagator;
+        edm::ESHandle<MuonDetLayerGeometry> muonGeometry;
+        // this will be the MB1 surface
+        const  BoundCylinder *barrelCylinder_;
+        // these are the ME1 surfaces.  ME 1/1 is closer in Z to the interaction point, so we need 2 surfaces for each endcap
+        const  BoundDisk *endcapDisk11Pos_, *endcapDisk11Neg_, *endcapDisk123Pos_, *endcapDisk123Neg_; 
 
         TH1D *luminosity;
 };
@@ -137,6 +160,12 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "segmentCompatArb",      "segmentCompat"); 
     book(*fs, pset, "segmentCompatNoArb",    "segmentCompat"); 
     book(*fs, pset, "caloCompat",            "caloCompat"); 
+
+    book(*fs, pset, "trkPhi_at_pME1_1",      "trkPhiAtSurface");
+    book(*fs, pset, "trkPhi_at_mME1_1",      "trkPhiAtSurface");
+    book(*fs, pset, "trkPhi_at_pME1_23",     "trkPhiAtSurface");
+    book(*fs, pset, "trkPhi_at_mME1_23",     "trkPhiAtSurface");
+    book(*fs, pset, "trkPhi_at_MB1",         "trkPhiAtSurface");
 
     if (pset.existsAs<edm::InputTag>("normalization")) {
         normalization_ = pset.getParameter<edm::InputTag>("normalization");
@@ -278,6 +307,69 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
             plots["caloCompat"]->Fill(mu.caloCompatibility());
         }
 
+        // Andy's phi at ME/MB 1 surface
+        if (mu.isTrackerMuon() && mu.innerTrack().isNonnull()) {
+          eventSetup.get<IdealMagneticFieldRecord>().get(bField);
+          eventSetup.get<TrackingComponentsRecord>().get("SteppingHelixPropagatorAlong",propagator);
+          eventSetup.get<MuonRecoGeometryRecord>().get(muonGeometry);
+          barrelCylinder_ = dynamic_cast<const BoundCylinder *>(& muonGeometry->allDTLayers()[0]->surface());
+          endcapDisk11Pos_  = dynamic_cast<const BoundDisk *>(& muonGeometry->forwardCSCLayers()[0]->surface());
+          endcapDisk11Neg_  = dynamic_cast<const BoundDisk *>(& muonGeometry->backwardCSCLayers()[0]->surface());
+          endcapDisk123Pos_  = dynamic_cast<const BoundDisk *>(& muonGeometry->forwardCSCLayers()[1]->surface());
+          endcapDisk123Neg_  = dynamic_cast<const BoundDisk *>(& muonGeometry->backwardCSCLayers()[1]->surface());
+          FreeTrajectoryState origin;
+          TrajectoryStateOnSurface surface;
+          const Propagator * prop = &*propagator;
+          origin = TrajectoryStateTransform().initialFreeState(*(mu.track()), bField.product());
+          float trkEtaAtOrigin = origin.momentum().eta();
+          TrajectoryStateOnSurface trial = prop->propagate(origin, *barrelCylinder_);
+          bool inBarrel = false;
+          bool inME1_23 = false;
+          bool inME1_1 = false;
+          if (trial.isValid()){
+            if (fabs(trial.globalPosition().z()) <= barrelCylinder_->bounds().length()/2){
+              /*
+              cout << "GLBMOMMOM: " << origin.momentum() << endl;
+              cout << "GLBMOMPHI: " << origin.momentum().phi() << endl;
+              cout << "GLBPOSPHI: " << trial.globalPosition().phi() << endl;
+              cout << "GLBPOSX: " << trial.globalPosition().x() << endl;
+              cout << "GLBPOSY: " << trial.globalPosition().y() << endl;
+              cout << "GLBPOSZ: " << trial.globalPosition().z() << endl;
+              cout << "GLBPOSMAG: " << trial.globalPosition().mag() << endl;
+              cout << "GLBPOSRHO: " << trial.globalPosition().perp() << endl;
+              cout << endl;
+              */
+              surface = trial;
+              inBarrel = true;
+            }
+          }
+          if (!trial.isValid() || !inBarrel){
+            trial = prop->propagate(origin, (trkEtaAtOrigin > 0 ? *endcapDisk11Pos_ : *endcapDisk11Neg_));
+            if (trial.isValid()){
+              float radius = trial.globalPosition().perp();
+              if ((radius >= endcapDisk11Pos_->innerRadius()) && (radius <= endcapDisk11Pos_->outerRadius())){
+                surface = trial;
+                inME1_1 = true;
+              }
+            }
+            trial = prop->propagate(origin, (trkEtaAtOrigin > 0 ? *endcapDisk123Pos_ : *endcapDisk123Neg_));
+            if (trial.isValid()){
+              float radius = trial.globalPosition().perp();
+              if ((radius >= endcapDisk123Pos_->innerRadius()) && (radius <= endcapDisk123Pos_->outerRadius())){
+                surface = trial;
+                inME1_23 = true;
+              }
+            }
+          }
+          if (surface.isValid()){
+            if (trkEtaAtOrigin > 0 && inME1_1) plots["trkPhi_at_pME1_1"]->Fill(surface.globalPosition().phi());
+            if (trkEtaAtOrigin < 0 && inME1_1) plots["trkPhi_at_mME1_1"]->Fill(surface.globalPosition().phi());
+            if (trkEtaAtOrigin > 0 && inME1_23) plots["trkPhi_at_pME1_23"]->Fill(surface.globalPosition().phi());
+            if (trkEtaAtOrigin < 0 && inME1_23) plots["trkPhi_at_mME1_23"]->Fill(surface.globalPosition().phi());
+            if (inBarrel) plots["trkPhi_at_MB1"]->Fill(surface.globalPosition().phi());
+          }
+        }
+        // end Andy's stuff
 
     }
 }
