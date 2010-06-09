@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.30 2010/05/28 10:12:59 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.31 2010/06/08 12:58:03 covarell Exp $
 //
 //
 
@@ -1078,7 +1078,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     Jpsict->setVal(theCtau);
     JpsictErr->setVal(theCtauErr);
     // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << theRapidity << endl;
-    cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
+    // cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
     trigger0->setIndex((int)isTriggerMatched[0],kTRUE);
