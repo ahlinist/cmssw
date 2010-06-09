@@ -8,7 +8,6 @@ $Id$
 #include "DataFormats/Provenance/interface/LuminosityBlockID.h"
 #include "DataFormats/Provenance/interface/RunID.h"
 #include "FWCore/Framework/interface/InputSource.h"
-#include "FWCore/Catalog/interface/FileCatalog.h"
 #include "FWCore/Catalog/interface/InputFileCatalog.h"
 #include <vector>
 #include <string>
@@ -40,7 +39,6 @@ namespace edm {
     virtual void setRun(RunNumber_t);
     virtual void setLumi(LuminosityBlockNumber_t lb);
     
-    PoolCatalog poolCatalog_;
     InputFileCatalog catalog_;
     InputFileCatalog secondaryCatalog_;
   };
