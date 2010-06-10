@@ -1,7 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
+from math import pi
+
 ## Define some utilities to declare bins easily
-def _nBins(n,min,max): return cms.vdouble(*[min + (max-min)/n*i for i in range(n+1)])
+def _nBins(n,min,max): return cms.vdouble(*[min + (max-min)/float(n)*i for i in range(n+1)])
 def _evenBins(min,max,delta): 
     ret = cms.vdouble(min)
     x = min
@@ -16,7 +18,7 @@ def makeInclusiveMuonPlots(rebinFactor=1):
         ptBins = _evenBins( 0, 30, 0.25 * rebinFactor),
         pBins  = _evenBins( 0, 50, 0.5  * rebinFactor),
         etaBins = _evenBins( -2.6, 2.6, 0.2 * rebinFactor),
-        phiBins = _evenBins(-3.2,  3.2, 0.2 * rebinFactor),
+        phiBins = _evenBins(-pi, pi, pi/16 * rebinFactor),
         chargeBins = cms.vdouble(-2,0,2),
         # ---- Vertex ----
         dxyFineBins = _evenBins(-0.2, 0.2, 0.005), #  50um
@@ -40,8 +42,8 @@ def makeInclusiveMuonPlots(rebinFactor=1):
         # ---- Muon ID ----
         muonStationsBins    = _nBins(5,0,5), 
         segmentMatchesBins = _nBins(8,0,8),
-        segmentCompatBins  = _evenBins(0, 1 + 0.1*rebinFactor, 0.1 * rebinFactor), # need one bin for ">= 1.0"
-        caloCompatBins     = _evenBins(0, 1 + 0.1*rebinFactor, 0.1 * rebinFactor), # need one bin for ">= 1.0"
+        segmentCompatBins  = _nBins(20/rebinFactor, 0, 1.001), 
+        caloCompatBins     = _nBins(20/rebinFactor, 0, 1.001),
         # ---- Phi at MB/ME 1 Surface ----
         trkPhiAtSurfaceBins = _nBins(37,-3.23,3.23)
     )
