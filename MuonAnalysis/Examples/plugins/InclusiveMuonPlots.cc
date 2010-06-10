@@ -308,7 +308,7 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
         }
 
         // Andy's phi at ME/MB 1 surface
-        if (mu.isTrackerMuon() && mu.innerTrack().isNonnull()) {
+        if (mu.innerTrack().isNonnull()) {
           eventSetup.get<IdealMagneticFieldRecord>().get(bField);
           eventSetup.get<TrackingComponentsRecord>().get("SteppingHelixPropagatorAlong",propagator);
           eventSetup.get<MuonRecoGeometryRecord>().get(muonGeometry);
