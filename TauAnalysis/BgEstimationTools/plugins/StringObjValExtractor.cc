@@ -61,6 +61,18 @@ typedef StringObjValExtractor<ZllHypothesisMuTau> ZllHypothesisMuTauValExtractor
 typedef StringObjValExtractor<ZllHypothesisDiTau> ZllHypothesisDiTauValExtractor;
 typedef StringObjValExtractor<ZllHypothesisElecMu> ZllHypothesisElecMuValExtractor;
 
+#include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEt.h"
+
+typedef StringObjValExtractor<PATTauNuPair> PATTauNuPairValExtractor;
+
+#include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergy.h"
+
+typedef StringObjValExtractor<PATTauRecoilEnergyFromCaloTowers> PATTauRecoilEnergyValExtractor;
+
+#include "AnalysisDataFormats/TauAnalysis/interface/MEtTopology.h"
+
+typedef StringObjValExtractor<MEtTopology> MEtTopologyValExtractor;
+
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, CandidateValExtractor, "CandidateValExtractor");
@@ -80,3 +92,8 @@ DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, ZllHypothesisElecTauValExtractor
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, ZllHypothesisMuTauValExtractor, "ZllHypothesisMuTauValExtractor");
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, ZllHypothesisDiTauValExtractor, "ZllHypothesisDiTauValExtractor");
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, ZllHypothesisElecMuValExtractor, "ZllHypothesisElecMuValExtractor");
+
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATTauNuPairValExtractor, "PATTauNuPairValExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATTauRecoilEnergyValExtractor, "PATTauRecoilEnergyValExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, MEtTopologyValExtractor, "MEtTopologyValExtractor");
+
