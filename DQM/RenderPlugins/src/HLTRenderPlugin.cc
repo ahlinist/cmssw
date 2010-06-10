@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.17 2010/03/29 09:16:26 rekovic Exp $
+  $Id: HLTRenderPlugin.cc,v 1.18 2010/06/09 09:47:36 rekovic Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.18  2010/06/09 09:47:36  rekovic
+  change the check for paths to source and client histograms.  Added change of X-axis range for 1D LS histogrsms.
+
   Revision 1.17  2010/03/29 09:16:26  rekovic
   Extend Renders from counts_LS to _LS plots
 
@@ -158,49 +161,51 @@ private:
       if(REMATCH("Efficiency_Summary_*", o.name) || REMATCH("HLTRate_*", o.name) 
 	 || REMATCH("PassingBits_Summary_*", o.name)){
 	
-	//gStyle->SetOptStat(11);
-	//obj->GetXaxis()->SetTitle("");
-	//obj->GetYaxis()->SetTitle("");
-	int nbins = obj->GetNbinsX();
-	int maxRange = nbins;
-	for ( int i = nbins; i > 0; --i ) {
-	  //if ( obj->GetBinContent(i) != 0 ) {
-	  if ( strlen(obj->GetXaxis()->GetBinLabel(i)) != 0 ) {
-	    maxRange = i;
-	    break;
-	  }
-	}
-	obj->GetXaxis()->SetRange(0, maxRange);
+				//gStyle->SetOptStat(11);
+				//obj->GetXaxis()->SetTitle("");
+				//obj->GetYaxis()->SetTitle("");
+				int nbins = obj->GetNbinsX();
+				int maxRange = nbins;
+				for ( int i = nbins; i > 0; --i ) {
+				  if ( strlen(obj->GetXaxis()->GetBinLabel(i)) != 0 ) {
+				    maxRange = i;
+				    break;
+				  }
+				}
+				obj->GetXaxis()->SetRange(0, maxRange);
+			}
+
+
+      // FourVector histograms
+      if ( o.name.find("FourVector/paths/") != std::string::npos){
+
+
+	      if( o.name.find("custom-eff") != std::string::npos)
+	      {
+	        gStyle->SetOptStat(10);
+	        obj->SetMinimum(-0.05);
+	        obj->SetMaximum(1.2);
+	        obj->GetYaxis()->SetTitle("_Eff_");
+	
+	        if ( o.name.find("l1Et_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("L1 P_{T}");
+	        if ( o.name.find("onEt_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("HLT P_{T}");
+	        if ( o.name.find("offEt_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("RECO P_{T}");
+	      }
+	      if (  o.name.find("custom-eff") == std::string::npos)
+	      {
+	
+	        if ( o.name.find("l1Et") != std::string::npos) obj->GetXaxis()->SetTitle("L1 P_{T}");
+	        if ( o.name.find("onEt") != std::string::npos) obj->GetXaxis()->SetTitle("HLT P_{T}");
+	        if ( o.name.find("offEt") != std::string::npos) obj->GetXaxis()->SetTitle("RECO P_{T}");
+	        if ( o.name.find("l1DRL1On") != std::string::npos) obj->GetXaxis()->SetTitle("L1-HLT #Delta R [rad]");
+	        if ( o.name.find("offDRL1Off") != std::string::npos) obj->GetXaxis()->SetTitle("L1-RECO #Delta R [rad]");
+	        if ( o.name.find("offDROnOff") != std::string::npos) obj->GetXaxis()->SetTitle("HLT-RECO #Delta R [rad]");
+	      }
+
       }
 
+      if ( o.name.find("FourVector/PathsSummary") != std::string::npos) {
 
-      // FourVector eff histograms
-      if ( o.name.find("FourVector/paths/") != std::string::npos
-       && o.name.find("custom-eff") != std::string::npos)
-      {
-        gStyle->SetOptStat(10);
-        obj->SetMinimum(-0.05);
-        obj->SetMaximum(1.2);
-        obj->GetYaxis()->SetTitle("_Eff_");
-
-        if ( o.name.find("l1Et_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("L1 P_{T}");
-        if ( o.name.find("onEt_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("HLT P_{T}");
-        if ( o.name.find("offEt_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("RECO P_{T}");
-      }
-      if ( o.name.find("FourVector/paths") != std::string::npos
-       && o.name.find("custom-eff") == std::string::npos)
-      {
-
-        if ( o.name.find("l1Et") != std::string::npos) obj->GetXaxis()->SetTitle("L1 P_{T}");
-        if ( o.name.find("onEt") != std::string::npos) obj->GetXaxis()->SetTitle("HLT P_{T}");
-        if ( o.name.find("offEt") != std::string::npos) obj->GetXaxis()->SetTitle("RECO P_{T}");
-        if ( o.name.find("l1DRL1On") != std::string::npos) obj->GetXaxis()->SetTitle("L1-HLT #Delta R [rad]");
-        if ( o.name.find("offDRL1Off") != std::string::npos) obj->GetXaxis()->SetTitle("L1-RECO #Delta R [rad]");
-        if ( o.name.find("offDROnOff") != std::string::npos) obj->GetXaxis()->SetTitle("HLT-RECO #Delta R [rad]");
-      }
-
-      if ( o.name.find("FourVector/PathsSummary") != std::string::npos)
-      {
         if ( o.name.find("Pass_Any") != std::string::npos  ||  o.name.find("Normalized_Any") != std::string::npos  )
         {
           gPad->SetBottomMargin(0.16);
@@ -236,7 +241,6 @@ private:
 	        obj->GetXaxis()->SetRange(minRange, maxRange);
 	      }
       }
-      }
       if ( o.name.find("FourVector/PathsSummary/Filters Counts") != std::string::npos)
       {
         if ( o.name.find("Filters") != std::string::npos    )
@@ -254,15 +258,7 @@ private:
         }
       }
 
-      // Code used in SiStripRenderPlugin -- do we want similar defaults?
-      /*
-        gStyle->SetOptStat(0111);
-        if ( obj->GetMaximum(1.e5) > 0. )
-          gPad->SetLogy(1);
-        else
-          gPad->SetLogy(0);
-      */
-    }
+  }
 
   void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
   {
