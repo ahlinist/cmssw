@@ -25,9 +25,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: TemplateFitAdapterBase.h,v 1.4 2009/12/04 13:45:22 veelken Exp $
+ * $Id: TemplateFitAdapterBase.h,v 1.5 2010/04/10 13:55:04 veelken Exp $
  *
  */
 
@@ -99,7 +99,7 @@ class TemplateFitAdapterBase
 
   virtual void saveFitResults();
 
-  virtual void print(std::ostream& stream) const;
+  virtual void print(std::ostream&) const;
 
   virtual void makeControlPlots();
  
@@ -126,6 +126,8 @@ class TemplateFitAdapterBase
 
     virtual void initialize();
     virtual void fluctuate(bool, bool, double);
+
+    virtual void print(std::ostream&);
 
     std::string processName_;
     std::string varName_;
@@ -182,6 +184,8 @@ class TemplateFitAdapterBase
 
     void initialize();
     void fluctuate(bool, bool, double);
+
+    static bool normalizeFluctHistogram_;
 
     std::vector<sysErrType> sysErrFluctuations_;
   };
