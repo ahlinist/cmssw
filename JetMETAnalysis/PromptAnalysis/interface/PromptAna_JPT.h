@@ -21,8 +21,6 @@ class PromptAna_JPT : public edm::EDProducer{
   double findPtFractionInCone(const reco::TrackRefVector& inConeTracks, const reco::TrackRefVector& outOfConeTracks);
   const edm::InputTag   inputTag; 
  
-  const std::string jptCorrectorName;
-  const std::string zspCorrectorName;   
   const std::string     jetCorrectionService;
   const std::string     prefix,suffix;
   const bool            allVariables;
