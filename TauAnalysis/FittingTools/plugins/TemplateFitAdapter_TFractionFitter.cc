@@ -57,6 +57,8 @@ TemplateFitAdapter_TFractionFitter::TemplateFitAdapter_TFractionFitter(const edm
 {
   std::cout << "<TemplateFitAdapter_TFractionFitter::TemplateFitAdapter_TFractionFitter>:" << std::endl;
 
+  model1dType::normalizeFluctHistogram_ = true;
+
   dataNdEntryImpSpecific_ = new dataNdTypeTFractionFitterSpecific();
 
 //--- read configuration parameters specifying signal and background processes
