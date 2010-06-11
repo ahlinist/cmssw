@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.1 $
  *
- * $Id: TemplateHistFitter.h,v 1.13 2009/11/17 15:12:19 veelken Exp $
+ * $Id: TemplateHistFitter.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
  *
  */
 
@@ -49,7 +49,7 @@ class TemplateHistFitter : public edm::EDAnalyzer
   
  private:
 
-  void beginJob(const edm::EventSetup&) {}
+  void beginJob() {}
   void analyze(const edm::Event&, const edm::EventSetup&) {}
   void endJob();
 
