@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: SmoothLandau_x_GaussPdfWrapper.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
+ * $Id: SmoothLandau_x_GaussPdfWrapper.h,v 1.1 2010/05/26 15:00:27 veelken Exp $
  *
  */
 
@@ -31,6 +31,8 @@ class SmoothLandau_x_GaussPdfWrapper : public SmoothPdfWrapperBase
   void initialize();
 
  private:
+  edm::ParameterSet cfgParameter_;
+
   RooRealVar* width_;
   RooRealVar* mp_;
   RooRealVar* area_;

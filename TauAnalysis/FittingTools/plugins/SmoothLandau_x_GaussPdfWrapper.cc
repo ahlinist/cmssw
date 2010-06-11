@@ -5,12 +5,7 @@
 SmoothLandau_x_GaussPdfWrapper::SmoothLandau_x_GaussPdfWrapper(const edm::ParameterSet& cfg)
   : SmoothPdfWrapperBase(cfg)
 {
-  edm::ParameterSet cfgParameter = cfg.getParameter<edm::ParameterSet>("parameter");
-
-  width_ = makeRooRealVar("width", "Width", cfgParameter.getParameter<edm::ParameterSet>("width"));
-  mp_ = makeRooRealVar("mp", "MP", cfgParameter.getParameter<edm::ParameterSet>("mp"));
-  area_ = makeRooRealVar("area", "Area", cfgParameter.getParameter<edm::ParameterSet>("area"));
-  gsigma_ = makeRooRealVar("gsigma", "gSigma", cfgParameter.getParameter<edm::ParameterSet>("gsigma"));
+  cfgParameter_ = cfg.getParameter<edm::ParameterSet>("parameter");
 }
   
 SmoothLandau_x_GaussPdfWrapper::~SmoothLandau_x_GaussPdfWrapper()
@@ -25,8 +20,15 @@ SmoothLandau_x_GaussPdfWrapper::~SmoothLandau_x_GaussPdfWrapper()
 
 void SmoothLandau_x_GaussPdfWrapper::initialize()
 {
+  std::cout << "<SmoothLandau_x_GaussPdfWrapper::initialize>:" << std::endl;
+
+  width_ = makeRooRealVar(std::string(name_).append("_width"), "Width", cfgParameter_.getParameter<edm::ParameterSet>("width"));
+  mp_ = makeRooRealVar(std::string(name_).append("_mp"), "MP", cfgParameter_.getParameter<edm::ParameterSet>("mp"));
+  area_ = makeRooRealVar(std::string(name_).append("_area"), "Area", cfgParameter_.getParameter<edm::ParameterSet>("area"));
+  gsigma_ = makeRooRealVar(std::string(name_).append("_gsigma"), "gSigma", cfgParameter_.getParameter<edm::ParameterSet>("gsigma"));
+
   delete pdf_;
-  pdf_ = new SmoothLandau_x_GaussPdf(name_, title_, *x_, *width_, *mp_, *area_, *gsigma_);
+  pdf_ = new SmoothLandau_x_GaussPdf(name_.data(), title_.data(), *x_, *width_, *mp_, *area_, *gsigma_);
 
   fit();
 }
