@@ -1,5 +1,5 @@
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_JPT.h"
-#include "JetMETCorrections/Algorithms/interface/JetPlusTrackCorrector.h"
+//#include "JetMETCorrections/Algorithms/interface/JetPlusTrackCorrector.h"
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "RecoJets/JetAssociationAlgorithms/interface/JetTracksAssociationDRCalo.h"
@@ -22,7 +22,6 @@
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
-#include "JetMETCorrections/Algorithms/interface/JetPlusTrackCorrector.h"
 #include "DataFormats/JetReco/interface/JetExtendedAssociation.h"
 #include "DataFormats/JetReco/interface/JetID.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -39,6 +38,8 @@
 #include "DataFormats/Candidate/interface/LeafCandidate.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
+#include   "DataFormats/JetReco/interface/JPTJetCollection.h"
+#include   "DataFormats/JetReco/interface/JPTJet.h"
 
 
 #include <string>
@@ -114,9 +115,7 @@ class JPTPromptAnaTrackVariables
 };
 
 PromptAna_JPT::PromptAna_JPT(const edm::ParameterSet& iConfig) 
-  : inputTag(iConfig.getParameter<edm::InputTag>("InputTag"))  
-  , jptCorrectorName(iConfig.getParameter<std::string>("JPTCorrectorName"))
-  , zspCorrectorName(iConfig.getParameter<std::string>("ZSPCorrectorName"))  
+  : inputTag(iConfig.getParameter<edm::InputTag>("InputTag"))      		
   , jetCorrectionService(iConfig.getParameter<std::string>  ("JetCorrectionService"  ))
   , prefix  (iConfig.getParameter<std::string>  ("Prefix"  ))
   , suffix  (iConfig.getParameter<std::string>  ("Suffix"  ))
@@ -135,29 +134,17 @@ PromptAna_JPT::PromptAna_JPT(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > ( prefix + "JIDfHPD"  + suffix );
   produces <std::vector<int> >    ( prefix + "JIDn90Hits"  + suffix );
   produces <std::vector<double> > ( prefix + "JIDfRBX"  + suffix );
-  //produces <std::vector<double> > ( prefix + "JIDfSubDet1"  + suffix );
-  //produces <std::vector<double> > ( prefix + "JIDfSubDet2"  + suffix );
-  //produces <std::vector<double> > ( prefix + "JIDfSubDet3"  + suffix );
-  //produces <std::vector<double> > ( prefix + "JIDfSubDet4"  + suffix );
+  
   produces <std::vector<double> > ( prefix + "JIDresEMF"  + suffix );
   produces <std::vector<double> > ( prefix + "EmEnergyFraction"  + suffix );
   produces <std::vector<double> > ( prefix + "EnergyFractionHadronic"  + suffix );
   produces <std::vector<double> > ( prefix + "TowersArea"  + suffix );
   produces <std::vector<double> > ( prefix + "MaxEInEmTowers"  + suffix );
   produces <std::vector<double> > ( prefix + "MaxEInHadTowers"  + suffix );
-  //produces <std::vector<double> > ( prefix + "HadEnergyInHB"  + suffix );
-  //produces <std::vector<double> > ( prefix + "HadEnergyInHE"  + suffix );
-  //produces <std::vector<double> > ( prefix + "HadEnergyInHO"  + suffix );
-  //produces <std::vector<double> > ( prefix + "HadEnergyInHF"  + suffix );
-  //produces <std::vector<double> > ( prefix + "EmEnergyInEB"  + suffix );
-  //produces <std::vector<double> > ( prefix + "EmEnergyInEE"  + suffix );
-  //produces <std::vector<double> > ( prefix + "EmEnergyInHF"  + suffix );
+ 
   produces <std::vector<int> > ( prefix + "N60"  + suffix ); 
   produces <std::vector<int> > ( prefix + "N90"  + suffix ); 
-  //produces <std::vector<double> > ( prefix + "pTFirst"  + suffix );
-  //produces <std::vector<double> > ( prefix + "EnergyFirst"  + suffix );
-  //produces <std::vector<double> > ( prefix + "EtaFirst"  + suffix );
-  //produces <std::vector<double> > ( prefix + "PhiFirst"  + suffix );
+
   //JPT specific
   produces <std::vector<double> > ( prefix + "RawPt" + suffix );    
   produces <std::vector<double> > ( prefix + "scaleL2L3"  + suffix ); 
@@ -284,10 +271,6 @@ void PromptAna_JPT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> >  fHPD  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<int> >  fn90Hits  ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<double> >  fRBX  ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  fSubDet1  ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  fSubDet2  ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  fSubDet3  ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  fSubDet4  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  resEMF  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  emEnergyFraction  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  energyFractionHadronic ( new std::vector<double>()  ) ;
@@ -295,19 +278,9 @@ void PromptAna_JPT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> >  maxEInEmTowers   ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  maxEInHadTowers   ( new std::vector<double>()  ) ;  
   std::auto_ptr<std::vector<double> > scaleL2L3   ( new std::vector<double>()  ); 
-  //std::auto_ptr<std::vector<double> >  hadEnergyInHB   ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  hadEnergyInHE   ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  hadEnergyInHO   ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  hadEnergyInHF   ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  emEnergyInEB   ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  emEnergyInEE   ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  emEnergyInHF   ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<int> >  n60   ( new std::vector<int>()  ); 
   std::auto_ptr<std::vector<int> >  n90   ( new std::vector<int>()  ); 
-  //std::auto_ptr<std::vector<double> >  ptfirst  ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  energyfirst  ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  etafirst  ( new std::vector<double>()  ) ;
-  //std::auto_ptr<std::vector<double> >  phifirst  ( new std::vector<double>()  ) ;
+
   //JPT specific
   std::auto_ptr< std::vector<double> > rawPt (new std::vector<double>());
   std::auto_ptr< std::vector<double> > rawE (new std::vector<double>());
@@ -334,134 +307,79 @@ void PromptAna_JPT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   JPTPromptAnaTrackVariables InCaloOutVertexElectrons(prefix,suffix,"InCaloOutVertexElectrons");
   //}
 
-  //Get the Jets Collection
-  edm::Handle<reco::CaloJetCollection> jetcollection;
+  //Get the JPT Jets Collection
+
+  edm::Handle<reco::JPTJetCollection> jetcollection;
   iEvent.getByLabel(inputTag, jetcollection);
-  
-  // Get JPT corrector
-  const JetCorrector* corrector = JetCorrector::getJetCorrector(jptCorrectorName,iSetup);
-  if (!corrector) edm::LogError("JPTPromptAnalysis") << "Failed to get corrector with name " << jptCorrectorName << "from the EventSetup";
-  const JetPlusTrackCorrector* jptCorrector = dynamic_cast<const JetPlusTrackCorrector*>(corrector);
-  if (!jptCorrector) edm::LogError("JPTPromptAnalysis") << "Corrector with name " << jptCorrectorName << " is not a JetPlusTrackCorrector";
-  //get ZSP corrector
-  const JetCorrector* zspCorrector = JetCorrector::getJetCorrector(zspCorrectorName,iSetup);
-  if (!zspCorrector) edm::LogError("JPTPromptAnalysis") << "Failed to get corrector with name " << zspCorrectorName << "from the EventSetup";
-  //make a track propagator to get the positiopn on calo
+
   jptJetAnalysis::TrackPropagatorToCalo trackPropagator;
   trackPropagator.update(iSetup);
   
   int clj=0;       int jc = 0;
 
   //Fill the variables
-  for(reco::CaloJetCollection::const_iterator it = jetcollection->begin(); it != jetcollection->end() ; ++it ){
-    const reco::CaloJet& rawJet = *it; 
-    edm::RefToBase<Jet> jetRef(edm::Ref<reco::CaloJetCollection>(jetcollection,jc));
+  for(reco::JPTJetCollection::const_iterator it = jetcollection->begin(); it != jetcollection->end() ; ++it ){
+   
+    edm::RefToBase<Jet> jptjetRef = it->getCaloJetRef();
+    reco::CaloJet const * rawcalojet = dynamic_cast<reco::CaloJet const *>( &* jptjetRef);
 
-    //make corrected jet
-    const double factorZSP = zspCorrector->correction(rawJet,jetRef,iEvent,iSetup);
-    JetPlusTrackCorrector::P4 correctedDirectionOnRaw;
-    const double factorJPTonRaw = jptCorrector->correction(rawJet,jetRef,iEvent,iSetup,correctedDirectionOnRaw);
-  
-    const double factorZSPJPT = factorZSP + factorJPTonRaw - 1.0;
-    const double factorJPT = factorZSPJPT / factorZSP;
-    JetPlusTrackCorrector::P4 jptCorrectedVector(0,0,0,0);
-    if (correctedDirectionOnRaw.energy()) jptCorrectedVector = correctedDirectionOnRaw * ( (rawJet.energy()*factorZSPJPT) / correctedDirectionOnRaw.energy() );
-    assert((jptCorrectedVector.energy() - rawJet.energy()*factorZSPJPT) < 1e-6);
-    const reco::CaloJet jptCorrectedJet(jptCorrectedVector, rawJet.getSpecific(), rawJet.getJetConstituents() );   
+     const JetCorrector* corrector = JetCorrector::getJetCorrector (jetCorrectionService,iSetup); 
+     if (!corrector) edm::LogError("JPTPromptAnalysis") << "Failed to get corrector with name " << jetCorrectionService<< "from the EventSetup";
+     scaleL2L3->push_back( corrector->correction((*it).p4()) );
     
-    const JetCorrector* corrector = JetCorrector::getJetCorrector (jetCorrectionService,iSetup);
-    scaleL2L3->push_back( corrector->correction(jptCorrectedJet.p4()) );
-    //get tracks
-    jpt::MatchedTracks pions;
-    jpt::MatchedTracks muons;
-    jpt::MatchedTracks electrons;
-    jptCorrector->matchTracks(rawJet,iEvent,iSetup,pions,muons,electrons);
-    reco::TrackRefVector allPions;
-    allPions.reserve(pions.inVertexInCalo_.size()+pions.inVertexOutOfCalo_.size()+pions.outOfVertexInCalo_.size());
-    for (reco::TrackRefVector::const_iterator iTrk = pions.inVertexInCalo_.begin(); iTrk != pions.inVertexInCalo_.end(); ++iTrk)
-      allPions.push_back(*iTrk);
-    for (reco::TrackRefVector::const_iterator iTrk = pions.inVertexOutOfCalo_.begin(); iTrk != pions.inVertexOutOfCalo_.end(); ++iTrk)
-      allPions.push_back(*iTrk);
-    for (reco::TrackRefVector::const_iterator iTrk = pions.outOfVertexInCalo_.begin(); iTrk != pions.outOfVertexInCalo_.end(); ++iTrk)
-      allPions.push_back(*iTrk);
-    reco::TrackRefVector allMuons;
-    allMuons.reserve(muons.inVertexInCalo_.size()+muons.inVertexOutOfCalo_.size()+muons.outOfVertexInCalo_.size());
-    for (reco::TrackRefVector::const_iterator iTrk = muons.inVertexInCalo_.begin(); iTrk != muons.inVertexInCalo_.end(); ++iTrk)
-      allMuons.push_back(*iTrk);
-    for (reco::TrackRefVector::const_iterator iTrk = muons.inVertexOutOfCalo_.begin(); iTrk != muons.inVertexOutOfCalo_.end(); ++iTrk)
-      allMuons.push_back(*iTrk);
-    for (reco::TrackRefVector::const_iterator iTrk = muons.outOfVertexInCalo_.begin(); iTrk != muons.outOfVertexInCalo_.end(); ++iTrk)
-      allMuons.push_back(*iTrk);
-    reco::TrackRefVector allElectrons;
-    allElectrons.reserve(electrons.inVertexInCalo_.size()+electrons.inVertexOutOfCalo_.size()+electrons.outOfVertexInCalo_.size());
-    for (reco::TrackRefVector::const_iterator iTrk = electrons.inVertexInCalo_.begin(); iTrk != electrons.inVertexInCalo_.end(); ++iTrk)
-      allElectrons.push_back(*iTrk);
-    for (reco::TrackRefVector::const_iterator iTrk = electrons.inVertexOutOfCalo_.begin(); iTrk != electrons.inVertexOutOfCalo_.end(); ++iTrk)
-      allElectrons.push_back(*iTrk);
-    for (reco::TrackRefVector::const_iterator iTrk = electrons.outOfVertexInCalo_.begin(); iTrk != electrons.outOfVertexInCalo_.end(); ++iTrk)
-      allElectrons.push_back(*iTrk);
-    //TODO add to config and run
+     reco::TrackRefVector allPions;
+     allPions.reserve((*it).getPionsInVertexInCalo().size() +  (*it).getPionsInVertexOutCalo().size() +  (*it).getPionsOutVertexInCalo().size()) ;
+     reco::TrackRefVector allMuons;
+     allMuons.reserve((*it).getMuonsInVertexInCalo().size() +  (*it).getMuonsInVertexOutCalo().size() +  (*it).getMuonsOutVertexInCalo().size()) ;
+     reco::TrackRefVector allElectrons;
+     allElectrons.reserve((*it).getElecsInVertexInCalo().size() +  (*it).getElecsInVertexOutCalo().size() +  (*it).getElecsOutVertexInCalo().size()) ;
+
+
     if(it==jetcollection->begin()){
-      njets->push_back(jetcollection->size());
-      //ptfirst->push_back(jptCorrectedJet.pt());
-      //energyfirst->push_back(jptCorrectedJet.energy());
-      //etafirst->push_back(jptCorrectedJet.eta());
-      //phifirst->push_back(jptCorrectedJet.phi());
+      njets->push_back(jetcollection->size());     
     }
-    jetIDHelper.calculate(iEvent, *it);
-    pt->push_back(jptCorrectedJet.pt());
-    energy->push_back(jptCorrectedJet.energy());
-    nconstituents->push_back(jptCorrectedJet.getCaloConstituents().size());
-    eta->push_back(jptCorrectedJet.eta());
-    phi->push_back(jptCorrectedJet.phi());
+    jetIDHelper.calculate(iEvent, *rawcalojet);
+    pt->push_back((*it).pt());
+    energy->push_back((*it).energy());
+    nconstituents->push_back((*rawcalojet).getCaloConstituents().size());
+    eta->push_back((*it).eta());
+    phi->push_back((*it).phi());
     fHPD->push_back(jetIDHelper.fHPD() );
     fRBX->push_back(jetIDHelper.fRBX() );
     fn90Hits->push_back(jetIDHelper.n90Hits() );
-    //fSubDet1->push_back(jetIDHelper.fSubDetector1() );
-    //fSubDet2->push_back(jetIDHelper.fSubDetector2() );
-    //fSubDet3->push_back(jetIDHelper.fSubDetector3() );
-    //fSubDet4->push_back(jetIDHelper.fSubDetector4() );
+  
     resEMF->push_back(jetIDHelper.restrictedEMF() );
     //ok for the moment i add this by hand, just to be sure
     if(jetIDHelper.fHPD()<0.98 && jetIDHelper.n90Hits()>=2 && jetIDHelper.restrictedEMF()>0.01) clj++;
-    emEnergyFraction->push_back(jptCorrectedJet.emEnergyFraction());
-    energyFractionHadronic->push_back(jptCorrectedJet.energyFractionHadronic());
-    towersArea->push_back(jptCorrectedJet.towersArea());
-    maxEInEmTowers->push_back(jptCorrectedJet.maxEInEmTowers());
-    maxEInHadTowers->push_back(jptCorrectedJet.maxEInHadTowers());
-    //hadEnergyInHB->push_back(jptCorrectedJet.hadEnergyInHB());
-    //hadEnergyInHE->push_back(jptCorrectedJet.hadEnergyInHE());
-    //hadEnergyInHO->push_back(jptCorrectedJet.hadEnergyInHO());
-    //hadEnergyInHF->push_back(jptCorrectedJet.hadEnergyInHF());
-    //emEnergyInEB->push_back(jptCorrectedJet.emEnergyInEB());
-    //emEnergyInEE->push_back(jptCorrectedJet.emEnergyInEE());
-    //emEnergyInHF->push_back(jptCorrectedJet.emEnergyInHF());
-    n60->push_back(jptCorrectedJet.n60()); 
-    n90->push_back(jptCorrectedJet.n90());
-    rawPt->push_back(rawJet.pt());
-    rawE->push_back(rawJet.energy());
-    rawEta->push_back(rawJet.eta());
-    rawPhi->push_back(rawJet.phi());
-    deltaEta->push_back(jptCorrectedJet.eta()-rawJet.eta());
-    deltaPhi->push_back(jptCorrectedJet.phi()-rawJet.phi());
-    jptZspCorrFactor->push_back(factorZSPJPT);
-    zspCorrFactor->push_back(factorZSP);
-    jptCorrFactor->push_back(factorJPT);
+    emEnergyFraction->push_back((*rawcalojet).emEnergyFraction());
+    energyFractionHadronic->push_back((*rawcalojet).energyFractionHadronic());
+    towersArea->push_back((*rawcalojet).towersArea());
+    maxEInEmTowers->push_back((*rawcalojet).maxEInEmTowers());
+    maxEInHadTowers->push_back((*rawcalojet).maxEInHadTowers()); 
+    n60->push_back((*rawcalojet).n60()); 
+    n90->push_back((*rawcalojet).n90());
+    rawPt->push_back((*rawcalojet).pt());
+    rawE->push_back((*rawcalojet).energy());
+    rawEta->push_back((*rawcalojet).eta());
+    rawPhi->push_back((*rawcalojet).phi());
+    deltaEta->push_back((*it).eta()-(*rawcalojet).eta());
+    deltaPhi->push_back((*it).phi()-(*rawcalojet).phi());
+ 
     if (allVariables) {
-    ptFractionInCone->push_back(findPtFractionInCone(pions.inVertexInCalo_,pions.inVertexOutOfCalo_));
+      ptFractionInCone->push_back(findPtFractionInCone((*it).getPionsInVertexInCalo(),(*it).getPionsInVertexOutCalo()));
     //fill track hiostos
-    AllPions.set(allPions,rawJet,&trackPropagator);
-    InCaloInVertexPions.set(pions.inVertexInCalo_,rawJet,&trackPropagator);
-    OutCaloInVertexPions.set(pions.inVertexOutOfCalo_,rawJet,&trackPropagator);
-    InCaloOutVertexPions.set(pions.outOfVertexInCalo_,rawJet,&trackPropagator);
-    AllMuons.set(allMuons,rawJet,&trackPropagator);
-    InCaloInVertexMuons.set(muons.inVertexInCalo_,rawJet,&trackPropagator);
-    OutCaloInVertexMuons.set(muons.inVertexOutOfCalo_,rawJet,&trackPropagator);
-    InCaloOutVertexMuons.set(muons.outOfVertexInCalo_,rawJet,&trackPropagator);
-    AllElectrons.set(allElectrons,rawJet,&trackPropagator);
-    InCaloInVertexElectrons.set(electrons.inVertexInCalo_,rawJet,&trackPropagator);
-    OutCaloInVertexElectrons.set(electrons.inVertexOutOfCalo_,rawJet,&trackPropagator);
-    InCaloOutVertexElectrons.set(electrons.outOfVertexInCalo_,rawJet,&trackPropagator);
+    AllPions.set(allPions,*rawcalojet,&trackPropagator);
+    InCaloInVertexPions.set((*it).getPionsInVertexInCalo(),*rawcalojet,&trackPropagator);
+    OutCaloInVertexPions.set((*it).getPionsInVertexOutCalo(),*rawcalojet,&trackPropagator);
+    InCaloOutVertexPions.set((*it).getPionsOutVertexInCalo(),*rawcalojet,&trackPropagator);
+    AllMuons.set(allMuons,*rawcalojet,&trackPropagator);
+    InCaloInVertexMuons.set( (*it).getMuonsInVertexInCalo()  ,*rawcalojet,&trackPropagator);
+    OutCaloInVertexMuons.set( (*it).getMuonsInVertexOutCalo()   ,*rawcalojet,&trackPropagator);
+    InCaloOutVertexMuons.set( (*it).getMuonsOutVertexInCalo()  ,*rawcalojet,&trackPropagator);
+    AllElectrons.set(allElectrons,*rawcalojet,&trackPropagator);
+    InCaloInVertexElectrons.set(  (*it).getElecsInVertexInCalo()   ,*rawcalojet,&trackPropagator);
+    OutCaloInVertexElectrons.set(  (*it).getElecsInVertexOutCalo() ,*rawcalojet,&trackPropagator);
+    InCaloOutVertexElectrons.set(  (*it).getElecsOutVertexInCalo()   ,*rawcalojet,&trackPropagator);
     }
  	 jc++;
 
@@ -478,29 +396,17 @@ void PromptAna_JPT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( fHPD,  prefix + "JIDfHPD"    + suffix );
   iEvent.put( fn90Hits,  prefix + "JIDn90Hits"   + suffix );
   iEvent.put( fRBX,  prefix + "JIDfRBX"    + suffix );
-  //iEvent.put( fSubDet1,  prefix + "JIDfSubDet1"  + suffix );
-  //iEvent.put( fSubDet2,  prefix + "JIDfSubDet2"  + suffix );  
-  //iEvent.put( fSubDet3,  prefix + "JIDfSubDet3"  + suffix );
-  //iEvent.put( fSubDet4,  prefix + "JIDfSubDet4"  + suffix );
+
   iEvent.put( resEMF,  prefix + "JIDresEMF"    + suffix );
   iEvent.put( emEnergyFraction,  prefix + "EmEnergyFraction"  + suffix );
   iEvent.put( energyFractionHadronic,  prefix + "EnergyFractionHadronic"  + suffix );
   iEvent.put( towersArea,  prefix + "TowersArea"  + suffix );
   iEvent.put( maxEInEmTowers,  prefix + "MaxEInEmTowers"  + suffix );
   iEvent.put( maxEInHadTowers,  prefix + "MaxEInHadTowers"  + suffix );
-  //iEvent.put( hadEnergyInHB,  prefix + "HadEnergyInHB"  + suffix );
-  //iEvent.put( hadEnergyInHE,  prefix + "HadEnergyInHE"  + suffix );
-  //iEvent.put( hadEnergyInHO,  prefix + "HadEnergyInHO"  + suffix );
-  //iEvent.put( hadEnergyInHF,  prefix + "HadEnergyInHF"  + suffix );
-  //iEvent.put( emEnergyInEB,  prefix + "EmEnergyInEB"  + suffix );
-  //iEvent.put( emEnergyInEE,  prefix + "EmEnergyInEE"  + suffix );
-  //iEvent.put( emEnergyInHF,  prefix + "EmEnergyInHF"  + suffix );
+ 
   iEvent.put( n60,  prefix + "N60"  + suffix ); 
   iEvent.put( n90,  prefix + "N90"  + suffix );
-  //iEvent.put( ptfirst,  prefix + "pTFirst"  + suffix );
-  //iEvent.put( energyfirst,  prefix + "EnergyFirst"  + suffix );
-  //iEvent.put( etafirst,  prefix + "EtaFirst"  + suffix );
-  //iEvent.put( phifirst,  prefix + "PhiFirst"  + suffix );
+  
   iEvent.put( rawPt, prefix + "RawPt" + suffix );
   iEvent.put( rawE, prefix + "RawE" + suffix );
   iEvent.put( rawEta, prefix + "RawEta" + suffix );
