@@ -899,7 +899,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
     ),
 
     estStatUncertainties = cms.PSet(
-        numSamplings = cms.int32(10),
+        numSamplings = cms.int32(0),
         chi2redMax = cms.double(10.),
         verbosity = cms.PSet(
             printLevel = cms.int32(-1),
@@ -962,7 +962,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 mode = cms.string("coherent")
             )
         ),       
-        numSamplings = cms.int32(10),
+        numSamplings = cms.int32(0),
         chi2redMax = cms.double(10.),
         verbosity = cms.PSet(
             printLevel = cms.int32(-1),
