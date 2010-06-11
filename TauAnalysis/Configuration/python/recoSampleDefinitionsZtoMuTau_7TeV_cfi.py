@@ -97,7 +97,7 @@ fileNamesZtoMuTau_Ztautau_7TeV_part07 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/z/zeise/official/summer09/mutauskim_v1/ztautau_7TeV/muTauSkim_ztautau_7TeV_61.root',
     'rfio:/castor/cern.ch/user/z/zeise/official/summer09/mutauskim_v1/ztautau_7TeV/muTauSkim_ztautau_7TeV_62.root',
     'rfio:/castor/cern.ch/user/z/zeise/official/summer09/mutauskim_v1/ztautau_7TeV/muTauSkim_ztautau_7TeV_63.root',
-    'rfio:/castor/cern.ch/user/z/zeise/official/summer09/mutauskim_v1/ztautau_7TeV/muTauSkim_ztautau_7TeV_64.root',
+    #'rfio:/castor/cern.ch/user/z/zeise/official/summer09/mutauskim_v1/ztautau_7TeV/muTauSkim_ztautau_7TeV_64.root',
     'rfio:/castor/cern.ch/user/z/zeise/official/summer09/mutauskim_v1/ztautau_7TeV/muTauSkim_ztautau_7TeV_65.root',
     'rfio:/castor/cern.ch/user/z/zeise/official/summer09/mutauskim_v1/ztautau_7TeV/muTauSkim_ztautau_7TeV_66.root',
     'rfio:/castor/cern.ch/user/z/zeise/official/summer09/mutauskim_v1/ztautau_7TeV/muTauSkim_ztautau_7TeV_67.root',
