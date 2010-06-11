@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: SmoothGenericPdfWrapper.h,v 1.1 2010/05/26 15:00:27 veelken Exp $
+ * $Id: SmoothGenericPdfWrapper.h,v 1.2 2010/05/26 15:26:07 veelken Exp $
  *
  */
 
@@ -34,6 +34,8 @@ class SmoothGenericPdfWrapper : public SmoothPdfWrapperBase
 
  private:
   std::string formula_;
+
+  edm::ParameterSet cfgParameter_;
 };
 
 #endif  
