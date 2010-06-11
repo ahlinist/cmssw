@@ -3,6 +3,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/FittingTools/interface/interpolGridAuxFunctions.h"
 
 // include headers for xerces parser
 #include "xercesc/parsers/XercesDOMParser.hpp"
@@ -27,18 +28,6 @@ InterpolGridTable::~InterpolGridTable()
   xercesc::XMLString::release(&xmlTag_value_);
   xercesc::XMLString::release(&xmlTag_row_);
   xercesc::XMLString::release(&xmlTag_column_);
-}
-
-int getIndex(const std::vector<double>& elements, double value)
-{
-  unsigned numElements = elements.size();
-  for ( unsigned iElement = 0; iElement < numElements; ++iElement ) {
-    double element = elements[iElement];
-    if ( element == value ) return iElement;
-  }
-
-  edm::LogWarning("getIndex") << "Failed to find value = " << value << " in vector passed as function argument !!";
-  return -1;
 }
 
 void InterpolGridTable::loadXML(const std::string& fileName)
@@ -245,7 +234,7 @@ double InterpolGridTable::getValue(double x, double y) const
   std::cout << " rowIndex_lowerBound = " << rowIndex_lowerBound << std::endl;
   std::cout << " rowIndex_upperBound = " << rowIndex_upperBound << std::endl;
 
-//--- check that at all row and column indices have been found
+//--- check that all row and column indices are valid
   if ( !(columnIndex_lowerBound != -1 && columnIndex_upperBound != -1 &&
          rowIndex_lowerBound    != -1 && rowIndex_upperBound    != -1) ) {
     edm::LogError("InterpolGridTable::getValue") 
@@ -272,9 +261,9 @@ double InterpolGridTable::getValue(double x, double y) const
 //       --> weight value at lower bound (upper bound) 
 //           with distance between point for which interpolated value is to be computed and upper (lower) bound
     rowValue_lowerBound = (dX_upperBound*values_(columnIndex_lowerBound, rowIndex_lowerBound)
-			   + dX_lowerBound*values_(columnIndex_upperBound, rowIndex_lowerBound))/(dX_lowerBound + dX_upperBound);
+			 + dX_lowerBound*values_(columnIndex_upperBound, rowIndex_lowerBound))/(dX_lowerBound + dX_upperBound);
     rowValue_upperBound = (dX_upperBound*values_(columnIndex_lowerBound, rowIndex_upperBound)
-			   + dX_lowerBound*values_(columnIndex_upperBound, rowIndex_upperBound))/(dX_lowerBound + dX_upperBound);
+			 + dX_lowerBound*values_(columnIndex_upperBound, rowIndex_upperBound))/(dX_lowerBound + dX_upperBound);
   }
 
   std::cout << " rowValue_lowerBound = " << rowValue_lowerBound << std::endl;
