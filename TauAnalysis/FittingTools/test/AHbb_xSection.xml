@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<table>
+    <header row="mA" column="tanBeta"/>
+    <value mA="1" tanBeta="1">5.0</value>
+    <value mA="1" tanBeta="2">20.0</value>
+    <value mA="2" tanBeta="1">10.0</value>
+    <value mA="2" tanBeta="2">30.0</value>
+</table>
