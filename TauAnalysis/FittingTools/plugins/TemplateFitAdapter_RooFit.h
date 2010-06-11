@@ -20,9 +20,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: TemplateFitAdapter_RooFit.h,v 1.2 2009/11/29 15:25:15 veelken Exp $
+ * $Id: TemplateFitAdapter_RooFit.h,v 1.3 2010/05/27 12:41:21 veelken Exp $
  *
  */
 
@@ -60,6 +60,8 @@ class TemplateFitAdapter_RooFit : public TemplateFitAdapterBase
   void makeControlPlotsImpSpecific();
 
  private:
+
+  std::string moduleLabel_;
 
 //--- auxiliary data-structures specific to RooFit algorithms
   struct model1dTypeRooFitSpecific 
@@ -141,6 +143,8 @@ class TemplateFitAdapter_RooFit : public TemplateFitAdapterBase
     void addVar(const std::string&, RooRealVar*, bool, 
 		bool, const edm::ParameterSet&, bool, const edm::ParameterSet&,
 		const TemplateFitAdapterBase::model1dType*);
+
+    virtual void print(std::ostream&) const;
 
     std::string processName_;
 

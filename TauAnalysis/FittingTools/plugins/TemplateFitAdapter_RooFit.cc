@@ -85,7 +85,11 @@ TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::model1dTypeRooFitSpecific(
     pdfBinning_(0),
     pdfCoeffCollection_(0),
     pdfCoeffArgs_(0)
-{}
+{
+  std::cout << "<model1dTypeRooFitSpecific::model1dTypeRooFitSpecific>:" << std::endl;
+  std::cout << " processName = " << processName_ << std::endl;
+  std::cout << " varName = " << varName_ << std::endl;
+}
 
 TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::~model1dTypeRooFitSpecific()
 {
@@ -131,18 +135,24 @@ void buildMorphHistPdf_endpoint(DQMStore& dqmStore, const std::string& meName,
 
 void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
 {
-  //std::cout << "<model1dTypeRooFitSpecific::buildPdf>:" << std::endl;
+  std::cout << "<model1dTypeRooFitSpecific::buildPdf>:" << std::endl;
 
   if ( applySmoothing_ ) {
     bool isFirstFit = (!auxSmoothPdfWrapper_);
     
     if ( isFirstFit ) {
-      std::string pluginTypeSmoothPdfWrapper = cfgSmoothing_.getParameter<std::string>("pluginType");
-      auxSmoothPdfWrapper_ = SmoothPdfWrapperPluginFactory::get()->create(pluginTypeSmoothPdfWrapper, cfgSmoothing_);
       std::string auxSmoothPdfWrapperName 
 	= std::string(processName_).append("_").append(varName_).append("_").append("auxSmoothPdfWrapper");
-      auxSmoothPdfWrapper_->setName(auxSmoothPdfWrapperName.data());
-      auxSmoothPdfWrapper_->setTitle(auxSmoothPdfWrapperName.data());
+      std::cout << " auxSmoothPdfWrapperName = " << auxSmoothPdfWrapperName << std::endl;
+
+      cfgSmoothing_.addParameter<std::string>("name", auxSmoothPdfWrapperName); 
+      cfgSmoothing_.addParameter<std::string>("title", auxSmoothPdfWrapperName);
+
+      cfgSmoothing_.addParameter<bool>("fitSimultaneously", fitSimultaneously_);
+
+      std::string pluginTypeSmoothPdfWrapper = cfgSmoothing_.getParameter<std::string>("pluginType");
+      auxSmoothPdfWrapper_ = SmoothPdfWrapperPluginFactory::get()->create(pluginTypeSmoothPdfWrapper, cfgSmoothing_);
+      
       auxSmoothPdfWrapper_->setX(*varRef_);
     } else {
       auxSmoothPdfWrapper_->reinitializeParameter();
@@ -272,6 +282,9 @@ TemplateFitAdapter_RooFit::modelNdTypeRooFitSpecific::modelNdTypeRooFitSpecific(
     meanNormConstraint_(0),
     sigmaNormConstraint_(0)
 {
+  std::cout << "<modelNdTypeRooFitSpecific::modelNdTypeRooFitSpecific>:" << std::endl;
+  std::cout << " processName = " << processName_ << std::endl;
+
   std::string normName = std::string(processName_).append("_").append("norm");
   norm_ = new RooRealVar(normName.data(), normName.data(), norm_initial, 0., maxNorm);
 
@@ -316,6 +329,12 @@ void TemplateFitAdapter_RooFit::modelNdTypeRooFitSpecific::addVar(
 				    model1dEntryBase);
 }
 
+void TemplateFitAdapter_RooFit::modelNdTypeRooFitSpecific::print(std::ostream& outputStream) const
+{
+  outputStream << "<modelNdTypeRooFitSpecific::print>:" << std::endl;
+  outputStream << " norm = " << norm_->getVal() << std::endl;
+}
+
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
@@ -333,12 +352,16 @@ const T* getMapValue(const std::map<std::string, T*>& mapArg, const std::string&
 
 TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cfg)
   : TemplateFitAdapterBase(cfg),
+    moduleLabel_(cfg.getParameter<std::string>("@module_label")),
     fitData_(0),
     fitModel_(0),
     fitCategories_(0),
     fitResultImpSpecific_(0)
 {
   std::cout << "<TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit>:" << std::endl;
+  std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
+
+  model1dType::normalizeFluctHistogram_ = false;
 
   edm::ParameterSet cfgFit = cfg.getParameter<edm::ParameterSet>("fit");
 
@@ -349,7 +372,7 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
 	varName != varNames_.end(); ++varName ) {
     edm::ParameterSet cfgVariable = cfgVariables.getParameter<edm::ParameterSet>(*varName);
 
-    std::string name = cfgVariable.getParameter<std::string>("name");
+    std::string name = std::string(moduleLabel_).append("_").append(cfgVariable.getParameter<std::string>("name"));
     std::string title = ( cfgVariable.exists("title") ) ? cfgVariable.getParameter<std::string>("title") : name;
     double min = cfgVariable.getParameter<double>("min");
     double max = cfgVariable.getParameter<double>("max");
@@ -387,7 +410,8 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
     }
 
     modelNdTypeRooFitSpecific* modelNdEntryImpSpecific 
-      = new modelNdTypeRooFitSpecific(*processName, norm_initial, applyNormConstraints, meanNormConstraints, sigmaNormConstraints);
+      = new modelNdTypeRooFitSpecific(std::string(moduleLabel_).append("_").append(*processName),
+				      norm_initial, applyNormConstraints, meanNormConstraints, sigmaNormConstraints);
 
     edm::ParameterSet cfgTemplates = cfgProcess.getParameter<edm::ParameterSet>("templates");
     for ( vstring::const_iterator varName = varNames_.begin();
@@ -414,11 +438,10 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
       edm::ParameterSet cfgHorizontalMorphing = ( applyHorizontalMorphing ) ? 
 	cfgTemplate.getParameter<edm::ParameterSet>("interpolation") : edm::ParameterSet();
       
-      if ( (fitSimultaneously && applySmoothing)          || 
-	   (fitSimultaneously && applyHorizontalMorphing) ||
-	   (applySmoothing    && applyHorizontalMorphing) ) {
+      if ( (applyHorizontalMorphing && fitSimultaneously) ||
+	   (applyHorizontalMorphing && applySmoothing   ) ) {
 	edm::LogError ("TemplateFitAdapter_RooFit") 
-	  << " Parameters 'fitSimultaneously', 'applySmoothing' and 'applyHorizontalMorphing' are mutually exclusive !!";
+	  << " Parameters 'applyHorizontalMorphing' and 'fitSimultaneously', 'applySmoothing' are mutually exclusive !!";
 	error_ = 1;
 	continue;
       }
@@ -470,14 +493,14 @@ TemplateFitAdapter_RooFit::~TemplateFitAdapter_RooFit()
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-std::string getCategoryName_data(const std::string& varName)
+std::string getCategoryName_data(const std::string& moduleLabel, const std::string& varName)
 {
-  return std::string(varName).append("_data");
+  return std::string(moduleLabel).append("_").append(varName).append("_data");
 }
 
-std::string getCategoryName_template(const std::string& processName, const std::string& varName)
+std::string getCategoryName_template(const std::string& moduleLabel, const std::string& processName, const std::string& varName)
 {
-  return std::string(processName).append("_").append(varName).append("_template");
+  return std::string(moduleLabel).append("_").append(processName).append("_").append(varName).append("_template");
 }
 
 //
@@ -488,7 +511,7 @@ void TemplateFitAdapter_RooFit::buildFitData()
 {
   //std::cout << "<TemplateFitAdapter_RooFit::buildFitData>:" << std::endl;
 
-  std::string fitDataName = "fitData";
+  std::string fitDataName = std::string(moduleLabel_).append("_fitData");
 
   if ( fitCategories_->numTypes() == 1 ) {
     delete fitData_;
@@ -505,13 +528,13 @@ void TemplateFitAdapter_RooFit::buildFitData()
       
       varCollection.Add(fitVariables_[*varName]);
       
-      std::string categoryName_data = getCategoryName_data(*varName);
+      std::string categoryName_data = getCategoryName_data(moduleLabel_, *varName);
       histMap[categoryName_data] = dataNdEntry_->data1dEntries_[*varName]->fluctHistogram_;
       
       for ( vstring::const_iterator processName = processNames_.begin();
 	    processName != processNames_.end(); ++processName ) {
 	if ( modelNdEntriesImpSpecific_[*processName]->model1dEntriesImpSpecific_[*varName]->fitSimultaneously_ ) {
-	  std::string categoryName_template = getCategoryName_template(*processName, *varName);
+	  std::string categoryName_template = getCategoryName_template(moduleLabel_, *processName, *varName);
 	  histMap[categoryName_template] = modelNdEntries_[*processName]->model1dEntries_[*varName]->fluctHistogram_;
 	}
       }
@@ -548,7 +571,7 @@ void TemplateFitAdapter_RooFit::buildFitModel()
 
   for ( vstring::const_iterator varName = varNames_.begin();
 	varName != varNames_.end(); ++varName ) {
-    std::string pdfModelSumName = std::string(*varName).append("_pdfModelSum");
+    std::string pdfModelSumName = std::string(moduleLabel_).append("_").append(*varName).append("_pdfModelSum");
 
     TObjArray pdfModelSum_pdfCollection;
     TObjArray pdfModelSum_normCollection;
@@ -572,7 +595,7 @@ void TemplateFitAdapter_RooFit::buildFitModel()
 					    RooArgList(pdfModelSum_pdfCollection), RooArgList(pdfModelSum_normCollection));
   }
   
-  std::string fitModelName = "fitModel";
+  std::string fitModelName = std::string(moduleLabel_).append("_fitModel");
 
   if ( fitCategories_->numTypes() == 1 ) {
     fitModel_ = pdfModelSums_[varNames_.front()];
@@ -583,7 +606,7 @@ void TemplateFitAdapter_RooFit::buildFitModel()
     for ( vstring::const_iterator varName = varNames_.begin();
 	  varName != varNames_.end(); ++varName ) {
       
-      std::string categoryName_data = getCategoryName_data(*varName);
+      std::string categoryName_data = getCategoryName_data(moduleLabel_, *varName);
       ((RooSimultaneous*)fitModel_)->addPdf(*pdfModelSums_[*varName], categoryName_data.data());
       
       for ( vstring::const_iterator processName = processNames_.begin();
@@ -608,7 +631,7 @@ void TemplateFitAdapter_RooFit::buildFitModel()
 	  model1dEntryImpSpecific->auxPdfTemplateShapeSum_ = new RooAddPdf(pdfTemplateShapeSumName, pdfTemplateShapeSumName, 
 									   RooArgList(*pdfTemplateShape), RooArgList(*normTemplateShape));
 	  
-	  std::string categoryName_template = getCategoryName_template(*processName, *varName);
+	  std::string categoryName_template = getCategoryName_template(moduleLabel_, *processName, *varName);
 	  ((RooSimultaneous*)fitModel_)->addPdf(*model1dEntryImpSpecific->auxPdfTemplateShapeSum_, categoryName_template.data());
 	}
       }
@@ -652,13 +675,13 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
   fitCategories_ = new RooCategory("fitCategories", "fitCategories");
   for ( vstring::const_iterator varName = varNames_.begin();
 	varName != varNames_.end(); ++varName ) {
-    std::string categoryName_data = getCategoryName_data(*varName);
+    std::string categoryName_data = getCategoryName_data(moduleLabel_, *varName);
     fitCategories_->defineType(categoryName_data.data());
     
     for ( vstring::const_iterator processName = processNames_.begin();
 	  processName != processNames_.end(); ++processName ) {
       if ( modelNdEntriesImpSpecific_[*processName]->model1dEntriesImpSpecific_[*varName]->fitSimultaneously_ ) {
-	std::string categoryName_template = getCategoryName_template(*processName, *varName);
+	std::string categoryName_template = getCategoryName_template(moduleLabel_, *processName, *varName);
 	fitCategories_->defineType(categoryName_template.data());
       }
     }
@@ -731,7 +754,7 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
   }
 
   if ( externalConstraints_pdfCollection.GetEntries() > 0 ) {
-    std::string externalConstraints_pdfArgName = std::string("externalConstraints").append("_pdfArgs");
+    std::string externalConstraints_pdfArgName = std::string(moduleLabel_).append("_externalConstraints_pdfArgs");
     RooArgSet externalConstraints_pdfArgs(externalConstraints_pdfCollection, externalConstraints_pdfArgName.data());
     
     fitOptions.Add(new RooCmdArg(RooFit::ExternalConstraints(externalConstraints_pdfArgs)));
@@ -755,6 +778,11 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
   RooFitResult* fitResult = fitModel_->fitTo(*fitData_, fitOptions);
   fitResult_->status_ = ( fitResult->status() == fitStatus_converged_RooFit ) ? 0 : 1;
   fitResultImpSpecific_ = fitResult;
+
+  for ( modelNdEntryMapImpSpecific::const_iterator modelNdEntryImpSpecific = modelNdEntriesImpSpecific_.begin();
+	modelNdEntryImpSpecific != modelNdEntriesImpSpecific_.end(); ++modelNdEntryImpSpecific ) {
+    modelNdEntryImpSpecific->second->print(std::cout);
+  }
 
 //--- delete fit option objects
   int numCmdArgs = fitOptions.GetSize();
