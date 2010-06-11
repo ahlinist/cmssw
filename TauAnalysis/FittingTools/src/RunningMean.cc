@@ -13,8 +13,9 @@ RunningMean::RunningMean(unsigned d)
 void RunningMean::update(const TVectorD& value)
 {
   if ( value.GetNoElements() != (int)numVar_ ) {
-    edm::LogError("RunningMean::update") << "Given value has invalid dimension = " << value.GetNoElements() << "," 
-					 << " expected = " << numVar_ << " --> mean value will NOT be updated !!";
+    edm::LogError("RunningMean::update") 
+      << "Given value has invalid dimension = " << value.GetNoElements() << "," 
+      << " expected = " << numVar_ << " --> mean value will NOT be updated !!";
     return;
   }
 
@@ -35,8 +36,9 @@ void RunningMean::update(const TVectorD& value)
 void RunningMean::print(std::ostream& outputStream, const std::vector<std::string>* varNames) const
 {
   if ( varNames && varNames->size() != numVar_ ) {
-    edm::LogError("RunningMean::print") << "Given list of varable names of invalid size,"
-					<< " expected lenght = " << numVar_ << " !!";
+    edm::LogError("RunningMean::print") 
+      << "Given list of varable names of invalid size,"
+      << " expected lenght = " << numVar_ << " !!";
     return;
   }
 
