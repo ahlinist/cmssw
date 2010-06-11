@@ -78,6 +78,7 @@ protected:
   int    ttbit41_;
   int    ttbitBH_;
   float  pdf_[7];
+  float  pthat_;
   float  processID_;
   int    nHLT_;
   int    HLT_[maxP];

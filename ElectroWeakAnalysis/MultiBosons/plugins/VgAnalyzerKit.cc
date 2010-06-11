@@ -451,17 +451,25 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // PDF information
   // cout << "VgAnalyzerKit: produce: PDF information..." << endl;
   if (!isData_) {
-    Handle<PdfInfo> pdfInfoHandle;
-    bool pdfInfo = e.getByLabel("genEventPdfInfo", pdfInfoHandle);
+    Handle<GenEventInfoProduct> pdfInfoHandle;
+    bool pdfInfo = e.getByLabel("generator", pdfInfoHandle);
     if (pdfInfo) {
-      pdf_[0] = pdfInfoHandle->id1;      // PDG ID of incoming parton #1
-      pdf_[1] = pdfInfoHandle->id2;      // PDG ID of incoming parton #2
-      pdf_[2] = pdfInfoHandle->x1;       // x value of parton #1
-      pdf_[3] = pdfInfoHandle->x2;       // x value of parton #2
-      pdf_[4] = pdfInfoHandle->pdf1;     // PDF weight for parton #1
-      pdf_[5] = pdfInfoHandle->pdf2;     // PDF weight for parton #2
-      pdf_[6] = pdfInfoHandle->scalePDF; // scale of the hard interaction
+      pdf_[0] = pdfInfoHandle->pdf()->id.first;      // PDG ID of incoming parton #1
+      pdf_[1] = pdfInfoHandle->pdf()->id.second;      // PDG ID of incoming parton #2
+      pdf_[2] = pdfInfoHandle->pdf()->x.first;       // x value of parton #1
+      pdf_[3] = pdfInfoHandle->pdf()->x.second;       // x value of parton #2
+      pdf_[4] = pdfInfoHandle->pdf()->xPDF.first;     // PDF weight for parton #1
+      pdf_[5] = pdfInfoHandle->pdf()->xPDF.second;     // PDF weight for parton #2
+      pdf_[6] = pdfInfoHandle->pdf()->scalePDF; // scale of the hard interaction
     }
+  }
+
+  // get pthat value and store in ntuple
+  edm::Handle<GenEventInfoProduct> genEventScale;
+  e.getByLabel("generator", genEventScale);
+  pthat_ = 0;
+  if (genEventScale->hasBinningValues() ) {
+     pthat_ = genEventScale->binningValues()[0];
   }
 
   // GenParticle
@@ -909,6 +917,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
         }
       }
 
+      cout<<" Pho = "<<phoGenMomPID[nPho_]<<"     "<<phoOverlap_[nPho_]<<"     "<<phohasPixelSeed_[nPho_]<<endl;
       // Super Cluster
       phoSCE_[nPho_]   = (*iPho).superCluster()->energy();
       phoSCEta_[nPho_] = (*iPho).superCluster()->eta();
