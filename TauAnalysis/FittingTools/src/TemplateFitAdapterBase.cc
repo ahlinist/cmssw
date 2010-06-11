@@ -24,6 +24,8 @@ const std::string fluctMode_incoherent = "incoherent";
 
 typedef std::pair<double, double> double_pair;
 
+bool TemplateFitAdapterBase::model1dType::normalizeFluctHistogram_ = true;
+
 namespace templateFitAdapterBase
 {
   TRandom3 gRndNum;
@@ -95,6 +97,32 @@ void TemplateFitAdapterBase::data1dType::fluctuate(bool, bool, double numEntries
   makeHistogramPositive(fluctHistogram_);
 }
 
+void TemplateFitAdapterBase::data1dType::print(std::ostream& outputStream)
+{
+  outputStream << "<data1dType::print>:" << std::endl;
+  outputStream << " process = " << processName_ << ", variable = " << varName_ << std::endl;
+  outputStream << " integral = " << integral_ 
+	       << " (integral(fluctHistogram) = " << getIntegral(fluctHistogram_) << ")" << std::endl;
+  outputStream << " fitted fraction = " << fittedFraction_ << std::endl;
+  outputStream << " fluctHistogram:" << std::endl;
+  unsigned numBinsX = fluctHistogram_->GetNbinsX();
+  for ( unsigned iBinX = 0; iBinX < numBinsX; ++iBinX ) {
+    unsigned numBinsY = fluctHistogram_->GetNbinsY();
+    for ( unsigned iBinY = 0; iBinY < numBinsY; ++iBinY ) {
+      unsigned numBinsZ = fluctHistogram_->GetNbinsZ();
+      for ( unsigned iBinZ = 0; iBinZ < numBinsZ; ++iBinZ ) {
+	outputStream << "  binX = " << iBinX;
+	if ( fluctHistogram_->GetNbinsY() > 1 ) outputStream << ", binY = " << iBinY;
+	if ( fluctHistogram_->GetNbinsZ() > 1 ) outputStream << ", binZ = " << iBinZ;
+	outputStream << "(x = " << fluctHistogram_->GetXaxis()->GetBinCenter(iBinX);
+	if ( fluctHistogram_->GetNbinsY() > 1 ) outputStream << ", y = " << fluctHistogram_->GetYaxis()->GetBinCenter(iBinY);
+	if ( fluctHistogram_->GetNbinsZ() > 1 ) outputStream << ", z = " << fluctHistogram_->GetZaxis()->GetBinCenter(iBinZ);
+	outputStream << "): " << fluctHistogram_->GetBinContent(iBinX, iBinY, iBinZ) << std::endl;
+      }
+    }
+  }
+}
+
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
@@ -129,6 +157,8 @@ void TemplateFitAdapterBase::dataNdType::initialize()
 	data1dEntry != data1dEntries_.end(); ++data1dEntry ) { 
     data1dEntry->second->initialize();
     if ( data1dEntry->second->error_ ) error_ = 1;
+
+    data1dEntry->second->print(std::cout);
   }
 }
 
@@ -175,8 +205,10 @@ void TemplateFitAdapterBase::model1dType::initialize()
 
   data1dType::initialize();
 
-  double fluctIntegral = getIntegral(fluctHistogram_);
-  if ( fluctIntegral != 0. ) fluctHistogram_->Scale(fittedFraction_/fluctIntegral);
+  if ( normalizeFluctHistogram_ ) {
+    double fluctIntegral = getIntegral(fluctHistogram_);
+    if ( fluctIntegral != 0. ) fluctHistogram_->Scale(fittedFraction_/fluctIntegral);
+  }
 
   if ( error_ ) return;
 
@@ -239,8 +271,10 @@ void TemplateFitAdapterBase::model1dType::fluctuate(bool fluctStat, bool fluctSy
 
   makeHistogramPositive(fluctHistogram_);
   
-  double fluctIntegral = getIntegral(fluctHistogram_);
-  if ( fluctIntegral != 0. ) fluctHistogram_->Scale(fittedFraction_/fluctIntegral);
+  if ( normalizeFluctHistogram_ ) {
+    double fluctIntegral = getIntegral(fluctHistogram_);
+    if ( fluctIntegral != 0. ) fluctHistogram_->Scale(fittedFraction_/fluctIntegral);
+  }
 }
 
 //
@@ -276,6 +310,8 @@ void TemplateFitAdapterBase::modelNdType::initialize()
 	model1dEntry != model1dEntries_.end(); ++model1dEntry ) {
     model1dEntry->second->initialize();
     if ( model1dEntry->second->error_ ) error_ = 1;
+
+    model1dEntry->second->print(std::cout);
   }
 }
 
