@@ -29,13 +29,13 @@ for i in range(8):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "AH120_tautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 for i in range(4):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "AHbb120_tautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
     
 # Z --> tau+ tau- jobs
@@ -43,15 +43,14 @@ for i in range(16):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "Ztautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
-
 # Z --> mu+ mu- jobs
 for i in range(15):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "Zmumu_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # Z + jets jobs
@@ -59,7 +58,7 @@ for i in range(8):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "ZplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # W + jets jobs
@@ -67,7 +66,7 @@ for i in range(31):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "WplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # W/Z + c cbar/b bbar jobs
@@ -75,7 +74,7 @@ for i in range(23):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "Vqq_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # ttbar + jets jobs
@@ -83,7 +82,7 @@ for i in range(10):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "TTplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 # pp --> mu X QCD jobs
@@ -91,13 +90,13 @@ for i in range(28):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "InclusivePPmuX_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
 for i in range(71):
     submitToBatch(configFile = "runAHtoMuTau_cfg.py", channel = "AHtoMuTau",
                   sample = "PPmuXptGt20_7TeV_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements =
-                  "maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false; disableEventDump = true",
+                  "maxEvents = -1; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false; disableEventDump = true; globalTag = MC_36Y_V7A::All",
                   job = "analysis", queue = "1nd", outputFilePath = outputFilePath)
 
