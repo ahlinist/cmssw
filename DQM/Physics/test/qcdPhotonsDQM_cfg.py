@@ -9,17 +9,32 @@ process.DQM.collectorHost = ''
 
 process.dqmSaver.workflow = cms.untracked.string('/My/Test/DataSet')
 
+## Geometry and Detector Conditions (needed for spike removal code)
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = cms.string('START3X_V20::All')
+process.load("Configuration.StandardSequences.MagneticField_cff")
+
+
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(20000)
 )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-     '/store/relval/CMSSW_3_1_1/RelValGammaJets_Pt_80_120/GEN-SIM-RECO/STARTUP31X_V1-v2/0002/AA75B481-D16B-DE11-A245-000423D99996.root',
-     '/store/relval/CMSSW_3_1_1/RelValGammaJets_Pt_80_120/GEN-SIM-RECO/STARTUP31X_V1-v2/0002/8240F64F-D36B-DE11-ACC1-000423D6006E.root',
-     '/store/relval/CMSSW_3_1_1/RelValGammaJets_Pt_80_120/GEN-SIM-RECO/STARTUP31X_V1-v2/0002/70043885-D76B-DE11-BED8-000423D98B28.root',
-     '/store/relval/CMSSW_3_1_1/RelValGammaJets_Pt_80_120/GEN-SIM-RECO/STARTUP31X_V1-v2/0002/6C6D6590-D56B-DE11-AD51-001D09F24353.root',
-     '/store/relval/CMSSW_3_1_1/RelValGammaJets_Pt_80_120/GEN-SIM-RECO/STARTUP31X_V1-v2/0002/421096F6-CF6B-DE11-AC03-000423D6A6F4.root'
+    '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0012/5A79C5DB-AA45-DF11-B1B8-00215E93F06C.root',
+    '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/F2952E05-6F44-DF11-A267-E41F13181D5C.root',
+    '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/F26705DA-6E44-DF11-9EAC-00215E93E7AC.root',
+    '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/D8514CF6-7244-DF11-8AE7-00215E21DFBA.root',
+    '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/D4D0EE40-6F44-DF11-9739-E41F13181B60.root'
+#        '/store/data/Run2010A/EG/RECO/v1/000/136/086/165A1B30-4767-DF11-AFBD-0030487C7392.root',
+#        '/store/data/Run2010A/EG/RECO/v1/000/136/084/8472E9F2-4367-DF11-B309-000423D98750.root',
+#        '/store/data/Run2010A/EG/RECO/v1/000/136/083/14F5EC18-2667-DF11-857A-000423D8F63C.root',
+#        '/store/data/Run2010A/EG/RECO/v1/000/136/082/38099728-E466-DF11-ABC5-001D09F244BB.root',
+#        '/store/data/Run2010A/EG/RECO/v1/000/136/082/301FF51A-FE66-DF11-84A9-001D09F29114.root',
+#        '/store/data/Run2010A/EG/RECO/v1/000/136/082/18825C67-DC66-DF11-9AA7-000423D6CA6E.root',
+#        '/store/data/Run2010A/EG/RECO/v1/000/136/082/14677069-EA66-DF11-BDFA-000423D98DC4.root',
+#        '/store/data/Run2010A/EG/RECO/v1/000/136/080/B4FA9047-C766-DF11-AC4A-001D09F28E80.root'
                            )
 )
 
