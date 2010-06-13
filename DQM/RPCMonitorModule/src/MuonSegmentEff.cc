@@ -886,3 +886,6 @@ void MuonSegmentEff::endJob()
 {
   dbe =0;
 }
+
+
+DEFINE_FWK_MODULE(MuonSegmentEff);
