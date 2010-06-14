@@ -17,7 +17,7 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(120000)
+    input = cms.untracked.int32(10000)
 )
 
 process.source = cms.Source("PoolSource",
