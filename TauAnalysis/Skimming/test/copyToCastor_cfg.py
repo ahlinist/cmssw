@@ -4,6 +4,8 @@ process = cms.Process("copyToCastor")
 
 from TauAnalysis.Skimming.EventContent_cff import *
 
+# import of standard configurations for RECOnstruction
+# of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
@@ -12,7 +14,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
+process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(20)
