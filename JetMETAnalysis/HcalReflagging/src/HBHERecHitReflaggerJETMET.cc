@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HBHERecHitReflaggerJETMET.cc,v 1.2 2010/04/27 19:13:50 temple Exp $
+// $Id: HBHERecHitReflaggerJETMET.cc,v 1.3 2010/06/14 23:44:55 temple Exp $
 //
 //
 
@@ -160,6 +160,17 @@ ers");
    // Use hbheTimingFlagBit to set the appropriate flag position
    hbheTimingFlagBit_   = psTshaped.getParameter<int>("hbheTimingFlagBit");
 
+   if (debug_>0)
+     {
+       cout <<"HBHE Timing Flag will be written to flag bit "<<hbheTimingFlagBit_<<endl;
+       cout <<"Timing Energy/Time parameters are:"<<endl;
+       for (unsigned int i=0;i<tfilterEnvelope_.size();++i)
+	 cout <<"\t"<<tfilterEnvelope_[i].first<<"\t"<<tfilterEnvelope_[i].second<<endl;
+       cout <<"ignorelowest  = "<<ignorelowest_<<endl;
+       cout <<"ignorehighest = "<<ignorehighest_<<endl;
+       cout <<"win_offset    = "<<win_offset_<<endl;
+       cout <<"win_gain      = "<<win_gain_<<endl;
+     }
 
 }  //HBHERecHitReflaggerJETMET::HBHERecHitReflaggerJETMET()
 
