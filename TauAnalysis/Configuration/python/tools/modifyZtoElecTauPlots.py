@@ -4,75 +4,67 @@ import copy
 def modifyPlots(process):
 	TZtZeWGQ = cms.vstring(
 			'TTplusJets', 
-            'Ztautau',
-			'Zee', 
+            'ZtautauPlusJets',
+			'ZeePlusJets', 
 			'WplusJets', 
             'gammaPlusJetsSum',
 			'qcdSum'
 	)
 	ZtTZeWGQ = cms.vstring(
-            'Ztautau',
+            'ZtautauPlusJets',
 			'TTplusJets', 
-			'Zee', 
+			'ZeePlusJets', 
 			'WplusJets', 
             'gammaPlusJetsSum',
 			'qcdSum'
 	)
 	TZtWGQZe = cms.vstring(
 			'TTplusJets', 
-            'Ztautau',
+            'ZtautauPlusJets',
 			'WplusJets', 
             'gammaPlusJetsSum',
 			'qcdSum',
-			'Zee'
+			'ZeePlusJets'
 	)
 	ZtTWGQZe = cms.vstring(
-            'Ztautau',
+            'ZtautauPlusJets',
 			'TTplusJets', 
 			'WplusJets', 
             'gammaPlusJetsSum',
 			'qcdSum',
-			'Zee'
+			'ZeePlusJets'
 	)
 	TZtGWZeQ = cms.vstring(
 			'TTplusJets', 
-            'Ztautau',
+            'ZtautauPlusJets',
             'gammaPlusJetsSum',
 			'WplusJets', 
-			'Zee', 
+			'ZeePlusJets', 
 			'qcdSum'
 	)
 	TGQZtWZe = cms.vstring(
 			'TTplusJets', 
             'gammaPlusJetsSum',
 			'qcdSum',
-            'Ztautau',
+            'ZtautauPlusJets',
 			'WplusJets', 
-			'Zee'
+			'ZeePlusJets'
 	)
 	ZtTQGZeW = cms.vstring(
-            'Ztautau',
+            'ZtautauPlusJets',
 			'TTplusJets', 
 			'qcdSum',
             'gammaPlusJetsSum',
-			'Zee',
+			'ZeePlusJets',
 			'WplusJets'
 	)
 	ZtTGWZeQ = cms.vstring(
-            'Ztautau',
+            'ZtautauPlusJets',
 			'TTplusJets', 
             'gammaPlusJetsSum',
 			'WplusJets',
-			'Zee',
+			'ZeePlusJets',
 			'qcdSum'
-	)
-	TZtGQZeW = cms.vstring(
-			'TTplusJets', 
-            'Ztautau',
-            'gammaPlusJetsSum',
-			'qcdSum',
-			'Zee',
-			'WplusJets'
 	)
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronEta.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronEta.plots.processes = ZtTZeWGQ
@@ -117,8 +109,6 @@ def modifyPlots(process):
 	
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauLeadTrkPt_afterTauLeadTrk.plots.processes = ZtTQGZeW
 	
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauTrkIso_afterTauLeadTrkPt.plots.processes = ZtTWGQZe
-	
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tau_afterElectronConversionVeto.plots.processes = ZtTQGZeW
 
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tau_afterElectronPt.yAxis = cms.string('numEntries_log')
@@ -138,20 +128,3 @@ def modifyPlots(process):
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality.plots.processes = ZtTZeWGQ
 
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronSigmaIetaIeta_afterPrimaryEventVertexPosition.yAxis = cms.string('numEntries_log')
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronSigmaIetaIeta_afterPrimaryEventVertexPosition.plots.processes = ZtTZeWGQ
-			
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronHadronicOverE_afterPrimaryEventVertexPosition.yAxis = cms.string('numEntries_log')
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronHadronicOverE_afterPrimaryEventVertexPosition.plots.processes = ZtTZeWGQ
-			
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronDeltaPhiSuperClusterTrkAtVertex_afterPrimaryEventVertexPosition.yAxis = cms.string('numEntries_log')
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronDeltaPhiSuperClusterTrkAtVertex_afterPrimaryEventVertexPosition.plots.processes = ZtTZeWGQ
-			
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronDeltaEtaSuperClusterTrkAtVertex_afterPrimaryEventVertexPosition.yAxis = cms.string('numEntries_log')
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronDeltaEtaSuperClusterTrkAtVertex_afterPrimaryEventVertexPosition.plots.processes = ZtTZeWGQ
-			
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauNumTracksSignalCone_afterTauEcalIso.yAxis = cms.string('numEntries_log')
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauNumTracksSignalCone_afterTauEcalIso.plots.processes = ZtQGTZeW
-			
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tau_afterTauLeadTrk.plots.processes = TZtGQZeW
-			
