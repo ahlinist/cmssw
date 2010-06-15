@@ -46,13 +46,13 @@ submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTa
 # harvest QCD_BCtoE 
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt20to30_7TeV",
               replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
+              job = "harvesting", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt30to80_7TeV",
               replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
+              job = "harvesting", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_BCtoE_Pt80to170_7TeV",
               replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
+              job = "harvesting", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 
 # harvest QCD_EMenriched
 for i in range(2):
