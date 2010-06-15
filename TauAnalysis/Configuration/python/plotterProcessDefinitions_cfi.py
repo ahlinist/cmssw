@@ -1,9 +1,41 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+
+#--------------------------------------------------------------------------------
+# define data plotter PSet
+#--------------------------------------------------------------------------------
+
+process_Data = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('Data')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/Data'),
+        legendEntry = cms.string('Data'),
+        type = cms.string('Data') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
+
 #--------------------------------------------------------------------------------
 # define names of different Monte Carlo processes
 #--------------------------------------------------------------------------------
+
+# Minimum bias MC
+process_MinBias = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('MinBias')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/MinBias'),
+        legendEntry = cms.string('min bias'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
 
 # Z --> tau+ tau- generated with Pythia + Tauola (all decay modes)
 process_Ztautau = cms.PSet(
