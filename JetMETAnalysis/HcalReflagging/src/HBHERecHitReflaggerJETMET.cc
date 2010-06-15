@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HBHERecHitReflaggerJETMET.cc,v 1.5 2010/06/15 00:07:08 temple Exp $
+// $Id: HBHERecHitReflaggerJETMET.cc,v 1.6 2010/06/15 13:31:49 temple Exp $
 //
 //
 
@@ -113,6 +113,9 @@ private:
   double win_offset_;
   double win_gain_;
   int hbheTimingFlagBit_;
+
+  // event counter
+  int evtcount_;
 };
 
 //
@@ -159,7 +162,7 @@ ers");
    win_gain_        = psTshaped.getParameter<double>("win_gain");
    // Use hbheTimingFlagBit to set the appropriate flag position
    hbheTimingFlagBit_   = psTshaped.getUntrackedParameter<int>("hbheTimingFlagBit",HcalCaloFlagLabels::HBHETimingShapedCutsBits); 
-
+   evtcount_=0;
 }  //HBHERecHitReflaggerJETMET::HBHERecHitReflaggerJETMET()
 
 
@@ -199,7 +202,7 @@ void HBHERecHitReflaggerJETMET::beginRun(Run& r, const EventSetup& c)
 void
 HBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  if (debug_>0) cout <<"HBHE rechit Reflagger"<<endl;
+  if (evtcount_%1000==0 && debug_>0) cout <<"HBHE rechit Reflagger"<<endl;
 
    // read HBHE RecHits
    if (!iEvent.getByLabel(hbheInputLabel_,hbheRecHits))
@@ -257,7 +260,7 @@ HBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iS
    // put the re-flagged HBHE RecHit collection into the Event
    if (debug_>2) cout <<"Adding new HBHE rechit collection"<<endl;
    iEvent.put(pOut);
- 
+   ++evtcount_;
 }
 
 // ------------ method called once each job just before starting event loop  ------------
