@@ -35,81 +35,114 @@
 #
 #--------------------------------------------------------------------------------
 
-def makeReplacementsCrab(channel = None, sample = None, replacements = None):
+def makeReplacementsCrab(channel = None, sample = None, type = None, replacements = None):
 
-    # check that channel, sample and replacements parameters are defined and non-empty
-    if channel is None:
-        raise ValueError("Undefined channel Parameter !!")
-    if sample is None:
-        raise ValueError("Undefined sample Parameter !!")
-    if replacements is None:
-        raise ValueError("Undefined replacements Parameter !!")
+	# check that channel, sample and replacements parameters are defined and non-empty
+	if channel is None:
+		raise ValueError("Undefined channel Parameter !!")
+	if sample is None:
+		raise ValueError("Undefined sample Parameter !!")
+	if (type != "mc" and type != "data") :
+		raise ValueError("Undefined type Parameter !!")
+	if replacements is None:
+		raise ValueError("Undefined replacements Parameter !!")
 
-    # remove all white-space characters from replacements parameter string
-    replacements = replacements.replace(" ", "")
+	# remove all white-space characters from replacements parameter string
+	replacements = replacements.replace(" ", "")
 
-    # split replacements string into list of individual replace statements
-    # (separated by ";" character)
-    replaceStatements = replacements.split(";")
+	# split replacements string into list of individual replace statements
+	# (separated by ";" character)
+	replaceStatements = replacements.split(";")
 
-    replaceStatements_retVal = []
+	replaceStatements_retVal = []
 
-    factorization = None
+	factorization = None
+	systematics = None
+	disableEventDump = None
+
+	for replaceStatement in replaceStatements:
+
+		# split replacement string into name, value pairs
+		paramNameValuePair = replaceStatement.split("=")
+
+		# check that replacement string matches 'paramName=paramValue' format
+		if len(paramNameValuePair) != 2:
+			raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
+
+		# extract name and value to be used for replacement
+		paramName = paramNameValuePair[0]
+		paramValue = paramNameValuePair[1]
+
+		if paramName == "maxEvents":
+			replaceStatements_retVal.append(replaceStatement)
+		if paramName == "globalTag":
+			replaceStatements_retVal.append(replaceStatement)
+		if paramName == "applyFactorization":
+			factorization = None
+			if paramValue.lower() == "false":
+				factorization = ""
+			elif paramValue.lower() == "true":
+				factorization = "enableFactorization_run" + channel + "(process)"
+			else:
+				raise ValueError("Invalid factorization option = " + paramValue + " !!")
+		if paramName == "estimateSysUncertainties":
+	 		if paramValue.lower() == "false":
+		 		systematics = "disableSysUncertainties_run" + channel + "(process)"
+	 		elif paramValue.lower() == "true":
+		 		systematics = "enableSysUncertainties_run" + channel + "(process)"
+	 		else:
+		 		raise ValueError("Invalid systematics option = " + paramValue + " !!")
+	 	if paramName == "disableEventDump":
+		 	disableEventDump = paramValue
+
+	# check that factorization option has been defined
+	if factorization is None:
+		raise ValueError("Undefined factorization option !!")
+	replaceStatements_retVal.append("factorization = " + factorization)
+
+	# check that systematics option has been defined
+	if systematics is None:
+		raise ValueError("Undefined systematics option !!")
+	replaceStatements_retVal.append("systematics = " + systematics)
+
+	# check if event-dump output is to be disabled
+	# (keep event-dump output enabled per default,
+	#  in case disableEventDump option has not been explicitely specified)
+	if disableEventDump is not None and disableEventDump.lower() == "true":
+		replaceStatements_retVal.append("disableEventDump = setattr(process, 'disableEventDump', cms.PSet())")
+
+	# replace inputFileName parameter by itself
+	# (effectively disabling replacement of inputFileName parameter,
+	#  as it is already being replaced by crab)
+	replaceStatements_retVal.append("inputFileNames = process.source.fileNames")
+
+	# replace genPhaseSpaceCut, patTupleOutputFileName and plotsOutputFileName parameters
+	# (ommit "_part.." suffix of sample name in case of processes split
+	#  into multiple cmsRun job parts, in order to avoid having to specify
+	#   genPhaseSpaceCut, plotsOutputFileName and patTupleOutputFileName
+	#  again and again for each part)
+	genPhaseSpaceCut = "genPhaseSpaceCut" + channel + "_" + sample
+	patTupleOutputFileName = "patTupleOutputFileName" + channel + "_" + sample
+	plotsOutputFileName = "plotsOutputFileName" + channel + "_" + sample
+	if sample.find("_part") != -1:
+		genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
+		patTupleOutputFileName = "cms.untracked.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")]
+		patTupleOutputFileName += ".value().replace('_partXX', '')"
+		plotsOutputFileName = "cms.string(" + plotsOutputFileName[:plotsOutputFileName.rfind("_part")]
+		plotsOutputFileName += ".value().replace(\'_partXX', '')"
+	else:
+		plotsOutputFileName += ".value().replace(\'_partXX', '')"
+		patTupleOutputFileName += ".value().replace('_partXX', '')"
+	replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
+	replaceStatements_retVal.append("patTupleOutputFileName = " + patTupleOutputFileName)
+	replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
     
-    for replaceStatement in replaceStatements:
+	# disable automatic systematics calculation and PAT-tuple production
+	replaceStatements_retVal.append("isBatchMode = setattr(process, 'isBatchMode', cms.PSet())")
 
-        # split replacement string into name, value pairs
-        paramNameValuePair = replaceStatement.split("=")
+	# if running data, run function to remove MC-dependent modules
+	if type is "data":
+		replaceStatements_retVal.append("#switchToData(process) = switchToData(process)")
+	replacements_retVal = "; ".join(replaceStatements_retVal)
 
-        # check that replacement string matches 'paramName=paramValue' format
-        if len(paramNameValuePair) != 2:
-            raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
-
-        # extract name and value to be used for replacement
-        paramName = paramNameValuePair[0]
-        paramValue = paramNameValuePair[1]
-
-        if paramName == "maxEvents":
-            replaceStatements_retVal.append(replaceStatement)
-        if paramName == "applyFactorization":
-            factorization = None
-            if paramValue.lower() == "false":
-                factorization = ""
-            elif paramValue.lower() == "true":
-                factorization = "enableFactorization_run" + channel + "(process)"
-            else:
-                raise ValueError("Invalid factorization option = " + paramValue + " !!")
-
-    # check that factorization option has been defined
-    if factorization is None:
-        raise ValueError("Undefined factorization option !!")
-    replaceStatements_retVal.append("factorization = " + factorization)
-
-    # replace inputFileName parameter by itself
-    # (effectively disabling replacement of inputFileName parameter,
-    #  as it is already being replaced by crab)
-    replaceStatements_retVal.append("inputFileNames = process.source.fileNames")
-
-    # replace genPhaseSpaceCut, patTupleOutputFileName and plotsOutputFileName parameters
-    # (ommit "_part.." suffix of sample name in case of processes split
-    #  into multiple cmsRun job parts, in order to avoid having to specify
-    #   genPhaseSpaceCut, plotsOutputFileName and patTupleOutputFileName
-    #  again and again for each part)
-    genPhaseSpaceCut = "genPhaseSpaceCut" + channel + "_" + sample
-    patTupleOutputFileName = "patTupleOutputFileName" + channel + "_" + sample
-    plotsOutputFileName = "plotsOutputFileName" + channel + "_" + sample
-    if sample.find("_part") != -1:
-        genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
-        patTupleOutputFileName = "cms.untracked.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")]
-        patTupleOutputFileName += ".value().replace('_partXX', '')"
-        plotsOutputFileName = "cms.string(" + plotsOutputFileName[:plotsOutputFileName.rfind("_part")]
-        plotsOutputFileName += ".value().replace(\'_partXX', '')"
-    else:
-        plotsOutputFileName += ".value().replace(\'_partXX', '')"
-    replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
-    replaceStatements_retVal.append("patTupleOutputFileName = " + patTupleOutputFileName)
-    replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
-
-    replacements_retVal = "; ".join(replaceStatements_retVal)
-
-    return replacements_retVal
+	return replacements_retVal

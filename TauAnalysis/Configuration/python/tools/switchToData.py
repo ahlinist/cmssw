@@ -48,8 +48,13 @@ def switchToData(process):
 		process.analyzeZtoElecTauEvents.analyzers.remove(process.genPhaseSpaceEventInfoHistManager)
 		removeAnalyzer(process.analyzeZtoElecTauEvents.analysisSequence,"genPhaseSpaceEventInfoHistManager")
 		process.analyzeZtoElecTauEvents.eventDumps[0].doGenInfo = cms.bool(False)
+		process.analyzeZtoElecTauEvents.eventDumps[0].genParticleSource = cms.InputTag('')
 		process.electronHistManager.genParticleSource = cms.InputTag('')
 		process.tauHistManager.genParticleSource = cms.InputTag('')
 		process.jetHistManager.genParticleSource = cms.InputTag('')
-	
+		process.elecTauPairZeeHypotheses.genLeptonsFromZsSource = cms.InputTag('')
+		process.elecTauPairZeeHypothesesLooseElectronIsolation.genLeptonsFromZsSource = cms.InputTag('')
+		#process.selectedDiTauPairs1stTauChargeCumulative.srcGenParticles = cms.InputTag('')	
+		#process.selectedDiTauPairs1stTauChargeIndividual.srcGenParticles = cms.InputTag('')
+
 

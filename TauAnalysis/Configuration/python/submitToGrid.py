@@ -40,16 +40,18 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 #          in the format 'paramName1=paramValue1; paramName2=paramValue2;...';
 #          in the original config file, each occurence of any paramName
 #          will be replaced by the associated paramValue
-#      (9) outputFileNames
+#      (9) type
+#			type of sample; must be "data" or "mc"
+#     (10) outputFileNames
 #          names of all .root files produced by cmsRun job
 #
 #          NOTE: .root files missing in this list will not be copied to castor !!
 #
-#     (10) outputFilePath
+#     (11) outputFilePath
 #          name of the directory (either on afs area or castor)
 #          to which all .root files produced by the cmsRun job will be copied
 #          (e.g. "/castor/cern.ch/user/v/veelken/")
-#     (11) submit
+#     (12) submit
 #          if "yes", jobs will be submitted to the batch system, otherwise config files
 #          and scripts are generated but no submission
 #
@@ -59,7 +61,7 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 
 def submitToGrid(configFile = None, channel = None,
                  sample = None, job = None, dbs_name = None, dbs_url = None, 
-                 replFunction = None, replacements = "",
+                 replFunction = None, replacements = "", type = None,
                  outputFileNames = None, outputFilePath = None,
                  submit = "yes"):
     # check that configFile, channel, sample and outputFilePath
@@ -80,6 +82,8 @@ def submitToGrid(configFile = None, channel = None,
         raise ValueError("Undefined outputFileNames Parameter !!")
     if outputFilePath is None:
         raise ValueError("Undefined outputFilePath Parameter !!")
+    if type is None:
+        raise ValueError("Undefined type Parameter !!")
 
     # in case outputFilePath parameter not terminated by "/",
     # add terminating "/" character to outputFilePath string
@@ -99,7 +103,8 @@ def submitToGrid(configFile = None, channel = None,
     cmsswConfigFile_mod = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Grid_cfg.py")
 
     if replFunction is not None:
-        replacements = replFunction(channel = channel, sample = sample, replacements = replacements)
+        replacements = replFunction(channel = channel, sample = sample, type = type, replacements = replacements)
+	print replacements
 
     # delete previous version of modified config file if it exists
     if os.path.exists(cmsswConfigFile_mod):
