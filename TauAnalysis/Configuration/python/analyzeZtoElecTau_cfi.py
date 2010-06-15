@@ -62,9 +62,8 @@ triggerHistManagerForElecTau.l1Bits = cms.vstring(
 )
 
 triggerHistManagerForElecTau.hltPaths = cms.vstring(    
-	#'HLT_Ele15_SW_EleId_L1R',
-	#'HLT_Ele15_SW_LooseTrackIso_L1R',
-	'HLT_Ele15_LW_L1R'
+	'HLT_Ele15_SW_EleId_L1R',
+	'HLT_Ele15_SW_LooseTrackIso_L1R'
 )
 
 # import config for event weight histogram manager
@@ -411,7 +410,7 @@ elecTauAnalysisSequence = cms.VPSet(
     # trigger selection
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
-        title = cms.string('Electron Trigger'),
+        title = cms.string('Electron 15 Trigger'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
