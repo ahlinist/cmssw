@@ -35,7 +35,7 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 enableFactorization_makeZtoElecTauPlots(process)
 
 # import function for modifying parameters of individual plots
-from TauAnalysis.Configuration.modifyZtoElecTauPlots import modifyPlots
+from TauAnalysis.Configuration.tools.modifyZtoElecTauPlots import modifyPlots
 modifyPlots(process)
 
 # load only signal and gamma+jets background
