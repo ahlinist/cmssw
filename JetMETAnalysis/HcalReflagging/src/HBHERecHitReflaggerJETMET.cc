@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HBHERecHitReflaggerJETMET.cc,v 1.4 2010/06/14 23:54:47 temple Exp $
+// $Id: HBHERecHitReflaggerJETMET.cc,v 1.5 2010/06/15 00:07:08 temple Exp $
 //
 //
 
@@ -159,17 +159,6 @@ ers");
    win_gain_        = psTshaped.getParameter<double>("win_gain");
    // Use hbheTimingFlagBit to set the appropriate flag position
    hbheTimingFlagBit_   = psTshaped.getUntrackedParameter<int>("hbheTimingFlagBit",HcalCaloFlagLabels::HBHETimingShapedCutsBits); 
-   if (debug_>0)
-     {
-       cout <<"HBHE Timing Flag will be written to flag bit "<<hbheTimingFlagBit_<<endl;
-       cout <<"Timing Energy/Time parameters are:"<<endl;
-       for (unsigned int i=0;i<tfilterEnvelope_.size();++i)
-	 cout <<"\t"<<tfilterEnvelope_[i].first<<"\t"<<tfilterEnvelope_[i].second<<endl;
-       cout <<"ignorelowest  = "<<ignorelowest_<<endl;
-       cout <<"ignorehighest = "<<ignorehighest_<<endl;
-       cout <<"win_offset    = "<<win_offset_<<endl;
-       cout <<"win_gain      = "<<win_gain_<<endl;
-     }
 
 }  //HBHERecHitReflaggerJETMET::HBHERecHitReflaggerJETMET()
 
@@ -295,14 +284,21 @@ void HBHERecHitReflaggerJETMET::dumpInfo()
 {
   // Dump out all the parameters used in the reflagger
   if (debug_==0) return;
-  else
-    {
-      cout <<"  Dumping out all parameters!"<<endl;
-      cout <<"  An HPD must have at least "<<Nhits_<<" greater than "<<Ethresh_<<" to be considered noisy."<<endl;
-      cout <<"  If this is condition is met, ALL channels in the HPD are flagged as noisy."<<endl;
-    }
 
-}
+  cout <<"  Dumping out all parameters!"<<endl;
+  cout <<" HPD Hit Multiplicity flag bit set to : "<<hbheFlagBit_<<endl;
+  cout <<"  An HPD must have at least "<<Nhits_<<" greater than "<<Ethresh_<<" to be considered noisy."<<endl;
+  cout <<"  If this is condition is met, ALL channels in the HPD are flagged as noisy."<<endl;
+  
+  cout <<"\n\nHBHE Timing Flag will be written to flag bit "<<hbheTimingFlagBit_<<endl;
+  cout <<"Timing Energy/Time parameters are:"<<endl;
+  for (unsigned int i=0;i<tfilterEnvelope_.size();++i)
+    cout <<"\t"<<tfilterEnvelope_[i].first<<"\t"<<tfilterEnvelope_[i].second<<endl;
+  cout <<"ignorelowest  = "<<ignorelowest_<<endl;
+  cout <<"ignorehighest = "<<ignorehighest_<<endl;
+  cout <<"win_offset    = "<<win_offset_<<endl;
+  cout <<"win_gain      = "<<win_gain_<<endl;
+}// dumpInfo()
 
 
 void HBHERecHitReflaggerJETMET::SetTimingShapedFlags(HBHERecHit& hbhe)
@@ -371,14 +367,14 @@ void HBHERecHitReflaggerJETMET::SetTimingShapedFlags(HBHERecHit& hbhe)
   // Set status high if time outside expected range
   if (rhtime<=twinmin || rhtime >= twinmax)
     status=1; // set status to 1
-  if (status>0 && debug_>5)
-    cout <<" Setting timing flag" <<endl;
-
+  if (status>0 && debug_>0)
+    cout <<"HBHE Timing Flag Bit for "<<hbhe.id()<<"   is set; \tEnergy  = "<<hbhe.energy()<<"  time = "<<hbhe.time()<<endl;
+    
   if (status>0)
     hbhe.setFlagField(1,hbheTimingFlagBit_);
   
   return;
-}
+} //SetTimingShapedFlags(HBHERecHit& hbhe)
 
 
 
