@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HBHERecHitReflaggerJETMET.cc,v 1.3 2010/06/14 23:44:55 temple Exp $
+// $Id: HBHERecHitReflaggerJETMET.cc,v 1.4 2010/06/14 23:54:47 temple Exp $
 //
 //
 
@@ -158,8 +158,7 @@ ers");
    win_offset_      = psTshaped.getParameter<double>("win_offset");
    win_gain_        = psTshaped.getParameter<double>("win_gain");
    // Use hbheTimingFlagBit to set the appropriate flag position
-   hbheTimingFlagBit_   = psTshaped.getParameter<int>("hbheTimingFlagBit");
-
+   hbheTimingFlagBit_   = psTshaped.getUntrackedParameter<int>("hbheTimingFlagBit",HcalCaloFlagLabels::HBHETimingShapedCutsBits); 
    if (debug_>0)
      {
        cout <<"HBHE Timing Flag will be written to flag bit "<<hbheTimingFlagBit_<<endl;
