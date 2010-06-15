@@ -17,7 +17,7 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(1000)
 )
 
 process.source = cms.Source("PoolSource",
@@ -30,6 +30,7 @@ process.source = cms.Source("PoolSource",
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/D2D518F7-7244-DF11-9A1D-E41F131815BC.root',
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/D0C387E5-7444-DF11-BC80-E41F13181460.root',
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/D085E799-7144-DF11-966F-00215E93E7AC.root',
+        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/C6219DF9-7444-DF11-B4AB-00215E93EF9C.root',
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/C2A5C27B-7544-DF11-8549-E41F13181688.root',
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/BECE1389-7444-DF11-A07A-00215E93E7AC.root',
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/BE8863A1-7044-DF11-A324-00215E222772.root',
@@ -39,7 +40,13 @@ process.source = cms.Source("PoolSource",
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/B00B27D1-7144-DF11-9F96-00215E2211F4.root',
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/A6FC85DF-6D44-DF11-8CC1-E41F1318157C.root',
         '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/A41A98B1-6D44-DF11-B30E-E41F1318158C.root',
-        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/A0FE9789-7444-DF11-A606-00215E2220F4.root'
+        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/A0FE9789-7444-DF11-A606-00215E2220F4.root',
+        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/9C1FFB05-6E44-DF11-9FDE-00215E93D738.root',
+        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/929CAA8C-7444-DF11-AA34-00215E93C4A8.root',
+        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/88507C83-7544-DF11-9C2B-E41F131816A8.root',
+        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/86E4199F-7044-DF11-980C-00215E222256.root',
+        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/82F7C0D3-7144-DF11-9F8A-00215E21D750.root',
+        '/store/mc/Spring10/PhotonJet_Pt15/AODSIM/START3X_V26_S09-v1/0005/82DCB2DD-6D44-DF11-BDA2-E41F131817E8.root'
 #        '/store/data/Run2010A/EG/RECO/v1/000/136/086/165A1B30-4767-DF11-AFBD-0030487C7392.root',
 #        '/store/data/Run2010A/EG/RECO/v1/000/136/084/8472E9F2-4367-DF11-B309-000423D98750.root',
 #        '/store/data/Run2010A/EG/RECO/v1/000/136/083/14F5EC18-2667-DF11-857A-000423D8F63C.root',
