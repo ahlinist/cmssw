@@ -152,7 +152,7 @@ void ZllHypothesisT1T2HistManager<T1,T2>::fillHistogramsImp(const edm::Event& ev
 
     if ( ZllHypothesis->genLepton1().isAvailable() &&
 	 ZllHypothesis->genLepton2().isAvailable() ) {
-      hGenVisMass_->Fill((ZllHypothesis->genLepton2()->p4() + ZllHypothesis->genLepton2()->p4()).mass(), weight);
+      hGenVisMass_->Fill((ZllHypothesis->genLepton1()->p4() + ZllHypothesis->genLepton2()->p4()).mass(), weight);
     }
 
     hVisMassBestMach_->Fill(ZllHypothesis->p4ZbestMatch().mass(), weight);
