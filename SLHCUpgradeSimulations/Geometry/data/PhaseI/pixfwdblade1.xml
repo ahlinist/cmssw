@@ -49,11 +49,13 @@ Pixel Forward Blade
  <Constant name="GlueT"              value="0.050*mm"/>
  <Constant name="BumpBondT"          value="0.030*mm"/>
  <Constant name="BumpROChipT"        value="[ROChipT]+[BumpBondT]"/>
- <Constant name="VHDIT"              value="0.300*mm"/>
+ <Constant name="HDIT"              value="0.300*mm"/>
  <Constant name="BladeBaseT"         value="0.8*mm"/>
+ <Constant name="TPGBladeBaseT"      value="0.68*mm"/>
+ <Constant name="CarbonFiberSkinT"   value="0.06*mm"/>
  <Constant name="ModuleZ"            value="[BladeBaseT]/2+[ModuleT]"/>
  <Constant name="BumpROChipZ"        value="-[ModuleT]/2+[GlueT]+[BumpROChipT]/2"/>
- <Constant name="VHDIZ"              value="-[ModuleT]/2+2*[GlueT]+[ROChipT]+[BumpBondT]+[WaferT]+[VHDIT]/2"/>
+ <Constant name="HDIZ"              value="-[ModuleT]/2+2*[GlueT]+[ROChipT]+[BumpBondT]+[WaferT]+[HDIT]/2"/>
  <Constant name="WaferZ"             value="-[ModuleT]/2+[GlueT]+[ROChipT]+[BumpBondT]+[WaferT]/2"/>
 
 
@@ -66,6 +68,14 @@ Pixel Forward Blade
                                            tl1="[WedgeTop]/2." tl2="[WedgeTop]/2." h2="[WedgeH]/2."
                                            alp1="0*deg"        alp2="0*deg"        theta="0*deg"   phi="0*deg" />
   <Trapezoid name="PixelForwardBladeBase"  dz="[BladeBaseT]/2"
+                                           bl1="[WedgeBot]/2." bl2="[WedgeBot]/2." h1="[WedgeH]/2."
+                                           tl1="[WedgeTop]/2." tl2="[WedgeTop]/2." h2="[WedgeH]/2."
+                                           alp1="0*deg"        alp2="0*deg"        theta="0*deg"   phi="0*deg" />
+  <Trapezoid name="TPGBladeBase"           dz="[TPGBladeBaseT]/2"
+                                           bl1="[WedgeBot]/2." bl2="[WedgeBot]/2." h1="[WedgeH]/2."
+                                           tl1="[WedgeTop]/2." tl2="[WedgeTop]/2." h2="[WedgeH]/2."
+                                           alp1="0*deg"        alp2="0*deg"        theta="0*deg"   phi="0*deg" />
+  <Trapezoid name="CarbonFiberSkin"        dz="[CarbonFiberSkinT]/2"
                                            bl1="[WedgeBot]/2." bl2="[WedgeBot]/2." h1="[WedgeH]/2."
                                            tl1="[WedgeTop]/2." tl2="[WedgeTop]/2." h2="[WedgeH]/2."
                                            alp1="0*deg"        alp2="0*deg"        theta="0*deg"   phi="0*deg" />
@@ -83,8 +93,8 @@ Pixel Forward Blade
                                         dz="[BumpBondT]/2" />
   <Box name="PixelForwardAdhesiveFilm"  dx="[GlueW]/2" dy="[GlueL]/2"
                                         dz="[GlueT]/2" />
-  <Box name="PixelForwardVHDI"          dx="[SensitiveW]/2" dy="[SensitiveL]/2"
-                                        dz="[VHDIT]/2" />
+  <Box name="PixelForwardHDI"          dx="[SensitiveW]/2" dy="[SensitiveL]/2"
+                                        dz="[HDIT]/2" />
 
 </SolidSection>
 
@@ -93,10 +103,19 @@ Pixel Forward Blade
   <rSolid name="PixelForwardBlade"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
- <LogicalPart name="PixelForwardBladeBase" category="support">
+ <LogicalPart name="PixelForwardBladeBase" category="unspecified">
   <rSolid name="PixelForwardBladeBase"/>
-  <rMaterial name="materials:Beryllium"/>
+  <rMaterial name="materials:Air"/>
  </LogicalPart>
+ <LogicalPart name="TPGBladeBase" category="support">
+  <rSolid name="TPGBladeBase"/>
+  <rMaterial name="materials:FPix_TPG"/>
+ </LogicalPart>
+ <LogicalPart name="CarbonFiberSkin" category="support">
+  <rSolid name="CarbonFiberSkin"/>
+  <rMaterial name="materials:FPix_CFSkin"/>
+ </LogicalPart>
+
  <LogicalPart name="PixelForwardModule1" category="unspecified">
   <rSolid name="PixelForwardModule"/>
   <rMaterial name="materials:Air"/>
@@ -113,9 +132,9 @@ Pixel Forward Blade
   <rSolid name="PixelForwardAdhesiveFilm"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
- <LogicalPart name="PixelForwardVHDI" category="support">
-  <rSolid name="PixelForwardVHDI"/>
-  <rMaterial name="pixfwdMaterials:Pix_Fwd_VHDI"/>
+ <LogicalPart name="PixelForwardHDI" category="support">
+  <rSolid name="PixelForwardHDI"/>
+  <rMaterial name="pixfwdMaterials:Pix_Fwd_HDI"/>
  </LogicalPart>
  <LogicalPart name="PixelForwardBumpROChip" category="envelope">
   <rSolid name="PixelForwardBumpROChip"/>
@@ -147,6 +166,22 @@ Pixel Forward Blade
   <rChild name="pixfwdblade1:PixelForwardBladeBase"/>
   <Translation x="0"  y="0"  z="0" />
  </PosPart>
+ <PosPart copyNumber="1">
+  <rParent name="pixfwdblade1:PixelForwardBladeBase"/>
+  <rChild name="pixfwdblade1:TPGBladeBase"/>
+  <Translation x="0"  y="0"  z="0" />
+ </PosPart>
+ <PosPart copyNumber="1">
+  <rParent name="pixfwdblade1:PixelForwardBladeBase"/>
+  <rChild name="pixfwdblade1:CarbonFiberSkin"/>
+  <Translation x="0"  y="0"  z="[TPGBladeBaseT]/2+[CarbonFiberSkinT]/2" />
+ </PosPart>
+ <PosPart copyNumber="2">
+  <rParent name="pixfwdblade1:PixelForwardBladeBase"/>
+  <rChild name="pixfwdblade1:CarbonFiberSkin"/>
+  <Translation x="0"  y="0"  z="-[TPGBladeBaseT]/2-[CarbonFiberSkinT]/2" />
+ </PosPart>
+
  <PosPart copyNumber="1">
   <rParent name="pixfwdblade1:PixelForwardBlade"/>
   <rChild name="pixfwdblade1:PixelForwardModule1"/>
@@ -186,8 +221,8 @@ Pixel Forward Blade
  
 <PosPart copyNumber="1">
   <rParent name="pixfwdblade1:PixelForwardModule1"/>
-  <rChild name="pixfwdblade1:PixelForwardVHDI"/>
-  <Translation x="0"  y="0"  z="[VHDIZ]" />
+  <rChild name="pixfwdblade1:PixelForwardHDI"/>
+  <Translation x="0"  y="0"  z="[HDIZ]" />
  </PosPart>
 
  <PosPart copyNumber="1">

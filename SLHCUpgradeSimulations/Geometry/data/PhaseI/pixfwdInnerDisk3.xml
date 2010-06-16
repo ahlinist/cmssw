@@ -2,13 +2,17 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="pixfwdInnerDisk3.xml" eval="true">
-  <Constant name="InnerRingRMin"        value="44.3*mm"/>
-  <Constant name="InnerRingRMax"        value="45.0*mm"/>
-  <Constant name="InnerRingHalfWidth"   value="26.75*mm"/>
+  <Constant name="InnerRingCFRMin"        value="44.3*mm"/>
+  <Constant name="InnerRingCFRMax"        value="44.8*mm"/>
+  <Constant name="InnerRingRMin"        value="44.8*mm"/>
+  <Constant name="InnerRingRMax"        value="46.8*mm"/>
+  <Constant name="InnerRingHalfWidth"   value="15.0*mm"/>
   <Constant name="InnerRingZ"           value="[pixfwdDisks:DiskHalfWidth]-[InnerRingHalfWidth]"/>
-  <Constant name="OuterRingRMin"        value="[InnerRingRMax]+[pixfwdblade3:WedgeSideL]"/>
-  <Constant name="OuterRingRMax"        value="[OuterRingRMin]+3.0*mm"/>
-  <Constant name="OuterRingHalfWidth"   value="12*mm"/>
+  <Constant name="OuterRingRMin"        value="[InnerRingRMax]+[pixfwdblade1:WedgeSideL]"/>
+  <Constant name="OuterRingRMax"        value="[OuterRingRMin]+2.0*mm"/>
+  <Constant name="OuterRingCFRMin"      value="[OuterRingRMax]"/>
+  <Constant name="OuterRingCFRMax"      value="[OuterRingCFRMin]+0.5*mm"/>
+  <Constant name="OuterRingHalfWidth"   value="14*mm"/>
   <Constant name="OuterRingZ"           value="[pixfwdDisks:DiskHalfWidth]-[OuterRingHalfWidth]"/>
 </ConstantsSection>
  
@@ -19,18 +23,35 @@
 
   <Tubs name="PixelForwardInnerDiskOuterRing"  startPhi="0." deltaPhi="360*deg"
    rMin="[OuterRingRMin]" rMax="[OuterRingRMax]" dz="[OuterRingHalfWidth]" />
+
+  <Tubs name="PixelForwardInnerDiskCFInnerRing"  startPhi="0." deltaPhi="360*deg"
+   rMin="[InnerRingCFRMin]" rMax="[InnerRingCFRMax]" dz="[InnerRingHalfWidth]"/>
+
+  <Tubs name="PixelForwardInnerDiskCFOuterRing"  startPhi="0." deltaPhi="360*deg"
+   rMin="[OuterRingCFRMin]" rMax="[OuterRingCFRMax]" dz="[OuterRingHalfWidth]" />
 </SolidSection>
  
 <LogicalPartSection label="pixfwdInnerDisk3.xml">
  <LogicalPart name="PixelForwardInnerDiskInnerRing" category="support">
   <rSolid name="PixelForwardInnerDiskInnerRing"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="materials:C_C_InnerRing"/>
  </LogicalPart>
   
  <LogicalPart name="PixelForwardInnerDiskOuterRing" category="support">
   <rSolid name="PixelForwardInnerDiskOuterRing"/>
-  <rMaterial name="materials:Aluminium"/>
+  <rMaterial name="materials:C_C_OuterRing"/>
  </LogicalPart>
+
+ <LogicalPart name="PixelForwardInnerDiskCFInnerRing" category="support">
+  <rSolid name="PixelForwardInnerDiskCFInnerRing"/>
+  <rMaterial name="materials:FPix_CFSkin"/>
+ </LogicalPart>
+  
+ <LogicalPart name="PixelForwardInnerDiskCFOuterRing" category="support">
+  <rSolid name="PixelForwardInnerDiskCFOuterRing"/>
+  <rMaterial name="materials:FPix_CFSkin"/>
+ </LogicalPart>
+
 </LogicalPartSection>
 
 
@@ -44,6 +65,18 @@
   <PosPart copyNumber="1">
     <rParent name="pixfwdDisks:PixelForwardDisk3"/>
     <rChild name="pixfwdInnerDisk3:PixelForwardInnerDiskOuterRing"/>
+    <Translation x="0.*mm" y="0.*mm" z="[OuterRingZ]"/>
+  </PosPart>
+ 
+  <PosPart copyNumber="1">
+    <rParent name="pixfwdDisks:PixelForwardDisk3"/>
+    <rChild name="pixfwdInnerDisk3:PixelForwardInnerDiskCFInnerRing"/>
+    <Translation x="0.*mm" y="0.*mm" z="[InnerRingZ]"/>
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwdDisks:PixelForwardDisk3"/>
+    <rChild name="pixfwdInnerDisk3:PixelForwardInnerDiskCFOuterRing"/>
     <Translation x="0.*mm" y="0.*mm" z="[OuterRingZ]"/>
   </PosPart>
  
