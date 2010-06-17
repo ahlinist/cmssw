@@ -14,7 +14,7 @@ preselectedElectrons = cms.EDFilter("PATElectronSelector",
   filter = cms.bool(False)                                
 )
 
-###NEW!!! Try new cleaning options for jets:D
+###Cleaning options for jets:
 from PhysicsTools.PatAlgos.cleaningLayer1.jetCleaner_cfi import *
 topJets = cleanPatJets.clone()
 topJets.src = cms.InputTag("preselectedJets")
@@ -90,6 +90,7 @@ topMuons = cms.EDProducer("PATMuonCleaner",
 )
 
 
+
 topElectrons = cms.EDProducer("PATElectronCleaner",
                               src= cms.InputTag("preselectedElectrons"),
                               preselection = cms.string(''),
@@ -108,6 +109,8 @@ topElectrons = cms.EDProducer("PATElectronCleaner",
                               )
 
 
+
+
 bJets = cms.EDFilter("PATJetSelector",
                      src = cms.InputTag("topJets"),
 #                     src = cms.InputTag("preselectedJets"),
@@ -115,6 +118,11 @@ bJets = cms.EDFilter("PATJetSelector",
                      filter = cms.bool(False)
                      )
 
+patPFBJets = cms.EDFilter("PATJetSelector",
+                          src = cms.InputTag("patJetsPFlow"),
+                          cut = cms.string('pt>0'),
+                          filter = cms.bool(False)
+                          )
 
 antiBJets = cms.EDFilter("PATJetSelector",
                      src = cms.InputTag("topJets"),
@@ -162,3 +170,19 @@ MCTruthParticles = cms.EDProducer("SingleTopTChannelMCProducer",
                                           genParticlesSource = cms.InputTag("genParticles")
                                           )
 
+
+#Part for control samples:
+
+#AntiIso cut for QCD: 
+topMuonsAntiIso = topMuons.clone(src = cms.InputTag("cleanPatMuons"))
+topElectronsAntiIso = topElectrons.clone(src = cms.InputTag("cleanPatElectrons"))
+
+
+preselectedMuonsAntiIso = topMuons.clone()
+preselectedElectronsAntiIso = topElectrons.clone()
+
+topJetsAntiIso = topJets.clone()
+
+bJetsAntiIso = bJets.clone(src=cms.InputTag('topJetsAntiIso'))
+antiBJetsAntiIso = antiBJets.clone(src=cms.InputTag('topJetsAntiIso'))
+forwardJetsAntiIso = forwardJets.clone(src=cms.InputTag('topJetsAntiIso'))
