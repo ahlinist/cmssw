@@ -433,7 +433,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauMatchingGenTauDecayMode_->getTH1()->Fill(JetMCTagUtils::genTauDecayMode(*patTau->genJet()).data(), weight);
     }
 
-    hTauNumTracksSignalCone_->Fill(patTau->signalTracks().size(), weight);
+    hTauNumTracksSignalCone_->Fill(patTau->signalPFChargedHadrCands().size(), weight);
     hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size(), weight);
 
     if ( isValidRef(patTau->leadTrack()) ) {
