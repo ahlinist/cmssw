@@ -104,7 +104,6 @@ def submitToGrid(configFile = None, channel = None,
 
     if replFunction is not None:
         replacements = replFunction(channel = channel, sample = sample, type = type, replacements = replacements)
-	print replacements
 
     # delete previous version of modified config file if it exists
     if os.path.exists(cmsswConfigFile_mod):
@@ -148,7 +147,7 @@ def submitToGrid(configFile = None, channel = None,
     replacements += "; events_per_job = " + eventsPerJob
     replacements += "; output_file = " + crabOutputFiles
     replacements += "; ui_working_dir = " + crabDirectory
-    replacements += "; logdir = " + crabDirectory + "log/"
+    replacements += "; logdir = " + crabDirectory + "res/"
     replacements += "; user_remote_dir = " + outputFilePath
     prepareConfigFile(configFile_orig = crabConfigFile_orig, replacements = replacements, configFile_mod = crabConfigFile_mod)
     
