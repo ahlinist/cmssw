@@ -21,6 +21,7 @@ process.source = cms.Source("PoolSource",
 		'rfio:///castor/cern.ch/cms/store/caf/user/meridian/EGMPromptFilter_Beam10/133483/EGMPromptFilter_Electrons_133483_19627412_1_1.root'
     )
 )
+process.source.inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMConverter_*_*")
 
 #--------------------------------------------------------------------------------
 # select electrons and tau-jets
@@ -168,7 +169,8 @@ process.elecTauSkimOutputModule = cms.OutputModule("PoolOutputModule",
 )
 
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True)
+    wantSummary = cms.untracked.bool(True),
+	fileMode = cms.untracked.string('NOMERGE')
 )
 
 process.o = cms.EndPath(process.elecTauSkimOutputModule)
