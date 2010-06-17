@@ -13,7 +13,8 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
+#process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
+process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -70,10 +71,10 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_01.root'
-    )
+		#'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
+		#'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
+    	'rfio:/castor/cern.ch/user/j/jkolb/elecTauPatTuples/spring10/patTupleZtoElecTau_Zee_7TeV_part01.root'
+	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
 
@@ -135,6 +136,8 @@ from TauAnalysis.Configuration.tools.switchToData import *
 ##switchToData(process)#
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+
 process.p = cms.Path(
     process.producePatTupleZtoElecTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
@@ -177,6 +180,8 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+#
+process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
 #
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
