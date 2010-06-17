@@ -8,17 +8,6 @@ process = cms.Process("Test")
 
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
-## add inFlightMuons
-process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-process.inFlightMuons = cms.EDProducer("PATGenCandsFromSimTracksProducer",
-        src           = cms.InputTag("g4SimHits"),   ## use "famosSimHits" for FAMOS
-        setStatus     = cms.int32(-1),
-        particleTypes = cms.vstring("mu+"),          ## picks also mu-, of course
-        filter        = cms.vstring("pt > 0.5"),     ## just for testing
-        makeMotherLink = cms.bool(True),
-        writeAncestors = cms.bool(True),             ## save also the intermediate GEANT ancestors of the muons
-        genParticles   = cms.InputTag("genParticles"),
-)
 ## prepare several clones of match associations for status 1, 3 and in flight muons (status -1)
 process.muMatch3 = process.muonMatch.clone(mcStatus = [3]) # hard scattering
 process.muMatch1 = process.muonMatch.clone(mcStatus = [1]) # stable
