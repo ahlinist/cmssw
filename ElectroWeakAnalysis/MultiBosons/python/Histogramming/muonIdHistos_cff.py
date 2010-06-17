@@ -40,10 +40,32 @@ numberOfValidHitsHisto = cms.PSet(
   plotquantity = cms.untracked.string("numberOfValidHits")
 )
 
+isolationR03emVetoEtHisto = cms.PSet(
+  itemsToPlot = cms.untracked.int32(-1),
+  min = cms.untracked.double(0),
+  max = cms.untracked.double(10),
+  nbins = cms.untracked.int32(100),
+  name = cms.untracked.string("isolationR03emVetoEt"),
+  description = cms.untracked.string("ECAL veto [GeV]"),
+  plotquantity = cms.untracked.string("isolationR03.emVetoEt")
+)
+
+isolationR03hadVetoEtHisto = cms.PSet(
+  itemsToPlot = cms.untracked.int32(-1),
+  min = cms.untracked.double(0),
+  max = cms.untracked.double(10),
+  nbins = cms.untracked.int32(100),
+  name = cms.untracked.string("isolationR03hadVetoEt"),
+  description = cms.untracked.string("HCAL veto [GeV]"),
+  plotquantity = cms.untracked.string("isolationR03.hadVetoEt")
+)
+
 muonIdHistos = cms.VPSet(normChi2Histo,
   dbHisto,
   edbHisto,
-  numberOfValidHitsHisto
+  numberOfValidHitsHisto,
+  isolationR03emVetoEtHisto,
+  isolationR03hadVetoEtHisto
 )
 
 ## Add tab-completion during the inspection
