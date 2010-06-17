@@ -30,7 +30,17 @@ hcalIsoHisto = cms.PSet(
   plotquantity = cms.untracked.string("hcalIso")
 )
 
-isoHistos = cms.VPSet(trackIsoHisto, ecalIsoHisto, hcalIsoHisto)
+relIsoHisto = cms.PSet(
+  itemsToPlot = cms.untracked.int32(-1),
+  min = cms.untracked.double(0),
+  max = cms.untracked.double(2),
+  nbins = cms.untracked.int32(100),
+  name = cms.untracked.string("relIso"),
+  description = cms.untracked.string("combined relative isolation [1]"),
+  plotquantity = cms.untracked.string("(trackIso + ecalIso + hcalIso) / pt")
+)
+
+isoHistos = cms.VPSet(trackIsoHisto, ecalIsoHisto, hcalIsoHisto, relIsoHisto)
 
 ## Add tab-completion during the inspection
 if __name__ == "__main__":
