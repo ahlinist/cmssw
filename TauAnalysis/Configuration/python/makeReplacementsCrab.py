@@ -124,7 +124,7 @@ def makeReplacementsCrab(channel = None, sample = None, type = None, replacement
 	# when running over RECO samples, produce PAT-tuple as well
 	if inputFileType == "RECO/AOD":
 		patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
-    	replaceStatements_retVal.append("patTupleProduction = " + patTupleProduction)
+		replaceStatements_retVal.append("patTupleProduction = " + patTupleProduction)
 
 	# replace genPhaseSpaceCut, patTupleOutputFileName and plotsOutputFileName parameters
 	# (ommit "_part.." suffix of sample name in case of processes split
