@@ -59,6 +59,7 @@ def makeReplacementsCrab(channel = None, sample = None, type = None, replacement
 	factorization = None
 	systematics = None
 	disableEventDump = None
+	inputFileType = None
 
 	for replaceStatement in replaceStatements:
 
@@ -77,6 +78,10 @@ def makeReplacementsCrab(channel = None, sample = None, type = None, replacement
 			replaceStatements_retVal.append(replaceStatement)
 		if paramName == "globalTag":
 			replaceStatements_retVal.append(replaceStatement)
+		if paramName == "eventsPerJob":
+			replaceStatements_retVal.append(replaceStatement)
+		if paramName == "inputFileType":
+			inputFileType = paramValue								
 		if paramName == "applyFactorization":
 			factorization = None
 			if paramValue.lower() == "false":
@@ -115,6 +120,11 @@ def makeReplacementsCrab(channel = None, sample = None, type = None, replacement
 	# (effectively disabling replacement of inputFileName parameter,
 	#  as it is already being replaced by crab)
 	replaceStatements_retVal.append("inputFileNames = process.source.fileNames")
+
+	# when running over RECO samples, produce PAT-tuple as well
+	if inputFileType == "RECO/AOD":
+		patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
+    	replaceStatements_retVal.append("patTupleProduction = " + patTupleProduction)
 
 	# replace genPhaseSpaceCut, patTupleOutputFileName and plotsOutputFileName parameters
 	# (ommit "_part.." suffix of sample name in case of processes split
