@@ -47,7 +47,7 @@ PromptAna_PMTNoise::PromptAna_PMTNoise(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > (prefix + "METHFM"+suffix);
   produces <std::vector<double> > (prefix + "METphiHFP"+suffix);
   produces <std::vector<double> > (prefix + "METphiHFM"+suffix);
-  
+
   // Track/Trigger
   produces <int>  (prefix+"NumberHighPurityTracks"+suffix);
   produces <int>  (prefix+"NumberTotalTracks"+suffix);
@@ -65,12 +65,15 @@ PromptAna_PMTNoise::PromptAna_PMTNoise(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > (prefix+"EcalS4"+suffix);
   produces <std::vector<int> > (prefix+"EcalIeta"+suffix);
   produces <std::vector<int> > (prefix+"EcalIphi"+suffix);
-  
+
   //Generator Information
   produces <std::vector<double> > (prefix+"PtHat"+suffix);
   produces <std::vector<double> > (prefix+"PhotonEnergy"+suffix);
   produces <std::vector<double> > (prefix+"PhotonEta"+suffix);
-  produces <std::vector<double> > (prefix+"PhotonPhi"+suffix); 
+  produces <std::vector<double> > (prefix+"PhotonPhi"+suffix);
+
+  // HBHE Noise
+  produces <bool> (prefix+"HBHEFilterResult"+suffix);
 }
 
 
@@ -288,7 +291,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if (debug_>0) cout <<"ADDING TRACK/TRIGGER INFO"<<endl;
 
   auto_ptr<bool> BSaccept( new bool() );
-  auto_ptr<int> NHQTracks( new int() );
+  auto_ptr<int> NHPTracks( new int() );
   auto_ptr<int> NTracks( new int() );
   auto_ptr<bool> isprimaryvertex( new bool() );     
   auto_ptr<bool> isbscminbias( new bool() ); 
@@ -333,7 +336,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   if (tkColl->size()<10 || (float)numhighpurity/(float)tkColl->size() > 0.25)
     *BSaccept.get()=true;
-  *NHQTracks.get()=numhighpurity;
+  *NHPTracks.get()=numhighpurity;
   *NTracks.get()=tkColl->size();
 
   if (debug_>1) cout <<"Getting L1GtTriggerMenu"<<endl;
@@ -436,10 +439,23 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         photonphi->push_back(p->phi());
       }
     }
+    
+  //---------------------------------------------------------------------------------------- //
+  // Part 7: HBHE Noise
+
+  auto_ptr<bool> hbheFilterResult( new bool() );
+
+  *hbheFilterResult.get()=true;
+
+  edm::Handle<bool> hbheFilterHandle;
+  if (iEvent.getByLabel(edm::InputTag("HBHENoiseFilterResultProducer","HBHENoiseFilterResult"), hbheFilterHandle) && hbheFilterHandle.isValid())
+    {
+      *hbheFilterResult.get()=*hbheFilterHandle;
+    }
   //---------------------------------------------------------------------------------------- //
 
   // Add objects to collection
-  
+
   if (debug_>0) cout <<"ADDING OBJECTS TO COLLECTION"<<endl;
 
  //EVENT
@@ -484,7 +500,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(metphihfm,prefix + "METphiHFM"+suffix);
   
   // Track/Trigger
-  iEvent.put(NHQTracks,prefix+"NumberHighPurityTracks"+suffix);
+  iEvent.put(NHPTracks,prefix+"NumberHighPurityTracks"+suffix);
   iEvent.put(NTracks,prefix+"NumberTotalTracks"+suffix);
   iEvent.put(BSaccept,prefix+"PassesBeamScraping"+suffix);
   iEvent.put(isprimaryvertex, prefix+"isPrimaryVertex"+suffix);
@@ -506,6 +522,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(photonenergy,prefix+"PhotonEnergy"+suffix);
   iEvent.put(photoneta,prefix+"PhotonEta"+suffix);
   iEvent.put(photonphi,prefix+"PhotonPhi"+suffix);
+  
+  // HBHE Noise
+  iEvent.put(hbheFilterResult,prefix+"HBHEFilterResult"+suffix);
 
 } // void PromptAna_PMTNoise::produce()
 
