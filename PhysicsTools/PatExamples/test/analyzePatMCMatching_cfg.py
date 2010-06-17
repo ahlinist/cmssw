@@ -20,20 +20,19 @@ process.inFlightMuons = cms.EDProducer("PATGenCandsFromSimTracksProducer",
         genParticles   = cms.InputTag("genParticles"),
 )
 ## prepare several clones of match associations for status 1, 3 and in flight muons (status -1)
-process.muMatch3 = process.muonMatch.clone(mcStatus = cms.vint32( 3))
-process.muMatch1 = process.muonMatch.clone(mcStatus = cms.vint32( 1))
-process.muMatchF = process.muonMatch.clone(mcStatus = cms.vint32(-1),matched = cms.InputTag("inFlightMuons"))
+process.muMatch3 = process.muonMatch.clone(mcStatus = [3]) # hard scattering
+process.muMatch1 = process.muonMatch.clone(mcStatus = [1]) # stable
+
 
 ## add the new matches to the default sequence
 process.patDefaultSequence.replace(process.muonMatch,
                                    process.muMatch1 +
-                                   process.muMatch3 +
-                                   process.muMatchF
-                                   )
+                                   process.muMatch3
+)
+
 process.patMuons.genParticleMatch = cms.VInputTag(
     cms.InputTag("muMatch3"),
-    cms.InputTag("muMatch1"), 
-    cms.InputTag("muMatchF"),
+    cms.InputTag("muMatch1")
 )
 
 
@@ -58,6 +57,5 @@ process.analyzePatMCMatching = cms.EDAnalyzer("PatMCMatching",
 
 process.out.outputCommands = cms.untracked.vstring('keep *') 
 
-process.p = cms.Path(   process.inFlightMuons + process.patDefaultSequence + process.analyzePatMCMatching
-    )
+process.p = cms.Path(process.patDefaultSequence + process.analyzePatMCMatching)
 
