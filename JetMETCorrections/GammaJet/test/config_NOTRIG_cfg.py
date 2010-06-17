@@ -35,7 +35,7 @@ process.maxEvents = cms.untracked.PSet(
 #    #wantSummary = cms.untracked.bool(True)
 #)
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 
 #############   Include the jet corrections ##########
@@ -88,8 +88,8 @@ process.GlobalTag.globaltag = cms.string('GR_R_36X_V12::All')
 #process.load('EGamma/EGammaSkims/promptRecoTrackCorrections_cff')
 process.load('EGamma/EGammaSkims/cleanReRecoSequence_cff')
 
-#process.ecalCleanClustering = cms.Sequence(process.cleanedEcalClusters*process.cleanedEgammaSkimReco)
-process.ecalCleanClustering = cms.Sequence(process.cleanedEgammaSkimReco)
+process.ecalCleanClustering = cms.Sequence(process.cleanedEcalClusters*process.cleanedEgammaSkimReco)
+#process.ecalCleanClustering = cms.Sequence(process.cleanedEgammaSkimReco)
 
 ###########  EB SPIKE CLEANING END   #####################
 
