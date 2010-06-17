@@ -32,6 +32,9 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cff")
 # (running over skimmed samples stored on CASTOR)
 # using skim samples with loose E/p selection and track extra collections
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
+
+# import event-content definition of products to be stored in patTuple
+from TauAnalysis.Configuration.patTupleEventContent_cff import *
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -61,6 +64,11 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 
 process.DQMStore = cms.Service("DQMStore")
 
+process.savePatTuple = cms.OutputModule("PoolOutputModule",
+	patTupleEventContent,
+	fileName = cms.untracked.string('patTuple.root')
+)
+
 process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoElecTau.root')
 )
@@ -73,7 +81,7 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 		#'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
 		#'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-    	'rfio:/castor/cern.ch/user/j/jkolb/elecTauPatTuples/spring10/patTupleZtoElecTau_Zee_7TeV_part01.root'
+    	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/spring10/MinBias_pythia6_0/skimElecTau_95_0.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -89,6 +97,13 @@ process.source = cms.Source("PoolSource",
 #__#isBatchMode#
 #__process.GlobalTag.globaltag = "#globalTag#"
 #
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# add patElectronIsolation, which was removed from standard pat sequence in CMSSW_3_4
+# only necessary if rproducing PAT-tuples
+from TauAnalysis.Configuration.tools.producePatElectronIsolation import *
+producePatElectronIsolation(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -110,6 +125,9 @@ switchToPFTauShrinkingCone(process)
 #--------------------------------------------------------------------------------
 # import utility function for managing pat::Jets
 from PhysicsTools.PatAlgos.tools.jetTools import *
+
+# switchJetCollection complains if this doesn't exist
+process.jetCorrFactors = cms.PSet()
 
 # uncomment to replace caloJets by pfJets
 switchJetCollection(process, jetCollection = cms.InputTag("iterativeCone5PFJets"))
