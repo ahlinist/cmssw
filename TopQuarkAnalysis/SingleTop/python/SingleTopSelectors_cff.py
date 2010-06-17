@@ -10,6 +10,14 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 hltFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 hltFilter.HLTPaths = ['HLT_Mu9','HLT_Ele15_LW_L1R']
 
+import HLTrigger.HLTfilters.hltHighLevelDev_cfi
+hltFilterDev = HLTrigger.HLTfilters.hltHighLevelDev_cfi.hltHighLevelDev.clone()
+hltFilterDev.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+hltFilterDev.andOr = True
+hltFilterDev.HLTPaths = ('HLT_Mu9','HLT_Photon10_L1R')
+hltFilterDev.HLTPathsPrescales = cms.vuint32(1,1)
+
+
 #####Primary vertex filter
 PVFilter = cms.EDFilter(
     'VertexSelector',

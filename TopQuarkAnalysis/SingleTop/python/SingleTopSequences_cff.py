@@ -17,7 +17,7 @@ makeNewPatElectrons = cms.Sequence(patElectronIDs * patElectronIsolation * patEl
 
 
 basePath = cms.Sequence(
-    hltFilter *
+    hltFilterDev *
     PVFilter *
     preselectedJets *
     preselectedMETs *
