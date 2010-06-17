@@ -24,7 +24,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/NoDataException.h"
-#include "FWCore/Framework/interface/EventSetupRecord.h"
+#include "FWCore/Framework/interface/EventSetupRecordKey.h"
 
 // forward declarations
 namespace edm {
@@ -38,9 +38,9 @@ class NoProxyException : public NoDataException<T>
       // ---------- constants, enums and typedefs --------------
 
       // ---------- Constructors and destructor ----------------
-      NoProxyException(const EventSetupRecord& iRecord,
+      NoProxyException(const EventSetupRecordKey& iKey,
 			  const DataKey& iDataKey) :
-       NoDataException<T>(iRecord.key(), iDataKey,"NoProxyException",NoDataExceptionBase::noProxyMessage()) 
+       NoDataException<T>(iKey, iDataKey,"NoProxyException",NoDataExceptionBase::noProxyMessage()) 
        {
        }
 
