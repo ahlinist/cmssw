@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.33 2010/06/07 15:07:09 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.34 2010/06/07 15:13:20 pandolf Exp $
 //
 //
 
@@ -48,8 +48,10 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 //#include "DataFormats/VertexReco/interface/VertexCollection.h"
 //#include "DataFormats/JetReco/interface/CaloJetCollection.h"
+//#include "DataFormats/JetReco/interface/JPTJetCollection.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/JPTJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
@@ -73,7 +75,8 @@
 #include "RecoCaloTools/Selectors/interface/CaloConeSelector.h"
 #include "RecoCaloTools/MetaCollections/interface/CaloRecHitMetaCollections.h"
 
-#include "RecoEcal/EgammaCoreTools/interface/ClusterShapeAlgo.h"
+//#include "RecoEcal/EgammaCoreTools/interface/ClusterShapeAlgo.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 
 #include "MyAnalysis/IsolationTools/interface/SuperClusterHitsEcalIsolation.h"
 
@@ -91,7 +94,7 @@
 
 // HLT trigger
 #include "FWCore/Framework/interface/TriggerNamesService.h"
-#include <FWCore/Framework/interface/TriggerNames.h>
+#include <FWCore/Common/interface/TriggerNames.h>
 #include <DataFormats/Common/interface/TriggerResults.h>
 #define MAXHLTBITS    200
 
@@ -147,23 +150,23 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   Jetsrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>("jetskt6");
   Jetsrcakt5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsakt5");
   //Jetsrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsakt7");
-  Jetsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis5");
-  Jetsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis7");
+  //Jetsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis5");
+  //Jetsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis7");
   JetJPTsrcak5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsjptak5");
   JetPFsrcite_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfite");
   JetPFsrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt4");
   JetPFsrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt6");
   JetPFsrcakt5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfakt5");
   JetPFsrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfakt7");
-  JetPFsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfsis5");
-  JetPFsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfsis7");
+  //JetPFsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfsis5");
+  //JetPFsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfsis7");
   JetGensrcite_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenite");
   JetGensrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenkt4");
   JetGensrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenkt6");
   JetGensrcakt5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenakt5");
   JetGensrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgenakt7");
-  JetGensrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgensis5");
-  JetGensrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgensis7");
+  //JetGensrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgensis5");
+  //JetGensrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsgensis7");
   METsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("met");
   METGensrc_ = iConfig.getUntrackedParameter<edm::InputTag>("genMet");
   HBhitsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("hbhits");
@@ -284,13 +287,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel(Jetsrckt4_, jetskt4);
    Handle<CaloJetCollection> jetskt6;
    iEvent.getByLabel(Jetsrckt6_, jetskt6);
-   Handle<CaloJetCollection> jetssis5;
-   iEvent.getByLabel(Jetsrcsis5_, jetssis5);
-   Handle<CaloJetCollection> jetssis7;
-   iEvent.getByLabel(Jetsrcsis7_, jetssis7);
+//   Handle<CaloJetCollection> jetssis5;
+//   iEvent.getByLabel(Jetsrcsis5_, jetssis5);
+//   Handle<CaloJetCollection> jetssis7;
+//   iEvent.getByLabel(Jetsrcsis7_, jetssis7);
 
    // get JPT collection
-   Handle<CaloJetCollection> jptjetsak5;
+   Handle<JPTJetCollection> jptjetsak5;
    iEvent.getByLabel(JetJPTsrcak5_, jptjetsak5);
 
    // get PF jets collection
@@ -302,17 +305,17 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel(JetPFsrcakt5_, pfjetsakt5);
    Handle<PFJetCollection> pfjetsakt7;
    iEvent.getByLabel(JetPFsrcakt7_, pfjetsakt7);
-   Handle<PFJetCollection> pfjetssis5;
-   iEvent.getByLabel(JetPFsrcsis5_, pfjetssis5);
+//   Handle<PFJetCollection> pfjetssis5;
+//   iEvent.getByLabel(JetPFsrcsis5_, pfjetssis5);
    Handle<PFJetCollection> pfjetskt6;
    iEvent.getByLabel(JetPFsrckt6_, pfjetskt6);
-   Handle<PFJetCollection> pfjetssis7;
-   iEvent.getByLabel(JetPFsrcsis7_, pfjetssis7);
+//   Handle<PFJetCollection> pfjetssis7;
+//   iEvent.getByLabel(JetPFsrcsis7_, pfjetssis7);
 
    //get jet correctors
-   const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
-   const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
-   const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
+ //const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
+ //const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
+ //const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
  
    // get gen jet collection
    Handle<GenJetCollection> jetsgenite;
@@ -325,10 +328,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    if( isMC ) iEvent.getByLabel(JetGensrcakt5_, jetsgenakt5);
    Handle<GenJetCollection> jetsgenakt7;
    if( isMC ) iEvent.getByLabel(JetGensrcakt7_, jetsgenakt7);
-   Handle<GenJetCollection> jetsgensis5;
-   if( isMC ) iEvent.getByLabel(JetGensrcsis5_, jetsgensis5);
-   Handle<GenJetCollection> jetsgensis7;
-   if( isMC ) iEvent.getByLabel(JetGensrcsis7_, jetsgensis7);
+//   Handle<GenJetCollection> jetsgensis5;
+//   if( isMC ) iEvent.getByLabel(JetGensrcsis5_, jetsgensis5);
+//   Handle<GenJetCollection> jetsgensis7;
+//   if( isMC ) iEvent.getByLabel(JetGensrcsis7_, jetsgensis7);
 
    // get caloMET
    Handle<CaloMETCollection> calomethandle;
@@ -374,17 +377,21 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    const CaloSubdetectorGeometry* geometry_p = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
 
    // get topology
-   const CaloSubdetectorTopology *topology_p;
-   edm::ESHandle<CaloTopology> topoHandle;
-   iSetup.get<CaloTopologyRecord>().get(topoHandle);
-   topology_p = topoHandle->getSubdetectorTopology(DetId::Ecal, EcalBarrel);
+// const CaloSubdetectorTopology *topology_p;
+// edm::ESHandle<CaloTopology> topoHandle;
+// iSetup.get<CaloTopologyRecord>().get(topoHandle);
+// topology_p = topoHandle->getSubdetectorTopology(DetId::Ecal, EcalBarrel);
+
+   edm::ESHandle<CaloTopology> pTopology;
+   iSetup.get<CaloTopologyRecord>().get(pTopology);
+   const CaloTopology *topology = pTopology.product();
 
    //   edm::ESHandle<TrackerGeometry> trackerHandle_;
    //edm::ESHandle<MagneticField> theMagField;
    //iSetup.get<IdealMagneticFieldRecord>().get(theMagField);
    //   iSetup.get<TrackerDigiGeometryRecord>().get(trackerHandle_);
   
-   ClusterShapeAlgo algo;
+   //ClusterShapeAlgo algo;
 
 //---------------------------HLT Trigger ---------------------------------------------------------------------------------------------
 // You Can See HLT Name list ->  " JetMETCorrections/GammaJet/test/HLTList.txt " file 
@@ -408,7 +415,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    else 
    {
    	edm::TriggerNames HLTNames;
-   	HLTNames.init(*hltTriggerResultHandle);
+//   	HLTNames.init(*hltTriggerResultHandle);
+      HLTNames = iEvent.triggerNames(*hltTriggerResultHandle);
 
    	std::string tempnames;  
    	hltCount = hltTriggerResultHandle->size();
@@ -1138,35 +1146,35 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        nJetGen_akt7++;
      }
 
-     for (GenJetCollection::const_iterator it = jetsgensis5->begin(); 
-        it != jetsgensis5->end(); ++it) {
+//   for (GenJetCollection::const_iterator it = jetsgensis5->begin(); 
+//      it != jetsgensis5->end(); ++it) {
 
-       if (nJetGen_sis5>=100) {cout << "number of gen jets sis 05 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_sis5 < genjetnmin_ || it->pt() > genjetptthr_) {
+//     if (nJetGen_sis5>=100) {cout << "number of gen jets sis 05 is larger than 100. Skipping" << endl; continue;}
+//     if (nJetGen_sis5 < genjetnmin_ || it->pt() > genjetptthr_) {
 
-         ptJetGen_sis5[nJetGen_sis5] = it->pt();
-         eJetGen_sis5[nJetGen_sis5] = it->energy();	 
-         etaJetGen_sis5[nJetGen_sis5] = it->eta();	 
-         phiJetGen_sis5[nJetGen_sis5] = it->phi();	      
-         
-         nJetGen_sis5++;
-       }
-     }
+//       ptJetGen_sis5[nJetGen_sis5] = it->pt();
+//       eJetGen_sis5[nJetGen_sis5] = it->energy();	 
+//       etaJetGen_sis5[nJetGen_sis5] = it->eta();	 
+//       phiJetGen_sis5[nJetGen_sis5] = it->phi();	      
+//       
+//       nJetGen_sis5++;
+//     }
+//   }
 
-     for (GenJetCollection::const_iterator it = jetsgensis7->begin(); 
-        it != jetsgensis7->end(); ++it) {
+//   for (GenJetCollection::const_iterator it = jetsgensis7->begin(); 
+//      it != jetsgensis7->end(); ++it) {
 
-       if (nJetGen_sis7>=100) {cout << "number of gen jets sis 07 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_sis7 < genjetnmin_ || it->pt() > genjetptthr_) {
+//     if (nJetGen_sis7>=100) {cout << "number of gen jets sis 07 is larger than 100. Skipping" << endl; continue;}
+//     if (nJetGen_sis7 < genjetnmin_ || it->pt() > genjetptthr_) {
 
-         ptJetGen_sis7[nJetGen_sis7] = it->pt();
-         eJetGen_sis7[nJetGen_sis7] = it->energy();	 
-         etaJetGen_sis7[nJetGen_sis7] = it->eta();	 
-         phiJetGen_sis7[nJetGen_sis7] = it->phi();	      
-         
-         nJetGen_sis7++;
-       }
-     }
+//       ptJetGen_sis7[nJetGen_sis7] = it->pt();
+//       eJetGen_sis7[nJetGen_sis7] = it->energy();	 
+//       etaJetGen_sis7[nJetGen_sis7] = it->eta();	 
+//       phiJetGen_sis7[nJetGen_sis7] = it->phi();	      
+//       
+//       nJetGen_sis7++;
+//     }
+//   }
 
   } //if(isMC)
 
@@ -1378,16 +1386,18 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      // cluster shape variables
      
      if (TMath::Abs(SCseed->eta())<1.47){
-       reco::ClusterShape tempShape=algo.Calculate(*SCseed, rhits, &(*geometry_p), &(*topology_p),4.7);
-       sMajMajPhot[nPhot]=tempShape.sMajMaj();
-       sMinMinPhot[nPhot]=tempShape.sMinMin();
-       FisherPhot[nPhot]=tempShape.fisher();
-       alphaPhot[nPhot]=tempShape.s_alpha();
-       sEtaEtaPhot[nPhot]=tempShape.sEtaEta();
-       sPhiPhiPhot[nPhot]=tempShape.sPhiPhi();
-       E1Phot[nPhot]=tempShape.eMax();
-       E9Phot[nPhot]=tempShape.e3x3();
-       E25Phot[nPhot]=tempShape.e5x5();
+       //reco::ClusterShape tempShape=algo.Calculate(*SCseed, rhits, &(*geometry_p), &(*topology_p),4.7);
+       Cluster2ndMoments moments = EcalClusterTools::cluster2ndMoments(*SCseed, *rhits);
+       std::vector<float> etaphimoments = EcalClusterTools::localCovariances(*SCseed, &(*rhits), &(*topology));
+       sMajMajPhot[nPhot]=moments.sMaj;
+       sMinMinPhot[nPhot]=moments.sMin;
+       //FisherPhot[nPhot]=tempShape.fisher();
+       alphaPhot[nPhot]=moments.alpha;
+       sEtaEtaPhot[nPhot]=etaphimoments[0];
+       sPhiPhiPhot[nPhot]=etaphimoments[1];
+       //E1Phot[nPhot]=tempShape.eMax();
+       //E9Phot[nPhot]=tempShape.e3x3();
+       //E25Phot[nPhot]=tempShape.e5x5();
      }else{
        sMajMajPhot[nPhot]=-100.;
        sMinMinPhot[nPhot]=-100.;
@@ -1567,10 +1577,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        ptJet_akt5[nJet_akt5] = it->pt();	 
 
        // Jet Energy Scale Corrections on-the-fly     
-       CaloJet  correctedJet = *it;
-       double scale = corrector_akt5->correction(it->p4());
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
+//     CaloJet  correctedJet = *it;
+//     double scale = corrector_akt5->correction(it->p4());
+//     correctedJet.scaleEnergy(scale);
+//     ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
 
        eJet_akt5[nJet_akt5] = it->energy();	 
        etaJet_akt5[nJet_akt5] = it->eta();	 
@@ -1596,41 +1606,41 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    //nJet_akt7++;
    //}
    
-   for (CaloJetCollection::const_iterator it = jetssis5->begin(); 
-	 it != jetssis5->end(); ++it) {
-     
-     if (nJet_sis5>=100) {cout << "number of reco jets sis 05 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr_) {
-       
-       ptJet_sis5[nJet_sis5] = it->pt();
-       eJet_sis5[nJet_sis5] = it->energy();	 
-       etaJet_sis5[nJet_sis5] = it->eta();	 
-       phiJet_sis5[nJet_sis5] = it->phi();	      
-       //emfJet_sis5[nJet_sis5] = it->emEnergyFraction();
-       emfJet_sis5[nJet_sis5] = fixEMF(it->emEnergyFraction(), it->eta());
-       
-       nJet_sis5++;
-     }
-   }
+// for (CaloJetCollection::const_iterator it = jetssis5->begin(); 
+//     it != jetssis5->end(); ++it) {
+//   
+//   if (nJet_sis5>=100) {cout << "number of reco jets sis 05 is larger than 100. Skipping" << endl; continue;}
+//   if (it->pt() > calojetptthr_) {
+//     
+//     ptJet_sis5[nJet_sis5] = it->pt();
+//     eJet_sis5[nJet_sis5] = it->energy();	 
+//     etaJet_sis5[nJet_sis5] = it->eta();	 
+//     phiJet_sis5[nJet_sis5] = it->phi();	      
+//     //emfJet_sis5[nJet_sis5] = it->emEnergyFraction();
+//     emfJet_sis5[nJet_sis5] = fixEMF(it->emEnergyFraction(), it->eta());
+//     
+//     nJet_sis5++;
+//   }
+// }
 
-   for (CaloJetCollection::const_iterator it = jetssis7->begin(); 
-	 it != jetssis7->end(); ++it) {
-     
-     if (nJet_sis7>=100) {cout << "number of reco jets sis 07 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr_) {
-       
-       ptJet_sis7[nJet_sis7] = it->pt();
-       eJet_sis7[nJet_sis7] = it->energy();	 
-       etaJet_sis7[nJet_sis7] = it->eta();	 
-       phiJet_sis7[nJet_sis7] = it->phi();	      
-       //emfJet_sis7[nJet_sis7] = it->emEnergyFraction();
-       emfJet_sis7[nJet_sis7] = fixEMF(it->emEnergyFraction(), it->eta());
-       
-       nJet_sis7++;
-     }
-   }
+// for (CaloJetCollection::const_iterator it = jetssis7->begin(); 
+//     it != jetssis7->end(); ++it) {
+//   
+//   if (nJet_sis7>=100) {cout << "number of reco jets sis 07 is larger than 100. Skipping" << endl; continue;}
+//   if (it->pt() > calojetptthr_) {
+//     
+//     ptJet_sis7[nJet_sis7] = it->pt();
+//     eJet_sis7[nJet_sis7] = it->energy();	 
+//     etaJet_sis7[nJet_sis7] = it->eta();	 
+//     phiJet_sis7[nJet_sis7] = it->phi();	      
+//     //emfJet_sis7[nJet_sis7] = it->emEnergyFraction();
+//     emfJet_sis7[nJet_sis7] = fixEMF(it->emEnergyFraction(), it->eta());
+//     
+//     nJet_sis7++;
+//   }
+// }
    
-   for (CaloJetCollection::const_iterator it = jptjetsak5->begin(); 
+   for (JPTJetCollection::const_iterator it = jptjetsak5->begin(); 
        it != jptjetsak5->end(); ++it) {
      
      if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
@@ -1640,7 +1650,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        eJet_jptak5[nJet_jptak5] = it->energy();	 
        etaJet_jptak5[nJet_jptak5] = it->eta();	 
        phiJet_jptak5[nJet_jptak5] = it->phi();	      
-       emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
+       //emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
        
        nJet_jptak5++;
      }
@@ -1688,10 +1698,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      phiJet_pfakt5[nJet_pfakt5] = it->phi();	      
      
      // Jet Energy Scale Corrections on-the-fly     
-     PFJet  correctedJet = *it;
-     double scale = corrector_pfakt5->correction(it->p4());
-     correctedJet.scaleEnergy(scale);
-     ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
+//   PFJet  correctedJet = *it;
+//   double scale = corrector_pfakt5->correction(it->p4());
+//   correctedJet.scaleEnergy(scale);
+//   ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
 
      // Extra variables for PFlow studies
      Int_t nChargedHadrons = 0;
@@ -1846,10 +1856,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        phiJet_pfakt7[nJet_pfakt7] = it->phi();	      
      
        // Jet Energy Scale Corrections on-the-fly     
-       PFJet  correctedJet = *it;
-       double scale = corrector_pfakt7->correction(it->p4());
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
+//     PFJet  correctedJet = *it;
+//     double scale = corrector_pfakt7->correction(it->p4());
+//     correctedJet.scaleEnergy(scale);
+//     ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
 
        // Extra variables for PFlow studies
        Int_t nChargedHadrons = 0;
@@ -1991,20 +2001,20 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      } 
    }
 
-   for (PFJetCollection::const_iterator it = pfjetssis5->begin(); 
-	 it != pfjetssis5->end(); ++it) {
-     
-     if (nJet_pfsis5>=100) {cout << "number of reco jets pfsis5 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfsis5 < pfjetnmin_ || it->pt() > pfjetptthr_) {
+// for (PFJetCollection::const_iterator it = pfjetssis5->begin(); 
+//     it != pfjetssis5->end(); ++it) {
+//   
+//   if (nJet_pfsis5>=100) {cout << "number of reco jets pfsis5 is larger than 100. Skipping" << endl; continue;}
+//   if (nJet_pfsis5 < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
-       ptJet_pfsis5[nJet_pfsis5] = it->pt();
-       eJet_pfsis5[nJet_pfsis5] = it->energy();	 
-       etaJet_pfsis5[nJet_pfsis5] = it->eta();	 
-       phiJet_pfsis5[nJet_pfsis5] = it->phi();	      
-       
-       nJet_pfsis5++;
-     }
-   }
+//     ptJet_pfsis5[nJet_pfsis5] = it->pt();
+//     eJet_pfsis5[nJet_pfsis5] = it->energy();	 
+//     etaJet_pfsis5[nJet_pfsis5] = it->eta();	 
+//     phiJet_pfsis5[nJet_pfsis5] = it->phi();	      
+//     
+//     nJet_pfsis5++;
+//   }
+// }
 
    for (PFJetCollection::const_iterator it = pfjetskt6->begin(); 
 	 it != pfjetskt6->end(); ++it) {
@@ -2021,20 +2031,20 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      }
    }
 
-   for (PFJetCollection::const_iterator it = pfjetssis7->begin(); 
-	 it != pfjetssis7->end(); ++it) {
-     
-     if (nJet_pfsis7>=100) {cout << "number of reco jets pfsis7 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfsis7 < pfjetnmin_ || it->pt() > pfjetptthr_) {
+// for (PFJetCollection::const_iterator it = pfjetssis7->begin(); 
+//     it != pfjetssis7->end(); ++it) {
+//   
+//   if (nJet_pfsis7>=100) {cout << "number of reco jets pfsis7 is larger than 100. Skipping" << endl; continue;}
+//   if (nJet_pfsis7 < pfjetnmin_ || it->pt() > pfjetptthr_) {
 
-       ptJet_pfsis7[nJet_pfsis7] = it->pt();
-       eJet_pfsis7[nJet_pfsis7] = it->energy();	 
-       etaJet_pfsis7[nJet_pfsis7] = it->eta();	 
-       phiJet_pfsis7[nJet_pfsis7] = it->phi();	      
-       
-       nJet_pfsis7++;
-     }
-   }
+//     ptJet_pfsis7[nJet_pfsis7] = it->pt();
+//     eJet_pfsis7[nJet_pfsis7] = it->energy();	 
+//     etaJet_pfsis7[nJet_pfsis7] = it->eta();	 
+//     phiJet_pfsis7[nJet_pfsis7] = it->phi();	      
+//     
+//     nJet_pfsis7++;
+//   }
+// }
    // Fill caloMET
 
    const CaloMETCollection *calometcol = calomethandle.product();
