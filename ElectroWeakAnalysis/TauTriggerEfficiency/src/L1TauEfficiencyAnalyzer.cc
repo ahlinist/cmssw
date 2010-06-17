@@ -248,8 +248,9 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
       /*
       std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId()
                 << " etaIndex " << iJet->gctJetCand()->etaIndex() << " phiIndex " << iJet->gctJetCand()->phiIndex()
+                << " tau jet et " << jetEt << " eta " << jetEta << " phi " << jetPhi
                 << std::endl;
-      */                
+      */
     }
   }
 
@@ -273,6 +274,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
         /*
         std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId() 
                   << " etaIndex " << iJet->gctJetCand()->etaIndex() << " phiIndex " << iJet->gctJetCand()->phiIndex()
+                  << " central jet et " << jetEt << " eta " << jetEta << " phi " << jetPhi
                   << std::endl;
         */
       }
@@ -437,13 +439,6 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
     maxPhi = std::max(maxPhi, iter->gctPhi());
 
     if(regionId == iter->id().rawId()) {
-      /*
-      std::cout << "L1Analyzer " << __LINE__ << ": " << iter->id().rawId()
-                << " etaIndex " << iter->gctEta() << " phiIndex " << iter->gctPhi()
-                << " et " << iter->et()
-                << " tauVeto " << iter->tauVeto()
-                << std::endl;
-      */
       found = iter;
     }
   }
@@ -466,6 +461,12 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
             << " rgnEtLsb " << jfPars->getRgnEtLsbGeV()
             << " our threshold GeV " << isolationThresholds[0]
             << " gct " << static_cast<unsigned>(isolationThresholds[0]/jfPars->getRgnEtLsbGeV())
+            << std::endl;
+  std::cout << "L1Analyzer " << __LINE__ << ": " << found->id().rawId()
+            << " etaIndex " << found->gctEta() << " phiIndex " << found->gctPhi()
+            << " et (raw) " << found->et()
+            << " et (scaled) " << found->et()*jfPars->getRgnEtLsbGeV()
+            << " tauVeto " << found->tauVeto()
             << std::endl;
   */
 
@@ -493,7 +494,8 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
       /*
       std::cout << "L1Analyzer " << __LINE__ << ": " << iter->id().rawId()
                 << " etaIndex " << iter->gctEta() << " phiIndex " << iter->gctPhi()
-                << " et " << iter->et()
+                << " et (raw) " << iter->et()
+                << " et (scaled) " << iter->et()*jfPars->getRgnEtLsbGeV()
                 << " tauVeto " << iter->tauVeto()
                 << std::endl;
       */
@@ -504,7 +506,11 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
       hasTauVeto = hasTauVeto || found->tauVeto();
     }
   }
-  //std::cout << "L1Analyzer " << __LINE__ << ": L1 isolation " << l1Isolations[0] << " (number of adjacent cells with Et < " << isolationThresholds[0] << " GeV; should be 7/8 for tau)" << std::endl;
+  /*
+  std::cout << "L1Analyzer " << __LINE__ << ": L1 isolation " << l1Isolations[1] << " (number of adjacent cells with Et < " << isolationThresholds[1] << " GeV; should be 7/8 for tau)" 
+            << " hasTauVeto " << hasTauVeto
+            << std::endl;
+  */
 }
 
 
