@@ -503,7 +503,7 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
         if(iter->et() < thresholds[i])
           ++(l1Isolations[i]);
       }
-      hasTauVeto = hasTauVeto || found->tauVeto();
+      hasTauVeto = hasTauVeto || iter->tauVeto();
     }
   }
   /*
