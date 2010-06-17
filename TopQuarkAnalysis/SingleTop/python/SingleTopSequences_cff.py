@@ -17,8 +17,6 @@ makeNewPatElectrons = cms.Sequence(patElectronIDs * patElectronIsolation * patEl
 
 
 basePath = cms.Sequence(
-    hltFilterDev *
-    PVFilter *
     preselectedJets *
     preselectedMETs *
     preselectedMuons *
@@ -28,6 +26,8 @@ basePath = cms.Sequence(
 
 ##Muons Sequences
 baseMuonSequence = cms.Sequence(
+    hltFilterDev *
+    PVFilter *
     countLeptons *
     topMuons *
     countMuons *
@@ -35,6 +35,8 @@ baseMuonSequence = cms.Sequence(
     )
 
 baseMuonAntiIsoSequence = cms.Sequence(
+    hltFilterDev *
+    PVFilter *
     vetoLeptonsIso *
     topMuonsAntiIso *
     countMuonsAntiIso *
@@ -46,16 +48,22 @@ baseMuonAntiIsoSequence = cms.Sequence(
 
 ##Electron sequences
 baseElectronSequence = cms.Sequence(
-    vetoLooseMuons *
+    hltFilterDev *
+    PVFilter *
+    countLeptons *
+#    vetoLooseMuons *
+#    vetoZInvariantMass *
     topElectrons *
     countElectrons *
     electronIDIso 
     
-#*    vetoZInvariantMass
+
     )
 
 
 baseElectronAntiIsoSequence = cms.Sequence(
+    hltFilterDev *
+    PVFilter *
     vetoLeptonsIso *
     topElectronsAntiIso *
     countElectronsAntiIso *
