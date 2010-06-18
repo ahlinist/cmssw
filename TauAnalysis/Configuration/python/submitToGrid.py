@@ -147,7 +147,7 @@ def submitToGrid(configFile = None, channel = None,
     replacements += "; events_per_job = " + eventsPerJob
     replacements += "; output_file = " + crabOutputFiles
     replacements += "; ui_working_dir = " + crabDirectory
-    replacements += "; logdir = " + crabDirectory + "res/"
+	#replacements += "; logdir = " + crabDirectory + "res/"
     replacements += "; user_remote_dir = " + outputFilePath
     prepareConfigFile(configFile_orig = crabConfigFile_orig, replacements = replacements, configFile_mod = crabConfigFile_mod)
     
