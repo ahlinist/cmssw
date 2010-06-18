@@ -13,7 +13,7 @@ normChi2Histo = cms.PSet(
 dbHisto = cms.PSet(
   itemsToPlot = cms.untracked.int32(-1),
   min = cms.untracked.double(0),
-  max = cms.untracked.double(100),
+  max = cms.untracked.double(1),
   nbins = cms.untracked.int32(100),
   name = cms.untracked.string("dB"),
   description = cms.untracked.string("dB"),
@@ -23,7 +23,7 @@ dbHisto = cms.PSet(
 edbHisto = cms.PSet(
   itemsToPlot = cms.untracked.int32(-1),
   min = cms.untracked.double(0),
-  max = cms.untracked.double(100),
+  max = cms.untracked.double(1),
   nbins = cms.untracked.int32(100),
   name = cms.untracked.string("edB"),
   description = cms.untracked.string("edB"),
@@ -60,10 +60,11 @@ isolationR03hadVetoEtHisto = cms.PSet(
   plotquantity = cms.untracked.string("isolationR03.hadVetoEt")
 )
 
-muonIdHistos = cms.VPSet(normChi2Histo,
+muonIdHistos = cms.VPSet(
+#   normChi2Histo,
   dbHisto,
   edbHisto,
-  numberOfValidHitsHisto,
+#   numberOfValidHitsHisto,
   isolationR03emVetoEtHisto,
   isolationR03hadVetoEtHisto
 )
