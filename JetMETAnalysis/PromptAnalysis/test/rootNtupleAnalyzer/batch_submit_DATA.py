@@ -1,5 +1,10 @@
 #! /usr/bin/env python
 import os
+import string
+import re
+
+################################################
+### User Section
 
 ## setup the output dir and input files
 output = "DATA900_test"
@@ -9,61 +14,62 @@ settingfile = "config/cutFileExample.txt"
 # choose among cmst3 8nm 1nh 8nh 1nd 1nw 
 queue = "1nh"
 ijobmax = 21
-################################################
-# to write on local disks
-################################################
-outputmain = output
 
-os.system("mkdir "+output)
-os.system("mkdir "+output+"/log/")
-os.system("mkdir "+output+"/input/")
-os.system("mkdir "+output+"/src/")
-outputroot = outputmain+"/root/"
-os.system("mkdir "+outputroot)
+### End of User Section
 ################################################
-#look for the current directory
+
 ################################################
-os.system("\\rm tmp.log")
-os.system("echo $PWD > tmp.log")
-tmp = open("tmp.log")
-pwd = tmp.readline()
-tmp.close()
-os.system("\\rm tmp.log")
+pwd = os.getcwd()
+
+outputmain = output
+if not re.search("^/", outputmain):
+    outputmain = pwd + "/" + outputmain
+
+if not re.search("^/", inputlist):
+    inputlist = pwd + "/" + inputlist
+
+if not re.search("^/", settingfile):
+    settingfile = pwd + "/" + settingfile
+################################################
+# write on local disk
+################################################
+os.system("mkdir -p "+outputmain)
+os.system("mkdir -p "+outputmain+"/log/")
+os.system("mkdir -p "+outputmain+"/input/")
+os.system("mkdir -p "+outputmain+"/src/")
+os.system("mkdir -p "+outputmain+"/root/")
 #################################################
-numfiles = reduce(lambda x,y: x+1, file(inputlist).xreadlines(), 0)
-filesperjob = numfiles/ijobmax
-filesperjob = filesperjob
-extrafiles  = numfiles%ijobmax
+# output prefix
+outputPrefix = string.split(outputmain,"/")[-1]
+#################################################
+numfiles = len(file(inputlist).readlines())
+
+if ijobmax > numfiles:
+    ijobmax=numfiles
+filesperjob = int(numfiles/ijobmax)
+if numfiles%ijobmax!=0:
+    filesperjob = filesperjob+1
+    ijobmax = int(numfiles/filesperjob)+1
+#################################################
 input = open(inputlist)
-######################################
+#################################################
 for ijob in range(ijobmax):
     # prepare the list file
-    inputfilename = output+"/input/input_"+str(ijob)+".list"
-    inputfile = open(inputfilename,'w')
-    # if it is a normal job get filesperjob lines
-    if ijob != (ijobmax-1):
-        for line in range(filesperjob):
-            ntpfile = input.readline()
-            if ntpfile != '':
-                inputfile.write(ntpfile)
-            continue
-    else:
-        # if it is the last job get ALL remaining lines
-        ntpfile = input.readline()
-        while ntpfile != '':
-            inputfile.write(ntpfile)
-            ntpfile = input.readline()
-            continue
+    inputfilename = outputmain+"/input/input_"+str(ijob)+".list"
+    inputfile = open(inputfilename,"w")
+    for i in range(filesperjob):
+        line = input.readline()
+        if line != "":
+            inputfile.write(line)
+        continue
     inputfile.close()
 
     # prepare the script to run
-    outputname = output+"/src/submit_"+str(ijob)+".src"
-    outputfile = open(outputname,'w')
-    outputfile.write('#!/bin/bash\n')
-    outputfile.write('cd '+pwd)
-    outputfile.write('./main '+inputfilename+" "+settingfile+" "+ "promptanaTree/tree" + " "+ outputroot+output+"_"+str(ijob)+" "+output+"/log/cutEfficiencyFile_"+str(ijob)+"\n") 
+    outputname = outputmain+"/src/submit_"+str(ijob)+".src"
+    outputfile = open(outputname,"w")
+    outputfile.write("#!/bin/bash\n")
+    outputfile.write("cd "+pwd+"\n")
+    outputfile.write("./main "+inputfilename+" "+settingfile+" "+"promptanaTree/tree"+" "+outputmain+"/root/"+outputPrefix+"_"+str(ijob)+" "+outputmain+"/log/"+outputPrefix+"_"+str(ijob)+"\n")
     outputfile.close
-    os.system("echo bsub -q "+queue+" -o "+output+"/log/"+output+"_"+str(ijob)+".log source "+pwd[:-1]+"/"+outputname)
-    os.system("bsub -q "+queue+" -o "+output+"/log/"+output+"_"+str(ijob)+".log source "+pwd[:-1]+"/"+outputname)
-    ijob = ijob+1
-    continue
+    print    ("bsub -q "+queue+" -o "+outputmain+"/log/"+outputPrefix+"_"+str(ijob)+".log source "+outputname)
+    os.system("bsub -q "+queue+" -o "+outputmain+"/log/"+outputPrefix+"_"+str(ijob)+".log source "+outputname)
