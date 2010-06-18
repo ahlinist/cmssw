@@ -15,6 +15,10 @@ patElectronIDs = cms.Sequence(simpleEleIdSequence)
 
 makeNewPatElectrons = cms.Sequence(patElectronIDs * patElectronIsolation * patElectrons)
 
+patElectrons.usePV = cms.bool(False)
+patMuons.usePV = cms.bool(False)
+
+
 
 basePath = cms.Sequence(
     preselectedJets *
