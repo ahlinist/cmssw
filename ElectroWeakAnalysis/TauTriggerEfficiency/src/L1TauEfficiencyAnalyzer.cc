@@ -244,6 +244,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
       jetPhi = iJet->phi();
       hasL1Jet = true;
       hasL1TauJet = true;
+      hasL1CenJet = false;
       jetRegionId = iJet->gctJetCand()->regionId().rawId();
       /*
       std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId()
@@ -269,6 +270,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
         jetEta = iJet->eta();
         jetPhi = iJet->phi();
         hasL1Jet = true;
+        hasL1TauJet = false;
         hasL1CenJet = true;
         jetRegionId = iJet->gctJetCand()->regionId().rawId();
         /*
