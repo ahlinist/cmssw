@@ -36,7 +36,7 @@ relIsoHisto = cms.PSet(
   max = cms.untracked.double(2),
   nbins = cms.untracked.int32(100),
   name = cms.untracked.string("relIso"),
-  description = cms.untracked.string("combined relative isolation [1]"),
+  description = cms.untracked.string("combined relative isolation"),
   plotquantity = cms.untracked.string("(trackIso + ecalIso + hcalIso) / pt")
 )
 
