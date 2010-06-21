@@ -480,12 +480,36 @@ drawOption_uncertainty = cms.PSet(
     drawOptionLegend = cms.string('f')
 )
 
+
+#--------------------------------------------------------------------------------
+#
+# define draw options for data
+#
+#--------------------------------------------------------------------------------
+#drawOption_Data = copy.deepcopy(drawOption_black_points)
+
+drawOption_Data = cms.PSet(
+	markerColor = color_black,
+	markerSize = cms.double(0.5),
+	markerStyle = cms.int32(8),
+	lineColor = color_black,
+	lineStyle = cms.int32(1),
+	lineWidth = cms.int32(2),
+	drawOption = cms.string('e1p'),
+	drawOptionLegend = cms.string('p')
+)
+
 #--------------------------------------------------------------------------------
 # define drawOptions used per default for different Monte Carlo processes
 #
 # (NOTE: per default, expectations of different Monte Carlo processes
 #        are stacked on top of each other)
 #--------------------------------------------------------------------------------
+
+drawOption_MinBias_stacked = copy.deepcopy(drawOption_red_stacked)
+drawOption_MinBias_separate = copy.deepcopy(drawOption_red_separate)
+drawOption_MinBias = drawOption_MinBias_stacked
+drawOption_MinBiasPlusJets = drawOption_MinBias
 
 drawOption_Ztautau_stacked = copy.deepcopy(drawOption_red_stacked)
 drawOption_Ztautau_separate = copy.deepcopy(drawOption_red_separate)
