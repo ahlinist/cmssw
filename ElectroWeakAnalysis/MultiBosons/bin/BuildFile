@@ -12,6 +12,7 @@
 <use name=PhysicsTools/Utilities>
 <use name=PhysicsTools/FWLite>
 <use name=PhysicsTools/SelectorUtils>
+<use name=ElectroWeakAnalysis/MultiBosons>
 <environment>
 <bin file="plotMuons.cc"> </bin>
 </environment>
