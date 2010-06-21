@@ -13,7 +13,7 @@
 #include <iostream>
 #include <iomanip>
 
-void printBinCenterPosition(std::ostream& stream, const BinGrid* binGrid, unsigned binNumber)
+void printBinCenterPosition(std::ostream& stream, const BinGrid* binGrid, unsigned binNumber, bool addNewLine)
 {
   unsigned numBins = binGrid->numBins();
   if ( binNumber >= 0 && binNumber < numBins ) {
@@ -33,10 +33,39 @@ void printBinCenterPosition(std::ostream& stream, const BinGrid* binGrid, unsign
       if ( iObjVar < (numObjVarNames - 1) ) stream << ", ";
     }
     
-    std::cout << "): " << std::endl;
+    stream << "): ";
+    if ( addNewLine ) stream << std::endl;
   } else {
     edm::LogError ("printBinCenterPosition") << "Invalid binNumber = " << binNumber << " !!";
   }
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+double getBinContent(const std::vector<binResultType>& binResult, const char* name)
+{
+  for ( std::vector<binResultType>::const_iterator binResult_i = binResult.begin();
+	binResult_i != binResult.end(); ++binResult_i ) {
+    if ( binResult_i->name_ == name ) return binResult_i->binContent_;
+  }
+
+  edm::LogError ("getBinContent") 
+    << "binResult passed as function argument does not contain an entry of name = " << name << " !!";
+  return 0.;
+}
+
+double getBinSumw2(const std::vector<binResultType>& binResult, const char* name)
+{
+  for ( std::vector<binResultType>::const_iterator binResult_i = binResult.begin();
+	binResult_i != binResult.end(); ++binResult_i ) {
+    if ( binResult_i->name_ == name ) return binResult_i->binSumw2_;
+  }
+
+  edm::LogError ("getBinSumw2") 
+    << "binResult passed as function argument does not contain an entry of name = " << name << " !!";
+  return 0.;
 }
 
 //
