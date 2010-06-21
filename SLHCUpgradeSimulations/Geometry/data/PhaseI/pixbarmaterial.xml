@@ -73,6 +73,21 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="Pix_Bar_Baseplate_Full_Upgrade" density="0.367256*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.75244">
+      <rMaterial name="pixbarmaterial:Silicon_Nitride"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.15186">
+      <rMaterial name="materials:Steel-008"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.04271">
+      <rMaterial name="materials:Silicone_Gel"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.05299">
+      <rMaterial name="materials:Epoxy"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
   <CompositeMaterial name="Pix_Bar_Baseplate_Half" density="3.18369*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.86861">
       <rMaterial name="pixbarmaterial:Silicon_Nitride"/>
@@ -217,7 +232,7 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="Flange_with_Manifold_Upgrade" density="2.31560*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="Flange_with_Manifold_Upgrade" density="1.38936*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.1216">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
