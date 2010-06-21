@@ -101,7 +101,7 @@ void DQMDumpBinningResults::endJob()
     }
   }
 
-//--- print objects inhertiting from BinningBase class 
+//--- print objects inheriting from BinningBase class 
   for ( std::vector<std::string>::const_iterator process = processes_.begin();
 	process != processes_.end(); ++process ) {
     BinningBase* binningResult = binningResults_[*process];
