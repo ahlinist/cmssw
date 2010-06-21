@@ -17,9 +17,9 @@ hbherechitreflaggerJETMET = cms.EDProducer(
     # The following are constraints for Phil's timing rechit
 
     # shaped cut parameters are pairs of (energy, time threshold) values
-    # These must be ordered by increaseing energy!
+    # These must be ordered by increasing energy!
     timingshapedcutsParameters = cms.PSet(
-    hbheTimingFlagBit = cms.untracked.int32(30),
+    hbheTimingFlagBit = cms.untracked.int32(30), #UserDefinedBit1
     tfilterEnvelope=cms.vdouble(4.00,12.04,
                                 13.00,10.56,
                                 23.50,8.82,
