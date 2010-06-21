@@ -11,7 +11,7 @@
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
-#include "ElectroWeakAnalysis/MultiBosons/bin/MuonHistogrammer.cc"
+#include "ElectroWeakAnalysis/MultiBosons/interface/MuonHistogrammer.h"
 
 #include "Math/GenVector/PxPyPzM4D.h"
 

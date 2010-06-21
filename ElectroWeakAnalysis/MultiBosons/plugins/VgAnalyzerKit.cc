@@ -20,6 +20,8 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "PhysicsTools/CandUtils/interface/AddFourMomenta.h"
 
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/Scalers/interface/DcsStatus.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
