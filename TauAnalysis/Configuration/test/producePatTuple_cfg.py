@@ -103,7 +103,7 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 process.jetCorrFactors = cms.PSet()
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, cms.InputTag("iterativeCone5PFJets") )
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
