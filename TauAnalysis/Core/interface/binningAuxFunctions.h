@@ -4,13 +4,17 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "TauAnalysis/Core/interface/BinGrid.h"
+#include "TauAnalysis/Core/interface/BinningBase.h"
 #include "TauAnalysis/Core/interface/ModelBinning.h"
 
 #include <vector>
 #include <string>
 #include <iostream>
 
-void printBinCenterPosition(std::ostream&, const BinGrid*, unsigned);
+void printBinCenterPosition(std::ostream&, const BinGrid*, unsigned, bool = true);
+
+double getBinContent(const std::vector<binResultType>&, const char*);
+double getBinSumw2(const std::vector<binResultType>&, const char*);
 
 std::string encodeBinningStringRep(const std::string&, const std::string&, const std::string&);
 void decodeBinningStringRep(const std::string&, std::string&, std::string&, std::string&, int&);
