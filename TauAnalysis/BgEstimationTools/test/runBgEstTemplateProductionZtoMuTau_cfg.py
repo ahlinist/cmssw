@@ -84,7 +84,7 @@ setattr(process.patTaus.tauIDSources, "ewkTauId", cms.InputTag('ewkTauId'))
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, cms.InputTag("iterativeCone5PFJets"))
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
 #
 # NOTE: need to delete empty sequence produced by call to "switchJetCollection"
 #       in order to avoid error when calling "process.dumpPython"
