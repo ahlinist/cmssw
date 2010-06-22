@@ -1,150 +1,89 @@
-#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
-#include "DataFormats/FWLite/interface/Handle.h"
-#include "DataFormats/PatCandidates/interface/Jet.h"
-
 #include <vector>
 
 #include "TH1.h"
-#include "TH2.h"
-#include "TF1.h"
 #include "TFile.h"
+#include <TROOT.h>
+#include <TSystem.h>
+
+#include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/FWLite/interface/Event.h"
+#include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "FWCore/ParameterSet/interface/ProcessDesc.h"
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
+#include "PhysicsTools/FWLite/interface/TFileService.h"
+#include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
+
 
 using namespace std;
 using namespace reco;
 using namespace pat;
 
-string overlapName = "electrons";               //the overlap name
-//string overlapName = "tkIsoElectrons";        //switch the overlap name and see the effect
 
-//Each histogram in this collection, will be written to the output file at the end
-std::vector<TH1*> histoContainer;
-
-//Definition of the method, body is implemented at the end of the file
-void AnalyzeNotCleanJets( const pat::Jet* );
-
-//The MAIN method
-int main(int argc, char *argv[]) {
-
-  string patTupleFileName = "patTuple.root" ;   //default input file name, if no parameter is passed to the executable, it assumes that the input file is in the same directory and its name is patTuple.root
-  //Read the input file name from the arguments
-  if(argc == 2) //if any argument has been given
-    patTupleFileName = std::string( *(++argv) );
-
-  //HISTOGRAMS
-  TH1F hEMFAllJets("hEMFAllJets" , "EMF For All Jets" , 21 , 0 , 1.05);
-  //add the histograms to the container to be written at the end
-  histoContainer.push_back( &hEMFAllJets   );
-
-  //TH1F hEMFCleanJets("hEMFCleanJets" , "EMF For Clean Jets" , 21 , 0 , 1.05);
-  //histoContainer.push_back( &hEMFCleanJets );
-
-  //initialize FWLite
+int main(int argc, char *argv[]){
+  // load framework libraries
+  gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
-  TFile file(patTupleFileName.c_str());
 
-  fwlite::Event ev(&file);
+  // get the python configuration
+  PythonProcessDesc builder(argv[1]);
+  const edm::ParameterSet& fwliteParameters = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("FWLiteParams");
 
-  //FWLite loop over the events in the file
+  // now get each parameter
+  std::string   input_   ( fwliteParameters.getParameter<std::string  >("input"   ) );
+  std::string   overlaps_( fwliteParameters.getParameter<std::string  >("overlaps") );
+  edm::InputTag jets_    ( fwliteParameters.getParameter<edm::InputTag>("jetSrc"  ) );
+
+  // book a set of histograms
+  fwlite::TFileService fs = fwlite::TFileService("analyzePatBasics.root");
+  TFileDirectory theDir = fs.mkdir("analyzePatCleaning.root");
+  TH1F* emfAllJets_    = theDir.make<TH1F>("emfAllJets"    , "f_{emf}(All Jets)"    ,  20,  0.,  1.);
+  TH1F* emfCleanJets_  = theDir.make<TH1F>("emfCleanJets"  , "f_{emf}(Clean Jets)"  ,  20,  0.,  1.);
+  TH1F* emfOverlapJets_= theDir.make<TH1F>("emfOverlapJets", "f_{emf}(Overlap Jets)",  20,  0.,  1.);
+  TH1F* deltaRElecJet_ = theDir.make<TH1F>("deltaRElecJet" , "#DeltaR (elec, jet)"  ,  10,  0., 0.5);
+  TH1F* elecOverJet_   = theDir.make<TH1F>("elecOverJet"   , "E_{elec}/E_{jet}"     , 100,  0.,  2.);
+  TH1F* nOverlaps_     = theDir.make<TH1F>("nOverlaps"     , "Number of overlaps"   ,   5,  0.,  5.);
+  
+  // open input file (can be located on castor)
+  TFile* inFile = TFile::Open(input_.c_str());
+
+  // loop the events
+  unsigned int iEvent=0;
+  fwlite::Event ev(inFile); 
   for(ev.toBegin(); !ev.atEnd(); ++ev){
-    //make a handle and get the clean Jets from the event
-    fwlite::Handle<std::vector<pat::Jet> > jets;
-    jets.getByLabel(ev,"cleanPatJets");
+    edm::EventBase const & event = ev;
 
-    //Loop over the jets in the event
+    // simple event counter
+    if(iEvent>0 && iEvent%1==0){
+      std::cout << "  processing event: " << iEvent << std::endl;
+    }
+
+    // handle to jet collection
+    edm::Handle<std::vector<pat::Jet> > jets;
+    event.getByLabel(jets_, jets);
+
+    // loop over the jets in the event
     for( vector<pat::Jet>::const_iterator jet = jets->begin(); jet != jets->end(); jet++ ){
-      //accept the jets with pt > 20
       if(jet->pt() > 20){
-	//Fill the histogram with all of the jets
-	hEMFAllJets.Fill( jet->emEnergyFraction() );
-	//seprate the jets into two clean and notClean categories
-	if(! jet->hasOverlaps(overlapName)){
-	  //Draw the EMF of clean jets
-	  //hEMFCleanJets.Fill( jet->emEnergyFraction() );
+	emfAllJets_->Fill( jet->emEnergyFraction() );
+	if(! jet->hasOverlaps(overlaps_)){
+	  emfCleanJets_->Fill( jet->emEnergyFraction() );
 	}
 	else{
-	  //Analyze the notClean jets
-	  //AnalyzeNotCleanJets( & (*jet) );
+	  //get all overlaps
+	  const reco::CandidatePtrVector overlaps = jet->overlaps(overlaps_);
+	  nOverlaps_->Fill( overlaps.size() );
+	  emfOverlapJets_->Fill( jet->emEnergyFraction() );
+	  //loop over the overlaps
+	  for( reco::CandidatePtrVector::const_iterator overlap = overlaps.begin(); overlap != overlaps.end(); overlap++){ 
+	    float deltaR = reco::deltaR( (*overlap)->eta(), (*overlap)->phi(), jet->eta(), jet->phi() );
+	    deltaRElecJet_->Fill( deltaR );
+	    elecOverJet_->Fill( (*overlap)->energy(), jet->energy() );
+	  }
 	}
-      }//JET PT CONDITION
-    } // JET LOOP
-    }//EVENT LOOP
-
-
-  //open the output file
-  TFile* fOut = TFile::Open("out.root" , "RECREATE");
-  fOut->cd();
-
-  //make a loop over all histograms and write them into the file
-  for(vector<TH1*>::const_iterator histo = histoContainer.begin(); histo != histoContainer.end(); histo ++){
-    (*histo)->Write();
+      }
+    }
   }
-  
-  //close the file
-  fOut->Close();
-  
+  inFile->Close();
   return 0;
 }
-
-
-
-
-
-//include to have access to deltaR function :
-#include "DataFormats/Math/interface/deltaR.h"
-
-
-//Histograms for notClean jets
-TH1F hEleJetDistance("hEleJetDistance" , "Distance between jets and the closest electron" , 5 , 0 , 0.5);
-TH1F hEleJetEnergyRatio("hEleJetEnergyRatio" , "Energy ratio of jet and closest electron" , 100 , 1. , 6.);
-TH1F hNumberOfOverlaps("hNumberOfOverlaps" , "Number of overlaps" , 5 , 0 , 5);
-TH2F hEnergyRatiovsDistance("hEnergyRatiovsDistance" , "Energy ratio vs. distance" , 5 , 0 , 0.5 , 100 , 1. , 6. );
-
-
-bool firstTime(true);
-
-//the body of AnalyzeNotCleanJets method
-void AnalyzeNotCleanJets( const pat::Jet* jet ){
-
-  //if it's the first time that the method is called, the histograms should be added into the container
-  if(firstTime){
-    firstTime = false;
-
-    histoContainer.push_back( &hEleJetDistance );
-    histoContainer.push_back( &hEleJetEnergyRatio );
-    histoContainer.push_back( &hNumberOfOverlaps );
-    histoContainer.push_back( &hEnergyRatiovsDistance );
-  }
-
-
-  //read the properties of the jet
-  float jetEnergy = jet->energy();
-  float jetEta    = jet->eta();
-  float jetPhi    = jet->phi();
-
-
-  //get all of the electrons that overlape with the jet
-  const reco::CandidatePtrVector overlappingElectrons =  jet->overlaps(overlapName);
-
-  //in some cases, more that one electron are in the cone of the jet
-  hNumberOfOverlaps.Fill(overlappingElectrons.size());
-
-  //loop over the overlapping electrons
-  for( reco::CandidatePtrVector::const_iterator electron = overlappingElectrons.begin() ;
-       electron != overlappingElectrons.end() ;
-       electron ++){
-
-    //read the properties of the electron
-    float elecEnergy = (*electron)->energy() ;
-    float elecEta    = (*electron)->eta();
-    float elecPhi    = (*electron)->phi();
-    
-    float energyRatio = jetEnergy / elecEnergy ;
-    float distance    = reco::deltaR( elecEta , elecPhi , jetEta , jetPhi );
-
-    //filll the histograms
-    hEleJetDistance.Fill( distance );
-    hEleJetEnergyRatio.Fill( energyRatio );
-    hEnergyRatiovsDistance.Fill( distance , energyRatio );
-
-  }//ELECRON LOOP
-}//END OF THE AnalyzeNotCleanJets METHOD
