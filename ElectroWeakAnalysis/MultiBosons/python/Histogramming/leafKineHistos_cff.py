@@ -22,8 +22,8 @@ etaHisto = cms.PSet(
 
 phiHisto = cms.PSet(
   itemsToPlot = cms.untracked.int32(-1),
-  min = cms.untracked.double(-4),
-  max = cms.untracked.double(4),
+  min = cms.untracked.double(-4.0),
+  max = cms.untracked.double(4.0),
   nbins = cms.untracked.int32(80),
   name = cms.untracked.string("Phi"),
   description = cms.untracked.string("#phi"),
