@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+isData = 0
 process = cms.Process("TTEffSKIM")
 
 process.maxEvents = cms.untracked.PSet(
@@ -17,8 +18,11 @@ process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus","Ide
 
 process.load('CondCore.DBCommon.CondDBSetup_cfi')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-#process.GlobalTag.globaltag = 'GR10_E_V4A::All'
-process.GlobalTag.globaltag = 'MC_3XY_V25::All'
+if(isData):
+  process.GlobalTag.globaltag = 'GR10_E_V4A::All'
+else:
+  process.GlobalTag.globaltag = 'MC_3XY_V25::All'
+
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -41,9 +45,10 @@ process.source = cms.Source("PoolSource",
 process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
 process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
 process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
-#process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39))')
-# For MC
-process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39)')
+if(isData):
+  process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39))')
+else:
+  process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39)')
 
 process.scrapping = cms.EDFilter("FilterOutScraping",
     	applyfilter = cms.untracked.bool(True),
