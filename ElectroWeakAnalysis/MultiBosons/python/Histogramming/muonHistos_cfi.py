@@ -9,6 +9,12 @@ muonHistos = cms.EDAnalyzer("PatMuonHistoAnalyzer",
   src = cms.InputTag("cleanPatMuons")
 )
 
+#muonHistos.histograms.etaHist.min = cms.untracked.double(-2.4)
+#muonHistos.histograms.etaHist.max = cms.untracked.double(2.4)
+
+#muonHistos.histograms.phiHist.min = cms.untracked.double(-3.14159)
+#muonHistos.histograms.phiHist.max = cms.untracked.double(3.14159)
+
 from ElectroWeakAnalysis.MultiBosons.Histogramming.histoTools_cff import *
 setItemsToPlot(muonHistos, 5)
 
