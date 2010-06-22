@@ -3,7 +3,7 @@
 
 <ConstantsSection label="pixbar.xml" eval="true">
  <Constant name="zero"              value="0.0*fm"/>
- <Constant name="Rin1"              value="2.70*cm"/>
+ <Constant name="Rin1"              value="3.10*cm"/>
  <Constant name="Rin2"              value="18.00*cm"/>
  <Constant name="Rin3"              value="18.50*cm"/>
  <Constant name="RinSupTubCab"      value="15.00*cm"/>
@@ -24,9 +24,9 @@
  <Constant name="SupportT"          value="0.350*cm"/>
  <Constant name="SupportY"          value="19.00*cm"/>
  <Constant name="ShieldL"           value="55.40*cm"/>
- <Constant name="Shield1Rin"        value="2.700*cm"/>
- <Constant name="Shield1Rout"       value="2.705*cm"/>
- <Constant name="Shield2Rout"       value="2.730*cm"/>
+ <Constant name="Shield1Rin"        value="3.200*cm"/>
+ <Constant name="Shield1Rout"       value="3.205*cm"/>
+ <Constant name="Shield2Rout"       value="3.230*cm"/>
  <Constant name="Shield3Rin"        value="18.470*cm"/>
  <Constant name="Shield3Rout"       value="18.475*cm"/>
  <Constant name="FlangeRin"         value="10.600*cm"/>
