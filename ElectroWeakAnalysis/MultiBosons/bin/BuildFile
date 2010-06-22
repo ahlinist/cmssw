@@ -16,3 +16,6 @@
 <environment>
 <bin file="plotMuons.cc"> </bin>
 </environment>
+<environment>
+<bin file="plotPhotons.cc"> </bin>
+</environment>
