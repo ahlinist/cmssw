@@ -3,12 +3,12 @@
 
 <ConstantsSection label="pixbarlayer0.xml" eval="true">
  <Constant name="Ladders"           value="16"/>
- <Constant name="CoolDist"          value="3.4*cm"/>
+ <Constant name="CoolDist"          value="3.9*cm"/>
  <Constant name="CoolWidth"         value="0.3747*cm"/>
  <Constant name="OuterFirst"        value="-1"/>
 </ConstantsSection>
 
-<Algorithm name="track:DDPixBarLayerUpgradeAlgoCoverage">
+<Algorithm name="track:DDPixBarLayerUpgradeAlgo">
   <rParent name="pixbarlayer0:PixelBarrelLayer0"/>
   <String name="GeneralMaterial"   value="materials:Air"/>
   <Numeric name="Ladders"          value="[pixbarlayer0:Ladders]"/>
@@ -24,7 +24,6 @@
   <String name="LadderName"        value="pixbarladderfull0:PixelBarrelLadderFull0"/> 
   <Numeric name="LadderWidth"      value="[pixbarladderfull0:LadderWidth]"/>
   <Numeric name="LadderThick"      value="[pixbarladderfull0:LadderThick]"/>
-  <Numeric name="ActiveWidth"      value="[pixbarladderfull0:ActiveWidth]"/>
   <Numeric name="OuterFirst"       value="[pixbarlayer0:OuterFirst]"/>
 </Algorithm>
 
