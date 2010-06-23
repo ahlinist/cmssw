@@ -48,9 +48,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/MinBias/skimElecTau_100_1.root'
-		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/data/EG_SD/skimElecTau_24_0.root'
-		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Summer09_CMSSW_3_1_4/Ztautau_7TeV/skimElecTau_Ztautau_7TeV_17.root'
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/spring10/MinBias_pythia6_0/skimElecTau_100_0.root'
 	)
 	#skipBadFiles = cms.untracked.bool(True)    
 )
@@ -68,7 +66,7 @@ process.source = cms.Source("PoolSource",
 
 #--------------------------------------------------------------------------------
 # add patElectronIsolation, which was removed from standard pat sequence in CMSSW_3_4
-from TauAnalysis.Configuration.tools.producePatElectronIsolation import *
+from TauAnalysis.Configuration.tools.patElectronTools import *
 producePatElectronIsolation(process)
 #--------------------------------------------------------------------------------
 
