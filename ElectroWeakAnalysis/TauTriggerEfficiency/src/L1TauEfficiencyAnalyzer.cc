@@ -124,6 +124,14 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   if(isolationThresholds.size() == 0)
     throw cms::Exception("Configuration") << "At least one item in L1IsolationThresholds is needed!" << std::endl;
 
+  std::string matchMode = iConfig.getParameter<std::string>("L1JetMatchingMode");
+  if(matchMode == "nearestDR")
+    selectNearest = true;
+  else if(matchMode == "highestEt")
+    selectNearest = false;
+  else
+    throw cms::Exception("Configuration") << "L1JetMatchingMode should be 'nearestDR' or 'highestEt', was '" << matchMode << "'" << std::endl;
+
 
   l1tree = trigtree;
 
@@ -139,6 +147,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet);
   l1tree->Branch("L1MET", &met);
   l1tree->Branch("L1MHT", &mht);
+  l1tree->Branch("L1JetsInMatchingCone", &jetsInMatchCone);
 
   l1Isolations.resize(isolationThresholds.size(), 0);
   thresholds.resize(isolationThresholds.size(), 0.);
@@ -177,6 +186,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
   hasTriggeredL1CenJet = false;
   met=0.;
   mht=0.;
+  jetsInMatchCone=0;
 
   unsigned jetRegionId = 0;
 
@@ -230,28 +240,33 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
 
   // Match for PF tau and L1extra tau
   jetMinDR = 99999999.;
+  double jetMaxEt = 0.;
   for(iJet = l1Taus.begin(); iJet != l1Taus.end(); ++iJet) {
     //if(iJet->et() <= 5.)
     //  continue;
 
     double DR = deltaR(iJet->eta(), iJet->phi(), tau.Eta(), tau.Phi());
-    if(DR < jetMatchingCone && DR < jetMinDR) {
-      jetMinDR = DR;
-      jetPt = iJet->pt();
-      jetEt = iJet->et();
-      jetUncorrEt = L1JetEtUncorr(jetEt);
-      jetEta = iJet->eta();
-      jetPhi = iJet->phi();
-      hasL1Jet = true;
-      hasL1TauJet = true;
-      hasL1CenJet = false;
-      jetRegionId = iJet->gctJetCand()->regionId().rawId();
-      /*
-      std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId()
-                << " etaIndex " << iJet->gctJetCand()->etaIndex() << " phiIndex " << iJet->gctJetCand()->phiIndex()
-                << " tau jet et " << jetEt << " eta " << jetEta << " phi " << jetPhi
-                << std::endl;
-      */
+    if(DR < jetMatchingCone) {
+      ++jetsInMatchCone;
+      if((selectNearest && DR < jetMinDR) ||
+         (!selectNearest && iJet->et() > jetMaxEt)) {
+        jetMinDR = DR;
+        jetPt = iJet->pt();
+        jetEt = iJet->et();
+        jetUncorrEt = L1JetEtUncorr(jetEt);
+        jetEta = iJet->eta();
+        jetPhi = iJet->phi();
+        hasL1Jet = true;
+        hasL1TauJet = true;
+        hasL1CenJet = false;
+        jetRegionId = iJet->gctJetCand()->regionId().rawId();
+        /*
+          std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId()
+                    << " etaIndex " << iJet->gctJetCand()->etaIndex() << " phiIndex " << iJet->gctJetCand()->phiIndex()
+                    << " tau jet et " << jetEt << " eta " << jetEta << " phi " << jetPhi
+                    << std::endl;
+        */
+      }
     }
   }
 
@@ -262,23 +277,27 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
       //  continue;
 
       double DR = deltaR(iJet->eta(), iJet->phi(), tau.Eta(), tau.Phi());
-      if(DR < jetMatchingCone && DR < jetMinDR) {
-        jetMinDR = DR;
-        jetPt = iJet->pt();
-        jetEt = iJet->et();
-	jetUncorrEt = L1JetEtUncorr(jetEt);
-        jetEta = iJet->eta();
-        jetPhi = iJet->phi();
-        hasL1Jet = true;
-        hasL1TauJet = false;
-        hasL1CenJet = true;
-        jetRegionId = iJet->gctJetCand()->regionId().rawId();
-        /*
-        std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId() 
-                  << " etaIndex " << iJet->gctJetCand()->etaIndex() << " phiIndex " << iJet->gctJetCand()->phiIndex()
-                  << " central jet et " << jetEt << " eta " << jetEta << " phi " << jetPhi
-                  << std::endl;
-        */
+      if(DR < jetMatchingCone) {
+        ++jetsInMatchCone;
+        if((selectNearest && DR < jetMinDR) ||
+           (!selectNearest && iJet->et() > jetMaxEt)) {
+          jetMinDR = DR;
+          jetPt = iJet->pt();
+          jetEt = iJet->et();
+          jetUncorrEt = L1JetEtUncorr(jetEt);
+          jetEta = iJet->eta();
+          jetPhi = iJet->phi();
+          hasL1Jet = true;
+          hasL1TauJet = false;
+          hasL1CenJet = true;
+          jetRegionId = iJet->gctJetCand()->regionId().rawId();
+          /*
+            std::cout << "L1Analyzer " << __LINE__ << ": " << iJet->gctJetCand()->regionId().rawId() 
+                      << " etaIndex " << iJet->gctJetCand()->etaIndex() << " phiIndex " << iJet->gctJetCand()->phiIndex()
+                      << " central jet et " << jetEt << " eta " << jetEta << " phi " << jetPhi
+                      << std::endl;
+          */
+        }
       }
   }
 
