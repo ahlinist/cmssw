@@ -413,6 +413,32 @@ private:
   void postDrawTH2( TCanvas *, const VisDQMObject &o )
     {
 
+      if(o.name.find("reportSummaryMap") != std::string::npos)
+      {
+	
+	TBox* b_box_g = new TBox();
+	TBox* b_box_c = new TBox();
+	TBox* b_box_y = new TBox();
+	TBox* b_box_r = new TBox();
+
+	b_box_g->SetFillColor(416);
+	b_box_c->SetFillColor(432);
+	b_box_y->SetFillColor(400);
+	b_box_r->SetFillColor(632);
+
+	TLegend* leg = new TLegend(0.1,0.75,0.9,0.9); //(0.16, 0.11, 0.44, 0.38);
+	leg->AddEntry(b_box_g,"Good (signal)",   "f");
+	leg->AddEntry(b_box_c,"Good (pedestal)","f");
+	leg->AddEntry(b_box_y,"Hot Channel",  "f");
+	leg->AddEntry(b_box_r,"Dead Channel", "f");
+	leg->Draw();
+	
+        TLine* my_line = new TLine();
+        my_line->DrawLine(0,18.07,14,18.07);
+
+      }
+
+
       if(o.name.find("testOccupancy") != std::string::npos)
       {
         TH2F * histo =  dynamic_cast<TH2F*>( o.object );
