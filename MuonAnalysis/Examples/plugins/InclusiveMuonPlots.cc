@@ -37,7 +37,10 @@
 #include "TrackingTools/DetLayers/interface/DetLayer.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
 #include "TrackPropagation/SteppingHelixPropagator/interface/SteppingHelixPropagator.h"
-
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 #include <TH1.h>
 #include <TProfile.h>
@@ -72,6 +75,7 @@ class InclusiveMuonPlots: public edm::EDAnalyzer {
     private:
         edm::InputTag muons_;
         StringCutObjectSelector<pat::Muon> selector_;
+        bool onlyLeadingMuon_;
 
         edm::InputTag primaryVertices_;
         edm::InputTag normalization_;
@@ -84,18 +88,22 @@ class InclusiveMuonPlots: public edm::EDAnalyzer {
         edm::ESHandle<MagneticField> bField;
         edm::ESHandle<Propagator> propagator;
         edm::ESHandle<MuonDetLayerGeometry> muonGeometry;
+        edm::ESHandle<TransientTrackBuilder> theTTBuilder;
+
         // this will be the MB1 surface
         const  BoundCylinder *barrelCylinder_;
         // these are the ME1 surfaces.  ME 1/1 is closer in Z to the interaction point, so we need 2 surfaces for each endcap
         const  BoundDisk *endcapDisk11Pos_, *endcapDisk11Neg_, *endcapDisk123Pos_, *endcapDisk123Neg_; 
 
         TH1D *luminosity;
+
 };
 
 /// Constructor
 InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     muons_(pset.getParameter<edm::InputTag>("muons")),
     selector_(pset.getParameter<std::string>("selection")),
+    onlyLeadingMuon_(pset.getParameter<bool>("onlyLeadingMuon")),
     primaryVertices_(pset.getParameter<edm::InputTag>("primaryVertices")),
     luminosity(0) // by default, we don't have luminosity info
 {
@@ -107,11 +115,15 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     md_dir->WriteTObject(new TObjString(muons_.encode().c_str()), "muons");
     md_dir->WriteTObject(new TObjString(pset.getParameter<std::string>("selection").c_str()), "selection");
 
+    book(*fs, pset, "nMuons"),
+
     book(*fs, pset, "p"); 
     book(*fs, pset, "pt"); 
     book(*fs, pset, "eta"); 
     book(*fs, pset, "phi"); 
     book(*fs, pset, "charge"); 
+    book(*fs, pset, "qp"); 
+    book(*fs, pset, "qpt"); 
 
     book(*fs, pset, "pSta",   "p"); 
     book(*fs, pset, "ptSta",  "pt"); 
@@ -122,6 +134,10 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "dxyFine");
     book(*fs, pset, "dzCoarse");
     book(*fs, pset, "dzFine");
+    book(*fs, pset, "tip");
+    book(*fs, pset, "tipSig");
+    book(*fs, pset, "ip3d");
+    book(*fs, pset, "ip3dSig");
 
     book(*fs, pset, "pixelHits");
     book(*fs, pset, "pixelLayers");
@@ -160,6 +176,9 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "segmentCompatArb",      "segmentCompat"); 
     book(*fs, pset, "segmentCompatNoArb",    "segmentCompat"); 
     book(*fs, pset, "caloCompat",            "caloCompat"); 
+
+    book(*fs, pset, "timeAtIpInOut");
+    book(*fs, pset, "timeAtIpInOutSig");
 
     book(*fs, pset, "trkPhi_at_pME1_1",      "trkPhiAtSurface");
     book(*fs, pset, "trkPhi_at_mME1_1",      "trkPhiAtSurface");
@@ -213,23 +232,32 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
     using namespace edm;
     using namespace std;
 
+    eventSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
+    eventSetup.get<IdealMagneticFieldRecord>().get(bField);
+    eventSetup.get<TrackingComponentsRecord>().get("SteppingHelixPropagatorAlong",propagator);
+    eventSetup.get<MuonRecoGeometryRecord>().get(muonGeometry);
+
     Handle<View<reco::Muon> > muons;
     event.getByLabel(muons_, muons);
 
     Handle<vector<reco::Vertex> > vertices;
     event.getByLabel(primaryVertices_, vertices);
 
+    size_t nmu = 0;
     foreach (const reco::Muon &recomu, *muons) {
         // we want to make a pat::Muon so that we can access directly muonID in the cuts
         const pat::Muon &mu = (typeid(recomu) == typeid(pat::Muon) ? static_cast<const pat::Muon &>(recomu) : pat::Muon(recomu));
         
         if (!selector_(mu)) continue;
+        nmu++;
     
         plots["p"  ]->Fill(mu.p());
         plots["pt" ]->Fill(mu.pt());
         plots["eta"]->Fill(mu.eta());
         plots["phi"]->Fill(mu.phi());
         plots["charge"]->Fill(mu.charge());
+        plots["qp"  ]->Fill(mu.p()*mu.charge());
+        plots["qpt" ]->Fill(mu.pt()*mu.charge());
 
         if (mu.innerTrack().isNonnull()) {
             plots["pixelHits"  ]->Fill(mu.innerTrack()->hitPattern().numberOfValidPixelHits());
@@ -246,7 +274,20 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
                 plots["dzCoarse"]->Fill(mu.innerTrack()->dz(vtx.position()));
                 plots["dxyFine"]->Fill(mu.innerTrack()->dxy(vtx.position()));
                 plots["dzFine"]->Fill(mu.innerTrack()->dz(vtx.position()));
+
+                reco::TransientTrack ttk = theTTBuilder->build(mu.innerTrack());
+                std::pair<bool,Measurement1D> tip  = IPTools::absoluteTransverseImpactParameter(ttk, vtx);
+                if (tip.first ) { 
+                    plots["tip"]->Fill(tip.second.value());
+                    plots["tipSig"]->Fill(tip.second.significance());
+                }
+                std::pair<bool,Measurement1D> ip3d = IPTools::absoluteImpactParameter3D(ttk, vtx);
+                if (ip3d.first ) { 
+                    plots["ip3d"]->Fill(ip3d.second.value());
+                    plots["ip3dSig"]->Fill(ip3d.second.significance());
+                }
             }
+            
         }
         if (mu.outerTrack().isNonnull()) {
             plots["pSta"  ]->Fill(mu.outerTrack()->p());
@@ -307,11 +348,15 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
             plots["caloCompat"]->Fill(mu.caloCompatibility());
         }
 
+        if (mu.isTimeValid()) {
+            plots["timeAtIpInOut"]->Fill(mu.time().timeAtIpInOut);
+            if (mu.time().timeAtIpInOutErr != 0) {
+                plots["timeAtIpInOutSig"]->Fill(mu.time().timeAtIpInOut/mu.time().timeAtIpInOutErr);
+            }
+        }
+
         // Andy's phi at ME/MB 1 surface
         if (mu.innerTrack().isNonnull()) {
-          eventSetup.get<IdealMagneticFieldRecord>().get(bField);
-          eventSetup.get<TrackingComponentsRecord>().get("SteppingHelixPropagatorAlong",propagator);
-          eventSetup.get<MuonRecoGeometryRecord>().get(muonGeometry);
           barrelCylinder_ = dynamic_cast<const BoundCylinder *>(& muonGeometry->allDTLayers()[0]->surface());
           endcapDisk11Pos_  = dynamic_cast<const BoundDisk *>(& muonGeometry->forwardCSCLayers()[0]->surface());
           endcapDisk11Neg_  = dynamic_cast<const BoundDisk *>(& muonGeometry->backwardCSCLayers()[0]->surface());
@@ -372,6 +417,7 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
         // end Andy's stuff
 
     }
+    plots["nMuons"]->Fill(nmu);
 }
 
 void InclusiveMuonPlots::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup) 
