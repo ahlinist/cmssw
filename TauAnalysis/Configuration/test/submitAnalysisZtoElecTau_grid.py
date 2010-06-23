@@ -11,7 +11,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 # NOTE: outputFilePath must **not** contain "/castor/cern.ch" !!
 #       (internally added by crab)
 #
-outputFilePath = "/user/j/jkolb/elecTauAnalysis/spring10/test/"
+outputFilePath = "/user/j/jkolb/elecTauAnalysis/spring10/test2/"
 
 inputFileType = "RECO/AOD"
 
@@ -37,7 +37,7 @@ submitToGrid(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
 
 submitToGrid(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
 		sample = "WplusJets_7TeV", job = "spring10_0",
-		dbs_name = "/Wtaunu/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecTauSkim/USER",
+		dbs_name = "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecTauSkim/USER",
 		dbs_url = "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",             
 		replFunction = makeReplacementsCrab, replacements =
 		"maxEvents = -1; inputFileType = " + inputFileType + "; eventsPerJob = 30000; applyFactorization = false; estimateSysUncertainties = false; globalTag = START3X_V26::All",
@@ -90,7 +90,7 @@ submitToGrid(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
 		dbs_name = "/QCD_EMEnriched_Pt30to80/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecTauSkim/USER",
 		dbs_url = "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",             
 		replFunction = makeReplacementsCrab, replacements =
-		"maxEvents = -1; inputFileType = " + inputFileType + "; eventsPerJob = 50000; applyFactorization = true; estimateSysUncertainties = false; globalTag = START3X_V26::All",
+		"maxEvents = -1; inputFileType = " + inputFileType + "; eventsPerJob = 60000; applyFactorization = true; estimateSysUncertainties = false; globalTag = START3X_V26::All",
 		type = "mc",
 		outputFileNames = [ plotsOutputFileNameZtoElecTau_QCD_EMenriched_Pt30to80_7TeV ], 
 		outputFilePath = outputFilePath, submit = "yes")
