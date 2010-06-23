@@ -31,97 +31,61 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
 
    resetVariables();
 
-   // Get the jets
-   //   edm::Handle<edm::View<pat::Jet> > jetHandle;
-   //   event.getByLabel(jetTag_, jetHandle);
-   //   if (!jetHandle.isValid()) {
-   //      edm::LogWarning("MyMHTEventSelector") << "No Jet results for InputTag " << jetTag_;
-   //      return false;
-   //   }
-   edm::Handle<edm::View<reco::Jet> > jetHandle;
-   event.getByLabel(jetTag_, jetHandle);
-   if (!jetHandle.isValid()) {
-      edm::LogWarning("MyMHTEventSelector") << "No Jet results for InputTag " << jetTag_;
-      return false;
-   }
+   //   Get the jets
+     edm::Handle<edm::View<pat::Jet> > jetHandle;
+     event.getByLabel(jetTag_, jetHandle);
+     if (!jetHandle.isValid()) {
+        edm::LogWarning("MyMHTEventSelector") << "No Jet results for InputTag " << jetTag_;
+        return false;
+     }
+//    edm::Handle<edm::View<reco::Jet> > jetHandle;
+//    event.getByLabel(jetTag_, jetHandle);
+//    if (!jetHandle.isValid()) {
+//       edm::LogWarning("MyMHTEventSelector") << "No Jet results for InputTag " << jetTag_;
+//       return false;
+//    }
 
-   bool patjet = false;
-   bool calojet = false;
-   try {
-      const pat::Jet testjet = dynamic_cast<const pat::Jet &> (*(jetHandle->begin()));
-      patjet = true;
-      //std::cout << "Is pat::Jet" << std::endl;
-   } catch (...) {
-      try {
-         const reco::CaloJet testjet = dynamic_cast<const reco::CaloJet &> (*(jetHandle->begin()));
-         calojet = true;
-         //std::cout << "Is reco::CaloJet" << std::endl;
-      } catch (...) {
-      }
-   }
+//    bool patjet = false;
+//    bool calojet = false;
+//    try {
+//       const pat::Jet testjet = dynamic_cast<const pat::Jet &> (*(jetHandle->begin()));
+//       patjet = true;
+//       //std::cout << "Is pat::Jet" << std::endl;
+//    } catch (...) {
+//       try {
+//          const reco::CaloJet testjet = dynamic_cast<const reco::CaloJet &> (*(jetHandle->begin()));
+//          calojet = true;
+//          //std::cout << "Is reco::CaloJet" << std::endl;
+//       } catch (...) {
+//       }
+//    }
 
-   if (patjet) {
+//   if (patjet) {
 
       // Sum over jet Ets (with cut on min. pt)
-      edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
+     //      edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
+      edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
       while (iJet != jetHandle->end()) {
-         const pat::Jet *jet = dynamic_cast<const pat::Jet *> (&(*iJet));
+	//         const pat::Jet *jet = dynamic_cast<const pat::Jet *> (&(*iJet));
          //         std::cout << "pat::Jet (pt, eta, phi, emf, n90, fHPD): " << jet->pt() << ", " << jet->eta() << ", "
          //                  << jet->phi() << ", " << jet->emEnergyFraction() << ", " << jet->jetID().n90Hits << ", "
          //                  << jet->jetID().fHPD << std::endl;
-         if (jet->emEnergyFraction() <= minFem_ && fabs(jet->eta()) < 2.6 && useJetID_) {
+         if (iJet->emEnergyFraction() <= minFem_ && fabs(iJet->eta()) < 2.6 && useJetID_) {
             ++iJet;
             continue;
          }
-         if (jet->emEnergyFraction() >= maxFem_ && fabs(jet->eta()) < 2.6 && useJetID_) {
+         if (iJet->emEnergyFraction() >= maxFem_ && fabs(iJet->eta()) < 2.6 && useJetID_) {
             ++iJet;
             continue;
          }
-         if (jet->jetID().n90Hits <= minN90_ && useJetID_) {
+         if (iJet->jetID().n90Hits <= minN90_ && useJetID_) {
             ++iJet;
             continue;
          }
-         if (jet->jetID().fHPD >= maxfHPD_ && useJetID_) {
+         if (iJet->jetID().fHPD >= maxfHPD_ && useJetID_) {
             ++iJet;
             continue;
          }
-         if (jet->pt() > minPt_ && fabs(jet->eta()) < maxEta_) {
-            math::XYZTLorentzVector p4(jet->px(), jet->py(), jet->pz(), jet->energy());//   jet->correctedP4("abs");
-            HT += p4;
-         }
-         ++iJet;
-      }
-
-   } else if (calojet) {
-
-      // Sum over jet Ets (with cut on min. pt)
-      edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
-      while (iJet != jetHandle->end()) {
-         const reco::CaloJet *jet = dynamic_cast<const reco::CaloJet *> (&(*iJet));
-         //         std::cout << "reco::CaloJet (pt, eta, phi, emf): " << jet->pt() << ", " << jet->eta() << ", " << jet->phi()
-         //                  << ", " << jet->emEnergyFraction() << std::endl;
-         if (jet->emEnergyFraction() <= minFem_ && fabs(jet->eta()) < 2.6) {
-            ++iJet;
-            continue;
-         }
-         if (jet->emEnergyFraction() >= maxFem_ && fabs(jet->eta()) < 2.6) {
-            ++iJet;
-            continue;
-         }
-         if (jet->pt() > minPt_ && fabs(jet->eta()) < maxEta_) {
-            math::XYZTLorentzVector p4(jet->px(), jet->py(), jet->pz(), jet->energy());//   jet->correctedP4("abs");
-            HT += p4;
-         }
-         ++iJet;
-      }
-
-   } else {
-
-      // Sum over jet Ets (with cut on min. pt)
-      edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
-      while (iJet != jetHandle->end()) {
-         //         std::cout << "reco::Jet (pt, eta, phi): " << iJet->pt() << ", " << iJet->eta() << ", " << iJet->phi()
-         //                  << std::endl;
          if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
             math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
             HT += p4;
@@ -129,7 +93,44 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
          ++iJet;
       }
 
-   }
+//    } else if (calojet) {
+
+//       // Sum over jet Ets (with cut on min. pt)
+//       edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
+//       while (iJet != jetHandle->end()) {
+//          const reco::CaloJet *jet = dynamic_cast<const reco::CaloJet *> (&(*iJet));
+//          //         std::cout << "reco::CaloJet (pt, eta, phi, emf): " << jet->pt() << ", " << jet->eta() << ", " << jet->phi()
+//          //                  << ", " << jet->emEnergyFraction() << std::endl;
+//          if (jet->emEnergyFraction() <= minFem_ && fabs(jet->eta()) < 2.6) {
+//             ++iJet;
+//             continue;
+//          }
+//          if (jet->emEnergyFraction() >= maxFem_ && fabs(jet->eta()) < 2.6) {
+//             ++iJet;
+//             continue;
+//          }
+//          if (jet->pt() > minPt_ && fabs(jet->eta()) < maxEta_) {
+//             math::XYZTLorentzVector p4(jet->px(), jet->py(), jet->pz(), jet->energy());//   jet->correctedP4("abs");
+//             HT += p4;
+//          }
+//          ++iJet;
+//       }
+
+//    } else {
+
+//       // Sum over jet Ets (with cut on min. pt)
+//       edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
+//       while (iJet != jetHandle->end()) {
+//          //         std::cout << "reco::Jet (pt, eta, phi): " << iJet->pt() << ", " << iJet->eta() << ", " << iJet->phi()
+//          //                  << std::endl;
+//          if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
+//             math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
+//             HT += p4;
+//          }
+//          ++iJet;
+//       }
+
+//    }
 
    float myMHT = HT.pt();
    //std::cout << myMHT << std::endl;
