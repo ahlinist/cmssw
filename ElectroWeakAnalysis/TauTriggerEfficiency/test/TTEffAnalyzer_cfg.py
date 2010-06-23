@@ -126,6 +126,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         HltResults              = cms.InputTag("TriggerResults","","HLT"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
+        L1JetMatchingMode        = cms.string("nearestDR"), # "nearestDR", "highestEt"
         L1IsolationThresholds   = cms.vuint32(1,2,3,4), # count regions with "et() < threshold", these are in GeV
 	L2AssociationCollection = cms.InputTag("openhltL2TauIsolationProducer"),
         EERecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEE"),
