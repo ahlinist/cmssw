@@ -63,6 +63,7 @@ class L1TauEfficiencyAnalyzer {
         TTree *l1tree;
 
         float jetPt, jetEt, jetUncorrEt, jetEta, jetPhi, jetMinDR;
+        int jetsInMatchCone;
         bool hasL1Jet, hasL1TauJet, hasL1CenJet;
         bool hasTauVeto;
         std::vector<int> l1Isolations;
@@ -76,6 +77,8 @@ class L1TauEfficiencyAnalyzer {
 	int _HltEvtCnt;
 	bool *_l1Flag;
 	bool *_hltFlag;
+
+        bool selectNearest;
 
 	//edm::TriggerNames _triggerNames;
 	std::vector<std::string> _triggerNames;
