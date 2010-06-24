@@ -88,14 +88,12 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       pTrack            = gHFEvent->addSigTrack();
 
       pTrack->fMCID     = 0;                            //muon type: global, standalone or tracker muon
-      if (muon->isGlobalMuon())                       
+      if (muon->isGlobalMuon()) 
 	pTrack->fMCID   = 1;          
-      else if (muon->isStandAloneMuon()) 
-	pTrack->fMCID   = 2; 
-      else if (muon->isTrackerMuon()) 
-	pTrack->fMCID   = 3; 
-      else if (muon->isCaloMuon()) 
-	pTrack->fMCID   = 4; 
+      if (muon->isStandAloneMuon()) 
+	pTrack->fElID   = 1;                            //abuse of ElID and KaID (change when possible)
+      if (muon->isTrackerMuon()) 
+	pTrack->fKaID   = 1; 
       
       pTrack->fMuType   = 0;                            //0=RECO, 1=L1, 2=HLTL2, 3=HLTL3 
       pTrack->fMuID     = (muon->track()).index();      //index of muon track in RECO track block
@@ -292,4 +290,4 @@ void  HFDumpSignal::endJob() {
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFDumpSignal);
+DEFINE_FWK_MODULE(HFDumpSignal);
