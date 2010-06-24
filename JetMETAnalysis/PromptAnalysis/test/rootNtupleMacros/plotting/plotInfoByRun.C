@@ -47,6 +47,10 @@ void plotInfoByRun(){
   tree->SetBranchAddress("SelectedEvts_dijets",&SelectedEvts_dijetsTMP);
   tree->GetEntry(0);
 
+  for(int i=0; i<nruns; i++){
+    cout<<"runnumberTMP["<< i<<"]= "<<runnumberTMP[i] << endl;
+  }
+
   int runnum[nruns];
   double lumi[nruns];
   int selEv[nruns];
@@ -58,12 +62,15 @@ void plotInfoByRun(){
 
   //reorder the runnnumbers
   int NewI=0;
+  int minRN;
+  int minRNfix=3*runnumberTMP[0];
   while(NewI<nruns){
-
-  int minRN=3*runnumberTMP[0];
+    cout<< " runnumberTMP[0] "<< runnumberTMP[0] << endl;
   int MinI=999;
+  minRN=minRNfix;
   for(int i=0; i<nruns; i++) {
     if(runnumberTMP[i]<minRN && runnumberTMP[i]!=-1){
+      minRN=runnumberTMP[i];
       MinI=i;
     }
   }
@@ -75,6 +82,7 @@ void plotInfoByRun(){
   selEv_dj[NewI]=SelectedEvts_dijetsTMP[MinI];
   Njets_dj[NewI]=NumOfJets_dijetsTMP[MinI];
   JetSumPt_dj[NewI]=SumJetPt_dijetsTMP[MinI];
+  cout<< "NewI " <<NewI << " runnum[NewI] "<<runnum[NewI] <<" lumi[NewI]  " << lumi[NewI]<< endl;
   NewI++;
   runnumberTMP[MinI]=-1;
 }
@@ -83,6 +91,7 @@ void plotInfoByRun(){
   char arg[100];
 
   for(int n=0; n<nruns; n++){
+    cout<< "runnum "<< runnum[n] << endl;
     sprintf(arg,"%d",runnum[n]);
     names[n]=(TString)arg;
   }
@@ -98,7 +107,10 @@ void plotInfoByRun(){
   TH1D *AvJetPt_dijets = new TH1D("AvJetPt_dijets","AvJetPt_dijets",nbins,0.,nbins-1);
 
   for(int h=0; h<nbins;h++){
+
+    cout<<"name "<< names[h] << "  value "<<  selEv[h]<<"/"<<lumi[h] << endl;
     if(lumi[h]<=0.) continue;
+
     SelectedEvts->GetXaxis()->SetBinLabel(h+1,names[h]);
     SelectedEvts->SetBinContent(h+1,selEv[h]/lumi[h]);
     //    if(selEv[h]>0)    SelectedEvts->SetBinError(h+1,sqrt(selEv[h])/lumi[h]);
@@ -138,7 +150,7 @@ void plotInfoByRun(){
   title->SetBorderSize(0.1);
   title->SetTextFont(42);
   title->AddText("JPT jets");
-  title->AddText("p_{T}>25 GeV , |#eta|<2.6");
+  title->AddText("p_{T}>25 GeV , | #eta|<2.6");
   //
   TPaveText *titledj = new TPaveText(0.5,0.75,0.9,0.9,"blNDC");
   titledj->SetFillStyle(4000);
@@ -146,7 +158,7 @@ void plotInfoByRun(){
   titledj->SetBorderSize(0.1);
   titledj->SetTextFont(42);
   titledj->AddText("JPT dijets");
-  titledj->AddText("p_{T}>25 GeV , |#eta|<3 , #Delta#phi>2.1");
+  titledj->AddText("p_{T}>25 GeV , | #eta|<3 , #Delta#phi>2.1");
   //
 
 
