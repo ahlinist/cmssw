@@ -11,7 +11,8 @@
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
-#include "ElectroWeakAnalysis/MultiBosons/interface/MuonHistogrammer.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "ElectroWeakAnalysis/MultiBosons/interface/Histogrammer.h"
 
 #include "Math/GenVector/PxPyPzM4D.h"
 
@@ -71,7 +72,7 @@ int main ( int argc, char ** argv )
     muonHistos.push_back(hist);
   }
 
-  MuonHistogrammer muonHistogrammer(muonHistosCfg, fs);
+  Histogrammer<pat::Muon> muonHistogrammer(muonHistosCfg, fs);
 
 
   // This object 'event' is used both to get all information from the
