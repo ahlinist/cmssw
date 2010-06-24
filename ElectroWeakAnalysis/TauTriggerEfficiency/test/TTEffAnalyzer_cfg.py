@@ -73,11 +73,11 @@ process.PFTausSelected = cms.EDFilter("PFTauSelector",
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
     #process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
-    process.GlobalTag.globaltag = 'GR_R_36X_V11::All'
+    process.GlobalTag.globaltag = 'GR_R_36X_V12::All'
     #process.GlobalTag.globaltag = 'MC_3XY_V26::All'
 else:
-    #process.GlobalTag.globaltag = 'START3X_V26A::All'
-    process.GlobalTag.globaltag = 'MC_36Y_V9::All'
+    process.GlobalTag.globaltag = 'START36_V10::All'
+    #process.GlobalTag.globaltag = 'MC_36Y_V10::All'
 
 print process.GlobalTag.globaltag
 
