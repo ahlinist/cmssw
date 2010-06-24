@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.31 2010/06/08 12:58:03 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.32 2010/06/09 08:52:33 covarell Exp $
 //
 //
 
@@ -1078,7 +1078,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     Jpsict->setVal(theCtau);
     JpsictErr->setVal(theCtauErr);
     // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << theRapidity << endl;
-    // cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
+    cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
     trigger0->setIndex((int)isTriggerMatched[0],kTRUE);
@@ -1185,7 +1185,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
 	(sign == 1 && muon1->charge() + muon2->charge() == 2) || 
 	(sign == 2 && muon1->charge() + muon2->charge() == -2);
 
-      if (thisSign && !(muon1->isTrackerMuon()) && !(muon2->isTrackerMuon()) ) {
+      if (thisSign && !(muon1->isTrackerMuon() && muon2->isTrackerMuon()) ) {
 
 	// global + calo? (x2)
 	if (muon1->isGlobalMuon() && muon2->isCaloMuon() ) {
