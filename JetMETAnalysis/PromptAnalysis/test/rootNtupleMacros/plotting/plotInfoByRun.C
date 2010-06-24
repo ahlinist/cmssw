@@ -64,7 +64,6 @@ void plotInfoByRun(){
   int MinI=999;
   for(int i=0; i<nruns; i++) {
     if(runnumberTMP[i]<minRN && runnumberTMP[i]!=-1){
-      minRN=runnumberTMP[i];
       MinI=i;
     }
   }
