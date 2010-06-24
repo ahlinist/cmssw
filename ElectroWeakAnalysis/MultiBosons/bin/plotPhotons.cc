@@ -11,7 +11,8 @@
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
-#include "ElectroWeakAnalysis/MultiBosons/interface/PhotonHistogrammer.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
+#include "ElectroWeakAnalysis/MultiBosons/interface/Histogrammer.h"
 
 #include "Math/GenVector/PxPyPzM4D.h"
 
@@ -71,7 +72,7 @@ int main ( int argc, char ** argv )
     photonHistos.push_back(hist);
   }
 
-  PhotonHistogrammer photonHistogrammer(photonHistosCfg, fs);
+  Histogrammer<pat::Photon> photonHistogrammer(photonHistosCfg, fs);
 
 
   // This object 'event' is used both to get all information from the
