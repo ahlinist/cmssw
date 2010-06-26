@@ -60,7 +60,33 @@ public:
     {
     
       c->cd();
-      if ( o.name.find( "Info/LhcInfo/beamMode") != std::string::npos )
+      if ( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos )
+      {
+         // object is TH2 histogram
+	 TH2F* obj = dynamic_cast<TH2F*>( o.object );
+	 for ( int i = obj->GetNbinsX(); i > 0; --i )
+	 {
+	   if ( obj->GetBinContent(i,28) == 1 )
+	   {
+             char s[25];
+  	     sprintf (s,"Stable Beams");
+             TText tt;
+	     tt.SetTextSize(0.1);
+	     tt.SetTextColor(38);
+	     tt.DrawTextNDC(0.25,0.6,const_cast<char*>(s));
+	   }
+	   if ( obj->GetBinContent(i,27) == 1 )
+	   {
+             char s[25];
+  	     sprintf (s,"7 TeV");
+             TText tt;
+	     tt.SetTextSize(0.1);
+	     tt.SetTextColor(38);
+	     tt.DrawTextNDC(0.4,0.5,const_cast<char*>(s));
+	   }
+         }
+      }
+      else if ( o.name.find( "Info/LhcInfo/beamMode") != std::string::npos )
       {
 	 TH1F* obj = dynamic_cast<TH1F*>( o.object );
 	 assert( obj );
@@ -112,8 +138,7 @@ public:
 	   tt.DrawTextNDC(0.3,0.5,s);
 	 }
       }
-
-      if ( o.name.find( "Info/LhcInfo/lhcFill") != std::string::npos )
+      else if ( o.name.find( "Info/LhcInfo/lhcFill") != std::string::npos )
       {
 	 TH1F* obj = dynamic_cast<TH1F*>( o.object );
 	 assert( obj );
@@ -138,8 +163,7 @@ public:
 	   tt.DrawTextNDC(0.2,0.5,const_cast<char*>(s));
 	 }
       }
-
-      if ( o.name.find( "Info/LhcInfo/momentum") != std::string::npos )
+      else if ( o.name.find( "Info/LhcInfo/momentum") != std::string::npos )
       {
 	 TH1F* obj = dynamic_cast<TH1F*>( o.object );
 	 assert( obj );
@@ -173,7 +197,7 @@ private:
       assert( obj );
 
       
-      int topBin = 28;
+      int topBin = 29;
       int nbins = obj->GetNbinsX();
       int maxRange = nbins;
       for ( int i = nbins; i > 0; --i )
