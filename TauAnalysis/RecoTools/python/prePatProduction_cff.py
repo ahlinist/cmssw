@@ -29,6 +29,7 @@ from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
 # disabled by default since Spring10 production
 from RecoJets.JetAssociationProducers.trackExtrapolator_cfi import *
 from RecoJets.Configuration.RecoJets_cff import *
+from RecoJets.Configuration.RecoPFJets_cff import *
 from RecoJets.Configuration.GenJetParticles_cff import *
 from RecoJets.Configuration.RecoGenJets_cff import *
 from RecoJets.Configuration.RecoJetAssociations_cff import *
@@ -37,6 +38,7 @@ from RecoBTag.Configuration.RecoBTag_cff import *
 redoAk5Jets = cms.Sequence(
     trackExtrapolator
    + ak5CaloJets + ak5CaloJetsPUCorr + ak5JetID + ak5JTA
+   + ak5PFJets
    #+ btagging
 )
 
@@ -53,11 +55,11 @@ producePrePat = cms.Sequence(
    + pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
    + recoElectronIsolation
    + recoMuonIsolation
+   + redoAk5Jets
    + PFTau
    #+ shrinkingConePFTauTancCVTransform
    + associateTauFakeRates
    + ewkTauId
-   + redoAk5Jets
    + genParticlesForJets + ak5GenJets
    + metsignificance
    + produceEventShapeVars
