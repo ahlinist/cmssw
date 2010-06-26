@@ -69,20 +69,19 @@ public:
 	   if ( obj->GetBinContent(i,28) == 1 )
 	   {
              char s[25];
-  	     sprintf (s,"Stable Beams");
+  	     sprintf (s,"Collisions10");
              TText tt;
-	     tt.SetTextSize(0.1);
-	     tt.SetTextColor(38);
-	     tt.DrawTextNDC(0.25,0.6,const_cast<char*>(s));
-	   }
-	   if ( obj->GetBinContent(i,27) == 1 )
-	   {
-             char s[25];
-  	     sprintf (s,"7 TeV");
-             TText tt;
-	     tt.SetTextSize(0.1);
-	     tt.SetTextColor(38);
-	     tt.DrawTextNDC(0.4,0.5,const_cast<char*>(s));
+	     tt.SetTextSize(0.15);
+	     tt.SetTextColor(13);
+	     tt.DrawTextNDC(0.2,0.5,const_cast<char*>(s));
+
+	     if ( obj->GetBinContent(i,27) == 1 )
+	     {
+    	       sprintf (s,"7 TeV");
+	       tt.SetTextSize(0.1);
+	       tt.SetTextColor(13);
+	       tt.DrawTextNDC(0.4,0.4,const_cast<char*>(s));
+ 	     }
 	   }
          }
       }
