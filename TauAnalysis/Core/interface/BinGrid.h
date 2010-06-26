@@ -10,9 +10,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: BinGrid.h,v 1.1 2009/12/04 13:42:00 veelken Exp $
+ * $Id: BinGrid.h,v 1.2 2010/01/15 17:37:14 veelken Exp $
  *
  */
 
@@ -40,6 +40,7 @@ class BinGrid
   virtual int binNumber(const std::vector<double>&) const;
 
   virtual std::vector<double> binCenter(unsigned) const;
+  virtual std::vector<double> binEdges(unsigned) const;
   virtual double binVolume(unsigned) const;
 
   virtual void print(std::ostream&) const;

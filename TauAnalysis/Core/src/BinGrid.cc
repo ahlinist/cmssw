@@ -224,6 +224,16 @@ std::vector<double> BinGrid::binCenter(unsigned totBin) const
   }
 }
 
+std::vector<double> BinGrid::binEdges(unsigned dimension) const
+{
+  if ( dimension >= 0 && dimension < numDimensions_ ) {
+    return binEdges_[dimension];
+  } else {
+    edm::LogError ("BinGrid::binCenter") << " Invalid dimension = " << dimension << " !!";
+    return std::vector<double>();
+  }
+}
+
 double BinGrid::binVolume(unsigned totBin) const
 {
   if ( totBin >= 0 && totBin < numBinsTotal_ ) {
