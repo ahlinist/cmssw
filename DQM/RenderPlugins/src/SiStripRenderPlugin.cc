@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.24 $
-  \date $Date: 2010/05/24 18:30:32 $
+  \version $Revision: 1.25 $
+  \date $Date: 2010/05/25 07:54:23 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -363,15 +363,15 @@ private:
     float xmax = obj->GetXaxis()->GetXmax();
     float ymax = obj->GetMaximum()*1.2;
 
-    float TIBLimit1 = 2500.0;
-    float TOBLimit1 = 3000.0;
-    float TECLimit1 = 2500.0;
-    float TIDLimit1 = 500.0;
+    float TIBLimit1 = 5000.0;
+    float TOBLimit1 = 5000.0;
+    float TECLimit1 = 5000.0;
+    float TIDLimit1 = 1000.0;
 
-    float TIBLimit2 = 300.0;
-    float TOBLimit2 = 250.0;
-    float TECLimit2 = 400.0;
-    float TIDLimit2 = 80.0;
+    float TIBLimit2 = 800.0;
+    float TOBLimit2 = 800.0;
+    float TECLimit2 = 1000.0;
+    float TIDLimit2 = 300.0;
     if( name.find( "TotalNumberOfDigiProfile__" ) != std::string::npos )
       {
         if (obj->GetEntries() > 10.0) c->SetLogy(1);
