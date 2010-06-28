@@ -26,28 +26,21 @@ process.source = cms.Source("PoolSource",
 )
 
 
-from ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff import *
-process.IncludedHLTs = IncludedHLTs
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff")
 
-process.CounterAllEvents = cms.EDAnalyzer("EventCounter",
-	fileName = cms.untracked.string("skim.root"),
-	name = cms.string("All events")
-)
-process.CounterSavedEvents = cms.EDAnalyzer("EventCounter",
-	fileName = cms.untracked.string("skim.root"),
-	name = cms.string("Saved events")
-)
+process.TTEffSkimCounterAllEvents   = cms.EDProducer("EventCountProducer")
+process.TTEffSkimCounterSavedEvents = cms.EDProducer("EventCountProducer")
 
-process.tauFilter = cms.Path(
-	process.CounterAllEvents *
-	process.IncludedHLTs *
-	process.CounterSavedEvents
+process.TTEffSkimFilter = cms.Path(
+	process.TTEffSkimCounterAllEvents *
+	process.MuonHLTs *
+	process.TTEffSkimCounterSavedEvents
 )
 
 process.output = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string("skim.root"),
     SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('tauFilter')
+        SelectEvents = cms.vstring('TTEffSkimFilter')
     )
 )
 process.out_step = cms.EndPath(process.output)
