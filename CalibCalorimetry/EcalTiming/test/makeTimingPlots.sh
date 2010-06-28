@@ -96,8 +96,11 @@ echo 'Making Laser Webpages for ' ${run_num}
 #my_cmssw_base='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/ccecal/CRAFT_devel_321/src'
 my_cmssw_base=$CMSSW_BASE/src
 work_dir=/castor/cern.ch/user/c/ccecal/Timing
-#work_dir=${my_cmssw_base}/'CalibCalorimetry/EcalTiming/test'
+dwork_dir=${my_cmssw_base}/'CalibCalorimetry/EcalTiming/test'
 Nrun_num=${run_num}${APPENDIX}
+
+cd $dwork_dir;
+eval `scramv1 ru -sh`;
 
 
 plots_dir=plots/${analy_type}/$Nrun_num;
@@ -120,6 +123,7 @@ echo  'EcalTimingTTreePlotter '${plots_dir}'/'${Nroot_file}' '${Nrun_num}' 1 png
 #echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/plotLaser.C'
 #echo 'DrawLaserPlots("'${plots_dir}'/'${Nroot_file}'","'${Nrun_num}'",kTRUE,"png","'${plots_dir}'",kFALSE,"${analy_type}","'${plot_file}'")'
 echo
+
 
 EcalTimingTTreePlotter ${plots_dir}/${Nroot_file} ${Nrun_num} 1 png ${plots_dir} 0 ${analy_type} ${plot_file} $OPTIONS > ${plots_dir}/plotting.txt
 
