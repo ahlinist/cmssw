@@ -467,11 +467,11 @@ void analysisClass::Loop()
       int pass_Jet15U=0;
       //  13 HLT_Jet15U
 
-      //Here we ask for the HLT trigger
-      if(hltbits->at(13)==1){ //but Joanna says she remembers it's bit 6: to be checked!
-	pass_Jet15U=1;
-      }
-
+      if(runid==135149 || runid==135175){ //very specific to these runs and bug prone..we should really use the trigger names
+	   if(hltbits->at(12)==1) pass_Jet15U=1;
+	 } else {
+	   if(hltbits->at(13)==1) pass_Jet15U=1;
+	 }
       //## pass_BPTX - Two beams crossing at CMS (only Data)
       if(isData==1)
 	{
@@ -524,8 +524,8 @@ void analysisClass::Loop()
       pass_BSC_MB =1;
       pass_BSC_BeamHaloVeto =1;
 
-       if (pass_BPTX && pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto && pass_Jet15U==1) {
-
+      //       if (pass_BPTX && pass_BSC_MB && pass_PhysicsBit && pass_BSC_BeamHaloVeto && pass_Jet15U==1) {
+       if (pass_Jet15U==1) {
 
      // ---------------------------------------------------------------
      //# Reco-based Selection
