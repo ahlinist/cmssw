@@ -20,7 +20,7 @@ LeptonVetoSelector::LeptonVetoSelector(const edm::ParameterSet& pset) :
                      "maxElectronDxy")), minPtMuon_(pset.getParameter<double> ("minMuonPt")), maxEtaMuon_(
                      pset.getParameter<double> ("maxMuonEta")), muonIso_(pset.getParameter<double> ("muonIsolation")),
             muonHits_(pset.getParameter<unsigned int> ("muonMinHits")), muonDxy_(pset.getParameter<double> (
-                     "maxMuonDxy"))
+                     "maxMuonDxy")), invertVeto_  ( pset.getParameter<bool>        ("invertVeto")        )
 
 //,
 //  tauTag_    ( pset.getParameter<edm::InputTag>("tau")       ),
@@ -34,6 +34,7 @@ LeptonVetoSelector::LeptonVetoSelector(const edm::ParameterSet& pset) :
    //  defineVariable("nTaus");
 
 }
+
 
 //__________________________________________________________________________________________________
 bool LeptonVetoSelector::select(const edm::Event& event) const {
@@ -167,16 +168,19 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   //  setVariable("nTaus",nTaus);
 
   // Selection
-  if (nElectrons > 0 || nMuons > 0 || nTaus > 0)
-    return false;
+  if (!invertVeto_){
+    if ( nElectrons>0 || nMuons>0 || nTaus>0 ) return false;
 
-  //
-  // all electrons, muons and taus are below Et cut or not isolated: event passes
-  //
-  return true;
-
+    //
+    // all electrons, muons and taus are below Et cut or not isolated: event passes
+    //
+    return true;
+  }
+  else{
+    if ( (nElectrons +  nMuons + nTaus) == 1 && nTaus ==0 ) return true;
+  }
+  return false;
 }
-
 //__________________________________________________________________________________________________
 #include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
