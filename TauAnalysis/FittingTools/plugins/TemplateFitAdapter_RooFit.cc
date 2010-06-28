@@ -394,24 +394,24 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
     double norm_initial = ( cfgProcess.exists("norm") ) ? 
       cfgProcess.getParameter<edm::ParameterSet>("norm").getParameter<double>("initial") : normStartValue;
 
-    bool applyNormConstraints = false;
-    double meanNormConstraints = 0.;
-    double sigmaNormConstraints = 0.;
+    bool applyNormConstraint = false;
+    double meanNormConstraint = 0.;
+    double sigmaNormConstraint = 0.;
     if ( cfgFit.exists("constraints") ) {
       edm::ParameterSet cfgConstraints = cfgFit.getParameter<edm::ParameterSet>("constraints");
       if ( cfgConstraints.exists(*processName) ) {
 	edm::ParameterSet cfgConstraint = cfgConstraints.getParameter<edm::ParameterSet>(*processName);
 	edm::ParameterSet cfgNormConstraint = cfgConstraint.getParameter<edm::ParameterSet>("norm");
-      
-	applyNormConstraints = true;
-	meanNormConstraints = cfgNormConstraint.getParameter<double>("value");
-	sigmaNormConstraints = cfgNormConstraint.getParameter<double>("uncertainty");
+
+	applyNormConstraint = true;
+	meanNormConstraint = cfgNormConstraint.getParameter<double>("value");
+	sigmaNormConstraint = cfgNormConstraint.getParameter<double>("uncertainty");
       }
     }
 
     modelNdTypeRooFitSpecific* modelNdEntryImpSpecific 
       = new modelNdTypeRooFitSpecific(std::string(moduleLabel_).append("_").append(*processName),
-				      norm_initial, applyNormConstraints, meanNormConstraints, sigmaNormConstraints);
+				      norm_initial, applyNormConstraint, meanNormConstraint, sigmaNormConstraint);
 
     edm::ParameterSet cfgTemplates = cfgProcess.getParameter<edm::ParameterSet>("templates");
     for ( vstring::const_iterator varName = varNames_.begin();
