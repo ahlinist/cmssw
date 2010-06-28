@@ -3,25 +3,18 @@
 jobtype                 = cmssw
 scheduler               = glite
 
-server_name            = Bari
-#server_name		= ucsd
+use_server		= 1
 
 [CMSSW]
 
-#datasetpath             = /Ztautau/Summer09-MC_31X_V3-v1/GEN-SIM-RECO
-#datasetpath             = /Ztautau/Summer08_IDEAL_V11_redigi_v2/GEN-SIM-RECO
-#datasetpath		= /Zee/Summer08_IDEAL_V11_redigi_v1/GEN-SIM-RAW
-#datasetpath		= /QCDpt30/Summer08_IDEAL_V11_redigi_v1/GEN-SIM-RAW
-#datasetpath		= /WJets-madgraph/Fall08_IDEAL_V9_v1/GEN-SIM-RAW
-#datasetpath		= /Wmunu/Summer09-MC_31X_V3-v1/GEN-SIM-RECO
-datasetpath		= /MinimumBias/BeamCommissioning09-SD_AllMinBias-Dec19thSkim_336p3_v1/RAW-RECO
+datasetpath		= /Ztautau/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO
 
-pset                    = TTEffAnalysisSkim_cfg.py
+pset                    = TTEffAnalysisMuonSkim_cfg.py
 total_number_of_events  = -1
 events_per_job          = 10000
 output_file             = skim.root
 
-use_parent = 0
+use_parent = 1
 
 [USER]
 return_data             = 0
@@ -30,35 +23,23 @@ copy_data 		= 1
 ####storage_element         = T2_IT_Pisa
 storage_element		= cmsdcache.pi.infn.it
 storage_path=/srm/managerv2?SFN=/pnfs/pi.infn.it/data/cms
-user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/MinimumBias_BeamCommissioning09_SD_AllMinBias_Dec19thSkim_336p3_v1_RAW_RECO_Skim_run1
-role= priorityuser
-#user_remote_dir         = TauTriggerEfficiencyMeasurementData
+user_remote_dir=user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/Ztautau_Spring10_START3X_V26_S09_v1_RAW_RECO_Skim_v4
+#role= priorityuser
+#user_remote_dir     	= TauTriggerEfficiencyMeasurementData
 srm_version             = srmv2
 ####eMail                   = sami.lehti@helsinki.fi
 publish_data            = 1
-publish_data_name       = TauTriggerEff_MinimumBias_BeamCommissioning09_SD_AllMinBias_Dec19thSkim_336p3_v1_RAW_RECO_Skim_run1
+publish_data_name       = TauTriggerEff_Ztautau_Spring10_START3X_V26_S09_v1_RAW_RECO_Skim_v4
 #dbs_url_for_publication = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet
 dbs_url_for_publication = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet
-
-
-#storage_element = madhatter.csc.fi
-####storage_path = /srm/managerv2?SFN=/castor/cern.ch/user
-#storage_path = /pnfs/csc.fi/data/cms/TauTriggerAnalysisData
-#user_remote_dir = s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer08_IDEAL_V11_redigi_v2_HLT
-#user_remote_dir = s/slehti/TauTriggerEfficiencyMeasurementData/QCDpt30_Summer08_IDEAL_V11_redigi_v1_HLT
-#user_remote_dir = s/slehti/TauTriggerEfficiencyMeasurementData/Zee_Summer08_IDEAL_V11_redigi_v1_HLT
-#storage_path = /pnfs/csc.fi/data/cms/store/user
-#user_remote_dir = s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_run5
-####user_remote_dir = s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4
-#user_remote_dir = s/slehti/test
 
 
 use_central_bossDB      = 0
 use_boss_rt             = 0
 
-thresholdLevel       = 0
-debug_wrapper     = 1
-xml_report             = Report.xml
+thresholdLevel       	= 0
+debug_wrapper     	= 1
+xml_report             	= Report.xml
 
 [GRID]
 rb                      = CERN 
@@ -69,5 +50,5 @@ lcg_catalog_type        = lfc
 lfc_host                = lfc-cms-test.cern.ch
 lfc_home                = /grid/cms
 #CE_white_list = T2_IT_Pisa,T2_FR_CCIN2P3,T2_US_Florida,T2_EE_Estonia
-#CE_white_list = T2_US_Wisconsin
+CE_white_list = T2_US_Florida
 #CE_black_list = lcg02.ciemat.es
