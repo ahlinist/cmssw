@@ -23,7 +23,7 @@ MuonHLTs = hlt.triggerResultsFilter.clone(
     throw = False
 )
 
-//HLTFilter code located in TTEff
+#HLTFilter code located in TTEff
 IncludedHLTs = cms.EDFilter("HLTFilter",
 	HLTResults   = cms.InputTag("TriggerResults::HLT"),
 	HLTSelection = cms.VInputTag(cms.InputTag("HLT_L1MuOpen"),
