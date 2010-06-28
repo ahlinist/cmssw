@@ -21,7 +21,7 @@ process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus","Ide
 #process.source = source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-	"rfio:/castor/cern.ch/user/s/slehti/testData/Ztautau_GEN_SIM_RECO_MC_31X_V2_preproduction_311_v1.root"
+	"rfio:/castor/cern.ch/user/s/slehti/testData/Ztautau_Spring10-START3X_V26_S09-v1-RAW-RECO.root"
     )
 )
 
