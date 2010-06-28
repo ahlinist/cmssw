@@ -82,10 +82,11 @@ if [ "${analy_type}" == "Timing" ]
 then
    echo "Running the Timing combination analysis"
    #CheckEcalTiming.sh -p Run_${run_num} -ff True -ffn ${analy_type}_${run_num}.root -n 5 -t 25 -dt Physics -l 2 -aa 5.0 -as 0.0 -dr True 
-   CheckEcalTiming.sh -p Run_${run_num} -ff True -ffn ${analy_type}_${run_num}.root -n 0 -t 15 -dt Physics -l 2 -aa 5.0 -as 0.0 -dr True -tt True
+   #######################CheckEcalTiming.sh -p Run_${run_num} -ff True -ffn ${analy_type}_${run_num}.root -n 0 -t 15 -dt Physics -l 2 -aa 5.0 -as 0.0 -dr True -tt True
    ###rm -fr data
    ###rm -fr conf
-   mv -f log/TimingPhysics_Run_${run_num}.*.root ${analy_type}_${run_num}.root
+   #######################mv -f log/TimingPhysics_Run_${run_num}.*.root ${analy_type}_${run_num}.root
+   echo "done"
    ###rm -fr log
 fi
 
