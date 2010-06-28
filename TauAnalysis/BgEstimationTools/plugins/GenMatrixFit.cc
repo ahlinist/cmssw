@@ -764,6 +764,143 @@ void GenMatrixFit::print(std::ostream& stream)
 //
 
 /*
+
+double compChi2red(const TemplateFitAdapterBase::fitResultType* fitResult) 
+{
+  //std::cout << "<compChi2red>:" << std::endl;
+  
+  double chi2 = 0.;
+  int numDoF = 0;
+
+  int numVariables = 0;
+
+  typedef std::map<std::string, TemplateFitAdapterBase::fitResultType::distrEntryType> distrEntryMap;
+  for ( distrEntryMap::const_iterator var = fitResult->distributions_.begin();
+	var != fitResult->distributions_.end(); ++var ) {
+    const std::string& varName = var->first;
+
+    ++numVariables;
+
+    const TH1* histogramData = var->second.data_;
+    //std::cout << " histogramData: name = " << histogramData->GetName() << "," 
+    //	        << " numDimensions = " << histogramData->GetDimension() << std::endl;
+
+    int numBinsX = histogramData->GetNbinsX();
+    for ( int iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
+
+      int numBinsY = histogramData->GetNbinsY();
+      for ( int iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
+	
+	int numBinsZ = histogramData->GetNbinsZ();
+	for ( int iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
+
+//--- restrict computation of chi^2 to region included in fit
+	  if ( histogramData->GetDimension() == 1 ) {
+	    double xMin = var->second.fitRanges_[0].min_;
+	    double xMax = var->second.fitRanges_[0].max_;
+	    
+	    double binCenter = histogramData->GetXaxis()->GetBinCenter(iBinX);
+	    
+	    if ( !(binCenter > xMin && binCenter < xMax) ) continue;
+	  } else if ( histogramData->GetDimension() == 2 ) {
+	    double xMin = var->second.fitRanges_[0].min_;
+	    double xMax = var->second.fitRanges_[0].max_;
+	    
+	    double yMin = var->second.fitRanges_[1].min_;
+	    double yMax = var->second.fitRanges_[1].max_;
+	    
+	    double binCenterX = histogramData->GetXaxis()->GetBinCenter(iBinX);
+	    double binCenterY = histogramData->GetYaxis()->GetBinCenter(iBinY);
+	    
+	    if ( !(binCenterX > xMin && binCenterX < xMax &&
+		   binCenterY > yMin && binCenterY < yMax) ) continue;
+	  } else if ( histogramData->GetDimension() == 3 ) {
+	    double xMin = var->second.fitRanges_[0].min_;
+	    double xMax = var->second.fitRanges_[0].max_;
+	    
+	    double yMin = var->second.fitRanges_[1].min_;
+	    double yMax = var->second.fitRanges_[1].max_;
+	    
+	    double zMin = var->second.fitRanges_[2].min_;
+	    double zMax = var->second.fitRanges_[2].max_;
+
+	    double binCenterX = histogramData->GetXaxis()->GetBinCenter(iBinX);
+	    double binCenterY = histogramData->GetYaxis()->GetBinCenter(iBinY);
+	    double binCenterZ = histogramData->GetZaxis()->GetBinCenter(iBinZ);
+
+	    if ( !(binCenterX > xMin && binCenterX < xMax &&
+		   binCenterY > yMin && binCenterY < yMax &&
+		   binCenterZ > zMin && binCenterZ < zMax) ) continue;
+	  } 
+	  
+	  double dataBinContent = histogramData->GetBinContent(iBinX, iBinY, iBinZ);
+	  double dataBinError = histogramData->GetBinError(iBinX, iBinY, iBinZ);
+      
+	  double fitBinContent = 0.;
+	  double fitBinError2 = 0.;
+	  typedef std::map<std::string, TemplateFitAdapterBase::fitResultType::normEntryType> normEntryMap;
+	  for ( normEntryMap::const_iterator process = fitResult->normalizations_.begin();
+		process != fitResult->normalizations_.end(); ++process ) {
+	    const std::string& processName = process->first;
+      
+	    if ( var->second.templates_.find(processName) == var->second.templates_.end() ) {
+	      edm::LogError ("makeControlPlotsObsDistribution") 
+		<< " Failed to find template histogram for process = " << processName << ","
+		<< " variable = " << varName << " --> skipping !!";
+	      return 1.e+3;
+	    } 
+
+	    const TH1* histogramProcess = var->second.templates_.find(processName)->second;
+	    
+	    double processBinContent = histogramProcess->GetBinContent(iBinX, iBinY, iBinZ);
+	    double processBinError = histogramProcess->GetBinError(iBinX, iBinY, iBinZ);
+
+	    double processNorm = process->second.value_;
+	    double processIntegral = getIntegral(histogramProcess, &var->second.fitRanges_);
+	    double scaleFactor = ( processIntegral > 0. ) ? (processNorm/processIntegral) : 1.;
+
+	    double processBinContent_scaled = scaleFactor*processBinContent;
+	    double processBinError_scaled = scaleFactor*processBinError;
+
+	    fitBinContent += processBinContent_scaled;
+	    fitBinError2 += processBinError_scaled*processBinError_scaled;
+	  }
+      
+	  //std::cout << "iBinX = " << iBinX << ", iBinY = " << iBinY << ", iBinZ = " << iBinZ << ":"
+	  //	      << " dataBinContent = " << dataBinContent << " +/- " << dataBinError << "," 
+	  //	      << " fitBinContent = " << fitBinContent << " +/- " << TMath::Sqrt(fitBinError2) << std::endl;
+
+	  double diffBinContent2 = (dataBinContent - fitBinContent)*(dataBinContent - fitBinContent);
+	  double diffBinError2 = fitBinError2 + dataBinError*dataBinError;
+	  
+	  if ( diffBinError2 > 0. ) {
+	    chi2 += (diffBinContent2/diffBinError2);
+	    ++numDoF;
+	  }
+	}
+      }
+    }
+  }
+
+//--- correct number of degrees of freedom
+//    for number of fitted parameters
+  numDoF -= numVariables;
+
+  //std::cout << " chi2 = " << chi2 << std::endl;
+  //std::cout << " numDoF = " << numDoF << std::endl;
+  
+  if ( numDoF > 0 ) {
+    return (chi2/numDoF);
+  } else {
+    edm::LogWarning ("compChi2red") 
+      << " numDoF = " << numDoF << " must not be negative --> returning Chi2red = 1.e+3 !!";
+    return 1.e+3;
+  }
+}
+
+ */
+
+/*
 void GenMatrixFit::makeControlPlot(const RooRealVar* x, 
 					const std::string& variableName, const std::string& variableTitle,
 					const std::string& outputFileName)
