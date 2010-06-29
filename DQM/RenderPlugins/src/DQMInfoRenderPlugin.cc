@@ -56,7 +56,8 @@ public:
 	}
     }
  
-  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
+ 
+ virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
     
       c->cd();
@@ -64,24 +65,26 @@ public:
       {
          // object is TH2 histogram
 	 TH2F* obj = dynamic_cast<TH2F*>( o.object );
-	 for ( int i = obj->GetNbinsX(); i > 0; --i )
+	 for ( int i = 1 ; i < obj->GetNbinsX(); i++ )
 	 {
 	   if ( obj->GetBinContent(i,28) == 1 )
 	   {
              char s[25];
   	     sprintf (s,"Collisions10");
-             TText tt;
-	     tt.SetTextSize(0.15);
-	     tt.SetTextColor(13);
-	     tt.DrawTextNDC(0.2,0.5,const_cast<char*>(s));
+             TText tt1;
+	     tt1.SetTextSize(0.15);
+	     tt1.SetTextColor(13);
+	     tt1.DrawTextNDC(0.2,0.5,const_cast<char*>(s));
 
 	     if ( obj->GetBinContent(i,27) == 1 )
 	     {
     	       sprintf (s,"7 TeV");
-	       tt.SetTextSize(0.1);
-	       tt.SetTextColor(13);
-	       tt.DrawTextNDC(0.4,0.4,const_cast<char*>(s));
+               TText tt2;
+	       tt2.SetTextSize(0.1);
+	       tt2.SetTextColor(13);
+	       tt2.DrawTextNDC(0.4,0.4,const_cast<char*>(s));
  	     }
+	     break;
 	   }
          }
       }
