@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: GenMatrixFit.h,v 1.2 2009/07/15 09:03:47 veelken Exp $
+ * $Id: GenMatrixFit.h,v 1.1 2010/06/27 14:08:48 veelken Exp $
  *
  */
 
@@ -73,6 +73,8 @@ class GenMatrixFit : public edm::EDAnalyzer
   {
     model1dEntryType(const std::string&, objVarEntryType*, double, bool, double, double);
     ~model1dEntryType();
+    
+    void print(std::ostream&) const;
 
     std::string name_;
 
@@ -95,6 +97,13 @@ class GenMatrixFit : public edm::EDAnalyzer
     modelNdEntryType(const std::string&, const std::vector<objVarEntryType*>&, double, bool, double, double,
 		     const std::vector<double>&, const std::vector<bool>&, const std::vector<double>&, const std::vector<double>&);
     ~modelNdEntryType();
+
+    std::string getRegionTitle(unsigned, const std::vector<std::string>&);
+    std::string getContrTitle(unsigned);
+    double getContr(unsigned);
+    double getContrErr(unsigned);
+    
+    void print(std::ostream&) const;
 
     std::string name_;
 
@@ -127,10 +136,11 @@ class GenMatrixFit : public edm::EDAnalyzer
   void buildFitData();
   void buildFitModel();
   void fit(int, int);
+  double compChi2red();
   void saveFitResults();
   void makeControlPlots();
 
-  void print(std::ostream& stream);
+  void print(std::ostream&);
 
 //--- configuration parameters 
   std::string dqmDirectory_data_;

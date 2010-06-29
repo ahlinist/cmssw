@@ -7,12 +7,14 @@
 
 #include "TauAnalysis/Core/interface/binningAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
+#include "TauAnalysis/FittingTools/interface/templateFitAuxFunctions.h"
 
 #include <TObjArray.h>
 #include <TMath.h>
 #include <TRandom3.h>
 #include <TCanvas.h>
 #include <TROOT.h>
+#include <TLegend.h>
 
 #include <RooRealVar.h>
 #include <RooConstVar.h>
@@ -20,8 +22,6 @@
 #include <RooProdPdf.h>
 #include <RooAddPdf.h>
 #include <RooArgSet.h>
-#include <RooGlobalFunc.h>
-#include <RooPlot.h>
 #include <RooFit.h>
 #include <RooBinning.h>
 #include <RooGaussian.h>
@@ -203,6 +203,14 @@ GenMatrixFit::model1dEntryType::~model1dEntryType()
   delete sigmaProbConstraint_;
 }
 
+void GenMatrixFit::model1dEntryType::print(std::ostream& stream) const
+{
+  stream << "<model1dEntryType::print>:" << std::endl;
+  stream << " name = " << name_ << std::endl;
+  stream << " prob1 = " << prob1_->getVal() << std::endl;
+  stream << " prob2 = " << prob2_->getVal() << std::endl;
+}
+
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
@@ -287,6 +295,115 @@ GenMatrixFit::modelNdEntryType::~modelNdEntryType()
   }
 
   delete norm_;
+}
+
+std::string GenMatrixFit::modelNdEntryType::getRegionTitle(unsigned region, const std::vector<string>& varNames)
+{
+  unsigned numVar = model1dEntries_.size();
+
+  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  if ( region >= 0 && region < numRegions ) {
+    std::ostringstream regionTitle;
+    for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
+      const std::string& varName = varNames[iVar];
+      
+      unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));
+      
+      std::string operator_string;
+      if ( region & bitValue ) {
+	operator_string = "<";
+      } else {
+	operator_string = ">=";
+      }
+
+      regionTitle << varName << " " << operator_string << " " << model1dEntries_[iVar]->pdf1d_->getBinBoundaries()[0];
+      if ( iVar < (numVar - 1) ) regionTitle << " && "; 
+    }
+
+    return regionTitle.str();
+  } else {
+    edm::LogError ("getRegionTitle") << " Invalid region = " << region << " !!";
+    return std::string("undefined");
+  }
+}
+ 
+std::string GenMatrixFit::modelNdEntryType::getContrTitle(unsigned region)
+{
+  unsigned numVar = model1dEntries_.size();
+
+  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  if ( region >= 0 && region < numRegions ) {
+    std::ostringstream contrTitle;
+    contrTitle << "Norm * ";
+
+    for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
+      
+      unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));
+
+      std::ostringstream probDescription;
+      if ( region & bitValue ) {
+	probDescription << "(1 - P" << (iVar + 1) << ")";
+      } else {
+	probDescription << "P" << (iVar + 1);
+      }
+
+      contrTitle << probDescription.str();
+      if ( iVar < (numVar - 1) ) contrTitle << " * "; 
+    }
+
+    return contrTitle.str();
+  } else {
+    edm::LogError ("getContrTitle") << " Invalid region = " << region << " !!";
+    assert(0);
+  }
+}
+ 
+double GenMatrixFit::modelNdEntryType::getContr(unsigned region)
+{
+  unsigned numVar = model1dEntries_.size();
+
+  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  if ( region >= 0 && region < numRegions ) {
+
+    double contribution = norm_->getVal();
+
+    for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
+      model1dEntryType* model1dEntry = model1dEntries_[iVar];
+
+      const Double_t* binBoundaries = model1dEntry->pdf1d_->getBinBoundaries();
+      double prob1, prob2;
+      getProbability(model1dEntry->prob1_->getVal(), model1dEntry->prob2_->getVal(), binBoundaries, prob1, prob2);
+      
+      unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));    
+      if ( region & bitValue ) 
+	contribution *= prob1;
+      else 
+	contribution *= prob2;
+    }
+    
+    return contribution;
+  } else {
+    edm::LogError ("getContr") << " Invalid region = " << region << " !!";
+    return 0.;
+  }
+}
+ 
+double GenMatrixFit::modelNdEntryType::getContrErr(unsigned region)
+{
+//--- not implemented yet
+  return 0.;
+}
+
+void GenMatrixFit::modelNdEntryType::print(std::ostream& stream) const
+{
+  stream << "<modelNdEntryType::print>:" << std::endl;
+  stream << " name = " << name_ << std::endl;
+  stream << " norm = " << norm_->getVal() << std::endl;
+  
+  for ( std::vector<model1dEntryType*>::const_iterator model1dEntry = model1dEntries_.begin();
+	model1dEntry != model1dEntries_.end(); ++model1dEntry ) {
+    (*model1dEntry)->print(stream);
+  }
 }
 
 //
@@ -611,11 +728,6 @@ void GenMatrixFit::fit(int printLevel, int printWarnings)
 //--- perform fit
   fitResult_ = pdfModel_->fitTo(*dataSet_, fitOptions);
 
-  //for ( modelNdEntryMap::iterator modelNdEntry = modelNdEntries_.begin();
-  //	  modelNdEntry != modelNdEntries_.end(); ++modelNdEntry ) {
-  //  modelNdEntry->second->print(std::cout);
-  //}
-
 //--- delete fit option objects
   int numCmdArgs = fitOptions.GetSize();
   for ( int iCmdArg = 0; iCmdArg < numCmdArgs; ++iCmdArg ) {
@@ -648,7 +760,7 @@ void GenMatrixFit::endJob()
 //--- print-out fit results
   std::cout << ">>> Fit Results <<<" << std::endl;
   std::cout << " fitStatus = " << fitResult_->status() << std::endl;
-  //std::cout << " Chi2red = " << compChi2red(fitResult_) << std::endl;
+  std::cout << " Chi2red = " << this->compChi2red() << std::endl;
   print(std::cout);
 
 //--- store fit results in DQMStore
@@ -666,14 +778,212 @@ void GenMatrixFit::endJob()
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+double GenMatrixFit::compChi2red() 
+{
+  //std::cout << "<compChi2red>:" << std::endl;
+  
+  double chi2 = 0.;
+  int numDoF = 0;
+
+  unsigned numVar = objVarEntries_.size();
+
+  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+
+  for ( unsigned iRegion = 0; iRegion < numRegions; ++iRegion ) {
+    std::vector<binResultType> binResults = dataBinningResults_->getBinResults(iRegion);
+
+    double numData = getBinContent(binResults, "rec");
+    double numDataErr2 = getBinSumw2(binResults, "rec");
+
+    double numFit = 0.;
+    double numFitErr2 = 0.;
+    for ( modelNdEntryMap::iterator modelNdEntry = modelNdEntries_.begin();
+	  modelNdEntry != modelNdEntries_.end(); ++modelNdEntry ) {
+      numFit += modelNdEntry->second->getContr(iRegion);
+      numFitErr2 += TMath::Power(modelNdEntry->second->getContrErr(iRegion), 2);
+    }
+    
+    double diff = numData - numFit;
+    double diffErr2 = numDataErr2 + numFitErr2;
+    
+    if ( diffErr2 > 0. ) {
+      chi2 += (diff*diff/diffErr2);
+      ++numDoF;
+    }
+  }
+
+//--- correct number of degrees of freedom
+//    for number of fitted parameters
+//    (numVar probability values plus norm per process)
+  unsigned numProcesses = modelNdEntries_.size();
+  numDoF -= (numProcesses*(numVar + 1));
+
+  //std::cout << " chi2 = " << chi2 << std::endl;
+  //std::cout << " numDoF = " << numDoF << std::endl;
+  
+  if ( numDoF > 0 ) {
+    return (chi2/numDoF);
+  } else {
+    edm::LogWarning ("compChi2red") 
+      << " numDoF = " << numDoF << " must not be negative --> returning Chi2red = 1.e+3 !!";
+    return 1.e+3;
+  }
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+void getFitParameter(RooAbsReal* par, double& parValue, double& parErrUp, double& parErrDown)
+{
+  if ( par ) {
+    parValue = par->getVal();
+
+    if ( dynamic_cast<const RooRealVar*>(par) ) {
+      const RooRealVar* par_derived = dynamic_cast<const RooRealVar*>(par);
+      
+      if ( par_derived->hasAsymError() ) {
+	parErrUp = par_derived->getAsymErrorHi();
+	parErrDown = par_derived->getAsymErrorLo();
+      } else {
+	parErrUp = parErrDown = par_derived->getError();
+      }
+    } 
+  } else {
+    edm::LogError ("getFitParameter") << " par = NULL --> setting parameter value and uncertainty to zero !!";
+    parValue = parErrUp = parErrDown = 0.;
+  }
+}
+
 void GenMatrixFit::saveFitResults()
 {
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("saveFitResults") << " Failed to access dqmStore --> fit results will NOT be saved !!";
+    return;
+  }
+  
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  
+  for ( modelNdEntryMap::iterator modelNdEntry = modelNdEntries_.begin();
+	modelNdEntry != modelNdEntries_.end(); ++modelNdEntry ) {
+    std::string normName = std::string(modelNdEntry->second->name_).append("_norm");
+    double normValue, normErrUp, normErrDown;
+    getFitParameter(modelNdEntry->second->norm_, normValue, normErrUp, normErrDown);
+    saveFitParameter(dqmStore, dqmDirectory_fitResult_, modelNdEntry->first, normName, normValue, normErrUp, normErrDown);
+    
+    for ( std::vector<model1dEntryType*>::iterator model1dEntry = modelNdEntry->second->model1dEntries_.begin();
+	  model1dEntry != modelNdEntry->second->model1dEntries_.end(); ++model1dEntry ) {
+      std::string prob1Name = std::string((*model1dEntry)->name_).append("_prob1");
+      double prob1Value, prob1ErrUp, prob1ErrDown;
+      getFitParameter((*model1dEntry)->prob1_, prob1Value, prob1ErrUp, prob1ErrDown);
+      saveFitParameter(dqmStore, dqmDirectory_fitResult_, modelNdEntry->first, prob1Name, prob1Value, prob1ErrUp, prob1ErrDown);
 
+      std::string prob2Name = std::string((*model1dEntry)->name_).append("_prob2");
+      double prob2Value, prob2ErrUp, prob2ErrDown;
+      getFitParameter((*model1dEntry)->prob2_, prob2Value, prob2ErrUp, prob2ErrDown);
+      saveFitParameter(dqmStore, dqmDirectory_fitResult_, modelNdEntry->first, prob2Name, prob2Value, prob2ErrUp, prob2ErrDown);
+    }
+  }
 }
 
 void GenMatrixFit::makeControlPlots()
 {
+//--- stop ROOT from opening X-window for canvas output
+//    (in order to be able to run in batch mode) 
+  gROOT->SetBatch(true);
 
+  TCanvas canvas("GenMatrixFit", "GenMatrixFit", defaultCanvasSizeX, defaultCanvasSizeY);
+  canvas.SetFillColor(10);
+
+  unsigned numVar = varNames_.size();
+
+  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+
+  int numBinsX = numRegions;
+  double minX = -0.5;
+  double maxX = numRegions - 0.5;
+  
+  std::string dataHistogramName = std::string(moduleLabel_).append("_dataHistogram");
+  std::string histogramTitle = "Num. Events in different Regions";
+  TH1* dataHistogram = new TH1D(dataHistogramName.data(), histogramTitle.data(), numBinsX, minX, maxX);
+  for ( unsigned iRegion = 0; iRegion < numRegions; ++iRegion ) {
+    std::vector<binResultType> binResults = dataBinningResults_->getBinResults(iRegion);
+
+    double binContent = getBinContent(binResults, "rec");
+    double binErr2 = getBinSumw2(binResults, "rec");
+
+    int binIndex = dataHistogram->FindBin(iRegion);
+
+    dataHistogram->SetBinContent(binIndex, binContent);
+    dataHistogram->SetBinError(binIndex, TMath::Sqrt(binErr2));
+  }
+
+  dataHistogram->SetMarkerColor(1);
+  dataHistogram->SetMarkerStyle(8);
+  dataHistogram->SetLineColor(1);
+
+  dataHistogram->SetXTitle("Region");
+  dataHistogram->SetTitleOffset(1.2, "X");
+  dataHistogram->SetYTitle("");
+  dataHistogram->SetTitleOffset(1.2, "Y");
+
+  double yMax = dataHistogram->GetMaximum();
+
+  std::map<std::string, TH1*> modelHistograms; // key = processName
+  for ( vstring::const_iterator processName = processNames_.begin();
+	processName != processNames_.end(); ++processName ) {
+    modelNdEntryType* modelNdEntry = modelNdEntries_[*processName];
+    
+    std::string modelHistogramName = std::string(moduleLabel_).append("_").append(*processName).append("_modelHistogram");
+    TH1* modelHistogram = new TH1D(modelHistogramName.data(), histogramTitle.data(), numBinsX, minX, maxX);
+    for ( unsigned iRegion = 0; iRegion < numRegions; ++iRegion ) {
+      double binContent = modelNdEntry->getContr(iRegion);
+      double binErr = modelNdEntry->getContrErr(iRegion);
+
+      int binIndex = modelHistogram->FindBin(iRegion);
+      
+      modelHistogram->SetBinContent(binIndex, binContent);
+      modelHistogram->SetBinError(binIndex, binErr);
+    }
+
+    drawOptionsType* drawOption = drawOptions_[*processName];
+    modelHistogram->SetLineColor(drawOption->lineColor_);
+    modelHistogram->SetLineStyle(drawOption->lineStyle_);
+    modelHistogram->SetLineWidth(drawOption->lineWidth_);
+    
+    modelHistograms[*processName] = modelHistogram;
+
+    if ( modelHistogram->GetMaximum() > yMax ) yMax = modelHistogram->GetMaximum(); 
+  }
+
+  TLegend legend(0.60, 0.64, 0.89, 0.89, "", "brNDC"); 
+  legend.SetBorderSize(0);
+  legend.SetFillColor(0);
+
+  dataHistogram->SetMaximum(yMax);
+  dataHistogram->Draw("e1p");
+  legend.AddEntry(dataHistogram, "Data", "p");
+  
+  for ( std::map<std::string, TH1*>::iterator modelHistogram = modelHistograms.begin();
+	modelHistogram != modelHistograms.end(); ++modelHistogram ) {
+    modelHistogram->second->SetMaximum(yMax);
+    modelHistogram->second->Draw("histsame");
+    legend.AddEntry(modelHistogram->second, modelHistogram->first.data(), "l");
+  }
+
+  dataHistogram->Draw("e1psame");
+
+  legend.Draw();
+
+  canvas.Update();
+  
+  canvas.Print(controlPlotsFileName_.data());
+
+  delete dataHistogram;
+  for ( std::map<std::string, TH1*>::iterator it = modelHistograms.begin();
+	it != modelHistograms.end(); ++it ) {
+    delete it->second;
+  }
 }
 
 //
@@ -683,6 +993,11 @@ void GenMatrixFit::makeControlPlots()
 void GenMatrixFit::print(std::ostream& stream)
 {
   stream << "<GenMatrixFit::print>:" << std::endl;
+
+  for ( modelNdEntryMap::iterator modelNdEntry = modelNdEntries_.begin();
+	modelNdEntry != modelNdEntries_.end(); ++modelNdEntry ) {
+    modelNdEntry->second->print(stream);
+  }
 
   unsigned numVar = objVarEntries_.size();
 
@@ -705,293 +1020,18 @@ void GenMatrixFit::print(std::ostream& stream)
   stream << "Contributions to Regions:" << std::endl;
   unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
   for ( unsigned iRegion = 0; iRegion < numRegions; ++iRegion ) {
-    std::ostringstream regionDescription1;
-    std::ostringstream regionDescription2;
-    regionDescription2 << "Norm * ";
-    for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
-      const std::string& varName = varNames_[iVar];
-
-      unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));
-
-      std::string operator_string;
-      std::ostringstream probDescription;
-      if ( iRegion & bitValue ) {
-	operator_string = "<";
-	probDescription << "(1 - P" << (iVar + 1) << ")";
-      } else {
-	operator_string = ">=";
-	probDescription << "P" << (iVar + 1);
-      }
-
-      regionDescription1 << varName << " " << operator_string << " " << objVarEntries_[varName]->xBoundary_;
-      regionDescription2 << probDescription.str();
-      if ( iVar < (numVar - 1) ) {
-	regionDescription1 << " && "; 
-	regionDescription2 << " * "; 
-      }
+    if ( modelNdEntries_.begin() != modelNdEntries_.end() ) {
+      stream << " " << modelNdEntries_.begin()->second->getRegionTitle(iRegion, varNames_) << std::endl;
+      stream << " " << modelNdEntries_.begin()->second->getContrTitle(iRegion) << std::endl;
     }
-
-    stream << " " << regionDescription1.str() << std::endl;
-    stream << " " << regionDescription2.str() << std::endl;
-
+    
     for ( modelNdEntryMap::iterator modelNdEntry = modelNdEntries_.begin();
 	  modelNdEntry != modelNdEntries_.end(); ++modelNdEntry ) {
-      const std::string& processName = modelNdEntry->first;
-
-      double processContribution = modelNdEntry->second->norm_->getVal();
-      std::vector<model1dEntryType*>& model1dEntries = modelNdEntry->second->model1dEntries_;
-      for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
-	unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));
-	
-	const Double_t* binBoundaries = model1dEntries[iVar]->pdf1d_->getBinBoundaries();
-	double prob1, prob2;
-	getProbability(model1dEntries[iVar]->prob1_->getVal(), model1dEntries[iVar]->prob2_->getVal(), binBoundaries, prob1, prob2);
-
-	if ( iRegion & bitValue ) 
-	  processContribution *= prob1;
-	else 
-	  processContribution *= prob2;
-      }
-
-      stream << "  " << processName << " = " 
-	     << std::setprecision(3) << std::fixed << processContribution << std::endl;
+      stream << "  " << modelNdEntry->first << " = " 
+	     << std::setprecision(3) << std::fixed << modelNdEntry->second->getContr(iRegion) << std::endl;
     }
   }
 }
-
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
-
-/*
-
-double compChi2red(const TemplateFitAdapterBase::fitResultType* fitResult) 
-{
-  //std::cout << "<compChi2red>:" << std::endl;
-  
-  double chi2 = 0.;
-  int numDoF = 0;
-
-  int numVariables = 0;
-
-  typedef std::map<std::string, TemplateFitAdapterBase::fitResultType::distrEntryType> distrEntryMap;
-  for ( distrEntryMap::const_iterator var = fitResult->distributions_.begin();
-	var != fitResult->distributions_.end(); ++var ) {
-    const std::string& varName = var->first;
-
-    ++numVariables;
-
-    const TH1* histogramData = var->second.data_;
-    //std::cout << " histogramData: name = " << histogramData->GetName() << "," 
-    //	        << " numDimensions = " << histogramData->GetDimension() << std::endl;
-
-    int numBinsX = histogramData->GetNbinsX();
-    for ( int iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
-
-      int numBinsY = histogramData->GetNbinsY();
-      for ( int iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
-	
-	int numBinsZ = histogramData->GetNbinsZ();
-	for ( int iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
-
-//--- restrict computation of chi^2 to region included in fit
-	  if ( histogramData->GetDimension() == 1 ) {
-	    double xMin = var->second.fitRanges_[0].min_;
-	    double xMax = var->second.fitRanges_[0].max_;
-	    
-	    double binCenter = histogramData->GetXaxis()->GetBinCenter(iBinX);
-	    
-	    if ( !(binCenter > xMin && binCenter < xMax) ) continue;
-	  } else if ( histogramData->GetDimension() == 2 ) {
-	    double xMin = var->second.fitRanges_[0].min_;
-	    double xMax = var->second.fitRanges_[0].max_;
-	    
-	    double yMin = var->second.fitRanges_[1].min_;
-	    double yMax = var->second.fitRanges_[1].max_;
-	    
-	    double binCenterX = histogramData->GetXaxis()->GetBinCenter(iBinX);
-	    double binCenterY = histogramData->GetYaxis()->GetBinCenter(iBinY);
-	    
-	    if ( !(binCenterX > xMin && binCenterX < xMax &&
-		   binCenterY > yMin && binCenterY < yMax) ) continue;
-	  } else if ( histogramData->GetDimension() == 3 ) {
-	    double xMin = var->second.fitRanges_[0].min_;
-	    double xMax = var->second.fitRanges_[0].max_;
-	    
-	    double yMin = var->second.fitRanges_[1].min_;
-	    double yMax = var->second.fitRanges_[1].max_;
-	    
-	    double zMin = var->second.fitRanges_[2].min_;
-	    double zMax = var->second.fitRanges_[2].max_;
-
-	    double binCenterX = histogramData->GetXaxis()->GetBinCenter(iBinX);
-	    double binCenterY = histogramData->GetYaxis()->GetBinCenter(iBinY);
-	    double binCenterZ = histogramData->GetZaxis()->GetBinCenter(iBinZ);
-
-	    if ( !(binCenterX > xMin && binCenterX < xMax &&
-		   binCenterY > yMin && binCenterY < yMax &&
-		   binCenterZ > zMin && binCenterZ < zMax) ) continue;
-	  } 
-	  
-	  double dataBinContent = histogramData->GetBinContent(iBinX, iBinY, iBinZ);
-	  double dataBinError = histogramData->GetBinError(iBinX, iBinY, iBinZ);
-      
-	  double fitBinContent = 0.;
-	  double fitBinError2 = 0.;
-	  typedef std::map<std::string, TemplateFitAdapterBase::fitResultType::normEntryType> normEntryMap;
-	  for ( normEntryMap::const_iterator process = fitResult->normalizations_.begin();
-		process != fitResult->normalizations_.end(); ++process ) {
-	    const std::string& processName = process->first;
-      
-	    if ( var->second.templates_.find(processName) == var->second.templates_.end() ) {
-	      edm::LogError ("makeControlPlotsObsDistribution") 
-		<< " Failed to find template histogram for process = " << processName << ","
-		<< " variable = " << varName << " --> skipping !!";
-	      return 1.e+3;
-	    } 
-
-	    const TH1* histogramProcess = var->second.templates_.find(processName)->second;
-	    
-	    double processBinContent = histogramProcess->GetBinContent(iBinX, iBinY, iBinZ);
-	    double processBinError = histogramProcess->GetBinError(iBinX, iBinY, iBinZ);
-
-	    double processNorm = process->second.value_;
-	    double processIntegral = getIntegral(histogramProcess, &var->second.fitRanges_);
-	    double scaleFactor = ( processIntegral > 0. ) ? (processNorm/processIntegral) : 1.;
-
-	    double processBinContent_scaled = scaleFactor*processBinContent;
-	    double processBinError_scaled = scaleFactor*processBinError;
-
-	    fitBinContent += processBinContent_scaled;
-	    fitBinError2 += processBinError_scaled*processBinError_scaled;
-	  }
-      
-	  //std::cout << "iBinX = " << iBinX << ", iBinY = " << iBinY << ", iBinZ = " << iBinZ << ":"
-	  //	      << " dataBinContent = " << dataBinContent << " +/- " << dataBinError << "," 
-	  //	      << " fitBinContent = " << fitBinContent << " +/- " << TMath::Sqrt(fitBinError2) << std::endl;
-
-	  double diffBinContent2 = (dataBinContent - fitBinContent)*(dataBinContent - fitBinContent);
-	  double diffBinError2 = fitBinError2 + dataBinError*dataBinError;
-	  
-	  if ( diffBinError2 > 0. ) {
-	    chi2 += (diffBinContent2/diffBinError2);
-	    ++numDoF;
-	  }
-	}
-      }
-    }
-  }
-
-//--- correct number of degrees of freedom
-//    for number of fitted parameters
-  numDoF -= numVariables;
-
-  //std::cout << " chi2 = " << chi2 << std::endl;
-  //std::cout << " numDoF = " << numDoF << std::endl;
-  
-  if ( numDoF > 0 ) {
-    return (chi2/numDoF);
-  } else {
-    edm::LogWarning ("compChi2red") 
-      << " numDoF = " << numDoF << " must not be negative --> returning Chi2red = 1.e+3 !!";
-    return 1.e+3;
-  }
-}
-
- */
-
-/*
-void GenMatrixFit::makeControlPlot(const RooRealVar* x, 
-					const std::string& variableName, const std::string& variableTitle,
-					const std::string& outputFileName)
-{
-//--- stop ROOT from opening X-window for canvas output
-//    (in order to be able to run in batch mode) 
-  gROOT->SetBatch(true);
-
-  TCanvas canvas("GenMatrixFit", "GenMatrixFit", defaultCanvasSizeX, defaultCanvasSizeY);
-  canvas.SetFillColor(10);
-
-  RooPlot* plotFrame = x->frame();
-  std::string plotTitle = std::string("GenMatrixFit - Control Distribution of ").append(variableName);
-  plotFrame->SetTitle(plotTitle.data());
-  dataSet_->plotOn(plotFrame, RooFit::MarkerColor(kBlack), RooFit::MarkerStyle(2));
-  const std::vector<pdfSingleProcessEntryType*>& pdfSingleProcessEntries = pdfProcessSumEntry_->pdfSingleProcessEntries_;
-  for ( std::vector<pdfSingleProcessEntryType*>::const_iterator pdfSingleProcessEntry = pdfSingleProcessEntries.begin();
-	pdfSingleProcessEntry != pdfSingleProcessEntries.end(); ++pdfSingleProcessEntry ) {
-    std::string componentName = (*pdfSingleProcessEntry)->pdfSingleProcess_->GetName();
-    pdfProcessSumEntry_->pdfProcessSum_->plotOn(plotFrame, RooFit::Components(componentName.data()), 
-						RooFit::LineColor((*pdfSingleProcessEntry)->lineColor_), 
-						RooFit::LineStyle((*pdfSingleProcessEntry)->lineStyle_), 
-						RooFit::LineWidth((*pdfSingleProcessEntry)->lineWidth_));
-  }
-  pdfProcessSumEntry_->pdfProcessSum_->plotOn(plotFrame, RooFit::LineColor(kBlack), RooFit::LineStyle(kSolid), RooFit::LineWidth(2));
-  plotFrame->SetXTitle(variableTitle.data());
-  //plotFrame->SetTitleOffset(1.2, "X");
-  plotFrame->SetYTitle("");
-  //plotFrame->SetTitleOffset(1.2, "Y");
-  plotFrame->Draw();
-  
-  canvas.Update();
-  
-  canvas.Print(outputFileName.data());
-}
-
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
-
-void GenMatrixFit::makeScaleFactors()
-{
-//--- check that dimensionality of point specifying signal region
-//    matches number of observables
-  if ( scaleFactorSignalRegion_.size() != numVar_ ) {
-    edm::LogError ("makeScaleFactors") << " Dimensionality of point specifying signal region = " << scaleFactorSignalRegion_.size()
-				       << " does not match Number of observables = " << numVar_ << " --> skipping !!";
-    return;
-  }
-
-//--- check that point specifying signal point
-//    is within defined bin-grid
-  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar_));
-  unsigned iRegion = dataBinGrid_->binNumber(scaleFactorSignalRegion_);
-  if ( !(iRegion >= 1 && iRegion <= numRegions) ) {
-    edm::LogError ("makeScaleFactors") << " Point specifying signal region not within defined bin-grid --> skipping !!";
-    return;
-  }
-
-//--- open output file
-  std::ostream* outputFile = new std::ofstream(scaleFactorFileName_.data(), std::ios::out);
-
-  std::vector<pdfSingleProcessEntryType*>& pdfSingleProcessEntries = pdfProcessSumEntry_->pdfSingleProcessEntries_;
-  for ( std::vector<pdfSingleProcessEntryType*>::const_iterator pdfSingleProcessEntry = pdfSingleProcessEntries.begin(); 
-	pdfSingleProcessEntry != pdfSingleProcessEntries.end(); ++pdfSingleProcessEntry ) {
-
-//--- compute normalization constant
-    double processContribution = (*pdfSingleProcessEntry)->norm_->getVal();
-    std::vector<model1dEntryType*>& model1dEntries = (*pdfSingleProcessEntry)->model1dEntries_;
-    for ( unsigned iVar = 0; iVar < numVar_; ++iVar ) {
-      unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));
-
-      const Double_t* binBoundaries = model1dEntries[iVar]->pdf1d_->getBinBoundaries();
-      double prob1, prob2;
-      getProbability(model1dEntries[iVar]->prob1_->getVal(), model1dEntries[iVar]->prob2_->getVal(), binBoundaries, prob1, prob2);
-
-      if ( iRegion & bitValue ) 
-	processContribution *= prob1;
-      else 
-	processContribution *= prob2;
-    }
-
-//--- write normalization constant for process into output file
-    (*outputFile) << (*pdfSingleProcessEntry)->name_ << ".normalization = cms.double(" 
-		  << std::setprecision(3) << std::fixed << processContribution << ")" << std::endl;
-  }
-
-//--- close output file
-  delete outputFile;
-}
- */
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
