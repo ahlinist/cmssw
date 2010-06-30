@@ -112,6 +112,11 @@ bool VGammaMuonSelector::operator()( const pat::Muon & mu,
   return false;
 }
 
+bool VGammaMuonSelector::operator()( const pat::Muon &, 
+				     pat::strbitset & ) {
+  return false;
+}
+
 bool VGammaMuonSelector::Jun252010Cuts( const pat::Muon& mu, 
 					edm::EventBase const & evt, 
 					pat::strbitset & ret ) {
