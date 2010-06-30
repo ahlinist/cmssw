@@ -349,6 +349,8 @@ class IsolatedHBHERecHitReflaggerJETMET : public edm::EDProducer {
  private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
 
+  void DumpHBHEHitMap(std::vector<HBHEHitMap>& i) const;
+
   // parameters
   edm::InputTag hbheLabel_;
   std::vector<edm::InputTag> ecalLabels_;
@@ -375,6 +377,8 @@ class IsolatedHBHERecHitReflaggerJETMET : public edm::EDProducer {
   double TightMonoHitEne_;
   
   int hbheFlagBit_;
+
+  bool debug_;
 
   // object validator
   ObjectValidator objvalidator_;

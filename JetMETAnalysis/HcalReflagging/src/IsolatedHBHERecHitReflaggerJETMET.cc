@@ -73,10 +73,13 @@ IsolatedHBHERecHitReflaggerJETMET::IsolatedHBHERecHitReflaggerJETMET(const edm::
   TightMonoHitEne_(iConfig.getParameter<double>("TightMonoHitEne")),
 
   hbheFlagBit_(iConfig.getParameter<int>("hbheFlagBit")),
+
+  debug_(iConfig.getUntrackedParameter<bool>("debug",true)),
   objvalidator_(iConfig),
   trackAssociator_()
 {
   produces<HBHERecHitCollection>();
+  produces<bool>("HBHERecHitReflaggerResult");
   trackAssociator_.useDefaultPropagator();
   edm::ParameterSet parameters = iConfig.getParameter<edm::ParameterSet>("TrackAssociatorParameters");
   trackParameters_.loadParameters( parameters );
@@ -153,6 +156,21 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
   organizer.getDiHits(dihits, minenergy);
   organizer.getMonoHits(monohits, minenergy);
 
+  if(debug_ && (rbxs.size()>0 || hpds.size()>0 || dihits.size()>0 || monohits.size()>0)) {
+    std::cout << "------------------------------------" << std::endl;
+    std::cout << "RBXs:" << std::endl;
+    DumpHBHEHitMap(rbxs);
+    std::cout << "\nHPDs:" << std::endl;
+    DumpHBHEHitMap(hpds);
+    std::cout << "\nDiHits:" << std::endl;
+    DumpHBHEHitMap(dihits);
+    std::cout << "\nMonoHits:" << std::endl;
+    DumpHBHEHitMap(monohits);
+    std::cout << "------------------------------------" << std::endl;
+  }
+
+  bool result=true;
+
   // determine which hits are noisy
   std::set<const HBHERecHit*> noisehits;
   for(int i=0; i<static_cast<int>(rbxs.size()); i++) {
@@ -166,6 +184,7 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
        (isolhcale/ene<TightHcalIsol_ && isolecale/ene<TightEcalIsol_ && isoltrke/ene<TightTrackIsol_ && ((trkfide>TightRBXEne1_ && nhits>=TightRBXHits1_) || (trkfide>TightRBXEne2_ && nhits>=TightRBXHits2_)))) {
       for(HBHEHitMap::hitmap_const_iterator it=rbxs[i].beginHits(); it!=rbxs[i].endHits(); ++it)
 	noisehits.insert(it->first);
+      result=false;
     }
   }
 
@@ -180,6 +199,7 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
        (isolhcale/ene<TightHcalIsol_ && isolecale/ene<TightEcalIsol_ && isoltrke/ene<TightTrackIsol_ && ((trkfide>TightHPDEne1_ && nhits>=TightHPDHits1_) || (trkfide>TightHPDEne2_ && nhits>=TightHPDHits2_)))) {
       for(HBHEHitMap::hitmap_const_iterator it=hpds[i].beginHits(); it!=hpds[i].endHits(); ++it)
 	noisehits.insert(it->first);
+      result=false;
     }
   }
 
@@ -193,6 +213,7 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
        (isolhcale/ene<TightHcalIsol_ && isolecale/ene<TightEcalIsol_ && isoltrke/ene<TightTrackIsol_ && ene>TightDiHitEne_)) {
       for(HBHEHitMap::hitmap_const_iterator it=dihits[i].beginHits(); it!=dihits[i].endHits(); ++it)
 	noisehits.insert(it->first);
+      result=false;
     }
   }
   
@@ -206,26 +227,53 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
        (isolhcale/ene<TightHcalIsol_ && isolecale/ene<TightEcalIsol_ && isoltrke/ene<TightTrackIsol_ && ene>TightMonoHitEne_)) {
       for(HBHEHitMap::hitmap_const_iterator it=monohits[i].beginHits(); it!=monohits[i].endHits(); ++it)
 	noisehits.insert(it->first);
+      result=false;
     }
   }
 
-   // prepare the output HBHE RecHit collection
-   std::auto_ptr<HBHERecHitCollection> pOut(new HBHERecHitCollection());
-   // loop over rechits, and set the new bit you wish to use
-   for(HBHERecHitCollection::const_iterator it=hbhehits_h->begin(); it!=hbhehits_h->end(); ++it) {
-     const HBHERecHit* hit=&(*it);
-     HBHERecHit newhit(*hit);
-     if(noisehits.end()!=noisehits.find(hit)) {
-       newhit.setFlagField(1, hbheFlagBit_);
-     }
-     pOut->push_back(newhit);
-   }
+  // prepare the output HBHE RecHit collection
+  std::auto_ptr<HBHERecHitCollection> pOut(new HBHERecHitCollection());
+  // loop over rechits, and set the new bit you wish to use
+  for(HBHERecHitCollection::const_iterator it=hbhehits_h->begin(); it!=hbhehits_h->end(); ++it) {
+    const HBHERecHit* hit=&(*it);
+    HBHERecHit newhit(*hit);
+    if(noisehits.end()!=noisehits.find(hit)) {
+      newhit.setFlagField(1, hbheFlagBit_);
+    }
+    pOut->push_back(newhit);
+  }
 
+  iEvent.put(pOut);
 
-   iEvent.put(pOut);
+  std::auto_ptr<bool> pOut2(new bool);
+  *pOut2=result;
+  iEvent.put(pOut2, "HBHERecHitReflaggerResult");
+  
+
   delete ecalSevLvlAlgo;
-
+   
   return;  
+}
+
+void IsolatedHBHERecHitReflaggerJETMET::DumpHBHEHitMap(std::vector<HBHEHitMap>& i) const
+{
+  for(std::vector<HBHEHitMap>::const_iterator it=i.begin(); it!=i.end(); ++it) {
+    std::cout << "hit energy=" << it->hitEnergy()
+              << "; # hits=" << it->nHits()
+              << "; hcal energy same=" << it->hcalEnergySameTowers()
+              << "; ecal energy same=" << it->ecalEnergySameTowers()
+              << "; track energy same=" << it->trackEnergySameTowers()
+              << "; neighbor hcal energy=" << it->hcalEnergyNeighborTowers() << std::endl;
+    std::cout << "hits:" << std::endl;
+    for(HBHEHitMap::hitmap_const_iterator it2=it->beginHits(); it2!=it->endHits(); ++it2) {
+      const HBHERecHit *hit=it2->first;
+      std::cout << "RBX #=" << HcalHPDRBXMap::indexRBX(hit->id())
+                << "; HPD #=" << HcalHPDRBXMap::indexHPD(hit->id())
+                << "; " << (*hit) << std::endl;
+    }
+    std::cout << std::endl;
+  }
+  return;
 }
 
 ////////////////////////////////////////////////////////////
