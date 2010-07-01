@@ -9,7 +9,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaMuonSelector.h"
-//#include "ElectroWeakAnalysis/MultiBosons/interface/VGammaMuonSelector.h"
+//#include "ElectroWeakAnalysis/MultiBosons/interface/VGammaElectronSelector.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
@@ -23,8 +23,8 @@ class VGammaDiLeptonEventSelector : public EventSelector {
   bool operator()( const reco::CompositeCandidate&, edm::EventBase const & ) const;
   using EventSelector::operator();
 
-  std::vector<reco::ShallowClonePtrCandidate> const & selectedElectrons()   const { return selectedElectrons_;}
-  std::vector<reco::ShallowClonePtrCandidate> const & selectedMuons()       const { return selectedMuons_; }
+  std::vector<reco::ShallowClonePtrCandidate>       const & selectedElectrons()   const { return selectedElectrons_;}
+  std::vector<reco::ShallowClonePtrCandidate>       const & selectedMuons()       const { return selectedMuons_; }
   std::vector<reco::ShallowClonePtrCandidate>       const & selectedDiMuons()     const { return selectedDiMuons_; }
   std::vector<reco::ShallowClonePtrCandidate>       const & selectedDiElectrons() const { return selectedDiElectrons_; }
 
@@ -47,6 +47,9 @@ class VGammaDiLeptonEventSelector : public EventSelector {
 
   std::string                 muTrig_;
   std::string                 eleTrig_;
+
+  std::vector<pat::Muon> allMuons_;
+  std::vector<pat::Electron> allElectrons_;
 
   std::vector<reco::ShallowClonePtrCandidate> selectedMuons_;
   std::vector<reco::ShallowClonePtrCandidate> selectedElectrons_;
