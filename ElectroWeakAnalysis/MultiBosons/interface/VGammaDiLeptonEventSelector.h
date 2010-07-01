@@ -9,7 +9,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaMuonSelector.h"
-//#include "ElectroWeakAnalysis/MultiBosons/interface/VGammaElectronSelector.h"
+#include "ElectroWeakAnalysis/MultiBosons/interface/VGammaElectronSelector.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
@@ -33,8 +33,10 @@ class VGammaDiLeptonEventSelector : public EventSelector {
     muonId_.print(out);
     out << "DiMuon Muon ID Selector: " << std::endl;
     diMuonId_.print(out);
-    //out << "Electron ID Selector: " << std::endl;
-    //electronId_.print(out);
+    out << "Electron ID Selector: " << std::endl;
+    electronId_.print(out);
+    out << "DiElectron ID Selector: " << std::endl;
+    diElectronId_.print(out);
   }
  
  protected: 
@@ -57,7 +59,7 @@ class VGammaDiLeptonEventSelector : public EventSelector {
   std::vector<reco::ShallowClonePtrCandidate> selectedDiElectrons_;
 
   VGammaMuonSelector                   muonId_, diMuonId_;
-  //  VGammaElectronSelector               electronId_, diElectronId_;
+  VGammaElectronSelector               electronId_, diElectronId_;
   
 };
 
