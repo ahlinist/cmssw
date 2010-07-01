@@ -62,8 +62,7 @@ int main ( int argc, char ** argv )
   Histogrammer<reco::CompositeCandidate>* diElectronHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* muonPlusMETHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* electronPlusMETHistos(NULL);
-  
-    
+      
   Histogrammer<reco::CompositeCandidate>* ZMuMuGammaHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* ZEEGammaHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* WMuNuGammaHistos(NULL);

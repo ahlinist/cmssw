@@ -10,13 +10,13 @@ VGammaDiLeptonEventSelector::VGammaDiLeptonEventSelector( edm::ParameterSet cons
   muonTag_         (params.getParameter<edm::InputTag>("muonSrc") ),
   electronTag_     (params.getParameter<edm::InputTag>("electronSrc") ),  
   diMuonTag_     (params.getParameter<edm::InputTag>("diMuonSrc")),  
-  //diElectronTag_     (params.getParameter<edm::InputTag>("diElectronSrc")), 
+  diElectronTag_     (params.getParameter<edm::InputTag>("diElectronSrc")), 
   muTrig_          (params.getParameter<std::string>("muTrig")),
   eleTrig_         (params.getParameter<std::string>("eleTrig")),
   muonId_     (params.getParameter<edm::ParameterSet>("muonId") ),
-  diMuonId_        (params.getParameter<edm::ParameterSet>("muonId") )
-  //  electronId_ (params.getParameter<edm::ParameterSet>("electronId") ),
-  //  diElectronId_    (params.getParameter<edm::ParameterSet>("electronId") ),    
+  diMuonId_        (params.getParameter<edm::ParameterSet>("muonId") ),
+  electronId_ (params.getParameter<edm::ParameterSet>("electronId") ),
+  diElectronId_    (params.getParameter<edm::ParameterSet>("electronId") )
 {
   // make the bitset
   push_back( "Inclusive"      );
@@ -110,7 +110,7 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
       if( diMuonId_(*mu1,event) && diMuonId_(*mu2,event) ) 
 	selectedDiMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( diMuonHandle, idimuon - diMuonBegin ) ) );      
     }
-    /*
+    
     for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(),
 	    electronEnd = electronHandle->end(), ielectron = electronBegin;
 	  ielectron != electronEnd; ++ielectron ) 
@@ -118,15 +118,15 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
 	selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
         
     for ( std::vector<reco::CompositeCandidate>::const_iterator diElectronBegin = diElectronHandle->begin(),
-	    diElectronEnd = electronHandle->diElectronHandle->end(), idielectron = diElectronBegin;
+	    diElectronEnd = diElectronHandle->end(), idielectron = diElectronBegin;
 	  idielectron != diElectronEnd; ++idielectron ) {
-      const pat::Electron * mu1 = dynamic_cast<const pat::Electron*>(idielectron->daughter(0)->masterClonePtr().get());
-      const pat::Electron * mu2 = dynamic_cast<const pat::Electron*>(idielectron->daughter(1)->masterClonePtr().get());
+      const pat::Electron * e1 = dynamic_cast<const pat::Electron*>(idielectron->daughter(0)->masterClonePtr().get());
+      const pat::Electron * e2 = dynamic_cast<const pat::Electron*>(idielectron->daughter(1)->masterClonePtr().get());
 
-      if( diElectronId_(*mu1,event) && diElectronId_(*mu2,event) ) 
+      if( diElectronId_(*e1,event) && diElectronId_(*e2,event) ) 
 	selectedDiElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( diElectronHandle, idielectron - diElectronBegin ) ) );      
     }
-    */ 
+    
 
     if(ignoreCut("== 1 Tight DiLepton") || 
        selectedDiMuons_.size() + selectedDiElectrons_.size() == 1) passCut(ret,"== 1 Tight DiLepton");
@@ -143,7 +143,7 @@ bool VGammaDiLeptonEventSelector::operator() ( reco::CompositeCandidate const& d
 {
   bool ret = false;
   VGammaMuonSelector muid(muonId_);
-  //VGammaElectronSelector eid(electronId_);
+  VGammaElectronSelector eid(electronId_);
  
   const pat::Muon *mu1 = dynamic_cast<const pat::Muon*>(diLepton.daughter(0)->masterClonePtr().get());
   const pat::Muon *mu2 = dynamic_cast<const pat::Muon*>(diLepton.daughter(1)->masterClonePtr().get());
@@ -151,13 +151,13 @@ bool VGammaDiLeptonEventSelector::operator() ( reco::CompositeCandidate const& d
   if(mu1 && mu2)
     ret = (bool)muid(*mu1,evt) && (bool)muid(*mu2,evt);
 
-  /*
+  
   const pat::Electron *e1 = dynamic_cast<const pat::Electron*>(diLepton.daughter(0)->masterClonePtr().get());
   const pat::Electron *e2 = dynamic_cast<const pat::Electron*>(diLepton.daughter(1)->masterClonePtr().get());
 
   if(e1 && e2)
     ret = (bool)eid(*e1,evt) && (bool)eid(*e2,evt);
-  */
+  
 
   return ret;
 }
