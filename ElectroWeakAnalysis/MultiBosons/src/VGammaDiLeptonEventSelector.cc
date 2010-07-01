@@ -13,12 +13,9 @@ VGammaDiLeptonEventSelector::VGammaDiLeptonEventSelector( edm::ParameterSet cons
   muTrig_          (params.getParameter<std::string>("muTrig")),
   eleTrig_         (params.getParameter<std::string>("eleTrig")),
   muonId_     (params.getParameter<edm::ParameterSet>("muonId") ),
-  diMuonId_        (params.getParameter<edm::ParameterSet>("muonId") ),
+  diMuonId_        (params.getParameter<edm::ParameterSet>("muonId") )
   //  electronId_ (params.getParameter<edm::ParameterSet>("electronId") ),
-  //  diElectronId_    (params.getParameter<edm::ParameterSet>("electronId") ),  
-  doee             (params.getParameter<bool>("selectDiElectrons") ),
-  domumu           (params.getParameter<bool>("selectDiMuons") )
-  
+  //  diElectronId_    (params.getParameter<edm::ParameterSet>("electronId") ),    
 {
   // make the bitset
   push_back( "Inclusive"      );
@@ -90,7 +87,7 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
     edm::Handle< vector< reco::CompositeCandidate > > diElectronHandle;
     event.getByLabel (diElectronTag_, diElectronHandle);
     
-    if((domumu && diMuonHandle->size()) || (doee && diElectronHandle->size())) passCut(ret,">= 1 DiLepton");
+    if(ignoreCut(">= 1 DiLepton") || diMuonHandle->size() + diElectronHandle->size()) passCut(ret,">= 1 DiLepton");
 
     for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(),
 	    muonEnd = muonHandle->end(), imuon = muonBegin;
@@ -125,7 +122,8 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
     }
     */ 
 
-    if((domumu && selectedDiMuons_.size()) || (doee && selectedDiElectrons_.size() == 1)) passCut(ret,"== 1 Tight DiLepton");
+    if(ignoreCut("== 1 Tight DiLepton") || 
+       selectedDiMuons_.size() + selectedDiElectrons_.size() == 1) passCut(ret,"== 1 Tight DiLepton");
 
   } // end if trigger
   
@@ -133,4 +131,27 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
   setIgnored(ret);
   
   return (bool)ret;
+}
+
+bool VGammaDiLeptonEventSelector::operator() ( reco::CompositeCandidate const& diLepton , edm::EventBase const& evt) const
+{
+  bool ret = false;
+  VGammaMuonSelector muid(muonId_);
+  //VGammaElectronSelector eid(electronId_);
+ 
+  const pat::Muon *mu1 = dynamic_cast<const pat::Muon*>(diLepton.daughter(0)->masterClonePtr().get());
+  const pat::Muon *mu2 = dynamic_cast<const pat::Muon*>(diLepton.daughter(1)->masterClonePtr().get());
+ 
+  if(mu1 && mu2)
+    ret = (bool)muid(*mu1,evt) && (bool)muid(*mu2,evt);
+
+  /*
+  const pat::Electron *e1 = dynamic_cast<const pat::Electron*>(diLepton.daughter(0)->masterClonePtr().get());
+  const pat::Electron *e2 = dynamic_cast<const pat::Electron*>(diLepton.daughter(1)->masterClonePtr().get());
+
+  if(e1 && e2)
+    ret = (bool)eid(*e1,evt) && (bool)eid(*e2,evt);
+  */
+
+  return ret;
 }

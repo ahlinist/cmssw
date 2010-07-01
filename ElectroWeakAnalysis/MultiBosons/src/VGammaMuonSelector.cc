@@ -101,10 +101,10 @@ bool VGammaMuonSelector::operator()( const pat::Muon & mu,
 				     pat::strbitset & ret ) {
   switch (version_) {
   case Jun252010:
-    return Jun252010Cuts(mu, evt, ret);
+    return Jun252010Cuts(mu, ret);
     break;
   case Jun262010_jpsi:
-    return Jun262010_jpsiCuts(mu, evt, ret);
+    return Jun262010_jpsiCuts(mu, ret);
     break;
   default:
     break;
@@ -112,13 +112,22 @@ bool VGammaMuonSelector::operator()( const pat::Muon & mu,
   return false;
 }
 
-bool VGammaMuonSelector::operator()( const pat::Muon &, 
-				     pat::strbitset & ) {
+bool VGammaMuonSelector::operator()( const pat::Muon & mu, 
+				     pat::strbitset &  ret) {
+  switch (version_) {
+  case Jun252010:
+    return Jun252010Cuts(mu, ret);
+    break;
+  case Jun262010_jpsi:
+    return Jun262010_jpsiCuts(mu, ret);
+    break;
+  default:
+    break;
+  }
   return false;
 }
 
 bool VGammaMuonSelector::Jun252010Cuts( const pat::Muon& mu, 
-					edm::EventBase const & evt, 
 					pat::strbitset & ret ) {
   ret.set(false);
   
@@ -158,8 +167,7 @@ bool VGammaMuonSelector::Jun252010Cuts( const pat::Muon& mu,
   return (bool)ret;
 }
 
-bool VGammaMuonSelector::Jun262010_jpsiCuts( const pat::Muon& mu, 
-					     edm::EventBase const & evt, 
+bool VGammaMuonSelector::Jun262010_jpsiCuts( const pat::Muon& mu,
 					     pat::strbitset & ret ) {
   ret.set(false);
   

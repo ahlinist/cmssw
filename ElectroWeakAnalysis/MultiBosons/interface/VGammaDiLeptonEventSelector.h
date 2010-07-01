@@ -19,6 +19,8 @@ class VGammaDiLeptonEventSelector : public EventSelector {
   VGammaDiLeptonEventSelector( edm::ParameterSet const & params );
   
   virtual bool operator()( edm::EventBase const & t, pat::strbitset & ret);
+  // for use as object selector
+  bool operator()( const reco::CompositeCandidate&, edm::EventBase const & ) const;
   using EventSelector::operator();
 
   std::vector<reco::ShallowClonePtrCandidate> const & selectedElectrons()   const { return selectedElectrons_;}
@@ -53,8 +55,6 @@ class VGammaDiLeptonEventSelector : public EventSelector {
 
   VGammaMuonSelector                   muonId_, diMuonId_;
   //  VGammaElectronSelector               electronId_, diElectronId_;
-
-  bool doee, domumu;
   
 };
 

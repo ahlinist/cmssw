@@ -23,11 +23,11 @@ class VGammaMuonSelector : public Selector<pat::Muon> {
   bool operator()( const pat::Muon &, 
 		   pat::strbitset & );
 
-  bool Jun252010Cuts( const pat::Muon& mu, 
-		      edm::EventBase const & evt, 
+  bool Jun252010Cuts( const pat::Muon& mu,
 		      pat::strbitset & ret );
 
-  bool Jun262010_jpsiCuts( const pat::Muon& mu, edm::EventBase const & evt, pat::strbitset & ret );
+  bool Jun262010_jpsiCuts( const pat::Muon& mu,
+			   pat::strbitset & ret );
 
 
  private:
