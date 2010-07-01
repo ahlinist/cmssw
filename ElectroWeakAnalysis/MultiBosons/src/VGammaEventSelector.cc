@@ -27,9 +27,13 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   push_back( "Trigger"        );
   push_back( ">= 1 Photon"  );
   push_back( "== 1 Tight Photon" );  
-  push_back( "Pass DiLepton Id"  );
+  push_back( "Pass DiLepton Id" );
   push_back( "Pass Lepton+MET Id" );
   push_back( "Pass Photon+MET Id" );
+  push_back( "Pass DiLepton Id or Lepton+MET Id"  );
+  push_back( "Pass DiLepton Id or Photon+MET Id"  );
+  push_back( "Pass Lepton+MET Id or Photon+MET Id"  );
+  push_back( "Pass DiLepton Id or Lepton+MET Id or Photon+MET Id"  );
 
   // turn (almost) everything on by default
   set( "Inclusive"      );
@@ -39,6 +43,10 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   set( "Pass DiLepton Id"  );
   set( "Pass Lepton+MET Id" );
   set( "Pass Photon+MET Id" );
+  set( "Pass DiLepton Id or Lepton+MET Id"  );
+  set( "Pass DiLepton Id or Photon+MET Id"  );
+  set( "Pass Lepton+MET Id or Photon+MET Id"  );
+  set( "Pass DiLepton Id or Lepton+MET Id or Photon+MET Id"  );
 
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );  
@@ -50,11 +58,27 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
 {
   ret.set(false);
 
+  allPhotons_.clear();
+  allMuons_.clear();
+  allElectrons_.clear();
+  allMETs_.clear();
+
+  allDiMuons_.clear();
+  allDiElectrons_.clear();
+  allMuonPlusMETs_.clear();
+  allElectronPlusMETs_.clear();
+
+  allZEEGammaCands_.clear();
+  allZMuMuGammaCands_.clear();
+  allWENuGammaCands_.clear();
+  allWMuNuGammaCands_.clear();
+  allZNuNuGammaCands_.clear();
+
   selectedPhotons_.clear();
-  selectedZEEGammaCandidates_.clear();
-  selectedZMuMuGammaCandidates_.clear();
-  selectedWENuGammaCandidates_.clear();
-  selectedWMuNuGammaCandidates_.clear();
+  selectedZEEGammaCands_.clear();
+  selectedZMuMuGammaCands_.clear();
+  selectedWENuGammaCands_.clear();
+  selectedWMuNuGammaCands_.clear();
 
   passCut( ret, "Inclusive");
 
@@ -123,8 +147,8 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
       const pat::Photon *photon = dynamic_cast<const pat::Photon*>(izmumug->daughter(1)->masterClonePtr().get());
 
       if( diLeptonId_(*zmumu,event) )//&& photonId_(*photon,event) ) 
-	selectedZMuMuGammaCandidates_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( zmumugHandle, 
-														     izmumug - zmumugBegin ) ) );      
+	selectedZMuMuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( zmumugHandle, 
+														izmumug - zmumugBegin ) ) );      
     }
     
     //write Zee, WEnu, WMuNu, Photon + MET
