@@ -7,13 +7,14 @@
           ElectronConstant = "92" 
           ElectronThreshold = "120" 
           ElectronSlope= "3" 
-          TauLeadTower = "0"
+          TauSeedTower = "0"
           IsolationElectronA = "2" 
           IsolationElectronB = "6" 
           IsolationTauA = "1" 
           IsolationTauB = "10" 
           IsolationZone = "3" 
-          IsolationThreshold = "6" 
+          IsolationThresholdElectron = "6"
+          IsolationThresholdTau = "6"
           JetEt = "10" />
 
 <GEOMETRY eta0 = "4" phi0 = "4" dim = "64" etam = "60" phim = "75"     />
