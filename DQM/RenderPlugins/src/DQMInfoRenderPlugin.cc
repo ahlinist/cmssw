@@ -65,7 +65,8 @@ public:
       {
          // object is TH2 histogram
 	 TH2F* obj = dynamic_cast<TH2F*>( o.object );
-	 for ( int i = 1 ; i < obj->GetNbinsX(); i++ )
+	 assert( obj );
+         for ( int i = 1 ; i < obj->GetNbinsX(); i++ )
 	 {
 	   if ( obj->GetBinContent(i,28) == 1 )
 	   {
