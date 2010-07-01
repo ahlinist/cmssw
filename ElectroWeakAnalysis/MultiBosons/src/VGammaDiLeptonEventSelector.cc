@@ -10,6 +10,7 @@ VGammaDiLeptonEventSelector::VGammaDiLeptonEventSelector( edm::ParameterSet cons
   muonTag_         (params.getParameter<edm::InputTag>("muonSrc") ),
   electronTag_     (params.getParameter<edm::InputTag>("electronSrc") ),  
   diMuonTag_     (params.getParameter<edm::InputTag>("diMuonSrc")),  
+  //diElectronTag_     (params.getParameter<edm::InputTag>("diElectronSrc")), 
   muTrig_          (params.getParameter<std::string>("muTrig")),
   eleTrig_         (params.getParameter<std::string>("eleTrig")),
   muonId_     (params.getParameter<edm::ParameterSet>("muonId") ),
@@ -56,9 +57,14 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
 
     if ( trig->wasRun() && trig->wasAccept() ) {
 
-      pat::TriggerPath const * muPath = trig->path(muTrig_);
+      pat::TriggerPath const * muPath(NULL);
+      pat::TriggerPath const * elePath(NULL);
 
-      pat::TriggerPath const * elePath = trig->path(eleTrig_);
+      if(muTrig_.size())
+	muPath = trig->path(muTrig_);      
+
+      if(eleTrig_.size())
+	elePath = trig->path(eleTrig_);
 
       if ( muPath != 0 && muPath->wasAccept() ) {
 	passTrig = true;    

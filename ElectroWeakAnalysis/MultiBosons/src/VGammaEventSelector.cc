@@ -17,7 +17,7 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   eleTrig_         (params.getParameter<std::string>("eleTrig")),
   photonTrig_      (params.getParameter<std::string>("photonTrig")),
   metTrig_         (params.getParameter<std::string>("metTrig")),
-  diLeptonId_      (params.getParameter<edm::ParameterSet>("diLeptonIfCfg"))
+  diLeptonId_      (params.getParameter<edm::ParameterSet>("diLeptonIdCfg"))
   //photonId_(params.getParameter<edm::ParameterSet>("photonIdCfg")),
   //leptonPlusMETId_(params.getParameter<edm::ParameterSet>("leptonPlusMETIdCfg")),
   //photonPlusMETId_(params.getParameter<edm::ParameterSet>("photonPlusMETIdCfg")),    
