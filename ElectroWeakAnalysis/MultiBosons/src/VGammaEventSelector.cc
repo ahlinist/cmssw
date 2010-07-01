@@ -30,11 +30,12 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   push_back( "Pass DiLepton Id" );
   push_back( "Pass Lepton+MET Id" );
   push_back( "Pass Photon+MET Id" );
-  push_back( "Pass DiLepton Id or Lepton+MET Id"  );
-  push_back( "Pass DiLepton Id or Photon+MET Id"  );
-  push_back( "Pass Lepton+MET Id or Photon+MET Id"  );
-  push_back( "Pass DiLepton Id or Lepton+MET Id or Photon+MET Id"  );
-
+  push_back( "ZMuMuGamma" );
+  push_back( "ZEEGamma" );
+  push_back( "WMuNuGamma" );
+  push_back( "WENuGamma" );
+  push_back( "ZNuNuGamma" );
+  
   // turn (almost) everything on by default
   set( "Inclusive"      );
   set( "Trigger"        );
@@ -43,10 +44,12 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   set( "Pass DiLepton Id"  );
   set( "Pass Lepton+MET Id" );
   set( "Pass Photon+MET Id" );
-  set( "Pass DiLepton Id or Lepton+MET Id"  );
-  set( "Pass DiLepton Id or Photon+MET Id"  );
-  set( "Pass Lepton+MET Id or Photon+MET Id"  );
-  set( "Pass DiLepton Id or Lepton+MET Id or Photon+MET Id"  );
+  set( "ZMuMuGamma" );
+  set( "ZEEGamma" );
+  set( "WMuNuGamma" );
+  set( "WENuGamma" );
+  set( "ZNuNuGamma" );
+  
 
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );  
@@ -154,13 +157,18 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
     //write Zee, WEnu, WMuNu, Photon + MET
 
     if(ignoreCut("Pass DiLepton Id") || diLeptonId_(event)) passCut(ret,"Pass DiLepton Id");
-
-    if(ignoreCut("Pass Lepton+MET Id") || true) passCut(ret,"Pass Lepton+MET Id");
-
-    if(ignoreCut("Pass Photon+MET Id") || true) passCut(ret,"Pass Photon+MET Id");      
-
+       
+    if(ignoreCut("Pass Lepton+MET Id") || false) passCut(ret,"Pass Lepton+MET Id");
+    
+    if(ignoreCut("Pass Photon+MET Id") || false) passCut(ret,"Pass Photon+MET Id");
+       
+    if(ignoreCut("ZMuMuGamma") || selectedZMuMuGammaCands_.size() == 1) passCut(ret,"ZMuMuGamma");    
+    if(ignoreCut("ZEEGamma")   || selectedZEEGammaCands_.size() == 1)   passCut(ret,"ZEEGamma");    
+    if(ignoreCut("WMuNuGamma") || selectedWMuNuGammaCands_.size() == 1) passCut(ret,"WMuNuGamma");
+    if(ignoreCut("WENuGamma")  || selectedWENuGammaCands_.size() == 1)  passCut(ret,"WENuGamma");
+    //if(ignoreCut("ZNuNuGamma") || selectedZNuNuGammaCands().size() == 1) passCut(ret,"ZNuNuGamma");
+    
   } // end if trigger
-  
 
   setIgnored(ret);
   
