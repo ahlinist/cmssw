@@ -15,18 +15,20 @@ process.load("DQMServices.Components.MEtoEDMConverter_cfi")
 process.load("DQMServices.Core.DQM_cfg")
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = 'MC_31X_V1::All'
+#process.GlobalTag.globaltag = 'MC_31X_V1::All'
+process.GlobalTag.globaltag = 'START3X_V18::All'
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/data/CRAFT09/Cosmics/RECO/v1/000/111/125/8A62785E-158D-DE11-884B-0030486730C6.root')
+   fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/s/stupputi/Beams/Data/Express/PromptReco/stupputi/MuMonitor/RPCSkim_Collisions10_PromptReco_RECO/de32951a8bd98c6e98fd59b2f6c2a3d7/rpcSkimExp_135808-136082_9_1.root')
 )
 
 process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
   incldt = cms.untracked.bool(True),
   inclcsc = cms.untracked.bool(True),
+  incltrack =  cms.untracked.bool(False),
 
   debug = cms.untracked.bool(False),
 
@@ -39,8 +41,19 @@ process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
 
 ##  cscSegments = cms.untracked.string('hltCscSegments'),
 ##  dt4DSegments = cms.untracked.string('hltDt4DSegments'),
-  cscSegments = cms.untracked.string('cscSegments'),
-  dt4DSegments = cms.untracked.string('dt4DSegments')
+  cscSegments = cms.InputTag('cscSegments'),
+  dt4DSegments = cms.InputTag('dt4DSegments'),
+  tracks = cms.InputTag("standAloneMuons"),
+  TrackTransformer = cms.PSet(
+      DoPredictionsOnly = cms.bool(False),
+      Fitter = cms.string('KFFitterForRefitInsideOut'),
+      TrackerRecHitBuilder = cms.string('WithTrackAngle'),
+      Smoother = cms.string('KFSmootherForRefitInsideOut'),
+      MuonRecHitBuilder = cms.string('MuonRecHitBuilder'),
+      RefitDirection = cms.string('alongMomentum'),
+      RefitRPCHits = cms.bool(False),
+      Propagator = cms.string('SmartPropagatorAnyRKOpposite')
+  )
 )
 
 process.museg = cms.EDFilter("MuonSegmentEff",
@@ -54,9 +67,9 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     
     DuplicationCorrection = cms.untracked.int32(1),
 
-    manualalignment = cms.untracked.bool(True),
+    manualalignment = cms.untracked.bool(False),
     AliFileName = cms.untracked.string('/afs/cern.ch/user/c/carrillo/endcap/CMSSW_3_0_0_pre10/src/DQM/RPCMonitorModule/data/Alignment69912.dat'),
-
+	
     rangestrips = cms.untracked.double(4.),
 
 ##  cscSegments = cms.untracked.string('hltCscSegments'),
@@ -71,7 +84,7 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     rpcCSCPoints = cms.InputTag("rpcPointProducer","RPCCSCExtrapolatedPoints"),
 
     EffSaveRootFile = cms.untracked.bool(True),
-    EffRootFileName = cms.untracked.string('/tmp/carrillo/eff111125.FEEFDE56-288D-DE11-9A6E-0030486780B8.root'),
+    EffRootFileName = cms.untracked.string('PromptReco.rpcSkimExp_135808-136082_9_1.root'),
     EffSaveRootFileEventsInterval = cms.untracked.int32(100)
 )
 
