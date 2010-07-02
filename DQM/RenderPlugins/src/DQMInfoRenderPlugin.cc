@@ -66,26 +66,29 @@ public:
          // object is TH2 histogram
 	 TH2F* obj = dynamic_cast<TH2F*>( o.object );
 	 assert( obj );
+
+         int topbin = obj->GetNbinsY();
          for ( int i = 1 ; i < obj->GetNbinsX(); i++ )
 	 {
-	   if ( obj->GetBinContent(i,28) == 1 )
 	   {
-             char s[25];
-  	     sprintf (s,"Collisions10");
-             TText tt1;
-	     tt1.SetTextSize(0.15);
-	     tt1.SetTextColor(13);
-	     tt1.DrawTextNDC(0.2,0.5,const_cast<char*>(s));
-
-	     if ( obj->GetBinContent(i,27) == 1 )
+  	     if ( obj->GetBinContent(i,topbin-1) == 1 )
 	     {
-    	       sprintf (s,"7 TeV");
-               TText tt2;
-	       tt2.SetTextSize(0.1);
-	       tt2.SetTextColor(13);
-	       tt2.DrawTextNDC(0.4,0.4,const_cast<char*>(s));
- 	     }
-	     break;
+               char s[25];
+  	       sprintf (s,"Collisions10");
+               TText tt1;
+	       tt1.SetTextSize(0.15);
+	       tt1.SetTextColor(13);
+	       tt1.DrawTextNDC(0.2,0.5,const_cast<char*>(s));
+	       if ( obj->GetBinContent(i,topbin-2) == 1 )
+	       {
+    		 sprintf (s,"7 TeV");
+        	 TText tt2;
+		 tt2.SetTextSize(0.1);
+		 tt2.SetTextColor(13);
+		 tt2.DrawTextNDC(0.4,0.4,const_cast<char*>(s));
+ 	       }
+	       break;
+	     }
 	   }
          }
       }
@@ -200,7 +203,7 @@ private:
       assert( obj );
 
       
-      int topBin = 29;
+      int topBin = obj->GetNbinsY();
       int nbins = obj->GetNbinsX();
       int maxRange = nbins;
       for ( int i = nbins; i > 0; --i )
