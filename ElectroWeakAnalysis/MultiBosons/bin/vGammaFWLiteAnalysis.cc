@@ -73,31 +73,33 @@ int main ( int argc, char ** argv )
   // vgamma event hypotheses
   if(cfg->existsAs<edm::ParameterSet>("ZMuMuGamma")) {
     edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("ZMuMuGamma");
-    
+
+    ZMuMuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZMuMuGammaHistos"),fs);
+
     if(histConf.existsAs<edm::ParameterSet>("muonHistos"))
       zgmuonHistos = new Histogrammer<pat::Muon>(histConf.getParameter<edm::ParameterSet>("muonHistos"),fs);
     if(histConf.existsAs<edm::ParameterSet>("dimuonHistos"))
       diMuonHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("diMuonHistos"),fs);
     if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
       zmumugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
-    
-    ZMuMuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZMuMuGammaHistos"),fs);
   }
   if(cfg->existsAs<edm::ParameterSet>("ZEEGamma")) {
     edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("ZEEGamma");
+
+    ZEEGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZEEGammaHistos"),fs);
 
     if(histConf.existsAs<edm::ParameterSet>("electronHistos"))
       zgelectronHistos = new Histogrammer<pat::Electron>(histConf.getParameter<edm::ParameterSet>("electronHistos"),fs);
     if(histConf.existsAs<edm::ParameterSet>("dimuonHistos"))
       diElectronHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("diElectronHistos"),fs);
     if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
-      zeegphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
-    
-    ZEEGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZEEGammaHistos"),fs);
+      zeegphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);    
   }
   if(cfg->existsAs<edm::ParameterSet>("WMuNuGamma")) {
     edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("WMuNuGamma");
     
+    WMuNuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("WMuNuGammaHistos"),fs);
+
     if(histConf.existsAs<edm::ParameterSet>("muonHistos"))
       wgmuonHistos = new Histogrammer<pat::Muon>(histConf.getParameter<edm::ParameterSet>("muonHistos"),fs);
     if(histConf.existsAs<edm::ParameterSet>("metHistos"))
@@ -105,12 +107,12 @@ int main ( int argc, char ** argv )
     if(histConf.existsAs<edm::ParameterSet>("dimuonHistos"))
       muonPlusMETHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("muonPlusMETHistos"),fs);
     if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
-      wmunugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
-    
-    WMuNuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("WMuNuGammaHistos"),fs);
+      wmunugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);    
   }
   if(cfg->existsAs<edm::ParameterSet>("WENuGamma")) {
     edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("WENuGamma");
+
+    WENuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("WENuGammaHistos"),fs);
 
     if(histConf.existsAs<edm::ParameterSet>("electronHistos"))
       wgelectronHistos = new Histogrammer<pat::Electron>(histConf.getParameter<edm::ParameterSet>("electronHistos"),fs);
@@ -120,19 +122,17 @@ int main ( int argc, char ** argv )
       electronPlusMETHistos = 
 	new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("electronPlusMETHistos"),fs);
     if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
-      wenugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
-
-    WENuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("WENuGammaHistos"),fs);
+      wenugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);    
   }
   if(cfg->existsAs<edm::ParameterSet>("ZNuNuGamma")) {
     edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("ZNuNuGamma");
+
+    ZNuNuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZNuNuGammaHistos"),fs);
     
     if(histConf.existsAs<edm::ParameterSet>("metHistos"))
       znunugmetHistos = new Histogrammer<pat::MET>(histConf.getParameter<edm::ParameterSet>("metHistos"),fs);
     if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
-      znunugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
-
-    ZNuNuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZNuNuGammaHistos"),fs);
+      znunugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);    
   }
 
   // This object 'event' is used both to get all information from the

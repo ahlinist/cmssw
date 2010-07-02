@@ -14,4 +14,4 @@ diLepton_jpsi_selection = cms.PSet(trigSrc = cms.InputTag("TriggerResults"),
                                    electronId1 = electronSelections.Jul012010_selection.copy(),
                                    electronId2 = electronSelections.Jul012010_selection.copy()
                                    )
-                                   
+
