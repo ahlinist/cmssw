@@ -12,7 +12,7 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaDiLeptonEventSelector.h"
 //#include "ElectroWeakAnalysis/MultiBosons/interface/VGammaLeptonPlusMETSelector.h"
 //#include "ElectroWeakAnalysis/MultiBosons/interface/VGammaPhotonPlusMETSelector.h"
-//#include "ElectroWeakAnalysis/MultiBosons/interface/VGammaPhotonSelector.h"
+#include "ElectroWeakAnalysis/MultiBosons/interface/VGammaPhotonSelector.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
@@ -42,8 +42,10 @@ class VGammaEventSelector : public EventSelector {
   std::vector<reco::CompositeCandidate> const& allZNuNuGammaCands() const { return allZNuNuGammaCands_; }
 
   // photons  
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedPhotons()     const 
-    { return selectedPhotons_; }
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaPhotons()     const 
+    { return selectedZGammaPhotons_; }
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaPhotons()     const 
+    { return selectedWGammaPhotons_; }
   
   // accessors to daughter selectors
   VGammaDiLeptonEventSelector      const& diLeptonSelector()      const { return diLeptonId_; }
@@ -81,13 +83,22 @@ class VGammaEventSelector : public EventSelector {
  
  protected: 
 
+  void fillAll( edm::EventBase const & event );
+
   edm::InputTag               trigTag_;
+  edm::InputTag               muonTag_;
+  edm::InputTag               electronTag_;  
   edm::InputTag               photonTag_;
+  edm::InputTag               metTag_;
+  edm::InputTag               dimuonTag_;
+  edm::InputTag               dielectronTag_;
+  edm::InputTag               electronMETTag_;
+  edm::InputTag               muonMETTag_;
   edm::InputTag               zeegTag_;
   edm::InputTag               zmumugTag_;
   edm::InputTag               wenugTag_;
   edm::InputTag               wmunugTag_;
-  edm::InputTag               photonMETTag_;
+  edm::InputTag               znunugTag_;
 
   std::string                 muTrig_;
   std::string                 eleTrig_;
@@ -110,17 +121,18 @@ class VGammaEventSelector : public EventSelector {
   std::vector<reco::CompositeCandidate> allWMuNuGammaCands_;
   std::vector<reco::CompositeCandidate> allZNuNuGammaCands_;
   
-  std::vector<reco::ShallowClonePtrCandidate> selectedPhotons_;
+  std::vector<reco::ShallowClonePtrCandidate> selectedZGammaPhotons_;
+  std::vector<reco::ShallowClonePtrCandidate> selectedWGammaPhotons_;
 
   std::vector<reco::ShallowClonePtrCandidate> selectedZEEGammaCands_;
   std::vector<reco::ShallowClonePtrCandidate> selectedZMuMuGammaCands_;
   std::vector<reco::ShallowClonePtrCandidate> selectedWENuGammaCands_;  
   std::vector<reco::ShallowClonePtrCandidate> selectedWMuNuGammaCands_;
 
-  VGammaDiLeptonEventSelector                   diLeptonId_;
+  VGammaDiLeptonEventSelector            diLeptonId_;
   //VGammaLeptonPlusMETEventSelector            leptonPlusMETId_;
   //VGammaPhotonPlusMETEventSelector            photonPlusMETId_;
-  //VGammaPhotonSelector                   photonId_;
+  VGammaPhotonSelector                   zgphotonId_,wgphotonId_;
   
 };
 

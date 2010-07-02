@@ -120,7 +120,7 @@ int main ( int argc, char ** argv )
        select.considerCut("ZMuMuGamma")) {
       if(muonHistos)   muonHistos->analyze(select.diLeptonSelector().selectedMuons());
       if(diMuonHistos) diMuonHistos->analyze(select.diLeptonSelector().selectedDiMuons());
-      if(photonHistos) photonHistos->analyze(select.selectedPhotons());
+      if(photonHistos) photonHistos->analyze(select.selectedZGammaPhotons());
       
       ZMuMuGammaHistos->analyze(select.selectedZMuMuGammaCands());
     }
@@ -129,7 +129,7 @@ int main ( int argc, char ** argv )
        select.considerCut("ZEEGamma")) {
       if(electronHistos)   electronHistos->analyze(select.diLeptonSelector().selectedElectrons());
       if(diElectronHistos) diElectronHistos->analyze(select.diLeptonSelector().selectedDiElectrons());
-      if(photonHistos)     photonHistos->analyze(select.selectedPhotons());
+      if(photonHistos)     photonHistos->analyze(select.selectedZGammaPhotons());
       
       ZEEGammaHistos->analyze(select.selectedZEEGammaCands());
     }      
@@ -140,7 +140,7 @@ int main ( int argc, char ** argv )
       if(muonsHistos)        muonHistos->analyze(select.leptonPlusMETSelector().selectedMuons());
       if(muonPlusMETHistos)  diMuonHistos->analyze(select.leptonPlusMETSelector().selectedMuonPlusMETs());
       if(metHistos)          metHistos->analyze(select.leptonPlusMETSelector().selectedMETs());
-      if(photonHistos)       photonHistos->analyze(select.selectedPhotons());
+      if(photonHistos)       photonHistos->analyze(select.selectedWGammaPhotons());
       
       WMuNuGammaHistos->analyze(select.selectedWMuNuGammaCands());
     }
@@ -150,7 +150,7 @@ int main ( int argc, char ** argv )
       if(electronsHistos)        electronHistos->analyze(select.leptonPlusMETSelector().selectedElectrons());
       if(electronPlusMETHistos)  diElectronHistos->analyze(select.leptonPlusMETSelector().selectedElectronPlusMETs());
       if(metHistos)              metHistos->analyze(select.leptonPlusMETSelector().selectedMETs());
-      if(photonHistos)           photonHistos->analyze(select.selectedPhotons());
+      if(photonHistos)           photonHistos->analyze(select.selectedWGammaPhotons());
       
       WENuGammaHistos->analyze(select.selectedWENuGammaCands());
     }      
