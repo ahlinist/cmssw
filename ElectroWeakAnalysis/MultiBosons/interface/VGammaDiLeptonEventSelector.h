@@ -29,14 +29,14 @@ class VGammaDiLeptonEventSelector : public EventSelector {
   std::vector<reco::ShallowClonePtrCandidate>       const & selectedDiElectrons() const { return selectedDiElectrons_; }
 
   void printSelectors(std::ostream & out) {
-    out << "Muon ID Selector: " << std::endl;
-    muonId_.print(out);
-    out << "DiMuon Muon ID Selector: " << std::endl;
-    diMuonId_.print(out);
-    out << "Electron ID Selector: " << std::endl;
-    electronId_.print(out);
-    out << "DiElectron ID Selector: " << std::endl;
-    diElectronId_.print(out);
+    out << "Muon ID Selector 1: " << std::endl;
+    muonId1_.print(out);
+    out << "Muon ID Selector 2: " << std::endl;
+    muonId2_.print(out);
+    out << "Electron ID Selector 1: " << std::endl;
+    electronId1_.print(out);
+    out << "Electron ID Selector 2: " << std::endl;
+    electronId2_.print(out);
   }
  
  protected: 
@@ -58,8 +58,8 @@ class VGammaDiLeptonEventSelector : public EventSelector {
   std::vector<reco::ShallowClonePtrCandidate> selectedDiMuons_;
   std::vector<reco::ShallowClonePtrCandidate> selectedDiElectrons_;
 
-  VGammaMuonSelector                   muonId_, diMuonId_;
-  VGammaElectronSelector               electronId_, diElectronId_;
+  VGammaMuonSelector                   muonId1_, muonId2_;
+  VGammaElectronSelector               electronId1_, electronId2_;
   
 };
 

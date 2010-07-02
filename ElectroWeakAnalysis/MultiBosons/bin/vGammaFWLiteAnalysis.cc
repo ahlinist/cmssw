@@ -53,10 +53,11 @@ int main ( int argc, char ** argv )
 
   fwlite::TFileService fs = fwlite::TFileService( outputs.getParameter<std::string>("outputName") );
 
-  Histogrammer<pat::Muon>*     muonHistos(NULL);
-  Histogrammer<pat::Electron>* electronHistos(NULL);
-  Histogrammer<pat::Photon>*   photonHistos(NULL);
-  Histogrammer<pat::MET>*      metHistos(NULL);
+  Histogrammer<pat::Muon>*     zgmuonHistos(NULL), *wgmuonHistos(NULL);
+  Histogrammer<pat::Electron>* zgelectronHistos(NULL), *wgelectronHistos(NULL);
+  Histogrammer<pat::Photon>*   zeegphotonHistos(NULL), *zmumugphotonHistos(NULL), 
+    *wmunugphotonHistos(NULL),*wenugphotonHistos(NULL), *znunugphotonHistos(NULL);
+  Histogrammer<pat::MET>*      znunugmetHistos(NULL), *wenugmetHistos(NULL), *wmunugmetHistos(NULL);
 
   Histogrammer<reco::CompositeCandidate>* diMuonHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* diElectronHistos(NULL);
@@ -68,38 +69,71 @@ int main ( int argc, char ** argv )
   Histogrammer<reco::CompositeCandidate>* WMuNuGammaHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* WENuGammaHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* ZNuNuGammaHistos(NULL);
-
-  // bare object histos
-  if(cfg->existsAs<edm::ParameterSet>("muonHistos"))
-    muonHistos = new Histogrammer<pat::Muon>(cfg->getParameter<edm::ParameterSet>("muonHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("electronHistos"))
-    electronHistos = new Histogrammer<pat::Electron>(cfg->getParameter<edm::ParameterSet>("electronHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("photonHistos"))
-    photonHistos = new Histogrammer<pat::Photon>(cfg->getParameter<edm::ParameterSet>("photonHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("metHistos"))
-    metHistos = new Histogrammer<pat::MET>(cfg->getParameter<edm::ParameterSet>("metHistos"),fs);
-
-  // intermediate objects
-  if(cfg->existsAs<edm::ParameterSet>("dimuonHistos"))
-    diMuonHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("diMuonHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("dielectronHistos"))
-    diElectronHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("diElectronHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("muonPlusMETHistos"))
-    muonPlusMETHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("muonPlusMETHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("electronPlusMETHistos"))
-    electronPlusMETHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("electronPlusMETHistos"),fs);
-
+  
   // vgamma event hypotheses
-  if(cfg->existsAs<edm::ParameterSet>("ZMuMuGammaHistos"))
-    ZMuMuGammaHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("ZMuMuGammaHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("ZEEGammaHistos"))
-    ZEEGammaHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("ZEEGammaHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("WMuNuGammaHistos"))
-    WMuNuGammaHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("WMuNuGammaHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("WENuGammaHistos"))
-    WENuGammaHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("WENuGammaHistos"),fs);
-  if(cfg->existsAs<edm::ParameterSet>("ZNuNuGammaHistos"))
-    ZNuNuGammaHistos = new Histogrammer<reco::CompositeCandidate>(cfg->getParameter<edm::ParameterSet>("ZNuNuGammaHistos"),fs);
+  if(cfg->existsAs<edm::ParameterSet>("ZMuMuGamma")) {
+    edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("ZMuMuGamma");
+    
+    if(histConf.existsAs<edm::ParameterSet>("muonHistos"))
+      zgmuonHistos = new Histogrammer<pat::Muon>(histConf.getParameter<edm::ParameterSet>("muonHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("dimuonHistos"))
+      diMuonHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("diMuonHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
+      zmumugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
+    
+    ZMuMuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZMuMuGammaHistos"),fs);
+  }
+  if(cfg->existsAs<edm::ParameterSet>("ZEEGamma")) {
+    edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("ZEEGamma");
+
+    if(histConf.existsAs<edm::ParameterSet>("electronHistos"))
+      zgelectronHistos = new Histogrammer<pat::Electron>(histConf.getParameter<edm::ParameterSet>("electronHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("dimuonHistos"))
+      diElectronHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("diElectronHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
+      zeegphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
+    
+    ZEEGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZEEGammaHistos"),fs);
+  }
+  if(cfg->existsAs<edm::ParameterSet>("WMuNuGamma")) {
+    edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("WMuNuGamma");
+    
+    if(histConf.existsAs<edm::ParameterSet>("muonHistos"))
+      wgmuonHistos = new Histogrammer<pat::Muon>(histConf.getParameter<edm::ParameterSet>("muonHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("metHistos"))
+      wmunugmetHistos = new Histogrammer<pat::MET>(histConf.getParameter<edm::ParameterSet>("metHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("dimuonHistos"))
+      muonPlusMETHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("muonPlusMETHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
+      wmunugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
+    
+    WMuNuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("WMuNuGammaHistos"),fs);
+  }
+  if(cfg->existsAs<edm::ParameterSet>("WENuGamma")) {
+    edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("WENuGamma");
+
+    if(histConf.existsAs<edm::ParameterSet>("electronHistos"))
+      wgelectronHistos = new Histogrammer<pat::Electron>(histConf.getParameter<edm::ParameterSet>("electronHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("metHistos"))
+      wenugmetHistos = new Histogrammer<pat::MET>(histConf.getParameter<edm::ParameterSet>("metHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("dimuonHistos"))
+      electronPlusMETHistos = 
+	new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("electronPlusMETHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
+      wenugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
+
+    WENuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("WENuGammaHistos"),fs);
+  }
+  if(cfg->existsAs<edm::ParameterSet>("ZNuNuGamma")) {
+    edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("ZNuNuGamma");
+    
+    if(histConf.existsAs<edm::ParameterSet>("metHistos"))
+      znunugmetHistos = new Histogrammer<pat::MET>(histConf.getParameter<edm::ParameterSet>("metHistos"),fs);
+    if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
+      znunugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);
+
+    ZNuNuGammaHistos = new Histogrammer<reco::CompositeCandidate>(histConf.getParameter<edm::ParameterSet>("ZNuNuGammaHistos"),fs);
+  }
 
   // This object 'event' is used both to get all information from the
   // event as well as to store histograms, etc.
@@ -118,38 +152,38 @@ int main ( int argc, char ** argv )
     if(ZMuMuGammaHistos && 
        event_result[std::string("ZMuMuGamma")] &&
        select.considerCut("ZMuMuGamma")) {
-      if(muonHistos)   muonHistos->analyze(select.selectedZGammaMuons());
+      if(zgmuonHistos)   zgmuonHistos->analyze(select.selectedZGammaMuons());
       if(diMuonHistos) diMuonHistos->analyze(select.selectedZGammaDiMuons());
-      if(photonHistos) photonHistos->analyze(select.selectedZGammaPhotons());
+      if(zmumugphotonHistos) zmumugphotonHistos->analyze(select.selectedZGammaPhotons());
       
       ZMuMuGammaHistos->analyze(select.selectedZMuMuGammaCands());
     }
     if(ZEEGammaHistos &&
        event_result[std::string("ZEEGamma")] &&
        select.considerCut("ZEEGamma")) {
-      if(electronHistos)   electronHistos->analyze(select.selectedZGammaElectrons());
+      if(zgelectronHistos)   zgelectronHistos->analyze(select.selectedZGammaElectrons());
       if(diElectronHistos) diElectronHistos->analyze(select.selectedZGammaDiElectrons());
-      if(photonHistos)     photonHistos->analyze(select.selectedZGammaPhotons());
+      if(zeegphotonHistos)     zeegphotonHistos->analyze(select.selectedZGammaPhotons());
       
       ZEEGammaHistos->analyze(select.selectedZEEGammaCands());
     }    
     if(WMuNuGammaHistos && 
        event_result[std::string("WMuNuGamma")] &&
        select.considerCut("WMuNuGamma")) { 
-      if(muonHistos)        muonHistos->analyze(select.selectedWGammaMuons());
-      if(muonPlusMETHistos)  diMuonHistos->analyze(select.selectedWGammaMuonPlusMETs());
-      if(metHistos)          metHistos->analyze(select.selectedWGammaMETs());
-      if(photonHistos)       photonHistos->analyze(select.selectedWGammaPhotons());
+      if(wgmuonHistos)       wgmuonHistos->analyze(select.selectedWGammaMuons());
+      if(muonPlusMETHistos)  muonPlusMETHistos->analyze(select.selectedWGammaMuonPlusMETs());
+      if(wmunugmetHistos)    wmunugmetHistos->analyze(select.selectedWGammaMETs());
+      if(wmunugphotonHistos) wmunugphotonHistos->analyze(select.selectedWGammaPhotons());
       
       WMuNuGammaHistos->analyze(select.selectedWMuNuGammaCands());
     }
     if(WENuGammaHistos && 
        event_result[std::string("WENuGamma")] &&
        select.considerCut("WENuGamma")) {
-      if(electronHistos)        electronHistos->analyze(select.selectedWGammaElectrons());
-      if(electronPlusMETHistos)  diElectronHistos->analyze(select.selectedWGammaElectronPlusMETs());
-      if(metHistos)              metHistos->analyze(select.selectedWGammaMETs());
-      if(photonHistos)           photonHistos->analyze(select.selectedWGammaPhotons());
+      if(wgelectronHistos)         wgelectronHistos->analyze(select.selectedWGammaElectrons());
+      if(electronPlusMETHistos)  electronPlusMETHistos->analyze(select.selectedWGammaElectronPlusMETs());
+      if(wenugmetHistos)         wenugmetHistos->analyze(select.selectedWGammaMETs());
+      if(wenugphotonHistos)      wenugphotonHistos->analyze(select.selectedWGammaPhotons());
       
       WENuGammaHistos->analyze(select.selectedWENuGammaCands());
     }   
@@ -157,42 +191,71 @@ int main ( int argc, char ** argv )
     if(ZNuNuGammaHists && 
        event_result[std::string("ZNuNuGamma")] &&
        select.considerCut("ZNuNuGamma")) {
-      if(metHistos)              metHistos->analyze(select.photonPlusMETSelector().selectedMETs());
-      if(photonHistos)           photonHistos->analyze(select.photonPlusMETSelector().selectedPhotons());
+      if(znunugmetHistos)              metHistos->analyze(select.photonPlusMETSelector().selectedMETs());
+      if(znunugphotonHistos)           photonHistos->analyze(select.photonPlusMETSelector().selectedPhotons());
       
       ZNuNuGammaHistos->analyze(select.selectedZNuNuGammaCands());
     }
     */
-     
-	
-    if(muonHistos)            muonHistos->analyze(select.allMuons());
-    if(electronHistos)        electronHistos->analyze(select.allElectrons());
-    if(photonHistos)          photonHistos->analyze(select.allPhotons());
-    if(metHistos)             metHistos->analyze(select.allMETs());
+    
+    if(ZMuMuGammaHistos) {
+      if(zgmuonHistos)          zgmuonHistos->analyze(select.allMuons());
+      if(diMuonHistos)          diMuonHistos->analyze(select.allDiMuons());
+      if(zmumugphotonHistos)    zmumugphotonHistos->analyze(select.allPhotons());
 
-    if(diMuonHistos)          diMuonHistos->analyze(select.allDiMuons());
-    if(diElectronHistos)      diElectronHistos->analyze(select.allDiElectrons());
-    if(muonPlusMETHistos)     muonPlusMETHistos->analyze(select.allMuonPlusMETs());
-    if(electronPlusMETHistos) electronPlusMETHistos->analyze(select.allElectronPlusMETs());
-				       
-    if(ZMuMuGammaHistos)      ZMuMuGammaHistos->analyze(select.allZMuMuGammaCands());
-    if(ZEEGammaHistos)        ZEEGammaHistos->analyze(select.allZEEGammaCands());
-    if(WMuNuGammaHistos)      WMuNuGammaHistos->analyze(select.allWMuNuGammaCands());
-    if(WENuGammaHistos)       WENuGammaHistos->analyze(select.allWENuGammaCands());
-    if(ZNuNuGammaHistos)      ZNuNuGammaHistos->analyze(select.allZNuNuGammaCands());
+      ZMuMuGammaHistos->analyze(select.allZMuMuGammaCands());
+    }
+    if(ZEEGammaHistos) {
+      if(zgelectronHistos)      zgelectronHistos->analyze(select.allElectrons());
+      if(diElectronHistos)      diElectronHistos->analyze(select.allDiElectrons());
+      if(zeegphotonHistos)      zeegphotonHistos->analyze(select.allPhotons());
+
+      ZEEGammaHistos->analyze(select.allZEEGammaCands());
+    }
+    if(WMuNuGammaHistos) {
+      if(wgmuonHistos)          wgmuonHistos->analyze(select.allMuons());
+      if(wmunugmetHistos)       wmunugmetHistos->analyze(select.allMETs());
+      if(muonPlusMETHistos)     muonPlusMETHistos->analyze(select.allMuonPlusMETs());
+      if(wmunugphotonHistos)    wmunugphotonHistos->analyze(select.allPhotons());
+
+      WMuNuGammaHistos->analyze(select.allWMuNuGammaCands());
+    }
+    if(WENuGammaHistos) {
+      if(wgelectronHistos)      wgelectronHistos->analyze(select.allElectrons());
+      if(wenugmetHistos)        wenugmetHistos->analyze(select.allMETs());
+      if(electronPlusMETHistos) electronPlusMETHistos->analyze(select.allElectronPlusMETs());
+      if(wenugphotonHistos)     wenugphotonHistos->analyze(select.allPhotons());
+      
+
+      WENuGammaHistos->analyze(select.allWENuGammaCands());
+    }
+    if(ZNuNuGammaHistos) {
+      if(znunugmetHistos)       znunugmetHistos->analyze(select.allMETs());
+      if(znunugphotonHistos)    znunugphotonHistos->analyze(select.allPhotons());
+
+      ZNuNuGammaHistos->analyze(select.allZNuNuGammaCands());
+    }
   } // end loop over events
   
-  if(muonHistos)       delete muonHistos;
-  if(electronHistos)   delete electronHistos;
-  if(photonHistos)     delete photonHistos;
-  if(metHistos)        delete metHistos;
-  if(diMuonHistos)     delete diMuonHistos;
-  if(diElectronHistos) delete diElectronHistos;
-  if(ZMuMuGammaHistos) delete ZMuMuGammaHistos;
-  if(ZEEGammaHistos)   delete ZMuMuGammaHistos;
-  if(ZNuNuGammaHistos) delete ZMuMuGammaHistos;
-  if(WENuGammaHistos)  delete ZMuMuGammaHistos;
-  if(WMuNuGammaHistos) delete ZMuMuGammaHistos;
+  if(zgmuonHistos)       delete zgmuonHistos;
+  if(wgmuonHistos)       delete wgmuonHistos;
+  if(zgelectronHistos)   delete zgelectronHistos;
+  if(wgelectronHistos)   delete wgelectronHistos;
+  if(zmumugphotonHistos) delete zmumugphotonHistos;
+  if(zeegphotonHistos)   delete zeegphotonHistos;
+  if(wmunugphotonHistos) delete wmunugphotonHistos;
+  if(wenugphotonHistos)  delete wenugphotonHistos;
+  if(znunugphotonHistos) delete znunugphotonHistos;
+  if(wenugmetHistos)     delete wenugmetHistos;
+  if(wmunugmetHistos)    delete wmunugmetHistos;
+  if(znunugmetHistos)    delete znunugmetHistos;
+  if(diMuonHistos)       delete diMuonHistos;
+  if(diElectronHistos)   delete diElectronHistos;
+  if(ZMuMuGammaHistos)   delete ZMuMuGammaHistos;
+  if(ZEEGammaHistos)     delete ZEEGammaHistos;
+  if(ZNuNuGammaHistos)   delete ZNuNuGammaHistos;
+  if(WENuGammaHistos)    delete WENuGammaHistos;
+  if(WMuNuGammaHistos)   delete WMuNuGammaHistos;
   
 
 }
