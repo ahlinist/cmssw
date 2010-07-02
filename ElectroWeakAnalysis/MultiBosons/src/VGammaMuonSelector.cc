@@ -7,7 +7,7 @@ VGammaMuonSelector::VGammaMuonSelector( const edm::ParameterSet& conf ) {
   version v;
   if( verStr == "Jun252010")
     v = Jun252010;
-  else if( verStr == "June262010_jpsi" )
+  else if( verStr == "Jun262010_jpsi" )
     v = Jun262010_jpsi;
   else
     throw cms::Exception("InvalidInput") << "\'version\' must be one of: Jun252010 Jun262010_jpsi" << std::endl;
