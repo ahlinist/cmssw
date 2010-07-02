@@ -25,10 +25,10 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   photonTrig_      (params.getParameter<std::string>("photonTrig")),
   metTrig_         (params.getParameter<std::string>("metTrig")),
   diLeptonId_      (params.getParameter<edm::ParameterSet>("diLeptonIdCfg")),
+  leptonPlusMETId_ (params.getParameter<edm::ParameterSet>("leptonPlusMETIdCfg")),
+  //photonPlusMETId_(params.getParameter<edm::ParameterSet>("photonPlusMETIdCfg")),
   zgphotonId_      (params.getParameter<edm::ParameterSet>("zGammaPhotonIdCfg")),
-  wgphotonId_      (params.getParameter<edm::ParameterSet>("wGammaPhotonIdCfg"))
-  //leptonPlusMETId_(params.getParameter<edm::ParameterSet>("leptonPlusMETIdCfg")),
-  //photonPlusMETId_(params.getParameter<edm::ParameterSet>("photonPlusMETIdCfg")),    
+  wgphotonId_      (params.getParameter<edm::ParameterSet>("wGammaPhotonIdCfg"))        
 {
   // make the bitset
   push_back( "Inclusive"      );
@@ -146,38 +146,86 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
     event.getByLabel (znunugTag_, photonMETHandle);
 
     if(ignoreCut(">= 1 Photon") || photonHandle->size()) passCut(ret,">= 1 Photon");
-
     
-    for ( std::vector<pat::Photon>::const_iterator photonBegin = photonHandle->begin(),
-	    photonEnd = photonHandle->end(), iphoton = photonBegin;
-	  iphoton != photonEnd; ++iphoton ) {
-      if ( zgphotonId_(*iphoton,event) ) 
-	selectedZGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Photon>( photonHandle, iphoton - photonBegin ) ) );
-      if ( wgphotonId_(*iphoton,event) ) 
-	selectedWGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Photon>( photonHandle, iphoton - photonBegin ) ) );      
+    if(!ignoreCut("WMuMuGamma")) {
+      for ( std::vector<reco::CompositeCandidate>::const_iterator zmumugBegin = zmumugHandle->begin(),
+	      zmumugEnd = zmumugHandle->end(), izmumug = zmumugBegin;
+	    izmumug != zmumugEnd; ++izmumug ) {
+	const reco::CompositeCandidate *zmumu = dynamic_cast<const reco::CompositeCandidate*>(izmumug->daughter(0)->masterClonePtr().get());
+	const pat::Photon *photon = dynamic_cast<const pat::Photon*>(izmumug->daughter(1)->masterClonePtr().get());
+	
+	if( diLeptonId_(*zmumu,event) && zgphotonId_(*photon,event) ) {
+	  selectedZMuMuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( zmumugHandle, 
+														  izmumug - zmumugBegin ) ) ); 
+	  selectedZGammaMuons_.push_back( reco::ShallowClonePtrCandidate( zmumu->daughter(0)->masterClonePtr() ) );
+	  selectedZGammaMuons_.push_back( reco::ShallowClonePtrCandidate( zmumu->daughter(1)->masterClonePtr() ) );
+	  selectedZGammaDiMuons_.push_back( reco::ShallowClonePtrCandidate( izmumug->daughter(0)->masterClonePtr() ) );
+	  selectedZGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( izmumug->daughter(1)->masterClonePtr() ) );
+	}
+      }
     }
     
+    if(!ignoreCut("ZEEGamma")) {
+      for ( std::vector<reco::CompositeCandidate>::const_iterator zeegBegin = zeegHandle->begin(),
+	      zeegEnd = zeegHandle->end(), izeeg = zeegBegin;
+	    izeeg != zeegEnd; ++izeeg ) {
+	const reco::CompositeCandidate *zee = dynamic_cast<const reco::CompositeCandidate*>(izeeg->daughter(0)->masterClonePtr().get());
+	const pat::Photon *photon = dynamic_cast<const pat::Photon*>(izeeg->daughter(1)->masterClonePtr().get());
+	
+	if( diLeptonId_(*zee,event) && zgphotonId_(*photon,event) ) {
+	  selectedZEEGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( zeegHandle, 
+														izeeg - zeegBegin ) ) );
+	  selectedZGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( zee->daughter(0)->masterClonePtr() ) );
+	  selectedZGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( zee->daughter(1)->masterClonePtr() ) );
+	  selectedZGammaDiElectrons_.push_back( reco::ShallowClonePtrCandidate( izeeg->daughter(0)->masterClonePtr() ) );
+	  selectedZGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( izeeg->daughter(1)->masterClonePtr() ) );
+	}      
+      }
+    }
+
+    if(!ignoreCut("WMuNuGamma")) {
+      for ( std::vector<reco::CompositeCandidate>::const_iterator wmunugBegin = wmunugHandle->begin(),
+	      wmunugEnd = wmunugHandle->end(), iwmunug = wmunugBegin;
+	    iwmunug != wmunugEnd; ++iwmunug ) {
+	const reco::CompositeCandidate *wmunu = dynamic_cast<const reco::CompositeCandidate*>(iwmunug->daughter(0)->masterClonePtr().get());
+	const pat::Photon *photon = dynamic_cast<const pat::Photon*>(iwmunug->daughter(1)->masterClonePtr().get());
+	
+	if( leptonPlusMETId_(*wmunu,event) && wgphotonId_(*photon,event) ) {
+	  selectedWMuNuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( wmunugHandle, 
+														  iwmunug - wmunugBegin ) ) );
+	  selectedWGammaMuons_.push_back( reco::ShallowClonePtrCandidate( wmunu->daughter(0)->masterClonePtr() ) );
+	  selectedWGammaMETs_.push_back( reco::ShallowClonePtrCandidate( wmunu->daughter(1)->masterClonePtr() ) );
+	  selectedWGammaMuonPlusMETs_.push_back( reco::ShallowClonePtrCandidate( iwmunug->daughter(0)->masterClonePtr() ) );
+	  selectedWGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( iwmunug->daughter(1)->masterClonePtr() ) );
+	}
+      }
+    }
+    
+    if(!ignoreCut("WENuGamma")) {
+      for ( std::vector<reco::CompositeCandidate>::const_iterator wenugBegin = wenugHandle->begin(),
+	      wenugEnd = wenugHandle->end(), iwenug = wenugBegin;
+	    iwenug != wenugEnd; ++iwenug ) {
+	const reco::CompositeCandidate *wenu = dynamic_cast<const reco::CompositeCandidate*>(iwenug->daughter(0)->masterClonePtr().get());
+	const pat::Photon *photon = dynamic_cast<const pat::Photon*>(iwenug->daughter(1)->masterClonePtr().get());
+	
+	if( leptonPlusMETId_(*wenu,event) && wgphotonId_(*photon,event) ) {
+	  selectedWENuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( wenugHandle, 
+														 iwenug - wenugBegin ) ) );
+	  selectedWGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( wenu->daughter(0)->masterClonePtr() ) );
+	  selectedWGammaMETs_.push_back( reco::ShallowClonePtrCandidate( wenu->daughter(1)->masterClonePtr() ) );
+	  selectedWGammaElectronPlusMETs_.push_back( reco::ShallowClonePtrCandidate( iwenug->daughter(0)->masterClonePtr() ) );
+	  selectedWGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( iwenug->daughter(1)->masterClonePtr() ) );
+	}
+      }
+    }
+
     if(ignoreCut("== 1 Tight Photon") || 
        selectedZGammaPhotons_.size() == 1 ||
        selectedWGammaPhotons_.size() == 1) passCut(ret,"== 1 Tight Photon");
 
-
-    for ( std::vector<reco::CompositeCandidate>::const_iterator zmumugBegin = zmumugHandle->begin(),
-	    zmumugEnd = zeegHandle->end(), izmumug = zmumugBegin;
-	  izmumug != zmumugEnd; ++izmumug ) {
-      const reco::CompositeCandidate *zmumu = dynamic_cast<const reco::CompositeCandidate*>(izmumug->daughter(0)->masterClonePtr().get());
-      const pat::Photon *photon = dynamic_cast<const pat::Photon*>(izmumug->daughter(1)->masterClonePtr().get());
-
-      if( diLeptonId_(*zmumu,event) && zgphotonId_(*photon,event) ) 
-	selectedZMuMuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( zmumugHandle, 
-														izmumug - zmumugBegin ) ) );      
-    }
-    
-    //write Zee, WEnu, WMuNu, Photon + MET
-
     if(ignoreCut("Pass DiLepton Id") || diLeptonId_(event)) passCut(ret,"Pass DiLepton Id");
        
-    if(ignoreCut("Pass Lepton+MET Id") || false) passCut(ret,"Pass Lepton+MET Id");
+    if(ignoreCut("Pass Lepton+MET Id") || leptonPlusMETId_(event)) passCut(ret,"Pass Lepton+MET Id");
     
     if(ignoreCut("Pass Photon+MET Id") || false) passCut(ret,"Pass Photon+MET Id");
        

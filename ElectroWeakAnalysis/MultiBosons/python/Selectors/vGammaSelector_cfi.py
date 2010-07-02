@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 import ElectroWeakAnalysis.MultiBosons.Selectors.diLeptonSelector_cfi as diLeptonSelections
+import ElectroWeakAnalysis.MultiBosons.Selectors.leptonMETSelector_cfi as leptonMETSelections
 import ElectroWeakAnalysis.MultiBosons.Selectors.photonSelector_cfi as photonSelections
 
 sw_commissioning_selection = cms.PSet(trigSrc = cms.InputTag("TriggerResults"),
@@ -21,6 +22,7 @@ sw_commissioning_selection = cms.PSet(trigSrc = cms.InputTag("TriggerResults"),
                                       photonTrig = cms.string(""),
                                       metTrig = cms.string(""),
                                       diLeptonId = diLeptonSelections.diLepton_jpsi_selection.copy(),
+                                      leptonMETId = leptonMETSelections.leptonMET_base_selection.copy(),
                                       zGammaPhotonId = photonSelections.Jul022010_loose_selection.copy(),
                                       wGammaPhotonId = photonSelections.Jul022010_poter65_selection.copy()
                                       )
