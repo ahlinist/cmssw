@@ -9,7 +9,9 @@ diLepton_jpsi_selection = cms.PSet(trigSrc = cms.InputTag("TriggerResults"),
                                    diElectronSrc = cms.InputTag("dielectrons"),
                                    muTrig = cms.string("*Mu*"),
                                    eleTrig = cms.string(""),
-                                   muonId = muonSelections.Jun262010_jpsi_selection.copy(),
-                                   electronId = electronSelections.Jul012010_selection.copy()
+                                   muonId1 = muonSelections.Jun262010_jpsi_selection.copy(),
+                                   muonId2 = muonSelections.Jun262010_jpsi_selection.copy(),
+                                   electronId1 = electronSelections.Jul012010_selection.copy(),
+                                   electronId2 = electronSelections.Jul012010_selection.copy()
                                    )
                                    
