@@ -118,8 +118,8 @@ int main ( int argc, char ** argv )
     if(ZMuMuGammaHistos && 
        event_result[std::string("ZMuMuGamma")] &&
        select.considerCut("ZMuMuGamma")) {
-      if(muonHistos)   muonHistos->analyze(select.diLeptonSelector().selectedMuons());
-      if(diMuonHistos) diMuonHistos->analyze(select.diLeptonSelector().selectedDiMuons());
+      if(muonHistos)   muonHistos->analyze(select.selectedZGammaMuons());
+      if(diMuonHistos) diMuonHistos->analyze(select.selectedZGammaDiMuons());
       if(photonHistos) photonHistos->analyze(select.selectedZGammaPhotons());
       
       ZMuMuGammaHistos->analyze(select.selectedZMuMuGammaCands());
@@ -127,19 +127,18 @@ int main ( int argc, char ** argv )
     if(ZEEGammaHistos &&
        event_result[std::string("ZEEGamma")] &&
        select.considerCut("ZEEGamma")) {
-      if(electronHistos)   electronHistos->analyze(select.diLeptonSelector().selectedElectrons());
-      if(diElectronHistos) diElectronHistos->analyze(select.diLeptonSelector().selectedDiElectrons());
+      if(electronHistos)   electronHistos->analyze(select.selectedZGammaElectrons());
+      if(diElectronHistos) diElectronHistos->analyze(select.selectedZGammaDiElectrons());
       if(photonHistos)     photonHistos->analyze(select.selectedZGammaPhotons());
       
       ZEEGammaHistos->analyze(select.selectedZEEGammaCands());
-    }      
-    /*
+    }    
     if(WMuNuGammaHistos && 
        event_result[std::string("WMuNuGamma")] &&
        select.considerCut("WMuNuGamma")) { 
-      if(muonsHistos)        muonHistos->analyze(select.leptonPlusMETSelector().selectedMuons());
-      if(muonPlusMETHistos)  diMuonHistos->analyze(select.leptonPlusMETSelector().selectedMuonPlusMETs());
-      if(metHistos)          metHistos->analyze(select.leptonPlusMETSelector().selectedMETs());
+      if(muonHistos)        muonHistos->analyze(select.selectedWGammaMuons());
+      if(muonPlusMETHistos)  diMuonHistos->analyze(select.selectedWGammaMuonPlusMETs());
+      if(metHistos)          metHistos->analyze(select.selectedWGammaMETs());
       if(photonHistos)       photonHistos->analyze(select.selectedWGammaPhotons());
       
       WMuNuGammaHistos->analyze(select.selectedWMuNuGammaCands());
@@ -147,13 +146,14 @@ int main ( int argc, char ** argv )
     if(WENuGammaHistos && 
        event_result[std::string("WENuGamma")] &&
        select.considerCut("WENuGamma")) {
-      if(electronsHistos)        electronHistos->analyze(select.leptonPlusMETSelector().selectedElectrons());
-      if(electronPlusMETHistos)  diElectronHistos->analyze(select.leptonPlusMETSelector().selectedElectronPlusMETs());
-      if(metHistos)              metHistos->analyze(select.leptonPlusMETSelector().selectedMETs());
+      if(electronHistos)        electronHistos->analyze(select.selectedWGammaElectrons());
+      if(electronPlusMETHistos)  diElectronHistos->analyze(select.selectedWGammaElectronPlusMETs());
+      if(metHistos)              metHistos->analyze(select.selectedWGammaMETs());
       if(photonHistos)           photonHistos->analyze(select.selectedWGammaPhotons());
       
       WENuGammaHistos->analyze(select.selectedWENuGammaCands());
-    }      
+    }   
+    /*
     if(ZNuNuGammaHists && 
        event_result[std::string("ZNuNuGamma")] &&
        select.considerCut("ZNuNuGamma")) {
