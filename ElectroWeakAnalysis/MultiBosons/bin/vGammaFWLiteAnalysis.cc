@@ -197,7 +197,7 @@ int main ( int argc, char ** argv )
       ZNuNuGammaHistos->analyze(select.selectedZNuNuGammaCands());
     }
     */
-    /*
+    
     if(ZMuMuGammaHistos) {
       if(zgmuonHistos)          zgmuonHistos->analyze(select.allMuons());
       if(diMuonHistos)          diMuonHistos->analyze(select.allDiMuons());
@@ -235,7 +235,7 @@ int main ( int argc, char ** argv )
 
       ZNuNuGammaHistos->analyze(select.allZNuNuGammaCands());
     }
-    */
+    
   } // end loop over events
   
   std::cout << "Processed " << iEvent << " events." << std::endl << std::endl;
