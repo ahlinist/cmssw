@@ -467,11 +467,13 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // get pthat value and store in ntuple
-  edm::Handle<GenEventInfoProduct> genEventScale;
-  e.getByLabel("generator", genEventScale);
-  pthat_ = 0;
-  if (genEventScale->hasBinningValues() ) {
-     pthat_ = genEventScale->binningValues()[0];
+  if (!isData_) {
+    edm::Handle<GenEventInfoProduct> genEventScale;
+    e.getByLabel("generator", genEventScale);
+    pthat_ = 0;
+    if (genEventScale->hasBinningValues() ) {
+       pthat_ = genEventScale->binningValues()[0];
+    }
   }
 
   // GenParticle
