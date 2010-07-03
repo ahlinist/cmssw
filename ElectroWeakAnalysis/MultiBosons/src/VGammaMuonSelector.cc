@@ -131,6 +131,8 @@ bool VGammaMuonSelector::Jun252010Cuts( const pat::Muon& mu,
 					pat::strbitset & ret ) {
   ret.set(false);
   
+  if(!mu.innerTrack().isNonnull()) return false;
+
   double pt(mu.pt()), eta(fabs(mu.eta())), norm_chi2(mu.normChi2()), corr_d0(mu.dB()),
     relIso((mu.trackIso() + mu.caloIso())/pt);
   int pixHits(mu.innerTrack()->hitPattern().numberOfValidPixelHits()),
@@ -151,7 +153,7 @@ bool VGammaMuonSelector::Jun252010Cuts( const pat::Muon& mu,
   if(mu.muonID(TMidType_)) tkMuId = 1;
   
   if(typeMatches == cut("MuonTypeRequirements", int()) || ignoreCut("MuonTypeRequirements")) passCut(ret,"MuonTypeRequirements");
-  if(tkMuId == cut("TrackerMuonIdType", int()) || ignoreCut("TypeMuonIdType")) passCut(ret,"TrackMuonIdType");
+  if(tkMuId == cut("TrackerMuonIdType", int()) || ignoreCut("TrackerMuonIdType")) passCut(ret,"TrackerMuonIdType");
   if(pixHits > cut("minPixHits",int()) || ignoreCut("minPixHits")) passCut(ret,"minPixHits");
   if(tkHits > cut("minTkHits",int()) || ignoreCut("minTkHits")) passCut(ret,"minTkHits");
   if(corr_d0 < cut("d0", double()) || ignoreCut("d0")) passCut(ret,"d0");
@@ -171,6 +173,8 @@ bool VGammaMuonSelector::Jun262010_jpsiCuts( const pat::Muon& mu,
 					     pat::strbitset & ret ) {
   ret.set(false);
   
+  if(!mu.innerTrack().isNonnull()) return false;
+
   double pt(mu.pt()), eta(fabs(mu.eta())), norm_chi2(mu.innerTrack()->normalizedChi2()), dz(mu.innerTrack()->dz()), 
     corr_d0(mu.dB()), p(mu.p());
   int tkHits(mu.innerTrack()->found());
@@ -182,7 +186,7 @@ bool VGammaMuonSelector::Jun262010_jpsiCuts( const pat::Muon& mu,
   if(mu.muonID(TMidType_)) tkMuId = 1;
   
   if(typeMatches == cut("MuonTypeRequirements", int()) || ignoreCut("MuonTypeRequirements")) passCut(ret,"MuonTypeRequirements");
-  if(tkMuId == cut("TrackerMuonIdType", int()) || ignoreCut("TypeMuonIdType")) passCut(ret,"TrackMuonIdType");
+  if(tkMuId == cut("TrackerMuonIdType", int()) || ignoreCut("TrackerMuonIdType")) passCut(ret,"TrackerMuonIdType");
   if(tkHits > cut("minTkHits",int()) || ignoreCut("minTkHits")) passCut(ret,"minTkHits");
   if(norm_chi2 < cut("maxNormChi2", double()) || ignoreCut("maxNormChi2")) passCut(ret,"maxNormChi2");
   if(corr_d0 < cut("d0", double()) || ignoreCut("d0")) passCut(ret,"d0");

@@ -7,6 +7,7 @@ dimuons = cms.EDFilter("CandViewShallowClonePtrCombiner",
     roles = cms.vstring("1", "2") # dummy roles to be specified below
 )
 
+
 ## Define all the other combined candidates
 dielectrons      = dimuons.clone(decay = "cleanPatElectrons@+ cleanPatElectrons@-")
 electronPlusMETs = dimuons.clone(decay = "cleanPatElectrons patMETsPF")
@@ -18,7 +19,7 @@ ZEEGammaCands   = dimuons.clone(decay = "dielectrons cleanPatPhotons")
 ZMuMuGammaCands = dimuons.clone(decay = "dimuons cleanPatPhotons")
 ZNuNuGammaCands = dimuons.clone(decay = "patMETsPF cleanPatPhotons")
 
-## Specify the dauther roles
+## Specify the daughter roles
 dimuons.roles          = ["muon1", "muon2"]
 dielectrons.roles      = ["electron1", "electron2"]
 electronPlusMETs.roles = ["electron", "MET"]

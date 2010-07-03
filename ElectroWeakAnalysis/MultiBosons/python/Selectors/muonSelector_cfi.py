@@ -19,7 +19,7 @@ Jun252010_selection = cms.PSet(version = cms.string("Jun252010"),
 
 Jun262010_jpsi_selection = cms.PSet(version = cms.string("Jun262010_jpsi"),
                                     muonTypeRequirement = cms.vstring("AllTrackerMuons"),
-                                    TrackerMuonIdType = cms.string("TMLastStationAngTightCleaned"),
+                                    TrackerMuonIdType = cms.string("TMLastStationAngTight"),
                                     minPixHits = cms.uint32(0),  # not used in this selection!!
                                     minTkHits = cms.uint32(12),
                                     maxD0 = cms.double(.5),

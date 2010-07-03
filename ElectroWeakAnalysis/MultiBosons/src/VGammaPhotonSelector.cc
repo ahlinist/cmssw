@@ -149,25 +149,25 @@ bool VGammaPhotonSelector::Jul022010Cuts( const pat::Photon& pho,
 					  pat::strbitset & ret ) {
   ret.set(false);
   
-  double pt(pho.et()), eta(fabs(pho.eta()));
+  double pt(pho.et()), eta(fabs(pho.superCluster()->eta()));
   double ecaliso = pho.ecalRecHitSumEtConeDR04();
   double hcaliso = pho.hcalTowerSumEtConeDR04();
   double trkiso = pho.trkSumPtHollowConeDR04();
   double hovere = pho.hadronicOverEm();
 
-  double maxecaliso(0.0), maxhcaliso(0.0), maxtrkiso(0.0), maxhovere(0.0);
+  double maxecaliso(-1.0), maxhcaliso(-1.0), maxtrkiso(-1.0), maxhovere(-1.0);
 
-  if(pho.isEB()) {
+  if(eta < 1.442) {
     maxecaliso = barJurECALIsoConst_ + barJurECALIsoSlope_*pt;
     maxhcaliso = barTowHCALIsoConst_ + barTowHCALIsoSlope_*pt;
     maxtrkiso  = barHConeTrkIsoConst_ + barHConeTrkIsoSlope_*pt;
     maxhovere   = barMaxHOverE_;
   }
-  if(pho.isEE()) {
-     maxecaliso = endJurECALIsoConst_ + endJurECALIsoSlope_*pt;
-     maxhcaliso = endTowHCALIsoConst_ + endTowHCALIsoSlope_*pt;
-     maxtrkiso  = endHConeTrkIsoConst_ + endHConeTrkIsoSlope_*pt;
-     maxhovere   = endMaxHOverE_;
+  if(eta > 1.650) {
+    maxecaliso = endJurECALIsoConst_ + endJurECALIsoSlope_*pt;
+    maxhcaliso = endTowHCALIsoConst_ + endTowHCALIsoSlope_*pt;
+    maxtrkiso  = endHConeTrkIsoConst_ + endHConeTrkIsoSlope_*pt;
+    maxhovere   = endMaxHOverE_;
   }
 
   if(ignoreCut("PassJurrasicECALIso")  || ecaliso < maxecaliso) passCut(ret,"PassJurrasicECALIso");
@@ -192,22 +192,22 @@ bool VGammaPhotonSelector::Jul022010_poterCuts( const pat::Photon& pho,
   double hovere = pho.hadronicOverEm();
   double sigmaIetaIeta = pho.sigmaIetaIeta();
   
-  double maxecaliso(0.0), maxhcaliso(0.0), maxtrkiso(0.0), 
-    maxhovere(0.0), maxsigmaietaieta(0.0);
+  double maxecaliso(-1.0), maxhcaliso(-1.0), maxtrkiso(-1.0), 
+    maxhovere(-1.0), maxsigmaietaieta(-1.0);
 
-  if(pho.isEB()) {
+  if(eta < 1.442) {
     maxecaliso = barJurECALIsoConst_ + barJurECALIsoSlope_*pt;
     maxhcaliso = barTowHCALIsoConst_ + barTowHCALIsoSlope_*pt;
     maxtrkiso  = barHConeTrkIsoConst_ + barHConeTrkIsoSlope_*pt;
     maxhovere   = barMaxHOverE_;
     maxsigmaietaieta = barMaxSigIEtaIEta_;
   }
-  if(pho.isEE()) {
-     maxecaliso = endJurECALIsoConst_ + endJurECALIsoSlope_*pt;
-     maxhcaliso = endTowHCALIsoConst_ + endTowHCALIsoSlope_*pt;
-     maxtrkiso  = endHConeTrkIsoConst_ + endHConeTrkIsoSlope_*pt;
-     maxhovere   = endMaxHOverE_;
-     maxsigmaietaieta = endMaxSigIEtaIEta_;
+  if(eta > 1.650) {
+    maxecaliso = endJurECALIsoConst_ + endJurECALIsoSlope_*pt;
+    maxhcaliso = endTowHCALIsoConst_ + endTowHCALIsoSlope_*pt;
+    maxtrkiso  = endHConeTrkIsoConst_ + endHConeTrkIsoSlope_*pt;
+    maxhovere   = endMaxHOverE_;
+    maxsigmaietaieta = endMaxSigIEtaIEta_;
   }
 
   if(ignoreCut("PassJurrasicECALIso")  || ecaliso < maxecaliso) passCut(ret,"PassJurrasicECALIso");
@@ -234,22 +234,22 @@ bool VGammaPhotonSelector::Jul022010_poterrelCuts( const pat::Photon& pho,
   double hovere = pho.hadronicOverEm();
   double sigmaIetaIeta = pho.sigmaIetaIeta();
   
-  double maxecaliso(0.0), maxhcaliso(0.0), maxtrkiso(0.0), 
-    maxhovere(0.0), maxsigmaietaieta(0.0);
+  double maxecaliso(-1.0), maxhcaliso(-1.0), maxtrkiso(-1.0), 
+    maxhovere(-1.0), maxsigmaietaieta(-1.0);
 
-  if(pho.isEB()) {
+  if(eta < 1.442) {
     maxecaliso = barJurECALIsoConst_;
     maxhcaliso = barTowHCALIsoConst_;
     maxtrkiso  = barHConeTrkIsoConst_;
     maxhovere  = barMaxHOverE_;
     maxsigmaietaieta = barMaxSigIEtaIEta_;
   }
-  if(pho.isEE()) {
-     maxecaliso = endJurECALIsoConst_;
-     maxhcaliso = endTowHCALIsoConst_;
-     maxtrkiso  = endHConeTrkIsoConst_;
-     maxhovere   = endMaxHOverE_;
-     maxsigmaietaieta = endMaxSigIEtaIEta_;
+  if(eta > 1.650) {
+    maxecaliso = endJurECALIsoConst_;
+    maxhcaliso = endTowHCALIsoConst_;
+    maxtrkiso  = endHConeTrkIsoConst_;
+    maxhovere   = endMaxHOverE_;
+    maxsigmaietaieta = endMaxSigIEtaIEta_;
   }
 
   if(ignoreCut("PassJurrasicECALIso")  || ecaliso/pt < maxecaliso) passCut(ret,"PassJurrasicECALIso");

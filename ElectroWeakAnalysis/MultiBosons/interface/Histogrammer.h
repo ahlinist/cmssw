@@ -195,7 +195,7 @@ Histogrammer<HistObject>::analyze(const std::vector<reco::ShallowClonePtrCandida
     std::vector<reco::ShallowClonePtrCandidate>::const_iterator it, begin;
     it = begin = collection.begin();
     for (; it != collection.end(); ++it) {
-      // convert the iterator to a pointer to it's master
+      // convert the iterator to a pointer to its master
       reco::CandidatePtr ptr = it->masterClonePtr();
       const HistObject * element = dynamic_cast<const HistObject*>( ptr.get() );
 

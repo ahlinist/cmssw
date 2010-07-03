@@ -8,7 +8,7 @@ vgExtraPhotonEventContent = [
   'keep *_*5x5SuperClusters*_*_*',
   'keep *_multi5x5BasicClusters_*Endcap*_*',
   'keep *_hybridSuperClusters_*_*',
-  'keep *_correctedHybridSuperClusters_*_*',
+  'keep *_correctedHybridSuperClusters_*_*',  
 ]
 
 vgExtraAnalyzerKitEventContent = [
@@ -24,6 +24,10 @@ vgExtraAnalyzerKitEventContent = [
   'keep *_pfMet_*_*',
   'keep *_reducedEcalRecHitsEB_*_*',
   'keep *_reducedEcalRecHitsEE_*_*',
+  'keep *_globalMuons_*_*',
+  'keep *_pixelTracks_*_*',  
+  'keep *_standAloneMuons_*_*',
+  'keep *_tevMuons_*_*'
 ]
 
 vgMuMuGammaEventContent = [

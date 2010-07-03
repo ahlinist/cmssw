@@ -15,6 +15,7 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaPhotonSelector.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
+#include "DataFormats/Candidate/interface/ShallowCloneCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 
 class VGammaEventSelector : public EventSelector {
