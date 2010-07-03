@@ -168,8 +168,6 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
 
 	if( diLeptonId_(*zmumu,event) && zgphotonId_(*photon,event) ) {
 
-	  std::cout << izmumug - zmumugBegin <<  "th ZMuMu Passed Selection" << std::endl;
-
 	  selectedZMuMuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( zmumugHandle, 
 	  													  izmumug - zmumugBegin ) ) ); 
 	  selectedZGammaMuons_.push_back( reco::ShallowClonePtrCandidate( zmumu->daughter(0)->masterClonePtr() ) );
@@ -181,7 +179,6 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
     }
     
     if(!ignoreCut("ZEEGamma")) {
-      std::cout << "Selecting ZEEGamma events!" << std::endl;
       for ( std::vector<reco::CompositeCandidate>::const_iterator zeegBegin = zeegHandle->begin(),
 	      zeegEnd = zeegHandle->end(), izeeg = zeegBegin;
 	    izeeg != zeegEnd; ++izeeg ) {
@@ -190,8 +187,6 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
 
 	if( diLeptonId_(*zee,event) && zgphotonId_(*photon,event) ) {
 	  
-	  std::cout << "Passed Selection" << std::endl;
-
 	  selectedZEEGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( zeegHandle, 
 														izeeg - zeegBegin ) ) );
 	  selectedZGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( zee->daughter(0)->masterClonePtr() ) );
@@ -211,8 +206,6 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
 	const pat::Photon *photon = dynamic_cast<const pat::Photon*>(iwmunug->daughter(1)->masterClonePtr().get());
 	
 	if(  leptonPlusMETId_(*wmunu,event) && wgphotonId_(*photon,event) ) {
-
-	  std::cout << iwmunug - wmunugBegin <<  "th WMuNuGamma Passed Selection" << std::endl;
 	  
 	  selectedWMuNuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( wmunugHandle, 
 														  iwmunug - wmunugBegin ) ) );
@@ -234,8 +227,6 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
 	const pat::Photon *photon = dynamic_cast<const pat::Photon*>(iwenug->daughter(1)->masterClonePtr().get());
 		
 	if( leptonPlusMETId_(*wenu,event) && wgphotonId_(*photon,event) ) {
-
-	  std::cout << "Passed Selection" << std::endl;
 
 	  selectedWENuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( wenugHandle, 
 														 iwenug - wenugBegin ) ) );
