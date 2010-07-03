@@ -67,8 +67,7 @@ process.out.outputCommands += vgEventContent.vgExtraAnalyzerKitEventContent
 process.out.outputCommands += vgEventContent.vgCandsEventContent
 process.out.SelectEvents.SelectEvents = ["*Path"]
 
-process.out.fileName = "/tmp/veverka/VGammaSkimPAT_%devts.root" % \
-  process.maxEvents.input.value()
+process.out.fileName = "VGammaSkim.root"
 
 process.options.wantSummary = True
 
