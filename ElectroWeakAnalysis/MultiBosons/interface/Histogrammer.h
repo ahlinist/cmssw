@@ -55,7 +55,8 @@ class Histogrammer {
   edm::InputTag src_;
   const double weight_;
   /// vector of pointers to histograms
-  std::vector<ExpressionHisto<HistObject>* > vhistograms_;
+  std::vector<ExpressionHisto<HistObject>* > vhistograms_selected_;
+  std::vector<ExpressionHisto<HistObject>* > vhistograms_all_;
 };
 
 template <typename HistObject>
@@ -72,13 +73,18 @@ Histogrammer<HistObject>::Histogrammer(const edm::ParameterSet & config,
   // TODO Check if the rhs can be omitted
   //   fwlite::TFileService fs;/* = fwlite::TFileService(fileName);*/
   TFileDirectory dir = fs.mkdir(dirName);
+  TFileDirectory allh = dir.mkdir("all");
+  TFileDirectory selh = dir.mkdir("selected");
   
   for (edm::VParameterSet::const_iterator iCfg = histosCfg.begin();
        iCfg != histosCfg.end(); ++iCfg)
     {
-      ExpressionHisto<HistObject> *hist = new ExpressionHisto<HistObject>(*iCfg);
-      hist->initialize(dir);
-      vhistograms_.push_back(hist);
+      ExpressionHisto<HistObject> *hist_all = new ExpressionHisto<HistObject>(*iCfg);
+      ExpressionHisto<HistObject> *hist_sel = new ExpressionHisto<HistObject>(*iCfg);
+      hist_all->initialize(allh);
+      hist_sel->initialize(selh);
+      vhistograms_all_.push_back(hist_all);
+      vhistograms_selected_.push_back(hist_sel);
     }
   
   if(config.existsAs<edm::VParameterSet>("specializedHistograms"))
@@ -91,10 +97,13 @@ Histogrammer<HistObject>::~Histogrammer()
   
   // delete all histograms and clear the vector of pointers
   typename std::vector< ExpressionHisto<HistObject>* >::const_iterator hist;
-  for (hist = vhistograms_.begin(); hist != vhistograms_.end(); ++hist)
+  for (hist = vhistograms_all_.begin(); hist != vhistograms_all_.end(); ++hist)
+    (*hist)->~ExpressionHisto<HistObject>();
+  for (hist = vhistograms_selected_.begin(); hist != vhistograms_selected_.end(); ++hist)
     (*hist)->~ExpressionHisto<HistObject>();
 
-  vhistograms_.clear();
+  vhistograms_all_.clear();
+  vhistograms_selected_.clear();
 }
 
 template<typename HistObject>
@@ -172,7 +181,7 @@ Histogrammer<HistObject>::analyze(const std::vector<HistObject> &collection)
 {
   // loop over histograms
   typename std::vector<ExpressionHisto<HistObject>*>::const_iterator hist;
-  for (hist = vhistograms_.begin(); hist != vhistograms_.end(); ++hist)
+  for (hist = vhistograms_all_.begin(); hist != vhistograms_all_.end(); ++hist)
   {
     // loop over collection
     typename std::vector<HistObject>::const_iterator element, begin = collection.begin();
@@ -189,7 +198,7 @@ Histogrammer<HistObject>::analyze(const std::vector<reco::ShallowClonePtrCandida
 {
   // loop over histograms
   typename std::vector<ExpressionHisto<HistObject>*>::const_iterator hist;
-  for (hist = vhistograms_.begin(); hist != vhistograms_.end(); ++hist)
+  for (hist = vhistograms_selected_.begin(); hist != vhistograms_selected_.end(); ++hist)
   {
     // loop over collection
     std::vector<reco::ShallowClonePtrCandidate>::const_iterator it, begin;
