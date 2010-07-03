@@ -5,6 +5,8 @@
 ## TODO: Add various MET flavors
 ## TODO: Prune gen particles
 ## TODO: Check event size and reduce it
+## TODO: Do we want to use VBTF WLNu candidates instead of ours leptonPlusMETs?
+##       They have the acop method.
 
 
 import FWCore.ParameterSet.Config as cms
