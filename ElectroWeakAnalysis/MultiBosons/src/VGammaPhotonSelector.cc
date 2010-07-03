@@ -98,7 +98,7 @@ void VGammaPhotonSelector::init(const version& v,
 
   switch( version_ ) {
   case Jul022010:
-    ignoreCut("PassSigmaIetaIeta");
+    set("PassSigmaIetaIeta",false);
     break;
   case Jul022010_poter:
     break;

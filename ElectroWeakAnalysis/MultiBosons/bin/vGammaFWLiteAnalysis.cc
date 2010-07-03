@@ -238,6 +238,10 @@ int main ( int argc, char ** argv )
     */
   } // end loop over events
   
+  std::cout << "Processed " << iEvent << " events." << std::endl << std::endl;
+  select.printSelectors(std::cout);
+  
+
   if(zgmuonHistos)       delete zgmuonHistos;
   if(wgmuonHistos)       delete wgmuonHistos;
   if(zgelectronHistos)   delete zgelectronHistos;

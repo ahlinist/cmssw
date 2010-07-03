@@ -101,10 +101,17 @@ class VGammaEventSelector : public EventSelector {
   */
 
   void printSelectors(std::ostream & out) {
+    out << "Event Selector: " << std::endl;
+    this->print(out);
     out << "DiLepton Selector: " << std::endl;
     diLeptonId_.printSelectors(out);    
     out << "Lepton+MET Selector: " << std::endl;
     leptonPlusMETId_.printSelectors(out);
+    out << "ZGamma Photon Selector: " << std::endl;
+    zgphotonId_.print(out);
+    out << "WGamma Photon Selector: " << std::endl;
+    wgphotonId_.print(out);
+    
     /*
     out << "DiLepton Selector: " << std::endl;
     muonId_.printSelectors(out);

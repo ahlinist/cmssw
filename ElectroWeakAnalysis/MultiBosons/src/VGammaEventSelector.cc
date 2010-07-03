@@ -251,15 +251,15 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
        selectedZGammaPhotons_.size() == 1 ||
        selectedWGammaPhotons_.size() == 1) passCut(ret,"== 1 Tight Photon");
 
-    //if(ignoreCut("Pass DiLepton Id") || diLeptonId_(event)) passCut(ret,"Pass DiLepton Id");
+    if(ignoreCut("Pass DiLepton Id") || diLeptonId_(event)) passCut(ret,"Pass DiLepton Id");
        
-    //if(ignoreCut("Pass Lepton+MET Id") || leptonPlusMETId_(event)) passCut(ret,"Pass Lepton+MET Id");
+    if(ignoreCut("Pass Lepton+MET Id") || leptonPlusMETId_(event)) passCut(ret,"Pass Lepton+MET Id");
     
     if(ignoreCut("Pass Photon+MET Id") || false) passCut(ret,"Pass Photon+MET Id");
        
-    if(ignoreCut("ZMuMuGamma") || selectedZMuMuGammaCands_.size() >= 1) passCut(ret,"ZMuMuGamma");    
+    if(ignoreCut("ZMuMuGamma") || selectedZMuMuGammaCands_.size() == 1) passCut(ret,"ZMuMuGamma");    
     if(ignoreCut("ZEEGamma")   || selectedZEEGammaCands_.size() == 1)   passCut(ret,"ZEEGamma");    
-    if(ignoreCut("WMuNuGamma") || selectedWMuNuGammaCands_.size() >= 1) passCut(ret,"WMuNuGamma");
+    if(ignoreCut("WMuNuGamma") || selectedWMuNuGammaCands_.size() == 1) passCut(ret,"WMuNuGamma");
     if(ignoreCut("WENuGamma")  || selectedWENuGammaCands_.size() == 1)  passCut(ret,"WENuGamma");
     //if(ignoreCut("ZNuNuGamma") || selectedZNuNuGammaCands().size() == 1) passCut(ret,"ZNuNuGamma");
     

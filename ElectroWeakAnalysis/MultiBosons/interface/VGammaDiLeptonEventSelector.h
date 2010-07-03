@@ -29,6 +29,7 @@ class VGammaDiLeptonEventSelector : public EventSelector {
   std::vector<reco::ShallowClonePtrCandidate>       const & selectedDiElectrons() const { return selectedDiElectrons_; }
 
   void printSelectors(std::ostream & out) {
+    this->print(out);
     out << "Muon ID Selector 1: " << std::endl;
     muonId1_.print(out);
     out << "Muon ID Selector 2: " << std::endl;
@@ -60,6 +61,8 @@ class VGammaDiLeptonEventSelector : public EventSelector {
 
   VGammaMuonSelector                   muonId1_, muonId2_;
   VGammaElectronSelector               electronId1_, electronId2_;
+
+  double minMass;
   
 };
 
