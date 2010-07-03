@@ -1,43 +1,38 @@
 import FWCore.ParameterSet.Config as cms
-## TODO: check that filters work (they don't)
+## TODO: check that filters work (they seem to)
 ## TODO: check that lepton1 is the leading lepton
-## TODO: move to selectors in filter mode
 
-WENuGammaFilter = cms.EDFilter("CandViewCountFilter",
-    src = cms.InputTag("WENuGammaCands"),
-    minNumber = cms.uint32(1),
-    cut = cms.string(""), # dummy to be set below
-)
+electronPlusMETFilter = cms.EDFilter("CandViewSelector",
+  src = cms.InputTag("electronPlusMETs"),
+  cut = cms.string("daughter('electron').pt > 15"),
+  filter = cms.bool(True),
+    )
+
+muonPlusMETFilter = electronPlusMETFilter.clone(
+  src = "muonPlusMETs",
+  cut = "daughter('muon').pt > 15"
+    )
+
+dielectronFilter = electronPlusMETFilter.clone(
+  src = "dielectrons",
+  cut = "daughter('electron1').pt > 15 | daughter('electron2').pt > 15"
+    )
+
+dimuonFilter = electronPlusMETFilter.clone(
+  src = "dimuons",
+  cut = "daughter('muon1').pt > 15 | daughter('muon2').pt > 15"
+    )
+
+WENuGammaFilter = electronPlusMETFilter.clone(
+  src = "WENuGammaCands",
+  cut = "daughter('photon').pt > 10"
+    )
 
 WMuNuGammaFilter = WENuGammaFilter.clone(src = "WMuNuGammaCands")
 ZEEGammaFilter   = WENuGammaFilter.clone(src = "ZEEGammaCands")
 ZMuMuGammaFilter = WENuGammaFilter.clone(src = "ZMuMuGammaCands")
-ZNuNuGammaFilter = WENuGammaFilter.clone(src = "ZNuNuGammaCands")
 
-## Define some auxiliary dictionaries to make the rest neater
-## (cms.string doesn't support `operator+=(str)' or equivalent)
-filters = {
-  "WENuGamma" : WENuGammaFilter,
-  "WMuNuGamma": WMuNuGammaFilter,
-  "ZEEGamma"  : ZEEGammaFilter,
-  "ZMuMuGamma": ZMuMuGammaFilter,
-  "ZNuNuGamma": ZNuNuGammaFilter,
-}
-
-## Dictionary to contain python strings describing cuts
-cuts = {}
-
-## Initialize the cut strings by requiring a photon pt > 10 GeV
-for key in filters.keys(): cuts[key] = "daughter('photon').pt > 20"
-
-## Add additional requirement of leading lepton pt > 15 GeV
-cuts["WENuGamma"]  += " & daugher('electronPlusMET').daughter('electron').pt > 15"
-cuts["WMuNuGamma"] += " & daugher('muonPlusMET').daughter('muon').pt > 15"
-cuts["ZEEGamma"]   += " & daugher('dielectron').daughter('electron').pt > 15"
-cuts["ZMuMuGamma"] += " & daugher('dimuon').daughter('muon').pt > 15"
-
-## Add additional MET > 40 GeV cut for the ZNuNuGamma
-cuts["ZNuNuGamma"] += " & daughter('MET').pt > 40"
-
-## Set the filters' cut paramets
-for key in cuts.keys():  filters[key].cut = cuts[key]
+ZInvisibleGammaFilter = WENuGammaFilter.clone(
+  src = "ZInvisibleGammaCands",
+  cut = "daughter('photon').pt > 30 & daughter('MET').pt > 30"
+    )

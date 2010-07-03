@@ -2,13 +2,13 @@
 ## This is the VGamma PAT configuration + Skim for Spring10 MC full sim samples
 ###############################################################################
 
-## TODO: Add various MET flavors (done)
-## TODO: Prune gen particles
-## TODO: Check event size and reduce it
-## TODO: Do we want to use VBTF WLNu candidates instead of ours leptonPlusMETs?
-##       They have the acop method.
-## TODO: Use pfMET as default source for patMET (done)
-## TODO: Preselection (Done with TODOs)
+## TO-DO List
+## * Prune gen particles
+## * Check event size and reduce it
+## * Do we want to use VBTF WLNu candidates instead of ours leptonPlusMETs?
+##   They have the acop method.
+## * Add VBTF electron ID working points
+## * Embed photon showershape variables as user floats
 
 
 import FWCore.ParameterSet.Config as cms
@@ -34,7 +34,7 @@ process.WENuGammaPath  = cms.Path(process.patDefaultSequence * process.WENuGamma
 process.WMuNuGammaPath = cms.Path(process.patDefaultSequence * process.WMuNuGammaSequence)
 process.ZEEGammaPath   = cms.Path(process.patDefaultSequence * process.ZEEGammaSequence)
 process.ZMuMuGammaPath = cms.Path(process.patDefaultSequence * process.ZMuMuGammaSequence)
-process.ZNuNuGammaPath = cms.Path(process.patDefaultSequence * process.ZNuNuGammaSequence)
+process.ZInvisibleGammaPath = cms.Path(process.patDefaultSequence * process.ZInvisibleGammaSequence)
 
 ## PAT Trigger
 process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
@@ -57,8 +57,8 @@ F6369161-4749-DF11-8D77-003048678B8E.root
 """.split()
 process.source.fileNames = [fileNamePrefix + file for file in fileList]
 
-process.maxEvents.input = 100000
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.maxEvents.input = 10000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 ## Add VGamma event content and customize file name
 import ElectroWeakAnalysis.MultiBosons.Skimming.VgEventContent as vgEventContent
@@ -67,8 +67,8 @@ process.out.outputCommands += vgEventContent.vgExtraAnalyzerKitEventContent
 process.out.outputCommands += vgEventContent.vgCandsEventContent
 process.out.SelectEvents.SelectEvents = ["*Path"]
 
-
-process.out.fileName = "/scratch/lgray/patskim_test/VGammaSkimPAT.root"
+process.out.fileName = "/tmp/veverka/VGammaSkimPAT_%devts.root" % \
+  process.maxEvents.input.value()
 
 process.options.wantSummary = True
 
