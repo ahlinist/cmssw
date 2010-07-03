@@ -30,3 +30,15 @@ vgMuMuGammaEventContent = [
   'keep *_MuMuGammas_*_*',
   'keep *_MuMuGammasOneTrack_*_*',
 ]
+
+vgCandsEventContent = [
+  'keep *_electronPlusMETs_*_*',
+  'keep *_muonPlusMETs_*_*',
+  'keep *_dielectrons_*_*',
+  'keep *_dimuons_*_*',
+  'keep *_WENuGammaCands_*_*',
+  'keep *_WMuNuGammaCands_*_*',
+  'keep *_ZEEGammaCands_*_*',
+  'keep *_ZMuMuGammaCands_*_*',
+  'keep *_ZNuNuGammaCands_*_*',
+]
