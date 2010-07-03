@@ -21,6 +21,7 @@ VGammaLeptonMETEventSelector::VGammaLeptonMETEventSelector( edm::ParameterSet co
   push_back( "Inclusive"      );
   push_back( "Trigger"        );
   push_back( ">= 1 Lepton"  );
+  push_back( ">= 1 Tight Lepton"  );
   push_back( ">= 1 Lepton+MET" );
   push_back( "== 1 Selected Lepton+MET" );
   push_back( "minMT" , params.getParameter<double>("minMT") );
@@ -30,6 +31,7 @@ VGammaLeptonMETEventSelector::VGammaLeptonMETEventSelector( edm::ParameterSet co
   set( "Inclusive"      );
   set( "Trigger"        );
   set( ">= 1 Lepton"    );
+  set( ">= 1 Tight Lepton"    );
   set( ">= 1 Lepton+MET" );
   set( "== 1 Selected Lepton+MET" );
   set("minMT");
@@ -105,6 +107,8 @@ bool VGammaLeptonMETEventSelector::operator() ( edm::EventBase const & event, pa
     event.getByLabel (electronPlusMETTag_, electronPlusMETHandle);
     
     if(ignoreCut(">= 1 Lepton") || muonHandle->size() + electronHandle->size()) passCut(ret,">= 1 Lepton");
+
+    if(ignoreCut( ">= 1 Lepton+MET" ) || muonPlusMETHandle->size() + electronPlusMETHandle->size()) passCut(ret,">= 1 Lepton+MET");
 
     for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(),
 	    muonEnd = muonHandle->end(), imuon = muonBegin;
@@ -195,11 +199,21 @@ bool VGammaLeptonMETEventSelector::operator() ( reco::CompositeCandidate const& 
 double VGammaLeptonMETEventSelector::acop(const reco::CompositeCandidate& c) const {
   double acoplanarity(0.0);
 
+  const reco::Candidate* d1 = c.daughter(0);
+  const reco::Candidate* d2 = c.daughter(1);
+
+  acoplanarity = fabs(d1->phi() - d2->phi() - M_PI);
+
   return acoplanarity;
 }
 
 double VGammaLeptonMETEventSelector::mt(const reco::CompositeCandidate& c) const {
   double transversemass(0.0);
 
+  const reco::Candidate* d1 = c.daughter(0);
+  const reco::Candidate* d2 = c.daughter(1);
+
+  transversemass = std::sqrt( pow(d1->pt()+d2->pt(),2.) - pow(d1->px() + d2->px(),2.) - pow(d1->py() + d2->py(),2.) );
+  
   return transversemass;
 }

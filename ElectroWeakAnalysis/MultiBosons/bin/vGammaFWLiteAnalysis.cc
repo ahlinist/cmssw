@@ -142,7 +142,7 @@ int main ( int argc, char ** argv )
   //loop through each event
   unsigned iEvent=0;
   for (ev.toBegin(), iEvent=0; ! ev.atEnd() && iEvent < 100; ++ev, ++iEvent) {
-    
+        
     edm::EventBase const & event = ev;
 
     pat::strbitset event_result = select.getBitTemplate();
@@ -197,7 +197,7 @@ int main ( int argc, char ** argv )
       ZNuNuGammaHistos->analyze(select.selectedZNuNuGammaCands());
     }
     */
-    
+    /*
     if(ZMuMuGammaHistos) {
       if(zgmuonHistos)          zgmuonHistos->analyze(select.allMuons());
       if(diMuonHistos)          diMuonHistos->analyze(select.allDiMuons());
@@ -235,6 +235,7 @@ int main ( int argc, char ** argv )
 
       ZNuNuGammaHistos->analyze(select.allZNuNuGammaCands());
     }
+    */
   } // end loop over events
   
   if(zgmuonHistos)       delete zgmuonHistos;
@@ -257,5 +258,4 @@ int main ( int argc, char ** argv )
   if(WENuGammaHistos)    delete WENuGammaHistos;
   if(WMuNuGammaHistos)   delete WMuNuGammaHistos;
   
-
 }

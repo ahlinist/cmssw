@@ -57,7 +57,7 @@ F6369161-4749-DF11-8D77-003048678B8E.root
 """.split()
 process.source.fileNames = [fileNamePrefix + file for file in fileList]
 
-process.maxEvents.input = 100
+process.maxEvents.input = 100000
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 ## Add VGamma event content and customize file name
@@ -67,8 +67,8 @@ process.out.outputCommands += vgEventContent.vgExtraAnalyzerKitEventContent
 process.out.outputCommands += vgEventContent.vgCandsEventContent
 process.out.SelectEvents.SelectEvents = ["*Path"]
 
-process.out.fileName = "/tmp/veverka/VGammaSkimPAT_v2_%devts.root" % \
-  process.maxEvents.input.value()
+
+process.out.fileName = "/scratch/lgray/patskim_test/VGammaSkimPAT.root"
 
 process.options.wantSummary = True
 

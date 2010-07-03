@@ -23,12 +23,16 @@ VGammaDiLeptonEventSelector::VGammaDiLeptonEventSelector( edm::ParameterSet cons
   push_back( "Trigger"        );
   push_back( ">= 1 DiLepton"  );
   push_back( "== 1 Tight DiLepton" );
+  push_back( "minMass" , params.getParameter<double>("minMass"));
 
   // turn (almost) everything on by default
   set( "Inclusive"      );
   set( "Trigger"        );
   set( ">= 1 DiLepton"    );
   set( "== 1 Tight DiLepton" );
+  set( "minMass" );
+
+  ignoreCut( "minMass" );
 
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );  
@@ -94,7 +98,7 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
     event.getByLabel (diElectronTag_, diElectronHandle);
     
     if(ignoreCut(">= 1 DiLepton") || diMuonHandle->size() + diElectronHandle->size()) passCut(ret,">= 1 DiLepton");
-
+    
     for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(),
 	    muonEnd = muonHandle->end(), imuon = muonBegin;
 	  imuon != muonEnd; ++imuon ) 
@@ -107,7 +111,9 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
       const pat::Muon *mu1 = dynamic_cast<const pat::Muon*>(idimuon->daughter(0)->masterClonePtr().get());
       const pat::Muon *mu2 = dynamic_cast<const pat::Muon*>(idimuon->daughter(1)->masterClonePtr().get());
 
-      if( (muonId1_(*mu1,event) && muonId2_(*mu2,event)) || (muonId2_(*mu1,event) && muonId1_(*mu2,event)) ) 
+      if( ((muonId1_(*mu1,event) && muonId2_(*mu2,event)) || 
+	   (muonId2_(*mu1,event) && muonId1_(*mu2,event))) &&
+	  idimuon->mass() > cut("minMass",double()) ) 
 	selectedDiMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( diMuonHandle, idimuon - diMuonBegin ) ) );      
     }
     
@@ -116,14 +122,16 @@ bool VGammaDiLeptonEventSelector::operator() ( edm::EventBase const & event, pat
 	  ielectron != electronEnd; ++ielectron ) 
       if ( electronId1_(*ielectron,event) || electronId2_(*ielectron,event) ) 
 	selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-        
+    
     for ( std::vector<reco::CompositeCandidate>::const_iterator diElectronBegin = diElectronHandle->begin(),
 	    diElectronEnd = diElectronHandle->end(), idielectron = diElectronBegin;
 	  idielectron != diElectronEnd; ++idielectron ) {
       const pat::Electron * e1 = dynamic_cast<const pat::Electron*>(idielectron->daughter(0)->masterClonePtr().get());
       const pat::Electron * e2 = dynamic_cast<const pat::Electron*>(idielectron->daughter(1)->masterClonePtr().get());
 
-      if( (electronId1_(*e1,event) && electronId2_(*e2,event)) || (electronId2_(*e1,event) && electronId1_(*e2,event)) ) 
+      if( ((electronId1_(*e1,event) && electronId2_(*e2,event)) || 
+	   (electronId2_(*e1,event) && electronId1_(*e2,event))) &&
+	  idielectron->mass() > cut("minMass",double())) 
 	selectedDiElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( diElectronHandle, idielectron - diElectronBegin ) ) );      
     }
     
@@ -149,16 +157,18 @@ bool VGammaDiLeptonEventSelector::operator() ( reco::CompositeCandidate const& d
   const pat::Muon *mu1 = dynamic_cast<const pat::Muon*>(diLepton.daughter(0)->masterClonePtr().get());
   const pat::Muon *mu2 = dynamic_cast<const pat::Muon*>(diLepton.daughter(1)->masterClonePtr().get());
  
-  if(mu1 && mu2)
+  if(mu1 && mu2) {
     ret = ((bool)muid1(*mu1,evt) && (bool)muid2(*mu2,evt)) || ((bool)muid2(*mu1,evt) && (bool)muid1(*mu2,evt));
-
+    ret = diLepton.mass() > cut("minMass",double());
+  }
   
   const pat::Electron *e1 = dynamic_cast<const pat::Electron*>(diLepton.daughter(0)->masterClonePtr().get());
   const pat::Electron *e2 = dynamic_cast<const pat::Electron*>(diLepton.daughter(1)->masterClonePtr().get());
 
-  if(e1 && e2)
+  if(e1 && e2) {
     ret = ((bool)eid1(*e1,evt) && (bool)eid2(*e2,evt)) || ((bool)eid2(*e1,evt) && (bool)eid1(*e2,evt));
-  
+    ret = diLepton.mass() > cut("minMass",double());
+  }  
 
   return ret;
 }
