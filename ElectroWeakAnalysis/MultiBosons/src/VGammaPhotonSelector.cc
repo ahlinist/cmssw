@@ -2,18 +2,18 @@
 
 VGammaPhotonSelector::VGammaPhotonSelector( const edm::ParameterSet& conf ) {
   
-  std::string verStr(conf.getUntrackedParameter<std::string>("version"));
+  std::string verStr(conf.getParameter<std::string>("version"));
   
   version v;
   if( verStr == "Jul022010")
     v = Jul022010;
   else if( verStr == "Jul022010_poter" )
     v = Jul022010_poter;
+  else if( verStr == "Jul022010_poterrel" )
+    v = Jul022010_poterrel;
   else
-    throw cms::Exception("InvalidInput") << "\'version\' must be one of: Jun252010 Jun262010_jpsi" << std::endl;
-  
-  switch( v ) {
-  case Jul022010:
+    throw cms::Exception("InvalidInput") << "\'version\' must be one of: Jul022010 Jul022010_poter" << std::endl;
+    
     init( v,	
 	  conf.getParameter<double>("BarrelJurrasicECALIsoConst"),
 	  conf.getParameter<double>("BarrelJurrasicECALIsoSlope"),
@@ -34,55 +34,7 @@ VGammaPhotonSelector::VGammaPhotonSelector( const edm::ParameterSet& conf ) {
 	  conf.getParameter<double>("minPt"),
 	  conf.getParameter<double>("maxEta")
 	);
-  case Jul022010_poter:
-    init( v,	
-	  conf.getParameter<double>("BarrelJurrasicECALIsoConst"),
-	  conf.getParameter<double>("BarrelJurrasicECALIsoSlope"),
-	  conf.getParameter<double>("BarrelTowerHCALIsoConst"),	
-	  conf.getParameter<double>("BarrelTowerHCALIsoSlope"),	
-	  conf.getParameter<double>("BarrelMaxHadronicOverEm"),
-	  conf.getParameter<double>("BarrelHollowConeTrkIsoConst"),
-	  conf.getParameter<double>("BarrelHollowConeTrkIsoSlope"),
-	  conf.getParameter<double>("BarrelMaxSigmaIetaIeta"),
-	  conf.getParameter<double>("EndcapJurrasicECALIsoConst"),
-	  conf.getParameter<double>("EndcapJurrasicECALIsoSlope"),
-	  conf.getParameter<double>("EndcapTowerHCALIsoConst"),	
-	  conf.getParameter<double>("EndcapTowerHCALIsoSlope"),	
-	  conf.getParameter<double>("EndcapMaxHadronicOverEm"),
-	  conf.getParameter<double>("EndcapHollowConeTrkIsoConst"),
-	  conf.getParameter<double>("EndcapHollowConeTrkIsoSlope"),
-	  conf.getParameter<double>("EndcapMaxSigmaIetaIeta"),
-	  conf.getParameter<double>("minPt"),
-	  conf.getParameter<double>("maxEta")
-	);
-    break;
-  case Jul022010_poterrel:
-    init( v,	
-	  conf.getParameter<double>("BarrelJurrasicECALIsoConst"),
-	  conf.getParameter<double>("BarrelJurrasicECALIsoSlope"),
-	  conf.getParameter<double>("BarrelTowerHCALIsoConst"),	
-	  conf.getParameter<double>("BarrelTowerHCALIsoSlope"),	
-	  conf.getParameter<double>("BarrelMaxHadronicOverEm"),
-	  conf.getParameter<double>("BarrelHollowConeTrkIsoConst"),
-	  conf.getParameter<double>("BarrelHollowConeTrkIsoSlope"),
-	  conf.getParameter<double>("BarrelMaxSigmaIetaIeta"),
-	  conf.getParameter<double>("EndcapJurrasicECALIsoConst"),
-	  conf.getParameter<double>("EndcapJurrasicECALIsoSlope"),
-	  conf.getParameter<double>("EndcapTowerHCALIsoConst"),	
-	  conf.getParameter<double>("EndcapTowerHCALIsoSlope"),	
-	  conf.getParameter<double>("EndcapMaxHadronicOverEm"),
-	  conf.getParameter<double>("EndcapHollowConeTrkIsoConst"),
-	  conf.getParameter<double>("EndcapHollowConeTrkIsoSlope"),
-	  conf.getParameter<double>("EndcapMaxSigmaIetaIeta"),
-	  conf.getParameter<double>("minPt"),
-	  conf.getParameter<double>("maxEta")
-	);
-    break;
-  default:
-    break;
-  }
-  
-  
+    
 
   if( conf.exists("cutToIgnore") )
     setIgnoredCuts( conf.getParameter<std::vector<std::string> >("cutsToIgnore") );
@@ -127,6 +79,12 @@ void VGammaPhotonSelector::init(const version& v,
   endHConeTrkIsoConst_ = endHConeTrkIsoConst;
   endHConeTrkIsoSlope_ = endHConeTrkIsoSlope;
   endMaxSigIEtaIEta_ = endMaxSigIEtaIEta;
+  
+  push_back("PassJurrasicECALIso");
+  push_back("PassTowerHCALIso");
+  push_back("PassHadronicOverEm");
+  push_back("PassHollowConeTrkIso");
+  push_back("PassSigmaIetaIeta");
   push_back("minPt",minPt);
   push_back("maxEta",maxEta);
   

@@ -3,11 +3,11 @@ import ElectroWeakAnalysis.MultiBosons.Selectors.muonSelector_cfi as muonSelecti
 import ElectroWeakAnalysis.MultiBosons.Selectors.electronSelector_cfi as electronSelections
 import ElectroWeakAnalysis.MultiBosons.Selectors.metSelector_cfi as metSelections
 
-leptonMET_base_selection = cms.PSet(trigSrc = cms.InputTag("TriggerResults"),
-                                    muonSrc = cms.InputTag("selectedLayer1Muons"),
-                                    electronSrc = cms.InputTag("selectedLayer1Electrons"),
-                                    diMuonSrc = cms.InputTag("muonMETs"),
-                                    electronMETSrc = cms.InputTag("electronMETs"),
+leptonMET_base_selection = cms.PSet(trigSrc = cms.InputTag("patTriggerEvent"),
+                                    muonSrc = cms.InputTag("cleanPatMuonsTriggerMatch"),
+                                    electronSrc = cms.InputTag("cleanPatElectronsTriggerMatch"),
+                                    muonPlusMETSrc = cms.InputTag("muonPlusMETs"),
+                                    electronPlusMETSrc = cms.InputTag("electronPlusMETs"),
                                     muTrig = cms.string("HLT_Mu9"),
                                     eleTrig = cms.string(""),
                                     minMT = cms.double(50.0),

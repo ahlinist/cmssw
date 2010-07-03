@@ -2,10 +2,10 @@
 
 VGammaElectronSelector::VGammaElectronSelector( const edm::ParameterSet& conf ) {
   
-  std::string verStr(conf.getUntrackedParameter<std::string>("version"));
+  std::string verStr(conf.getParameter<std::string>("version"));
   
   version v;
-  if( verStr == "Jul0162010")
+  if( verStr == "Jul012010")
     v = Jul012010;
   else
     throw cms::Exception("InvalidInput") << "\'version\' must be one of: Jul012010" << std::endl;

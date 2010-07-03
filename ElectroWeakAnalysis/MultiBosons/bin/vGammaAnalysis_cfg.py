@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("FWLitePlots")
 
 process.inputs = cms.PSet (
-    fileNames = cms.vstring('file:/tmp/veverka/tmp.YPPUW29322/CMSSW_3_6_2/src/PhysicsTools/SelectorUtils/bin/wm_pat.root'
+    fileNames = cms.vstring('file:/scratch/lgray/patskim_test/VGammaSkimPAT.root'
                             )
 )
 
@@ -24,15 +24,18 @@ from ElectroWeakAnalysis.MultiBosons.Histogramming.mmgHistos_cfi import mmgHisto
 process.ZMuMuGamma = cms.PSet(
     muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
                           histograms = muonHistos.histograms.copy(),
-                          outputDirectory = cms.string('ZMuMuGamma/Muons')
+                          outputDirectory = cms.string('ZMuMuGamma_Muons'),
+                          eventWeight = cms.double(1.0)
                           ),
     photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
                             histograms = photonHistos.histograms.copy(),
-                            outputDirectory = cms.string('ZMuMuGamma/Photons')
+                            outputDirectory = cms.string('ZMuMuGamma_Photons'),
+                            eventWeight = cms.double(1.0)
                             ),
-    ZMuMuGammaHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
-                                histograms = photonHistos.histograms.copy(),
-                                outputDirectory = cms.string('ZMuMuGamma')
+    ZMuMuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
+                                histograms = mmgHistos.histograms.copy(),
+                                outputDirectory = cms.string('ZMuMuGamma'),
+                                eventWeight = cms.double(1.0)
                                 )
     
     )

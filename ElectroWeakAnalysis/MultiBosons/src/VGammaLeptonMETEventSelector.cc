@@ -9,8 +9,8 @@ VGammaLeptonMETEventSelector::VGammaLeptonMETEventSelector( edm::ParameterSet co
   trigTag_            (params.getParameter<edm::InputTag>("trigSrc") ),
   muonTag_            (params.getParameter<edm::InputTag>("muonSrc") ),
   electronTag_        (params.getParameter<edm::InputTag>("electronSrc") ),  
-  muonPlusMETTag_     (params.getParameter<edm::InputTag>("diMuonSrc")),  
-  electronPlusMETTag_ (params.getParameter<edm::InputTag>("diElectronSrc")), 
+  muonPlusMETTag_     (params.getParameter<edm::InputTag>("muonPlusMETSrc")),  
+  electronPlusMETTag_ (params.getParameter<edm::InputTag>("electronPlusMETSrc")), 
   muTrig_             (params.getParameter<std::string>("muTrig")),
   eleTrig_            (params.getParameter<std::string>("eleTrig")),
   muonId_             (params.getParameter<edm::ParameterSet>("muonId") ),
@@ -20,8 +20,9 @@ VGammaLeptonMETEventSelector::VGammaLeptonMETEventSelector( edm::ParameterSet co
   // make the bitset
   push_back( "Inclusive"      );
   push_back( "Trigger"        );
-  push_back( ">= 1 DiLepton"  );
-  push_back( "== 1 Tight DiLepton" );
+  push_back( ">= 1 Lepton"  );
+  push_back( ">= 1 Lepton+MET" );
+  push_back( "== 1 Selected Lepton+MET" );
   push_back( "minMT" , params.getParameter<double>("minMT") );
   push_back( "minAcoplanarity", params.getParameter<double>("minAcoplanarity") );
 
@@ -29,7 +30,7 @@ VGammaLeptonMETEventSelector::VGammaLeptonMETEventSelector( edm::ParameterSet co
   set( "Inclusive"      );
   set( "Trigger"        );
   set( ">= 1 Lepton"    );
-  set( ">= 1 Tight Lepton" );
+  set( ">= 1 Lepton+MET" );
   set( "== 1 Selected Lepton+MET" );
   set("minMT");
   set("minAcoplanarity");  
@@ -152,7 +153,8 @@ bool VGammaLeptonMETEventSelector::operator() ( edm::EventBase const & event, pa
        selectedMuons_.size() + selectedElectrons_.size() >= 1) passCut(ret,">= 1 Tight Lepton");
 
     if(ignoreCut("== 1 Selected Lepton+MET") || 
-       selectedElectronPlusMETs_.size() + selectedMuonPlusMETs_.size() == 1) passCut(ret,"== 1 Selected Lepton+MET");
+       selectedElectronPlusMETs_.size() == 1 ||
+       selectedMuonPlusMETs_.size() == 1) passCut(ret,"== 1 Selected Lepton+MET");
 
   } // end if trigger
   
