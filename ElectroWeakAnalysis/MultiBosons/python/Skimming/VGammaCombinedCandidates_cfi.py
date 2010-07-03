@@ -3,16 +3,29 @@ import FWCore.ParameterSet.Config as cms
 dimuons = cms.EDFilter("CandViewShallowClonePtrCombiner",
     checkCharge = cms.bool(False),
     cut = cms.string("mass > 0"),
-    decay = cms.string("cleanPatMuons@+ cleanPatMuons@-")
+    decay = cms.string("cleanPatMuons@+ cleanPatMuons@-"),
+    roles = cms.vstring("1", "2") # dummy roles to be specified below
 )
 
-dielectrons = dimuons.clone(decay = "cleanPatElectrons@+ cleanPatElectrons@-")
-electronPlusMETs = dimuons.clone(decay = "patMETs cleanPatElectrons")
-muonPlusMETs     = dimuons.clone(decay = "patMETs cleanPatMuons")
+## Define all the other combined candidates
+dielectrons      = dimuons.clone(decay = "cleanPatElectrons@+ cleanPatElectrons@-")
+electronPlusMETs = dimuons.clone(decay = "cleanPatElectrons patMETsPF")
+muonPlusMETs     = dimuons.clone(decay = "cleanPatMuons patMETsPF")
 
-WENuGammaCands  = dimuons.clone(decay = "cleanPatPhotons electronPlusMETs")
-WMuNuGammaCands = dimuons.clone(decay = "cleanPatPhotons muonPlusMETs")
-ZEEGammaCands   = dimuons.clone(decay = "cleanPatPhotons dielectrons")
-ZMuMuGammaCands = dimuons.clone(decay = "cleanPatPhotons dimuons")
-ZNuNuGammaCands = dimuons.clone(decay = "cleanPatPhotons patMETs")
+WENuGammaCands  = dimuons.clone(decay = "electronPlusMETs cleanPatPhotons")
+WMuNuGammaCands = dimuons.clone(decay = "muonPlusMETs cleanPatPhotons")
+ZEEGammaCands   = dimuons.clone(decay = "dielectrons cleanPatPhotons")
+ZMuMuGammaCands = dimuons.clone(decay = "dimuons cleanPatPhotons")
+ZNuNuGammaCands = dimuons.clone(decay = "patMETsPF cleanPatPhotons")
 
+## Specify the dauther roles
+dimuons.roles          = ["muon1", "muon2"]
+dielectrons.roles      = ["electron1", "electron2"]
+electronPlusMETs.roles = ["electron", "MET"]
+muonPlusMETs.roles     = ["muon", "MET"]
+
+WENuGammaCands.roles  = ["electronPlusMET", "photon"]
+WMuNuGammaCands.roles = ["muonPlusMET", "photon"]
+ZEEGammaCands.roles   = ["dielectron", "photon"]
+ZMuMuGammaCands.roles = ["dimuon", "photon"]
+ZNuNuGammaCands.roles = ["MET", "photon"]

@@ -2,11 +2,13 @@
 ## This is the VGamma PAT configuration + Skim for Spring10 MC full sim samples
 ###############################################################################
 
-## TODO: Add various MET flavors
+## TODO: Add various MET flavors (done)
 ## TODO: Prune gen particles
 ## TODO: Check event size and reduce it
 ## TODO: Do we want to use VBTF WLNu candidates instead of ours leptonPlusMETs?
 ##       They have the acop method.
+## TODO: Use pfMET as default source for patMET (done)
+## TODO: Preselection (Done with TODOs)
 
 
 import FWCore.ParameterSet.Config as cms
@@ -17,6 +19,11 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ## Spring10 MC was produced with CMSS_3_5_6 - make sure we can run on it
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
 run36xOn35xInput(process)
+
+## Add non-default MET flavors
+from PhysicsTools.PatAlgos.tools.metTools import *
+addPfMET(process , 'PF')
+addTcMET(process , 'TC')
 
 ## For consistency with the VgAnalyzerKit
 process.cleanPatPhotons.checkOverlaps.electrons.requireNoOverlaps = False
@@ -50,7 +57,7 @@ F6369161-4749-DF11-8D77-003048678B8E.root
 """.split()
 process.source.fileNames = [fileNamePrefix + file for file in fileList]
 
-process.maxEvents.input = 10000
+process.maxEvents.input = 100
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 ## Add VGamma event content and customize file name
@@ -60,6 +67,10 @@ process.out.outputCommands += vgEventContent.vgExtraAnalyzerKitEventContent
 process.out.outputCommands += vgEventContent.vgCandsEventContent
 process.out.SelectEvents.SelectEvents = ["*Path"]
 
-process.out.fileName = "/tmp/veverka/VGammaSkimPAT.root"
+process.out.fileName = "/tmp/veverka/VGammaSkimPAT_v2_%devts.root" % \
+  process.maxEvents.input.value()
 
 process.options.wantSummary = True
+
+## Add tab completion + history during inspection
+if __name__ == "__main__": import user
