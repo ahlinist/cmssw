@@ -17,6 +17,32 @@
 #include "TH2F.h"
 #include "TNtuple.h"
 #include <string>
+#include <algorithm>
+#include <vector>
+
+namespace tokenizer {
+  // stolen shamelessly from the internet
+  void tokenize(const std::string& str,
+		std::vector<std::string>& tokens,
+		const std::string& delimiters = " ")
+  {
+    // Skip delimiters at beginning.
+    std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+    // Find first "non-delimiter".
+    std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
+    
+    while (std::string::npos != pos || std::string::npos != lastPos)
+      {
+        // Found a token, add it to the vector.
+        tokens.push_back(str.substr(lastPos, pos - lastPos));
+        // Skip delimiters.  Note the "not_of"
+        lastPos = str.find_first_not_of(delimiters, pos);
+        // Find next "non-delimiter"
+        pos = str.find_first_of(delimiters, lastPos);
+      }
+  }
+  
+}
 
 template <typename HistObject>
 class Histogrammer {
@@ -72,9 +98,19 @@ Histogrammer<HistObject>::Histogrammer(const edm::ParameterSet & config,
     
   // TODO Check if the rhs can be omitted
   //   fwlite::TFileService fs;/* = fwlite::TFileService(fileName);*/
-  TFileDirectory dir = fs.mkdir(dirName);
-  TFileDirectory allh = dir.mkdir("all");
-  TFileDirectory selh = dir.mkdir("selected");
+  
+  std::vector<std::string> dirTokens;
+
+  tokenizer::tokenize(dirName,dirTokens,"/");
+
+  TFileDirectory lastdir = fs.mkdir(*(dirTokens.begin()));
+
+  for(std::vector<std::string>::const_iterator i = dirTokens.begin()+1;
+      i != dirTokens.end(); ++i)
+    lastdir = lastdir.mkdir(*i);
+  
+  TFileDirectory allh = lastdir.mkdir("all");
+  TFileDirectory selh = lastdir.mkdir("selected");
   
   for (edm::VParameterSet::const_iterator iCfg = histosCfg.begin();
        iCfg != histosCfg.end(); ++iCfg)
@@ -88,7 +124,7 @@ Histogrammer<HistObject>::Histogrammer(const edm::ParameterSet & config,
     }
   
   if(config.existsAs<edm::VParameterSet>("specializedHistograms"))
-    initSpecialHistograms(dir, config.getParameter<edm::VParameterSet>("specializedHistograms"));
+    initSpecialHistograms(selh, config.getParameter<edm::VParameterSet>("specializedHistograms"));
 }
 
 template<typename HistObject>

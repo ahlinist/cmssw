@@ -28,12 +28,12 @@ from ElectroWeakAnalysis.MultiBosons.Histogramming.mmgHistos_cfi import mmgHisto
 process.ZMuMuGamma = cms.PSet(
     muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
                           histograms = muonHistos.histograms.copy(),
-                          outputDirectory = cms.string('ZMuMuGamma_Muons'),
+                          outputDirectory = cms.string('ZMuMuGamma/Muons'),
                           eventWeight = cms.double(1.0)
                           ),
     photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
                             histograms = photonHistos.histograms.copy(),
-                            outputDirectory = cms.string('ZMuMuGamma_Photons'),
+                            outputDirectory = cms.string('ZMuMuGamma/Photons'),
                             eventWeight = cms.double(1.0)
                             ),
     ZMuMuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
@@ -47,12 +47,12 @@ process.ZMuMuGamma = cms.PSet(
 process.WMuNuGamma = cms.PSet(
     muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
                           histograms = muonHistos.histograms.copy(),
-                          outputDirectory = cms.string('WMuNuGamma_Muons'),
+                          outputDirectory = cms.string('WMuNuGamma/Muons'),
                           eventWeight = cms.double(1.0)
                           ),
     photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
                             histograms = photonHistos.histograms.copy(),
-                            outputDirectory = cms.string('WMuNuGamma_Photons'),
+                            outputDirectory = cms.string('WMuNuGamma/Photons'),
                             eventWeight = cms.double(1.0)
                             ),
     WMuNuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
