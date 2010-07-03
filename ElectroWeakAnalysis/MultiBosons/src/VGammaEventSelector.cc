@@ -19,7 +19,7 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   zmumugTag_       (params.getParameter<edm::InputTag>("zmumugSrc")),  
   wenugTag_        (params.getParameter<edm::InputTag>("wenugSrc") ),  
   wmunugTag_       (params.getParameter<edm::InputTag>("wmunugSrc")), 
-  znunugTag_       (params.getParameter<edm::InputTag>("photonMETSrc")),
+  znunugTag_       (params.getParameter<edm::InputTag>("znunugSrc")),
   muTrig_          (params.getParameter<std::string>("muTrig")),
   eleTrig_         (params.getParameter<std::string>("eleTrig")),
   photonTrig_      (params.getParameter<std::string>("photonTrig")),
@@ -57,7 +57,6 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   set( "WMuNuGamma" );
   set( "WENuGamma" );
   set( "ZNuNuGamma" );
-  
 
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );  
@@ -147,12 +146,16 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
 
     if(ignoreCut(">= 1 Photon") || photonHandle->size()) passCut(ret,">= 1 Photon");
     
-    if(!ignoreCut("WMuMuGamma")) {
+    if(!ignoreCut("ZMuMuGamma")) {
       for ( std::vector<reco::CompositeCandidate>::const_iterator zmumugBegin = zmumugHandle->begin(),
 	      zmumugEnd = zmumugHandle->end(), izmumug = zmumugBegin;
 	    izmumug != zmumugEnd; ++izmumug ) {
+	std::cout << "Getting ZMuMu Candidate" << std::endl;
 	const reco::CompositeCandidate *zmumu = dynamic_cast<const reco::CompositeCandidate*>(izmumug->daughter(0)->masterClonePtr().get());
+	std::cout << "ZMuMU pointer = " << zmumu << std::endl;
+	std::cout << "Getting Photon Candidate" << std::endl;
 	const pat::Photon *photon = dynamic_cast<const pat::Photon*>(izmumug->daughter(1)->masterClonePtr().get());
+	std::cout << "Photon pointer = " << photon << std::endl;
 	
 	if( diLeptonId_(*zmumu,event) && zgphotonId_(*photon,event) ) {
 	  selectedZMuMuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( zmumugHandle, 
@@ -251,11 +254,11 @@ void VGammaEventSelector::fillAll( edm::EventBase const & event )
   edm::Handle<std::vector<pat::Muon> > allmu;
   event.getByLabel (muonTag_, allmu);  
   allMuons_.insert(allMuons_.begin(),allmu->begin(),allmu->end());
-
+   
   edm::Handle<std::vector<pat::Electron> > alle;
   event.getByLabel (electronTag_, alle);  
   allElectrons_.insert(allElectrons_.begin(),alle->begin(),alle->end());
-  
+
   edm::Handle<std::vector<pat::MET> > allmet;
   event.getByLabel (metTag_, allmet);  
   allMETs_.insert(allMETs_.begin(),allmet->begin(),allmet->end());
@@ -265,15 +268,15 @@ void VGammaEventSelector::fillAll( edm::EventBase const & event )
   allDiMuons_.insert(allDiMuons_.begin(),alldimu->begin(),alldimu->end());
 
   edm::Handle<std::vector<reco::CompositeCandidate> > alldie;
-  event.getByLabel (dielectronTag_, allmet);  
+  event.getByLabel (dielectronTag_, alldie);  
   allDiElectrons_.insert(allDiElectrons_.begin(),alldie->begin(),alldie->end());
 
   edm::Handle<std::vector<reco::CompositeCandidate> > allmumet;
-  event.getByLabel (muonMETTag_, allmet);  
+  event.getByLabel (muonMETTag_, allmumet);  
   allMuonPlusMETs_.insert(allMuonPlusMETs_.begin(),allmumet->begin(),allmumet->end());
 
   edm::Handle<std::vector<reco::CompositeCandidate> > allemet;
-  event.getByLabel (electronMETTag_, allmet);  
+  event.getByLabel (electronMETTag_, allemet);  
   allElectronPlusMETs_.insert(allElectronPlusMETs_.begin(),allemet->begin(),allemet->end());
 
   edm::Handle<std::vector<reco::CompositeCandidate> > allzeeg;
@@ -281,18 +284,18 @@ void VGammaEventSelector::fillAll( edm::EventBase const & event )
   allZEEGammaCands_.insert(allZEEGammaCands_.begin(),allzeeg->begin(),allzeeg->end());
 
   edm::Handle<std::vector<reco::CompositeCandidate> > allzmumug;
-  event.getByLabel (zmumugTag_, allmet);  
+  event.getByLabel (zmumugTag_, allzmumug);  
   allZMuMuGammaCands_.insert(allZMuMuGammaCands_.begin(),allzmumug->begin(),allzmumug->end());
 
   edm::Handle<std::vector<reco::CompositeCandidate> > allwenug;
-  event.getByLabel (wenugTag_, allmet);  
+  event.getByLabel (wenugTag_, allwenug);  
   allWENuGammaCands_.insert(allWENuGammaCands_.begin(),allwenug->begin(),allwenug->end());
 
   edm::Handle<std::vector<reco::CompositeCandidate> > allwmunug;
-  event.getByLabel (wmunugTag_, allmet);  
+  event.getByLabel (wmunugTag_, allwmunug);  
   allWMuNuGammaCands_.insert(allWMuNuGammaCands_.begin(),allwmunug->begin(),allwmunug->end());
 
   edm::Handle<std::vector<reco::CompositeCandidate> > allznunug;
-  event.getByLabel (znunugTag_, allmet);  
+  event.getByLabel (znunugTag_, allznunug);  
   allZNuNuGammaCands_.insert(allZNuNuGammaCands_.begin(),allznunug->begin(),allznunug->end());
 }

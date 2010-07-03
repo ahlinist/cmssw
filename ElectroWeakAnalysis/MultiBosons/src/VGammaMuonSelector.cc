@@ -2,7 +2,7 @@
 
 VGammaMuonSelector::VGammaMuonSelector( const edm::ParameterSet& conf ) {
   
-  std::string verStr(conf.getUntrackedParameter<std::string>("version"));
+  std::string verStr(conf.getParameter<std::string>("version"));
   
   version v;
   if( verStr == "Jun252010")

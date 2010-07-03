@@ -145,7 +145,7 @@ int main ( int argc, char ** argv )
     
     edm::EventBase const & event = ev;
 
-    pat::strbitset event_result;
+    pat::strbitset event_result = select.getBitTemplate();
 
     select(event,event_result);
 
@@ -180,7 +180,7 @@ int main ( int argc, char ** argv )
     if(WENuGammaHistos && 
        event_result[std::string("WENuGamma")] &&
        select.considerCut("WENuGamma")) {
-      if(wgelectronHistos)         wgelectronHistos->analyze(select.selectedWGammaElectrons());
+      if(wgelectronHistos)       wgelectronHistos->analyze(select.selectedWGammaElectrons());
       if(electronPlusMETHistos)  electronPlusMETHistos->analyze(select.selectedWGammaElectronPlusMETs());
       if(wenugmetHistos)         wenugmetHistos->analyze(select.selectedWGammaMETs());
       if(wenugphotonHistos)      wenugphotonHistos->analyze(select.selectedWGammaPhotons());
