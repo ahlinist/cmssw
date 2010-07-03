@@ -24,8 +24,8 @@ VGammaLeptonMETEventSelector::VGammaLeptonMETEventSelector( edm::ParameterSet co
   push_back( ">= 1 Tight Lepton"  );
   push_back( ">= 1 Lepton+MET" );
   push_back( "== 1 Selected Lepton+MET" );
-  push_back( "minMT" , params.getParameter<double>("minMT") );
-  push_back( "minAcoplanarity", params.getParameter<double>("minAcoplanarity") );
+  minMT = params.getParameter<double>("minMT");
+  minAcoplanarity = params.getParameter<double>("minAcoplanarity");
 
   // turn (almost) everything on by default
   set( "Inclusive"      );
@@ -34,12 +34,7 @@ VGammaLeptonMETEventSelector::VGammaLeptonMETEventSelector( edm::ParameterSet co
   set( ">= 1 Tight Lepton"    );
   set( ">= 1 Lepton+MET" );
   set( "== 1 Selected Lepton+MET" );
-  set("minMT");
-  set("minAcoplanarity");  
-
-  ignoreCut("minMT");
-  ignoreCut("minAcoplanarity");
-
+  
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );  
 
@@ -125,8 +120,9 @@ bool VGammaLeptonMETEventSelector::operator() ( edm::EventBase const & event, pa
 
       if( muonId_(*mu,event) && 
 	  metId_(*met,event) &&
-	  acop(*imuonMET) > cut("minAcoplanarity",double()) &&
-	  mt(*imuonMET) > cut("minMT",double())) 
+	  acop(*imuonMET) > minAcoplanarity && 
+	  mt(*imuonMET) > minMT 
+	  )
 	selectedMuonPlusMETs_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( muonPlusMETHandle, 
 													     imuonMET - muonMETBegin ) ) );      
     }
@@ -146,8 +142,8 @@ bool VGammaLeptonMETEventSelector::operator() ( edm::EventBase const & event, pa
 
       if( electronId_(*ele,event) && 
 	  metId_(*met,event) && 
-	  acop(*ielectronMET) > cut("minAcoplanarity",double()) &&
-	  mt(*ielectronMET) > cut("minMT",double())
+	  acop(*ielectronMET) > minAcoplanarity &&
+	  mt(*ielectronMET) > minMT
 	  ) 
 	selectedElectronPlusMETs_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( electronPlusMETHandle, 
 														 ielectronMET - electronMETBegin ) ) );
@@ -181,15 +177,15 @@ bool VGammaLeptonMETEventSelector::operator() ( reco::CompositeCandidate const& 
    
   if(mu && met) {
     ret = (bool)muid(*mu,evt) && (bool)metid(*met,evt);
-    ret = (acop(leptonMET) > cut("minAcoplanarity",double()));
-    ret = (mt(leptonMET)   > cut("minMT",double()));
+    ret = (acop(leptonMET) > minAcoplanarity);
+    ret = (mt(leptonMET)   > minMT);
   }
 						      
   
   if(ele && met) {
     ret = (bool)eid(*ele,evt) && (bool)metid(*met,evt);
-    ret = (acop(leptonMET) > cut("minAcoplanarity",double()));
-    ret = (mt(leptonMET)   > cut("minMT",double()));
+    ret = (acop(leptonMET) > minAcoplanarity);
+    ret = (mt(leptonMET)   > minMT);
   }
   
 
