@@ -143,23 +143,18 @@ int main ( int argc, char ** argv )
   std::cout.precision(1);
   std::cout.setf(std::ios_base::fixed,std::ios_base::floatfield);
 
-  unsigned maxEventsInput = -1;
+  long long maxEventsInput = -1;
   if (cfg->existsAs<edm::ParameterSet>("maxEvents")) {
     edm::ParameterSet maxEvents = cfg->getParameter<edm::ParameterSet>("maxEvents");
-    maxEventsInput = maxEvents.getUntrackedParameter<int>("input", -1);
+    maxEventsInput = maxEvents.getUntrackedParameter<long long>("input", -1);
   }
 
+  double iEvent = 0.0;
   //loop through each event
-<<<<<<< vGammaFWLiteAnalysis.cc
-  double iEvent=0.0;
-  for (ev.toBegin(), iEvent=0; ! ev.atEnd(); ++ev, ++iEvent) {
+  for (ev.toBegin(), iEvent=0; ! ev.atEnd() && (iEvent < maxEventsInput || maxEventsInput == -1); ++ev, ++iEvent) {
 
     if( (int)(1000.0*iEvent/totalEvents) % 10 == 0  )
       std::cout << "\rProcessing is " << (iEvent/totalEvents)*100.0 << "% complete..." << std::flush;
-=======
-  unsigned iEvent=0;
-  for (ev.toBegin(), iEvent=0; ! ev.atEnd() && iEvent < maxEventsInput; ++ev, ++iEvent) {
->>>>>>> 1.12
         
     edm::EventBase const & event = ev;
 
