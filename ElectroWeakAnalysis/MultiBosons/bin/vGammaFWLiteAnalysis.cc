@@ -16,6 +16,7 @@
 #include "Math/GenVector/PxPyPzM4D.h"
 
 #include <iostream>
+#include <iomanip>
 #include <cmath>      //necessary for absolute function fabs()
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
@@ -138,6 +139,9 @@ int main ( int argc, char ** argv )
   // This object 'event' is used both to get all information from the
   // event as well as to store histograms, etc.
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
+  double totalEvents = ev.size();
+  std::cout.precision(1);
+  std::cout.setf(std::ios_base::fixed,std::ios_base::floatfield);
 
   unsigned maxEventsInput = -1;
   if (cfg->existsAs<edm::ParameterSet>("maxEvents")) {
@@ -146,8 +150,16 @@ int main ( int argc, char ** argv )
   }
 
   //loop through each event
+<<<<<<< vGammaFWLiteAnalysis.cc
+  double iEvent=0.0;
+  for (ev.toBegin(), iEvent=0; ! ev.atEnd(); ++ev, ++iEvent) {
+
+    if( (int)(1000.0*iEvent/totalEvents) % 10 == 0  )
+      std::cout << "\rProcessing is " << (iEvent/totalEvents)*100.0 << "% complete..." << std::flush;
+=======
   unsigned iEvent=0;
   for (ev.toBegin(), iEvent=0; ! ev.atEnd() && iEvent < maxEventsInput; ++ev, ++iEvent) {
+>>>>>>> 1.12
         
     edm::EventBase const & event = ev;
 
@@ -244,7 +256,8 @@ int main ( int argc, char ** argv )
     
   } // end loop over events
   
-  std::cout << "Processed " << iEvent << " events." << std::endl << std::endl;
+  std::cout << "\rProcessing is 100.0% complete..." << std::flush;      
+  std::cout << "\r-->Done processing!             " << std::endl; 
   select.printSelectors(std::cout);
   
 

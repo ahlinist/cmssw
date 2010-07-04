@@ -61,8 +61,9 @@ fileList = """
 """.split()
 process.source.fileNames = [fileNamePrefix + file for file in fileList]
 
-process.maxEvents.input = 10000
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.maxEvents.input = -1
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+
 
 ## Add VGamma event content and customize file name
 import ElectroWeakAnalysis.MultiBosons.Skimming.VgEventContent as vgEventContent

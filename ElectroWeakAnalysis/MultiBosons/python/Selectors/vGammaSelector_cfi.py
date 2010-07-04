@@ -3,7 +3,8 @@ import ElectroWeakAnalysis.MultiBosons.Selectors.diLeptonSelector_cfi as diLepto
 import ElectroWeakAnalysis.MultiBosons.Selectors.leptonMETSelector_cfi as leptonMETSelections
 import ElectroWeakAnalysis.MultiBosons.Selectors.photonSelector_cfi as photonSelections
 
-sw_commissioning_selection = cms.PSet(trigSrc = cms.InputTag("patTriggerEvent"),
+sw_commissioning_selection = cms.PSet(verbose_output = cms.bool(False),
+                                      trigSrc = cms.InputTag("patTriggerEvent"),
                                       muonSrc = cms.InputTag("cleanPatMuonsTriggerMatch"),
                                       electronSrc = cms.InputTag("cleanPatElectronsTriggerMatch"),
                                       photonSrc = cms.InputTag("cleanPatPhotonsTriggerMatch"),
