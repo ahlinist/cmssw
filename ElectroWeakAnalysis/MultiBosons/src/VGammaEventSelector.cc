@@ -6,6 +6,7 @@ using namespace std;
 
 VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   EventSelector(),
+  verbose_         (params.getParameter<bool>("verbose_output") ),
   trigTag_         (params.getParameter<edm::InputTag>("trigSrc") ),
   muonTag_         (params.getParameter<edm::InputTag>("muonSrc") ),
   electronTag_     (params.getParameter<edm::InputTag>("electronSrc") ),
