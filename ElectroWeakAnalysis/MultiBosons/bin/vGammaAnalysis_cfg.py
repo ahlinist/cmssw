@@ -2,16 +2,44 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("FWLitePlots")
 
+pathPrefix = "rfio:/castor/cern.ch/user/v/veverka/mc/Spring10/START3X_V26-v1/PAT/ZJets-madgraph/"
+
+filelist = """
+VGammaSkim_10_1_IgX.root
+VGammaSkim_11_1_5GN.root
+VGammaSkim_12_1_tkX.root
+VGammaSkim_13_1_iW0.root
+VGammaSkim_14_1_ldS.root
+VGammaSkim_15_1_BXg.root
+VGammaSkim_16_1_her.root
+VGammaSkim_17_1_Mu7.root
+VGammaSkim_18_1_3QB.root
+VGammaSkim_19_1_aXX.root
+VGammaSkim_1_1_thG.root
+VGammaSkim_20_1_kfK.root
+VGammaSkim_21_1_Uyn.root
+VGammaSkim_22_1_dRH.root
+VGammaSkim_2_1_uRr.root
+VGammaSkim_3_1_ARY.root
+VGammaSkim_4_1_3qg.root
+VGammaSkim_5_1_6vV.root
+VGammaSkim_6_1_PM5.root
+VGammaSkim_7_1_vKk.root
+VGammaSkim_8_1_Lvr.root
+VGammaSkim_9_1_v8B.root
+""".split()
+
 process.inputs = cms.PSet (
-    fileNames = cms.vstring('file:/tmp/veverka/VGammaSkimPAT_10000evts.root'
-                            )
+    fileNames = cms.vstring( )
 )
 
-process.outputs = cms.PSet (
+process.inputs.fileNames = [pathPrefix + file for file in filelist]
+
+process.outputs = cms.PSet (   
     outputName = cms.string('analysisPlots.root')
 )
 
-process.maxEvents = cms.PSet(output = cms.untracked.int32(5) )
+#process.maxEvents = cms.PSet(output = cms.untracked.int64(5) )
 
 ## Define the selector configuration you want to use in FWLite
 from ElectroWeakAnalysis.MultiBosons.Selectors.vGammaSelector_cfi import sw_commissioning_selection
