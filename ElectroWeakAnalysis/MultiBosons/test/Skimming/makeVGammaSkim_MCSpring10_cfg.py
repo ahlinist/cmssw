@@ -18,7 +18,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 ## Spring10 MC was produced with CMSS_3_5_6 - make sure we can run on it
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
-run36xOn35xInput(process)
+run36xOn35xInput(process, genJets = "ak5GenJets")
 
 ## Add non-default MET flavors
 from PhysicsTools.PatAlgos.tools.metTools import *
@@ -46,14 +46,18 @@ switchOnTriggerMatchEmbedding(process)
 process.GlobalTag.globaltag = cms.string('START3X_V26::All')
 
 ## Input
-fileNamePrefix = "rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_5_7/RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012/"
+#fileNamePrefix = "rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_5_7/RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012/"
+fileNamePrefix = "dcap://cmsdca.fnal.gov:24137/pnfs/fnal.gov/usr/cms/WAX/11/store/mc/Spring10/ZJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0013/"
+#fileList = """
+#10B71379-4549-DF11-9D80-003048D15D22.root
+#34FD3B1D-6949-DF11-9529-0018F3D09612.root
+#4C8D7358-4449-DF11-86BB-003048678A6C.root
+#B0EF52E8-4549-DF11-91D4-003048678AE4.root
+#E0784FDE-4449-DF11-AA23-003048678C9A.root
+#F6369161-4749-DF11-8D77-003048678B8E.root
+#""".split()
 fileList = """
-10B71379-4549-DF11-9D80-003048D15D22.root
-34FD3B1D-6949-DF11-9529-0018F3D09612.root
-4C8D7358-4449-DF11-86BB-003048678A6C.root
-B0EF52E8-4549-DF11-91D4-003048678AE4.root
-E0784FDE-4449-DF11-AA23-003048678C9A.root
-F6369161-4749-DF11-8D77-003048678B8E.root
+4C6A688E-3947-DF11-942E-0030487D710F.root
 """.split()
 process.source.fileNames = [fileNamePrefix + file for file in fileList]
 
