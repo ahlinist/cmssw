@@ -139,9 +139,15 @@ int main ( int argc, char ** argv )
   // event as well as to store histograms, etc.
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
 
+  unsigned maxEventsInput = -1;
+  if (cfg->existsAs<edm::ParameterSet>("maxEvents")) {
+    edm::ParameterSet maxEvents = cfg->getParameter<edm::ParameterSet>("maxEvents");
+    maxEventsInput = maxEvents.getUntrackedParameter<int>("input", -1);
+  }
+
   //loop through each event
   unsigned iEvent=0;
-  for (ev.toBegin(), iEvent=0; ! ev.atEnd() && iEvent < 100; ++ev, ++iEvent) {
+  for (ev.toBegin(), iEvent=0; ! ev.atEnd() && iEvent < maxEventsInput; ++ev, ++iEvent) {
         
     edm::EventBase const & event = ev;
 

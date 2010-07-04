@@ -3,13 +3,15 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("FWLitePlots")
 
 process.inputs = cms.PSet (
-    fileNames = cms.vstring('file:/scratch/lgray/patskim_test/VGammaSkimPAT.root'
+    fileNames = cms.vstring('file:/tmp/veverka/VGammaSkimPAT_10000evts.root'
                             )
 )
 
 process.outputs = cms.PSet (
     outputName = cms.string('analysisPlots.root')
 )
+
+process.maxEvents = cms.PSet(output = cms.untracked.int32(5) )
 
 ## Define the selector configuration you want to use in FWLite
 from ElectroWeakAnalysis.MultiBosons.Selectors.vGammaSelector_cfi import sw_commissioning_selection
