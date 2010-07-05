@@ -33,6 +33,7 @@ makeElecTauSkimmFlag = True
 
 makeElecMuSkimmFlag = True
 
+makeWtaunuSkimmFlag = False
 
 process.dummyModule = cms.EDProducer("DummyModule")
 
@@ -70,3 +71,6 @@ if makeElecMuSkimmFlag:
     process.validation+=process.elecMuValidation    
 
 
+if makeWtaunuSkimmFlag:
+    from TauAnalysis.Skimming.skimWTauNu_cff import *
+    addWTauNuSkimm(process)
