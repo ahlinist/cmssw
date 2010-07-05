@@ -114,7 +114,7 @@ def getReportForSample(path,skimType):
             publishName=""
             dashboardLink=""
             for line in crabLog:
-                if re.search("<User Dataset Name>",line)!=None:
+                if re.search("<User Dataset Name>",line)!=None and re.search(skimType,line)!=None:
                     publishName = line.split("=")[1].rstrip("\n")
                 if re.search("CMS Dashboard:",line)!=None:
                     dashboardLink = line.split(" ")[2].rstrip("\n")
@@ -153,6 +153,8 @@ def getReportForSample(path,skimType):
                 selectionPaths = ['elecPFTauSkimPath','elecCaloTauSkimPath']
             if  re.search("elecMu",skimType)!=None:
                 selectionPaths = ['elecMuSkimPath']
+            if  re.search("wTauNu",skimType)!=None:
+                selectionPaths = ['PFTauNuSkimPath','CaloTauNuSkimPath']
                                             
             fileListTmp = os.listdir(path+"/"+crabDir+"/res/")
             fileList = []
@@ -190,7 +192,7 @@ def getReportForSample(path,skimType):
             fileName = "TWiki_"+skimType+".txt"
             f = open(fileName,"a")
             
-            f.write("<tr> <td>[[https://cmsweb.cern.ch/dbs_discovery/aSearch?caseSensitive=on&userMode=user&sortOrder=desc&sortName=&grid=1&method=dbsapi&dbsInst="+dbsInst+"&userInput=find+dataset+where+dataset+like+*"+dbsDatasetName+"*+and+dataset.status+like+VALID*]["+publishName+"]]"
+            f.write("<tr> <td>[[https://cmsweb.cern.ch/dbs_discovery/aSearch?caseSensitive=on&userMode=user&sortOrder=desc&sortName=&grid=1&method=dbsapi&dbsInst="+dbsInst+"&userInput=find+dataset+where+dataset+like+*"+dbsDatasetName+"*"+skimType+"*+and+dataset.status+like+VALID*]["+publishName+"]]"
                     + "</td> <td>" + "[["+dashboardLink+"][Link]]"
                     + "</td> <td>" + "[[https://cmsweb.cern.ch/filemover/]["+storage_element+"]]"
                     + "</td> <td>" + outputString
@@ -199,15 +201,158 @@ def getReportForSample(path,skimType):
 ##################
 ##################
 
-
-rootPath = "/afs/cern.ch/user/a/akalinow/scratch0/CMS/ZtauTauSkimms/Spring10/Crab/"
-#rootPath = "/home/akalinow/scratch/CMS/ZtauTauSkimms/Crab/"
+rootPath = "/home/akalinow/scratch/CMS/ZtauTauSkimms/Spring10/Crab/"
 ###
+'''
 path = rootPath+"Ztautau/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
 getReportForSample(path,"muTau")
 getReportForSample(path,"diTau")
 getReportForSample(path,"elecTau")
 getReportForSample(path,"elecMu")
+
+path = rootPath+"ZJets-madgraph/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"WJets-madgraph/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"Zee/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"Zmumu/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"TTbarJets_Tauola-madgraph/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"Wtaunu/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"QCD_BCtoE_Pt20to30/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"QCD_BCtoE_Pt30to80/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"QCD_BCtoE_Pt80to170/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"QCD_EMEnriched_Pt20to30/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"QCD_EMEnriched_Pt30to80/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"QCD_EMEnriched_Pt80to170/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"PhotonJet_Pt0to15/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"PhotonJet_Pt15to20/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"PhotonJet_Pt20to30/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"PhotonJet_Pt30to50/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"PhotonJet_Pt50to80/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"PhotonJet_Pt80to120/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"PhotonJet_Pt120to170/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"PhotonJet_Pt170to300/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"InclusiveMu15/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"ppMuX/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"diTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"QCD_Pt-20_MuEnrichedPt10_7TeV-pythia6/Spring10-START3X_V26-v1/GEN-SIM-RECO/"
+getReportForSample(path,"muTau")
+getReportForSample(path,"elecTau")
+getReportForSample(path,"elecMu")
+
+path = rootPath+"WtaunuSkimm/Wtaunu/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"wTauNu")
+
+path = rootPath+"WtaunuSkimm/QCD_Pt15_BiasedTau/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/"
+getReportForSample(path,"wTauNu")
+'''
+
 
 
 
