@@ -17,9 +17,8 @@ process.options = cms.untracked.PSet(
 )
 
 ### global tag
-process.GlobalTag.globaltag = "GR_R_35X_V8B::All"
-#process.GlobalTag.globaltag = "GR_R_35X_V7::All"
-#process.GlobalTag.globaltag = "GR10_P_V5::All"
+process.GlobalTag.globaltag = "GR10_P_V6::All"
+# process.GlobalTag.globaltag = "GR_R_35X_V8B::All"
 
 ### source
 process.source = cms.Source("PoolSource",
@@ -40,7 +39,7 @@ process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
 # bsc minbias and veto on beam halo
 process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39) AND NOT ((42 AND NOT 43) OR (43 AND NOT 42))')
 # set the L1MinBiasVetoBeamHalo bit
-process.L1MinBiasVetoBeamHalo = cms.Path(process.hltLevel1GTSeed)
+# process.L1MinBiasVetoBeamHalo = cms.Path(process.hltLevel1GTSeed)
 
 # this is for filtering on HLT physics bit
 process.hltPhysicsDeclared = cms.EDFilter("HLTHighLevel",
@@ -52,7 +51,7 @@ process.hltPhysicsDeclared = cms.EDFilter("HLTHighLevel",
                                  throw = cms.bool(False)  # Avoid crashes if the job happens to process runs that don't have the HLT_PhysicsDeclared (e.g. 122294)
                                  )
 # copy the PhysicsDeclared bit
-process.PhysicsDeclared = cms.Path(process.hltPhysicsDeclared)
+# process.PhysicsDeclared = cms.Path(process.hltPhysicsDeclared)
 
 # this is for filtering on HLT MinBiasBSC bit
 process.hltMinBiasBSC = cms.EDFilter("HLTHighLevel",
@@ -64,7 +63,7 @@ process.hltMinBiasBSC = cms.EDFilter("HLTHighLevel",
                                      throw = cms.bool(True)
                                      )
 # copy the MinBiasBSC bit
-process.MinBiasBSC = cms.Path(process.hltMinBiasBSC)
+# process.MinBiasBSC = cms.Path(process.hltMinBiasBSC)
 
 # filter on good vertex
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
@@ -74,7 +73,7 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            maxd0 = cms.double(2)	
                                            )
 # set the PrimaryVertex bit
-process.PrimaryVertex = cms.Path(process.primaryVertexFilter)
+# process.PrimaryVertex = cms.Path(process.primaryVertexFilter)
  
 # filter to remove scraping ("monster") events
 process.scrapingFilter = cms.EDFilter("FilterOutScraping",
@@ -84,7 +83,7 @@ process.scrapingFilter = cms.EDFilter("FilterOutScraping",
                                       thresh = cms.untracked.double(0.25)
                                       )
 # set the Scraping bit
-process.Scraping = cms.Path(process.scrapingFilter)
+# process.Scraping = cms.Path(process.scrapingFilter)
 
 ###############################################
 
@@ -104,13 +103,25 @@ process.selectedEvents = cms.EDFilter("CandViewCountFilter",
     minNumber = cms.uint32(1),
 ) 
 
+### test new CSCTF matching
+process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
+process.load("MuonAnalysis.MuonAssociators.muonL1MatchExtended_cfi")
+process.muonL1MatchExtended.muons = "mergedMuons"
+from MuonAnalysis.MuonAssociators.muonL1MatchExtended_cfi import addUserData as addMuonL1MatchExtended
+addMuonL1MatchExtended(process.patMuonsWithoutTrigger, addExtraInfo=True)
+process.patMuonSequence.replace(process.patMuonsWithoutTrigger,
+    process.csctfDigis +
+    process.muonL1MatchExtended +
+    process.patMuonsWithoutTrigger
+)
+
 ### path
 process.Onia2MuMuPatTrkTrk = cms.Path(
         # process.hltLevel1GTSeed +
         # process.hltPhysicsDeclared +
         # process.hltMinBiasBSC +
-        # process.primaryVertexFilter +
-        # process.scrapingFilter +
+        process.primaryVertexFilter +
+        process.scrapingFilter +
         process.patMuonSequence +     # produce PAT muons for Onia2MuMu (includes merging with CaloMuons)
         process.onia2MuMuPatTrkTrk # +  # make J/Psi's (inclusively down to tracker+tracker)
         # process.selectedEvents        # select events with J/Psi's
@@ -119,7 +130,7 @@ process.Onia2MuMuPatTrkTrk = cms.Path(
 
 ### output
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('onia2MuMuPATData.root'),
+    fileName = cms.untracked.string('testNewCSCTF_data.root'),
     outputCommands = cms.untracked.vstring('drop *',
         'keep patCompositeCandidates_*__SkimmingOnia2MuMuPAT', ## PAT di-muons
         'keep patMuons_patMuons__SkimmingOnia2MuMuPAT',        ## All PAT muons (note: not necessary if you use only the di-muons)
