@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.32 2010/06/09 08:52:33 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.33 2010/06/24 10:01:05 covarell Exp $
 //
 //
 
@@ -267,6 +267,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       // number of events
       unsigned int nEvents;
       unsigned int passedCandidates;
+      unsigned int matchOldCandidates;
+      unsigned int matchNewCandidates;
 
       // limits 
       float JpsiMassMin;
@@ -319,6 +321,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
    //now do what ever initialization is needed
   nEvents = 0;
   passedCandidates = 0;
+  matchOldCandidates = 0;
+  matchNewCandidates = 0;
 
   JpsiMassMin = 2.6;
   JpsiMassMax = 3.5;
@@ -639,6 +643,8 @@ JPsiAnalyzerPAT::endJob() {
   
   cout << "Total number of events = " << nEvents << endl;
   cout << "Total number of passed candidates = " << passedCandidates << endl;
+  cout << "DoubleMuOpen-matched candidates: standard way = " << matchOldCandidates << endl;
+  cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
 
   TFile fOut(_histfilename.c_str(), "RECREATE");
   fOut.cd();
@@ -842,6 +848,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   static const unsigned int NTRIGGERS = 5;
   // MC 8E29
   bool isTriggerMatched[NTRIGGERS];
+  bool isTriggerMatchedNew;
   string HLTLastFilters[NTRIGGERS] = {"hltDoubleMuLevel1PathL1OpenFiltered", // BIT HLT_L1DoubleMuOpen 
 				      "hltSingleMu3L3Filtered3",             // BIT HLT_Mu3  
 				      "hltSingleMu5L3Filtered5",             // BIT HLT_Mu5 
@@ -854,7 +861,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 				      "hltMu0L1MuOpenL3Filtered0",           // BIT HLT_Mu0_L1MuOpen
 				      "hltMu0TrackJpsiTrackMassFiltered"};   // BIT HLT_Mu0_Track0_Jpsi */
   
-   // Trigger passed
+  // Trigger passed
 
   for (unsigned int iTr = 0; iTr<NTRIGGERS; iTr++ ) {
     const pat::TriggerObjectStandAloneCollection mu1HLTMatches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[iTr] ); 
@@ -865,6 +872,11 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       isTriggerMatched[iTr] = pass1 || pass2;
     } else {                     // double triggers here
       isTriggerMatched[iTr] = pass1 && pass2;
+    }
+    if (iTr == 0) {
+      if ( fabs(muon1->eta()) > 1.2 ) pass1 = (pass1 || muon1->userInt("muonL1MatchExtended") > 0);
+      if ( fabs(muon2->eta()) > 1.2 ) pass2 = (pass2 || muon2->userInt("muonL1MatchExtended") > 0);              // double triggers here
+      isTriggerMatchedNew = pass1 && pass2;
     }
   }
 
@@ -1069,6 +1081,8 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       fabs(theRapidity) > JpsiEtaMin && fabs(theRapidity) < JpsiEtaMax) {
 	
     passedCandidates++;
+    if (isTriggerMatched[0]) matchOldCandidates++;
+    if (isTriggerMatchedNew) matchNewCandidates++;
     
     if (_writeOutCands) *theTextFile << iEvent.id().run() << "\t" << iEvent.luminosityBlock() << "\t" << iEvent.id().event() << "\t" << theMass << "\n";
 
@@ -1078,7 +1092,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     Jpsict->setVal(theCtau);
     JpsictErr->setVal(theCtauErr);
     // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << theRapidity << endl;
-    cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
+    // cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
     trigger0->setIndex((int)isTriggerMatched[0],kTRUE);
