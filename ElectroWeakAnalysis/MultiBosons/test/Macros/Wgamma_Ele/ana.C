@@ -216,16 +216,16 @@ void ana::Loop()
         if (phohasPixelSeed[a] == 1) continue;
         if (phoEt[a] < pho_Pt) continue;
         if (fabs(phoSCEta[a]) > 2.5) continue;
-        if (fabs(phoSCEta[a]) > 1.442 && fabs(phoSCEta[a]) < 1.56) continue;
+        if (fabs(phoSCEta[a]) > 1.4442 && fabs(phoSCEta[a]) < 1.56) continue;
         if (file_Index == 5 && fabs(phoGenMomPID[a]) <= 22) continue;
         if (file_Index == 6 && fabs(phoGenMomPID[a]) <= 22) continue;
         pho_num += 1;
 
-        if (fabs(phoSCEta[a]) < 1.442 && (phoEcalIsoDR04[a]-0.004*phoEt[a]) > 2.6) continue;
-        if (fabs(phoSCEta[a]) < 1.442 && (phoHcalIsoDR04[a]-0.001*phoEt[a]) > 50) continue;
-        if (fabs(phoSCEta[a]) < 1.442 && (phoTrkIsoHollowDR04[a]-0.001*phoEt[a]) > 1.6) continue;
-        if (fabs(phoSCEta[a]) < 1.442 && phoHoverE[a] > 0.04) continue;
-        if (fabs(phoSCEta[a]) < 1.442 && phoSigmaIEtaIEta[a] > 0.012) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && (phoEcalIsoDR04[a]-0.004*phoEt[a]) > 2.6) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && (phoHcalIsoDR04[a]-0.001*phoEt[a]) > 50) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && (phoTrkIsoHollowDR04[a]-0.001*phoEt[a]) > 1.6) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && phoHoverE[a] > 0.04) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && phoSigmaIEtaIEta[a] > 0.012) continue;
 
         if (fabs(phoSCEta[a]) > 1.56 && (phoEcalIsoDR04[a]-0.004*phoEt[a]) > 50) continue;
         if (fabs(phoSCEta[a]) > 1.56 && (phoHcalIsoDR04[a]-0.001*phoEt[a]) > 1.4) continue;
@@ -317,7 +317,7 @@ void ana::Loop()
      cout<<" EleFake = "<<EleFake[a]<<endl;
      cout<<" Unknown = "<<Unknown[a]<<endl;
      cout<<" ===================================== "<<endl;
-     if (a == 0 || a == 11 || a == 12 || a ==13) continue;
+     if (a == 0) continue;
      total_bg += HLT_EleID_W_PhoID_dR_evt[a];
      total_FSR += FSR[a];
      total_ISR += ISR[a];
