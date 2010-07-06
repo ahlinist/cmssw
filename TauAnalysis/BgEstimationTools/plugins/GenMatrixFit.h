@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: GenMatrixFit.h,v 1.1 2010/06/27 14:08:48 veelken Exp $
+ * $Id: GenMatrixFit.h,v 1.2 2010/06/29 08:09:29 veelken Exp $
  *
  */
 
@@ -28,11 +28,10 @@
 #include "TauAnalysis/Core/interface/BinningBase.h"
 #include "TauAnalysis/Core/interface/BinGrid.h"
 
-#include "TauAnalysis/BgEstimationTools/interface/GenMatrix1dPdf.h"
-
 #include <RooRealVar.h>
 #include <RooAbsReal.h>
 #include <RooAbsPdf.h>
+#include <RooParametricStepFunction.h>
 #include <RooDataSet.h>
 #include <RooFitResult.h>
 
@@ -78,11 +77,10 @@ class GenMatrixFit : public edm::EDAnalyzer
 
     std::string name_;
 
-    GenMatrix1dPdf* pdf1d_;
+    RooParametricStepFunction* pdf1d_;
 
     bool fixProb_;
-    RooAbsReal* prob1_;
-    RooAbsReal* prob2_;
+    RooAbsReal* prob_;
 
 //--- data-members for adding constraints obtained from dedicated studies
 //    on the probability values to be determined by the "generalized matrix method" fit
@@ -128,21 +126,25 @@ class GenMatrixFit : public edm::EDAnalyzer
   
  private:
 
-  void beginJob(const edm::EventSetup&) {}
+  void beginJob() {}
   void analyze(const edm::Event&, const edm::EventSetup&) {}
   void endJob();
 
 //--- private auxiliary functions
+  void initialize();
   void buildFitData();
   void buildFitModel();
   void fit(int, int);
-  double compChi2red();
   void saveFitResults();
   void makeControlPlots();
+
+  double compChi2red();
 
   void print(std::ostream&);
 
 //--- configuration parameters 
+  edm::ParameterSet cfg_;
+  
   std::string dqmDirectory_data_;
   std::string dqmDirectory_fitResult_;
   std::string controlPlotsFileName_;

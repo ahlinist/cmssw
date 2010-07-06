@@ -15,6 +15,7 @@
 #include <TCanvas.h>
 #include <TROOT.h>
 #include <TLegend.h>
+#include <TArrayD.h>
 
 #include <RooRealVar.h>
 #include <RooConstVar.h>
@@ -35,7 +36,7 @@ const int defaultCanvasSizeY = 600;
 
 const double maxNorm = 1.e+6;
 
-const double epsilon = 1.e+2;
+const double epsilon = 1.e-2;
 
 double getRandom()
 {
@@ -53,27 +54,18 @@ double getRandom()
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void getProbability(double probDensity1, double probDensity2, const Double_t* binBoundaries,
-		    double& prob1, double& prob2)
+double getProbability(double probDensity, const Double_t* binBoundaries)
 {
-//--- "probability" values used by GenMatrix1dPdf are in fact probability densities,
+//--- "probability" values used by RooParametricStepFunction are in fact probability densities,
 //    so need to integrate probability density over bin-width 
 
   //std::cout << "<getProbability>:" << std::endl;
-  //std::cout << " probDensity1 = " << probDensity1 << std::endl;
-  //std::cout << " probDensity2 = " << probDensity2 << std::endl;
+  //std::cout << " probDensity = " << probDensity << std::endl;
 
-  double prob1_unnormalized = (binBoundaries[1] - binBoundaries[0])*probDensity1;
-  double prob2_unnormalized = (binBoundaries[2] - binBoundaries[1])*probDensity2;
+  double prob = (binBoundaries[1] - binBoundaries[0])*probDensity;
+  //std::cout << " prob = " << prob << std::endl;
 
-  //std::cout << " prob1_unnormalized = " << prob1_unnormalized << std::endl;
-  //std::cout << " prob2_unnormalized = " << prob2_unnormalized << std::endl;
-  
-  prob1 = prob1_unnormalized/(prob1_unnormalized + prob2_unnormalized);
-  prob2 = prob2_unnormalized/(prob1_unnormalized + prob2_unnormalized);
-
-  //std::cout << " prob1 = " << prob1 << std::endl;
-  //std::cout << " prob2 = " << prob2 << std::endl;
+  return prob;
 }
 
 //
@@ -121,58 +113,43 @@ GenMatrixFit::model1dEntryType::model1dEntryType(const std::string& name,
 						 double valueProbConstraint, 
 						 double sigmaProbConstraint)
   : name_(name), 
-    applyProbConstraint_(applyProbConstraint)
+    applyProbConstraint_(applyProbConstraint),
+    pdfProbConstraint_(0),
+    meanProbConstraint_(0),
+    sigmaProbConstraint_(0)
 {
-  //std::cout << "<model1dEntryType::model1dEntryType>:" << std::endl;
-  //std::cout << " name = " << name_ << std::endl;
-  
+  std::cout << "<model1dEntryType::model1dEntryType>:" << std::endl;
+  std::cout << " name = " << name_ << std::endl;
+  std::cout << " prob = " << prob << std::endl;
+
   const Int_t numBins = 2;  
-  Double_t binBoundaries[numBins + 1];
+  TArrayD binBoundaries(numBins + 1);
   binBoundaries[0] = objVarEntry->xMin_;
+  //std::cout << " binBoundaries[0] = " << binBoundaries[0] << std::endl;
   binBoundaries[1] = objVarEntry->xBoundary_;
+  //std::cout << " binBoundaries[1] = " << binBoundaries[1] << std::endl;
   binBoundaries[2] = objVarEntry->xMax_;
+  //std::cout << " binBoundaries[2] = " << binBoundaries[2] << std::endl;
 
-//--- "probability" values used by GenMatrix1dPdf are in fact probability densities,
+//--- "probability" values used by RooParametricStepFunction are in fact probability densities,
 //    so need to devide probability by bin-width (and renormalize)
-//
-//    NOTE: from the condition 
-//
-//         1 = prob + (1 - prob) = prob1 + prob2
-//           = (binBoundaries[1] - binBoundaries[0])*probDensity1 + (binBoundaries[2] - binBoundaries[1])*probDensity2 
-// 
-//          it follows that
-//
-//         probDensity2 =                 1.                    binBoundaries[1] - binBoundaries[0] 
-//                        ----------------------------------- - ----------------------------------- * probDensity1 
-//                        binBoundaries[2] - binBoundaries[1]   binBoundaries[2] - binBoundaries[1]
-//
   double probDensity1 = prob/(binBoundaries[1] - binBoundaries[0]);
-  double probDensity2_c0 = 1./(binBoundaries[2] - binBoundaries[1]);
-  double probDensity2_c1 = (binBoundaries[1] - binBoundaries[0])/(binBoundaries[2] - binBoundaries[1]);
 
-  std::string prob1Name = std::string(name_).append("_prob1");
-  std::string prob1Title = prob1Name;
-  std::cout << "--> creating RooRealVar with name = " << prob1Name << ", start-values:" 
+  std::string probName = std::string(name_).append("_prob");
+  std::string probTitle = probName;
+  std::cout << "--> creating RooRealVar with name = " << probName << ", start-values:" 
 	    << " probability = " << prob << ", prob. density = " << probDensity1 << "..." << std::endl;
-  prob1_ = new RooRealVar(prob1Name.data(), prob1Title.data(), probDensity1, 0., 1./(binBoundaries[1] - binBoundaries[0]));
-  
-  std::string prob2Name = std::string(name_).append("_prob2");
-  std::string prob2Title = prob2Name;
-  std::ostringstream prob2Function;
-  prob2Function << probDensity2_c0 << "-" << "(" << probDensity2_c1 << "*" << prob1Name << ")";
-  std::cout << "--> creating RooFormulaVar with name = " << prob2Name << "," 
-	    << " depending on variable = " << prob1_->GetName() 
-	    << " via function = " << prob2Function.str() << "..." << std::endl;
-  prob2_ = new RooFormulaVar(prob2Name.data(), prob2Title.data(), prob2Function.str().data(), RooArgList(*prob1_));
+  prob_ = new RooRealVar(probName.data(), probTitle.data(), probDensity1, 0., 1./(binBoundaries[1] - binBoundaries[0]));
   
   std::string pdf1dName = std::string(name_).append("_pdf1d");
   std::string pdf1dTitle = pdf1dName;
   TObjArray binProbabilities;
-  binProbabilities.Add(prob1_);
-  binProbabilities.Add(prob2_);
-  std::cout << "--> creating GenMatrix1dPdf with name = " << pdf1dName.data() << ","
-	    << " depending on variables = " << prob1_->GetName() << ", " << prob2_->GetName() << std::endl;
-  pdf1d_ = new GenMatrix1dPdf(pdf1dName.data(), pdf1dTitle.data(), *objVarEntry->x_, numBins, binBoundaries, binProbabilities);
+  binProbabilities.Add(prob_);
+  std::string pdf1dArgsName = std::string(name_).append("_args");
+  RooArgList pdf1dArgs(binProbabilities, pdf1dArgsName.data());
+  std::cout << "--> creating RooParametricStepFunction with name = " << pdf1dName.data() << ","
+	    << " depending on variables = " << prob_->GetName() << std::endl;
+  pdf1d_ = new RooParametricStepFunction(pdf1dName.data(), pdf1dTitle.data(), *objVarEntry->x_, pdf1dArgs, binBoundaries, numBins);
 
   if ( applyProbConstraint_ ) {
     std::cout << "<model1dType>: constraining prob = " << valueProbConstraint << " +/- " << sigmaProbConstraint << ","
@@ -185,7 +162,7 @@ GenMatrixFit::model1dEntryType::model1dEntryType(const std::string& name,
     
     std::string pdfProbConstraintName = std::string(name_).append("_pdfProbConstraint");
     pdfProbConstraint_ = new RooGaussian(pdfProbConstraintName.data(), pdfProbConstraintName.data(), 
-					 *prob1_, *meanProbConstraint_, *sigmaProbConstraint_);
+					 *prob_, *meanProbConstraint_, *sigmaProbConstraint_);
   }
 }
 
@@ -195,8 +172,7 @@ GenMatrixFit::model1dEntryType::~model1dEntryType()
 
   delete pdf1d_;
 
-  delete prob1_;
-  delete prob2_;
+  delete prob_;
 
   delete pdfProbConstraint_;
   delete meanProbConstraint_;
@@ -207,8 +183,7 @@ void GenMatrixFit::model1dEntryType::print(std::ostream& stream) const
 {
   stream << "<model1dEntryType::print>:" << std::endl;
   stream << " name = " << name_ << std::endl;
-  stream << " prob1 = " << prob1_->getVal() << std::endl;
-  stream << " prob2 = " << prob2_->getVal() << std::endl;
+  stream << " prob = " << prob_->getVal() << std::endl;
 }
 
 //
@@ -226,7 +201,10 @@ GenMatrixFit::modelNdEntryType::modelNdEntryType(const std::string& name,
 						 const std::vector<double>& valueProbConstraint, 
 						 const std::vector<double>& sigmaProbConstraint)
   : name_(name),
-    applyNormConstraint_(applyNormConstraint)
+    applyNormConstraint_(applyNormConstraint),
+    pdfNormConstraint_(0),
+    meanNormConstraint_(0),
+    sigmaNormConstraint_(0)
 {
   //std::cout << "<modelNdEntryType::modelNdEntryType>:" << std::endl;
   //std::cout << " name = " << name_ << std::endl;
@@ -316,7 +294,7 @@ std::string GenMatrixFit::modelNdEntryType::getRegionTitle(unsigned region, cons
 	operator_string = ">=";
       }
 
-      regionTitle << varName << " " << operator_string << " " << model1dEntries_[iVar]->pdf1d_->getBinBoundaries()[0];
+      regionTitle << varName << " " << operator_string << " " << model1dEntries_[iVar]->pdf1d_->getLimits()[0];
       if ( iVar < (numVar - 1) ) regionTitle << " && "; 
     }
 
@@ -370,15 +348,14 @@ double GenMatrixFit::modelNdEntryType::getContr(unsigned region)
     for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
       model1dEntryType* model1dEntry = model1dEntries_[iVar];
 
-      const Double_t* binBoundaries = model1dEntry->pdf1d_->getBinBoundaries();
-      double prob1, prob2;
-      getProbability(model1dEntry->prob1_->getVal(), model1dEntry->prob2_->getVal(), binBoundaries, prob1, prob2);
-      
+      const Double_t* binBoundaries = model1dEntry->pdf1d_->getLimits();
+      double prob = getProbability(model1dEntry->prob_->getVal(), binBoundaries);
+            
       unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));    
       if ( region & bitValue ) 
-	contribution *= prob1;
+	contribution *= prob;
       else 
-	contribution *= prob2;
+	contribution *= (1. - prob);
     }
     
     return contribution;
@@ -411,141 +388,34 @@ void GenMatrixFit::modelNdEntryType::print(std::ostream& stream) const
 //
 
 GenMatrixFit::GenMatrixFit(const edm::ParameterSet& cfg)
-  : moduleLabel_(cfg.getParameter<std::string>("@module_label")),
+  : cfg_(cfg),
+    moduleLabel_(cfg.getParameter<std::string>("@module_label")),
     cfgError_(0)
 {
   //std::cout << "<GenMatrixFit::GenMatrixFit>:" << std::endl;
 
-//--- get binning results from DQMStore
-  edm::ParameterSet cfgData = cfg.getParameter<edm::ParameterSet>("data");
-
-  edm::ParameterSet cfgBinningService = cfgData.getParameter<edm::ParameterSet>("binningService");
-  std::string binningServicePluginType = cfgBinningService.getParameter<std::string>("pluginType");
-  binningService_ = BinningServicePluginFactory::get()->create(binningServicePluginType, cfgBinningService);
-
-  dqmDirectory_data_ = cfgData.getParameter<std::string>("dqmDirectory");
-
-  dataBinningResults_ = binningService_->loadBinningResults(dqmDirectory_data_);
-  dataBinGrid_ = dataBinningResults_->binGrid();
-
-//--- determine number of variables;
-//    for each variable, get name and and bin-edges
-  unsigned numDimensions = dataBinGrid_->dimensions();
-
-  varNames_ = dataBinGrid_->objVarNames();
-  if ( varNames_.size() != numDimensions ) {
-    edm::LogError ("GenMatrixFit") << " Number of objVarNames does not match number of dimensions !!";
-    assert(0);
-  }
-
-  std::vector<objVarEntryType*> objVarEntries_vector(numDimensions);
-
-  for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
-    const std::string& varName = varNames_[iDimension];
-
-    std::vector<double> binEdges = dataBinGrid_->binEdges(iDimension);
-
-    if ( binEdges.size() != 3 ) {
-      edm::LogError ("GenMatrixFit") << " Number of binEdges not equal to three !!";
-      assert(0);
-    }
-
-    double xMin = binEdges[0];
-    double xBoundary = binEdges[1];
-    double xMax = binEdges[2]; 
-
-    objVarEntryType* objVarEntry = new objVarEntryType(varName, xMin, xBoundary, xMax);
-    objVarEntries_[varName] = objVarEntry;
-    objVarEntries_vector[iDimension] = objVarEntry;
-  }
-
-//--- get model parameters
-//    and draw options
-  edm::ParameterSet cfgProcesses = cfg.getParameter<edm::ParameterSet>("processes");
-  processNames_ = cfgProcesses.getParameterNamesForType<edm::ParameterSet>();
-
-  for ( vstring::const_iterator processName = processNames_.begin();
-	processName != processNames_.end(); ++processName ) {
-    edm::ParameterSet cfgProcess = cfgProcesses.getParameter<edm::ParameterSet>(*processName);
-
-    double norm_initial = cfgProcess.getParameter<edm::ParameterSet>("norm").getParameter<double>("initial");
-
-    std::vector<double> prob_initial(numDimensions);
-    for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
-      std::ostringstream probName;
-      probName << "par" << " " << (iDimension + 1);
-
-      prob_initial[iDimension] = cfgProcess.getParameter<edm::ParameterSet>(probName.str()).getParameter<double>("initial");
-
-//--- WARNING: pdf does not depend on observables at all,
-//             in case probability is exactly equal to 0.50,
-//             potentially causing problems with RooFit (?)
-//
-//            --> avoid this "degenerate" case by adding random number
-//                to probability value specified by configuration parameter
-      while ( TMath::Abs(prob_initial[iDimension] - 0.50) < epsilon ) {
-	prob_initial[iDimension] += 10.*epsilon*getRandom();
-      }
-    }
-
-    bool applyNormConstraint = false;
-    double meanNormConstraint = 0.;
-    double sigmaNormConstraint = 0.;
-
-    std::vector<bool> applyProbConstraint(numDimensions);
-    std::vector<double> meanProbConstraint(numDimensions);
-    std::vector<double> sigmaProbConstraint(numDimensions);
-
-    edm::ParameterSet cfgFit = cfg.getParameter<edm::ParameterSet>("fit");
-    if ( cfgFit.exists("constraints") ) {
-      edm::ParameterSet cfgConstraints = cfgFit.getParameter<edm::ParameterSet>("constraints");
-      if ( cfgConstraints.exists(*processName) ) {
-	edm::ParameterSet cfgConstraint = cfgConstraints.getParameter<edm::ParameterSet>(*processName);
-
-	if ( cfgConstraint.exists("norm") ) {	  
-	  edm::ParameterSet cfgNormConstraint = cfgConstraint.getParameter<edm::ParameterSet>("norm");
-
-	  applyNormConstraint = true;
-	  meanNormConstraint = cfgNormConstraint.getParameter<double>("value");
-	  sigmaNormConstraint = cfgNormConstraint.getParameter<double>("uncertainty");
-	}
-
-	for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
-	  std::ostringstream probName;
-	  probName << "par" << " " << (iDimension + 1);
-
-	  if ( cfgConstraint.exists(probName.str()) ) {
-	    edm::ParameterSet cfgProbConstraint = cfgConstraint.getParameter<edm::ParameterSet>(probName.str());
-	    
-	    applyProbConstraint[iDimension] = true;
-	    meanProbConstraint[iDimension] = cfgProbConstraint.getParameter<double>("value");
-	    sigmaProbConstraint[iDimension] = cfgProbConstraint.getParameter<double>("uncertainty");
-	  }
-	}
-      }
-    }
-
-    modelNdEntries_[*processName] = new modelNdEntryType(std::string(moduleLabel_).append("_").append(*processName),
-							 objVarEntries_vector, 
-							 norm_initial, applyNormConstraint, meanNormConstraint, sigmaNormConstraint,
-							 prob_initial, applyProbConstraint, meanProbConstraint, sigmaProbConstraint);
-
-    edm::ParameterSet cfgDrawOption = cfgProcess.getParameter<edm::ParameterSet>("drawOptions");
-    drawOptions_[*processName] = new drawOptionsType(cfgDrawOption);
-  }
-
 //--- read values of configuration parameters controlling verbosity print-out
 //    generated during fitting
-  edm::ParameterSet cfgFit = cfg.getParameter<edm::ParameterSet>("fit");
+  edm::ParameterSet cfgFit = cfg_.getParameter<edm::ParameterSet>("fit");
   printLevel_ = ( cfgFit.exists("printLevel") ) ? cfgFit.getParameter<int>("printLevel") : 1;
   printWarnings_  = ( cfgFit.exists("printWarnings") ) ? cfgFit.getParameter<bool>("printWarnings") : true;
 
 //--- read configuration parameters specifying options for making control plots
-  edm::ParameterSet cfgControlPlots = cfg.getParameter<edm::ParameterSet>("output").getParameter<edm::ParameterSet>("controlPlots");
+  edm::ParameterSet cfgProcesses = cfg.getParameter<edm::ParameterSet>("processes");
+  vstring processNames = cfgProcesses.getParameterNamesForType<edm::ParameterSet>();
+  for ( vstring::const_iterator processName = processNames.begin();
+	processName != processNames.end(); ++processName ) {
+    edm::ParameterSet cfgProcess = cfgProcesses.getParameter<edm::ParameterSet>(*processName);
+    
+    edm::ParameterSet cfgDrawOption = cfgProcess.getParameter<edm::ParameterSet>("drawOptions");
+    drawOptions_[*processName] = new drawOptionsType(cfgDrawOption);
+  }
+
+  edm::ParameterSet cfgControlPlots = cfg_.getParameter<edm::ParameterSet>("output").getParameter<edm::ParameterSet>("controlPlots");
   controlPlotsFileName_ = cfgControlPlots.getParameter<std::string>("fileName");
 
 //--- read configuration parameters specifying options for saving fit results in DQMStore
-  edm::ParameterSet cfgSaveFitResults = cfg.getParameter<edm::ParameterSet>("output").getParameter<edm::ParameterSet>("fitResults");
+  edm::ParameterSet cfgSaveFitResults = cfg_.getParameter<edm::ParameterSet>("output").getParameter<edm::ParameterSet>("fitResults");
   dqmDirectory_fitResult_ = dqmDirectoryName(cfgSaveFitResults.getParameter<std::string>("dqmDirectory"));
 }
 
@@ -581,6 +451,144 @@ GenMatrixFit::~GenMatrixFit()
   delete fitResult_;
 }
 
+void GenMatrixFit::initialize()
+{
+//--- get binning results from DQMStore
+  edm::ParameterSet cfgData = cfg_.getParameter<edm::ParameterSet>("data");
+
+  edm::ParameterSet cfgBinningService = cfgData.getParameter<edm::ParameterSet>("binningService");
+  std::string binningServicePluginType = cfgBinningService.getParameter<std::string>("pluginType");
+  binningService_ = BinningServicePluginFactory::get()->create(binningServicePluginType, cfgBinningService);
+
+  dqmDirectory_data_ = cfgData.getParameter<std::string>("dqmDirectory");
+
+  dataBinningResults_ = binningService_->loadBinningResults(dqmDirectory_data_);
+  dataBinGrid_ = dataBinningResults_->binGrid();
+
+  if ( !dataBinGrid_ ) {
+    edm::LogError ("GenMatrixFit") << " Failed to retrieve binningResults !!";
+    assert(0);
+  }
+
+//--- determine number of variables;
+//    for each variable, get name and and bin-edges
+  unsigned numDimensions = dataBinGrid_->dimensions();
+
+  varNames_ = dataBinGrid_->objVarNames();
+  if ( varNames_.size() != numDimensions ) {
+    edm::LogError ("GenMatrixFit") << " Number of objVarNames does not match number of dimensions !!";
+    assert(0);
+  }
+
+  std::vector<objVarEntryType*> objVarEntries_vector(numDimensions);
+
+  for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
+    const std::string& varName = varNames_[iDimension];
+
+    std::vector<double> binEdges = dataBinGrid_->binEdges(iDimension);
+
+    if ( binEdges.size() != 3 ) {
+      edm::LogError ("GenMatrixFit") << " Number of binEdges not equal to three !!";
+      assert(0);
+    }
+
+    double xMin = binEdges[0];
+    double xBoundary = binEdges[1];
+    double xMax = binEdges[2]; 
+
+    std::string objVarEntryName = std::string(moduleLabel_).append("_").append(varName);
+    objVarEntryType* objVarEntry = new objVarEntryType(objVarEntryName, xMin, xBoundary, xMax);
+    objVarEntries_[varName] = objVarEntry;
+    objVarEntries_vector[iDimension] = objVarEntry;
+  }
+
+//--- get model parameters
+  edm::ParameterSet cfgProcesses = cfg_.getParameter<edm::ParameterSet>("processes");
+  processNames_ = cfgProcesses.getParameterNamesForType<edm::ParameterSet>();
+
+  for ( vstring::const_iterator processName = processNames_.begin();
+	processName != processNames_.end(); ++processName ) {
+    edm::ParameterSet cfgProcess = cfgProcesses.getParameter<edm::ParameterSet>(*processName);
+
+    double norm_initial = cfgProcess.getParameter<edm::ParameterSet>("norm").getParameter<double>("initial");
+
+    std::vector<double> prob_initial(numDimensions);
+    for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
+      std::ostringstream probName;
+      probName << "par" << (iDimension + 1);
+
+      prob_initial[iDimension] = cfgProcess.getParameter<edm::ParameterSet>(probName.str()).getParameter<double>("initial");
+      if ( prob_initial[iDimension] < epsilon ) {
+	edm::LogError ("GenMatrixFit") 
+	  << " Initial value = " << prob_initial[iDimension] 
+	  << " for probName = " << probName.str() << ", processName = " << (*processName) << " below " << epsilon
+	  << " --> setting initial value to " << epsilon << " !!";
+	prob_initial[iDimension] = epsilon;
+      } else if ( prob_initial[iDimension] > (1. - epsilon) ) {
+	edm::LogError ("GenMatrixFit") 
+	  << " Initial value = " << prob_initial[iDimension] 
+	  << " for probName = " << probName.str() << ", processName = " << (*processName) << " above " << (1. - epsilon)
+	  << " --> setting initial value to " << (1. - epsilon) << " !!";
+	prob_initial[iDimension] = (1. - epsilon);
+      } 
+
+//--- WARNING: pdf does not depend on observables at all,
+//             in case probability is exactly equal to 0.50,
+//             potentially causing problems with RooFit (?)
+//
+//            --> avoid this "degenerate" case by adding random number
+//                to probability value specified by configuration parameter
+      while ( !(prob_initial[iDimension] > epsilon &&
+		TMath::Abs(prob_initial[iDimension] - 0.50) > epsilon &&
+		prob_initial[iDimension] < (1. - epsilon)) ) {
+	prob_initial[iDimension] += 10.*epsilon*getRandom();
+      }
+    }
+
+    bool applyNormConstraint = false;
+    double meanNormConstraint = 0.;
+    double sigmaNormConstraint = 0.;
+
+    std::vector<bool> applyProbConstraint(numDimensions);
+    std::vector<double> meanProbConstraint(numDimensions);
+    std::vector<double> sigmaProbConstraint(numDimensions);
+
+    edm::ParameterSet cfgFit = cfg_.getParameter<edm::ParameterSet>("fit");
+    if ( cfgFit.exists("constraints") ) {
+      edm::ParameterSet cfgConstraints = cfgFit.getParameter<edm::ParameterSet>("constraints");
+      if ( cfgConstraints.exists(*processName) ) {
+	edm::ParameterSet cfgConstraint = cfgConstraints.getParameter<edm::ParameterSet>(*processName);
+
+	if ( cfgConstraint.exists("norm") ) {	  
+	  edm::ParameterSet cfgNormConstraint = cfgConstraint.getParameter<edm::ParameterSet>("norm");
+
+	  applyNormConstraint = true;
+	  meanNormConstraint = cfgNormConstraint.getParameter<double>("value");
+	  sigmaNormConstraint = cfgNormConstraint.getParameter<double>("uncertainty");
+	}
+
+	for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
+	  std::ostringstream probName;
+	  probName << "par" << (iDimension + 1);
+
+	  if ( cfgConstraint.exists(probName.str()) ) {
+	    edm::ParameterSet cfgProbConstraint = cfgConstraint.getParameter<edm::ParameterSet>(probName.str());
+	    
+	    applyProbConstraint[iDimension] = true;
+	    meanProbConstraint[iDimension] = cfgProbConstraint.getParameter<double>("value");
+	    sigmaProbConstraint[iDimension] = cfgProbConstraint.getParameter<double>("uncertainty");
+	  }
+	}
+      }
+    }
+
+    modelNdEntries_[*processName] = new modelNdEntryType(std::string(moduleLabel_).append("_").append(*processName),
+							 objVarEntries_vector, 
+							 norm_initial, applyNormConstraint, meanNormConstraint, sigmaNormConstraint,
+							 prob_initial, applyProbConstraint, meanProbConstraint, sigmaProbConstraint);
+  }
+}
+
 //-----------------------------------------------------------------------------------------------------------------------
 // build RooFit structure
 //-----------------------------------------------------------------------------------------------------------------------
@@ -588,6 +596,9 @@ GenMatrixFit::~GenMatrixFit()
 void GenMatrixFit::buildFitData()
 {
 //--- build dataset
+
+  std::cout << "<GenMatrixFit::buildFitData>:" << std::endl;
+
   std::string dataSetName = std::string(moduleLabel_).append("_dataSet");
   std::string dataSetTitle = dataSetName;
   TObjArray objVarCollection;
@@ -620,6 +631,8 @@ void GenMatrixFit::buildFitModel()
 {
 //--- build probability density function for model
 
+  std::cout << "<GenMatrixFit::buildFitModel>:" << std::endl;
+
   std::string pdfModelName = std::string(moduleLabel_).append("_pdfModel");
   std::string pdfModelTitle = pdfModelName;
   
@@ -650,6 +663,10 @@ void GenMatrixFit::fit(int printLevel, int printWarnings)
 // fit number of (pseudo)data events observed in different bins of "generalized matrix"
 // with sum of probability density functions for signal and background processes
 //-----------------------------------------------------------------------------------------------------------------------
+
+//--- load binning results from DQMStore;
+//    build structure of variables used in fit
+  initialize();
 
 //--- configure RooFit model and data structures
   buildFitData();
@@ -873,15 +890,10 @@ void GenMatrixFit::saveFitResults()
     
     for ( std::vector<model1dEntryType*>::iterator model1dEntry = modelNdEntry->second->model1dEntries_.begin();
 	  model1dEntry != modelNdEntry->second->model1dEntries_.end(); ++model1dEntry ) {
-      std::string prob1Name = std::string((*model1dEntry)->name_).append("_prob1");
-      double prob1Value, prob1ErrUp, prob1ErrDown;
-      getFitParameter((*model1dEntry)->prob1_, prob1Value, prob1ErrUp, prob1ErrDown);
-      saveFitParameter(dqmStore, dqmDirectory_fitResult_, modelNdEntry->first, prob1Name, prob1Value, prob1ErrUp, prob1ErrDown);
-
-      std::string prob2Name = std::string((*model1dEntry)->name_).append("_prob2");
-      double prob2Value, prob2ErrUp, prob2ErrDown;
-      getFitParameter((*model1dEntry)->prob2_, prob2Value, prob2ErrUp, prob2ErrDown);
-      saveFitParameter(dqmStore, dqmDirectory_fitResult_, modelNdEntry->first, prob2Name, prob2Value, prob2ErrUp, prob2ErrDown);
+      std::string probName = std::string((*model1dEntry)->name_).append("_prob");
+      double probValue, probErrUp, probErrDown;
+      getFitParameter((*model1dEntry)->prob_, probValue, probErrUp, probErrDown);
+      saveFitParameter(dqmStore, dqmDirectory_fitResult_, modelNdEntry->first, probName, probValue, probErrUp, probErrDown);
     }
   }
 }
@@ -1006,14 +1018,17 @@ void GenMatrixFit::print(std::ostream& stream)
 	modelNdEntry != modelNdEntries_.end(); ++modelNdEntry ) {
     stream << " Process = " << modelNdEntry->first << std::endl;
     stream << "  norm = " << modelNdEntry->second->norm_->getVal() << std::endl;
+
     std::vector<model1dEntryType*>& model1dEntries = modelNdEntry->second->model1dEntries_;
+
     for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
       std::ostringstream probName;
       probName << "P" << (iVar + 1);
-      const Double_t* binBoundaries = model1dEntries[iVar]->pdf1d_->getBinBoundaries();
-      double prob1, prob2;
-      getProbability(model1dEntries[iVar]->prob1_->getVal(), model1dEntries[iVar]->prob2_->getVal(), binBoundaries, prob1, prob2);
-      stream << "  " << probName.str() << " = " << prob1 << std::endl;
+
+      const Double_t* binBoundaries = model1dEntries[iVar]->pdf1d_->getLimits();
+      double prob = getProbability(model1dEntries[iVar]->prob_->getVal(), binBoundaries);
+      
+      stream << "  " << probName.str() << " = " << prob << std::endl;
      }
   }
 
