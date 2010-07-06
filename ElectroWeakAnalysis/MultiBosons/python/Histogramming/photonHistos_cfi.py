@@ -9,6 +9,6 @@ photonHistos = cms.EDAnalyzer("PatPhotonHistoAnalyzer",
 )
 
 from ElectroWeakAnalysis.MultiBosons.Histogramming.histoTools_cff import *
-setItemsToPlot(photonHistos, 3)
+setItemsToPlot(photonHistos, 3, titlePrefix = "%d hardest photon")
 
 #makePhotonHistos = cms.Sequence(photonHistos)

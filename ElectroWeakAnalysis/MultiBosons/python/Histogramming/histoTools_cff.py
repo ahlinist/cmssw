@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 def setItemsToPlot(histoAnalyzer, itemsToPlot,
-                   namePrefix="", titlePrefix="%d. hardest muon ",
+                   namePrefix="", titlePrefix="%d. hardest candidate ",
                    namePostfix="_%d", titlePostfix=""):
   for histo in histoAnalyzer.histograms:
     histo.itemsToPlot = itemsToPlot

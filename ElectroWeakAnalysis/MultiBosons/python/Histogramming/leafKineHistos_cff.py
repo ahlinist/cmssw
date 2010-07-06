@@ -20,11 +20,12 @@ etaHisto = cms.PSet(
   plotquantity = cms.untracked.string("eta")
 )
 
+import math
 phiHisto = cms.PSet(
   itemsToPlot = cms.untracked.int32(-1),
-  min = cms.untracked.double(-4.0),
-  max = cms.untracked.double(4.0),
-  nbins = cms.untracked.int32(80),
+  min = cms.untracked.double(-math.pi),
+  max = cms.untracked.double(math.pi),
+  nbins = cms.untracked.int32(100),
   name = cms.untracked.string("Phi"),
   description = cms.untracked.string("#phi"),
   plotquantity = cms.untracked.string("phi")
