@@ -24,9 +24,9 @@ tauIdEffBinningZtoMuTau_genMatrix3d = cms.PSet(
             ),
             branchName = cms.string('relMuonIso'),
             binning = cms.PSet(
-                boundaries = cms.vdouble(0.09),
+                boundaries = cms.vdouble(0.06),
                 min = cms.double(-0.01),
-                max = cms.double(1000.)
+                max = cms.double(10.)
             )
         ),
         cms.PSet(
@@ -39,7 +39,7 @@ tauIdEffBinningZtoMuTau_genMatrix3d = cms.PSet(
             binning = cms.PSet(
                 boundaries = cms.vdouble(40.),
                 min = cms.double(-0.01),
-                max = cms.double(1000.)
+                max = cms.double(100.)
             )
         )
     )
@@ -69,9 +69,9 @@ tauIdEffBinningZtoMuTau_genMatrix4d = cms.PSet(
             ),
             branchName = cms.string('relMuonIso'),
             binning = cms.PSet(
-                boundaries = cms.vdouble(0.09),
+                boundaries = cms.vdouble(0.06),
                 min = cms.double(-0.01),
-                max = cms.double(1000.)
+                max = cms.double(10.)
             )
         ),
         cms.PSet(
@@ -84,7 +84,7 @@ tauIdEffBinningZtoMuTau_genMatrix4d = cms.PSet(
             binning = cms.PSet(
                 boundaries = cms.vdouble(40.),
                 min = cms.double(-0.01),
-                max = cms.double(1000.)
+                max = cms.double(100.)
             )
         ),
         cms.PSet(
