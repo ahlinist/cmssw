@@ -132,6 +132,7 @@ bool VGammaMuonSelector::Jun252010Cuts( const pat::Muon& mu,
   ret.set(false);
   
   if(!mu.innerTrack().isNonnull()) return false;
+  if(!mu.globalTrack().isNonnull()) return false; // the basically requires a global muon.
 
   double pt(mu.pt()), eta(fabs(mu.eta())), norm_chi2(mu.normChi2()), corr_d0(mu.dB()),
     relIso((mu.trackIso() + mu.caloIso())/pt);

@@ -2,31 +2,39 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("FWLitePlots")
 
-pathPrefix = "rfio:/castor/cern.ch/user/v/veverka/mc/Spring10/START3X_V26-v1/PAT/ZJets-madgraph/"
+pathPrefix = "/scratch/lgray/vgamma_patskims/TTbarJets-madgraph/"
 
 filelist = """
-VGammaSkim_10_1_IgX.root
-VGammaSkim_11_1_5GN.root
-VGammaSkim_12_1_tkX.root
-VGammaSkim_13_1_iW0.root
-VGammaSkim_14_1_ldS.root
-VGammaSkim_15_1_BXg.root
-VGammaSkim_16_1_her.root
-VGammaSkim_17_1_Mu7.root
-VGammaSkim_18_1_3QB.root
-VGammaSkim_19_1_aXX.root
-VGammaSkim_1_1_thG.root
-VGammaSkim_20_1_kfK.root
-VGammaSkim_21_1_Uyn.root
-VGammaSkim_22_1_dRH.root
-VGammaSkim_2_1_uRr.root
-VGammaSkim_3_1_ARY.root
-VGammaSkim_4_1_3qg.root
-VGammaSkim_5_1_6vV.root
-VGammaSkim_6_1_PM5.root
-VGammaSkim_7_1_vKk.root
-VGammaSkim_8_1_Lvr.root
-VGammaSkim_9_1_v8B.root
+VGammaSkim_10_1_ZVP.root
+VGammaSkim_11_1_wx6.root
+VGammaSkim_12_1_SWz.root
+VGammaSkim_13_1_hhz.root
+VGammaSkim_15_1_35M.root
+VGammaSkim_16_1_Csq.root
+VGammaSkim_17_1_NYr.root
+VGammaSkim_18_1_Ubh.root
+VGammaSkim_19_1_XV9.root
+VGammaSkim_1_1_gjy.root
+VGammaSkim_20_1_pwS.root
+VGammaSkim_21_1_5sx.root
+VGammaSkim_22_1_aTX.root
+VGammaSkim_23_1_QDA.root
+VGammaSkim_24_1_TFD.root
+VGammaSkim_25_1_72O.root
+VGammaSkim_26_1_OKs.root
+VGammaSkim_27_1_6Yr.root
+VGammaSkim_28_1_rsk.root
+VGammaSkim_29_1_gNK.root
+VGammaSkim_2_1_oRG.root
+VGammaSkim_30_1_E8w.root
+VGammaSkim_31_1_GdW.root
+VGammaSkim_3_1_Tc8.root
+VGammaSkim_4_1_3eb.root
+VGammaSkim_5_1_IQe.root
+VGammaSkim_6_1_0i9.root
+VGammaSkim_7_1_y81.root
+VGammaSkim_8_1_C1K.root
+VGammaSkim_9_1_TfC.root
 """.split()
 
 process.inputs = cms.PSet (
@@ -36,10 +44,10 @@ process.inputs = cms.PSet (
 process.inputs.fileNames = [pathPrefix + file for file in filelist]
 
 process.outputs = cms.PSet (   
-    outputName = cms.string('analysisPlots.root')
+    outputName = cms.string('analysisPlots_ttbar.root')
 )
 
-#process.maxEvents = cms.PSet(output = cms.untracked.int64(5) )
+#process.maxEvents = cms.PSet(input = cms.untracked.int64(1000) )
 
 ## Define the selector configuration you want to use in FWLite
 from ElectroWeakAnalysis.MultiBosons.Selectors.vGammaSelector_cfi import sw_commissioning_selection
