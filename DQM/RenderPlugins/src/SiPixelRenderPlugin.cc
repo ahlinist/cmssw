@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.36 $
-  \date $Date: 2010/05/18 11:52:30 $
+  \version $Revision: 1.37 $
+  \date $Date: 2010/06/30 09:58:31 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -320,6 +320,10 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       if( o.name.find( "SUMCLU_charge_Endcap" ) != std::string::npos ){obj->SetMaximum(50.); }
       if( o.name.find( "SUMCLU_nclusters_Endcap" ) != std::string::npos ){obj->SetMaximum(1.6); }
       if( o.name.find( "SUMCLU_size_Endcap" ) != std::string::npos ){obj->SetMaximum(3.5); }
+      if( o.name.find( "SUMOFF_adc_Barrel" ) != std::string::npos ){ obj->SetMinimum(70.); obj->SetMaximum(110.); }
+      if( o.name.find( "SUMOFF_ndigis_Barrel" ) != std::string::npos ){ obj->SetMinimum(2.); obj->SetMaximum(14.); }
+      if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ obj->SetMinimum(90.); obj->SetMaximum(140.); }
+      if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ obj->SetMinimum(1.); obj->SetMaximum(6.); }
       
    
      // prettify for shifters:
@@ -365,8 +369,8 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       assert( obj );
       
       if( o.name.find( "SUMOFF_adc_Barrel" ) != std::string::npos ){ 
-        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,70.,192.,70.); 
-        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,100.,192.,100.); 
+        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,82.,192.,82.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,98.,192.,98.); 
       }
       else if( o.name.find( "SUMDIG_adc_Barrel" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,75.,768.,75.); 
@@ -374,15 +378,15 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       }
       else if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,100.,96.,100.); 
-        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,130.,96.,130.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,125.,96.,125.); 
       }
       else if( o.name.find( "SUMDIG_adc_Endcap" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,95.,672.,95.); 
         TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,130.,672.,130.); 
       }
       else if( o.name.find( "SUMOFF_ndigis_Barrel" ) != std::string::npos ){ 
-        TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,3.,192.,3.); 
-        TLine t2; t2.SetLineColor(4); t2.DrawLine(0.,13.,192.,13.); 
+        TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,4.,192.,4.); 
+        TLine t2; t2.SetLineColor(4); t2.DrawLine(0.,13.5,192.,13.5); 
       }
       else if( o.name.find( "SUMDIG_ndigis_Barrel" ) != std::string::npos ){ 
         TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,3.,768.,3.); 
@@ -390,8 +394,8 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       }
       else if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ 
         obj->SetMaximum(8.);
-        TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,2.,96.,2.); 
-        TLine t2; t2.SetLineColor(4); t2.DrawLine(0.,4.,96.,4.); 
+        TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,2.5,96.,2.5); 
+        TLine t2; t2.SetLineColor(4); t2.DrawLine(0.,3.8,96.,3.8); 
       }
       else if( o.name.find( "SUMDIG_ndigis_Endcap" ) != std::string::npos ){ 
         TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,2.,672.,2.); 
