@@ -279,7 +279,7 @@ void ana::Loop()
       h9[file_Index][2]->Fill(WenuMassTPfMET[W_Index], M3, weight[file_Index]);
 
       // Make the plost of photon pt spectrum
-      if (fabs(phoSCEta[pho_Index]) < 1.442) h8[file_Index][0]->Fill(phoEt[pho_Index], weight[file_Index]);
+      if (fabs(phoSCEta[pho_Index]) < 1.4442) h8[file_Index][0]->Fill(phoEt[pho_Index], weight[file_Index]);
       else h8[file_Index][1]->Fill(phoEt[pho_Index], weight[file_Index]);
       h8[file_Index][2]->Fill(phoEt[pho_Index], weight[file_Index]);
 
