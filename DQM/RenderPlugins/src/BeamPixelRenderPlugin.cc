@@ -45,7 +45,7 @@ public:
 
     for (int g = 1; g < NRGBs_rainbow; g++)
       {
-        nColorsGradient = (int) (floor(NCont_rainbow * stops_rainbow[g]) - floor(NCont_rainbow * stops_rainbow[g-1])); // specify number of gradients between stops (g-1) and (g)
+        nColorsGradient = (int) (floor(NCont_rainbow * stops_rainbow[g]) - floor(NCont_rainbow * stops_rainbow[g-1])); // Specify number of gradients between stops (g-1) and (g)
         for (int c = 0; c < nColorsGradient; c++)
 	  {
 	    hcalRainbowColors[highestIndex] = 1101 + highestIndex;
@@ -174,7 +174,7 @@ private:
     if ((o.name.find("muX vs lumi") != std::string::npos) || (o.name.find("muY vs lumi") != std::string::npos) || (o.name.find("muZ vs lumi") != std::string::npos) ||
 	(o.name.find("sigmaX vs lumi") != std::string::npos) || (o.name.find("sigmaY vs lumi") != std::string::npos) || (o.name.find("sigmaZ vs lumi") != std::string::npos) ||
 	(o.name.find("dxdz vs lumi") != std::string::npos) || (o.name.find("dydz vs lumi") != std::string::npos) || (o.name.find("pixelHits vs lumi") != std::string::npos) ||
-	(o.name.find("Good vertices vs lumi") != std::string::npos))
+	(o.name.find("good vertices vs lumi") != std::string::npos))
       {
 	gStyle->SetOptFit(1110);
 	gStyle->SetOptStat(10);
