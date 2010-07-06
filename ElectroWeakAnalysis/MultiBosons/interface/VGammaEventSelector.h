@@ -124,7 +124,8 @@ class VGammaEventSelector : public EventSelector {
  protected: 
 
   void fillAll( edm::EventBase const & event );
-  
+  double deltaR(const reco::Candidate*, const reco::Candidate*) const;
+
   bool verbose_;
 
   edm::InputTag               trigTag_;
@@ -186,6 +187,8 @@ class VGammaEventSelector : public EventSelector {
   //VGammaPhotonPlusMETEventSelector            photonPlusMETId_;
   VGammaPhotonSelector                   zgphotonId_,wgphotonId_;
   
+  double minLeptonPhotonDR_;
+
 };
 
 

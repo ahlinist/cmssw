@@ -140,6 +140,7 @@ int main ( int argc, char ** argv )
   // event as well as to store histograms, etc.
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
   double totalEvents = ev.size();
+  std::cout << "There are " << totalEvents << " events to process." <<std::endl;
   std::cout.precision(1);
   std::cout.setf(std::ios_base::fixed,std::ios_base::floatfield);
 
