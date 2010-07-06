@@ -16,6 +16,6 @@ muonHistos = cms.EDAnalyzer("PatMuonHistoAnalyzer",
 #muonHistos.histograms.phiHist.max = cms.untracked.double(3.14159)
 
 from ElectroWeakAnalysis.MultiBosons.Histogramming.histoTools_cff import *
-setItemsToPlot(muonHistos, 5)
+setItemsToPlot(muonHistos, 5, titlePrefix = "%d. hardest muon")
 
 #makeMuonHistos = cms.Sequence(muonHistos)
