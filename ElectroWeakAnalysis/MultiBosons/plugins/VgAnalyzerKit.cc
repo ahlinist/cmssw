@@ -94,6 +94,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("IsTracksGood", &IsTracksGood_, "IsTracksGood/I");
   if (doGenParticles_) {
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
+    tree_->Branch("pthat", &pthat_, "pthat/F");
     tree_->Branch("processID", &processID_, "processID/F");
     // genParticle
     tree_->Branch("nMC", &nMC_, "nMC/I");
