@@ -71,7 +71,9 @@ from MuonAnalysis.MuonAssociators.muonHLTL1Match_cfi import muonHLTL1Match
 muonMatchL1 = muonHLTL1Match.clone(
     src     = muonTriggerMatchHLTMu3.src,
     matched = muonTriggerMatchHLTMu3.matched,
-    maxDeltaR   = cms.double(0.3),
+    maxDeltaR     = cms.double(1.2),
+    maxDeltaEta   = cms.double(0.2),
+    fallbackToME1 = cms.bool(True),
 )
 
 ### Single Mu L1
