@@ -9,23 +9,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
     fileNames = cms.untracked.vstring(
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_1_1_SSn.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_2_1_EMo.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_2_1_LLj.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_2_1_Xmn.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_3_1_2LZ.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_3_1_JHH.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_3_1_OY8.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_3_1_s8P.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_4_1_ZY1.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_4_1_kap.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_4_1_tbk.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_4_1_xcF.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_5_1_dHS.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_6_1_Lnu.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_6_1_p3K.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_7_1_gFb.root', 
-'rfio:/castor/cern.ch/user/c/covarell/temp/testNewCSCTF_data_8_1_XJi.root' 
+    "file:testNewCSCTF_data.root"
+ 
     )
 )
 
@@ -66,8 +51,10 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     removeTrueMuons = cms.untracked.bool(False),
     storeWrongSign = cms.untracked.bool(True),
     writeOutCandidates = cms.untracked.bool(False),
-    includePsiPrime = cms.untracked.bool(False)
+    includePsiPrime = cms.untracked.bool(False),
+    massCorrectionMode=cms.int32(3),    # mode 0 no correction, mode 1 constant corr, mode 2 pt dependent corr, mode 3 pt and eta dependent corr
+    makeJSON = cms.untracked.bool(True) # make a JSON (PseudoJSON.txt) file out of the runs and lumis analyzed 
 )
 
 
-process.p = cms.Path(process.hltMu3*process.demo)
+process.p = cms.Path(process.demo)
