@@ -55,7 +55,8 @@ def AddFlag(sevLevelComputer,flag="UserDefinedBit0",severity=10):
             if (Flags==['']):
                 Flags=[flag] # Create new vector for this flag
             else:
-                Flags.append(flag) # append flag to existing vector
+                if flag not in Flags:  # don't need to add flag if it's already there
+                    Flags.append(flag) # append flag to existing vector
             sevLevelComputer.SeverityLevels[i].RecHitFlags=Flags  # Set new RecHitFlags vector
             AddedSeverity=True
         else:  # Found some other level; be sure to remove flag from it
