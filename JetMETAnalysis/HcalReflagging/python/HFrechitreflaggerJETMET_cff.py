@@ -9,6 +9,9 @@ from math import log
 HFrechitreflaggerJETMETv1 = deepcopy(hfrechitreflaggerJETMET)
 HFrechitreflaggerJETMETv1.PETstat.short_R=[0.98]
 HFrechitreflaggerJETMETv1.PETstat.short_R_29=[0.98]
+HFrechitreflaggerJETMETv1.PETstat.flagsToSkip=0
+HFrechitreflaggerJETMETv1.S9S1stat.flagsToSkip=0
+HFrechitreflaggerJETMETv1.FlagsToSet=(4,0)  # Set HFPET, then HFLongShort (S9S1)
 
 ########################################################################
 # v2 = "Medium conditions"  -- short R cut set to 0.8, rather than 0.98
@@ -16,6 +19,9 @@ HFrechitreflaggerJETMETv2 = deepcopy(hfrechitreflaggerJETMET)
 HFrechitreflaggerJETMETv2.PETstat.short_R=[0.8]
 HFrechitreflaggerJETMETv2.PETstat.short_R_29=[0.8]
 #)
+HFrechitreflaggerJETMETv2.PETstat.flagsToSkip=0
+HFrechitreflaggerJETMETv2.S9S1stat.flagsToSkip=0
+HFrechitreflaggerJETMETv2.FlagsToSet=(4,0)  # Set HFPET, then HFLongShort (S9S1)
 
 ########################################################################
 # v3 = "Tight conditions"  -- short R cut set to 0.8
@@ -30,7 +36,9 @@ for i in range(29,42):
 HFrechitreflaggerJETMETv3.S9S1stat.longEnergyParams=[]
 for i in range(29,42):
     HFrechitreflaggerJETMETv3.S9S1stat.longEnergyParams.append(eval('-0.09*log(55)'))
-
+HFrechitreflaggerJETMETv3.PETstat.flagsToSkip=0
+HFrechitreflaggerJETMETv3.S9S1stat.flagsToSkip=0
+HFrechitreflaggerJETMETv3.FlagsToSet=(4,0)  # Set HFPET, then HFLongShort (S9S1)
 
 ##########################################################################
 # v4 = "Medium + time conditions"  -- short R cut set to 0.8, rather than 0.98
@@ -39,7 +47,9 @@ for i in range(29,42):
 HFrechitreflaggerJETMETv4 = deepcopy(hfrechitreflaggerJETMET)
 HFrechitreflaggerJETMETv4.PETstat.short_R=[0.8]
 HFrechitreflaggerJETMETv4.PETstat.short_R_29=[0.8]
-HFrechitreflaggerJETMETv4.FlagsToSet=(4,3,0,2)
+HFrechitreflaggerJETMETv4.PETstat.flagsToSkip=0
+HFrechitreflaggerJETMETv4.S9S1stat.flagsToSkip=0
+HFrechitreflaggerJETMETv4.FlagsToSet=(4,0,2)  # Set HFInTimeWindowFlag after others
 
 #############################################################################
 #  v5 = "v3 + time conditions"
@@ -55,7 +65,9 @@ for i in range(29,42):
 HFrechitreflaggerJETMETv5.S9S1stat.longEnergyParams=[]
 for i in range(29,42):
     HFrechitreflaggerJETMETv3.S9S1stat.longEnergyParams.append(eval('-0.09*log(55)'))
-HFrechitreflaggerJETMETv5.FlagsToSet=(4,3,0,2)
+HFrechitreflaggerJETMETv5.PETstat.flagsToSkip=0
+HFrechitreflaggerJETMETv5.S9S1stat.flagsToSkip=0
+HFrechitreflaggerJETMETv5.FlagsToSet=(4,0,2)
 
 ##############################################################################
 #   v10 = default conditions as of 7 July 10
