@@ -103,17 +103,17 @@ process.selectedEvents = cms.EDFilter("CandViewCountFilter",
     minNumber = cms.uint32(1),
 ) 
 
-### test new CSCTF matching
-process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
-process.load("MuonAnalysis.MuonAssociators.muonL1MatchExtended_cfi")
-process.muonL1MatchExtended.muons = "mergedMuons"
-from MuonAnalysis.MuonAssociators.muonL1MatchExtended_cfi import addUserData as addMuonL1MatchExtended
-addMuonL1MatchExtended(process.patMuonsWithoutTrigger, addExtraInfo=True)
-process.patMuonSequence.replace(process.patMuonsWithoutTrigger,
-    process.csctfDigis +
-    process.muonL1MatchExtended +
-    process.patMuonsWithoutTrigger
-)
+### test new CSCTF matching / NOT NEEDED ANYMORE
+## process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
+## process.load("MuonAnalysis.MuonAssociators.muonL1MatchExtended_cfi")
+## process.muonL1MatchExtended.muons = "mergedMuons"
+## from MuonAnalysis.MuonAssociators.muonL1MatchExtended_cfi import addUserData as addMuonL1MatchExtended
+## addMuonL1MatchExtended(process.patMuonsWithoutTrigger, addExtraInfo=True)
+## process.patMuonSequence.replace(process.patMuonsWithoutTrigger,
+##     process.csctfDigis +
+##     process.muonL1MatchExtended +
+##     process.patMuonsWithoutTrigger
+## )
 
 ### path
 process.Onia2MuMuPatTrkTrk = cms.Path(
@@ -138,7 +138,9 @@ process.out = cms.OutputModule("PoolOutputModule",
         'keep *_offlineBeamSpot_*_*',                          ## Beam spot: you want this for the same reason                                   
         'keep edmTriggerResults_TriggerResults_*_*',           ## HLT info, per path (cheap)
         'keep l1extraL1MuonParticles_l1extraParticles_*_*',    ## L1 info (cheap)
-        #'keep *_patTrigger_*_*',                               ## HLT info, per object (BIG. Keep only when debugging trigger match)
+        'keep *_patTrigger_*_*',   ## all HLT 4-vectors
+        'keep *_csctfDigis_*_*',       ## CSCTF info
+        'keep *_cscSegments_*_*'       ## CSC segments
     ),
     ## Uncomment to activate skimming!
     # SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('Onia2MuMuPatTrkTrk') )
