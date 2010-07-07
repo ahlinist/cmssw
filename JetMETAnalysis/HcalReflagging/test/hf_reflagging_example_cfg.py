@@ -101,7 +101,8 @@ process.hfrecoReflagged.debug=1
 
 import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
 process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"HFLongShort",11)
-process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"HFDigiTime",11)
+if (isMC==False):  # Don't use HFDigiTime on MC !
+    process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"HFDigiTime",11)
 if process.hfrecoReflagged.debug>0:
     for i in process.hcalRecAlgos.SeverityLevels:
         print i
