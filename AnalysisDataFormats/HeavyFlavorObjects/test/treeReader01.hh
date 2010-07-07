@@ -20,8 +20,6 @@
 #include "../rootio/TAnaVertex.hh"
 
 
-using namespace std;
-
 #define DR      57.29577951
 #define PIPMASS 0.13957
 #define ELMASS  0.000511

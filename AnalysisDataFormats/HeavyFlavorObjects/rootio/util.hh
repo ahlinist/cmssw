@@ -16,8 +16,6 @@ extern TROOT  *gROOT;
 extern TStyle *gStyle;
 extern TDirectory  *gDirectory;
 
-using namespace::std;
-
 // ======================================================================
 // General utilities
 // ======================================================================

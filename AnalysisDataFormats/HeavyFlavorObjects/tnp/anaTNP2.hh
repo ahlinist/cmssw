@@ -27,8 +27,6 @@
 #include <fstream>
 #include <vector>
 
-using namespace std;
-
 class anaTNP2: public TObject {
 
 public:
@@ -51,7 +49,7 @@ public:
 		      const char *sm = "Matched", const char *binning = "mt,pt-eta");
   void readPidTables(const char *sample = "jpsi");
 
-  void addBackground(vector<TH1D> &vec, double s2b = 2., double p0 = 1., double p1 = 0.);
+  void addBackground(std::vector<TH1D> &vec, double s2b = 2., double p0 = 1., double p1 = 0.);
   void fitJpsi(int mode);
   void fitUpsilon(int mode);
   void McpYields(); 
@@ -70,7 +68,7 @@ public:
   // -- Utilities and helper methods
   // -------------------------------
   void setFunctionParameters(TH1D *h, TF1 *f, int mode); 
-  bool getBinCenters(string hname, double &eta, double &pT, int &Q);
+  bool getBinCenters(std::string hname, double &eta, double &pT, int &Q);
 
   int  wait();
   void makeCanvas(int i = 3);
@@ -88,8 +86,8 @@ public:
   TH2D *fHbinning;
 
   // -- vectors containing the fitted histograms: S1 = mm, S2 = mt, S3 = mmbar
-  vector<TH1D> fS1VectorPos,    fS1VectorNeg,    fS2VectorPos,    fS2VectorNeg,    fS3VectorPos,    fS3VectorNeg; 
-  vector<TH1D> fS1VectorMcpPos, fS1VectorMcpNeg, fS2VectorMcpPos, fS2VectorMcpNeg, fS3VectorMcpPos, fS3VectorMcpNeg; 
+  std::vector<TH1D> fS1VectorPos,    fS1VectorNeg,    fS2VectorPos,    fS2VectorNeg,    fS3VectorPos,    fS3VectorNeg; 
+  std::vector<TH1D> fS1VectorMcpPos, fS1VectorMcpNeg, fS2VectorMcpPos, fS2VectorMcpNeg, fS3VectorMcpPos, fS3VectorMcpNeg; 
 
   //-- 2d histograms for the (fitted) event yields
   TH2D *fS1YieldPos, *fS1YieldNeg, *fS2YieldPos, *fS2YieldNeg, *fS3YieldPos, *fS3YieldNeg;
@@ -122,10 +120,10 @@ public:
   char line[200];
   int fFixFit; 
 
-  string fDirectory;
-  string fPtDirectory;
-  string fNumbersFileName;
-  string fSample; 
+  std::string fDirectory;
+  std::string fPtDirectory;
+  std::string fNumbersFileName;
+  std::string fSample; 
   char fSuffix[100]; 
 
   ClassDef(anaTNP2,1) //Testing anaTNP2

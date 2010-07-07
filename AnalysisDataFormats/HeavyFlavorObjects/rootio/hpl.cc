@@ -8,6 +8,8 @@
 #include "TVirtualPad.h"  // access to gPad
 #include "TRegexp.h"
 
+using std::cout;
+using std::endl;
 
 // ----------------------------------------------------------------------
 void hpl(const char *h, const char *options) { 

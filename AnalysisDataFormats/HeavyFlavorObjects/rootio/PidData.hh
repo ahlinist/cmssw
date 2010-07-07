@@ -6,8 +6,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace::std;
-
 class PidData: public TObject {
 
 public:
@@ -94,7 +92,7 @@ private:
 
 };
 
-ostream & operator << (ostream& , const PidData&);
+std::ostream & operator << (std::ostream& , const PidData&);
 
 
 #endif

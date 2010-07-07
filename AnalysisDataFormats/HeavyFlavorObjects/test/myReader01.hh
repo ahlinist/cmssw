@@ -22,7 +22,6 @@
 
 #include "treeReader01.hh"
 
-using namespace std;
 
 #define DR      57.29577951
 #define PIPMASS 0.13957
