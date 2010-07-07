@@ -31,6 +31,8 @@
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 
+#include "DataFormats/EgammaCandidates/interface/PhotonPi0DiscriminatorAssociation.h"
+
 #include <iostream>
 
 using namespace std;
@@ -247,6 +249,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoSCPhiWidth", phoSCPhiWidth_, "phoSCPhiWidth[nPho]/F");
   tree_->Branch("phoOverlap", phoOverlap_, "phoOverlap[nPho]/I");
   tree_->Branch("phohasPixelSeed", phohasPixelSeed_, "phohasPixelSeed[nPho]/I");
+  tree_->Branch("phoIsConv", phoIsConv_, "phoIsConv[nPho]/I");
+  tree_->Branch("phoPi0Disc",phoPi0Disc_ , "phoPi0Disc[nPho]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
@@ -376,7 +380,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     ttbit34_ = (technicalTriggerWordBeforeMask.at(34)) ? 1 : 0;
     ttbit40_ = (technicalTriggerWordBeforeMask.at(40)) ? 1 : 0;
     ttbit41_ = (technicalTriggerWordBeforeMask.at(41)) ? 1 : 0;
-    ttbitBH_ = (technicalTriggerWordBeforeMask.at(36) || technicalTriggerWordBeforeMask.at(37) || technicalTriggerWordBeforeMask.at(38) || technicalTriggerWordBeforeMask.at(39)) ? 1 : 0;
+    ttbitBH_ = (technicalTriggerWordBeforeMask.at(36) || technicalTriggerWordBeforeMask.at(37) || 
+technicalTriggerWordBeforeMask.at(38) || technicalTriggerWordBeforeMask.at(39)) ? 1 : 0;
   }
 
   // Get CaloTower information
@@ -489,7 +494,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
       genIndex++;
 
-      if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 && fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
+      if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 && 
+fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
 	const Candidate *p = (const Candidate*)&(*ip);
 
@@ -777,8 +783,10 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       int EleGenIndex = 0;
       if (!isData_) {
         if ((*iEle).genLepton() && genParticlesHandle_.isValid() ) {
-          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
-            if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
+          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); 
+++iGen) {
+            if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() 
+== (*iEle).genLepton()->status()) {
                 eleGenIndex_[nEle_] = EleGenIndex;
 
                 const Candidate *elep = (const Candidate*)&(*iGen);
@@ -817,6 +825,15 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
 
   // Photon
+   // take the pi0 rejection info from RECO
+  Handle<reco::PhotonPi0DiscriminatorAssociationMap>  map;
+  e.getByLabel("piZeroDiscriminators","PhotonPi0DiscriminatorAssociationMap",  map);
+  reco::PhotonPi0DiscriminatorAssociationMap::const_iterator mapIter;
+//
+  edm::Handle<reco::PhotonCollection> R_PhotonHandle;
+  e.getByLabel("photons", "", R_PhotonHandle);
+  const reco::PhotonCollection R_photons = *(R_PhotonHandle.product());   
+
   const Candidate *phomom = 0;
   int nPhoPassCut = 0;
   nPho_ = 0;
@@ -883,7 +900,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       phoEBottom_[nPho_]    = lazyTool.eBottom(*phoSeed);
 
       if(iPho->isEB()==true && EBRecHits.isValid()){
-            std::vector<float> RoundAndAngle = EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
+            std::vector<float> RoundAndAngle = 
+EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
             phoRoundness_[nPho_] = RoundAndAngle[0];
             phoAngle_[nPho_] = RoundAndAngle[1];
       } else{
@@ -900,9 +918,11 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       int phoGenIndex = 0;
       if ( !isData_ && genParticlesHandle_.isValid() ) {
         if ((*iPho).genPhoton()) {
-          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
+          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); 
+++iGen) {
 
-            if (iGen->p4() == (*iPho).genPhoton()->p4() && iGen->pdgId() == (*iPho).genPhoton()->pdgId() && iGen->status() == (*iPho).genPhoton()->status()) {
+            if (iGen->p4() == (*iPho).genPhoton()->p4() && iGen->pdgId() == (*iPho).genPhoton()->pdgId() && iGen->status() 
+== (*iPho).genPhoton()->status()) {
 
               phoGenIndex_[nPho_] = phoGenIndex;
 
@@ -931,7 +951,23 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       phoSCEtaWidth_[nPho_] = (*iPho).superCluster()->etaWidth();
       phoSCPhiWidth_[nPho_] = (*iPho).superCluster()->phiWidth();
 
-      nPho_++;
+
+      phoIsConv_[nPho_] = iPho->hasConversionTracks();
+
+      phoPi0Disc_[nPho_] = -1;
+
+      int R_nphot = 0;
+      float nn = -1;
+      for( reco::PhotonCollection::const_iterator  R_phot_iter = R_photons.begin(); R_phot_iter != R_photons.end(); R_phot_iter++) { 
+        mapIter = map->find(edm::Ref<reco::PhotonCollection>(R_PhotonHandle,R_nphot));
+        if(mapIter!=map->end()) {
+          nn = mapIter->val;
+        }
+        if(iPho->p4() == R_phot_iter->p4()) phoPi0Disc_[nPho_] = nn;
+        R_nphot++;              
+      }  
+      
+       nPho_++;
     }
 
   // Muon
@@ -996,7 +1032,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
             for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen !=
                   genParticlesHandle_->end(); ++iGen) {
 
-              if (iGen->p4() == (*iMu).genLepton()->p4() && iGen->pdgId() == (*iMu).genLepton()->pdgId() && iGen->status() == (*iMu).genLepton()->status()) muGenIndex_[nMu_] = MuGenIndex;
+              if (iGen->p4() == (*iMu).genLepton()->p4() && iGen->pdgId() == (*iMu).genLepton()->pdgId() && iGen->status() 
+== (*iMu).genLepton()->status()) muGenIndex_[nMu_] = MuGenIndex;
               MuGenIndex++;
             }
           }
