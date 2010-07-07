@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.34 2010/07/05 15:44:20 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.35 2010/07/07 14:04:40 covarell Exp $
 //
 //
 
@@ -79,6 +79,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool selTrackerMuon(const pat::Muon* aMuon);
       bool selCaloMuon(const pat::Muon* aMuon);
       int getJpsiVarType(const double jpsivar, vector<double> vectbin);
+      double CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode);
 
       // histos
       TH1F *QQMass2Glob_passmu3;
@@ -233,6 +234,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       RooCategory* matchType;
       RooCategory* trigger0;
       RooCategory* trigger1;
+      RooCategory* JpsiSign;   
 
       // handles
       // Handle<pat::CompositeCandidateCollection > collGG;
@@ -260,6 +262,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _storeWs;
       bool           _writeOutCands;
       bool           _inclPsiP;
+      int            _MassCorr;
+      bool           _JSON;
       // InputTag       _triggerresults;
       vector<unsigned int>                     _thePassedCats[3];
       vector<const pat::CompositeCandidate*>   _thePassedCands[3];
@@ -284,6 +288,10 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 
       math::XYZPoint RefVtx;
       ofstream* theTextFile;
+      ofstream* JSON;
+  
+      int runtmp,lumitmp,count;
+      int runmax,runmin;
 
 };    
       
@@ -315,7 +323,9 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _removeMuons(iConfig.getUntrackedParameter<bool>("removeTrueMuons",false)),
   _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false)),
   _writeOutCands(iConfig.getUntrackedParameter<bool>("writeOutCandidates",false)),
-  _inclPsiP(iConfig.getUntrackedParameter<bool>("includePsiPrime",false))
+  _inclPsiP(iConfig.getUntrackedParameter<bool>("includePsiPrime",false)),
+  _MassCorr(iConfig.getParameter<int>("massCorrectionMode")),
+  _JSON(iConfig.getUntrackedParameter<bool>("makeJSON",false))
   // _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
@@ -323,6 +333,12 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   passedCandidates = 0;
   matchCandidates = 0;
   matchNewCandidates = 0;
+  
+  count=0;
+  runtmp=0;
+  lumitmp=11111111;
+  runmax=0;
+  runmin=100000000;
 
   JpsiMassMin = 2.6;
   JpsiMassMax = 3.5;
@@ -378,6 +394,12 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   trigger1->defineType("unmatched",0);
   trigger1->defineType("matched",1);
 
+  JpsiSign = new RooCategory("JpsiSign","Sign of Jpsi dimuons");
+  
+  JpsiSign->defineType("OS",0);
+  JpsiSign->defineType("SSP",1);
+  JpsiSign->defineType("SSM",2);
+
   JpsiMass = new RooRealVar("JpsiMass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");
   JpsiPt = new RooRealVar("JpsiPt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
   JpsiEta = new RooRealVar("JpsiEta","J/psi eta",-JpsiEtaMax,JpsiEtaMax);
@@ -391,10 +413,15 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   varlist.add(*JpsictTrue);   varlist.add(*JpsiPtType);
   varlist.add(*JpsiEtaType);  varlist.add(*JpsictErr);
   varlist.add(*trigger0);     varlist.add(*trigger1);
+  varlist.add(*JpsiSign);
 
   data = new RooDataSet("data","A sample",varlist);
   if (_writeOutCands) theTextFile = new ofstream("passedCandidates.txt");
-
+  
+  if (_JSON){
+    JSON = new ofstream("PseudoJSON.txt");
+    *JSON << "{";
+  }
 }
 
 
@@ -410,13 +437,65 @@ JPsiAnalyzerPAT::~JPsiAnalyzerPAT()
 //
 // member functions
 //
-
+double JPsiAnalyzerPAT::CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode){  
+  double CMass=0;
+  const double mumass=0.105658;
+  double k1,k2;
+  double pt1=mu1.innerTrack()->pt();
+  double pt2=mu2.innerTrack()->pt();
+  double eta1=mu1.innerTrack()->eta();
+  double eta2=mu2.innerTrack()->eta();
+  if (mode==1){
+    k1=1.0009;//constant scale correction
+    k2=1.0009;
+  }
+  if (mode==2){
+    k1=1.0019-0.0004*pt1;
+    k2=1.0019-0.0004*pt2; // pt dependent correction
+  }
+  if (mode==3){
+    double a0=1.002;
+    double a1=-0.002;
+    double a2=0.001;
+    double a3=-0.0001;
+    k1=a0+a1*fabs(eta1)+a2*eta1*eta1+a3*pt1;
+    k2=a0+a1*fabs(eta2)+a2*eta2*eta2+a3*pt2;// pt and eta dependent 
+  }
+  math::XYZVector mom1=mu1.innerTrack()->momentum();
+  math::XYZVector mom2=mu2.innerTrack()->momentum();
+  mom1=k1*mom1; 
+  mom2=k2*mom2;
+  double E1=sqrt(mom1.mag2()+(mumass*mumass));
+  double E2=sqrt(mom2.mag2()+(mumass*mumass));
+  math::XYZVector momtot=mom1+mom2;
+  CMass=sqrt((E1+E2)*(E1+E2)-momtot.mag2());
+  return CMass;
+}
 // ------------ method called to for each event  ------------
 void
 JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    nEvents++;
 
+   int Nrun=iEvent.id().run();
+   int lumi=iEvent.luminosityBlock();
+   if (Nrun>runmax) runmax=Nrun;     // this is only for printout at the end of job
+   if (Nrun<runmin) runmin=Nrun;
+   if (_JSON){                      // these lines write out a JSON file of runs analyzed
+     if (Nrun!=runtmp){
+       runtmp=Nrun; 
+       if (count == 0)  *JSON << " \"" << Nrun << "\" :[[" << lumi <<", ";
+       if (count!=0) *JSON << lumitmp <<"]],"<< " \"" << Nrun << "\" :[[" << lumi <<", ";
+       lumitmp=lumi;
+       count++;
+     }
+     if (lumi!=lumitmp) {
+       if (Nrun==runtmp && lumi!=lumitmp+1) {
+	 *JSON << lumitmp << "],["<< lumi << ", "; 
+       }
+       lumitmp=lumi;
+     }
+   }
    // iEvent.getByLabel(_triggerresults,trigger);
 
    // try {iEvent.getByLabel("onia2MuMuPatGlbGlb",collGG);} 
@@ -644,7 +723,13 @@ JPsiAnalyzerPAT::endJob() {
   cout << "Total number of events = " << nEvents << endl;
   cout << "Total number of passed candidates = " << passedCandidates << endl;
   cout << "Total number of DoubleMuOpen-matched candidates = " << matchCandidates << endl;
-  // cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
+  cout << "Analyzed runs from  " << runmin << "  to  " << runmax << endl; 
+  if (_JSON){
+    cout << "JSON file produced" << endl;
+    *JSON << lumitmp <<"]]}";
+    JSON->close();
+  }
+ // cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
 
   TFile fOut(_histfilename.c_str(), "RECREATE");
   fOut.cd();
@@ -812,7 +897,10 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
   
   float theMass = aCand->mass();
-
+  if (_MassCorr!=0){
+    double CMass=CorrectMass(*muon1,*muon2,_MassCorr);
+    if (CMass!=0) theMass=CMass;
+  }
   // Only sidebands
   /* if (aCand->mass() < 2.3 || aCand->mass() > 6.5  ||
       (aCand->mass() < 3.3 && aCand->mass() > 2.9) ||
@@ -1068,8 +1156,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     // to be done
   }
 
-  if (muon1->charge()*muon2->charge() < 0 &&
-      theMass > JpsiMassMin && theMass < JpsiMassMax && 
+  if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
       theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
       aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
       fabs(theRapidity) > JpsiEtaMin && fabs(theRapidity) < JpsiEtaMax) {
@@ -1079,6 +1166,13 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     // if (isTriggerMatchedNew) matchNewCandidates++;
     
     if (_writeOutCands) *theTextFile << iEvent.id().run() << "\t" << iEvent.luminosityBlock() << "\t" << iEvent.id().event() << "\t" << theMass << "\n";
+
+    int ss=999;
+    if (muon1->charge() + muon2->charge() == 0) ss=0;
+    if (muon1->charge() + muon2->charge() == 2) ss=1;
+    if (muon1->charge() + muon2->charge() == -2) ss=2;
+
+    JpsiSign->setIndex(ss,kTRUE);
 
     JpsiPt->setVal(aCand->pt()); 
     JpsiEta->setVal(theRapidity); 
@@ -1111,7 +1205,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     varlist_tmp.add(*JpsictTrue);   varlist_tmp.add(*JpsiPtType);
     varlist_tmp.add(*JpsiEtaType);  varlist_tmp.add(*JpsictErr);
     varlist_tmp.add(*trigger0);     varlist_tmp.add(*trigger1); 
-
+    varlist_tmp.add(*JpsiSign);
     data->add(varlist_tmp);
     
   }

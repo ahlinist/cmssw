@@ -24,12 +24,35 @@ process.GlobalTag.globaltag = "GR10_P_V6::All"
 process.source = cms.Source("PoolSource",
     inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMConverter_*_*"),
     fileNames = cms.untracked.vstring(
-        '/store/data/Commissioning10/MinimumBias/USER/v9/000/134/721/7CF8C522-7F56-DF11-94EA-003048D46066.root',
+#        '/store/data/Commissioning10/MinimumBias/USER/v9/000/134/721/7CF8C522-7F56-DF11-94EA-003048D46066.root',
+# '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/529/B44750E9-3C89-DF11-B241-0017A4770C18.root'
+'/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/459/6E5EFAF3-EE88-DF11-B788-0017A4771014.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/459/28D1C48C-F088-DF11-8843-001F296B9576.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/458/F0F096F2-EE88-DF11-AB1F-00237DA13C2E.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/458/E20095F2-EE88-DF11-8E75-00237DA10D06.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/458/CCEC939F-EF88-DF11-AA78-0017A4771014.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/458/CA8A84F7-EC88-DF11-8532-001F296A52A6.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/458/ACA396A3-ED88-DF11-8811-0025B3E0228C.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/458/A0EC178D-F088-DF11-BF87-001F296BB3B8.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/458/7E08E64E-EE88-DF11-9B78-0025B3E0228C.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/457/6E929B90-F088-DF11-BD83-001F296B758E.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/455/BCA84493-AE88-DF11-AF21-00237DA16C5E.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/450/F8AABFB6-AE88-DF11-819F-00237DA16C5E.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/441/A050D6CA-7C88-DF11-9646-001F296A52A6.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/436/5A107EC3-7B88-DF11-97C0-001F296A52A6.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/425/2A1A9A1B-7E88-DF11-88E4-001F296A52A6.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/411/C497DD97-F188-DF11-AD6D-0025B3E0228C.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/411/72884E2E-F188-DF11-859C-001F296B758E.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/411/4E73A746-F088-DF11-9C30-0025B3E0228C.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/409/2E156426-7888-DF11-B3CF-001E0B5FD4A6.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/407/FA893336-B788-DF11-9801-001E0BEACAB8.root',
+        '/store/data/Run2010A/Mu/RAW-RECO/v6/000/139/407/E2BF9E36-B588-DF11-A42E-0017A477083C.root',
+
     )
 )
 
 ### number of events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
 
 #############REAL DATA######################
 # this is for filtering on L1 technical trigger bit
