@@ -10,6 +10,8 @@
 #include "TString.h"
 #include "TH2.h"
 
+using std::cout;
+using std::endl;
 
 // ----------------------------------------------------------------------
 void setMaximum(double scale, TH1 *h1, TH1 *h2) {
