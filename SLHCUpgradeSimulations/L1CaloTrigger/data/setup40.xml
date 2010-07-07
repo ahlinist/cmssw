@@ -2,7 +2,7 @@
 <CARD>
 
 <SETTINGS ECALTower = "1" HCALTower = "2" ClusterThr = "2" ElectronConstant = "95" ElectronThreshold = "120" ElectronSlope= "3" TauSeedTower = "0"
-   IsolationElectronA = "2" IsolationElectronB = "5" IsolationTauA = "1" IsolationTauB = "20" IsolationZone = "3" IsolationThresholdElectron = "2" IsolationThresholdTau = "4" JetCenter = "2" JetEt = "20" />
+   IsolationElectronA = "2" IsolationElectronB = "5" IsolationTauA = "1" IsolationTauB = "20" IsolationZone = "3" IsolationThresholdElectron = "2" IsolationThresholdTau = "4" JetCenter = "2" JetEt = "20" FineGrainPass="1"/>
 
 <GEOMETRY eta0 = "4" phi0 = "4" dim = "64" etam = "60" phim = "75"     />
 <WIRE no = "4" eta = "-28" phi = "69" />

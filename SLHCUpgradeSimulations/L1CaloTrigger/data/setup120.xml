@@ -15,7 +15,8 @@
           IsolationZone = "3" 
           IsolationThresholdElectron = "6"
           IsolationThresholdTau = "6"
-          JetEt = "10" />
+          JetEt = "10" 
+	  FineGrainPass="1"/>
 
 <GEOMETRY eta0 = "4" phi0 = "4" dim = "64" etam = "60" phim = "75"     />
 <WIRE no = "4" eta = "-28" phi = "69" />
