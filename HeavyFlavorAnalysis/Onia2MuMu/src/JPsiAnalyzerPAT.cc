@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.33 2010/06/24 10:01:05 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.34 2010/07/05 15:44:20 covarell Exp $
 //
 //
 
@@ -267,7 +267,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       // number of events
       unsigned int nEvents;
       unsigned int passedCandidates;
-      unsigned int matchOldCandidates;
+      unsigned int matchCandidates;
       unsigned int matchNewCandidates;
 
       // limits 
@@ -321,7 +321,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
    //now do what ever initialization is needed
   nEvents = 0;
   passedCandidates = 0;
-  matchOldCandidates = 0;
+  matchCandidates = 0;
   matchNewCandidates = 0;
 
   JpsiMassMin = 2.6;
@@ -329,7 +329,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   if (_inclPsiP) JpsiMassMax = 4.2;
   JpsiMassMinSide = 0.;
   JpsiMassMaxSide = 12.0;
-  JpsiCtMin = -1.0;
+  JpsiCtMin = -2.0;
   JpsiCtMax = 3.5;
 
   JpsiPtType = new RooCategory("JpsiPtType","Category of Pt");
@@ -643,8 +643,8 @@ JPsiAnalyzerPAT::endJob() {
   
   cout << "Total number of events = " << nEvents << endl;
   cout << "Total number of passed candidates = " << passedCandidates << endl;
-  cout << "DoubleMuOpen-matched candidates: standard way = " << matchOldCandidates << endl;
-  cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
+  cout << "Total number of DoubleMuOpen-matched candidates = " << matchCandidates << endl;
+  // cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
 
   TFile fOut(_histfilename.c_str(), "RECREATE");
   fOut.cd();
@@ -848,18 +848,12 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   static const unsigned int NTRIGGERS = 5;
   // MC 8E29
   bool isTriggerMatched[NTRIGGERS];
-  bool isTriggerMatchedNew;
+  // bool isTriggerMatchedNew = false;
   string HLTLastFilters[NTRIGGERS] = {"hltDoubleMuLevel1PathL1OpenFiltered", // BIT HLT_L1DoubleMuOpen 
 				      "hltSingleMu3L3Filtered3",             // BIT HLT_Mu3  
 				      "hltSingleMu5L3Filtered5",             // BIT HLT_Mu5 
 				      "hltDiMuonL3PreFiltered0",             // BIT HLT_DoubleMu0 
 				      "hltDiMuonL3PreFiltered"};             // BIT HLT_DoubleMu3
-  // early data
-  /* string HLTLastFilters[NTRIGGERS] = {"hltDoubleMuLevel1PathL1OpenFiltered", // BIT HLT_L1DoubleMuOpen 
-                                      "hltL2Mu0L2Filtered0",                 // BIT HLT_L2Mu0
-				      "hltSingleMu3L2Filtered3",             // BIT HLT_L2Mu3  
-				      "hltMu0L1MuOpenL3Filtered0",           // BIT HLT_Mu0_L1MuOpen
-				      "hltMu0TrackJpsiTrackMassFiltered"};   // BIT HLT_Mu0_Track0_Jpsi */
   
   // Trigger passed
 
@@ -873,11 +867,11 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     } else {                     // double triggers here
       isTriggerMatched[iTr] = pass1 && pass2;
     }
-    if (iTr == 0) {
+    /* if (iTr == 0) {
       if ( fabs(muon1->eta()) > 1.2 ) pass1 = (pass1 || muon1->userInt("muonL1MatchExtended") > 0);
       if ( fabs(muon2->eta()) > 1.2 ) pass2 = (pass2 || muon2->userInt("muonL1MatchExtended") > 0);              // double triggers here
       isTriggerMatchedNew = pass1 && pass2;
-    }
+      } */
   }
 
   if (isTriggerMatched[1]) { // pass Bit 1
@@ -1081,8 +1075,8 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       fabs(theRapidity) > JpsiEtaMin && fabs(theRapidity) < JpsiEtaMax) {
 	
     passedCandidates++;
-    if (isTriggerMatched[0]) matchOldCandidates++;
-    if (isTriggerMatchedNew) matchNewCandidates++;
+    if (isTriggerMatched[0]) matchCandidates++;
+    // if (isTriggerMatchedNew) matchNewCandidates++;
     
     if (_writeOutCands) *theTextFile << iEvent.id().run() << "\t" << iEvent.luminosityBlock() << "\t" << iEvent.id().event() << "\t" << theMass << "\n";
 
@@ -1096,6 +1090,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
     trigger0->setIndex((int)isTriggerMatched[0],kTRUE);
+    // trigger0->setIndex((int)isTriggerMatchedNew,kTRUE);
     trigger1->setIndex((int)isTriggerMatched[1],kTRUE);
     JpsictTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
      
