@@ -451,7 +451,7 @@ def enableFactorization_makeZtoElecTauPlots(process):
         process.evtSelPrimaryEventVertex,
         process.evtSelPrimaryEventVertexQuality,
         process.evtSelPrimaryEventVertexPosition,
-        process.evtSelTightElectronId,
+        process.evtSelLooseElectronId,
         process.evtSelElectronAntiCrack,
         process.evtSelElectronEta,
         process.evtSelElectronPt,
@@ -613,11 +613,39 @@ def enableFactorization_makeZtoElecTauPlots(process):
         dqmDirectoryOut = 'harvested/gammaPlusJets_Pt30to50_factorized/zElecTauAnalyzer/'
     )
 
+    # configure sequence for applying factorization to "PhotonJets_Pt50to80" process
+    process.scaleZtoElecTau_gammaPlusJets_Pt50to80 = composeFactorizationSequence(
+        process = process,
+        processName = "gammaPlusJets_Pt50to80",
+        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/gammaPlusJets_Pt50to80/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+        evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
+        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/gammaPlusJets_Pt50to80/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+        evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
+        meName_numerator = meNameZtoElecTau_numerator,
+        meName_denominator = meNameZtoElecTau_denominator,
+        dqmDirectoryOut = 'harvested/gammaPlusJets_Pt50to80_factorized/zElecTauAnalyzer/'
+    )
+
+    # configure sequence for applying factorization to "PhotonJets_Pt80to120" process
+    process.scaleZtoElecTau_gammaPlusJets_Pt80to120 = composeFactorizationSequence(
+        process = process,
+        processName = "gammaPlusJets_Pt80to120",
+        dqmDirectoryIn_factorizedTightEvtSel = 'harvested/gammaPlusJets_Pt80to120/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+        evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
+        dqmDirectoryIn_factorizedLooseEvtSel = 'harvested/gammaPlusJets_Pt80to120/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+        evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
+        meName_numerator = meNameZtoElecTau_numerator,
+        meName_denominator = meNameZtoElecTau_denominator,
+        dqmDirectoryOut = 'harvested/gammaPlusJets_Pt80to120_factorized/zElecTauAnalyzer/'
+    )
+
     # compute gamma+jets background sum using factorized histograms and FilterStatistics objects
     process.addZtoElecTau_gammaPlusJetsSum.gammaPlusJetsSum.dqmDirectories_input = cms.vstring(
         'harvested/gammaPlusJets_Pt15to20_factorized',
         'harvested/gammaPlusJets_Pt20to30_factorized',
-        'harvested/gammaPlusJets_Pt30to50_factorized'
+        'harvested/gammaPlusJets_Pt30to50_factorized',
+        'harvested/gammaPlusJets_Pt50to80_factorized',
+        'harvested/gammaPlusJets_Pt80to120_factorized'
     )
 
     # compute QCD background sum using factorized histograms and FilterStatistics objects
@@ -625,12 +653,12 @@ def enableFactorization_makeZtoElecTauPlots(process):
         'harvested/QCD_BCtoE_Pt20to30_factorized',
         'harvested/QCD_BCtoE_Pt30to80_factorized',
         'harvested/QCD_BCtoE_Pt80to170_factorized',
-        'harvested/QCD_EMenriched_Pt20to30_factorized',
+		'harvested/QCD_EMenriched_Pt20to30_factorized',
         'harvested/QCD_EMenriched_Pt30to80_factorized',
         'harvested/QCD_EMenriched_Pt80to170_factorized'
     )
     process.addZtoElecTau = cms.Sequence(
-        process.scaleZtoElecTau_QCD_EMenriched_Pt20to30
+		process.scaleZtoElecTau_QCD_EMenriched_Pt20to30
        + process.scaleZtoElecTau_QCD_EMenriched_Pt30to80
        + process.scaleZtoElecTau_QCD_EMenriched_Pt80to170
        + process.scaleZtoElecTau_QCD_BCtoE_Pt20to30
@@ -639,6 +667,8 @@ def enableFactorization_makeZtoElecTauPlots(process):
        + process.scaleZtoElecTau_gammaPlusJets_Pt15to20
        + process.scaleZtoElecTau_gammaPlusJets_Pt20to30
        + process.scaleZtoElecTau_gammaPlusJets_Pt30to50
+       + process.scaleZtoElecTau_gammaPlusJets_Pt50to80
+       + process.scaleZtoElecTau_gammaPlusJets_Pt80to120
        + process.addZtoElecTau_qcdSum 
        + process.addZtoElecTau_gammaPlusJetsSum 
        + process.addZtoElecTau_smSum
