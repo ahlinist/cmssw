@@ -1,7 +1,13 @@
 <use name=JetMETAnalysis/JetUtilities>
 <use name=root>
 
+<bin name=ReadRelJECTree file=ReadRelJECTree.cc>
+</bin>
+
 <bin name=ReadDijetTree file=ReadDijetTree.cc>
+</bin>
+
+<bin name=ReadTrigger file=ReadTrigger.cc>
 </bin>
 
 <bin name=CombineSamples file=CombineSamples.cc>
