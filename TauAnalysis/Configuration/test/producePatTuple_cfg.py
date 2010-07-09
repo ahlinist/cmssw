@@ -12,7 +12,7 @@ process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'START3X_V27::All'
-
+#process.GlobalTag.globaltag = cms.string('GR_R_36X_V12::All')
 
 #--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
@@ -21,7 +21,7 @@ process.load("TauAnalysis.Configuration.producePatTuple_cff")
 # define configuration parameters for submission of jobs to CERN batch system 
 # (running over skimmed samples stored on CASTOR)
 #from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecMu_cfi import *
-#from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_7TeV_cfi import *
 #from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_10TeV_cfi import *
@@ -48,7 +48,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/spring10/MinBias_pythia6_0/skimElecTau_100_0.root'
+     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/spring10/MinBias_pythia6_0/skimElecTau_100_0.root'
 	)
 	#skipBadFiles = cms.untracked.bool(True)    
 )
@@ -112,9 +112,12 @@ from TauAnalysis.Configuration.tools.metTools import *
 # (set boolean parameter to true/false to enable/disable type-1 MET corrections)
 addPFMet(process, False)
 
-# uncomment to replace caloMET by pfMET in all di-tau objects
+# uncomment to replace caloMET by pfMET in all di-tau objects and tau-nu objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
+
+process.load("TauAnalysis.CandidateTools.tauNuPairProduction_cff")
+replaceMETforTauNu(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 
 from TauAnalysis.Configuration.tools.sysUncertaintyTools import *
 # uncomment to disable produceSysErrGenEventReweights sequence from PAT post-production
@@ -123,7 +126,7 @@ disableSysUncertainties_patTupleProduction(process)
 
 process.p = cms.Path(
 		process.producePatTuple
-		#  + process.printEventContent      
+            #    + process.printEventContent      
 		+ process.savePatTuple
 )
 
