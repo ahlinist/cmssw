@@ -142,3 +142,17 @@ patTupleEventContent.outputCommands.extend(
 patTupleEventContent.outputCommands.extend(
      [ 'keep *_offlineBeamSpot_*_*' ]
 )
+
+#--------------------------------------------------------------------------------
+# required by tau recoil energy
+#--------------------------------------------------------------------------------
+patTupleEventContent.outputCommands.extend(
+    [ 'keep *_towerMaker_*_*',
+      'keep *_patJets*_*_*' ]
+)
+
+
+patTupleEventContent.outputCommands.extend(
+    [ 'keep *_caloEventShapeVars_*_*',
+      'keep *_pfEventShapeVars_*_*' ]
+)
