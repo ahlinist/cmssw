@@ -26,6 +26,7 @@ selectedMEtTopology025 = cms.EDFilter("MEtTopologySelector",
 )
 
 
-produceMEtTopology = cms.Sequence( metTopologies
-                                   *selectedMEtTopology04
-                                   *selectedMEtTopology025)
+produceMEtTopology = cms.Sequence( metTopologies)
+
+selectMEtTopology = cms.Sequence( selectedMEtTopology04
+                                  *selectedMEtTopology025)
