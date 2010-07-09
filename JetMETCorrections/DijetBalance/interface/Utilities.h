@@ -16,7 +16,14 @@ void CalculateCorrection(bool UseRatioForResponse, double x, double ex, double y
 void Invert(TF1* f, double Min, double Max, double y, double& x);
 bool HistoExists(vector<string> LIST, string hname);
 int getBin(double x, vector<double> boundaries);
-
+bool contains(const vector<string>& collection,const string& element);
+bool contains(const vector<string>& collection,const string& element)
+{
+  vector<string>::const_iterator it;
+  for (it=collection.begin();it!=collection.end();++it)
+    if ((*it)==element) return true;
+  return false;
+}
 //////////////////////////////////////////////////////////////////////
 void GetMPV(TH1F* histo, TDirectory* Dir, double& peak, double& error, double& sigma, double& err_sigma)
 {

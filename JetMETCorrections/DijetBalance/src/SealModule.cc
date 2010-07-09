@@ -2,19 +2,19 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "JetMETCorrections/DijetBalance/interface/DijetBalanceTreeProducer.h"
-#include "JetMETCorrections/DijetBalance/interface/CaloTreeProducer.h"
-#include "JetMETCorrections/DijetBalance/interface/PFTreeProducer.h"
+#include "JetMETCorrections/DijetBalance/interface/RelJECTreeProducer.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/JPTJet.h"
 using namespace cms;
 using namespace reco;
-DEFINE_SEAL_MODULE();
+
+DEFINE_FWK_MODULE(RelJECTreeProducer);
+
 typedef DijetBalanceTreeProducer<CaloJet> CaloDBTreeProducer;
-DEFINE_ANOTHER_FWK_MODULE(CaloDBTreeProducer);
-typedef DijetBalanceTreeProducer<GenJet> GenDBTreeProducer;
-DEFINE_ANOTHER_FWK_MODULE(GenDBTreeProducer);
+DEFINE_FWK_MODULE(CaloDBTreeProducer);
 typedef DijetBalanceTreeProducer<PFJet> PFDBTreeProducer;
-DEFINE_ANOTHER_FWK_MODULE(PFDBTreeProducer);
-DEFINE_ANOTHER_FWK_MODULE(CaloTreeProducer);
-DEFINE_ANOTHER_FWK_MODULE(PFTreeProducer);
+DEFINE_FWK_MODULE(PFDBTreeProducer);
+typedef DijetBalanceTreeProducer<JPTJet> JPTDBTreeProducer;
+DEFINE_FWK_MODULE(JPTDBTreeProducer);
