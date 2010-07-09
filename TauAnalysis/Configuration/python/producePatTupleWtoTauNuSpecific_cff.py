@@ -33,7 +33,7 @@ producePatTupleWtoTauNuSpecific = cms.Sequence(
     selectTauNuPairs+
     selectTauNuPairsLooseIsolation+
     produceTauRecoilEnergy+
-    produceMEtTopology+
+    selectMEtTopology+
     selectPatMuons+
     selectPatElectrons+    
     selectPatTaus+
