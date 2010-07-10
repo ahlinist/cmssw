@@ -3,7 +3,6 @@
 
 /*
   Author: Jim Kowalkowski 01-02-06
-  $Id$
 
  */
 
@@ -37,6 +36,7 @@ namespace edm
                         ExactMatch = 3};
   }
 
+  class ParameterSetDescription;
   class EventSelector
   {
   public:
@@ -68,6 +68,8 @@ namespace edm
       maskTriggerResults(TriggerResults const& inputResults);
     static std::vector<std::string>
       getEventSelectionVString(edm::ParameterSet const& pset);
+
+    static void fillDescription(ParameterSetDescription& desc);
 
   private:
 
