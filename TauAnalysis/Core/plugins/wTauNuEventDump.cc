@@ -32,42 +32,44 @@ void wTauNuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   printEventSelectionInfo(filterResults_cumulative, filterResults_individual, outputStream_);
 
-  *outputStream_ << ">>GENERATOR LEVEL INFORMATION<<" << std::endl;
 
-  edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
-  iEvent.getByLabel(genParticleSource_, genParticleCollection);
-  edm::Handle<edm::View<reco::GenJet> > genTauJetCollection;
-  iEvent.getByLabel(genTauJetSource_, genTauJetCollection);
-  edm::Handle<edm::View<reco::GenJet> > genJetCollection;
-  iEvent.getByLabel("iterativeCone5GenJets", genJetCollection);
-
-  edm::Handle<pat::JetCollection> patJets;
-  iEvent.getByLabel(patJetSource_, patJets);
-
-  printGenParticleInfo(genParticleCollection, genTauJetCollection, outputStream_);
-  //  printGenJetInfo(genJetCollection, patJets, outputStream_);
-
-  bool matched = false;
-  for( edm::View<reco::GenJet>::const_iterator genJet = genJetCollection->begin();genJet != genJetCollection->end(); ++genJet){
-	if(genJet->pt() > 10){
-	  if(TMath::Abs(genJet->eta()) > 3)
-		*outputStream_<<"HIGH ETA GEN-JET!!! ";
-	  *outputStream_<<"gen-jet: Pt = "<<genJet->pt()<<", eta = "
-					<<genJet->eta()<<", phi = "
-					<<genJet->phi()*180./TMath::Pi()<<std::endl;
-	  matched = false;
-	  for ( pat::JetCollection::const_iterator patJet = patJets->begin(); patJet != patJets->end(); ++patJet ) {
-		
-		if( reco::deltaR(patJet->p4(), genJet->p4() ) < 0.5 ){
-		  *outputStream_<<"Matched with pat-jet: Pt = "<<patJet->pt()<<", eta = "<<patJet->eta()<<", phi = "<<patJet->phi()*180./TMath::Pi()<<std::endl;
-		  matched = true;
+  if( doGenInfo_){
+	*outputStream_ << ">>GENERATOR LEVEL INFORMATION<<" << std::endl;
+	
+	edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
+	iEvent.getByLabel(genParticleSource_, genParticleCollection);
+	edm::Handle<edm::View<reco::GenJet> > genTauJetCollection;
+	iEvent.getByLabel(genTauJetSource_, genTauJetCollection);
+	edm::Handle<edm::View<reco::GenJet> > genJetCollection;
+	iEvent.getByLabel("iterativeCone5GenJets", genJetCollection);
+	
+	edm::Handle<pat::JetCollection> patJets;
+	iEvent.getByLabel(patJetSource_, patJets);
+  
+	printGenParticleInfo(genParticleCollection, genTauJetCollection, outputStream_);
+	//  printGenJetInfo(genJetCollection, patJets, outputStream_);
+	
+	bool matched = false;
+	for( edm::View<reco::GenJet>::const_iterator genJet = genJetCollection->begin();genJet != genJetCollection->end(); ++genJet){
+	  if(genJet->pt() > 10){
+		if(TMath::Abs(genJet->eta()) > 3)
+		  *outputStream_<<"HIGH ETA GEN-JET!!! ";
+		*outputStream_<<"gen-jet: Pt = "<<genJet->pt()<<", eta = "
+					  <<genJet->eta()<<", phi = "
+					  <<genJet->phi()*180./TMath::Pi()<<std::endl;
+		matched = false;
+		for ( pat::JetCollection::const_iterator patJet = patJets->begin(); patJet != patJets->end(); ++patJet ) {
+		  
+		  if( reco::deltaR(patJet->p4(), genJet->p4() ) < 0.5 ){
+			*outputStream_<<"Matched with pat-jet: Pt = "<<patJet->pt()<<", eta = "<<patJet->eta()<<", phi = "<<patJet->phi()*180./TMath::Pi()<<std::endl;
+			matched = true;
+		  }
 		}
+		if(matched == false)
+		  *outputStream_<<"NO MATCH!!!"<<std::endl;
 	  }
-	  if(matched == false)
-		*outputStream_<<"NO MATCH!!!"<<std::endl;
 	}
   }
-    
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 
   tauDump_->print(iEvent, iSetup);
