@@ -183,7 +183,9 @@ void GenMatrixFit::model1dEntryType::print(std::ostream& stream) const
 {
   stream << "<model1dEntryType::print>:" << std::endl;
   stream << " name = " << name_ << std::endl;
-  stream << " prob = " << prob_->getVal() << std::endl;
+  const Double_t* binBoundaries = pdf1d_->getLimits();
+  double prob = getProbability(prob_->getVal(), binBoundaries);
+  stream << " prob = " << prob << std::endl;
 }
 
 //
@@ -294,7 +296,7 @@ std::string GenMatrixFit::modelNdEntryType::getRegionTitle(unsigned region, cons
 	operator_string = ">=";
       }
 
-      regionTitle << varName << " " << operator_string << " " << model1dEntries_[iVar]->pdf1d_->getLimits()[0];
+      regionTitle << varName << " " << operator_string << " " << model1dEntries_[iVar]->pdf1d_->getLimits()[1];
       if ( iVar < (numVar - 1) ) regionTitle << " && "; 
     }
 
@@ -891,9 +893,18 @@ void GenMatrixFit::saveFitResults()
     for ( std::vector<model1dEntryType*>::iterator model1dEntry = modelNdEntry->second->model1dEntries_.begin();
 	  model1dEntry != modelNdEntry->second->model1dEntries_.end(); ++model1dEntry ) {
       std::string probName = std::string((*model1dEntry)->name_).append("_prob");
-      double probValue, probErrUp, probErrDown;
-      getFitParameter((*model1dEntry)->prob_, probValue, probErrUp, probErrDown);
-      saveFitParameter(dqmStore, dqmDirectory_fitResult_, modelNdEntry->first, probName, probValue, probErrUp, probErrDown);
+
+//--- parameter useds to fir RooParametricStepFunction is actually probability density,
+//    not probability, so need to multiply by bin-width
+      double probDensity, probDensityErrUp, probDensityErrDown;
+      getFitParameter((*model1dEntry)->prob_, probDensity, probDensityErrUp, probDensityErrDown);
+
+      const Double_t* binBoundaries = (*model1dEntry)->pdf1d_->getLimits();
+      double prob = getProbability(probDensity, binBoundaries);
+      double probErrUp = getProbability(probDensityErrUp, binBoundaries);
+      double probErrDown = getProbability(probDensityErrDown, binBoundaries);
+
+      saveFitParameter(dqmStore, dqmDirectory_fitResult_, modelNdEntry->first, probName, prob, probErrUp, probErrDown);
     }
   }
 }
