@@ -12,6 +12,7 @@
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
 #include "utils.h"
 
+#include "TMath.h"
 #include "TH2F.h"
 #include "TStyle.h"
 #include "TCanvas.h"
@@ -133,7 +134,7 @@ public:
 	   }
 	 }
 
-         if (ibin!=0)
+         if (ibin>2)
 	 {
            const char* s = smode[ibin].c_str();
            TText tt;
@@ -143,6 +144,7 @@ public:
 	     tt.SetTextColor(3);
 	   tt.DrawTextNDC(0.3,0.5,s);
 	 }
+	 
       }
       else if ( o.name.find( "Info/LhcInfo/lhcFill") != std::string::npos )
       {
@@ -202,24 +204,24 @@ private:
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
 
-      
       int topBin = obj->GetNbinsY();
       int nbins = obj->GetNbinsX();
       int maxRange = nbins;
+
       for ( int i = nbins; i > 0; --i )
       {
 	if ( obj->GetBinContent(i,topBin) != 0 )
 	{
-	   maxRange = i;
+	   maxRange = TMath::Max(i+1,2);  // leave at least 2 bins
 	   break;
 	}
       }
+
       obj->GetXaxis()->SetRange(1,maxRange);
-      //obj->GetYaxis()->SetRange(1,topBin-1);
       obj->GetYaxis()->SetRange(1,topBin);
+
       gPad->SetGrid(1,1);
       gPad->SetLeftMargin(0.12);
-
       obj->SetStats( kFALSE );
 
       int pcol[2];
@@ -257,10 +259,11 @@ private:
       {
 	if ( obj->GetBinContent(i) != 0 )
 	{
-	   maxRange = i+1;
+	   maxRange = TMath::Max(i+1,2);
 	   break;
 	}
       }
+
       obj->GetXaxis()->SetRange(1,maxRange);
       obj->SetStats( kFALSE );
       obj->SetMinimum(-1.e-15);
@@ -272,8 +275,6 @@ private:
         gPad->SetLeftMargin(0.15);
         gPad->SetGrid(1,1);
       }
-      
-      // FIXME: put in last value as text
       
       return;
 
