@@ -57,4 +57,11 @@ def switchToData(process):
 		#process.selectedDiTauPairs1stTauChargeCumulative.srcGenParticles = cms.InputTag('')	
 		#process.selectedDiTauPairs1stTauChargeIndividual.srcGenParticles = cms.InputTag('')
 
-
+	# remove modules from the W->tau nu analysis sequence which run on GEN collections
+	if hasattr(process,"analyzeWtoTauNuEvents"):
+		process.analyzeWtoTauNuEvents.eventDumps[0].doGenInfo = cms.bool(False)
+		process.analyzeWtoTauNuEvents.eventDumps[0].genParticleSource = cms.InputTag('')
+		process.electronHistManager.genParticleSource = cms.InputTag('')
+		process.tauHistManager.genParticleSource = cms.InputTag('')
+		process.jetHistManager.genParticleSource = cms.InputTag('')
+		
