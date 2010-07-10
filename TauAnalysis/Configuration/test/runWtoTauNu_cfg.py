@@ -12,7 +12,8 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
+#process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
+process.GlobalTag.globaltag = cms.string('GR_R_36X_V12::All')
 
 # import configuration parameters for submission of jobs to CERN batch system
 from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_7TeV_cfi import *
@@ -34,9 +35,8 @@ process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
    maxEventsToPrint = cms.untracked.int32(100)
 )
 
-
 # import particle data table, needed for print-out of generator level information
-process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+#process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 #import sequences for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
@@ -68,7 +68,11 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/l/liis/SkimNov09/Wtaunu7TeV_PFCaloTauMet/wTauNuSkim_1.root'
+'file:patTuple.root'
+#    '/store/data/Run2010A/Mu/RECO/v2/000/136/088/D83846A0-8367-DF11-8287-0030487C6088.root'
+#    'file:../../Skimming/test/wTauNuSkim.root'
+#    'rfio:/castor/cern.ch/user/l/liis/wTauNuPatTuples/spring10/patTupleWtoTauNu_Wtaunu_7TeV_10_1_Y7M.root'
+        #'rfio:/castor/cern.ch/user/l/liis/SkimNov09/Wtaunu7TeV_PFCaloTauMet/wTauNuSkim_1.root'
         #'rfio:/castor/cern.ch/user/l/liis/CMSSW_31X/SelEvents/MinBias_RawPlusReco_10.root'
     )
 )
@@ -121,9 +125,6 @@ process.load("TauAnalysis.CandidateTools.tauNuPairProduction_cff")
 replaceMETforTauNu(process,
                                         cms.InputTag('patMETs'),
                                         cms.InputTag('patPFMETs'))
-
-# comment-out to add genMET with mu's to layer1MET (caloMET)
-#process.layer1METs.genMETSource = cms.InputTag('genMetTrue')
 #--------------------------------------------------------------------------------
 
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstElectron_cfi import *
@@ -131,9 +132,13 @@ pfRecoTauDiscriminationAgainstElectron.ApplyCut_EmFraction = cms.bool(False)
 pfRecoTauDiscriminationAgainstElectron.EmFraction_maxValue  = cms.double(0.85)
 
 from TauAnalysis.Configuration.tools.changeCut import *
-changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byIsolation') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byIsolation') > 0.5")
 changeCut(process, "selectedPatElectronsTightId","electronID('eidRobustTight') > 0")
+
+from TauAnalysis.Configuration.tools.switchToData import *
+# uncomment when running over DATA samples
+switchToData(process)#
 
 process.p = cms.Path( 
 #    process.CastorTowerReco
@@ -167,13 +172,9 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-if not hasattr(process, "isBatchMode"):   
-    process.p.replace(process.producePatTupleWtoTauNuSpecific, process.producePatTuple+process.producePatTupleWtoTauNuSpecific)
+#if not hasattr(process, "isBatchMode"):   
+#    process.p.replace(process.producePatTupleWtoTauNuSpecific, process.producePatTuple+process.producePatTupleWtoTauNuSpecific)
 #--------------------------------------------------------------------------------
-
-#replace reco->aod. Necessary for fast-sim produced qcd sample
-#from TauAnalysis.Configuration.tools.aodTools import *
-#switchToAOD(process, eventDumpPlugin = process.wTauNuEventDump)
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
