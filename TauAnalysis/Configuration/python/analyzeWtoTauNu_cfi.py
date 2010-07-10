@@ -25,16 +25,13 @@ pfEventShapeVarsHistManager.dqmDirectory_store = cms.string('PFEventShapeVars')
 
 wTauNuHistManagers = cms.vstring(
     'tauHistManager',
-    'muonHistManager',
-    'electronHistManager',
     'caloMEtHistManager',
     'pfMEtHistManager',
     'jetHistManager',
     'vertexHistManager',
-    'tauRecoilEnergyFromJetsHistManager',
     'tauRecoilEnergyFromCaloTowersHistManager',
-    'tauRecoilEnergyFromCentralCaloTowersHistManager',
-    'tauRecoilEnergyFromForwardCaloTowersHistManager',
+#    'tauRecoilEnergyFromCentralCaloTowersHistManager',
+#    'tauRecoilEnergyFromForwardCaloTowersHistManager',
     'metTopologyHistManager',
     'tauNuCandidateHistManager',
     'caloEventShapeVarsHistManager',
@@ -392,7 +389,7 @@ wTauNuAnalysisSequence = cms.VPSet(
         ),
  cms.PSet(
         filter = cms.string('evtSelMetTopology'),
-        title = cms.string('MET-topology < 0.3'),
+        title = cms.string('MET-topology < 0.25'),
         saveRunEventNumbers = cms.vstring('passed_cumulative')
         ),
     cms.PSet(
