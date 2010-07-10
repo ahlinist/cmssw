@@ -26,7 +26,7 @@ tauIdEffBinningZtoMuTau_genMatrix3d = cms.PSet(
             binning = cms.PSet(
                 boundaries = cms.vdouble(0.06),
                 min = cms.double(-0.01),
-                max = cms.double(10.)
+                max = cms.double(0.18)
             )
         ),
         cms.PSet(
@@ -71,7 +71,7 @@ tauIdEffBinningZtoMuTau_genMatrix4d = cms.PSet(
             binning = cms.PSet(
                 boundaries = cms.vdouble(0.06),
                 min = cms.double(-0.01),
-                max = cms.double(10.)
+                max = cms.double(0.18)
             )
         ),
         cms.PSet(
