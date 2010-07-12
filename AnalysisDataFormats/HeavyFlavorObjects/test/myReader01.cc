@@ -26,7 +26,7 @@ void myReader01::startAnalysis() {
 
 
 void myReader01::eventProcessing() {
-  TAnaTrack *pTrack;
+  TAnaTrack *pTrack, *pTrack_tag;
   TAnaTrack *pTrack1, *pTrack2;
   TAnaCand  *pCand;
   TAnaMuon  *pMuon;
@@ -35,17 +35,19 @@ void myReader01::eventProcessing() {
   fRun = fpEvt->fRunNumber;  
   TLorentzVector m1, m2, res;
   
- // int Npt = 6;
- // double PTbin[] = {0., 2., 3., 4., 5., 6., 20.};		 
-  									
- // int Neta = 5;							
- // double Etabin[] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
   
-  int Npt = 7;
-  double PTbin[] = {0., 2., 3., 4., 5., 6., 10., 20.};		 
+  
+  int Npt = 6;
+  double PTbin[] = {0., 2., 3., 4., 5., 6., 20.};		 
+  									
+  int Neta = 5;							
+  double Etabin[] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
+  
+ // int Npt = 7;
+ // double PTbin[] = {0., 2., 3., 4., 5., 6., 10., 20.};		 
   								
-  int Neta = 16;							
-  double Etabin[] = {-2.4, -2.1, -1.8, -1.5, -1.2, -0.9, -0.6, -0.3, 0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4};      
+ // int Neta = 16;							
+ // double Etabin[] = {-2.4, -2.1, -1.8, -1.5, -1.2, -0.9, -0.6, -0.3, 0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4};      
 
   int npt = 12;
   double pTbin[] = {0., 2., 2.5, 3., 3.5, 4., 4.5, 5., 5.5, 6., 7., 9., 20.};		//	used for t/m_EtaPT_neg/pos
@@ -68,7 +70,7 @@ void myReader01::eventProcessing() {
    ((TH1D*)fpHistFile->Get("n401"))->Fill(fpEvt->nSigTracks());     
   
   
-  fRes = 443;
+  fRes = 100553;
   
 /////////////////////////////////////////////////  ---- Truth Candidate
 
@@ -147,13 +149,52 @@ void myReader01::eventProcessing() {
    ((TH1D*)fpHistFile->Get("nT"))->Fill(trakermuon);
    ((TH1D*)fpHistFile->Get("nS"))->Fill(standalonemuon);
 
+  
+  
+ 
+      
+      
+////////////////////////////////////////////////  ---- Tag Muons Kinematics 
+  
+  cout << "------------------------------ Tag Muons Kinematics ----------------------------------------" << endl;
+  
+  int Globalmuon(0); 
+  for (int s = 0; s < fpEvt->nSigTracks(); ++s) {
+  	if ( s%2 == 1 ) continue;
+  	pTrack = fpEvt->getSigTrack(s);
+	
+	pTrack_tag = fpEvt->getRecTrack(pTrack->fIndex);
+	((TH1D*)fpHistFile->Get("stagMuID"))->Fill(pTrack_tag->fMuID);
+		
+	if ( pTrack_tag->fMuID == -1 ) continue; // Make sure that track is reconstructed as a muon !!
+	
+	if ( pTrack_tag->fPlab.Perp() < 3. ) continue;
+	if ( pTrack_tag->fPlab.Eta() > 2.4 ) continue;
+	if ( pTrack_tag->fPlab.Eta() < -2.4 ) continue;
+	
+	if ( !((pTrack_tag->fMuID & 0x1<<1) && (pTrack_tag->fMuID & 0x1<<2)) ) continue;
+		Globalmuon++;
+		cout << " Global Muon " << s << endl;		
+		((TH1D*)fpHistFile->Get("tagG101"))->Fill(pTrack_tag->fPlab.Perp());
+		
+		if ( (pTrack_tag->fMCID == 13) || (pTrack_tag->fMCID == -13) ) {	
+			
+			((TH1D*)fpHistFile->Get("tagMatchedG101"))->Fill(pTrack_tag->fPlab.Perp());
+			
+		}	
+	
+		
+   }
 
 ////////////////////////////////////////////////////// ---- (All) Muons Kinematics 
 	cout << "------------------------------ (All) Muons Kinematics ----------------------------------------" << endl;
-	
+	int glotra(0);
 	for (int m = 1; m < fpEvt->nMuons(); ++m) {
 
 		pMuon = fpEvt->getMuon(m);
+		
+		if ( pMuon->fMuID == -1 ) continue;
+		
 		((TH1D*)fpHistFile->Get("mMuID"))->Fill(pMuon->fMuID);
 		((TH1D*)fpHistFile->Get("mTimeNdof"))->Fill(pMuon->fTimeNdof);
 		if ( pMuon->fMuID & 0x1<<1 ) {
@@ -199,8 +240,13 @@ void myReader01::eventProcessing() {
 			((TH1D*)fpHistFile->Get("mC101a"))->Fill(pMuon->fInnerPlab.Perp());
 		}
 		
+		
+		if ( pMuon->fMuID & 0x1<<2 && pMuon->fMuID & 0x1<<1 ) glotra++;
+		
 	}
    
+   
+   ((TH1D*)fpHistFile->Get("nGT"))->Fill(glotra);
 ////////////////////////////////////////////////////// ---- RecTracks stuff
     
    cout << "------------------------------ RecTracks stuff ----------------------------------------" << endl;
@@ -215,15 +261,15 @@ void myReader01::eventProcessing() {
 		((TH1D*)fpHistFile->Get("r102a"))->Fill(pTrack->fPlab.Eta());
 		((TH1D*)fpHistFile->Get("r103a"))->Fill(pTrack->fPlab.Phi());
       		
-		if ( (pTrack->fPlab.Perp() <= 15.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+		if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 			((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 			}
 		
 		if ( pTrack->fMuID == -1 ) continue; // Make sure that track is reconstructed as a muon !!
 		
-		if ( pTrack->fMuID & 0x1<<1 ){
+		if ( (pTrack->fMuID & 0x1<<1) && (pTrack->fMuID & 0x1<<2)){
 			
-			if ( (pTrack->fPlab.Perp() <= 15.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >=
+			if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >=
 			-2.4)){
 				((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 			}
@@ -236,24 +282,24 @@ void myReader01::eventProcessing() {
 	     ((TH1D*)fpHistFile->Get("r102b"))->Fill(pTrack->fPlab.Eta());
 	     ((TH1D*)fpHistFile->Get("r103b"))->Fill(pTrack->fPlab.Phi());
 	     
-	     if ( (pTrack->fPlab.Perp() <= 15.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	     if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	     		((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	     	}
 		
 		if ( pTrack->fMuID == -1 ) continue; // Make sure that track is reconstructed as a muon !!
 		
-		if ( pTrack->fMuID & 0x1<<1 ){
+		if ( (pTrack->fMuID & 0x1<<1) && (pTrack->fMuID & 0x1<<2) ){
 			
-			if ( (pTrack->fPlab.Perp() <= 15.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+			if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 				((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 			}
 			
 		}
-	     } 
+	} 
 	   
 	if ( pTrack->fMuID == -1 ) continue; 
 	
-	if ( pTrack->fMuID & 0x1<<1 ){
+	if ( (pTrack->fMuID & 0x1<<1) && (pTrack->fMuID & 0x1<<2) && (pTrack->fPlab.Perp() >= 3.)){
 	
 		((TH1D*)fpHistFile->Get("r101c"))->Fill(pTrack->fPlab.Perp());
 		((TH1D*)fpHistFile->Get("r102c"))->Fill(pTrack->fPlab.Eta());
@@ -263,37 +309,25 @@ void myReader01::eventProcessing() {
 	   
 //     cout << "R: "; pTrack->dump(); 		
    }
-      
-////////////////////////////////////////// ------ T&P stuff
   
-  cout << "------------------------------ T&P stuff ----------------------------------------" << endl;
-    
+  
+////////////////////////////////////////// ------ Resonance Muons
+  
+  cout << "------------------------------ Resonance Muons ----------------------------------------" << endl;  
   TGenCand *pMom1, *pMom2;
-  TGenCand *pMom;
+  TGenCand *pMom;  
+  double index_pos1 = -1; double index_pos2 = -1; 
+  double index_neg1 = -1; double index_neg2 = -1;
   
-  bool cut = false;
+  bool a = false; bool b = false; bool c = false; bool d = false;
   
-  if ( fpEvt->nCands() > 0){
-  	for (int it = 0; it < fpEvt->nCands(); ++it) {
-		cout << "-----------Candidate Stuff-------------------" << endl;
-		pCand = fpEvt->getCand(it);
-		
-		if ( pCand->fType == 67 || pCand->fType == -67) continue;
-		
-		((TH1D*)fpHistFile->Get("c100"))->Fill(pCand->fMass);
-    		((TH1D*)fpHistFile->Get("c101"))->Fill(pCand->fPlab.Perp()); 
-   		((TH1D*)fpHistFile->Get("c102"))->Fill(pCand->fPlab.Eta());
-   		((TH1D*)fpHistFile->Get("c103"))->Fill(pCand->fPlab.Phi());
-    		((TH2D*)fpHistFile->Get("c150"))->Fill(pCand->fPlab.Perp() , pCand->fPlab.Eta());	
-		
-		pTrack1 = fpEvt->getSigTrack(2*it+1);
-		pTrack2 = fpEvt->getSigTrack(2*it);
-		cout << "pCand->fMass = " << pCand->fMass <<", pCand->fType = " << pCand->fType << endl;
-				
-		if ( pTrack1->fGenIndex == -99999 ) continue;
-		if ( pTrack1->fGenIndex == -1 ) continue;
-		if ( pTrack2->fGenIndex == -99999 ) continue;
-		if ( pTrack2->fGenIndex == -1 ) continue;
+  for (int it = 0; it < fpEvt->nCands(); ++it) {
+  	pCand = fpEvt->getCand(it);
+  	pTrack1 = fpEvt->getSigTrack(2*it+1);
+	pTrack2 = fpEvt->getSigTrack(2*it);
+	pTrack_tag = fpEvt->getRecTrack(pTrack2->fIndex);
+	
+  	if ( (pTrack1->fGenIndex >= 0) && (pTrack2->fGenIndex >= 0) ){
 			
 		pGEn1 = fpEvt->getGenCand(pTrack1->fGenIndex);
 		pGEn2 = fpEvt->getGenCand(pTrack2->fGenIndex);	
@@ -310,128 +344,221 @@ void myReader01::eventProcessing() {
 			cout << "pMom2->fID = " << pMom2->fID << endl;
 				
 			if ( pMom1->fID == fRes && pMom2->fID == fRes ){
-				
-				cout << "------Reduced Tree-------" << endl;
-				
-				pq = pTrack1->fQ;
-				cout << "pq = "<< pq <<endl;
-				pf = pTrack1->fPlab.Phi();
-				pe = pTrack1->fPlab.Eta();
-				pp = pTrack1->fPlab.Perp();
-				pm = pTrack1->fMuID;
-				
-				double p_theta = pTrack1->fPlab.Theta();		
-				double cot_p_theta = TMath::Tan(1/p_theta);			
-				double p_sqrt = TMath::Sqrt( 1 + cot_p_theta*cot_p_theta );
-					
-				pP = pTrack1->fPlab.Perp()*p_sqrt;
-				
-				cout << " pp = " << pp << " pP = " << pP << " p_theta = " << p_theta << endl;
-					
-				tq = pTrack2->fQ;
-				tf = pTrack2->fPlab.Phi();
-				te = pTrack2->fPlab.Eta();
-				tp = pTrack2->fPlab.Perp();
-				cout << "tp = "<< tp <<endl;
-				
-				double t_theta = pTrack2->fPlab.Theta();
-				double cot_t_theta = TMath::Tan(1/t_theta);			
-				double t_sqrt = TMath::Sqrt( 1 + cot_t_theta*cot_t_theta );
-				
-				tP = pTrack2->fPlab.Perp()*t_sqrt;
-				
-				cout << " tp = " << tp << " tP = " << tP << " t_theta = " << t_theta << endl;
-				
-				double deta = TMath::Abs(te - pe);
-				double dphi = TMath::Abs(tf - pf);
-				
-				dR = TMath::Sqrt((deta*deta)+(dphi*dphi));
-					
-				uf = pCand->fPlab.Phi();
-				cout << "uf = "<< uf <<endl;
-				ue = pCand->fPlab.Eta();
-				up = pCand->fPlab.Perp();
-				um = pCand->fMass;
-				fTree->Fill();
-				
-				
-				if (fRes ==  553 || fRes ==  100553 || fRes ==  200553){
-				
-				//	cut = (pTrack1->fPlab.Eta()*pTrack2->fPlab.Eta() > 0.);
-				//	cut = ( TMath::Abs(pTrack2->fPlab.Eta() - pTrack1->fPlab.Eta()) < 0.5 );
-					cut = true;
-					
-				}
-							
-				if (fRes ==  443 ){
 			
-				//	cut = ( TMath::Abs(pTrack1->fPlab.Eta()-pTrack2->fPlab.Eta()) > 0.5 );
-				//	cut = ( pTrack2->fPlab.Perp() > 4. && ( TMath::Abs(pTrack2->fPlab.Eta() - pTrack1->fPlab.Eta()) < 0.2 ) );
-				/*	if ( TMath::Abs(pTrack2->fPlab.Eta()) < 1.){ cut = ( pTrack2->fPlab.Perp() > 6. );}  // cut on tag muon's pt
-					if ( TMath::Abs(pTrack2->fPlab.Eta()) > 1.){ cut = true; }	*/
-					cut = true;
+  				if ( TMath::Abs(pTrack1->fPlab.Eta()-pTrack2->fPlab.Eta()) < 0.3 ) continue;
 				
-				}
-				
-				
-				if ( cut == false ) continue;
-
-				// 443 J/Psi , 553 Y(1S), 100553 Y(2S) and Y(3S) !??!?? 
-			
-				cout << " Signals are really comig from the resonance " <<endl;
-				
-				////////////////////////////////////////  Filling mtMatched histograms
-				
-				cout << "------------Filling mtMatched histograms-----------" <<endl;			
-					
-				for ( int ieta = 0; ieta < Neta; ++ieta ){
-					for ( int ipt = 0; ipt < Npt; ++ipt ){
-						if( ( pTrack1->fPlab.Eta() <= Etabin[ieta+1] ) && ( pTrack1->fPlab.Eta() > Etabin[ieta] ) ){
-							if ( ( pTrack1->fPlab.Perp() >= PTbin[ipt] ) && ( pTrack1->fPlab.Perp() < PTbin[ipt+1] ) ){
-								if ( pTrack1->fQ < 0 ){
-									((TH1D*)fpHistFile->Get(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", Etabin[ieta],
-									Etabin[ieta+1], PTbin[ipt], PTbin[ipt+1],charge[0])))->Fill(pCand->fMass);
-								}
-								if ( pTrack1->fQ > 0 ){
-									((TH1D*)fpHistFile->Get(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", Etabin[ieta],
-									Etabin[ieta+1], PTbin[ipt], PTbin[ipt+1], charge[1])))->Fill(pCand->fMass);
-								}
+  				if ( (pTrack1->fPlab.Perp() >= 3.) && (pTrack1->fPlab.Eta() <= 2.4) && (pTrack1->fPlab.Eta() >= -2.4) && (pTrack1->fMuID != -1) && (pTrack1->fMuID & 0x1<<1)  && (pTrack1->fMuID & 0x1<<2) ) {
+												
+						if ( pTrack1->fQ > 0 && index_pos1 != pTrack1->fGenIndex  && index_pos2 != pTrack1->fGenIndex ){
+							posmuoneta = pTrack1->fPlab.Eta();
+							posmuonpt = pTrack1->fPlab.Perp();
+							index_pos1 = pTrack1->fGenIndex;
+							cout << "POS pTrack1->fGenIndex = " << pTrack1->fGenIndex << endl;
+							a = true;
 							}
-						}
-					}	
-				}
-					
-				if ( (pTrack1->fMuID!= -1) && (pTrack1->fMuID & 0x1<<1) ){
-										
-				////////////////////////////////////////  Filling mmMatched histograms 
-				
-				cout << "------------Filling mmMatched histograms-----------" <<endl;
+						 if ( pTrack1->fQ < 0 && index_neg1 != pTrack1->fGenIndex  && index_neg2 != pTrack1->fGenIndex ){
+							negmuoneta = pTrack1->fPlab.Eta();
+							negmuonpt = pTrack1->fPlab.Perp();
+							index_neg1 = pTrack1->fGenIndex;
+							cout << "NEG pTrack1->fGenIndex = " << pTrack1->fGenIndex << endl;
+							b = true;
+							}
+					}		
 						
+  				if ( (pTrack2->fPlab.Perp() >= 3.) && (pTrack2->fPlab.Eta() <= 2.4) && (pTrack2->fPlab.Eta() >= -2.4) && (pTrack_tag->fMuID != -1) && (pTrack_tag->fMuID & 0x1<<1)  && (pTrack_tag->fMuID & 0x1<<2) ) {
+						
+						if ( pTrack2->fQ > 0  && index_pos1 != pTrack2->fGenIndex  && index_pos2 != pTrack2->fGenIndex ){
+							posmuoneta = pTrack2->fPlab.Eta();
+							posmuonpt = pTrack2->fPlab.Perp();
+							index_pos2 = pTrack2->fGenIndex;
+							cout << "POS pTrack2->fGenIndex = " << pTrack2->fGenIndex << endl;
+							c = true;
+							}
+						 if ( pTrack2->fQ < 0 && index_neg1 != pTrack2->fGenIndex  && index_neg2 != pTrack2->fGenIndex){
+							negmuoneta = pTrack2->fPlab.Eta();
+							negmuonpt = pTrack2->fPlab.Perp();
+							index_neg2 = pTrack2->fGenIndex;
+							cout << "NEG pTrack2->fGenIndex = " << pTrack2->fGenIndex << endl;
+							d = true;
+							}	
+					}
+				
+				
+				if ( !(a || c) ) { posmuoneta=-10 ; posmuonpt = -1;}
+				if ( !(b || d) ) { negmuoneta=-10 ; negmuonpt = -1;} 									
+				fTree1->Fill();		
+				}
+		}
+	}					
+  }
+      
+////////////////////////////////////////// ------ T&P stuff
+  
+  cout << "------------------------------ T&P stuff ----------------------------------------" << endl;
+    
+
+  
+  bool cut = false;
+  TString Label = "hltL1sL1SingleMu3:HLT::";
+  if ( fpEvt->nCands() > 0){
+  	for (int it = 0; it < fpEvt->nCands(); ++it) {
+		cout << "-----------Candidate Stuff-------------------" << endl;
+		pCand = fpEvt->getCand(it);
+		
+		((TH1D*)fpHistFile->Get("c100"))->Fill(pCand->fMass);
+		
+		if ( pCand->fType == 67 || pCand->fType == -67) continue;
+		
+		pTrack1 = fpEvt->getSigTrack(2*it+1);
+		pTrack2 = fpEvt->getSigTrack(2*it);
+		cout << "pCand->fMass = " << pCand->fMass <<", pCand->fType = " << pCand->fType << endl;
+		
+		pTrack_tag = fpEvt->getRecTrack(pTrack2->fIndex);
+		
+		if ( pTrack_tag->fMuID == -1 ) continue; // Make sure that track is reconstructed as a muon !!
+		if ( pTrack_tag->fPlab.Perp() < 3. ) continue;
+		if ( pTrack_tag->fPlab.Eta() > 2.4 ) continue;
+		if ( pTrack_tag->fPlab.Eta() < -2.4 ) continue;
+		if ( !((pTrack_tag->fMuID & 0x1<<1) && (pTrack_tag->fMuID & 0x1<<2)) ) continue;
+		
+		if  ( !isMatchedToTrig(pTrack_tag, Label) ) continue;
+				
+		if ( (pTrack1->fGenIndex >= 0) && (pTrack2->fGenIndex >= 0) ){
+			
+			pGEn1 = fpEvt->getGenCand(pTrack1->fGenIndex);
+			pGEn2 = fpEvt->getGenCand(pTrack2->fGenIndex);	
+				
+			cout << "pGEn1->fID = "  << pGEn1->fID << endl; 
+			cout << "pGEn2->fID = "  << pGEn2->fID << endl;
+		
+			if ( abs(pGEn1->fID) == 13 && abs(pGEn2->fID) == 13 ){
+		
+				pMom1 = fpEvt->getGenCand(pGEn1->fMom1);
+				pMom2 = fpEvt->getGenCand(pGEn2->fMom1);
+				
+				cout << "pMom1->fID = " << pMom1->fID << endl;
+				cout << "pMom2->fID = " << pMom2->fID << endl;
+				
+				if ( pMom1->fID == fRes && pMom2->fID == fRes ){
+				
+					cout << "------Reduced Tree-------" << endl;
+				
+					pq = pTrack1->fQ;
+					cout << "pq = "<< pq <<endl;
+					pf = pTrack1->fPlab.Phi();
+					pe = pTrack1->fPlab.Eta();
+					pp = pTrack1->fPlab.Perp();
+					pm = pTrack1->fMuID;
+				
+					double p_theta = pTrack1->fPlab.Theta();		
+					double cot_p_theta = TMath::Tan(1/p_theta);			
+					double p_sqrt = TMath::Sqrt( 1 + cot_p_theta*cot_p_theta );
+						
+					pP = pTrack1->fPlab.Perp()*p_sqrt;
+					
+					cout << " pp = " << pp << " pP = " << pP << " p_theta = " << p_theta << endl;
+					
+					tq = pTrack2->fQ;
+					tf = pTrack2->fPlab.Phi();
+					te = pTrack2->fPlab.Eta();
+					tp = pTrack2->fPlab.Perp();
+					cout << "tp = "<< tp <<endl;
+				
+					double t_theta = pTrack2->fPlab.Theta();
+					double cot_t_theta = TMath::Tan(1/t_theta);			
+					double t_sqrt = TMath::Sqrt( 1 + cot_t_theta*cot_t_theta );
+				
+					tP = pTrack2->fPlab.Perp()*t_sqrt;
+				
+					cout << " tp = " << tp << " tP = " << tP << " t_theta = " << t_theta << endl;
+				
+					double deta = TMath::Abs(te - pe);
+					double dphi = TMath::Abs(tf - pf);
+				
+					dR = TMath::Sqrt((deta*deta)+(dphi*dphi));
+					
+					uf = pCand->fPlab.Phi();
+					cout << "uf = "<< uf <<endl;
+					ue = pCand->fPlab.Eta();
+					up = pCand->fPlab.Perp();
+					um = pCand->fMass;
+					fTree->Fill();
+				
+				
+					if (fRes ==  553 || fRes ==  100553 || fRes ==  200553){
+				
+					//	cut = (pTrack1->fPlab.Eta()*pTrack2->fPlab.Eta() > 0.);
+					//	cut = ( TMath::Abs(pTrack2->fPlab.Eta() - pTrack1->fPlab.Eta()) < 0.5 );
+						cut = true;
+					
+					}
+							
+					if (fRes ==  443 ){
+			
+					//	cut = ( TMath::Abs(pTrack1->fPlab.Eta()-pTrack2->fPlab.Eta()) > 0.2 );
+					//	cut = ( pTrack2->fPlab.Perp() > 6. );
+					/*	if ( TMath::Abs(pTrack2->fPlab.Eta()) < 1.){ cut = ( pTrack2->fPlab.Perp() > 4. );}  // cut on tag muon's pt
+						if ( TMath::Abs(pTrack2->fPlab.Eta()) > 1.){ cut = true; }	*/
+						cut = true;
+				
+					}
+					
+					
+					if ( cut == false ) continue;
+
+					// 443 J/Psi , 553 Y(1S), 100553 Y(2S) and Y(3S) !??!?? 
+				
+					cout << " Signals are really comig from the resonance " <<endl;
+				
+					////////////////////////////////////////  Filling mtMatched histograms
+				
+					cout << "------------Filling mtMatched histograms-----------" <<endl;			
+					
 					for ( int ieta = 0; ieta < Neta; ++ieta ){
 						for ( int ipt = 0; ipt < Npt; ++ipt ){
 							if( ( pTrack1->fPlab.Eta() <= Etabin[ieta+1] ) && ( pTrack1->fPlab.Eta() > Etabin[ieta] ) ){
 								if ( ( pTrack1->fPlab.Perp() >= PTbin[ipt] ) && ( pTrack1->fPlab.Perp() < PTbin[ipt+1] ) ){
 									if ( pTrack1->fQ < 0 ){
-										((TH1D*)fpHistFile->Get(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", Etabin[ieta],											Etabin[ieta+1], PTbin[ipt], PTbin[ipt+1],charge[0])))->Fill(pCand->fMass);
+										((TH1D*)fpHistFile->Get(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", Etabin[ieta],
+										Etabin[ieta+1], PTbin[ipt], PTbin[ipt+1],charge[0])))->Fill(pCand->fMass);
 									}
 									if ( pTrack1->fQ > 0 ){
-										((TH1D*)fpHistFile->Get(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", Etabin[ieta],
-										Etabin[ieta+1], PTbin[ipt], PTbin[ipt+1],charge[1])))->Fill(pCand->fMass);
+										((TH1D*)fpHistFile->Get(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", Etabin[ieta],
+										Etabin[ieta+1], PTbin[ipt], PTbin[ipt+1], charge[1])))->Fill(pCand->fMass);
+									}
+								}
+							}
+						}	
+					}
+					
+					if ( (pTrack1->fMuID!= -1) && (pTrack1->fMuID & 0x1<<1)  && (pTrack1->fMuID & 0x1<<2) ){
+										
+					////////////////////////////////////////  Filling mmMatched histograms 
+				
+					cout << "------------Filling mmMatched histograms-----------" <<endl;
+						
+						for ( int ieta = 0; ieta < Neta; ++ieta ){
+							for ( int ipt = 0; ipt < Npt; ++ipt ){
+								if( ( pTrack1->fPlab.Eta() <= Etabin[ieta+1] ) && ( pTrack1->fPlab.Eta() > Etabin[ieta] ) ){
+									if ( ( pTrack1->fPlab.Perp() >= PTbin[ipt] ) && ( pTrack1->fPlab.Perp() < PTbin[ipt+1] ) ){
+										if ( pTrack1->fQ < 0 ){
+											((TH1D*)fpHistFile->Get(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", Etabin[ieta], Etabin[ieta+1], PTbin[ipt], PTbin[ipt+1],charge[0])))->Fill(pCand->fMass);
+										}
+										if ( pTrack1->fQ > 0 ){
+											((TH1D*)fpHistFile->Get(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", Etabin[ieta], Etabin[ieta+1], PTbin[ipt], PTbin[ipt+1],charge[1])))->Fill(pCand->fMass);
+										}
 									}
 								}
 							}
 						}
-					}
 			
+					}
+				
 				}
-				
-				
 			}
 			
 		}
-	
-		  
-	
+		
 		cut = false;
 		
 		if (fRes ==  553 || fRes ==  100553 || fRes ==  200553){
@@ -445,9 +572,9 @@ void myReader01::eventProcessing() {
 							
 		if (fRes ==  443 ){
 					
-	 	//	cut = ( TMath::Abs(pTrack1->fPlab.Eta()-pTrack2->fPlab.Eta()) > 0.5 );
-		//	cut = ( pTrack2->fPlab.Perp() > 4. && ( TMath::Abs(pTrack2->fPlab.Eta() - pTrack1->fPlab.Eta() ) < 0.2 ) );	
-		/*	if ( TMath::Abs(pTrack2->fPlab.Eta()) < 1.){ cut = ( pTrack2->fPlab.Perp() > 6. );}  // cut on tag muon's pt
+	 	//	cut = ( TMath::Abs(pTrack1->fPlab.Eta()-pTrack2->fPlab.Eta()) > 0.2 );
+		//	cut = ( pTrack2->fPlab.Perp() > 6. );	
+		/*	if ( TMath::Abs(pTrack2->fPlab.Eta()) < 1.){ cut = ( pTrack2->fPlab.Perp() > 4. );}  // cut on tag muon's pt
 			if ( TMath::Abs(pTrack2->fPlab.Eta()) > 1.){ cut = true; }	*/
 			cut = true;			
 		}
@@ -474,7 +601,7 @@ void myReader01::eventProcessing() {
 			}
 		}
 				
-		if ( (pTrack1->fMuID!= -1) && (pTrack1->fMuID & 0x1<<1) ){
+		if ( (pTrack1->fMuID!= -1) && (pTrack1->fMuID & 0x1<<1) && (pTrack1->fMuID & 0x1<<2) ){
 		
 		////////////////////////////////////////////  Filling the mm histograms
 			
@@ -500,7 +627,7 @@ void myReader01::eventProcessing() {
 		}
 		
 		
-		if ( !((pTrack1->fMuID!= -1) && (pTrack1->fMuID & 0x1<<1)) ){
+		if ( !((pTrack1->fMuID!= -1) && (pTrack1->fMuID & 0x1<<1) && (pTrack1->fMuID & 0x1<<2)) ){
 		
 		///////////////////////////////////////////  Filling mmbar histograms 
 		
@@ -566,6 +693,33 @@ void myReader01::eventProcessing() {
   
 }
 
+bool myReader01::isMatchedToTrig(TAnaTrack *pTag, TString Label){
+	bool a=false;
+	TTrgObj *pTrig;
+	TLorentzVector tag;
+	tag.SetPtEtaPhiM(pTag->fPlab.Pt(), pTag->fPlab.Eta(), pTag->fPlab.Phi(), 0.);
+	((TH1D*)fpHistFile->Get("tag_pt"))->Fill(pTag->fPlab.Pt());
+	for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+    		pTrig = fpEvt->getTrgObj(s);
+		//cout << "pTrig->fLabel is " << pTrig->fLabel << endl;
+		
+		if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+			cout << "pTrig->fLabel is " << pTrig->fLabel << endl;;
+			double dR = tag.DeltaR(pTrig->fP);
+	        	double dEta = TMath::Abs(pTag->fPlab.Eta() - pTrig->fP.Eta());
+			double dPhi = TMath::Abs(pTag->fPlab.Phi() - pTrig->fP.Phi());
+			((TH1D*)fpHistFile->Get("trig_dR"))->Fill(dR);
+			((TH1D*)fpHistFile->Get("trig_dEta"))->Fill(dEta);
+			((TH1D*)fpHistFile->Get("trig_dPhi"))->Fill(dPhi);
+		//	if ( (dPhi < 0.7) && (dPhi > 0.3) ) ((TH1D*)fpHistFile->Get("trig_dEta_aftercut"))->Fill(dEta);		// Used for J/Psi
+			if ( (dPhi < 0.55) && (dPhi > 0.15) ) ((TH1D*)fpHistFile->Get("trig_dEta_aftercut"))->Fill(dEta);		// Usedfor Ups1S
+			if ( (dPhi < 0.7) && (dPhi > 0.3) && (dEta < 0.14)) a=true;				
+	
+		}
+  	}
+	
+	return a;
+}
 
 // ----------------------------------------------------------------------
 void myReader01::fillHist() {
@@ -586,17 +740,17 @@ void myReader01::bookHist() {
 
 int x(2), w(10);  
 
-//int Npt = 6;
-//double PTbin[] = {0., 2., 3., 4., 5., 6., 20.};			//   used 	
+int Npt = 6;
+double PTbin[] = {0., 2., 3., 4., 5., 6., 20.};			//   used 	
 								//    for 
-//int Neta = 5;							//   mmbar
-//double Etabin[] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
+int Neta = 5;							//   mmbar
+double Etabin[] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
 
-int Npt = 7;
-double PTbin[] = {0., 2., 3., 4., 5., 6., 10., 20.};		 
+//int Npt = 7;
+//double PTbin[] = {0., 2., 3., 4., 5., 6., 10., 20.};		 
   								
-int Neta = 16;							
-double Etabin[] = {-2.4, -2.1, -1.8, -1.5, -1.2, -0.9, -0.6, -0.3, 0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4};      
+//int Neta = 16;							
+//double Etabin[] = {-2.4, -2.1, -1.8, -1.5, -1.2, -0.9, -0.6, -0.3, 0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4};      
 
 
 int npt = 12;
@@ -608,10 +762,10 @@ double etabin[] = {-2.4, -1.8, -1.5, -1.2, -1.0, -0.8, -0.6, 0., 0.6, 0.8, 1.0, 
 int ncharge = 1;
 int charge[] = {-1, 1};
 
-int binnum(30);
+int binnum(50);
 
-double lowmass(2.8);
-double highmass(3.4);
+double lowmass(8.7);
+double highmass(11.2);
 
 
 if ( fRes == 443 ){
@@ -699,6 +853,7 @@ h = new TH1D("n403", "ngencand", 1000, 0, 1000.);
 ////////////////////////////////////////////////  ---- Signal stuff 
 
 h = new TH1D("sMuID",  "MuID", 900, -10.,890.);
+h = new TH1D("stagMuID",  "MuID", 900, -10.,890.);
 
 h = new TH1D("sG101",  "Global Muons -- Pt", 60, 0., 30.);
 h = new TH1D("sG101a", "Global Muons in Barrel -- Pt", 60, 0., 30.);
@@ -719,6 +874,16 @@ h = new TH1D("sS102",  "Calo Muons -- Eta", 60, -3., 3.);
 h = new TH1D("nG", " # of Global Muons", 10, 0.,10.);
 h = new TH1D("nT", " # of Traker muons", 10, 0.,10.);
 h = new TH1D("nS", " # of Standalone muons", 10, 0.,10.);
+h = new TH1D("nGT", " # of Global&Tracker Muons", 10, 0.,10.);
+
+h = new TH1D("tagG101",  "Tag, Global Muons -- Pt", 60, 0., 30.);
+h = new TH1D("tagMatchedG101",  "Tag Matched, Global Muons -- Pt", 60, 0., 30.);
+
+h = new TH1D("tag_pt",  "tag_pt", 20, 0., 20.);
+h = new TH1D("trig_dR",  "trig_dR", 50, 0., 1.);
+h = new TH1D("trig_dEta",  "trig_dEta", 50, 0., 1.);
+h = new TH1D("trig_dPhi",  "trig_dPhi", 50, 0., 1.);
+h = new TH1D("trig_dEta_aftercut",  "trig_dEta", 50, 0., 1.);
 
 ///////////////////////////////////////////////   ----  Muon Stuff
 
@@ -758,8 +923,8 @@ h = new TH1D("r102a", "(Matched) Muon -- Eta, Neg", Neta, Etabin);
 h = new TH1D("r102b", "(Matched) Muon -- Eta, Pos", Neta, Etabin);
 h = new TH1D("r103a", "(Matched) Muon -- Phi, Neg", 40, -4., 4.);
 h = new TH1D("r103b", "(Matched) Muon -- Phi, Pos", 40, -4., 4.);
-h = new TH1D("r101c", "(Reco -- Global) Muon -- Pt, Neg", 60, 0., 30.);
-h = new TH1D("r102c", "(Reco -- Global) Muon -- Eta, Neg", 60, -3., 3.);
+h = new TH1D("r101c", "(Reco -- Global) Muon -- Pt, Neg", 34, 3., 20.);
+h = new TH1D("r102c", "(Reco -- Global) Muon -- Eta", 48, -2.4, 2.4);
 h = new TH1D("r103c", "(Reco -- Global) Muon -- Phi, Neg", 40, -4., 4.);
 
 k = new TH2D("tEtaPt_neg", "tEtaPt_neg", Neta, Etabin, Npt, PTbin);
@@ -824,6 +989,11 @@ fTree->Branch("ue",    &ue ,"ue/F");
 fTree->Branch("up",    &up ,"up/F");
 fTree->Branch("um",    &um ,"um/F");
 
+fTree1 = new TTree("muons", "muons");
+fTree1->Branch("posmuoneta", &posmuoneta ,"posmuoneta/F");
+fTree1->Branch("posmuonpt",  &posmuonpt ,"posmuonpt/F");
+fTree1->Branch("negmuoneta", &negmuoneta ,"negmuoneta/F");
+fTree1->Branch("negmuonpt",  &negmuonpt ,"negmuonpt/F");
 
 }
 
