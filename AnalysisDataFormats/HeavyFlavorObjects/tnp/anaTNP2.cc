@@ -152,18 +152,18 @@ void anaTNP2::loadFiles(const char *dir, int i) {
     //    string ufile = fDirectory + string("/") + string("ups1s/Ups1S_etacut0.3.root");   // with delta(eta) < 0.3 
     //    string ufile = fDirectory + string("/") + string("ups1s/summer09_Ups1S_eta0.5.root");   // with delta(eta) < 0.3 
     //    string ufile = fDirectory + string("/") + string("ups1s/Ups1STagandprobe_10TeV_sameHem.root");   // with delta(eta) < 0.3 
-    string ufile = fDirectory + string("/") + string("upsilon/Ups1STagAndProbe_7TeV_NewBinning.root");    
+    string ufile = fDirectory + string("/") + string("upsilon/Ups1STagAndProbe_7TeV_v3_tm.root");    
 
     fM[0] = new TFile(ufile.c_str()); lM[0] =  1.;
     //    ufile = fDirectory + string("/") + string("ups2s/Ups2S.root");
     //    ufile = fDirectory + string("/") + string("ups2s/summer09_Ups2S_eta0.5.root");
     //    ufile = fDirectory + string("/") + string("ups2s/Ups2STagandprobe_10TeV_sameHem.root");
-    ufile = fDirectory + string("/") + string("upsilon/Ups2STagAndProbe_7TeV_NewBinning.root");
+    ufile = fDirectory + string("/") + string("upsilon/Ups2STagAndProbe_7TeV_v3_tm.root");
     fM[1] = new TFile(ufile.c_str()); lM[1] =  5.732; 
     //    ufile = fDirectory + string("/") + string("ups3s/Ups3S.root");
     //    ufile = fDirectory + string("/") + string("ups3s/summer09_Ups3S_eta0.5.root");
     //    ufile = fDirectory + string("/") + string("ups3s/Ups3STagandprobe_10TeV_sameHem.root");
-    ufile = fDirectory + string("/") + string("upsilon/Ups3STagAndProbe_7TeV_NewBinning.root");
+    ufile = fDirectory + string("/") + string("upsilon/Ups3STagAndProbe_7TeV_v3_tm.root");
     fM[2] = new TFile(ufile.c_str()); lM[2] = 24.562; 
     cout << "Hello" << endl;
   }
@@ -214,9 +214,9 @@ void anaTNP2::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
-     // ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV_DeltaEta0.5.root");
-      ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV_NewBinning.root"); 
-      jfile = fDirectory + string("/jpsi/JpsiTagAndProbe_7TeV_NewBinning2_DeltaEtaInv0.5.root");
+      ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV_2Slumi_v3_tm.root");
+     // ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
+      jfile = fDirectory + string("/jpsi/JpsiTagAndProbe_7TeV_DeltaEta0.3Inv_v3_tm.root");
      // jfile = fDirectory + string("/jpsi/ppMuMuX_7TeV_JpsiBackground.root");  
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaTNP2::loadfiles()" << endl;
@@ -266,6 +266,8 @@ void anaTNP2::combineUpsilons() {
       h0->Add(h1);
       h0->Add(h2);
       
+     // h0->Scale(5.);
+      
       integerEntries(h0);
       
       h0->SetDirectory(f);
@@ -288,6 +290,8 @@ void anaTNP2::combineUpsilons() {
       H0->Add(H1);
       H0->Add(H2);
       
+     // H0->Scale(5.);
+            
       H0->SetDirectory(f);
     }
   }
@@ -367,7 +371,7 @@ void anaTNP2::makeAll(int channel) {
 
 
   // -- J/psi
-  if (channel & 2) {
+  if (channel & 2) {    
     init(fDirectory.c_str(), fMode);
     // -- fill histograms
     fSample = string("jpsi");
@@ -386,7 +390,8 @@ void anaTNP2::makeAll(int channel) {
     fitJpsi(1);
     fillPidTables(); 
     //  validation();
-    projections(); 
+    projections();    
+   // TFile *file = new TFile("ptDifference.root","RECREATE"); 
     allDifferences(2); 
   }
 
@@ -498,12 +503,12 @@ void anaTNP2::readPidTables(const char *sample) {
 void anaTNP2::allDifferences(int sample) {
   // sample = 0x1 Upsilon
   //          0x2 J/psi
-
+  
   double MIN(-0.1), MAX(0.1);    
  
   // -- mmbar vs mm/mt
   if (sample & 0x1) {
-    MIN = -0.05; MAX = 0.05;	
+    //MIN = -0.05; MAX = 0.05;	
     ptDifference(Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 Form("%s/PtMmbPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 MIN, MAX, "upsilon-tnp-mmb-pos.eps");
@@ -525,7 +530,7 @@ void anaTNP2::allDifferences(int sample) {
 
   // -- fit bias
   if (sample & 0x1) {
-    MIN = -0.05; MAX = 0.05;  
+    //MIN = -0.05; MAX = 0.05;  
     ptDifference(Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 Form("%s/PtMcpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 MIN, MAX, "upsilon-tnp-mcp-pos.eps");
@@ -547,7 +552,7 @@ void anaTNP2::allDifferences(int sample) {
 
   // -- selection bias
   if (sample & 0x1) {
-    MIN = -0.05; MAX = 0.05;
+    //MIN = -0.05; MAX = 0.05;
     ptDifference(Form("%s/PtMctPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 Form("%s/PtMcpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 MIN, MAX, "upsilon-mct-mcp-pos.eps");
@@ -570,7 +575,7 @@ void anaTNP2::allDifferences(int sample) {
 
   // -- The final difference
   if (sample & 0x1) {
-    MIN = -0.05; MAX = 0.05;
+    //MIN = -0.05; MAX = 0.05;
     ptDifference(Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 Form("%s/PtMctPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 MIN, MAX, "upsilon-tnp-mct-pos.eps");
@@ -592,7 +597,7 @@ void anaTNP2::allDifferences(int sample) {
 
   // -- NEG vs POS
   if (sample & 0x1) {
-    MIN = -0.05; MAX = 0.05;
+   // MIN = -0.05; MAX = 0.05;
     ptDifference(Form("%s/PtTnpNeg-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
 		 MIN, MAX, "upsilon-neg-pos.eps");
@@ -636,8 +641,9 @@ void anaTNP2::allDifferences(int sample) {
 // ----------------------------------------------------------------------
 void anaTNP2::ptDifference(const char *a, const char *b, double MIN, double MAX, const char *fname) {
 
+  
   PidTable td(a); 
-  PidTable tb(b); 
+  PidTable tb(b);
 
   td.setHistMinMax(0.8, 1.1);
   TH1D *hd = new TH1D("Hd", "", 40, MIN, MAX); 
@@ -666,7 +672,27 @@ void anaTNP2::ptDifference(const char *a, const char *b, double MIN, double MAX,
   tl->DrawLatex(0.12, 0.92, Form("mean: %4.3f", hd->GetMean())); 
   tl->DrawLatex(0.50, 0.92, Form("RMS:  %4.3f", hd->GetRMS())); 
   c1->SaveAs(Form("%s/bias-%s", fPtDirectory.c_str(), fname)); 
-
+   
+  
+  
+  if ( fname == "jpsi-mct-mcp-pos.eps" ){
+  	TFile file("BiasPos.root","recreate");
+  	TH2D *BiasPos = (TH2D*)h1->Clone();
+	BiasPos->SetName("BiasPos");
+	BiasPos->Write();
+  	//file.Write();
+	file.Close();
+  }
+  
+  if ( fname == "jpsi-mct-mcp-neg.eps" ){
+  	TFile file1("BiasNeg.root","recreate");
+  	TH2D *BiasNeg = (TH2D*)h1->Clone();
+	BiasNeg->SetName("BiasNeg");
+	BiasNeg->Write();
+  	//file.Write();
+	file1.Close();
+  }  
+  
 }
 
 
@@ -1984,8 +2010,10 @@ void anaTNP2::fitUpsilon(int mode) {
 	TH1D *hn_mt        = new TH1D("hn_mt"   , "hn_mt"   , 40, -4.,4.); 
 	TH1D *hn_mmbar     = new TH1D("hn_mmbar", "hn_mmbar", 40, -4.,4.);
 	
-  	gStyle->SetOptStat(PRINT); 
-  	gStyle->SetOptFit(PRINT); 
+//  	gStyle->SetOptStat(PRINT); 
+//  	gStyle->SetOptFit(PRINT);
+  	gStyle->SetOptStat(0000000000000); 
+  	gStyle->SetOptFit(00000000000000);		 
   	makeCanvas(1); 
   	c1->Clear();
   	c1->Divide(3,1);
@@ -3100,8 +3128,10 @@ void anaTNP2::fitJpsi(int mode) {
 	TH1D *hn_mt        = new TH1D("hn_mt"   , "hn_mt"   , 40, -4.,4.); 
 	TH1D *hn_mmbar     = new TH1D("hn_mmbar", "hn_mmbar", 40, -4.,4.);
 		
-  	gStyle->SetOptStat(PRINT); 
-  	gStyle->SetOptFit(PRINT); 
+  	//gStyle->SetOptStat(PRINT); 
+  	//gStyle->SetOptFit(PRINT);
+  	gStyle->SetOptStat(0000000000000); 
+  	gStyle->SetOptFit(00000000000000);		 
   	makeCanvas(1); 
   	c1->Clear();
   	c1->Divide(3,1); 
