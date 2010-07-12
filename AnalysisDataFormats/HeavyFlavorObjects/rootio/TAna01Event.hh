@@ -111,24 +111,19 @@ public:
 
   // -- Trigger words
   bool              fL1TDecision, fHLTDecision;
-  int               fL1Decision;
   #define NL1T 128
   #define NLTT 64
   #define NHLT 256
   // -- L1 trigger
   TString           fL1TNames[NL1T];
   int               fL1TPrescale[NL1T];
-  int               fL1TWords[NL1T];
-  int               fL1TWasRun[NL1T];
   bool              fL1TResult[NL1T];
   bool              fL1TMask[NL1T];
   bool              fL1TError[NL1T];
 
   // -- L1 technical trigger
   TString           fLTTNames[NLTT];
-  TString           fL1TTNames[32*NLTT];
   int               fLTTPrescale[NLTT];
-  int               fL1TTWords[NLTT];
   bool              fLTTResult[NLTT];
   bool              fLTTMask[NLTT];
   bool              fLTTError[NLTT];
@@ -136,7 +131,6 @@ public:
   // -- HLT
   TString           fHLTNames[NHLT];
   int               fHLTPrescale[NHLT];
-  int               fHLTWords[NHLT];
   bool              fHLTResult[NHLT];
   bool              fHLTWasRun[NHLT];
   bool              fHLTError[NHLT];
