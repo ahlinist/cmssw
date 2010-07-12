@@ -2,8 +2,8 @@
   \File BeamRenderPlugin
   \Display Plugin for BeamSpot DQM Histograms
   \author 
-  \version $Revision: 1.9 $
-  \date $Date: 2010/06/04 07:11:25 $
+  \version $Revision: 1.10 $
+  \date $Date: 2010/06/05 14:36:58 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -65,6 +65,10 @@ public:
     
     if ( dynamic_cast<TH2F*>( o.object ) ) {
       postDrawTH2F( c, o );
+    }
+
+    if ( dynamic_cast<TH1F*>( o.object ) ) {
+      postDrawTH1F( c, o );
     }
 
   }
@@ -189,6 +193,50 @@ private:
     if ( name.find( "reportSummaryMap" ) != std::string::npos ) {
       c->SetGridx();
       c->SetGridy();
+      return;
+    }
+
+  }
+
+  void postDrawTH1F( TCanvas *c, const VisDQMObject &o ) {
+
+    TH1F* obj = dynamic_cast<TH1F*>( o.object );
+    assert( obj );
+
+    std::string name = o.name.substr(o.name.rfind("/")+1);
+
+    if( ( o.name.find( "_lumi" )  != std::string::npos || 
+	  o.name.find( "_time" )  != std::string::npos ) &&
+	o.name.find( "_all" )  == std::string::npos && 
+	o.name.find( "nTrk" )  == std::string::npos &&
+	o.name.find( "bx" )  == std::string::npos ) {
+      gStyle->SetErrorX(0.);
+      obj->SetLineColor(2);
+      obj->SetMarkerStyle(20);
+      obj->SetMarkerSize(0.8);
+      obj->SetMarkerColor(4);
+      return;
+    }
+
+    if ( o.name.find( "_all" )  != std::string::npos ) {
+      c->SetGridy();
+      gStyle->SetErrorX(0.);
+      gStyle->SetEndErrorSize(0.);
+      obj->SetLineColor(2);
+      obj->SetMarkerStyle(20);
+      obj->SetMarkerSize(0.6);
+      obj->SetMarkerColor(4);
+      return;
+    }
+
+    if( o.name.find( "Trending" )  != std::string::npos ) {
+      c->SetGridy();
+      gStyle->SetErrorX(0.);
+      gStyle->SetEndErrorSize(0.);
+      obj->SetLineColor(2);
+      obj->SetMarkerStyle(20);
+      obj->SetMarkerSize(0.8);
+      obj->SetMarkerColor(4);
       return;
     }
 
