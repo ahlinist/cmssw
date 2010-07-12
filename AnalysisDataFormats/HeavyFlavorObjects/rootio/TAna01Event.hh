@@ -110,7 +110,8 @@ public:
   unsigned int      fTimeLo, fTimeHi; 
 
   // -- Trigger words
-  bool              fL1TDecision, fHLTDecision; 
+  bool              fL1TDecision, fHLTDecision;
+  int               fL1Decision;
   #define NL1T 128
   #define NLTT 64
   #define NHLT 256
@@ -118,12 +119,14 @@ public:
   TString           fL1TNames[NL1T];
   int               fL1TPrescale[NL1T];
   int               fL1TWords[NL1T];
+  int               fL1TWasRun[NL1T];
   bool              fL1TResult[NL1T];
   bool              fL1TMask[NL1T];
   bool              fL1TError[NL1T];
 
   // -- L1 technical trigger
   TString           fLTTNames[NLTT];
+  TString           fL1TTNames[32*NLTT];
   int               fLTTPrescale[NLTT];
   int               fL1TTWords[NLTT];
   bool              fLTTResult[NLTT];
