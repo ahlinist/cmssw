@@ -131,6 +131,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Int_t event;
 
       // Vertex distribution
+      Int_t nvertex;
       Float_t vx;
       Float_t vy;
       Float_t vz;
