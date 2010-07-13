@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 isolhbherechitreflaggerJETMET = cms.EDProducer(
     'IsolatedHBHERecHitReflaggerJETMET',
 
+    debug = cms.untracked.bool(False),
+
     hbheInput = cms.InputTag('hbhereco'),
     ecalInputs = cms.VInputTag(cms.InputTag("ecalRecHit","EcalRecHitsEB"), cms.InputTag("ecalRecHit","EcalRecHitsEE")),
     trackInput = cms.InputTag('generalTracks'),
@@ -34,9 +36,9 @@ isolhbherechitreflaggerJETMET = cms.EDProducer(
     TightHPDHits2 = cms.int32(3),
 
     LooseDiHitEne = cms.double(50.0),
-    TightDiHitEne = cms.double(30.0),
+    TightDiHitEne = cms.double(15.0),
     LooseMonoHitEne = cms.double(35.0),
-    TightMonoHitEne = cms.double(25.0),
+    TightMonoHitEne = cms.double(8.0),
 
     # which status bit to set when a hit is bad
     hbheFlagBit = cms.int32(31),

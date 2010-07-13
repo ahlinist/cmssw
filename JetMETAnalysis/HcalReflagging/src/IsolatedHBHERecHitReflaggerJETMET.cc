@@ -79,7 +79,8 @@ IsolatedHBHERecHitReflaggerJETMET::IsolatedHBHERecHitReflaggerJETMET(const edm::
   trackAssociator_()
 {
   produces<HBHERecHitCollection>();
-  produces<bool>("HBHERecHitReflaggerResult");
+  produces<int>("HBHERecHitReflaggerNumBadChannels");
+  produces<double>("HBHERecHitReflaggerSumEtBadChannels");
   trackAssociator_.useDefaultPropagator();
   edm::ParameterSet parameters = iConfig.getParameter<edm::ParameterSet>("TrackAssociatorParameters");
   trackParameters_.loadParameters( parameters );
@@ -141,6 +142,11 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
   objvalidator_.setEBRecHitCollection(&(*ebhits_h));
   objvalidator_.setEERecHitCollection(&(*eehits_h));
 
+  // get the calo geometry
+  edm::ESHandle<CaloGeometry> pG;
+  evSetup.get<CaloGeometryRecord>().get(pG);
+  const CaloGeometry* geo = pG.product();
+
   // organizer the hits
   PhysicsTowerOrganizer pto(iEvent, evSetup, hbhehits_h, ebhits_h, eehits_h, tracks_h, objvalidator_, *(ctcm.product()), trackAssociator_, trackParameters_);
   HBHEHitMapOrganizer organizer(hbhehits_h, objvalidator_, pto);
@@ -150,11 +156,10 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
   std::vector<HBHEHitMap> hpds;
   std::vector<HBHEHitMap> dihits;
   std::vector<HBHEHitMap> monohits;
-  double minenergy=10.0;
-  organizer.getRBXs(rbxs, minenergy);
-  organizer.getHPDs(hpds, minenergy);
-  organizer.getDiHits(dihits, minenergy);
-  organizer.getMonoHits(monohits, minenergy);
+  organizer.getRBXs(rbxs, LooseRBXEne1_<TightRBXEne1_ ? LooseRBXEne1_ : TightRBXEne1_);
+  organizer.getHPDs(hpds, LooseHPDEne1_<TightHPDEne1_ ? LooseHPDEne1_ : TightHPDEne1_);
+  organizer.getDiHits(dihits, LooseDiHitEne_<TightDiHitEne_ ? LooseDiHitEne_ : TightDiHitEne_);
+  organizer.getMonoHits(monohits, LooseMonoHitEne_<TightMonoHitEne_ ? LooseMonoHitEne_ : TightMonoHitEne_);
 
   if(debug_ && (rbxs.size()>0 || hpds.size()>0 || dihits.size()>0 || monohits.size()>0)) {
     std::cout << "------------------------------------" << std::endl;
@@ -231,6 +236,8 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
     }
   }
 
+  std::pair<int, double> NoisyHBHEHits(0,0);
+
   // prepare the output HBHE RecHit collection
   std::auto_ptr<HBHERecHitCollection> pOut(new HBHERecHitCollection());
   // loop over rechits, and set the new bit you wish to use
@@ -239,16 +246,22 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
     HBHERecHit newhit(*hit);
     if(noisehits.end()!=noisehits.find(hit)) {
       newhit.setFlagField(1, hbheFlagBit_);
+      ++NoisyHBHEHits.first;
+      GlobalPoint gp = geo->getPosition(hit->id());
+      double et = hit->energy()*gp.perp()/gp.mag();
+      NoisyHBHEHits.second += et;
     }
     pOut->push_back(newhit);
   }
 
   iEvent.put(pOut);
 
-  std::auto_ptr<bool> pOut2(new bool);
-  *pOut2=result;
-  iEvent.put(pOut2, "HBHERecHitReflaggerResult");
-  
+  std::auto_ptr<int> pOut2(new int);
+  *pOut2=NoisyHBHEHits.first;
+  std::auto_ptr<double> pOut3(new double);
+  *pOut3=NoisyHBHEHits.second;
+  iEvent.put(pOut2, "HBHERecHitReflaggerNumBadChannels");
+  iEvent.put(pOut3, "HBHERecHitReflaggerSumEtBadChannels");
 
   delete ecalSevLvlAlgo;
    
