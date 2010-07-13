@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.34 2010/06/07 15:13:20 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.35 2010/06/17 16:54:53 pandolf Exp $
 //
 //
 
@@ -313,9 +313,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 //   iEvent.getByLabel(JetPFsrcsis7_, pfjetssis7);
 
    //get jet correctors
- //const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
- //const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
- //const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
+   const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
+   const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
+   const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
  
    // get gen jet collection
    Handle<GenJetCollection> jetsgenite;
@@ -904,7 +904,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
              nPhotonsGen += 1;
              p4PhotonsGen += p4;
              //save photons and later check for conversions:
-             shortPtcls.push_back(*iPart); //(only if eta<3)
+             //photon conversions switched OFF!
+             //shortPtcls.push_back(*iPart); //(only if eta<3)
            } else {
              nHFEMGen += 1;
              p4HFEMGen += p4;
@@ -1187,6 +1188,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    maxptphoton1 = 0; maxptphoton2 = 0; maxptphoton3 = 0;
 
    // Get the primary vertex coordinates
+   nvertex = VertexHandle->size();
+
    vx = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->x() : 999.;
    vy = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->y() : 999.;
    vz = (VertexHandle->begin()->isValid()) ? VertexHandle->begin()->z() : 999.;
@@ -1577,10 +1580,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        ptJet_akt5[nJet_akt5] = it->pt();	 
 
        // Jet Energy Scale Corrections on-the-fly     
-//     CaloJet  correctedJet = *it;
-//     double scale = corrector_akt5->correction(it->p4());
-//     correctedJet.scaleEnergy(scale);
-//     ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
+       CaloJet  correctedJet = *it;
+       double scale = corrector_akt5->correction(it->p4());
+       correctedJet.scaleEnergy(scale);
+       ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
 
        eJet_akt5[nJet_akt5] = it->energy();	 
        etaJet_akt5[nJet_akt5] = it->eta();	 
@@ -1698,10 +1701,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      phiJet_pfakt5[nJet_pfakt5] = it->phi();	      
      
      // Jet Energy Scale Corrections on-the-fly     
-//   PFJet  correctedJet = *it;
-//   double scale = corrector_pfakt5->correction(it->p4());
-//   correctedJet.scaleEnergy(scale);
-//   ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
+     PFJet  correctedJet = *it;
+     double scale = corrector_pfakt5->correction(it->p4());
+     correctedJet.scaleEnergy(scale);
+     ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
 
      // Extra variables for PFlow studies
      Int_t nChargedHadrons = 0;
@@ -1856,10 +1859,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        phiJet_pfakt7[nJet_pfakt7] = it->phi();	      
      
        // Jet Energy Scale Corrections on-the-fly     
-//     PFJet  correctedJet = *it;
-//     double scale = corrector_pfakt7->correction(it->p4());
-//     correctedJet.scaleEnergy(scale);
-//     ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
+       PFJet  correctedJet = *it;
+       double scale = corrector_pfakt7->correction(it->p4());
+       correctedJet.scaleEnergy(scale);
+       ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
 
        // Extra variables for PFlow studies
        Int_t nChargedHadrons = 0;
@@ -2051,7 +2054,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    CaloMET const& calomet = calometcol->front();
    
    sMet = calomet.sumEt();
-   eMet = calomet.energy();	 
+   eMet = calomet.pt();	 
    phiMet = calomet.phi();	      
 
    // Fill tcMET
@@ -2060,7 +2063,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    MET const& tcmet = tcmetcol->front();
    
    stcMet = tcmet.sumEt();
-   etcMet = tcmet.et();
+   etcMet = tcmet.pt();
    phitcMet = tcmet.phi();
      
    // Fill pfMET
@@ -2069,7 +2072,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    PFMET const& pfmet = pfmetcol->front();
 
    spfMet = pfmet.sumEt();
-   epfMet = pfmet.energy();
+   epfMet = pfmet.pt();
    phipfMet = pfmet.phi();
 
    sMetGen = 0.;
@@ -2632,6 +2635,8 @@ GammaJetAnalyzer::beginJob()
   //HLT_Photon10_L1R HLT_Photon10_LooseEcalIso_TrackIso_L1R HLT_Photon15_L1R HLT_Photon20_LooseEcalIso_TrackIso_L1R HLT_Photon25_L1R HLT_Photon25_LooseEcalIso_TrackIso_L1R HLT_Photon30_L1R_1E31 HLT_Photon70_L1R
 
   //vertex info
+  m_tree->Branch("nvertex",&nvertex,"nvertex/I");
+
   m_tree->Branch("vxMC",&vxMC,"vxMC/F");
   m_tree->Branch("vyMC",&vyMC,"vyMC/F");
   m_tree->Branch("vzMC",&vzMC,"vzMC/F");
