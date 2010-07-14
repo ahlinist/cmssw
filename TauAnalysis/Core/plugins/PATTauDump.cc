@@ -54,7 +54,7 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
   evt.getByLabel(patTauSource_, patTaus);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSource_, genParticles);
+  if( genParticleSource_.label() != "") evt.getByLabel(genParticleSource_, genParticles);
 
   unsigned iTau = 0;
   for ( pat::TauCollection::const_iterator patTau = patTaus->begin(); 
@@ -108,7 +108,8 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " muVeto = " << patTau->tauID("againstMuon") << std::endl;
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patTau->vertex(), outputStream_);
-    *outputStream_ << "* matching gen. pdgId = " 
+    if( genParticleSource_.label() != "")
+		*outputStream_ << "* matching gen. pdgId = " 
 		   << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
     if ( printTauIdEfficiencies_ ) {
       *outputStream_ << " pat::Tau id. efficiencies (byStandardChain):" << std::endl
@@ -119,8 +120,6 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
       printTauEfficiency(*outputStream_, *patTau, "QCD, second highest Pt jet", "frByStandardChainDiJetSecondPtsim", "qcdDiJetSecondLeadJet");
       printTauEfficiency(*outputStream_, *patTau, "WplusJets", "frByStandardChainWJetssim", "WplusJets");
     }
-    *outputStream_ << "* matching gen. pdgId = " 
-		   << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
     ++iTau;
   }
   
