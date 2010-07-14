@@ -43,7 +43,7 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
   evt.getByLabel(patMuonSource_, patMuons);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSource_, genParticles);
+  if( genParticleSource_.label() != "") evt.getByLabel(genParticleSource_, genParticles);
 
   unsigned iMuon = 0;
   for ( pat::MuonCollection::const_iterator patMuon = patMuons->begin(); 
@@ -71,7 +71,8 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patMuon->vertex(), outputStream_);
     if ( isValidRef(patMuon->track()) ) *outputStream_ << " dIP = " << patMuon->track()->dxy(patMuon->vertex()) << std::endl;
-    *outputStream_ << "* matching gen. pdgId = " 
+    if( genParticleSource_.label() != "") 
+		*outputStream_ << "* matching gen. pdgId = " 
 		   << getMatchingGenParticlePdgId(patMuon->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
     ++iMuon; 
   }

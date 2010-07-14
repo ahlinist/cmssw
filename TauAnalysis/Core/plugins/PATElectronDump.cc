@@ -43,7 +43,7 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
   evt.getByLabel(patElectronSource_, patElectrons);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSource_, genParticles);
+  if( genParticleSource_.label() != "") evt.getByLabel(genParticleSource_, genParticles);
   
   unsigned iElectron = 0;
   for ( pat::ElectronCollection::const_iterator patElectron = patElectrons->begin(); 
@@ -72,7 +72,8 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
     *outputStream_ << " hcalIso = " << patElectron->hcalIso() << std::endl;
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patElectron->vertex(), outputStream_);
-    *outputStream_ << "* matching gen. pdgId = " 
+    if( genParticleSource_.label() != "") 
+		*outputStream_ << "* matching gen. pdgId = " 
 		   << getMatchingGenParticlePdgId(patElectron->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
     ++iElectron;
   }
