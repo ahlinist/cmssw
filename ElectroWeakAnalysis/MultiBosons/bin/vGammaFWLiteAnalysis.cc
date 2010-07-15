@@ -176,7 +176,7 @@ int main ( int argc, char ** argv )
 	(select.considerCut("ZInvisibleGamma") && trbn.accept("ZInvisibleGammaPath"))  ) {
       select(event,event_result);
     } else { continue; } 
-    /*
+    
     if(ZMuMuGammaHistos && 
        event_result[std::string("ZMuMuGamma")] &&
        select.considerCut("ZMuMuGamma")) {
@@ -214,56 +214,16 @@ int main ( int argc, char ** argv )
       if(wenugphotonHistos)      wenugphotonHistos->analyze(select.selectedWGammaPhotons());
       
       WENuGammaHistos->analyze(select.selectedWENuGammaCands());
-    }   
-    */
+    }  
     /*
-    if(ZNuNuGammaHists && 
+    if(ZNuNuGammaHistos && 
        event_result[std::string("ZInivisibleGamma")] &&
        select.considerCut("ZInvisibleGamma")) {
-      if(znunugmetHistos)              metHistos->analyze(select.photonPlusMETSelector().selectedMETs());
-      if(znunugphotonHistos)           photonHistos->analyze(select.photonPlusMETSelector().selectedPhotons());
+      if(znunugmetHistos)              znunugmetHistos->analyze(select.photonPlusMETSelector().selectedMETs());
+      if(znunugphotonHistos)           znunugphotonHistos->analyze(select.photonPlusMETSelector().selectedPhotons());
       
       ZNuNuGammaHistos->analyze(select.selectedZNuNuGammaCands());
-    }
-    */
-    /*
-    if(ZMuMuGammaHistos) {
-      if(zgmuonHistos)          zgmuonHistos->analyze(select.allMuons());
-      if(diMuonHistos)          diMuonHistos->analyze(select.allDiMuons());
-      if(zmumugphotonHistos)    zmumugphotonHistos->analyze(select.allPhotons());
-
-      ZMuMuGammaHistos->analyze(select.allZMuMuGammaCands());
-    }
-    if(ZEEGammaHistos) {
-      if(zgelectronHistos)      zgelectronHistos->analyze(select.allElectrons());
-      if(diElectronHistos)      diElectronHistos->analyze(select.allDiElectrons());
-      if(zeegphotonHistos)      zeegphotonHistos->analyze(select.allPhotons());
-
-      ZEEGammaHistos->analyze(select.allZEEGammaCands());
-    }
-    if(WMuNuGammaHistos) {
-      if(wgmuonHistos)          wgmuonHistos->analyze(select.allMuons());
-      if(wmunugmetHistos)       wmunugmetHistos->analyze(select.allMETs());
-      if(muonPlusMETHistos)     muonPlusMETHistos->analyze(select.allMuonPlusMETs());
-      if(wmunugphotonHistos)    wmunugphotonHistos->analyze(select.allPhotons());
-
-      WMuNuGammaHistos->analyze(select.allWMuNuGammaCands());
-    }
-    if(WENuGammaHistos) {
-      if(wgelectronHistos)      wgelectronHistos->analyze(select.allElectrons());
-      if(wenugmetHistos)        wenugmetHistos->analyze(select.allMETs());
-      if(electronPlusMETHistos) electronPlusMETHistos->analyze(select.allElectronPlusMETs());
-      if(wenugphotonHistos)     wenugphotonHistos->analyze(select.allPhotons());
-      
-
-      WENuGammaHistos->analyze(select.allWENuGammaCands());
-    }
-    if(ZNuNuGammaHistos) {
-      if(znunugmetHistos)       znunugmetHistos->analyze(select.allMETs());
-      if(znunugphotonHistos)    znunugphotonHistos->analyze(select.allPhotons());
-
-      ZNuNuGammaHistos->analyze(select.allZNuNuGammaCands());
-    }
+    }    
     */
   } // end loop over events
   
