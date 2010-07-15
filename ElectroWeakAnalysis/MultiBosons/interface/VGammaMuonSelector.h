@@ -23,6 +23,9 @@ class VGammaMuonSelector : public Selector<pat::Muon> {
   bool operator()( const pat::Muon &, 
 		   pat::strbitset & );
 
+  bool operator()( const pat::Muon*,
+		   pat::strbitset& );
+
   bool Jun252010Cuts( const pat::Muon& mu,
 		      pat::strbitset & ret );
 

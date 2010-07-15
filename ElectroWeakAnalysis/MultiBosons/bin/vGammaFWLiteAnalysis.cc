@@ -5,6 +5,8 @@
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/FWLite/interface/ChainEvent.h"
 #include "DataFormats/FWLite/interface/MultiChainEvent.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
@@ -159,10 +161,22 @@ int main ( int argc, char ** argv )
         
     edm::EventBase const & event = ev;
 
+    //edm::Handle<edm::TriggerResults> skimResults;
+    //event.getByLabel(edm::InputTag("TriggerResults","","PAT"),skimResults);
+
+    const edm::TriggerResultsByName& trbn = event.triggerResultsByName("PAT");
+
+    // get selector bit template and fill
     pat::strbitset event_result = select.getBitTemplate();
-
-    select(event,event_result);
-
+    
+    if( (select.considerCut("ZMuMuGamma")      && trbn.accept("ZMuMuGammaPath"))     ||
+        (select.considerCut("ZEEGamma")        && trbn.accept("ZEEGammaPath"))       ||
+	(select.considerCut("WMuNuGamma")      && trbn.accept("WMuNuGammaPath"))     ||
+	(select.considerCut("WENuGamma")       && trbn.accept("WENuGammaPath"))      ||
+	(select.considerCut("ZInvisibleGamma") && trbn.accept("ZInvisibleGammaPath"))  ) {
+      select(event,event_result);
+    } else { continue; } 
+    /*
     if(ZMuMuGammaHistos && 
        event_result[std::string("ZMuMuGamma")] &&
        select.considerCut("ZMuMuGamma")) {
@@ -201,17 +215,18 @@ int main ( int argc, char ** argv )
       
       WENuGammaHistos->analyze(select.selectedWENuGammaCands());
     }   
+    */
     /*
     if(ZNuNuGammaHists && 
-       event_result[std::string("ZNuNuGamma")] &&
-       select.considerCut("ZNuNuGamma")) {
+       event_result[std::string("ZInivisibleGamma")] &&
+       select.considerCut("ZInvisibleGamma")) {
       if(znunugmetHistos)              metHistos->analyze(select.photonPlusMETSelector().selectedMETs());
       if(znunugphotonHistos)           photonHistos->analyze(select.photonPlusMETSelector().selectedPhotons());
       
       ZNuNuGammaHistos->analyze(select.selectedZNuNuGammaCands());
     }
     */
-    
+    /*
     if(ZMuMuGammaHistos) {
       if(zgmuonHistos)          zgmuonHistos->analyze(select.allMuons());
       if(diMuonHistos)          diMuonHistos->analyze(select.allDiMuons());
@@ -249,7 +264,7 @@ int main ( int argc, char ** argv )
 
       ZNuNuGammaHistos->analyze(select.allZNuNuGammaCands());
     }
-    
+    */
   } // end loop over events
   
   std::cout << "\rProcessing is 100.0% complete..." << std::flush;      

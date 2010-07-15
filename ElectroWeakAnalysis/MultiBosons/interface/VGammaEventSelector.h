@@ -26,21 +26,21 @@ class VGammaEventSelector : public EventSelector {
   using EventSelector::operator();
 
   // all objects present in event of various types
-  std::vector<pat::Photon>   const& allPhotons()   const { return allPhotons_; }
-  std::vector<pat::Electron> const& allElectrons() const { return allElectrons_; }
-  std::vector<pat::Muon>     const& allMuons()     const { return allMuons_; }
-  std::vector<pat::MET>      const& allMETs()      const { return allMETs_; }
+  std::vector<pat::Photon>   const& allPhotons()   const { return *allPhotons_; }
+  std::vector<pat::Electron> const& allElectrons() const { return *allElectrons_; }
+  std::vector<pat::Muon>     const& allMuons()     const { return *allMuons_; }
+  std::vector<pat::MET>      const& allMETs()      const { return *allMETs_; }
 
-  std::vector<reco::CompositeCandidate> const& allDiMuons()          const { return allDiMuons_; }
-  std::vector<reco::CompositeCandidate> const& allDiElectrons()      const { return allDiElectrons_; }
-  std::vector<reco::CompositeCandidate> const& allMuonPlusMETs()     const { return allMuonPlusMETs_; }
-  std::vector<reco::CompositeCandidate> const& allElectronPlusMETs() const { return allElectronPlusMETs_; }
+  std::vector<reco::CompositeCandidate> const& allDiMuons()          const { return *allDiMuons_; }
+  std::vector<reco::CompositeCandidate> const& allDiElectrons()      const { return *allDiElectrons_; }
+  std::vector<reco::CompositeCandidate> const& allMuonPlusMETs()     const { return *allMuonPlusMETs_; }
+  std::vector<reco::CompositeCandidate> const& allElectronPlusMETs() const { return *allElectronPlusMETs_; }
   
-  std::vector<reco::CompositeCandidate> const& allZMuMuGammaCands() const { return allZMuMuGammaCands_; }
-  std::vector<reco::CompositeCandidate> const& allZEEGammaCands()  const { return allZEEGammaCands_; }
-  std::vector<reco::CompositeCandidate> const& allWENuGammaCands()  const { return allWENuGammaCands_; }
-  std::vector<reco::CompositeCandidate> const& allWMuNuGammaCands() const { return allWMuNuGammaCands_; }
-  std::vector<reco::CompositeCandidate> const& allZNuNuGammaCands() const { return allZNuNuGammaCands_; }
+  std::vector<reco::CompositeCandidate> const& allZMuMuGammaCands() const { return *allZMuMuGammaCands_; }
+  std::vector<reco::CompositeCandidate> const& allZEEGammaCands()   const { return *allZEEGammaCands_; }
+  std::vector<reco::CompositeCandidate> const& allWENuGammaCands()  const { return *allWENuGammaCands_; }
+  std::vector<reco::CompositeCandidate> const& allWMuNuGammaCands() const { return *allWMuNuGammaCands_; }
+  std::vector<reco::CompositeCandidate> const& allZNuNuGammaCands() const { return *allZNuNuGammaCands_; }
 
   // photons  
   std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaPhotons()     const 
@@ -148,21 +148,21 @@ class VGammaEventSelector : public EventSelector {
   std::string                 photonTrig_; // Photon and met triggers not implemented yet.
   std::string                 metTrig_;    // These flags do nothing at the moment.
 
-  std::vector<pat::Photon>   allPhotons_;
-  std::vector<pat::Muon>     allMuons_;
-  std::vector<pat::Electron> allElectrons_;
-  std::vector<pat::MET>      allMETs_;
+  edm::Handle<std::vector<pat::Photon> >   allPhotons_;
+  edm::Handle<std::vector<pat::Muon> >     allMuons_;
+  edm::Handle<std::vector<pat::Electron> > allElectrons_;
+  edm::Handle<std::vector<pat::MET> >      allMETs_;
 
-  std::vector<reco::CompositeCandidate> allDiMuons_;
-  std::vector<reco::CompositeCandidate> allDiElectrons_;
-  std::vector<reco::CompositeCandidate> allMuonPlusMETs_;
-  std::vector<reco::CompositeCandidate> allElectronPlusMETs_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allDiMuons_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allDiElectrons_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allMuonPlusMETs_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allElectronPlusMETs_;
 
-  std::vector<reco::CompositeCandidate> allZEEGammaCands_;
-  std::vector<reco::CompositeCandidate> allZMuMuGammaCands_;
-  std::vector<reco::CompositeCandidate> allWENuGammaCands_;
-  std::vector<reco::CompositeCandidate> allWMuNuGammaCands_;
-  std::vector<reco::CompositeCandidate> allZNuNuGammaCands_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allZEEGammaCands_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allZMuMuGammaCands_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allWENuGammaCands_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allWMuNuGammaCands_;
+  edm::Handle<std::vector<reco::CompositeCandidate> > allZNuNuGammaCands_;
   
   std::vector<reco::ShallowClonePtrCandidate> selectedZGammaPhotons_;
   std::vector<reco::ShallowClonePtrCandidate> selectedWGammaPhotons_;
