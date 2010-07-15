@@ -47,7 +47,7 @@ process.outputs = cms.PSet (
     outputName = cms.string('analysisPlots_ttbar.root')
 )
 
-#process.maxEvents = cms.PSet(input = cms.untracked.int64(1000) )
+process.maxEvents = cms.PSet(input = cms.untracked.int64(-1) )
 
 ## Define the selector configuration you want to use in FWLite
 from ElectroWeakAnalysis.MultiBosons.Selectors.vGammaSelector_cfi import sw_commissioning_selection
@@ -55,8 +55,9 @@ from ElectroWeakAnalysis.MultiBosons.Selectors.vGammaSelector_cfi import sw_comm
 process.SelectorConfig = sw_commissioning_selection.copy()
 
 process.SelectorConfig.cutsToIgnore = cms.vstring("ZEEGamma",
+                                                  "WMuNuGamma",
                                                   "WENuGamma",
-                                                  "ZNuNuGamma")
+                                                  "ZInvisibleGamma")
 
 ## Create the histogram definitions for the FWLite program
 from ElectroWeakAnalysis.MultiBosons.Histogramming.muonHistos_cfi import muonHistos
@@ -82,22 +83,22 @@ process.ZMuMuGamma = cms.PSet(
     
     )
 
-process.WMuNuGamma = cms.PSet(
-    muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
-                          histograms = muonHistos.histograms.copy(),
-                          outputDirectory = cms.string('WMuNuGamma/Muons'),
-                          eventWeight = cms.double(1.0)
-                          ),
-    photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
-                            histograms = photonHistos.histograms.copy(),
-                            outputDirectory = cms.string('WMuNuGamma/Photons'),
-                            eventWeight = cms.double(1.0)
-                            ),
-    WMuNuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
-                                histograms = mmgHistos.histograms.copy(),
-                                outputDirectory = cms.string('WMuNuGamma'),
-                                eventWeight = cms.double(1.0)
-                                )
-    
-    )
+#process.WMuNuGamma = cms.PSet(
+#    muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
+#                          histograms = muonHistos.histograms.copy(),
+#                          outputDirectory = cms.string('WMuNuGamma/Muons'),
+#                          eventWeight = cms.double(1.0)
+#                          ),
+#    photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
+#                            histograms = photonHistos.histograms.copy(),
+#                            outputDirectory = cms.string('WMuNuGamma/Photons'),
+#                            eventWeight = cms.double(1.0)
+#                            ),
+#    WMuNuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
+#                                histograms = mmgHistos.histograms.copy(),
+#                                outputDirectory = cms.string('WMuNuGamma'),
+#                                eventWeight = cms.double(1.0)
+#                                )
+#    
+#    )
 
