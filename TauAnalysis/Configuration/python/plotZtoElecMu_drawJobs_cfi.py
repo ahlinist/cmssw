@@ -10,15 +10,15 @@ plots_ZtoElecMu = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            #'ZmumuPlusJets',
-            'Zmumu',
-            #'ZeePlusJets',
-            'Zee',
+            'ZmumuPlusJets',
+            #'Zmumu',
+            'ZeePlusJets',
+            #'Zee',
             'WplusJets',
             'TTplusJets',
             'qcdSum',
-            'ZtautauPlusJets',
-            'Ztautau'
+            'ZtautauPlusJets'
+            #'Ztautau'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -28,15 +28,15 @@ plots_ZtoElecMu = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        #'ZmumuPlusJets',
-        'Zmumu',
-        #'ZeePlusJets',
-        'Zee',
+        'ZmumuPlusJets',
+        #'Zmumu',
+        'ZeePlusJets',
+        #'Zee',
         'WplusJets',
         'TTplusJets',
         'qcdSum',
-        'ZtautauPlusJets',
-        'Ztautau'
+        'ZtautauPlusJets'
+        #'Ztautau'
     )
 )
 

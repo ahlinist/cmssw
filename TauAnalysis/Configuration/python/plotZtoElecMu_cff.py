@@ -8,16 +8,17 @@ import copy
 #
 
 # uncomment next line to make plots for 10 TeV centre-of-mass energy
-from TauAnalysis.Configuration.plotZtoElecMu_processes_10TeV_cfi import *
+#from TauAnalysis.Configuration.plotZtoElecMu_processes_10TeV_cfi import *
 # uncomment next line to make plots for 7 TeV centre-of-mass energy
-#from TauAnalysis.Configuration.plotZtoElecMu_processes_7TeV_cfi import *
+from TauAnalysis.Configuration.plotZtoElecMu_processes_7TeV_cfi import *
 from TauAnalysis.Configuration.plotZtoElecMu_drawJobs_cfi import *
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 loadZtoElecMu = cms.EDAnalyzer("DQMFileLoader",
-    Ztautau = copy.deepcopy(processZtoElecMu_Ztautau.config_dqmFileLoader),
-    #ZmumuPlusJets = copy.deepcopy(processZtoElecMu_ZmumuPlusJets.config_dqmFileLoader),
-    Zmumu = copy.deepcopy(processZtoElecMu_Zmumu.config_dqmFileLoader),
+    ZtautauPlusJets = copy.deepcopy(processZtoElecMu_ZtautauPlusJets.config_dqmFileLoader),                           
+    #Ztautau = copy.deepcopy(processZtoElecMu_Ztautau.config_dqmFileLoader),
+    ZmumuPlusJets = copy.deepcopy(processZtoElecMu_ZmumuPlusJets.config_dqmFileLoader),
+    #Zmumu = copy.deepcopy(processZtoElecMu_Zmumu.config_dqmFileLoader),
     ZeePlusJets = copy.deepcopy(processZtoElecMu_ZeePlusJets.config_dqmFileLoader),                           
     #Zee = copy.deepcopy(processZtoElecMu_Zee.config_dqmFileLoader),
     WplusJets = copy.deepcopy(processZtoElecMu_WplusJetsSum.config_dqmFileLoader),
@@ -39,9 +40,10 @@ addZtoElecMu_qcdSum = cms.EDAnalyzer("DQMHistAdder",
 addZtoElecMu_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Ztautau',
-            #'harvested/ZmumuPlusJets',
-            'harvested/Zmumu',
+            'harvested/ZtautauPlusJets',
+            #'harvested/Ztautau',
+            'harvested/ZmumuPlusJets',
+            #'harvested/Zmumu',
             'harvested/ZeePlusJets',
             #'harvested/Zee',
             'harvested/WplusJets',
@@ -56,9 +58,10 @@ addZtoElecMu = cms.Sequence(addZtoElecMu_qcdSum + addZtoElecMu_smSum)
 
 plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
-        Ztautau = copy.deepcopy(process_Ztautau.config_dqmHistPlotter),
-        #ZmumuPlusJets = copy.deepcopy(process_ZmumuPlusJets.config_dqmHistPlotter),
-        Zmumu = copy.deepcopy(process_Zmumu.config_dqmHistPlotter),
+        ZtautauPlusJets = copy.deepcopy(process_ZtautauPlusJets.config_dqmHistPlotter),
+        #Ztautau = copy.deepcopy(process_Ztautau.config_dqmHistPlotter),
+        ZmumuPlusJets = copy.deepcopy(process_ZmumuPlusJets.config_dqmHistPlotter),
+        #Zmumu = copy.deepcopy(process_Zmumu.config_dqmHistPlotter),
         ZeePlusJets = copy.deepcopy(process_ZeePlusJets.config_dqmHistPlotter),
         #Zee = copy.deepcopy(process_Zee.config_dqmHistPlotter),
         WplusJets = copy.deepcopy(process_WplusJets.config_dqmHistPlotter),
@@ -105,9 +108,10 @@ plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
 
     drawOptionSets = cms.PSet(
         default = cms.PSet(
-            Ztautau = copy.deepcopy(drawOption_Ztautau),
-            #ZmumuPlusJets = copy.deepcopy(drawOption_ZmumuPlusJets),
-            Zmumu = copy.deepcopy(drawOption_Zmumu),
+            ZtautauPlusJets = copy.deepcopy(drawOption_ZtautauPlusJets),
+            #Ztautau = copy.deepcopy(drawOption_Ztautau),
+            ZmumuPlusJets = copy.deepcopy(drawOption_ZmumuPlusJets),
+            #Zmumu = copy.deepcopy(drawOption_Zmumu),
             ZeePlusJets = copy.deepcopy(drawOption_ZeePlusJets),
             #Zee = copy.deepcopy(drawOption_Zee),
             WplusJets = copy.deepcopy(drawOption_WplusJets),
