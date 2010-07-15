@@ -30,6 +30,23 @@ processZtoElecMu_ZtautauSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+processZtoElecMu_ZtautauPlusJets = copy.deepcopy(process_ZtautauPlusJets)
+processZtoElecMu_ZtautauPlusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecMu_ZtautauPlusJets_7TeV_part01.root',
+    'plotsZtoElecMu_ZtautauPlusJets_7TeV_part02.root'
+)
+processZtoElecMu_ZtautauPlusJets.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/ZtautauPlusJets')
+processZtoElecMu_ZtautauPlusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecMu_ZtautauPlusJets_7TeV*intLumiZtoElecMu_Data_7TeV/intLumiZtoElecMu_ZtautauPlusJets_7TeV)
+
+processZtoElecMu_ZtautauPlusJetsSum = copy.deepcopy(process_ZtautauPlusJets)
+processZtoElecMu_ZtautauPlusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecMu_ZtautauPlusJetsSum.root'
+)
+processZtoElecMu_ZtautauPlusJetsSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
+processZtoElecMu_ZtautauPlusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 processZtoElecMu_ZmumuPlusJets = copy.deepcopy(process_ZmumuPlusJets)
 processZtoElecMu_ZmumuPlusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecMu_ZmumuPlusJets_7TeV_part01.root',
