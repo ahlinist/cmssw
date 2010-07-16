@@ -42,7 +42,7 @@ void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm:
 {  
   //std::cout << "<PFCandidateHistManager::fillHistogramsImp>:" << std::endl; 
 
-  edm::Handle<std::vector<reco::PFCandidate> > pfCandidates;
+  edm::Handle<reco::PFCandidateCollection> pfCandidates;
   evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
   double pfCandidateWeightSum = pfCandidates->size();
