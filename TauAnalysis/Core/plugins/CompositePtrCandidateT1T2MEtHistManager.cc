@@ -10,6 +10,7 @@
 #include "DataFormats/Common/interface/AssociationVector.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Math/interface/angle.h"
+#include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
@@ -88,6 +89,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hGenDeltaRleg2VisNu_ = book1D("GenDeltaRleg2VisNu", "gen. leg_{2} dR(pVis, pNu)", 102, -0.01, 1.01);
   hGenLeg1DecayTime_ = book1D("GenLeg1DecayTime", "gen. leg_{1} Decay eigentime", 100, 0., 1000.);
   hGenLeg2DecayTime_ = book1D("GenLeg2DecayTime", "gen. leg_{2} Decay eigentime", 100, 0., 1000.);
+
+  hGenSqrtX1X2VsDPhi12_ = bookProfile1D("GenSqrtX1X2VsDPhi12", 
+					"gen. sqrt(X_{1} * X_{2}) vs. #Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon);
 
   hGenLeg1TauPlusDecayAngleLepton_ = book1D("GenLeg1TauPlusDecayAngleLepton", 
 					    "gen. leg_{1} #theta(#tau, #ell) for lep. Tau+ decays", 36, 0., TMath::Pi());
@@ -377,6 +381,15 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
       fillDeltaRvisNuHistogram(hGenDeltaRleg1VisNu_, diTauCandidate->p4Leg1gen(), diTauCandidate->p4VisLeg1gen(), weight);
       fillDeltaRvisNuHistogram(hGenDeltaRleg2VisNu_, diTauCandidate->p4Leg2gen(), diTauCandidate->p4VisLeg2gen(), weight);
+
+      double dPhi12gen = TMath::Abs(normalizedPhi(diTauCandidate->p4VisLeg1gen().phi() - diTauCandidate->p4VisLeg2gen().phi()));
+/*
+  
+  CV: temporary work-around until MonitorElement::Fill(double, double, double) is fixed for TProfiles
+
+      hGenSqrtX1X2VsDPhi12_->Fill(dPhi12gen, TMath::Sqrt(diTauCandidate->x1gen()*diTauCandidate->x2gen()), weight);
+ */
+      hGenSqrtX1X2VsDPhi12_->getTProfile()->Fill(dPhi12gen, TMath::Sqrt(diTauCandidate->x1gen()*diTauCandidate->x2gen()), weight);
 
       hGenLeg1DecayTime_->Fill(compDecayEigenTime(diTauCandidate->decayVertexPosLeg1gen(), 
 						  diTauCandidate->primaryVertexPosGen(), diTauCandidate->p4Leg1gen().energy()), weight);
