@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.58 2010/01/07 12:56:15 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.59 2010/03/17 16:22:25 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.58 $
-  \date $Date: 2010/01/07 12:56:15 $
+  \version $Revision: 1.59 $
+  \date $Date: 2010/03/17 16:22:25 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -1237,9 +1237,9 @@ private:
       if(o.name.find("ROB_mean") != std::string::npos)
       {
 	TH2F * histo =  dynamic_cast<TH2F*>( o.object );
-	if(histo->ProjectionY("",100,100,"")->Integral()>0)
+	if(histo->ProjectionX("",100,101,"")->Integral()>0)
 	{
-          TLatex *labelOverflow = new TLatex(0.5,0.5,"Overflow");
+          TLatex *labelOverflow = new TLatex(0.45,0.45,"Overflow");
           labelOverflow->SetTextColor(kRed);
           labelOverflow->SetNDC();
           labelOverflow->Draw("same");
