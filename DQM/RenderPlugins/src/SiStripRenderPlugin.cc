@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.25 $
-  \date $Date: 2010/05/25 07:54:23 $
+  \version $Revision: 1.26 $
+  \date $Date: 2010/06/27 17:46:42 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -161,6 +161,18 @@ private:
         obj->SetOption("text");
         return;
       }
+
+
+      if( o.name.find( "DeltaBx_vs_ApvCycle" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        gStyle->SetPalette(1,0);
+        obj->SetOption("colz");
+      }
+      return;
+    
+
+
     }
 
   void preDrawTH1F( TCanvas *, const VisDQMObject &o )
@@ -187,6 +199,13 @@ private:
       ya->SetLabelSize(0.04);
 
       if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        obj->SetMaximum(4.0);
+        obj->SetMinimum(-0.1);
+        return;
+      }
+      if( o.name.find( "Summary_MeanNumberOfDigis__TOB" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
         obj->SetMaximum(2.5);
@@ -363,15 +382,15 @@ private:
     float xmax = obj->GetXaxis()->GetXmax();
     float ymax = obj->GetMaximum()*1.2;
 
-    float TIBLimit1 = 5000.0;
-    float TOBLimit1 = 5000.0;
-    float TECLimit1 = 5000.0;
-    float TIDLimit1 = 1000.0;
+    float TIBLimit1 = 3000.0;
+    float TOBLimit1 = 3500.0;
+    float TECLimit1 = 3000.0;
+    float TIDLimit1 = 700.0;
 
-    float TIBLimit2 = 800.0;
-    float TOBLimit2 = 800.0;
-    float TECLimit2 = 1000.0;
-    float TIDLimit2 = 300.0;
+    float TIBLimit2 = 500.0;
+    float TOBLimit2 = 500.0;
+    float TECLimit2 = 700.0;
+    float TIDLimit2 = 150.0;
     if( name.find( "TotalNumberOfDigiProfile__" ) != std::string::npos )
       {
         if (obj->GetEntries() > 10.0) c->SetLogy(1);
