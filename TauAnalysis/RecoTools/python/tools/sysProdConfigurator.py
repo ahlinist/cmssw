@@ -3,17 +3,17 @@ import sys
 import copy
 import random
 
-
-
 class sysProdConfigurator(cms._ParameterTypeBase):
+
     def __init__(self,pyModuleName,pyNameSpace):
         self.pyModuleName = pyModuleName,
         self.pyNameSpace = pyNameSpace 
         self.sequence = None
 
-
-    def createSequence(self,randomNumberService,modulePrefix,moduleType,src,energyScaleMean,energyScaleShift,energyScaleSmearing,ptShift,ptSmearing,etaShift,etaSmearing,phiShift,phiSmearing):
-            module =cms.EDProducer(moduleType)
+    def createSequence(self, randomNumberService, modulePrefix, moduleType, src,
+                       energyScaleMean, energyScaleShift, energyScaleSmearing,
+                       ptShift, ptSmearing, etaShift, etaSmearing, phiShift, phiSmearing):
+            module = cms.EDProducer(moduleType)
             module.src = cms.InputTag(src)
             #THE FileInPath shooudl not be empty!!!! Put a file that exists even if
             #it has no meaning... There is no trivial way to avoid that :-(
@@ -42,7 +42,6 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                 engineName = cms.untracked.string('TRandom3')
             )
 
-
             #ENERGY SCALE
             energyScaleValues = [energyScaleMean-energyScaleShift, energyScaleMean ,energyScaleMean+energyScaleShift]
             energyScaleLabels = ['EnScaleDown' ,'', 'EnScaleUp']
@@ -50,7 +49,7 @@ class sysProdConfigurator(cms._ParameterTypeBase):
             for label,eScale in zip(energyScaleLabels,energyScaleValues):
                 m =module.clone()
                 m.energyScale = cms.double(eScale)
-              #Register the filter in the namespace
+                #Register the filter in the namespace
                 pyModule = sys.modules[self.pyModuleName[0]]
                 if pyModule is None:
                    raise ValueError("'pyModuleName' Parameter invalid")
@@ -75,7 +74,7 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                 m =module.clone()
                 m.deltaPt = cms.double(value)
                 m.setLabel(modulePrefix+label)
-              #Register the filter in the namespace
+                #Register the filter in the namespace
                 pyModule = sys.modules[self.pyModuleName[0]]
                 if pyModule is None:
                    raise ValueError("'pyModuleName' Parameter invalid")
@@ -84,7 +83,7 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                    self.sequence=m
                 else:
                   self.sequence*=m
-              #Create an entry in the random number service
+                #Create an entry in the random number service
                 randomSet = randomPSet.clone()
                 randomSet.initialSeed = random.randint(100000,300000)
                 setattr(randomNumberService,modulePrefix+label,randomSet)
@@ -98,7 +97,7 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                 m =module.clone()
                 m.deltaEta = cms.double(value)
                 m.setLabel(modulePrefix+label)
-              #Register the filter in the namespace
+                #Register the filter in the namespace
                 pyModule = sys.modules[self.pyModuleName[0]]
                 if pyModule is None:
                    raise ValueError("'pyModuleName' Parameter invalid")
@@ -119,7 +118,7 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                 m =module.clone()
                 m.deltaPhi = cms.double(value)
                 m.setLabel(modulePrefix+label)
-              #Register the filter in the namespace
+                #Register the filter in the namespace
                 pyModule = sys.modules[self.pyModuleName[0]]
                 if pyModule is None:
                    raise ValueError("'pyModuleName' Parameter invalid")
