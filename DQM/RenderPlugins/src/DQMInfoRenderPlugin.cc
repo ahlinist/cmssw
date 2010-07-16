@@ -60,7 +60,7 @@ public:
  
  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
-    
+      return;
       c->cd();
       if ( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos )
       {
