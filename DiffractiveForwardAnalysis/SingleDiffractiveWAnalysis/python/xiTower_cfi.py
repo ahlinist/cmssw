@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 xiTower = cms.EDProducer("XiTowerDumper",
     CaloTowersTag = cms.InputTag("towerMaker"),
     MuonTag = cms.InputTag("muons"),
+    comEnergy = cms.double(10000.),
     UseMETInfo = cms.bool(True),
     CaloMETTag = cms.InputTag("met"),
     HFPlusTowerThreshold = cms.double(1.0),

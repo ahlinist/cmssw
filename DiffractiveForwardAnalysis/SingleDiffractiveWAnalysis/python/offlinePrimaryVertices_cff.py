@@ -15,12 +15,13 @@ offlinePrimaryVerticesFromCTFTracksKVF = RecoVertex.PrimaryVertexProducer.Offlin
 offlinePrimaryVerticesFromCTFTracksKVF.algorithm = 'KalmanVertexFitter'
 offlinePrimaryVerticesFromCTFTracksTKF = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi.offlinePrimaryVertices.clone()
 offlinePrimaryVerticesFromCTFTracksTKF.algorithm = 'TrimmedKalmanFinder'
+"""
 offlinePrimaryVerticesFromCTFTracksAVFModified = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi.offlinePrimaryVertices.clone()
 offlinePrimaryVerticesFromCTFTracksAVFModified.algorithm = 'AdaptiveVertexFitter'
 offlinePrimaryVerticesFromCTFTracksAVFModified.TkFilterParameters.minSiliconHits = 4
 offlinePrimaryVerticesFromCTFTracksAVFModified.TkFilterParameters.maxD0Significance = 10.0
 offlinePrimaryVerticesFromCTFTracksAVFModified.TkClusParameters.zSeparation = 0.05
+"""
 
 vertexreco = cms.Sequence(offlinePrimaryVerticesFromCTFTracksAVF + 
-                          offlinePrimaryVerticesFromCTFTracksKVF +
-                          offlinePrimaryVerticesFromCTFTracksAVFModified)
+                          offlinePrimaryVerticesFromCTFTracksKVF)

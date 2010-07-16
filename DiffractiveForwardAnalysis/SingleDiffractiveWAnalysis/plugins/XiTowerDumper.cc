@@ -42,7 +42,8 @@ private:
 
 using namespace reco;
 
-XiTowerDumper::XiTowerDumper(const edm::ParameterSet& conf):comEnergy_(10000.) {
+XiTowerDumper::XiTowerDumper(const edm::ParameterSet& conf){
+        comEnergy_ = conf.getParameter<double>("comEnergy"); 
 	calotowersTag_ = conf.getParameter<edm::InputTag>("CaloTowersTag");
 	muonTag_ = conf.getParameter<edm::InputTag>("MuonTag");
 
