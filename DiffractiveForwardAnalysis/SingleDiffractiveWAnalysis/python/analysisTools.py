@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 def addAnalyzer(process,refAnalyzer,refSequence=None,filter="",**pars):
     analyzer = refAnalyzer.label()
+    forbiddenStrings = ('.',)
     if filter:
         if filter[0] == "!":
             analyzer += "_Not" + filter[1:]
@@ -10,7 +11,9 @@ def addAnalyzer(process,refAnalyzer,refSequence=None,filter="",**pars):
     if refSequence:
         analyzer += "_" + refSequence.label()
     for key in pars:
-        analyzer += "_" + key + "_" + str(pars[key])
+        valueLabel = str(pars[key])
+        for replaceStr in forbiddenStrings: valueLabel = valueLabel.replace(replaceStr,'_')
+        analyzer += "_" + key + "_" + valueLabel
 
     if not hasattr(process,analyzer):
         setattr(process,analyzer,refAnalyzer.clone(**pars))
@@ -37,7 +40,7 @@ def makeAnalysis(process,refAnalyzer='edmDumpAnalysis',refSequence='',attributes
     analyzer = getattr(process,refAnalyzer)
     sequence = None
     if refSequence: sequence = getattr(process,refSequence)
-    addPath(process,addAnalyzer(process,analyzer,sequence))
+    if not attributes and not filters: addPath(process,addAnalyzer(process,analyzer,sequence))
 
     for replace in attributes:
         addPath(process,addAnalyzer(process,analyzer,sequence,**replace))

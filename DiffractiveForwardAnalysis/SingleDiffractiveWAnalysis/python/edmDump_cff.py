@@ -1,8 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-#from JetMETCorrections.Configuration.L2L3Corrections_Summer08Redigi_cff import *
-from JetMETCorrections.Configuration.L2L3Corrections_Summer08_cff import *
-
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.castorGen_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.castorTower_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.hfTower_cfi import *
@@ -13,7 +10,7 @@ from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.selectGoodTracks_cfi 
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.selectTracksAssociatedToPV_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.trackMultiplicity_cfi import *
 
-xiFromJets.ParticlesTag = "L2L3CorJetSC5PF"
+xiFromJets.ParticlesTag = "ak5PFJets"
 xiTowerNoMET = xiTower.clone(UseMETInfo = False)
 xiFromJetsNoMET = xiFromJets.clone(UseMETInfo = False)
 
@@ -36,7 +33,7 @@ edmDumpAllNoPileUp = cms.Sequence(castorGen +
                           hfTower + 
                           xiTower +
                           xiTowerNoMET +
-                          L2L3CorJetSC5PF * xiFromJets +
+                          xiFromJets +
                           xiFromJetsNoMET +
                           trackMultiplicity +
                           edmDumpTracks)

@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 xiFromCaloTowers = cms.EDProducer("XiEdmNtupleDumper",
     comEnergy = cms.double(10000.),
-    ParticlesTag = cms.InputTag(""),
+    ParticlesTag = cms.InputTag("towerMaker"),
     UseCaloTowers = cms.bool(True),
     HFPlusTowerThreshold = cms.double(1.0),
     HFMinusTowerThreshold = cms.double(1.0),
