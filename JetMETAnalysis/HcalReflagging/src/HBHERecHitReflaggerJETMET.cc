@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HBHERecHitReflaggerJETMET.cc,v 1.6 2010/06/15 13:31:49 temple Exp $
+// $Id: HBHERecHitReflaggerJETMET.cc,v 1.7 2010/06/15 13:37:17 temple Exp $
 //
 //
 
@@ -240,7 +240,7 @@ HBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iS
        int HPDindex=logicalMap_->getHcalFrontEndId(recHit->detid()).rmIndex();
        int RBXindex=logicalMap_->getHcalFrontEndId(recHit->detid()).rbxIndex();
        // Add rechit to collection
-
+       
        if (
 	   (HPDmap[HPDindex]>=Nhits_ && RBXflag_==false) || // HPD requirement
 	   (RBXmap[RBXindex]>=Nhits_ && RBXflag_==true)  // RBX requirement
@@ -249,6 +249,9 @@ HBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iS
 	   newhit.setFlagField(1,hbheFlagBit_);
 	   if (debug_>1) cout <<"HBHE Noise Flag Bit "<<hbheFlagBit_<<" set for Channel "<<newhit.id()<<endl;
 	 }
+       else
+	 newhit.setFlagField(0,hbheFlagBit_);
+
        if (debug_>5) cout <<"HBHE Noise Flag Bit for "<<newhit.id()<<"  = "<<newhit.flagField(hbheFlagBit_)<<endl;
 
        // Set Phil's timing bit
@@ -375,7 +378,8 @@ void HBHERecHitReflaggerJETMET::SetTimingShapedFlags(HBHERecHit& hbhe)
     
   if (status>0)
     hbhe.setFlagField(1,hbheTimingFlagBit_);
-  
+  else
+    hbhe.setFlagField(0,hbheTimingFlagBit_);
   return;
 } //SetTimingShapedFlags(HBHERecHit& hbhe)
 
