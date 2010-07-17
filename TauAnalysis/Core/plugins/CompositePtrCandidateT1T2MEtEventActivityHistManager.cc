@@ -27,10 +27,10 @@ std::string getNameParEncodedValue(const std::string& name, double parValue1, co
   fullName.setf(std::ios::fixed);
   fullName.precision(1);
   fullName << name << parValue1;
-  if ( parValue2 ) fullName << parName2 << parValue2;
+  if ( parValue2 ) fullName << parName2 << (*parValue2);
 
   int errorFlag = 0;
-  std::string fullName_mod = replace_string(fullName.str(), ".", "_", 0, 1, errorFlag);
+  std::string fullName_mod = replace_string(fullName.str(), ".", "_", 0, 2, errorFlag);
 
   return fullName_mod;
 }
@@ -55,33 +55,30 @@ template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtEventActivityHistManager<T1,T2>::histogramCollectionType::bookHistograms(
        DQMStore& dqmStore, const std::string& dqmDirectory)
 {
-  //std::cout << "<histogramCollectionType::bookHistograms>:" << std::endl;
-  //std::cout << " etaGap = " << etaGap_ << std::endl;
-
   for ( vdouble::const_iterator chargedParticlePtThreshold = chargedParticlePtThresholds_.begin();
 	chargedParticlePtThreshold != chargedParticlePtThresholds_.end(); ++chargedParticlePtThreshold ) {
-    std::string histogramName = getNameParEncodedValue("NumChargedParticles", *chargedParticlePtThreshold, "etaGap", &etaGap_);
+    std::string histogramName = getNameParEncodedValue("NumChargedParticles", *chargedParticlePtThreshold);
     MonitorElement* histogram = HistManagerBase::book1D(dqmStore, dqmDirectory, histogramName, histogramName, 100, -0.5, 99.5);
     hNumChargedParticles_.push_back(histogram);
   }
 
   for ( vdouble::const_iterator jetPtThreshold = jetPtThresholds_.begin();
 	jetPtThreshold != jetPtThresholds_.end(); ++jetPtThreshold ) {
-    std::string histogramName = getNameParEncodedValue("NumJets", *jetPtThreshold, "etaGap", &etaGap_);
+    std::string histogramName = getNameParEncodedValue("NumJets", *jetPtThreshold);
     MonitorElement* histogram = HistManagerBase::book1D(dqmStore, dqmDirectory, histogramName, histogramName, 20, -0.5, 19.5);
     hNumJets_.push_back(histogram);
   }
 	
   for ( vdouble::const_iterator chargedParticlePtThreshold = chargedParticlePtThresholds_.begin();
 	chargedParticlePtThreshold != chargedParticlePtThresholds_.end(); ++chargedParticlePtThreshold ) {
-    std::string histogramName = getNameParEncodedValue("ChargedParticleEtSum", *chargedParticlePtThreshold, "etaGap", &etaGap_);
+    std::string histogramName = getNameParEncodedValue("ChargedParticleEtSum", *chargedParticlePtThreshold);
     MonitorElement* histogram = HistManagerBase::book1D(dqmStore, dqmDirectory, histogramName, histogramName, 100, -0.5, 99.5);
     hChargedParticleEtSum_.push_back(histogram);
   }
   
   for ( vdouble::const_iterator particlePtThreshold = particlePtThresholds_.begin();
 	particlePtThreshold != particlePtThresholds_.end(); ++particlePtThreshold ) {
-    std::string histogramName = getNameParEncodedValue("ParticleEtSum", *particlePtThreshold, "etaGap", &etaGap_);
+    std::string histogramName = getNameParEncodedValue("ParticleEtSum", *particlePtThreshold);
     MonitorElement* histogram = HistManagerBase::book1D(dqmStore, dqmDirectory, histogramName, histogramName, 100, -0.5, 99.5);
     hParticleEtSum_.push_back(histogram);
   }
@@ -92,9 +89,6 @@ void CompositePtrCandidateT1T2MEtEventActivityHistManager<T1,T2>::histogramColle
        const CompositePtrCandidateT1T2MEt<T1,T2>& diTauCandidate, 
        const reco::PFCandidateCollection& pfCandidates, const pat::JetCollection& patJets, double weight)
 {
-  //std::cout << "<histogramCollectionType::fillHistograms>:" << std::endl;
-  //std::cout << " etaGap = " << etaGap_ << std::endl;
-
   double etaMin = TMath::Min(diTauCandidate.leg1()->eta(), diTauCandidate.leg2()->eta()) - etaGap_;
   double etaMax = TMath::Max(diTauCandidate.leg1()->eta(), diTauCandidate.leg2()->eta()) + etaGap_;
   
@@ -219,6 +213,8 @@ void CompositePtrCandidateT1T2MEtEventActivityHistManager<T1,T2>::bookHistograms
     std::string subDirName = getNameParEncodedValue("etaGap", etaGaps_[iEtaGap]);
 
     std::string dqmDirectoryName_full = dqmDirectoryName(dqmDirectory_store_).append(subDirName);
+
+    dqmStore_->setCurrentFolder(dqmDirectoryName_full);
 
     histograms_[iEtaGap].bookHistograms(*dqmStore_, dqmDirectoryName_full);
   }
