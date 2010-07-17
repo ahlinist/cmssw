@@ -246,24 +246,31 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
     }
 	
     std::auto_ptr<TH1> clone(dynamic_cast<TH1*>(histogram->Clone()));
-    if ( scaleFactorErr > 0. ) {
-      unsigned numBinsX = clone->GetNbinsX();
-      for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
-	unsigned numBinsY = clone->GetNbinsY();
-	for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
-	  unsigned numBinsZ = clone->GetNbinsZ();
-	  for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
-	    double binContent = clone->GetBinContent(iBinX, iBinY, iBinZ);
-	    double binError = clone->GetBinError(iBinX, iBinY, iBinZ);
-	    
-	    clone->SetBinContent(iBinX, iBinY, iBinZ, scaleFactor*binContent);
-	    clone->SetBinError(iBinX, iBinY, iBinZ, 
-			       TMath::Sqrt(TMath::Power(scaleFactor*binError, 2) + TMath::Power(scaleFactorErr*binContent, 2)));
+
+//--- do not scale profile histograms
+//    (as their y-axis represents average values of observables,
+//     **not** number of events)
+    if ( !(meInput->kind() == MonitorElement::DQM_KIND_TPROFILE   ||
+	   meInput->kind() == MonitorElement::DQM_KIND_TPROFILE2D) ) {
+      if ( scaleFactorErr > 0. ) {
+	unsigned numBinsX = clone->GetNbinsX();
+	for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
+	  unsigned numBinsY = clone->GetNbinsY();
+	  for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
+	    unsigned numBinsZ = clone->GetNbinsZ();
+	    for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
+	      double binContent = clone->GetBinContent(iBinX, iBinY, iBinZ);
+	      double binError = clone->GetBinError(iBinX, iBinY, iBinZ);
+	      
+	      clone->SetBinContent(iBinX, iBinY, iBinZ, scaleFactor*binContent);
+	      clone->SetBinError(iBinX, iBinY, iBinZ, 
+				 TMath::Sqrt(TMath::Power(scaleFactor*binError, 2) + TMath::Power(scaleFactorErr*binContent, 2)));
+	    }
 	  }
 	}
+      } else {
+	clone->Scale(scaleFactor);
       }
-    } else {
-      clone->Scale(scaleFactor);
     }
 	
     dqmStore.setCurrentFolder(outputDirectory);
