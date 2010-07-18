@@ -1,6 +1,7 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/VgAnalyzerKit.h"
 
-#include "FWCore/ParameterSet/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
@@ -33,6 +34,9 @@
 
 #include "DataFormats/EgammaCandidates/interface/PhotonPi0DiscriminatorAssociation.h"
 
+#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
+#include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
+
 #include <iostream>
 
 using namespace std;
@@ -47,6 +51,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);
   trgResults_     = ps.getParameter<InputTag>("triggerResults");
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
+  doStoreJets_     = ps.getParameter<bool>("doStoreJets");
   gtdigilabel_    = ps.getParameter<InputTag>("GTDigiLabel");
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
   caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
@@ -77,12 +82,9 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("lumis", &lumis_, "lumis/I");
   tree_->Branch("isData", &isData_, "isData/O");
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
-  tree_->Branch("ttbit34", &ttbit34_, "ttbit34/I");
-  tree_->Branch("ttbit40", &ttbit40_, "ttbit40/I");
-  tree_->Branch("ttbit41", &ttbit41_, "ttbit41/I");
-  tree_->Branch("ttbitBH", &ttbitBH_, "ttbitBH/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[16]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -146,7 +148,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  // ELECTRON ID
   tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
@@ -174,12 +175,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eledPhiAtVtx", eledPhiAtVtx_, "eledPhiAtVtx[nEle]/F");
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/F");
-  tree_->Branch("eleEMax", eleEMax_, "eleEMax[nEle]/F");
   tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3[nEle]/F");
-  tree_->Branch("eleERight", eleERight_, "eleERight[nEle]/F");
-  tree_->Branch("eleELeft", eleELeft_, "eleELeft[nEle]/F");
-  tree_->Branch("eleETop", eleETop_, "eleETop[nEle]/F");
-  tree_->Branch("eleEBottom", eleEBottom_, "eleEBottom[nEle]/F");
+  tree_->Branch("eleSeedTime", eleSeedTime_, "eleSeedTime[nEle]/F");
+  // If Flag == 2, it means that rechit is out of time
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EcalFirstBeam09Anomalous#Spike_identification_in_collisio
+  tree_->Branch("eleRecoFlag", eleRecoFlag_, "eleRecoFlag[nEle]/I");
+  // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
+  tree_->Branch("eleSeverity", eleSeverity_, "eleSeverity[nEle]/I");
   if (doGenParticles_) {
     tree_->Branch("eleGenIndex", eleGenIndex_, "eleGenIndex[nEle]/I");
     tree_->Branch("eleGenGMomPID", eleGenGMomPID_, "eleGenGMomPID[nEle]/I");
@@ -192,15 +194,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleIsoTrkDR04", eleIsoTrkDR04_, "eleIsoTrkDR04[nEle]/F");
   tree_->Branch("eleIsoEcalDR04", eleIsoEcalDR04_, "eleIsoEcalDR04[nEle]/F");
   tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04_, "eleIsoHcalDR04[nEle]/F");
-  tree_->Branch("eleChi2NDF", eleChi2NDF_, "eleChi2NDF[nEle]/F");
-  tree_->Branch("eleD0", eleD0_, "eleD0[nEle]/F");
-  tree_->Branch("eleNumberOfValidHits", eleNumberOfValidHits_, "eleNumberOfValidHits[nEle]/I");
-  tree_->Branch("eleValidHitInFirstPXB",eleValidHitInFirstPXB_,"eleValidHitInFirstPXB[nEle]/I");
-  tree_->Branch("eleTrkExpectHitsInner",eleTrkExpectHitsInner_,"eleTrkExpectHitsInner[nEle]/I");
-  tree_->Branch("eleDist",eleDist_,"eleDist[nEle]/F");
-  tree_->Branch("eleDcot",eleDcot_,"eleDcot[nEle]/F");
-  tree_->Branch("eleConvRadius",eleConvRadius_,"eleConvRadius[nEle]/F");
-  tree_->Branch("eleConvPoint",eleConvPoint_,"eleConvPoint[nEle][3]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
@@ -225,14 +218,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
-  tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
-  tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
-  tree_->Branch("phoEMax", phoEMax_, "phoEMax[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3[nPho]/F");
-  tree_->Branch("phoERight", phoERight_, "phoERight[nPho]/F");
-  tree_->Branch("phoELeft", phoELeft_, "phoELeft[nPho]/F");
-  tree_->Branch("phoETop", phoETop_, "phoETop[nPho]/F");
-  tree_->Branch("phoEBottom", phoEBottom_, "phoEBottom[nPho]/F");
+  tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
+  // If Flag == 2, it means that rechit is out of time
+  tree_->Branch("phoRecoFlag", phoRecoFlag_, "phoRecoFlag[nPho]/I");
+  // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
+  tree_->Branch("phoSeverity", phoSeverity_, "phoSeverity[nPho]/I");
+  tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
   tree_->Branch("phoRoundness", phoRoundness_, "phoRoundness[nPho]/F");
   tree_->Branch("phoAngle", phoAngle_, "phoAngle[nPho]/F");
   if (doGenParticles_) {
@@ -274,6 +266,36 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muNumberOfValidTrkHits", muNumberOfValidTrkHits_, "muNumberOfValidTrkHits[nMu]/I");
   tree_->Branch("muNumberOfValidPixelHits", muNumberOfValidPixelHits_, "muNumberOfValidPixelHits[nMu]/I");
   tree_->Branch("muNumberOfValidMuonHits", muNumberOfValidMuonHits_, "muNumberOfValidMuonHits[nMu]/I");
+  // Jet
+  if (doStoreJets_) {
+    tree_->Branch("nJet", &nJet_, "nJet/I");
+    tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
+    tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
+    tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
+    tree_->Branch("jetPhi", jetPhi_, "jetPhi[nJet]/F");
+    tree_->Branch("jetMass", jetMass_, "jetMass[nJet]/F");
+    tree_->Branch("jetEt", jetEt_, "jetEt[nJet]/F");
+    tree_->Branch("jetenergyFractionHadronic", jetenergyFractionHadronic_, "jetenergyFractionHadronic[nJet]/F");
+    tree_->Branch("jetemEnergyFraction", jetemEnergyFraction_, "jetemEnergyFraction[nJet]/F");
+    tree_->Branch("jetfHPD", jetfHPD_, "jetfHPD[nJet]/F");
+    tree_->Branch("jetN60", jetN60_, "jetN60[nJet]/I");
+    tree_->Branch("jetN90", jetN90_, "jetN90[nJet]/I");
+    if (doGenParticles_) {
+      tree_->Branch("jetGenIndex", jetGenIndex_, "jetGenIndex[nJet]/I");
+      tree_->Branch("jetGenJetIndex", jetGenJetIndex_, "jetGenJetIndex[nJet]/I");
+      tree_->Branch("jetGenJetEn", jetGenJetEn_, "jetGenJetEn[nJet]/F");
+      tree_->Branch("jetGenJetPt", jetGenJetPt_, "jetGenJetPt[nJet]/F");
+      tree_->Branch("jetGenJetEta", jetGenJetEta_, "jetGenJetEta[nJet]/F");
+      tree_->Branch("jetGenJetPhi", jetGenJetPhi_, "jetGenJetPhi[nJet]/F");
+      tree_->Branch("jetGenJetMass", jetGenJetMass_, "jetGenJetMass[nJet]/F");
+      tree_->Branch("jetGenPartonID", jetGenPartonID_, "jetGenPartonID[nJet]/I");
+      tree_->Branch("jetGenPartonMomID", jetGenPartonMomID_, "jetGenPartonMomID[nJet]/I");
+    }
+    tree_->Branch("jetpartonFlavour", jetpartonFlavour_, "jetpartonFlavour[nJet]/I");
+    tree_->Branch("jetRawPt", jetRawPt_, "jetRawPt[nJet]/F");
+    tree_->Branch("jetRawEn", jetRawEn_, "jetRawEn[nJet]/F");
+    tree_->Branch("jetCharge", jetCharge_, "jetCharge[nJet]/F");
+  }
   // Zee candiate
   tree_->Branch("nZee", &nZee_, "nZee/I");
   tree_->Branch("ZeeMass", ZeeMass_, "ZeeMass[nZee]/F");
@@ -314,6 +336,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("WmunuEtPfMET", WmunuEtPfMET_, "WmunuEtPfMET[nWmunu]/F");
   tree_->Branch("WmunuACopPfMET", WmunuACopPfMET_, "WmunuACopPfMET[nWmunu]/F");
   tree_->Branch("WmunuMuIndex", WmunuMuIndex_, "WmunuMuIndex[nWmunu]/I");
+
 }
 
 VgAnalyzerKit::~VgAnalyzerKit() {
@@ -357,6 +380,10 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
 
+  // get the channel status from the DB
+  edm::ESHandle<EcalChannelStatus> chStatus;
+  es.get<EcalChannelStatusRcd>().get(chStatus);
+
   //Handle<int> genProcessID;
   //e.getByLabel("genEventProcID", genProcessID);
   //processID_ = *genProcessID;
@@ -377,11 +404,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     const TechnicalTriggerWord&  technicalTriggerWordBeforeMask = gtReadoutRecord->technicalTriggerWord();
 
     ttbit0_  = (technicalTriggerWordBeforeMask.at(0))  ? 1 : 0;
-    ttbit34_ = (technicalTriggerWordBeforeMask.at(34)) ? 1 : 0;
-    ttbit40_ = (technicalTriggerWordBeforeMask.at(40)) ? 1 : 0;
-    ttbit41_ = (technicalTriggerWordBeforeMask.at(41)) ? 1 : 0;
-    ttbitBH_ = (technicalTriggerWordBeforeMask.at(36) || technicalTriggerWordBeforeMask.at(37) || 
-technicalTriggerWordBeforeMask.at(38) || technicalTriggerWordBeforeMask.at(39)) ? 1 : 0;
   }
 
   // Get CaloTower information
@@ -557,6 +579,27 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
   // HLT
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
+
+  // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
+  // 0: HLT_Jet15U
+  // 1: HLT_Jet30U
+  // 2: HLT_Mu9
+  // 3: HLT_DoubleMu3
+  // 4: HLT_Ele10_LW_L1R
+  // 5: HLT_Ele15_LW_L1R
+  // 6: HLT_Ele10_SW_L1R
+  // 7: HLT_Ele15_SW_L1R
+  // 8: HLT_Ele20_SW_L1R
+  // 9: HLT_DoubleEle5_SW_L1R
+  //10: HLT_Photon15_L1R
+  //11: HLT_Photon10_Cleaned_L1R
+  //12: HLT_Photon15_Cleaned_L1R
+  //13: HLT_Photon20_Cleaned_L1R
+  //14: HLT_DoublePhoton5_L1R
+  //15: HLT_DoublePhoton10_L1R
+  for (int a=0; a<16; a++)
+    HLTIndex_[a] = -1;
+ 
   nHLT_ = 0;
   if (saveHLTInfo_) {
     Handle<TriggerResults> trgResultsHandle;
@@ -565,12 +608,24 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     vector<string> hlNames_ = trgNames.triggerNames();
     nHLT_ = trgNames.size();
     for (size_t i=0; i<trgNames.size(); ++i) {
-      //int hltBits[20] = {6, 7, 8, 9, 10, 11, 12, 44, 45, 46, 47, 48, 49, 50, 76, 77, 78, 83, 84, 85};
-      //for (int i=0; i<20; ++i) {
-      //HLT_[i] = (trgResultsHandle->accept(hltBits[i]) == true) ? 1:0;
-      //cout<<"HLT bit = "<<hltBits[i]<<"   "<<hlNames_[hltBits[i]]<<" "<<HLT_[i]<<endl;
       HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
-      //cout<<"HLT bit = "<<i<<"   "<<hlNames_[i]<<endl;
+
+      if (hlNames_[i] == "HLT_Jet15U")                    HLTIndex_[0] = i;
+      else if (hlNames_[i] == "HLT_Jet30U")               HLTIndex_[1] = i;
+      else if (hlNames_[i] == "HLT_Mu9")                  HLTIndex_[2] = i;
+      else if (hlNames_[i] == "HLT_DoubleMu3")            HLTIndex_[3] = i;
+      else if (hlNames_[i] == "HLT_Ele10_LW_L1R")         HLTIndex_[4] = i;
+      else if (hlNames_[i] == "HLT_Ele15_LW_L1R")         HLTIndex_[5] = i;
+      else if (hlNames_[i] == "HLT_Ele10_SW_L1R")         HLTIndex_[6] = i;
+      else if (hlNames_[i] == "HLT_Ele15_SW_L1R")         HLTIndex_[7] = i;
+      else if (hlNames_[i] == "HLT_Ele20_SW_L1R")         HLTIndex_[8] = i;
+      else if (hlNames_[i] == "HLT_Double5_SW_L1R")       HLTIndex_[9] = i;
+      else if (hlNames_[i] == "HLT_Photon15_L1R")         HLTIndex_[10] = i;
+      else if (hlNames_[i] == "HLT_Photon10_Cleaned_L1R") HLTIndex_[11] = i;
+      else if (hlNames_[i] == "HLT_Photon15_Cleaned_L1R") HLTIndex_[12] = i;
+      else if (hlNames_[i] == "HLT_Photon20_Cleaned_L1R") HLTIndex_[13] = i;
+      else if (hlNames_[i] == "HLT_DoublePhoton5_L1R")    HLTIndex_[14] = i;
+      else if (hlNames_[i] == "HLT_DoublePhoton10_L1R")   HLTIndex_[15] = i;
     }
   }
 
@@ -753,45 +808,22 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleSCPos_[nEle_][1] = iEle->superCluster()->y();
       eleSCPos_[nEle_][2] = iEle->superCluster()->z();
 
-      const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
-
-      eleEMax_[nEle_] = lazyTool.eMax(*eleSeed);
-      eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
-
-      eleERight_[nEle_]     = lazyTool.eRight(*eleSeed);
-      eleELeft_[nEle_]      = lazyTool.eLeft(*eleSeed);
-      eleETop_[nEle_]       = lazyTool.eTop(*eleSeed);
-      eleEBottom_[nEle_]    = lazyTool.eBottom(*eleSeed);
-
-      /*
-      //For electron concersion rejection
-      // if need a ID optimisation need to use correct tags for later releases 3_6_1_patch2?
-      
-      ConversionFinder convFinder;
-      ConversionInfo convInfo = convFinder.getConversionInfo(*iEle , Tracks, evt_bField);
-
-      eleDist_[nEle_] = convInfo.dist();
-      eleDcot_[nEle_] = convInfo.dcot();
-      eleConvRadius_[nEle_]    = convInfo.radiusOfConversion();
-      eleConvPoint_[nEle_][0]  = convInfo.pointOfConversion().x();
-      eleConvPoint_[nEle_][1]  = convInfo.pointOfConversion().y();
-      eleConvPoint_[nEle_][2]  = convInfo.pointOfConversion().z();
-      */
-
       // Gen Particle
       eleGenIndex_[nEle_] = -1;
       int EleGenIndex = 0;
       if (!isData_) {
         if ((*iEle).genLepton() && genParticlesHandle_.isValid() ) {
-          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); 
-++iGen) {
-            if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() 
-== (*iEle).genLepton()->status()) {
+
+          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
+
+            if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
+
                 eleGenIndex_[nEle_] = EleGenIndex;
 
                 const Candidate *elep = (const Candidate*)&(*iGen);
 
                 for (size_t j=0; j<elep->numberOfMothers(); ++j) {
+
                   elemom = elep->mother(j);
                   eleGenMomPID_[nEle_] = elemom->pdgId();
                   eleGenMomPt_[nEle_] = elemom->pt();
@@ -803,9 +835,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         }
       }
 
-      eleSigmaEtaEta_[nEle_]   = iEle->scSigmaEtaEta();
-      eleSigmaIEtaIEta_[nEle_] = iEle->scSigmaIEtaIEta();
-
       eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
       eleIsoEcalDR03_[nEle_] = iEle->dr03EcalRecHitSumEt();
       eleIsoHcalDR03_[nEle_] = iEle->dr03HcalTowerSumEt();
@@ -814,22 +843,44 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
       eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
 
-      eleChi2NDF_[nEle_] = iEle->gsfTrack()->normalizedChi2();
+      eleSigmaEtaEta_[nEle_]   = iEle->scSigmaEtaEta();
+      eleSigmaIEtaIEta_[nEle_] = iEle->scSigmaIEtaIEta();
 
-      eleD0_[nEle_] = (*iEle).gsfTrack()->d0();
-      eleNumberOfValidHits_[nEle_]  = (*iEle).gsfTrack()->numberOfValidHits();
-      eleValidHitInFirstPXB_[nEle_] = iEle->gsfTrack()->hitPattern().hasValidHitInFirstPixelBarrel();
-      eleTrkExpectHitsInner_[nEle_] = iEle->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-      
+      const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
+
+      eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
+
+      eleSeedTime_[nEle_] = -999.;
+      eleRecoFlag_[nEle_] = -999.;
+      eleSeverity_[nEle_] = -999.;
+      DetId eleSeedDetId = lazyTool.getMaximum(*eleSeed).first;
+
+
+      if ( iEle->isEB() && EBReducedRecHits.isValid() ) {
+        EcalRecHitCollection::const_iterator eleebrhit = EBReducedRecHits->find(eleSeedDetId);
+        if ( eleebrhit != EBReducedRecHits->end() ) { 
+	   eleSeedTime_[nEle_] = eleebrhit->time(); 
+           eleRecoFlag_[nEle_] = eleebrhit->recoFlag();
+           eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EBReducedRecHits), *chStatus );
+	}
+      } else if ( EEReducedRecHits.isValid() ) {
+        EcalRecHitCollection::const_iterator eleeerhit = EEReducedRecHits->find(eleSeedDetId);
+        if ( eleeerhit != EEReducedRecHits->end() ) { 
+	   eleSeedTime_[nEle_] = eleeerhit->time(); 
+           eleRecoFlag_[nEle_] = eleeerhit->recoFlag();
+           eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EEReducedRecHits), *chStatus );
+	}
+      }
+
       nEle_++;
     }
 
   // Photon
-   // take the pi0 rejection info from RECO
+  // take the pi0 rejection info from RECO
   Handle<reco::PhotonPi0DiscriminatorAssociationMap>  map;
   e.getByLabel("piZeroDiscriminators","PhotonPi0DiscriminatorAssociationMap",  map);
   reco::PhotonPi0DiscriminatorAssociationMap::const_iterator mapIter;
-//
+
   edm::Handle<reco::PhotonCollection> R_PhotonHandle;
   e.getByLabel("photons", "", R_PhotonHandle);
   const reco::PhotonCollection R_photons = *(R_PhotonHandle.product());   
@@ -841,7 +892,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
       
       if (iPho->pt() > leadingPhoPtCut_) nPhoPassCut++;
-      
+
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
       phoEt_[nPho_]  = iPho->et();
@@ -880,28 +931,31 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       if (iPho->isEBEEGap() == true) phoPos_[nPho_] = 4;
 
       phoSeedTime_[nPho_] = -999.;
+      phoRecoFlag_[nEle_] = -999.;
+      phoSeverity_[nEle_] = -999.;
       const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
       DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first;
 
       if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoSeedDetId);
-        if ( ebrhit != EBReducedRecHits->end() ) { phoSeedTime_[nPho_] = ebrhit->time(); }
+        if ( ebrhit != EBReducedRecHits->end() ) { 
+	   phoSeedTime_[nPho_] = ebrhit->time();
+           phoRecoFlag_[nPho_] = ebrhit->recoFlag();
+           phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EBReducedRecHits), *chStatus );
+        }
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoSeedDetId);
-        if ( eerhit != EEReducedRecHits->end() ) { phoSeedTime_[nPho_] = eerhit->time(); }
+        if ( eerhit != EEReducedRecHits->end() ) { 
+	   phoSeedTime_[nPho_] = eerhit->time(); 
+           phoRecoFlag_[nPho_] = eerhit->recoFlag();
+           phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EEReducedRecHits), *chStatus );
+	}
       }
 
-      phoEMax_[nPho_] = lazyTool.eMax(*phoSeed);
       phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
 
-      phoERight_[nPho_]     = lazyTool.eRight(*phoSeed);
-      phoELeft_[nPho_]      = lazyTool.eLeft(*phoSeed);
-      phoETop_[nPho_]       = lazyTool.eTop(*phoSeed);
-      phoEBottom_[nPho_]    = lazyTool.eBottom(*phoSeed);
-
       if(iPho->isEB()==true && EBRecHits.isValid()){
-            std::vector<float> RoundAndAngle = 
-EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
+            std::vector<float> RoundAndAngle = EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
             phoRoundness_[nPho_] = RoundAndAngle[0];
             phoAngle_[nPho_] = RoundAndAngle[1];
       } else{
@@ -918,11 +972,9 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
       int phoGenIndex = 0;
       if ( !isData_ && genParticlesHandle_.isValid() ) {
         if ((*iPho).genPhoton()) {
-          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); 
-++iGen) {
+          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
 
-            if (iGen->p4() == (*iPho).genPhoton()->p4() && iGen->pdgId() == (*iPho).genPhoton()->pdgId() && iGen->status() 
-== (*iPho).genPhoton()->status()) {
+            if (iGen->p4() == (*iPho).genPhoton()->p4() && iGen->pdgId() == (*iPho).genPhoton()->pdgId() && iGen->status() == (*iPho).genPhoton()->status()) {
 
               phoGenIndex_[nPho_] = phoGenIndex;
 
@@ -934,7 +986,6 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
                 phoGenMomPt[nPho_] = phomom->pt();
                 if (phomom->mother()) phoGenGMomPID[nPho_] = phomom->mother()->pdgId();
               }
-
             }
 
             phoGenIndex++;
@@ -942,7 +993,6 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
         }
       }
 
-      cout<<" Pho = "<<phoGenMomPID[nPho_]<<"     "<<phoOverlap_[nPho_]<<"     "<<phohasPixelSeed_[nPho_]<<endl;
       // Super Cluster
       phoSCE_[nPho_]   = (*iPho).superCluster()->energy();
       phoSCEta_[nPho_] = (*iPho).superCluster()->eta();
@@ -950,7 +1000,6 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
       phoSCEt_[nPho_]  = (*iPho).superCluster()->energy()/cosh(phoSCEta_[nPho_]);
       phoSCEtaWidth_[nPho_] = (*iPho).superCluster()->etaWidth();
       phoSCPhiWidth_[nPho_] = (*iPho).superCluster()->phiWidth();
-
 
       phoIsConv_[nPho_] = iPho->hasConversionTracks();
 
@@ -966,7 +1015,7 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
         if(iPho->p4() == R_phot_iter->p4()) phoPi0Disc_[nPho_] = nn;
         R_nphot++;              
       }  
-      
+    
        nPho_++;
     }
 
@@ -978,12 +1027,11 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
       if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
-
+      
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
       //       if (iMu->globalTrack().isNull()) continue;
       //       if (iMu->innerTrack().isNull()) continue;
-      //if (iMu->pt()<10) continue;
 
       for (int i=0; i<6; ++i) muID_[nMu_][i] = 0;
       if (iMu->isGood("AllArbitrated")==1) muID_[nMu_][0] = 1;
@@ -1029,11 +1077,11 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
       if (!isData_) {
         if ( (*iMu).genLepton() && genParticlesHandle_.isValid() ) {
           if (fabs((*iMu).genLepton()->pdgId())==13) {
-            for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen !=
-                  genParticlesHandle_->end(); ++iGen) {
+            for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
 
-              if (iGen->p4() == (*iMu).genLepton()->p4() && iGen->pdgId() == (*iMu).genLepton()->pdgId() && iGen->status() 
-== (*iMu).genLepton()->status()) muGenIndex_[nMu_] = MuGenIndex;
+              if (iGen->p4() == (*iMu).genLepton()->p4() && iGen->pdgId() == (*iMu).genLepton()->pdgId() && iGen->status() == (*iMu).genLepton()->status()) 
+	        muGenIndex_[nMu_] = MuGenIndex;
+
               MuGenIndex++;
             }
           }
@@ -1041,7 +1089,6 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
       }
 
       nMu_++;
-
     }
   }
 
@@ -1277,7 +1324,60 @@ EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHit
     }
   }
 
-  if ((nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
+  // Jet
+  // cout << "VgAnalyzerKit: produce: Jet..." << endl;
+  if (doStoreJets_) {
+    nJet_ = 0;
+    if ( jetHandle_.isValid() )
+      for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
+
+        if ( iJet->pt() < 15 ) continue;
+
+	jetEn_[nJet_]     = iJet->energy();
+	jetPt_[nJet_]     = iJet->pt();
+	jetEta_[nJet_]    = iJet->eta();
+	jetPhi_[nJet_]    = iJet->phi();
+	jetMass_[nJet_]   = iJet->mass();
+	jetCharge_[nJet_] = iJet->jetCharge();
+	jetEt_[nJet_]     = iJet->et();
+	jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
+	jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
+	jetpartonFlavour_[nJet_] = iJet->partonFlavour();
+
+	// Jet Id related
+	jetfHPD_[nJet_] = iJet->jetID().fHPD;
+	jetN60_[nJet_]  = iJet->n60();
+	jetN90_[nJet_]  = iJet->n90();
+
+	jetenergyFractionHadronic_[nJet_] = iJet->energyFractionHadronic();
+	jetemEnergyFraction_[nJet_] = iJet->emEnergyFraction();
+
+	jetGenJetIndex_[nJet_] = -1;
+	jetGenJetEn_[nJet_] = -1.0;
+	jetGenJetPt_[nJet_] = -99999;
+	jetGenJetEta_[nJet_] = -999;
+	jetGenJetPhi_[nJet_] = -999;
+	jetGenJetMass_[nJet_] = -999;
+
+        if (!isData_ && genParticlesHandle_.isValid() ) {
+          if ((*iJet).genJet()) {
+            jetGenJetIndex_[nJet_] = 1;
+	    jetGenJetEn_[nJet_] = (*iJet).genJet()->energy();
+	    jetGenJetPt_[nJet_] = (*iJet).genJet()->pt();
+	    jetGenJetEta_[nJet_] = (*iJet).genJet()->eta();
+	    jetGenJetPhi_[nJet_] = (*iJet).genJet()->phi();
+	    jetGenJetMass_[nJet_] = (*iJet).genJet()->mass();
+          }
+        }
+        nJet_++;
+      }
+  }
+
+  if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
+    hEvents_->Fill(1.5);
+    tree_->Fill();
+  }
+  if (doStoreJets_ == true && nPhoPassCut > 0) {
     hEvents_->Fill(1.5);
     tree_->Fill();
   }
