@@ -21,8 +21,11 @@
 
 #include "TTree.h"
 #include "TH1F.h"
+#include "TH2F.h"
+#include "TString.h"
 
 using namespace edm;
+using namespace std;
 
 const int maxP = 500;
 
@@ -45,6 +48,7 @@ protected:
   bool saveHistograms_;
   bool saveHLTInfo_;
   bool doGenParticles_;
+  bool doStoreJets_;
 
   InputTag vtxlabel_;
   InputTag gtdigilabel_;
@@ -73,15 +77,12 @@ protected:
   int    lumis_;
   bool   isData_;
   int    ttbit0_;
-  int    ttbit34_;
-  int    ttbit40_;
-  int    ttbit41_;
-  int    ttbitBH_;
   float  pdf_[7];
   float  pthat_;
   float  processID_;
   int    nHLT_;
   int    HLT_[maxP];
+  int    HLTIndex_[16];
   int    nHFTowersP_;
   int    nHFTowersN_;
   int    nVtx_;
@@ -166,12 +167,10 @@ protected:
   float  eledPhiAtVtx_[maxP];
   float  eleSigmaEtaEta_[maxP];
   float  eleSigmaIEtaIEta_[maxP];
-  float  eleEMax_[maxP];
   float  eleE3x3_[maxP];
-  float  eleERight_[maxP];
-  float  eleELeft_[maxP];
-  float  eleETop_[maxP];
-  float  eleEBottom_[maxP];
+  float  eleSeedTime_[maxP];
+  int    eleRecoFlag_[maxP];
+  int    eleSeverity_[maxP];
   int    eleGenIndex_[maxP];
   int    eleGenGMomPID_[maxP];
   int    eleGenMomPID_[maxP];
@@ -214,16 +213,13 @@ protected:
   float  phoEcalIsoDR04_[maxP];
   float  phoHcalIsoDR04_[maxP];
   float  phoHoverE_[maxP];
-  float  phoSeedTime_[maxP];
   float  phoSigmaEtaEta_[maxP];
   float  phoSigmaIEtaIEta_[maxP];
-  int    phoPos_[maxP];
-  float  phoEMax_[maxP];
   float  phoE3x3_[maxP];
-  float  phoERight_[maxP];
-  float  phoELeft_[maxP];
-  float  phoETop_[maxP];
-  float  phoEBottom_[maxP];
+  float  phoSeedTime_[maxP];
+  int    phoRecoFlag_[maxP];
+  int    phoSeverity_[maxP];
+  int    phoPos_[maxP];
   float  phoRoundness_[maxP];
   float  phoAngle_[maxP];
   int    phoGenIndex_[maxP];
@@ -262,6 +258,37 @@ protected:
   int    muNumberOfValidTrkHits_[maxP];
   int    muNumberOfValidPixelHits_[maxP];
   int    muNumberOfValidMuonHits_[maxP];
+
+  // Jet
+  int    nJet_;
+  int    jetAlgo_[maxP];
+  float  jetEn_[maxP];
+  float  jetPt_[maxP];
+  float  jetEta_[maxP];
+  float  jetPhi_[maxP];
+  float  jetMass_[maxP];
+  float  jetEt_[maxP];
+  float  jetmaxEInEmTowers_[maxP];
+  float  jetmaxEInHadTowers_[maxP];
+  float  jetenergyFractionHadronic_[maxP];
+  float  jetemEnergyFraction_[maxP];
+  float	 jetfHPD_[maxP];
+  int	 jetN60_[maxP] ;
+  int	 jetN90_[maxP] ;
+  int    jetGenIndex_[maxP];
+  int    jetGenJetIndex_[maxP];
+  float  jetGenJetEn_[maxP];
+  float  jetGenJetPt_[maxP];
+  float  jetGenJetEta_[maxP];
+  float  jetGenJetPhi_[maxP];
+  float  jetGenJetMass_[maxP];
+  int    jetGenPartonID_[maxP];
+  int    jetGenPartonMomID_[maxP];
+  int    jetpartonFlavour_[maxP];
+  float  jetRawPt_[maxP];
+  float  jetRawEn_[maxP];
+  float  jetCharge_[maxP];
+
   // Zee candidate
   int    nZee_;
   float  ZeeMass_[maxP];
@@ -270,6 +297,7 @@ protected:
   float  ZeePhi_[maxP];
   int    ZeeLeg1Index_[maxP];
   int    ZeeLeg2Index_[maxP];
+
   // Zmumu candidate
   int    nZmumu_;
   float  ZmumuMass_[maxP];
