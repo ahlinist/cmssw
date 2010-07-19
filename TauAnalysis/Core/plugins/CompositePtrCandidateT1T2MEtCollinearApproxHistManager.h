@@ -70,6 +70,9 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
   MonitorElement* hGenX2_;
   MonitorElement* hGenX1vsX2_;
 
+  MonitorElement* hX1_;
+  MonitorElement* hX2_;
+
   MonitorElement* hX1vsGenX1_;
   MonitorElement* hX1vsGenX1Profile_;
   MonitorElement* hX2vsGenX2_;

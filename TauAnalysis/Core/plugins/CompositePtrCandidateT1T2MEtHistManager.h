@@ -88,6 +88,14 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDiTauCandidateCharge_;
   MonitorElement* hDiTauCandidateMass_;
 
+  MonitorElement* hSVfitX1_;
+  MonitorElement* hSVfitX2_;
+/*
+  MonitorElement* hSVfitX1vsGenX1_;
+  MonitorElement* hSVfitX1vsGenX1Profile_;
+  MonitorElement* hSVfitX2vsGenX2_;
+  MonitorElement* hSVfitX2vsGenX2Profile_;
+ */
   MonitorElement* hSVfitMass_; 
   MonitorElement* hSVfitMass1stSolution_;
   MonitorElement* hSVfitMass2ndSolution_;

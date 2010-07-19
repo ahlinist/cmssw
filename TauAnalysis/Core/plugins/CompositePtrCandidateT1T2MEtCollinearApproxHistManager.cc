@@ -84,6 +84,8 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::bookHistogra
 
   hGenX1_ = book1D("GenX1", "gen. X_{1}", 51, -0.01, 1.01);
   hGenX2_ = book1D("GenX2", "gen. X_{2}", 51, -0.01, 1.01);
+  hX1_ = book1D("X1", "X_{1}", 51, -0.01, 1.01);
+  hX2_ = book1D("X2", "X_{2}", 51, -0.01, 1.01);
   if ( makeCollinearApproxX1X2histograms_ ) {
     hGenX1vsX2_ = book2D("GenX1vsX2", "gen. X_{1} vs. X_{2}", 51, -0.01, 1.01, 51, -0.01, 1.01);
   
@@ -245,6 +247,9 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
 
       hGenX1_->Fill(diTauCandidate->x1gen(), weight);
       hGenX2_->Fill(diTauCandidate->x2gen(), weight);
+
+      hX1_->Fill(diTauCandidate->x1CollinearApprox(), weight);
+      hX2_->Fill(diTauCandidate->x2CollinearApprox(), weight);
 
       if ( makeCollinearApproxX1X2histograms_ ) {
 	hGenX1vsX2_->Fill(diTauCandidate->x1gen(), diTauCandidate->x2gen(), weight);
