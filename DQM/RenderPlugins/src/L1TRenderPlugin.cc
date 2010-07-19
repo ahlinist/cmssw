@@ -1,4 +1,4 @@
-/*
+/*!
   \file L1TRenderPlugin.cc
   \\
   \\ Code shamelessly borrowed from J. Temple's HcalRenderPlugin.cc code,
@@ -169,108 +169,6 @@ private:
 
       gStyle->SetOptStat(111111);
 
-      // GCT section
-      if (o.name.find("L1TGCT") != std::string::npos) {
-
-        // General style and stats
-        //gStyle->SetPalette(1);
-        //obj->SetOption("colz");
-        gPad->SetGrid(1,1);
-        gStyle->SetOptStat(11);
-
-        // Axis labels
-
-        // HF Ring Counts
-        if (o.name.find("TowerCountNegEta") != std::string::npos ||
-            o.name.find("TowerCountPosEta") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("HF Ring Tower Count");
-          return;
-        }        
-
-        // HF Ring Sums
-        if (o.name.find("ETSumNegEta") != std::string::npos ||
-            o.name.find("ETSumPosEta") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("HF Ring E_{T}");
-          return;
-        } 
-
-        // HF Ring ratios
-        if( (o.name.find("HFRingRatioPosEta")!= std::string::npos ) ){
-          obj->GetXaxis()->SetTitle("HF #eta + RING1 E_{T}/RING2 E_{T}");
-          return;
-        } 
-
-        // HF Ring ratios
-        if( (o.name.find("HFRingRatioNegEta")!= std::string::npos) ){
-          obj->GetXaxis()->SetTitle("HF #eta - RING1 E_{T}/RING2 E_{T}");
-          return;
-        } 
-
-        // Eta 1D
-        if (o.name.find("Eta") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("#eta");
-          obj->SetMinimum(0);
-          return;
-        }
-
-        // Phi 1D
-        if (o.name.find("Phi") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("#phi");
-          obj->SetMinimum(0);
-          return;
-        }
-
-        // Jet and electron ET
-        if (o.name.find("Rank") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("E_{T}");
-	  gPad->SetLogy(1);
-          return;
-        }
-
-        // Energy sums overflow
-        if (o.name.find("Of") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("Overflow Bit");
-	  int bincheck = obj->GetNbinsX();
-	  if( bincheck==2 ){
-	    obj->GetXaxis()->SetBinLabel(1,"Off");
-	    obj->GetXaxis()->SetBinLabel(2,"On");
-	  }
-          obj->GetXaxis()->SetNdivisions(2);
-          return;
-        }
-
-        // Energy sums
-        if (o.name.find("EtMiss") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("MET");
-	  gPad->SetLogy(1);
-          return;
-        }
-
-        // Energy sums
-        if (o.name.find("HtMiss") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("MHT");
-	  gPad->SetLogy(1);
-          return;
-        }
-
-        // Energy sums
-        if (o.name.find("EtTotal") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("Sum E_{T}");
-	  gPad->SetLogy(1);
-          return;
-        }
-
-        // Energy sums
-        if (o.name.find("EtHad") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("H_{T}");
-	  gPad->SetLogy(1);
-          return;
-        }
-
-        return;      
-      }
-
-
       if(REMATCH("Packed Charge *", o.name))
       {
         obj->GetXaxis()->SetTitle("charge");
@@ -367,7 +265,25 @@ private:
 	    o.name.find("Rate_TechBit") != std::string::npos ||
 	    o.name.find("Rate_Ratio") != std::string::npos ||
 	    o.name.find("Integral_TechBit") != std::string::npos ||
-	    o.name.find("Integral_AlgoBit") != std::string::npos) )
+	    o.name.find("Integral_AlgoBit") != std::string::npos ||
+	    o.name.find("Physics_Trigger_Rate") != std::string::npos ||
+	    o.name.find("Random_Trigger_Rate") != std::string::npos ||
+	    o.name.find("Lost_Physics_Trigger_Rate") != std::string::npos ||
+	    o.name.find("Deadtime_Percent") != std::string::npos ||
+	    o.name.find("instTrigRate") != std::string::npos ||
+	    o.name.find("instEventRate") != std::string::npos ||
+	    o.name.find("Rate_Ratio") != std::string::npos ||
+	    o.name.find("Number_of_Triggers") != std::string::npos ||
+	    o.name.find("Physics_Triggers") != std::string::npos ||
+	    o.name.find("Random_Triggers") != std::string::npos ||
+	    o.name.find("Lost_Final_Trigger") != std::string::npos ||
+	    o.name.find("DeadTime") != std::string::npos ||
+	    o.name.find("Number_Resets") != std::string::npos ||
+	    o.name.find("Orbit_Number") != std::string::npos ||
+	    o.name.find("Number_of_Events") != std::string::npos ||
+	    o.name.find("totAlgoRate") != std::string::npos ||
+	    o.name.find("totTtRate") != std::string::npos 
+	    ) )
       {
         gStyle->SetOptStat(11);
         obj->GetXaxis()->SetTitle("Luminosity Segment Number");
@@ -398,10 +314,27 @@ private:
 
 	if ( (o.name.find("Integral_TechBit") != std::string::npos ||
 	      o.name.find("Integral_AlgoBit") != std::string::npos ||
-	      o.name.find("Rate_Ratio") != std::string::npos) )
+	      o.name.find("Rate_Ratio") != std::string::npos ||
+	      o.name.find("Deadtime_Percent") != std::string::npos ||
+	      o.name.find("Physics_Triggers") != std::string::npos ||
+	      o.name.find("Random_Triggers") != std::string::npos || 
+	      o.name.find("Orbit_Number") != std::string::npos ||
+	      o.name.find("Number_of_Events") != std::string::npos ||
+	      o.name.find("Lost_Final_Trigger") != std::string::npos ||
+	      o.name.find("DeadTime") != std::string::npos ||
+	      o.name.find("Number_Resets") != std::string::npos 
+	      ) )
 	  {
 	    obj->GetYaxis()->SetTitle("");
 	  }
+	else if ( (o.name.find("instTrigRate") != std::string::npos ||
+		   o.name.find("instEventRate") != std::string::npos ||
+		   o.name.find("Number_of_Triggers") != std::string::npos 
+		   ) )
+	  {
+	    obj->GetXaxis()->SetTitle("Time (sec)");
+	  }
+
 
       }
       //  if( o.name.find( "dttf_p_q_" )  != std::string::npos) {
@@ -510,57 +443,82 @@ private:
 
         // Axis labels
 
-        // Energy sums MET and MHT correlations
-        if (o.name.find("EtMissHtMissPhiCorr") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("MET #phi");
-          obj->GetYaxis()->SetTitle("MHT #phi");
-          return;
-        }
-
-        // Eta phi 2D plots
+        // Eta phi 
         if (o.name.find("EtaPhi") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("#eta");
-          obj->GetYaxis()->SetTitle("#phi");
+          obj->GetXaxis()->SetTitle("GCT #eta");
+          obj->GetYaxis()->SetTitle("GCT #phi");
           return;
         }
 
         // BX plots
         if (o.name.find("Bx") != std::string::npos) {
           obj->GetXaxis()->SetTitle("BX");
-          obj->GetXaxis()->SetNdivisions(5);
-          obj->GetYaxis()->SetTitle("E_{T}");
-	  int bincheck = obj->GetNbinsX();
-	  if( bincheck==5 ){
-	    obj->GetXaxis()->SetBinLabel(1,"-2");
-	    obj->GetXaxis()->SetBinLabel(2,"-1");
-	    obj->GetXaxis()->SetBinLabel(3,"0");
-	    obj->GetXaxis()->SetBinLabel(4,"+1");
-	    obj->GetXaxis()->SetBinLabel(5,"+2");
-	  }
+          obj->GetYaxis()->SetTitle("GCT E_{T}");
+          return;
+        }
+
+        // Jet and electron ET
+        if (o.name.find("Rank") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT E_{T}");
+          return;
+        }
+
+        // Energy sums overflow
+        if (o.name.find("Of") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("Overflow Bit");
+          return;
+        }
+
+        // Energy sums phi
+        if (o.name.find("HtMissPhi") != std::string::npos ||
+            o.name.find("EtMissPhi") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT #phi");
           return;
         }
 
        // Energy sums MET and MHT correlations
         if (o.name.find("EtMissHtMissCorr") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("MET");
-          obj->GetYaxis()->SetTitle("MHT");
+          obj->GetXaxis()->SetTitle("GCT EtMiss");
+          obj->GetYaxis()->SetTitle("GCT HtMiss");
           return;
         }
 
-       // Energy sums Sum ET and HT correlations
-        if (o.name.find("EtTotalEtHadCorr") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("Sum E_{T}");
-          obj->GetYaxis()->SetTitle("H_{T}");
+       // Energy sums MET and MHT correlations
+        if (o.name.find("EtMissHtMissPhiCorr") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT EtMiss #phi");
+          obj->GetYaxis()->SetTitle("GCT HtMiss #phi");
           return;
         }
 
+        // Energy sums ET
+        if (o.name.find("HtMiss") != std::string::npos ||
+            o.name.find("EtMiss") != std::string::npos ||
+            o.name.find("EtHad") != std::string::npos ||
+            o.name.find("EtTotal") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT E_{T}");
+          return;
+        }
+
+        // HF Ring Counts
+        if (o.name.find("TowerCountNegEta") != std::string::npos ||
+            o.name.find("TowerCountPosEta") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT HF Ring Count");
+          return;
+        }        
+
+        // HF Ring Sums
+        if (o.name.find("ETSumNegEta") != std::string::npos ||
+            o.name.find("ETSumPosEta") != std::string::npos) {
+          obj->GetXaxis()->SetTitle("GCT HF Ring E_{T}");
+          return;
+        } 
 
         // HF Ring correlations
         if (o.name.find("TowerCountCorr") != std::string::npos ||
             o.name.find("HFRing1Corr") != std::string::npos ||
             o.name.find("HFRing2Corr") != std::string::npos) {
-          obj->GetXaxis()->SetTitle("HF #eta +");
-          obj->GetYaxis()->SetTitle("HF #eta -");
+          obj->GetXaxis()->SetTitle("GCT HF #eta +");
+          obj->GetYaxis()->SetTitle("GCT HF #eta -");
           return;
         } 
 
@@ -672,6 +630,7 @@ private:
       }
       if(o.name.find("BX_diffvslumi") != std::string::npos)
 	{
+	  obj->GetXaxis()->SetTitle("Luminosity Segment Number");
 	  obj->GetYaxis()->SetTitle("#Delta bx");
 	  //obj->GetXaxis()->SetNdivisions(6,true);
 	  obj->GetYaxis()->SetNdivisions(9,true);
@@ -899,7 +858,6 @@ private:
 
 	if( 
 	   o.name.find( "IsoEm" ) != std::string::npos ||
-	   o.name.find( "CenJet" ) != std::string::npos ||
 	   o.name.find( "TauJet" ) != std::string::npos
 	   )
 	{
@@ -914,17 +872,6 @@ private:
 	  b_box->DrawBox(17.5,-0.5,21.5,17.5);
 	}
 
-	if (o.name.find( "ForJet" ) != std::string::npos)
-	{
-	  l_line->SetLineWidth(1);
-	  l_line->DrawLine(3.5,-0.5,3.5,17.5);
-	  l_line->DrawLine(17.5,-0.5,17.5,17.5);
-
-	  b_box->SetFillColor(1);
-	  b_box->SetFillStyle(3013);
-          b_box->DrawBox(3.5,-0.5,17.5,17.5);
-	}
-        
 	return;
       }
 
