@@ -16,6 +16,7 @@
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
+#include <TFile.h>
 
 const double epsilon = 0.01;
 const double speedOfLight = 3.e-5; // speed of light [cm/fs]
@@ -35,7 +36,8 @@ bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& composit
 
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet& cfg)
-  : HistManagerBase(cfg)
+  : HistManagerBase(cfg),
+    lutSqrtX1X2VsDPhi12_(0)
 {
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::CompositePtrCandidateT1T2MEtHistManager>:" << std::endl;
 
@@ -54,6 +56,23 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
 
   diTauLeg1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "diTauLeg1WeightSource");
   diTauLeg2WeightExtractors_ = getTauJetWeightExtractors<T2>(cfg, "diTauLeg2WeightSource");
+
+  if ( cfg.exists("fileName_sqrtX1X2VsDPhi12") && cfg.exists("meName_sqrtX1X2VsDPhi12") ) {
+    std::string fileName_sqrtX1X2VsDPhi12 = cfg.getParameter<std::string>("fileName_sqrtX1X2VsDPhi12");
+    std::string meName_sqrtX1X2VsDPhi12 = cfg.getParameter<std::string>("meName_sqrtX1X2VsDPhi12");
+
+    TFile* file_sqrtX1X2VsDPhi12 = TFile::Open(fileName_sqrtX1X2VsDPhi12.data());
+    if ( !file_sqrtX1X2VsDPhi12->IsZombie() ) {
+      TObject* obj = file_sqrtX1X2VsDPhi12->Get(meName_sqrtX1X2VsDPhi12.data());
+      if ( obj ) lutSqrtX1X2VsDPhi12_ = dynamic_cast<TH1*>(obj->Clone());
+    } else {
+      edm::LogError ("CompositePtrCandidateT1T2MEtHistManager") 
+	<< " Failed to open inputFile = " << fileName_sqrtX1X2VsDPhi12
+	<< "--> sqrtX1X2VsDPhi12 LUT histogram will NOT be loaded !!";
+    }
+    
+    delete file_sqrtX1X2VsDPhi12;
+  }
   
   requireGenMatch_ = cfg.getParameter<bool>("requireGenMatch");
   //std::cout << " requireGenMatch = " << requireGenMatch_ << std::endl;
@@ -74,6 +93,8 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::~CompositePtrCandidateT1T2MEtHis
 	it != diTauLeg2WeightExtractors_.end(); ++it ) {
     delete (*it);
   }
+
+  delete lutSqrtX1X2VsDPhi12_;
 }
 
 template<typename T1, typename T2>
@@ -82,7 +103,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::bookHistogramsImp>:" << std::endl;
 
   hGenDiTauCandidatePt_ = book1D("GenDiTauCandidatePt", "gen. Composite P_{T}", 75, 0., 150.);
-  
+
+  hGenLeg1En_ = book1D("GenLeg1En", "gen. leg_{1} Energy", 125, 0., 250.);
+  hGenLeg2En_ = book1D("GenLeg2En", "gen. leg_{2} Energy", 125, 0., 250.);
   hGenLeg1PtVsLeg2Pt_ = book2D("GenLeg1PtVsLeg2Pt", "gen. leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
   hGenLeg1EtaVsLeg2Eta_ = book2D("GenLeg1EtaVsLeg2Eta", "gen. leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
   hGenDeltaRleg1VisNu_ = book1D("GenDeltaRleg1VisNu", "gen. leg_{1} dR(pVis, pNu)", 102, -0.01, 1.01);
@@ -92,6 +115,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 
   hGenSqrtX1X2VsDPhi12_ = bookProfile1D("GenSqrtX1X2VsDPhi12", 
 					"gen. sqrt(X_{1} * X_{2}) vs. #Delta#phi_{1,2}", 18, -epsilon, TMath::Pi() + epsilon);
+  hSqrtX1X2VsDPhi12Mass_ = book1D("SqrtX1X2VsDPhi12Mass", "sqrt(X_{1} * X_{2}) vs. #Delta#phi_{1,2} LUT Mass", 50, 0., 250.);
 
   hGenLeg1TauPlusDecayAngleLepton_ = book1D("GenLeg1TauPlusDecayAngleLepton", 
 					    "gen. leg_{1} #theta(#tau, #ell) for lep. Tau+ decays", 36, 0., TMath::Pi());
@@ -338,7 +362,7 @@ void fillSVmassRecoSolutionHistogram(unsigned iSolution, MonitorElement* h,
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::fillHistogramsImp>:" << std::endl; 
+  std::cout << "<CompositePtrCandidateT1T2MEtHistManager::fillHistogramsImp>:" << std::endl; 
 
   typedef std::vector<CompositePtrCandidateT1T2MEt<T1,T2> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> diTauCandidates;
@@ -376,6 +400,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 	 diTauCandidate->p4Leg2gen().energy() > epsilon ) {
       hGenDiTauCandidatePt_->Fill(diTauCandidate->p4VisGen().pt(), weight);
 
+      hGenLeg1En_->Fill(diTauCandidate->p4VisLeg1gen().energy(), weight);
+      hGenLeg2En_->Fill(diTauCandidate->p4VisLeg2gen().energy(), weight);
+
       hGenLeg1PtVsLeg2Pt_->Fill(diTauCandidate->p4VisLeg1gen().pt(), diTauCandidate->p4VisLeg2gen().pt(), weight);
       hGenLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->p4VisLeg1gen().eta(), diTauCandidate->p4VisLeg2gen().eta(), weight);
 
@@ -390,6 +417,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
       hGenSqrtX1X2VsDPhi12_->Fill(dPhi12gen, TMath::Sqrt(diTauCandidate->x1gen()*diTauCandidate->x2gen()), weight);
  */
       hGenSqrtX1X2VsDPhi12_->getTProfile()->Fill(dPhi12gen, TMath::Sqrt(diTauCandidate->x1gen()*diTauCandidate->x2gen()), weight);
+      if ( lutSqrtX1X2VsDPhi12_ ) {
+	int binIndex = lutSqrtX1X2VsDPhi12_->FindBin(diTauCandidate->dPhi12());
+	double averageSqrtX1X2VsDPhi12 = lutSqrtX1X2VsDPhi12_->GetBinContent(binIndex);
+	if ( averageSqrtX1X2VsDPhi12 > 0. ) hSqrtX1X2VsDPhi12Mass_->Fill(diTauCandidate->p4Vis().mass()/averageSqrtX1X2VsDPhi12, weight);
+      }
 
       hGenLeg1DecayTime_->Fill(compDecayEigenTime(diTauCandidate->decayVertexPosLeg1gen(), 
 						  diTauCandidate->primaryVertexPosGen(), diTauCandidate->p4Leg1gen().energy()), weight);

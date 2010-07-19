@@ -39,6 +39,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   edm::InputTag vertexSrc_;
   edm::InputTag visMassHypothesisSrc_;
 
+  TH1* lutSqrtX1X2VsDPhi12_;
+
   bool requireGenMatch_;
 
 //--- "helper" class for accessing weight values
@@ -55,6 +57,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 //--- histograms
   MonitorElement* hGenDiTauCandidatePt_;
 
+  MonitorElement* hGenLeg1En_;
+  MonitorElement* hGenLeg2En_;
   MonitorElement* hGenLeg1PtVsLeg2Pt_;
   MonitorElement* hGenLeg1EtaVsLeg2Eta_;
   MonitorElement* hGenDeltaRleg1VisNu_;
@@ -63,6 +67,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hGenLeg2DecayTime_;
 
   MonitorElement* hGenSqrtX1X2VsDPhi12_;
+  MonitorElement* hSqrtX1X2VsDPhi12Mass_;
 
   MonitorElement* hGenLeg1TauPlusDecayAngleLepton_;
   MonitorElement* hGenLeg1TauPlusDecayAngleOneProng_;
