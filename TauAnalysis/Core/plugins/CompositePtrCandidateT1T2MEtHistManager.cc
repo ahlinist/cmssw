@@ -148,6 +148,14 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hDiTauCandidateCharge_ = book1D("DiTauCandidateCharge", "Composite Charge", 11, -5.5, +5.5);
   hDiTauCandidateMass_ = book1D("DiTauCandidateMass", "Composite Invariant Mass", 50, 0., 250.);
 
+  hSVfitX1_ = book1D("SVfitX1", "X_{1}", 51, -0.01, 1.01);
+  hSVfitX2_ = book1D("SVfitX2", "X_{2}", 51, -0.01, 1.01);
+/*
+  hSVfitX1vsGenX1_ = book2D("SVfitX1vsGenX1", "X_{1} vs. gen. X_{1}", 21, -0.01, 1.01, 100, -2.5, +2.5);
+  hSVfitX1vsGenX1Profile_ = bookProfile1D("SVfitX1vsGenX1Profile", "X_{1} vs. gen. X_{1}", 51, -0.01, 1.01);
+  hSVfitX2vsGenX2_ = book2D("SVfitX2vsGenX2", "X_{2} vs. gen. X_{2}", 21, -0.01, 1.01, 100, -2.5, +2.5);
+  hSVfitX2vsGenX2Profile_ = bookProfile1D("SVfitX2vsGenX2Profile", "X_{2} vs. gen. X_{2}", 51, -0.01, 1.01);
+ */
   hSVfitMass_ = book1D("SVfitMass", "SVfit Mass", 50, 0., 250.);
   hSVfitMass1stSolution_ = book1D("SVfitMass1stSolution", "SVfit Mass (1st Solution)", 50, 0., 250.);
   hSVfitMass2ndSolution_ = book1D("SVfitMass2ndSolution", "SVfit Mass (2nd Solution)", 50, 0., 250.);
@@ -448,6 +456,18 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
 	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
       if ( svFitSolution->isValidSolution() && svFitSolution->svFitStatus() == 0 ) {
+	
+	hSVfitX1_->Fill(svFitSolution->x1(), weight);
+	hSVfitX2_->Fill(svFitSolution->x2(), weight);
+/*
+	if ( diTauCandidate->p4Leg1gen().energy() > epsilon && 
+	     diTauCandidate->p4Leg2gen().energy() > epsilon ) {
+	  hSVfitX1vsGenX1_->Fill(diTauCandidate->x1gen(), svFitSolution->x1(), weight);
+	  hSVfitX1vsGenX1Profile_->getTProfile()->Fill(diTauCandidate->x1gen(), svFitSolution->x1(), weight);
+	  hSVfitX2vsGenX2_->Fill(diTauCandidate->x2gen(), svFitSolution->x2(), weight);
+	  hSVfitX2vsGenX2Profile_->getTProfile()->Fill(diTauCandidate->x2gen(), svFitSolution->x2(), weight);
+	}
+ */	
 	hSVfitMass_->Fill(svFitSolution->p4().mass(), weight);
 	hSVfitMassVsLogLikelihood_->Fill(svFitSolution->p4().mass(), svFitSolution->logLikelihood(), weight);
 	hSVfitLogLikelihood_->Fill(svFitSolution->logLikelihood(), weight);
