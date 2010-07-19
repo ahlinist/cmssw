@@ -3,6 +3,8 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
@@ -18,7 +20,8 @@ MEtHistManager::MEtHistManager(const edm::ParameterSet& cfg)
   metSrc_ = cfg.getParameter<edm::InputTag>("metSource");
   //std::cout << " metSrc = " << metSrc_ << std::endl;
   
-  if ( cfg.exists("metSignificanceSource") ) metSignificanceSrc_ = cfg.getParameter<edm::InputTag>("metSignificanceSource");
+  metSignificanceSrc_ = ( cfg.exists("metSignificanceSource") ) ? 
+    cfg.getParameter<edm::InputTag>("metSignificanceSource") : edm::InputTag();
   //std::cout << " metSignificanceSrc = " << metSignificanceSrc_ << std::endl;
 
   if ( cfg.exists("leg1Source") ) leg1Src_ = cfg.getParameter<edm::InputTag>("leg1Source");
@@ -110,7 +113,7 @@ void fillMEtProjectionHistograms(MonitorElement* hMEtPparlDiff, MonitorElement* 
 void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
-  //std::cout << "<MEtHistManager::fillHistogramsImp>:" << std::endl; 
+  std::cout << "<MEtHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<std::vector<pat::MET> > patMETs;
   getCollection(evt, metSrc_, patMETs);
@@ -123,9 +126,9 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
      if ( recoMETs->size() == 1 ) metSignificance = recoMETs->begin()->metSignificance();
   }
 
-  edm::Handle<edm::View<reco::Candidate> > leg1Particles;
+  edm::Handle<reco::CandidateView> leg1Particles;
   if ( leg1Src_.label() != "" ) evt.getByLabel(leg1Src_, leg1Particles);
-  edm::Handle<edm::View<reco::Candidate> > leg2Particles;
+  edm::Handle<reco::CandidateView> leg2Particles;
   if ( leg2Src_.label() != "" ) evt.getByLabel(leg2Src_, leg2Particles);
 
   if ( patMETs->size() == 1 ) {
@@ -190,7 +193,7 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       }
 
       if ( leg1Src_.label() != "" ) {
-	for ( edm::View<reco::Candidate>::const_iterator leg1Particle = leg1Particles->begin();
+	for ( reco::CandidateView::const_iterator leg1Particle = leg1Particles->begin();
 	      leg1Particle != leg1Particles->end(); ++leg1Particle ) {
 	  if ( leg1Particle->pt() > 5. )
 	    fillMEtProjectionHistograms(hMEtPparlLeg1Diff_, hMEtPparlLeg1Pull_, 0, 0,
@@ -199,7 +202,7 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       }
 
       if ( leg2Src_.label() != "" ) {
-	for ( edm::View<reco::Candidate>::const_iterator leg2Particle = leg2Particles->begin();
+	for ( reco::CandidateView::const_iterator leg2Particle = leg2Particles->begin();
 	      leg2Particle != leg2Particles->end(); ++leg2Particle ) {
 	  if ( leg2Particle->pt() > 5. )
 	    fillMEtProjectionHistograms(hMEtPparlLeg2Diff_, hMEtPparlLeg2Pull_, 0, 0,
@@ -208,9 +211,9 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       }
 
       if ( leg1Src_.label() != "" && leg2Src_.label() != "" ) {
-	for ( edm::View<reco::Candidate>::const_iterator leg1Particle = leg1Particles->begin();
+	for ( reco::CandidateView::const_iterator leg1Particle = leg1Particles->begin();
 	      leg1Particle != leg1Particles->end(); ++leg1Particle ) {
-	  for ( edm::View<reco::Candidate>::const_iterator leg2Particle = leg2Particles->begin();
+	  for ( reco::CandidateView::const_iterator leg2Particle = leg2Particles->begin();
 		leg2Particle != leg2Particles->end(); ++leg2Particle ) {
 	    if ( leg1Particle->pt() > 5. && leg2Particle->pt() > 5. && 
 		 reco::deltaR(leg1Particle->p4(), leg2Particle->p4()) > 0.7 ) {
