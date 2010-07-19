@@ -362,7 +362,7 @@ void fillSVmassRecoSolutionHistogram(unsigned iSolution, MonitorElement* h,
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  std::cout << "<CompositePtrCandidateT1T2MEtHistManager::fillHistogramsImp>:" << std::endl; 
+  //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::fillHistogramsImp>:" << std::endl; 
 
   typedef std::vector<CompositePtrCandidateT1T2MEt<T1,T2> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> diTauCandidates;
