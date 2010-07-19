@@ -113,7 +113,7 @@ void fillMEtProjectionHistograms(MonitorElement* hMEtPparlDiff, MonitorElement* 
 void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
-  std::cout << "<MEtHistManager::fillHistogramsImp>:" << std::endl; 
+  //std::cout << "<MEtHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<std::vector<pat::MET> > patMETs;
   getCollection(evt, metSrc_, patMETs);
