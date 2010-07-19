@@ -400,8 +400,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 	 diTauCandidate->p4Leg2gen().energy() > epsilon ) {
       hGenDiTauCandidatePt_->Fill(diTauCandidate->p4VisGen().pt(), weight);
 
-      hGenLeg1En_->Fill(diTauCandidate->p4VisLeg1gen().energy(), weight);
-      hGenLeg2En_->Fill(diTauCandidate->p4VisLeg2gen().energy(), weight);
+      hGenLeg1En_->Fill(diTauCandidate->p4Leg1gen().energy(), weight);
+      hGenLeg2En_->Fill(diTauCandidate->p4Leg2gen().energy(), weight);
 
       hGenLeg1PtVsLeg2Pt_->Fill(diTauCandidate->p4VisLeg1gen().pt(), diTauCandidate->p4VisLeg2gen().pt(), weight);
       hGenLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->p4VisLeg1gen().eta(), diTauCandidate->p4VisLeg2gen().eta(), weight);
