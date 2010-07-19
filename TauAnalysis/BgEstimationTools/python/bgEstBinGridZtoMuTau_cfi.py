@@ -59,7 +59,7 @@ binning_diTauMt1MET = cms.PSet(
 binning_diTauAbsCharge = cms.PSet(
     extractor = cms.PSet(
         pluginType = cms.string("PATMuTauPairValExtractor"),
-        src = cms.InputTag('muTauPairsTauIdEffZtoMuTauRelMuonIsolation'),
+        src = cms.InputTag(''),
         value = cms.string("? leg2.leadPFChargedHadrCand.isNonnull ? abs(leg1.charge + leg2.leadPFChargedHadrCand.charge) : 0")
     ),
     branchName = cms.string('diTauAbsCharge'),
