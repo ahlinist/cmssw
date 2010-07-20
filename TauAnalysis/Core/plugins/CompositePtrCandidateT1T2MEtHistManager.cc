@@ -455,7 +455,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
     for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
 	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
-      if ( svFitSolution->isValidSolution() && svFitSolution->svFitStatus() == 0 ) {
+      if ( svFitSolution->isValidSolution() ) {
 	
 	hSVfitX1_->Fill(svFitSolution->x1(), weight);
 	hSVfitX2_->Fill(svFitSolution->x2(), weight);
