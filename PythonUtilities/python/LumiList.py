@@ -169,6 +169,7 @@ class LumiList(object):
         return self|other
 
     def __len__(self):
+        '''Returns number of runs in list'''
         return len(self.compactList)
 
     def filterLumis(self, lumiList):
@@ -192,7 +193,6 @@ class LumiList(object):
         return doubleBracketRE.sub (']],\n',
                                     json.dumps (self.compactList,
                                                 sort_keys=True))
-
 
     def getCompactList(self):
         """
