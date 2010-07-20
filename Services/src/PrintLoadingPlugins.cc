@@ -67,6 +67,7 @@ PrintLoadingPlugins::~PrintLoadingPlugins()
 void PrintLoadingPlugins::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
   edm::ParameterSetDescription desc;
   descriptions.add("PrintLoadingPlugins", desc);
+  descriptions.setComment("This service logs each request to load a plugin.");
 }
 
 //

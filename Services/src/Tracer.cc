@@ -132,8 +132,9 @@ void
 Tracer::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
 
     edm::ParameterSetDescription desc;
-    desc.addUntracked<std::string>("indention", "++");
+    desc.addUntracked<std::string>("indention", "++")->setComment("Prefix characters for output. The characters are repeated to form the indentation.");
     descriptions.add("Tracer", desc);
+   descriptions.setComment("This service prints each phase the framework is processing, e.g. constructing a module,running a module, etc.");
 }
 
 //

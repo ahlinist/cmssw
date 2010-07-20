@@ -71,7 +71,8 @@ edm::service::LoadAllDictionaries::LoadAllDictionaries(const edm::ParameterSet& 
 
 void edm::service::LoadAllDictionaries::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
   edm::ParameterSetDescription desc;
-  desc.addUntracked<bool>("doLoad", true);
+  desc.addUntracked<bool>("doLoad", true)->setComment("Only if 'true' do we load all dictionaries");
   descriptions.add("LoadAllDictionaries", desc);
+  descriptions.setComment("This service allows you to force all known Reflex dictionaries to be loaded at the beginning of the job");
 }
 
