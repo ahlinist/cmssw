@@ -115,7 +115,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 
   hGenSqrtX1X2VsDPhi12_ = bookProfile1D("GenSqrtX1X2VsDPhi12", 
 					"gen. sqrt(X_{1} * X_{2}) vs. #Delta#phi_{1,2}", 18, -epsilon, TMath::Pi() + epsilon);
-  hSqrtX1X2VsDPhi12Mass_ = book1D("SqrtX1X2VsDPhi12Mass", "sqrt(X_{1} * X_{2}) vs. #Delta#phi_{1,2} LUT Mass", 50, 0., 250.);
+  hGenSqrtX1X2VsVisEnRatio_ = bookProfile1D("GenSqrtX1X2VsVisEnRatio", 
+					    "gen. sqrt(X_{1} * X_{2}) vs. vis. E_{1} / E_{2}", 25, -epsilon, 2.51);
+  hGenSqrtX1X2VsVisPtRatio_ = bookProfile1D("GenSqrtX1X2VsVisPtRatio", 
+					    "gen. sqrt(X_{1} * X_{2}) vs. vis. P_{T}^{1} / P_{T}^{2}", 25, -epsilon, 2.51);
+  hSqrtX1X2VsDPhi12Mass_ = book1D("SqrtX1X2VsDPhi12Mass", "sqrt(X_{1} * X_{2}) vs. #Delta#phi_{1,2} LUT Mass", 50, 0., 250.);  
 
   hGenLeg1TauPlusDecayAngleLepton_ = book1D("GenLeg1TauPlusDecayAngleLepton", 
 					    "gen. leg_{1} #theta(#tau, #ell) for lep. Tau+ decays", 36, 0., TMath::Pi());
@@ -417,6 +421,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
       fillDeltaRvisNuHistogram(hGenDeltaRleg1VisNu_, diTauCandidate->p4Leg1gen(), diTauCandidate->p4VisLeg1gen(), weight);
       fillDeltaRvisNuHistogram(hGenDeltaRleg2VisNu_, diTauCandidate->p4Leg2gen(), diTauCandidate->p4VisLeg2gen(), weight);
 
+      double sqrtX1X2gen = TMath::Sqrt(diTauCandidate->x1gen()*diTauCandidate->x2gen());
       double dPhi12gen = TMath::Abs(normalizedPhi(diTauCandidate->p4VisLeg1gen().phi() - diTauCandidate->p4VisLeg2gen().phi()));
 /*
   
@@ -424,7 +429,13 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
       hGenSqrtX1X2VsDPhi12_->Fill(dPhi12gen, TMath::Sqrt(diTauCandidate->x1gen()*diTauCandidate->x2gen()), weight);
  */
-      hGenSqrtX1X2VsDPhi12_->getTProfile()->Fill(dPhi12gen, TMath::Sqrt(diTauCandidate->x1gen()*diTauCandidate->x2gen()), weight);
+      hGenSqrtX1X2VsDPhi12_->getTProfile()->Fill(dPhi12gen, sqrtX1X2gen, weight);
+      double visEnRatio = ( diTauCandidate->p4VisLeg2gen().energy() > 0. ) ?
+	diTauCandidate->p4VisLeg1gen().energy()/diTauCandidate->p4VisLeg2gen().energy() : -1.;
+      hGenSqrtX1X2VsVisEnRatio_->getTProfile()->Fill(TMath::Min(visEnRatio, 2.5), sqrtX1X2gen, weight);
+      double visPtRatio = ( diTauCandidate->p4VisLeg2gen().pt() > 0. ) ?
+	diTauCandidate->p4VisLeg1gen().pt()/diTauCandidate->p4VisLeg2gen().pt() : -1.;
+      hGenSqrtX1X2VsVisPtRatio_->getTProfile()->Fill(TMath::Min(visPtRatio, 2.5), sqrtX1X2gen, weight);
       if ( lutSqrtX1X2VsDPhi12_ ) {
 	int binIndex = lutSqrtX1X2VsDPhi12_->FindBin(diTauCandidate->dPhi12());
 	double averageSqrtX1X2VsDPhi12 = lutSqrtX1X2VsDPhi12_->GetBinContent(binIndex);
