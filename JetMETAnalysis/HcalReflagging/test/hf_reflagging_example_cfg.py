@@ -97,14 +97,15 @@ elif version==10:
 
 
 import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
-print "These are the severity levels for the various rechit flags:"
-print "(Severity > 10 causes rechit to be ignored by CaloTower maker)"
+
 process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"HFLongShort",11)
 if (isMC==False):  # Don't use HFDigiTime on MC !
     process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"HFDigiTime",11)
-if process.hfrecoReflagged.debug>0:
-    for i in process.hcalRecAlgos.SeverityLevels:
-        print i
+
+print "These are the severity levels for the various rechit flags:"
+print "(Severity > 10 causes rechit to be ignored by CaloTower maker)"
+for i in process.hcalRecAlgos.SeverityLevels:
+    print i
 
 
 
