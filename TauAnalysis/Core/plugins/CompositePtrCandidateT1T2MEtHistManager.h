@@ -67,7 +67,11 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hGenLeg2DecayTime_;
 
   MonitorElement* hGenSqrtX1X2VsDPhi12_;
+  MonitorElement* hGenSqrtX1X2VsVisEnRatio_;
+  MonitorElement* hGenSqrtX1X2VsVisPtRatio_;
   MonitorElement* hSqrtX1X2VsDPhi12Mass_;
+  MonitorElement* hSqrtX1X2VsVisEnRatio_;
+  MonitorElement* hSqrtX1X2VsVisPtRatio_;
 
   MonitorElement* hGenLeg1TauPlusDecayAngleLepton_;
   MonitorElement* hGenLeg1TauPlusDecayAngleOneProng_;
