@@ -142,6 +142,9 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauHcalIsoPt_;
   MonitorElement* hTauIsoSumPt_;
 
+  MonitorElement* hTauNumIsoPFChargedHadrons_;
+  MonitorElement* hTauNumIsoPFGammas_;
+
   MonitorElement* hTauDeltaRnearestJet_;
 
   MonitorElement* hTauTrkIsoEnProfile_;

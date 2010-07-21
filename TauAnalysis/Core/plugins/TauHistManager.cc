@@ -279,7 +279,10 @@ void TauHistManager::bookHistogramsImp()
   hTauPFNeutralHadronIsoPt_ = book1D("TauPFNeutralHadronIsoPt", "Particle Flow (Neutral Hadron) Isolation P_{T}", 100, 0., 10.);   
   hTauPFGammaIsoPt_ = book1D("TauPFGammaIsoPt", "Particle Flow (Photon) Isolation P_{T}", 100, 0., 10.);  
   
-//--- book "control" histograms to check agreement between tau isolation variables
+  hTauNumIsoPFChargedHadrons_ = book1D("TauNumIsoPFChargedHadrons", "PF charged hadrons in isolation cone", 10, 0., 10.);  
+  hTauNumIsoPFGammas_ = book1D("TauNumIsoPFGammas", "PF gammas in isolation cone", 10, 0., 10.);  
+
+ //--- book "control" histograms to check agreement between tau isolation variables
 //    computed by PAT-level IsoDeposits with the values computed by reco::PFTau producer
   if ( makeIsoPtCtrlHistograms_ ) {
     hTauPFChargedHadronIsoPtCtrl_ = book2D("TauPFChargedHadronIsoPtCtrl", "Particle Flow (Charged Hadron) Isolation P_{T} (reco::PFTau vs. IsoDeposit)", 40, 0., 20., 40, 0., 20.);
@@ -604,6 +607,9 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau, double weight)
   hTauPFChargedHadronIsoPt_->Fill(patTau.chargedHadronIso(), weight);
   hTauPFNeutralHadronIsoPt_->Fill(patTau.neutralHadronIso(), weight);
   hTauPFGammaIsoPt_->Fill(patTau.photonIso(), weight);
+
+  hTauNumIsoPFChargedHadrons_->Fill(patTau.isolationPFChargedHadrCands().size(),weight);
+  hTauNumIsoPFGammas_->Fill(patTau.isolationPFGammaCands().size(),weight);
 
   if ( makeIsoPtCtrlHistograms_ ) {
     double sumPtIsolationConePFChargedHadrons = 0.;
