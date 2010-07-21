@@ -60,6 +60,14 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1
 # New SeverityLevelComputer that can be used to undo the default HF cleaning
 import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
 process.hcalRecAlgos=RemoveAddSevLevel.RemoveFlag(process.hcalRecAlgos,"HFLongShort")
+process.hcalRecAlgos=RemoveAddSevLevel.RemoveFlag(process.hcalRecAlgos,"HFDigiTime")
+
+print "These are the severity levels for the various rechit flags:"
+print "(Severity > 10 causes rechit to be ignored by CaloTower maker)"
+for i in process.hcalRecAlgos.SeverityLevels:
+    print i
+
+
 
 # Path and EndPath definitions
 process.rereco_step = cms.Path(process.caloTowersRec*(process.recoJets*process.recoJetIds+process.recoTrackJets)*process.recoJetAssociations*process.metreco) # re-reco jets and met

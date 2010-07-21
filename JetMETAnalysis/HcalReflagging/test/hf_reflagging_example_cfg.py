@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import string
 
 maxevents = 100  # specify number of events
 isMC = False  # Specify whether file is Monte Carlo or real data
