@@ -37,6 +37,7 @@ process.options = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
+    # Include your file here
     '/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/132/601/F65A94F7-4141-DF11-9F4E-003048D47A80.root'
     #'file:/home/jtemple/TEST_HCAL_RECO_FILE.root'
     )
@@ -58,14 +59,7 @@ process.output = cms.OutputModule("PoolOutputModule",
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 
-import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
-#process.hcalRecAlgos=RemoveAddSevLevel.RemoveFlag(process.hcalRecAlgos,"HFLongShort")
-#process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"UserDefinedBit0",10)
-
-
-
-
-# HF RecHit reflagger
+# HF RecHit reflagger -- specify type of HF cleaning to use
 process.load("JetMETAnalysis/HcalReflagging/HFrechitreflaggerJETMET_cff")
 if version==1:
     process.hfrecoReflagged = process.HFrechitreflaggerJETMETv1.clone()
@@ -73,7 +67,7 @@ elif version==2:
     process.hfrecoReflagged = process.HFrechitreflaggerJETMETv2.clone()
 elif version==3:
     process.hfrecoReflagged = process.HFrechitreflaggerJETMETv3.clone()
-elif version==4:
+elif version==4: 
     if (isMC==False):
         process.hfrecoReflagged = process.HFrechitreflaggerJETMETv4.clone()
     else:
@@ -83,16 +77,19 @@ elif version==5:
         process.hfrecoReflagged = process.HFrechitreflaggerJETMETv5.clone()
     else:
         process.hfrecoReflagged = process.HFrechitreflaggerJETMETv3.clone()  
+
+# CURRENT RECOMMENDATION
 elif version==10:
     process.hfrecoReflagged = process.HFrechitreflaggerJETMETv10.clone()
-    if (isMC==True):  # V10 cleaning uses results of prior flags when setting new flags
+    if (isMC==False):  # V10 cleaning uses results of prior flags when setting new flags; this is the current recommendation as of 21 July 2010 
         process.hfrecoReflagged.PETstat.flagsToSkip =string.atoi('10',2)
         process.hfrecoReflagged.S8S1stat.flagsToSkip=string.atoi('10010',2)
         process.hfrecoReflagged.S9S1stat.flagsToSkip=string.atoi('11010',2)
+        # Flag ordering
         process.hfrecoReflagged.FlagsToSet=(4,3,0)  # set flag 4 (HFPET -- also sets HFLongShort), then flag 3 (HFS8S1 -- also sets HFLongShort), then flag 0 (HFLongShort -- set directly via S9S1)
 
 # Add debugging here
-process.hfrecoReflagged.debug=1
+#process.hfrecoReflagged.debug=1
 
 
 # Versions set the flag "HFLongShort", which needs to have a severity level > 9 to be excluded from CaloTowers.  Some versions (4 & 5) set the flag "HFInTimeWindow" -- (bit 2) you can turn on that if you wish.
@@ -100,6 +97,8 @@ process.hfrecoReflagged.debug=1
 
 
 import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
+print "These are the severity levels for the various rechit flags:"
+print "(Severity > 10 causes rechit to be ignored by CaloTower maker)"
 process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"HFLongShort",11)
 if (isMC==False):  # Don't use HFDigiTime on MC !
     process.hcalRecAlgos=RemoveAddSevLevel.AddFlag(process.hcalRecAlgos,"HFDigiTime",11)
