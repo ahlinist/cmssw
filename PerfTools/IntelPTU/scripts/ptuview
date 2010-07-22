@@ -45,7 +45,7 @@
 # where as before "somestring" is up to you. The URL will then be:
 #   http://x.y/z/cgi-bin/ptuview/all/somestring/
 #
-#  $Id: ptuview,v 1.8 2010/05/24 11:05:04 mkortela Exp $
+#  $Id: ptuview,v 1.9 2010/06/01 05:52:56 mkortela Exp $
 #
 # Peter Elmer, Princeton University
 # 24 March, 2010
@@ -59,6 +59,8 @@ import locale
 from locale import format
 from optparse import OptionParser
 import glob
+import StringIO
+import re
 from os.path import join, normpath, exists, basename, isdir, dirname, getsize
 debug=False
 
@@ -656,6 +658,16 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
   srcclassother = "cntr"
   srcsuppress = ["FirstLine", "CPU_CLK_UNHALTED.CORE max(lCPU)"]
 
+  if proftype == "bbl":
+    fname = mycsvfile.replace(".csv", ".png")
+    if not os.path.exists(fname):
+      out.write("<h2>File not found</h2>\n")
+      return "html"
+    
+    file = open(mycsvfile.replace(".csv", ".png"), "rb")
+    out.write(file.read())
+    return "png"
+
   # In "all" report we don't want the Source column to be shown
   if proftype == "all":
     i = srcorder.index("Source")
@@ -665,6 +677,8 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
 
   ifile  = open(mycsvfile, "rb")
   reader = csv.reader(ifile)
+
+  block_re = re.compile("Block\s+(?P<num>\d+)")
 
   rownum = 0
   fieldordered = []
@@ -752,10 +766,19 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
             theclass = "highlight"
         out.write("<tr class=%s>\n" % theclass )
         url1 = "<a href=\"" + cgiscript
+
+        urlbbl = ""
+        if proftype == "asm":
+          file = os.path.join(dirname(mycsvfile), profname+"_bbl.png")
+          if os.path.exists(file):
+            urlbbl = url1
+            urlbbl += "/bbl/"
+
         if (proftype == "src"):
           url1 += "/asm/"
         else: #(proftype == "asm")
           url1 += "/src/"
+          
         url3 = "</a>"
         for iii,jjj in enumerate(fieldordered):
           rowtxt=row[jjj]
@@ -780,6 +803,23 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
               out.write("<td class=%s>%s%s%s</td>\n" % (classordered[iii],url2,rowtxt,url3))
             else:
               out.write("<td class=%s>%s</td>\n" % (classordered[iii],rowtxt))
+          elif titleordered[iii] == "Address":
+            out.write("<td class=%s>" % classordered[iii])
+            m = block_re.search(rowtxt)
+            if m and len(urlbbl) > 0:
+              url2 = urlbbl + profname + '">'
+              anchor = "block"+m.group("num")
+              out.write('<a name="%s">%s%s%s</a>' % (anchor,url2,rowtxt,url3))
+            else:
+              out.write("%s" % rowtxt)
+            out.write("</td>\n")
+          elif titleordered[iii] == "Assembly":
+            m = block_re.search(rowtxt)
+            if m:
+              rowtxt = block_re.sub('<a href="#block%s">\g<0></a>'%m.group("num"), rowtxt)
+              out.write("<td class=%s>%s</td>\n" % (classordered[iii],rowtxt))
+            else:  
+              out.write("<td class=%s>%s</td>\n" % (classordered[iii],rowtxt))
           else:
             out.write("<td class=%s>%s</td>\n" % (classordered[iii],rowtxt))
         out.write("</tr>\n")
@@ -788,10 +828,11 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
   ifile.close()
   out.write("</tbody>\n")
   out.write("</table>\n")
+  return "html"
 
 
 def findReportType(args):
-  for t in ["src", "asm", "all"]:
+  for t in ["src", "asm", "all", "bbl"]:
     try:
       i = args.index(t)
       return (i, t)
@@ -800,17 +841,29 @@ def findReportType(args):
 
   return (None, None)  
 
-def printError(out):
-  out.write("<h1>Invalid URL:</h1>\n")
-  out.write("</body></html>")
-
-def buildReply(out):
+def printHtmlHeader(out):
+  out.write("Content-Type: text/html\n\n")
   out.write("<html>\n")
   out.write(CSS)
   out.write(JS)
   out.write("<body>\n")
+
+def printHtmlFooter(out):
+  out.write("</body></html>")
+
+def printPngHeader(out):
+  out.write("Content-Type: image/png\n\n")
+
+def printError(out):
+  printHtmlHeader(out)
+  out.write("<h1>Invalid URL:</h1>\n")
+  printHtmlFooter(out)
+
+def buildReply(out):
   if not "PATH_INFO" in os.environ or not "SCRIPT_FILENAME" in os.environ:
+    printHtmlHeader(out)
     out.write("<h1>No vars:</h1>\n")
+    printHtmlFooter(out)
   else:
     relPath = os.environ["PATH_INFO"].replace(os.environ["SCRIPT_FILENAME"], "").lstrip("/")
     # Tokenize the relPath. Ignore anything after the 3rd field.
@@ -829,23 +882,35 @@ def buildReply(out):
       if index > 0:
         subdir = normpath("/".join(relargs[0:index]))
         mypath = os.path.join(dataPath, subdir)
-        #out.write("<p>%s</p>"%mypath) 
-        #out.write("<p>%s</p>"%subdir) 
         if mypath.find(dataPath) < 0:
           printError(out)
           return
-              
+
       mycsvfile = mypath + "/" + profname + "_" + proftype + ".csv"
-      out.write("<h1>%s profile - %s</h1>\n" % (proftype,profname))
-      cgiscript = "/" + os.environ["SCRIPT_FILENAME"].replace(os.environ["DOCUMENT_ROOT"],"")
+      cgiscript = os.environ["SCRIPT_FILENAME"].replace(os.environ["DOCUMENT_ROOT"],"")
+      if cgiscript[0] != "/":
+        cgiscript = "/"+cgiscript
       if len(subdir) > 0:
         cgiscript += "/" + subdir
       
       hlline = -1
       if (len(relargs) >= index+3):
-        hlline = relargs[index+2] 
-      getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out)
-      out.write("</body></html>")
+        hlline = relargs[index+2]
+
+      output = StringIO.StringIO()  
+      type = getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,output)
+      if type == "html":
+        printHtmlHeader(out)
+        out.write("<h1>%s profile - %s</h1>\n" % (proftype,profname))
+        out.write(output.getvalue())
+        printHtmlFooter(out) 
+      elif type == "png":
+        printPngHeader(out)
+        out.write(output.getvalue())
+      else:
+        printError(out)
+
+      output.close()
     else:
       printError(out)
 
@@ -865,7 +930,5 @@ if __name__ == "__main__":
   parser.add_option("--timeout", "-t", dest="timeout", default=60*15, type="int")
   opts, args = parser.parse_args()
 
-  print "Content-Type: text/html"
-  print
   buildReply(sys.stdout)
 
