@@ -61,6 +61,30 @@ import csv
 import xml.dom.minidom
 from optparse import OptionParser
 
+# # Hue 200/360, value 100/100 
+# colortable = ["#FFFFFF", # Saturation  0/100
+#               "#E6F7FF", #            10/100
+#               "#CCEEFF", #            20/100
+#               "#B2E5FF", #            30/100
+#               "#99DDFF", #            40/100
+#               "#80D4FF", #            50/100
+#               "#66CCFF", #            60/100
+#               "#4DC3FF", #            70/100
+#               "#33BBFF"] #            80/100
+
+# Hue 0/360, value 100/100
+colortable = ["#FFFFFF", # Saturation   0/100
+              "#FFE6E6", # Saturation  10/100
+              "#FFCCCC", # Saturation  20/100
+              "#FFB2B2", # Saturation  30/100
+              "#FF9999", # Saturation  40/100
+              "#FF8080", # Saturation  50/100
+              "#FF6666", # Saturation  60/100
+              "#FF4D4D", # Saturation  70/100
+              "#FF3333", # Saturation  80/100
+              "#FF1919", # Saturation  90/100
+              "#FF0000"] # Saturation 100/100
+
 class Function:
     def __init__(self, name, module, source, rva):
         self.name = name
@@ -81,6 +105,127 @@ class Function:
     def getFirstLine(self):
         return self.firstLine
 
+class BlockGraph:
+    class Block:
+        def __init__(self, id):
+            self.id = id
+            self.data = {}
+            self.nexts = []
+            self.branchTarget = None
+
+        def addData(self, descr, value):
+            self.data[descr] = value
+
+        def getCycles(self):
+            if self.data.has_key("CPU_CLK_UNHALTED.CORE"):
+                return int(self.data["CPU_CLK_UNHALTED.CORE"])
+            else:
+                return 0;            
+
+        def addNext(self, id):
+            self.nexts.append(id)
+
+        def node(self, options, maxCycles):
+            font = options["fontsize"]["block"]
+            if len(self.data) == 0:
+                font = options["fontsize"]["empty"]
+
+            shape = "ellipse"
+
+            # Determine color
+            color = '"%s"' % colortable[0]
+            cycles = self.getCycles()
+            if maxCycles > 0 and cycles > 0:
+                index = int(float(cycles)/maxCycles * (len(colortable)-1)) + 1
+                index = min(len(colortable)-1, index)
+                color = '"%s"' % colortable[index]
+
+            # Mark returning blocks    
+            if len(self.nexts) == 0:
+                shape = "box"
+                color = '"#99DDFF"'
+            
+            ret  = '  b%s [shape="%s",style=filled,fillcolor=%s,label=< <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">\n' % (self.id, shape, color)
+            ret += '    <TR><TD COLSPAN="2"><FONT POINT-SIZE="%d">Block %s</FONT></TD></TR>\n' % (font, self.id)
+
+            font = options["fontsize"]["event"]
+            for descr, value in self.data.iteritems():
+                ret += '    <TR><TD><FONT POINT-SIZE="%d">%s</FONT></TD><TD><FONT POINT-SIZE="%d">%s</FONT></TD></TR>\n' % (font, descr, font, value)
+        
+            ret += '  </TABLE>>]\n'
+            return ret
+
+        def edges(self):
+            ret = ""
+            for n in self.nexts:
+                ret += '  b%s -> b%s\n' % (self.id, n)
+            return ret
+
+        def setBranchTarget(self, target):
+            self.branchTarget = target
+            self.addNext(target)
+
+        def getBranchTarget(self):
+            return self.branchTarget
+
+    def __init__(self, options, dataDescriptionIndex_re):
+        self.blocks = []
+        self.options = options
+        self.dataDescriptionIndex_re = dataDescriptionIndex_re
+        self.branchTarget_re = re.compile("//@modules\.0/@basicBlockGraph/@basicBlocks\.(?P<target>\d+)")
+        self.maxCycles = 0
+
+    def addBlock(self, id, element, dataDescriptions):
+        block = self.Block(id)
+
+        for data in element.getElementsByTagName("data"):
+            m = self.dataDescriptionIndex_re.search(data.getAttribute("description"))
+            if not m:
+                continue
+
+            index = int(m.group("index"))
+            descr = dataDescriptions[index].getAttribute("name")
+            if descr in self.options["ignoreFields"]:
+                continue
+            
+            value = data.getAttribute("value")
+
+            block.addData(descr, value)
+
+        if element.hasAttribute("branchTarget"):
+            m = self.branchTarget_re.search(element.getAttribute("branchTarget"))
+            if m:
+                branchTarget = m.group("target")
+                block.setBranchTarget(branchTarget)
+
+        # Read the next block number from the XML
+        if element.hasAttribute("next"):
+            m = self.branchTarget_re.search(element.getAttribute("next"))
+            if m:
+                block.addNext(m.group("target"))
+
+        self.maxCycles = max(self.maxCycles, block.getCycles())
+        self.blocks.append(block)
+        return block
+                              
+
+    def __str__(self):
+        ret  = 'digraph G {\n'
+        ret += '  node [height=0.1,width=0.1]\n'
+
+        for b in self.blocks:
+            ret += b.node(self.options, self.maxCycles)
+
+        ret += '\n'
+
+        for b in self.blocks:
+            ret += b.edges()
+            ret += '\n'
+
+        ret += '}\n'
+
+        return ret
+
 class VtsaError:
     def __init__(self, err):
         self.err = err
@@ -91,12 +236,21 @@ class VtsaError:
 class Vtsa:
     def __init__(self, opts):
         self.expdir = opts.expdir
+        self.buildBlocks = opts.basicblocks
+        self.verbose = opts.verbose
         self.command = "/opt/intel/ptu32_001_lin_intel64/bin/vtsaview"
 #        self.options = {"common": "-cpu total -t=95 -n=1000000 --granularity=function --show-events-as=samples --threads-match=time -er --filter process,"+opts.filter,
         self.options = {"common": ["-cpu", "total", "-t=%d" % opts.threshold,
                                    "-n=1000000", "--granularity=function", "--show-events-as=samples", "--threads-match=time", "-er", "--filter", "process,"+opts.filter ],
                         "all": ["--aggregate=e", "--csv"],
                         "src": ["--aggregate=p", "--sv", "-ds", "windows", "--xml"]}
+
+        self.ignoreFields = ["CPU_CLK_UNHALTED.CORE max(lCPU)"]
+        self.dotoptions = {"fontsize": {"block": 14,
+                                        "empty": 8,
+                                        "event": 10},
+                           "format": ["dot", "png"],
+                           "ignoreFields": self.ignoreFields}
 
         self.directory = opts.output
         if len(self.directory) > 0:
@@ -105,10 +259,11 @@ class Vtsa:
             elif not os.path.isdir(self.directory):
                 raise VtsaError("Not a directory '%s'" % self.directory) 
 
+
         self.dataDescriptionIndex_re = re.compile("//@dataDescriptions\.(?P<index>\d+)")
         self.sourceLine_re = re.compile("//@sourceFiles\.0/@sourceLines\.(?P<line>\d+)")
         self.asmLine_re = re.compile("//@modules\.0/@asmLines\.(?P<line>\d+)")
-        self.branchTarget_re = re.compile("//@modules\.0/@basicBlockGraph/@basicBlocks\.(?P<target>\d+)")
+#        self.branchTarget_re = re.compile("//@modules\.0/@basicBlockGraph/@basicBlocks\.(?P<target>\d+)")
         self.jump_re = re.compile("(?P<jump>j\S+\s+)\S+")
 
     def buildCmd(self, report):
@@ -118,6 +273,8 @@ class Vtsa:
         return cmd
 
     def execute(self, cmd):
+        if self.verbose:
+            print " ".join(cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
 
         ret_out = []
@@ -198,7 +355,7 @@ class Vtsa:
 
         output.close()    
 
-    def addData(self, dst, size, element):
+    def addDataCsv(self, dst, size, element):
         # Default values for counter data
         data = ["0"] * size
         datas = element.getElementsByTagName("data")
@@ -215,7 +372,7 @@ class Vtsa:
         for d in data:
             dst += ',"%s"' % d
 
-        return dst    
+        return dst
 
     def buildSrcReport(self, function):
         cmd = self.buildCmd("src")
@@ -224,7 +381,7 @@ class Vtsa:
         ok = self.checkError(error)
         if not ok:
 #            print "%s : vtsaview error (probably no src), skipping" % function.name
-            return (None, None)
+            return (None, None, None)
 
         dom = xml.dom.minidom.parseString("\n".join(input))
         
@@ -239,6 +396,8 @@ class Vtsa:
             asm += ',"%s"' % column
         src += "\n"
         asm += "\n"
+
+        dot = BlockGraph(self.dotoptions, self.dataDescriptionIndex_re)
 
         # Contents for src report
         sourceFile = dom.getElementsByTagName("sourceFiles")[0]
@@ -256,7 +415,7 @@ class Vtsa:
                 function.setFirstLine(lineNumber)
             
             # Counter values
-            src = self.addData(src, dataSize, line)
+            src = self.addDataCsv(src, dataSize, line)
             src += "\n"
 
         # Contents for asm report
@@ -275,16 +434,12 @@ class Vtsa:
                     lines.append(int(m.group("line")))
 
             asm += ('"Block %s","0",""' % id)
-            asm = self.addData(asm, dataSize, block)
+            asm = self.addDataCsv(asm, dataSize, block)
             asm += "\n"
 
-            # Check for possible branch target
-            branchTarget = ""
-            if block.hasAttribute("branchTarget"):
-                m = self.branchTarget_re.search(block.getAttribute("branchTarget"))
-                if m:
-                    branchTarget = m.group("target")
-
+            blockObject = dot.addBlock(id, block, dataDescriptions)
+            branchTarget = blockObject.getBranchTarget()
+            
             # Find the assembly lines of this block        
             for i, alineno in enumerate(lines):
                 # Contents of asm line
@@ -301,16 +456,16 @@ class Vtsa:
                 lineContents = contents.getAttribute("lineContents")
 
                 # Transform the possible branch target to "Block N"
-                if branchTarget != "" and i == len(lines)-1:
+                if i == len(lines)-1 and branchTarget != None:
                     lineContents = self.jump_re.sub("\g<jump>Block %s" % branchTarget, lineContents)
 
                 # Add asm line to CSV    
                 asm += ('"%s","%s","%s"' % (address, sourceLine, lineContents))
-                asm = self.addData(asm, dataSize, aline)
+                asm = self.addDataCsv(asm, dataSize, aline)
                 asm += "\n"
 
         print "  %s : built src and asm reports" % function.name
-        return (src, asm)
+        return (src, asm, str(dot))
 
     def buildFunctionReport(self, function, i):
         # Don't even try to run vtsaview if the "all" report doesn't
@@ -321,7 +476,7 @@ class Vtsa:
         if not function.hasSource():
             return
 
-        (src, asm) = self.buildSrcReport(function)
+        (src, asm, dot) = self.buildSrcReport(function)
 
         if src != None:
             file = open(os.path.join(self.directory, "%d_src.csv" % i), "w")
@@ -332,8 +487,18 @@ class Vtsa:
             file = open(os.path.join(self.directory, "%d_asm.csv" % i), "w")
             file.write(asm)
             file.close()
-    
 
+        if self.buildBlocks and dot != None:
+            name = os.path.join(self.directory, "%d_bbl." % i)
+            for f in self.dotoptions["format"]:
+                if f == "dot":
+                    file = open(name+f, "w")
+                    file.write(dot)
+                    file.close()
+                else:
+                    p = subprocess.Popen(["dot", "-T%s" % f, "-o", name+f], stdin=subprocess.PIPE, close_fds=True)
+                    p.communicate(dot)                    
+                    
 if __name__ == "__main__":
     parser = OptionParser(usage="Usage: %prog [options]")
     parser.add_option("--experiment", "-e", dest="expdir", type="string",
@@ -346,6 +511,10 @@ if __name__ == "__main__":
                       help='Filter the given process (default: "cmsRun")')
     parser.add_option("--output", "-o", dest="output", default="",
                       help='Destination directory (default: CWD)')
+    parser.add_option("--basic-blocks", "-b", dest="basicblocks", action="store_true", default=False,
+                      help='Produce basic block graphs (experimental)')
+    parser.add_option("--verbose", "-v", dest="verbose", action="store_true", default=False,
+                      help='Be verbose (i.e. print all commands')
     (opts, args) = parser.parse_args()
 
     if opts.expdir == None:
