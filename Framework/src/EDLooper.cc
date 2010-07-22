@@ -17,6 +17,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/Actions.h"
 #include "FWCore/Utilities/interface/Exception.h"
+#include "FWCore/Framework/interface/ScheduleInfo.h"
 
 #include "boost/bind.hpp"
 
@@ -107,4 +108,21 @@ namespace edm {
   {
     return std::set<eventsetup::EventSetupRecordKey> ();
   }
+   
+  void 
+  EDLooper::copyInfo(const ScheduleInfo& iInfo){
+    scheduleInfo_ = std::auto_ptr<ScheduleInfo>(new ScheduleInfo(iInfo));
+  }
+  void 
+  EDLooper::setModuleChanger(const ModuleChanger* iChanger) {
+    moduleChanger_ = iChanger;
+  }
+
+  const ModuleChanger* EDLooper::moduleChanger() const {
+    return moduleChanger_;
+  }
+  const ScheduleInfo* EDLooper::scheduleInfo() const {
+    return scheduleInfo_.get();
+  }
+  
 }
