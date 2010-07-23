@@ -141,25 +141,76 @@
 
   <ElementaryMaterial name="Zirconium" density="6.494*g/cm3" symbol=" " atomicWeight="91.22*g/mole" atomicNumber="40"/>
 
-  <CompositeMaterial name="FPix_TPG" density="2.26*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="FPix_Thermflow" density="0.7625*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.3787448">
+      <rMaterial name="materials:Silicon"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.21575329">
+      <rMaterial name="materials:Oxygen"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.3239468">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.08155498">
+      <rMaterial name="materials:Hydrogen"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="FPix_TPG" density="2.47*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="1.00">
       <rMaterial name="materials:Carbon"/>
     </MaterialFraction>
   </CompositeMaterial>
  
-  <CompositeMaterial name="FPix_CFSkin" density="1.76*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="FPix_CFSkin" density="3.43511*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="1.00">
       <rMaterial name="materials:Carbon"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="C_C_OuterRing" density="1.80*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="FPix_CFSkin_OuterOuterRing" density="2.2677*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="FPix_CFSkin_OuterInnerRing" density="1.000035*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="FPix_CFSkin_InnerOuterRing" density="1.77*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="FPix_CFSkin_InnerInnerRing" density="1.1744*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="C_C_OuterOuterRing" density="1.612*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="1.0">
       <rMaterial name="materials:Carbon"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="C_C_InnerRing" density="1.76*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="C_C_OuterInnerRing" density="1.745*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.0">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="C_C_InnerOuterRing" density="1.944*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.0">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="C_C_InnerInnerRing" density="1.566*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="1.0">
       <rMaterial name="materials:Carbon"/>
     </MaterialFraction>
