@@ -15,6 +15,8 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
+#include "TStopwatch.h"
+
 
 int main(int argc, char* argv[])
 {
@@ -56,44 +58,52 @@ int main(int argc, char* argv[])
   // loop the events
   unsigned int iEvent=0;
   fwlite::Event ev(inFile);
+  TStopwatch timer;
+  timer.Start();
+
+  unsigned int nEventsAnalyzed = 0;
   for(ev.toBegin(); !ev.atEnd(); ++ev, ++iEvent){
     edm::EventBase const & event = ev;
-
-    // break loop after end of file is reached
-    // or after 1000 events have been processed
-    if( iEvent==1000 ) break;
-   
-    // simple event counter
-    if(iEvent>0 && iEvent%1==0){
-      std::cout << "  processing event: " << iEvent << std::endl;
-    }
 
     // Handle to the jet collection
     edm::Handle<std::vector<pat::Jet> > jets;
     edm::InputTag jetLabel( argv[3] );
     event.getByLabel(jetLabel, jets);
    
-    // loop jet collection and fill histograms
-    for(unsigned i=0; i<jets->size(); ++i){
-      jetPt_ ->Fill( (*jets)[i].pt()  );
-      jetEta_->Fill( (*jets)[i].eta() );
-      jetPhi_->Fill( (*jets)[i].phi() );
-      reco::SecondaryVertexTagInfo const * svTagInfos = (*jets)[i].tagInfoSecondaryVertex("secondaryVertex");
-      if ( svTagInfos != 0 ) {
-    if ( svTagInfos->nVertices() > 0 )
-      disc_->Fill( svTagInfos->flightDistance(0).value() );
-      }
-      std::vector<CaloTowerPtr> const & caloConstituents =  (*jets)[i].getCaloConstituents();
-      for ( std::vector<CaloTowerPtr>::const_iterator ibegin = caloConstituents.begin(),
-          iend = caloConstituents.end(),
-          iconstituent = ibegin;
-        iconstituent != iend; ++iconstituent ) {
-    constituentPt_->Fill( (*iconstituent)->pt() );
-      }
-    }
+    // // loop jet collection and fill histograms
+    // for(unsigned i=0; i<jets->size(); ++i){
+    //   jetPt_ ->Fill( (*jets)[i].pt()  );
+    //   jetEta_->Fill( (*jets)[i].eta() );
+    //   jetPhi_->Fill( (*jets)[i].phi() );
+    //   reco::SecondaryVertexTagInfo const * svTagInfos = (*jets)[i].tagInfoSecondaryVertex("secondaryVertex");
+    //   if ( svTagInfos != 0 ) {
+    // if ( svTagInfos->nVertices() > 0 )
+    //   disc_->Fill( svTagInfos->flightDistance(0).value() );
+    //   }
+    //   std::vector<CaloTowerPtr> const & caloConstituents =  (*jets)[i].getCaloConstituents();
+    //   for ( std::vector<CaloTowerPtr>::const_iterator ibegin = caloConstituents.begin(),
+    //       iend = caloConstituents.end(),
+    //       iconstituent = ibegin;
+    //     iconstituent != iend; ++iconstituent ) {
+    // constituentPt_->Fill( (*iconstituent)->pt() );
+    //   }
+    // }
+    ++nEventsAnalyzed;
   } 
   // close input file
   inFile->Close();
+
+  timer.Stop();
+
+  // print some timing statistics
+  Double_t rtime = timer.RealTime();
+  Double_t ctime = timer.CpuTime();
+  printf("Analyzed events: %d \n",nEventsAnalyzed);
+  printf("RealTime=%f seconds, CpuTime=%f seconds\n",rtime,ctime);
+  printf("%4.2f events / RealTime second .\n", (double)nEventsAnalyzed/rtime);
+  printf("%4.2f events / CpuTime second .\n", (double)nEventsAnalyzed/ctime);
+  
+
 
   // ----------------------------------------------------------------------
   // Third Part:
