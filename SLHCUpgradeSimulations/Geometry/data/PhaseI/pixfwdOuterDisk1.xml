@@ -3,17 +3,17 @@
 
 <ConstantsSection label="pixfwdOuterDisk1.xml" eval="true">
   
-  <Constant name="OuterRingCFRMax"      value="160.0*mm"/>
-  <Constant name="OuterRingCFRMin"      value="[OuterRingCFRMax]-0.5*mm"/>
-  <Constant name="OuterRingRMax"        value="[OuterRingCFRMin]"/>
+  <Constant name="OuterRingRMax"        value="166.0*mm"/>
   <Constant name="OuterRingRMin"        value="[OuterRingRMax]-2.0*mm"/>
+  <Constant name="OuterRingCFRMax"      value="[OuterRingRMin]"/>
+  <Constant name="OuterRingCFRMin"      value="[OuterRingCFRMax]-0.5*mm"/>
 <!--  <Constant name="OuterRingHalfWidth"   value="31.0*mm"/> -->
   <Constant name="OuterRingHalfWidth"   value="18.6*mm"/>
   <Constant name="OuterRingZ"           value="-[pixfwdDisks:DiskHalfWidth]+[OuterRingHalfWidth]"/>
-  <Constant name="InnerRingRMax"        value="[OuterRingRMin]-[pixfwdblade1:WedgeSideL]"/>
-  <Constant name="InnerRingRMin"        value="[InnerRingRMax]-2.0*mm"/>
-  <Constant name="InnerRingCFRMax"      value="[InnerRingRMin]"/>
-  <Constant name="InnerRingCFRMin"      value="[InnerRingCFRMax]-0.5*mm"/>
+  <Constant name="InnerRingRMax"      value="89.2"/>
+  <Constant name="InnerRingRMin"      value="[InnerRingRMax]-2.0*mm"/>
+  <Constant name="InnerRingCFRMax"     value="[InnerRingRMin]"/>
+  <Constant name="InnerRingCFRMin"     value="[InnerRingCFRMax]-0.5*mm"/>
 <!--   <Constant name="InnerRingHalfWidth"   value="14.0*mm"/> -->
   <Constant name="InnerRingHalfWidth"   value="15.0*mm"/>
   <Constant name="InnerRingZ"           value="-[pixfwdDisks:DiskHalfWidth]+[InnerRingHalfWidth]"/>
@@ -37,22 +37,22 @@
 <LogicalPartSection label="pixfwdOuterDisk1.xml">
  <LogicalPart name="PixelForwardOuterDiskInnerRing" category="support">
   <rSolid name="PixelForwardOuterDiskInnerRing"/>
-  <rMaterial name="materials:C_C_InnerRing"/>
+  <rMaterial name="materials:C_C_OuterInnerRing"/>
  </LogicalPart>
 
  <LogicalPart name="PixelForwardOuterDiskOuterRing" category="support">
   <rSolid name="PixelForwardOuterDiskOuterRing"/>
-  <rMaterial name="materials:C_C_OuterRing"/>
+  <rMaterial name="materials:C_C_OuterOuterRing"/>
  </LogicalPart>
 
  <LogicalPart name="PixelForwardOuterDiskCFInnerRing" category="support">
   <rSolid name="PixelForwardOuterDiskCFInnerRing"/>
-  <rMaterial name="materials:FPix_CFSkin"/>
+  <rMaterial name="materials:FPix_CFSkin_OuterInnerRing"/>
  </LogicalPart>
 
  <LogicalPart name="PixelForwardOuterDiskCFOuterRing" category="support">
   <rSolid name="PixelForwardOuterDiskCFOuterRing"/>
-  <rMaterial name="materials:FPix_CFSkin"/>
+  <rMaterial name="materials:FPix_CFSkin_OuterOuterRing"/>
  </LogicalPart>
 
 
@@ -98,10 +98,12 @@
   <Vector  name="BladeZShift" type="numeric" nEntries="34">
    -26.42*mm,-23.92*mm,-21.42*mm,-18.92*mm,-16.42*mm,-13.92*mm,-11.42*mm, -8.92*mm,
    -26.42*mm,-23.92*mm,-21.42*mm,-18.92*mm,-16.42*mm,-13.92*mm,-11.42*mm, -8.92*mm, -6.42*mm,
-   -26.42*mm,-23.92*mm,-21.42*mm,-18.92*mm,-16.42*mm,-13.92*mm,-11.42*mm, -8.92*mm,
-   -26.42*mm,-23.92*mm,-21.42*mm,-18.92*mm,-16.42*mm,-13.92*mm,-11.42*mm, -8.92*mm, -6.42*mm
+   -6.42*mm, -8.92*mm, -11.42*mm,-13.92*mm,-16.42*mm,-18.92*mm,-21.42*mm,-23.92*mm, -26.42*mm,
+   -8.92*mm, -11.42*mm,-13.92*mm,-16.42*mm,-18.92*mm,-21.42*mm,-23.92*mm, -26.42*mm
+
+
   </Vector>
-  <Numeric name="AnchorRadius"     value="121.4*mm"/>
+  <Numeric name="AnchorRadius"     value="129.5*mm"/>
   <String  name="RotationName"     value="pixfwdOuterDisk1:PixOuter"/>
   <String  name="FlagString"       value="YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"/>
 </Algorithm>

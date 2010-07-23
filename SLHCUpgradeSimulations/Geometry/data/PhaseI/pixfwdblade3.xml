@@ -28,20 +28,20 @@ Pixel Forward Blade
  <Constant name="WedgeThick"         value="2.8*mm"/>
  <Constant name="WaferL"             value="[SensitiveL]+2*[SideWidth]"/>
  <Constant name="WaferW"             value="[SensitiveW]+2*[SideWidth]"/>
- <Constant name="WaferT"             value="0.270*mm"/>
+ <Constant name="WaferT"             value="0.250*mm"/>
 <!-- <Constant name="WaferX"         value="0.5*([WedgeBot]+[WaferL]*sin([WedgeAngle])-[WaferW]*cos([WedgeAngle]))-[SideGap]/cos([WedgeAngle])"/>
  <Constant name="WaferY"             value="0.5*([WaferL]/cos([WedgeAngle])-[WedgeH]+([WaferW]-[WaferL]*tan([WedgeAngle]))*sin([WedgeAngle]))"/>-->
 
  <Constant name="ROChipL"            value="8.005*mm"/>    <!-- Readout chip length -->
  <Constant name="ROChipW"            value="10.735*mm"/>   <!-- Readout chip width -->
- <Constant name="ROChipT"            value="0.200*mm"/>    <!-- Readout chip thickness -->
+ <Constant name="ROChipT"            value="0.150*mm"/>    <!-- Readout chip thickness -->
  <Constant name="ROChipSpaceL"       value ="0.084*mm"/>   <!-- Distance (along width) between adjacent chips -->
  <Constant name="ROChipSpaceW"       value ="0.095*mm"/>   <!-- Distance (along length) between  adjacent chips -->
  <Constant name="ROChipX"            value ="[ROChipW]/2.+[ROChipSpaceW]/2."/>   <!-- Distance (along width) between center of wafer and ROChips -->
  <Constant name="ROChipZ"            value ="[ROChipT]/2.+[WaferT]/2.+0.011*mm"/>   <!-- Distance (along Z) between center of wafer and ROChips -->
  <Constant name="ModuleL"            value="[SensitiveL]+2*[SideWidth]"/>
  <Constant name="ModuleW"            value="2*[ROChipW]+[ROChipSpaceW]"/>
- <Constant name="ModuleT"            value="0.900*mm"/>
+ <Constant name="ModuleT"            value="0.730*mm"/>
  <Constant name="ModuleX"            value="0.5*([WedgeBot]+[WaferL]*sin([WedgeAngle])-[WaferW]*cos([WedgeAngle]))-[SideGap]/cos([WedgeAngle])"/>
  <Constant name="ModuleY"            value="0.5*([WaferL]/cos([WedgeAngle])-[WedgeH]+([WaferW]-[WaferL]*tan([WedgeAngle]))*sin([WedgeAngle]))"/>
  <Constant name="GlueL"              value="[SensitiveL]+2*[SideWidth]"/>
@@ -49,7 +49,7 @@ Pixel Forward Blade
  <Constant name="GlueT"              value="0.050*mm"/>
  <Constant name="BumpBondT"          value="0.030*mm"/>
  <Constant name="BumpROChipT"        value="[ROChipT]+[BumpBondT]"/>
- <Constant name="HDIT"              value="0.300*mm"/>
+ <Constant name="HDIT"              value="0.200*mm"/>
  <Constant name="BladeBaseT"         value="0.8*mm"/>
  <Constant name="TPGBladeBaseT"      value="0.68*mm"/>
  <Constant name="CarbonFiberSkinT"   value="0.06*mm"/>
@@ -130,7 +130,7 @@ Pixel Forward Blade
  </LogicalPart>
  <LogicalPart name="PixelForwardAdhesiveFilm" category="unspecified">
   <rSolid name="PixelForwardAdhesiveFilm"/>
-  <rMaterial name="materials:Silicon"/>
+  <rMaterial name="materials:FPix_Thermflow"/>
  </LogicalPart>
  <LogicalPart name="PixelForwardHDI" category="support">
   <rSolid name="PixelForwardHDI"/>
