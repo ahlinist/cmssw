@@ -7,13 +7,11 @@
 // the TriggerResults objects upon which the decision to write out an
 // event is made.
 //
-// $Id$
 // -------------------------------------------------------------------
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSelector.h"
 #include "DataFormats/Common/interface/Handle.h"

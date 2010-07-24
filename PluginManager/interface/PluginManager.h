@@ -24,7 +24,6 @@
 #include <map>
 #include <string>
 #include <boost/filesystem/path.hpp>
-#include <boost/shared_ptr.hpp>
 #include "sigc++/signal.h"
 
 // user include files

@@ -12,6 +12,8 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
+#include <string>
+
 namespace edm {
 
   /**

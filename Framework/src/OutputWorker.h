@@ -8,13 +8,9 @@ this object is to call the output module.
 
 According to our current definition, a single output module can only
 appear in one worker.
-
-$Id$
 ----------------------------------------------------------------------*/
 
 #include <memory>
-
-#include "boost/shared_ptr.hpp"
 
 #include "FWCore/Framework/src/WorkerT.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"

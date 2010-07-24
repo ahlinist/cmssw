@@ -52,8 +52,6 @@
 
 // user include files
 #include "FWCore/Framework/interface/ESPreFunctorDecorator.h"
-#include "FWCore/Framework/interface/IOVSyncValue.h"
-#include "FWCore/Framework/interface/EventSetupRecord.h"
 
 // forward declarations
 

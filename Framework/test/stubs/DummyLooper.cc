@@ -13,14 +13,12 @@
 //
 // Original Author:  Valentin Kuznetsov
 //         Created:  Tue Jul 18 10:17:05 EDT 2006
-// $Id$
 //
 //
 
 
 // system include files
 #include <memory>
-#include "boost/shared_ptr.hpp"
 
 // user include files
 #include "FWCore/Framework/interface/LooperFactory.h"

@@ -16,10 +16,11 @@
 //
 // Author:      Chris Jones
 // Created:     Mon Apr 11 16:20:52 CDT 2005
-// $Id$
 //
 
 // system include files
+#include <memory>
+#include <string>
 
 // user include files
 #include "FWCore/Framework/interface/ProxyFactoryBase.h"

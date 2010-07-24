@@ -14,7 +14,6 @@
 
 #include "FWCore/Framework/src/Worker.h"
 #include "FWCore/Framework/src/RunStopwatch.h"
-#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm {
 

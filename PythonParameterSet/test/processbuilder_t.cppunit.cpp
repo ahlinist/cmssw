@@ -19,8 +19,6 @@
 #include <FWCore/PythonParameterSet/interface/PythonProcessDesc.h>
 #include "FWCore/Utilities/interface/EDMException.h"
 
-#include "boost/shared_ptr.hpp"
-
 #include <vector>
 #include <string>
 #include <iostream>

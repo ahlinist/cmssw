@@ -23,13 +23,11 @@ macro EVENTSETUP_RECORD_REG is used to create that code.
 //
 // Author:      Chris Jones
 // Created:     Wed Apr  6 14:33:32 EDT 2005
-// $Id$
 //
 
 // system include files
 
 // user include files
-#include "FWCore/Framework/interface/HCTypeTag.h"
 #include "FWCore/Framework/interface/HCMethods.icc"
 #include "FWCore/Framework/interface/eventSetupGetImplementation.icc"
 

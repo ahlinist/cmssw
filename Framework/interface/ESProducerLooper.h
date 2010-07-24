@@ -20,6 +20,9 @@
 //
 
 // system include files
+#include <memory>
+#include <set>
+#include <string>
 
 // user include files
 #include "FWCore/Framework/interface/ESProducer.h"

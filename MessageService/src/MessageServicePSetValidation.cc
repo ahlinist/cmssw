@@ -16,7 +16,6 @@
 
 // system include files
 
-#include <sstream>
 #include <algorithm>
 
 // user include files

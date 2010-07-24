@@ -16,7 +16,6 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Thu Apr  5 12:10:23 EDT 2007
-// $Id$
 //
 
 // system include files
@@ -25,7 +24,6 @@
 
 // user include files
 #include "FWCore/PluginManager/interface/PluginFactoryBase.h"
-#include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/PluginManager/interface/PluginManager.h"
 // forward declarations
 

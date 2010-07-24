@@ -21,13 +21,10 @@
 
 // system include files
 #include <map>
-#include "boost/shared_ptr.hpp"
 #include "Rtypes.h"
-#include "TUUID.h"
 
 // user include files
 #include "DataFormats/Common/interface/EDProductGetter.h"
-#include "DataFormats/Provenance/interface/BranchDescription.h"
 #include "DataFormats/Common/interface/EDProduct.h"
 #include "FWCore/FWLite/interface/BranchMapReader.h"
 

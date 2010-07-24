@@ -2,11 +2,9 @@
 #define FWCore_Sources_RawInputSource_h
 
 /*----------------------------------------------------------------------
-$Id$
 ----------------------------------------------------------------------*/
 
 #include <memory>
-#include "boost/shared_ptr.hpp"
 
 #include "DataFormats/Provenance/interface/EventID.h"
 #include "FWCore/Framework/interface/InputSource.h"

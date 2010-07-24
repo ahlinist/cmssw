@@ -8,7 +8,6 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Tue May 23 11:03:31 EDT 2006
-// $Id$
 //
 
 // system include files
@@ -22,7 +21,6 @@
 
 // user include files
 #include "FWCore/FWLite/src/BareRootProductGetter.h"
-#include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "DataFormats/Provenance/interface/BranchType.h"
 #include "FWCore/Utilities/interface/WrappedClassName.h"
 #include "FWCore/Utilities/interface/Exception.h"
