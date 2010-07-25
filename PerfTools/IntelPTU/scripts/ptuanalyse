@@ -47,7 +47,7 @@
 # A short help of the parameters is shown with '-h'.
 #
 #
-#  $Id: ptuanalyse,v 1.6 2010/05/26 06:06:40 mkortela Exp $
+#  $Id: ptuanalyse,v 1.8 2010/07/22 20:15:05 mkortela Exp $
 #
 # Matti Kortelainen, Helsinki Institute of Physics
 # 15 April 2010
@@ -60,6 +60,10 @@ import re
 import csv
 import xml.dom.minidom
 from optparse import OptionParser
+
+#ptu_path = "/opt/intel/ptu32_001_lin_intel64/bin"
+# take executables from $PATH
+ptu_path = ""
 
 # # Hue 200/360, value 100/100 
 # colortable = ["#FFFFFF", # Saturation  0/100
@@ -238,12 +242,17 @@ class Vtsa:
         self.expdir = opts.expdir
         self.buildBlocks = opts.basicblocks
         self.verbose = opts.verbose
-        self.command = "/opt/intel/ptu32_001_lin_intel64/bin/vtsaview"
+        self.command = os.path.join(ptu_path, "vtsaview")
 #        self.options = {"common": "-cpu total -t=95 -n=1000000 --granularity=function --show-events-as=samples --threads-match=time -er --filter process,"+opts.filter,
         self.options = {"common": ["-cpu", "total", "-t=%d" % opts.threshold,
-                                   "-n=1000000", "--granularity=function", "--show-events-as=samples", "--threads-match=time", "-er", "--filter", "process,"+opts.filter ],
+                                   "-n=1000000", "--granularity="+opts.granularity,
+                                   "--show-events-as="+opts.sea,
+                                   "--threads-match=time", "-er"],
                         "all": ["--aggregate=e", "--csv"],
                         "src": ["--aggregate=p", "--sv", "-ds", "windows", "--xml"]}
+
+        if len(opts.filter) > 0:
+            self.options["common"].extend(["--filter", "process,"+opts.filter])
 
         self.ignoreFields = ["CPU_CLK_UNHALTED.CORE max(lCPU)"]
         self.dotoptions = {"fontsize": {"block": 14,
@@ -265,6 +274,8 @@ class Vtsa:
         self.asmLine_re = re.compile("//@modules\.0/@asmLines\.(?P<line>\d+)")
 #        self.branchTarget_re = re.compile("//@modules\.0/@basicBlockGraph/@basicBlocks\.(?P<target>\d+)")
         self.jump_re = re.compile("(?P<jump>j\S+\s+)\S+")
+
+        self.doFunctionReports = not opts.allonly
 
     def buildCmd(self, report):
         cmd = [self.command, self.expdir]
@@ -317,7 +328,7 @@ class Vtsa:
         ok = self.checkError(error)
         if not ok:
             return
-        
+
         output = open(os.path.join(self.directory, file), "w")
 
         # The headers of "all" input which are needed for per-function
@@ -326,6 +337,8 @@ class Vtsa:
         hdrcolumns = ["rva", "function", "module", "source"]
         hdrtrans = [lambda x: x.upper()] + [lambda x: x.capitalize()]*3
         hdrmap = {}
+
+        doFuncRep = self.doFunctionReports
 
         rownum = 0
         reader = csv.reader(input.__iter__(), delimiter='\t')
@@ -337,18 +350,24 @@ class Vtsa:
                         hdrmap[value] = i
                         j = hdrcolumns.index(value)
                         row[i] = hdrtrans[j](value)
-                row.append("FirstLine")        
+
+                if not hdrmap.has_key("function"):
+                    doFuncRep = False
+
+                if doFuncRep:
+                    row.append("FirstLine")        
             # Body of "all" report    
             else:
-                # Transform the rva from hex -> dec
-                rva = str(int(row[hdrmap["rva"]], 16))
-                row[hdrmap["rva"]] = rva
+                if doFuncRep:
+                    # Transform the rva from hex -> dec
+                    rva = str(int(row[hdrmap["rva"]], 16))
+                    row[hdrmap["rva"]] = rva
 
-                # Build the src+asm reports for a function, take first
-                # line with any counter being > 0
-                function = Function(row[hdrmap["function"]], row[hdrmap["module"]], row[hdrmap["source"]], rva)
-                self.buildFunctionReport(function, rownum-1)
-                row.append(function.getFirstLine())
+                    # Build the src+asm reports for a function, take first
+                    # line with any counter being > 0
+                    function = Function(row[hdrmap["function"]], row[hdrmap["module"]], row[hdrmap["source"]], rva)
+                    self.buildFunctionReport(function, rownum-1)
+                    row.append(function.getFirstLine())
 
             output.write(self.formatRow(row)+"\n")
             rownum += 1
@@ -505,10 +524,16 @@ if __name__ == "__main__":
                       help="PTU Experiment directory")
     parser.add_option("--all", "-a", dest="allname", type="string", default="basic_sampling",
                       help='Name of "all" report; _all.csv is appended to the name (default: "basic_sampling"')
+    parser.add_option("--all-only", dest="allonly", action="store_true", default=False,
+                      help="Produce only the all report")
     parser.add_option("--threshold", "-t", dest="threshold", type="int", default=95,
                       help='Threshold for displayed hotspots (see the same option of vtsaview)  (default: 95)')
     parser.add_option("--filter", dest="filter", type="string", default="cmsRun",
-                      help='Filter the given process (default: "cmsRun")')
+                      help='Filter the given process, use empty value to specify no filter (default: "cmsRun")')
+    parser.add_option("--granularity", dest="granularity", type="string", default="function",
+                      help='Define the report granularity. Valid values are rva, virtual(va), basicblock(b), function(f), source(s), module(m), thread(t), process(p) (default: "function")')
+    parser.add_option("--show-events-as", dest="sea", type="string", default="events",
+                      help='Shows the events as samples(as), events(e) or percents(p) (default: "events")')
     parser.add_option("--output", "-o", dest="output", default="",
                       help='Destination directory (default: CWD)')
     parser.add_option("--basic-blocks", "-b", dest="basicblocks", action="store_true", default=False,
@@ -524,7 +549,7 @@ if __name__ == "__main__":
 
     try:
         vtsa = Vtsa(opts)
-        print "Building function reports"
+        print "Building reports"
         vtsa.buildAllReport(all_file)
         print "Done"
     except OSError, e:
