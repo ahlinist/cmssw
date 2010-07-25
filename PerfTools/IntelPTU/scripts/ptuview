@@ -51,7 +51,7 @@
 #   http://x,y/z/cgi-bin/ptuview/summary/somestring/
 #
 #
-#  $Id: ptuview,v 1.10 2010/07/22 20:23:38 mkortela Exp $
+#  $Id: ptuview,v 1.11 2010/07/25 06:06:25 mkortela Exp $
 #
 # Peter Elmer, Princeton University
 # 24 March, 2010
@@ -1032,6 +1032,7 @@ def getSummaryReport(mycsvfile, out, reader):
     # Read the CSV file
     rownum = 0
     moduleIndex = -1
+    vmlinuxRemoved = False
     for row in reader:
         # header
         if rownum == 0:
@@ -1046,6 +1047,7 @@ def getSummaryReport(mycsvfile, out, reader):
         else:
             # skip the idle process
             if moduleIndex >= 0 and row[moduleIndex] == "vmlinux":
+                vmlinuxRemoved = True
                 continue
                 
             for ev in groups.getEvents():
@@ -1057,7 +1059,7 @@ def getSummaryReport(mycsvfile, out, reader):
     groups.computeCosts()    
 
     # Present the accumulated data as a table
-    if moduleIndex >= 0:
+    if vmlinuxRemoved:
         out.write("<p>Note: system idle process (vmlinux) has been removed from the numbers below<p>\n")
     out.write("<table>\n")
     out.write('<thead><tr class="hdr"><th>Group</th><th>Event</th><th>Counts</th><th>Penalty</th><th>Cost</th><th>Description</th></thead>\n')
@@ -1133,7 +1135,7 @@ def getcsvtable(mycsvfile,cgiscript,proftype,profname,hlline,out):
       out.write('<span><a href="%s">%s</a></span>\n' % (url, desc))
       file = os.path.join(dirname(mycsvfile), profname+"_bbl.png")
       if os.path.exists(file):
-          out.write('<span><a href="%s/bbl/%s">Basic block graph</span>\n' % (cgiscript, profname))
+          out.write('<span><a href="%s/bbl/%s">Basic block graph</span></a>\n' % (cgiscript, profname))
 
       out.write("</div>\n")
 
