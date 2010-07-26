@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.18 2010/06/09 09:47:36 rekovic Exp $
+  $Id: HLTRenderPlugin.cc,v 1.19 2010/06/10 14:59:48 rekovic Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.19  2010/06/10 14:59:48  rekovic
+  Fix a bug of missing bracket
+
   Revision 1.18  2010/06/09 09:47:36  rekovic
   change the check for paths to source and client histograms.  Added change of X-axis range for 1D LS histogrsms.
 
@@ -204,7 +207,7 @@ private:
 
       }
 
-      if ( o.name.find("FourVector/PathsSummary") != std::string::npos) {
+      if ( o.name.find("PathsSummary") != std::string::npos) {
 
         if ( o.name.find("Pass_Any") != std::string::npos  ||  o.name.find("Normalized_Any") != std::string::npos  )
         {
@@ -241,7 +244,7 @@ private:
 	        obj->GetXaxis()->SetRange(minRange, maxRange);
 	      }
       }
-      if ( o.name.find("FourVector/PathsSummary/Filters Counts") != std::string::npos)
+      if ( o.name.find("PathsSummary/Filters Counts") != std::string::npos)
       {
         if ( o.name.find("Filters") != std::string::npos    )
         {
@@ -249,7 +252,7 @@ private:
           gPad->SetLogy(1);
         }
       }
-      if ( o.name.find("FourVector/PathsSummary/Filters Efficiencies") != std::string::npos)
+      if ( o.name.find("PathsSummary/Filters Efficiencies") != std::string::npos)
       {
         if ( o.name.find("Filters") != std::string::npos    )
         {
@@ -324,7 +327,7 @@ private:
        obj->SetMaximum(1.2);
       }
 
-      if ( o.name.find("FourVector/PathsSummary") != std::string::npos)
+      if ( o.name.find("PathsSummary") != std::string::npos)
       {
         if (o.name.find("PassPass") != std::string::npos )
         {
