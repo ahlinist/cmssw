@@ -2,10 +2,10 @@
 <CARD>
 
 
-<SETTINGS ECALTower = "2" 
-          HCALTower = "4" 
-          ClusterThr = "6" 
-          ElectronConstant = "90" 
+<SETTINGS ECALTower = "1" 
+          HCALTower = "2" 
+          ClusterThr = "2" 
+          ElectronConstant = "95" 
           ElectronThreshold = "120" 
           ElectronSlope= "6" 
           TauSeedTower = "0"  
@@ -14,7 +14,7 @@
           IsolationTauA = "1" 
           IsolationTauB = "5" 
           IsolationZone = "3" 
-          IsolationThresholdElectron = "6"
+          IsolationThresholdElectron = "3"
           IsolationThresholdTau = "6"
           JetEt = "2"
 	  FineGrainPass = "1" />
