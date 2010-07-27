@@ -198,4 +198,5 @@ from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
 from PhysicsTools.PatAlgos.patEventContent_cff import patTriggerEventContent
 process.out.outputCommands = patEventContentNoCleaning
 process.out.outputCommands += patTriggerEventContent
-process.out.outputCommands += [ 'keep recoTracks_generalTracks_*_*' ]
+process.out.outputCommands += [ 'keep recoTracks_generalTracks_*_*',
+                                'keep LumiSummary_lumiProducer_*_*']
