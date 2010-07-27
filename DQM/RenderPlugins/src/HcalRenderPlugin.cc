@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.39 $
-  \date $Date: 2010/05/30 19:05:59 $
+  \version $Revision: 1.40 $
+  \date $Date: 2010/05/30 19:29:28 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -690,10 +690,18 @@ private:
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
 
-
+    if (o.name.find("reportSummaryMap" ) != std::string::npos)
+      {
+	if (obj->GetBinContent(0,0)==-1) // insufficient events for certification
+	  {
+	    TText t;
+	    t.SetTextSize(0.1);
+	    t.DrawText(1,1, "Insufficient Events for Run Certification!");
+	  }
+      }
     // in the future, we can add text output based on error status,
     // or set bin range based on filled histograms, etc.
-    if ( (o.name.find("RawDataMonitor_Hcal/Corruption")      != std::string::npos)   ||
+    else if ( (o.name.find("RawDataMonitor_Hcal/Corruption")      != std::string::npos)   ||
 	 (o.name.find("RawDataMonitor_Hcal/Corruption/F")      != std::string::npos) ||
 	 (o.name.find("DataFormatMonitor/Corruption")      != std::string::npos)   ||
 	 (o.name.find("DataFormatMonitor/Corruption/F")      != std::string::npos) )
