@@ -82,6 +82,16 @@ public:
     set("PF Kin Cuts", !useCalo);
     set("PF Delta Phi", !useCalo);    
     set("PF Jet ID", !useCalo);
+
+    // Indices for fast caching
+    caloCuts_      = index_type(&bits_, std::string("Calo Cuts") );
+    caloKin_       = index_type(&bits_, std::string("Calo Kin Cuts"));
+    caloDeltaPhi_  = index_type(&bits_, std::string("Calo Delta Phi"));
+    caloJetID_     = index_type(&bits_, std::string("Calo Jet ID"));
+    pfCuts_        = index_type(&bits_, std::string("PF Cuts"));
+    pfKin_         = index_type(&bits_, std::string("PF Kin Cuts"));
+    pfDeltaPhi_    = index_type(&bits_, std::string("PF Delta Phi"));
+    pfJetID_       = index_type(&bits_, std::string("PF Jet ID"));
     
   }
 
@@ -93,27 +103,27 @@ public:
     pat::strbitset retPFJet = pfJetSel_->getBitTemplate();
 
 
-    if ( considerCut("Calo Cuts") ) {
-      passCut(ret, "Calo Cuts");
+    if ( considerCut(caloCuts_) ) {
+      passCut(ret, caloCuts_);
       event.getByLabel( jetSrc_, h_jets_ );
       // Calo Cuts
-      if ( h_jets_->size() >= 2 || ignoreCut("Calo Kin Cuts") ) {
-	passCut(ret, "Calo Kin Cuts");
+      if ( h_jets_->size() >= 2 || ignoreCut(caloKin_) ) {
+	passCut(ret, caloKin_);
 	pat::Jet const & jet0 = h_jets_->at(0);
 	pat::Jet const & jet1 = h_jets_->at(1);
 	double dphi = fabs(deltaPhi<double>( jet0.phi(),
 					     jet1.phi() ) );
 	  
-	if ( fabs(dphi - TMath::Pi()) < 1.0 || ignoreCut("Calo Delta Phi") ) {
-	  passCut(ret, "Calo Delta Phi");
+	if ( fabs(dphi - TMath::Pi()) < 1.0 || ignoreCut(caloDeltaPhi_) ) {
+	  passCut(ret, caloDeltaPhi_);
 
 	    
 	  retCaloJet.set(false);
 	  bool pass0 = (*jetSel_)( jet0, retCaloJet );
 	  retCaloJet.set(false);
 	  bool pass1 = (*jetSel_)( jet1, retCaloJet );
-	  if ( (pass0 && pass1) || ignoreCut("Calo Jet ID") ) {
-	    passCut(ret, "Calo Jet ID");
+	  if ( (pass0 && pass1) || ignoreCut(caloJetID_) ) {
+	    passCut(ret, caloJetID_);
 	    caloJet0_ = edm::Ptr<pat::Jet>( h_jets_, 0);
 	    caloJet1_ = edm::Ptr<pat::Jet>( h_jets_, 1);
 
@@ -124,28 +134,28 @@ public:
     }// end if calo cuts
 
 
-    if ( considerCut("PF Cuts") ) {
+    if ( considerCut(pfCuts_) ) {
 
-      passCut(ret, "PF Cuts");
+      passCut(ret, pfCuts_);
       event.getByLabel( pfJetSrc_, h_pfjets_ );
       // PF Cuts
-      if ( h_pfjets_->size() >= 2 || ignoreCut("PF Kin Cuts") ) {
-	passCut( ret, "PF Kin Cuts");
+      if ( h_pfjets_->size() >= 2 || ignoreCut(pfKin_) ) {
+	passCut( ret, pfKin_);
 	pat::Jet const & jet0 = h_pfjets_->at(0);
 	pat::Jet const & jet1 = h_pfjets_->at(1);
 	double dphi = fabs(deltaPhi<double>( jet0.phi(),
 					     jet1.phi() ) );
 	  
-	if ( fabs(dphi - TMath::Pi()) < 1.0 || ignoreCut("PF Delta Phi") ) {
-	  passCut(ret, "PF Delta Phi");
+	if ( fabs(dphi - TMath::Pi()) < 1.0 || ignoreCut(pfDeltaPhi_) ) {
+	  passCut(ret, pfDeltaPhi_);
 
 	    
 	  retPFJet.set(false);
 	  bool pass0 = (*pfJetSel_)( jet0, retPFJet );
 	  retPFJet.set(false);
 	  bool pass1 = (*pfJetSel_)( jet1, retPFJet );
-	  if ( (pass0 && pass1) || ignoreCut("PF Jet ID") ) {
-	    passCut(ret, "PF Jet ID");
+	  if ( (pass0 && pass1) || ignoreCut(pfJetID_) ) {
+	    passCut(ret, pfJetID_);
 	    pfJet0_ = edm::Ptr<pat::Jet>( h_pfjets_, 0);
 	    pfJet1_ = edm::Ptr<pat::Jet>( h_pfjets_, 1);
 
@@ -174,6 +184,17 @@ public:
   pat::Jet                    const &   pfJet1() const { return *pfJet1_; }
 
 
+  // Fast caching indices
+  index_type const &   caloCuts()        const {return caloCuts_;}      
+  index_type const &   caloKin()         const {return caloKin_;}       
+  index_type const &   caloDeltaPhi()    const {return caloDeltaPhi_;}  
+  index_type const &   caloJetID()       const {return caloJetID_;}     
+  index_type const &   pfCuts()          const {return pfCuts_;}        
+  index_type const &   pfKin()           const {return pfKin_;}         
+  index_type const &   pfDeltaPhi()      const {return pfDeltaPhi_;}    
+  index_type const &   pfJetID()         const {return pfJetID_;}       
+
+
 protected:
   boost::shared_ptr<JetIDSelectionFunctor>   jetSel_;
   boost::shared_ptr<PFJetIDSelectionFunctor> pfJetSel_;
@@ -188,6 +209,16 @@ protected:
 
   edm::Ptr<pat::Jet>                         pfJet0_;
   edm::Ptr<pat::Jet>                         pfJet1_;
+
+  // Fast caching indices
+  index_type   caloCuts_;      
+  index_type   caloKin_;       
+  index_type   caloDeltaPhi_;  
+  index_type   caloJetID_;     
+  index_type   pfCuts_;        
+  index_type   pfKin_;         
+  index_type   pfDeltaPhi_;    
+  index_type   pfJetID_;       
 
 };
 
@@ -362,8 +393,8 @@ int main (int argc, char* argv[])
     ///------------------
     /// CALO JETS
     ///------------------
-    if ( retCalo.test("Calo Kin Cuts") ) {
-      if ( retCalo.test("Calo Delta Phi") ) {
+    if ( retCalo.test( caloSelector.caloKin() ) ) {
+      if ( retCalo.test( caloSelector.caloDeltaPhi() ) ) {
 	vector<pat::Jet>  const & allCaloJets = caloSelector.allCaloJets();
 
 	for ( std::vector<pat::Jet>::const_iterator jetBegin = allCaloJets.begin(),
@@ -410,7 +441,7 @@ int main (int argc, char* argv[])
 
     
 
-	if ( retCalo.test("Calo Jet ID") ) {
+	if ( retCalo.test( caloSelector.caloJetID() ) ) {
 	  pat::Jet const & jet0 = caloSelector.caloJet0();
 	  pat::Jet const & jet1 = caloSelector.caloJet1();
 
@@ -453,7 +484,7 @@ int main (int argc, char* argv[])
     ///------------------
     /// PF JETS
     ///------------------
-    if ( retPF.test("PF Delta Phi") ) {
+    if ( retPF.test( pfSelector.pfDeltaPhi() ) ) {
 
       vector<pat::Jet> const & allPFJets = pfSelector.allPFJets();
 
@@ -486,7 +517,7 @@ int main (int argc, char* argv[])
 
     
 
-      if ( retPF.test("PF Jet ID") ) {
+      if ( retPF.test( pfSelector.pfJetID() ) ) {
 	pat::Jet const & jet0 = pfSelector.pfJet0();
 	pat::Jet const & jet1 = pfSelector.pfJet1();
 
