@@ -137,6 +137,8 @@ PfmCodeAnalyser& PfmCodeAnalyser::Instance(const char *event0, unsigned int cmas
  // initializes all the necessary structures to start the actual counting, calling pfm_start()
 void PfmCodeAnalyser::start()
 {
+  if (started) return;
+
  memset(&ctx,0, sizeof(ctx));
  memset(&inp,0, sizeof(inp));
  memset(&outp,0, sizeof(outp));
@@ -226,6 +228,7 @@ void PfmCodeAnalyser::stop()
 {
   if (!started) return;
   pfm_stop(fd);
+  started=false;
   if(pfm_read_pmds(fd, pd, inp.pfp_event_count) == -1)
     {
       fprintf(stderr, "ERROR: Could not read pmds\naborting...\n");
@@ -244,6 +247,7 @@ void PfmCodeAnalyser::stop_init()
 {
   if (!started) return;
   pfm_stop(fd);
+  started=false;
   if(pfm_read_pmds(fd, pd, inp.pfp_event_count) == -1)
     {
       fprintf(stderr, "ERROR: Could not read pmds\naborting...\n");
