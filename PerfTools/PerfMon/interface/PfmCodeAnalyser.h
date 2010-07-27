@@ -41,7 +41,9 @@ class PfmCodeAnalyser
   unsigned long sum[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
   unsigned count;
   unsigned overhead_avg[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
-  
+
+  bool started;
+
  private:
   PfmCodeAnalyser(const char *event0, unsigned int cmask_v0, bool inv_v0,
                   const char *event1, unsigned int cmask_v1, bool inv_v1,
@@ -119,6 +121,7 @@ PfmCodeAnalyser::PfmCodeAnalyser(const char *event0, unsigned int cmask_v0, bool
   sum[i] = 0;
  }
  count = 0;
+ started=false;
 }
 
 PfmCodeAnalyser& PfmCodeAnalyser::Instance(const char *event0, unsigned int cmask_v0, bool inv_v0,
@@ -210,6 +213,7 @@ void PfmCodeAnalyser::start()
   fprintf(stderr, "ERROR: Could not load context\naborting...\n");
   exit(1);
  }
+ started=true;
  pfm_start(fd, NULL);   
 }
 
@@ -220,36 +224,38 @@ void PfmCodeAnalyser::start()
  // stops the counting calling pfm_stop() and stores the counting results into the "results" map
 void PfmCodeAnalyser::stop()
 {
- pfm_stop(fd);
- if(pfm_read_pmds(fd, pd, inp.pfp_event_count) == -1)
- {
-  fprintf(stderr, "ERROR: Could not read pmds\naborting...\n");
-  exit(1);
- }
- 
- for(int i=0; i<used_counters_number; i++) 
- {
-  sum[i] += (pd[i].reg_value - overhead_avg[i]);
- }
- count++;
- close(fd);
+  if (!started) return;
+  pfm_stop(fd);
+  if(pfm_read_pmds(fd, pd, inp.pfp_event_count) == -1)
+    {
+      fprintf(stderr, "ERROR: Could not read pmds\naborting...\n");
+      exit(1);
+    }
+  
+  for(int i=0; i<used_counters_number; i++) 
+    {
+      sum[i] += (pd[i].reg_value - overhead_avg[i]);
+    }
+  count++;
+  close(fd);
 }
 
 void PfmCodeAnalyser::stop_init()
 {
- pfm_stop(fd);
- if(pfm_read_pmds(fd, pd, inp.pfp_event_count) == -1)
- {
-  fprintf(stderr, "ERROR: Could not read pmds\naborting...\n");
-  exit(1);
- }
- 
- for(int i=0; i<used_counters_number; i++) 
- {
-  sum[i] += (pd[i].reg_value);
- }
- count++;
- close(fd);
+  if (!started) return;
+  pfm_stop(fd);
+  if(pfm_read_pmds(fd, pd, inp.pfp_event_count) == -1)
+    {
+      fprintf(stderr, "ERROR: Could not read pmds\naborting...\n");
+      exit(1);
+    }
+  
+  for(int i=0; i<used_counters_number; i++) 
+    {
+      sum[i] += (pd[i].reg_value);
+    }
+  count++;
+  close(fd);
 }
 
 PfmCodeAnalyser::~PfmCodeAnalyser()
