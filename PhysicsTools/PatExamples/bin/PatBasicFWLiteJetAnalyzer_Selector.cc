@@ -21,6 +21,7 @@ This example creates a histogram of Jet Pt, using Jets with Pt above 30 and ETA 
 #include "PhysicsTools/SelectorUtils/interface/Selector.h"
 #include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
+#include "PhysicsTools/SelectorUtils/interface/RunLumiSelector.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "DataFormats/FWLite/interface/ChainEvent.h"
@@ -259,6 +260,9 @@ int main (int argc, char* argv[])
   edm::ParameterSet const& plotParameters      = parameters->getParameter<edm::ParameterSet>("plotParameters");
   edm::ParameterSet const& inputs              = parameters->getParameter<edm::ParameterSet>("inputs");
   edm::ParameterSet const& outputs             = parameters->getParameter<edm::ParameterSet>("outputs");
+
+  cout << "Making RunLumiSelector" << endl;
+  RunLumiSelector runLumiSel( inputs );
   
   cout << "setting up TFileService" << endl;
   // book a set of histograms
@@ -365,7 +369,6 @@ int main (int argc, char* argv[])
 				    pfJetIDParameters,
 				    pfJetStudiesParams );
 
-   vector<int> const & runs = plotParameters.getParameter<std::vector<int> >("runs");
    bool doTracks = plotParameters.getParameter<bool>("doTracks");
    bool useMC    = plotParameters.getParameter<bool>("useMC");
 
@@ -378,10 +381,14 @@ int main (int argc, char* argv[])
 
     edm::EventBase const & event = ev;
 
-    int run = event.id().run();
-    if ( runs.size() > 0 && find( runs.begin(), runs.end(), run ) == runs.end() ) continue;
+    if ( runLumiSel(ev) == false ) continue;
 
-    if ( nev % 10000 == 0 ) cout << "Processing run " << event.id().run() << ", event " << event.id().event() << endl;
+    int run = event.id().run();
+
+    if ( nev % 100 == 0 ) cout << "Processing run " << event.id().run() << ", lumi " << event.id().luminosityBlock() << ", event " << event.id().event() << endl;
+
+
+
 
     pat::strbitset retCalo = caloSelector.getBitTemplate();
     caloSelector( event, retCalo );
