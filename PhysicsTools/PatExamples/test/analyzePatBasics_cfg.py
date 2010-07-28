@@ -4,7 +4,7 @@ process = cms.Process("Test")
 
 process.source = cms.Source("PoolSource",
   fileNames = cms.untracked.vstring(
-    'file:PATLayer1_Output.fromAOD_full.root'
+    'file:patTuple.root'
   )
 )
 
