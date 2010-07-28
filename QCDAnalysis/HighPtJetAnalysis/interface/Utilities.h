@@ -67,8 +67,6 @@ typedef struct
   float sumetNoHF;
   float met_over_sumet; 
   float met_over_sumet_NoHF;
-  float eemf;
-  float echf;
   float ht;
   float pthat;
   float weight;
@@ -85,6 +83,7 @@ typedef struct
   int fired;
 } TrigStruct;
 void fillHist(const TString& histName,map<TString, TH1*> HistNames, const double& x);
+void FillHist(const TString& histName, map<TString, TH1*> HistNames, const double& x, const double& wt);
 void fillHist(const TString& histName,map<TString, TH2*> HistNames, const double& x, const double& y);
 void BinNormalization(TH1F *h);
 int  getBin(double x, vector<double> boundaries);
@@ -108,6 +107,15 @@ void FillHist(const TString& histName, map<TString, TH1*> HistNames, const doubl
     cout << "%fillHist -- Could not find histogram with name: " << histName << endl;
   else
     hid->second->Fill(x);
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+void FillHist(const TString& histName, map<TString, TH1*> HistNames, const double& x, const double& wt)
+{
+  map<TString, TH1*>::iterator hid = HistNames.find(histName);
+  if (hid==HistNames.end())
+    cout << "%fillHist -- Could not find histogram with name: " << histName << endl;
+  else
+    hid->second->Fill(x,wt);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void FillHist(const TString& histName, map<TString, TH2*> HistNames, const double& x, const double& y) 
