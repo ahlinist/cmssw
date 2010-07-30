@@ -44,14 +44,17 @@ class PfmCodeAnalyser
 
   bool started;
 
- private:
+ public:
   PfmCodeAnalyser(const char *event0, unsigned int cmask_v0, bool inv_v0,
                   const char *event1, unsigned int cmask_v1, bool inv_v1,
                   const char *event2, unsigned int cmask_v2, bool inv_v2,
-                  const char *event3, unsigned int cmask_v3, bool inv_v3); // constructor hidden
+                  const char *event3, unsigned int cmask_v3, bool inv_v3);
+ ~PfmCodeAnalyser();
+
+private:
+ // constructor hidden
   PfmCodeAnalyser(PfmCodeAnalyser const&); // copy constructor hidden
   PfmCodeAnalyser& operator=(PfmCodeAnalyser const&); // assign operator hidden
-  ~PfmCodeAnalyser(); // destructor hidden
 
  public:
   static PfmCodeAnalyser& Instance(const char *event0 = "UNHALTED_CORE_CYCLES", unsigned int cmask_v0 = 0, bool inv_v0 = false,
