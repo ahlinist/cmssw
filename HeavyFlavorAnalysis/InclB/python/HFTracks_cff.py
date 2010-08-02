@@ -20,7 +20,7 @@ matching = cms.EDProducer( "MCTruthDeltaRMatcherNew",
 
 anal = cms.EDAnalyzer("EventContentAnalyzer")
 
-trkDump = cms.EDFilter("HFDumpTracks",
+trkDump = cms.EDAnalyzer("HFDumpTracks",
     
     tracksLabel = cms.untracked.string('generalTracks'),
     tracksLabel2 = cms.untracked.string('alltrackCandidates'),

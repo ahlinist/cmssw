@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 
-candidateDump = cms.EDFilter("HFDumpCandidate",
+candidateDump = cms.EDAnalyzer("HFDumpCandidate",
     muonLabel = cms.untracked.string('muons'),
     trackLabel = cms.untracked.string('generalTracks'),
     trackptmin = cms.untracked.double(1.0),

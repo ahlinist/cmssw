@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 
 
-signalDump = cms.EDFilter("HFDumpSignal",
+signalDump = cms.EDAnalyzer("HFDumpSignal",
     usejetforip = cms.untracked.int32(1),
     muonLabel = cms.untracked.string('muons'),
     jetsLabel = cms.untracked.string('myak5TrackJets'),

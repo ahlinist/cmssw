@@ -6,7 +6,7 @@ from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
 
 
 
-trkjetflavourByRef = cms.EDFilter("JetPartonMatcher",
+trkjetflavourByRef = cms.EDProducer("JetPartonMatcher",
     #jets = cms.InputTag("sis5TrackJets"),
     jets = cms.InputTag("myak5TrackJets"),
     coneSizeToAssociate = cms.double(0.5),
@@ -29,7 +29,7 @@ alltrackCandidates = cms.EDProducer("ConcreteChargedCandidateProducer",
     particleType = cms.string('pi+')
 )
 
-trackjetDump = cms.EDFilter("HFDumpTrackJets",
+trackjetDump = cms.EDAnalyzer("HFDumpTrackJets",
     doflavortagging = cms.untracked.int32(1),
     verbose = cms.untracked.int32(0),
     #jetsLabel = cms.untracked.string('sis5TrackJets'),
@@ -45,7 +45,7 @@ TrackJetParameters = cms.PSet(
     src            = cms.InputTag("trackCandidates"),
     srcPVs         = cms.InputTag('offlinePrimaryVerticesWithBS'),
     jetType        = cms.string('BasicJet'),
-    jetPtMin       = cms.double(0.3),
+    jetPtMin       = cms.double(1.0),
     inputEMin      = cms.double(0.0),
     inputEtMin     = cms.double(0.0),
     doPVCorrection = cms.bool(False),
@@ -65,16 +65,11 @@ TrackJetParameters = cms.PSet(
     # only use the tracks that were used to fit the vertex
     UseOnlyVertexTracks = cms.bool(False),
     # only consider the highest-sum-pT PV for clustering
-    UseOnlyOnePV        = cms.bool(False),
+    UseOnlyOnePV        = cms.bool(True),
     # maximum z-distance between track and vertex for association (in cm)
-    DzTrVtxMax          = cms.double(2),
+    DzTrVtxMax          = cms.double(15),
     # maximum xy-distance between track and vertex for association (in cm)
-    DxyTrVtxMax         = cms.double(10),
-    # minimum number of degrees of freedom to call a PV a good vertex
-    MinVtxNdof          = cms.int32(3),
-    # maximum z distance to origin to call a PV a good vertex
-    MaxVtxZ             = cms.double(15.)
-
+    DxyTrVtxMax         = cms.double(10000)
 
 )
 
