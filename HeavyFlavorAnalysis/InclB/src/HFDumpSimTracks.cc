@@ -92,7 +92,10 @@ void HFDumpSimTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
   edm::Handle<edm::SimVertexContainer> SimVtx;
   iEvent.getByLabel(fTracksLabel.c_str(),SimVtx);
- 
+  const edm::SimVertexContainer& vtxs = *(SimVtx.product());
+  
+
+
  
   if (fVerbose > 0) cout << "===> SimTracks " << trks.size() << endl;
   TAnaTrack *pTrack; 

@@ -245,6 +245,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     bool foundjet = false;
     //loop over all track jets
     int jetidx=0;
+    int ntracks=0;
     for ( BasicJetCollection::const_iterator it = jets->begin(); it != jets->end(); it ++ ) { 
       
       std::vector< const reco::Candidate * > Constituent = it->getJetConstituentsQuick();
@@ -255,6 +256,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	  //found a track jet to which the track belongs->use this jet when calculating the IP
 	  matchedjet   = (*it).clone(); 
 	  foundjet = true;
+	  ntracks = Constituent.size();
 	  if (fVerbose > 0) cout << "track " << i << " belongs to jet " << jetidx << endl;
 	}
       } 
@@ -279,6 +281,10 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 	pTrack->fLip = trackView.dz((pv->position())); //re-evaluate the dz with respect to the vertex position
 	pTrack->fLipE  =  trackView.dzError();
+
+	///if (ntracks==1) {
+	// cout << pTrack->fTip << " " << pTrack->fTipE << endl;
+	//	}
 
       }
     }

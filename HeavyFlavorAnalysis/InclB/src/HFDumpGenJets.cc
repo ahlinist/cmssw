@@ -153,10 +153,17 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       int index  = -1;
       const GenParticle* mcpart = mcparts[i];
       if (mcpart) {
-	found = find( cands.begin(), cands.end(), mcpart );
-	if ( found != cands.end() ) index = found - cands.begin() ;
+	for (unsigned int j = 0; j < cands.size(); ++ j ) {
+	  const GenParticle *p1 = (cands)[j];
+	  
+	  if (mcpart->pt() == p1->pt() && mcpart->phi() == p1->phi() && mcpart->eta() == p1->eta() ) 
+	    index = j;
+	  
+	}
 	pGenJet->addTrack(index);
-      } 
+      }
+      
+       
     }
   
     if (fVerbose > 0) pGenJet->dump();
