@@ -178,4 +178,4 @@ void  HFDumpVertex::endJob() {
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFDumpVertex);
+DEFINE_FWK_MODULE(HFDumpVertex);

@@ -301,4 +301,4 @@ void  HFDumpTrackJets::endJob() {
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFDumpTrackJets);
+DEFINE_FWK_MODULE(HFDumpTrackJets);

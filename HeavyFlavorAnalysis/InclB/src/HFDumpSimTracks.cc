@@ -92,10 +92,7 @@ void HFDumpSimTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
   edm::Handle<edm::SimVertexContainer> SimVtx;
   iEvent.getByLabel(fTracksLabel.c_str(),SimVtx);
-  const edm::SimVertexContainer& vtxs = *(SimVtx.product());
-  
-
-
+ 
  
   if (fVerbose > 0) cout << "===> SimTracks " << trks.size() << endl;
   TAnaTrack *pTrack; 
@@ -116,14 +113,14 @@ void HFDumpSimTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& i
     pTrack->fMuID        = -9999 ;//index of parent in sim tracks
   
     int vertexIndex=trksiter->vertIndex();
-    int parentIndex=-1;
+    int parentIndex=-11;
     if (vertexIndex>-1) {
       parentIndex = (*SimVtx)[vertexIndex].parentIndex();
     }
     if (parentIndex>-1) {
       int j=0;
       for (trksiter2 = trks.begin(); trksiter2 != trks.end(); trksiter2++) {
-	if (trksiter2->trackId()==parentIndex) {
+	if (trksiter2->trackId()==uint(parentIndex)) {
 	  pTrack->fMuID        = j ;
 	  break;
 	}
@@ -197,4 +194,4 @@ void  HFDumpSimTracks::endJob() {
 
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFDumpSimTracks);
+DEFINE_FWK_MODULE(HFDumpSimTracks);
