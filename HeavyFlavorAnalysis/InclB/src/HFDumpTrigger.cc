@@ -4,7 +4,7 @@
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 
 #include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
 #include "DataFormats/L1Trigger/interface/L1MuonParticle.h"
@@ -84,9 +84,9 @@ HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
        << fHLTFilterObject3.c_str() << endl;
   cout << "----------------------------------------------------------------------" << endl;
   fFile       = new TFile(iConfig.getParameter<string>("fileName").c_str(), "RECREATE");
-  fHistoL1          = new TH1I("l1triggerbits", "L1 trigger bits", 500, 0., 500.);
-  fHistoHLT         = new TH1I("hlttriggerbits", "HLT trigger bits", 500, 0., 500.);
-  fHistoHLT_on      = new TH1I("hlttriggerbitson", "HLT trigger bits on", 500, 0., 500.);
+  fHistoL1          = new TH1I("l1triggerbits", "L1 trigger bits", 200, 0., 200.);
+  fHistoHLT         = new TH1I("hlttriggerbits", "HLT trigger bits", 150, 0., 150.);
+  fHistoHLT_on      = new TH1I("hlttriggerbitson", "HLT trigger bits on", 150, 0., 150.);
  
   
 }
@@ -290,8 +290,11 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     } 
 
     // get hold of trigger names - based on TriggerResults object!
-    edm::TriggerNames triggerNames_;
-    triggerNames_.init(*hltresults); 
+    //edm::TriggerNames triggerNames_;
+    //triggerNames_.init(*hltresults); 
+
+    edm::TriggerNames const& triggerNames_ = iEvent.triggerNames(*hltresults);
+
  
     for (int itrig=0; itrig< ntrigs; itrig++) {
 
@@ -503,4 +506,4 @@ void  HFDumpTrigger::endJob() {
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFDumpTrigger);
+DEFINE_FWK_MODULE(HFDumpTrigger);

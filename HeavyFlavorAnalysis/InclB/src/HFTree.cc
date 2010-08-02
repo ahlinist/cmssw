@@ -70,4 +70,4 @@ void  HFTree::endJob() {
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFTree);
+DEFINE_FWK_MODULE(HFTree);

@@ -61,4 +61,4 @@ void  HFHisto::endJob() {
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFHisto);
+DEFINE_FWK_MODULE(HFHisto);

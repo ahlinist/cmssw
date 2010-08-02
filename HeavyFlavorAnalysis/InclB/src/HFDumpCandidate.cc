@@ -652,4 +652,4 @@ void  HFDumpCandidate::endJob() {
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFDumpCandidate);
+DEFINE_FWK_MODULE(HFDumpCandidate);

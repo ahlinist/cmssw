@@ -280,4 +280,4 @@ void  HFDumpGenJets::endJob() {
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(HFDumpGenJets);
+DEFINE_FWK_MODULE(HFDumpGenJets);
