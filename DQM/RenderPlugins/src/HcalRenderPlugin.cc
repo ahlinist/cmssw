@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.40 $
-  \date $Date: 2010/05/30 19:29:28 $
+  \version $Revision: 1.41 $
+  \date $Date: 2010/07/27 21:23:24 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -695,8 +695,9 @@ private:
 	if (obj->GetBinContent(0,0)==-1) // insufficient events for certification
 	  {
 	    TText t;
-	    t.SetTextSize(0.1);
-	    t.DrawText(1,1, "Insufficient Events for Run Certification!");
+	    t.SetTextSize(0.05);
+	    t.DrawText(0,0.9, "Insufficient Events for");
+	    t.DrawText(0,0.8, "Run Certification!");
 	  }
       }
     // in the future, we can add text output based on error status,
