@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
-genDump = cms.EDFilter("HFDumpGenerator",
+genDump = cms.EDAnalyzer("HFDumpGenerator",
     GenEventScale = cms.untracked.string('genEventScale'),
     generatorCandidates = cms.untracked.string('genParticles'),
     GenEventProcID = cms.untracked.string('genEventProcID'),

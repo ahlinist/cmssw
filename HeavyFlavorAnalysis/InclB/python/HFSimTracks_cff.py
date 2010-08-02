@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-simtrkDump = cms.EDFilter("HFDumpSimTracks",
+simtrkDump = cms.EDAnalyzer("HFDumpSimTracks",
     
     tracksLabel = cms.untracked.string('g4SimHits'),
     verbose = cms.untracked.int32(0)

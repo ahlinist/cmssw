@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-triggerDump = cms.EDFilter("HFDumpTrigger",
+triggerDump = cms.EDAnalyzer("HFDumpTrigger",
     verbose = cms.untracked.int32(0),
     dol1 = cms.untracked.int32(1),
     dohlt = cms.untracked.int32(1),
@@ -22,7 +22,7 @@ triggerDump = cms.EDFilter("HFDumpTrigger",
     HLTw4 = cms.untracked.string('HLT_L1Mu'),
     HLTw5 = cms.untracked.string('HLT_L1MuOpen'),
     HLTw6 = cms.untracked.string('HLT_DoubleMu0'),
-    HLTw7 = cms.untracked.string('HLT_DoubleMu3'),
+    HLTw7 = cms.untracked.string('HLT_L1_BscMinBiasOR_BptxPlusORMinus'),
     #HLTfiltObj2 = cms.untracked.string('hltL2MuonCandidates::HLT8E29'),
     #HLTfiltObj3 = cms.untracked.string('hltL3MuonCandidates::HLT8E29'),
     HLTfiltObj2 = cms.untracked.string('hltL2MuonCandidates::HLT'),
