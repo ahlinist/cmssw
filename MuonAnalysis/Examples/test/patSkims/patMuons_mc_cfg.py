@@ -12,14 +12,14 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 ### global tag
-#process.GlobalTag.globaltag = 'START36_V9::All'
-process.GlobalTag.globaltag = 'START3X_V26B::All'
+process.GlobalTag.globaltag = 'START38_V8::All'
 
 ### source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'root://pcmssd12.cern.ch//data/gpetrucc/7TeV/hlt/MuHLT_MinBiasMC357_185_1.root',
-        #'root://pcmssd12.cern.ch//data/gpetrucc/7TeV/jpsi/ppMuX_Spring10_REDIGI_START3X_V26_S09_GEN-SIM-RECO_C0AC7DEB-8144-DF11-A1E1-00304867D838.root'
+        '/store/relval/CMSSW_3_8_0/RelValMinBias/GEN-SIM-RECO/START38_V7-v1/0005/9EC22559-2C95-DF11-9F1D-001A92811744.root',
+        '/store/relval/CMSSW_3_8_0/RelValMinBias/GEN-SIM-RECO/START38_V7-v1/0005/24C78530-3D95-DF11-80F8-00261894393F.root',
+        '/store/relval/CMSSW_3_8_0/RelValMinBias/GEN-SIM-RECO/START38_V7-v1/0004/1415F186-0195-DF11-97D0-003048678FE6.root',
     )
 )
 
@@ -27,12 +27,6 @@ process.source = cms.Source("PoolSource",
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 ### FILTERS for GoodCollision
-process.load("L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff")
-from HLTrigger.HLTfilters.hltLevel1GTSeed_cfi import hltLevel1GTSeed
-hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
-process.bscFilter = hltLevel1GTSeed.clone(L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39)'))
-process.bit40     = hltLevel1GTSeed.clone(L1SeedsLogicalExpression = cms.string('(40 OR 41)'))
-process.haloVeto  = hltLevel1GTSeed.clone(L1SeedsLogicalExpression = cms.string('NOT (36 OR 37 OR 38 OR 39)'))
 process.oneGoodVertexFilter = cms.EDFilter("VertexSelector",
    src = cms.InputTag("offlinePrimaryVertices"),
    cut = cms.string("!isFake && ndof >= 4 && abs(z) <= 15 && position.Rho <= 2"),
@@ -50,35 +44,13 @@ process.recoMuFilter   = cms.EDFilter("CandViewCountFilter", src = cms.InputTag(
 
 process.preFilter = cms.Sequence(process.oneGoodVertexFilter * process.noScraping)
 
-process.Flag_BSC      = cms.Path(process.noScraping * process.oneGoodVertexFilter + process.bscFilter)
-process.Flag_Bit40    = cms.Path(process.bit40)
-process.Flag_HaloVeto = cms.Path(process.haloVeto)
-
 from HLTrigger.HLTfilters.hltHighLevelDev_cfi import hltHighLevelDev
-process.bscMinBiasWithPrescale   = hltHighLevelDev.clone(HLTPaths = ['HLT_MinBiasBSC'],                      HLTPathsPrescales = [1])
-process.bscMinBiasORWithPrescale = hltHighLevelDev.clone(HLTPaths = ['HLT_L1_BscMinBiasOR_BptxPlusORMinus'], HLTPathsPrescales = [1])
-process.hltMu3                   = hltHighLevelDev.clone(HLTPaths = ['HLT_Mu3'],                             HLTPathsPrescales = [1])
-process.hltL1MuOpen              = hltHighLevelDev.clone(HLTPaths = ['HLT_L1MuOpen'],                        HLTPathsPrescales = [1])
+process.bscMinBiasOR = hltHighLevelDev.clone(HLTPaths = ['HLT_L1_BscMinBiasOR_BptxPlusORMinus'], HLTPathsPrescales = [1])
+process.hltL1MuOpen  = hltHighLevelDev.clone(HLTPaths = ['HLT_L1MuOpen'],                        HLTPathsPrescales = [1])
 
-process.Count_BscOR  = cms.Path(process.preFilter * process.bscMinBiasORWithPrescale)
-process.Count_Bsc    = cms.Path(process.preFilter * process.bscMinBiasWithPrescale)
-process.Count_RecoMu = cms.Path(process.preFilter * process.recoMuFilter)
-process.Count_GlbMu  = cms.Path(process.preFilter * process.globalMuFilter )
-process.Count_RecoMu_BscOR = cms.Path(process.preFilter * process.recoMuFilter    * process.bscMinBiasORWithPrescale)
-process.Count_GlbMu_BscOR  = cms.Path(process.preFilter * process.globalMuFilter  * process.bscMinBiasORWithPrescale)
-process.Count_RecoMu_Bsc   = cms.Path(process.preFilter * process.recoMuFilter    * process.bscMinBiasWithPrescale)
-process.Count_GlbMu_Bsc    = cms.Path(process.preFilter * process.globalMuFilter  * process.bscMinBiasWithPrescale)
-process.Count_RecoMu_Mu3   = cms.Path(process.preFilter * process.recoMuFilter    * process.hltMu3)
-process.Count_GlbMu_Mu3    = cms.Path(process.preFilter * process.globalMuFilter  * process.hltMu3)
-process.Count_RecoMu_L1MuOpen = cms.Path(process.preFilter * process.recoMuFilter    * process.hltL1MuOpen)
-process.Count_GlbMu_L1MuOpen  = cms.Path(process.preFilter * process.globalMuFilter  * process.hltL1MuOpen)
-
-process.skim_GoodColl          = cms.Path(process.preFilter)
 process.skim_RecoMu            = cms.Path(process.preFilter * process.recoMuFilter  )
 process.skim_GlbMu             = cms.Path(process.preFilter * process.globalMuFilter)
-process.skim_RecoMuBsc         = cms.Path(process.preFilter * process.recoMuFilter   * process.bscMinBiasWithPrescale)
-process.skim_RecoMuBscOR       = cms.Path(process.preFilter * process.recoMuFilter   * process.bscMinBiasORWithPrescale)
-process.skim_RecoMuHLTMu3      = cms.Path(process.preFilter * process.recoMuFilter   * process.hltMu3)
+process.skim_RecoMuBscOR       = cms.Path(process.preFilter * process.recoMuFilter   * process.bscMinBiasOR)
 process.skim_RecoMuHLTL1MuOpen = cms.Path(process.preFilter * process.recoMuFilter   * process.hltL1MuOpen)
 
 ### Adding Trigger Info from TriggerResultsSummary to the PATMuon
@@ -105,11 +77,6 @@ from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_8E29_cff import addMCinfo
 addMCinfo(process)
 
 ### Add MC classification by hits
-# Requires:
-#   SimGeneral/TrackingAnalysis V04-01-00-02 (35X) or V04-01-03+ (37X+)
-#   SimTracker/TrackAssociation V01-08-17    (35X+)
-#   SimMuon/MCTruth             V02-05-00-01 (35X) or V02-06-00+ (37X+)
-#   MuonAnalysis/MuonAssociators V01-08-05
 process.load("MuonAnalysis.MuonAssociators.muonClassificationByHits_cfi")
 from MuonAnalysis.MuonAssociators.muonClassificationByHits_cfi import addUserData as addClassByHits
 addClassByHits(process.patMuonsWithoutTrigger, extraInfo=True)
@@ -125,7 +92,6 @@ process.muonClassificationByHits.replace(process.classByHitsGlb, process.classBy
 addClassByHits(process.patMuonsWithoutTrigger, labels=["classByHitsTMA","classByHitsGlbPT"], extraInfo=False)
 
 ### Adding Info about the Muon Station involved to the PATMuon
-# Requires MuonAnalysis/Examples V00-03-00+
 process.load("MuonAnalysis.Examples.muonStations_cfi")
 from MuonAnalysis.Examples.muonStations_cfi import addUserData as addStations
 addStations(process.patMuonsWithoutTrigger)
@@ -161,6 +127,6 @@ process.out = cms.OutputModule("PoolOutputModule",
         'keep recoRecoChargedCandidates_hltL2MuonCandidates__*',
         'keep recoRecoChargedCandidates_hltL3MuonCandidates__*',
     ),
-    #SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring("skim_RecoMuBscOR", "skim_RecoMuHLTMu3", "skim_GlbMu") ),
+    SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring("skim_RecoMuBscOR") ),
 )
 process.e = cms.EndPath(process.out)
