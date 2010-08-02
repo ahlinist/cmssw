@@ -19,8 +19,8 @@ process.load("HeavyFlavorAnalysis.InclB.HFSignal_cff")
 process.signalDump.verbose = 0
 
 process.load("HeavyFlavorAnalysis.InclB.HFJets_cff")
-process.jetDump.doflavortagging = 1
-process.jetDump.verbose = 0
+## process.jetDump.doflavortagging = 1
+## process.jetDump.verbose = 0
 
 process.load("HeavyFlavorAnalysis.InclB.HFTrackJets_cff")
 process.trackjetDump.doflavortagging = 0
@@ -49,22 +49,22 @@ process.GlobalTag.globaltag = "START3X_V26::All" # or "" or...
 
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:dcap://t3se01.psi.ch:22125/pnfs/psi.ch/cms/trivcat/store/mc/Spring10/MinBias/GEN-SIM-RECO/START3X_V25B_356ReReco-v1/0007/FE90A396-233C-DF11-8106-002618943898.root')
+    fileNames = cms.untracked.vstring('file:dcap://t3se01.psi.ch:22125/pnfs/psi.ch/cms/trivcat/store/user/caminada/FEB66DFA-2586-DF11-96CA-003048678F6C.root')
     
 )
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(50)
 )
-process.tree = cms.EDFilter("HFTree",
+process.tree = cms.EDAnalyzer("HFTree",
     fileName = cms.string('mc.root')
 )
 
-process.histo_begin = cms.EDFilter("HFHisto",
+process.histo_begin = cms.EDAnalyzer("HFHisto",
     fileName = cms.string('histo_begin.root')
 )
 
-process.histo_end = cms.EDFilter("HFHisto",
+process.histo_end = cms.EDAnalyzer("HFHisto",
     fileName = cms.string('histo_end.root')
 )
 
@@ -72,7 +72,7 @@ process.filterpkame = cms.EDFilter("PKAME",
     tracksLabel = cms.untracked.string('generalTracks')
 )
 
-process.myPartons = cms.EDFilter("PartonSelector",
+process.myPartons = cms.EDProducer("PartonSelector",
     
     src = cms.InputTag("genParticles"),
     withLeptons = cms.bool(False)
@@ -101,7 +101,7 @@ process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NO
 
 
 #process.p = cms.Path(process.hltLevel1GTSeed + process.filterpkame*process.histo_begin*process.GenDump*process.myPartons*process.CandidateDump*process.CandidateDumpNew*process.JetDump*process.GenJetDump*process.TrackJetDump*process.TrackDump*process.SignalDump*process.VertexDump*process.TriggerDump*process.tree*process.histo_end)
-process.p = cms.Path(process.filterpkame*process.histo_begin*process.GenDump*process.SimTrackDump*process.myPartons*process.CandidateDump*process.CandidateDumpNew*process.GenJetDump*process.TrackJetDump*process.TrackDump*process.SignalDump*process.VertexDump*process.TriggerDump*process.tree*process.histo_end)
+process.p = cms.Path(process.hltLevel1GTSeed + process.filterpkame*process.histo_begin*process.GenDump*process.SimTrackDump*process.myPartons*process.CandidateDump*process.CandidateDumpNew*process.GenJetDump*process.TrackJetDump*process.TrackDump*process.SignalDump*process.VertexDump*process.TriggerDump*process.tree*process.histo_end)
 
 
 
