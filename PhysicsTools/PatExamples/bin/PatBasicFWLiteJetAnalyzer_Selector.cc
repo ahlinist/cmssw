@@ -383,8 +383,6 @@ int main (int argc, char* argv[])
 
     if ( runLumiSel(ev) == false ) continue;
 
-    int run = event.id().run();
-
     if ( nev % 100 == 0 ) cout << "Processing run " << event.id().run() << ", lumi " << event.id().luminosityBlock() << ", event " << event.id().event() << endl;
 
 
