@@ -70,24 +70,24 @@ int main(int argc, char* argv[])
     edm::InputTag jetLabel( argv[3] );
     event.getByLabel(jetLabel, jets);
    
-    // // loop jet collection and fill histograms
-    // for(unsigned i=0; i<jets->size(); ++i){
-    //   jetPt_ ->Fill( (*jets)[i].pt()  );
-    //   jetEta_->Fill( (*jets)[i].eta() );
-    //   jetPhi_->Fill( (*jets)[i].phi() );
-    //   reco::SecondaryVertexTagInfo const * svTagInfos = (*jets)[i].tagInfoSecondaryVertex("secondaryVertex");
-    //   if ( svTagInfos != 0 ) {
-    // if ( svTagInfos->nVertices() > 0 )
-    //   disc_->Fill( svTagInfos->flightDistance(0).value() );
-    //   }
-    //   std::vector<CaloTowerPtr> const & caloConstituents =  (*jets)[i].getCaloConstituents();
-    //   for ( std::vector<CaloTowerPtr>::const_iterator ibegin = caloConstituents.begin(),
-    //       iend = caloConstituents.end(),
-    //       iconstituent = ibegin;
-    //     iconstituent != iend; ++iconstituent ) {
-    // constituentPt_->Fill( (*iconstituent)->pt() );
-    //   }
-    // }
+    // loop jet collection and fill histograms
+    for(unsigned i=0; i<jets->size(); ++i){
+      jetPt_ ->Fill( (*jets)[i].pt()  );
+      jetEta_->Fill( (*jets)[i].eta() );
+      jetPhi_->Fill( (*jets)[i].phi() );
+      reco::SecondaryVertexTagInfo const * svTagInfos = (*jets)[i].tagInfoSecondaryVertex("secondaryVertex");
+      if ( svTagInfos != 0 ) {
+    if ( svTagInfos->nVertices() > 0 )
+      disc_->Fill( svTagInfos->flightDistance(0).value() );
+      }
+      std::vector<CaloTowerPtr> const & caloConstituents =  (*jets)[i].getCaloConstituents();
+      for ( std::vector<CaloTowerPtr>::const_iterator ibegin = caloConstituents.begin(),
+          iend = caloConstituents.end(),
+          iconstituent = ibegin;
+        iconstituent != iend; ++iconstituent ) {
+    constituentPt_->Fill( (*iconstituent)->pt() );
+      }
+    }
     ++nEventsAnalyzed;
   } 
   // close input file
