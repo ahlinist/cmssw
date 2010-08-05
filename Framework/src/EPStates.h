@@ -298,10 +298,11 @@ namespace statemachine {
     bool checkInvariant();
 
     typedef mpl::list<
-      sc::transition<Run, NewRun, HandleRuns, &HandleRuns::finalizeRun>,
+      sc::custom_reaction<Run>,
       sc::custom_reaction<File>,
       sc::transition<Lumi, HandleLumis> > reactions;
 
+    sc::result react(Run const& run);
     sc::result react(File const& file);
   private:
     edm::IEventProcessor & ep_;
@@ -422,9 +423,11 @@ namespace statemachine {
     bool checkInvariant();
 
     typedef mpl::list<
+      sc::custom_reaction<Run>,
       sc::custom_reaction<Lumi>,
       sc::custom_reaction<File> > reactions;
 
+    sc::result react(Run const& run);
     sc::result react(Lumi const& lumi);
     sc::result react(File const& file);
   private:
@@ -440,9 +443,10 @@ namespace statemachine {
 
     typedef mpl::list<
       sc::transition<Event, HandleEvent>,
-      sc::transition<Lumi, AnotherLumi>,
+      sc::custom_reaction<Lumi>,
       sc::custom_reaction<File> > reactions;
 
+    sc::result react(Lumi const& lumi);
     sc::result react(File const& file);
   private:
     edm::IEventProcessor & ep_;
