@@ -181,6 +181,21 @@ private:
 
 	return;
       }
+
+    if ((o.name.find("hist pixelHits vs lumi") != std::string::npos) || (o.name.find("hist good vx vs lumi") != std::string::npos))
+      {
+	gStyle->SetOptFit(1110);
+	gStyle->SetOptStat(10);
+
+	gStyle->SetErrorX(0.);
+	gStyle->SetEndErrorSize(0.);
+
+	obj->SetMarkerStyle(20);
+	obj->SetMarkerSize(0.4);
+	obj->SetMarkerColor(4);
+
+	return;
+      }
   }
 
   void preDrawTProfile(TCanvas* c, const VisDQMObject& o)
