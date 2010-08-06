@@ -15,6 +15,8 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaEventSelector.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/Histogrammer.h"
 
+#include "ElectroWeakAnalysis/MultiBosons/interface/Heartbeat.h"
+
 #include "Math/GenVector/PxPyPzM4D.h"
 
 #include <iostream>
@@ -141,10 +143,13 @@ int main ( int argc, char ** argv )
   // This object 'event' is used both to get all information from the
   // event as well as to store histograms, etc.
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
-  double totalEvents = ev.size();
-  std::cout << "There are " << totalEvents << " events to process." <<std::endl;
-  std::cout.precision(1);
-  std::cout.setf(std::ios_base::fixed,std::ios_base::floatfield);
+
+  // get heartbeat configuration (very important, I know...)
+  edm::ParameterSet hbConf = cfg->getParameter<edm::ParameterSet>("heartbeat");
+  unsigned long long totalEvents = ev.size();
+  double theprecision = hbConf.getParameter<double>("updateEvery");
+  // make the heartbeat
+  Heartbeat hb(totalEvents,theprecision);
 
   long long maxEventsInput = -1;
   if (cfg->existsAs<edm::ParameterSet>("maxEvents")) {
@@ -156,8 +161,7 @@ int main ( int argc, char ** argv )
   //loop through each event
   for (ev.toBegin(), iEvent=0; ! ev.atEnd() && (iEvent < maxEventsInput || maxEventsInput == -1); ++ev, ++iEvent) {
 
-    if( (int)(1000.0*iEvent/totalEvents) % 10 == 0  )
-      std::cout << "\rProcessing is " << (iEvent/totalEvents)*100.0 << "% complete..." << std::flush;
+    hb.update(std::cout);
         
     edm::EventBase const & event = ev;
 
@@ -227,10 +231,7 @@ int main ( int argc, char ** argv )
     */
   } // end loop over events
   
-  std::cout << "\rProcessing is 100.0% complete..." << std::flush;      
-  std::cout << "\r-->Done processing!             " << std::endl; 
-  select.printSelectors(std::cout);
-  
+  select.printSelectors(std::cout);  
 
   if(zgmuonHistos)       delete zgmuonHistos;
   if(wgmuonHistos)       delete wgmuonHistos;
