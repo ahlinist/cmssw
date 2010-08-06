@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.37 $
-  \date $Date: 2010/06/30 09:58:31 $
+  \version $Revision: 1.38 $
+  \date $Date: 2010/07/06 07:15:19 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -222,7 +222,6 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
           o.name.find( "Occupancy" ) != std::string::npos ||
 	  o.name.find( "position_siPixelClusters" ) != std::string::npos ||
 	  (o.name.find( "TRKMAP" ) != std::string::npos && o.name.find( "Layer" ) != std::string::npos) ||
-	  o.name.find( "HitEfficiency" ) != std::string::npos || 
 	  o.name.find( "sizeYvsEta" ) != std::string::npos) 
       {
         gStyle->SetPalette(1);
@@ -230,7 +229,25 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
         obj->SetOption("colz");
         return;
       }
-      
+      //Separated out HitEfficiency maps to set scale
+      if( o.name.find( "HitEfficiency_L" ) != std::string::npos)
+        {
+          gStyle->SetPalette(1);
+          gPad->SetRightMargin(0.15);
+          obj->SetOption("colz");
+          obj->SetMaximum(1.0);
+          obj->SetMinimum(0.90);
+          return;
+        }
+      if( o.name.find( "HitEfficiency_D" ) != std::string::npos)
+        {
+          gStyle->SetPalette(1);
+          gPad->SetRightMargin(0.15);
+          obj->SetOption("colz");
+          obj->SetMaximum(1.0);
+          obj->SetMinimum(0.75);
+          return;
+        }
       if( o.name.find( "FedChLErrArray" ) != std::string::npos )
       {
         gPad->SetGrid();
@@ -258,6 +275,17 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
         obj->SetOption("colztext");
 	if( obj->GetEntries() > 0. ) gPad->SetLogz(1);
       }
+      if( o.name.find( "DigiOcc_FEDvsVsLumiSections" ) != std::string::npos )
+        {
+          gPad->SetLeftMargin(0.3);
+          gPad->SetRightMargin(0.15);
+          gStyle->SetPalette(1);
+          obj->SetOption("colz");
+          obj->SetMinimum(0.4);
+          obj->SetMaximum(1.8);
+          return;
+        }
+      
       
       TH2F* obj2 = dynamic_cast<TH2F*>( o.object );
 
@@ -453,6 +481,10 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
         Int_t ibin = obj->GetMaximumBin(); 
         Double_t val = obj->GetBinContent(ibin); 
         TLine tl; tl.SetLineColor(4); tl.DrawLine(21.,0.,21.,val); 
+      }
+      else if( o.name.find( "averageDigiOccupancy" ) != std::string::npos ){
+        TLine tl; tl.SetLineColor(4); tl.DrawLine(-0.5,0.6,39.5,0.6);
+        TLine t2; t2.SetLineColor(4); t2.DrawLine(-0.5,1.6,39.5,1.6);
       }
 //       else if( o.name.find( "OnTrack/size_siPixelClusters" ) != std::string::npos ||
 //                o.name.find( "OffTrack/size_siPixelClusters" ) != std::string::npos ){ 
