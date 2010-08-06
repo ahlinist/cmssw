@@ -94,12 +94,13 @@
   <Numeric name="NumberOfBlades"   value="34"/>
   <Numeric name="BladeAngle"       value="-20*deg"/>
   <Numeric name="BladeTilt"        value="0*deg"/>
-  <Numeric name="BladeCommonZ"     value="0.0*mm"/>
+  <Numeric name="BladeCommonZ"     value="-3.25*mm"/>
   <Vector  name="BladeZShift" type="numeric" nEntries="34">
-   -26.42*mm,-23.92*mm,-21.42*mm,-18.92*mm,-16.42*mm,-13.92*mm,-11.42*mm, -8.92*mm,
-   -26.42*mm,-23.92*mm,-21.42*mm,-18.92*mm,-16.42*mm,-13.92*mm,-11.42*mm, -8.92*mm, -6.42*mm,
-   -6.42*mm, -8.92*mm, -11.42*mm,-13.92*mm,-16.42*mm,-18.92*mm,-21.42*mm,-23.92*mm, -26.42*mm,
-   -8.92*mm, -11.42*mm,-13.92*mm,-16.42*mm,-18.92*mm,-21.42*mm,-23.92*mm, -26.42*mm
+   -27.42*mm,-24.92*mm,-22.42*mm,-19.92*mm,-17.42*mm,-14.92*mm,-12.42*mm, -9.92*mm,
+   -27.42*mm,-24.92*mm,-22.42*mm,-19.92*mm,-17.42*mm,-14.92*mm,-12.42*mm, -9.92*mm, -7.42*mm,
+   -7.42*mm, -9.92*mm, -12.42*mm,-14.92*mm,-17.42*mm,-19.92*mm,-22.42*mm,-24.92*mm, -27.42*mm,
+   -9.92*mm, -12.42*mm,-14.92*mm,-17.42*mm,-19.92*mm,-22.42*mm,-24.92*mm, -27.42*mm
+
   </Vector>
   <Numeric name="AnchorRadius"     value="129.5*mm"/>
   <String  name="RotationName"     value="pixfwdOuterDisk2:PixOuter"/>

@@ -14,8 +14,8 @@
  <Constant name="RootMidZ3"      value="[cms:TrackBeamZ1]-[ZPixelForward]"/>
  <Constant name="RootEndZ"       value="2*[RootHalfLength]"/>
 
- <Constant name="Disk1Z"         value="31*mm"/>
- <Constant name="Disk2Z"         value="[Disk1Z]+75*mm"/>
+ <Constant name="Disk1Z"         value="35.75*mm"/>
+ <Constant name="Disk2Z"         value="[Disk1Z]+72.5*mm"/>
  <Constant name="Disk3Z"         value="[Disk2Z]+120*mm"/>
 
  <Constant name="ZCylinder"      value="[AnchorZ]"/>
