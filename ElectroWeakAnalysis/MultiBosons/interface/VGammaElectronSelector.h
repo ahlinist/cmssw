@@ -12,6 +12,7 @@ class VGammaElectronSelector : public Selector<pat::Electron> {
  public:
   enum version { Jul012010 , N_VERSIONS};
   
+  VGammaElectronSelector() {}
   VGammaElectronSelector( const edm::ParameterSet& );
 
   bool operator()( const pat::Electron &, 

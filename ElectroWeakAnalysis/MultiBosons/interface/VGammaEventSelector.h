@@ -20,6 +20,7 @@
 
 class VGammaEventSelector : public EventSelector {
  public:
+  VGammaEventSelector() {}
   VGammaEventSelector( edm::ParameterSet const & params );
   
   virtual bool operator()( edm::EventBase const & t, pat::strbitset & ret);

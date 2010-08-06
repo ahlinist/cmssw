@@ -12,6 +12,7 @@ class VGammaMuonSelector : public Selector<pat::Muon> {
  public:
   enum version { Jun252010 , Jun262010_jpsi  , N_VERSIONS};
   
+  VGammaMuonSelector() {}
   VGammaMuonSelector( const edm::ParameterSet& );
 
   bool operator()( const pat::Muon &, 
@@ -22,9 +23,6 @@ class VGammaMuonSelector : public Selector<pat::Muon> {
 
   bool operator()( const pat::Muon &, 
 		   pat::strbitset & );
-
-  bool operator()( const pat::Muon*,
-		   pat::strbitset& );
 
   bool Jun252010Cuts( const pat::Muon& mu,
 		      pat::strbitset & ret );
