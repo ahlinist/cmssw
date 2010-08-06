@@ -17,6 +17,7 @@
 
 class VGammaLeptonMETEventSelector : public EventSelector {
  public:
+  VGammaLeptonMETEventSelector() {}
   VGammaLeptonMETEventSelector( edm::ParameterSet const & params );
   
   virtual bool operator()( edm::EventBase const & t, pat::strbitset & ret);

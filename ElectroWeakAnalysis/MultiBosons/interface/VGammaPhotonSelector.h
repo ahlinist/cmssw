@@ -12,6 +12,7 @@ class VGammaPhotonSelector : public Selector<pat::Photon> {
  public:
   enum version { Jul022010 , Jul022010_poter, Jul022010_poterrel , N_VERSIONS};
   
+  VGammaPhotonSelector() {}
   VGammaPhotonSelector( const edm::ParameterSet& );
 
   bool operator()( const pat::Photon&, 

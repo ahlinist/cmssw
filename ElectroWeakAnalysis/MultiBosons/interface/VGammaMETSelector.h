@@ -12,6 +12,7 @@ class VGammaMETSelector : public Selector<pat::MET> {
  public:
   enum version { Jul022010 , N_VERSIONS};
   
+  VGammaMETSelector() {}
   VGammaMETSelector( const edm::ParameterSet& );
 
   bool operator()( const pat::MET &, 
