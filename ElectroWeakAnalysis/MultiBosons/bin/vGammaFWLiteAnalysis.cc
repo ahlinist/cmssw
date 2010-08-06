@@ -144,18 +144,19 @@ int main ( int argc, char ** argv )
   // event as well as to store histograms, etc.
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
 
-  // get heartbeat configuration (very important, I know...)
-  edm::ParameterSet hbConf = cfg->getParameter<edm::ParameterSet>("heartbeat");
-  unsigned long long totalEvents = ev.size();
-  double theprecision = hbConf.getParameter<double>("updateEvery");
-  // make the heartbeat
-  Heartbeat hb(totalEvents,theprecision);
-
   long long maxEventsInput = -1;
   if (cfg->existsAs<edm::ParameterSet>("maxEvents")) {
     edm::ParameterSet maxEvents = cfg->getParameter<edm::ParameterSet>("maxEvents");
     maxEventsInput = maxEvents.getUntrackedParameter<long long>("input", -1);
   }
+
+  // get heartbeat configuration (very important, I know...)
+  edm::ParameterSet hbConf = cfg->getParameter<edm::ParameterSet>("heartbeat");
+  unsigned long long totalEvents = ev.size();
+  double theprecision = hbConf.getParameter<double>("updateEvery");
+  // make the heartbeat
+  Heartbeat hb(((maxEventsInput == -1 || (long long)totalEvents < maxEventsInput) ? totalEvents : maxEventsInput),
+	       theprecision);
 
   double iEvent = 0.0;
   //loop through each event
