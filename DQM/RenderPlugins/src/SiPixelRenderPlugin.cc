@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.38 $
-  \date $Date: 2010/07/06 07:15:19 $
+  \version $Revision: 1.39 $
+  \date $Date: 2010/08/06 07:52:18 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -275,7 +275,7 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
         obj->SetOption("colztext");
 	if( obj->GetEntries() > 0. ) gPad->SetLogz(1);
       }
-      if( o.name.find( "DigiOcc_FEDvsVsLumiSections" ) != std::string::npos )
+      if( o.name.find( "avgfedDigiOccvsLumi" ) != std::string::npos )
         {
           gPad->SetLeftMargin(0.3);
           gPad->SetRightMargin(0.15);
