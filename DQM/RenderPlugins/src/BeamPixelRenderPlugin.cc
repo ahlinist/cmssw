@@ -171,20 +171,8 @@ private:
     xa->SetLabelSize(0.03);
     ya->SetLabelSize(0.03);
 
-    if ((o.name.find("muX vs lumi") != std::string::npos) || (o.name.find("muY vs lumi") != std::string::npos) || (o.name.find("muZ vs lumi") != std::string::npos) ||
-	(o.name.find("sigmaX vs lumi") != std::string::npos) || (o.name.find("sigmaY vs lumi") != std::string::npos) || (o.name.find("sigmaZ vs lumi") != std::string::npos) ||
-	(o.name.find("dxdz vs lumi") != std::string::npos) || (o.name.find("dydz vs lumi") != std::string::npos) || (o.name.find("pixelHits vs lumi") != std::string::npos) ||
-	(o.name.find("good vertices vs lumi") != std::string::npos))
-      {
-	gStyle->SetOptFit(1110);
-	gStyle->SetOptStat(10);
-
-	return;
-      }
-
     if ((o.name.find("hist pixelHits vs lumi") != std::string::npos) || (o.name.find("hist good vx vs lumi") != std::string::npos))
       {
-	gStyle->SetOptFit(1110);
 	gStyle->SetOptStat(10);
 
 	gStyle->SetErrorX(0.);
@@ -193,6 +181,17 @@ private:
 	obj->SetMarkerStyle(20);
 	obj->SetMarkerSize(0.4);
 	obj->SetMarkerColor(4);
+
+	return;
+      }
+
+    if ((o.name.find("muX vs lumi") != std::string::npos) || (o.name.find("muY vs lumi") != std::string::npos) || (o.name.find("muZ vs lumi") != std::string::npos) ||
+	(o.name.find("sigmaX vs lumi") != std::string::npos) || (o.name.find("sigmaY vs lumi") != std::string::npos) || (o.name.find("sigmaZ vs lumi") != std::string::npos) ||
+	(o.name.find("dxdz vs lumi") != std::string::npos) || (o.name.find("dydz vs lumi") != std::string::npos) || (o.name.find("pixelHits vs lumi") != std::string::npos) ||
+	(o.name.find("good vertices vs lumi") != std::string::npos))
+      {
+	gStyle->SetOptFit(1110);
+	gStyle->SetOptStat(10);
 
 	return;
       }
