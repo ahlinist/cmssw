@@ -77,7 +77,7 @@ std::string dqmDirectoryName(const std::string& directory)
   std::string dirName = directory;
 
 //--- add tailing '/'
-  if ( dirName != "" && dirName.find_last_of(dqmSeparator) != (dirName.length() - 1) )  dirName.append(dqmSeparator);
+  if ( dirName != "" && dirName.find_last_of(dqmSeparator) != (dirName.length() - 1) ) dirName.append(dqmSeparator);
 
 //--- replace all instances of '//' by '/'
   while ( dirName.find(dqmSeparator2) != std::string::npos ) {
