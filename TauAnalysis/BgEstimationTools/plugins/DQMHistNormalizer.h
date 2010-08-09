@@ -6,7 +6,7 @@
  *  Class to produce copy of histogram 
  *  with normalization equal to specified value
  *
- *  $Date: 2009/01/21 17:34:57 $
+ *  $Date: 2009/08/13 15:02:08 $
  *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
@@ -23,8 +23,15 @@ class DQMHistNormalizer : public edm::EDAnalyzer
 {
   struct jobEntryType
   {
-    std::string meNameInput_;
-    std::string meNameOutput_;
+    jobEntryType(const edm::ParameterSet&);
+
+    std::string meName_input_;
+    std::string meName_output_;
+
+    std::string dqmDirectory_input_;
+    std::string dqmDirectory_output_;
+
+    int cfgError_;
   };
 
  public:
