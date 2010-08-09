@@ -79,6 +79,7 @@ void TauIdEffZtoMuTauHistManager::bookHistogramsImp()
   hDiTauVisMassFromTauJetP4_ = book1D("DiTauVisMassFromTauJetP4", "DiTauVisMassFromTauJetP4", 40, 0., 200.);
   hDiTauCollinearApproxMassFromJetP4_ = book1D("DiTauCollinearApproxMassFromJetP4", "DiTauCollinearApproxMassFromJetP4", 50, 0., 250.);
   hDiTauCollinearApproxMassFromTauJetP4_ = book1D("DiTauCollinearApproxMassFromTauJetP4", "DiTauCollinearApproxMassFromTauJetP4", 50, 0., 250.);
+  hDiTauWplusJetsDiscr_ = book1D("DiTauWplusJetsDiscr", "DiTauWplusJetsDiscr", 100, -250., +250.);
 
   hNumCentralJets_ = book1D("NumCentralJets", "NumCentralJets", 5, -0.5, 4.5);
   hCentralJetPt_ = book1D("CentralJetPt", "CentralJetPt", 75, 0., 150.);
@@ -149,8 +150,8 @@ void TauIdEffZtoMuTauHistManager::fillHistogramsImp(const edm::Event& evt, const
   edm::Handle<pat::TauCollection> patTaus;
   evt.getByLabel(tauSrc_, patTaus);
 
-  edm::Handle<PATMuTauPairCollection> diTaus;
-  evt.getByLabel(diTauSrc_, diTaus);
+  edm::Handle<PATMuTauPairCollection> diTauCandidates;
+  evt.getByLabel(diTauSrc_, diTauCandidates);
   
   edm::Handle<pat::JetCollection> patCentralJets;
   evt.getByLabel(centralJetSrc_, patCentralJets);
@@ -181,24 +182,28 @@ void TauIdEffZtoMuTauHistManager::fillHistogramsImp(const edm::Event& evt, const
   double diTauChargeSign = (*diTauChargeSignExtractor_)(evt);
   hDiTauChargeSign_->Fill(diTauChargeSign, evtWeight);
   
-  for ( PATMuTauPairCollection::const_iterator diTau = diTaus->begin(); 
-	diTau != diTaus->end(); ++diTau ) {
-    double diTauPtProj = computeDiTauProj(diTau->p4Vis(), diTau->leg1()->p4());
+  for ( PATMuTauPairCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
+	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
+    double diTauPtProj = computeDiTauProj(diTauCandidate->p4Vis(), diTauCandidate->leg1()->p4());
     hDiTauPtProj_->Fill(diTauPtProj, evtWeight);
 
-    double diTauMEtProj = computeDiTauProj(diTau->met()->p4(), diTau->leg1()->p4());
+    double diTauMEtProj = computeDiTauProj(diTauCandidate->met()->p4(), diTauCandidate->leg1()->p4());
     hDiTauMEtProj_->Fill(diTauMEtProj, evtWeight);
 
-    hDiTauVisMassFromJetP4_->Fill((diTau->leg1()->p4() + diTau->leg2()->pfTauTagInfoRef()->pfjetRef()->p4()).mass(), evtWeight);
-    hDiTauVisMassFromTauJetP4_->Fill((diTau->leg1()->p4() + diTau->leg2()->p4()).mass(), evtWeight);
-    //if ( (diTau->dPhi12()*180./TMath::Pi()) < 160. ) {
+    double diTauMass_fromJetP4 = (diTauCandidate->leg1()->p4() + diTauCandidate->leg2()->pfTauTagInfoRef()->pfjetRef()->p4()).mass();
+    hDiTauVisMassFromJetP4_->Fill(diTauMass_fromJetP4, evtWeight);
+    double diTauMass_fromTauP4 = (diTauCandidate->leg1()->p4() + diTauCandidate->leg2()->p4()).mass();
+    hDiTauVisMassFromTauJetP4_->Fill(diTauMass_fromTauP4, evtWeight);
+    //if ( (diTauCandidate->dPhi12()*180./TMath::Pi()) < 160. ) {
       fillCollinearApproxMassHistogram(hDiTauCollinearApproxMassFromJetP4_,
-				       diTau->leg1()->p4(), diTau->leg2()->pfTauTagInfoRef()->pfjetRef()->p4(),
-				       diTau->met()->px(), diTau->met()->py(), evtWeight);
+				       diTauCandidate->leg1()->p4(), diTauCandidate->leg2()->pfTauTagInfoRef()->pfjetRef()->p4(),
+				       diTauCandidate->met()->px(), diTauCandidate->met()->py(), evtWeight);
       fillCollinearApproxMassHistogram(hDiTauCollinearApproxMassFromTauJetP4_,
-				       diTau->leg1()->p4(), diTau->leg2()->p4(),
-				       diTau->met()->px(), diTau->met()->py(), evtWeight);
+				       diTauCandidate->leg1()->p4(), diTauCandidate->leg2()->p4(),
+				       diTauCandidate->met()->px(), diTauCandidate->met()->py(), evtWeight);
     //}
+
+    hDiTauWplusJetsDiscr_->Fill(diTauCandidate->mt1MET() + 2*(diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis()), evtWeight);
   }
 
   hNumCentralJets_->Fill(patCentralJets->size(), evtWeight);
