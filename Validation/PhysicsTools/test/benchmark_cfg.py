@@ -12,10 +12,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_0_pre5/RelValTTbar/GEN-SIM-RECO/START36_V3-v1/0009/0A36A3F4-D63D-DF11-8B35-002354EF3BE4.root',
-	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_0_pre5/RelValTTbar/GEN-SIM-RECO/START36_V3-v1/0009/164EB76A-C93D-DF11-8F22-0018F3D09644.root',
-	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_0_pre5/RelValTTbar/GEN-SIM-RECO/START36_V3-v1/0009/3EEC34FF-D23D-DF11-B086-003048678F6C.root',
-	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_0_pre5/RelValTTbar/GEN-SIM-RECO/START36_V3-v1/0009/4E43F20D-D23D-DF11-93DB-002618943935.root'
+	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_0/RelValTTbar/GEN-SIM-RECO/START38_V7-v1/0004/2CEECFE9-1995-DF11-A731-001A92811714.root',
+	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_0/RelValTTbar/GEN-SIM-RECO/START38_V7-v1/0004/38D102EC-1895-DF11-8C87-0018F3D096DA.root',
+	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_0/RelValTTbar/GEN-SIM-RECO/START38_V7-v1/0004/50410AEC-1A95-DF11-B786-0018F3D0960A.root',
+	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_0/RelValTTbar/GEN-SIM-RECO/START38_V7-v1/0004/5AE276E9-1495-DF11-86F1-0018F3D096C2.root'
     )
 )
 ## Maximal Number of Events
@@ -25,7 +25,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = cms.string('MC_3XY_V12::All')
-process.GlobalTag.globaltag = cms.string('STARTUP3X_V11::All')
+process.GlobalTag.globaltag = cms.string('START38_V7::All')
 #process.GlobalTag.globaltag = cms.string('STARTUP3XY_V9::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
