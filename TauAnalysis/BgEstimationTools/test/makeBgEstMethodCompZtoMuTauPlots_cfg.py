@@ -87,7 +87,7 @@ process.compBgEstFakeRateZtoMuTau_smBgSum = cms.Sequence(process.addBgEstFakeRat
 ##    dqmDirectory_input = cms.string('methodTauIdDiscr/harvested/Ztautau/afterEvtSelDiMuPairZmumuHypothesisVeto'),
 ##    dqmDirectory_output = cms.string('methodBgEstTemplateFit/template/Ztautau'),
 ##    meNameScaleFactor = cms.string('methodBgEstTemplateFit/fitBgEstTemplateZtoMuTau/fitResults/Ztautau/norm/value#a1#s1'),
-##    meTypeScaleFactor = cms.string('real')                                                            
+##    meType = cms.string('real')                                                            
 ##)
 
 dqmDirectory_template = 'methodBgEstTemplateFit/template/harvested/smSum/BgEstTemplateAnalyzer_'
@@ -96,35 +96,35 @@ process.scaleBgEstTemplateFitZtoMuTau_ZmumuJetMisId = cms.EDAnalyzer("DQMHistSca
     dqmDirectory_input = cms.string(dqmDirectory_template + 'ZmumuJetMisIdEnriched/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched'),
     dqmDirectory_output = cms.string('methodBgEstTemplateFit/template/ZmumuJetMisId'),
     meNameScaleFactor = cms.string('methodBgEstTemplateFit/fitBgEstTemplateZtoMuTau/fitResults/ZmumuJetMisId/norm/value#a1#s1'),
-    meTypeScaleFactor = cms.string('real')                                                            
+    meType = cms.string('real')                                                            
 )
 
 process.scaleBgEstTemplateFitZtoMuTau_ZmumuMuonMisId = cms.EDAnalyzer("DQMHistScaler",
     dqmDirectory_input = cms.string(dqmDirectory_template + 'ZmumuMuonMisIdEnriched/afterDiMuonPairBgEstZmumuMuonMisIdEnriched'),
     dqmDirectory_output = cms.string('methodBgEstTemplateFit/template/ZmumuMuonMisId'),
     meNameScaleFactor = cms.string('methodBgEstTemplateFit/fitBgEstTemplateZtoMuTau/fitResults/ZmumuMuonMisId/norm/value#a1#s1'),
-    meTypeScaleFactor = cms.string('real')                                                            
+    meType = cms.string('real')                                                            
 )
 
 process.scaleBgEstTemplateFitZtoMuTau_WplusJets = cms.EDAnalyzer("DQMHistScaler",
     dqmDirectory_input = cms.string(dqmDirectory_template + 'WplusJetsEnriched/afterDiMuonVetoBgEstWplusJetsEnriched'),
     dqmDirectory_output = cms.string('methodBgEstTemplateFit/template/WplusJets'),
     meNameScaleFactor = cms.string('methodBgEstTemplateFit/fitBgEstTemplateZtoMuTau/fitResults/WplusJets/norm/value#a1#s1'),
-    meTypeScaleFactor = cms.string('real')                                                            
+    meType = cms.string('real')                                                            
 )
 
 process.scaleBgEstTemplateFitZtoMuTau_TTplusJets = cms.EDAnalyzer("DQMHistScaler",
     dqmDirectory_input = cms.string(dqmDirectory_template + 'TTplusJetsEnriched/afterDiMuonVetoBgEstTTplusJetsEnriched'),
     dqmDirectory_output = cms.string('methodBgEstTemplateFit/template/TTplusJets'),
     meNameScaleFactor = cms.string('methodBgEstTemplateFit/fitBgEstTemplateZtoMuTau/fitResults/TTplusJets/norm/value#a1#s1'),
-    meTypeScaleFactor = cms.string('real')                                                            
+    meType = cms.string('real')                                                            
 )
 
 process.scaleBgEstTemplateFitZtoMuTau_QCD = cms.EDAnalyzer("DQMHistScaler",
     dqmDirectory_input = cms.string(dqmDirectory_template + 'QCDenriched/afterDiMuonVetoBgEstQCDenriched'),
     dqmDirectory_output = cms.string('methodBgEstTemplateFit/template/QCD'),
     meNameScaleFactor = cms.string('methodBgEstTemplateFit/fitBgEstTemplateZtoMuTau/fitResults/QCD/norm/value#a1#s1'),
-    meTypeScaleFactor = cms.string('real')                                                            
+    meType = cms.string('real')                                                            
 )
 
 process.addBgEstTemplateFitZtoMuTau_smBgSum = cms.EDAnalyzer("DQMHistAdder",
