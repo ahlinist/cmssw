@@ -9,8 +9,8 @@
  *         of muon isolation from other event selection criteria,
  *         in order to avoid problems with limited Monte Carlo statistics)
  *
- *  $Date: 2010/04/10 13:57:56 $
- *  $Revision: 1.6 $
+ *  $Date: 2010/05/19 08:40:47 $
+ *  $Revision: 1.7 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -36,7 +36,9 @@ class DQMHistScaler : public edm::EDAnalyzer
     explicit cfgEntryScaleJob(const edm::ParameterSet&);
 
     std::string meName_input_;
+    std::string meName_inputErr_;
     std::string meName_output_;
+    std::string meName_outputErr_;
 
     std::string dqmDirectory_input_;
     vstring dqmSubDirectories_input_;
@@ -45,15 +47,17 @@ class DQMHistScaler : public edm::EDAnalyzer
     double scaleFactorErr_;
     
     std::string meNameScaleFactor_;
-    std::string meTypeScaleFactor_;
     std::string meNameScaleFactorErr_;
-    std::string meTypeScaleFactorErr_;
     
+    std::string meNameNumerator_;
+    std::string meNameNumeratorErr_;
+    std::string meNameDenominator_;
+    std::string meNameDenominatorErr_;
+
+    std::string meType_;
+
     std::string dqmDirectory_factorizedLooseSel_;
     std::string dqmDirectory_factorizedTightSel_;
-    std::string meNameNumerator_;
-    std::string meNameDenominator_;
-    std::string meType_;
     
     std::string dqmDirectory_output_;
     
