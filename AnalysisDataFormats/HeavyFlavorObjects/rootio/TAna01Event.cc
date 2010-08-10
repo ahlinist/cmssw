@@ -363,7 +363,7 @@ TAnaCand* TAna01Event::getCand(Int_t n) {
 // ----------------------------------------------------------------------
 TAnaCand* TAna01Event::addCand() {
   TClonesArray& d = *fCandidates; 
-  new(d[d.GetLast()+1]) TAnaCand();
+  new(d[d.GetLast()+1]) TAnaCand(fnCandidates);
   ++fnCandidates;
   return (TAnaCand*)d[d.GetLast()];
 }

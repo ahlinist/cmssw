@@ -10,7 +10,7 @@
 class TAnaCand: public TObject {
 
 public:
-  TAnaCand();
+  TAnaCand(int index = -99);
   virtual ~TAnaCand();
   void clear();
   void dump();

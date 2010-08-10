@@ -5,8 +5,9 @@ ClassImp(TAnaCand)
 
 using namespace std;
 
-TAnaCand::TAnaCand() { 
+TAnaCand::TAnaCand(int index) {
   clear();
+  fIndex = index;
 }
 
 TAnaCand::~TAnaCand() {
