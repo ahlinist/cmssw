@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.10 $
+ * \version $Revision: 1.11 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.10 2010/04/08 16:50:20 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.11 2010/06/06 21:56:03 friis Exp $
  *
  */
 
@@ -101,6 +101,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// access to missing transverse momentum
   const reco::CandidatePtr met() const { return met_; }
+  double sumEtFromMEt() const { return edm::Ptr<reco::MET>(met_)->sumEt(); }
 
   // get sum of charge of visible decay products
   // (not need to declare it in CompositePtrCandidateT1T2MEt; 
