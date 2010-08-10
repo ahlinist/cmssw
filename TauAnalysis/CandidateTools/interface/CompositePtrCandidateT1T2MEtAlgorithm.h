@@ -36,7 +36,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
  public:
 
-  CompositePtrCandidateT1T2MEtAlgorithm(const edm::ParameterSet& cfg)
+  CompositePtrCandidateT1T2MEtAlgorithm(const edm::ParameterSet& cfg):svMassRecoFitter_(cfg)
   {
     recoMode_ = cfg.getParameter<std::string>("recoMode");
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);

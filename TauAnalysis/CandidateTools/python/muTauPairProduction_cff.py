@@ -7,7 +7,8 @@ from TauAnalysis.CandidateTools.resolutions_cfi import *
 # produce combinations of muon + tau-jet pairs
 #--------------------------------------------------------------------------------
 
-allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
+allMuTauPairs = cms.EDProducer(
+    "PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
     srcLeg1 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
     srcLeg2 = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),                               
@@ -18,6 +19,12 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     srcGenParticles = cms.InputTag('genParticles'),                  
     recoMode = cms.string(""),
     doSVreco = cms.bool(True),                          
+    SVOptions = cms.PSet(
+        useMEtInFit = cms.bool(True),
+        useLeg1TrackingInFit = cms.bool(True),
+        useLeg2TrackingInFit = cms.bool(True),
+        correctPrimaryVertexInFit = cms.bool(False)
+    ),
     collinearApproxMassCompatibility = cms.PSet(
         mZ = cms.PSet(
             resonanceMass = cms.double(91.2),
