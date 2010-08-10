@@ -177,15 +177,15 @@ bool VGammaLeptonMETEventSelector::operator() ( reco::CompositeCandidate const& 
    
   if(mu && met) {
     ret = (bool)muid(*mu,evt) && (bool)metid(*met,evt);
-    ret = (acop(leptonMET) > minAcoplanarity);
-    ret = (mt(leptonMET)   > minMT);
+    ret *= (acop(leptonMET) > minAcoplanarity);
+    ret *= (mt(leptonMET)   > minMT);
   }
 						      
   
   if(ele && met) {
     ret = (bool)eid(*ele,evt) && (bool)metid(*met,evt);
-    ret = (acop(leptonMET) > minAcoplanarity);
-    ret = (mt(leptonMET)   > minMT);
+    ret *= (acop(leptonMET) > minAcoplanarity);
+    ret *= (mt(leptonMET)   > minMT);
   }
   
 
