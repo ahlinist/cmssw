@@ -195,6 +195,13 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hCollinearApproxX2_ = book1D("CollinearApproxX2", "Collinear Approximation X_{2}", 100, -2.5, +2.5);
 
   hCDFmethodMass_ = book1D("CDFmethodMass", "CDF Method Mass", 50, 0., 250.);
+
+  // MET resolution plots
+  hMETresXvsSumEt_ = book2D("METresXvsSumEt", "MET X resolution", 80, -20, 20, 50, 0, 500);
+  hMETresYvsSumEt_ = book2D("METresYvsSumEt", "MET Y resolution", 80, -20, 20, 50, 0, 500);
+
+  hMETresParMuonvsSumEt_ = book2D("METresParMuonvsSumEt", "MET resolution parallel to leg 1", 80, -20, 20, 50, 0, 500);
+  hMETresPerpMuonvsSumEt_ = book2D("METresPerpMuonvsSumEt", "MET resolution perp. to leg 1", 80, -20, 20, 50, 0, 500);
   
   hMt12MET_ = book1D("Mt12MET", "Mass_{T 1,2,MET}", 50, 0., 250.);
   
@@ -460,6 +467,21 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hDiTauCandidatePhi_->Fill(diTauCandidate->phi(), weight);
     hDiTauCandidateCharge_->Fill(diTauCandidate->charge(), weight);
     hDiTauCandidateMass_->Fill(diTauCandidate->mass(), weight);
+
+    // MET resolution plots
+    if(diTauCandidate->met().isNonnull()){
+       reco::Candidate::LorentzVector residualMET = diTauCandidate->p4InvisGen() - diTauCandidate->met()->p4();
+
+       double sumEt = diTauCandidate->sumEtFromMEt();
+       hMETresXvsSumEt_->Fill(residualMET.px(), sumEt);
+       hMETresYvsSumEt_->Fill(residualMET.py(), sumEt);
+
+       reco::Candidate::LorentzVector leg1P4 = diTauCandidate->leg1()->p4();
+       hMETresParMuonvsSumEt_->Fill(
+             (residualMET.px()*leg1P4.px() + residualMET.py()*leg1P4.py())/leg1P4.pt(), sumEt);
+       hMETresPerpMuonvsSumEt_->Fill(
+             (residualMET.px()*leg1P4.py() + residualMET.py()*leg1P4.px())/leg1P4.pt(), sumEt);
+    }
 
     double minLogLikelihood = 1.e+6;
 
