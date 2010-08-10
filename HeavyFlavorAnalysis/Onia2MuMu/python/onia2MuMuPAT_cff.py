@@ -1,272 +1,179 @@
 import FWCore.ParameterSet.Config as cms
 
-##    __  __                        ____      _       __  __                       
-##   |  \/  | ___ _ __ __ _  ___   / ___|__ _| | ___ |  \/  |_   _  ___  _ __  ___ 
-##   | |\/| |/ _ \ '__/ _` |/ _ \ | |   / _` | |/ _ \| |\/| | | | |/ _ \| '_ \/ __|
-##   | |  | |  __/ | | (_| |  __/ | |__| (_| | | (_) | |  | | |_| | (_) | | | \__ \
-##   |_|  |_|\___|_|  \__, |\___|  \____\__,_|_|\___/|_|  |_|\__,_|\___/|_| |_|___/
-##                    |___/                                                        
-##   
-## ==== Merge CaloMuons into the collection of reco::Muons  ====
-from RecoMuon.MuonIdentification.calomuons_cfi import calomuons;
-mergedMuons = cms.EDProducer("CaloMuonMerger",
-    muons     = cms.InputTag("muons"), 
-    caloMuons = cms.InputTag("calomuons"),
-    minCaloCompatibility = calomuons.minCaloCompatibility
-)
+def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
+    # Setup the process
+    process.options = cms.untracked.PSet(
+        wantSummary = cms.untracked.bool(True),
+        # fileMode = cms.untracked.string('MERGE'),
+    )
+    process.load("FWCore.MessageService.MessageLogger_cfi")
+    process.MessageLogger.cerr.FwkReport.reportEvery = 100
+    process.load('Configuration.StandardSequences.GeometryExtended_cff')
+    process.load("Configuration.StandardSequences.Reconstruction_cff")
+    process.load("Configuration.StandardSequences.MagneticField_cff")
+    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+    process.GlobalTag.globaltag = GlobalTag
 
-##    __  __  ____   _____           _   _     
-##   |  \/  |/ ___| |_   _| __ _   _| |_| |__  
-##   | |\/| | |       | || '__| | | | __| '_ \ 
-##   | |  | | |___    | || |  | |_| | |_| | | |
-##   |_|  |_|\____|   |_||_|   \__,_|\__|_| |_|
-##                                             
-##   
-from PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi import muonMatch
-muonMatch.src = 'mergedMuons'
-
-##    __  __       _          ____   _  _____   __  __                       
-##   |  \/  | __ _| | _____  |  _ \ / \|_   _| |  \/  |_   _  ___  _ __  ___ 
-##   | |\/| |/ _` | |/ / _ \ | |_) / _ \ | |   | |\/| | | | |/ _ \| '_ \/ __|
-##   | |  | | (_| |   <  __/ |  __/ ___ \| |   | |  | | |_| | (_) | | | \__ \
-##   |_|  |_|\__,_|_|\_\___| |_| /_/   \_\_|   |_|  |_|\__,_|\___/|_| |_|___/
-##                                                                           
-##   
-### ==== Make PAT Muons ====
-import PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi
-patMuonsWithoutTrigger = PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi.patMuons.clone(
-    muonSource = 'mergedMuons',
-    # embed the tracks, so we don't have to carry them around
-    embedTrack          = True,
-    embedCombinedMuon   = True,
-    embedStandAloneMuon = True,
-    embedCaloMETMuonCorrs = cms.bool(False),
-    embedTcMETMuonCorrs   = cms.bool(False),
-    # then switch off some features we don't need
-    #addTeVRefits = False, ## <<--- this doesn't work. PAT bug ??
-    embedPickyMuon = False,
-    embedTpfmsMuon = False, 
-    userIsolation = cms.PSet(),   # no extra isolation beyond what's in reco::Muon itself
-    isoDeposits = cms.PSet(), # no heavy isodeposits
-    addGenMatch = True,       # no mc: T&P doesn't take it from here anyway.
-    embedGenMatch = True,
-    genParticleMatch = 'muonMatch'
-)
-
-##    _____     _                         __  __       _       _     
-##   |_   _| __(_) __ _  __ _  ___ _ __  |  \/  | __ _| |_ ___| |__  
-##     | || '__| |/ _` |/ _` |/ _ \ '__| | |\/| |/ _` | __/ __| '_ \ 
-##     | || |  | | (_| | (_| |  __/ |    | |  | | (_| | || (__| | | |
-##     |_||_|  |_|\__, |\__, |\___|_|    |_|  |_|\__,_|\__\___|_| |_|
-##                |___/ |___/                                        
-##   
-### ==== Unpack trigger, and match ====
-from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi import patTrigger
-patTrigger.onlyStandAlone = True
-
-### ==== Then perform a match for all HLT triggers of interest
-from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import muonTriggerMatchHLTMu3
-muonTriggerMatchHLTMu3.src = 'patMuonsWithoutTrigger'
-muonTriggerMatchHLTMu3.andOr = False # i.e. 'AND'
-### == For HLT triggers which are just L1s, we need a different matcher
-from MuonAnalysis.MuonAssociators.muonHLTL1Match_cfi import muonHLTL1Match
-muonMatchL1 = muonHLTL1Match.clone(
-    src     = muonTriggerMatchHLTMu3.src,
-    matched = muonTriggerMatchHLTMu3.matched,
-    maxDeltaR     = cms.double(1.2),
-    maxDeltaEta   = cms.double(0.2),
-    fallbackToME1 = cms.bool(True),
-)
-
-### Single Mu L1
-muonMatchHLTL1MuOpen = muonMatchL1.clone(pathNames = [ 'HLT_L1MuOpen' ], filterLabels = ['hltL1MuOpenL1Filtered0' ])
-### Single Mu L2
-muonMatchHLTL2Mu0 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_L2Mu0" ], filterLabels = ['hltL2Mu0L2Filtered0'] )
-muonMatchHLTL2Mu3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_L2Mu3" ], filterLabels = ['hltSingleMu3L2Filtered3'] )
-### Single Mu L3
-muonMatchHLTMu3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3" ], filterLabels = ['hltSingleMu3L3Filtered3'] )
-muonMatchHLTMu5 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5" ], filterLabels = ['hltSingleMu5L3Filtered5'] )
-
-### Double Mu L1
-muonMatchHLTL1DoubleMuOpen = muonMatchL1.clone(pathNames = [ 'HLT_L1DoubleMuOpen' ], filterLabels = ['hltDoubleMuLevel1PathL1OpenFiltered' ])
-### Double Mu L2
-muonMatchHLTL2DoubleMu0 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_L2DoubleMu0" ], filterLabels = ['hltDiMuonL2PreFiltered0'] )
-### Double Mu L3
-muonMatchHLTDoubleMu0 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_DoubleMu0" ], filterLabels = ['hltDiMuonL3PreFiltered0'] )
-muonMatchHLTDoubleMu3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_DoubleMu3" ], filterLabels = ['hltDiMuonL3PreFiltered']  )
-
-### Mu L3 + L1MuOpen: 
-#---- L3 part
-muonMatchHLTMu0L1MuOpenL3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu0_L1MuOpen" ], filterLabels = [ 'hltMu0L1MuOpenL3Filtered0' ])
-muonMatchHLTMu3L1MuOpenL3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3_L1MuOpen" ], filterLabels = [ 'hltMu3L1MuOpenL3Filtered3' ])
-muonMatchHLTMu5L1MuOpenL3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5_L1MuOpen" ], filterLabels = [ 'hltMu5L1MuOpenL3Filtered5' ])
-#---- L1 part
-muonMatchHLTMu0L1MuOpenL1 = muonMatchL1.clone(pathNames = [ 'HLT_Mu0_L1MuOpen' ], filterLabels = ['hltMu0L1MuOpenL1Filtered0' ])
-muonMatchHLTMu3L1MuOpenL1 = muonMatchL1.clone(pathNames = [ 'HLT_Mu3_L1MuOpen' ], filterLabels = ['hltMu3L1MuOpenL1Filtered0' ])
-muonMatchHLTMu5L1MuOpenL1 = muonMatchL1.clone(pathNames = [ 'HLT_Mu5_L1MuOpen' ], filterLabels = ['hltMu5L1MuOpenL1Filtered0' ])
-
-### Mu L3 + L2Mu0
-#---- L3 part
-muonMatchHLTMu0L2Mu0L3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu0_L2Mu0" ], filterLabels = [ 'hltMu0L2Mu0L3Filtered0' ])
-muonMatchHLTMu3L2Mu0L3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3_L2Mu0" ], filterLabels = [ 'hltMu3L2Mu0L3Filtered0' ])
-muonMatchHLTMu5L2Mu0L3 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5_L2Mu0" ], filterLabels = [ 'hltMu5L2Mu0L3Filtered0' ])
-#---- L2 part (actually, they're all the same (L2DoubleMu0)
-muonMatchHLTMu0L2Mu0L2 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu0_L2Mu0" ], filterLabels = [ 'hltDiMuonL2PreFiltered0' ])
-muonMatchHLTMu3L2Mu0L2 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu3_L2Mu0" ], filterLabels = [ 'hltDiMuonL2PreFiltered0' ])
-muonMatchHLTMu5L2Mu0L2 = muonTriggerMatchHLTMu3.clone(pathNames = [ "HLT_Mu5_L2Mu0" ], filterLabels = [ 'hltDiMuonL2PreFiltered0' ])
-
-### Mu L3 + Track
-#---- muon part
-muonMatchHLTMu0Tk0Mu  = muonTriggerMatchHLTMu3.clone(
-    pathNames      = [ "HLT_Mu0_Track0_Jpsi" ], 
-    filterLabels   = [ 'hltMu0TrackJpsiTrackMassFiltered' ], 
-    collectionTags = [ 'hltL3MuonCandidates::HLT' ] 
-)
-muonMatchHLTMu3Tk0Mu = muonMatchHLTMu0Tk0Mu.clone(pathNames = [ "HLT_Mu3_Track0_Jpsi" ], filterLabels = [ 'hltMu3TrackJpsiTrackMassFiltered' ])
-muonMatchHLTMu5Tk0Mu = muonMatchHLTMu0Tk0Mu.clone(pathNames = [ "HLT_Mu5_Track0_Jpsi" ], filterLabels = [ 'hltMu5TrackJpsiTrackMassFiltered' ])
-#---- track part 
-# v-- this works and it's easier --v
-muonMatchHLTCtfTrack  = muonTriggerMatchHLTMu3.clone(pathNames = [ "*" ], collectionTags = ['hltMuTrackJpsiCtfTrackCands::HLT'])
-
-
-## ==== Embed ====
-patMuonsWithTrigger = cms.EDProducer( "PATTriggerMatchMuonEmbedder",
-    src     = cms.InputTag(  "patMuonsWithoutTrigger" ),
-    matches = cms.VInputTag( 
-        # HLT Matches
-        cms.InputTag('muonMatchHLTL1MuOpen','propagatedReco'), # fake, will match if and only if he muon did propagate to station 2
-        cms.InputTag('muonMatchHLTL1MuOpen'),
-        cms.InputTag('muonMatchHLTL2Mu0'),
-        cms.InputTag('muonMatchHLTL2Mu3'),
-        cms.InputTag('muonMatchHLTMu3'),
-        cms.InputTag('muonMatchHLTMu5'),
-        cms.InputTag('muonMatchHLTL1DoubleMuOpen'),
-        cms.InputTag('muonMatchHLTL2DoubleMu0'),
-        cms.InputTag('muonMatchHLTDoubleMu0'),
-        cms.InputTag('muonMatchHLTDoubleMu3'),
-        cms.InputTag('muonMatchHLTMu0L1MuOpenL3'),
-        cms.InputTag('muonMatchHLTMu3L1MuOpenL3'),
-        cms.InputTag('muonMatchHLTMu5L1MuOpenL3'),
-        cms.InputTag('muonMatchHLTMu0L1MuOpenL1'),
-        cms.InputTag('muonMatchHLTMu3L1MuOpenL1'),
-        cms.InputTag('muonMatchHLTMu5L1MuOpenL1'),
-        cms.InputTag('muonMatchHLTMu0L2Mu0L3'),
-        cms.InputTag('muonMatchHLTMu3L2Mu0L3'),
-        cms.InputTag('muonMatchHLTMu5L2Mu0L3'),
-        cms.InputTag('muonMatchHLTMu0L2Mu0L2'),
-        cms.InputTag('muonMatchHLTMu3L2Mu0L2'),
-        cms.InputTag('muonMatchHLTMu5L2Mu0L2'),
-        cms.InputTag('muonMatchHLTMu0Tk0Mu'),
-        cms.InputTag('muonMatchHLTMu3Tk0Mu'),
-        cms.InputTag('muonMatchHLTMu5Tk0Mu'),
-        #cms.InputTag('muonMatchHLTMu0Tk0Tk'),
-        #cms.InputTag('muonMatchHLTMu3Tk0Tk'),
-        #cms.InputTag('muonMatchHLTMu5Tk0Tk'),
-        cms.InputTag('muonMatchHLTCtfTrack'),
+    # Drop the DQM stuff on input
+    process.source = cms.Source("PoolSource",
+        inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMConverter_*_*"),
+        fileNames = cms.untracked.vstring()
     )
 
-)
+    # Scraping filter
+    process.scrapingFilter = cms.EDFilter("FilterOutScraping",
+        applyfilter = cms.untracked.bool(True),
+        debugOn = cms.untracked.bool(False),
+        numtrack = cms.untracked.uint32(10),
+        thresh = cms.untracked.double(0.25)
+    )
 
-## ==== Trigger Sequence ====
-patTriggerMatching = cms.Sequence(
-    patTrigger * 
-    ( muonMatchHLTL1MuOpen   +
-      muonMatchHLTL2Mu0      +
-      muonMatchHLTL2Mu3      +
-      muonMatchHLTMu3        +
-      muonMatchHLTMu5        +
-      # symmetric double muons
-      muonMatchHLTL1DoubleMuOpen +
-      muonMatchHLTL2DoubleMu0    +
-      muonMatchHLTDoubleMu0      +
-      muonMatchHLTDoubleMu3      +
-      # mu + l1 mu
-      muonMatchHLTMu0L1MuOpenL3 + 
-      muonMatchHLTMu3L1MuOpenL3 + 
-      muonMatchHLTMu5L1MuOpenL3 + 
-      muonMatchHLTMu0L1MuOpenL1 + 
-      muonMatchHLTMu3L1MuOpenL1 + 
-      muonMatchHLTMu5L1MuOpenL1 + 
-      # mu + l2 mu
-      muonMatchHLTMu0L2Mu0L3 + 
-      muonMatchHLTMu3L2Mu0L3 + 
-      muonMatchHLTMu5L2Mu0L3 + 
-      muonMatchHLTMu0L2Mu0L2 + 
-      muonMatchHLTMu3L2Mu0L2 + 
-      muonMatchHLTMu5L2Mu0L2 + 
-      # mu + track
-      muonMatchHLTMu0Tk0Mu + 
-      muonMatchHLTMu3Tk0Mu + 
-      muonMatchHLTMu5Tk0Mu + 
-      #muonMatchHLTMu0Tk0Tk + 
-      #muonMatchHLTMu3Tk0Tk + 
-      #muonMatchHLTMu5Tk0Tk  
-      muonMatchHLTCtfTrack
-    ) *
-    patMuonsWithTrigger
-)
+    # Merge CaloMuons and General Tracks into the collection of reco::Muons
+    process.load("RecoMuon.MuonIdentification.mergedMuons_cfi")
+    process.mergedMuons.mergeTracks = True
+    process.mergedMuons.tracksCut = '(abs(eta) <= 1.3 && pt > 3.3) || (1.3 < abs(eta) <= 2.2 && p > 2.9) || (2.2 < abs(eta) <= 2.4  && pt > 0.8)'
+    process.mergedMuons.caloMuonsCut = process.mergedMuons.tracksCut
 
-### ==== Apply some final selection (none by default) ====
-patMuons = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("patMuonsWithTrigger"),
-    cut = cms.string(""), 
-)
+    # Prune generated particles
+    process.genOniaDecay = cms.EDProducer("GenParticlePruner",
+        src = cms.InputTag("genParticles"),
+        select = cms.vstring(
+            "keep++ pdgId = 443", # J/psi and its daughters
+            "keep++ pdgId = 100443", # psi' and its daughters
+            "keep++ pdgId = 553", # Upsilon(1S) and its daughters
+            "keep++ pdgId = 100553", # Upsilon (2S,3S) and its daughters
+        )
+    )
 
-### ==== Sequence ====
-patMuonSequence = cms.Sequence( 
-    mergedMuons *
-    muonMatch *
-    patMuonsWithoutTrigger *
-    patTriggerMatching *
-    patMuons  
-)
+    # MC truth matching
+    process.load("PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi")
+    process.muonMatch.src = 'mergedMuons'
+    process.muonMatch.resolveByMatchQuality = True
 
-##    ____  _       __  __                       
-##   |  _ \(_)     |  \/  |_   _  ___  _ __  ___ 
-##   | | | | |_____| |\/| | | | |/ _ \| '_ \/ __|
-##   | |_| | |_____| |  | | |_| | (_) | | | \__ \
-##   |____/|_|     |_|  |_|\__,_|\___/|_| |_|___/
-##                                               
-##   
-import HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi 
+    # Make PAT Muons
+    process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
+    from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import changeRecoMuonInput, useL1MatchingWindowForSinglets, changeTriggerProcessName
+    # with some customization
+    changeRecoMuonInput(process, "mergedMuons")
+    useL1MatchingWindowForSinglets(process)
+    changeTriggerProcessName(process,HLT)
+    process.patMuonsWithoutTrigger.addGenMatch = True
+    process.patMuonsWithoutTrigger.embedGenMatch = True
+    process.patMuonsWithoutTrigger.genParticleMatch = 'muonMatch'
 
-onia2MuMuPatGlbGlb = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
+    # Make a sequence
+    process.patMuonSequence = cms.Sequence(
+        process.scrapingFilter *
+        process.mergedMuons *
+        process.genOniaDecay *
+        process.muonMatch *
+        process.patMuonsWithTriggerSequence
+    )
 
-onia2MuMuPatGlbTrk = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
-onia2MuMuPatGlbTrk.lowerPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon")
+    # Make dimuon candidates
+    process.onia2MuMuPatTrkTrk = cms.EDProducer('Onia2MuMuPAT',
+        muons = cms.InputTag("patMuonsWithTrigger"),
+        beamSpotTag = cms.InputTag("offlineBeamSpot"),
+        primaryVertexTag = cms.InputTag("offlinePrimaryVertices"),
+        higherPuritySelection = cms.string("isGlobalMuon || isTrackerMuon"), ## At least one muon must pass this selection
+        lowerPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon"), ## BOTH muons must pass this selection
+        dimuonSelection  = cms.string("2 < mass && abs(daughter('muon1').innerTrack.dz - daughter('muon2').innerTrack.dz) < 25"), ## The dimuon must pass this selection before vertexing
+        addCommonVertex = cms.bool(True), ## Embed the full reco::Vertex out of the common vertex fit
+        addMuonlessPrimaryVertex = cms.bool(True), ## Embed the primary vertex re-made from all the tracks except the two muons
+        addMCTruth = cms.bool(True),      ## Add the common MC mother of the two muons, if any
+        resolvePileUpAmbiguity = cms.bool(False)   ## Order PVs by their vicinity to the J/psi vertex, not by sumPt                            
+    )
 
-onia2MuMuPatGlbCal = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
-onia2MuMuPatGlbCal.lowerPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon || (track.isNonnull && isCaloMuon)")
+    # check if there is at least one (inclusive) tracker+tracker di-muon
+    process.onia2MuMuPatTrkTrkFilter = cms.EDFilter("CandViewCountFilter",
+        src = cms.InputTag('onia2MuMuPatTrkTrk'),
+        minNumber = cms.uint32(1),
+    )
 
-onia2MuMuPatTrkTrk = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
-onia2MuMuPatTrkTrk.higherPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon")
-onia2MuMuPatTrkTrk.lowerPuritySelection   = cms.string("isGlobalMuon || isTrackerMuon")
+    # the onia2MuMu path
+    process.Onia2MuMuPAT = cms.Path(
+        process.patMuonSequence *
+        process.onia2MuMuPatTrkTrk *
+        process.onia2MuMuPatTrkTrkFilter
+    )
 
-onia2MuMuPatTrkCal = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
-onia2MuMuPatTrkCal.higherPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon")
-onia2MuMuPatTrkCal.lowerPuritySelection   = cms.string("isGlobalMuon || isTrackerMuon || (track.isNonnull && isCaloMuon)")
+    # Make Tag and Probe pairs for efficiency measurements
+    TAG_TRIGGER = "(!triggerObjectMatchesByFilter('hltSingleMu3L3Filtered3').empty())"
+    TAG_TRIGGER += "|| (!triggerObjectMatchesByCollection('hltL3MuonCandidates').empty() && triggerObjectMatchesByCollection('hltL3MuonCandidates').at(0).hasFilterLabel('hltMu3TrackJpsiTrackMassFiltered'))"
+    TAG_TRIGGER += "|| (!triggerObjectMatchesByCollection('hltL3MuonCandidates').empty() && triggerObjectMatchesByCollection('hltL3MuonCandidates').at(0).hasFilterLabel('hltMu5TrackJpsiTrackMassFiltered'))"
+    TAG_TRIGGER += "|| (!triggerObjectMatchesByCollection('hltL3MuonCandidates').empty() && triggerObjectMatchesByCollection('hltL3MuonCandidates').at(0).hasFilterLabel('hltMu3L2Mu0L3Filtered3'))"
+    TAG_TRIGGER += "|| (!triggerObjectMatchesByCollection('hltL3MuonCandidates').empty() && triggerObjectMatchesByCollection('hltL3MuonCandidates').at(0).hasFilterLabel('hltMu5L2Mu0L3Filtered5'))"
 
-onia2MuMuPatArbTrkTrk = HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cfi.onia2MuMuPAT.clone()
-onia2MuMuPatArbTrkTrk.higherPuritySelection  = cms.string("isGlobalMuon || (isTrackerMuon && muonID('TrackerMuonArbitrated'))")
-onia2MuMuPatArbTrkTrk.lowerPuritySelection   = cms.string("isGlobalMuon || (isTrackerMuon && muonID('TrackerMuonArbitrated'))")
+    process.tagMuons = cms.EDFilter("PATMuonSelector",
+        src = cms.InputTag("patMuonsWithTrigger"),
+        cut = cms.string("isGlobalMuon && "+TAG_TRIGGER),
+    )
 
-##    _____           _     
-##   |_   _|__   ___ | |___ 
-##     | |/ _ \ / _ \| / __|
-##     | | (_) | (_) | \__ \
-##     |_|\___/ \___/|_|___/
-##                          
-##   
-def onia2MuMu_isNotMC(process):
-    process.patMuonSequence.remove(muonMatch)
-    process.patMuonsWithoutTrigger.addGenMatch = False
-    process.onia2MuMuPatGlbGlb.addMCTruth = False
-    process.onia2MuMuPatGlbCal.addMCTruth = False
-    process.onia2MuMuPatGlbTrk.addMCTruth = False
-    process.onia2MuMuPatTrkTrk.addMCTruth = False
-    process.onia2MuMuPatTrkCal.addMCTruth = False
- #   process.onia2MuMuPatGlbGlb.addMuonlessPrimaryVertex = False
- #   process.onia2MuMuPatGlbCal.addMuonlessPrimaryVertex = False
- #   process.onia2MuMuPatGlbTrk.addMuonlessPrimaryVertex = False
- #   process.onia2MuMuPatTrkTrk.addMuonlessPrimaryVertex = False
- #   process.onia2MuMuPatTrkCal.addMuonlessPrimaryVertex = False
+    process.probeMuons = cms.EDFilter("PATMuonSelector",
+        src = cms.InputTag("patMuonsWithTrigger"),
+        cut = cms.string("track.isNonnull"),
+    )
+
+    process.tagMuonsMCMatch = cms.EDProducer("MCTruthDeltaRMatcherNew",
+        src = cms.InputTag("tagMuons"),
+        matched = cms.InputTag("genOniaDecay"),
+        pdgId = cms.vint32(13),
+        distMin = cms.double(0.1),
+    )
+
+    process.probeMuonsMCMatch = process.tagMuonsMCMatch.clone(src = "probeMuons")
+
+    process.tpPairs = cms.EDProducer("CandViewShallowCloneCombiner",
+        cut = cms.string('2.6 < mass < 3.5'),
+        decay = cms.string('tagMuons@+ probeMuons@-')
+    )
+
+    # check if there is at least one Tag and Probe pair
+    process.tpPairsFilter = cms.EDFilter("CandViewCountFilter",
+        src = cms.InputTag('tpPairs'),
+        minNumber = cms.uint32(1),
+    )
+    
+    # the Tag and Probe path
+    process.TagAndProbe = cms.Path(
+        process.patMuonSequence *
+        process.tagMuons *
+        process.probeMuons *
+        process.tagMuonsMCMatch *
+        process.probeMuonsMCMatch *
+        process.tpPairs *
+        process.tpPairsFilter
+    )
+
+    # output
+    process.out = cms.OutputModule("PoolOutputModule",
+        fileName = cms.untracked.string('onia2MuMuPAT.root'),
+        outputCommands = cms.untracked.vstring('drop *',
+            'keep *_genOniaDecay_*_Onia2MuMuPAT',                  # generated decay of the Onia
+            'keep patMuons_patMuonsWithTrigger_*_Onia2MuMuPAT',    # All PAT muos including general tracks and matches to triggers
+            'keep patCompositeCandidates_*__Onia2MuMuPAT',         # PAT di-muons
+            'keep patMuons_tagMuons__Onia2MuMuPAT',                # tagMuons for efficiency
+            'keep patMuons_probeMuons__Onia2MuMuPAT',              # probeMuons for efficiency
+            'keep *_tagMuonsMCMatch__Onia2MuMuPAT',                # tagMuons MC matches for efficiency
+            'keep *_probeMuonsMCMatch__Onia2MuMuPAT',              # probeMuons MC matches for efficiency
+            'keep recoCompositeCandidates_*__Onia2MuMuPAT',        # RECO di-muons, tpPairs for efficiency
+            'keep *_offlinePrimaryVertices_*_*',                   # Primary vertices: you want these to compute impact parameters
+            'keep *_offlineBeamSpot_*_*',                          # Beam spot: you want this for the same reason                                   
+            'keep edmTriggerResults_TriggerResults_*_*',           # HLT info, per path (cheap)
+            'keep l1extraL1MuonParticles_l1extraParticles_*_*',    # L1 info (cheap)
+        ),
+        SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('Onia2MuMuPAT', 'TagAndProbe') )
+    )
+    process.e = cms.EndPath(process.out)
+
+    if not Filter:
+        process.out.SelectEvents = cms.untracked.PSet()
+
+    if not MC:
+        process.patMuonSequence.remove(process.genOniaDecay)
+        process.patMuonSequence.remove(process.muonMatch)
+        process.patMuonsWithoutTrigger.addGenMatch = False
+        process.onia2MuMuPatTrkTrk.addMCTruth = False
+        process.TagAndProbe.remove(process.tagMuonsMCMatch)
+        process.TagAndProbe.remove(process.probeMuonsMCMatch)
+
