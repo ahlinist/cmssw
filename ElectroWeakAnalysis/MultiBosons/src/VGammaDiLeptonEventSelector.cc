@@ -156,7 +156,7 @@ bool VGammaDiLeptonEventSelector::operator() ( reco::CompositeCandidate const& d
  
   if(mu1 && mu2) {
     ret = ((bool)muid1(*mu1,evt) && (bool)muid2(*mu2,evt)) || ((bool)muid2(*mu1,evt) && (bool)muid1(*mu2,evt));
-    ret = (diLepton.mass() > minMass) ;
+    ret *= (diLepton.mass() > minMass) ;
   }
   
   const pat::Electron *e1 = dynamic_cast<const pat::Electron*>(diLepton.daughter(0)->masterClonePtr().get());
@@ -164,7 +164,7 @@ bool VGammaDiLeptonEventSelector::operator() ( reco::CompositeCandidate const& d
 
   if(e1 && e2) {
     ret = ((bool)eid1(*e1,evt) && (bool)eid2(*e2,evt)) || ((bool)eid2(*e1,evt) && (bool)eid1(*e2,evt));
-    ret = (diLepton.mass() > minMass) ;
+    ret *= (diLepton.mass() > minMass) ;
   }  
 
   return ret;
