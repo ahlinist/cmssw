@@ -124,6 +124,7 @@ def submitToBatch(configFile = None, channel = None, sample = None,
     	script = """#!/bin/csh
 limit vmem unlim
 cd %(subDir)s
+setenv SCRAM_ARCH slc5_ia32_gcc434
 eval `scramv1 runtime -csh`
 cd -
 cmsRun %(config)s
@@ -139,6 +140,7 @@ end
     	script = """#!/bin/csh
 limit vmem unlim
 cd %(subDir)s
+setenv SCRAM_ARCH slc5_ia32_gcc434
 eval `scramv1 runtime -csh`
 cd -
 cmsRun %(config)s
