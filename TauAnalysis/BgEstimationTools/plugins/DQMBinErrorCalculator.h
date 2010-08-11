@@ -7,8 +7,8 @@
  *  given number of events tested (denominator) and passed (numerator)
  *  in form of two MonitorElements of type float
  *
- *  $Date: 2009/11/27 18:36:05 $
- *  $Revision: 1.1 $
+ *  $Date: 2010/05/18 09:49:23 $
+ *  $Revision: 1.2 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -27,14 +27,18 @@ class DQMBinErrorCalculator : public edm::EDAnalyzer
   {
     explicit cfgEntryBinError(const edm::ParameterSet&);
     std::string meName_numerator_;
+    std::string meName_numeratorErr_;
     std::string meName_denominator_;
+    std::string meName_denominatorErr_;
 
     std::string meName_passed_;
+    std::string meName_passedErr_;
     std::string meName_failed_;
+    std::string meName_failedErr_;
 
     std::string label_;
 
-    mutable bool error_;
+    mutable bool errorFlag_;
   };
 
  public:
