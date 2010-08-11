@@ -131,24 +131,38 @@ void dqmCheckExistence(DQMStore& dqmStore, const std::string& directoryName, con
   }
 }
 
-void dqmRegisterHistogram(DQMStore& dqmStore, TH1* histogram, const std::string& name)
+void dqmRegisterHistogram(DQMStore& dqmStore, TH1* histogram, const std::string& meName_full)
 {
+  std::string meName, dqmDirectory;
+  separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
+  if ( dqmDirectory != "" ) dqmStore.setCurrentFolder(dqmDirectory);
+
   histogram->SetName(histogram->GetName());  
   if ( TH1F* h = dynamic_cast<TH1F*>(histogram) ) {
-    dqmStore.book1D(name, h);
+    dqmStore.book1D(meName, h);
   } else if ( TH1S* h = dynamic_cast<TH1S*>(histogram) ) {
-    dqmStore.book1S(name, h);
+    dqmStore.book1S(meName, h);
   } else if ( TH2F* h = dynamic_cast<TH2F*>(histogram) ) {
-    dqmStore.book2D(name, h);
+    dqmStore.book2D(meName, h);
   } else if ( TH2S* h = dynamic_cast<TH2S*>(histogram) ) {
-    dqmStore.book2S(name, h);
+    dqmStore.book2S(meName, h);
   } else if ( TH3F* h = dynamic_cast<TH3F*>(histogram) ) {
-    dqmStore.book3D(name, h);
+    dqmStore.book3D(meName, h);
   } else if ( TProfile* h = dynamic_cast<TProfile*>(histogram) ) {
-    dqmStore.bookProfile(name, h);
+    dqmStore.bookProfile(meName, h);
   } else if ( TProfile2D* h = dynamic_cast<TProfile2D*>(histogram) ) {
-    dqmStore.bookProfile2D(name, h);
+    dqmStore.bookProfile2D(meName, h);
   }
+}
+
+void dqmRegisterFloat(DQMStore& dqmStore, double meValue, const std::string& meName_full)
+{ 
+  std::string meName, dqmDirectory;
+  separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
+  if ( dqmDirectory != "" ) dqmStore.setCurrentFolder(dqmDirectory);
+
+  MonitorElement* me = dqmStore.bookFloat(meName);
+  me->Fill(meValue);
 }
 
 double getPower_general(const std::string& meName, const std::string& arg, double defaultValue)
@@ -280,7 +294,8 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
     dqmCheckExistence(dqmStore, outputDirectory, meName_output, mode, error);
     if ( error ) return;
 	
-    MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(meName_output));
+    std::string meNameOutput_full = dqmDirectoryName(outputDirectory).append(meName_output);
+    MonitorElement* meOutput = dqmStore.get(meNameOutput_full);
     if ( meOutput ) {
 //--- add histogram to outputHistogram
       //std::cout << "--> adding to existing histogram." << std::endl;
@@ -288,7 +303,7 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
     } else {
 //--- create new outputHistogram
       //std::cout << "--> registering as new histogram." << std::endl;
-      dqmRegisterHistogram(dqmStore, clone.release(), meName_output);
+      dqmRegisterHistogram(dqmStore, clone.release(), meNameOutput_full);
     }
   } else if ( meInput->kind() == MonitorElement::DQM_KIND_INT ) {
     int intValue = meInput->getIntValue();

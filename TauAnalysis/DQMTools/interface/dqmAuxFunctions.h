@@ -28,6 +28,7 @@ std::string dqmSubDirectoryName(const std::string&, const std::string&);
 
 void dqmCheckExistence(DQMStore&, const std::string&, const std::string&, int, int&);
 void dqmRegisterHistogram(DQMStore&, TH1*, const std::string&);
+void dqmRegisterFloat(DQMStore&, double, const std::string&);
 
 void dqmCopyMonitorElement(DQMStore&, const std::string&, const std::string&, const std::string&, const std::string&, 
 			   double, double, int = 1);
