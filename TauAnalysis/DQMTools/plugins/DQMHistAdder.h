@@ -6,8 +6,8 @@
  *  Class to add DQM monitoring elements stored in separate directories in DQMStore
  *  (in order to e.g. compute the total Standard Model expectation)
  *
- *  $Date: 2009/03/17 13:18:45 $
- *  $Revision: 1.2 $
+ *  $Date: 2010/01/28 16:57:27 $
+ *  $Revision: 1.3 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -28,11 +28,19 @@ class DQMHistAdder : public edm::EDAnalyzer
 
   struct cfgEntryAddJob
   {
-    cfgEntryAddJob(const std::string&, const edm::ParameterSet&);
+    cfgEntryAddJob(const edm::ParameterSet&);
+
     void print() const;
-    std::string name_;
+
+    vstring meNames_input_;
+    vstring meNames_inputErr_;
+    std::string meName_output_;
+    std::string meName_outputErr_;
+
     vstring dqmDirectories_input_;
     std::string dqmDirectory_output_;
+
+    int cfgError_;
   };
 
  public:
@@ -42,7 +50,7 @@ class DQMHistAdder : public edm::EDAnalyzer
   virtual void endJob();  
 
  private:
-  std::map<std::string, cfgEntryAddJob> addJobs_;
+  std::vector<cfgEntryAddJob> addJobs_;
   int cfgError_;
 };
 
