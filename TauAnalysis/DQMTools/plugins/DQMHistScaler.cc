@@ -24,12 +24,12 @@ DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
     meName_outputErr_(""),
     scaleFactor_(-1),
     scaleFactorErr_(0.),
-    meNameScaleFactor_(""),
-    meNameScaleFactorErr_(""),    
-    meNameNumerator_(""),
-    meNameNumeratorErr_(""),
-    meNameDenominator_(""),
-    meNameDenominatorErr_(""),
+    meName_scaleFactor_(""),
+    meName_scaleFactorErr_(""),    
+    meName_numerator_(""),
+    meName_numeratorErr_(""),
+    meName_denominator_(""),
+    meName_denominatorErr_(""),
     meType_(""),
     dqmDirectory_factorizedLooseSel_(""),
     dqmDirectory_factorizedTightSel_(""),
@@ -49,39 +49,39 @@ DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
     ++numScales;
   } 
 
-  if ( cfg.exists("meNameScaleFactor") &&
+  if ( cfg.exists("meName_scaleFactor") &&
        cfg.exists("meType") ) {
-    meNameScaleFactor_ = cfg.getParameter<std::string>("meNameScaleFactor"); 
+    meName_scaleFactor_ = cfg.getParameter<std::string>("meName_scaleFactor"); 
 
-    if ( cfg.exists("meNameScaleFactorErr") ) {
-      meNameScaleFactorErr_ = cfg.getParameter<std::string>("meNameScaleFactorErr"); 
+    if ( cfg.exists("meName_scaleFactorErr") ) {
+      meName_scaleFactorErr_ = cfg.getParameter<std::string>("meName_scaleFactorErr"); 
     }
     
     meType_ = cfg.getParameter<std::string>("meType"); 
     
-    //std::cout << " meNameScaleFactor = " << meNameScaleFactor_ << std::endl;
-    //std::cout << " meNameScaleFactorErr = " << meNameScaleFactorErr_ << std::endl;
+    //std::cout << " meName_scaleFactor = " << meName_scaleFactor_ << std::endl;
+    //std::cout << " meName_scaleFactorErr = " << meName_scaleFactorErr_ << std::endl;
     //std::cout << " meType = " << meType_ << std::endl;
 
     ++numScales;
   }
   
-  if ( cfg.exists("meNameNumerator") && cfg.exists("meNameDenominator") && 
+  if ( cfg.exists("meName_numerator") && cfg.exists("meName_denominator") && 
        cfg.exists("meType") ) {
-    meNameNumerator_ = cfg.getParameter<std::string>("meNameNumerator");
-    meNameDenominator_ = cfg.getParameter<std::string>("meNameDenominator");
+    meName_numerator_ = cfg.getParameter<std::string>("meName_numerator");
+    meName_denominator_ = cfg.getParameter<std::string>("meName_denominator");
 
-    if ( cfg.exists("meNameNumeratorErr") && cfg.exists("meNameDenominatorErr") ) {
-      meNameNumeratorErr_ = cfg.getParameter<std::string>("meNameNumeratorErr");
-      meNameDenominatorErr_ = cfg.getParameter<std::string>("meNameDenominatorErr");
+    if ( cfg.exists("meName_numeratorErr") && cfg.exists("meName_denominatorErr") ) {
+      meName_numeratorErr_ = cfg.getParameter<std::string>("meName_numeratorErr");
+      meName_denominatorErr_ = cfg.getParameter<std::string>("meName_denominatorErr");
     }
 
     meType_ = cfg.getParameter<std::string>("meType");
     
-    //std::cout << " meNameNumerator = " << meNameNumerator_ << std::endl;
-    //std::cout << " meNameNumeratorErr = " << meNameNumeratorErr_ << std::endl;
-    //std::cout << " meNameDenominator = " << meNameDenominator_ << std::endl;
-    //std::cout << " meNameDenominatorErr = " << meNameDenominatorErr_ << std::endl;
+    //std::cout << " meName_numerator = " << meName_numerator_ << std::endl;
+    //std::cout << " meName_numeratorErr = " << meName_numeratorErr_ << std::endl;
+    //std::cout << " meName_denominator = " << meName_denominator_ << std::endl;
+    //std::cout << " meName_denominatorErr = " << meName_denominatorErr_ << std::endl;
     //std::cout << " meType = " << meType_ << std::endl;
    
     if ( cfg.exists("dqmDirectory_factorizedLooseSel") &&
@@ -129,8 +129,8 @@ DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
 //    configuration parameters are defined 
   if ( numScales != 1 ) {
     edm::LogError("DQMHistScaler") 
-      << " Need to specify either Configuration parameter 'scaleFactor', 'meNameScaleFactor' or"
-      << " 'meNameNumerator' and 'meNameDenominator' !!";
+      << " Need to specify either Configuration parameter 'scaleFactor', 'meName_scaleFactor' or"
+      << " 'meName_numerator' and 'meName_denominator' !!";
     cfgError_ = 1;
   } 
 }
@@ -247,34 +247,34 @@ double getMonitorElementNorm(DQMStore& dqmStore,
 //}
 
 double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
-		const std::string& meNameNumerator, const std::string& meNameNumeratorErr,
-		const std::string& meNameDenominator, const std::string& meNameDenominatorErr,
+		const std::string& meName_numerator, const std::string& meName_numeratorErr,
+		const std::string& meName_denominator, const std::string& meName_denominatorErr,
 		const std::string& meType,
 		double& ratioErr, int& errorFlag)
 {
   std::cout << "<getRatio>:" << std::endl;
-  std::cout << " meNameNumerator = " << meNameNumerator << std::endl;
-  std::cout << " meNameNumeratorErr = " << meNameNumerator << std::endl;
-  std::cout << " meNameDenominator = " << meNameDenominator << std::endl;
-  std::cout << " meNameDenominatorErr = " << meNameDenominatorErr << std::endl;
+  std::cout << " meName_numerator = " << meName_numerator << std::endl;
+  std::cout << " meName_numeratorErr = " << meName_numerator << std::endl;
+  std::cout << " meName_denominator = " << meName_denominator << std::endl;
+  std::cout << " meName_denominatorErr = " << meName_denominatorErr << std::endl;
     
   double dummy;
 
   double numerator, numeratorErr;
-  std::string meNameNumerator_full = dqmDirectoryName(dqmDirectory).append(meNameNumerator);
-  numerator = getMonitorElementNorm(dqmStore, meNameNumerator_full, meType, numeratorErr, errorFlag);
-  if ( meNameNumeratorErr != "" ) {
-    std::string meNameNumeratorErr_full = dqmDirectoryName(dqmDirectory).append(meNameNumeratorErr);
-    numeratorErr = getMonitorElementNorm(dqmStore, meNameNumeratorErr_full, meType, dummy, errorFlag);
+  std::string meName_numerator_full = dqmDirectoryName(dqmDirectory).append(meName_numerator);
+  numerator = getMonitorElementNorm(dqmStore, meName_numerator_full, meType, numeratorErr, errorFlag);
+  if ( meName_numeratorErr != "" ) {
+    std::string meName_numeratorErr_full = dqmDirectoryName(dqmDirectory).append(meName_numeratorErr);
+    numeratorErr = getMonitorElementNorm(dqmStore, meName_numeratorErr_full, meType, dummy, errorFlag);
   }
   std::cout << " numerator = " << numerator << " +/- " << numeratorErr << std::endl;
 
   double denominator, denominatorErr;
-  std::string meNameDenominator_full = dqmDirectoryName(dqmDirectory).append(meNameDenominator);
-  denominator = getMonitorElementNorm(dqmStore, meNameDenominator_full, meType, denominatorErr, errorFlag);
-  if ( meNameDenominatorErr != "" ) {
-    std::string meNameDenominatorErr_full = dqmDirectoryName(dqmDirectory).append(meNameDenominatorErr);
-    denominatorErr = getMonitorElementNorm(dqmStore, meNameDenominatorErr_full, meType, dummy, errorFlag);
+  std::string meName_denominator_full = dqmDirectoryName(dqmDirectory).append(meName_denominator);
+  denominator = getMonitorElementNorm(dqmStore, meName_denominator_full, meType, denominatorErr, errorFlag);
+  if ( meName_denominatorErr != "" ) {
+    std::string meName_denominatorErr_full = dqmDirectoryName(dqmDirectory).append(meName_denominatorErr);
+    denominatorErr = getMonitorElementNorm(dqmStore, meName_denominatorErr_full, meType, dummy, errorFlag);
   }
   std::cout << " denominator = " << denominator << " +/- " << denominatorErr << std::endl;
 
@@ -323,12 +323,12 @@ void DQMHistScaler::endJob()
     if ( cfgScaleJob->scaleFactor_ != -1. ) {
       scaleFactor = cfgScaleJob->scaleFactor_;
       scaleFactorErr = cfgScaleJob->scaleFactorErr_;
-    } else if ( cfgScaleJob->meNameScaleFactor_ != "" ) { 
+    } else if ( cfgScaleJob->meName_scaleFactor_ != "" ) { 
       int errorFlag = 0;
-      scaleFactor = getMonitorElementNorm(dqmStore, cfgScaleJob->meNameScaleFactor_, cfgScaleJob->meType_, scaleFactorErr, errorFlag);
-      if ( cfgScaleJob->meNameScaleFactorErr_ != "" ) {
+      scaleFactor = getMonitorElementNorm(dqmStore, cfgScaleJob->meName_scaleFactor_, cfgScaleJob->meType_, scaleFactorErr, errorFlag);
+      if ( cfgScaleJob->meName_scaleFactorErr_ != "" ) {
 	double dummy;
-	scaleFactorErr = getMonitorElementNorm(dqmStore, cfgScaleJob->meNameScaleFactorErr_, cfgScaleJob->meType_, dummy, errorFlag);
+	scaleFactorErr = getMonitorElementNorm(dqmStore, cfgScaleJob->meName_scaleFactorErr_, cfgScaleJob->meType_, dummy, errorFlag);
       }
       
       if ( errorFlag ) {
@@ -339,22 +339,22 @@ void DQMHistScaler::endJob()
     } else {
       int errorFlag = 0;
       
-      const std::string& meNameNumerator = cfgScaleJob->meNameNumerator_;
-      const std::string& meNameNumeratorErr = cfgScaleJob->meNameNumeratorErr_;
-      const std::string& meNameDenominator = cfgScaleJob->meNameDenominator_;
-      const std::string& meNameDenominatorErr = cfgScaleJob->meNameDenominatorErr_;
+      const std::string& meName_numerator = cfgScaleJob->meName_numerator_;
+      const std::string& meName_numeratorErr = cfgScaleJob->meName_numeratorErr_;
+      const std::string& meName_denominator = cfgScaleJob->meName_denominator_;
+      const std::string& meName_denominatorErr = cfgScaleJob->meName_denominatorErr_;
       const std::string& meType = cfgScaleJob->meType_;
 
       if ( cfgScaleJob->dqmDirectory_factorizedLooseSel_ != "" &&
 	   cfgScaleJob->dqmDirectory_factorizedTightSel_ != "" ) {
 	double efficiencyLooseSel, efficiencyErrLooseSel;
 	efficiencyLooseSel = getRatio(dqmStore, cfgScaleJob->dqmDirectory_factorizedLooseSel_,
-				      meNameNumerator, meNameNumeratorErr, meNameDenominator, meNameDenominatorErr, meType,
+				      meName_numerator, meName_numeratorErr, meName_denominator, meName_denominatorErr, meType,
 				      efficiencyErrLooseSel, errorFlag);
 	
 	double efficiencyTightSel, efficiencyErrTightSel;
 	efficiencyTightSel = getRatio(dqmStore, cfgScaleJob->dqmDirectory_factorizedTightSel_,
-				      meNameNumerator, meNameNumeratorErr, meNameDenominator, meNameDenominatorErr, meType,
+				      meName_numerator, meName_numeratorErr, meName_denominator, meName_denominatorErr, meType,
 				      efficiencyErrTightSel, errorFlag);
 	
 	scaleFactor = ( efficiencyLooseSel > 0. ) ? efficiencyTightSel/efficiencyLooseSel : 0.;
@@ -364,7 +364,7 @@ void DQMHistScaler::endJob()
 	scaleFactorErr = scaleFactor*TMath::Sqrt(relErr2);
       } else {
 	scaleFactor = getRatio(dqmStore, "",
-			       meNameNumerator, meNameNumeratorErr, meNameDenominator, meNameDenominatorErr, meType,
+			       meName_numerator, meName_numeratorErr, meName_denominator, meName_denominatorErr, meType,
 			       scaleFactorErr, errorFlag);
       }
 
