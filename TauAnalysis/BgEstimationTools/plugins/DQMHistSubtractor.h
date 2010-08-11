@@ -6,7 +6,7 @@
  *  Class to produce histogram computed as
  *  difference of two other histograms
  *
- *  $Date: 2009/01/21 17:34:57 $
+ *  $Date: 2009/08/13 15:02:09 $
  *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
@@ -24,9 +24,16 @@ class DQMHistSubtractor : public edm::EDAnalyzer
 {
   struct jobEntryType
   { 
-    std::string meNameMinuend_;
-    std::string meNameSubtrahend_;
-    std::string meNameDifference_;
+    jobEntryType(const edm::ParameterSet&);
+
+    std::string meName_minuend_;
+    std::string meName_minuendErr_;
+
+    std::string meName_subtrahend_;
+    std::string meName_subtrahendErr_;
+
+    std::string meName_difference_;
+    std::string meName_differenceErr_;
   };
 
  public:
