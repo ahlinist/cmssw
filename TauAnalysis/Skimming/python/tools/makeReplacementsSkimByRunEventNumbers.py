@@ -35,7 +35,7 @@
 #
 #--------------------------------------------------------------------------------
 
-def makeReplacementsSkimByRunEventNumbers(channel = None, sample = None, replacements = None):
+def makeReplacementsSkimByRunEventNumbers(channel = None, sample = None, type = None, replacements = None):
 
     # check that channel, sample and replacements parameters are defined and non-empty
     if channel is None:
