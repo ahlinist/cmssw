@@ -68,7 +68,7 @@ DQMHistNormalizer::DQMHistNormalizer(const edm::ParameterSet& cfg)
     jobs_.push_back(jobEntry);
   } 
   
-  norm_ = cfg.getParameter<double>("norm");
+  norm_ = cfg.exists("norm") ? cfg.getParameter<double>("norm") : 1.;
 }
 
 DQMHistNormalizer::~DQMHistNormalizer() 
@@ -100,11 +100,9 @@ void addNormalizedHistogram(DQMStore& dqmStore,
   std::auto_ptr<TH1> histoOutput(dynamic_cast<TH1*>(histoInput->Clone()));
   if ( !histoOutput->GetSumw2N()      ) histoOutput->Sumw2();
   if (  histoOutput->Integral() != 0. ) histoOutput->Scale(norm/histoOutput->Integral());
-    
-  std::string outputHistogramName, outputHistogramDirectory;
-  separateMonitorElementFromDirectoryName(meNameOutput_full, outputHistogramName, outputHistogramDirectory);
-  if ( outputHistogramDirectory != "" ) dqmStore.setCurrentFolder(outputHistogramDirectory);
-  dqmRegisterHistogram(dqmStore, histoOutput.release(), outputHistogramName);
+
+//--- register normalized histogram as MonitorElement in DQMStore    
+  dqmRegisterHistogram(dqmStore, histoOutput.release(), meNameOutput_full);
 }
 
 void addNormalizedHistogramRecursively(DQMStore& dqmStore, 
