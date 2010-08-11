@@ -116,7 +116,7 @@ void DQMBinErrorCalculator::endJob()
 	std::cout << " failed = " << failed << " +/- " << failedErr << std::endl;
 
 	if ( denominator != 0. ) 
-	  efficiencyErr = TMath::Sqrt(TMath::Power(failed*passedErr, 2) + TMath::Power(passed*failedErr, 2))/denominator;
+	  efficiencyErr = TMath::Sqrt(TMath::Power(failed*passedErr, 2) + TMath::Power(passed*failedErr, 2))/(denominator*denominator);
       } else {
 	std::cout << " passed = " << passed << std::endl;
 	std::cout << " failed = " << failed << std::endl;  
@@ -141,7 +141,7 @@ void DQMBinErrorCalculator::endJob()
     if ( plot->label_ != "" ) std::cout << "(" << plot->label_ << ")";
     std::cout << " = " << efficiency*100. 
 	      << " + " << efficiency_binErrUp*100. << " - " << efficiency_binErrDown*100. << " ('stat.')";
-    if ( efficiencyErr > 0. ) std::cout << " +/- " << efficiencyErr << " ('sys.')";
+    if ( efficiencyErr > 0. ) std::cout << " +/- " << efficiencyErr*100. << " ('sys.')";
     std::cout << " %" << std::endl;
 
     double N = denominator;
