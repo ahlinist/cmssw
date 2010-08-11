@@ -472,7 +472,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     if(diTauCandidate->met().isNonnull()){
        reco::Candidate::LorentzVector residualMET = diTauCandidate->p4InvisGen() - diTauCandidate->met()->p4();
 
-       double sumEt = diTauCandidate->sumEtFromMEt();
+       double sumEt = diTauCandidate->met()->sumEt();
        hMETresXvsSumEt_->Fill(residualMET.px(), sumEt);
        hMETresYvsSumEt_->Fill(residualMET.py(), sumEt);
 
