@@ -208,6 +208,72 @@ double f_p1a3cb(double *x, double *par) {
   double fitval = cb1 + cb2 + cb3 + f_p1(x, &par[9]);
   return fitval;
 
+}
+
+// ----------------------------------------------------------------------
+double f_p2a3cb(double *x, double *par) {
+  // par[0]:  mean of Ups(1S) CB
+  // par[1]:  sigma of Ups(1S) CB
+  // par[2]:  alpha, crossover point of Ups(1S), Ups(2S), Ups(3S) CB
+  // par[3]:  n, length of tail of Ups(1S), Ups(2S), Ups(3S) CB
+  // par[4]:  N1, normalization of Ups(1S) CB
+  // par[5]:  mean of Ups(2S) and (when scaled) Ups(3S) CB
+  // par[6]:  sigma of Ups(2S) and (when scaled) Ups(3S) Ups(3S) CB
+  // par[7]:  N2, normalization of Ups(2S) CB 
+  // par[8]:  N3, normalization of Ups(3S) CB
+  // par[8];  par 0 of pol1
+  // par[9];  par 1 of pol1
+  // par[10]; par 2 of pol1
+
+
+  double cb1(0.), cb2(0.), cb3(0.);
+  double exponent1(0.), exponent2(0.), exponent3(0.);
+  const double scale   = 10.355/10.02;
+
+  if (x[0] > par[0] - par[2]*par[1]) {
+    exponent1 = (x[0] - par[0])/par[1];
+    cb1 = TMath::Exp(-exponent1*exponent1/2.);
+  } else {
+    double nenner1  = TMath::Power(par[3]/par[2], par[3])*TMath::Exp(-par[2]*par[2]/2.);
+    double zaehler1 = (par[0] - x[0])/par[1] + par[3]/par[2] - par[2];
+    zaehler1 = TMath::Power(zaehler1, par[3]);
+    cb1= nenner1/zaehler1;
+  }
+
+  if (par[4] > 0.) {
+    cb1 *= par[4];
+  }
+
+  if (x[0] > par[5] - par[2]*par[6]) {
+    exponent2 = (x[0] - par[5])/par[6];
+    cb2 = TMath::Exp(-exponent2*exponent2/2.);
+  } else {
+    double nenner2  = TMath::Power(par[3]/par[2], par[3])*TMath::Exp(-par[2]*par[2]/2.);
+    double zaehler2 = (par[5] - x[0])/par[6] + par[3]/par[2] - par[2];
+    zaehler2 = TMath::Power(zaehler2, par[3]);
+    cb2= nenner2/zaehler2;
+  }
+
+  if (par[7] > 0.) {
+    cb2 *= par[7];
+  }
+
+  if (x[0] > (scale*par[5]) - (par[2]*scale*par[6])) {
+    exponent3 = (x[0] - (scale*par[5]))/(scale*par[6]);
+    cb3 = TMath::Exp(-exponent3*exponent3/2.);
+  } else {
+    double nenner3  = TMath::Power(par[3]/par[2], par[3])*TMath::Exp(-par[2]*par[2]/2.);
+    double zaehler3 = (scale*par[5] - x[0])/(scale*par[6]) + par[3]/par[2] - par[2];
+    zaehler3 = TMath::Power(zaehler3, par[3]);
+    cb3= nenner3/zaehler3;
+  }
+
+  if (par[8] > 0.) {
+    cb3 *= par[8];
+  }
+
+  double fitval = cb1 + cb2 + cb3 + f_p2(x, &par[9]);
+  return fitval;
 
 }
 

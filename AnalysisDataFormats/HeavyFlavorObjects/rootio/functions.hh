@@ -19,6 +19,7 @@ double f_p2acb(double *x, double *par);
 double f_cbaG(double *x, double *par);
 double f_p1acbaG(double *x, double *par);
 double f_p1a3cb(double *x, double *par);
+double f_p2a3cb(double *x, double *par);
 
 // Novosibirsk
 double f_fnov(double *x, double *par);
