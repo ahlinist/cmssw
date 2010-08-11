@@ -184,8 +184,9 @@ double getPower_general(const std::string& meName, const std::string& arg, doubl
     return atof(power_string.data());
   }
 
-  edm::LogWarning ("getPower_general") << " Failed to decode power for argument " << arg 
-				       <<  " --> returning default value = " << defaultValue << " !!";
+  edm::LogWarning ("getPower_general") 
+    << " Failed to decode power for argument " << arg << " in meName = " << meName
+    <<  " --> returning default value = " << defaultValue << " !!";
   return defaultValue;
 }
 
