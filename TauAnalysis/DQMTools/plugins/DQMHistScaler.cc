@@ -173,8 +173,8 @@ double getMonitorElementNorm(DQMStore& dqmStore,
 			     const std::string& meName_full, const std::string& meType, 
 			     double& normErr, int& errorFlag)
 {
-  std::cout << "<getMonitorElementNorm>:" << std::endl;
-  std::cout << " meName_full = " << meName_full << std::endl;
+  //std::cout << "<getMonitorElementNorm>:" << std::endl;
+  //std::cout << " meName_full = " << meName_full << std::endl;
 
   std::string meName, dqmDirectory;
   separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
@@ -252,11 +252,11 @@ double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
 		const std::string& meType,
 		double& ratioErr, int& errorFlag)
 {
-  std::cout << "<getRatio>:" << std::endl;
-  std::cout << " meName_numerator = " << meName_numerator << std::endl;
-  std::cout << " meName_numeratorErr = " << meName_numerator << std::endl;
-  std::cout << " meName_denominator = " << meName_denominator << std::endl;
-  std::cout << " meName_denominatorErr = " << meName_denominatorErr << std::endl;
+  //std::cout << "<getRatio>:" << std::endl;
+  //std::cout << " meName_numerator = " << meName_numerator << std::endl;
+  //std::cout << " meName_numeratorErr = " << meName_numerator << std::endl;
+  //std::cout << " meName_denominator = " << meName_denominator << std::endl;
+  //std::cout << " meName_denominatorErr = " << meName_denominatorErr << std::endl;
     
   double dummy;
 
@@ -267,7 +267,7 @@ double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
     std::string meName_numeratorErr_full = dqmDirectoryName(dqmDirectory).append(meName_numeratorErr);
     numeratorErr = getMonitorElementNorm(dqmStore, meName_numeratorErr_full, meType, dummy, errorFlag);
   }
-  std::cout << " numerator = " << numerator << " +/- " << numeratorErr << std::endl;
+  //std::cout << " numerator = " << numerator << " +/- " << numeratorErr << std::endl;
 
   double denominator, denominatorErr;
   std::string meName_denominator_full = dqmDirectoryName(dqmDirectory).append(meName_denominator);
@@ -276,14 +276,14 @@ double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
     std::string meName_denominatorErr_full = dqmDirectoryName(dqmDirectory).append(meName_denominatorErr);
     denominatorErr = getMonitorElementNorm(dqmStore, meName_denominatorErr_full, meType, dummy, errorFlag);
   }
-  std::cout << " denominator = " << denominator << " +/- " << denominatorErr << std::endl;
+  //std::cout << " denominator = " << denominator << " +/- " << denominatorErr << std::endl;
 
   double ratio = ( denominator > 0. ) ? numerator/denominator : 0.;
   double relErr2 = 0.;
   if ( numerator   > 0. ) relErr2 += TMath::Power(numeratorErr/numerator, 2);
   if ( denominator > 0. ) relErr2 += TMath::Power(denominatorErr/denominator, 2);
   ratioErr = ratio*TMath::Sqrt(relErr2);
-  std::cout << " ratio = " << ratio << " +/- " << ratioErr << std::endl;
+  //std::cout << " ratio = " << ratio << " +/- " << ratioErr << std::endl;
 
   return ratio;
 }
@@ -381,7 +381,7 @@ void DQMHistScaler::endJob()
 //    in case specific subdirectories have been specified in configuration parameters, 
 //    copy the specified subdirectories only, else copy all subdirectories 
 //    from dqmDirectory_input to dqmDirectory_output
-    std::cout << "--> scaling histograms..." << std::endl;
+    //std::cout << "--> scaling histograms..." << std::endl;
     if ( cfgScaleJob->meName_input_ != "" && cfgScaleJob->meName_output_ != "" ) {
       std::string meName_input, dqmDirectory_input;
       separateMonitorElementFromDirectoryName(cfgScaleJob->meName_input_, meName_input, dqmDirectory_input);
@@ -405,14 +405,14 @@ void DQMHistScaler::endJob()
 	MonitorElement* meInput = dqmStore.get(cfgScaleJob->meName_input_);
 	MonitorElement* meInputErr = dqmStore.get(cfgScaleJob->meName_inputErr_);
 	
-	std::cout << " meInput = " << meInput << std::endl;
-	std::cout << " meInputErr = " << meInputErr << std::endl;
+	//std::cout << " meInput = " << meInput << std::endl;
+	//std::cout << " meInputErr = " << meInputErr << std::endl;
 
 	MonitorElement* meOutput = dqmStore.get(cfgScaleJob->meName_output_);
 	MonitorElement* meOutputErr = dqmStore.get(cfgScaleJob->meName_outputErr_);
 	
-	std::cout << " meOutput = " << meOutput << std::endl;
-	std::cout << " meOutputErr = " << meOutputErr << std::endl;
+	//std::cout << " meOutput = " << meOutput << std::endl;
+	//std::cout << " meOutputErr = " << meOutputErr << std::endl;
 
 	if ( meInput->kind() == MonitorElement::DQM_KIND_REAL && meInputErr->kind() == MonitorElement::DQM_KIND_REAL ) {
 	  double relErr2 = 0.;
