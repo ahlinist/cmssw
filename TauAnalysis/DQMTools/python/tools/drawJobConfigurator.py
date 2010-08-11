@@ -41,8 +41,6 @@ class drawJobConfigurator(cms._ParameterTypeBase):
             raise ValueError("Invalid 'template' Parameter !!")
         if plot is None and plots is None:
             raise ValueError("Invalid 'plot' and 'plots' Parameters !!")
-        if afterCut is None and beforeCut is None:
-            raise ValueError("Invalid 'afterCuts' and 'beforeCuts' Parameters !!")
 
         # check if need to call recursively
         # in case of multiple plots
@@ -50,7 +48,7 @@ class drawJobConfigurator(cms._ParameterTypeBase):
             for plot in plots:
                 self.add(afterCut = afterCut, beforeCut = beforeCut, plot = plot)
             return
-
+        
         dqmSubDirectory = composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut)
         self.dqmSubDirectories.append(dqmSubDirectory)
         
@@ -67,7 +65,8 @@ class drawJobConfigurator(cms._ParameterTypeBase):
             dqmSubDirectory = self.dqmSubDirectories[iPlot]
 
             dqmDirectory = self.dqmDirectory
-            dqmDirectory += dqmSubDirectory
+            if dqmSubDirectory != "":
+                dqmDirectory += dqmSubDirectory
             if not dqmDirectory.endswith("/"):
                 dqmDirectory += "/"
 
