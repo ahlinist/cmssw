@@ -273,6 +273,8 @@ void makeHistogramPositive(TH1* fluctHistogram)
 
 TH1* makeSubrangeHistogram(const TH1* histogram, const fitRangeEntryCollection* fitRanges)
 {
+  //std::cout << "<makeSubrangeHistogram>:" << std::endl;
+  
   std::string subrangeHistogramName = std::string(histogram->GetName()).append("_subrange");
 
   if ( !fitRanges ) return (TH1*)histogram->Clone(subrangeHistogramName.data());
@@ -294,6 +296,9 @@ TH1* makeSubrangeHistogram(const TH1* histogram, const fitRangeEntryCollection* 
     
     double xMin = fitRanges->at(0).min_;
     double xMax = fitRanges->at(0).max_;
+
+    //std::cout << " xMin = " << xMin << std::endl;
+    //std::cout << " xMax = " << xMax << std::endl;
 
     int numBins = histogram->GetNbinsX();
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
@@ -503,21 +508,27 @@ TH1* makeConcatenatedHistogram(const std::string& histogramName_concatenated, co
     }
   }
 
+  //std::cout << " numBinsTot = " << numBinsTot << std::endl;
+
   TH1* histogram_concatenated = new TH1F(histogramName_concatenated.data(), histogramName_concatenated.data(), 
 					 numBinsTot, -0.5, numBinsTot - 0.5);
 
-  int iBin_concat = 0;
+  int iBin_concat = 1;
 
   for ( unsigned iHistogram = 0; iHistogram < numHistograms; ++iHistogram ) {
     const TH1* histogram_i = histograms[iHistogram];
 
+    double scaleFactor = ( normCorrFactors && integrals[iHistogram] > 0. ) ? 
+      maxNorm/((*normCorrFactors)[iHistogram]*integrals[iHistogram]) : 1.;
+
+    //std::cout << "iHistogram = " << iHistogram << ": integal = " << integrals[iHistogram];
+    //if ( normCorrFactors ) std::cout << ", normCorrFactor = " << (*normCorrFactors)[iHistogram];
+    //std::cout << ", scaleFactor = " << scaleFactor << std::endl;
+    
     int numBins_i = histogram_i->GetNbinsX();
     for ( int iBin_i = 1; iBin_i <= numBins_i; ++iBin_i ) {
       double binContent_i = histogram_i->GetBinContent(iBin_i);
       double binError_i = histogram_i->GetBinError(iBin_i);
-
-      double scaleFactor = ( normCorrFactors && integrals[iHistogram] > 0. ) ? 
-	maxNorm/((*normCorrFactors)[iHistogram]*integrals[iHistogram]) : 1.;
 
       histogram_concatenated->SetBinContent(iBin_concat, scaleFactor*binContent_i);
       histogram_concatenated->SetBinError(iBin_concat, scaleFactor*binError_i);
@@ -526,6 +537,15 @@ TH1* makeConcatenatedHistogram(const std::string& histogramName_concatenated, co
     }
   }
 
+  //std::cout << "histogram_concatenated:" << std::endl;
+  //int numBins_concatenated = histogram_concatenated->GetNbinsX();
+  //for ( int iBin_concatenated = 1; iBin_concatenated <= numBins_concatenated; ++iBin_concatenated ) {
+  //  std::cout << " binX = " << iBin_concatenated
+  //	        << " (x = " << histogram_concatenated->GetXaxis()->GetBinCenter(iBin_concatenated) << "):"
+  //	        << " " << histogram_concatenated->GetBinContent(iBin_concatenated) 
+  //	        << " +/- " << histogram_concatenated->GetBinError(iBin_concatenated) << std::endl;
+  //}
+  
   return histogram_concatenated;
 }
 
@@ -533,9 +553,11 @@ TH1* makeConcatenatedHistogram(const std::string& histogramName_concatenated, co
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void saveMonitorElement_float(DQMStore& dqmStore, const char* meName, float meValue)
+const std::string meOptionsValue = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s1");
+const std::string meOptionsErr = std::string(meOptionsSeparator).append("a2").append(meOptionsSeparator).append("s1");
+
+void saveMonitorElement_float(DQMStore& dqmStore, const char* meName, float meValue, const std::string& meOptions)
 {
-  const std::string meOptions = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s1");
   MonitorElement* me = dqmStore.bookFloat(std::string(meName).append(meOptions));
   me->Fill(meValue);
 }
@@ -547,14 +569,14 @@ void saveFitParameter(DQMStore& dqmStore, const std::string& dqmDirectory, const
   
   dqmStore.setCurrentFolder(dqmDirectory_full);
   
-  saveMonitorElement_float(dqmStore, "value", parValue);
+  saveMonitorElement_float(dqmStore, "value", parValue, meOptionsValue);
   
   if ( parErrUp != parErrDown ) {
-    saveMonitorElement_float(dqmStore, "errorHi", parErrUp);
-    saveMonitorElement_float(dqmStore, "errorLo", parErrDown);
+    saveMonitorElement_float(dqmStore, "errorHi", parErrUp, meOptionsErr);
+    saveMonitorElement_float(dqmStore, "errorLo", parErrDown, meOptionsErr);
   } else {
     double parErr = 0.5*(parErrUp + parErrDown);
-    saveMonitorElement_float(dqmStore, "error", parErr);
+    saveMonitorElement_float(dqmStore, "error", parErr, meOptionsErr);
   }
 }
 
