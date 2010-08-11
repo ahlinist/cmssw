@@ -24,24 +24,24 @@ DQMHistNormalizer::jobEntryType::jobEntryType(const edm::ParameterSet& cfg)
 {
   unsigned numConfigs = 0;
 
-  if ( cfg.exists("meNameInput") && cfg.exists("meNameOutput") ) {
-    meName_input_ = cfg.getParameter<std::string>("meNameInput");
-    meName_output_ = cfg.getParameter<std::string>("meNameOutput");
+  if ( cfg.exists("meName_input") && cfg.exists("meName_output") ) {
+    meName_input_ = cfg.getParameter<std::string>("meName_input");
+    meName_output_ = cfg.getParameter<std::string>("meName_output");
 
     ++numConfigs;
   }
 
-  if ( cfg.exists("dqmDirectoryInput") && cfg.exists("dqmDirectoryOutput") ) {
-    dqmDirectory_input_ = cfg.getParameter<std::string>("dqmDirectoryInput");
-    dqmDirectory_output_ = cfg.getParameter<std::string>("dqmDirectoryOutput");
+  if ( cfg.exists("dqmDirectory_input") && cfg.exists("dqmDirectory_output") ) {
+    dqmDirectory_input_ = cfg.getParameter<std::string>("dqmDirectory_input");
+    dqmDirectory_output_ = cfg.getParameter<std::string>("dqmDirectory_output");
 
     ++numConfigs;
   }
 
   if ( numConfigs != 1 ) {
     edm::LogError("DQMHistNormalizer") 
-      << " Need to specify either Configuration parameter 'meNameInput' and 'meNameOutput' or"
-      << " 'dqmDirectoryInput' and 'dqmDirectoryOutput' !!";
+      << " Need to specify either Configuration parameter 'meName_input' and 'meName_output' or"
+      << " 'dqmDirectory_input' and 'dqmDirectory_output' !!";
     cfgError_ = 1;
   }
 }
@@ -82,18 +82,18 @@ void DQMHistNormalizer::analyze(const edm::Event&, const edm::EventSetup&)
 }
 
 void addNormalizedHistogram(DQMStore& dqmStore, 
-			    const std::string& meNameInput_full, const std::string& meNameOutput_full, double norm)
+			    const std::string& meName_input_full, const std::string& meName_output_full, double norm)
 {
   //std::cout << "<addNormalizedHistogram>:" << std::endl;
-  //std::cout << " meNameInput = " << meNameInput_full << std::endl;
-  //std::cout << " meNameOutput = " << meNameOutput_full << std::endl;
+  //std::cout << " meName_input = " << meName_input_full << std::endl;
+  //std::cout << " meName_output = " << meName_output_full << std::endl;
 
-  MonitorElement* meInput = dqmStore.get(meNameInput_full);
+  MonitorElement* meInput = dqmStore.get(meName_input_full);
   //std::cout << " meInput = " << meInput << std::endl;
   TH1* histoInput = ( meInput ) ? meInput->getTH1() : 0;
   if ( !histoInput ) {
     edm::LogError ("addNormalizedHistogram") 
-      << " Failed to retrieve histogram " << meNameInput_full << " from dqmStore !!";
+      << " Failed to retrieve histogram " << meName_input_full << " from dqmStore !!";
     return;
   }
   
@@ -102,36 +102,36 @@ void addNormalizedHistogram(DQMStore& dqmStore,
   if (  histoOutput->Integral() != 0. ) histoOutput->Scale(norm/histoOutput->Integral());
 
 //--- register normalized histogram as MonitorElement in DQMStore    
-  dqmRegisterHistogram(dqmStore, histoOutput.release(), meNameOutput_full);
+  dqmRegisterHistogram(dqmStore, histoOutput.release(), meName_output_full);
 }
 
 void addNormalizedHistogramRecursively(DQMStore& dqmStore, 
-				       const std::string& dqmDirectoryInput, const std::string& dqmDirectoryOutput, double norm)
+				       const std::string& dqmDirectory_input, const std::string& dqmDirectory_output, double norm)
 {
 //--- add to the output directory 
 //    normalized copies of all histograms in current input directory 
-  dqmStore.setCurrentFolder(dqmDirectoryInput);
+  dqmStore.setCurrentFolder(dqmDirectory_input);
 
   std::vector<std::string> meNames = dqmStore.getMEs();
   for ( std::vector<std::string>::const_iterator meName = meNames.begin();
 	meName != meNames.end(); ++meName ) {
-    std::string meNameInput_full = dqmDirectoryName(dqmDirectoryInput).append(*meName);
-    std::string meNameOutput_full = dqmDirectoryName(dqmDirectoryOutput).append(*meName);
+    std::string meName_input_full = dqmDirectoryName(dqmDirectory_input).append(*meName);
+    std::string meName_output_full = dqmDirectoryName(dqmDirectory_output).append(*meName);
 
-    addNormalizedHistogram(dqmStore, meNameInput_full, meNameOutput_full, norm);
+    addNormalizedHistogram(dqmStore, meName_input_full, meName_output_full, norm);
   }
 
 //--- call function recursively for all sub-directories
-  dqmStore.setCurrentFolder(dqmDirectoryInput);
+  dqmStore.setCurrentFolder(dqmDirectory_input);
   std::vector<std::string> dirNames = dqmStore.getSubdirs();
   for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
 	dirName != dirNames.end(); ++dirName ) {
-    std::string subDirName = dqmSubDirectoryName(dqmDirectoryInput, *dirName);
+    std::string subDirName = dqmSubDirectoryName(dqmDirectory_input, *dirName);
     
-    std::string dqmDirectoryInput_full = dqmDirectoryName(dqmDirectoryInput).append(subDirName);
-    std::string dqmDirectoryOutput_full = dqmDirectoryName(dqmDirectoryOutput).append(subDirName);
+    std::string dqmDirectory_input_full = dqmDirectoryName(dqmDirectory_input).append(subDirName);
+    std::string dqmDirectory_output_full = dqmDirectoryName(dqmDirectory_output).append(subDirName);
 
-    addNormalizedHistogramRecursively(dqmStore, dqmDirectoryInput_full, dqmDirectoryOutput_full, norm);
+    addNormalizedHistogramRecursively(dqmStore, dqmDirectory_input_full, dqmDirectory_output_full, norm);
   }
 }
 
