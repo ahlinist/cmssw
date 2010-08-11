@@ -106,18 +106,19 @@ void TemplateFitAdapterBase::data1dType::print(std::ostream& outputStream)
   outputStream << " fitted fraction = " << fittedFraction_ << std::endl;
   outputStream << " fluctHistogram:" << std::endl;
   unsigned numBinsX = fluctHistogram_->GetNbinsX();
-  for ( unsigned iBinX = 0; iBinX < numBinsX; ++iBinX ) {
+  for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
     unsigned numBinsY = fluctHistogram_->GetNbinsY();
-    for ( unsigned iBinY = 0; iBinY < numBinsY; ++iBinY ) {
+    for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
       unsigned numBinsZ = fluctHistogram_->GetNbinsZ();
-      for ( unsigned iBinZ = 0; iBinZ < numBinsZ; ++iBinZ ) {
+      for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
 	outputStream << "  binX = " << iBinX;
 	if ( fluctHistogram_->GetNbinsY() > 1 ) outputStream << ", binY = " << iBinY;
 	if ( fluctHistogram_->GetNbinsZ() > 1 ) outputStream << ", binZ = " << iBinZ;
-	outputStream << "(x = " << fluctHistogram_->GetXaxis()->GetBinCenter(iBinX);
+	outputStream << " (x = " << fluctHistogram_->GetXaxis()->GetBinCenter(iBinX);
 	if ( fluctHistogram_->GetNbinsY() > 1 ) outputStream << ", y = " << fluctHistogram_->GetYaxis()->GetBinCenter(iBinY);
 	if ( fluctHistogram_->GetNbinsZ() > 1 ) outputStream << ", z = " << fluctHistogram_->GetZaxis()->GetBinCenter(iBinZ);
-	outputStream << "): " << fluctHistogram_->GetBinContent(iBinX, iBinY, iBinZ) << std::endl;
+	outputStream << "): " << fluctHistogram_->GetBinContent(iBinX, iBinY, iBinZ) 
+		     << " +/- " << fluctHistogram_->GetBinError(iBinX, iBinY, iBinZ) << std::endl;
       }
     }
   }
