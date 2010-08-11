@@ -20,7 +20,9 @@
 const int verbosity = 0;
 
 DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
-  : scaleFactor_(-1),
+  : meName_inputErr_(""),
+    meName_outputErr_(""),
+    scaleFactor_(-1),
     scaleFactorErr_(0.),
     meNameScaleFactor_(""),
     meNameScaleFactorErr_(""),    
@@ -55,7 +57,7 @@ DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
       meNameScaleFactorErr_ = cfg.getParameter<std::string>("meNameScaleFactorErr"); 
     }
     
-    meType_ = cfg.getParameter<std::string>("meTypeScaleFactor"); 
+    meType_ = cfg.getParameter<std::string>("meType"); 
     
     //std::cout << " meNameScaleFactor = " << meNameScaleFactor_ << std::endl;
     //std::cout << " meNameScaleFactorErr = " << meNameScaleFactorErr_ << std::endl;
@@ -101,6 +103,15 @@ DQMHistScaler::cfgEntryScaleJob::cfgEntryScaleJob(const edm::ParameterSet& cfg)
 
     //std::cout << " meName_input = " << meName_input_ << std::endl;
     //std::cout << " meName_output = " << meName_output_ << std::endl;
+    
+    if ( cfg.exists("meName_inputErr") &&
+	 cfg.exists("meName_outputErr") ) {
+      meName_inputErr_ = cfg.getParameter<std::string>("meName_inputErr");
+      meName_outputErr_ = cfg.getParameter<std::string>("meName_outputErr");
+      
+      //std::cout << " meName_inputErr = " << meName_inputErr_ << std::endl;
+      //std::cout << " meName_outputErr = " << meName_outputErr_ << std::endl;
+    }
   } else {
     dqmDirectory_input_ = cfg.getParameter<std::string>("dqmDirectory_input");
     //std::cout << " dqmDirectory_input = " << dqmDirectory_input_ << std::endl;
@@ -162,7 +173,8 @@ double getMonitorElementNorm(DQMStore& dqmStore,
 			     const std::string& meName_full, const std::string& meType, 
 			     double& normErr, int& errorFlag)
 {
-  //std::cout << "<getMonitorElementNorm>:" << std::endl;
+  std::cout << "<getMonitorElementNorm>:" << std::endl;
+  std::cout << " meName_full = " << meName_full << std::endl;
 
   std::string meName, dqmDirectory;
   separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
@@ -222,17 +234,17 @@ double getMonitorElementNorm(DQMStore& dqmStore,
   }
 }
 
-double getMonitorElementNorm(DQMStore& dqmStore, 
-			     const std::string& meName_full, const std::string& meNameErr_full, const std::string& meType, 
-			     double& normErr, int& errorFlag)
-{
-  double norm = getMonitorElementNorm(dqmStore, meName_full, meType, normErr, errorFlag);
-  if ( meNameErr_full != "" ) {
-    double dummy;
-    normErr = getMonitorElementNorm(dqmStore, meNameErr_full, meType, dummy, errorFlag);
-  }
-  return norm;
-}
+//double getMonitorElementNorm(DQMStore& dqmStore, 
+//			     const std::string& meName_full, const std::string& meNameErr_full, const std::string& meType, 
+//			     double& normErr, int& errorFlag)
+//{
+//  double norm = getMonitorElementNorm(dqmStore, meName_full, meType, normErr, errorFlag);
+//  if ( meNameErr_full != "" ) {
+//    double dummy;
+//    normErr = getMonitorElementNorm(dqmStore, meNameErr_full, meType, dummy, errorFlag);
+//  }
+//  return norm;
+//}
 
 double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
 		const std::string& meNameNumerator, const std::string& meNameNumeratorErr,
@@ -241,31 +253,37 @@ double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
 		double& ratioErr, int& errorFlag)
 {
   std::cout << "<getRatio>:" << std::endl;
-  
+  std::cout << " meNameNumerator = " << meNameNumerator << std::endl;
+  std::cout << " meNameNumeratorErr = " << meNameNumerator << std::endl;
+  std::cout << " meNameDenominator = " << meNameDenominator << std::endl;
+  std::cout << " meNameDenominatorErr = " << meNameDenominatorErr << std::endl;
+    
   double dummy;
 
-  std::string meNameNumeratorLooseSel_full = dqmDirectoryName(dqmDirectory).append(meNameNumerator);
-  std::string meNameNumeratorErrLooseSel_full = dqmDirectoryName(dqmDirectory).append(meNameNumeratorErr);
   double numerator, numeratorErr;
-  numerator = getMonitorElementNorm(dqmStore, dqmDirectory, meNameNumerator, meType, numeratorErr, errorFlag);
-  if ( meNameNumeratorErr != "" ) 
-    numeratorErr = getMonitorElementNorm(dqmStore, dqmDirectory, meNameNumerator, meType, dummy, errorFlag);
-  //std::cout << " numerator = " << numerator << " +/- " << numeratorErr << std::endl;
+  std::string meNameNumerator_full = dqmDirectoryName(dqmDirectory).append(meNameNumerator);
+  numerator = getMonitorElementNorm(dqmStore, meNameNumerator_full, meType, numeratorErr, errorFlag);
+  if ( meNameNumeratorErr != "" ) {
+    std::string meNameNumeratorErr_full = dqmDirectoryName(dqmDirectory).append(meNameNumeratorErr);
+    numeratorErr = getMonitorElementNorm(dqmStore, meNameNumeratorErr_full, meType, dummy, errorFlag);
+  }
+  std::cout << " numerator = " << numerator << " +/- " << numeratorErr << std::endl;
 
-  std::string meNameDenominator_full = dqmDirectoryName(dqmDirectory).append(meNameDenominator);
-  std::string meNameDenominatorErr_full = dqmDirectoryName(dqmDirectory).append(meNameDenominatorErr);
   double denominator, denominatorErr;
-  denominator = getMonitorElementNorm(dqmStore, dqmDirectory, meNameDenominator, meType, denominatorErr, errorFlag);
-  if ( meNameDenominatorErr != "" ) 
-    denominatorErr = getMonitorElementNorm(dqmStore, dqmDirectory, meNameDenominator, meType, dummy, errorFlag);
-  //std::cout << " denominator = " << denominator << " +/- " << denominatorErr << std::endl;
+  std::string meNameDenominator_full = dqmDirectoryName(dqmDirectory).append(meNameDenominator);
+  denominator = getMonitorElementNorm(dqmStore, meNameDenominator_full, meType, denominatorErr, errorFlag);
+  if ( meNameDenominatorErr != "" ) {
+    std::string meNameDenominatorErr_full = dqmDirectoryName(dqmDirectory).append(meNameDenominatorErr);
+    denominatorErr = getMonitorElementNorm(dqmStore, meNameDenominatorErr_full, meType, dummy, errorFlag);
+  }
+  std::cout << " denominator = " << denominator << " +/- " << denominatorErr << std::endl;
 
   double ratio = ( denominator > 0. ) ? numerator/denominator : 0.;
   double relErr2 = 0.;
   if ( numerator   > 0. ) relErr2 += TMath::Power(numeratorErr/numerator, 2);
   if ( denominator > 0. ) relErr2 += TMath::Power(denominatorErr/denominator, 2);
   ratioErr = ratio*TMath::Sqrt(relErr2);
-  //std::cout << " ratio = " << ratio << " +/- " << ratioErr << std::endl;
+  std::cout << " ratio = " << ratio << " +/- " << ratioErr << std::endl;
 
   return ratio;
 }
@@ -350,7 +368,7 @@ void DQMHistScaler::endJob()
 			       scaleFactorErr, errorFlag);
       }
 
-      //std::cout << " scaleFactor = " << scaleFactor << " +/- " << scaleFactorErr << std::endl;
+      std::cout << " scaleFactor = " << scaleFactor << " +/- " << scaleFactorErr << std::endl;
 
       if ( errorFlag ) {
 	edm::LogError ("endJob") 
@@ -363,40 +381,48 @@ void DQMHistScaler::endJob()
 //    in case specific subdirectories have been specified in configuration parameters, 
 //    copy the specified subdirectories only, else copy all subdirectories 
 //    from dqmDirectory_input to dqmDirectory_output
-    //std::cout << "--> scaling histograms..." << std::endl;
+    std::cout << "--> scaling histograms..." << std::endl;
     if ( cfgScaleJob->meName_input_ != "" && cfgScaleJob->meName_output_ != "" ) {
       std::string meName_input, dqmDirectory_input;
       separateMonitorElementFromDirectoryName(cfgScaleJob->meName_input_, meName_input, dqmDirectory_input);
-      
+
       std::string meName_output, dqmDirectory_output;
       separateMonitorElementFromDirectoryName(cfgScaleJob->meName_output_, meName_output, dqmDirectory_output);
-      
+
       dqmCopyMonitorElement(dqmStore, dqmDirectory_input, meName_input, dqmDirectory_output, meName_output, 
 			    scaleFactor, scaleFactorErr);
 
       if ( cfgScaleJob->meName_inputErr_ != "" && cfgScaleJob->meName_outputErr_ != "" ) {
 	std::string meName_inputErr, dqmDirectory_inputErr;
 	separateMonitorElementFromDirectoryName(cfgScaleJob->meName_inputErr_, meName_inputErr, dqmDirectory_inputErr);
-	
+
 	std::string meName_outputErr, dqmDirectory_outputErr;
 	separateMonitorElementFromDirectoryName(cfgScaleJob->meName_outputErr_, meName_outputErr, dqmDirectory_outputErr);
-	
+
 	dqmCopyMonitorElement(dqmStore, dqmDirectory_inputErr, meName_inputErr, dqmDirectory_outputErr, meName_outputErr, 
 			      scaleFactor, scaleFactorErr);
+
+	MonitorElement* meInput = dqmStore.get(cfgScaleJob->meName_input_);
+	MonitorElement* meInputErr = dqmStore.get(cfgScaleJob->meName_inputErr_);
 	
-	MonitorElement* meInput = dqmStore.get(meName_input);
-	MonitorElement* meInputErr = dqmStore.get(meName_inputErr);
+	std::cout << " meInput = " << meInput << std::endl;
+	std::cout << " meInputErr = " << meInputErr << std::endl;
+
+	MonitorElement* meOutput = dqmStore.get(cfgScaleJob->meName_output_);
+	MonitorElement* meOutputErr = dqmStore.get(cfgScaleJob->meName_outputErr_);
 	
-	MonitorElement* meOutput = dqmStore.get(meName_output);
-	MonitorElement* meOutputErr = dqmStore.get(meName_outputErr);
-	
+	std::cout << " meOutput = " << meOutput << std::endl;
+	std::cout << " meOutputErr = " << meOutputErr << std::endl;
+
 	if ( meInput->kind() == MonitorElement::DQM_KIND_REAL && meInputErr->kind() == MonitorElement::DQM_KIND_REAL ) {
 	  double relErr2 = 0.;
 	  if ( meInput->getFloatValue() != 0. ) relErr2 += TMath::Power(meInputErr->getFloatValue()/meInput->getFloatValue(), 2);
 	  if ( scaleFactor              != 0. ) relErr2 += TMath::Power(scaleFactorErr/scaleFactor, 2);
+
 	  double output = meOutput->getFloatValue();
 	  double outputErr_reset = -meOutputErr->getFloatValue();
 	  double outputErr = output*TMath::Sqrt(relErr2);
+
 	  meOutputErr->Fill(outputErr_reset + outputErr);
 	} else {
 	  edm::LogError ("endJob") 
@@ -406,7 +432,7 @@ void DQMHistScaler::endJob()
     } else if ( cfgScaleJob->dqmSubDirectories_input_.size() > 0 ) {
       for ( vstring::const_iterator dqmSubDirectory = cfgScaleJob->dqmSubDirectories_input_.begin();
 	    dqmSubDirectory != cfgScaleJob->dqmSubDirectories_input_.end(); ++dqmSubDirectory ) {
-	
+
 	std::string inputDirectory = dqmDirectoryName_full(cfgScaleJob->dqmDirectory_input_, *dqmSubDirectory);
 	std::string outputDirectory = dqmDirectoryName_full(cfgScaleJob->dqmDirectory_output_, *dqmSubDirectory);
 	
