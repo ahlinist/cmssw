@@ -132,14 +132,14 @@ def composeFactorizationSequence(process,
         dqmDirectory_factorizedTightSel = cms.string(dqmDirectoryIn_factorizedTightEvtSel + "FilterStatistics" + "/")
         meType = cms.string("real")
         
-        setattr(dqmHistScaler_plotsLooseEvtSel, "meNameNumerator", cms.string("".join([meName_numerator, meOptionsNumWeighted])))
-        setattr(dqmHistScaler_plotsLooseEvtSel, "meNameDenominator", cms.string("".join([meName_denominator, meOptionsNumWeighted])))
+        setattr(dqmHistScaler_plotsLooseEvtSel, "meName_numerator", cms.string("".join([meName_numerator, meOptionsNumWeighted])))
+        setattr(dqmHistScaler_plotsLooseEvtSel, "meName_denominator", cms.string("".join([meName_denominator, meOptionsNumWeighted])))
         setattr(dqmHistScaler_plotsLooseEvtSel, "dqmDirectory_factorizedLooseSel", dqmDirectory_factorizedLooseSel)
         setattr(dqmHistScaler_plotsLooseEvtSel, "dqmDirectory_factorizedTightSel", dqmDirectory_factorizedTightSel)
         setattr(dqmHistScaler_plotsLooseEvtSel, "meType", meType)
         
-        setattr(dqmHistScaler_filterStatLooseEvtSel, "meNameNumerator", cms.string("".join([meName_numerator, meOptionsNumWeighted])))
-        setattr(dqmHistScaler_filterStatLooseEvtSel, "meNameDenominator", cms.string("".join([meName_denominator, meOptionsNumWeighted])))
+        setattr(dqmHistScaler_filterStatLooseEvtSel, "meName_numerator", cms.string("".join([meName_numerator, meOptionsNumWeighted])))
+        setattr(dqmHistScaler_filterStatLooseEvtSel, "meName_denominator", cms.string("".join([meName_denominator, meOptionsNumWeighted])))
         setattr(dqmHistScaler_filterStatLooseEvtSel, "dqmDirectory_factorizedLooseSel", dqmDirectory_factorizedLooseSel)
         setattr(dqmHistScaler_filterStatLooseEvtSel, "dqmDirectory_factorizedTightSel", dqmDirectory_factorizedTightSel)
         setattr(dqmHistScaler_filterStatLooseEvtSel, "meType", meType)

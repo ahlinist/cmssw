@@ -276,8 +276,8 @@ process.loadTemplateHistZtoElecTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
 process.normalizeTemplateHistZtoElecTau_Ztautau = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(
         cms.PSet(
-            meNameInput = cms.string(dqmDirectory_Ztautau_ZmumuTemplate + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
-            meNameOutput = cms.string(dqmDirectory_Ztautau_ZmumuTemplate + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
+            meName_input = cms.string(dqmDirectory_Ztautau_ZmumuTemplate + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
+            meName_output = cms.string(dqmDirectory_Ztautau_ZmumuTemplate + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
         )
     ),   
     norm = cms.double(1.)
@@ -311,8 +311,8 @@ process.extrAnalysisHistZtoElecTau = cms.EDAnalyzer("DQMHistScaler",
 process.normalizeAnalysisHistZtoElecTau_Ztautau = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(
         cms.PSet(
-             meNameInput = cms.string(dqmDirectory_Ztautau_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
-             meNameOutput = cms.string(dqmDirectory_Ztautau_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
+             meName_input = cms.string(dqmDirectory_Ztautau_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
+             meName_output = cms.string(dqmDirectory_Ztautau_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
         )
     ),
     norm = cms.double(1.)
@@ -321,8 +321,8 @@ process.normalizeAnalysisHistZtoElecTau_Ztautau = cms.EDAnalyzer("DQMHistNormali
 process.normalizeAnalysisHistZtoElecTau_Zee = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(
         cms.PSet(
-             meNameInput = cms.string(dqmDirectory_Zee_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
-             meNameOutput = cms.string(dqmDirectory_Zee_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
+             meName_input = cms.string(dqmDirectory_Zee_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
+             meName_output = cms.string(dqmDirectory_Zee_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
         )
     ),
     norm = cms.double(1.)
@@ -331,8 +331,8 @@ process.normalizeAnalysisHistZtoElecTau_Zee = cms.EDAnalyzer("DQMHistNormalizer"
 process.normalizeAnalysisHistZtoElecTau_WplusJets = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(
         cms.PSet(
-             meNameInput = cms.string(dqmDirectory_WplusJets_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
-             meNameOutput = cms.string(dqmDirectory_WplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
+             meName_input = cms.string(dqmDirectory_WplusJets_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
+             meName_output = cms.string(dqmDirectory_WplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
         )
     ),
     norm = cms.double(1.)
@@ -341,8 +341,8 @@ process.normalizeAnalysisHistZtoElecTau_WplusJets = cms.EDAnalyzer("DQMHistNorma
 process.normalizeAnalysisHistZtoElecTau_TTplusJets = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(
         cms.PSet(
-             meNameInput = cms.string(dqmDirectory_TTplusJets_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
-             meNameOutput = cms.string(dqmDirectory_TTplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
+             meName_input = cms.string(dqmDirectory_TTplusJets_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
+             meName_output = cms.string(dqmDirectory_TTplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
         )
     ),
     norm = cms.double(1.)
@@ -351,8 +351,8 @@ process.normalizeAnalysisHistZtoElecTau_TTplusJets = cms.EDAnalyzer("DQMHistNorm
 process.normalizeAnalysisHistZtoElecTau_gammaPlusJets = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(
         cms.PSet(
-             meNameInput = cms.string(dqmDirectory_gammaPlusJets_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
-             meNameOutput = cms.string(dqmDirectory_gammaPlusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
+             meName_input = cms.string(dqmDirectory_gammaPlusJets_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
+             meName_output = cms.string(dqmDirectory_gammaPlusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
         )
     ),
     norm = cms.double(1.)
@@ -361,8 +361,8 @@ process.normalizeAnalysisHistZtoElecTau_gammaPlusJets = cms.EDAnalyzer("DQMHistN
 process.normalizeAnalysisHistZtoElecTau_QCD = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(
         cms.PSet(
-             meNameInput = cms.string(dqmDirectory_QCD_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
-             meNameOutput = cms.string(dqmDirectory_QCD_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
+             meName_input = cms.string(dqmDirectory_QCD_finalEvtSel_orig + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12),
+             meName_output = cms.string(dqmDirectory_QCD_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
         )
     ),
     norm = cms.double(1.)
@@ -558,9 +558,9 @@ process.plotTemplateHistZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
 process.prodSysBiasHistZtoElecTau_Ztautau = cms.EDAnalyzer("DQMHistSubtractor",
     config = cms.VPSet(
         cms.PSet(
-            meNameMinuend = cms.string(dqmDirectory_Ztautau_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_Ztautau_ZmumuTemplate + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_Ztautau_systematics + "bias" + "/" + meName_diTauMvis12_norm)
+            meName_minuend = cms.string(dqmDirectory_Ztautau_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
+            meName_subtrahend = cms.string(dqmDirectory_Ztautau_ZmumuTemplate + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
+            meName_difference = cms.string(dqmDirectory_Ztautau_systematics + "bias" + "/" + meName_diTauMvis12_norm)
         )
     )    
 )
@@ -568,9 +568,9 @@ process.prodSysBiasHistZtoElecTau_Ztautau = cms.EDAnalyzer("DQMHistSubtractor",
 process.prodSysBiasHistZtoElecTau_Zee = cms.EDAnalyzer("DQMHistSubtractor",
     config = cms.VPSet(
         cms.PSet(
-            meNameMinuend = cms.string(dqmDirectory_Zee_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_Zee_bgEstEnriched_data + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_Zee_systematics + "bias" + "/" + meName_diTauMvis12_norm)
+            meName_minuend = cms.string(dqmDirectory_Zee_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
+            meName_subtrahend = cms.string(dqmDirectory_Zee_bgEstEnriched_data + meName_diTauMvis12_norm),
+            meName_difference = cms.string(dqmDirectory_Zee_systematics + "bias" + "/" + meName_diTauMvis12_norm)
         )
     )                                                       
 )
@@ -578,9 +578,9 @@ process.prodSysBiasHistZtoElecTau_Zee = cms.EDAnalyzer("DQMHistSubtractor",
 process.prodSysBiasHistZtoElecTau_WplusJets = cms.EDAnalyzer("DQMHistSubtractor",
     config = cms.VPSet(
         cms.PSet(
-            meNameMinuend = cms.string(dqmDirectory_WplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_WplusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_WplusJets_systematics + "bias" + "/" + meName_diTauMvis12_norm)
+            meName_minuend = cms.string(dqmDirectory_WplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
+            meName_subtrahend = cms.string(dqmDirectory_WplusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
+            meName_difference = cms.string(dqmDirectory_WplusJets_systematics + "bias" + "/" + meName_diTauMvis12_norm)
         )
     )                                                       
 )
@@ -588,9 +588,9 @@ process.prodSysBiasHistZtoElecTau_WplusJets = cms.EDAnalyzer("DQMHistSubtractor"
 process.prodSysBiasHistZtoElecTau_TTplusJets = cms.EDAnalyzer("DQMHistSubtractor",
     config = cms.VPSet(
         cms.PSet(
-            meNameMinuend = cms.string(dqmDirectory_TTplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_TTplusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_TTplusJets_systematics + "bias" + "/" + meName_diTauMvis12_norm)
+            meName_minuend = cms.string(dqmDirectory_TTplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
+            meName_subtrahend = cms.string(dqmDirectory_TTplusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
+            meName_difference = cms.string(dqmDirectory_TTplusJets_systematics + "bias" + "/" + meName_diTauMvis12_norm)
         )
     )                                                       
 )
@@ -598,9 +598,9 @@ process.prodSysBiasHistZtoElecTau_TTplusJets = cms.EDAnalyzer("DQMHistSubtractor
 process.prodSysBiasHistZtoElecTau_gammaPlusJets = cms.EDAnalyzer("DQMHistSubtractor",
     config = cms.VPSet(
         cms.PSet(
-            meNameMinuend = cms.string(dqmDirectory_gammaPlusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_gammaPlusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_gammaPlusJets_systematics + "bias" + "/" + meName_diTauMvis12_norm)
+            meName_minuend = cms.string(dqmDirectory_gammaPlusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
+            meName_subtrahend = cms.string(dqmDirectory_gammaPlusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
+            meName_difference = cms.string(dqmDirectory_gammaPlusJets_systematics + "bias" + "/" + meName_diTauMvis12_norm)
         )
     )                                                       
 )
@@ -608,9 +608,9 @@ process.prodSysBiasHistZtoElecTau_gammaPlusJets = cms.EDAnalyzer("DQMHistSubtrac
 process.prodSysBiasHistZtoElecTau_QCD = cms.EDAnalyzer("DQMHistSubtractor",
     config = cms.VPSet(
         cms.PSet(
-            meNameMinuend = cms.string(dqmDirectory_QCD_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-            meNameSubtrahend = cms.string(dqmDirectory_QCD_bgEstEnriched_data + meName_diTauMvis12_norm),
-            meNameDifference = cms.string(dqmDirectory_QCD_systematics + "bias" + "/" + meName_diTauMvis12_norm)
+            meName_minuend = cms.string(dqmDirectory_QCD_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
+            meName_subtrahend = cms.string(dqmDirectory_QCD_bgEstEnriched_data + meName_diTauMvis12_norm),
+            meName_difference = cms.string(dqmDirectory_QCD_systematics + "bias" + "/" + meName_diTauMvis12_norm)
         )
     )                                                       
 )
