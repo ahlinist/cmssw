@@ -34,7 +34,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
     process.mergedMuons.tracksCut = '(abs(eta) <= 1.3 && pt > 3.3) || (1.3 < abs(eta) <= 2.2 && p > 2.9) || (2.2 < abs(eta) <= 2.4  && pt > 0.8)'
     process.mergedMuons.caloMuonsCut = process.mergedMuons.tracksCut
 
-    # Prune generated particles
+    # Prune generated particles, needed fot the Tag and Probe
     process.genOniaDecay = cms.EDProducer("GenParticlePruner",
         src = cms.InputTag("genParticles"),
         select = cms.vstring(
@@ -45,31 +45,36 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         )
     )
 
-    # MC truth matching
-    process.load("PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi")
-    process.muonMatch.src = 'mergedMuons'
-    process.muonMatch.resolveByMatchQuality = True
-
     # Make PAT Muons
     process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
-    from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import changeRecoMuonInput, useL1MatchingWindowForSinglets, changeTriggerProcessName
+    from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import addMCinfo, changeRecoMuonInput, useL1MatchingWindowForSinglets, changeTriggerProcessName, switchOffAmbiguityResolution
     # with some customization
+    if MC:
+        addMCinfo(process)
+        # since we match inner tracks, keep the matching tight and make it one-to-one
+        process.muonMatch.maxDeltaR = 0.05
+        process.muonMatch.resolveByMatchQuality = True
     changeRecoMuonInput(process, "mergedMuons")
     useL1MatchingWindowForSinglets(process)
-    changeTriggerProcessName(process,HLT)
-    process.patMuonsWithoutTrigger.addGenMatch = True
-    process.patMuonsWithoutTrigger.embedGenMatch = True
-    process.patMuonsWithoutTrigger.genParticleMatch = 'muonMatch'
+    changeTriggerProcessName(process, HLT)
+    switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
+    process.muonMatchHLTL3.maxDeltaR = 0.1
+    process.muonMatchHLTL3.maxDPtRel = 10.0
+    process.muonMatchHLTCtfTrack.maxDeltaR = 0.1
+    process.muonMatchHLTCtfTrack.maxDPtRel = 10.0
+    process.muonMatchHLTTrackMu.maxDeltaR = 0.1
+    process.muonMatchHLTTrackMu.maxDPtRel = 10.0
 
     # Make a sequence
     process.patMuonSequence = cms.Sequence(
         process.scrapingFilter *
         process.mergedMuons *
         process.genOniaDecay *
-        process.muonMatch *
         process.patMuonsWithTriggerSequence
     )
-
+    if not MC:
+        process.patMuonSequence.remove(process.genOniaDecay)
+      
     # Make dimuon candidates
     process.onia2MuMuPatTrkTrk = cms.EDProducer('Onia2MuMuPAT',
         muons = cms.InputTag("patMuonsWithTrigger"),
@@ -80,7 +85,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         dimuonSelection  = cms.string("2 < mass && abs(daughter('muon1').innerTrack.dz - daughter('muon2').innerTrack.dz) < 25"), ## The dimuon must pass this selection before vertexing
         addCommonVertex = cms.bool(True), ## Embed the full reco::Vertex out of the common vertex fit
         addMuonlessPrimaryVertex = cms.bool(True), ## Embed the primary vertex re-made from all the tracks except the two muons
-        addMCTruth = cms.bool(True),      ## Add the common MC mother of the two muons, if any
+        addMCTruth = cms.bool(MC),      ## Add the common MC mother of the two muons, if any
         resolvePileUpAmbiguity = cms.bool(False)   ## Order PVs by their vicinity to the J/psi vertex, not by sumPt                            
     )
 
@@ -114,15 +119,6 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         cut = cms.string("track.isNonnull"),
     )
 
-    process.tagMuonsMCMatch = cms.EDProducer("MCTruthDeltaRMatcherNew",
-        src = cms.InputTag("tagMuons"),
-        matched = cms.InputTag("genOniaDecay"),
-        pdgId = cms.vint32(13),
-        distMin = cms.double(0.1),
-    )
-
-    process.probeMuonsMCMatch = process.tagMuonsMCMatch.clone(src = "probeMuons")
-
     process.tpPairs = cms.EDProducer("CandViewShallowCloneCombiner",
         cut = cms.string('2.6 < mass < 3.5'),
         decay = cms.string('tagMuons@+ probeMuons@-')
@@ -139,11 +135,17 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         process.patMuonSequence *
         process.tagMuons *
         process.probeMuons *
-        process.tagMuonsMCMatch *
-        process.probeMuonsMCMatch *
         process.tpPairs *
         process.tpPairsFilter
     )
+
+    if MC:
+        process.tagMuonsMCMatch = process.muonMatch.clone(
+            src = cms.InputTag("tagMuons"),
+            matched = cms.InputTag("genOniaDecay"),
+        )
+        process.probeMuonsMCMatch = process.tagMuonsMCMatch.clone(src = "probeMuons")
+        process.TagAndProbe.replace(process.tpPairs, process.tagMuonsMCMatch * process.probeMuonsMCMatch * process.tpPairs)
 
     # output
     process.out = cms.OutputModule("PoolOutputModule",
@@ -162,18 +164,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
             'keep edmTriggerResults_TriggerResults_*_*',           # HLT info, per path (cheap)
             'keep l1extraL1MuonParticles_l1extraParticles_*_*',    # L1 info (cheap)
         ),
-        SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('Onia2MuMuPAT', 'TagAndProbe') )
+        SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('Onia2MuMuPAT', 'TagAndProbe') ) if Filter else cms.untracked.PSet()
     )
     process.e = cms.EndPath(process.out)
-
-    if not Filter:
-        process.out.SelectEvents = cms.untracked.PSet()
-
-    if not MC:
-        process.patMuonSequence.remove(process.genOniaDecay)
-        process.patMuonSequence.remove(process.muonMatch)
-        process.patMuonsWithoutTrigger.addGenMatch = False
-        process.onia2MuMuPatTrkTrk.addMCTruth = False
-        process.TagAndProbe.remove(process.tagMuonsMCMatch)
-        process.TagAndProbe.remove(process.probeMuonsMCMatch)
 
