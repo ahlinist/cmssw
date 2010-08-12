@@ -32,7 +32,7 @@ build_pat_efficiency_loader(shrinkingConeWJets, None, patTaus.efficiencies)
 build_pat_efficiency_loader(shrinkingConeMuEnrichedQCDAssociator, None, patTaus.efficiencies)
 build_pat_efficiency_loader(shrinkingConeDiJetHighPt, None, patTaus.efficiencies)
 build_pat_efficiency_loader(shrinkingConeDiJetSecondPt, None, patTaus.efficiencies)
-patTaus.addEfficiencies = cms.bool(True)
+patTaus.addEfficiencies = cms.bool(False)
 
 # do not remove tau-jets failing discriminatorByIsolation
 # (instead, leave this removal to the subsequent selector stage)

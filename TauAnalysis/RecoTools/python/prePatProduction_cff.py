@@ -58,7 +58,7 @@ producePrePat = cms.Sequence(
    + redoAk5Jets
    + PFTau
    #+ shrinkingConePFTauTancCVTransform
-   + associateTauFakeRates
+   #+ associateTauFakeRates
    + ewkTauId
    + genParticlesForJets + ak5GenJets
    + metsignificance
