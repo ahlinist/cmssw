@@ -7,17 +7,17 @@ def addPFMet(process,correct=False):
     process.patPFMETs = process.patMETs.clone()
     process.patPFMETs.addMuonCorrections = False
 
-    process.makeLayer1PFMETs = cms.Sequence(process.patPFMETs)
+    process.makePatPFMETs = cms.Sequence(process.patPFMETs)
     if correct:
-        process.makeLayer1PFMETs.replace(process.patPFMETs,
+        process.makePatPFMETs.replace(process.patPFMETs,
                                          process.pfCorMET*process.patPFMETs)
         process.patPFMETs.metSource = cms.InputTag('pfType1MET')
     else:
-        process.makeLayer1PFMETs.replace(process.patPFMETs,
+        process.makePatPFMETs.replace(process.patPFMETs,
                                          process.pfMET*process.patPFMETs)
         process.patPFMETs.metSource = cms.InputTag('pfMET')
     process.patPFMETs.genMETSource = cms.InputTag('genMetTrue')
-    process.makePatMETs += process.makeLayer1PFMETs
+    process.makePatMETs += process.makePatPFMETs
 
 def addTCMet(process):
     process.layer1TCMETs = process.patMETs.clone()
