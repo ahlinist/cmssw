@@ -129,7 +129,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if (rmu1 != 0 && rmu2 != 0 && rmu1->track().id() == pvtracks.id() && rmu2->track().id() == pvtracks.id()) { 
 	    // Prepare the collection of tracks without the two muon tracks
 	    TrackCollection muonLess;
-	    muonLess.reserve(pvtracks->size()-2);
+	    muonLess.reserve(pvtracks->size());
 	    for (size_t i = 0, n = pvtracks->size(); i < n; ++i) {
 	      if (i == rmu1->track().key()) continue;
 	      if (i == rmu2->track().key()) continue;
