@@ -35,11 +35,11 @@ cfgPrimaryEventVertexPosition = cms.PSet(
 )
 
 # electron candidate selection
-cfgLooseElectronIdCut = cms.PSet(
-    pluginName = cms.string('looseElectronIdCut'),
+cfgElectronIdCut = cms.PSet(
+    pluginName = cms.string('electronIdCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecTauLooseIdCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecTauLooseIdIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecTauIdCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecTauIdIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronAntiCrackCut = cms.PSet(
@@ -77,11 +77,11 @@ cfgElectronEcalIsoCut = cms.PSet(
     src_individual = cms.InputTag('selectedPatElectronsForElecTauEcalIsoIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgElectronTrkCut = cms.PSet(
-    pluginName = cms.string('electronTrkCut'),
+cfgElectronConversionVeto = cms.PSet(
+    pluginName = cms.string('electronConversionVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecTauTrkCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecTauTrkIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsForElecTauConversionVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsForElecTauConversionVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronTrkIPcut = cms.PSet(
@@ -89,13 +89,6 @@ cfgElectronTrkIPcut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatElectronsForElecTauTrkIPcumulative'),
     src_individual = cms.InputTag('selectedPatElectronsForElecTauTrkIPindividual'),
-    minNumber = cms.uint32(1)
-)
-cfgElectronConversionVeto = cms.PSet(
-    pluginName = cms.string('electronConversionVeto'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecTauConversionVetoCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecTauConversionVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -237,15 +230,14 @@ zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,
-      cfgLooseElectronIdCut,
+      cfgElectronIdCut,
       cfgElectronAntiCrackCut,
       cfgElectronEtaCut,
       cfgElectronPtCut,
       cfgElectronTrkIsoCut,
       cfgElectronEcalIsoCut,
-      cfgElectronTrkCut,
-      cfgElectronTrkIPcut,
       cfgElectronConversionVeto,
+      cfgElectronTrkIPcut,
       cfgTauAntiOverlapWithElectronsVeto,
       cfgTauEtaCut,
       cfgTauPtCut,

@@ -14,6 +14,9 @@ selectedPatElectronsForElecTauTightId = copy.deepcopy(selectedPatElectronsTightI
 # require electron candidate to pass the loose electron id. criteria
 selectedPatElectronsForElecTauLooseId = copy.deepcopy(selectedPatElectronsLooseId)
 
+# require electron candidate to pass the electron id. criteria 
+selectedPatElectronsForElecTauId = copy.deepcopy(selectedPatElectronsLooseId)
+
 # require electron candidate to not be within eta-crack
 # between Barrel and Encap ECAL calorimeter
 selectedPatElectronsForElecTauAntiCrackCut = copy.deepcopy(selectedPatElectronsAntiCrackCut)
@@ -67,5 +70,18 @@ selectedPatElectronsForElecTauConversionVeto = cms.EDFilter("PATElectronConversi
     doHists = cms.bool(False)
 )
 
-selectedPatElectronsForElecTauConversionVetoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauConversionVeto)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation = cms.EDFilter("PATElectronConversionFinder",
+    trackSource = cms.InputTag('generalTracks'),
+    conversionSource = cms.InputTag('conversions'),
+	photonSource = cms.InputTag('photons'),
+    cotThetaCut = cms.double(0.05),
+    docaElecTrack = cms.double(0),
+    dRElecTrack = cms.double(0.1),
+    doPixCut = cms.bool(True),
+    useInnerParsForElec = cms.bool(True),
+    useInnerParsForTrks = cms.bool(True),
+    useConversionColl = cms.bool(True),
+    nTrkMax = cms.double(10),
+    doHists = cms.bool(False)
+)
 
