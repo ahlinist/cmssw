@@ -3,83 +3,99 @@ import copy
 
 def modifyPlots(process):
 	TZtZeWGQ = cms.vstring(
+			'Data',
 			'TTplusJets', 
-            'ZtautauPlusJets',
-			'ZeePlusJets', 
+            'Ztautau',
+			'Zee', 
 			'WplusJets', 
             'gammaPlusJetsSum',
-			'qcdSum'
+			'qcdEMenrichedSum',
+			'qcdBCtoESum'
 	)
 	ZtTZeWGQ = cms.vstring(
-            'ZtautauPlusJets',
+			'Data',
+            'Ztautau',
 			'TTplusJets', 
-			'ZeePlusJets', 
+			'Zee', 
 			'WplusJets', 
             'gammaPlusJetsSum',
-			'qcdSum'
+			'qcdEMenrichedSum',
+			'qcdBCtoESum'
 	)
 	TZtWGQZe = cms.vstring(
+			'Data',
 			'TTplusJets', 
-            'ZtautauPlusJets',
+            'Ztautau',
 			'WplusJets', 
             'gammaPlusJetsSum',
-			'qcdSum',
-			'ZeePlusJets'
+			'qcdEMenrichedSum',
+			'qcdBCtoESum',
+			'Zee'
 	)
 	ZtTWGQZe = cms.vstring(
-            'ZtautauPlusJets',
+			'Data',
+            'Ztautau',
 			'TTplusJets', 
 			'WplusJets', 
             'gammaPlusJetsSum',
-			'qcdSum',
-			'ZeePlusJets'
+			'qcdEMenrichedSum',
+			'qcdBCtoESum',
+			'Zee'
 	)
 	TZtGWZeQ = cms.vstring(
+			'Data',
 			'TTplusJets', 
-            'ZtautauPlusJets',
+            'Ztautau',
             'gammaPlusJetsSum',
 			'WplusJets', 
-			'ZeePlusJets', 
-			'qcdSum'
+			'Zee', 
+			'qcdEMenrichedSum',
+			'qcdBCtoESum'
 	)
 	TGQZtWZe = cms.vstring(
+			'Data',
 			'TTplusJets', 
             'gammaPlusJetsSum',
-			'qcdSum',
-            'ZtautauPlusJets',
+			'qcdEMenrichedSum',
+			'qcdBCtoESum',
+            'Ztautau',
 			'WplusJets', 
-			'ZeePlusJets'
+			'Zee'
 	)
 	ZtTQGZeW = cms.vstring(
-            'ZtautauPlusJets',
+			'Data',
+            'Ztautau',
 			'TTplusJets', 
-			'qcdSum',
+			'qcdEMenrichedSum',
+			'qcdBCtoESum',
             'gammaPlusJetsSum',
-			'ZeePlusJets',
+			'Zee',
 			'WplusJets'
 	)
 	ZtTGWZeQ = cms.vstring(
-            'ZtautauPlusJets',
+			'Data',
+            'Ztautau',
 			'TTplusJets', 
             'gammaPlusJetsSum',
 			'WplusJets',
-			'ZeePlusJets',
-			'qcdSum'
+			'Zee',
+			'qcdEMenrichedSum',
+			'qcdBCtoESum'
 	)
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronEta.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronEta.plots.processes = ZtTZeWGQ
 	
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterLooseElectronId.yAxis = cms.string('numEntries_log')
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterLooseElectronId.plots.processes = ZtTZeWGQ
+	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronId.yAxis = cms.string('numEntries_log')
+	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronId.plots.processes = ZtTZeWGQ
+	
+	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronTrkIP_afterElectronConversionVeto.yAxis = cms.string('numEntries_log')
+	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronTrkIP_afterElectronConversionVeto.plots.processes = ZtTWGQZe
 	
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronEcalIso.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronEcalIso.plots.processes = ZtTWGQZe
 	
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronTrkIso_afterTauPt.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronTrkIso_afterTauPt.plots.processes = ZtTZeWGQ
-	
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronTrkIP_afterElectronTrk.yAxis = cms.string('numEntries_log')
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronTrkIP_afterElectronTrk.plots.processes = ZtTWGQZe
 	
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronEcalIso_afterElectronTrkIso.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electronEcalIso_afterElectronTrkIso.plots.processes = ZtTWGQZe
@@ -93,13 +109,10 @@ def modifyPlots(process):
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronAntiCrack.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronAntiCrack.plots.processes = ZtTZeWGQ
 	
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronTrkIP.yAxis = cms.string('numEntries_log')
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronTrkIP.plots.processes = ZtTWGQZe
-	
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterPrimaryEventVertexPosition.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterPrimaryEventVertexPosition.plots.processes = ZtTZeWGQ
 			
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauLeadTrkPt_afterElectronConversionVeto.plots.processes = ZtTQGZeW
+	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauLeadTrkPt_afterElectronTrkIP.plots.processes = ZtTQGZeW
 	
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauLeadTrkPt_afterTauAntiOverlapWithElectronsVeto.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauLeadTrkPt_afterTauAntiOverlapWithElectronsVeto.plots.processes = ZtTGWZeQ
@@ -109,7 +122,8 @@ def modifyPlots(process):
 	
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tauLeadTrkPt_afterTauLeadTrk.plots.processes = ZtTQGZeW
 	
-	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tau_afterElectronConversionVeto.plots.processes = ZtTQGZeW
+	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tau_afterElectronTrkIP.plots.processes = ZtTQGZeW
+	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_electron_afterElectronTrkIP.plots.processes = ZtTQGZeW
 
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tau_afterElectronPt.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_tau_afterElectronPt.plots.processes = ZtTZeWGQ
