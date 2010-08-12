@@ -22,6 +22,9 @@ from TauAnalysis.RecoTools.recoPFTauIdentification_cfi import *
 from RecoTauTag.Configuration.RecoPFTauTag_cff import *
 #from RecoTauTag.TauTagTools.TancCVTransform_cfi import *
 
+# produce HPS taus and discriminants
+from RecoTauTag.Configuration.HPSPFTaus_cfi import *
+
 # produce tau id. efficiencies & fake-rates
 from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
 
@@ -57,10 +60,11 @@ producePrePat = cms.Sequence(
    + recoMuonIsolation
    + redoAk5Jets
    + PFTau
-   #+ shrinkingConePFTauTancCVTransform
-   #+ associateTauFakeRates
+   + shrinkingConePFTauTancCVTransform
+   + associateTauFakeRates
    + ewkTauId
    + genParticlesForJets + ak5GenJets
    + metsignificance
    + produceEventShapeVars
+   + produceAndDiscriminateHPSPFTaus
 )
