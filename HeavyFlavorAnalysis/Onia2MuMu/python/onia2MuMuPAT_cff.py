@@ -80,8 +80,10 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         muons = cms.InputTag("patMuonsWithTrigger"),
         beamSpotTag = cms.InputTag("offlineBeamSpot"),
         primaryVertexTag = cms.InputTag("offlinePrimaryVertices"),
-        higherPuritySelection = cms.string("isGlobalMuon || isTrackerMuon || (innerTrack.isNonnull && genParticleRef(0).isNonnull)"), ## At least one muon must pass this selection
-        lowerPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon || (innerTrack.isNonnull && genParticleRef(0).isNonnull)"), ## BOTH muons must pass this selection
+        # At least one muon must pass this selection
+        higherPuritySelection = cms.string("(isGlobalMuon || isTrackerMuon || (innerTrack.isNonnull && genParticleRef(0).isNonnull)) && abs(innerTrack.dxy)<4 && abs(innerTrack.dz)<35"),
+        # BOTH muons must pass this selection
+        lowerPuritySelection  = cms.string("(isGlobalMuon || isTrackerMuon || (innerTrack.isNonnull && genParticleRef(0).isNonnull)) && abs(innerTrack.dxy)<4 && abs(innerTrack.dz)<35"),
         dimuonSelection  = cms.string("2 < mass"), ## The dimuon must pass this selection before vertexing
         addCommonVertex = cms.bool(True), ## Embed the full reco::Vertex out of the common vertex fit
         addMuonlessPrimaryVertex = cms.bool(True), ## Embed the primary vertex re-made from all the tracks except the two muons
@@ -103,15 +105,9 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
     )
 
     # Make Tag and Probe pairs for efficiency measurements
-    TAG_TRIGGER = "(!triggerObjectMatchesByFilter('hltSingleMu3L3Filtered3').empty())"
-    TAG_TRIGGER += "|| (!triggerObjectMatchesByCollection('hltL3MuonCandidates').empty() && triggerObjectMatchesByCollection('hltL3MuonCandidates').at(0).hasFilterLabel('hltMu3TrackJpsiTrackMassFiltered'))"
-    TAG_TRIGGER += "|| (!triggerObjectMatchesByCollection('hltL3MuonCandidates').empty() && triggerObjectMatchesByCollection('hltL3MuonCandidates').at(0).hasFilterLabel('hltMu5TrackJpsiTrackMassFiltered'))"
-    TAG_TRIGGER += "|| (!triggerObjectMatchesByCollection('hltL3MuonCandidates').empty() && triggerObjectMatchesByCollection('hltL3MuonCandidates').at(0).hasFilterLabel('hltMu3L2Mu0L3Filtered3'))"
-    TAG_TRIGGER += "|| (!triggerObjectMatchesByCollection('hltL3MuonCandidates').empty() && triggerObjectMatchesByCollection('hltL3MuonCandidates').at(0).hasFilterLabel('hltMu5L2Mu0L3Filtered5'))"
-
     process.tagMuons = cms.EDFilter("PATMuonSelector",
         src = cms.InputTag("patMuonsWithTrigger"),
-        cut = cms.string("isGlobalMuon && "+TAG_TRIGGER),
+        cut = cms.string("isGlobalMuon && abs(innerTrack.dxy)<4 && abs(innerTrack.dz)<35"), # do not require trigger at this skim level
     )
 
     process.probeMuons = cms.EDFilter("PATMuonSelector",
