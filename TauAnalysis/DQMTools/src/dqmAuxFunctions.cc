@@ -441,9 +441,85 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void separateMonitorElementFromDirectoryName(const std::string& meAndDirectoryName, std::string& meName, std::string& dqmDirectoryName)
+void printMonitorElementValue(MonitorElement* me, std::ostream& stream)
 {
-  std::string tempName = meAndDirectoryName;
+  int meType = me->kind();
+  if ( meType == MonitorElement::DQM_KIND_INT ) {
+    stream << me->getIntValue();
+  } else if ( meType == MonitorElement::DQM_KIND_REAL ) {
+    stream << me->getFloatValue();
+  } else if ( meType == MonitorElement::DQM_KIND_STRING ) {
+    stream << me->getStringValue();
+  } 
+}
+
+void dqmDumpMonitorElement(DQMStore& dqmStore, const std::string& meName, const std::string& meName_err, 
+			   const std::string& label, std::ostream& stream)
+{
+  MonitorElement* me = dqmStore.get(meName);
+  MonitorElement* me_err = ( meName_err != "" ) ? dqmStore.get(meName_err) : 0;
+
+  if ( !me ) {
+    edm::LogError ("dqmDumpMonitorElement") 
+      << " Failed to retrieve MonitorElement " << meName << " from dqmStore !!";
+    return;
+  }
+
+  stream << label << ":" << std::endl;
+
+  int meType = me->kind();
+  if ( meType == MonitorElement::DQM_KIND_TH1F      ||
+       meType == MonitorElement::DQM_KIND_TH1S      ||
+       meType == MonitorElement::DQM_KIND_TH2F      ||
+       meType == MonitorElement::DQM_KIND_TH2S      ||
+       meType == MonitorElement::DQM_KIND_TH3F      ||
+       meType == MonitorElement::DQM_KIND_TPROFILE  ||
+       meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
+    TH1* histogram = me->getTH1();
+
+    unsigned numBinsX = histogram->GetNbinsX();
+    for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
+      unsigned numBinsY = histogram->GetNbinsY();
+      for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
+	unsigned numBinsZ = histogram->GetNbinsZ();
+	for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
+	  stream << "  binX = " << iBinX;
+	  if ( histogram->GetNbinsY() > 1 ) stream << ", binY = " << iBinY;
+	  if ( histogram->GetNbinsZ() > 1 ) stream << ", binZ = " << iBinZ;
+	  stream << " (x = " << histogram->GetXaxis()->GetBinCenter(iBinX);
+	  if ( histogram->GetNbinsY() > 1 ) stream << ", y = " << histogram->GetYaxis()->GetBinCenter(iBinY);
+	  if ( histogram->GetNbinsZ() > 1 ) stream << ", z = " << histogram->GetZaxis()->GetBinCenter(iBinZ);
+	  stream << "): " << histogram->GetBinContent(iBinX, iBinY, iBinZ) 
+		 << " +/- " << histogram->GetBinError(iBinX, iBinY, iBinZ) << std::endl;
+	}
+      }
+    }
+  } else if ( meType == MonitorElement::DQM_KIND_INT ) {
+    stream << " value = " << me->getIntValue();
+    if ( me_err ) {
+      stream << " +/- ";
+      printMonitorElementValue(me_err, stream);
+    }
+    stream << std::endl;
+  } else if ( meType == MonitorElement::DQM_KIND_REAL ) {
+    stream << " value = " << me->getFloatValue();
+    if ( me_err ) {
+      stream << " +/- ";
+      printMonitorElementValue(me_err, stream);
+    }
+    stream << std::endl;
+  } else if ( meType == MonitorElement::DQM_KIND_STRING ) {
+    stream << " value = " << me->getStringValue() << std::endl;
+  }
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+void separateMonitorElementFromDirectoryName(const std::string& meName_full, std::string& meName, std::string& dqmDirectoryName)
+{
+  std::string tempName = meName_full;
 
 //--- remove DQM root directory from histogram name
   std::string::size_type dqmRootDirectoryPos = tempName.find(dqmRootDirectory);
