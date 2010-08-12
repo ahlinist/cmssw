@@ -612,52 +612,50 @@ void Onia2MuMu::beginJob()
     fTree->Branch("HLTUpsilon2Mu_L3_4mom",  "TClonesArray",       &HLTUpsilon2Mu_L3_4mom, 32000, 0);
     fTree->Branch("HLTUpsilon2Mu_L3_id",    HLTUpsilon2Mu_L3_id,     "HLTUpsilon2Mu_L3_id[HLTUpsilon2Mu_L3_size]/I");
  
-    // HLT bits for Muon
-    // RC: removed hard-coded numbering! Very dangerous!!!
-    /* hltBits[0] = 50;
-    hltBits[1] = 51;
-    hltBits[2] = 52;
-    hltBits[3] = 53;
-    hltBits[4] = 42;
-    hltBits[5] = 44;
-    hltBits[6] = 45;
-    hltBits[7] = 46; */
-
     HLTBits_size = NTRIGGERS;
-    string HLTbitNames[NTRIGGERS] = {"HLT_Mu3", "HLT_Mu5", "HLT_Mu9", "HLT_DoubleMu0", "HLT_DoubleMu3"};
 
-    if (hltConfig.init(the8e29ProcName)) {
-      // check if trigger name in config
-      const unsigned int n(hltConfig.size());
-      for (int ihlt = 0; ihlt < NTRIGGERS; ihlt++) {
-        hltBits[ihlt] = 0;
-	unsigned int triggerIndex( hltConfig.triggerIndex(HLTbitNames[ihlt]) );
-	if (triggerIndex>=n) {
-	  cout << "OniaToMuMu::beginRun: "
-	       << " TriggerName " << HLTbitNames[ihlt]
-	       << " not available in config!" << endl;
-	} else {
-	  hltBits[ihlt] = triggerIndex;
-	}
-      }
-      // Level-2 FILTERS (module names)
-      hltModules[0][0] = edm::InputTag("NotUsed","",the8e29ProcName);
-      hltModules[0][1] = edm::InputTag("NotUsed","",the8e29ProcName);
-      hltModules[0][2] = edm::InputTag("NotUsed","",the8e29ProcName);
-      hltModules[0][3] = edm::InputTag("NotUsed","",the8e29ProcName);
-      hltModules[0][4] = edm::InputTag("NotUsed","",the8e29ProcName);
-      // Level-3 FILTERS (module names)
-      hltModules[1][0] = edm::InputTag("hltSingleMu3L3Filtered3","",the8e29ProcName);
-      hltModules[1][1] = edm::InputTag("hltSingleMu5L3Filtered5","",the8e29ProcName);
-      hltModules[1][2] = edm::InputTag("hltSingleMu9L3Filtered9","",the8e29ProcName);
-      hltModules[1][3] = edm::InputTag("hltDiMuonL3PreFiltered0","",the8e29ProcName);
-      hltModules[1][4] = edm::InputTag("hltDiMuonL3PreFiltered","",the8e29ProcName);
-    } else {
-      cout << "OniaToMuMu::beginRun:"
-	   << " HLT config extraction failure with process name HLT" << endl;
-    }
+    // Level-2 FILTERS (module names)
+    hltModules[0][0] = edm::InputTag("NotUsed","",the8e29ProcName);
+    hltModules[0][1] = edm::InputTag("NotUsed","",the8e29ProcName);
+    hltModules[0][2] = edm::InputTag("NotUsed","",the8e29ProcName);
+    hltModules[0][3] = edm::InputTag("NotUsed","",the8e29ProcName);
+    hltModules[0][4] = edm::InputTag("NotUsed","",the8e29ProcName);
+    // Level-3 FILTERS (module names)
+    hltModules[1][0] = edm::InputTag("hltSingleMu3L3Filtered3","",the8e29ProcName);
+    hltModules[1][1] = edm::InputTag("hltSingleMu5L3Filtered5","",the8e29ProcName);
+    hltModules[1][2] = edm::InputTag("hltSingleMu9L3Filtered9","",the8e29ProcName);
+    hltModules[1][3] = edm::InputTag("hltDiMuonL3PreFiltered0","",the8e29ProcName);
+    hltModules[1][4] = edm::InputTag("hltDiMuonL3PreFiltered","",the8e29ProcName);
   }
   
+}
+
+void Onia2MuMu::beginRun(const Run & iRun, const EventSetup & iSetup)
+{
+  if(theStoreHLTFlag){
+    bool isChanged;
+    if(hltConfig.init(iRun, iSetup, the8e29ProcName, isChanged)){
+      if(isChanged){
+        string HLTbitNames[NTRIGGERS] = {"HLT_Mu3", "HLT_Mu5", "HLT_Mu9", "HLT_DoubleMu0", "HLT_DoubleMu3"};
+        // check if trigger name in config
+        const unsigned int n(hltConfig.size());
+        for (int ihlt = 0; ihlt < NTRIGGERS; ihlt++) {
+          hltBits[ihlt] = 0;
+          unsigned int triggerIndex( hltConfig.triggerIndex(HLTbitNames[ihlt]) );
+          if (triggerIndex>=n) {
+            cout << "OniaToMuMu::beginRun: "
+                 << " TriggerName " << HLTbitNames[ihlt]
+                 << " not available in config!" << endl;
+          } else {
+            hltBits[ihlt] = triggerIndex;
+          }
+        }
+      }      
+    }else{
+      cout << "OniaToMuMu::beginRun:"
+           << " HLT config extraction failure with process name HLT" << endl;
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////
