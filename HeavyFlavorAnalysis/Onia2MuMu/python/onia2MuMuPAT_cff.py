@@ -34,14 +34,13 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
     process.mergedMuons.tracksCut = '(abs(eta) <= 1.3 && pt > 3.3) || (1.3 < abs(eta) <= 2.2 && p > 2.9) || (2.2 < abs(eta) <= 2.4  && pt > 0.8)'
     process.mergedMuons.caloMuonsCut = process.mergedMuons.tracksCut
 
-    # Prune generated particles, needed fot the Tag and Probe
-    process.genOniaDecay = cms.EDProducer("GenParticlePruner",
+    # Prune generated particles to muons and their parents
+    process.genMuons = cms.EDProducer("GenParticlePruner",
         src = cms.InputTag("genParticles"),
         select = cms.vstring(
-            "keep++ pdgId = 443", # J/psi and its daughters
-            "keep++ pdgId = 100443", # psi' and its daughters
-            "keep++ pdgId = 553", # Upsilon(1S) and its daughters
-            "keep++ pdgId = 100553", # Upsilon (2S,3S) and its daughters
+            "drop  *  ",                     # this is the default
+            "++keep abs(pdgId) = 13",        # keep muons and their parents
+            "drop pdgId == 21 && status = 2" # remove intermediate qcd spam carrying no flavour info
         )
     )
 
@@ -54,6 +53,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         # since we match inner tracks, keep the matching tight and make it one-to-one
         process.muonMatch.maxDeltaR = 0.05
         process.muonMatch.resolveByMatchQuality = True
+        process.muonMatch.matched = "genMuons"
     changeRecoMuonInput(process, "mergedMuons")
     useL1MatchingWindowForSinglets(process)
     changeTriggerProcessName(process, HLT)
@@ -69,20 +69,20 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
     process.patMuonSequence = cms.Sequence(
         process.scrapingFilter *
         process.mergedMuons *
-        process.genOniaDecay *
+        process.genMuons *
         process.patMuonsWithTriggerSequence
     )
     if not MC:
-        process.patMuonSequence.remove(process.genOniaDecay)
+        process.patMuonSequence.remove(process.genMuons)
       
     # Make dimuon candidates
     process.onia2MuMuPatTrkTrk = cms.EDProducer('Onia2MuMuPAT',
         muons = cms.InputTag("patMuonsWithTrigger"),
         beamSpotTag = cms.InputTag("offlineBeamSpot"),
         primaryVertexTag = cms.InputTag("offlinePrimaryVertices"),
-        higherPuritySelection = cms.string("isGlobalMuon || isTrackerMuon"), ## At least one muon must pass this selection
-        lowerPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon"), ## BOTH muons must pass this selection
-        dimuonSelection  = cms.string("2 < mass && abs(daughter('muon1').innerTrack.dz - daughter('muon2').innerTrack.dz) < 25"), ## The dimuon must pass this selection before vertexing
+        higherPuritySelection = cms.string("isGlobalMuon || isTrackerMuon || (innerTrack.isNonnull && genParticleRef(0).isNonnull)"), ## At least one muon must pass this selection
+        lowerPuritySelection  = cms.string("isGlobalMuon || isTrackerMuon || (innerTrack.isNonnull && genParticleRef(0).isNonnull)"), ## BOTH muons must pass this selection
+        dimuonSelection  = cms.string("2 < mass"), ## The dimuon must pass this selection before vertexing
         addCommonVertex = cms.bool(True), ## Embed the full reco::Vertex out of the common vertex fit
         addMuonlessPrimaryVertex = cms.bool(True), ## Embed the primary vertex re-made from all the tracks except the two muons
         addMCTruth = cms.bool(MC),      ## Add the common MC mother of the two muons, if any
@@ -140,10 +140,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
     )
 
     if MC:
-        process.tagMuonsMCMatch = process.muonMatch.clone(
-            src = cms.InputTag("tagMuons"),
-            matched = cms.InputTag("genOniaDecay"),
-        )
+        process.tagMuonsMCMatch = process.muonMatch.clone(src = "tagMuons")
         process.probeMuonsMCMatch = process.tagMuonsMCMatch.clone(src = "probeMuons")
         process.TagAndProbe.replace(process.tpPairs, process.tagMuonsMCMatch * process.probeMuonsMCMatch * process.tpPairs)
 
@@ -151,7 +148,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
     process.out = cms.OutputModule("PoolOutputModule",
         fileName = cms.untracked.string('onia2MuMuPAT.root'),
         outputCommands = cms.untracked.vstring('drop *',
-            'keep *_genOniaDecay_*_Onia2MuMuPAT',                  # generated decay of the Onia
+            'keep *_genMuons_*_Onia2MuMuPAT',                      # generated muons and parents
             'keep patMuons_patMuonsWithTrigger_*_Onia2MuMuPAT',    # All PAT muos including general tracks and matches to triggers
             'keep patCompositeCandidates_*__Onia2MuMuPAT',         # PAT di-muons
             'keep patMuons_tagMuons__Onia2MuMuPAT',                # tagMuons for efficiency
