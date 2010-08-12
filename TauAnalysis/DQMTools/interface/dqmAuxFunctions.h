@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 const std::string parKeyword = "#PAR#";
 const std::string plotKeyword = "#PLOT#";
@@ -34,6 +35,8 @@ void dqmCopyMonitorElement(DQMStore&, const std::string&, const std::string&, co
 			   double, double, int = 1);
 void dqmCopyRecursively(DQMStore&, const std::string&, const std::string&, 
 			double, double, int, bool, std::vector<outputCommandEntry>* = 0);
+
+void dqmDumpMonitorElement(DQMStore&, const std::string&, const std::string&, const std::string&, std::ostream&);
 
 const std::string dqmSeparator = "/";
 const std::string dqmSeparator2 = std::string(dqmSeparator).append(dqmSeparator);
