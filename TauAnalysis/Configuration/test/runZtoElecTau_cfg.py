@@ -153,6 +153,10 @@ from TauAnalysis.Configuration.tools.switchToData import *
 # uncomment when running over DATA samples
 ##switchToData(process)#
 #--------------------------------------------------------------------------------
+# for MC, collections are missing
+process.analyzeZtoElecTauEvents.eventDumps[0].doGenInfo = cms.bool(False)
+
+# for data, 
 
 #--------------------------------------------------------------------------------
 

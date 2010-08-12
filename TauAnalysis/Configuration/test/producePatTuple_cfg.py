@@ -67,7 +67,7 @@ process.source = cms.Source("PoolSource",
 #--------------------------------------------------------------------------------
 # add patElectronIsolation, which was removed from standard pat sequence in CMSSW_3_4
 from TauAnalysis.Configuration.tools.patElectronTools import *
-producePatElectronIsolation(process)
+producePatElectronIsolationAndSimpleId(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

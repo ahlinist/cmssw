@@ -8,6 +8,9 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 # define for Z --> e + tau-jet analysis names of .root files containing histograms
 #--------------------------------------------------------------------------------
 
+#scaleFactor = float(float(7638)/float(6143))
+scaleFactor = float(1.)
+
 processZtoElecTau_Data_7TeV = copy.deepcopy(process_Data)
 processZtoElecTau_Data_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_Data_7TeV_part01.root',
@@ -24,10 +27,50 @@ processZtoElecTau_Data_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_Data_7TeV_part12.root',
 	'plotsZtoElecTau_Data_7TeV_part13.root',
 	'plotsZtoElecTau_Data_7TeV_part14.root',
-	'plotsZtoElecTau_Data_7TeV_part15.root'
+	'plotsZtoElecTau_Data_7TeV_part15.root',
+	'plotsZtoElecTau_Data_7TeV_part16.root',
+	'plotsZtoElecTau_Data_7TeV_part17.root',
+	'plotsZtoElecTau_Data_7TeV_part18.root',
+	'plotsZtoElecTau_Data_7TeV_part19.root',
+	'plotsZtoElecTau_Data_7TeV_part20.root',
+	'plotsZtoElecTau_Data_7TeV_part21.root',
+	'plotsZtoElecTau_Data_7TeV_part22.root',
+	'plotsZtoElecTau_Data_7TeV_part23.root',
+	'plotsZtoElecTau_Data_7TeV_part24.root',
+	'plotsZtoElecTau_Data_7TeV_part25.root',
+	'plotsZtoElecTau_Data_7TeV_part26.root',
+	'plotsZtoElecTau_Data_7TeV_part27.root',
+	'plotsZtoElecTau_Data_7TeV_part28.root',
+	'plotsZtoElecTau_Data_7TeV_part29.root',
+	'plotsZtoElecTau_Data_7TeV_part30.root',
+	'plotsZtoElecTau_Data_7TeV_part31.root',
+	'plotsZtoElecTau_Data_7TeV_part32.root',
+	'plotsZtoElecTau_Data_7TeV_part33.root',
+	'plotsZtoElecTau_Data_7TeV_part34.root',
+	'plotsZtoElecTau_Data_7TeV_part35.root',
+	'plotsZtoElecTau_Data_7TeV_part36.root',
+	'plotsZtoElecTau_Data_7TeV_part37.root',
+	'plotsZtoElecTau_Data_7TeV_part38.root',
+	'plotsZtoElecTau_Data_7TeV_part39.root',
+	'plotsZtoElecTau_Data_7TeV_part40.root',
+	'plotsZtoElecTau_Data_7TeV_part41.root',
+	'plotsZtoElecTau_Data_7TeV_part42.root',
+	'plotsZtoElecTau_Data_7TeV_part43.root',
+	'plotsZtoElecTau_Data_7TeV_part44.root',
+	'plotsZtoElecTau_Data_7TeV_part45.root',
+	'plotsZtoElecTau_Data_7TeV_part46.root',
+	'plotsZtoElecTau_Data_7TeV_part47.root',
+	'plotsZtoElecTau_Data_7TeV_part48.root',
+	'plotsZtoElecTau_Data_7TeV_part49.root',
+	'plotsZtoElecTau_Data_7TeV_part50.root',
+	'plotsZtoElecTau_Data_7TeV_part51.root',
+	'plotsZtoElecTau_Data_7TeV_part52.root',
+	'plotsZtoElecTau_Data_7TeV_part53.root',
+	'plotsZtoElecTau_Data_7TeV_part54.root',
+	'plotsZtoElecTau_Data_7TeV_part55.root',
+	'plotsZtoElecTau_Data_7TeV_part56.root',
+	'plotsZtoElecTau_Data_7TeV_part57.root'
 )
-#processZtoElecTau_Data_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_Data_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_Data_7TeV)
-processZtoElecTau_Data_7TeV.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 processZtoElecTau_Data_7TeV_Sum = copy.deepcopy(process_Data)
 processZtoElecTau_Data_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -92,16 +135,13 @@ processZtoElecTau_MinBias_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring
 	'plotsZtoElecTau_MinBias_7TeV_part50.root',
 	'plotsZtoElecTau_MinBias_7TeV_part51.root'
 )
-#processZtoElecTau_MinBias_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_MinBias_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_MinBias_7TeV)
-#processZtoElecTau_MinBias_7TeV.config_dqmFileLoader.scaleFactor = cms.double(47853/1737)
-processZtoElecTau_MinBias_7TeV.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 processZtoElecTau_MinBias_7TeV_Sum = copy.deepcopy(process_MinBias)
 processZtoElecTau_MinBias_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_MinBias_7TeVSum.root'
 )
 processZtoElecTau_MinBias_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_MinBias_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(674/79)
+processZtoElecTau_MinBias_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_MinBias_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_MinBias_7TeV)
 
 #--------------------------------------------------------------------------------
 
@@ -125,19 +165,17 @@ processZtoElecTau_Ztautau_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring
 	'plotsZtoElecTau_Ztautau_7TeV_part16.root',
 	'plotsZtoElecTau_Ztautau_7TeV_part17.root',
 	'plotsZtoElecTau_Ztautau_7TeV_part18.root',
-	'plotsZtoElecTau_Ztautau_7TeV_part19.root',
-	'plotsZtoElecTau_Ztautau_7TeV_part20.root',
-	'plotsZtoElecTau_Ztautau_7TeV_part21.root'
+	#'plotsZtoElecTau_Ztautau_7TeV_part19.root',
+	'plotsZtoElecTau_Ztautau_7TeV_part20.root'
 )
-#processZtoElecTau_Ztautau_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_Ztautau_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_Ztautau_7TeV)
 
 processZtoElecTau_Ztautau_7TeV_Sum = copy.deepcopy(process_Ztautau)
 processZtoElecTau_Ztautau_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_Ztautau_7TeVSum.root'
 )
 processZtoElecTau_Ztautau_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_Ztautau_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(float(650)/float(52000))
-
+#processZtoElecTau_Ztautau_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(float(650)/float(52000))
+processZtoElecTau_Ztautau_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_Ztautau_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_Ztautau_7TeV*scaleFactor)
 #--------------------------------------------------------------------------------
 
 processZtoElecTau_Zee_7TeV = copy.deepcopy(process_Zee)
@@ -168,7 +206,7 @@ processZtoElecTau_Zee_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_Zee_7TeV_part24.root',
 	'plotsZtoElecTau_Zee_7TeV_part25.root',
 	'plotsZtoElecTau_Zee_7TeV_part26.root',
-	'plotsZtoElecTau_Zee_7TeV_part27.root',
+	#'plotsZtoElecTau_Zee_7TeV_part27.root',
 	'plotsZtoElecTau_Zee_7TeV_part28.root',
 	'plotsZtoElecTau_Zee_7TeV_part29.root',
 	'plotsZtoElecTau_Zee_7TeV_part30.root',
@@ -190,14 +228,14 @@ processZtoElecTau_Zee_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_Zee_7TeV_part46.root',
 	'plotsZtoElecTau_Zee_7TeV_part47.root',
 	'plotsZtoElecTau_Zee_7TeV_part48.root',
-	'plotsZtoElecTau_Zee_7TeV_part49.root',
+	#'plotsZtoElecTau_Zee_7TeV_part49.root',
 	'plotsZtoElecTau_Zee_7TeV_part50.root',
 	'plotsZtoElecTau_Zee_7TeV_part51.root',
 	'plotsZtoElecTau_Zee_7TeV_part52.root',
 	'plotsZtoElecTau_Zee_7TeV_part53.root',
 	'plotsZtoElecTau_Zee_7TeV_part54.root',
-	'plotsZtoElecTau_Zee_7TeV_part55.root',
-	'plotsZtoElecTau_Zee_7TeV_part56.root',
+	#'plotsZtoElecTau_Zee_7TeV_part55.root',
+	#'plotsZtoElecTau_Zee_7TeV_part56.root',
 	'plotsZtoElecTau_Zee_7TeV_part57.root',
 	'plotsZtoElecTau_Zee_7TeV_part58.root',
 	'plotsZtoElecTau_Zee_7TeV_part59.root',
@@ -208,14 +246,14 @@ processZtoElecTau_Zee_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_Zee_7TeV_part64.root',
 	'plotsZtoElecTau_Zee_7TeV_part65.root',
 	'plotsZtoElecTau_Zee_7TeV_part66.root',
-	'plotsZtoElecTau_Zee_7TeV_part67.root',
+	#'plotsZtoElecTau_Zee_7TeV_part67.root',
 	'plotsZtoElecTau_Zee_7TeV_part68.root',
 	'plotsZtoElecTau_Zee_7TeV_part69.root',
 	'plotsZtoElecTau_Zee_7TeV_part70.root',
-#	'plotsZtoElecTau_Zee_7TeV_part71.root',
+	'plotsZtoElecTau_Zee_7TeV_part71.root',
 	'plotsZtoElecTau_Zee_7TeV_part72.root',
 	'plotsZtoElecTau_Zee_7TeV_part73.root',
-	'plotsZtoElecTau_Zee_7TeV_part74.root',
+	#'plotsZtoElecTau_Zee_7TeV_part74.root',
 	'plotsZtoElecTau_Zee_7TeV_part75.root',
 	'plotsZtoElecTau_Zee_7TeV_part76.root',
 	'plotsZtoElecTau_Zee_7TeV_part77.root',
@@ -227,14 +265,13 @@ processZtoElecTau_Zee_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_Zee_7TeV_part83.root',
 	'plotsZtoElecTau_Zee_7TeV_part84.root'
 )
-processZtoElecTau_Zee_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_Zee_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_Zee_7TeV)
 
 processZtoElecTau_Zee_7TeV_Sum = copy.deepcopy(process_Zee)
 processZtoElecTau_Zee_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_Zee_7TeVSum.root'
 )
 processZtoElecTau_Zee_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_Zee_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_Zee_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_Zee_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_Zee_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
@@ -243,40 +280,42 @@ processZtoElecTau_gammaPlusJets_Pt15to20_7TeV.config_dqmFileLoader.inputFileName
     'plotsZtoElecTau_PhotonPlusJets_Pt15to20_7TeV.root'
 )
 processZtoElecTau_gammaPlusJets_Pt15to20_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt15to20')
-processZtoElecTau_gammaPlusJets_Pt15to20_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt15to20_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt15to20_7TeV)
+processZtoElecTau_gammaPlusJets_Pt15to20_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt15to20_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt15to20_7TeV*scaleFactor)
 
 processZtoElecTau_gammaPlusJets_Pt20to30_7TeV = copy.deepcopy(process_gammaPlusJets)
 processZtoElecTau_gammaPlusJets_Pt20to30_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_PhotonPlusJets_Pt20to30_7TeV.root'
 )
 processZtoElecTau_gammaPlusJets_Pt20to30_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt20to30')
-processZtoElecTau_gammaPlusJets_Pt20to30_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt20to30_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt20to30_7TeV)
+processZtoElecTau_gammaPlusJets_Pt20to30_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt20to30_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt20to30_7TeV*scaleFactor)
 
 processZtoElecTau_gammaPlusJets_Pt30to50_7TeV = copy.deepcopy(process_gammaPlusJets)
 processZtoElecTau_gammaPlusJets_Pt30to50_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_PhotonPlusJets_Pt30to50_7TeV.root'
 )
 processZtoElecTau_gammaPlusJets_Pt30to50_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt30to50')
-processZtoElecTau_gammaPlusJets_Pt30to50_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt30to50_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt30to50_7TeV)
+processZtoElecTau_gammaPlusJets_Pt30to50_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt30to50_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt30to50_7TeV*scaleFactor)
 
 processZtoElecTau_gammaPlusJets_Pt50to80_7TeV = copy.deepcopy(process_gammaPlusJets)
 processZtoElecTau_gammaPlusJets_Pt50to80_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_PhotonPlusJets_Pt50to80_7TeV.root'
 )
 processZtoElecTau_gammaPlusJets_Pt50to80_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt50to80')
-processZtoElecTau_gammaPlusJets_Pt50to80_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt50to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt50to80_7TeV)
+processZtoElecTau_gammaPlusJets_Pt50to80_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt50to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt50to80_7TeV*scaleFactor)
 
 processZtoElecTau_gammaPlusJets_Pt80to120_7TeV = copy.deepcopy(process_gammaPlusJets)
 processZtoElecTau_gammaPlusJets_Pt80to120_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_PhotonPlusJets_Pt80to120_7TeV.root'
 )
 processZtoElecTau_gammaPlusJets_Pt80to120_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt80to120')
-processZtoElecTau_gammaPlusJets_Pt80to120_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt80to120_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt80to120_7TeV)
+processZtoElecTau_gammaPlusJets_Pt80to120_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt80to120_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt80to120_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
-processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV = copy.deepcopy(process_QCD_BCtoE_Pt20to30)
-processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
+processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part01 = copy.deepcopy(process_QCD_BCtoE_Pt20to30)
+processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part02 = copy.deepcopy(process_QCD_BCtoE_Pt20to30)
+processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part03 = copy.deepcopy(process_QCD_BCtoE_Pt20to30)
+processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part01.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part02.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part03.root',
@@ -287,15 +326,113 @@ processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV.config_dqmFileLoader.inputFileNames = 
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part08.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part09.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part10.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part100.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part101.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part102.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part103.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part104.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part105.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part106.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part107.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part108.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part109.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part11.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part110.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part111.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part112.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part113.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part114.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part115.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part116.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part117.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part118.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part119.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part12.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part120.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part121.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part122.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part123.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part124.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part125.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part126.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part127.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part128.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part129.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part13.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part130.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part131.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part132.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part133.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part134.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part135.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part136.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part137.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part138.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part139.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part14.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part140.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part141.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part142.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part143.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part144.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part145.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part146.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part147.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part148.root'
+)
+processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part149.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part15.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part150.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part151.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part152.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part153.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part154.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part155.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part156.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part157.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part158.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part159.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part16.root',
-	#'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part17.root',
-	#'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part18.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part160.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part161.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part162.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part163.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part164.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part165.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part166.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part167.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part168.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part169.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part17.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part170.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part171.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part172.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part173.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part174.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part175.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part176.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part177.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part178.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part179.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part18.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part180.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part181.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part182.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part183.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part184.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part185.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part186.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part187.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part188.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part189.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part19.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part190.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part191.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part192.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part193.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part194.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part195.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part20.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part21.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part22.root',
@@ -307,7 +444,9 @@ processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV.config_dqmFileLoader.inputFileNames = 
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part28.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part29.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part30.root',
-	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part31.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part31.root'
+)
+processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part03.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part32.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part33.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part34.root',
@@ -377,21 +516,23 @@ processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV.config_dqmFileLoader.inputFileNames = 
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part98.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part99.root'
 )
-processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt20to30_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt20to30_7TeV)
 
 processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_Sum = copy.deepcopy(process_QCD_BCtoE_Pt20to30)
 processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeVSum.root'
+    'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part01Sum.root',
+    'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part02Sum.root',
+    'plotsZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_part03Sum.root'
 )
 processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_QCD_BCtoE_Pt20to30_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt20to30_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt20to30_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
-processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV = copy.deepcopy(process_QCD_BCtoE_Pt30to80)
-processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
-		#'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part01.root',
-		#'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part02.root',
+processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part01 = copy.deepcopy(process_QCD_BCtoE_Pt30to80)
+processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part02 = copy.deepcopy(process_QCD_BCtoE_Pt30to80)
+processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part01.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part02.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part03.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part04.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part05.root',
@@ -400,12 +541,82 @@ processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV.config_dqmFileLoader.inputFileNames = 
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part08.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part09.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part10.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part100.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part101.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part102.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part103.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part104.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part105.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part106.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part107.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part108.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part109.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part11.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part110.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part111.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part112.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part113.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part114.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part115.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part116.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part117.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part118.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part119.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part12.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part120.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part121.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part122.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part123.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part124.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part125.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part126.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part127.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part128.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part129.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part13.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part130.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part131.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part132.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part133.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part134.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part135.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part136.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part137.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part138.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part139.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part14.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part140.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part141.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part142.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part143.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part144.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part145.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part146.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part147.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part148.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part149.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part15.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part150.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part151.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part152.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part153.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part154.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part155.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part156.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part157.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part158.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part159.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part16.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part160.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part161.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part162.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part163.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part164.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part165.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part166.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part167.root'
+)
+processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part17.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part18.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part19.root',
@@ -430,7 +641,7 @@ processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV.config_dqmFileLoader.inputFileNames = 
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part38.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part39.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part40.root',
-	#	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part41.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part41.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part42.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part43.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part44.root',
@@ -455,7 +666,7 @@ processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV.config_dqmFileLoader.inputFileNames = 
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part63.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part64.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part65.root',
-#	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part66.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part66.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part67.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part68.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part69.root',
@@ -474,21 +685,36 @@ processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV.config_dqmFileLoader.inputFileNames = 
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part82.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part83.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part84.root',
-	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part85.root'
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part85.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part86.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part87.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part88.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part89.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part90.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part91.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part92.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part93.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part94.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part95.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part96.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part97.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part98.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part99.root'
 )
-processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt30to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt30to80_7TeV)
 
 processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_Sum = copy.deepcopy(process_QCD_BCtoE_Pt30to80)
 processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeVSum.root'
+    'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part01Sum.root',
+    'plotsZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_part02Sum.root'
 )
 processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_QCD_BCtoE_Pt30to80_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt30to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt30to80_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
-processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV = copy.deepcopy(process_QCD_BCtoE_Pt80to170)
-processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
+processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part01 = copy.deepcopy(process_QCD_BCtoE_Pt80to170)
+processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part02 = copy.deepcopy(process_QCD_BCtoE_Pt80to170)
+processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part01.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part02.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part03.root',
@@ -513,7 +739,7 @@ processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV.config_dqmFileLoader.inputFileNames =
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part22.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part23.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part24.root',
-	#'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part25.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part25.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part26.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part27.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part28.root',
@@ -526,24 +752,71 @@ processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV.config_dqmFileLoader.inputFileNames =
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part35.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part36.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part37.root',
-	#'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part38.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part38.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part39.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part40.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part41.root',
 	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part42.root'
 )
-processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt80to170_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt80to170_7TeV)
+processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part43.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part44.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part45.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part46.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part47.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part48.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part49.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part50.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part51.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part52.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part53.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part54.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part55.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part56.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part57.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part58.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part59.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part60.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part61.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part62.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part63.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part64.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part65.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part66.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part67.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part68.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part69.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part70.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part71.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part72.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part73.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part74.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part75.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part76.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part77.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part78.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part79.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part80.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part81.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part82.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part83.root',
+	'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part84.root'
+)
 
 processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_Sum = copy.deepcopy(process_QCD_BCtoE_Pt80to170)
 processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeVSum.root'
+    'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part01Sum.root',
+    'plotsZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_part02Sum.root'
 )
 processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_QCD_BCtoE_Pt80to170_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt80to170_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt80to170_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
 processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01 = copy.deepcopy(process_QCD_EMenriched_Pt20to30)
+processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02 = copy.deepcopy(process_QCD_EMenriched_Pt20to30)
+processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part03 = copy.deepcopy(process_QCD_EMenriched_Pt20to30)
+
 processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02.root',
@@ -582,7 +855,7 @@ processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part35.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part36.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part37.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part38.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part38.root', 
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part39.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part40.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part41.root',
@@ -605,7 +878,9 @@ processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part58.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part59.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part60.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part61.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part61.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part62.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part63.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part64.root',
@@ -614,7 +889,7 @@ processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part67.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part68.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part69.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part70.root',
+	#'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part70.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part71.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part72.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part73.root',
@@ -631,15 +906,10 @@ processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part84.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part85.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part86.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part87.root'
-)
-processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt20to30_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt20to30_7TeV)
-
-processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02 = copy.deepcopy(process_QCD_EMenriched_Pt20to30)
-processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part87.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part88.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part89.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part90.root',
+	#'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part90.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part91.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part92.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part93.root',
@@ -671,7 +941,9 @@ processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part119.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part120.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part121.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part122.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part122.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part03.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part123.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part124.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part125.root',
@@ -679,7 +951,7 @@ processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part127.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part128.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part129.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part130.root',
+	#'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part130.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part131.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part132.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part133.root',
@@ -723,22 +995,52 @@ processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part171.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part172.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part173.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part174.root'
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part174.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part175.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part176.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part177.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part178.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part179.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part180.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part181.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part182.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part183.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part184.root'
 )
-processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt20to30_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt20to30_7TeV)
 
 processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_Sum = copy.deepcopy(process_QCD_EMenriched_Pt20to30)
 processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part01Sum.root',
-    'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02Sum.root'
+    'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part02Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_part03Sum.root'
 )
 processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_QCD_EMenriched_Pt20to30_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt20to30_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt20to30_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
 
 processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part01 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part05 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part06 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part07 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part08 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part09 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part10 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part11 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part12 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part13 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part14 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part15 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part16 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part17 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part18 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part19 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part20 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+
 processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part01.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.root',
@@ -751,43 +1053,405 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part01.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part09.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part10.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part100.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1000.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1001.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1002.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1003.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1004.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1005.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1006.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1007.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1008.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1009.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part101.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1010.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1011.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1012.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1013.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1014.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1015.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1016.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1017.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1018.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1019.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part102.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1020.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1021.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1022.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1023.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1024.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1025.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1026.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1027.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1028.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1029.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part103.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1030.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1031.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1032.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1033.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1034.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1035.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1036.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1037.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1038.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1039.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part104.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1040.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1041.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1042.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1043.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1044.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1045.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1046.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1047.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1048.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1049.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part105.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1050.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1051.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1052.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1053.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1054.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1055.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1056.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1057.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1058.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1059.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part106.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1060.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1061.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1062.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1063.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1064.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1065.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1066.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1067.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1068.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1069.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part107.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1070.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1071.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1072.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1073.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1074.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1075.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1076.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1077.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1078.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1079.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part108.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1080.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1081.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1082.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1083.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1084.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1085.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1086.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1087.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1088.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1089.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part109.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1090.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1091.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1092.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1093.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1094.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1095.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1096.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1097.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1098.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1099.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part11.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part110.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1100.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1101.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1102.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1103.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1104.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1105.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1106.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1107.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1108.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1109.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part111.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1110.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1111.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1112.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1113.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1114.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1115.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1116.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1117.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1118.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1119.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part112.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1120.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1121.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1122.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1123.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1124.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1125.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1126.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1127.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1128.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1129.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part113.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1130.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1131.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1132.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1133.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1134.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1135.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1136.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1137.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1138.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1139.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part114.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1140.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1141.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1142.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1143.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1144.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1145.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1146.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1147.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1148.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1149.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part115.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1150.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1151.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1152.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1153.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1154.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1155.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1156.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1157.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1158.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1159.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part116.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1160.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1161.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1162.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1163.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1164.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1165.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1166.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1167.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1168.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1169.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part117.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1170.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1171.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1172.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1173.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1174.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1175.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1176.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1177.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1178.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1179.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part118.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1180.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1181.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1182.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1183.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1184.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1185.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1186.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1187.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1188.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1189.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part119.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1190.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1191.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1192.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1193.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1194.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1195.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1196.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1197.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1198.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1199.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part12.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part120.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1200.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1201.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1202.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1203.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1204.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1205.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1206.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1207.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1208.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1209.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part121.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1210.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1211.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1212.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1213.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1214.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1215.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1216.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1217.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1218.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1219.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part122.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1220.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1221.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1222.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1223.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1224.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1225.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1226.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1227.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1228.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1229.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part123.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1230.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1231.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1232.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1233.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1234.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1235.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1236.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1237.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1238.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1239.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part124.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1240.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1241.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1242.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1243.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part05.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1244.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1245.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1246.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1247.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1248.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1249.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part125.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1250.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1251.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1252.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1253.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1254.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1255.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1256.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1257.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1258.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1259.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part126.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1260.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1261.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1262.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1263.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1264.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1265.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1266.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1267.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1268.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1269.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part127.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1270.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1271.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1272.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1273.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1274.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1275.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1276.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1277.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1278.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1279.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part128.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1280.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1281.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1282.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1283.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1284.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1285.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1286.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1287.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1288.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1289.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part129.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1290.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1291.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1292.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1293.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1294.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1295.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1296.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1297.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1298.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1299.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part13.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part130.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1300.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1301.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1302.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1303.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1304.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1305.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1306.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part06.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1307.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1308.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1309.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part131.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1310.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1311.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1312.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1313.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1314.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1315.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1316.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1317.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1318.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1319.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part132.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1320.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1321.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1322.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1323.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1324.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1325.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1326.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1327.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1328.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1329.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part133.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1330.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1331.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1332.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1333.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1334.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1335.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1336.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1337.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1338.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1339.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part134.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1340.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1341.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1342.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1343.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1344.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1345.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1346.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1347.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1348.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1349.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part135.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part1350.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part136.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part137.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part138.root',
@@ -808,7 +1472,9 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part01.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part151.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part152.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part153.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part154.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part154.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part07.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part155.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part156.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part157.root',
@@ -837,12 +1503,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part01.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part178.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part179.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part18.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part180.root'
-)
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part01.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt30to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt30to80_7TeV)
-
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part180.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part181.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part182.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part183.root',
@@ -883,7 +1544,9 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part215.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part216.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part217.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part218.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part218.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part08.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part219.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part22.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part220.root',
@@ -953,7 +1616,9 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part279.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part28.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part280.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part281.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part281.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part09.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part282.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part283.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part284.root',
@@ -1000,6 +1665,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part321.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part322.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part323.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part324.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part325.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part326.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part327.root',
@@ -1022,7 +1688,9 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part342.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part343.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part344.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part345.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part345.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part10.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part346.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part347.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part348.root',
@@ -1039,12 +1707,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part358.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part359.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part36.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part360.root'
-)
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt30to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt30to80_7TeV)
-
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part360.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part361.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part362.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part363.root',
@@ -1065,6 +1728,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part377.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part378.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part379.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part38.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part380.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part381.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part382.root',
@@ -1096,7 +1760,9 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part406.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part407.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part408.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part409.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part409.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part11.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part41.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part410.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part411.root',
@@ -1108,6 +1774,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part417.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part418.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part419.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part42.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part420.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part421.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part422.root',
@@ -1119,6 +1786,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part428.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part429.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part43.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part430.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part431.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part432.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part433.root',
@@ -1164,7 +1832,10 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part47.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part470.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part471.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part472.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part472.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part12.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part473.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part474.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part475.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part476.root',
@@ -1212,6 +1883,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part514.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part515.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part516.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part517.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part518.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part519.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part52.root',
@@ -1232,16 +1904,13 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part533.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part534.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part535.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part536.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part536.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part13.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part537.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part538.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part539.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part54.root'
-)
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt30to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt30to80_7TeV)
-
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part54.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part540.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part541.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part542.root',
@@ -1263,6 +1932,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part557.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part558.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part559.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part56.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part560.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part561.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part562.root',
@@ -1273,7 +1943,9 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part567.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part568.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part569.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part57.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part570.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part571.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part572.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part573.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part574.root',
@@ -1287,6 +1959,8 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part581.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part582.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part583.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part584.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part585.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part586.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part587.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part588.root',
@@ -1302,7 +1976,9 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part597.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part598.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part599.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part60.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part60.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part14.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part600.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part601.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part602.root',
@@ -1310,12 +1986,14 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part604.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part605.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part606.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part607.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part608.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part609.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part61.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part610.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part611.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part612.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part613.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part614.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part615.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part616.root',
@@ -1327,6 +2005,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part621.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part622.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part623.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part624.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part625.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part626.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part627.root',
@@ -1334,6 +2013,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part629.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part63.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part630.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part631.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part632.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part633.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part634.root',
@@ -1368,7 +2048,9 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part660.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part661.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part662.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part663.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part663.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part15.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part664.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part665.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part666.root',
@@ -1382,50 +2064,406 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.input
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part673.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part674.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part675.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part676.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part677.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part678.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part679.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part68.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part680.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part681.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part682.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part683.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part684.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part685.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part686.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part687.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part688.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part689.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part69.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part690.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part691.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part692.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part693.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part694.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part695.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part696.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part697.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part698.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part699.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part70.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part700.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part701.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part702.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part703.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part704.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part705.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part706.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part707.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part708.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part709.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part71.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part73.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part74.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part75.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part77.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part78.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part79.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part80.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part82.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part83.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part85.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part86.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part87.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part88.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part89.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part90.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part91.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part92.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part93.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part94.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part95.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part96.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part97.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part98.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part99.root'
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part710.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part711.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part712.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part713.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part714.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part715.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part716.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part717.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part718.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part719.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part72.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part720.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part721.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part722.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part723.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part724.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part725.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part726.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part727.root'
 )
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt30to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt30to80_7TeV)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part16.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part728.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part729.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part73.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part730.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part731.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part732.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part733.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part734.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part735.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part736.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part737.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part738.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part739.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part74.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part740.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part741.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part742.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part743.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part744.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part745.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part746.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part747.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part748.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part749.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part75.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part750.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part751.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part752.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part753.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part754.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part755.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part756.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part757.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part758.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part759.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part76.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part760.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part761.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part762.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part763.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part764.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part765.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part766.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part767.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part768.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part769.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part77.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part770.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part771.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part772.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part773.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part774.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part775.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part776.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part777.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part778.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part779.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part78.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part780.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part781.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part782.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part783.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part784.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part785.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part786.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part787.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part788.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part789.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part79.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part790.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part17.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part791.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part792.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part793.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part794.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part795.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part796.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part797.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part798.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part799.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part80.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part800.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part801.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part802.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part803.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part804.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part805.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part806.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part807.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part808.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part809.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part81.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part810.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part811.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part812.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part813.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part814.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part815.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part816.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part817.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part818.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part819.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part82.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part820.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part821.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part822.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part823.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part824.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part825.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part826.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part827.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part828.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part829.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part83.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part830.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part831.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part832.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part833.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part834.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part835.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part836.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part837.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part838.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part839.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part84.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part840.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part841.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part842.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part843.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part844.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part845.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part846.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part847.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part848.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part849.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part85.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part850.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part851.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part852.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part853.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part854.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part18.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part855.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part856.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part857.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part858.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part859.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part86.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part860.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part861.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part862.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part863.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part864.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part865.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part866.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part867.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part868.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part869.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part87.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part870.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part871.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part872.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part873.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part874.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part875.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part876.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part877.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part878.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part879.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part88.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part880.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part881.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part882.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part883.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part884.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part885.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part886.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part887.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part888.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part889.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part89.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part890.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part891.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part892.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part893.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part894.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part895.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part896.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part897.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part898.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part899.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part90.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part900.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part901.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part902.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part903.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part904.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part905.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part906.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part907.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part908.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part909.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part91.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part910.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part911.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part912.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part913.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part914.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part915.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part916.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part917.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part918.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part19.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part919.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part92.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part920.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part921.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part922.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part923.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part924.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part925.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part926.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part927.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part928.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part929.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part93.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part930.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part931.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part932.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part933.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part934.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part935.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part936.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part937.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part938.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part939.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part94.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part940.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part941.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part942.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part943.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part944.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part945.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part946.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part947.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part948.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part949.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part95.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part950.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part951.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part952.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part953.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part954.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part955.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part956.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part957.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part958.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part959.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part96.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part960.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part961.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part962.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part20.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part963.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part964.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part965.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part966.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part967.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part968.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part969.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part97.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part970.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part971.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part972.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part973.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part974.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part975.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part976.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part977.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part978.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part979.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part98.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part980.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part981.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part982.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part983.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part984.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part985.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part986.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part987.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part988.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part989.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part99.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part990.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part991.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part992.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part993.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part994.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part995.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part996.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part997.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part998.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part999.root'
+)
 
 processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_Sum = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
 processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part01Sum.root',
     'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part02Sum.root',
     'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part03Sum.root',
-    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04Sum.root'
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part04Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part05Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part06Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part07Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part08Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part09Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part10Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part11Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part12Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part13Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part14Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part15Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part16Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part17Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part18Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part19Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_part20Sum.root'
 )
 processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_QCD_EMenriched_Pt30to80_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt30to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt30to80_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
 processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part01 = copy.deepcopy(process_QCD_EMenriched_Pt80to170)
+processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02 = copy.deepcopy(process_QCD_EMenriched_Pt80to170)
+processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part03 = copy.deepcopy(process_QCD_EMenriched_Pt80to170)
+
 processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part01.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02.root',
@@ -1437,20 +2475,173 @@ processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part01.config_dqmFileLoader.inpu
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part08.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part09.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part10.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part100.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part101.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part102.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part103.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part104.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part105.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part106.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part107.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part108.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part109.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part11.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part110.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part111.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part112.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part113.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part114.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part115.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part116.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part117.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part118.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part119.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part12.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part120.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part121.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part122.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part123.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part124.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part125.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part126.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part127.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part128.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part129.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part13.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part130.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part131.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part132.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part133.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part134.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part135.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part136.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part137.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part138.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part139.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part14.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part140.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part141.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part142.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part143.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part144.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part145.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part146.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part147.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part148.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part149.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part15.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part150.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part151.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part152.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part153.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part154.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part155.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part156.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part157.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part158.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part159.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part16.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part160.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part161.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part162.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part163.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part164.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part165.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part166.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part167.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part168.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part169.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part17.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part170.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part171.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part172.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part173.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part174.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part175.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part176.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part177.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part178.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part179.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part18.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part180.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part181.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part182.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part183.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part184.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part185.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part186.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part187.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part188.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part189.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part19.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part190.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part191.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part192.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part193.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part194.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part195.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part196.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part197.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part198.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part199.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part20.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part200.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part201.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part202.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part203.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part204.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part205.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part206.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part207.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part208.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part209.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part21.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part210.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part211.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part212.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part213.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part214.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part215.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part216.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part217.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part218.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part219.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part22.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part220.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part221.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part222.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part223.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part224.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part225.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part226.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part227.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part228.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part229.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part23.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part24.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part230.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part231.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part232.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part233.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part234.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part235.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part236.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part237.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part238.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part239.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part24.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part03.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part240.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part241.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part242.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part243.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part244.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part245.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part246.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part247.root',
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part248.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part25.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part26.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part27.root',
@@ -1478,12 +2669,7 @@ processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part01.config_dqmFileLoader.inpu
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part49.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part50.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part51.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part52.root'
-)
-processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part01.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt80to170_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt80to170_7TeV)
-
-processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02 = copy.deepcopy(process_QCD_EMenriched_Pt80to170)
-processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part52.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part53.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part54.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part55.root',
@@ -1530,42 +2716,17 @@ processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02.config_dqmFileLoader.inpu
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part96.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part97.root',
 	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part98.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part99.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part100.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part101.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part102.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part103.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part104.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part105.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part106.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part107.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part108.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part109.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part110.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part111.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part112.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part113.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part114.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part115.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part116.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part117.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part118.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part119.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part120.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part121.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part122.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part123.root',
-	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part124.root'
+	'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part99.root'
 )
-processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt80to170_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt80to170_7TeV)
 
 processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_Sum = copy.deepcopy(process_QCD_EMenriched_Pt80to170)
 processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part01Sum.root',
-    'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02Sum.root'
+    'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part02Sum.root',
+    'plotsZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_part03Sum.root'
 )
 processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_QCD_EMenriched_Pt80to170_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt80to170_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt80to170_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
@@ -1587,16 +2748,80 @@ processZtoElecTau_WplusJets_7TeV.config_dqmFileLoader.inputFileNames = cms.vstri
 	'plotsZtoElecTau_WplusJets_7TeV_part14.root',
 	'plotsZtoElecTau_WplusJets_7TeV_part15.root',
 	'plotsZtoElecTau_WplusJets_7TeV_part16.root',
-	'plotsZtoElecTau_WplusJets_7TeV_part17.root'
+	'plotsZtoElecTau_WplusJets_7TeV_part17.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part18.root',
+	#'plotsZtoElecTau_WplusJets_7TeV_part19.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part20.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part21.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part22.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part23.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part24.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part25.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part26.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part27.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part28.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part29.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part30.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part31.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part32.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part33.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part34.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part35.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part36.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part37.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part38.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part39.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part40.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part41.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part42.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part43.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part44.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part45.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part46.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part47.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part48.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part49.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part50.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part51.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part52.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part53.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part54.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part55.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part56.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part57.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part58.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part59.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part60.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part61.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part62.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part63.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part64.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part65.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part66.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part67.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part68.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part69.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part70.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part71.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part72.root',
+	#'plotsZtoElecTau_WplusJets_7TeV_part73.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part74.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part75.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part76.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part77.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part78.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part79.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part80.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part81.root',
+	'plotsZtoElecTau_WplusJets_7TeV_part82.root'
 )
-processZtoElecTau_WplusJets_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_WplusJets_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_WplusJets_7TeV)
 
 processZtoElecTau_WplusJets_7TeV_Sum = copy.deepcopy(process_WplusJets)
 processZtoElecTau_WplusJets_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_WplusJets_7TeVSum.root'
 )
 processZtoElecTau_WplusJets_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_WplusJets_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_WplusJets_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_WplusJets_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_WplusJets_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
@@ -1615,23 +2840,17 @@ processZtoElecTau_ZeePlusJets_7TeV.config_dqmFileLoader.inputFileNames = cms.vst
 	'plotsZtoElecTau_ZeePlusJets_7TeV_part11.root',
 	'plotsZtoElecTau_ZeePlusJets_7TeV_part12.root',
 	'plotsZtoElecTau_ZeePlusJets_7TeV_part13.root',
-	'plotsZtoElecTau_ZeePlusJets_7TeV_part14.root',
-	'plotsZtoElecTau_ZeePlusJets_7TeV_part15.root',
-	'plotsZtoElecTau_ZeePlusJets_7TeV_part16.root',
-	'plotsZtoElecTau_ZeePlusJets_7TeV_part17.root',
-	'plotsZtoElecTau_ZeePlusJets_7TeV_part18.root',
-	'plotsZtoElecTau_ZeePlusJets_7TeV_part19.root',
-	'plotsZtoElecTau_ZeePlusJets_7TeV_part20.root',
-	'plotsZtoElecTau_ZeePlusJets_7TeV_part21.root'
+	'plotsZtoElecTau_ZeePlusJets_7TeV_part14.root'
 )
-processZtoElecTau_ZeePlusJets_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_ZeePlusJets_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_ZeePlusJets_7TeV)
 
 processZtoElecTau_ZeePlusJets_7TeV_Sum = copy.deepcopy(process_ZeePlusJets)
 processZtoElecTau_ZeePlusJets_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_ZeePlusJets_7TeVSum.root'
 )
 processZtoElecTau_ZeePlusJets_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_ZeePlusJets_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_ZeePlusJets_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_ZeePlusJets_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_ZeePlusJets_7TeV*scaleFactor)
+
+#--------------------------------------------------------------------------------
 
 processZtoElecTau_ZtautauPlusJets_7TeV = copy.deepcopy(process_ZtautauPlusJets)
 processZtoElecTau_ZtautauPlusJets_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -1648,23 +2867,15 @@ processZtoElecTau_ZtautauPlusJets_7TeV.config_dqmFileLoader.inputFileNames = cms
 	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part11.root',
 	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part12.root',
 	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part13.root',
-	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part14.root',
-	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part15.root',
-	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part16.root',
-	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part17.root',
-	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part18.root',
-	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part19.root',
-	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part20.root',
-	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part21.root'
+	'plotsZtoElecTau_ZtautauPlusJets_7TeV_part14.root'
 )
-processZtoElecTau_ZtautauPlusJets_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_ZtautauPlusJets_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_ZtautauPlusJets_7TeV)
 
 processZtoElecTau_ZtautauPlusJets_7TeV_Sum = copy.deepcopy(process_ZtautauPlusJets)
 processZtoElecTau_ZtautauPlusJets_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_ZtautauPlusJets_7TeVSum.root'
 )
 processZtoElecTau_ZtautauPlusJets_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_ZtautauPlusJets_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_ZtautauPlusJets_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_ZtautauPlusJets_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_ZtautauPlusJets_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
 
@@ -1687,7 +2898,7 @@ processZtoElecTau_TTplusJets_7TeV.config_dqmFileLoader.inputFileNames = cms.vstr
 	'plotsZtoElecTau_TTplusJets_7TeV_part15.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part16.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part17.root',
-	#'plotsZtoElecTau_TTplusJets_7TeV_part18.root',
+	'plotsZtoElecTau_TTplusJets_7TeV_part18.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part19.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part20.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part21.root',
@@ -1708,7 +2919,7 @@ processZtoElecTau_TTplusJets_7TeV.config_dqmFileLoader.inputFileNames = cms.vstr
 	'plotsZtoElecTau_TTplusJets_7TeV_part36.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part37.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part38.root',
-	'plotsZtoElecTau_TTplusJets_7TeV_part39.root',
+	#'plotsZtoElecTau_TTplusJets_7TeV_part39.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part40.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part41.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part42.root',
@@ -1723,13 +2934,12 @@ processZtoElecTau_TTplusJets_7TeV.config_dqmFileLoader.inputFileNames = cms.vstr
 	'plotsZtoElecTau_TTplusJets_7TeV_part51.root',
 	'plotsZtoElecTau_TTplusJets_7TeV_part52.root'
 )
-processZtoElecTau_TTplusJets_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_TTplusJets_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_TTplusJets_7TeV)
 
 processZtoElecTau_TTplusJets_7TeV_Sum = copy.deepcopy(process_TTplusJets)
 processZtoElecTau_TTplusJets_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
     'plotsZtoElecTau_TTplusJets_7TeVSum.root'
 )
 processZtoElecTau_TTplusJets_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processZtoElecTau_TTplusJets_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+processZtoElecTau_TTplusJets_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_TTplusJets_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_TTplusJets_7TeV*scaleFactor)
 
 #--------------------------------------------------------------------------------
