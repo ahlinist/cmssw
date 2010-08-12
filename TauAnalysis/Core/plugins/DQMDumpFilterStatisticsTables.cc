@@ -98,7 +98,7 @@ void printSummaryTable(std::ostream& stream, unsigned widthNameColumn, unsigned 
     stream << std::setw(widthNameColumn) << std::left << filterTitles[iFilter];
     for ( size_t iProcess = 0; iProcess < numProcesses; ++iProcess ) {
       stream << " ";
-      stream << std::setw(widthNumberColumns) << std::fixed << std::setprecision(1) << std::right << table[iFilter][iProcess];
+      stream << std::setw(widthNumberColumns) << std::fixed << std::setprecision(2) << std::right << table[iFilter][iProcess];
     }
     stream << std::endl;
   } 
@@ -223,7 +223,7 @@ void DQMDumpFilterStatisticsTables::endJob()
       columnLabels.push_back(process);
     }
 
-    printSummaryTable(std::cout, 30, 20, *columnSummaryTable, columnLabels, refFilterTitleColumn, table, numFilters, numProcesses);
+    printSummaryTable(std::cout, 42, 18, *columnSummaryTable, columnLabels, refFilterTitleColumn, table, numFilters, numProcesses);
   }
 }
 
