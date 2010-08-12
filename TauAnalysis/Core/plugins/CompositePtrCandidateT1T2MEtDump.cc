@@ -65,7 +65,7 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
   evt.getByLabel(diTauCandidateSource_, diTauCandidates);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSource_, genParticles);
+  if( genParticleSource_.label() != "") evt.getByLabel(genParticleSource_, genParticles);
       
   unsigned iDiTauCandidate = 0;
   for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
@@ -101,8 +101,10 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
     *outputStream_ << " (collinear Approx. " << collinearApproxStatus << ")" << std::endl;
     const CollinearApproxCompatibility* collinearApproxCompatibility = diTauCandidate->collinearApproxCompatibility("mZ");
     if ( collinearApproxCompatibility ) *outputStream_ << " Chi2(mZ) = " << collinearApproxCompatibility->minuitFitChi2() << std::endl;
-    *outputStream_ << " dR(leg1, nu1) = " << compDeltaRlegNu(diTauCandidate->leg1()->p4(), *genParticles) << std::endl;
-    *outputStream_ << " dR(leg2, nu2) = " << compDeltaRlegNu(diTauCandidate->leg2()->p4(), *genParticles) << std::endl;
+    if( genParticleSource_.label() != "") {
+			*outputStream_ << " dR(leg1, nu1) = " << compDeltaRlegNu(diTauCandidate->leg1()->p4(), *genParticles) << std::endl;
+    	*outputStream_ << " dR(leg2, nu2) = " << compDeltaRlegNu(diTauCandidate->leg2()->p4(), *genParticles) << std::endl;
+	}
     const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
     for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
 	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
