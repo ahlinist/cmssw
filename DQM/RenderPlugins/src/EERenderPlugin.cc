@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.162 2010/06/01 15:12:59 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.163 2010/06/01 15:15:17 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.162 $
-  \date $Date: 2010/06/01 15:12:59 $
+  \version $Revision: 1.163 $
+  \date $Date: 2010/06/01 15:15:17 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -495,6 +495,7 @@ private:
         obj->GetXaxis()->SetNdivisions(10);
         obj->GetYaxis()->SetNdivisions(10);
         if(name.find( "EETTT" ) == std::string::npos ) {
+          gStyle->SetPalette(1);
           gPad->SetGridx();
           gPad->SetGridy();          
         }
@@ -506,6 +507,7 @@ private:
         {
           gPad->SetGridx();
           gPad->SetGridy();
+          gStyle->SetPalette(1);
         }
         obj->GetXaxis()->SetNdivisions(10);
         obj->GetYaxis()->SetNdivisions(10);
@@ -736,6 +738,7 @@ private:
         {
           gPad->SetGridx();
           gPad->SetGridy();
+          gStyle->SetPalette(1);
         }
         obj->GetXaxis()->SetNdivisions(10);
         obj->GetYaxis()->SetNdivisions(10);
@@ -819,6 +822,7 @@ private:
         else
         {
           obj->SetMinimum(0.0);
+          gStyle->SetPalette(1);
         }
 
         if( name.find( "Error" ) == std::string::npos )
@@ -834,12 +838,12 @@ private:
           }
           else
           {
-            gStyle->SetPalette(10, pCol4);
+            gStyle->SetPalette(1);
           }
         }
         else
         {
-          gStyle->SetPalette(10, pCol5);
+          gStyle->SetPalette(1);
         }
 
         gPad->SetRightMargin(0.15);

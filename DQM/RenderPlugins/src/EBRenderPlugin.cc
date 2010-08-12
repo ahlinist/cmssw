@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.138 2010/03/30 14:29:06 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.139 2010/06/01 15:12:58 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.138 $
-  \date $Date: 2010/03/30 14:29:06 $
+  \version $Revision: 1.139 $
+  \date $Date: 2010/06/01 15:12:58 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -680,12 +680,12 @@ private:
           }
           else
           {
-            gStyle->SetPalette(10, pCol4);
+            gStyle->SetPalette(1);
           }
         }
         else
         {
-          gStyle->SetPalette(10, pCol5);
+          gStyle->SetPalette(1);
         }
 
         gPad->SetRightMargin(0.15);
