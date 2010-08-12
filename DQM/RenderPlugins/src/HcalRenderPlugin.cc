@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.41 $
-  \date $Date: 2010/07/27 21:23:24 $
+  \version $Revision: 1.40 $
+  \date $Date: 2010/05/30 19:29:28 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -534,6 +534,11 @@ private:
 	      (o.name.find("RawDataMonitor_Hcal/problem_rawdata/") != std::string::npos) ||
 	      (o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos) ||
 	      (o.name.find("DataFormatMonitor/H")!= std::string::npos)  ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/ ProblemCoarsePedestals")!= std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/problem_coarsepedestals")!= std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/HB HE HF Depth")!= std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/HE Depth")!= std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/HO Depth")!= std::string::npos) ||
 	      (o.name.find("HcalInfo/SummaryClientPlots") !=std::string::npos)
 	      )
       {
@@ -690,19 +695,10 @@ private:
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
 
-    if (o.name.find("reportSummaryMap" ) != std::string::npos)
-      {
-	if (obj->GetBinContent(0,0)==-1) // insufficient events for certification
-	  {
-	    TText t;
-	    t.SetTextSize(0.05);
-	    t.DrawText(0,0.9, "Insufficient Events for");
-	    t.DrawText(0,0.8, "Run Certification!");
-	  }
-      }
+
     // in the future, we can add text output based on error status,
     // or set bin range based on filled histograms, etc.
-    else if ( (o.name.find("RawDataMonitor_Hcal/Corruption")      != std::string::npos)   ||
+    if ( (o.name.find("RawDataMonitor_Hcal/Corruption")      != std::string::npos)   ||
 	 (o.name.find("RawDataMonitor_Hcal/Corruption/F")      != std::string::npos) ||
 	 (o.name.find("DataFormatMonitor/Corruption")      != std::string::npos)   ||
 	 (o.name.find("DataFormatMonitor/Corruption/F")      != std::string::npos) )
@@ -961,6 +957,11 @@ private:
 	      (o.name.find("NZSMonitor_Hcal/problem_NZS/") != std::string::npos) ||
 	      (o.name.find("RawDataMonitor_Hcal/ ProblemRawData")   != std::string::npos) ||
 	      (o.name.find("RawDataMonitor_Hcal/problem_rawdata/") != std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/ ProblemCoarsePedestals")   != std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/problem_coarsepedestals")!= std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/HB HE HF Depth")!= std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/HE Depth")!= std::string::npos) ||
+	      (o.name.find("CoarsePedestalMonitor_Hcal/HO Depth")!= std::string::npos) ||
 	      (o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos) 
 
 	      )
