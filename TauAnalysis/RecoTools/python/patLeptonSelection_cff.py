@@ -70,14 +70,13 @@ selectPatElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.conf
 # select electrons for Z->electron + tau-jet analysis
 #
 
-selectedPatElectronsForElecTauTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
-selectedPatElectronsForElecTauLooseId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.4 & eSuperClusterOverP > 0.8) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.6 & eSuperClusterOverP > 0.8)')
+selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.035 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.008 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.035 & sigmaIetaIeta < 0.03)')
+#selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.4 & eSuperClusterOverP > 0.8) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.6 & eSuperClusterOverP > 0.8)')
 selectedPatElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
 selectedPatElectronsForElecTauEta21.cut = cms.string('abs(eta) < 2.1')
 selectedPatElectronsForElecTauPt15.cut = cms.string('pt > 15.')
 selectedPatElectronsForElecTauTrkIso.cut = cms.string('userIsolation("pat::TrackIso") < 1.')
 selectedPatElectronsForElecTauEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & userIsolation("pat::EcalIso") < 2.5) | (abs(superCluster.eta) > 1.479 & userIsolation("pat::EcalIso") < 3.5)')
-selectedPatElectronsForElecTauTrk.cut = cms.string('gsfTrack.isNonnull')
 selectedPatElectronsForElecTauTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
 selectedPatElectronsForElecTauTrkIP.IpMax = cms.double(0.05)
 selectedPatElectronsForElecTauConversionVeto.cotThetaCut = cms.double(0.05)
@@ -88,15 +87,14 @@ selectedPatElectronsForElecTauConversionVeto.nTrkMax = cms.double(1)
 selectedPatElectronsForElecTauConversionVeto.useConversionColl = cms.bool(True)
 
 patElectronSelConfiguratorForElecTau = objSelConfigurator(
-    [ selectedPatElectronsForElecTauLooseId,
+    [ selectedPatElectronsForElecTauId,
       selectedPatElectronsForElecTauAntiCrackCut,
       selectedPatElectronsForElecTauEta21,
       selectedPatElectronsForElecTauPt15,
       selectedPatElectronsForElecTauTrkIso,
       selectedPatElectronsForElecTauEcalIso,
-      selectedPatElectronsForElecTauTrk,
-      selectedPatElectronsForElecTauTrkIP,
-	  selectedPatElectronsForElecTauConversionVeto ],
+	  selectedPatElectronsForElecTauConversionVeto,
+      selectedPatElectronsForElecTauTrkIP ],
     src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
@@ -105,15 +103,14 @@ patElectronSelConfiguratorForElecTau = objSelConfigurator(
 selectPatElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(pyNameSpace = locals())
 
 patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
-    [ selectedPatElectronsForElecTauLooseId,
+    [ selectedPatElectronsForElecTauId,
       selectedPatElectronsForElecTauAntiCrackCut,
       selectedPatElectronsForElecTauEta21,
       selectedPatElectronsForElecTauPt15,
       selectedPatElectronsForElecTauTrkIsoLooseIsolation,
       selectedPatElectronsForElecTauEcalIsoLooseIsolation,
-      selectedPatElectronsForElecTauTrkLooseIsolation,
-      selectedPatElectronsForElecTauTrkIPlooseIsolation,
-	  selectedPatElectronsForElecTauConversionVetoLooseIsolation ],
+	  selectedPatElectronsForElecTauConversionVetoLooseIsolation,
+      selectedPatElectronsForElecTauTrkIPlooseIsolation ],
     src = "cleanPatElectrons",
     pyModuleName = __name__,
     doSelIndividual = True
