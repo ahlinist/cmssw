@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 from ElectroWeakAnalysis.MultiBosons.Skimming.VGammaCombinedCandidates_cfi import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.VGammaFilters_cfi import *
+from ElectroWeakAnalysis.MultiBosons.Skimming.GenPhotonFilters_cfi import *
+
 
 WENuGammaSequence  = cms.Sequence(
   electronPlusMETs * WENuGammaCands * electronPlusMETFilter * WENuGammaFilter
@@ -20,3 +22,7 @@ ZMuMuGammaSequence = cms.Sequence(
     )
 
 ZInvisibleGammaSequence = cms.Sequence(ZInvisibleGammaCands * ZInvisibleGammaFilter)
+
+pythiaPartonShowerIsrSequence = cms.Sequence(leadingPhoton * pythiaPartonShowerIsrFilter)
+
+pythiaPartonShowerFsrSequence = cms.Sequence(leadingPhoton * pythiaPartonShowerFsrFilter)
