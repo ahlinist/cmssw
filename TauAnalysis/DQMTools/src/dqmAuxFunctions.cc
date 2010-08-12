@@ -465,8 +465,6 @@ void dqmDumpMonitorElement(DQMStore& dqmStore, const std::string& meName, const 
     return;
   }
 
-  stream << label << ":" << std::endl;
-
   int meType = me->kind();
   if ( meType == MonitorElement::DQM_KIND_TH1F      ||
        meType == MonitorElement::DQM_KIND_TH1S      ||
@@ -476,6 +474,8 @@ void dqmDumpMonitorElement(DQMStore& dqmStore, const std::string& meName, const 
        meType == MonitorElement::DQM_KIND_TPROFILE  ||
        meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
     TH1* histogram = me->getTH1();
+
+    stream << " " << label << ":" << std::endl;
 
     unsigned numBinsX = histogram->GetNbinsX();
     for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
@@ -495,21 +495,21 @@ void dqmDumpMonitorElement(DQMStore& dqmStore, const std::string& meName, const 
       }
     }
   } else if ( meType == MonitorElement::DQM_KIND_INT ) {
-    stream << " value = " << me->getIntValue();
+    stream << " " << label << ": " << me->getIntValue();
     if ( me_err ) {
       stream << " +/- ";
       printMonitorElementValue(me_err, stream);
     }
     stream << std::endl;
   } else if ( meType == MonitorElement::DQM_KIND_REAL ) {
-    stream << " value = " << me->getFloatValue();
+    stream << " " << label << ": " << me->getFloatValue();
     if ( me_err ) {
       stream << " +/- ";
       printMonitorElementValue(me_err, stream);
     }
     stream << std::endl;
   } else if ( meType == MonitorElement::DQM_KIND_STRING ) {
-    stream << " value = " << me->getStringValue() << std::endl;
+    stream << " " << label << ": " << me->getStringValue() << std::endl;
   }
 }
 
