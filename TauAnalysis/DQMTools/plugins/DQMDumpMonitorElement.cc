@@ -90,6 +90,8 @@ void DQMDumpMonitorElement::endJob()
 	  << " but no processes have been defined !!";
       }
 
+      std::cout << dumpJob->label_ << ":" << std::endl;
+
       for ( vstring::const_iterator process = dumpJob->processes_.begin();
 	    process != dumpJob->processes_.end(); ++process ) {
 	int errorFlag = 0;       
@@ -97,7 +99,7 @@ void DQMDumpMonitorElement::endJob()
 	std::string meName_err_expanded = ( dumpJob->meName_err_ != "" ) ?
 	  replace_string(dumpJob->meName_err_, processDirKeyword, *process, 0, 1, errorFlag) : "";
 
-	if ( !errorFlag ) dqmDumpMonitorElement(dqmStore, meName_expanded, meName_err_expanded, dumpJob->label_, std::cout);
+	if ( !errorFlag ) dqmDumpMonitorElement(dqmStore, meName_expanded, meName_err_expanded, *process, std::cout);
       }
     } else {
       dqmDumpMonitorElement(dqmStore, dumpJob->meName_, dumpJob->meName_err_, dumpJob->label_, std::cout);
