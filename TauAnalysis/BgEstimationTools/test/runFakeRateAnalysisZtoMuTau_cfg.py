@@ -24,11 +24,6 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 process.load("TauAnalysis.Configuration.producePatTupleZtoMuTauSpecific_cff")
 
-# import sequence for production of event weights
-# specific to application of fake-rate technique for background estimation
-process.load("TauAnalysis.BgEstimationTools.fakeRateJetWeightProducer_cfi")
-process.load("TauAnalysis.BgEstimationTools.fakeRateEventWeightProducer_cfi")
-
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
 
