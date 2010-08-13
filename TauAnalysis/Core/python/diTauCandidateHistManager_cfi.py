@@ -11,7 +11,9 @@ diTauCandidateHistManager = cms.PSet(
 
     dqmDirectory_store = cms.string('DiTauCandidateQuantities'),
 
-    fileName_sqrtX1X2VsDPhi12 = cms.string('/afs/cern.ch/user/v/veelken/public/TauAnalysis/CMSSW_3_3_x/sqrtX1X2_vs_DPhi12_ZtoMuTau.root'),
+    fileName_sqrtX1X2VsDPhi12 = cms.string(
+        'file:/afs/cern.ch/user/v/veelken/public/TauAnalysis/CMSSW_3_3_x/sqrtX1X2_vs_DPhi12_ZtoMuTau.root'
+    ),
     meName_sqrtX1X2VsDPhi12 = cms.string('GenSqrtX1X2VsDPhi12'),
 
     #requireGenMatch = cms.bool(True),
