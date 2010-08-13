@@ -152,8 +152,8 @@ void ElectronHistManager::bookHistogramsImp()
   hElectronHadEnOverEmEn_ = book1D("ElectronHadEnOverEmEn", "Electron #frac{E_{had}}{E_{em}}", 102, -0.01, 1.01);
   hElectronSuperclShapeSigmaEtaEta_ = book1D("ElectronSuperclShapeSigmaEtaEta", "Electron #sigma_{#eta#eta}^{Supercluster}", 102, -0.001, 0.101);
   hElectronSuperclShapeSigmaIetaIeta_ = book1D("ElectronSuperclShapeSigmaIetaIeta", "Electron #sigma_{i#eta i#eta}^{Supercluster}", 102, -0.001, 0.101);
-  hElectronDeltaPhiSuperclToExtrapolTrack_ = book1D("ElectronDeltaPhiSuperclToExtrapolTrack", "Electron #Delta#phi_{in}", 22, -0.001, 0.021);
-  hElectronDeltaEtaSuperclToExtrapolTrack_ = book1D("ElectronDeltaEtaSuperclToExtrapolTrack", "Electron #Delta#eta_{in}", 102, -0.001, 0.101);
+  hElectronDeltaPhiSuperclToExtrapolTrack_ = book1D("ElectronDeltaPhiSuperclToExtrapolTrack", "Electron #Delta#phi_{in}", 40, 0, 0.05);
+  hElectronDeltaEtaSuperclToExtrapolTrack_ = book1D("ElectronDeltaEtaSuperclToExtrapolTrack", "Electron #Delta#eta_{in}", 40, 0, 0.02);
   hElectronBremsFraction_ = book1D("ElectronBremsFraction", "Electron f_{Brems}", 80, -2., +2.);
   
   hElectronTrkIsoPt_ = book1D("ElectronTrkIsoPt", "Electron Track Isolation P_{T}", 100, 0., 10.);    
@@ -299,8 +299,8 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
     hElectronHadEnOverEmEn_->Fill(patElectron->hcalOverEcal(), weight); 
     hElectronSuperclShapeSigmaEtaEta_->Fill(patElectron->sigmaEtaEta(), weight); 
     hElectronSuperclShapeSigmaIetaIeta_->Fill(patElectron->sigmaIetaIeta(), weight); 
-    hElectronDeltaPhiSuperclToExtrapolTrack_->Fill(patElectron->deltaPhiSuperClusterTrackAtVtx(), weight);
-    hElectronDeltaEtaSuperclToExtrapolTrack_->Fill(patElectron->deltaEtaSuperClusterTrackAtVtx(), weight);
+    hElectronDeltaPhiSuperclToExtrapolTrack_->Fill( fabs(patElectron->deltaPhiSuperClusterTrackAtVtx()), weight);
+    hElectronDeltaEtaSuperclToExtrapolTrack_->Fill( fabs(patElectron->deltaEtaSuperClusterTrackAtVtx()), weight);
     if ( isValidRef(patElectron->gsfTrack()) ) {
       double pIn  = patElectron->trackMomentumAtVtx().R(); 
       double pOut = patElectron->trackMomentumOut().R(); 
