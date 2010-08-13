@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.40 $
-  \date $Date: 2010/05/30 19:29:28 $
+  \version $Revision: 1.43 $
+  \date $Date: 2010/08/12 21:51:51 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -513,6 +513,19 @@ private:
 	obj->SetMinimum(-1.);
 	obj->SetMaximum(1.);
       }
+    
+    // Pedestal mean plots -- center at 3, with range [1,5]
+    else if ((o.name.find("CoarsePedestalMonitor_Hcal/HB HE HF Depth")!= std::string::npos) ||
+	     (o.name.find("CoarsePedestalMonitor_Hcal/HE Depth")!= std::string::npos) ||
+	     (o.name.find("CoarsePedestalMonitor_Hcal/HO Depth")!= std::string::npos))
+      {
+	obj->SetContour(100);
+	setRainbowColor(obj);
+	// same limits as for DetDiagPedestalMonitor
+	obj->SetOption("colz");
+	obj->SetMinimum(1.);
+	obj->SetMaximum(5.);
+      }
 
     // Normalized error rate histograms plotted with error Fraction colors (0 = green, 1 = red)
     else if ( (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
@@ -536,9 +549,9 @@ private:
 	      (o.name.find("DataFormatMonitor/H")!= std::string::npos)  ||
 	      (o.name.find("CoarsePedestalMonitor_Hcal/ ProblemCoarsePedestals")!= std::string::npos) ||
 	      (o.name.find("CoarsePedestalMonitor_Hcal/problem_coarsepedestals")!= std::string::npos) ||
-	      (o.name.find("CoarsePedestalMonitor_Hcal/HB HE HF Depth")!= std::string::npos) ||
-	      (o.name.find("CoarsePedestalMonitor_Hcal/HE Depth")!= std::string::npos) ||
-	      (o.name.find("CoarsePedestalMonitor_Hcal/HO Depth")!= std::string::npos) ||
+	      //(o.name.find("CoarsePedestalMonitor_Hcal/HB HE HF Depth")!= std::string::npos) ||
+	      //(o.name.find("CoarsePedestalMonitor_Hcal/HE Depth")!= std::string::npos) ||
+	      //(o.name.find("CoarsePedestalMonitor_Hcal/HO Depth")!= std::string::npos) ||
 	      (o.name.find("HcalInfo/SummaryClientPlots") !=std::string::npos)
 	      )
       {
