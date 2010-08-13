@@ -226,6 +226,9 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       }
     }
   } else {
-    edm::LogError ("MEtHistManager::fillHistograms") << " Exactly one MET object expected per event --> skipping !!";
+    edm::LogError ("MEtHistManager::fillHistograms") 
+      << " Exactly one MET object expected per event" 
+      << " (found " << patMETs->size() << " objects in collection = " << metSrc_.label() << ")" 
+      << " --> skipping !!";
   }
 }
