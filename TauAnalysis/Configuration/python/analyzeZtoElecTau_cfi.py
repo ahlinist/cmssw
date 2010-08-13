@@ -404,7 +404,7 @@ elecTauAnalysisSequence = cms.VPSet(
     # trigger selection
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
-        title = cms.string('Electron 15 Trigger'),
+        title = cms.string('Trigger'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -422,7 +422,7 @@ elecTauAnalysisSequence = cms.VPSet(
     # primary event vertex selection
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertex'),
-        title = cms.string('Vertex'),
+        title = cms.string('Vertex exists'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -459,7 +459,7 @@ elecTauAnalysisSequence = cms.VPSet(
     # electron acceptance cuts
 	cms.PSet(
         filter = cms.string('evtSelElectronId'),
-        title = cms.string('Electron Id.'),
+        title = cms.string('Electron ID'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
