@@ -17,7 +17,7 @@ class sysProdConfigurator(cms._ParameterTypeBase):
             module.src = cms.InputTag(src)
             #THE FileInPath shooudl not be empty!!!! Put a file that exists even if
             #it has no meaning... There is no trivial way to avoid that :-(
-            module.fileName = cms.FileInPath('TauAnalysis/RecoTools/plugins/SmearedParticleProducer.cc')
+            module.fileName = cms.FileInPath('DataFormats/Candidate/interface/Candidate.h')
             module.smearMCParticle = cms.bool(False)
             module.smearFromPtHistogram = cms.bool(False)
             module.smearFromEtaHistogram = cms.bool(False)
