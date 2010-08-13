@@ -234,18 +234,6 @@ double getMonitorElementNorm(DQMStore& dqmStore,
   }
 }
 
-//double getMonitorElementNorm(DQMStore& dqmStore, 
-//			     const std::string& meName_full, const std::string& meNameErr_full, const std::string& meType, 
-//			     double& normErr, int& errorFlag)
-//{
-//  double norm = getMonitorElementNorm(dqmStore, meName_full, meType, normErr, errorFlag);
-//  if ( meNameErr_full != "" ) {
-//    double dummy;
-//    normErr = getMonitorElementNorm(dqmStore, meNameErr_full, meType, dummy, errorFlag);
-//  }
-//  return norm;
-//}
-
 double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
 		const std::string& meName_numerator, const std::string& meName_numeratorErr,
 		const std::string& meName_denominator, const std::string& meName_denominatorErr,
@@ -254,7 +242,7 @@ double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
 {
   //std::cout << "<getRatio>:" << std::endl;
   //std::cout << " meName_numerator = " << meName_numerator << std::endl;
-  //std::cout << " meName_numeratorErr = " << meName_numerator << std::endl;
+  //std::cout << " meName_numeratorErr = " << meName_numeratorErr << std::endl;
   //std::cout << " meName_denominator = " << meName_denominator << std::endl;
   //std::cout << " meName_denominatorErr = " << meName_denominatorErr << std::endl;
     
@@ -420,10 +408,12 @@ void DQMHistScaler::endJob()
 	  if ( scaleFactor              != 0. ) relErr2 += TMath::Power(scaleFactorErr/scaleFactor, 2);
 
 	  double output = meOutput->getFloatValue();
-	  double outputErr_reset = -meOutputErr->getFloatValue();
 	  double outputErr = output*TMath::Sqrt(relErr2);
 
-	  meOutputErr->Fill(outputErr_reset + outputErr);
+	  //std::cout << " outputErr = " << outputErr << std::endl;
+
+	  meOutputErr->Reset();	  
+	  meOutputErr->Fill(outputErr);
 	} else {
 	  edm::LogError ("endJob") 
 	    << " Handling of errors implemented for Monitor Elements of type DQM_KIND_REAL only !!";
