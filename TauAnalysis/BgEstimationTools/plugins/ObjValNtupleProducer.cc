@@ -80,7 +80,7 @@ ObjValNtupleProducer::~ObjValNtupleProducer()
   std::cout << "done." << std::endl;
 }
 
-void ObjValNtupleProducer::beginJob(const edm::EventSetup&)
+void ObjValNtupleProducer::beginJob()
 {
   std::cout << "<ObjValNtupleProducer::beginJob>:" << std::endl;
 

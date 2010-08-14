@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: ObjValNtupleProducer.h,v 1.3 2009/07/30 16:41:46 veelken Exp $
+ * $Id: ObjValNtupleProducer.h,v 1.4 2009/09/08 15:56:26 gfball Exp $
  *
  */
 
@@ -63,7 +63,7 @@ class ObjValNtupleProducer : public edm::EDAnalyzer
   
  private:
 
-  void beginJob(const edm::EventSetup&);
+  void beginJob();
   void analyze(const edm::Event&, const edm::EventSetup&);
   void endJob() {}
 
