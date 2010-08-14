@@ -117,8 +117,8 @@ void DQMBinningErrorBandProducer::computeErrorBandImp(DQMStore& dqmStore,
       double diffBinContent = binContent_variance - binContent_centralValue;
       variance += diffBinContent*diffBinContent;
 	      
-      if ( binContent_centralValue < binContent_min || isFirstValue ) binContent_min = binContent_centralValue;
-      if ( binContent_centralValue > binContent_max || isFirstValue ) binContent_max = binContent_centralValue;
+      if ( binContent_variance < binContent_min || isFirstValue ) binContent_min = binContent_variance;
+      if ( binContent_variance > binContent_max || isFirstValue ) binContent_max = binContent_variance;
       isFirstValue = false;
     }
 	    
