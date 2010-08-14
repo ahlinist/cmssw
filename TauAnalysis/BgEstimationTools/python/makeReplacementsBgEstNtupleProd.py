@@ -35,13 +35,15 @@
 #
 #--------------------------------------------------------------------------------
 
-def makeReplacementsBgEstNtupleProd(channel = None, sample = None, replacements = None):
+def makeReplacementsBgEstNtupleProd(channel = None, sample = None, type = None, replacements = None):
 
     # check that channel, sample and replacements parameters are defined and non-empty
     if channel is None:
         raise ValueError("Undefined channel Parameter !!")
     if sample is None:
         raise ValueError("Undefined sample Parameter !!")
+    if type is None:
+        raise ValueError("Undefined type Parameter !!")
     if replacements is None:
         raise ValueError("Undefined replacements Parameter !!")
 
@@ -67,30 +69,30 @@ def makeReplacementsBgEstNtupleProd(channel = None, sample = None, replacements 
         paramName = paramNameValuePair[0]
         paramValue = paramNameValuePair[1]
 
-        if paramName == "maxEvents" or paramName == "skipEvents" or paramName == "intLumiData":
+        if paramName == "maxEvents" or paramName == "skipEvents" or paramName == "intLumiData" or paramName == "globalTag":
             replaceStatements_retVal.append(replaceStatement)
 
-    # replace bgEstSampleFileNames parameter
-    bgEstSampleFileNames = "bgEstSampleFileNames" + channel +"_" + sample
-    replaceStatements_retVal.append("bgEstSampleFileNames = " + bgEstSampleFileNames)
+    # replace inputFileNames parameter
+    inputFileNames = "fileNames" + channel + "_" + sample
+    replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
     
-    # replace genPhaseSpaceCut, bgEstNtupleOutputFileName and intLumi parameters
+    # replace genPhaseSpaceCut, ntupleOutputFileName and intLumi parameters
     # (ommit "_part.." suffix of sample name in case of processes split
     #  into multiple cmsRun job parts, in order to avoid having to specify
     #   genPhaseSpaceCut, bgEstNtupleOutputFileName and intLumi
     #  again and again for each part)
     genPhaseSpaceCut = "genPhaseSpaceCut" + channel +"_" + sample
-    bgEstNtupleOutputFileName = "bgEstNtupleOutputFileName" + channel +"_" + sample
+    ntupleOutputFileName = "ntuple" + channel + "_" + sample + "_partXX.root"
     intLumi = "intLumi" + channel +"_" + sample
     corrFactor = "corrFactor" + channel +"_" + sample
     if sample.find("_part") != -1:
         genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
-        bgEstNtupleOutputFileName = "cms.string(" + bgEstNtupleOutputFileName[:bgEstNtupleOutputFileName.rfind("_part")]
-        bgEstNtupleOutputFileName += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+        ntupleOutputFileName = "cms.string(" + "'" + ntupleOutputFileName + "'"
+        ntupleOutputFileName += ".replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
         intLumi = intLumi[:intLumi.rfind("_part")]
         corrFactor = corrFactor[:corrFactor.rfind("_part")]
     replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
-    replaceStatements_retVal.append("bgEstNtupleOutputFileName = " + bgEstNtupleOutputFileName)
+    replaceStatements_retVal.append("ntupleOutputFileName = " + ntupleOutputFileName)
     replaceStatements_retVal.append("intLumi = " + intLumi)
     replaceStatements_retVal.append("corrFactor = " + corrFactor)
 

@@ -13,50 +13,65 @@ genPhaseSpaceFilter = cms.EDFilter("EventSelPluginFilter",
     )
 )
 
+muonsLooseZtoMuTauNtupleForZmumuHypotheses = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("cleanPatMuons"),
+    cut = cms.string('isGlobalMuon | isStandAloneMuon | pt > 5.'),
+    filter = cms.bool(False)
+)
+
+muonsTightZtoMuTauNtupleForZmumuHypotheses = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("cleanPatMuons"),
+    cut = cms.string('isGlobalMuon | isStandAloneMuon'),
+    filter = cms.bool(False)
+)
+
+allDiMuPairZtoMuTauNtupleZmumuHypotheses = cms.EDProducer("DiCandidatePairProducer",
+    useLeadingTausOnly = cms.bool(False),
+    srcLeg1 = cms.InputTag('muonsTightZtoMuTauNtupleForZmumuHypotheses'),
+    srcLeg2 = cms.InputTag('muonsLooseZtoMuTauNtupleForZmumuHypotheses'),
+    dRmin12 = cms.double(0.5),
+    srcMET = cms.InputTag(''),
+    recoMode = cms.string(""),
+    scaleFuncImprovedCollinearApprox = cms.string('1'),                                        
+    verbosity = cms.untracked.int32(0)
+)
+
+selectedDiMuPairZtoMuTauNtupleZmumuHypotheses = cms.EDFilter("DiCandidatePairSelector",
+    src = cms.InputTag("allDiMuPairZtoMuTauNtupleZmumuHypotheses"),                                   
+    cut = cms.string('p4Vis.mass > 70. & p4Vis.mass < 110.'),
+    filter = cms.bool(False)
+)
+
 muTauPairCutBgEstPreselection = cms.EDProducer("BoolEventSelFlagProducer",
     pluginName = cms.string("muTauPairCutBgEstPreselection"),
-    pluginType = cms.string("OrEventSelector"),
+    pluginType = cms.string("AndEventSelector"),
     selectors = cms.VPSet(
-        cms.PSet(
-            pluginName = cms.string("muTauPairCutBgEstPreselZmumu"),
+        cms.PSet(            
+            pluginName = cms.string("muTauPairCutBgEstPreselection"),
             pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('muTauPairsForBgEstZmumuEnriched'),
+            src = cms.InputTag('muTauPairsZtoMuTauNtuplePzetaDiff'),
             minNumber = cms.uint32(1)
         ),
         cms.PSet(
-            pluginName = cms.string("muTauPairCutBgEstPreselWplusJets"),
-            pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
-            minNumber = cms.uint32(1)
+            pluginName = cms.string('diMuPairZmumuHypothesisVeto'),
+            pluginType = cms.string('PATCandViewMaxEventSelector'),
+            src = cms.InputTag('selectedDiMuPairZtoMuTauNtupleZmumuHypotheses'),
+            maxNumber = cms.uint32(0)
         ),
         cms.PSet(
-            pluginName = cms.string("muTauPairCutBgEstPreselTTplusJets"),
-            pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('muTauPairsForBgEstTTplusJetsEnriched'),
-            minNumber = cms.uint32(1)
-        ),
-        cms.PSet(
-            pluginName = cms.string("muTauPairCutBgEstPreselQCDlooseMuonIsolation"),
-            pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenrichedLooseMuonIsolation'),
-            minNumber = cms.uint32(1)
-        ),
-        cms.PSet(
-            pluginName = cms.string("muTauPairCutBgEstPreselQCDnoMuonIsolation"),
-            pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoMuonIsolation'),
-            minNumber = cms.uint32(1)
-        ),
-        cms.PSet(
-            pluginName = cms.string("muTauPairCutBgEstPreselQCDnoIsolation"),
-            pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenrichedNoIsolation'),
-            minNumber = cms.uint32(1)
+            pluginName = cms.string('uniqueMuonCandidateCutTauIdEffZtoMuTauCombinedFit'),
+            pluginType = cms.string('PATCandViewMaxEventSelector'),
+            src = cms.InputTag('muonsTightZtoMuTauNtupleForZmumuHypotheses'),
+            maxNumber = cms.uint32(1)
         )
     )
 ) 
 
-produceBoolEventSelFlags = cms.Sequence( muTauPairCutBgEstPreselection )
+produceBoolEventSelFlags = cms.Sequence(
+    muonsLooseZtoMuTauNtupleForZmumuHypotheses * muonsTightZtoMuTauNtupleForZmumuHypotheses
+   * allDiMuPairZtoMuTauNtupleZmumuHypotheses * selectedDiMuPairZtoMuTauNtupleZmumuHypotheses
+   * muTauPairCutBgEstPreselection
+)
 
 selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFilter",
     flags = cms.VInputTag(
