@@ -52,7 +52,6 @@ def prepareConfigFile(configFile_orig = None, replacements = "",  configFile_mod
             raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !")
 
         cfg_mod = cfg_mod.replace("#%s#"%replaceStatement[0],replaceStatement[1])
-
     
     cfg_mod = cfg_mod.replace('#__','')
         
