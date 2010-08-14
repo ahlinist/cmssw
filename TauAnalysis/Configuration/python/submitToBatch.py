@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 
@@ -167,3 +168,8 @@ end
             bsubCommand += ' -R \"' + resourceRequest + '\" '
         bsubCommand += ' < ' + scriptFile
         subprocess.call(bsubCommand, shell = True)
+
+    # wait for 10 seconds, in order not to generate too many castor requests in too short a time
+    # (maximum number of permissible requests = 900 in 180 seconds; cmsRun jobs will abort in case this limit is excdeeded)
+    time.sleep(10)
+    
