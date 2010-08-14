@@ -387,7 +387,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
   edm::Handle<CompositePtrCandidateCollection> diTauCandidates;
   getCollection(evt, diTauCandidateSrc_, diTauCandidates);
 
-  //std::cout << " diTauCandidates.size = " << diTauCandidates->size() << std::endl;
+  //std::cout << " diTauCandidateSrc = " << diTauCandidateSrc_.label() << ":" 
+  //	      << " diTauCandidates.size = " << diTauCandidates->size() << std::endl;
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(genParticleSrc_, genParticles);
@@ -486,8 +487,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     double minLogLikelihood = 1.e+6;
 
     const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
+    //std::cout << "svFitSolutions.size = " << svFitSolutions.size() << std::endl;
     for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
 	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
+      //std::cout << " svFitSolution->isValidSolution[" << svFitSolution - svFitSolutions.begin() << "]" 
+      //	  << " = " << svFitSolution->isValidSolution() << std::endl;
       if ( svFitSolution->isValidSolution() ) {
 	
 	hSVfitX1_->Fill(svFitSolution->x1(), weight);
