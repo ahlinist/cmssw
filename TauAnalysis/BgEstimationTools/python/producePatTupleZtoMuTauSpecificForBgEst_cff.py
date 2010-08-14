@@ -10,11 +10,10 @@ from TauAnalysis.BgEstimationTools.patPFTauSelectionForBgEst_cff import *
 from TauAnalysis.BgEstimationTools.muTauPairProductionForBgEst_cff import *
 
 from TauAnalysis.BgEstimationTools.patJetSelectionForBgEst_cff import *
-from TauAnalysis.BgEstimationTools.patJetSelectionForZtoMuTauBgEst_cff import *
 
 producePatTupleZtoMuTauSpecificForBgEst = cms.Sequence(
     selectMuonsForBgEst
    * selectTausForBgEst
    * produceMuTauPairsForBgEst
-   * selectJetsForBgEst * selectJetsForZtoMuTauBgEst
+   * selectJetsForBgEst
 )
