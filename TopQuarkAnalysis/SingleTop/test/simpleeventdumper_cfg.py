@@ -43,14 +43,14 @@ process.goodVertices = cms.EDFilter("VertexSelector",
                                     )
 
 process.demo = cms.EDAnalyzer('SimpleEventDumper',
+                              verticesSource = cms.InputTag("goodVertices"),
                               electronSource = cms.InputTag("cleanPatElectrons"),
                               muonSource     = cms.InputTag("patMuons"),
-                              patjetSource = cms.InputTag("patJets"),
-                              verticesSource = cms.InputTag("goodVertices"),
                               patmetSource = cms.InputTag("patMETs"),
                               calometSource = cms.InputTag("met"),
                               pfmetSource = cms.InputTag("pfMet"),
                               tcmetSource = cms.InputTag("tcMet"),
+                              patjetSource = cms.InputTag("patJets"),
                               
 )
 
