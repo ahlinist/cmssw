@@ -24,6 +24,16 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 process.load("TauAnalysis.Configuration.producePatTupleAHtoMuTauSpecific_cff")
 
+# Options used for SV mass fit method
+process.allMuTauPairs.SVOptions.useMEtInFit = cms.bool(True)
+process.allMuTauPairs.SVOptions.useLeg1TrackingInFit = cms.bool(True)
+process.allMuTauPairs.SVOptions.useLeg2TrackingInFit = cms.bool(True)
+process.allMuTauPairs.SVOptions.correctPrimaryVertexInFit = cms.bool(False)
+process.allMuTauPairsLooseMuonIsolation.SVOptions.useMEtInFit = process.allMuTauPairs.SVOptions.useMEtInFit 
+process.allMuTauPairsLooseMuonIsolation.SVOptions.useLeg1TrackingInFit = process.allMuTauPairs.SVOptions.useLeg1TrackingInFit
+process.allMuTauPairsLooseMuonIsolation.SVOptions.useLeg2TrackingInFit = process.allMuTauPairs.SVOptions.useLeg2TrackingInFit
+process.allMuTauPairsLooseMuonIsolation.SVOptions.correctPrimaryVertexInFit = process.allMuTauPairs.SVOptions.correctPrimaryVertexInFit 
+
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectAHtoMuTau_cff")
 
