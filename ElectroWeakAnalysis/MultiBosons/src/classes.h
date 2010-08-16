@@ -1,6 +1,8 @@
 #include "PhysicsTools/SelectorUtils/interface/Selector.h"
 #include "PhysicsTools/SelectorUtils/interface/EventSelector.h"
 
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
+
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaMuonSelector.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaElectronSelector.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaMETSelector.h"
@@ -9,8 +11,12 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaDiLeptonEventSelector.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/VGammaEventSelector.h"
 
+#include "ElectroWeakAnalysis/MultiBosons/interface/FWLiteAnalysisWrapper.h"
+
+void vgamma::runAnalysis(const std::string &);
+
 namespace {
-  struct dictionary {    
+  struct dictionary {             
     pat::strbitset _bs;
     
     VGammaMuonSelector _vgms;
@@ -20,5 +26,8 @@ namespace {
     VGammaDiLeptonEventSelector _vgdles;
     VGammaLeptonMETEventSelector _vglmes;
     VGammaEventSelector _vgevs;
+    
+    //vgamma::
+    //vgamma::FWLiteAnalysisWrapper _vgaw;
   };
 }

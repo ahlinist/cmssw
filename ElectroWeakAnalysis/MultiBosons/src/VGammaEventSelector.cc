@@ -152,8 +152,6 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
 
     selectedWGammaMETs_.reserve(len);
     selectedWGammaPhotons_.reserve(len);
-
-    edm::Handle< vector< reco::CompositeCandidate > > photonMETHandle(allZNuNuGammaCands_);
     
     if(ignoreCut(">= 1 Photon") || allPhotons_->size()) passCut(ret,">= 1 Photon");
     
@@ -260,7 +258,7 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
        selectedZGammaPhotons_.size() == 1 ||
        selectedWGammaPhotons_.size() == 1) passCut(ret,"== 1 Tight Photon");
 
-    //if(ignoreCut("Pass DiLepton Id") || diLeptonId_(event)) passCut(ret,"Pass DiLepton Id");
+    if(ignoreCut("Pass DiLepton Id") || diLeptonId_(event)) passCut(ret,"Pass DiLepton Id");
        
     //if(ignoreCut("Pass Lepton+MET Id") || leptonPlusMETId_(event)) passCut(ret,"Pass Lepton+MET Id");
     

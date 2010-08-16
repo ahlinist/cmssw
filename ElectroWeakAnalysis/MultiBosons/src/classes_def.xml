@@ -1,6 +1,7 @@
 <lcgdict>
  <selection>
-  <class name="pat::strbitset" />
+  <class name="pat::strbitset" />  
+  
   <class name="VGammaEventSelector" />
   <class name="VGammaDiLeptonEventSelector" />
   <class name="VGammaLeptonMETEventSelector" />
@@ -8,5 +9,8 @@
   <class name="VGammaMuonSelector" />
   <class name="VGammaElectronSelector" />  
   <class name="VGammaMETSelector" />
+  <class name="vgamma::FWLiteAnalysisWrapper/>
  </selection>
+ <exclusion>
+ </exclusion>
 </lcgdict>
