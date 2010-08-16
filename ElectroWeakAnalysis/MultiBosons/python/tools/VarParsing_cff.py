@@ -5,6 +5,8 @@ from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 def applyOptions(process,options):
+    options.parseArguments()
+
     #process.MessageLogger.FwkReport.reportEvery=options.reportEvery
     if options.globalTag == "":
         raise ValueError('\"\" is not a valid option for the global tag!')
@@ -22,7 +24,7 @@ def applyOptions(process,options):
 
 options = VarParsing.VarParsing("analysis")
 options.register("globalTag",
-                 "", # default value is empty string, force user to supply tag.
+                 "GR_P_V7::All", # default value is latest prompt reco (August 2010)
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.string,         # string, int, or float
                  "Global tag to be used."
@@ -44,6 +46,5 @@ options.register("Use35XInput",
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.string,         # string, int, or float
                  "Is this 35X data?"
-                 )
 
-options.parseArguments()
+                 )
