@@ -61,8 +61,18 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
     std::string fileName_sqrtX1X2VsDPhi12 = cfg.getParameter<std::string>("fileName_sqrtX1X2VsDPhi12");
     std::string meName_sqrtX1X2VsDPhi12 = cfg.getParameter<std::string>("meName_sqrtX1X2VsDPhi12");
 
-    TFile* file_sqrtX1X2VsDPhi12 = TFile::Open(fileName_sqrtX1X2VsDPhi12.data());
-    if ( !file_sqrtX1X2VsDPhi12->IsZombie() ) {
+    TFile* file_sqrtX1X2VsDPhi12 = NULL;
+    // Catch the exception thrown if the file does not exist and log it
+    // to prevent grid jobs from crashing.  See 
+    // https://hypernews.cern.ch/HyperNews/CMS/get/edmFramework/2455.html
+    try {
+       file_sqrtX1X2VsDPhi12 = TFile::Open(fileName_sqrtX1X2VsDPhi12.data());
+    } catch (...) { 
+       edm::LogError("CompositePtrCandidateT1T2MEtHistManager") << "Exception caught and "
+          << "surpressed in TFile::Open(" << fileName_sqrtX1X2VsDPhi12 << ").  The file is "
+          << "probably not available.";
+    }
+    if ( file_sqrtX1X2VsDPhi12 && !file_sqrtX1X2VsDPhi12->IsZombie() ) {
       TObject* obj = file_sqrtX1X2VsDPhi12->Get(meName_sqrtX1X2VsDPhi12.data());
       if ( obj ) lutSqrtX1X2VsDPhi12_ = dynamic_cast<TH1*>(obj->Clone());
     } else {
