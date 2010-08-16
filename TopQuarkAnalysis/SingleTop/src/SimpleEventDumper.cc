@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.2 2010/08/15 21:09:54 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.3 2010/08/16 10:29:36 giamman Exp $
 //
 //
 
@@ -61,6 +61,9 @@ class SimpleEventDumper : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
   double MT(double lx, double ly, double nx, double ny);
+  double AddQuadratically( const double nr1, const double nr2 );
+  double DeltaPhi(double v1, double v2);
+  double GetDeltaR(double eta1, double eta2, double phi1, double phi2);
       // ----------member data ---------------------------
   edm::InputTag vertices_;
   edm::InputTag muonSource_;
@@ -69,12 +72,17 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   edm::InputTag calometSource_;
   edm::InputTag pfmetSource_;
   edm::InputTag tcmetSource_;
+  edm::InputTag patjetSource_;
+  edm::InputTag pfjetSource_;
   edm::Handle<std::vector<pat::Muon> > muons;
   edm::Handle<std::vector<pat::Electron> > electrons;
   edm::Handle<std::vector<pat::MET> > patmets;
   edm::Handle<std::vector<reco::CaloMET> > calomets;
   edm::Handle<std::vector<reco::PFMET> > pfmets;
   edm::Handle<std::vector<reco::MET> > tcmets;
+  edm::Handle<std::vector<pat::Jet> > patjets;
+  edm::Handle<std::vector<reco::PFJet> > pfjets;
+  double jet_threshold;
 };
 
 //
@@ -98,7 +106,9 @@ SimpleEventDumper::SimpleEventDumper(const edm::ParameterSet& iConfig)
   calometSource_     = iConfig.getParameter<edm::InputTag>("calometSource");
   pfmetSource_     = iConfig.getParameter<edm::InputTag>("pfmetSource");
   tcmetSource_     = iConfig.getParameter<edm::InputTag>("tcmetSource");
-
+  patjetSource_     = iConfig.getParameter<edm::InputTag>("patjetSource");
+  pfjetSource_     = iConfig.getParameter<edm::InputTag>("pfjetSource");
+  jet_threshold  = iConfig.getParameter<double>("jet_pt_min");
 }
 
 
@@ -146,6 +156,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   double mux = 0.;
   double muy = 0.;
+  double muz = 0.;
   for (unsigned int j = 0; j < muons->size(); j++){
     cout << "-----------------------------------" << endl;
     cout << "@muon " << j << endl;
@@ -174,6 +185,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     mux = (*muons)[j].px();
     muy = (*muons)[j].py();
+    muz = (*muons)[j].pz();
   }  
 
   // Electrons
@@ -186,6 +198,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   double ex = 0.;
   double ey = 0.;
+  double ez = 0.;
   for (unsigned int j = 0; j < electrons->size(); j++){
     cout << "-----------------------------------" << endl;
     cout << "@electron " << j << endl;
@@ -222,6 +235,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     ex = (*electrons)[j].px();
     ey = (*electrons)[j].py();
+    ez = (*electrons)[j].pz();
   }  
 
   // MET
@@ -321,13 +335,81 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     cout << " and with MET from PAT: " << mt_pat << " - from calo: " << mt_calo << " - from PF: " << mt_pf << "- from tc: " << mt_tc << endl;
   }
 
+  // Jets
+  try {
+    iEvent.getByLabel(patjetSource_, patjets);
+  } catch (std::exception & err) {
+    std::cout <<"ERROR: jet label not found ("<<patjetSource_<<")"<< std::endl;
+    return;
+  }
+  double max_tchp = -999.;
+  int index_max_tchp = -1;
+  for (unsigned int j = 0; j < patjets->size(); j++){
+    double pt = (*patjets)[j].pt();
+    double eta = (*patjets)[j].eta();
+    double phi = (*patjets)[j].phi();
+    double emf = (*patjets)[j].emEnergyFraction();
+    reco::JetID jID = (*patjets)[j].jetID();
+    double fHPD = jID.fHPD;
+    int n90hits = jID.n90Hits;
+    double tchp = (*patjets)[j].bDiscriminator("trackCountingHighPurBJetTags");
+    double tche = (*patjets)[j].bDiscriminator("trackCountingHighEffBJetTags");
+    double ssvhp = (*patjets)[j].bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+    double ssvhe = (*patjets)[j].bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+    if (pt > jet_threshold) {
+      cout << "-----------------------------------" << endl;
+      cout << "@PAT jet " << j << endl;
+      cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << endl;
+      cout << "EM fraction = " << emf << ", fHPD = " << fHPD << ", N90 = " << n90hits << endl;
+      cout << "b-tagging, TCHP = " << tchp << ", TCHE = " << tche << ", SSVHP = " << ssvhp << ", SSVHE = " << ssvhe << endl;
+      // find highest-TCHP jet:
+      if (tchp > max_tchp) {
+	max_tchp = tchp;
+	index_max_tchp = j;
+      }
+    }
+  }
+  cout << "-----------------------------------" << endl;
+  cout << "The highest-TCHP PAT jet is #" << index_max_tchp << endl;
+  
+  try {
+    iEvent.getByLabel(pfjetSource_, pfjets);
+  } catch (std::exception & err) {
+    std::cout <<"ERROR: jet label not found ("<<pfjetSource_<<")"<< std::endl;
+    return;
+  }
+  double min_dr = 999.;
+  int index_matched_pf_patbtag = -1;
+  for (unsigned int j = 0; j < pfjets->size(); j++){
+    double pt = (*pfjets)[j].pt();
+    double eta = (*pfjets)[j].eta();
+    double phi = (*pfjets)[j].phi();
+    double chf = (*pfjets)[j].chargedHadronEnergyFraction();
+    double nhf = (*pfjets)[j].neutralHadronEnergyFraction();
+    double cef = (*pfjets)[j].chargedEmEnergyFraction();
+    double nef = (*pfjets)[j].neutralEmEnergyFraction();
+    int nch = (*pfjets)[j].chargedMultiplicity();
+    int nconstituents = (*pfjets)[j].numberOfDaughters();
+    if (pt > jet_threshold) {
+      cout << "-----------------------------------" << endl;
+      cout << "@PF jet " << j << endl;
+      cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << endl;
+      cout << "N.constituents = " << nconstituents << ", ch.hadron fraction = " << chf << ", ne.hadron fraction = " << nhf << ", ch.EM fraction = " << cef << ", ne.EM fraction = " << nef << ", charged multiplicity = " << nch << endl;
+      // find the PFjet matched in angle to the b-tagged PATjet:
+      double dr = GetDeltaR(eta,(*patjets)[index_max_tchp].eta(),phi,(*patjets)[index_max_tchp].phi());
+      if (dr < min_dr) {
+	min_dr = dr;
+	index_matched_pf_patbtag = j;
+      }
+    }
+  }
+  cout << "-----------------------------------" << endl;
+  cout << "The PF jet matched to the highest-TCHP PAT jet is #" << index_matched_pf_patbtag << endl;
+
+  
+
 }
 
-double SimpleEventDumper::MT(double lx, double ly, double nx, double ny) {
-  double lt = sqrt(lx*lx+ly*ly);
-  double nt = sqrt(nx*nx+ny*ny);
-  return sqrt(pow(lt+nt,2) - pow(lx+nx,2) - pow(ly+ny,2) );
-}
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
@@ -339,6 +421,30 @@ SimpleEventDumper::beginJob()
 void 
 SimpleEventDumper::endJob() {
 }
+
+double SimpleEventDumper::MT(double lx, double ly, double nx, double ny) {
+  double lt = AddQuadratically(lx,ly);
+  double nt = AddQuadratically(nx,ny);
+  return sqrt(pow(lt+nt,2) - pow(lx+nx,2) - pow(ly+ny,2) );
+}
+
+double SimpleEventDumper::AddQuadratically( const double nr1, const double nr2 ){
+  return sqrt(nr1*nr1+nr2*nr2);
+}
+
+double SimpleEventDumper::DeltaPhi(double v1, double v2)
+{ // Computes the correctly normalized phi difference
+  // v1, v2 = phi of object 1 and 2
+ double diff = fabs(v2 - v1);
+ double corr = 2*acos(-1.) - diff;
+ if (diff < acos(-1.)){ return diff;} else { return corr;}
+
+}
+
+double SimpleEventDumper::GetDeltaR(double eta1, double eta2, double phi1, double phi2){
+ return AddQuadratically((eta1-eta2),DeltaPhi(phi1, phi2) );
+}
+
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(SimpleEventDumper);

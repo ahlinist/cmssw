@@ -51,7 +51,9 @@ process.demo = cms.EDAnalyzer('SimpleEventDumper',
                               pfmetSource = cms.InputTag("pfMet"),
                               tcmetSource = cms.InputTag("tcMet"),
                               patjetSource = cms.InputTag("patJets"),
-                              
+                              pfjetSource = cms.InputTag("ak5PFJets"),
+
+                              jet_pt_min = cms.double(20),
 )
 
 
