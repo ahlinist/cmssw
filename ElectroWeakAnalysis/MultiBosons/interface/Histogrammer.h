@@ -2,9 +2,10 @@
 #define ElectroWeakAnalysis_MultiBosons_Histogrammer_h
 
 /** \class MuonHistogrammer
- *  Base class for all FWLite Histogrammers
- *  Users just need to define the options for whatever they template to.
+ *  Template class for all FWLite Histogrammers
+ *  Users add specialized histogramming functions using register function + py config
  *  \author Jan Veverka, Caltech
+ *  \author Lindsey Gray, UW-Madison
  */
 
 #include "DataFormats/FWLite/interface/Event.h"
@@ -48,6 +49,9 @@ template <typename HistObject>
 class Histogrammer {
  public:
   typedef void (*func_type)(const HistObject&);
+  
+  /// for compatibility with REFLEX
+  Histogrammer() {}
 
   /// ctor from parameter set
   Histogrammer(const edm::ParameterSet &, fwlite::TFileService &);
@@ -62,12 +66,12 @@ class Histogrammer {
   /// the event weight
   const double& weight() const { return weight_; }
 
- protected:
-  
   // in the base class register functions which take one object of type HistObject
   // special histograms are only filled for selected objects!
-  void registerFunction(const std::string& s, func_type fcn ) { funcNameToFunc_[s] = fcn; }  
+  void registerFunction(const std::string& s, func_type fcn ) { funcNameToFunc_[s] = fcn; }
 
+ protected:
+  
   std::map<std::string, func_type > funcNameToFunc_; // filled using registerFunction in derived class
   std::map<std::string,TObject*> specHistos_; // histo name to histogram
   std::map<std::string,std::string> funcNameToHist_; // function name to histogram
@@ -95,10 +99,7 @@ Histogrammer<HistObject>::Histogrammer(const edm::ParameterSet & config,
   //   string fileName         = config.getParameter<string>("outputFile");
   std::string dirName          = config.getParameter<std::string>("outputDirectory");
   edm::VParameterSet histosCfg = config.getParameter<edm::VParameterSet>("histograms");
-    
-  // TODO Check if the rhs can be omitted
-  //   fwlite::TFileService fs;/* = fwlite::TFileService(fileName);*/
-  
+      
   std::vector<std::string> dirTokens;
 
   tokenizer::tokenize(dirName,dirTokens,"/");

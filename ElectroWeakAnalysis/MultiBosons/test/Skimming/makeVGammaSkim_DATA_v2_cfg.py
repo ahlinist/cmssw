@@ -48,7 +48,7 @@ removeMCMatching(process,names=['METs'],postfix="TC")
 removeMCMatching(process,names=['METs'],postfix="PF")
 
 ## This is the global tag for the Spring10 MC
-process.GlobalTag.globaltag = cms.string('GR_R_36X_V12B::All')
+process.GlobalTag.globaltag = cms.string('GR10_P_V7::All')
 
 ## Input
 #fileNamePrefix = "rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_5_7/RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012/"

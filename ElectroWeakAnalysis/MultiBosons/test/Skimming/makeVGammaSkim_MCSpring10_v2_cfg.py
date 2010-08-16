@@ -92,7 +92,7 @@ process.out.SelectEvents.SelectEvents = ["*Path"]
 process.out.fileName = "VGammaSkim_v2.root"
 
 process.patMuons.embedTrack = True
-# process.patElectrons.embedTrack = True
+process.patElectrons.embedTrack = True
 
 process.options.wantSummary = True
 
