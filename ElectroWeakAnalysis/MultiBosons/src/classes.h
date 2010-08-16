@@ -13,7 +13,7 @@
 
 #include "ElectroWeakAnalysis/MultiBosons/interface/FWLiteAnalysisWrapper.h"
 
-void vgamma::runAnalysis(const std::string &);
+
 
 namespace {
   struct dictionary {             
@@ -26,8 +26,7 @@ namespace {
     VGammaDiLeptonEventSelector _vgdles;
     VGammaLeptonMETEventSelector _vglmes;
     VGammaEventSelector _vgevs;
-    
-    //vgamma::
-    //vgamma::FWLiteAnalysisWrapper _vgaw;
+        
+    vgamma::FWLiteAnalysisWrapper _vgaw;
   };
 }
