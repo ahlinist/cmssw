@@ -79,7 +79,6 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool selTrackerMuon(const pat::Muon* aMuon);
       bool selCaloMuon(const pat::Muon* aMuon);
       int getJpsiVarType(const double jpsivar, vector<double> vectbin);
-      double CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode);
 
       // histos
       TH1F *QQMass2Glob_passmu3;
@@ -232,9 +231,11 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       RooCategory* JpsiPtType;
       RooCategory* JpsiEtaType;
       RooCategory* matchType;
-      RooCategory* trigger0;
-      RooCategory* trigger1;
-      RooCategory* JpsiSign;   
+      RooCategory* triggerMu;
+      RooCategory* triggerMuPre;
+      RooCategory* triggerDMu;
+      RooCategory* triggerOniaTrack;
+      RooCategory* triggerOniaL1Mu;
 
       // handles
       // Handle<pat::CompositeCandidateCollection > collGG;
@@ -262,8 +263,6 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _storeWs;
       bool           _writeOutCands;
       bool           _inclPsiP;
-      int            _MassCorr;
-      bool           _JSON;
       // InputTag       _triggerresults;
       vector<unsigned int>                     _thePassedCats[3];
       vector<const pat::CompositeCandidate*>   _thePassedCands[3];
@@ -288,10 +287,6 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 
       math::XYZPoint RefVtx;
       ofstream* theTextFile;
-      ofstream* JSON;
-  
-      int runtmp,lumitmp,count;
-      int runmax,runmin;
 
 };    
       
@@ -323,9 +318,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _removeMuons(iConfig.getUntrackedParameter<bool>("removeTrueMuons",false)),
   _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false)),
   _writeOutCands(iConfig.getUntrackedParameter<bool>("writeOutCandidates",false)),
-  _inclPsiP(iConfig.getUntrackedParameter<bool>("includePsiPrime",false)),
-  _MassCorr(iConfig.getParameter<int>("massCorrectionMode")),
-  _JSON(iConfig.getUntrackedParameter<bool>("makeJSON",false))
+  _inclPsiP(iConfig.getUntrackedParameter<bool>("includePsiPrime",false))
   // _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
@@ -333,12 +326,6 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   passedCandidates = 0;
   matchCandidates = 0;
   matchNewCandidates = 0;
-  
-  count=0;
-  runtmp=0;
-  lumitmp=11111111;
-  runmax=0;
-  runmin=100000000;
 
   JpsiMassMin = 2.6;
   JpsiMassMax = 3.5;
@@ -386,19 +373,22 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   matchType->defineType("unmatched",0);
   matchType->defineType("matched",1);
 
-  trigger0 = new RooCategory("trigger0","Match with trigger bit 0");
-  trigger1 = new RooCategory("trigger1","Match with trigger bit 1"); 
+  triggerMu = new RooCategory("triggerMu","Match with single mu trigger bit");
+  triggerMuPre = new RooCategory("triggerMuPre","Match with single mu prescaled trigger bit");
+  triggerDMu = new RooCategory("triggerDMu","Match with double mu trigger bit");
+  triggerOniaTrack = new RooCategory("triggerOniaTrack","Match with onia-track trigger bit");
+  triggerOniaL1Mu = new RooCategory("triggerOniaL1Mu","Match with onia-L1Mu trigger bit");
 
-  trigger0->defineType("unmatched",0);
-  trigger0->defineType("matched",1);
-  trigger1->defineType("unmatched",0);
-  trigger1->defineType("matched",1);
-
-  JpsiSign = new RooCategory("JpsiSign","Sign of Jpsi dimuons");
-  
-  JpsiSign->defineType("OS",0);
-  JpsiSign->defineType("SSP",1);
-  JpsiSign->defineType("SSM",2);
+  triggerMu->defineType("unmatched",0);
+  triggerMu->defineType("matched",1);
+  triggerMuPre->defineType("unmatched",0);
+  triggerMuPre->defineType("matched",1);
+  triggerDMu->defineType("unmatched",0);
+  triggerDMu->defineType("matched",1);
+  triggerOniaTrack->defineType("unmatched",0);
+  triggerOniaTrack->defineType("matched",1);
+  triggerOniaL1Mu->defineType("unmatched",0);
+  triggerOniaL1Mu->defineType("matched",1);
 
   JpsiMass = new RooRealVar("JpsiMass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");
   JpsiPt = new RooRealVar("JpsiPt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
@@ -412,16 +402,13 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   RooArgList varlist(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
   varlist.add(*JpsictTrue);   varlist.add(*JpsiPtType);
   varlist.add(*JpsiEtaType);  varlist.add(*JpsictErr);
-  varlist.add(*trigger0);     varlist.add(*trigger1);
-  varlist.add(*JpsiSign);
+  varlist.add(*triggerMu);    varlist.add(*triggerMuPre);
+  varlist.add(*triggerDMu);   varlist.add(*triggerOniaTrack);
+  varlist.add(*triggerOniaL1Mu);    
 
   data = new RooDataSet("data","A sample",varlist);
   if (_writeOutCands) theTextFile = new ofstream("passedCandidates.txt");
-  
-  if (_JSON){
-    JSON = new ofstream("PseudoJSON.txt");
-    *JSON << "{";
-  }
+
 }
 
 
@@ -437,65 +424,13 @@ JPsiAnalyzerPAT::~JPsiAnalyzerPAT()
 //
 // member functions
 //
-double JPsiAnalyzerPAT::CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode){  
-  double CMass=0;
-  const double mumass=0.105658;
-  double k1,k2;
-  double pt1=mu1.innerTrack()->pt();
-  double pt2=mu2.innerTrack()->pt();
-  double eta1=mu1.innerTrack()->eta();
-  double eta2=mu2.innerTrack()->eta();
-  if (mode==1){
-    k1=1.0009;//constant scale correction
-    k2=1.0009;
-  }
-  if (mode==2){
-    k1=1.0019-0.0004*pt1;
-    k2=1.0019-0.0004*pt2; // pt dependent correction
-  }
-  if (mode==3){
-    double a0=1.002;
-    double a1=-0.002;
-    double a2=0.001;
-    double a3=-0.0001;
-    k1=a0+a1*fabs(eta1)+a2*eta1*eta1+a3*pt1;
-    k2=a0+a1*fabs(eta2)+a2*eta2*eta2+a3*pt2;// pt and eta dependent 
-  }
-  math::XYZVector mom1=mu1.innerTrack()->momentum();
-  math::XYZVector mom2=mu2.innerTrack()->momentum();
-  mom1=k1*mom1; 
-  mom2=k2*mom2;
-  double E1=sqrt(mom1.mag2()+(mumass*mumass));
-  double E2=sqrt(mom2.mag2()+(mumass*mumass));
-  math::XYZVector momtot=mom1+mom2;
-  CMass=sqrt((E1+E2)*(E1+E2)-momtot.mag2());
-  return CMass;
-}
+
 // ------------ method called to for each event  ------------
 void
 JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    nEvents++;
 
-   int Nrun=iEvent.id().run();
-   int lumi=iEvent.luminosityBlock();
-   if (Nrun>runmax) runmax=Nrun;     // this is only for printout at the end of job
-   if (Nrun<runmin) runmin=Nrun;
-   if (_JSON){                      // these lines write out a JSON file of runs analyzed
-     if (Nrun!=runtmp){
-       runtmp=Nrun; 
-       if (count == 0)  *JSON << " \"" << Nrun << "\" :[[" << lumi <<", ";
-       if (count!=0) *JSON << lumitmp <<"]],"<< " \"" << Nrun << "\" :[[" << lumi <<", ";
-       lumitmp=lumi;
-       count++;
-     }
-     if (lumi!=lumitmp) {
-       if (Nrun==runtmp && lumi!=lumitmp+1) {
-	 *JSON << lumitmp << "],["<< lumi << ", "; 
-       }
-       lumitmp=lumi;
-     }
-   }
    // iEvent.getByLabel(_triggerresults,trigger);
 
    // try {iEvent.getByLabel("onia2MuMuPatGlbGlb",collGG);} 
@@ -723,13 +658,7 @@ JPsiAnalyzerPAT::endJob() {
   cout << "Total number of events = " << nEvents << endl;
   cout << "Total number of passed candidates = " << passedCandidates << endl;
   cout << "Total number of DoubleMuOpen-matched candidates = " << matchCandidates << endl;
-  cout << "Analyzed runs from  " << runmin << "  to  " << runmax << endl; 
-  if (_JSON){
-    cout << "JSON file produced" << endl;
-    *JSON << lumitmp <<"]]}";
-    JSON->close();
-  }
- // cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
+  // cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
 
   TFile fOut(_histfilename.c_str(), "RECREATE");
   fOut.cd();
@@ -897,10 +826,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
   
   float theMass = aCand->mass();
-  if (_MassCorr!=0){
-    double CMass=CorrectMass(*muon1,*muon2,_MassCorr);
-    if (CMass!=0) theMass=CMass;
-  }
+
   // Only sidebands
   /* if (aCand->mass() < 2.3 || aCand->mass() > 6.5  ||
       (aCand->mass() < 3.3 && aCand->mass() > 2.9) ||
@@ -934,18 +860,18 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   
   // PUT HERE THE *LAST FILTERS* OF THE BITS YOU LIKE
   static const unsigned int NTRIGGERS = 5;
-  // MC 8E29
-  bool isTriggerMatched[NTRIGGERS];
-  // bool isTriggerMatchedNew = false;
-  string HLTLastFilters[NTRIGGERS] = {"hltDoubleMuLevel1PathL1OpenFiltered", // BIT HLT_L1DoubleMuOpen 
-				      "hltSingleMu3L3Filtered3",             // BIT HLT_Mu3  
-				      "hltSingleMu5L3Filtered5",             // BIT HLT_Mu5 
-				      "hltDiMuonL3PreFiltered0",             // BIT HLT_DoubleMu0 
-				      "hltDiMuonL3PreFiltered"};             // BIT HLT_DoubleMu3
   
-  // Trigger passed
+  bool isTriggerMatched[NTRIGGERS];
+  string HLTLastFilters[NTRIGGERS+1] = {"hltDoubleMuLevel1PathL1OpenFiltered",   // BIT HLT_L1DoubleMuOpen 
+					"hltSingleMu3L3Filtered3",               // BIT HLT_Mu3  
+					"hltSingleMu5L3Filtered5",               // BIT HLT_Mu5  
+                                        "hltMu0TrackJpsiTrackMassFiltered",      // BIT Mu0_Track0_JPsi
+                                        "hltMu0L1MuOpenL3Filtered0",             // BIT Mu0_L1MuOpen (Mu0 part)
+                                        "hltDoubleMuLevel1PathL1OpenFiltered"};  // BIT Mu0_L1MuOpen (L1MuOpen part)
 
-  for (unsigned int iTr = 0; iTr<NTRIGGERS; iTr++ ) {
+  // Trigger passed (normal)
+
+  for (unsigned int iTr = 0; iTr<NTRIGGERS-2; iTr++ ) {
     const pat::TriggerObjectStandAloneCollection mu1HLTMatches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[iTr] ); 
     const pat::TriggerObjectStandAloneCollection mu2HLTMatches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[iTr] );
     bool pass1 = mu1HLTMatches.size() > 0;
@@ -955,12 +881,34 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     } else {                     // double triggers here
       isTriggerMatched[iTr] = pass1 && pass2;
     }
-    /* if (iTr == 0) {
-      if ( fabs(muon1->eta()) > 1.2 ) pass1 = (pass1 || muon1->userInt("muonL1MatchExtended") > 0);
-      if ( fabs(muon2->eta()) > 1.2 ) pass2 = (pass2 || muon2->userInt("muonL1MatchExtended") > 0);              // double triggers here
-      isTriggerMatchedNew = pass1 && pass2;
-      } */
   }
+
+  // Trigger passed (onia track)
+
+  bool matchedMu1 = false, matchedTrack1 = false;
+  bool matchedMu2 = false, matchedTrack2 = false;
+  const pat::TriggerObjectStandAloneCollection mu1tkMatch = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-2] );
+  for (unsigned k = 0; k < mu1tkMatch.size(); ++k) {
+    if (mu1tkMatch[k].collection() == "hltL3MuonCandidates::HLT") matchedMu1 = true;
+    if (mu1tkMatch[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT") matchedTrack1 = true;
+  }
+  const pat::TriggerObjectStandAloneCollection mu2tkMatch = muon2->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-2] );
+  for (unsigned k = 0; k < mu2tkMatch.size(); ++k) {
+    if (mu2tkMatch[k].collection() == "hltL3MuonCandidates::HLT") matchedMu2 = true;
+    if (mu2tkMatch[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT") matchedTrack2 = true;
+  }
+  isTriggerMatched[NTRIGGERS-2] = (matchedMu1 && matchedTrack2) || (matchedMu2 && matchedTrack1);
+
+  // Trigger passed (onia L1Mu)
+  const pat::TriggerObjectStandAloneCollection mu1L1Matches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS] ); 
+  const pat::TriggerObjectStandAloneCollection mu2L1Matches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS] );
+  const pat::TriggerObjectStandAloneCollection mu1MuMatches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-1] ); 
+  const pat::TriggerObjectStandAloneCollection mu2MuMatches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-1] );
+  bool pass1l1 = mu1L1Matches.size() > 0;
+  bool pass2l1 = mu2L1Matches.size() > 0;
+  bool pass1mu = mu1MuMatches.size() > 0;
+  bool pass2mu = mu2MuMatches.size() > 0;
+  isTriggerMatched[NTRIGGERS-1] = pass1l1 && pass2l1 && (pass1mu || pass2mu);
 
   if (isTriggerMatched[1]) { // pass Bit 1
     if (muon1->charge()*muon2->charge() < 0) {
@@ -1156,7 +1104,8 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     // to be done
   }
 
-  if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
+  if (muon1->charge()*muon2->charge() < 0 &&
+      theMass > JpsiMassMin && theMass < JpsiMassMax && 
       theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
       aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
       fabs(theRapidity) > JpsiEtaMin && fabs(theRapidity) < JpsiEtaMax) {
@@ -1167,13 +1116,6 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     
     if (_writeOutCands) *theTextFile << iEvent.id().run() << "\t" << iEvent.luminosityBlock() << "\t" << iEvent.id().event() << "\t" << theMass << "\n";
 
-    int ss=999;
-    if (muon1->charge() + muon2->charge() == 0) ss=0;
-    if (muon1->charge() + muon2->charge() == 2) ss=1;
-    if (muon1->charge() + muon2->charge() == -2) ss=2;
-
-    JpsiSign->setIndex(ss,kTRUE);
-
     JpsiPt->setVal(aCand->pt()); 
     JpsiEta->setVal(theRapidity); 
     JpsiMass->setVal(theMass);
@@ -1183,9 +1125,11 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     // cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
-    trigger0->setIndex((int)isTriggerMatched[0],kTRUE);
-    // trigger0->setIndex((int)isTriggerMatchedNew,kTRUE);
-    trigger1->setIndex((int)isTriggerMatched[1],kTRUE);
+    triggerDMu->setIndex((int)isTriggerMatched[0],kTRUE);
+    triggerMuPre->setIndex((int)isTriggerMatched[1],kTRUE);
+    triggerMu->setIndex((int)isTriggerMatched[2],kTRUE);
+    triggerOniaTrack->setIndex((int)isTriggerMatched[3],kTRUE);
+    triggerOniaL1Mu->setIndex((int)isTriggerMatched[4],kTRUE);
     JpsictTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
      
     if (_storeefficiency) {
@@ -1204,8 +1148,10 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*JpsiType,*matchType);   // temporarily remove tag-and-probe weights
     varlist_tmp.add(*JpsictTrue);   varlist_tmp.add(*JpsiPtType);
     varlist_tmp.add(*JpsiEtaType);  varlist_tmp.add(*JpsictErr);
-    varlist_tmp.add(*trigger0);     varlist_tmp.add(*trigger1); 
-    varlist_tmp.add(*JpsiSign);
+    varlist_tmp.add(*triggerMu);    varlist_tmp.add(*triggerMuPre);
+    varlist_tmp.add(*triggerDMu);   varlist_tmp.add(*triggerOniaTrack);
+    varlist_tmp.add(*triggerOniaL1Mu);   
+
     data->add(varlist_tmp);
     
   }
