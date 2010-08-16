@@ -8,11 +8,19 @@
 
 #include <vector>
 
-const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector&, 
-					 const reco::GenParticleCollection&, double = 0.5, int = -1,
-					 std::vector<int>* = 0);
+/// Find the best match to the input four vector out of the GenParticleCollection 
+/// If pdgIds is non null (and pdgIdStrict is true), look for specific pdgIds.  If 
+/// pdgIdStrict is false, take the best candidate, but always prefer those which match
+/// the pdgId list
+const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& toMatch, 
+					 const reco::GenParticleCollection& genParticles, 
+                                         double dRMax = 0.5, int status = -1,
+					 std::vector<int>* pdgIds = 0, bool pdgIdStrict = true);
 
 void findDaughters(const reco::GenParticle*, std::vector<const reco::GenParticle*>&, int = -1);
+
+/// Find the effective secondary vertex of a generator level particle
+reco::Candidate::Point getDecayVertex(const reco::GenParticle*);
 
 bool isNeutrino(const reco::GenParticle*);
 

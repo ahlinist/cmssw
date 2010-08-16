@@ -176,22 +176,21 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   
   void compGenQuantities(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate, const reco::GenParticleCollection* genParticles)
   {
-    const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1);
+    vector<int> preferTaus(2);
+    preferTaus[0] = 15;
+    preferTaus[1] = -15;
+
+    const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1, &preferTaus, false);
     if ( genLeg1 ) {
-      // TODO (EF): is primary event vertex definition consistent ??
       compositePtrCandidate.setPrimaryVertexPosGen(genLeg1->vertex());
-      if ( genLeg1->daughter(0) ) compositePtrCandidate.setDecayVertexPosLeg1gen(genLeg1->daughter(0)->vertex());
-      //std::cout << "genLeg1: Pt = " << genLeg1->pt() << ", eta = " << genLeg1->eta() << "," 
-      //	  << " phi = " << genLeg1->phi()*180./TMath::Pi() << std::endl;
+      compositePtrCandidate.setDecayVertexPosLeg1gen(getDecayVertex(genLeg1));
       compositePtrCandidate.setP4Leg1gen(genLeg1->p4());
       compositePtrCandidate.setP4VisLeg1gen(getVisMomentum(genLeg1, genParticles));
     }
     
-    const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1);
+    const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1, &preferTaus, false);
     if ( genLeg2 ) {
-      if ( genLeg2->daughter(0) ) compositePtrCandidate.setDecayVertexPosLeg1gen(genLeg2->daughter(0)->vertex());
-      //std::cout << "genLeg2: Pt = " << genLeg2->pt() << ", eta = " << genLeg2->eta() << "," 
-      //	  << " phi = " << genLeg2->phi()*180./TMath::Pi() << std::endl;
+      compositePtrCandidate.setDecayVertexPosLeg2gen(getDecayVertex(genLeg2));
       compositePtrCandidate.setP4Leg2gen(genLeg2->p4());
       compositePtrCandidate.setP4VisLeg2gen(getVisMomentum(genLeg2, genParticles));
     }
