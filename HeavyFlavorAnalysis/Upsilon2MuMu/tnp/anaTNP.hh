@@ -42,23 +42,30 @@ public:
 
   // -- main methods
   // --------------
-  void makeAll(int channels = 3);
+  void makeAllMC(int channels = 3);
+  void makeAllDATA(int channels = 3);
 
   void readHistograms(TFile *f, 
 		      const char *s1 = "mm", const char *s2 = "mt", const char *s3 = "mmbar", 
 		      const char *sm = "Matched", const char *binning = "mt,pt-eta");
+  
+  void readHistogramsDATA(TFile *f, 
+			  const char *s1 = "mm", const char *s2 = "mt", const char *s3 = "mmbar", 
+			  const char *binning = "mt,pt-eta"); // FOR DATA
+  
   void readPidTables(const char *sample = "jpsi");
 
   void addBackground(std::vector<TH1D> &vec, double s2b = 2., double p0 = 1., double p1 = 0.);
   void fitJpsi(int mode);
   void fitUpsilon(int mode);
   void McpYields(); 
-  void fillPidTables();
+  void fillPidTables(int mode);
 
   void integerEntries(TH1D  *h);
   void validation();
-  void projections();
+  void projections(int mode);
   void allDifferences(int jpsiOnly = 0); 
+  void allDifferencesDATA(int jpsiOnly = 0); 
   void ptDifference(const char* a, const char* b, double MIN, double MAX, const char *fname = "ptDifference.pdf"); 
 
   void totalMass();
