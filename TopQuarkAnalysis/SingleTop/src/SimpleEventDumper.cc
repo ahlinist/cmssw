@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.4 2010/08/16 14:12:42 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.5 2010/08/17 10:13:44 giamman Exp $
 //
 //
 
@@ -410,6 +410,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	// find the PFjet matched in angle to the b-tagged PATjet:
 	if (index_max_tchp > -1) {
 	  double dr = GetDeltaR(eta,(*patjets)[index_max_tchp].eta(),phi,(*patjets)[index_max_tchp].phi());
+	  cout << "distance from the highest-TCHP PAT jet: " << dr << endl;
 	  if (dr < min_dr) {
 	    min_dr = dr;
 	    index_matched_pf_patbtag = j;
