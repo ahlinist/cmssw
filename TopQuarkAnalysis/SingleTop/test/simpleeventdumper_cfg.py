@@ -9,8 +9,10 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #        'file:singletop_140331_267971718.root'
-    'file:emu4jetsmet_142038_702_367782938.root'
-    )
+#    'file:emu4jetsmet_142038_702_367782938.root'
+    'rfio:/castor/cern.ch/cms/store/data/Run2010A/Mu/RECO/v4/000/140/331/94659715-5F91-DF11-BBCD-001D09F2AF96.root'
+    ),
+    eventsToProcess = cms.untracked.VEventRange("140331:267971718-140331:267971718")
 )
 
 # conditions ------------------------------------------------------------------
