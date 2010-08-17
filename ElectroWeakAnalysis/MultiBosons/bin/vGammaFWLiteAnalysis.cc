@@ -47,6 +47,8 @@ int main ( int argc, char ** argv )
     std::cout << "Usage : " << argv[0] << " [parameters.py]" << std::endl;
     return 0;
   }
+  cout << ">>> Welcome to vGammaFWLiteAnalysis! <<<" << endl << endl;
+  cout << "Visit https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFramework for help." << endl << flush;
 
   // Parse configuration, get names of input files, output files
   // and the configuration of the selector and histograms.
@@ -140,10 +142,11 @@ int main ( int argc, char ** argv )
       znunugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);    
   }
 
+  cout << "Reading input file(s) ... " << flush;
   // This object 'event' is used both to get all information from the
   // event as well as to store histograms, etc.
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
-
+  cout << "done." << endl << flush;
   long long maxEventsInput = -1;
   if (cfg->existsAs<edm::ParameterSet>("maxEvents")) {
     edm::ParameterSet maxEvents = cfg->getParameter<edm::ParameterSet>("maxEvents");
