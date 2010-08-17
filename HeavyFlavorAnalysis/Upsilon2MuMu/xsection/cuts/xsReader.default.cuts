@@ -5,3 +5,6 @@ PT1	  2.5
 PT2	  2.5
 CHI2      1.0
 RESTYPE   553
+BIN        50
+MASSLO    8.7
+MASSHI   11.2

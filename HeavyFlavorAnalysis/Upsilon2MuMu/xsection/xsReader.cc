@@ -276,75 +276,65 @@ void xsReader::fillHist() {
 
 // ----------------------------------------------------------------------
 void xsReader::bookHist() {
-
-  int binnum(50);
-  double lowmass(8.7);
-  double highmass(11.2);
   
-  if ( RESTYPE == 443 ){
-    lowmass = 2.8;
-    highmass = 3.4;
-    binnum = 30;
-    cout << "xsReader: Running over J/psi: " << lowmass << " " << highmass << endl;
-  } else {
-    cout << "xsReader: Running over Ups: " << lowmass << " " << highmass << endl;
+  fBin = BIN;
+  fMassLow = MASSLO;
+  fMassHigh = MASSHI;
+  
+  TH1 *h;
+  TH2 *k;
+ 
+  h = new TH1D("r101a", "(Matched) Muon -- Pt, Neg", fNpt, fPTbin);
+  k = new TH2D("mt,pt-eta", "mt,pt-eta", fNpt, fPTbin, fNy, fYbin);
+  k = new TH2D("mmmbar,pt-eta", "mmbar,pt-eta", fNpt, fPTbin, fNy, fYbin);
+  cout << "--> xsReader> bookHist> " << endl;
+  
+  // candidateSelection() histograms
+  h = new TH1D("n2_cuts", "n2_cuts", 100, 0., 100.);
+  h = new TH1D("n2", "ncand", 20, 0, 20.);
+  h = new TH1D("n2_CandType", "ncand_CandType", 20, 0, 20.);
+  h = new TH1D("n2_CandType_MuType1", "ncand_CandType_MuType1", 20, 0, 20.);
+  h = new TH1D("n2_CandType_MuType1&2", "ncand_CandType_MuType1&2", 20, 0, 20.);
+  h = new TH1D("n2_CandType_MuType1&2_Pt1", "ncand_CandType_MuType1&2_Pt1", 20, 0, 20.);
+  h = new TH1D("n2_CandType_MuType1&2_Pt1&2", "ncand_CandType_MuType1&2_Pt1&2", 20, 0, 20.);
+  h = new TH1D("n2_CandType_MuType1&2_Pt1&2_Chi2", "ncand_CandType_MuType1&2_Pt1&2_Chi2", 20, 0, 20.);
+  h = new TH1D("TruthCand", "TruthCand", 10, 550., 560.);
+  
+  
+  // fillCandHist() histograms
+  h = new TH1D("CandMass", "CandMass", 44, 1, 12.);
+  h = new TH1D("CandPt", "CandPt", 80, 0, 40.);
+  h = new TH1D("CandRapidity", "CandRapidity", 80, -4, 4.);
+  h = new TH1D("CandEta", "CandEta", 80, -4, 4.);
+  h = new TH1D("UpsilonMass", "UpsilonMass", BIN, fMassLow, fMassHigh); 
+  for ( int iy = 0; iy < fNy; ++iy ){
+    h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]),
+		 Form("UpsilonMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]),
+		 fBin, fMassLow, fMassHigh);
+  }     
+  for ( int ipt = 0; ipt < fNpt; ++ipt ){
+    h = new TH1D(Form("UpsilonMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]),
+		 Form("UpsilonMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]),
+		 fBin, fMassLow, fMassHigh);
+  }
+  for ( int iy = 0; iy < fNy; ++iy ){
+    for ( int ipt = 0; ipt < fNpt; ++ipt ){
+      h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
+		   Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
+		   fBin, fMassLow, fMassHigh);
+    }	
   }
   
- TH1 *h;
- TH2 *k;
- 
- h = new TH1D("r101a", "(Matched) Muon -- Pt, Neg", fNpt, fPTbin);
- k = new TH2D("mt,pt-eta", "mt,pt-eta", fNpt, fPTbin, fNy, fYbin);
- k = new TH2D("mmmbar,pt-eta", "mmbar,pt-eta", fNpt, fPTbin, fNy, fYbin);
- cout << "--> xsReader> bookHist> " << endl;
-
-
- // candidateSelection() histograms
- h = new TH1D("n2_cuts", "n2_cuts", 100, 0., 100.);
- h = new TH1D("n2", "ncand", 20, 0, 20.);
- h = new TH1D("n2_CandType", "ncand_CandType", 20, 0, 20.);
- h = new TH1D("n2_CandType_MuType1", "ncand_CandType_MuType1", 20, 0, 20.);
- h = new TH1D("n2_CandType_MuType1&2", "ncand_CandType_MuType1&2", 20, 0, 20.);
- h = new TH1D("n2_CandType_MuType1&2_Pt1", "ncand_CandType_MuType1&2_Pt1", 20, 0, 20.);
- h = new TH1D("n2_CandType_MuType1&2_Pt1&2", "ncand_CandType_MuType1&2_Pt1&2", 20, 0, 20.);
- h = new TH1D("n2_CandType_MuType1&2_Pt1&2_Chi2", "ncand_CandType_MuType1&2_Pt1&2_Chi2", 20, 0, 20.);
- h = new TH1D("TruthCand", "TruthCand", 10, 550., 560.);
- 
-
- // fillCandHist() histograms
- h = new TH1D("CandMass", "CandMass", 44, 1, 12.);
- h = new TH1D("CandPt", "CandPt", 80, 0, 40.);
- h = new TH1D("CandRapidity", "CandRapidity", 80, -4, 4.);
- h = new TH1D("CandEta", "CandEta", 80, -4, 4.);
- h = new TH1D("UpsilonMass", "UpsilonMass", 50, lowmass, highmass); 
- for ( int iy = 0; iy < fNy; ++iy ){
-  h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]),
-	       Form("UpsilonMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]),
-	       binnum, lowmass, highmass);
- }     
- for ( int ipt = 0; ipt < fNpt; ++ipt ){
-  h = new TH1D(Form("UpsilonMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]),
-	       Form("UpsilonMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]),
-	       binnum, lowmass, highmass);
- }
- for ( int iy = 0; iy < fNy; ++iy ){
-	for ( int ipt = 0; ipt < fNpt; ++ipt ){
-	  h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
-		       Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
-		       binnum, lowmass, highmass);
-	}	
- }
- 
- // MCstudy() histograms
- k = new TH2D("PtResolution_Cand", "PtResolution_Cand", 100, 0, 50, 100, 0, 50);
- k = new TH2D("YResolution_Cand", "YResolution_Cand", 100, -5, 5, 100, -5, 5);
- k = new TH2D("PtResolution_Muon", "PtResolution_Muon", 100, 0, 50, 100, 0, 50);
- k = new TH2D("#etaResolution_Muon", "#etaResolution_Muon", 80, -4, 4, 80, -4, 4);
- h = new TH1D("DeltaPtoverPt_Cand", "DeltaPtoverPt_Cand", 50, -0.1, 0.1);
- h = new TH1D("DeltaYoverY_Cand", "DeltaYoverY_Cand", 50, -0.05, 0.05);
- h = new TH1D("DeltaPtoverPt_Muon", "DeltaPtoverPt_Muon", 50, -0.1, 0.1);
- h = new TH1D("DeltaEtaoverEta_Muon", "DeltaEtaoverEta_Muon", 50, -0.05, 0.05); 
- h = new TH1D("MaxDoca_Cand", "MaxDoca_Cand", 60, 0., 0.03); 
+  // MCstudy() histograms
+  k = new TH2D("PtResolution_Cand", "PtResolution_Cand", 100, 0, 50, 100, 0, 50);
+  k = new TH2D("YResolution_Cand", "YResolution_Cand", 100, -5, 5, 100, -5, 5);
+  k = new TH2D("PtResolution_Muon", "PtResolution_Muon", 100, 0, 50, 100, 0, 50);
+  k = new TH2D("#etaResolution_Muon", "#etaResolution_Muon", 80, -4, 4, 80, -4, 4);
+  h = new TH1D("DeltaPtoverPt_Cand", "DeltaPtoverPt_Cand", 50, -0.1, 0.1);
+  h = new TH1D("DeltaYoverY_Cand", "DeltaYoverY_Cand", 50, -0.05, 0.05);
+  h = new TH1D("DeltaPtoverPt_Muon", "DeltaPtoverPt_Muon", 50, -0.1, 0.1);
+  h = new TH1D("DeltaEtaoverEta_Muon", "DeltaEtaoverEta_Muon", 50, -0.05, 0.05); 
+  h = new TH1D("MaxDoca_Cand", "MaxDoca_Cand", 60, 0., 0.03); 
  
 }
 
@@ -411,7 +401,21 @@ void xsReader::readCuts(TString filename, int dump) {
     if (!strcmp(CutName, "RESTYPE")) {
       RESTYPE = int(CutValue); ok = 1;
       if (dump) cout << "RESTYPE:         " << RESTYPE << endl;
-    }       
+    }
+    if (!strcmp(CutName, "MASSLO")) {
+      MASSLO = CutValue; ok = 1;
+      if (dump) cout << "MASSLO:          " << MASSLO << endl;
+    }           
+    
+    if (!strcmp(CutName, "MASSHI")) {
+      MASSHI = CutValue; ok = 1;
+      if (dump) cout << "MASSHI:         " << MASSHI << endl;
+    }   
+    
+    if (!strcmp(CutName, "BIN")) {
+      BIN = int(CutValue); ok = 1;
+      if (dump) cout << "BIN:              " << BIN << endl;
+    }
     
     if (!strcmp(CutName, "PTLO")) {
       PTLO = CutValue; ok = 1;

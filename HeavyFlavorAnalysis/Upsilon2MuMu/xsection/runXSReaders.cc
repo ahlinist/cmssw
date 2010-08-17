@@ -172,9 +172,9 @@ int main(int argc, char *argv[]) {
   }
   if (a){
   a->openHistFile(histfile); 
-  a->bookHist(); 
+  //a->bookHist(); 
   a->readCuts(cutFile, 1);
-
+  a->bookHist();
   a->startAnalysis(); 
   a->loop(nevents, start);
   a->closeHistFile(); 
