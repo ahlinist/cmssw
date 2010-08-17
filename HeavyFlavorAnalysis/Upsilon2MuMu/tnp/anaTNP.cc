@@ -30,7 +30,7 @@ using std::vector;
 // root [1] gSystem->Load("lib/libAnaClasses.so");
 // root [2] anaTNP a("/shome/bora/root/tnp", 40)            
 // --> Loading rootfiles in /shome/bora/root/tnp for 40
-// root [3] a.makeAll(3)                                          
+// root [3] a.makeAllMC(3)                                          
 //
 // NOTE: (1) this works for ME, YOU have to copy the files and directories in ~ursl/public/root
 //       (2) If it does not work the first time, .q, and try again... (don't ask, I don't know)
@@ -209,7 +209,7 @@ void anaTNP::loadFiles(const char *dir, int i) {
     } else if (40 == i) {
       ufile = fDirectory + string("/upsilon/100804.sp10.mt.COMBINED.tnpReaderTrig_MC.default.root");
      // ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
-      jfile = fDirectory + string("/jpsi/tmp.dimuons..defaults.root");
+      jfile = fDirectory + string("/jpsi/100807.data.mt.tnpReaderMuID_DATA.JPSI.default.root");
      // jfile = fDirectory + string("/jpsi/ppMuMuX_7TeV_JpsiBackground.root");  
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaTNP::loadfiles()" << endl;
@@ -294,9 +294,45 @@ void anaTNP::combineUpsilons() {
 
 }
 
+// ----------------------------------------------------------------------
+void anaTNP::makeAllDATA(int channel) {
+
+  // -- Upsilon
+  if (channel & 1) {
+    init(fDirectory.c_str(), fMode);
+    // -- fill histograms
+    fSample = string("upsilon");
+    readHistograms(fM[0], "mm", "mt", "mmbar", "mt,pt-eta");
+    
+    fitUpsilon(2);
+    fillPidTables(0); // 0 - DATA, 1 - MC
+    //  validation();
+    projections(0); // 0 - DATA, 1 - MC
+    allDifferencesDATA(1); 
+
+  }
+
+  // -- J/psi
+  if (channel & 2) {    
+    init(fDirectory.c_str(), fMode);
+    // -- fill histograms
+    fSample = string("jpsi");
+    readHistogramsDATA(fM[1], "mm", "mt", "mmbar", "mt,pt-eta");
+        
+    fitJpsi(1);
+    fillPidTables(0); // 0 - DATA, 1 - MC
+    //validation();
+    projections(0);  // 0 - DATA, 1 - MC  
+    allDifferencesDATA(2); 
+  }
+  
+  if ((channel&1) && (channel&2)) allDifferencesDATA(3); 
+  
+
+}
 
 // ----------------------------------------------------------------------
-void anaTNP::makeAll(int channel) {
+void anaTNP::makeAllMC(int channel) {
 
   // -- bias plots
   if (0) {
@@ -355,9 +391,9 @@ void anaTNP::makeAll(int channel) {
     addBackground(fS3VectorNeg, 1.);
 
     fitUpsilon(2);
-    fillPidTables(); 
+    fillPidTables(1); // 0 - DATA, 1 - MC
     //  validation();
-    projections(); 
+    projections(1); // 0 - DATA, 1 - MC
     allDifferences(1); 
 
   }
@@ -381,24 +417,23 @@ void anaTNP::makeAll(int channel) {
     addBackground(fS3VectorNeg, 1.);
     
     fitJpsi(1);
-    fillPidTables(); 
+    fillPidTables(1); // 0 - DATA, 1 - MC
     //  validation();
-    projections();    
-   // TFile *file = new TFile("ptDifference.root","RECREATE"); 
+    projections(1);    // 0 - DATA, 1 - MC
     allDifferences(2); 
   }
-
+  
   if (1) {
     init(fDirectory.c_str(), fMode);
     fSample = string("upsilon");
     readPidTables("upsilon"); 
-    projections(); 
+    projections(1); 
     //    allDifferences(1); 
 
     init(fDirectory.c_str(), fMode);
     fSample = string("jpsi");
     readPidTables("jpsi"); 
-    projections(); 
+    projections(1); 
     //    allDifferences(2); 
 
   }
@@ -406,12 +441,13 @@ void anaTNP::makeAll(int channel) {
   if ((channel&1) && (channel&2)) allDifferences(3); 
   
 
-
 }
 
 
+
+
 // ----------------------------------------------------------------------
-void anaTNP::fillPidTables() {
+void anaTNP::fillPidTables(int mode) {
 
   // -- MM/MT
   fPtTnpNeg->readFromHist(gDirectory, "fS1YieldNeg", "fS2YieldNeg");
@@ -422,6 +458,8 @@ void anaTNP::fillPidTables() {
   fPtTnpPos->setHistName("TNP positive muons");                     
   fPtTnpPos->dumpToFile((fPtDirectory+string("/PtTnpPos-") + fSample + string(".dat")).c_str());
 
+
+  if (mode == 1){ // FOR MC
   // -- MC all 
   fPtMctNeg->readFromHist(gDirectory, "fS1MctNeg", "fS2MctNeg");
   fPtMctNeg->setHistName("MC truth negative muons");                     
@@ -435,10 +473,12 @@ void anaTNP::fillPidTables() {
   fPtMcpNeg->readFromHist(gDirectory, "fS1McpNeg", "fS2McpNeg");
   fPtMcpNeg->setHistName("MC probe negative muons");                     
   fPtMcpNeg->dumpToFile((fPtDirectory+string("/PtMcpNeg-") + fSample + string(".dat")).c_str());
-
+  
   fPtMcpPos->readFromHist(gDirectory, "fS1McpPos", "fS2McpPos");
   fPtMcpPos->setHistName("MC probe positive muons");                     
   fPtMcpPos->dumpToFile((fPtDirectory+string("/PtMcpPos-") + fSample + string(".dat")).c_str());
+  
+  }  
 
   // -- MM/(MM + MMbar)
   fPtMmbNeg->readFromHist(gDirectory, "fS1YieldNeg", "fS3YieldNeg");
@@ -491,6 +531,63 @@ void anaTNP::readPidTables(const char *sample) {
   
 }
 
+
+// ----------------------------------------------------------------------
+void anaTNP::allDifferencesDATA(int sample) {
+  // sample = 0x1 Upsilon
+  //          0x2 J/psi
+  
+  double MIN(-0.1), MAX(0.1);    
+ 
+  // -- mmbar vs mm/mt
+  if (sample & 0x1) {
+    //MIN = -0.05; MAX = 0.05;	
+    ptDifference(Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
+		 Form("%s/PtMmbPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
+		 MIN, MAX, "upsilon-tnp-mmb-pos.eps");
+
+    ptDifference(Form("%s/PtTnpNeg-%s.dat", fPtDirectory.c_str(), "upsilon"), 
+		 Form("%s/PtMmbNeg-%s.dat", fPtDirectory.c_str(), "upsilon"), 
+		 MIN, MAX, "upsilon-tnp-mmb-neg.eps");
+  }
+  
+  if (sample & 0x2) {
+    ptDifference(Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "jpsi"), 
+		 Form("%s/PtMmbPos-%s.dat", fPtDirectory.c_str(), "jpsi"), 
+		 MIN, MAX, "jpsi-tnp-mmb-pos.eps");
+    
+    ptDifference(Form("%s/PtTnpNeg-%s.dat", fPtDirectory.c_str(), "jpsi"), 
+		 Form("%s/PtMmbNeg-%s.dat", fPtDirectory.c_str(), "jpsi"), 
+		 MIN, MAX, "jpsi-tnp-mmb-neg.eps");
+  }
+
+  // -- NEG vs POS
+  if (sample & 0x1) {
+   // MIN = -0.05; MAX = 0.05;
+    ptDifference(Form("%s/PtTnpNeg-%s.dat", fPtDirectory.c_str(), "upsilon"), 
+		 Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
+		 MIN, MAX, "upsilon-neg-pos.eps");
+  }
+
+  if (sample & 0x2) {
+    ptDifference(Form("%s/PtTnpNeg-%s.dat", fPtDirectory.c_str(), "jpsi"), 
+		 Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "jpsi"), 
+		 MIN, MAX, "jpsi-neg-pos.eps");
+  }
+
+  // -- Upsilon vs. J/psi
+  if (sample & 0x2 && sample & 0x1) {
+    ptDifference(Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "upsilon"), 
+		 Form("%s/PtTnpPos-%s.dat", fPtDirectory.c_str(), "jpsi"), 
+		 MIN, MAX, "upsilon-jpsi-tnp-pos.eps");
+    
+    ptDifference(Form("%s/PtTnpNeg-%s.dat", fPtDirectory.c_str(), "upsilon"), 
+		 Form("%s/PtTnpNeg-%s.dat", fPtDirectory.c_str(), "jpsi"), 
+		 MIN, MAX, "upsilon-jpsi-tnp-neg.eps");
+    
+  }
+
+}
 
 // ----------------------------------------------------------------------
 void anaTNP::allDifferences(int sample) {
@@ -690,287 +787,539 @@ void anaTNP::ptDifference(const char *a, const char *b, double MIN, double MAX, 
 
 
 // ----------------------------------------------------------------------
-void anaTNP::projections() {
+void anaTNP::projections(int mode) {
 
-  zone();
-  TH2D *hpt = fPtMctNeg->get2dHist("hpt", "hpt", 1); 
+  if ( mode == 0 ){
+    zone();
+    TH2D *hpt = fPtTnpNeg->get2dHist("hpt", "hpt", 1); 
+    
+    //  hpt->Print("all"); 
+    
+    // -- momentum
+    TH1D *hPtnp = new TH1D("hPtnp", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
+    TH1D *hPmmb = new TH1D("hPmmb", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
 
-  //  hpt->Print("all"); 
+    hPtnp->SetMaximum(1.1); 
+    setHist(hPtnp, kBlack, 20, 1.4); 
+    setHist(hPmmb, kBlack, 26, 1.4); 
+    
+    double lo(0.), hi(0.); 
+    int maxPad (0); 
+    if (hpt->GetNbinsX() <= 4) {
+      zone(2,2);
+      maxPad = 4; 
+    } else if (hpt->GetNbinsX() <= 6) {
+      zone(2,3);
+      maxPad = 6; 
+    } else if (hpt->GetNbinsX() <= 9) {
+      zone(3,3);
+      maxPad = 9; 
+    } else if (hpt->GetNbinsX() <= 12) {
+      zone(3,4);
+      maxPad = 12; 
+    } else if (hpt->GetNbinsX() <= 16) {
+      zone(4,4);
+      maxPad = 16; 
+    } else if (hpt->GetNbinsX() <= 20) {
+      zone(4,5);
+      maxPad = 20; 
+    } else if (hpt->GetNbinsX() <= 24) {
+      zone(4,6);
+      maxPad = 24;
+    }
+  
+    for (int i = 1; i <= hpt->GetNbinsX(); ++i) {
+      c0->cd(i); shrinkPad(0.20, 0.15); 
+      lo = hpt->GetXaxis()->GetBinLowEdge(i); 
+      hi = hpt->GetXaxis()->GetBinLowEdge(i+1); 
+      
+      cout << "lo: " << lo << " hi: " << hi << endl;
+      fPtTnpNeg->projectP(hPtnp, lo, hi);
+      fPtMmbNeg->projectP(hPmmb, lo, hi);
+      
+      
+      hPtnp->SetMinimum(0.15); 
+      setTitles(hPtnp, "p_{T} [GeV]", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+      
+      hPtnp->DrawCopy("e");
+      hPmmb->DrawCopy("samee");
+      
+      tl->DrawLatex(0.2, 0.92, Form("%3.1f < #eta < %3.1f", lo, hi)); 
+      
+      c0->Modified();
+      c0->Update();
+    }
+    
+    c0->cd(maxPad); 
+    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+    legg->SetHeader("negative muons");
+    legge = legg->AddEntry(hPtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hPmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
+    legg->Draw();
+    c0->Modified();
+    c0->Update();
+    
+    c0->SaveAs(Form("%s/projections-%s-neg-pt.eps", fPtDirectory.c_str(), fSample.c_str())); 
+    
+    
+    if (hpt->GetNbinsX() <= 4) {
+      zone(2,2);
+      maxPad = 4; 
+    } else if (hpt->GetNbinsX() <= 6) {
+      zone(2,3);
+      maxPad = 6; 
+    } else if (hpt->GetNbinsX() <= 9) {
+      zone(3,3);
+      maxPad = 9; 
+    } else if (hpt->GetNbinsX() <= 12) {
+      zone(3,4);
+      maxPad = 12; 
+    } else if (hpt->GetNbinsX() <= 16) {
+      zone(4,4);
+      maxPad = 16; 
+    } else if (hpt->GetNbinsX() <= 20) {
+      zone(4,5);
+      maxPad = 20; 
+    } else if (hpt->GetNbinsX() <= 24) {
+      zone(4,6);
+      maxPad = 24; 
+    }
+    
+    
+    for (int i = 1; i <= hpt->GetNbinsX(); ++i) {
+      c0->cd(i); shrinkPad(0.20, 0.15); 
+      lo = hpt->GetXaxis()->GetBinLowEdge(i); 
+      hi = hpt->GetXaxis()->GetBinLowEdge(i+1); 
 
-  // -- momentum
-  TH1D *hPmct = new TH1D("hPmct", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
-  TH1D *hPmcp = new TH1D("hPmcp", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
-  TH1D *hPtnp = new TH1D("hPtnp", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
-  TH1D *hPmmb = new TH1D("hPmmb", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
+      cout << "lo: " << lo << " hi: " << hi << endl;
+      fPtTnpPos->projectP(hPtnp, lo, hi);
+      fPtMmbPos->projectP(hPmmb, lo, hi);
+      
+      hPtnp->SetMinimum(0.15); 
+      setTitles(hPtnp, "p_{T} [GeV]", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+      
+      hPtnp->DrawCopy("e");
+      hPmmb->DrawCopy("samee");
+      
+      tl->DrawLatex(0.2, 0.92, Form("%3.1f < #eta < %3.1f", lo, hi)); 
+      
+      c0->Modified();
+      c0->Update();
+      
+    }
+    
+    c0->cd(maxPad); 
+    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+    legg->SetHeader("positive muons");
+    legge = legg->AddEntry(hPtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hPmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
+    legg->Draw();
+    c0->Modified();
+    c0->Update();
+    
+    c0->SaveAs(Form("%s/projections-%s-pos-pt.eps", fPtDirectory.c_str(), fSample.c_str())); 
+    
+    
+    // -- eta
+    TH1D *hTtnp = new TH1D("hTtnp", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
+    TH1D *hTmmb = new TH1D("hTmmb", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
+    
+    setHist(hTtnp, kBlack, 20, 1.4); 
+    setHist(hTmmb, kBlack, 26, 1.4); 
+    
+    if (hpt->GetNbinsY() <= 4) {
+      zone(2,2);
+      maxPad = 4; 
+    } else if (hpt->GetNbinsY() <= 6) {
+      zone(2,3);
+      maxPad = 6; 
+    } else if (hpt->GetNbinsY() <= 9) {
+      zone(3,3);
+      maxPad = 9; 
+    } else if (hpt->GetNbinsY() <= 12) {
+      zone(3,4);
+      maxPad = 12; 
+    } else if (hpt->GetNbinsY() <= 16) {
+      zone(4,4);
+      maxPad = 16; 
+    } else if (hpt->GetNbinsY() <= 20) {
+      zone(4,5);
+      maxPad = 20; 
+    }
 
-  hPmct->SetMaximum(1.1); 
-  setHist(hPmct, kRed, 25, 1.4); 
-  setHist(hPmcp, kBlue, 24, 1.4); 
-  setHist(hPtnp, kBlack, 20, 1.4); 
-  setHist(hPmmb, kBlack, 26, 1.4); 
+    for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
+      c0->cd(i-1); shrinkPad(0.20, 0.15); 
+      lo = hpt->GetYaxis()->GetBinLowEdge(i); 
+      hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
+      
+      cout << "lo: " << lo << " hi: " << hi << endl;
+      fPtTnpNeg->projectT(hTtnp, lo, hi);
+      fPtMmbNeg->projectT(hTmmb, lo, hi);
+      
+      hTtnp->SetMinimum(0.15); 
+      hTtnp->SetMaximum(1.1); 
+      setTitles(hTtnp, "#eta", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+      
+      hTtnp->DrawCopy("e");
+      hTmmb->DrawCopy("samee");
 
-  double lo(0.), hi(0.); 
-  int maxPad (0); 
-  if (hpt->GetNbinsX() <= 4) {
-    zone(2,2);
-    maxPad = 4; 
-  } else if (hpt->GetNbinsX() <= 6) {
-    zone(2,3);
-    maxPad = 6; 
-  } else if (hpt->GetNbinsX() <= 9) {
-    zone(3,3);
-    maxPad = 9; 
-  } else if (hpt->GetNbinsX() <= 12) {
-    zone(3,4);
-    maxPad = 12; 
-  } else if (hpt->GetNbinsX() <= 16) {
-    zone(4,4);
-    maxPad = 16; 
-  } else if (hpt->GetNbinsX() <= 20) {
-    zone(4,5);
-    maxPad = 20; 
-  } else if (hpt->GetNbinsX() <= 24) {
-    zone(4,6);
-    maxPad = 24;
+      tl->DrawLatex(0.2, 0.92, Form("%3.1f < p_{T} < %3.1f GeV", lo, hi)); 
+      
+      c0->Modified();
+      c0->Update();
+      
+    }
+
+    c0->cd(maxPad); 
+    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+    legg->SetHeader("negative muons");
+    legge = legg->AddEntry(hTtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hTmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
+    legg->Draw();
+    c0->Modified();
+    c0->Update();
+
+    c0->SaveAs(Form("%s/projections-%s-neg-eta.eps", fPtDirectory.c_str(), fSample.c_str())); 
+    
+    if (hpt->GetNbinsY() <= 4) {
+      zone(2,2);
+      maxPad = 4; 
+    } else if (hpt->GetNbinsY() <= 6) {
+      zone(2,3);
+      maxPad = 6; 
+    } else if (hpt->GetNbinsY() <= 9) {
+      zone(3,3);
+      maxPad = 9; 
+    } else if (hpt->GetNbinsY() <= 12) {
+      zone(3,4);
+      maxPad = 12; 
+    } else if (hpt->GetNbinsY() <= 16) {
+      zone(4,4);
+      maxPad = 16; 
+    } else if (hpt->GetNbinsY() <= 20) {
+      zone(4,5);
+      maxPad = 20; 
+    }
+    
+    for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
+      c0->cd(i-1); shrinkPad(0.20, 0.15); 
+      lo = hpt->GetYaxis()->GetBinLowEdge(i); 
+      hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
+      
+      cout << "lo: " << lo << " hi: " << hi << endl;
+      fPtTnpPos->projectT(hTtnp, lo, hi);
+      fPtMmbPos->projectT(hTmmb, lo, hi);
+      
+      hTtnp->SetMinimum(0.15); 
+      hTtnp->SetMaximum(1.1); 
+      setTitles(hTtnp, "#eta", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+            
+      hTtnp->DrawCopy("e");
+      hTmmb->DrawCopy("samee");
+      
+      tl->DrawLatex(0.2, 0.92, Form("%3.1f < p_{T} < %3.1f GeV", lo, hi)); 
+      
+      c0->Modified();
+      c0->Update();
+      
+    }
+    c0->cd(maxPad); 
+    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+    legg->SetHeader("positive muons");
+    legge = legg->AddEntry(hTtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hTmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
+    legg->Draw();
+    c0->Modified();
+    c0->Update();
+    c0->SaveAs(Form("%s/projections-%s-pos-eta.eps", fPtDirectory.c_str(), fSample.c_str())); 
   }
   
-  for (int i = 1; i <= hpt->GetNbinsX(); ++i) {
-    c0->cd(i); shrinkPad(0.20, 0.15); 
-    lo = hpt->GetXaxis()->GetBinLowEdge(i); 
-    hi = hpt->GetXaxis()->GetBinLowEdge(i+1); 
-
-    cout << "lo: " << lo << " hi: " << hi << endl;
-    fPtMctNeg->projectP(hPmct, lo, hi);
-    fPtMcpNeg->projectP(hPmcp, lo, hi);
-    fPtTnpNeg->projectP(hPtnp, lo, hi);
-    fPtMmbNeg->projectP(hPmmb, lo, hi);
-
+  if ( mode == 1 ){
+    zone();
+    TH2D *hpt = fPtMctNeg->get2dHist("hpt", "hpt", 1); 
     
-    hPmct->SetMinimum(0.15); 
-    setTitles(hPmct, "p_{T} [GeV]", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+    //  hpt->Print("all"); 
+    
+    // -- momentum
+    TH1D *hPmct = new TH1D("hPmct", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
+    TH1D *hPmcp = new TH1D("hPmcp", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
+    TH1D *hPtnp = new TH1D("hPtnp", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
+    TH1D *hPmmb = new TH1D("hPmmb", "", hpt->GetNbinsY(), hpt->GetYaxis()->GetXbins()->GetArray()); 
 
-    hPmct->DrawCopy("e");
-    hPmcp->DrawCopy("samee");
-    hPtnp->DrawCopy("samee");
-    hPmmb->DrawCopy("samee");
-
-    tl->DrawLatex(0.2, 0.92, Form("%3.1f < #eta < %3.1f", lo, hi)); 
-
+    hPmct->SetMaximum(1.1); 
+    setHist(hPmct, kRed, 25, 1.4); 
+    setHist(hPmcp, kBlue, 24, 1.4); 
+    setHist(hPtnp, kBlack, 20, 1.4); 
+    setHist(hPmmb, kBlack, 26, 1.4); 
+    
+    double lo(0.), hi(0.); 
+    int maxPad (0); 
+    if (hpt->GetNbinsX() <= 4) {
+      zone(2,2);
+      maxPad = 4; 
+    } else if (hpt->GetNbinsX() <= 6) {
+      zone(2,3);
+      maxPad = 6; 
+    } else if (hpt->GetNbinsX() <= 9) {
+      zone(3,3);
+      maxPad = 9; 
+    } else if (hpt->GetNbinsX() <= 12) {
+      zone(3,4);
+      maxPad = 12; 
+    } else if (hpt->GetNbinsX() <= 16) {
+      zone(4,4);
+      maxPad = 16; 
+    } else if (hpt->GetNbinsX() <= 20) {
+      zone(4,5);
+      maxPad = 20; 
+    } else if (hpt->GetNbinsX() <= 24) {
+      zone(4,6);
+      maxPad = 24;
+    }
+  
+    for (int i = 1; i <= hpt->GetNbinsX(); ++i) {
+      c0->cd(i); shrinkPad(0.20, 0.15); 
+      lo = hpt->GetXaxis()->GetBinLowEdge(i); 
+      hi = hpt->GetXaxis()->GetBinLowEdge(i+1); 
+      
+      cout << "lo: " << lo << " hi: " << hi << endl;
+      fPtMctNeg->projectP(hPmct, lo, hi);
+      fPtMcpNeg->projectP(hPmcp, lo, hi);
+      fPtTnpNeg->projectP(hPtnp, lo, hi);
+      fPtMmbNeg->projectP(hPmmb, lo, hi);
+      
+      
+      hPmct->SetMinimum(0.15); 
+      setTitles(hPmct, "p_{T} [GeV]", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+      
+      hPmct->DrawCopy("e");
+      hPmcp->DrawCopy("samee");
+      hPtnp->DrawCopy("samee");
+      hPmmb->DrawCopy("samee");
+      
+      tl->DrawLatex(0.2, 0.92, Form("%3.1f < #eta < %3.1f", lo, hi)); 
+      
+      c0->Modified();
+      c0->Update();
+    }
+    
+    c0->cd(maxPad); 
+    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+    legg->SetHeader("negative muons");
+    legge = legg->AddEntry(hPmct, " MC truth","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hPmcp,  " MC probe","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hPtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hPmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
+    legg->Draw();
     c0->Modified();
     c0->Update();
-  }
+    
+    c0->SaveAs(Form("%s/projections-%s-neg-pt.eps", fPtDirectory.c_str(), fSample.c_str())); 
+    
+    
+    if (hpt->GetNbinsX() <= 4) {
+      zone(2,2);
+      maxPad = 4; 
+    } else if (hpt->GetNbinsX() <= 6) {
+      zone(2,3);
+      maxPad = 6; 
+    } else if (hpt->GetNbinsX() <= 9) {
+      zone(3,3);
+      maxPad = 9; 
+    } else if (hpt->GetNbinsX() <= 12) {
+      zone(3,4);
+      maxPad = 12; 
+    } else if (hpt->GetNbinsX() <= 16) {
+      zone(4,4);
+      maxPad = 16; 
+    } else if (hpt->GetNbinsX() <= 20) {
+      zone(4,5);
+      maxPad = 20; 
+    } else if (hpt->GetNbinsX() <= 24) {
+      zone(4,6);
+      maxPad = 24; 
+    }
+    
+    
+    for (int i = 1; i <= hpt->GetNbinsX(); ++i) {
+      c0->cd(i); shrinkPad(0.20, 0.15); 
+      lo = hpt->GetXaxis()->GetBinLowEdge(i); 
+      hi = hpt->GetXaxis()->GetBinLowEdge(i+1); 
 
-  c0->cd(maxPad); 
-  legg = new TLegend(0.3,0.3,0.8,0.8);
-  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
-  legg->SetHeader("negative muons");
-  legge = legg->AddEntry(hPmct, " MC truth","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hPmcp,  " MC probe","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hPtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hPmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
-  legg->Draw();
-  c0->Modified();
-  c0->Update();
+      cout << "lo: " << lo << " hi: " << hi << endl;
+      fPtMctPos->projectP(hPmct, lo, hi);
+      fPtMcpPos->projectP(hPmcp, lo, hi);
+      fPtTnpPos->projectP(hPtnp, lo, hi);
+      fPtMmbPos->projectP(hPmmb, lo, hi);
+      
+      hPmct->SetMinimum(0.15); 
+      setTitles(hPmct, "p_{T} [GeV]", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+      
+      hPmct->DrawCopy();
+      hPmcp->DrawCopy("same");
+      hPtnp->DrawCopy("samee");
+      
+      tl->DrawLatex(0.2, 0.92, Form("%3.1f < #eta < %3.1f", lo, hi)); 
+      
+      c0->Modified();
+      c0->Update();
+      
+    }
+    
+    c0->cd(maxPad); 
+    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+    legg->SetHeader("positive muons");
+    legge = legg->AddEntry(hPmct, " MC truth","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hPmcp,  " MC probe","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hPtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hPmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
+    legg->Draw();
+    c0->Modified();
+    c0->Update();
+    
+    c0->SaveAs(Form("%s/projections-%s-pos-pt.eps", fPtDirectory.c_str(), fSample.c_str())); 
+    
+    
+    // -- eta
+    TH1D *hTmct = new TH1D("hTmct", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
+    TH1D *hTmcp = new TH1D("hTmcp", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
+    TH1D *hTtnp = new TH1D("hTtnp", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
+    TH1D *hTmmb = new TH1D("hTmmb", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
+    
+    setHist(hTmct, kRed, 25, 1.4); 
+    setHist(hTmcp, kBlue, 24, 1.4); 
+    setHist(hTtnp, kBlack, 20, 1.4); 
+    setHist(hTmmb, kBlack, 26, 1.4); 
+    
+    if (hpt->GetNbinsY() <= 4) {
+      zone(2,2);
+      maxPad = 4; 
+    } else if (hpt->GetNbinsY() <= 6) {
+      zone(2,3);
+      maxPad = 6; 
+    } else if (hpt->GetNbinsY() <= 9) {
+      zone(3,3);
+      maxPad = 9; 
+    } else if (hpt->GetNbinsY() <= 12) {
+      zone(3,4);
+      maxPad = 12; 
+    } else if (hpt->GetNbinsY() <= 16) {
+      zone(4,4);
+      maxPad = 16; 
+    } else if (hpt->GetNbinsY() <= 20) {
+      zone(4,5);
+      maxPad = 20; 
+    }
 
-  c0->SaveAs(Form("%s/projections-%s-neg-pt.eps", fPtDirectory.c_str(), fSample.c_str())); 
+    for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
+      c0->cd(i-1); shrinkPad(0.20, 0.15); 
+      lo = hpt->GetYaxis()->GetBinLowEdge(i); 
+      hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
+      
+      cout << "lo: " << lo << " hi: " << hi << endl;
+      fPtMctNeg->projectT(hTmct, lo, hi);
+      fPtMcpNeg->projectT(hTmcp, lo, hi);
+      fPtTnpNeg->projectT(hTtnp, lo, hi);
+      fPtMmbNeg->projectT(hTmmb, lo, hi);
+      
+      hTmct->SetMinimum(0.15); 
+      hTmct->SetMaximum(1.1); 
+      setTitles(hTmct, "#eta", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+      
+      hTmct->DrawCopy("e");
+      hTmcp->DrawCopy("samee");
+      hTtnp->DrawCopy("samee");
+      hTmmb->DrawCopy("samee");
 
+      tl->DrawLatex(0.2, 0.92, Form("%3.1f < p_{T} < %3.1f GeV", lo, hi)); 
+      
+      c0->Modified();
+      c0->Update();
+      
+    }
 
-  if (hpt->GetNbinsX() <= 4) {
-    zone(2,2);
-    maxPad = 4; 
-  } else if (hpt->GetNbinsX() <= 6) {
-    zone(2,3);
-    maxPad = 6; 
-  } else if (hpt->GetNbinsX() <= 9) {
-    zone(3,3);
-    maxPad = 9; 
-  } else if (hpt->GetNbinsX() <= 12) {
-    zone(3,4);
-    maxPad = 12; 
-  } else if (hpt->GetNbinsX() <= 16) {
-    zone(4,4);
-    maxPad = 16; 
-  } else if (hpt->GetNbinsX() <= 20) {
-    zone(4,5);
-    maxPad = 20; 
-  } else if (hpt->GetNbinsX() <= 24) {
-    zone(4,6);
-    maxPad = 24; 
-  }
-   
-
-  for (int i = 1; i <= hpt->GetNbinsX(); ++i) {
-    c0->cd(i); shrinkPad(0.20, 0.15); 
-    lo = hpt->GetXaxis()->GetBinLowEdge(i); 
-    hi = hpt->GetXaxis()->GetBinLowEdge(i+1); 
-
-    cout << "lo: " << lo << " hi: " << hi << endl;
-    fPtMctPos->projectP(hPmct, lo, hi);
-    fPtMcpPos->projectP(hPmcp, lo, hi);
-    fPtTnpPos->projectP(hPtnp, lo, hi);
-    fPtMmbPos->projectP(hPmmb, lo, hi);
-
-    hPmct->SetMinimum(0.15); 
-    setTitles(hPmct, "p_{T} [GeV]", "Efficiency", 0.09, 1.1, 0.8, 0.09);
-
-    hPmct->DrawCopy();
-    hPmcp->DrawCopy("same");
-    hPtnp->DrawCopy("samee");
-
-    tl->DrawLatex(0.2, 0.92, Form("%3.1f < #eta < %3.1f", lo, hi)); 
-
+    c0->cd(maxPad); 
+    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+    legg->SetHeader("negative muons");
+    legge = legg->AddEntry(hTmct, " MC truth","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hTmcp,  " MC probe","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hTtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hTmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
+    legg->Draw();
     c0->Modified();
     c0->Update();
 
-  }
-
-  c0->cd(maxPad); 
-  legg = new TLegend(0.3,0.3,0.8,0.8);
-  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
-  legg->SetHeader("positive muons");
-  legge = legg->AddEntry(hPmct, " MC truth","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hPmcp,  " MC probe","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hPtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hPmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
-  legg->Draw();
-  c0->Modified();
-  c0->Update();
-
-  c0->SaveAs(Form("%s/projections-%s-pos-pt.eps", fPtDirectory.c_str(), fSample.c_str())); 
-
-
-  // -- eta
-  TH1D *hTmct = new TH1D("hTmct", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
-  TH1D *hTmcp = new TH1D("hTmcp", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
-  TH1D *hTtnp = new TH1D("hTtnp", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
-  TH1D *hTmmb = new TH1D("hTmmb", "", hpt->GetNbinsX(), hpt->GetXaxis()->GetXbins()->GetArray()); 
-
-  setHist(hTmct, kRed, 25, 1.4); 
-  setHist(hTmcp, kBlue, 24, 1.4); 
-  setHist(hTtnp, kBlack, 20, 1.4); 
-  setHist(hTmmb, kBlack, 26, 1.4); 
-
-  if (hpt->GetNbinsY() <= 4) {
-    zone(2,2);
-    maxPad = 4; 
-  } else if (hpt->GetNbinsY() <= 6) {
-    zone(2,3);
-    maxPad = 6; 
-  } else if (hpt->GetNbinsY() <= 9) {
-    zone(3,3);
-    maxPad = 9; 
-  } else if (hpt->GetNbinsY() <= 12) {
-    zone(3,4);
-    maxPad = 12; 
-  } else if (hpt->GetNbinsY() <= 16) {
-    zone(4,4);
-    maxPad = 16; 
-  } else if (hpt->GetNbinsY() <= 20) {
-    zone(4,5);
-    maxPad = 20; 
-  }
-
-  for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
-    c0->cd(i-1); shrinkPad(0.20, 0.15); 
-    lo = hpt->GetYaxis()->GetBinLowEdge(i); 
-    hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
-
-    cout << "lo: " << lo << " hi: " << hi << endl;
-    fPtMctNeg->projectT(hTmct, lo, hi);
-    fPtMcpNeg->projectT(hTmcp, lo, hi);
-    fPtTnpNeg->projectT(hTtnp, lo, hi);
-    fPtMmbNeg->projectT(hTmmb, lo, hi);
-
-    hTmct->SetMinimum(0.15); 
-    hTmct->SetMaximum(1.1); 
-    setTitles(hTmct, "#eta", "Efficiency", 0.09, 1.1, 0.8, 0.09);
-
-    hTmct->DrawCopy("e");
-    hTmcp->DrawCopy("samee");
-    hTtnp->DrawCopy("samee");
-    hTmmb->DrawCopy("samee");
-
-    tl->DrawLatex(0.2, 0.92, Form("%3.1f < p_{T} < %3.1f GeV", lo, hi)); 
-
+    c0->SaveAs(Form("%s/projections-%s-neg-eta.eps", fPtDirectory.c_str(), fSample.c_str())); 
+    
+    if (hpt->GetNbinsY() <= 4) {
+      zone(2,2);
+      maxPad = 4; 
+    } else if (hpt->GetNbinsY() <= 6) {
+      zone(2,3);
+      maxPad = 6; 
+    } else if (hpt->GetNbinsY() <= 9) {
+      zone(3,3);
+      maxPad = 9; 
+    } else if (hpt->GetNbinsY() <= 12) {
+      zone(3,4);
+      maxPad = 12; 
+    } else if (hpt->GetNbinsY() <= 16) {
+      zone(4,4);
+      maxPad = 16; 
+    } else if (hpt->GetNbinsY() <= 20) {
+      zone(4,5);
+      maxPad = 20; 
+    }
+    
+    for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
+      c0->cd(i-1); shrinkPad(0.20, 0.15); 
+      lo = hpt->GetYaxis()->GetBinLowEdge(i); 
+      hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
+      
+      cout << "lo: " << lo << " hi: " << hi << endl;
+      fPtMctPos->projectT(hTmct, lo, hi);
+      fPtMcpPos->projectT(hTmcp, lo, hi);
+      fPtTnpPos->projectT(hTtnp, lo, hi);
+      fPtMmbPos->projectT(hTmmb, lo, hi);
+      
+      hTmct->SetMinimum(0.15); 
+      hTmct->SetMaximum(1.1); 
+      setTitles(hTmct, "#eta", "Efficiency", 0.09, 1.1, 0.8, 0.09);
+      //    hTmct->SetTitle(Form("positive muons (%3.1f < p_{T} < %3.1f GeV, %s)", lo, hi, fSample.c_str())); 
+      
+      hTmct->DrawCopy("e");
+      hTmcp->DrawCopy("samee");
+      hTtnp->DrawCopy("samee");
+      hTmmb->DrawCopy("samee");
+      
+      tl->DrawLatex(0.2, 0.92, Form("%3.1f < p_{T} < %3.1f GeV", lo, hi)); 
+      
+      c0->Modified();
+      c0->Update();
+      
+    }
+    c0->cd(maxPad); 
+    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+    legg->SetHeader("positive muons");
+    legge = legg->AddEntry(hTmct, " MC truth","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hTmcp,  " MC probe","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hTtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hTmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
+    legg->Draw();
     c0->Modified();
     c0->Update();
-
+    c0->SaveAs(Form("%s/projections-%s-pos-eta.eps", fPtDirectory.c_str(), fSample.c_str())); 
   }
-
-  c0->cd(maxPad); 
-  legg = new TLegend(0.3,0.3,0.8,0.8);
-  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
-  legg->SetHeader("negative muons");
-  legge = legg->AddEntry(hTmct, " MC truth","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hTmcp,  " MC probe","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hTtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hTmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
-  legg->Draw();
-  c0->Modified();
-  c0->Update();
-
-  c0->SaveAs(Form("%s/projections-%s-neg-eta.eps", fPtDirectory.c_str(), fSample.c_str())); 
-
-  if (hpt->GetNbinsY() <= 4) {
-    zone(2,2);
-    maxPad = 4; 
-  } else if (hpt->GetNbinsY() <= 6) {
-    zone(2,3);
-    maxPad = 6; 
-  } else if (hpt->GetNbinsY() <= 9) {
-    zone(3,3);
-    maxPad = 9; 
-  } else if (hpt->GetNbinsY() <= 12) {
-    zone(3,4);
-    maxPad = 12; 
-  } else if (hpt->GetNbinsY() <= 16) {
-    zone(4,4);
-    maxPad = 16; 
-  } else if (hpt->GetNbinsY() <= 20) {
-    zone(4,5);
-    maxPad = 20; 
-  }
- 
-  for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
-    c0->cd(i-1); shrinkPad(0.20, 0.15); 
-    lo = hpt->GetYaxis()->GetBinLowEdge(i); 
-    hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
-
-    cout << "lo: " << lo << " hi: " << hi << endl;
-    fPtMctPos->projectT(hTmct, lo, hi);
-    fPtMcpPos->projectT(hTmcp, lo, hi);
-    fPtTnpPos->projectT(hTtnp, lo, hi);
-    fPtMmbPos->projectT(hTmmb, lo, hi);
-
-    hTmct->SetMinimum(0.15); 
-    hTmct->SetMaximum(1.1); 
-    setTitles(hTmct, "#eta", "Efficiency", 0.09, 1.1, 0.8, 0.09);
-    //    hTmct->SetTitle(Form("positive muons (%3.1f < p_{T} < %3.1f GeV, %s)", lo, hi, fSample.c_str())); 
-
-    hTmct->DrawCopy("e");
-    hTmcp->DrawCopy("samee");
-    hTtnp->DrawCopy("samee");
-    hTmmb->DrawCopy("samee");
-
-    tl->DrawLatex(0.2, 0.92, Form("%3.1f < p_{T} < %3.1f GeV", lo, hi)); 
-
-    c0->Modified();
-    c0->Update();
-
-  }
-  c0->cd(maxPad); 
-  legg = new TLegend(0.3,0.3,0.8,0.8);
-  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
-  legg->SetHeader("positive muons");
-  legge = legg->AddEntry(hTmct, " MC truth","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hTmcp,  " MC probe","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hTtnp,  " tag and probe 1","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(hTmmb,  " tag and probe 2","p"); legge->SetTextColor(kBlack);
-  legg->Draw();
-  c0->Modified();
-  c0->Update();
-  c0->SaveAs(Form("%s/projections-%s-pos-eta.eps", fPtDirectory.c_str(), fSample.c_str())); 
-
+  
+  
 }
 
 
@@ -1149,13 +1498,13 @@ void anaTNP::readHistograms(TFile *f,
 			 );
 
   fS2McpPos = new TH2D("fS2McpPos", 
-		       Form("%s fS2McpPos", s1), 
+		       Form("%s fS2McpPos", s2), 
 		       fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
 		       fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
 		       );
   
   fS2McpNeg = new TH2D("fS2McpNeg", 
-		       Form("%s fS2McpNeg", s1), 
+		       Form("%s fS2McpNeg", s2), 
 		       fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
 		       fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
 		       );
@@ -1176,6 +1525,121 @@ void anaTNP::readHistograms(TFile *f,
   
 }
 
+// ----------------------------------------------------------------------
+void anaTNP::readHistogramsDATA(TFile *f, 
+				const char *s1, const char *s2, const char *s3, 
+				const char *binning) {  
+
+  cout << "====> Reading histograms from " << f->GetName() << endl;
+  
+  TObject *obj;
+  TKey    *key;
+  TIter next(f->GetListOfKeys());
+
+  TH1D  *h1, *h2; 
+  float etamin, etamax, ptmin, ptmax; 
+  int   charge, n; 
+  char searchString1[2000], searchString2[2000], searchString3[2000]; 
+  char sp[] = "%"; 
+  char sf[] = "f"; 
+  char sd[] = "d"; 
+  sprintf(searchString1, "%s,eta%s%s_%s%s,pt%s%s_%s%s,Q%s%s", s1, sp, sf, sp, sf, sp, sf, sp, sf, sp, sd); 
+  cout << "searchString1: " << searchString1 << endl;
+ 
+  sprintf(searchString2, "%s,eta%s%s_%s%s,pt%s%s_%s%s,Q%s%s", s2, sp, sf, sp, sf, sp, sf, sp, sf, sp, sd); 
+  cout << "searchString2: " << searchString2 << endl;
+ 
+  sprintf(searchString3, "%s,eta%s%s_%s%s,pt%s%s_%s%s,Q%s%s", s3, sp, sf, sp, sf, sp, sf, sp, sf, sp, sd); 
+  cout << "searchString3: " << searchString3 << endl;
+
+
+  while ((key = (TKey*)next())) {
+    n = -1; 
+    obj = key->ReadObj();
+    if (obj->InheritsFrom(TH2D::Class()) && !strcmp(obj->GetName(), binning)) {
+      cout << "Extracting binning histogram from " << obj->GetName() << endl;
+      fHbinning = (TH2D*)obj;
+    }
+    if (obj->InheritsFrom(TH1D::Class())) {
+      h1 = (TH1D*)f->Get(obj->GetName());
+
+      // -- sample 1
+      n = sscanf(h1->GetName(), searchString1, &etamin, &etamax, &ptmin, &ptmax, &charge);
+      if (n > 0) {
+	cout << "s1: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s1:%s", h1->GetName())); 
+	if (charge > 0) {
+	  fS1VectorPos.push_back(*h2); 
+	} else {
+	  fS1VectorNeg.push_back(*h2); 
+	}
+      }
+
+      // -- sample 2
+      n = sscanf(h1->GetName(), searchString2, &etamin, &etamax, &ptmin, &ptmax, &charge);
+      if (n > 0) {
+	cout << "s2: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s2:%s", h1->GetName())); 
+	if (charge > 0) {
+	  fS2VectorPos.push_back(*h2); 
+	} else {
+	  fS2VectorNeg.push_back(*h2); 
+	}
+      }
+
+      // -- sample 3 (mmbar)
+      n = sscanf(h1->GetName(), searchString3, &etamin, &etamax, &ptmin, &ptmax, &charge);
+      if (n > 0) {
+	cout << "s3: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s3:%s", h1->GetName())); 
+	if (charge > 0) {
+	  fS3VectorPos.push_back(*h2); 
+	} else {
+	  fS3VectorNeg.push_back(*h2); 
+	}
+      }
+
+    }
+
+  }
+  
+  fS1YieldPos = new TH2D("fS1YieldPos", 
+			 Form("%s fS1YieldPos", s1), 
+			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			 );
+
+  fS1YieldNeg = new TH2D("fS1YieldNeg", 
+			 Form("%s fS1YieldNeg", s1), 
+			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			 );
+
+  fS2YieldPos = new TH2D("fS2YieldPos", 
+			 Form("%s fS2YieldPos", s2), 
+			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			 );
+
+  fS2YieldNeg = new TH2D("fS2YieldNeg", 
+			 Form("%s fS2YieldNeg", s2), 
+			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			 );
+
+  fS3YieldPos = new TH2D("fS3YieldPos", 
+			 Form("%s fS3YieldPos", s3), 
+			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			 );
+
+  fS3YieldNeg = new TH2D("fS3YieldNeg", 
+			 Form("%s fS3YieldNeg", s3), 
+			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			 );
+  
+}
 
 // ----------------------------------------------------------------------
 void anaTNP::addBackground(vector<TH1D> &vec, double sb, double p0, double p1) {  
