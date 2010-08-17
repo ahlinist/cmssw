@@ -55,7 +55,7 @@ public:
   float	      up, uf, ue, um;
   float	      posmuoneta, posmuonpt, negmuoneta, negmuonpt;
   int  	      fRes;
-  
+    
   // Cut values
   int SAMPLE;
   int TYPE;
@@ -94,7 +94,8 @@ public:
   static const int  fNq = 1;
   double      fPTbin[fNpt+1], fEtabin[fNeta+1];
   int fQ[fNq+1];
-
+  int fBin;
+  double fMassLow, fMassHigh;
 };
 
 #endif

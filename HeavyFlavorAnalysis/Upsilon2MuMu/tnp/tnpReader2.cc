@@ -526,19 +526,10 @@ void tnpReader2::bookHist() {
   TH1 *h;
   TH2 *k;
   
-  int Bin = 50;
-  double MassLow = 8.7;
-  double MassHigh = 11.2;
+  fBin = BIN;
+  fMassLow = MASSLO;
+  fMassHigh = MASSHI;
     
-  if ( RESTYPE == 443 ){
-    MassLow = 2.8;
-    MassHigh = 3.4;
-    Bin = 30;
-    cout << "tnpReader2: Running over J/psi: " << MassLow << " " << MassHigh << endl;
-  } else {
-    cout << "tnpReader2: Running over Ups: " << MassLow << " " << MassHigh << endl;
-  }
-  
   k = new TH2D("mt,pt-eta", "mt,pt-eta", fNpt, fPTbin, fNeta, fEtabin);
   k = new TH2D("mmmbar,pt-eta", "mmbar,pt-eta", fNpt, fPTbin, fNeta, fEtabin);
   
@@ -568,7 +559,7 @@ void tnpReader2::bookHist() {
       for ( int iq = 0; iq <= fNq; ++iq ){
 	h = new TH1D(Form("mt,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
 		     Form("mt,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
-		     Bin, MassLow, MassHigh);
+		     fBin, fMassLow, fMassHigh);
       }
     }	
   }
@@ -578,7 +569,7 @@ void tnpReader2::bookHist() {
       for ( int iq = 0; iq <= fNq; ++iq ){
 	h = new TH1D(Form("mm,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
 		     Form("mm,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
-		     Bin, MassLow, MassHigh);
+		     fBin, fMassLow, fMassHigh);
       }
     }	
   }
@@ -588,7 +579,7 @@ void tnpReader2::bookHist() {
       for ( int iq = 0; iq <= fNq; ++iq ){
 	h = new TH1D(Form("mmbar,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
 		     Form("mmbar,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
-		     Bin, MassLow, MassHigh);
+		     fBin, fMassLow, fMassHigh);
       }
     }	
   }  
@@ -598,7 +589,7 @@ void tnpReader2::bookHist() {
       for ( int iq = 0; iq <= fNq; ++iq ){
 	h = new TH1D(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
 		     Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
-		     Bin, MassLow, MassHigh);
+		     fBin, fMassLow, fMassHigh);
       }
     }	
   }
@@ -608,7 +599,7 @@ void tnpReader2::bookHist() {
       for ( int iq = 0; iq <= fNq; ++iq ){
 	h = new TH1D(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
 		     Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt], fPTbin[ipt+1], fQ[iq]),
-		     Bin, MassLow, MassHigh);
+		     fBin, fMassLow, fMassHigh);
       }
     }	
   }
