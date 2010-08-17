@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.3 2010/08/16 10:29:36 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.4 2010/08/16 14:12:42 giamman Exp $
 //
 //
 
@@ -131,8 +131,8 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 {
   // identity of the event
   int r,ls,e;
-  r=iEvent.id().run(); ls=iEvent.luminosityBlock(); e=iEvent.id().event(); 
   cout << "############################################" << endl;
+  r=iEvent.id().run(); ls=iEvent.luminosityBlock(); e=iEvent.id().event(); 
   cout << "Run/LS/Event: " << r << "/" << ls << "/" << e << endl; 
   cout << "############################################" << endl;
 
@@ -157,36 +157,43 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   double mux = 0.;
   double muy = 0.;
   double muz = 0.;
-  for (unsigned int j = 0; j < muons->size(); j++){
-    cout << "-----------------------------------" << endl;
-    cout << "@muon " << j << endl;
-    double pt = (*muons)[j].pt();
-    double eta = (*muons)[j].eta();
-    double phi = (*muons)[j].phi();
-    int nhits = (*muons)[j].innerTrack()->numberOfValidHits();
-    cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << ", nhits(tk) = " << nhits << endl;
+  if (muons->size() > 0) {
+    for (unsigned int j = 0; j < muons->size(); j++){
+      cout << "-----------------------------------" << endl;
+      cout << "@muon " << j << endl;
+      double pt = (*muons)[j].pt();
+      double eta = (*muons)[j].eta();
+      double phi = (*muons)[j].phi();
+      int nhits = -1;
+      if ((*muons)[j].track().isNonnull()) nhits = (*muons)[j].innerTrack()->numberOfValidHits();
+      cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << ", nhits(tk) = " << nhits << endl;
+      bool global = (*muons)[j].isGlobalMuon();
+      bool tracker = (*muons)[j].isTrackerMuon();
+      bool gpt = (*muons)[j].isGood("GlobalMuonPromptTight");
+      cout << "global = " << global << ", tracker = " << tracker << ", globalPromptTight = " << gpt << endl;
 
-    double tipSign = -10.;
-    reco::TransientTrack transTrack;
-    reco::TrackRef trackRef = (*muons)[j].track();
-    if(!(trackRef.isNonnull() && trackRef.isAvailable()))
-      continue;
-    transTrack = trackBuilder->build(trackRef);
-    if (vertices->size()>0) {
-      tipSign = IPTools::absoluteTransverseImpactParameter(transTrack, vertex).second.significance();
-    }
-    cout << "IP significance = " << tipSign << endl;
+      double tkIso = (*muons)[j].trackIso();
+      double ecalIso = (*muons)[j].ecalIso();
+      double hcalIso = (*muons)[j].hcalIso();
+      double relIso = (tkIso+ecalIso+hcalIso)/pt;
+      cout << "tkIso = " << tkIso << ", ecalIso = " << ecalIso << ", hcalIso = " << hcalIso << ", relIso = " << relIso << endl;
+      
+      mux = (*muons)[j].px();
+      muy = (*muons)[j].py();
+      muz = (*muons)[j].pz();
 
-    double tkIso = (*muons)[j].trackIso();
-    double ecalIso = (*muons)[j].ecalIso();
-    double hcalIso = (*muons)[j].hcalIso();
-    double relIso = (tkIso+ecalIso+hcalIso)/pt;
-    cout << "tkIso = " << tkIso << ", ecalIso = " << ecalIso << ", hcalIso = " << hcalIso << ", relIso = " << relIso << endl;
-
-    mux = (*muons)[j].px();
-    muy = (*muons)[j].py();
-    muz = (*muons)[j].pz();
-  }  
+      double tipSign = -10.;
+      reco::TransientTrack transTrack;
+      reco::TrackRef trackRef = (*muons)[j].track();
+      if(!(trackRef.isNonnull() && trackRef.isAvailable()))
+	continue;
+      transTrack = trackBuilder->build(trackRef);
+      if (vertices->size()>0) {
+	tipSign = IPTools::absoluteTransverseImpactParameter(transTrack, vertex).second.significance();
+      }
+      cout << "IP significance = " << tipSign << endl;
+    }  
+  }
 
   // Electrons
   try {
@@ -199,44 +206,46 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   double ex = 0.;
   double ey = 0.;
   double ez = 0.;
-  for (unsigned int j = 0; j < electrons->size(); j++){
-    cout << "-----------------------------------" << endl;
-    cout << "@electron " << j << endl;
-    double etaSC = (*electrons)[j].superCluster()->eta();
-    if (fabs(etaSC)<1.4442) {
-      cout << " is a barrel electron" << endl;
-    } else if (fabs(etaSC)>1.4442 && fabs(etaSC)<1.5660) {
-      cout << " is in the ECAL crack" << endl;
-    } else {
-      cout << " is an endcap electron" << endl;
-    }
-    double pt = (*electrons)[j].pt();
-    double eta = (*electrons)[j].eta();
-    double phi = (*electrons)[j].phi();
-    int nlost = (*electrons)[j].gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-    cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << ", lost hits = " << nlost << endl;
+  if (electrons->size() > 0) {
+    for (unsigned int j = 0; j < electrons->size(); j++){
+      cout << "-----------------------------------" << endl;
+      cout << "@electron " << j << endl;
+      double etaSC = (*electrons)[j].superCluster()->eta();
+      if (fabs(etaSC)<1.4442) {
+	cout << " is a barrel electron" << endl;
+      } else if (fabs(etaSC)>1.4442 && fabs(etaSC)<1.5660) {
+	cout << " is in the ECAL crack" << endl;
+      } else {
+	cout << " is an endcap electron" << endl;
+      }
+      double pt = (*electrons)[j].pt();
+      double eta = (*electrons)[j].eta();
+      double phi = (*electrons)[j].phi();
+      int nlost = (*electrons)[j].gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+      cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << ", lost hits = " << nlost << endl;
+      
+      double tkIso = (*electrons)[j].dr03TkSumPt();
+      double ecalIso = (*electrons)[j].dr03EcalRecHitSumEt(); // note: TOPDIL, differently from TOPLJ, doesn't subtract the 1 GeV offset in the barrel
+      double hcalIso = (*electrons)[j].dr03HcalTowerSumEt();
+      double relIso = (tkIso+ecalIso+hcalIso)/pt;
+      cout << "tkIso = " << tkIso << ", ecalIso = " << ecalIso << ", hcalIso = " << hcalIso << ", relIso = " << relIso << endl;
+      
+      ex = (*electrons)[j].px();
+      ey = (*electrons)[j].py();
+      ez = (*electrons)[j].pz();
 
-    double tipSign = -10.;
-    reco::TransientTrack transTrack;
-    reco::GsfTrackRef trackRef = (*electrons)[j].gsfTrack();
-    if(!(trackRef.isNonnull() && trackRef.isAvailable()))
-      continue;
-    transTrack = trackBuilder->build(trackRef);
-    if (vertices->size()>0) {
-      tipSign = IPTools::absoluteTransverseImpactParameter(transTrack, vertex).second.significance();
-    }
-    cout << "IP significance = " << tipSign << endl;
-
-    double tkIso = (*electrons)[j].dr03TkSumPt();
-    double ecalIso = (*electrons)[j].dr03EcalRecHitSumEt(); // note: TOPDIL, differently from TOPLJ, doesn't subtract the 1 GeV offset in the barrel
-    double hcalIso = (*electrons)[j].dr03HcalTowerSumEt();
-    double relIso = (tkIso+ecalIso+hcalIso)/pt;
-    cout << "tkIso = " << tkIso << ", ecalIso = " << ecalIso << ", hcalIso = " << hcalIso << ", relIso = " << relIso << endl;
-
-    ex = (*electrons)[j].px();
-    ey = (*electrons)[j].py();
-    ez = (*electrons)[j].pz();
-  }  
+      double tipSign = -10.;
+      reco::TransientTrack transTrack;
+      reco::GsfTrackRef trackRef = (*electrons)[j].gsfTrack();
+      if(!(trackRef.isNonnull() && trackRef.isAvailable()))
+	continue;
+      transTrack = trackBuilder->build(trackRef);
+      if (vertices->size()>0) {
+	tipSign = IPTools::absoluteTransverseImpactParameter(transTrack, vertex).second.significance();
+      }
+      cout << "IP significance = " << tipSign << endl;
+    }  
+  }
 
   // MET
 
@@ -344,34 +353,36 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
   double max_tchp = -999.;
   int index_max_tchp = -1;
-  for (unsigned int j = 0; j < patjets->size(); j++){
-    double pt = (*patjets)[j].pt();
-    double eta = (*patjets)[j].eta();
-    double phi = (*patjets)[j].phi();
-    double emf = (*patjets)[j].emEnergyFraction();
-    reco::JetID jID = (*patjets)[j].jetID();
-    double fHPD = jID.fHPD;
-    int n90hits = jID.n90Hits;
-    double tchp = (*patjets)[j].bDiscriminator("trackCountingHighPurBJetTags");
-    double tche = (*patjets)[j].bDiscriminator("trackCountingHighEffBJetTags");
-    double ssvhp = (*patjets)[j].bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
-    double ssvhe = (*patjets)[j].bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-    if (pt > jet_threshold) {
-      cout << "-----------------------------------" << endl;
-      cout << "@PAT jet " << j << endl;
-      cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << endl;
-      cout << "EM fraction = " << emf << ", fHPD = " << fHPD << ", N90 = " << n90hits << endl;
-      cout << "b-tagging, TCHP = " << tchp << ", TCHE = " << tche << ", SSVHP = " << ssvhp << ", SSVHE = " << ssvhe << endl;
-      // find highest-TCHP jet:
-      if (tchp > max_tchp) {
-	max_tchp = tchp;
-	index_max_tchp = j;
+  if (patjets->size() > 0) {
+    for (unsigned int j = 0; j < patjets->size(); j++){
+      double pt = (*patjets)[j].pt();
+      double eta = (*patjets)[j].eta();
+      double phi = (*patjets)[j].phi();
+      double emf = (*patjets)[j].emEnergyFraction();
+      reco::JetID jID = (*patjets)[j].jetID();
+      double fHPD = jID.fHPD;
+      int n90hits = jID.n90Hits;
+      double tchp = (*patjets)[j].bDiscriminator("trackCountingHighPurBJetTags");
+      double tche = (*patjets)[j].bDiscriminator("trackCountingHighEffBJetTags");
+      double ssvhp = (*patjets)[j].bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+      double ssvhe = (*patjets)[j].bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+      if (pt > jet_threshold) {
+	cout << "-----------------------------------" << endl;
+	cout << "@PAT jet " << j << endl;
+	cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << endl;
+	cout << "EM fraction = " << emf << ", fHPD = " << fHPD << ", N90 = " << n90hits << endl;
+	cout << "b-tagging, TCHP = " << tchp << ", TCHE = " << tche << ", SSVHP = " << ssvhp << ", SSVHE = " << ssvhe << endl;
+	// find highest-TCHP jet:
+	if (tchp > max_tchp) {
+	  max_tchp = tchp;
+	  index_max_tchp = j;
+	}
       }
     }
+    cout << "-----------------------------------" << endl;
+    cout << "The highest-TCHP PAT jet is #" << index_max_tchp << endl;
   }
-  cout << "-----------------------------------" << endl;
-  cout << "The highest-TCHP PAT jet is #" << index_max_tchp << endl;
-  
+
   try {
     iEvent.getByLabel(pfjetSource_, pfjets);
   } catch (std::exception & err) {
@@ -380,32 +391,35 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
   double min_dr = 999.;
   int index_matched_pf_patbtag = -1;
-  for (unsigned int j = 0; j < pfjets->size(); j++){
-    double pt = (*pfjets)[j].pt();
-    double eta = (*pfjets)[j].eta();
-    double phi = (*pfjets)[j].phi();
-    double chf = (*pfjets)[j].chargedHadronEnergyFraction();
-    double nhf = (*pfjets)[j].neutralHadronEnergyFraction();
-    double cef = (*pfjets)[j].chargedEmEnergyFraction();
-    double nef = (*pfjets)[j].neutralEmEnergyFraction();
-    int nch = (*pfjets)[j].chargedMultiplicity();
-    int nconstituents = (*pfjets)[j].numberOfDaughters();
-    if (pt > jet_threshold) {
-      cout << "-----------------------------------" << endl;
-      cout << "@PF jet " << j << endl;
-      cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << endl;
-      cout << "N.constituents = " << nconstituents << ", ch.hadron fraction = " << chf << ", ne.hadron fraction = " << nhf << ", ch.EM fraction = " << cef << ", ne.EM fraction = " << nef << ", charged multiplicity = " << nch << endl;
-      // find the PFjet matched in angle to the b-tagged PATjet:
-      double dr = GetDeltaR(eta,(*patjets)[index_max_tchp].eta(),phi,(*patjets)[index_max_tchp].phi());
-      if (dr < min_dr) {
-	min_dr = dr;
-	index_matched_pf_patbtag = j;
+  if (pfjets->size() > 0) {
+    for (unsigned int j = 0; j < pfjets->size(); j++){
+      double pt = (*pfjets)[j].pt();
+      double eta = (*pfjets)[j].eta();
+      double phi = (*pfjets)[j].phi();
+      double chf = (*pfjets)[j].chargedHadronEnergyFraction();
+      double nhf = (*pfjets)[j].neutralHadronEnergyFraction();
+      double cef = (*pfjets)[j].chargedEmEnergyFraction();
+      double nef = (*pfjets)[j].neutralEmEnergyFraction();
+      int nch = (*pfjets)[j].chargedMultiplicity();
+      int nconstituents = (*pfjets)[j].numberOfDaughters();
+      if (pt > jet_threshold) {
+	cout << "-----------------------------------" << endl;
+	cout << "@PF jet " << j << endl;
+	cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << endl;
+	cout << "N.constituents = " << nconstituents << ", ch.hadron fraction = " << chf << ", ne.hadron fraction = " << nhf << ", ch.EM fraction = " << cef << ", ne.EM fraction = " << nef << ", charged multiplicity = " << nch << endl;
+	// find the PFjet matched in angle to the b-tagged PATjet:
+	if (index_max_tchp > -1) {
+	  double dr = GetDeltaR(eta,(*patjets)[index_max_tchp].eta(),phi,(*patjets)[index_max_tchp].phi());
+	  if (dr < min_dr) {
+	    min_dr = dr;
+	    index_matched_pf_patbtag = j;
+	  }
+	}
       }
     }
+    cout << "-----------------------------------" << endl;
+    cout << "The PF jet matched to the highest-TCHP PAT jet is #" << index_matched_pf_patbtag << endl;
   }
-  cout << "-----------------------------------" << endl;
-  cout << "The PF jet matched to the highest-TCHP PAT jet is #" << index_matched_pf_patbtag << endl;
-
   
 
 }
