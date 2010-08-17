@@ -26,16 +26,30 @@ process.GlobalTag.globaltag = cms.string("GR_R_35X_V6::All")
 # TQAF/PAT Layer 1 ------------------------------------------------------------
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
-# corrections:
 from PhysicsTools.PatAlgos.recoLayer0.jetCorrFactors_cfi import *
-patJetCorrFactors.corrSample = cms.string("Spring10") 
-
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Spring10")
+from PhysicsTools.PatAlgos.tools.coreTools import *
 
 # turn off MC matching for the process
-from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All'])
+
+# add PF:
+addJetCollection(process,
+                   cms.InputTag('ak5PFJets'),
+                   'AK5',
+                   'PF',
+                   doJTA=True,
+                   doBTagging=True,
+                   jetCorrLabel=('AK5','PF'),
+                   doType1MET=True,
+                   doJetID      = True,
+                   jetIdLabel   = "ak5"
+                  )
+
+# corrections:
+patJetCorrFactors.corrSample = cms.string("Spring10") 
+switchJECSet( process, "Spring10")
+
 
 # good vertices
 process.goodVertices = cms.EDFilter("VertexSelector",
@@ -49,11 +63,12 @@ process.demo = cms.EDAnalyzer('SimpleEventDumper',
                               electronSource = cms.InputTag("cleanPatElectrons"),
                               muonSource     = cms.InputTag("patMuons"),
                               patmetSource = cms.InputTag("patMETs"),
-                              calometSource = cms.InputTag("met"),
+                              calometSource = cms.InputTag("met"), #uncorrected
                               pfmetSource = cms.InputTag("pfMet"),
                               tcmetSource = cms.InputTag("tcMet"),
                               patjetSource = cms.InputTag("patJets"),
-                              pfjetSource = cms.InputTag("ak5PFJets"),
+                              pfjetSource = cms.InputTag("ak5PFJets"), #uncorrected
+                              pfpatjetSource = cms.InputTag("patJetsAK5PF"), #corrected, and possibility to access b-tagging for it
 
                               jet_pt_min = cms.double(20),
 )
