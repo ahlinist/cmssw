@@ -53,6 +53,9 @@ public:
   int RESTYPE;
   double PT1;
   double PT2;
+  int BIN;
+  double MASSLO;
+  double MASSHI;  
   
   // -- Variables
   TAnaCand    *fpCand; 
@@ -66,6 +69,9 @@ public:
   static const int  fNpt = 6;
   static const int  fNy = 4;
   double      fPTbin[fNpt+1], fYbin[fNy+1];
+  int fBin;
+  double fMassLow, fMassHigh;
+  
 };
 
 
