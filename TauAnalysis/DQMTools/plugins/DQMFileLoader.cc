@@ -2,6 +2,7 @@
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/Core/interface/FilterStatisticsService.h"
 
 // framework & common header files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -93,7 +94,30 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
     }
   }
 
-  scaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : defaultScaleFactor;
+  
+  // Determine if we want to automagically calculate the scaling factor
+  autoscale_ = ( cfg.exists("autoscale") ) ? cfg.getParameter<bool>("autoscale") : false;
+
+  if(autoscale_)
+  {
+     totalExpectedEventsBeforeSkim_ = cfg.getParameter<unsigned>("totalExpectedEventsBeforeSkim");
+     skimEfficiency_ = cfg.getParameter<double>("skimEfficiency");
+     xSection_ = cfg.getParameter<double>("xSection");
+     targetIntLumi_ = cfg.getParameter<double>("targetIntLumi");
+     filterStatisticsLocation_ = cfg.getParameter<std::string>("filterStatisticsLocation");
+     filterToUse_ = cfg.getParameter<std::string>("filterToUse");
+     scaleFactor_ = -1;
+     // Warn if old scale factor is hanging around
+     if( cfg.exists("scaleFactor") )
+     {
+        edm::LogWarning("DQMFileLoader::cfgEntryFileSet") 
+           << "Both the <autoscale> and <scaleFactor> options are set. The <scaleFactor> specified "
+           << " in the parameter set will be ignored and the autoscale value will be used!"; 
+     }
+  } else {
+     scaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : defaultScaleFactor;
+  }
+
   //std::cout << " scaleFactor = " << scaleFactor_ << std::endl;
 
   dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : "";
@@ -179,6 +203,7 @@ void DQMFileLoader::endJob()
     return;
   }
 
+
 //--- check that inputFiles exist;
 //    store list of directories existing in inputFile,
 //    in order to separate histogram directories existing in the inputFile from directories existing in DQMStore
@@ -215,8 +240,56 @@ void DQMFileLoader::endJob()
 //--- load histograms from file
   //std::cout << "--> loading histograms from file..." << std::endl;
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
-  for ( std::map<std::string, cfgEntryFileSet>::const_iterator fileSet = fileSets_.begin();
-	fileSet != fileSets_.end(); ++fileSet ) {
+  for ( std::map<std::string, cfgEntryFileSet>::iterator fileSet = fileSets_.begin();
+	fileSet != fileSets_.end(); ++fileSet ) 
+  {
+     cfgEntryFileSet& cfgFileSet = fileSet->second;
+     if(cfgFileSet.autoscale_)
+     {
+        std::cout << "************************** Autoscaler *****************************************" << std::endl;
+        std::cout << " Looping over input files to find scale factor for sample " << fileSet->first << std::endl;
+        // If using the autoscale option, first loop over the files to compute the total number
+        // of events process
+        unsigned int eventsProcessed = 0;
+        for ( vstring::const_iterator inputFileName = cfgFileSet.inputFileNames_.begin();
+              inputFileName != cfgFileSet.inputFileNames_.end(); ++inputFileName ) 
+        {
+           std::string inputFileName_full;
+           if ( inputFilePath_ != "" ) inputFileName_full += inputFilePath_;
+           inputFileName_full += (*inputFileName);
+           //if ( verbosity ) std::cout << " opening inputFile = " << inputFileName_full << std::endl;
+           std::cout << " opening inputFile = " << inputFileName_full << std::endl;  
+           dqmStore.open(inputFileName_full, true);
+           // Load filter statistics
+           FilterStatisticsService statsService;
+           FilterStatisticsTable* filterTable = statsService.loadFilterStatisticsTable(cfgFileSet.filterStatisticsLocation_);
+           //filterTable->print(std::cout);
+           int eventsInThisFile  = filterTable->extractNumber(
+                 cfgFileSet.filterStatisticsLocation_.append(cfgFileSet.filterToUse_),
+                 "Processed", false);
+           std::cout << " events in file: " << eventsInThisFile << std::endl;
+           eventsProcessed += eventsInThisFile;
+        }
+        // Compute luminosity scale factor
+        double luminosityNoJobFailures = cfgFileSet.totalExpectedEventsBeforeSkim_ /
+           (cfgFileSet.xSection_ * cfgFileSet.skimEfficiency_);
+        double expectedEvents = cfgFileSet.totalExpectedEventsBeforeSkim_*cfgFileSet.skimEfficiency_;
+        double jobEfficiency = eventsProcessed/expectedEvents;
+        double effectiveLumi = luminosityNoJobFailures*jobEfficiency;
+        // Set the scale factor
+        cfgFileSet.scaleFactor_ = cfgFileSet.targetIntLumi_/effectiveLumi;
+
+        std::cout << " xSection: " << cfgFileSet.xSection_ << "pb" << std::endl;
+        std::cout << " total event production: " << cfgFileSet.totalExpectedEventsBeforeSkim_ << std::endl;
+        std::cout << " skim efficiency: " << cfgFileSet.skimEfficiency_ << std::endl;
+        std::cout << " Int. lumi assuming no job failures: " << luminosityNoJobFailures << "pb-1" << std::endl;
+        std::cout << " Actual/expected events processed: " << eventsProcessed << "/" << expectedEvents 
+           << " (" << jobEfficiency*100 << "%)" << std::endl;
+        std::cout << " Effective int. lumi: " << luminosityNoJobFailures*jobEfficiency << "pb-1" << std::endl;
+        std::cout << " Scale factor for target lumi " << cfgFileSet.targetIntLumi_  
+           << "pb-1: " << cfgFileSet.scaleFactor_ << std::endl;
+     }
+
     for ( vstring::const_iterator inputFileName = fileSet->second.inputFileNames_.begin();
 	  inputFileName != fileSet->second.inputFileNames_.end(); ++inputFileName ) {
       std::string inputFileName_full;
