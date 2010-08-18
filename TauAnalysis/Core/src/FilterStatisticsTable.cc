@@ -26,6 +26,7 @@ FilterStatisticsRow::FilterStatisticsRow(int filterId, const std::string& filter
   columnLabels_[FilterStatisticsRow::kEff_marginal] = "margin. Efficiency";
   columnLabels_[FilterStatisticsRow::kEff_individual] = "indiv. Efficiency";
   columnLabels_[FilterStatisticsRow::kExclRejected] = "excl. Rejection";
+  columnLabels_[FilterStatisticsRow::kProcessed] = "Processed";
 }
 
 FilterStatisticsRow::~FilterStatisticsRow()
@@ -67,7 +68,9 @@ double FilterStatisticsRow::extractNumber(const std::string& columnLabel, bool w
       : compEff(numEvents_passed_->num(), numEvents_processed_->num());
   } else if ( columnLabel == columnLabels_[FilterStatisticsRow::kExclRejected] ) {
     return ( weighted ) ? numEvents_exclRejected_->numWeighted() : numEvents_exclRejected_->num();
-  } 
+  } else if ( columnLabel == columnLabels_[FilterStatisticsRow::kProcessed] ) {
+     return ( weighted ) ? numEvents_processed_->numWeighted() : numEvents_processed_->num();
+  }
 
   edm::LogError ("FilterStatisticsRow::extractNumber") << " columnLabel = " << columnLabel << " undefined !!";
   return -1;
@@ -268,5 +271,23 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
   }
   stream << std::endl << std::endl;
 }
+
+
+
+double FilterStatisticsTable::extractNumber(const std::string& row, const std::string& col, bool weighted) const
+{
+   // Find the appropriate row
+   for(std::vector<rowEntry_type>::const_iterator irow = rows_.begin(); irow != rows_.end(); ++irow)
+   {
+      if(irow->first == row)
+      {
+         return irow->second->extractNumber(col, weighted);
+      }
+   }
+   edm::LogError ("FilterStatisticsTable::extractNumber") << " filterName = " << row << " undefined !!";
+   return -1;
+}
+
+
 
 
