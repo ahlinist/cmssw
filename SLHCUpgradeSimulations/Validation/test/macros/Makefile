@@ -26,3 +26,10 @@ runres: runres.o
 runres.o:  runres.C
 	$(CXX) $(CXXFLAGS) -c runres.C
 
+plothitreseta: plothitreseta.o
+	$(CXX) $(CXXFLAGS) -c $<
+	$(LD) $(LDFLAGS) -o plothitreseta plothitreseta.o $(GLIBS)
+
+plothitreseta.o:  plothitreseta.C
+	$(CXX) $(CXXFLAGS) -c plothitreseta.C
+
