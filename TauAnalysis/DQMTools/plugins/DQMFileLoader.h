@@ -5,8 +5,8 @@
  *  
  *  Class to load DQM monitoring elements from ROOT files into DQMStore
  *
- *  $Date: 2009/08/17 16:07:21 $
- *  $Revision: 1.4 $
+ *  $Date: 2009/10/23 13:49:31 $
+ *  $Revision: 1.5 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -31,12 +31,22 @@ class DQMFileLoader : public edm::EDAnalyzer
   struct cfgEntryFileSet
   {
     cfgEntryFileSet(const std::string&, const edm::ParameterSet&);
+    int cfgError_;
     void print() const;
     std::string name_;
-    vstring inputFileNames_;
-    double scaleFactor_;
     std::string dqmDirectory_store_;
-    int cfgError_;
+    vstring inputFileNames_;
+    // Can optionally specify nEvents, skimEff and xSection
+    // to get scale factor
+    bool autoscale_;
+    int totalExpectedEventsBeforeSkim_;
+    double skimEfficiency_;
+    double xSection_; // in pb
+    double targetIntLumi_; // the desired integrated luminosity
+    double scaleFactor_;
+    // Path to a DQM element that counts events processed
+    std::string filterStatisticsLocation_;
+    std::string filterToUse_;
   };
 
  public:
