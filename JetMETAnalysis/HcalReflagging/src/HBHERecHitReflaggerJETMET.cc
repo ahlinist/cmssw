@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HBHERecHitReflaggerJETMET.cc,v 1.7 2010/06/15 13:37:17 temple Exp $
+// $Id: HBHERecHitReflaggerJETMET.cc,v 1.8 2010/07/17 00:59:22 temple Exp $
 //
 //
 
@@ -368,8 +368,9 @@ void HBHERecHitReflaggerJETMET::SetTimingShapedFlags(HBHERecHit& hbhe)
 	}
     }
   // Apply offset, gain
-  twinmax=win_offset_+twinmax*win_gain_;  
   twinmin=win_offset_-twinmax*win_gain_;
+  twinmax=win_offset_+twinmax*win_gain_;  
+  
   // Set status high if time outside expected range
   if (rhtime<=twinmin || rhtime >= twinmax)
     status=1; // set status to 1
