@@ -26,7 +26,7 @@ const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& d
     }
 
     // If we require strict PDG id checking, skip it if it doesn't match
-    if(!matchesPdgId && pdgIdStrict)
+    if(pdgIds && !matchesPdgId && pdgIdStrict)
        continue;
 
     // Check if status matches - if not, skip it.
