@@ -194,6 +194,11 @@ int main ( int argc, char ** argv )
 
       if(event_result[std::string("ZMuMuGamma")] &&
 	 select.considerCut("ZMuMuGamma")) {
+	/*
+	std::cout << "Run: " << event.id().run() 
+		  << " Lumi: " << event.id().luminosityBlock() 
+		  << " Evt: " << event.id().event() << std::endl;
+	*/
 	if(zgmuonHistos)       zgmuonHistos->analyze(select.selectedZGammaMuons());
 	if(diMuonHistos)       diMuonHistos->analyze(select.selectedZGammaDiMuons());
 	if(zmumugphotonHistos) zmumugphotonHistos->analyze(select.selectedZGammaPhotons());
