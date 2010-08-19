@@ -58,20 +58,40 @@ def buildMergeTree(files, output_filename, intermediate_dir, merge_per_job=3, ve
             )
             new_layer.append( (output_file_name, files_to_merge ) )
 
+        # Make sure we have some files to merge
+        if not new_layer:
+            print "WARNING: Output file %s has no input files!" % output_filename
+            done = True
+            continue
         # Add this layer to our set of jobs
         layers.append(new_layer)
         # Make a new generator of input files using the outputs of the new layer
         input_files = itertools.chain(( job[0] for job in new_layer ), leftover_files)
         # Check and see if we are done - only one job in this layer, no leftovers
-        print len(layers), len(new_layer), len(leftover_files)
         if len(new_layer) == 1 and not len(leftover_files):
             done = True
+
+
 
     if verbose:
         for i, layer in enumerate(layers):
             for job, (output, inputs) in enumerate(layer):
                 print i, job, output, inputs
     return layers
+
+def writeMakefileLocalCopy(castor_file, working_dir, makefile):
+    basename = os.path.basename(castor_file)
+    local_path = os.path.join(working_dir, basename)
+    target_line = "%s:\n" % local_path
+    rfcp_line = "\trfcp %s %s\n" % (castor_file, local_path)
+    makefile.write(target_line)
+    makefile.write(rfcp_line)
+    return local_path
+
+def copyLocalAndWrite(castor_files, working_dir, makefile):
+    for castor_file in castor_files:
+        castor_file = castor_file.replace('rfio:', '')
+        yield writeMakefileLocalCopy(castor_file, working_dir, makefile)
 
 def writeMakefileCommands(mergeTree, outputFile, makefile):
     for level, layer in enumerate(mergeTree):
@@ -87,19 +107,25 @@ def writeMakefileCommands(mergeTree, outputFile, makefile):
             run_line = '\t${HARVEST} %s %s\n' % (
                  output_file, ' '.join(input_files))
             makefile.write(run_line)
+            if input_files_no_castor:
+                pass
+                # Delete the last layer
+                #rm_line = '\trm %s\n' % ' '.join(input_files_no_castor)
+                #makefile.write(rm_line)
             makefile.write('\n')
     # Make a rule to copy our final level file
-    final_merge_output = mergeTree[-1][0][0]
-    makefile.write('# Copy final output to desired location\n')
-    makefile.write('%s: %s\n' % (outputFile, final_merge_output))
-    makefile.write('\tcp %s %s\n' % (final_merge_output, outputFile))
+    if mergeTree:
+        final_merge_output = mergeTree[-1][0][0]
+        makefile.write('# Copy final output to desired location\n')
+        makefile.write('%s: %s\n' % (outputFile, final_merge_output))
+        makefile.write('\tcp %s %s\n' % (final_merge_output, outputFile))
 
-def buildMakefile(merge_jobs, working_dir, makefilename, merge_per_job=3):
+def buildMakefile(merge_jobs, working_dir, makefilename, copy_first=True, merge_per_job=3):
     ''' Build a Makefile to merge DQM histograms
 
     [merge_jobs] is a list of tuples of the form
-    [ (output1, [input1_1.root, input1_2.root, ... ] ),
-      (output2, [input2_1.root, input2_2.root, ... ] ),
+    [ (alias1, output1, [input1_1.root, input1_2.root, ... ] ),
+      (alias2, output2, [input2_1.root, input2_2.root, ... ] ),
       ...  ]
 
     [working_dir] is a local directory to store the temporary
@@ -118,10 +144,18 @@ def buildMakefile(merge_jobs, working_dir, makefilename, merge_per_job=3):
     makefile.write("# List of targets to merge\n")
     makefile.write("all: %s\n\n" % ' '.join(merge_job[0] for merge_job in merge_jobs)) 
 
-    for output_file, to_merge in merge_jobs:
+    makefile.write("# Alias to filename mappings:\n")
+    for alias, output_file in [ (merge_job[0], merge_job[1]) for merge_job in merge_jobs]:
+        makefile.write("%s: %s\n" % (alias, output_file))
+
+    for alias, output_file, to_merge in merge_jobs:
+        print "Building makefile section for %s" % output_file
         makefile.write("\n#########################################################\n")
         makefile.write("# Merging %s\n" % output_file)
         makefile.write("#########################################################\n")
+
+        to_merge = copyLocalAndWrite(to_merge, working_dir, makefile)
+
         writeMakefileCommands(
             buildMergeTree(
                 to_merge,
