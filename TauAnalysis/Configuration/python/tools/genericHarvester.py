@@ -14,9 +14,6 @@ if not len(sys.argv) > 3+argument_offset:
 outputFileName = sys.argv[1+argument_offset]
 inputFileNames = sys.argv[(2+argument_offset):]
 
-print outputFileName
-print inputFileNames
-
 process = cms.Process('genericHarvester')
 process.DQMStore = cms.Service("DQMStore")
 
