@@ -4,7 +4,7 @@ import ROOT
 import sys
 from DataFormats.FWLite import Events, Handle
 
-files = ["PATLayer1_Output.fromAOD_full.root"]
+files = ["patTuple.root"]
 events = Events (files)
 handle  = Handle ("std::vector<pat::Muon>")
 
