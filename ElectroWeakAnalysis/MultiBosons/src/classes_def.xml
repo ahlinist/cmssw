@@ -9,7 +9,7 @@
   <class name="VGammaMuonSelector" />
   <class name="VGammaElectronSelector" />  
   <class name="VGammaMETSelector" />
-  <class name="vgamma::FWLiteAnalysisWrapper/>
+  <class name="vgamma::FWLiteAnalysisWrapper"/>
  </selection>
  <exclusion>
  </exclusion>
