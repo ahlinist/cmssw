@@ -21,8 +21,9 @@ def fits(mode):
     eraseContent=cleanDir()
     
     # target directories
-    plotDir = "/afs/cern.ch/user/i/iraklis/www/Vgamma/TGC/vGrid"
-    vGridDir = "/data/iraklis/TGC/UPLOADTOCVS/CMSSW_3_6_3/src/ElectroWeakAnalysis/MultiBosons/test/Macros/aTGC/vGrid"
+    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma"
+    vGridDir = curDir
+    #vGridDir = "/data/iraklis/TGC/UPLOADTOCVS/CMSSW_3_6_3/src/ElectroWeakAnalysis/MultiBosons/test/Macros/aTGC/vGrid"
     
     makeD(plotDir)
     makeD(vGridDir)
@@ -46,7 +47,7 @@ def fits(mode):
     # get bkg distribution
     ROOT.gROOT.cd()
     bkg = ROOT.TH1F()
-    f = ROOT.TFile.Open("/data/iraklis/TGC/Limits/REBIN/DATA/pseudoData_SM/data_%s.root"%mode)
+    f = ROOT.TFile.Open("../data_%s.root"%mode)
     ROOT.gROOT.cd()
     bkg = f.Get("background_%s"%mode).Clone()
     f.Close()
@@ -264,7 +265,7 @@ def fits(mode):
 
     pseudoTgcData = pseudo(pseudoTGC,bkg) # get simulated data
     print pseudoTgcData
-    newPseudoFileLocation = "/data/iraklis/TGC/Limits/REBIN/DATA/pseudoData_%s_%s"%(pseudoCoup[0],pseudoCoup[1])
+    newPseudoFileLocation = "%s/pseudoData_%s_%s"%(curDir,pseudoCoup[0],pseudoCoup[1])
     makeD(newPseudoFileLocation)
     f = ROOT.TFile.Open("%s/data_%s.root"%(newPseudoFileLocation,mode),"RECREATE")
     pseudoTgcData.SetName("data_%s"%mode)
