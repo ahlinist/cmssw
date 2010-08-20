@@ -46,5 +46,4 @@ options.register("Use35XInput",
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.string,         # string, int, or float
                  "Is this 35X data?"
-
                  )
