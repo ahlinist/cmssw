@@ -1,16 +1,16 @@
 import ROOT, os, re, commands, time, array, math
 
-execfile("/data/iraklis/TGC/Limits/fittingFcn.py")
-execfile("/data/iraklis/TGC/Limits/axis_limits.py")
-execfile("/data/iraklis/TGC/Limits/initCMSStyle.py")
-execfile("/data/iraklis/TGC/Limits/beautify.py")
-execfile("/data/iraklis/TGC/Limits/dRange.py")
+execfile("../fittingFcn.py")
+execfile("../axis_limits.py")
+execfile("../initCMSStyle.py")
+execfile("../beautify.py")
+execfile("../dRange.py")
                                         
 def fit(LLHOUT):
     bea = beautify() # helper to make histos pretty
     initCMSStyle()   # initialise cmsStyle
     dRan = dRange()  # allows to build list for range with float step 
-    plotDir = "/afs/cern.ch/user/i/iraklis/www/Vgamma/TGC/"
+    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma"
     ROOT.gStyle.SetPalette(1)
     
     # read likelyhoods
