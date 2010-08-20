@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.6 2010/08/17 10:54:26 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.7 2010/08/17 16:39:46 giamman Exp $
 //
 //
 
@@ -172,6 +172,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       int nhits = -1;
       if ((*muons)[j].track().isNonnull()) nhits = (*muons)[j].innerTrack()->numberOfValidHits();
       cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << ", nhits(tk) = " << nhits << endl;
+      //      cout << "px = " << (*muons)[j].px() << ", py = " << (*muons)[j].py() << endl;
       bool global = (*muons)[j].isGlobalMuon();
       bool tracker = (*muons)[j].isTrackerMuon();
       bool gpt = (*muons)[j].isGood("GlobalMuonPromptTight");
@@ -270,6 +271,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       cout << "PAT met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
       met_pat_x = (*patmets)[0].px();
       met_pat_y = (*patmets)[0].py();
+      //      cout << "met_x = " << met_pat_x << ", met_y = " << met_pat_y << endl;
     }
   } catch (std::exception & err) {
     std::cout <<"ERROR: MET label not found ("<<patmetSource_<<")"<< std::endl;
@@ -288,6 +290,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       cout << "calo met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
       met_calo_x = (*calomets)[0].px();
       met_calo_y = (*calomets)[0].py();
+      //      cout << "met_x = " << met_calo_x << ", met_y = " << met_calo_y << endl;
     }
   } catch (std::exception & err) {
     std::cout <<"ERROR: MET label not found ("<<calometSource_<<")"<< std::endl;
@@ -306,6 +309,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       cout << "PF met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
       met_pf_x = (*pfmets)[0].px();
       met_pf_y = (*pfmets)[0].py();
+      //cout << "met_x = " << met_pf_x << ", met_y = " << met_pf_y << endl;
     }
   } catch (std::exception & err) {
     std::cout <<"ERROR: MET label not found ("<<pfmetSource_<<")"<< std::endl;
@@ -324,6 +328,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       cout << "tc met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
       met_tc_x = (*tcmets)[0].px();
       met_tc_y = (*tcmets)[0].py();
+      cout << "met_x = " << met_tc_x << ", met_y = " << met_tc_y << endl;
     }
   } catch (std::exception & err) {
     std::cout <<"ERROR: MET label not found ("<<tcmetSource_<<")"<< std::endl;
@@ -498,9 +503,16 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   // Top
   cout << "-----------------------------------" << endl;
+  cout << "Top reconstruction " << endl;
+  cout << " PAT: " << endl;
   double mtop_pat = Mtop(lx,ly,lz,met_pat_x,met_pat_y,jx_pat,jy_pat,jz_pat);
+  cout << " mtop = " << mtop_pat << endl;
+  cout << " PF, uncorrected: " << endl;
   double mtop_pf = Mtop(lx,ly,lz,met_pf_x,met_pf_y,jx_pf,jy_pf,jz_pf);
+  cout << " mtop = " << mtop_pf << endl;
+  cout << " PF, corrected: " << endl;
   double mtop_pfpat = Mtop(lx,ly,lz,met_pf_x,met_pf_y,jx_pfpat,jy_pfpat,jz_pfpat);
+  cout << " mtop = " << mtop_pfpat << endl;
 
 
 }
@@ -524,7 +536,48 @@ double SimpleEventDumper::MT(double lx, double ly, double nx, double ny) {
 }
 
 double SimpleEventDumper::Mtop(double lx, double ly, double lz, double nx, double ny, double jx, double jy, double jz) {
-  return 0.;
+
+  // solve W constraint equation for the z component of neutrino momentum
+  double pz1=0;
+  double pz2=0;
+  double mW = 80.4;  //  (PDG 2006)
+  double le2 = lx*lx + ly*ly + lz*lz;
+  double met2 = nx*nx + ny*ny;
+  double a = (mW*mW)/2 + nx*lx + ny*ly;
+  double delta = a*a - le2*met2 + lz*lz*met2;
+  pz1 = a*lz/(lx*lx + ly*ly);
+  pz2 = pz1;
+  if (delta < 0) {
+    cout << "  complex solutions" << endl;
+    // here I'm applying the Very Simple Algorithm (simpler even than TOP-09-005): just drop the imaginary part
+    // in the future I'll add a switch between different algorithms
+  } else {
+    cout << "  real solutions" << endl;
+    double root = sqrt(delta*le2)/(lx*lx + ly*ly);
+    pz1 += root;
+    pz2 -= root;
+  }
+  cout << "  neutrino Pz 1: " << pz1 << ", Pz 2: " << pz2 << endl; 
+
+  // create W candidate
+  double nz = 0;
+  if (fabs(pz1)<fabs(pz2)) {
+    nz = pz1;
+  } else {
+    nz = pz2;
+  }
+  double wx = lx+nx;
+  double wy = ly+ny;
+  double wz = lz+nz;
+  double we = sqrt(mW*mW + wx*wx + wy*wy + wz*wz);
+
+  // create top candidate
+  double tx = wx+jx;
+  double ty = wy+jy;
+  double tz = wz+jz;
+  double te = we+sqrt(jx*jx + jy*jy + jz*jz);
+  double mtop = sqrt(te*te - tx*tx - ty*ty - tz*tz);
+  return mtop;
 }
 
 double SimpleEventDumper::AddQuadratically( const double nr1, const double nr2 ){
