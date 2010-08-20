@@ -36,6 +36,9 @@
 
 using namespace std;
 
+bool jsonContainsEvent( std::vector<edm::LuminosityBlockRange>*,
+			const edm::EventBase& );
+
 int main ( int argc, char ** argv )
 {
 
@@ -143,10 +146,38 @@ int main ( int argc, char ** argv )
   }
 
   cout << "Reading input file(s) ... " << flush;
+  std::vector<std::string> filesToProcess;
+  std::map<std::string,std::vector<edm::LuminosityBlockRange>* > filesToLumis;
+  std::vector<std::vector<edm::LuminosityBlockRange>* > lumisToProcess;
   // This object 'event' is used both to get all information from the
   // event as well as to store histograms, etc.
-  fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
+  // Process differently depending on if we are fed a list of files or 
+  // a list of files with associated LumiBlocks
+  if( inputs.existsAs<std::vector<std::string> >("fileNames") ) {
+    filesToProcess = inputs.getParameter<std::vector<std::string> >("fileNames");
+  } else if( inputs.existsAs<std::vector<edm::ParameterSet> >("fileNames") ) {
+    std::vector<edm::ParameterSet> files = inputs.getParameter<std::vector<edm::ParameterSet> >("fileNames");
+      for( std::vector<edm::ParameterSet>::const_iterator c = files.begin(); c != files.end(); ++c) {	
+	// make map of file names to lumiblock sets
+	std::vector<edm::LuminosityBlockRange> const &templumisref = 
+	  c->getParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess");
+	lumisToProcess.push_back(new std::vector<edm::LuminosityBlockRange>());
+	lumisToProcess.back()->resize(templumisref.size());
+	std::copy(templumisref.begin(),templumisref.end(),lumisToProcess.back()->begin());
+
+	std::vector<std::string> fileNames = c->getParameter<std::vector<std::string> >("fileNames");
+	filesToProcess.reserve(filesToProcess.size()+fileNames.size());
+	filesToProcess.insert(filesToProcess.end(),fileNames.begin(),fileNames.end());	
+
+	for ( std::vector<std::string>::const_iterator f = fileNames.begin(); f != fileNames.end(); ++f)
+	  filesToLumis[*f] = lumisToProcess.back();
+      }
+  } else {
+    throw cms::Exception("InvalidInput") << "fileNames must be of type vstring or VPSet!" << std::endl;
+  }
+  fwlite::ChainEvent ev ( filesToProcess );
   cout << "done." << endl << flush;
+
   long long maxEventsInput = -1;
   if (cfg->existsAs<edm::ParameterSet>("maxEvents")) {
     edm::ParameterSet maxEvents = cfg->getParameter<edm::ParameterSet>("maxEvents");
@@ -165,12 +196,13 @@ int main ( int argc, char ** argv )
   //loop through each event
   for (ev.toBegin(), iEvent=0; ! ev.atEnd() && (iEvent < maxEventsInput || maxEventsInput == -1); ++ev, ++iEvent) {
 
+    // only process those events which are in the good runs list.
+    if(lumisToProcess.size())
+      if(!jsonContainsEvent(filesToLumis[ev.getTFile()->GetName()],ev)) continue;
+
     hb.update(std::cout);
         
     edm::EventBase const & event = ev;
-
-    //edm::Handle<edm::TriggerResults> skimResults;
-    //event.getByLabel(edm::InputTag("TriggerResults","","PAT"),skimResults);
 
     const edm::TriggerResultsByName& trbn = event.triggerResultsByName("PAT");
 
@@ -278,6 +310,11 @@ int main ( int argc, char ** argv )
   
   select.printSelectors(std::cout);  
 
+  for( std::vector<std::vector<edm::LuminosityBlockRange>* >::iterator i = lumisToProcess.begin();
+       i != lumisToProcess.end();
+       ++i)
+    delete *i;
+
   if(zgmuonHistos)       delete zgmuonHistos;
   if(wgmuonHistos)       delete wgmuonHistos;
   if(zgelectronHistos)   delete zgelectronHistos;
@@ -298,4 +335,21 @@ int main ( int argc, char ** argv )
   if(WENuGammaHistos)    delete WENuGammaHistos;
   if(WMuNuGammaHistos)   delete WMuNuGammaHistos;
   
+}
+
+bool jsonContainsEvent( std::vector<edm::LuminosityBlockRange>* j,
+			const edm::EventBase& e ) {
+  
+  if(j->empty()) return true;
+
+  bool (*fcn) (edm::LuminosityBlockRange const&,
+	       edm::LuminosityBlockID const&) = &edm::contains;
+
+  edm::LuminosityBlockID lumiID(e.id().run(),e.id().luminosityBlock());
+
+  std::vector<edm::LuminosityBlockRange>::const_iterator f = 
+    std::find_if(j->begin(),j->end(),
+		 boost::bind(fcn,_1,lumiID));
+
+  return f != j->end();
 }
