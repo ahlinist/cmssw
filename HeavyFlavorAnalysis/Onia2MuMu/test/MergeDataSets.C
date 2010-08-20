@@ -30,8 +30,8 @@ int main(int argc, char* argv[]) {
   ifstream *inputFile = new ifstream(inputFileName);
 
   /// WEIGHTS AND SCALE HERE
-  float weights[] = {0.0100,0.0136,0.0151,0.0032,0.0393,0.987};
-  int scaleStats = 1;
+  float weights[] = {0.987,0.0100,0.0136,0.0151,0.0032,0.0858,0.0727};
+  int scaleStats = 5;
   ///
   /// CATEGORIES HERE
   RooCategory MCType("MCType","Category of MC");
@@ -62,11 +62,11 @@ int main(int argc, char* argv[]) {
       theFile = TFile::Open(MyRootFile);
       thisData = (RooDataSet*)theFile->Get("data");
 
-      RooDataSet* addVars = new RooDataSet("addVars","Weight and type",
-					   RooArgList(*MCweight,MCType));
+      const RooArgSet* thisRow = thisData->get(0); 
+      RooArgSet* newRow = new RooArgSet(*thisRow);
+      newRow->add(MCType);   newRow->add(*MCweight);
 
-      const RooArgSet* thisRow = thisData->get(0);   
-      newData = new RooDataSet("data","new data",*thisRow);
+      newData = new RooDataSet("data","new data",*newRow,RooFit::WeightVar(*MCweight));
 
       for (Int_t iSamp = 0; iSamp < thisData->numEntries(); iSamp++)
 	{
@@ -83,12 +83,12 @@ int main(int argc, char* argv[]) {
 	    MCType.setIndex(theMCType);
 	    MCweight->setVal(weights[nfiles]);          
 	    
-	    newData->add(*thisRow);
-	    addVars->add(RooArgSet(*MCweight,MCType));
+	    RooArgSet* tempRow = new RooArgSet(*thisRow);
+	    tempRow->add(MCType);   tempRow->add(*MCweight);
+	    newData->add(*tempRow);
+	   
 	  }
 	}
-
-      newData->merge(addVars);
 
       if (nfiles == 0) {
 	finalData = new RooDataSet(*newData);
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
   }
 
   theOutput.cd();
-  finalData->setWeightVar(*MCweight);
+  // finalData->setWeightVar(*MCweight);
   finalData->Write();
   theOutput.Close();
   inputFile->close();
