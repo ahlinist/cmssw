@@ -36,9 +36,6 @@
 
 using namespace std;
 
-bool jsonContainsEvent( std::vector<edm::LuminosityBlockRange>*,
-			const edm::EventBase& );
-
 int main ( int argc, char ** argv )
 {
 
@@ -50,23 +47,26 @@ int main ( int argc, char ** argv )
     std::cout << "Usage : " << argv[0] << " [parameters.py]" << std::endl;
     return 0;
   }
-  cout << "                                                                        \n"
-          "                                  Welcome to                            \n"
-          "               _   _           _____  _    _  _      _  _               \n"
-          "              | | | | _   _   |  ___|| |  | || |    (_)| |_  ___        \n"
-          "              | | | |/_\\_/ /  | |_   | |/\\| || |    | || __|/ _ \\    \n"
-          "              \\ \\_/ /  |  /   |  _|  \\  /\\  /| |___ | || |_|  __/   \n"
-          "               \\___/   , /    |_|     \\/  \\/ |_____||_| \\__|\\___|  \n"
-          "                      /_/                                               \n"
-          "                     _                   _              _               \n"
-          "                    / \\    _ __    __ _ | | _   _  ___ (_) ___         \n"
-          "                   / _ \\  | '_ \\  / _` || || | | |/ __|| |/ __|       \n"
-          "                  / ___ \\ | | | || (_| || || |_| |\\__ \\| |\\__ \\    \n"
-          "                 /_/   \\_\\|_| |_| \\__,_||_| \\__, ||___/|_||___/     \n"
-          "                                            |___/                       \n"
-          "                                                                        \n"
-          "Visit https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFramework for help.\n" 
-       << flush << endl;
+  cout << 
+    " _____________________________________________________________________________ \n"
+    "|                                                                             |\n"
+    "|                                  Welcome to                                 |\n"
+    "|               _   _           _____  _    _  _      _  _                    |\n"
+    "|              | | | | _   _   |  ___|| |  | || |    (_)| |_  ___             |\n"
+    "|              | | | |/_\\_/ /  | |_   | |/\\| || |    | || __|/ _ \\            |\n"
+    "|              \\ \\_/ /  \\  /   |  _|  \\  /\\  /| |___ | || |_|  __/            |\n"
+    "|               \\___/   / /    |_|     \\/  \\/ |_____||_| \\__|\\___|            |\n"
+    "|                      |_/                                                    |\n"
+    "|                    _                   _              _                     |\n"
+    "|                   / \\    _ __    __ _ | | _   _  ___ (_) ___                |\n"
+    "|                  / _ \\  | '_ \\  / _` || || | | |/ __|| |/ __|               |\n"
+    "|                 / ___ \\ | | | || (_| || || |_| |\\__ \\| |\\__ \\               |\n"
+    "|                /_/   \\_\\|_| |_| \\__,_||_| \\__, ||___/|_||___/               |\n"
+    "|                                           |___/                             |\n"
+    "|                                                                             |\n"
+    "|  Visit https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFramework for help.   |\n"
+    "|_____________________________________________________________________________|\n"
+     << flush << endl;
 
   // Parse configuration, get names of input files, output files
   // and the configuration of the selector and histograms.
@@ -161,38 +161,10 @@ int main ( int argc, char ** argv )
   }
 
   cout << "Reading input file(s) ... " << flush;
-  std::vector<std::string> filesToProcess;
-  std::map<std::string,std::vector<edm::LuminosityBlockRange>* > filesToLumis;
-  std::vector<std::vector<edm::LuminosityBlockRange>* > lumisToProcess;
   // This object 'event' is used both to get all information from the
   // event as well as to store histograms, etc.
-  // Process differently depending on if we are fed a list of files or 
-  // a list of files with associated LumiBlocks
-  if( inputs.existsAs<std::vector<std::string> >("fileNames") ) {
-    filesToProcess = inputs.getParameter<std::vector<std::string> >("fileNames");
-  } else if( inputs.existsAs<std::vector<edm::ParameterSet> >("fileNames") ) {
-    std::vector<edm::ParameterSet> files = inputs.getParameter<std::vector<edm::ParameterSet> >("fileNames");
-      for( std::vector<edm::ParameterSet>::const_iterator c = files.begin(); c != files.end(); ++c) {	
-	// make map of file names to lumiblock sets
-	std::vector<edm::LuminosityBlockRange> const &templumisref = 
-	  c->getParameter<std::vector<edm::LuminosityBlockRange> >("lumisToProcess");
-	lumisToProcess.push_back(new std::vector<edm::LuminosityBlockRange>());
-	lumisToProcess.back()->resize(templumisref.size());
-	std::copy(templumisref.begin(),templumisref.end(),lumisToProcess.back()->begin());
-
-	std::vector<std::string> fileNames = c->getParameter<std::vector<std::string> >("fileNames");
-	filesToProcess.reserve(filesToProcess.size()+fileNames.size());
-	filesToProcess.insert(filesToProcess.end(),fileNames.begin(),fileNames.end());	
-
-	for ( std::vector<std::string>::const_iterator f = fileNames.begin(); f != fileNames.end(); ++f)
-	  filesToLumis[*f] = lumisToProcess.back();
-      }
-  } else {
-    throw cms::Exception("InvalidInput") << "fileNames must be of type vstring or VPSet!" << std::endl;
-  }
-  fwlite::ChainEvent ev ( filesToProcess );
+  fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
   cout << "done." << endl << flush;
-
   long long maxEventsInput = -1;
   if (cfg->existsAs<edm::ParameterSet>("maxEvents")) {
     edm::ParameterSet maxEvents = cfg->getParameter<edm::ParameterSet>("maxEvents");
@@ -211,13 +183,12 @@ int main ( int argc, char ** argv )
   //loop through each event
   for (ev.toBegin(), iEvent=0; ! ev.atEnd() && (iEvent < maxEventsInput || maxEventsInput == -1); ++ev, ++iEvent) {
 
-    // only process those events which are in the good runs list.
-    if(lumisToProcess.size())
-      if(!jsonContainsEvent(filesToLumis[ev.getTFile()->GetName()],ev)) continue;
-
     hb.update(std::cout);
         
     edm::EventBase const & event = ev;
+
+    //edm::Handle<edm::TriggerResults> skimResults;
+    //event.getByLabel(edm::InputTag("TriggerResults","","PAT"),skimResults);
 
     const edm::TriggerResultsByName& trbn = event.triggerResultsByName("PAT");
 
@@ -241,11 +212,6 @@ int main ( int argc, char ** argv )
 
       if(event_result[std::string("ZMuMuGamma")] &&
 	 select.considerCut("ZMuMuGamma")) {
-	/*
-	std::cout << "Run: " << event.id().run() 
-		  << " Lumi: " << event.id().luminosityBlock() 
-		  << " Evt: " << event.id().event() << std::endl;
-	*/
 	if(zgmuonHistos)       zgmuonHistos->analyze(select.selectedZGammaMuons());
 	if(diMuonHistos)       diMuonHistos->analyze(select.selectedZGammaDiMuons());
 	if(zmumugphotonHistos) zmumugphotonHistos->analyze(select.selectedZGammaPhotons());
@@ -325,11 +291,6 @@ int main ( int argc, char ** argv )
   
   select.printSelectors(std::cout);  
 
-  for( std::vector<std::vector<edm::LuminosityBlockRange>* >::iterator i = lumisToProcess.begin();
-       i != lumisToProcess.end();
-       ++i)
-    delete *i;
-
   if(zgmuonHistos)       delete zgmuonHistos;
   if(wgmuonHistos)       delete wgmuonHistos;
   if(zgelectronHistos)   delete zgelectronHistos;
@@ -350,21 +311,4 @@ int main ( int argc, char ** argv )
   if(WENuGammaHistos)    delete WENuGammaHistos;
   if(WMuNuGammaHistos)   delete WMuNuGammaHistos;
   
-}
-
-bool jsonContainsEvent( std::vector<edm::LuminosityBlockRange>* j,
-			const edm::EventBase& e ) {
-  
-  if(j->empty()) return true;
-
-  bool (*fcn) (edm::LuminosityBlockRange const&,
-	       edm::LuminosityBlockID const&) = &edm::contains;
-
-  edm::LuminosityBlockID lumiID(e.id().run(),e.id().luminosityBlock());
-
-  std::vector<edm::LuminosityBlockRange>::const_iterator f = 
-    std::find_if(j->begin(),j->end(),
-		 boost::bind(fcn,_1,lumiID));
-
-  return f != j->end();
 }
