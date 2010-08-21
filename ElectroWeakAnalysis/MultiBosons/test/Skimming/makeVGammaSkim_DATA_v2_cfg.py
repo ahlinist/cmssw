@@ -86,5 +86,9 @@ process.patElectrons.embedTrack = True
 
 process.options.wantSummary = True
 
+#apply VGamma specific options
+from ElectroWeakAnalysis.MultiBosons.tools.VarParsing_cff import *
+applyOptions(process,options)
+
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user
