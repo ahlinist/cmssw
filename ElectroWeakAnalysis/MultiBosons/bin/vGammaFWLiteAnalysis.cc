@@ -50,8 +50,23 @@ int main ( int argc, char ** argv )
     std::cout << "Usage : " << argv[0] << " [parameters.py]" << std::endl;
     return 0;
   }
-  cout << ">>> Welcome to vGammaFWLiteAnalysis! <<<" << endl << endl;
-  cout << "Visit https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFramework for help." << endl << flush;
+  cout << "                                                                        \n"
+          "                                  Welcome to                            \n"
+          "               _   _           _____  _    _  _      _  _               \n"
+          "              | | | | _   _   |  ___|| |  | || |    (_)| |_  ___        \n"
+          "              | | | |/_\\_/ /  | |_   | |/\\| || |    | || __|/ _ \\    \n"
+          "              \\ \\_/ /  |  /   |  _|  \\  /\\  /| |___ | || |_|  __/   \n"
+          "               \\___/   , /    |_|     \\/  \\/ |_____||_| \\__|\\___|  \n"
+          "                      /_/                                               \n"
+          "                     _                   _              _               \n"
+          "                    / \\    _ __    __ _ | | _   _  ___ (_) ___         \n"
+          "                   / _ \\  | '_ \\  / _` || || | | |/ __|| |/ __|       \n"
+          "                  / ___ \\ | | | || (_| || || |_| |\\__ \\| |\\__ \\    \n"
+          "                 /_/   \\_\\|_| |_| \\__,_||_| \\__, ||___/|_||___/     \n"
+          "                                            |___/                       \n"
+          "                                                                        \n"
+          "Visit https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFramework for help.\n" 
+       << flush << endl;
 
   // Parse configuration, get names of input files, output files
   // and the configuration of the selector and histograms.
