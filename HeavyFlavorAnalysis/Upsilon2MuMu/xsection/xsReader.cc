@@ -16,6 +16,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   cout << "--> xsReader> This is the start ..." << endl;
   fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 3.; fPTbin[3] = 5.; fPTbin[4] = 8.; fPTbin[5] =12.; fPTbin[6] = 20.;
   fYbin[0] = -2.4; fYbin[1] = -1.4; fYbin[2] = 0.; fYbin[3] = 1.4; fYbin[4] = 2.4;
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpPos-upsilon.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpNeg-upsilon.dat");
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpPos-upsilon.dat");
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpNeg-upsilon.dat");  
 }
 // ----------------------------------------------------------------------
 xsReader::~xsReader() {
@@ -31,8 +35,8 @@ void xsReader::startAnalysis() {
 void xsReader::eventProcessing() {
   
   candidateSelection(2);
-  calculateWeights(0);
   if ( 0 != fpCand  ){
+    calculateWeights(0);
     fillCandHist();
     if ( 0 != fgCand ) MCstudy();
   }
@@ -56,6 +60,8 @@ void xsReader::candidateSelection(int mode){
       pCand = fpEvt->getCand(iC);
       lCands.push_back(iC);
       if (TYPE != pCand->fType) continue;
+      if (pCand->fMass < MASSLO) continue;
+      if (pCand->fMass > MASSHI) continue;
       lCands_CT.push_back(iC);
       TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1); 
       TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
@@ -101,7 +107,8 @@ void xsReader::candidateSelection(int mode){
   
   if (0 == nc_CT_M1T_M2T_Pt1_Pt2_CHI2) return; 
   int best(0);
-  if (nc_CT_M1T_M2T_Pt1_Pt2_CHI2 > 1) { 
+  if (nc_CT_M1T_M2T_Pt1_Pt2_CHI2 > 1) {
+    cout << "MORE THAN ONE CANDIDATE" <<endl;
     double ptMax(0.), pt(0.);
     double maxDocaMax(99.), maxDoca(0.);
     double chi2Max(99.), chi2(0.);
@@ -127,13 +134,15 @@ void xsReader::candidateSelection(int mode){
 	  }
       } 	
     }
-  }
+  } else if (nc_CT_M1T_M2T_Pt1_Pt2_CHI2 == 1) {best = lCands_CT_M1T_M2T_Pt1_Pt2_CHI2[0];}
+  
   int truth(0);
   TLorentzVector Cand, gCand;
   if ( best > -1 ) {
     fpCand = fpEvt->getCand(best); 
     fCandPt   = fpCand->fPlab.Perp();
     fCandMass = fpCand->fMass;
+    cout <<"fpCand->fMass "<<fpCand->fMass <<" fpCand->fPlab.Perp() "<< fpCand->fPlab.Perp() <<" fpCand->fPlab.Eta()" << fpCand->fPlab.Perp()<<endl;
     Cand.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
     fCandY = Cand.Rapidity();
     TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
@@ -236,8 +245,36 @@ void xsReader::MCstudy(){
 
 // ----------------------------------------------------------------------
 void xsReader::calculateWeights(int mode){
+  double effID1(-99); double effID2(-99);
+  double effTR1(-99); double effTR2(-99);
+  TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
+  TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+  cout <<pl1->fPlab.Perp()<<"  "<<pl2->fPlab.Perp() << endl;
+  cout <<pl1->fPlab.Eta()<<"  "<<pl2->fPlab.Eta() << endl;
   
-  fWeight = 1.;
+  if ( pl1->fQ > 0 ){
+    
+    effID1 = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+    effTR1 = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+
+  } else if ( pl1->fQ < 0 ){
+    effID1 = fPidTableMuIDNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+    effTR1 = fPidTableMuIDNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+  }
+  
+  if ( pl2->fQ > 0 ){
+    effID2 = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+    effTR2 = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+  }
+  else if ( pl2->fQ < 0 ){
+    effID2 = fPidTableMuIDNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+    effTR2 = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+  }
+  
+  fWeight = effID1*effID2*effTR1*effTR2;
+  cout <<" effID1  =  "<<effID1<<", effID2 =  "<<effID2<<" effTR1  =  "<<effTR1<<", effTR2 =  "<<effTR2<<", fWeight  =  "<<  fWeight <<endl;
+  
+  fWeight = 1;
   
 }
 // ----------------------------------------------------------------------
