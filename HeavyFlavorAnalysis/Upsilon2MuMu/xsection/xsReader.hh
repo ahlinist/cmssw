@@ -19,6 +19,7 @@
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaJet.hh"
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/PidTable.hh"
 
 #include "treeReaderXS.hh"
 
@@ -64,6 +65,8 @@ public:
   double      fGenCandPt, fGenCandY;
   double      fGenMuon1Pt, fGenMuon1Eta, fMuon1Eta, fMuon1Pt;
   double      fGenMuon2Pt, fGenMuon2Eta, fMuon2Eta, fMuon2Pt;
+  PidTable    *fPidTableMuIDPos, *fPidTableMuIDNeg; 
+  PidTable    *fPidTableTrigPos, *fPidTableTrigNeg;
   
   double      fWeight;
   static const int  fNpt = 6;
@@ -71,6 +74,7 @@ public:
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
   double fMassLow, fMassHigh;
+  
   
 };
 
