@@ -271,8 +271,8 @@ void DQMFileLoader::endJob()
            eventsProcessed += eventsInThisFile;
         }
         // Compute luminosity scale factor
-        double luminosityNoJobFailures = cfgFileSet.totalExpectedEventsBeforeSkim_ /
-           (cfgFileSet.xSection_ * cfgFileSet.skimEfficiency_);
+        double luminosityNoJobFailures = 
+           cfgFileSet.totalExpectedEventsBeforeSkim_ /cfgFileSet.xSection_;
         double expectedEvents = cfgFileSet.totalExpectedEventsBeforeSkim_*cfgFileSet.skimEfficiency_;
         double jobEfficiency = eventsProcessed/expectedEvents;
         double effectiveLumi = luminosityNoJobFailures*jobEfficiency;
@@ -288,6 +288,7 @@ void DQMFileLoader::endJob()
         std::cout << " Effective int. lumi: " << luminosityNoJobFailures*jobEfficiency << "pb-1" << std::endl;
         std::cout << " Scale factor for target lumi " << cfgFileSet.targetIntLumi_  
            << "pb-1: " << cfgFileSet.scaleFactor_ << std::endl;
+        std::cout << " sanity check: " << fileSet->second.scaleFactor_ << std::endl;
      }
 
     for ( vstring::const_iterator inputFileName = fileSet->second.inputFileNames_.begin();
