@@ -213,6 +213,8 @@ int main ( int argc, char ** argv )
   //loop through each event
   for (ev.toBegin(), iEvent=0; ! ev.atEnd() && (iEvent < maxEventsInput || maxEventsInput == -1); ++ev, ++iEvent) {
 
+    hb.update(std::cout);
+
     // only process those events which are in the good runs list.
     if(lumisToProcess.size())
       if(!jsonContainsEvent(filesToLumis[ev.getTFile()->GetName()],ev)) {
@@ -220,7 +222,7 @@ int main ( int argc, char ** argv )
 	continue;
       }
 
-    hb.update(std::cout);
+    
         
     edm::EventBase const & event = ev;
 
