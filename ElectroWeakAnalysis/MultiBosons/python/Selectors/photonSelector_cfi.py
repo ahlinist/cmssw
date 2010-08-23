@@ -1,5 +1,26 @@
 import FWCore.ParameterSet.Config as cms
 
+Jul022010_passthru_selection = cms.PSet(version = cms.string("Jul022010"),
+                                     BarrelJurrasicECALIsoConst = cms.double(100.0),
+                                     BarrelJurrasicECALIsoSlope = cms.double(0.004),
+                                     BarrelTowerHCALIsoConst = cms.double(100.0),
+                                     BarrelTowerHCALIsoSlope = cms.double(0.001),
+                                     BarrelMaxHadronicOverEm = cms.double(0.5),
+                                     BarrelHollowConeTrkIsoConst = cms.double(100.0),
+                                     BarrelHollowConeTrkIsoSlope = cms.double(0.001),                                     
+                                     EndcapJurrasicECALIsoConst = cms.double(100.0),
+                                     EndcapJurrasicECALIsoSlope = cms.double(0.004),
+                                     EndcapTowerHCALIsoConst = cms.double(100.0),
+                                     EndcapTowerHCALIsoSlope = cms.double(0.001),
+                                     EndcapMaxHadronicOverEm = cms.double(0.5),
+                                     EndcapHollowConeTrkIsoConst = cms.double(100.0),
+                                     EndcapHollowConeTrkIsoSlope = cms.double(0.001),                                     
+                                     minPt = cms.double(10),
+                                     maxEta = cms.double(2.5),
+                                     BarrelMaxSigmaIetaIeta = cms.double(0.012), #ignored!
+                                     EndcapMaxSigmaIetaIeta = cms.double(0.1)  #ignored!
+                                     )
+
 Jul022010_loose_selection = cms.PSet(version = cms.string("Jul022010"),
                                      BarrelJurrasicECALIsoConst = cms.double(4.2),
                                      BarrelJurrasicECALIsoSlope = cms.double(0.004),
