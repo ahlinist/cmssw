@@ -81,6 +81,7 @@ def _setEventDump(process, enable, **kwargs):
 def _setEnableFactorization(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
+        print "Enabling factorization for %s" % channel
         enabler = getattr(factorizationTools, "enableFactorization_run%s" % channel)
         enabler(process)
 
@@ -88,9 +89,11 @@ def _setEnableFactorization(process, enable, **kwargs):
 def _setEnableSystematics(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
+        print "Enabling systematics"
         enabler = getattr(sysUncertaintyTools, "enableSysUncertainties_run%s" % channel)
         enabler(process)
     else:
+        print "Disabling systematics"
         disabler = getattr(sysUncertaintyTools, "disableSysUncertainties_run%s" % channel)
         disabler(process)
 
@@ -102,7 +105,7 @@ def _setInputFileType(process, filetype, **kwargs):
             process, "producePatTuple%sSpecific" % kwargs['channel'])
         process.p.replace(patTupleProducerSpecific, process.producePatTupleAll)
 
-@_requires(inputs=['data', 'smMC', 'smSumMC', 'bsmMC',]) 
+@_requires(inputs=['Data', 'smMC', 'smSumMC', 'bsmMC',]) 
 def _setIsData(process, type, **kwargs):
     if type.lower().find('mc') == -1:
         switchToData.switchToData(process)
