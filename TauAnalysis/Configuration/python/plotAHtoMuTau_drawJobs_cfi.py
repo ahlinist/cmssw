@@ -21,8 +21,8 @@ plots_AHtoMuTau = cms.PSet(
         )
     ),
     xAxis = cms.string('unlabeled'),
-    yAxis = cms.string('numEntries_linear'),
-    #yAxis = cms.string('numEntries_log'),
+    #yAxis = cms.string('numEntries_linear'),
+    yAxis = cms.string('numEntries_log'),
     legend = cms.string('regular'),
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
