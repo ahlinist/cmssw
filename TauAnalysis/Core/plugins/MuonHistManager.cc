@@ -207,7 +207,9 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
   getCollection(evt, jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSrc_, genParticles);
+  if(genParticleSrc_.label() != "") {
+     evt.getByLabel(genParticleSrc_, genParticles);
+  }
 
   //std::cout << " patMuons.size = " << patMuons->size() << std::endl;
   hNumMuons_->Fill(patMuons->size(), evtWeight);
@@ -249,13 +251,15 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
       hMuonPhiCompToGen_->Fill(patMuon->phi() - patMuon->genLepton()->phi(), weight);
     }
 
-    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patMuon->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
-    if ( matchingGenParticlePdgId == -1 ) {
-      hMuonMatchingGenParticlePdgId_->Fill(-1, weight);
-    } else if ( abs(matchingGenParticlePdgId) > 22 ) {
-      hMuonMatchingGenParticlePdgId_->Fill(24, weight);
-    } else {
-      hMuonMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
+    if(genParticles.isValid()) {
+       int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patMuon->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+       if ( matchingGenParticlePdgId == -1 ) {
+          hMuonMatchingGenParticlePdgId_->Fill(-1, weight);
+       } else if ( abs(matchingGenParticlePdgId) > 22 ) {
+          hMuonMatchingGenParticlePdgId_->Fill(24, weight);
+       } else {
+          hMuonMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
+       }
     }
 
     if ( vertexSrc_.label() != "" && isValidRef(patMuon->track()) ) {
