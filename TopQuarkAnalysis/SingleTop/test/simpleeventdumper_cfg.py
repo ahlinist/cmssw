@@ -72,7 +72,8 @@ process.demo = cms.EDAnalyzer('SimpleEventDumper',
 
                               jet_pt_min = cms.double(20),
                               useL5corr = cms.bool(True),
-)
+                              useL5corr_including_gluons = cms.bool(True),
+                              )
 
 
 process.p = cms.Path(process.goodVertices * process.patDefaultSequence * process.demo)

@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.8 2010/08/20 13:26:37 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.9 2010/08/24 13:12:12 giamman Exp $
 //
 //
 
@@ -86,7 +86,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   edm::Handle<std::vector<reco::PFJet> > pfjets;
   edm::Handle<std::vector<pat::Jet> > pfpatjets;
   double jet_threshold;
-  bool l5corr;
+  bool l5corr,l5corr_inclGlu;
 };
 
 //
@@ -115,6 +115,7 @@ SimpleEventDumper::SimpleEventDumper(const edm::ParameterSet& iConfig)
   pfpatjetSource_     = iConfig.getParameter<edm::InputTag>("pfpatjetSource");
   jet_threshold  = iConfig.getParameter<double>("jet_pt_min");
   l5corr = iConfig.getParameter<bool>("useL5corr");
+  l5corr_inclGlu = iConfig.getParameter<bool>("useL5corr_including_gluons");
 }
 
 
@@ -445,11 +446,21 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       met_pat_x = (*patmets)[0].px();
       met_pat_y = (*patmets)[0].py();
       //      cout << "met_x = " << met_pat_x << ", met_y = " << met_pat_y << endl;
-      met_patL5_x = met_pat_x + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].px() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].px();
-      met_patL5_y = met_pat_y + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].py() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].py();
-      metL5 = AddQuadratically(met_patL5_x,met_patL5_y);
-      phiL5 = atan2(met_patL5_y,met_patL5_x);
-      cout << "PAT+L5 met = " << metL5 << ", phi = " << phiL5 << endl;
+      if (l5corr) {
+	met_patL5_x = met_pat_x + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].px() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].px();
+	met_patL5_y = met_pat_y + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].py() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].py();
+	if (l5corr_inclGlu) { // correct all other jets, if any, as gluons
+	  for (int j = 0; j < (int)patjets->size(); j++){
+	    if (j != index_max_tchp && j != index_bveto) {
+	      met_patL5_x += (1.-(*patjets)[j].corrFactor("had", "GLU"))*(*patjets)[j].px();
+	      met_patL5_y += (1.-(*patjets)[j].corrFactor("had", "GLU"))*(*patjets)[j].py();
+	    }
+	  }
+	}
+	metL5 = AddQuadratically(met_patL5_x,met_patL5_y);
+	phiL5 = atan2(met_patL5_y,met_patL5_x);
+	cout << "PAT+L5 met = " << metL5 << ", phi = " << phiL5 << endl;
+      }
     }
   } catch (std::exception & err) {
     std::cout <<"ERROR: MET label not found ("<<patmetSource_<<")"<< std::endl;
@@ -506,7 +517,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       cout << "tc met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
       met_tc_x = (*tcmets)[0].px();
       met_tc_y = (*tcmets)[0].py();
-      cout << "met_x = " << met_tc_x << ", met_y = " << met_tc_y << endl;
+      //      cout << "met_x = " << met_tc_x << ", met_y = " << met_tc_y << endl;
     }
   } catch (std::exception & err) {
     std::cout <<"ERROR: MET label not found ("<<tcmetSource_<<")"<< std::endl;
@@ -523,7 +534,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     double mt_pf = MT(lx,ly,met_pf_x,met_pf_y);
     double mt_tc = MT(lx,ly,met_tc_x,met_tc_y);
     cout << " with MET from PAT: " << mt_pat << endl;
-    cout << " with MET from PAT+L5: " << mt_patL5 << endl;
+    if (l5corr) cout << " with MET from PAT+L5: " << mt_patL5 << endl;
     cout << " with MET from calo: " << mt_calo << endl;
     cout << " with MET from PF: " << mt_pf << endl;
     cout << " with tcMET: " << mt_tc << endl;
