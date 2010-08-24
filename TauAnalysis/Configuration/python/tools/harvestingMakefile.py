@@ -142,10 +142,10 @@ def buildMakefile(merge_jobs, working_dir, makefilename, copy_first=True, merge_
     makefile.write("HARVEST = %s\n\n" % path_to_harvester_script)
 
     makefile.write("# List of targets to merge\n")
-    makefile.write("all: %s\n\n" % ' '.join(merge_job[0] for merge_job in merge_jobs)) 
+    makefile.write("all: %s\n\n" % ' '.join(merge_job[0] for merge_job in merge_jobs if merge_job[2])) 
 
     makefile.write("# Alias to filename mappings:\n")
-    for alias, output_file in [ (merge_job[0], merge_job[1]) for merge_job in merge_jobs]:
+    for alias, output_file in [ (merge_job[0], merge_job[1]) for merge_job in merge_jobs if merge_job[2]]:
         makefile.write("%s: %s\n" % (alias, output_file))
 
     for alias, output_file, to_merge in merge_jobs:
