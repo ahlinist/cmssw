@@ -71,6 +71,7 @@ process.demo = cms.EDAnalyzer('SimpleEventDumper',
                               pfpatjetSource = cms.InputTag("patJetsAK5PF"), #corrected, and possibility to access b-tagging for it
 
                               jet_pt_min = cms.double(20),
+                              useL5corr = cms.bool(True),
 )
 
 

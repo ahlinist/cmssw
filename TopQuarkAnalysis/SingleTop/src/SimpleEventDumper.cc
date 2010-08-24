@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.7 2010/08/17 16:39:46 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.8 2010/08/20 13:26:37 giamman Exp $
 //
 //
 
@@ -86,6 +86,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   edm::Handle<std::vector<reco::PFJet> > pfjets;
   edm::Handle<std::vector<pat::Jet> > pfpatjets;
   double jet_threshold;
+  bool l5corr;
 };
 
 //
@@ -113,6 +114,7 @@ SimpleEventDumper::SimpleEventDumper(const edm::ParameterSet& iConfig)
   pfjetSource_     = iConfig.getParameter<edm::InputTag>("pfjetSource");
   pfpatjetSource_     = iConfig.getParameter<edm::InputTag>("pfpatjetSource");
   jet_threshold  = iConfig.getParameter<double>("jet_pt_min");
+  l5corr = iConfig.getParameter<bool>("useL5corr");
 }
 
 
@@ -254,87 +256,6 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     et = (*electrons)[0].pt();
   }
 
-  // MET
-
-  cout << "-----------------------------------" << endl;
-  cout << "MET " << endl;
-
-  double met_pat_x = 0.;
-  double met_pat_y = 0.;
-  try {
-    iEvent.getByLabel(patmetSource_, patmets);
-    if (patmets->size()>=1){
-      double met = (*patmets)[0].et();
-      double phi = (*patmets)[0].phi();
-      double sumet = (*patmets)[0].sumEt();
-      double metsig = (*patmets)[0].mEtSig();
-      cout << "PAT met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
-      met_pat_x = (*patmets)[0].px();
-      met_pat_y = (*patmets)[0].py();
-      //      cout << "met_x = " << met_pat_x << ", met_y = " << met_pat_y << endl;
-    }
-  } catch (std::exception & err) {
-    std::cout <<"ERROR: MET label not found ("<<patmetSource_<<")"<< std::endl;
-    return;
-  }
-
-  double met_calo_x = 0.;
-  double met_calo_y = 0.;
-  try {
-    iEvent.getByLabel(calometSource_, calomets);
-    if (calomets->size()>=1){
-      double met = (*calomets)[0].et();
-      double phi = (*calomets)[0].phi();
-      double sumet = (*calomets)[0].sumEt();
-      double metsig = (*calomets)[0].mEtSig();
-      cout << "calo met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
-      met_calo_x = (*calomets)[0].px();
-      met_calo_y = (*calomets)[0].py();
-      //      cout << "met_x = " << met_calo_x << ", met_y = " << met_calo_y << endl;
-    }
-  } catch (std::exception & err) {
-    std::cout <<"ERROR: MET label not found ("<<calometSource_<<")"<< std::endl;
-    return;
-  }
-
-  double met_pf_x = 0.;
-  double met_pf_y = 0.;
-  try {
-    iEvent.getByLabel(pfmetSource_, pfmets);
-    if (pfmets->size()>=1){
-      double met = (*pfmets)[0].et();
-      double phi = (*pfmets)[0].phi();
-      double sumet = (*pfmets)[0].sumEt();
-      double metsig = (*pfmets)[0].mEtSig();
-      cout << "PF met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
-      met_pf_x = (*pfmets)[0].px();
-      met_pf_y = (*pfmets)[0].py();
-      //cout << "met_x = " << met_pf_x << ", met_y = " << met_pf_y << endl;
-    }
-  } catch (std::exception & err) {
-    std::cout <<"ERROR: MET label not found ("<<pfmetSource_<<")"<< std::endl;
-    return;
-  }
-
-  double met_tc_x = 0.;
-  double met_tc_y = 0.;
-  try {
-    iEvent.getByLabel(tcmetSource_, tcmets);
-    if (tcmets->size()>=1){
-      double met = (*tcmets)[0].et();
-      double phi = (*tcmets)[0].phi();
-      double sumet = (*tcmets)[0].sumEt();
-      double metsig = (*tcmets)[0].mEtSig();
-      cout << "tc met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
-      met_tc_x = (*tcmets)[0].px();
-      met_tc_y = (*tcmets)[0].py();
-      cout << "met_x = " << met_tc_x << ", met_y = " << met_tc_y << endl;
-    }
-  } catch (std::exception & err) {
-    std::cout <<"ERROR: MET label not found ("<<tcmetSource_<<")"<< std::endl;
-    return;
-  }
-
   // Choose leading lepton
   double lx=0;
   double ly=0;
@@ -354,17 +275,6 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
   // note: asap I will add lepton selection as in TOPLJ, and here the check will be based on number_of_selected_muons and _electrons
 
-  // MT
-  cout << "-----------------------------------" << endl;
-  cout << "MT " << endl;
-  if (muons->size()>=1 || electrons->size()>=1){ // also here the check will be based on number_of_selected_muons and _electrons
-    double mt_pat = MT(lx,ly,met_pat_x,met_pat_y);
-    double mt_calo = MT(lx,ly,met_calo_x,met_calo_y);
-    double mt_pf = MT(lx,ly,met_pf_x,met_pf_y);
-    double mt_tc = MT(lx,ly,met_tc_x,met_tc_y);
-    cout << " with MET from PAT: " << mt_pat << " - from calo: " << mt_calo << " - from PF: " << mt_pf << "- from tc: " << mt_tc << endl;
-  }
-
   // Jets
   try {
     iEvent.getByLabel(patjetSource_, patjets);
@@ -373,7 +283,9 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     return;
   }
   double max_tchp = -999.;
+  double max_pt_bveto = -999.;
   int index_max_tchp = -1;
+  int index_bveto = -1;
   double jx_pat=0;
   double jy_pat=0;
   double jz_pat=0;
@@ -396,10 +308,20 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << endl;
 	cout << "EM fraction = " << emf << ", fHPD = " << fHPD << ", N90 = " << n90hits << endl;
 	cout << "b-tagging, TCHP = " << tchp << ", TCHE = " << tche << ", SSVHP = " << ssvhp << ", SSVHE = " << ssvhe << endl;
+	if (l5corr) {
+	  cout << "L5 correction factor under the hypothesis B: " <<  (*patjets)[j].corrFactor("had", "B") << endl;
+	  cout << "L5 correction factor under the hypothesis UDS: " <<  (*patjets)[j].corrFactor("had", "UDS") << endl;
+	  cout << "L5 correction factor under the hypothesis GLU: " <<  (*patjets)[j].corrFactor("had", "GLU") << endl;
+	}
 	// find highest-TCHP jet:
 	if (tchp > max_tchp) {
 	  max_tchp = tchp;
 	  index_max_tchp = j;
+	}
+	// find b-veto jet (highest-pt jet below TCHE loose threshold):
+	if (tche < 1.7 && pt > max_pt_bveto) {
+	  max_pt_bveto = pt;
+	  index_bveto = j;
 	}
       }
     }
@@ -500,7 +422,113 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     jy_pfpat = (*patjets)[index_max_tchp_pf].py();
     jz_pfpat = (*patjets)[index_max_tchp_pf].pz();
   }
+
+  // MET
+
+  cout << "-----------------------------------" << endl;
+  cout << "MET " << endl;
+
+  double met_pat_x = 0.;
+  double met_pat_y = 0.;
+  double met_patL5_x = 0.;
+  double met_patL5_y = 0.;
+  double metL5 = 0.;
+  double phiL5 = 0.;
+  try {
+    iEvent.getByLabel(patmetSource_, patmets);
+    if (patmets->size()>=1){
+      double met = (*patmets)[0].et();
+      double phi = (*patmets)[0].phi();
+      double sumet = (*patmets)[0].sumEt();
+      double metsig = (*patmets)[0].mEtSig();
+      cout << "PAT met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
+      met_pat_x = (*patmets)[0].px();
+      met_pat_y = (*patmets)[0].py();
+      //      cout << "met_x = " << met_pat_x << ", met_y = " << met_pat_y << endl;
+      met_patL5_x = met_pat_x + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].px() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].px();
+      met_patL5_y = met_pat_y + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].py() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].py();
+      metL5 = AddQuadratically(met_patL5_x,met_patL5_y);
+      phiL5 = atan2(met_patL5_y,met_patL5_x);
+      cout << "PAT+L5 met = " << metL5 << ", phi = " << phiL5 << endl;
+    }
+  } catch (std::exception & err) {
+    std::cout <<"ERROR: MET label not found ("<<patmetSource_<<")"<< std::endl;
+    return;
+  }
+
+  double met_calo_x = 0.;
+  double met_calo_y = 0.;
+  try {
+    iEvent.getByLabel(calometSource_, calomets);
+    if (calomets->size()>=1){
+      double met = (*calomets)[0].et();
+      double phi = (*calomets)[0].phi();
+      double sumet = (*calomets)[0].sumEt();
+      double metsig = (*calomets)[0].mEtSig();
+      cout << "calo met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
+      met_calo_x = (*calomets)[0].px();
+      met_calo_y = (*calomets)[0].py();
+      //      cout << "met_x = " << met_calo_x << ", met_y = " << met_calo_y << endl;
+    }
+  } catch (std::exception & err) {
+    std::cout <<"ERROR: MET label not found ("<<calometSource_<<")"<< std::endl;
+    return;
+  }
+
+  double met_pf_x = 0.;
+  double met_pf_y = 0.;
+  try {
+    iEvent.getByLabel(pfmetSource_, pfmets);
+    if (pfmets->size()>=1){
+      double met = (*pfmets)[0].et();
+      double phi = (*pfmets)[0].phi();
+      double sumet = (*pfmets)[0].sumEt();
+      double metsig = (*pfmets)[0].mEtSig();
+      cout << "PF met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
+      met_pf_x = (*pfmets)[0].px();
+      met_pf_y = (*pfmets)[0].py();
+      //cout << "met_x = " << met_pf_x << ", met_y = " << met_pf_y << endl;
+    }
+  } catch (std::exception & err) {
+    std::cout <<"ERROR: MET label not found ("<<pfmetSource_<<")"<< std::endl;
+    return;
+  }
+
+  double met_tc_x = 0.;
+  double met_tc_y = 0.;
+  try {
+    iEvent.getByLabel(tcmetSource_, tcmets);
+    if (tcmets->size()>=1){
+      double met = (*tcmets)[0].et();
+      double phi = (*tcmets)[0].phi();
+      double sumet = (*tcmets)[0].sumEt();
+      double metsig = (*tcmets)[0].mEtSig();
+      cout << "tc met = " << met << ", phi = " << phi << ", SumEt = " << sumet << ", MET significance = " << metsig << endl;
+      met_tc_x = (*tcmets)[0].px();
+      met_tc_y = (*tcmets)[0].py();
+      cout << "met_x = " << met_tc_x << ", met_y = " << met_tc_y << endl;
+    }
+  } catch (std::exception & err) {
+    std::cout <<"ERROR: MET label not found ("<<tcmetSource_<<")"<< std::endl;
+    return;
+  }
   
+  // MT
+  cout << "-----------------------------------" << endl;
+  cout << "MT " << endl;
+  if (muons->size()>=1 || electrons->size()>=1){ // also here the check will be based on number_of_selected_muons and _electrons
+    double mt_pat = MT(lx,ly,met_pat_x,met_pat_y);
+    double mt_patL5 = MT(lx,ly,met_patL5_x,met_patL5_y);
+    double mt_calo = MT(lx,ly,met_calo_x,met_calo_y);
+    double mt_pf = MT(lx,ly,met_pf_x,met_pf_y);
+    double mt_tc = MT(lx,ly,met_tc_x,met_tc_y);
+    cout << " with MET from PAT: " << mt_pat << endl;
+    cout << " with MET from PAT+L5: " << mt_patL5 << endl;
+    cout << " with MET from calo: " << mt_calo << endl;
+    cout << " with MET from PF: " << mt_pf << endl;
+    cout << " with tcMET: " << mt_tc << endl;
+  }
+
   // Top
   cout << "-----------------------------------" << endl;
   cout << "Top reconstruction " << endl;
