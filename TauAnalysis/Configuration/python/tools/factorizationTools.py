@@ -792,6 +792,131 @@ def enableFactorization_runAHtoMuTau(process):
     )
     process.p.replace(process.analyzeAHtoMuTauEvents, process.analyzeAHtoMuTauEvents_factorized)
 
+def enableFactorization_makeAHtoMuTauPlots_grid(
+    process,
+    factorizationSequenceName = "loadAndFactorizeAHtoMuTauSamples",
+    samplesToFactorize=['InclusivePPmuX', 'PPmuXptGt20'],
+    relevantMergedSamples=['qcdSum'],
+    mergedToRecoSampleDict = {},
+    mergedSampleAdderModule = lambda sample, btag: 'addAHtoMuTau_%s_%s' % (btag, sample),
+    dqmDirectoryOut = 
+    lambda sample, btag:'/harvested/%s_factorized/ahMuTauAnalyzer_%s/'% (sample, btag),
+    dqmDirectoryTight = 
+    lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s_factorizedWithMuonIsolation/' % (sample, btag),
+    dqmDirectoryLoose = 
+    lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s_factorizedWithoutMuonIsolation/' % (sample, btag),
+    pyObjectLabel = ""):
+
+    process.load("TauAnalysis.Configuration.analyzeAHtoMuTau_cfi")
+
+    # define list of event selection criteria on "tight" muon isolation branch
+    # of the analysis, **before** applying factorization of muon track + ECAL
+    # isolation efficiencies
+    evtSelAHtoMuTau_factorizedTight = [
+        process.genPhaseSpaceCut,
+        process.evtSelTrigger,
+        process.evtSelPrimaryEventVertex,
+        process.evtSelPrimaryEventVertexQuality,
+        process.evtSelPrimaryEventVertexPosition,
+        process.evtSelGlobalMuon,
+        process.evtSelMuonEta,
+        process.evtSelMuonPt,
+        process.evtSelTauAntiOverlapWithMuonsVeto,
+        process.evtSelTauEta,
+        process.evtSelTauPt,
+        process.evtSelMuonTrkIso,
+        process.evtSelMuonEcalIso
+    ]
+
+    # define list of event selection criteria on "loose" muon isolation branch
+    # of the analysis, **after** applying factorization of muon track + ECAL
+    # isolation efficiencies
+    evtSelAHtoMuTau_factorizedLoose = [
+        process.evtSelMuonAntiPion,
+        process.evtSelMuonTrkIP,
+        process.evtSelTauLeadTrk,
+        process.evtSelTauLeadTrkPt,
+        process.evtSelTauTaNCdiscr,
+        process.evtSelTauTrkIso,
+        process.evtSelTauEcalIso,
+        process.evtSelTauProng,
+        process.evtSelTauCharge,
+        process.evtSelTauMuonVeto,
+        process.evtSelTauElectronVeto,
+        process.evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
+        process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
+        process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
+        process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+        process.evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
+        process.evtSelDiMuPairZmumuHypothesisVeto
+    ]
+
+    # Make specialized cases for the w/ w/o btag cases
+    evtSelAHtoMuTau_factorizedLoose_specialized = {
+        'woBtag' : copy.deepcopy(evtSelAHtoMuTau_factorizedLoose),
+        'wBtag' : copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
+    }
+    evtSelAHtoMuTau_factorizedLoose_specialized['woBtag'].append(
+        process.evtSelNonCentralJetEt20bTag)
+    evtSelAHtoMuTau_factorizedLoose_specialized['wBtag'].append(
+        process.evtSelCentralJetEt20)
+    evtSelAHtoMuTau_factorizedLoose_specialized['wBtag'].append(
+        process.evtSelCentralJetEt20bTag)
+
+    # defines names of MonitorElements used as numerator and denominator
+    # to compute factorization scale-factor
+    meNameAHtoMuTau_numerator = "evtSelMuonEcalIso/passed_cumulative_numWeighted"
+    meNameAHtoMuTau_denominator = "evtSelMuonTrkIso/processed_cumulative_numWeighted"
+
+    # Loop over the samples and btag options and create sequences
+    # for each of the factorization jobs and add them to the factorization
+    # sequence
+    factorizationSequence = getattr(process, factorizationSequenceName)
+    for sample, bTagOption in [(sample, bTagOption) 
+                               for bTagOption in ['woBtag', 'wBtag'] 
+                               for sample in samplesToFactorize]:
+        new_factorization_sequence = composeFactorizationSequence(
+            process = process,
+            processName = sample + "_" + bTagOption + "_" + pyObjectLabel,
+            dqmDirectoryIn_factorizedTightEvtSel = dqmDirectoryTight(
+                sample, bTagOption),
+            evtSel_factorizedTight = evtSelAHtoMuTau_factorizedTight,
+            dqmDirectoryIn_factorizedLooseEvtSel = dqmDirectoryLoose(
+                sample, bTagOption),
+            evtSel_factorizedLoose = evtSelAHtoMuTau_factorizedLoose_specialized[bTagOption],
+            meName_numerator = meNameAHtoMuTau_numerator,
+            meName_denominator = meNameAHtoMuTau_denominator,
+            dqmDirectoryOut = dqmDirectoryOut(sample, bTagOption),
+            dropInputDirectories = False
+        )
+        new_factorization_seq_name = "scaleAHtoMuTau_%s_%s_%s" % (
+            bTagOption, sample, pyObjectLabel)
+        setattr(process, new_factorization_seq_name, new_factorization_sequence)
+        factorizationSequence += new_factorization_sequence
+
+    # Now update any of the relevant mergers
+    for btag in ['woBtag', 'wBtag']:
+        for mergedSample in relevantMergedSamples:
+            # Get the module that is doing the mergign
+            merger = getattr(process.mergeSamplesAHtoMuTau, 
+                                    "merge_%s_%s" % (mergedSample, btag))
+            # Get the subsamples associated with this merged sample
+            subsamples = mergedToRecoSampleDict[mergedSample]['samples']
+            # Set the adder to use our new factorized inputs
+            merger.dqmDirectories_input = cms.vstring(
+                [dqmDirectoryOut(sample, btag) for sample in subsamples ])
+    
+    # Update the plot sources in the plot jobs.  Note that we don't need to do
+    # this for the merged samples, since we have replaced the HistAdder sources
+    for plotterModuleName in ['plotAHtoMuTau_woBtag', 'plotAHtoMuTau_wBtag']:
+        plotterModuleProcesses = getattr(process, plotterModuleName).processes
+        for sample in samplesToFactorize:
+            if hasattr(plotterModuleProcesses, sample):
+                # FIXME don't hard code this
+                getattr(plotterModuleProcesses, sample).dqmDirectory = \
+                        cms.string("/harvested/%s_factorized" % sample)
+
+
 def enableFactorization_makeAHtoMuTauPlots(process,
         dqmDirectoryIn_woBtag_InclusivePPmuX = 'harvested/InclusivePPmuX/ahMuTauAnalyzer_woBtag',
         dqmDirectoryOut_woBtag_InclusivePPmuX = 'harvested/InclusivePPmuX_factorized/ahMuTauAnalyzer_woBtag',
@@ -851,11 +976,11 @@ def enableFactorization_makeAHtoMuTauPlots(process,
     ]
 
     evtSelAHtoMuTau_woBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
-    evtSelAHtoMuTau_woBtag_factorizedLoose.append(evtSelNonCentralJetEt20bTag)
+    evtSelAHtoMuTau_woBtag_factorizedLoose.append(process.evtSelNonCentralJetEt20bTag)
 
     evtSelAHtoMuTau_wBtag_factorizedLoose = copy.deepcopy(evtSelAHtoMuTau_factorizedLoose)
-    evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelCentralJetEt20)
-    evtSelAHtoMuTau_wBtag_factorizedLoose.append(evtSelCentralJetEt20bTag)
+    evtSelAHtoMuTau_wBtag_factorizedLoose.append(process.evtSelCentralJetEt20)
+    evtSelAHtoMuTau_wBtag_factorizedLoose.append(process.evtSelCentralJetEt20bTag)
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
