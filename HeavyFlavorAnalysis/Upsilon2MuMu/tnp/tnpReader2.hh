@@ -37,12 +37,13 @@ public:
   void        bookHist();
   void        startAnalysis();
   void        eventProcessing();
-  void        fillHist(TAnaCand *pCand,  int mode);
+  void        fillHist(TAnaCand *pCand,  int mode, bool CombineEndCaps);
   bool        truthMatch(TAnaCand *pCand);
   void        readCuts(TString filename, int dump = 1);
   bool        isPathPreScaled(TString path);
   void        TagSelection();
   void        ProbeSelection();
+  bool        TrackSelection(TAnaTrack *pTrack, int mode);  // mode = 1 for Tag, mode = 2 for Probe 
   void        MCTruth(int mode);
   void        Info();
   bool        isGoodProbe(TAnaCand *pCand);
@@ -89,8 +90,8 @@ public:
   vector<TAnaCand*> fCandGP;
   vector<TAnaCand*> fCandnotGP;  
   
-  static const int  fNpt = 6;
-  static const int  fNeta = 5;
+  static const int  fNpt = 3;
+  static const int  fNeta = 3;
   static const int  fNq = 1;
   double      fPTbin[fNpt+1], fEtabin[fNeta+1];
   int fQ[fNq+1];
