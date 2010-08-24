@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.9 2010/08/24 13:12:12 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.10 2010/08/24 20:02:21 giamman Exp $
 //
 //
 
@@ -76,6 +76,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   edm::InputTag patjetSource_;
   edm::InputTag pfjetSource_;
   edm::InputTag pfpatjetSource_;
+  edm::InputTag jptjetSource_;
   edm::Handle<std::vector<pat::Muon> > muons;
   edm::Handle<std::vector<pat::Electron> > electrons;
   edm::Handle<std::vector<pat::MET> > patmets;
@@ -85,6 +86,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   edm::Handle<std::vector<pat::Jet> > patjets;
   edm::Handle<std::vector<reco::PFJet> > pfjets;
   edm::Handle<std::vector<pat::Jet> > pfpatjets;
+  edm::Handle<std::vector<pat::Jet> > jptjets;
   double jet_threshold;
   bool l5corr,l5corr_inclGlu;
 };
@@ -113,6 +115,7 @@ SimpleEventDumper::SimpleEventDumper(const edm::ParameterSet& iConfig)
   patjetSource_     = iConfig.getParameter<edm::InputTag>("patjetSource");
   pfjetSource_     = iConfig.getParameter<edm::InputTag>("pfjetSource");
   pfpatjetSource_     = iConfig.getParameter<edm::InputTag>("pfpatjetSource");
+  jptjetSource_     = iConfig.getParameter<edm::InputTag>("jptjetSource");
   jet_threshold  = iConfig.getParameter<double>("jet_pt_min");
   l5corr = iConfig.getParameter<bool>("useL5corr");
   l5corr_inclGlu = iConfig.getParameter<bool>("useL5corr_including_gluons");
@@ -419,9 +422,48 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     }
     cout << "-----------------------------------" << endl;
     cout << "The highest-TCHP PF-through-PAT jet is #" << index_max_tchp_pf << endl;
-    jx_pfpat = (*patjets)[index_max_tchp_pf].px();
-    jy_pfpat = (*patjets)[index_max_tchp_pf].py();
-    jz_pfpat = (*patjets)[index_max_tchp_pf].pz();
+    jx_pfpat = (*pfpatjets)[index_max_tchp_pf].px();
+    jy_pfpat = (*pfpatjets)[index_max_tchp_pf].py();
+    jz_pfpat = (*pfpatjets)[index_max_tchp_pf].pz();
+  }
+
+  try {
+    iEvent.getByLabel(jptjetSource_, jptjets);
+  } catch (std::exception & err) {
+    std::cout <<"ERROR: jet label not found ("<<jptjetSource_<<")"<< std::endl;
+    return;
+  }
+  max_tchp = -999.;
+  int index_max_tchp_jpt = -1;
+  double jx_jpt=0;
+  double jy_jpt=0;
+  double jz_jpt=0;
+  if (jptjets->size() > 0) {
+    for (unsigned int j = 0; j < jptjets->size(); j++){
+      double pt = (*jptjets)[j].pt();
+      double eta = (*jptjets)[j].eta();
+      double phi = (*jptjets)[j].phi();
+      double tchp = (*jptjets)[j].bDiscriminator("trackCountingHighPurBJetTags");
+      double tche = (*jptjets)[j].bDiscriminator("trackCountingHighEffBJetTags");
+      double ssvhp = (*jptjets)[j].bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+      double ssvhe = (*jptjets)[j].bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+      if (pt > jet_threshold) {
+	cout << "-----------------------------------" << endl;
+	cout << "@JPT jet through PAT " << j << endl;
+	cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << endl;
+	cout << "b-tagging, TCHP = " << tchp << ", TCHE = " << tche << ", SSVHP = " << ssvhp << ", SSVHE = " << ssvhe << endl;
+	// find highest-TCHP jet:
+	if (tchp > max_tchp) {
+	  max_tchp = tchp;
+	  index_max_tchp_jpt = j;
+	}
+      }
+    }
+    cout << "-----------------------------------" << endl;
+    cout << "The highest-TCHP JPT jet is #" << index_max_tchp_jpt << endl;
+    jx_jpt = (*jptjets)[index_max_tchp_jpt].px();
+    jy_jpt = (*jptjets)[index_max_tchp_jpt].py();
+    jz_jpt = (*jptjets)[index_max_tchp_jpt].pz();
   }
 
   // MET
@@ -545,13 +587,16 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   cout << "Top reconstruction " << endl;
   cout << " PAT: " << endl;
   double mtop_pat = Mtop(lx,ly,lz,met_pat_x,met_pat_y,jx_pat,jy_pat,jz_pat);
-  cout << " mtop = " << mtop_pat << endl;
+  cout << "  mtop = " << mtop_pat << endl;
   cout << " PF, uncorrected: " << endl;
   double mtop_pf = Mtop(lx,ly,lz,met_pf_x,met_pf_y,jx_pf,jy_pf,jz_pf);
-  cout << " mtop = " << mtop_pf << endl;
+  cout << "  mtop = " << mtop_pf << endl;
   cout << " PF, corrected: " << endl;
   double mtop_pfpat = Mtop(lx,ly,lz,met_pf_x,met_pf_y,jx_pfpat,jy_pfpat,jz_pfpat);
-  cout << " mtop = " << mtop_pfpat << endl;
+  cout << "  mtop = " << mtop_pfpat << endl;
+  cout << " JPT+tcMET: " << endl;
+  double mtop_jpt = Mtop(lx,ly,lz,met_tc_x,met_tc_y,jx_jpt,jy_jpt,jz_jpt);
+  cout << "  mtop = " << mtop_jpt << endl;
 
 
 }

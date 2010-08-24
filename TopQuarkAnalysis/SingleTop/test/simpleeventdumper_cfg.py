@@ -46,6 +46,24 @@ addJetCollection(process,
                    jetIdLabel   = "ak5"
                   )
 
+# add JPT
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+process.load('RecoJets.Configuration.RecoJPTJets_cff')
+
+
+addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
+                                  'AK5', 'JPT',
+                                  doJTA        = True,
+                                  doBTagging   = True,
+                                  jetCorrLabel = ('AK5','JPT'),
+                                  doType1MET   = False,
+                                  doL1Cleaning = False,
+                                  doL1Counters = True,
+                                  genJetCollection = cms.InputTag("ak5GenJets"),
+                                  doJetID      = True,
+                                  jetIdLabel   = "ak5"
+                                  )
+
 # corrections:
 patJetCorrFactors.corrSample = cms.string("Spring10") 
 switchJECSet( process, "Spring10")
@@ -69,6 +87,7 @@ process.demo = cms.EDAnalyzer('SimpleEventDumper',
                               patjetSource = cms.InputTag("patJets"),
                               pfjetSource = cms.InputTag("ak5PFJets"), #uncorrected
                               pfpatjetSource = cms.InputTag("patJetsAK5PF"), #corrected, and possibility to access b-tagging for it
+                              jptjetSource = cms.InputTag("patJetsAK5JPT"),                             
 
                               jet_pt_min = cms.double(20),
                               useL5corr = cms.bool(True),
