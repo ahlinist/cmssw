@@ -14,9 +14,11 @@ scheduler = glidein
 datasetpath = $datasetpath
 dbs_url = $dbs_url
 pset = $pset
-total_number_of_events = $total_number_of_events
-events_per_job = $events_per_job
+total_number_of_$split_type = $total_number
+number_of_jobs = $number_of_jobs
 output_file = $output_file
+$lumi_mask                                 
+$runselection
 
 [USER]
 ui_working_dir = $ui_working_dir
@@ -32,13 +34,15 @@ publish_data = $publish_data
 ''')
 
 _CRAB_DEFAULTS = {
-    'events_per_job' : 20000,
-    'total_number_of_events' : -1,
+    'number_of_jobs' : 150,
+    'total_number' : -1,
     'return_data' : 0,
     'copy_data' : 1,
     'storage_element' : 'srm-cms.cern.ch',
     'storage_path' : '/srm/managerv2?SFN=/castor/cern.ch',
     'publish_data' : 0,
+    'lumi_mask' : '',
+    'runselection' : '',
 }
 
 def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, submit=True):
@@ -66,6 +70,14 @@ def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, submit=True):
         submissionDirectory, 'crabdir_%s' % configFileName)
     fullCrabOptions['ui_working_dir'] = ui_working_dir
     fullCrabOptions.update(crabOptions)
+
+    # For these cases we need some additional processing
+    if fullCrabOptions['lumi_mask']:
+        fullCrabOptions['lumi_mask'] = (
+            'lumi_mask = '+fullCrabOptions['lumi_mask'])
+    if fullCrabOptions['runselection']:
+        fullCrabOptions['runselection'] = (
+            'runselection = '+fullCrabOptions['runselection'])
 
     # Create the crab file
     crabFileName = "crab_" + configFileName + ".cfg"
