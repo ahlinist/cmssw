@@ -10,16 +10,20 @@ process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
+process.GlobalTag.globaltag = cms.string('START36_V7::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
-process.source = cms.Source("PoolSource",
+process.source = cms.Source(
+    "PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root',
-        '/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
+        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
+        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root',
+        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/BA1ED3DD-375D-DF11-8298-001A92810AE6.root',
+        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/AACDC475-375D-DF11-8F4D-0018F3D09612.root',
+        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/48A2071B-3C5D-DF11-B231-002618FDA25B.root'
     )
 )
 
