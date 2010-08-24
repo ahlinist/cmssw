@@ -16,8 +16,8 @@ const int  tnpReader2::fNq;
 // ----------------------------------------------------------------------
 tnpReader2::tnpReader2(TChain *tree, TString evtClassName): treeReaderTNP(tree, evtClassName) {
   cout << "--> tnpReader2> This is the start ..." << endl;
-  fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 3.; fPTbin[3] = 4.; fPTbin[4] = 5.; fPTbin[5] =6.; fPTbin[6] = 20.;
-  fEtabin[0] = -2.4; fEtabin[1] = -1.2; fEtabin[2] = -0.4; fEtabin[3] = 0.4; fEtabin[4] = 1.2; fEtabin[5] = 2.4;
+  fPTbin[0] = 3.5; fPTbin[1] = 5.; fPTbin[2] = 7.; fPTbin[3] = 20.;
+  fEtabin[0] = -2.4; fEtabin[1] = -1.1; fEtabin[2] = 1.1; fEtabin[3] = 2.4;
   fQ[0] = -1;  fQ[1] = 1;
 }
 // ----------------------------------------------------------------------
@@ -35,10 +35,10 @@ void tnpReader2::eventProcessing() {
   //cout << " NEW EVENT  " << endl;
   if ( SAMPLE == 1 ) MCTruth(MODE);  // For running on MC
   if ( isPathPreScaled(HLTPATH_TAG) ) goto end;;
-  if ( !isPathFired(HLTPATH_TAG) ) goto end;
+  if ( !isPathFired(HLTPATH_TAG) ) goto end;        
   TagSelection();
   for ( unsigned int v = 0; v < fCand.size(); ++v   ) {
-    if ( !isMatchedToTrig(fCand[v],HLTLABEL_TAG,1)) continue;    // 1 -- Trigger Matching for Tag , 2 -- Trigger Matching for Probe
+    if ( !isMatchedToTrig(fCand[v],HLTLABEL_TAG,1)) continue;    //0 -- No Trigger Matching , 1 -- Trigger Matching for Tag , 2 -- Trigger Matching for Probe
   }
   
   //cout << "fCandTT.size() = "  << fCandTT.size() << endl;
@@ -56,9 +56,9 @@ void tnpReader2::eventProcessing() {
     //cout << "fCandPS.size() = "  << fCandPS.size() << endl;
     for ( unsigned int y = 0; y < fCandPS.size(); ++y   ) {
       
-      fillHist(fCandPS[y], 1); // Mode: 1 -- mt
+      fillHist(fCandPS[y], 1, true); // Mode: 1 -- mt
       if ( SAMPLE == 1 ) {  // For running on DATA
-	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4); // Mode: 4 -- mtMatched
+	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4, true); // Mode: 4 -- mtMatched
       }
       isGoodProbe(fCandPS[y]);
       
@@ -66,23 +66,23 @@ void tnpReader2::eventProcessing() {
     
     for ( unsigned int x = 0; x < fCandGP.size(); ++x   ) {
       
-      fillHist(fCandGP[x],2); // Mode: 2 -- mm
-      if ( truthMatch(fCandGP[x]) ) fillHist(fCandGP[x], 5); // Mode: 5 -- mmMatched
+      fillHist(fCandGP[x],2, true); // Mode: 2 -- mm
+      if ( truthMatch(fCandGP[x]) ) fillHist(fCandGP[x], 5, true); // Mode: 5 -- mmMatched
       
     }
     
     for ( unsigned int z = 0; z < fCandnotGP.size(); ++z   ) {
       
-      fillHist(fCandnotGP[z],3);  // Mode: 3 -- mmbar
+      fillHist(fCandnotGP[z],3, true);  // Mode: 3 -- mmbar
       
     }
     
   } else if ( MODE == 2  ){  // Trigger Efficiency Mode
     for ( unsigned int y = 0; y < fCandPS.size(); ++y   ) {
       
-      fillHist(fCandPS[y], 1); // Mode: 1 -- mt
+      fillHist(fCandPS[y], 1, true); // Mode: 1 -- mt
       if ( SAMPLE == 1 ) {  // For running on MC
-	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4); // Mode: 4 -- mtMatched
+	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4, true); // Mode: 4 -- mtMatched
       }
       isMatchedToTrig(fCandPS[y],HLTLABEL_PROBE,2);
 
@@ -90,14 +90,14 @@ void tnpReader2::eventProcessing() {
     
     for ( unsigned int x = 0; x < fCandTP.size(); ++x   ) {
       
-      fillHist(fCandTP[x],2); // Mode: 2 -- mm
-      if ( truthMatch(fCandTP[x]) ) fillHist(fCandTP[x], 5); // Mode: 5 -- mmMatched
+      fillHist(fCandTP[x],2, true); // Mode: 2 -- mm
+      if ( truthMatch(fCandTP[x]) ) fillHist(fCandTP[x], 5, true); // Mode: 5 -- mmMatched
       
     }
     
     for ( unsigned int z = 0; z < fCandnotTP.size(); ++z   ) {
       
-      fillHist(fCandnotTP[z],3);  // Mode: 3 -- mmbar
+      fillHist(fCandnotTP[z],3, true);  // Mode: 3 -- mmbar
     
     }
 
@@ -106,6 +106,7 @@ void tnpReader2::eventProcessing() {
   }
  end:
   freePointers();
+  
 }
 
 void tnpReader2::freePointers(){
@@ -168,24 +169,24 @@ void tnpReader2::MCTruth(int mode){
       pTrack = fpEvt->getRecTrack(it);
       
       if ( pTrack->fMCID == 13 ){
-	if ( (pTrack->fPlab.Perp() <= fPTbin[6]) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	  ((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	}
 	
 	if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2)){
-	  if ( (pTrack->fPlab.Perp() <= fPTbin[6]) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	    ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	  }
 	}
       }     
       
       if ( pTrack->fMCID == -13 ){
-	if ( (pTrack->fPlab.Perp() <= fPTbin[6]) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	  ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	}
 	
 	if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2) ){
-	  if ( (pTrack->fPlab.Perp() <= fPTbin[6]) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	    ((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	  }
 	}
@@ -198,24 +199,24 @@ void tnpReader2::MCTruth(int mode){
       pTrack = fpEvt->getRecTrack(it);
       
       if ( pTrack->fMCID == 13 ){
-	if ( (pTrack->fPlab.Perp() <= fPTbin[6]) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	  ((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	}
 	
 	if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){
-	  if ( (pTrack->fPlab.Perp() <= fPTbin[6]) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	    ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	  }
 	}
       }     
       
       if ( pTrack->fMCID == -13 ){
-	if ( (pTrack->fPlab.Perp() <= fPTbin[6]) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	  ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	}
 	
 	if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){
-	  if ( (pTrack->fPlab.Perp() <= fPTbin[6]) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	    ((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	  }
 	}
@@ -249,7 +250,7 @@ bool tnpReader2::isPathFired( TString Path ){
 
 void tnpReader2::TagSelection(){
   
-  TAnaCand *pCand(0);  TAnaTrack *pTag(0);
+  TAnaCand *pCand(0);  TAnaTrack *pTag(0); TAnaTrack *pTrack(0);
   for (int i = 0; i < fpEvt->nCands(); ++i) {
     pCand = fpEvt->getCand(i);
     if ( pCand->fType != TYPE ) continue;
@@ -257,7 +258,14 @@ void tnpReader2::TagSelection(){
     if ( pTag->fPlab.Perp() < PT_TAG ) continue;
     if ( pTag->fPlab.Eta() > ETAHI_TAG ) continue;
     if ( pTag->fPlab.Eta() < ETALO_TAG ) continue;
-    if ( !((pTag->fMuID & 0x1<< MUTYPE1 ) && (pTag->fMuID & 0x1<< MUTYPE2)) ) continue;
+    //if ( !((pTag->fMuID & 0x1<< MUTYPE1 ) && (pTag->fMuID & 0x1<< MUTYPE2)) ) continue;
+    
+    // SOME CHANGES to Mimic Spainard's Study
+    if ( !(pTag->fMuID & 0x1<< MUTYPE1) ) continue;
+   
+    //pTrack = fpEvt->getRecTrack(pTag->fIndex);
+    //if ( !TrackSelection(pTrack,1) ) continue;
+    
     //if ( pTag->fTrackQuality != 2 ) continue;
     //cout << " pTag->fIndex = "  << pTag->fIndex << endl;
     fCand.push_back(pCand);
@@ -267,7 +275,7 @@ void tnpReader2::TagSelection(){
 
 void tnpReader2::ProbeSelection(){
   
-  TAnaCand *pCand(0);  TAnaTrack *pProbe(0);
+  TAnaCand *pCand(0);  TAnaTrack *pProbe(0); TAnaTrack *pTrack(0);
   for (unsigned int i = 0; i < fCandTT.size(); ++i) {
     pCand = fCandTT[i];
     if ( pCand->fMass < MASSLO  ) continue;
@@ -275,12 +283,49 @@ void tnpReader2::ProbeSelection(){
     if ( pCand->fMaxDoca > MAXDOCA  ) continue;
     pProbe = fpEvt->getSigTrack(pCand->fSig2);
     if ( pProbe->fPlab.Perp() < PT_PROBE ) continue;
+    
+    // SOME CHANGES to Mimic Spainard's Study
+    //pTrack = fpEvt->getRecTrack(pProbe->fIndex);
+    //if ( !TrackSelection(pTrack,2)) continue; 
+    
     //if ( pProbe->fTrackQuality != 2 ) continue;
     //cout << " pProbe->fIndex = "  << pProbe->fIndex << endl;
     fCandPS.push_back(pCand);
   }
   
 }
+
+bool tnpReader2::TrackSelection(TAnaTrack *pTrack, int mode){
+  bool passed = false;					
+  if ((pTrack->fChi2/pTrack->fDof) > 4) return passed;
+  if (fabs(pTrack->fd0) > 2 ) return passed;
+  if (fabs(pTrack->fdz) > 30 ) return passed;
+  int pixelhits(0), siliconhits(0);
+  for (int i=0; i < 20; i++){
+    cout << " NEW PATTERN  " << endl;
+    /* for (int j=9; j>=0; j--) {
+       int bit = (pTrack->fHitPattern[i] >> j) & 0x1;
+       cout << bit << endl;;
+       }*/
+    if ( !(~(pTrack->fHitPattern[i]) & 0x1) ) continue;
+    if ( !(~(pTrack->fHitPattern[i]) & 0x2) ) continue;
+    if ( !(pTrack->fHitPattern[i] & 0x1 << 10)) continue;
+    if ( (pTrack->fHitPattern[i] & 0x1 << 9) ) siliconhits++;
+    if ( (pTrack->fHitPattern[i] & 0x1 << 8) && (pTrack->fHitPattern[i] & 0x1 << 7)) siliconhits++;
+    if ( (pTrack->fHitPattern[i] & 0x1 << 7) && !(pTrack->fHitPattern[i] & 0x1 << 8) && !(pTrack->fHitPattern[i] & 0x1 << 9) ) pixelhits++;
+    if ( !(pTrack->fHitPattern[i] & 0x1 << 7) && (pTrack->fHitPattern[i] & 0x1 << 8) && !(pTrack->fHitPattern[i] & 0x1 << 9) ) pixelhits++;
+  }
+  // if ( pixelhits >= 1 ) cout << pTrack->fPlab.Eta() << endl;
+  //cout <<"pixelhits = " << pixelhits <<"siliconhits = "<<siliconhits << endl;
+  //cout <<"validhits = " << pTrack->fValidHits << endl;
+  if ( (pixelhits > 1) && (siliconhits > 11) ) {
+    //cout << " Valid Track "  << endl;
+    passed = true;
+  }
+  return passed;
+}
+
+
 
 void tnpReader2::Info(){
   
@@ -323,6 +368,12 @@ bool tnpReader2::isRecTrackMatchedToTrig(TAnaTrack *pTrack, TString Label){
 bool tnpReader2::isMatchedToTrig(TAnaCand *pCand, TString Label, int mode){
   bool HLTlabel = false;
   TTrgObj *pTrig(0);
+
+  if ( mode == 0 ){
+    HLTlabel = true;
+    fCandTT.push_back(pCand);
+  }
+  
   if ( mode == 1 ){ // For Matching Tag muon to T.O.
     TLorentzVector tag;
     TAnaTrack *pTag(0);
@@ -382,7 +433,8 @@ bool tnpReader2::isGoodProbe(TAnaCand *pCand){
   
   TAnaTrack *pProbe(0);
   pProbe = fpEvt->getSigTrack(pCand->fSig2);
-  if ( (pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2) ){
+  //  if ( (pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2) ){
+  if ( pProbe->fMuID & 0x1<< MUTYPE2 ){  
     GoodProbe = true;
     fCandGP.push_back(pCand); // will be used for mm
     //cout << " GOOD PROBE " << endl;
@@ -423,13 +475,49 @@ bool tnpReader2::truthMatch(TAnaCand *pCand) {
 }
 
 // ----------------------------------------------------------------------
-void tnpReader2::fillHist(TAnaCand *pCand,  int mode) {
+void tnpReader2::fillHist(TAnaCand *pCand,  int mode, bool CombineEndCaps) {
   
   TAnaTrack *pProbe(0);
   if ( mode == 1 ){
     pProbe = fpEvt->getSigTrack(pCand->fSig2);
-      for ( int ieta = 0; ieta < fNeta; ++ieta ){
-	for ( int ipt = 0; ipt < fNpt; ++ipt ){
+    for ( int ieta = 0; ieta < fNeta; ++ieta ){
+      for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	  
+	if ( CombineEndCaps ){
+	  if ( pProbe->fPlab.Eta() < -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mt,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mt,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	  
+	  
+	  if ( pProbe->fPlab.Eta() > -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mt,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mt,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	}
+	
+	if ( !CombineEndCaps ){
+	  
 	  if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
 	    if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
 	      if ( pProbe->fQ < 0 ){
@@ -442,12 +530,51 @@ void tnpReader2::fillHist(TAnaCand *pCand,  int mode) {
 	      }
 	    }
 	  }
+	  
 	}
+	
       }
+    }
   } else  if ( mode == 2 ){
     pProbe = fpEvt->getSigTrack(pCand->fSig2);
-      for ( int ieta = 0; ieta < fNeta; ++ieta ){
-	for ( int ipt = 0; ipt < fNpt; ++ipt ){
+    for ( int ieta = 0; ieta < fNeta; ++ieta ){
+      for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	
+	if ( CombineEndCaps ){
+	  if ( pProbe->fPlab.Eta() < -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mm,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mm,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	  
+	  
+	  if ( pProbe->fPlab.Eta() > -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mm,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mm,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	}
+	
+	if ( !CombineEndCaps ){
+	  
 	  if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
 	    if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
 	      if ( pProbe->fQ < 0 ){
@@ -460,12 +587,51 @@ void tnpReader2::fillHist(TAnaCand *pCand,  int mode) {
 	      }
 	    }
 	  }
+	  
 	}
+	
       }
+    }
   } else if ( mode == 3 ){
     pProbe = fpEvt->getSigTrack(pCand->fSig2);
-      for ( int ieta = 0; ieta < fNeta; ++ieta ){
-	for ( int ipt = 0; ipt < fNpt; ++ipt ){
+    for ( int ieta = 0; ieta < fNeta; ++ieta ){
+      for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	  
+	if ( CombineEndCaps ){
+	  if ( pProbe->fPlab.Eta() < -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mmbar,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mmbar,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	    
+	  if ( pProbe->fPlab.Eta() > -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mmbar,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mmbar,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	}
+	
+	
+	if ( !CombineEndCaps ){
+	  
 	  if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
 	    if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
 	      if ( pProbe->fQ < 0 ){
@@ -478,12 +644,50 @@ void tnpReader2::fillHist(TAnaCand *pCand,  int mode) {
 	      }
 	    }
 	  }
+	  
 	}
+	
       }
+    }
   }   if ( mode == 4 ){
     pProbe = fpEvt->getSigTrack(pCand->fSig2);
-      for ( int ieta = 0; ieta < fNeta; ++ieta ){
-	for ( int ipt = 0; ipt < fNpt; ++ipt ){
+    for ( int ieta = 0; ieta < fNeta; ++ieta ){
+      for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	
+	if ( CombineEndCaps ){
+	  if ( pProbe->fPlab.Eta() < -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	  
+	  if ( pProbe->fPlab.Eta() > -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mtMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	}
+	
+	if ( !CombineEndCaps ){
+	  
 	  if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
 	    if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
 	      if ( pProbe->fQ < 0 ){
@@ -496,12 +700,50 @@ void tnpReader2::fillHist(TAnaCand *pCand,  int mode) {
 	      }
 	    }
 	  }
+	  
 	}
+	
       }
+    }
   } else  if ( mode == 5 ){
     pProbe = fpEvt->getSigTrack(pCand->fSig2);
-      for ( int ieta = 0; ieta < fNeta; ++ieta ){
-	for ( int ipt = 0; ipt < fNpt; ++ipt ){
+    for ( int ieta = 0; ieta < fNeta; ++ieta ){
+      for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	
+	if ( CombineEndCaps ){
+	  if ( pProbe->fPlab.Eta() < -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fabs(fEtabin[ieta+1]), fabs(fEtabin[ieta]), fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	    
+	  if ( pProbe->fPlab.Eta() > -1.1 ){
+	    if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
+	      if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		if ( pProbe->fQ < 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[0])))->Fill(pCand->fMass);
+		}
+		if ( pProbe->fQ > 0 ){
+		  ((TH1D*)fpHistFile->Get(Form("mmMatched,eta%.1f_%.1f,pt%.1f_%.1f,Q%.1d", fEtabin[ieta], fEtabin[ieta+1], fPTbin[ipt],
+					       fPTbin[ipt+1],fQ[1])))->Fill(pCand->fMass);
+		}
+	      }
+	    }
+	  }
+	}
+	
+	if ( !CombineEndCaps ){ 
+	  
 	  if( ( pProbe->fPlab.Eta() <= fEtabin[ieta+1] ) && ( pProbe->fPlab.Eta() > fEtabin[ieta] ) ){
 	    if ( ( pProbe->fPlab.Perp() >= fPTbin[ipt] ) && ( pProbe->fPlab.Perp() < fPTbin[ipt+1] ) ){
 	      if ( pProbe->fQ < 0 ){
@@ -514,8 +756,11 @@ void tnpReader2::fillHist(TAnaCand *pCand,  int mode) {
 	      }
 	    }
 	  }
+	  
 	}
+	
       }
+    }
   }
   
 }
