@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.12 2010/08/25 12:35:45 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.13 2010/08/25 15:24:32 giamman Exp $
 //
 //
 
@@ -94,6 +94,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   double DeltaPhi(double v1, double v2);
   double GetDeltaR(double eta1, double eta2, double phi1, double phi2);
   double METfit(double fitterPrintLevel, int ysol);
+  double TopPolAngle_LepLqj(TLorentzVector top, double lx, double ly, double lz, double lqjx, double lqjy, double lqjz);
       // ----------member data ---------------------------
   edm::InputTag vertices_;
   edm::InputTag muonSource_;
@@ -619,6 +620,8 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   TLorentzVector Top_pat = Top(lx,ly,lz,met_pat_x,met_pat_y,jx_pat,jy_pat,jz_pat);
   double mtop_pat = Top_pat.M();
   cout << "  mtop = " << mtop_pat << endl;
+  double cosTheta_pat = TopPolAngle_LepLqj(Top_pat,lx,ly,lz,(*patjets)[index_bveto].px(),(*patjets)[index_bveto].py(),(*patjets)[index_bveto].pz());
+  cout << "  cosTheta* = " << cosTheta_pat << endl;
 
   cout << " PF, uncorrected: " << endl;
   TLorentzVector Top_pf = Top(lx,ly,lz,met_pf_x,met_pf_y,jx_pf,jy_pf,jz_pf);
@@ -752,6 +755,23 @@ TLorentzVector SimpleEventDumper::Top(double lx, double ly, double lz, double nx
   //  double mtop = sqrt(te*te - tx*tx - ty*ty - tz*tz);
   //  cout << " mass from 4-vector: " << top.M() << endl;
   return top;
+}
+
+double SimpleEventDumper::TopPolAngle_LepLqj(TLorentzVector top, double lx, double ly, double lz, double lqjx, double lqjy, double lqjz)
+{
+  // Polarisation of Top quark 
+  // cos Theta of Angle between Lepton fom W_top and Light Quark Jet in the 
+  // Top Quark rest Frame
+  TLorentzVector lep;
+  lep.SetPxPyPzE(lx,ly,lz,sqrt(lx*lx+ly*ly+lz*lz));	
+  
+  TVector3 top_boost = top.BoostVector();
+  
+  TLorentzVector lqj;
+  lqj.SetPxPyPzE(lqjx,lqjy,lqjz,sqrt(lqjx*lqjx+lqjy*lqjy+lqjz*lqjz));
+  lep.Boost(-top_boost);
+  lqj.Boost(-top_boost);
+  return lep.Vect()*lqj.Vect()/(lep.Vect().Mag()*lqj.Vect().Mag() );
 }
 
 double SimpleEventDumper::AddQuadratically( const double nr1, const double nr2 ){
