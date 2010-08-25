@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.10 2010/08/24 20:02:21 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.11 2010/08/24 20:34:40 giamman Exp $
 //
 //
 
@@ -44,11 +44,38 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
+#include "TMinuit.h"
+
+
+const double mW = 80.4;  //  (PDG 2006)
+
+
 //
 // class declaration
 //
 using namespace edm;
 using namespace std;
+
+namespace NeutrinoFit {
+  static Double_t FullReco_MET_X = 0.;
+  static Double_t FullReco_MET_Y = 0.;
+  static Double_t FullReco_Pxe = 0.;
+  static Double_t FullReco_Pye = 0.;
+  static Double_t FullReco_PTe = 0.;
+
+  static void delta1fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
+  {
+    double delta = 0.0; 
+    delta = sqrt((par[0]-FullReco_MET_X)*(par[0]-FullReco_MET_X) + TMath::Power((((mW*mW*FullReco_Pye + 2*FullReco_Pxe*FullReco_Pye*par[0])-(mW*FullReco_PTe)*(sqrt(mW*mW + 4*FullReco_Pxe*par[0])))/(2*FullReco_Pxe*FullReco_Pxe) - FullReco_MET_Y),2));
+    f = delta;
+  }
+  static void delta2fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
+  {
+    double delta = 0.0; 
+    delta = sqrt((par[0]-FullReco_MET_X)*(par[0]-FullReco_MET_X) + TMath::Power((((mW*mW*FullReco_Pye + 2*FullReco_Pxe*FullReco_Pye*par[0])+(mW*FullReco_PTe)*(sqrt(mW*mW + 4*FullReco_Pxe*par[0])))/(2*FullReco_Pxe*FullReco_Pxe) - FullReco_MET_Y),2));
+    f = delta;
+  }
+}
 
 class SimpleEventDumper : public edm::EDAnalyzer {
    public:
@@ -65,6 +92,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   double AddQuadratically( const double nr1, const double nr2 );
   double DeltaPhi(double v1, double v2);
   double GetDeltaR(double eta1, double eta2, double phi1, double phi2);
+  double METfit(double fitterPrintLevel, int ysol);
       // ----------member data ---------------------------
   edm::InputTag vertices_;
   edm::InputTag muonSource_;
@@ -89,6 +117,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   edm::Handle<std::vector<pat::Jet> > jptjets;
   double jet_threshold;
   bool l5corr,l5corr_inclGlu;
+  int imgSolStrategy;
 };
 
 //
@@ -119,6 +148,7 @@ SimpleEventDumper::SimpleEventDumper(const edm::ParameterSet& iConfig)
   jet_threshold  = iConfig.getParameter<double>("jet_pt_min");
   l5corr = iConfig.getParameter<bool>("useL5corr");
   l5corr_inclGlu = iConfig.getParameter<bool>("useL5corr_including_gluons");
+  imgSolStrategy = iConfig.getParameter<int>("imgSolStrategy");
 }
 
 
@@ -572,12 +602,10 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   if (muons->size()>=1 || electrons->size()>=1){ // also here the check will be based on number_of_selected_muons and _electrons
     double mt_pat = MT(lx,ly,met_pat_x,met_pat_y);
     double mt_patL5 = MT(lx,ly,met_patL5_x,met_patL5_y);
-    double mt_calo = MT(lx,ly,met_calo_x,met_calo_y);
     double mt_pf = MT(lx,ly,met_pf_x,met_pf_y);
     double mt_tc = MT(lx,ly,met_tc_x,met_tc_y);
     cout << " with MET from PAT: " << mt_pat << endl;
     if (l5corr) cout << " with MET from PAT+L5: " << mt_patL5 << endl;
-    cout << " with MET from calo: " << mt_calo << endl;
     cout << " with MET from PF: " << mt_pf << endl;
     cout << " with tcMET: " << mt_tc << endl;
   }
@@ -622,19 +650,69 @@ double SimpleEventDumper::MT(double lx, double ly, double nx, double ny) {
 double SimpleEventDumper::Mtop(double lx, double ly, double lz, double nx, double ny, double jx, double jy, double jz) {
 
   // solve W constraint equation for the z component of neutrino momentum
+  double mt = MT(lx,ly,nx,ny);
   double pz1=0;
   double pz2=0;
-  double mW = 80.4;  //  (PDG 2006)
+  bool isComplex=false;
+  if (mt > mW) {
+    isComplex=true;
+    cout << "  complex solutions" << endl;
+    double PxNu_1=0.;
+    double PxNu_2=0.;
+    double PyNu_1 = 0.;
+    double PyNu_2 = 0.;
+    double delta1 = 0.;
+    double delta2 = 0.;
+    switch (imgSolStrategy)
+      {
+      case 0:
+	cout << "  imgSolStrategy=0: just drop the imaginary part (not what was done in TOP-09-005)" << endl;
+	break;
+
+      case 1:
+	cout << "  imgSolStrategy=1: move nx and ny by the same scale factor, to force M_T=M_W (as in TOP-09-005)" << endl;
+	NeutrinoFit::FullReco_PTe = AddQuadratically(lx,ly);
+	NeutrinoFit::FullReco_Pxe = lx;
+	NeutrinoFit::FullReco_Pye = ly;
+	NeutrinoFit::FullReco_MET_X = nx;
+	NeutrinoFit::FullReco_MET_Y = ny;
+	PxNu_1 = METfit(-1,1); //(Printlevel, y-solution)
+	PxNu_2 = METfit(-1,2);
+	PyNu_1 = ((mW*mW*NeutrinoFit::FullReco_Pye + 2*NeutrinoFit::FullReco_Pxe*NeutrinoFit::FullReco_Pye*PxNu_1)
+		  -(mW*NeutrinoFit::FullReco_PTe)*(sqrt(mW*mW + 4*NeutrinoFit::FullReco_Pxe*PxNu_1)))/(2*NeutrinoFit::FullReco_Pxe*NeutrinoFit::FullReco_Pxe);
+	PyNu_2 = ((mW*mW*NeutrinoFit::FullReco_Pye + 2*NeutrinoFit::FullReco_Pxe*NeutrinoFit::FullReco_Pye*PxNu_2)
+		  +(mW*NeutrinoFit::FullReco_PTe)*(sqrt(mW*mW + 4*NeutrinoFit::FullReco_Pxe*PxNu_2)))/(2*NeutrinoFit::FullReco_Pxe*NeutrinoFit::FullReco_Pxe);
+	delta1 =  sqrt((PxNu_1 - NeutrinoFit::FullReco_MET_X)*(PxNu_1 - NeutrinoFit::FullReco_MET_X) 
+		       +(PyNu_1 - NeutrinoFit::FullReco_MET_Y)*(PyNu_1 - NeutrinoFit::FullReco_MET_Y));
+	delta2 =  sqrt((PxNu_2 - NeutrinoFit::FullReco_MET_X)*(PxNu_2 - NeutrinoFit::FullReco_MET_X) 
+		       +(PyNu_2 - NeutrinoFit::FullReco_MET_Y)*(PyNu_2 - NeutrinoFit::FullReco_MET_Y));
+
+	if(delta1<delta2)
+	  {
+	    nx = PxNu_1;
+	    ny = PyNu_1;
+	  }
+	else
+	  {
+	    nx = PxNu_2;
+	    ny = PyNu_2;
+	  }
+
+	break;
+
+      default:
+	cout << "  value imgSolStrategy=" << imgSolStrategy << " does not correspond to any implemented option" << endl;
+	return -1.;
+      }
+  }
+
   double le2 = lx*lx + ly*ly + lz*lz;
   double met2 = nx*nx + ny*ny;
   double a = (mW*mW)/2 + nx*lx + ny*ly;
   double delta = a*a - le2*met2 + lz*lz*met2;
   pz1 = a*lz/(lx*lx + ly*ly);
   pz2 = pz1;
-  if (delta < 0) {
-    cout << "  complex solutions" << endl;
-    // here I'm applying the Very Simple Algorithm (simpler even than TOP-09-005): just drop the imaginary part
-    // in the future I'll add a switch between different algorithms
+  if (isComplex) {
   } else {
     cout << "  real solutions" << endl;
     double root = sqrt(delta*le2)/(lx*lx + ly*ly);
@@ -679,6 +757,100 @@ double SimpleEventDumper::DeltaPhi(double v1, double v2)
 
 double SimpleEventDumper::GetDeltaR(double eta1, double eta2, double phi1, double phi2){
  return AddQuadratically((eta1-eta2),DeltaPhi(phi1, phi2) );
+}
+
+
+// from the TOP-09-005 macro:
+
+double SimpleEventDumper::METfit(double fitterPrintLevel, int ysol)
+{
+
+  Double_t Pxnu = 0.0;
+  TMinuit* minu = new TMinuit(5);
+
+  if (ysol == 1) minu->SetFCN(NeutrinoFit::delta1fcn); 
+  if (ysol == 2) minu->SetFCN(NeutrinoFit::delta2fcn); 
+
+ 
+  double arglist[20];
+  int ierflg = 0;
+    
+  // Set print level.
+  arglist[0] = fitterPrintLevel;
+  minu->mnexcm("SET PRINT", arglist, 1, ierflg);
+  // Set strategy. Possible values: 0, 1, 2 
+  arglist[0] =  2.0; 
+  minu->mnexcm("SET STRATEGY", arglist, 1, ierflg);	  
+  arglist[0] =  1.0;
+  minu->mnexcm("CALL FCN", arglist, 1, ierflg);
+
+  // Calculate limits for the parameter:
+
+  Double_t upper = 0.0;
+  Double_t lower = 0.0;
+  Double_t start = 0.0;
+
+  if(NeutrinoFit::FullReco_Pxe < 0)
+    {
+      upper = - mW*mW/(4*NeutrinoFit::FullReco_Pxe);
+      lower = -9999.;
+    }
+
+  if(NeutrinoFit::FullReco_Pxe == 0)
+    {
+      upper =  9999.;
+      lower = -9999.;
+    }
+
+  if(NeutrinoFit::FullReco_Pxe > 0)
+    {
+      upper = 9999.;
+      lower = - mW*mW/(4*NeutrinoFit::FullReco_Pxe);
+    }
+
+ if(NeutrinoFit::FullReco_MET_X > upper) start = upper -1;
+ else if(NeutrinoFit::FullReco_MET_X < lower) start = lower + 1;
+ else start = NeutrinoFit::FullReco_MET_X;
+ 
+
+  // Set parameters:
+  
+  minu->mnparm(0, "Px", start, 0.01, lower, upper, ierflg);
+  
+  arglist[0] = .5;	
+  minu->mnexcm("SET ERR", arglist , 1, ierflg);  
+  
+  arglist[0] = 0.0;	
+  minu->mnexcm("SET NOW", arglist , 1, ierflg);  
+  
+  ierflg = 0;
+  arglist[0] = 100;
+  arglist[1] = 1.;
+  minu->mnexcm("SIMPLEX", arglist, 2, ierflg);
+  arglist[0] = 500;
+  minu->mnexcm("MIGRAD", arglist, 1, ierflg);
+    
+  minu->mnmnos() ;
+
+  double px_fit;
+  double px_fit_error;
+  
+  int rtVal = minu->GetParameter(0, px_fit, px_fit_error);
+  if (rtVal < 0)
+    std::cerr << "Error with parameter." << std::endl;
+  
+
+  Pxnu  = px_fit;
+  
+    if (fitterPrintLevel > 0)
+    {
+      std::cout<<"*******************************"<<std::endl;
+      std::cout << "Fit Results: Px(nu) = " << px_fit
+		<< " +- " << px_fit_error << std::endl;
+      std::cout<<"*******************************"<<std::endl;
+    }
+    delete minu;
+    return px_fit;
 }
 
 

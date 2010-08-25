@@ -92,6 +92,8 @@ process.demo = cms.EDAnalyzer('SimpleEventDumper',
                               jet_pt_min = cms.double(20),
                               useL5corr = cms.bool(True),
                               useL5corr_including_gluons = cms.bool(True),
+
+                              imgSolStrategy = cms.int32(1), #0: ignore Img part; 1: adjust MW (as TOP-09-005)
                               )
 
 
