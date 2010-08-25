@@ -52,4 +52,6 @@ double getTauJetWeight(const T& patTau, const std::vector<FakeRateJetWeightExtra
   return tauJetWeight;
 }
 
+double compDecayEigenTime(const reco::Candidate::Point&, const reco::Candidate::Point&, double);
+
 #endif

@@ -93,5 +93,19 @@ double getDeltaRnearestJet(const reco::Particle::LorentzVector& refMomentum,
   return deltaRnearestJet;
 }
 
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+double compDecayEigenTime(const reco::Candidate::Point& primaryVertexPos, const reco::Candidate::Point& decayVertexPos, 
+			  double tauLeptonEnergy)
+{
+  const double speedOfLight = 3.e-5; // speed of light [cm/fs]
+  const double tauLeptonMass = 1.78; // tau lepton mass [GeV]
+
+  double decayDistance = TMath::Sqrt((decayVertexPos - primaryVertexPos).Mag2());
+  double gamma = tauLeptonEnergy/tauLeptonMass;
+  return decayDistance/(speedOfLight*gamma);
+}
 
 

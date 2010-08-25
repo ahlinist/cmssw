@@ -19,8 +19,6 @@
 #include <TFile.h>
 
 const double epsilon = 0.01;
-const double speedOfLight = 3.e-5; // speed of light [cm/fs]
-const double tauLeptonMass = 1.78; // tau lepton mass [GeV]
 
 template<typename T1, typename T2>
 bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate)
@@ -131,28 +129,6 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hDiTauCandidatePhi_ = book1D("DiTauCandidatePhi", "Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
   hDiTauCandidateCharge_ = book1D("DiTauCandidateCharge", "Composite Charge", 11, -5.5, +5.5);
   hDiTauCandidateMass_ = book1D("DiTauCandidateMass", "Composite Invariant Mass", 50, 0., 250.);
-
-  hSVfitX1_ = book1D("SVfitX1", "X_{1}", 51, -0.01, 1.01);
-  hSVfitX2_ = book1D("SVfitX2", "X_{2}", 51, -0.01, 1.01);
-/*
-  hSVfitX1vsGenX1_ = book2D("SVfitX1vsGenX1", "X_{1} vs. gen. X_{1}", 21, -0.01, 1.01, 100, -2.5, +2.5);
-  hSVfitX1vsGenX1Profile_ = bookProfile1D("SVfitX1vsGenX1Profile", "X_{1} vs. gen. X_{1}", 51, -0.01, 1.01);
-  hSVfitX2vsGenX2_ = book2D("SVfitX2vsGenX2", "X_{2} vs. gen. X_{2}", 21, -0.01, 1.01, 100, -2.5, +2.5);
-  hSVfitX2vsGenX2Profile_ = bookProfile1D("SVfitX2vsGenX2Profile", "X_{2} vs. gen. X_{2}", 51, -0.01, 1.01);
- */
-  hSVfitMass_ = book1D("SVfitMass", "SVfit Mass", 50, 0., 250.);
-  hSVfitMass1stSolution_ = book1D("SVfitMass1stSolution", "SVfit Mass (1st Solution)", 50, 0., 250.);
-  hSVfitMass2ndSolution_ = book1D("SVfitMass2ndSolution", "SVfit Mass (2nd Solution)", 50, 0., 250.);
-  hSVfitMass3rdSolution_ = book1D("SVfitMass3rdSolution", "SVfit Mass (3rd Solution)", 50, 0., 250.);
-  hSVfitMass4thSolution_ = book1D("SVfitMass4thSolution", "SVfit Mass (4th Solution)", 50, 0., 250.);  
-  hSVfitMassBestMatch_ = book1D("SVfitMassBestMatch", "SVfit Mass best matching gen. Mass", 50, 0., 250.);
-  hSVfitMassAverage_ = book1D("SVfitMassAverage", "SVfit Mass (Average of valid Solutions)", 50, 0., 250.);
-  hSVfitMassNumSolutionsAveraged_ = book1D("SVfitMassNumSolutionsAveraged", "SVfit Num. Mass Solutions incl. in Average", 5, -0.5, 4.5);
-  hSVfitMassVsLogLikelihood_ = book2D("SVfitMassVsLogLikelihood", "SVfit Mass vs. log-Likelihood", 50, 0., 250., 20, -35., 25.);
-  hSVfitLogLikelihood_ = book1D("SVfitLogLikelihood", "SVfit log-Likelihood", 100, -50., 50.);
-  hSVfitDecayTimeLeg1_ = book1D("SVfitDecayTimeLeg1", "SVfit leg_{1} Decay eigentime", 100, 0., 1000.);
-  hSVfitDecayTimeLeg2_ = book1D("SVfitDecayTimeLeg2", "SVfit leg_{2} Decay eigentime", 100, 0., 1000.);
-  hSVfitStatus_ = book1D("SVfitStatus", "SVfit Status", 10, -2.5, 7.5);
   
   hLeg1PtVsLeg2Pt_ = book2D("Leg1PtVsLeg2Pt", "leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
   hLeg1EtaVsLeg2Eta_ = book2D("Leg1EtaVsLeg2Eta", "leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
@@ -216,14 +192,6 @@ void fillDeltaRvisNuHistogram(MonitorElement* h,
   reco::Candidate::LorentzVector p4Nu = p4 - p4Vis;
   double dR = deltaR(p4Vis, p4Nu);
   h->Fill(TMath::Min(dR, 1.), weight);
-}
-
-double compDecayEigenTime(const reco::Candidate::Point& primaryVertexPos, const reco::Candidate::Point& decayVertexPos, 
-			  double tauLeptonEnergy)
-{
-  double decayDistance = TMath::Sqrt((decayVertexPos - primaryVertexPos).Mag2());
-  double gamma = tauLeptonEnergy/tauLeptonMass;
-  return decayDistance/(speedOfLight*gamma);
 }
 
 std::string getGenTauDecayMode(const std::vector<const reco::GenParticle*>& genTauDecayProducts) 
@@ -350,14 +318,6 @@ void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton,
   }
 }
 
-void fillSVmassRecoSolutionHistogram(unsigned iSolution, MonitorElement* h, 
-				     const std::vector<SVmassRecoSolution>& svFitSolutions, double weight)
-{
-  if ( iSolution >= 0 && iSolution < svFitSolutions.size() ) {
-    if ( svFitSolutions[iSolution].isValidSolution() ) h->Fill(svFitSolutions[iSolution].p4().mass(), weight);
-  }
-}
-
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
@@ -460,75 +420,6 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
        hMETresPerpMuonvsSumEt_->Fill(
              (residualMET.px()*leg1P4.py() + residualMET.py()*leg1P4.px())/leg1P4.pt(), sumEt);
     }
-
-    double minLogLikelihood = 1.e+6;
-
-    const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
-    //std::cout << "svFitSolutions.size = " << svFitSolutions.size() << std::endl;
-    for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
-	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
-      //std::cout << " svFitSolution->isValidSolution[" << svFitSolution - svFitSolutions.begin() << "]" 
-      //	  << " = " << svFitSolution->isValidSolution() << std::endl;
-      if ( svFitSolution->isValidSolution() ) {
-	
-	hSVfitX1_->Fill(svFitSolution->x1(), weight);
-	hSVfitX2_->Fill(svFitSolution->x2(), weight);
-/*
-	if ( diTauCandidate->p4Leg1gen().energy() > epsilon && 
-	     diTauCandidate->p4Leg2gen().energy() > epsilon ) {
-	  hSVfitX1vsGenX1_->Fill(diTauCandidate->x1gen(), svFitSolution->x1(), weight);
-	  hSVfitX1vsGenX1Profile_->getTProfile()->Fill(diTauCandidate->x1gen(), svFitSolution->x1(), weight);
-	  hSVfitX2vsGenX2_->Fill(diTauCandidate->x2gen(), svFitSolution->x2(), weight);
-	  hSVfitX2vsGenX2Profile_->getTProfile()->Fill(diTauCandidate->x2gen(), svFitSolution->x2(), weight);
-	}
- */	
-	hSVfitMass_->Fill(svFitSolution->p4().mass(), weight);
-	hSVfitMassVsLogLikelihood_->Fill(svFitSolution->p4().mass(), svFitSolution->logLikelihood(), weight);
-	hSVfitLogLikelihood_->Fill(svFitSolution->logLikelihood(), weight);
-	double leg1TotEnergy = ( svFitSolution->x1() > 0 && svFitSolution->x1() <= 1 ) ?
-	  svFitSolution->p4VisLeg1().energy()/svFitSolution->x1() : svFitSolution->p4VisLeg1().energy();
-	hSVfitDecayTimeLeg1_->Fill(compDecayEigenTime(svFitSolution->decayVertexPosLeg1(), 
-						      svFitSolution->primaryVertexPosSVrefitted(), leg1TotEnergy), weight);
-	double leg2TotEnergy = ( svFitSolution->x2() > 0 && svFitSolution->x2() <= 1 ) ?
-	  svFitSolution->p4VisLeg2().energy()/svFitSolution->x2() : svFitSolution->p4VisLeg2().energy();
-	hSVfitDecayTimeLeg2_->Fill(compDecayEigenTime(svFitSolution->decayVertexPosLeg2(), 
-						      svFitSolution->primaryVertexPosSVrefitted(), leg2TotEnergy), weight);
-	
-	if ( svFitSolution->logLikelihood() < minLogLikelihood ) minLogLikelihood = svFitSolution->logLikelihood();
-      }
-      
-      hSVfitStatus_->Fill(svFitSolution->svFitStatus(), weight);
-    }
-
-    fillSVmassRecoSolutionHistogram(0, hSVfitMass1stSolution_, svFitSolutions, weight);
-    fillSVmassRecoSolutionHistogram(1, hSVfitMass2ndSolution_, svFitSolutions, weight);
-    fillSVmassRecoSolutionHistogram(2, hSVfitMass3rdSolution_, svFitSolutions, weight);
-    fillSVmassRecoSolutionHistogram(3, hSVfitMass4thSolution_, svFitSolutions, weight);
-    
-    double genDiTauMass = diTauCandidate->p4gen().mass();
-    double svFitMassBestMatch = 1.e+6;
-    double svFitMassAverage = 0.;
-    unsigned svFitMassNumSolutionsAveraged = 0;
-    double svFitMassAverageNumSigmaCut = 2.;
-
-    for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
-	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
-      if ( svFitSolution->isValidSolution() && svFitSolution->svFitStatus() == 0 ) {
-	if ( TMath::Abs(svFitSolution->p4().mass() - genDiTauMass) < TMath::Abs(svFitMassBestMatch - genDiTauMass) ) {
-	  svFitMassBestMatch = svFitSolution->p4().mass();
-	}
-	
-	if ( svFitSolution->logLikelihood() < (0.5*svFitMassAverageNumSigmaCut*svFitMassAverageNumSigmaCut) ) {
-	  svFitMassAverage += svFitSolution->p4().mass();
-	  ++svFitMassNumSolutionsAveraged;
-	}
-      }
-    }
-
-    if ( svFitMassBestMatch != 1.e+6 ) hSVfitMassBestMatch_->Fill(svFitMassBestMatch, weight);
-
-    if ( svFitMassNumSolutionsAveraged > 0 ) hSVfitMassAverage_->Fill(svFitMassAverage/svFitMassNumSolutionsAveraged, weight);
-    hSVfitMassNumSolutionsAveraged_->Fill(svFitMassNumSolutionsAveraged, weight);
 
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
     hLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->leg1()->eta(), diTauCandidate->leg2()->eta(), weight);
