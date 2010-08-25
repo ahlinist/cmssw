@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.11 2010/08/24 20:34:40 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.12 2010/08/25 12:35:45 giamman Exp $
 //
 //
 
@@ -45,6 +45,7 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 #include "TMinuit.h"
+#include "TLorentzVector.h"
 
 
 const double mW = 80.4;  //  (PDG 2006)
@@ -88,7 +89,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
   double MT(double lx, double ly, double nx, double ny);
-  double Mtop(double lx, double ly, double lz, double nx, double ny, double jx, double jy, double jz);
+  TLorentzVector Top(double lx, double ly, double lz, double nx, double ny, double jx, double jy, double jz);
   double AddQuadratically( const double nr1, const double nr2 );
   double DeltaPhi(double v1, double v2);
   double GetDeltaR(double eta1, double eta2, double phi1, double phi2);
@@ -613,19 +614,26 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Top
   cout << "-----------------------------------" << endl;
   cout << "Top reconstruction " << endl;
-  cout << " PAT: " << endl;
-  double mtop_pat = Mtop(lx,ly,lz,met_pat_x,met_pat_y,jx_pat,jy_pat,jz_pat);
-  cout << "  mtop = " << mtop_pat << endl;
-  cout << " PF, uncorrected: " << endl;
-  double mtop_pf = Mtop(lx,ly,lz,met_pf_x,met_pf_y,jx_pf,jy_pf,jz_pf);
-  cout << "  mtop = " << mtop_pf << endl;
-  cout << " PF, corrected: " << endl;
-  double mtop_pfpat = Mtop(lx,ly,lz,met_pf_x,met_pf_y,jx_pfpat,jy_pfpat,jz_pfpat);
-  cout << "  mtop = " << mtop_pfpat << endl;
-  cout << " JPT+tcMET: " << endl;
-  double mtop_jpt = Mtop(lx,ly,lz,met_tc_x,met_tc_y,jx_jpt,jy_jpt,jz_jpt);
-  cout << "  mtop = " << mtop_jpt << endl;
 
+  cout << " PAT: " << endl;
+  TLorentzVector Top_pat = Top(lx,ly,lz,met_pat_x,met_pat_y,jx_pat,jy_pat,jz_pat);
+  double mtop_pat = Top_pat.M();
+  cout << "  mtop = " << mtop_pat << endl;
+
+  cout << " PF, uncorrected: " << endl;
+  TLorentzVector Top_pf = Top(lx,ly,lz,met_pf_x,met_pf_y,jx_pf,jy_pf,jz_pf);
+  double mtop_pf = Top_pf.M();
+  cout << "  mtop = " << mtop_pf << endl;
+
+  cout << " PF, corrected: " << endl;
+  TLorentzVector Top_pfpat = Top(lx,ly,lz,met_pf_x,met_pf_y,jx_pfpat,jy_pfpat,jz_pfpat);
+  double mtop_pfpat = Top_pfpat.M();
+  cout << "  mtop = " << mtop_pfpat << endl;
+
+  cout << " JPT+tcMET: " << endl;
+  TLorentzVector Top_jpt = Top(lx,ly,lz,met_tc_x,met_tc_y,jx_jpt,jy_jpt,jz_jpt);
+  double mtop_jpt = Top_jpt.M();
+  cout << "  mtop = " << mtop_jpt << endl;
 
 }
 
@@ -647,7 +655,9 @@ double SimpleEventDumper::MT(double lx, double ly, double nx, double ny) {
   return sqrt(pow(lt+nt,2) - pow(lx+nx,2) - pow(ly+ny,2) );
 }
 
-double SimpleEventDumper::Mtop(double lx, double ly, double lz, double nx, double ny, double jx, double jy, double jz) {
+TLorentzVector SimpleEventDumper::Top(double lx, double ly, double lz, double nx, double ny, double jx, double jy, double jz) {
+
+  TLorentzVector top;
 
   // solve W constraint equation for the z component of neutrino momentum
   double mt = MT(lx,ly,nx,ny);
@@ -738,8 +748,10 @@ double SimpleEventDumper::Mtop(double lx, double ly, double lz, double nx, doubl
   double ty = wy+jy;
   double tz = wz+jz;
   double te = we+sqrt(jx*jx + jy*jy + jz*jz);
-  double mtop = sqrt(te*te - tx*tx - ty*ty - tz*tz);
-  return mtop;
+  top.SetPxPyPzE(tx,ty,tz,te);
+  //  double mtop = sqrt(te*te - tx*tx - ty*ty - tz*tz);
+  //  cout << " mass from 4-vector: " << top.M() << endl;
+  return top;
 }
 
 double SimpleEventDumper::AddQuadratically( const double nr1, const double nr2 ){
