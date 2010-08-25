@@ -9,7 +9,7 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_132440_137436_Jun14ReReco',
     'data_Mu_137437_139558_Prompt',
     'data_Mu_139559_140159_Jul16ReReco',
-    'data_Mu_140160_999999_Prompt',
+    'data_Mu_140160_999999_Prompt_v2',
     'A120', 'bbA120', 
     'A130', 'bbA130', 
     'A200', 'bbA200', 
@@ -17,6 +17,7 @@ SAMPLES_TO_ANALYZE = [
     'Zmumu',
     'InclusivePPmuX', 
     'PPmuXptGt20', 
+    'PPmuXptGt20Mu15', 
     'WplusJets',
     'TTplusJets',
 ] 
@@ -30,6 +31,8 @@ SAMPLES_TO_PLOT = [
     'A130Sum', 
     'A200Sum', 
     'qcdSum', 
+    #'InclusivePPmuX',
+    #'PPmuXptGt20',
     'WplusJets', 
     'Zmumu', 
     'TTplusJets',
@@ -54,20 +57,9 @@ _nanobarns = 1000.0
 _microbarns = 1.0e6
 
 # Integrated luminosity to normalize 
-TARGET_LUMI = 115785.778/_microbarns
+TARGET_LUMI = (4924.3 + 61275 + 115786 + 808979)/_microbarns
 
 RECO_SAMPLES = {
-    'dataJul16' : {
-        'datasetpath' : "/JetMETTau/Run2010A-Jul16thReReco-v1/RECO",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_139779-140159_7TeV_July16thReReco_Collisions10_JSON.txt",
-        'conditions' : 'GR_R_36X_V12B::All',
-        'events_processed' : 3413445,
-        'skim_eff' : 1.0,
-        'legendEntry' : 'DATA',
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-    },
     'data_Mu_132440_137436_Jun14ReReco' : {
         'datasetpath' : "/Mu/Run2010A-Jun14thReReco_v1/RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
@@ -83,6 +75,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/Mu/Run2010A-PromptReco-v4/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'runselection' : '137437 - 139558',
+        'conditions' : 'GR_R_36X_V12::All',
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-143179_7TeV_StreamExpress_Collisions10_JSON.txt",
         'events_processed' : -1,
         'skim_eff' : 1.0,
@@ -99,10 +92,11 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
     },
-    'data_Mu_140160_999999_Prompt' : {
+    'data_Mu_140160_999999_Prompt_v2' : {
         'datasetpath' : '/Mu/Run2010A-PromptReco-v4/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'runselection' : '140160 - 999999',
+        'conditions' : 'GR_R_36X_V12::All',
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-143179_7TeV_StreamExpress_Collisions10_JSON.txt",
         'events_processed' : -1,
         'skim_eff' : 1.0,
@@ -126,7 +120,7 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
     'bbA120' : {
-        'datasetpath' : "/bbAtautau_M130/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'datasetpath' : "/bbAtautau_M120/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 99470,
         'skim_eff' : 1.0,
@@ -158,7 +152,7 @@ RECO_SAMPLES = {
     },
     'bbA130' : {
         # Not skimmed
-        'datasetpath' : "/Atautau_M130/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'datasetpath' : "/bbAtautau_M130/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 101900,
         'skim_eff' : 1.0,
@@ -246,12 +240,23 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_QCD,
         'factorize' : True,
     },
-    #    Using the unskimmed dataset
+    'PPmuXptGt20Mu15' : {
+        'datasetpath' : "/InclusiveMu15/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'events_processed' : 4377187,
+        'skim_eff' : 1.0,
+        'x_sec' : 0.2969*_millibarns*2.684e-4,
+        'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_QCD,
+        'factorize' : True,
+    },
+    #Using the unskimmed dataset
     'PPmuXptGt20' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt10_7TeV-pythia6/Spring10-START3X_V26-v1/GEN-SIM-RECO",
         'events_processed' : 6342864, 
         'skim_eff' : 1.0,
         'x_sec' : 296500000*_picobarns*0.00116, # xsec (pb) * gen filter efficiency
+        'genPhaseSpaceCut' : 'leadingGenMuon.pt < 15.',
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -284,13 +289,14 @@ MERGE_SAMPLES = {
             'data_Mu_132440_137436_Jun14ReReco',
             'data_Mu_137437_139558_Prompt',
             'data_Mu_139559_140159_Jul16ReReco',
-            'data_Mu_140160_999999_Prompt',
+            'data_Mu_140160_999999_Prompt_v2',
         ],
         'legendEntry' : 'DATA',
-        'type' : 'smMC',
+        'type' : 'Data',
         'drawOption' : styles.drawOption_Data
     },
     'qcdSum' : {
+        #'samples' : ['InclusivePPmuX', 'PPmuXptGt20', 'PPmuXptGt20Mu15'],
         'samples' : ['InclusivePPmuX', 'PPmuXptGt20'],
         'legendEntry' : 'QCD',
         'type' : 'smMC', 
@@ -348,5 +354,16 @@ for sample in RECO_SAMPLES.keys():
 
 
 
-
+#    'dataJul16' : {
+#        'datasetpath' : "/JetMETTau/Run2010A-Jul16thReReco-v1/RECO",
+#        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+#        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_139779-140159_7TeV_July16thReReco_Collisions10_JSON.txt",
+#        'conditions' : 'GR_R_36X_V12B::All',
+#        'events_processed' : 3413445,
+#        'skim_eff' : 1.0,
+#        'legendEntry' : 'DATA',
+#        'type' : 'Data',
+#        'drawOption' : styles.drawOption_Data,
+#    },
+#
 
