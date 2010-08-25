@@ -227,7 +227,7 @@ void TauHistManager::bookHistogramsImp()
 					     "Discriminator by ECAL Isolation", 2, -0.5, 1.5);
   
   hTauDiscriminatorAgainstElectrons_ = book1D("TauDiscriminatorAgainstElectrons", 
-					      "Discriminator against Electrons", 102, -0.01, 1.01);
+					      "Discriminator against Electrons", 2, -0.5, 1.5);
   hTauEmFraction_ = book1D("TauEmFraction", "TauEmFraction", 101, -0.01, 2.01);
   hTauHcalTotOverPLead_ = book1D("TauHcalTotOverPLead", "TauHcalTotOverPLead", 101, -0.01, 2.01);
   hTauHcalMaxOverPLead_ = book1D("TauHcalMaxOverPLead", "TauHcalMaxOverPLead", 101, -0.01, 2.01);
@@ -237,7 +237,7 @@ void TauHistManager::bookHistogramsImp()
   hTauCaloEOverPLead_ = book1D("TauCaloEOverPLead", "TauCaloEOverPLead", 101, -0.01, 2.01);
   
   hTauDiscriminatorAgainstMuons_ = book1D("TauDiscriminatorAgainstMuons", 
-					  "Discriminator against Muons", 102, -0.01, 1.01);
+					  "Discriminator against Muons", 2, -0.5, 1.5);
   
   hTauRecDecayMode_ = book1D("TauRecDecayMode", "rec. Tau decay mode", 20, -0.5, 19.5);
   setAxisLabelsRecTauDecayMode(hTauRecDecayMode_->getTH1()->GetXaxis());
@@ -259,13 +259,13 @@ void TauHistManager::bookHistogramsImp()
 				    "TauTaNCoutputTransform", 102, -0.01, 1.01);
   
   hTauDiscriminatorTaNCfrOnePercent_ = book1D("TauDiscriminatorTaNCfrOnePercent",
-					      "TauDiscriminatorTaNCfrOnePercent", 102, -0.01, 1.01);
+					      "TauDiscriminatorTaNCfrOnePercent", 2, -0.5, 1.5);
   hTauDiscriminatorTaNCfrHalfPercent_ = book1D("TauDiscriminatorTaNCfrHalfPercent",
-					       "TauDiscriminatorTaNCfrHalfPercent", 102, -0.01, 1.01);
+					       "TauDiscriminatorTaNCfrHalfPercent", 2, -0.5, 1.5);
   hTauDiscriminatorTaNCfrQuarterPercent_ = book1D("TauDiscriminatorTaNCfrQuarterPercent",
-						  "TauDiscriminatorTaNCfrQuarterPercent", 102, -0.01, 1.01);
+						  "TauDiscriminatorTaNCfrQuarterPercent", 2, -0.5, 1.5);
   hTauDiscriminatorTaNCfrTenthPercent_ = book1D("TauDiscriminatorTaNCfrTenthPercent",
-						"TauDiscriminatorTaNCfrTenthPercent", 102, -0.01, 1.01);
+						"TauDiscriminatorTaNCfrTenthPercent", 2, -0.5, 1.5);
   
   hTauTrkIsoPt_ = book1D("TauTrkIsoPt", "Track Isolation P_{T}", 100, 0., 10.);    
   hTauEcalIsoPt_ = book1D("TauEcalIsoPt", "ECAL Isolation P_{T}", 100, 0., 10.);
