@@ -36,6 +36,10 @@ diTauCandidateCollinearApproxHistManagerBinnedForMuTau.histManagers = cms.VPSet(
     caloMEtHistManager,
     genPhaseSpaceEventInfoHistManager
 )
+from TauAnalysis.Core.diTauCandidateSVfitHistManager_cfi import *
+diTauCandidateSVfitHistManagerForMuTau = copy.deepcopy(diTauCandidateSVfitHistManager)
+diTauCandidateSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateSVfitHistManagerForMuTau')
+diTauCandidateSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairSVfitHistManager')
 from TauAnalysis.Core.diTauCandidateEventActivityHistManager_cfi import *
 diTauCandidateEventActivityHistManagerForMuTau = copy.deepcopy(diTauCandidateEventActivityHistManager)
 diTauCandidateEventActivityHistManagerForMuTau.pluginName = cms.string('diTauCandidateEventActivityHistManagerForMuTau')
@@ -948,6 +952,7 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateCollinearApproxHistManagerBinnedForMuTau',
             'diTauCandidateCollinearApproxBinnerForMuTau',
+            'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateEventActivityHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManager',
@@ -965,6 +970,7 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
             'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
+            'diTauCandidateSVfitHistManager.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateEventActivityHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses'
         )
