@@ -258,6 +258,8 @@ protected:
   int    muNumberOfValidTrkHits_[maxP];
   int    muNumberOfValidPixelHits_[maxP];
   int    muNumberOfValidMuonHits_[maxP];
+  int    muStations_[maxP];
+  int    muChambers_[maxP];
 
   // Jet
   int    nJet_;

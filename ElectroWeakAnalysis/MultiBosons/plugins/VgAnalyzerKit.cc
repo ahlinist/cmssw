@@ -266,6 +266,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muNumberOfValidTrkHits", muNumberOfValidTrkHits_, "muNumberOfValidTrkHits[nMu]/I");
   tree_->Branch("muNumberOfValidPixelHits", muNumberOfValidPixelHits_, "muNumberOfValidPixelHits[nMu]/I");
   tree_->Branch("muNumberOfValidMuonHits", muNumberOfValidMuonHits_, "muNumberOfValidMuonHits[nMu]/I");
+  tree_->Branch("muStations", muStations_, "muStations[nMu]/I");
+  tree_->Branch("muChambers", muChambers_, "muChambers[nMu]/I");
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
@@ -1071,6 +1073,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       muEmVeto_[nMu_]  = iMu->isolationR03().emVetoEt;
       muHadVeto_[nMu_] = iMu->isolationR03().hadVetoEt;
+
+      int stations = 0;
+      unsigned stationMask(iMu->stationMask());
+      for(unsigned i=0; i < 8; ++i)
+	if(stationMask & 1 << i) ++stations;
+      muStations_[nMu_] = stations;
+      muChambers_[nMu_]  = iMu->numberOfMatches();
 
       muGenIndex_[nMu_] = -1;
       int MuGenIndex = 0;
