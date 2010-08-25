@@ -41,6 +41,11 @@ public:
   void        fillHist();
   void        fillCandHist();
   void        MCstudy();
+  void        acceptance();
+  bool        isPathPreScaled(TString path);
+  bool        isPathFired(TString path);
+  void        getBinCenters(TGenCand *gCand, double &pt, double &rapidity);
+  void        AnaEff(TAnaCand *pCand, int mode);
   void        calculateWeights(int mode);
   void        readCuts(TString filename, int dump = 1);
   void        candidateSelection(int mode);
@@ -56,7 +61,9 @@ public:
   double PT2;
   int BIN;
   double MASSLO;
-  double MASSHI;  
+  double MASSHI;
+  int UPSTYPE;
+  TString HLTPATH;
   
   // -- Variables
   TAnaCand    *fpCand; 
