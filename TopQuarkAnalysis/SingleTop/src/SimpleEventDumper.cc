@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.13 2010/08/25 15:24:32 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.14 2010/08/25 16:25:57 giamman Exp $
 //
 //
 
@@ -562,6 +562,10 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   double met_pf_x = 0.;
   double met_pf_y = 0.;
+  double met_pfcor_x = 0.;
+  double met_pfcor_y = 0.;
+  double metPFcor = 0.;
+  double phiPFcor = 0.;
   try {
     iEvent.getByLabel(pfmetSource_, pfmets);
     if (pfmets->size()>=1){
@@ -573,6 +577,15 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       met_pf_x = (*pfmets)[0].px();
       met_pf_y = (*pfmets)[0].py();
       //cout << "met_x = " << met_pf_x << ", met_y = " << met_pf_y << endl;
+      met_pfcor_x = met_pf_x;
+      met_pfcor_y = met_pf_y;
+      for (unsigned int j = 0; j < pfpatjets->size(); j++){
+	met_pfcor_x += (*pfjets)[j].px() - (*pfpatjets)[j].px();
+	met_pfcor_y += (*pfjets)[j].py() - (*pfpatjets)[j].py();
+      }
+      metPFcor = AddQuadratically(met_pfcor_x,met_pfcor_y);
+      phiPFcor = atan2(met_pfcor_y,met_pfcor_x);
+      cout << "PF met (corrected) = " << metPFcor << ", phi = " << phiPFcor << endl;
     }
   } catch (std::exception & err) {
     std::cout <<"ERROR: MET label not found ("<<pfmetSource_<<")"<< std::endl;
@@ -605,10 +618,12 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     double mt_pat = MT(lx,ly,met_pat_x,met_pat_y);
     double mt_patL5 = MT(lx,ly,met_patL5_x,met_patL5_y);
     double mt_pf = MT(lx,ly,met_pf_x,met_pf_y);
+    double mt_pfcor = MT(lx,ly,met_pfcor_x,met_pfcor_y);
     double mt_tc = MT(lx,ly,met_tc_x,met_tc_y);
     cout << " with MET from PAT: " << mt_pat << endl;
     if (l5corr) cout << " with MET from PAT+L5: " << mt_patL5 << endl;
     cout << " with MET from PF: " << mt_pf << endl;
+    cout << " with MET from PF corrected: " << mt_pfcor << endl;
     cout << " with tcMET: " << mt_tc << endl;
   }
 
@@ -629,9 +644,9 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   cout << "  mtop = " << mtop_pf << endl;
 
   cout << " PF, corrected: " << endl;
-  TLorentzVector Top_pfpat = Top(lx,ly,lz,met_pf_x,met_pf_y,jx_pfpat,jy_pfpat,jz_pfpat);
-  double mtop_pfpat = Top_pfpat.M();
-  cout << "  mtop = " << mtop_pfpat << endl;
+  TLorentzVector Top_pfcor = Top(lx,ly,lz,met_pfcor_x,met_pfcor_y,jx_pfpat,jy_pfpat,jz_pfpat);
+  double mtop_pfcor = Top_pfcor.M();
+  cout << "  mtop = " << mtop_pfcor << endl;
 
   cout << " JPT+tcMET: " << endl;
   TLorentzVector Top_jpt = Top(lx,ly,lz,met_tc_x,met_tc_y,jx_jpt,jy_jpt,jz_jpt);
