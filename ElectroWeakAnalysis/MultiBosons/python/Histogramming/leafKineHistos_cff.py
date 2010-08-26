@@ -4,9 +4,9 @@ ptHisto = cms.PSet(
   itemsToPlot = cms.untracked.int32(-1),
   min = cms.untracked.double(0),
   max = cms.untracked.double(300),
-  nbins = cms.untracked.int32(60),
+  nbins = cms.untracked.int32(300),
   name = cms.untracked.string("Pt"),
-  description = cms.untracked.string("P_{#perp}   [GeV/c]"),
+  description = cms.untracked.string("P_{#perp} [GeV/c]"),
   plotquantity = cms.untracked.string("pt")
 )
 
