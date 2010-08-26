@@ -9,7 +9,7 @@ rapidityHisto = cms.PSet(
   max = cms.untracked.double(6.0),
   nbins = cms.untracked.int32(120),
   name = cms.untracked.string("Rapidity"),
-  description = cms.untracked.string("y"),
+  description = cms.untracked.string("Rapidity:Rapidity:N per .1"),
   plotquantity = cms.untracked.string("rapidity")
 )
 
@@ -19,7 +19,7 @@ massHisto = cms.PSet(
   max = cms.untracked.double(200),
   nbins = cms.untracked.int32(200),
   name = cms.untracked.string("Mass"),
-  description = cms.untracked.string("Mass [GeV/c^{2}]"),
+  description = cms.untracked.string("Mass [GeV/c^{2}]:M [GeV/c^{2}]:N per 1 GeV/c^{2}"),
   plotquantity = cms.untracked.string("mass")
 )
 
@@ -29,7 +29,7 @@ mtHisto = cms.PSet(
   max = cms.untracked.double(200),
   nbins = cms.untracked.int32(200),
   name = cms.untracked.string("Mt"),
-  description = cms.untracked.string("Transverse Mass [GeV/c^{2}]"),
+  description = cms.untracked.string("Transverse Mass [GeV/c^{2}]:M_{T} [GeV/c^{2}]:N per 1 GeV/c^{2}"),
   plotquantity = cms.untracked.string("mt")
 )
 

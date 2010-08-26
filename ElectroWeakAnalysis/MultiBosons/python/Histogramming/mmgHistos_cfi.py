@@ -6,7 +6,7 @@ dau0MassHisto = cms.PSet(
   max = cms.untracked.double(200),
   nbins = cms.untracked.int32(200),
   name = cms.untracked.string("dau0Mass"),
-  description = cms.untracked.string("Daughter 0 Mass [GeV/c^{2}]"),
+  description = cms.untracked.string("Daughter 0 Mass [GeV/c^{2}]:M [GeV/c^{2}]:N per 1 GeV/c^{2}"),
   plotquantity = cms.untracked.string("daughter(0).mass")
 )
 
