@@ -73,7 +73,7 @@ int main ( int argc, char ** argv )
 
   // Parse configuration, get names of input files, output files
   // and the configuration of the selector and histograms.
-  PythonProcessDesc builder(argv[1]);
+  PythonProcessDesc builder(argv[1],argc,argv);
   boost::shared_ptr<edm::ParameterSet> cfg = builder.processDesc()->getProcessPSet();
   edm::ParameterSet const& inputs =  cfg->getParameter<edm::ParameterSet>("inputs");
   edm::ParameterSet const& outputs =  cfg->getParameter<edm::ParameterSet>("outputs");
@@ -251,6 +251,7 @@ int main ( int argc, char ** argv )
 
       if(event_result[std::string("ZMuMuGamma")] &&
 	 select.considerCut("ZMuMuGamma")) {
+
 	if(zgmuonHistos)       zgmuonHistos->analyze(select.selectedZGammaMuons());
 	if(diMuonHistos)       diMuonHistos->analyze(select.selectedZGammaDiMuons());
 	if(zmumugphotonHistos) zmumugphotonHistos->analyze(select.selectedZGammaPhotons());
