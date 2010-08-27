@@ -2,6 +2,8 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2Fwd.h"
@@ -69,6 +71,10 @@ namespace {
     /// create dictionaries for SVmassRecoSolution objects
     SVmassRecoSolution dummySVmassRecoSolution;
     std::vector<SVmassRecoSolution> dummySVmassRecoSolutionCollection;
+    SVfitDiTauSolution dummySVfitDiTauSolution;
+    std::vector<SVfitDiTauSolution> dummySVfitDiTauSolutionCollection;
+    SVmassRecoSolution dummySVfitLegSolution;
+    std::vector<SVfitLegSolution> dummySVfitLegSolutionCollection;
 
     /// create dictionaries for PATElecPair objects
     PATElecPair dummyPATElecPair;
