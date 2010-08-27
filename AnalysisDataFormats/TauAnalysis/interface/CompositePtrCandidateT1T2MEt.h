@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.13 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.12 2010/08/10 13:37:32 friis Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.13 2010/08/11 18:48:35 friis Exp $
  *
  */
 
@@ -29,6 +29,9 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CollinearApproxCompatibility.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
 template<typename T1, typename T2>
 class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate 
@@ -194,6 +197,22 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   SVmassRecoSolution svFitSolution(size_t index) const { 
      if(svFitSolutions_.size() > index) return svFitSolutions_.at(index); else return SVmassRecoSolution(); }
 
+  const SVfitDiTauSolution* svFitSolution(const std::string& algorithm, const std::string& polarizationHypothesisName = "") const
+  {
+    std::string polHypoName_expanded = ( polarizationHypothesisName != "" ) ? polarizationHypothesisName : "Unknown";
+
+    const SVfitDiTauSolution* svFitSolution
+      = findMapElement<std::string, std::string, SVfitDiTauSolution>(svFitSolutionMap_, algorithm, polHypoName_expanded);
+
+    if ( !svFitSolution ) {
+      edm::LogError("CompositePtrCandidateT1T2MEt::svFitSolution") 
+	<< " No SVfit solution defined for algorithm = " << algorithm << "," 
+	<< " polarizationHypothesis = " << polHypoName_expanded << " !!";
+    }
+
+    return svFitSolution;
+  }
+
  private:
   
   /// allow only CompositePtrCandidateT1T2MEtAlgorithm to change values of data-members
@@ -268,6 +287,11 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// set solutions computed by secondary vertex based mass reconstruction algorithm
   void setSVfitSolutions(const std::vector<SVmassRecoSolution>& solutions) { svFitSolutions_ = solutions; }
 
+  void addSVfitSolution(const std::string& algorithm, const std::string& polarizationHypothesisName, const SVfitDiTauSolution& solution)
+  {
+    svFitSolutionMap_[algorithm].insert(std::pair<std::string, SVfitDiTauSolution>(polarizationHypothesisName, solution));
+  }
+
   /// references/pointers to decay products
   T1Ptr leg1_;
   T2Ptr leg2_;
@@ -331,6 +355,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// solutions of secondary vertex based mass reconstruction algorithm
   std::vector<SVmassRecoSolution> svFitSolutions_;
+
+  typedef std::map<std::string, SVfitDiTauSolution> SVfitAlgorithmSolutionType;
+  std::map<std::string, SVfitAlgorithmSolutionType> svFitSolutionMap_;
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
