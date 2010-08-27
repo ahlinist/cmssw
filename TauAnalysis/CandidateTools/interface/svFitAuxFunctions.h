@@ -22,7 +22,6 @@ namespace SVfit_namespace
 
    /// Vector sum of two points
    reco::Candidate::Point operator+(const reco::Candidate::Point&, const reco::Candidate::Point&);
-
 }
 
 #endif
