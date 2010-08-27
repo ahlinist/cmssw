@@ -165,9 +165,11 @@ void xsReader::candidateSelection(int mode){
       lCands_CT_M1T.push_back(iC);
       if ( (pl2->fMuID & MUTYPE2) != MUTYPE2 ) continue;      
       lCands_CT_M1T_M2T.push_back(iC);
-      if ( pl1->fPlab.Perp() <= PT1 ) continue;
+      if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
+      if ( (pl1->fPlab.Eta() > ETAHI) || (pl1->fPlab.Eta() < ETALO) ) continue;
       lCands_CT_M1T_M2T_Pt1.push_back(iC);
-      if ( pl2->fPlab.Perp() <= PT2 ) continue;
+      if ( (pl2->fPlab.Perp() > PTHI) || (pl2->fPlab.Perp() < PTLO) ) continue;
+      if ( (pl2->fPlab.Eta() > ETAHI) || (pl2->fPlab.Eta() < ETALO) ) continue;
       lCands_CT_M1T_M2T_Pt1_Pt2.push_back(iC);
       if ( pCand->fVtx.fChi2 > CHI2 ) continue;
       lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.push_back(iC);
@@ -194,9 +196,9 @@ void xsReader::candidateSelection(int mode){
   ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(16, nc_CT_M1T_M2T);
   ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(16, Form("ID^{#mu_{2}}=%d",MUTYPE2));
   ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(18, nc_CT_M1T_M2T_Pt1);
-  ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(18, Form("p_{T}^{#mu_{1}}=%.1f",PT1));
+  ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(18, Form("p_{T}^{#mu_{1}}=%.1f",PTLO));
   ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(20, nc_CT_M1T_M2T_Pt1_Pt2);
-  ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(20, Form("p_{T}^{#mu_{2}}=%.1f",PT2));
+  ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(20, Form("p_{T}^{#mu_{2}}=%.1f",PTLO));
   ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(22, nc_CT_M1T_M2T_Pt1_Pt2_CHI2);
   ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(22, Form("#chi^{2}<%.1f",CHI2));
 
@@ -281,6 +283,7 @@ void xsReader::AnaEff(TAnaCand *pCand, int mode) {
       if ( genCand->fID == RESTYPE ) {
 	truth++;
       }
+      
       if ( mode == 1 ) ((TH1D*)fpHistFile->Get(Form("AnaEff_%.1dS,OverAll", UPSTYPE)))->AddBinContent(2,truth);
       if ( mode == 2 ) ((TH1D*)fpHistFile->Get(Form("AnaEff_%.1dS,OverAll", UPSTYPE)))->AddBinContent(8,truth);
       
@@ -403,8 +406,14 @@ void xsReader::calculateWeights(int mode){
   }
   
   fWeight = 1/(effID1*effID2*effTR1*effTR2);
-  //cout <<" effID1  =  "<<effID1<<", effID2 =  "<<effID2<<" effTR1  =  "<<effTR1<<", effTR2 =  "<<effTR2<<", fWeight  =  "<<  fWeight <<endl;
-  
+  if ( fCandPt > 3 && fabs(fCandY) > 1.4  ){
+    cout << "fCandPt = " << fCandPt << "fCandY = " << fCandY << endl;
+    cout <<" effID1  =  "<<effID1<<", effID2 =  "<<effID2<<" effTR1  =  "<<effTR1<<", effTR2 =  "<<effTR2<<", fWeight  =  "<<  fWeight <<endl;
+    if ( effID1 < 0 || effID2 < 0 || effTR1 < 0 || effTR2 < 0   ){
+      cout <<pl1->fPlab.Perp()<<"  "<<pl2->fPlab.Perp() << endl;
+      cout <<pl1->fPlab.Eta()<<"  "<<pl2->fPlab.Eta() << endl;
+    }
+  }
 }
 // ----------------------------------------------------------------------
 bool xsReader::isMatchedToTrig(TAnaTrack *pTag, TString Label){
@@ -575,16 +584,6 @@ void xsReader::readCuts(TString filename, int dump) {
       if (dump) cout << "MUTYPE2:           " << MUTYPE2 << endl;
     }       
     
-    if (!strcmp(CutName, "PT1")) {
-      PT1 = CutValue; ok = 1;
-      if (dump) cout << "PT1:             " << PT1 << endl;
-    }    
-    
-    if (!strcmp(CutName, "PT2")) {
-      PT2 = CutValue; ok = 1;
-      if (dump) cout << "PT2:             " << PT2 << endl;
-    }           
-    
     if (!strcmp(CutName, "CHI2")) {
       CHI2 = CutValue; ok = 1;
       if (dump) cout << "CHI2:              " << CHI2 << endl;
@@ -628,6 +627,14 @@ void xsReader::readCuts(TString filename, int dump) {
       hcuts->GetXaxis()->SetBinLabel(ibin, "p_{T}^{min}(l) [GeV]");
     }
 
+    if (!strcmp(CutName, "PTHI")) {
+      PTHI = CutValue; ok = 1;
+      if (dump) cout << "PTHI:           " << PTHI << " GeV" << endl;
+      ibin = 11;
+      hcuts->SetBinContent(ibin, PTHI);
+      hcuts->GetXaxis()->SetBinLabel(ibin, "p_{T}^{min}(l) [GeV]");
+    }    
+    
     if (!strcmp(CutName, "ETALO")) {
       ETALO = CutValue; ok = 1;
       if (dump) cout << "ETALO:           " << ETALO << endl;
