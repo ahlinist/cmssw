@@ -34,6 +34,10 @@
   <!-- create dictionaries for SVmassRecoSolution objects -->
   <class name="SVmassRecoSolution"/>
   <class name="std::vector<SVmassRecoSolution>"/>
+  <class name="SVfitDiTauSolution"/>
+  <class name="std::vector<SVfitDiTauSolution>"/>
+  <class name="SVfitLegSolution"/>
+  <class name="std::vector<SVfitLegSolution>"/>
 
   <!-- create dictionaries for PATElecPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron>"/>
