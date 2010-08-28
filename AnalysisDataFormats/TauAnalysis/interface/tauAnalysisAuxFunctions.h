@@ -5,8 +5,11 @@
 
 namespace TauAnalysis_namespace 
 {
+  /// Compute vector sum of two points
   reco::Candidate::Point operator+(const reco::Candidate::Point&, const reco::Candidate::Point&);
 
+  /// Access element stored in "two-dimensional" map 
+  /// (i.e. in a map in which each value is referenced by two keys)
   template<typename keyT1, typename keyT2, typename valueT>
   const valueT* findMapElement(const std::map<keyT1, std::map<keyT2, valueT> >& map, const keyT1& key1, const keyT2& key2)
   {
