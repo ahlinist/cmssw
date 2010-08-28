@@ -33,6 +33,10 @@
 // SimDataFormats
 #include "SimDataFormats/TrackingHit/interface/PSimHitContainer.h"
 #include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+#include "SimTracker/TrackAssociation/interface/TrackAssociatorByHits.h"
+#include "SimTracker/Records/interface/TrackAssociatorRecord.h"
+#include "SimTracker/TrackAssociation/plugins/ParametersDefinerForTPESProducer.h"
 
 #include "SLHCUpgradeSimulations/Validation/interface/SLHCPixelHitAnalyzer.h"
 
@@ -87,6 +91,8 @@ void SLHCPixelHitAnalyzer::beginJob(const edm::EventSetup& es)
 
   isSim = conf_.getParameter<bool>("isSim");
   useAllPixel = conf_.getParameter<bool>("useAllPixel");
+
+  parametersDefiner = conf_.getParameter<std::string>("parametersDefiner");
 
   // but after that it is ok to create a tree..
   PixHitTree_ = new TTree("PixNtuple", "Pixel hit analyzer ntuple");
@@ -155,7 +161,8 @@ void SLHCPixelHitAnalyzer::beginJob(const edm::EventSetup& es)
   //  std::cout << "Making track branch:" << std::endl;
   PixHitTree_->Branch("track", &track_, "pt/F:p:px:py:pz:globalTheta:globalEta:globalPhi:localTheta:localPhi:chi2:ndof:foundHits/I:tracknum", bufsize);
   //  std::cout << "Making track only branch:" << std::endl;
-  TrackTree_->Branch("TrackInfo", &trackonly_, "run/I:evtnum:tracknum:pixelTrack:NumPixelHits:NumStripHits:charge:chi2/F:ndof:theta:d0:dz:p:pt:px:py:pz:phi:eta:vx:vy:vz:muonT0:muondT0", bufsize);
+  TrackTree_->Branch("TrackInfo", &trackonly_, "run/I:evtnum:tracknum:simtrks:pixelTrack:NumPixelHits:NumStripHits:charge:chi2/F:ndof:theta:d0:d0err:dz:dzerr:p:pt:pterr:px:py:pz:phi:eta:vx:vy:vz:muonT0:muondT0", bufsize);
+  TrackTree_->Branch("SimTrackInfo", &simtrackonly_, "charge/I:d0/F:dz:p:pt:px:py:pz:phi:eta:vx:vy:vz", bufsize);
   edm::LogInfo("PixelNuplizer_RealData") << "Made all branches." << std::endl;
 
 }
@@ -301,6 +308,7 @@ void SLHCPixelHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSet
   init();
 
   trackonly_.init();
+  simtrackonly_.init();
  
   // -- Does this belong into beginJob()?
   ESHandle<TrackerGeometry> TG;
@@ -317,10 +325,40 @@ void SLHCPixelHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSet
 
   if (hTTAC.isValid()) {
     int NbrTracks =  hTTAC->size();
-    //cout << " nbr tracks " << NbrTracks << endl;
+    //std::cout << " nbr tracks from trajectory " << NbrTracks << endl;
     const TrajTrackAssociationCollection ttac = *(hTTAC.product());
+
+    // associate reco tracks to simTracks
+    // first we need the (same track collection) as used for above
+    edm::Handle<View<reco::Track> >  trackCollection;
+    iEvent.getByLabel(conf_.getParameter<edm::InputTag>("trackProducer"), trackCollection);
+    if(trackCollection->size() != (unsigned int)NbrTracks) {
+      std::cout << " num tracks in trackerCollection = " << trackCollection->size() 
+                << " not equal to num trajectory = " << NbrTracks << endl;
+    }
+    edm::ESHandle<TrackAssociatorBase> theAssociator;
+    iSetup.get<TrackAssociatorRecord>().get(conf_.getParameter<std::string>("associator"),theAssociator);
+    const TrackAssociatorBase*  associator( theAssociator.product() );
+
+    edm::ESHandle<ParametersDefinerForTP> parametersDefinerTP; 
+    iSetup.get<TrackAssociatorRecord>().get(parametersDefiner,parametersDefinerTP);  
+
+    edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+    iEvent.getByLabel(conf_.getParameter< edm::InputTag >("beamSpotLabel"),recoBeamSpotHandle);
+    reco::BeamSpot bs = *recoBeamSpotHandle;   
+
+    edm::Handle<TrackingParticleCollection>  TPCollection;
+    reco::RecoToSimCollection recSimColl;
+
+    if(isSim == true) {
+      iEvent.getByLabel(conf_.getParameter<edm::InputTag>("label_tp"), TPCollection);
+      const TrackingParticleCollection tPC = *(TPCollection.product());
+      recSimColl=associator->associateRecoToSim(trackCollection, TPCollection, &iEvent);
+    }
    
     // cout << "   hTTAC.isValid()" << endl;
+    int at=0;
+    int rT=0;
     for (TrajTrackAssociationCollection::const_iterator it = ttac.begin(); it !=  ttac.end(); ++it) {
 
       TrackNumber++;
@@ -344,7 +382,35 @@ void SLHCPixelHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSet
 		 testSubDetID == StripSubdetector::TID || testSubDetID == StripSubdetector::TEC) stripHits++;
       }//end of for trajectory loop 
 
-      fillTrackOnly(iEvent,iSetup, pixelHits, stripHits, TrackNumber, trackref);
+      // also fill matched simTrack if appropriate
+      unsigned int num_matched_simtrks = 0;
+      if(isSim == true) {
+        ++rT;
+        RefToBase<Track> mytrack(trackref);
+        std::vector<std::pair<TrackingParticleRef, double> > tp;
+        if(recSimColl.find(mytrack) != recSimColl.end()){
+          tp = recSimColl[mytrack];
+          num_matched_simtrks = tp.size();
+          if (tp.size()!=0) {
+            at++;
+            //std::cout << "reco::Track #" << rT << " with pt=" << mytrack->pt() << " " << trackref->pt()
+            //                                   << " associated with quality:" << tp.begin()->second <<"\n";
+            TrackingParticleRef tpr = tp.begin()->first;
+            //Get tracking particle parameters at point of closest approach to the beamline
+            ParticleBase::Vector momentumTP = parametersDefinerTP->momentum(iEvent,iSetup,*(tpr.get()));
+            ParticleBase::Point vertexTP = parametersDefinerTP->vertex(iEvent,iSetup,*(tpr.get()));
+            fillSimTrackOnly(momentumTP, vertexTP, tpr);
+          }
+        } else {
+          //std::cout << "reco::Track #" << rT << " with pt=" << mytrack->pt() << " " << trackref->pt()
+          //                                    << " NOT associated to any TrackingParticle" << "\n";                
+        }
+
+      }
+      fillTrackOnly(iEvent,iSetup, pixelHits, stripHits, TrackNumber, num_matched_simtrks, trackref, bs);
+
+
+
     //++++++++++
       TrackTree_->Fill();
     //++++++++++
@@ -674,10 +740,12 @@ return true;
 }
 
 
-void SLHCPixelHitAnalyzer::fillTrackOnly(const edm::Event& iEvent, const edm::EventSetup& iSetup, int pixelHits, int stripHits, int TrackNumber, const TrackRef& track)
+void SLHCPixelHitAnalyzer::fillTrackOnly(const edm::Event& iEvent, const edm::EventSetup& iSetup, int pixelHits, int stripHits, 
+  int TrackNumber, unsigned int num_matched_simtrks, const TrackRef& track, const reco::BeamSpot& bs)
 {
   if(pixelHits > 0) trackonly_.pixelTrack = 1;
   trackonly_.tracknum = TrackNumber;
+  trackonly_.simtrks  = num_matched_simtrks;
   trackonly_.run = iEvent.id().run();
   trackonly_.evtnum = iEvent.id().event();
   trackonly_.NumPixelHits = pixelHits;
@@ -686,10 +754,13 @@ void SLHCPixelHitAnalyzer::fillTrackOnly(const edm::Event& iEvent, const edm::Ev
   trackonly_.ndof = track->ndof();
   trackonly_.charge = track->charge();
   trackonly_.theta = track->theta();
-  trackonly_.d0 = track->d0();
-  trackonly_.dz = track->dz();
+  trackonly_.d0 = track->dxy(bs.position());
+  trackonly_.d0err = track->dxyError();
+  trackonly_.dz = track->dz(bs.position());
+  trackonly_.dzerr = track->dzError();
   trackonly_.p = track->p();
   trackonly_.pt = track->pt();
+  trackonly_.pterr = track->ptError();
   trackonly_.px = track->px();
   trackonly_.py = track->py();
   trackonly_.pz = track->pz();
@@ -717,6 +788,26 @@ void SLHCPixelHitAnalyzer::fillTrackOnly(const edm::Event& iEvent, const edm::Ev
   return;
 }
 
+void SLHCPixelHitAnalyzer::fillSimTrackOnly(const ParticleBase::Vector& momentumTP, const ParticleBase::Point& vertexTP,
+                                            const TrackingParticleRef& tpr)
+{
+  simtrackonly_.d0 = (-vertexTP.x()*sin(momentumTP.phi())+vertexTP.y()*cos(momentumTP.phi()));
+  simtrackonly_.dz = vertexTP.z() - (vertexTP.x()*momentumTP.x()+vertexTP.y()*momentumTP.y())/sqrt(momentumTP.perp2()) * momentumTP.z()/sqrt(momentumTP.perp2());
+  simtrackonly_.p = tpr->p();
+  simtrackonly_.pt = tpr->pt();
+  //simtrackonly_.p = momentumTP.mag();
+  //simtrackonly_.pt = momentumTP.perp();
+  simtrackonly_.px = momentumTP.x();
+  simtrackonly_.py = momentumTP.y();
+  simtrackonly_.pz = momentumTP.z();
+  simtrackonly_.phi = momentumTP.phi();
+  simtrackonly_.eta = momentumTP.eta();
+  simtrackonly_.vx = vertexTP.x();
+  simtrackonly_.vy = vertexTP.y();
+  simtrackonly_.vz = vertexTP.z();
+  simtrackonly_.charge = tpr->charge();
+  return;
+}
 
 void SLHCPixelHitAnalyzer::fillEvt(const edm::Event& iEvent,int NbrTracks)
 {
@@ -1118,6 +1209,7 @@ void SLHCPixelHitAnalyzer::TrackOnlyStruct::init()
   run = dummy_int;
   evtnum = dummy_int;
   tracknum = dummy_int;
+  simtrks = dummy_int;
   pixelTrack = 0;
   NumPixelHits = dummy_int;
   NumStripHits = dummy_int;
@@ -1125,6 +1217,31 @@ void SLHCPixelHitAnalyzer::TrackOnlyStruct::init()
   ndof = dummy_float;
   charge = dummy_int;
   theta = dummy_float;
+  d0 = dummy_float;
+  d0err = dummy_float;
+  dz = dummy_float;
+  dzerr = dummy_float;
+  p = dummy_float;
+  pt = dummy_float;
+  pterr = dummy_float;
+  px = dummy_float;
+  py = dummy_float;
+  pz = dummy_float;
+  phi = dummy_float;
+  eta = dummy_float;
+  vx = dummy_float;
+  vy = dummy_float;
+  vz = dummy_float;
+  muonT0 = dummy_float;
+  muondT0 = dummy_float;
+}
+
+void SLHCPixelHitAnalyzer::SimTrackOnlyStruct::init()
+{
+  int dummy_int = -9999;
+  float dummy_float = -9999.0;
+
+  charge = dummy_int;
   d0 = dummy_float;
   dz = dummy_float;
   p = dummy_float;
@@ -1137,8 +1254,6 @@ void SLHCPixelHitAnalyzer::TrackOnlyStruct::init()
   vx = dummy_float;
   vy = dummy_float;
   vz = dummy_float;
-  muonT0 = dummy_float;
-  muondT0 = dummy_float;
 }
 
 

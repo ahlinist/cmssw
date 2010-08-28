@@ -14,14 +14,17 @@
 #include "SimDataFormats/Track/interface/SimTrackContainer.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
-#include "DQM/TrackerMonitorTrack/interface/MonitorTrackResiduals.h"
 #include "DQM/SiStripCommon/interface/SiStripFolderOrganizer.h"
+#include "DQM/TrackerMonitorTrack/interface/MonitorTrackResiduals.h"
 #include "TrackingTools/PatternTools/interface/TrajectoryFitter.h"
 #include "TrackingTools/TrackFitters/interface/TrajectoryStateCombiner.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "Alignment/OfflineValidation/interface/TrackerValidationVariables.h"
 #include "TrackingTools/TrackAssociator/interface/TrackAssociatorParameters.h"
 #include "TrackingTools/TrackAssociator/interface/TrackDetectorAssociator.h"
+#include "SimDataFormats/TrackingAnalysis/interface/ParticleBase.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "TObject.h"
 #include "TH1D.h"
 
@@ -46,7 +49,8 @@ class SLHCPixelHitAnalyzer : public edm::EDAnalyzer
 
 
  protected:
-  void fillTrackOnly(const edm::Event&, const edm::EventSetup &, int, int, int, const TrackRef&);
+  void fillTrackOnly(const edm::Event&, const edm::EventSetup &, int, int, int, unsigned int, const TrackRef&, const reco::BeamSpot&);
+  void fillSimTrackOnly(const ParticleBase::Vector&, const ParticleBase::Point&, const TrackingParticleRef&);
   void fillEvt(const edm::Event&,int NbrTracks);
   void fillDet(const DetId &, uint, const PixelGeomDetUnit*);
   void fillVertex(const PixelGeomDetUnit*);
@@ -56,7 +60,7 @@ class SLHCPixelHitAnalyzer : public edm::EDAnalyzer
   	       const RectangularPixelTopology *, const edm::SimTrackContainer& );
   void fillTrack(TrajectoryStateOnSurface&,const Trajectory&, int);
 
- void isPixelTrack(const edm::Ref<std::vector<Trajectory> > &refTraj, bool &isBpixtrack, bool &isFpixtrack);
+  void isPixelTrack(const edm::Ref<std::vector<Trajectory> > &refTraj, bool &isBpixtrack, bool &isFpixtrack);
   
   bool isValidMuonAssoc(const edm::Event& iEvent);		   
   bool isOffTrackHits(const edm::Event& iEvent,const SiPixelCluster& matchIt, const edm::EventSetup& iSetup,const RectangularPixelTopology*, uint32_t geoId, TrajectoryStateOnSurface& tsos );		   
@@ -65,7 +69,7 @@ class SLHCPixelHitAnalyzer : public edm::EDAnalyzer
   void sectorAndWheel(const  reco::Muon & muon0 ,int & w0,int & s0 );
   float correctedTime(const  reco::Muon & muon0);
 
- void bpixNames(const DetId &pID, int &DBlayer, int &DBladder, int &DBmodule);
+  void bpixNames(const DetId &pID, int &DBlayer, int &DBladder, int &DBmodule);
   void fpixNames(const DetId &pID, int &DBdisk, int &DBblade, int &DBpanel, int &DBplaquette);
 
 
@@ -75,6 +79,7 @@ class SLHCPixelHitAnalyzer : public edm::EDAnalyzer
   edm::ParameterSet conf_;
   edm::ESHandle<TrackerGeometry> tkGeom_;
   edm::ESHandle<MagneticField> magneticField_;
+  std::string parametersDefiner;
 
 
   TH1D *dummyhist;
@@ -377,6 +382,7 @@ class SLHCPixelHitAnalyzer : public edm::EDAnalyzer
     int run;
     int evtnum;
     int tracknum;     // number of track processed (correlates with others)
+    int simtrks;      // number of matched simTracks (TrackingParticle actually)
     int pixelTrack;   // 0 = no, 1 = yes
     int NumPixelHits;
     int NumStripHits;
@@ -385,9 +391,12 @@ class SLHCPixelHitAnalyzer : public edm::EDAnalyzer
     float ndof;
     float theta;
     float d0;
+    float d0err;
     float dz;
+    float dzerr;
     float p;
     float pt;
+    float pterr;
     float px;
     float py;
     float pz;
@@ -400,6 +409,24 @@ class SLHCPixelHitAnalyzer : public edm::EDAnalyzer
     float muondT0;
     void init();
     } trackonly_;
+
+  struct SimTrackOnlyStruct{
+
+    int charge;
+    float d0;
+    float dz;
+    float p;
+    float pt;
+    float px;
+    float py;
+    float pz;
+    float phi;
+    float eta;
+    float vx;
+    float vy;
+    float vz;
+    void init();
+    } simtrackonly_;
 
 };
 
