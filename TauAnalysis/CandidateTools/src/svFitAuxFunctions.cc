@@ -10,9 +10,6 @@
 
 #include <limits>
 
-const double tauLeptonMass = 1.77685; // GeV
-const double tauLeptonMass2 = tauLeptonMass*tauLeptonMass;
-
 namespace SVfit_namespace {
   
   // Adapted for our vector types from TVector3 class

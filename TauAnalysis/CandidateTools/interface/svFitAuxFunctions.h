@@ -5,6 +5,9 @@
 
 namespace SVfit_namespace 
 {
+  const double tauLeptonMass = 1.77685; // GeV
+  const double tauLeptonMass2 = tauLeptonMass*tauLeptonMass;
+
   inline double square(double x)
   {
     return x*x;	
