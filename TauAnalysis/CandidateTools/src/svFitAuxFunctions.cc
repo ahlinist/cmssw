@@ -14,16 +14,6 @@ const double tauLeptonMass = 1.77685; // GeV
 const double tauLeptonMass2 = tauLeptonMass*tauLeptonMass;
 
 namespace SVfit_namespace {
-
-  inline double square(double x)
-  {
-    return x*x;	
-  }
-  
-  inline double energy(double mass, double momentum)
-  {
-    return TMath::Sqrt(square(mass) + square(momentum));
-  }
   
   // Adapted for our vector types from TVector3 class
   reco::Candidate::Vector rotateUz(const math::RThetaPhiVector& toRotate,
@@ -73,10 +63,10 @@ namespace SVfit_namespace {
     // Get the visible momentum perpindicular/parallel to the tau boost direction in the LAB
     const double pVisLabFramePara = pVisLabFrame*TMath::Cos(angleVisLabFrame);
     
-    // Now use the Lorentz equation for VisP along the tau direction to solve for
+    // Now use the Lorentz equation for pVis along the tau direction to solve for
     // the gamma of the tau boost.
     const double pVisRestFramePara = pVisRestFrame * TMath::Cos(gjAngle);
-    const double eVisRestFrame = energy(tauVisMass, pVisRestFrame);
+    const double eVisRestFrame = TMath::Sqrt(square(tauVisMass) + square(pVisRestFrame));
     
     const double gamma = (eVisRestFrame * TMath::Sqrt(square(eVisRestFrame) + square(pVisLabFramePara) 
       - square(pVisRestFramePara)) - pVisRestFramePara*pVisLabFramePara)/(square(eVisRestFrame) - square(pVisRestFramePara));
