@@ -59,6 +59,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	for ( vstring::const_iterator svFitAlgorithmName = svFitAlgorithmNames.begin();
 	      svFitAlgorithmName != svFitAlgorithmNames.end(); ++svFitAlgorithmName ) {
 	  edm::ParameterSet cfgSVfitAlgorithm = cfgSVfit.getParameter<edm::ParameterSet>(*svFitAlgorithmName);
+	  cfgSVfitAlgorithm.addParameter<std::string>("name", *svFitAlgorithmName);
 	  SVfitAlgorithm<T1,T2>* svFitAlgorithm = new SVfitAlgorithm<T1,T2>(cfgSVfitAlgorithm);
 	  svFitAlgorithms_.insert(std::pair<std::string, SVfitAlgorithm<T1,T2>*>(*svFitAlgorithmName, svFitAlgorithm));
 	}
