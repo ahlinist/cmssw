@@ -97,9 +97,6 @@ int main ( int argc, char ** argv )
   Histogrammer<reco::CompositeCandidate>* WMuNuGammaHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* WENuGammaHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* ZNuNuGammaHistos(NULL);
-  
-  std::cout << Histogrammer<pat::Muon>::numberOfFunctions() << std::endl;
-  
 
   // vgamma event hypotheses
   if(cfg->existsAs<edm::ParameterSet>("ZMuMuGamma")) {
