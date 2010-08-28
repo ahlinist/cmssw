@@ -12,6 +12,7 @@ dau0MassHisto = cms.PSet(
 
 from ElectroWeakAnalysis.MultiBosons.Histogramming.histoTools_cff import *
 from ElectroWeakAnalysis.MultiBosons.Histogramming.compositeKineHistos_cff import *
+from ElectroWeakAnalysis.MultiBosons.Histogramming.zGammaSpecialHistos_cff import *
 
 mmgHistos = makeHistoAnalyzer("CandViewHistoAnalyzer",
   histos = compositeKineHistos + [dau0MassHisto],
