@@ -20,8 +20,8 @@ namespace SVfit_namespace
    /// Compute the tau four vector given the tau direction and momentum
    reco::Candidate::LorentzVector tauP4(const reco::Candidate::Vector& tauDirection, double tauMomentumLabFrame);
 
-   /// Vector sum of two points
-   reco::Candidate::Point operator+(const reco::Candidate::Point&, const reco::Candidate::Point&);
+   /// Compute logarithm of Gaussion probability density function
+   double logGaussian(double residual, double sigma);
 }
 
 #endif
