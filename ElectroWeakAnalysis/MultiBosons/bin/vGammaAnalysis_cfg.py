@@ -40,7 +40,7 @@ process.SelectorConfig.cutsToIgnore = cms.vstring("ZEEGamma",
 from ElectroWeakAnalysis.MultiBosons.Histogramming.muonHistos_cfi import muonHistos
 from ElectroWeakAnalysis.MultiBosons.Histogramming.photonHistos_cfi import photonHistos
 from ElectroWeakAnalysis.MultiBosons.Histogramming.mmgHistos_cfi import mmgHistos
-from ElectroWeakAnalysis.MultiBosons.Histogramming.zGammaSpecialHistos import zGammaSpecialHistos
+from ElectroWeakAnalysis.MultiBosons.Histogramming.zGammaSpecialHistos_cff import zGammaSpecialHistos
 
 process.ZMuMuGamma = cms.PSet(
     muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
