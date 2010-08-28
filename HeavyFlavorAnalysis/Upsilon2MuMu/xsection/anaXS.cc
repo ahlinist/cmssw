@@ -125,6 +125,7 @@ void anaXS::init(const char *dir, int i) {
   if (fS1YieldComparison) fS1YieldComparison->Reset();
   if (fAnaEff) fAnaEff->Reset();
   if (fAllGenRes) fAllGenRes->Reset();
+  if (fAcceptance) fAcceptance->Reset();
   if (fRecoGenRes) fRecoGenRes->Reset();
 
   /////////////////////////
@@ -162,12 +163,12 @@ void anaXS::loadFiles(const char *dir, int i) {
 
   // -- Upsilon merging
   if (0 == i) {
-    string ufile = fDirectory + string("/") + string("upsilon/100825.sp10.mm.1s_v2.xsReader.default.root");    
+    string ufile = fDirectory + string("/") + string("upsilon/100825.sp10.mm.1s.xsReader.default.root");    
 
     fM[0] = new TFile(ufile.c_str()); lM[0] = 1.;
-    ufile = fDirectory + string("/") + string("upsilon/100825.sp10.mm.2s_v2.xsReader.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/100825.sp10.mm.2s.xsReader.default.root");
     fM[1] = new TFile(ufile.c_str()); lM[1] = 1.04; 
-    ufile = fDirectory + string("/") + string("upsilon/100825.sp10.mm.3s_v2.xsReader.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/100825.sp10.mm.3s.xsReader.default.root");
     fM[2] = new TFile(ufile.c_str()); lM[2] = 1.81; 
     cout << "Got the Files for Merging" << endl;
   }
@@ -218,8 +219,8 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
-      ufile = fDirectory + string("/upsilon/100825.sp10.mm.COMBINED_v2.xsRedear.default.root");
-     // ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
+      ufile = fDirectory + string("/upsilon/100825.sp10.mm.COMBINED.xsReader.default.root");
+      //ufile = fDirectory + string("/upsilon/deneme.root"); 
       jfile = fDirectory + string("/jpsi/tmp.dimuons..defaults.root");
      // jfile = fDirectory + string("/jpsi/ppMuMuX_7TeV_JpsiBackground.root");  
     } else {
@@ -269,6 +270,27 @@ void anaXS::combineUpsilons() {
 	    h2->SetDirectory(f);
 	    goto end;
 	  }
+	  
+	  char *histName = Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", 1, Ybin[j], Ybin[j+1], PTbin[i], PTbin[i+1]);
+	  if ( !strcmp(h0->GetName(),histName) ){
+	    cout << histName  << endl;
+	    h1 = (TH1D*)(fM[1]->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", 2, Ybin[j], Ybin[j+1], PTbin[i], PTbin[i+1])));
+	    h2 = (TH1D*)(fM[2]->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", 3, Ybin[j], Ybin[j+1], PTbin[i], PTbin[i+1])));
+	    h1->SetDirectory(f);
+	    h2->SetDirectory(f);
+	    goto end;
+	  }
+	  
+	  char *histname = Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", 1, Ybin[j], Ybin[j+1], PTbin[i], PTbin[i+1]);
+	  if ( !strcmp(h0->GetName(),histname) ){
+	    cout << histname  << endl;
+	    h1 = (TH1D*)(fM[1]->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", 2, Ybin[j], Ybin[j+1], PTbin[i], PTbin[i+1])));
+	    h2 = (TH1D*)(fM[2]->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", 3, Ybin[j], Ybin[j+1], PTbin[i], PTbin[i+1])));
+	    h1->SetDirectory(f);
+	    h2->SetDirectory(f);
+	    goto end;
+	  }	  
+
 	}
       }
       
@@ -319,7 +341,7 @@ void anaXS::combineUpsilons() {
 	
 	ptbin = H0->GetXaxis()->GetNbins();
 	ybin = H0->GetYaxis()->GetNbins();
-	cout << ptbin << " " << ybin << endl;
+	//cout << ptbin << " " << ybin << endl;
 	
 	for ( int i=1; i <= ptbin; i++ ){
 	  PTbin[i]=H0->GetXaxis()->GetBinLowEdge(i);
@@ -339,7 +361,7 @@ void anaXS::combineUpsilons() {
       
       for ( int i=1; i <= ptbin+1; i++ ){
 	for ( int j=1; j <= ybin+1; j++ ){
-	  cout<< PTbin[i] << "  " << Ybin[j]  << endl;
+	  //cout<< PTbin[i] << "  " << Ybin[j]  << endl;
 	}
       }
       
@@ -387,15 +409,15 @@ void anaXS::makeAllMC(int channel) {
     init(fDirectory.c_str(), fMode);
     // -- fill histograms
     fSample = string("upsilon");
-    ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "mt,pt-eta");
+    ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "MuIDEff_1S", "MuIDEff_2S", "MuIDEff_3S", "TrigEff_1S", "TrigEff_2S", "TrigEff_3S", "mt,pt-eta");
     
     // -- add backgrounds
     addBackground(fS1Vector, 0.3);
     
     FITUpsilon();
     GetAnaEff();
-    HistoFlip2D(fAllGenRes);
-    HistoFlip2D(fRecoGenRes);
+    GetMuIDEff();
+    GetTrigEff();
     CorrectedYields();
     //projections(); 
     
@@ -560,10 +582,26 @@ void anaXS::HistoFlip2D(TH2D *H){
   
 }
 
+void anaXS::plotAcceptance(){
+  
+  double deno(-1.); double numa(-1.); double acceptance(-1);
+  for ( int iy = 1; iy <= fS1Yield->GetNbinsX(); ++iy ){
+    for ( int ipt = 1; ipt <= fS1Yield->GetNbinsY(); ++ipt ){
+      deno = fAllGenRes->GetBinContent(iy,ipt);
+      numa = fRecoGenRes->GetBinContent(iy,ipt);
+      acceptance = numa/deno;
+      fAcceptance->SetBinContent(iy,ipt,acceptance);
+    }
+  }
+  
+ 
+  
+}
+
 void anaXS::CorrectedYields(){
   
-  //makeCanvas(2);
-  //c2->Divide(2,2);
+  makeCanvas(2);
+  c2->Divide(2,2);
   //c2->cd(1);
   //fS1Yield->Draw("colz");
   //c2->cd(2);
@@ -572,15 +610,29 @@ void anaXS::CorrectedYields(){
   //fAllGenRes->Draw("colz");
   //c2->cd(4);
   //fRecoGenRes->Draw("colz");
+  
+  plotAcceptance();
+  c2->cd(1);
+  fAcceptance->Draw("colz");
+  c2->cd(2);
+  fAnaEff->Draw("colz");
+  c2->cd(3);
+  fMuIDEff->Draw("colz");  
+  c2->cd(4);
+  fTrigEff->Draw("colz");   
+  
   int bin(-1); double bin_ratio(-1);
   for ( int iy = 1; iy <= fS1Yield->GetNbinsX(); ++iy ){
     for ( int ipt = 1; ipt <= fS1Yield->GetNbinsY(); ++ipt ){
       
-      bin = (fS1Yield->GetBinContent(iy,ipt) * fAllGenRes->GetBinContent(iy,ipt) ) / (fAnaEff->GetBinContent(iy,ipt) * fRecoGenRes->GetBinContent(iy,ipt) );
+      bin = fS1Yield->GetBinContent(iy,ipt) / ( fMuIDEff->GetBinContent(iy,ipt) * fTrigEff->GetBinContent(iy,ipt) * fAcceptance->GetBinContent(iy,ipt) * fAnaEff->GetBinContent(iy,ipt) );
       fS1YieldCorrected->SetBinContent(iy,ipt,bin);
       cout << "fAnaEff->GetBinContent(iy,ipt) = "<< fAnaEff->GetBinContent(iy,ipt) << endl;
+      cout << "fMuIDEff->GetBinContent(iy,ipt) = "<< fMuIDEff->GetBinContent(iy,ipt) << endl;
+      cout << "fTrigEff->GetBinContent(iy,ipt) = "<< fTrigEff->GetBinContent(iy,ipt) << endl;
       cout << "fAllGenRes->GetBinContent(iy,ipt) = "<< fAllGenRes->GetBinContent(iy,ipt) <<endl;
       cout << "fRecoGenRes->GetBinContent(iy,ipt) = "<< fRecoGenRes->GetBinContent(iy,ipt) <<endl;
+      cout << "fAcceptance->GetBinContent(iy,ipt) = "<< fAcceptance->GetBinContent(iy,ipt) << endl;
       cout << "fS1Yield->GetBinContent(iy,ipt) = "<< fS1Yield->GetBinContent(iy,ipt) <<endl;
       cout << "fS1YieldCoreected->GetBinContent(iy,ipt) = "<< fS1YieldCorrected->GetBinContent(iy,ipt) <<endl;
       bin_ratio = (fS1YieldCorrected->GetBinContent(iy,ipt) - fAllGenRes->GetBinContent(iy,ipt))/ fAllGenRes->GetBinContent(iy,ipt);
@@ -1157,7 +1209,7 @@ void anaXS::projections() {
 
 }
 
-void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char *s3, const char *s4, const char *binning) {  
+void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char *s3, const char *s4, const char *s5, const char *s6, const char *s7, const char *s8, const char *s9, const char *s10, const char *binning) {  
   
   cout << "====> Reading histograms from " << f->GetName() << endl;
   
@@ -1169,7 +1221,8 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
   TH2D  *h3; 
   float etamin, etamax, ptmin, ptmax; 
   int   n; 
-  char searchString1[2000], searchString2[2000] ,searchString3[2000], searchString4[2000];
+  char searchString1[2000], searchString2[2000] ,searchString3[2000], searchString4[2000], searchString5[2000] ;
+  char searchString6[2000], searchString7[2000] ,searchString8[2000], searchString9[2000], searchString10[2000];
   char sp[] = "%"; 
   char sf[] = "f";
   sprintf(searchString1, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s1, sp, sf, sp, sf, sp, sf, sp, sf); 
@@ -1184,95 +1237,172 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
   sprintf(searchString4, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s4, sp, sf, sp, sf, sp, sf, sp, sf); 
   cout << "searchString4: " << searchString4 << endl;
   
-     
-    while ((key = (TKey*)next())) {
-      n = -1; 
-      obj = key->ReadObj();
-      if (obj->InheritsFrom(TH2D::Class()) && !strcmp(obj->GetName(), binning)) {
-	cout << "Extracting binning histogram from " << obj->GetName() << endl;
-	fHbinning = (TH2D*)obj;
-      }
-      	
-      if (obj->InheritsFrom(TH2D::Class())) {
-	h3 = (TH2D*)f->Get(obj->GetName());
-	if ( !strcmp(h3->GetName(),"AllGenRes_1S")) {
-	  fAllGenRes = (TH2D*)h3->Clone("AllGenRes_1S");
-	  cout << "--> : " << fAllGenRes->GetName() << ", # entries = " << fAllGenRes->GetSumOfWeights() << endl;
-	}
-	
-	if ( !strcmp(h3->GetName(),"RecoGenRes_1S")) {
-	  fRecoGenRes = (TH2D*)h3->Clone("RecoGenRes_1S");
-	  cout << "--> : " << fRecoGenRes->GetName() << ", # entries = " << fRecoGenRes->GetSumOfWeights() << endl;
-	}	
-	
+  sprintf(searchString5, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s5, sp, sf, sp, sf, sp, sf, sp, sf); 
+  cout << "searchString5: " << searchString5 << endl;
+  
+  sprintf(searchString6, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s6, sp, sf, sp, sf, sp, sf, sp, sf); 
+  cout << "searchString6: " << searchString6 << endl;
+  
+  sprintf(searchString7, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s7, sp, sf, sp, sf, sp, sf, sp, sf); 
+  cout << "searchString7: " << searchString7 << endl;
+
+  sprintf(searchString8, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s8, sp, sf, sp, sf, sp, sf, sp, sf); 
+  cout << "searchString8: " << searchString8 << endl;
+
+  sprintf(searchString9, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s9, sp, sf, sp, sf, sp, sf, sp, sf); 
+  cout << "searchString9: " << searchString9 << endl;
+
+  sprintf(searchString10, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s10, sp, sf, sp, sf, sp, sf, sp, sf); 
+  cout << "searchString10: " << searchString10 << endl;
+    
+  while ((key = (TKey*)next())) {
+    n = -1; 
+    obj = key->ReadObj();
+    if (obj->InheritsFrom(TH2D::Class()) && !strcmp(obj->GetName(), binning)) {
+      cout << "Extracting binning histogram from " << obj->GetName() << endl;
+      fHbinning = (TH2D*)obj;
+    }
+    
+    if (obj->InheritsFrom(TH2D::Class())) {
+      h3 = (TH2D*)f->Get(obj->GetName());
+      if ( !strcmp(h3->GetName(),"AllGenRes_1S")) {
+	fAllGenRes = (TH2D*)h3->Clone("AllGenRes_1S");
+	cout << "--> : " << fAllGenRes->GetName() << ", # entries = " << fAllGenRes->GetSumOfWeights() << endl;
       }
       
-      if (obj->InheritsFrom(TH1D::Class())) {
-	h1 = (TH1D*)f->Get(obj->GetName());
-	
-	// -- sample UpsilonMass
-	n = sscanf(h1->GetName(), searchString1, &etamin, &etamax, &ptmin, &ptmax);
-	if (n > 0) {
-	  cout << "s1: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
-	  h2 = (TH1D*)h1->Clone(Form("s1:%s", h1->GetName()));
-	  if ( !strcmp(h2->GetName(),"s1:UpsilonMass,rapidity-2.4_-1.4")) continue;
-	  if ( !strcmp(h2->GetName(),"s1:UpsilonMass,rapidity-1.4_0.0")) continue;
-	  if ( !strcmp(h2->GetName(),"s1:UpsilonMass,rapidity0.0_1.4")) continue;
-	  if ( !strcmp(h2->GetName(),"s1:UpsilonMass,rapidity1.4_2.4")) continue;	  
-	  fS1Vector.push_back(*h2); 
-	  
-	}
-	
-	// -- sample AnaEff_1S
-	n = sscanf(h1->GetName(), searchString2, &etamin, &etamax, &ptmin, &ptmax);
-	if (n > 0) {
-	  cout << "s2: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
-	  h2 = (TH1D*)h1->Clone(Form("s2:%s", h1->GetName())); 
-	  fS2Vector.push_back(*h2); 
-	}
-	
-	// -- sample AnaEff_2S
-	n = sscanf(h1->GetName(), searchString3, &etamin, &etamax, &ptmin, &ptmax);
-	if (n > 0) {
-	  cout << "s3: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
-	  h2 = (TH1D*)h1->Clone(Form("s3:%s", h1->GetName())); 
-	  fS3Vector.push_back(*h2); 
-	}
-	
-	// -- sample AnaEff_3S
-	n = sscanf(h1->GetName(), searchString4, &etamin, &etamax, &ptmin, &ptmax);
-	if (n > 0) {
-	  cout << "s4: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
-	  h2 = (TH1D*)h1->Clone(Form("s4:%s", h1->GetName())); 
-	  fS4Vector.push_back(*h2); 
-	}	
-	
-	
-      }
+      if ( !strcmp(h3->GetName(),"RecoGenRes_1S")) {
+	fRecoGenRes = (TH2D*)h3->Clone("RecoGenRes_1S");
+	cout << "--> : " << fRecoGenRes->GetName() << ", # entries = " << fRecoGenRes->GetSumOfWeights() << endl;
+      }	
       
     }
-
-    fS1Yield = new TH2D("fS1Yield", 
-			Form("%s fS1Yield", s1), 
-			fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
-			fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
-			);
+    
+    if (obj->InheritsFrom(TH1D::Class())) {
+      h1 = (TH1D*)f->Get(obj->GetName());
+	
+      // -- sample UpsilonMass
+      n = sscanf(h1->GetName(), searchString1, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s1: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s1:%s", h1->GetName()));
+	fS1Vector.push_back(*h2); 
+	
+      }
+      
+      // -- sample AnaEff_1S
+      n = sscanf(h1->GetName(), searchString2, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s2: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s2:%s", h1->GetName())); 
+	fS2Vector.push_back(*h2); 
+      }
+      
+      // -- sample AnaEff_2S
+      n = sscanf(h1->GetName(), searchString3, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s3: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s3:%s", h1->GetName())); 
+	fS3Vector.push_back(*h2); 
+      }
+      
+      // -- sample AnaEff_3S
+      n = sscanf(h1->GetName(), searchString4, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s4: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s4:%s", h1->GetName())); 
+	fS4Vector.push_back(*h2); 
+      }	
+      
+      // -- sample MuIDEff_1S
+      n = sscanf(h1->GetName(), searchString5, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s5: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s5:%s", h1->GetName())); 
+	fS5Vector.push_back(*h2); 
+      }
+      
+      // -- sample MuIDEff_2S
+      n = sscanf(h1->GetName(), searchString6, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s6: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s6:%s", h1->GetName())); 
+	fS6Vector.push_back(*h2); 
+      }
+      
+      // -- sample MuIDEff_3S
+      n = sscanf(h1->GetName(), searchString7, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s7: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s7:%s", h1->GetName())); 
+	fS7Vector.push_back(*h2); 
+      }	
+      
+      // -- sample TrigEff_1S
+      n = sscanf(h1->GetName(), searchString8, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s8: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s8:%s", h1->GetName())); 
+	fS8Vector.push_back(*h2); 
+      }
+      
+      // -- sample TrigEff_2S
+      n = sscanf(h1->GetName(), searchString9, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s9: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s9:%s", h1->GetName())); 
+	fS9Vector.push_back(*h2); 
+      }
+      
+      // -- sample TrigEff_3S
+      n = sscanf(h1->GetName(), searchString10, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s10: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s10:%s", h1->GetName())); 
+	fS10Vector.push_back(*h2); 
+      }	      
+      
+      
+    }
+    
+  }
   
-    fAnaEff = new TH2D("fAnaEff", "fAnaEff", 
-		       fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
-		       fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
-		       );
-    fS1YieldCorrected = new TH2D("fS1YieldCorrected", 
-			Form("%s fS1YieldCorrected", s1), 
-			fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
-			fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
-			);
-    fS1YieldComparison = new TH2D("fS1YieldComparison", 
-			Form("%s fS1YieldComparison", s1), 
-			fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
-			fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
-			);
-
+  fS1Yield = new TH2D("fS1Yield", 
+		      Form("%s fS1Yield", s1), 
+		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		      );
+  
+  fAnaEff = new TH2D("fAnaEff", "fAnaEff", 
+		     fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		     fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		     );
+  
+  fMuIDEff = new TH2D("fMuIDEff", "fMuIdEff", 
+		     fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		     fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		     );  
+  
+  fTrigEff = new TH2D("fTrigEff", "fTrigEff", 
+		     fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		     fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		     );   
+  
+  fAcceptance = new TH2D("fAcceptance", "fAcceptance", 
+			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			 );
+  
+  fS1YieldCorrected = new TH2D("fS1YieldCorrected", 
+			       Form("%s fS1YieldCorrected", s1), 
+			       fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+			       fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			       );
+  fS1YieldComparison = new TH2D("fS1YieldComparison", 
+				Form("%s fS1YieldComparison", s1), 
+				fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+				fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+				);
+  
     
 }
 
@@ -1496,23 +1626,23 @@ void anaXS::addBackground(vector<TH1D> &vec, double sb, double p0, double p1) {
 
 void anaXS::integerEntries(TH1D  *h){
 
-	int bincontent;
-	double BinContent, remainder;
-	
-	for (Int_t i= 1 ; i <= h->GetNbinsX() ; i++){ 		
+  int bincontent;
+  double BinContent, remainder;
+  
+  for (Int_t i= 1 ; i <= h->GetNbinsX() ; i++){ 		
+    
+    bincontent = h->GetBinContent(i);  		
+    BinContent = h->GetBinContent(i);
+    remainder = BinContent - bincontent;
 		
-		bincontent = h->GetBinContent(i);  		
-		BinContent = h->GetBinContent(i);
-		remainder = BinContent - bincontent;
-		
-		if ( remainder >= 0.5 ){
-			h->SetBinContent(i,bincontent+1);  
-		} else if ( remainder < 0.5){
-			h->SetBinContent(i,bincontent);
-		}
-	}
+    if ( remainder >= 0.5 ){
+      h->SetBinContent(i,bincontent+1);  
+    } else if ( remainder < 0.5){
+      h->SetBinContent(i,bincontent);
+    }
+  }
 
-
+  
 }
 
 void anaXS::GetAnaEff(){
@@ -1538,8 +1668,59 @@ void anaXS::GetAnaEff(){
     cout << nbin  << endl;
     fAnaEff->SetBinContent(nbin, yield); 
     fAnaEff->SetBinError(nbin, yieldE); 
-  
+    
   }
+  //makeCanvas(1);
+  //fAnaEff->Draw("colz");
+  
+}
+
+void anaXS::GetMuIDEff(){
+  
+  TH1D *h;
+  double pt, eta; 
+  double yield, yieldE;
+  int    nbin;
+  for (unsigned int i = 0; i < fS5Vector.size(); ++i) {
+    
+    h = &(fS5Vector[i]);
+    cout << h->GetName()  << endl;
+    yield = h->GetMean();
+    yieldE = h->GetMeanError(); 
+    cout << yield << " "  << yieldE << endl;
+    GetBinCenters(h->GetName(), eta, pt);
+    nbin = fMuIDEff->FindBin(eta, pt); 
+    cout << nbin  << endl;
+    fMuIDEff->SetBinContent(nbin, yield); 
+    fMuIDEff->SetBinError(nbin, yieldE); 
+  }
+  //makeCanvas(1);
+  //fMuIDEff->Draw("colz");
+  
+}
+
+void anaXS::GetTrigEff(){
+  
+  TH1D *h;
+  double pt, eta; 
+  double yield, yieldE;
+  int    nbin;
+  for (unsigned int i = 0; i < fS8Vector.size(); ++i) {
+    
+    h = &(fS8Vector[i]);
+    cout << h->GetName()  << endl;
+    yield = h->GetMean(); 
+    yieldE = h->GetMeanError(); 
+    cout << yield << " "  << yieldE << endl;
+    GetBinCenters(h->GetName(), eta, pt);
+    nbin = fTrigEff->FindBin(eta, pt); 
+    cout << nbin  << endl;
+    fTrigEff->SetBinContent(nbin, yield); 
+    fTrigEff->SetBinError(nbin, yieldE); 
+    
+  }
+  //makeCanvas(1);
+  //fTrigEff->Draw("colz");
   
 }
 
@@ -1555,17 +1736,13 @@ void anaXS::FITUpsilon(){
   
   double pt, eta; 
     
-  double yield, yieldE, width, widthE; 
+  double yield, yieldE; 
   int    nbin;
   int fitted(0);
   
   int status(0);
   const char* Status;
   
-  int bin(-1);
-	
-  //  	gStyle->SetOptStat(PRINT); 
-  //  	gStyle->SetOptFit(PRINT);
   gStyle->SetOptStat(0000000000000); 
   gStyle->SetOptFit(00000000000000);		 
   makeCanvas(1); 
@@ -4949,7 +5126,7 @@ void anaXS::makeCanvas(int i) {
     c1->ToggleEventStatus();
   }
   if (i & 2) { 
-    c2 = new TCanvas("c2", "c2", 300, 200, 400, 800);
+    c2 = new TCanvas("c2", "c2", 300, 200, 800, 400);
     c2->ToggleEventStatus();
   }
 }

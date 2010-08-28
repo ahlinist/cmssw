@@ -57,8 +57,10 @@ public:
   int MUTYPE2;
   double CHI2;
   int RESTYPE;
-  double PT1;
-  double PT2;
+  double PTHI;
+  double PTLO;
+  double ETAHI;
+  double ETALO; 
   int BIN;
   double MASSLO;
   double MASSHI;
