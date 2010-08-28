@@ -21,37 +21,14 @@
 #include <algorithm>
 #include <vector>
 
-namespace tokenizer {
-  // stolen shamelessly from the internet
-  void tokenize(const std::string& str,
-		std::vector<std::string>& tokens,
-		const std::string& delimiters = " ")
-  {
-    // Skip delimiters at beginning.
-    std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-    // Find first "non-delimiter".
-    std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
-    
-    while (std::string::npos != pos || std::string::npos != lastPos)
-      {
-        // Found a token, add it to the vector.
-        tokens.push_back(str.substr(lastPos, pos - lastPos));
-        // Skip delimiters.  Note the "not_of"
-        lastPos = str.find_first_not_of(delimiters, pos);
-        // Find next "non-delimiter"
-        pos = str.find_first_of(delimiters, lastPos);
-      }
-  }
-  
-}
-
 template <typename HistObject>
 class Histogrammer {
  public:
-  typedef void (*func_type)(const HistObject&);
+  typedef void (*func_type)(const HistObject&, const std::map<std::string,TObject*>&);
+  typedef void (*post_type)(const std::map<std::string,TObject*>&);
   
   /// for compatibility with REFLEX
-  Histogrammer() {}
+  Histogrammer() : weight_(0.0) {}
 
   /// ctor from parameter set
   Histogrammer(const edm::ParameterSet &, fwlite::TFileService &);
@@ -68,18 +45,34 @@ class Histogrammer {
 
   // in the base class register functions which take one object of type HistObject
   // special histograms are only filled for selected objects!
-  void registerFunction(const std::string& s, func_type fcn ) { funcNameToFunc_[s] = fcn; }
+  // if there is no post processing to be done, pass NULL
+  struct RegisterFunction {
+    RegisterFunction(const std::string& s,
+		     func_type f, 
+		     post_type p) {	
+      std::cout <<" Adding: " << s << " at " << (func_type)f << " , " << (post_type)p << std::endl; 
+      Histogrammer<HistObject>::registerFunction(s,f,p);
+      std::cout << Histogrammer<HistObject>::numberOfFunctions() << std::endl;      
+    }
+  };
+
+  static void registerFunction(const std::string&, func_type, post_type ); 
+  static int numberOfFunctions() { return funcNameToFunc_ ? funcNameToFunc_->size() : 0; }
 
  protected:
   
-  std::map<std::string, func_type > funcNameToFunc_; // filled using registerFunction in derived class
-  std::map<std::string,TObject*> specHistos_; // histo name to histogram
-  std::map<std::string,std::string> funcNameToHist_; // function name to histogram
+  static std::map<std::string, std::pair<func_type,post_type> > *funcNameToFunc_; // filled using registerFunction in derived class  
+  std::map<std::string,std::map<std::string,TObject*> > funcNameToHist_; // function name to histogram
 
  private:
 
   void initSpecialHistograms(TFileDirectory &,const edm::VParameterSet&);
   void fillSpecialHistograms(const HistObject &);
+  
+  void tokenize(const std::string&,
+		std::vector<std::string>&,
+		const std::string& delimiters);
+
 
   /// label of the input collection
   edm::InputTag src_;
@@ -89,10 +82,22 @@ class Histogrammer {
   std::vector<ExpressionHisto<HistObject>* > vhistograms_all_;
 };
 
+template <typename HistObject> std::map<std::string, std::pair<typename Histogrammer<HistObject>::func_type,typename Histogrammer<HistObject>::post_type> > *Histogrammer<HistObject>::funcNameToFunc_ = NULL;
+
+template <typename HistObject>
+void Histogrammer<HistObject>::registerFunction(const std::string& s, 
+						typename Histogrammer<HistObject>::func_type fcn, 
+						typename Histogrammer<HistObject>::post_type pst ) {
+  if(!funcNameToFunc_) 
+    funcNameToFunc_ = new std::map<std::string, std::pair<func_type,post_type> >();
+  (*funcNameToFunc_)[s] = std::make_pair(fcn,pst);
+}
+
+
 template <typename HistObject>
 Histogrammer<HistObject>::Histogrammer(const edm::ParameterSet & config,
-					       fwlite::TFileService &fs
-					       ) :
+				       fwlite::TFileService &fs
+				       ) :
   src_(config.getParameter<edm::InputTag>("src") ),
   weight_(config.getParameter<double>("eventWeight"))
 {
@@ -102,7 +107,7 @@ Histogrammer<HistObject>::Histogrammer(const edm::ParameterSet & config,
       
   std::vector<std::string> dirTokens;
 
-  tokenizer::tokenize(dirName,dirTokens,"/");
+  tokenize(dirName,dirTokens,"/");
 
   TFileDirectory lastdir = fs.mkdir(*(dirTokens.begin()));
 
@@ -131,6 +136,12 @@ Histogrammer<HistObject>::Histogrammer(const edm::ParameterSet & config,
 template<typename HistObject>
 Histogrammer<HistObject>::~Histogrammer()
 {
+  // first do post processing
+  for(typename std::map<std::string,std::pair<func_type,post_type> >::const_iterator i = funcNameToFunc_->begin();
+      i != funcNameToFunc_->end();
+      ++i) 
+    if(i->second.second)
+      i->second.second(funcNameToHist_[i->first]);
   
   // delete all histograms and clear the vector of pointers
   typename std::vector< ExpressionHisto<HistObject>* >::const_iterator hist;
@@ -138,6 +149,16 @@ Histogrammer<HistObject>::~Histogrammer()
     (*hist)->~ExpressionHisto<HistObject>();
   for (hist = vhistograms_selected_.begin(); hist != vhistograms_selected_.end(); ++hist)
     (*hist)->~ExpressionHisto<HistObject>();
+
+  for( std::map<std::string,std::map<std::string,TObject*> >::const_iterator fcn = funcNameToHist_.begin();
+       fcn != funcNameToHist_.end();
+       ++fcn ) {
+    for( std::map<std::string,TObject*>::const_iterator hist = fcn->second.begin();
+	 hist != fcn->second.end();
+	 ++hist ) {
+      delete hist->second;
+    }
+  }
 
   vhistograms_all_.clear();
   vhistograms_selected_.clear();
@@ -157,32 +178,30 @@ Histogrammer<HistObject>::initSpecialHistograms(TFileDirectory & dir,const edm::
 	std::string name = iCfg->getUntrackedParameter<std::string>("name");
 	std::string desc = iCfg->getUntrackedParameter<std::string>("description");
 	std::string vars = iCfg->getUntrackedParameter<std::string>("vars");
-	std::string func = iCfg->getUntrackedParameter<std::string>("associatedFunction");
+	std::string func = iCfg->getUntrackedParameter<std::string>("processFunction");
 
-	funcNameToHist_[func] = name;
-	specHistos_[name] = dir.make<TNtuple>(name.c_str(),
-					      desc.c_str(),
-					      vars.c_str());
+	funcNameToHist_[func][name] = dir.make<TNtuple>(name.c_str(),
+							desc.c_str(),
+							vars.c_str());
 
       } else if (type == "TH1F") {
 
-      std::string name = iCfg->getUntrackedParameter<std::string>("name");
-      std::string desc = iCfg->getUntrackedParameter<std::string>("desc");
-      std::string func = iCfg->getUntrackedParameter<std::string>("associatedFunction");
-      double min = iCfg->getUntrackedParameter<double>("min");
-      double max = iCfg->getUntrackedParameter<double>("max");      
-      int nbins = iCfg->getUntrackedParameter<int>("nbins");
+	std::string name = iCfg->getUntrackedParameter<std::string>("name");
+	std::string desc = iCfg->getUntrackedParameter<std::string>("desc");
+	std::string func = iCfg->getUntrackedParameter<std::string>("processFunction");
+	double min = iCfg->getUntrackedParameter<double>("min");
+	double max = iCfg->getUntrackedParameter<double>("max");      
+	int nbins = iCfg->getUntrackedParameter<int>("nbins");
 
-      funcNameToHist_[func] = name;
-      specHistos_[name] = dir.make<TH1F>(name.c_str(),
-					 desc.c_str(),
-					 nbins,min,max);
+	funcNameToHist_[func][name] = dir.make<TH1F>(name.c_str(),
+						     desc.c_str(),
+						     nbins,min,max);
 
       } else if (type == "TH2F") {
 
 	std::string name = iCfg->getUntrackedParameter<std::string>("name");
 	std::string desc = iCfg->getUntrackedParameter<std::string>("desc");
-	std::string func = iCfg->getUntrackedParameter<std::string>("associatedFunction");
+	std::string func = iCfg->getUntrackedParameter<std::string>("Function");
 	double xmin = iCfg->getUntrackedParameter<double>("xmin");
 	double xmax = iCfg->getUntrackedParameter<double>("xmax");      
 	int xnbins = iCfg->getUntrackedParameter<int>("xnbins");
@@ -190,11 +209,10 @@ Histogrammer<HistObject>::initSpecialHistograms(TFileDirectory & dir,const edm::
 	double ymax = iCfg->getUntrackedParameter<double>("ymax");      
 	int ynbins = iCfg->getUntrackedParameter<int>("ynbins");
 	
-	funcNameToHist_[func] = name;
-	specHistos_[name] = dir.make<TH2F>(name.c_str(),
-					   desc.c_str(),
-					   xnbins,xmin,xmax,
-					   ynbins,ymin,ymax);
+	funcNameToHist_[func][name] = dir.make<TH2F>(name.c_str(),
+						    desc.c_str(),
+						    xnbins,xmin,xmax,
+						    ynbins,ymin,ymax);
 	
       } else {
 	throw cms::Exception("InvalidInput") << "type : \'" << type << "\' is not allowed!" << std::endl;
@@ -216,50 +234,70 @@ template<typename HistObject>
 void
 Histogrammer<HistObject>::analyze(const std::vector<HistObject> &collection)
 {
-  // loop over histograms
-  typename std::vector<ExpressionHisto<HistObject>*>::const_iterator hist;
-  for (hist = vhistograms_all_.begin(); hist != vhistograms_all_.end(); ++hist)
-  {
-    // loop over collection
-    typename std::vector<HistObject>::const_iterator element, begin = collection.begin();
-    for (element = begin; element != collection.end(); ++element) {
+  // loop over collection
+  typename std::vector<HistObject>::const_iterator element, begin = collection.begin();
+  for (element = begin; element != collection.end(); ++element) {
+    // loop over histograms
+    typename std::vector<ExpressionHisto<HistObject>*>::const_iterator hist;
+    for (hist = vhistograms_all_.begin(); hist != vhistograms_all_.end(); ++hist)
       if ( !(*hist)->fill(*element, weight(), element-begin) ) break;
       
     } // loop over collection
-  } // loop over histograms
 }
 
 template<typename HistObject>
 void
 Histogrammer<HistObject>::analyze(const std::vector<reco::ShallowClonePtrCandidate> &collection)
-{
-  // loop over histograms
-  typename std::vector<ExpressionHisto<HistObject>*>::const_iterator hist;
-  for (hist = vhistograms_selected_.begin(); hist != vhistograms_selected_.end(); ++hist)
-  {
-    // loop over collection
-    std::vector<reco::ShallowClonePtrCandidate>::const_iterator it, begin;
-    it = begin = collection.begin();
-    for (; it != collection.end(); ++it) {
-      // convert the iterator to a pointer to its master
-      reco::CandidatePtr ptr = it->masterClonePtr();
-      const HistObject * element = dynamic_cast<const HistObject*>( ptr.get() );
+{  
+  // loop over collection
+  std::vector<reco::ShallowClonePtrCandidate>::const_iterator it, begin;
+  it = begin = collection.begin();
+  for (; it != collection.end(); ++it) {    
+    // convert the iterator to a pointer to its master
+    reco::CandidatePtr ptr = it->masterClonePtr();
+    const HistObject * element = dynamic_cast<const HistObject*>( ptr.get() );
 
+    // loop over histograms
+    typename std::vector<ExpressionHisto<HistObject>*>::const_iterator hist;
+    for (hist = vhistograms_selected_.begin(); hist != vhistograms_selected_.end(); ++hist)
       if ( !(*hist)->fill(*element, weight(), it-begin) ) break;
-      fillSpecialHistograms(*element);
-    } // loop over collection
-  } // loop over histograms
+ 
+    // fill special histos for this element
+    fillSpecialHistograms(*element);
+  } // loop over collection
 }
 
 template<typename HistObject>
 void 
 Histogrammer<HistObject>::fillSpecialHistograms(const HistObject & obj) 
 {
-  for(typename std::map<std::string,func_type>::const_iterator i = funcNameToFunc_.begin();
-      i != funcNameToFunc_.end();
-      ++i) 
-    i->second(obj);
+  if(funcNameToFunc_)
+    for(typename std::map<std::string,std::pair<func_type,post_type> >::const_iterator i = funcNameToFunc_->begin();
+	i != funcNameToFunc_->end();
+	++i) {
+      i->second.first(obj,funcNameToHist_[i->first]);
+    }
 }
 
+template<typename HistObject>
+void Histogrammer<HistObject>::tokenize(const std::string& str,
+					std::vector<std::string>& tokens,
+					const std::string& delimiters = " ")
+{
+  // Skip delimiters at beginning.
+  std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+  // Find first "non-delimiter".
+  std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
+  
+  while (std::string::npos != pos || std::string::npos != lastPos)
+    {
+      // Found a token, add it to the vector.
+      tokens.push_back(str.substr(lastPos, pos - lastPos));
+      // Skip delimiters.  Note the "not_of"
+      lastPos = str.find_first_not_of(delimiters, pos);
+      // Find next "non-delimiter"
+      pos = str.find_first_of(delimiters, lastPos);
+    }
+}  
 
 #endif
