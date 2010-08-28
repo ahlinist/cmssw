@@ -49,15 +49,11 @@ class Histogrammer {
   struct RegisterFunction {
     RegisterFunction(const std::string& s,
 		     func_type f, 
-		     post_type p) {	
-      std::cout <<" Adding: " << s << " at " << (func_type)f << " , " << (post_type)p << std::endl; 
-      Histogrammer<HistObject>::registerFunction(s,f,p);
-      std::cout << Histogrammer<HistObject>::numberOfFunctions() << std::endl;      
-    }
+		     post_type p) 
+    { Histogrammer<HistObject>::registerFunction(s,f,p); }
   };
 
   static void registerFunction(const std::string&, func_type, post_type ); 
-  static int numberOfFunctions() { return funcNameToFunc_ ? funcNameToFunc_->size() : 0; }
 
  protected:
   
@@ -137,11 +133,15 @@ template<typename HistObject>
 Histogrammer<HistObject>::~Histogrammer()
 {
   // first do post processing
-  for(typename std::map<std::string,std::pair<func_type,post_type> >::const_iterator i = funcNameToFunc_->begin();
-      i != funcNameToFunc_->end();
-      ++i) 
-    if(i->second.second)
-      i->second.second(funcNameToHist_[i->first]);
+  if(funcNameToFunc_) {
+    for(typename std::map<std::string,std::pair<func_type,post_type> >::const_iterator i = funcNameToFunc_->begin();
+	i != funcNameToFunc_->end();
+	++i) {
+      if(i->second.second) {
+	i->second.second(funcNameToHist_[i->first]);
+      }
+    }
+  }
   
   // delete all histograms and clear the vector of pointers
   typename std::vector< ExpressionHisto<HistObject>* >::const_iterator hist;
@@ -149,16 +149,6 @@ Histogrammer<HistObject>::~Histogrammer()
     (*hist)->~ExpressionHisto<HistObject>();
   for (hist = vhistograms_selected_.begin(); hist != vhistograms_selected_.end(); ++hist)
     (*hist)->~ExpressionHisto<HistObject>();
-
-  for( std::map<std::string,std::map<std::string,TObject*> >::const_iterator fcn = funcNameToHist_.begin();
-       fcn != funcNameToHist_.end();
-       ++fcn ) {
-    for( std::map<std::string,TObject*>::const_iterator hist = fcn->second.begin();
-	 hist != fcn->second.end();
-	 ++hist ) {
-      delete hist->second;
-    }
-  }
 
   vhistograms_all_.clear();
   vhistograms_selected_.clear();
@@ -201,7 +191,7 @@ Histogrammer<HistObject>::initSpecialHistograms(TFileDirectory & dir,const edm::
 
 	std::string name = iCfg->getUntrackedParameter<std::string>("name");
 	std::string desc = iCfg->getUntrackedParameter<std::string>("desc");
-	std::string func = iCfg->getUntrackedParameter<std::string>("Function");
+	std::string func = iCfg->getUntrackedParameter<std::string>("processFunction");
 	double xmin = iCfg->getUntrackedParameter<double>("xmin");
 	double xmax = iCfg->getUntrackedParameter<double>("xmax");      
 	int xnbins = iCfg->getUntrackedParameter<int>("xnbins");
@@ -210,9 +200,9 @@ Histogrammer<HistObject>::initSpecialHistograms(TFileDirectory & dir,const edm::
 	int ynbins = iCfg->getUntrackedParameter<int>("ynbins");
 	
 	funcNameToHist_[func][name] = dir.make<TH2F>(name.c_str(),
-						    desc.c_str(),
-						    xnbins,xmin,xmax,
-						    ynbins,ymin,ymax);
+						     desc.c_str(),
+						     xnbins,xmin,xmax,
+						     ynbins,ymin,ymax);
 	
       } else {
 	throw cms::Exception("InvalidInput") << "type : \'" << type << "\' is not allowed!" << std::endl;
