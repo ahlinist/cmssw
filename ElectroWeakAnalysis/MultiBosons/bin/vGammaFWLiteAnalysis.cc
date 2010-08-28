@@ -98,6 +98,9 @@ int main ( int argc, char ** argv )
   Histogrammer<reco::CompositeCandidate>* WENuGammaHistos(NULL);
   Histogrammer<reco::CompositeCandidate>* ZNuNuGammaHistos(NULL);
   
+  std::cout << Histogrammer<pat::Muon>::numberOfFunctions() << std::endl;
+  
+
   // vgamma event hypotheses
   if(cfg->existsAs<edm::ParameterSet>("ZMuMuGamma")) {
     edm::ParameterSet histConf = cfg->getParameter<edm::ParameterSet>("ZMuMuGamma");
@@ -162,6 +165,8 @@ int main ( int argc, char ** argv )
     if(histConf.existsAs<edm::ParameterSet>("photonHistos")) 
       znunugphotonHistos = new Histogrammer<pat::Photon>(histConf.getParameter<edm::ParameterSet>("photonHistos"),fs);    
   }
+
+ 
 
   cout << "Reading input file(s) ... " << flush;
   std::vector<std::string> filesToProcess;
