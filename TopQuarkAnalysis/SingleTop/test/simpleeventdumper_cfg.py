@@ -12,7 +12,7 @@ process.source = cms.Source("PoolSource",
 #    'file:emu4jetsmet_142038_702_367782938.root'
     'rfio:/castor/cern.ch/cms/store/data/Run2010A/Mu/RECO/v4/000/140/331/94659715-5F91-DF11-BBCD-001D09F2AF96.root'
     ),
-    eventsToProcess = cms.untracked.VEventRange("140331:267971718-140331:267971718")
+#    eventsToProcess = cms.untracked.VEventRange("140331:267971718-140331:267971718")
 )
 
 # conditions ------------------------------------------------------------------
@@ -89,11 +89,13 @@ process.demo = cms.EDAnalyzer('SimpleEventDumper',
                               pfpatjetSource = cms.InputTag("patJetsAK5PF"), #corrected, and possibility to access b-tagging for it
                               jptjetSource = cms.InputTag("patJetsAK5JPT"),                             
 
+                              lep_pt_min = cms.double(10),
+                              mt_min = cms.double(20),
                               jet_pt_min = cms.double(20),
-                              useL5corr = cms.bool(True),
-                              useL5corr_including_gluons = cms.bool(True),
+                              useL5corr = cms.bool(False),
+                              useL5corr_including_gluons = cms.bool(False),
 
-                              imgSolStrategy = cms.int32(1), #0: ignore Img part; 1: adjust MW (as TOP-09-005)
+                              imgSolStrategy = cms.int32(1), #0: ignore Img part; 1: adjust MT to MW (as TOP-09-005)
                               )
 
 
