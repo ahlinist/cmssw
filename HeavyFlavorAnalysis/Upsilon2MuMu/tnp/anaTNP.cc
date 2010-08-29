@@ -209,8 +209,8 @@ void anaTNP::loadFiles(const char *dir, int i) {
     } else if (40 == i) {
       ufile = fDirectory + string("/upsilon/100804.sp10.mt.COMBINED.tnpReaderTrig_MC.default.root");
      // ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
-      jfile = fDirectory + string("/jpsi/100807.data.mt.tnpReaderMuID_DATA.JPSI.default.root");
-     // jfile = fDirectory + string("/jpsi/ppMuMuX_7TeV_JpsiBackground.root");  
+      //jfile = fDirectory + string("/jpsi/100807.data.mt.tnpReaderMuID_DATA.CompareICHEP.default.root");
+      jfile = fDirectory + string("/jpsi/100807.data.mt.tnpReaderMuID_DATA.ComEndCaps.default.root");  
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaTNP::loadfiles()" << endl;
       return;
@@ -318,7 +318,10 @@ void anaTNP::makeAllDATA(int channel) {
     // -- fill histograms
     fSample = string("jpsi");
     readHistogramsDATA(fM[1], "mm", "mt", "mmbar", "mt,pt-eta");
-        
+    
+    // -- add backgrounds
+    addBackground(fS1VectorPos, 0.3);
+    
     fitJpsi(1);
     fillPidTables(0); // 0 - DATA, 1 - MC
     //validation();
@@ -949,8 +952,8 @@ void anaTNP::projections(int mode) {
       maxPad = 20; 
     }
 
-    for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
-      c0->cd(i-1); shrinkPad(0.20, 0.15); 
+    for (int i = 1; i <= hpt->GetNbinsY(); ++i) {
+      c0->cd(i); shrinkPad(0.20, 0.15); 
       lo = hpt->GetYaxis()->GetBinLowEdge(i); 
       hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
       
@@ -1004,8 +1007,8 @@ void anaTNP::projections(int mode) {
       maxPad = 20; 
     }
     
-    for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
-      c0->cd(i-1); shrinkPad(0.20, 0.15); 
+    for (int i = 1; i <= hpt->GetNbinsY(); ++i) {
+      c0->cd(i); shrinkPad(0.20, 0.15); 
       lo = hpt->GetYaxis()->GetBinLowEdge(i); 
       hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
       
@@ -1108,7 +1111,7 @@ void anaTNP::projections(int mode) {
     }
     
     c0->cd(maxPad); 
-    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg = new TLegend(0.3,0.2,0.8,0.6);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("negative muons");
     legge = legg->AddEntry(hPmct, " MC truth","p"); legge->SetTextColor(kBlack);
@@ -1172,7 +1175,7 @@ void anaTNP::projections(int mode) {
     }
     
     c0->cd(maxPad); 
-    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg = new TLegend(0.3,0.2,0.8,0.6);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("positive muons");
     legge = legg->AddEntry(hPmct, " MC truth","p"); legge->SetTextColor(kBlack);
@@ -1217,8 +1220,8 @@ void anaTNP::projections(int mode) {
       maxPad = 20; 
     }
 
-    for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
-      c0->cd(i-1); shrinkPad(0.20, 0.15); 
+    for (int i = 1; i <= hpt->GetNbinsY(); ++i) {
+      c0->cd(i); shrinkPad(0.20, 0.15); 
       lo = hpt->GetYaxis()->GetBinLowEdge(i); 
       hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
       
@@ -1245,7 +1248,7 @@ void anaTNP::projections(int mode) {
     }
 
     c0->cd(maxPad); 
-    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg = new TLegend(0.3,0.2,0.8,0.6);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("negative muons");
     legge = legg->AddEntry(hTmct, " MC truth","p"); legge->SetTextColor(kBlack);
@@ -1278,8 +1281,8 @@ void anaTNP::projections(int mode) {
       maxPad = 20; 
     }
     
-    for (int i = 2; i <= hpt->GetNbinsY(); ++i) {
-      c0->cd(i-1); shrinkPad(0.20, 0.15); 
+    for (int i = 1; i <= hpt->GetNbinsY(); ++i) {
+      c0->cd(i); shrinkPad(0.20, 0.15); 
       lo = hpt->GetYaxis()->GetBinLowEdge(i); 
       hi = hpt->GetYaxis()->GetBinLowEdge(i+1); 
       
@@ -1306,7 +1309,7 @@ void anaTNP::projections(int mode) {
       
     }
     c0->cd(maxPad); 
-    legg = new TLegend(0.3,0.3,0.8,0.8);
+    legg = new TLegend(0.3,0.2,0.8,0.6);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("positive muons");
     legge = legg->AddEntry(hTmct, " MC truth","p"); legge->SetTextColor(kBlack);
