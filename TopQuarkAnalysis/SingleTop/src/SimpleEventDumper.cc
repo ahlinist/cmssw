@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.14 2010/08/25 16:25:57 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.15 2010/08/26 12:52:08 giamman Exp $
 //
 //
 
@@ -117,7 +117,7 @@ class SimpleEventDumper : public edm::EDAnalyzer {
   edm::Handle<std::vector<reco::PFJet> > pfjets;
   edm::Handle<std::vector<pat::Jet> > pfpatjets;
   edm::Handle<std::vector<pat::Jet> > jptjets;
-  double jet_threshold;
+  double jet_threshold,lep_threshold,mt_threshold;
   bool l5corr,l5corr_inclGlu;
   int imgSolStrategy;
 };
@@ -148,6 +148,8 @@ SimpleEventDumper::SimpleEventDumper(const edm::ParameterSet& iConfig)
   pfpatjetSource_     = iConfig.getParameter<edm::InputTag>("pfpatjetSource");
   jptjetSource_     = iConfig.getParameter<edm::InputTag>("jptjetSource");
   jet_threshold  = iConfig.getParameter<double>("jet_pt_min");
+  lep_threshold  = iConfig.getParameter<double>("lep_pt_min");
+  mt_threshold  = iConfig.getParameter<double>("mt_min");
   l5corr = iConfig.getParameter<bool>("useL5corr");
   l5corr_inclGlu = iConfig.getParameter<bool>("useL5corr_including_gluons");
   imgSolStrategy = iConfig.getParameter<int>("imgSolStrategy");
@@ -292,6 +294,8 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     et = (*electrons)[0].pt();
   }
 
+  if (muons->size() == 0 && electrons->size() == 0) return;
+
   // Choose leading lepton
   double lx=0;
   double ly=0;
@@ -308,7 +312,9 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     cout << "leading lepton is an electron" << endl;
   } else {
     cout << "no selected lepton" << endl;
+    return;
   }
+  if (lt < lep_threshold) return;
   // note: asap I will add lepton selection as in TOPLJ, and here the check will be based on number_of_selected_muons and _electrons
 
   // Jets
@@ -363,9 +369,11 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     }
     cout << "-----------------------------------" << endl;
     cout << "The highest-TCHP PAT jet is #" << index_max_tchp << endl;
-    jx_pat = (*patjets)[index_max_tchp].px();
-    jy_pat = (*patjets)[index_max_tchp].py();
-    jz_pat = (*patjets)[index_max_tchp].pz();
+    if (index_max_tchp > -1) {
+      jx_pat = (*patjets)[index_max_tchp].px();
+      jy_pat = (*patjets)[index_max_tchp].py();
+      jz_pat = (*patjets)[index_max_tchp].pz();
+    }
   }
 
   try {
@@ -408,9 +416,11 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     }
     cout << "-----------------------------------" << endl;
     cout << "The PF jet matched to the highest-TCHP PAT jet is #" << index_matched_pf_patbtag << endl;
-    jx_pf = (*pfjets)[index_matched_pf_patbtag].px();
-    jy_pf = (*pfjets)[index_matched_pf_patbtag].py();
-    jz_pf = (*pfjets)[index_matched_pf_patbtag].pz();
+    if (index_matched_pf_patbtag>-1) {
+      jx_pf = (*pfjets)[index_matched_pf_patbtag].px();
+      jy_pf = (*pfjets)[index_matched_pf_patbtag].py();
+      jz_pf = (*pfjets)[index_matched_pf_patbtag].pz();
+    }
   }
 
   try {
@@ -454,9 +464,11 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     }
     cout << "-----------------------------------" << endl;
     cout << "The highest-TCHP PF-through-PAT jet is #" << index_max_tchp_pf << endl;
-    jx_pfpat = (*pfpatjets)[index_max_tchp_pf].px();
-    jy_pfpat = (*pfpatjets)[index_max_tchp_pf].py();
-    jz_pfpat = (*pfpatjets)[index_max_tchp_pf].pz();
+    if (index_max_tchp_pf > -1) {
+      jx_pfpat = (*pfpatjets)[index_max_tchp_pf].px();
+      jy_pfpat = (*pfpatjets)[index_max_tchp_pf].py();
+      jz_pfpat = (*pfpatjets)[index_max_tchp_pf].pz();
+    }
   }
 
   try {
@@ -493,10 +505,14 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     }
     cout << "-----------------------------------" << endl;
     cout << "The highest-TCHP JPT jet is #" << index_max_tchp_jpt << endl;
-    jx_jpt = (*jptjets)[index_max_tchp_jpt].px();
-    jy_jpt = (*jptjets)[index_max_tchp_jpt].py();
-    jz_jpt = (*jptjets)[index_max_tchp_jpt].pz();
+    if (index_max_tchp_jpt > -1) {
+      jx_jpt = (*jptjets)[index_max_tchp_jpt].px();
+      jy_jpt = (*jptjets)[index_max_tchp_jpt].py();
+      jz_jpt = (*jptjets)[index_max_tchp_jpt].pz();
+    }
   }
+
+  if (patjets->size() == 0 && pfjets->size() == 0 && jptjets->size() == 0) return;
 
   // MET
 
@@ -520,7 +536,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       met_pat_x = (*patmets)[0].px();
       met_pat_y = (*patmets)[0].py();
       //      cout << "met_x = " << met_pat_x << ", met_y = " << met_pat_y << endl;
-      if (l5corr) {
+      if (l5corr && patjets->size() > 0) {
 	met_patL5_x = met_pat_x + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].px() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].px();
 	met_patL5_y = met_pat_y + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].py() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].py();
 	if (l5corr_inclGlu) { // correct all other jets, if any, as gluons
@@ -579,13 +595,15 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       //cout << "met_x = " << met_pf_x << ", met_y = " << met_pf_y << endl;
       met_pfcor_x = met_pf_x;
       met_pfcor_y = met_pf_y;
-      for (unsigned int j = 0; j < pfpatjets->size(); j++){
-	met_pfcor_x += (*pfjets)[j].px() - (*pfpatjets)[j].px();
-	met_pfcor_y += (*pfjets)[j].py() - (*pfpatjets)[j].py();
+      if (pfpatjets->size() > 0) {// Type-I corrections "by hand"
+	for (unsigned int j = 0; j < pfpatjets->size(); j++){
+	  met_pfcor_x += (*pfjets)[j].px() - (*pfpatjets)[j].px();
+	  met_pfcor_y += (*pfjets)[j].py() - (*pfpatjets)[j].py();
+	}
+	metPFcor = AddQuadratically(met_pfcor_x,met_pfcor_y);
+	phiPFcor = atan2(met_pfcor_y,met_pfcor_x);
+	cout << "PF met (corrected) = " << metPFcor << ", phi = " << phiPFcor << endl;
       }
-      metPFcor = AddQuadratically(met_pfcor_x,met_pfcor_y);
-      phiPFcor = atan2(met_pfcor_y,met_pfcor_x);
-      cout << "PF met (corrected) = " << metPFcor << ", phi = " << phiPFcor << endl;
     }
   } catch (std::exception & err) {
     std::cout <<"ERROR: MET label not found ("<<pfmetSource_<<")"<< std::endl;
@@ -621,37 +639,48 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     double mt_pfcor = MT(lx,ly,met_pfcor_x,met_pfcor_y);
     double mt_tc = MT(lx,ly,met_tc_x,met_tc_y);
     cout << " with MET from PAT: " << mt_pat << endl;
-    if (l5corr) cout << " with MET from PAT+L5: " << mt_patL5 << endl;
+    if (l5corr && patjets->size() > 0) cout << " with MET from PAT+L5: " << mt_patL5 << endl;
     cout << " with MET from PF: " << mt_pf << endl;
-    cout << " with MET from PF corrected: " << mt_pfcor << endl;
+    if (pfpatjets->size() > 0) cout << " with MET from PF corrected: " << mt_pfcor << endl;
     cout << " with tcMET: " << mt_tc << endl;
+
+    if (mt_pat < mt_threshold && mt_pf < mt_threshold && mt_tc < mt_threshold) return;
   }
 
   // Top
   cout << "-----------------------------------" << endl;
   cout << "Top reconstruction " << endl;
 
-  cout << " PAT: " << endl;
-  TLorentzVector Top_pat = Top(lx,ly,lz,met_pat_x,met_pat_y,jx_pat,jy_pat,jz_pat);
-  double mtop_pat = Top_pat.M();
-  cout << "  mtop = " << mtop_pat << endl;
-  double cosTheta_pat = TopPolAngle_LepLqj(Top_pat,lx,ly,lz,(*patjets)[index_bveto].px(),(*patjets)[index_bveto].py(),(*patjets)[index_bveto].pz());
-  cout << "  cosTheta* = " << cosTheta_pat << endl;
 
-  cout << " PF, uncorrected: " << endl;
-  TLorentzVector Top_pf = Top(lx,ly,lz,met_pf_x,met_pf_y,jx_pf,jy_pf,jz_pf);
-  double mtop_pf = Top_pf.M();
-  cout << "  mtop = " << mtop_pf << endl;
+  if (index_max_tchp > -1 && index_bveto > -1) {
+    cout << " PAT: " << endl;
+    TLorentzVector Top_pat = Top(lx,ly,lz,met_pat_x,met_pat_y,jx_pat,jy_pat,jz_pat);
+    double mtop_pat = Top_pat.M();
+    cout << "  mtop = " << mtop_pat << endl;
+    double cosTheta_pat = TopPolAngle_LepLqj(Top_pat,lx,ly,lz,(*patjets)[index_bveto].px(),(*patjets)[index_bveto].py(),(*patjets)[index_bveto].pz());
+    cout << "  cosTheta* = " << cosTheta_pat << endl;
+  }
 
-  cout << " PF, corrected: " << endl;
-  TLorentzVector Top_pfcor = Top(lx,ly,lz,met_pfcor_x,met_pfcor_y,jx_pfpat,jy_pfpat,jz_pfpat);
-  double mtop_pfcor = Top_pfcor.M();
-  cout << "  mtop = " << mtop_pfcor << endl;
+  if (index_matched_pf_patbtag > -1) {
+    cout << " PF, uncorrected: " << endl;
+    TLorentzVector Top_pf = Top(lx,ly,lz,met_pf_x,met_pf_y,jx_pf,jy_pf,jz_pf);
+    double mtop_pf = Top_pf.M();
+    cout << "  mtop = " << mtop_pf << endl;
+  }
 
-  cout << " JPT+tcMET: " << endl;
-  TLorentzVector Top_jpt = Top(lx,ly,lz,met_tc_x,met_tc_y,jx_jpt,jy_jpt,jz_jpt);
-  double mtop_jpt = Top_jpt.M();
-  cout << "  mtop = " << mtop_jpt << endl;
+  if (index_max_tchp_pf > -1) {
+    cout << " PF, corrected: " << endl;
+    TLorentzVector Top_pfcor = Top(lx,ly,lz,met_pfcor_x,met_pfcor_y,jx_pfpat,jy_pfpat,jz_pfpat);
+    double mtop_pfcor = Top_pfcor.M();
+    cout << "  mtop = " << mtop_pfcor << endl;
+  }
+
+  if (index_max_tchp_jpt > -1) {
+    cout << " JPT+tcMET: " << endl;
+    TLorentzVector Top_jpt = Top(lx,ly,lz,met_tc_x,met_tc_y,jx_jpt,jy_jpt,jz_jpt);
+    double mtop_jpt = Top_jpt.M();
+    cout << "  mtop = " << mtop_jpt << endl;
+  }
 
 }
 
