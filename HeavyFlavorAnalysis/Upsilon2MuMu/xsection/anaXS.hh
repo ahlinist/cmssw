@@ -70,6 +70,7 @@ public:
   void integerEntries(TH1D  *h);
   void validation();
   void projections();
+  void PlotProjections();
   void allDifferences(int jpsiOnly = 0); 
   void ptDifference(const char* a, const char* b, double MIN, double MAX, const char *fname = "ptDifference.pdf"); 
   
@@ -105,6 +106,9 @@ public:
   
   //-- 2d histograms for the (fitted) event yields
   TH2D *fS1Yield, *fAllGenRes, *fRecoGenRes, *fAnaEff, *fS1YieldCorrected, *fS1YieldComparison , *fAcceptance, *fMuIDEff, *fTrigEff;
+  
+  //-- 1d histograms for the (fitted) event yields
+  TH1D *fAcceptanceProjPt, *fS1YieldPt, *fAllGenResPt, *fS1YieldEta, *fAllGenResEta; 
   
   // -- vectors containing the fitted histograms: S1 =mm , S2 = mt, S3 = mmbar
   std::vector<TH1D> fS1VectorPos,    fS1VectorNeg,    fS2VectorPos,    fS2VectorNeg,    fS3VectorPos,    fS3VectorNeg; 
