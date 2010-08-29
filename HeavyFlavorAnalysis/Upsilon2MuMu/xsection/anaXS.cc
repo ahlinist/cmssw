@@ -123,10 +123,15 @@ void anaXS::init(const char *dir, int i) {
   if (fS1Yield) fS1Yield->Reset();
   if (fS1YieldCorrected) fS1YieldCorrected->Reset();
   if (fS1YieldComparison) fS1YieldComparison->Reset();
+  if (fS1YieldPt) fS1YieldPt->Reset();
+  if (fS1YieldEta) fS1YieldEta->Reset();
   if (fAnaEff) fAnaEff->Reset();
   if (fAllGenRes) fAllGenRes->Reset();
+  if (fAllGenResPt) fAllGenResPt->Reset();
+  if (fAllGenResEta) fAllGenResEta->Reset();
   if (fAcceptance) fAcceptance->Reset();
   if (fRecoGenRes) fRecoGenRes->Reset();
+  if (fAcceptanceProjPt) fAcceptanceProjPt->Reset();
 
   /////////////////////////
   
@@ -167,9 +172,9 @@ void anaXS::loadFiles(const char *dir, int i) {
 
     fM[0] = new TFile(ufile.c_str()); lM[0] = 1.;
     ufile = fDirectory + string("/") + string("upsilon/100825.sp10.mm.2s.xsReader.default.root");
-    fM[1] = new TFile(ufile.c_str()); lM[1] = 1.04; 
+    fM[1] = new TFile(ufile.c_str()); lM[1] = 1.66; 
     ufile = fDirectory + string("/") + string("upsilon/100825.sp10.mm.3s.xsReader.default.root");
-    fM[2] = new TFile(ufile.c_str()); lM[2] = 1.81; 
+    fM[2] = new TFile(ufile.c_str()); lM[2] = 3.43; 
     cout << "Got the Files for Merging" << endl;
   }
 
@@ -237,7 +242,7 @@ void anaXS::loadFiles(const char *dir, int i) {
 // ----------------------------------------------------------------------
 void anaXS::combineUpsilons() {
   
-  string ufile = fDirectory + string("/upsilon/upsilon.root");
+  string ufile = fDirectory + string("/upsilon/100825.sp10.mm.COMBINED.xsReader.default.root");
   TFile *f = new TFile(ufile.c_str(), "RECREATE"); 
 
   fM[0]->cd();
@@ -419,7 +424,7 @@ void anaXS::makeAllMC(int channel) {
     GetMuIDEff();
     GetTrigEff();
     CorrectedYields();
-    //projections(); 
+    PlotProjections(); 
     
   }
 
@@ -924,6 +929,103 @@ void anaXS::ptDifference(const char *a, const char *b, double MIN, double MAX, c
   
 }
 
+void anaXS::PlotProjections() {
+
+  double bin_contentAll(0); double bin_contentReco(0); double bin_ratioA(0);
+  double bin_contentYield(0); double bin_ratio(0);
+  plotAcceptance();
+  makeCanvas(2);
+  //c1->Divide(1,2);
+  //c4->cd(1);
+  //fAcceptance->Draw("colz");
+  for (int j = 1; j <= fAcceptance->GetNbinsY(); ++j){
+    for (int i = 1; i <= fAcceptance->GetNbinsX(); ++i) {
+      //cout << fAllGenRes->GetCellContent(i,j) << endl;
+      //cout << fRecoGenRes->GetCellContent(i,j) << endl;
+      bin_contentAll += fAllGenRes->GetCellContent(i,j);
+      bin_contentReco += fRecoGenRes->GetCellContent(i,j);
+      bin_contentYield += fS1YieldCorrected->GetCellContent(i,j);
+    }
+    bin_ratio = bin_contentReco/bin_contentAll;
+    //cout << "bin_ratio = "  << bin_ratio << endl;
+    fAcceptanceProjPt->SetBinContent(j,bin_ratio);
+    cout << bin_contentYield << endl;
+    fS1YieldPt->SetBinContent(j,bin_contentYield);
+    fAllGenResPt->SetBinContent(j,bin_contentAll);
+    bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
+    bin_contentYield=0;
+  }
+  //c1->cd(2);
+  fAcceptanceProjPt->GetXaxis()->SetTitle("P_{T}");
+  fAcceptanceProjPt->SetMinimum(0.2);
+  fAcceptanceProjPt->SetMaximum(1.05);
+  fAcceptanceProjPt->SetMarkerStyle(22);
+  fAcceptanceProjPt->SetMarkerColor(2);
+  fAcceptanceProjPt->SetLineColor(2);
+  fAcceptanceProjPt->Draw("p");
+  legg = new TLegend(0.6,0.6,0.8,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+  //legg->SetHeader("Acceptance");
+  legge = legg->AddEntry(fAcceptanceProjPt,  "Y(1S) Acceptance ","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  // makeCanvas(1);
+  fS1YieldPt->SetTitle("Yield Comparison");
+  fS1YieldPt->GetXaxis()->SetTitle("P_{T}");
+  fS1YieldPt->SetMinimum(50000.);
+  fS1YieldPt->SetMaximum(500000.);
+  fS1YieldPt->SetMarkerStyle(21);
+  fS1YieldPt->SetMarkerColor(3);
+  fS1YieldPt->SetLineColor(3);
+  fAllGenResPt->SetMarkerStyle(20);
+  fAllGenResPt->SetMarkerColor(4);
+  fAllGenResPt->SetLineColor(4);
+  fS1YieldPt->Draw("p");
+  fAllGenResPt->Draw("psame");
+  legg = new TLegend(0.6,0.6,0.8,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+  legg->SetHeader("Yield Comparison");
+  legge = legg->AddEntry(fS1YieldPt,  "Reconstructed Yield ","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(fAllGenResPt,  "True Yield","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  
+  bin_contentAll=0; bin_contentYield=0;
+  for (int i = 1; i <= fAcceptance->GetNbinsX(); ++i) {
+    for (int j = 1; j <= fAcceptance->GetNbinsY(); ++j){
+  
+      bin_contentAll += fAllGenRes->GetCellContent(i,j);
+      bin_contentYield += fS1YieldCorrected->GetCellContent(i,j);
+
+    }
+    
+    fS1YieldEta->SetBinContent(i,bin_contentYield);
+    fAllGenResEta->SetBinContent(i,bin_contentAll);
+    bin_contentAll=0;
+    bin_contentYield=0;
+    
+  }
+
+  //makeCanvas(1);
+  fS1YieldEta->SetTitle("Yield Comparison");
+  fS1YieldEta->GetXaxis()->SetTitle("Rapidity");
+  fS1YieldEta->SetMinimum(250000.);
+  fS1YieldEta->SetMaximum(500000.);
+  fS1YieldEta->SetMarkerStyle(21);
+  fS1YieldEta->SetMarkerColor(3);
+  fS1YieldEta->SetLineColor(3);
+  fAllGenResEta->SetMarkerStyle(20);
+  fAllGenResEta->SetMarkerColor(4);
+  fAllGenResEta->SetLineColor(4);
+  //fS1YieldEta->Draw("p");
+  //fAllGenResEta->Draw("psame");
+  legg = new TLegend(0.6,0.7,0.8,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
+  legg->SetHeader("Yield Comparison");
+  legge = legg->AddEntry(fS1YieldEta,  "Reconstructed Yield ","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(fAllGenResEta,  "True Yield","p"); legge->SetTextColor(kBlack);
+  //legg->Draw();
+
+  
+}
 
 // ----------------------------------------------------------------------
 void anaXS::projections() {
@@ -1391,6 +1493,25 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
 			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
 			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
 			 );
+  fAcceptanceProjPt = new TH1D("Acceptance", "Acceptance", 
+			       fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			       );
+  
+  fS1YieldPt = new TH1D("S1YieldPt", "S1YieldPt", 
+			fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			);
+
+  fS1YieldEta = new TH1D("S1YieldEta", "S1YieldEta", 
+			fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray()
+			);  
+  
+  fAllGenResPt = new TH1D("AllGenResPt", "AllGenResPt", 
+			fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			);  
+  
+  fAllGenResEta = new TH1D("AllGenResEta", "AllGenResEta", 
+			fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray()
+			);    
   
   fS1YieldCorrected = new TH2D("fS1YieldCorrected", 
 			       Form("%s fS1YieldCorrected", s1), 
@@ -1670,8 +1791,8 @@ void anaXS::GetAnaEff(){
     fAnaEff->SetBinError(nbin, yieldE); 
     
   }
-  //makeCanvas(1);
-  //fAnaEff->Draw("colz");
+  makeCanvas(1);
+  fAnaEff->Draw("colz");
   
 }
 
