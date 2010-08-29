@@ -16,8 +16,8 @@ const int  tnpReader2::fNq;
 // ----------------------------------------------------------------------
 tnpReader2::tnpReader2(TChain *tree, TString evtClassName): treeReaderTNP(tree, evtClassName) {
   cout << "--> tnpReader2> This is the start ..." << endl;
-  fPTbin[0] = 3.5; fPTbin[1] = 5.; fPTbin[2] = 7.; fPTbin[3] = 20.;
-  fEtabin[0] = -2.4; fEtabin[1] = -1.1; fEtabin[2] = 1.1; fEtabin[3] = 2.4;
+  fPTbin[0] = 3.; fPTbin[1] = 4.; fPTbin[2] = 5.; fPTbin[3] = 6.; fPTbin[4] = 20.;
+  fEtabin[0] = -2.4; fEtabin[1] = -1.2; fEtabin[2] = -0.4; fEtabin[3] = 0.4; fEtabin[4] = 1.2; fEtabin[5] = 2.4;
   fQ[0] = -1;  fQ[1] = 1;
 }
 // ----------------------------------------------------------------------
@@ -34,7 +34,7 @@ void tnpReader2::eventProcessing() {
   
   //cout << " NEW EVENT  " << endl;
   if ( SAMPLE == 1 ) MCTruth(MODE);  // For running on MC
-  if ( isPathPreScaled(HLTPATH_TAG) ) goto end;;
+  if ( isPathPreScaled(HLTPATH_TAG) ) goto end;
   if ( !isPathFired(HLTPATH_TAG) ) goto end;        
   TagSelection();
   for ( unsigned int v = 0; v < fCand.size(); ++v   ) {
@@ -56,9 +56,9 @@ void tnpReader2::eventProcessing() {
     //cout << "fCandPS.size() = "  << fCandPS.size() << endl;
     for ( unsigned int y = 0; y < fCandPS.size(); ++y   ) {
       
-      fillHist(fCandPS[y], 1, true); // Mode: 1 -- mt
+      fillHist(fCandPS[y], 1, false); // Mode: 1 -- mt
       if ( SAMPLE == 1 ) {  // For running on DATA
-	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4, true); // Mode: 4 -- mtMatched
+	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4, false); // Mode: 4 -- mtMatched
       }
       isGoodProbe(fCandPS[y]);
       
@@ -66,44 +66,47 @@ void tnpReader2::eventProcessing() {
     
     for ( unsigned int x = 0; x < fCandGP.size(); ++x   ) {
       
-      fillHist(fCandGP[x],2, true); // Mode: 2 -- mm
-      if ( truthMatch(fCandGP[x]) ) fillHist(fCandGP[x], 5, true); // Mode: 5 -- mmMatched
+      fillHist(fCandGP[x],2, false); // Mode: 2 -- mm
+      if ( truthMatch(fCandGP[x]) ) fillHist(fCandGP[x], 5, false); // Mode: 5 -- mmMatched
       
     }
     
     for ( unsigned int z = 0; z < fCandnotGP.size(); ++z   ) {
       
-      fillHist(fCandnotGP[z],3, true);  // Mode: 3 -- mmbar
+      fillHist(fCandnotGP[z],3, false);  // Mode: 3 -- mmbar
       
     }
     
   } else if ( MODE == 2  ){  // Trigger Efficiency Mode
     for ( unsigned int y = 0; y < fCandPS.size(); ++y   ) {
-      
-      fillHist(fCandPS[y], 1, true); // Mode: 1 -- mt
+      fillHist(fCandPS[y], 1, false); // Mode: 1 -- mt
       if ( SAMPLE == 1 ) {  // For running on MC
-	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4, true); // Mode: 4 -- mtMatched
+	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4, false); // Mode: 4 -- mtMatched
       }
       isMatchedToTrig(fCandPS[y],HLTLABEL_PROBE,2);
 
     }
-    
     for ( unsigned int x = 0; x < fCandTP.size(); ++x   ) {
       
-      fillHist(fCandTP[x],2, true); // Mode: 2 -- mm
-      if ( truthMatch(fCandTP[x]) ) fillHist(fCandTP[x], 5, true); // Mode: 5 -- mmMatched
+      fillHist(fCandTP[x],2, false); // Mode: 2 -- mm
+      if ( truthMatch(fCandTP[x]) ) fillHist(fCandTP[x], 5, false); // Mode: 5 -- mmMatched
       
     }
     
     for ( unsigned int z = 0; z < fCandnotTP.size(); ++z   ) {
       
-      fillHist(fCandnotTP[z],3, true);  // Mode: 3 -- mmbar
+      fillHist(fCandnotTP[z],3, false);  // Mode: 3 -- mmbar
     
     }
 
   } else if ( MODE == 3 ){
     
   }
+  
+  
+  
+  
+  
  end:
   freePointers();
   
@@ -197,27 +200,28 @@ void tnpReader2::MCTruth(int mode){
   if ( mode == 2 ){ // For Trigger
     for (int it = 0; it < fpEvt->nRecTracks(); ++it) {
       pTrack = fpEvt->getRecTrack(it);
-      
-      if ( pTrack->fMCID == 13 ){
-	if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	  ((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
-	}
-	
-	if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){
+      if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2) ){
+	if ( pTrack->fMCID == 13 ){
 	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	    ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    ((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	  }
-	}
-      }     
-      
-      if ( pTrack->fMCID == -13 ){
-	if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	  ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
-	}
 	
-	if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){
+	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){
+	    if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	      ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    }
+	  }
+	}     
+      
+	if ( pTrack->fMCID == -13 ){
 	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	    ((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	  }
+	  
+	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){
+	    if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	      ((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    }
 	  }
 	}
       } 
@@ -258,10 +262,10 @@ void tnpReader2::TagSelection(){
     if ( pTag->fPlab.Perp() < PT_TAG ) continue;
     if ( pTag->fPlab.Eta() > ETAHI_TAG ) continue;
     if ( pTag->fPlab.Eta() < ETALO_TAG ) continue;
-    //if ( !((pTag->fMuID & 0x1<< MUTYPE1 ) && (pTag->fMuID & 0x1<< MUTYPE2)) ) continue;
+    if ( !((pTag->fMuID & 0x1<< MUTYPE1 ) && (pTag->fMuID & 0x1<< MUTYPE2)) ) continue;
     
     // SOME CHANGES to Mimic Spainard's Study
-    if ( !(pTag->fMuID & 0x1<< MUTYPE1) ) continue;
+    //if ( !(pTag->fMuID & 0x1<< MUTYPE1) ) continue;
    
     //pTrack = fpEvt->getRecTrack(pTag->fIndex);
     //if ( !TrackSelection(pTrack,1) ) continue;
@@ -283,6 +287,8 @@ void tnpReader2::ProbeSelection(){
     if ( pCand->fMaxDoca > MAXDOCA  ) continue;
     pProbe = fpEvt->getSigTrack(pCand->fSig2);
     if ( pProbe->fPlab.Perp() < PT_PROBE ) continue;
+    
+    if ( MODE == 2  ) if ( !((pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2)) ) continue;
     
     // SOME CHANGES to Mimic Spainard's Study
     //pTrack = fpEvt->getRecTrack(pProbe->fIndex);
@@ -417,6 +423,7 @@ bool tnpReader2::isMatchedToTrig(TAnaCand *pCand, TString Label, int mode){
 	  HLTlabel = true;				
 	  ((TH1D*)fpHistFile->Get("Probe_trig_dR_aftercuts"))->Fill(probe_dR);
 	  //cout << " Trigger Matched to Probe " << endl;
+	  //if ( ((pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2)) ) cout << " Gl&Tr  " << endl;
 	  fCandTP.push_back(pCand); // will be used for mm
 	  break;
 	} 
