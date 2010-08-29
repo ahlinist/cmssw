@@ -18,8 +18,8 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fYbin[0] = -2.; fYbin[1] = -1.; fYbin[2] = 0.; fYbin[3] = 1.; fYbin[4] = 2.;
   fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpPos-upsilon.dat");
   fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpNeg-upsilon.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/dummy/PtTnpPos-upsilon.dat");
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/dummy/PtTnpNeg-upsilon.dat");  
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpPos-upsilon.dat");
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpNeg-upsilon.dat");  
 }
 // ----------------------------------------------------------------------
 xsReader::~xsReader() {
@@ -52,10 +52,11 @@ void xsReader::eventProcessing() {
 
 void xsReader::acceptance(){
   
-  TGenCand *gCand(0); TAnaTrack *pTrack(0);
+  TGenCand *gCand(0); TAnaTrack *pTrack(0); 
   TGenCand *gDau1(0); TGenCand *gDau2(0);  
   double pt, rapidity; bool match1 = false; bool match2 = false;
-  int index1(-1), index2(-1);
+  double pt1(-1), pt2(-1);
+  int index1(-1), index2(-1); 
   TLorentzVector genCand;
   for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
     gCand = fpEvt->getGenCand(iG);
@@ -72,20 +73,24 @@ void xsReader::acceptance(){
 	  for (int iR = 0; iR < fpEvt->nRecTracks(); ++iR) {
 	    pTrack = fpEvt->getRecTrack(iR);
 	    if ( pTrack->fGenIndex == gDau1->fNumber ) {
-	      index1 = pTrack->fGenIndex; 
+	      index1 = pTrack->fGenIndex;
+	      pt1 = pTrack->fPlab.Perp();
 	      match1 = true;
-	    }
+	    } 
 	    if ( pTrack->fGenIndex == gDau2->fNumber ) {
 	      index2 = pTrack->fGenIndex;
+	      pt2 = pTrack->fPlab.Perp();
 	      match2 = true;
 	    }
-	    if ( match1 && match2 ){
+	    
+	  }
+	  
+	  if ( match1 && match2 ){
+	    if ((pt1 > 3.) && (pt2 > 3.) ){
 	      ((TH2D*)fpHistFile->Get(Form("RecoGenRes_%.1dS",UPSTYPE)))->Fill(rapidity, pt);
 	      match1 = false; match2 = false;
-	      break;
 	    }
-	    
-	  } 
+	  }
 	}
       }
     }
@@ -168,12 +173,12 @@ void xsReader::candidateSelection(int mode){
     lCands_CT_M1T.push_back(iC);
     if ( (pl2->fMuID & MUTYPE2) != MUTYPE2 ) continue;
     lCands_CT_M1T_M2T.push_back(iC);
-    //if ( (pl1->fPlab.Perp() > PTHI) || ( (fabs(pl1->fPlab.Eta()) < 1.2) && (pl1->fPlab.Perp() < PTLO) ) || (  (fabs(pl1->fPlab.Eta()) > 1.2) && (pl1->fPlab.Perp() < 3.) ) ) continue;
-    if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
+    if ( (pl1->fPlab.Perp() > PTHI) || ( (fabs(pl1->fPlab.Eta()) < 1.2) && (pl1->fPlab.Perp() < PTLO) ) || (  (fabs(pl1->fPlab.Eta()) > 1.2) && (pl1->fPlab.Perp() < 3.) ) ) continue;
+    //if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
     if ( (pl1->fPlab.Eta() > ETAHI) || (pl1->fPlab.Eta() < ETALO) ) continue;
     lCands_CT_M1T_M2T_Pt1.push_back(iC);
-    //if ( (pl2->fPlab.Perp() > PTHI) || ( (fabs(pl2->fPlab.Eta()) < 1.2) && (pl2->fPlab.Perp() < PTLO) ) || (  (fabs(pl2->fPlab.Eta()) > 1.2) && (pl2->fPlab.Perp() < 3.) ) ) continue;   
-    if ( (pl2->fPlab.Perp() > PTHI) || (pl2->fPlab.Perp() < PTLO) ) continue;
+    if ( (pl2->fPlab.Perp() > PTHI) || ( (fabs(pl2->fPlab.Eta()) < 1.2) && (pl2->fPlab.Perp() < PTLO) ) || (  (fabs(pl2->fPlab.Eta()) > 1.2) && (pl2->fPlab.Perp() < 3.) ) ) continue;   
+    //if ( (pl2->fPlab.Perp() > PTHI) || (pl2->fPlab.Perp() < PTLO) ) continue;
     if ( (pl2->fPlab.Eta() > ETAHI) || (pl2->fPlab.Eta() < ETALO) ) continue;
     lCands_CT_M1T_M2T_Pt1_Pt2.push_back(iC);
     if ( pCand->fVtx.fChi2 > CHI2 ) continue;
