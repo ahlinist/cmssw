@@ -44,6 +44,7 @@ public:
   // --------------
   void makeAll(int channels = 3);
   void makeAllMC(int channels = 3);
+  void makeAllDATA(int channels = 3);
   void readHistograms(TFile *f, 
 		      const char *s1 = "mm", const char *s2 = "mt", const char *s3 = "mmbar", 
 		      const char *sm = "Matched", const char *binning = "mt,pt-eta");
@@ -53,6 +54,14 @@ public:
 		      const char *s5 = "MuIDEff_1S", const char *s6 = "MuIDEff_2S", const char *s7 = "MuIDEff_3S",
 		      const char *s8 = "TrigEff_1S", const char *s9 = "TrigEff_2S", const char *s10 = "TrigEff_3S",
 		      const char *binning = "mt,pt-eta");
+  
+  void ReadHistogramsDATA0(TFile *f,  const char *s2 = "AnaEff_1S", const char *binning = "mt,pt-eta");
+  
+  void ReadHistogramsDATA1(TFile *f, const char *s1 = "UpsilonMass",  const char *s5 = "MuIDEff_1S", 
+		      const char *s8 = "TrigEff_1S", const char *binning = "mt,pt-eta");
+  
+  
+  
   void readPidTables(const char *sample = "jpsi");
 
   void addBackground(std::vector<TH1D> &vec, double s2b = 2., double p0 = 1., double p1 = 0.);
@@ -61,7 +70,7 @@ public:
   void FITUpsilon();
   void McpYields(); 
   void fillPidTables();
-  void CorrectedYields();
+  void CorrectedYields(int mode); // 1 - MC, 2 - DATA
   void plotAcceptance();
   void GetAnaEff();
   void GetMuIDEff();
@@ -70,7 +79,7 @@ public:
   void integerEntries(TH1D  *h);
   void validation();
   void projections();
-  void PlotProjections();
+  void PlotProjections(int mode); // 1 - MC, 2 - DATA
   void allDifferences(int jpsiOnly = 0); 
   void ptDifference(const char* a, const char* b, double MIN, double MAX, const char *fname = "ptDifference.pdf"); 
   

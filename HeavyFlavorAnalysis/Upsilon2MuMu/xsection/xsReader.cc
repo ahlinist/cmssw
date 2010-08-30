@@ -16,10 +16,16 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   cout << "--> xsReader> This is the start ..." << endl;
   fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 3.; fPTbin[3] = 5.; fPTbin[4] = 8.; fPTbin[5] =12.; fPTbin[6] = 20.;
   fYbin[0] = -2.; fYbin[1] = -1.; fYbin[2] = 0.; fYbin[3] = 1.; fYbin[4] = 2.;
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpPos-upsilon.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpNeg-upsilon.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpPos-upsilon.dat");
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpNeg-upsilon.dat");  
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpPos-upsilon.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpNeg-upsilon.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpPos-upsilon.dat");   // MC 
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpNeg-upsilon.dat"); 
+  
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/PtMmbPos-jpsi.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/PtMmbNeg-jpsi.dat");
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/PtMmbPos-jpsi.dat");     // DATA
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/PtMmbNeg-jpsi.dat"); 
+  
 }
 // ----------------------------------------------------------------------
 xsReader::~xsReader() {
@@ -34,14 +40,14 @@ void xsReader::startAnalysis() {
 
 void xsReader::eventProcessing() {
   
-  acceptance(); 
+  if ( MODE == 1  ) acceptance();  // FOR MC only
   if ( isPathPreScaled(HLTPATH) ) goto end;
   if ( !isPathFired(HLTPATH) ) goto end;
   candidateSelection(2); 
   if ( 0 != fpCand  ){
     calculateWeights(0); 
     fillCandHist(); 
-    if ( 0 != fgCand ) MCstudy(); 
+    if ( 0 != fgCand && MODE == 1 ) MCstudy(); // FOr MC only
   }
 	   
   fpHistFile->cd();
@@ -160,7 +166,7 @@ void xsReader::candidateSelection(int mode){
 
   for (int iC = 0; iC < fpEvt->nCands(); ++iC) {
     pCand = fpEvt->getCand(iC);
-    AnaEff(pCand, 1); // 1 -- # of TruthCand before Cuts, 2 -- # of TruthCand After Cuts 
+    if ( MODE == 1 ) AnaEff(pCand, 1); // 1 -- # of TruthCand before Cuts, 2 -- # of TruthCand After Cuts 
     lCands.push_back(iC);
     if (TYPE != pCand->fType) continue;
     if (pCand->fMass < MASSLO) continue;
@@ -249,7 +255,7 @@ void xsReader::candidateSelection(int mode){
   TLorentzVector Cand, gCand;
   if ( best > -1 ) {
     fpCand = fpEvt->getCand(best);
-    AnaEff(fpCand, 2);
+    if ( MODE == 1 ) AnaEff(fpCand, 2);
     fCandPt   = fpCand->fPlab.Perp();
     fCandMass = fpCand->fMass;
     Cand.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
@@ -385,7 +391,7 @@ void xsReader::calculateWeights(int mode){
   double MuIdWeight(-99); double TrigWeight(-99);
   TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
   TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
-    
+  
   if ( pl1->fQ > 0 ){
     effID1 = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
     effTR1 = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
@@ -410,8 +416,7 @@ void xsReader::calculateWeights(int mode){
   MuIdWeight = effID1*effID2;
   TrigWeight = effTR1*effTR2;
   
-  //cout<<" "<<fCandY<<"  "<<fCandPt<<" "<<MuIdWeight<<" "<<TrigWeight<<endl; 
-    
+  
   for ( int iy = 0; iy < fNy; ++iy ){
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
       if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
@@ -501,7 +506,7 @@ void xsReader::bookHist() {
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
       h = new TH1D(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
 		   Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
-		   2000, 0., 20.);  
+		   100, 0., 1.);  
       ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
     }
   }
@@ -512,7 +517,7 @@ void xsReader::bookHist() {
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
       h = new TH1D(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
 		   Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
-		   2000, 0., 20.);  
+		   100, 0., 1.);  
       ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
     }
   }  
@@ -600,6 +605,11 @@ void xsReader::readCuts(TString filename, int dump) {
       if (dump) cout << "TYPE:           " << TYPE << endl;
     }
     
+    if (!strcmp(CutName, "MODE")) {
+      MODE = int(CutValue); ok = 1;
+      if (dump) cout << "MODE:           " << MODE << endl;
+    }
+        
     if (!strcmp(CutName, "MUTYPE1")) {
       MUTYPE1 = int(CutValue); ok = 1;
       if (dump) cout << "MUTYPE1:           " << MUTYPE1 << endl;
