@@ -71,6 +71,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     /// NO re-scaling of the p4 is made at this stage.
     scaleFunc_ = new TF1("scaleFunc_", scaleFuncImprovedCollinearApprox_.c_str(), 10, 300);
   }
+
   ~CompositePtrCandidateT1T2MEtAlgorithm() {
     for ( std::map<std::string, CollinearApproxFitter*>::iterator it = collinearApproxFitters_.begin();
 	  it != collinearApproxFitters_.end(); ++it ) {
@@ -81,6 +82,14 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       delete it->second;
     }
     delete scaleFunc_;  
+  }
+
+  void beginEvent(edm::Event& evt, const edm::EventSetup& es)
+  {
+    for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
+	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
+      svFitAlgorithm->second->beginEvent(evt, es);
+    }
   }
 
   CompositePtrCandidateT1T2MEt<T1,T2> buildCompositePtrCandidate(const T1Ptr leg1, 
