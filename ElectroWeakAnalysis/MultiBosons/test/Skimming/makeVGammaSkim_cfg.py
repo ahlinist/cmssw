@@ -28,8 +28,8 @@ skimVersion = 3  # Do we need this?
 basePath = "ElectroWeakAnalysis.MultiBosons.Skimming." # shorthand
 
 ## Define default options specific to this configuration file
-# options.jobType = "testSpring10McCern"
-options.jobType = "testPromptRecoV4Cern"
+options.jobType = "testSpring10McCern"
+# options.jobType = "testPromptRecoV4Cern"
 
 ## Parse (command-line) arguments - this overrides the options given above
 options.parseArguments()

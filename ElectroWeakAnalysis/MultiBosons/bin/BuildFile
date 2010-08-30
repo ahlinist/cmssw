@@ -20,5 +20,8 @@
 <bin file="plotPhotons.cc"> </bin>
 </environment>
 <environment>
+<bin file="plotElectrons.cc"> </bin>
+</environment>
+<environment>
 <bin file="vGammaFWLiteAnalysis.cc"> </bin>
-</environment> 
+</environment>
