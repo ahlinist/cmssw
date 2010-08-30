@@ -48,6 +48,13 @@ options.register("wantSummary",
   "Do you want long trigger and timing reports at the end?"
   )
 
+options.register("hltPaths",
+  "HLT_Mu9",                         # default value
+  VarParsing.multiplicity.list,      # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "List of HLT paths whose OR is required."
+  )
+
 ## Use this to work around bug with passing multiple option parameters with
 ## crab.  Pass just this one parameter and associate it with several other
 ## options in applyJobOptions.

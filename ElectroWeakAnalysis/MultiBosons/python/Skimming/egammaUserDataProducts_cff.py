@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def egammaUserDataProducts(moduleName):
+def egammaUserDataFloats(moduleName):
   return [
     cms.InputTag(moduleName, "e1x3"),
     cms.InputTag(moduleName, "e3x1"),
@@ -39,5 +39,14 @@ def egammaUserDataProducts(moduleName):
 
     cms.InputTag(moduleName, "zernike20"),
     cms.InputTag(moduleName, "zernike42"),
+
+    cms.InputTag(moduleName, "swissCross"),
+    cms.InputTag(moduleName, "E1OverE9")
   ]
-# egammaUserDataProducts(moduleName) <--------------------------------------
+# egammaUserDataFloats(moduleName) <------------------------------------------
+
+def egammaUserDataInts(moduleName):
+  return [
+    cms.InputTag(moduleName, "isOutOfTime"),
+  ]
+# egammaUserDataInts(moduleName) <------------------------------------------
