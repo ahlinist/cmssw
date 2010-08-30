@@ -4,7 +4,7 @@ from ElectroWeakAnalysis.MultiBosons.tools.VarParsingWithBool \
 
 options = VarParsing("analysis")
 
-options.setDefault("outputFile", "MuonPhotonSkim.root")
+options.setDefault("outputFile", "VGammaSkim.root")
 
 options.register("globalTag",
   "GR10_P_V7::All", # default value is latest prompt reco (August 2010)

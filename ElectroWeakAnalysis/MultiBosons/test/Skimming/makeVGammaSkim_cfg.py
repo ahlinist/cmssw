@@ -20,10 +20,11 @@ from PhysicsTools.PatAlgos.tools.trigTools import *
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.options import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.jobOptions import *
+from ElectroWeakAnalysis.MultiBosons.Skimming.egammaUserDataProducts_cff import *
 
 ## See link below for the definition of the selection
 ## https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFirstPaper#Vgamma_Group_skims
-skimVersion = 1
+skimVersion = 3  # Do we need this?
 
 ## Define default options specific to this configuration file
 options.jobType = "testSpring10McCern"
@@ -63,28 +64,45 @@ if options.use35XInput:
 process.patMuons.embedTrack = True
 process.patElectrons.embedTrack = True
 
-## Add photon cluster shape user data
-# process.load(
-#   "ElectroWeakAnalysis.MultiBosons.Skimming.patPhotonClusterShape_cff"
-#   )
-
-
 ## Keep only global and tracker muons
 process.selectedPatMuons.cut = "isGlobalMuon | isTrackerMuon"
 
-## No overlap of phtons and electrons
+## Reject soft jets to reduce event content
+process.selectedPatJets.cut = "pt > 30"
+
+## No overlap of photons and electrons
 process.cleanPatPhotons.checkOverlaps.electrons.requireNoOverlaps = True
+
+## Add photon user data
+process.load("ElectroWeakAnalysis.MultiBosons.Skimming.photonUserData_cfi")
+process.patDefaultSequence.replace(process.patPhotons,
+  process.photonUserData * process.patPhotons
+  )
+process.patPhotons.userData.userFloats.src = egammaUserDataProducts(
+  moduleName = "photonUserData"
+  )
+
+## Add electron user data
+process.load("ElectroWeakAnalysis.MultiBosons.Skimming.electronUserData_cfi")
+process.patDefaultSequence.replace(process.patElectrons,
+  process.electronUserData * process.patElectrons
+  )
+process.patElectrons.userData.userFloats.src = egammaUserDataProducts(
+  moduleName = "electronUserData"
+  )
 
 ## PAT Trigger
 process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.muonTriggerMatchHLTMuons_cfi")
-process.patTriggerMatcher += process.muonTriggerMatchHLTMuons
-process.patTriggerMatcher.remove( process.patTriggerMatcherElectron )
-process.patTriggerMatcher.remove( process.patTriggerMatcherMuon )
-process.patTriggerMatcher.remove( process.patTriggerMatcherTau )
-process.patTriggerEvent.patTriggerMatches = [ "muonTriggerMatchHLTMuons" ]
 switchOnTrigger(process)
 switchOnTriggerMatchEmbedding(process)
+
+process.patTriggerEvent.patTriggerMatches = [ "muonTriggerMatchHLTMuons" ]
+process.cleanPatMuonsTriggerMatch.matches = [ "muonTriggerMatchHLTMuons" ]
+process.patTriggerMatcher = cms.Sequence(process.muonTriggerMatchHLTMuons)
+process.patTriggerMatchEmbedder = cms.Sequence(
+  process.cleanPatMuonsTriggerMatch
+  )
 
 ## Define VGamma Paths
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.VGammaSkimSequences_cff")
@@ -96,10 +114,9 @@ process.ZInvisibleGammaPath = cms.Path(process.patDefaultSequence * process.ZInv
 
 
 ## Add VGamma event content
-# process.out.outputCommands += vgEventContent.vgExtraPhotonEventContent
-# process.out.outputCommands += vgEventContent.vgExtraAnalyzerKitEventContent
 process.out.outputCommands += vgEventContent.vgCandsEventContent
 process.out.outputCommands += ["keep *_TriggerResults_*_PAT"]
+process.out.outputCommands += ["drop *_cleanPatMuons_*_PAT"]
 process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
 process.out.fileName = options.outputFile
 process.options.wantSummary = options.wantSummary

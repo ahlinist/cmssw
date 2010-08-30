@@ -3,19 +3,19 @@ import os
 
 process = cms.Process("FWLitePlots")
 
-castorDir = "/castor/cern.ch/user/l/lgray/mc/Spring10/VGammaSkim_v2/Zgamma"
-pathPrefix = "rfio:" + castorDir + "/"
-filelist = os.popen("nsls " + castorDir).read().split()[:10]
+# castorDir = "/castor/cern.ch/user/l/lgray/mc/Spring10/VGammaSkim_v2/Zgamma"
+# pathPrefix = "rfio:" + castorDir + "/"
+# filelist = os.popen("nsls " + castorDir).read().split()[:10]
 
 process.inputs = cms.PSet (
-    fileNames = cms.vstring( )
+    fileNames = cms.vstring(          "file:/afs/cern.ch/cms/cit/veverka/vgamma/skims/CMSSW_3_6_3/src/ElectroWeakAnalysis/MultiBosons/test/Skimming/MuonPhotonSkim_numEvent10.root")
 )
 
-process.inputs.fileNames = [pathPrefix + file for file in filelist]
+# process.inputs.fileNames = [pathPrefix + file for file in filelist]
 
 
 
-process.outputs = cms.PSet (   
+process.outputs = cms.PSet (
     outputName = cms.string('VGammaHistos.root')
 )
 
@@ -24,7 +24,7 @@ process.maxEvents = cms.PSet(input = cms.untracked.int64(-1) )
 process.heartbeat = cms.PSet(
     updateEvery = cms.double(1.0) # update the heartbeat every X percent
     )
-                             
+
 
 ## Define the selector configuration you want to use in FWLite
 from ElectroWeakAnalysis.MultiBosons.Selectors.vGammaSelector_cfi import sw_commissioning_selection
@@ -32,6 +32,7 @@ from ElectroWeakAnalysis.MultiBosons.Selectors.vGammaSelector_cfi import sw_comm
 process.SelectorConfig = sw_commissioning_selection.copy()
 
 process.SelectorConfig.cutsToIgnore = cms.vstring("ZEEGamma",
+                                                  "ZMMGamma",
                                                   "WMuNuGamma",
                                                   "WENuGamma",
                                                   "ZInvisibleGamma")
@@ -59,7 +60,7 @@ process.ZMuMuGamma = cms.PSet(
                                 outputDirectory = cms.string('ZMuMuGamma'),
                                 eventWeight = cms.double(1.0)
                                 )
-    
+
     )
 
 #process.WMuNuGamma = cms.PSet(
@@ -78,7 +79,7 @@ process.ZMuMuGamma = cms.PSet(
 #                                outputDirectory = cms.string('WMuNuGamma'),
 #                                eventWeight = cms.double(1.0)
 #                                )
-#    
+#
 #    )
 
 if __name__ == "__main__": import user
