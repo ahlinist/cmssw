@@ -7,15 +7,14 @@
 
 Description: Test module for UserData in PAT
 
+Provided by Pasqualle Musella with probable contributions from
+Freya Blekman and Giovanni Petrucciani. Adapted for VGamma by
+Jan Veverka. Many thanks to Lindsey Gray for debugging issues
+with templates!
+
 Implementation:
 
 */
-//
-// Original Author:  Freya Blekman
-//         Created:  Mon Apr 21 10:03:50 CEST 2008
-// $Id: EgammaUserDataProducer.cc,v 1.1 2009/01/28 19:50:36 musella Exp $
-//
-//
 
 
 // system include files
@@ -34,6 +33,10 @@ Implementation:
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Common/interface/OwnVector.h"
+
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
@@ -56,7 +59,11 @@ namespace vgamma {
     virtual void produce(edm::Event&, const edm::EventSetup&);
 
     // ----------member data ---------------------------
-    void putMap(edm::Event & iEvent, edm::Handle<edm::View<EgammaType> >& egammas, std::vector<float>& vfloat, const std::string& name);
+    template <typename UserDataType>
+    void putMap(edm::Event & iEvent,
+                edm::Handle<edm::View<EgammaType> >& egammas,
+                std::vector<UserDataType>& vUserData,
+                const std::string& name);
 
     edm::InputTag src_;
     edm::InputTag ebRechits_;
@@ -113,6 +120,8 @@ namespace vgamma {
     produces<edm::ValueMap<float> > ("zernike42");
 
     produces<edm::ValueMap<float> > ("swissCross");
+    produces<edm::ValueMap<float> > ("E1OverE9");
+    produces<edm::ValueMap<int> > ("isOutOfTime");
   }
 
   template <typename EgammaType>
@@ -131,12 +140,12 @@ namespace vgamma {
     using namespace edm;
 
     edm::Handle<View<EgammaType> > egammas;
-//     edm::Handle<EcalRecHitCollection> eeRechits;
-//     edm::Handle<EcalRecHitCollection> ebRechits;
+    edm::Handle<EcalRecHitCollection> eeRechits;
+    edm::Handle<EcalRecHitCollection> ebRechits;
 
     iEvent.getByLabel(src_, egammas);
-//     iEvent.getByLabel(ebRechits_, ebRechits);
-//     iEvent.getByLabel(eeRechits_, eeRechits);
+    iEvent.getByLabel(ebRechits_, ebRechits);
+    iEvent.getByLabel(eeRechits_, eeRechits);
 
 
     EcalClusterLazyTools lazyTools(iEvent, iSetup, ebRechits_, eeRechits_);
@@ -180,6 +189,8 @@ namespace vgamma {
     vector<float> zernike42;
 
     vector<float> swissCross;
+    vector<float> E1OverE9;
+    vector<int>   isOutOfTime;
 
     for( size_t ip = 0; ip<egammas->size(); ip++ ) {
       const reco::BasicCluster &cluster = *((*egammas)[ip].superCluster()->seed());
@@ -225,70 +236,104 @@ namespace vgamma {
       zernike20  .push_back(lazyTools.zernike20  (cluster));
       zernike42  .push_back(lazyTools.zernike42  (cluster));
 
-//       DetId id = cluster.seed();
-//       float sx;
-//       if (/* id is in EB*/)
-//         EcalSeverityLevelAlgo::swissCross(id, ebRechits);
-//       swissCross .push_back()
+      // Spike cleaning variables
+      DetId id = cluster.seed();
+      float swissCrossValue;
+      float E1OverE9Value;
+      uint32_t recoFlag = 0;
+      if (id.subdetId() == EcalBarrel) {
+        swissCrossValue = EcalSeverityLevelAlgo::swissCross(id, *ebRechits);
+        E1OverE9Value = EcalSeverityLevelAlgo::E1OverE9(id, *ebRechits);
+        for (EcalRecHitCollection::const_iterator rh = ebRechits->begin();
+          // find the seed rechit
+          rh != ebRechits->end(); ++rh) {
+          if ( rh->id() == cluster.seed() ) {
+            recoFlag = rh->recoFlag();
+            break;
+          }
+        }
+      } else if (id.subdetId() == EcalEndcap) {
+        swissCrossValue = EcalSeverityLevelAlgo::swissCross(id, *eeRechits);
+        E1OverE9Value = EcalSeverityLevelAlgo::E1OverE9(id, *eeRechits);
+        for (EcalRecHitCollection::const_iterator rh = eeRechits->begin();
+          // find the seed rechit
+          rh != eeRechits->end(); ++rh) {
+          if ( rh->id() == cluster.seed() ) {
+            recoFlag = rh->recoFlag();
+          }
+        }
+      } else {
+        cerr << "WARNING: unknown subdetId: " << id.subdetId() << endl;
+      }
+
+      swissCross .push_back(swissCrossValue);
+      E1OverE9.push_back(E1OverE9Value);
+
+      isOutOfTime.push_back(recoFlag == EcalRecHit::kOutOfTime);
 
     }
 
-    putMap(iEvent,egammas,e1x3,"e1x3");
-    putMap(iEvent,egammas,e3x1,"e3x1");
-    putMap(iEvent,egammas,e1x5,"e1x5");
-    putMap(iEvent,egammas,e2x2,"e2x2");
-    putMap(iEvent,egammas,e3x2,"e3x2");
-    putMap(iEvent,egammas,e3x3,"e3x3");
-    putMap(iEvent,egammas,e4x4,"e4x4");
-    putMap(iEvent,egammas,e5x5,"e5x5");
+    putMap<float>(iEvent,egammas,e1x3,"e1x3");
+    putMap<float>(iEvent,egammas,e3x1,"e3x1");
+    putMap<float>(iEvent,egammas,e1x5,"e1x5");
+    putMap<float>(iEvent,egammas,e2x2,"e2x2");
+    putMap<float>(iEvent,egammas,e3x2,"e3x2");
+    putMap<float>(iEvent,egammas,e3x3,"e3x3");
+    putMap<float>(iEvent,egammas,e4x4,"e4x4");
+    putMap<float>(iEvent,egammas,e5x5,"e5x5");
 
-    putMap(iEvent,egammas,e2x5Right,"e2x5Right");
-    putMap(iEvent,egammas,e2x5Left,"e2x5Left");
-    putMap(iEvent,egammas,e2x5Top,"e2x5Top");
-    putMap(iEvent,egammas,e2x5Bottom,"e2x5Bottom");
-    putMap(iEvent,egammas,e2x5Max,"e2x5Max");
+    putMap<float>(iEvent,egammas,e2x5Right,"e2x5Right");
+    putMap<float>(iEvent,egammas,e2x5Left,"e2x5Left");
+    putMap<float>(iEvent,egammas,e2x5Top,"e2x5Top");
+    putMap<float>(iEvent,egammas,e2x5Bottom,"e2x5Bottom");
+    putMap<float>(iEvent,egammas,e2x5Max,"e2x5Max");
 
-    putMap(iEvent,egammas,eLeft,"eLeft");
-    putMap(iEvent,egammas,eRight,"eRight");
-    putMap(iEvent,egammas,eTop,"eTop");
-    putMap(iEvent,egammas,eBottom,"eBottom");
+    putMap<float>(iEvent,egammas,eLeft,"eLeft");
+    putMap<float>(iEvent,egammas,eRight,"eRight");
+    putMap<float>(iEvent,egammas,eTop,"eTop");
+    putMap<float>(iEvent,egammas,eBottom,"eBottom");
 
-    putMap(iEvent,egammas,eMax,"eMax");
-    putMap(iEvent,egammas,e2nd,"e2nd");
+    putMap<float>(iEvent,egammas,eMax,"eMax");
+    putMap<float>(iEvent,egammas,e2nd,"e2nd");
 
-    putMap(iEvent,egammas,etaLat,"etaLat");
-    putMap(iEvent,egammas,phiLat,"phiLat");
-    putMap(iEvent,egammas,lat,"lat");
+    putMap<float>(iEvent,egammas,etaLat,"etaLat");
+    putMap<float>(iEvent,egammas,phiLat,"phiLat");
+    putMap<float>(iEvent,egammas,lat,"lat");
 
-    putMap(iEvent,egammas,covEtaEta,"covEtaEta");
-    putMap(iEvent,egammas,covEtaPhi,"covEtaPhi");
-    putMap(iEvent,egammas,covPhiPhi,"covPhiPhi");
+    putMap<float>(iEvent,egammas,covEtaEta,"covEtaEta");
+    putMap<float>(iEvent,egammas,covEtaPhi,"covEtaPhi");
+    putMap<float>(iEvent,egammas,covPhiPhi,"covPhiPhi");
 
-    putMap(iEvent,egammas,covIEtaIEta,"covIEtaIEta");
-    putMap(iEvent,egammas,covIEtaIPhi,"covIEtaIPhi");
-    putMap(iEvent,egammas,covIPhiIPhi,"covIPhiIPhi");
+    putMap<float>(iEvent,egammas,covIEtaIEta,"covIEtaIEta");
+    putMap<float>(iEvent,egammas,covIEtaIPhi,"covIEtaIPhi");
+    putMap<float>(iEvent,egammas,covIPhiIPhi,"covIPhiIPhi");
 
-    putMap(iEvent,egammas,zernike20,"zernike20");
-    putMap(iEvent,egammas,zernike42,"zernike42");
+    putMap<float>(iEvent,egammas,zernike20,"zernike20");
+    putMap<float>(iEvent,egammas,zernike42,"zernike42");
+
+    putMap<float>(iEvent,egammas,swissCross,"swissCross");
+    putMap<float>(iEvent,egammas,E1OverE9,  "E1OverE9");
+    putMap<int>(iEvent,egammas,isOutOfTime, "isOutOfTime");
+//     putMap<float>(iEvent,egammas,,"");
   }
 
-  template <typename EgammaType>
+  template <typename EgammaType> template <typename UserDataType>
   void
   EgammaUserDataProducer<EgammaType>::putMap (
     edm::Event & iEvent,
     edm::Handle<edm::View<EgammaType> >& egammas,
-    std::vector<float>& vfloat,
+    std::vector<UserDataType>& vUserData,
     const std::string& name
     )
   {
     using namespace std;
     using namespace edm;
 
-    auto_ptr<ValueMap<float> > prod( new ValueMap<float>() );
-    ValueMap<float>::Filler intfiller (*prod);
-    intfiller.insert(egammas, vfloat.begin(), vfloat.end());
-    intfiller.fill();
-    iEvent.put(prod,name);
+    auto_ptr<ValueMap<UserDataType> > prod( new ValueMap<UserDataType>() );
+    typename ValueMap<UserDataType>::Filler filler (*prod);
+    filler.insert(egammas, vUserData.begin(), vUserData.end());
+    filler.fill();
+    iEvent.put(prod, name);
   }
 
 } // namespace::vgamma
