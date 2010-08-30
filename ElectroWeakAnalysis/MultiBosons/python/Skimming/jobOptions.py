@@ -4,7 +4,7 @@ def applyJobOptions(options):
   To be called after options.parseArguments()
   """
   if options.jobType == "testSpring10McCern":
-    options.maxEvents = 10
+    options.maxEvents = 100
     options.inputFiles = [
       "/store/relval/CMSSW_3_5_7/" +
       "RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012/" +
@@ -26,25 +26,25 @@ def applyJobOptions(options):
 
   if options.jobType == "testPromptRecoV4Cern":
     options.maxEvents = 1
+#     00E4E6F2-EF7A-DF11-AF08-001E0B48E92A.root
+#     02546700-F07A-DF11-B921-00237DA1CD92.root
+#     089CCAFE-EF7A-DF11-8A36-00237DA12CA0.root
+#     0A33DA73-F07A-DF11-B717-00237DA10D14.root
+#     0AF279DA-F37A-DF11-844B-0017A4770430.root
+#     2475F48D-F17A-DF11-BAAD-0017A4770008.root
+#     2C0B3D6D-F47A-DF11-A646-0017A4770C38.root
+#     2EC3A00D-F07A-DF11-9B09-00237DA41368.root
+#     30212CEB-EF7A-DF11-9EAE-0017A4770828.root
+#     3CDCFEE7-EF7A-DF11-8FE4-0017A4771004.root
+#     3E6B78EA-F17A-DF11-AEF9-0017A4771030.root
+#     40ACF3E7-EF7A-DF11-A840-0017A4770430.root
+#     48CE97B5-F47A-DF11-9BF4-001E0B4A0EFC.root
+#     584B5E90-F37A-DF11-A8D5-0017A4770024.root
+#     6A86E9F7-EF7A-DF11-A7AF-0017A4770C34.root
+#     6AC5E58D-F17A-DF11-AAC3-0017A4770004.root
     options.inputFiles = [
       "/store/data/Run2010A/Mu/RECO/Jun14thReReco_v1/0005/" +
       file for file in """
-        00E4E6F2-EF7A-DF11-AF08-001E0B48E92A.root
-        02546700-F07A-DF11-B921-00237DA1CD92.root
-        089CCAFE-EF7A-DF11-8A36-00237DA12CA0.root
-        0A33DA73-F07A-DF11-B717-00237DA10D14.root
-        0AF279DA-F37A-DF11-844B-0017A4770430.root
-        2475F48D-F17A-DF11-BAAD-0017A4770008.root
-        2C0B3D6D-F47A-DF11-A646-0017A4770C38.root
-        2EC3A00D-F07A-DF11-9B09-00237DA41368.root
-        30212CEB-EF7A-DF11-9EAE-0017A4770828.root
-        3CDCFEE7-EF7A-DF11-8FE4-0017A4771004.root
-        3E6B78EA-F17A-DF11-AEF9-0017A4771030.root
-        40ACF3E7-EF7A-DF11-A840-0017A4770430.root
-        48CE97B5-F47A-DF11-9BF4-001E0B4A0EFC.root
-        584B5E90-F37A-DF11-A8D5-0017A4770024.root
-        6A86E9F7-EF7A-DF11-A7AF-0017A4770C34.root
-        6AC5E58D-F17A-DF11-AAC3-0017A4770004.root
         720CA171-F47A-DF11-BF4D-0017A477041C.root
         72BE83F5-EF7A-DF11-9669-001CC443B76C.root
         84070BDC-EF7A-DF11-BA3C-00237DA13CAC.root
@@ -69,6 +69,7 @@ def applyJobOptions(options):
     options.use35XInput = False
     options.isMaxEventsOutput = True
     options.wantSummary = False
+    options.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9]]
     return
     # end of testPromptRecoV4Cern options <-----------------------------------
 
