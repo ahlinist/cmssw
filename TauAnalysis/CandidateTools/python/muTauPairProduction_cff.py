@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
 from TauAnalysis.CandidateTools.resolutions_cfi import *
+from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
 
 #--------------------------------------------------------------------------------
 # produce combinations of muon + tau-jet pairs
@@ -37,6 +38,26 @@ allMuTauPairs = cms.EDProducer(
             resonanceWidth = cms.double(1.),
             metResolutionPx = pfMEtResolutionPx,
             metResolutionPy = pfMEtResolutionPy
+        )
+    ),
+    svFit = cms.PSet(
+        psKine = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauKinematicsPhaseSpace         
+            )
+        ),
+        psKine_MEt = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauKinematicsPhaseSpace,
+                svFitLikelihoodMEt
+            )
+        ),
+        psKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauKinematicsPhaseSpace,
+                svFitLikelihoodMEt,
+                svFitLikelihoodDiTauPtBalance
+            )
         )
     ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                           
