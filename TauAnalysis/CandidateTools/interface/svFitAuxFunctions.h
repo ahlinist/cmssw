@@ -1,6 +1,9 @@
 #ifndef TauAnalysis_CandidateTools_svFitAuxFunctions_h
 #define TauAnalysis_CandidateTools_svFitAuxFunctions_h
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
 namespace SVfit_namespace 
@@ -40,6 +43,31 @@ namespace SVfit_namespace
 
   /// Compute logarithm of Gaussion probability density function
   double logGaussian(double residual, double sigma);
+
+  /// Auxiliary functions to determine if one or two neutrinos are produced in tau lepton decay;
+  /// in case only one neutrino is produced, the resulting neutrino system is massless,
+  /// while a neutrino system of in general non-zero invariant mass is produced in the two neutrino case
+  template <typename T>
+  inline bool isMasslessNuSystem() 
+  {
+    // massless neutrino system produced in hadronic tau --> X + nu decays;
+    // use this implementation for the generic particle Candidate case 
+    return true; 
+  }
+
+  template <>
+  inline bool isMasslessNuSystem<pat::Electron>()
+  {
+    // neutrino system of in general non-zero mass produced in tau --> electron nu nu decays
+    return false; 
+  }
+
+  template <>
+  inline bool isMasslessNuSystem<pat::Muon>()
+  {
+    // neutrino system of in general non-zero mass produced in tau --> muon nu nu decays
+    return false; 
+  }
 }
 
 #endif
