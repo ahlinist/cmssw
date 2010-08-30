@@ -10,9 +10,21 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #        'file:singletop_140331_267971718.root'
 #    'file:emu4jetsmet_142038_702_367782938.root'
-    'rfio:/castor/cern.ch/cms/store/data/Run2010A/Mu/RECO/v4/000/140/331/94659715-5F91-DF11-BBCD-001D09F2AF96.root'
+#MU:
+#    'rfio:/castor/cern.ch/cms/store/data/Run2010A/Mu/RECO/v4/000/140/331/94659715-5F91-DF11-BBCD-001D09F2AF96.root'
+#EG:
+    '/store/data/Run2010A/EG/RECO/v4/000/142/311/3C6D0701-4AA0-DF11-8437-0030487CD184.root'
+#    '/store/data/Run2010A/EG/RECO/v4/000/142/528/B6A7A5D9-F8A2-DF11-9096-003048F118D2.root'
+#    '/store/data/Run2010A/EG/RECO/v4/000/142/189/C8FCE35C-E39E-DF11-8AE1-0030487C90EE.root'
+#    '/store/data/Run2010A/EG/RECO/v4/000/141/960/F0ED7F32-C59B-DF11-9148-001D09F2B30B.root'
     ),
+#MU:
 #    eventsToProcess = cms.untracked.VEventRange("140331:267971718-140331:267971718")
+#EG:
+    eventsToProcess = cms.untracked.VEventRange("142311:90425319-142311:90425319")
+#    eventsToProcess = cms.untracked.VEventRange("142528:10965929-142528:10965929")
+#    eventsToProcess = cms.untracked.VEventRange("142189:125469763-142189:125469763")
+#    eventsToProcess = cms.untracked.VEventRange("141960:54210983-141960:54210983")
 )
 
 # conditions ------------------------------------------------------------------
@@ -21,7 +33,8 @@ process.load("Configuration.StandardSequences.MixingNoPileUp_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff") ### real data
-process.GlobalTag.globaltag = cms.string("GR_R_35X_V6::All")
+#process.GlobalTag.globaltag = cms.string("GR_R_35X_V6::All")
+process.GlobalTag.globaltag = cms.string("GR_R_36X_V12::All")
 
 # TQAF/PAT Layer 1 ------------------------------------------------------------
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
