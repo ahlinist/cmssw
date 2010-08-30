@@ -6,7 +6,7 @@
 namespace TauAnalysis_namespace 
 {
   /// Compute vector sum of two points
-  reco::Candidate::Point operator+(const reco::Candidate::Point&, const reco::Candidate::Point&);
+  reco::Candidate::Point operator+(const reco::Candidate::Point&, const reco::Candidate::Vector&);
 
   /// Access element stored in "two-dimensional" map 
   /// (i.e. in a map in which each value is referenced by two keys)
