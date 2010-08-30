@@ -36,6 +36,8 @@
   <class name="std::vector<SVmassRecoSolution>"/>
   <class name="SVfitDiTauSolution"/>
   <class name="std::vector<SVfitDiTauSolution>"/>
+  <class name="std::map<std::string,SVfitDiTauSolution>"/>
+  <class name="std::map<std::string, std::map<std::string, SVfitDiTauSolution> >"/>
   <class name="SVfitLegSolution"/>
   <class name="std::vector<SVfitLegSolution>"/>
 
