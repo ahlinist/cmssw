@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.15 2010/08/26 12:52:08 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.16 2010/08/29 15:35:59 giamman Exp $
 //
 //
 
@@ -294,7 +294,10 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     et = (*electrons)[0].pt();
   }
 
-  if (muons->size() == 0 && electrons->size() == 0) return;
+  if (muons->size() == 0 && electrons->size() == 0) {
+    cout << "no leptons, skip" << endl;
+    return;
+  }
 
   // Choose leading lepton
   double lx=0;
@@ -306,6 +309,9 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if (electrons->size()==0 || mut >=et) {
       lx=mux;ly=muy;lz=muz;lt=mut;
       cout << "leading lepton is a muon" << endl;
+    } else if (electrons->size()>0 && et>mut) {
+      lx=ex;ly=ey;lz=ez;lt=et;
+      cout << "leading lepton is an electron" << endl;
     }
   } else if (electrons->size()>=1) {
     lx=ex;ly=ey;lz=ez;lt=et;
@@ -314,7 +320,10 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     cout << "no selected lepton" << endl;
     return;
   }
-  if (lt < lep_threshold) return;
+  if (lt < lep_threshold) {
+    cout << "no leptons above " << lep_threshold << "GeV, skip" << endl;
+    return;
+  }
   // note: asap I will add lepton selection as in TOPLJ, and here the check will be based on number_of_selected_muons and _electrons
 
   // Jets
