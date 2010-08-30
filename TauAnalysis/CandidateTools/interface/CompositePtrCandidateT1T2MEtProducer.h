@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.13 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.12 2010/04/08 16:51:25 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.13 2010/05/22 16:49:08 veelken Exp $
  *
  */
 
@@ -42,6 +42,8 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/METReco/interface/MET.h"
 
 #include <string>
@@ -181,6 +183,11 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	 edm::LogError ("produce") << " Failed to access TransientTrackBuilder !!";
        }
     }
+
+//--- pass edm::Event and edm::EventSetup to SVfit algorithm
+//    (needed by likelihood plugins for initialization of TransientTrackBuilder 
+//     and to retrieve BeamSpot and genParticle collection from the event)
+    algorithm_.beginEvent(evt, es);
 
 //--- check if only one combination of tau decay products 
 //    (the combination of highest Pt object in leg1 collection + highest Pt object in leg2 collection)
