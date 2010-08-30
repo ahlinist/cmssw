@@ -4,7 +4,7 @@ dimuons = cms.EDFilter("CandViewShallowClonePtrCombiner",
     checkCharge = cms.bool(False),
     cut = cms.string("mass > 0"),
     decay = cms.string("cleanPatMuons@+ cleanPatMuons@-"),
-    roles = cms.vstring("1", "2") # dummy roles to be specified below
+    roles = cms.vstring("1", "2") # dummy roles, real ones are specified below
 )
 
 ## Define all the other combined candidates
@@ -19,13 +19,13 @@ ZMuMuGammaCands = dimuons.clone(decay = "dimuons cleanPatPhotons")
 ZInvisibleGammaCands = dimuons.clone(decay = "patMETsPF cleanPatPhotons")
 
 ## Specify the dauther roles
-dimuons.roles          = ["muon1", "muon2"]
-dielectrons.roles      = ["electron1", "electron2"]
-electronPlusMETs.roles = ["electron", "MET"]
-muonPlusMETs.roles     = ["muon", "MET"]
+dimuons.roles          = ["lepton1", "lepton2"]
+dielectrons.roles      = ["lepton1", "lepton2"]
+electronPlusMETs.roles = ["lepton", "MET"]
+muonPlusMETs.roles     = ["lepton", "MET"]
 
-WENuGammaCands.roles  = ["electronPlusMET", "photon"]
-WMuNuGammaCands.roles = ["muonPlusMET", "photon"]
-ZEEGammaCands.roles   = ["dielectron", "photon"]
-ZMuMuGammaCands.roles = ["dimuon", "photon"]
+WENuGammaCands.roles  = ["leptonPlusMET", "photon"]
+WMuNuGammaCands.roles = ["leptonPlusMET", "photon"]
+ZEEGammaCands.roles   = ["dilepton", "photon"]
+ZMuMuGammaCands.roles = ["dilepton", "photon"]
 ZInvisibleGammaCands.roles = ["MET", "photon"]
