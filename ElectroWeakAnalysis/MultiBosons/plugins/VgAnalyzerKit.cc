@@ -640,7 +640,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       else if (hlNames_[i] == "HLT_Ele20_SW_EleId_L1R")      HLTIndex_[15] = i;
       else if (hlNames_[i] == "HLT_Ele15_SW_CaloEleId_L1R")  HLTIndex_[16] = i;
       else if (hlNames_[i] == "HLT_Ele20_SW_CaloEleId_L1R")  HLTIndex_[17] = i;
-      else if (hlNames_[i] == "HLT_Ele12_SW_CaloEleId_L1R")  HLTIndex_[18] = i;
+      else if (hlNames_[i] == "HLT_Ele25_SW_CaloEleId_L1R")  HLTIndex_[18] = i;
       else if (hlNames_[i] == "HLT_Double5_SW_L1R")          HLTIndex_[19] = i;
       else if (hlNames_[i] == "HLT_Double10_SW_L1R")         HLTIndex_[20] = i;
       else if (hlNames_[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[21] = i;
@@ -1399,7 +1399,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       }
   }
 
-  if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
+  //if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
+  if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
     hEvents_->Fill(1.5);
     tree_->Fill();
   }
