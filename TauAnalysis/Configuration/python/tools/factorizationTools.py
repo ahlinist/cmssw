@@ -801,6 +801,8 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     mergedSampleAdderModule = lambda sample, btag: 'addAHtoMuTau_%s_%s' % (btag, sample),
     dqmDirectoryOut = 
     lambda sample, btag:'/harvested/%s_factorized/ahMuTauAnalyzer_%s/'% (sample, btag),
+    dqmDirectoryOutUnfactorized = 
+    lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s/'% (sample, btag),
     dqmDirectoryTight = 
     lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s_factorizedWithMuonIsolation/' % (sample, btag),
     dqmDirectoryLoose = 
@@ -897,14 +899,24 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     # Now update any of the relevant mergers
     for btag in ['woBtag', 'wBtag']:
         for mergedSample in relevantMergedSamples:
-            # Get the module that is doing the mergign
+            # Get the module that is doing the merging, if it exists
+            if not hasattr(process.mergeSamplesAHtoMuTau, 
+                           "merge_%s_%s"%(mergedSample,btag)):
+                continue
             merger = getattr(process.mergeSamplesAHtoMuTau, 
                                     "merge_%s_%s" % (mergedSample, btag))
+
             # Get the subsamples associated with this merged sample
             subsamples = mergedToRecoSampleDict[mergedSample]['samples']
             # Set the adder to use our new factorized inputs
-            merger.dqmDirectories_input = cms.vstring(
-                [dqmDirectoryOut(sample, btag) for sample in subsamples ])
+            def merge_directories(_list):
+                for sample in _list:
+                    if sample in samplesToFactorize:
+                        yield dqmDirectoryOut(sample, btag)
+                    else:
+                        yield dqmDirectoryOutUnfactorized(sample, btag)
+
+            merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
     
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
