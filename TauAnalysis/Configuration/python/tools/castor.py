@@ -22,6 +22,7 @@
 import commands
 import os
 import fnmatch
+import time
 
 def group(iterator, count):
     """
@@ -361,3 +362,13 @@ def rfdir (paths, recursive=False):
     sc, out = commands.getstatusoutput (cmd)
     return sc, out
         
+def last_modified(path):
+    ''' last_modified <file_path>
+    Return the last modification time for a castor file
+    '''
+
+    #Castor time string
+    castor_time = time.strptime(rfstat(path)['Last modify'], 
+                                "%a %b %d %H:%M:%S %Y")
+    return time.mktime(castor_time)
+
