@@ -82,7 +82,7 @@ protected:
   float  processID_;
   int    nHLT_;
   int    HLT_[maxP];
-  int    HLTIndex_[16];
+  int    HLTIndex_[25];
   int    nHFTowersP_;
   int    nHFTowersN_;
   int    nVtx_;
