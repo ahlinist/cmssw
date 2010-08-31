@@ -84,7 +84,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[16]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[25]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -585,21 +585,31 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
   // 0: HLT_Jet15U
   // 1: HLT_Jet30U
-  // 2: HLT_Mu9
-  // 3: HLT_DoubleMu3
-  // 4: HLT_Ele10_LW_L1R
-  // 5: HLT_Ele15_LW_L1R
-  // 6: HLT_Ele10_SW_L1R
-  // 7: HLT_Ele15_SW_L1R
-  // 8: HLT_Ele20_SW_L1R
-  // 9: HLT_DoubleEle5_SW_L1R
-  //10: HLT_Photon15_L1R
-  //11: HLT_Photon10_Cleaned_L1R
-  //12: HLT_Photon15_Cleaned_L1R
-  //13: HLT_Photon20_Cleaned_L1R
-  //14: HLT_DoublePhoton5_L1R
-  //15: HLT_DoublePhoton10_L1R
-  for (int a=0; a<16; a++)
+  // 2: HLT_Jet50U
+  // 3: HLT_Jet70U
+  // 4: HLT_Jet100U
+  // 5: HLT_Mu9
+  // 6: HLT_DoubleMu3
+  // 7: HLT_Ele15_LW_L1R
+  // 8: HLT_Ele20_LW_L1R 
+  // 9: HLT_Ele15_SW_L1R
+  //10: HLT_Ele20_SW_L1R
+  //11: HLT_Ele25_SW_L1R 
+  //12: HLT_Ele30_SW_L1R 
+  //13: HLT_Ele10_SW_EleIdIsol_L1R
+  //14: HLT_Ele15_SW_EleId_L1R
+  //15: HLT_Ele20_SW_EleId_L1R 
+  //16: HLT_Ele15_SW_CaloEleId_L1R 
+  //17: HLT_Ele20_SW_CaloEleId_L1R 
+  //18: HLT_Ele25_SW_CaloEleId_L1R 
+  //19: HLT_DoubleEle5_SW_L1R
+  //20: HLT_DoubleEle10_SW_L1R 
+  //21: HLT_Photon15_Cleaned_L1R
+  //22: HLT_Photon20_Cleaned_L1R
+  //23: HLT_Photon25_Cleaned_L1R
+  //24: HLT_Photon30_Cleaned_L1R 
+
+  for (int a=0; a<25; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -611,23 +621,32 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     nHLT_ = trgNames.size();
     for (size_t i=0; i<trgNames.size(); ++i) {
       HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
-
-      if (hlNames_[i] == "HLT_Jet15U")                    HLTIndex_[0] = i;
-      else if (hlNames_[i] == "HLT_Jet30U")               HLTIndex_[1] = i;
-      else if (hlNames_[i] == "HLT_Mu9")                  HLTIndex_[2] = i;
-      else if (hlNames_[i] == "HLT_DoubleMu3")            HLTIndex_[3] = i;
-      else if (hlNames_[i] == "HLT_Ele10_LW_L1R")         HLTIndex_[4] = i;
-      else if (hlNames_[i] == "HLT_Ele15_LW_L1R")         HLTIndex_[5] = i;
-      else if (hlNames_[i] == "HLT_Ele10_SW_L1R")         HLTIndex_[6] = i;
-      else if (hlNames_[i] == "HLT_Ele15_SW_L1R")         HLTIndex_[7] = i;
-      else if (hlNames_[i] == "HLT_Ele20_SW_L1R")         HLTIndex_[8] = i;
-      else if (hlNames_[i] == "HLT_Double5_SW_L1R")       HLTIndex_[9] = i;
-      else if (hlNames_[i] == "HLT_Photon15_L1R")         HLTIndex_[10] = i;
-      else if (hlNames_[i] == "HLT_Photon10_Cleaned_L1R") HLTIndex_[11] = i;
-      else if (hlNames_[i] == "HLT_Photon15_Cleaned_L1R") HLTIndex_[12] = i;
-      else if (hlNames_[i] == "HLT_Photon20_Cleaned_L1R") HLTIndex_[13] = i;
-      else if (hlNames_[i] == "HLT_DoublePhoton5_L1R")    HLTIndex_[14] = i;
-      else if (hlNames_[i] == "HLT_DoublePhoton10_L1R")   HLTIndex_[15] = i;
+ 
+      if (hlNames_[i] == "HLT_Jet15U")                       HLTIndex_[0] = i;
+      else if (hlNames_[i] == "HLT_Jet30U")                  HLTIndex_[1] = i;
+      else if (hlNames_[i] == "HLT_Jet50U")                  HLTIndex_[2] = i;
+      else if (hlNames_[i] == "HLT_Jet70U")                  HLTIndex_[3] = i;
+      else if (hlNames_[i] == "HLT_Jet100U")                 HLTIndex_[4] = i;
+      else if (hlNames_[i] == "HLT_Mu9")                     HLTIndex_[5] = i;
+      else if (hlNames_[i] == "HLT_DoubleMu3")               HLTIndex_[6] = i;
+      else if (hlNames_[i] == "HLT_Ele15_LW_L1R")            HLTIndex_[7] = i;
+      else if (hlNames_[i] == "HLT_Ele20_LW_L1R")            HLTIndex_[8] = i;
+      else if (hlNames_[i] == "HLT_Ele15_SW_L1R")            HLTIndex_[9] = i;
+      else if (hlNames_[i] == "HLT_Ele20_SW_L1R")            HLTIndex_[10] = i;
+      else if (hlNames_[i] == "HLT_Ele25_SW_L1R")            HLTIndex_[11] = i;
+      else if (hlNames_[i] == "HLT_Ele30_SW_L1R")            HLTIndex_[12] = i;
+      else if (hlNames_[i] == "HLT_Ele10_SW_EleIdIsol_L1R")  HLTIndex_[13] = i;
+      else if (hlNames_[i] == "HLT_Ele15_SW_EleId_L1R")      HLTIndex_[14] = i;
+      else if (hlNames_[i] == "HLT_Ele20_SW_EleId_L1R")      HLTIndex_[15] = i;
+      else if (hlNames_[i] == "HLT_Ele15_SW_CaloEleId_L1R")  HLTIndex_[16] = i;
+      else if (hlNames_[i] == "HLT_Ele20_SW_CaloEleId_L1R")  HLTIndex_[17] = i;
+      else if (hlNames_[i] == "HLT_Ele12_SW_CaloEleId_L1R")  HLTIndex_[18] = i;
+      else if (hlNames_[i] == "HLT_Double5_SW_L1R")          HLTIndex_[19] = i;
+      else if (hlNames_[i] == "HLT_Double10_SW_L1R")         HLTIndex_[20] = i;
+      else if (hlNames_[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[21] = i;
+      else if (hlNames_[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[22] = i;
+      else if (hlNames_[i] == "HLT_Photon25_Cleaned_L1R")    HLTIndex_[23] = i;
+      else if (hlNames_[i] == "HLT_Photon30_Cleaned_L1R")    HLTIndex_[24] = i;
     }
   }
 
@@ -1112,7 +1131,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       leg2Index = leg1Index + 1;
       for (View<pat::Electron>::const_iterator jEle = iEle+1; jEle != electronHandle_->end(); ++jEle) {
 
-	if (iEle->charge() * jEle->charge() < 0 ) {
+	//if (iEle->charge() * jEle->charge() < 0 ) {
 	  pat::CompositeCandidate Zee;
 	  Zee.addDaughter(*iEle, "ele1");
 	  Zee.addDaughter(*jEle, "ele2");
@@ -1127,9 +1146,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  ZeeLeg2Index_[nZee_] = leg2Index;
 
 	  nZee_++;
-	}
-
-	leg2Index++;
+	//}
       }
 
       leg1Index++;
