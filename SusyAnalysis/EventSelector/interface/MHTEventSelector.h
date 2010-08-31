@@ -4,7 +4,7 @@
 ///
 /// Computes MHT from all jets and cuts on it
 ///
-/// $Id: MHTEventSelector.h,v 1.3 2010/04/26 13:41:59 csander Exp $
+/// $Id: MHTEventSelector.h,v 1.4 2010/05/28 08:01:48 csander Exp $
 
 // system include files
 #include <memory>
@@ -14,7 +14,8 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
 
 class MHTEventSelector: public SusyEventSelector {
 public:

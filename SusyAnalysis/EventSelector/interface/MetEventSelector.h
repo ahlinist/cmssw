@@ -5,7 +5,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: MetEventSelector.h,v 1.8 2010/04/26 13:41:59 csander Exp $
+/// $Id: MetEventSelector.h,v 1.9 2010/05/28 08:01:48 csander Exp $
 
 //if uncorrNumber =
 //0: bare uncorrected MET
@@ -22,7 +22,8 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
 #include <vector>

@@ -5,7 +5,7 @@
 ///
 /// Calculates the total charge fraction from all jets
 ///
-/// $Id: ChargedFractionSelector.h,v 1.1 2008/05/23 15:48:21 fronga Exp $
+/// $Id: ChargedFractionSelector.h,v 1.2 2010/05/28 08:01:48 csander Exp $
 
 // system include files
 #include <memory>
@@ -15,7 +15,8 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 class ChargedFractionSelector: public SusyEventSelector {
 public:

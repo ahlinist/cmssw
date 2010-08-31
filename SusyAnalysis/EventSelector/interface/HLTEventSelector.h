@@ -7,7 +7,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: HLTEventSelector.h,v 1.3 2008/11/19 10:56:12 fronga Exp $
+/// $Id: HLTEventSelector.h,v 1.4 2010/05/28 08:01:48 csander Exp $
 
 // system include files
 #include <memory>
@@ -17,7 +17,8 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
 
 #include <vector>
 #include <string>

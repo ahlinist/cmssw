@@ -6,7 +6,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: GenericJetEventSelector.h,v 1.1 2009/11/02 13:05:50 auterman Exp $
+/// $Id: GenericJetEventSelector.h,v 1.2 2010/05/28 08:01:48 csander Exp $
 
 // system include files
 #include <memory>
@@ -16,7 +16,8 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 //#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
