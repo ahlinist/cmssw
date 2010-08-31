@@ -1,6 +1,7 @@
 import itertools
 import os
 import glob
+import hashlib
 
 '''
 
@@ -51,10 +52,16 @@ def buildMergeTree(files, output_filename, intermediate_dir, merge_per_job=3, ve
             if len(files_to_merge) == 1:
                 leftover_files.append(files_to_merge[0])
                 continue
+            # Compute a hash of the input filenames to ensure that nothing
+            # tricky happens when we update the list of input files
+            hash = hashlib.md5()
+            map(hash.update, files_to_merge)
+            hash_str = hash.hexdigest()[:6]
             # Otherwise merge this set
             output_file_name = os.path.join(
                 intermediate_dir, 
-                output_filename.replace( '.root', '_layer%i_job%i.root' % (len(layers), job))
+                output_filename.replace('.root', '_layer%i_job%i_%s.root' % 
+                                        (len(layers), job, hash_str))
             )
             new_layer.append( (output_file_name, files_to_merge ) )
 
