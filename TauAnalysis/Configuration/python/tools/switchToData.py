@@ -27,8 +27,6 @@ def switchToData(process):
     # remove modules from post-PAT production running on genParticles
     process.producePostPat.remove(produceGenObjects)
 
-
-
     # remove modules from producePatTupleZtoElecTauSpecific sequence which run on genParticles
     if hasattr(process,'allDiTauPairs'): 
         process.allDiTauPairs.srcGenParticles = cms.InputTag('')
@@ -72,6 +70,11 @@ def switchToData(process):
 
     for module_name in ['analyzeAHtoMuTauEvents_woBtag', 'analyzeAHtoMuTauEvents_wBtag']:
         # Loop over relevant generic analyzers
+        process.muTauPairZmumuHypothesesForAHtoMuTau.genLeptonsFromZsSource = cms.InputTag('')
+        process.muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation.genLeptonsFromZsSource = cms.InputTag('')
+        process.muTauPairZmumuHypotheses.genLeptonsFromZsSource = cms.InputTag('')
+        process.muTauPairZmumuHypothesesLooseMuonIsolation.genLeptonsFromZsSource = cms.InputTag('')
+
         if hasattr(process, module_name):
             module = getattr(process, module_name)
 
@@ -92,8 +95,9 @@ def switchToData(process):
                             #del histManager.genParticleSource
 
             removeAnalyzer(module.analysisSequence,"genPhaseSpaceEventInfoHistManager")
-            module.eventDumps[0].doGenInfo = cms.bool(False)
-            module.eventDumps[0].genParticleSource = cms.InputTag('')
+            #module.eventDumps[0].doGenInfo = cms.bool(False)
+            #module.eventDumps[0].genParticleSource = cms.InputTag('')
             process.muonHistManager.genParticleSource = cms.InputTag('')
             process.tauHistManager.genParticleSource = cms.InputTag('')
             process.jetHistManager.genParticleSource = cms.InputTag('')
+
