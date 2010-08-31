@@ -1,3 +1,11 @@
+extraConversionEventContent = [
+  'keep *_photonCore_*_*',
+  'keep *_conversions_*_*',
+  'keep *_trackerOnlyConversions_*_*',
+  'keep *_ckfInOutTracksFromConversions_*_*',
+  'keep *_ckfOutInTracksFromConversions_*_*',
+]
+
 vgExtraPhotonEventContent = [
   'keep *_photons_*_*',
   'keep *_photonCore_*_*',

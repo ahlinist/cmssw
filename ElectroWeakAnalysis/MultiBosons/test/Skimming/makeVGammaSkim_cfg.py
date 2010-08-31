@@ -163,6 +163,7 @@ process.hltFilter.HLTPaths = options.hltPaths
 
 ## Add VGamma event content
 process.out.outputCommands += vgEventContent.vgCandsEventContent
+process.out.outputCommands += vgEventContent.extraConversionEventContent
 process.out.outputCommands += ["keep *_TriggerResults_*_PAT"]
 process.out.outputCommands += ["drop *_cleanPatMuons_*_PAT"]
 if not options.isRealData:
