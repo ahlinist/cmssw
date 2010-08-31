@@ -5,7 +5,7 @@
 ///
 /// Just checks that there is (at least) one primary vertex.
 ///
-/// $Id: PrimaryVertexEventSelector.h,v 1.2 2008/05/23 15:48:22 fronga Exp $
+/// $Id: PrimaryVertexEventSelector.h,v 1.3 2010/05/28 08:01:48 csander Exp $
 
 // system include files
 #include <memory>
@@ -15,7 +15,8 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
 
 class PrimaryVertexEventSelector: public SusyEventSelector {
 public:

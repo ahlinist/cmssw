@@ -7,10 +7,11 @@
 ///
 /// \author jjones - Tue Jun  3 15:42:09 CEST 2008
 ///
-/// $Id: MaxNumJetsEventSelector.h,v 1.1 2008/07/16 16:17:32 jaj99 Exp $
+/// $Id: MaxNumJetsEventSelector.h,v 1.2 2010/05/28 08:01:48 csander Exp $
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 
 class MaxNumJetsEventSelector: public SusyEventSelector {
