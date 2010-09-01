@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.15 $
+ * \version $Revision: 1.16 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.15 2010/08/30 10:11:05 friis Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.16 2010/08/30 13:17:14 veelken Exp $
  *
  */
 
@@ -204,7 +204,8 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     std::string polHypoName_expanded = ( polarizationHypothesisName != "" ) ? polarizationHypothesisName : "Unknown";
 
     const SVfitDiTauSolution* svFitSolution
-      = TauAnalysis_namespace::findMapElement<std::string, std::string, SVfitDiTauSolution>(svFitSolutionMap_, algorithm, polHypoName_expanded);
+      = TauAnalysis_namespace::findMapElement<std::string, std::string, SVfitDiTauSolution>
+          (svFitSolutionMap_, algorithm, polHypoName_expanded);
 
     if ( !svFitSolution ) {
       edm::LogError("CompositePtrCandidateT1T2MEt::svFitSolution") 
