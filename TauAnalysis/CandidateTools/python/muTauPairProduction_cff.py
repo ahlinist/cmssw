@@ -8,8 +8,7 @@ from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
 # produce combinations of muon + tau-jet pairs
 #--------------------------------------------------------------------------------
 
-allMuTauPairs = cms.EDProducer(
-    "PATMuTauPairProducer",
+allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
     srcLeg1 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
     srcLeg2 = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),                               
@@ -21,9 +20,10 @@ allMuTauPairs = cms.EDProducer(
     recoMode = cms.string(""),
     doSVreco = cms.bool(True),                          
     SVOptions = cms.PSet(
+        usePtBalanceInFit = cms.bool(True),
         useMEtInFit = cms.bool(True),
-        useLeg1TrackingInFit = cms.bool(True),
-        useLeg2TrackingInFit = cms.bool(True),
+        useLeg1TrackingInFit = cms.bool(False),
+        useLeg2TrackingInFit = cms.bool(False),
         correctPrimaryVertexInFit = cms.bool(False)
     ),
     collinearApproxMassCompatibility = cms.PSet(
@@ -45,19 +45,19 @@ allMuTauPairs = cms.EDProducer(
             likelihoodFunctions = cms.VPSet(
                 svFitLikelihoodDiTauKinematicsPhaseSpace         
             )
-        ),
-        psKine_MEt = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPhaseSpace,
-                svFitLikelihoodMEt
-            )
-        ),
-        psKine_MEt_ptBalance = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPhaseSpace,
-                svFitLikelihoodMEt,
-                svFitLikelihoodDiTauPtBalance
-            )
+        ##),
+        ##psKine_MEt = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodDiTauKinematicsPhaseSpace,
+        ##        svFitLikelihoodMEt
+        ##    )
+        ##),
+        ##psKine_MEt_ptBalance = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodDiTauKinematicsPhaseSpace,
+        ##        svFitLikelihoodMEt,
+        ##        svFitLikelihoodDiTauPtBalance
+        ##    )
         )
     ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                           
