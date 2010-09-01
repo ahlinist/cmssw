@@ -114,7 +114,7 @@ namespace edm {
             struct TwoHolder {
                typedef T T1_t;
                typedef U T2_t;
-               TwoHolder(T i1, U i2) : h1_(i1), h2_(i2) {}
+               TwoHolder(const T& i1, const U& i2) : h1_(i1), h2_(i2) {}
                T h1_;
                U h2_;
             };
