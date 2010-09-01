@@ -25,10 +25,12 @@ process.load("TauAnalysis.Configuration.producePatTuple_cff")
 process.load("TauAnalysis.Configuration.producePatTupleAHtoMuTauSpecific_cff")
 
 # Options used for SV mass fit method
-process.allMuTauPairs.SVOptions.useMEtInFit = cms.bool(True)
+process.allMuTauPairs.SVOptions.usePtBalanceInFit = cms.bool(False)
+process.allMuTauPairs.SVOptions.useMEtInFit = cms.bool(False)
 process.allMuTauPairs.SVOptions.useLeg1TrackingInFit = cms.bool(False)
 process.allMuTauPairs.SVOptions.useLeg2TrackingInFit = cms.bool(False)
 process.allMuTauPairs.SVOptions.correctPrimaryVertexInFit = cms.bool(False)
+process.allMuTauPairsLooseMuonIsolation.SVOptions.usePtBalanceInFit = process.allMuTauPairs.SVOptions.usePtBalanceInFit
 process.allMuTauPairsLooseMuonIsolation.SVOptions.useMEtInFit = process.allMuTauPairs.SVOptions.useMEtInFit 
 process.allMuTauPairsLooseMuonIsolation.SVOptions.useLeg1TrackingInFit = process.allMuTauPairs.SVOptions.useLeg1TrackingInFit
 process.allMuTauPairsLooseMuonIsolation.SVOptions.useLeg2TrackingInFit = process.allMuTauPairs.SVOptions.useLeg2TrackingInFit
@@ -81,7 +83,23 @@ process.source = cms.Source("PoolSource",
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
         #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part01.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part02.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part03.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part04.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part05.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part06.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part07.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part08.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part09.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part10.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part11.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part12.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part13.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part14.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part15.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part16.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
