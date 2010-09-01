@@ -17,11 +17,11 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/METReco/interface/MET.h"
 
-#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
-
 #include "TauAnalysis/CandidateTools/interface/CollinearApproxFitter.h"
 #include "TauAnalysis/CandidateTools/interface/SVmassRecoFitter.h"
 #include "TauAnalysis/CandidateTools/interface/SVfitAlgorithm.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
+#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
 #include "TMath.h"
 #include "TF1.h"
@@ -54,12 +54,14 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	collinearApproxFitters_.insert(std::pair<std::string, CollinearApproxFitter*>(*massHypothesisName, collinearApproxFitter));
       }
       if (  cfg.exists("svFit") ) {
-	edm::ParameterSet cfgSVfit = cfg.getParameter<edm::ParameterSet>("svFit");
+	edm::ParameterSet cfgSVfit = cfg.getParameter<edm::ParameterSet>("svFit");	
 	vstring svFitAlgorithmNames = cfgSVfit.getParameterNamesForType<edm::ParameterSet>();
 	for ( vstring::const_iterator svFitAlgorithmName = svFitAlgorithmNames.begin();
 	      svFitAlgorithmName != svFitAlgorithmNames.end(); ++svFitAlgorithmName ) {
 	  edm::ParameterSet cfgSVfitAlgorithm = cfgSVfit.getParameter<edm::ParameterSet>(*svFitAlgorithmName);
 	  cfgSVfitAlgorithm.addParameter<std::string>("name", *svFitAlgorithmName);
+	  copyCfgParameter<edm::InputTag>(cfg, "srcPrimaryVertex", cfgSVfitAlgorithm);
+	  copyCfgParameter<edm::InputTag>(cfg, "srcBeamSpot", cfgSVfitAlgorithm);
 	  SVfitAlgorithm<T1,T2>* svFitAlgorithm = new SVfitAlgorithm<T1,T2>(cfgSVfitAlgorithm);
 	  svFitAlgorithms_.insert(std::pair<std::string, SVfitAlgorithm<T1,T2>*>(*svFitAlgorithmName, svFitAlgorithm));
 	}
