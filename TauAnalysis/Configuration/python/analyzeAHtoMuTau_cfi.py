@@ -214,6 +214,17 @@ muTauEventDump = cms.PSet(
     tauSource = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
     printTauIdEfficiencies = cms.bool(False),
     diTauCandidateSource = cms.InputTag(''),
+    svFitAlgorithms = cms.VPSet(
+        cms.PSet(
+            name = cms.string("psKine")
+        ),
+        cms.PSet(
+            name = cms.string("psKine_MEt")
+        ),
+        cms.PSet(
+            name = cms.string("psKine_MEt_ptBalance")
+        )
+    ),
     muTauZmumuHypothesisSource = cms.InputTag(''),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypotheses'),
     jetSource = cms.InputTag('selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'),
