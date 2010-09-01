@@ -112,6 +112,7 @@ int do_work(int argc, char* argv[], char** env)
 	  std::cerr << "SCRAM_ARCH not set and attempt to set it failed\n";
 	  return -1;
 	}
+      arch = getenv("SCRAM_ARCH");
     }
 
   int rc=0;
