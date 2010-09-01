@@ -62,7 +62,7 @@ namespace fwlite {
   class BranchMapReader {
   public:
     BranchMapReader(TFile* file);
-    BranchMapReader() : strategy_(0) {}
+    BranchMapReader() : strategy_(0),fileVersion_(0) {}
 
       // ---------- const member functions ---------------------
 
