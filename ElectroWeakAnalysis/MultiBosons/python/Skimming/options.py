@@ -49,11 +49,13 @@ options.register("wantSummary",
   )
 
 options.register("hltPaths",
-  "HLT_Mu9",                         # default value
+  "",                                # default value
   VarParsing.multiplicity.list,      # singleton or list
   VarParsing.varType.string,         # bool, string, int, or float
   "List of HLT paths whose OR is required."
   )
+
+options.setupTags(tag = "%s", ifCond = "jobType != ''", tagArg = "jobType")
 
 ## Use this to work around bug with passing multiple option parameters with
 ## crab.  Pass just this one parameter and associate it with several other
