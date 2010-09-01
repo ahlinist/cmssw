@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-muonTriggerMatchHLTMuons = cms.EDFilter( "PATTriggerMatcherDRLessByR",
+muonTriggerMatchHLTMuons = cms.EDProducer( "PATTriggerMatcherDRLessByR",
     src     = cms.InputTag( "cleanPatMuons" ),
     matched = cms.InputTag( "patTrigger" ),
     andOr          = cms.bool( False ),
