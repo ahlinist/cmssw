@@ -1,15 +1,21 @@
 #ifndef TauAnalysis_CandidateTools_svFitAuxFunctions_h
 #define TauAnalysis_CandidateTools_svFitAuxFunctions_h
 
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
+
 namespace SVfit_namespace 
 {
   const double tauLeptonMass = 1.77685; // GeV
   const double tauLeptonMass2 = tauLeptonMass*tauLeptonMass;
+
+  const double cTauLifetime = 8.711e-3; // centimeters
 
   inline double square(double x)
   {
