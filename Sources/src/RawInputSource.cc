@@ -15,6 +15,7 @@ namespace edm {
 				       InputSourceDescription const& desc) :
     InputSource(pset, desc),
     runNumber_(RunNumber_t()),
+    luminosityBlockNumber_(),
     newRun_(false),
     newLumi_(false),
     eventCached_(false) {
