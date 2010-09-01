@@ -200,6 +200,9 @@ class VarParsing (object):
                         self.setDefault (name, value)
                     else:
                         # list
+                        ## JV: Added line below so that can check in jobOptions
+                        ## not to override command line options
+                        self._beenSet[name] = True
                         self.setDefault (name, value)
             else:
                 # commands
