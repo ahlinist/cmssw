@@ -24,7 +24,7 @@
 
 namespace edm {
 
-  EDLooperBase::EDLooperBase() : iCounter_(0) { }
+  EDLooperBase::EDLooperBase() : iCounter_(0), act_table_(0), moduleChanger_(0) { }
   EDLooperBase::~EDLooperBase() { }
 
   void
