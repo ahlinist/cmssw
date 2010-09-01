@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-electronUserData = cms.EDFilter("ElectronUserDataProducer",
+electronUserData = cms.EDProducer("ElectronUserDataProducer",
   src = cms.InputTag("gsfElectrons"),
 #   ebRechits = cms.InputTag("ecalRecHit","EcalRecHitsEB"),
 #   eeRechits = cms.InputTag("ecalRecHit","EcalRecHitsEE"),

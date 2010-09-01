@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-dimuons = cms.EDFilter("CandViewShallowClonePtrCombiner",
+dimuons = cms.EDProducer("CandViewShallowClonePtrCombiner",
     checkCharge = cms.bool(False),
     cut = cms.string("mass > 0"),
     decay = cms.string("cleanPatMuons@+ cleanPatMuons@-"),
