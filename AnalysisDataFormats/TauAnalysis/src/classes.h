@@ -75,8 +75,9 @@ namespace {
     std::vector<SVfitDiTauSolution> dummySVfitDiTauSolutionCollection;
     SVmassRecoSolution dummySVfitLegSolution;
     std::vector<SVfitLegSolution> dummySVfitLegSolutionCollection;
-    std::map<std::string, SVfitDiTauSolution> dummySVfitDiTauSolutionMap;
     std::map<std::string, double> dummySVfitDiTauSolutionLogLikeMap;
+    std::map<std::string, std::map<std::string, double> > dummySVfitDiTauSolutionLogLikeMapMap;
+    std::map<std::string, SVfitDiTauSolution> dummySVfitDiTauSolutionMap;
     std::map<std::string, std::map<std::string, SVfitDiTauSolution> > dummySVfitDiTauSolutionMapMap;
 
     /// create dictionaries for PATElecPair objects
