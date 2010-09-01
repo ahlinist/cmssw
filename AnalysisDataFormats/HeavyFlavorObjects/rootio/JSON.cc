@@ -95,6 +95,20 @@ bool JSON::good(int run, int lumisection) {
 
 
 // ----------------------------------------------------------------------
+bool JSON::goodRun(int run) {
+  map<int, vector<pair<int, int> > >::iterator it;
+  // FIXME: Is it faster to directly access the pair with the key in the map?
+  for (it = fBegin; it != fEnd; ++it) {
+    if (run == it->first) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+// ----------------------------------------------------------------------
 pair<int, int> JSON::ls(string ls) {
   int ls1(-1), ls2(-1); 
   sscanf(ls.c_str(), "[%d, %d]", &ls1, &ls2);

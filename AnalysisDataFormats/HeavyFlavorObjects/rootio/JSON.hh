@@ -26,6 +26,7 @@ public:
 
   void print(); 
   bool good(int run, int lumisection); 
+  bool goodRun(int run); 
 
 private: 
 
