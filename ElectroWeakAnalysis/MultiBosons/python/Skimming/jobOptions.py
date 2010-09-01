@@ -9,7 +9,7 @@ def applyJobOptions(options):
 
   jobOptions = copy.deepcopy(defaultOptions)
 
-  if options.jobType == "testSpring10McCern":
+  if options.jobType == "testMC":
     jobOptions.maxEvents = 100
     jobOptions.inputFiles = [
       "/store/relval/CMSSW_3_5_7/" +
@@ -29,7 +29,7 @@ def applyJobOptions(options):
     jobOptions.hltPaths = ["HLT_Mu9"]
     # end of testSpring10McCern options <-------------------------------------
 
-  elif options.jobType == "testPromptRecoV4Cern":
+  elif options.jobType == "testRealData":
     jobOptions.maxEvents = 1
     jobOptions.inputFiles = [
       "/store/data/Run2010A/Mu/RECO/v4/000/" +
@@ -78,6 +78,7 @@ def applyJobOptions(options):
     raise RuntimeError, "Unknown jobType option `%s'" % options.jobType
 
   jobOptions.parseArguments()
-  options = jobOptions
+
+  return jobOptions
 
 # applyMultiOptionTag(options) <----------------------------------------------
