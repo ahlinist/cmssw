@@ -39,10 +39,6 @@
       if (gRandom->Rndm() > 0.5) w3 |= (0x1<<j); 
       if (gRandom->Rndm() > 0.5) w4 |= (0x1<<j); 
     }
-    pEvent->fL1TWords[0] = w1; 
-    pEvent->fL1TWords[1] = w1; 
-    pEvent->fL1TWords[2] = w2; 
-    pEvent->fL1TWords[3] = w3; 
 
     w1 = 0; 
     w2 = 0; 
@@ -58,10 +54,6 @@
       if (gRandom->Rndm() > 0.5) w3 |= (0x1<<j); 
       if (gRandom->Rndm() > 0.5) w4 |= (0x1<<j); 
     }
-    pEvent->fHLTWords[0] = w1; 
-    pEvent->fHLTWords[1] = w1; 
-    pEvent->fHLTWords[2] = w2; 
-    pEvent->fHLTWords[3] = w3; 
     
     // -- Vertex
     for (int j = 0; j < 2; ++j) {
@@ -160,7 +152,7 @@
     
     
     cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
-    pEvent->dump();  
+    //    pEvent->dump();  
     
     pTree->Fill();
   }
