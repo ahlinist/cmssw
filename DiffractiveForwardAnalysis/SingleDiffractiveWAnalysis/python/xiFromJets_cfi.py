@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 xiFromJets = cms.EDProducer("XiEdmNtupleDumper",
     comEnergy = cms.double(10000.),
-    ParticlesTag = cms.InputTag("sisCone5CaloJets"),
+    ParticlesTag = cms.InputTag("ak5PFJets"),
     UseMuonInfo = cms.bool(True),
     MuonTag = cms.InputTag("muons"),
     UseMETInfo = cms.bool(True),
