@@ -22,7 +22,21 @@ CompositePtrCandidateT1T2MEtDump<T1,T2>::CompositePtrCandidateT1T2MEtDump(const 
     diTauCandidateSource_(cfg.getParameter<edm::InputTag>("diTauCandidateSource")),
     genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource"))
 {
-//--- nothing to be done yet...
+  if ( cfg.exists("svFitAlgorithms") ) {
+    typedef std::vector<edm::ParameterSet> vParameterSet;
+    vParameterSet cfgSVfitAlgorithms = cfg.getParameter<vParameterSet>("svFitAlgorithms");
+    for ( vParameterSet::const_iterator cfgSVfitAlgorithm = cfgSVfitAlgorithms.begin();
+	  cfgSVfitAlgorithm != cfgSVfitAlgorithms.end(); ++cfgSVfitAlgorithm ) {
+      svFitAlgorithmType svfitAlgorithm;
+      svfitAlgorithm.algorithmName_ = cfgSVfitAlgorithm->getParameter<std::string>("name");    
+      if ( cfgSVfitAlgorithm->exists("polarizationHypotheses") ) {
+	svfitAlgorithm.polarizationHypotheses_ = cfgSVfitAlgorithm->getParameter<vstring>("polarizationHypotheses");
+      } else {
+	svfitAlgorithm.polarizationHypotheses_.push_back(std::string("Unknown"));
+      }
+      svFitAlgorithms_.push_back(svfitAlgorithm);
+    }
+  }
 }
 
 template<typename T1, typename T2>
@@ -70,24 +84,27 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
   unsigned iDiTauCandidate = 0;
   for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
 	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
-    *outputStream_ << "DiTauCandidate(" << iDiTauCandidate << "):" << std::endl;
+    *outputStream_ << "DiTauCandidate(" << iDiTauCandidate << "):" << std::endl;    
     *outputStream_ << " Pt = " << diTauCandidate->pt() << std::endl;
+    *outputStream_ << " genPt = " << diTauCandidate->p4gen().pt() << std::endl;
     *outputStream_ << " theta = " << diTauCandidate->theta()*180./TMath::Pi() 
 		   << " (eta = " << diTauCandidate->eta() << ")" << std::endl;
     *outputStream_ << " phi = " << diTauCandidate->phi()*180./TMath::Pi() << std::endl;
     *outputStream_ << " Leg1" << std::endl;
     *outputStream_ << "  Pt = " << diTauCandidate->leg1()->pt() << std::endl;
+    *outputStream_ << "  genPt = " << diTauCandidate->p4VisLeg1gen().pt() << std::endl;
     *outputStream_ << "  theta = " << diTauCandidate->leg1()->theta()*180./TMath::Pi() 
 		   << " (eta = " << diTauCandidate->leg1()->eta() << ")" << std::endl;
     *outputStream_ << "  phi = " << diTauCandidate->leg1()->phi()*180./TMath::Pi() << std::endl;
     *outputStream_ << "  pdgId = " << diTauCandidate->leg1()->pdgId() << std::endl;
     *outputStream_ << " Leg2" << std::endl;
     *outputStream_ << "  Pt = " << diTauCandidate->leg2()->pt() << std::endl;
+    *outputStream_ << "  genPt = " << diTauCandidate->p4VisLeg2gen().pt() << std::endl;
     *outputStream_ << "  theta = " << diTauCandidate->leg2()->theta()*180./TMath::Pi() 
 		   << " (eta = " << diTauCandidate->leg2()->eta() << ")" << std::endl;
     *outputStream_ << "  phi = " << diTauCandidate->leg2()->phi()*180./TMath::Pi() << std::endl;
     *outputStream_ << "  pdgId = " << diTauCandidate->leg2()->pdgId() << std::endl;
-    *outputStream_ << " dPhi(Leg1,Leg2) = " << diTauCandidate->dPhi12()*180./TMath::Pi() << std::endl;
+    *outputStream_ << " dPhi(Leg1,Leg2) = " << diTauCandidate->dPhi12()*180./TMath::Pi() << std::endl;    
     *outputStream_ << " M(visible) = " << diTauCandidate->p4Vis().mass() << std::endl;
     *outputStream_ << " Mt(Leg1+MET) = " << diTauCandidate->mt1MET() << std::endl;
     *outputStream_ << " Mt(Leg2+MET) = " << diTauCandidate->mt2MET() << std::endl;
@@ -99,18 +116,29 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
 		   << " (gen. = " << diTauCandidate->x2gen() << ")" << std::endl;
     std::string collinearApproxStatus = ( diTauCandidate->collinearApproxIsValid() ) ? "valid" : "invalid";
     *outputStream_ << " (collinear Approx. " << collinearApproxStatus << ")" << std::endl;
+    *outputStream_ << " genM = " << diTauCandidate->p4gen().mass() << std::endl;
     const CollinearApproxCompatibility* collinearApproxCompatibility = diTauCandidate->collinearApproxCompatibility("mZ");
     if ( collinearApproxCompatibility ) *outputStream_ << " Chi2(mZ) = " << collinearApproxCompatibility->minuitFitChi2() << std::endl;
     if( genParticleSource_.label() != "") {
-			*outputStream_ << " dR(leg1, nu1) = " << compDeltaRlegNu(diTauCandidate->leg1()->p4(), *genParticles) << std::endl;
-    	*outputStream_ << " dR(leg2, nu2) = " << compDeltaRlegNu(diTauCandidate->leg2()->p4(), *genParticles) << std::endl;
-	}
+      *outputStream_ << " dR(leg1, nu1) = " << compDeltaRlegNu(diTauCandidate->leg1()->p4(), *genParticles) << std::endl;
+      *outputStream_ << " dR(leg2, nu2) = " << compDeltaRlegNu(diTauCandidate->leg2()->p4(), *genParticles) << std::endl;
+    }
     const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
     for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
 	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
-      if ( svFitSolution->isValidSolution() ) {
+      if ( svFitSolution->isValidSolution() && svFitSolution == svFitSolutions.begin() ) {
 	*outputStream_ << (*svFitSolution);
 	//if ( svFitSolution == svFitSolutions.begin() ) *outputStream_ << " M(SV method) = " << svFitSolution->p4().mass() << std::endl;
+      }
+    }
+    for ( typename std::vector<svFitAlgorithmType>::const_iterator svFitAlgorithm = svFitAlgorithms_.begin();
+	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
+      for ( vstring::const_iterator polarizationHypothesis = svFitAlgorithm->polarizationHypotheses_.begin();
+	    polarizationHypothesis != svFitAlgorithm->polarizationHypotheses_.end(); ++polarizationHypothesis ) {
+	*outputStream_ << "SVfit algorithm = " << svFitAlgorithm->algorithmName_ << "," 
+		       << " polarization = " <<  (*polarizationHypothesis) << ":" << std::endl;
+	const SVfitDiTauSolution* solution = diTauCandidate->svFitSolution(svFitAlgorithm->algorithmName_, *polarizationHypothesis);
+	if ( solution ) *outputStream_ << (*solution);	
       }
     }
     ++iDiTauCandidate;

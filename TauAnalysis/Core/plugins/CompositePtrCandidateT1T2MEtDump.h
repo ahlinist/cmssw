@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: CompositePtrCandidateT1T2MEtDump.h,v 1.1 2010/02/12 17:18:02 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtDump.h,v 1.2 2010/05/19 08:51:07 veelken Exp $
  *
  */
 
@@ -22,6 +22,9 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
 #include "TauAnalysis/Core/interface/ObjectDumpBase.h"
+
+#include <vector>
+#include <string>
 
 template<typename T1, typename T2>
 class CompositePtrCandidateT1T2MEtDump : public ObjectDumpBase
@@ -35,6 +38,15 @@ class CompositePtrCandidateT1T2MEtDump : public ObjectDumpBase
 
  private:
   edm::InputTag diTauCandidateSource_;
+
+  typedef std::vector<std::string> vstring;
+  struct svFitAlgorithmType
+  {
+    std::string algorithmName_;
+    vstring polarizationHypotheses_;
+  };
+  std::vector<svFitAlgorithmType> svFitAlgorithms_;
+  
   edm::InputTag genParticleSource_;
 };
 
