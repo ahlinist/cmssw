@@ -9,7 +9,7 @@ process.inputs = cms.PSet (
 #         '/Volumes/MyBook/Data/TTbar/shyft_35x_v3/ljmet_1.root'
 #         'file:zmm_pat.root'
 #         'file:/tmp/veverka/tmp.YPPUW29322/CMSSW_3_6_2/src/PhysicsTools/SelectorUtils/bin/wm_pat.root'
-  "file:VGammaSkim_numEvent200.root"
+  "file:VGammaSkim_numEvent10.root"
         )
 )
 
@@ -27,30 +27,66 @@ process.photonHistos = cms.PSet(
     [
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(-5),
+        max = cms.untracked.double(5),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("seedTime"),
+        description = cms.untracked.string("Photons:seed time (ns):events / bin"),
+        plotquantity = cms.untracked.string('userFloat("photonUserData:seedTime")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(0),
         max = cms.untracked.double(1),
         nbins = cms.untracked.int32(100),
-        name = cms.untracked.string("swissCross"),
-        description = cms.untracked.string("swiss cross"),
-        plotquantity = cms.untracked.string('userFloat("photonUserData:swissCross")')
+        name = cms.untracked.string("seedOutOfTimeChi2"),
+        description = cms.untracked.string("Photons:seed out of time #chi^{2}:events / bin"),
+        plotquantity = cms.untracked.string('userFloat("photonUserData:seedSwissCross")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(0),
+        max = cms.untracked.double(1),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("seedChi2"),
+        description = cms.untracked.string("Photons:seed #chi^{2}:events / bin"),
+        plotquantity = cms.untracked.string('userFloat("photonUserData:seedSwissCross")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(0),
+        max = cms.untracked.double(1),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("seedSwissCross"),
+        description = cms.untracked.string("Photons:seed swiss cross 1-S4/S1, events / bin"),
+        plotquantity = cms.untracked.string('userFloat("photonUserData:seedSwissCross")')
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(-0.5),
-        max = cms.untracked.double(1.5),
-        nbins = cms.untracked.int32(2),
-        name = cms.untracked.string("isOutOfTime"),
-        description = cms.untracked.string("is out of time"),
-        plotquantity = cms.untracked.string('userInt("photonUserData:isOutOfTime")')
+        max = cms.untracked.double(20.5),
+        nbins = cms.untracked.int32(21),
+        name = cms.untracked.string("seedRecoFlag"),
+        description = cms.untracked.string("Photons:seed reco flag:events per flag"),
+        plotquantity = cms.untracked.string('userInt("photonUserData:seedRecoFlag")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(-0.5),
+        max = cms.untracked.double(20.5),
+        nbins = cms.untracked.int32(21),
+        name = cms.untracked.string("seedSeverityLevel"),
+        description = cms.untracked.string("Photons:Seed severity level:events"),
+        plotquantity = cms.untracked.string('userInt("photonUserData:seedSeverityLevel")')
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(0),
         max = cms.untracked.double(1),
         nbins = cms.untracked.int32(100),
-        name = cms.untracked.string("E1OverE9"),
-        description = cms.untracked.string("E1/E9 severity"),
-        plotquantity = cms.untracked.string('userFloat("photonUserData:E1OverE9")')
+        name = cms.untracked.string("seedE1OverE9"),
+        description = cms.untracked.string("Phtons:Seed E1/E9 from severity level:events"),
+        plotquantity = cms.untracked.string('userFloat("photonUserData:seedE1OverE9")')
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
@@ -69,7 +105,7 @@ process.photonHistos = cms.PSet(
         max = cms.untracked.double(100),
         nbins = cms.untracked.int32(100),
         name = cms.untracked.string("e3x3User"),
-        description = cms.untracked.string("e3x3 user"),
+        description = cms.untracked.string("e3x3 user/cluster shape tools"),
         plotquantity = cms.untracked.string('userFloat("photonUserData:e3x3")')
       ),
       cms.PSet(
@@ -80,7 +116,16 @@ process.photonHistos = cms.PSet(
         name = cms.untracked.string("e3x3Photon"),
         description = cms.untracked.string("e3x3 photon"),
         plotquantity = cms.untracked.string('e3x3')
-      )
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(0),
+        max = cms.untracked.double(1),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("covIEtaIEta"),
+        description = cms.untracked.string("cov(i#eta,i#eta)"),
+        plotquantity = cms.untracked.string('userFloat("photonUserData:covIEtaIEta")')
+      ),
     ],
   eventWeight = cms.double(1.0),
   outputDirectory = cms.string('test')
