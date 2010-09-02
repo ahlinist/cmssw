@@ -95,7 +95,7 @@ namespace SVfit_namespace {
   double logGaussian(double residual, double sigma)
   {
     if ( sigma > 0. ) {
-      return -0.5*TMath::Log(2*TMath::Pi()*sigma) - 0.5*square(residual/sigma);
+      return -0.5*TMath::Log(2*TMath::Pi()*square(sigma)) - 0.5*square(residual/sigma);
     } else { 
       edm::LogError ("logGaussian")
 	<< " Parameter sigma must not be zero !!";
