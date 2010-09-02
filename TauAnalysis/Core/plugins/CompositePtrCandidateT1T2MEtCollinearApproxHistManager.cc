@@ -104,10 +104,11 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::bookHistogra
   
   hCollinearApproxEffDPhi12dep_ = book1D("CollinearApproxEffDPhi12dep", "Eff. of collinear Approximation as function of #Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon);
   hCollinearApproxEffDiTauPtDep_ = book1D("CollinearApproxEffDiTauPtDep", "Eff. of collinear Approximation as function of Visible P_{T}", 50, 0., 100.);
-  hCollinearApproxEffMEtDep_ = book1D("CollinearApproxEffMEtDep", "Eff. of collinear Approximation  as function of MEt", 75, 0., 150.);
+  hCollinearApproxEffMEtDep_ = book1D("CollinearApproxEffMEtDep", "Eff. of collinear Approximation as function of MEt", 75, 0., 150.);
 
   hCollinearApproxEta_ = book1D("CollinearApproxEta", "Collinear Approximation #eta", 100, -5., +5.);
   hCollinearApproxMass_ = book1D("CollinearApproxMass", "Collinear Approximation Mass", 50, 0., 250.);
+  hCollinearApproxMassRes_ = book1D("CollinearApproxMassRes", "Collinear Approximation Mass Resolution", 100, -2.5, +2.5);
   hCollinearApproxMassVsPt_ = book2D("CollinearApproxMassVsPt", "Collinear Approximation Mass vs. P_{T}", 30, 0., 150., 25, 0., 250.);
   hCollinearApproxMassVsDPhi12_ = book2D("CollinearApproxMassVsDPhi12", "Collinear Approximation Mass vs. #Delta#phi_{1,2}", 18, -epsilon, TMath::Pi() + epsilon, 25, 0., 250.);
   hCollinearApproxX1_ = book1D("CollinearApproxX1", "Collinear Approximation X_{1}", 100, -2.5, +2.5);
@@ -282,10 +283,13 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
     hCollinearApproxEffDiTauPtDep_->Fill(diTauCandidate->p4Vis().pt(), weight);
     hCollinearApproxEffMEtDep_->Fill(diTauCandidate->met()->pt(), weight);
 
+    double genMass = diTauCandidate->p4gen().mass();
+    double recMass = diTauCandidate->p4CollinearApprox().mass();
     hCollinearApproxEta_->Fill(diTauCandidate->p4CollinearApprox().eta(), weight);
-    hCollinearApproxMass_->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
-    hCollinearApproxMassVsPt_->Fill(diTauCandidate->p4Vis().pt(), diTauCandidate->p4CollinearApprox().mass(), weight);
-    hCollinearApproxMassVsDPhi12_->Fill(diTauCandidate->dPhi12(), diTauCandidate->p4CollinearApprox().mass(), weight);
+    hCollinearApproxMass_->Fill(recMass, weight);
+    if ( genMass > 0. ) hCollinearApproxMassRes_->Fill((recMass - genMass)/genMass, weight);
+    hCollinearApproxMassVsPt_->Fill(diTauCandidate->p4Vis().pt(), recMass, weight);
+    hCollinearApproxMassVsDPhi12_->Fill(diTauCandidate->dPhi12(), recMass, weight);
     hCollinearApproxX1_->Fill(diTauCandidate->x1CollinearApprox(), weight);
     hCollinearApproxX2_->Fill(diTauCandidate->x2CollinearApprox(), weight);
     if ( makeCollinearApproxX1X2histograms_ ) {
@@ -295,15 +299,15 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
     if ( makeCollinearApproxMassDepHistograms_  ) {
       int iDPhi12bin = TMath::FloorNint(diTauCandidate->dPhi12()/collinearApproxMassDPhi12Incr_);
       if ( iDPhi12bin >= 0 && iDPhi12bin < (int)hCollinearApproxMassDPhi12dep_.size() )
-	hCollinearApproxMassDPhi12dep_[iDPhi12bin]->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
+	hCollinearApproxMassDPhi12dep_[iDPhi12bin]->Fill(recMass, weight);
       
       int iDiTauPtBin = TMath::FloorNint(diTauCandidate->p4Vis().pt()/collinearApproxMassDiTauPtIncr_);
       if ( iDiTauPtBin >= 0 && iDiTauPtBin < (int)hCollinearApproxMassDiTauPtDep_.size() )
-	hCollinearApproxMassDiTauPtDep_[iDiTauPtBin]->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
+	hCollinearApproxMassDiTauPtDep_[iDiTauPtBin]->Fill(recMass, weight);
       
       int iMEtPtBin = TMath::FloorNint(diTauCandidate->met()->pt()/collinearApproxMassMEtPtIncr_);
       if ( iMEtPtBin >= 0 && iMEtPtBin < (int)hCollinearApproxMassMEtPtDep_.size() )
-	hCollinearApproxMassMEtPtDep_[iMEtPtBin]->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
+	hCollinearApproxMassMEtPtDep_[iMEtPtBin]->Fill(recMass, weight);
     }
     
     fillMEtHistograms(evt, *diTauCandidate, weight);
