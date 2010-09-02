@@ -45,19 +45,19 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
             likelihoodFunctions = cms.VPSet(
                 svFitLikelihoodDiTauKinematicsPhaseSpace         
             )
-        ##),
-        ##psKine_MEt = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodDiTauKinematicsPhaseSpace,
-        ##        svFitLikelihoodMEt
-        ##    )
-        ##),
-        ##psKine_MEt_ptBalance = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodDiTauKinematicsPhaseSpace,
-        ##        svFitLikelihoodMEt,
-        ##        svFitLikelihoodDiTauPtBalance
-        ##    )
+        ),
+        psKine_MEt = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauKinematicsPhaseSpace,
+                svFitLikelihoodMEt
+            )
+        ),
+        psKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauKinematicsPhaseSpace,
+                svFitLikelihoodMEt,
+                svFitLikelihoodDiTauPtBalance
+            )
         )
     ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                           
