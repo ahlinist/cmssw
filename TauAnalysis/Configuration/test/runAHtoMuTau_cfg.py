@@ -25,8 +25,8 @@ process.load("TauAnalysis.Configuration.producePatTuple_cff")
 process.load("TauAnalysis.Configuration.producePatTupleAHtoMuTauSpecific_cff")
 
 # Options used for SV mass fit method
-process.allMuTauPairs.SVOptions.usePtBalanceInFit = cms.bool(False)
-process.allMuTauPairs.SVOptions.useMEtInFit = cms.bool(False)
+process.allMuTauPairs.SVOptions.usePtBalanceInFit = cms.bool(True)
+process.allMuTauPairs.SVOptions.useMEtInFit = cms.bool(True)
 process.allMuTauPairs.SVOptions.useLeg1TrackingInFit = cms.bool(False)
 process.allMuTauPairs.SVOptions.useLeg2TrackingInFit = cms.bool(False)
 process.allMuTauPairs.SVOptions.correctPrimaryVertexInFit = cms.bool(False)
