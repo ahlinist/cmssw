@@ -3,6 +3,8 @@
 
 #include "DQMServices/Core/interface/DQMStore.h"
 
+#include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
+
 #include "TauAnalysis/FittingTools/interface/TemplateFitAdapterBase.h"
 
 #include <TH1.h>
@@ -16,6 +18,10 @@
 enum { kCoherent, kIncoherent };
 
 typedef std::pair<double, double> double_pair;
+
+const std::string meOptionsValue = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s1");
+const std::string meOptionsErr = std::string(meOptionsSeparator).append("a2").append(meOptionsSeparator).append("s1");
+const std::string meOptionsCov = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s2");
 
 double getSampledPull(double, double, double);
 
@@ -32,7 +38,7 @@ TH1* makeSubrangeHistogram(const TH1*, const std::vector<TemplateFitAdapterBase:
 TH1* makeSerializedHistogram(const TH1*);
 TH1* makeConcatenatedHistogram(const std::string&, const std::vector<const TH1*>&, const std::vector<double>*);
 
-void saveMonitorElement_float(DQMStore&, const char*, float);
+void saveMonitorElement_float(DQMStore&, const std::string&, float, const std::string&);
 void saveFitParameter(DQMStore&, const std::string&, const std::string&, const std::string&, double, double, double);
 
 void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultType*,
