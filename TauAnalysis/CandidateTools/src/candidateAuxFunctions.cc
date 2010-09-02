@@ -202,3 +202,55 @@ reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVe
 					p4daughter_tlorentzvector.Energy());
 }
 
+//
+//-------------------------------------------------------------------------------
+//
+
+TVector2 getDiTauBisectorDirection(const reco::Candidate::LorentzVector& leg1P4, const reco::Candidate::LorentzVector& leg2P4)
+{
+  double leg1CosPhi = TMath::Cos(leg1P4.phi());
+  double leg1SinPhi = TMath::Sin(leg1P4.phi());
+
+  double leg2CosPhi = TMath::Cos(leg2P4.phi());
+  double leg2SinPhi = TMath::Sin(leg2P4.phi());
+
+  double diTauPx_unnormalized = leg1CosPhi + leg2CosPhi;
+  double diTauPy_unnormalized = leg1SinPhi + leg2SinPhi;
+  double diTauP = TMath::Sqrt(diTauPx_unnormalized*diTauPx_unnormalized + diTauPy_unnormalized*diTauPy_unnormalized);
+  double diTauPx_normalized = ( diTauP > 0. ) ? (diTauPx_unnormalized/diTauP) : diTauPx_unnormalized;
+  double diTauPy_normalized = ( diTauP > 0. ) ? (diTauPy_unnormalized/diTauP) : diTauPy_unnormalized;
+  
+  return TVector2(diTauPx_normalized, diTauPy_normalized);
+}
+
+void computeMEtProjection(const reco::PFCandidateCollection& pfCandidates, const TVector2& direction,
+			  double& sumEt, double& sumP_par, double& sumP_perp)
+{
+  sumEt = 0.;
+
+  sumP_par = 0.;
+  sumP_perp = 0.;
+
+  double dirCosPhi = direction.X();
+  double dirSinPhi = direction.Y();
+
+  for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+	pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+//--- skip particle candidate of unknown type,
+//    as it is done in the "official" (pf)MET reconstruction code
+//    implemented in RecoMET/METAlgorithms/src/PFSpecificAlgo.cc
+    if ( !(pfCandidate->particleId() == reco::PFCandidate::h        ||
+	   pfCandidate->particleId() == reco::PFCandidate::e        ||
+	   pfCandidate->particleId() == reco::PFCandidate::mu       ||
+	   pfCandidate->particleId() == reco::PFCandidate::gamma    ||
+	   pfCandidate->particleId() == reco::PFCandidate::h0       ||
+	   pfCandidate->particleId() == reco::PFCandidate::h_HF     ||
+	   pfCandidate->particleId() == reco::PFCandidate::egamma_HF) ) continue;
+    
+    sumEt += pfCandidate->et();
+    
+    sumP_par += TMath::Abs(pfCandidate->px()*dirCosPhi + pfCandidate->py()*dirSinPhi);
+    sumP_perp += TMath::Abs(pfCandidate->px()*dirSinPhi - pfCandidate->py()*dirCosPhi);
+  }
+}
+

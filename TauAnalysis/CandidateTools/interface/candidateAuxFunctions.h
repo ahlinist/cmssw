@@ -4,7 +4,14 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+
+#include "DataFormats/Candidate/interface/Candidate.h" 
+
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
+
+#include <TVector2.h>
 
 #include <vector>
 
@@ -33,5 +40,8 @@ void compX1X2byCollinearApprox(double&, double&, double, double, double, double,
 double getPhysX(double x, bool& isWithinPhysRange);
 
 reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
+
+TVector2 getDiTauBisectorDirection(const reco::Candidate::LorentzVector& leg1P4, const reco::Candidate::LorentzVector& leg2P4); 
+void computeMEtProjection(const reco::PFCandidateCollection&, const TVector2&, double&, double&, double&);
 
 #endif
