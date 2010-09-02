@@ -89,7 +89,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::bookHistogramsImp>:" << std::endl;
 
   hGenDiTauCandidatePt_ = book1D("GenDiTauCandidatePt", "gen. Composite P_{T}", 75, 0., 150.);
-
+  hGenDiTauCandidateVisPt_ = book1D("GenDiTauCandidateVisPt", "gen. Composite visible P_{T}", 75, 0., 150.);
+  hGenDiTauCandidateEta_ = book1D("GenDiTauCandidateEta", "gen. Composite #eta", 100, -5., +5.);
+  hGenDiTauCandidatePhi_ = book1D("GenDiTauCandidatePhi", "gen. Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
+  
   hGenLeg1En_ = book1D("GenLeg1En", "gen. leg_{1} Energy", 125, 0., 250.);
   hGenLeg2En_ = book1D("GenLeg2En", "gen. leg_{2} Energy", 125, 0., 250.);
   hGenLeg1PtVsLeg2Pt_ = book2D("GenLeg1PtVsLeg2Pt", "gen. leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
@@ -133,6 +136,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 						 "gen. leg_{2} #theta(#tau, #nu) for had. three-prong Tau- decays", 36, 0., TMath::Pi());
   
   hDiTauCandidatePt_ = book1D("DiTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
+  hDiTauCandidateVisPt_ = book1D("DiTauCandidateVisPt", "Composite visible P_{T}", 75, 0., 150.);
   hDiTauCandidateEta_ = book1D("DiTauCandidateEta", "Composite #eta", 100, -5., +5.);
   hDiTauCandidatePhi_ = book1D("DiTauCandidatePhi", "Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
   hDiTauCandidateCharge_ = book1D("DiTauCandidateCharge", "Composite Charge", 11, -5.5, +5.5);
@@ -378,8 +382,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
     if ( diTauCandidate->p4Leg1gen().energy() > epsilon && 
 	 diTauCandidate->p4Leg2gen().energy() > epsilon ) {
-      hGenDiTauCandidatePt_->Fill(diTauCandidate->p4VisGen().pt(), weight);
-
+      hGenDiTauCandidatePt_->Fill(diTauCandidate->p4gen().pt(), weight);
+      hGenDiTauCandidateVisPt_->Fill(diTauCandidate->p4VisGen().pt(), weight);
+      hGenDiTauCandidateEta_->Fill(diTauCandidate->p4gen().eta(), weight);
+      hGenDiTauCandidatePhi_->Fill(diTauCandidate->p4gen().phi(), weight);
+      
       hGenLeg1En_->Fill(diTauCandidate->p4Leg1gen().energy(), weight);
       hGenLeg2En_->Fill(diTauCandidate->p4Leg2gen().energy(), weight);
 
@@ -421,6 +428,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     }
 
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
+    hDiTauCandidateVisPt_->Fill(diTauCandidate->p4Vis().pt(), weight);
     hDiTauCandidateEta_->Fill(diTauCandidate->eta(), weight);
     hDiTauCandidatePhi_->Fill(diTauCandidate->phi(), weight);
     hDiTauCandidateCharge_->Fill(diTauCandidate->charge(), weight);
@@ -438,8 +446,6 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
       double leg1SinPhi = TMath::Sin(leg1P4.phi());
 
       const reco::Candidate::LorentzVector& leg2P4 = diTauCandidate->leg2()->p4();
-      double leg2CosPhi = TMath::Cos(leg2P4.phi());
-      double leg2SinPhi = TMath::Sin(leg2P4.phi());
             
 //--- make unit vector bisecting tau lepton "legs"
 //    and project difference between "true" generated and reconstructed MET
