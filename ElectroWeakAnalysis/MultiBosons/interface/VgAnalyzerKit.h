@@ -54,6 +54,7 @@ protected:
   InputTag gtdigilabel_;
   InputTag tracklabel_;
   InputTag trgResults_;
+  InputTag trgEvent_;
   InputTag caloTowerlabel_;
   InputTag tcMETlabel_;
   InputTag pfMETlabel_;
@@ -65,6 +66,7 @@ protected:
   int leadingElePtCut_;
   int leadingMuPtCut_;
   int leadingPhoPtCut_;
+  string muonMatch_;
 
   pat::PatKitHelper helper_;
   TTree *tree_;

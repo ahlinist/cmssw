@@ -4,6 +4,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/Utilities/interface/EDMException.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
@@ -18,24 +19,21 @@
 #include "DataFormats/METReco/interface/PFMETCollection.h"
 #include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Scalers/interface/DcsStatus.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "PhysicsTools/CandUtils/interface/AddFourMomenta.h"
-
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-
-#include "FWCore/Framework/interface/ESHandle.h"
-#include "DataFormats/Scalers/interface/DcsStatus.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
-
 #include "DataFormats/EgammaCandidates/interface/PhotonPi0DiscriminatorAssociation.h"
-
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
+#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+#include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
 
 #include <iostream>
 
@@ -43,6 +41,7 @@ using namespace std;
 using namespace pat;
 using namespace edm;
 using namespace reco;
+using namespace pat::helper;
 
 VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helper_(ps) {
   // cout << "VgAnalyzerKit: entering ctor ..." << endl;
@@ -50,6 +49,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   saveHistograms_ = ps.getUntrackedParameter<bool>("saveHistograms", false);
   saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);
   trgResults_     = ps.getParameter<InputTag>("triggerResults");
+  trgEvent_       = ps.getParameter<InputTag>("triggerEvent"); 
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
   doStoreJets_     = ps.getParameter<bool>("doStoreJets");
   gtdigilabel_    = ps.getParameter<InputTag>("GTDigiLabel");
@@ -385,6 +385,12 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // get the channel status from the DB
   edm::ESHandle<EcalChannelStatus> chStatus;
   es.get<EcalChannelStatusRcd>().get(chStatus);
+
+  // PAT Trigger
+  edm::Handle< TriggerEvent > triggerEvent;
+  e.getByLabel(trgEvent_, triggerEvent);
+
+  const TriggerMatchHelper matchHelper;
 
   //Handle<int> genProcessID;
   //e.getByLabel("genEventProcID", genProcessID);
@@ -743,6 +749,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
   // cout<< "BField:"<< evt_bField <<endl;
   //=====
+
+  const TriggerObjectMatch * eleTriggerMatch( triggerEvent->triggerObjectMatchResult( "electronTriggerMatchHLTEle15LWL1R" ) );
   int nElePassCut = 0;
   nEle_ = 0;
   const Candidate *elemom = 0;
@@ -750,6 +758,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
       if (iEle->pt() > leadingElePtCut_) nElePassCut++;
+
+      edm::RefToBase<pat::Electron> eleRef = electronHandle_->refAt(nEle_);
+      reco::CandidateBaseRef eleBaseRef(eleRef);
+      const TriggerObjectRef eleTrigRef( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch, e, *triggerEvent ) );
+      if ( eleTrigRef.isAvailable() ) { 
+	cout<< eleBaseRef->pt() <<" "<< eleTrigRef->pt() <<endl;
+      }
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -875,7 +890,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleRecoFlag_[nEle_] = -999.;
       eleSeverity_[nEle_] = -999.;
       DetId eleSeedDetId = lazyTool.getMaximum(*eleSeed).first;
-
 
       if ( iEle->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleebrhit = EBReducedRecHits->find(eleSeedDetId);
@@ -1040,6 +1054,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
        nPho_++;
     }
 
+  // muon trigger matching
+  const TriggerObjectMatch * muTriggerMatch( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu3" ) );
+
   // Muon
   int nMuPassCut = 0;
   nMu_ = 0;
@@ -1049,6 +1066,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
       
+      edm::RefToBase<pat::Muon> muRef = muonHandle_->refAt(nMu_);
+      reco::CandidateBaseRef muBaseRef(muRef);
+      const TriggerObjectRef muTrigRef( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch, e, *triggerEvent ) );
+      if ( muTrigRef.isAvailable() ) { 
+	cout<< muBaseRef->pt() <<" "<< muTrigRef->pt() <<endl;
+      }
+
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
       //       if (iMu->globalTrack().isNull()) continue;
