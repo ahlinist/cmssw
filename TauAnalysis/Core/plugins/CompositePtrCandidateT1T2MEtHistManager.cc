@@ -18,6 +18,7 @@
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
+#include <TVector2.h>
 
 const double epsilon = 0.01;
 
@@ -329,37 +330,7 @@ void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton,
     }
   }
 }
-
-void computeMEtProjection(const reco::PFCandidateCollection& pfCandidates, 
-			  double dirCosPhi, double dirSinPhi, 
-			  double& metSumEt, double& metSumPpar, double& metSumPperp)
-{
-  metSumEt = 0.;
-
-  metSumPpar = 0.;
-  metSumPperp = 0.;
-
-  for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
-	pfCandidate != pfCandidates.end(); ++pfCandidate ) {
-//--- skip particle candidate of unknown type,
-//    as it is done in the "official" (pf)MET reconstruction code
-//    implemented in RecoMET/METAlgorithms/src/PFSpecificAlgo.cc
-    if ( !(pfCandidate->particleId() == reco::PFCandidate::h        ||
-	   pfCandidate->particleId() == reco::PFCandidate::e        ||
-	   pfCandidate->particleId() == reco::PFCandidate::mu       ||
-	   pfCandidate->particleId() == reco::PFCandidate::gamma    ||
-	   pfCandidate->particleId() == reco::PFCandidate::h0       ||
-	   pfCandidate->particleId() == reco::PFCandidate::h_HF     ||
-	   pfCandidate->particleId() == reco::PFCandidate::egamma_HF) ) continue;
-    
-    metSumEt += pfCandidate->et();
-    
-    metSumPpar += TMath::Abs(pfCandidate->px()*dirCosPhi + pfCandidate->py()*dirSinPhi);
-    metSumPperp += TMath::Abs(pfCandidate->px()*dirSinPhi - pfCandidate->py()*dirCosPhi);
-  }
-}
      
-
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
@@ -461,37 +432,36 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
       
       double sumEt = diTauCandidate->met()->sumEt();       
       //std::cout << "sumEt = " << sumEt << std::endl;
-            
-//--- make unit vector bisecting tau lepton "legs"
-      reco::Candidate::LorentzVector leg1P4 = diTauCandidate->leg1()->p4();
+
+      const reco::Candidate::LorentzVector& leg1P4 = diTauCandidate->leg1()->p4();
       double leg1CosPhi = TMath::Cos(leg1P4.phi());
       double leg1SinPhi = TMath::Sin(leg1P4.phi());
 
-      reco::Candidate::LorentzVector leg2P4 = diTauCandidate->leg2()->p4();
+      const reco::Candidate::LorentzVector& leg2P4 = diTauCandidate->leg2()->p4();
       double leg2CosPhi = TMath::Cos(leg2P4.phi());
       double leg2SinPhi = TMath::Sin(leg2P4.phi());
+            
+//--- make unit vector bisecting tau lepton "legs"
+//    and project difference between "true" generated and reconstructed MET
+//    in direction parallel and perpendicular to that vector
+      TVector2 diTauDirection = getDiTauBisectorDirection(leg1P4, leg2P4);
+      double diTauCosPhi = diTauDirection.X();
+      double diTauSinPhi = diTauDirection.Y();
 
-      double diTauCosPhi_unnormalized = leg1CosPhi + leg2CosPhi;
-      double diTauSinPhi_unnormalized = leg1SinPhi + leg2SinPhi;
-      double diTauVector_norm = TMath::Sqrt(diTauCosPhi_unnormalized*diTauCosPhi_unnormalized
-					   + diTauSinPhi_unnormalized*diTauSinPhi_unnormalized);
-      double diTauCosPhi_normalized = (diTauVector_norm > 0.) ? (diTauCosPhi_unnormalized/diTauVector_norm) : diTauCosPhi_unnormalized;
-      double diTauSinPhi_normalized = (diTauVector_norm > 0.) ? (diTauSinPhi_unnormalized/diTauVector_norm) : diTauSinPhi_unnormalized;
-
-      double metSumEt, metSumPpar, metSumPperp;
-      computeMEtProjection(*pfCandidates, diTauCosPhi_normalized, diTauSinPhi_normalized, metSumEt, metSumPpar, metSumPperp);
+      double metSumEt, metSumP_par, metSumP_perp;
+      computeMEtProjection(*pfCandidates, diTauDirection, metSumEt, metSumP_par, metSumP_perp);
       //std::cout << "metSumEt = " << metSumEt << std::endl;
-      //std::cout << "metSumPpar = " << metSumPpar << std::endl;
-      //std::cout << "metSumPperp = " << metSumPperp << std::endl;
-
+      //std::cout << "metSumP_par = " << metSumP_par << std::endl;
+      //std::cout << "metSumP_perp = " << metSumP_perp << std::endl;
+      
       hMETresXvsSumEt_->Fill(residualMET.px(), sumEt);
       hMETresYvsSumEt_->Fill(residualMET.py(), sumEt);
 
       hMETresParMuonvsSumEt_->Fill((residualMET.px()*leg1CosPhi + residualMET.py()*leg1SinPhi), sumEt);
       hMETresPerpMuonvsSumEt_->Fill((residualMET.px()*leg1SinPhi - residualMET.py()*leg1CosPhi), sumEt);
       
-      hMETresParDiTauvsSumPpar_->Fill((residualMET.px()*diTauCosPhi_normalized + residualMET.py()*diTauSinPhi_normalized), metSumPpar);
-      hMETresPerpDiTauvsSumPperp_->Fill((residualMET.px()*diTauSinPhi_normalized - residualMET.py()*diTauCosPhi_normalized), metSumPperp);
+      hMETresParDiTauvsSumPpar_->Fill((residualMET.px()*diTauCosPhi + residualMET.py()*diTauSinPhi), metSumP_par);
+      hMETresPerpDiTauvsSumPperp_->Fill((residualMET.px()*diTauSinPhi - residualMET.py()*diTauCosPhi), metSumP_perp);
     }
 
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
