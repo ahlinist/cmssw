@@ -20,6 +20,7 @@
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaJet.hh"
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/PidTable.hh"
+#include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/JSON.hh"
 
 #include "treeReaderXS.hh"
 
@@ -53,6 +54,7 @@ public:
   
   // -- Cut values
   int TYPE;
+  int MODE;
   int MUTYPE1;
   int MUTYPE2;
   double CHI2;
@@ -84,7 +86,7 @@ public:
   int fBin;
   double fMassLow, fMassHigh;
   
-  
+  JSON   *fpJSON;
 };
 
 

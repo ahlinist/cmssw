@@ -14,6 +14,7 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
+  fpJSON = new JSON("/shome/ursl/json/1.json");
   fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 3.; fPTbin[3] = 5.; fPTbin[4] = 8.; fPTbin[5] =12.; fPTbin[6] = 20.;
   fYbin[0] = -2.; fYbin[1] = -1.; fYbin[2] = 0.; fYbin[3] = 1.; fYbin[4] = 2.;
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpPos-upsilon.dat");
@@ -40,17 +41,19 @@ void xsReader::startAnalysis() {
 
 void xsReader::eventProcessing() {
   
-  if ( MODE == 1  ) acceptance();  // FOR MC only
-  if ( isPathPreScaled(HLTPATH) ) goto end;
-  if ( !isPathFired(HLTPATH) ) goto end;
-  candidateSelection(2); 
-  if ( 0 != fpCand  ){
-    calculateWeights(0); 
-    fillCandHist(); 
-    if ( 0 != fgCand && MODE == 1 ) MCstudy(); // FOr MC only
-  }
+  cout << fRun << " " << fLS << ": " << fpJSON->good(fRun, fLS) << endl;
+  
+  //if ( MODE == 1  ) acceptance();  // FOR MC only
+  //if ( isPathPreScaled(HLTPATH) ) goto end;
+  //if ( !isPathFired(HLTPATH) ) goto end;
+  //candidateSelection(2); 
+  //if ( 0 != fpCand  ){
+  //calculateWeights(0); 
+  //fillCandHist(); 
+  //if ( 0 != fgCand && MODE == 1 ) MCstudy(); // FOr MC only
+  //}
 	   
-  fpHistFile->cd();
+  //fpHistFile->cd();
   
  end:
   fillHist();

@@ -57,7 +57,7 @@ protected:
 
   // -- Variables
   int        fRun; 
-
+  int        fLS; 
 
   // -- Histogram pointers 
   TTree *fTree;
