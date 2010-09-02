@@ -38,8 +38,11 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   edm::InputTag genParticleSrc_;
   edm::InputTag vertexSrc_;
   edm::InputTag visMassHypothesisSrc_;
+  edm::InputTag pfCandidateSrc_;
 
   bool requireGenMatch_;
+
+  bool makeMEtProjResolutionHistograms_;
 
 //--- "helper" class for accessing weight values
 //    associated to tau decay products
@@ -95,6 +98,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hMETresYvsSumEt_;
   MonitorElement* hMETresParMuonvsSumEt_;
   MonitorElement* hMETresPerpMuonvsSumEt_;
+  MonitorElement* hMETresParDiTauvsSumPpar_;
+  MonitorElement* hMETresPerpDiTauvsSumPperp_;
 
   MonitorElement* hSVfitX1_;
   MonitorElement* hSVfitX2_;

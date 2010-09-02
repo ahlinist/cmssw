@@ -11,12 +11,13 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Math/interface/angle.h"
 #include "DataFormats/Math/interface/normalizedPhi.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
-#include <TFile.h>
 
 const double epsilon = 0.01;
 
@@ -44,12 +45,18 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
   genParticleSrc_ = cfg.getParameter<edm::InputTag>("genParticleSource");
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
+  pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
+  //std::cout << " pfCandidateSrc = " << pfCandidateSrc_ << std::endl;
+
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
 
   visMassHypothesisSrc_ = ( cfg.exists("visMassHypothesisSource") ) ?  
     cfg.getParameter<edm::InputTag>("visMassHypothesisSource") : edm::InputTag();
   //std::cout << " visMassHypothesisSrc = " << visMassHypothesisSrc_ << std::endl;
+
+  makeMEtProjResolutionHistograms_ = ( cfg.exists("makeMEtProjResolutionHistograms") ) ?
+    cfg.getParameter<bool>("makeMEtProjResolutionHistograms") : false;
 
   diTauLeg1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "diTauLeg1WeightSource");
   diTauLeg2WeightExtractors_ = getTauJetWeightExtractors<T2>(cfg, "diTauLeg2WeightSource");
@@ -152,12 +159,17 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 
   hCDFmethodMass_ = book1D("CDFmethodMass", "CDF Method Mass", 50, 0., 250.);
 
-  // MET resolution plots
-  hMETresXvsSumEt_ = book2D("METresXvsSumEt", "MET X resolution", 80, -20, 20, 50, 0, 500);
-  hMETresYvsSumEt_ = book2D("METresYvsSumEt", "MET Y resolution", 80, -20, 20, 50, 0, 500);
+  if ( makeMEtProjResolutionHistograms_ ) {
+//--- book MET resolution histograms
 
-  hMETresParMuonvsSumEt_ = book2D("METresParMuonvsSumEt", "MET resolution parallel to leg 1", 80, -20, 20, 50, 0, 500);
-  hMETresPerpMuonvsSumEt_ = book2D("METresPerpMuonvsSumEt", "MET resolution perp. to leg 1", 80, -20, 20, 50, 0, 500);
+    hMETresXvsSumEt_ = book2D("METresXvsSumEt", "MET X resolution", 80, -20., 20., 50, 0., 500.);
+    hMETresYvsSumEt_ = book2D("METresYvsSumEt", "MET Y resolution", 80, -20., 20., 50, 0., 500.);
+
+    hMETresParMuonvsSumEt_ = book2D("METresParMuonvsSumEt", "MET resolution parallel to leg_{1}", 80, -20., 20., 50, 0., 500.);
+    hMETresPerpMuonvsSumEt_ = book2D("METresPerpMuonvsSumEt", "MET resolution perp. to leg_{1}", 80, -20., 20., 50, 0., 500.);
+    hMETresParDiTauvsSumPpar_ = book2D("METresParDiTauvsSumPpar", "MET resolution parallel to diTau", 80, -20., 20., 50, 0., 500.);
+    hMETresPerpDiTauvsSumPperp_ = book2D("METresPerpDiTauvsSumPperp", "MET resolution perp. to diTau", 80, -20., 20., 50, 0., 500.);
+  }
   
   hMt12MET_ = book1D("Mt12MET", "Mass_{T 1,2,MET}", 50, 0., 250.);
   
@@ -318,6 +330,36 @@ void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton,
   }
 }
 
+void computeMEtProjection(const reco::PFCandidateCollection& pfCandidates, 
+			  double dirCosPhi, double dirSinPhi, 
+			  double& metSumEt, double& metSumPpar, double& metSumPperp)
+{
+  metSumEt = 0.;
+
+  metSumPpar = 0.;
+  metSumPperp = 0.;
+
+  for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+	pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+//--- skip particle candidate of unknown type,
+//    as it is done in the "official" (pf)MET reconstruction code
+//    implemented in RecoMET/METAlgorithms/src/PFSpecificAlgo.cc
+    if ( !(pfCandidate->particleId() == reco::PFCandidate::h        ||
+	   pfCandidate->particleId() == reco::PFCandidate::e        ||
+	   pfCandidate->particleId() == reco::PFCandidate::mu       ||
+	   pfCandidate->particleId() == reco::PFCandidate::gamma    ||
+	   pfCandidate->particleId() == reco::PFCandidate::h0       ||
+	   pfCandidate->particleId() == reco::PFCandidate::h_HF     ||
+	   pfCandidate->particleId() == reco::PFCandidate::egamma_HF) ) continue;
+    
+    metSumEt += pfCandidate->et();
+    
+    metSumPpar += TMath::Abs(pfCandidate->px()*dirCosPhi + pfCandidate->py()*dirSinPhi);
+    metSumPperp += TMath::Abs(pfCandidate->px()*dirSinPhi - pfCandidate->py()*dirCosPhi);
+  }
+}
+     
+
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
@@ -332,6 +374,13 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(genParticleSrc_, genParticles);
+
+//--- CV: collection of PFCandidate only needed in case histograms of MET resolution 
+//        projected parallel and perpendicular to diTau direction are to be filled
+  edm::Handle<reco::PFCandidateCollection> pfCandidates;
+  if ( makeMEtProjResolutionHistograms_ ) {
+    evt.getByLabel(pfCandidateSrc_, pfCandidates);
+  }
 
   edm::Handle<std::vector<reco::Vertex> > recoVertices;
   evt.getByLabel(vertexSrc_, recoVertices);
@@ -406,19 +455,43 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hDiTauCandidateCharge_->Fill(diTauCandidate->charge(), weight);
     hDiTauCandidateMass_->Fill(diTauCandidate->mass(), weight);
 
-    // MET resolution plots
-    if(diTauCandidate->met().isNonnull()){
-       reco::Candidate::LorentzVector residualMET = diTauCandidate->p4InvisGen() - diTauCandidate->met()->p4();
+    if ( makeMEtProjResolutionHistograms_ && diTauCandidate->met().isNonnull() ) {
+//--- fill MET resolution histograms
+      reco::Candidate::LorentzVector residualMET = diTauCandidate->p4InvisGen() - diTauCandidate->met()->p4();
+      
+      double sumEt = diTauCandidate->met()->sumEt();       
+      //std::cout << "sumEt = " << sumEt << std::endl;
+            
+//--- make unit vector bisecting tau lepton "legs"
+      reco::Candidate::LorentzVector leg1P4 = diTauCandidate->leg1()->p4();
+      double leg1CosPhi = TMath::Cos(leg1P4.phi());
+      double leg1SinPhi = TMath::Sin(leg1P4.phi());
 
-       double sumEt = diTauCandidate->met()->sumEt();
-       hMETresXvsSumEt_->Fill(residualMET.px(), sumEt);
-       hMETresYvsSumEt_->Fill(residualMET.py(), sumEt);
+      reco::Candidate::LorentzVector leg2P4 = diTauCandidate->leg2()->p4();
+      double leg2CosPhi = TMath::Cos(leg2P4.phi());
+      double leg2SinPhi = TMath::Sin(leg2P4.phi());
 
-       reco::Candidate::LorentzVector leg1P4 = diTauCandidate->leg1()->p4();
-       hMETresParMuonvsSumEt_->Fill(
-             (residualMET.px()*leg1P4.px() + residualMET.py()*leg1P4.py())/leg1P4.pt(), sumEt);
-       hMETresPerpMuonvsSumEt_->Fill(
-             (residualMET.px()*leg1P4.py() + residualMET.py()*leg1P4.px())/leg1P4.pt(), sumEt);
+      double diTauCosPhi_unnormalized = leg1CosPhi + leg2CosPhi;
+      double diTauSinPhi_unnormalized = leg1SinPhi + leg2SinPhi;
+      double diTauVector_norm = TMath::Sqrt(diTauCosPhi_unnormalized*diTauCosPhi_unnormalized
+					   + diTauSinPhi_unnormalized*diTauSinPhi_unnormalized);
+      double diTauCosPhi_normalized = (diTauVector_norm > 0.) ? (diTauCosPhi_unnormalized/diTauVector_norm) : diTauCosPhi_unnormalized;
+      double diTauSinPhi_normalized = (diTauVector_norm > 0.) ? (diTauSinPhi_unnormalized/diTauVector_norm) : diTauSinPhi_unnormalized;
+
+      double metSumEt, metSumPpar, metSumPperp;
+      computeMEtProjection(*pfCandidates, diTauCosPhi_normalized, diTauSinPhi_normalized, metSumEt, metSumPpar, metSumPperp);
+      //std::cout << "metSumEt = " << metSumEt << std::endl;
+      //std::cout << "metSumPpar = " << metSumPpar << std::endl;
+      //std::cout << "metSumPperp = " << metSumPperp << std::endl;
+
+      hMETresXvsSumEt_->Fill(residualMET.px(), sumEt);
+      hMETresYvsSumEt_->Fill(residualMET.py(), sumEt);
+
+      hMETresParMuonvsSumEt_->Fill((residualMET.px()*leg1CosPhi + residualMET.py()*leg1SinPhi), sumEt);
+      hMETresPerpMuonvsSumEt_->Fill((residualMET.px()*leg1SinPhi - residualMET.py()*leg1CosPhi), sumEt);
+      
+      hMETresParDiTauvsSumPpar_->Fill((residualMET.px()*diTauCosPhi_normalized + residualMET.py()*diTauSinPhi_normalized), metSumPpar);
+      hMETresPerpDiTauvsSumPperp_->Fill((residualMET.px()*diTauSinPhi_normalized - residualMET.py()*diTauCosPhi_normalized), metSumPperp);
     }
 
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
