@@ -553,10 +553,7 @@ TH1* makeConcatenatedHistogram(const std::string& histogramName_concatenated, co
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-const std::string meOptionsValue = std::string(meOptionsSeparator).append("a1").append(meOptionsSeparator).append("s1");
-const std::string meOptionsErr = std::string(meOptionsSeparator).append("a2").append(meOptionsSeparator).append("s1");
-
-void saveMonitorElement_float(DQMStore& dqmStore, const char* meName, float meValue, const std::string& meOptions)
+void saveMonitorElement_float(DQMStore& dqmStore, const std::string& meName, float meValue, const std::string& meOptions)
 {
   MonitorElement* me = dqmStore.bookFloat(std::string(meName).append(meOptions));
   me->Fill(meValue);
