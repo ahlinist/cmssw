@@ -92,6 +92,7 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
 
   MonitorElement* hCollinearApproxEta_;
   MonitorElement* hCollinearApproxMass_;
+  MonitorElement* hCollinearApproxMassRes_;
   MonitorElement* hCollinearApproxMassVsPt_;
   MonitorElement* hCollinearApproxMassVsDPhi12_;
   MonitorElement* hCollinearApproxX1_;
