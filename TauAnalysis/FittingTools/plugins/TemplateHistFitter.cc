@@ -10,10 +10,6 @@
 
 #include "TauAnalysis/FittingTools/interface/templateFitAuxFunctions.h"
 
-#include "TauAnalysis/FittingTools/interface/RunningMean.h"
-#include "TauAnalysis/FittingTools/interface/RunningMedian.h"
-#include "TauAnalysis/FittingTools/interface/RunningCovMatrix.h"
-
 #include <TMath.h>
 
 #include <iostream>
@@ -220,9 +216,60 @@ void TemplateHistFitter::estimateUncertainties(bool fluctStat, bool fluctSys, in
   std::cout << "Covariance Matrix:" << std::endl;
   cov.print(std::cout, &processNames_);
   
+//--- save estimated uncertainties
+  std::string dqmSubDirectory = "undefined";
+  if ( fluctStat && fluctSys ) {
+    dqmSubDirectory = "estCombUncertainties/norm";
+  } else if ( fluctStat ) {
+    dqmSubDirectory = "estStatUncertainties/norm";
+  } else if ( fluctSys ) {
+    dqmSubDirectory = "estSysUncertainties/norm";
+  } 
+  saveEstUncertainties(dqmSubDirectory, mean, median, cov);
+
   if ( controlPlotsFileName_ != "" ) {
     //makeControlPlotsCovariance(fitResult_->normValues_, median(), cov(), processNames_, controlPlotsFileName_, type);
     makeControlPlotsCovariance(fitResult_->normValues_, fitResult_->normValues_, cov(), processNames_, controlPlotsFileName_, type);
+  }
+}
+
+void TemplateHistFitter::saveEstUncertainties(const std::string& dqmSubDirectory,
+					      const RunningMean& mean, const RunningMedian& median, const RunningCovMatrix& cov)
+{
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("saveEstUncertainties") << " Failed to access dqmStore --> estimated uncertainties will NOT be saved !!";
+    return;
+  }
+  
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  
+  unsigned numProcesses = processNames_.size();
+  for ( unsigned iProcess = 0; iProcess < numProcesses; ++iProcess ) {
+    const std::string processName_i = processNames_[iProcess];
+
+    std::string dqmDirectory_full = dqmDirectoryName(dqmDirectory_fitResult_).append(dqmSubDirectory);
+
+    dqmStore.setCurrentFolder(dqmDirectory_full);
+  
+//--- save mean value
+    std::string meName_mean = std::string("mean").append("_").append(processName_i);
+    saveMonitorElement_float(dqmStore, meName_mean, mean(iProcess), meOptionsValue);
+
+//--- save median value
+    std::string meName_median = std::string("median").append("_").append(processName_i);
+    saveMonitorElement_float(dqmStore, meName_median, median(iProcess), meOptionsValue);
+
+//--- save elements of covariance matrix
+//    (save diagonal elements separately in order to ease processing by other DQM.. modules)
+    std::string meName_sigma = std::string("sigma").append("_").append(processName_i);
+    saveMonitorElement_float(dqmStore, meName_sigma, cov.sigma(iProcess), meOptionsErr);
+
+    for ( unsigned jProcess = 0; jProcess < numProcesses; ++jProcess ) {
+      const std::string processName_j = processNames_[jProcess];
+      
+      std::string meName_cov = std::string("cov").append("_").append(processName_i).append("_").append(processName_j);
+      saveMonitorElement_float(dqmStore, meName_cov, cov(iProcess, jProcess), meOptionsCov);
+    }
   }
 }
 

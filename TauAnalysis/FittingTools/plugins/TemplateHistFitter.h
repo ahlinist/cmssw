@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: TemplateHistFitter.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
+ * $Id: TemplateHistFitter.h,v 1.2 2010/06/11 08:58:09 veelken Exp $
  *
  */
 
@@ -32,6 +32,9 @@
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/FittingTools/interface/TemplateFitAdapterBase.h"
+#include "TauAnalysis/FittingTools/interface/RunningMean.h"
+#include "TauAnalysis/FittingTools/interface/RunningMedian.h"
+#include "TauAnalysis/FittingTools/interface/RunningCovMatrix.h"
 
 #include <TVectorD.h>
 #include <TMatrixD.h>
@@ -57,6 +60,7 @@ class TemplateHistFitter : public edm::EDAnalyzer
   void saveFitResults();
 
   void estimateUncertainties(bool, bool, int, double, const char*, int, bool);
+  void saveEstUncertainties(const std::string&, const RunningMean&, const RunningMedian&, const RunningCovMatrix&);
 
   typedef std::vector<std::string> vstring;
 
