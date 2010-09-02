@@ -40,13 +40,17 @@ def egammaUserDataFloats(moduleName):
     cms.InputTag(moduleName, "zernike20"),
     cms.InputTag(moduleName, "zernike42"),
 
-    cms.InputTag(moduleName, "swissCross"),
-    cms.InputTag(moduleName, "E1OverE9")
+    cms.InputTag(moduleName, "seedTime"),
+    cms.InputTag(moduleName, "seedOutOfTimeChi2"),
+    cms.InputTag(moduleName, "seedChi2"),
+    cms.InputTag(moduleName, "seedSwissCross"),
+    cms.InputTag(moduleName, "seedE1OverE9")
   ]
 # egammaUserDataFloats(moduleName) <------------------------------------------
 
 def egammaUserDataInts(moduleName):
   return [
-    cms.InputTag(moduleName, "isOutOfTime"),
+    cms.InputTag(moduleName, "seedRecoFlag"),
+    cms.InputTag(moduleName, "seedSeverityLevel"),
   ]
 # egammaUserDataInts(moduleName) <------------------------------------------

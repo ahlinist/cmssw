@@ -19,13 +19,18 @@ Implementation:
 
 // system include files
 #include <memory>
+#include <string>
+#include <vector>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -40,14 +45,14 @@ Implementation:
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
-
-#include <string>
-#include <vector>
+#include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 
 namespace vgamma {
   //
   // class decleration
   //
+  // EgammaType is meant to be one of the electron or photon flavors
+  // with the superCluster method, e.g. reco::Photon, pat::Electron etc.
   template <typename EgammaType>
   class EgammaUserDataProducer : public edm::EDProducer {
   public:
@@ -66,8 +71,8 @@ namespace vgamma {
                 const std::string& name);
 
     edm::InputTag src_;
-    edm::InputTag ebRechits_;
-    edm::InputTag eeRechits_;
+    edm::InputTag ebRecHits_;
+    edm::InputTag eeRecHits_;
   };
 
   //
@@ -78,8 +83,8 @@ namespace vgamma {
     const edm::ParameterSet& iConfig
     ):
     src_(iConfig.getParameter<edm::InputTag>("src")),
-    ebRechits_(iConfig.getParameter<edm::InputTag>("ebRechits")),
-    eeRechits_(iConfig.getParameter<edm::InputTag>("eeRechits"))
+    ebRecHits_(iConfig.getParameter<edm::InputTag>("ebRecHits")),
+    eeRecHits_(iConfig.getParameter<edm::InputTag>("eeRecHits"))
   {
     produces<edm::ValueMap<float> >("e1x3");
     produces<edm::ValueMap<float> >("e3x1");
@@ -119,9 +124,13 @@ namespace vgamma {
     produces<edm::ValueMap<float> > ("zernike20");
     produces<edm::ValueMap<float> > ("zernike42");
 
-    produces<edm::ValueMap<float> > ("swissCross");
-    produces<edm::ValueMap<float> > ("E1OverE9");
-    produces<edm::ValueMap<int> > ("isOutOfTime");
+    produces<edm::ValueMap<float> > ("seedTime");
+    produces<edm::ValueMap<float> > ("seedOutOfTimeChi2");
+    produces<edm::ValueMap<float> > ("seedChi2");
+    produces<edm::ValueMap<int  > > ("seedRecoFlag");
+    produces<edm::ValueMap<int  > > ("seedSeverityLevel");
+    produces<edm::ValueMap<float> > ("seedSwissCross");
+    produces<edm::ValueMap<float> > ("seedE1OverE9");
   }
 
   template <typename EgammaType>
@@ -140,15 +149,17 @@ namespace vgamma {
     using namespace edm;
 
     edm::Handle<View<EgammaType> > egammas;
-    edm::Handle<EcalRecHitCollection> eeRechits;
-    edm::Handle<EcalRecHitCollection> ebRechits;
+    edm::Handle<EcalRecHitCollection> eeRecHits;
+    edm::Handle<EcalRecHitCollection> ebRecHits;
+    edm::ESHandle<EcalChannelStatus> channelStatus;
 
     iEvent.getByLabel(src_, egammas);
-    iEvent.getByLabel(ebRechits_, ebRechits);
-    iEvent.getByLabel(eeRechits_, eeRechits);
+    iEvent.getByLabel(ebRecHits_, ebRecHits);
+    iEvent.getByLabel(eeRecHits_, eeRecHits);
+    iSetup.get<EcalChannelStatusRcd>().get(channelStatus);
 
 
-    EcalClusterLazyTools lazyTools(iEvent, iSetup, ebRechits_, eeRechits_);
+    EcalClusterLazyTools lazyTools(iEvent, iSetup, ebRecHits_, eeRecHits_);
 
     vector<float> e1x3;
     vector<float> e3x1;
@@ -188,12 +199,17 @@ namespace vgamma {
     vector<float> zernike20;
     vector<float> zernike42;
 
-    vector<float> swissCross;
-    vector<float> E1OverE9;
-    vector<int>   isOutOfTime;
+    vector<float> seedTime;
+    vector<float> seedOutOfTimeChi2;
+    vector<float> seedChi2;
+    vector<int>   seedRecoFlag;
+    vector<int>   seedSeverityLevel;
+    vector<float> seedSwissCross;
+    vector<float> seedE1OverE9;
 
-    for( size_t ip = 0; ip<egammas->size(); ip++ ) {
-      const reco::BasicCluster &cluster = *((*egammas)[ip].superCluster()->seed());
+    typename View<EgammaType>::const_iterator egamma;
+    for(egamma = egammas->begin(); egamma < egammas->end(); ++egamma) {
+      const reco::CaloCluster &cluster = *( egamma->superCluster()->seed() );
 
       e1x3       .push_back(lazyTools.e1x3(cluster));
       e3x1       .push_back(lazyTools.e3x1(cluster));
@@ -237,41 +253,41 @@ namespace vgamma {
       zernike42  .push_back(lazyTools.zernike42  (cluster));
 
       // Spike cleaning variables
-      DetId id = cluster.seed();
-      float swissCrossValue;
-      float E1OverE9Value;
-      uint32_t recoFlag = 0;
-      if (id.subdetId() == EcalBarrel) {
-        swissCrossValue = EcalSeverityLevelAlgo::swissCross(id, *ebRechits);
-        E1OverE9Value = EcalSeverityLevelAlgo::E1OverE9(id, *ebRechits);
-        for (EcalRecHitCollection::const_iterator rh = ebRechits->begin();
-          // find the seed rechit
-          rh != ebRechits->end(); ++rh) {
-          if ( rh->id() == cluster.seed() ) {
-            recoFlag = rh->recoFlag();
-            break;
-          }
-        }
-      } else if (id.subdetId() == EcalEndcap) {
-        swissCrossValue = EcalSeverityLevelAlgo::swissCross(id, *eeRechits);
-        E1OverE9Value = EcalSeverityLevelAlgo::E1OverE9(id, *eeRechits);
-        for (EcalRecHitCollection::const_iterator rh = eeRechits->begin();
-          // find the seed rechit
-          rh != eeRechits->end(); ++rh) {
-          if ( rh->id() == cluster.seed() ) {
-            recoFlag = rh->recoFlag();
-          }
-        }
+      float time          = -999.;
+      float outOfTimeChi2 = -999.;
+      float chi2          = -999.;
+      int   recoFlag      = -999;
+      float swissCross    = -999.;
+      float E1OverE9      = -999.;
+      int   severityLevel = -999;
+
+      DetId id = lazyTools.getMaximum(cluster).first;
+      const EcalRecHitCollection & recHits = ( egamma->isEB() ?
+        *ebRecHits :
+        *eeRecHits
+        );
+      EcalRecHitCollection::const_iterator rh = recHits.find(id);
+      if (rh != recHits.end()) {
+        time          = rh->time();
+        outOfTimeChi2 = rh->outOfTimeChi2();
+        chi2          = rh->chi2();
+        recoFlag      = rh->recoFlag();
+        severityLevel = EcalSeverityLevelAlgo::severityLevel(id, recHits,
+                                                             *channelStatus);
+        swissCross    = EcalSeverityLevelAlgo::swissCross(id, recHits);
+        E1OverE9      = EcalSeverityLevelAlgo::E1OverE9(id, recHits);
       } else {
-        cerr << "WARNING: unknown subdetId: " << id.subdetId() << endl;
+        LogWarning("SpikeCleaningVariables") << "Didn't find seed rechit!" << endl;
       }
 
-      swissCross .push_back(swissCrossValue);
-      E1OverE9.push_back(E1OverE9Value);
-
-      isOutOfTime.push_back(recoFlag == EcalRecHit::kOutOfTime);
-
-    }
+      seedTime         .push_back(time);
+      seedOutOfTimeChi2.push_back(outOfTimeChi2);
+      seedChi2         .push_back(chi2);
+      seedRecoFlag     .push_back(recoFlag);
+      seedSeverityLevel.push_back(severityLevel);
+      seedSwissCross   .push_back(swissCross);
+      seedE1OverE9     .push_back(E1OverE9);
+    } // for(egamma = egammas->begin(); egamma < egammas->end(); ++egamma)
 
     putMap<float>(iEvent,egammas,e1x3,"e1x3");
     putMap<float>(iEvent,egammas,e3x1,"e3x1");
@@ -311,11 +327,14 @@ namespace vgamma {
     putMap<float>(iEvent,egammas,zernike20,"zernike20");
     putMap<float>(iEvent,egammas,zernike42,"zernike42");
 
-    putMap<float>(iEvent,egammas,swissCross,"swissCross");
-    putMap<float>(iEvent,egammas,E1OverE9,  "E1OverE9");
-    putMap<int>(iEvent,egammas,isOutOfTime, "isOutOfTime");
-//     putMap<float>(iEvent,egammas,,"");
-  }
+    putMap<float>(iEvent,egammas,seedTime,"seedTime");
+    putMap<float>(iEvent,egammas,seedOutOfTimeChi2,"seedOutOfTimeChi2");
+    putMap<float>(iEvent,egammas,seedChi2,"seedChi2");
+    putMap<int  >(iEvent,egammas,seedRecoFlag,"seedRecoFlag");
+    putMap<int  >(iEvent,egammas,seedSeverityLevel,"seedSeverityLevel");
+    putMap<float>(iEvent,egammas,seedSwissCross,"seedSwissCross");
+    putMap<float>(iEvent,egammas,seedE1OverE9,"seedE1OverE9");
+  } // EgammaUserDataProducer<EgammaType>::produce
 
   template <typename EgammaType> template <typename UserDataType>
   void
@@ -334,6 +353,6 @@ namespace vgamma {
     filler.insert(egammas, vUserData.begin(), vUserData.end());
     filler.fill();
     iEvent.put(prod, name);
-  }
+  } // EgammaUserDataProducer<EgammaType>::putMap
 
 } // namespace::vgamma

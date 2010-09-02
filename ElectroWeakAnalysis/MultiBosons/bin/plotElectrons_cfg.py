@@ -9,7 +9,7 @@ process.inputs = cms.PSet (
 #         '/Volumes/MyBook/Data/TTbar/shyft_35x_v3/ljmet_1.root'
 #         'file:zmm_pat.root'
 #         'file:/tmp/veverka/tmp.YPPUW29322/CMSSW_3_6_2/src/PhysicsTools/SelectorUtils/bin/wm_pat.root'
-  "file:VGammaSkim_numEvent200.root"
+  "file:VGammaSkim_testMC_numEvent100.root"
         )
 )
 
@@ -22,35 +22,71 @@ process.outputs = cms.PSet (
 ## Convert cms.EDAnalyzer to cms.PSet
 # from ElectroWeakAnalysis.MultiBosons.Histogramming.photonHistos_cfi import photonHistos
 process.electronHistos = cms.PSet(
-  src = cms.InputTag(electronHistos.src.value() ),
+  src = cms.InputTag("cleanPatElectrons"),
   histograms = cms.VPSet() + #electronHistos.histograms.copy() +
     [
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(-5),
+        max = cms.untracked.double(5),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("seedTime"),
+        description = cms.untracked.string("Electrons:seed time (ns):events / bin"),
+        plotquantity = cms.untracked.string('userFloat("electronUserData:seedTime")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(0),
         max = cms.untracked.double(1),
         nbins = cms.untracked.int32(100),
-        name = cms.untracked.string("swissCross"),
-        description = cms.untracked.string("swiss cross"),
-        plotquantity = cms.untracked.string('userFloat("electronUserData:swissCross")')
+        name = cms.untracked.string("seedOutOfTimeChi2"),
+        description = cms.untracked.string("Electrons:seed out of time #chi^{2}:events / bin"),
+        plotquantity = cms.untracked.string('userFloat("electronUserData:seedSwissCross")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(0),
+        max = cms.untracked.double(1),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("seedChi2"),
+        description = cms.untracked.string("Electrons:seed #chi^{2}:events / bin"),
+        plotquantity = cms.untracked.string('userFloat("electronUserData:seedSwissCross")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(0),
+        max = cms.untracked.double(1),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("seedSwissCross"),
+        description = cms.untracked.string("Electrons:seed swiss cross 1-S4/S1, events / bin"),
+        plotquantity = cms.untracked.string('userFloat("electronUserData:seedSwissCross")')
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(-0.5),
-        max = cms.untracked.double(1.5),
-        nbins = cms.untracked.int32(2),
-        name = cms.untracked.string("isOutOfTime"),
-        description = cms.untracked.string("is out of time"),
-        plotquantity = cms.untracked.string('userInt("electronUserData:isOutOfTime")')
+        max = cms.untracked.double(20.5),
+        nbins = cms.untracked.int32(21),
+        name = cms.untracked.string("seedRecoFlag"),
+        description = cms.untracked.string("Electrons:seed reco flag:events per flag"),
+        plotquantity = cms.untracked.string('userInt("electronUserData:seedRecoFlag")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(-0.5),
+        max = cms.untracked.double(20.5),
+        nbins = cms.untracked.int32(21),
+        name = cms.untracked.string("seedSeverityLevel"),
+        description = cms.untracked.string("Electrons:Seed severity level:events"),
+        plotquantity = cms.untracked.string('userInt("electronUserData:seedSeverityLevel")')
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(0),
         max = cms.untracked.double(1),
         nbins = cms.untracked.int32(100),
-        name = cms.untracked.string("E1OverE9"),
-        description = cms.untracked.string("E1/E9 severity"),
-        plotquantity = cms.untracked.string('userFloat("electronUserData:E1OverE9")')
+        name = cms.untracked.string("seedE1OverE9"),
+        description = cms.untracked.string("Electrons:Seed E1/E9 from severity level:events"),
+        plotquantity = cms.untracked.string('userFloat("electronUserData:seedE1OverE9")')
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
@@ -66,21 +102,12 @@ process.electronHistos = cms.PSet(
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(0),
-        max = cms.untracked.double(100),
+        max = cms.untracked.double(1),
         nbins = cms.untracked.int32(100),
-        name = cms.untracked.string("e3x3User"),
-        description = cms.untracked.string("e3x3 user"),
-        plotquantity = cms.untracked.string('userFloat("electronUserData:e3x3")')
+        name = cms.untracked.string("covIetaIeta"),
+        description = cms.untracked.string("#sigma_{i#eta i#eta}"),
+        plotquantity = cms.untracked.string('userFloat("electronUserData:covIEtaIEta")')
       ),
-      cms.PSet(
-        itemsToPlot = cms.untracked.int32(-1),
-        min = cms.untracked.double(0),
-        max = cms.untracked.double(100),
-        nbins = cms.untracked.int32(100),
-        name = cms.untracked.string("e3x3Electron"),
-        description = cms.untracked.string("e3x3 electron"),
-        plotquantity = cms.untracked.string('e3x3')
-      )
     ],
   eventWeight = cms.double(1.0),
   outputDirectory = cms.string('test')

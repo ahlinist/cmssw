@@ -10,6 +10,7 @@
 ## * Add VBTF electron ID working points
 ## * Embed photon showershape variables as user floats (done)
 
+import copy
 import FWCore.ParameterSet.Config as cms
 import ElectroWeakAnalysis.MultiBosons.Skimming.VgEventContent as vgEventContent
 
@@ -20,20 +21,21 @@ from PhysicsTools.PatAlgos.tools.trigTools import *
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.egammaUserDataProducts_cff import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.jobOptions import *
-from ElectroWeakAnalysis.MultiBosons.Skimming.options import *
+from ElectroWeakAnalysis.MultiBosons.Skimming.options import options as defaultOptions
 
 ## See link below for the definition of the selection
 ## https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFirstPaper#Vgamma_Group_skims
 skimVersion = 3  # Do we need this?
 basePath = "ElectroWeakAnalysis.MultiBosons.Skimming." # shorthand
 
+options = copy.deepcopy(defaultOptions)
 ## Define default options specific to this configuration file
-options.jobType = "testSpring10McCern"
-# options.jobType = "testPromptRecoV4Cern"
+options.jobType = "testMC"
+# options.jobType = "testRealData"
 
 ## Parse (command-line) arguments - this overrides the options given above
 options.parseArguments()
-applyJobOptions(options)
+options = applyJobOptions(options)
 
 ## Input
 process.source.fileNames = options.inputFiles
@@ -43,7 +45,6 @@ if options.isMaxEventsOutput:
     )
 else:
   process.maxEvents.input = options.maxEvents
-process.MessageLogger.cerr.FwkReport.reportEvery = options.reportEvery
 
 ## Global tag
 process.GlobalTag.globaltag = options.globalTag
@@ -170,6 +171,15 @@ if not options.isRealData:
   process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
 process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
 process.out.fileName = options.outputFile
+
+## Logging
+process.MessageLogger.cerr.FwkReport.reportEvery = options.reportEvery
+if not options.isRealData:
+  ## Suppress many warnings about missing prescale tables
+  process.MessageLogger.categories += ["hltPrescaleTable"]
+  process.MessageLogger.cerr.hltPrescaleTable = cms.untracked.PSet(
+    limit = cms.untracked.int32(5)
+    )
 process.options.wantSummary = options.wantSummary
 
 ## Add tab completion + history during inspection
