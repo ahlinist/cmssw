@@ -57,6 +57,9 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
 //--- histograms
   MonitorElement* hGenDiTauCandidatePt_;
+  MonitorElement* hGenDiTauCandidateVisPt_;
+  MonitorElement* hGenDiTauCandidateEta_;
+  MonitorElement* hGenDiTauCandidatePhi_;
 
   MonitorElement* hGenLeg1En_;
   MonitorElement* hGenLeg2En_;
@@ -88,6 +91,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hGenLeg2TauMinusDecayAngleThreeProng_;
 
   MonitorElement* hDiTauCandidatePt_;
+  MonitorElement* hDiTauCandidateVisPt_;
   MonitorElement* hDiTauCandidateEta_;
   MonitorElement* hDiTauCandidatePhi_;
   MonitorElement* hDiTauCandidateCharge_;
