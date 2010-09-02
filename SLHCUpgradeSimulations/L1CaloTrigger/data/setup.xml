@@ -12,7 +12,7 @@
           IsolationElectronA = "1" 
           IsolationElectronB = "5" 
           IsolationTauA = "1" 
-          IsolationTauB = "7" 
+          IsolationTauB = "6" 
           IsolationZone = "3" 
           IsolationThresholdElectron = "3"
           IsolationThresholdTau = "5"
