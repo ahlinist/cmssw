@@ -136,7 +136,7 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
       for ( vstring::const_iterator polarizationHypothesis = svFitAlgorithm->polarizationHypotheses_.begin();
 	    polarizationHypothesis != svFitAlgorithm->polarizationHypotheses_.end(); ++polarizationHypothesis ) {
 	*outputStream_ << "SVfit algorithm = " << svFitAlgorithm->algorithmName_ << "," 
-		       << " polarization = " <<  (*polarizationHypothesis) << ":" << std::endl;
+		       << " polarization = " << (*polarizationHypothesis) << ":" << std::endl;
 	const SVfitDiTauSolution* solution = diTauCandidate->svFitSolution(svFitAlgorithm->algorithmName_, *polarizationHypothesis);
 	if ( solution ) *outputStream_ << (*solution);	
       }
