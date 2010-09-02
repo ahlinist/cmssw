@@ -24,8 +24,9 @@ void RunningCovMatrix::update(const TVectorD& value)
   //std::cout << " iValue = " << iValue_ << std::endl;
 
   if ( value.GetNoElements() != (int)numVar_ ) {
-    edm::LogError("RunningCovMatrix::update") << "Given value has invalid dimension = " << value.GetNoElements() << "," 
-					      << " expected = " << numVar_ << " --> mean value will NOT be updated !!";
+    edm::LogError("RunningCovMatrix::update") 
+      << "Given value has invalid dimension = " << value.GetNoElements() << "," 
+      << " expected = " << numVar_ << " --> mean value will NOT be updated !!";
     return;
   }
 
@@ -90,8 +91,9 @@ double RunningCovMatrix::sigma(unsigned i) const
   if ( i >= 0 && i < numVar_ ) {
     if ( iValue_ > 0 ) return TMath::Sqrt(cov_(i, i)/iValue_);
   } else {
-    edm::LogError("RunningCovMatrix::sigma") << "Given index i = " << i << " out of bounds,"
-					     << " expected range = 0.." << (numVar_ - 1) << " !!";
+    edm::LogError("RunningCovMatrix::sigma") 
+      << "Given index i = " << i << " out of bounds,"
+      << " expected range = 0.." << (numVar_ - 1) << " !!";
   }
   
   return 0.;
@@ -105,8 +107,9 @@ double RunningCovMatrix::correlation(unsigned i, unsigned j) const
     double sigmaJ = TMath::Sqrt(cov_(j, j));
     return cov_(i,j)/(sigmaI*sigmaJ);
   } else {
-    edm::LogError("RunningCovMatrix::correlation") << "Given indices i = " << i << ", j = " << j << " out of bounds,"
-						   << " expected range = 0.." << (numVar_ - 1) << " !!";
+    edm::LogError("RunningCovMatrix::correlation") 
+      << "Given indices i = " << i << ", j = " << j << " out of bounds,"
+      << " expected range = 0.." << (numVar_ - 1) << " !!";
     return 0.;
   }
 }
@@ -114,8 +117,9 @@ double RunningCovMatrix::correlation(unsigned i, unsigned j) const
 void RunningCovMatrix::print(std::ostream& outputStream, const std::vector<std::string>* varNames) const
 {
   if ( varNames && varNames->size() != numVar_ ) {
-    edm::LogError("RunningCovMatrix::print") << "Given list of varable names of invalid size,"
-					     << " expected lenght = " << numVar_ << " !!";
+    edm::LogError("RunningCovMatrix::print") 
+      << "Given list of varable names of invalid size,"
+      << " expected lenght = " << numVar_ << " !!";
     return;
   }
 

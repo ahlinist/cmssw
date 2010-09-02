@@ -13,8 +13,9 @@ RunningMedian::RunningMedian(unsigned d)
 void RunningMedian::update(const TVectorD& value)
 {
   if ( value.GetNoElements() != (int)numVar_ ) {
-    edm::LogError("RunningMedian::update") << "Given value has invalid dimension = " << value.GetNoElements() << "," 
-					   << " expected = " << numVar_ << " --> mean value will NOT be updated !!";
+    edm::LogError("RunningMedian::update") 
+      << "Given value has invalid dimension = " << value.GetNoElements() << "," 
+      << " expected = " << numVar_ << " --> mean value will NOT be updated !!";
     return;
   }
 
@@ -31,7 +32,8 @@ const TVectorD& RunningMedian::operator()() const
 
   unsigned numValues = values_[0].size();
   if ( !numValues ) {
-    edm::LogError("RunningMedian::operator()") << " No values added yet; median cannot be computed !!";
+    edm::LogError("RunningMedian::operator()") 
+      << " No values added yet; median cannot be computed !!";
     return auxMedian_;
   }
 
@@ -53,8 +55,9 @@ const TVectorD& RunningMedian::operator()() const
 void RunningMedian::print(std::ostream& outputStream, const std::vector<std::string>* varNames) const
 {
   if ( varNames && varNames->size() != numVar_ ) {
-    edm::LogError("RunningMedian ::print") << "Given list of varable names of invalid size,"
-					   << " expected lenght = " << numVar_ << " !!";
+    edm::LogError("RunningMedian ::print") 
+      << "Given list of varable names of invalid size,"
+      << " expected lenght = " << numVar_ << " !!";
     return;
   }
 
