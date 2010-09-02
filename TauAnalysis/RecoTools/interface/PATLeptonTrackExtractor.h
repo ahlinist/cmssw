@@ -7,11 +7,11 @@
  * for accessing the tracks of pat::Electrons and pat::Muons 
  * and the "leading" track of pat::Taus
  * 
- * \author Chriatian Veelken, UC Davis
+ * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATLeptonTrackExtractor.h,v 1.1 2009/04/07 08:29:02 veelken Exp $
+ * $Id: PATLeptonTrackExtractor.h,v 1.2 2009/05/26 12:36:29 veelken Exp $
  *
  */
 
