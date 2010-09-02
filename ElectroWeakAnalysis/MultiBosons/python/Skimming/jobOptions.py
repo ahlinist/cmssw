@@ -62,13 +62,31 @@ def applyJobOptions(options):
     jobOptions.hltPaths = ["HLT_Mu9"]
     # end of testPromptRecoV4Cern options <-----------------------------------
 
-  elif options.jobType == "PromptReco_v4":
+  elif options.jobType == "PromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
 
-  elif options.jobType == "Zgamma":
+  elif options.jobType == "PromptReco38X":
+    jobOptions.globalTag = "GR10_P_V9::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+
+  elif options.jobType == "ReReco36X":
+    jobOptions.globalTag = "GR_R_36X_V12B::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+
+  elif options.jobType == "ReReco38X":
+    jobOptions.globalTag = "GR_R_38X_V9A::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+
+  elif options.jobType == "MC36X":
     jobOptions.globalTag = "START3X_V26::All"
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
