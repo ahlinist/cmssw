@@ -8,8 +8,12 @@ diTauCandidateHistManager = cms.PSet(
 
     vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
     genParticleSource = cms.InputTag('genParticles'),
+    pfCandidateSource = cms.InputTag('particleFlow'),
 
     dqmDirectory_store = cms.string('DiTauCandidateQuantities'),
+
+    makeMEtProjResolutionHistograms = cms.bool(True),
+    #makeMEtProjResolutionHistograms = cms.bool(False),
 
     #requireGenMatch = cms.bool(True),
     requireGenMatch = cms.bool(False),
