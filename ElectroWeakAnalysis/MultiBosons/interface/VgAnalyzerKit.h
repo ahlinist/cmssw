@@ -142,6 +142,7 @@ protected:
   float  pfMETSig_;
   // Electron
   int    nEle_;
+  int    eleTrg_[maxP][5];
   int    eleID_[maxP][12];
   int    eleClass_[maxP];
   int    eleCharge_[maxP];
@@ -241,6 +242,7 @@ protected:
 
   // Muon
   int    nMu_;
+  int    muTrg_[maxP];
   float  muEta_[maxP];
   float  muPhi_[maxP];
   int    muCharge_[maxP];
