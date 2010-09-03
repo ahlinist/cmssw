@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.43 $
-  \date $Date: 2010/08/12 21:51:51 $
+  \version $Revision: 1.44 $
+  \date $Date: 2010/08/13 22:51:18 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -707,6 +707,17 @@ private:
   {
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
+
+    if (o.name.find("reportSummaryMap" ) != std::string::npos)  
+      {  
+	if (obj->GetBinContent(0,0)==-1) // insufficient events for certification  
+	  {  
+	    TText t;  
+	    t.SetTextSize(0.05);  
+	    t.DrawText(0,0.9, "Insufficient Events for");  
+	    t.DrawText(0,0.8, "Run Certification!");  
+	  }  
+      }
 
 
     // in the future, we can add text output based on error status,
