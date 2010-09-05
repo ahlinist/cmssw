@@ -68,17 +68,6 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 #numSamplings = cms.int32(1000)
                 numSamplings = cms.int32(-1)
             )
-        ##),
-        ##psKine_MEt_ptBalance_diTauPt = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodDiTauKinematicsPhaseSpace,
-        ##        svFitLikelihoodMEt,
-        ##        svFitLikelihoodDiTauPtBalance,
-        ##        svFitLikelihoodDiTauPt
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        numSamplings = cms.int32(-1)
-        ##    )
         )
     ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                           
