@@ -67,6 +67,7 @@ class L1TauEfficiencyAnalyzer {
         bool hasL1Jet, hasL1TauJet, hasL1CenJet;
         bool hasTauVeto;
         std::vector<int> l1Isolations;
+        std::vector<float> l1CaloRegions;        
 	bool hasTriggeredL1TauJet;
  	bool hasTriggeredL1CenJet;
 
