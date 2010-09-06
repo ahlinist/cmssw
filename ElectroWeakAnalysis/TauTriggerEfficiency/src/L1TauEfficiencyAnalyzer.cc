@@ -38,6 +38,7 @@
 
 #include <string>
 #include<algorithm>
+#include<iostream>
 
 namespace {
   class EtaPhiHelper {
@@ -89,6 +90,7 @@ using namespace std;
 // Default constructor
 L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer():
   l1tree(0),
+  l1CaloRegions(9, -1),
   _l1Flag(new bool[128]),
   _hltFlag(new bool[512])
 {}
@@ -155,6 +157,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
     l1tree->Branch(Form("L1IsolationRegions_%uGeV", isolationThresholds[i]), &(l1Isolations[i]));
   }
 
+  l1tree->Branch("L1CaloRegionEt", &l1CaloRegions);
 
   l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet);
   l1tree->Branch("hasTriggeredAndMatchedL1CenJet", &hasTriggeredL1CenJet);
@@ -182,6 +185,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
   hasL1CenJet = false;
   hasTauVeto = false;
   std::fill(l1Isolations.begin(), l1Isolations.end(), 0);
+  std::fill(l1CaloRegions.begin(), l1CaloRegions.end(), -1);
   hasTriggeredL1TauJet = false;
   hasTriggeredL1CenJet = false;
   met=0.;
@@ -472,8 +476,9 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
   // and L1Trigger/GlobalCaloTrigger/plugins/L1GctEmulator.cc
   edm::ESHandle< L1GctJetFinderParams > jfPars ;
   iSetup.get< L1GctJetFinderParamsRcd >().get(jfPars);
+  double rgnEtLsbGeV = jfPars->getRgnEtLsbGeV();
   for(size_t i=0; i<isolationThresholds.size(); ++i) {
-    thresholds[i] = isolationThresholds[i]/jfPars->getRgnEtLsbGeV(); // transform GeV to gct internal units
+    thresholds[i] = isolationThresholds[i]/rgnEtLsbGeV; // transform GeV to gct internal units
   }
   /*
   std::cout << "L1Analyzer " << __LINE__ 
@@ -507,6 +512,11 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
   if(nextEta == eta || prevEta == eta)
     throw cms::Exception("LogicError") << "Logic error with etas in " << __LINE__ << ":" << __LINE__;
 
+  // The region of the jet is always in the index 0
+  size_t iRegion=0;
+  l1CaloRegions[iRegion] = found->et()*rgnEtLsbGeV; // transform internal units to GeV
+  ++iRegion;  
+
   for(iter = caloRegionHandle->begin(); iter != caloRegionHandle->end(); ++iter) {
     if(((iter->gctEta() == nextEta || iter->gctEta() == prevEta) &&
         (iter->gctPhi() == nextPhi || iter->gctPhi() == prevPhi)) ||
@@ -524,6 +534,10 @@ void L1TauEfficiencyAnalyzer::fillCaloRegion(const edm::Event& iEvent, const edm
         if(iter->et() < thresholds[i])
           ++(l1Isolations[i]);
       }
+
+      l1CaloRegions[iRegion] = iter->et()*rgnEtLsbGeV; // transform internal units to GeV
+      ++iRegion;
+
       hasTauVeto = hasTauVeto || iter->tauVeto();
     }
   }
