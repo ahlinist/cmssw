@@ -74,6 +74,8 @@ namespace SVfit_namespace
     // neutrino system of in general non-zero mass produced in tau --> muon nu nu decays
     return false; 
   }
+
+  std::string getTauDecayModeName(int);
 }
 
 #endif
