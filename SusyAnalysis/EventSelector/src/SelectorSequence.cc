@@ -48,7 +48,7 @@ SelectorSequence::createSelectors (const std::vector<std::string>& sequence,
     edm::LogVerbatim("SelectorSequence") << "creating selector of type " << selectorType
                                          << " with name " << *i;
     // add full list of selectors (for combined selectors)
-    selectorPSet.addParameter<edm::ParameterSet>("_AllFilters",selectors);
+    //    selectorPSet.addParameter<edm::ParameterSet>("_AllFilters",selectors);
     // create selector
     const SusyEventSelector* selector = EventSelectorFactory::get()->create(selectorType,selectorPSet);
     selectors_.push_back(selector);
