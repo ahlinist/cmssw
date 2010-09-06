@@ -3,6 +3,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/Vector3D.h"
 
@@ -100,6 +101,44 @@ namespace SVfit_namespace {
       edm::LogError ("logGaussian")
 	<< " Parameter sigma must not be zero !!";
       return std::numeric_limits<float>::min();
+    }
+  }
+
+//
+//-------------------------------------------------------------------------------
+//
+
+  std::string getTauDecayModeName(int tauDecayMode)
+  {
+    // "translate" from enum defined in DataFormats/TauReco/interface/PFTauDecayMode.h
+    // to string ( in format defined in PhysicsTools/JetMCUtils/src/JetMCTag.cc )
+    //
+    // NOTE: the "unphysical" 2-prong modes take into account 
+    //       track reconstruction inefficiencies (migration from 3-prong decays),
+    //       fake tracks and tracks from the underlying event (migration from 1-prong decays)
+    //
+    if      ( tauDecayMode == reco::PFTauDecayMode::tauDecaysElectron           ) return std::string("electron");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecayMuon                ) return std::string("muon");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero ) return std::string("oneProng0Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero ) return std::string("oneProng1Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero ) return std::string("oneProng2Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion3PiZero ) return std::string("oneProng3Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion4PiZero ) return std::string("oneProng4Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion0PiZero ) return std::string("twoProng0Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion1PiZero ) return std::string("twoProng1Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion2PiZero ) return std::string("twoProng2Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion3PiZero ) return std::string("twoProng3Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion4PiZero ) return std::string("twoProng4Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero ) return std::string("threeProng0Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero ) return std::string("threeProng1Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion2PiZero ) return std::string("threeProng2Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion3PiZero ) return std::string("threeProng3Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero ) return std::string("threeProng4Pi0");
+    else if ( tauDecayMode == reco::PFTauDecayMode::tauDecayOther               ) return std::string("other");
+    else {
+      edm::LogError ("getTauDecayModeName")
+	<< " Invalid tau decay mode = " << tauDecayMode << " !!";
+      return std::string("unknown");
     }
   }
 }
