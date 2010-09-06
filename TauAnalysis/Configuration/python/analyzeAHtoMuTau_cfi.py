@@ -86,6 +86,9 @@ triggerHistManagerForMuTau.hltPaths = cms.vstring(
 # import config for event weight histogram manager
 from TauAnalysis.Core.eventWeightHistManager_cfi import *
 
+# import config for analyzer modules used for debugging purposes
+from TauAnalysis.Core.svFitLikelihoodAnalyzer_cfi import *
+
 # import config for binning results
 # used for keeping track of number of events passing all selection criteria
 from TauAnalysis.Core.dataBinner_cfi import *
@@ -1381,6 +1384,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'particleMultiplicityHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
+            'svFitLikelihoodAnalyzer',
             'dataBinner',
             'chi2mZbinGridHistManager'
         ),
