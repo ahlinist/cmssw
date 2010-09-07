@@ -43,12 +43,42 @@ typedef struct
 } JET_VAR;
 typedef struct 
 {
+  int   pfpassLooseID;
+  int   pfncr;
+  float pfrawPt;
+  float pfcorPt;
+  float pfeta;
+  //float pfetaD;
+  float pfy;
+  float pfphi;
+  float pfrawE;
+  float pfcorE;  
+  float pfchf;
+  float pfnhf;
+  float pfcem;
+  float pfnem;
+  float pfcml;
+  float pfnml;  
+  float pfgendR;
+  float pfgenPt;
+  float pfgenEta;
+  float pfgenPhi;
+  float pfcorRsp;
+  float pfrawRsp;
+  
+} PFJET_VAR;
+typedef struct 
+{
   int   runNo;
   int   evtNo;
   int   lumi;
   int   bunch;
+  int   bscrap;
+  int   bhalo;
   int   njets;
   int   njetsHt;
+  int   njetspf;
+  int   njetspfHt;
   int   passLooseHcalNoise;
   int   passTightHcalNoise;
   int   nPV;
@@ -60,14 +90,20 @@ typedef struct
   float PVchi2;
   float PVnormalizedChi2;
   float corMass;
-  float rawMass; 
+  float rawMass;
+  float corpfMass;
+  float rawpfMass;   
   float met;
   float metNoHF;
   float sumet;
   float sumetNoHF;
   float met_over_sumet; 
-  float met_over_sumet_NoHF;
+  float met_over_sumet_NoHF;  
+  float pfmet;
+  float pfsumet;
+  float pfmet_o_sumet; 
   float ht;
+  float pfht;
   float pthat;
   float weight;
 } EVENT_VAR;

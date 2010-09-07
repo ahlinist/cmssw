@@ -26,6 +26,10 @@
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/PFJetCollection.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
 using namespace edm;
 using namespace reco;
@@ -34,6 +38,7 @@ typedef math::PtEtaPhiELorentzVectorF LorentzVector;
 
 InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg) 
 {
+  mPFJetsName             = cfg.getParameter<std::string>              ("pfjets");
   mJetsName               = cfg.getParameter<std::string>              ("jets");
   mJetsIDName             = cfg.getParameter<std::string>              ("jetsID");
   mMetName                = cfg.getParameter<std::string>              ("met");
@@ -46,6 +51,7 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mL1GTReadoutRcdSource   = cfg.getParameter<edm::InputTag>            ("L1GTReadoutRcdSource");
   mL1GTObjectMapRcdSource = cfg.getParameter<edm::InputTag>            ("L1GTObjectMapRcdSource");
   mJetPtMin               = cfg.getParameter<double>                   ("minJetPt");
+  mPFJetPtMin             = cfg.getParameter<double>                   ("minPFJetPt");
   mIsMCarlo               = cfg.getUntrackedParameter<bool>            ("isMCarlo",false);
   mGenJetsName            = cfg.getUntrackedParameter<std::string>     ("genjets","");
 
@@ -113,6 +119,25 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   mLumi  = event.luminosityBlock();
   mBunch = event.bunchCrossing();
 
+ // TRACKS
+  Handle<reco::TrackCollection> tkRef;
+  event.getByLabel("generalTracks",tkRef);
+  const reco::TrackCollection* tkColl = tkRef.product(); 
+
+  int numhighpurity=0;
+  reco::TrackBase::TrackQuality  _trackQuality = reco::TrackBase::qualityByName("highPurity");
+  reco::TrackCollection::const_iterator itk   = tkColl->begin();
+  reco::TrackCollection::const_iterator itk_e = tkColl->end();
+  for(;itk!=itk_e;++itk){
+    if(itk->quality(_trackQuality)) numhighpurity++;
+   }
+
+  int numtrk  = tkColl->size();
+  double fractrk = (float)numhighpurity/(float)tkColl->size();
+  
+  mbscrap=1;
+  if(numtrk<10 || fractrk>0.25) mbscrap=0;
+  
   ////////////Vertices//////////////
   Handle<reco::VertexCollection> recVtxs;
   event.getByLabel("offlinePrimaryVertices",recVtxs);
@@ -128,6 +153,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
           mPVntracks->push_back((*recVtxs)[ind].tracksSize());
         }
     }
+
 
   ////////Get PtHat///////////////
   Handle<GenEventInfoProduct> hEventInfo;
@@ -164,6 +190,8 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   const HcalNoiseSummary summary = *noiseSummary; 	 
   mLooseHcalNoise = summary.passLooseNoiseFilter(); 	 
   mTightHcalNoise = summary.passTightNoiseFilter();
+
+
   ////////////// Jets //////
   Handle<CaloJetCollection> jets;
   event.getByLabel(mJetsName,jets);
@@ -172,6 +200,16 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   Handle<ValueMap<reco::JetID> > jetsID;
   event.getByLabel(mJetsIDName,jetsID);
   Handle<GenJetCollection> genjets;
+  ////////////// PF JETS //////
+  Handle<PFJetCollection> pfjets;
+  PFJetCollection::const_iterator pfjet;
+  event.getByLabel (mPFJetsName,pfjets);
+  std::vector<PFCandidatePtr> PFJetPart;
+  ////////////// PF CANDIDATES //////////////  
+   Handle<edm::View<PFCandidate> > pfCandidates;
+   event.getByLabel("particleFlow", pfCandidates);  
+  
+  
   if (mIsMCarlo)
     event.getByLabel(mGenJetsName,genjets);
   ////////////// Trigger //////
@@ -223,13 +261,32 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
           }
         }
     }
+    
+    
+    
   //===================== save L1 Trigger information ======================= 
   // get L1TriggerReadout records
   Handle<L1GlobalTriggerReadoutRecord> gtRecord;
+  event.getByLabel(mL1GTReadoutRcdSource,gtRecord);
+  if (!gtRecord.isValid())  m_l1GtUtils.retrieveL1EventSetup(iSetup);
+  
+  int bit36 =0;
+  int bit37 =0;
+  int bit38 =0;
+  int bit39 =0;
+  
+  if(gtRecord->technicalTriggerWord()[36]  ==true) bit36 =1;
+  if(gtRecord->technicalTriggerWord()[37]  ==true) bit37 =1;
+  if(gtRecord->technicalTriggerWord()[38]  ==true) bit38 =1;
+  if(gtRecord->technicalTriggerWord()[39]  ==true) bit39 =1;
+ 
+  mbhalo=0;
+  if(bit36==1&&bit37==1&&bit38==1&&bit39==1) mbhalo=1;
+  
   if (mFillL1)
     {
 
-    event.getByLabel(mL1GTReadoutRcdSource,gtRecord);
+    
    // sanity check on L1 Trigger Records
     int ErrFlag=0;
     if (!gtRecord.isValid()) 
@@ -240,7 +297,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
         }
 
 
-      m_l1GtUtils.retrieveL1EventSetup(iSetup);
+     
 
       for(unsigned int i=0; i<mL1TriggerNames.size(); i++) 
         {
@@ -266,6 +323,9 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
           }
         }
     }
+    
+    
+    
   ////////////// MET //////
   Handle<CaloMETCollection> met;
   event.getByLabel(mMetName,met);
@@ -292,6 +352,90 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       mMETnoHF   = (*metNoHF)[0].et();
       mSumETnoHF = (*metNoHF)[0].sumEt();
     }
+
+  // LOOP OVER PF CANDIDATES FOR PF MET
+   double sum_ex =0;
+   double sum_ey =0;
+   mPFSumET      =0;
+   
+  for (unsigned int pfc=0;pfc<pfCandidates->size();++pfc) {
+     
+    double phi        = (*pfCandidates)[pfc].phi();			 
+    double theta      = (*pfCandidates)[pfc].theta();
+    double e          = (*pfCandidates)[pfc].energy();
+    double et         = e*sin(theta);
+    
+    mPFSumET += et;
+    sum_ex += et*cos(phi);
+    sum_ey += et*sin(phi); 
+  
+  }
+  
+   mPFMET = sqrt( sum_ex*sum_ex + sum_ey*sum_ey );
+ 
+  // LOOP OVER PF JETS // 
+  
+  if((*pfjets).size() > 0){
+  
+    for(unsigned int ind=0;ind<(*pfjets).size();ind++){
+     
+      if ((*pfjets)[ind].pt() < mPFJetPtMin) continue;
+       
+           
+	   PFJetPart     = ((*pfjets)[ind].getPFConstituents());
+	
+       	   mPFPt         ->push_back((*pfjets)[ind].pt());
+           mPFEta        ->push_back((*pfjets)[ind].eta());
+          // mPFEtaD       ->push_back((*pfjets)[ind].detectorP4().eta()); DEN UPARXEI!
+           mPFY          ->push_back((*pfjets)[ind].y());
+           mPFPhi        ->push_back((*pfjets)[ind].phi());
+           mPFE          ->push_back((*pfjets)[ind].energy());
+           
+	   mPFChfJet     ->push_back((*pfjets)[ind].chargedHadronEnergyFraction());
+           mPFNhfJet     ->push_back(((*pfjets)[ind].neutralHadronEnergy() + (*pfjets)[ind].HFHadronEnergy() )/(*pfjets)[ind].energy());
+           mPFCemfJet    ->push_back((*pfjets)[ind].chargedEmEnergyFraction());
+           mPFNemfJet    ->push_back((*pfjets)[ind].neutralEmEnergyFraction());
+           mPFCmultiJet  ->push_back((*pfjets)[ind].chargedMultiplicity());
+           mPFNmultiJet  ->push_back((*pfjets)[ind].neutralMultiplicity());	  
+           mPFNcr        ->push_back(PFJetPart.size());
+	   
+        // IF MC DO THE MATHING // edw 
+	    if (mIsMCarlo){
+               float rmin(999);
+               int indMatchedGen(-1);
+               const reco::Candidate& rec = (*pfjets)[ind];
+               for(unsigned int indGen=0;indGen<(*genjets).size();indGen++)
+                 {
+                   const reco::Candidate& gen = (*genjets)[indGen];
+                   double deltaR = reco::deltaR(rec,gen);
+                   if (deltaR < rmin)
+                     {
+                       rmin = deltaR;
+                       indMatchedGen = indGen;
+                     }
+                 } 
+               if (indMatchedGen >= 0)
+                 {
+                   mPFGenMatchR  ->push_back(rmin);
+                   mPFGenMatchPt ->push_back((*genjets)[indMatchedGen].pt());
+                   mPFGenMatchEta->push_back((*genjets)[indMatchedGen].eta());
+                   mPFGenMatchPhi->push_back((*genjets)[indMatchedGen].phi());
+                 }
+               else
+                 {
+                   mPFGenMatchR  ->push_back(-999);
+                   mPFGenMatchPt ->push_back(-999);
+                   mPFGenMatchEta->push_back(-999);
+                   mPFGenMatchPhi->push_back(-999);
+                 } 
+             }
+	     
+       
+    } // IS PT OF PF JET > mPFJETPTMIN
+    
+  } // IF PF JETS EXISTS
+  
+  // LOOP OVER CALO JETS // 
   
   if ((*jets).size() > 0);
      {
@@ -331,7 +475,8 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
            LorentzVector TrkCaloP4 = JetExtendedAssociation::tracksAtCaloP4(*jetExtender,(*jets)[ind]);
            LorentzVector TrkVtxP4  = JetExtendedAssociation::tracksAtVertexP4(*jetExtender,(*jets)[ind]);
            RefToBase<Jet> jetRef(Ref<CaloJetCollection>(jets,ind));
-           mPt        ->push_back((*jets)[ind].pt());
+           
+	   mPt        ->push_back((*jets)[ind].pt());
            mEta       ->push_back((*jets)[ind].eta());
            mEtaD      ->push_back((*jets)[ind].detectorP4().eta());
            mY         ->push_back((*jets)[ind].y());
@@ -344,15 +489,17 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
            mEmf       ->push_back((*jets)[ind].emEnergyFraction());
            mEtaMoment ->push_back((*jets)[ind].etaetaMoment());
            mPhiMoment ->push_back((*jets)[ind].phiphiMoment());
-           mNtrkVtx   ->push_back(JetExtendedAssociation::tracksAtVertexNumber(*jetExtender,(*jets)[ind]));
+          
+	   mNtrkVtx   ->push_back(JetExtendedAssociation::tracksAtVertexNumber(*jetExtender,(*jets)[ind]));
            mNtrkCalo  ->push_back(JetExtendedAssociation::tracksAtCaloNumber(*jetExtender,(*jets)[ind]));
            mTrkCaloPt ->push_back(TrkCaloP4.pt());
            mTrkCaloEta->push_back(TrkCaloP4.eta());
-           mTrkCaloPhi->push_back(TrkCaloP4.phi());
+           mTrkCaloPhi->push_back(TrkCaloP4.phi());	   
            mTrkVtxPt  ->push_back(TrkVtxP4.pt());
            mTrkVtxEta ->push_back(TrkVtxP4.eta());
            mTrkVtxPhi ->push_back(TrkVtxP4.phi());
-           double jetEneNoise=0.0;
+          
+	   double jetEneNoise=0.0;
            vector< CaloTowerPtr >jTowers = (*jets)[ind].getCaloConstituents();
            for (unsigned int itow=0; itow<jTowers.size(); itow++)
              {
@@ -374,38 +521,57 @@ InclusiveJetTreeProducer::~InclusiveJetTreeProducer()
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::buildTree() 
 {
-  mGenMatchR    = new std::vector<float>();
-  mGenMatchPt   = new std::vector<float>();
-  mGenMatchEta  = new std::vector<float>();
-  mGenMatchPhi  = new std::vector<float>();
-  mPt           = new std::vector<float>();
-  mEta          = new std::vector<float>();
-  mEtaD         = new std::vector<float>();
-  mY            = new std::vector<float>();
-  mPhi          = new std::vector<float>();
-  mE            = new std::vector<float>();
-  mEmf          = new std::vector<float>();
-  mEtaMoment    = new std::vector<float>();
-  mPhiMoment    = new std::vector<float>();
-  mNtrkVtx      = new std::vector<int>   ();
-  mNtrkCalo     = new std::vector<int>   ();
-  mTrkCaloPt    = new std::vector<float>();
-  mTrkCaloEta   = new std::vector<float>();
-  mTrkCaloPhi   = new std::vector<float>();
-  mTrkVtxPt     = new std::vector<float>();
-  mTrkVtxEta    = new std::vector<float>();
-  mTrkVtxPhi    = new std::vector<float>();
-  mN90          = new std::vector<int>   ();
-  mN90Hits      = new std::vector<int>   ();
-  mfHPD         = new std::vector<float>();
-  mfRBX         = new std::vector<float>();
-  mfHcalNoise   = new std::vector<float>();
-  mPVx          = new std::vector<float>();
-  mPVy          = new std::vector<float>();
-  mPVz          = new std::vector<float>();
-  mPVchi2       = new std::vector<float>();
-  mPVndof       = new std::vector<float>();
-  mPVntracks    = new std::vector<int>();
+  mGenMatchR      = new std::vector<float>();
+  mGenMatchPt     = new std::vector<float>();
+  mGenMatchEta    = new std::vector<float>();
+  mGenMatchPhi    = new std::vector<float>();
+  mPt             = new std::vector<float>();
+  mEta            = new std::vector<float>();
+  mEtaD           = new std::vector<float>();
+  mY              = new std::vector<float>();
+  mPhi            = new std::vector<float>();
+  mE              = new std::vector<float>();
+  mEmf            = new std::vector<float>();
+  mEtaMoment      = new std::vector<float>();
+  mPhiMoment      = new std::vector<float>();
+  mNtrkVtx        = new std::vector<int>   ();
+  mNtrkCalo       = new std::vector<int>   ();
+  mTrkCaloPt      = new std::vector<float>();
+  mTrkCaloEta     = new std::vector<float>();
+  mTrkCaloPhi     = new std::vector<float>();
+  mTrkVtxPt       = new std::vector<float>();
+  mTrkVtxEta      = new std::vector<float>();
+  mTrkVtxPhi      = new std::vector<float>();
+  mN90            = new std::vector<int>   ();
+  mN90Hits        = new std::vector<int>   ();
+  mfHPD           = new std::vector<float>();
+  mfRBX           = new std::vector<float>();
+  mfHcalNoise     = new std::vector<float>();
+  mPVx            = new std::vector<float>();
+  mPVy            = new std::vector<float>();
+  mPVz            = new std::vector<float>();
+  mPVchi2         = new std::vector<float>();
+  mPVndof         = new std::vector<float>();
+  mPVntracks      = new std::vector<int>();
+  
+  mPFGenMatchR    = new std::vector<float>();
+  mPFGenMatchPt   = new std::vector<float>();
+  mPFGenMatchEta  = new std::vector<float>();
+  mPFGenMatchPhi  = new std::vector<float>();
+  
+  mPFPt           = new std::vector<float>();
+  mPFEta          = new std::vector<float>();
+  mPFEtaD         = new std::vector<float>();
+  mPFY            = new std::vector<float>();
+  mPFPhi          = new std::vector<float>();
+  mPFE            = new std::vector<float>(); 
+  mPFChfJet       = new std::vector<float>();
+  mPFNhfJet   	  = new std::vector<float>();
+  mPFCemfJet  	  = new std::vector<float>();
+  mPFNemfJet  	  = new std::vector<float>();
+  mPFCmultiJet	  = new std::vector<float>();
+  mPFNmultiJet	  = new std::vector<float>();
+  mPFNcr          = new std::vector<float>();
   
   mTree->Branch("pt"                 ,"vector<float>"      ,&mPt);
   mTree->Branch("eta"                ,"vector<float>"      ,&mEta);
@@ -413,19 +579,35 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("y"                  ,"vector<float>"      ,&mY);
   mTree->Branch("phi"                ,"vector<float>"      ,&mPhi);
   mTree->Branch("e"                  ,"vector<float>"      ,&mE);
+  //
+  mTree->Branch("pfpt"               ,"vector<float>"	   ,&mPFPt);
+  mTree->Branch("pfeta"              ,"vector<float>"	   ,&mPFEta);
+  mTree->Branch("pfetaDetector"      ,"vector<float>"	   ,&mPFEtaD);
+  mTree->Branch("pfy"                ,"vector<float>"	   ,&mPFY);
+  mTree->Branch("pfphi"              ,"vector<float>"	   ,&mPFPhi);
+  mTree->Branch("pfe"                ,"vector<float>"	   ,&mPFE);
+
+  mTree->Branch("pfchf"              ,"vector<float>"	    ,&mPFChfJet);	
+  mTree->Branch("pfnhf"              ,"vector<float>"	    ,&mPFNhfJet);	  
+  mTree->Branch("pfcem"              ,"vector<float>"	    ,&mPFCemfJet);    
+  mTree->Branch("pfnem"              ,"vector<float>"	    ,&mPFNemfJet);    
+  mTree->Branch("pfcml"              ,"vector<float>"	    ,&mPFCmultiJet);  
+  mTree->Branch("pfnml"              ,"vector<float>"	    ,&mPFNmultiJet);  
+  mTree->Branch("pfncr"              ,"vector<float>"	    ,&mPFNcr);	  
+
   mTree->Branch("emf"                ,"vector<float>"      ,&mEmf);
   mTree->Branch("etaMoment"          ,"vector<float>"      ,&mEtaMoment);
   mTree->Branch("phiMoment"          ,"vector<float>"      ,&mPhiMoment);
-  mTree->Branch("nTrkVtx"            ,"vector<int>"         ,&mNtrkVtx);
-  mTree->Branch("nTrkCalo"           ,"vector<int>"         ,&mNtrkCalo);
+  mTree->Branch("nTrkVtx"            ,"vector<int>"        ,&mNtrkVtx);
+  mTree->Branch("nTrkCalo"           ,"vector<int>"        ,&mNtrkCalo);
   mTree->Branch("TrkCaloPt"          ,"vector<float>"      ,&mTrkCaloPt);
   mTree->Branch("TrkCaloEta"         ,"vector<float>"      ,&mTrkCaloEta);
   mTree->Branch("TrkCaloPhi"         ,"vector<float>"      ,&mTrkCaloPhi);
   mTree->Branch("TrkVtxPt"           ,"vector<float>"      ,&mTrkVtxPt);
   mTree->Branch("TrkVtxEta"          ,"vector<float>"      ,&mTrkVtxEta);
   mTree->Branch("TrkVtxPhi"          ,"vector<float>"      ,&mTrkVtxPhi);
-  mTree->Branch("n90"                ,"vector<int>"         ,&mN90);
-  mTree->Branch("n90hits"            ,"vector<int>"         ,&mN90Hits);
+  mTree->Branch("n90"                ,"vector<int>"        ,&mN90);
+  mTree->Branch("n90hits"            ,"vector<int>"        ,&mN90Hits);
   mTree->Branch("fHPD"               ,"vector<float>"      ,&mfHPD);
   mTree->Branch("fRBX"               ,"vector<float>"      ,&mfRBX);  
   mTree->Branch("fHcalNoise"         ,"vector<float>"      ,&mfHcalNoise);
@@ -435,25 +617,27 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("PVchi2"             ,"vector<float>"      ,&mPVchi2);
   mTree->Branch("PVndof"             ,"vector<float>"      ,&mPVndof);
   mTree->Branch("PVntracks"          ,"vector<int>"         ,&mPVntracks);
+  mTree->Branch("bhalo"              ,&mbhalo		    ,"mbhalo/I");
+  mTree->Branch("bscrap"             ,&mbscrap		    ,"mbscrap/I");
   mTree->Branch("evtNo"              ,&mEvtNo               ,"mEvtNo/I");
   mTree->Branch("runNo"              ,&mRunNo               ,"mRunNo/I");
   mTree->Branch("lumi"               ,&mLumi                ,"mLumi/I");
   mTree->Branch("bunch"              ,&mBunch               ,"mBunch/I");
   mTree->Branch("met"                ,&mMET                 ,"mMET/F");
   mTree->Branch("sumet"              ,&mSumET               ,"mSumET/F");
+  mTree->Branch("pfmet"              ,&mPFMET		    ,"mPFMET/F");
+  mTree->Branch("pfsumet"            ,&mPFSumET  	    ,"mPFSumET/F");  
   mTree->Branch("metNoHF"            ,&mMETnoHF             ,"mMETnoHF/F");
   mTree->Branch("sumetNoHF"          ,&mSumETnoHF           ,"mSumETnoHF/F");
   mTree->Branch("passLooseHcalNoise" ,&mLooseHcalNoise      ,"mLooseHcalNoise/I"); 	 
   mTree->Branch("passTightHcalNoise" ,&mTightHcalNoise      ,"mTightHcalNoise/I");
 
 
-  //cout << "mTriggerNames: " << mTriggerNames.size() << endl;
   for (unsigned int jname=0;jname<mTriggerNames.size();jname++) {
      const char* branchname=mTriggerNames[jname].c_str();
      mTree->Branch(branchname,&mHLTTrigResults[jname],"prescale/I:fired/I");
      }
 
-  //cout << "mL1TriggerNames: " << mL1TriggerNames.size() << endl;
   for (unsigned int jname=0;jname<mL1TriggerNames.size();jname++) {
      const char* branchname=mL1TriggerNames[jname].c_str();
      mTree->Branch(branchname,&mL1TrigResults[jname],"prescale/I:fired/I");
@@ -468,6 +652,10 @@ void InclusiveJetTreeProducer::buildTree()
       mTree->Branch("genMatchPt"     ,"vector<float>"      ,&mGenMatchPt);
       mTree->Branch("genMatchEta"    ,"vector<float>"      ,&mGenMatchEta);
       mTree->Branch("genMatchPhi"    ,"vector<float>"      ,&mGenMatchPhi);
+      mTree->Branch("genPFMatchR"    ,"vector<float>"      ,&mPFGenMatchR);
+      mTree->Branch("genPFMatchPt"   ,"vector<float>"      ,&mPFGenMatchPt);
+      mTree->Branch("genPFMatchEta"  ,"vector<float>"      ,&mPFGenMatchEta);
+      mTree->Branch("genPFMatchPhi"  ,"vector<float>"      ,&mPFGenMatchPhi);
     }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -500,6 +688,24 @@ void InclusiveJetTreeProducer::clearTreeVectors()
   mY          ->clear();
   mPhi        ->clear();
   mE          ->clear();
+
+  mPFGenMatchR  ->clear();
+  mPFGenMatchPt ->clear();
+  mPFGenMatchEta->clear();
+  mPFGenMatchPhi->clear();
+  mPFPt         ->clear();
+  mPFEta        ->clear();
+  mPFEtaD       ->clear();
+  mPFY          ->clear();
+  mPFPhi        ->clear();
+  mPFE          ->clear();
+  mPFChfJet     ->clear();
+  mPFNhfJet     ->clear();
+  mPFCemfJet    ->clear();
+  mPFNemfJet    ->clear();
+  mPFCmultiJet  ->clear();
+  mPFNmultiJet  ->clear();
+  mPFNcr        ->clear();
   mEmf        ->clear();
   mEtaMoment  ->clear();
   mPhiMoment  ->clear();
