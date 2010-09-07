@@ -5,7 +5,7 @@
  *
  * \Authors: A. Giammanco, A. Orso M. Iorio
  * 
- * \ version $Id: SingleTopTChannelMCProducer.h $
+ * \ version $Id: SingleTopTChannelMCProducer.h,v 1.1 2010/03/09 16:33:06 oiorio Exp $
  */
 
 //Single Top MC Producer
@@ -29,7 +29,8 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Common/interface/View.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"

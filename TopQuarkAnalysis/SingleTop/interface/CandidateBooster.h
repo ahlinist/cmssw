@@ -11,7 +11,7 @@
  *
  *Produces a candidate collection boosted in the center of mass given by another collection 
  *
- *\version  $Id: CandidateBooster.h,v 1.6 2010/03/30 15:07:11 oiorio Exp $
+ *\version  $Id: CandidateBooster.h,v 1.1 2010/04/02 22:37:38 oiorio Exp $
  *
  *
 */
@@ -35,7 +35,8 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Common/interface/View.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
