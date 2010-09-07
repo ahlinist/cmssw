@@ -16,9 +16,7 @@ process.maxEvents = cms.untracked.PSet(
 #############   Define the source file ###############
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/data/Run2010A/JetMETTau/RECO/May27thReReco_v1/0000/6C168093-4B6A-DF11-85DF-0018F3D095EA.root',
-        '/store/data/Run2010A/JetMETTau/RECO/May27thReReco_v1/0000/68E27462-4C6A-DF11-BCFE-003048678B20.root',
-        '/store/data/Run2010A/JetMETTau/RECO/May27thReReco_v1/0000/6636D172-4C6A-DF11-9571-0018F3D096A4.root'
+        '/store/data/Run2010A/JetMET/RECO/v4/000/144/114/F4E53E34-31B4-DF11-9A2C-0030487CD6D8.root'
     )
 )
 #############   Monster Event Removal  ###############
@@ -40,6 +38,7 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
 process.TFileService = cms.Service("TFileService",fileName = cms.string('InclusiveJetTree.root'))
 
 process.ak5calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
+    pfjets                 = cms.string('ak5PFJets'),
     jets                   = cms.string('ak5CaloJets'), 
     jetsID                 = cms.string('ak5JetID'),
     jetExtender            = cms.string('ak5JetExtender'),
@@ -47,6 +46,7 @@ process.ak5calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
     metNoHF                = cms.string('metNoHF'),
     hcalNoiseTag           = cms.InputTag('hcalnoise'),
     minJetPt               = cms.double(4.0), 
+    minPFJetPt             = cms.double(4.0),
     jetTriggerNames        = cms.vstring('HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U'),
     triggerResultsTag      = cms.InputTag('TriggerResults','','HLT'),
     l1TriggerNames         = cms.vstring(),     
@@ -54,12 +54,14 @@ process.ak5calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
     L1GTObjectMapRcdSource = cms.InputTag('hltL1GtObjectMap','','HLT')
 )
 
-process.ak7calo = process.ak5calo.clone(jets = 'ak7CaloJets', jetsID = 'ak7JetID', jetExtender = 'ak7JetExtender')
+process.ak7calo = process.ak5calo.clone(pfjets = 'ak7PFJets',jets = 'ak7CaloJets', jetsID = 'ak7JetID', jetExtender = 'ak7JetExtender')
 
 process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
 process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('0 AND NOT (36 OR 37 OR 38 OR 39)')
 
-process.p = cms.Path(process.hltLevel1GTSeed * process.primaryVertexFilter * process.monster * process.trackExtrapolator *  process.ak7JTA * process.ak7calo)
+process.p = cms.Path(process.hltLevel1GTSeed * process.primaryVertexFilter * process.monster * process.trackExtrapolator *  process.ak7JTA 
+* process.ak7calo)
 #############   Format MessageLogger #################
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
+
 
