@@ -310,26 +310,18 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
   }
   
   int recTauDecayMode = recTauJet.decayMode();
+  const reco::PFCandidateRefVector& recTauJetChargedConstituents = recTauJet.signalPFChargedHadrCands();
   
-  if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero ||
-       recTauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero ) {
-//--- tau- --> rho- --> pi- pi0 or tau- --> a1- --> pi- pi0 pi0 case;
+  if ( recTauJetChargedConstituents.size() == 1 ) {
+//--- tau- --> one-prong case (in particular rho- --> pi- pi0 or tau- --> a1- --> pi- pi0 pi0);
 //    the "distinguishable" pion is the leading charged hadron
     return recTauJet.leadPFChargedHadrCand().get();
-  } else if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero ) {
-    const reco::PFCandidateRefVector& recTauJetChargedConstituents = recTauJet.signalPFChargedHadrCands();
-    
-    double recTauJetCharge = 0;
-    for ( reco::PFCandidateRefVector::const_iterator recTauJetChargedConstituent = recTauJetChargedConstituents.begin();
-	  recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
-      recTauJetCharge += (*recTauJetChargedConstituent)->charge();
-    }
-    std::cout << " recTauJetCharge = " << recTauJetCharge << " (" << recTauJet.charge() << ")" << std::endl;
-    
-    for ( reco::PFCandidateRefVector::const_iterator recTauJetChargedConstituent = recTauJetChargedConstituents.begin();
-	  recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
+  } else if ( recTauJetChargedConstituents.size() == 3 ) {
+    double recTauJetCharge = recTauJet.charge();
 
-//--- tau- --> a1- --> pi- pi+ pi- case
+    for ( reco::PFCandidateRefVector::const_iterator recTauJetChargedConstituent = recTauJetChargedConstituents.begin();
+	  recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
+//--- tau- --> three-prong case (in particular a1- --> pi- pi+ pi-);
 //    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
       if ( TMath::Abs((*recTauJetChargedConstituent)->charge()*recTauJetCharge) > 0.5 ) return recTauJetChargedConstituent->get();	
     }      
