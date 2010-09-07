@@ -13,10 +13,29 @@
 
 namespace SVfit_namespace 
 {
+  //-----------------------------------------------------------------------------
+  // define masses, widths and lifetimes of particles
+  // relevant for computing values of likelihood functions in SVfit algorithm
+  //
+  // NOTE: the values are taken from
+  //        K. Nakamura et al. (Particle Data Group), 
+  //        J. Phys. G 37, 075021 (2010)
+  //
+  const double chargedPionMass = 0.13957; // GeV
+  const double chargedPionMass2 = chargedPionMass*chargedPionMass;
+ 
+  const double rhoMesonMass = 0.77549; // GeV
+  const double rhoMesonMass2 = rhoMesonMass*rhoMesonMass;
+  const double rhoMesonWidth = 0.1491; // GeV
+ 
+  const double a1MesonMass = 1.230; // GeV
+  const double a1MesonMass2 = a1MesonMass*a1MesonMass;
+  const double a1MesonWidth = 0.600; // GeV (upper limit of range quoted for width of a1 meson resonance in PDG summary tables)
+
   const double tauLeptonMass = 1.77685; // GeV
   const double tauLeptonMass2 = tauLeptonMass*tauLeptonMass;
-
   const double cTauLifetime = 8.711e-3; // centimeters
+  //-----------------------------------------------------------------------------
 
   inline double square(double x)
   {
