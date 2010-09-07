@@ -7,6 +7,7 @@
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "TMath.h"
 
 #include <vector>
@@ -45,9 +46,11 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   edm::Handle<std::vector<pat::Muon> > muonHandle;
   event.getByLabel(muonTag_, muonHandle);
 
-  edm::Handle<reco::BeamSpot> beamSpotHandle;
-  event.getByLabel(beamSpot_, beamSpotHandle);
-  reco::BeamSpot myBeamSpot = *beamSpotHandle;
+  reco::Vertex myBeamSpot;
+  edm::Handle <edm::View<reco::Vertex> >vertices;
+  event.getByLabel(beamSpot_, vertices); 
+  if(!vertices->empty() && !vertices->front().isFake() )
+    myBeamSpot = vertices->front();
 
   const math::XYZPointD & myPosition = myBeamSpot.position();
 
@@ -77,10 +80,16 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     if (fabs(ie->eta()) > maxEtaEle_)
       continue;
 
-    if ((ie->trackIso() + ie->ecalIso() + ie->hcalIso()) / ie->pt() > eleIso_)
+    if (fabs(ie->eta()) > 1.4442 && fabs(ie->eta()) < 1.566)
+      continue;
+
+    if((ie->isEB() &&(( ie->dr03TkSumPt() + std::max(0., ie->dr03EcalRecHitSumEt() - 1.) + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt() > eleIso_)) || ( ! ie->isEB() && ( ie->dr03TkSumPt() + ie->dr03EcalRecHitSumEt() + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt() > eleIso_))   
       continue;
 
     if (fabs(ie->gsfTrack()->dxy(myPosition)) > eleDxy_)
+      continue;
+
+    if (abs(ie->vz() - myPosition.z()) > 1)     
       continue;
 
     //       std::cout << "PAT electron"<<std::endl;
@@ -111,10 +120,9 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   }
 
   for (std::vector<pat::Muon>::const_iterator im = (*muonHandle).begin(); im != (*muonHandle).end(); ++im) {
-
-    //if( im->isGood(reco::Muon::GlobalMuonPromptTight) == false ) continue;
-    if (!im->isGlobalMuon())
-      continue;
+    //if( im->isGood("GlobalMuonPromptTight") == false ) continue;
+    if( im->isGood("GlobalMuonPromptTight") < 1 ) continue;
+    //if (!im->isGlobalMuon())      continue;
 
     if (im->pt() < minPtMuon_)
       continue;
@@ -126,6 +134,9 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
       continue;
 
     if (fabs(im->innerTrack()->dxy(myPosition)) > muonDxy_)
+      continue;
+
+    if (abs(im->vz() - myPosition.z()) > 1)     
       continue;
 
     if (im->innerTrack()->numberOfValidHits() < muonHits_)
@@ -166,6 +177,8 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   //      }
   //    }
   //  setVariable("nTaus",nTaus);
+
+  //std::cout<<"nMuons: "<<nMuons<<"  nElecs: "<<nElectrons<<std::endl;
 
   // Selection
   if (!invertVeto_){
