@@ -1,5 +1,5 @@
-#ifndef _Top_Producer_h
-#define _Top_Producer_h
+#ifndef _Top_Jet_Producer_h
+#define _Top_Jet_Producer_h
 
 
 
@@ -33,9 +33,7 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-//#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-
 #include "DataFormats/Common/interface/View.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
@@ -65,22 +63,24 @@
 
 //namespace pat {
 
-  class TopProducer : public edm::EDProducer {
+  class SingleTopJetsProducer : public edm::EDProducer {
 
     public:
 
-      explicit TopProducer(const edm::ParameterSet & iConfig);
-      ~TopProducer();
+      explicit SingleTopJetsProducer(const edm::ParameterSet & iConfig);
+      ~SingleTopJetsProducer();
       virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
     //       static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
     private:
-    std::vector<math::XYZTLorentzVector> Nu4Momentum(const reco::Candidate & Lepton,const reco::Candidate & MET);
-    
-    edm::InputTag electronsSrc_,muonsSrc_,jetsSrc_,METsSrc_;
-    
-    bool useNegativeDeltaSolutions_,usePositiveDeltaSolutions_,usePzMinusSolutions_,usePzPlusSolutions_,usePzAbsValMinimumSolutions_,useMetForNegativeSolutions_,usePxMinusSolutions_,usePxPlusSolutions_;   
 
- 
+    
+    edm::InputTag src_,eleSrc_,muSrc_;
+    bool isJPT;
+    bool isCalo;
+    bool isPF;
+    //typedef pat::helper::OverlapTest OverlapTest;
+    //boost::ptr_vector<OverlapTest> overlaps;
+    
 
 
 
