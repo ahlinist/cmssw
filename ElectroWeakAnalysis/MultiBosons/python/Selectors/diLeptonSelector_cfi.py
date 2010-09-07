@@ -24,8 +24,8 @@ diLepton_zgamma_selection = cms.PSet(trigSrc = cms.InputTag("patTriggerEvent"),
                                      muTrig = cms.string("HLT_Mu9"),
                                      eleTrig = cms.string(""),
                                      minMass = cms.double(20.0),
-                                     muonId1 = muonSelections.Jun252010_selection.copy(),
-                                     muonId2 = muonSelections.Jun252010_selection.copy(),
+                                     muonId1 = muonSelections.Sep062010_selection.copy(),
+                                     muonId2 = muonSelections.Sep062010_selection.copy(),
                                      electronId1 = electronSelections.Jul012010_selection.copy(),
                                      electronId2 = electronSelections.Jul012010_selection.copy()
                                      )

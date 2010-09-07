@@ -12,7 +12,7 @@ leptonMET_base_selection = cms.PSet(trigSrc = cms.InputTag("patTriggerEvent"),
                                     eleTrig = cms.string(""),
                                     minMT = cms.double(50.0),
                                     minAcoplanarity = cms.double(2.0),
-                                    muonId = muonSelections.Jun262010_jpsi_selection.copy(),
+                                    muonId = muonSelections.Sep062010_selection.copy(),
                                     electronId = electronSelections.Jul012010_selection.copy(),
                                     metId = metSelections.Jul022010_selection.copy()
                                     )
