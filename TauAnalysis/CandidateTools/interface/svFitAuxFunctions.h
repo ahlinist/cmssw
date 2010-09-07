@@ -7,6 +7,7 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 
@@ -74,8 +75,6 @@ namespace SVfit_namespace
     // neutrino system of in general non-zero mass produced in tau --> muon nu nu decays
     return false; 
   }
-
-  std::string getTauDecayModeName(int);
 }
 
 #endif
