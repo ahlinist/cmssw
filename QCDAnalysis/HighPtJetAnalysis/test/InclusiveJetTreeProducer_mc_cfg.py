@@ -26,6 +26,7 @@ process.TFileService = cms.Service("TFileService",fileName = cms.string('/uscms/
 process.GlobalTag.globaltag = 'START3X_V25B::All'
 
 process.ak5calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
+    pfjets                 = cms.string('ak5PFJets'),
     jets                   = cms.string('ak5CaloJets'), 
     jetsID                 = cms.string('ak5JetID'),
     jetExtender            = cms.string('ak5JetExtender'),
@@ -35,6 +36,7 @@ process.ak5calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
     metNoHF                = cms.string('metNoHF'),
     hcalNoiseTag           = cms.InputTag('hcalnoise'),
     minJetPt               = cms.double(3.0), 
+    minPFJetPt             = cms.double(3.0),
     jetTriggerNames        = cms.vstring('HLT_MinBiasBSC','HLT_Jet15U','HLT_Jet30','HLT_Jet50','HLT_Jet50','HLT_PhysicsDeclared'),
     triggerProcessName     = cms.string('HLT'), 
     triggerResultsTag      = cms.InputTag('TriggerResults','','HLT'),
@@ -46,7 +48,6 @@ process.ak5calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
     genjets                = cms.untracked.string('ak5GenJets')
 )
 
-#process.ak7calo = process.ak5calo.clone(jets = 'ak7CaloJets', jetsID = 'ak7JetID', jetExtender = 'ak7JetExtender', genjets='ak7GenJets')
 process.p = cms.Path(process.ZSPJetCorrectionsAntiKt5 * process.ZSPrecoJetAssociationsAntiKt5 * process.ak5JTA * process.ak5calo)
 #############   Format MessageLogger #################
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
