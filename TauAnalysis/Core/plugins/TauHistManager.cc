@@ -166,7 +166,7 @@ void setAxisLabelsGenTauDecayMode(TAxis* axis)
 void setAxisLabelsRecTauDecayMode(TAxis* axis)
 {
 //--- set labels for reconstructed tau decay modes
-  
+
   setAxisLabel(axis, reco::PFTauDecayMode::tauDecaysElectron);
   setAxisLabel(axis, reco::PFTauDecayMode::tauDecayMuon);
   setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero);
@@ -439,33 +439,37 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauJetRadiusEnProfile_->getTProfile()->Fill(patTau->energy(), jetRadius, weight);
     }
 
-    double recVisMass = patTau->mass();
-    double genVisMass = patTau->genJet()->mass();
-    std::string genTauDecayMode = JetMCTagUtils::genTauDecayMode(*patTau->genJet());
-    fillTauVisMassHistogram(hTauVisMass_, hTauVisMassRes_, "all", 
-			    recVisMass, genVisMass, genTauDecayMode, weight);
-    fillTauVisMassHistogram(hTauVisMassOneProngOnePi0_, hTauVisMassResOneProngOnePi0_, "oneProng1Pi0", 
-			    recVisMass, genVisMass, genTauDecayMode, weight);
-    fillTauVisMassHistogram(hTauVisMassOneProngTwoPi0s_, hTauVisMassResOneProngTwoPi0s_, "oneProng2Pi0", 
-			    recVisMass, genVisMass, genTauDecayMode, weight);
-    fillTauVisMassHistogram(hTauVisMassThreeProngNoPi0s_, hTauVisMassResThreeProngNoPi0s_, "threeProng0Pi0", 
-			    recVisMass, genVisMass, genTauDecayMode, weight);
-    fillTauVisMassHistogram(hTauVisMassThreeProngOnePi0_, hTauVisMassResThreeProngOnePi0_, "threeProng1Pi0", 
-			    recVisMass, genVisMass, genTauDecayMode, weight);
+    if ( patTau->genJet() != 0 ) {
+      double recVisMass = patTau->mass();
+      double genVisMass = patTau->genJet()->mass();
 
-    if ( genTauDecayMode == "oneProng1Pi0"   ||
-	 genTauDecayMode == "oneProng2Pi0"   ||
-	 genTauDecayMode == "threeProng0Pi0" ) {
-      const reco::Candidate* recDistPion = getDistPion(*patTau);
-      const reco::Candidate* genDistPion = getDistPion(*patTau->genJet());
-      if ( recDistPion && genDistPion ) {
-	double distPionPtRes = (recDistPion->pt() - genDistPion->pt())/patTau->pt();
-	if      ( genTauDecayMode == "oneProng1Pi0"   ) hDistPionEnResOneProngOnePi0_->Fill(distPionPtRes, weight);
-	else if ( genTauDecayMode == "oneProng2Pi0"   ) hDistPionEnResOneProngTwoPi0s_->Fill(distPionPtRes, weight);
-	else if ( genTauDecayMode == "threeProng0Pi0" ) hDistPionEnResThreeProngNoPi0s_->Fill(distPionPtRes, weight);
-      } else {
-	edm::LogWarning("TauHistManager::fillHistogramsImp") 
-	  << " Failed to identify 'distinguishable' pion !!";
+      std::string genTauDecayMode = JetMCTagUtils::genTauDecayMode(*patTau->genJet());
+
+      fillTauVisMassHistogram(hTauVisMass_, hTauVisMassRes_, "all", 
+			      recVisMass, genVisMass, genTauDecayMode, weight);
+      fillTauVisMassHistogram(hTauVisMassOneProngOnePi0_, hTauVisMassResOneProngOnePi0_, "oneProng1Pi0", 
+			      recVisMass, genVisMass, genTauDecayMode, weight);
+      fillTauVisMassHistogram(hTauVisMassOneProngTwoPi0s_, hTauVisMassResOneProngTwoPi0s_, "oneProng2Pi0", 
+			      recVisMass, genVisMass, genTauDecayMode, weight);
+      fillTauVisMassHistogram(hTauVisMassThreeProngNoPi0s_, hTauVisMassResThreeProngNoPi0s_, "threeProng0Pi0", 
+			      recVisMass, genVisMass, genTauDecayMode, weight);
+      fillTauVisMassHistogram(hTauVisMassThreeProngOnePi0_, hTauVisMassResThreeProngOnePi0_, "threeProng1Pi0", 
+			      recVisMass, genVisMass, genTauDecayMode, weight);
+
+      if ( genTauDecayMode == "oneProng1Pi0"   ||
+	   genTauDecayMode == "oneProng2Pi0"   ||
+	   genTauDecayMode == "threeProng0Pi0" ) {
+	const reco::Candidate* recDistPion = getDistPion(*patTau);
+	const reco::Candidate* genDistPion = getDistPion(*patTau->genJet());
+	if ( recDistPion && genDistPion ) {
+	  double distPionPtRes = (recDistPion->pt() - genDistPion->pt())/patTau->pt();
+	  if      ( genTauDecayMode == "oneProng1Pi0"   ) hDistPionEnResOneProngOnePi0_->Fill(distPionPtRes, weight);
+	  else if ( genTauDecayMode == "oneProng2Pi0"   ) hDistPionEnResOneProngTwoPi0s_->Fill(distPionPtRes, weight);
+	  else if ( genTauDecayMode == "threeProng0Pi0" ) hDistPionEnResThreeProngNoPi0s_->Fill(distPionPtRes, weight);
+	} else {
+	  edm::LogWarning("TauHistManager::fillHistogramsImp") 
+	    << " Failed to identify 'distinguishable' pion !!";
+	}
       }
     }
     
