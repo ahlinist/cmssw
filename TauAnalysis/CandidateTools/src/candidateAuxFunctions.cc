@@ -1,5 +1,8 @@
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
+#include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
+
+#include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TMath.h"
@@ -252,5 +255,135 @@ void computeMEtProjection(const reco::PFCandidateCollection& pfCandidates, const
     sumP_par += TMath::Abs(pfCandidate->px()*dirCosPhi + pfCandidate->py()*dirSinPhi);
     sumP_perp += TMath::Abs(pfCandidate->px()*dirSinPhi - pfCandidate->py()*dirCosPhi);
   }
+}
+
+//
+//-------------------------------------------------------------------------------
+//
+
+std::string getTauDecayModeName(int tauDecayMode)
+{
+  // "translate" from enum defined in DataFormats/TauReco/interface/PFTauDecayMode.h
+  // to string ( in format defined in PhysicsTools/JetMCUtils/src/JetMCTag.cc )
+  //
+  // NOTE: the "unphysical" 2-prong modes take into account 
+  //       track reconstruction inefficiencies (migration from 3-prong decays),
+  //       fake tracks and tracks from the underlying event (migration from 1-prong decays)
+  //
+  if      ( tauDecayMode == reco::PFTauDecayMode::tauDecaysElectron           ) return std::string("electron");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecayMuon                ) return std::string("muon");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero ) return std::string("oneProng0Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero ) return std::string("oneProng1Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero ) return std::string("oneProng2Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion3PiZero ) return std::string("oneProng3Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion4PiZero ) return std::string("oneProng4Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion0PiZero ) return std::string("twoProng0Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion1PiZero ) return std::string("twoProng1Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion2PiZero ) return std::string("twoProng2Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion3PiZero ) return std::string("twoProng3Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay2ChargedPion4PiZero ) return std::string("twoProng4Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero ) return std::string("threeProng0Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero ) return std::string("threeProng1Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion2PiZero ) return std::string("threeProng2Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion3PiZero ) return std::string("threeProng3Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero ) return std::string("threeProng4Pi0");
+  else if ( tauDecayMode == reco::PFTauDecayMode::tauDecayOther               ) return std::string("other");
+  else {
+    edm::LogError ("getTauDecayModeName")
+      << " Invalid tau decay mode = " << tauDecayMode << " !!";
+    return std::string("unknown");
+  }
+}
+
+//
+//-------------------------------------------------------------------------------
+//
+
+const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
+{
+  std::cout << "<getDistPion>:" << std::endl;
+  
+  if ( !recTauJet.isPFTau() ) {
+    edm::LogWarning ("getDistPion")
+      << " Cannot identify 'distinguishable' pion for CaloTaus/TCTaus --> returning NULL pointer !!";
+    return 0;
+  }
+  
+  int recTauDecayMode = recTauJet.decayMode();
+  
+  if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero ||
+       recTauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero ) {
+//--- tau- --> rho- --> pi- pi0 or tau- --> a1- --> pi- pi0 pi0 case;
+//    the "distinguishable" pion is the leading charged hadron
+    return recTauJet.leadPFChargedHadrCand().get();
+  } else if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero ) {
+    const reco::PFCandidateRefVector& recTauJetChargedConstituents = recTauJet.signalPFChargedHadrCands();
+    
+    double recTauJetCharge = 0;
+    for ( reco::PFCandidateRefVector::const_iterator recTauJetChargedConstituent = recTauJetChargedConstituents.begin();
+	  recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
+      recTauJetCharge += (*recTauJetChargedConstituent)->charge();
+    }
+    std::cout << " recTauJetCharge = " << recTauJetCharge << " (" << recTauJet.charge() << ")" << std::endl;
+    
+    for ( reco::PFCandidateRefVector::const_iterator recTauJetChargedConstituent = recTauJetChargedConstituents.begin();
+	  recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
+
+//--- tau- --> a1- --> pi- pi+ pi- case
+//    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
+      if ( TMath::Abs((*recTauJetChargedConstituent)->charge()*recTauJetCharge) > 0.5 ) return recTauJetChargedConstituent->get();	
+    }      
+  } else {
+    edm::LogWarning ("getDistPion")
+      << " Unsupported rec. tau decay mode = " << recTauDecayMode << " --> returning NULL pointer !!";
+    return 0;
+  }
+  
+  edm::LogWarning ("getDistPion")
+    << " Failed to identify 'distinguishable' rec. pion --> returning NULL pointer !!";
+  return 0;
+}
+
+const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
+{
+  std::cout << "<getDistPion>:" << std::endl;
+
+  std::string genTauDecayMode = JetMCTagUtils::genTauDecayMode(genTauJet);
+  
+  std::vector<const reco::GenParticle*> genTauJetConstituents = genTauJet.getGenConstituents();
+  
+  if ( genTauDecayMode == "oneProng1Pi0" ||
+       genTauDecayMode == "oneProng2Pi0" ) {
+    for ( std::vector<const reco::GenParticle*>::const_iterator genTauJetConstituent = genTauJetConstituents.begin();
+	  genTauJetConstituent != genTauJetConstituents.end(); ++genTauJetConstituent ) {
+      
+//--- tau- --> rho- --> pi- pi0 or tau- --> a1- --> pi- pi0 pi0 case;
+//    the "distinguishable" pion is the charged one
+      if ( TMath::Abs((*genTauJetConstituent)->charge()) > 0.5 ) return (*genTauJetConstituent);	
+    }
+  } else if ( genTauDecayMode == "threeProng0Pi0" ) {
+    double genTauJetCharge = 0;
+    for ( std::vector<const reco::GenParticle*>::const_iterator genTauJetConstituent = genTauJetConstituents.begin();
+	  genTauJetConstituent != genTauJetConstituents.end(); ++genTauJetConstituent ) {
+      genTauJetCharge += (*genTauJetConstituent)->charge();
+    }
+    std::cout << " genTauJetCharge = " << genTauJetCharge << " (" << genTauJet.charge() << ")" << std::endl;
+    
+    for ( std::vector<const reco::GenParticle*>::const_iterator genTauJetConstituent = genTauJetConstituents.begin();
+	  genTauJetConstituent != genTauJetConstituents.end(); ++genTauJetConstituent ) {
+
+//--- tau- --> a1- --> pi- pi+ pi- case
+//    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
+      if ( TMath::Abs((*genTauJetConstituent)->charge()*genTauJetCharge) > 0.5 ) return (*genTauJetConstituent);	
+    }      
+  } else {
+    edm::LogWarning ("getDistPion")
+      << " Unsupported gen. tau decay mode = " << genTauDecayMode << " --> returning NULL pointer !!";
+    return 0;
+  }
+  
+  edm::LogWarning ("getDistPion")
+    << " Failed to identify 'distinguishable' gen. pion --> returning NULL pointer !!";
+  return 0;
 }
 
