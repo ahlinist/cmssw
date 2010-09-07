@@ -56,17 +56,19 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     
     //---- configurable parameters --------  
     bool mIsMCarlo;
-    //bool mFirstEventFlag;
     double mJetPtMin;
+    double mPFJetPtMin;
+     
     std::string mJetsName;
+    std::string mPFJetsName;
     std::string mGenJetsName;
     std::string mJetsIDName;
     std::string mJetExtender;
     std::string mMetName;
     std::string mMetNoHFName;
-    //std::string mTriggerProcessName;
-    std::vector<std::string> mTriggerNames;
-    std::vector<std::string> mL1TriggerNames;
+
+    std::vector<std::string>  mTriggerNames;
+    std::vector<std::string>  mL1TriggerNames;
     std::vector<unsigned int> mTriggerIndex;
     edm::InputTag mHcalNoiseTag;
     edm::InputTag mTriggerResultsTag, mL1GTReadoutRcdSource, mL1GTObjectMapRcdSource;    
@@ -84,8 +86,9 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     bool mFillHLT, mFillL1;
     //---- TREE variables --------
     int mRunNo, mEvtNo, mLumi, mBunch, mLooseHcalNoise, mTightHcalNoise;
+    int mbhalo,mbscrap;
     float mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
-    std::vector<int>    *mNtrkVtx,*mNtrkCalo,*mN90,*mN90Hits,*mPVntracks;
+    std::vector<int>   *mNtrkVtx,*mNtrkCalo,*mN90,*mN90Hits,*mPVntracks;
     std::vector<float> *mGenMatchR,*mGenMatchPt,*mGenMatchEta,*mGenMatchPhi;
     std::vector<float> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
     std::vector<float> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
@@ -93,6 +96,16 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<float> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
     std::vector<float> *mPVx,*mPVy,*mPVz,*mPVchi2,*mPVndof;
     std::vector<float> *mfHcalNoise;
+    
+   
+    float mPFMET, mPFSumET;
+    
+    std::vector<float> *mPFPt,*mPFEta,*mPFEtaD,*mPFY,*mPFPhi,*mPFE;     
+    std::vector<float> *mPFChfJet,*mPFNhfJet,*mPFCemfJet,*mPFNemfJet;
+    std::vector<float> *mPFCmultiJet,*mPFNmultiJet,*mPFNcr;    
+    std::vector<float> *mPFGenMatchR,*mPFGenMatchPt,*mPFGenMatchEta,*mPFGenMatchPhi;
+       
+
     TrigStruct mHLTTrigResults[100],mL1TrigResults[100];
 };
 #endif
