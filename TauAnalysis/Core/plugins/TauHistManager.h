@@ -79,7 +79,22 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauJetRadius_;
   MonitorElement* hTauJetRadiusPtProfile_;
   MonitorElement* hTauJetRadiusEnProfile_;
+
+  MonitorElement* hTauVisMass_;
+  MonitorElement* hTauVisMassRes_;
+  MonitorElement* hTauVisMassOneProngOnePi0_;
+  MonitorElement* hTauVisMassResOneProngOnePi0_;
+  MonitorElement* hTauVisMassOneProngTwoPi0s_;
+  MonitorElement* hTauVisMassResOneProngTwoPi0s_;
+  MonitorElement* hTauVisMassThreeProngNoPi0s_;
+  MonitorElement* hTauVisMassResThreeProngNoPi0s_;
+  MonitorElement* hTauVisMassThreeProngOnePi0_;
+  MonitorElement* hTauVisMassResThreeProngOnePi0_;
   
+  MonitorElement* hDistPionEnResOneProngOnePi0_;
+  MonitorElement* hDistPionEnResOneProngTwoPi0s_;
+  MonitorElement* hDistPionEnResThreeProngNoPi0s_;
+
   MonitorElement* hTauJetWeightPosLog_;
   MonitorElement* hTauJetWeightNegLog_;
   MonitorElement* hTauJetWeightZero_;

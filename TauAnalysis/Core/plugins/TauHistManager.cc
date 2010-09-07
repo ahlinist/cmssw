@@ -18,7 +18,7 @@
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 #include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
-#include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -143,10 +143,8 @@ void setAxisLabel(TAxis* axis, int tauDecayMode)
 //
 //    NOTE: bin numbers start at 1 (not 0) !!
 //
-  axis->SetBinLabel(1 + tauDecayMode, SVfit_namespace::getTauDecayModeName(tauDecayMode));
+  axis->SetBinLabel(1 + tauDecayMode, getTauDecayModeName(tauDecayMode).data());
 }
-
- getTauDecayModeName(
 
 void setAxisLabelsGenTauDecayMode(TAxis* axis)
 {
@@ -205,6 +203,21 @@ void TauHistManager::bookHistogramsImp()
   hTauJetRadiusPtProfile_ = bookProfile1D("TauJetRadiusPtProfile", "Tau jet-Radius vs. P_{T}", 30, 0., 150.);
   hTauJetRadiusEnProfile_ = bookProfile1D("TauJetRadiusEnProfile", "Tau jet-Radius vs. Energy", 50, 0., 250.);
   
+  hTauVisMass_ = book1D("TauVisMass", "TauVisMass", 100, 0., 2.5);
+  hTauVisMassRes_ = book1D("TauVisMassRes", "TauVisMassRes", 100, -1.25, 1.25);
+  hTauVisMassOneProngOnePi0_ = book1D("TauVisMassOneProngOnePi0", "TauVisMassOneProngOnePi0", 100, 0., 2.5);
+  hTauVisMassResOneProngOnePi0_ = book1D("TauVisMassResOneProngOnePi0", "TauVisMassResOneProngOnePi0", 100, -1.25, 1.25);
+  hTauVisMassOneProngTwoPi0s_ = book1D("TauVisMassOneProngTwoPi0s", "TauVisMassOneProngTwoPi0s", 100, 0., 2.5);
+  hTauVisMassResOneProngTwoPi0s_ = book1D("TauVisMassResOneProngTwoPi0s", "TauVisMassResOneProngTwoPi0s", 100, -1.25, 1.25);
+  hTauVisMassThreeProngNoPi0s_ = book1D("TauVisMassThreeProngNoPi0s", "TauVisMassThreeProngNoPi0s", 100, 0., 2.5);
+  hTauVisMassResThreeProngNoPi0s_ = book1D("TauVisMassResThreeProngNoPi0s", "TauVisMassResThreeProngNoPi0s", 100, -1.25, 1.25);
+  hTauVisMassThreeProngOnePi0_ = book1D("TauVisMassThreeProngOnePi0", "TauVisMassThreeProngOnePi0", 100, 0., 2.5);
+  hTauVisMassResThreeProngOnePi0_ = book1D("TauVisMassResThreeProngOnePi0", "TauVisMassResThreeProngOnePi0", 100, -1.25, 1.25);
+
+  hDistPionEnResOneProngOnePi0_ = book1D("DistPionEnResOneProngOnePi0", "DistPionEnResOneProngOnePi0", 100, -1.25, 1.25);
+  hDistPionEnResOneProngTwoPi0s_ = book1D("DistPionEnResOneProngTwoPi0s", "DistPionEnResOneProngTwoPi0s", 100, -1.25, 1.25);
+  hDistPionEnResThreeProngNoPi0s_ = book1D("DistPionEnResThreeProngNoPi0s", "DistPionEnResThreeProngNoPi0s", 100, -1.25, 1.25);
+
   bookWeightHistograms(*dqmStore_, "TauJetWeight", "Tau Weight", 
 		       hTauJetWeightPosLog_, hTauJetWeightNegLog_, hTauJetWeightZero_, 
 		       hTauJetWeightLinear_);
@@ -351,6 +364,15 @@ bool isIndexed(int patTauIndex, const std::vector<int>& tauIndicesToPlot)
   return isIndexed;
 }
 
+void fillTauVisMassHistogram(MonitorElement* hVisMass, MonitorElement* hVisMassRes, const std::string& selectedtauDecayMode,
+			     double recVisMass, double genVisMass, const std::string& genTauDecayMode, double weight)
+{
+  if ( genTauDecayMode == selectedtauDecayMode || selectedtauDecayMode == "all" ) {
+    hVisMass->Fill(recVisMass, weight);
+    hVisMassRes->Fill(recVisMass - genVisMass, weight);
+  }
+}
+
 void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<TauHistManager::fillHistogramsImp>:" << std::endl; 
@@ -417,6 +439,36 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauJetRadiusEnProfile_->getTProfile()->Fill(patTau->energy(), jetRadius, weight);
     }
 
+    double recVisMass = patTau->mass();
+    double genVisMass = patTau->genJet()->mass();
+    std::string genTauDecayMode = JetMCTagUtils::genTauDecayMode(*patTau->genJet());
+    fillTauVisMassHistogram(hTauVisMass_, hTauVisMassRes_, "all", 
+			    recVisMass, genVisMass, genTauDecayMode, weight);
+    fillTauVisMassHistogram(hTauVisMassOneProngOnePi0_, hTauVisMassResOneProngOnePi0_, "oneProng1Pi0", 
+			    recVisMass, genVisMass, genTauDecayMode, weight);
+    fillTauVisMassHistogram(hTauVisMassOneProngTwoPi0s_, hTauVisMassResOneProngTwoPi0s_, "oneProng2Pi0", 
+			    recVisMass, genVisMass, genTauDecayMode, weight);
+    fillTauVisMassHistogram(hTauVisMassThreeProngNoPi0s_, hTauVisMassResThreeProngNoPi0s_, "threeProng0Pi0", 
+			    recVisMass, genVisMass, genTauDecayMode, weight);
+    fillTauVisMassHistogram(hTauVisMassThreeProngOnePi0_, hTauVisMassResThreeProngOnePi0_, "threeProng1Pi0", 
+			    recVisMass, genVisMass, genTauDecayMode, weight);
+
+    if ( genTauDecayMode == "oneProng1Pi0"   ||
+	 genTauDecayMode == "oneProng2Pi0"   ||
+	 genTauDecayMode == "threeProng0Pi0" ) {
+      const reco::Candidate* recDistPion = getDistPion(*patTau);
+      const reco::Candidate* genDistPion = getDistPion(*patTau->genJet());
+      if ( recDistPion && genDistPion ) {
+	double distPionPtRes = (recDistPion->pt() - genDistPion->pt())/patTau->pt();
+	if      ( genTauDecayMode == "oneProng1Pi0"   ) hDistPionEnResOneProngOnePi0_->Fill(distPionPtRes, weight);
+	else if ( genTauDecayMode == "oneProng2Pi0"   ) hDistPionEnResOneProngTwoPi0s_->Fill(distPionPtRes, weight);
+	else if ( genTauDecayMode == "threeProng0Pi0" ) hDistPionEnResThreeProngNoPi0s_->Fill(distPionPtRes, weight);
+      } else {
+	edm::LogWarning("TauHistManager::fillHistogramsImp") 
+	  << " Failed to identify 'distinguishable' pion !!";
+      }
+    }
+    
     fillWeightHistograms(hTauJetWeightPosLog_, hTauJetWeightNegLog_, hTauJetWeightZero_, 
 			 hTauJetWeightLinear_, tauJetWeight);
 
@@ -431,8 +483,8 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     }
 
     int matchingGenParticlePdgId = -1;
-    if( genParticles.isValid() )
-		matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+    if ( genParticles.isValid() )
+      matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
     if ( matchingGenParticlePdgId == -1 ) {
       hTauMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {
