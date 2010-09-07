@@ -30,8 +30,11 @@ int main(int argc, char* argv[]) {
   ifstream *inputFile = new ifstream(inputFileName);
 
   /// WEIGHTS AND SCALE HERE
-  float weights[] = {0.987,0.0100,0.0136,0.0151,0.0032,0.0858,0.0727};
-  int scaleStats = 5;
+  // float weights[] = {0.987,0.0100,0.0136,0.0151,0.0032,0.0858,0.0727};
+  // int scaleStats = 2;
+  float weights[] = {1.0,1.0};
+  int scaleStats = 1;
+
   ///
   /// CATEGORIES HERE
   RooCategory MCType("MCType","Category of MC");

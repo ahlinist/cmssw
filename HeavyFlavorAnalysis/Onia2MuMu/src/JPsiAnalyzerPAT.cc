@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.36 2010/07/07 16:41:40 fiori Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.38 2010/08/17 09:46:11 covarell Exp $
 //
 //
 
@@ -94,9 +94,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH1F *QQMass2Glob_passmu5;
       TH1F *QQMass1Glob1Trk_passmu5;
       TH1F *QQMass1Glob1Cal_passmu5;
-  // TH1F *QQMass2Glob_passmu9;
-  // TH1F *QQMass1Glob1Trk_passmu9;
-  // TH1F *QQMass1Glob1Cal_passmu9;
+      TH1F *QQMass2Glob_passOniaTrack;
+      TH1F *QQMass1Glob1Trk_passOniaTrack;
+      TH1F *QQMass1Glob1Cal_passOniaTrack;
       TH1F *QQMass2GlobPT6_passmu5;
       TH1F *QQMass1Glob1TrkPT6_passmu5;
       TH1F *QQMass1Glob1CalPT6_passmu5;
@@ -106,9 +106,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
   // TH1F *WSMass2Glob_pass2muOpen;
   // TH1F *WSMass1Glob1Trk_pass2muOpen;
   // TH1F *WSMass1Glob1Cal_pass2muOpen;
-      TH1F *QQMass2Glob_pass2mu0;             
-      TH1F *QQMass1Glob1Trk_pass2mu0; 
-      TH1F *QQMass1Glob1Cal_pass2mu0;
+      TH1F *QQMass2Glob_passOniaL1Mu;             
+      TH1F *QQMass1Glob1Trk_passOniaL1Mu; 
+      TH1F *QQMass1Glob1Cal_passOniaL1Mu;
       
       TH1F *hMcRecoGlobMuDeltaR;        
       TH1F *hMcRecoTrkMuDeltaR;  
@@ -431,10 +431,10 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   data = new RooDataSet("data","A sample",varlist);
   if (_writeOutCands) theTextFile = new ofstream("passedCandidates.txt");
   
-  if (_JSON){
+  /* if (_JSON){
     JSON = new ofstream("PseudoJSON.txt");
     *JSON << "{";
-  }
+    }*/
 }
 
 
@@ -490,7 +490,7 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 {
    nEvents++;
 
-   int Nrun=iEvent.id().run();
+   /* int Nrun=iEvent.id().run();
    int lumi=iEvent.luminosityBlock();
    if (Nrun>runmax) runmax=Nrun;     // this is only for printout at the end of job
    if (Nrun<runmin) runmin=Nrun;
@@ -508,7 +508,8 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
        }
        lumitmp=lumi;
      }
-   }
+     }   */
+ 
    // iEvent.getByLabel(_triggerresults,trigger);
 
    // try {iEvent.getByLabel("onia2MuMuPatGlbGlb",collGG);} 
@@ -598,9 +599,9 @@ JPsiAnalyzerPAT::beginJob()
   QQMass2Glob_passmu5              = new TH1F("QQMass2Glob_passmu5",  "Invariant mass (2 global muons)", 120, 0.,15.);
   QQMass1Glob1Trk_passmu5          = new TH1F("QQMass1Glob1Trk_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
   QQMass1Glob1Cal_passmu5          = new TH1F("QQMass1Glob1Cal_passmu5",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.); 
-  // QQMass2Glob_passmu9              = new TH1F("QQMass2Glob_passmu9",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  // QQMass1Glob1Trk_passmu9          = new TH1F("QQMass1Glob1Trk_passmu9",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  // QQMass1Glob1Cal_passmu9          = new TH1F("QQMass1Glob1Cal_passmu9",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  QQMass2Glob_passOniaTrack              = new TH1F("QQMass2Glob_passOniaTrack",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  QQMass1Glob1Trk_passOniaTrack          = new TH1F("QQMass1Glob1Trk_passOniaTrack",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  QQMass1Glob1Cal_passOniaTrack          = new TH1F("QQMass1Glob1Cal_passOniaTrack",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
   QQMass2GlobPT6_passmu5           = new TH1F("QQMass2GlobPT6_passmu5",  "Invariant mass (2 global muons)", 120, 0.,15.);
   QQMass1Glob1TrkPT6_passmu5       = new TH1F("QQMass1Glob1TrkPT6_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
   QQMass1Glob1CalPT6_passmu5       = new TH1F("QQMass1Glob1CalPT6_passmu5",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
@@ -610,9 +611,9 @@ JPsiAnalyzerPAT::beginJob()
   // WSMass2Glob_pass2muOpen              = new TH1F("WSMass2Glob_pass2muOpen",  "Invariant mass (2 global muons)", 120, 0.,15.);
   // WSMass1Glob1Trk_pass2muOpen          = new TH1F("WSMass1Glob1Trk_pass2muOpen",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
   // WSMass1Glob1Cal_pass2muOpen          = new TH1F("WSMass1Glob1Cal_pass2muOpen",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  QQMass2Glob_pass2mu0              = new TH1F("QQMass2Glob_pass2mu0",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  QQMass1Glob1Trk_pass2mu0          = new TH1F("QQMass1Glob1Trk_pass2mu0",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  QQMass1Glob1Cal_pass2mu0          = new TH1F("QQMass1Glob1Cal_pass2mu0",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
+  QQMass2Glob_passOniaL1Mu              = new TH1F("QQMass2Glob_passOniaL1Mu",  "Invariant mass (2 global muons)", 120, 0.,15.);
+  QQMass1Glob1Trk_passOniaL1Mu          = new TH1F("QQMass1Glob1Trk_passOniaL1Mu",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
+  QQMass1Glob1Cal_passOniaL1Mu          = new TH1F("QQMass1Glob1Cal_passOniaL1Mu",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
   			       
   // deltaR		       
   hMcRecoGlobMuDeltaR               = new TH1F("hMcRecoGlobMuDeltaR",  "MC-reco matching #Delta R (global muons)", 100, 0.,0.5);
@@ -737,11 +738,11 @@ JPsiAnalyzerPAT::endJob() {
   cout << "Total number of passed candidates = " << passedCandidates << endl;
   cout << "Total number of DoubleMuOpen-matched candidates = " << matchCandidates << endl;
   cout << "Analyzed runs from  " << runmin << "  to  " << runmax << endl; 
-  if (_JSON){
+  /* if (_JSON){
     cout << "JSON file produced" << endl;
     *JSON << lumitmp <<"]]}";
     JSON->close();
-  }
+    }*/
  // cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
 
   TFile fOut(_histfilename.c_str(), "RECREATE");
@@ -762,18 +763,18 @@ JPsiAnalyzerPAT::endJob() {
   QQMass2GlobPT6_passmu5        -> Write();
   QQMass1Glob1TrkPT6_passmu5    -> Write();
   QQMass1Glob1CalPT6_passmu5    -> Write();
-  // QQMass2Glob_passmu9        -> Write();
-  // QQMass1Glob1Trk_passmu9    -> Write();
-  // QQMass1Glob1Cal_passmu9    -> Write();
+  QQMass2Glob_passOniaTrack        -> Write();
+  QQMass1Glob1Trk_passOniaTrack    -> Write();
+  QQMass1Glob1Cal_passOniaTrack    -> Write();
   QQMass2Glob_pass2muOpen          -> Write();
   QQMass1Glob1Trk_pass2muOpen      -> Write();
   QQMass1Glob1Cal_pass2muOpen      -> Write();
   // WSMass2Glob_pass2muOpen          -> Write();
   // WSMass1Glob1Trk_pass2muOpen      -> Write();
   // WSMass1Glob1Cal_pass2muOpen      -> Write();
-  QQMass2Glob_pass2mu0          -> Write();  
-  QQMass1Glob1Trk_pass2mu0      -> Write();  
-  QQMass1Glob1Cal_pass2mu0      -> Write();  
+  QQMass2Glob_passOniaL1Mu          -> Write();  
+  QQMass1Glob1Trk_passOniaL1Mu      -> Write();  
+  QQMass1Glob1Cal_passOniaL1Mu      -> Write();  
   			     
   hMcRecoGlobMuDeltaR           -> Write();   
   hMcRecoTrkMuDeltaR            -> Write();   
@@ -949,16 +950,30 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   static const unsigned int NTRIGGERS = 5;
   
   bool isTriggerMatched[NTRIGGERS];
+  // MC AND FIRST DATA 
   string HLTLastFilters[NTRIGGERS+1] = {"hltDoubleMuLevel1PathL1OpenFiltered",   // BIT HLT_L1DoubleMuOpen 
 					"hltSingleMu3L3Filtered3",               // BIT HLT_Mu3  
 					"hltSingleMu5L3Filtered5",               // BIT HLT_Mu5  
-                                        "hltMu0TrackJpsiTrackMassFiltered",      // BIT Mu0_Track0_JPsi
+                                        "hltMu0TrackJpsiTrackMassFiltered",      // BIT Mu0_Track0_Jpsi
                                         "hltMu0L1MuOpenL3Filtered0",             // BIT Mu0_L1MuOpen (Mu0 part)
                                         "hltDoubleMuLevel1PathL1OpenFiltered"};  // BIT Mu0_L1MuOpen (L1MuOpen part)
 
+  string HLTLastCollections[2] = {"hltL3MuonCandidates::HLT","hltMuTrackJpsiCtfTrackCands::HLT"};   // BIT Mu0_Track0_Jpsi 
+
+  // SECOND DATA
+  /* string HLTLastFilters[NTRIGGERS] =    {"hltL1DoubleMuOpenTightL1Filtered",        // BIT HLT_L1DoubleMuOpen_Tight
+					"hltSingleMu5L3Filtered5",                  // BIT HLT_Mu5  
+                                        "hltSingleMu7L3Filtered7",                  // BIT HLT_Mu7  
+                                        "hltMu3TrackJpsiTrackMassFiltered",         // BIT Mu3_Track0_Jpsi
+                                        "hltMu0TkMuJpsiTkMuMassFilteredNoCharge"};  // BIT Mu0_TkMu0_Jpsi_NoCharge
+
+  string HLTLastCollections[4] = {"hltL3MuonCandidates::HLT","hltMuTrackJpsiCtfTrackCands::HLT",           // BIT Mu3_Track0_Jpsi 
+                                  "hltL3MuonCandidates::HLT","hltMuTkMuJpsiTrackerMuonCands::HLT"};        // BIT Mu0_TkMu0_Jpsi_NoCharge 
+  */
+
   // Trigger passed (normal)
 
-  for (unsigned int iTr = 0; iTr<NTRIGGERS-2; iTr++ ) {
+  for (unsigned int iTr = 0; iTr < 3; iTr++ ) {
     const pat::TriggerObjectStandAloneCollection mu1HLTMatches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[iTr] ); 
     const pat::TriggerObjectStandAloneCollection mu2HLTMatches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[iTr] );
     bool pass1 = mu1HLTMatches.size() > 0;
@@ -970,24 +985,27 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     }
   }
 
-  // Trigger passed (onia track)
+  // Trigger passed (onia track & co.)
 
-  bool matchedMu1 = false, matchedTrack1 = false;
-  bool matchedMu2 = false, matchedTrack2 = false;
-  const pat::TriggerObjectStandAloneCollection mu1tkMatch = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-2] );
-  for (unsigned k = 0; k < mu1tkMatch.size(); ++k) {
-    if (mu1tkMatch[k].collection() == "hltL3MuonCandidates::HLT") matchedMu1 = true;
-    if (mu1tkMatch[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT") matchedTrack1 = true;
+  // for (unsigned int iTr = 3; iTr < 5; iTr++ ) {
+  for (unsigned int iTr = 3; iTr < 4; iTr++ ) {
+    bool matchedMu1 = false, matchedTrack1 = false;
+    bool matchedMu2 = false, matchedTrack2 = false;
+    const pat::TriggerObjectStandAloneCollection mu1tkMatch = muon1->triggerObjectMatchesByFilter( HLTLastFilters[iTr] );
+    for (unsigned k = 0; k < mu1tkMatch.size(); ++k) {
+      if (mu1tkMatch[k].collection() == HLTLastCollections[2*(iTr-3)]) matchedMu1 = true;
+      if (mu1tkMatch[k].collection() == HLTLastCollections[2*(iTr-3)+1]) matchedTrack1 = true;
+    }
+    const pat::TriggerObjectStandAloneCollection mu2tkMatch = muon2->triggerObjectMatchesByFilter( HLTLastFilters[iTr] );
+    for (unsigned k = 0; k < mu2tkMatch.size(); ++k) {
+      if (mu2tkMatch[k].collection() == HLTLastCollections[2*(iTr-3)]) matchedMu2 = true;
+      if (mu2tkMatch[k].collection() == HLTLastCollections[2*(iTr-3)+1]) matchedTrack2 = true;
+    }
+    isTriggerMatched[iTr] = (matchedMu1 && matchedTrack2) || (matchedMu2 && matchedTrack1);
   }
-  const pat::TriggerObjectStandAloneCollection mu2tkMatch = muon2->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-2] );
-  for (unsigned k = 0; k < mu2tkMatch.size(); ++k) {
-    if (mu2tkMatch[k].collection() == "hltL3MuonCandidates::HLT") matchedMu2 = true;
-    if (mu2tkMatch[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT") matchedTrack2 = true;
-  }
-  isTriggerMatched[NTRIGGERS-2] = (matchedMu1 && matchedTrack2) || (matchedMu2 && matchedTrack1);
-
+  
   // Trigger passed (onia L1Mu)
-  const pat::TriggerObjectStandAloneCollection mu1L1Matches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS] ); 
+  /* const pat::TriggerObjectStandAloneCollection mu1L1Matches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS] ); 
   const pat::TriggerObjectStandAloneCollection mu2L1Matches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS] );
   const pat::TriggerObjectStandAloneCollection mu1MuMatches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-1] ); 
   const pat::TriggerObjectStandAloneCollection mu2MuMatches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-1] );
@@ -996,6 +1014,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   bool pass1mu = mu1MuMatches.size() > 0;
   bool pass2mu = mu2MuMatches.size() > 0;
   isTriggerMatched[NTRIGGERS-1] = pass1l1 && pass2l1 && (pass1mu || pass2mu);
+  */
 
   if (isTriggerMatched[1]) { // pass Bit 1
     if (muon1->charge()*muon2->charge() < 0) {
@@ -1032,11 +1051,18 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       // if (theCat == 3) WSMass1Glob1Cal_pass2muOpen->Fill(theMass);       
     }
   }
+  if (isTriggerMatched[4]) { // pass Bit 4
+    if (muon1->charge()*muon2->charge() < 0) {
+      if (theCat == 0) QQMass2Glob_passOniaL1Mu->Fill(theMass);          
+      if (theCat == 1) QQMass1Glob1Trk_passOniaL1Mu->Fill(theMass);
+      if (theCat == 3) QQMass1Glob1Cal_passOniaL1Mu->Fill(theMass);    
+    }
+  } 
   if (isTriggerMatched[3]) { // pass Bit 3
     if (muon1->charge()*muon2->charge() < 0) {
-      if (theCat == 0) QQMass2Glob_pass2mu0->Fill(theMass);          
-      if (theCat == 1) QQMass1Glob1Trk_pass2mu0->Fill(theMass);
-      if (theCat == 3) QQMass1Glob1Cal_pass2mu0->Fill(theMass);    
+      if (theCat == 0) QQMass2Glob_passOniaTrack->Fill(theMass);          
+      if (theCat == 1) QQMass1Glob1Trk_passOniaTrack->Fill(theMass);
+      if (theCat == 3) QQMass1Glob1Cal_passOniaTrack->Fill(theMass);    
     }
   }  
   
