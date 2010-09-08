@@ -77,11 +77,13 @@ public:
   Plot(T *obj):
     fPlot(obj),
     fLegendX(0.6), fLegendY(0.2), fLegendWidth(0.2), fLegendHeight(0.07),
+    fMaxY(0), fMaxYset(false),
     fMetaX(0.2), fMetaY(0.89), fLumi(""), fDir(Metadata::kDown)
   {}
   Plot(T *obj, const std::string& lumi):
     fPlot(obj),
     fLegendX(0.6), fLegendY(0.2), fLegendWidth(0.2), fLegendHeight(0.07),
+    fMaxY(0), fMaxYset(false),
     fMetaX(0.2), fMetaY(0.89), fLumi(lumi), fDir(Metadata::kDown)
   {}
   ~Plot() { delete fPlot; }
@@ -118,6 +120,18 @@ public:
       else
         l.DrawLatex(fMetaX, fMetaY, ("CMS preliminary 2010, #sqrt{s}=7TeV, "+fLumi).c_str());
     }
+  }
+
+  float getMaxY() const {
+    if(fMaxYset)
+      return fMaxY;
+    else
+      return getMaxYimpl();
+  }
+  Plot& setMaxY(float y) {
+    fMaxY = y;
+    fMaxYset = true;
+    return *this;
   }
 
   Plot& setLegendX(float x) {
@@ -176,6 +190,10 @@ public:
     setMetaPos(pl.fMetaX, pl.fMetaY);
     setMetaDir(pl.fDir);
     setLumi(pl.fLumi);
+
+    if(pl.fMaxYset)
+      setMaxY(pl.fMaxY);
+
     return *this;
   }
 
@@ -198,6 +216,11 @@ private:
   Plot(const Plot&);            // NOT IMPLEMENTED
   Plot& operator=(const Plot&); // NOT IMPLEMENTED
 
+  float getMaxYimpl() const {
+    int maxbin = fPlot->GetMaximumBin();
+    return fPlot->GetBinContent(maxbin)+fPlot->GetBinError(maxbin);
+  }
+
 
   T *fPlot;
 
@@ -206,11 +229,22 @@ private:
   float fLegendWidth;
   float fLegendHeight;
 
+  float fMaxY;
+  bool fMaxYset;
+  
+
   float fMetaX;
   float fMetaY;
   std::string fLumi;
   Metadata::Dir fDir;
 };
+
+// TGraph specialization needed for dictionary generation by ACLiC
+template <>
+float Plot<TGraphAsymmErrors>::getMaxYimpl() const {
+  return fPlot->GetMaximum();
+}
+
 
 struct PlotLegendHeightWidth {
   PlotLegendHeightWidth(float h, float w): height(h), width(w) {}
@@ -606,7 +640,9 @@ public :
   Long64_t selectedL1JetEtEntries;
   
   //TTEffTree(TTree * /*tree*/ =0): mc(0), tauCut(14), cenCut(30) { }
-  TTEffTree(const std::string& selection): fSelectionString(selection), fSelection(0), tauCut(14), cenCut(30),
+  TTEffTree(const std::string& selection): fSelectionString(selection), fSelection(0),
+                                           tauCut(14), cenCut(30),
+                                           //tauCut(20), cenCut(30),
                                            allEntries(0), selectedEntries(0),
                                            selectedL1JetEntries(0), selectedL1JetEtEntries(0)
   {}
@@ -939,12 +975,27 @@ public:
     };
 
     void normalize(double norm) {
+      // Call Sumw2() before Scale() in order to scale the bin errors too
+
+      hasMatchedL1Jet->Sumw2();
       hasMatchedL1Jet->Scale(norm);
+
+      l1TauVeto->Sumw2();
       l1TauVeto->Scale(norm);
+
+      l1IsolationRegions2->Sumw2();
       l1IsolationRegions2->Scale(norm);
+
+      l1JetEt->Sumw2();
       l1JetEt->Scale(norm);
+
+      l1TauJetEt->Sumw2();
       l1TauJetEt->Scale(norm);
+
+      l1CenJetEt->Sumw2();
       l1CenJetEt->Scale(norm);
+
+      l1JetEtResolution->Sumw2();
       l1JetEtResolution->Scale(norm);
     }
 
@@ -1266,13 +1317,37 @@ struct Drawer {
     formats.push_back(format);
   }
 
-  void createCanvas(const TH1 *h1, const TH1 *h2, const TH1 *h3=0) const {
+  void createCanvas(const TH1 *h1, float ymax1, float ymax2, float ymax3) const {
+    createCanvas(h1, ymax1, std::max(ymax2, ymax3));
+  }
+
+  void createCanvas(const TH1 *h1, float ymax1, float ymax2) const {
     c = new TCanvas();
-    int h1maxbin = h1->GetMaximumBin();
+    float ymax = std::max(ymax1, ymax2);
+
     const TAxis *axis = h1->GetXaxis();
-    Double_t ymax = std::max(h1->GetBinContent(h1maxbin)+h1->GetBinError(h1maxbin), h2->GetMaximum());
-    if(h3)
-      ymax = std::max(ymax, h3->GetMaximum());
+    frame = c->DrawFrame(axis->GetXmin(), 0.,
+                         axis->GetXmax(), 1.1*ymax);
+    frame->GetXaxis()->SetTitle(h1->GetXaxis()->GetTitle());
+    frame->GetYaxis()->SetTitle(h1->GetYaxis()->GetTitle());
+  }
+
+  void createCanvas(const TH1 *h1, const TH1 *h2, const TH1 *h3=0) const {
+    int h1maxbin = h1->GetMaximumBin();
+    int h2maxbin = h2->GetMaximumBin();
+    if(h3) {
+      int h3maxbin = h3->GetMaximumBin();
+      createCanvas(h1,
+                   h1->GetBinContent(h1maxbin)+h1->GetBinError(h1maxbin),
+                   h2->GetBinContent(h2maxbin)+h2->GetBinError(h2maxbin),
+                   h3->GetBinContent(h3maxbin)+h3->GetBinError(h3maxbin));
+    }
+    else {
+      createCanvas(h1,
+                   h1->GetBinContent(h1maxbin)+h1->GetBinError(h1maxbin),
+                   h2->GetBinContent(h2maxbin)+h2->GetBinError(h2maxbin));
+    }
+        
     /*
     // Hack for testing DrawNormalized
     if(strcmp(h1->GetName(), "_dist_h4") == 0)
@@ -1281,10 +1356,6 @@ struct Drawer {
       ymax = 0.2;
     */
 
-    frame = c->DrawFrame(axis->GetXmin(), 0.,
-                         axis->GetXmax(), 1.1*ymax);
-    frame->GetXaxis()->SetTitle(h1->GetXaxis()->GetTitle());
-    frame->GetYaxis()->SetTitle(h1->GetYaxis()->GetTitle());
   }
 
   void createCanvas(const TGraph *gr) const {
@@ -1299,7 +1370,10 @@ struct Drawer {
   void draw(const char *fname,
             const Plot<TH1>& p1, const char *legend1,
             const Plot<TH1>& p2, const char *legend2) const {
+    createCanvas(p1.getPlot(), p2.getPlot());
     TLegend *leg = p2.createLegend();
+    TH1 *p2e = dynamic_cast<TH1 *>(p2->Clone());
+
     p1->SetMarkerColor(kBlack);
     p2->SetLineColor(kRed);
     p2->SetFillColor(kRed);
@@ -1308,11 +1382,22 @@ struct Drawer {
     leg->AddEntry(p2.getPlot(), legend2, "f");
     //p2->DrawNormalized("same", 1);
     //p1->DrawNormalized("P same", 1);
-    p2->Draw("same");
+
+    gStyle->SetErrorX(0.5);
+    p2e->SetFillStyle(1001);
+    p2e->SetFillColor(kRed-10);
+    p2e->SetMarkerStyle(0);
+
+    p2e->Draw("E2 same");
+
+    p2->Draw("HIST same");
     p1->Draw("EP same");
     leg->Draw();
     p2.drawMetadata();
     save(fname);
+
+    // Revert back to the tdrstyle default
+    gStyle->SetErrorX(0.0);
   }
 
   void draw(const char *fname,
@@ -1345,9 +1430,10 @@ struct Drawer {
   void draw(const char *fname,
             const Plot<TProfile>& p1, const char *legend1,
             const Plot<TProfile>& p2, const char *legend2) const {
-    createCanvas(p1.getPlot(), p2.getPlot());
+    createCanvas(p1.getPlot(), p1.getMaxY(), p2.getMaxY());
     TLegend *leg = p2.createLegend();
     p1->SetMarkerColor(kBlack);
+    p1->SetMarkerSize(0.75);
     p2->SetMarkerColor(kRed);
     leg->AddEntry(p1.getPlot(), legend1, "p");
     leg->AddEntry(p2.getPlot(), legend2, "p");
@@ -1362,7 +1448,7 @@ struct Drawer {
             const Plot<TProfile>& p1, const char *legend1,
             const Plot<TProfile>& p2, const char *legend2,
             const Plot<TProfile>& p3, const char *legend3) const {
-    createCanvas(p1.getPlot(), p2.getPlot(), p3.getPlot());
+    createCanvas(p1.getPlot(), p1.getMaxY(), p2.getMaxY(), p3.getMaxY());
     TLegend *leg = p3.createLegend();
     p1->SetMarkerColor(kBlack);
     p2->SetMarkerColor(kRed);
@@ -1465,7 +1551,7 @@ void draw_DistDataHistos(const char *prefix, const Drawer& draw,
                          const std::string& label1, const std::string& label2,
                          const std::string& lumi) {
   d1->forEach(PlotLegend(0.65, 0.6, 0.25, 0.14));
-  d1->forEach(PlotMetaPos(0.55, 0.89));
+  d1->forEach(PlotMetaPos(0.57, 0.89));
   d1->forEach(PlotLumi(lumi));
 
   d1->hasMatchedL1Jet.setLegendPos(0.2, 0.6).setMetaPos(0.2, 0.89);
@@ -1486,7 +1572,9 @@ void draw_DistDataHistos(const char *prefix, const Drawer& draw,
   res_p1->GetYaxis()->SetTitle(d1->l1JetEtResolution_PFTauEt->GetYaxis()->GetTitle());
   res_p2->GetYaxis()->SetTitle(d2->l1JetEtResolution_PFTauEt->GetYaxis()->GetTitle());
   res_p1.takeConf(d1->l1TauVeto);
-  res_p1.setLegendPos(0.2, 0.2);
+  //res_p1.setLegendPos(0.2, 0.2);
+  res_p1.setLegendPos(0.65, 0.6);
+  res_p1.setMaxY(0.5);
   res_p2.takeConf(res_p1);
   draw.draw(Form("%s_L1JetEtResolution_PFTauEt", prefix), res_p1, label1.c_str(), res_p2, label2.c_str());
 }
@@ -1496,7 +1584,7 @@ void draw_DistDataHistos(const char *prefix, const Drawer& draw,
                          const std::string& label1, const std::string& label2, const std::string& label3,
                          const std::string& lumi) {
   d1->forEach(PlotLegend(0.65, 0.6, 0.25, 0.14));
-  d1->forEach(PlotMetaPos(0.55, 0.89));
+  d1->forEach(PlotMetaPos(0.57, 0.89));
   d1->forEach(PlotLumi(lumi));
 
   d1->hasMatchedL1Jet.setLegendPos(0.2, 0.6).setMetaPos(0.2, 0.89);
@@ -1520,7 +1608,8 @@ void draw_DistDataHistos(const char *prefix, const Drawer& draw,
   res_p2->GetYaxis()->SetTitle(d2->l1JetEtResolution_PFTauEt->GetYaxis()->GetTitle());
   res_p3->GetYaxis()->SetTitle(d3->l1JetEtResolution_PFTauEt->GetYaxis()->GetTitle());
   res_p1.takeConf(d1->l1TauVeto);
-  res_p1.setLegendPos(0.2, 0.2);
+  //res_p1.setLegendPos(0.2, 0.2);
+  res_p1.setLegendPos(0.65, 0.6);
   res_p2.takeConf(res_p1);
   res_p3.takeConf(res_p1);
   draw.draw(Form("%s_L1JetEtResolution_PFTauEt", prefix), res_p1, label1.c_str(), res_p2, label2.c_str(), res_p3, label3.c_str());
@@ -1746,8 +1835,8 @@ struct Efficiency {
   }
 
   void drawL1Jet_TauVeto_plus_Isolation(const char *prefix) {
-    d.draw(Form("%s_L1Jet_TauVeto_plus_Isolation",  prefix), L1TauJet_TauVeto_plus_Isolation, "L1 Tau jet", L1Jet_TauVeto_plus_Isolation, "TauVeto + Isolation (1 GeV)");
-    d.draw(Form("%s_L1Jet_TauVeto_plus_Isolation2", prefix), L1TauJet_TauVeto_plus_Isolation, "L1 Tau jet", L1Jet_TauVeto_plus_Isolation2, "TauVeto + Isolation (2 GeV)");
+    d.drawMC(Form("%s_L1Jet_TauVeto_plus_Isolation",  prefix), L1TauJet_TauVeto_plus_Isolation, "L1 Tau jet", L1Jet_TauVeto_plus_Isolation, "TauVeto + Isolation (1 GeV)");
+    d.drawMC(Form("%s_L1Jet_TauVeto_plus_Isolation2", prefix), L1TauJet_TauVeto_plus_Isolation, "L1 Tau jet", L1Jet_TauVeto_plus_Isolation2, "TauVeto + Isolation (2 GeV)");
   }
 
   void draw(const char *prefix) {
@@ -1877,7 +1966,7 @@ void plotL1Efficiency() {
   Drawer draw("l1plots");
   draw.addFormat(".png");
   draw.addFormat(".eps");
-  draw.addFormat(".C");
+  //draw.addFormat(".C");
   //draw.addFormat(".svg");
 
   Fitter fit(draw);
@@ -1893,14 +1982,13 @@ void plotL1Efficiency() {
                   //, 85., 90., 95., 100.
                   //, 105., 110., 115., 120.
                   //, 125., 150.
-                  
   };
   size_t nbins = sizeof(bins)/sizeof(float)-1;
 
-  TH1F *histo_pt = new TH1F("foo1", "foo", 19, 10., 105.); // 5 GeV/c bins
+  //TH1F *histo_pt = new TH1F("foo1", "foo", 19, 10., 105.); // 5 GeV/c bins
   //TH1F *histo_pt = new TH1F("foo1", "foo", 47, 10., 104.); // 2 GeV/c bins
   //TH1F *histo_pt = new TH1F("foo1", "foo", 16, 0., 80.);
-  //TH1F *histo_pt = new TH1F("foo1", "foo", nbins, bins);
+  TH1F *histo_pt = new TH1F("foo1", "foo", nbins, bins);
   TH1F *histo_eta = new TH1F("foo2", "foo", 30, -3, 3.);
   TH1F *histo_phi = new TH1F("foo3", "foo", 35, -3.5, 3.5);
 
@@ -1935,8 +2023,10 @@ void plotL1Efficiency() {
 
   chain->Add(path + "tteffAnalysis-pftau_JetMETTau_Run2010A-CS_Tau-v2_RAW-RECO_tagV00-06-08.root");     std::string label("JetMET (Jun 7)");
   //chain->Add(path + "tteffAnalysis-pftau_cstau.root"); std::string label("JetMET (Jun 22)"); lumi = "L_{int}=6.91 nb^{-1}";
+  //chain->Add(path + "tteffAnalysis-pftau.root"); std::string label("MinBias (Jun 28)"); lumi = "L_{int}=10.1 nb^{-1}";
 
-  std::string pfTauSelection("PFTauEt > 15 && abs(PFTauEta) < 2.4 && PFTauIsoSum < 1. && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1/5. && PFMuonMatch == 1");
+  //std::string pfTauSelection("PFTauEt > 15 && abs(PFTauEta) < 2.4 && PFTauIsoSum < 1. && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1/5. && PFMuonMatch == 1");
+  std::string pfTauSelection("PFTauIso==1 && PFTauEt>15 && abs(PFTauEta)<2.4  && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1./5. && PFMuonMatch==1 && PFTauIsoSum<1.");
   std::string runSelection("run >= 132658");
 
   bool prev=false;
@@ -1975,9 +2065,9 @@ void plotL1Efficiency() {
   eff_pt.L1TauJet_EtCut.takeConf(eff_pt.L1Jet_Tau_EtCut2);
   eff_pt.L1Jet_EtCut.setLegendWidth(0.25).setLegendHeight(0.14);
   eff_pt.L1Jet_EtCut2.takeConf(eff_pt.L1Jet_EtCut);
-  eff_pt.L1Jet_Overall.takeConf(eff_pt.L1Jet_EtCut);
+  eff_pt.L1Jet_Overall.takeConf(eff_pt.L1Jet_TauVeto);
   eff_pt.L1Jet_Overall2.takeConf(eff_pt.L1Jet_Overall);
-  eff_pt.L1Jet_TauVeto_plus_Isolation.setLegendWidth(0.25).setMetaDir(Metadata::kRight);
+  eff_pt.L1Jet_TauVeto_plus_Isolation.setLegendWidth(0.25).setLegendPos(0.2, 0.2).setMetaDir(Metadata::kRight);
   eff_pt.L1Jet_TauVeto_plus_Isolation2.takeConf(eff_pt.L1Jet_TauVeto_plus_Isolation);
   eff_pt.draw("data_PFTauPt");
 
@@ -2057,7 +2147,8 @@ void plotL1Efficiency() {
 
     chain = new TChain("TTEffTree");
     //chain->Add(path + "tteffAnalyzerMinBiasMC7TeV357-PFTau.root");
-    chain->Add(path + "tteffAnalyzerMinBiasMC7TeV357L1Extra-PFTau.root"); mcLabel = "MC MinBias";
+    //chain->Add(path + "tteffAnalyzerMinBiasMC7TeV357L1Extra-PFTau.root"); mcLabel = "MC MinBias";
+    chain->Add(path + "tteffAnalyzerMinBiasStartup362-pftau.root"); mcLabel = "MC MinBias (Jun 25)";
     //chain->Add(path + "zttRelValTTEffAnalysis362-pftau.root"); mcLabel = "MC Z#rightarrow#tau#tau";
 
     list = analyse(pfTauSelection, chain, inputList);
@@ -2075,10 +2166,12 @@ void plotL1Efficiency() {
     eff_mc_pt.takeConf(eff_pt);
     eff_mc_pt.forEach(modify);
     eff_mc_pt.L1Jet.setMetaPos(0.4, 0.5);
-    eff_mc_pt.L1Jet_TauVeto.setMetaPos(0.2, 0.5);
+    //eff_mc_pt.L1Jet_TauVeto.setMetaPos(0.2, 0.5);
+    eff_mc_pt.L1Jet_TauVeto.setMetaDir(Metadata::kRight).setMetaPos(0.2, 0.89);
     eff_mc_pt.L1Jet_TauVeto_Isolation2.setMetaDir(Metadata::kRight).setMetaPos(0.2, 0.89);
     eff_mc_pt.L1Jet_Cen_EtCut2.setLegendPos(0.2, 0.6);
-    eff_mc_pt.L1Jet_Overall.setLegendPos(0.3, 0.2).setMetaPos(0.55, 0.4);
+    //eff_mc_pt.L1Jet_Overall.setLegendPos(0.3, 0.2).setMetaPos(0.55, 0.4);
+    eff_mc_pt.L1Jet_Overall.setLegendPos(0.55, 0.18).setMetaPos(0.55, 0.45);
     eff_mc_pt.L1Jet_Overall2.takeConf(eff_mc_pt.L1Jet_Overall);
 
     if(!mc2)
@@ -2087,7 +2180,8 @@ void plotL1Efficiency() {
     eff_mc_pt.forEach(PlotLumi(""));
     eff_mc_pt.L1Jet_Tau_EtCut2.takeConf(eff_pt.L1Jet_Tau_EtCut2);
     eff_mc_pt.L1Jet_Cen_EtCut2.takeConf(eff_pt.L1Jet_Cen_EtCut2);
-    eff_mc_pt.L1Jet_Cen_EtCut2.setLegendPos(0.8, 0.55);
+    //eff_mc_pt.L1Jet_Cen_EtCut2.setLegendPos(0.8, 0.55);
+    eff_mc_pt.L1Jet_Cen_EtCut2.setLegendPos(0.7, 0.8);
     eff_mc_pt.drawL1Jet_TauCen_EtCut("mc_PFTauPt");
     //eff_mc_pt.drawL1Jet_TauVeto_plus_Isolation("mc_PFTauPt");
     eff_mc_pt.forEach(PlotLumi(lumi));
