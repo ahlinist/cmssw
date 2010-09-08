@@ -301,8 +301,6 @@ std::string getTauDecayModeName(int tauDecayMode)
 
 const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
 {
-  std::cout << "<getDistPion>:" << std::endl;
-  
   if ( !recTauJet.isPFTau() ) {
     edm::LogWarning ("getDistPion")
       << " Cannot identify 'distinguishable' pion for CaloTaus/TCTaus --> returning NULL pointer !!";
@@ -313,6 +311,7 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
   const reco::PFCandidateRefVector& recTauJetChargedConstituents = recTauJet.signalPFChargedHadrCands();
   
   if ( recTauJetChargedConstituents.size() == 1 ) {
+
 //--- tau- --> one-prong case (in particular rho- --> pi- pi0 or tau- --> a1- --> pi- pi0 pi0);
 //    the "distinguishable" pion is the leading charged hadron
     return recTauJet.leadPFChargedHadrCand().get();
@@ -321,6 +320,7 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
 
     for ( reco::PFCandidateRefVector::const_iterator recTauJetChargedConstituent = recTauJetChargedConstituents.begin();
 	  recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
+
 //--- tau- --> three-prong case (in particular a1- --> pi- pi+ pi-);
 //    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
       if ( TMath::Abs((*recTauJetChargedConstituent)->charge()*recTauJetCharge) > 0.5 ) return recTauJetChargedConstituent->get();	
@@ -338,8 +338,6 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
 
 const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
 {
-  std::cout << "<getDistPion>:" << std::endl;
-
   std::string genTauDecayMode = JetMCTagUtils::genTauDecayMode(genTauJet);
   
   std::vector<const reco::GenParticle*> genTauJetConstituents = genTauJet.getGenConstituents();
@@ -354,13 +352,8 @@ const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
       if ( TMath::Abs((*genTauJetConstituent)->charge()) > 0.5 ) return (*genTauJetConstituent);	
     }
   } else if ( genTauDecayMode == "threeProng0Pi0" ) {
-    double genTauJetCharge = 0;
-    for ( std::vector<const reco::GenParticle*>::const_iterator genTauJetConstituent = genTauJetConstituents.begin();
-	  genTauJetConstituent != genTauJetConstituents.end(); ++genTauJetConstituent ) {
-      genTauJetCharge += (*genTauJetConstituent)->charge();
-    }
-    std::cout << " genTauJetCharge = " << genTauJetCharge << " (" << genTauJet.charge() << ")" << std::endl;
-    
+    double genTauJetCharge = genTauJet.charge();
+
     for ( std::vector<const reco::GenParticle*>::const_iterator genTauJetConstituent = genTauJetConstituents.begin();
 	  genTauJetConstituent != genTauJetConstituents.end(); ++genTauJetConstituent ) {
 
