@@ -2,9 +2,10 @@ import FWCore.ParameterSet.Config as cms
 
 from TopQuarkAnalysis.SingleTop.SelectionCuts_top_group_control_samples_v3_cff import *
 
+from PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi import *
+
 from PhysicsTools.PatAlgos.patSequences_cff import *
 
-from PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi import *
 
 #cFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
 #bFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
