@@ -9,6 +9,8 @@ VGammaMuonSelector::VGammaMuonSelector( const edm::ParameterSet& conf ) {
     v = Jun252010;
   else if( verStr == "Jun262010_jpsi" )
     v = Jun262010_jpsi;
+  else if( verStr == "Sep062010" )
+    v = Sep062010;
   else
     throw cms::Exception("InvalidInput") << "\'version\' must be one of: Jun252010 Jun262010_jpsi" << std::endl;
   
@@ -25,7 +27,7 @@ VGammaMuonSelector::VGammaMuonSelector( const edm::ParameterSet& conf ) {
 	conf.getParameter<double>("minP"),
 	conf.getParameter<double>("minPt"),
 	conf.getParameter<double>("maxEta"),
-	conf.getParameter<double>("maxRelIso")
+	conf.getParameter<double>("maxIso")
       );
   if( conf.exists("cutToIgnore") )
     setIgnoredCuts( conf.getParameter<std::vector<std::string> >("cutsToIgnore") );
@@ -46,7 +48,7 @@ void VGammaMuonSelector::init( const version& v,
 			       const double & p, // min p
 			       const double & pt, // min pt 
 			       const double & eta, // max eta
-			       const double & relIso // max rel comb iso
+			       const double & maxIso // max iso
 			       ) {
   version_ = v;
   muonTypeRequirement_ = vmt;
@@ -64,7 +66,7 @@ void VGammaMuonSelector::init( const version& v,
   push_back("minP", p);
   push_back("minPt", pt);
   push_back("maxEta", eta);
-  push_back("maxRelIso", relIso);
+  push_back("maxIso", maxIso);
   
   set("MuonTypeRequirements");
   set("TrackerMuonIdType");
@@ -78,10 +80,14 @@ void VGammaMuonSelector::init( const version& v,
   set("minP");
   set("minPt");
   set("maxEta");
-  set("maxRelIso");
+  set("maxIso");
   
   switch (version_) {
   case Jun252010 : 
+    set("dz",false);
+    set("minP",false);
+    break;
+  case Sep062010 :
     set("dz",false);
     set("minP",false);
     break;
@@ -89,7 +95,7 @@ void VGammaMuonSelector::init( const version& v,
     set("minPixHits",false);
     set("minChambers",false);
     set("minStations",false);
-    set("maxRelIso",false);
+    set("maxIso",false);
     break;
   default:
     throw cms::Exception("ImpossibleOutcome") << "This should have been thrown previously!!!" << std::endl;
@@ -102,6 +108,9 @@ bool VGammaMuonSelector::operator()( const pat::Muon & mu,
   switch (version_) {
   case Jun252010:
     return Jun252010Cuts(mu, ret);
+    break;
+  case Sep062010:
+    return Sep062010Cuts(mu, ret);
     break;
   case Jun262010_jpsi:
     return Jun262010_jpsiCuts(mu, ret);
@@ -169,6 +178,50 @@ bool VGammaMuonSelector::Jun252010Cuts( const pat::Muon& mu,
   
   return (bool)ret;
 }
+
+bool VGammaMuonSelector::Sep062010Cuts( const pat::Muon& mu, 
+					pat::strbitset & ret ) {
+  ret.set(false);
+  
+  if(!mu.innerTrack().isNonnull()) return false;
+  if(!mu.globalTrack().isNonnull()) return false; // the basically requires a global muon.
+
+  double pt(mu.pt()), eta(fabs(mu.eta())), norm_chi2(mu.normChi2()), corr_d0(mu.dB()),
+    Iso(mu.trackIso());
+  int pixHits(mu.innerTrack()->hitPattern().numberOfValidPixelHits()),
+    tkHits(mu.innerTrack()->hitPattern().numberOfValidStripHits()),
+    //    muHits(mu.outerTrack()->hitPattern().numberOfValidMuonDTHits()+
+    //	   mu.outerTrack()->hitPattern().numberOfValidMuonCSCHits()),
+    chambers(mu.numberOfMatches()),
+    stations(0);
+  unsigned stationMask(mu.stationMask());
+  int typeMatches(0), tkMuId(0);
+  
+  for(unsigned i=0; i < 8; ++i)
+    if(stationMask & 1 << i) ++stations;
+  
+  for(unsigned i=0;i<muonTypeRequirement_.size();++i) 
+    if(mu.muonID(muonTypeRequirement_[i])) ++typeMatches;
+  
+  if(mu.muonID(TMidType_)) tkMuId = 1;
+  
+  if(typeMatches == cut("MuonTypeRequirements", int()) || ignoreCut("MuonTypeRequirements")) passCut(ret,"MuonTypeRequirements");
+  if(tkMuId == cut("TrackerMuonIdType", int()) || ignoreCut("TrackerMuonIdType")) passCut(ret,"TrackerMuonIdType");
+  if(pixHits > cut("minPixHits",int()) || ignoreCut("minPixHits")) passCut(ret,"minPixHits");
+  if(tkHits > cut("minTkHits",int()) || ignoreCut("minTkHits")) passCut(ret,"minTkHits");
+  if(corr_d0 < cut("d0", double()) || ignoreCut("d0")) passCut(ret,"d0");
+  if(norm_chi2 < cut("maxNormChi2", double()) || ignoreCut("maxNormChi2")) passCut(ret,"maxNormChi2");
+  if(chambers > cut("minChambers", double()) || ignoreCut("minChambers")) passCut(ret,"minChambers");
+  if(stations > cut("minStations", double()) || ignoreCut("minStations")) passCut(ret,"minStations");
+  if(pt > cut("minPt", double()) || ignoreCut("minPt")) passCut(ret,"minPt");
+  if(eta < cut("maxEta", double()) || ignoreCut("maxEta")) passCut(ret,"maxEta");
+  if(Iso < cut("maxIso", double()) || ignoreCut("maxIso")) passCut(ret,"maxIso");
+  
+  setIgnored(ret);
+  
+  return (bool)ret;
+}
+
 
 bool VGammaMuonSelector::Jun262010_jpsiCuts( const pat::Muon& mu,
 					     pat::strbitset & ret ) {
