@@ -18,9 +18,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.1 $
  *
- * $Id: SVfitVMlineShapeIntegrand.h,v 1.9 2010/02/28 16:03:09 veelken Exp $
+ * $Id: SVfitVMlineShapeIntegrand.h,v 1.1 2010/09/07 13:42:04 veelken Exp $
  *
  */
 
@@ -73,7 +73,7 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
   double tauLeptonPol_; // tau lepton polarization 
 
 //--- temporary variables to speed-up computations
-//    ( recomputed every time one of the parameters gets set)
+//    (recomputed every time one of the parameters gets set)
   double m0_;           // resonance mass of vector meson
   double m0square_;
   double Gamma0_;       // width of vector meson resonance
