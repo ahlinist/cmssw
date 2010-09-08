@@ -49,23 +49,31 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 numSamplings = cms.int32(-1)
             )
         ),
-        psKine_MEt = cms.PSet(
+        ##psKine_MEt = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodDiTauKinematicsPhaseSpace,
+        ##        svFitLikelihoodMEt
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        ##psKine_MEt_ptBalance = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodDiTauKinematicsPhaseSpace,
+        ##        svFitLikelihoodMEt,
+        ##        svFitLikelihoodDiTauPtBalance
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        #numSamplings = cms.int32(1000)
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        polKine = cms.PSet(
             likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPhaseSpace,
-                svFitLikelihoodMEt
+                svFitLikelihoodDiTauKinematicsPolarized        
             ),
             estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        psKine_MEt_ptBalance = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPhaseSpace,
-                svFitLikelihoodMEt,
-                svFitLikelihoodDiTauPtBalance
-            ),
-            estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(1000)
                 numSamplings = cms.int32(-1)
             )
         )
