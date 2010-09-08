@@ -22,7 +22,10 @@ SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand(bool useCollApproxFormulas)
 
 SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand(const SVfitVMlineShapeIntegrand& bluePrint)
 {
+  //std::cout << "<SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand>:" << std::endl;
+
   useCollApproxFormulas_ = bluePrint.useCollApproxFormulas_;
+
   this->SetVMtype(bluePrint.vmType_);
   this->SetVMpol(bluePrint.vmPol_);
   this->SetMode(bluePrint.mode_);
@@ -35,12 +38,16 @@ SVfitVMlineShapeIntegrand::~SVfitVMlineShapeIntegrand()
 
 SVfitVMlineShapeIntegrand& SVfitVMlineShapeIntegrand::operator=(const SVfitVMlineShapeIntegrand& bluePrint)
 {
+  //std::cout << "<SVfitVMlineShapeIntegrand::operator=>:" << std::endl;
+
   useCollApproxFormulas_ = bluePrint.useCollApproxFormulas_;
+
   this->SetVMtype(bluePrint.vmType_);
   this->SetVMpol(bluePrint.vmPol_);
   this->SetMode(bluePrint.mode_);
   this->SetParameterTheta(bluePrint.theta_);
   this->SetParameterTauLeptonPol(bluePrint.tauLeptonPol_);
+
   return (*this);
 }
 
@@ -69,7 +76,7 @@ void SVfitVMlineShapeIntegrand::SetVMtype(VMtype type)
     m0_ = a1MesonMass;  
     Gamma0_ = a1MesonWidth;
   } else {
-    edm::LogError ("SVfitVMlineShapeIntegrand::update")
+    edm::LogError ("SVfitVMlineShapeIntegrand::SetVMtype")
       << " Invalid vecor meson type = " << vmType_ << " !!";
     return;
   }
