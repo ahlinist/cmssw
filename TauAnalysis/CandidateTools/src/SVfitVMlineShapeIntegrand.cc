@@ -70,7 +70,7 @@ void SVfitVMlineShapeIntegrand::SetVMtype(VMtype type)
     Gamma0_ = a1MesonWidth;
   } else {
     edm::LogError ("SVfitVMlineShapeIntegrand::update")
-      << " Undefined vecor meson type = " << vmType_ << " !!";
+      << " Invalid vecor meson type = " << vmType_ << " !!";
     return;
   }
 
@@ -119,7 +119,7 @@ double SVfitVMlineShapeIntegrand::fv(double mSquare) const
     }
   } else {
     edm::LogError ("SVfitVMlineShapeIntegrand::fv")
-      << " Undefined vector meson type = " << vmType_ << " !!";
+      << " Invalid vector meson type = " << vmType_ << " !!";
     return 0.;
   }
 }
@@ -176,13 +176,13 @@ double SVfitVMlineShapeIntegrand::DoEval(double mSquare) const
       else integrand = Fv(mSquare)*decayT(a, a2, cosOmega2, sinOmega2, sin2Omega);
     } else {
       edm::LogError ("SVfitVMlineShapeIntegrand::DoEval")
-	<< " Undefined vector meson polarization = " << vmPol_ << " !!";
+	<< " Invalid vector meson polarization = " << vmPol_ << " !!";
     }
   } else if ( mode_ == kVMnorm ) {
     integrand = Fv(mSquare);
   } else {
     edm::LogError ("SVfitVMlineShapeIntegrand::DoEval")
-      << " Undefined mode = " << mode_ << " !!";
+      << " Invalid mode = " << mode_ << " !!";
   }
 
   if ( debugLevel_ > 0 ) {
