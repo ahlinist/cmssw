@@ -18,9 +18,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: SVfitVMlineShapeIntegrand.h,v 1.1 2010/09/07 13:42:04 veelken Exp $
+ * $Id: SVfitVMlineShapeIntegrand.h,v 1.2 2010/09/08 10:19:33 veelken Exp $
  *
  */
 
@@ -35,10 +35,10 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
   enum VMpol  { kVMpolUndefined, kVMlongitudinalPol, kVMtransversePol };
 
   SVfitVMlineShapeIntegrand(bool);
-  SVfitVMlineShapeIntegrand(const SVfitVMlineShapeIntegrand& bluePrint);
+  SVfitVMlineShapeIntegrand(const SVfitVMlineShapeIntegrand&);
   virtual ~SVfitVMlineShapeIntegrand();
 
-  SVfitVMlineShapeIntegrand& operator=(const SVfitVMlineShapeIntegrand& bluePrint);
+  SVfitVMlineShapeIntegrand& operator=(const SVfitVMlineShapeIntegrand&);
   
   void SetParameterTheta(double);
   void SetParameterTauLeptonPol(double);
