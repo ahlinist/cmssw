@@ -20,7 +20,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: SVfitVMlineShapeIntegral.h,v 1.1 2010/09/07 13:42:04 veelken Exp $
+ * $Id: SVfitVMlineShapeIntegral.h,v 1.1 2010/09/07 15:50:14 veelken Exp $
  *
  */
 
@@ -32,13 +32,16 @@ class SVfitVMlineShapeIntegral
 {
  public:
   SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VMtype, SVfitVMlineShapeIntegrand::VMpol, bool);
-  ~SVfitVMlineShapeIntegral();
+  SVfitVMlineShapeIntegral(const SVfitVMlineShapeIntegral&);
+  virtual ~SVfitVMlineShapeIntegral();
 
-  double operator()(double theta, double tauLeptonPol, double z) const;
+  SVfitVMlineShapeIntegral& operator=(const SVfitVMlineShapeIntegral&);
+
+  double operator()(double, double, double) const;
 
  private:
   ROOT::Math::Integrator* integrator_;
-  mutable SVfitVMlineShapeIntegrand integrand_;
+  mutable SVfitVMlineShapeIntegrand* integrand_;
 
 //--- temporary variables to speed-up computations
 //    (computed once in constructor)
