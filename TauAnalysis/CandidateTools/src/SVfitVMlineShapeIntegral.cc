@@ -8,16 +8,21 @@ using namespace SVfit_namespace;
 
 SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VMtype vmType, 
 						   SVfitVMlineShapeIntegrand::VMpol vmPol, bool useCollApproxFormulas)
-  : integrand_(useCollApproxFormulas)
 {
-  integrator_ = new ROOT::Math::Integrator(integrand_);
+  //std::cout << "<SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral>:" << std::endl;
+  //std::cout << " vmType = " << vmType << std::endl;
+  //std::cout << " vmPol = " << vmPol << std::endl;
+  //std::cout << " useCollApproxFormulas = " << useCollApproxFormulas << std::endl;
 
-  integrand_.SetVMtype(vmType);
-  integrand_.SetVMpol(vmPol);
-  integrand_.SetMode(SVfitVMlineShapeIntegrand::kVMnorm);
+  integrand_ = new SVfitVMlineShapeIntegrand(useCollApproxFormulas);
+  integrand_->SetVMtype(vmType);
+  integrand_->SetVMpol(vmPol);
+  integrand_->SetMode(SVfitVMlineShapeIntegrand::kVMnorm);
+
 //--- CV: need to trigger update of ROOT::Math::Integrator by calling integrator->SetFunction
 //        after calling any non-const function of SVfitVMlineShapeIntegrand 
-  integrator_->SetFunction(integrand_);
+  integrator_ = new ROOT::Math::Integrator(*integrand_);
+  integrator_->SetFunction(*integrand_);
 
 //--- compute lower limit for normalization integral
 //   = invariant mass of n-pion system
@@ -32,26 +37,60 @@ SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VM
       << " Invalid vecor meson type = " << vmType << " !!";
   }
   minMass2_ = square(numPions*chargedPionMass);
-  std::cout << " minMass2 = " << minMass2_ << std::endl;
+  //std::cout << " minMass2 = " << minMass2_ << std::endl;
   norm_ = integrator_->Integral(minMass2_, tauLeptonMass2); 
-  std::cout << " norm = " << norm_ << std::endl;
+  //std::cout << " norm = " << norm_ << std::endl;
 
 //--- set integrand to compute vector meson line-shape integrals in the following...  
-  integrand_.SetMode(SVfitVMlineShapeIntegrand::kVMlineShape);
-  integrator_->SetFunction(integrand_);
+  integrand_->SetMode(SVfitVMlineShapeIntegrand::kVMlineShape);
+  integrator_->SetFunction(*integrand_);
+}
+
+SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(const SVfitVMlineShapeIntegral& bluePrint)
+{
+  //std::cout << "<SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral>:" << std::endl;
+
+  integrand_ = new SVfitVMlineShapeIntegrand(*bluePrint.integrand_);
+  
+  integrator_ = new ROOT::Math::Integrator(*integrand_);
+  integrator_->SetFunction(*integrand_);
+
+  minMass2_ = bluePrint.minMass2_;
+  norm_ = bluePrint.norm_;
 }
 
 SVfitVMlineShapeIntegral::~SVfitVMlineShapeIntegral()
 {
   delete integrator_;
+  delete integrand_;
+}
+
+SVfitVMlineShapeIntegral& SVfitVMlineShapeIntegral::operator=(const SVfitVMlineShapeIntegral& bluePrint)
+{
+  //std::cout << "<SVfitVMlineShapeIntegral::operator=>:" << std::endl;
+
+  delete integrator_;
+  delete integrand_;
+
+  integrand_ = new SVfitVMlineShapeIntegrand(*bluePrint.integrand_);
+  
+  integrator_ = new ROOT::Math::Integrator(*integrand_);
+  integrator_->SetFunction(*integrand_);
+
+  minMass2_ = bluePrint.minMass2_;
+  norm_ = bluePrint.norm_;
+
+  return (*this);
 }
 
 double SVfitVMlineShapeIntegral::operator()(double theta, double tauLeptonPol, double z) const
 {
-  integrand_.SetParameterTheta(theta);
-  integrand_.SetParameterTauLeptonPol(tauLeptonPol);
+  std::cout << "<SVfitVMlineShapeIntegral::operator()>:" << std::endl;
 
-  integrator_->SetFunction(integrand_);
+  integrand_->SetParameterTheta(theta);
+  integrand_->SetParameterTauLeptonPol(tauLeptonPol);
+
+  integrator_->SetFunction(*integrand_);
 
   double integral = integrator_->Integral(minMass2_, z*tauLeptonMass2)/norm_;
   if ( debugLevel_ > 0 ) {
