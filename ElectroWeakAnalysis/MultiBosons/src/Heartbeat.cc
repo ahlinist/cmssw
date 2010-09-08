@@ -9,7 +9,7 @@ Heartbeat::Heartbeat(const unsigned long long& m,const double & p):
   last(1)
 {
   outprec=0;
-  while(p*std::pow(10,outprec-1) < 1) ++outprec;
+  while(p*std::pow((long double)10,(long double)outprec-1) < 1) ++outprec;
   std::cout << "There are " << max << " events to process!" << std::endl;
 }
 
