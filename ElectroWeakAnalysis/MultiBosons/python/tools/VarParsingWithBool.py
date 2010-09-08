@@ -1,6 +1,3 @@
-from FWCore.ParameterSet.VarParsing import VarParsing
-from FWCore.Utilities.Enumerate import Enumerate
-
 import sys
 import os
 import re
