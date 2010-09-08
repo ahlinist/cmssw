@@ -34,7 +34,8 @@ process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff") ### real data
 #process.GlobalTag.globaltag = cms.string("GR_R_35X_V6::All")
-process.GlobalTag.globaltag = cms.string("GR_R_36X_V12::All")
+process.GlobalTag.globaltag = cms.string('GR_R_38X_V11::All') #TAG FOR  382
+#process.GlobalTag.globaltag = cms.string("GR_R_38X_V11::All")
 
 # TQAF/PAT Layer 1 ------------------------------------------------------------
 process.load("PhysicsTools.PatAlgos.patSequences_cff")

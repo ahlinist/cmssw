@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+
+
 #muon skim part
 preselectedMuons = cms.EDFilter("PATMuonSelector",
   src = cms.InputTag("cleanPatMuons"),
@@ -32,12 +34,38 @@ looseElectrons = cms.EDFilter("PATElectronSelector",
 )
 
 ###Cleaning options for jets:
-from PhysicsTools.PatAlgos.cleaningLayer1.jetCleaner_cfi import *
-preselectedJets = cms.EDProducer("PATJetCleaner",
-                                 preselection = cms.string(''),
-                                 src = cms.InputTag("cleanPatJets"),
-                                 finalCut = cms.string(''),
-                                 )
+
+preselectedJets = cms.EDFilter("PATJetSelector",
+  src = cms.InputTag("cleanPatJets"),
+  cut = cms.string('pt >  30 & abs(eta) < 5.0'),
+  filter = cms.bool(False)                                
+)
+
+topJets = cms.EDProducer("SingleTopJetsProducer",
+                         src = cms.InputTag("preselectedJets"),
+                         eleSrc = cms.InputTag("topElectrons"),
+                         muSrc = cms.InputTag("topElectrons"),
+                         isJPT = cms.untracked.bool(True),
+                         isPF = cms.untracked.bool(False),
+)
+
+topJetsPF = topJets.clone(
+      src = cms.InputTag("selectedPatJetsPFlow"),
+      isJPT = cms.untracked.bool(False),
+      isPF = cms.untracked.bool(True),
+      )
+
+
+topMuons = cms.EDFilter("PATMuonSelector",
+                        src = cms.InputTag("preselectedMuons"),
+                        filter = cms.bool(False),
+                        cut = cms.string("pt > 0")
+                        )
+
+#topMuons = cms.EDProducer("SingleTopMuonProducer",
+#                          src = cms.InputTag("preselectedMuons"),
+#                          jetSrc = cms.InputTag("topJets")
+#                          )
 
 #preselectedJets = cms.EDFilter("PATJetSelector",
 #  src = cms.InputTag("cleanPatJets"),
@@ -54,20 +82,20 @@ preselectedJets = cms.EDProducer("PATJetCleaner",
 #  filter = cms.bool(False)                                
 #)
 
-topJets = cms.EDProducer("SingleTopJetsProducer",
-                         src = cms.InputTag("preselectedJets"),
-                         eleSrc = cms.InputTag("topElectrons"),
-                         muSrc = cms.InputTag("topElectrons"),
-                         isJPT = cms.untracked.bool(True),
-                         isPF = cms.untracked.bool(False),
+#topJets = cms.EDProducer("SingleTopJetsProducer",
+#                         src = cms.InputTag("preselectedJets"),
+#                         eleSrc = cms.InputTag("topElectrons"),
+#                         muSrc = cms.InputTag("topElectrons"),
+#                         isJPT = cms.untracked.bool(True),
+#                         Ispf = cms.untracked.bool(False),
                          #  filter = cms.boolFalse)              
-                         )
+#                         )
 
-topJetsPF = topJets.clone(
-      src = cms.InputTag("selectedPatJetsPFlow"),
-      isJPT = cms.untracked.bool(False),
-      isPF = cms.untracked.bool(True),
-      )
+#topJetsPF = topJets.clone(
+#      src = cms.InputTag("selectedPatJetsPFlow"),
+ #     isJPT = cms.untracked.bool(False),
+ #     isPF = cms.untracked.bool(True),
+#      )
 
 
 #topJets.checkOverlaps = cms.PSet(
@@ -112,12 +140,6 @@ preselectedMETs = cms.EDFilter("PATMETSelector",
 allTopJets = cms.EDProducer("SingleTopJetsProducer",
                                  jetsSource = cms.InputTag("preselectedJets"),
                                  )
-
-topMuons = cms.EDFilter("PATMuonSelector",
-                        src = cms.InputTag("preselectedMuons"),
-                        filter = cms.bool(False),
-                        cut = cms.string("pt > 0")
-                        )
 
 #topMuons = cms.EDProducer("SingleTopMuonProducer",
 #                          src = cms.InputTag("preselectedMuons"),

@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc,v 1.9 2010/05/17 08:07:47 oiorio Exp $ 
+ *\version  $Id: SingleTopJetsProducer.cc,v 1.1 2010/09/07 14:32:50 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -118,16 +118,16 @@ for(size_t i = 0; i < jets->size(); ++i){
       const reco::JPTJet * jptJet = dynamic_cast<const reco::JPTJet *>(jets->at(i).originalObject()); 
       reco::CaloJet const * myCalo = dynamic_cast<reco::CaloJet const *>( &* jptJet->getCaloJetRef());
 
-      //std::cout <<  "jet fHPD "<< jets->at(i).jetID().fHPD<<" n90Hits  " << jets->at(i).jetID().n90Hits<< " calon90Hits "<< (*jetIDs)[jptJet->getCaloJetRef()].n90Hits<< " calofHPD " << (*jetIDs)[jptJet->getCaloJetRef()].fHPD <<std::endl;
+      //     std::cout <<  "jet fHPD "<< jets->at(i).jetID().fHPD<<" n90Hits  " << jets->at(i).jetID().n90Hits<< " calon90Hits "<< (*jetIDs)[jptJet->getCaloJetRef()].n90Hits<< " calofHPD " << (*jetIDs)[jptJet->getCaloJetRef()].fHPD <<std::endl;
 
       double fHPD = (*jetIDs)[jptJet->getCaloJetRef()].fHPD;
       double n90Hits = (*jetIDs)[jptJet->getCaloJetRef()].n90Hits;
 
-      condition = myCalo->emEnergyFraction()>0.01 && n90Hits > 1 && fHPD < 0.98;// jetID().fHPD()< 0.98;
-      //      //std::cout <<"size"<<jets->size()<<" emenfrac " <<myCalo->emEnergyFraction()<<std::endl;
+      condition =  myCalo->emEnergyFraction()>0.01 &&  (fabs(myCalo->eta()) > 2.4 || ( n90Hits > 1 && fHPD < 0.98));// jetID().fHPD()< 0.98;
+       //std::cout <<"size"<<jets->size()<<" emenfrac " <<myCalo->emEnergyFraction()<<std::endl;
     }
     else if(isPF){
-      condition = true;
+      condition = (jets->at(i).numberOfDaughters()>1 && jets->at(i).neutralHadronEnergyFraction() < 1 && jets->at(i).neutralEmEnergyFraction() < 1 && ((fabs(jets->at(i).eta())>2.4) || ( jets->at(i).chargedHadronEnergyFraction() > 0 && jets->at(i).chargedMultiplicity()>0)))  ;
     }
     if(!(condition))continue; 
     
