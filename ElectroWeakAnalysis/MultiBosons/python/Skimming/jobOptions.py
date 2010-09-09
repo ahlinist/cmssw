@@ -46,7 +46,7 @@ def applyJobOptions(options):
       HLT_Mu11
       """.split()
 
-    # end of testSpring10McCern options <-------------------------------------
+  # end of testMC options <-------------------------------------
 
   elif options.jobType == "testRealData":
     jobOptions.maxEvents = 1
@@ -77,9 +77,24 @@ def applyJobOptions(options):
     jobOptions.use35XInput = False
     jobOptions.isMaxEventsOutput = True
     jobOptions.wantSummary = False
-#     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9]]
+#     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9, 11]]
     jobOptions.hltPaths = ["HLT_Mu9"]
-    # end of testPromptRecoV4Cern options <-----------------------------------
+    jobOptions.muonTriggerMatchPaths = """
+      HLT_L1Mu14_L1ETM30
+      HLT_L1Mu14_L1SingleJet6U
+      HLT_L1Mu14_L1SingleEG10
+      HLT_L1Mu20
+      HLT_DoubleMu3
+      HLT_Mu3
+      HLT_Mu5
+      HLT_Mu9
+      HLT_L2Mu9
+      HLT_L2Mu11
+      HLT_L1Mu30
+      HLT_Mu7
+      HLT_L2Mu15
+      """.split()  ## Definition of MU PD for run 142933
+  # end of testRealData options <-----------------------------------
 
   elif options.jobType == "PromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"

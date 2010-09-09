@@ -104,7 +104,7 @@ process.patElectrons.userData.userInts.src = egammaUserDataInts(
 ## Add electron official electron ID from the Egamma / VBTF
 process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
 process.patDefaultSequence.replace(process.patElectrons,
-  (process.simpleEleIdSequence) * process.patElectrons
+  process.simpleEleIdSequence * process.patElectrons
   )
 process.patElectrons.addElectronID = cms.bool(True)
 process.patElectrons.electronIDSources = cms.PSet(
@@ -200,6 +200,14 @@ if not options.isRealData:
     limit = cms.untracked.int32(5)
     )
 process.options.wantSummary = options.wantSummary
+
+## Relax the pt for the tests on data
+if options.jobType == "testTriggerMatchRealData":
+  process.WMuNuGammaPath.remove(process.hltFilter)
+  process.muonPlusMETFilter.cut = "daughter('lepton').pt > 3"
+  process.WMuNuGammaPath.remove(process.WENuGammaFilter)
+
+
 
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user
