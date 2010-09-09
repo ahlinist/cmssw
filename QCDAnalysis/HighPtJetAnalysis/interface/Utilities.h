@@ -94,11 +94,8 @@ typedef struct
   float corpfMass;
   float rawpfMass;   
   float met;
-  float metNoHF;
   float sumet;
-  float sumetNoHF;
   float met_over_sumet; 
-  float met_over_sumet_NoHF;  
   float pfmet;
   float pfsumet;
   float pfmet_o_sumet; 
