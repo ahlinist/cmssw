@@ -92,6 +92,7 @@ def embedTriggerMatches(process, hltPaths):
   process.patTriggerSequence = cms.Sequence(
     process.patTrigger *
     process.patTriggerMatcher *
-    process.patTriggerEvent
+    process.patTriggerEvent *
+    process.patTriggerMatchEmbedder
   )
 # def embedTriggerMatches(process, hltPaths): <---------------------------------------
