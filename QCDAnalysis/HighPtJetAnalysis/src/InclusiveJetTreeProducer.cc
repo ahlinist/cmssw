@@ -42,7 +42,6 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mJetsName               = cfg.getParameter<std::string>              ("jets");
   mJetsIDName             = cfg.getParameter<std::string>              ("jetsID");
   mMetName                = cfg.getParameter<std::string>              ("met");
-  mMetNoHFName            = cfg.getParameter<std::string>              ("metNoHF");
   mJetExtender            = cfg.getParameter<std::string>              ("jetExtender");
   mHcalNoiseTag           = cfg.getParameter<edm::InputTag>            ("hcalNoiseTag");
   mTriggerNames           = cfg.getParameter<std::vector<std::string> >("jetTriggerNames");
@@ -340,19 +339,6 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       mSumET = (*met)[0].sumEt();
     }
 
-  Handle<CaloMETCollection> metNoHF;
-  event.getByLabel(mMetNoHFName,metNoHF);
-  if (metNoHF->size() == 0)
-    {
-      mMETnoHF   = -1;
-      mSumETnoHF = -1;
-    }
-  else
-    {
-      mMETnoHF   = (*metNoHF)[0].et();
-      mSumETnoHF = (*metNoHF)[0].sumEt();
-    }
-
   // LOOP OVER PF CANDIDATES FOR PF MET
    double sum_ex =0;
    double sum_ey =0;
@@ -627,8 +613,6 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("sumet"              ,&mSumET               ,"mSumET/F");
   mTree->Branch("pfmet"              ,&mPFMET		    ,"mPFMET/F");
   mTree->Branch("pfsumet"            ,&mPFSumET  	    ,"mPFSumET/F");  
-  mTree->Branch("metNoHF"            ,&mMETnoHF             ,"mMETnoHF/F");
-  mTree->Branch("sumetNoHF"          ,&mSumETnoHF           ,"mSumETnoHF/F");
   mTree->Branch("passLooseHcalNoise" ,&mLooseHcalNoise      ,"mLooseHcalNoise/I"); 	 
   mTree->Branch("passTightHcalNoise" ,&mTightHcalNoise      ,"mTightHcalNoise/I");
 
@@ -667,7 +651,8 @@ bool InclusiveJetTreeProducer::preTreeFillCut()
 
 
 // If there ain't any jets there isn't a lot we can do!
-if ((*mPt).size() < 1) return false;
+if (((*mPt).size() < 1) && ((*mPFPt).size() < 1)) 
+  return false;
 
 return true;
 }

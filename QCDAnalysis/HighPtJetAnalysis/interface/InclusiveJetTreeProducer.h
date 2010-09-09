@@ -87,7 +87,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     //---- TREE variables --------
     int mRunNo, mEvtNo, mLumi, mBunch, mLooseHcalNoise, mTightHcalNoise;
     int mbhalo,mbscrap;
-    float mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
+    float mMET, mSumET,  mPtHat, mWeight;
     std::vector<int>   *mNtrkVtx,*mNtrkCalo,*mN90,*mN90Hits,*mPVntracks;
     std::vector<float> *mGenMatchR,*mGenMatchPt,*mGenMatchEta,*mGenMatchPhi;
     std::vector<float> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
