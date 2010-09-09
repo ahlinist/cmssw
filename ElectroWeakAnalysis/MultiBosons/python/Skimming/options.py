@@ -52,7 +52,21 @@ options.register("hltPaths",
   "",                                # default value
   VarParsing.multiplicity.list,      # singleton or list
   VarParsing.varType.string,         # bool, string, int, or float
-  "List of HLT paths whose OR is required."
+  "List of HLT paths whose OR is required for selected events."
+  )
+
+options.register("electronTriggerMatchPaths",
+  "",                # default value
+  VarParsing.multiplicity.list,      # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "List of trigger paths whose matches should be embedded."
+  )
+
+options.register("muonTriggerMatchPaths",
+  "",                         # default value
+  VarParsing.multiplicity.list,      # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "List of trigger paths whose matches should be embedded."
   )
 
 options.setupTags(tag = "%s", ifCond = "jobType != ''", tagArg = "jobType")
@@ -66,3 +80,4 @@ options.register("jobType",
   VarParsing.varType.string,         # bool, string, int, or float
   "What is the type of this job? (Defines multiple options.)"
   )
+
