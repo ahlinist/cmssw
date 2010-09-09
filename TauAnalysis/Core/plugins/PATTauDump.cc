@@ -10,6 +10,7 @@
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -69,6 +70,7 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
     *outputStream_ << "(#signal PFChargedHadrons = " << patTau->signalPFChargedHadrCands().size() << ")" << std::endl;
     if ( patTau->signalTracks().size() != patTau->signalPFChargedHadrCands().size() ) *outputStream_ << "--> CHECK !!!" << std::endl;
+    *outputStream_ << " decayMode = " << getTauDecayModeName(patTau->decayMode()) << std::endl;
     *outputStream_ << " tauId" << std::endl;
     *outputStream_ << "  leadingTrackFinding = " << patTau->tauID("leadingTrackFinding") << std::endl;
     *outputStream_ << "  leadingTrackPtCut = " << patTau->tauID("leadingTrackPtCut") << std::endl;
