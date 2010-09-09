@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopJetsProducer.cc,v 1.1 2010/09/07 14:32:50 oiorio Exp $ 
+ *\version  $Id: SingleTopJetsProducer.cc,v 1.2 2010/09/08 16:49:12 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -127,7 +127,9 @@ for(size_t i = 0; i < jets->size(); ++i){
        //std::cout <<"size"<<jets->size()<<" emenfrac " <<myCalo->emEnergyFraction()<<std::endl;
     }
     else if(isPF){
-      condition = (jets->at(i).numberOfDaughters()>1 && jets->at(i).neutralHadronEnergyFraction() < 1 && jets->at(i).neutralEmEnergyFraction() < 1 && ((fabs(jets->at(i).eta())>2.4) || ( jets->at(i).chargedHadronEnergyFraction() > 0 && jets->at(i).chargedMultiplicity()>0)))  ;
+      
+      condition = (jets->at(i).numberOfDaughters()>1 && jets->at(i).neutralHadronEnergyFraction() < 1 && jets->at(i).neutralEmEnergyFraction() < 1 && ((fabs(jets->at(i).eta())>2.4) || ( jets->at(i).chargedHadronEnergyFraction() > 0 && jets->at(i).chargedMultiplicity()>0)) && jets->at(i).pt()> 30 && fabs(jets->at(i).eta())<5)  ;
+      //      std::cout << " ndau " << jets->at(i).numberOfDaughters() << " neuHadEn "<< jets->at(i).neutralHadronEnergyFraction() << " EmFrac " <<jets->at(i).neutralEmEnergyFraction() << " eta " << fabs(jets->at(i).eta())<< " HadEnFrac " << jets->at(i).chargedHadronEnergyFraction() << " CharMul "<< jets->at(i).chargedMultiplicity() << " pt "<<jets->at(i).pt()<<" passes ? " << condition<<std::endl; 
     }
     if(!(condition))continue; 
     
@@ -141,6 +143,8 @@ for(size_t i = 0; i < jets->size(); ++i){
       }
     }
 
+    //    std::cout<<" isIsolatedEle? " << isIsolated << std::endl;
+
     for(size_t j = 0; j < mus->size(); ++j){
       
       if(deltaR(jets->at(i),mus->at(j))<0.3) {
@@ -149,6 +153,7 @@ for(size_t i = 0; i < jets->size(); ++i){
       }
     }
 
+    //    std::cout<<" isIsolatedMu? " << isIsolated << std::endl;
 
     //std::cout << "mark 3"<< std::endl;
 
