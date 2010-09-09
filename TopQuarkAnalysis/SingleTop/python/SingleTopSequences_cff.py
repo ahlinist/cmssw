@@ -50,6 +50,7 @@ baseMuonSequencePF = cms.Sequence(
 baseMuonSequence = cms.Sequence(
     hltFilterDev *
     PVFilter *
+    HBHENoiseFilter *
     countLeptons *
     topMuons *
     topElectrons *
@@ -63,6 +64,7 @@ baseMuonSequence = cms.Sequence(
 baseMuonSequencePF = cms.Sequence(
     hltFilterDev *
     PVFilter *
+    HBHENoiseFilter *
     countLeptons *
     topElectrons *
     topMuons *
@@ -89,6 +91,7 @@ baseMuonAntiIsoSequence = cms.Sequence(
 baseElectronSequence = cms.Sequence(
     hltFilterPhoton20 *
     PVFilter *
+    HBHENoiseFilter *
     #    countLeptons *
     vetoLooseMuons *
     topElectrons *
@@ -102,8 +105,9 @@ baseElectronSequence = cms.Sequence(
     )
 
 baseElectronSequencePF = cms.Sequence(
-    #hltFilterPhoton20 *
+    hltFilterPhoton20 *
     PVFilter *
+    HBHENoiseFilter *
     #    countLeptons *
     vetoLooseMuons *
     topElectrons *

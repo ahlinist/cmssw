@@ -217,6 +217,8 @@ electronIDAntiIso = cms.EDFilter('SingleTopElectronFilter',
                           src = cms.InputTag("topElectronsAntiIso"),
                           isData = cms.untracked.bool(False),   
                           )
+from CommonTools.RecoAlgos.HBHENoiseFilter_cfi import * 
+
 
 MTWFilterMuons = cms.EDFilter('SingleTopMTWFilter',
 src1 = cms.InputTag("topMuons"),
