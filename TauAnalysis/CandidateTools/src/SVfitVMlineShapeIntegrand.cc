@@ -22,10 +22,7 @@ SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand(bool useCollApproxFormulas)
 
 SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand(const SVfitVMlineShapeIntegrand& bluePrint)
 {
-  //std::cout << "<SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand>:" << std::endl;
-
   useCollApproxFormulas_ = bluePrint.useCollApproxFormulas_;
-
   this->SetVMtype(bluePrint.vmType_);
   this->SetVMpol(bluePrint.vmPol_);
   this->SetMode(bluePrint.mode_);
@@ -38,16 +35,12 @@ SVfitVMlineShapeIntegrand::~SVfitVMlineShapeIntegrand()
 
 SVfitVMlineShapeIntegrand& SVfitVMlineShapeIntegrand::operator=(const SVfitVMlineShapeIntegrand& bluePrint)
 {
-  //std::cout << "<SVfitVMlineShapeIntegrand::operator=>:" << std::endl;
-
   useCollApproxFormulas_ = bluePrint.useCollApproxFormulas_;
-
   this->SetVMtype(bluePrint.vmType_);
   this->SetVMpol(bluePrint.vmPol_);
   this->SetMode(bluePrint.mode_);
   this->SetParameterTheta(bluePrint.theta_);
   this->SetParameterTauLeptonPol(bluePrint.tauLeptonPol_);
-
   return (*this);
 }
 
@@ -139,30 +132,37 @@ double SVfitVMlineShapeIntegrand::Fv(double mSquare) const
 
 double SVfitVMlineShapeIntegrand::HL(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega) const
 {
+  //std::cout << "<SVfitVMlineShapeIntegrand::HL>:" << std::endl;
   return (a2/((1. - a2)*(1. + 2*a2)))*(cosOmega2/a2 + sinOmega2 
 	+ tauLeptonPol_*cosTheta_*(cosOmega2/a2 + (sin2Omega/a)*tanTheta_ - sinOmega2));                // [1], formula (2.16)
 }
 
 double SVfitVMlineShapeIntegrand::HT(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega) const
 {
+  //std::cout << "<SVfitVMlineShapeIntegrand::HT>:" << std::endl;
   return (a2/((1. - a2)*(1. + 2*a2)))*(sinOmega2/a2 + 1. + cosOmega2 
 	+ tauLeptonPol_*cosTheta_*(sinOmega2/a2 - (sin2Omega/a)*tanTheta_ - 1. - cosOmega2));           // [1], formula (2.17)
 }
 
 double SVfitVMlineShapeIntegrand::decayL(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega) const
 { 
+  //std::cout << "<SVfitVMlineShapeIntegrand::decayL>:" << std::endl;
   return (0.5*a2/(1. + 2*a2))*(sinOmega2 + cosOmega2/a2 
 	+ tauLeptonPol_*cosTheta_*((sin2Omega/a)*tanTheta_ + cosOmega2/a2 - sinOmega2))*sinTheta_;      // [2], formula (32)
 }
 
 double SVfitVMlineShapeIntegrand::decayT(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega) const
 {
+  //std::cout << "<SVfitVMlineShapeIntegrand::decayT>:" << std::endl;
   return (0.5*a2/(1. + 2*a2))*(1. + cosOmega2 + sinOmega2/a2
 	+ tauLeptonPol_*cosTheta_*(sinOmega2/a2 - (sin2Omega/a)*tanTheta_ - cosOmega2 - 1.))*sinTheta_; // [2], formula (33)
 }
 
 double SVfitVMlineShapeIntegrand::DoEval(double mSquare) const
 {
+  //std::cout << "<SVfitVMlineShapeIntegrand::DoEval>:" << std::endl;
+  //std::cout << " mSquare = " << mSquare << std::endl;
+
   double integrand = 0.;
   if ( mode_ == kVMlineShape ) {
 
@@ -192,14 +192,7 @@ double SVfitVMlineShapeIntegrand::DoEval(double mSquare) const
       << " Invalid mode = " << mode_ << " !!";
   }
 
-  if ( debugLevel_ > 0 ) {
-    edm::LogVerbatim ("SVfitVMlineShapeIntegrand::DoEval")
-      << " theta = " << theta_ << std::endl
-      << " m0 = " << m0_ << std::endl
-      << " tauLeptonPol = " << tauLeptonPol_ << std::endl
-      << " m2 = " << mSquare << std::endl
-      << "--> integrand = " << integrand << std::endl;
-  }
+  //std::cout << "--> integrand = " << integrand << std::endl;
 
   return integrand;
 }  
