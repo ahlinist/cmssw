@@ -3,6 +3,17 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.tools.trigTools import *
 
+def getTargetBaseName(name):
+  ## Return e.g. baseName = "electron" for name = "cleanPatElectrons".
+  ##+ Frist make all lower case and remove trailing "s".
+  baseName = name.lower().rstrip("s")
+  ## Remove various PAT prefixes.
+  baseName = baseName.replace("selected", "")
+  baseName = baseName.replace("clean", "")
+  baseName = baseName.replace("pat", "")
+  return baseName
+
+
 def embedTriggerMatches(process, hltPaths):
   """
   Defines default PATTriggerMatchers for all combinations of target collections
@@ -27,38 +38,60 @@ def embedTriggerMatches(process, hltPaths):
     resolveByMatchQuality = cms.bool( True )
     )
 
-  switchOnTriggerMatchEmbedding(process)
-
+  ## Initialize relevant workflow items
   process.patTriggerEvent.patTriggerMatches = cms.VInputTag()
-  process.patTriggerMatcher                 = cms.Sequence()
-  process.patTriggerMatchEmbedder           = cms.Sequence()
+  if hasattr(process, "patTriggerMatcher"):
+    delattr(process, "patTriggerMatcher")
+  if hasattr(process, "patTriggerMatchEmbedder"):
+    delattr(process, "patTriggerMatchEmbedder")
 
   for target in hltPaths.keys():
-    ## Get the target trigger match name, e.g. cleanPatMuonsTriggerMatch for target = cleanPatMuons.
-    ##+ This should be defined by the tool switchOnTriggerMatchEmbedding
-    targetTriggerMatchName = target + "TriggerMatch"
-    targetTriggerMatch = getattr(process, targetTriggerMatchName)
-    if not targetTriggerMatch:
-      raise RuntimeError, "%s not defined." % targetTriggerMatchName
-    targetTriggerMatch.matches = cms.VInputTag()
+    ## Get the target base name, e.g. "muon" for target = "cleanPatMuons"
+    baseName = getTargetBaseName(target)
+    ## Get the target trigger match label, e.g. "cleanPatMuonsTriggerMatch"
+    triggerMatchLabel = target + "TriggerMatch"
+    ## Get the target trigger match module name, e.g. "PATTriggerMatchMuonEmbedder"
+    triggerMatchModule = "PATTriggerMatch" + baseName.title() + "Embedder"
+    ## Attach the target trigger match module to the process, e.g.
+    ##+ process.cleanPatMuonsTriggerMatch = cms.EDProducer("PATTriggerMatchMuonEmbedder",
+    ##+   matches = cms.VInputTag(),
+    ##+   src = cms.InputTag("cleanPatMuons")
+    ##+   )
+    setattr(process,
+      triggerMatchLabel,
+      cms.EDProducer(triggerMatchModule,
+        matches = cms.VInputTag(),
+        src = cms.InputTag(target),
+        )
+      )
+    targetTriggerMatch = getattr(process, triggerMatchLabel)
     for path in hltPaths[target]:
       ## Get the module name, e.g. "cleanPatMuonsTriggerMatch_HLT_Mu9"
       ##+ for target = "cleanPatMuons" and path = "HLT_Mu9"
-      moduleName = target + "TriggerMatch_" + path
+      moduleLabel = baseName + "TriggerMatch" + path.replace("_", "")
       setattr(process,
-        moduleName,
+        moduleLabel,
         triggerMatchTemplate.clone(
           src = target,
           pathNames = [path]
           )
         )
-      module = getattr(process, moduleName)
-      if not module:
-        raise RuntimeError, "Failed to create `%s'." % moduleName
-      process.patTriggerEvent.patTriggerMatches.append(moduleName)
-      targetTriggerMatch.matches.append(moduleName)
-      process.patTriggerMatcher += module
+      module = getattr(process, moduleLabel)
+      process.patTriggerEvent.patTriggerMatches.append(moduleLabel)
+      targetTriggerMatch.matches.append(moduleLabel)
+      if not hasattr(process, "patTriggerMatcher"):
+        process.patTriggerMatcher = cms.Sequence(module)
+      else:
+        process.patTriggerMatcher += module
     # for path in hltPaths[target]: <-------------------------------------------------
-    process.patTriggerMatchEmbedder += targetTriggerMatch
+    if not hasattr(process, "patTriggerMatchEmbedder"):
+      process.patTriggerMatchEmbedder = cms.Sequence(targetTriggerMatch)
+    else:
+      process.patTriggerMatchEmbedder += targetTriggerMatch
   # for target in hltPaths.keys(): <--------------------------------------------------
+  process.patTriggerSequence = cms.Sequence(
+    process.patTrigger *
+    process.patTriggerMatcher *
+    process.patTriggerEvent
+  )
 # def embedTriggerMatches(process, hltPaths): <---------------------------------------
