@@ -225,7 +225,7 @@ src2 = cms.InputTag("preselectedMETs"),
 
 MTWFilterMuonsPF = MTWFilterMuons.clone(
     src1 = cms.InputTag("topMuons"),
-    src2 = cms.InputTag("patMETsPFlow"),)
+    src2 = cms.InputTag("patMETsPF"),)
 
 MTWFilterElectrons = MTWFilterMuons.clone(src1 = cms.InputTag("topElectrons"),)
-MTWFilterElectronsPF = MTWFilterElectrons.clone(src2 = cms.InputTag("patMETsPFlow"),)
+MTWFilterElectronsPF = MTWFilterElectrons.clone(src2 = cms.InputTag("patMETsPF"),)
