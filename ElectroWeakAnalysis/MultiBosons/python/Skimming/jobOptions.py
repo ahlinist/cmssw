@@ -27,6 +27,25 @@ def applyJobOptions(options):
     jobOptions.isMaxEventsOutput = True
     jobOptions.wantSummary = False
     jobOptions.hltPaths = ["HLT_Mu9"]
+    jobOptions.electronTriggerMatchPaths = """
+      HLT_Ele10_LW_L1R
+      HLT_Ele12_SW_EleIdIsol_L1R
+      HLT_Ele15_LW_L1R
+      HLT_Ele15_SW_EleId_L1R
+      HLT_Ele15_SW_L1R
+      HLT_Ele15_SW_LooseTrackIso_L1R
+      HLT_Ele17_SW_CaloEleId_L1R
+      HLT_Ele17_SW_EleIdIsol_L1R
+      HLT_Ele17_SW_LEleId_L1R
+      HLT_Ele20_SW_L1R
+      HLT_Photon10_L1R
+      HLT_Photon15_L1R
+      """.split()
+    jobOptions.muonTriggerMatchPaths = """
+      HLT_Mu9
+      HLT_Mu11
+      """.split()
+
     # end of testSpring10McCern options <-------------------------------------
 
   elif options.jobType == "testRealData":

@@ -22,6 +22,7 @@ from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.egammaUserDataProducts_cff import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.jobOptions import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.options import options as defaultOptions
+from ElectroWeakAnalysis.MultiBosons.tools.skimmingTools import embedTriggerMatches
 
 ## See link below for the definition of the selection
 ## https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFirstPaper#Vgamma_Group_skims
@@ -29,6 +30,7 @@ skimVersion = 3  # Do we need this?
 basePath = "ElectroWeakAnalysis.MultiBosons.Skimming." # shorthand
 
 options = copy.deepcopy(defaultOptions)
+
 ## Define default options specific to this configuration file
 options.jobType = "testMC"
 # options.jobType = "testRealData"
@@ -99,18 +101,35 @@ process.patElectrons.userData.userInts.src = egammaUserDataInts(
   moduleName = "electronUserData"
   )
 
+## Add electron official electron ID from the Egamma / VBTF
+process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
+process.patDefaultSequence.replace(process.patElectrons,
+  (process.simpleEleIdSequence) * process.patElectrons
+  )
+process.patElectrons.addElectronID = cms.bool(True)
+process.patElectrons.electronIDSources = cms.PSet(
+  simpleEleId95relIso = cms.InputTag("simpleEleId95relIso"),
+  simpleEleId90relIso = cms.InputTag("simpleEleId90relIso"),
+  simpleEleId85relIso = cms.InputTag("simpleEleId85relIso"),
+  simpleEleId80relIso = cms.InputTag("simpleEleId80relIso"),
+  simpleEleId70relIso = cms.InputTag("simpleEleId70relIso"),
+  simpleEleId60relIso = cms.InputTag("simpleEleId60relIso"),
+  simpleEleId95cIso   = cms.InputTag("simpleEleId95cIso"),
+  simpleEleId90cIso   = cms.InputTag("simpleEleId90cIso"),
+  simpleEleId85cIso   = cms.InputTag("simpleEleId85cIso"),
+  simpleEleId80cIso   = cms.InputTag("simpleEleId80cIso"),
+  simpleEleId70cIso   = cms.InputTag("simpleEleId70cIso"),
+  simpleEleId60cIso   = cms.InputTag("simpleEleId60cIso"),
+  )
+
+
 ## PAT Trigger
 process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
-process.load(basePath + "muonTriggerMatchHLTMuons_cfi")
-switchOnTrigger(process)
-switchOnTriggerMatchEmbedding(process)
-
-process.patTriggerEvent.patTriggerMatches = [ "muonTriggerMatchHLTMuons" ]
-process.cleanPatMuonsTriggerMatch.matches = [ "muonTriggerMatchHLTMuons" ]
-process.patTriggerMatcher = cms.Sequence(process.muonTriggerMatchHLTMuons)
-process.patTriggerMatchEmbedder = cms.Sequence(
-  process.cleanPatMuonsTriggerMatch
-  )
+matchHltPaths = {
+  "cleanPatElectrons": options.electronTriggerMatchPaths,
+  "cleanPatMuons"    : options.muonTriggerMatchPaths
+  }
+embedTriggerMatches(process, matchHltPaths)
 
 ## Define Paths
 process.load(basePath + "VGammaSkimSequences_cff")
