@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.45 2010/04/19 08:29:41 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.46 2010/04/28 11:55:30 mkortela Exp $
 //
 //
 
@@ -49,12 +49,17 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   b_lumi = 0;
   PFPt = 0.;
   PFInvPt = 0.;
+  PFSignalSumPt = 0;
   PFEt = 0.;
   PFEta = -999.;
   PFPhi = -999.;
   PFProng = 0.;
   PFIso = 0;
   PFIsoSum = 0;
+  PFIsoNTrks = 0;
+  PFIsoTrkNHits = 0;
+  PFIsoTrkChi2 = 1000.;
+  PFIsoTrkPt = 0;
   PFEnergy = 0;
   PFMuonMatch = 0;
   PFTauMatch = 0;
@@ -84,8 +89,13 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFTauEta", &PFEta, "PFTauEta/F");
   _TTEffTree->Branch("PFTauPhi", &PFPhi, "PFTauPhi/F");
   _TTEffTree->Branch("PFTauProng", &PFProng, "PFTauProng/F");
+  _TTEffTree->Branch("PFTauSignalCandsPtSum", &PFSignalSumPt, "PFTauSignalCandsPtSum/F");
   _TTEffTree->Branch("PFTauIso", &PFIso, "PFTauIso/F");
   _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum, "PFTauIsoSum/F");
+  _TTEffTree->Branch("PFIsoNTrks", &PFIsoNTrks, "PFIsoNTrks/I");
+  _TTEffTree->Branch("PFIsoTrkNHits", &PFIsoTrkNHits, "PFIsoTrkNHits/I");
+  _TTEffTree->Branch("PFIsoTrkChi2", &PFIsoTrkChi2, "PFIsoTrkChi2/F");
+  _TTEffTree->Branch("PFIsoTrkPt", &PFIsoTrkPt, "PFIsoTrkPt/F");
   _TTEffTree->Branch("PFTauEnergy", &PFEnergy, "PFTauEnergy/F");
   _TTEffTree->Branch("PFClusterEtaRMS", &PFClusterEtaRMS, "PFClusterEtaRMS/F");
   _TTEffTree->Branch("PFClusterPhiRMS", &PFClusterPhiRMS, "PFClusterPhiRMS/F");
@@ -266,7 +276,25 @@ using namespace reco;
   // Fill #signal tracks, and PtSum in isolation annulus 
   PFProng  = PFTaus->at(i).signalPFChargedHadrCands().size(); // check config file
   PFIsoSum = PFTaus->at(i).isolationPFChargedHadrCandsPtSum();
+  PFIsoNTrks = PFTaus->at(i).isolationPFChargedHadrCands().size();
   PFEnergy = PFTaus->at(i).energy();
+  
+  // get the parameters of the tracks in the isolation region...
+  
+  const PFCandidateRefVector& theIsoCands = PFTaus->at(i).isolationPFChargedHadrCands();
+  for(PFCandidateRefVector::const_iterator vIt = theIsoCands.begin(); vIt != theIsoCands.end(); ++vIt){
+    const TrackRef theTrkRef = (*vIt)->trackRef();
+    PFIsoTrkChi2 = theTrkRef->chi2();
+    PFIsoTrkNHits = theTrkRef->numberOfValidHits();
+    PFIsoTrkPt = theTrkRef->pt();
+  }
+  
+  PFSignalSumPt = 0;
+  const PFCandidateRefVector& theSignalCands = PFTaus->at(i).signalPFChargedHadrCands();
+  for(PFCandidateRefVector::const_iterator vIt = theSignalCands.begin(); vIt != theSignalCands.end(); ++vIt){
+     if((*vIt) == thisTauRef->leadPFChargedHadrCand()) continue;
+     PFSignalSumPt += (*vIt)->pt();
+  }
 
   //PFElectronMatch = PFTaus->at(i).electronPreIDDecision();?
 
