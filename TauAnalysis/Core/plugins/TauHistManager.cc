@@ -456,9 +456,11 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       fillTauVisMassHistogram(hTauVisMassThreeProngOnePi0_, hTauVisMassResThreeProngOnePi0_, "threeProng1Pi0", 
 			      recVisMass, genVisMass, genTauDecayMode, weight);
 
-      if ( genTauDecayMode == "oneProng1Pi0"   ||
-	   genTauDecayMode == "oneProng2Pi0"   ||
-	   genTauDecayMode == "threeProng0Pi0" ) {
+      if ( (genTauDecayMode == "oneProng1Pi0"   ||
+	    genTauDecayMode == "oneProng2Pi0"   ||
+	    genTauDecayMode == "threeProng0Pi0") &&
+	   (patTau->signalPFChargedHadrCands().size() == 1 ||
+	    patTau->signalPFChargedHadrCands().size() == 3) ) {
 	const reco::Candidate* recDistPion = getDistPion(*patTau);
 	const reco::Candidate* genDistPion = getDistPion(*patTau->genJet());
 	if ( recDistPion && genDistPion ) {
