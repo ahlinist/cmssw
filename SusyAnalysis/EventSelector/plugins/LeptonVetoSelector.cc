@@ -15,7 +15,7 @@
 //__________________________________________________________________________________________________
 LeptonVetoSelector::LeptonVetoSelector(const edm::ParameterSet& pset) :
    SusyEventSelector(pset), electronTag_(pset.getParameter<edm::InputTag> ("electronTag")), muonTag_(pset.getParameter<
-            edm::InputTag> ("muonTag")), beamSpot_(pset.getParameter<edm::InputTag> ("beamSpot")), minPtEle_(
+            edm::InputTag> ("muonTag")), vertex_(pset.getParameter<edm::InputTag> ("vertex")), minPtEle_(
             pset.getParameter<double> ("minElectronPt")), maxEtaEle_(pset.getParameter<double> ("maxElectronEta")),
             eleIso_(pset.getParameter<double> ("electronIsolation")), eleDxy_(pset.getParameter<double> (
                      "maxElectronDxy")), minPtMuon_(pset.getParameter<double> ("minMuonPt")), maxEtaMuon_(
@@ -48,7 +48,7 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 
   reco::Vertex myBeamSpot;
   edm::Handle <edm::View<reco::Vertex> >vertices;
-  event.getByLabel(beamSpot_, vertices); 
+  event.getByLabel(vertex_, vertices); 
   if(!vertices->empty() && !vertices->front().isFake() )
     myBeamSpot = vertices->front();
 

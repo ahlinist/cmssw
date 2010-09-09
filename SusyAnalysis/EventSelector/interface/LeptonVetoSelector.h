@@ -26,7 +26,7 @@ public:
 private:
    edm::InputTag electronTag_;///< tag for electron input collection
    edm::InputTag muonTag_;///< tag for muon     input collection
-   edm::InputTag beamSpot_;///< tag for beamSpot
+   edm::InputTag vertex_;///< tag for vertex
    double minPtEle_; ///< minimum pt for electrons to be checked
    double maxEtaEle_; ///< max abs(eta)
    double eleIso_; ///< limit on relative electron isolation (trackIso+ecalIso+hcalIso)/pt
