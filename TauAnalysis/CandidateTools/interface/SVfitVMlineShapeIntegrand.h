@@ -18,9 +18,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: SVfitVMlineShapeIntegrand.h,v 1.2 2010/09/08 10:19:33 veelken Exp $
+ * $Id: SVfitVMlineShapeIntegrand.h,v 1.3 2010/09/08 16:38:04 veelken Exp $
  *
  */
 
@@ -81,8 +81,6 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
   double sinTheta_;
   double tanTheta_;
   double fv0_;
-
-  static const unsigned int debugLevel_ = 0;
 };
 
 #endif

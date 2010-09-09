@@ -18,9 +18,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: SVfitVMlineShapeIntegral.h,v 1.1 2010/09/07 15:50:14 veelken Exp $
+ * $Id: SVfitVMlineShapeIntegral.h,v 1.2 2010/09/08 16:37:41 veelken Exp $
  *
  */
 
@@ -47,8 +47,6 @@ class SVfitVMlineShapeIntegral
 //    (computed once in constructor)
   double minMass2_;
   double norm_;
-
-  static const unsigned int debugLevel_ = 0;
 };
 
 #endif
