@@ -13,7 +13,7 @@ process.prefer("magfield")
 process.hltGctDigis.hltMode = cms.bool(False) # Making L1CaloRegions
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(100)
+        input = cms.untracked.int32(1000)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
@@ -32,25 +32,42 @@ process.options = cms.untracked.PSet(
 #Mike needs Calo Geometry
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
+
 if(isData):
     process.source = cms.Source("PoolSource",
-        fileNames = cms.untracked.vstring(
-	    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/133/510/C024B5CF-A04B-DF11-9CD4-001A64789D28.root'
-        )
+	fileNames = cms.untracked.vstring(
+	   '/store/user/eluiggi/MinimumBias/MinBiasRun2010A_CSTauSkim371Run2/5b16de9afc6d7bc42a5712a35e6482fe/CSTauSkim_1_1_FFp.root'
+	)
     )
 else:
     process.source = cms.Source("PoolSource",
-        fileNames = cms.untracked.vstring(
-            'rfio:/castor/cern.ch/user/s/slehti/CMSSW_Data_1_1.root'
-        )
+	fileNames = cms.untracked.vstring(
+	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_1_1_3W4.root',
+	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_2_1_tfj.root',
+	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_3_1_1up.root',
+	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_4_1_lBK.root',
+	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_5_1_ZSt.root'
+	)
     )
+    
+#process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ztt2FileTest_cff")
+process.load("RecoJets.JetAssociationProducers.ic5PFJetTracksAssociatorAtVertex_cfi")
+from RecoTauTag.RecoTau.PFRecoTauTagInfoProducer_cfi import *
+process.myPFTauTagInfoProducer = copy.deepcopy(pfRecoTauTagInfoProducer)
+process.myPFTauTagInfoProducer.tkminPt = cms.double(0.5)
+process.myPFTauTagInfoProducer.ChargedHadrCand_tkminPt = cms.double(0.5)
+
+
+from RecoTauTag.Configuration.FixedConePFTaus_cfi import *
+process.myConeProducer = copy.deepcopy(fixedConePFTauProducer)
+process.myConeProducer.PFTauTagInfoProducer = cms.InputTag("myPFTauTagInfoProducer")
 
 process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi")
 from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
-process.thisPFTauDiscriminationByLeadingPionPtCut = cms.EDFilter("PFRecoTauDiscriminationByLeadingObjectPtCut",
+process.thisPFTauDiscriminationByLeadingPionPtCut = cms.EDProducer("PFRecoTauDiscriminationByLeadingObjectPtCut",
 
     # Tau collection to discriminate
-    PFTauProducer = cms.InputTag('shrinkingConePFTauProducer'),
+    PFTauProducer = cms.InputTag('myConeProducer'),
 
     # no pre-reqs for this cut
     Prediscriminants = noPrediscriminants,
@@ -62,9 +79,12 @@ process.thisPFTauDiscriminationByLeadingPionPtCut = cms.EDFilter("PFRecoTauDiscr
 )
 
 process.PFTausSelected = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag("shrinkingConePFTauProducer"),
+    src = cms.InputTag("myConeProducer"),
     discriminators = cms.VPSet(
-	cms.PSet( discriminator=cms.InputTag("thisPFTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.double(-0.5))
+	cms.PSet( 
+	  discriminator=cms.InputTag("thisPFTauDiscriminationByLeadingPionPtCut"),
+	  selectionCut=cms.double(0.5)
+	)
     )
 )
 
@@ -73,16 +93,14 @@ process.PFTausSelected = cms.EDFilter("PFTauSelector",
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
     #process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
-    process.GlobalTag.globaltag = 'GR_R_36X_V12::All'
-    #process.GlobalTag.globaltag = 'MC_3XY_V26::All'
+    process.GlobalTag.globaltag = 'GR_R_37X_V6D::All'
 else:
-    process.GlobalTag.globaltag = 'START36_V10::All'
-    #process.GlobalTag.globaltag = 'MC_36Y_V10::All'
+    #process.GlobalTag.globaltag = 'START3X_V26::All'
+    process.GlobalTag.globaltag = 'MC_36Y_V9::All'
 
 print process.GlobalTag.globaltag
 
 #process.prefer("magfield")
-
 
 #copying the Discriminator by Isolation
 #prediscriminator
@@ -126,7 +144,6 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         HltResults              = cms.InputTag("TriggerResults","","HLT"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
-        L1JetMatchingMode        = cms.string("nearestDR"), # "nearestDR", "highestEt"
         L1IsolationThresholds   = cms.vuint32(1,2,3,4), # count regions with "et() < threshold", these are in GeV
 	L2AssociationCollection = cms.InputTag("openhltL2TauIsolationProducer"),
         EERecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEE"),
@@ -173,7 +190,11 @@ process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
 
 if(isData):
     process.runEDAna = cms.Path(
-    	process.hltPhysicsDeclared+
+#    	process.hltPhysicsDeclared*
+#	process.myHLTL25ConeIsolation+
+	process.ic5PFJetTracksAssociatorAtVertex*
+	process.myPFTauTagInfoProducer*
+	process.myConeProducer*
     	process.thisPFTauDiscriminationByLeadingPionPtCut *
     	process.PFTausSelected *
     	process.thisPFTauDiscriminationByLeadingTrackFinding *
@@ -187,7 +208,11 @@ if(isData):
 else:
     process.runEDAna = cms.Path(
         process.hltPhysicsDeclared+
-	process.TauMCProducer*
+#	process.myHLTL25ConeIsolation+
+	process.ic5PFJetTracksAssociatorAtVertex+
+	process.myPFTauTagInfoProducer+
+	process.myConeProducer+
+#	process.TauMCProducer*
         process.thisPFTauDiscriminationByLeadingPionPtCut *
         process.PFTausSelected *
         process.thisPFTauDiscriminationByLeadingTrackFinding *
