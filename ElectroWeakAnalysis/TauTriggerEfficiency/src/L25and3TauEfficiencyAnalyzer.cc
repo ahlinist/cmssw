@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.5 2010/03/19 11:57:43 mkortela Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.6 2010/03/19 12:12:15 mkortela Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 using namespace edm;
@@ -33,12 +33,15 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   l25tree->Branch("leadDepth2", &leadDepth2,"leadDepth2/B" );
   l25tree->Branch("minDR", &minDR,"minDR/F" );
   l25tree->Branch("bareEt", &bareEt,"bareEt/F" );
-  l25tree->Branch("l25DefDisc13",&l25DefDisc13,"l25DefDisc13/B");
-  l25tree->Branch("l25DefDisc23",&l25DefDisc23,"l25DefDisc23/B");
-  l25tree->Branch("l25DefDisc21",&l25DefDisc21,"l25DefDisc21/B");
-  l25tree->Branch("l25LooseDisc13",&l25LooseDisc13,"l25LooseDisc13/B");
-  l25tree->Branch("l25LooseDisc23",&l25LooseDisc23,"l25LooseDisc23/B");
-  l25tree->Branch("l25LooseDisc21",&l25LooseDisc21,"l25LooseDisc21/B");
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_Ntrk0",&l25DefDisc_Trk5_IsoPtMin1_Ntrk0,"l25DefDisc_Trk5_IsoPtMin1_Ntrk0/B");
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_Ntrk1",&l25DefDisc_Trk5_IsoPtMin1_Ntrk1,"l25DefDisc_Trk5_IsoPtMin1_Ntrk1/B");
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0",&l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0,"l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0/B");
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1",&l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1,"l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1/B");
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin2_Ntrk0",&l25DefDisc_Trk5_IsoPtMin2_Ntrk0,"l25DefDisc_Trk5_IsoPtMin2_Ntrk0/B");
+  l25tree->Branch("l25IsoPtSum",&l25IsoPtSum,"l25IsoPtSum/F");
+  l25tree->Branch("l25IsoTrkNHits",&l25IsoTrkNHits,"l25IsoTrkNHits/I");
+  l25tree->Branch("l25IsoTrkChi2",&l25IsoTrkChi2,"l25IsoTrkChi2/F");
+  l25tree->Branch("l25IsoTrkPt",&l25IsoTrkPt,"l25IsoTrkPt/F");
 }
 
 void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Particle& tau) {
@@ -65,12 +68,15 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
   l25EtaLdgLoose = 0;
   l25PhiLdgLoose = 0;
   l25PtLdgLoose = 0;
-  l25DefDisc13 = 0;
-  l25DefDisc23 = 0;
-  l25DefDisc21 = 0;
-  l25LooseDisc21 = 0;
-  l25LooseDisc13 = 0;
-  l25LooseDisc23 = 0;
+  
+  l25DefDisc_Trk5_IsoPtMin1_Ntrk0 = 0;
+  l25DefDisc_Trk5_IsoPtMin1_Ntrk1 = 0;
+  l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0 = 0;
+  l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1 = 0;
+  l25DefDisc_Trk5_IsoPtMin2_Ntrk0 = 0;
+ 
+  l25IsoPtSum = 0;
+  l25NTrksIso = 0;
 
   if(HLTPFTau == true){
     Handle<PFTauTagInfoCollection> tags;
@@ -102,7 +108,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       } // tag loop
     }// non empty collection
     else {
-      edm::LogWarning("TTEffAnalyzer") <<"No L25Jetsource in event!"<<std::endl;
+      //edm::LogWarning("TTEffAnalyzer") <<"No L25Jetsource in event!"<<std::endl;
     }
     if(ptJets.isValid()){ // Leading Pt Cut > X GeV/c applied, check HLT Config file
       for(unsigned int j = 0; j < ptJets->size(); j++){
@@ -115,7 +121,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }// for jet loop
     }// non empty collection
     else {
-      edm::LogWarning("TTEffAnalyzer") <<"No L25PtJetsource in event!"<<std::endl;
+      //edm::LogWarning("TTEffAnalyzer") <<"No L25PtJetsource in event!"<<std::endl;
     }
     if(isoJets.isValid()){
       for(unsigned int j = 0; j < isoJets->size(); j++){
@@ -128,7 +134,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }
     }
     else {
-      edm::LogWarning("TTEffAnalyzer") <<"No L3IsoJetsource in event!"<<std::endl;
+      //edm::LogWarning("TTEffAnalyzer") <<"No L3IsoJetsource in event!"<<std::endl;
     }
     
   }
@@ -167,25 +173,36 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
 	    l25PtLdgJetDRLoose = sqrt(dphi*dphi+deta*deta);
 	  }
 	  
+	  // get the tracks in iso region around leading track 
+	  if(leadTrk.isNonnull()){
+	    l25IsoPtSum = 0.;
+	    const TrackRefVector theSignalTracks = tags->at(j).tracksInCone(leadTrk->momentum(), 0.15, 1.0);
+	    const TrackRefVector theIsoTracks = tags->at(j).tracksInCone(leadTrk->momentum(), 0.5, 1.0);
+	    l25NTrksIso = theIsoTracks.size() - theSignalTracks.size();
+	    
+	    for(TrackRefVector::const_iterator isoIt = theIsoTracks.begin(); isoIt != theIsoTracks.end(); ++isoIt){
+	      if(deltaR(leadTrk->momentum(), (*isoIt)->momentum()) > 0.15){
+	      	l25IsoPtSum += (*isoIt)->pt();
+	      	l25IsoTrkChi2 = (*isoIt)->chi2();
+	      	l25IsoTrkPt = (*isoIt)->pt();
+	      	l25IsoTrkNHits = (*isoIt)->numberOfValidHits();
+	      }
+	    }
+	  }
+	  	  
           //evaluate a series of different discriminator parameters
-	  if(tags->at(j).discriminator(0.1,0.15,0.5,3.,1.,0,0.2))
-	    l25DefDisc13=1;
-	  if(tags->at(j).discriminator(0.2,0.15,0.5,3.,1.,0,0.2))
-	    l25DefDisc23=1;
-	  if(tags->at(j).discriminator(0.2,0.15,0.5,1.,1.,0,0.2))
-	    l25DefDisc21=1;
-	  if(tags->at(j).discriminator(0.2,0.15,0.2,1.,1.,0,0.2))
-	    l25LooseDisc21=1;
-	  if(tags->at(j).discriminator(0.1,0.15,0.2,3.,1.,0,0.2))
-	    l25LooseDisc13=1;
-	  if(tags->at(j).discriminator(0.2,0.15,0.2,3.,1.,0,0.2))
-	    l25LooseDisc23=1;
-	  
+	  // MatchConeSize, sigCone, isoCone, ltPt, pt min, nTracksIsoRing, ltDz
+	  if(tags->at(j).discriminator(0.1,0.15,0.5,5.,1.,0,0.2))l25DefDisc_Trk5_IsoPtMin1_Ntrk0=1;
+	  if(tags->at(j).discriminator(0.1,0.15,0.5,5.,1.,1,0.2))l25DefDisc_Trk5_IsoPtMin1_Ntrk1=1;
+	  if(tags->at(j).discriminator(0.2,0.15,0.5,5.,1.5,0,0.2))l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0=1;
+	  if(tags->at(j).discriminator(0.2,0.15,0.5,5.,1.5,1,0.2))l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1=1;
+	  if(tags->at(j).discriminator(0.2,0.15,0.5,5.,2.0,0,0.2))l25DefDisc_Trk5_IsoPtMin2_Ntrk0=1;
+	  	  
 	}// calo and l25 tau match dr < l25MatchingCone
       }// for jet loop
     }// non empty collection
     else {
-      edm::LogWarning("TTEffAnalyzer") <<"No L25Jetsource in event!"<<std::endl;
+      //edm::LogWarning("TTEffAnalyzer") <<"No L25Jetsource in event!"<<std::endl;
     }
     
     if(ptJets.isValid()){ // Leading Pt Cut > X GeV/c applied, check HLT Config file
@@ -199,7 +216,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }// for jet loop
     }// non empty collection
     else {
-      edm::LogWarning("TTEffAnalyzer") <<"No L25PtJetsource in event!"<<std::endl;
+      //edm::LogWarning("TTEffAnalyzer") <<"No L25PtJetsource in event!"<<std::endl;
     }
     
     if(isoJets.isValid()){
@@ -213,7 +230,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }
     }
     else {
-      edm::LogWarning("TTEffAnalyzer") <<"No L3IsoJetsource in event!"<<std::endl;
+      //edm::LogWarning("TTEffAnalyzer") <<"No L3IsoJetsource in event!"<<std::endl;
     }
     
   }

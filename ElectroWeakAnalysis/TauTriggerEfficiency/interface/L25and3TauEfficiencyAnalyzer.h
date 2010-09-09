@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.3 2010/03/19 12:12:15 mkortela Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.4 2010/04/07 09:39:24 slehti Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -50,7 +50,12 @@ virtual void fill(const edm::Event&, const reco::Particle&);
       float minDR;
       float bareEt;
       float l25InvPt;
-      
+      float l25IsoPtSum;
+      int l25NTrksIso;
+      float l25IsoTrkChi2;
+      float l25IsoTrkPt;
+      unsigned int l25IsoTrkNHits;
+     
       double l25MatchingCone;
       bool HLTPFTau;
 
@@ -58,12 +63,11 @@ virtual void fill(const edm::Event&, const reco::Particle&);
       float l25EtaLdgLoose;
       float l25PhiLdgLoose;
       float l25PtLdgLoose;
-      char l25DefDisc13;
-      char l25DefDisc23;
-      char l25DefDisc21;
-      char l25LooseDisc21;
-      char l25LooseDisc13;
-      char l25LooseDisc23;
-
+      
+      bool l25DefDisc_Trk5_IsoPtMin1_Ntrk0;
+      bool l25DefDisc_Trk5_IsoPtMin1_Ntrk1;
+      bool l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0;
+      bool l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1;
+      bool l25DefDisc_Trk5_IsoPtMin2_Ntrk0;
 
 };
