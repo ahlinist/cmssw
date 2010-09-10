@@ -39,7 +39,7 @@ SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VM
   minMass2_ = square(numPions*chargedPionMass);
   //std::cout << " minMass2 = " << minMass2_ << std::endl;
   norm_ = integrator_->Integral(minMass2_, tauLeptonMass2); 
-  std::cout << " norm = " << norm_ << std::endl;
+  //std::cout << " norm = " << norm_ << std::endl;
 
 //--- set integrand to compute vector meson line-shape integrals in the following...  
   integrand_->SetMode(SVfitVMlineShapeIntegrand::kVMlineShape);
@@ -81,10 +81,10 @@ SVfitVMlineShapeIntegral& SVfitVMlineShapeIntegral::operator=(const SVfitVMlineS
 
 double SVfitVMlineShapeIntegral::operator()(double theta, double tauLeptonPol, double z) const
 {
-  std::cout << "<SVfitVMlineShapeIntegral::operator()>:" << std::endl;
-  std::cout << " theta = " << theta << std::endl;
-  std::cout << " tauLeptonPol = " << tauLeptonPol << std::endl;
-  std::cout << " z = " << z << std::endl;
+  //std::cout << "<SVfitVMlineShapeIntegral::operator()>:" << std::endl;
+  //std::cout << " theta = " << theta << std::endl;
+  //std::cout << " tauLeptonPol = " << tauLeptonPol << std::endl;
+  //std::cout << " z = " << z << std::endl;
 
   integrand_->SetParameterTheta(theta);
   integrand_->SetParameterTauLeptonPol(tauLeptonPol);
@@ -92,7 +92,7 @@ double SVfitVMlineShapeIntegral::operator()(double theta, double tauLeptonPol, d
   integrator_->SetFunction(*integrand_);
 
   double integral = integrator_->Integral(minMass2_, z*tauLeptonMass2)/norm_;
-  std::cout << "--> integral = " << integral << std::endl;
+  //std::cout << "--> integral = " << integral << std::endl;
 
   return integral;
 }  
