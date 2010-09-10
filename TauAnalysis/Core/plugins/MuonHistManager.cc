@@ -252,7 +252,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
     }
 
     if(genParticles.isValid()) {
-       int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patMuon->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+       int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patMuon->p4(), *genParticles, &skipPdgIdsGenParticleMatch_);
        if ( matchingGenParticlePdgId == -1 ) {
           hMuonMatchingGenParticlePdgId_->Fill(-1, weight);
        } else if ( abs(matchingGenParticlePdgId) > 22 ) {

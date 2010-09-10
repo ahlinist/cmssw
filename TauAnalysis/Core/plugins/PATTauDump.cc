@@ -65,12 +65,14 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " theta = " << patTau->theta()*180./TMath::Pi() 
 		   << " (eta = " << patTau->eta() << ")" << std::endl;
     *outputStream_ << " phi = " << patTau->phi()*180./TMath::Pi() << std::endl;
+    *outputStream_ << " charge = " << patTau->charge() << std::endl;
+    *outputStream_ << " decayMode = " << getTauDecayModeName(patTau->decayMode()) << std::endl;
+    *outputStream_ << " visMass = " << patTau->mass() << std::endl;
     *outputStream_ << " leading Track" << std::endl;
     printTrackInfo(patTau->leadTrack(), patTau->vertex(), true, false, outputStream_);
     *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
     *outputStream_ << "(#signal PFChargedHadrons = " << patTau->signalPFChargedHadrCands().size() << ")" << std::endl;
     if ( patTau->signalTracks().size() != patTau->signalPFChargedHadrCands().size() ) *outputStream_ << "--> CHECK !!!" << std::endl;
-    *outputStream_ << " decayMode = " << getTauDecayModeName(patTau->decayMode()) << std::endl;
     *outputStream_ << " tauId" << std::endl;
     *outputStream_ << "  leadingTrackFinding = " << patTau->tauID("leadingTrackFinding") << std::endl;
     *outputStream_ << "  leadingTrackPtCut = " << patTau->tauID("leadingTrackPtCut") << std::endl;
@@ -110,9 +112,9 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " muVeto = " << patTau->tauID("againstMuon") << std::endl;
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patTau->vertex(), outputStream_);
-    if( genParticleSource_.label() != "")
-		*outputStream_ << "* matching gen. pdgId = " 
-		   << getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
+    if ( genParticleSource_.label() != "" )
+      *outputStream_ << "* matching gen. pdgId = " 
+		     << getMatchingGenParticlePdgId(patTau->p4(), *genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
     if ( printTauIdEfficiencies_ ) {
       *outputStream_ << " pat::Tau id. efficiencies (byStandardChain):" << std::endl
 		     << "  Ztautau = " << patTau->efficiency("effByStandardChainZTTsim").value() << std::endl;

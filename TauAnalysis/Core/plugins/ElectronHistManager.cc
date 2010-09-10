@@ -265,7 +265,7 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
 
     int matchingGenParticlePdgId = -1;
 	if( genParticles.isValid() ) 
-    	matchingGenParticlePdgId = getMatchingGenParticlePdgId(patElectron->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+    	matchingGenParticlePdgId = getMatchingGenParticlePdgId(patElectron->p4(), *genParticles, &skipPdgIdsGenParticleMatch_);
     
 	if ( matchingGenParticlePdgId == -1 ) {
       hElectronMatchingGenParticlePdgId_->Fill(-1, weight);

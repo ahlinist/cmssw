@@ -8,6 +8,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -82,8 +83,8 @@ void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >& f
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticles,
-			  edm::Handle<edm::View<reco::GenJet> >& genTauJets,
+void printGenParticleInfo(const reco::GenParticleCollection& genParticles,
+			  const reco::GenJetCollection& genTauJets,
 			  std::ostream* stream)
 {
   if ( !stream ) {
@@ -97,8 +98,8 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 	  << " phi = " <<  genMissingTransverseMomentum.phi()*180./TMath::Pi() << std::endl;
   *stream << std::endl;
 
-  for ( edm::View<reco::GenParticle>::const_iterator genParticle = genParticles->begin(); 
-	genParticle != genParticles->end(); ++genParticle ) {
+  for ( reco::GenParticleCollection::const_iterator genParticle = genParticles.begin(); 
+	genParticle != genParticles.end(); ++genParticle ) {
     const reco::Particle::LorentzVector& genParticleMomentum = genParticle->p4();
     int pdgId = genParticle->pdgId();
     int status = genParticle->status();
@@ -107,9 +108,11 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 //    (copied over to reco::GenParticle from HepMC product)
     if ( status == 3 ) continue;
     
+    std::string charge = ( genParticle->charge() > 0. ) ? "+" : "-";
+    
     if ( pdgId == -11 || pdgId == +11 ) {
-      *stream << "electron:" 
-	      << " pdgId = " << pdgId << "," 
+      *stream << "electron" << charge << ":"
+	      //<< " pdgId = " << pdgId << "," 
 	      << " status = " << status << "," 
 	      << " Pt = " << genParticleMomentum.pt() << "," 
 	      << " eta = " << genParticleMomentum.eta() << "," 
@@ -117,8 +120,8 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
     }
 
     if ( pdgId == -13 || pdgId == +13 ) {
-      *stream << "muon:" 
-	      << " pdgId = " << pdgId << "," 
+      *stream << "muon" << charge << ":"
+	      //<< " pdgId = " << pdgId << "," 
 	      << " status = " << status << "," 
 	      << " Pt = " << genParticleMomentum.pt() << "," 
 	      << " eta = " << genParticleMomentum.eta() << "," 
@@ -126,8 +129,8 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
     }
 
     if ( pdgId == -15 || pdgId == +15 ) {
-      *stream << "tau:" 
-	      << " pdgId = " << pdgId << "," 
+      *stream << "tau" << charge << ":"
+	      //<< " pdgId = " << pdgId << "," 
 	      << " status = " << status << "," 
 	      << " Pt = " << genParticleMomentum.pt() << "," 
 	      << " eta = " << genParticleMomentum.eta() << "," 
@@ -136,25 +139,25 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 //--- find genTauJet associated with generated tau 
 //    (match by closest distance in eta-phi)
       double dRmin = 0.;
-      edm::View<reco::GenJet>::const_iterator genTauJet_matched = genTauJets->end();
-      for ( edm::View<reco::GenJet>::const_iterator genTauJet = genTauJets->begin(); 
-	    genTauJet != genTauJets->end(); ++genTauJet ) {
+      reco::GenJetCollection::const_iterator genTauJet_matched = genTauJets.end();
+      for ( reco::GenJetCollection::const_iterator genTauJet = genTauJets.begin(); 
+	    genTauJet != genTauJets.end(); ++genTauJet ) {
 	const reco::Particle::LorentzVector& genTauJetMomentum = genTauJet->p4();
 
 	double dR = reco::deltaR(genParticleMomentum, genTauJetMomentum);
-	if ( dR < dRmin || genTauJet_matched == genTauJets->end() ) {
+	if ( dR < dRmin || genTauJet_matched == genTauJets.end() ) {
 	  genTauJet_matched = genTauJet;
 	  dRmin = dR;
 	}
       }
 
-      if ( genTauJet_matched == genTauJets->end() ) {
+      if ( genTauJet_matched == genTauJets.end() ) {
 	edm::LogError ("printGenParticleInfo") << " Failed to find matching TauGenJet --> skipping !!";
 	continue;
       }
       
 //--- find tau lepton decay products in list of generated particles
-      reco::GenParticleCollection genDecayProducts = getStableDecayProducts(genParticles, *genParticle);
+      reco::GenParticleCollection genDecayProducts = getStableDecayProducts(*genParticle);
       for ( reco::GenParticleCollection::const_iterator genDecayProduct = genDecayProducts.begin(); 
 	    genDecayProduct != genDecayProducts.end(); ++genDecayProduct ) {
 	*stream << "tauDecayProduct:" 
@@ -170,7 +173,7 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
       *stream << "tauDecayMode = " << tauDecayMode << std::endl;
 
 //--- reconstruct visible momentum of decay products
-      reco::Particle::LorentzVector genVisibleTauMomentum = getGenVisibleTauMomentum(*genTauJet_matched);
+      reco::Particle::LorentzVector genVisibleTauMomentum = getVisMomentum(&(*genParticle), &genParticles);
       if ( tauDecayMode == "oneProng0Pi0"    || 
 	   tauDecayMode == "oneProng1Pi0"    || 
 	   tauDecayMode == "oneProng2Pi0"    || 
@@ -182,8 +185,11 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 	*stream << "visible tau-jet:" 
 		<< " Pt = " << genVisibleTauMomentum.pt() << "," 
 		<< " eta = " << genVisibleTauMomentum.eta() << "," 
-		<< " phi = " <<  genVisibleTauMomentum.phi()*180./TMath::Pi() << std::endl;
+		<< " phi = " <<  genVisibleTauMomentum.phi()*180./TMath::Pi() 
+		<< " mass = " << genVisibleTauMomentum.mass() << std::endl;
       }
+
+      *stream << "neutrino mass = " << getInvisMomentum(&(*genParticle), &genParticles);
       
       *stream << std::endl;
     }
