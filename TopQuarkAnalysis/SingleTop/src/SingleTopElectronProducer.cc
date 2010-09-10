@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopProducer.cc,v 1.9 2010/05/17 08:07:47 oiorio Exp $ 
+ *\version  $Id: SingleTopElectronProducer.cc,v 1.1 2010/09/10 01:06:37 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -106,32 +106,16 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
 
   bool bit0 = true;
 
-  //  else //std::cout << " error: incorrect ID algo name " << std::endl;
-
-  ////std::cout << " mark 5 " << std::endl;
-
   for(size_t i = 0; i < electrons->size(); ++i){
-    bool condition = true; 
-    ////std::cout << " mark 6 " << electrons->size()<< std::endl;
   
     if(id_==std::string("cIso70")){
       SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso70,bfield,ctfTracks);
     bit0 = bool(patSele(electrons->at(i)) & 0x1);
-    //    //std::cout << " ishere70 " <<std::endl;
     }
     else if(id_ == std::string("cIso95")){
     SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso95,bfield,ctfTracks);
     bit0 = bool(patSele(electrons->at(i)) & 0x1);
-    //    //std::cout << " ishere95 " <<std::endl;
   }
-    
-    //    //std::cout << " id " <<id_<<std::endl;
-    
-    
-    
-
-
-    //    reco::GsfElectron recoEle = dynamic_cast<reco::GsfElectron>(&electrons->at(i));  
     ConversionFinder conv;
     ConversionInfo convInfo= conv.getConversionInfo(electrons->at(i),ctfTracks,bfield);
     
