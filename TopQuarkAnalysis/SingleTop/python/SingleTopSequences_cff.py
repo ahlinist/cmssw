@@ -98,7 +98,7 @@ baseElectronSequence = cms.Sequence(
     diElectrons *
     vetoDiElectrons *
     countElectrons *
-    electronIDIso *
+#    electronIDIso *
     topMuons *
     preselectedJets *
     MTWFilterElectrons 
@@ -114,7 +114,7 @@ baseElectronSequencePF = cms.Sequence(
     diElectrons *
     vetoDiElectrons *
     countElectrons *
-    electronIDIso *
+#    electronIDIso *
     topMuons *
     preselectedJets *
     MTWFilterElectronsPF
