@@ -59,11 +59,11 @@ void MuTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSet
     std::cout << "Pt(hat) = " << genEventInfo->binningValues()[0] << std::endl;
   }
 
-  edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
+  edm::Handle<reco::GenParticleCollection> genParticleCollection;
   iEvent.getByLabel(genParticleSource_, genParticleCollection);
-  edm::Handle<edm::View<reco::GenJet> > genTauJetCollection;
+  edm::Handle<reco::GenJetCollection> genTauJetCollection;
   iEvent.getByLabel(genTauJetSource_, genTauJetCollection);
-  printGenParticleInfo(genParticleCollection, genTauJetCollection, outputStream_);
+  printGenParticleInfo(*genParticleCollection, *genTauJetCollection, outputStream_);
 
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 

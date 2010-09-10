@@ -6,7 +6,9 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
@@ -24,7 +26,7 @@ std::ostream* getOutputOptions(const edm::ParameterSet&, bool&, int&);
 
 void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >&, const std::vector<std::pair<std::string, bool> >&, std::ostream*);
 
-void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >&, edm::Handle<edm::View<reco::GenJet> >&, std::ostream*);
+void printGenParticleInfo(const reco::GenParticleCollection&, const reco::GenJetCollection&, std::ostream*);
 
 template<typename T>
 void printTrackInfo(const edm::Ref<T>& track, const reco::Candidate::Point& vertex, bool printDxy, bool printDz, std::ostream* stream)

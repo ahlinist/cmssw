@@ -190,7 +190,7 @@ void JetHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     
     int matchingGenParticlePdgId = -1;
     if( genParticles.isValid() )
-		matchingGenParticlePdgId = getMatchingGenParticlePdgId(patJet->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+		matchingGenParticlePdgId = getMatchingGenParticlePdgId(patJet->p4(), *genParticles, &skipPdgIdsGenParticleMatch_);
     if ( matchingGenParticlePdgId == -1 ) {
       hJetMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {

@@ -490,7 +490,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 
     int matchingGenParticlePdgId = -1;
     if ( genParticles.isValid() )
-      matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
+      matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), *genParticles, &skipPdgIdsGenParticleMatch_);
     if ( matchingGenParticlePdgId == -1 ) {
       hTauMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {

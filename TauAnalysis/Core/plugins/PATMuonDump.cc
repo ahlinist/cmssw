@@ -53,6 +53,7 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " theta = " << patMuon->theta()*180./TMath::Pi() 
 		   << " (eta = " << patMuon->eta() << ")" << std::endl;
     *outputStream_ << " phi = " << patMuon->phi()*180./TMath::Pi() << std::endl;
+    *outputStream_ << " charge = " << patMuon->charge() << std::endl;
     *outputStream_ << " isGlobalMuon = " << patMuon->isGlobalMuon() << std::endl;
     *outputStream_ << " isStandAloneMuon = " << patMuon->isStandAloneMuon() << std::endl;
     *outputStream_ << " inner Track" << std::endl;
@@ -71,9 +72,9 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patMuon->vertex(), outputStream_);
     if ( isValidRef(patMuon->track()) ) *outputStream_ << " dIP = " << patMuon->track()->dxy(patMuon->vertex()) << std::endl;
-    if( genParticleSource_.label() != "") 
-		*outputStream_ << "* matching gen. pdgId = " 
-		   << getMatchingGenParticlePdgId(patMuon->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
+    if ( genParticleSource_.label() != "" ) 
+      *outputStream_ << "* matching gen. pdgId = " 
+		     << getMatchingGenParticlePdgId(patMuon->p4(), *genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
     ++iMuon; 
   }
   

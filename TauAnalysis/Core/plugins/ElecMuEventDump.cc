@@ -4,6 +4,10 @@
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "DataFormats/Common/interface/Handle.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
+
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
@@ -39,11 +43,17 @@ void ElecMuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   *outputStream_ << ">>GENERATOR LEVEL INFORMATION<<" << std::endl;
 
-  edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
+  edm::Handle<GenEventInfoProduct> genEventInfo;
+  iEvent.getByLabel(genEventInfoSource_, genEventInfo);
+  if ( genEventInfo.isValid() && genEventInfo->hasBinningValues() ) {
+    std::cout << "Pt(hat) = " << genEventInfo->binningValues()[0] << std::endl;
+  }
+
+  edm::Handle<reco::GenParticleCollection> genParticleCollection;
   iEvent.getByLabel(genParticleSource_, genParticleCollection);
-  edm::Handle<edm::View<reco::GenJet> > genTauJetCollection;
+  edm::Handle<reco::GenJetCollection> genTauJetCollection;
   iEvent.getByLabel(genTauJetSource_, genTauJetCollection);
-  printGenParticleInfo(genParticleCollection, genTauJetCollection, outputStream_);
+  printGenParticleInfo(*genParticleCollection, *genTauJetCollection, outputStream_);
 
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 

@@ -72,9 +72,9 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
     *outputStream_ << " hcalIso = " << patElectron->hcalIso() << std::endl;
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patElectron->vertex(), outputStream_);
-    if( genParticleSource_.label() != "") 
-		*outputStream_ << "* matching gen. pdgId = " 
-		   << getMatchingGenParticlePdgId(patElectron->p4(), genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
+    if ( genParticleSource_.label() != "" ) 
+      *outputStream_ << "* matching gen. pdgId = " 
+		     << getMatchingGenParticlePdgId(patElectron->p4(), *genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
     ++iElectron;
   }
   
