@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopElectronProducer.cc,v 1.1 2010/09/10 01:06:37 oiorio Exp $ 
+ *\version  $Id: SingleTopElectronProducer.cc,v 1.2 2010/09/10 01:21:02 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -110,11 +110,11 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
   
     if(id_==std::string("cIso70")){
       SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso70,bfield,ctfTracks);
-    bit0 = bool(patSele(electrons->at(i)) & 0x1);
+    bit0 = bool(patSele(electrons->at(i)));
     }
     else if(id_ == std::string("cIso95")){
     SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso95,bfield,ctfTracks);
-    bit0 = bool(patSele(electrons->at(i)) & 0x1);
+    bit0 = bool(patSele(electrons->at(i)));
   }
     ConversionFinder conv;
     ConversionInfo convInfo= conv.getConversionInfo(electrons->at(i),ctfTracks,bfield);
@@ -126,12 +126,12 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
     if(!cut(electrons->at(i)))continue; 
     
     //std::cout << " passes cut " << cut_ <<  std::endl;
-
+    
     if(!bit0) continue;
-    if(useConversionVeto_ && !(fabs(dist)<0.02&&fabs(dcot<0.02)))continue;
+    if(useConversionVeto_ && (fabs(dist) < 0.02 && fabs(dcot) < 0.02))continue;
 
         
-    //    //std::cout << " pass all "<< std::endl;
+    //std::cout << " pass all "<< std::endl;
 
 
 
