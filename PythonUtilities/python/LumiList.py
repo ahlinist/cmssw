@@ -262,8 +262,6 @@ class LumiList(object):
             run = str(run)
             if self.compactList.has_key (run):
                 del self.compactList[run]
-            else:
-                print "LumiList.removeRuns() Warning: run %s not found. Action skpped." % run
             
 
 '''
