@@ -971,6 +971,7 @@ void DQMHistPlotter::analyze(const edm::Event&, const edm::EventSetup&)
 void DQMHistPlotter::endJob()
 {
   std::cout << "<DQMHistPlotter::endJob>:" << std::endl;
+  gROOT->SetStyle("Plain");
 
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
