@@ -19,13 +19,20 @@ analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation = analyzeAHtoMuTauEven
     name = cms.string('ahMuTauAnalyzer_woBtag_factorizedWithMuonIsolation'),
     analysisSequence = muTauAnalysisSequence_woBtag_factorizedWithMuonIsolation
 )
-analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
+
 
 analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation = analyzeAHtoMuTauEvents_wBtag.clone(
     name = cms.string('ahMuTauAnalyzer_wBtag_factorizedWithMuonIsolation'),
     analysisSequence = muTauAnalysisSequence_wBtag_factorizedWithMuonIsolation
 )
-analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
+
+# Add in the event dumps, if they exist
+
+if len(analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.eventDumps):
+    analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
+
+if len(analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.eventDumps):
+    analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
 
 analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(
     analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation
@@ -61,7 +68,7 @@ eventSelectionReplacements = \
 analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation = analyzeAHtoMuTauEvents_woBtag.clone(
     name = cms.string('ahMuTauAnalyzer_woBtag_factorizedWithoutMuonIsolation')
 )
-analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
+
 replaceEventSelections(analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation, eventSelectionReplacements)
 analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.analysisSequence = \
   muTauAnalysisSequence_woBtag_factorizedWithoutMuonIsolation
@@ -69,7 +76,11 @@ analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.analysisSequence = 
 analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation = analyzeAHtoMuTauEvents_wBtag.clone(
     name = cms.string('ahMuTauAnalyzer_wBtag_factorizedWithoutMuonIsolation')
 )
-analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
+if analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.eventDumps:
+    analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
+if analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.eventDumps:
+    analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
+
 replaceEventSelections(analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation, eventSelectionReplacements)
 analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.analysisSequence = \
   muTauAnalysisSequence_wBtag_factorizedWithoutMuonIsolation
