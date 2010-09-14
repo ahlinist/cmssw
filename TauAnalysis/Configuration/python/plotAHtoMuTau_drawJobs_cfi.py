@@ -610,7 +610,7 @@ finalSamplePlots = \
         name = "finalSamplePlots_mZcollApproxCompatibility"
     ),
     drawJobConfigEntry(
-        meName = 'DiTauCandidateQuantities/SVfitMass1stSolution',
+        meName = 'DiTauCandidateSVfitQuantities/Mass1stSolution',
         title = "M(Muon + Tau), SV method (final Event sample)",
         xAxis = 'Mass',
         name = "finalSamplePlots_mSVmethod"
