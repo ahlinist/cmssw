@@ -127,6 +127,17 @@ process.step7  = countPatJets.clone(src = 'goodJets', minNumber = 4)
 
 
 ## ---
+## selection monitoring
+## ---
+
+from PhysicsTools.PatExamples.PatTopSelectionAnalyzer_cfi import *
+process.dummy = analyzePatTopSelection
+
+process.TFileService = cms.Service("TFileService",
+  fileName = cms.string('analyzePatTopSelection.root')
+)
+
+## ---
 ## paths
 ## ---
 
@@ -135,6 +146,7 @@ process.looseSequence = cms.Path(
     process.vetoElectrons *
     process.looseMuons    *
     process.vetoMuons     *
+    process.dummy  * 
     process.step1  *
     process.step2  *
     process.step3b *
