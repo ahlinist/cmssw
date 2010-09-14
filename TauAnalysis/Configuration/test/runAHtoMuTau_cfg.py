@@ -78,11 +78,9 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
-process.source = cms.Source("PoolSource",
+process.source = cms.Source(
+    "PoolSource",
     fileNames = cms.untracked.vstring(
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
         #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
         'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part01.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part02.root',
@@ -158,7 +156,7 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
-#
+
 # change muon track and ECAL isolation requirements
 # to relative isolation (sum Pt of tracks/ECAL energy deposits within isolation cone divided by muon Pt)
 changeCut(process, "selectedPatMuonsTrkIso", 0.4, attribute = "dRisoCone")
@@ -231,6 +229,7 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 # disable event-dump output
 # in order to reduce size of log-files
+process.disableEventDump = cms.PSet()
 if hasattr(process, "disableEventDump"):
     process.analyzeAHtoMuTauEvents_woBtag.eventDumps = cms.VPSet()
     process.analyzeAHtoMuTauEvents_wBtag.eventDumps = cms.VPSet()
@@ -256,4 +255,7 @@ if not hasattr(process, "isBatchMode"):
 #
 #del process.patJetMETCorrections
 #print process.dumpPython()
+
+#from TauAnalysis.Configuration.tools.switchToData import switchToData
+#switchToData(process)
 
