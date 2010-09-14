@@ -9,7 +9,7 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_132440_137436_Jun14ReReco',
     'data_Mu_137437_139558_Prompt',
     'data_Mu_139559_140159_Jul16ReReco',
-    'data_Mu_140160_999999_Prompt_v2',
+    'data_Mu_140160_999999_Prompt',
     'A120', 'bbA120', 
     'A130', 'bbA130', 
     'A200', 'bbA200', 
@@ -17,7 +17,8 @@ SAMPLES_TO_ANALYZE = [
     'Zmumu',
     'InclusivePPmuX', 
     'PPmuXptGt20', 
-    'PPmuXptGt20Mu15', 
+    #'PPmuXptGt20Mu15', 
+    'PPmuXptGt20Mu15_v2', 
     'WplusJets',
     'TTplusJets',
 ] 
@@ -33,12 +34,15 @@ SAMPLES_TO_PLOT = [
     'qcdSum', 
     #'InclusivePPmuX',
     #'PPmuXptGt20',
+    #'PPmuXptGt20Mu15',
     'WplusJets', 
     'Zmumu', 
     'TTplusJets',
     'Ztautau', 
 ]
 
+SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
+SAMPLES_TO_PRINT.append('smBgSum')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -57,7 +61,9 @@ _nanobarns = 1000.0
 _microbarns = 1.0e6
 
 # Integrated luminosity to normalize 
-TARGET_LUMI = (4924.3 + 61275 + 115786 + 808979)/_microbarns
+#TARGET_LUMI = (4924.3 + 61275 + 115786 + 808979)/_microbarns
+#TARGET_LUMI = (4652+60315.532+107818+630241.996)/_microbarns
+TARGET_LUMI = (4203+58971+89050+1048863)/_microbarns
 
 RECO_SAMPLES = {
     'data_Mu_132440_137436_Jun14ReReco' : {
@@ -92,12 +98,12 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
     },
-    'data_Mu_140160_999999_Prompt_v2' : {
+    'data_Mu_140160_999999_Prompt' : {
         'datasetpath' : '/Mu/Run2010A-PromptReco-v4/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'runselection' : '140160 - 999999',
         'conditions' : 'GR_R_36X_V12::All',
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-143179_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-143336_7TeV_StreamExpress_Collisions10_JSON_v2.txt",
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -250,6 +256,16 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_QCD,
         'factorize' : True,
     },
+    'PPmuXptGt20Mu15_v2' : {
+        'datasetpath' : "/InclusiveMu15/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'events_processed' : 4377187,
+        'skim_eff' : 1.0,
+        'x_sec' : 0.2969*_millibarns*2.684e-4,
+        'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_QCD,
+        'factorize' : True,
+    },
     #Using the unskimmed dataset
     'PPmuXptGt20' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt10_7TeV-pythia6/Spring10-START3X_V26-v1/GEN-SIM-RECO",
@@ -289,15 +305,15 @@ MERGE_SAMPLES = {
             'data_Mu_132440_137436_Jun14ReReco',
             'data_Mu_137437_139558_Prompt',
             'data_Mu_139559_140159_Jul16ReReco',
-            'data_Mu_140160_999999_Prompt_v2',
+            'data_Mu_140160_999999_Prompt',
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data
     },
     'qcdSum' : {
-        #'samples' : ['InclusivePPmuX', 'PPmuXptGt20', 'PPmuXptGt20Mu15'],
-        'samples' : ['InclusivePPmuX', 'PPmuXptGt20'],
+        'samples' : ['InclusivePPmuX', 'PPmuXptGt20', 'PPmuXptGt20Mu15_v2'],
+        #'samples' : ['InclusivePPmuX', 'PPmuXptGt20'],
         'legendEntry' : 'QCD',
         'type' : 'smMC', 
         'drawOption' : styles.drawOption_QCD,
@@ -322,7 +338,8 @@ MERGE_SAMPLES = {
     },
     'smBgSum' : {
         'samples' : ['Ztautau', 'Zmumu', 'InclusivePPmuX', 
-                     'PPmuXptGt20', 'WplusJets', 'TTplusJets'],
+                     'PPmuXptGt20', 'PPmuXptGt20Mu15_v2', 'WplusJets', 
+                     'TTplusJets'],
         'legendEntry' : 'SM',
         'type' : 'smSumMC',
         'drawOption' : styles.drawOption_QCD,
