@@ -1,175 +1,130 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("Test")
+## Define the process
+process = cms.Process("Top")
 
+## Define the input sample
 process.source = cms.Source("PoolSource",
   fileNames = cms.untracked.vstring(
-    'file:job_20100913-221732/patTuple_standard_ttbar_madgraph.root_ttbar10_madAOD.root'
+    'file:top/patTuple_top_madgraph.root_ttbar10_madAOD.root'
   )
 )
 
-## options and output report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-
-## ---
-## define object collections
-## ---
-from PhysicsTools.PatAlgos.cleaningLayer1.muonCleaner_cfi import *
-process.looseMuons = cleanPatMuons.clone(
-    preselection =
-    'isGlobalMuon & isTrackerMuon &'
-    'pt > 20. &'
-    'abs(eta) < 2.1 &'
-    '(trackIso+caloIso)/pt < 0.1 &'
-    'innerTrack.numberOfValidHits > 10 &'
-    'globalTrack.normalizedChi2 < 10.0 &'
-    'globalTrack.hitPattern.numberOfValidMuonHits > 0 &'
-    'abs(dB) < 0.02',
-    checkOverlaps = cms.PSet(
-      jets = cms.PSet(
-        src                 = cms.InputTag("goodJets"),
-        algorithm           = cms.string("byDeltaR"),
-        preselection        = cms.string(""),
-        deltaR              = cms.double(0.3),
-        checkRecoComponents = cms.bool(False),
-        pairCut             = cms.string(""),
-        requireNoOverlaps   = cms.bool(True),
-      )
-    )
+## ----------------------------------------------------------------
+## Apply object selection according to TopPAG reference selection
+## for ICHEP 2010. This will result in 5 additional collections:
+##
+## * goodJets
+## * vetoElecs
+## * vetoMuons
+## * looseMuons
+## * tightMuons
+##
+## Have a look ont the cff file to learn more about the exact
+## selection citeria.
+## ----------------------------------------------------------------
+process.load("PhysicsTools.PatExamples.topObjectSelection_cff")
+process.topObjectProduction = cms.Path(
+    process.topObjectSelection
 )
 
-process.tightMuons = cleanPatMuons.clone(
-    src = 'looseMuons',
-    preselection = '(trackIso+caloIso)/pt < 0.05'
-)
+## ----------------------------------------------------------------
+## Define the steps for the TopPAG reference selection for ICHEP
+## 2010. Have a look at the WorkBookPATExampleTopQuarks. These
+## are event selections. They make use of the object selections
+## applied in the step above.
+## ----------------------------------------------------------------
 
-process.vetoMuons = cleanPatMuons.clone(
-    preselection =
-    'isGlobalMuon &'
-    'pt > 10. &'
-    'abs(eta) < 2.5 &'
-    '(trackIso+caloIso)/pt < 0.2'
-)
-
-from PhysicsTools.PatAlgos.selectionLayer1.electronSelector_cfi import *
-process.vetoElectrons = selectedPatElectrons.clone(
-    src = 'selectedPatElectrons',
-    cut =
-    'et > 15. &'
-    'abs(eta) < 2.5 &'
-    '(dr03TkSumPt+dr03EcalRecHitSumEt+dr03HcalTowerSumEt)/et <  0.2'
- )
-
-from PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi import *
-process.goodJets = selectedPatJets.clone(
-    src = 'selectedPatJets',
-    cut =
-    'pt > 30. &'
-    'abs(eta) < 2.4 &'
-    'emEnergyFraction > 0.01 &'
-    'jetID.n90Hits > 1 &'
-    'jetID.fHPD < 0.98'
-)
-
-## ---
-## define selection steps 
-## ---
-
+## Trigger bit (HLT_mu9)
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-## trigger
-process.step1  = hltHighLevel.clone(
-    TriggerResultsTag = "TriggerResults::HLT",
-    HLTPaths = ["HLT_Mu9"]
-)
-
-# vertex filter
-process.step2  = cms.EDFilter(
-    "VertexSelector",
-    src = cms.InputTag("offlinePrimaryVertices"),
-    cut = cms.string("!isFake && ndof > 4 && abs(z) < 15 && position.Rho < 2"),
-    filter = cms.bool(True),
-)
-
-## tight muon selection
+process.step1  = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9"])
+## Vertex requirement
+process.step2  = cms.EDFilter("VertexSelector", src = cms.InputTag("offlinePrimaryVertices"), cut = cms.string("!isFake && ndof > 4 && abs(z) < 15 && position.Rho < 2"), filter = cms.bool(True))
+## Exact one tight muon
 from PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi import *
-process.step3a = countPatMuons.clone(
-    src = 'tightMuons',
-    minNumber = 1,
-    maxNumber = 1
-)
-
-## loose muon selection
-process.step3b = countPatMuons.clone(
-    src = 'looseMuons',
-    minNumber = 1,
-    maxNumber = 1
-)
-
-## additional muon veto
-process.step4  = countPatMuons.clone(
-    src = 'vetoMuons',
-    maxNumber = 1
-)
-
-## additional electron veto
+process.step3a = countPatMuons.clone(src = 'tightMuons', minNumber = 1, maxNumber = 1)
+## Exact one loose muon
+process.step3b = countPatMuons.clone(src = 'looseMuons', minNumber = 1, maxNumber = 1)
+## Veto on additional muons 
+process.step4  = countPatMuons.clone(src = 'vetoMuons' , maxNumber = 1)
+## Veto on additional electrons
 from PhysicsTools.PatAlgos.selectionLayer1.electronCountFilter_cfi import *
-process.step5  = countPatMuons.clone(
-    src = 'vetoElectrons',
-    maxNumber = 0
-)
-
-## jet selection bins
+process.step5  = countPatMuons.clone(src = 'vetoElecs' , maxNumber = 0)
+## Different jet multiplicity selections
 from PhysicsTools.PatAlgos.selectionLayer1.jetCountFilter_cfi import *
-process.step6a = countPatJets.clone(src = 'goodJets', minNumber = 1)
-process.step6b = countPatJets.clone(src = 'goodJets', minNumber = 2)
-process.step6c = countPatJets.clone(src = 'goodJets', minNumber = 3)
-process.step7  = countPatJets.clone(src = 'goodJets', minNumber = 4)
+process.step6a = countPatJets.clone(src = 'goodJets'   , minNumber = 1)
+process.step6b = countPatJets.clone(src = 'goodJets'   , minNumber = 2)
+process.step6c = countPatJets.clone(src = 'goodJets'   , minNumber = 3)
+process.step7  = countPatJets.clone(src = 'goodJets'   , minNumber = 4)
 
 
-## ---
-## selection monitoring
-## ---
+## ----------------------------------------------------------------
+## Define monitoring modules for the event selection. You should
+## few this only as an example for an analyses technique including
+## full CMSSW features, not as a complete analysis.
+## ----------------------------------------------------------------
 
 from PhysicsTools.PatExamples.PatTopSelectionAnalyzer_cfi import *
-process.dummy = analyzePatTopSelection
+process.monStep1  = analyzePatTopSelection.clone(jets='goodJets')
+process.monStep2  = analyzePatTopSelection.clone(jets='goodJets')
+process.monStep3a = analyzePatTopSelection.clone(muons='tightMuons', jets='goodJets')
+process.monStep3b = analyzePatTopSelection.clone(muons='looseMuons', jets='goodJets')
+process.monStep4  = analyzePatTopSelection.clone(muons='vetoMuons' , jets='goodJets')
+process.monStep5  = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoElecs', jets='goodJets')
+process.monStep6a = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoElecs', jets='goodJets')
+process.monStep6b = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoElecs', jets='goodJets')
+process.monStep6c = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoElecs', jets='goodJets')
+process.monStep7  = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoElecs', jets='goodJets')
 
+## Define the TFileService
 process.TFileService = cms.Service("TFileService",
   fileName = cms.string('analyzePatTopSelection.root')
 )
 
-## ---
-## paths
-## ---
 
-process.looseSequence = cms.Path(
-    process.goodJets      *
-    process.vetoElectrons *
-    process.looseMuons    *
-    process.vetoMuons     *
-    process.dummy  * 
-    process.step1  *
-    process.step2  *
-    process.step3b *
-    process.step4  *
-    process.step5  *
-    process.step6a *
-    process.step6b *
-    process.step6c
+## ----------------------------------------------------------------
+## Define the analysis paths: we define two selection paths to 
+## monitor the cutflow according to the TopPAG reference selection
+## for ICHEP 2010. All necessary object collections have been pro-
+## duced in the cms.Path topObjectProduction before hand. The out-
+## put report is switched on to get a quick overview of the number
+## number of events after each selection step. 
+## ----------------------------------------------------------------
+
+## Switch output report on
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+
+## Define loose event selection path
+process.looseEventSelection = cms.Path(
+    process.monStep1   * 
+    process.step1      *
+    process.monStep2   *     
+    process.step2      *
+    process.monStep3b  * 
+    process.step3b     *
+    process.monStep4   *     
+    process.step4      *
+    process.monStep5   *     
+    process.step5      *
+    process.monStep6a  *     
+    process.step6a     *
+    process.monStep6b  *     
+    process.step6b     *
+    process.monStep6c  *     
+    process.step6c    
     )
 
-process.tightSequence = cms.Path(
-    process.goodJets      *
-    process.vetoElectrons *
-    process.looseMuons    *
-    process.tightMuons    *
-    process.vetoMuons     *
-    process.step1  *
-    process.step2  *
-    process.step3a *
-    process.step4  *
-    process.step5  *
-    process.step6a *
-    process.step6b *
-    process.step6c *
-    process.step7
+## Define tight event selection path
+process.tightEventSelection = cms.Path(
+    process.step1      *
+    process.step2      *
+    process.step3a     *
+    process.monStep3b  *     
+    process.step4      *
+    process.step5      *
+    process.step6a     *
+    process.step6b     *
+    process.step6c     *
+    process.step7      *
+    process.monStep7     
     )
