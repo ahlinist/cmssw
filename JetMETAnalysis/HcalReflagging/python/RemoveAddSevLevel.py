@@ -7,6 +7,8 @@ def RemoveFlag(sevLevelComputer,flag="HFLongShort"):
     
     removeSeverity=-1 # Track which Severity Level has been modified
 
+
+
     # Loop over all levels
     for i in range(len(sevLevelComputer.SeverityLevels)):
         Flags=sevLevelComputer.SeverityLevels[i].RecHitFlags.value()
@@ -42,11 +44,26 @@ def PrintLevels(SLComp):
 
 def AddFlag(sevLevelComputer,flag="UserDefinedBit0",severity=10):
     ''' Adds specified flag to severity level computer using specified severity level.
-        If flag already exists at another severit level, it is removed from that level.
+        If flag already exists at another severity level, it is removed from that level.
         '''
     
     AddedSeverity=False
     removeSeverity=-1
+
+    allowedflags=[]
+    for i in sevLevelComputer.SeverityLevels:
+        allowedflags.append(i.RecHitFlags.value())
+    if flag not in allowedflags:
+        print "\n\n"
+        for j in range(0,3):
+            print "###################################################"
+        print "\nWARNING!!!!!! You are adding a flag \n\t'%s' \nthat is not defined in the Severity Level Computer!"%flag
+        print "This can be EXCEPTIONALLY dangerous if you do not \nknow what you are doing!\n"
+        print "Proceed with EXTREME caution!\n"
+        for j in range(0,3):
+            print "###################################################"
+        print "\n\n"
+
     #Loop over severity Levels
     for i in range(len(sevLevelComputer.SeverityLevels)):
         Level=sevLevelComputer.SeverityLevels[i].Level.value()
