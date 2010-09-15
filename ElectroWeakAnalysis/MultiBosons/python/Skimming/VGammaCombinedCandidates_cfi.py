@@ -3,14 +3,14 @@ import FWCore.ParameterSet.Config as cms
 dimuons = cms.EDProducer("CandViewShallowClonePtrCombiner",
     checkCharge = cms.bool(False),
     cut = cms.string("mass > 0"),
-    decay = cms.string("cleanPatMuons@+ cleanPatMuons@-"),
+    decay = cms.string("cleanPatMuonsTriggerMatch@+ cleanPatMuonsTriggerMatch@-"),
     roles = cms.vstring("1", "2") # dummy roles, real ones are specified below
 )
 
 ## Define all the other combined candidates
-dielectrons      = dimuons.clone(decay = "cleanPatElectrons@+ cleanPatElectrons@-")
-electronPlusMETs = dimuons.clone(decay = "cleanPatElectrons patMETsPF")
-muonPlusMETs     = dimuons.clone(decay = "cleanPatMuons patMETsPF")
+dielectrons      = dimuons.clone(decay = "cleanPatElectronsTriggerMatch@+ cleanPatElectronsTriggerMatch@-")
+electronPlusMETs = dimuons.clone(decay = "cleanPatElectronsTriggerMatch patMETsPF")
+muonPlusMETs     = dimuons.clone(decay = "cleanPatMuonsTriggerMatch patMETsPF")
 
 WENuGammaCands  = dimuons.clone(decay = "electronPlusMETs cleanPatPhotons")
 WMuNuGammaCands = dimuons.clone(decay = "muonPlusMETs cleanPatPhotons")
