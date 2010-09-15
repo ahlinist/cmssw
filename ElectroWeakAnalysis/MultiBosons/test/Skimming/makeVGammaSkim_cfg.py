@@ -122,9 +122,9 @@ process.patElectrons.electronIDSources = cms.PSet(
   simpleEleId60cIso   = cms.InputTag("simpleEleId60cIso"),
   )
 
-
 ## PAT Trigger
 process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
+switchOnTrigger(process)
 matchHltPaths = {
   "cleanPatElectrons": options.electronTriggerMatchPaths,
   "cleanPatMuons"    : options.muonTriggerMatchPaths
@@ -199,10 +199,11 @@ if not options.isRealData:
   process.MessageLogger.cerr.hltPrescaleTable = cms.untracked.PSet(
     limit = cms.untracked.int32(5)
     )
+
 process.options.wantSummary = options.wantSummary
 
 ## Relax the pt for the tests on data
-if options.jobType == "testTriggerMatchRealData":
+if options.jobType == "testRealData":
   process.WMuNuGammaPath.remove(process.hltFilter)
   process.muonPlusMETFilter.cut = "daughter('lepton').pt > 3"
   process.WMuNuGammaPath.remove(process.WENuGammaFilter)

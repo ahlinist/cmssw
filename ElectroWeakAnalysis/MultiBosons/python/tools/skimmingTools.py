@@ -23,7 +23,7 @@ def embedTriggerMatches(process, hltPaths):
   """
 
   # Template trigger match producer
-  triggerMatchTemplate = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR",
+  triggerMatchTemplate = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
     src     = cms.InputTag( "dummySource" ),
     matched = cms.InputTag( "patTrigger" ),
     andOr          = cms.bool( False ),

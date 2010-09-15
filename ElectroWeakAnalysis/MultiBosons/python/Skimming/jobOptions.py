@@ -20,7 +20,7 @@ def applyJobOptions(options):
         4C8D7358-4449-DF11-86BB-003048678A6C.root
       """.split()
     ]
-    jobOptions.globalTag = "START3X_V26::All"
+    jobOptions.globalTag = "START38_V10::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
@@ -71,7 +71,7 @@ def applyJobOptions(options):
         143/657/E07818F5-A9AE-DF11-B252-0030487CD6F2.root
       """.split()
     ]
-    jobOptions.globalTag = "GR10_P_V7::All"
+    jobOptions.globalTag = "GR10_P_V9::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
