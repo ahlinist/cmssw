@@ -42,8 +42,7 @@ baseMuonSequencePF = cms.Sequence(
     topMuons *
     preselectedJets *
     topJetsPF *
-    countMuons *
-    MTWFilterMuonsPF
+    countMuons 
     )
 
 
@@ -57,8 +56,7 @@ baseMuonSequence = cms.Sequence(
     preselectedJets *
     topJets *
     #topJetsPF *
-    countMuons *
-    MTWFilterMuons
+    countMuons 
     )
 
 baseMuonSequencePF = cms.Sequence(
@@ -71,8 +69,7 @@ baseMuonSequencePF = cms.Sequence(
     preselectedJets *
     #    topJets *
     topJetsPF *
-    countMuonsPF *
-    MTWFilterMuonsPF
+    countMuonsPF 
     )
 
 baseMuonAntiIsoSequence = cms.Sequence(
@@ -100,8 +97,7 @@ baseElectronSequence = cms.Sequence(
     countElectrons *
 #    electronIDIso *
     topMuons *
-    preselectedJets *
-    MTWFilterElectrons 
+    preselectedJets 
     )
 
 baseElectronSequencePF = cms.Sequence(
@@ -116,8 +112,7 @@ baseElectronSequencePF = cms.Sequence(
     countElectrons *
 #    electronIDIso *
     topMuons *
-    preselectedJets *
-    MTWFilterElectronsPF
+    preselectedJets 
     )
 
 
@@ -262,6 +257,7 @@ allPseudoBJetsAntiIsoTops= cms.Sequence(
 TSampleMuonPF = cms.Sequence(
     IsoMuonsPF *
     countJetsPF *
+    MTWFilterMuonsPF * 
     countBTagsPF * 
     countForwardJetsPF  
     )
@@ -270,6 +266,7 @@ TSampleMuonPF = cms.Sequence(
 TSampleMuon = cms.Sequence(
     IsoMuons *
     countJetsNonTTBar *
+    MTWFilterMuons * 
     countBTags * 
     countForwardJets * 
     allTops *
@@ -328,6 +325,7 @@ TSampleElectron = cms.Sequence(
     IsoElectrons *
     topMuons *
     countJetsNonTTBar *
+    MTWFilterElectrons * 
     countBTags * 
     countForwardJets * 
     allTops *
@@ -338,19 +336,9 @@ TSampleElectron = cms.Sequence(
 TSampleElectronPF = cms.Sequence(
     IsoElectronsPF *
     countJetsPF *
+    MTWFilterElectronsPF * 
     countBTagsPF * 
     countForwardJetsPF  
-    )
-
-
-TSampleHighEffElectron = cms.Sequence(
-    IsoElectrons *
-    countJetsNonTTBar *
-    countBTags * 
-    countAntiBTags #* 
-#    allTops *
-#    singleTopObservablesTSample #*
-#    SingleTopWtransverseMassFilter
     )
 
 

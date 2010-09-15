@@ -37,7 +37,7 @@ preselectedJets = cms.EDFilter("PATJetSelector",
 topJets = cms.EDProducer("SingleTopJetsProducer",
                          src = cms.InputTag("preselectedJets"),
                          eleSrc = cms.InputTag("topElectrons"),
-                         muSrc = cms.InputTag("topElectrons"),
+                         muSrc = cms.InputTag("topMuons"),
                          isJPT = cms.untracked.bool(True),
                          isPF = cms.untracked.bool(False),
 )
@@ -63,8 +63,8 @@ preselectedMETs = cms.EDFilter("PATMETSelector",
 
 #Part of BJets tagging and Forward Jets production
 allTopJets = cms.EDProducer("SingleTopJetsProducer",
-                                 jetsSource = cms.InputTag("preselectedJets"),
-                                 )
+                            jetsSource = cms.InputTag("preselectedJets"),
+                            )
 
 topMuonsPF =  topMuons.clone(jetSrc = cms.InputTag("topJetsPF")) 
 

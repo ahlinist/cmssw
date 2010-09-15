@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopElectronProducer.cc,v 1.2 2010/09/10 01:21:02 oiorio Exp $ 
+ *\version  $Id: SingleTopElectronProducer.cc,v 1.3 2010/09/10 10:16:08 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -132,8 +132,6 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
 
         
     //std::cout << " pass all "<< std::endl;
-
-
 
     finalElectrons->push_back(electrons->at(i));
    
