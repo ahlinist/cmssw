@@ -4,7 +4,7 @@ extraConversionEventContent = [
   'keep *_trackerOnlyConversions_*_*',
   'keep *_ckfInOutTracksFromConversions_*_*',
   'keep *_ckfOutInTracksFromConversions_*_*',
-]
+  ]
 
 vgExtraPhotonEventContent = [
   'keep *_photons_*_*',
@@ -17,7 +17,7 @@ vgExtraPhotonEventContent = [
   'keep *_multi5x5BasicClusters_*Endcap*_*',
   'keep *_hybridSuperClusters_*_*',
   'keep *_correctedHybridSuperClusters_*_*',
-]
+  ]
 
 vgExtraAnalyzerKitEventContent = [
   'keep *_allTrackCandidates_*_*',
@@ -36,12 +36,12 @@ vgExtraAnalyzerKitEventContent = [
   'keep *_pixelTracks_*_*',
   'keep *_standAloneMuons_*_*',
   'keep *_tevMuons_*_*'
-]
+  ]
 
 vgMuMuGammaEventContent = [
   'keep *_MuMuGammas_*_*',
   'keep *_MuMuGammasOneTrack_*_*',
-]
+  ]
 
 vgCandsEventContent = [
   'keep *_electronPlusMETs_*_*',
@@ -53,4 +53,15 @@ vgCandsEventContent = [
   'keep *_ZEEGammaCands_*_*',
   'keep *_ZMuMuGammaCands_*_*',
   'keep *_ZInvisibleGammaCands_*_*',
-]
+  ]
+
+extraSkimEventContent = vgCandsEventContent[:] + extraConversionEventContent[:] + [
+  "keep *_gsfElectronCores_*_*",
+  "keep *_offlinePrimaryVertices_*_*",
+  "keep *_offlineBeamSpot_*_*",
+  "keep *_TriggerResults_*_PAT",
+  ## cleanPatMuons are replaced by cleanPatMuonsTriggerMatch
+  "drop *_cleanPatMuons_*_PAT",
+  ## cleanPatElectrons are replaced by cleanPatElectronsTriggerMatch
+  "drop *_cleanPatElectrons_*_PAT",
+  ]

@@ -135,8 +135,14 @@ embedTriggerMatches(process, matchHltPaths)
 process.load(basePath + "VGammaSkimSequences_cff")
 
 if options.isRealData:
-  ## Add cleaning for no scraping events etc.
+  ## Add cleaning of collision data (no scraping events etc.)
+  ##+ https://twiki.cern.ch/twiki/bin/viewauth/CMS/Collisions2010Recipes
   process.load(basePath + "goodCollisionDataSequence_cff")
+  ## Remove the hltPhysicsDeclared - it kills some good events, reference?
+  process.goodCollisionDataSequence.remove("hltPhysicsDeclared")
+  ## Run the hltPhysicsDeclared filter in a separate path to
+  ##+ store its result in the triggerEvent product.
+  process.hltPhysicsDeclaredPath = cms.Path(process.hltPhysicsDeclared)
   process.defaultSequence = cms.Sequence(
     process.goodCollisionDataSequence +
     process.patDefaultSequence
@@ -181,11 +187,8 @@ process.ZInvisibleGammaPath = cms.Path(
 ## HLT trigger
 process.hltFilter.HLTPaths = options.hltPaths
 
-## Add VGamma event content
-process.out.outputCommands += vgEventContent.vgCandsEventContent
-process.out.outputCommands += vgEventContent.extraConversionEventContent
-process.out.outputCommands += ["keep *_TriggerResults_*_PAT"]
-process.out.outputCommands += ["drop *_cleanPatMuons_*_PAT"]
+## Output configuration (add event content, select events, output file name)
+process.out.outputCommands += vgEventContent.extraSkimEventContent
 if not options.isRealData:
   process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
 process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
@@ -194,11 +197,12 @@ process.out.fileName = options.outputFile
 ## Logging
 process.MessageLogger.cerr.FwkReport.reportEvery = options.reportEvery
 if not options.isRealData:
-  ## Suppress many warnings about missing prescale tables
+  ## Suppress many warnings about missing HLT prescale tables
   process.MessageLogger.categories += ["hltPrescaleTable"]
   process.MessageLogger.cerr.hltPrescaleTable = cms.untracked.PSet(
     limit = cms.untracked.int32(5)
     )
+
 
 process.options.wantSummary = options.wantSummary
 
@@ -207,8 +211,6 @@ if options.jobType == "testRealData":
   process.WMuNuGammaPath.remove(process.hltFilter)
   process.muonPlusMETFilter.cut = "daughter('lepton').pt > 3"
   process.WMuNuGammaPath.remove(process.WENuGammaFilter)
-
-
 
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user

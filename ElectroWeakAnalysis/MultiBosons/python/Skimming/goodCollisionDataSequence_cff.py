@@ -14,7 +14,7 @@ hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
 ## https://twiki.cern.ch/twiki/bin/view/CMS/Collisions2010Recipes#Removal_of_Beam_Scraping_Events
 noScraping = cms.EDFilter("FilterOutScraping",
   applyfilter = cms.untracked.bool(True),
-  debugOn = cms.untracked.bool(True),
+  debugOn = cms.untracked.bool(False),
   numtrack = cms.untracked.uint32(10),
   thresh = cms.untracked.double(0.25)
 )
@@ -29,7 +29,7 @@ primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
 )
 
 goodCollisionDataSequence = cms.Sequence(
-#   hltPhysicsDeclared  + # kills some good runs
-#   noScraping          + # crashes?
+  hltPhysicsDeclared  + # kills some good runs?
+  noScraping          + # crashes?
   primaryVertexFilter
 )
