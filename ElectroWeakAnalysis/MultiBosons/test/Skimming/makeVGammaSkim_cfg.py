@@ -88,6 +88,18 @@ process.patPhotons.userData.userFloats.src = egammaUserDataFloats(
 process.patPhotons.userData.userInts.src = egammaUserDataInts(
   moduleName = "photonUserData"
   )
+process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
+process.piZeroDiscriminators.preshClusterShapeProducer = "multi5x5PreshowerClusterShape"
+process.piZeroDiscriminators.preshClusterShapeCollectionX = "multi5x5PreshowerXClustersShape"
+process.piZeroDiscriminators.preshClusterShapeCollectionY = "multi5x5PreshowerYClustersShape"
+process.patDefaultSequence.replace(process.patPhotons,
+  process.piZeroDiscriminators * process.patPhotons
+  )
+## This doesn't work since it is an association map and we need a value map.
+##+ Have to write another user data producer.
+# process.patPhotons.userData.userFloats.src.append(
+#   cms.InputTag("piZeroDiscriminators", "PhotonPi0DiscriminatorAssociationMap")
+#   )
 
 ## Add electron user data
 process.load(basePath + "electronUserData_cfi")
@@ -189,6 +201,9 @@ process.hltFilter.HLTPaths = options.hltPaths
 
 ## Output configuration (add event content, select events, output file name)
 process.out.outputCommands += vgEventContent.extraSkimEventContent
+## FIXME: embed the pi0 discriminator result in the phtons and remove
+##+ it from the event content
+process.out.outputCommands += ["keep *_piZeroDiscriminators_*_*"]
 if not options.isRealData:
   process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
 process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
