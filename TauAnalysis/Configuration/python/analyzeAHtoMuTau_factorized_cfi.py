@@ -33,10 +33,6 @@ evtSelDiTauCandidateForAHtoMuTauPzetaDiffLooseMuonIsolation = evtSelDiTauCandida
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation', 'individual')
 )
-evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto.clone(
-    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation', 'individual')
-)    
 
 # central jet veto/b-jet candidate selection
 evtSelNonCentralJetEt20bTagLooseMuonIsolation = cms.PSet(
@@ -94,8 +90,6 @@ inputTagReplacements = \
       "selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative",
       "selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative" ],
-    [ "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative",
-      "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolationCumulative" ],
     [ "muTauPairZmumuHypothesesForAHtoMuTau",
       "muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation" ],
     [ "muTauPairVisMassHypothesesForAHtoMuTau",
