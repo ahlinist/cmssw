@@ -26,11 +26,6 @@
   <class name="edm::Ptr<reco::Track>"/>
   <class name="edm::Ptr<reco::GsfTrack>"/>
 
-  <!-- create dictionaries for CollinearApproxCompatibility objects -->
-  <class name="CollinearApproxCompatibility"/>
-  <class name="std::vector<CollinearApproxCompatibility>"/>
-  <class name="std::map<std::string, CollinearApproxCompatibility>"/>
-
   <!-- create dictionaries for SVmassRecoSolution objects -->
   <class name="SVmassRecoSolution"/>
   <class name="std::vector<SVmassRecoSolution>"/>
