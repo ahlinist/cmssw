@@ -7,7 +7,6 @@
 #include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/CollinearApproxCompatibility.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
@@ -17,7 +16,6 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/METReco/interface/MET.h"
 
-#include "TauAnalysis/CandidateTools/interface/CollinearApproxFitter.h"
 #include "TauAnalysis/CandidateTools/interface/SVmassRecoFitter.h"
 #include "TauAnalysis/CandidateTools/interface/SVfitAlgorithm.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
@@ -43,28 +41,17 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   {
     recoMode_ = cfg.getParameter<std::string>("recoMode");
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
-    if ( cfg.exists("collinearApproxMassCompatibility") ) {
-      edm::ParameterSet cfgMassHypotheses = cfg.getParameter<edm::ParameterSet>("collinearApproxMassCompatibility");
-      typedef std::vector<std::string> vstring;
-      vstring massHypothesisNames = cfgMassHypotheses.getParameterNamesForType<edm::ParameterSet>();
-      for ( vstring::const_iterator massHypothesisName = massHypothesisNames.begin();
-	    massHypothesisName != massHypothesisNames.end(); ++massHypothesisName ) {
-	edm::ParameterSet cfgMassHypothesis = cfgMassHypotheses.getParameter<edm::ParameterSet>(*massHypothesisName);
-	CollinearApproxFitter* collinearApproxFitter = new CollinearApproxFitter(cfgMassHypothesis);
-	collinearApproxFitters_.insert(std::pair<std::string, CollinearApproxFitter*>(*massHypothesisName, collinearApproxFitter));
-      }
-      if (  cfg.exists("svFit") ) {
-	edm::ParameterSet cfgSVfit = cfg.getParameter<edm::ParameterSet>("svFit");	
-	vstring svFitAlgorithmNames = cfgSVfit.getParameterNamesForType<edm::ParameterSet>();
-	for ( vstring::const_iterator svFitAlgorithmName = svFitAlgorithmNames.begin();
-	      svFitAlgorithmName != svFitAlgorithmNames.end(); ++svFitAlgorithmName ) {
-	  edm::ParameterSet cfgSVfitAlgorithm = cfgSVfit.getParameter<edm::ParameterSet>(*svFitAlgorithmName);
-	  cfgSVfitAlgorithm.addParameter<std::string>("name", *svFitAlgorithmName);
-	  copyCfgParameter<edm::InputTag>(cfg, "srcPrimaryVertex", cfgSVfitAlgorithm);
-	  copyCfgParameter<edm::InputTag>(cfg, "srcBeamSpot", cfgSVfitAlgorithm);
-	  SVfitAlgorithm<T1,T2>* svFitAlgorithm = new SVfitAlgorithm<T1,T2>(cfgSVfitAlgorithm);
-	  svFitAlgorithms_.insert(std::pair<std::string, SVfitAlgorithm<T1,T2>*>(*svFitAlgorithmName, svFitAlgorithm));
-	}
+    if ( cfg.exists("svFit") ) {
+      edm::ParameterSet cfgSVfit = cfg.getParameter<edm::ParameterSet>("svFit");	
+      std::vector<std::string> svFitAlgorithmNames = cfgSVfit.getParameterNamesForType<edm::ParameterSet>();
+      for ( std::vector<std::string>::const_iterator svFitAlgorithmName = svFitAlgorithmNames.begin();
+	    svFitAlgorithmName != svFitAlgorithmNames.end(); ++svFitAlgorithmName ) {
+	edm::ParameterSet cfgSVfitAlgorithm = cfgSVfit.getParameter<edm::ParameterSet>(*svFitAlgorithmName);
+	cfgSVfitAlgorithm.addParameter<std::string>("name", *svFitAlgorithmName);
+	copyCfgParameter<edm::InputTag>(cfg, "srcPrimaryVertex", cfgSVfitAlgorithm);
+	copyCfgParameter<edm::InputTag>(cfg, "srcBeamSpot", cfgSVfitAlgorithm);
+	SVfitAlgorithm<T1,T2>* svFitAlgorithm = new SVfitAlgorithm<T1,T2>(cfgSVfitAlgorithm);
+	svFitAlgorithms_.insert(std::pair<std::string, SVfitAlgorithm<T1,T2>*>(*svFitAlgorithmName, svFitAlgorithm));
       }
     }
     scaleFuncImprovedCollinearApprox_ = cfg.getParameter<std::string>("scaleFuncImprovedCollinearApprox");
@@ -74,11 +61,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     scaleFunc_ = new TF1("scaleFunc_", scaleFuncImprovedCollinearApprox_.c_str(), 10, 300);
   }
 
-  ~CompositePtrCandidateT1T2MEtAlgorithm() {
-    for ( std::map<std::string, CollinearApproxFitter*>::iterator it = collinearApproxFitters_.begin();
-	  it != collinearApproxFitters_.end(); ++it ) {
-      delete it->second;
-    }
+  ~CompositePtrCandidateT1T2MEtAlgorithm() 
+  {
     for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator it = svFitAlgorithms_.begin();
 	  it != svFitAlgorithms_.end(); ++it ) {
       delete it->second;
@@ -124,14 +108,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compCollinearApprox(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
       // add a Improved collinear approximation
       compImprovedCollinearApprox(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
-
-      std::map<std::string, CollinearApproxCompatibility> collinearApproxCompatibilities;
-      for ( std::map<std::string, CollinearApproxFitter*>::iterator collinearApproxFitter = collinearApproxFitters_.begin();
-	    collinearApproxFitter != collinearApproxFitters_.end(); ++collinearApproxFitter ) {	
-	collinearApproxCompatibilities.insert(std::pair<std::string, CollinearApproxCompatibility>(
-	  collinearApproxFitter->first, collinearApproxFitter->second->fit(leg1->p4(), leg2->p4(), met)));
-      }
-      compositePtrCandidate.setCollinearApproxCompatibilities(collinearApproxCompatibilities);
 
       compositePtrCandidate.setP4CDFmethod(compP4CDFmethod(leg1->p4(), leg2->p4(), met->px(), met->py()));
       compositePtrCandidate.setMt12MET(compMt(leg1->p4(), leg2->p4(), met->px(), met->py()));    
@@ -431,7 +407,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   std::string recoMode_;
   int verbosity_;
-  std::map<std::string, CollinearApproxFitter*> collinearApproxFitters_;
   std::string scaleFuncImprovedCollinearApprox_;
   TF1* scaleFunc_;
   svMassReco::SVmassRecoFitter<T1,T2> svMassRecoFitter_;
