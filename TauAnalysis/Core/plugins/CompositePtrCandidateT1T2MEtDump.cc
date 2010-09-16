@@ -117,8 +117,6 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
     std::string collinearApproxStatus = ( diTauCandidate->collinearApproxIsValid() ) ? "valid" : "invalid";
     *outputStream_ << " (collinear Approx. " << collinearApproxStatus << ")" << std::endl;
     *outputStream_ << " genM = " << diTauCandidate->p4gen().mass() << std::endl;
-    const CollinearApproxCompatibility* collinearApproxCompatibility = diTauCandidate->collinearApproxCompatibility("mZ");
-    if ( collinearApproxCompatibility ) *outputStream_ << " Chi2(mZ) = " << collinearApproxCompatibility->minuitFitChi2() << std::endl;
     if( genParticleSource_.label() != "") {
       *outputStream_ << " dR(leg1, nu1) = " << compDeltaRlegNu(diTauCandidate->leg1()->p4(), *genParticles) << std::endl;
       *outputStream_ << " dR(leg2, nu2) = " << compDeltaRlegNu(diTauCandidate->leg2()->p4(), *genParticles) << std::endl;
