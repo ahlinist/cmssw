@@ -1,8 +1,25 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
 from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
 from TauAnalysis.CandidateTools.resolutions_cfi import *
 from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
+
+svFitLikelihoodMuTauPairKinematicsPhaseSpace = copy.deepcopy(svFitLikelihoodDiTauKinematicsPhaseSpace)
+svFitLikelihoodMuTauPairKinematicsPhaseSpace.pluginType = "SVfitLikelihoodMuTauPairKinematics"
+svFitLikelihoodMuTauPairKinematicsPhaseSpace.leg1.pluginType = "SVfitMuonLikelihoodPhaseSpace"
+svFitLikelihoodMuTauPairKinematicsPhaseSpace.leg2.pluginType = "SVfitTauLikelihoodPhaseSpace"
+
+svFitLikelihoodMuTauPairKinematicsPolarized = copy.deepcopy(svFitLikelihoodDiTauKinematicsPolarized)
+svFitLikelihoodMuTauPairKinematicsPolarized.pluginType = "SVfitLikelihoodMuTauPairKinematics"
+svFitLikelihoodMuTauPairKinematicsPolarized.leg1.pluginType = "SVfitMuonLikelihoodPolarization"
+svFitLikelihoodMuTauPairKinematicsPolarized.leg2.pluginType = "SVfitTauLikelihoodPolarization"
+
+svFitLikelihoodMuTauPairMEt = copy.deepcopy(svFitLikelihoodMEt)
+svFitLikelihoodMuTauPairMEt.pluginType = cms.string("SVfitLikelihoodMEtMuTau")
+
+svFitLikelihoodMuTauPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
+svFitLikelihoodMuTauPairPtBalance.pluginType = cms.string("SVfitLikelihoodMuTauPairPtBalance")
 
 #--------------------------------------------------------------------------------
 # produce combinations of muon + tau-jet pairs
@@ -26,24 +43,10 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         useLeg2TrackingInFit = cms.bool(False),
         correctPrimaryVertexInFit = cms.bool(False)
     ),
-    collinearApproxMassCompatibility = cms.PSet(
-        mZ = cms.PSet(
-            resonanceMass = cms.double(91.2),
-            resonanceWidth = cms.double(2.5),
-            metResolutionPx = pfMEtResolutionPx,
-            metResolutionPy = pfMEtResolutionPy
-        ),
-        mAH120 = cms.PSet(
-            resonanceMass = cms.double(120),
-            resonanceWidth = cms.double(1.),
-            metResolutionPx = pfMEtResolutionPx,
-            metResolutionPy = pfMEtResolutionPy
-        )
-    ),
     svFit = cms.PSet(
         psKine = cms.PSet(
             likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPhaseSpace         
+                svFitLikelihoodMuTauPairKinematicsPhaseSpace         
             ),
             estUncertainties = cms.PSet(
                 numSamplings = cms.int32(-1)
@@ -51,8 +54,8 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ),
         psKine_MEt = cms.PSet(
             likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPhaseSpace,
-                svFitLikelihoodMEt
+                svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+                svFitLikelihoodMuTauPairMEt
             ),
             estUncertainties = cms.PSet(
                 numSamplings = cms.int32(-1)
@@ -60,9 +63,9 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ),
         psKine_MEt_ptBalance = cms.PSet(
             likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPhaseSpace,
-                svFitLikelihoodMEt,
-                svFitLikelihoodDiTauPtBalance
+                svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+                svFitLikelihoodMuTauPairMEt,
+                svFitLikelihoodMuTauPairPtBalance
             ),
             estUncertainties = cms.PSet(
                 #numSamplings = cms.int32(1000)
@@ -71,7 +74,7 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ),
         polKine = cms.PSet(
             likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPolarized        
+                svFitLikelihoodMuTauPairKinematicsPolarized        
             ),
             estUncertainties = cms.PSet(
                 numSamplings = cms.int32(-1)
@@ -79,8 +82,8 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ),
         polKine_MEt = cms.PSet(
             likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPolarized,
-                svFitLikelihoodMEt
+                svFitLikelihoodMuTauPairKinematicsPolarized,
+                svFitLikelihoodMuTauPairMEt
             ),
             estUncertainties = cms.PSet(
                 numSamplings = cms.int32(-1)
@@ -88,9 +91,9 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ),
         polKine_MEt_ptBalance = cms.PSet(
             likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauKinematicsPolarized,
-                svFitLikelihoodMEt,
-                svFitLikelihoodDiTauPtBalance
+                svFitLikelihoodMuTauPairKinematicsPolarized,
+                svFitLikelihoodMuTauPairMEt,
+                svFitLikelihoodMuTauPairPtBalance
             ),
             estUncertainties = cms.PSet(
                 #numSamplings = cms.int32(1000)
