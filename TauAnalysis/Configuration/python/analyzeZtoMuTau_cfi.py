@@ -818,7 +818,7 @@ muTauAnalysisSequence = cms.VPSet(
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauChargeCumulative'
+            'tauHistManager.tauSource = selectedPatTausForMuTauMuonVetoCumulative'
         )
     ),  
     cms.PSet(
