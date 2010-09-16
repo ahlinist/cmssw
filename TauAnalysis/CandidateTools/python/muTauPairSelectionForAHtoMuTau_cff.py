@@ -18,17 +18,11 @@ selectedMuTauPairsForAHtoMuTauMt1MET = copy.deepcopy(selectedMuTauPairsMt1MET)
 
 selectedMuTauPairsForAHtoMuTauPzetaDiff = copy.deepcopy(selectedMuTauPairsPzetaDiff)
 
-selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto = cms.EDFilter("PATMuTauPairSelector",
-    cut = cms.string('collinearApproxCompatibility("mZ").minuitFitChi2 > 1.'),
-    filter = cms.bool(False)
-)
-
 patMuTauPairSelConfiguratorForAHtoMuTau = objSelConfigurator(
     [ selectedMuTauPairsForAHtoMuTauAntiOverlapVeto,
       selectedMuTauPairsForAHtoMuTauZeroCharge,
       selectedMuTauPairsForAHtoMuTauMt1MET,
-      selectedMuTauPairsForAHtoMuTauPzetaDiff,
-      selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto ],
+      selectedMuTauPairsForAHtoMuTauPzetaDiff ],
     src = "allMuTauPairs",
     pyModuleName = __name__,
     doSelIndividual = True
@@ -50,15 +44,11 @@ selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolation = copy.deepcopy(selectedM
 
 selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsForAHtoMuTauPzetaDiff)
 
-
-selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto)
-
 patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolation = objSelConfigurator(
     [ selectedMuTauPairsForAHtoMuTauAntiOverlapVetoLooseMuonIsolation,
       selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolation,
       selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolation,
-      selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation,
-      selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation ],
+      selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation ],
     src = "allMuTauPairsLooseMuonIsolation",
     pyModuleName = __name__,
     doSelIndividual = True

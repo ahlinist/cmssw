@@ -7,7 +7,8 @@ process = cms.Process('runAHtoMuTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
@@ -81,6 +82,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
+        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
         #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
         'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part01.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part02.root',
@@ -98,6 +100,9 @@ process.source = cms.Source(
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part14.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part15.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part16.root'
+    ##),
+    ##eventsToProcess = cms.untracked.VEventID(
+    ##    '1:386'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -171,13 +176,6 @@ changeCut(process, "selectedPatMuonsEcalIsoLooseIsolation", "(ecalIso/pt) < 0.25
 
 # enable cut on TaNC output
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCfrQuarterPercent') > 0.5")
-
-# enable/disable cut on Z mass veto
-##changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto", "collinearApproxCompatibility('mZ').minuitFitChi2 > 2.")
-changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVeto", "collinearApproxCompatibility('mZ').minuitFitChi2 > -1.")
-
-##changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation", "collinearApproxCompatibility('mZ').minuitFitChi2 > 2.")
-changeCut(process, "selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation", "collinearApproxCompatibility('mZ').minuitFitChi2 > -1.")
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
