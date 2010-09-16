@@ -47,7 +47,6 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         evtSelDiTauCandidateForAHtoMuTauMt1MET,
         evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
 
         # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
         evtSelDiMuPairZmumuHypothesisVeto,
@@ -76,12 +75,12 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         triggerHistManagerForMuTau,
         svFitLikelihoodAnalyzer,
         dataBinner,
-        chi2mZbinGridHistManager
+        leg1ChargeBinGridHistManager
     ),
 
     eventDumps = cms.VPSet(
         muTauEventDump.clone(
-            diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative'),
+            diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
             muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTau'),
             triggerConditions = cms.vstring("evtSelNonCentralJetEt20bTag: passed_cumulative")
         )
@@ -96,7 +95,7 @@ analyzeAHtoMuTauEvents_wBtag = analyzeAHtoMuTauEvents_woBtag.clone(
 
     eventDumps = cms.VPSet(
         muTauEventDump.clone(
-            diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative'),
+            diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
             muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTau'),
             triggerConditions = cms.vstring("evtSelCentralJetEt20bTag: passed_cumulative")
         )
