@@ -360,36 +360,65 @@ selectPatTausForMuTau = patTauSelConfiguratorForMuTau.configure(pyNameSpace = lo
 selectedPatTausForDiTauEta21.cut = selectedPatTausEta21.cut
 selectedPatTausForDiTauPt20.cut = selectedPatTausPt20.cut
 selectedPatTausForDiTauLeadTrk.cut = selectedPatTausLeadTrk.cut
-selectedPatTausForDiTauLeadTrkPt.cut = selectedPatTausLeadTrkPt.cut
-selectedPatTausForDiTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
-selectedPatTausForDiTauTrkIso.cut = selectedPatTausTrkIso.cut
-selectedPatTausForDiTauEcalIso.cut = selectedPatTausEcalIso.cut
-selectedPatTausForDiTauProng.cut = selectedPatTausProng.cut
-selectedPatTausForDiTauCharge.cut = selectedPatTausCharge.cut
+selectedPatTausForDiTau1stLeadTrkPt.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 12.')
+selectedPatTausForDiTau1stTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > 0.5')
+selectedPatTausForDiTau1stTrkIso.cut = selectedPatTausTrkIso.cut
+selectedPatTausForDiTau1stEcalIso.cut = selectedPatTausEcalIso.cut
+selectedPatTausForDiTau1stProng.cut = selectedPatTausProng.cut
+selectedPatTausForDiTau1stCharge.cut = selectedPatTausCharge.cut
+selectedPatTausForDiTau1stMuonVeto.cut = selectedPatTausMuonVeto.cut
+selectedPatTausForDiTau1stElectronVeto.cut = selectedPatTausElectronVeto.cut
+selectedPatTausForDiTau2ndLeadTrkPt.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 8.')
+selectedPatTausForDiTau2ndTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > 0.5')
+selectedPatTausForDiTau2ndTrkIso.cut = selectedPatTausTrkIso.cut
+selectedPatTausForDiTau2ndEcalIso.cut = selectedPatTausEcalIso.cut
+selectedPatTausForDiTau2ndProng.cut = selectedPatTausProng.cut
+selectedPatTausForDiTau2ndCharge.cut = selectedPatTausCharge.cut
+selectedPatTausForDiTau2ndMuonVeto.cut = selectedPatTausMuonVeto.cut
+selectedPatTausForDiTau2ndElectronVeto.cut = selectedPatTausElectronVeto.cut
 
-patTauSelConfiguratorForDiTau = objSelConfigurator(
+patTauSelConfiguratorForDiTau1st = objSelConfigurator(
     [ selectedPatTausForDiTauEta21,
       selectedPatTausForDiTauPt20,
       selectedPatTausForDiTauLeadTrk,
-      selectedPatTausForDiTauLeadTrkPt,
-      selectedPatTausForDiTauTaNCdiscr,
-      selectedPatTausForDiTauTrkIso,
-      selectedPatTausForDiTauEcalIso,
-      selectedPatTausForDiTauProng,
-      selectedPatTausForDiTauCharge ],
+      selectedPatTausForDiTau1stLeadTrkPt,
+      selectedPatTausForDiTau1stTaNCdiscr,
+      selectedPatTausForDiTau1stTrkIso,
+      selectedPatTausForDiTau1stEcalIso,
+      selectedPatTausForDiTau1stProng,
+      selectedPatTausForDiTau1stCharge,
+      selectedPatTausForDiTau1stMuonVeto,
+      selectedPatTausForDiTau1stElectronVeto ],
     src = "cleanPatTaus",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectPatTausForDiTau = patTauSelConfiguratorForDiTau.configure(pyNameSpace = locals())
+selectPatTausForDiTau1st = patTauSelConfiguratorForDiTau1st.configure(pyNameSpace = locals())
+
+patTauSelConfiguratorForDiTau2nd = objSelConfigurator(
+    [ selectedPatTausForDiTau2ndLeadTrkPt,
+      selectedPatTausForDiTau2ndTaNCdiscr,
+      selectedPatTausForDiTau2ndTrkIso,
+      selectedPatTausForDiTau2ndEcalIso,
+      selectedPatTausForDiTau2ndProng,
+      selectedPatTausForDiTau2ndCharge,
+      selectedPatTausForDiTau2ndMuonVeto,
+      selectedPatTausForDiTau2ndElectronVeto ],
+    src = "selectedPatTausForDiTauLeadTrkCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectPatTausForDiTau2nd = patTauSelConfiguratorForDiTau2nd.configure(pyNameSpace = locals())
+
+selectPatTausForDiTau = cms.Sequence(selectPatTausForDiTau1st * selectPatTausForDiTau2nd)
 
 # define collections of pat::(PF)Taus used in W->tau-jet + nu channel
-
 selectedPatTausForWTauNuEta21.cut = selectedPatTausEta21.cut
 selectedPatTausForWTauNuPt20.cut = cms.string("pt > 25. & pt < 60.")
 selectedPatTausForWTauNuLeadTrk.cut = selectedPatTausLeadTrk.cut
-selectedPatTausForWTauNuLeadTrkPt.cut = cms.string("leadTrack().isNonnull() & leadTrack().pt() > 20.")
+selectedPatTausForWTauNuLeadTrkPt.cut = cms.string('leadTrack().isNonnull() & leadTrack().pt() > 20.')
 selectedPatTausForWTauNuTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') 
 selectedPatTausForWTauNuEcalIso.cut = selectedPatTausEcalIso.cut
 selectedPatTausForWTauNuTrkIso.cut = selectedPatTausTrkIso.cut
