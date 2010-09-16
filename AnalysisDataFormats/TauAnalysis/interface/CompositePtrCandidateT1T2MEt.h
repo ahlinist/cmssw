@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.16 $
+ * \version $Revision: 1.17 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.16 2010/08/30 13:17:14 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.17 2010/09/01 15:20:29 veelken Exp $
  *
  */
 
@@ -27,7 +27,6 @@
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/CollinearApproxCompatibility.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
@@ -119,19 +118,6 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double x2CollinearApprox() const { return x2CollinearApprox_; }
   bool collinearApproxIsValid() const { return collinearApproxIsValid_; }
 
-  /// get compatibility of four-momentum computed by collinear approximation 
-  /// with different mass hypotheses
-  const CollinearApproxCompatibility* collinearApproxCompatibility(const std::string& hypothesis) const 
-  {
-    std::map<std::string, CollinearApproxCompatibility>::const_iterator it = collinearApproxCompatibilities_.find(hypothesis);
-    if ( it != collinearApproxCompatibilities_.end() ) {
-      return &it->second;
-    } else {
-      edm::LogWarning ("collinearApproxFitChi2") << " No value defined for hypothesis = " << hypothesis << " !!";
-      return 0;
-    }
-  }
-
   /// get the four-momentum and x1-x2 (xi = visible energy fraction of the ith-tau)
   /// computed by improved coll. approx.
   const reco::Candidate::LorentzVector& p4ImprovedCollinearApprox() const { return p4ImprovedCollinearApprox_; }
@@ -207,11 +193,11 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
       = TauAnalysis_namespace::findMapElement<std::string, std::string, SVfitDiTauSolution>
           (svFitSolutionMap_, algorithm, polHypoName_expanded);
 
-    if ( !svFitSolution ) {
-      edm::LogError("CompositePtrCandidateT1T2MEt::svFitSolution") 
-	<< " No SVfit solution defined for algorithm = " << algorithm << "," 
-	<< " polarizationHypothesis = " << polHypoName_expanded << " !!";
-    }
+    //if ( !svFitSolution ) {
+    //  edm::LogError("CompositePtrCandidateT1T2MEt::svFitSolution") 
+    //	  << " No SVfit solution defined for algorithm = " << algorithm << "," 
+    //	  << " polarizationHypothesis = " << polHypoName_expanded << " !!";
+    //}
 
     return svFitSolution;
   }
@@ -246,15 +232,10 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     validityCollinearApproxFlag_ = flag;
   }
 
-  /// set compatibilities of four-momentum computed by collinear approximation with different mass hypotheses
-  void setCollinearApproxCompatibilities(std::map<std::string, CollinearApproxCompatibility> collinearApproxCompatibilities)
-  {
-    collinearApproxCompatibilities_ = collinearApproxCompatibilities;
-  }
-  
   /// set four-momentum and scaling factors for momenta of visible decay products
   /// computed by Improved collinear approximation
-  void setImprovedCollinearApproxQuantities(const reco::Candidate::LorentzVector& p4, double x1, double x2, double scaleFactor, bool isValid, int flag)
+  void setImprovedCollinearApproxQuantities(
+         const reco::Candidate::LorentzVector& p4, double x1, double x2, double scaleFactor, bool isValid, int flag)
   {
     p4ImprovedCollinearApprox_ = p4;
     x1ImprovedCollinearApprox_ = x1;
@@ -319,9 +300,6 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   bool collinearApproxIsValid_;
   double x1CollinearApprox_;
   double x2CollinearApprox_;
-
-  /// compatibilities of four-momentum computed by collinear approximation with different mass hypotheses
-  std::map<std::string, CollinearApproxCompatibility> collinearApproxCompatibilities_;
 
   /// four-momentum of visible decay products
   reco::Candidate::LorentzVector p4ImprovedCollinearApprox_;
