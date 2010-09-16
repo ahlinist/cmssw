@@ -13,15 +13,16 @@ selectedDiTauPairsAntiOverlapVeto = cms.EDFilter("PATDiTauPairSelector",
     filter = cms.bool(False)
 )
 
-# require muon and tau not to be back-to-back
-selectedDiTauPairsAcoplanarity = cms.EDFilter("PATDiTauPairSelector",
-    cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)'),
-    filter = cms.bool(False)
-)
-
 # require muon and tau to form a zero-charge pair
 selectedDiTauPairsZeroCharge = cms.EDFilter("PATDiTauPairSelector",
     cut = cms.string('charge = 0'),
     #cut = cms.string('(leg1.leadTrack.charge + leg2.leadTrack.charge) = 0'), # NOTE: to be used for background studies only !!
+    filter = cms.bool(False)
+)
+
+# require the two tau-jets not to be back-to-back
+selectedDiTauPairsAcoplanarity = cms.EDFilter("PATDiTauPairSelector",
+    #cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)'),
+    cut = cms.string('(dPhi1MET < 3.2) | (dPhi2MET < 3.2)'), # CV: cut disabled for now...
     filter = cms.bool(False)
 )
