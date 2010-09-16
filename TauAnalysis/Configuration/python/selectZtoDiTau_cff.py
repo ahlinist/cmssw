@@ -63,6 +63,13 @@ cfgFirstTauLeadTrkPtCut = cms.PSet(
     src_individual = cms.InputTag('selectedDiTauPairs1stTauLeadTrkPtIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgFirstTauTaNCdiscrCut = cms.PSet(
+    pluginName = cms.string('firstTauTaNCdiscrCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs1stTauTaNCdiscrCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs1stTauTaNCdiscrIndividual'),
+    minNumber = cms.uint32(1)
+)
 cfgFirstTauTrkIsoCut = cms.PSet(
     pluginName = cms.string('firstTauTrkIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -89,6 +96,20 @@ cfgFirstTauChargeCut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedDiTauPairs1stTauChargeCumulative'),
     src_individual = cms.InputTag('selectedDiTauPairs1stTauChargeIndividual'),
+    minNumber = cms.uint32(1)
+)
+cfgFirstTauMuonVeto = cms.PSet(
+    pluginName = cms.string('firstTauMuonVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs1stTauMuonVetoCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs1stTauMuonVetoIndividual'),
+    minNumber = cms.uint32(1)
+)
+cfgFirstTauElectronVeto = cms.PSet(
+    pluginName = cms.string('firstTauElectronVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs1stTauElectronVetoCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs1stTauElectronVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -121,6 +142,13 @@ cfgSecondTauLeadTrkPtCut = cms.PSet(
     src_individual = cms.InputTag('selectedDiTauPairs2ndTauLeadTrkPtIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgSecondTauTaNCdiscrCut = cms.PSet(
+    pluginName = cms.string('secondTauTaNCdiscrCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauTaNCdiscrCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs2ndTauTaNCdiscrIndividual'),
+    minNumber = cms.uint32(1)
+)
 cfgSecondTauTrkIsoCut = cms.PSet(
     pluginName = cms.string('secondTauTrkIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -149,6 +177,20 @@ cfgSecondTauChargeCut = cms.PSet(
     src_individual = cms.InputTag('selectedDiTauPairs2ndTauChargeIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgSecondTauMuonVeto = cms.PSet(
+    pluginName = cms.string('secondTauMuonVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauMuonVetoCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs2ndTauMuonVetoIndividual'),
+    minNumber = cms.uint32(1)
+)
+cfgSecondTauElectronVeto = cms.PSet(
+    pluginName = cms.string('secondTauElectronVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauElectronVetoCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs2ndTauElectronVetoIndividual'),
+    minNumber = cms.uint32(1)
+)
 
 # di-tau candidate selection
 cfgDiTauCandidateForDiTauAntiOverlapVeto = cms.PSet(
@@ -158,18 +200,18 @@ cfgDiTauCandidateForDiTauAntiOverlapVeto = cms.PSet(
     src_individual = cms.InputTag('selectedDiTauPairsAntiOverlapVetoIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgDiTauCandidateForDiTauAcoplanarityCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForDiTauAcoplanarityCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedDiTauPairsAcoplanarityCumulative'),
-    src_individual = cms.InputTag('selectedDiTauPairsAcoplanarityIndividual'),
-    minNumber = cms.uint32(1)
-)
 cfgDiTauCandidateForDiTauZeroChargeCut = cms.PSet(
     pluginName = cms.string('diTauCandidateForDiTauZeroChargeCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedDiTauPairsZeroChargeCumulative'),
     src_individual = cms.InputTag('selectedDiTauPairsZeroChargeIndividual'),
+    minNumber = cms.uint32(1)
+)
+cfgDiTauCandidateForDiTauAcoplanarityCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForDiTauAcoplanarityCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairsAcoplanarityCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairsAcoplanarityIndividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -190,21 +232,27 @@ zToDiTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgFirstTauPtCut,
       cfgFirstTauLeadTrkCut,
       cfgFirstTauLeadTrkPtCut,
+      cfgFirstTauTaNCdiscrCut,
       cfgFirstTauTrkIsoCut,
       cfgFirstTauEcalIsoCut,
       cfgFirstTauProngCut,
       cfgFirstTauChargeCut,
+      cfgFirstTauMuonVeto,
+      cfgFirstTauElectronVeto,
       cfgSecondTauEtaCut,
       cfgSecondTauPtCut,
       cfgSecondTauLeadTrkCut,
       cfgSecondTauLeadTrkPtCut,
+      cfgSecondTauTaNCdiscrCut,
       cfgSecondTauTrkIsoCut,
       cfgSecondTauEcalIsoCut,
       cfgSecondTauProngCut,
       cfgSecondTauChargeCut,
+      cfgSecondTauMuonVeto,
+      cfgSecondTauElectronVeto,
       cfgDiTauCandidateForDiTauAntiOverlapVeto,
-      cfgDiTauCandidateForDiTauAcoplanarityCut,
       cfgDiTauCandidateForDiTauZeroChargeCut,
+      cfgDiTauCandidateForDiTauAcoplanarityCut,
       cfgCentralJetVeto ], 
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
