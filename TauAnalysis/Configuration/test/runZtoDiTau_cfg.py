@@ -41,7 +41,7 @@ process.load("TauAnalysis.Configuration.analyzeZtoDiTau_cff")
 
 process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
     src = cms.InputTag("genParticles"),
-    maxEventsToPrint = cms.untracked.int32(10)
+    maxEventsToPrint = cms.untracked.int32(100)
 )
 
 # print event content 
@@ -64,10 +64,25 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
+        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part01.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part02.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part03.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part04.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part05.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part06.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part07.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part08.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part09.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part10.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part11.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part12.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part13.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part14.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part15.root',
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part16.root'
+        
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -114,8 +129,7 @@ switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
 from TauAnalysis.Configuration.tools.metTools import *
 
 # uncomment to add pfMET
-# first Boolean swich on genMET with mu's production
-# second Boolean swich on type-1 corrections
+# set Boolean swich to true in order to apply type-1 corrections
 addPFMet(process, correct = False)
 
 # uncomment to replace caloMET by pfMET in all di-tau objects
@@ -161,19 +175,6 @@ if not hasattr(process, "isBatchMode"):
     process.p.replace(process.producePatTupleZtoDiTauSpecific, process.producePatTuple + process.producePatTupleZtoDiTauSpecific)
 #--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# restrict input for PAT-tuple production to AOD event content (instead of RECO/AOD):
-#  o use "reducedEcalRecHits" collections for computation of electron isolation variables
-#  o disable PAT trigger matching and filling of trigger information histograms
-# (necessary to process FastSim samples)
-#
-# NOTE: the 'switchToAOD' function needs to be called
-#       at the very end of configuring the process object !!
-#
-from TauAnalysis.Configuration.tools.aodTools import *
-switchToAOD(process, triggerHistManager = process.triggerHistManagerForDiTau, eventDumpPlugin = process.diTauEventDump)
-#--------------------------------------------------------------------------------
-
 # print-out all python configuration parameter information
 #
 # NOTE: need to delete empty sequence produced by call to "switchJetCollection"
@@ -182,3 +183,6 @@ switchToAOD(process, triggerHistManager = process.triggerHistManagerForDiTau, ev
 #
 #del process.patJetMETCorrections
 #print process.dumpPython()
+
+#from TauAnalysis.Configuration.tools.switchToData import switchToData
+#switchToData(process)
