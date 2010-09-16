@@ -849,7 +849,6 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
         process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
         process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        process.evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
         process.evtSelDiMuPairZmumuHypothesisVeto
     ]
 
@@ -983,7 +982,6 @@ def enableFactorization_makeAHtoMuTauPlots(process,
         process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
         process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        process.evtSelDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
         process.evtSelDiMuPairZmumuHypothesisVeto
     ]
 
