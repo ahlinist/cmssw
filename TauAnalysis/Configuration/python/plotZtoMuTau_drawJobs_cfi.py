@@ -310,9 +310,9 @@ drawJobConfigurator_ZtoMuTau.add(
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after Charge(Tau) = +/-1 Cut)",
+            title = "Tau (after Tau #mu-Veto Cut)",
             xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterTauCharge"
+            name = "cutFlowControlPlots_tau_afterTauMuonVeto"
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauDiscriminatorAgainstElectrons',
