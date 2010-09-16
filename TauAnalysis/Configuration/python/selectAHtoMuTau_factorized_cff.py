@@ -36,11 +36,6 @@ cfgDiTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation = cfgDiTauCandidateF
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationIndividual')
 )
-cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation = cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto.clone(
-    pluginName = cms.string('diTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolationCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolationIndividual')
-)
 
 # central jet veto/b-jet candidate selection
 # for not not overlapping with loosely "isolated" muons
@@ -69,7 +64,6 @@ ahToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauMt1METcutLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation,
-      cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVetoLooseMuonIsolation,
       cfgCentralJetEt20bTagVetoLooseMuonIsolation,
       cfgCentralJetEt20CutLooseMuonIsolation,
       cfgCentralJetEt20bTagCutLooseMuonIsolation ],

@@ -30,14 +30,6 @@ cfgDiTauCandidateForAHtoMuTauPzetaDiffCut = cfgDiTauCandidateForMuTauPzetaDiffCu
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffIndividual')
 )
-cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto = cms.PSet(    
-    pluginName = cms.string('diTauCandidateForAHtoMuTauCollinearApproxZmassVeto'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauCollinearApproxZmassVetoIndividual'),
-    systematics = cms.vstring(muTauPairSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
 
 # central jet veto/b-jet candidate selection
 cfgCentralJetEt20bTagVeto = cms.PSet(
@@ -90,7 +82,6 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForAHtoMuTauZeroChargeCut,
       cfgDiTauCandidateForAHtoMuTauMt1METcut,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCut,
-      cfgDiTauCandidateForAHtoMuTauCollinearApproxZmassVeto,
       cfgDiMuPairZmumuHypothesisVeto,
       cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,
