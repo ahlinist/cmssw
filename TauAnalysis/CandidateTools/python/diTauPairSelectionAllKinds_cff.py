@@ -159,14 +159,15 @@ selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolati
 #--------------------------------------------------------------------------------
 
 selectedDiTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.7')
-selectedDiTauPairsAcoplanarity.cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)')
 selectedDiTauPairsZeroCharge.cut = cms.string('charge = 0')
+#selectedDiTauPairsAcoplanarity.cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)')
+selectedDiTauPairsAcoplanarity.cut = cms.string('(dPhi1MET < 3.2) | (dPhi2MET < 3.2)') # CV: cut disabled for now...
 
 patDiTauPairSelConfigurator = objSelConfigurator(
     [ selectedDiTauPairsAntiOverlapVeto,
-      selectedDiTauPairsAcoplanarity,
-      selectedDiTauPairsZeroCharge ],
-    src = "selectedDiTauPairs2ndTauChargeCumulative",
+      selectedDiTauPairsZeroCharge, 
+      selectedDiTauPairsAcoplanarity ],
+    src = "selectedDiTauPairs2ndTauElectronVetoCumulative",
     pyModuleName = __name__,
     doSelIndividual = True
 )
