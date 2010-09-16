@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 import TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_grid_cfi as samples
 
 #--------------------------------------------------------------------------------
-# Print-out cut-flow information for Z --> mu + tau-jet channel
+# Print-out cut-flow information for for MSSM Higgs analysis in
+# A/H --> mu + tau-jet channel
 #--------------------------------------------------------------------------------
 
 def sample_dqm_name(sample):
