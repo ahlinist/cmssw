@@ -2,6 +2,7 @@ import os
 import subprocess
 import copy
 import string
+
 from TauAnalysis.Configuration.cfgOptionMethods import copyCfgFileAndApplyOptions
 
 _CRAB_TEMPLATE = string.Template('''
