@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
 #--------------------------------------------------------------------------------  
 # produce collections of tau-jet + tau-jet pairs passing selection criteria
@@ -26,3 +27,17 @@ selectedDiTauPairsAcoplanarity = cms.EDFilter("PATDiTauPairSelector",
     cut = cms.string('(dPhi1MET < 3.2) | (dPhi2MET < 3.2)'), # CV: cut disabled for now...
     filter = cms.bool(False)
 )
+
+# define additional collections of tau-jet + tau-jet candidates
+# with loose lead. track Pt, track isolation and ECAL isolation applied on second leg
+# (NOTE: to be used for the purpose of factorizing efficiencies
+#        of tau id. criteria from other event selection criteria,
+#        in order to avoid problems with limited Monte Carlo statistics)
+
+selectedDiTauPairsAntiOverlapVetoLoose2ndTau = copy.deepcopy(selectedDiTauPairsAntiOverlapVeto)
+
+selectedDiTauPairsZeroChargeLoose2ndTau = selectedDiTauPairsZeroCharge.clone(
+    cut = cms.string('(leg1.charge + leg2.leadTrack.charge) = 0')
+)    
+
+selectedDiTauPairsAcoplanarityLoose2ndTau = copy.deepcopy(selectedDiTauPairsAcoplanarity)

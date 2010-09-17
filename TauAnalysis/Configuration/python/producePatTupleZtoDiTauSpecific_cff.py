@@ -23,7 +23,7 @@ from TauAnalysis.RecoTools.patJetSelection_cff import *
 #
 from TauAnalysis.RecoTools.patMetSelection_cff import *
 #
-# produce collections of muon + tau-jet pairs
+# produce collections of tau-jet + tau-jet pairs
 # passing different selection criteria
 #
 from TauAnalysis.CandidateTools.diTauPairProduction_cff import *
@@ -34,6 +34,6 @@ producePatTupleZtoDiTauSpecific = cms.Sequence(
    + selectPatElectrons
    + selectPatTaus + selectPatTausForDiTau
    + produceDiTauPairs
-   + selectDiTauPairs
+   + selectDiTauPairs + selectDiTauPairsLoose2ndTau
    + selectPatJets
 )

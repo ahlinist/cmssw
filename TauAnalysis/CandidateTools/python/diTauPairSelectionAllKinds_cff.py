@@ -174,9 +174,31 @@ patDiTauPairSelConfigurator = objSelConfigurator(
 
 selectDiTauPairs = patDiTauPairSelConfigurator.configure(pyNameSpace = locals())
 
+# define additional collections of tau-jet + tau-jet candidates
+# with loose lead. track Pt, track isolation and ECAL isolation applied on second leg
+# (NOTE: to be used for the purpose of factorizing efficiencies
+#        of tau id. criteria from other event selection criteria,
+#        in order to avoid problems with limited Monte Carlo statistics)
+
+selectedDiTauPairsAntiOverlapVetoLoose2ndTau.cut = cms.string('dR12 > 0.7')
+selectedDiTauPairsZeroChargeLoose2ndTau.cut = cms.string('(leg1.charge + leg2.leadTrack.charge) = 0')
+#selectedDiTauPairsAcoplanarityLoose2ndTau.cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)')
+selectedDiTauPairsAcoplanarityLoose2ndTau.cut = cms.string('(dPhi1MET < 3.2) | (dPhi2MET < 3.2)') # CV: cut disabled for now...
+
+patDiTauPairSelConfiguratorLoose2ndTau = objSelConfigurator(
+    [ selectedDiTauPairsAntiOverlapVetoLoose2ndTau,
+      selectedDiTauPairsZeroChargeLoose2ndTau, 
+      selectedDiTauPairsAcoplanarityLoose2ndTau ],
+    src = "selectedDiTauPairs2ndTauElectronVetoLooseCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectDiTauPairsLoose2ndTau = patDiTauPairSelConfiguratorLoose2ndTau.configure(pyNameSpace = locals())
+
 selectDiTauPairsAllKinds = cms.Sequence(
     selectElecMuPairs + selectElecMuPairsLooseElectronIsolation
    + selectElecTauPairs + selectElecTauPairsLooseElectronIsolation
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
-   + selectDiTauPairs
+   + selectDiTauPairs + selectDiTauPairsLoose2ndTau
 )
