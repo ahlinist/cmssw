@@ -39,6 +39,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   CompositePtrCandidateT1T2MEtAlgorithm(const edm::ParameterSet& cfg)
     : svMassRecoFitter_(cfg)
   {
+    //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
+
     recoMode_ = cfg.getParameter<std::string>("recoMode");
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
     if ( cfg.exists("svFit") ) {
@@ -52,6 +54,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	copyCfgParameter<edm::InputTag>(cfg, "srcBeamSpot", cfgSVfitAlgorithm);
 	SVfitAlgorithm<T1,T2>* svFitAlgorithm = new SVfitAlgorithm<T1,T2>(cfgSVfitAlgorithm);
 	svFitAlgorithms_.insert(std::pair<std::string, SVfitAlgorithm<T1,T2>*>(*svFitAlgorithmName, svFitAlgorithm));
+	//std::cout << "--> adding SVfit algorithm: name = " << (*svFitAlgorithmName) << std::endl;
       }
     }
     scaleFuncImprovedCollinearApprox_ = cfg.getParameter<std::string>("scaleFuncImprovedCollinearApprox");
@@ -119,7 +122,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
 
 //--- SV method computation (if we have the PV and beamspot)
-      if( pv && beamSpot && trackBuilder && doSVreco ) {
+      if ( pv && beamSpot && trackBuilder && doSVreco ) {
 	std::vector<SVmassRecoSolution> solutions = svMassRecoFitter_.fitVertices(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
 	//std::cout << "solutions.size = " << solutions.size() << std::endl;
 	compositePtrCandidate.setSVfitSolutions(solutions);
