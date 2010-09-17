@@ -76,9 +76,9 @@ triggerHistManagerForDiTau.l1Bits = cms.vstring(
     'L1_ETM60'
 )
 triggerHistManagerForDiTau.hltPaths = cms.vstring(
-    'HLT_IsoTau_MET65_Trk20',
-    'HLT_IsoTau_MET35_Trk15_L1MET',
-    'HLT_DoubleIsoTau_Trk3',
+    ##'HLT_IsoTau_MET65_Trk20',
+    ##'HLT_IsoTau_MET35_Trk15_L1MET',
+    ##'HLT_DoubleIsoTau_Trk3',
     'HLT_MET25',
     'HLT_MET35',
     'HLT_MET50',
@@ -122,7 +122,6 @@ evtSelPrimaryEventVertex = cms.PSet(
     pluginName = cms.string('evtSelPrimaryEventVertex'),
     pluginType = cms.string('BoolEventSelector'),
     src = cms.InputTag('primaryEventVertex')
-
 )
 evtSelPrimaryEventVertexQuality = cms.PSet(
     pluginName = cms.string('evtSelPrimaryEventVertexQuality'),
@@ -326,9 +325,9 @@ diTauEventDump = cms.PSet(
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
     hltPathsToPrint = cms.vstring(
-        'HLT_IsoTau_MET65_Trk20',
-        'HLT_IsoTau_MET35_Trk15_L1MET',
-        'HLT_DoubleIsoTau_Trk3'
+        ##'HLT_IsoTau_MET65_Trk20',
+        ##'HLT_IsoTau_MET35_Trk15_L1MET',
+        ##'HLT_DoubleIsoTau_Trk3'
     ),
     
     genParticleSource = cms.InputTag('genParticles'),
@@ -340,6 +339,29 @@ diTauEventDump = cms.PSet(
     muonSource = cms.InputTag('cleanPatMuons'),
     tauSource = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoCumulative'),
     diTauCandidateSource = cms.InputTag('selectedDiTauPairsAcoplanarityCumulative'),
+    svFitAlgorithms = cms.VPSet(
+        ##cms.PSet(
+        ##    name = cms.string("psKine")
+        ##),
+        ##cms.PSet(
+        ##    name = cms.string("psKine_MEt")
+        ##),
+        cms.PSet(
+            name = cms.string("psKine_MEt_ptBalance")
+        ),
+        ##cms.PSet(
+        ##    name = cms.string("polKine"),
+        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ##),
+        ##cms.PSet(
+        ##    name = cms.string("polKine_MEt"),
+        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ##),
+        cms.PSet(
+            name = cms.string("polKine_MEt_ptBalance"),
+            polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        )
+    ),
     jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
     caloMEtSource = cms.InputTag('patMETs'),
     pfMEtSource = cms.InputTag('patPFMETs'),
@@ -669,7 +691,7 @@ diTauAnalysisSequence = cms.VPSet(
             'triggerHistManagerForDiTau'
         ),
         replace = cms.vstring(
-            'tauHistManager1.tauSource = selectedPatTausForDiTau1stElectonVetoCumulative'
+            'tauHistManager1.tauSource = selectedPatTausForDiTau1stElectronVetoCumulative'
         )
     ),
 
@@ -860,7 +882,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForDiTauAcoplanarity'),
         title = cms.string('dPhi(1.Tau-MET) < 3.2 || dPhi(2.Tau-MET) < 3.2'), # cut disabled for now...
-        saveRunEventNumbers = cms.vstring('')
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -881,8 +903,8 @@ diTauAnalysisSequence = cms.VPSet(
             'tauHistManager2.tauSource = selectedPatTausForDiTau2ndElectronVetoCumulative',
             'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsAcoplanarityCumulative'
         )
-    #),
-
+    )
+    
     # veto events containing additional central jets with Et > 20 GeV
     #cms.PSet(
     #    filter = cms.string('evtSelCentralJetVeto'),
@@ -909,5 +931,4 @@ diTauAnalysisSequence = cms.VPSet(
     #        'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsAcoplanarityCumulative'
     #    )
     #)
-  )
 )
