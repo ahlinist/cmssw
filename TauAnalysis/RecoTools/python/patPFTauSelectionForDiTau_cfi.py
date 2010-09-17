@@ -52,3 +52,33 @@ selectedPatTausForDiTau2ndMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 # require tau candidate to pass electron veto
 selectedPatTausForDiTau1stElectronVeto = copy.deepcopy(selectedPatTausElectronVeto)
 selectedPatTausForDiTau2ndElectronVeto = copy.deepcopy(selectedPatTausElectronVeto)
+
+#--------------------------------------------------------------------------------
+# define additional collections of tau-jet candidates
+# with loose lead. track Pt, track isolation and ECAL isolation applied
+#
+# (NOTE: to be used for the purpose of factorizing efficiencies
+#        of tau id. criteria from other event selection criteria,
+#        in order to avoid problems with limited Monte Carlo statistics)
+#--------------------------------------------------------------------------------
+
+selectedPatTausForDiTau2ndLeadTrkPtLoose = selectedPatTausForDiTau2ndLeadTrkPt.clone(
+    cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 5.')
+)    
+selectedPatTausForDiTau2ndTaNCdiscrLoose = selectedPatTausForDiTau2ndTaNCdiscr.clone(
+    cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.')
+)    
+selectedPatTausForDiTau2ndTrkIsoLoose = selectedPatTausForDiTau2ndTrkIso.clone(
+    cut = cms.string('userIsolation("PfChargedHadronIso") < 8.')
+)     
+selectedPatTausForDiTau2ndEcalIsoLoose = selectedPatTausForDiTau2ndEcalIso.clone(
+    cut = cms.string('userIsolation("PfGammaIso") < 8.')
+)     
+selectedPatTausForDiTau2ndProngLoose = selectedPatTausForDiTau2ndProng.clone(
+    cut = cms.string('signalPFChargedHadrCands.size() > -1')
+)     
+selectedPatTausForDiTau2ndChargeLoose = selectedPatTausForDiTau2ndCharge.clone(
+    cut = cms.string('abs(charge) > -1.')
+)     
+selectedPatTausForDiTau2ndMuonVetoLoose = copy.deepcopy(selectedPatTausForDiTau2ndMuonVeto)
+selectedPatTausForDiTau2ndElectronVetoLoose = copy.deepcopy(selectedPatTausForDiTau2ndElectronVeto)
