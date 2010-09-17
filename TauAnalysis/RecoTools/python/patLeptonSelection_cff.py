@@ -412,7 +412,32 @@ patTauSelConfiguratorForDiTau2nd = objSelConfigurator(
 
 selectPatTausForDiTau2nd = patTauSelConfiguratorForDiTau2nd.configure(pyNameSpace = locals())
 
-selectPatTausForDiTau = cms.Sequence(selectPatTausForDiTau1st * selectPatTausForDiTau2nd)
+selectedPatTausForDiTau2ndLeadTrkPtLoose.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 5.')
+selectedPatTausForDiTau2ndTaNCdiscrLoose.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.')
+selectedPatTausForDiTau2ndTrkIsoLoose.cut = cms.string('userIsolation("PfChargedHadronIso") < 8.')
+selectedPatTausForDiTau2ndEcalIsoLoose.cut = cms.string('userIsolation("PfGammaIso") < 8.')
+selectedPatTausForDiTau2ndProngLoose.cut = cms.string('signalPFChargedHadrCands.size() > -1')
+selectedPatTausForDiTau2ndChargeLoose.cut = cms.string('abs(charge) > -1.')
+selectedPatTausForDiTau2ndMuonVetoLoose.cut = selectedPatTausMuonVeto.cut
+selectedPatTausForDiTau2ndElectronVetoLoose.cut = selectedPatTausElectronVeto.cut
+
+patTauSelConfiguratorForDiTau2ndLoose = objSelConfigurator(
+    [ selectedPatTausForDiTau2ndLeadTrkPtLoose,
+      selectedPatTausForDiTau2ndTaNCdiscrLoose,
+      selectedPatTausForDiTau2ndTrkIsoLoose,
+      selectedPatTausForDiTau2ndEcalIsoLoose,
+      selectedPatTausForDiTau2ndProngLoose,
+      selectedPatTausForDiTau2ndChargeLoose,
+      selectedPatTausForDiTau2ndMuonVetoLoose,
+      selectedPatTausForDiTau2ndElectronVetoLoose ],
+    src = "selectedPatTausForDiTauLeadTrkCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectPatTausForDiTau2ndLoose = patTauSelConfiguratorForDiTau2ndLoose.configure(pyNameSpace = locals())
+
+selectPatTausForDiTau = cms.Sequence(selectPatTausForDiTau1st * selectPatTausForDiTau2nd * selectPatTausForDiTau2ndLoose)
 
 # define collections of pat::(PF)Taus used in W->tau-jet + nu channel
 selectedPatTausForWTauNuEta21.cut = selectedPatTausEta21.cut
