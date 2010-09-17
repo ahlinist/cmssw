@@ -73,7 +73,7 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         particleMultiplicityHistManager,
         vertexHistManager,
         triggerHistManagerForMuTau,
-        svFitLikelihoodAnalyzer,
+        svFitLikelihoodAnalyzerForMuTau,
         dataBinner,
         leg1ChargeBinGridHistManager
     ),

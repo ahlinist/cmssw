@@ -88,6 +88,20 @@ from TauAnalysis.Core.eventWeightHistManager_cfi import *
 
 # import config for analyzer modules used for debugging purposes
 from TauAnalysis.Core.svFitLikelihoodAnalyzer_cfi import *
+from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
+svFitLikelihoodAnalyzerForMuTau = svFitLikelihoodAnalyzer.clone(
+    pluginName = cms.string('svFitLikelihoodAnalyzerForMuTau'),
+    pluginType = cms.string('SVfitLikelihoodMuTauPairAnalyzer'),
+      
+    diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
+
+    svFitLikelihoodFunctions = cms.VPSet(
+        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+        svFitLikelihoodMuTauPairKinematicsPolarized,
+        svFitLikelihoodMuTauPairMEt,
+        svFitLikelihoodMuTauPairPtBalance
+    )
+)
 
 # import config for binning results
 # used for keeping track of number of events passing all selection criteria
@@ -156,13 +170,6 @@ evtSelDiTauCandidateForAHtoMuTauPzetaDiff = evtSelDiTauCandidateForMuTauPzetaDif
     pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauPzetaDiff'),
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'individual')
-)
-evtSelDiTauCandidateForAHtoMuTauPzetaDiff = cms.PSet(
-    pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauPzetaDiff'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiff', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiff', 'individual'),
-    systematics = cms.vstring(muTauPairSystematics.keys())
 )
 
 # central jet veto/b-jet candidate selection
@@ -1344,7 +1351,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'particleMultiplicityHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
-            'svFitLikelihoodAnalyzer',
+            'svFitLikelihoodAnalyzerForMuTau',
             'dataBinner',
             'leg1ChargeBinGridHistManager'
         ),
