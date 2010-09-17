@@ -216,12 +216,12 @@ cfgDiTauCandidateForDiTauAcoplanarityCut = cms.PSet(
 )
 
 # veto events containing additional central jets with Et > 20 GeV
-cfgCentralJetVeto = cms.PSet(
-    pluginName = cms.string('centralJetVeto'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedPatJetsEt20Cumulative'),
-    maxNumber = cms.uint32(0)
-)
+#cfgCentralJetVeto = cms.PSet(
+#    pluginName = cms.string('centralJetVeto'),
+#    pluginType = cms.string('PATCandViewMaxEventSelector'),
+#    src = cms.InputTag('selectedPatJetsEt20Cumulative'), # CV: need to carefully check InputTag before using central jet veto !!
+#    maxNumber = cms.uint32(0)
+#)
 
 zToDiTauEventSelConfigurator = eventSelFlagProdConfigurator(
     [ #cfgTrigger,
@@ -252,8 +252,8 @@ zToDiTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgSecondTauElectronVeto,
       cfgDiTauCandidateForDiTauAntiOverlapVeto,
       cfgDiTauCandidateForDiTauZeroChargeCut,
-      cfgDiTauCandidateForDiTauAcoplanarityCut,
-      cfgCentralJetVeto ], 
+      cfgDiTauCandidateForDiTauAcoplanarityCut ],
+      #cfgCentralJetVeto ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
