@@ -114,6 +114,11 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # as input for pat::Tau production
 switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+
+# disable preselection on of pat::Taus
+# (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
+#  but re-enabled after switching tau collection)
+process.cleanPatTaus.preselection = cms.string('')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -145,6 +150,18 @@ process.p = cms.Path(
   + process.analyzeZtoDiTauEvents
   + process.saveZtoDiTauPlots 
 )
+
+
+#--------------------------------------------------------------------------------
+# import utility function for factorization
+from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runZtoDiTau
+#
+# define "hook" for enabling/disabling factorization
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#__#factorization#
+##enableFactorization_runZtoDiTau(process)
+#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for disabling estimation of systematic uncertainties
