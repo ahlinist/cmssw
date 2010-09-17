@@ -16,7 +16,7 @@ SAMPLES_TO_ANALYZE = [
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    'qcdDiJet',
+    'qcdSum',
     'WplusJets',
     'Zee',
     'Zmumu',
@@ -26,6 +26,7 @@ SAMPLES_TO_PLOT = [
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 SAMPLES_TO_PRINT.append('smBgSum')
+SAMPLES_TO_PRINT.append('smSum')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -54,16 +55,16 @@ RECO_SAMPLES = {
         'x_sec' : 1300*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Ztautau,
+        'drawOption' : styles.drawOption_Ztautau
     },
     'Zee' : {
         'datasetpath' : "/Zee/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
         'events_processed' : 2421575,
         'skim_eff' : 0.600,
         'x_sec' : 1300*_picobarns,
-        'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Zmumu,
+        'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Zee
     },
     'Zmumu' : {
         'datasetpath' : "/Zmumu/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
@@ -72,17 +73,17 @@ RECO_SAMPLES = {
         'x_sec' : 1300*_picobarns,
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Zmumu,
+        'drawOption' : styles.drawOption_Zmumu
     },
     'qcdDiJet' : {
         'datasetpath' : "/QCD_Pt15_BiasedTau/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'events_processed' : 6020758,
         'skim_eff' : 1.000, # unskimmed sample
-        'x_sec' : 87.4*_millibarns*0.0338, # 48.44 mb * gen filter efficiency
+        'x_sec' : 0.874*_millibarns*0.0338, # 0.874 mb * gen filter efficiency
         'legendEntry' : plotter.process_qcd_W.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_qcd_W.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
-        'factorize' : True,
+        'factorize' : True
     },
     'WplusJets' : {
         'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
@@ -91,7 +92,7 @@ RECO_SAMPLES = {
         'x_sec' : 24170*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets,
+        'drawOption' : styles.drawOption_WplusJets
     },
     'TTplusJets' : {
         'datasetpath' : "/TTbarJets_Tauola-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
@@ -100,17 +101,29 @@ RECO_SAMPLES = {
         'x_sec' : 95*_picobarns,
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_TTplusJets,
+        'drawOption' : styles.drawOption_TTplusJets
     },
 }
 
 # Define samples that get merged together
 MERGE_SAMPLES = {
+    'qcdSum' : {
+        'samples' : [ 'qcdDiJet', ],
+        'legendEntry' : 'QCD',
+        'type' : 'smMC', 
+        'drawOption' : styles.drawOption_QCD,
+    },
     'smBgSum' : {
-        'samples' : [ 'Zmumu', 'Zee', 'qcdDiJet', 'WplusJets', 'TTplusJets' ],
+        'samples' : [ 'Zmumu', 'Zee', 'qcdSum', 'WplusJets', 'TTplusJets' ],
         'legendEntry' : 'SM',
         'type' : 'smSumMC',
-        'drawOption' : styles.drawOption_QCD,
+        'drawOption' : styles.drawOption_QCD
+    },
+    'smSum' : {
+        'samples' : [ 'Ztautau', 'smBgSum' ],
+        'legendEntry' : 'SM',
+        'type' : 'smSumMC',
+        'drawOption' : styles.drawOption_QCD
     }
 }
 
