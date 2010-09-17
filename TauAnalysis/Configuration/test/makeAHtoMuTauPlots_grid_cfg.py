@@ -43,9 +43,9 @@ print "Updating", relevantMergedSamples
 
 enableFactorization_makeAHtoMuTauPlots_grid(
     process,
-    samplesToFactorize=samplesToFactorize,
-    relevantMergedSamples=relevantMergedSamples,
-    mergedToRecoSampleDict=samples.MERGE_SAMPLES,
+    samplesToFactorize = samplesToFactorize,
+    relevantMergedSamples = relevantMergedSamples,
+    mergedToRecoSampleDict = samples.MERGE_SAMPLES,
 )
 
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
