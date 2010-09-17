@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.13 2010/05/22 16:49:08 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.14 2010/08/30 13:28:20 veelken Exp $
  *
  */
 
@@ -65,6 +65,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       cfgError_(0)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtProducer::CompositePtrCandidateT1T2MEtProducer>:" << std::endl;
+    //std::cout << " moduleLabel = " << cfg.getParameter<std::string>("@module_label") << std::endl;
 
     useLeadingTausOnly_ = cfg.getParameter<bool>("useLeadingTausOnly");
     srcLeg1_ = cfg.getParameter<edm::InputTag>("srcLeg1");
@@ -77,11 +78,11 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     recoMode_ = cfg.getParameter<std::string>("recoMode");
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
 
-    //std::cout << " srcLeg1 = " << srcLeg1_ << std::endl;
-    //std::cout << " srcLeg2 = " << srcLeg2_ << std::endl;
-    //std::cout << " srcMET = " << srcMET_ << std::endl;
-    //std::cout << " srcPV_ = " << srcPV_ << std::endl;
-    //std::cout << " srcBeamSpot = " << srcBeamSpot_ << std::endl;
+    //std::cout << " srcLeg1 = " << srcLeg1_.label() << std::endl;
+    //std::cout << " srcLeg2 = " << srcLeg2_.label() << std::endl;
+    //std::cout << " srcMET = " << srcMET_.label() << std::endl;
+    //std::cout << " srcPV_ = " << srcPV_.label() << std::endl;
+    //std::cout << " srcBeamSpot = " << srcBeamSpot_.label() << std::endl;
     //std::cout << " recoMode = " << recoMode_ << std::endl;
 
 //--- check that InputTag for MET collection has been defined,
