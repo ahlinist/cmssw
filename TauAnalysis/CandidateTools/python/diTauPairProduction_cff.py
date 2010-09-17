@@ -196,11 +196,11 @@ selectedDiTauPairs2ndTauLeadTrkPtCumulative = selectedDiTauPairs1stTauElectronVe
 
 # require 2nd tau candidate to pass TaNC discriminator for 0.25% nominal fake-rate
 selectedDiTauPairs2ndTauTaNCdiscrIndividual = selectedDiTauPairs1stTauElectronVetoCumulative.clone(
-        srcLeg1 = cms.InputTag('selectedPatTausForDiTau2ndTaNCdiscrIndividual')
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndTaNCdiscrIndividual')
 )
 
 selectedDiTauPairs2ndTauTaNCdiscrCumulative = selectedDiTauPairs1stTauElectronVetoCumulative.clone(
-    srcLeg1 = cms.InputTag('selectedPatTausForDiTau2ndTaNCdiscrCumulative')
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndTaNCdiscrCumulative')
 )
 
 # require 2nd tau candidate to have no tracks of Pt > 1. GeV
@@ -244,78 +244,163 @@ selectedDiTauPairs2ndTauChargeCumulative = selectedDiTauPairs1stTauElectronVetoC
 
 # require 2nd tau candidate to pass muon veto
 selectedDiTauPairs2ndTauMuonVetoIndividual = selectedDiTauPairs1stTauElectronVetoCumulative.clone(
-    srcLeg1 = cms.InputTag('selectedPatTausForDiTau2ndMuonVetoIndividual')
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndMuonVetoIndividual')
 )
 
 selectedDiTauPairs2ndTauMuonVetoCumulative = selectedDiTauPairs1stTauElectronVetoCumulative.clone(
-    srcLeg1 = cms.InputTag('selectedPatTausForDiTau2ndMuonVetoCumulative')
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndMuonVetoCumulative')
 )
 
 # require 2nd tau candidate to pass electron veto
 selectedDiTauPairs2ndTauElectronVetoIndividual = selectedDiTauPairs1stTauElectronVetoCumulative.clone(
-    srcLeg1 = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoIndividual')
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoIndividual')
 )
 
 selectedDiTauPairs2ndTauElectronVetoCumulative = selectedDiTauPairs1stTauElectronVetoCumulative.clone(
-    srcLeg1 = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoCumulative')
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoCumulative'),
+    doSVreco = cms.bool(True),
+    svFit = cms.PSet(
+        psKine = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauPairKinematicsPhaseSpace         
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauPairKinematicsPhaseSpace,
+                svFitLikelihoodDiTauPairMEt
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauPairKinematicsPhaseSpace,
+                svFitLikelihoodDiTauPairMEt,
+                svFitLikelihoodDiTauPairPtBalance
+        ),
+            estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(1000)
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        polKine = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauPairKinematicsPolarized        
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        polKine_MEt = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauPairKinematicsPolarized,
+                svFitLikelihoodDiTauPairMEt
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        polKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodDiTauPairKinematicsPolarized,
+                svFitLikelihoodDiTauPairMEt,
+                svFitLikelihoodDiTauPairPtBalance
+            ),
+            estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(1000)
+                numSamplings = cms.int32(-1)
+            )
+        )
+    )
 )
 
-selectedDiTauPairs2ndTauElectronVetoCumulative.svFit = cms.PSet(
-    psKine = cms.PSet(
-        likelihoodFunctions = cms.VPSet(
-            svFitLikelihoodDiTauPairKinematicsPhaseSpace         
-        ),
-        estUncertainties = cms.PSet(
-            numSamplings = cms.int32(-1)
-        )
-    ),
-    psKine_MEt = cms.PSet(
-        likelihoodFunctions = cms.VPSet(
-            svFitLikelihoodDiTauPairKinematicsPhaseSpace,
-            svFitLikelihoodDiTauPairMEt
-        ),
-        estUncertainties = cms.PSet(
-            numSamplings = cms.int32(-1)
-        )
-    ),
-    psKine_MEt_ptBalance = cms.PSet(
-        likelihoodFunctions = cms.VPSet(
-            svFitLikelihoodDiTauPairKinematicsPhaseSpace,
-            svFitLikelihoodDiTauPairMEt,
-            svFitLikelihoodDiTauPairPtBalance
-    ),
-        estUncertainties = cms.PSet(
-            #numSamplings = cms.int32(1000)
-            numSamplings = cms.int32(-1)
-        )
-    ),
-    polKine = cms.PSet(
-        likelihoodFunctions = cms.VPSet(
-            svFitLikelihoodDiTauPairKinematicsPolarized        
-        ),
-        estUncertainties = cms.PSet(
-            numSamplings = cms.int32(-1)
-        )
-    ),
-    polKine_MEt = cms.PSet(
-        likelihoodFunctions = cms.VPSet(
-            svFitLikelihoodDiTauPairKinematicsPolarized,
-            svFitLikelihoodDiTauPairMEt
-        ),
-        estUncertainties = cms.PSet(
-            numSamplings = cms.int32(-1)
-        )
-    ),
-    polKine_MEt_ptBalance = cms.PSet(
-        likelihoodFunctions = cms.VPSet(
-            svFitLikelihoodDiTauPairKinematicsPolarized,
-            svFitLikelihoodDiTauPairMEt,
-            svFitLikelihoodDiTauPairPtBalance
-        ),
-        estUncertainties = cms.PSet(
-            #numSamplings = cms.int32(1000)
-            numSamplings = cms.int32(-1)
-        )
+# define additional collections of tau-jet + tau-jet candidates
+# with loose lead. track Pt, track isolation and ECAL isolation applied on second leg
+# (NOTE: to be used for the purpose of factorizing efficiencies
+#        of tau id. criteria from other event selection criteria,
+#        in order to avoid problems with limited Monte Carlo statistics)
+
+selectedDiTauPairs2ndTauLeadTrkPtLooseIndividual = selectedDiTauPairs2ndTauLeadTrkPtIndividual.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndLeadTrkPtLooseIndividual')    
+)    
+selectedDiTauPairs2ndTauLeadTrkPtLooseCumulative = selectedDiTauPairs2ndTauLeadTrkPtCumulative.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndLeadTrkPtLooseCumulative')
+)
+
+selectedDiTauPairs2ndTauTaNCdiscrLooseIndividual = selectedDiTauPairs2ndTauTaNCdiscrIndividual.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndTaNCdiscrLooseIndividual')
+)
+selectedDiTauPairs2ndTauTaNCdiscrLooseCumulative = selectedDiTauPairs2ndTauTaNCdiscrCumulative.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndTaNCdiscrLooseCumulative')
+)
+
+selectedDiTauPairs2ndTauTrkIsoLooseIndividual = selectedDiTauPairs2ndTauTrkIsoIndividual.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndTrkIsoLooseIndividual')
+)    
+selectedDiTauPairs2ndTauTrkIsoLooseCumulative = selectedDiTauPairs2ndTauTrkIsoCumulative.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndTrkIsoLooseCumulative')
+)    
+
+selectedDiTauPairs2ndTauEcalIsoLooseIndividual = selectedDiTauPairs2ndTauEcalIsoIndividual.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndEcalIsoLooseIndividual')
+)    
+selectedDiTauPairs2ndTauEcalIsoLooseCumulative = selectedDiTauPairs2ndTauEcalIsoCumulative.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndEcalIsoLooseCumulative')
+)    
+
+selectedDiTauPairs2ndTauProngLooseIndividual = selectedDiTauPairs2ndTauProngIndividual.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndProngLooseIndividual')
+)    
+selectedDiTauPairs2ndTauProngLooseCumulative = selectedDiTauPairs2ndTauProngCumulative.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndProngLooseCumulative')
+)    
+
+selectedDiTauPairs2ndTauChargeLooseIndividual = selectedDiTauPairs2ndTauChargeIndividual.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndChargeLooseIndividual')
+)    
+selectedDiTauPairs2ndTauChargeLooseCumulative = selectedDiTauPairs2ndTauChargeCumulative.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndChargeLooseCumulative')
+)
+
+selectedDiTauPairs2ndTauMuonVetoLooseIndividual = selectedDiTauPairs2ndTauMuonVetoIndividual.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndMuonVetoLooseIndividual')
+)
+selectedDiTauPairs2ndTauMuonVetoLooseCumulative = selectedDiTauPairs2ndTauMuonVetoCumulative.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndMuonVetoLooseCumulative')
+)
+
+selectedDiTauPairs2ndTauElectronVetoLooseIndividual = selectedDiTauPairs2ndTauElectronVetoIndividual.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoLooseIndividual')
+)
+#
+# NOTE:
+#     (1) SVfit algorithm with likelihood functions for polarized tau lepton decays
+#         cannot be run in case loose tau id. criteria are applied,
+#         as the charge of the tau-jet + tau-jet pair as well as
+#         the (hypothetic) tau decay mode cannot be reconstructed for the second leg
+#        --> use likelihood functions for "isotropic" (phase-space only) tau lepton decays instead,
+#            so that a valid solution exists for { polKine, polKine_MEt, polKine_MEt_ptBalance }
+#        --> conguration parameters of event-dump plugin and SVFit histogram manager do not need to be changed
+#     (2) The usage of likelihood functions for "isotropic" (phase-space only) instead of polarized tau lepton decays
+#         will introduce a (small) bias to the shape of tau+ tau- invariant mass distribution
+#         reconstructed for QCD background
+#        (and a small data-Monte Carlo difference, as factorization is applied to QCD Monte Carlo only, not to the data)
+#
+selectedDiTauPairs2ndTauElectronVetoLooseCumulative = selectedDiTauPairs2ndTauElectronVetoCumulative.clone(
+    srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoLooseCumulative'),
+    doSVreco = cms.bool(True),
+    svFit = cms.PSet(
+        psKine = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine,
+        psKine_MEt = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt,
+        psKine_MEt_ptBalance = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance,
+        polKine = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine,
+        polKine_MEt = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt,
+        polKine_MEt_ptBalance = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance
     )
 )
 
@@ -336,11 +421,19 @@ produceDiTauPairs = cms.Sequence(
    * selectedDiTauPairs2ndTauPt20Individual * selectedDiTauPairs2ndTauPt20Cumulative
    * selectedDiTauPairs2ndTauLeadTrkIndividual * selectedDiTauPairs2ndTauLeadTrkCumulative
    * selectedDiTauPairs2ndTauLeadTrkPtIndividual * selectedDiTauPairs2ndTauLeadTrkPtCumulative
-   * selectedDiTauPairs2ndTauTaNCdiscrIndividual * selectedDiTauPairs2ndTauTaNCdiscrCumulative  
+    * selectedDiTauPairs2ndTauLeadTrkPtLooseIndividual * selectedDiTauPairs2ndTauLeadTrkPtLooseCumulative
+   * selectedDiTauPairs2ndTauTaNCdiscrIndividual * selectedDiTauPairs2ndTauTaNCdiscrCumulative
+    * selectedDiTauPairs2ndTauTaNCdiscrLooseIndividual * selectedDiTauPairs2ndTauTaNCdiscrLooseCumulative  
    * selectedDiTauPairs2ndTauTrkIsoIndividual * selectedDiTauPairs2ndTauTrkIsoCumulative
+    * selectedDiTauPairs2ndTauTrkIsoLooseIndividual * selectedDiTauPairs2ndTauTrkIsoLooseCumulative
    * selectedDiTauPairs2ndTauEcalIsoIndividual * selectedDiTauPairs2ndTauEcalIsoCumulative
+    * selectedDiTauPairs2ndTauEcalIsoLooseIndividual * selectedDiTauPairs2ndTauEcalIsoLooseCumulative
    * selectedDiTauPairs2ndTauProngIndividual * selectedDiTauPairs2ndTauProngCumulative
+    * selectedDiTauPairs2ndTauProngLooseIndividual * selectedDiTauPairs2ndTauProngLooseCumulative
    * selectedDiTauPairs2ndTauChargeIndividual * selectedDiTauPairs2ndTauChargeCumulative
+    * selectedDiTauPairs2ndTauChargeLooseIndividual * selectedDiTauPairs2ndTauChargeLooseCumulative
    * selectedDiTauPairs2ndTauMuonVetoIndividual * selectedDiTauPairs2ndTauMuonVetoCumulative
+    * selectedDiTauPairs2ndTauMuonVetoLooseIndividual * selectedDiTauPairs2ndTauMuonVetoLooseCumulative
    * selectedDiTauPairs2ndTauElectronVetoIndividual * selectedDiTauPairs2ndTauElectronVetoCumulative
+    * selectedDiTauPairs2ndTauElectronVetoLooseIndividual * selectedDiTauPairs2ndTauElectronVetoLooseCumulative
 )
