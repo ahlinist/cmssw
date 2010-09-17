@@ -100,6 +100,11 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # as input for pat::Tau production
 switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+
+# disable preselection on of pat::Taus
+# (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
+#  but re-enabled after switching tau collection)
+process.cleanPatTaus.preselection = cms.string('')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
