@@ -43,7 +43,7 @@ using namespace reco;
 using namespace pat::helper;
 
 VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(ps) {
-  // cout << "VgNtuplizer: entering ctor ..." << endl;
+  // // cout << "VgNtuplizer: entering ctor ..." << endl;
 
   saveHistograms_ = ps.getUntrackedParameter<bool>("saveHistograms", false);
   saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);  
@@ -64,7 +64,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
 
   if (saveHistograms_) helper_.bookHistos(this);
 
-  // cout << "VgNtuplizer: making output tree" << endl;
+  // // cout << "VgNtuplizer: making output tree" << endl;
 
   Service<TFileService> fs;
   hEvents_ = fs->make<TH1F>("hEvents", "total processed and skimmed events", 2, 0, 2);
@@ -390,7 +390,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   //Handle<int> genProcessID;
   //e.getByLabel("genEventProcID", genProcessID);
   //processID_ = *genProcessID;
-  cout << "VgNtuplizer: produce: event info ..." << endl;
+  // cout << "VgNtuplizer: produce: event info ..." << endl;
 
   run_    = e.id().run();
   event_  = e.id().event();
@@ -448,7 +448,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   if (nGoodVtx > 0) IsVtxGood_ = 1;
 
   // PDF information
-  cout << "VgNtuplizer: produce: PDF information..." << endl;
+  // cout << "VgNtuplizer: produce: PDF information..." << endl;
   if (!isData_) {
     Handle<GenEventInfoProduct> pdfInfoHandle;
     bool pdfInfo = e.getByLabel("generator", pdfInfoHandle);
@@ -465,7 +465,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // GenParticle
-  cout << "VgNtuplizer: produce: GenParticle... " << endl;
+  // cout << "VgNtuplizer: produce: GenParticle... " << endl;
   if (!isData_ && genParticlesHandle_.isValid() ) {
 
     nMC_ = 0;
@@ -538,7 +538,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
 
   // Gen & PAT MET (caloMET)
-  cout << "VgNtuplizer: produce: Gen & PAT MET (caloMET) ..." << endl;
+  // cout << "VgNtuplizer: produce: Gen & PAT MET (caloMET) ..." << endl;
   int nMET = 0;
   if( METHandle_.isValid() )
     for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
@@ -571,7 +571,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     }
 
   // tcMET
-  cout << "VgNtuplizer: produce: tcMET ..." << endl;
+  // cout << "VgNtuplizer: produce: tcMET ..." << endl;
   Handle<edm::View<pat::MET> > tcMETcoll;
   const pat::MET *tcMET = 0;
   if (e.getByLabel(tcMETlabel_, tcMETcoll)) {
@@ -588,7 +588,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
 
   // pfMET
-  cout << "VgNtuplizer: produce: pfMET ..." << endl;
+  // cout << "VgNtuplizer: produce: pfMET ..." << endl;
   Handle<View<pat::MET> > pfMETcoll;
   const pat::MET *pfMET = 0;
   if (e.getByLabel(pfMETlabel_, pfMETcoll)) {
@@ -606,7 +606,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
   // Electron
 
-  cout << "VgNtuplizer: produce: Electron ..." << endl;
+  // cout << "VgNtuplizer: produce: Electron ..." << endl;
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -616,13 +616,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       if (iEle->pt() > leadingElePtCut_) nElePassCut++;
       
-      std::cout << "Get Electron Trigger" << std::endl;
+      // cout << "Get Electron Trigger" << std::endl;
       eleTrg_[nEle_][0] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_LW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][1] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][2] = (iEle->triggerObjectMatchesByPath("HLT_Ele20_SW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][3] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_EleId_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][4] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_CaloEleId_L1R").size()) ? 1 : -99;
-      std::cout << "Got Electron Trigger" << std::endl;
+      // cout << "Got Electron Trigger" << std::endl;
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -650,7 +650,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       // 9  simpleEleId85relIso
       // 10 simpleEleId90relIso
       // 11 simpleEleId95relIso
-      std::cout << "Get Electron Ids" << std::endl;
+      // cout << "Get Electron Ids" << std::endl;
       eleID_[nEle_][0] = int (iEle->electronID("simpleEleId60cIso"));
       eleID_[nEle_][1] = int (iEle->electronID("simpleEleId70cIso"));
       eleID_[nEle_][2] = int (iEle->electronID("simpleEleId80cIso"));
@@ -663,9 +663,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleID_[nEle_][9] = int (iEle->electronID("simpleEleId85relIso"));
       eleID_[nEle_][10]= int (iEle->electronID("simpleEleId90relIso"));
       eleID_[nEle_][11]= int (iEle->electronID("simpleEleId95relIso"));
-      std::cout << "Got Electron Ids" << std::endl;
+      // cout << "Got Electron Ids" << std::endl;
 
-      std::cout << "Get Electron Stuff 1" << std::endl;
+      // cout << "Get Electron Stuff 1" << std::endl;
       eleClass_[nEle_]   = iEle->classification();
       eleCharge_[nEle_]  = iEle->charge();
       eleEn_[nEle_]      = iEle->energy();
@@ -675,9 +675,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       elePhi_[nEle_]     = iEle->phi();
       eleHoverE_[nEle_]  = iEle->hadronicOverEm();
       eleEoverP_[nEle_]  = iEle->eSuperClusterOverP();
-      std::cout << "Got Electron Stuff 1" << std::endl;
+      // cout << "Got Electron Stuff 1" << std::endl;
 
-      std::cout << "Get Electron Stuff 2" << std::endl;
+      // cout << "Get Electron Stuff 2" << std::endl;
       elePin_[nEle_]  = iEle->trackMomentumAtVtx().R();
       elePout_[nEle_] = iEle->trackMomentumOut().R();
 
@@ -685,10 +685,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       eledEtaAtVtx_[nEle_] = iEle->deltaEtaSuperClusterTrackAtVtx();
       eledPhiAtVtx_[nEle_] = iEle->deltaPhiSuperClusterTrackAtVtx();
-      std::cout << "Got Electron Stuff 2" << std::endl;
+      // cout << "Got Electron Stuff 2" << std::endl;
 
       // Access super cluster
-      std::cout << "Get Electron SC Stuff 1" << std::endl;
+      // cout << "Get Electron SC Stuff 1" << std::endl;
       eleSCEta_[nEle_]   = iEle->superCluster()->eta();
       eleSCPhi_[nEle_]   = iEle->superCluster()->phi();
       //eleSCRawEn_[nEle_] = iEle->superCluster()->rawEnergy();
@@ -699,9 +699,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleSCPos_[nEle_][0] = iEle->superCluster()->x();
       eleSCPos_[nEle_][1] = iEle->superCluster()->y();
       eleSCPos_[nEle_][2] = iEle->superCluster()->z();
-      std::cout << "Got Electron SC Stuff 1" << std::endl;
+      // cout << "Got Electron SC Stuff 1" << std::endl;
 
-      std::cout << "Get Electron TK Stuff 1" << std::endl;
+      // cout << "Get Electron TK Stuff 1" << std::endl;
       eleVtx_[nEle_][0] = iEle->trackPositionAtVtx().x();
       eleVtx_[nEle_][1] = iEle->trackPositionAtVtx().y();
       eleVtx_[nEle_][2] = iEle->trackPositionAtVtx().z();
@@ -709,7 +709,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleCaloPos_[nEle_][0] = iEle->trackPositionAtCalo().x();
       eleCaloPos_[nEle_][1] = iEle->trackPositionAtCalo().y();
       eleCaloPos_[nEle_][2] = iEle->trackPositionAtCalo().z();
-      std::cout << "Get Electron TK Stuff 1" << std::endl;
+      // cout << "Get Electron TK Stuff 1" << std::endl;
 
       
 
@@ -717,7 +717,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleGenIndex_[nEle_] = -1;
       int EleGenIndex = 0;
       if (!isData_) {
-	std::cout << "Trying to get electron gen info!" << std::endl;
+	// cout << "Trying to get electron gen info!" << std::endl;
         if ((*iEle).genLepton() && genParticlesHandle_.isValid() ) {
 
           for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
@@ -739,7 +739,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
             EleGenIndex++;
           }
         }
-	std::cout << "Got electron gen info!" << std::endl;
+	// cout << "Got electron gen info!" << std::endl;
       }
 
       eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
@@ -818,7 +818,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoAngle_[nPho_] = iPho->userFloat("scAngle");
 
       // Gen Particle
-      cout << "VgNtuplizer: produce: photon " << nPho_ << " gen match ..." << endl;
+      // cout << "VgNtuplizer: produce: photon " << nPho_ << " gen match ..." << endl;
       phoGenIndex_[nPho_]  = -999;
       phoGenMomPID[nPho_]  = -999;
       phoGenMomPt[nPho_]   = -999;
@@ -869,7 +869,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   int nMuPassCut = 0;
   nMu_ = 0;
   if( muonHandle_.isValid() ) {
-    cout << "VgNtuplizer: produce: number of muons: " << muonHandle_->size() << endl;
+    // cout << "VgNtuplizer: produce: number of muons: " << muonHandle_->size() << endl;
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
       if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
@@ -948,7 +948,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
 
   // Zee candidate
-  cout << "VgNtuplizer: produce: Zee candidate..." << endl;
+  // cout << "VgNtuplizer: produce: Zee candidate..." << endl;
   nZee_ = 0;
   int leg1Index = 0;
   int leg2Index = 0;
@@ -981,7 +981,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
 
   // Zmumu candidate
-  cout << "VgNtuplizer: produce: Zmumu candidate..." << endl;
+  // cout << "VgNtuplizer: produce: Zmumu candidate..." << endl;
 
   nZmumu_ = 0;
   leg1Index = 0;
@@ -1078,7 +1078,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   } // Build Zmumu candidate on the fly based on the source muons
 
   // Wenu candiate
-  cout << "VgNtuplizer: produce: Wenu candiate..." << endl;
+  // cout << "VgNtuplizer: produce: Wenu candiate..." << endl;
   nWenu_ = 0;
   leg1Index = 0;
   if (electronHandle_.isValid() &&
@@ -1126,7 +1126,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
 
   // Wmunu candiate
-  cout << "VgNtuplizer: produce: Wmunu candiate..." << endl;
+  // cout << "VgNtuplizer: produce: Wmunu candiate..." << endl;
   nWmunu_ = 0;
   leg1Index = 0;
   if (muonHandle_.isValid() &&
@@ -1178,7 +1178,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
 
   // Jet
-  cout << "VgNtuplizer: produce: Jet..." << endl;
+  // cout << "VgNtuplizer: produce: Jet..." << endl;
   if (doStoreJets_) {
     nJet_ = 0;
     if ( jetHandle_.isValid() )
