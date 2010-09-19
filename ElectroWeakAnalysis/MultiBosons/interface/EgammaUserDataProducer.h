@@ -1,3 +1,5 @@
+#ifndef _ElectroWeakAnalysis_MultiBosons_EgammaUserDataProducer_h_
+#define _ElectroWeakAnalysis_MultiBosons_EgammaUserDataProducer_h_
 // -*- C++ -*-
 //
 // Package:    PatAlgos
@@ -357,6 +359,7 @@ namespace vgamma {
     
     putMap<float>(iEvent,egammas,scRoundness,"scRoundness");
     putMap<float>(iEvent,egammas,scAngle,"scAngle");
+
   } // EgammaUserDataProducer<EgammaType>::produce
 
   template <typename EgammaType> template <typename UserDataType>
@@ -379,3 +382,5 @@ namespace vgamma {
   } // EgammaUserDataProducer<EgammaType>::putMap
 
 } // namespace::vgamma
+
+#endif

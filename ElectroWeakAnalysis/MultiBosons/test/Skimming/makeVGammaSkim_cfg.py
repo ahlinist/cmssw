@@ -92,14 +92,13 @@ process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
 process.piZeroDiscriminators.preshClusterShapeProducer = "multi5x5PreshowerClusterShape"
 process.piZeroDiscriminators.preshClusterShapeCollectionX = "multi5x5PreshowerXClustersShape"
 process.piZeroDiscriminators.preshClusterShapeCollectionY = "multi5x5PreshowerYClustersShape"
+process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0DiscValMapMaker_cfi")
 process.patDefaultSequence.replace(process.patPhotons,
-  process.piZeroDiscriminators * process.patPhotons
+  process.piZeroDiscriminators * process.pi0DiscValMapMaker* process.patPhotons
   )
-## This doesn't work since it is an association map and we need a value map.
-##+ Have to write another user data producer.
-# process.patPhotons.userData.userFloats.src.append(
-#   cms.InputTag("piZeroDiscriminators", "PhotonPi0DiscriminatorAssociationMap")
-#   )
+process.patPhotons.userData.userFloats.src.append(
+  cms.InputTag("pi0DiscValMapMaker", "piZeroDiscriminatorsPhotonPi0DiscriminatorAssociationMap")
+  )
 
 ## Add electron user data
 process.load(basePath + "electronUserData_cfi")

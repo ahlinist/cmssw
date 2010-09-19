@@ -122,28 +122,42 @@ void PatKitHelper::getHandles( edm::Event & event,
   bool doGenParticles = parameters_.getParameter<bool>("doGenParticles");
   bool doZmumu        = parameters_.getParameter<bool>("doZmumu");
 
-
-  edm::InputTag muonName         = parameters_.getParameter<edm::InputTag>("muonSrc"    );
-  edm::InputTag electronName     = parameters_.getParameter<edm::InputTag>("electronSrc");
-  edm::InputTag tauName          = parameters_.getParameter<edm::InputTag>("tauSrc"     );
-  edm::InputTag jetName          = parameters_.getParameter<edm::InputTag>("jetSrc"     );
-  edm::InputTag METName          = parameters_.getParameter<edm::InputTag>("METSrc"     );
-  edm::InputTag photonName       = parameters_.getParameter<edm::InputTag>("photonSrc"  );
-  edm::InputTag trackName        = parameters_.getParameter<edm::InputTag>("trackSrc"   );
-  edm::InputTag genParticlesName = parameters_.getParameter<edm::InputTag>("genParticleSrc");
-  edm::InputTag zmumuName        = parameters_.getParameter<edm::InputTag>("zmumuSrc"  );
-
-
-
-  if ( doMuon         ) event.getByLabel(muonName        , muonHandle);
-  if ( doElectron     ) event.getByLabel(electronName    , electronHandle);
-  if ( doTau          ) event.getByLabel(tauName         , tauHandle);
-  if ( doJet          ) event.getByLabel(jetName         , jetHandle);
-  if ( doMET          ) event.getByLabel(METName         , METHandle);
-  if ( doPhoton       ) event.getByLabel(photonName      , photonHandle);
-  if ( doTrack        ) event.getByLabel(trackName       , trackHandle);
-  if ( doGenParticles ) event.getByLabel(genParticlesName, genParticlesHandle );
-  if ( doZmumu        ) event.getByLabel(zmumuName       , zmumuHandle);
+  if ( doMuon         ) {
+    edm::InputTag muonName         = parameters_.getParameter<edm::InputTag>("muonSrc"    );
+    event.getByLabel(muonName        , muonHandle);
+  }
+  if ( doElectron     ) {
+    edm::InputTag electronName     = parameters_.getParameter<edm::InputTag>("electronSrc");
+    event.getByLabel(electronName    , electronHandle);
+  }
+  if ( doTau          ) {
+    edm::InputTag tauName          = parameters_.getParameter<edm::InputTag>("tauSrc"     );
+    event.getByLabel(tauName         , tauHandle);
+  }
+  if ( doJet          ) {
+    edm::InputTag jetName          = parameters_.getParameter<edm::InputTag>("jetSrc"     );
+    event.getByLabel(jetName         , jetHandle);
+  }
+  if ( doMET          ) {
+    edm::InputTag METName          = parameters_.getParameter<edm::InputTag>("METSrc"     );
+    event.getByLabel(METName         , METHandle);
+  }
+  if ( doPhoton       ) {
+    edm::InputTag photonName       = parameters_.getParameter<edm::InputTag>("photonSrc"  );
+    event.getByLabel(photonName      , photonHandle);
+  }
+  if ( doTrack        ) {
+    edm::InputTag trackName        = parameters_.getParameter<edm::InputTag>("trackSrc"   );
+    event.getByLabel(trackName       , trackHandle);
+  }
+  if ( doGenParticles ) {
+    edm::InputTag genParticlesName = parameters_.getParameter<edm::InputTag>("genParticleSrc");
+    event.getByLabel(genParticlesName, genParticlesHandle );
+  }
+  if ( doZmumu        ) {
+    edm::InputTag zmumuName        = parameters_.getParameter<edm::InputTag>("zmumuSrc"  );
+    event.getByLabel(zmumuName       , zmumuHandle);
+  }
 
 }
 
