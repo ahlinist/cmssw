@@ -44,7 +44,10 @@ def egammaUserDataFloats(moduleName):
     cms.InputTag(moduleName, "seedOutOfTimeChi2"),
     cms.InputTag(moduleName, "seedChi2"),
     cms.InputTag(moduleName, "seedSwissCross"),
-    cms.InputTag(moduleName, "seedE1OverE9")
+    cms.InputTag(moduleName, "seedE1OverE9"),
+    
+    cms.InputTag(moduleName, "scRoundness"),
+    cms.InputTag(moduleName, "scAngle")
   ]
 # egammaUserDataFloats(moduleName) <------------------------------------------
 

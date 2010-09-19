@@ -44,6 +44,7 @@ Implementation:
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 
@@ -131,6 +132,9 @@ namespace vgamma {
     produces<edm::ValueMap<int  > > ("seedSeverityLevel");
     produces<edm::ValueMap<float> > ("seedSwissCross");
     produces<edm::ValueMap<float> > ("seedE1OverE9");
+
+    produces<edm::ValueMap<float> > ("scRoundness");
+    produces<edm::ValueMap<float> > ("scAngle");
   }
 
   template <typename EgammaType>
@@ -206,6 +210,9 @@ namespace vgamma {
     vector<int>   seedSeverityLevel;
     vector<float> seedSwissCross;
     vector<float> seedE1OverE9;
+
+    vector<float> scRoundness;
+    vector<float> scAngle;
 
     typename View<EgammaType>::const_iterator egamma;
     for(egamma = egammas->begin(); egamma < egammas->end(); ++egamma) {
@@ -287,6 +294,19 @@ namespace vgamma {
       seedSeverityLevel.push_back(severityLevel);
       seedSwissCross   .push_back(swissCross);
       seedE1OverE9     .push_back(E1OverE9);
+
+      float roundness = -999.;
+      float angle = -999.;
+
+      if(egamma->isEB()) {
+	std::vector<float> roundnessAndAngle = 
+	  EcalClusterTools::roundnessBarrelSuperClusters(*(egamma->superCluster()),*ebRecHits.product(),0);
+	roundness = roundnessAndAngle[0];
+	angle = roundnessAndAngle[1];
+      }
+
+      scRoundness.push_back(roundness);
+      scAngle    .push_back(angle);
     } // for(egamma = egammas->begin(); egamma < egammas->end(); ++egamma)
 
     putMap<float>(iEvent,egammas,e1x3,"e1x3");
@@ -334,6 +354,9 @@ namespace vgamma {
     putMap<int  >(iEvent,egammas,seedSeverityLevel,"seedSeverityLevel");
     putMap<float>(iEvent,egammas,seedSwissCross,"seedSwissCross");
     putMap<float>(iEvent,egammas,seedE1OverE9,"seedE1OverE9");
+    
+    putMap<float>(iEvent,egammas,scRoundness,"scRoundness");
+    putMap<float>(iEvent,egammas,scAngle,"scAngle");
   } // EgammaUserDataProducer<EgammaType>::produce
 
   template <typename EgammaType> template <typename UserDataType>
