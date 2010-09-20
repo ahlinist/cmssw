@@ -139,7 +139,7 @@ class VarParsing (object):
             # if this is not empty, then we didn't have a key that was
             # necessary.
             print "Missing keys: %s" % necessaryKeys
-            raise runtimeError, "Missing keys"
+            raise RuntimeError, "Missing keys"
         tag = kwargs.get('tag')
         del kwargs['tag']
         self._tags[tag] = kwargs
