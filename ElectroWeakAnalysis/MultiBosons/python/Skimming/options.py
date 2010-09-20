@@ -69,6 +69,13 @@ options.register("muonTriggerMatchPaths",
   "List of trigger paths whose matches should be embedded."
   )
 
+options.register("skimType",
+  "MuonPhoton", # default value
+  VarParsing.multiplicity.singleton, # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "What is the type of this skim, e.g. MuonPhoton?"
+  )
+
 options.setupTags(tag = "%s", ifCond = "jobType != ''", tagArg = "jobType")
 
 ## Use this to work around bug with passing multiple option parameters with
