@@ -4,8 +4,8 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ## ---
 ## adjust inputs if necessary
 ## ---
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run36xOn35xInput
-run36xOn35xInput(process)
+##from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run36xOn35xInput
+##run36xOn35xInput(process)
 
 ## --- 
 ## adjust workflow to need in TopPAG

@@ -6,8 +6,26 @@ process = cms.Process("Top")
 ## Define the input sample
 process.source = cms.Source("PoolSource",
   fileNames = cms.untracked.vstring(
-    'file:top/patTuple_top_madgraph.root_ttbar10_madAOD.root'
+    'file:patTuple.root'
   )
+)
+## restrict the number of events for testing 
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(1000)
+)
+
+from PhysicsTools.PatExamples.topSamples_cff import *
+process.source.fileNames = simulationQCD
+##process.source.fileNames = simulationWjets
+##process.source.fileNames = simulationZjets
+##process.source.fileNames = simulationTtbar
+
+## Define the TFileService
+process.TFileService = cms.Service("TFileService",
+  fileName = cms.string('analyzePatTopSelection_qcd.root')
+##fileName = cms.string('analyzePatTopSelection_wjets.root')
+##fileName = cms.string('analyzePatTopSelection_zjets.root')
+##fileName = cms.string('analyzePatTopSelection_ttbar.root')
 )
 
 ## ----------------------------------------------------------------
@@ -65,6 +83,7 @@ process.step7  = countPatJets.clone(src = 'goodJets'   , minNumber = 4)
 ## ----------------------------------------------------------------
 
 from PhysicsTools.PatExamples.PatTopSelectionAnalyzer_cfi import *
+process.monStart  = analyzePatTopSelection.clone(jets='goodJets')
 process.monStep1  = analyzePatTopSelection.clone(jets='goodJets')
 process.monStep2  = analyzePatTopSelection.clone(jets='goodJets')
 process.monStep3a = analyzePatTopSelection.clone(muons='tightMuons', jets='goodJets')
@@ -75,11 +94,6 @@ process.monStep6a = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoE
 process.monStep6b = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoElecs', jets='goodJets')
 process.monStep6c = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoElecs', jets='goodJets')
 process.monStep7  = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoElecs', jets='goodJets')
-
-## Define the TFileService
-process.TFileService = cms.Service("TFileService",
-  fileName = cms.string('analyzePatTopSelection.root')
-)
 
 
 ## ----------------------------------------------------------------
@@ -96,22 +110,23 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 ## Define loose event selection path
 process.looseEventSelection = cms.Path(
-    process.monStep1   * 
+    process.monStart   * 
     process.step1      *
-    process.monStep2   *     
+    process.monStep1   *     
     process.step2      *
-    process.monStep3b  * 
+    process.monStep2   * 
     process.step3b     *
-    process.monStep4   *     
+    process.monStep3b  *     
     process.step4      *
-    process.monStep5   *     
+    process.monStep4   *     
     process.step5      *
-    process.monStep6a  *     
+    process.monStep5   *     
     process.step6a     *
-    process.monStep6b  *     
+    process.monStep6a  *     
     process.step6b     *
-    process.monStep6c  *     
-    process.step6c    
+    process.monStep6b  *     
+    process.step6c     *
+    process.monStep6c
     )
 
 ## Define tight event selection path
@@ -119,7 +134,7 @@ process.tightEventSelection = cms.Path(
     process.step1      *
     process.step2      *
     process.step3a     *
-    process.monStep3b  *     
+    process.monStep3a  *     
     process.step4      *
     process.step5      *
     process.step6a     *
