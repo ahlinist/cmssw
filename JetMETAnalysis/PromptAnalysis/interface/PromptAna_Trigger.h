@@ -14,28 +14,15 @@
 #include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
 #include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
 
-
 class PromptAna_Trigger : public edm::EDProducer {
- public: 
+ public:
   explicit PromptAna_Trigger(const edm::ParameterSet&);
-  edm::TriggerResults tr;
 
- private: 
+ private:
   void produce( edm::Event &, const edm::EventSetup & );
-  void endJob();
-  void fillAlgoNameListNoUnderScores();
-
-  const edm::InputTag inputTag;
-  int nBxOutput;
-  bool storeByName;
-
-  std::vector<std::string> algoNameList;
-  std::vector<std::string> algoNameListNoUnderScores;  
-
-  std::set<std::string> algosPresentInData;
-  std::set<std::string> menusAlreadyParsed;
-
-  const edm::InputTag   TRGTag;
+  const edm::InputTag   l1InputTag, hltInputTag;
+  const std::vector<std::string> hltPathsOfInterest;
 };
 
 #endif
+

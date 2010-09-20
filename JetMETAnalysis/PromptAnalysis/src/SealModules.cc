@@ -28,7 +28,7 @@
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_TcMET.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PfMET.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Jet.h"
-#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_JPT.h"
+//#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_JPT.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PFJet.h"
 //#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_BeamHalo.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CaloTowers.h"
@@ -45,7 +45,7 @@ DEFINE_FWK_MODULE(PromptAna_MET);
 DEFINE_FWK_MODULE(PromptAna_TcMET);
 DEFINE_FWK_MODULE(PromptAna_PfMET);
 DEFINE_FWK_MODULE(PromptAna_Jet);
-DEFINE_FWK_MODULE(PromptAna_JPT);
+//DEFINE_FWK_MODULE(PromptAna_JPT);
 DEFINE_FWK_MODULE(PromptAna_PFJet);
 //DEFINE_FWK_MODULE(PromptAna_BeamHalo);
 DEFINE_FWK_MODULE(PromptAna_CaloTowers);
@@ -53,5 +53,5 @@ DEFINE_FWK_MODULE(PromptAna_Trigger);
 DEFINE_FWK_MODULE(PromptAna_CleanUp);
 DEFINE_FWK_MODULE(PromptAna_Vertex);
 DEFINE_FWK_MODULE(PromptAna_Track);
-//DEFINE_FWK_MODULE(PromptAna_PMTNoise);
+DEFINE_FWK_MODULE(PromptAna_PMTNoise);
 DEFINE_FWK_MODULE(PromptAna_ECALspikes);

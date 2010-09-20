@@ -20,8 +20,8 @@
 #include "DataFormats/JetReco/interface/CaloJet.h"
 //
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
-//#include "FWCore/Framework/interface/TriggerNames.h"
 #include "FWCore/Common/interface/TriggerNames.h"
+//#include "FWCore/Framework/interface/TriggerNames.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
