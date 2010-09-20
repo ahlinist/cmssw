@@ -55,14 +55,20 @@ namespace vgamma {
 
     edm::InputTag valueTypeSrc;
     edm::InputTag asscMapSrc;
+    std::string prodInstName;
   }; // AsscToValueToValueMapConverter<T,U>
 
   template <typename CollType,typename ValueType>
   AsscToValueToValueMapConverter<CollType,ValueType>::AsscToValueToValueMapConverter
     (const edm::ParameterSet& iConfig): valueTypeSrc(iConfig.getParameter<edm::InputTag>("collectionSrc")),
-                                        asscMapSrc(iConfig.getParameter<edm::InputTag>("associationSrc"))
+      asscMapSrc(iConfig.getParameter<edm::InputTag>("associationSrc"))
   {
-    produces<edm::ValueMap<ValueType> >(asscMapSrc.label()+asscMapSrc.instance());
+    if(iConfig.existsAs<std::string>("label"))
+      prodInstName = iConfig.getParameter<std::string>("label");
+    else
+      prodInstName = asscMapSrc.label()+std::string(":")+asscMapSrc.instance();
+
+    produces<edm::ValueMap<ValueType> >(prodInstName);
   }
 
   template <typename CollType,typename ValueType>
@@ -75,6 +81,7 @@ namespace vgamma {
     std::vector<ValueType> values;
     // the data collection serving as the keys for the association map
     edm::Handle<CollType> theCollection;
+    std::string pin;
 
     //get collections
     iEvent.getByLabel(valueTypeSrc,theCollection);
@@ -94,7 +101,7 @@ namespace vgamma {
     }
     theFiller.insert(theCollection, values.begin(), values.end());
     theFiller.fill();
-    iEvent.put(prod,asscMapSrc.label()+std::string(":")+asscMapSrc.instance());
+    iEvent.put(prod,prodInstName);
   }
 
 } // namespace vgamma
