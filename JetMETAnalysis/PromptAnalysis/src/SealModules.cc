@@ -36,7 +36,7 @@
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CleanUp.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Vertex.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Track.h"
-//#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PMTNoise.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_PMTNoise.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_ECALspikes.h"
 
 DEFINE_FWK_MODULE(PromptAnaTree);
