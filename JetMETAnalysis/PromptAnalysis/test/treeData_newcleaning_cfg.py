@@ -52,34 +52,12 @@ process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
 process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
 process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('0 AND NOT (36 OR 37 OR 38 OR 39)')
 
-# # this is for filtering on HLT path
-# process.hltHighLevel = cms.EDFilter("HLTHighLevel",
-#                                   TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
-#                                   HLTPaths = cms.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus'),        # provide list of HLT paths (or patterns) you want
-#                                   eventSetupPathsKey = cms.string(''),             # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
-#                                   andOr = cms.bool(True),                          # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
-#                                   throw = cms.bool(True)                           # throw exception on unknown path names
-#                                   )
-
 # Primary vertex filter
 process.primaryVertexFilter = cms.EDFilter("VertexSelector",
     src = cms.InputTag("offlinePrimaryVertices"),
     cut = cms.string("!isFake && ndof > 4 && abs(z) <= 15 && position.Rho <= 2"),
     filter = cms.bool(True)
 )
-
-process.METFilter = cms.EDFilter("CandViewSelector",
- src = cms.InputTag("tcMet"),
- cut = cms.string("pt > 30"),
- filter = cms.bool(True),
- )
-
-# MET filter # USING a filter class
-#process.METFilter = cms.EDFilter("METSelector",
-#    src = cms.InputTag("met"),
-#    cut = cms.string("pt>30.0"),
-#    filter = cms.bool(True)
-#)
 
 # Scraping filter
 process.scrapingVeto = cms.EDFilter("FilterOutScraping",
@@ -111,34 +89,20 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanatrigger_*_*',
     'keep *_promptanavtx_*_*',
     'keep *_promptanatrack_*_*',
-    'keep *_promptanaecalspikes_*_*',
-    'keep *_promptanaPMTnoise_*_*',
+#    'keep *_promptanaecalspikes_*_*',
+#    'keep *_promptanaPMTnoise_*_*',
     'keep *_HBHENoiseFilterResultProducer_*_*'
     ))
 
-process.promptanaPMTnoise.isMC=False
-process.promptanaPMTnoise.debug=0
+#process.promptanaPMTnoise.isMC=False
+#process.promptanaPMTnoise.debug=0
 
 
 # Filter sequence
 process.filterSequence = cms.Sequence(
-#    process.hltHighLevel*
-#    process.hltLevel1GTSeed*
     process.primaryVertexFilter*
-    process.METFilter*
     process.scrapingVeto
 )
-
-# New SeverityLevelComputer that can be used to undo the default HF cleaning
-import JetMETAnalysis.HcalReflagging.RemoveAddSevLevel as RemoveAddSevLevel
-process.hcalRecAlgos=RemoveAddSevLevel.RemoveFlag(process.hcalRecAlgos,"HFLongShort")
-# HF cleaning for data only
-#process.hcalRecAlgos.SeverityLevels[3].RecHitFlags.remove("HFDigiTime")
-#process.hcalRecAlgos.SeverityLevels[4].RecHitFlags.append("HFDigiTime")
-
-# Path and EndPath definitions
-#process.rereco_step = cms.Path(process.towerMaker*(process.met+process.muonMETValueMapProducer+process.muonTCMETValueMapProducer+process.tcMet))
-process.rereco_step = cms.Path(process.filterSequence*process.caloTowersRec*(process.recoJets*process.recoJetIds+process.recoTrackJets)*process.recoJetAssociations*process.btagging*process.metreco) # re-reco jets and MET
 
 process.ntuple_step=cms.Path(
     process.filterSequence*
@@ -155,10 +119,10 @@ process.ntuple_step=cms.Path(
     process.promptanavtx +
     process.promptanatrack +
     process.promptanaecalspikes +
-    process.promptanaPMTnoise
+#    process.promptanaPMTnoise
     )
     *process.promptanaTree
 )
 
-process.schedule = cms.Schedule(process.rereco_step, process.hbheflag, process.ntuple_step)
+process.schedule = cms.Schedule(process.hbheflag, process.ntuple_step)
 
