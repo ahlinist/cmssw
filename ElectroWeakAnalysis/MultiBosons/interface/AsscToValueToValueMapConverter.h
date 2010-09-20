@@ -94,7 +94,7 @@ namespace vgamma {
     }
     theFiller.insert(theCollection, values.begin(), values.end());
     theFiller.fill();
-    iEvent.put(prod,asscMapSrc.label()+asscMapSrc.instance());
+    iEvent.put(prod,asscMapSrc.label()+std::string(":")+asscMapSrc.instance());
   }
 
 } // namespace vgamma
