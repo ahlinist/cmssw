@@ -25,6 +25,8 @@
 <use name=SimTracker/TrackerHitAssociation>
 <use name=SimTracker/TrackHistory>
 <use name=CommonTools/Statistics>
+<use name=CommonTools/Utils>
+<use name=CommonTools/UtilAlgos>
 <use name=clhep>
 <use name=boost>
 <use name = hepmc>
@@ -45,6 +47,8 @@
    <use name=DataFormats/VertexReco>
    <use name=DQMServices/Core>
    <use name=CommonTools/Statistics>
+   <use name=CommonTools/Utils>
+   <use name=CommonTools/UtilAlgos>
    <use name=clhep>
    <use name=boost>
    <use name=SimDataFormats/Track>
