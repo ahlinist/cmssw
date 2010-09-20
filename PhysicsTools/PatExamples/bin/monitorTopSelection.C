@@ -63,10 +63,10 @@ void monitorTopSelection(const std::string& histName="yield", std::string select
   
   // list of input smaples
   std::vector<string> samples_;
-  samples_.push_back("root/analyzePatTopSelection_ttbar.root");
-  samples_.push_back("root/analyzePatTopSelection_wjets.root");
-  samples_.push_back("root/analyzePatTopSelection_zjets.root");
-  samples_.push_back("root/analyzePatTopSelection_qcd.root"  );
+  samples_.push_back("analyzePatTopSelection_ttbar.root");
+  samples_.push_back("analyzePatTopSelection_wjets.root");
+  samples_.push_back("analyzePatTopSelection_zjets.root");
+  samples_.push_back("analyzePatTopSelection_qcd.root"  );
 
   //open files
   std::vector<TFile*> files;
