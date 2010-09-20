@@ -92,12 +92,17 @@ process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
 process.piZeroDiscriminators.preshClusterShapeProducer = "multi5x5PreshowerClusterShape"
 process.piZeroDiscriminators.preshClusterShapeCollectionX = "multi5x5PreshowerXClustersShape"
 process.piZeroDiscriminators.preshClusterShapeCollectionY = "multi5x5PreshowerYClustersShape"
-process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0DiscValMapMaker_cfi")
+# process.patDefaultSequence.replace(process.patPhotons,
+#   process.piZeroDiscriminators * process.patPhotons
+#   )
+
+process.eca = cms.EDAnalyzer("EventContentAnalyzer")
+process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0Discriminator_cfi")
 process.patDefaultSequence.replace(process.patPhotons,
-  process.piZeroDiscriminators * process.pi0DiscValMapMaker* process.patPhotons
+  process.piZeroDiscriminators * process.pi0Discriminator * process.patPhotons
   )
 process.patPhotons.userData.userFloats.src.append(
-  cms.InputTag("pi0DiscValMapMaker", "pi0Discriminator")
+  cms.InputTag("pi0Discriminator") #, "piZeroDiscriminatorsPhotonPi0DiscriminatorAssociationMap")
   )
 
 ## Add electron user data
@@ -200,12 +205,18 @@ process.hltFilter.HLTPaths = options.hltPaths
 
 ## Output configuration (add event content, select events, output file name)
 process.out.outputCommands += vgEventContent.extraSkimEventContent
-## FIXME: embed the pi0 discriminator result in the phtons and remove
-##+ it from the event content
-process.out.outputCommands += ["keep *_piZeroDiscriminators_*_*"]
+
 if not options.isRealData:
   process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
-process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
+
+if options.skimType == "MuonPhoton":
+  process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
+elif options.skimType == "MuonElectron":
+  process.out.SelectEvents.SelectEvents = ["WENuGammaPath"]
+else:
+  raise RuntimeError, "Illegal skimType option: %s" % options.skimType
+# if options.skimType == ... <------------------------------------------------
+
 process.out.fileName = options.outputFile
 
 ## Logging
