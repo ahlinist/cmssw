@@ -1,38 +1,23 @@
 import FWCore.ParameterSet.Config as cms
 
-def keepMeGrandMother(iDaughter, iGrandDaughter):
-  cuts = """
-      keep++ numberOfDaughters > %d
-      daughter(%d).numberOfDaughters > %d
-      daughter(%d).daughter(%d).status = 3
-    """ % (iDaughter, iDaughter, iGrandDaughter, iDaughter, iGrandDaughter)
-  while "  " in cuts: cuts = cuts.replace("  ", " ")
-  cuts = cuts.lstrip()
-  cuts = cuts.rstrip()
-  cuts = cuts.split("\n")
-  while "" in cuts: cuts.remove("")
-  return " & ".join(cuts)
-
-grandMotherSelection = [keepMeGrandMother(i, j)
-  for i in range(5) for j in range(5)
-  ]
-
 prunedGenParticles = cms.EDProducer("GenParticlePruner",
   src = cms.InputTag("genParticles"),
   select = cms.vstring(
-    "++keep++ status = 3", # hard scattering full genealogy
-    "keep++ numberOfDaughters > 0 & daughter(0).status = 3",
-    "keep++ numberOfDaughters > 1 & daughter(1).status = 3",
-    "keep++ numberOfDaughters > 2 & daughter(2).status = 3",
-    "keep++ numberOfDaughters > 3 & daughter(3).status = 3",
-    "keep++ numberOfDaughters > 4 & daughter(4).status = 3",
+    ## Keep the hard scattering process with all ancesstors, children and
+    ##+ grand children.
+    "++keep+ status = 2 & numberOfMothers > 0 & mother(0).status = 3",
+    ## Keep all the interesting leptons, neutrinos and photons together
+    ##+ with all there ancestors
+    "++keep status = 1 & abs(pdgId) = 11 & pt > 3 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 12 & pt > 3 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 13 & pt > 3 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 14 & pt > 3 & abs(eta) < 3.1",
+    "++keep              abs(pdgId) = 15 & pt > 3 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 16 & pt > 3 & abs(eta) < 3.1",
+    "++keep status = 1 &     pdgId  = 22 & pt > 3 & abs(eta) < 3.1",
+    ## Drop all the soft and out of acceptance particles
+    "drop pt < 1.5 | abs(eta) > 5"
   )
 )
-
-# These are to preserve ISR
-prunedGenParticles.select += tuple(grandMotherSelection)
-
-# Remove uninteresting particles
-prunedGenParticles.select += tuple(["drop pt < 1.5 & abs(eta) > 5"])
 
 if __name__ == "__main__": import user
