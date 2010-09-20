@@ -97,7 +97,7 @@ process.patDefaultSequence.replace(process.patPhotons,
   process.piZeroDiscriminators * process.pi0DiscValMapMaker* process.patPhotons
   )
 process.patPhotons.userData.userFloats.src.append(
-  cms.InputTag("pi0DiscValMapMaker", "piZeroDiscriminatorsPhotonPi0DiscriminatorAssociationMap")
+  cms.InputTag("pi0DiscValMapMaker", "pi0Discriminator")
   )
 
 ## Add electron user data

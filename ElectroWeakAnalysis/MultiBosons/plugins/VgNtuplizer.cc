@@ -860,7 +860,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       phoIsConv_[nPho_] = iPho->hasConversionTracks();
 
-      phoPi0Disc_[nPho_] = iPho->userFloat("piZeroDiscriminatorsPhotonPi0DiscriminatorAssociationMap");
+      phoPi0Disc_[nPho_] = iPho->userFloat("pi0Discriminator");
             
       nPho_++;
     }
