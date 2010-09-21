@@ -18,6 +18,11 @@ svFitLikelihoodMuTauPairKinematicsPolarized.leg2.pluginType = "SVfitTauLikelihoo
 svFitLikelihoodMuTauPairMEt = copy.deepcopy(svFitLikelihoodMEt)
 svFitLikelihoodMuTauPairMEt.pluginType = cms.string("SVfitLikelihoodMEtMuTau")
 
+svFitLikelihoodMuTauPairTrackInfo = copy.deepcopy(svFitLikelihoodTrackInfo)
+svFitLikelihoodMuTauPairTrackInfo.pluginType = "SVfitLikelihoodMuTauPairTrackInfo"
+svFitLikelihoodMuTauPairTrackInfo.leg1.pluginType = "SVfitMuonLikelihoodTrackInfo"
+svFitLikelihoodMuTauPairTrackInfo.leg2.pluginType = "SVfitTauLikelihoodTrackInfo"
+
 svFitLikelihoodMuTauPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
 svFitLikelihoodMuTauPairPtBalance.pluginType = cms.string("SVfitLikelihoodMuTauPairPtBalance")
 
@@ -52,53 +57,90 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 numSamplings = cms.int32(-1)
             )
         ),
-        psKine_MEt = cms.PSet(
+        ##psKine_MEt = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+        ##        svFitLikelihoodMuTauPairMEt
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        psKine_Track = cms.PSet(
             likelihoodFunctions = cms.VPSet(
                 svFitLikelihoodMuTauPairKinematicsPhaseSpace,
-                svFitLikelihoodMuTauPairMEt
+                svFitLikelihoodMuTauPairTrackInfo
             ),
             estUncertainties = cms.PSet(
                 numSamplings = cms.int32(-1)
             )
-        ),
-        psKine_MEt_ptBalance = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodMuTauPairKinematicsPhaseSpace,
-                svFitLikelihoodMuTauPairMEt,
-                svFitLikelihoodMuTauPairPtBalance
-            ),
-            estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(1000)
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        polKine = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodMuTauPairKinematicsPolarized        
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        polKine_MEt = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodMuTauPairKinematicsPolarized,
-                svFitLikelihoodMuTauPairMEt
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        polKine_MEt_ptBalance = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodMuTauPairKinematicsPolarized,
-                svFitLikelihoodMuTauPairMEt,
-                svFitLikelihoodMuTauPairPtBalance
-            ),
-            estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(1000)
-                numSamplings = cms.int32(-1)
-            )
+        ##),
+        ##psKine_ptBalance = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+        ##        svFitLikelihoodMuTauPairPtBalance
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        ##psKine_MEt_Track_ptBalance = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+        ##        svFitLikelihoodMuTauPairMEt,
+        ##        svFitLikelihoodMuTauPairTrackInfo,
+        ##        svFitLikelihoodMuTauPairPtBalance
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        #numSamplings = cms.int32(1000)
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        ##polKine = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodMuTauPairKinematicsPolarized        
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        ##polKine_MEt = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodMuTauPairKinematicsPolarized,
+        ##        svFitLikelihoodMuTauPairMEt
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        ##polKine_Track = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodMuTauPairKinematicsPolarized,
+        ##        svFitLikelihoodMuTauPairTrackInfo
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        ##polKine_ptBalance = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodMuTauPairKinematicsPolarized,
+        ##        svFitLikelihoodMuTauPairPtBalance
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        numSamplings = cms.int32(-1)
+        ##    )
+        ##),
+        ##polKine_MEt_Track_ptBalance = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodMuTauPairKinematicsPolarized,
+        ##        svFitLikelihoodMuTauPairMEt,
+        ##        svFitLikelihoodMuTauPairPtBalance
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        #numSamplings = cms.int32(1000)
+        ##        numSamplings = cms.int32(-1)
+        ##    )
         )
     ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                           

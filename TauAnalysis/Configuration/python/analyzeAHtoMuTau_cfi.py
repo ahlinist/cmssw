@@ -119,7 +119,7 @@ leg1ChargeBinGridHistManager = cms.PSet(
                     src = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
                     value = cms.string('leg1.charge')
                 ),
-                branchName = cms.string('chi2mZ'),
+                branchName = cms.string('leg1Charge'),
                 binning = cms.PSet(
                     boundaries = cms.vdouble(0.),
                     min = cms.double(-2.),
@@ -223,15 +223,18 @@ muTauEventDump = cms.PSet(
     printTauIdEfficiencies = cms.bool(False),
     diTauCandidateSource = cms.InputTag(''),
     svFitAlgorithms = cms.VPSet(
-        ##cms.PSet(
-        ##    name = cms.string("psKine")
-        ##),
+        cms.PSet(
+            name = cms.string("psKine")
+        ),
         ##cms.PSet(
         ##    name = cms.string("psKine_MEt")
         ##),
         cms.PSet(
-            name = cms.string("psKine_MEt_ptBalance")
-        ),
+            name = cms.string("psKine_Track")
+        ##),        
+        ##cms.PSet(
+        ##    name = cms.string("psKine_MEt_Track_ptBalance")
+        ##),
         ##cms.PSet(
         ##    name = cms.string("polKine"),
         ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
@@ -240,9 +243,13 @@ muTauEventDump = cms.PSet(
         ##    name = cms.string("polKine_MEt"),
         ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
         ##),
-        cms.PSet(
-            name = cms.string("polKine_MEt_ptBalance"),
-            polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ##cms.PSet(
+        ##    name = cms.string("polKine_Track"),
+        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ##),
+        ##cms.PSet(
+        ##    name = cms.string("polKine_MEt_Track_ptBalance"),
+        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
         )
     ),
     muTauZmumuHypothesisSource = cms.InputTag(''),
