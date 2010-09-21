@@ -170,6 +170,7 @@ if options.isRealData:
 else:
   process.load(basePath + "prunedGenParticles_cfi")
   process.defaultSequence = cms.Sequence(
+    process.hltFilter +
     process.prunedGenParticles *
     process.patDefaultSequence
   )
@@ -206,6 +207,8 @@ process.ZInvisibleGammaPath = cms.Path(
 
 ## HLT trigger
 process.hltFilter.HLTPaths = options.hltPaths
+process.hltFilter.TriggerResultsTag = \
+  "TriggerResults::" + options.hltProcessName
 
 ## Output configuration (add event content, select events, output file name)
 process.out.outputCommands += vgEventContent.extraSkimEventContent
