@@ -57,6 +57,7 @@ namespace vgamma {
     edm::InputTag valueTypeSrc;
     edm::InputTag asscMapSrc;
     std::string prodInstName;
+    bool complain;
   }; // AsscToValueToValueMapConverter<T,U>
 
   template <typename CollType,typename ValueType>
@@ -68,6 +69,12 @@ namespace vgamma {
       prodInstName = iConfig.getParameter<std::string>("label");
     else
       prodInstName = asscMapSrc.label()+std::string(":")+asscMapSrc.instance();
+
+    //complain instead of throwing exception
+    if(iConfig.existsAs<bool>("complain"))
+      complain = iConfig.getParameter<bool>("complain");
+    else
+      complain = false;	
 
     produces<edm::ValueMap<ValueType> >(prodInstName);
   }
@@ -102,8 +109,12 @@ namespace vgamma {
 	theerror << "Isomorphic AssociationMap is not isomorphic." << std::endl
 		 << "Photon: " << i - theCollection->begin() << " does not have a mapping!" << std::endl;
 	
-	throw edm::Exception( edm::errors::ProductNotFound, 
-			      theerror.str());      
+	if(complain)
+	  std::cout << theerror.str();
+	else
+	  throw edm::Exception( edm::errors::ProductNotFound, 
+				theerror.str());
+	
       }
     }
     theFiller.insert(theCollection, values.begin(), values.end());
