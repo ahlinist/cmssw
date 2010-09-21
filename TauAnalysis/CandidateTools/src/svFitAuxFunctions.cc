@@ -7,6 +7,7 @@
 #include "DataFormats/Math/interface/Vector3D.h"
 
 #include <TMath.h>
+#include <Math/VectorUtil.h>
 
 #include <limits>
 
@@ -42,6 +43,18 @@ namespace SVfit_namespace {
     //std::cout << " fX = " << fX << ", fY = " << fY << ", fZ = " << fZ << std::endl;
 
     return reco::Candidate::Vector(fX, fY, fZ);
+  }
+
+  reco::Candidate::LorentzVector boostToCOM(
+      const reco::Candidate::LorentzVector &comSystem,
+      const reco::Candidate::LorentzVector &p4ToBoost) {
+    reco::Candidate::Vector boost = comSystem.BoostToCM();
+    return ROOT::Math::VectorUtil::boost(p4ToBoost, boost);
+  }
+
+  double compLabThetaInCOM(const reco::Candidate::LorentzVector& com, 
+      const reco::Candidate::LorentzVector& p4) {
+    return boostToCOM(com, p4).theta();
   }
   
   double pVisRestFrame(double tauVisMass, double tauNuNuMass) 
