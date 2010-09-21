@@ -9,7 +9,8 @@ def applyJobOptions(options):
   options.parseArguments()
   jobOptions = copy.deepcopy(defaultOptions)
 
-  ## Set the default trigger match paths
+  ## Set the default trigger match paths, see
+  ##+
   jobOptions.electronTriggerMatchPaths = """
     HLT_Ele10_LW_L1R
     HLT_Ele12_SW_EleIdIsol_L1R
@@ -25,24 +26,20 @@ def applyJobOptions(options):
     HLT_Photon15_L1R
     """.split()
   jobOptions.muonTriggerMatchPaths = """
+    HLT_L1Mu14_L1ETM30
+    HLT_L1Mu14_L1SingleJet6U
+    HLT_L1Mu14_L1SingleEG10
+    HLT_L1Mu20
+    HLT_DoubleMu3
+    HLT_Mu3
+    HLT_Mu5
     HLT_Mu9
-    HLT_Mu11
-    """.split()
-  jobOptions.electronTriggerMatchPaths = """
-    HLT_Ele10_LW_L1R
-    HLT_Ele12_SW_EleIdIsol_L1R
-    HLT_Ele15_LW_L1R
-    HLT_Ele15_SW_EleId_L1R
-    HLT_Ele15_SW_L1R
-    HLT_Ele15_SW_LooseTrackIso_L1R
-    HLT_Ele17_SW_CaloEleId_L1R
-    HLT_Ele17_SW_EleIdIsol_L1R
-    HLT_Ele17_SW_LEleId_L1R
-    HLT_Ele20_SW_L1R
-    HLT_Photon10_L1R
-    HLT_Photon15_L1R
-    """.split()
-
+    HLT_L2Mu9
+    HLT_L2Mu11
+    HLT_L1Mu30
+    HLT_Mu7
+    HLT_L2Mu15
+    """.split()  ## Definition of MU PD for run 142933
 
   if options.jobType == "testMC":
     jobOptions.maxEvents = 100
@@ -62,24 +59,6 @@ def applyJobOptions(options):
     jobOptions.isMaxEventsOutput = True
     jobOptions.wantSummary = False
     jobOptions.hltPaths = ["HLT_Mu9"]
-    jobOptions.electronTriggerMatchPaths = """
-      HLT_Ele10_LW_L1R
-      HLT_Ele12_SW_EleIdIsol_L1R
-      HLT_Ele15_LW_L1R
-      HLT_Ele15_SW_EleId_L1R
-      HLT_Ele15_SW_L1R
-      HLT_Ele15_SW_LooseTrackIso_L1R
-      HLT_Ele17_SW_CaloEleId_L1R
-      HLT_Ele17_SW_EleIdIsol_L1R
-      HLT_Ele17_SW_LEleId_L1R
-      HLT_Ele20_SW_L1R
-      HLT_Photon10_L1R
-      HLT_Photon15_L1R
-      """.split()
-    jobOptions.muonTriggerMatchPaths = """
-      HLT_Mu9
-      HLT_Mu11
-      """.split()
 
   # end of testMC options <-------------------------------------
 
@@ -114,21 +93,6 @@ def applyJobOptions(options):
     jobOptions.wantSummary = False
 #     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9, 11]]
     jobOptions.hltPaths = ["HLT_Mu9"]
-    jobOptions.muonTriggerMatchPaths = """
-      HLT_L1Mu14_L1ETM30
-      HLT_L1Mu14_L1SingleJet6U
-      HLT_L1Mu14_L1SingleEG10
-      HLT_L1Mu20
-      HLT_DoubleMu3
-      HLT_Mu3
-      HLT_Mu5
-      HLT_Mu9
-      HLT_L2Mu9
-      HLT_L2Mu11
-      HLT_L1Mu30
-      HLT_Mu7
-      HLT_L2Mu15
-      """.split()  ## Definition of MU PD for run 142933
   # end of testRealData options <-----------------------------------
 
   elif options.jobType == "testSummer10":
