@@ -52,6 +52,17 @@ namespace SVfit_namespace
     return x*x*x*x;	
   }
 
+  /// Boost a lorentz vector into the COM system of another lorentz vector.
+  reco::Candidate::LorentzVector boostToCOM(
+      const reco::Candidate::LorentzVector &comSystem,
+      const reco::Candidate::LorentzVector &p4ToBoost 
+      );   
+
+  /// Compute polar angle (in lab) for a Lorentz vector <p4> given a center of
+  /// mass system Lorentz vector <com>
+  double compLabThetaInCOM(const reco::Candidate::LorentzVector& com, 
+      const reco::Candidate::LorentzVector& p4);
+
   /// Determine visible tau rest frame energy given visible mass and neutrino mass
   double pVisRestFrame(double tauVisMass, double tauNuNuMass);
 
