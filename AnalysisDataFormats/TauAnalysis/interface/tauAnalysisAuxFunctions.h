@@ -2,12 +2,10 @@
 #define AnalysisDataFormats_TauAnalysis_tauAnalysisAuxFunctions_h
 
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/CLHEP/interface/AlgebraicObjects.h"
 
 namespace TauAnalysis_namespace 
 {
-  /// Compute vector sum of two points
-  reco::Candidate::Point operator+(const reco::Candidate::Point&, const reco::Candidate::Vector&);
-
   /// Access element stored in "two-dimensional" map 
   /// (i.e. in a map in which each value is referenced by two keys)
   template<typename keyT1, typename keyT2, typename valueT>
@@ -24,6 +22,9 @@ namespace TauAnalysis_namespace
 //    (error handling needs to be taken care of by calling code...)
     return 0;
   } 
+
+  /// compute tau flight path (= distance between tau production and decay vertex)
+  double compDecayDistance(const AlgebraicVector3&, const AlgebraicVector3&);
 }
 
 #endif
