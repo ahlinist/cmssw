@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.17 $
+ * \version $Revision: 1.18 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.17 2010/09/01 15:20:29 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.18 2010/09/16 13:55:18 veelken Exp $
  *
  */
 
@@ -185,19 +185,37 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
      else return SVmassRecoSolution(); 
   }
 
-  const SVfitDiTauSolution* svFitSolution(const std::string& algorithm, const std::string& polarizationHypothesisName = "") const
+  const SVfitDiTauSolution* svFitSolution(const std::string& algorithm, 
+					  const std::string& polarizationHypothesisName = "", int* errorFlag = 0) const
   {
     std::string polHypoName_expanded = ( polarizationHypothesisName != "" ) ? polarizationHypothesisName : "Unknown";
 
     const SVfitDiTauSolution* svFitSolution
       = TauAnalysis_namespace::findMapElement<std::string, std::string, SVfitDiTauSolution>
           (svFitSolutionMap_, algorithm, polHypoName_expanded);
-
-    //if ( !svFitSolution ) {
-    //  edm::LogError("CompositePtrCandidateT1T2MEt::svFitSolution") 
-    //	  << " No SVfit solution defined for algorithm = " << algorithm << "," 
-    //	  << " polarizationHypothesis = " << polHypoName_expanded << " !!";
-    //}
+    
+    if ( !svFitSolution ) {
+      if ( errorFlag ) {
+	(*errorFlag) = 1;
+      } else {
+	edm::LogError ("CompositePtrCandidateT1T2MEt::svFitSolution") 
+	  << " No SVfit solution defined for algorithm = " << algorithm << "," 
+    	  << " polarizationHypothesis = " << polHypoName_expanded << " !!";
+	std::cout << "available: " << std::endl;
+	for ( std::map<std::string, SVfitAlgorithmSolutionType>::const_iterator algorithm = svFitSolutionMap_.begin();
+	      algorithm != svFitSolutionMap_.end(); ++algorithm ) {
+	  std::cout << " for algorithmName = " << algorithm->first << ": polarizationHypothesis = { ";
+	  bool isFirst = true;
+	  for ( SVfitAlgorithmSolutionType::const_iterator polHypothesis = algorithm->second.begin();
+		polHypothesis != algorithm->second.end(); ++polHypothesis ) {
+	    if ( !isFirst ) std::cout << ", ";
+	    std::cout << polHypothesis->first;
+	    isFirst = false;
+	  }
+	  std::cout << " }" << std::endl;
+	}
+      }
+    }
 
     return svFitSolution;
   }
@@ -338,7 +356,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   std::vector<SVmassRecoSolution> svFitSolutions_;
 
   typedef std::map<std::string, SVfitDiTauSolution> SVfitAlgorithmSolutionType;
-  std::map<std::string, SVfitAlgorithmSolutionType> svFitSolutionMap_;
+  std::map<std::string, SVfitAlgorithmSolutionType> svFitSolutionMap_; // first key = algorithmName, second key = polarizationHypothesis
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
