@@ -7,29 +7,29 @@ from ElectroWeakAnalysis.MultiBosons.Skimming.GenPhotonFilters_cfi import *
 
 WENuGammaSequence  = cms.Sequence(
   electronPlusMETs *
-  electronPlusMETFilter *
   WENuGammaCands *
+  electronPlusMETFilter *
   WENuGammaFilter
   )
 
 WMuNuGammaSequence = cms.Sequence(
   muonPlusMETs *
-  muonPlusMETFilter *
   WMuNuGammaCands *
+  muonPlusMETFilter *
   WMuNuGammaFilter
   )
 
 ZEEGammaSequence = cms.Sequence(
   dielectrons *
-  dielectronFilter *
   ZEEGammaCands *
+  dielectronFilter *
   ZEEGammaFilter
   )
 
 ZMuMuGammaSequence = cms.Sequence(
   dimuons *
-  dimuonFilter *
   ZMuMuGammaCands *
+  dimuonFilter *
   ZMuMuGammaFilter
   )
 
