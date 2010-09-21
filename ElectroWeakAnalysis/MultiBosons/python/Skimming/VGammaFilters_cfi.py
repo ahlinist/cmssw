@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-dimuonFilter   = WENuGammaFilter.clone(
+dimuonFilter   = cms.EDFilter("CandViewCountFilter",
   src = cms.InputTag("dimuons"),
   minNumber = cms.uint32(1)
   )
