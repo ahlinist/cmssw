@@ -1,10 +1,17 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
+#include <TMath.h>
+
 namespace TauAnalysis_namespace 
 {
-  reco::Candidate::Point operator+(const reco::Candidate::Point& p1, const reco::Candidate::Vector& p2)
+  double compDecayDistance(const AlgebraicVector3& eventVertexPos, const AlgebraicVector3& decayVertexPos)
   {
-    return reco::Candidate::Point(p1.x() + p2.x(), p1.y() + p2.y(), p1.z() + p2.z());
+    double mag2 = 0.;
+    for ( unsigned iDimension = 0; iDimension < 3; ++iDimension ) {
+      double d = eventVertexPos(iDimension) - decayVertexPos(iDimension);
+      mag2 += d*d;
+    }
+    return TMath::Sqrt(mag2);
   }
 }
 
