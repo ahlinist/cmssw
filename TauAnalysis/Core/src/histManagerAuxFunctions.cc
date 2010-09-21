@@ -1,5 +1,7 @@
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
+#include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
+
 #include <TMath.h>
 
 void bookWeightHistograms(DQMStore& dqmStore, const char* name, const char* title, 
@@ -100,12 +102,15 @@ double getDeltaRnearestJet(const reco::Particle::LorentzVector& refMomentum,
 double compDecayEigenTime(const reco::Candidate::Point& primaryVertexPos, const reco::Candidate::Point& decayVertexPos, 
 			  double tauLeptonEnergy)
 {
-  const double speedOfLight = 3.e-5; // speed of light [cm/fs]
-  const double tauLeptonMass = 1.78; // tau lepton mass [GeV]
+  double tauLeptonDecayDistance = TMath::Sqrt((decayVertexPos - primaryVertexPos).Mag2());
+  return compDecayEigenTime(tauLeptonDecayDistance, tauLeptonEnergy);
+}
 
-  double decayDistance = TMath::Sqrt((decayVertexPos - primaryVertexPos).Mag2());
-  double gamma = tauLeptonEnergy/tauLeptonMass;
-  return decayDistance/(speedOfLight*gamma);
+double compDecayEigenTime(double tauLeptonDecayDistance,  double tauLeptonEnergy)
+{
+  const double speedOfLight = 3.e-5; // speed of light [cm/fs]
+  double gamma = tauLeptonEnergy/SVfit_namespace::tauLeptonMass;
+  return tauLeptonDecayDistance/(speedOfLight*gamma);
 }
 
 
