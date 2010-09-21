@@ -73,6 +73,14 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     delete scaleFunc_;  
   }
 
+  void beginJob()
+  {
+    for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
+	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
+      svFitAlgorithm->second->beginJob();
+    }
+  }
+
   void beginEvent(edm::Event& evt, const edm::EventSetup& es)
   {
     for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
