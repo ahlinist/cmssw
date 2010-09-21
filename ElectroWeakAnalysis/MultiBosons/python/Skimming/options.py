@@ -48,6 +48,13 @@ options.register("wantSummary",
   "Do you want long trigger and timing reports at the end?"
   )
 
+options.register("hltProcessName",
+  "HLT",                             # default value
+  VarParsing.multiplicity.singleton, # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "Name of the Process that produced the HLT information."
+  )
+
 options.register("hltPaths",
   "",                                # default value
   VarParsing.multiplicity.list,      # singleton or list

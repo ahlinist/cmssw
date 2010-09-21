@@ -6,7 +6,7 @@ def applyJobOptions(options):
   Set multiple options defined by the jobType argument.
   To be called after options.parseArguments()
   """
-
+  options.parseArguments()
   jobOptions = copy.deepcopy(defaultOptions)
 
   if options.jobType == "testMC":
@@ -96,6 +96,38 @@ def applyJobOptions(options):
       """.split()  ## Definition of MU PD for run 142933
   # end of testRealData options <-----------------------------------
 
+  elif options.jobType == "testSummer10":
+    jobOptions.inputFiles = [
+        "rfio:/castor/cern.ch/user/z/zkliu/TestRECO/36x_ZJet_Madgraph_tauola_TestRECO.root"
+        ]
+    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.globalTag = "START38_V10::All"
+    jobOptions.reportEvery = 1
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = False
+    jobOptions.isMaxEventsOutput = True
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI36X"
+    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.electronTriggerMatchPaths = """
+      HLT_Ele10_LW_L1R
+      HLT_Ele12_SW_EleIdIsol_L1R
+      HLT_Ele15_LW_L1R
+      HLT_Ele15_SW_EleId_L1R
+      HLT_Ele15_SW_L1R
+      HLT_Ele15_SW_LooseTrackIso_L1R
+      HLT_Ele17_SW_CaloEleId_L1R
+      HLT_Ele17_SW_EleIdIsol_L1R
+      HLT_Ele17_SW_LEleId_L1R
+      HLT_Ele20_SW_L1R
+      HLT_Photon10_L1R
+      HLT_Photon15_L1R
+      """.split()
+    jobOptions.muonTriggerMatchPaths = """
+      HLT_Mu9
+      HLT_Mu11
+      """.split()
+
   elif options.jobType == "PromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"
     jobOptions.isRealData = True
@@ -129,8 +161,18 @@ def applyJobOptions(options):
   elif options.jobType != "":
     raise RuntimeError, "Unknown jobType option `%s'" % options.jobType
 
+  ## Set all the non-default option values equal to jobOptions to preserve options set
+  ##+ in the cfg file
+  for name, value in options._singletons.items() + options._lists.items():
+    if value != getattr(defaultOptions, name):
+      setattr(jobOptions, name, value)
+
   jobOptions.parseArguments()
 
-  return jobOptions
+  ## Set all the options equal to jobOptions
+  for name, value in jobOptions._singletons.items() + jobOptions._lists.items():
+    setattr(options, name, value)
+
+#   return jobOptions
 
 # applyMultiOptionTag(options) <----------------------------------------------
