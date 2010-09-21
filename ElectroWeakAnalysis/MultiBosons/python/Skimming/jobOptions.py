@@ -9,6 +9,41 @@ def applyJobOptions(options):
   options.parseArguments()
   jobOptions = copy.deepcopy(defaultOptions)
 
+  ## Set the default trigger match paths
+  jobOptions.electronTriggerMatchPaths = """
+    HLT_Ele10_LW_L1R
+    HLT_Ele12_SW_EleIdIsol_L1R
+    HLT_Ele15_LW_L1R
+    HLT_Ele15_SW_EleId_L1R
+    HLT_Ele15_SW_L1R
+    HLT_Ele15_SW_LooseTrackIso_L1R
+    HLT_Ele17_SW_CaloEleId_L1R
+    HLT_Ele17_SW_EleIdIsol_L1R
+    HLT_Ele17_SW_LEleId_L1R
+    HLT_Ele20_SW_L1R
+    HLT_Photon10_L1R
+    HLT_Photon15_L1R
+    """.split()
+  jobOptions.muonTriggerMatchPaths = """
+    HLT_Mu9
+    HLT_Mu11
+    """.split()
+  jobOptions.electronTriggerMatchPaths = """
+    HLT_Ele10_LW_L1R
+    HLT_Ele12_SW_EleIdIsol_L1R
+    HLT_Ele15_LW_L1R
+    HLT_Ele15_SW_EleId_L1R
+    HLT_Ele15_SW_L1R
+    HLT_Ele15_SW_LooseTrackIso_L1R
+    HLT_Ele17_SW_CaloEleId_L1R
+    HLT_Ele17_SW_EleIdIsol_L1R
+    HLT_Ele17_SW_LEleId_L1R
+    HLT_Ele20_SW_L1R
+    HLT_Photon10_L1R
+    HLT_Photon15_L1R
+    """.split()
+
+
   if options.jobType == "testMC":
     jobOptions.maxEvents = 100
     jobOptions.inputFiles = [
@@ -109,24 +144,6 @@ def applyJobOptions(options):
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI36X"
     jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
-    jobOptions.electronTriggerMatchPaths = """
-      HLT_Ele10_LW_L1R
-      HLT_Ele12_SW_EleIdIsol_L1R
-      HLT_Ele15_LW_L1R
-      HLT_Ele15_SW_EleId_L1R
-      HLT_Ele15_SW_L1R
-      HLT_Ele15_SW_LooseTrackIso_L1R
-      HLT_Ele17_SW_CaloEleId_L1R
-      HLT_Ele17_SW_EleIdIsol_L1R
-      HLT_Ele17_SW_LEleId_L1R
-      HLT_Ele20_SW_L1R
-      HLT_Photon10_L1R
-      HLT_Photon15_L1R
-      """.split()
-    jobOptions.muonTriggerMatchPaths = """
-      HLT_Mu9
-      HLT_Mu11
-      """.split()
 
   elif options.jobType == "PromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"
