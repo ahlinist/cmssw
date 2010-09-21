@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.14 2010/08/30 13:28:20 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.15 2010/09/17 12:28:36 veelken Exp $
  *
  */
 
@@ -111,6 +111,11 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
   }
 
   ~CompositePtrCandidateT1T2MEtProducer() {}
+
+  void beginJob()
+  {
+    algorithm_.beginJob();
+  }
 
   void produce(edm::Event& evt, const edm::EventSetup& es)
   {
