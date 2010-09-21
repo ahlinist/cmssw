@@ -32,12 +32,13 @@ basePath = "ElectroWeakAnalysis.MultiBosons.Skimming." # shorthand
 options = copy.deepcopy(defaultOptions)
 
 ## Define default options specific to this configuration file
-options.jobType = "testMC"
+options.jobType = "testSummer10"
+# options.jobType = "testMC"
 # options.jobType = "testRealData"
 
 ## Parse (command-line) arguments - this overrides the options given above
-options.parseArguments()
-options = applyJobOptions(options)
+# options.parseArguments()
+applyJobOptions(options)
 
 ## Input
 process.source.fileNames = options.inputFiles
@@ -88,18 +89,21 @@ process.patPhotons.userData.userFloats.src = egammaUserDataFloats(
 process.patPhotons.userData.userInts.src = egammaUserDataInts(
   moduleName = "photonUserData"
   )
-process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
-process.piZeroDiscriminators.preshClusterShapeProducer = "multi5x5PreshowerClusterShape"
-process.piZeroDiscriminators.preshClusterShapeCollectionX = "multi5x5PreshowerXClustersShape"
-process.piZeroDiscriminators.preshClusterShapeCollectionY = "multi5x5PreshowerYClustersShape"
-# process.patDefaultSequence.replace(process.patPhotons,
-#   process.piZeroDiscriminators * process.patPhotons
-#   )
 
-process.eca = cms.EDAnalyzer("EventContentAnalyzer")
+process.load("RecoEcal.EgammaClusterProducers.preshowerClusterShape_cfi")
+process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
+
+#process.piZeroDiscriminators.preshClusterShapeProducer = "multi5x5PreshowerClusterShape"
+#process.piZeroDiscriminators.preshClusterShapeCollectionX = "multi5x5PreshowerXClustersShape"
+#process.piZeroDiscriminators.preshClusterShapeCollectionY = "multi5x5PreshowerYClustersShape"
+
+# process.eca = cms.EDAnalyzer("EventContentAnalyzer")
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0Discriminator_cfi")
 process.patDefaultSequence.replace(process.patPhotons,
-  process.piZeroDiscriminators * process.pi0Discriminator * process.patPhotons
+  process.preshowerClusterShape *
+  process.piZeroDiscriminators  *
+  process.pi0Discriminator      *
+  process.patPhotons
   )
 process.patPhotons.userData.userFloats.src.append(
   cms.InputTag("pi0Discriminator") #, "piZeroDiscriminatorsPhotonPi0DiscriminatorAssociationMap")
@@ -141,6 +145,8 @@ process.patElectrons.electronIDSources = cms.PSet(
 ## PAT Trigger
 process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
 switchOnTrigger(process)
+process.patTrigger.processName = options.hltProcessName
+process.patTriggerEvent.processName = options.hltProcessName
 matchHltPaths = {
   "cleanPatElectrons": options.electronTriggerMatchPaths,
   "cleanPatMuons"    : options.muonTriggerMatchPaths
@@ -148,6 +154,7 @@ matchHltPaths = {
 embedTriggerMatches(process, matchHltPaths)
 
 ## Define Paths
+process.load(basePath + "hltFilter_cfi")
 process.load(basePath + "VGammaSkimSequences_cff")
 
 if options.isRealData:
@@ -161,6 +168,7 @@ if options.isRealData:
   process.hltPhysicsDeclaredPath = cms.Path(process.hltPhysicsDeclared)
   process.defaultSequence = cms.Sequence(
     process.goodCollisionDataSequence +
+    process.hltFilter +
     process.patDefaultSequence
   )
 else:
@@ -211,7 +219,7 @@ if not options.isRealData:
 
 if options.skimType == "MuonPhoton":
   process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
-elif options.skimType == "MuonElectron":
+elif options.skimType == "ElectronPhoton":
   process.out.SelectEvents.SelectEvents = ["WENuGammaPath"]
 else:
   raise RuntimeError, "Illegal skimType option: %s" % options.skimType
@@ -236,6 +244,12 @@ if options.jobType == "testRealData":
   process.WMuNuGammaPath.remove(process.hltFilter)
   process.muonPlusMETFilter.cut = "daughter('lepton').pt > 3"
   process.WMuNuGammaPath.remove(process.WENuGammaFilter)
+
+if options.jobType == "testSummer10":
+#   process.WENuGammaPath.remove(process.hltFilter)
+#   process.WENuGammaPath.remove(process.electronPlusMETFilter)
+#   process.WENuGammaPath.remove(process.WENuGammaFilter)
+    pass
 
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user

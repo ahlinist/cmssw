@@ -95,9 +95,11 @@ namespace vgamma {
 	theMap->find(edm::Ref<CollType>(theCollection,i - theCollection->begin()));
       if(itr != theMap->end())
 	values.push_back(itr->val);
-      else
-	throw edm::Exception( edm::errors::ProductNotFound, 
-			      "Isomorphic AssociationMap does not contain one or more necessary keys." );      
+      else {
+	std::cout << "Photon: " << i - theCollection->begin() << " does not have a mapping!" << std::endl;
+	//throw edm::Exception( edm::errors::ProductNotFound, 
+	//	      "Isomorphic AssociationMap is not isomorphic." );      
+      }
     }
     theFiller.insert(theCollection, values.begin(), values.end());
     theFiller.fill();

@@ -1,13 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 
-from ElectroWeakAnalysis.MultiBosons.Skimming.hltFilter_cfi import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.VGammaCombinedCandidates_cfi import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.VGammaFilters_cfi import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.GenPhotonFilters_cfi import *
 
 
 WENuGammaSequence  = cms.Sequence(
-  hltFilter +
   electronPlusMETs *
   electronPlusMETFilter *
   WENuGammaCands *
@@ -15,7 +13,6 @@ WENuGammaSequence  = cms.Sequence(
   )
 
 WMuNuGammaSequence = cms.Sequence(
-  hltFilter +
   muonPlusMETs *
   muonPlusMETFilter *
   WMuNuGammaCands *
@@ -23,7 +20,6 @@ WMuNuGammaSequence = cms.Sequence(
   )
 
 ZEEGammaSequence = cms.Sequence(
-  hltFilter +
   dielectrons *
   dielectronFilter *
   ZEEGammaCands *
@@ -31,7 +27,6 @@ ZEEGammaSequence = cms.Sequence(
   )
 
 ZMuMuGammaSequence = cms.Sequence(
-  hltFilter +
   dimuons *
   dimuonFilter *
   ZMuMuGammaCands *
@@ -39,19 +34,16 @@ ZMuMuGammaSequence = cms.Sequence(
   )
 
 ZInvisibleGammaSequence = cms.Sequence(
-  hltFilter +
   ZInvisibleGammaCands *
   ZInvisibleGammaFilter
   )
 
 pythiaPartonShowerIsrSequence = cms.Sequence(
-  hltFilter +
   leadingPhoton *
   pythiaPartonShowerIsrFilter
   )
 
 pythiaPartonShowerFsrSequence = cms.Sequence(
-  hltFilter +
   leadingPhoton *
   pythiaPartonShowerFsrFilter
   )

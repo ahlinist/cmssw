@@ -41,7 +41,7 @@ process.photonHistos = cms.PSet(
         nbins = cms.untracked.int32(100),
         name = cms.untracked.string("seedOutOfTimeChi2"),
         description = cms.untracked.string("Photons:seed out of time #chi^{2}:events / bin"),
-        plotquantity = cms.untracked.string('userFloat("photonUserData:seedSwissCross")')
+        plotquantity = cms.untracked.string('userFloat("photonUserData:seedOutOfTimeChi2")')
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
@@ -50,7 +50,7 @@ process.photonHistos = cms.PSet(
         nbins = cms.untracked.int32(100),
         name = cms.untracked.string("seedChi2"),
         description = cms.untracked.string("Photons:seed #chi^{2}:events / bin"),
-        plotquantity = cms.untracked.string('userFloat("photonUserData:seedSwissCross")')
+        plotquantity = cms.untracked.string('userFloat("photonUserData:seedChi2")')
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
@@ -125,6 +125,17 @@ process.photonHistos = cms.PSet(
         name = cms.untracked.string("covIEtaIEta"),
         description = cms.untracked.string("cov(i#eta,i#eta)"),
         plotquantity = cms.untracked.string('userFloat("photonUserData:covIEtaIEta")')
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(0),
+        max = cms.untracked.double(2),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("pi0Discriminator"),
+        description = cms.untracked.string("pi_{0} discriminator"),
+        plotquantity = cms.untracked.string(
+          'userFloat("pi0Discriminator")'
+          )
       ),
     ],
   eventWeight = cms.double(1.0),
