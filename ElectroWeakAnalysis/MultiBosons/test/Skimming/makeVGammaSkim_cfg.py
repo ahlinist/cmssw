@@ -3,12 +3,8 @@
 ###############################################################################
 
 ## TO-DO List
-## * Prune gen particles (done)
-## * Check event size and reduce it (partially)
 ## * Do we want to use VBTF WLNu candidates instead of ours leptonPlusMETs?
 ##   They have the acop method.
-## * Add VBTF electron ID working points
-## * Embed photon showershape variables as user floats (done)
 
 import copy
 import FWCore.ParameterSet.Config as cms
