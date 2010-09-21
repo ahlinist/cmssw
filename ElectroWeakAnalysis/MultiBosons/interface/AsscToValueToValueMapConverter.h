@@ -20,6 +20,7 @@ Implementation:
 #include <memory>
 #include <string>
 #include <vector>
+#include <sstream>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -96,9 +97,13 @@ namespace vgamma {
       if(itr != theMap->end())
 	values.push_back(itr->val);
       else {
-	std::cout << "Photon: " << i - theCollection->begin() << " does not have a mapping!" << std::endl;
-	//throw edm::Exception( edm::errors::ProductNotFound, 
-	//	      "Isomorphic AssociationMap is not isomorphic." );      
+	std::stringstream theerror;
+
+	theerror << "Isomorphic AssociationMap is not isomorphic." << std::endl
+		 << "Photon: " << i - theCollection->begin() << " does not have a mapping!" << std::endl;
+	
+	throw edm::Exception( edm::errors::ProductNotFound, 
+			      theerror.str());      
       }
     }
     theFiller.insert(theCollection, values.begin(), values.end());
