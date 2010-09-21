@@ -51,11 +51,6 @@ namespace SVfit_namespace {
     reco::Candidate::Vector boost = comSystem.BoostToCM();
     return ROOT::Math::VectorUtil::boost(p4ToBoost, boost);
   }
-
-  double compLabThetaInCOM(const reco::Candidate::LorentzVector& com, 
-      const reco::Candidate::LorentzVector& p4) {
-    return boostToCOM(com, p4).theta();
-  }
   
   double pVisRestFrame(double tauVisMass, double tauNuNuMass) 
   {
@@ -133,9 +128,9 @@ namespace SVfit_namespace {
     reco::Candidate::Vector tauMomentum = tauDirection*tauMomentumLabFrame;
     reco::Candidate::LorentzVector tauP4LabFrame = reco::Candidate::LorentzVector(
       math::PtEtaPhiMLorentzVector(tauMomentum.rho(), tauMomentum.eta(), tauMomentum.phi(), tauLeptonMass));
-    //std::cout << "--> tauMomentum: E = " << tauP4LabFrame.energy() 
-    //          << ", eta = " << tauP4LabFrame.eta() << ", phi = " << tauP4LabFrame.phi()*180./TMath::Pi() 
-    //          << ", mass = " << tauP4LabFrame.mass() << std::endl;
+    //std::cout << "--> tauMomentum: E = " << tauP4LabFrame.energy() << ","
+    //          << " eta = " << tauP4LabFrame.eta() << ", phi = " << tauP4LabFrame.phi()*180./TMath::Pi() << ","
+    //          << " mass = " << tauP4LabFrame.mass() << std::endl;
 
     return tauP4LabFrame;
   }
@@ -152,6 +147,38 @@ namespace SVfit_namespace {
       edm::LogError ("logGaussian")
 	<< " Parameter sigma must not be zero !!";
       return std::numeric_limits<float>::min();
+    }
+  }
+
+//
+//-------------------------------------------------------------------------------
+//
+
+  double getTauLeptonPolarization(SVfitLegSolution::polarizationHypothesisType tauLeptonPolarizationHypothesis, double tauLeptonCharge)
+  {
+//--- determine whether visible tau decay products come from a tau- or a tau+ decay;
+//    depending on whether the tau lepton is a tau- or a tau+,
+//    the following convention is used to relate the "handed-ness" of the tau to the polarization:
+//   o P(tau-_{L}) = P(tau+_{R}) = -1
+//   o P(tau-_{R}) = P(tau+_{L}) = +1
+//
+    double tauLeptonPolarizationSign = 0.;
+    if      ( tauLeptonCharge < 0. ) tauLeptonPolarizationSign = +1.; // tau- case
+    else if ( tauLeptonCharge > 0. ) tauLeptonPolarizationSign = -1.; // tau+ case
+    else {
+      edm::LogWarning ("getTauLeptonPolarization") 
+	<< " Failed to identify whether visible tau decay products come from a tau- or a tau+ decay !!";
+      return 0.;
+    }
+    
+    if ( tauLeptonPolarizationHypothesis == SVfitLegSolution::kLeftHanded  ) {
+      return -1.*tauLeptonPolarizationSign;
+    } else if ( tauLeptonPolarizationHypothesis == SVfitLegSolution::kRightHanded ) {
+      return +1.*tauLeptonPolarizationSign;
+    } else {
+      edm::LogWarning ("getTauLeptonPolarization") 
+	<< " Unknown polarization of tau lepton !!";
+      return 0.;
     }
   }
 }
