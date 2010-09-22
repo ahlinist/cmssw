@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.16 2010/08/29 15:35:59 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.17 2010/08/30 21:52:41 giamman Exp $
 //
 //
 
@@ -239,6 +239,12 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     muy = (*muons)[0].py();
     muz = (*muons)[0].pz();
     mut = (*muons)[0].pt();
+  }
+
+  // di-muon mass
+  if (muons->size()>=2) {
+    double mass = sqrt(pow((*muons)[0].energy()+(*muons)[1].energy(),2) - pow((*muons)[0].px()+(*muons)[1].px(),2) - pow((*muons)[0].py()+(*muons)[1].py(),2) - pow((*muons)[0].pz()+(*muons)[1].pz(),2));
+    cout << "Dimuon mass = "  << mass << endl;
   }
 
   // Electrons
