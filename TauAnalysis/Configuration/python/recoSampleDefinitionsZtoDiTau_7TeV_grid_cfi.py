@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
+import copy
+
 import TauAnalysis.Configuration.plotterProcessDefinitions_cfi as plotter
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
-import copy
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
@@ -48,6 +49,69 @@ _microbarns = 1.0e6
 TARGET_LUMI = (200.0)/_picobarns
 
 RECO_SAMPLES = {
+    'data_JetMETTau_132440_137436_Jun14ReReco' : {
+        'datasetpath' : "/JetMETTau/Run2010A-Jun14thReReco_v2/RECO", # run-range in DBS: 135821-137772
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-137028_7TeV_June14thReReco_Collisions10_JSON.txt",
+        'runselection' : "132440 - 137436",
+        'conditions' : 'GR_R_36X_V12B::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+    },
+    'data_JetMETTau_137437_139558_Prompt' : {
+        'datasetpath' : '/JetMETTau/Run2010A-PromptReco-v4/RECO', # run-range in DBS: 137437-141887
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'runselection' : '137437 - 139778',
+        'conditions' : 'GR_R_36X_V12::All',
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-144114_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+    },    
+    ##'data_JetMETTau_139559_140159_Jul6ReReco' : {
+    ##    'datasetpath' : "/JetMETTau/Run2010A-Jul6thReReco_v1/RECO", # run-range in DBS: 136033-139459
+    ##    'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+    ##    'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_139779-140159_7TeV_July16thReReco_Collisions10_JSON.txt",
+    ##    'runselection' : "136033 - 139459",
+    ##    'conditions' : 'GR_R_36X_V12B::All',
+    ##    'events_processed' : -1,
+    ##    'skim_eff' : 1.0,
+    ##    'type' : 'Data',
+    ##    'drawOption' : styles.drawOption_Data,
+    ##},
+    'data_JetMETTau_139559_140159_Jul16ReReco' : {
+        'datasetpath' : "/JetMETTau/Run2010A-Jul16thReReco-v1/RECO", # run-range in DBS: 139779-140160
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_139779-140159_7TeV_July16thReReco_Collisions10_JSON.txt",
+        'runselection' : "139779 - 140159",
+        'conditions' : 'GR_R_36X_V12B::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+    },
+    'data_BTau_140160_999999_Prompt' : {
+        'datasetpath' : '/BTau/Run2010A-PromptReco-v4/RECO', # run-range in DBS: 141950-144114
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'runselection' : '140160 - 144114',
+        'conditions' : 'GR_R_36X_V12::All',
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-144114_7TeV_StreamExpress_Collisions10_JSON_v2.txt",
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+    },
+    ##'data_BTau_140160_999999_Prompt' : {
+    ##    'datasetpath' : '/BTau/Run2010B-PromptReco-v2/RECO', # run-range in DBS: 146240-146339
+    ##    'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+    ##    'runselection' : '146240 - 999999',
+    ##    'conditions' : 'GR_R_36X_V12::All',
+    ##    'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/...",
+    ##    'events_processed' : -1,
+    ##    'skim_eff' : 1.0,
+    ##    'type' : 'Data',
+    ##},    
     'Ztautau' : {
         'datasetpath' : "/Ztautau/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
         'events_processed' : 2195255,
@@ -111,12 +175,12 @@ MERGE_SAMPLES = {
         'samples' : [ 'qcdDiJet', ],
         'legendEntry' : 'QCD',
         'type' : 'smMC', 
-        'drawOption' : styles.drawOption_QCD,
+        'drawOption' : styles.drawOption_QCD
     },
     'smBgSum' : {
         'samples' : [ 'Zmumu', 'Zee', 'qcdSum', 'WplusJets', 'TTplusJets' ],
         'legendEntry' : 'SM',
-        'type' : 'smSumMC',
+        'type' : 'smMC',
         'drawOption' : styles.drawOption_QCD
     },
     'smSum' : {
