@@ -43,7 +43,7 @@ using namespace reco;
 using namespace pat::helper;
 
 VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(ps) {
-  // // cout << "VgNtuplizer: entering ctor ..." << endl;
+  // cout << "VgNtuplizer: entering ctor ..." << endl;
 
   saveHistograms_ = ps.getUntrackedParameter<bool>("saveHistograms", false);
   saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);  
@@ -64,7 +64,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
 
   if (saveHistograms_) helper_.bookHistos(this);
 
-  // // cout << "VgNtuplizer: making output tree" << endl;
+  // cout << "VgNtuplizer: making output tree" << endl;
 
   Service<TFileService> fs;
   hEvents_ = fs->make<TH1F>("hEvents", "total processed and skimmed events", 2, 0, 2);
@@ -408,6 +408,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
     nHFTowersP_ = 0;
     nHFTowersN_ = 0;
     for (CaloTowerCollection::const_iterator aCalo = CaloTowers->begin(); aCalo != CaloTowers->end(); aCalo++) {
+      // cout << "trying to ntuplize calotowers." << std::endl;
 
       if (aCalo->energy() > 3) {
         for (size_t i = 0; i < aCalo->constituentsSize(); ++i) {
@@ -453,6 +454,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
     Handle<GenEventInfoProduct> pdfInfoHandle;
     bool pdfInfo = e.getByLabel("generator", pdfInfoHandle);
     if (pdfInfo) {
+      // cout << "Get PDF info.." << endl;
       pdf_[0] = pdfInfoHandle->pdf()->id.first;      // PDG ID of incoming parton #1
       pdf_[1] = pdfInfoHandle->pdf()->id.second;      // PDG ID of incoming parton #2
       pdf_[2] = pdfInfoHandle->pdf()->x.first;       // x value of parton #1
@@ -460,7 +462,9 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       pdf_[4] = pdfInfoHandle->pdf()->xPDF.first;     // PDF weight for parton #1
       pdf_[5] = pdfInfoHandle->pdf()->xPDF.second;     // PDF weight for parton #2
       pdf_[6] = pdfInfoHandle->pdf()->scalePDF; // scale of the hard interaction
-      pthat_ = pdfInfoHandle->binningValues()[0];
+      // cout << "Get pThat info..." << endl; 
+      pthat_ = (pdfInfoHandle->hasBinningValues() ? pdfInfoHandle->binningValues()[0] : 0);
+      // cout << "Got pThat info..." << endl;
     }
   }
 
