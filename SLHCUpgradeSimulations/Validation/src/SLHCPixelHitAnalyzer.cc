@@ -76,11 +76,8 @@ void SLHCPixelHitAnalyzer::endJob()
 }
 
 
-void SLHCPixelHitAnalyzer::beginJob(const edm::EventSetup& es)
+void SLHCPixelHitAnalyzer::beginJob()
 {
-  es.get<TrackerDigiGeometryRecord>().get( tkGeom_ );
-  es.get<IdealMagneticFieldRecord>().get(magneticField_);
-
   // put here whatever you want to do at the beginning of the job
   edm::Service<TFileService> fs;
   // a 'feature' of TFileService is that it does not like to add trees until a histogram is also created.
@@ -293,6 +290,9 @@ bool SLHCPixelHitAnalyzer::isValidMuonAssoc(const edm::Event& iEvent){
 // Functions that get called by framework every event
 void SLHCPixelHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+  iSetup.get<TrackerDigiGeometryRecord>().get( tkGeom_ );
+  iSetup.get<IdealMagneticFieldRecord>().get(magneticField_);
+
  LogDebug("MuonTOFFilter_trackQuality") << " analyze " << std::endl;
   int TrackNumber = 0;
   dummyhist->Fill(0.5);
