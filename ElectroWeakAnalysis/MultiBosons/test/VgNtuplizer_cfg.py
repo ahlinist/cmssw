@@ -14,7 +14,7 @@ process.maxEvents = cms.untracked.PSet(
     )
 
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring('file:Skimming/VGammaSkim_numEvent100_ZMM.root'),
+                            fileNames = cms.untracked.vstring('file:VGammaSkim_ElectronPhotonhltFilter_36x_ZJet_Madgraph_tauola_TestRECO.root'),
                             noEventSort = cms.untracked.bool(True),
                             duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
                             )

@@ -59,8 +59,7 @@ extraSkimEventContent = vgCandsEventContent[:] + extraConversionEventContent[:] 
   "keep *_gsfElectronCores_*_*",
   "keep *_offlinePrimaryVertices_*_*",
   "keep *_offlineBeamSpot_*_*",
-#   "keep *_TriggerResults_*_PAT",
-
+   "keep *_TriggerResults_*_PAT",
   ## cleanPatMuons are replaced by cleanPatMuonsTriggerMatch
   "drop *_cleanPatMuons_*_PAT",
   ## cleanPatElectrons are replaced by cleanPatElectronsTriggerMatch
