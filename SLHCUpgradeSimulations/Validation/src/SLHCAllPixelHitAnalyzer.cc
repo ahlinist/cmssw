@@ -73,11 +73,8 @@ void SLHCAllPixelHitAnalyzer::endJob()
 }
 
 
-void SLHCAllPixelHitAnalyzer::beginJob(const edm::EventSetup& es)
+void SLHCAllPixelHitAnalyzer::beginJob()
 {
-  es.get<TrackerDigiGeometryRecord>().get( tkGeom_ );
-  es.get<IdealMagneticFieldRecord>().get(magneticField_);
-
   // put here whatever you want to do at the beginning of the job
   edm::Service<TFileService> fs;
   // a 'feature' of TFileService is that it does not like to add trees until a histogram is also created.
@@ -165,6 +162,9 @@ void SLHCAllPixelHitAnalyzer::beginJob(const edm::EventSetup& es)
 // Functions that get called by framework every event
 void SLHCAllPixelHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+  iSetup.get<TrackerDigiGeometryRecord>().get( tkGeom_ );
+  iSetup.get<IdealMagneticFieldRecord>().get(magneticField_);
+
   //int TrackNumber = 0;
   dummyhist->Fill(0.5);
   maxsize_AllPixInfoStruct_ = 200;

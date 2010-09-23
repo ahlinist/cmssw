@@ -38,7 +38,7 @@ class SLHCAllPixelHitAnalyzer : public edm::EDAnalyzer
   
   explicit SLHCAllPixelHitAnalyzer(const edm::ParameterSet& ps);
   virtual ~SLHCAllPixelHitAnalyzer();
-  virtual void beginJob(const edm::EventSetup& iSetup);
+  virtual void beginJob();
   virtual void endJob();
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
 
