@@ -14,6 +14,8 @@ HistManagerBase::HistManagerBase(const edm::ParameterSet& cfg)
     dqmError_(0),
     normMethod_(kNormUndefined) 
 {
+  //std::cout << "<HistManagerBase::HistManagerBase>:" << std::endl;
+
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
@@ -36,6 +38,8 @@ HistManagerBase::HistManagerBase(const edm::ParameterSet& cfg)
 
 void HistManagerBase::bookHistograms()
 {
+  //std::cout << "<HistManagerBase::bookHistograms>:" << std::endl;
+
   if ( !edm::Service<DQMStore>().isAvailable() ) {
     edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
     dqmError_ = 1;
@@ -44,7 +48,8 @@ void HistManagerBase::bookHistograms()
 
   dqmStore_ = &(*edm::Service<DQMStore>());
   dqmStore_->setCurrentFolder(dqmDirectory_store_);
-
+  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
+  
   bookHistogramsImp();
 }
 
