@@ -101,8 +101,8 @@ process.source = cms.Source(
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part15.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part16.root'
     ##),
-    ##eventsToProcess = cms.untracked.VEventID(
-    ##    '1:386'
+    ##eventsToProcess = cms.untracked.VEventRange(
+    ##    '1:22227-1:22227'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -232,7 +232,7 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 # disable event-dump output
 # in order to reduce size of log-files
-process.disableEventDump = cms.PSet()
+##process.disableEventDump = cms.PSet()
 if hasattr(process, "disableEventDump"):
     process.analyzeAHtoMuTauEvents_woBtag.eventDumps = cms.VPSet()
     process.analyzeAHtoMuTauEvents_wBtag.eventDumps = cms.VPSet()
