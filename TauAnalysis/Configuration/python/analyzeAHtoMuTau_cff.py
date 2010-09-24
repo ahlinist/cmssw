@@ -66,6 +66,7 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateCollinearApproxHistManagerForMuTau,
         diTauCandidateSVfitHistManagerForMuTau,
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
+        diTauLeg1ChargeBinGridHistManager,
         muPairHistManager,
         jetHistManager,
         caloMEtHistManager,
@@ -74,8 +75,7 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         vertexHistManager,
         triggerHistManagerForMuTau,
         svFitLikelihoodAnalyzerForMuTau,
-        dataBinner,
-        leg1ChargeBinGridHistManager
+        dataBinner
     ),
 
     eventDumps = cms.VPSet(

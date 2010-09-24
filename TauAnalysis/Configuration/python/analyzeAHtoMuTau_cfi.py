@@ -107,11 +107,11 @@ svFitLikelihoodAnalyzerForMuTau = svFitLikelihoodAnalyzer.clone(
 # used for keeping track of number of events passing all selection criteria
 from TauAnalysis.Core.dataBinner_cfi import *
 
-leg1ChargeBinGridHistManager = cms.PSet(
-    pluginName = cms.string('leg1ChargeBinGridHistManager'),
+diTauLeg1ChargeBinGridHistManager = cms.PSet(
+    pluginName = cms.string('diTauLeg1ChargeBinGridHistManager'),
     pluginType = cms.string('BinGridHistManager'),
     binning = cms.PSet(
-        name = cms.string("leg1ChargeBinning"),
+        name = cms.string("diTauLeg1ChargeBinning"),
         config = cms.VPSet(
             cms.PSet( 
                 extractor = cms.PSet(
@@ -119,7 +119,7 @@ leg1ChargeBinGridHistManager = cms.PSet(
                     src = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
                     value = cms.string('leg1.charge')
                 ),
-                branchName = cms.string('leg1Charge'),
+                branchName = cms.string('diTauLeg1Charge'),
                 binning = cms.PSet(
                     boundaries = cms.vdouble(0.),
                     min = cms.double(-2.),
@@ -132,7 +132,7 @@ leg1ChargeBinGridHistManager = cms.PSet(
         diTauCandidateHistManagerForMuTau,
         diTauCandidateSVfitHistManagerForMuTau
     ),
-    dqmDirectory_store = cms.string('leg1ChargeBinnedHistograms')
+    dqmDirectory_store = cms.string('diTauLeg1ChargeBinnedHistograms')
 )
 
 #--------------------------------------------------------------------------------
@@ -211,7 +211,8 @@ muTauEventDump = cms.PSet(
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
     hltPathsToPrint = cms.vstring('HLT_Mu9', 'HLT_IsoMu9', 'HLT_Mu11', 'HLT_Mu15'),
-        
+
+    doGenInfo = cms.bool(True),
     genParticleSource = cms.InputTag('genParticles'),
     genJetSource = cms.InputTag('iterativeCone5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
@@ -226,14 +227,17 @@ muTauEventDump = cms.PSet(
         cms.PSet(
             name = cms.string("psKine")
         ),
-        ##cms.PSet(
-        ##    name = cms.string("psKine_MEt")
-        ##),
+        cms.PSet(
+            name = cms.string("psKine_MEt")
+        ),
         cms.PSet(
             name = cms.string("psKine_Track")
-        ##),        
-        ##cms.PSet(
-        ##    name = cms.string("psKine_MEt_Track_ptBalance")
+        ),
+        cms.PSet(
+            name = cms.string("psKine_ptBalance")
+        ),
+        cms.PSet(
+            name = cms.string("psKine_MEt_Track_ptBalance")
         ##),
         ##cms.PSet(
         ##    name = cms.string("polKine"),
@@ -245,6 +249,10 @@ muTauEventDump = cms.PSet(
         ##),
         ##cms.PSet(
         ##    name = cms.string("polKine_Track"),
+        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ##),
+        ##cms.PSet(
+        ##    name = cms.string("polKine_ptBalance"),
         ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
         ##),
         ##cms.PSet(
@@ -792,6 +800,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'diTauLeg1ChargeBinGridHistManager',
             'muPairHistManager',
             'jetHistManager',
             'caloMEtHistManager',
@@ -1351,6 +1360,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'diTauLeg1ChargeBinGridHistManager',
             'muPairHistManager',
             'jetHistManager',
             'caloMEtHistManager',
@@ -1359,8 +1369,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'vertexHistManager',
             'triggerHistManagerForMuTau',
             'svFitLikelihoodAnalyzerForMuTau',
-            'dataBinner',
-            'leg1ChargeBinGridHistManager'
+            'dataBinner'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
