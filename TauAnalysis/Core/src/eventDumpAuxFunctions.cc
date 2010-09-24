@@ -135,6 +135,8 @@ void printGenParticleInfo(const reco::GenParticleCollection& genParticles,
 	      << " Pt = " << genParticleMomentum.pt() << "," 
 	      << " eta = " << genParticleMomentum.eta() << "," 
 	      << " phi = " << genParticleMomentum.phi()*180./TMath::Pi() << std::endl;
+      *stream << " (prod. vertex: x = " << genParticle->vertex().x() << ","
+	      << " y = " << genParticle->vertex().y() << ", z = " << genParticle->vertex().z() << ")" << std::endl;
 
 //--- find genTauJet associated with generated tau 
 //    (match by closest distance in eta-phi)
@@ -166,6 +168,9 @@ void printGenParticleInfo(const reco::GenParticleCollection& genParticles,
 		<< " Pt = " << genDecayProduct->pt() << "," 
 		<< " eta = " << genDecayProduct->eta() << "," 
 		<< " phi = " <<  genDecayProduct->phi()*180./TMath::Pi() << std::endl;
+	if ( TMath::Abs(genDecayProduct->charge()) > 0.5 )
+	  *stream << " (prod. vertex: x = " << genDecayProduct->vertex().x() << ","
+		  << " y = " << genDecayProduct->vertex().y() << ", z = " << genDecayProduct->vertex().z() << ")" << std::endl;
       }
 
 //--- reconstruct tau lepton decay mode
