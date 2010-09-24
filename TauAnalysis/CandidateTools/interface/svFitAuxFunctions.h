@@ -124,6 +124,16 @@ namespace SVfit_namespace
   template<typename T1, typename T2>
   double logGaussianNd(const T1& residual, const T2& cov)
   {
+    //std::cout << "<logGaussianNd>:" << std::endl;
+
+    //std::cout << "residual:" << std::endl;
+    //residual.Print(std::cout);
+    //std::cout << std::endl;
+
+    //std::cout << "cov:" << std::endl;
+    //cov.Print(std::cout);
+    //std::cout << std::endl;
+
     unsigned numDimensions = residual.Dim();
     if ( cov.Diagonal().Dim() != numDimensions ) {
       edm::LogError ("logGaussianNd")
@@ -141,12 +151,18 @@ namespace SVfit_namespace
     } 
     
     T2 covInverse(cov);
-    int errorFlag = covInverse.Invert();
-    if ( errorFlag != 0 ) {
+    bool flag = covInverse.Invert();
+    if ( flag == false ) {
       edm::LogError ("logGaussianNd")
-	<< " Failed to invert covariance matrix, errorFlag = " << errorFlag << " !!";
+	<< " Failed to invert covariance matrix, error flag = " << flag << " !!";
       return std::numeric_limits<float>::min();
     }
+    
+    //std::cout << "covInverse:" << std::endl;
+    //covInverse.Print(std::cout);
+    //std::cout << std::endl;
+
+    //std::cout << "--> residual^T V^-1 redidual = " << ROOT::Math::Dot(residual, covInverse*residual) << std::endl;
 
     return -0.5*numDimensions*TMath::Log(2*TMath::Pi()) - 0.5*det - 0.5*(ROOT::Math::Dot(residual, covInverse*residual));
   }
