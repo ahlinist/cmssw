@@ -6,6 +6,10 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
+    'data_JetMETTau_132440_137436_Jun14ReReco',
+    'data_JetMETTau_137437_139558_Prompt',
+    'data_JetMETTau_139559_140159_Jul16ReReco',
+    ##'data_BTau_140160_999999_Prompt',
     'Ztautau',
     'Zee',
     'Zmumu',
@@ -49,12 +53,23 @@ _microbarns = 1.0e6
 TARGET_LUMI = (200.0)/_picobarns
 
 RECO_SAMPLES = {
-    'data_JetMETTau_132440_137436_Jun14ReReco' : {
+    'data_JetMETTau_132440_135802_May27ReReco' : {
+        'datasetpath' : "/MinimumBias/Commissioning10-May27thSkim_SD_JetMETTau-v2/RECO", # run-range in DBS: 131511-135802
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-136119_7TeV_May27thReReco_Collisions10_JSON.txt",
+        'runselection' : "132440 - 135802",
+        'conditions' : 'GR_R_36X_V12A::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+    },
+    'data_JetMETTau_135821_137436_Jun14ReReco' : {
         'datasetpath' : "/JetMETTau/Run2010A-Jun14thReReco_v2/RECO", # run-range in DBS: 135821-137772
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-137028_7TeV_June14thReReco_Collisions10_JSON.txt",
-        'runselection' : "132440 - 137436",
-        'conditions' : 'GR_R_36X_V12B::All',
+        'runselection' : "135821 - 137436",
+        'conditions' : 'GR_R_36X_V12A::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -69,18 +84,7 @@ RECO_SAMPLES = {
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
-    },    
-    ##'data_JetMETTau_139559_140159_Jul6ReReco' : {
-    ##    'datasetpath' : "/JetMETTau/Run2010A-Jul6thReReco_v1/RECO", # run-range in DBS: 136033-139459
-    ##    'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    ##    'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_139779-140159_7TeV_July16thReReco_Collisions10_JSON.txt",
-    ##    'runselection' : "136033 - 139459",
-    ##    'conditions' : 'GR_R_36X_V12B::All',
-    ##    'events_processed' : -1,
-    ##    'skim_eff' : 1.0,
-    ##    'type' : 'Data',
-    ##    'drawOption' : styles.drawOption_Data,
-    ##},
+    },
     'data_JetMETTau_139559_140159_Jul16ReReco' : {
         'datasetpath' : "/JetMETTau/Run2010A-Jul16thReReco-v1/RECO", # run-range in DBS: 139779-140160
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
@@ -102,16 +106,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'type' : 'Data',
     },
-    ##'data_BTau_140160_999999_Prompt' : {
-    ##    'datasetpath' : '/BTau/Run2010B-PromptReco-v2/RECO', # run-range in DBS: 146240-146339
-    ##    'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    ##    'runselection' : '146240 - 999999',
-    ##    'conditions' : 'GR_R_36X_V12::All',
-    ##    'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/...",
-    ##    'events_processed' : -1,
-    ##    'skim_eff' : 1.0,
-    ##    'type' : 'Data',
-    ##},    
     'Ztautau' : {
         'datasetpath' : "/Ztautau/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
         'events_processed' : 2195255,
@@ -171,20 +165,43 @@ RECO_SAMPLES = {
 
 # Define samples that get merged together
 MERGE_SAMPLES = {
+    'data' : {
+        'samples' : [
+            ##'data_JetMETTau_132440_135802_May27ReReco',
+            'data_JetMETTau_132440_137436_Jun14ReReco',
+            'data_JetMETTau_137437_139558_Prompt',
+            'data_JetMETTau_139559_140159_Jul16ReReco',
+            ##'data_BTau_140160_999999_Prompt'
+        ],
+        'legendEntry' : 'DATA',
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data
+    },
     'qcdSum' : {
-        'samples' : [ 'qcdDiJet', ],
+        'samples' : [
+             'qcdDiJet',
+        ],
         'legendEntry' : 'QCD',
         'type' : 'smMC', 
         'drawOption' : styles.drawOption_QCD
     },
     'smBgSum' : {
-        'samples' : [ 'Zmumu', 'Zee', 'qcdSum', 'WplusJets', 'TTplusJets' ],
+        'samples' : [
+            'Zmumu',
+            'Zee',
+            'qcdSum',
+            'WplusJets',
+            'TTplusJets'
+        ],
         'legendEntry' : 'SM',
         'type' : 'smMC',
         'drawOption' : styles.drawOption_QCD
     },
     'smSum' : {
-        'samples' : [ 'Ztautau', 'smBgSum' ],
+        'samples' : [
+            'Ztautau',
+            'smBgSum'
+        ],
         'legendEntry' : 'SM',
         'type' : 'smSumMC',
         'drawOption' : styles.drawOption_QCD
