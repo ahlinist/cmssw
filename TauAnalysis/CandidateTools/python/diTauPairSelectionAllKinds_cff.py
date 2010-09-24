@@ -166,7 +166,8 @@ selectedDiTauPairsAcoplanarity.cut = cms.string('(dPhi1MET < 3.2) | (dPhi2MET < 
 patDiTauPairSelConfigurator = objSelConfigurator(
     [ selectedDiTauPairsAntiOverlapVeto,
       selectedDiTauPairsZeroCharge, 
-      selectedDiTauPairsAcoplanarity ],
+      selectedDiTauPairsAcoplanarity,
+      selectedDiTauPairsPzetaDiff ],
     src = "selectedDiTauPairs2ndTauElectronVetoCumulative",
     pyModuleName = __name__,
     doSelIndividual = True
@@ -188,7 +189,8 @@ selectedDiTauPairsAcoplanarityLoose2ndTau.cut = cms.string('(dPhi1MET < 3.2) | (
 patDiTauPairSelConfiguratorLoose2ndTau = objSelConfigurator(
     [ selectedDiTauPairsAntiOverlapVetoLoose2ndTau,
       selectedDiTauPairsZeroChargeLoose2ndTau, 
-      selectedDiTauPairsAcoplanarityLoose2ndTau ],
+      selectedDiTauPairsAcoplanarityLoose2ndTau,
+      selectedDiTauPairsPzetaDiffLoose2ndTau ],
     src = "selectedDiTauPairs2ndTauElectronVetoLooseCumulative",
     pyModuleName = __name__,
     doSelIndividual = True
