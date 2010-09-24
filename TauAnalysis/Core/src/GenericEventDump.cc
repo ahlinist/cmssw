@@ -114,7 +114,7 @@ void printMatchingGenParticleTypes(const char* header_matched,
 
 GenericEventDump::~GenericEventDump()
 {
-  if( doGenInfo_ ) {
+  if ( doGenInfo_ ) {
     //--- print counts of different types of particles faking reconstructed electrons,
     //    muons and tau-jets
     printMatchingGenParticleTypes("Number of reconstructed Electrons matching generated", 
@@ -166,7 +166,7 @@ void GenericEventDump::analyze(const edm::Event& evt, const edm::EventSetup& es,
   
   EventDumpBase::analyze(evt, es, filterResults_cumulative, filterResults_individual, eventWeight);
   
-  if( doGenInfo_ ) countFakeParticles(evt);
+  if ( doGenInfo_ ) countFakeParticles(evt);
 }
 
 //
@@ -577,7 +577,7 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
   printMissingEtInfo_i(evt, patCaloMEtSource_, *outputStream_, "recoCaloMET:");
   printMissingEtInfo_i(evt, patPFMEtSource_, *outputStream_, "recoPFMET:");
   
-  if( doGenInfo_ ) {
+  if ( doGenInfo_ ) {
     
     printJetMatchingInfo_i(evt, edm::InputTag("iterativeCone5PFJets"), genJetSource_, *outputStream_, "PFJet");
     printJetMatchingInfo_i(evt, edm::InputTag("iterativeCone5CaloJets"), genJetSource_, *outputStream_, "CaloJet");
