@@ -9,21 +9,24 @@ using namespace std;
 TAna00Event::TAna00Event(Int_t Option) {
   fRecTracks       = new TClonesArray("TAnaTrack", 1000);
   fnRecTracks      = 0;
-
+  
   fSigTracks       = new TClonesArray("TAnaTrack", 1000);
   fnSigTracks      = 0;
-
+  
   fSimTracks       = new TClonesArray("TAnaTrack", 1000);
   fnSimTracks      = 0;
-
+  
   fCaloJets        = new TClonesArray("TAnaJet", 1000);
   fnCaloJets       = 0;
+  
+  fPFJets           = new TClonesArray("TAnaJet", 1000);
+  fnPFJets         = 0;
 
   fGenJets         = new TClonesArray("TAnaJet", 1000);
   fnGenJets        = 0;
-
-  fTrackJets        = new TClonesArray("TAnaJet", 1000);
-  fnTrackJets       = 0;
+  
+  fTrackJets       = new TClonesArray("TAnaJet", 1000);
+  fnTrackJets      = 0;
 
   fCandidates      = new TClonesArray("TAnaCand", 1000);
   fnCandidates     = 0; 
@@ -86,6 +89,18 @@ void TAna00Event::Clear(Option_t *option) {
   fCaloJets->Clear(option);
   fnCaloJets = 0;
   //  cout << " ... done " << endl;
+
+
+  TAnaJet *pPFJet;
+  //  cout << "Starting to clear jets ";
+  for (i = 0; i < fnPFJets; i++) {
+    pPFJet = getPFJet(i);
+    pPFJet->clear();
+  }
+  fPFJets->Clear(option);
+  fnPFJets = 0;
+  //  cout << " ... done " << endl
+
 
   TAnaJet *pGenJet;
   //  cout << "Starting to clear jets ";
@@ -252,6 +267,22 @@ TAnaJet* TAna00Event::addCaloJet() {
 }
 
 // ----------------------------------------------------------------------
+TAnaJet* TAna00Event::getPFJet(Int_t n) { 
+  return (TAnaJet*)fPFJets->UncheckedAt(n); 
+}
+
+// ----------------------------------------------------------------------
+TAnaJet* TAna00Event::addPFJet() {
+  TClonesArray& d = *fPFJets; 
+  new(d[d.GetLast()+1]) TAnaJet(fnPFJets);
+  ++fnPFJets;
+  return (TAnaJet*)d[d.GetLast()];
+}
+
+
+
+
+// ----------------------------------------------------------------------
 TAnaJet* TAna00Event::getTrackJet(Int_t n) {
  return (TAnaJet*)fTrackJets->UncheckedAt(n);
 }
@@ -324,54 +355,103 @@ TAnaVertex* TAna00Event::addPV() {
 
 // ----------------------------------------------------------------------
 void TAna00Event::dump() {
-  cout << "Run: " << fRunNumber << ", Event: " << fEventNumber 
-       << " nGenCand = " << nGenCands()
-       << " nRecTrk = " << nRecTracks()
-       << endl;
 
-  cout << "Primary Vtx: "; 
+  cout << "======= Run: " << fRunNumber << " Event: " << fEventNumber<< endl;
+  cout << " fEventWeight= "<<fEventWeight
+       <<" fProcessID= "<<fProcessID
+       <<" fXsec= "<<fXsec
+       <<" fEventTag= "<<fEventTag
+       <<" fPtHat= "<< fPtHat<<endl;
+  
+  cout << " fL1Decision= "<<fL1Decision<<" fHLTDecision="<<fHLTDecision<<endl;
+  cout << "  fNb2="<< fNb2<<" fNc2="<<fNc2<<" fNs2="<<fNs2<<endl;
+  cout << " fGenMET="<<fGenMET<<" fMET0="<< fMET0<<" fMET1="<<fMET1<<endl;
+  cout << " fGensumET="<<fGensumET<<" fsumET0="<< fsumET0<<" fsumET1="<<fsumET1<<endl; 
+  
+  cout << "--Primary Vtx: "<<fnPV<<endl; 
   TAnaVertex *pPV;
   for (int i = 0; i < fnPV; i++) {
     pPV = getPV(i);
-    if (i > 0) cout << "             ";
+    if (i > 0) cout <<i<< " PV:  ";
     pPV->dump();
   }
 
   
-  Int_t i;
-  
-  TGenCand *pGenCand;
-  for (i = 0; i < fnGenCands; i++) {
-    pGenCand = getGenCand(i);
-    cout << "genT: ";
-    pGenCand->dump();
-  }
-  
+  cout << "--GenCand: "<<fnGenCands<<endl;  
+ //  TGenCand *pGenCand;
+//   for (int i = 0; i < fnGenCands; i++) {
+//     pGenCand = getGenCand(i);
+//     cout <<i<< " gen: ";
+//     pGenCand->dump();
+//   }
+ 
+  cout << "--RecTracks: "<<nRecTracks()<<endl;  
   TAnaTrack *pTrk;
-  TAnaCand  *pCand;
-  for (i = 0; i < nRecTracks(); ++i) {
+  for (int i = 0; i < nRecTracks(); ++i) {
     pTrk = getRecTrack(i);
-    cout << "recT: ";
+    cout <<i<< " recTrk: ";
     pTrk->dump();
   }
   
-  for (i = 0; i < nSigTracks(); ++i) {
+  cout << "--SigTracks: "<<nSigTracks()<<endl;  
+  for (int i = 0; i < nSigTracks(); ++i) {
     pTrk = getSigTrack(i);
-    cout << "sigT: ";
+    cout <<i<< " sigTrk: ";
     pTrk->dump();
   }
 
-  for (i = 0; i < nSimTracks(); ++i) {
+ cout << "--TrackJets: "<<nTrackJets()<<endl;  
+ TAnaJet* pj;
+  for (int i = 0; i < nTrackJets(); ++i) {
+    pj = getTrackJet(i);
+    cout <<i<< " TrJet: ";
+    pj->dump();
+  }
+
+ cout << "--CaloJets: "<<nCaloJets()<<endl;  
+  for (int i = 0; i <nCaloJets(); ++i) {
+    pj = getCaloJet(i);
+    cout <<i<< " CaloJet: ";
+    pj->dump();
+  }
+
+ cout << "--PFJets: "<<nPFJets()<<endl;  
+  for (int i = 0; i <nPFJets(); ++i) {
+    pj = getPFJet(i);
+    cout <<i<< " PFJet: ";
+    pj->dump();
+  }
+
+ cout << "--GenJets: "<<nGenJets()<<endl;  
+  for (int i = 0; i <nGenJets(); ++i) {
+    pj = getGenJet(i);
+    cout <<i<< " GenJet: ";
+    pj->dump();
+  }
+
+
+  cout << "--SimTracks: "<<nSimTracks()<<endl;
+  for (int i = 0; i < nSimTracks(); ++i) {
     pTrk = getSimTrack(i);
-    cout << "simT: ";
+    cout <<i<< " simTrk: ";
     pTrk->dump();
   }
 
-  for (i = 0; i < nCands(); ++i) {
+ cout << "--Cand: "<<nCands()<<endl;
+   TAnaCand  *pCand;
+ for (int i = 0; i < nCands(); ++i) {
     pCand = getCand(i);
-    cout << "cand: ";
+    cout <<i<< "cand: ";
     pCand->dump();
   }
+
+ cout << "--Candd=: "<<nD0Cands()<<endl;
+ for (int i = 0; i < nD0Cands(); ++i) {
+    pCand = getD0Cand(i);
+    cout <<i<< "candD0: ";
+    pCand->dump();
+  }
+
 
   cout << endl;
 }

@@ -18,17 +18,10 @@ void TAnaJet::clear() {
 
 
 void TAnaJet::dump() {
-  //   cout << " q = " << fQ
-  //        << " p = " << fPlab.Mag() 
-  //        << " f = " << fPlab.Phi() 
-  //        << " t = " << fPlab.Theta();
-
-  cout << Form("eT=%6.2f f=%+4.3f eta=%+4.3f ", fEt, fPlab.Phi(), fPlab.Eta());
- 
-  if (fIndex > -1) {
-    cout << " idx = " << fIndex;
-  }
-
+ cout<<"------AnaJet"<<endl;
+ cout<<" fIndex="<<fIndex<<"ftrjpvindx="<<ftrjpvindx<<" fbtag="<< fbtag<<endl; 
+ cout<<" ET="<<fPlab.Perp()<<" eta="<< fPlab.Eta()<<" fM="<<fM<<endl;
+ cout<<" fEMEnergy="<<fEMEnergy<<" fHADEnergy="<<fHADEnergy<<" fn60="<<fn60<<" fn90="<<fn90<<endl;
   cout << " trks: (" << fNtracks << ")";
   for (int i = 0; i < fNtracks; ++i) cout << getTrack(i) << ", ";
     

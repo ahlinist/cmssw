@@ -1,7 +1,7 @@
 #ifndef TANAVERTEX
 #define TANAVERTEX
 
-#define TANAVERTEX_MAXTRK 200
+#define TANAVERTEX_MAXTRK 300
 
 #include "TObject.h"
 #include "TVector3.h"
@@ -42,7 +42,7 @@ public:
   double fProb;
   int fStatus;
   int fType;
-
+  int fsimvmatch;
   // -- Distance to primary vertex
   double fDxy, fDxyE, fCxy;
   double fD3d, fD3dE, fC3d;

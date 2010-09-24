@@ -44,6 +44,12 @@ public:
   int            fJetFlavorAlgo; 
   int            fJetFlavorPhys;
   int            fJetFlavorEne; //not used
+  
+  int            ftrjpvindx;  // trackjet primary vertex ID
+  // btagging info
+  double        fbtag;  // btag discriminant
+
+
 
   void           addTrack(int index);  
   int            getNtracks()    {return fNtracks;}

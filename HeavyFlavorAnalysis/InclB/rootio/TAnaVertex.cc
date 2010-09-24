@@ -91,6 +91,7 @@ void TAnaVertex::getCovXX(TMatrixD &bla) {
 
     
 void TAnaVertex::dump() {
+  cout<<"------AnaVertex "<<fsimvmatch<<endl;
   char line[200];
   sprintf(line, "chi2/dof=%5.3f/%d prob=%5.3f typ=%2d vtx=(%5.3f,%5.3f,%5.3f)",
 	  fChi2, fNdof, fProb, fType, fPoint.X(), fPoint.Y(), fPoint.Z());

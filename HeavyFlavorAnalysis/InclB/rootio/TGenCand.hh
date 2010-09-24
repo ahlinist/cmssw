@@ -27,7 +27,9 @@ public:
   int            fMom1, fMom2;          // mothers
   int            fDau1, fDau2;          // daughters
   int            fTag;
-
+  int            fmID;  // first mother Id
+  int            fMuonSource;  // coded muon origin
+  int            fIndex;
 
   TLorentzVector fP;
   double         fMass;
