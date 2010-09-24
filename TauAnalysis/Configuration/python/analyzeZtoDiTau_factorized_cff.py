@@ -48,8 +48,8 @@ replaceEventSelections(analyzeZtoDiTauEvents_factorizedLoose2ndTau,
       [ evtSelSecondTauElectronVeto, evtSelSecondTauElectronVetoLoose ],
       [ evtSelDiTauCandidateForDiTauAntiOverlapVeto, evtSelDiTauCandidateForDiTauAntiOverlapVetoLoose2ndTau ],
       [ evtSelDiTauCandidateForDiTauZeroCharge, evtSelDiTauCandidateForDiTauZeroChargeLoose2ndTau ],
-      [ evtSelDiTauCandidateForDiTauAcoplanarity, evtSelDiTauCandidateForDiTauAcoplanarityLoose2ndTau],
-      [ evtSelDiTauCandidateForDiTauPzetaDiff, evtSelDiTauCandidateForDiTauPzetaDiffLoose2ndTau] ]
+      [ evtSelDiTauCandidateForDiTauAcoplanarity, evtSelDiTauCandidateForDiTauAcoplanarityLoose2ndTau ],
+      [ evtSelDiTauCandidateForDiTauPzetaDiff, evtSelDiTauCandidateForDiTauPzetaDiffLoose2ndTau ] ]
       #[ evtSelCentralJetVeto, evtSelCentralJetVetoLoose2ndTau] ]
 )                       
 analyzeZtoDiTauEvents_factorizedLoose2ndTau.analysisSequence = diTauAnalysisSequence_factorizedLoose2ndTau
