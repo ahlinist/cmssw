@@ -12,7 +12,13 @@ OUTPUT_FILE_PATH = "/user/v/veelken/CMSSW_3_6_x/plots/ZtoDiTau/"
 JOB_ID = "7TeV"
 PLOT_FILES_PREFIX = 'plots'
 
-SAMPLE_LIST_OVERRIDE = []
+SAMPLE_LIST_OVERRIDE = [
+    # modify in case you want to submit crab jobs for some samples only...
+    'data_JetMETTau_132440_137436_Jun14ReReco',
+    'data_JetMETTau_137437_139558_Prompt',
+    'data_JetMETTau_139559_140159_Jul16ReReco',
+    'data_BTau_140160_999999_Prompt'
+]
 
 ENABLE_SYSTEMATICS = False
 
@@ -33,7 +39,6 @@ def get_conditions(globalTag):
         return autoCond[globalTag]
     else:
         return globalTag
-
 
 def number_of_jobs(sample_info, preferred=10000, max_jobs=300):
     """
