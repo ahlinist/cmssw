@@ -387,10 +387,11 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   if( genParticleSrc_.label() != "") evt.getByLabel(genParticleSrc_, genParticles);
 
   double tauJetWeightSum = 0.;
-  int patTauIndex = 0;
+  int patTauIndex_run1 = 0;
   for ( std::vector<pat::Tau>::const_iterator patTau = patTaus->begin(); 
-	patTau != patTaus->end(); ++patTau, ++patTauIndex ) {
-    if ( tauIndicesToPlot_.size() > 0 && (!isIndexed(patTauIndex, tauIndicesToPlot_)) ) continue;
+	patTau != patTaus->end(); ++patTau, ++patTauIndex_run1 ) {
+    
+    if ( tauIndicesToPlot_.size() > 0 && (!isIndexed(patTauIndex_run1, tauIndicesToPlot_)) ) continue;
 
     if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
 
@@ -408,10 +409,11 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   //std::cout << " patTaus.size = " << patTaus->size() << std::endl;
   hNumTaus_->Fill(patTaus->size(), evtWeight);
 
+  int patTauIndex_run2 = 0;
   for ( std::vector<pat::Tau>::const_iterator patTau = patTaus->begin(); 
-	patTau != patTaus->end(); ++patTau, ++patTauIndex ) {
+	patTau != patTaus->end(); ++patTau, ++patTauIndex_run2 ) {
 
-    if ( tauIndicesToPlot_.size() > 0 && (!isIndexed(patTauIndex, tauIndicesToPlot_)) ) continue;
+    if ( tauIndicesToPlot_.size() > 0 && (!isIndexed(patTauIndex_run2, tauIndicesToPlot_)) ) continue;
 
     //bool isGenTauMatched = matchesGenTau(*patTau);
     //std::cout << " Pt = " << patTau->pt() << ", eta = " << patTau->eta() << ", phi = " << patTau->phi() << std::endl;
