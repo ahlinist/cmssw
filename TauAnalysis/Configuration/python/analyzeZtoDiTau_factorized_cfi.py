@@ -60,7 +60,7 @@ evtSelDiTauCandidateForDiTauAcoplanarityLoose2ndTau = evtSelDiTauCandidateForDiT
     src_cumulative = cms.InputTag('diTauCandidateForDiTauAcoplanarityCutLoose2ndTau', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForDiTauAcoplanarityCutLoose2ndTau', 'individual')
 )
-evtSelDiTauCandidateForDiTauPzetaDiffLoose2ndTau = evtSelDiTauCandidateForDiTauAcoplanarity.clone(
+evtSelDiTauCandidateForDiTauPzetaDiffLoose2ndTau = evtSelDiTauCandidateForDiTauPzetaDiff.clone(
     src_cumulative = cms.InputTag('diTauCandidateForDiTauPzetaDiffCutLoose2ndTau', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForDiTauPzetaDiffCutLoose2ndTau', 'individual')
 )
