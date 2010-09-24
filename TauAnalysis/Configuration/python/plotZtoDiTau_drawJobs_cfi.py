@@ -14,8 +14,9 @@ plots_ZtoDiTau = cms.PSet(
             'Zmumu',
             'WplusJets',
             'TTplusJets',
-            'qcdDiJet',
-            'Ztautau'
+            'Ztautau',
+            'qcdDiJet'
+            ##'Ztautau'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -29,8 +30,9 @@ plots_ZtoDiTau = cms.PSet(
         'Zmumu',
         'WplusJets',
         'TTplusJets',
-        'qcdDiJet',
-        'Ztautau'
+        'Ztautau',
+        'qcdDiJet'
+        ##'Ztautau'
     )
 )
 
@@ -385,16 +387,16 @@ drawJobConfigurator_ZtoDiTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoDiTau.add(
-    afterCut = evtSelSecondTauElectronVeto,
-    beforeCut = evtSelDiTauCandidateForDiTauAntiOverlapVeto,
-    plot = drawJobConfigEntry(
-        meName = 'DiTauCandidateQuantities/DR12',
-        title = "#Delta R(Tau_{1},Tau_{2}) (after Tau_{2} e-Veto Cut)",
-        xAxis = 'dR',
-        name = "cutFlowControlPlots_dR12_afterTau2Charge"
-    )
-)
+##drawJobConfigurator_ZtoDiTau.add(
+##    afterCut = evtSelSecondTauElectronVeto,
+##    beforeCut = evtSelDiTauCandidateForDiTauAntiOverlapVeto,
+##    plot = drawJobConfigEntry(
+##        meName = 'DiTauCandidateQuantities/DR12',
+##        title = "#Delta R(Tau_{1},Tau_{2}) (after Tau_{2} e-Veto Cut)",
+##        xAxis = 'dR',
+##        name = "cutFlowControlPlots_dR12_afterTau2ElectronVeto"
+##    )
+##)
 
 drawJobConfigurator_ZtoDiTau.add(
     afterCut = evtSelDiTauCandidateForDiTauAntiOverlapVeto,
@@ -431,6 +433,17 @@ drawJobConfigurator_ZtoDiTau.add(
         )
     ]
 )
+
+drawJobConfigurator_ZtoDiTau.add(
+    afterCut = evtSelDiTauCandidateForDiTauAcoplanarity,
+    beforeCut = evtSelDiTauCandidateForDiTauPzetaDiff,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/PzetaDiff',
+        title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (after Acoplanarity Cut)",
+        xAxis = 'GeV',
+        name = "cutFlowControlPlots_PzetaDiff_afterAcoplanarity"
+    )
+)    
 
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
@@ -591,13 +604,13 @@ drawJobConfigurator_ZtoDiTau.add(
             title = "M(Tau_{1} + Tau_{2}), collinear Approx. (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mCollApprox"
-        ),
-        drawJobConfigEntry(
-            meName = 'JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3',
-            PAR = [ '15', '20', '30' ],
-            title = "N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)",
-            xAxis = 'N',
-            name = "finalSamplePlots_numCentralJets"
+        ##),
+        ##drawJobConfigEntry(
+        ##    meName = 'JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3',
+        ##    PAR = [ '15', '20', '30' ],
+        ##    title = "N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)",
+        ##    xAxis = 'N',
+        ##    name = "finalSamplePlots_numCentralJets"
         )
     ]
 )                
