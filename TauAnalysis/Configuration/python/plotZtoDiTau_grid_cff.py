@@ -41,7 +41,7 @@ for sample in samples.FLATTENED_SAMPLES_TO_PLOT:
     # statistics information
     if sample_info['factorize']:
         sample_pset.filterStatisticsLocation = cms.string(
-            'zDiTauAnalyzer_factorizedWithTauIsolation/FilterStatistics/')
+            'zDiTauAnalyzer_factorizedTight2ndTau/FilterStatistics/')
 
     # Add to our sample dictionary
     _fileLoaderJobs[sample] = sample_pset
@@ -65,7 +65,7 @@ for merge_name in samples.MERGE_SAMPLES.keys():
             '/harvested/%s/zDiTauAnalyzer'%(merge_name))
     )
     # Add the new PSet to our list
-    _histAdderJobs["merge_%s_%s" % (merge_name, type)] = new_pset
+    _histAdderJobs["merge_%s" % (merge_name)] = new_pset
 
 # Build the file loader
 loadZtoDiTauSamples = cms.EDAnalyzer("DQMFileLoader", **_fileLoaderJobs)
@@ -104,6 +104,7 @@ drawJobTemplate.stack = cms.vstring([
     samples.ALL_SAMPLES[sample]['type'].find('Data') == -1
 ])
 drawJobTemplate.yAxis = cms.string('numEntries_log')
+##drawJobTemplate.yAxis = cms.string('numEntries_linear')
 
 # Reset the template for the drawJob configurators
 drawJobs.drawJobConfigurator_ZtoDiTau.setTemplate(drawJobTemplate)
