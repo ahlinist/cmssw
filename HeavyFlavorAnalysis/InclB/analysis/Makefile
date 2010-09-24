@@ -33,7 +33,7 @@ analysis: analysis.cc treeAnalysis.cc
 	$(CXX) $(CXXFLAGS) -I../ -c treeAnalysis.cc -o treeAnalysis.o
 	$(ROOTSYS)/bin/rootcint -f treeAnalysisDict.cc -c treeAnalysis.hh LinkDef.h
 	$(CXX) $(CXXFLAGS) -o analysis.o -c analysis.cc
-	$(LD) $(LDFLAGS)  -o analysis $(GLIBS) /shome/caminada/cmssw/CMSSW_3_5_6/lib/slc5_ia32_gcc434/libAna00.so analysis.o treeAnalysis.o
+	$(LD) $(LDFLAGS)  -o analysis $(GLIBS) $(CMSSW_BASE)/lib/slc5_ia32_gcc434/libAna00.so analysis.o treeAnalysis.o
 
 
 # ======================================================================

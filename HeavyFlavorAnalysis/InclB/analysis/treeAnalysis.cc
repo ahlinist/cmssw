@@ -10,7 +10,25 @@ void treeAnalysis::startAnalysis() {
 
   Random = new TRandom3();
 
- 
+
+
+  // the parametrization of the fake probability (function of pt right now)
+  fa = new TF1("fa","landau",0,100);
+
+//   fa->SetParameter(0,1.49577e-02);
+//   fa->SetParameter(1,1.35722e+01);
+//   fa->SetParameter(2,6.53037e+00);
+
+//   fa->SetParameter(0,1.16074e-02);
+//   fa->SetParameter(1,8.07008e+00);
+//   fa->SetParameter(2,2.61046e+00);
+
+ //with trigger  // Lea ICHEP values
+  fa->SetParameter(0,9.81225e-03);
+  fa->SetParameter(1,7.66702e+00);
+  fa->SetParameter(2,2.03658e+00);
+
+
 }
 
 
@@ -67,6 +85,8 @@ void treeAnalysis::readCuts(TString filename, int dump) {
     if (buffer[0] == '/') {continue;}
     sscanf(buffer, "%s %f", CutName, &CutValue);
 
+
+    //cout << CutName << " " << CutValue << "           " << strcmp(CutName, "PTLOMUON") << endl;
     if (!strcmp(CutName, "PTLOMUON")) {
       PTLOMUON = CutValue; ok = 1;
       if (dump) cout << "PTLOMUON:\t\t" << PTLOMUON << " GeV" << endl;
@@ -287,29 +307,16 @@ void treeAnalysis::InitVariables() {
 // ----------------------------------------------------------------------
 void treeAnalysis::eventProcessing(int option, double weightlow, double weight020, double weight2030, double weight3050, double weight5080, double weight80120, double weight120170,  double weight170, double pthat) {
 
+  fMC=(option==1);
+
   InitVariables();
 
   if (fDebug & 1) cout << "==> Event: " << fEvent << endl; 
   fpEvt->fEventWeight = 1;
  
-//   for (int i=0; i<fpEvt->nTrackJets(); i++) {
-   
-//     TAnaJet* jet = fpEvt->getTrackJet(i);
-//     double e = jet->fE;
-//     double p = jet->fPlab.Mag();
-//     double m = jet->fM;
-//     TLorentzVector v, v1;
-//     for (int j=0; j< jet->getNtracks(); j++) {
-//       TAnaTrack* tr = fpEvt->getRecTrack(jet->getTrack(j));
-//       v1.SetPtEtaPhiM(tr->fPlab.Pt(),tr->fPlab.Eta(),tr->fPlab.Phi(),0.140);
-//       v = v+v1;
-//     }
-
-//     cout << sqrt(e*e-p*p) << "\t" << m << "\t" << v.M() << endl;
-
-//   }
 
   //DATA+MC
+  StoreOriginalPlabTrackJets();  // keeps a backup (currently in the fD2-fD6 fields)
   CorrectTrackJets();
 
 
@@ -324,13 +331,16 @@ void treeAnalysis::eventProcessing(int option, double weightlow, double weight02
     fpEvt->fHLTDecision = fpEvt->fHLTw2; 
   }
 
-  //DATA
-  if (option == 0) {
+  ((TH1D*)gDirectory->Get("beamwx"))->Fill(fpEvt->fBeamwx,fpEvt->fEventWeight);
+  ((TH1D*)gDirectory->Get("beamwy"))->Fill(fpEvt->fBeamwy,fpEvt->fEventWeight);
+  ((TH1D*)gDirectory->Get("beamex"))->Fill(fpEvt->fBeamex,fpEvt->fEventWeight);
+  ((TH1D*)gDirectory->Get("beamey"))->Fill(fpEvt->fBeamey,fpEvt->fEventWeight);
 
-    if (fpEvt->fRunNumber!=135445) {
 
-      fpHistFile->cd();
-      ((TH1D*)gDirectory->Get("runs"))->Fill(fpEvt->fRunNumber,fpEvt->fEventWeight);
+  fpHistFile->cd();
+  ((TH1D*)gDirectory->Get("runs"))->Fill(fpEvt->fRunNumber,fpEvt->fEventWeight); 
+
+  if (option == 0) {  //DATA
       
       FillRECOMuons(ETTRKJET,ETCALOJET); //arguments: cut on matched jet et and eta 
       fNrecomuons          = NumberOfRECOMuons();
@@ -341,19 +351,14 @@ void treeAnalysis::eventProcessing(int option, double weightlow, double weight02
       fNHLTL3muons         = NumberOfTriggerMuons(3); 
       ihighRECOmuon0       = GetHighestPtRECOMuon();                         // index of highest pt reco muon 
       ihighRECOmuon1       = GetHighestPtRECOMuon(PTLOMUON, ETAMUONLO, ETAMUONHI);        // index of highest pt reco muon (cut) 
-      AnalyzeAODEvent();
-    }
-  }
-  //MC
-  //else if (option == 1 && (fpEvt->fProcessID==11 || fpEvt->fProcessID==12 || fpEvt->fProcessID==13 || fpEvt->fProcessID==28 || fpEvt->fProcessID==53 || fpEvt->fProcessID==68 )) { 
-  else if (option == 1 ) {
+      AnalyzeAODEvent(0);
 
-    fpHistFile->cd();
-    ((TH1D*)gDirectory->Get("runs"))->Fill(fpEvt->fRunNumber,fpEvt->fEventWeight); 
-  
-    //fpEvt->dumpGenBlock();
+  }  else if (option == 1 ) {  //MC
+
+     //fpEvt->dumpGenBlock();
     //CalculateEtGenJets();
     //CorrectGenJets();//subtract muon from GenJet
+
     FillGENMuons();
     FillRECOMuons(ETTRKJET,ETCALOJET); //arguments: cut on matched jet et and eta
     fpEvt->fEventTag     = GetEventOrigin(); // event tag (1:b,2:c,3:uds)
@@ -376,8 +381,57 @@ void treeAnalysis::eventProcessing(int option, double weightlow, double weight02
     AnalyzeRECOEvent();
     AnalyzeAODEvent(1); 
 
-  }	
+  } else if (option==2) { // minbias fakes
    
+
+    // ----------------------------------------------------------------------------------------------
+    // reweighting minbias track spectrum with muon fake rate
+    // ----------------------------------------------------------------------------------------------
+    
+    fNrecomuons          = NumberOfTriggerMuons(0); // meaningless ?, maybe fill with tracks x weight
+    fNL1muons            = NumberOfTriggerMuons(1);
+    fNHLTL2muons         = NumberOfTriggerMuons(2);
+    fNHLTL3muons         = NumberOfTriggerMuons(3); 
+  
+    fNrecotracks         = NumberOfRECOTracks();
+    fNrecotrackjets      = NumberOfRECOTrackJets(); 
+
+
+
+    //1) clear, 2) correct jets for track under study, 3) fill fake muons, 4) fill histos
+    
+    fNCands = 0;
+  
+    //loop over all tracks
+    for (int i=0; i< fpEvt->nRecTracks(); i++) { 
+
+      //set original values
+      ResetTrackJets();
+        
+      TAnaTrack* pRecTrack = fpEvt->getRecTrack(i);
+    
+      // emulate muon selection
+      if (fabs(pRecTrack->fPlab.Eta())<ETAMUON && pRecTrack->fPlab.Pt()>1 && fabs(pRecTrack->fLip)<DZCUT ) {
+	if ( (pRecTrack->fStripHits+pRecTrack->fPixelHits)>TRKHITMUON && pRecTrack->fPixelLayers > PIXLAY && pRecTrack->fChi2/pRecTrack->fDof < CHIMUON && fabs(pRecTrack->fTip) < D0MUON && fabs(pRecTrack->fLip) < DZMUON ) { 
+	  
+	  fNCands++;
+	  
+	  CorrectTrackJets(i); //Achtung: Track Indices 
+	  FillRECOFakeMuons(pRecTrack, ETLOJET);
+	  
+	  TAnaCand* muoncand = fpEvt->getCand(fNCands-1);
+	    
+	  double weight = GetWeight(muoncand->fPlab.Pt(),muoncand->fPlab.Eta());
+	  AnalyzeAODEventMB(muoncand, weight);
+	}
+      }
+      
+    }
+    //fill event histograms
+     RECOFillEventHistogram(0,0,fpEvt->fEventWeight);
+    
+  }
+
 
 }
 
@@ -547,24 +601,6 @@ void treeAnalysis::AnalyzeAODEvent(int mc){
     if (mc==1)
       RECOFillEventHistogram(1,fpEvt->fEventTag,fpEvt->fEventWeight);  
     
- //  if (fpEvt->nD0Cands()>0) {  // == D0 cand
-//     cout << "==> Run:   " << fpEvt->fRunNumber << endl;
-//     cout << "==> Event: " << fpEvt->fEventNumber << endl; 
-//     cout << "==> " << fpEvt->nD0Cands() << " D0 candidates " << endl;
-//     for (int i=0; i<fpEvt->nD0Cands(); i++) 
-//       cout << "----------D0 cand " << fpEvt->getD0Cand(i)->fMCID << ": mass " << fpEvt->getD0Cand(i)->fMass << " kaon " << fpEvt->getD0Cand(i)->fSig1 << " pion " << fpEvt->getD0Cand(i)->fSig2  << " pionslow " << fpEvt->getD0Cand(i)->fSig3 << endl;
-    
-    
-//   } 
-
-//   if (fpEvt->nCands()>0) {  // == muon cand
-//     cout << "==> Run:   " << fpEvt->fRunNumber << endl;
-//     cout << "==> Event: " << fpEvt->fEventNumber << endl; 
-//     cout << "==> " << fpEvt->nCands() << " muon candidates " << endl;
-//     for (int i=0; i<fpEvt->nCands(); i++) 
-//       cout << "---------- cand: pt " << fpEvt->getCand(i)->fPlab.Pt() << " eta " << fpEvt->getCand(i)->fPlab.Eta() << " phi " << fpEvt->getCand(i)->fPlab.Phi() << endl;
-  
-//   } 
   
     if (ihighRECOmuon1>-1) {  // == highest pt muon in acceptance 
       //cout << "==> Run:   " << fpEvt->fRunNumber << endl;
@@ -693,6 +729,59 @@ void treeAnalysis::AnalyzeAODEvent(int mc){
 
 
 // ----------------------------------------------------------------------
+void treeAnalysis::AnalyzeAODEventMB(TAnaCand* muon, double weight){ 
+  // for a single muon candidate   // from minbias/treeAnalysis
+
+  //cout << "AnalyzeAODEvent" << endl;
+  //cout << weight << endl;
+  
+  RECOFillHistogram(muon, 2, 0, weight);
+  
+  if (muon->fPlab.Pt() >PTLOMUON && fabs(muon->fPlab.Eta())<ETAMUON ) {  // == highest pt muon in acceptance  
+    
+    RECOFillHistogram(muon, 3, 0, weight);
+    
+    //check that track jets is made not only from the muon track
+    if (muon->fIndexTrackJet>-1) {
+      TAnaJet* trkjet = fpEvt->getTrackJet(muon->fIndexTrackJet);
+         
+     
+      //int ntracks = int (trkjet->getNtracks()-trkjet->fD1);
+      int ntracks = int (trkjet->getNtracks());
+      if (ntracks>0 && trkjet->fEt > ETLOJET) {
+	
+	RECOFillHistogram(muon, 4, 0, weight);
+
+      }
+    }
+
+    if (muon->fIndexTrackJet>-1) {
+      TAnaJet* trkjet = fpEvt->getTrackJet(muon->fIndexTrackJet);
+      int ntracks = int (trkjet->getNtracks());
+      
+      if (ntracks>0 && trkjet->fEt > 3) { 
+	RECOFillHistogram(muon, 7, 0, weight);
+      }
+      else if (ntracks>0 && trkjet->fEt > 1) {
+	RECOFillHistogram(muon, 8, 0, weight);
+      }
+      else  {
+	RECOFillHistogram(muon, 9, 0, weight);
+      }
+    } 
+    else  {
+      RECOFillHistogram(muon, 9, 0, weight);
+    }
+
+    
+    
+    
+  }//reco muon in acceptance
+  
+}
+
+
+// ----------------------------------------------------------------------
 void treeAnalysis::CorrectGenJets() {
   //subtract gen muons
 
@@ -811,13 +900,97 @@ void treeAnalysis::CorrectTrackJets() {
 }
 
 // ----------------------------------------------------------------------
+void treeAnalysis::CorrectTrackJets(int trackindex) {
+  // subtract a reco track
+
+  for (int i=0; i<fpEvt->nTrackJets(); i++) {
+ 
+    bool corrected = false;
+    TAnaJet* jet = fpEvt->getTrackJet(i);
+    TLorentzVector vect;
+    vect.SetPtEtaPhiE(jet->fPlab.Pt(), jet->fPlab.Eta(), jet->fPlab.Phi(), jet->fE);
+   
+    for (int j=0; j<jet->getNtracks(); j++) { 
+     
+      if (trackindex == jet->getTrack(j)) {
+	TLorentzVector muvect; 
+	muvect.SetPtEtaPhiM((fpEvt->getRecTrack(trackindex))->fPlab.Pt(), (fpEvt->getRecTrack(trackindex))->fPlab.Eta(), (fpEvt->getRecTrack(trackindex))->fPlab.Phi(), mmuon);
+
+	vect = vect - muvect;
+	corrected = true;
+      }
+    }
+    
+    fpEvt->getTrackJet(i)->fPlab.SetPtEtaPhi(vect.Pt(), vect.Eta(), vect.Phi());
+    fpEvt->getTrackJet(i)->fE  = vect.E();
+    fpEvt->getTrackJet(i)->fEt = vect.Et();
+    //cout << "pt " << fpEvt->getTrackJet(i)->fPlab.Pt() << " et " <<  fpEvt->getTrackJet(i)->fEt << " e " << fpEvt->getTrackJet(i)->fE << endl;
+    //cout << "--------------------------------" << endl;
+    if (corrected) 
+      fpEvt->getTrackJet(i)->fD1 = 1;
+  }
+ 
+}
+
+
+// ----------------------------------------------------------------------
+void treeAnalysis::StoreOriginalPlabTrackJets() {
+  // (mis-) use the fD2-fD6 fields in TAnaJet to keep a back-up of the original values
+
+  for (int i=0; i<fpEvt->nTrackJets(); i++) {
+
+    fpEvt->getTrackJet(i)->fD2 = fpEvt->getTrackJet(i)->fPlab.Pt();
+    fpEvt->getTrackJet(i)->fD3 = fpEvt->getTrackJet(i)->fPlab.Eta();
+    fpEvt->getTrackJet(i)->fD4 = fpEvt->getTrackJet(i)->fPlab.Phi();
+    fpEvt->getTrackJet(i)->fD5 = fpEvt->getTrackJet(i)->fE;
+    fpEvt->getTrackJet(i)->fD6 = fpEvt->getTrackJet(i)->fEt;
+  }
+ 
+}
+
+
+// ----------------------------------------------------------------------
+void treeAnalysis::ResetTrackJets() {
+  // undo what correctTrackJets did, originally from minbias/treeAnalysis
+  // StoreOriginalPlabTrackJets() must be called before any "correctJEts" routine
+  
+  for (int i=0; i<fpEvt->nTrackJets(); i++) {
+    fpEvt->getTrackJet(i)->fD1 = 0;
+    fpEvt->getTrackJet(i)->fPlab.SetPtEtaPhi(fpEvt->getTrackJet(i)->fD2, fpEvt->getTrackJet(i)->fD3, fpEvt->getTrackJet(i)->fD4);
+    fpEvt->getTrackJet(i)->fE = fpEvt->getTrackJet(i)->fD5;
+    fpEvt->getTrackJet(i)->fEt = fpEvt->getTrackJet(i)->fD6;
+  }
+ 
+ 
+
+}
+
+
+// ----------------------------------------------------------------------
+double treeAnalysis::GetWeight (double pt, double eta) {
+
+  double weight = fa->Eval(pt);
+
+  if (weight<0)
+    weight = 0;
+
+  return weight;
+
+
+}
+
+
+
+
+// ----------------------------------------------------------------------
 int treeAnalysis::IsGlobalMuonTrack(int track_index) {
 
   int index = 0;
 
   for (int j=0; j<fpEvt->nSigTracks(); j++) {
     //RECO muon + global muon + trackindex = index
-    if (fpEvt->getSigTrack(j)->fMuType==0 && fpEvt->getSigTrack(j)->fMCID==1 && track_index == fpEvt->getSigTrack(j)->fMuID) {
+    //if (fpEvt->getSigTrack(j)->fMuType==0 && fpEvt->getSigTrack(j)->fMCID==1 && track_index == fpEvt->getSigTrack(j)->fMuID) {
+    if (fpEvt->getSigTrack(j)->fMuType==0 && track_index == fpEvt->getSigTrack(j)->fMuID) {
       index = 1;
     }
   }
@@ -998,6 +1171,8 @@ void treeAnalysis::CountBQuarksinJet(){
 
   // cout << "****************Event*****************" << endl << endl;
   //fpEvt->dumpGenBlock();
+  cout << "****************  treeAnalysis::CountBQuarksinJet() called  *****************" << endl << endl;
+  cout << "if this happens, there may (or may not) be a conflict with (track)jetCorrections/fD1,fD2" << endl;
 
   //set counter to 0
   for(int j=0; j<fpEvt->nCaloJets(); j++){ 
@@ -1354,26 +1529,86 @@ double treeAnalysis::GetSumPt(TAnaCand* muon, double radius) {
   
 }
 
+
+// ----------------------------------------------------------------------
+void treeAnalysis::FillRECOFakeMuons(TAnaTrack* tr, double etmin_jet) { 
+  // fill a pseudo-muon candidate from a track , orignally from minbias/treeAnalysis
+ 
+  TAnaCand*  pMuon;
+     
+  pMuon = fpEvt->addCand();
+  //initalize-----------------------------
+  pMuon->fSig1           = -99999;
+  pMuon->fSig2           = -99999;
+  pMuon->fSig3           = -99999;
+  pMuon->fSig4           = -99999; 
+  pMuon->fType           = -99999; 
+  pMuon->fMass           = -99999; 
+  pMuon->fMCID           = -99999;
+  pMuon->fMCTag          = -99999;
+  pMuon->fIndexJet       = -99999;
+  pMuon->fIndexL1        = -99999;
+  pMuon->fIndexHLTL2     = -99999;
+  pMuon->fIndexHLTL3     = -99999;
+  pMuon->fIndex          = -99999;
+  pMuon->fPtRel1         = -99999;
+  pMuon->fDeltaR1        = -99999; 
+  pMuon->fPtRel2         = -99999;
+  pMuon->fDeltaR2        = -99999;
+  //------------------------------------
+  
+  pMuon->fPlab.SetPtEtaPhi(tr->fPlab.Pt(),
+			   tr->fPlab.Eta(),
+			   tr->fPlab.Phi());                               //lorentz vector 
+      
+  pMuon->fSig1             = tr->fIndex;                                         //index in RecTracks
+  
+  pMuon->fIndexJet         = RECOGetClosestCaloJet(pMuon, etmin_jet);            //index of closest calo jet
+  //pMuon->fIndexTrackJet    = RECOGetClosestTrackJet(pMuon, etmin_jet);           //index of closest track jet
+  pMuon->fIndexTrackJet    = RECOGetJetToWhichMuonBelongs(pMuon);  
+ 
+     
+  pMuon->fIndexL1          = RECOGetClosestL1(pMuon);                            // index of L1 muon
+  pMuon->fIndexHLTL2       = RECOGetClosestHLTL2(pMuon);                         // index of HLT muon (L1 seed) 
+  pMuon->fIndexHLTL3       = RECOGetClosestHLTL3(pMuon);                         // index of HLT muon (L1 filtered) 
+
+  pMuon->fPtRel1           = RECOPtRel1(pMuon, pMuon->fIndexJet);                // ptrel wrt calojet
+  pMuon->fDeltaR1          = RECODeltaR1(pMuon, pMuon->fIndexJet);               // deltaR wrt calojet
+  
+  pMuon->fPtRel2           = RECOPtRel2(pMuon, pMuon->fIndexTrackJet);           // ptrel wrt trackjet
+  pMuon->fDeltaR2          = RECODeltaR2(pMuon, pMuon->fIndexTrackJet);          // deltaR wrt trackjet
+
+  
+  if (fDebug & 1) {
+    cout << "FillRecoFakeMuons(): " ;
+    pMuon->dump();
+  }
+  
+  
+}
+
+
 // ----------------------------------------------------------------------
 void treeAnalysis::FillRECOMuons(double etmin_jet, double etmin_calojet) {  
+  // fill reco muons into candidates
 
   TAnaTrack* pSigTrack;
   TAnaCand*  pMuon;
- 
+
   //search for generated muons in the event
   for (int i=0; i< fpEvt->nSigTracks(); i++){
 
     pSigTrack = fpEvt->getSigTrack(i);
 
-    if (pSigTrack->fMuType==0 && pSigTrack->fMCID == 1 && pSigTrack->fMuID > -1 && pSigTrack->fKaID==1) { //is reco global+trk muon
+    
+    //if (pSigTrack->fMuType==0 && pSigTrack->fMCID == 1 && pSigTrack->fMuID > -1 && pSigTrack->fKaID==1) { //is reco global+trk muon
+    if (pSigTrack->fMuType==0 && pSigTrack->fMuID > -1) { // tracker id now required in src/HFDumpSignals
 
       TAnaTrack* InnerTrack = fpEvt->getRecTrack(pSigTrack->fMuID);
       //muon quality cuts
       if ( (InnerTrack->fStripHits+InnerTrack->fPixelHits)>TRKHITMUON && InnerTrack->fPixelLayers > PIXLAY && InnerTrack->fChi2/InnerTrack->fDof < CHIMUON && pSigTrack->fChi2/pSigTrack->fDof < CHIMUON && fabs(InnerTrack->fTip) < D0MUON && fabs(InnerTrack->fLip) < DZMUON && pSigTrack->fMuonHits>0) {
 	 
       
-	if (fDebug & 1) cout << "==> found a RECO muon in the event" << endl;
-	
 	
 	pMuon = fpEvt->addCand();
 	//initalize-----------------------------
@@ -1821,7 +2056,7 @@ int treeAnalysis::NumberOfRECOMuons() {
 
 // ----------------------------------------------------------------------
 int treeAnalysis::NumberOfTriggerMuons(int level) {
-
+  
   int n = 0;
   for (int i=0; i< fpEvt->nSigTracks(); i++){
     if ( fpEvt->getSigTrack(i)->fMuType == level )
@@ -1940,8 +2175,11 @@ void treeAnalysis::bookHist(int option) {
  
 
   cout << "-->bookHist> " << endl; 
-  h = new TH1D("runs", "runs", 900000, 0., 900000);
-  
+  h = new TH1D("runs", "runs", 20000, 130000, 150000);
+  h = new TH1D("beamwx","beamwx", 100, 0., 0.1);
+  h = new TH1D("beamwy","beamwy", 100, 0., 0.1);
+  h = new TH1D("beamex","beamex", 100, 0., 0.1);
+  h = new TH1D("beamey","beamey", 100, 0., 0.1);
 
 
   // create a subdirectory "top" in this file
@@ -1949,13 +2187,13 @@ void treeAnalysis::bookHist(int option) {
   cdtop->cd();    // make the "top" directory the current directory
 
          
+  Int_t ntags = 12;  // can we set ntags to 1 for data ??????????????
   Int_t nlevels;
   if (option==1)
-    nlevels=42;
+    nlevels=42;  // MC
   else
-    nlevels=10;
+    nlevels=10;  // data
     
-  const Int_t ntags = 12;
     
   bool trigger = false;
     
@@ -2215,14 +2453,83 @@ void treeAnalysis::bookHist(int option) {
 	sprintf(hname,"RECO_%d_%d_muon_d0",i,j); sprintf(htitle,"REOC muon IP: level %d tag %d",i,j);
 	h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{0} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color);
 
-	sprintf(hname,"RECO_%d_%d_muon_d0_eta1",i,j); sprintf(htitle,"REOC muon IP: level %d tag %d",i,j);
-	h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{0} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
-	sprintf(hname,"RECO_%d_%d_muon_d0_eta2",i,j); sprintf(htitle,"REOC muon IP: level %d tag %d",i,j);
-	h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{0} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color);
-	sprintf(hname,"RECO_%d_%d_muon_d0_eta3",i,j); sprintf(htitle,"REOC muon IP: level %d tag %d",i,j);
-	h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{0} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color);
-	sprintf(hname,"RECO_%d_%d_muon_d0_eta4",i,j); sprintf(htitle,"REOC muon IP: level %d tag %d",i,j);
-	h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{0} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color);
+
+	for(int etabin=1; etabin<=4; etabin++){
+	  sprintf(hname,"RECO_%d_%d_muon_d0_eta%d",i,j,etabin); sprintf(htitle,"RECO muon IP (%d): level %d tag %d",etabin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{0} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_ptrel2_eta%d",i,j,etabin); sprintf(htitle,"RECO muon ptrel (%d): level %d tag %d",etabin,i,j);
+	  h = new TH1D(hname,htitle, 100, 0, 10.); setTitles(h,  "ptrel [GeV]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxybs_eta%d",i,j,etabin); sprintf(htitle,"RECO muon IP(beam) (%d): level %d tag %d",etabin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{BS} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxysim_eta%d",i,j,etabin); sprintf(htitle,"RECO muon IP(sim) (%d): level %d tag %d",etabin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{BS} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_sigmaxy_eta%d",i,j,etabin); sprintf(htitle,"RECO muon sigma(dxy) (%d): level %d tag %d",etabin,i,j);
+	  h = new TH1D(hname,htitle, 100, 0, 0.1); setTitles(h,  "sigma(dxy)", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxybsn_eta%d",i,j,etabin); sprintf(htitle,"RECO muon IP(beam) (%d): level %d tag %d",etabin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 40); setTitles(h,  "d_{BS}/sigma", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxysimn_eta%d",i,j,etabin); sprintf(htitle,"RECO muon IP(sim) (%d): level %d tag %d",etabin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 40); setTitles(h, "d_{BS}/sigma", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxybsvsptrel2_eta%d",i,j,etabin); sprintf(htitle,"RECO muon IP(beam) vs ptrel2 (%d): level %d tag %d",etabin,i,j);
+	  h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "d_{BS} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxysimvsptrel2_eta%d",i,j,etabin); sprintf(htitle,"RECO muon IP(sim) vs ptrel2  (%d): level %d tag %d",etabin,i,j);
+	  h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "d_{BS} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+	  
+	}
+
+	for(int etabin=1; etabin<=4; etabin++){
+	  for(int ptbin=1; ptbin<=3; ptbin++){
+	    sprintf(hname,"RECO_%d_%d_muon_d0_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon IP (%d,%d): level %d tag %d",etabin,ptbin,i,j);
+	    h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{0} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	    sprintf(hname,"RECO_%d_%d_muon_sigmaxy_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon sigma(dxy) (%d,%d): level %d tag %d",etabin,ptbin,i,j);
+	    h = new TH1D(hname,htitle, 100, 0, 0.1); setTitles(h,  "sigma(dxy)", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxybs_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon IP(beam) (%d,%d): level %d tag %d",etabin,ptbin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{BS} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxysim_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon IP(sim) (%d,%d): level %d tag %d",etabin,ptbin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 0.2); setTitles(h,  "d_{BS} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxybsn_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon IP(beam) (%d,%d): level %d tag %d",etabin,ptbin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 40); setTitles(h,  "d_{BS}/sigma", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_dxysimn_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon IP(sim) (%d,%d): level %d tag %d",etabin,ptbin,i,j);
+	  h = new TH1D(hname,htitle, 200, 0, 40); setTitles(h,  "d_{BS}/sigma", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+	  sprintf(hname,"RECO_%d_%d_muon_ptrel2_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon ptrel (%d,%d): level %d tag %d",etabin,ptbin,i,j);
+	  h = new TH1D(hname,htitle, 100, 0, 10.); setTitles(h,  "ptrel [GeV]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+
+// 	  sprintf(hname,"RECO_%d_%d_muon_dxybsvsptrel2_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon IP(beam) vs ptrel2 (bin %d): level %d tag %d",etabin,i,j);
+// 	  h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "d_{BS} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
+// 	  sprintf(hname,"RECO_%d_%d_muon_dxysimvsptrel2_eta%d_pt%d",i,j,etabin,ptbin); sprintf(htitle,"RECO muon IP(sim) vs ptrel2  (bin %d): level %d tag %d",etabin,i,j);
+// 	  h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "d_{BS} [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+	  }
+	}
+
+
+	sprintf(hname,"RECO_%d_%d_beamwx",i,j); sprintf(htitle,"RECO muon beam width x: level %d tag %d",i,j);
+	h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "wx [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+	sprintf(hname,"RECO_%d_%d_beamwy",i,j); sprintf(htitle,"RECO muon beam width y: level %d tag %d",i,j);
+	h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "wx [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+	sprintf(hname,"RECO_%d_%d_beamex",i,j); sprintf(htitle,"RECO muon beam position uncertainty x: level %d tag %d",i,j);
+	h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "ex [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+	sprintf(hname,"RECO_%d_%d_beamey",i,j); sprintf(htitle,"RECO muon beam position uncertainty x: level %d tag %d",i,j);
+	h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "ey [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+	sprintf(hname,"RECO_%d_%d_beamwex",i,j); sprintf(htitle,"RECO muon width+error x: level %d tag %d",i,j);
+	h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "wx+ex [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+	sprintf(hname,"RECO_%d_%d_beamwey",i,j); sprintf(htitle,"RECO muon beam width+error y: level %d tag %d",i,j);
+	h = new TH2D(hname,htitle, 20, 0, 0.2,100, 0., 10.); setTitles(h,  "wy+ey [cm]", "events/bin"); h->Sumw2(); h->SetLineColor(color); 
+
 
 	sprintf(hname,"RECO_%d_%d_muon_reliso1",i,j); sprintf(htitle,"REOC muon #Sigma p_{T}/p_{T}: level %d tag %d",i,j);
 	h = new TH1D(hname,htitle, 100, 0, 5); setTitles(h,  "#Sigma (p_{T}) [GeV] (#Delta R < 0.3)", "events/bin"); h->Sumw2(); h->SetLineColor(color);
@@ -2826,7 +3133,8 @@ void treeAnalysis::RECOFillEventHistogram(int i, int j, double weight) {
       TAnaTrack* candtrk = fpEvt->getSigTrack(cand->fSig3);
 
 
-      if (candtrk->fMuType==0 && candtrk->fMCID == 1 && candtrk->fMuID > -1 && candtrk->fKaID==1) { //is reco global+trk muon
+      //if (candtrk->fMuType==0 && candtrk->fMCID == 1 && candtrk->fMuID > -1 && candtrk->fKaID==1) { //is reco global+trk muon
+      if (candtrk->fMuType==0 && candtrk->fMuID > -1) { //is reco global  muon
 
 	TAnaTrack* InnerTrack = fpEvt->getRecTrack(candtrk->fMuID);
 	//muon quality cuts
@@ -3198,6 +3506,8 @@ void treeAnalysis::RECOFillHistogram(TAnaCand* muon, int i, int j, double weight
   }
   //Achtung: IP vom Track
   int idx_track = int(muon->fSig1);
+  int idx_signal=int(muon->fSig3);
+
   if (idx_track>-1) { 
 
     sprintf(hname,"RECO_%d_%d_muon_pixhits",i,j);
@@ -3214,25 +3524,86 @@ void treeAnalysis::RECOFillHistogram(TAnaCand* muon, int i, int j, double weight
     ((TH1D*)gDirectory->Get(hname))->Fill(fpEvt->getRecTrack(idx_track)->fStripLayers+fpEvt->getRecTrack(idx_track)->fPixelLayers,weight); 
 
 
+
     sprintf(hname,"RECO_%d_%d_muon_d0",i,j);
     ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fTip),weight);
-    if (fabs (muon->fPlab.Eta()) < 1) {
-      sprintf(hname,"RECO_%d_%d_muon_d0_eta1",i,j);
-      ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fTip),weight);
-    }
-    else if (fabs (muon->fPlab.Eta()) < 1.5) {
-      sprintf(hname,"RECO_%d_%d_muon_d0_eta2",i,j);
-      ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fTip),weight);
-    } 
-    else if (fabs (muon->fPlab.Eta()) < 2) {
-      sprintf(hname,"RECO_%d_%d_muon_d0_eta3",i,j);
-      ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fTip),weight);
-    }
-    else {
-      sprintf(hname,"RECO_%d_%d_muon_d0_eta4",i,j);
-      ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fTip),weight);
 
+    int etabin=0;
+    if (fabs (muon->fPlab.Eta()) < 1) { etabin=1; }
+    else if (fabs (muon->fPlab.Eta()) < 1.5) { etabin=2;}
+    else if (fabs (muon->fPlab.Eta()) < 2) { etabin=3;}
+    else { etabin=4;}
+    int ptbin=0;
+    if (fabs (muon->fPlab.Pt()) < 10) { ptbin=1; }
+    else if (fabs (muon->fPlab.Pt()) < 20) { ptbin=2;}
+    else { ptbin=3;}
+
+    double sigmadxy=fpEvt->getRecTrack(idx_track)->fTipE;
+    
+
+    sprintf(hname,"RECO_%d_%d_muon_d0_eta%d",i,j,etabin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fTip),weight);
+    sprintf(hname,"RECO_%d_%d_muon_d0_eta%d_pt%d",i,j,etabin,ptbin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fTip),weight);
+
+    sprintf(hname,"RECO_%d_%d_muon_sigmaxy_eta%d",i,j,etabin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(sigmadxy,weight);
+    sprintf(hname,"RECO_%d_%d_muon_sigmaxy_eta%d_pt%d",i,j,etabin,ptbin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(sigmadxy,weight);
+
+    sprintf(hname,"RECO_%d_%d_muon_dxybs_eta%d",i,j,etabin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fDxybs),weight);
+    sprintf(hname,"RECO_%d_%d_muon_dxybs_eta%d_pt%d",i,j,etabin,ptbin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fDxybs),weight);
+
+//     sprintf(hname,"RECO_%d_%d_muon_dxybs_eta%d",i,j,etabin);
+//     ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getSigTrack(idx_signal)->fDxybs),weight);
+//     sprintf(hname,"RECO_%d_%d_muon_dxybs_eta%d_pt%d",i,j,etabin,ptbin);
+//     ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getSigTrack(idx_signal)->fDxybs),weight);
+
+    sprintf(hname,"RECO_%d_%d_muon_dxybsn_eta%d",i,j,etabin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fDxybs/sigmadxy),weight);
+    sprintf(hname,"RECO_%d_%d_muon_dxybsn_eta%d_pt%d",i,j,etabin,ptbin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fDxybs/sigmadxy),weight);
+
+
+    double wx=fpEvt->fBeamwx, wy=fpEvt->fBeamwy;
+    double ex=fpEvt->fBeamex, ey=fpEvt->fBeamey; 
+    sprintf(hname,"RECO_%d_%d_beamwx",i,j);
+    ((TH1D*)gDirectory->Get(Form("RECO_%d_%d_beamwx",i,j)))->Fill(wx,weight);
+    ((TH1D*)gDirectory->Get(Form("RECO_%d_%d_beamwy",i,j)))->Fill(wy,weight);
+    ((TH1D*)gDirectory->Get(Form("RECO_%d_%d_beamex",i,j)))->Fill(ex,weight);
+    ((TH1D*)gDirectory->Get(Form("RECO_%d_%d_beamey",i,j)))->Fill(ey,weight);
+
+    
+    sprintf(hname,"RECO_%d_%d_muon_ptrel2_eta%d",i,j,etabin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(muon->fPtRel2,weight);
+    sprintf(hname,"RECO_%d_%d_muon_ptrel2_eta%d_pt%d",i,j,etabin,ptbin);
+    ((TH1D*)gDirectory->Get(hname))->Fill(muon->fPtRel2,weight);
+
+    if(idx_signal>0){
+      double phitrack=fpEvt->getSigTrack(idx_signal)->fPlab.Phi();
+      double pvsmearing=Random->Gaus(0,42e-4)*sin(phitrack)-Random->Gaus(0,46e-4)*cos(phitrack);
+      //cout << fpEvt->getSigTrack(idx_signal)->fDxysimv << " " << pvsmearing << endl;
+      sprintf(hname,"RECO_%d_%d_muon_dxysim_eta%d",i,j,etabin);
+      ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getSigTrack(idx_signal)->fDxysimv+pvsmearing),weight);
+      sprintf(hname,"RECO_%d_%d_muon_dxysim_eta%d_pt%d",i,j,etabin,ptbin);
+      ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getSigTrack(idx_signal)->fDxysimv+pvsmearing),weight);
+
+
+      sprintf(hname,"RECO_%d_%d_muon_dxysimn_eta%d",i,j,etabin);
+      ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getSigTrack(idx_signal)->fDxysimv+pvsmearing)/sigmadxy,weight);
+      sprintf(hname,"RECO_%d_%d_muon_dxysimn_eta%d_pt%d",i,j,etabin,ptbin);
+      ((TH1D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getSigTrack(idx_signal)->fDxysimv+pvsmearing)/sigmadxy,weight);
+
+      sprintf(hname,"RECO_%d_%d_muon_dxysimvsptrel2_eta%d",i,j,etabin);
+      ((TH2D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getSigTrack(idx_signal)->fDxysimv+pvsmearing), muon->fPtRel2,weight);
     }
+
+    sprintf(hname,"RECO_%d_%d_muon_dxybsvsptrel2_eta%d",i,j,etabin);
+    ((TH2D*)gDirectory->Get(hname))->Fill(fabs(fpEvt->getRecTrack(idx_track)->fDxybs), muon->fPtRel2,weight);
+
+
 
 
 
@@ -3749,17 +4120,17 @@ void treeAnalysis::RECOFillAllHistogram(TAnaCand* muon, int i, double weight) {
   RECOFillEventHistogram(i, 0, weight);
   RECOFillHistogram(muon, i, 0, weight);
   
-  RECOFillEventHistogram(i, fpEvt->fEventTag, weight); 
-  RECOFillHistogram(muon,i,fpEvt->fEventTag,weight);//tag (1:b,2:c,3:uds)
+  if(fMC){
+    RECOFillEventHistogram(i, fpEvt->fEventTag, weight); 
+    RECOFillHistogram(muon,i,fpEvt->fEventTag,weight);//tag (1:b,2:c,3:uds)
 
-  if (fpEvt->fEventTag ==1 ) {
-    RECOFillEventHistogram(i, muon->fMCTag, weight); 
-    RECOFillHistogram(muon,i, muon->fMCTag, weight);//tag (4:b,5:bc,6:c,7:uds)
-    RECOFillEventHistogram(i, fpEvt->fEventBits, weight); 
-    RECOFillHistogram(muon,i, fpEvt->fEventBits, weight);//tag (8:FCR,9:FEC,10:GS,11:none)
-
+    if (fpEvt->fEventTag ==1 ) {
+      RECOFillEventHistogram(i, muon->fMCTag, weight); 
+      RECOFillHistogram(muon,i, muon->fMCTag, weight);//tag (4:b,5:bc,6:c,7:uds)
+      RECOFillEventHistogram(i, fpEvt->fEventBits, weight); 
+      RECOFillHistogram(muon,i, fpEvt->fEventBits, weight);//tag (8:FCR,9:FEC,10:GS,11:none)
+    }
   }
-
 
 }
 
