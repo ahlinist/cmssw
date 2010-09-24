@@ -17,6 +17,7 @@ from TauAnalysis.RecoTools.patLeptonSelection_cff import *
 # (pat::Jet collection to be considered for central-jet veto)
 #
 from TauAnalysis.RecoTools.patJetSelection_cff import *
+from TauAnalysis.RecoTools.patJetSelectionForZtoDiTau_cff import *
 #
 # produce collections of pat::(Calo)MET objects
 # passing different selection criteria
@@ -35,5 +36,5 @@ producePatTupleZtoDiTauSpecific = cms.Sequence(
    + selectPatTaus + selectPatTausForDiTau
    + produceDiTauPairs
    + selectDiTauPairs + selectDiTauPairsLoose2ndTau
-   + selectPatJets
+   + selectPatJets + selectPatJetsForZtoDiTau + selectPatJetsForZtoDiTauLoose2ndTau
 )
