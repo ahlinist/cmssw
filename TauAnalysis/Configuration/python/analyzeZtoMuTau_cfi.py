@@ -398,7 +398,8 @@ muTauEventDump = cms.PSet(
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
     hltPathsToPrint = cms.vstring('HLT_Mu9', 'HLT_IsoMu9', 'HLT_Mu11', 'HLT_Mu15'),
-        
+
+    doGenInfo = cms.bool(True),
     genParticleSource = cms.InputTag('genParticles'),
     genJetSource = cms.InputTag('iterativeCone5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
