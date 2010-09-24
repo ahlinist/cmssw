@@ -729,8 +729,8 @@ def enableFactorization_runZtoDiTau(process):
 def enableFactorization_makeZtoDiTauPlots_grid(
     process,
     factorizationSequenceName = "loadAndFactorizeZtoDiTauSamples",
-    samplesToFactorize = [ 'qcdDiJet' ],
-    relevantMergedSamples = [ 'qcdSum' ],
+    samplesToFactorize = [ 'qcdDiJet', ],
+    relevantMergedSamples = [ 'qcdSum', ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample: 'addZtoDiTau_%s' % (sample),
     dqmDirectoryOut = 
@@ -779,12 +779,13 @@ def enableFactorization_makeZtoDiTauPlots_grid(
     # define list of event selection criteria on "loose" tau id. branch
     # of the analysis, **after** applying factorization of
     # lead. track Pt, track isolation and ECAL isolation efficiencies
-    evtSelAHtoMuTau_factorizedLoose = [
+    evtSelZtoDiTau_factorizedLoose = [
         process.evtSelSecondTauMuonVeto,
         process.evtSelSecondTauElectronVeto,
         process.evtSelDiTauCandidateForDiTauAntiOverlapVeto,
         process.evtSelDiTauCandidateForDiTauZeroCharge,
-        process.evtSelDiTauCandidateForDiTauAcoplanarity
+        process.evtSelDiTauCandidateForDiTauAcoplanarity,
+        process.evtSelDiTauCandidateForDiTauPzetaDiff
         #process.evtSelCentralJetVeto
     ]
 
