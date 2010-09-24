@@ -60,6 +60,10 @@ evtSelDiTauCandidateForDiTauAcoplanarityLoose2ndTau = evtSelDiTauCandidateForDiT
     src_cumulative = cms.InputTag('diTauCandidateForDiTauAcoplanarityCutLoose2ndTau', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForDiTauAcoplanarityCutLoose2ndTau', 'individual')
 )
+evtSelDiTauCandidateForDiTauPzetaDiffLoose2ndTau = evtSelDiTauCandidateForDiTauAcoplanarity.clone(
+    src_cumulative = cms.InputTag('diTauCandidateForDiTauPzetaDiffCutLoose2ndTau', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForDiTauPzetaDiffCutLoose2ndTau', 'individual')
+)
 
 # veto events containing additional central jets with Et > 20 GeV
 #evtSelCentralJetVetoLoose2ndTau = cms.PSet(
@@ -99,7 +103,9 @@ inputTagReplacements = \
     [ "selectedDiTauPairs2ndTauElectronVetoCumulative", "selectedDiTauPairs2ndTauElectronVetoLooseCumulative" ],
     [ "selectedDiTauPairsAntiOverlapVetoCumulative", "selectedDiTauPairsAntiOverlapVetoLoose2ndTauCumulative" ],
     [ "selectedDiTauPairsZeroChargeCumulative", "selectedDiTauPairsZeroChargeLoose2ndTauCumulative" ],
-    [ "selectedDiTauPairsAcoplanarityCumulative", "selectedDiTauPairsAcoplanarityLoose2ndTauCumulative" ] ]
+    [ "selectedDiTauPairsAcoplanarityCumulative", "selectedDiTauPairsAcoplanarityLoose2ndTauCumulative" ],
+    [ "selectedDiTauPairsPzetaDiffCumulative", "selectedDiTauPairsLoose2ndTauPzetaDiffCumulative" ],
+    [ "selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVeto", "selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoLoose2ndTau" ] ]
     # CV: need to add replace statement for jet collection on which central jet veto is based
     #     (in case central jet veto is applied)
 

@@ -71,6 +71,11 @@ cfgDiTauCandidateForDiTauAcoplanarityCutLoose2ndTau = cfgDiTauCandidateForDiTauA
     src_cumulative = cms.InputTag('selectedDiTauPairsAcoplanarityLoose2ndTauCumulative'),
     src_individual = cms.InputTag('selectedDiTauPairsAcoplanarityLoose2ndTauIndividual')
 )
+cfgDiTauCandidateForDiTauPzetaDiffCutLoose2ndTau = cfgDiTauCandidateForDiTauPzetaDiffCut.clone(
+    pluginName = cms.string('diTauCandidateForDiTauPzetaDiffCutLoose2ndTau'),
+    src_cumulative = cms.InputTag('selectedDiTauPairsPzetaDiffLoose2ndTauCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairsPzetaDiffLoose2ndTauIndividual'),
+)
 
 # veto events containing additional central jets with Et > 20 GeV
 #cfgCentralJetVetoLoose2ndTau = cfgCentralJetVeto.clone(
@@ -89,7 +94,8 @@ zToDiTauEventSelConfiguratorLoose2ndTau = eventSelFlagProdConfigurator(
       cfgSecondTauElectronVetoLoose,
       cfgDiTauCandidateForDiTauAntiOverlapVetoLoose2ndTau,
       cfgDiTauCandidateForDiTauZeroChargeCutLoose2ndTau,
-      cfgDiTauCandidateForDiTauAcoplanarityCutLoose2ndTau ], 
+      cfgDiTauCandidateForDiTauAcoplanarityCutLoose2ndTau,
+      cfgDiTauCandidateForDiTauPzetaDiffCutLoose2ndTau ], 
       #cfgCentralJetVetoLoose2ndTau ], 
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
