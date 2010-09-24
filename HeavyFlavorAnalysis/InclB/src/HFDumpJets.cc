@@ -65,7 +65,8 @@ HFDumpJets::HFDumpJets(const edm::ParameterSet& iConfig):
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fDoFlavorTagging(iConfig.getUntrackedParameter<int>("doflavortagging", 0)),
   fJetsLabel(iConfig.getUntrackedParameter<string>("jetsLabel", string("MCJetCorJetIcone5"))),
-  fGenCandidatesLabel(iConfig.getUntrackedParameter<string>("generatorCandidates", string("genParticles"))), 
+ fJetsTagLabel(iConfig.getUntrackedParameter<string>("jetsTagLabel", string("simpleSecondaryVertexBJetTags"))),
+  fGenCandidatesLabel(iConfig.getUntrackedParameter<string>("genparticlesLabel", string("genParticles"))), 
   fsourceByRefer(iConfig.getParameter<edm::InputTag>("sourceByRefer"))
  
 {
@@ -92,9 +93,21 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   // -- get the collection of CaloJets 
   edm::Handle<reco::CaloJetCollection> caloJets;
   iEvent.getByLabel( fJetsLabel.c_str(), caloJets ); 
+ if( !caloJets.isValid()) { if(fVerbose > 0) cout<<"****** no "<<fJetsLabel<<endl; return; }
+  // btag   
+edm::Handle<reco::JetTagCollection> bTagH;
+iEvent.getByLabel(fJetsTagLabel.c_str(), bTagH);
+ bool btaginfo=false;
+ if( bTagH.isValid()) {
+//const reco::JetTagCollection & bTags = *(bTagHandle.product());
+if (fVerbose > 0) cout << "==>HFDumpTrackJets> bjetstag =" <<  bTagH->size() << endl;
+ btaginfo=true;
+ }else {
+   if(fVerbose > 0) cout << " ***** not found " <<fJetsTagLabel<< endl;
+ }
 
-  
 
+ if(fVerbose > 0) cout<<"  HFDumpJets====> "<< caloJets->size()<<endl;
   //Loop over CaloJets (with Jet Flavor Tagging)
   int jetIndex=0; 
   bool first = true;
@@ -134,10 +147,29 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     pCaloJet->fD5               = -9999; //not used
     pCaloJet->fD6               = -9999; //not used
     pCaloJet->fD7               = -9999; //not used
-  
-    if (fVerbose > 0) pCaloJet->dump();
+    pCaloJet->ftrjpvindx       = 0; //not used
+    pCaloJet->fbtag         = -9999; // btag SSV output
 
-    
+
+   
+    // btag info
+    if(btaginfo) {
+ const reco::JetTagCollection & tagColl = *(bTagH.product());
+ double rmin = 0.5; // jets match cone
+ for (JetTagCollection::const_iterator ijt = tagColl.begin();
+        ijt != tagColl.end(); ++ijt) {
+   // match with actual jet
+   TVector3 jetbcand;
+   jetbcand.SetPtEtaPhi(ijt->first->pt(), ijt->first->eta(), ijt->first->phi());  
+  double r = (pCaloJet->fPlab).DeltaR(jetbcand);
+  if (fVerbose > 2)  cout<<" jettag "<<r<<"  "<< ijt->second<<" "<<ijt->first->pt()<<" "<<cal->pt()<<endl;
+  if(r<rmin) {
+pCaloJet->fbtag= ijt->second;
+ if (fVerbose > 1) cout<<r<<" btag "<<pCaloJet->fbtag<<endl; 
+  }
+ }
+    }//btaginfo
+
     if (fDoFlavorTagging == 1) { 
 
       // -- get the collection for flavor matching
@@ -266,10 +298,12 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     
     jetIndex++;
     j++;
-    
+ 
+
+  if (fVerbose > 0) {cout<<" calojet"<<endl; pCaloJet->dump(); }  
   } 
 
-
+  return;
 
 }
 

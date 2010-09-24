@@ -1,3 +1,5 @@
+#ifndef  HFDumpSignalH
+#define  HFDumpSignalH
 
 // system include files
 #include <memory>
@@ -29,14 +31,16 @@ class HFDumpSignal : public edm::EDAnalyzer {
   virtual void endJob() ;
 
   int         fVerbose;
-  int         fUseJetForIP;
   double      fJetMatch;
   double      fJetEtMin; 
   std::string fMuonLabel; 
   std::string   fJetsLabel;
   std::string   fTracksLabel;
   std::string   fVertexLabel;
+  std::string   fSimVertexLabel;
   
   int nevt;
 
 };
+
+#endif

@@ -85,8 +85,8 @@ HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
   cout << "----------------------------------------------------------------------" << endl;
   fFile       = new TFile(iConfig.getParameter<string>("fileName").c_str(), "RECREATE");
   fHistoL1          = new TH1I("l1triggerbits", "L1 trigger bits", 200, 0., 200.);
-  fHistoHLT         = new TH1I("hlttriggerbits", "HLT trigger bits", 150, 0., 150.);
-  fHistoHLT_on      = new TH1I("hlttriggerbitson", "HLT trigger bits on", 150, 0., 150.);
+  fHistoHLT         = new TH1I("hlttriggerbits", "HLT trigger bits", 250, 0., 250.);  // changed from 150
+  fHistoHLT_on      = new TH1I("hlttriggerbitson", "HLT trigger bits on", 250, 0., 250.);
  
   
 }

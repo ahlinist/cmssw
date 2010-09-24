@@ -100,11 +100,13 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   Handle<reco::TrackCollection> recTrks;
   //iEvent.getByLabel("generalTracks", recTrks);
   iEvent.getByLabel(fTracksLabel.c_str(), recTrks);
-
+if( !recTrks.isValid()) { cout<<"****** no "<<fTracksLabel<<endl; return;}
   // -- get the collection of muons and store their corresponding track indices
   vector<int> muonIndices;
   Handle<MuonCollection> hMuons;
   iEvent.getByLabel(fMuonsLabel, hMuons);
+ if( !hMuons.isValid()) { cout<<"****** no "<<fMuonsLabel<<endl; }
+
 
   for (MuonCollection::const_iterator muon = hMuons->begin(); muon != hMuons->end(); ++muon) {
     if (muon->isGlobalMuon() ) {
@@ -134,12 +136,26 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //*******************
   //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
   //signed impact parameter
+
+ 
   //primary vertex
   Handle<reco::VertexCollection> primaryVertex;
-  iEvent.getByLabel(fVertexLabel.c_str(),primaryVertex);
-  //std::vector<Point> points;
-  //selectVertices(*primaryVertex, points);
-  
+  iEvent.getByLabel(fVertexLabel.c_str(),primaryVertex); 
+ if( !primaryVertex.isValid()) { cout<<"****** no "<<fVertexLabel<<endl; return; }
+
+
+edm::Ref<VertexCollection> * pvRef;
+bool pvFound = (primaryVertex->size() != 0); 
+// define highest vertex (lowest chi2) vertex
+ const reco::Vertex* pVertex =&(*primaryVertex->begin());   // FIXME make a real vertex selection here
+
+// use beamspot, or 0 if not available
+ math::XYZPoint bs = math::XYZPoint(0.,0.,0.);
+ edm::Handle<reco::BeamSpot> beamSpotCollection;
+ iEvent.getByLabel("offlineBeamSpot", beamSpotCollection);
+ if (beamSpotCollection.isValid()){ bs = beamSpotCollection->position();}
+ else { cout<<"****no beamspot "<<endl;}
+
   edm::ESHandle<TransientTrackBuilder> builder;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",builder);
   //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -147,7 +163,8 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // handle to 0.5 cone ctf track jets  
   Handle<BasicJetCollection> jetsH;
   iEvent.getByLabel(fJetsLabel.c_str(),jetsH);
-  const BasicJetCollection *jets   = jetsH.product(); 
+  bool jetsvalid=true;
+  if( !jetsH.isValid()) { cout<<"****** no "<<fJetsLabel<<endl; jetsvalid=false; }
   //tracks (jet constituents)
   Handle<reco::CandidateView> candidates1Handle;
   iEvent.getByLabel(fTracksLabel2.c_str(), candidates1Handle); 
@@ -178,7 +195,10 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			      trackView.phi()
 			      );
 
-  
+    pTrack->fVertex.SetXYZ(trackView.vertex().x(),
+			   trackView.vertex().y(),
+			   trackView.vertex().z());
+
     pTrack->fHighPurity = t->quality(reco::TrackBase::highPurity);     
     pTrack->fQ = trackView.charge();
     pTrack->fChi2 = trackView.chi2();
@@ -208,6 +228,22 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     pTrack->fTIBLayers   = trackView.hitPattern().stripTIBLayersWithMeasurement(); 
     pTrack->fTIDLayers   = trackView.hitPattern().stripTIDLayersWithMeasurement();
     pTrack->fTOBLayers   = trackView.hitPattern().stripTOBLayersWithMeasurement();
+
+
+    pTrack->fTrChi2norm  =  trackView.normalizedChi2(); // chi2 of the tracker t
+
+
+     pTrack->fDxybs       = trackView.dxy(bs);          // Dxy relative to the beam spot
+      pTrack->fDzbs       = trackView.dz(bs);        // dz relative to bs or o if not available
+  // impact parameter of the tracker track relative  to the first PV  
+      pTrack->fDxypv       = trackView.dxy(pVertex->position()); 
+      pTrack->fDzpv        = trackView.dz(pVertex->position());       
+      pTrack->fDxyE        = trackView.dxyError();  // error on Dxy
+      pTrack->fDzE         = trackView.dzError();
+
+
+
+
 
     pTrack->fMuID = 0.; 
     for (unsigned int im = 0; im < muonIndices.size(); ++im) {
@@ -244,6 +280,8 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     BasicJet* matchedjet;
     bool foundjet = false;
     //loop over all track jets
+    if(jetsvalid) {
+    const BasicJetCollection *jets   = jetsH.product(); 
     int jetidx=0;
     for ( BasicJetCollection::const_iterator it = jets->begin(); it != jets->end(); it ++ ) { 
       
@@ -260,6 +298,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       } 
       jetidx++;
     }
+  } //jetsvalid
 
     if (foundjet) {
       TLorentzVector vect;
@@ -287,7 +326,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     t++;  
   }
   
-  
+  return;
 }
 
 // ------------ method called once each job just before starting event loop  ------------

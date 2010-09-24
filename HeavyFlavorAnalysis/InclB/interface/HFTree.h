@@ -31,7 +31,12 @@ class HFTree : public edm::EDAnalyzer {
   TTree        *fTree;
   TAna00Event  *fEvent;
  
- 
+  std::string   fCaloMetLabel;
+  std::string   fPFMetLabel;
+  std::string   fGenMetLabel;
+  int           fVerbose;
+  int           fRequireSignal;
+  
   int nevt;
 };
 
