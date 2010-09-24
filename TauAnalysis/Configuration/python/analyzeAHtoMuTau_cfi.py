@@ -227,22 +227,22 @@ muTauEventDump = cms.PSet(
         cms.PSet(
             name = cms.string("psKine")
         ),
-        cms.PSet(
-            name = cms.string("psKine_MEt")
-        ),
-        cms.PSet(
-            name = cms.string("psKine_Track")
-        ),
-        cms.PSet(
-            name = cms.string("psKine_ptBalance")
-        ),
-        cms.PSet(
-            name = cms.string("psKine_MEt_Track_ptBalance")
+        ##cms.PSet(
+        ##    name = cms.string("psKine_MEt")
         ##),
         ##cms.PSet(
-        ##    name = cms.string("polKine"),
-        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ##    name = cms.string("psKine_Track")
         ##),
+        ##cms.PSet(
+        ##    name = cms.string("psKine_ptBalance")
+        ##),
+        ##cms.PSet(
+        ##    name = cms.string("psKine_MEt_ptBalance")
+        ##),
+        cms.PSet(
+            name = cms.string("polKine"),
+            polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ),
         ##cms.PSet(
         ##    name = cms.string("polKine_MEt"),
         ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
@@ -255,8 +255,12 @@ muTauEventDump = cms.PSet(
         ##    name = cms.string("polKine_ptBalance"),
         ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
         ##),
+        cms.PSet(
+            name = cms.string("polKine_Zprod"),
+            polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ##),
         ##cms.PSet(
-        ##    name = cms.string("polKine_MEt_Track_ptBalance"),
+        ##    name = cms.string("polKine_MEt_ptBalance"),
         ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
         )
     ),
