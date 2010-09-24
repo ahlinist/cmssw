@@ -71,7 +71,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-137028_7TeV_June14thReReco_Collisions10_JSON.txt",
         'runselection' : "132440 - 137436",
-        'conditions' : 'GR_R_36X_V12B::All',
+        'conditions' : 'GR_R_36X_V12A::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
