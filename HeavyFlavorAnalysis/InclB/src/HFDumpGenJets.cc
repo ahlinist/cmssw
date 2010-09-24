@@ -71,21 +71,28 @@ HFDumpGenJets::~HFDumpGenJets() {
 // ----------------------------------------------------------------------
 void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  
+  if (fVerbose > 0) cout<<" HFDumpGenJets::analyze===> "<<nevt<<endl;
   nevt++;
   // -- get the collection of GenJets 
   edm::Handle<reco::GenJetCollection> genJets;
   iEvent.getByLabel( fGenJetsLabel.c_str(), genJets ); 
+   if( !genJets.isValid()) {
+     if (fVerbose > 0) cout << "****no " << fGenJetsLabel << endl; return;}
+ else if(fVerbose > 0) cout << "+++  genjets "  << endl;
 
   // -- get the collection for flavor matching
   edm::Handle<reco::JetMatchedPartonsCollection> theTagByRef;
   iEvent.getByLabel (fsourceByRefer , theTagByRef);
-
+ if( !theTagByRef.isValid()) {
+     if(fVerbose > 0) cout << "****no  matched "  << endl; }
+ else if(fVerbose > 0) cout << "+++  matched "  << endl;
   // -- get the collection of GenParticles 
   edm::Handle<GenParticleCollection> genParticlesH;
   genParticlesH.clear();
   iEvent.getByLabel (fGenCandidatesLabel.c_str(), genParticlesH);
- 
+    if( !genParticlesH.isValid()) {
+     if (fVerbose > 0) cout << "****no " <<fGenCandidatesLabel  << endl; }
+
   //GenParticles for Jet Flavor Tagging
   std::vector<const GenParticle *> cands;
   cands.clear();
@@ -94,7 +101,7 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     cands.push_back( & * p );
   }
 
-  if (fVerbose > 0) cout << "==>HFDumpGenJets> nGenJets =" << genJets->size() << endl;
+  if (fVerbose > 0) cout << "==>HFDumpGenJets> nGenJets =" << genJets->size() <<" "<<cands.size()<<" "<<theTagByRef->size()<<endl;
   if (genJets->size() != theTagByRef->size()) {
     if (fVerbose > 0) cout << "==>HFDumpGenJets> ERROR: Different Size of JetCollections" << endl;
   }
@@ -107,6 +114,8 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
     const Jet *aJet             = (*j).first.get(); 
     const MatchedPartons aMatch = (*j).second;  
+    if (fVerbose > 0) cout<<jetIndex<<" matched indexes "<<endl;
+
 
     if (gen->eta() != aJet->eta()) {
       if (fVerbose > 0) cout << "==>HFDumpGenJets> ERROR: Different jets in JetCollections" << endl;
@@ -146,12 +155,14 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     pGenJet->fD6               = -9999; //not used
     pGenJet->fD7               = -9999; //not used  
 
-
+if (fVerbose > 0) cout<<" get  genjet constituents "<<endl;
     //jet constituents
     std::vector <const GenParticle*> mcparts = gen->getGenConstituents(); 
     for (unsigned int i = 0; i < mcparts.size (); i++) {
       int index  = -1;
+      if (fVerbose > 0) cout<<i<<" genpat "<<mcparts.size ()<<endl;
       const GenParticle* mcpart = mcparts[i];
+      if (fVerbose > 0) cout<<" mcpart "<<mcpart<<endl; 
       if (mcpart) {
 	for (unsigned int j = 0; j < cands.size(); ++ j ) {
 	  const GenParticle *p1 = (cands)[j];
@@ -161,12 +172,14 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  
 	}
 	pGenJet->addTrack(index);
-      }
+
+      } //mcpart
       
        
-    }
+    } //i
+
   
-    if (fVerbose > 0) pGenJet->dump();
+    if (fVerbose > 0) { cout<<" genjets "<<endl;  pGenJet->dump(); }
     
     const GenParticleRef theHeaviest = aMatch.heaviest() ;
     if(theHeaviest.isNonnull()) {

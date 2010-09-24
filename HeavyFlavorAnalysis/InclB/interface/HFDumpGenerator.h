@@ -1,4 +1,3 @@
-
 #ifndef _HFDUMPGENERATOR_h_
 #define _HFDUMPGENERATOR_h_
 
@@ -31,8 +30,8 @@ class HFDumpGenerator : public edm::EDAnalyzer {
 
   int         fVerbose;
   std::string fGenCandidatesLabel, fGenEventLabel;
-  std::string fGenEventScale, fGenEventProcID, fGenEventWeight;
- 
+  int     fGenCandStat;
+  double  fGenCandPt; 
   int nevt;
 
 };

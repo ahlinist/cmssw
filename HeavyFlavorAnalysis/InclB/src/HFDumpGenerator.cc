@@ -34,10 +34,10 @@ using namespace reco;
 HFDumpGenerator::HFDumpGenerator(const ParameterSet& iConfig):
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fGenCandidatesLabel(iConfig.getUntrackedParameter<string>("generatorCandidates", string("genParticles"))), 
-  fGenEventLabel(iConfig.getUntrackedParameter<string>("generatorEvent", string("EvtGenProducer"))),
-  fGenEventScale(iConfig.getUntrackedParameter<string>("GenEventScale", string("genEventScale"))),
-  fGenEventProcID(iConfig.getUntrackedParameter<string>("GenEventProcID", string("genEventProcID"))),
-  fGenEventWeight(iConfig.getUntrackedParameter<string>("GenEventWeight", string("genEventWeight")))  {
+ fGenCandStat(iConfig.getUntrackedParameter<int>("gencandstat", 0)), 
+ fGenCandPt(iConfig.getUntrackedParameter<double>("gencandptmin", 1.0)), 
+  fGenEventLabel(iConfig.getUntrackedParameter<string>("generatorEvent", string("EvtGenProducer")))
+  {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpGenerator constructor: " << fGenCandidatesLabel << "  " << fGenEventLabel << endl;
@@ -75,13 +75,20 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   gHFEvent->fXsec         = -99999;
   gHFEvent->fFilterEff    = -99999;
   gHFEvent->fEventWeight  = 1; 
-
+ 
+  gHFEvent->fNb2=-99999;
+  gHFEvent->fNb3=-99999;
+  gHFEvent->fNc2=-99999;
+  gHFEvent->fNc3=-99999;
+  gHFEvent->fNs2=-99999;
+  gHFEvent->fNs3=-99999;
 
   try {
     Handle<GenEventInfoProduct> evt_info;
     iEvent.getByType(evt_info);
     gHFEvent->fPtHat     = evt_info->qScale();
     gHFEvent->fProcessID = evt_info->signalProcessID();
+    gHFEvent->fEventWeight= evt_info->weight();
     if (fVerbose > 0) cout << "==>HFDumpGenerator> pthat      = " << gHFEvent->fPtHat << endl;
     if (fVerbose > 0) cout << "==>HFDumpGenerator> process ID = " << gHFEvent->fProcessID << endl;
 
@@ -100,12 +107,20 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   }
   catch (cms::Exception &ex) {
     if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: GenRunInfoProduct not found" << endl;
-  } 
+  } // geninfo
 
   // ======================= GENERATOR BLOCK =============================
   TGenCand  *pGen;
   // -- From PhysicsTools/HepMCCandAlgos/plugins/ParticleListDrawer.cc
   int iMo1(-1), iMo2(-1), iDa1(-1), iDa2(-1); 
+
+  // number of status2,3 b and c quarks
+  int Nb3=0; 
+  int Nc3=0;
+  int Ns3=0;
+  int Nb2=0; 
+  int Nc2=0;
+  int Ns2=0;
 
   std::vector<const GenParticle *> cands;
   cands.clear();
@@ -124,12 +139,36 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   if (fVerbose > 0) printf("==>HFDumpGenerator> nGenParticles = %i\n", genParticlesH->size());
 
   int i(-1); 
+  int ind(-1);
   for(GenParticleCollection::const_iterator p  = genParticlesH->begin(); p != genParticlesH->end();  p++) {
-    ++i; 
+    ++ind; 
+
+ if(p->status()==3){
+	if(abs(p->pdgId())==5) Nb3++; //count b
+	if(abs(p->pdgId())==4) Nc3++;  //count c
+	if(abs(p->pdgId())==3) Ns3++;  //count s
+      } else if(p->status()==2){
+	if(abs(p->pdgId())==5) Nb2++; //count b
+	if(abs(p->pdgId())==4) Nc2++;  //count c
+	if(abs(p->pdgId())==3) Ns2++;  //count s
+      }     
+
+    // select candidates to store, it will breake the sibling relations
+  int stat=p->status(); 
+  bool bstat=(stat>fGenCandStat);
+  bool bpt=(p->pt()> fGenCandPt);
+  bool bm= abs(p->pdgId())==13;
+  bool bp= abs(p->pdgId())<40&&stat==3;  //partons and bosons
+  bool bstat1= (stat==1);
+  // store muons, stat1  and partons always
+  if((bm||bstat1||bp)||(bpt||bstat)) {   
+  ++i; 
+
     pGen = gHFEvent->addGenCand();
     pGen->fID    = p->pdgId();
     pGen->fStatus = p->status();  
     pGen->fNumber = i; //p - particles->begin();
+    pGen->fIndex = ind; //p - particles->begin();
   
     double vx = p->vx(), vy = p->vy(), vz = p->vz();
     pGen->fP.SetXYZT(p->px(), 
@@ -153,6 +192,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     if (found != cands.end()) {
       iMo1 = found - cands.begin();
       pGen->fMom1 = iMo1;
+      pGen->fmID =cands[iMo1]->pdgId();
     } else {
       pGen->fMom1 = -1;
     }
@@ -177,12 +217,35 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
       pGen->fDau2 = iDa2;
     }
 
+    // if muon do a deep tracing
+    if(bm) {
+      //..... pGen->fMuonSource=
+    }
+
     if (fVerbose > 1) pGen->dump();
+
+		      } // select
+		      
+} // p  
+
+  gHFEvent->fNb2=Nb2;
+  gHFEvent->fNb3=Nb3;
+  gHFEvent->fNc2=Nc2;
+  gHFEvent->fNc3=Nc3;
+  gHFEvent->fNs2=Ns2;
+  gHFEvent->fNs3=Ns3;
+
+
+  if(fVerbose > 1) {
+    cout<<" HFDumpGenerator Nb2 "<<Nb2<<" Nb3 "<<Nb3<<" Nc2 "<<Nc2<<" Nc3 "<<Nc3<<" Ns2 "<<Ns2<<" Ns3 "<<Ns3<<endl;
+
   }
  
   genParticlesH.clear();
 
  
+
+
 }
 
 // ------------ method called once each job just before starting event loop  ------------

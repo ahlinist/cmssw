@@ -12,6 +12,10 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/CandMatchMap.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "SimDataFormats/Vertex/interface/SimVertex.h"
+#include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
+#include "SimDataFormats/Track/interface/SimTrack.h"
+#include "SimDataFormats/Track/interface/SimTrackContainer.h"
 
 #include "DataFormats/Common/interface/Ref.h"
 
@@ -20,6 +24,8 @@
 #include "HeavyFlavorAnalysis/InclB/rootio/TAnaCand.hh"
 #include "HeavyFlavorAnalysis/InclB/rootio/TGenCand.hh"
 #include "HeavyFlavorAnalysis/InclB/rootio/TAnaVertex.hh"
+
+
 
 // -- Yikes!
 extern TAna00Event *gHFEvent;
@@ -33,6 +39,7 @@ using namespace reco;
 HFDumpVertex::HFDumpVertex(const edm::ParameterSet& iConfig):  
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fVertexLabel(iConfig.getUntrackedParameter<string>("vertexLabel", string("offlinePrimaryVertices"))),
+  fSimVertexLabel(iConfig.getUntrackedParameter<string>("simvertexLabel", string("g4SimHits"))),
   fVertexTracksLabel(iConfig.getUntrackedParameter<string>("vertexTracksLabel", string("generalTracks")))
 {
   cout << "----------------------------------------------------------------------" << endl;
@@ -51,10 +58,13 @@ HFDumpVertex::~HFDumpVertex() {
 // ----------------------------------------------------------------------
 void HFDumpVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
+  if(fVerbose>0) cout<<" HFDumpVertex===> "<<endl;
   ///////////////////
   //tracks (jet constituents)
   Handle<reco::TrackCollection> candidates1Handle;
-  iEvent.getByLabel("generalTracks", candidates1Handle); 
+  iEvent.getByLabel(fVertexTracksLabel.c_str(), candidates1Handle); 
+  if(!candidates1Handle.isValid()) 
+{if(fVerbose>0) cout<<" ***no "<<fVertexTracksLabel<<endl; return; }
 
   std::vector<const Track *> trkcands;
   trkcands.clear();
@@ -67,6 +77,19 @@ void HFDumpVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     const Track *  p1 = &p2;
     trkcands.push_back( & * p1 );
   }
+
+
+// use simvertexes
+ bool simvFound =false;
+ const SimVertex* simv0 =0;
+Handle<SimVertexContainer> simVtxs;
+iEvent.getByLabel( fSimVertexLabel.c_str(), simVtxs);
+if( !simVtxs.isValid()) { if(fVerbose>0)cout<<"****** no "<<fSimVertexLabel<<endl;  }
+ else {
+simvFound = (simVtxs->size() != 0); 
+if(simvFound)  simv0=&(*simVtxs->begin());
+ } 
+ 
 
   /////////////////////////
 
@@ -84,13 +107,27 @@ void HFDumpVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     edm::Handle<reco::VertexCollection> recoPrimaryVertexCollection;
     iEvent.getByLabel(fVertexLabel.c_str(), recoPrimaryVertexCollection);
+    if(!recoPrimaryVertexCollection.isValid() ) if(fVerbose>0)cout<<"****** no "<<fVertexLabel<<endl; 
+
     //    const reco::VertexCollection vertices = *(recoPrimaryVertexCollection.product());
 
     int isFake(-1); 
     double cov[9]; 
     for (reco::VertexCollection::const_iterator iv = recoPrimaryVertexCollection->begin(); iv != recoPrimaryVertexCollection->end(); ++iv) {
       TAnaVertex *pVtx = gHFEvent->addPV();
-    
+      pVtx->fsimvmatch=-9999;
+      // match with simvertex if avaiable
+      double dmin=0.1;      
+if(simvFound) {
+      double dz = iv->z() - simv0->position().z(); 
+    if ( fabs(dz) < dmin ) {
+      pVtx->fsimvmatch=1;
+      } else  pVtx->fsimvmatch=0;
+
+	} // simvfound
+
+
+
       if (iv->isFake()) {
 	isFake = 1; 
       } else {

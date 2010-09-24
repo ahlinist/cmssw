@@ -1,3 +1,5 @@
+#ifndef  HFDumpTrackJetsH
+#define  HFDumpTrackJetsH
 
 // system include files
 #include <memory>
@@ -33,6 +35,7 @@ class HFDumpTrackJets : public edm::EDAnalyzer {
   int           fVerbose;
   int           fDoFlavorTagging;
   std::string   fJetsLabel;
+  std::string   fJetsTagLabel;
   std::string   fTracksLabel;
   std::string   fGenCandidatesLabel;
   edm::InputTag fsourceByRefer;
@@ -45,3 +48,5 @@ class HFDumpTrackJets : public edm::EDAnalyzer {
   
 
 };
+
+#endif

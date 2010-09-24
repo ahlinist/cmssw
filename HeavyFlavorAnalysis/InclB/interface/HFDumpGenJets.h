@@ -1,3 +1,6 @@
+#ifndef  HFDumpGenJetsH
+#define  HFDumpGenJetsH
+
 // system include files
 #include <memory>
 
@@ -41,3 +44,4 @@ class HFDumpGenJets : public edm::EDAnalyzer {
 
 };
 
+#endif

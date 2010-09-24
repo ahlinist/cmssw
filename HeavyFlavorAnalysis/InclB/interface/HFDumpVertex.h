@@ -1,3 +1,5 @@
+#ifndef  HFDumpVertexH
+#define  HFDumpVertexH
 // system include files
 #include <memory>
 
@@ -24,13 +26,16 @@ class HFDumpVertex : public edm::EDAnalyzer {
  private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void endJob();
 
 
   int           fVerbose;
   std::string   fVertexLabel;
   std::string   fVertexTracksLabel;
-
+  std::string   fSimVertexLabel;
+  
   int nevt;
 
 };
+
+#endif
