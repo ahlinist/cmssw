@@ -47,7 +47,7 @@
 # A short help of the parameters is shown with '-h'.
 #
 #
-#  $Id: ptuanalyse,v 1.8 2010/07/22 20:15:05 mkortela Exp $
+#  $Id: ptuanalyse,v 1.9 2010/07/25 18:43:09 mkortela Exp $
 #
 # Matti Kortelainen, Helsinki Institute of Physics
 # 15 April 2010
@@ -276,6 +276,7 @@ class Vtsa:
         self.jump_re = re.compile("(?P<jump>j\S+\s+)\S+")
 
         self.doFunctionReports = not opts.allonly
+        self.functionNumberLimit = opts.maxfunc
 
     def buildCmd(self, report):
         cmd = [self.command, self.expdir]
@@ -359,15 +360,18 @@ class Vtsa:
             # Body of "all" report    
             else:
                 if doFuncRep:
-                    # Transform the rva from hex -> dec
-                    rva = str(int(row[hdrmap["rva"]], 16))
-                    row[hdrmap["rva"]] = rva
+                    if self.functionNumberLimit < 0 or rownum-1 <= self.functionNumberLimit:
+                        # Transform the rva from hex -> dec
+                        rva = str(int(row[hdrmap["rva"]], 16))
+                        row[hdrmap["rva"]] = rva
 
-                    # Build the src+asm reports for a function, take first
-                    # line with any counter being > 0
-                    function = Function(row[hdrmap["function"]], row[hdrmap["module"]], row[hdrmap["source"]], rva)
-                    self.buildFunctionReport(function, rownum-1)
-                    row.append(function.getFirstLine())
+                        # Build the src+asm reports for a function, take first
+                        # line with any counter being > 0
+                        function = Function(row[hdrmap["function"]], row[hdrmap["module"]], row[hdrmap["source"]], rva)
+                        self.buildFunctionReport(function, rownum-1)
+                        row.append(function.getFirstLine())
+                    else:
+                        row.append("")
 
             output.write(self.formatRow(row)+"\n")
             rownum += 1
@@ -526,6 +530,8 @@ if __name__ == "__main__":
                       help='Name of "all" report; _all.csv is appended to the name (default: "basic_sampling"')
     parser.add_option("--all-only", dest="allonly", action="store_true", default=False,
                       help="Produce only the all report")
+    parser.add_option("--max-functions", dest="maxfunc", type="int", default=-1,
+                      help="Generate src/asm/bbl reports for functions only up to this row (in order to save time), -1 for all functions (default: -1)")
     parser.add_option("--threshold", "-t", dest="threshold", type="int", default=95,
                       help='Threshold for displayed hotspots (see the same option of vtsaview)  (default: 95)')
     parser.add_option("--filter", dest="filter", type="string", default="cmsRun",
