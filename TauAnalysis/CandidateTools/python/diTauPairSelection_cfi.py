@@ -28,6 +28,13 @@ selectedDiTauPairsAcoplanarity = cms.EDFilter("PATDiTauPairSelector",
     filter = cms.bool(False)
 )
 
+# require missing transverse momentum to point
+# in the direction of visible tau decay products
+selectedDiTauPairsPzetaDiff = cms.EDFilter("PATDiTauPairSelector",
+    cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.'),
+    filter = cms.bool(False)
+)
+
 # define additional collections of tau-jet + tau-jet candidates
 # with loose lead. track Pt, track isolation and ECAL isolation applied on second leg
 # (NOTE: to be used for the purpose of factorizing efficiencies
@@ -41,3 +48,5 @@ selectedDiTauPairsZeroChargeLoose2ndTau = selectedDiTauPairsZeroCharge.clone(
 )    
 
 selectedDiTauPairsAcoplanarityLoose2ndTau = copy.deepcopy(selectedDiTauPairsAcoplanarity)
+
+selectedDiTauPairsPzetaDiffLoose2ndTau = copy.deepcopy(selectedDiTauPairsPzetaDiff)
