@@ -71,7 +71,14 @@ public:
   void        CorrectGenJets(); 
   void        CalculateEtGenJets();
   void        CorrectTrackJets();
+  void        CorrectTrackJets(int track_index);  // originally in  minbias/treeAnalysis
+  void        ResetTrackJets();       // originally in  minbias/treeAnalysis
+  void        StoreOriginalPlabTrackJets();       // originally in  minbias/treeAnalysis
+  void        FillRECOFakeMuons(TAnaTrack* tr, double etmin_jet); // originally in  minbias/treeAnalysis
+  void        AnalyzeAODEventMB(TAnaCand* muon, double weight);
   int         IsGlobalMuonTrack(int track_index);
+  double      GetWeight (double pt, double eta); // originally in  minbias/treeAnalysis
+
 
   int         NumberOfGENMuons();
   int         NumberOfRECOMuons();
@@ -155,11 +162,14 @@ private:
   TString     fChainFileName; // the name of the chain file
   int         fNentries;      // number of events in chain
   int         fEvent;         // current event number
+  bool fMC;
 
   TAna00Event*fpEvt; 
 
   // -- Histogram pointers 
   TTree *fTree;
+
+  TF1 *fa;
 
   int fDebug;
  
@@ -175,6 +185,7 @@ private:
    
   // -- Variables 
   int fNgenmuons, fNrecomuons, fNrecotracks, fNrecotrackjets;
+  int fNCands;  // originally from minbias/treeAnalysis
   int fNL1muons, fNHLTL2muons, fNHLTL3muons;
   int ihighGENmuon0, ihighGENmuon1;
   int ihighRECOmuon0, ihighRECOmuon1; 
