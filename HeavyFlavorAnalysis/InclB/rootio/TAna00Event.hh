@@ -71,6 +71,12 @@ public:
   TAnaJet*            getGenJet(int n);
   virtual TAnaJet*    addGenJet();
 
+// -- PFJets
+  int                 nPFJets() {return fnPFJets;}
+  TAnaJet*            getPFJet(int n);
+  virtual TAnaJet*    addPFJet();
+
+
   // -- TrackJets
   int                 nTrackJets() {return fnTrackJets;}
   TAnaJet*            getTrackJet(int n);
@@ -91,6 +97,8 @@ public:
 
   int               fL1w1, fL1w2, fL1w3, fL1w4;
   int               fHLTw1, fHLTw2, fHLTw3, fHLTw4, fHLTw5, fHLTw6, fHLTw7;
+  
+  int               fNb2,fNb3,fNc2,fNc3,fNs2,fNs3;
 
 
   double            fLumi; 
@@ -109,8 +117,10 @@ public:
   int               fnPrimaryVertices;
   TAnaVertex        fPrimaryVertex2;
 
-  TVector3          fGenMET, fMET0, fMET1;  // only x and y component are relevant. z could contain type information. 
+  double          fGenMET, fMET0, fMET1;  // only x and y component are relevant. z could contain type information. 
+  double          fGensumET, fsumET0, fsumET1;  // 0 is calo, 1 is PF
 
+  double           fBeamwx, fBeamwy, fBeamex, fBeamey;  // transverse beamspot size and uncertainty
 private:
 
   int               fnGenCands;
@@ -130,6 +140,9 @@ private:
 
   int               fnGenJets;
   TClonesArray      *fGenJets;
+
+  int               fnPFJets;
+  TClonesArray      *fPFJets;
 
   int               fnTrackJets;
   TClonesArray      *fTrackJets;
