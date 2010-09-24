@@ -86,8 +86,8 @@ void BinGridHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Eve
 //    for that region in bin-grid
   std::map<unsigned, vHistManager>::iterator histManagerList = histManagers_.find(iRegion);
   if ( histManagerList == histManagers_.end() ) {
-    edm::LogError ("BinGridHistManager::fillHistogramsImp") << " No histogram Managers defined for region = " << iRegion 
-							    << " --> skipping !!";
+    edm::LogError ("BinGridHistManager::fillHistogramsImp") 
+      << " No histogram Managers defined for region = " << iRegion << " --> skipping !!";
     return;
   }
 
