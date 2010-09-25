@@ -192,6 +192,8 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t escPhot[40];
       Float_t etaPhot[40];
       Float_t phiPhot[40];
+      Float_t timePhot[40];
+      Float_t e4SwissCrossPhot[40];
 
       // Reconstructed photon conversions
       Int_t nconvPhot;
@@ -265,6 +267,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t FisherPhot[40];
       Float_t alphaPhot[40];
       Float_t sEtaEtaPhot[40];
+      Float_t sEtaPhiPhot[40];
       Float_t sPhiPhiPhot[40];
       Float_t E1Phot[40];
       Float_t E9Phot[40];

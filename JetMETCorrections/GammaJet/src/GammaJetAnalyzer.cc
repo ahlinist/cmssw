@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.35 2010/06/17 16:54:53 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.36 2010/07/13 23:53:26 pandolf Exp $
 //
 //
 
@@ -107,6 +107,8 @@
 #include "DataFormats/PatCandidates/interface/Photon.h"
 
 #include "TLorentzVector.h"
+#include "TRegexp.h"
+#include "TString.h"
 
 #include <set>
 #include <algorithm>
@@ -358,16 +360,16 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    const HBHERecHitMetaCollection mhbhe(*hbhe);
  
    // get ECAL reco hits
-   Handle<EBRecHitCollection> ecalhits;
-   const EBRecHitCollection* rhits=0;
-   iEvent.getByLabel(recoProducer_, recoCollection_, ecalhits);
-   const EcalRecHitMetaCollection mecalhits(*ecalhits);    
-   rhits = ecalhits.product(); // get a ptr to the product
+   Handle<EBRecHitCollection> ecalhitseb;
+   const EBRecHitCollection* rhitseb=0;
+   iEvent.getByLabel(recoProducer_, recoCollection_, ecalhitseb);
+   //const EcalRecHitMetaCollection mecalhits(*ecalhits);    
+   rhitseb = ecalhitseb.product(); // get a ptr to the product
 
    Handle<EERecHitCollection> ecalhitsee;
    const EERecHitCollection* rhitsee=0;
    iEvent.getByLabel(recoProducer_, "EcalRecHitsEE", ecalhitsee);
-   rhitsee = ecalhits.product(); // get a ptr to the product
+   rhitsee = ecalhitsee.product(); // get a ptr to the product
 
    // get geometry
    edm::ESHandle<CaloGeometry> geoHandle;
@@ -424,16 +426,23 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    	for (int i = 0 ; i != hltCount; ++i) {
 
-	  tempnames += HLTNames.triggerName(i) + ":";
-	  //aHLTResults[i] = hltTriggerResultHandle->accept(i);
-	  //cout << i <<"....." << HLTNames.triggerName(i).c_str() << ".... : " << hltTriggerResultHandle->accept(i) << endl;
-
 	  map<string, int>::const_iterator it 
 	    = hltTriggers.find(HLTNames.triggerName(i));
-	  if (it != hltTriggers.end()) {
+
+        TString hltName(HLTNames.triggerName(i));
+        TRegexp reg("Photon");
+
+//	  if (it != hltTriggers.end()) {
+	  if ( hltName.Contains(reg) ) {
+
+	    tempnames += HLTNames.triggerName(i) + ":";
+	    //aHLTResults[i] = hltTriggerResultHandle->accept(i);
+	    //cout << i <<"....." << HLTNames.triggerName(i).c_str() << ".... : " << hltTriggerResultHandle->accept(i) << endl;
+
 	    int itrig = it->second;
 	    aHLTResults[itrig] = hltTriggerResultHandle->accept(i);
 	    hltPass |= aHLTResults[itrig];
+
 	  }
    	} // for i
 
@@ -1214,6 +1223,27 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      eseedPhot[nPhot] = it->superCluster()->seed()->energy();	 
      etaPhot[nPhot] = it->eta();	 
      phiPhot[nPhot] = it->phi();	      
+
+     
+     const Ptr<CaloCluster> theSeed = it->superCluster()->seed(); 
+
+     const EBRecHitCollection* rechits = ( fabs(it->eta())<1.479 ) ? rhitseb : rhitsee;
+
+     // photon ID (spike ID) related info:
+     // timing:
+     std::pair<DetId, float> maxRH = EcalClusterTools::getMaximum( *theSeed, &(*rechits) );
+     DetId seedCrystalId = maxRH.first;
+     EcalRecHitCollection::const_iterator seedRH = rechits->find(seedCrystalId);
+     timePhot[nPhot] = (float)seedRH->time();
+     // swiss cross:
+     e4SwissCrossPhot[nPhot] = (fabs(it->eta())>=1.479) ? 0. :
+                          ( EcalClusterTools::eLeft( *theSeed, &(*rechits), topology ) +
+                            EcalClusterTools::eRight( *theSeed, &(*rechits), topology ) +
+                            EcalClusterTools::eTop( *theSeed, &(*rechits), topology ) +
+                            EcalClusterTools::eBottom( *theSeed, &(*rechits), topology ) );
+
+
+
      
      double ptphoton = it->pt(); 
      if (ptphoton>maxptphoton1) {
@@ -1371,7 +1401,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      // calculate ECAL isolation 
 
      // ecal isolation with SC seed rechits removal
-     SuperClusterHitsEcalIsolation scBasedIsolation(rhits,rhitsee);
+     SuperClusterHitsEcalIsolation scBasedIsolation(rhitseb,rhitsee);
      scBasedIsolation.setExtRadius(0.1);
      scBasedIsolation.excludeHalo(false);
      ecaliso01Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*SCseed));
@@ -1389,15 +1419,16 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      // cluster shape variables
      
      if (TMath::Abs(SCseed->eta())<1.47){
-       //reco::ClusterShape tempShape=algo.Calculate(*SCseed, rhits, &(*geometry_p), &(*topology_p),4.7);
-       Cluster2ndMoments moments = EcalClusterTools::cluster2ndMoments(*SCseed, *rhits);
-       std::vector<float> etaphimoments = EcalClusterTools::localCovariances(*SCseed, &(*rhits), &(*topology));
+       //reco::ClusterShape tempShape=algo.Calculate(*SCseed, rhitseb, &(*geometry_p), &(*topology_p),4.7);
+       Cluster2ndMoments moments = EcalClusterTools::cluster2ndMoments(*SCseed, *rhitseb);
+       std::vector<float> etaphimoments = EcalClusterTools::localCovariances(*SCseed, &(*rhitseb), &(*topology));
        sMajMajPhot[nPhot]=moments.sMaj;
        sMinMinPhot[nPhot]=moments.sMin;
        //FisherPhot[nPhot]=tempShape.fisher();
        alphaPhot[nPhot]=moments.alpha;
        sEtaEtaPhot[nPhot]=etaphimoments[0];
-       sPhiPhiPhot[nPhot]=etaphimoments[1];
+       sEtaPhiPhot[nPhot]=etaphimoments[1];
+       sPhiPhiPhot[nPhot]=etaphimoments[2];
        //E1Phot[nPhot]=tempShape.eMax();
        //E9Phot[nPhot]=tempShape.e3x3();
        //E25Phot[nPhot]=tempShape.e5x5();
@@ -1407,6 +1438,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        FisherPhot[nPhot]=-100.;
        alphaPhot[nPhot]=-100.;
        sEtaEtaPhot[nPhot] = it->sigmaEtaEta();//-100.;
+       sEtaPhiPhot[nPhot]=-100.;
        sPhiPhiPhot[nPhot]=-100.;
        E1Phot[nPhot] = SCseed->energy();//-100.;
        E9Phot[nPhot] = it->e3x3();//-100.;
@@ -1435,6 +1467,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      ++nPhot;
     
    }
+
+
+
 
    // loop on converted photons
    for (reco::ConversionCollection::const_iterator iCPho =
@@ -1492,6 +1527,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    // Loop over reco Jets
 
+
    /*
    // Could replace multiple explicit lines with a loop in the future
    for (int i = 0; i != nAlgo; ++i) {
@@ -1518,6 +1554,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        } // it
    } // i
    */
+
 
 
    for (CaloJetCollection::const_iterator it = jetsite->begin(); 
@@ -1738,46 +1775,46 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        int ijet = it - pfjetsakt5->begin();
        if (ijet < 2 && nPF < nMaxPF) {
 
-	 int pdgId = (*jt)->translateTypeToPdgId(id);
-	 // "antiparticlate" the dummy neutral HF particles
-	 // to tell them apart from h and gamma elsewhere
-	 if (id==PFCandidate::h_HF || id==PFCandidate::egamma_HF) pdgId *= -1;
-	 pdgIdPF[nPF] = pdgId;
-	 ptPF[nPF] = (*jt)->pt();
-	 ePF[nPF] = (*jt)->energy();
-	 etaPF[nPF] = (*jt)->eta();
-	 phiPF[nPF] = (*jt)->phi();
+       int pdgId = (*jt)->translateTypeToPdgId(id);
+       // "antiparticlate" the dummy neutral HF particles
+       // to tell them apart from h and gamma elsewhere
+       if (id==PFCandidate::h_HF || id==PFCandidate::egamma_HF) pdgId *= -1;
+       pdgIdPF[nPF] = pdgId;
+       ptPF[nPF] = (*jt)->pt();
+       ePF[nPF] = (*jt)->energy();
+       etaPF[nPF] = (*jt)->eta();
+       phiPF[nPF] = (*jt)->phi();
 
-	 ++nPF;
+       ++nPF;
        }
 
        if (id==PFCandidate::h) { // charged hadrons
          nChargedHadrons += 1;
-	 p4ChargedHadrons += p4;
+       p4ChargedHadrons += p4;
        }
        if (id==PFCandidate::e) { // electrons
          nElectrons += 1;
-	 p4Electrons += p4;
+       p4Electrons += p4;
        }
        if (id==PFCandidate::mu) { // muons
          nMuons += 1;
-	 p4Muons += p4;
+       p4Muons += p4;
        }
        if (id==PFCandidate::gamma) { // photons
          nPhotons += 1;
-	 p4Photons += p4;
+       p4Photons += p4;
        }
        if (id==PFCandidate::h0) { // neutral hadrons
          nNeutralHadrons += 1;
-	 p4NeutralHadrons += p4;
+       p4NeutralHadrons += p4;
        }
        if (id==PFCandidate::h_HF) { // HF hadrons
          nHFHadrons += 1;
-	 p4HFHadrons += p4;
+       p4HFHadrons += p4;
        }
        if (id==PFCandidate::egamma_HF) { // HF EM clusters
          nHFEM += 1;
-	 p4HFEM += p4;
+       p4HFEM += p4;
        }
 
      } //for PFCandidates
@@ -1789,16 +1826,16 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      eChargedHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
      ptChargedHadrons_pfakt5[nJet_pfakt5] = p->Pt() / it->pt();
      phiChargedHadrons_pfakt5[nJet_pfakt5] = (p->Pt() ?
-					   delta_phi(p->Phi(), it->phi()) : 0);
+      				   delta_phi(p->Phi(), it->phi()) : 0);
      etaChargedHadrons_pfakt5[nJet_pfakt5] = (p->Pt() ?
-					      p->Eta() - it->eta() : 0);
+      				      p->Eta() - it->eta() : 0);
   
      nElectrons_pfakt5[nJet_pfakt5] =  nElectrons;
      p = &p4Electrons;
      eElectrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
      ptElectrons_pfakt5[nJet_pfakt5] = p->Pt() / it->pt();
      phiElectrons_pfakt5[nJet_pfakt5] = (p->Pt() ?
-					 delta_phi(p->Phi(), it->phi()) : 0);
+      				 delta_phi(p->Phi(), it->phi()) : 0);
      etaElectrons_pfakt5[nJet_pfakt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
   
      nMuons_pfakt5[nJet_pfakt5] =  nMuons;
@@ -1806,7 +1843,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      eMuons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
      ptMuons_pfakt5[nJet_pfakt5] = p->Pt() / it->pt();
      phiMuons_pfakt5[nJet_pfakt5] = (p->Pt() ?
-				     delta_phi(p->Phi(), it->phi()) : 0);
+      			     delta_phi(p->Phi(), it->phi()) : 0);
      etaMuons_pfakt5[nJet_pfakt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
 
      nPhotons_pfakt5[nJet_pfakt5] =  nPhotons;
@@ -1814,7 +1851,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      ePhotons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
      ptPhotons_pfakt5[nJet_pfakt5] = p->Pt() / it->pt();
      phiPhotons_pfakt5[nJet_pfakt5] = (p->Pt() ?
-				       delta_phi(p->Phi(), it->phi()) : 0);
+      			       delta_phi(p->Phi(), it->phi()) : 0);
      etaPhotons_pfakt5[nJet_pfakt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
 
      nNeutralHadrons_pfakt5[nJet_pfakt5] =  nNeutralHadrons;
@@ -1822,16 +1859,16 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      eNeutralHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
      ptNeutralHadrons_pfakt5[nJet_pfakt5] = p->Pt() / it->pt();
      phiNeutralHadrons_pfakt5[nJet_pfakt5] = (p->Pt() ?
-					   delta_phi(p->Phi(), it->phi()) : 0);
+      				   delta_phi(p->Phi(), it->phi()) : 0);
      etaNeutralHadrons_pfakt5[nJet_pfakt5] = (p->Pt() ?
-					      p->Eta() - it->eta() : 0);
+      				      p->Eta() - it->eta() : 0);
   
      nHFHadrons_pfakt5[nJet_pfakt5] =  nHFHadrons;
      p = &p4HFHadrons;
      eHFHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
      ptHFHadrons_pfakt5[nJet_pfakt5] = p->Pt() / it->pt();
      phiHFHadrons_pfakt5[nJet_pfakt5] = (p->Pt() ?
-					 delta_phi(p->Phi(), it->phi()) : 0);
+      				 delta_phi(p->Phi(), it->phi()) : 0);
      etaHFHadrons_pfakt5[nJet_pfakt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
 
      nHFEM_pfakt5[nJet_pfakt5] =  nHFEM;
@@ -1839,7 +1876,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      eHFEM_pfakt5[nJet_pfakt5] = p->E() / it->energy();
      ptHFEM_pfakt5[nJet_pfakt5] = p->Pt() / it->pt();
      phiHFEM_pfakt5[nJet_pfakt5] = (p->Pt() ?
-				    delta_phi(p->Phi(), it->phi()) : 0);
+      			    delta_phi(p->Phi(), it->phi()) : 0);
      etaHFEM_pfakt5[nJet_pfakt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
 
      ++nJet_pfakt5;
@@ -2102,6 +2139,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    } //if is MC
    
+
    //event++;  
    m_tree->Fill();
 
@@ -2169,6 +2207,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("eseedPhot  ",&eseedPhot  ,"eseedPhot[nPhot]/F");
   m_tree->Branch("etaPhot",&etaPhot,"etaPhot[nPhot]/F");
   m_tree->Branch("phiPhot",&phiPhot,"phiPhot[nPhot]/F");
+  m_tree->Branch("timePhot",&timePhot,"timePhot[nPhot]/F");
+  m_tree->Branch("e4SwissCrossPhot",&e4SwissCrossPhot,"e4SwissCrossPhot[nPhot]/F");
 
   m_tree->Branch("nconvPhot",&nconvPhot,"nconvPhot/I");
   m_tree->Branch("chi2convPhot",&chi2convPhot,"chi2convPhot[nconvPhot]/F");
@@ -2243,6 +2283,7 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("sMinMinPhot",&sMinMinPhot,"sMinMin2Phot[nPhot]/F");
   m_tree->Branch("alphaPhot",&alphaPhot,"alphaPhot[nPhot]/F");
   m_tree->Branch("sEtaEtaPhot",&sEtaEtaPhot,"sEtaEtaPhot[nPhot]/F");
+  m_tree->Branch("sEtaPhiPhot",&sEtaPhiPhot,"sEtaPhiPhot[nPhot]/F");
   m_tree->Branch("sPhiPhiPhot",&sPhiPhiPhot,"sPhiPhiPhot[nPhot]/F");
   m_tree->Branch("E1Phot",&E1Phot,"E1Phot[nPhot]/F");
   m_tree->Branch("E9Phot",&E9Phot,"E9Phot[nPhot]/F");
@@ -2649,15 +2690,21 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("vndof",&vndof,"vndof/F");
 
   // Set trigger bits of interest
-  nHLT = 8;
+  nHLT = 13;
   hltTriggers["HLT_Photon10_L1R"] = 0;
   hltTriggers["HLT_Photon10_LooseEcalIso_TrackIso_L1R"] = 1;
   hltTriggers["HLT_Photon15_L1R"] = 2;
-  hltTriggers["HLT_Photon20_LooseEcalIso_TrackIso_L1R"] = 3;
-  hltTriggers["HLT_Photon25_L1R"] = 4;
-  hltTriggers["HLT_Photon25_LooseEcalIso_TrackIso_L1R"] = 5;
-  hltTriggers["HLT_Photon30_L1R_1E31"] = 6;
-  hltTriggers["HLT_Photon70_L1R"] = 7;
+  hltTriggers["HLT_Photon20_L1R"] = 3;
+  hltTriggers["HLT_Photon20_LooseEcalIso_TrackIso_L1R"] = 4;
+  hltTriggers["HLT_Photon25_L1R"] = 5;
+  hltTriggers["HLT_Photon25_LooseEcalIso_TrackIso_L1R"] = 6;
+  hltTriggers["HLT_Photon30_L1R_1E31"] = 7;
+  hltTriggers["HLT_Photon70_L1R"] = 8;
+
+  hltTriggers["HLT_Photon10_Cleaned_L1R"] = 9;
+  hltTriggers["HLT_Photon15_Cleaned_L1R"] = 10;
+  hltTriggers["HLT_Photon20_Cleaned_L1R"] = 11;
+  hltTriggers["HLT_Photon30_Cleaned_L1R"] = 12;
 
   m_tree->Branch("hltPass",&hltPass,"hltPass/O");
   //m_tree->Branch("hltCount",&hltCount,"hltCount/I");
