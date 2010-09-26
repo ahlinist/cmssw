@@ -93,7 +93,7 @@ patElectronSelConfiguratorForElecTau = objSelConfigurator(
       selectedPatElectronsForElecTauPt15,
       selectedPatElectronsForElecTauTrkIso,
       selectedPatElectronsForElecTauEcalIso,
-	  selectedPatElectronsForElecTauConversionVeto,
+      selectedPatElectronsForElecTauConversionVeto,
       selectedPatElectronsForElecTauTrkIP ],
     src = "cleanPatElectrons",
     pyModuleName = __name__,
@@ -109,7 +109,7 @@ patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
       selectedPatElectronsForElecTauPt15,
       selectedPatElectronsForElecTauTrkIsoLooseIsolation,
       selectedPatElectronsForElecTauEcalIsoLooseIsolation,
-	  selectedPatElectronsForElecTauConversionVetoLooseIsolation,
+      selectedPatElectronsForElecTauConversionVetoLooseIsolation,
       selectedPatElectronsForElecTauTrkIPlooseIsolation ],
     src = "cleanPatElectrons",
     pyModuleName = __name__,
@@ -180,12 +180,20 @@ selectPatElectronsForElecMuLooseIsolation = patElectronSelConfiguratorForElecMuL
 
 selectedPatMuonsGlobal.cut = cms.string('isGlobalMuon()')
 selectedPatMuonsEta21.cut = cms.string('abs(eta) < 2.1')
-selectedPatMuonsPt15.cut = cms.string('pt > 15.')
+selectedPatMuonsPt10.cut = cms.string('pt > 10.')
+selectedPatMuonsVbTfId.beamSpotSource = cms.InputTag("offlineBeamSpot")
 selectedPatMuonsTrkIso.vetos = vetos = cms.vstring("0.01")
-selectedPatMuonsTrkIso.dRisoCone = cms.double(0.6)
-selectedPatMuonsTrkIso.sumPtMax = cms.double(1.)
-selectedPatMuonsTrkIso.sumPtMethod = cms.string("absolute")
-selectedPatMuonsEcalIso.cut = cms.string('userIsolation("pat::EcalIso") < 1.')
+selectedPatMuonsTrkIso.dRisoCone = cms.double(0.4)
+selectedPatMuonsTrkIso.sumPtMax = cms.double(0.10)
+selectedPatMuonsTrkIso.sumPtMethod = cms.string("relative")
+selectedPatMuonsEcalIso.vetos = vetos = cms.vstring("0.01")
+selectedPatMuonsEcalIso.dRisoCone = cms.double(0.4)
+selectedPatMuonsEcalIso.sumPtMax = cms.double(0.10)
+selectedPatMuonsEcalIso.sumPtMethod = cms.string("relative")
+selectedPatMuonsCombIso.vetos = vetos = cms.vstring("0.01")
+selectedPatMuonsCombIso.dRisoCone = cms.double(0.4)
+selectedPatMuonsCombIso.sumPtMax = cms.double(0.10)
+selectedPatMuonsCombIso.sumPtMethod = cms.string("relative")
 selectedPatMuonsPionVeto.CaloCompCoefficient = cms.double(0.8)
 selectedPatMuonsPionVeto.SegmCompCoefficient = cms.double(1.2)
 selectedPatMuonsPionVeto.AntiPionCut = cms.double(1.0)
@@ -196,9 +204,11 @@ selectedPatMuonsTrkIP.IpMax = cms.double(0.05)
 patMuonSelConfigurator = objSelConfigurator(
     [ selectedPatMuonsGlobal,
       selectedPatMuonsEta21,
-      selectedPatMuonsPt15,
+      selectedPatMuonsPt10,
+      selectedPatMuonsVbTfId,
       selectedPatMuonsTrkIso,
       selectedPatMuonsEcalIso,
+      selectedPatMuonsCombIso,
       selectedPatMuonsPionVeto,
       selectedPatMuonsTrk,
       selectedPatMuonsTrkIP ],
@@ -209,11 +219,12 @@ patMuonSelConfigurator = objSelConfigurator(
 
 selectPatMuons = patMuonSelConfigurator.configure(pyNameSpace = locals())
 
-selectedPatMuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
-selectedPatMuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
-selectedPatMuonsTrkIsoLooseIsolation.sumPtMax = cms.double(8.)
-selectedPatMuonsTrkIsoLooseIsolation.sumPtMethod = cms.string("absolute")
-selectedPatMuonsEcalIsoLooseIsolation.cut = cms.string('userIsolation("pat::EcalIso") < 8.')
+selectedPatMuonsTrkIsoLooseIsolation.sumPtMax = cms.double(0.25)
+selectedPatMuonsTrkIsoLooseIsolation.sumPtMethod = cms.string("relative")
+selectedPatMuonsEcalIsoLooseIsolation.sumPtMax = cms.double(0.25)
+selectedPatMuonsEcalIsoLooseIsolation.sumPtMethod = cms.string("relative")
+selectedPatMuonsCombIsoLooseIsolation.sumPtMax = cms.double(0.25)
+selectedPatMuonsCombIsoLooseIsolation.sumPtMethod = cms.string("relative")
 selectedPatMuonsPionVetoLooseIsolation.CaloCompCoefficient = selectedPatMuonsPionVeto.CaloCompCoefficient
 selectedPatMuonsPionVetoLooseIsolation.SegmCompCoefficient = selectedPatMuonsPionVeto.SegmCompCoefficient
 selectedPatMuonsPionVetoLooseIsolation.AntiPionCut = selectedPatMuonsPionVeto.AntiPionCut
@@ -224,9 +235,11 @@ selectedPatMuonsTrkIPlooseIsolation.IpMax = selectedPatMuonsTrkIP.IpMax
 patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
     [ selectedPatMuonsGlobal,
       selectedPatMuonsEta21,
-      selectedPatMuonsPt15,
+      selectedPatMuonsPt10,
+      selectedPatMuonsVbTfId,
       selectedPatMuonsTrkIsoLooseIsolation,
       selectedPatMuonsEcalIsoLooseIsolation,
+      selectedPatMuonsCombIsoLooseIsolation,
       selectedPatMuonsPionVetoLooseIsolation,
       selectedPatMuonsTrkLooseIsolation,
       selectedPatMuonsTrkIPlooseIsolation ],
@@ -326,7 +339,7 @@ selectedPatTausForMuTauEta21.cut = selectedPatTausEta21.cut
 selectedPatTausForMuTauPt20.cut = selectedPatTausPt20.cut
 selectedPatTausForMuTauLeadTrk.cut = selectedPatTausLeadTrk.cut
 selectedPatTausForMuTauLeadTrkPt.cut = selectedPatTausLeadTrkPt.cut
-selectedPatTausForMuTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
+selectedPatTausForMuTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > 0.5')
 selectedPatTausForMuTauTrkIso.cut = selectedPatTausTrkIso.cut
 selectedPatTausForMuTauEcalIso.cut = selectedPatTausEcalIso.cut
 selectedPatTausForMuTauProng.cut = selectedPatTausProng.cut
@@ -418,8 +431,8 @@ selectedPatTausForDiTau2ndTrkIsoLoose.cut = cms.string('userIsolation("PfCharged
 selectedPatTausForDiTau2ndEcalIsoLoose.cut = cms.string('userIsolation("PfGammaIso") < 8.')
 selectedPatTausForDiTau2ndProngLoose.cut = cms.string('signalPFChargedHadrCands.size() > -1')
 selectedPatTausForDiTau2ndChargeLoose.cut = cms.string('abs(charge) > -1.')
-selectedPatTausForDiTau2ndMuonVetoLoose.cut = selectedPatTausMuonVeto.cut
-selectedPatTausForDiTau2ndElectronVetoLoose.cut = selectedPatTausElectronVeto.cut
+selectedPatTausForDiTau2ndMuonVetoLoose.cut = selectedPatTausForDiTau2ndMuonVeto.cut
+selectedPatTausForDiTau2ndElectronVetoLoose.cut = selectedPatTausForDiTau2ndElectronVeto.cut
 
 patTauSelConfiguratorForDiTau2ndLoose = objSelConfigurator(
     [ selectedPatTausForDiTau2ndLeadTrkPtLoose,
