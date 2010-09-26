@@ -12,10 +12,10 @@ SAMPLES_TO_ANALYZE = [
     'Ztautau', 
     'Zmumu',
     'InclusivePPmuX', 
-    'PPmuXptGt20', 
-    'PPmuXptGt20Mu15_v2', 
+    'PPmuXptGt20Mu10', 
+    'PPmuXptGt20Mu15', 
     'WplusJets',
-    'TTplusJets',
+    'TTplusJets'
 ] 
 
 # List of samples to include in the final level plots.  May include selections
