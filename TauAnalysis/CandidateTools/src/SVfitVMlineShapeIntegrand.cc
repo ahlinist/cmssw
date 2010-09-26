@@ -10,8 +10,9 @@
 
 using namespace SVfit_namespace;
 
-SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand(bool useCollApproxFormulas)
+SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand(bool useCollApproxFormulas, double minMass2)
   : useCollApproxFormulas_(useCollApproxFormulas),
+    minMass2_(minMass2),
     vmType_(kVMtypeUndefined),
     vmPol_(kVMpolUndefined),
     mode_(kVMmodeUndefined)
@@ -23,6 +24,7 @@ SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand(bool useCollApproxFormulas)
 SVfitVMlineShapeIntegrand::SVfitVMlineShapeIntegrand(const SVfitVMlineShapeIntegrand& bluePrint)
 {
   useCollApproxFormulas_ = bluePrint.useCollApproxFormulas_;
+  minMass2_ = bluePrint.minMass2_;
   this->SetVMtype(bluePrint.vmType_);
   this->SetVMpol(bluePrint.vmPol_);
   this->SetMode(bluePrint.mode_);
@@ -36,6 +38,7 @@ SVfitVMlineShapeIntegrand::~SVfitVMlineShapeIntegrand()
 SVfitVMlineShapeIntegrand& SVfitVMlineShapeIntegrand::operator=(const SVfitVMlineShapeIntegrand& bluePrint)
 {
   useCollApproxFormulas_ = bluePrint.useCollApproxFormulas_;
+  minMass2_ = bluePrint.minMass2_;
   this->SetVMtype(bluePrint.vmType_);
   this->SetVMpol(bluePrint.vmPol_);
   this->SetMode(bluePrint.mode_);
@@ -109,7 +112,10 @@ double SVfitVMlineShapeIntegrand::Gammav(double mSquare) const
 double SVfitVMlineShapeIntegrand::fv(double mSquare) const
 {
   if ( vmType_ == kVMrho ) {
-    return TMath::Power(1. - 4.*chargedPionMass2/mSquare, 1.5); // [1], formula (2.24)
+    if ( (1. - 4.*chargedPionMass2/mSquare) > 0. )
+      return TMath::Power(1. - 4.*chargedPionMass2/mSquare, 1.5); // [1], formula (2.24)
+    else
+      return 0.;
   } else if ( vmType_ == kVMa1 ) {
     if ( mSquare < (rhoMesonMass2 + chargedPionMass2) ) {
       double tmp = mSquare - 9*chargedPionMass2;
@@ -132,36 +138,37 @@ double SVfitVMlineShapeIntegrand::Fv(double mSquare) const
 
 double SVfitVMlineShapeIntegrand::HL(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega) const
 {
-  //std::cout << "<SVfitVMlineShapeIntegrand::HL>:" << std::endl;
   return (a2/((1. - a2)*(1. + 2*a2)))*(cosOmega2/a2 + sinOmega2 
 	+ tauLeptonPol_*cosTheta_*(cosOmega2/a2 + (sin2Omega/a)*tanTheta_ - sinOmega2));                // [1], formula (2.16)
 }
 
 double SVfitVMlineShapeIntegrand::HT(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega) const
 {
-  //std::cout << "<SVfitVMlineShapeIntegrand::HT>:" << std::endl;
   return (a2/((1. - a2)*(1. + 2*a2)))*(sinOmega2/a2 + 1. + cosOmega2 
 	+ tauLeptonPol_*cosTheta_*(sinOmega2/a2 - (sin2Omega/a)*tanTheta_ - 1. - cosOmega2));           // [1], formula (2.17)
 }
 
 double SVfitVMlineShapeIntegrand::decayL(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega) const
 { 
-  //std::cout << "<SVfitVMlineShapeIntegrand::decayL>:" << std::endl;
   return (0.5*a2/(1. + 2*a2))*(sinOmega2 + cosOmega2/a2 
 	+ tauLeptonPol_*cosTheta_*((sin2Omega/a)*tanTheta_ + cosOmega2/a2 - sinOmega2))*sinTheta_;      // [2], formula (32)
 }
 
 double SVfitVMlineShapeIntegrand::decayT(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega) const
 {
-  //std::cout << "<SVfitVMlineShapeIntegrand::decayT>:" << std::endl;
   return (0.5*a2/(1. + 2*a2))*(1. + cosOmega2 + sinOmega2/a2
 	+ tauLeptonPol_*cosTheta_*(sinOmega2/a2 - (sin2Omega/a)*tanTheta_ - cosOmega2 - 1.))*sinTheta_; // [2], formula (33)
 }
 
 double SVfitVMlineShapeIntegrand::DoEval(double mSquare) const
 {
-  //std::cout << "<SVfitVMlineShapeIntegrand::DoEval>:" << std::endl;
+  //std::cout << "<SVfitVMlineShapeIntegrand::DoEval>:" << std::endl;  
   //std::cout << " mSquare = " << mSquare << std::endl;
+  //std::cout << " vmType = " << vmType_ << std::endl;
+
+//--- check that mass^2 passed as function argument is valid
+  const double epsilon = 1.e-4;
+  if ( !(mSquare > (minMass2_ + epsilon)) ) return 0.;
 
   double integrand = 0.;
   if ( mode_ == kVMlineShape ) {
@@ -176,11 +183,21 @@ double SVfitVMlineShapeIntegrand::DoEval(double mSquare) const
     double sin2Omega = TMath::Sin(2*omega);
 
     if ( vmPol_ == kVMlongitudinalPol ) {
-      if ( useCollApproxFormulas_ ) integrand = Fv(mSquare)*HL(a, a2, cosOmega2, sinOmega2, sin2Omega);
-      else integrand = Fv(mSquare)*decayL(a, a2, cosOmega2, sinOmega2, sin2Omega);
+      if ( useCollApproxFormulas_ ) {
+	//std::cout << " HL = " << HL(a, a2, cosOmega2, sinOmega2, sin2Omega) << std::endl;
+	integrand = Fv(mSquare)*HL(a, a2, cosOmega2, sinOmega2, sin2Omega);
+      } else {
+	//std::cout << " decayL = " << decayL(a, a2, cosOmega2, sinOmega2, sin2Omega) << std::endl;
+	integrand = Fv(mSquare)*decayL(a, a2, cosOmega2, sinOmega2, sin2Omega);
+      }
     } else if ( vmPol_ == kVMtransversePol ) {
-      if ( useCollApproxFormulas_ ) integrand = Fv(mSquare)*HT(a, a2, cosOmega2, sinOmega2, sin2Omega);
-      else integrand = Fv(mSquare)*decayT(a, a2, cosOmega2, sinOmega2, sin2Omega);
+      if ( useCollApproxFormulas_ ) {
+	//std::cout << " HT = " << HT(a, a2, cosOmega2, sinOmega2, sin2Omega) << std::endl;
+	integrand = Fv(mSquare)*HT(a, a2, cosOmega2, sinOmega2, sin2Omega);
+      } else {
+	//std::cout << " decayT = " << decayT(a, a2, cosOmega2, sinOmega2, sin2Omega) << std::endl;
+	integrand = Fv(mSquare)*decayT(a, a2, cosOmega2, sinOmega2, sin2Omega);
+      }
     } else {
       edm::LogError ("SVfitVMlineShapeIntegrand::DoEval")
 	<< " Invalid vector meson polarization = " << vmPol_ << " !!";

@@ -6,6 +6,8 @@
 
 using namespace SVfit_namespace;
 
+#include <limits>
+
 SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VMtype vmType, 
 						   SVfitVMlineShapeIntegrand::VMpol vmPol, bool useCollApproxFormulas)
 {
@@ -14,7 +16,22 @@ SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VM
   //std::cout << " vmPol = " << vmPol << std::endl;
   //std::cout << " useCollApproxFormulas = " << useCollApproxFormulas << std::endl;
 
-  integrand_ = new SVfitVMlineShapeIntegrand(useCollApproxFormulas);
+//--- compute lower limit for normalization integral
+//   = invariant mass of n-pion system
+//   
+//    CV: difference in mass between charged and neutral pions is ignored
+//
+  unsigned numPions = 0;
+  if      ( vmType == SVfitVMlineShapeIntegrand::kVMrho ) numPions = 2;
+  else if ( vmType == SVfitVMlineShapeIntegrand::kVMa1  ) numPions = 3;
+  else {
+    edm::LogError ("SVfitVMlineShapeIntegrand::update")
+      << " Invalid vecor meson type = " << vmType << " !!";
+  }
+  minMass2_ = square(numPions*chargedPionMass);
+  //std::cout << " minMass2 = " << minMass2_ << std::endl;
+
+  integrand_ = new SVfitVMlineShapeIntegrand(useCollApproxFormulas, minMass2_);
   integrand_->SetVMtype(vmType);
   integrand_->SetVMpol(vmPol);
   integrand_->SetMode(SVfitVMlineShapeIntegrand::kVMnorm);
@@ -24,20 +41,7 @@ SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VM
   integrator_ = new ROOT::Math::Integrator(*integrand_);
   integrator_->SetFunction(*integrand_);
 
-//--- compute lower limit for normalization integral
-//   = invariant mass of n-pion system
-//   
-//    CV: difference in mass between charged and neutral pions is ignored
-//
-  double numPions = 0.;
-  if      ( vmType == SVfitVMlineShapeIntegrand::kVMrho ) numPions = 2;
-  else if ( vmType == SVfitVMlineShapeIntegrand::kVMa1  ) numPions = 3;
-  else {
-    edm::LogError ("SVfitVMlineShapeIntegrand::update")
-      << " Invalid vecor meson type = " << vmType << " !!";
-  }
-  minMass2_ = square(numPions*chargedPionMass);
-  //std::cout << " minMass2 = " << minMass2_ << std::endl;
+//--- compute vector meson line-shape normalization factor
   norm_ = integrator_->Integral(minMass2_, tauLeptonMass2); 
   //std::cout << " norm = " << norm_ << std::endl;
 
