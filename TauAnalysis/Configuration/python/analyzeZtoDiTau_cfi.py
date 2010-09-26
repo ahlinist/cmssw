@@ -350,23 +350,9 @@ diTauEventDump = cms.PSet(
     tauSource = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoCumulative'),
     diTauCandidateSource = cms.InputTag('selectedDiTauPairsPzetaDiffCumulative'),
     svFitAlgorithms = cms.VPSet(
-        ##cms.PSet(
-        ##    name = cms.string("psKine")
-        ##),
-        ##cms.PSet(
-        ##    name = cms.string("psKine_MEt")
-        ##),
         cms.PSet(
             name = cms.string("psKine_MEt_ptBalance")
         ),
-        ##cms.PSet(
-        ##    name = cms.string("polKine"),
-        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
-        ##),
-        ##cms.PSet(
-        ##    name = cms.string("polKine_MEt"),
-        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
-        ##),
         cms.PSet(
             name = cms.string("polKine_MEt_ptBalance"),
             polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")

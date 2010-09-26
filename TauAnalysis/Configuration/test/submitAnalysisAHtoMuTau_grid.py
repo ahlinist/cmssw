@@ -8,7 +8,6 @@ OUTPUT_FILE_PATH = "/user/f/friis/AHtoMuTau_grid/"
 JOB_ID = "Run7"
 PLOT_FILES_PREFIX = 'plots'
 
-#SAMPLE_LIST_OVERRIDE = [sample for sample in samples.SAMPLES_TO_ANALYZE if sample in ['data_Mu_140160_999999_Prompt_v2'] ]
 SAMPLE_LIST_OVERRIDE = []
 
 ENABLE_SYSTEMATICS = False
