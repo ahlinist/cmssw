@@ -8,7 +8,7 @@ import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.Configuration.analyzeZtoDiTau_factorized_cfi import *
 from TauAnalysis.Configuration.analyzeZtoDiTau_cff import *
-from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelections
+from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelections, replaceAnalyzerModules
 
 #--------------------------------------------------------------------------------
 # define Z --> tau-jet + tau-jet analysis module
@@ -18,7 +18,7 @@ from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelec
 analyzeZtoDiTauEvents_factorizedTight2ndTau = analyzeZtoDiTauEvents.clone(
     name = cms.string('zDiTauAnalyzer_factorizedTight2ndTau'),
     analysisSequence = diTauAnalysisSequence_factorizedTight2ndTau
-)    
+)
 analyzeZtoDiTauEvents_factorizedTight2ndTau.eventDumps[0] = diTauEventDump_factorizedTight2ndTau
 
 #--------------------------------------------------------------------------------
@@ -32,6 +32,32 @@ analyzeZtoDiTauEvents_factorizedTight2ndTau.eventDumps[0] = diTauEventDump_facto
 #          before analyzeZtoDiTauEvents_factorizedLoose2ndTau !!
 #
 #--------------------------------------------------------------------------------
+
+diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau = diTauCandidateSVfitHistManagerForDiTau.clone(
+    SVfitAlgorithms = cms.VPSet(
+        cms.PSet(
+            name = cms.string("psKine")
+        ),
+        cms.PSet(
+            name = cms.string("psKine_MEt")
+        ),
+        cms.PSet(
+            name = cms.string("psKine_MEt_ptBalance")
+        ),        
+        cms.PSet(
+            name = cms.string("polKine")
+        ),
+        cms.PSet(
+            name = cms.string("polKine_MEt")
+        ),
+        cms.PSet(
+            name = cms.string("polKine_MEt_ptBalance")
+        ##),
+        ##cms.PSet(
+        ##    name = cms.string("polKine_MEt_ptBalance_Zprod")
+        )
+    )
+)    
 
 analyzeZtoDiTauEvents_factorizedLoose2ndTau = analyzeZtoDiTauEvents.clone(
     name = cms.string('zDiTauAnalyzer_factorizedLoose2ndTau')
@@ -51,6 +77,8 @@ replaceEventSelections(analyzeZtoDiTauEvents_factorizedLoose2ndTau,
       [ evtSelDiTauCandidateForDiTauAcoplanarity, evtSelDiTauCandidateForDiTauAcoplanarityLoose2ndTau ],
       [ evtSelDiTauCandidateForDiTauPzetaDiff, evtSelDiTauCandidateForDiTauPzetaDiffLoose2ndTau ] ]
       #[ evtSelCentralJetVeto, evtSelCentralJetVetoLoose2ndTau] ]
-)                       
+)
 analyzeZtoDiTauEvents_factorizedLoose2ndTau.analysisSequence = diTauAnalysisSequence_factorizedLoose2ndTau
-
+replaceAnalyzerModules(analyzeZtoDiTauEvents_factorizedLoose2ndTau,
+    [ [ diTauCandidateSVfitHistManagerForDiTau, diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau ], ]
+)                       
