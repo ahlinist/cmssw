@@ -18,9 +18,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: SVfitVMlineShapeIntegrand.h,v 1.3 2010/09/08 16:38:04 veelken Exp $
+ * $Id: SVfitVMlineShapeIntegrand.h,v 1.4 2010/09/09 14:08:49 veelken Exp $
  *
  */
 
@@ -34,7 +34,7 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
   enum VMmode { kVMmodeUndefined, kVMlineShape, kVMnorm };
   enum VMpol  { kVMpolUndefined, kVMlongitudinalPol, kVMtransversePol };
 
-  SVfitVMlineShapeIntegrand(bool);
+  SVfitVMlineShapeIntegrand(bool, double);
   SVfitVMlineShapeIntegrand(const SVfitVMlineShapeIntegrand&);
   virtual ~SVfitVMlineShapeIntegrand();
 
@@ -63,6 +63,8 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
   double decayT(double, double, double, double, double) const;
 
   bool useCollApproxFormulas_;
+
+  double minMass2_;     // minimum value for mass^2 for which integrand is to be computed
 
   VMtype vmType_;
   VMpol  vmPol_;
