@@ -160,35 +160,119 @@ drawJobConfigurator_AHtoMuTau.add(
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelTauPt,
+    beforeCut = evtSelMuonVbTfId,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonTypeTracker',
+            title = "Muon type 'Tracker' (after Tau P_{T} Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_muonTypeTracker_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonTypeTracker',
+            title = "Muon global Track #Chi^{2} (after Tau P_{T} Cut)",
+            xAxis = 'Chi2',
+            name = "cutFlowControlPlots_muonGlobalTrackChi2_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonGlobalTrackIPxyBeamSpot',
+            title = "Muon global Track IP_{xy} wrt. BeamSpot (after Tau P_{T} Cut)",
+            xAxis = 'IPxy',
+            name = "cutFlowControlPlots_muonGlobalTrackIPxyBeamSpot_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonNumTrackerHits',
+            title = "Muon num. Tracker Hits (after Tau P_{T} Cut)",
+            xAxis = 'N',
+            name = "cutFlowControlPlots_muonNumTrackerHits_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonNumPixelHits',
+            title = "Muon num. Pixel Hits (after Tau P_{T} Cut)",
+            xAxis = 'N',
+            name = "cutFlowControlPlots_muonNumPixelHits_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonNumberOfChambers',
+            title = "Muon num. Chambers with Hits (after Tau P_{T} Cut)",
+            xAxis = 'N',
+            name = "cutFlowControlPlots_muonNumChamberHits_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonNumberOfSegments',
+            title = "Muon num. Segments (after Tau P_{T} Cut)",
+            xAxis = 'N',
+            name = "cutFlowControlPlots_muonNumSegments_afterTauPt"
+        )
+    ]
+)
+
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelMuonVbTfId,
     beforeCut = evtSelMuonTrkIso,
-    plot = drawJobConfigEntry(
-        meName = 'MuonQuantities/MuonTrkIsoPt',
-        title = "Muon Track iso. (after Tau P_{T} Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_muonTrkIso_afterTauPt"
-    )
+    plots = [
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFChargedHadronIsoPt',
+            title = "Muon Track iso. (after Muon VBTF id. Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_muonAbsTrkIso_afterMuonVbTfId"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFChargedHadronIsoPtRel',
+            title = "Muon Track rel. iso. (after Muon VBTF id. Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_muonRelTrkIso_afterMuonVbTfId"
+        )
+    ]
 )
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelMuonTrkIso,
     beforeCut = evtSelMuonEcalIso,
-    plot = drawJobConfigEntry(
-        meName = 'MuonQuantities/MuonEcalIsoPt',
-        title = "Muon ECAL iso. (after Muon Track iso. Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_muonEcalIso_afterMuonTrkIso"
-    )
+    plots = [
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFGammaIsoPt',
+            title = "Muon ECAL iso. (after Muon Track iso. Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_muonAbsEcalIso_afterMuonTrkIso"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFGammaIsoPtRel',
+            title = "Muon ECAL rel. iso. (after Muon Track iso. Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_muonRelEcalIso_afterMuonTrkIso"
+        )
+    ]
 )
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelMuonEcalIso,
+    beforeCut = evtSelMuonCombIso,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonParticleFlowIsoPt',
+            title = "Muon Combined iso. (after Muon Track iso. Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_muonAbsCombIso_afterMuonEcalIso"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonParticleFlowIsoPtRel',
+            title = "Muon Combined rel. iso. (after Muon Track iso. Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_muonRelCombIso_afterMuonEcalIso"
+        )
+    ]
+)
+
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelMuonCombIso,
     beforeCut = evtSelMuonAntiPion,
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/Muon#PAR#Compatibility',
         PAR = [ 'Calo', 'Segment' ],
-        title = "Muon #PAR# compatibility (after Muon ECAL iso. Cut)",
+        title = "Muon #PAR# compatibility (after Muon Combined iso. Cut)",
         xAxis = 'prob',
-        name = "cutFlowControlPlots_muonComp_afterMuonEcalIso"
+        name = "cutFlowControlPlots_muonComp_afterMuonCombIso"
     )
 )
 
@@ -463,8 +547,8 @@ drawJobConfigurator_AHtoMuTau_wBtag.add(
 # define distributions to be plotted for events passing all event selection criteria
 #--------------------------------------------------------------------------------
 
-finalSamplePlots = \
-  [ drawJobConfigEntry(
+finalSamplePlots = [
+    drawJobConfigEntry(
         meName = 'MuonQuantities/Muon#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
         title = "Muon (final Event sample)",
@@ -582,7 +666,7 @@ finalSamplePlots = \
     ),
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/CDFmethodMass',
-        title = "M(Muon + Tau), CDF method (final Event sample)",
+        title = "M(Muon + Tau + MET), CDF method (final Event sample)",
         xAxis = 'Mass',
         name = "finalSamplePlots_mCDFmethod"
     ),
@@ -597,6 +681,12 @@ finalSamplePlots = \
         title = "M(Muon + Tau), SV method (final Event sample)",
         xAxis = 'Mass',
         name = "finalSamplePlots_mSVmethod"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/Ht12MET',
+        title = "#Sigma H_{T}(Muon + Tau + MET) (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_ht"
     ),
     drawJobConfigEntry(
         meName = 'JetQuantities/Jet#PAR#',

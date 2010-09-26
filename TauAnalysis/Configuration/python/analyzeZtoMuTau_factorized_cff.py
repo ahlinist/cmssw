@@ -40,6 +40,7 @@ analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventD
 replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation, 
     [ [ evtSelMuonTrkIso, evtSelMuonTrkIsoLooseIsolation ],
       [ evtSelMuonEcalIso, evtSelMuonEcalIsoLooseIsolation ],
+      [ evtSelMuonCombIso, evtSelMuonCombIsoLooseIsolation ],
       [ evtSelMuonAntiPion, evtSelMuonAntiPionLooseIsolation ],
       [ evtSelMuonTrkIP, evtSelMuonTrkIPlooseIsolation ],
       [ evtSelDiTauCandidateForMuTauAntiOverlapVeto, evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation ],
