@@ -30,6 +30,8 @@ xAxis_dEta.xAxisTitle = cms.string('#Delta #eta')
 xAxis_dR = copy.deepcopy(xAxis)
 xAxis_dR.xAxisTitle = cms.string('#Delta R')
 
+xAxis_Chi2 = copy.deepcopy(xAxis)
+xAxis_Chi2.xAxisTitle = cms.string('#Chi^{2}')
 xAxis_prob = copy.deepcopy(xAxis)
 xAxis_prob.xAxisTitle = cms.string('P')
 
