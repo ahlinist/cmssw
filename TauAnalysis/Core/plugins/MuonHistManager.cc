@@ -10,6 +10,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 #include "TauAnalysis/Core/interface/eventAuxFunctions.h"
@@ -51,20 +52,24 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
 
   vertexSrc_ = ( cfg.exists("vertexSource") ) ? cfg.getParameter<edm::InputTag>("vertexSource") : edm::InputTag();
   if ( vertexSrc_.label() == "" ) {
-    edm::LogWarning("MuonHistManager") << " Configuration parameter 'vertexSource' not specified" 
-				       << " --> Impact Parameter histograms will NOT be plotted !!";
+    edm::LogWarning("MuonHistManager") 
+      << " Configuration parameter 'vertexSource' not specified" 
+      << " --> Impact Parameter histograms will NOT be plotted !!";
   }
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
+  beamSpotSrc_ = ( cfg.exists("beamSpotSource") ) ? cfg.getParameter<edm::InputTag>("beamSpotSource") : edm::InputTag();
+  //std::cout << " beamSpotSrc = " << beamSpotSrc_ << std::endl;
 
   jetSrc_ = cfg.getParameter<edm::InputTag>("jetSource");
   //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
-  if ( genParticleSrc_.label() == "" ) {
-    edm::LogWarning("MuonHistManager") 
-      << " Configuration parameter 'genParticleSource' not specified" 
-      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
-  }
+  //if ( genParticleSrc_.label() == "" ) {
+  //  edm::LogWarning("MuonHistManager") 
+  //    << " Configuration parameter 'genParticleSource' not specified" 
+  //    << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+  //}
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   requireGenMuonMatch_ = cfg.getParameter<bool>("requireGenMuonMatch");
@@ -125,6 +130,11 @@ void MuonHistManager::bookHistogramsImp()
   hMuonPtVsAbsEta_ = book2D("MuonPtVsAbsEta", "MuonPtVsAbsEta", 7, muonAbsEtaBinning2d, 6, muonPtBinning2d);
   hMuonCharge_ = book1D("MuonCharge", "Muon Charge", 3, -1.5, +1.5);
   
+  hMuonTypeGlobal_ = book1D("MuonTypeGlobal", "MuonTypeGlobal", 2, -0.5, +1.5);
+  hMuonTypeTracker_ = book1D("MuonTypeTracker", "MuonTypeTracker", 2, -0.5, +1.5);
+  hMuonTypeStandAlone_ = book1D("MuonTypeStandAlone", "MuonTypeStandAlone", 2, -0.5, +1.5);
+  hMuonTypeCalo_ = book1D("MuonTypeCalo", "MuonTypeCalo", 2, -0.5, +1.5);
+
   bookWeightHistograms(*dqmStore_, "MuonWeight", "Muon Weight", 
 		       hMuonWeightPosLog_, hMuonWeightNegLog_, hMuonWeightZero_, 
 		       hMuonWeightLinear_);
@@ -135,35 +145,51 @@ void MuonHistManager::bookHistogramsImp()
   
   hMuonMatchingGenParticlePdgId_ = book1D("MuonMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
 
+  hMuonNumTrackerHits_ = book1D("MuonNumTrackerHits", "MuonNumTrackerHits", 25, -0.5, 24.5);
+  hMuonNumPixelHits_ = book1D("MuonNumPixelHits", "MuonNumPixelHits", 5, -0.5, 4.5);
+  hMuonNumStripHits_ = book1D("MuonNumStripHits", "MuonNumStripHits", 20, -0.5, 19.5);
+
   hMuonTrackIPxy_ = book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.100, 0.100);
-  hMuonTrackIPz_ = book1D("MuonTrackIPz", "MuonTrackIPz", 100, -1.0, 1.0);
-  
+  hMuonTrackIPz_ = book1D("MuonTrackIPz", "MuonTrackIPz", 100, -1.0, 1.0);  
+
+  hMuonTrackIPxyBeamSpot_ = book1D("MuonTrackIPxyBeamSpot", "MuonTrackIPxyBeamSpot", 100, -0.100, 0.100);
+  hMuonGlobalTrackIPxyBeamSpot_ = book1D("MuonGlobalTrackIPxyBeamSpot", "MuonGlobalTrackIPxyBeamSpot", 100, -0.100, 0.100);
+
+  hMuonGlobalTrackChi2red_ = book1D("MuonGlobalTrackChi2red", "MuonGlobalTrackChi2red", 100, -0.01, 25.);
+
+  hMuonTime_ = book1D("MuonTime", "MuonTime", 200, -100., +100.);
+
   hMuonEcalDeposits_ = book1D("MuonEcalDeposits", "MuonEcalDeposits", 100, 0., 10.);
   hMuonHcalDeposits_ = book1D("MuonHcalDeposits", "MuonHcalDeposits", 100, 0., 10.);
   hMuonCaloDeposits_ = book1D("MuonCaloDeposits", "MuonCaloDeposits", 100, 0., 10.);
   hMuonCaloCompatibility_ = book1D("MuonCaloCompatibility", "MuonCaloCompatibility", 102, -0.01, 1.01);
   
   hMuonNumberOfChambers_ = book1D("MuonNumberOfChambers", "MuonNumberOfChambers", 25, -0.5, 24.5);
+  hMuonNumberOfSegments_ = book1D("MuonNumberOfSegments", "MuonNumberOfSegments", 10, -0.5, 9.5);
   hMuonSegmentCompatibility_ = book1D("MuonSegmentCompatibility", "MuonSegmentCompatibility", 102, -0.01, 1.01);
   
-  hMuonTrkIsoPt_ = book1D("MuonTrkIsoPt", "MuonTrkIsoPt", 100, 0., 10.);    
+  hMuonTrkIsoPt_ = book1D("MuonTrkIsoPt", "MuonTrkIsoPt", 101, -0.05, 10.05); 
   hMuonTrkIsoPtVsMuonPt_ = book2D("MuonTrkIsoPtVsMuonPt", "MuonTrkIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonEcalIsoPt_ = book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 100, 0., 10.);
+  hMuonTrkIsoPtRel_ = book1D("MuonTrkIsoPtRel", "MuonTrkIsoPtRel", 101, -0.005, 1.005);  
+  hMuonEcalIsoPt_ = book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 101, -0.05, 10.05); 
   hMuonEcalIsoPtVsMuonPt_ = book2D("MuonEcalIsoPtVsMuonPt", "MuonEcalIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonHcalIsoPt_ = book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 10.);
-  hMuonIsoSumPt_ = book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 10.);
+  hMuonEcalIsoPtRel_ = book1D("MuonEcalIsoPtRel", "MuonEcalIsoPtRel", 101, -0.005, 1.005); 
+  hMuonHcalIsoPt_ = book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 101, -0.05, 10.05); 
+  hMuonHcalIsoPtRel_ = book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 101, -0.005, 1.005); 
+  hMuonIsoSumPt_ = book1D("MuonIsoSumPt", "MuonIsoSumPt", 101, -0.05, 10.05); 
   hMuonIsoSumPtVsMuonPt_ = book2D("MuonIsoSumPtVsMuonPt", "MuonIsoSumPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonTrkIsoPtRel_ = book1D("MuonTrkIsoPtRel", "MuonTrkIsoPtRel", 100, 0., 1.);    
-  hMuonEcalIsoPtRel_ = book1D("MuonEcalIsoPtRel", "MuonEcalIsoPtRel", 100, 0., 1.);
-  hMuonHcalIsoPtRel_ = book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 100, 0., 1.);
-  hMuonIsoSumPtRel_ = book1D("MuonIsoSumPtRel", "MuonIsoSumPtRel", 100, 0., 1.);
+  hMuonIsoSumPtRel_ = book1D("MuonIsoSumPtRel", "MuonIsoSumPtRel", 101, -0.005, 1.005); 
 
   hMuonDeltaRnearestJet_ = book1D("MuonDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
 
-  hMuonParticleFlowIsoPt_ = book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 100, 0., 10.);    
-  hMuonPFChargedHadronIsoPt_ = book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 100, 0., 10.);   
-  hMuonPFNeutralHadronIsoPt_ = book1D("MuonPFNeutralHadronIsoPt", "MuonPFNeutralHadronIsoPt", 100, 0., 10.);   
-  hMuonPFGammaIsoPt_ = book1D("MuonPFGammaIsoPt", "MuonPFGammaIsoPt", 100, 0., 10.);  
+  hMuonParticleFlowIsoPt_ = book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 101, -0.05, 10.05);    
+  hMuonParticleFlowIsoPtRel_ = book1D("MuonParticleFlowIsoPtRel", "MuonParticleFlowIsoPtRel", 101, -0.005, 1.005); 
+  hMuonPFChargedHadronIsoPt_ = book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 101, -0.05, 10.05); 
+  hMuonPFChargedHadronIsoPtRel_ = book1D("MuonPFChargedHadronIsoPtRel", "MuonPFChargedHadronIsoPtRel", 101, -0.005, 1.005); 
+  hMuonPFNeutralHadronIsoPt_ = book1D("MuonPFNeutralHadronIsoPt", "MuonPFNeutralHadronIsoPt", 101, -0.05, 10.05); 
+  hMuonPFNeutralHadronIsoPtRel_ = book1D("MuonPFNeutralHadronIsoPtRel", "MuonPFNeutralHadronIsoPtRel", 101, -0.005, 1.005); 
+  hMuonPFGammaIsoPt_ = book1D("MuonPFGammaIsoPt", "MuonPFGammaIsoPt", 101, -0.05, 10.05); 
+  hMuonPFGammaIsoPtRel_ = book1D("MuonPFGammaIsoPtRel", "MuonPFGammaIsoPtRel", 101, -0.005, 1.005); 
   
 //--- book "control" histograms to check agreement between muon isolation variables
 //    computed by PAT-level IsoDeposits based on particle flow 
@@ -190,7 +216,7 @@ void MuonHistManager::bookHistogramsImp()
   
   if ( makeIsoPtConeSizeDepHistograms_ ) bookMuonIsoConeSizeDepHistograms();
 }
-
+     
 double MuonHistManager::getMuonWeight(const pat::Muon& patMuon)
 {
   return 1.;
@@ -239,6 +265,11 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
     hMuonPtVsAbsEta_->Fill(TMath::Abs(patMuon->eta()), patMuon->pt(), weight); 
     hMuonCharge_->Fill(patMuon->charge(), weight);
 
+    hMuonTypeGlobal_->Fill(patMuon->isGlobalMuon(), weight);
+    hMuonTypeTracker_->Fill(patMuon->isTrackerMuon(), weight);
+    hMuonTypeStandAlone_->Fill(patMuon->isStandAloneMuon(), weight);
+    hMuonTypeCalo_->Fill(patMuon->isCaloMuon(), weight);
+
     fillWeightHistograms(hMuonWeightPosLog_, hMuonWeightNegLog_, hMuonWeightZero_, 
 			 hMuonWeightLinear_, muonWeight);
 
@@ -251,7 +282,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
       hMuonPhiCompToGen_->Fill(patMuon->phi() - patMuon->genLepton()->phi(), weight);
     }
 
-    if(genParticles.isValid()) {
+    if ( genParticles.isValid() ) {
        int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patMuon->p4(), *genParticles, &skipPdgIdsGenParticleMatch_);
        if ( matchingGenParticlePdgId == -1 ) {
           hMuonMatchingGenParticlePdgId_->Fill(-1, weight);
@@ -260,6 +291,13 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
        } else {
           hMuonMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
        }
+    }
+
+    if ( isValidRef(patMuon->track()) ) {
+      const reco::HitPattern& hitPattern = patMuon->innerTrack()->hitPattern();
+      hMuonNumTrackerHits_->Fill(hitPattern.numberOfValidTrackerHits(), weight);
+      hMuonNumPixelHits_->Fill(hitPattern.numberOfValidPixelHits(), weight);
+      hMuonNumStripHits_->Fill(hitPattern.numberOfValidStripHits(), weight);
     }
 
     if ( vertexSrc_.label() != "" && isValidRef(patMuon->track()) ) {
@@ -272,6 +310,18 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
       }
     }
 
+    if ( beamSpotSrc_.label() != "" ) {
+      edm::Handle<reco::BeamSpot> beamSpot;
+      evt.getByLabel(beamSpotSrc_, beamSpot);
+      if ( isValidRef(patMuon->track()) ) hMuonTrackIPxyBeamSpot_->Fill(patMuon->track()->dxy(beamSpot->position()), weight);
+      if ( isValidRef(patMuon->globalTrack()) ) 
+	hMuonGlobalTrackIPxyBeamSpot_->Fill(patMuon->globalTrack()->dxy(beamSpot->position()), weight);
+    }
+    
+    if ( isValidRef(patMuon->globalTrack()) ) hMuonGlobalTrackChi2red_->Fill(patMuon->globalTrack()->normalizedChi2(), weight);
+     
+    if ( patMuon->isTimeValid() ) hMuonTime_->Fill(patMuon->time().timeAtIpInOut, weight);
+
     if ( patMuon->isEnergyValid() ) {
       hMuonEcalDeposits_->Fill(patMuon->calEnergy().em, weight);
       hMuonHcalDeposits_->Fill(patMuon->calEnergy().had + patMuon->calEnergy().ho, weight);
@@ -280,6 +330,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
     if ( patMuon->isCaloCompatibilityValid() ) hMuonCaloCompatibility_->Fill(patMuon->caloCompatibility(), weight);
       
     hMuonNumberOfChambers_->Fill(patMuon->numberOfChambers(), weight);
+    hMuonNumberOfSegments_->Fill(patMuon->numberOfMatches(), weight); // number of segments in muon stations matched to inner track
     double segmentCompatibility = muon::segmentCompatibility(*patMuon);
     hMuonSegmentCompatibility_->Fill(segmentCompatibility, weight);
 
@@ -369,20 +420,20 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, double wei
   double muonTrackIso = patMuon.userIsolation(pat::TrackIso);
   double muonEcalIso = patMuon.userIsolation(pat::EcalIso);
   double muonHcalIso = patMuon.userIsolation(pat::HcalIso);
+  //double muonIsoSum = muonTrackIso + muonEcalIso + muonHcalIso;
+  double muonIsoSum = muonTrackIso + muonEcalIso;
 
   hMuonTrkIsoPt_->Fill(muonTrackIso, weight);
   hMuonTrkIsoPtVsMuonPt_->Fill(patMuon.pt(), muonTrackIso, weight);
+  hMuonTrkIsoPtRel_->Fill(muonTrackIso/patMuon.pt(), weight);
   hMuonEcalIsoPt_->Fill(muonEcalIso, weight);
   hMuonEcalIsoPtVsMuonPt_->Fill(patMuon.pt(), muonEcalIso, weight);
-  hMuonHcalIsoPt_->Fill(muonHcalIso, weight);
-  //hMuonIsoSumPt_->Fill(muonTrackIso + muonEcalIso + muonHcalIso, weight);
-  hMuonIsoSumPt_->Fill(muonTrackIso + muonEcalIso, weight);
-  hMuonIsoSumPtVsMuonPt_->Fill(patMuon.pt(), muonTrackIso + muonEcalIso, weight);
-  hMuonTrkIsoPtRel_->Fill(muonTrackIso/patMuon.pt(), weight);
   hMuonEcalIsoPtRel_->Fill(muonEcalIso/patMuon.pt(), weight);
+  hMuonHcalIsoPt_->Fill(muonHcalIso, weight);
   hMuonHcalIsoPtRel_->Fill(muonHcalIso/patMuon.pt(), weight);
-  //hMuonIsoSumPtRel_->Fill((muonTrackIso + muonEcalIso + muonHcalIso)/patMuon.pt(), weight);
-  hMuonIsoSumPtRel_->Fill((muonTrackIso + muonEcalIso)/patMuon.pt(), weight);
+  hMuonIsoSumPt_->Fill(muonIsoSum, weight);
+  hMuonIsoSumPtVsMuonPt_->Fill(patMuon.pt(), muonIsoSum, weight);
+  hMuonIsoSumPtRel_->Fill(muonIsoSum/patMuon.pt(), weight);
 
   //std::cout << " particleIso = " << patMuon.particleIso() << std::endl;
   //std::cout << " chargedHadronIso = " << patMuon.chargedHadronIso() << std::endl;
@@ -390,9 +441,13 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, double wei
   //std::cout << " photonIso = " << patMuon.photonIso() << std::endl;
   
   hMuonParticleFlowIsoPt_->Fill(patMuon.particleIso(), weight);
+  hMuonParticleFlowIsoPt_->Fill(patMuon.particleIso()/patMuon.pt(), weight);
   hMuonPFChargedHadronIsoPt_->Fill(patMuon.chargedHadronIso(), weight);
+  hMuonPFChargedHadronIsoPt_->Fill(patMuon.chargedHadronIso()/patMuon.pt(), weight);
   hMuonPFNeutralHadronIsoPt_->Fill(patMuon.neutralHadronIso(), weight);
+  hMuonPFNeutralHadronIsoPt_->Fill(patMuon.neutralHadronIso()/patMuon.pt(), weight);
   hMuonPFGammaIsoPt_->Fill(patMuon.photonIso(), weight);
+  hMuonPFGammaIsoPt_->Fill(patMuon.photonIso()/patMuon.pt(), weight);
   
   if ( makeIsoPtCtrlHistograms_ ) {
     hMuonPFChargedHadronIsoPtCtrl_->Fill(muonTrackIso, patMuon.chargedHadronIso(), weight);

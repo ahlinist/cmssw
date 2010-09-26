@@ -38,6 +38,7 @@ class MuonHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag muonSrc_;
   edm::InputTag vertexSrc_;
+  edm::InputTag beamSpotSrc_;
   edm::InputTag jetSrc_;
   edm::InputTag genParticleSrc_;
 
@@ -64,6 +65,11 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonPhi_;
   MonitorElement* hMuonCharge_;
 
+  MonitorElement* hMuonTypeGlobal_;
+  MonitorElement* hMuonTypeTracker_;
+  MonitorElement* hMuonTypeStandAlone_;
+  MonitorElement* hMuonTypeCalo_;
+
   MonitorElement* hMuonWeightPosLog_;
   MonitorElement* hMuonWeightNegLog_;
   MonitorElement* hMuonWeightZero_;
@@ -75,8 +81,19 @@ class MuonHistManager : public HistManagerBase
 
   MonitorElement* hMuonMatchingGenParticlePdgId_;
 
+  MonitorElement* hMuonNumTrackerHits_;
+  MonitorElement* hMuonNumPixelHits_;
+  MonitorElement* hMuonNumStripHits_;
+
   MonitorElement* hMuonTrackIPxy_;
   MonitorElement* hMuonTrackIPz_;
+
+  MonitorElement* hMuonTrackIPxyBeamSpot_;
+  MonitorElement* hMuonGlobalTrackIPxyBeamSpot_;
+
+  MonitorElement* hMuonGlobalTrackChi2red_; // (normalized) chi^2 of global muon track fit per degree of freedom
+
+  MonitorElement* hMuonTime_;
 
   MonitorElement* hMuonEcalDeposits_;
   MonitorElement* hMuonHcalDeposits_;
@@ -84,19 +101,20 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonCaloCompatibility_;
 
   MonitorElement* hMuonNumberOfChambers_;
+  MonitorElement* hMuonNumberOfSegments_;
   MonitorElement* hMuonSegmentCompatibility_;
 
 //--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hMuonTrkIsoPt_;
   MonitorElement* hMuonTrkIsoPtVsMuonPt_;
+  MonitorElement* hMuonTrkIsoPtRel_;
   MonitorElement* hMuonEcalIsoPt_;
   MonitorElement* hMuonEcalIsoPtVsMuonPt_;
+  MonitorElement* hMuonEcalIsoPtRel_;
   MonitorElement* hMuonHcalIsoPt_;
+  MonitorElement* hMuonHcalIsoPtRel_;
   MonitorElement* hMuonIsoSumPt_;
   MonitorElement* hMuonIsoSumPtVsMuonPt_;
-  MonitorElement* hMuonTrkIsoPtRel_;
-  MonitorElement* hMuonEcalIsoPtRel_;
-  MonitorElement* hMuonHcalIsoPtRel_;
   MonitorElement* hMuonIsoSumPtRel_;
 
   MonitorElement* hMuonDeltaRnearestJet_;
@@ -122,10 +140,14 @@ class MuonHistManager : public HistManagerBase
   reco::isodeposit::AbsVetos muonHcalIsoParam_;
 
 //--- IsoDeposits reconstructed from Partcile Flow
-  MonitorElement* hMuonParticleFlowIsoPt_;
+  MonitorElement* hMuonParticleFlowIsoPt_;  
+  MonitorElement* hMuonParticleFlowIsoPtRel_;  
   MonitorElement* hMuonPFChargedHadronIsoPt_;
+  MonitorElement* hMuonPFChargedHadronIsoPtRel_;
   MonitorElement* hMuonPFNeutralHadronIsoPt_;
+  MonitorElement* hMuonPFNeutralHadronIsoPtRel_;
   MonitorElement* hMuonPFGammaIsoPt_;
+  MonitorElement* hMuonPFGammaIsoPtRel_;
 
   MonitorElement* hMuonPFChargedHadronIsoPtCtrl_;
   MonitorElement* hMuonPFGammaIsoPtCtrl_;
