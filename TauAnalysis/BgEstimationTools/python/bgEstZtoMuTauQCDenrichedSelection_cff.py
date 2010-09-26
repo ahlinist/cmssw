@@ -15,11 +15,14 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 
 muonsBgEstQCDenrichedTrkIso = copy.deepcopy(selectedPatMuonsTrkIso)
-muonsBgEstQCDenrichedTrkIso.sumPtMin = cms.double(4.)
-muonsBgEstQCDenrichedTrkIso.sumPtMax = cms.double(8.)
+muonsBgEstQCDenrichedTrkIso.sumPtMin = cms.double(0.10)
+muonsBgEstQCDenrichedTrkIso.sumPtMax = cms.double(0.25)
+muonsBgEstQCDenrichedTrkIso.sumPtMethod = cms.string("relative")
 
 muonsBgEstQCDenrichedEcalIso = copy.deepcopy(selectedPatMuonsEcalIso)
-muonsBgEstQCDenrichedEcalIso.cut = cms.string('userIsolation("pat::EcalIso") > 4. & userIsolation("pat::EcalIso") < 8.')
+muonsBgEstQCDenrichedEcalIso.sumPtMin = cms.double(0.10)
+muonsBgEstQCDenrichedEcalIso.sumPtMax = cms.double(0.25)
+muonsBgEstQCDenrichedEcalIso.sumPtMethod = cms.string("relative")
 
 muonsBgEstQCDenrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
 
@@ -27,7 +30,7 @@ muonSelConfiguratorBgEstQCDenriched = objSelConfigurator(
     [ muonsBgEstQCDenrichedTrkIso,
       muonsBgEstQCDenrichedEcalIso,
       muonsBgEstQCDenrichedPionVeto ],
-    src = "selectedPatMuonsPt15Cumulative",
+    src = "selectedPatMuonsPt10Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
 )
