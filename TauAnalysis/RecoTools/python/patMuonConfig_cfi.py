@@ -22,26 +22,26 @@ from PhysicsTools.PatAlgos.cleaningLayer1.muonCleaner_cfi import *
 # increase size of muon isolation cone from default of deltaR = 0.3 to 0.6
 patMuons.userIsolation = cms.PSet()
 patMuons.userIsolation.tracker = cms.PSet(
-	deltaR = cms.double(0.6),
-	src = cms.InputTag("muIsoDepositTk")
+    deltaR = cms.double(0.4),
+    src = cms.InputTag("muIsoDepositTk")
 )
 patMuons.userIsolation.ecal = cms.PSet(
-	deltaR = cms.double(0.6),
-	src = cms.InputTag("muIsoDepositCalByAssociatorTowers","ecal")
+    deltaR = cms.double(0.4),
+    src = cms.InputTag("muIsoDepositCalByAssociatorTowers","ecal")
 )
 patMuons.userIsolation.hcal = cms.PSet(
-	deltaR = cms.double(0.6),
-	src = cms.InputTag("muIsoDepositCalByAssociatorTowers","hcal")
+    deltaR = cms.double(0.4),
+    src = cms.InputTag("muIsoDepositCalByAssociatorTowers","hcal")
 )
 patMuons.userIsolation.user = cms.VPSet(
-	cms.PSet( 
-		src = cms.InputTag("muIsoDepositCalByAssociatorTowers","ho"),
-		deltaR = cms.double(0.6)
-	), 
-	cms.PSet(
-		src = cms.InputTag("muIsoDepositJets"),
-		deltaR = cms.double(0.6)
-	)
+    cms.PSet( 
+        src = cms.InputTag("muIsoDepositCalByAssociatorTowers","ho"),
+        deltaR = cms.double(0.4)
+    ), 
+    cms.PSet(
+        src = cms.InputTag("muIsoDepositJets"),
+        deltaR = cms.double(0.4)
+    )
 )
 
 # add IsoDeposit objects for Track, ECAL and HCAL based isolation
