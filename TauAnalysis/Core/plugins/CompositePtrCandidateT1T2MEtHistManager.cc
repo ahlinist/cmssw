@@ -181,6 +181,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hMt1MET_ = book1D("Mt1MET", "Mass_{T 1,MET}", 40, 0., 200.);
   hMt2MET_ = book1D("Mt2MET", "Mass_{T 2,MET}", 40, 0., 200.);
   
+  hHt12MET_ = book1D("Ht12MET", "P_{T}^{1} + P_{T}^{2} + MET", 50, 0., 250.);
+
   hDPhi12_ = book1D("DPhi12", "#Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon);
   hDR12_ = book1D("DR12", "#Delta R_{1,2}", 51, -0.1, 10.1);
   
@@ -528,6 +530,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
     hMt1MET_->Fill(diTauCandidate->mt1MET(), weight);
     hMt2MET_->Fill(diTauCandidate->mt2MET(), weight);
+
+    if ( diTauCandidate->leg1().isNonnull() && diTauCandidate->leg2().isNonnull() && diTauCandidate->met().isNonnull() ) {
+      hHt12MET_->Fill(diTauCandidate->leg1()->pt() + diTauCandidate->leg2()->pt() + diTauCandidate->met()->pt(), weight);
+    }
 
     hDPhi12_->Fill(diTauCandidate->dPhi12(), weight);
     hDR12_->Fill(diTauCandidate->dR12(), weight);
