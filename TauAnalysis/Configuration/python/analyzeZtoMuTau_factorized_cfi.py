@@ -22,7 +22,11 @@ evtSelMuonTrkIsoLooseIsolation = evtSelMuonTrkIso.clone(
 evtSelMuonEcalIsoLooseIsolation = evtSelMuonEcalIso.clone(
     src_cumulative = cms.InputTag('muonEcalIsoCutLooseIsolation', 'cumulative'),
     src_individual = cms.InputTag('muonEcalIsoCutLooseIsolation', 'individual')
-)    
+)
+evtSelMuonCombIsoLooseIsolation = evtSelMuonCombIso.clone(
+    src_cumulative = cms.InputTag('muonCombIsoCutLooseIsolation', 'cumulative'),
+    src_individual = cms.InputTag('muonCombIsoCutLooseIsolation', 'individual')
+)
 evtSelMuonAntiPionLooseIsolation = evtSelMuonAntiPion.clone(
     src_cumulative = cms.InputTag('muonAntiPionCutLooseIsolation', 'cumulative'),
     src_individual = cms.InputTag('muonAntiPionCutLooseIsolation', 'individual')
@@ -59,13 +63,13 @@ evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation = evtSelDiTauCandidateFo
 #--------------------------------------------------------------------------------
 
 muTauEventDump_factorizedWithoutMuonIsolation = muTauEventDump.clone(
-    name = cms.string('muTauEventDump_factorizedWithoutMuonIsolation'),
+    pluginName = cms.string('muTauEventDump_factorizedWithoutMuonIsolation'),
     output = cms.string("std::cout"),
     triggerConditions = cms.vstring()
 )    
 
 muTauEventDump_factorizedWithMuonIsolation = muTauEventDump.clone(
-    name = cms.string('muTauEventDump_factorizedWithMuonIsolation'),
+    pluginName = cms.string('muTauEventDump_factorizedWithMuonIsolation'),
     output = cms.string("std::cout"),
     triggerConditions = cms.vstring()
 )    
@@ -79,6 +83,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalys
 replaceAnalyzerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation,
     [ [ "selectedPatMuonsTrkIsoCumulative", "selectedPatMuonsTrkIsoLooseIsolationCumulative" ],
       [ "selectedPatMuonsEcalIsoCumulative", "selectedPatMuonsEcalIsoLooseIsolationCumulative" ],
+      [ "selectedPatMuonsCombIsoCumulative", "selectedPatMuonsCombIsoLooseIsolationCumulative" ],
       [ "selectedPatMuonsPionVetoCumulative", "selectedPatMuonsPionVetoLooseIsolationCumulative" ],
       [ "selectedPatMuonsTrkIPcumulative", "selectedPatMuonsTrkIPlooseIsolationCumulative" ],
       [ "selectedMuTauPairsAntiOverlapVetoCumulative", "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative" ],

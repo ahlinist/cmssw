@@ -59,13 +59,13 @@ evtSelCentralJetEt20bTagLooseMuonIsolation = cms.PSet(
 #--------------------------------------------------------------------------------
 
 muTauEventDump_factorizedWithoutMuonIsolation = muTauEventDump.clone(
-    name = cms.string('muTauEventDump_factorizedWithoutMuonIsolation'),
+    pluginName = cms.string('muTauEventDump_factorizedWithoutMuonIsolation'),    
     output = cms.string("std::cout"),
     triggerConditions = cms.vstring()
 )    
 
 muTauEventDump_factorizedWithMuonIsolation = muTauEventDump.clone(
-    name = cms.string('muTauEventDump_factorizedWithMuonIsolation'),
+    pluginName = cms.string('muTauEventDump_factorizedWithMuonIsolation'),
     output = cms.string("std::cout"),
     triggerConditions = cms.vstring()
 )
@@ -78,6 +78,7 @@ muTauEventDump_factorizedWithMuonIsolation = muTauEventDump.clone(
 inputTagReplacements = \
   [ [ "selectedPatMuonsTrkIsoCumulative", "selectedPatMuonsTrkIsoLooseIsolationCumulative" ],
     [ "selectedPatMuonsEcalIsoCumulative", "selectedPatMuonsEcalIsoLooseIsolationCumulative" ],
+    [ "selectedPatMuonsCombIsoCumulative", "selectedPatMuonsCombIsoLooseIsolationCumulative" ],
     [ "selectedPatMuonsPionVetoCumulative", "selectedPatMuonsPionVetoLooseIsolationCumulative" ],
     [ "selectedPatMuonsTrkIPcumulative", "selectedPatMuonsTrkIPlooseIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauAntiOverlapVetoCumulative",

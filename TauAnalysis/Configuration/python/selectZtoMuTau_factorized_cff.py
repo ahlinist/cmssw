@@ -26,6 +26,12 @@ cfgMuonEcalIsoCutLooseIsolation = cfgMuonEcalIsoCut.clone(
     src_individual = cms.InputTag('selectedPatMuonsEcalIsoLooseIsolationIndividual')
 )
 
+cfgMuonCombIsoCutLooseIsolation = cfgMuonCombIsoCut.clone(
+    pluginName = cms.string('muonCombIsoCutLooseIsolation'),
+    src_cumulative = cms.InputTag('selectedPatMuonsCombIsoLooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsCombIsoLooseIsolationIndividual')
+)
+
 cfgMuonAntiPionCutLooseIsolation = cfgMuonAntiPionCut.clone(
     pluginName = cms.string('muonAntiPionCutLooseIsolation'),
     src_cumulative = cms.InputTag('selectedPatMuonsPionVetoLooseIsolationCumulative'),

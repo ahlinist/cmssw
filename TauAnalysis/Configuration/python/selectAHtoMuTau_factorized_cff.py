@@ -58,6 +58,7 @@ cfgCentralJetEt20bTagCutLooseMuonIsolation = cfgCentralJetEt20bTagCut.clone(
 ahToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     [ cfgMuonTrkIsoCutLooseIsolation,
       cfgMuonEcalIsoCutLooseIsolation,
+      cfgMuonCombIsoCutLooseIsolation,
       cfgMuonAntiPionCutLooseIsolation,
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation,

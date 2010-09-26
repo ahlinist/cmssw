@@ -55,8 +55,16 @@ cfgMuonEtaCut = cms.PSet(
 cfgMuonPtCut = cms.PSet(
     pluginName = cms.string('muonPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsPt15Cumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsPt15Individual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsPt10Cumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsPt10Individual'),
+    systematics = cms.vstring(muonSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+cfgMuonVbTfIdCut = cms.PSet(
+    pluginName = cms.string('muonVbTfIdCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedPatMuonsVbTfIdCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsVbTfIdIndividual'),
     systematics = cms.vstring(muonSystematics.keys()),
     minNumber = cms.uint32(1)
 )
@@ -73,6 +81,14 @@ cfgMuonEcalIsoCut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatMuonsEcalIsoCumulative'),
     src_individual = cms.InputTag('selectedPatMuonsEcalIsoIndividual'),
+    systematics = cms.vstring(muonSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+cfgMuonCombIsoCut = cms.PSet(
+    pluginName = cms.string('muonCombIsoCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedPatMuonsCombIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsCombIsoIndividual'),
     systematics = cms.vstring(muonSystematics.keys()),
     minNumber = cms.uint32(1)
 )
@@ -251,11 +267,13 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgGlobalMuonCut,
       cfgMuonEtaCut,
       cfgMuonPtCut,
+      cfgMuonVbTfIdCut,
       cfgTauAntiOverlapWithMuonsVeto,
       cfgTauEtaCut,
       cfgTauPtCut,
       cfgMuonTrkIsoCut,
       cfgMuonEcalIsoCut,
+      cfgMuonCombIsoCut,
       cfgMuonAntiPionCut,
       cfgMuonTrkIPcut,
       cfgTauLeadTrkCut,
