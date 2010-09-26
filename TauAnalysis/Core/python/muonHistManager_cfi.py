@@ -6,6 +6,7 @@ muonHistManager = cms.PSet(
       
     muonSource = cms.InputTag('cleanPatMuons'),
     vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    beamSpotSource = cms.InputTag('offlineBeamSpot'),
     jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),
 
