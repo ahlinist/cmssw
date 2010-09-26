@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+
 import TauAnalysis.Configuration.recoSampleDefinitionsZtoDiTau_7TeV_grid_cfi as samples
 
 #--------------------------------------------------------------------------------
