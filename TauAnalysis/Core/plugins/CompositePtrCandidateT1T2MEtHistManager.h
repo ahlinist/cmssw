@@ -132,6 +132,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hMt1MET_;
   MonitorElement* hMt2MET_;
   
+  MonitorElement* hHt12MET_;
+
   MonitorElement* hDPhi12_;
   MonitorElement* hDR12_;
 
