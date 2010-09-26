@@ -33,11 +33,11 @@ PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::Parameter
     isoDepositType_ = pat::HcalIso;
   } else if ( isoDepositType_string == "pfAllParticles" ) {
     isoDepositType_ = pat::PfAllParticleIso;
-  } else if ( isoDepositType_string == "pfChargedHadron" ) {
+  } else if ( isoDepositType_string == "pfChargedHadrons" ) {
     isoDepositType_ = pat::PfChargedHadronIso;
-  } else if ( isoDepositType_string == "pfNeutralHadron" ) {
+  } else if ( isoDepositType_string == "pfNeutralHadrons" ) {
     isoDepositType_ = pat::PfNeutralHadronIso;
-  } else if ( isoDepositType_string == "pfGamma" ) {
+  } else if ( isoDepositType_string == "pfPhotons" ) {
     isoDepositType_ = pat::PfGammaIso;
   } else {
     edm::LogError ("PATLeptonIsoDepositSelector") 
