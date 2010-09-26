@@ -2,7 +2,12 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 #--------------------------------------------------------------------------------  
-# produce collections of pat::Electrons passing selection criteria
+# produce collections of pat::Muons passing selection criteria
+#
+# NOTE: the final cut values are (re)defined in
+#
+#         TauAnalysis/RecoTools/python/patLeptonSelection_cff.py
+#
 #--------------------------------------------------------------------------------
 
 # see https://twiki.cern.ch/twiki/bin/view/CMS/SWGuidePhysicsCutParser
@@ -22,27 +27,49 @@ selectedPatMuonsEta21 = cms.EDFilter("PATMuonSelector",
 )
 
 # require muon candidate to have transverse momentum above threshold
-selectedPatMuonsPt15 = cms.EDFilter("PATMuonSelector",
-    cut = cms.string('pt > 15.'),
+selectedPatMuonsPt10 = cms.EDFilter("PATMuonSelector",
+    cut = cms.string('pt > 10.'),
     filter = cms.bool(False)
 )
 
+# require muon candidate to pass VBTF selection
+# (selection criteria defined by Vector Boson Task Force
+#  and documented in CMS AN-10-264)
+selectedPatMuonsVbTfId = cms.EDFilter("PATMuonVbTfSelector",
+    beamSpotSource = cms.InputTag("offlineBeamSpot")
+)                                      
+
 # require muon candidate to be isolated
-# with respect to tracks (of Pt >~ 0.3 GeV)
+# with respect to tracks/charged hadrons
 selectedPatMuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
-    type = cms.string('tracker'),
+    type = cms.string('pfChargedHadrons'),
     vetos = cms.vstring("0.01"),                          
-    dRisoCone = cms.double(0.6),
-    sumPtMax = cms.double(1.),
-    sumPtMethod = cms.string("absolute"),                                 
+    dRisoCone = cms.double(0.4),
+    sumPtMax = cms.double(0.10),
+    sumPtMethod = cms.string("relative"),                                 
     filter = cms.bool(False)
 )
 
 # require muon candidate to be isolated
-# with respect to energy deposits in ECAL
-# (not associated to muon candidate)
-selectedPatMuonsEcalIso = cms.EDFilter("PATMuonSelector",
-    cut = cms.string('userIsolation("pat::EcalIso") < 1.'),
+# with respect to ECAL energy deposits/photons
+selectedPatMuonsEcalIso = cms.EDFilter("PATMuonIsoDepositSelector",
+    type = cms.string('pfPhotons'),
+    vetos = cms.vstring("0.01"),                          
+    dRisoCone = cms.double(0.4),
+    sumPtMax = cms.double(0.10),
+    sumPtMethod = cms.string("relative"),                                 
+    filter = cms.bool(False)
+)
+
+# require muon candidate to be isolated
+# with respect to sum of tracks + ECAL and HCAL energy deposits/
+# charged and neutral hadrons + photons
+selectedPatMuonsCombIso = cms.EDFilter("PATMuonIsoDepositSelector",
+    type = cms.string('pfAllParticles'),
+    vetos = cms.vstring("0.01"),                          
+    dRisoCone = cms.double(0.4),
+    sumPtMax = cms.double(0.10),
+    sumPtMethod = cms.string("relative"),                                 
     filter = cms.bool(False)
 )
 
@@ -80,16 +107,17 @@ selectedPatMuonsTrkIP = cms.EDFilter("PATMuonIpSelector",
 #        in order to avoid problems with limited Monte Carlo statistics)
 #--------------------------------------------------------------------------------
 
-selectedPatMuonsTrkIsoLooseIsolation = copy.deepcopy(selectedPatMuonsTrkIso)
-selectedPatMuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
-selectedPatMuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
-selectedPatMuonsTrkIsoLooseIsolation.sumPtMax = cms.double(8.)
+selectedPatMuonsTrkIsoLooseIsolation = selectedPatMuonsTrkIso.clone()
+selectedPatMuonsTrkIsoLooseIsolation.sumPtMax = cms.double(0.25)
 
-selectedPatMuonsEcalIsoLooseIsolation = copy.deepcopy(selectedPatMuonsEcalIso)
-selectedPatMuonsEcalIsoLooseIsolation.cut = cms.string('userIsolation("pat::EcalIso") < 8.')
+selectedPatMuonsEcalIsoLooseIsolation = selectedPatMuonsEcalIso.clone()
+selectedPatMuonsEcalIsoLooseIsolation.sumPtMax = cms.double(0.25)
 
-selectedPatMuonsPionVetoLooseIsolation = copy.deepcopy(selectedPatMuonsPionVeto)
+selectedPatMuonsCombIsoLooseIsolation = selectedPatMuonsCombIso.clone()
+selectedPatMuonsCombIsoLooseIsolation.sumPtMax = cms.double(0.25)
 
-selectedPatMuonsTrkLooseIsolation = copy.deepcopy(selectedPatMuonsTrk)
+selectedPatMuonsPionVetoLooseIsolation = selectedPatMuonsPionVeto.clone()
 
-selectedPatMuonsTrkIPlooseIsolation = copy.deepcopy(selectedPatMuonsTrkIP)
+selectedPatMuonsTrkLooseIsolation = selectedPatMuonsTrk.clone()
+
+selectedPatMuonsTrkIPlooseIsolation = selectedPatMuonsTrkIP.clone()
