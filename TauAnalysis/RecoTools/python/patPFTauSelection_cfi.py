@@ -1,5 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 
+#--------------------------------------------------------------------------------  
+# produce collections of pat::Taus passing selection criteria
+#
+# NOTE: the final cut values are (re)defined in
+#
+#         TauAnalysis/RecoTools/python/patLeptonSelection_cff.py
+#
+#--------------------------------------------------------------------------------
+
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
 selectedPatTausEta21 = cms.EDFilter("PATTauSelector",
     cut = cms.string("abs(eta) < 2.1"),

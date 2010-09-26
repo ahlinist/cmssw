@@ -3,6 +3,11 @@ import copy
 
 #--------------------------------------------------------------------------------  
 # produce collections of pat::Electrons passing selection criteria
+#
+# NOTE: the final cut values are (re)defined in
+#
+#         TauAnalysis/RecoTools/python/patLeptonSelection_cff.py
+#
 #--------------------------------------------------------------------------------
 
 # see https://twiki.cern.ch/twiki/bin/view/CMS/SWGuidePhysicsCutParser
