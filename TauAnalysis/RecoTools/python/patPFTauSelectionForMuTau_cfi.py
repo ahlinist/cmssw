@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-import copy
 
 from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 
@@ -13,38 +12,38 @@ selectedPatTausForMuTauAntiOverlapWithMuonsVeto = cms.EDFilter("PATTauAntiOverla
 )
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
-selectedPatTausForMuTauEta21 = copy.deepcopy(selectedPatTausEta21)
+selectedPatTausForMuTauEta21 = selectedPatTausEta21.clone()
 
 # require tau candidate to have transverse energy above threshold
-selectedPatTausForMuTauPt20 = copy.deepcopy(selectedPatTausPt20)
+selectedPatTausForMuTauPt20 = selectedPatTausPt20.clone()
 
 # require tau candidate to have a leading track
 # (track of Pt > 1. GeV within matching cone of size dR = 0.2 around jet-axis)
-selectedPatTausForMuTauLeadTrk = copy.deepcopy(selectedPatTausLeadTrk)
+selectedPatTausForMuTauLeadTrk = selectedPatTausLeadTrk.clone()
 
 # require leading track of tau candidate to have Pt > 5. GeV
-selectedPatTausForMuTauLeadTrkPt = copy.deepcopy(selectedPatTausLeadTrkPt)
+selectedPatTausForMuTauLeadTrkPt = selectedPatTausLeadTrkPt.clone()
 
 # require tau candidate to pass TaNC discriminator
-selectedPatTausForMuTauTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
+selectedPatTausForMuTauTaNCdiscr = selectedPatTausTaNCdiscr.clone()
 
 # require tau candidate to have no tracks of Pt > 1. GeV
 # in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
-selectedPatTausForMuTauTrkIso = copy.deepcopy(selectedPatTausTrkIso)
+selectedPatTausForMuTauTrkIso = selectedPatTausTrkIso.clone()
 
 # require tau candidate to be isolated
 # with respect to energy deposits in ECAL
-selectedPatTausForMuTauEcalIso = copy.deepcopy(selectedPatTausEcalIso)
+selectedPatTausForMuTauEcalIso = selectedPatTausEcalIso.clone()
 
 # require tau candidate to have either one or three tracks within signal cone
-selectedPatTausForMuTauProng = copy.deepcopy(selectedPatTausProng)
+selectedPatTausForMuTauProng = selectedPatTausProng.clone()
 
 # require tau candidate to have charge either +1 or -1
 # (computed as sum of charges of tracks within signal cone)
-selectedPatTausForMuTauCharge = copy.deepcopy(selectedPatTausCharge)
+selectedPatTausForMuTauCharge = selectedPatTausCharge.clone()
 
 # require tau candidate to pass muon veto
-selectedPatTausForMuTauMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
+selectedPatTausForMuTauMuonVeto = selectedPatTausMuonVeto.clone()
 
 # require tau candidate to pass electron veto
-selectedPatTausForMuTauElectronVeto = copy.deepcopy(selectedPatTausElectronVeto)
+selectedPatTausForMuTauElectronVeto = selectedPatTausElectronVeto.clone()
