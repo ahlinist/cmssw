@@ -7,14 +7,14 @@ process = cms.Process('runAHtoMuTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-#process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
+process.GlobalTag.globaltag = cms.string('MC_36Y_V10::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -102,7 +102,7 @@ process.source = cms.Source(
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part16.root'
     ##),
     ##eventsToProcess = cms.untracked.VEventRange(
-    ##    '1:22227-1:22227'
+    ##    '1:1680350-1:1680350'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -163,26 +163,6 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# import utility function for changing cut values
-from TauAnalysis.Configuration.tools.changeCut import changeCut
-
-# change muon track and ECAL isolation requirements
-# to relative isolation (sum Pt of tracks/ECAL energy deposits within isolation cone divided by muon Pt)
-changeCut(process, "selectedPatMuonsTrkIso", 0.4, attribute = "dRisoCone")
-changeCut(process, "selectedPatMuonsTrkIso", 0.09, attribute = "sumPtMax")
-changeCut(process, "selectedPatMuonsTrkIso", "relative", attribute = "sumPtMethod")
-changeCut(process, "selectedPatMuonsEcalIso", "(ecalIso/pt) < 0.09")
-
-changeCut(process, "selectedPatMuonsTrkIsoLooseIsolation", 0.4, attribute = "dRisoCone")
-changeCut(process, "selectedPatMuonsTrkIsoLooseIsolation", 0.25, attribute = "sumPtMax")
-changeCut(process, "selectedPatMuonsTrkIsoLooseIsolation", "relative", attribute = "sumPtMethod")
-changeCut(process, "selectedPatMuonsEcalIsoLooseIsolation", "(ecalIso/pt) < 0.25")
-
-# enable cut on TaNC output
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCfrQuarterPercent') > 0.5")
-#--------------------------------------------------------------------------------
-
 process.p = cms.Path(
    process.producePatTupleAHtoMuTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
@@ -209,7 +189,7 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#factorization#
-##enableFactorization_runAHtoMuTau(process)
+enableFactorization_runAHtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
