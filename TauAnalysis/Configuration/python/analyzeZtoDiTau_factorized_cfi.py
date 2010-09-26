@@ -76,13 +76,18 @@ evtSelDiTauCandidateForDiTauPzetaDiffLoose2ndTau = evtSelDiTauCandidateForDiTauP
 #--------------------------------------------------------------------------------
 
 diTauEventDump_factorizedLoose2ndTau = diTauEventDump.clone(
-    name = cms.string('diTauEventDump_factorizedLoose2ndTau'),
+    pluginName = cms.string('diTauEventDump_factorizedLoose2ndTau'),
+    svFitAlgorithms = cms.VPSet(
+        cms.PSet(
+            name = cms.string("psKine_MEt_ptBalance")
+        )
+    ),
     output = cms.string("std::cout"),
     triggerConditions = cms.vstring()
 )    
 
 diTauEventDump_factorizedTight2ndTau = diTauEventDump.clone(
-    name = cms.string('diTauEventDump_factorizedTight2ndTau'),
+    pluginName = cms.string('diTauEventDump_factorizedTight2ndTau'),
     output = cms.string("std::cout"),
     triggerConditions = cms.vstring()
 )
@@ -104,7 +109,7 @@ inputTagReplacements = \
     [ "selectedDiTauPairsAntiOverlapVetoCumulative", "selectedDiTauPairsAntiOverlapVetoLoose2ndTauCumulative" ],
     [ "selectedDiTauPairsZeroChargeCumulative", "selectedDiTauPairsZeroChargeLoose2ndTauCumulative" ],
     [ "selectedDiTauPairsAcoplanarityCumulative", "selectedDiTauPairsAcoplanarityLoose2ndTauCumulative" ],
-    [ "selectedDiTauPairsPzetaDiffCumulative", "selectedDiTauPairsLoose2ndTauPzetaDiffCumulative" ],
+    [ "selectedDiTauPairsPzetaDiffCumulative", "selectedDiTauPairsPzetaDiffLoose2ndTauCumulative" ],
     [ "selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVeto", "selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoLoose2ndTau" ] ]
     # CV: need to add replace statement for jet collection on which central jet veto is based
     #     (in case central jet veto is applied)
