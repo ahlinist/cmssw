@@ -54,6 +54,9 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
 		   << " (eta = " << patMuon->eta() << ")" << std::endl;
     *outputStream_ << " phi = " << patMuon->phi()*180./TMath::Pi() << std::endl;
     *outputStream_ << " charge = " << patMuon->charge() << std::endl;
+    if ( patMuon->isTimeValid() ) {
+      *outputStream_ << " time = " << patMuon->time().timeAtIpInOut << " +/- " << patMuon->time().timeAtIpInOutErr << std::endl;
+    }
     *outputStream_ << " isGlobalMuon = " << patMuon->isGlobalMuon() << std::endl;
     *outputStream_ << " isStandAloneMuon = " << patMuon->isStandAloneMuon() << std::endl;
     *outputStream_ << " inner Track" << std::endl;
