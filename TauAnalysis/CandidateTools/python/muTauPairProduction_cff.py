@@ -61,44 +61,26 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 numSamplings = cms.int32(-1)
             )
         ),
-        ##psKine_MEt = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
-        ##        svFitLikelihoodMuTauPairMEt
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        numSamplings = cms.int32(-1)
-        ##    )
-        ##),
-        ##psKine_Track = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
-        ##        svFitLikelihoodMuTauPairTrackInfo
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        numSamplings = cms.int32(-1)
-        ##    )
-        ##),
-        ##psKine_ptBalance = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
-        ##        svFitLikelihoodMuTauPairPtBalance
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        numSamplings = cms.int32(-1)
-        ##    )
-        ##),
-        ##psKine_MEt_ptBalance = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
-        ##        svFitLikelihoodMuTauPairMEt,
-        ##        svFitLikelihoodMuTauPairPtBalance
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        #numSamplings = cms.int32(1000)
-        ##        numSamplings = cms.int32(-1)
-        ##    )
-        ##),
+        psKine_MEt = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+                svFitLikelihoodMuTauPairMEt
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+                svFitLikelihoodMuTauPairMEt,
+                svFitLikelihoodMuTauPairPtBalance
+            ),
+            estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(1000)
+                numSamplings = cms.int32(-1)
+            )
+        ),
         polKine = cms.PSet(
             likelihoodFunctions = cms.VPSet(
                 svFitLikelihoodMuTauPairKinematicsPolarized        
@@ -107,47 +89,32 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 numSamplings = cms.int32(-1)
             )
         ),
-        ##polKine_MEt = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodMuTauPairKinematicsPolarized,
-        ##        svFitLikelihoodMuTauPairMEt
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        numSamplings = cms.int32(-1)
-        ##    )
-        ##),
-        ##polKine_Track = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodMuTauPairKinematicsPolarized,
-        ##        svFitLikelihoodMuTauPairTrackInfo
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        numSamplings = cms.int32(-1)
-        ##    )
-        ##),        
-        ##polKine_ptBalance = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodMuTauPairKinematicsPolarized,
-        ##        svFitLikelihoodMuTauPairPtBalance
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        numSamplings = cms.int32(-1)
-        ##    )
-        ##),
-        polKine_Zprod = cms.PSet(
+        polKine_MEt = cms.PSet(
             likelihoodFunctions = cms.VPSet(
                 svFitLikelihoodMuTauPairKinematicsPolarized,
-                svFitLikelihoodMuTauPairZprod
+                svFitLikelihoodMuTauPairMEt
             ),
             estUncertainties = cms.PSet(
                 numSamplings = cms.int32(-1)
             )
+        ),
+        polKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodMuTauPairKinematicsPolarized,
+                svFitLikelihoodMuTauPairMEt,
+                svFitLikelihoodMuTauPairPtBalance
+            ),
+            estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(1000)
+                numSamplings = cms.int32(-1)
+            )
         ##),
-        ##polKine_MEt_ptBalance = cms.PSet(
+        ##polKine_MEt_ptBalance_Zprod = cms.PSet(
         ##    likelihoodFunctions = cms.VPSet(
         ##        svFitLikelihoodMuTauPairKinematicsPolarized,
         ##        svFitLikelihoodMuTauPairMEt,
-        ##        svFitLikelihoodMuTauPairPtBalance
+        ##        svFitLikelihoodMuTauPairPtBalance,
+        ##        svFitLikelihoodMuTauPairZprod
         ##    ),
         ##    estUncertainties = cms.PSet(
         ##        #numSamplings = cms.int32(1000)

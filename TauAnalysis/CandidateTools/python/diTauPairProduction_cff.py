@@ -19,6 +19,10 @@ svFitLikelihoodDiTauPairMEt.pluginType = cms.string("SVfitLikelihoodMEtDiTau")
 svFitLikelihoodDiTauPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
 svFitLikelihoodDiTauPairPtBalance.pluginType = cms.string("SVfitLikelihoodDiTauPairPtBalance")
 
+svFitLikelihoodDiTauPairZprod = copy.deepcopy(svFitLikelihoodDiTauProdZ0)
+svFitLikelihoodDiTauPairZprod.pluginType = cms.string("SVfitLikelihoodDiTauPairProd")
+svFitLikelihoodDiTauPairZprod.process = cms.string("Z0")
+
 #--------------------------------------------------------------------------------
 # produce combinations of tau-jet + tau-jet pairs
 #--------------------------------------------------------------------------------
@@ -282,7 +286,7 @@ selectedDiTauPairs2ndTauElectronVetoCumulative = selectedDiTauPairs1stTauElectro
                 svFitLikelihoodDiTauPairKinematicsPhaseSpace,
                 svFitLikelihoodDiTauPairMEt,
                 svFitLikelihoodDiTauPairPtBalance
-        ),
+            ),
             estUncertainties = cms.PSet(
                 #numSamplings = cms.int32(1000)
                 numSamplings = cms.int32(-1)
@@ -315,6 +319,18 @@ selectedDiTauPairs2ndTauElectronVetoCumulative = selectedDiTauPairs1stTauElectro
                 #numSamplings = cms.int32(1000)
                 numSamplings = cms.int32(-1)
             )
+        ##),
+        ##polKine_MEt_ptBalance_Zprod = cms.PSet(
+        ##    likelihoodFunctions = cms.VPSet(
+        ##        svFitLikelihoodDiTauPairKinematicsPolarized,
+        ##        svFitLikelihoodDiTauPairMEt,
+        ##        svFitLikelihoodDiTauPairPtBalance,
+        ##        svFitLikelihoodDiTauPairZprod
+        ##    ),
+        ##    estUncertainties = cms.PSet(
+        ##        #numSamplings = cms.int32(1000)
+        ##        numSamplings = cms.int32(-1)
+        ##    )
         )
     )
 )
@@ -397,10 +413,11 @@ selectedDiTauPairs2ndTauElectronVetoLooseCumulative = selectedDiTauPairs2ndTauEl
     svFit = cms.PSet(
         psKine = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine,
         psKine_MEt = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt,
-        psKine_MEt_ptBalance = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance,
+        psKine_MEt_ptBalance = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance,        
         polKine = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine,
         polKine_MEt = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt,
         polKine_MEt_ptBalance = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance
+        #polKine_MEt_ptBalance_Zprod = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance
     )
 )
 
