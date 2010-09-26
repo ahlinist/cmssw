@@ -6,10 +6,11 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
+    'data_JetMETTau_132440_135802_May27ReReco',
     'data_JetMETTau_132440_137436_Jun14ReReco',
     'data_JetMETTau_137437_139558_Prompt',
     'data_JetMETTau_139559_140159_Jul16ReReco',
-    ##'data_BTau_140160_999999_Prompt',
+    'data_BTau_140160_999999_Prompt',
     'Ztautau',
     'Zee',
     'Zmumu',
@@ -23,9 +24,9 @@ SAMPLES_TO_ANALYZE = [
 SAMPLES_TO_PLOT = [
     'qcdSum',
     'WplusJets',
+    'TTplusJets',
     'Zee',
     'Zmumu',
-    'TTplusJets',
     'Ztautau'
 ]
 
@@ -50,7 +51,12 @@ _nanobarns = 1000.0
 _microbarns = 1.0e6
 
 # Integrated luminosity to normalize 
-TARGET_LUMI = (200.0)/_picobarns
+#TARGET_LUMI = (200.0)/_picobarns
+TARGET_LUMI = (
+     0.005 # data_JetMETTau_132440_137436_Jun14ReReco
+   + 0.060 # data_JetMETTau_137437_139558_Prompt
+   + 0.110 # data_JetMETTau_139559_140159_Jul16ReReco
+)/_picobarns
 
 RECO_SAMPLES = {
     'data_JetMETTau_132440_135802_May27ReReco' : {
@@ -62,7 +68,7 @@ RECO_SAMPLES = {
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
+        'drawOption' : styles.drawOption_Data
     },
     'data_JetMETTau_135821_137436_Jun14ReReco' : {
         'datasetpath' : "/JetMETTau/Run2010A-Jun14thReReco_v2/RECO", # run-range in DBS: 135821-137772
@@ -73,7 +79,7 @@ RECO_SAMPLES = {
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
+        'drawOption' : styles.drawOption_Data
     },
     'data_JetMETTau_137437_139558_Prompt' : {
         'datasetpath' : '/JetMETTau/Run2010A-PromptReco-v4/RECO', # run-range in DBS: 137437-141887
@@ -84,6 +90,7 @@ RECO_SAMPLES = {
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
+        'drawOption' : styles.drawOption_Data
     },
     'data_JetMETTau_139559_140159_Jul16ReReco' : {
         'datasetpath' : "/JetMETTau/Run2010A-Jul16thReReco-v1/RECO", # run-range in DBS: 139779-140160
@@ -94,7 +101,7 @@ RECO_SAMPLES = {
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
+        'drawOption' : styles.drawOption_Data
     },
     'data_BTau_140160_999999_Prompt' : {
         'datasetpath' : '/BTau/Run2010A-PromptReco-v4/RECO', # run-range in DBS: 141950-144114
@@ -105,12 +112,13 @@ RECO_SAMPLES = {
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
+        'drawOption' : styles.drawOption_Data
     },
     'Ztautau' : {
         'datasetpath' : "/Ztautau/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
         'events_processed' : 2195255,
         'skim_eff' : 0.321,
-        'x_sec' : 1300*_picobarns,
+        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau
@@ -119,7 +127,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/Zee/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
         'events_processed' : 2421575,
         'skim_eff' : 0.600,
-        'x_sec' : 1300*_picobarns,
+        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee
@@ -128,7 +136,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/Zmumu/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
         'events_processed' : 2111268,
         'skim_eff' : 0.649,
-        'x_sec' : 1300*_picobarns,
+        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu
@@ -147,7 +155,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
         'events_processed' : 9008895,
         'skim_eff' : 0.537,
-        'x_sec' : 24170*_picobarns,
+        'x_sec' : 1.28*24170*_picobarns, # W + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets
@@ -167,11 +175,11 @@ RECO_SAMPLES = {
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-            ##'data_JetMETTau_132440_135802_May27ReReco',
+            'data_JetMETTau_132440_135802_May27ReReco',
             'data_JetMETTau_132440_137436_Jun14ReReco',
             'data_JetMETTau_137437_139558_Prompt',
             'data_JetMETTau_139559_140159_Jul16ReReco',
-            ##'data_BTau_140160_999999_Prompt'
+            'data_BTau_140160_999999_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
