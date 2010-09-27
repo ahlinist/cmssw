@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
+
 from TauAnalysis.Configuration.submitToBatch import submitToBatch
 from TauAnalysis.Configuration.makeReplacementsAnalysis import makeReplacementsAnalysis
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/spring10/current/"
-#outputFilePath = "/castor/cern.ch/user/v/veelken/plots/ZtoElecTau/"
+outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/fall10/current/"
 
 #inputFileType = "RECO/AOD"
 inputFileType = "PATTuple"
@@ -22,7 +22,7 @@ inputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauPatTuples/spring10/current/
 
 #--------------------------------------------------------------------------------
 #
-# Monte Carlo samples from Summer'09 production, both 7TeV and 10TeV energies
+# Monte Carlo samples from Spring 10 production at 7TeV
 #
 # NOTE: The jobs get submitted to the '8nh' queue,
 #       which allows for an execution time of the cmsRun jobs of up to 24 hours
@@ -35,7 +35,7 @@ inputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauPatTuples/spring10/current/
 # 7 TeV data samples
 #
 
-for i in range(57):
+for i in range(417):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
 		sample = "Data_7TeV_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
@@ -47,15 +47,7 @@ for i in range(57):
 # 7 TeV MC samples
 #
 
-# Spring10 MinBias
-for i in range(51):
-	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "MinBias_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
-		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
-
-	# Z --> tau tau jobs
+# Z --> tau tau jobs
 for i in range(21):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
 		sample = "Ztautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
