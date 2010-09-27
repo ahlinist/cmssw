@@ -26,7 +26,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         # generator level selection of Z --> e + tau-jet events
         # passing basic acceptance and kinematic cuts
         # (NOTE: to be used for efficiency studies only !!)
-        #genElectronCut,
+				#genElectronCut,
         #genTauCut,
     
         # trigger selection
@@ -53,6 +53,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauPt,
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
+				evtSelTauTaNCdiscr,
         evtSelTauTrkIso,
         evtSelTauEcalIso,
         evtSelTauProng,
