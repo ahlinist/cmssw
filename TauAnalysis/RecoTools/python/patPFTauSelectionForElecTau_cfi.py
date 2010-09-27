@@ -7,7 +7,7 @@ from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 # (in order to avoid double-counting one and the same physical particle
 #  as electron and as tau candidate)
 selectedPatTausForElecTauAntiOverlapWithElectronsVeto = cms.EDFilter("PATTauAntiOverlapSelector",
-    srcNotToBeFiltered = cms.VInputTag("selectedPatElectronsTrkIPcumulative"),
+    srcNotToBeFiltered = cms.VInputTag("selectedPatElectronsForElecTauPt15Cumulative"),
     dRmin = cms.double(0.3),
     filter = cms.bool(False)                                           
 )
