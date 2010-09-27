@@ -70,13 +70,13 @@ selectPatElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.conf
 # select electrons for Z->electron + tau-jet analysis
 #
 
-selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.035 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.008 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.035 & sigmaIetaIeta < 0.03)')
-#selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.4 & eSuperClusterOverP > 0.8) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustLoose") > 0 & eSuperClusterOverP < 1.6 & eSuperClusterOverP > 0.8)')
+# VBTF WP90 electron ID and isolation
+selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.8 & hcalOverEcal < 0.12 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.009 & abs(deltaPhiSuperClusterTrackAtVtx) <0.7 & hcalOverEcal < 0.05 & sigmaIetaIeta < 0.03)') 
 selectedPatElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
 selectedPatElectronsForElecTauEta21.cut = cms.string('abs(eta) < 2.1')
 selectedPatElectronsForElecTauPt15.cut = cms.string('pt > 15.')
-selectedPatElectronsForElecTauTrkIso.cut = cms.string('userIsolation("pat::TrackIso") < 1.')
-selectedPatElectronsForElecTauEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & userIsolation("pat::EcalIso") < 2.5) | (abs(superCluster.eta) > 1.479 & userIsolation("pat::EcalIso") < 3.5)')
+selectedPatElectronsForElecTauTrkIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & dr03TkSumPt/p4.Pt < 0.12) | (abs(superCluster.eta) > 1.479 & dr03TkSumPt/p4.Pt < 0.05) ')
+selectedPatElectronsForElecTauEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.09) | (abs(superCluster.eta) > 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.06)')
 selectedPatElectronsForElecTauTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
 selectedPatElectronsForElecTauTrkIP.IpMax = cms.double(0.05)
 selectedPatElectronsForElecTauConversionVeto.cotThetaCut = cms.double(0.05)
@@ -84,7 +84,7 @@ selectedPatElectronsForElecTauConversionVeto.docaElecTrack = cms.double(0)
 selectedPatElectronsForElecTauConversionVeto.dRElecTrack = cms.double(0.1)
 selectedPatElectronsForElecTauConversionVeto.doPixCut = cms.bool(True)
 selectedPatElectronsForElecTauConversionVeto.nTrkMax = cms.double(1)
-selectedPatElectronsForElecTauConversionVeto.useConversionColl = cms.bool(True)
+selectedPatElectronsForElecTauConversionVeto.useConversionColl = cms.bool(False)
 
 patElectronSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedPatElectronsForElecTauId,
@@ -101,6 +101,15 @@ patElectronSelConfiguratorForElecTau = objSelConfigurator(
 )
 
 selectPatElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(pyNameSpace = locals())
+
+#  loose isolation
+selectedPatElectronsForElecTauTrkIsoLooseIsolation.cut = cms.string('dr03TkSumPt/p4.Pt < 0.5')
+selectedPatElectronsForElecTauEcalIsoLooseIsolation.cut = cms.string('dr03EcalRecHitSumEt/p4.Pt < 0.4')
+selectedPatElectronsForElecTauTrkIPlooseIsolation.vertexSource = selectedPatElectronsForElecTauTrkIP.vertexSource
+selectedPatElectronsForElecTauTrkIPlooseIsolation.IpMax = selectedPatElectronsForElecTauTrkIP.IpMax
+
+selectedPatElectronsForElecTauConversionVetoLooseIsolation.nTrkMax = cms.double(10)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation.doPixCut = cms.bool(True)
 
 patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
     [ selectedPatElectronsForElecTauId,
@@ -299,7 +308,7 @@ selectedPatTausForElecTauEta21.cut = selectedPatTausEta21.cut
 selectedPatTausForElecTauPt20.cut = selectedPatTausPt20.cut
 selectedPatTausForElecTauLeadTrk.cut = selectedPatTausLeadTrk.cut
 selectedPatTausForElecTauLeadTrkPt.cut = selectedPatTausLeadTrkPt.cut
-selectedPatTausForElecTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
+selectedPatTausForElecTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrHalfPercent") > 0') 
 selectedPatTausForElecTauTrkIso.cut = selectedPatTausTrkIso.cut
 selectedPatTausForElecTauEcalIso.cut = selectedPatTausEcalIso.cut
 selectedPatTausForElecTauProng.cut = selectedPatTausProng.cut
