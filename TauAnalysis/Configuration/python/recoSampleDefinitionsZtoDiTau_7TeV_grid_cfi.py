@@ -7,7 +7,7 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
     'data_JetMETTau_132440_135802_May27ReReco',
-    'data_JetMETTau_132440_137436_Jun14ReReco',
+    'data_JetMETTau_135821_137436_Jun14ReReco',
     'data_JetMETTau_137437_139558_Prompt',
     'data_JetMETTau_139559_140159_Jul16ReReco',
     'data_BTau_140160_999999_Prompt',
@@ -16,7 +16,7 @@ SAMPLES_TO_ANALYZE = [
     'Zmumu',
     'qcdDiJet', 
     'WplusJets',
-    'TTplusJets',
+    'TTplusJets'
 ] 
 
 # List of samples to include in the final level plots.  May include selections
@@ -40,7 +40,7 @@ SAMPLE_DEFAULTS = {
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'lumi_mask' : '',
-    'runselection' : '',
+    'runselection' : ''
 }
 
 # Conversions to pico barns
@@ -51,12 +51,12 @@ _nanobarns = 1000.0
 _microbarns = 1.0e6
 
 # Integrated luminosity to normalize 
-#TARGET_LUMI = (200.0)/_picobarns
-TARGET_LUMI = (
-     0.005 # data_JetMETTau_132440_137436_Jun14ReReco
-   + 0.060 # data_JetMETTau_137437_139558_Prompt
-   + 0.110 # data_JetMETTau_139559_140159_Jul16ReReco
-)/_picobarns
+TARGET_LUMI = (200.0)/_picobarns
+##TARGET_LUMI = (
+##     0.005 # data_JetMETTau_132440_137436_Jun14ReReco
+##   + 0.060 # data_JetMETTau_137437_139558_Prompt
+##   + 0.110 # data_JetMETTau_139559_140159_Jul16ReReco
+##)/_picobarns
 
 RECO_SAMPLES = {
     'data_JetMETTau_132440_135802_May27ReReco' : {
