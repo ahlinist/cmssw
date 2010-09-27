@@ -11,7 +11,7 @@
 #include <TString.h>
 #include <TRandom.h>
 
-void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_index, Double_t EvtWeight, TString ProcessTag,TString TSaveFileName)
+void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_index, Double_t EvtWeight, TString ProcessTag,TString TSaveFileName,Float_t DelRCut)
 {
    //photonID table
    Double_t PhoIDCutEB[8][5]={{50 ,50 ,3.9,0.5 ,0.012},{2.6,50 ,2.5,0.04,0.012},
@@ -26,7 +26,7 @@ void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_inde
 
    //Set Cut
    float ElePtCut(20), PhoPtCut(10),PhoHoverPreCut(0.5);
-   float ZMassCutL(10), ZMassCutU(999), DelRCut(0.7);
+   float ZMassCutL(10), ZMassCutU(999);
 
    //-------------------------
    int EleN_num(0), EleP_num(0), Pho_num(0);
@@ -93,7 +93,7 @@ void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_inde
      }
    }
 
-   //--
+   //Set Process Tag Name
    if (ProcessTag=="Zg") hNEvt->SetBinContent(14,0);
    else if (ProcessTag=="ZJet") hNEvt->SetBinContent(14,1);
    else if (ProcessTag=="WJet") hNEvt->SetBinContent(14,2);
@@ -116,21 +116,12 @@ void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_inde
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
 
-      if (HLT[HLTIndex[5]]==0) continue;
+      //HLT
+      //if (HLT[HLTIndex[5]]==0) continue;
 
       if (nVtx ==0 ) continue;
       if (IsVtxGood ==0 ) continue;
       if (IsTracksGood ==0 ) continue;
-
-//----Skim check
-      EleN_num=0;
-      for (Int_t iPho=0;iPho<nPho;iPho++){
-        if (phoEt[iPho] < 10) continue;
-        if (phoOverlap[iPho] == 1) continue;
-        EleN_num++;
-      }  
-      if (EleN_num==0) continue;
-//----
 
       EleN_num0=0,EleP_num0=0;
       EleN_num=0,EleP_num=0;
@@ -147,19 +138,24 @@ void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_inde
          if (fabs(eleSCEta[iEle])>2.5) continue;
          if ( fabs(eleSCEta[iEle])>1.4442 && fabs(eleSCEta[iEle])<1.566) continue;
 
+         //spike cleaning in EB
          if (fabs(eleSCEta[iEle]) < 1.4442) {
            if (eleRecoFlag[iEle]==2) continue;
            if (eleSeverity[iEle]==3) continue;
            if (eleSeverity[iEle]==4) continue;
          } 
 
+         //MC macthing
+         if (abs(eleGenMomPID[iEle])!=11 && abs(eleGenGMomPID[iEle])!=23 && abs(eleGenGMomPID[iEle])!=24) continue;
+
          if (eleCharge[iEle]==1){
             EleP_num0++;
          } else if (eleCharge[iEle]==-1){
             EleN_num0++;
          }
+
          if ( fabs(eleSCEta[iEle]) < 1.4442 ) Ele1InEE = 0;
-         else if (fabs(eleSCEta[iEle])<2.56 && fabs(eleSCEta[iEle])>1.566) Ele1InEE = 1;
+         else if (fabs(eleSCEta[iEle])<2.5 && fabs(eleSCEta[iEle])>1.566) Ele1InEE = 1;
 
          heEta[0]->Fill(eleEta[iEle],EvtWeight);
          h2Pt[0]->Fill(elePt[iEle],EvtWeight);
@@ -260,7 +256,19 @@ void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_inde
             if (fabs(phoSCEta[iPho]) > 1.4442 && fabs(phoSCEta[iPho]) < 1.566 ) continue;
             if (phoOverlap[iPho] == 1) continue;
             if (phohasPixelSeed[iPho] == 1) continue;
-            if (phoHoverE[iPho] > PhoHoverPreCut) continue;
+            //if (phoHoverE[iPho] > PhoHoverPreCut) continue;
+
+            //spike cleaning in EB
+            if (fabs(phoSCEta[iPho]) < 1.4442) {
+             if (phoRecoFlag[iPho]==2) continue;
+             if (phoSeverity[iPho]==3) continue;
+             if (phoSeverity[iPho]==4) continue;
+           }
+
+            //MC matching
+            if ( fabs(phoGenMomPID[iPho])!=21  &&
+                 fabs(phoGenMomPID[iPho])>=7    && fabs(phoGenGMomPID[iPho])>=7  && fabs(phoGenGMomPID[iPho])!=21 &&
+                 fabs(phoGenGMomPID[iPho])!=24 && fabs(phoGenGMomPID[iPho])!=23 ) continue;
 
             //Remove ISR/FSR in Madgrapg W/Z+Jet
             if (ProcessTag == "WJet" || ProcessTag == "ZJet") {
@@ -335,7 +343,7 @@ void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_inde
            hMee[1]  -> Fill(Zee.M(),EvtWeight);
            hMeeg[0] -> Fill(Mllg.M(),EvtWeight);
 
-           //(6) deltaR(ele(both), photon)>0.7
+           //(6) deltaR(ele(both), photon) > deltaR cut
            MC_dPhi=0.0, MC_dEta=0.0;
            DelR1=0.0, DelR2=0.0;
 
@@ -396,6 +404,7 @@ void Zg_SelectorMC::Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_inde
 
                hNEvt->Fill(5.5,EvtWeight);
 
+               //Check the source of photon
                if (ProcessTag == "Zg" || ProcessTag == "Wg") {
                    if (phoGenMomPID[pho_index]==22 && 
                    (abs(phoGenGMomPID[pho_index])==23 || abs(phoGenGMomPID[pho_index])==24)) hNEvt->Fill(6.5,EvtWeight);
