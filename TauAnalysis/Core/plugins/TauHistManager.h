@@ -105,6 +105,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauPhiCompToGen_;
 
   MonitorElement* hTauMatchingGenParticlePdgId_;
+  MonitorElement* hTauMatchingFinalStateGenParticlePdgId_;
   MonitorElement* hTauMatchingGenTauDecayMode_;
 
   vint skipPdgIdsGenParticleMatch_;

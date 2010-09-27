@@ -227,6 +227,7 @@ void TauHistManager::bookHistogramsImp()
   hTauPhiCompToGen_ = book1D("TauPhiCompToGen", "RECO-GEN #Delta#phi", 200, -0.050, +0.050);
   
   hTauMatchingGenParticlePdgId_ = book1D("TauMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+  hTauMatchingFinalStateGenParticlePdgId_ = book1D("TauMatchingFinalStateGenParticlePdgId", "matching final state gen. Particle PdgId", 26, -1.5, 24.5);
   hTauMatchingGenTauDecayMode_ = book1D("TauMatchingGenTauDecayMode", "matching gen. Tau decay mode", 20, -0.5, 19.5);
   setAxisLabelsGenTauDecayMode(hTauMatchingGenTauDecayMode_->getTH1()->GetXaxis());
   
@@ -490,15 +491,28 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauPhiCompToGen_->Fill(patTau->phi() - patTau->genJet()->phi(), weight);
     }
 
+		//  get PDG IDs of matching generator particles
     int matchingGenParticlePdgId = -1;
-    if ( genParticles.isValid() )
-      matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), *genParticles, &skipPdgIdsGenParticleMatch_);
+    int matchingFinalStateGenParticlePdgId = -1;
+    if( genParticles.isValid() ) {
+		matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_,true);
+		matchingFinalStateGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_,false);
+	}
+
     if ( matchingGenParticlePdgId == -1 ) {
       hTauMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {
       hTauMatchingGenParticlePdgId_->Fill(24, weight);
     } else {
       hTauMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
+    }
+
+    if ( matchingFinalStateGenParticlePdgId == -1 ) {
+      hTauMatchingFinalStateGenParticlePdgId_->Fill(-1, weight);
+    } else if ( abs(matchingFinalStateGenParticlePdgId) > 22 ) {
+      hTauMatchingFinalStateGenParticlePdgId_->Fill(24, weight);
+    } else {
+      hTauMatchingFinalStateGenParticlePdgId_->Fill(abs(matchingFinalStateGenParticlePdgId), weight);
     }
 
     if ( patTau->genJet() != 0 ) {

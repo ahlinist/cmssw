@@ -75,6 +75,7 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronPhiCompToGen_;
 
   MonitorElement* hElectronMatchingGenParticlePdgId_;
+  MonitorElement* hElectronMatchingFinalStateGenParticlePdgId_;
 
   MonitorElement* hElectronTrackPt_;
   MonitorElement* hElectronTrackIPxy_;
