@@ -14,6 +14,9 @@ PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
     # modify in case you want to submit crab jobs for some samples only...
+    'InclusivePPmuX', 
+    'PPmuXptGt20Mu10', 
+    'PPmuXptGt20Mu15'
 ]
 
 ENABLE_SYSTEMATICS = False
@@ -77,7 +80,7 @@ for sample in samples.SAMPLES_TO_ANALYZE:
     jobOptions.append(('globalTag', get_conditions(sample_info['conditions'])))
 
     # This must be done after the factorization step ?
-    ##jobOptions.append(('enableSysUncertainties', ENABLE_SYSTEMATICS))
+    jobOptions.append(('enableSysUncertainties', ENABLE_SYSTEMATICS))
 
     # Build crab options
     crabOptions = {
