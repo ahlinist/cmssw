@@ -1,4 +1,11 @@
-void Run_ZgSelectorMC(Int_t eleID, Int_t phoID){
+void Run_ZgSelectorMC(){
+  int   eleID_index(8);//relIso80
+  int   phoID_index(6); //0-7:95,90,85,80,75,65,EG_Loose,EG_Tight
+  float DelRCut(0.7);
+  Run_ZgSelectorMC(eleID_index,phoID_index,DelRCut);
+}
+
+void Run_ZgSelectorMC(Int_t eleID, Int_t phoID,Float_t DelRCut){
 
    gROOT->LoadMacro("Zg_SelectorMC.C+");
 
@@ -49,10 +56,7 @@ void Run_ZgSelectorMC(Int_t eleID, Int_t phoID){
    for (Int_t iSample=0;iSample<nfile;iSample++) {
      cout<<"Now Running....sample:"<<iSample<<", Weight:"<<EvtWeight[iSample]<<endl;
      Zg_SelectorMC t(iSample);
-     t.Loop(iSample,phoID,eleID,EvtWeight[iSample],ProcessTag[iSample],TSaveFileName);
+     t.Loop(iSample,phoID,eleID,EvtWeight[iSample],ProcessTag[iSample],TSaveFileName,DelRCut);
    }
    cout<<"Done!"<<endl;
-}
-void Run_ZgSelectorMC(){
-  Run_ZgSelectorMC(11,6);
 }
