@@ -15,7 +15,7 @@ dumpZtoElecTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
         TTplusJets = cms.string('harvested/TTplusJets/zElecTauAnalyzer/FilterStatistics/'),
         QCD_EMenriched = cms.string('harvested/qcdEMenrichedSum/zElecTauAnalyzer/FilterStatistics/'),
         QCD_BCtoE = cms.string('harvested/qcdBCtoESum/zElecTauAnalyzer/FilterStatistics/'),
-        gammaPlusJetsSum = cms.string('harvested/gammaPlusJetsSum/zElecTauAnalyzer/FilterStatistics/')
+        PhotonPlusJets = cms.string('harvested/gammaPlusJetsSum/zElecTauAnalyzer/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
 )
