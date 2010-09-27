@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
+import copy
+
 import TauAnalysis.Configuration.plotterProcessDefinitions_cfi as plotter
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
-import copy
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
@@ -39,7 +40,7 @@ SAMPLE_DEFAULTS = {
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'lumi_mask' : '',
-    'runselection' : '',
+    'runselection' : ''
 }
 
 # Conversions to pico barns
