@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.36 2010/03/29 07:46:04 mkortela Exp $
+// $Id: TTEffAnalyzer.h,v 1.37 2010/04/19 08:29:41 slehti Exp $
 //
 //
 
@@ -92,6 +92,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       float PFClusterEtaRMS, PFClusterPhiRMS, PFClusterDrRMS;
       float pfJetChargedEmEnergy, pfJetChargedEmEnergyFraction, pfJetChargedHadronEnergy, pfJetChargedHadronEnergyFraction;
       float pfJetNeutralEmEnergy, pfJetNeutralEmEnergyFraction, pfJetNeutralHadronEnergy, pfJetNeutralHadronEnergyFraction;
+      float PFSignalSumPt,PFIsoNTrks,PFIsoTrkNHits,PFIsoTrkChi2,PFIsoTrkPt;
       double MCMatchingCone;
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
