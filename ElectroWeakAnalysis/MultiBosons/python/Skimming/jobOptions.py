@@ -34,6 +34,7 @@ def applyJobOptions(options):
     HLT_Mu3
     HLT_Mu5
     HLT_Mu9
+    HLT_Mu11
     HLT_L2Mu9
     HLT_L2Mu11
     HLT_L1Mu30
@@ -109,29 +110,181 @@ def applyJobOptions(options):
     jobOptions.hltProcessName = "REDIGI36X"
     jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
 
-  elif options.jobType == "PromptReco36X":
+  elif options.jobType == "MUPHPromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
 
-  elif options.jobType == "PromptReco38X":
+  elif options.jobType == "EPHPromptReco36X":
+    jobOptions.globalTag = "GR10_P_V7::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "JETPromptReco36X":
+    jobOptions.globalTag = "GR10_P_V7::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "Jet"
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "PHMETPromptReco36X":
+    jobOptions.globalTag = "GR10_P_V7::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "PhotonMET"
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "MUPHPromptReco38X":
     jobOptions.globalTag = "GR10_P_V9::All"
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
 
-  elif options.jobType == "ReReco36X":
+  elif options.jobType == "EPHPromptReco38X":
+    jobOptions.globalTag = "GR10_P_V9::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "JETPromptReco38X":
+    jobOptions.globalTag = "GR10_P_V9::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "Jet"
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "PHMETPromptReco38X":
+    jobOptions.globalTag = "GR10_P_V9::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "PhotonMET"
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "MUPHReReco36X":
     jobOptions.globalTag = "GR_R_36X_V12B::All"
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
 
-  elif options.jobType == "ReReco38X":
-    jobOptions.globalTag = "GR_R_38X_V9A::All"
+  elif options.jobType == "EPHReReco36X":
+    jobOptions.globalTag = "GR_R_36X_V12B::All"
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
+    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.wantSummary = True
+    
+  elif options.jobType == "JETReReco36X":
+    jobOptions.globalTag = "GR_R_36X_V12B::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "Jet"
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "PHMETReReco36X":
+    jobOptions.globalTag = "GR_R_36X_V12B::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "PhotonMET"
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "MUPHReReco38X":
+    jobOptions.globalTag = "GR_R_38X_V13A::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "EPHReReco38X":
+    jobOptions.globalTag = "GR_R_38X_V13A::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "JETReReco38X":
+    jobOptions.globalTag = "GR_R_38X_V13A::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "Jet"
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "PHMETReReco38X":
+    jobOptions.globalTag = "GR_R_38X_V13A::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "PhotonMET"
+    jobOptions.wantSummary = True
+
+  elif options.jobType == "MUPHMC38X":
+    jobOptions.globalTag = "START38_V12::All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = True
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI36X"
+
+  elif options.jobType == "EPHMC38X":
+    jobOptions.globalTag = "START38_V12::All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = True
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI36X"
+
+  elif options.jobType == "JETMC38X":
+    jobOptions.globalTag = "START38_V12::All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = True
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI36X"
+
+  elif options.jobType == "PHMETMC38X":
+    jobOptions.globalTag = "START38_V12::All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = True
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI36X"
 
   elif options.jobType == "MC36X":
     jobOptions.globalTag = "START3X_V26::All"
