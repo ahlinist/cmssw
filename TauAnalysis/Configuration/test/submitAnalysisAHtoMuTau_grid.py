@@ -1,7 +1,11 @@
-from TauAnalysis.Configuration.submitToGrid2 import submitToGrid
-import TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_grid_cfi as samples
-from Configuration.PyReleaseValidation.autoCond import autoCond
+#!/usr/bin/env python
+
 import copy
+
+import TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_grid_cfi as samples
+
+from Configuration.PyReleaseValidation.autoCond import autoCond
+from TauAnalysis.Configuration.submitToGrid2 import submitToGrid
 
 CONFIG_FILE = 'runAHtoMuTau_cfg.py'
 OUTPUT_FILE_PATH = "/user/f/friis/AHtoMuTau_grid/" 
@@ -74,7 +78,7 @@ for sample in samples.SAMPLES_TO_ANALYZE:
     # Get the appropriate GlobalTag
     jobOptions.append(('globalTag', get_conditions(sample_info['conditions'])))
 
-    # This must be done after the factorization step?
+    # This must be done after the factorization step ?
     jobOptions.append(('enableSysUncertainties', ENABLE_SYSTEMATICS))
 
     # Build crab options
