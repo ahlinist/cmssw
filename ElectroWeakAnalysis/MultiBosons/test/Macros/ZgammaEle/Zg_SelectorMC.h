@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Tue Sep  7 07:38:30 2010 by ROOT version 5.22/00d
+// Fri Sep 24 15:26:22 2010 by ROOT version 5.22/00d
 // from TTree EventTree/Event data
-// found on file: 362_ZJets_7TeV_madgraph_tauola.root
+// found on file: vgtree_1.root
 //////////////////////////////////////////////////////////
 
 #ifndef Zg_SelectorMC_h
@@ -27,15 +27,15 @@ public :
    Bool_t          isData;
    Int_t           ttbit0;
    Int_t           nHLT;
-   Int_t           HLT[144];   //[nHLT]
-   Int_t           HLTIndex[16];
+   Int_t           HLT[200];   //[nHLT]
+   Int_t           HLTIndex[25];
    Int_t           nHFTowersP;
    Int_t           nHFTowersN;
    Int_t           nVtx;
-   Float_t         vtx[4][3];   //[nVtx]
-   Int_t           vtxNTrk[4];   //[nVtx]
-   Int_t           vtxNDF[4];   //[nVtx]
-   Float_t         vtxD0[4];   //[nVtx]
+   Float_t         vtx[15][3];   //[nVtx]
+   Int_t           vtxNTrk[15];   //[nVtx]
+   Int_t           vtxNDF[15];   //[nVtx]
+   Float_t         vtxD0[15];   //[nVtx]
    Int_t           IsVtxGood;
    Int_t           nTrk;
    Int_t           nGoodTrk;
@@ -44,19 +44,19 @@ public :
    Float_t         pthat;
    Float_t         processID;
    Int_t           nMC;
-   Int_t           mcPID[22];   //[nMC]
-   Float_t         mcPt[22];   //[nMC]
-   Float_t         mcMass[22];   //[nMC]
-   Float_t         mcEta[22];   //[nMC]
-   Float_t         mcPhi[22];   //[nMC]
-   Int_t           mcGMomPID[22];   //[nMC]
-   Int_t           mcMomPID[22];   //[nMC]
-   Float_t         mcMomPt[22];   //[nMC]
-   Float_t         mcMomMass[22];   //[nMC]
-   Float_t         mcMomEta[22];   //[nMC]
-   Float_t         mcMomPhi[22];   //[nMC]
-   Int_t           mcIndex[22];   //[nMC]
-   Int_t           mcDecayType[22];   //[nMC]
+   Int_t           mcPID[124];   //[nMC]
+   Float_t         mcPt[124];   //[nMC]
+   Float_t         mcMass[124];   //[nMC]
+   Float_t         mcEta[124];   //[nMC]
+   Float_t         mcPhi[124];   //[nMC]
+   Int_t           mcGMomPID[124];   //[nMC]
+   Int_t           mcMomPID[124];   //[nMC]
+   Float_t         mcMomPt[124];   //[nMC]
+   Float_t         mcMomMass[124];   //[nMC]
+   Float_t         mcMomEta[124];   //[nMC]
+   Float_t         mcMomPhi[124];   //[nMC]
+   Int_t           mcIndex[124];   //[nMC]
+   Int_t           mcDecayType[124];   //[nMC]
    Float_t         genMET;
    Float_t         genMETx;
    Float_t         genMETy;
@@ -84,147 +84,151 @@ public :
    Float_t         pfMETmEtSig;
    Float_t         pfMETSig;
    Int_t           nEle;
-   Int_t           eleID[7][12];   //[nEle]
-   Int_t           eleClass[7];   //[nEle]
-   Int_t           eleCharge[7];   //[nEle]
-   Float_t         eleEn[7];   //[nEle]
-   Float_t         eleSCRawEn[7];   //[nEle]
-   Float_t         eleESEn[7];   //[nEle]
-   Float_t         eleSCEn[7];   //[nEle]
-   Float_t         elePt[7];   //[nEle]
-   Float_t         elePz[7];   //[nEle]
-   Float_t         eleEta[7];   //[nEle]
-   Float_t         elePhi[7];   //[nEle]
-   Float_t         eleSCEta[7];   //[nEle]
-   Float_t         eleSCPhi[7];   //[nEle]
-   Float_t         eleSCEtaWidth[7];   //[nEle]
-   Float_t         eleSCPhiWidth[7];   //[nEle]
-   Float_t         eleVtx[7][3];   //[nEle]
-   Float_t         eleCaloPos[7][3];   //[nEle]
-   Float_t         eleSCPos[7][3];   //[nEle]
-   Float_t         eleHoverE[7];   //[nEle]
-   Float_t         eleEoverP[7];   //[nEle]
-   Float_t         elePin[7];   //[nEle]
-   Float_t         elePout[7];   //[nEle]
-   Float_t         eleBrem[7];   //[nEle]
-   Float_t         eledEtaAtVtx[7];   //[nEle]
-   Float_t         eledPhiAtVtx[7];   //[nEle]
-   Float_t         eleSigmaEtaEta[7];   //[nEle]
-   Float_t         eleSigmaIEtaIEta[7];   //[nEle]
-   Float_t         eleE3x3[7];   //[nEle]
-   Float_t         eleSeedTime[7];   //[nEle]
-   Int_t           eleRecoFlag[7];   //[nEle]
-   Int_t           eleSeverity[7];   //[nEle]
-   Int_t           eleGenIndex[7];   //[nEle]
-   Int_t           eleGenGMomPID[7];   //[nEle]
-   Int_t           eleGenMomPID[7];   //[nEle]
-   Float_t         eleGenMomPt[7];   //[nEle]
-   Float_t         eleIsoTrkDR03[7];   //[nEle]
-   Float_t         eleIsoEcalDR03[7];   //[nEle]
-   Float_t         eleIsoHcalDR03[7];   //[nEle]
-   Float_t         eleIsoTrkDR04[7];   //[nEle]
-   Float_t         eleIsoEcalDR04[7];   //[nEle]
-   Float_t         eleIsoHcalDR04[7];   //[nEle]
+//   Int_t           eleTrg[225][5];   //[nEle]
+   Int_t           eleID[225][12];   //[nEle]
+   Int_t           eleClass[225];   //[nEle]
+   Int_t           eleCharge[225];   //[nEle]
+   Float_t         eleEn[225];   //[nEle]
+   Float_t         eleSCRawEn[225];   //[nEle]
+   Float_t         eleESEn[225];   //[nEle]
+   Float_t         eleSCEn[225];   //[nEle]
+   Float_t         elePt[225];   //[nEle]
+   Float_t         elePz[225];   //[nEle]
+   Float_t         eleEta[225];   //[nEle]
+   Float_t         elePhi[225];   //[nEle]
+   Float_t         eleSCEta[225];   //[nEle]
+   Float_t         eleSCPhi[225];   //[nEle]
+   Float_t         eleSCEtaWidth[225];   //[nEle]
+   Float_t         eleSCPhiWidth[225];   //[nEle]
+   Float_t         eleVtx[225][3];   //[nEle]
+   Float_t         eleCaloPos[225][3];   //[nEle]
+   Float_t         eleSCPos[225][3];   //[nEle]
+   Float_t         eleHoverE[225];   //[nEle]
+   Float_t         eleEoverP[225];   //[nEle]
+   Float_t         elePin[225];   //[nEle]
+   Float_t         elePout[225];   //[nEle]
+   Float_t         eleBrem[225];   //[nEle]
+   Float_t         eledEtaAtVtx[225];   //[nEle]
+   Float_t         eledPhiAtVtx[225];   //[nEle]
+   Float_t         eleSigmaEtaEta[225];   //[nEle]
+   Float_t         eleSigmaIEtaIEta[225];   //[nEle]
+   Float_t         eleE3x3[225];   //[nEle]
+   Float_t         eleSeedTime[225];   //[nEle]
+   Int_t           eleRecoFlag[225];   //[nEle]
+   Int_t           eleSeverity[225];   //[nEle]
+   Int_t           eleGenIndex[225];   //[nEle]
+   Int_t           eleGenGMomPID[225];   //[nEle]
+   Int_t           eleGenMomPID[225];   //[nEle]
+   Float_t         eleGenMomPt[225];   //[nEle]
+   Float_t         eleIsoTrkDR03[225];   //[nEle]
+   Float_t         eleIsoEcalDR03[225];   //[nEle]
+   Float_t         eleIsoHcalDR03[225];   //[nEle]
+   Float_t         eleIsoTrkDR04[225];   //[nEle]
+   Float_t         eleIsoEcalDR04[225];   //[nEle]
+   Float_t         eleIsoHcalDR04[225];   //[nEle]
    Int_t           nPho;
-   Bool_t          phoIsPhoton[9];   //[nPho]
-   Float_t         phoE[9];   //[nPho]
-   Float_t         phoEt[9];   //[nPho]
-   Float_t         phoPz[9];   //[nPho]
-   Float_t         phoEta[9];   //[nPho]
-   Float_t         phoPhi[9];   //[nPho]
-   Float_t         phoR9[9];   //[nPho]
-   Float_t         phoTrkIsoSolidDR03[9];   //[nPho]
-   Float_t         phoTrkIsoHollowDR03[9];   //[nPho]
-   Int_t           phoNTrkSolidDR03[9];   //[nPho]
-   Int_t           phoNTrkHollowDR03[9];   //[nPho]
-   Float_t         phoEcalIsoDR03[9];   //[nPho]
-   Float_t         phoHcalIsoDR03[9];   //[nPho]
-   Float_t         phoTrkIsoSolidDR04[9];   //[nPho]
-   Float_t         phoTrkIsoHollowDR04[9];   //[nPho]
-   Int_t           phoNTrkSolidDR04[9];   //[nPho]
-   Int_t           phoNTrkHollowDR04[9];   //[nPho]
-   Float_t         phoEcalIsoDR04[9];   //[nPho]
-   Float_t         phoHcalIsoDR04[9];   //[nPho]
-   Float_t         phoHoverE[9];   //[nPho]
-   Float_t         phoSigmaEtaEta[9];   //[nPho]
-   Float_t         phoSigmaIEtaIEta[9];   //[nPho]
-   Float_t         phoE3x3[9];   //[nPho]
-   Float_t         phoSeedTime[9];   //[nPho]
-   Int_t           phoRecoFlag[9];   //[nPho]
-   Int_t           phoSeverity[9];   //[nPho]
-   Int_t           phoPos[9];   //[nPho]
-   Float_t         phoRoundness[9];   //[nPho]
-   Float_t         phoAngle[9];   //[nPho]
-   Int_t           phoGenIndex[9];   //[nPho]
-   Int_t           phoGenGMomPID[9];   //[nPho]
-   Int_t           phoGenMomPID[9];   //[nPho]
-   Float_t         phoGenMomPt[9];   //[nPho]
-   Float_t         phoSCE[9];   //[nPho]
-   Float_t         phoSCEt[9];   //[nPho]
-   Float_t         phoSCEta[9];   //[nPho]
-   Float_t         phoSCPhi[9];   //[nPho]
-   Float_t         phoSCEtaWidth[9];   //[nPho]
-   Float_t         phoSCPhiWidth[9];   //[nPho]
-   Int_t           phoOverlap[9];   //[nPho]
-   Int_t           phohasPixelSeed[9];   //[nPho]
-   Int_t           phoIsConv[9];   //[nPho]
-   Float_t         phoPi0Disc[9];   //[nPho]
+   Bool_t          phoIsPhoton[226];   //[nPho]
+   Float_t         phoE[226];   //[nPho]
+   Float_t         phoEt[226];   //[nPho]
+   Float_t         phoPz[226];   //[nPho]
+   Float_t         phoEta[226];   //[nPho]
+   Float_t         phoPhi[226];   //[nPho]
+   Float_t         phoR9[226];   //[nPho]
+   Float_t         phoTrkIsoSolidDR03[226];   //[nPho]
+   Float_t         phoTrkIsoHollowDR03[226];   //[nPho]
+   Int_t           phoNTrkSolidDR03[226];   //[nPho]
+   Int_t           phoNTrkHollowDR03[226];   //[nPho]
+   Float_t         phoEcalIsoDR03[226];   //[nPho]
+   Float_t         phoHcalIsoDR03[226];   //[nPho]
+   Float_t         phoTrkIsoSolidDR04[226];   //[nPho]
+   Float_t         phoTrkIsoHollowDR04[226];   //[nPho]
+   Int_t           phoNTrkSolidDR04[226];   //[nPho]
+   Int_t           phoNTrkHollowDR04[226];   //[nPho]
+   Float_t         phoEcalIsoDR04[226];   //[nPho]
+   Float_t         phoHcalIsoDR04[226];   //[nPho]
+   Float_t         phoHoverE[226];   //[nPho]
+   Float_t         phoSigmaEtaEta[226];   //[nPho]
+   Float_t         phoSigmaIEtaIEta[226];   //[nPho]
+   Float_t         phoE3x3[226];   //[nPho]
+   Float_t         phoSeedTime[226];   //[nPho]
+   Int_t           phoRecoFlag[226];   //[nPho]
+   Int_t           phoSeverity[226];   //[nPho]
+   Int_t           phoPos[226];   //[nPho]
+   Float_t         phoRoundness[226];   //[nPho]
+   Float_t         phoAngle[226];   //[nPho]
+   Int_t           phoGenIndex[226];   //[nPho]
+   Int_t           phoGenGMomPID[226];   //[nPho]
+   Int_t           phoGenMomPID[226];   //[nPho]
+   Float_t         phoGenMomPt[226];   //[nPho]
+   Float_t         phoSCE[226];   //[nPho]
+   Float_t         phoSCEt[226];   //[nPho]
+   Float_t         phoSCEta[226];   //[nPho]
+   Float_t         phoSCPhi[226];   //[nPho]
+   Float_t         phoSCEtaWidth[226];   //[nPho]
+   Float_t         phoSCPhiWidth[226];   //[nPho]
+   Int_t           phoOverlap[226];   //[nPho]
+   Int_t           phohasPixelSeed[226];   //[nPho]
+   Int_t           phoIsConv[226];   //[nPho]
+   Float_t         phoPi0Disc[226];   //[nPho]
    Int_t           nMu;
-   Float_t         muEta[15];   //[nMu]
-   Float_t         muPhi[15];   //[nMu]
-   Int_t           muCharge[15];   //[nMu]
-   Float_t         muPt[15];   //[nMu]
-   Float_t         muPz[15];   //[nMu]
-   Int_t           muGenIndex[15];   //[nMu]
-   Float_t         muIsoTrk[15];   //[nMu]
-   Float_t         muIsoCalo[15];   //[nMu]
-   Float_t         muIsoEcal[15];   //[nMu]
-   Float_t         muIsoHcal[15];   //[nMu]
-   Float_t         muChi2NDF[15];   //[nMu]
-   Float_t         muEmVeto[15];   //[nMu]
-   Float_t         muHadVeto[15];   //[nMu]
-   Int_t           muType[15];   //[nMu]
-   Bool_t          muID[15][6];   //[nMu]
-   Float_t         muD0[15];   //[nMu]
-   Int_t           muNumberOfValidTrkHits[15];   //[nMu]
-   Int_t           muNumberOfValidPixelHits[15];   //[nMu]
-   Int_t           muNumberOfValidMuonHits[15];   //[nMu]
+//   Int_t           muTrg;
+   Float_t         muEta[229];   //[nMu]
+   Float_t         muPhi[229];   //[nMu]
+   Int_t           muCharge[229];   //[nMu]
+   Float_t         muPt[229];   //[nMu]
+   Float_t         muPz[229];   //[nMu]
+   Int_t           muGenIndex[229];   //[nMu]
+   Float_t         muIsoTrk[229];   //[nMu]
+   Float_t         muIsoCalo[229];   //[nMu]
+   Float_t         muIsoEcal[229];   //[nMu]
+   Float_t         muIsoHcal[229];   //[nMu]
+   Float_t         muChi2NDF[229];   //[nMu]
+   Float_t         muEmVeto[229];   //[nMu]
+   Float_t         muHadVeto[229];   //[nMu]
+   Int_t           muType[229];   //[nMu]
+   Bool_t          muID[229][6];   //[nMu]
+   Float_t         muD0[229];   //[nMu]
+   Int_t           muNumberOfValidTrkHits[229];   //[nMu]
+   Int_t           muNumberOfValidPixelHits[229];   //[nMu]
+   Int_t           muNumberOfValidMuonHits[229];   //[nMu]
+//   Int_t           muStations[229];   //[nMu]
+//   Int_t           muChambers[229];   //[nMu]
    Int_t           nZee;
-   Float_t         ZeeMass[12];   //[nZee]
-   Float_t         ZeePt[12];   //[nZee]
-   Float_t         ZeeEta[12];   //[nZee]
-   Float_t         ZeePhi[12];   //[nZee]
-   Int_t           ZeeLeg1Index[12];   //[nZee]
-   Int_t           ZeeLeg2Index[12];   //[nZee]
+   Float_t         ZeeMass[210];   //[nZee]
+   Float_t         ZeePt[210];   //[nZee]
+   Float_t         ZeeEta[210];   //[nZee]
+   Float_t         ZeePhi[210];   //[nZee]
+   Int_t           ZeeLeg1Index[210];   //[nZee]
+   Int_t           ZeeLeg2Index[210];   //[nZee]
    Int_t           nZmumu;
-   Float_t         ZmumuMass[4];   //[nZmumu]
-   Float_t         ZmumuPt[4];   //[nZmumu]
-   Float_t         ZmumuEta[4];   //[nZmumu]
-   Float_t         ZmumuPhi[4];   //[nZmumu]
-   Int_t           ZmumuLeg1Index[4];   //[nZmumu]
-   Int_t           ZmumuLeg2Index[4];   //[nZmumu]
+   Float_t         ZmumuMass[114];   //[nZmumu]
+   Float_t         ZmumuPt[114];   //[nZmumu]
+   Float_t         ZmumuEta[114];   //[nZmumu]
+   Float_t         ZmumuPhi[114];   //[nZmumu]
+   Int_t           ZmumuLeg1Index[114];   //[nZmumu]
+   Int_t           ZmumuLeg2Index[114];   //[nZmumu]
    Int_t           nWenu;
-   Float_t         WenuMassTCaloMET[7];   //[nWenu]
-   Float_t         WenuEtCaloMET[7];   //[nWenu]
-   Float_t         WenuACopCaloMET[7];   //[nWenu]
-   Float_t         WenuMassTTcMET[7];   //[nWenu]
-   Float_t         WenuEtTcMET[7];   //[nWenu]
-   Float_t         WenuACopTcMET[7];   //[nWenu]
-   Float_t         WenuMassTPfMET[7];   //[nWenu]
-   Float_t         WenuEtPfMET[7];   //[nWenu]
-   Float_t         WenuACopPfMET[7];   //[nWenu]
-   Int_t           WenuEleIndex[7];   //[nWenu]
+   Float_t         WenuMassTCaloMET[115];   //[nWenu]
+   Float_t         WenuEtCaloMET[115];   //[nWenu]
+   Float_t         WenuACopCaloMET[115];   //[nWenu]
+   Float_t         WenuMassTTcMET[115];   //[nWenu]
+   Float_t         WenuEtTcMET[115];   //[nWenu]
+   Float_t         WenuACopTcMET[115];   //[nWenu]
+   Float_t         WenuMassTPfMET[115];   //[nWenu]
+   Float_t         WenuEtPfMET[115];   //[nWenu]
+   Float_t         WenuACopPfMET[115];   //[nWenu]
+   Int_t           WenuEleIndex[115];   //[nWenu]
    Int_t           nWmunu;
-   Float_t         WmunuMassTCaloMET[6];   //[nWmunu]
-   Float_t         WmunuEtCaloMET[6];   //[nWmunu]
-   Float_t         WmunuACopCaloMET[6];   //[nWmunu]
-   Float_t         WmunuMassTTcMET[6];   //[nWmunu]
-   Float_t         WmunuEtTcMET[6];   //[nWmunu]
-   Float_t         WmunuACopTcMET[6];   //[nWmunu]
-   Float_t         WmunuMassTPfMET[6];   //[nWmunu]
-   Float_t         WmunuEtPfMET[6];   //[nWmunu]
-   Float_t         WmunuACopPfMET[6];   //[nWmunu]
-   Int_t           WmunuMuIndex[6];   //[nWmunu]
+   Float_t         WmunuMassTCaloMET[114];   //[nWmunu]
+   Float_t         WmunuEtCaloMET[114];   //[nWmunu]
+   Float_t         WmunuACopCaloMET[114];   //[nWmunu]
+   Float_t         WmunuMassTTcMET[114];   //[nWmunu]
+   Float_t         WmunuEtTcMET[114];   //[nWmunu]
+   Float_t         WmunuACopTcMET[114];   //[nWmunu]
+   Float_t         WmunuMassTPfMET[114];   //[nWmunu]
+   Float_t         WmunuEtPfMET[114];   //[nWmunu]
+   Float_t         WmunuACopPfMET[114];   //[nWmunu]
+   Int_t           WmunuMuIndex[114];   //[nWmunu]
 
    // List of branches
    TBranch        *b_run;   //!
@@ -292,6 +296,7 @@ public :
    TBranch        *b_pfMETmEtSig;   //!
    TBranch        *b_pfMETSig;   //!
    TBranch        *b_nEle;   //!
+//   TBranch        *b_eleTrg;   //!
    TBranch        *b_eleID;   //!
    TBranch        *b_eleClass;   //!
    TBranch        *b_eleCharge;   //!
@@ -378,6 +383,7 @@ public :
    TBranch        *b_phoIsConv;   //!
    TBranch        *b_phoPi0Disc;   //!
    TBranch        *b_nMu;   //!
+//   TBranch        *b_muTrg;   //!
    TBranch        *b_muEta;   //!
    TBranch        *b_muPhi;   //!
    TBranch        *b_muCharge;   //!
@@ -397,6 +403,8 @@ public :
    TBranch        *b_muNumberOfValidTrkHits;   //!
    TBranch        *b_muNumberOfValidPixelHits;   //!
    TBranch        *b_muNumberOfValidMuonHits;   //!
+//   TBranch        *b_muStations;   //!
+//   TBranch        *b_muChambers;   //!
    TBranch        *b_nZee;   //!
    TBranch        *b_ZeeMass;   //!
    TBranch        *b_ZeePt;   //!
@@ -440,7 +448,7 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_index, Double_t EvtWeight, TString ProcessTag,TString TSaveFileName);
+   virtual void     Loop(Int_t sample_index, Int_t phoID_index, Int_t EleID_index, Double_t EvtWeight, TString ProcessTag,TString TSaveFileName,Float_t DelRCut);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 };
@@ -450,16 +458,18 @@ public :
 #ifdef Zg_SelectorMC_cxx
 Zg_SelectorMC::Zg_SelectorMC(Int_t sample_index)
 {
+// if parameter tree is not specified (or zero), connect the file
+// used to generate this class and read the Tree.
    TTree *tree;
-   
+
    TString LoadFileName;
    Int_t nfile=0;
-   
+
    FILE *Table = fopen("Input_table_Sig", "r");
    char filename[200];
    char tmp[100];
    int flag = 1;
-   while (flag != -1){
+   while (flag != -1){ 
       flag=fscanf(Table, "%s", tmp);
       if (flag == -1) continue;
       flag=fscanf(Table, "%s", filename);
@@ -588,6 +598,7 @@ void Zg_SelectorMC::Init(TTree *tree)
    fChain->SetBranchAddress("pfMETmEtSig", &pfMETmEtSig, &b_pfMETmEtSig);
    fChain->SetBranchAddress("pfMETSig", &pfMETSig, &b_pfMETSig);
    fChain->SetBranchAddress("nEle", &nEle, &b_nEle);
+//   fChain->SetBranchAddress("eleTrg", eleTrg, &b_eleTrg);
    fChain->SetBranchAddress("eleID", eleID, &b_eleID);
    fChain->SetBranchAddress("eleClass", eleClass, &b_eleClass);
    fChain->SetBranchAddress("eleCharge", eleCharge, &b_eleCharge);
@@ -674,6 +685,7 @@ void Zg_SelectorMC::Init(TTree *tree)
    fChain->SetBranchAddress("phoIsConv", phoIsConv, &b_phoIsConv);
    fChain->SetBranchAddress("phoPi0Disc", phoPi0Disc, &b_phoPi0Disc);
    fChain->SetBranchAddress("nMu", &nMu, &b_nMu);
+//   fChain->SetBranchAddress("muTrg", &muTrg, &b_muTrg);
    fChain->SetBranchAddress("muEta", muEta, &b_muEta);
    fChain->SetBranchAddress("muPhi", muPhi, &b_muPhi);
    fChain->SetBranchAddress("muCharge", muCharge, &b_muCharge);
@@ -693,6 +705,8 @@ void Zg_SelectorMC::Init(TTree *tree)
    fChain->SetBranchAddress("muNumberOfValidTrkHits", muNumberOfValidTrkHits, &b_muNumberOfValidTrkHits);
    fChain->SetBranchAddress("muNumberOfValidPixelHits", muNumberOfValidPixelHits, &b_muNumberOfValidPixelHits);
    fChain->SetBranchAddress("muNumberOfValidMuonHits", muNumberOfValidMuonHits, &b_muNumberOfValidMuonHits);
+//   fChain->SetBranchAddress("muStations", muStations, &b_muStations);
+//   fChain->SetBranchAddress("muChambers", muChambers, &b_muChambers);
    fChain->SetBranchAddress("nZee", &nZee, &b_nZee);
    fChain->SetBranchAddress("ZeeMass", ZeeMass, &b_ZeeMass);
    fChain->SetBranchAddress("ZeePt", ZeePt, &b_ZeePt);
