@@ -58,7 +58,10 @@ process.analyzePatMCMatching = cms.EDAnalyzer("PatMCMatching",
   muonSrc     = cms.untracked.InputTag("cleanPatMuons")                                             
 )
 
+
 process.outpath.remove(process.out)
 
 process.p = cms.Path(process.patDefaultSequence + process.analyzePatMCMatching)
 
+del(process.out)
+del(process.outpath)
