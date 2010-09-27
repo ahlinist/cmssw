@@ -78,6 +78,7 @@ cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation = cfgDiTauCandidateForMu
 zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     [ cfgMuonTrkIsoCutLooseIsolation,
       cfgMuonEcalIsoCutLooseIsolation,
+      cfgMuonCombIsoCutLooseIsolation,
       cfgMuonAntiPionCutLooseIsolation,
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
