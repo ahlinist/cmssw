@@ -1,0 +1,34 @@
+How to use:
+(A)Run on MC:
+   (1) Modify Input_table_Sig, the format is:
+   ProcessTag   input_file_name  cross-section_@1/pb(LO)  #total_unskimmed_event
+
+   ps. the event wieght is calculated: cross-section / #total_unskimmed_event
+
+   (2) run: root -b Run_ZgSelectorMC.C
+       It will create a root file which save some information.
+       You can change eleID/phoID/deltaR cut in Run_ZgSelectorMC.C
+       For other cut, you can modify them in Zg_SelectorMC.C
+       (search for "Set Cut")
+
+   (3) Print out the event yield:
+       run: root -b print_Event.C
+       It will create a .txt file record the event yield information
+       The input file is created by Run_ZgSelectorMC.C
+       (You may need to modify the input file name)
+       You can change luminosity and set NLO cross-section in this file.
+       ex. McLumi=100., SetMCNLO=true, and set kFactor for each samples
+
+(B)Run on Data
+   (1) Modify the input dataset in ZgSelectData.h
+   (2) run: root -b Run_ZgSelectData.C
+       It will create a root file which save some information, and show all the Zgamma->eegamma candidates.
+       You can change eleID/phoID/deltaR/Zmass cut in Run_ZgSelectorMC.C
+       For other cut, you can modify them in ZgSelectData.C
+       
+(C)Make plots for MC/Data comparison
+   run: root -b CombineHistogram.C
+   You need the output file from Run_ZgSelectData.C and Run_ZgSelectorMC.C
+   You also need to set the MC luminosity and set k_factor in CombineHistogram.C
+   It will create a root file which save all comparison plot after each steps
+ 
