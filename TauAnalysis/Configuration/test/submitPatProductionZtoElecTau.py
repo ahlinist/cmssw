@@ -28,7 +28,7 @@ outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauPatTuples/spring10/current
 # 7TeV data samples
 #
 
-for i in range(57):
+for i in range(417):
 	submitToBatch(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau", 
 		sample = "ZtoElecTau_Data_7TeV_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsPatProduction, replacements = "maxEvents = -1; globalTag = GR_R_36X_V12B::All",

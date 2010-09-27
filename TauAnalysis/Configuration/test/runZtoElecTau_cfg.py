@@ -79,9 +79,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		#'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-		#'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-    	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/spring10/MinBias_pythia6_0/skimElecTau_95_0.root'
+		'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
+		'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -100,8 +99,16 @@ process.source = cms.Source("PoolSource",
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# set trigger
+process.Trigger.selectors[0].triggerPaths = cms.vstring('HLT_Ele10_SW_EleId_L1R','HLT_Ele10_LW_EleId_L1R','HLT_Ele10_LW_L1R','HLT_Ele10_SW_L1R')
+process.analyzeZtoElecTauEvents.eventDumps[0].hltPathsToPrint = cms.vstring('HLT_Ele10_SW_EleId_L1R','HLT_Ele10_LW_EleId_L1R','HLT_Ele10_LW_L1R','HLT_Ele10_SW_L1R')
+process.triggerHistManagerForElecTau.hltPaths = cms.vstring('HLT_Ele10_SW_EleId_L1R','HLT_Ele10_LW_EleId_L1R','HLT_Ele10_LW_L1R','HLT_Ele10_SW_L1R')
+#--------------------------------------------------------------------------------
+
+
+#--------------------------------------------------------------------------------
 # add patElectronIsolation, which was removed from standard pat sequence in CMSSW_3_4
-# only necessary if rproducing PAT-tuples
+# only necessary if producing PAT-tuples
 from TauAnalysis.Configuration.tools.patElectronTools import *
 producePatElectronIsolation(process)
 #--------------------------------------------------------------------------------
@@ -158,11 +165,10 @@ from TauAnalysis.Configuration.tools.switchToData import *
 # uncomment when running over DATA samples
 ##switchToData(process)#
 #--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # for MC, collections are missing
 process.analyzeZtoElecTauEvents.eventDumps[0].doGenInfo = cms.bool(False)
-
-# for data, 
-
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(

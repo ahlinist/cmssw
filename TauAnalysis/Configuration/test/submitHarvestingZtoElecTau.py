@@ -5,7 +5,7 @@ from TauAnalysis.Configuration.makeReplacementsHarvesting import makeReplacement
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/spring10/current/"
+outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/fall10/current/"
 
 inputFilePath = "rfio:" + outputFilePath
 
@@ -24,14 +24,11 @@ inputFilePath = "rfio:" + outputFilePath
 # 7TeV samples
 
 # harvest data
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "Data_7TeV",
+for i in range(9):
+	submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
+							sample = "Data_7TeV" + "_part%(i)02d" % {"i" : (i + 1)},
               replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
               job = "harvesting", queue = "8nh", outputFilePath = outputFilePath, type = "data")
-
-# harvest min bias
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "MinBias_7TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
 
 # harvest Z --> tau tau 
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "Ztautau_7TeV",
@@ -39,9 +36,11 @@ submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTa
               job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
 
 # harvest Z --> e e
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "Zee_7TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
+for i in range(2):
+	submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
+		sample = "Zee_7TeV" + "_part%(i)02d" % {"i" : (i + 1)},
+    replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+    job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
 
 # harvest QCD_BCtoE 
 for i in range(3):
@@ -78,9 +77,11 @@ for i in range(3):
 		job = "harvesting", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 
 # harvest W/Z + jets
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "WplusJets_7TeV",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
-              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
+for i in range(2):
+	submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
+			sample = "WplusJets_7TeV" + "_part%(i)02d" % {"i" : (i + 1)},
+			replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+			job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
 
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "ZtautauPlusJets_7TeV",
               replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
