@@ -7,7 +7,6 @@ import copy
 #
 # Author: Christian Veelken, UC Davis
 #         Jeff Kolb, Notre Dame
-#         Nancy Marinelli, Notre Dame
 # 
 #--------------------------------------------------------------------------------
 
@@ -17,7 +16,6 @@ from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
 	Data = copy.deepcopy(processZtoElecTau_Data_7TeV_Sum.config_dqmFileLoader),
-	#MinBias = copy.deepcopy(processZtoElecTau_MinBias_7TeV_Sum.config_dqmFileLoader),
 	Ztautau = copy.deepcopy(processZtoElecTau_Ztautau_7TeV_Sum.config_dqmFileLoader),
 	Zee = copy.deepcopy(processZtoElecTau_Zee_7TeV_Sum.config_dqmFileLoader),
 	ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJets_7TeV_Sum.config_dqmFileLoader),
