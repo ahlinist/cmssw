@@ -9,15 +9,12 @@ from TauAnalysis.Configuration.submitToGrid2 import submitToGrid
 
 CONFIG_FILE = 'runZtoDiTau_cfg.py'
 OUTPUT_FILE_PATH = "/user/v/veelken/CMSSW_3_6_x/plots/ZtoDiTau/"
-JOB_ID = "7TeV"
+JOB_ID = "7TeVii"
 PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
     # modify in case you want to submit crab jobs for some samples only...
-    'data_JetMETTau_132440_137436_Jun14ReReco',
-    'data_JetMETTau_137437_139558_Prompt',
-    'data_JetMETTau_139559_140159_Jul16ReReco',
-    'data_BTau_140160_999999_Prompt'
+    'qcdDiJet'
 ]
 
 ENABLE_SYSTEMATICS = False
@@ -81,7 +78,7 @@ for sample in samples.SAMPLES_TO_ANALYZE:
     jobOptions.append(('globalTag', get_conditions(sample_info['conditions'])))
 
     # This must be done after the factorization step ?
-    ##jobOptions.append(('enableSysUncertainties', ENABLE_SYSTEMATICS))
+    jobOptions.append(('enableSysUncertainties', ENABLE_SYSTEMATICS))
 
     # Build crab options
     crabOptions = {
