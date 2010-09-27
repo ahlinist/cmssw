@@ -66,7 +66,6 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
         #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
-        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/skims/tauCommissioning/data/muTauSkim_1_1.root'
         'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part01.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part02.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part03.root',
@@ -82,9 +81,8 @@ process.source = cms.Source("PoolSource",
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part13.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part14.root',
         ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part15.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part16.root'
-        
-    )
+        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part16.root'        
+    )    
     #skipBadFiles = cms.untracked.bool(True)
 )
 
@@ -152,7 +150,6 @@ process.p = cms.Path(
   + process.saveZtoDiTauPlots 
 )
 
-
 #--------------------------------------------------------------------------------
 # import utility function for factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runZtoDiTau
@@ -182,6 +179,13 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# disable accessing generator level information
+# if running on data
+#from TauAnalysis.Configuration.tools.switchToData import switchToData
+#switchToData(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 #
 process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.producePatTupleZtoDiTauSpecific )
 #
@@ -201,6 +205,3 @@ if not hasattr(process, "isBatchMode"):
 #
 #del process.patJetMETCorrections
 #print process.dumpPython()
-
-#from TauAnalysis.Configuration.tools.switchToData import switchToData
-#switchToData(process)

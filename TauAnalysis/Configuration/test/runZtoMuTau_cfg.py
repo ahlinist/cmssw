@@ -188,6 +188,13 @@ if hasattr(process, "disableEventDump"):
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# disable accessing generator level information
+# if running on data
+#from TauAnalysis.Configuration.tools.switchToData import switchToData
+#switchToData(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 #
 process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
 #
@@ -207,6 +214,3 @@ if not hasattr(process, "isBatchMode"):
 #
 #del process.patJetMETCorrections
 #print process.dumpPython()
-
-#from TauAnalysis.Configuration.tools.switchToData import switchToData
-#switchToData(process)
