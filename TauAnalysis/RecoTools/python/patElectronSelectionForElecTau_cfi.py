@@ -36,9 +36,6 @@ selectedPatElectronsForElecTauTrkIso = copy.deepcopy(selectedPatElectronsTrkIso)
 # (not associated to electron candidate)
 selectedPatElectronsForElecTauEcalIso = copy.deepcopy(selectedPatElectronsEcalIso)
 
-# require electron candidate to be linked to (GSF) track
-selectedPatElectronsForElecTauTrk = copy.deepcopy(selectedPatElectronsTrk)
-
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
 selectedPatElectronsForElecTauTrkIP = copy.deepcopy(selectedPatElectronsTrkIP)
@@ -48,8 +45,6 @@ selectedPatElectronsForElecTauTrkIsoLooseIsolation.cut = cms.string('trackIso < 
 
 selectedPatElectronsForElecTauEcalIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauEcalIso)
 selectedPatElectronsForElecTauEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
-
-selectedPatElectronsForElecTauTrkLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrk)
 
 selectedPatElectronsForElecTauTrkIPlooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIP)
 
