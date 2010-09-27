@@ -29,8 +29,8 @@ options = copy.deepcopy(defaultOptions)
 
 ## Define default options specific to this configuration file
 options.jobType = "testSummer10"
-# options.jobType = "testMC"
-# options.jobType = "testRealData"
+#options.jobType = "testMC"
+#options.jobType = "testRealData"
 
 ## Parse (command-line) arguments - this overrides the options given above
 # options.parseArguments()
@@ -66,10 +66,10 @@ process.patMuons.embedTrack = True
 process.patElectrons.embedTrack = True
 
 ## Keep only global and tracker muons
-process.selectedPatMuons.cut = "isGlobalMuon | isTrackerMuon"
+process.selectedPatMuons.cut = cms.string("isGlobalMuon | isTrackerMuon")
 
 ## Reject soft jets to reduce event content
-process.selectedPatJets.cut = "pt > 30"
+process.selectedPatJets.cut = cms.string("pt > 30")
 
 ## No overlap of photons and electrons
 process.cleanPatPhotons.checkOverlaps.electrons.requireNoOverlaps = True
@@ -241,7 +241,7 @@ process.options.wantSummary = options.wantSummary
 ## Relax the pt for the tests on data
 if options.jobType == "testRealData":
   process.WMuNuGammaPath.remove(process.hltFilter)
-  process.muonPlusMETFilter.cut = "daughter('lepton').pt > 3"
+  process.muonPlusMETFilter.cut = cms.string("daughter('lepton').pt > 3")
   process.WMuNuGammaPath.remove(process.WENuGammaFilter)
 
 if options.jobType == "testSummer10":
