@@ -61,68 +61,90 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 #--------------------------------------------------------------------------------
 
 def submitToBatch(configFile = None, channel = None, sample = None,
-                  replFunction = None, replacements = "",
-                  job = "job", queue = "1nd", outputFilePath = None,
-                  type = "mc", resourceRequest = None, submit = "yes"):
-    # check that configFile, channel, sample, outputFilePath, and type
-    # parameters are defined and non-empty
-    if configFile is None:
-        raise ValueError("Undefined configFile Parameter !!")
-    if channel is None:
-        raise ValueError("Undefined channel Parameter !!")
-    if sample is None:
-        raise ValueError("Undefined sample Parameter !!")
-    if outputFilePath is None:
-        raise ValueError("Undefined outputFilePath Parameter !!")
-    if type is None:
-        raise ValueError("Undefined type Parameter !!")
+	replFunction = None, replacements = "",
+	job = "job", queue = "1nd", outputFilePath = None,
+	type = "mc", resourceRequest = None, submit = "yes"):
+	# check that configFile, channel, sample, outputFilePath, and type
+	# parameters are defined and non-empty
+	if configFile is None:
+		raise ValueError("Undefined configFile Parameter !!")
+	if channel is None:
+		raise ValueError("Undefined channel Parameter !!")
+	if sample is None:
+		raise ValueError("Undefined sample Parameter !!")
+	if outputFilePath is None:
+		raise ValueError("Undefined outputFilePath Parameter !!")
+	if type is None:
+		raise ValueError("Undefined type Parameter !!")
+	
+	# in case outputFilePath parameter not terminated by "/",
+	# add terminating "/" character to outputFilePath string
+	if not outputFilePath.endswith("/"):
+		outputFilePath += "/"
+	
+	# get name of sample, without "part"
+	sampleName = sample
+	if sample.find("part") != -1:
+	 sampleName = sample[:sample.rfind("part") - 1]
+	
+	# get "part" number, without the sample name
+	part = sample
+	if sample.find("part") != -1:
+	 part = sample[sample.find("part")+4:]
 
-    # in case outputFilePath parameter not terminated by "/",
-    # add terminating "/" character to outputFilePath string
-    if not outputFilePath.endswith("/"):
-        outputFilePath += "/"
+	# get name of directory in which config files will be created;
+	# add terminating "/" character to submissionDirectory string also,
+	# if necessary
+	workingDirectory = os.getcwd()
+	if not workingDirectory.endswith("/"):
+		workingDirectory += "/"
+	submissionDirectory = workingDirectory + "lxbatch/"+ sampleName + "/cfg/"
 
-    # get name of directory in which config files will be created;
-    # add terminating "/" character to submissionDirectory string also,
-    # if necessary
-    workingDirectory = os.getcwd()
-    if not workingDirectory.endswith("/"):
-        workingDirectory += "/"
-    submissionDirectory = workingDirectory + "lxbatch/"
+	# make directories if necessary
+	if (not os.path.exists(submissionDirectory)):
+		os.makedirs(submissionDirectory)
+	cshDirectory = submissionDirectory.replace("cfg","csh")
+	if not os.path.exists(cshDirectory):
+		os.mkdir(cshDirectory)
+	logDirectory = submissionDirectory.replace("cfg","log")
+	if not os.path.exists(logDirectory):
+		os.mkdir(logDirectory)
 
-    # compose name of modified config file including the replacements
-    configFile_orig = configFile
-    configFile_base = None
-    if configFile.find("/") != -1:
-        configFile_base = submissionDirectory + configFile[configFile.rfind("/") + 1::]
-    else:    
-        configFile_base = submissionDirectory + configFile
-    configFile_mod = configFile_base.replace("_cfg.py", "_" + sample + "@Batch_cfg.py")
+	# compose name of modified config file including the replacements
+	configFile_orig = configFile
+	configFile_base = None
+	if configFile.find("/") != -1:
+		configFile_base = submissionDirectory + configFile[configFile.rfind("/") + 1::]
+	else:    
+		configFile_base = submissionDirectory + configFile
+	configFile_mod = configFile_base.replace("_cfg.py", "_" + part + "@Batch_cfg.py")		
+	#print configFile_mod
 
-    if replFunction is not None:
-        replacements = replFunction(channel = channel, sample = sample, type = type, replacements = replacements)
-	#print replacements
+	if replFunction is not None:
+		replacements = replFunction(channel = channel, sample = sample, type = type, replacements = replacements)
 
-    # delete previous version of modified config file if it exists
-    if os.path.exists(configFile_mod):
-        os.remove(configFile_mod)
+	# delete previous version of modified config file if it exists
+	if os.path.exists(configFile_mod):
+		os.remove(configFile_mod)
 
-    # create new version of modified config file
-    prepareConfigFile(configFile_orig = configFile_orig, replacements = replacements, configFile_mod = configFile_mod)
+	# create new version of modified config file
+	prepareConfigFile(configFile_orig = configFile_orig, replacements = replacements, configFile_mod = configFile_mod)
 
-    # if it exists, delete previous version of shell script
-    # for submission of cmsRun job to the CERN batch system 
-    scriptFile = configFile_base.replace("_cfg.py", "_" + sample + "@Batch.csh")
-    if os.path.exists(scriptFile):
-        os.remove(scriptFile)
+	# if it exists, delete previous version of shell script
+	# for submission of cmsRun job to the CERN batch system 
+	#scriptFile = cshDirectory + sample + '.csh'
+	scriptFile = configFile_base.replace("_cfg.py", "_" + part + "@Batch.csh")
+	scriptFile = scriptFile.replace("cfg","csh")
+	if os.path.exists(scriptFile):
+		os.remove(scriptFile)
 
-    # create shell script for submission of cmsRun job to the CERN batch system
-    # (copy all .root files produced by the cmsRun job to directory specified
-    #  by outputFilePath parameter given as function argument;
-    #  use 'rfcp' for copying to castor and 'scp' for copying to afs area)
-    cp = None
-    if outputFilePath.find("/castor") != -1:
-    	script = """#!/bin/csh
+	# create shell script for submission of cmsRun job to the CERN batch system
+	# (copy all .root files produced by the cmsRun job to directory specified
+	#  by outputFilePath parameter given as function argument;
+	#  use 'rfcp' for copying to castor and 'scp' for copying to afs area)
+	cp = None
+	if outputFilePath.find("/castor") != -1:
+		script = """#!/bin/csh
 limit vmem unlim
 cd %(subDir)s
 setenv SCRAM_ARCH slc5_ia32_gcc434
@@ -137,8 +159,8 @@ foreach rootFile (${rootFiles})
 	rfcp ${rootFile} %(outDir)s
 end
 """ % {'subDir': submissionDirectory, 'config': configFile_mod, 'outDir':outputFilePath}
-    else:
-    	script = """#!/bin/csh
+	else:
+		script = """#!/bin/csh
 limit vmem unlim
 cd %(subDir)s
 setenv SCRAM_ARCH slc5_ia32_gcc434
@@ -151,25 +173,26 @@ foreach rootFile (${rootFiles})
 	scp ${rootFile} %(outDir)s
 end
 """ % {'subDir': submissionDirectory, 'config': configFile_mod, 'outDir':outputFilePath}
-
-    scf = open(scriptFile,"w")
-    scf.write(script)
-    scf.close()    
+	
+	scf = open(scriptFile,"w")
+	scf.write(script)
+	scf.close()    
 
     # make shell script executable
-    os.chmod(scriptFile,0744)
+	os.chmod(scriptFile,0744)
     
     # finally, submit job to the CERN batch system
-    if submit == "yes":
-        logFile = configFile_base.replace("_cfg.py", "_" + sample + "@Batch.out")
-        jobName = job + channel + "_" + sample
-        bsubCommand = 'bsub -q ' + queue + ' -J ' + jobName + ' -L /bin/csh -eo ' + logFile + ' -oo ' + logFile
-        if resourceRequest != None:
-            bsubCommand += ' -R \"' + resourceRequest + '\" '
-        bsubCommand += ' < ' + scriptFile
-        subprocess.call(bsubCommand, shell = True)
+	if submit == "yes":
+		logFile = configFile_base.replace("_cfg.py", "_" + sample + "@Batch.out")
+		logFile = logFile.replace("cfg","log")
+		jobName = job + channel + "_" + sample
+		bsubCommand = 'bsub -q ' + queue + ' -J ' + jobName + ' -L /bin/csh -eo ' + logFile + ' -oo ' + logFile
+		if resourceRequest != None:
+			bsubCommand += ' -R \"' + resourceRequest + '\" '
+		bsubCommand += ' < ' + scriptFile
+		subprocess.call(bsubCommand, shell = True)
 
     # wait for 10 seconds, in order not to generate too many castor requests in too short a time
     # (maximum number of permissible requests = 900 in 180 seconds; cmsRun jobs will abort in case this limit is excdeeded)
-    time.sleep(10)
+	time.sleep(10)
     
