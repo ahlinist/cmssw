@@ -246,7 +246,7 @@ def applyJobOptions(options):
     jobOptions.skimType = "PhotonMET"
     jobOptions.wantSummary = True
 
-  elif options.jobType == "MUPHMC38X":
+  elif options.jobType == "MUPHMC38XSpring10":
     jobOptions.globalTag = "START38_V12::All"
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
@@ -254,15 +254,35 @@ def applyJobOptions(options):
     jobOptions.skimType = "MuonPhoton"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI"
+
+  elif options.jobType == "MUPHMC38XSummer10":
+    jobOptions.globalTag = "START38_V12::All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI36X"
 
-  elif options.jobType == "EPHMC38X":
+  elif options.jobType == "EPHMC38XSpring10":
     jobOptions.globalTag = "START38_V12::All"
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
-    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI"
+
+  elif options.jobType == "EPHMC38XSummer10":
+    jobOptions.globalTag = "START38_V12::All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = True
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI36X"
 
@@ -274,7 +294,7 @@ def applyJobOptions(options):
     jobOptions.skimType = "MuonPhoton"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
-    jobOptions.hltProcessName = "REDIGI36X"
+    jobOptions.hltProcessName = "REDIGI"
 
   elif options.jobType == "PHMETMC38X":
     jobOptions.globalTag = "START38_V12::All"
@@ -284,7 +304,7 @@ def applyJobOptions(options):
     jobOptions.skimType = "MuonPhoton"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
-    jobOptions.hltProcessName = "REDIGI36X"
+    jobOptions.hltProcessName = "REDIGI"
 
   elif options.jobType == "MC36X":
     jobOptions.globalTag = "START3X_V26::All"
