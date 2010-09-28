@@ -157,7 +157,7 @@ void WMuNuPtAnalyzer::analyze (const Event & event, const EventSetup &) {
     edm::Handle< vector<reco::CompositeCandidate> > CandHandle;
     if(!event.getByLabel(edm::InputTag("wmnCands"),CandHandle)) return; if(CandHandle->size()==0) return;
     edm::Handle< vector<reco::GenParticle>  > GenHandle;
-    if(event.isRealData() != 1) event.getByLabel(edm::InputTag("wmnPrunedGenParticles"),GenHandle) ;
+    if(!event.isRealData()) event.getByLabel(edm::InputTag("wmnPrunedGenParticles"),GenHandle) ;
     
     for(unsigned int i=0;i<CandHandle->size();++i){
       const Candidate * mu = 0;
@@ -170,19 +170,19 @@ void WMuNuPtAnalyzer::analyze (const Event & event, const EventSetup &) {
       if(eta_bin == 1 && fabs(mu->eta()) > 0.9) return;
       if(eta_bin == 2 && fabs(mu->eta()) < 0.9) return;
       // in MC case, we get the generated parameters from Ws
-      if(event.isRealData() == 1){
-	h1_["hPt"]->Fill(mu->pt());
+      if(event.isRealData()){
+	      h1_["hPt"]->Fill(mu->pt());
       }else{
-	getGenData(GenHandle,data);
-	//with collision data, we get the reco parameters from Ws
-	// Get all interesting parameters for resolution studies
-	data.mu_pt = mu->pt();
-	data.mu_eta = mu->eta();
-	data.WmassT = WMuNu.mt();
-	data.mu_charge = WMuNu.charge();
-	data.nu_pt= met->pt(); data.mu_pz = mu->pz(); data.mu_phi = mu->phi(); data.nu_phi = met->phi(); 
-	data.r = CLHEP::RandGauss::shoot(0,1);  data.rp = CLHEP::RandGauss::shoot(0,1);   
-	tree->Fill();
+	      getGenData(GenHandle,data);
+	      //with collision data, we get the reco parameters from Ws
+	      // Get all interesting parameters for resolution studies
+	      data.mu_pt = mu->pt();
+	      data.mu_eta = mu->eta();
+	      data.WmassT = WMuNu.mt();
+	      data.mu_charge = WMuNu.charge();
+	      data.nu_pt= met->pt(); data.mu_pz = mu->pz(); data.mu_phi = mu->phi(); data.nu_phi = met->phi(); 
+	      data.r = CLHEP::RandGauss::shoot(0,1);  data.rp = CLHEP::RandGauss::shoot(0,1);   
+	      tree->Fill();
       }
       // random numbers necessary for the resolution method
     }
