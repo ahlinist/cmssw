@@ -495,8 +495,8 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     int matchingGenParticlePdgId = -1;
     int matchingFinalStateGenParticlePdgId = -1;
     if( genParticles.isValid() ) {
-		matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_,true);
-		matchingFinalStateGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_,false);
+		matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), *genParticles, &skipPdgIdsGenParticleMatch_,true);
+		matchingFinalStateGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), *genParticles, &skipPdgIdsGenParticleMatch_,false);
 	}
 
     if ( matchingGenParticlePdgId == -1 ) {
