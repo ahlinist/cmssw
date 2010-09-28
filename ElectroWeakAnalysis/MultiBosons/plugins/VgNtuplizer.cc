@@ -23,6 +23,7 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/VgNtuplizer.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
@@ -436,20 +437,22 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 
   nHLT_ = 0;
   if (saveHLTInfo_) {
-//     const TriggerPathCollection &trgPaths = *triggerEvent->paths();
-//     nHLT_ = trgPaths.size();
-//     for (size_t i=0; i<trgPaths.size(); ++i) {
-//       HLT_[i] = trgPaths[i].wasAccept() == true ? 1 : 0;
-//     }
+    const TriggerPathCollection &trgPaths = *triggerEvent->paths();
+    nHLT_ = trgPaths.size();
+    for (size_t i=0; i<trgPaths.size(); ++i) {
+      HLT_[i] = trgPaths[i].wasAccept() == true ? 1 : 0;
+    }
 
-/*    for (size_t i=0; i<HLTIndexPath.size(); ++i) {
+    for (size_t i=0; i<HLTIndexPath.size(); ++i) {
       if ( HLTIndexPath.find(i) == HLTIndexPath.end() ) {
         throw cms::Exception("HLTIndex") << "Illegal index of "
                                          << "an interesting HLT path!"
                                          << endl;
       }
-      HLTIndex_[i] = triggerEvent->path(HLTIndexPath[i])->index();
-    } // for (size_t i=0; i<HLTIndexPath.size(); ++i)*/
+      if ( triggerEvent->path(HLTIndexPath[i]) ) {
+        HLTIndex_[i] = triggerEvent->path( HLTIndexPath[i] )->index();
+      }
+    } // for (size_t i=0; i<HLTIndexPath.size(); ++i)
   } // if (saveHLTInfo_)
 
   // Get CaloTower information
