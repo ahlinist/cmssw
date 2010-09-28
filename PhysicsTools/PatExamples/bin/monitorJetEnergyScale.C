@@ -80,6 +80,7 @@ void monitorJetEnergyScale()
   jes[2]->SetLineWidth(3.);
   jes[2]->SetMarkerStyle(20.);
   jes[2]->SetMarkerColor(kRed);
+  jes[2]->GetXaxis()->SetTitle("p_{T}^{gen} [GeV]");
   jes[2]->Draw();
   jes[1]->SetLineColor(kBlue);
   jes[1]->SetLineWidth(3.);
