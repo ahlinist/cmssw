@@ -160,9 +160,9 @@ void WMuNuPtAnalyzer::analyze (const Event & event, const EventSetup &) {
     if(event.isRealData() != 1) event.getByLabel(edm::InputTag("wmnPrunedGenParticles"),GenHandle) ;
     
     for(unsigned int i=0;i<CandHandle->size();++i){
-      const Candidate * mu;
+      const Candidate * mu = 0;
       const CompositeCandidate  WMuNu = (*CandHandle)[i];
-      const Candidate  * met;
+      const Candidate  * met = 0;
       if( (*CandHandle)[i].daughter(0)->charge() != 0) {mu = (*CandHandle)[i].daughter(0);met=(*CandHandle)[i].daughter(1);}
       else {(*CandHandle)[i].daughter(1);(*CandHandle)[i].daughter(0);}
       
