@@ -84,7 +84,7 @@ protected:
   float  processID_;
   int    nHLT_;
   int    HLT_[maxP];
-  int    HLTIndex_[25];
+  int    HLTIndex_[23];
   int    nHFTowersP_;
   int    nHFTowersN_;
   int    nVtx_;
@@ -142,7 +142,7 @@ protected:
   float  pfMETSig_;
   // Electron
   int    nEle_;
-  int    eleTrg_[maxP][5];
+  int    eleTrg_[maxP][7];
   int    eleID_[maxP][12];
   int    eleClass_[maxP];
   int    eleCharge_[maxP];
@@ -242,7 +242,7 @@ protected:
 
   // Muon
   int    nMu_;
-  int    muTrg_[maxP];
+  int    muTrg_[maxP][2];
   float  muEta_[maxP];
   float  muPhi_[maxP];
   int    muCharge_[maxP];
