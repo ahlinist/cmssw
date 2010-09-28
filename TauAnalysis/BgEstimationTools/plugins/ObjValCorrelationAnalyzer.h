@@ -11,14 +11,14 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: ObjValCorrelationAnalyzer.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: ObjValCorrelationAnalyzer.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include <TChain.h>

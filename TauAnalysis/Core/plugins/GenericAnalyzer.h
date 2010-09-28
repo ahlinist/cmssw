@@ -9,15 +9,15 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.10 $
+  * \version $Revision: 1.11 $
   *
-  * $Id: GenericAnalyzer.h,v 1.10 2010/04/28 14:44:07 jkolb Exp $
+  * $Id: GenericAnalyzer.h,v 1.11 2010/05/11 12:41:45 jkolb Exp $
   *
   */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 

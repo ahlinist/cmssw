@@ -9,16 +9,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: FakeRateEventWeightProducer.h,v 1.4 2009/10/17 17:18:04 veelken Exp $
+ * $Id: FakeRateEventWeightProducer.h,v 1.5 2010/08/13 12:41:23 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/FakeRateWeightProducerBase.h"

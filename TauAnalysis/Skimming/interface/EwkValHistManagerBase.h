@@ -10,14 +10,14 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: EwkValHistManagerBase.h,v 1.1 2010/02/10 16:14:20 veelken Exp $
+ * $Id: EwkValHistManagerBase.h,v 1.1 2010/02/11 09:48:03 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DQMServices/Core/interface/DQMStore.h"
 

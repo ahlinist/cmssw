@@ -15,15 +15,15 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATMuonAntiPionExtractor.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
+ * $Id: PATMuonAntiPionExtractor.h,v 1.2 2009/07/30 16:08:12 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValExtractorBase.h"

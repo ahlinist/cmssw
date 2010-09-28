@@ -10,13 +10,13 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: NumObjExtractor.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
+ * $Id: NumObjExtractor.h,v 1.1 2009/06/17 12:53:07 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValExtractorBase.h"

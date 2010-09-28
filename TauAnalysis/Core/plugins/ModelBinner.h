@@ -14,12 +14,12 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: ModelBinner.h,v 1.1 2010/01/07 13:23:16 veelken Exp $
+ * $Id: ModelBinner.h,v 1.1 2010/01/15 17:36:50 veelken Exp $
  *
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TauAnalysis/Core/interface/BinnerBase.h"
 

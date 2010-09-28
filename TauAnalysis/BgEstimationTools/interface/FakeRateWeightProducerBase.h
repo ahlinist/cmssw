@@ -8,16 +8,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: FakeRateWeightProducerBase.h,v 1.7 2010/02/04 16:19:59 veelken Exp $
+ * $Id: FakeRateWeightProducerBase.h,v 1.8 2010/03/05 08:52:49 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h" 

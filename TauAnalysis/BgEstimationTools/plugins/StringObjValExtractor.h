@@ -14,15 +14,15 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2.2.1 $
+ * \version $Revision: 1.3 $
  *
- * $Id: StringObjValExtractor.h,v 1.2.2.1 2009/08/04 12:52:01 mbluj Exp $
+ * $Id: StringObjValExtractor.h,v 1.3 2009/10/25 12:38:14 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "CommonTools/Utils/interface/StringObjectFunction.h"

@@ -12,14 +12,14 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: CompositePtrCandidateT1T2MEtIpSelector.h,v 1.1 2009/04/07 14:37:06 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtIpSelector.h,v 1.1 2009/06/10 09:33:53 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "TauAnalysis/RecoTools/interface/PATLeptonTrackExtractor.h"
 

@@ -15,15 +15,15 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATLeptonIsolationExtractor.h,v 1.1 2009/11/18 14:33:05 veelken Exp $
+ * $Id: PATLeptonIsolationExtractor.h,v 1.2 2009/11/27 15:47:44 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"

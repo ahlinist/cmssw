@@ -11,13 +11,13 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: ObjValExtractorBase.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: ConstObjValExtractor.h,v 1.1 2009/06/11 07:23:28 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValExtractorBase.h"

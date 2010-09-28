@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.15 $
+ * \version $Revision: 1.16 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.15 2010/09/17 12:28:36 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.16 2010/09/21 08:58:40 veelken Exp $
  *
  */
 
@@ -26,7 +26,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DataFormats/Common/interface/View.h"
 

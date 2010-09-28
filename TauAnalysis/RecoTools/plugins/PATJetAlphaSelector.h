@@ -9,16 +9,16 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATJetAlphaSelector.h,v 1.4 2009/04/09 14:51:21 veelken Exp $
+ * $Id: PATJetAlphaSelector.h,v 1.1 2009/08/25 13:55:27 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "TauAnalysis/RecoTools/interface/PATJetAlphaExtractor.h"
 
