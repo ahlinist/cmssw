@@ -18,7 +18,7 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 ## Configure jet energy scaling module
 process.load("PhysicsTools.PatExamples.JetEnergyShift_cfi")
-process.scaledJets.scaleFactor =  1.1
+process.scaledJets.scaleFactor =  1.0
 
 ## Select good jets
 from PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi import *
