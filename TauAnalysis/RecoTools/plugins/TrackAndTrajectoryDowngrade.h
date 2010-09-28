@@ -8,16 +8,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: TrackAndTrajectoryDowngrade.h,v 1.3 2010/04/28 14:51:15 jkolb Exp $
+ * $Id: TrackAndTrajectoryDowngrade.h,v 1.1 2010/07/16 18:26:16 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Common/interface/Handle.h"
 
 #include <TRandom3.h>

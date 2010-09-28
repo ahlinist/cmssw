@@ -8,14 +8,14 @@
  * 
  * \author Joshua Swanson
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: ewkTauValAuxFunctions.h,v 1.2 2010/01/21 09:40:36 veelken Exp $
+ * $Id: ewkTauValAuxFunctions.h,v 1.1 2010/02/10 16:14:20 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Candidate/interface/Candidate.h"

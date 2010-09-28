@@ -9,9 +9,9 @@
  * 
  * \authors Christian Veelken
  *
- * \version $Revision: 1.1.2.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: CompositePtrCandidateTMEtProducer.h,v 1.1.2.1 2009/08/04 09:54:39 mbluj Exp $
+ * $Id: CompositePtrCandidateTMEtProducer.h,v 1.2 2009/10/25 12:38:15 veelken Exp $
  *
  */
 
@@ -23,7 +23,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DataFormats/Common/interface/View.h"
 

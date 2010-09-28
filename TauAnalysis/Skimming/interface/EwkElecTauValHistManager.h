@@ -9,16 +9,16 @@
  * \author Joshua Swanson
  *        (modified by Christian Veelken)
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: EwkElecTauValHistManager.h,v 1.1 2010/02/10 16:14:20 veelken Exp $
+ * $Id: EwkElecTauValHistManager.h,v 1.2 2010/02/11 09:48:02 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DQMServices/Core/interface/MonitorElement.h"
 

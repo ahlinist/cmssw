@@ -9,7 +9,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: PATLeptonRecoilEnergyProducer.h,v 1.1 2009/07/29 13:03:38 veelken Exp $
+ * $Id: PATLeptonRecoilEnergyProducer.h,v 1.1 2009/07/31 14:17:07 veelken Exp $
  *
  */
 
@@ -21,7 +21,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DataFormats/Common/interface/View.h"
 

@@ -10,15 +10,15 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: BoolEventSelector.h,v 1.1 2009/04/13 13:57:50 veelken Exp $
+ * $Id: BoolEventSelector.h,v 1.2 2010/04/28 14:44:07 jkolb Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 

@@ -10,14 +10,14 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: UnitTestModule.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
+ * $Id: UnitTestModule.h,v 1.1 2010/06/11 10:35:22 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include <string>

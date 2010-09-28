@@ -11,15 +11,15 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.5 $
+  * \version $Revision: 1.6 $
   *
-  * $Id: SysUncertaintyService.h,v 1.5 2010/02/12 17:21:32 veelken Exp $
+  * $Id: SysUncertaintyService.h,v 1.6 2010/02/17 18:14:50 veelken Exp $
   *
   */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"

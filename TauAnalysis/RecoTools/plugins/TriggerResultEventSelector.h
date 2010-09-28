@@ -8,15 +8,15 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: TriggerResultEventSelector.h,v 1.2 2009/02/24 14:18:31 veelken Exp $
+ * $Id: TriggerResultEventSelector.h,v 1.3 2010/04/28 14:51:15 jkolb Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 

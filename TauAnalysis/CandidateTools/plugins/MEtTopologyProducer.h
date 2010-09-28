@@ -11,7 +11,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: MEtTopologyProducer.h,v 1.1 2009/06/10 09:33:09 veelken Exp $
+ * $Id: MEtTopologyProducer.h,v 1.1 2009/07/11 15:36:32 veelken Exp $
  *
  */
 
@@ -23,7 +23,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TauAnalysis/CandidateTools/interface/MEtTopologyAlgorithm.h"
 

@@ -10,16 +10,16 @@
  * \author Konstantinos A. Petridis, Imperial College;
  *  modified by Christian Veelken
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: PATLeptonIpSelector.h,v 1.3 2009/04/07 08:29:50 veelken Exp $
+ * $Id: PATLeptonIpSelector.h,v 1.4 2009/04/09 14:51:21 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "TauAnalysis/RecoTools/interface/PATLeptonTrackExtractor.h"
 
 #include <vector>

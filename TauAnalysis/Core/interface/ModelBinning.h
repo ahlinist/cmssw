@@ -12,9 +12,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: ModelBinning.h,v 1.1 2010/01/15 17:36:49 veelken Exp $
+ * $Id: ModelBinning.h,v 1.2 2010/02/16 15:18:50 veelken Exp $
  *
  */
 
@@ -22,7 +22,7 @@
 #include "TauAnalysis/Core/interface/DataBinning.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include <vector>
 #include <string>

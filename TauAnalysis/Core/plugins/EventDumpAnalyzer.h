@@ -9,7 +9,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: EventDumpAnalyzer.h,v 1.1 2009/06/09 13:30:20 veelken Exp $
+ * $Id: EventDumpAnalyzer.h,v 1.1 2009/08/01 09:46:05 veelken Exp $
  *
  */
 
@@ -17,7 +17,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TauAnalysis/Core/interface/EventDumpBase.h"
 

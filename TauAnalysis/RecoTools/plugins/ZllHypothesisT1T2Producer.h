@@ -16,7 +16,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: ZllHypothesisT1T2Producer.h,v 1.1 2009/07/29 13:03:38 veelken Exp $
+ * $Id: ZllHypothesisT1T2Producer.h,v 1.1 2009/10/10 12:32:16 veelken Exp $
  *
  */
 
@@ -28,7 +28,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TauAnalysis/RecoTools/interface/ZllHypothesisT1T2Algorithm.h"
 

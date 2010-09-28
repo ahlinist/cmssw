@@ -12,16 +12,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: GenMatrixFit.h,v 1.2 2010/06/29 08:09:29 veelken Exp $
+ * $Id: GenMatrixFit.h,v 1.3 2010/07/06 08:39:23 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/Core/interface/BinningServiceBase.h"
