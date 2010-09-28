@@ -20,12 +20,13 @@ static const float BINS[]={30., 40., 50., 60., 70., 80., 100., 125., 150.};
 
 /// -------------------------------------------------------------------------------
 ///
-/// Display the selection monitoring plots. The parameters are the histogram name 
-/// withing the root file and the selection step that make up the corresponding 
-/// directory within the root file. All valid parameter are given in the vectors 
-/// validHists_ (for the hostogram names) and validSteps_ (for the selection steps).
+/// Determine and display the Jet Response for Uncorrected, L2Relative and 
+/// L3Absolute corrected jets as a function of the pt of the matched genJet
+/// from a set of basic histograms filled in the PatJetAnalyzer. The mean 
+/// jet energy response is determined from simple gaussien fits w/o any 
+/// extras.
 /// The use case is:
-/// .x PhysicsTools/PatExamples/bin/monitorTopSelection.C+("muonPt", "Step1")
+/// .x PhysicsTools/PatExamples/bin/monitorJetEnergyScale.C+
 ///
 /// -------------------------------------------------------------------------------
 void monitorJetEnergyScale()
