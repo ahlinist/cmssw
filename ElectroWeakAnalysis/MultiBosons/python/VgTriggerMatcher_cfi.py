@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 # matches to HLT_Mu9
-muonTriggerMatchHLTMu9 = cms.EDFilter("PATTriggerMatcherDRDPtLessByR",
+muonTriggerMatchHLTMu9 = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
                                       andOr          = cms.bool( False ),
@@ -17,7 +17,7 @@ muonTriggerMatchHLTMu9 = cms.EDFilter("PATTriggerMatcherDRDPtLessByR",
                                       )
 
 # matches to HLT_Ele15_LW_L1R
-electronTriggerMatchHLTEle15LWL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR",
+electronTriggerMatchHLTEle15LWL1R = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                                   src     = cms.InputTag( "cleanPatElectrons" ),
                                                   matched = cms.InputTag( "patTrigger" ),
                                                   andOr          = cms.bool( False ),
@@ -33,7 +33,7 @@ electronTriggerMatchHLTEle15LWL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR
                                                   )
 
 # matches to HLT_Ele15_SW_L1R
-electronTriggerMatchHLTEle15SWL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR",
+electronTriggerMatchHLTEle15SWL1R = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                                   src     = cms.InputTag( "cleanPatElectrons" ),
                                                   matched = cms.InputTag( "patTrigger" ),
                                                   andOr          = cms.bool( False ),
@@ -49,7 +49,7 @@ electronTriggerMatchHLTEle15SWL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR
                                                   )
 
 # matches to HLT_Ele20_SW_L1R
-electronTriggerMatchHLTEle20SWL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR",
+electronTriggerMatchHLTEle20SWL1R = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                                   src     = cms.InputTag( "cleanPatElectrons" ),
                                                   matched = cms.InputTag( "patTrigger" ),
                                                   andOr          = cms.bool( False ),
@@ -65,7 +65,7 @@ electronTriggerMatchHLTEle20SWL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR
                                                   )
 
 # matches to HLT_Ele15_SW_EleId_L1R
-electronTriggerMatchHLTEle15SWEleIdL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR",
+electronTriggerMatchHLTEle15SWEleIdL1R = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                                   src     = cms.InputTag( "cleanPatElectrons" ),
                                                   matched = cms.InputTag( "patTrigger" ),
                                                   andOr          = cms.bool( False ),
@@ -81,7 +81,7 @@ electronTriggerMatchHLTEle15SWEleIdL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLe
                                                   )
 
 # matches to HLT_Ele15_SW_CaloEleId_L1R
-electronTriggerMatchHLTEle15SWCaloEleIdL1R = cms.EDFilter( "PATTriggerMatcherDRDPtLessByR",
+electronTriggerMatchHLTEle15SWCaloEleIdL1R = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            andOr          = cms.bool( False ),
