@@ -1,11 +1,11 @@
 The extra resolution smearing parameter and the scale factor are computed in two steps:
 
-1. Generate MC and data samples. In test/ZMuMu (WMuNu), configure 
-   ZMuMuNTupleCreator_MC.py (WMuNuNTupleCreator_MC.py) and run. Do the same 
-   with ZMuMuNTupleCreator_Data.py (WMuNuNTupleCreator_Data.py). This will 
-   create two NTuples: EdmZmmTreeData.root (EdmWmnTreeData.root) and 
-   EdmZmmTreeMC.root (EdmWmnTreeMC.root), or the name that you used in the 
-   configuration file.
+1. Generate MC and data samples. In test/ZMM (test/WPLUS, test/WMINUS), 
+   configure ZMuMuNTupleCreator_MC.py (WMuNuNTupleCreator_MC.py) and run. 
+   Do the same with ZMuMuNTupleCreator_Data.py (WMuNuNTupleCreator_Data.py). 
+   This will create two NTuples with names EdmZmmTreeData.root (EdmWmnTreeData.root) 
+   and EdmZmmTreeMC.root (EdmWmnTreeMC.root), or with the names that you assigned 
+   in the configuration file if you changed the defaults.
  
 2. Configure ZMuMuResAnalyzer.py with the input files (the ones from point 1) 
    and your preferences for the fit. The output is ResultsZMuMu.root (
