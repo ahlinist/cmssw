@@ -145,7 +145,13 @@ process.patTrigger.processName = options.hltProcessName
 process.patTriggerEvent.processName = options.hltProcessName
 matchHltPaths = {
   "cleanPatElectrons": options.electronTriggerMatchPaths,
-  "cleanPatMuons"    : options.muonTriggerMatchPaths
+  "cleanPatMuons"    : options.muonTriggerMatchPaths,
+  "cleanPatTaus"     : options.tauTriggerMatchPaths,
+  "cleanPatPhotons"  : options.photonTriggerMatchPaths,
+  "cleanPatJets"     : options.jetTriggerMatchPaths,
+  "patMETs"          : options.metTriggerMatchPaths,
+  "patMETsPF"        : options.metTriggerMatchPaths,
+  "patMETsTC"        : options.metTriggerMatchPaths,
   }
 embedTriggerMatches(process, matchHltPaths)
 

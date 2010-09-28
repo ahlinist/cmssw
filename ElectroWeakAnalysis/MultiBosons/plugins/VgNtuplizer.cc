@@ -1,40 +1,41 @@
-#include "ElectroWeakAnalysis/MultiBosons/interface/VgNtuplizer.h"
+#include <iostream>
 
-//#include "FWCore/ParameterSet/interface/InputTag.h"
-#include "FWCore/Utilities/interface/InputTag.h"
-#include "FWCore/Common/interface/TriggerNames.h"
-#include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/Framework/interface/ESHandle.h"
-#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "DataFormats/HepMCCandidate/interface/PdfInfo.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonPi0DiscriminatorAssociation.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
-#include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
-#include "DataFormats/METReco/interface/METCollection.h"
+#include "DataFormats/HepMCCandidate/interface/PdfInfo.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/METReco/interface/MET.h"
-#include "DataFormats/METReco/interface/PFMETCollection.h"
+#include "DataFormats/METReco/interface/METCollection.h"
 #include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/METReco/interface/PFMETCollection.h"
 #include "DataFormats/Math/interface/deltaR.h"
-#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
-#include "PhysicsTools/CandUtils/interface/AddFourMomenta.h"
-#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-#include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
-#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
-#include "MagneticField/Engine/interface/MagneticField.h"
+#include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
+#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+#include "DataFormats/PatCandidates/interface/TriggerPath.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
-#include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
-#include "DataFormats/EgammaCandidates/interface/PhotonPi0DiscriminatorAssociation.h"
-#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
-#include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
-#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+#include "ElectroWeakAnalysis/MultiBosons/interface/VgNtuplizer.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Utilities/interface/EDMException.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "PhysicsTools/CandUtils/interface/AddFourMomenta.h"
 #include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
+#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
-#include <iostream>
+#include "ElectroWeakAnalysis/MultiBosons/interface/VgNtuplizer.h"
 
 using namespace std;
 using namespace pat;
@@ -46,20 +47,20 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   // cout << "VgNtuplizer: entering ctor ..." << endl;
 
   saveHistograms_ = ps.getUntrackedParameter<bool>("saveHistograms", false);
-  saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);  
-  trgEvent_       = ps.getParameter<InputTag>("triggerEvent"); 
+  saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);
+  trgEvent_       = ps.getParameter<InputTag>("triggerEvent");
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
   doStoreJets_     = ps.getParameter<bool>("doStoreJets");
-  
+
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
-  caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");  
+  caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
   tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
 
   leadingElePtCut_ = ps.getParameter<double>("LeadingElePtCut");
   leadingMuPtCut_  = ps.getParameter<double>("LeadingMuPtCut");
   leadingPhoPtCut_ = ps.getParameter<double>("LeadingPhoPtCut");
-  
+
   beamSpotCollection_        = ps.getParameter<InputTag>("BeamSpotCollection");
 
   if (saveHistograms_) helper_.bookHistos(this);
@@ -377,7 +378,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
                                               photonHandle_,
                                               trackHandle_,
                                               genParticlesHandle_);
- 
+
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
 
@@ -403,72 +404,53 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
 
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
-  // 0: HLT_Jet15U
-  // 1: HLT_Jet30U
-  // 2: HLT_Jet50U
-  // 3: HLT_Jet70U
-  // 4: HLT_Jet100U
-  // 5: HLT_Mu9
-  // 6: HLT_DoubleMu3
-  // 7: HLT_Ele15_LW_L1R
-  // 8: HLT_Ele20_LW_L1R 
-  // 9: HLT_Ele15_SW_L1R
-  //10: HLT_Ele20_SW_L1R
-  //11: HLT_Ele25_SW_L1R 
-  //12: HLT_Ele30_SW_L1R 
-  //13: HLT_Ele10_SW_EleIdIsol_L1R
-  //14: HLT_Ele15_SW_EleId_L1R
-  //15: HLT_Ele20_SW_EleId_L1R 
-  //16: HLT_Ele15_SW_CaloEleId_L1R 
-  //17: HLT_Ele20_SW_CaloEleId_L1R 
-  //18: HLT_Ele25_SW_CaloEleId_L1R 
-  //19: HLT_DoubleEle5_SW_L1R
-  //20: HLT_DoubleEle10_SW_L1R 
-  //21: HLT_Photon15_Cleaned_L1R
-  //22: HLT_Photon20_Cleaned_L1R
-  //23: HLT_Photon25_Cleaned_L1R
-  //24: HLT_Photon30_Cleaned_L1R 
+  std::map<unsigned, std::string> HLTIndexPath;
+  HLTIndexPath[ 0] = "HLT_Jet15U";
+  HLTIndexPath[ 1] = "HLT_Jet30U";
+  HLTIndexPath[ 2] = "HLT_Jet50U";
+  HLTIndexPath[ 3] = "HLT_Jet70U";
+  HLTIndexPath[ 4] = "HLT_Jet100U";
+  HLTIndexPath[ 5] = "HLT_Mu9";
+  HLTIndexPath[ 6] = "HLT_DoubleMu3";
+  HLTIndexPath[ 7] = "HLT_Ele15_LW_L1R";
+  HLTIndexPath[ 8] = "HLT_Ele20_LW_L1R";
+  HLTIndexPath[ 9] = "HLT_Ele15_SW_L1R";
+  HLTIndexPath[10] = "HLT_Ele20_SW_L1R";
+  HLTIndexPath[11] = "HLT_Ele25_SW_L1R";
+  HLTIndexPath[12] = "HLT_Ele30_SW_L1R";
+  HLTIndexPath[13] = "HLT_Ele10_SW_EleIdIsol_L1R";
+  HLTIndexPath[14] = "HLT_Ele15_SW_EleId_L1R";
+  HLTIndexPath[15] = "HLT_Ele20_SW_EleId_L1R";
+  HLTIndexPath[16] = "HLT_Ele15_SW_CaloEleId_L1R";
+  HLTIndexPath[17] = "HLT_Ele20_SW_CaloEleId_L1R";
+  HLTIndexPath[18] = "HLT_Ele25_SW_CaloEleId_L1R";
+  HLTIndexPath[19] = "HLT_DoubleEle5_SW_L1R";
+  HLTIndexPath[20] = "HLT_DoubleEle10_SW_L1R";
+  HLTIndexPath[21] = "HLT_Photon15_Cleaned_L1R";
+  HLTIndexPath[22] = "HLT_Photon20_Cleaned_L1R";
+  HLTIndexPath[23] = "HLT_Photon25_Cleaned_L1R";
+  HLTIndexPath[24] = "HLT_Photon30_Cleaned_L1R";
 
   for (int a=0; a<25; a++)
     HLTIndex_[a] = -1;
- 
+
   nHLT_ = 0;
   if (saveHLTInfo_) {
-    Handle<TriggerResults> trgResultsHandle;
-    e.getByLabel(trgResults_, trgResultsHandle);
-    const TriggerNames &trgNames = e.triggerNames(*trgResultsHandle);
-    vector<string> hlNames = trgNames.triggerNames();
-    nHLT_ = trgNames.size();
-    for (size_t i=0; i<trgNames.size(); ++i) {
-      HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
- 
-      if (hlNames[i] == "HLT_Jet15U")                       HLTIndex_[0] = i;
-      else if (hlNames[i] == "HLT_Jet30U")                  HLTIndex_[1] = i;
-      else if (hlNames[i] == "HLT_Jet50U")                  HLTIndex_[2] = i;
-      else if (hlNames[i] == "HLT_Jet70U")                  HLTIndex_[3] = i;
-      else if (hlNames[i] == "HLT_Jet100U")                 HLTIndex_[4] = i;
-      else if (hlNames[i] == "HLT_Mu9")                     HLTIndex_[5] = i;
-      else if (hlNames[i] == "HLT_DoubleMu3")               HLTIndex_[6] = i;
-      else if (hlNames[i] == "HLT_Ele15_LW_L1R")            HLTIndex_[7] = i;
-      else if (hlNames[i] == "HLT_Ele20_LW_L1R")            HLTIndex_[8] = i;
-      else if (hlNames[i] == "HLT_Ele15_SW_L1R")            HLTIndex_[9] = i;
-      else if (hlNames[i] == "HLT_Ele20_SW_L1R")            HLTIndex_[10] = i;
-      else if (hlNames[i] == "HLT_Ele25_SW_L1R")            HLTIndex_[11] = i;
-      else if (hlNames[i] == "HLT_Ele30_SW_L1R")            HLTIndex_[12] = i;
-      else if (hlNames[i] == "HLT_Ele10_SW_EleIdIsol_L1R")  HLTIndex_[13] = i;
-      else if (hlNames[i] == "HLT_Ele15_SW_EleId_L1R")      HLTIndex_[14] = i;
-      else if (hlNames[i] == "HLT_Ele20_SW_EleId_L1R")      HLTIndex_[15] = i;
-      else if (hlNames[i] == "HLT_Ele15_SW_CaloEleId_L1R")  HLTIndex_[16] = i;
-      else if (hlNames[i] == "HLT_Ele20_SW_CaloEleId_L1R")  HLTIndex_[17] = i;
-      else if (hlNames[i] == "HLT_Ele25_SW_CaloEleId_L1R")  HLTIndex_[18] = i;
-      else if (hlNames[i] == "HLT_Double5_SW_L1R")          HLTIndex_[19] = i;
-      else if (hlNames[i] == "HLT_Double10_SW_L1R")         HLTIndex_[20] = i;
-      else if (hlNames[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[21] = i;
-      else if (hlNames[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[22] = i;
-      else if (hlNames[i] == "HLT_Photon25_Cleaned_L1R")    HLTIndex_[23] = i;
-      else if (hlNames[i] == "HLT_Photon30_Cleaned_L1R")    HLTIndex_[24] = i;
-    }
-  }
+//     const TriggerPathCollection &trgPaths = *triggerEvent->paths();
+//     nHLT_ = trgPaths.size();
+//     for (size_t i=0; i<trgPaths.size(); ++i) {
+//       HLT_[i] = trgPaths[i].wasAccept() == true ? 1 : 0;
+//     }
+
+/*    for (size_t i=0; i<HLTIndexPath.size(); ++i) {
+      if ( HLTIndexPath.find(i) == HLTIndexPath.end() ) {
+        throw cms::Exception("HLTIndex") << "Illegal index of "
+                                         << "an interesting HLT path!"
+                                         << endl;
+      }
+      HLTIndex_[i] = triggerEvent->path(HLTIndexPath[i])->index();
+    } // for (size_t i=0; i<HLTIndexPath.size(); ++i)*/
+  } // if (saveHLTInfo_)
 
   // Get CaloTower information
   edm::Handle<CaloTowerCollection> pCaloTower;
@@ -533,7 +515,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       pdf_[4] = pdfInfoHandle->pdf()->xPDF.first;     // PDF weight for parton #1
       pdf_[5] = pdfInfoHandle->pdf()->xPDF.second;     // PDF weight for parton #2
       pdf_[6] = pdfInfoHandle->pdf()->scalePDF; // scale of the hard interaction
-      // cout << "Get pThat info..." << endl; 
+      // cout << "Get pThat info..." << endl;
       pthat_ = (pdfInfoHandle->hasBinningValues() ? pdfInfoHandle->binningValues()[0] : 0);
       // cout << "Got pThat info..." << endl;
     }
@@ -551,7 +533,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 
       genIndex++;
 
-      if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 && 
+      if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 &&
 fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
 	const Candidate *p = (const Candidate*)&(*ip);
@@ -690,7 +672,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
       if (iEle->pt() > leadingElePtCut_) nElePassCut++;
-      
+
       // cout << "Get Electron Trigger" << std::endl;
       eleTrg_[nEle_][0] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_LW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][1] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_L1R").size()) ? 1 : -99;
@@ -786,7 +768,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleCaloPos_[nEle_][2] = iEle->trackPositionAtCalo().z();
       // cout << "Get Electron TK Stuff 1" << std::endl;
 
-      
+
 
       // Gen Particle
       eleGenIndex_[nEle_] = -1;
@@ -833,7 +815,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleSeedTime_[nEle_] = iEle->userFloat("seedTime");
       eleRecoFlag_[nEle_] = iEle->userInt("seedRecoFlag");
       eleSeverity_[nEle_] = iEle->userInt("seedSeverityLevel");
-      
+
       nEle_++;
     }
 
@@ -843,7 +825,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   nPho_ = 0;
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
-      
+
       if (iPho->pt() > leadingPhoPtCut_) nPhoPassCut++;
 
       phoIsPhoton_[nPho_] = iPho->isPhoton();
@@ -874,7 +856,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
-      
+
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;
@@ -886,7 +868,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoSeedTime_[nPho_] = iPho->userFloat("seedTime");
       phoRecoFlag_[nPho_] = iPho->userInt("seedRecoFlag");
       phoSeverity_[nPho_] = iPho->userInt("seedSeverityLevel");
-      
+
       phoE3x3_[nPho_] = iPho->userFloat("e3x3");
 
       phoRoundness_[nPho_] = iPho->userFloat("scRoundness");
@@ -901,11 +883,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       int phoGenIndex = 0;
       if ( !isData_ && genParticlesHandle_.isValid() ) {
         if ((*iPho).genPhoton()) {
-          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); 
+          for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin();
 	       iGen != genParticlesHandle_->end(); ++iGen) {
 
-            if (iGen->p4() == (*iPho).genPhoton()->p4() && 
-		iGen->pdgId() == (*iPho).genPhoton()->pdgId() && 
+            if (iGen->p4() == (*iPho).genPhoton()->p4() &&
+		iGen->pdgId() == (*iPho).genPhoton()->pdgId() &&
 		iGen->status() == (*iPho).genPhoton()->status()) {
 
               phoGenIndex_[nPho_] = phoGenIndex;
@@ -936,7 +918,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoIsConv_[nPho_] = iPho->hasConversionTracks();
 
       phoPi0Disc_[nPho_] = iPho->userFloat("pi0Discriminator");
-            
+
       nPho_++;
     }
 
@@ -948,7 +930,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
       if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
-      
+
       muTrg_[nMu_] = (iMu->triggerObjectMatchesByPath("HLT_Mu9").size()) ? 1 : -99;
 
       //       if (!iMu->isGlobalMuon()) continue;
@@ -1009,7 +991,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
           if (fabs((*iMu).genLepton()->pdgId())==13) {
             for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
 
-              if (iGen->p4() == (*iMu).genLepton()->p4() && iGen->pdgId() == (*iMu).genLepton()->pdgId() && iGen->status() == (*iMu).genLepton()->status()) 
+              if (iGen->p4() == (*iMu).genLepton()->p4() && iGen->pdgId() == (*iMu).genLepton()->pdgId() && iGen->status() == (*iMu).genLepton()->status())
 	        muGenIndex_[nMu_] = MuGenIndex;
 
               MuGenIndex++;
@@ -1246,7 +1228,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), pfMET->phi());
 
       leg1Index = iMu-(muonHandle_->begin());
-      
+
       WmunuMuIndex_[nWmunu_]    = leg1Index;
       nWmunu_++;
     }

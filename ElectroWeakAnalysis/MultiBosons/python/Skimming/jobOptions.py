@@ -42,6 +42,24 @@ def applyJobOptions(options):
     HLT_L2Mu15
     """.split()  ## Definition of MU PD for run 142933
 
+  jobOptions.tauTriggerMatchPaths = """
+    """.split()
+
+  jobOptions.photonTriggerMatchPaths = """
+    HLT_Photon10_L1R
+    HLT_Photon15_L1R
+    HLT_Photon15_Cleaned_L1R
+    HLT_Photon20_Cleaned_L1R
+    HLT_Photon25_Cleaned_L1R
+    HLT_Photon30_Cleaned_L1R
+    """.split()
+
+  jobOptions.jetTriggerMatchPaths = """
+    """.split()
+
+  jobOptions.metTriggerMatchPaths = """
+    """.split()
+
   if options.jobType == "testMC":
     jobOptions.maxEvents = 100
     jobOptions.inputFiles = [
@@ -195,7 +213,7 @@ def applyJobOptions(options):
     jobOptions.skimType = "ElectronPhoton"
     jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
     jobOptions.wantSummary = True
-    
+
   elif options.jobType == "JETReReco36X":
     jobOptions.globalTag = "GR_R_36X_V12B::All"
     jobOptions.isRealData = True

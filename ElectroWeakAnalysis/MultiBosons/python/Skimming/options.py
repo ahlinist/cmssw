@@ -76,6 +76,34 @@ options.register("muonTriggerMatchPaths",
   "List of trigger paths whose matches should be embedded."
   )
 
+options.register("tauTriggerMatchPaths",
+  "",                         # default value
+  VarParsing.multiplicity.list,      # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "List of trigger paths whose matches should be embedded."
+  )
+
+options.register("photonTriggerMatchPaths",
+  "",                         # default value
+  VarParsing.multiplicity.list,      # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "List of trigger paths whose matches should be embedded."
+  )
+
+options.register("jetTriggerMatchPaths",
+  "",                         # default value
+  VarParsing.multiplicity.list,      # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "List of trigger paths whose matches should be embedded."
+  )
+
+options.register("metTriggerMatchPaths",
+  "",                         # default value
+  VarParsing.multiplicity.list,      # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "List of trigger paths whose matches should be embedded."
+  )
+
 options.register("skimType",
   "MuonPhoton", # default value
   VarParsing.multiplicity.singleton, # singleton or list
