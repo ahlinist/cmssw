@@ -11,7 +11,7 @@ void Tutils::draw_label(t_label l[], double x1, double y1,double dx, double dy,i
 
 
 double Tutils::modpt(double pt, double pt_gen, double r,double rp, const double * sigma, int mode){
-  double ptmod;
+  double ptmod = pt;
   // for Ws
   // mode == 0 does not work when MC width is bigger than data one. This is solved with mode == 1
   if(mode==1){
