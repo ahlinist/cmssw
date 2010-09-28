@@ -7,7 +7,7 @@ process = cms.Process("MuonAna")
 from PhysicsTools.PatExamples.samplesDESY_cff import *
 
 process.source = cms.Source("PoolSource",
-  fileNames = zjetsPAT
+  fileNames = zjetsTracks
 )
 
 process.maxEvents = cms.untracked.PSet(
