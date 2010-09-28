@@ -21,7 +21,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
 
     def _addModule(self, objSelItem, srcParam, sysName = None, process = None):
         # create module
-        module = cms.EDFilter(self.boolEventSelFlagProducer)
+        module = cms.EDProducer(self.boolEventSelFlagProducer)
 
         # set module attributes
         moduleName = None
