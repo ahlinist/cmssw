@@ -16,7 +16,7 @@ process.source = cms.Source("PoolSource",
 #            "rfio:///castor/cern.ch/user/d/degrutto/2010/ZCands/RECO/EWK_HighPtDiMuonSkim_SD_Mu_140_116_126_23ZCands.root"
  #            "file:EdmWmnTreeMCMINUS.root",
              "file:EdmWmnTreeMCMINUSShort.root",
-#             "file:EdmWmnTreeDataShort.root"
+             "file:EdmWmnTreeDataShort.root"
       ),
 #      inputCommands = cms.untracked.vstring(
 #            'keep *',
@@ -42,7 +42,7 @@ process.fit = cms.EDAnalyzer("WMuNuPtAnalyzer",
                              # If doscan = true => draw likelihood curve (no minimization); else minimize (no likelihood curve)
                              Doscan = cms.untracked.bool(False),
                              # local use only
-                             EdmNtuple = cms.untracked.bool(False), 
+                             EdmNtuple = cms.untracked.bool(True), 
                              # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
                              DoFit1 = cms.untracked.bool(False), # delta
                              DoFit2 = cms.untracked.bool(False), # sigma

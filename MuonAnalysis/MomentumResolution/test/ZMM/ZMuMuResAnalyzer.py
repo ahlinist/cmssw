@@ -7,7 +7,7 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.destinations = ['cout']
 process.MessageLogger.cout = cms.untracked.PSet(
       threshold = cms.untracked.string('INFO'),
-      FwkReport = cms.untracked.PSet(reportEvery=cms.untracked.int32(10))
+      FwkReport = cms.untracked.PSet(reportEvery=cms.untracked.int32(100))
 )
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -46,7 +46,7 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              # doups (if you want to add another resonance to the fit, e. g. Upsilon)
                              DoUps = cms.untracked.bool(False),
                              # local use only
-                             EdmNtuple = cms.untracked.bool(False), 
+                             EdmNtuple = cms.untracked.bool(True), 
                              # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
                              DoFit1 = cms.untracked.bool(False), # delta
                              DoFit2 = cms.untracked.bool(False), # sigma
