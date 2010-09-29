@@ -16,7 +16,7 @@ goodMuons = cms.EDFilter("MuonViewRefSelector",
 )
 
 # Cuts on dimuon system
-zmmCands = cms.EDFilter("CandViewShallowCloneCombiner",
+zmmCands = cms.EDProducer("CandViewShallowCloneCombiner",
     checkCharge = cms.bool(True),
     cut = cms.string('mass>60 && mass<120 && charge=0'),
     decay = cms.string("goodMuons@+ goodMuons@-")
