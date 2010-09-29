@@ -14,18 +14,20 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
 )
 
-from PhysicsTools.PatExamples.samplesCERN_cff import *
-process.source.fileNames = simulationQCD
+from PhysicsTools.PatExamples.samplesDESY_cff import *
+##process.source.fileNames = muonSKIM
+##process.source.fileNames = simulationQCD
 ##process.source.fileNames = simulationWjets
 ##process.source.fileNames = simulationZjets
-##process.source.fileNames = simulationTtbar
+process.source.fileNames = simulationTtbar
 
 ## Define the TFileService
 process.TFileService = cms.Service("TFileService",
-  fileName = cms.string('analyzePatTopSelection_qcd.root')
+##fileName = cms.string('analyzePatTopSelection.root')
+##fileName = cms.string('analyzePatTopSelection_qcd.root')
 ##fileName = cms.string('analyzePatTopSelection_wjets.root')
 ##fileName = cms.string('analyzePatTopSelection_zjets.root')
-##fileName = cms.string('analyzePatTopSelection_ttbar.root')
+fileName = cms.string('analyzePatTopSelection_ttbar.root')
 )
 
 ## ----------------------------------------------------------------
