@@ -20,25 +20,27 @@ matching = cms.EDProducer( "MCTruthDeltaRMatcherNew",
 
 anal = cms.EDAnalyzer("EventContentAnalyzer")
 
+<<<<<<< HFTracks_cff.py
+trackDump = cms.EDAnalyzer("HFDumpTracks",    
+=======
 trkDump = cms.EDAnalyzer("HFDumpTracks",
     
+>>>>>>> 1.3
     tracksLabel = cms.untracked.string('generalTracks'),
     tracksLabel2 = cms.untracked.string('alltrackCandidates'),
     muonsLabel = cms.untracked.InputTag("muons"),
     verbose = cms.untracked.int32(0),
     doTruthMatching = cms.untracked.int32(2),
-
     vertexLabel = cms.untracked.string('offlinePrimaryVerticesWithBS'),
     jetsLabel = cms.untracked.string('myak5TrackJets'),
-
+    #reco matching
     trackingParticlesLabel = cms.untracked.string('trackingParticles'),#reco matching
-   
-  
-    associatorLabel3 = cms.untracked.string('matching'),                    #aod matching
-    genParticlesLabel = cms.untracked.string('genParticles'),               #aod matching
-    trackcandsLabel = cms.untracked.string('allTrackCandidates')            #aod matching
+#aod matching     
+    associatorLabel3 = cms.untracked.string('matching'),      
+    genParticlesLabel = cms.untracked.string('genParticles'),           
+    trackcandsLabel = cms.untracked.string('allTrackCandidates')            
 )
 
 
-TrackDump = cms.Sequence(allTrackCandidates*matching*trkDump)
-TrackDumpAOD = cms.Sequence(trkDump)
+TrackDump = cms.Sequence(allTrackCandidates*matching*trackDump)
+TrackDumpAOD = cms.Sequence(trackDump)

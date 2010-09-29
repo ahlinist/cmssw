@@ -8,6 +8,9 @@ signalDump = cms.EDAnalyzer("HFDumpSignal",
     jetsLabel = cms.untracked.string('myak5TrackJets'),
     tracksLabel = cms.untracked.string('alltrackCandidates'),
     vertexLabel = cms.untracked.string('offlinePrimaryVerticesWithBS'),
+    simvertexLabel = cms.untracked.string('simG4'),
+    jetmatch =       cms.untracked.double(0.5),
+    jetetmin =        cms.untracked.double(1.0),
     verbose = cms.untracked.int32(0)
 )
 
