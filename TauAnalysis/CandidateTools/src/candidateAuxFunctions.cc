@@ -362,7 +362,7 @@ const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
 //    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
       if ((*genTauJetConstituent)->charge() &&
           (*genTauJetConstituent)->charge()*genTauJetCharge < 0) {
-          return genTauJetConstituent->get();
+          return *genTauJetConstituent;
       }
     }
   } else {
