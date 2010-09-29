@@ -29,11 +29,17 @@ alltrackCandidates = cms.EDProducer("ConcreteChargedCandidateProducer",
     particleType = cms.string('pi+')
 )
 
+<<<<<<< HFTrackJets_cff.py
+trackjetDump = cms.EDAnalyzer("HFDumpTrackJets",
+    doflavortagging = cms.untracked.int32(0),
+=======
 trackjetDump = cms.EDAnalyzer("HFDumpTrackJets",
     doflavortagging = cms.untracked.int32(1),
+>>>>>>> 1.5
     verbose = cms.untracked.int32(0),
     #jetsLabel = cms.untracked.string('sis5TrackJets'),
     jetsLabel = cms.untracked.string('myak5TrackJets'),
+    jetsTagLabel  = cms.untracked.string('simpleSecondaryVertexHighPurBJetTags'),
     tracksLabel = cms.untracked.string('alltrackCandidates'),#for indices (need all tracks in the event, not only the ones used in the jet algorithm
     sourceByRefer = cms.InputTag("trkjetflavourByRef"),
     genparticlesLabel = cms.untracked.string('genParticles')
@@ -93,11 +99,9 @@ myak5TrackJets = cms.EDProducer(
 
 
 
-
-#TrackJetDump    = cms.Sequence(selectTracks*trackCandidates*alltrackCandidates*sis5TrackJets*trkjetflavourByRef*trackjetDump)
-#TrackJetDumpAOD = cms.Sequence(selectTracks*trackCandidates*alltrackCandidates*sis5TrackJets*trackjetDump)
-
 TrackJetDump    = cms.Sequence(selectTracks*trackCandidates*alltrackCandidates*myak5TrackJets*trkjetflavourByRef*trackjetDump)
+
+
 TrackJetDumpAOD = cms.Sequence(selectTracks*trackCandidates*alltrackCandidates*myak5TrackJets*trackjetDump)
 
 
