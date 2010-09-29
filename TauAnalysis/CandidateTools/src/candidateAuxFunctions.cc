@@ -322,7 +322,9 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
          recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
 //--- tau- --> three-prong case (in particular a1- --> pi- pi+ pi-);
 //    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
-      if ((*recTauJetChargedConstituent)->charge()*recTauJetCharge < 0) return recTauJetChargedConstituent->get();
+      if ((*recTauJetChargedConstituent)->charge()*recTauJetCharge < 0) {
+        return recTauJetChargedConstituent->get();
+      }
     }
   } else {
     edm::LogWarning ("getDistPion")
