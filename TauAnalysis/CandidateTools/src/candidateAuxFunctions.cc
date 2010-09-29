@@ -8,15 +8,15 @@
 #include "TMath.h"
 #include "TLorentzVector.h"
 
-const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& direction, 
+const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& direction,
 					 const reco::GenParticleCollection& genParticles, double dRmax, int status,
 					 std::vector<int>* pdgIds, bool pdgIdStrict)
 {
-  bool bestMatchMatchesPdgId = false; 
+  bool bestMatchMatchesPdgId = false;
   const reco::GenParticle* bestMatch = 0;
 
   for ( reco::GenParticleCollection::const_iterator genParticle = genParticles.begin();
-	genParticle != genParticles.end(); ++genParticle ) 
+	genParticle != genParticles.end(); ++genParticle )
   {
     bool matchesPdgId = false;
     if ( pdgIds ) {
@@ -42,13 +42,13 @@ const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& d
        continue;
 
     // Check if higher than current best match
-    bool higherEnergyThanBestMatch = 
+    bool higherEnergyThanBestMatch =
        (bestMatch) ? (genParticle->energy() > bestMatch->energy()) : true;
 
     // Check if old bestMatch was not a prefered ID and the new one is.
     if(bestMatchMatchesPdgId)
     {
-       // If the old one matches, only use the new one if it is a better 
+       // If the old one matches, only use the new one if it is a better
        // energy match
        if(matchesPdgId && higherEnergyThanBestMatch)
           bestMatch = &(*genParticle);
@@ -62,7 +62,7 @@ const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& d
        }
     }
   }
-  
+
   return bestMatch;
 }
 
@@ -75,7 +75,7 @@ reco::Candidate::Point getDecayVertex(const reco::GenParticle* mother)
       return mother->vertex();
    } else {
       // Try to sure we aren't going through any intermediate decays
-      for(std::vector<const reco::GenParticle*>::const_iterator dau = stableDaughters.begin(); 
+      for(std::vector<const reco::GenParticle*>::const_iterator dau = stableDaughters.begin();
             dau != stableDaughters.end(); ++dau)
       {
          if((*dau)->mother() == mother)
@@ -91,9 +91,9 @@ void findDaughters(const reco::GenParticle* mother, std::vector<const reco::GenP
   unsigned numDaughters = mother->numberOfDaughters();
   for ( unsigned iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
     const reco::GenParticle* daughter = mother->daughterRef(iDaughter).get();
-    
+
     if ( status == -1 || daughter->status() == status ) daughters.push_back(daughter);
-    
+
     findDaughters(daughter, daughters, status);
   }
 }
@@ -153,7 +153,7 @@ reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle* genLeg,
 {
   std::vector<const reco::GenParticle*> stableDaughters;
   findDaughters(genLeg, stableDaughters, 1);
-  
+
   reco::Candidate::LorentzVector p4Invis = getInvisMomentum(stableDaughters);
 
   return p4Invis;
@@ -165,7 +165,7 @@ void compX1X2byCollinearApprox(double& x1, double& x2, double pxLeg1, double pyL
   double x1_denominator = pyLeg2*(pxLeg1 + pxMEt) - pxLeg2*(pyLeg1 + pyMEt);
   x1 = ( x1_denominator != 0. ) ? x1_numerator/x1_denominator : -1.;
   //std::cout << "x1 = " << x1 << std::endl;
-  
+
   double x2_numerator = x1_numerator;
   double x2_denominator = pxLeg1*(pyLeg2 + pyMEt) - pyLeg1*(pxLeg2 + pxMEt);
   x2 = ( x2_denominator != 0. ) ? x2_numerator/x2_denominator : -1.;
@@ -191,7 +191,7 @@ double getPhysX(double x, bool& isWithinPhysRange)
   return physX;
 }
 
-reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVector& p4daughter, 
+reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVector& p4daughter,
 						const reco::Candidate::LorentzVector& p4mother)
 {
   TLorentzVector p4mother_tlorentzvector(p4mother.px(), p4mother.py(), p4mother.pz(), p4mother.energy());
@@ -201,7 +201,7 @@ reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVe
   TLorentzVector p4daughter_tlorentzvector(p4daughter.px(), p4daughter.py(), p4daughter.pz(), p4daughter.energy());
   p4daughter_tlorentzvector.Boost(boostVector);
 
-  return reco::Candidate::LorentzVector(p4daughter_tlorentzvector.Px(), p4daughter_tlorentzvector.Py(), p4daughter_tlorentzvector.Pz(), 
+  return reco::Candidate::LorentzVector(p4daughter_tlorentzvector.Px(), p4daughter_tlorentzvector.Py(), p4daughter_tlorentzvector.Pz(),
 					p4daughter_tlorentzvector.Energy());
 }
 
@@ -222,7 +222,7 @@ TVector2 getDiTauBisectorDirection(const reco::Candidate::LorentzVector& leg1P4,
   double diTauP = TMath::Sqrt(diTauPx_unnormalized*diTauPx_unnormalized + diTauPy_unnormalized*diTauPy_unnormalized);
   double diTauPx_normalized = ( diTauP > 0. ) ? (diTauPx_unnormalized/diTauP) : diTauPx_unnormalized;
   double diTauPy_normalized = ( diTauP > 0. ) ? (diTauPy_unnormalized/diTauP) : diTauPy_unnormalized;
-  
+
   return TVector2(diTauPx_normalized, diTauPy_normalized);
 }
 
@@ -249,9 +249,9 @@ void computeMEtProjection(const reco::PFCandidateCollection& pfCandidates, const
 	   pfCandidate->particleId() == reco::PFCandidate::h0       ||
 	   pfCandidate->particleId() == reco::PFCandidate::h_HF     ||
 	   pfCandidate->particleId() == reco::PFCandidate::egamma_HF) ) continue;
-    
+
     sumEt += pfCandidate->et();
-    
+
     sumP_par += TMath::Abs(pfCandidate->px()*dirCosPhi + pfCandidate->py()*dirSinPhi);
     sumP_perp += TMath::Abs(pfCandidate->px()*dirSinPhi - pfCandidate->py()*dirCosPhi);
   }
@@ -266,7 +266,7 @@ std::string getTauDecayModeName(int tauDecayMode)
   // "translate" from enum defined in DataFormats/TauReco/interface/PFTauDecayMode.h
   // to string ( in format defined in PhysicsTools/JetMCUtils/src/JetMCTag.cc )
   //
-  // NOTE: the "unphysical" 2-prong modes take into account 
+  // NOTE: the "unphysical" 2-prong modes take into account
   //       track reconstruction inefficiencies (migration from 3-prong decays),
   //       fake tracks and tracks from the underlying event (migration from 1-prong decays)
   //
@@ -306,10 +306,10 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
       << " Cannot identify 'distinguishable' pion for CaloTaus/TCTaus --> returning NULL pointer !!";
     return 0;
   }
-  
+
   int recTauDecayMode = recTauJet.decayMode();
   const reco::PFCandidateRefVector& recTauJetChargedConstituents = recTauJet.signalPFChargedHadrCands();
-  
+
   if ( recTauJetChargedConstituents.size() == 1 ) {
 
 //--- tau- --> one-prong case (in particular rho- --> pi- pi0 or tau- --> a1- --> pi- pi0 pi0);
@@ -319,18 +319,17 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
     double recTauJetCharge = recTauJet.charge();
 
     for ( reco::PFCandidateRefVector::const_iterator recTauJetChargedConstituent = recTauJetChargedConstituents.begin();
-	  recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
-
+         recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
 //--- tau- --> three-prong case (in particular a1- --> pi- pi+ pi-);
 //    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
-      if ( TMath::Abs((*recTauJetChargedConstituent)->charge()*recTauJetCharge) > 0.5 ) return recTauJetChargedConstituent->get();	
-    }      
+      if ((*recTauJetChargedConstituent)->charge()*recTauJetCharge < 0) return recTauJetChargedConstituent->get();
+    }
   } else {
     edm::LogWarning ("getDistPion")
       << " Unsupported rec. tau decay mode = " << recTauDecayMode << " --> returning NULL pointer !!";
     return 0;
   }
-  
+
   edm::LogWarning ("getDistPion")
     << " Failed to identify 'distinguishable' rec. pion --> returning NULL pointer !!";
   return 0;
@@ -339,17 +338,17 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
 const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
 {
   std::string genTauDecayMode = JetMCTagUtils::genTauDecayMode(genTauJet);
-  
+
   std::vector<const reco::GenParticle*> genTauJetConstituents = genTauJet.getGenConstituents();
-  
+
   if ( genTauDecayMode == "oneProng1Pi0" ||
        genTauDecayMode == "oneProng2Pi0" ) {
     for ( std::vector<const reco::GenParticle*>::const_iterator genTauJetConstituent = genTauJetConstituents.begin();
 	  genTauJetConstituent != genTauJetConstituents.end(); ++genTauJetConstituent ) {
-      
+
 //--- tau- --> rho- --> pi- pi0 or tau- --> a1- --> pi- pi0 pi0 case;
 //    the "distinguishable" pion is the charged one
-      if ( TMath::Abs((*genTauJetConstituent)->charge()) > 0.5 ) return (*genTauJetConstituent);	
+      if ((*genTauJetConstituent)->charge()) return (*genTauJetConstituent);
     }
   } else if ( genTauDecayMode == "threeProng0Pi0" ) {
     double genTauJetCharge = genTauJet.charge();
@@ -359,14 +358,17 @@ const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
 
 //--- tau- --> a1- --> pi- pi+ pi- case
 //    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
-      if ( TMath::Abs((*genTauJetConstituent)->charge()*genTauJetCharge) > 0.5 ) return (*genTauJetConstituent);	
-    }      
+      if ((*genTauJetConstituent)->charge() &&
+          (*genTauJetConstituent)->charge()*genTauJetCharge < 0) {
+          return genTauJetConstituent->get();
+      }
+    }
   } else {
     edm::LogWarning ("getDistPion")
       << " Unsupported gen. tau decay mode = " << genTauDecayMode << " --> returning NULL pointer !!";
     return 0;
   }
-  
+
   edm::LogWarning ("getDistPion")
     << " Failed to identify 'distinguishable' gen. pion --> returning NULL pointer !!";
   return 0;
