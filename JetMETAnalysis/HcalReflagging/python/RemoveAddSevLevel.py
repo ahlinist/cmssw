@@ -52,7 +52,12 @@ def AddFlag(sevLevelComputer,flag="UserDefinedBit0",severity=10):
 
     allowedflags=[]
     for i in sevLevelComputer.SeverityLevels:
-        allowedflags.append(i.RecHitFlags.value())
+        for j in i.RecHitFlags.value():
+            if j=="":
+                continue
+            allowedflags.append(j)
+            
+    #print "Allowed flags = ",allowedflags
     if flag not in allowedflags:
         print "\n\n"
         for j in range(0,3):
