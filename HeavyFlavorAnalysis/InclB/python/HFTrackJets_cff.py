@@ -29,13 +29,8 @@ alltrackCandidates = cms.EDProducer("ConcreteChargedCandidateProducer",
     particleType = cms.string('pi+')
 )
 
-<<<<<<< HFTrackJets_cff.py
 trackjetDump = cms.EDAnalyzer("HFDumpTrackJets",
     doflavortagging = cms.untracked.int32(0),
-=======
-trackjetDump = cms.EDAnalyzer("HFDumpTrackJets",
-    doflavortagging = cms.untracked.int32(1),
->>>>>>> 1.5
     verbose = cms.untracked.int32(0),
     #jetsLabel = cms.untracked.string('sis5TrackJets'),
     jetsLabel = cms.untracked.string('myak5TrackJets'),

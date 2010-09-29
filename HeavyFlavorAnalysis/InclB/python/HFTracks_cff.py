@@ -20,12 +20,8 @@ matching = cms.EDProducer( "MCTruthDeltaRMatcherNew",
 
 anal = cms.EDAnalyzer("EventContentAnalyzer")
 
-<<<<<<< HFTracks_cff.py
+
 trackDump = cms.EDAnalyzer("HFDumpTracks",    
-=======
-trkDump = cms.EDAnalyzer("HFDumpTracks",
-    
->>>>>>> 1.3
     tracksLabel = cms.untracked.string('generalTracks'),
     tracksLabel2 = cms.untracked.string('alltrackCandidates'),
     muonsLabel = cms.untracked.InputTag("muons"),
