@@ -18,7 +18,8 @@ process.load("MuonAnalysis.MomentumResolution.goldenZmmSelection_cfi")
 process.source = cms.Source("PoolSource", 
       fileNames = cms.untracked.vstring(
             #"rfio:/castor/cern.ch/user/j/jalcaraz/Data2010/GoldenZmumus_132440-144114.root"
-            "file:/ciet3b/data3/GoldenZmumus/RECOGoldenZmumus_VBTF_132440-144114.root"
+            #"file:/ciet3b/data3/GoldenZmumus/RECOGoldenZmumus_VBTF_132440-144114.root"
+            "file:/ciet3b/data4/MUSKIM2010B/MUAODRED_SKIM_144115-146729_1.root"
 ),
       inputCommands = cms.untracked.vstring(
             'keep *',

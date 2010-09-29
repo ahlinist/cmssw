@@ -14,7 +14,7 @@ goodMuonsForW = cms.EDFilter("MuonViewRefSelector",
 )
 
 # Cuts on wmn system
-wmnCands = cms.EDFilter("CandViewShallowCloneCombiner",
+wmnCands = cms.EDProducer("CandViewShallowCloneCombiner",
     checkCharge = cms.bool(False),
     cut = cms.string('sqrt((daughter(0).pt+daughter(1).pt)*(daughter(0).pt+daughter(1).pt)-pt*pt)>50'),
     decay = cms.string("goodMuonsForW pfMet")
