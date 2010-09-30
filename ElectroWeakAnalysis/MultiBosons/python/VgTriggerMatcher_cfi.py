@@ -11,7 +11,7 @@ muonTriggerMatchHLTMu9 = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
                                       pathNames      = cms.vstring( 'HLT_Mu9' ),
                                       collectionTags = cms.vstring( '*' ),
                                       maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
                                       resolveByMatchQuality = cms.bool( True )
                                       )
@@ -27,7 +27,7 @@ muonTriggerMatchHLTMu11 = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
                                       pathNames      = cms.vstring( 'HLT_Mu11' ),
                                       collectionTags = cms.vstring( '*' ),
                                       maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
                                       resolveByMatchQuality = cms.bool( True )
                                       )
@@ -43,7 +43,7 @@ electronTriggerMatchHLTEle15LWL1R = cms.EDProducer( "PATTriggerMatcherDRDPtLessB
                                                   pathNames      = cms.vstring( 'HLT_Ele15_LW_L1R' ),
                                                   collectionTags = cms.vstring( '*' ),
                                                   maxDPtRel = cms.double( 0.5 ),
-                                                  maxDeltaR = cms.double( 0.5 ),
+                                                  maxDeltaR = cms.double( 0.3 ),
                                                   resolveAmbiguities    = cms.bool( True ),
                                                   resolveByMatchQuality = cms.bool( True )
                                                   )
@@ -59,7 +59,7 @@ electronTriggerMatchHLTEle15SWL1R = cms.EDProducer( "PATTriggerMatcherDRDPtLessB
                                                   pathNames      = cms.vstring( 'HLT_Ele15_SW_L1R' ),
                                                   collectionTags = cms.vstring( '*' ),
                                                   maxDPtRel = cms.double( 0.5 ),
-                                                  maxDeltaR = cms.double( 0.5 ),
+                                                  maxDeltaR = cms.double( 0.3 ),
                                                   resolveAmbiguities    = cms.bool( True ),
                                                   resolveByMatchQuality = cms.bool( True )
                                                   )
@@ -75,7 +75,7 @@ electronTriggerMatchHLTEle20SWL1R = cms.EDProducer( "PATTriggerMatcherDRDPtLessB
                                                   pathNames      = cms.vstring( 'HLT_Ele20_SW_L1R' ),
                                                   collectionTags = cms.vstring( '*' ),
                                                   maxDPtRel = cms.double( 0.5 ),
-                                                  maxDeltaR = cms.double( 0.5 ),
+                                                  maxDeltaR = cms.double( 0.3 ),
                                                   resolveAmbiguities    = cms.bool( True ),
                                                   resolveByMatchQuality = cms.bool( True )
                                                   )
@@ -91,7 +91,7 @@ electronTriggerMatchHLTEle15SWEleIdL1R = cms.EDProducer( "PATTriggerMatcherDRDPt
                                                   pathNames      = cms.vstring( 'HLT_Ele15_SW_EleId_L1R' ),
                                                   collectionTags = cms.vstring( '*' ),
                                                   maxDPtRel = cms.double( 0.5 ),
-                                                  maxDeltaR = cms.double( 0.5 ),
+                                                  maxDeltaR = cms.double( 0.3 ),
                                                   resolveAmbiguities    = cms.bool( True ),
                                                   resolveByMatchQuality = cms.bool( True )
                                                   )
@@ -107,7 +107,7 @@ electronTriggerMatchHLTEle15SWCaloEleIdL1R = cms.EDProducer( "PATTriggerMatcherD
                                                            pathNames      = cms.vstring( 'HLT_Ele15_SW_CaloEleId_L1R' ),
                                                            collectionTags = cms.vstring( '*' ),
                                                            maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
@@ -123,7 +123,7 @@ electronTriggerMatchHLTEle17SWCaloEleIdL1R  = cms.EDProducer( "PATTriggerMatcher
                                                            pathNames      = cms.vstring( 'HLT_Ele17_SW_CaloEleId_L1R' ),
                                                            collectionTags = cms.vstring( '*' ),
                                                            maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
@@ -139,7 +139,7 @@ electronTriggerMatchHLTEle17SWTightEleIdL1R   = cms.EDProducer( "PATTriggerMatch
                                                            pathNames      = cms.vstring( 'HLT_Ele17_SW_TightEleId_L1R' ),
                                                            collectionTags = cms.vstring( '*' ),
                                                            maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
