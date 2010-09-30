@@ -392,6 +392,9 @@ void WMuNuPtAnalyzer::sigmascan(){
   }
   TGraph * glikelihood = new TGraph(x,y);
   c_["cScan"]->cd();
+  glikelihood->GetYaxis()->SetTitle("- log-likelihood");
+  if(fitparameter==2) glikelihood->GetXaxis()->SetTitle("#sigma_{#kappa_{T}} (1/pt) [TeV^{-1}]");
+  else glikelihood->GetXaxis()->SetTitle("#delta_{#kappa_{T}} (1/pt) [TeV^{-1}]");  
   glikelihood->Draw("AP");
 }
 
