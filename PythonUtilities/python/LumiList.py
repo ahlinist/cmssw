@@ -272,6 +272,7 @@ class LumiList(object):
         lumiRangeList = self.compactList.get( str(run) )
         if not lumiRangeList:
             # the run isn't there, so no need to look any further
+            return False
         for lumiRange in lumiRangeList:
             if lumiRange[0] <= lumiSection and lumiSection <= lumiRange[1]:
                 # got it
