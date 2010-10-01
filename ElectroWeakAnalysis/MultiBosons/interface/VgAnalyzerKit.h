@@ -84,7 +84,7 @@ protected:
   float  processID_;
   int    nHLT_;
   int    HLT_[maxP];
-  int    HLTIndex_[23];
+  int    HLTIndex_[24];
   int    nHFTowersP_;
   int    nHFTowersN_;
   int    nVtx_;
@@ -196,6 +196,7 @@ protected:
 
   // Photon
   int    nPho_;
+  int    phoTrg_[maxP][4];
   bool   phoIsPhoton_[maxP];
   float  phoE_[maxP];
   float  phoEt_[maxP];
