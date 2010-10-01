@@ -20,6 +20,7 @@
 #include "TText.h"
 #include <cassert>
 #include "TROOT.h"
+#include "TObjString.h"
 
 class DQMInfoRenderPlugin : public DQMRenderPlugin
 {
@@ -29,19 +30,16 @@ public:
     {
       // determine whether core object is an Info object
       if ( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos
-        || o.name.find( "Info/LhcInfo/") != std::string::npos )
+        || o.name.find( "Info/LhcInfo/") != std::string::npos 
+        || o.name.find( "Info/ProvInfo/Taglist") != std::string::npos)
         return true;
       return false;
     }
 
-  virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
-    {
-
+  virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &){
       c->cd();
       gPad->SetLogy(0);
-      
-      if ( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos )
-      {
+      if ( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos ){
         // object is TH2 histogram
         if ( dynamic_cast<TH2F*>( o.object ) ) 
         {
@@ -49,17 +47,57 @@ public:
            preDrawTH2F( c, o );
         }
       }
-      else if ( o.name.find( "Info/LhcInfo/") != std::string::npos )
+      else if ( o.name.find( "Info/LhcInfo/") != std::string::npos ){
         if ( dynamic_cast<TH1F*>( o.object ) )
-	{
-	   gPad->SetLogy(0);
-	   preDrawTH1F( c, o);
-	}
-    }
- 
- 
+        {
+         gPad->SetLogy(0);
+         preDrawTH1F( c, o);
+        }
+      }
+      else if (o.name.find( "Info/ProvInfo/Taglist") != std::string::npos){
+        TObjString* s;
+        s=dynamic_cast<TObjString*>(o.object);
+        taglist=s->String();
+        s->SetString("");
+	   }
+  }
+  
  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
+      if (o.name.find( "Info/ProvInfo/Taglist") != std::string::npos){
+        int max = 0;
+        int length = 0;
+        std::vector<std::string> tltable;
+        tltable.push_back("");
+        for (std::string::iterator it=taglist.begin(); it < taglist.end(); it++){
+          if (*it == ';'){
+            tltable.push_back("");
+            length=0;          
+            continue;
+          }
+          if (*it == ':'){
+            if (max < length) max = length;
+            length *= -1;
+          }
+          tltable.back().append(1,*it);
+          if (length >=0) length++;
+        }
+        if (tltable.back().empty()) tltable.pop_back();
+        int numRows = (int) tltable.size();
+        float rowHight = 1.0 / numRows;
+        TText tt;
+        tt.SetTextSize(rowHight);
+        tt.SetTextFont(102);
+        tt.SetTextAlign(13);
+        for (int i = 0; i < (int) tltable.size(); i++ ){
+          int cpos = tltable[i].find(':');
+          for (int j=0;j < max-cpos; j++)
+            tltable[i].insert(cpos+j,1,' ');
+          tt.DrawText(0.01,1.0-(rowHight*i),tltable[i].c_str());
+        }
+        return;
+      }
+      
       return;
       c->cd();
       if ( o.name.find( "Info/EventInfo/reportSummaryMap" ) != std::string::npos )
@@ -199,6 +237,7 @@ public:
 
     } 
 private:
+  std::string taglist;
   void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
