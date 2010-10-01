@@ -1,6 +1,6 @@
 #include "ElectroWeakAnalysis/MultiBosons/interface/VgAnalyzerKit.h"
 
-//#include "FWCore/ParameterSet/interface/InputTag.h"
+#include <iostream>
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/Utilities/interface/EDMException.h"
@@ -34,8 +34,6 @@
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
-
-#include <iostream>
 
 using namespace std;
 using namespace pat;
@@ -197,6 +195,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04_, "eleIsoHcalDR04[nEle]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
+  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][4]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
@@ -609,9 +608,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   //16: HLT_Ele17_SW_CaloEleId_L1R 
   //17: HLT_Ele17_SW_TightEleId_L1R
   //18: HLT_DoubleEle10_SW_L1R 
-  //19: HLT_Photon15_Cleaned_L1R
-  //20: HLT_Photon20_Cleaned_L1R
-  //21: HLT_Photon25_Cleaned_L1R
+  //19: HLT_Photon10_Cleaned_L1R
+  //20: HLT_Photon15_Cleaned_L1R
+  //21: HLT_Photon20_Cleaned_L1R
   //22: HLT_Photon30_Cleaned_L1R 
 
   for (int a=0; a<23; a++)
@@ -646,9 +645,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       else if (hlNames[i] == "HLT_Ele17_SW_CaloEleId_L1R")  HLTIndex_[16] = i;
       else if (hlNames[i] == "HLT_Ele17_SW_TightEleId_L1R") HLTIndex_[17] = i;
       else if (hlNames[i] == "HLT_Double10_SW_L1R")         HLTIndex_[18] = i;
-      else if (hlNames[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[19] = i;
-      else if (hlNames[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[20] = i;
-      else if (hlNames[i] == "HLT_Photon25_Cleaned_L1R")    HLTIndex_[21] = i;
+      else if (hlNames[i] == "HLT_Photon10_Cleaned_L1R")    HLTIndex_[19] = i;
+      else if (hlNames[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[20] = i;
+      else if (hlNames[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[21] = i;
       else if (hlNames[i] == "HLT_Photon30_Cleaned_L1R")    HLTIndex_[22] = i;
     }
   }
@@ -937,10 +936,28 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const Candidate *phomom = 0;
   int nPhoPassCut = 0;
   nPho_ = 0;
+  const TriggerObjectMatch *phoTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10CleanedL1R"));
+  const TriggerObjectMatch *phoTriggerMatch2(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton15CleanedL1R"));
+  const TriggerObjectMatch *phoTriggerMatch3(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton20CleanedL1R"));
+  const TriggerObjectMatch *phoTriggerMatch4(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton30CleanedL1R"));
+
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
       
       if (iPho->pt() > leadingPhoPtCut_) nPhoPassCut++;
+
+      edm::RefToBase<pat::Photon> phoRef = photonHandle_->refAt(nPho_);
+      reco::CandidateBaseRef phoBaseRef(phoRef);
+      const TriggerObjectRef phoTrigRef1( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch1, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef2( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch2, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef3( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch3, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef4( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch4, e, *triggerEvent ) );
+      phoTrg_[nPho_][0] = (phoTrigRef1.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][1] = (phoTrigRef2.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][2] = (phoTrigRef3.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][3] = (phoTrigRef4.isAvailable()) ? 1 : -99;
+
+      cout<<" Pho HLT = "<<iPho->pt()<<"     "<<phoTrg_[nPho_][0]<<"     "<<phoTrg_[nPho_][1]<<"     "<<phoTrg_[nPho_][2]<<"     "<<phoTrg_[nPho_][3]<<endl;
 
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
