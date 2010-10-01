@@ -50,76 +50,10 @@ process.zmmPrunedGenParticles = cms.EDProducer(
     )
 )
 
-process.goodZToMuMuEdmNtuple = cms.EDProducer(
-    "CandViewNtpProducer", 
-    src = cms.InputTag("zmmCands"),
-    lazyParser = cms.untracked.bool(True),
-    variables = cms.VPSet(
-    cms.PSet(
-    tag = cms.untracked.string("mu1STApt"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.pt")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STApx"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.px")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STApy"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.py")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STApz"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.pz")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STAp"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.p")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STAphi"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.phi")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STAeta"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.eta")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STApt"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.pt")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STApx"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.px")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STApy"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.py")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STApz"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.pz")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STAp"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.p")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STAphi"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.phi")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STAeta"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.eta")
-    )
-
-    )  
- )
-
 # Path
 process.path = cms.Path(
       process.zmmPrunedGenParticles *
-      process.goldenZMMSelectionSequence *
-      process.goodZToMuMuEdmNtuple
+      process.goldenZMMSelectionSequence 
 )
 
 # Write a customized output
@@ -127,8 +61,7 @@ process.myEventContent = cms.PSet(outputCommands=cms.untracked.vstring('drop *')
 process.myEventContent.outputCommands.extend(
       cms.untracked.vstring(
             'keep *_zmmCands_*_*'
-          , 'keep *_zmmPrunedGenParticles_*_*',
-            'keep *_goodZToMuMuEdmNtuple_*_*'
+          , 'keep *_zmmPrunedGenParticles_*_*'
       )
 )
 
@@ -139,7 +72,7 @@ process.zmmOutputModule = cms.OutputModule("PoolOutputModule"
       , SelectEvents = cms.untracked.PSet(
             SelectEvents = cms.vstring('path')
       )
-      , fileName = cms.untracked.string('EdmZmmTreeMC_STA.root')
+      , fileName = cms.untracked.string('EdmZmmTreeMC.root')
 )
 
 # End path

@@ -42,57 +42,16 @@ for file in os.listdir(file_directory):
 # Events processed
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 
-process.goodZToMuMuEdmNtuple = cms.EDProducer(
-    "CandViewNtpProducer", 
-    src = cms.InputTag("zmmCands"),
-    lazyParser = cms.untracked.bool(True),
-    variables = cms.VPSet(
-    cms.PSet(
-    tag = cms.untracked.string("mu1STApx"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.px")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STApy"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.py")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STApz"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.pz")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu1STAp"),
-    quantity = cms.untracked.string("daughter(0).masterClone.outerTrack.p")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STApx"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.px")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STApy"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.py")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STApz"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.pz")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("mu2STAp"),
-    quantity = cms.untracked.string("daughter(1).masterClone.outerTrack.p")
-    )
-  )
-)
-
 # Path
 process.path = cms.Path(
-      process.goldenZMMSelectionSequence * process.goodZToMuMuEdmNtuple
+      process.goldenZMMSelectionSequence 
 )
 
 # Write a customized output
 process.myEventContent = cms.PSet(outputCommands=cms.untracked.vstring('drop *'))
 process.myEventContent.outputCommands.extend(
       cms.untracked.vstring(
-            'keep *_zmmCands_*_*',
-            'keep *_goodZToMuMuEdmNtuple_*_*'
+            'keep *_zmmCands_*_*'            
 )
 )
 
@@ -104,7 +63,7 @@ process.zmmOutputModule = cms.OutputModule("PoolOutputModule"
       , SelectEvents = cms.untracked.PSet(
             SelectEvents = cms.vstring('path')
       )
-      , fileName = cms.untracked.string('EdmZmmTreeData_STA.root')
+      , fileName = cms.untracked.string('EdmZmmTreeData.root')
 )
 
 # End path
