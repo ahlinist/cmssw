@@ -18,7 +18,7 @@ process.source = cms.Source("PoolSource",
 
 # Official version (EdmNtuple = True)
              "file:EdmZmmTreeMCShort.root",
-             "file:EdmZmmTreeDataShort.root"
+#             "file:EdmZmmTreeDataShort.root"
       ),
 #      inputCommands = cms.untracked.vstring(
 #            'keep *',
@@ -32,30 +32,30 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # Output histograms
 process.TFileService = cms.Service("TFileService", 
-                                   fileName = cms.string("ResultsZMuMu_scan3.root"),
+                                   fileName = cms.string("ResultsZMuMu_res_6pb_STA.root"),
                                    closeFileFast = cms.untracked.bool(True)
 )
 
 process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              Initval=cms.untracked.double(0), # Initial and error values for minimization
-                             Errorval = cms.untracked.double(0.05),  
+                             Errorval = cms.untracked.double(1),  
                              # Luminosity (dummy, only for plot tagging)
-                             Lumi = cms.untracked.double(10),
+                             Lumi = cms.untracked.double(6),
                              # If doscan = true => draw likelihood curve (no minimization); else minimize (no likelihood curve)
-                             Doscan = cms.untracked.bool(True),
+                             Doscan = cms.untracked.bool(False),
                              # doups (if you want to add another resonance to the fit, e. g. Upsilon)
                              DoUps = cms.untracked.bool(False),
                              # local use only
-                             EdmNtuple = cms.untracked.bool(True), 
+                             EdmNtuple = cms.untracked.bool(False), 
                              # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
                              DoFit1 = cms.untracked.bool(False), # delta
                              DoFit2 = cms.untracked.bool(False), # sigma
                              DoFit3 = cms.untracked.bool(True),  # sigma(1/pt)
                              DoFit4 = cms.untracked.bool(True),  # delta(1/pt)
                              # Scan parameters (only meaningful if doscan = true)
-                             NbinsScan = cms.untracked.int32(10),
-                             IniScan = cms.untracked.double(0),
-                             EndScan = cms.untracked.double(0.15),
+                             NbinsScan = cms.untracked.int32(8),
+                             IniScan = cms.untracked.double(-0.3),
+                             EndScan = cms.untracked.double(1),
                              # if fs (full statistics) is true (default) => config.num_random**4 random values per muon; else 1 random per muon
                              Fs = cms.untracked.bool(False),
                              NumRandom = cms.untracked.int32(5),
@@ -64,11 +64,11 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              # domigrad = 0 => Simplex only, domigrad = 1 => Simplex + Migrad
                              DoMigrad = cms.untracked.bool(True),
                              # local use only
-                             RootFileName = cms.untracked.string("treeMC_histoData.root"),
+                             RootFileName = cms.untracked.string("treeMC_histoData_6pb_STA.root"),
                              # Histo values
                              Nbins_histomassZ = cms.untracked.int32(40),
-                             Inibin_histomassZ = cms.untracked.int32(70),
-                             Endbin_histomassZ = cms.untracked.int32(110),
+                             Inibin_histomassZ = cms.untracked.int32(50),
+                             Endbin_histomassZ = cms.untracked.int32(130),
                              Nbins_histomassU = cms.untracked.int32(10),
                              Inibin_histomassU = cms.untracked.int32(6),
                              Endbin_histomassU = cms.untracked.int32(8)
