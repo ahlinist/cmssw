@@ -18,6 +18,7 @@ MHTJetEventSelector::MHTJetEventSelector(const edm::ParameterSet& pset) :
   jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
   mhtDphiMin_(pset.getParameter<double> ("mhtDPhiMin")),
   dPhiJet2MHTMin_(pset.getParameter<double> ("dPhiJet2MHTMin")),
+  dPhiJet1MHTMin_(pset.getParameter<double> ("dPhiJet1MHTMin")),
   rDistJetsMin_(pset.getParameter<double> ("rDistJetsMin")),
   nJetsMHTIso_(pset.getParameter<unsigned int> ("NJets_mhtIso")),
   minPt_(pset.getParameter<double> ("minPt")),
@@ -123,6 +124,8 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
    if (metIso < mhtDphiMin_)
       return false;
    if (dPhiJet2Met < dPhiJet2MHTMin_)
+      return false;
+   if (dPhiJet1Met < dPhiJet1MHTMin_)
       return false;
    if (R1 < rDistJetsMin_)
       return false;
