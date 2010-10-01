@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.44 $
-  \date $Date: 2010/08/13 22:51:18 $
+  \version $Revision: 1.45 $
+  \date $Date: 2010/09/03 15:11:01 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -70,11 +70,6 @@ class HcalRenderPlugin : public DQMRenderPlugin
   int summaryColors[100]; // grey for values of -1, then red at 0 and green above 0.98
   Int_t NRGBs_summary;
   Int_t NCont_summary;
-
-  // old error color scheme:  green for <5%, max out at red=100%
-  int oldHcalErrorColors[100];
-  Int_t NRGBs_oldError;
-  Int_t NCont_oldError;
 
   // error colors:  green for <5% error, then yellow->red, then grey above 100% (previously-known problems)
   int hcalErrorColors[105];
@@ -222,10 +217,11 @@ public:
     // repeat for hcal error colors.  Assign color positions starting at 1501
     NRGBs_hcalError = 8; // specify number of RGB boundaries for hcalError
     NCont_hcalError = 105; // specify number of contours for hcalError
+    // Update on 1 October 10:  Switch 'black' color to 'white' for known bad channels
     Double_t stops_hcalError[] = { 0.00, 0.05/1.05, 0.40/1.05, 0.75/1.05, 0.95/1.05, 1.00/1.05,  1.01/1.05,1.05/1.05};
-    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.0};
-    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00, 0.00, 0.0};
-    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.0};
+    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.0};
+    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00, 0.00, 1.0};
+    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.0};
     nColorsGradient=0;
     highestIndex=0;
     for (int g=1;g<NRGBs_hcalError;++g)
@@ -1066,10 +1062,6 @@ void setErrorColor(TH2* obj)
 void setOldErrorColor(TH2* obj)
 {
   obj->SetContour(100);
-  /*
-  obj->SetContour(NCont_oldError);
-  gStyle->SetPalette(NCont_oldError, oldHcalErrorColors);
-  */
 }
 
   void drawEtaPhiLines(TH2* obj)
