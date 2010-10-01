@@ -272,6 +272,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
+    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][5]/I");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -957,8 +958,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoTrg_[nPho_][2] = (phoTrigRef3.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][3] = (phoTrigRef4.isAvailable()) ? 1 : -99;
 
-      cout<<" Pho HLT = "<<iPho->pt()<<"     "<<phoTrg_[nPho_][0]<<"     "<<phoTrg_[nPho_][1]<<"     "<<phoTrg_[nPho_][2]<<"     "<<phoTrg_[nPho_][3]<<endl;
-
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
       phoEt_[nPho_]  = iPho->et();
@@ -1408,12 +1407,33 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
   // Jet
   // cout << "VgAnalyzerKit: produce: Jet..." << endl;
+  const TriggerObjectMatch *jetTriggerMatch1(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet15U"));
+  const TriggerObjectMatch *jetTriggerMatch2(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30U"));
+  const TriggerObjectMatch *jetTriggerMatch3(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet50U"));
+  const TriggerObjectMatch *jetTriggerMatch4(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet70U"));
+  const TriggerObjectMatch *jetTriggerMatch5(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet100U"));
+
   if (doStoreJets_) {
     nJet_ = 0;
     if ( jetHandle_.isValid() )
       for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
 
         if ( iJet->pt() < 15 ) continue;
+
+	edm::RefToBase<pat::Jet> jetRef = jetHandle_->refAt(nJet_);
+	reco::CandidateBaseRef jetBaseRef(jetRef);
+	const TriggerObjectRef jetTrigRef1( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch1, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef2( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch2, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef3( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch3, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef4( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch4, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef5( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch5, e, *triggerEvent ) );
+	jetTrg_[nJet_][0] = (jetTrigRef1.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][1] = (jetTrigRef2.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][2] = (jetTrigRef3.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][3] = (jetTrigRef4.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][4] = (jetTrigRef5.isAvailable()) ? 1 : -99;
+
+ 	cout<<" Jet HLT = "<<iJet->pt()<<"      "<<jetTrg_[nJet_][0]<<"     "<<jetTrg_[nJet_][1]<<"     "<<jetTrg_[nJet_][2]<<"     "<<jetTrg_[nJet_][3]<<"     "<<jetTrg_[nJet_][4]<<endl;
 
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
