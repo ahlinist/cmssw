@@ -34,6 +34,7 @@ private:
 
    float mhtDphiMin_; ///< Minimum angle between MET and any leading jet
    float dPhiJet2MHTMin_; ///< Minimum angle between MET and 2nd leading jet
+   float dPhiJet1MHTMin_; ///< Minimum angle between MET and 1nd leading jet
    float rDistJetsMin_; ///< Minimum R1 and R2
    unsigned int nJetsMHTIso_; ///<  Nr. of jets for MET isolation
    float minPt_; ///< minimum Pt of jets taken into account
