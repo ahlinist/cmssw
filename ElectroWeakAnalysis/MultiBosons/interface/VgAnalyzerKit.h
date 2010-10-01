@@ -268,6 +268,7 @@ protected:
 
   // Jet
   int    nJet_;
+  int    jetTrg_[maxP][5];
   int    jetAlgo_[maxP];
   float  jetEn_[maxP];
   float  jetPt_[maxP];
