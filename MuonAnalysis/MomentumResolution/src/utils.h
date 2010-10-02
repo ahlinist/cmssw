@@ -22,10 +22,9 @@ struct t_data{double pt1,pt2,pt1_gen,pt2_gen,px_pt1,px_pt2,py_pt1,py_pt2,pz_pt1,
 class Tutils{
  public:
   void draw_label(t_label l[], double x1, double y1,double dx, double dy,int n);
-  double modpt(double pt, double pt_gen, double r,double rp, const double * sigma, int mode);
-  double modpt(double pt, double pt_gen, double r,double rp, const double * sigma);
-  double computeMass(t_data& data, double r1, double r2,double rp1, double rp2, const double sigma[]);
-  double computeMass(t_data& data, const double sigma[]);
+  double modpt(double pt, double pt_gen, double r,double rp, const double * sigma, double eta,int mode);
+  double computeMass(t_data& data, double r1, double r2,double rp1, double rp2, const double sigma[],int mode);
+  double computeMass(t_data& data, const double sigma[],int mode);
   
   double likelihood(TH1D * hZmassVar, TH1D * hZmassModel);
   void setTDRStyle();

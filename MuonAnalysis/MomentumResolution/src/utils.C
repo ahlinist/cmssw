@@ -10,30 +10,36 @@ void Tutils::draw_label(t_label l[], double x1, double y1,double dx, double dy,i
 }
 
 
-double Tutils::modpt(double pt, double pt_gen, double r,double rp, const double * sigma, int mode){
+double Tutils::modpt(double pt, double pt_gen, double r,double rp, const double * sigma, double eta,int mode){
   double ptmod = pt;
-  // for Ws
-  // mode == 0 does not work when MC width is bigger than data one. This is solved with mode == 1
+  // mode == 0 does not work when MC distribution is wider than data one. This is solved with mode == 1
   if(mode==1){
-    ptmod = 1/( sigma[2]/pt + (1-sigma[2])/pt_gen );
-    ptmod = ptmod + ptmod*(sigma[0] + r*sigma[1] + sigma[3]*(1./1000.)*ptmod);
-
+    if(eta<0.9){
+      ptmod = 1/( sigma[2]/pt + (1-sigma[2])/pt_gen );
+      ptmod = ptmod + ptmod*(sigma[0] + r*sigma[1] + sigma[3]*(1./1000.)*ptmod);
+    }else if(eta<2.1){
+      ptmod = 1/( sigma[4]/pt + (1-sigma[4])/pt_gen );
+      ptmod = ptmod + ptmod*(sigma[0] + r*sigma[1] + sigma[5]*(1./1000.)*ptmod);
+    }else{
+      ptmod = 1/( sigma[6]/pt + (1-sigma[6])/pt_gen );
+      ptmod = ptmod + ptmod*(sigma[0] + r*sigma[1] + sigma[7]*(1./1000.)*ptmod);
+    }
     //ptmod = pt_gen + pt_gen*(sigma[0] + r*sigma[1] + sigma[3]*(1./1000.)*pt_gen) + (1/( sigma[2]/pt + (1-sigma[2])/pt_gen )-pt_gen);
   }else if(mode == 0){
-    ptmod = pt + pt*(sigma[0] + r*sigma[1] + rp*sigma[2]*(1./1000.)*pt + sigma[3]*(1./1000.)*pt);
+    if(eta<0.9)
+      ptmod = pt + pt*(sigma[0] + r*sigma[1] + rp*sigma[2]*(1./1000.)*pt + sigma[3]*(1./1000.)*pt);
+    else if(eta<2.1)
+      ptmod = pt + pt*(sigma[0] + r*sigma[1] + rp*sigma[4]*(1./1000.)*pt + sigma[5]*(1./1000.)*pt);
+    else 
+      ptmod = pt + pt*(sigma[0] + r*sigma[1] + rp*sigma[6]*(1./1000.)*pt + sigma[7]*(1./1000.)*pt);
   }
   return ptmod;
 }
 
-double Tutils::modpt(double pt, double pt_gen, double r,double rp, const double * sigma){
-  // for Zs
-  double ptmod = pt + pt*(sigma[0] + r*sigma[1] + rp*sigma[2]*(1./1000.)*pt_gen + sigma[3]*(1./1000.)*pt_gen);
-  return ptmod;
-}
 
-double Tutils::computeMass(t_data& data,double r1, double r2,double rp1, double rp2,const double sigma[]) {
-  double ptmod1 = modpt(data.pt1,data.pt1_gen,r1,rp1,sigma);
-  double ptmod2 = modpt(data.pt2,data.pt2_gen,r2,rp2,sigma);
+double Tutils::computeMass(t_data& data,double r1, double r2,double rp1, double rp2,const double sigma[],int mode) {
+  double ptmod1 = modpt(data.pt1,data.pt1_gen,r1,rp1,sigma,data.eta1,mode);
+  double ptmod2 = modpt(data.pt2,data.pt2_gen,r2,rp2,sigma,data.eta2,mode);
   double px1 = ptmod1*data.px_pt1;
   double py1= ptmod1*data.py_pt1;
   double pz1 = ptmod1*data.pz_pt1;
@@ -46,9 +52,9 @@ double Tutils::computeMass(t_data& data,double r1, double r2,double rp1, double 
   px = px1 + px2; py = py1 + py2; pz = pz1 + pz2; E = E1 + E2;
   return sqrt(E*E - px*px - py*py - pz*pz);
 }
-double Tutils::computeMass(t_data& data,const double sigma[]) {
-  double ptmod1 = modpt(data.pt1,data.pt1_gen,data.r1,data.rp1,sigma);
-  double ptmod2 = modpt(data.pt2,data.pt2_gen,data.r2,data.rp2,sigma);
+double Tutils::computeMass(t_data& data,const double sigma[],int mode) {
+  double ptmod1 = modpt(data.pt1,data.pt1_gen,data.r1,data.rp1,sigma,data.eta1,mode);
+  double ptmod2 = modpt(data.pt2,data.pt2_gen,data.r2,data.rp2,sigma,data.eta2,mode);
   double px1 = ptmod1*data.px_pt1;
   double py1= ptmod1*data.py_pt1;
   double pz1 = ptmod1*data.pz_pt1;

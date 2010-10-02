@@ -75,7 +75,7 @@ public:
   void sigmascan();
   void minimize(double sigma=0);
   void fix_variable(double sigma);
-  void set_minimizer(const double initval[4],int id);
+  void set_minimizer(const double initval[8],int id);
   void getdata(TH1D *histo,const double * par,int pID);
   void draw_output();
   void draw_resonance(int id);
@@ -87,7 +87,7 @@ private:
   bool doscan;
   bool doups; 
   bool edmNtuple;
-  bool dofit0,dofit1,dofit2,dofit3;
+  bool dofit0,dofit1,dofit2,dofit3,dofit4,dofit5,dofit6,dofit7;
   int nbins_scan;
   double ini_scan;
   double end_scan;
@@ -98,19 +98,20 @@ private:
   string rootfilename;
   int nbins_hmassZ, inibin_hmassZ, endbin_hmassZ;
   int nbins_hmassU, inibin_hmassU, endbin_hmassU;
+  int mode;
   TTree * treeZ;  TTree * treeU;
   t_data data;
   double rn1[10][10];
   double rn2[10][10];
   double sigma;
-  double sigmaopt[9];
-  double sigmaopterror[4];
+  double sigmaopt[13];
+  double sigmaopterror[8];
   ROOT::Minuit2::Minuit2Minimizer*  fMinuit;
   ROOT::Math::IMultiGenFunction *   fFunc;  
   Tutils * utils;
   std::map<std::string,TH1D*> h1_;
   std::map<std::string,TCanvas*> c_;
-  bool dofit[4];
+  bool dofit[8];
 };
 
 #include <CLHEP/Random/RandGauss.h>
@@ -127,6 +128,10 @@ ZMuMuPtAnalyzer::ZMuMuPtAnalyzer(const ParameterSet& pset) :
   dofit1(pset.getUntrackedParameter<bool>("DoFit2",false)), 
   dofit2(pset.getUntrackedParameter<bool>("DoFit3",false)), 
   dofit3(pset.getUntrackedParameter<bool>("DoFit4",false)), 
+  dofit4(pset.getUntrackedParameter<bool>("DoFit5",false)), 
+  dofit5(pset.getUntrackedParameter<bool>("DoFit6",false)), 
+  dofit6(pset.getUntrackedParameter<bool>("DoFit7",false)), 
+  dofit7(pset.getUntrackedParameter<bool>("DoFit8",false)), 
   nbins_scan(pset.getUntrackedParameter<int>("NbinsScan",20)), 
   ini_scan(pset.getUntrackedParameter<double>("IniScan",0)), 
   end_scan(pset.getUntrackedParameter<double>("EndScan",1)), 
@@ -140,10 +145,11 @@ ZMuMuPtAnalyzer::ZMuMuPtAnalyzer(const ParameterSet& pset) :
   endbin_hmassZ(pset.getUntrackedParameter<int>("Endbin_histomassZ",110)),
   nbins_hmassU(pset.getUntrackedParameter<int>("Nbins_histomassU",10)),
   inibin_hmassU(pset.getUntrackedParameter<int>("Inibin_histomassU",6)),
-  endbin_hmassU(pset.getUntrackedParameter<int>("Endbin_histomassU",8))
+  endbin_hmassU(pset.getUntrackedParameter<int>("Endbin_histomassU",8)),
+  mode(pset.getUntrackedParameter<int>("Mode",0))
 { 
   utils->setTDRStyle();
-  fFunc = new ROOT::Math::Functor( this , &ZMuMuPtAnalyzer::fcn , 9 ); 
+  fFunc = new ROOT::Math::Functor( this , &ZMuMuPtAnalyzer::fcn , 13); 
   LogDebug("ZMuMuPtAnalyzerAnalyzer")<<" ZMuMuPtAnalyzerAnalyzer constructor called";
 }
 
@@ -153,6 +159,7 @@ ZMuMuPtAnalyzer::~ZMuMuPtAnalyzer(){
 
 void ZMuMuPtAnalyzer::beginJob(){//const EventSetup& eventSetup){
   dofit[0] = dofit0;  dofit[1] = dofit1;  dofit[2] = dofit2;  dofit[3] = dofit3;
+  dofit[4] = dofit4;  dofit[5] = dofit5;  dofit[6] = dofit6;  dofit[7] = dofit7;
 
   edm::Service<TFileService> fs;
 
@@ -251,7 +258,7 @@ void ZMuMuPtAnalyzer::endJob(){
     // Get results
     const double * results = fMinuit->X();
     const double * errors = fMinuit->Errors();
-    for (int i=0;i<5;i++){sigmaopt[i]=results[i]; if(i<4) sigmaopterror[i]=errors[i];}
+    for (int i=0;i<9;i++){sigmaopt[i]=results[i]; if(i<8) sigmaopterror[i]=errors[i];}
     // OUTPUT ***********************************
     draw_output();
     //*******************************************
@@ -297,7 +304,7 @@ double ZMuMuPtAnalyzer::fcn(const double *par)
       hUmassVar->Delete();
     }
   cout <<", (Z + U) " << result << " " << endl;
-  cout << " **** SF: " << par[0] << " **** MS: " << par[1] << " **** INT: " << par[2] << " **** NSF: " << par[3] << " **** Scale: " << par[4] <<endl;
+  cout << "**** SigmaBarrel: " << par[2] << " **** DeltaBarrel: " << par[3] << "**** SigmaOlap: " << par[4] << " **** DeltaOlap: " << par[5] << "**** SigmaEndcap: " << par[6] << " **** DeltaEndcap: " << par[7] << " **** Scale: " << par[8] <<endl;
   return result;
 }
 
@@ -314,7 +321,7 @@ void ZMuMuPtAnalyzer::draw_resonance(int id){
   c->cd();
   for(int i=1;i<=hdata->GetNbinsX();i++){hdata->SetBinError(i,sqrt(hdata->GetBinContent(i)));}
   hdata->Draw(); h->Draw("same"); //hZmassSol->Draw("same");
-  double sigmaref[5]={0,0,0,0,sigmaopt[4]};
+  double sigmaref[9]={0,0,0,0,0,0,0,0,sigmaopt[8]};if(mode==1) {sigmaref[2]=sigmaref[4]=sigmaref[6]=1;}
   // get the data for the reference MC
   getdata(hRef,sigmaref,id); hRef->SetLineColor(3);
   hRef->Draw("same"); //draw it
@@ -322,7 +329,7 @@ void ZMuMuPtAnalyzer::draw_resonance(int id){
   t_label lab[3];
   lab[0].h = hdata; lab[0].text << "Collision data";
   //lab[1].h = hptOpt;  lab[1].text << "Fit: s1 = " << sigmaopt[0] << " (1/TeV)"<<" s2 = " << sigmaopt[1] << " (1/TeV)"<<" s3 = " << sigmaopt[2] << " (1/TeV)"<<" s4 = " << sigmaopt[3] << " (1/TeV)";
-  lab[1].h = h;  lab[1].text << "Fit: #sigma_{#kappa_{T}} (1/pt) = " << sigmaopt[2] << " [TeV^{-1}]"<<", #delta_{#kappa_{T}} (1/pt) = " << sigmaopt[3] << " [TeV^{-1}]";
+  lab[1].h = h;  lab[1].text << "Fit(Barrel): #sigma_{#kappa_{T}} (1/pt) = " << sigmaopt[2] << " [TeV^{-1}]"<<", #delta_{#kappa_{T}} (1/pt) = " << sigmaopt[3] << " [TeV^{-1}]"<< " Fit(Overlap): #sigma_{#kappa_{T}} (1/pt) = " << sigmaopt[4] << " [TeV^{-1}]"<<", #delta_{#kappa_{T}} (1/pt) = " << sigmaopt[5] << " [TeV^{-1}]"<< "Fit(Endcap: #sigma_{#kappa_{T}} (1/pt) = " << sigmaopt[6] << " [TeV^{-1}]"<<", #delta_{#kappa_{T}} (1/pt) = " << sigmaopt[7] << " [TeV^{-1}]";
   lab[2].h = hRef;  lab[2].text << "Reference MC";
   utils->draw_label(lab,0,0.8,0.2,0.1,3); // posicion de las esquinas,tamano de los lados,
 }
@@ -348,29 +355,29 @@ void ZMuMuPtAnalyzer::getdata(TH1D *histo,const double * par,int pID){
 	  for(int l=0;l<num_random;l++){
 	    for(int m=0;m<num_random;m++){
 	      // distort momentum and fill histogram
-	      histo->Fill(utils->computeMass(data,rn1[i][j],rn2[i][j],rn1[l][m],rn2[l][m],par));
+	      histo->Fill(utils->computeMass(data,rn1[i][j],rn2[i][j],rn1[l][m],rn2[l][m],par,mode));
 	    }
 	  }
 	}
       }
     }else{
       // distort momentum and fill histogram
-      histo->Fill(utils->computeMass(data,par));
+      histo->Fill(utils->computeMass(data,par,mode));
     }
   }
   // if it is the Z resonance (pID == 0) only scale
-  if(pID==0) histo->Scale(par[4]); 
+  if(pID==0) histo->Scale(par[8]); 
   else {
     // if it is the U resonance (pID == 0) scale and add background (quadratically)
-    histo->Scale(par[5]);
+    histo->Scale(par[9]);
     for(int i=1; i<=histo->GetNbinsX(); i++){
       double x = histo->GetXaxis()->GetBinCenter(i);
-      histo->SetBinContent(i, histo->GetBinContent(i) + par[6] + par[7]*x + par[8]*x*x);
+      histo->SetBinContent(i, histo->GetBinContent(i) + par[10] + par[11]*x + par[12]*x*x);
     }
   }
 }
 
-void ZMuMuPtAnalyzer::set_minimizer(const double initval[4],int id){
+void ZMuMuPtAnalyzer::set_minimizer(const double initval[8],int id){
   if(id==0) {
     cout << "********************* SIMPLEX ****************************** " << endl;
     fMinuit = new ROOT::Minuit2::Minuit2Minimizer( ROOT::Minuit2::kSimplex );
@@ -387,13 +394,17 @@ void ZMuMuPtAnalyzer::fix_variable(double sigma){
   if(fitparameter==0) fMinuit->SetFixedVariable(fitparameter,"sigma1",sigma);
   else if(fitparameter==1) fMinuit->SetFixedVariable(fitparameter,"sigma2",sigma);
   else if(fitparameter==2) fMinuit->SetFixedVariable(fitparameter,"sigma3",sigma);
-  else {fMinuit->SetFixedVariable(fitparameter,"sigma4",sigma);}
+  else if(fitparameter==3) fMinuit->SetFixedVariable(fitparameter,"sigma4",sigma);
+  else if(fitparameter==4) fMinuit->SetFixedVariable(fitparameter,"sigmaOlap",sigma);
+  else if(fitparameter==5) fMinuit->SetFixedVariable(fitparameter,"deltaOlap",sigma);
+  else if(fitparameter==6) fMinuit->SetFixedVariable(fitparameter,"sigmaEndcap",sigma);
+  else {fMinuit->SetFixedVariable(fitparameter,"deltaEndcap",sigma);}
 }
 
 void ZMuMuPtAnalyzer::minimize(double sigma){
   // CREATE MINIMIZER *************************
   // First SIMPLEX
-  const double initval_simplex[4]={initval,initval,initval,initval};
+  const double initval_simplex[8]={initval,initval,initval,initval,initval,initval,initval,initval};
   set_minimizer(initval_simplex,0);
   if(doscan) fix_variable(sigma);
   fMinuit->Minimize();
@@ -411,7 +422,7 @@ void ZMuMuPtAnalyzer::minimize(double sigma){
 
 void ZMuMuPtAnalyzer::sigmascan(){
   // SCAN 
-  double sigma_scan[9];
+  double sigma_scan[13];
   TVectorD x(nbins_scan+1); TVectorD y(nbins_scan+1); //nbins+1
   double sigma;
   for(int i=0;i<=nbins_scan;i++){
@@ -422,9 +433,10 @@ void ZMuMuPtAnalyzer::sigmascan(){
     minimize(sigma);
     // getoutput
     const double * results = fMinuit->X();
-    sigma_scan[0] = results[0];  sigma_scan[1]= results[1];  sigma_scan[2]= results[2];  sigma_scan[3]= results[3];    sigma_scan[4]=results[4]; 
+    sigma_scan[0] = results[0];  sigma_scan[1]= results[1];  sigma_scan[2]= results[2];  sigma_scan[3]= results[3];    sigma_scan[4]=results[4]; sigma_scan[5] = results[5];  sigma_scan[6]= results[6];  sigma_scan[7]= results[7];  sigma_scan[8]= results[8];    sigma_scan[9]=results[9]; 
     cout << "-- OUTPUT --------------------------" <<endl;
     cout << sigma_scan[0] << " " << sigma_scan[1] << " " <<sigma_scan[2] << " " <<sigma_scan[3] << " " <<endl;
+    cout << sigma_scan[4] << " " << sigma_scan[5] << " " <<sigma_scan[6] << " " <<sigma_scan[7] << " " <<endl;
     sigma_scan[fitparameter] = sigma;
     
     // compute likelihood for this output
@@ -453,6 +465,11 @@ void ZMuMuPtAnalyzer::create_fitter(const double *results){
   if(dofit[2]) fMinuit->SetVariable(2,"sigma3",results[2],errorval); else fMinuit->SetFixedVariable(2,"sigma3",0);
   if(dofit[3]) fMinuit->SetVariable(3,"sigma4",results[3],errorval); else fMinuit->SetFixedVariable(3,"sigma4",0);
 
+  if(dofit[4]) fMinuit->SetVariable(4,"sigmaOlap",results[4],errorval); else fMinuit->SetFixedVariable(4,"sigmaOlap",0);
+  if(dofit[5]) fMinuit->SetVariable(5,"deltaOlap",results[5],errorval); else fMinuit->SetFixedVariable(5,"deltaOlap",0);
+  if(dofit[6]) fMinuit->SetVariable(6,"sigmaEndcap",results[6],errorval); else fMinuit->SetFixedVariable(6,"sigmaEndcap",0);
+  if(dofit[7]) fMinuit->SetVariable(7,"deltaEndcap",results[7],errorval); else fMinuit->SetFixedVariable(7,"deltaEndcap",0);
+
   // init value for the scales
   double init_scaleZ = (float)h1_["hZmass"]->GetEntries()/(float)treeZ->GetEntries(); double err_scaleZ = init_scaleZ/10; 
   double init_scaleU=0,err_scaleU=0;
@@ -462,17 +479,17 @@ void ZMuMuPtAnalyzer::create_fitter(const double *results){
   // in case we use fs => extra term to normalize (we have num_random**4 entries for each event)
   if(fs){err_scaleZ/=norm;err_scaleU/=norm;init_scaleZ/=norm;init_scaleU/=norm;}
   // Set initial values for scale and background
-  fMinuit->SetFixedVariable(4,"scaleZ",init_scaleZ);//,0.004,0,0);
+  fMinuit->SetFixedVariable(8,"scaleZ",init_scaleZ);//,0.004,0,0);
   if(doups){
-    fMinuit->SetVariable(5,"scaleU",init_scaleU,err_scaleU);//,0.01,0,0);
-    fMinuit->SetVariable(6,"B0",-2236.41,200);
-    fMinuit->SetVariable(7,"B1",616.577,50);
-    fMinuit->SetVariable(8,"B2",-32.0859,20);
+    fMinuit->SetVariable(9,"scaleU",init_scaleU,err_scaleU);//,0.01,0,0);
+    fMinuit->SetVariable(10,"B0",-2236.41,200);
+    fMinuit->SetVariable(11,"B1",616.577,50);
+    fMinuit->SetVariable(12,"B2",-32.0859,20);
   }else{
-    fMinuit->SetFixedVariable(5,"scaleU",0);//,err_scaleU);//,0.01,0,0);
-    fMinuit->SetFixedVariable(6,"B0",0);//,200);
-    fMinuit->SetFixedVariable(7,"B1",0);//,50);
-    fMinuit->SetFixedVariable(8,"B2",0);//,20);
+    fMinuit->SetFixedVariable(9,"scaleU",0);//,err_scaleU);//,0.01,0,0);
+    fMinuit->SetFixedVariable(10,"B0",0);//,200);
+    fMinuit->SetFixedVariable(11,"B1",0);//,50);
+    fMinuit->SetFixedVariable(12,"B2",0);//,20);
   }
   // likelihood
   fMinuit->SetErrorDef(0.5);
