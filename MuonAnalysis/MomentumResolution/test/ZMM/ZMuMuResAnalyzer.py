@@ -44,14 +44,19 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              # If doscan = true => draw likelihood curve (no minimization); else minimize (no likelihood curve)
                              Doscan = cms.untracked.bool(False),
                              # doups (if you want to add another resonance to the fit, e. g. Upsilon)
-                             DoUps = cms.untracked.bool(False),
+                             DoUps = cms.untracked.bool(True),
                              # local use only
-                             EdmNtuple = cms.untracked.bool(True), 
+                             EdmNtuple = cms.untracked.bool(False), 
                              # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
                              DoFit1 = cms.untracked.bool(False), # delta
                              DoFit2 = cms.untracked.bool(False), # sigma
                              DoFit3 = cms.untracked.bool(True),  # sigma(1/pt)
                              DoFit4 = cms.untracked.bool(True),  # delta(1/pt)
+                             # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
+                             DoFit5 = cms.untracked.bool(False), # delta
+                             DoFit6 = cms.untracked.bool(False), # sigma
+                             DoFit7 = cms.untracked.bool(False),  # sigma(1/pt)
+                             DoFit8 = cms.untracked.bool(False),  # delta(1/pt)
                              # Scan parameters (only meaningful if doscan = true)
                              NbinsScan = cms.untracked.int32(8),
                              IniScan = cms.untracked.double(-0.3),
@@ -62,7 +67,7 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              # Only valid if doscan = true. Parameter of the likelihood curve
                              FitParameter = cms.untracked.int32(3),
                              # domigrad = 0 => Simplex only, domigrad = 1 => Simplex + Migrad
-                             DoMigrad = cms.untracked.bool(True),
+                             DoMigrad = cms.untracked.bool(False),
                              # local use only
                              RootFileName = cms.untracked.string("treeMC_histoData_6pb.root"),
                              # Histo values
@@ -71,7 +76,8 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              Endbin_histomassZ = cms.untracked.int32(110),
                              Nbins_histomassU = cms.untracked.int32(10),
                              Inibin_histomassU = cms.untracked.int32(6),
-                             Endbin_histomassU = cms.untracked.int32(8)
+                             Endbin_histomassU = cms.untracked.int32(8),
+                             Mode = cms.untracked.int32(0)
                              )                                     
 # Path
 process.path = cms.Path(
