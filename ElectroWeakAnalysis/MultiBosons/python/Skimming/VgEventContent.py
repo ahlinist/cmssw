@@ -60,10 +60,6 @@ extraSkimEventContent = vgCandsEventContent[:] + extraConversionEventContent[:] 
   "keep *_offlinePrimaryVertices_*_*",
   "keep *_offlineBeamSpot_*_*",
    "keep *_TriggerResults_*_PAT",
-  ## cleanPatMuons are replaced by cleanPatMuonsTriggerMatch
-  "drop *_cleanPatMuons_*_PAT",
-  ## cleanPatElectrons are replaced by cleanPatElectronsTriggerMatch
-  "drop *_cleanPatElectrons_*_PAT",
   ## keep lightweight generator content
   "keep *_generator_*_*",
   "drop edmHepMCProduct_*_*_*"

@@ -6,11 +6,18 @@ from PhysicsTools.PatAlgos.tools.trigTools import *
 def getTargetBaseName(name):
   ## Return e.g. baseName = "electron" for name = "cleanPatElectrons".
   ##+ Frist make all lower case and remove trailing "s".
-  baseName = name.lower().rstrip("s")
+  baseName = name.lower()
   ## Remove various PAT prefixes.
   baseName = baseName.replace("selected", "")
   baseName = baseName.replace("clean", "")
   baseName = baseName.replace("pat", "")
+  baseName = baseName.replace("pf", "")
+  baseName = baseName.replace("tc", "")
+  baseName = baseName.rstrip("s")
+  if baseName == "met": 
+    baseName = "MET"
+  else:
+    baseName = baseName.title()
   return baseName
 
 
@@ -51,7 +58,7 @@ def embedTriggerMatches(process, hltPaths):
     ## Get the target trigger match label, e.g. "cleanPatMuonsTriggerMatch"
     triggerMatchLabel = target + "TriggerMatch"
     ## Get the target trigger match module name, e.g. "PATTriggerMatchMuonEmbedder"
-    triggerMatchModule = "PATTriggerMatch" + baseName.title() + "Embedder"
+    triggerMatchModule = "PATTriggerMatch" + baseName + "Embedder"
     ## Attach the target trigger match module to the process, e.g.
     ##+ process.cleanPatMuonsTriggerMatch = cms.EDProducer("PATTriggerMatchMuonEmbedder",
     ##+   matches = cms.VInputTag(),
@@ -68,7 +75,7 @@ def embedTriggerMatches(process, hltPaths):
     for path in hltPaths[target]:
       ## Get the module name, e.g. "cleanPatMuonsTriggerMatchHLTMu9"
       ##+ for target = "cleanPatMuons" and path = "HLT_Mu9"
-      moduleLabel = baseName + "TriggerMatch" + path.replace("_", "")
+      moduleLabel = baseName.lower() + "TriggerMatch" + path.replace("_", "")
       setattr(process,
         moduleLabel,
         triggerMatchTemplate.clone(

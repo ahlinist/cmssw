@@ -154,6 +154,9 @@ matchHltPaths = {
   "patMETsTC"        : options.metTriggerMatchPaths,
   }
 embedTriggerMatches(process, matchHltPaths)
+## Drop matched target collections from the event content to only keep the trigger matched versions
+for collection in matchHltPaths.keys():
+  vgEventContent.extraSkimEventContent.append("drop *_%s_*_*" % collection)
 
 ## Define Paths
 process.load(basePath + "hltFilter_cfi")
