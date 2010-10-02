@@ -1433,7 +1433,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetTrg_[nJet_][3] = (jetTrigRef4.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][4] = (jetTrigRef5.isAvailable()) ? 1 : -99;
 
- 	cout<<" Jet HLT = "<<iJet->pt()<<"      "<<jetTrg_[nJet_][0]<<"     "<<jetTrg_[nJet_][1]<<"     "<<jetTrg_[nJet_][2]<<"     "<<jetTrg_[nJet_][3]<<"     "<<jetTrg_[nJet_][4]<<endl;
+ 	//cout<<" Jet HLT = "<<iJet->pt()<<"      "<<jetTrg_[nJet_][0]<<"     "<<jetTrg_[nJet_][1]<<"     "<<jetTrg_[nJet_][2]<<"     "<<jetTrg_[nJet_][3]<<"     "<<jetTrg_[nJet_][4]<<endl;
 
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
