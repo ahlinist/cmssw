@@ -17,8 +17,8 @@ process.source = cms.Source("PoolSource",
 #             "file:EdmZmmTreeMCShort.root"
 
 # Official version (EdmNtuple = True)
-             "file:EdmZmmTreeMC.root",
-             "file:EdmZmmTreeData.root"
+             "file:EdmZmmTreeMCShort.root",
+ #            "file:EdmZmmTreeData.root"
       ),
 #      inputCommands = cms.untracked.vstring(
 #            'keep *',
@@ -44,7 +44,7 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              # If doscan = true => draw likelihood curve (no minimization); else minimize (no likelihood curve)
                              Doscan = cms.untracked.bool(False),
                              # doups (if you want to add another resonance to the fit, e. g. Upsilon)
-                             DoUps = cms.untracked.bool(True),
+                             DoUps = cms.untracked.bool(False),
                              # local use only
                              EdmNtuple = cms.untracked.bool(False), 
                              # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
@@ -53,10 +53,8 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              DoFit3 = cms.untracked.bool(True),  # sigma(1/pt)
                              DoFit4 = cms.untracked.bool(True),  # delta(1/pt)
                              # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
-                             DoFit5 = cms.untracked.bool(False), # delta
-                             DoFit6 = cms.untracked.bool(False), # sigma
-                             DoFit7 = cms.untracked.bool(False),  # sigma(1/pt)
-                             DoFit8 = cms.untracked.bool(False),  # delta(1/pt)
+                             DoEtaSigma = cms.untracked.bool(True),
+                             DoEtaDelta = cms.untracked.bool(True),
                              # Scan parameters (only meaningful if doscan = true)
                              NbinsScan = cms.untracked.int32(8),
                              IniScan = cms.untracked.double(-0.3),
@@ -67,7 +65,7 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              # Only valid if doscan = true. Parameter of the likelihood curve
                              FitParameter = cms.untracked.int32(3),
                              # domigrad = 0 => Simplex only, domigrad = 1 => Simplex + Migrad
-                             DoMigrad = cms.untracked.bool(False),
+                             DoMigrad = cms.untracked.bool(True),
                              # local use only
                              RootFileName = cms.untracked.string("treeMC_histoData_6pb.root"),
                              # Histo values
