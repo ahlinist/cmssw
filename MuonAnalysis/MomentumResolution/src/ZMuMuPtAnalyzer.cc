@@ -87,7 +87,7 @@ private:
   bool doscan;
   bool doups; 
   bool edmNtuple;
-  bool dofit0,dofit1,dofit2,dofit3,dofit4,dofit5,dofit6,dofit7;
+  bool dofit0,dofit1,dofit2,dofit3,doetasigma,doetadelta;
   int nbins_scan;
   double ini_scan;
   double end_scan;
@@ -128,10 +128,8 @@ ZMuMuPtAnalyzer::ZMuMuPtAnalyzer(const ParameterSet& pset) :
   dofit1(pset.getUntrackedParameter<bool>("DoFit2",false)), 
   dofit2(pset.getUntrackedParameter<bool>("DoFit3",false)), 
   dofit3(pset.getUntrackedParameter<bool>("DoFit4",false)), 
-  dofit4(pset.getUntrackedParameter<bool>("DoFit5",false)), 
-  dofit5(pset.getUntrackedParameter<bool>("DoFit6",false)), 
-  dofit6(pset.getUntrackedParameter<bool>("DoFit7",false)), 
-  dofit7(pset.getUntrackedParameter<bool>("DoFit8",false)), 
+  doetasigma(pset.getUntrackedParameter<bool>("DoEtaSigma",false)), 
+  doetadelta(pset.getUntrackedParameter<bool>("DoEtaDelta",false)), 
   nbins_scan(pset.getUntrackedParameter<int>("NbinsScan",20)), 
   ini_scan(pset.getUntrackedParameter<double>("IniScan",0)), 
   end_scan(pset.getUntrackedParameter<double>("EndScan",1)), 
@@ -159,7 +157,8 @@ ZMuMuPtAnalyzer::~ZMuMuPtAnalyzer(){
 
 void ZMuMuPtAnalyzer::beginJob(){//const EventSetup& eventSetup){
   dofit[0] = dofit0;  dofit[1] = dofit1;  dofit[2] = dofit2;  dofit[3] = dofit3;
-  dofit[4] = dofit4;  dofit[5] = dofit5;  dofit[6] = dofit6;  dofit[7] = dofit7;
+  if(doetasigma){dofit[4] = true;  dofit[6] = true;}
+  if(doetadelta) {dofit[5] = true;  dofit[7] = true;}
 
   edm::Service<TFileService> fs;
 
@@ -355,14 +354,14 @@ void ZMuMuPtAnalyzer::getdata(TH1D *histo,const double * par,int pID){
 	  for(int l=0;l<num_random;l++){
 	    for(int m=0;m<num_random;m++){
 	      // distort momentum and fill histogram
-	      histo->Fill(utils->computeMass(data,rn1[i][j],rn2[i][j],rn1[l][m],rn2[l][m],par,mode));
+	      histo->Fill(utils->computeMass(data,rn1[i][j],rn2[i][j],rn1[l][m],rn2[l][m],par,mode,doetasigma || doetadelta));
 	    }
 	  }
 	}
       }
     }else{
-      // distort momentum and fill histogram
-      histo->Fill(utils->computeMass(data,par,mode));
+      // distort momentum and fill histogram4
+      histo->Fill(utils->computeMass(data,par,mode,doetasigma || doetadelta));
     }
   }
   // if it is the Z resonance (pID == 0) only scale
