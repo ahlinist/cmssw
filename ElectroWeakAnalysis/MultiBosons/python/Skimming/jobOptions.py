@@ -264,6 +264,16 @@ def applyJobOptions(options):
     jobOptions.skimType = "PhotonMET"
     jobOptions.wantSummary = True
 
+  elif options.jobType == "MUPHMC36XSpring10":
+    jobOptions.globalTag = "START36_V10::All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = True
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI"
+
   elif options.jobType == "MUPHMC38XSpring10":
     jobOptions.globalTag = "START38_V12::All"
     jobOptions.isRealData = False
@@ -273,6 +283,16 @@ def applyJobOptions(options):
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI"
+
+  elif options.jobType == "MUPHMC36XSummer10":
+    jobOptions.globalTag = "START36_V10::All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI36X"
 
   elif options.jobType == "MUPHMC38XSummer10":
     jobOptions.globalTag = "START38_V12::All"
