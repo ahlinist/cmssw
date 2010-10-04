@@ -77,12 +77,14 @@ private:
   int nbins_hmassU;
   int inibin_hmassU;
   int endbin_hmassU;
+  bool useSTA;
 };
 
 #include <CLHEP/Random/RandGauss.h>
 
 /// Constructor
 EdmToTreeConverterZ::EdmToTreeConverterZ(const ParameterSet& pset) :
+  useSTA(pset.getUntrackedParameter<bool>("UseSTA",true)),
   doups(pset.getUntrackedParameter<bool>("Doups")),
   nbins_hmassZ(pset.getUntrackedParameter<int>("Nbins_histomassZ",40)),
   inibin_hmassZ(pset.getUntrackedParameter<int>("Inibin_histomassZ",70)),
@@ -123,29 +125,70 @@ void EdmToTreeConverterZ::analyze(const Event & event, const EventSetup& eventSe
   edm::Handle< vector<reco::GenParticle> > GenHandle;
   event.getByLabel(edm::InputTag("zmmPrunedGenParticles"),GenHandle);
 
-  for (unsigned int i=0; i<CandHandle->size(); ++i) {
-    double mass = (*CandHandle)[i].mass();
+  edm::Handle< vector<float> > varHandle;  
+  double mass;  
+  if(useSTA){
+    double px1,py1,pz1,E1,px2,py2,pz2,E2,px,py,pz,E;
     if(event.isRealData() == 1){
-      if(mass > 60){
-	hZMass->Fill((*CandHandle)[i].mass());
-      }else{
-	hUMass->Fill((*CandHandle)[i].mass());
-      }
-    }	
-    else{
-      const Candidate * cand1,* cand2;
-      if((*CandHandle)[i].daughter(0)->charge()==-1) {cand1 = (*CandHandle)[i].daughter(0); cand2 = (*CandHandle)[i].daughter(1);}
-      else {cand1 = (*CandHandle)[i].daughter(1); cand2 = (*CandHandle)[i].daughter(0);}
-      data.pt1 = cand1->pt();      data.pt2 = cand2->pt();
-      data.px_pt1= cand1->px()/cand1->pt(); data.px_pt2 = cand2->px()/cand2->pt();
-      data.py_pt1= cand1->py()/cand1->pt(); data.py_pt2 = cand2->py()/cand2->pt();
-      data.pz_pt1= cand1->pz()/cand1->pt(); data.pz_pt2 = cand2->pz()/cand2->pt();
-      data.p_pt1= cand1->p()/cand1->pt(); data.p_pt2 = cand2->p()/cand2->pt();
-      data.eta1 = cand1->eta();       data.eta2 = cand2->eta(); 
-      data.phi1 = cand1->phi();       data.phi2 = cand2->phi(); 
-      data.mass = (*CandHandle)[i].mass();
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STApx"),varHandle); px1= (*varHandle)[0]; 
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STApy"),varHandle); py1= (*varHandle)[0];
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STApz"),varHandle); pz1= (*varHandle)[0]; 
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STAp"),varHandle); E1 = sqrt(pow((*varHandle)[0],2)+pow(0.106,2));
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STApx"),varHandle); px2= (*varHandle)[0]; 
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STApy"),varHandle); py2= (*varHandle)[0];
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STApz"),varHandle); pz2= (*varHandle)[0]; 
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STAp"),varHandle); E2 = sqrt(pow((*varHandle)[0],2)+pow(0.106,2));
+      px = px1 + px2; py = py1 + py2; pz = pz1 + pz2; E = E1 + E2;
+      mass = sqrt(E*E - px*px - py*py - pz*pz);
+      if(mass > 10) hZMass->Fill(mass); else hUMass->Fill(mass);
+    }else{
+      data.mass = 91;
+      bool normal_pos;
+      if((*CandHandle)[0].daughter(0)->charge()==-1) normal_pos=true; else normal_pos = false;
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STApt"),varHandle); if(normal_pos) data.pt1 = (*varHandle)[0]; else data.pt2 = (*varHandle)[0];
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STApx"),varHandle);if(normal_pos)data.px_pt1=(*varHandle)[0]/data.pt1;else data.px_pt2=(*varHandle)[0]/data.pt2;
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STApy"),varHandle);if(normal_pos)data.py_pt1=(*varHandle)[0]/data.pt1;else data.py_pt2 =(*varHandle)[0]/data.pt2;
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STApz"),varHandle);if(normal_pos)data.pz_pt1=(*varHandle)[0]/data.pt1;else data.pz_pt2=(*varHandle)[0]/data.pt2; 
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STAp"),varHandle);if(normal_pos)data.p_pt1=(*varHandle)[0]/data.pt1;else data.p_pt2=(*varHandle)[0]/data.pt2;
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STAphi"),varHandle); if(normal_pos) data.phi1 = (*varHandle)[0]; else data.phi2 = (*varHandle)[0];
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu1STAeta"),varHandle); if(normal_pos) data.eta1 = (*varHandle)[0]; else data.eta2 = (*varHandle)[0];
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STApt"),varHandle); if(normal_pos) data.pt2 = (*varHandle)[0]; else data.pt1 = (*varHandle)[0]; 
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STApx"),varHandle);if(normal_pos)data.px_pt2=(*varHandle)[0]/data.pt2;else data.px_pt1= (*varHandle)[0]/data.pt1;
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STApy"),varHandle);if(normal_pos)data.py_pt2=(*varHandle)[0]/data.pt2;else data.py_pt1= (*varHandle)[0]/data.pt1;
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STApz"),varHandle);if(normal_pos)data.pz_pt2=(*varHandle)[0]/data.pt2;else data.pz_pt1= (*varHandle)[0]/data.pt1;
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STAp"),varHandle);if(normal_pos)data.p_pt2=(*varHandle)[0]/data.pt2; else data.p_pt1 = (*varHandle)[0]/data.pt1;
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STAphi"),varHandle); if(normal_pos) data.phi2 = (*varHandle)[0]; else data.phi1 = (*varHandle)[0];
+      event.getByLabel(edm::InputTag("goodZToMuMuEdmNtuple:mu2STAeta"),varHandle); if(normal_pos) data.eta2 = (*varHandle)[0]; else data.eta1 = (*varHandle)[0];
       data.r1 = CLHEP::RandGauss::shoot(0,1);  data.r2 = CLHEP::RandGauss::shoot(0,1);  data.rp1 = CLHEP::RandGauss::shoot(0,1);  data.rp2 = CLHEP::RandGauss::shoot(0,1);
-      if(mass > 60) treeZ->Fill(); else treeU->Fill();
+      if(data.mass > 10) treeZ->Fill(); else treeU->Fill();
+    }
+  }else{
+    cout << "no sta"<<endl;
+    for (unsigned int i=0; i<CandHandle->size(); ++i) {
+      mass = (*CandHandle)[i].mass();
+      if(event.isRealData() == 1){
+	if(mass > 60){
+	  hZMass->Fill((*CandHandle)[i].mass());
+	}else{
+	  hUMass->Fill((*CandHandle)[i].mass());
+	}
+      }	
+      else{
+	const Candidate * cand1,* cand2;
+	if((*CandHandle)[i].daughter(0)->charge()==-1) {cand1 = (*CandHandle)[i].daughter(0); cand2 = (*CandHandle)[i].daughter(1);}
+	else {cand1 = (*CandHandle)[i].daughter(1); cand2 = (*CandHandle)[i].daughter(0);}
+	data.pt1 = cand1->pt();
+	data.pt2 = cand2->pt();
+	data.px_pt1= cand1->px()/cand1->pt(); data.px_pt2 = cand2->px()/cand2->pt();
+	data.py_pt1= cand1->py()/cand1->pt(); data.py_pt2 = cand2->py()/cand2->pt();
+	data.pz_pt1= cand1->pz()/cand1->pt(); data.pz_pt2 = cand2->pz()/cand2->pt();
+	data.p_pt1= cand1->p()/cand1->pt(); data.p_pt2 = cand2->p()/cand2->pt();
+	data.eta1 = cand1->eta();       data.eta2 = cand2->eta(); 
+	data.phi1 = cand1->phi();       data.phi2 = cand2->phi(); 
+	data.mass = (*CandHandle)[i].mass();
+	data.r1 = CLHEP::RandGauss::shoot(0,1);  data.r2 = CLHEP::RandGauss::shoot(0,1);  data.rp1 = CLHEP::RandGauss::shoot(0,1);  data.rp2 = CLHEP::RandGauss::shoot(0,1);
+	if(mass > 60) treeZ->Fill(); else treeU->Fill();
+      }
     }
   }
   if(event.isRealData()!=1){
