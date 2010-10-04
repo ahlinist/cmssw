@@ -209,3 +209,14 @@ def switchToData(process):
 			process.muTauPairZmumuHypotheses.genLeptonsFromZsSource = cms.InputTag('')
 			process.muTauPairZmumuHypothesesLooseMuonIsolation.genLeptonsFromZsSource = cms.InputTag('')    
       
+
+	# remove modules from the Z->e+mu analysis sequence which run on GEN collections
+	if hasattr(process,"analyzeZtoElecMuEvents"):
+                process.analyzeZtoElecMuEvents.analyzers.remove(process.genPhaseSpaceEventInfoHistManager)
+                removeAnalyzer(process.analyzeZtoElecMuEvents.analysisSequence,"genPhaseSpaceEventInfoHistManager")
+                process.analyzeZtoElecMuEvents.eventDumps[0].doGenInfo = cms.bool(False)
+                process.analyzeZtoElecMuEvents.eventDumps[0].genParticleSource = cms.InputTag('')
+                process.electronHistManager.genParticleSource = cms.InputTag('')
+                process.muonHistManager.genParticleSource = cms.InputTag('')
+                process.jetHistManager.genParticleSource = cms.InputTag('')
+  
