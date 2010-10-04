@@ -243,9 +243,9 @@ std::string getGenTauDecayMode(const std::vector<const reco::GenParticle*>& genT
       numMuons++;
       break;
     default : 
-      if ( (*genTauDecayProduct)->charge() != 0 ) {
+      if ( (*genTauDecayProduct)->charge() != 0  && (*genTauDecayProduct)->status()==1 ) {
 	numChargedHadrons++; 
-      } else {
+      } else if (pdgId!=16 && (*genTauDecayProduct)->status()==1){
 	numNeutralHadrons++; 
       }
     }
