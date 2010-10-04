@@ -87,8 +87,7 @@ double Tutils::computeMass(t_data& data,const double sigma[],int mode,bool etabi
 
 double Tutils::likelihood(TH1D * hZmassVar, TH1D * hZmassModel){
   double lhood=0;
-  for(int i=1; i<=hZmassVar->GetXaxis()->GetNbins(); i++){
-    if(i<4 || i>23) continue;
+  for(int i=0; i<=hZmassVar->GetXaxis()->GetNbins()+1; i++){
     if(hZmassVar->GetBinContent(i)!=0) lhood += hZmassVar->GetBinContent(i) - hZmassModel->GetBinContent(i)*log(hZmassVar->GetBinContent(i));
   }
   return lhood;
