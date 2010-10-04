@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.139 2010/06/01 15:12:58 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.140 2010/08/12 09:16:38 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.139 $
-  \date $Date: 2010/06/01 15:12:58 $
+  \version $Revision: 1.140 $
+  \date $Date: 2010/08/12 09:16:38 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -836,6 +836,8 @@ private:
       {
         gPad->SetBottomMargin(0.25);
         obj->GetXaxis()->LabelsOption("v");
+        obj->GetXaxis()->SetBinLabel(1+8, "FORCED FS");
+        obj->GetXaxis()->SetBinLabel(1+12, "FIFO FULL+L1A");
       }
 
       if( name.find( "front-end status errors summary" ) != std::string::npos )

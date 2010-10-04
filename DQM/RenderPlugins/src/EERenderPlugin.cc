@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.163 2010/06/01 15:15:17 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.164 2010/08/12 09:16:38 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.163 $
-  \date $Date: 2010/06/01 15:15:17 $
+  \version $Revision: 1.164 $
+  \date $Date: 2010/08/12 09:16:38 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -993,6 +993,8 @@ private:
       {
         gPad->SetBottomMargin(0.25);
         obj->GetXaxis()->LabelsOption("v");
+        obj->GetXaxis()->SetBinLabel(1+8, "FORCED FS");
+        obj->GetXaxis()->SetBinLabel(1+12, "FIFO FULL+L1A");
       }
 
       if( name.find( "EERDT" ) != std::string::npos )
