@@ -9,6 +9,15 @@ def applyJobOptions(options):
   options.parseArguments()
   jobOptions = copy.deepcopy(defaultOptions)
 
+  ## parse crabOptions
+  if options.crabOptions:
+    for opt in options.crabOptions.split(","):
+      print "Parsing crab option: `%s'" % opt
+      opt.replace(" ", "")
+      name, value = opt.split("=")
+      setattr(options, name, value)
+      setattr(jobOptions, name, value)
+
   ## Set the default trigger match paths, see
   ##+
   jobOptions.electronTriggerMatchPaths = """
@@ -357,12 +366,16 @@ def applyJobOptions(options):
   ##+ in the cfg file
   for name, value in options._singletons.items() + options._lists.items():
     if value != getattr(defaultOptions, name):
+      ## If it's a list, clear it first
+      if name in options._lists.keys(): jobOptions.clearList(name)
       setattr(jobOptions, name, value)
 
   jobOptions.parseArguments()
 
   ## Set all the options equal to jobOptions
   for name, value in jobOptions._singletons.items() + jobOptions._lists.items():
+    ## If it's a list, clear it first
+    if name in options._lists.keys(): options.clearList(name)
     setattr(options, name, value)
 
 #   return jobOptions
