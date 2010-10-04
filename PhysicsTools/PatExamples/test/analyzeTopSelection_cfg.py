@@ -14,8 +14,8 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
 )
 
-from PhysicsTools.PatExamples.samplesDESY_cff import *
-##process.source.fileNames = muonSKIM
+from PhysicsTools.PatExamples.samplesCERN_cff import *
+##process.source.fileNames = muonSKIM        ## ATTENTION these samoek are NOT available on castor
 ##process.source.fileNames = simulationQCD
 ##process.source.fileNames = simulationWjets
 ##process.source.fileNames = simulationZjets

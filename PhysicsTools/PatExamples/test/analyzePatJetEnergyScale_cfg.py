@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("EnergyScale")
 
 ## Declare input
-from PhysicsTools.PatExamples.samplesDESY_cff import *
+from PhysicsTools.PatExamples.samplesCERN_cff import *
 
 process.source = cms.Source("PoolSource",
   fileNames = ttbarJets
