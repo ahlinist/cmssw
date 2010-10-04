@@ -111,6 +111,13 @@ options.register("skimType",
   "What is the type of this skim, e.g. MuonPhoton?"
   )
 
+options.register("crabOptions",
+  "", # default value
+  VarParsing.multiplicity.singleton, # singleton or list
+  VarParsing.varType.string,         # bool, string, int, or float
+  "Pass several options in one string delimited by a `,'?"
+  )
+
 options.setupTags(tag = "%s", ifCond = "jobType != ''", tagArg = "jobType")
 
 ## Use this to work around bug with passing multiple option parameters with
