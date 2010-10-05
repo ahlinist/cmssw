@@ -48,13 +48,11 @@ process.fit = cms.EDAnalyzer("ZMuMuPtAnalyzer",
                              # local use only
                              EdmNtuple = cms.untracked.bool(False), 
                              # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
-                             DoFit1 = cms.untracked.bool(False), # delta
-                             DoFit2 = cms.untracked.bool(False), # sigma
-                             DoFit3 = cms.untracked.bool(True),  # sigma(1/pt)
-                             DoFit4 = cms.untracked.bool(True),  # delta(1/pt)
-                             # dofit (0 => constant shift, 1 => constant res term, 2 => res term with pt, 3 => const shift with pt)
-                             DoEtaSigma = cms.untracked.bool(True),
-                             DoEtaDelta = cms.untracked.bool(True),
+                             DoSigma = cms.untracked.bool(True),
+                             DoDelta = cms.untracked.bool(True),
+                             DoPhi = cms.untracked.bool(True),
+                             DoEta = cms.untracked.bool(False),
+                             DoCharge = cms.untracked.bool(False), 
                              # Scan parameters (only meaningful if doscan = true)
                              NbinsScan = cms.untracked.int32(8),
                              IniScan = cms.untracked.double(-0.3),
