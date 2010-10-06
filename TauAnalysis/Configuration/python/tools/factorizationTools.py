@@ -226,9 +226,9 @@ def enableFactorization_makeZtoMuTauPlots_grid(
     dqmDirectoryOutUnfactorized = 
     lambda sample:'/harvested/%s/zMuTauAnalyzer/'% (sample),
     dqmDirectoryTight = 
-    lambda sample:'/harvested/%s/zMuTauAnalyzer/' % (sample),
-    dqmDirectoryLoose = 
     lambda sample:'/harvested/%s/zMuTauAnalyzer_factorizedWithMuonIsolation/' % (sample),
+    dqmDirectoryLoose = 
+    lambda sample:'/harvested/%s/zMuTauAnalyzer_factorizedWithoutMuonIsolation/' % (sample),
     pyObjectLabel = ""):
 
     process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cfi")
@@ -269,10 +269,10 @@ def enableFactorization_makeZtoMuTauPlots_grid(
         process.evtSelTauCharge,
         process.evtSelTauMuonVeto,
         process.evtSelTauElectronVeto,
-        process.evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
-        process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
-        process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
-        process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+        process.evtSelDiTauCandidateForMuTauAntiOverlapVeto,
+        process.evtSelDiTauCandidateForMuTauZeroCharge,
+        process.evtSelDiTauCandidateForMuTauMt1MET,
+        process.evtSelDiTauCandidateForMuTauPzetaDiff,
         process.evtSelDiMuPairZmumuHypothesisVeto
     ]
 
@@ -982,7 +982,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     process,
     factorizationSequenceName = "loadAndFactorizeAHtoMuTauSamples",
     samplesToFactorize = [ 'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15' ],
-    relevantMergedSamples = ['qcdSum'],
+    relevantMergedSamples = [ 'qcdSum', ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample, btag: 'addAHtoMuTau_%s_%s' % (btag, sample),
     dqmDirectoryOut = 
