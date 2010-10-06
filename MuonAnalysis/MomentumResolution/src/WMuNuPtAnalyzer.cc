@@ -4,7 +4,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
@@ -14,9 +13,6 @@
 #include "TTree.h"
 
 #include "utilsW.h"
-
-#include <map>
-#include <vector>
 
 namespace reco {class GenParticle;}
   
@@ -73,15 +69,10 @@ private:
 
 };
 
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/MuonReco/interface/MuonFwd.h"
-
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Utilities/interface/EDMException.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
