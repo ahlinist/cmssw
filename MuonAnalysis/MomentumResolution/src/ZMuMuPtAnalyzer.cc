@@ -11,6 +11,7 @@
 #include "Math/Functor.h"
 #include "TH1D.h"
 #include "TTree.h"
+#include "TCanvas.h"
 
 #include "utils.h"
 

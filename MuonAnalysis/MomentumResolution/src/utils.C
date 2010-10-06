@@ -1,5 +1,10 @@
 #include "utils.h"
 #define MMuon 0.105658
+
+#include <math.h>
+#include "TLegend.h"
+#include "TStyle.h"
+
 void Tutils::draw_label(t_label l[], double x1, double y1,double dx, double dy,int n){
    TLegend *label  = new TLegend(x1,y1,x1+dx,y1+dy,NULL,"brNDC");
   label->SetBorderSize(0); label->SetFillColor(0); label->SetTextSize(0.042);

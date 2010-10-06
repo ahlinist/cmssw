@@ -1,19 +1,9 @@
 #ifndef Utils_H
 #define Utils_H
 
-#include "TCanvas.h"
-#include "TRandom3.h"
 #include <sstream>
 #include <iostream>
-#include <math.h>
-#include "TLegend.h"
 #include "TH1D.h"
-#include "TPaveText.h"
-#include "TText.h"
-#include "TH2F.h"
-#include "TF1.h"
-#include "TCanvas.h"
-#include "TStyle.h"
 
 using namespace std;
 struct t_label{ stringstream text;  TH1D * h;};
