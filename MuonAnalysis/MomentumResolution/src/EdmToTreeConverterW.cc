@@ -1,42 +1,18 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                                                      //
-//          WMuNuPtAnalyzer, to compute resolution and scale factor via WMuNu channel                                   //
-//                                                                                                                      //    
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                                                      //      
-//    Create a root tree with all interesting parameters for selected WMuNu candidates                                  //
-//                                                                                                                      //
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////////
+//
+//   EdmToTreeConverterW, to create an ultrasimple Tree to analyze ZMuMus
+//
+///////////////////////////////////////////////////////////////////////////////
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Utilities/interface/InputTag.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "DataFormats/Common/interface/Handle.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+
 #include "TH1D.h"
 #include "TTree.h"
-#include "TFile.h"
-#include "TGraph.h"
-#include <CLHEP/Random/RandGauss.h>
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 #include "utilsW.h"
-#include "Minuit2/Minuit2Minimizer.h"
-#include "Math/Functor.h"
-#include "TVectorD.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "DataFormats/Common/interface/Handle.h"
-
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-
-#include "AnalysisDataFormats/EWK/interface/WMuNuCandidate.h"
-
-  
-using namespace edm;
-using namespace std;
-using namespace reco;
+namespace reco {class GenParticle;}
 
 class EdmToTreeConverterW : public edm::EDAnalyzer {
 public:
@@ -45,7 +21,7 @@ public:
   virtual void beginJob();
   virtual void endJob();
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  void getGenData(Handle<reco::GenParticleCollection> genParticles,t_data& data);
+  void getGenData(edm::Handle<std::vector<reco::GenParticle> > genParticles,t_data& data);
 private:
   int nbins_h, inibin_h, endbin_h;
   bool mode;int charge;int eta_bin;
@@ -54,7 +30,16 @@ private:
   t_data data;
 };
 
+#include <CLHEP/Random/RandGauss.h>
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
 
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+using namespace std;
+using namespace edm;
+using namespace reco;
 
 EdmToTreeConverterW::EdmToTreeConverterW( const ParameterSet & pset ) :
   nbins_h(pset.getUntrackedParameter<int>("Nbins_histo",40)),
