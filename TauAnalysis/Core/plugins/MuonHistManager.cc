@@ -65,11 +65,6 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
   //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
-  //if ( genParticleSrc_.label() == "" ) {
-  //  edm::LogWarning("MuonHistManager") 
-  //    << " Configuration parameter 'genParticleSource' not specified" 
-  //    << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
-  //}
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   requireGenMuonMatch_ = cfg.getParameter<bool>("requireGenMuonMatch");
@@ -233,9 +228,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
   getCollection(evt, jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  if(genParticleSrc_.label() != "") {
-     evt.getByLabel(genParticleSrc_, genParticles);
-  }
+  if ( genParticleSrc_.label() != "" ) evt.getByLabel(genParticleSrc_, genParticles);
 
   //std::cout << " patMuons.size = " << patMuons->size() << std::endl;
   hNumMuons_->Fill(patMuons->size(), evtWeight);
