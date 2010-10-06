@@ -48,6 +48,12 @@ else:
 ## Global tag
 process.GlobalTag.globaltag = options.globalTag
 
+## HLT trigger
+process.load(basePath + "hltFilter_cfi")
+process.hltFilter.HLTPaths = options.hltPaths
+process.hltFilter.TriggerResultsTag = \
+  "TriggerResults::" + options.hltProcessName
+
 ## Remove MC matching and apply cleaning if we run on data
 ## (No need to remove pfMET and tcMET explicitly if this is done first
 if options.isRealData:
@@ -71,8 +77,10 @@ process.selectedPatMuons.cut = cms.string("isGlobalMuon | isTrackerMuon")
 ## Reject soft jets to reduce event content
 process.selectedPatJets.cut = cms.string("pt > 30")
 
-## No overlap of photons and electrons
-process.cleanPatPhotons.checkOverlaps.electrons.requireNoOverlaps = True
+## Overlap of photons and electrons
+##+ Set to True to remove overlapping photons from the event, False to embed
+##+ embed the overlap information
+process.cleanPatPhotons.checkOverlaps.electrons.requireNoOverlaps = False
 
 ## Add photon user data
 process.load(basePath + "photonUserData_cfi")
@@ -159,7 +167,15 @@ for collection in matchHltPaths.keys():
   vgEventContent.extraSkimEventContent.append("drop *_%s_*_*" % collection)
 
 ## Define Paths
-process.load(basePath + "hltFilter_cfi")
+process.skimFilterSequence = cms.Sequence(process.hltFilter)
+
+if options.skimType == "MuonPhoton":
+  process.load(basePath + "muonPhotonSkimFilterSequence_cff")
+  process.skimFilterSequence += process.muonPhotonSkimFilterSequence
+elif options.skimType == "ElectronPhoton":
+  process.load(basePath + "electronPhotonSkimFilterSequence_cff")
+  process.skimFilterSequence += process.electronPhotonSkimFilterSequence
+
 process.load(basePath + "VGammaSkimSequences_cff")
 
 if options.isRealData:
@@ -173,27 +189,27 @@ if options.isRealData:
   process.hltPhysicsDeclaredPath = cms.Path(process.hltPhysicsDeclared)
   process.defaultSequence = cms.Sequence(
     process.goodCollisionDataSequence +
-    process.hltFilter +
+    process.skimFilterSequence +
     process.patDefaultSequence
   )
 else:
   process.load(basePath + "prunedGenParticles_cfi")
   process.defaultSequence = cms.Sequence(
-    process.hltFilter +
+    process.skimFilterSequence +
     process.prunedGenParticles *
     process.patDefaultSequence
   )
   ## Add parton shower related filters (prevent ISR/FSR double-counting)
   process.isLeadingPhotonPythiaPartonShowerIsr = cms.Path(
-    process.patDefaultSequence *
+    process.defaultSequence *
     process.pythiaPartonShowerIsrSequence
   )
   process.isLeadingPhotonPythiaPartonShowerFsr = cms.Path(
-    process.patDefaultSequence *
+    process.defaultSequence *
     process.pythiaPartonShowerFsrSequence
   )
   process.hasPhotonCandidateNotPythiaPartonShower = cms.Path(
-    process.patDefaultSequence *
+    process.defaultSequence *
     process.pythiaPartonShowerPhotonVeto
   )
 # if options.isRealData <-----------------------------------------------------
@@ -213,11 +229,6 @@ process.ZMuMuGammaPath = cms.Path(
 process.ZInvisibleGammaPath = cms.Path(
   process.defaultSequence * process.ZInvisibleGammaSequence
   )
-
-## HLT trigger
-process.hltFilter.HLTPaths = options.hltPaths
-process.hltFilter.TriggerResultsTag = \
-  "TriggerResults::" + options.hltProcessName
 
 ## Output configuration (add event content, select events, output file name)
 process.out.outputCommands += vgEventContent.extraSkimEventContent

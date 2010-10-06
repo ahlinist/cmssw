@@ -33,6 +33,10 @@ def applyJobOptions(options):
     HLT_Ele20_SW_L1R
     HLT_Photon10_L1R
     HLT_Photon15_L1R
+    HLT_Photon15_Cleaned_L1R
+    HLT_Photon20_Cleaned_L1R
+    HLT_Photon25_Cleaned_L1R
+    HLT_Photon30_Cleaned_L1R
     """.split()
   jobOptions.muonTriggerMatchPaths = """
     HLT_L1Mu14_L1ETM30
