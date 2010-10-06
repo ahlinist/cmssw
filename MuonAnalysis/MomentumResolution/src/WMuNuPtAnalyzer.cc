@@ -1,43 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                                                      //
-//          WMuNuPtAnalyzer, to compute resolution and scale factor via WMuNu channel                                   //
-//                                                                                                                      //    
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                                                      //      
-//    Create a root tree with all interesting parameters for selected WMuNu candidates                                  //
-//                                                                                                                      //
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////////
+//
+//   WMuNuPtAnalyzer, to compute resolution and scale factor via WMuNu channel
+//
+///////////////////////////////////////////////////////////////////////////////
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "DataFormats/Common/interface/Handle.h"
-#include "TH1D.h"
-#include "TTree.h"
-#include "TFile.h"
-#include "TGraph.h"
-#include <CLHEP/Random/RandGauss.h>
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "utilsW.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+
 #include "Minuit2/Minuit2Minimizer.h"
 #include "Math/Functor.h"
-#include "TVectorD.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "TH1D.h"
+#include "TTree.h"
 
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "DataFormats/Common/interface/Handle.h"
+#include "utilsW.h"
 
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include <map>
+#include <vector>
 
-#include "AnalysisDataFormats/EWK/interface/WMuNuCandidate.h"
-
+namespace reco {class GenParticle;}
   
-using namespace edm;
-using namespace std;
-using namespace reco;
-
 class WMuNuPtAnalyzer : public edm::EDAnalyzer {
 public:
   WMuNuPtAnalyzer (const edm::ParameterSet &);
@@ -54,7 +36,7 @@ public:
   void set_minimizer(const double initval[4],int id);
   void getdata(TH1D *histo,const double * par);
   void draw_output();
-  void getGenData(edm::Handle<reco::GenParticleCollection> genParticles,t_data& gen);
+  void getGenData(edm::Handle<std::vector<reco::GenParticle> > genParticles,t_data& gen);
   double fcn( const double* );
 private:
   double initval;
@@ -91,7 +73,27 @@ private:
 
 };
 
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/Utilities/interface/EDMException.h"
+
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+#include "TFile.h"
+#include "TVectorD.h"
+#include "TGraph.h"
+#include <CLHEP/Random/RandGauss.h>
+
+using namespace edm;
+using namespace std;
+using namespace reco;
 
 WMuNuPtAnalyzer::WMuNuPtAnalyzer( const ParameterSet & pset ) :
   initval(pset.getUntrackedParameter<double>("Initval",0)),
