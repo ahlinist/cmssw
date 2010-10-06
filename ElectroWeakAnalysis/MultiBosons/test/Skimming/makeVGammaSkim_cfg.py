@@ -170,11 +170,16 @@ for collection in matchHltPaths.keys():
 process.skimFilterSequence = cms.Sequence(process.hltFilter)
 
 if options.skimType == "MuonPhoton":
-  process.load(basePath + "muonPhotonSkimFilterSequence_cff")
-  process.skimFilterSequence += process.muonPhotonSkimFilterSequence
+    process.load(basePath + "muonPhotonSkimFilterSequence_cff")
+    process.skimFilterSequence += process.muonPhotonSkimFilterSequence
 elif options.skimType == "ElectronPhoton":
-  process.load(basePath + "electronPhotonSkimFilterSequence_cff")
-  process.skimFilterSequence += process.electronPhotonSkimFilterSequence
+    process.load(basePath + "electronPhotonSkimFilterSequence_cff")
+    process.skimFilterSequence += process.electronPhotonSkimFilterSequence
+elif options.skimType == "Dimuon":
+    process.load(basePath + "dimuonSkimFilterSequence_cff")
+    process.skimFilterSequence += process.dimuonSkimFilterSequence
+else:
+    raise RuntimeError, "Illegal skimType option: %s" % options.skimType
 
 process.load(basePath + "VGammaSkimSequences_cff")
 
@@ -240,6 +245,8 @@ if options.skimType == "MuonPhoton":
   process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
 elif options.skimType == "ElectronPhoton":
   process.out.SelectEvents.SelectEvents = ["WENuGammaPath"]
+elif options.skimType == "Dimuon":
+  process.out.SelectEvents.SelectEvents = [""]
 else:
   raise RuntimeError, "Illegal skimType option: %s" % options.skimType
 # if options.skimType == ... <------------------------------------------------
