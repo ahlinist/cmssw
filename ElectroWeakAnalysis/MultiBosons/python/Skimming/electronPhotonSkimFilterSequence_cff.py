@@ -7,16 +7,16 @@ goodElectrons = cms.EDFilter("CandViewRefSelector",
     )
 
 goodPhotons = cms.EDProducer("PhotonCleaner",
-    finalCut = cms.string(''),
     src = cms.InputTag("photons"),
+    preselection = cms.string("pt > 10"),
     checkOverlaps = cms.PSet(
         electrons = cms.PSet(
-            src = cms.InputTag("gsfElectrons"),
+            src = cms.InputTag("goodElectrons"),
             requireNoOverlaps = cms.bool(True),
-            algorithm = cms.string('bySuperClusterSeed')
+            algorithm = cms.string("bySuperClusterSeed")
         )
     ),
-    preselection = cms.string('pt > 10')
+    finalCut = cms.string(""),
 )
 
 photonSkimFilter = cms.EDFilter("CandViewCountFilter",
