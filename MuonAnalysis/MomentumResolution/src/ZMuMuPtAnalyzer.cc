@@ -313,7 +313,9 @@ double ZMuMuPtAnalyzer::fcn(const double *par)
     if(i==0) text1 = "Sigma "; else text1 = "Delta ";
     if(dophi) text2 << "PhiBin " << j;
     if(doeta) {if(k==0) text3 ="Barrel "; else if(k==1) text3="Overlap "; else text3="Endcap ";}
-    if(docharge) if(l==0) text4 = "mu(-)"; else text4="mu(+)";
+    if(docharge) {
+            if(l==0) text4 = "mu(-)"; else text4="mu(+)";
+    }
     cout << "**** Par " << text1 << text2.str() << text3 << text4 << ": " << par[36*i+6*j+2*k+l] << endl;
   }
   return result;

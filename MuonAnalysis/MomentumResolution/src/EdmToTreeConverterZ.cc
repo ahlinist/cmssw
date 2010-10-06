@@ -70,6 +70,7 @@ private:
   t_data data;
   TH1D * hZMass;
   TH1D * hUMass;
+  bool useSTA;
   bool doups;
   int nbins_hmassZ;
   int inibin_hmassZ;
@@ -77,7 +78,6 @@ private:
   int nbins_hmassU;
   int inibin_hmassU;
   int endbin_hmassU;
-  bool useSTA;
 };
 
 #include <CLHEP/Random/RandGauss.h>
