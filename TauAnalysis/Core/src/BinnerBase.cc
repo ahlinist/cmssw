@@ -16,6 +16,7 @@ BinnerBase::BinnerBase()
 }
 
 BinnerBase::BinnerBase(const edm::ParameterSet& cfg)
+  : AnalyzerPluginBase(cfg)
 {
   //std::cout << "<BinnerBase::BinnerBase>:" << std::endl; 
 

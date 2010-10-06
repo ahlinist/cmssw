@@ -10,7 +10,8 @@ double defaultTProfileYmin = -1.e+38; // minimum for y-values entering TProfile 
 double defaultTProfileYmax = +1.e+38; // maximum for y-values entering TProfile histograms (value actually permissible even for float)
 
 HistManagerBase::HistManagerBase(const edm::ParameterSet& cfg)
-  : dqmStore_(0), 
+  : AnalyzerPluginBase(cfg),
+    dqmStore_(0), 
     dqmError_(0),
     normMethod_(kNormUndefined) 
 {
