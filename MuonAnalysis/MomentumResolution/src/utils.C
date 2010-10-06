@@ -31,6 +31,21 @@ double Tutils::modpt(double pt, double pt_gen, double r,double rp, const double 
 }
 
 
+double Tutils::modpt(double pt, double pt_gen, double r,double rp, const double * sigma, int mode){
+  double ptmod = pt;
+  // for Ws
+  // mode == 0 does not work when MC width is bigger than data one. This is solved with mode == 1
+  if(mode==1){
+    ptmod = 1/( sigma[2]/pt + (1-sigma[2])/pt_gen );
+    ptmod = ptmod + ptmod*(sigma[0] + r*sigma[1] + sigma[3]*(1./1000.)*ptmod);
+
+    //ptmod = pt_gen + pt_gen*(sigma[0] + r*sigma[1] + sigma[3]*(1./1000.)*pt_gen) + (1/( sigma[2]/pt + (1-sigma[2])/pt_gen )-pt_gen);
+  }else if(mode == 0){
+    ptmod = pt + pt*(sigma[0] + r*sigma[1] + rp*sigma[2]*(1./1000.)*pt_gen + sigma[3]*(1./1000.)*pt_gen);
+  }
+  return ptmod;
+}
+
 double Tutils::computeMass(t_data& data,double r1, double r2,double rp1, double rp2,const double sigma[],int mode,t_do& do_opt) {
   double ptmod1; 
   double ptmod2;

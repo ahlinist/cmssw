@@ -13,7 +13,7 @@
 #include "TTree.h"
 #include "TCanvas.h"
 
-#include "utilsW.h"
+#include "utils.h"
 
 namespace reco {class GenParticle;}
   
@@ -33,7 +33,7 @@ public:
   void set_minimizer(const double initval[4],int id);
   void getdata(TH1D *histo,const double * par);
   void draw_output();
-  void getGenData(edm::Handle<std::vector<reco::GenParticle> > genParticles,t_data& gen);
+  void getGenData(edm::Handle<std::vector<reco::GenParticle> > genParticles,t_dataW& gen);
   double fcn( const double* );
 private:
   double initval;
@@ -54,7 +54,7 @@ private:
   bool mode;int charge;int eta_bin;
 
   TTree * tree;  
-  t_data data;
+  t_dataW data;
   double rn1[10][10];
   double rn2[10][10];
   double sigma;
@@ -62,7 +62,7 @@ private:
   double sigmaopterror[4];
   ROOT::Minuit2::Minuit2Minimizer*  fMinuit;
   ROOT::Math::IMultiGenFunction *   fFunc;  
-  TutilsW * utils;
+  Tutils * utils;
   std::map<std::string,TH1D*> h1_;
   std::map<std::string,TCanvas*> c_;
   bool dofit[4];
@@ -218,7 +218,7 @@ void WMuNuPtAnalyzer::endJob() {
 }
 
 
-void WMuNuPtAnalyzer::getGenData(Handle<reco::GenParticleCollection> genParticles,t_data& data){
+void WMuNuPtAnalyzer::getGenData(Handle<reco::GenParticleCollection> genParticles,t_dataW& data){
   //for all the particles in the event (only in MC case)
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const reco::GenParticle & p = (*genParticles)[ i ];

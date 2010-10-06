@@ -10,7 +10,7 @@
 #include "TH1D.h"
 #include "TTree.h"
 
-#include "utilsW.h"
+#include "utils.h"
 
 namespace reco {class GenParticle;}
 
@@ -21,13 +21,13 @@ public:
   virtual void beginJob();
   virtual void endJob();
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  void getGenData(edm::Handle<std::vector<reco::GenParticle> > genParticles,t_data& data);
+  void getGenData(edm::Handle<std::vector<reco::GenParticle> > genParticles,t_dataW& data);
 private:
   int nbins_h, inibin_h, endbin_h;
   bool mode;int charge;int eta_bin;
   TH1D * hPt;
   TTree * tree;  
-  t_data data;
+  t_dataW data;
 };
 
 #include <CLHEP/Random/RandGauss.h>
@@ -104,7 +104,7 @@ void EdmToTreeConverterW::endJob() {
 
 }
 
-void EdmToTreeConverterW::getGenData(Handle<reco::GenParticleCollection> genParticles,t_data& data){
+void EdmToTreeConverterW::getGenData(Handle<reco::GenParticleCollection> genParticles,t_dataW& data){
   //for all the particles in the event (only in MC case)
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const reco::GenParticle & p = (*genParticles)[ i ];
