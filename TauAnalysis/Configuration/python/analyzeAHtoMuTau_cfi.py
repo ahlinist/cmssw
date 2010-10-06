@@ -1016,9 +1016,20 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauPt20Cumulative'
         )
     ),
-    
+
     # selection of muon candidate (isolation & id.)
-    # produced in muonic tau decay    
+    # produced in muonic tau decay
+    cms.PSet(
+        filter = cms.string('evtSelMuonVbTfId'),
+        title = cms.string('Muon VBTF id.'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'muonHistManager'
+        ),
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsVbTfIdCumulative')
+    ),
     cms.PSet(
         filter = cms.string('evtSelMuonTrkIso'),
         title = cms.string('Muon Track iso.'),
@@ -1040,6 +1051,17 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'muonHistManager'
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsEcalIsoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonCombIso'),
+        title = cms.string('Muon Combined iso.'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'muonHistManager'
+        ),
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsCombIsoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonAntiPion'),
