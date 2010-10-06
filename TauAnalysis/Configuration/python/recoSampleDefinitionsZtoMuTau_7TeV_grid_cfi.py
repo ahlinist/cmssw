@@ -50,10 +50,14 @@ _picobarns = 1.0
 _nanobarns = 1000.0
 _microbarns = 1.0e6
 
-# Integrated luminosity to normalize 
-#TARGET_LUMI = (4924.3 + 61275 + 115786 + 808979)/_microbarns
-#TARGET_LUMI = (4652+60315.532+107818+630241.996)/_microbarns
-TARGET_LUMI = (4203+58971+89050+1048863)/_microbarns
+# Integrated luminosity to normalize
+##TARGET_LUMI = (200.0)/_picobarns
+TARGET_LUMI = (
+     0.004 # data_Mu_132440_137436_Jun14ReReco
+   + 0.059 # data_Mu_137437_139558_Prompt
+   + 0.089 # data_Mu_139559_140159_Jul16ReReco
+   + 2.374 # data_Mu_140160_999999_Prompt
+)/_picobarns
 
 RECO_SAMPLES = {
     'data_Mu_132440_137436_Jun14ReReco' : {
@@ -180,7 +184,7 @@ MERGE_SAMPLES = {
             'data_Mu_132440_137436_Jun14ReReco',
             'data_Mu_137437_139558_Prompt',
             'data_Mu_139559_140159_Jul16ReReco',
-            'data_Mu_140160_999999_Prompt',
+            'data_Mu_140160_999999_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
