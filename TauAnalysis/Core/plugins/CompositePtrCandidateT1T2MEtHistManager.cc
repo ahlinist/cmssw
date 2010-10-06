@@ -350,7 +350,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
   //	      << " diTauCandidates.size = " << diTauCandidates->size() << std::endl;
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSrc_, genParticles);
+  if ( genParticleSrc_.label() != "" ) evt.getByLabel(genParticleSrc_, genParticles);
 
 //--- CV: collection of PFCandidate only needed in case histograms of MET resolution 
 //        projected parallel and perpendicular to diTau direction are to be filled
@@ -421,12 +421,16 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
       hGenMass_->Fill(diTauCandidate->p4gen().mass(), weight);
 
-      fillGenTauHistograms(hGenLeg1TauPlusDecayAngleLepton_, hGenLeg1TauPlusDecayAngleOneProng_, hGenLeg1TauPlusDecayAngleThreeProng_,
-			   hGenLeg1TauMinusDecayAngleLepton_, hGenLeg1TauMinusDecayAngleOneProng_, hGenLeg1TauMinusDecayAngleThreeProng_,
-			   diTauCandidate->p4Leg1gen(), *genParticles, weight);
-      fillGenTauHistograms(hGenLeg2TauPlusDecayAngleLepton_, hGenLeg2TauPlusDecayAngleOneProng_, hGenLeg2TauPlusDecayAngleThreeProng_,
-			   hGenLeg2TauMinusDecayAngleLepton_, hGenLeg2TauMinusDecayAngleOneProng_, hGenLeg2TauMinusDecayAngleThreeProng_,
-			   diTauCandidate->p4Leg2gen(), *genParticles, weight);
+      if ( genParticles.isValid() ) { 
+	fillGenTauHistograms(
+          hGenLeg1TauPlusDecayAngleLepton_, hGenLeg1TauPlusDecayAngleOneProng_, hGenLeg1TauPlusDecayAngleThreeProng_,
+	  hGenLeg1TauMinusDecayAngleLepton_, hGenLeg1TauMinusDecayAngleOneProng_, hGenLeg1TauMinusDecayAngleThreeProng_,
+	  diTauCandidate->p4Leg1gen(), *genParticles, weight);
+	fillGenTauHistograms(
+	  hGenLeg2TauPlusDecayAngleLepton_, hGenLeg2TauPlusDecayAngleOneProng_, hGenLeg2TauPlusDecayAngleThreeProng_,
+	  hGenLeg2TauMinusDecayAngleLepton_, hGenLeg2TauMinusDecayAngleOneProng_, hGenLeg2TauMinusDecayAngleThreeProng_,
+	  diTauCandidate->p4Leg2gen(), *genParticles, weight);
+      }
     }
 
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
