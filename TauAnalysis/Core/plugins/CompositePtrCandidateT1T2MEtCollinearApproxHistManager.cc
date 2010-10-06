@@ -315,133 +315,134 @@ template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillMEtHistograms(const edm::Event& evt, const CompositePtrCandidateT1T2MEt<T1,T2>& diTauCandidate, double weight)
 {
   edm::Handle<reco::GenParticleCollection> genParticles;
-  evt.getByLabel(genParticleSrc_, genParticles);
+  if ( genParticleSrc_.label() != "" ) evt.getByLabel(genParticleSrc_, genParticles);
 
-  const reco::GenParticle* genLeg1 = findGenParticle(diTauCandidate.leg1()->p4(), *genParticles, 0.5, -1);
-  const reco::GenParticle* genLeg2 = findGenParticle(diTauCandidate.leg2()->p4(), *genParticles, 0.5, -1);
+  edm::Handle<edm::View<reco::Jet> > recoJets;
+  evt.getByLabel(recoJetSrc_, recoJets);
+      
+  edm::Handle<reco::GenJetCollection> genJets;
+  if ( genJetSrc_.label() != "" ) evt.getByLabel(genJetSrc_, genJets);
 
-  if ( genLeg1 && genLeg2 ) {
-    reco::Candidate::LorentzVector p4Zgen = genLeg1->p4() + genLeg2->p4();
+  edm::Handle<edm::View<reco::MET> > genMETs;
+  if ( genMEtSrc_.label() != "" ) evt.getByLabel(genMEtSrc_, genMETs);      
 
-    reco::Candidate::LorentzVector p4InvisLeg1gen = getInvisMomentum(genLeg1, genParticles.product());
-    reco::Candidate::LorentzVector p4InvisLeg2gen = getInvisMomentum(genLeg2, genParticles.product());
+  if ( genParticles.isValid() && genJets.isValid() && genMETs.isValid() ) {
+    const reco::GenParticle* genLeg1 = findGenParticle(diTauCandidate.leg1()->p4(), *genParticles, 0.5, -1);
+    const reco::GenParticle* genLeg2 = findGenParticle(diTauCandidate.leg2()->p4(), *genParticles, 0.5, -1);
     
-    reco::Candidate::LorentzVector p4GenTauNeutrinos = p4InvisLeg1gen + p4InvisLeg2gen;
+    if ( genLeg1 && genLeg2 ) {
+      reco::Candidate::LorentzVector p4Zgen = genLeg1->p4() + genLeg2->p4();
+      
+      reco::Candidate::LorentzVector p4InvisLeg1gen = getInvisMomentum(genLeg1, genParticles.product());
+      reco::Candidate::LorentzVector p4InvisLeg2gen = getInvisMomentum(genLeg2, genParticles.product());
+      
+      reco::Candidate::LorentzVector p4GenTauNeutrinos = p4InvisLeg1gen + p4InvisLeg2gen;
+      
+      fillHistogram(hMEtTauNeutrinosParallelZ_, hMEtTauNeutrinosPerpendicularZ_, p4GenTauNeutrinos, p4Zgen, weight);
+      
+      reco::Candidate::LorentzVector p4GenNeutrinos(0,0,0,0);
+      for ( reco::GenParticleCollection::const_iterator genParticle = genParticles->begin(); 
+	    genParticle != genParticles->end(); ++genParticle ) {
+	
+	if ( genParticle->status() == 1 && isNeutrino(&(*genParticle)) )p4GenNeutrinos += genParticle->p4();
+      }
+      
+      reco::Candidate::LorentzVector p4GenNonTauNeutrinos = p4GenNeutrinos - p4GenTauNeutrinos;
+      
+      fillHistogram(hMEtNonTauNeutrinosParallelZ_, hMEtNonTauNeutrinosPerpendicularZ_, p4GenNonTauNeutrinos, p4Zgen, weight);
+      
+      reco::Candidate::LorentzVector p4VisLeg1gen = getVisMomentum(genLeg1, genParticles.product());
+      reco::Candidate::LorentzVector p4MisMeasLeg1 = p4VisLeg1gen - diTauCandidate.leg1()->p4();
+      fillHistogram(hMEtLeg1MisMeasParallelZ_, hMEtLeg1MisMeasPerpendicularZ_, p4MisMeasLeg1, p4Zgen, weight);
+      
+      reco::Candidate::LorentzVector p4VisLeg2gen = getVisMomentum(genLeg2, genParticles.product());
+      reco::Candidate::LorentzVector p4MisMeasLeg2 = p4VisLeg2gen - diTauCandidate.leg2()->p4();
+      fillHistogram(hMEtLeg2MisMeasParallelZ_, hMEtLeg2MisMeasPerpendicularZ_, p4MisMeasLeg2, p4Zgen, weight);
 
-    fillHistogram(hMEtTauNeutrinosParallelZ_, hMEtTauNeutrinosPerpendicularZ_, p4GenTauNeutrinos, p4Zgen, weight);
+      std::vector<const reco::Jet*> recoJets_matched;    
 
-    reco::Candidate::LorentzVector p4GenNeutrinos(0,0,0,0);
-    for ( reco::GenParticleCollection::const_iterator genParticle = genParticles->begin(); 
-	  genParticle != genParticles->end(); ++genParticle ) {
-
-      if ( genParticle->status() == 1 && isNeutrino(&(*genParticle)) )p4GenNeutrinos += genParticle->p4();
-    }
-
-    reco::Candidate::LorentzVector p4GenNonTauNeutrinos = p4GenNeutrinos - p4GenTauNeutrinos;
-    
-    fillHistogram(hMEtNonTauNeutrinosParallelZ_, hMEtNonTauNeutrinosPerpendicularZ_, p4GenNonTauNeutrinos, p4Zgen, weight);
-
-    reco::Candidate::LorentzVector p4VisLeg1gen = getVisMomentum(genLeg1, genParticles.product());
-    reco::Candidate::LorentzVector p4MisMeasLeg1 = p4VisLeg1gen - diTauCandidate.leg1()->p4();
-    fillHistogram(hMEtLeg1MisMeasParallelZ_, hMEtLeg1MisMeasPerpendicularZ_, p4MisMeasLeg1, p4Zgen, weight);
-
-    reco::Candidate::LorentzVector p4VisLeg2gen = getVisMomentum(genLeg2, genParticles.product());
-    reco::Candidate::LorentzVector p4MisMeasLeg2 = p4VisLeg2gen - diTauCandidate.leg2()->p4();
-    fillHistogram(hMEtLeg2MisMeasParallelZ_, hMEtLeg2MisMeasPerpendicularZ_, p4MisMeasLeg2, p4Zgen, weight);
-  
-    edm::Handle<edm::View<reco::Jet> > recoJets;
-    evt.getByLabel(recoJetSrc_, recoJets);
-
-    edm::Handle<reco::GenJetCollection> genJets;
-    evt.getByLabel(genJetSrc_, genJets);
-
-    const double maxEtaAcceptance = 5.0;
-
-    double pxMisMeasJets = 0;
-    double pyMisMeasJets = 0;
-
-    std::vector<const reco::Jet*> recoJets_matched;    
-
-    reco::Candidate::LorentzVector p4GenHighEtaJets(0,0,0,0);
-
-    for ( reco::GenJetCollection::const_iterator genJet = genJets->begin();
-	  genJet != genJets->end(); ++genJet ) {
+      reco::Candidate::LorentzVector p4GenHighEtaJets(0,0,0,0);
+      
+      double pxMisMeasJets = 0;
+      double pyMisMeasJets = 0;
+      
+      for ( reco::GenJetCollection::const_iterator genJet = genJets->begin();
+	    genJet != genJets->end(); ++genJet ) {
 //--- CV: genJet includes neutrinos,
 //        so cannot simply take genJet four-vector, but need to compute visible momentum
-      reco::Candidate::LorentzVector genJetVisMomentum = getVisMomentum(genJet->getGenConstituents(), 1);
+	reco::Candidate::LorentzVector genJetVisMomentum = getVisMomentum(genJet->getGenConstituents(), 1);
 
 //--- skip jets outside of geometric acceptance of the ECAL/HCAL (barrel, endcap or HF) calorimeters
-      if ( TMath::Abs(genJetVisMomentum.eta()) > maxEtaAcceptance ) {
-	p4GenHighEtaJets += genJet->p4();
-	continue;
-      }
+	const double maxEtaAcceptance = 5.0;
+	if ( TMath::Abs(genJetVisMomentum.eta()) > maxEtaAcceptance ) {
+	  p4GenHighEtaJets += genJet->p4();
+	  continue;
+	}
     
 //--- skip jets coinciding with tau decay products
-      if ( reco::deltaR(diTauCandidate.leg1()->p4(), genJetVisMomentum) < 0.5 || 
-	   reco::deltaR(diTauCandidate.leg2()->p4(), genJetVisMomentum) ) continue;
+	if ( reco::deltaR(diTauCandidate.leg1()->p4(), genJetVisMomentum) < 0.5 || 
+	     reco::deltaR(diTauCandidate.leg2()->p4(), genJetVisMomentum) ) continue;
 
-      const reco::Jet* recoJet_matched = 0;
-      double dRmin = 1.e+3;
-
+	const reco::Jet* recoJet_matched = 0;
+	double dRmin = 1.e+3;
+	
+	for ( edm::View<reco::Jet>::const_iterator recoJet = recoJets->begin(); 
+	      recoJet != recoJets->end(); ++recoJet ) {
+	  double dR = reco::deltaR(genJetVisMomentum, recoJet->p4());
+	  if ( dR < 0.5 && dR < dRmin ) {
+	    recoJet_matched = &(*recoJet);
+	    dRmin = dR;
+	  }
+	}
+	
+	double dPx = ( recoJet_matched ) ? genJetVisMomentum.px() - recoJet_matched->px() : genJetVisMomentum.px();
+	double dPy = ( recoJet_matched ) ? genJetVisMomentum.py() - recoJet_matched->py() : genJetVisMomentum.py();
+	
+	pxMisMeasJets += dPx;
+	pyMisMeasJets += dPy;
+	
+	recoJets_matched.push_back(recoJet_matched);
+      }
+      
       for ( edm::View<reco::Jet>::const_iterator recoJet = recoJets->begin(); 
 	    recoJet != recoJets->end(); ++recoJet ) {
-	double dR = reco::deltaR(genJetVisMomentum, recoJet->p4());
-	if ( dR < 0.5 && dR < dRmin ) {
-	  recoJet_matched = &(*recoJet);
-	  dRmin = dR;
+	
+	bool isMatched = false;
+	
+	for ( std::vector<const reco::Jet*>::const_iterator recoJet_matched = recoJets_matched.begin(); 
+	      recoJet_matched != recoJets_matched.end(); ++recoJet_matched ) {
+	  if ( &(*recoJet) == (*recoJet_matched) ) isMatched = true;
+	}
+	
+	if ( !isMatched ) {
+	  pxMisMeasJets -= recoJet->px();
+	  pyMisMeasJets -= recoJet->py();
 	}
       }
       
-      double dPx = ( recoJet_matched ) ? genJetVisMomentum.px() - recoJet_matched->px() : genJetVisMomentum.px();
-      double dPy = ( recoJet_matched ) ? genJetVisMomentum.py() - recoJet_matched->py() : genJetVisMomentum.py();
+      fillHistogram(hMEtJetMisMeasParallelZ_, hMEtJetMisMeasPerpendicularZ_, pxMisMeasJets, pyMisMeasJets, p4Zgen, weight);
       
-      pxMisMeasJets += dPx;
-      pyMisMeasJets += dPy;
-
-      recoJets_matched.push_back(recoJet_matched);
-    }
-
-    for ( edm::View<reco::Jet>::const_iterator recoJet = recoJets->begin(); 
-	  recoJet != recoJets->end(); ++recoJet ) {
-
-      bool isMatched = false;
-
-      for ( std::vector<const reco::Jet*>::const_iterator recoJet_matched = recoJets_matched.begin(); 
-	    recoJet_matched != recoJets_matched.end(); ++recoJet_matched ) {
-	if ( &(*recoJet) == (*recoJet_matched) ) isMatched = true;
+      fillHistogram(hMEtHighEtaJetsParallelZ_, hMEtHighEtaJetsPerpendicularZ_, p4GenHighEtaJets, p4Zgen, weight);
+     	  
+      if ( genMETs->size() != 1 ) {
+	edm::LogWarning ("fillMEtHistograms") 
+	  << " Failed to unique MEt object in the Event !!";
+	return;
       }
-    
-      if ( !isMatched ) {
-	pxMisMeasJets -= recoJet->px();
-	pyMisMeasJets -= recoJet->py();
-      }
+      const reco::MET& genMET = (*genMETs->begin());
+	  
+      reco::Candidate::LorentzVector genMEt = genMET.p4();
+      reco::Candidate::LorentzVector recoMEt = diTauCandidate.met()->p4();
+      
+      double pxUnaccountedMEt = recoMEt.px() - (p4GenTauNeutrinos.px() + p4GenNonTauNeutrinos.px() 
+					      + p4MisMeasLeg1.px() + p4MisMeasLeg2.px() + pxMisMeasJets + p4GenHighEtaJets.px());
+      double pyUnaccountedMEt = recoMEt.py() - (p4GenTauNeutrinos.py() + p4GenNonTauNeutrinos.py() 
+					      + p4MisMeasLeg1.py() + p4MisMeasLeg2.py() + pyMisMeasJets + p4GenHighEtaJets.py());
+      
+      fillHistogram(hMEtUnaccountedParallelZ_, hMEtUnaccountedPerpendicularZ_, pxUnaccountedMEt, pyUnaccountedMEt, p4Zgen, weight);
+    } else {
+      edm::LogWarning ("fillMEtHistograms") << " Failed to find generated tau-leptons !!";
     }
-
-    fillHistogram(hMEtJetMisMeasParallelZ_, hMEtJetMisMeasPerpendicularZ_, pxMisMeasJets, pyMisMeasJets, p4Zgen, weight);
-
-    fillHistogram(hMEtHighEtaJetsParallelZ_, hMEtHighEtaJetsPerpendicularZ_, p4GenHighEtaJets, p4Zgen, weight);
-
-    edm::Handle<edm::View<reco::MET> > genMETs;
-    evt.getByLabel(genMEtSrc_, genMETs);
-
-    if ( genMETs->size() != 1 ) {
-      edm::LogWarning ("fillMEtHistograms") << " Failed to unique MEt object in the Event !!";
-      return;
-    }
-    
-    const reco::MET& genMET = (*genMETs->begin());
-
-    reco::Candidate::LorentzVector genMEt = genMET.p4();
-    reco::Candidate::LorentzVector recoMEt = diTauCandidate.met()->p4();
-
-    double pxUnaccountedMEt = recoMEt.px() - (p4GenTauNeutrinos.px() + p4GenNonTauNeutrinos.px() 
-                             + p4MisMeasLeg1.px() + p4MisMeasLeg2.px()+ pxMisMeasJets + p4GenHighEtaJets.px());
-    double pyUnaccountedMEt = recoMEt.py() - (p4GenTauNeutrinos.py() + p4GenNonTauNeutrinos.py() 
-                             + p4MisMeasLeg1.py() + p4MisMeasLeg2.py()+ pyMisMeasJets + p4GenHighEtaJets.py());
- 
-    fillHistogram(hMEtUnaccountedParallelZ_, hMEtUnaccountedPerpendicularZ_, pxUnaccountedMEt, pyUnaccountedMEt, p4Zgen, weight);
-  } else {
-    edm::LogWarning ("fillMEtHistograms") << " Failed to find generated tau-leptons !!";
   }
 }
 
