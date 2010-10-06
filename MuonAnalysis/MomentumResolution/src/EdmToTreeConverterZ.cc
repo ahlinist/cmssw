@@ -1,68 +1,22 @@
-#include "FWCore/Common/interface/TriggerNames.h"
-
-#include "DataFormats/Common/interface/TriggerResults.h"
-
-#include <CLHEP/Random/RandGauss.h>
-#include "utils.h"
-#include "Minuit2/Minuit2Minimizer.h"
-#include "Math/Functor.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-
-
-#include "HLTrigger/Muon/interface/HLTMuonIsoFilter.h"
-#include "HLTrigger/Muon/interface/HLTMuonL1Filter.h"
-#include "HLTrigger/HLTcore/interface/HLTFilter.h"
-
-#include <CLHEP/Random/RandGauss.h>
-//#include "master.h"
-#include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/MuonReco/interface/MuonFwd.h"
-
+///////////////////////////////////////////////////////////////////////////////
+//
+//   EdmToTreeConverterZ, to create an ultrasimple Tree to analyze ZMuMus
+//
+///////////////////////////////////////////////////////////////////////////////
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/ESHandle.h"
-#include "DataFormats/Candidate/interface/CompositeCandidate.h" 
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Utilities/interface/EDMException.h"
 
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-
-#include "TFile.h"
-#include "TH1F.h"
+#include "TH1D.h"
 #include "TTree.h"
-#include "TVectorD.h"
-#include "TGraph.h"
 
-#include <map>
-#include <vector>
-//#include "ZMuMuPtAnalyzer.h"
-
-
-
-
-
-
-class TFile;
-class TH1D;
-class TH2D;
-
-
-//struct t_data{double pt1,pt2,px_pt1,px_pt2,py_pt1,py_pt2,pz_pt1,pz_pt2,p_pt1,p_pt2,eta1,phi1,eta2,phi2,mass,r1,r2,rp1,rp2;};
-
-using namespace std;
-using namespace edm;
-using namespace reco;
-
+#include "utils.h"
 
 class EdmToTreeConverterZ : public edm::EDAnalyzer {
 public:
-  EdmToTreeConverterZ(const ParameterSet& pset);
+  EdmToTreeConverterZ(const edm::ParameterSet& pset);
   virtual ~EdmToTreeConverterZ();
-  virtual void beginJob();//const EventSetup& eventSetup);
+  virtual void beginJob();
   virtual void endJob();
   virtual void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
 private:
@@ -81,6 +35,15 @@ private:
 };
 
 #include <CLHEP/Random/RandGauss.h>
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h" 
+
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+using namespace std;
+using namespace edm;
+using namespace reco;
 
 /// Constructor
 EdmToTreeConverterZ::EdmToTreeConverterZ(const ParameterSet& pset) :
