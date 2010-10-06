@@ -6,6 +6,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include "TauAnalysis/Core/interface/SysUncertaintyService.h"
 #include "TauAnalysis/Core/interface/sysUncertaintyAuxFunctions.h"
@@ -163,10 +164,18 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
     edm::LogError ("filter") << " No event selector plugin defined for central value !!";
     return false;
   };
-
-  edm::Event* evt_nonConst = const_cast<edm::Event*>(&evt);
-  bool filterDecision = (*it->second)(*evt_nonConst, es);
-  //std::cout << " filterDecision = " << filterDecision << std::endl;
+  
+  bool filterDecision = true;
+  try { 
+    edm::Event* evt_nonConst = const_cast<edm::Event*>(&evt);
+    filterDecision = (*it->second)(*evt_nonConst, es);
+    //std::cout << " filterDecision = " << filterDecision << std::endl;
+  } catch ( cms::Exception& e ) {
+    edm::LogError("filter") 
+      << " Filter plugin name = " << name_ << " caused exception --> rethrowing !!";
+    throw e;
+  }
+  
   return filterDecision;
 }
 
@@ -186,7 +195,7 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter_individual(const edm:
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-GenericAnalyzer::analysisSequenceEntry_analyzer::analysisSequenceEntry_analyzer(const std::string& name , 
+GenericAnalyzer::analysisSequenceEntry_analyzer::analysisSequenceEntry_analyzer(const std::string& name, 
 										const std::list<edm::ParameterSet>& cfgAnalyzers)
   : analysisSequenceEntry(name)
 {
@@ -231,7 +240,13 @@ void GenericAnalyzer::analysisSequenceEntry_analyzer::analyze(const edm::Event& 
     
     if ( analyzer->supportsSystematics_ == false && isSystematicApplied ) continue;
 
-    analyzer->plugin_->analyze(evt, es, evtWeight);
+    try { 
+      analyzer->plugin_->analyze(evt, es, evtWeight);
+    } catch ( cms::Exception& e ) {
+      edm::LogError("analyze") 
+	<< " Analyzer plugin name = " << analyzer->plugin_->name() << " caused exception --> rethrowing !!";
+      throw e;
+    }
   }
 }
 
