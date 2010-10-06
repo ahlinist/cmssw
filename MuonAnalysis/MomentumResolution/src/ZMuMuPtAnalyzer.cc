@@ -113,7 +113,6 @@ ZMuMuPtAnalyzer::ZMuMuPtAnalyzer(const ParameterSet& pset) :
   endbin_hmassU(pset.getUntrackedParameter<int>("Endbin_histomassU",8)),
   mode(pset.getUntrackedParameter<int>("Mode",0))
 { 
-  cout << dosigma << " " << dodelta << " " << dophi << " " << doeta << " " << docharge << endl;
   do_opt.dosigma= dosigma; do_opt.dodelta=dodelta; do_opt.dophi = dophi; do_opt.doeta=doeta; do_opt.docharge = docharge;
   utils->setTDRStyle();
   fFunc = new ROOT::Math::Functor( this , &ZMuMuPtAnalyzer::fcn , 77); 
@@ -130,14 +129,14 @@ void ZMuMuPtAnalyzer::beginJob(){//const EventSetup& eventSetup){
   if(dophi) j_phi = 6; if(doeta) k_eta = 3; if(docharge) l_charge=2;
   if(dosigma) {for(int j=0;j<j_phi;j++) for(int k=0;k<k_eta;k++) for(int l=0;l<l_charge;l++) dofit[0][j][k][l] = 1; dofit[0][0][0][0] = 1;}
   if(dodelta) {for(int j=0;j<j_phi;j++) for(int k=0;k<k_eta;k++) for(int l=0;l<l_charge;l++) dofit[1][j][k][l] = 1; dofit[1][0][0][0] = 1;}
-  cout<<dofit[0][1][1][0]<<endl;
   edm::Service<TFileService> fs;
+
 
   h1_["hZmassOpt"]=fs->make<TH1D>("HistoMassZOpt","HistoMassZOpt",nbins_hmassZ,inibin_hmassZ,endbin_hmassZ);
   h1_["hZmassRef"]=fs->make<TH1D>("HistoMassZRef","HistoMassZRef",nbins_hmassZ,inibin_hmassZ,endbin_hmassZ);
   h1_["hZmass"]=fs->make<TH1D>("HistoMassZ","HistoMassZ",nbins_hmassZ,inibin_hmassZ,endbin_hmassZ);
   c_["cZmass"]=fs->make<TCanvas>("Zmass","Zmass",50,50,700,400);
-  //cZmass = new TCanvas("Zmass","Zmass",50,50,700,400);
+    //cZmass = new TCanvas("Zmass","Zmass",50,50,700,400);
 
   if(doups){
     h1_["hUmassOpt"]=fs->make<TH1D>("HistoMassZOpt","HistoMassZOpt",nbins_hmassU,inibin_hmassU,endbin_hmassU);
@@ -280,6 +279,8 @@ double ZMuMuPtAnalyzer::fcn(const double *par)
     if(i==0) text1 = "Sigma "; else text1 = "Delta ";
     if(dophi) text2 << "PhiBin " << j;
     if(doeta) {if(k==0) text3 ="Barrel "; else if(k==1) text3="Overlap "; else text3="Endcap ";}
+    if(docharge) {if(l==0) text4 = "mu(-)"; else text4="mu(+)";}
+    cout << "**** Par " << 36*i+6*j+2*k+l <<" " << text1 << text2.str() << text3 << text4 << ": " << par[36*i+6*j+2*k+l] << endl;
     if(docharge) {
             if(l==0) text4 = "mu(-)"; else text4="mu(+)";
     }
@@ -310,7 +311,7 @@ void ZMuMuPtAnalyzer::draw_resonance(int id){
   t_label lab[3];
   lab[0].h = hdata; lab[0].text << "Collision data";
   //lab[1].h = hptOpt;  lab[1].text << "Fit: s1 = " << sigmaopt[0] << " (1/TeV)"<<" s2 = " << sigmaopt[1] << " (1/TeV)"<<" s3 = " << sigmaopt[2] << " (1/TeV)"<<" s4 = " << sigmaopt[3] << " (1/TeV)";
-  lab[1].h = h;  lab[1].text << "Fit(Barrel): #sigma_{#kappa_{T}} (1/pt) = " << sigmaopt[2] << " [TeV^{-1}]"<<", #delta_{#kappa_{T}} (1/pt) = " << sigmaopt[3] << " [TeV^{-1}]"<< " Fit(Overlap): #sigma_{#kappa_{T}} (1/pt) = " << sigmaopt[4] << " [TeV^{-1}]"<<", #delta_{#kappa_{T}} (1/pt) = " << sigmaopt[5] << " [TeV^{-1}]"<< "Fit(Endcap: #sigma_{#kappa_{T}} (1/pt) = " << sigmaopt[6] << " [TeV^{-1}]"<<", #delta_{#kappa_{T}} (1/pt) = " << sigmaopt[7] << " [TeV^{-1}]";
+  lab[1].h = h;  lab[1].text << "Fit(Barrel): #sigma_{#kappa_{T}} (1/pt) = " << sigmaopt[0] << " [TeV^{-1}]"<<", #delta_{#kappa_{T}} (1/pt) = " << sigmaopt[31] << " [TeV^{-1}]";
   lab[2].h = hRef;  lab[2].text << "Reference MC";
   utils->draw_label(lab,0,0.8,0.2,0.1,3); // posicion de las esquinas,tamano de los lados,
 }
@@ -399,7 +400,6 @@ void ZMuMuPtAnalyzer::minimize(double sigma){
 
 void ZMuMuPtAnalyzer::sigmascan(){
   // SCAN 
-  double sigma_scan[77];
   TVectorD x(nbins_scan+1); TVectorD y(nbins_scan+1); //nbins+1
   double sigma;
   for(int i_scan=0;i_scan<=nbins_scan;i_scan++){
@@ -408,16 +408,7 @@ void ZMuMuPtAnalyzer::sigmascan(){
     TH1D * hUmassScan = new TH1D("UmassScan","U mass used as MC",nbins_hmassU,inibin_hmassU,endbin_hmassU);
     // minimize
     minimize(sigma);
-    // getoutput
-    const double * results = fMinuit->X();
-    for(int i=0;i<2;i++) for(int j=0;j<6;j++) for(int k=0;k<3;k++) for(int l=0;l<2;l++)
-      sigma_scan[36*i+6*j+2*k+l]=results[36*i+6*j+2*k+l];
-    sigma_scan[fitparameter] = sigma;
-    
-    // compute likelihood for this output
-    getdata(hZmassScan,sigma_scan,0); if(doups) getdata(hUmassScan,sigma_scan,1);
-    if(doups) y[i_scan] = utils->likelihood(hZmassScan,h1_["hZmass"]) + utils->likelihood(hUmassScan,h1_["hUmass"]);
-    else y[i_scan] = utils->likelihood(hZmassScan,h1_["hZmass"]);
+    y[i_scan] = fMinuit->MinValue();
     x[i_scan] = sigma;
     
     // delete
