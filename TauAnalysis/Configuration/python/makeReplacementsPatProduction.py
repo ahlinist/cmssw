@@ -75,14 +75,14 @@ def makeReplacementsPatProduction(channel = None, sample = None, type = None, re
 			replaceStatements_retVal.append(replaceStatement)
 
 	# replace inputFileName parameter
-	inputFileNames = "fileNames" + sample
+	inputFileNames = "fileNames" + channel + "_" + sample
 	replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
 
 	# replace patTupleOutputFileName parameter
 	# (ommit "_part.." suffix of sample name in case of processes split
 	#  into multiple cmsRun job parts, in order to avoid having to specify
 	#  patTupleOutputFileName again and again for each part)
-	patTupleOutputFileName = "patTupleOutputFileName" + sample
+	patTupleOutputFileName = "patTupleOutputFileName" + channel + "_" + sample
 	if sample.find("_part") != -1:
 		patTupleOutputFileName = "cms.untracked.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")]
 		patTupleOutputFileName += ".value().replace('_partXX', '" + sample[sample.rfind("_part"):] + "'))"
