@@ -13,7 +13,7 @@ compile linking it with libpfm!
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
-#include "IgTools/IgHook/interface/IgHookTrace.h"
+#include "IgHookTrace.h"
 #include <iostream>
 #include <string>
 #include <cstring>
