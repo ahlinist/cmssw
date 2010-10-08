@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <PFM_CONFIG>
- <PROPERTIES NAME="GeneralAnalysis" RUN_CONFIG="hlt_HLT.py" OUTPUT_DIR="results/" />
+ <PROPERTIES NAME="GeneralAnalysis" RUN_CONFIG="step2_RAW2DIGI_L1Reco_RECO.py" OUTPUT_DIR="results/" />
  <CONFIG START_AT_EVENT="4" PARALLEL="0" />
  <PROCESSOR FAMILY="NEHALEM" />
  <EVENTS>
