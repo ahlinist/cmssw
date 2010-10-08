@@ -53,6 +53,7 @@ compile linking it with libpfm!
 #include <list>
 #include <cmath>
 #include <sys/stat.h>
+#define cpuid(func,eax,ebx,ecx,edx)	__asm__ __volatile__ ("cpuid": "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "a" (func));
 
 #define MAX_EVT_NAME_LEN 256
 #define NUM_PMCS PFMLIB_MAX_PMCS
@@ -114,11 +115,14 @@ namespace edm
     void finalizepm();
     std::string event_str[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
     std::string prefix;
+    std::string family;
     char event_cstr[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS][MAX_EVENT_NAME_LENGTH];
     char prefix_cstr[MAX_PREFIX_NAME_LENGTH];
     unsigned int ph_ev_count;
     bool inv[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
     bool nehalem;
+    bool core;
+    bool westmere;
     unsigned int cmask[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
     unsigned int start_at_event;
     pfmlib_core_input_param_t params;
@@ -151,6 +155,10 @@ namespace edm
    // the fields of the class using the parameters passed by the python configuration file to the service
   PerfMonService::PerfMonService(const ParameterSet& iPS, ActivityRegistry& iRegistry)     
   {
+   int ax,bx,cx,dx;
+   cpuid(1,ax,bx,cx,dx);
+   int sse4_2_mask = 1 << 20;
+   int nehalem_flag = cx & sse4_2_mask;
    iRegistry.watchPostBeginJob(this,&PerfMonService::postBeginJob);
    iRegistry.watchPostEndJob(this,&PerfMonService::postEndJob);
    iRegistry.watchPreProcessEvent(this,&PerfMonService::preEventProcessing);
@@ -172,7 +180,23 @@ namespace edm
    {
     if(event_str[i].length()>0) used_counters_number++;
    }
-   nehalem = iPS.getUntrackedParameter<bool>("NEHALEM", nehalem);
+   family = iPS.getUntrackedParameter<std::string>("FAMILY", family);
+   nehalem = false;
+   core = false;
+   westmere = false;
+   if(family.compare("CORE")==0) core = true;
+   else if(family.compare("NEHALEM")==0) nehalem = true;
+   else if(family.compare("WESTMERE")==0) westmere = true;
+   else
+   {
+    fprintf(stderr, "ERROR: Unsupported processor family \"%s\"\naborting...\n", family.c_str());
+    exit(1);
+   }
+   if(core && nehalem_flag)
+   {    
+    fprintf(stderr, "ERROR: Processor family specified (\"%s\") incompatible with current architecture\naborting...\n", family.c_str());
+    exit(1);
+   }
    prefix = iPS.getUntrackedParameter<std::string>("PREFIX", prefix);
    for(int i=0; i<MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS; i++) 
    {
@@ -206,6 +230,7 @@ namespace edm
    memset(pc, 0, sizeof(pc));
    memset(&load_arg, 0, sizeof(load_arg));
    memset(&params, 0, sizeof(params));
+   memset(&nhm_params, 0, sizeof(nhm_params));
 
    for(int i=0; i<used_counters_number; i++) 
    {
@@ -231,7 +256,7 @@ namespace edm
      (nhm_params.pfp_nhm_counters[i]).cnt_mask = cmask[i];
     }
    }
-   if(nehalem)
+   if(nehalem || westmere)
    {
     ret = pfm_dispatch_events(&inp, &nhm_params, &outp, NULL);
    }
@@ -334,7 +359,11 @@ namespace edm
     {
      fprintf(outfile, "NHM ");
     }
-    else
+    else if(westmere)
+    {
+     fprintf(outfile, "WSM ");
+    }
+    else if(core)
     {
      fprintf(outfile, "CORE ");
     }
@@ -385,7 +414,7 @@ namespace edm
    entry = collected_samples;
    while(count--)
    {   
-    if(ent->ovfl_pmd>=0 && ent->ovfl_pmd<=3)
+    if(ent->ovfl_pmd<=3)
     {
      ((samples[ent->ovfl_pmd])[current_module])[(unsigned long)(ent->ip)]++;
     }
@@ -495,6 +524,7 @@ namespace edm
    memset(&load_args, 0, sizeof(load_args));
    pfm_get_num_counters(&num_counters); 
    memset(&params, 0, sizeof(params));
+   memset(&nhm_params, 0, sizeof(nhm_params));
 
    for(int i=0; i<used_counters_number; i++) 
    {
@@ -520,7 +550,7 @@ namespace edm
      (nhm_params.pfp_nhm_counters[i]).cnt_mask = cmask[i];
     }
    }
-   if(nehalem)
+   if(nehalem || westmere)
    {
     ret = pfm_dispatch_events(&inp, &nhm_params, &outp, NULL);
    }
@@ -672,7 +702,11 @@ namespace edm
      {
       gzprintf(outfile, "NHM ");
      }
-     else
+     else if(westmere)
+     {
+      gzprintf(outfile, "WSM ");
+     }
+     else if(core)
      {
       gzprintf(outfile, "CORE ");
      }
