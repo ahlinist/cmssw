@@ -4,10 +4,12 @@ Author: Daniele Francesco Kruse
 E-mail: daniele.francesco.kruse@cern.ch
 Version: 0.9 (16/02/2010)
 
-This program takes a normal python configuration file for cmsRun and generates the 42 python 
+This program takes a XML configuration file and generates the python 
 configuration files to be passed to cmsRun, in order to use the PerfmonService of CMSSW
 both for counting and sampling. It also generates the "*_runs.py" file responsible for
 calling all the others.
+
+compile linking it with libxerces-c (-lxerces-c)
 */
 
 #include <stdlib.h>
@@ -37,6 +39,7 @@ calling all the others.
 #define PROPERTY_STR_MAX_LENGTH 200
 #define VALUE_STR_MAX_LENGTH 200
 #define ANALYSIS_NAME_MAX_LENGTH 200
+#define PROC_FAMILY_MAX_LENGTH 200
 
 using namespace xercesc;
 
@@ -44,19 +47,20 @@ using namespace xercesc;
 // const char *original_buffer   : original buffer containing the configuration for cmsRun
 // const char *original_filename : filename of the original python configuration file 
 // const char *prefix            : destination directory and prefix for result files
-// int sampling                  : set as: 0 if counting, 1 if sampling
-// const char *event             : name of the event to monitor
-// int inv                       : inv mask of the counter
-// unsigned int cmask            : counter mask of the counter
+// const char *eventN            : name of the N-th event to monitor
+// int invN                      : inv mask of the N-th counter
+// unsigned int cmaskN           : counter mask of the N-th counter
+// unsigned int spN              : sampling period of the N-th counter (use 0 if counting)
 // unsigned int start_at         : specifies at which event number PerfmonService should start monitoring
 // char *generated_filename      : name of generated python configuration file
+// const char *family            : processor family (CORE or NEHALEM or WESTMERE)
 // generates the python configuration file, containing the original part ("original_buffer") plus the parameters to be used by the PerfmonService of CMSSW
 int gen_file(const char *original_buffer, const char *original_filename, const char *prefix,
              const char *event0, int inv0, unsigned int cmask0, unsigned int sp0,
              const char *event1, int inv1, unsigned int cmask1, unsigned int sp1,
              const char *event2, int inv2, unsigned int cmask2, unsigned int sp2,
              const char *event3, int inv3, unsigned int cmask3, unsigned int sp3,
-             unsigned int start_at, char *generated_filename, int nehalem)
+             unsigned int start_at, char *generated_filename, const char *family)
 {
  char to_append[APPENDIX_MAX_LENGTH];
  bzero(to_append, APPENDIX_MAX_LENGTH);
@@ -85,9 +89,9 @@ int gen_file(const char *original_buffer, const char *original_filename, const c
  inv2 ? strcat(to_append, "True") : strcat(to_append, "False");
  strcat(to_append, "),\n\tINV3=cms.untracked.bool(");
  inv3 ? strcat(to_append, "True") : strcat(to_append, "False");
- strcat(to_append, "),\n\tNEHALEM=cms.untracked.bool(");
- nehalem ? strcat(to_append, "True") : strcat(to_append, "False");
- strcat(to_append, "),\n\tCMASK0=cms.untracked.int32(");
+ strcat(to_append, "),\n\tFAMILY=cms.untracked.string(\"");
+ strcat(to_append, family);
+ strcat(to_append, "\"),\n\tCMASK0=cms.untracked.int32(");
  sprintf(num_str, "%d", cmask0);
  strcat(to_append, num_str); 
  strcat(to_append, "),\n\tCMASK1=cms.untracked.int32(");
@@ -178,17 +182,19 @@ int gen_file(const char *original_buffer, const char *original_filename, const c
  return 0;
 }
 
+// class ParseHandler : class responsible for parsing the XML config file
 class ParseHandler : public DefaultHandler
 {
  private:
   XMLCh *ATTR_NAME;
-  XMLCh *ATTR_CMS_PY_CONF_FILE;
+  XMLCh *ATTR_RUN_CONFIG;
   XMLCh *ATTR_OUTPUT_DIR;
   XMLCh *ATTR_START_AT_EVENT;
   XMLCh *ATTR_PARALLEL;
   XMLCh *ATTR_CMASK;
   XMLCh *ATTR_INVMASK;
   XMLCh *ATTR_SMPL_PERIOD;
+  XMLCh *ATTR_FAMILY;
 
  public:
   char events[MAX_EVENT_SETS][MAX_EVENTS_NO][MAX_EVENT_NAME_LENGTH];
@@ -200,6 +206,7 @@ class ParseHandler : public DefaultHandler
   char py_conf_file[FILENAME_MAX_LENGTH];
   char output_dir[FILENAME_MAX_LENGTH];
   char analysis_name[ANALYSIS_NAME_MAX_LENGTH];
+  char processor_family[PROC_FAMILY_MAX_LENGTH];
   int cur_set;
   int cur_event;
 
@@ -222,27 +229,30 @@ class ParseHandler : public DefaultHandler
    cur_event = 0;
    bzero(py_conf_file, FILENAME_MAX_LENGTH);
    bzero(output_dir, FILENAME_MAX_LENGTH);
+   bzero(processor_family, PROC_FAMILY_MAX_LENGTH);
    ATTR_NAME = XMLString::transcode("NAME");
-   ATTR_CMS_PY_CONF_FILE = XMLString::transcode("CMS_PY_CONF_FILE");
+   ATTR_RUN_CONFIG = XMLString::transcode("RUN_CONFIG");
    ATTR_OUTPUT_DIR = XMLString::transcode("OUTPUT_DIR");
    ATTR_START_AT_EVENT = XMLString::transcode("START_AT_EVENT");
    ATTR_PARALLEL = XMLString::transcode("PARALLEL");
    ATTR_CMASK = XMLString::transcode("CMASK");
    ATTR_INVMASK = XMLString::transcode("INVMASK");
    ATTR_SMPL_PERIOD = XMLString::transcode("SMPL_PERIOD");
+   ATTR_FAMILY = XMLString::transcode("FAMILY");
   }
   ~ParseHandler()
   {
    try
    {
     XMLString::release(&ATTR_NAME);
-    XMLString::release(&ATTR_CMS_PY_CONF_FILE);
+    XMLString::release(&ATTR_RUN_CONFIG);
     XMLString::release(&ATTR_OUTPUT_DIR);
     XMLString::release(&ATTR_START_AT_EVENT);
     XMLString::release(&ATTR_PARALLEL);
     XMLString::release(&ATTR_CMASK);
     XMLString::release(&ATTR_INVMASK);
-    XMLString::release(&ATTR_SMPL_PERIOD); 
+    XMLString::release(&ATTR_SMPL_PERIOD);
+    XMLString::release(&ATTR_FAMILY); 
    }
    catch(...)
    {
@@ -258,16 +268,29 @@ class ParseHandler : public DefaultHandler
    else if(!strcmp(elem_name, "PROPERTIES"))
    {
     char *ATTR_NAME_char = XMLString::transcode(attrs.getValue(ATTR_NAME));
-    char *ATTR_CMS_PY_CONF_FILE_char = XMLString::transcode(attrs.getValue(ATTR_CMS_PY_CONF_FILE));
+    char *ATTR_RUN_CONFIG_char = XMLString::transcode(attrs.getValue(ATTR_RUN_CONFIG));
     char *ATTR_OUTPUT_DIR_char = XMLString::transcode(attrs.getValue(ATTR_OUTPUT_DIR));
     strcpy(analysis_name, ATTR_NAME_char);
-    strcpy(py_conf_file, ATTR_CMS_PY_CONF_FILE_char);
+    strcpy(py_conf_file, ATTR_RUN_CONFIG_char);
     strcpy(output_dir, ATTR_OUTPUT_DIR_char);
     try
     {
      XMLString::release(&ATTR_NAME_char);
-     XMLString::release(&ATTR_CMS_PY_CONF_FILE_char);
+     XMLString::release(&ATTR_RUN_CONFIG_char);
      XMLString::release(&ATTR_OUTPUT_DIR_char);
+    }
+    catch(...)
+    {
+     printf("Error releasing!!\n");
+    }   
+   }
+   else if(!strcmp(elem_name, "PROCESSOR"))
+   {
+    char *ATTR_FAMILY_char = XMLString::transcode(attrs.getValue(ATTR_FAMILY));
+    strcpy(processor_family, ATTR_FAMILY_char);
+    try
+    {
+     XMLString::release(&ATTR_FAMILY_char);
     }
     catch(...)
     {
@@ -341,6 +364,7 @@ class ParseHandler : public DefaultHandler
    char *elem_name = XMLString::transcode(localname);
    if(!strcmp(elem_name, "PFM_CONFIG"));
    else if(!strcmp(elem_name, "PROPERTIES"));
+   else if(!strcmp(elem_name, "PROCESSOR"));
    else if(!strcmp(elem_name, "CONFIG"));
    else if(!strcmp(elem_name, "EVENTS"));
    else if(!strcmp(elem_name, "EVENT_SET"))
@@ -378,9 +402,8 @@ class ParseHandler : public DefaultHandler
 };
 
 // main()
-// takes as input: the original python configuration file, the path to the directory that will contain the results
-// and the of event at which the service should start monitoring. 
-// then generates the 42 python configuration files to be passed to cmsRun, in order to use the PerfmonService of CMSSW
+// takes as input the XML configuration file that contains all the monitoring parameters. 
+// then generates the python configuration files to be passed to cmsRun, in order to use the PerfmonService of CMSSW
 // both for counting and sampling, it also generates the "*_runs.py" file responsible for calling all the others
 int main(int argc, char *argv[])
 {
@@ -438,7 +461,7 @@ int main(int argc, char *argv[])
            handler.events[i][1], handler.invmasks[i][1], handler.cmasks[i][1], handler.sampling_periods[i][1],
            handler.events[i][2], handler.invmasks[i][2], handler.cmasks[i][2], handler.sampling_periods[i][2],
            handler.events[i][3], handler.invmasks[i][3], handler.cmasks[i][3], handler.sampling_periods[i][3],
-           handler.start_at_event, filename, 1);
+           handler.start_at_event, filename, handler.processor_family);
   strcat(to_append, "os.system(\"cmsRun ");
   strcat(to_append, filename);
   if(handler.parallel)

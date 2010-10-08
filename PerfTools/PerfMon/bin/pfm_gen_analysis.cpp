@@ -85,6 +85,8 @@ compile linking zlib: g++ -Wall -lz pfm_analysis.cpp
 
 #define PIPE_BUFFER_LENGTH 1000
 
+// class PipeReader : responsible for reading the output of "nm" and "objdump" commands
+// by Giulio Eulisse
 class PipeReader
 {
  public:
@@ -129,6 +131,7 @@ class PipeReader
 // const char *srcbuffer  : source string
 // const char **dstbuffer : destination string
 // Skips white spaces
+// by Giulio Eulisse
 bool skipWhitespaces(const char *srcbuffer, const char **destbuffer)
 {
  if(!isspace(*srcbuffer++))
@@ -150,6 +153,7 @@ bool skipWhitespaces(const char *srcbuffer, const char **destbuffer)
 // Skips strings of the form '\\s+strptr\\s+' starting from buffer.
 // Returns a pointer to the first char which does not match the above regexp,
 // or 0 in case the regexp is not matched.
+// by Giulio Eulisse
 bool skipString(const char *strptr, const char *srcbuffer, const char **dstbuffer)
 {
  if(strncmp(srcbuffer, strptr, strlen(strptr)))
@@ -160,6 +164,8 @@ bool skipString(const char *strptr, const char *srcbuffer, const char **dstbuffe
  return true;
 }
 
+// class FileInfo : responsible for finding information (symbol name and library) of an instruction address
+// by Giulio Eulisse
 class FileInfo
 {
  public:
@@ -180,20 +186,16 @@ class FileInfo
    {
     return 0;
    }
-
    SymbolCache::iterator i = lower_bound(m_symbolCache.begin(), m_symbolCache.end(), offset, CacheItemComparator());
    if(i->OFFSET == offset)
    {
     return i->NAME.c_str();
-   }
-    
+   }    
    if(i == m_symbolCache.begin())
    {
     return m_symbolCache.begin()->NAME.c_str();
    }
-
    --i;
-
    return i->NAME.c_str(); 
   }
 
@@ -244,11 +246,9 @@ class FileInfo
     //    
     //    LOAD\\s+off\\s+(0x[0-9A-Fa-f]+)\\s+vaddr\\s+(0x[0-9A-Fa-f]+)
     // 
-    // and sets vmbase to be $2 - $1 of the first matched entry.
-      
+    // and sets vmbase to be $2 - $1 of the first matched entry.      
     std::string line;
-    std::getline(objdump.output(), line);
-    
+    std::getline(objdump.output(), line);    
     if(!objdump.output()) break;
     if(line.empty()) continue;      
     const char *lineptr = line.c_str();
@@ -320,6 +320,8 @@ static std::vector<std::string> nhm_caa_events;
 static std::vector<std::string> core_caa_events_displ;
 static std::vector<std::string> nhm_caa_events_displ;
 
+// void init_core_caa_events()
+// fills the core_caa_events vector, i.e. the vector containing the names of the events necessary to do the cycle accounting analysis for core processors
 void init_core_caa_events()
 {
  core_caa_events.push_back("BRANCH_INSTRUCTIONS_RETIRED");
@@ -335,16 +337,13 @@ void init_core_caa_events()
  core_caa_events.push_back("MEM_LOAD_RETIRED:L1D_LINE_MISS");
  core_caa_events.push_back("MEM_LOAD_RETIRED:L2_LINE_MISS");
  core_caa_events.push_back("MISPREDICTED_BRANCH_RETIRED");
- //core_caa_events.push_back("RS_UOPS_DISPATCHED");
- //core_caa_events.push_back("RS_UOPS_DISPATCHED CMASK=1");
  core_caa_events.push_back("RS_UOPS_DISPATCHED CMASK=1 INV=1");
  core_caa_events.push_back("SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE");
  core_caa_events.push_back("UNHALTED_CORE_CYCLES");
- //core_caa_events.push_back("UOPS_RETIRED:ANY");
- //core_caa_events.push_back("UOPS_RETIRED:FUSED");
- //core_caa_events.push_back("IDLE_DURING_DIV");
 }
 
+// void init_nhm_caa_events()
+// fills the nhm_caa_events vector, i.e. the vector containing the names of the events necessary to do the cycle accounting analysis for nehalem processors
 void init_nhm_caa_events()
 {
  nhm_caa_events.push_back("ARITH:CYCLES_DIV_BUSY");
@@ -390,6 +389,8 @@ void init_nhm_caa_events()
  nhm_caa_events.push_back("UOPS_RETIRED:ANY");
 }
 
+// bool check_for_core_caa_events()
+// checks whether all the events necessary to do the cycle accounting analysis for core processors have been counted
 bool check_for_core_caa_events()
 {
  for(std::vector<std::string>::const_iterator it=core_caa_events.begin(); it!=core_caa_events.end(); ++it)
@@ -403,6 +404,8 @@ bool check_for_core_caa_events()
  return true;
 }
 
+// bool check_for_nhm_caa_events()
+// checks whether all the events necessary to do the cycle accounting analysis for nehalem processors have been counted
 bool check_for_nhm_caa_events()
 {
  for(std::vector<std::string>::const_iterator it=nhm_caa_events.begin(); it!=nhm_caa_events.end(); ++it)
@@ -416,6 +419,8 @@ bool check_for_nhm_caa_events()
  return true;
 }
 
+// void init_core_caa_events_displ()
+// fills the vector containing the names of the derivated values (for core processors) to be displayed in the main table in index.html
 void init_core_caa_events_displ()
 {
  core_caa_events_displ.push_back("Total Cycles");
@@ -466,6 +471,9 @@ void init_core_caa_events_displ()
  core_caa_events_displ.push_back("% of Mispredicted Branches");
 }
 
+// void calc_core_deriv_values(double totalCycles)
+// double totalCycles : total unhalted core cycles used for the execution of all the modules (used to calculate the iMargin)
+// calculates the various derivated values (for core processors), from raw counter data, that will be displayed of the main table in the index.html
 void calc_core_deriv_values(double totalCycles)
 {
  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
@@ -515,6 +523,8 @@ void calc_core_deriv_values(double totalCycles)
  }
 }
 
+// void init_nhm_caa_events_displ()
+// fills the vector containing the names of the derivated values (for nehalem processors) to be displayed in the main table in index.html
 void init_nhm_caa_events_displ()
 {
  nhm_caa_events_displ.push_back("Total Cycles");
@@ -621,6 +631,9 @@ void init_nhm_caa_events_displ()
  nhm_caa_events_displ.push_back("Packed % of all UOPS Retired");
 }
 
+// void calc_nhm_deriv_values(double totalCycles)
+// double totalCycles : total unhalted core cycles used for the execution of all the modules (used to calculate the iMargin)
+// calculates the various derivated values (for nehalem processors), from raw counter data, that will be displayed of the main table in the index.html
 void calc_nhm_deriv_values(double totalCycles)
 {
  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
@@ -1127,7 +1140,6 @@ const char *func_name(const char *demangled_symbol)
 
 // put_module()
 // S_module *cur_module : pointer to the current module object to be written out in to HTML file
-// const char *event    : name of architectural event being analysed
 // const char *dir      : directory where sampling results input files are located
 // creates or updates the HTML output file using information contained inside the module object given as a parameter
 void put_S_module(S_module *cur_module, const char *dir)
@@ -1322,7 +1334,7 @@ int read_S_file(const char *dir, const char *filename)
   if(line[strlen(line)-1]=='\n') line[strlen(line)-1]='\0';
   bzero(event, MAX_EVENT_NAME_LENGTH);
   sscanf(line, "%s %s %u %u %u", arch, event, &cmask, &inv, &sp);
-  if(!strcmp(arch, "NHM")) nehalem = true; else nehalem = false;
+  if(!strcmp(arch, "NHM") || !strcmp(arch, "WSM")) nehalem = true; else nehalem = false;
   bzero(line, MAX_LINE_LENGTH);
   while(gzgets(res_file, line, MAX_LINE_LENGTH)!=Z_NULL)
   {
@@ -1418,6 +1430,11 @@ int read_S_file(const char *dir, const char *filename)
  return 0;
 }
 
+// read_S_events()
+// const char *dir      : directory where sampling results input files are located
+// const char *filename : name of the current file to analyse
+// checks which events have been sampled and writes their names inside the S_events vector prior to the real analysis. 
+// this is used to generate the top menu in the symbol analysis files
 int read_S_events(const char *dir, const char *filename)
 {
  char event[MAX_EVENT_NAME_LENGTH];
@@ -1466,7 +1483,7 @@ int read_S_events(const char *dir, const char *filename)
  return 0;
 }
 
-// finalize_html_pages()
+// finalize_S_html_pages()
 // const char *dir : directory contating sampling result files
 // puts footers in module HTML pages and creates index file
 int finalize_S_html_pages(const char *dir)
@@ -1494,7 +1511,8 @@ int finalize_S_html_pages(const char *dir)
  return 0;
 }
 
-// read_file()
+// read_C_file()
+// const char *dir         : directory where counting results input files are located
 // const char *filename    : input file to analyse
 // analyses the event file and updates the list of modules with counter information found in the file
 // returns the number of modules found in the file
@@ -1525,7 +1543,7 @@ int read_C_file(const char *dir, const char *filename)
  strcat(path_name, filename);
  FILE *fp = fopen(path_name, "r");
  fscanf(fp, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str);
- if(!strcmp(arch, "NHM")) nehalem = true; else nehalem = false;
+ if(!strcmp(arch, "NHM") || !strcmp(arch, "WSM")) nehalem = true; else nehalem = false;
  std::string event_str(event);
  if(atoi(cmask_str)>0)
  {
@@ -1562,6 +1580,10 @@ int read_C_file(const char *dir, const char *filename)
  return number_of_modules;
 }
 
+// void put_C_header()
+// FILE *fp                          : file pointer of the index.html file
+// std::vector<std::string> &columns : vector containing the names of the columns of the main result table
+// writes the header in the index.html file and the header of the main table contained in it
 void put_C_header(FILE *fp, std::vector<std::string> &columns)
 {
  fprintf(fp, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"  \"http://www.w3.org/TR/html4/loose.dtd\">\n");
@@ -1587,6 +1609,10 @@ void put_C_header(FILE *fp, std::vector<std::string> &columns)
  return;
 }
 
+// void put_C_modules()
+// FILE *fp                          : file pointer of the index.html file
+// std::vector<std::string> &columns : vector containing the names of the columns of the main result table
+// writes the values corresponding to the column names (contained in the columns vector) inside the main table in the index.html
 void put_C_modules(FILE *fp, std::vector<std::string> &columns)
 {
  int index = 0;
@@ -1616,12 +1642,19 @@ void put_C_modules(FILE *fp, std::vector<std::string> &columns)
  }
 }
 
+// void put_C_footer()
+// FILE *fp                          : file pointer of the index.html file
+// writes the footer in the index.html file and the footer of the main table contained in it
 void put_C_footer(FILE *fp)
 {
  fprintf(fp, "</table>\n</body>\n</html>\n");
  return;
 }
 
+// void put_C_header_csv()
+// FILE *fp                          : file pointer of the index.html file
+// std::vector<std::string> &columns : vector containing the names of the columns of the main result table
+// writes the header in the result comma-separated-values file
 void put_C_header_csv(FILE *fp, std::vector<std::string> &columns)
 {
  fprintf(fp, "MODULE NAME");
@@ -1634,6 +1667,10 @@ void put_C_header_csv(FILE *fp, std::vector<std::string> &columns)
  return;
 }
 
+// void put_C_modules_csv()
+// FILE *fp                          : file pointer of the index.html file
+// std::vector<std::string> &columns : vector containing the names of the columns of the main result table
+// writes the values corresponding to the column names (contained in the columns vector) inside the result comma-separated-values file
 void put_C_modules_csv(FILE *fp, std::vector<std::string> &columns)
 {
  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
@@ -1657,10 +1694,8 @@ void put_C_modules_csv(FILE *fp, std::vector<std::string> &columns)
 }
 
 // normalize()
-// struct C_module *mod    : pointer to the head of the list of modules
-// int counter             : event selected (see C_module class for which event corresponds to which number)
-// int number_of_modules   : length of the list
-// double value       : value to be normalized
+// std::string field       : event (derivated or raw) to normalize
+// double value            : value to be normalized
 // double normalizeTo      : value to which the value above should be normalized
 // returns the normalized value
 double normalize(std::string field, double value, double normalizeTo)
@@ -1680,9 +1715,6 @@ double normalize(std::string field, double value, double normalizeTo)
 }
 
 // calc_post_deriv_values()
-// struct C_module *mod    : pointer to the head of the list of modules
-// double totalCycles : total cycles spent by all the modules
-// int number_of_modules   : length of the list
 // calculates the iFactor of each module
 void calc_post_deriv_values()
 {
@@ -1709,8 +1741,6 @@ void calc_post_deriv_values()
 }
 
 // getTotalCycles()
-// struct C_module *mod  : pointer to the head of the list of modules
-// int number_of_modules : length of the list
 // returns the number of total cycles spent by all the modules
 double getTotalCycles()
 {
@@ -1734,7 +1764,9 @@ double getTotalCycles()
 
 // main()
 // takes as argument the directory containing results 
-// and produces the HTML directory inside of it containing browsable statistics
+// and produces the HTML directory inside of it containing browsable raw counters (default)
+// or containing the calculated derivated values (using the --caa option)
+// it is also possible to generate the comma-separated-values file using the --csv option
 int main(int argc, char *argv[])
 {
  if(argc<2 || argc>4)
@@ -1897,6 +1929,32 @@ int main(int argc, char *argv[])
    put_C_modules_csv(fp, C_events);
   }
   fclose(fp);
- } 
+ }
+ if(!csv)
+ {
+  char src[MAX_FILENAME_LENGTH];
+  char dst[MAX_FILENAME_LENGTH];
+  sprintf(src, "sorttable.js");
+  sprintf(dst, "%s/HTML/sorttable.js", argv[1]);
+  int fd_src = open(src, O_RDONLY);
+  if(fd_src == -1)
+  {
+   fprintf(stderr, "ERROR: Cannot open file \"%s\"!\naborting...\n", src);
+   exit(1);
+  }
+  int fd_dst = open(dst, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+  if(fd_dst == -1)
+  {
+   fprintf(stderr, "ERROR: Cannot open file \"%s\" (%s)!\naborting...\n", dst, strerror(errno));
+   exit(1);
+  }
+  char c;
+  while(read(fd_src, &c, 1))
+  {
+   write(fd_dst, &c, 1);
+  }
+  close(fd_dst);
+  close(fd_src);
+ }
  return 0;
 }
