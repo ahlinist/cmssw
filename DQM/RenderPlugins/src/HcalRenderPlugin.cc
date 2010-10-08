@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.45 $
-  \date $Date: 2010/09/03 15:11:01 $
+  \version $Revision: 1.46 $
+  \date $Date: 2010/10/01 15:14:13 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -215,13 +215,13 @@ public:
     */
 
     // repeat for hcal error colors.  Assign color positions starting at 1501
-    NRGBs_hcalError = 8; // specify number of RGB boundaries for hcalError
+    NRGBs_hcalError = 9; // specify number of RGB boundaries for hcalError
     NCont_hcalError = 105; // specify number of contours for hcalError
     // Update on 1 October 10:  Switch 'black' color to 'white' for known bad channels
-    Double_t stops_hcalError[] = { 0.00, 0.05/1.05, 0.40/1.05, 0.75/1.05, 0.95/1.05, 1.00/1.05,  1.01/1.05,1.05/1.05};
-    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.0};
-    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00, 0.00, 1.0};
-    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.0};
+    Double_t stops_hcalError[] = { 0.00, 0.05/1.05, 0.40/1.05, 0.75/1.05, 0.95/1.05, 1.00/1.05, 1.01/1.05,1.02/1.05, 1.05/1.05};
+    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.0, 1.0};
+    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00, 0.00, 1.0, 1.0};
+    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.0, 1.0};
     nColorsGradient=0;
     highestIndex=0;
     for (int g=1;g<NRGBs_hcalError;++g)
