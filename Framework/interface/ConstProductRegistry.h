@@ -52,6 +52,8 @@ namespace edm {
     // return-by-value of the vector so that it may be used in a
     // colon-initialization list.
     std::vector<BranchDescription const*> allBranchDescriptions() const {return reg_->allBranchDescriptions();}
+
+    bool anyProductProduced() const {return reg_->anyProductProduced();}
      
     template< class T>
     void watchProductAdditions(const T& iFunc)
