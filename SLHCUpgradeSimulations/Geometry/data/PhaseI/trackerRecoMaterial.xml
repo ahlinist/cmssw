@@ -141,7 +141,7 @@ July 2009
       <PartSelector path="//PixelForward[1]/PixelForwardDisk1/PixelForwardModule1[2]/PixelForwardWafer1/PixelForwardSensor1"/>
       <PartSelector path="//PixelForward[1]/PixelForwardDisk1/PixelForwardModule1[1]/PixelForwardWafer1/PixelForwardSensor1"/>
       <PartSelector path="//PixelForward[1]/PixelForwardDisk1/PixelForwardModule1[2]/PixelForwardWafer1/PixelForwardSensor1"/>
-        <Parameter name="TrackerRadLength" value="0.102"/>
+        <Parameter name="TrackerRadLength" value="0.055"/>
       <Parameter name="TrackerXi" value="0.0002116"/>
     </SpecPar>
 
@@ -151,7 +151,7 @@ July 2009
       <PartSelector path="//PixelForward[1]/PixelForwardDisk2/PixelForwardModule2[1]/PixelForwardWafer2/PixelForwardSensor2"/>
       <PartSelector path="//PixelForward[1]/PixelForwardDisk2/PixelForwardModule2[2]/PixelForwardWafer2/PixelForwardSensor2"/>
 
-      <Parameter name="TrackerRadLength" value="0.1617"/>
+      <Parameter name="TrackerRadLength" value="0.031"/>
       <Parameter name="TrackerXi" value="0.0003217"/>
     </SpecPar>
 
@@ -160,7 +160,7 @@ July 2009
       <PartSelector path="//PixelForward[1]/PixelForwardDisk3/PixelForwardModule3[2]/PixelForwardWafer3/PixelForwardSensor3"/>
       <PartSelector path="//PixelForward[1]/PixelForwardDisk3/PixelForwardModule3[1]/PixelForwardWafer3/PixelForwardSensor3"/>
       <PartSelector path="//PixelForward[1]/PixelForwardDisk3/PixelForwardModule3[2]/PixelForwardWafer3/PixelForwardSensor3"/>
-      <Parameter name="TrackerRadLength" value="0.1617"/>
+      <Parameter name="TrackerRadLength" value="0.031"/>
       <Parameter name="TrackerXi" value="0.0003217"/>
     </SpecPar>
 
@@ -170,7 +170,7 @@ July 2009
       <PartSelector path="//PixelForward[2]/PixelForwardDisk1/PixelForwardModule1[2]/PixelForwardWafer1/PixelForwardSensor1"/>   
       <PartSelector path="//PixelForward[2]/PixelForwardDisk1/PixelForwardModule1[1]/PixelForwardWafer1/PixelForwardSensor1"/>   
       <PartSelector path="//PixelForward[2]/PixelForwardDisk1/PixelForwardModule1[2]/PixelForwardWafer1/PixelForwardSensor1"/>   
-      <Parameter name="TrackerRadLength" value="0.102"/>
+      <Parameter name="TrackerRadLength" value="0.055"/>
       <Parameter name="TrackerXi" value="0.0002116"/>
     </SpecPar>
 
@@ -179,7 +179,7 @@ July 2009
       <PartSelector path="//PixelForward[2]/PixelForwardDisk2/PixelForwardModule2[2]/PixelForwardWafer2/PixelForwardSensor2"/>   
       <PartSelector path="//PixelForward[2]/PixelForwardDisk2/PixelForwardModule2[1]/PixelForwardWafer2/PixelForwardSensor2"/>   
       <PartSelector path="//PixelForward[2]/PixelForwardDisk2/PixelForwardModule2[2]/PixelForwardWafer2/PixelForwardSensor2"/>   
-      <Parameter name="TrackerRadLength" value="0.1617"/>
+      <Parameter name="TrackerRadLength" value="0.031"/>
       <Parameter name="TrackerXi" value="0.0003217"/>
     </SpecPar>
 
@@ -188,7 +188,7 @@ July 2009
       <PartSelector path="//PixelForward[2]/PixelForwardDisk3/PixelForwardModule3[2]/PixelForwardWafer3/PixelForwardSensor3"/>   
       <PartSelector path="//PixelForward[2]/PixelForwardDisk3/PixelForwardModule3[1]/PixelForwardWafer3/PixelForwardSensor3"/>   
       <PartSelector path="//PixelForward[2]/PixelForwardDisk3/PixelForwardModule3[2]/PixelForwardWafer3/PixelForwardSensor3"/>   
-      <Parameter name="TrackerRadLength" value="0.1617"/>
+      <Parameter name="TrackerRadLength" value="0.031"/>
       <Parameter name="TrackerXi" value="0.0003217"/>
     </SpecPar>
 
