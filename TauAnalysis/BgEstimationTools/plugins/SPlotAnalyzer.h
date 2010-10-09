@@ -16,9 +16,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: SPlotAnalyzer.h,v 1.1 2010/09/27 12:18:47 veelken Exp $
+ * $Id: SPlotAnalyzer.h,v 1.2 2010/10/07 13:51:46 veelken Exp $
  *
  */
 
@@ -36,6 +36,8 @@
 
 #include <TH1.h>
 #include <TChain.h>
+#include <TCanvas.h>
+#include <TPostScript.h>
 
 #include <vector>
 #include <string>
@@ -51,8 +53,8 @@ class SPlotAnalyzer : public edm::EDAnalyzer
     
  private:
 //--- functions inherited from EDAnalyzer base class
-  void beginJob();
-  void analyze(const edm::Event&, const edm::EventSetup&);
+  void beginJob() {}
+  void analyze(const edm::Event&, const edm::EventSetup&) {}
   void endJob();
 
 //--- auxiliary functions
@@ -61,19 +63,19 @@ class SPlotAnalyzer : public edm::EDAnalyzer
 
   void buildSPlotWeights();
 
-  void makeControlPlot();
-
 //--- configuration parameters
   typedef std::vector<std::string> vstring;
 
-  struct processEntryType
+  struct dataEntryType
   {
-    processEntryType(const std::string&, const vstring&);
-    ~processEntryType();
+    dataEntryType(const edm::ParameterSet&, const std::string& = "distributions");
+    ~dataEntryType();
 
-    void setAuxVar(RooRealVar* fitVar) { fitVarRef_ = fitVar; }
+    void buildAuxConcatenatedHistogram();
     
-    void buildPdf();
+    void setFitVar(RooRealVar* fitVar) { fitVarRef_ = fitVar; }
+
+    void buildDataHist();
 
     std::string processName_;
 
@@ -82,43 +84,76 @@ class SPlotAnalyzer : public edm::EDAnalyzer
     RooRealVar* fitVarRef_;
 
     TH1* auxConcatenatedHistogram_;   
-    RooDataHist* modelDataHist_;  
-    RooHistPdf* modelHistPdf_;
+    RooDataHist* fitDataHist_;  
 
-    RooRealVar* norm_;
+    void buildSPlotDataSet(const RooArgSet&);
+
+    vstring sPlotNtupleFileNames_;
+    std::string sPlotTreeName_;
+    
+    TChain* sPlotNtuple_;
+    RooDataSet* sPlotDataSet_;
 
     int error_;
   };
 
-  std::vector<processEntryType> processes_;
+  struct processEntryType : public dataEntryType
+  {
+    processEntryType(const edm::ParameterSet&, const std::string&, const std::string& = "templates");
+    ~processEntryType();
+    
+    void buildPdf();
+    
+    RooHistPdf* modelHistPdf_;
+
+    RooRealVar* norm_;
+  };
+
+  //---------------------------------------------------------
+  std::vector<processEntryType*> processes_;
 
   RooAbsPdf* fitModel_;
+  //---------------------------------------------------------
 
   //---------------------------------------------------------
-  std::vector<std::string> meNamesFitVariables_;
-
-  TH1* auxConcatenatedHistogram_;   
-  RooDataHist* fitDataHist_;  
+  dataEntryType* data_;
 
   RooRealVar* fitVar_;
+
+  RooStats::SPlot* sPlotAlgorithm_;
   //---------------------------------------------------------
 
   //---------------------------------------------------------
-  vstring sPlotFileNames_;
-  std::string sPlotTreeName_;
-  TChain* sPlotNtuple_;
+  struct sPlotEntryType
+  {
+    sPlotEntryType(const edm::ParameterSet&);
+    ~sPlotEntryType();
 
-  RooDataSet* sPlotDataSet_;
+    std::string branchName_;
 
-  RooStats::SPlot* sPlot_;
+    RooRealVar* var_;
 
-  vstring controlVariableNames_;
-  RooArgSet controlVariables_;
+    std::string title_;
+
+    double xMin_;
+    double xMax_;
+
+    vstring selProcesses_;
+  };
+
+  void makeControlPlot(const std::string&, const sPlotEntryType&);
+
+  std::vector<sPlotEntryType*> sPlots_;
+
+  RooArgSet sPlotVariables_;
   //---------------------------------------------------------
 
   std::string outputFilePath_;
   std::string outputFileName_;
   std::string indOutputFileName_;
+
+  TCanvas* canvas_;
+  TPostScript* ps_;
 
   int cfgError_;
   int dqmError_;
