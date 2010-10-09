@@ -22,15 +22,18 @@ dqmDirectory_data = 'data'
 
 meName_muonPt = 'muonPt'
 meName_muonAbsEta = 'muonAbsEta'
+
+ntuplePath = "/data1/veelken/CMSSW_3_6_x/ntuples"
+treeName = "ntupleProducer/ZtoMuTauNtuple"
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 process.prodTemplateHist_Ztautau = cms.EDAnalyzer("TemplateHistProducer",
     fileNames = cms.vstring(
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_Ztautau_7TeV_part*'
+        ntuplePath + '/' + 'ntupleZtoMuTau_Ztautau_7TeV_part*'
     ),
                                                   
-    treeName = cms.string("ZtoMuTauNtuple"),
+    treeName = cms.string(treeName),
                                                   
     treeSelection = cms.string(""),
                                                   
@@ -66,14 +69,14 @@ process.prodTemplateHist_Ztautau = cms.EDAnalyzer("TemplateHistProducer",
 
 process.prodTemplateHist_QCD = process.prodTemplateHist_Ztautau.clone()
 process.prodTemplateHist_QCD.fileNames = cms.vstring(
-    'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_PPmuXptGt20_7TeV_part*'
+    ntuplePath + '/' + 'ntupleZtoMuTau_PPmuXptGt20_7TeV_part*'
 )
 process.prodTemplateHist_QCD.config[0].meName = cms.string(dqmDirectory_QCD_template + "/" + meName_muonPt)
 process.prodTemplateHist_QCD.config[1].meName = cms.string(dqmDirectory_QCD_template + "/" + meName_muonAbsEta)
 
 process.prodTemplateHist_WplusJets = process.prodTemplateHist_Ztautau.clone()
 process.prodTemplateHist_WplusJets.fileNames = cms.vstring(
-    'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_WplusJets_7TeV_part*'
+    ntuplePath + '/' + 'ntupleZtoMuTau_WplusJets_7TeV_part*'
 )
 process.prodTemplateHist_WplusJets.config[0].meName = cms.string(dqmDirectory_WplusJets_template + "/" + meName_muonPt)
 process.prodTemplateHist_WplusJets.config[1].meName = cms.string(dqmDirectory_WplusJets_template + "/" + meName_muonAbsEta)
@@ -88,12 +91,13 @@ process.prodTemplateHist = cms.Sequence(
 #--------------------------------------------------------------------------------
 process.prodDistribution_data = process.prodTemplateHist_Ztautau.clone()
 process.prodDistribution_data.fileNames = cms.vstring(
-    'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_Ztautau_7TeV_part*',
-    'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_PPmuXptGt20_7TeV_part*',
-    'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_WplusJets_7TeV_part*'
+    '/data1/veelken/CMSSW_3_6_x/ntuples/ntupleZtoMuTau_Ztautau_7TeV_part*',
+    '/data1/veelken/CMSSW_3_6_x/ntuples/ntupleZtoMuTau_PPmuXptGt20_7TeV_part*',
+    '/data1/veelken/CMSSW_3_6_x/ntuples/ntupleZtoMuTau_WplusJets_7TeV_part*'
 )
 process.prodDistribution_data.config[0].meName = cms.string(dqmDirectory_data + "/" + meName_muonPt)
 process.prodDistribution_data.config[1].meName = cms.string(dqmDirectory_data + "/" + meName_muonAbsEta)
+process.prodDistribution_data.norm = cms.double(-1.) # do not normalize data
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -107,7 +111,13 @@ process.runSPlotAnalysis = cms.EDAnalyzer("SPlotAnalyzer",
                 muonAbsEta = cms.PSet(
                     meName = cms.string(dqmDirectory_Ztautau_template + '/' + meName_muonAbsEta)
                 )
-            )
+            ),
+            
+            fileNames = cms.vstring(
+                ntuplePath + '/' + 'ntupleZtoMuTau_Ztautau_7TeV_part*'
+            ),
+            
+            treeName = cms.string(treeName)
         ),
         QCD = cms.PSet(
             templates = cms.PSet(
@@ -117,7 +127,13 @@ process.runSPlotAnalysis = cms.EDAnalyzer("SPlotAnalyzer",
                 muonAbsEta = cms.PSet(
                     meName = cms.string(dqmDirectory_QCD_template + '/' + meName_muonAbsEta)
                 )
-            )
+            ),
+            
+            fileNames = cms.vstring(
+                ntuplePath + '/' + 'ntupleZtoMuTau_PPmuXptGt20_7TeV_part*'
+            ),
+            
+            treeName = cms.string(treeName)
         ),
         WplusJets = cms.PSet(
             templates = cms.PSet(
@@ -127,7 +143,13 @@ process.runSPlotAnalysis = cms.EDAnalyzer("SPlotAnalyzer",
                 muonAbsEta = cms.PSet(
                     meName = cms.string(dqmDirectory_WplusJets_template + '/' + meName_muonAbsEta)
                 )
-            )
+            ),
+            
+            fileNames = cms.vstring(
+                ntuplePath + '/' + 'ntupleZtoMuTau_WplusJets_7TeV_part*'
+            ),
+            
+            treeName = cms.string(treeName)
         )
     ),
 
@@ -139,23 +161,45 @@ process.runSPlotAnalysis = cms.EDAnalyzer("SPlotAnalyzer",
             muonAbsEta = cms.PSet(
                 meName = cms.string(dqmDirectory_data + '/' + meName_muonAbsEta)
             )
-        )
+        ),
+        
+        fileNames = cms.vstring(
+            ntuplePath + '/' + 'ntupleZtoMuTau_Ztautau_7TeV_part*',
+            ntuplePath + '/' + 'ntupleZtoMuTau_PPmuXptGt20_7TeV_part*',
+            ntuplePath + '/' + 'ntupleZtoMuTau_WplusJets_7TeV_part*'
+        ),
+        
+        treeName = cms.string(treeName)
     ),
 
-    sPlot = cms.PSet(
-        fileNames = cms.vstring(
-            'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_Ztautau_7TeV_part*',
-            'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_PPmuXptGt20_7TeV_part*',
-            'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/ntuples/ZtoMuTau/7TeV/ntupleZtoMuTau_WplusJets_7TeV_part*'
+    sPlots = cms.PSet(
+        diTauVisMass = cms.PSet(
+            branchName = cms.string('diTauVisMass'),
+            title = cms.string("muon + tau-jet visible Mass"),
+            xMin = cms.double(0.),
+            xMax = cms.double(200.),
+            selProcesses = cms.vstring('Ztautau')
         ),
-
-        treeName = cms.string("ZtoMuTauNtuple"),
-            
-        branchNames = cms.vstring(
-            'diTauVisMass',
-            'tauCharge',
-            'tauLeadChargedParticlePt',
-            'tauNumChargedParticlesSignalCone'
+        tauCharge = cms.PSet(
+            branchName = cms.string('tauCharge'),
+            title = cms.string("tau-jet charge"),
+            xMin = cms.double(-5.5),
+            xMax = cms.double(+5.5),
+            selProcesses = cms.vstring('Ztautau')
+        ),
+        tauLeadChargedParticlePt = cms.PSet(
+            branchName = cms.string('tauLeadChargedParticlePt'),
+            title = cms.string("tau-jet lead. charged hadron P_{T}"),
+            xMin = cms.double(0.),
+            xMax = cms.double(150.),
+            selProcesses = cms.vstring('Ztautau')
+        ),
+        tauNumChargedParticlesSignalCone = cms.PSet(
+            branchName = cms.string('tauNumChargedParticlesSignalCone'),
+            title = cms.string("tau-jet num. charged hadrons in signal cone"),
+            xMin = cms.double(-0.5),
+            xMax = cms.double(+9.5),
+            selProcesses = cms.vstring('Ztautau')
         )
     ),    
 
@@ -165,8 +209,14 @@ process.runSPlotAnalysis = cms.EDAnalyzer("SPlotAnalyzer",
 )
 #--------------------------------------------------------------------------------
 
+process.saveHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
+    outputFileName = cms.string('runSPlotAnalysis_histograms.root'),
+    outputCommands = cms.vstring()
+)
+
 process.p = cms.Path(
     process.prodTemplateHist
    + process.prodDistribution_data
+   + process.saveHistograms
    + process.runSPlotAnalysis
 )
