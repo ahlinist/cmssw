@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: TemplateHistProducer.h,v 1.8 2010/01/07 14:19:32 veelken Exp $
+ * $Id: TemplateHistProducer.h,v 1.9 2010/09/28 11:23:28 jkolb Exp $
  *
  */
 
@@ -74,7 +74,7 @@ class TemplateHistProducer : public edm::EDAnalyzer
   
  private:
 
-  void beginJob(const edm::EventSetup&) {}
+  void beginJob() {}
   void analyze(const edm::Event&, const edm::EventSetup&) {}
   void endJob();
 
