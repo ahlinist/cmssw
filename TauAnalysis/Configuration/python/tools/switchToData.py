@@ -21,9 +21,6 @@ def switchToData(process):
 		process.patPFMETs.addGenMET = cms.bool(False)
 
 	# remove modules from pre-PAT production running on genParticles
-	process.producePrePat.remove(ak5CaloJets)
-	process.producePrePat.remove(ak5CaloJetsPUCorr)
-
 	process.producePrePat.remove(genParticlesForJets)
 	process.producePrePat.remove(ak5GenJets)
 
