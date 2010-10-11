@@ -14,76 +14,67 @@ const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& d
 {
   bool bestMatchMatchesPdgId = false;
   const reco::GenParticle* bestMatch = 0;
-
+  
   for ( reco::GenParticleCollection::const_iterator genParticle = genParticles.begin();
-	genParticle != genParticles.end(); ++genParticle )
-  {
+	genParticle != genParticles.end(); ++genParticle ) {
     bool matchesPdgId = false;
     if ( pdgIds ) {
       for ( std::vector<int>::const_iterator pdgId = pdgIds->begin(); pdgId != pdgIds->end(); ++pdgId ) {
 	if ( genParticle->pdgId() == (*pdgId) ) {
-           matchesPdgId = true;
-           break;
+	  matchesPdgId = true;
+	  break;
         }
       }
     }
-
+    
     // If we require strict PDG id checking, skip it if it doesn't match
-    if(pdgIds && !matchesPdgId && pdgIdStrict)
-       continue;
-
+    if ( pdgIds && !matchesPdgId && pdgIdStrict ) continue;
+    
     // Check if status matches - if not, skip it.
     bool statusMatch = (status == -1 || genParticle->status() == status);
-    if(!statusMatch)
-       continue;
+    if ( !statusMatch ) continue;
 
     double dR = reco::deltaR(direction, genParticle->p4());
-    if ( dR > dRmax )
-       continue;
+    if ( dR > dRmax ) continue;
 
     // Check if higher than current best match
-    bool higherEnergyThanBestMatch =
-       (bestMatch) ? (genParticle->energy() > bestMatch->energy()) : true;
+    bool higherEnergyThanBestMatch = (bestMatch) ? 
+      (genParticle->energy() > bestMatch->energy()) : true;
 
     // Check if old bestMatch was not a prefered ID and the new one is.
-    if(bestMatchMatchesPdgId)
-    {
-       // If the old one matches, only use the new one if it is a better
-       // energy match
-       if(matchesPdgId && higherEnergyThanBestMatch)
-          bestMatch = &(*genParticle);
+    if ( bestMatchMatchesPdgId ) {
+      // If the old one matches, only use the new one if it is a better
+      // energy match
+      if ( matchesPdgId && higherEnergyThanBestMatch ) bestMatch = &(*genParticle);
     } else {
-       // The old one doesn't match the prefferred list if it is either
-       // a better energy match or better pdgId match
-       if (higherEnergyThanBestMatch || matchesPdgId)
-       {
+      // The old one doesn't match the prefferred list if it is either
+      // a better energy match or better pdgId match
+      if (higherEnergyThanBestMatch || matchesPdgId ) {
           bestMatch = &(*genParticle);
-          if(matchesPdgId) bestMatchMatchesPdgId = true;
-       }
+          if ( matchesPdgId ) bestMatchMatchesPdgId = true;
+      }
     }
   }
-
+  
   return bestMatch;
 }
 
 reco::Candidate::Point getDecayVertex(const reco::GenParticle* mother)
 {
-   std::vector<const reco::GenParticle*> stableDaughters;
-   findDaughters(mother, stableDaughters, 1);
-   // If no daughters, return production vertex
-   if(!stableDaughters.size()) {
-      return mother->vertex();
-   } else {
-      // Try to sure we aren't going through any intermediate decays
-      for(std::vector<const reco::GenParticle*>::const_iterator dau = stableDaughters.begin();
-            dau != stableDaughters.end(); ++dau)
-      {
-         if((*dau)->mother() == mother)
-            return (*dau)->vertex();
-      }
-      // If everything had an intermediate decay, just take the first one. :/
-      return stableDaughters[0]->vertex();
-   }
+  std::vector<const reco::GenParticle*> stableDaughters;
+  findDaughters(mother, stableDaughters, 1);
+  // If no daughters, return production vertex
+  if ( !stableDaughters.size() ) {
+    return mother->vertex();
+  } else {
+    // Try to sure we aren't going through any intermediate decays
+    for ( std::vector<const reco::GenParticle*>::const_iterator dau = stableDaughters.begin();
+	  dau != stableDaughters.end(); ++dau ) {
+      if ( (*dau)->mother() == mother ) return (*dau)->vertex();
+    }
+    // If everything had an intermediate decay, just take the first one. :/
+    return stableDaughters[0]->vertex();
+  }
 }
 
 void findDaughters(const reco::GenParticle* mother, std::vector<const reco::GenParticle*>& daughters, int status)
@@ -322,7 +313,7 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
          recTauJetChargedConstituent != recTauJetChargedConstituents.end(); ++recTauJetChargedConstituent ) {
 //--- tau- --> three-prong case (in particular a1- --> pi- pi+ pi-);
 //    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
-      if ((*recTauJetChargedConstituent)->charge()*recTauJetCharge < 0) {
+      if ( (*recTauJetChargedConstituent)->charge()*recTauJetCharge < 0 ) {
         return recTauJetChargedConstituent->get();
       }
     }
@@ -360,9 +351,9 @@ const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
 
 //--- tau- --> a1- --> pi- pi+ pi- case
 //    the "distinguishable" pion is the pion of charge opposite to the tau-jet charge
-      if ((*genTauJetConstituent)->charge() &&
-          (*genTauJetConstituent)->charge()*genTauJetCharge < 0) {
-          return *genTauJetConstituent;
+      if ( (*genTauJetConstituent)->charge() != 0. &&
+	   ((*genTauJetConstituent)->charge()*genTauJetCharge) < 0. ) {
+	return *genTauJetConstituent;
       }
     }
   } else {
