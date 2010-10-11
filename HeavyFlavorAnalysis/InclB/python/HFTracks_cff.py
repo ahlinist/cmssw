@@ -28,13 +28,14 @@ trackDump = cms.EDAnalyzer("HFDumpTracks",
     verbose = cms.untracked.int32(0),
     doTruthMatching = cms.untracked.int32(2),
     vertexLabel = cms.untracked.string('offlinePrimaryVerticesWithBS'),
+    vertexMinNdof = cms.untracked.double(4.),
     jetsLabel = cms.untracked.string('myak5TrackJets'),
     #reco matching
     trackingParticlesLabel = cms.untracked.string('trackingParticles'),#reco matching
 #aod matching     
     associatorLabel3 = cms.untracked.string('matching'),      
     genParticlesLabel = cms.untracked.string('genParticles'),           
-    trackcandsLabel = cms.untracked.string('allTrackCandidates')            
+    trackcandsLabel = cms.untracked.string('allTrackCandidates')           
 )
 
 

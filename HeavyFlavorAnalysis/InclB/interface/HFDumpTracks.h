@@ -46,12 +46,14 @@ class HFDumpTracks : public edm::EDAnalyzer {
   std::string          fGenParticlesLabel,fAssociatorLabel3, fTrackingParticlesLabel; 
   std::string          fVertexLabel, fJetsLabel;
   edm::InputTag        fMuonsLabel; 
+  
 
   typedef math::XYZPoint Point; 
   void selectVertices ( const reco::VertexCollection &vtxs, std::vector<Point> &points);
   
   int                  nevt; 
   int                  fVerbose, fDoTruthMatching;
+  double               fVertexMinNdof;
 
   TrackAssociatorBase *fAssociator;
 };

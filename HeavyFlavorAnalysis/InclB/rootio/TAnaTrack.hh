@@ -45,13 +45,16 @@ public:
   double        fMuonCalocomp;    // calocomp from calorimeters
   double        fMuonVertexChi2;   // muon vertex ch2
   double        fMuonPtrel;  // ptrel to the closest selected jet used in 3dIP
-  // -- Hit pattern
+   int           fMuonSelector;  //  for muon tracks TMLastStationAngTight
+ // -- Hit pattern
 
   int  fMuonCSCHits, fMuonDTHits, fMuonRPCHits, fMuonHits;
   int  fBPIXHits, fFPIXHits, fPixelHits;
   int  fStripHits, fTECHits, fTIBHits, fTIDHits, fTOBHits;
   int  fBPIXLayers, fFPIXLayers, fPixelLayers;
   int  fStripLayers, fTECLayers, fTIBLayers, fTIDLayers, fTOBLayers;
+  int  fExpectedHitsInner, fExpectedHitsOuter;
+  int  fLostHits, fValidHitInFirstPixelBarrel;
 
 
 
