@@ -56,7 +56,7 @@ TARGET_LUMI = (
      0.004 # data_Mu_132440_137436_Jun14ReReco
    + 0.059 # data_Mu_137437_139558_Prompt
    + 0.089 # data_Mu_139559_140159_Jul16ReReco
-   + 2.374 # data_Mu_140160_999999_Prompt
+   + 2.786 # data_Mu_140160_999999_Prompt
 )/_picobarns
 
 RECO_SAMPLES = {
