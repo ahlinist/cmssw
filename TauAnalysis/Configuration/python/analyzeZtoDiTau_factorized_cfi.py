@@ -98,7 +98,15 @@ diTauEventDump_factorizedTight2ndTau = diTauEventDump.clone(
 #--------------------------------------------------------------------------------
 
 inputTagReplacements = \
-  [ [ "selectedDiTauPairs2ndTauLeadTrkPtCumulative", "selectedDiTauPairs2ndTauLeadTrkPtLooseCumulative" ],
+  [ [ "selectedPatTausForDiTau2ndLeadTrkPtCumulative", "selectedPatTausForDiTau2ndLeadTrkPtLooseCumulative" ],
+    [ "selectedPatTausForDiTau2ndTaNCdiscrCumulative", "selectedPatTausForDiTau2ndTaNCdiscrLooseCumulative" ],
+    [ "selectedPatTausForDiTau2ndTrkIsoCumulative", "selectedPatTausForDiTau2ndTrkIsoLooseCumulative" ],
+    [ "selectedPatTausForDiTau2ndEcalIsoCumulative", "selectedPatTausForDiTau2ndEcalIsoLooseCumulative" ],
+    [ "selectedPatTausForDiTau2ndProngCumulative", "selectedPatTausForDiTau2ndProngLooseCumulative" ],
+    [ "selectedPatTausForDiTau2ndChargeCumulative", "selectedPatTausForDiTau2ndChargeLooseCumulative" ],
+    [ "selectedPatTausForDiTau2ndMuonVetoCumulative", "selectedPatTausForDiTau2ndMuonVetoLooseCumulative" ],
+    [ "selectedPatTausForDiTau2ndElectronVetoCumulative", "selectedPatTausForDiTau2ndElectronVetoLooseCumulative" ],    
+    [ "selectedDiTauPairs2ndTauLeadTrkPtCumulative", "selectedDiTauPairs2ndTauLeadTrkPtLooseCumulative" ],
     [ "selectedDiTauPairs2ndTauTaNCdiscrCumulative", "selectedDiTauPairs2ndTauTaNCdiscrLooseCumulative" ],
     [ "selectedDiTauPairs2ndTauTrkIsoCumulative", "selectedDiTauPairs2ndTauTrkIsoLooseCumulative" ],
     [ "selectedDiTauPairs2ndTauEcalIsoCumulative", "selectedDiTauPairs2ndTauEcalIsoLooseCumulative" ],
@@ -110,9 +118,8 @@ inputTagReplacements = \
     [ "selectedDiTauPairsZeroChargeCumulative", "selectedDiTauPairsZeroChargeLoose2ndTauCumulative" ],
     [ "selectedDiTauPairsAcoplanarityCumulative", "selectedDiTauPairsAcoplanarityLoose2ndTauCumulative" ],
     [ "selectedDiTauPairsPzetaDiffCumulative", "selectedDiTauPairsPzetaDiffLoose2ndTauCumulative" ],
-    [ "selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVeto", "selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoLoose2ndTau" ] ]
-    # CV: need to add replace statement for jet collection on which central jet veto is based
-    #     (in case central jet veto is applied)
+    [ "selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoCumulative",
+      "selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoLoose2ndTauCumulative" ] ]
 
 diTauAnalysisSequence_factorizedLoose2ndTau = copy.deepcopy(diTauAnalysisSequence)
 replaceAnalyzerInputTags(diTauAnalysisSequence_factorizedLoose2ndTau, inputTagReplacements)
