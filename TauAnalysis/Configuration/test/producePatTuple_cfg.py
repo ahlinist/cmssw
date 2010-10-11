@@ -3,6 +3,8 @@ import copy
 
 process = cms.Process('producePatTupleZtoElecTau')
 
+# import of standard configurations for RECOnstruction
+# of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
@@ -11,8 +13,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'START3X_V27::All'
-#process.GlobalTag.globaltag = cms.string('GR_R_36X_V12::All')
+process.GlobalTag.globaltag = cms.string('START38_V12::All')
 
 #--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
@@ -38,19 +39,19 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 #--------------------------------------------------------------------------------
 
 process.savePatTuple = cms.OutputModule("PoolOutputModule",
-	patTupleEventContent,
-	fileName = cms.untracked.string('patTuple.root')
+    patTupleEventContent,
+    fileName = cms.untracked.string('patTuple.root')
 )
 
 process.maxEvents = cms.untracked.PSet(            
-	input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring(
-     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/spring10/MinBias_pythia6_0/skimElecTau_100_0.root'
-	)
-	#skipBadFiles = cms.untracked.bool(True)    
+    fileNames = cms.untracked.vstring(
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/skims/ZtoMuTau/test/pseudoData_Ztautau_1_1_Hwf.root'
+    )
+    #skipBadFiles = cms.untracked.bool(True)    
 )
 
 #--------------------------------------------------------------------------------
@@ -74,7 +75,7 @@ producePatElectronIsolationAndSimpleId(process)
 # import function to remove MC-specific modules 
 from TauAnalysis.Configuration.tools.switchToData import switchToData
 # uncomment to run over data
-##switchToData(process)#
+switchToData(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -91,14 +92,16 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # as input for pat::Tau production
 switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+
+# disable preselection on of pat::Taus
+# (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
+#  but re-enabled after switching tau collection)
+process.cleanPatTaus.preselection = cms.string('')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for managing pat::Jets
 from PhysicsTools.PatAlgos.tools.jetTools import *
-
-# switchJetCollection complains if this doesn't exist
-process.jetCorrFactors = cms.PSet()
 
 # uncomment to replace caloJets by pfJets
 switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
@@ -110,7 +113,7 @@ from TauAnalysis.Configuration.tools.metTools import *
 
 # uncomment to add pfMET
 # (set boolean parameter to true/false to enable/disable type-1 MET corrections)
-addPFMet(process, False)
+addPFMet(process, correct = False)
 
 # uncomment to replace caloMET by pfMET in all di-tau objects and tau-nu objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
@@ -125,9 +128,9 @@ disableSysUncertainties_patTupleProduction(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
-		process.producePatTuple
-            #    + process.printEventContent      
-		+ process.savePatTuple
+    process.producePatTuple
+  #+ process.printEventContent      
+   + process.savePatTuple
 )
 
 #process.options = cms.untracked.PSet(
@@ -136,3 +139,4 @@ process.p = cms.Path(
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
+
