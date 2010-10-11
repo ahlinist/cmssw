@@ -67,6 +67,7 @@ HFDumpTracks::HFDumpTracks(const edm::ParameterSet& iConfig):
   fAssociatorLabel3(iConfig.getUntrackedParameter<string>("associatorLabel3", string("allTracksGenParticlesMatch"))), //aod matching
   fTrackingParticlesLabel(iConfig.getUntrackedParameter<string>("trackingParticlesLabel", string("trackingParticles"))),//reco matching 
   fVertexLabel(iConfig.getUntrackedParameter<string>("vertexLabel", string("offlinePrimaryVerticesWithBS"))), 
+  fVertexMinNdof(iConfig.getUntrackedParameter<double>("vertexMinNdof", 4.)),
   fJetsLabel(iConfig.getUntrackedParameter<string>("jetsLabel", string("sis5TrackJets"))),
   fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
@@ -133,32 +134,27 @@ if( !recTrks.isValid()) { cout<<"****** no "<<fTracksLabel<<endl; return;}
       cands.push_back( & * p );
     }
   }
-  //*******************
-  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-  //signed impact parameter
+
 
  
   //primary vertex
   Handle<reco::VertexCollection> primaryVertex;
   iEvent.getByLabel(fVertexLabel.c_str(),primaryVertex); 
- if( !primaryVertex.isValid()) { cout<<"****** no "<<fVertexLabel<<endl; return; }
+  if( !primaryVertex.isValid()) { cout<<"****** no "<<fVertexLabel<<endl; return; }
 
 
-edm::Ref<VertexCollection> * pvRef;
-bool pvFound = (primaryVertex->size() != 0); 
-// define highest vertex (lowest chi2) vertex
- const reco::Vertex* pVertex =&(*primaryVertex->begin());   // FIXME make a real vertex selection here
 
-// use beamspot, or 0 if not available
- math::XYZPoint bs = math::XYZPoint(0.,0.,0.);
- edm::Handle<reco::BeamSpot> beamSpotCollection;
- iEvent.getByLabel("offlineBeamSpot", beamSpotCollection);
- if (beamSpotCollection.isValid()){ bs = beamSpotCollection->position();}
- else { cout<<"****no beamspot "<<endl;}
-
+  // use beamspot, or 0 if not available
+  math::XYZPoint bs = math::XYZPoint(0.,0.,0.);
+  edm::Handle<reco::BeamSpot> beamSpotCollection;
+  iEvent.getByLabel("offlineBeamSpot", beamSpotCollection);
+  if (beamSpotCollection.isValid()){ bs = beamSpotCollection->position();}
+  else { cout<<"****no beamspot "<<endl;}
+  
   edm::ESHandle<TransientTrackBuilder> builder;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",builder);
-  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
 
   // handle to 0.5 cone ctf track jets  
   Handle<BasicJetCollection> jetsH;
@@ -169,8 +165,6 @@ bool pvFound = (primaryVertex->size() != 0);
   Handle<reco::CandidateView> candidates1Handle;
   iEvent.getByLabel(fTracksLabel2.c_str(), candidates1Handle); 
   
-  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
  
   
   if (fVerbose > 0) cout << "===> Tracks " << tracksView->size() << endl;
@@ -199,11 +193,27 @@ bool pvFound = (primaryVertex->size() != 0);
 			   trackView.vertex().y(),
 			   trackView.vertex().z());
 
+    double dmin=9999.;
+    const reco::Vertex* pVertex =&(*primaryVertex->begin()); // if selection below fails, take the first one
+    for (reco::VertexCollection::const_iterator iv = primaryVertex->begin(); iv != primaryVertex->end(); ++iv) { 
+      if (iv->ndof()>fVertexMinNdof){
+	if (fabs(trackView.vertex().z()-iv->z()) < dmin){
+	  dmin=fabs(trackView.vertex().z()-iv->z());
+	  pVertex=&(*iv);
+	}
+      }
+    }
+   
+
     pTrack->fHighPurity = t->quality(reco::TrackBase::highPurity);     
     pTrack->fQ = trackView.charge();
     pTrack->fChi2 = trackView.chi2();
     pTrack->fDof = int(trackView.ndof());
     pTrack->fHits = trackView.numberOfValidHits();  
+    pTrack->fExpectedHitsInner = trackView.trackerExpectedHitsInner().numberOfHits();
+    pTrack->fExpectedHitsOuter = trackView.trackerExpectedHitsOuter().numberOfHits();
+    pTrack->fLostHits    = trackView.numberOfLostHits();
+    pTrack->fValidHitInFirstPixelBarrel=trackView.hitPattern().hasValidHitInFirstPixelBarrel();
 
     pTrack->fMuonCSCHits = trackView.hitPattern().numberOfValidMuonCSCHits();
     pTrack->fMuonDTHits  = trackView.hitPattern().numberOfValidMuonDTHits();
@@ -233,23 +243,21 @@ bool pvFound = (primaryVertex->size() != 0);
     pTrack->fTrChi2norm  =  trackView.normalizedChi2(); // chi2 of the tracker t
 
 
-     pTrack->fDxybs       = trackView.dxy(bs);          // Dxy relative to the beam spot
-      pTrack->fDzbs       = trackView.dz(bs);        // dz relative to bs or o if not available
-  // impact parameter of the tracker track relative  to the first PV  
-      pTrack->fDxypv       = trackView.dxy(pVertex->position()); 
-      pTrack->fDzpv        = trackView.dz(pVertex->position());       
-      pTrack->fDxyE        = trackView.dxyError();  // error on Dxy
-      pTrack->fDzE         = trackView.dzError();
+    pTrack->fDxybs       = trackView.dxy(bs);          // Dxy relative to the beam spot
+    pTrack->fDzbs        = trackView.dz(bs);        // dz relative to bs or o if not available (?)
+    pTrack->fDxypv       = trackView.dxy(pVertex->position()); 
+    pTrack->fDzpv        = trackView.dz(pVertex->position());       
+    pTrack->fDxyE        = trackView.dxyError();  // error on Dxy
+    pTrack->fDzE         = trackView.dzError();
 
 
-
-
-
+    pTrack->fMuonSelector=0;
     pTrack->fMuID = 0.; 
     for (unsigned int im = 0; im < muonIndices.size(); ++im) {
       if (int(i) == muonIndices[im]) {
 	pTrack->fMuID = 1.;
 	if (fVerbose > 0) cout << " ==>HFDumpTracks> Found a muon!!" << endl;
+	//bool laststation = muon::isGoodMuon(*muon, muon::TMLastStationAngTight);
       }
     }
 
@@ -306,20 +314,13 @@ bool pvFound = (primaryVertex->size() != 0);
       GlobalVector direction(vect.X(),vect.Y(),vect.Z());
       
       const TransientTrack & transientTrack = builder->build(&(*t));
-      const  Vertex  *pv;
-      bool pvFound = (primaryVertex->size() != 0);
-      if(pvFound) {
-	pv = &(*primaryVertex->begin());
-	pTrack->fTip      = IPTools::signedTransverseImpactParameter(transientTrack, direction, *pv).second.value();
-	pTrack->fTipE     = IPTools::signedTransverseImpactParameter(transientTrack, direction, *pv).second.error();  // 3d and transverse impact parameters
-	pTrack->fTip3d    = IPTools::signedImpactParameter3D(transientTrack,direction,*pv).second.value();
-	pTrack->fTip3dE   = IPTools::signedImpactParameter3D(transientTrack, direction, *pv).second.error();
-
-
-	pTrack->fLip = trackView.dz((pv->position())); //re-evaluate the dz with respect to the vertex position
-	pTrack->fLipE  =  trackView.dzError();
-
-      }
+      // 3d and transverse impact parameters
+      pTrack->fTip      = IPTools::signedTransverseImpactParameter(transientTrack, direction, *pVertex).second.value();
+      pTrack->fTipE     = IPTools::signedTransverseImpactParameter(transientTrack, direction, *pVertex).second.error();  
+      pTrack->fTip3d    = IPTools::signedImpactParameter3D(transientTrack,direction,*pVertex).second.value();
+      pTrack->fTip3dE   = IPTools::signedImpactParameter3D(transientTrack, direction, *pVertex).second.error();
+      //pTrack->fLip = trackView.dz((pVertex->position())); //re-evaluate the dz with respect to the vertex position
+      //pTrack->fLipE  =  trackView.dzError();
     }
    
     
