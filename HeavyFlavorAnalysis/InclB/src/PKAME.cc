@@ -13,7 +13,7 @@
 //
 // Original Author:  Lea Caminada (PSI) [leac]
 //         Created:  Thu Mar 18 11:19:51 CET 2010
-// $Id$
+// $Id: PKAME.cc,v 1.2 2010/08/02 15:06:37 leac Exp $
 //
 //
 
@@ -132,7 +132,7 @@ PKAME::PKAME(const edm::ParameterSet& iConfig):fTracksLabel(iConfig.getUntracked
 PKAME::~PKAME()
 {
  
-   // do anything here that needs to be done at desctruction time
+   // do anything here that needs to be done at destruction time
    // (e.g. close files, deallocate resources etc.)
 
 }
@@ -160,17 +160,16 @@ PKAME::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<reco::TrackCollection> recTrks;
   iEvent.getByLabel(fTracksLabel.c_str(), recTrks); 
 
-  int nhighpurity=0, ntot=0;
+  int nhighpurity=0, ntot=0, nsel=0;
   for(reco::TrackCollection::const_iterator t=recTrks->begin(); t!=recTrks->end(); ++t){
     ntot++;
     if(t->quality(reco::TrackBase::highPurity)) nhighpurity++;
+    int nhit=t->hitPattern().numberOfValidPixelHits() + t->hitPattern().numberOfValidStripHits();
+    if( (fabs(t->eta())<2.4) && (t->pt()>5.) && (nhit>3) ) nsel++;
   }
   
   bool accept=true;
-  if((nhighpurity<0.25*ntot)&&(ntot>10))
-    accept=false;
-
-
+  if (  ((nhighpurity<0.25*ntot)&&(ntot>10)) ||  (nsel==0) )  accept=false;
 
    return accept;
 }
