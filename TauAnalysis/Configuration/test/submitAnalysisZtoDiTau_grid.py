@@ -9,7 +9,7 @@ from TauAnalysis.Configuration.submitToGrid2 import submitToGrid
 
 CONFIG_FILE = 'runZtoDiTau_cfg.py'
 OUTPUT_FILE_PATH = "/user/v/veelken/CMSSW_3_6_x/plots/ZtoDiTau/"
-JOB_ID = "7TeVii"
+JOB_ID = "7TeV"
 PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
