@@ -15,6 +15,7 @@
 #include <TH2.h>
 #include <TH3.h>
 #include <TF1.h>
+#include <TProfile.h>
 #include <TTree.h>
 #include <TCanvas.h>
 #include <TStyle.h>
@@ -34,6 +35,20 @@ const double pi = 3.14159265;
 const double mmuon = 0.10565837;
 const double mpion = 0.13957018;
 
+// "tags"
+const int allEventsTag=0;
+const int bEventTag=1;
+const int cEventTag=2;
+const int lightEventTag=3;
+const int bMuonTag=4;
+const int cMuonTag=5;
+const int lightMuonTag=6;
+const int otherMuonTag=7;
+const int FCREventTag=8;
+const int FEXEventTag=9;
+const int GSEventTag=10;
+const int nonTag=11;
+const int minbiasTag=12;
 
 class treeAnalysis {
 public:
@@ -48,6 +63,7 @@ public:
   void        closeHistFile();
   void        chainFileName(const char *name);
   void        bookHist(int option); 
+  bool        fillHist(const char * hname, const double & value, const double & weight);
   void        setTitles(TH1 *h, const char *sx, const char *sy,
 			float size = 0.06, float xoff = 1.2, float yoff = 1.7, float lsize = 0.06, int font = 42);
   void        cdDirectory(int i, int j); 
@@ -109,6 +125,7 @@ public:
   int         RECOGetClosestCaloJet(TAnaCand* cand, double etmin_jet);
   int         RECOGetClosestCaloJet(TAnaTrack* track, double etmin_jet); 
   int         RECOGetClosestTrackJet(TAnaCand* cand, double etmin_jet);
+  int         RECOGetClosestTrack(TAnaCand* cand);
   int         RECOGetClosestL1(TAnaCand* cand);
   int         RECOGetClosestHLTL2(TAnaCand* cand); 
   int         RECOGetClosestHLTL3(TAnaCand* cand);
@@ -149,7 +166,6 @@ public:
   void        AnalyzeTrigger();
   void        AnalyzeAODEvent(int mc=0);
 
- 
 
 
 
@@ -182,6 +198,7 @@ private:
   double ALPHA; 
   double L1MATCH, HLTMATCH, JETMATCH;
   double PIXLAY, TRKLAY, DZCUT, VTXNDOF;
+  double BEAMSIZEX,BEAMSIZEY,BEAMOFFSETX,BEAMOFFSETY;
    
   // -- Variables 
   int fNgenmuons, fNrecomuons, fNrecotracks, fNrecotrackjets;
