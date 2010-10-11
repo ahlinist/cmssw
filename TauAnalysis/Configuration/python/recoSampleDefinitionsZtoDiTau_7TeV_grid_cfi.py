@@ -9,10 +9,10 @@ SAMPLES_TO_ANALYZE = [
     'data_JetMETTau_132440_135802_May27ReReco',
     'data_JetMETTau_135821_137436_Jun14ReReco',
     'data_JetMETTau_137437_139558_Prompt',
-    'data_JetMETTau_139559_140159_Jul16ReReco',
+    ##'data_JetMETTau_139559_140159_Jul16ReReco',
     'data_BTau_140160_999999_Prompt',
     'Ztautau',
-    'Zee',
+    ##'Zee',
     'Zmumu',
     'qcdDiJet', 
     'WplusJets',
@@ -22,12 +22,14 @@ SAMPLES_TO_ANALYZE = [
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    'qcdSum',
+    'data', 	
+    ##'qcdSum',
     'WplusJets',
     'TTplusJets',
-    'Zee',
+    ##'Zee',
     'Zmumu',
-    'Ztautau'
+    'Ztautau',
+    'qcdSum'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
@@ -51,12 +53,15 @@ _nanobarns = 1000.0
 _microbarns = 1.0e6
 
 # Integrated luminosity to normalize 
-TARGET_LUMI = (200.0)/_picobarns
+##TARGET_LUMI = (200.0)/_picobarns
 ##TARGET_LUMI = (
-##     0.005 # data_JetMETTau_132440_137436_Jun14ReReco
-##   + 0.060 # data_JetMETTau_137437_139558_Prompt
-##   + 0.110 # data_JetMETTau_139559_140159_Jul16ReReco
+##     0.005 # data_JetMETTau_132440_135802_May27ReReco
+##   + 0.060 # data_JetMETTau_135821_137436_Jun14ReReco
+##   + 0.110 # data_JetMETTau_137437_139558_Prompt
+##           # data_JetMETTau_139559_140159_Jul16ReReco
+##           # data_BTau_140160_999999_Prompt
 ##)/_picobarns
+TARGET_LUMI = (2.9)/_picobarns
 
 RECO_SAMPLES = {
     'data_JetMETTau_132440_135802_May27ReReco' : {
@@ -176,9 +181,9 @@ MERGE_SAMPLES = {
     'data' : {
         'samples' : [
             'data_JetMETTau_132440_135802_May27ReReco',
-            'data_JetMETTau_132440_137436_Jun14ReReco',
+            'data_JetMETTau_135821_137436_Jun14ReReco',
             'data_JetMETTau_137437_139558_Prompt',
-            'data_JetMETTau_139559_140159_Jul16ReReco',
+            ##'data_JetMETTau_139559_140159_Jul16ReReco',
             'data_BTau_140160_999999_Prompt'
         ],
         'legendEntry' : 'DATA',
@@ -196,7 +201,7 @@ MERGE_SAMPLES = {
     'smBgSum' : {
         'samples' : [
             'Zmumu',
-            'Zee',
+            ##'Zee',
             'qcdSum',
             'WplusJets',
             'TTplusJets'
