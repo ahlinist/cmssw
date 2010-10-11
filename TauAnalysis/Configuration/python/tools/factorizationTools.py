@@ -271,6 +271,7 @@ def enableFactorization_makeZtoMuTauPlots_grid(
         process.evtSelTauElectronVeto,
         process.evtSelDiTauCandidateForMuTauAntiOverlapVeto,
         process.evtSelDiTauCandidateForMuTauZeroCharge,
+        process.evtSelDiTauCandidateForMuTauAcoplanarity12,
         process.evtSelDiTauCandidateForMuTauMt1MET,
         process.evtSelDiTauCandidateForMuTauPzetaDiff,
         process.evtSelDiMuPairZmumuHypothesisVeto
