@@ -48,6 +48,11 @@ enableFactorization_makeZtoMuTauPlots_grid(
     mergedToRecoSampleDict = samples.MERGE_SAMPLES,
 )
 
+process.plotZtoMuTau.labels.mcNormScale.text = cms.vstring(
+    '2.9pb^{-1}',
+    '#sqrt{s}=7TeV'
+)
+
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
 # define name and directory in which .root file containing all histograms gets saved
