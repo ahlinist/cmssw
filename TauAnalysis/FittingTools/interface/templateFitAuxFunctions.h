@@ -36,7 +36,7 @@ void makeHistogramPositive(TH1*);
 
 TH1* makeSubrangeHistogram(const TH1*, const std::vector<TemplateFitAdapterBase::fitRangeEntryType>*);
 TH1* makeSerializedHistogram(const TH1*);
-TH1* makeConcatenatedHistogram(const std::string&, const std::vector<const TH1*>&, const std::vector<double>*);
+TH1* makeConcatenatedHistogram(const std::string&, const std::vector<const TH1*>&, const std::vector<double>* = 0);
 
 void saveMonitorElement_float(DQMStore&, const std::string&, float, const std::string&);
 void saveFitParameter(DQMStore&, const std::string&, const std::string&, const std::string&, double, double, double);
