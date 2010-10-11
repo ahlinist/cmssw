@@ -14,9 +14,6 @@ PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
     # modify in case you want to submit crab jobs for some samples only...
-    'InclusivePPmuX', 
-    'PPmuXptGt20Mu10', 
-    'PPmuXptGt20Mu15'
 ]
 
 ENABLE_SYSTEMATICS = False
