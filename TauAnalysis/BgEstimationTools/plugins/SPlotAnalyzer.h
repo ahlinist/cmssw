@@ -16,9 +16,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: SPlotAnalyzer.h,v 1.2 2010/10/07 13:51:46 veelken Exp $
+ * $Id: SPlotAnalyzer.h,v 1.3 2010/10/09 13:58:59 veelken Exp $
  *
  */
 
@@ -71,26 +71,26 @@ class SPlotAnalyzer : public edm::EDAnalyzer
     dataEntryType(const edm::ParameterSet&, const std::string& = "distributions");
     ~dataEntryType();
 
-    void buildAuxConcatenatedHistogram();
+    void getHistogram();
     
-    void setFitVar(RooRealVar* fitVar) { fitVarRef_ = fitVar; }
-
-    void buildDataHist();
+    void buildDataHist(const RooArgSet&);
 
     std::string processName_;
 
     vstring meNames_;
 
-    RooRealVar* fitVarRef_;
-
-    TH1* auxConcatenatedHistogram_;   
+    const TH1* fitHistogram_;   
     RooDataHist* fitDataHist_;  
 
-    void buildSPlotDataSet(const RooArgSet&);
+    void buildSPlotDataSet(const RooArgSet&, const RooArgSet&);
 
     vstring sPlotNtupleFileNames_;
     std::string sPlotTreeName_;
+    vstring sPlotBranchNames_;
     
+    std::string sPlotWeightVariableName_;
+    RooRealVar* sPlotWeightVariable_;
+
     TChain* sPlotNtuple_;
     RooDataSet* sPlotDataSet_;
 
@@ -102,7 +102,7 @@ class SPlotAnalyzer : public edm::EDAnalyzer
     processEntryType(const edm::ParameterSet&, const std::string&, const std::string& = "templates");
     ~processEntryType();
     
-    void buildPdf();
+    void buildPdf(const RooArgSet&);
     
     RooHistPdf* modelHistPdf_;
 
@@ -118,7 +118,9 @@ class SPlotAnalyzer : public edm::EDAnalyzer
   //---------------------------------------------------------
   dataEntryType* data_;
 
-  RooRealVar* fitVar_;
+  vstring fitVariableNames_;
+  std::vector<RooRealVar*> fitVariableList_;
+  RooArgSet fitVariables_;
 
   RooStats::SPlot* sPlotAlgorithm_;
   //---------------------------------------------------------
