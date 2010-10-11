@@ -10,7 +10,7 @@ plots_ZtoDiTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            'Zee',
+            ##'Zee',
             'Zmumu',
             'WplusJets',
             'TTplusJets',
@@ -26,7 +26,7 @@ plots_ZtoDiTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        'Zee',
+        ##'Zee',
         'Zmumu',
         'WplusJets',
         'TTplusJets',
@@ -451,7 +451,7 @@ drawJobConfigurator_ZtoDiTau.add(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoDiTau.add(
-    afterCut = evtSelDiTauCandidateForDiTauAcoplanarity,
+    afterCut = evtSelDiTauCandidateForDiTauPzetaDiff,
     plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities1/Tau#PAR#',
@@ -479,7 +479,7 @@ drawJobConfigurator_ZtoDiTau.add(
             name = "finalSamplePlots_tau1NumTracksSignalCone"
         ),
         drawJobConfigEntry(
-            meName = 'TauQuantities1/Tau1JetRadius',
+            meName = 'TauQuantities1/TauJetRadius',
             title = "Tau_{1} Jet Radius (final Event sample)",
             xAxis = 'unlabeled',
             name = "finalSamplePlots_tau1JetRadius"
@@ -604,13 +604,25 @@ drawJobConfigurator_ZtoDiTau.add(
             title = "M(Tau_{1} + Tau_{2}), collinear Approx. (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mCollApprox"
-        ##),
-        ##drawJobConfigEntry(
-        ##    meName = 'JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3',
-        ##    PAR = [ '15', '20', '30' ],
-        ##    title = "N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)",
-        ##    xAxis = 'N',
-        ##    name = "finalSamplePlots_numCentralJets"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+            title = "M(Muon + Tau), SVfit method (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mSVmethod"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/Ht12MET',
+            title = "#Sigma H_{T}(Muon + Tau + MET) (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_ht"
+        ),
+        drawJobConfigEntry(
+            meName = 'JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3',
+            PAR = [ '15', '20', '30' ],
+            title = "N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)",
+            xAxis = 'N',
+            name = "finalSamplePlots_numCentralJets"
         )
     ]
 )                
