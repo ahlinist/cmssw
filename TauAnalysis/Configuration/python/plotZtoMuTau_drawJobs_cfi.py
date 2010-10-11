@@ -473,16 +473,16 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-##drawJobConfigurator_ZtoMuTau.add(
-##    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
-##    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
-##    plot = drawJobConfigEntry(
-##	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
-##        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-##        xAxis = 'Mass',
-##        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
-##    )
-##)
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+    plot = drawJobConfigEntry(
+	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
+        xAxis = 'Mass',
+        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+    )
+)
 
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
@@ -613,6 +613,12 @@ drawJobConfigurator_ZtoMuTau.add(
             title = "M(Muon + Tau), collinear Approx. (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mCollApprox"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+            title = "M(Muon + Tau), SVfit method (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mSVmethod"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/Ht12MET',
