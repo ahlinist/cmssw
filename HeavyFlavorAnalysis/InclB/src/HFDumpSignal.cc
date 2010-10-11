@@ -13,6 +13,8 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
+
 
 #include "DataFormats/JetReco/interface/BasicJetCollection.h"
 #include "DataFormats/TrackReco/interface/Track.h"
@@ -113,7 +115,7 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 // TrackJets 
 Handle<BasicJetCollection> jetsH;
 iEvent.getByLabel(fJetsLabel.c_str(),jetsH);
- bool jetvalid=true;
+// bool jetvalid=true;
 if( !jetsH.isValid()) { cout<<"****** no "<<fJetsLabel<<endl;  }
 
 //tracks (jet constituents)
@@ -149,11 +151,15 @@ iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",builder);
 				muon->phi()
 				);
 
+      bool laststation = muon::isGoodMuon(*muon, muon::TMLastStationAngTight);
 
       
       pTrack->fChi2        = (muon->globalTrack())->chi2();
       pTrack->fDof         = int((muon->globalTrack())->ndof());
       pTrack->fHits        = (muon->globalTrack())->numberOfValidHits();  
+      if(laststation){
+	pTrack->fMuonSelector = 1;
+      }
       
       pTrack->fMuonCSCHits = (muon->globalTrack())->hitPattern().numberOfValidMuonCSCHits();
       pTrack->fMuonDTHits  = (muon->globalTrack())->hitPattern().numberOfValidMuonDTHits();
@@ -180,6 +186,10 @@ iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",builder);
       pTrack->fTOBLayers   = (muon->globalTrack())->hitPattern().stripTOBLayersWithMeasurement();
      
       pTrack->fTrChi2norm  = muon->innerTrack()->normalizedChi2(); // chi2 of the tracker track
+      pTrack->fExpectedHitsInner = (muon->innerTrack())->trackerExpectedHitsInner().numberOfHits();
+      pTrack->fExpectedHitsOuter = (muon->innerTrack())->trackerExpectedHitsOuter().numberOfHits();
+      pTrack->fLostHits    = (muon->innerTrack())->hitPattern().numberOfLostTrackerHits();
+      pTrack->fValidHitInFirstPixelBarrel=(muon->innerTrack())->hitPattern().hasValidHitInFirstPixelBarrel();
  
       pTrack->fDxybs       = muon->innerTrack()->dxy(bs);          // Dxy relative to the beam spot
       pTrack->fDzbs          = muon->innerTrack()->dz(bs);        // dz relative to bs or o if not available
@@ -368,6 +378,9 @@ iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",builder);
 		GlobalVector direction(0.,0.,1.);
 		const TransientTrack & transientTrack = builder->build(&(*(muon->track()))); 
 		const Vertex vv(myVertex); //PV without muon
+		pTrack->fTip3d    = IPTools::signedImpactParameter3D(transientTrack,direction,vv).second.value();
+		pTrack->fTip3dE   = IPTools::signedImpactParameter3D(transientTrack, direction, vv).second.error();
+
 		pTrack->fLip      = IPTools::signedTransverseImpactParameter(transientTrack, direction, vv).second.value();
 		pTrack->fLipE     = IPTools::signedTransverseImpactParameter(transientTrack, direction, vv).second.error();	 
 	      } // valid myvertex
