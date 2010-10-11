@@ -148,14 +148,14 @@ plotZtoDiTau = cms.EDAnalyzer("DQMHistPlotter",
                               
     drawJobs = drawJobs.drawJobConfigurator_ZtoDiTau.configure(),
 
-    #canvasSizeX = cms.int32(800),
-    #canvasSizeY = cms.int32(640),                         
-    canvasSizeX = cms.int32(640),
-    canvasSizeY = cms.int32(800),                         
+    canvasSizeX = cms.int32(800),
+    canvasSizeY = cms.int32(640),                         
+    #canvasSizeX = cms.int32(640),
+    #canvasSizeY = cms.int32(800),                         
 
     outputFilePath = cms.string('./plots/'),
     #outputFileName = cms.string('plotsZtoDiTau.ps')
-    indOutputFileName = cms.string('plotZtoDiTau_#PLOT#.pdf')
+    indOutputFileName = cms.string('plotZtoDiTau_#PLOT#.png')
 )
 
 saveZtoDiTau = cms.EDAnalyzer("DQMSimpleFileSaver",
