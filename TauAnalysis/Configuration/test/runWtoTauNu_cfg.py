@@ -12,8 +12,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-#process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
-process.GlobalTag.globaltag = cms.string('GR_R_36X_V12::All')
+process.GlobalTag.globaltag = cms.string('START38_V12::All')
 
 # import configuration parameters for submission of jobs to CERN batch system
 from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_7TeV_cfi import *

@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
+process.GlobalTag.globaltag = cms.string('START38_V12::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -207,10 +207,4 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
-#
-# NOTE: need to delete empty sequence produced by call to "switchJetCollection"
-#       in order to avoid error when calling "process.dumpPython"
-#      ( cf. https://hypernews.cern.ch/HyperNews/CMS/get/physTools/1688/1/1/1/1/1.html )
-#
-#del process.patJetMETCorrections
 #print process.dumpPython()
