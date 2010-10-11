@@ -677,8 +677,8 @@ finalSamplePlots = [
         name = "finalSamplePlots_mCollApprox"
     ),
     drawJobConfigEntry(
-        meName = 'DiTauCandidateSVfitQuantities/Mass1stSolution',
-        title = "M(Muon + Tau), SV method (final Event sample)",
+        meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+        title = "M(Muon + Tau), SVfit method (final Event sample)",
         xAxis = 'Mass',
         name = "finalSamplePlots_mSVmethod"
     ),
