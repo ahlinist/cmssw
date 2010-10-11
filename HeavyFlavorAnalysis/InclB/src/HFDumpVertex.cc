@@ -59,12 +59,11 @@ HFDumpVertex::~HFDumpVertex() {
 void HFDumpVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   if(fVerbose>0) cout<<" HFDumpVertex===> "<<endl;
-  ///////////////////
   //tracks (jet constituents)
   Handle<reco::TrackCollection> candidates1Handle;
   iEvent.getByLabel(fVertexTracksLabel.c_str(), candidates1Handle); 
   if(!candidates1Handle.isValid()) 
-{if(fVerbose>0) cout<<" ***no "<<fVertexTracksLabel<<endl; return; }
+    {if(fVerbose>0) cout<<" ***no "<<fVertexTracksLabel<<endl; return; }
 
   std::vector<const Track *> trkcands;
   trkcands.clear();
@@ -79,16 +78,16 @@ void HFDumpVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
 
 
-// use simvertexes
- bool simvFound =false;
- const SimVertex* simv0 =0;
-Handle<SimVertexContainer> simVtxs;
-iEvent.getByLabel( fSimVertexLabel.c_str(), simVtxs);
-if( !simVtxs.isValid()) { if(fVerbose>0)cout<<"****** no "<<fSimVertexLabel<<endl;  }
- else {
-simvFound = (simVtxs->size() != 0); 
-if(simvFound)  simv0=&(*simVtxs->begin());
- } 
+  // use simvertexes
+  bool simvFound =false;
+  const SimVertex* simv0 =0;
+  Handle<SimVertexContainer> simVtxs;
+  iEvent.getByLabel( fSimVertexLabel.c_str(), simVtxs);
+  if( !simVtxs.isValid()) { if(fVerbose>0)cout<<"****** no "<<fSimVertexLabel<<endl;  }
+  else {
+    simvFound = (simVtxs->size() != 0); 
+    if(simvFound)  simv0=&(*simVtxs->begin());
+  } 
  
 
   /////////////////////////
@@ -116,18 +115,18 @@ if(simvFound)  simv0=&(*simVtxs->begin());
     for (reco::VertexCollection::const_iterator iv = recoPrimaryVertexCollection->begin(); iv != recoPrimaryVertexCollection->end(); ++iv) {
       TAnaVertex *pVtx = gHFEvent->addPV();
       pVtx->fsimvmatch=-9999;
+
       // match with simvertex if avaiable
-      double dmin=0.1;      
-if(simvFound) {
-      double dz = iv->z() - simv0->position().z(); 
-    if ( fabs(dz) < dmin ) {
-      pVtx->fsimvmatch=1;
-      } else  pVtx->fsimvmatch=0;
-
-	} // simvfound
-
-
-
+      double dmin=0.2;      
+      if(simvFound) {
+	double dz = iv->z() - simv0->position().z(); 
+	if ( fabs(dz) < dmin ) {
+	  pVtx->fsimvmatch=1;
+	} else  pVtx->fsimvmatch=0;
+      } // simvfound
+      
+      
+      
       if (iv->isFake()) {
 	isFake = 1; 
       } else {
@@ -141,11 +140,11 @@ if(simvFound) {
 	  bestPV = cnt;
 	}
       }
-
+      
       if (fVerbose > 1) {
 	cout << "PV found: isFake = " << isFake << " with " << ntracks << " tracks" << endl;
       }
-     
+      
       pVtx->setInfo(iv->chi2(), int(iv->ndof()), 1., isFake, ntracks);
       pVtx->fPoint.SetXYZ(iv->x(),
 			  iv->y(),
@@ -174,20 +173,17 @@ if(simvFound) {
 	cout << "===> Vertex " << endl;
 	pVtx->dump();
       }
-    
+      
       ++cnt; 
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
     if (fVerbose > 0) cout << "==>HFDumpStuff> primaryVertex " << fVertexLabel << " not found " << endl;
   } 
-     
+  
   if (fVerbose > 0) cout << "The best pV is at position: " << bestPV  << " and has " << bestN << " tracks" << endl;
-
-
-  /////////////////
-  //////////////////
-  /////////////////
+  
+  
 
 
 
