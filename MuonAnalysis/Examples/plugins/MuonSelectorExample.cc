@@ -1,8 +1,8 @@
 /** \class MuonSelectorExample
  *  Example selector of muons.
  *
- *  $Date: 2009/06/22 13:33:37 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/09/25 10:13:44 $
+ *  $Revision: 1.1 $
  *  \author G. Petrucciani (SNS Pisa)
  */
 
@@ -10,6 +10,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/RefToBaseVector.h"
