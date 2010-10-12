@@ -137,6 +137,10 @@ namespace vgamma {
 
     produces<edm::ValueMap<float> > ("scRoundness");
     produces<edm::ValueMap<float> > ("scAngle");
+
+    produces<edm::ValueMap<float> > ("sMin");
+    produces<edm::ValueMap<float> > ("sMaj");
+    produces<edm::ValueMap<float> > ("alphaSMinMaj");
   }
 
   template <typename EgammaType>
@@ -215,6 +219,10 @@ namespace vgamma {
 
     vector<float> scRoundness;
     vector<float> scAngle;
+
+    vector<float> sMin;
+    vector<float> sMaj;
+    vector<float> alphaSMinMaj;
 
     typename View<EgammaType>::const_iterator egamma;
     for(egamma = egammas->begin(); egamma < egammas->end(); ++egamma) {
@@ -309,6 +317,28 @@ namespace vgamma {
 
       scRoundness.push_back(roundness);
       scAngle    .push_back(angle);
+      
+      float smin = -999.;
+      float smax = -999.;
+      float alphasminmaj = -999.;
+
+      if(egamma->isEB()) {
+	Cluster2ndMoments theMoments = EcalClusterTools::cluster2ndMoments(*(egamma->superCluster()),*ebRecHits.product());
+	smin = theMoments.sMin;
+	smax = theMoments.sMaj;
+	alphasminmaj = theMoments.alpha;
+      } else if (egamma->isEE()) {
+	Cluster2ndMoments theMoments = EcalClusterTools::cluster2ndMoments(*(egamma->superCluster()),*eeRecHits.product());
+	smin = theMoments.sMin;
+	smax = theMoments.sMaj;
+	alphasminmaj = theMoments.alpha;
+      }
+	
+      sMin.push_back(smin);
+      sMaj.push_back(smax);
+      alphaSMinMaj.push_back(alphasminmaj);
+								   
+
     } // for(egamma = egammas->begin(); egamma < egammas->end(); ++egamma)
 
     putMap<float>(iEvent,egammas,e1x3,"e1x3");
@@ -359,6 +389,10 @@ namespace vgamma {
     
     putMap<float>(iEvent,egammas,scRoundness,"scRoundness");
     putMap<float>(iEvent,egammas,scAngle,"scAngle");
+
+    putMap<float>(iEvent,egammas,sMin,"sMin");
+    putMap<float>(iEvent,egammas,sMaj,"sMaj");
+    putMap<float>(iEvent,egammas,alphaSMinMaj,"alphaSMinMaj");
 
   } // EgammaUserDataProducer<EgammaType>::produce
 
