@@ -92,6 +92,23 @@ def applyJobOptions(options):
     jobOptions.wantSummary = False
     jobOptions.hltPaths = ["HLT_Mu9"]
 
+  if options.jobType == "testMC":
+    jobOptions.maxEvents = 100
+    jobOptions.inputFiles = [
+      "/store/mc/Summer10/" +
+      "Zmumu_M20_CTEQ66-powheg/GEN-SIM-RECO/START36_V9_S09-v2/0018/" +
+      file for file in """
+        36FD5DFF-D67F-DF11-9C85-0026189438A9.root
+      """.split()
+    ]
+    jobOptions.globalTag = "START38_V10::All"
+    jobOptions.reportEvery = 1
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = False
+    jobOptions.isMaxEventsOutput = True
+    jobOptions.wantSummary = False
+    jobOptions.hltPaths = ["HLT_Mu9"]
+
   # end of testMC options <-------------------------------------
 
   elif options.jobType == "testRealData":
