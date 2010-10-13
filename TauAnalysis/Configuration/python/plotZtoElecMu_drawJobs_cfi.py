@@ -434,6 +434,18 @@ drawJobConfigurator_ZtoElecMu.add(
             name = "finalSamplePlots_mCollApprox"
         ),
         drawJobConfigEntry(
+            meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+            title = "M(Electron + Muon), SVfit method (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mSVmethod"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/Ht12MET',
+            title = "#Sigma H_{T}(Electron + Muon + MET) (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_ht"
+        ),
+        drawJobConfigEntry(
             meName = 'JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3',
             PAR = [ '15', '20', '30' ],
             title = "N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)",

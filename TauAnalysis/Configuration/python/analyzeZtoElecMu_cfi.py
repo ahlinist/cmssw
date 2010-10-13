@@ -17,6 +17,13 @@ diTauCandidateHistManagerForElecMu.pluginName = cms.string('diTauCandidateHistMa
 diTauCandidateHistManagerForElecMu.pluginType = cms.string('PATElecMuPairHistManager')
 diTauCandidateHistManagerForElecMu.diTauCandidateSource = cms.InputTag('allElecMuPairs')
 diTauCandidateHistManagerForElecMu.visMassHypothesisSource = cms.InputTag('')
+
+from TauAnalysis.Core.diTauCandidateSVfitHistManager_cfi import *
+diTauCandidateSVfitHistManagerForElecMu = copy.deepcopy(diTauCandidateSVfitHistManager)
+diTauCandidateSVfitHistManagerForElecMu.pluginName = cms.string('diTauCandidateSVfitHistManagerForElecMu')
+diTauCandidateSVfitHistManagerForElecMu.pluginType = cms.string('PATElecMuPairSVfitHistManager')
+diTauCandidateSVfitHistManagerForElecMu.diTauCandidateSource = cms.InputTag('allElecMuPairs')
+
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForElecMu = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZmumuHypothesisHistManagerForElecMu.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForElecMu')
@@ -482,7 +489,7 @@ elecMuAnalysisSequence = cms.VPSet(
             'vertexHistManager',
             'triggerHistManagerForElecMu'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPt15Cumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPt10Cumulative')
     ),
 
     # electron acceptance cuts
@@ -501,7 +508,7 @@ elecMuAnalysisSequence = cms.VPSet(
         ),
         replace = cms.vstring(
             'electronHistManager.electronSource = selectedPatElectronsForElecMuAntiOverlapWithMuonsVetoCumulative',
-            'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative'
+            'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative'
         )
     ),
 
@@ -520,7 +527,7 @@ elecMuAnalysisSequence = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecMuTightIdCumulative',
-                              'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative')
+                              'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronAntiCrack'),
@@ -536,7 +543,7 @@ elecMuAnalysisSequence = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecMuAntiCrackCutCumulative',
-                              'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative')
+                              'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronEta'),
@@ -552,7 +559,7 @@ elecMuAnalysisSequence = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecMuEta21Cumulative',
-                              'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative')
+                              'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronPt'),
@@ -569,7 +576,7 @@ elecMuAnalysisSequence = cms.VPSet(
             'triggerHistManagerForElecMu'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecMuPt15Cumulative',
-                              'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative',
                               'muonHistManager.makeIsoPtConeSizeDepHistograms = True')
     ),
 
@@ -784,6 +791,7 @@ elecMuAnalysisSequence = cms.VPSet(
             'electronHistManager',
             'muonHistManager',
             'diTauCandidateHistManagerForElecMu',
+            'diTauCandidateSVfitHistManagerForElecMu',
             'diTauCandidateZmumuHypothesisHistManagerForElecMu',
             'jetHistManager',
             'caloMEtHistManager',
@@ -796,6 +804,7 @@ elecMuAnalysisSequence = cms.VPSet(
                               'electronHistManager.electronSource = selectedPatElectronsForElecMuTrkIPcumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsPzetaDiffCumulative',
                               'diTauCandidateHistManagerForElecMu.visMassHypothesisSource = elecMuPairVisMassHypotheses',
+                              'diTauCandidateSVfitHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsPzetaDiffCumulative',
                               'diTauCandidateZmumuHypothesisHistManagerForElecMu.ZllHypothesisSource = elecMuPairZmumuHypotheses')
     )
 )
