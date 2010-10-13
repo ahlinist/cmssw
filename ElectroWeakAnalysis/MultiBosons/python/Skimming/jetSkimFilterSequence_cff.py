@@ -19,6 +19,14 @@ goodSuperClusters = cms.EDFilter("CandViewRefSelector",
     cut = cms.string('et > 10.')
 )
 
+goodJets = cms.EDFilter("CaloJetRefSelector",
+    filter = cms.bool(True),
+    src = cms.InputTag("ak5CaloJets"),
+    cut = cms.string('(abs(eta) >= 2.6 | emEnergyFraction() > 0.01) & energyFractionHadronic() < 0.98 & n90() > 1')
+)
+
+
+
 jetSkimFilterSequence = cms.Sequence(
   superClusterMerger *
   superClusterCands *

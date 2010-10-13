@@ -29,7 +29,12 @@ basePath = "ElectroWeakAnalysis.MultiBosons.Skimming." # shorthand
 options = copy.deepcopy(defaultOptions)
 
 ## Define default options specific to this configuration file
+
+#options.jobType = "testSummer10"
+options.jobType = "testPOWHEG"
+#options.jobType = "testRealData"
 # options.jobType = "testMC"
+
 
 ## Parse (command-line) arguments - this overrides the options given above
 # options.parseArguments()
@@ -168,7 +173,9 @@ elif options.skimType == "Dimuon":
     process.hltFilter.HLTPaths += ["HLT_Mu9", "HLT_Mu11", "HLT_DoubleMu3"]
     process.load(basePath + "dimuonSkimFilterSequence_cff")
     process.skimFilterSequence += process.dimuonSkimFilterSequence
-
+elif options.skimType == "Jet":
+  process.load(basePath + "jetSkimFilterSequence_cff")
+  process.skimFilterSequence += process.dimuonSkimFilterSequence
 else:
     raise RuntimeError, "Illegal skimType option: %s" % options.skimType
 
