@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-goodLooseMuons = cms.EDFilter("CandViewRefSelector",
+goodLooseMuons = cms.EDFilter("MuonViewRefSelector",
     src = cms.InputTag("muons"),
     cut = cms.string("""
             pt > 10 &
