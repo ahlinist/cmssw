@@ -1,7 +1,6 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
 
@@ -63,12 +62,9 @@ namespace {
     edm::Ptr<reco::Track> dummyTrackPtr;
     edm::Ptr<reco::GsfTrack> dummyGsfTrackPtr;
 
-    /// create dictionaries for SVmassRecoSolution objects
-    SVmassRecoSolution dummySVmassRecoSolution;
-    std::vector<SVmassRecoSolution> dummySVmassRecoSolutionCollection;
+    /// create dictionaries for SVfit solution objects
     SVfitDiTauSolution dummySVfitDiTauSolution;
     std::vector<SVfitDiTauSolution> dummySVfitDiTauSolutionCollection;
-    SVmassRecoSolution dummySVfitLegSolution;
     std::vector<SVfitLegSolution> dummySVfitLegSolutionCollection;
     std::map<std::string, double> dummySVfitDiTauSolutionLogLikeMap;
     std::map<std::string, std::map<std::string, double> > dummySVfitDiTauSolutionLogLikeMapMap;

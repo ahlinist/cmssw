@@ -26,9 +26,7 @@
   <class name="edm::Ptr<reco::Track>"/>
   <class name="edm::Ptr<reco::GsfTrack>"/>
 
-  <!-- create dictionaries for SVmassRecoSolution objects -->
-  <class name="SVmassRecoSolution"/>
-  <class name="std::vector<SVmassRecoSolution>"/>
+  <!-- create dictionaries for SVfit solution objects -->
   <class name="SVfitDiTauSolution"/>
   <class name="std::vector<SVfitDiTauSolution>"/>
   <class name="std::map<std::string, double>"/>
