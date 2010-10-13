@@ -1,4 +1,5 @@
 import copy
+import sys
 from ElectroWeakAnalysis.MultiBosons.Skimming.options import options as defaultOptions
 
 def applyJobOptions(options):
@@ -7,71 +8,11 @@ def applyJobOptions(options):
   To be called after options.parseArguments()
   """
   options.parseArguments()
+
+  ## Attach the crabOptions to the command line arguments
+  if options.crabOptions: sys.argv += options.crabOptions.split(",")
+
   jobOptions = copy.deepcopy(defaultOptions)
-
-  ## parse crabOptions
-  if options.crabOptions:
-    for opt in options.crabOptions.split(","):
-      print "Parsing crab option: `%s'" % opt
-      opt.replace(" ", "")
-      name, value = opt.split("=")
-      setattr(options, name, value)
-      setattr(jobOptions, name, value)
-
-  ## Set the default trigger match paths, see
-  ##+
-  jobOptions.electronTriggerMatchPaths = """
-    HLT_Ele10_LW_L1R
-    HLT_Ele12_SW_EleIdIsol_L1R
-    HLT_Ele15_LW_L1R
-    HLT_Ele15_SW_EleId_L1R
-    HLT_Ele15_SW_L1R
-    HLT_Ele15_SW_LooseTrackIso_L1R
-    HLT_Ele17_SW_CaloEleId_L1R
-    HLT_Ele17_SW_EleIdIsol_L1R
-    HLT_Ele17_SW_LEleId_L1R
-    HLT_Ele20_SW_L1R
-    HLT_Photon10_L1R
-    HLT_Photon15_L1R
-    HLT_Photon15_Cleaned_L1R
-    HLT_Photon20_Cleaned_L1R
-    HLT_Photon25_Cleaned_L1R
-    HLT_Photon30_Cleaned_L1R
-    """.split()
-  jobOptions.muonTriggerMatchPaths = """
-    HLT_L1Mu14_L1ETM30
-    HLT_L1Mu14_L1SingleJet6U
-    HLT_L1Mu14_L1SingleEG10
-    HLT_L1Mu20
-    HLT_DoubleMu3
-    HLT_Mu3
-    HLT_Mu5
-    HLT_Mu9
-    HLT_Mu11
-    HLT_L2Mu9
-    HLT_L2Mu11
-    HLT_L1Mu30
-    HLT_Mu7
-    HLT_L2Mu15
-    """.split()  ## Definition of MU PD for run 142933
-
-  jobOptions.tauTriggerMatchPaths = """
-    """.split()
-
-  jobOptions.photonTriggerMatchPaths = """
-    HLT_Photon10_L1R
-    HLT_Photon15_L1R
-    HLT_Photon15_Cleaned_L1R
-    HLT_Photon20_Cleaned_L1R
-    HLT_Photon25_Cleaned_L1R
-    HLT_Photon30_Cleaned_L1R
-    """.split()
-
-  jobOptions.jetTriggerMatchPaths = """
-    """.split()
-
-  jobOptions.metTriggerMatchPaths = """
-    """.split()
 
   if options.jobType == "testMC":
     jobOptions.maxEvents = 100
