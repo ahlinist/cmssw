@@ -142,7 +142,7 @@ protected:
   float  pfMETSig_;
   // Electron
   int    nEle_;
-  int    eleTrg_[maxP][7];
+  int    eleTrg_[maxP][8];
   int    eleID_[maxP][12];
   int    eleClass_[maxP];
   int    eleCharge_[maxP];

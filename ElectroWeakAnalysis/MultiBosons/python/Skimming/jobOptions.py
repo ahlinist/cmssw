@@ -54,8 +54,8 @@ def applyJobOptions(options):
 
   # end of testMC options <-------------------------------------
 
-  elif options.jobType == "testRealData":
-    jobOptions.maxEvents = 1
+  elif options.jobType == "testJetRealData":
+    jobOptions.maxEvents = -1
     jobOptions.inputFiles = [
       "/store/data/Run2010A/Mu/RECO/v4/000/" +
       file for file in """
@@ -85,6 +85,35 @@ def applyJobOptions(options):
     jobOptions.wantSummary = False
 #     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9, 11]]
     jobOptions.hltPaths = ["HLT_Mu9"]
+  # end of testRealData options <-----------------------------------
+
+  elif options.jobType == "testRealData":
+    jobOptions.maxEvents = -1
+    jobOptions.inputFiles = [
+      "/store/data/Run2010B/Jet/RECO/PromptReco-v2/000/" +
+      file for file in """
+        147/757/1428A995-A4D6-DF11-8499-0030487C2B86.root
+        147/757/360DEEC4-A1D6-DF11-9680-003048F11CF0.root
+        147/757/748A647E-A2D6-DF11-AF11-001617C3B6CE.root
+        147/757/B8DDD485-A2D6-DF11-9276-001617DBCF6A.root
+        147/757/D4F5A10B-ADD6-DF11-A99F-0030487C7828.root
+        147/755/0E36619B-98D6-DF11-98B4-001D09F2A465.root
+        147/755/3E51D9A2-8CD6-DF11-9A05-000423D9997E.root
+        147/755/5C885813-98D6-DF11-AA8A-001617E30CC8.root
+        147/755/6063353F-97D6-DF11-A69C-001D09F24664.root
+        147/755/B6D62927-9CD6-DF11-966D-003048F0258C.root
+        147/755/DC73547A-8DD6-DF11-849E-0030487C8CB8.root
+        147/755/E865F520-98D6-DF11-8BAC-001617C3B6CE.root
+      """.split()
+    ]
+    jobOptions.globalTag = "GR10_P_V10::All"
+    jobOptions.reportEvery = 1
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.isMaxEventsOutput = False
+    jobOptions.wantSummary = False
+#     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9, 11]]
+    jobOptions.hltPaths = ["HLT_Jet100U","HLT_Jet70U","HLT_Jet50U","HLT_Jet30U","HLT_Jet15U"]
   # end of testRealData options <-----------------------------------
 
   elif options.jobType == "testSummer10":
@@ -345,3 +374,5 @@ def applyJobOptions(options):
 #   return jobOptions
 
 # applyMultiOptionTag(options) <----------------------------------------------
+
+
