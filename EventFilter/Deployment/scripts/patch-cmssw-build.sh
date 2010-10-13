@@ -64,16 +64,6 @@ for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEA
   done
 done
 
-# link debug symbols from the base release
-TARGET=$TOPDIR/opt/cmssw/$AREA/lib
-mkdir -p $TARGET/.debug/
-for FILE in $TARGET/*.so; do
-    ORIG=$(dirname $(readlink $FILE))
-    NAME=$(basename $FILE).debug
-    DEBUG=$ORIG/.debug/$NAME
-    [ -f $DEBUG ] && ln -s -f $DEBUG $TARGET/.debug/
-done
-
 echo "Generating and populating summary directories"
 CMSSW_ROOT_DIRECTORY=`grep RELEASETOP $CMSSW_VERSION/.SCRAM/$SCRAM_ARCH/Environment | cut -d= -f2`
 cd $CMSSW_ROOT_DIRECTORY/src
@@ -82,6 +72,17 @@ install_env.pl $TOPDIR/opt/cmssw/$AREA/lib $TOPDIR/opt/cmssw/$AREA/module $TOPDI
 echo "Linking .rootmap plugin entries from $CMSSW_ROOT_DIRECTORY"
 find $CMSSW_ROOT_DIRECTORY/external/$SCRAM_ARCH/lib -name '*.rootmap' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$AREA/lib
 find $CMSSW_ROOT_DIRECTORY/lib/$SCRAM_ARCH          -name '*.rootmap' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$AREA/lib
+
+# link debug symbols from the base release
+echo "Linking .debug symbols from $CMSSW_ROOT_DIRECTORY"
+TARGET=$TOPDIR/opt/cmssw/$AREA/lib
+mkdir -p $TARGET/.debug/
+for FILE in $TARGET/*.so; do
+    ORIG=$(dirname $(readlink $FILE))
+    NAME=$(basename $FILE).debug
+    DEBUG=$ORIG/.debug/$NAME
+    [ -f $DEBUG ] && ln -s $DEBUG $TARGET/.debug/
+done
 
 cd $TOPDIR
 for x in opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/lib/$SCRAM_ARCH/*.so
