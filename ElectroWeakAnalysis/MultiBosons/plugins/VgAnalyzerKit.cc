@@ -82,7 +82,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[23]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[24]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -458,7 +458,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	vtxNDF_[nVtx_] = (*recVtxs)[i].ndof();
 	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho();
 
-	if (vtxNDF_[nVtx_] > 4 && fabs(vtx_[nVtx_][2]) <= 15 && vtxD0_[nVtx_] <= 2) nGoodVtx++;
+	if (vtxNDF_[nVtx_] > 4 && fabs(vtx_[nVtx_][2]) <= 18 && vtxD0_[nVtx_] <= 2) nGoodVtx++;
 	nVtx_++;
       }
   }
@@ -608,13 +608,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   //15: HLT_Ele20_SW_CaloEleId_L1R 
   //16: HLT_Ele17_SW_CaloEleId_L1R 
   //17: HLT_Ele17_SW_TightEleId_L1R
-  //18: HLT_DoubleEle10_SW_L1R 
-  //19: HLT_Photon10_Cleaned_L1R
-  //20: HLT_Photon15_Cleaned_L1R
-  //21: HLT_Photon20_Cleaned_L1R
-  //22: HLT_Photon30_Cleaned_L1R 
+  //18: HLT_Ele17_SW_TighterEleIdIsol_L1R
+  //19: HLT_DoubleEle10_SW_L1R 
+  //20: HLT_Photon10_Cleaned_L1R
+  //21: HLT_Photon15_Cleaned_L1R
+  //22: HLT_Photon20_Cleaned_L1R
+  //23: HLT_Photon30_Cleaned_L1R 
 
-  for (int a=0; a<23; a++)
+  for (int a=0; a<24; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -626,7 +627,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     nHLT_ = trgNames.size();
     for (size_t i=0; i<trgNames.size(); ++i) {
       HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
- 
+
       if (hlNames[i] == "HLT_Jet15U")                       HLTIndex_[0] = i;
       else if (hlNames[i] == "HLT_Jet30U")                  HLTIndex_[1] = i;
       else if (hlNames[i] == "HLT_Jet50U")                  HLTIndex_[2] = i;
@@ -645,11 +646,12 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       else if (hlNames[i] == "HLT_Ele20_SW_CaloEleId_L1R")  HLTIndex_[15] = i;
       else if (hlNames[i] == "HLT_Ele17_SW_CaloEleId_L1R")  HLTIndex_[16] = i;
       else if (hlNames[i] == "HLT_Ele17_SW_TightEleId_L1R") HLTIndex_[17] = i;
-      else if (hlNames[i] == "HLT_Double10_SW_L1R")         HLTIndex_[18] = i;
-      else if (hlNames[i] == "HLT_Photon10_Cleaned_L1R")    HLTIndex_[19] = i;
-      else if (hlNames[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[20] = i;
-      else if (hlNames[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[21] = i;
-      else if (hlNames[i] == "HLT_Photon30_Cleaned_L1R")    HLTIndex_[22] = i;
+      else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R ") HLTIndex_[18] = i;
+      else if (hlNames[i] == "HLT_DoubleEle10_SW_L1R")      HLTIndex_[19] = i;
+      else if (hlNames[i] == "HLT_Photon10_Cleaned_L1R")    HLTIndex_[20] = i;
+      else if (hlNames[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[21] = i;
+      else if (hlNames[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[22] = i;
+      else if (hlNames[i] == "HLT_Photon30_Cleaned_L1R")    HLTIndex_[23] = i;
     }
   }
 
@@ -754,6 +756,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch5(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15SWCaloEleIdL1R"));
   const TriggerObjectMatch *eleTriggerMatch6(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWCaloEleIdL1R"));
   const TriggerObjectMatch *eleTriggerMatch7(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTightEleIdL1R"));
+  const TriggerObjectMatch *eleTriggerMatch8(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -772,6 +775,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef5( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch5, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef6( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch6, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef7( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch7, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef8( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch8, e, *triggerEvent ) );
       eleTrg_[nEle_][0] = (eleTrigRef1.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][1] = (eleTrigRef2.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][2] = (eleTrigRef3.isAvailable()) ? 1 : -99;
@@ -779,6 +783,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][4] = (eleTrigRef5.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][5] = (eleTrigRef6.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][6] = (eleTrigRef7.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][7] = (eleTrigRef8.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -987,6 +992,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
       
+      cout<<" Pho = "<<nPho_<<"     "<<phohasPixelSeed_[nPho_]<<"     "<<phoEt_[nPho_]<<"     "<<phoTrkIsoHollowDR04_[nPho_]<<endl;
+
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;
@@ -996,8 +1003,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       if (iPho->isEBEEGap() == true) phoPos_[nPho_] = 4;
 
       phoSeedTime_[nPho_] = -999.;
-      phoRecoFlag_[nEle_] = -999.;
-      phoSeverity_[nEle_] = -999.;
+      phoRecoFlag_[nPho_] = -999.;
+      phoSeverity_[nPho_] = -999.;
       const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
       DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first;
 
@@ -1432,8 +1439,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetTrg_[nJet_][2] = (jetTrigRef3.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][3] = (jetTrigRef4.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][4] = (jetTrigRef5.isAvailable()) ? 1 : -99;
-
- 	//cout<<" Jet HLT = "<<iJet->pt()<<"      "<<jetTrg_[nJet_][0]<<"     "<<jetTrg_[nJet_][1]<<"     "<<jetTrg_[nJet_][2]<<"     "<<jetTrg_[nJet_][3]<<"     "<<jetTrg_[nJet_][4]<<endl;
 
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
