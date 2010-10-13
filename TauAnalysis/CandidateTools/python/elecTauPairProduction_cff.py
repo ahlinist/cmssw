@@ -1,20 +1,69 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
+
+svFitLikelihoodElecTauPairKinematicsPhaseSpace = copy.deepcopy(svFitLikelihoodDiTauKinematicsPhaseSpace)
+svFitLikelihoodElecTauPairKinematicsPhaseSpace.pluginType = "SVfitLikelihoodElecTauPairKinematics"
+svFitLikelihoodElecTauPairKinematicsPhaseSpace.leg1.pluginType = "SVfitElectronLikelihoodPhaseSpace"
+svFitLikelihoodElecTauPairKinematicsPhaseSpace.leg2.pluginType = "SVfitTauLikelihoodPhaseSpace"
+
+svFitLikelihoodElecTauPairMEt = copy.deepcopy(svFitLikelihoodMEt)
+svFitLikelihoodElecTauPairMEt.pluginType = cms.string("SVfitLikelihoodMEtElecTau")
+
+svFitLikelihoodElecTauPairTrackInfo = copy.deepcopy(svFitLikelihoodTrackInfo)
+svFitLikelihoodElecTauPairTrackInfo.pluginType = "SVfitLikelihoodElecTauPairTrackInfo"
+svFitLikelihoodElecTauPairTrackInfo.leg1.pluginType = "SVfitElectronLikelihoodTrackInfo"
+svFitLikelihoodElecTauPairTrackInfo.leg2.pluginType = "SVfitTauLikelihoodTrackInfo"
+
+svFitLikelihoodElecTauPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
+svFitLikelihoodElecTauPairPtBalance.pluginType = cms.string("SVfitLikelihoodElecTauPairPtBalance")
+
 #--------------------------------------------------------------------------------
 # produce combinations of electron + tau-jet pairs
 #--------------------------------------------------------------------------------
 
 elecTauPairsAfterTauPt = cms.EDProducer("PATElecTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-		srcLeg1 = cms.InputTag('selectedPatElectronsForElecTauPt15Cumulative'),
-		srcLeg2 = cms.InputTag('selectedPatTausForElecTauPt20Cumulative'),
+    srcLeg1 = cms.InputTag('selectedPatElectronsForElecTauPt15Cumulative'),
+    srcLeg2 = cms.InputTag('selectedPatTausForElecTauPt20Cumulative'),
     dRmin12 = cms.double(0.3),
     srcMET = cms.InputTag('patMETs'),
     srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
-	#    srcBeamSpot = cms.InputTag("offlineBeamSpot"),                             
+    srcBeamSpot = cms.InputTag("offlineBeamSpot"),                             
     srcGenParticles = cms.InputTag('genParticles'),                                   
     recoMode = cms.string(""),
+    doSVreco = cms.bool(True),                          
+    svFit = cms.PSet(
+        psKine = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecTauPairKinematicsPhaseSpace         
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecTauPairKinematicsPhaseSpace,
+                svFitLikelihoodElecTauPairMEt
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecTauPairKinematicsPhaseSpace,
+                svFitLikelihoodElecTauPairMEt,
+                svFitLikelihoodElecTauPairPtBalance
+            ),
+            estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(1000)
+                numSamplings = cms.int32(-1)
+            )
+        )
+    ),                                    
     scaleFuncImprovedCollinearApprox = cms.string('1'),                             
     verbosity = cms.untracked.int32(0)
 )
