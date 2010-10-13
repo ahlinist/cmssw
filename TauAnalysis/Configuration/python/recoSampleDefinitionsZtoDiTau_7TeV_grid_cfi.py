@@ -6,11 +6,9 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    'data_JetMETTau_132440_135802_May27ReReco',
-    'data_JetMETTau_135821_137436_Jun14ReReco',
-    'data_JetMETTau_137437_139558_Prompt',
-    ##'data_JetMETTau_139559_140159_Jul16ReReco',
-    'data_BTau_140160_999999_Prompt',
+    'data_JetMETTau_135821_141887_Sep17ReReco',
+    'data_BTau_141950_144114_Sep17ReReco',
+    'data_BTau_145762_147116_Prompt',
     'Ztautau',
     ##'Zee',
     'Zmumu',
@@ -55,65 +53,42 @@ _microbarns = 1.0e6
 # Integrated luminosity to normalize 
 ##TARGET_LUMI = (200.0)/_picobarns
 ##TARGET_LUMI = (
-##     0.005 # data_JetMETTau_132440_135802_May27ReReco
-##   + 0.060 # data_JetMETTau_135821_137436_Jun14ReReco
-##   + 0.110 # data_JetMETTau_137437_139558_Prompt
-##           # data_JetMETTau_139559_140159_Jul16ReReco
-##           # data_BTau_140160_999999_Prompt
+##     0.0 # data_JetMETTau_135821_141887_Sep17ReReco
+##   + 0.0 # data_BTau_141950_144114_Sep17ReReco
+##   + 0.0 # data_BTau_145762_147116_Prompt
 ##)/_picobarns
+
 TARGET_LUMI = (2.9)/_picobarns
 
 RECO_SAMPLES = {
-    'data_JetMETTau_132440_135802_May27ReReco' : {
-        'datasetpath' : "/MinimumBias/Commissioning10-May27thSkim_SD_JetMETTau-v2/RECO", # run-range in DBS: 131511-135802
+    'data_JetMETTau_135821_141887_Sep17ReReco' : {
+        'datasetpath' : "/JetMETTau/Run2010A-Sep17ReReco_v2/RECO", # run-range in DBS: 135821-141887
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-136119_7TeV_May27thReReco_Collisions10_JSON.txt",
-        'runselection' : "132440 - 135802",
-        'conditions' : 'GR_R_36X_V12A::All',
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : "135821 - 141887",
+        'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data
     },
-    'data_JetMETTau_135821_137436_Jun14ReReco' : {
-        'datasetpath' : "/JetMETTau/Run2010A-Jun14thReReco_v2/RECO", # run-range in DBS: 135821-137772
+    'data_BTau_141950_144114_Sep17ReReco' : {
+        'datasetpath' : '/BTau/Run2010A-Sep17ReReco_v2/RECO', # run-range in DBS: 141950-144114
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-137028_7TeV_June14thReReco_Collisions10_JSON.txt",
-        'runselection' : "135821 - 137436",
-        'conditions' : 'GR_R_36X_V12A::All',
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : '141950 - 144114',
+        'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data
     },
-    'data_JetMETTau_137437_139558_Prompt' : {
-        'datasetpath' : '/JetMETTau/Run2010A-PromptReco-v4/RECO', # run-range in DBS: 137437-141887
+    'data_BTau_145762_147116_Prompt' : {
+        'datasetpath' : "/BTau/Run2010B-PromptReco-v2/RECO", # run-range in DBS: 139779-140159
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'runselection' : '137437 - 139778',
-        'conditions' : 'GR_R_36X_V12::All',
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-144114_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
-    },
-    'data_JetMETTau_139559_140159_Jul16ReReco' : {
-        'datasetpath' : "/JetMETTau/Run2010A-Jul16thReReco-v1/RECO", # run-range in DBS: 139779-140160
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_139779-140159_7TeV_July16thReReco_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
         'runselection' : "139779 - 140159",
-        'conditions' : 'GR_R_36X_V12B::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
-    },
-    'data_BTau_140160_999999_Prompt' : {
-        'datasetpath' : '/BTau/Run2010A-PromptReco-v4/RECO', # run-range in DBS: 141950-144114
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'runselection' : '140160 - 144114',
-        'conditions' : 'GR_R_36X_V12::All',
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-144114_7TeV_StreamExpress_Collisions10_JSON_v2.txt",
+        'conditions' : 'GR_R_38X_V13::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -173,18 +148,16 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets
-    },
+    }
 }
 
 # Define samples that get merged together
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-            'data_JetMETTau_132440_135802_May27ReReco',
-            'data_JetMETTau_135821_137436_Jun14ReReco',
-            'data_JetMETTau_137437_139558_Prompt',
-            ##'data_JetMETTau_139559_140159_Jul16ReReco',
-            'data_BTau_140160_999999_Prompt'
+            'data_JetMETTau_135821_141887_Sep17ReReco',
+            'data_BTau_141950_144114_Sep17ReReco',
+            'data_BTau_145762_147116_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
