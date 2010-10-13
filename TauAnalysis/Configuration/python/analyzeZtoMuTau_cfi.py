@@ -1047,7 +1047,7 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
             'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
-            'diTauCandidateSVfitHistManager.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateEventActivityHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses'
         )
