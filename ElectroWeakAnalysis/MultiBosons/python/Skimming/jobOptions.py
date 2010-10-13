@@ -12,7 +12,69 @@ def applyJobOptions(options):
   ## Attach the crabOptions to the command line arguments
   if options.crabOptions: sys.argv += options.crabOptions.split(",")
 
+
+  ## Set the default trigger match paths, see
+  ##+
+  jobOptions.electronTriggerMatchPaths = """
+    HLT_Ele10_LW_L1R
+    HLT_Ele12_SW_EleIdIsol_L1R
+    HLT_Ele15_LW_L1R
+    HLT_Ele15_SW_EleId_L1R
+    HLT_Ele15_SW_L1R
+    HLT_Ele15_SW_LooseTrackIso_L1R
+    HLT_Ele17_SW_CaloEleId_L1R
+    HLT_Ele17_SW_EleIdIsol_L1R
+    HLT_Ele17_SW_LEleId_L1R
+    HLT_Ele20_SW_L1R
+    HLT_Photon10_L1R
+    HLT_Photon15_L1R
+    HLT_Photon15_Cleaned_L1R
+    HLT_Photon20_Cleaned_L1R
+    HLT_Photon25_Cleaned_L1R
+    HLT_Photon30_Cleaned_L1R
+    """.split()
+  jobOptions.muonTriggerMatchPaths = """
+    HLT_L1Mu14_L1ETM30
+    HLT_L1Mu14_L1SingleJet6U
+    HLT_L1Mu14_L1SingleEG10
+    HLT_L1Mu20
+    HLT_DoubleMu3
+    HLT_Mu3
+    HLT_Mu5
+    HLT_Mu9
+    HLT_Mu11
+    HLT_L2Mu9
+    HLT_L2Mu11
+    HLT_L1Mu30
+    HLT_Mu7
+    HLT_L2Mu15
+    """.split()  ## Definition of MU PD for run 142933
+
+  jobOptions.tauTriggerMatchPaths = """
+    """.split()
+
+  jobOptions.photonTriggerMatchPaths = """
+    HLT_Photon10_L1R
+    HLT_Photon15_L1R
+    HLT_Photon15_Cleaned_L1R
+    HLT_Photon20_Cleaned_L1R
+    HLT_Photon25_Cleaned_L1R
+    HLT_Photon30_Cleaned_L1R
+    """.split()
+
+  jobOptions.jetTriggerMatchPaths = """
+  HLT_Jet15U
+  HLT_Jet30U
+  HLT_Jet50U
+  HLT_Jet70U
+  HLT_Jet100U
+  """.split()
+
+  jobOptions.metTriggerMatchPaths = """
+  """.split()
+
   jobOptions = copy.deepcopy(defaultOptions)
+
 
   if options.jobType == "testMC":
     jobOptions.maxEvents = 100
@@ -33,12 +95,13 @@ def applyJobOptions(options):
     jobOptions.wantSummary = False
     jobOptions.hltPaths = ["HLT_Mu9"]
 
-  if options.jobType == "testMC":
-    jobOptions.maxEvents = 100
+  if options.jobType == "testPOWHEG":
+    jobOptions.maxEvents = -1
     jobOptions.inputFiles = [
-      "/store/mc/Summer10/" +
-      "Zmumu_M20_CTEQ66-powheg/GEN-SIM-RECO/START36_V9_S09-v2/0018/" +
+      "file:/scratch/lgray/skimming/CMSSW_3_8_4_patch3/"+
+      "src/ElectroWeakAnalysis/MultiBosons/" +
       file for file in """
+        3A6643C1-D17F-DF11-8B44-001A92971B0C.root
         36FD5DFF-D67F-DF11-9C85-0026189438A9.root
       """.split()
     ]
@@ -48,6 +111,7 @@ def applyJobOptions(options):
     jobOptions.use35XInput = False
     jobOptions.isMaxEventsOutput = True
     jobOptions.wantSummary = False
+    jobOptions.hltProcessName = "REDIGI36X"
     jobOptions.hltPaths = ["HLT_Mu9"]
 
   # end of testMC options <-------------------------------------
