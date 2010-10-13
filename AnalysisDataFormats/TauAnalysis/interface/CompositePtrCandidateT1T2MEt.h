@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.18 $
+ * \version $Revision: 1.19 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.18 2010/09/16 13:55:18 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.19 2010/09/21 08:45:15 veelken Exp $
  *
  */
 
@@ -27,7 +27,6 @@
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
@@ -177,14 +176,6 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     return out;
   }
 
-  /// get solutions computed by secondary vertex based mass reconstruction algorithm
-  const std::vector<SVmassRecoSolution>& svFitSolutions() const { return svFitSolutions_; }
-  /// get individual solution at given index (to support StringParser extraction)
-  SVmassRecoSolution svFitSolution(size_t index) const { 
-     if ( svFitSolutions_.size() > index ) return svFitSolutions_.at(index); 
-     else return SVmassRecoSolution(); 
-  }
-
   const SVfitDiTauSolution* svFitSolution(const std::string& algorithm, 
 					  const std::string& polarizationHypothesisName = "", int* errorFlag = 0) const
   {
@@ -286,9 +277,6 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void setPzeta(double pZeta) { pZeta_ = pZeta; }
   void setPzetaVis(double pZetaVis) { pZetaVis_ = pZetaVis; }
 
-  /// set solutions computed by secondary vertex based mass reconstruction algorithm
-  void setSVfitSolutions(const std::vector<SVmassRecoSolution>& solutions) { svFitSolutions_ = solutions; }
-
   void addSVfitSolution(const std::string& algorithm, const std::string& polarizationHypothesisName, const SVfitDiTauSolution& solution)
   {
     svFitSolutionMap_[algorithm].insert(std::pair<std::string, SVfitDiTauSolution>(polarizationHypothesisName, solution));
@@ -353,8 +341,6 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double pZetaVis_;
 
   /// solutions of secondary vertex based mass reconstruction algorithm
-  std::vector<SVmassRecoSolution> svFitSolutions_;
-
   typedef std::map<std::string, SVfitDiTauSolution> SVfitAlgorithmSolutionType;
   std::map<std::string, SVfitAlgorithmSolutionType> svFitSolutionMap_; // first key = algorithmName, second key = polarizationHypothesis
 };
