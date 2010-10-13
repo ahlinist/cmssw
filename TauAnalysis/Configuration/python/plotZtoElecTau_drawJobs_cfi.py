@@ -702,6 +702,18 @@ drawJobConfigurator_ZtoElecTau.add(
             title = "M(Electron + Tau), collinear Approx. (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mCollApprox"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+            title = "M(Electron + Tau), SVfit method (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mSVmethod"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/Ht12MET',
+            title = "#Sigma H_{T}(Electron + Tau + MET) (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_ht"
         )
     ]
 )                
