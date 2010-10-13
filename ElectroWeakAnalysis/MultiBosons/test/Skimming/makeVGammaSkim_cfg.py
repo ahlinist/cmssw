@@ -17,6 +17,7 @@ from PhysicsTools.PatAlgos.tools.trigTools import *
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.egammaUserDataProducts_cff import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.jobOptions import *
+from ElectroWeakAnalysis.MultiBosons.Skimming.matchHltPaths import matchHltPaths
 from ElectroWeakAnalysis.MultiBosons.Skimming.options import options as defaultOptions
 from ElectroWeakAnalysis.MultiBosons.tools.skimmingTools import embedTriggerMatches
 
@@ -28,9 +29,7 @@ basePath = "ElectroWeakAnalysis.MultiBosons.Skimming." # shorthand
 options = copy.deepcopy(defaultOptions)
 
 ## Define default options specific to this configuration file
-options.jobType = "testSummer10"
-#options.jobType = "testMC"
-#options.jobType = "testRealData"
+# options.jobType = "testMC"
 
 ## Parse (command-line) arguments - this overrides the options given above
 # options.parseArguments()
@@ -47,12 +46,6 @@ else:
 
 ## Global tag
 process.GlobalTag.globaltag = options.globalTag
-
-## HLT trigger
-process.load(basePath + "hltFilter_cfi")
-process.hltFilter.HLTPaths = options.hltPaths
-process.hltFilter.TriggerResultsTag = \
-  "TriggerResults::" + options.hltProcessName
 
 ## Remove MC matching and apply cleaning if we run on data
 ## (No need to remove pfMET and tcMET explicitly if this is done first
@@ -97,11 +90,6 @@ process.patPhotons.userData.userInts.src = egammaUserDataInts(
 process.load("RecoEcal.EgammaClusterProducers.preshowerClusterShape_cfi")
 process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
 
-#process.piZeroDiscriminators.preshClusterShapeProducer = "multi5x5PreshowerClusterShape"
-#process.piZeroDiscriminators.preshClusterShapeCollectionX = "multi5x5PreshowerXClustersShape"
-#process.piZeroDiscriminators.preshClusterShapeCollectionY = "multi5x5PreshowerYClustersShape"
-
-# process.eca = cms.EDAnalyzer("EventContentAnalyzer")
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0Discriminator_cfi")
 process.patDefaultSequence.replace(process.patPhotons,
   process.preshowerClusterShape *
@@ -151,53 +139,61 @@ process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
 switchOnTrigger(process)
 process.patTrigger.processName = options.hltProcessName
 process.patTriggerEvent.processName = options.hltProcessName
-matchHltPaths = {
-  "cleanPatElectrons": options.electronTriggerMatchPaths,
-  "cleanPatMuons"    : options.muonTriggerMatchPaths,
-  "cleanPatTaus"     : options.tauTriggerMatchPaths,
-  "cleanPatPhotons"  : options.photonTriggerMatchPaths,
-  "cleanPatJets"     : options.jetTriggerMatchPaths,
-  "patMETs"          : options.metTriggerMatchPaths,
-  "patMETsPF"        : options.metTriggerMatchPaths,
-  "patMETsTC"        : options.metTriggerMatchPaths,
-  }
 embedTriggerMatches(process, matchHltPaths)
 ## Drop matched target collections from the event content to only keep the trigger matched versions
 for collection in matchHltPaths.keys():
   vgEventContent.extraSkimEventContent.append("drop *_%s_*_*" % collection)
 
-## Define Paths
-process.skimFilterSequence = cms.Sequence(process.hltFilter)
+## HLT trigger
+process.load(basePath + "hltFilter_cfi")
+process.hltFilter.HLTPaths = options.hltPaths
+process.hltFilter.TriggerResultsTag = \
+  "TriggerResults::" + options.hltProcessName
+
+## Define the path that's used to select events
+process.skimFilterSequence = cms.Sequence(process.hltFilter) # Extend below
+process.skimFilterPath = cms.Path(process.skimFilterSequence)
 
 if options.skimType == "MuonPhoton":
+    process.hltFilter.HLTPaths += ["HLT_Mu9", "HLT_Mu11"]
     process.load(basePath + "muonPhotonSkimFilterSequence_cff")
     process.skimFilterSequence += process.muonPhotonSkimFilterSequence
+
 elif options.skimType == "ElectronPhoton":
+    process.hltFilter.HLTPaths += ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
     process.load(basePath + "electronPhotonSkimFilterSequence_cff")
     process.skimFilterSequence += process.electronPhotonSkimFilterSequence
+
 elif options.skimType == "Dimuon":
+    process.hltFilter.HLTPaths += ["HLT_Mu9", "HLT_Mu11", "HLT_DoubleMu3"]
     process.load(basePath + "dimuonSkimFilterSequence_cff")
     process.skimFilterSequence += process.dimuonSkimFilterSequence
+
 else:
     raise RuntimeError, "Illegal skimType option: %s" % options.skimType
 
 process.load(basePath + "VGammaSkimSequences_cff")
 
+## Add cleaning of collision data (no scraping events etc.)
+##+ https://twiki.cern.ch/twiki/bin/viewauth/CMS/Collisions2010Recipes
+process.load(basePath + "goodCollisionDataSequence_cff")
+
 if options.isRealData:
-  ## Add cleaning of collision data (no scraping events etc.)
-  ##+ https://twiki.cern.ch/twiki/bin/viewauth/CMS/Collisions2010Recipes
-  process.load(basePath + "goodCollisionDataSequence_cff")
   ## Remove the hltPhysicsDeclared - it kills some good events, reference?
   process.goodCollisionDataSequence.remove("hltPhysicsDeclared")
   ## Run the hltPhysicsDeclared filter in a separate path to
   ##+ store its result in the triggerEvent product.
   process.hltPhysicsDeclaredPath = cms.Path(process.hltPhysicsDeclared)
-  process.defaultSequence = cms.Sequence(
+  process.skimFilterSequence = cms.Sequence(
     process.goodCollisionDataSequence +
+    process.skimFilterSequence
+    )
+  process.defaultSequence = cms.Sequence(
     process.skimFilterSequence +
     process.patDefaultSequence
   )
 else:
+  process.primaryVertexFilterPath = cms.Path(process.primaryVertexFilter)
   process.load(basePath + "prunedGenParticles_cfi")
   process.defaultSequence = cms.Sequence(
     process.skimFilterSequence +
@@ -241,16 +237,7 @@ process.out.outputCommands += vgEventContent.extraSkimEventContent
 if not options.isRealData:
   process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
 
-if options.skimType == "MuonPhoton":
-  process.out.SelectEvents.SelectEvents = ["WMuNuGammaPath"]
-elif options.skimType == "ElectronPhoton":
-  process.out.SelectEvents.SelectEvents = ["WENuGammaPath"]
-elif options.skimType == "Dimuon":
-  process.out.SelectEvents.SelectEvents = [""]
-else:
-  raise RuntimeError, "Illegal skimType option: %s" % options.skimType
-# if options.skimType == ... <------------------------------------------------
-
+process.out.SelectEvents.SelectEvents = ["skimFilterPath"]
 process.out.fileName = options.outputFile
 
 ## Logging
@@ -262,20 +249,7 @@ if not options.isRealData:
     limit = cms.untracked.int32(5)
     )
 
-
 process.options.wantSummary = options.wantSummary
-
-## Relax the pt for the tests on data
-if options.jobType == "testRealData":
-  process.WMuNuGammaPath.remove(process.hltFilter)
-  process.muonPlusMETFilter.cut = cms.string("daughter('lepton').pt > 3")
-  process.WMuNuGammaPath.remove(process.WENuGammaFilter)
-
-if options.jobType == "testSummer10":
-#   process.WENuGammaPath.remove(process.hltFilter)
-#   process.WENuGammaPath.remove(process.electronPlusMETFilter)
-#   process.WENuGammaPath.remove(process.WENuGammaFilter)
-    pass
 
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user
