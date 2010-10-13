@@ -52,7 +52,7 @@ cp -r $TOPDIR/$CMSSW_VERSION/lib $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms
 
 # add links to the external data directories
 echo "Linking extrnal data to their destination"
-for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEARCH_PATH | cut -d= -f2 | tr ':' ' '); do 
+for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEARCH_PATH | cut -d= -f2 | tr ':' ' '); do
   for DATA in $CMSSWDATA/*/*/data; do
     RELATIVE=$(echo "$DATA" | sed -e"s#$CMSSWDATA/##")
     TARGET=$TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/src/$RELATIVE
@@ -62,6 +62,16 @@ for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEA
     mkdir -p $(dirname $TARGET)
     ln -s $DATA $TARGET
   done
+done
+
+# link debug symbols from the base release
+TARGET=$TOPDIR/opt/cmssw/$AREA/lib
+mkdir -p $TARGET/.debug/
+for FILE in $TARGET/*.so; do
+    ORIG=$(dirname $(readlink $FILE))
+    NAME=$(basename $FILE).debug
+    DEBUG=$ORIG/.debug/$NAME
+    [ -f $DEBUG ] && ln -s -f $DEBUG $TARGET/.debug/
 done
 
 echo "Generating and populating summary directories"
