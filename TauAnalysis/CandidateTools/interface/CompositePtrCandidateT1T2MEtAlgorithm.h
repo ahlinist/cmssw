@@ -7,7 +7,6 @@
 #include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/SVmassRecoSolution.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h" 
@@ -16,7 +15,6 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/METReco/interface/MET.h"
 
-#include "TauAnalysis/CandidateTools/interface/SVmassRecoFitter.h"
 #include "TauAnalysis/CandidateTools/interface/SVfitAlgorithm.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
@@ -37,7 +35,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
  public:
 
   CompositePtrCandidateT1T2MEtAlgorithm(const edm::ParameterSet& cfg)
-    : svMassRecoFitter_(cfg)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
 
@@ -131,10 +128,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
 //--- SV method computation (if we have the PV and beamspot)
       if ( pv && beamSpot && trackBuilder && doSVreco ) {
-	std::vector<SVmassRecoSolution> solutions = svMassRecoFitter_.fitVertices(leg1, leg2, met, *pv, *beamSpot, trackBuilder);
-	//std::cout << "solutions.size = " << solutions.size() << std::endl;
-	compositePtrCandidate.setSVfitSolutions(solutions);
-
 	for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::const_iterator svFitAlgorithm = svFitAlgorithms_.begin();
 	      svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
 	  std::vector<SVfitDiTauSolution> svFitSolutions = svFitAlgorithm->second->fit(compositePtrCandidate);
@@ -171,14 +164,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	  << " Failed to set four-momentum:"
 	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
       } 
-    }  else if ( recoMode_ == "secondaryVertexFit" ) {
-      if ( met.isNonnull() && pv && beamSpot && compositePtrCandidate.svFitSolutions().size() > 0 ) {
-	compositePtrCandidate.setP4(compositePtrCandidate.svFitSolutions().begin()->p4());
-      } else {
-	edm::LogError ("buildCompositePtrCandidate") 
-	  << " Failed to set four-momentum:"
-	  << " recoMode = " << recoMode_ << " requires MET, PrimaryVertex and Beamspot pointers to be valid !!";
-      }
     }  else if ( recoMode_ == "cdfMethod" ) {
       if ( met.isNonnull() ) {
 	compositePtrCandidate.setP4(compositePtrCandidate.p4CDFmethod());
@@ -420,7 +405,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   int verbosity_;
   std::string scaleFuncImprovedCollinearApprox_;
   TF1* scaleFunc_;
-  svMassReco::SVmassRecoFitter<T1,T2> svMassRecoFitter_;
   std::map<std::string, SVfitAlgorithm<T1,T2>*> svFitAlgorithms_;
 };
 

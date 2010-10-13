@@ -45,13 +45,6 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     srcGenParticles = cms.InputTag('genParticles'),                  
     recoMode = cms.string(""),
     doSVreco = cms.bool(True),                          
-    SVOptions = cms.PSet(
-        usePtBalanceInFit = cms.bool(True),
-        useMEtInFit = cms.bool(True),
-        useLeg1TrackingInFit = cms.bool(False),
-        useLeg2TrackingInFit = cms.bool(False),
-        correctPrimaryVertexInFit = cms.bool(False)
-    ),
     svFit = cms.PSet(
         psKine = cms.PSet(
             likelihoodFunctions = cms.VPSet(

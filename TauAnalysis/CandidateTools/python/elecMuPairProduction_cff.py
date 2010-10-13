@@ -1,6 +1,25 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
+
+svFitLikelihoodElecMuPairKinematicsPhaseSpace = copy.deepcopy(svFitLikelihoodDiTauKinematicsPhaseSpace)
+svFitLikelihoodElecMuPairKinematicsPhaseSpace.pluginType = "SVfitLikelihoodElecMuPairKinematics"
+svFitLikelihoodElecMuPairKinematicsPhaseSpace.leg1.pluginType = "SVfitElectronLikelihoodPhaseSpace"
+svFitLikelihoodElecMuPairKinematicsPhaseSpace.leg2.pluginType = "SVfitMuonLikelihoodPhaseSpace"
+
+svFitLikelihoodElecMuPairMEt = copy.deepcopy(svFitLikelihoodMEt)
+svFitLikelihoodElecMuPairMEt.pluginType = cms.string("SVfitLikelihoodMEtElecMu")
+
+svFitLikelihoodElecMuPairTrackInfo = copy.deepcopy(svFitLikelihoodTrackInfo)
+svFitLikelihoodElecMuPairTrackInfo.pluginType = "SVfitLikelihoodElecMuPairTrackInfo"
+svFitLikelihoodElecMuPairTrackInfo.leg1.pluginType = "SVfitElectronLikelihoodTrackInfo"
+svFitLikelihoodElecMuPairTrackInfo.leg2.pluginType = "SVfitMuonLikelihoodTrackInfo"
+
+svFitLikelihoodElecMuPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
+svFitLikelihoodElecMuPairPtBalance.pluginType = cms.string("SVfitLikelihoodElecMuPairPtBalance")
+
+
 #--------------------------------------------------------------------------------
 # produce combinations of electron + muons pairs
 #--------------------------------------------------------------------------------
@@ -11,8 +30,41 @@ allElecMuPairs = cms.EDProducer("PATElecMuPairProducer",
     srcLeg2 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
     dRmin12 = cms.double(-1.),
     srcMET = cms.InputTag('patMETs'),
+    srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
+    srcBeamSpot = cms.InputTag("offlineBeamSpot"),                               
     srcGenParticles = cms.InputTag('genParticles'),                                  
     recoMode = cms.string(""),
+    doSVreco = cms.bool(True),                          
+    svFit = cms.PSet(
+        psKine = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecMuPairKinematicsPhaseSpace         
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecMuPairKinematicsPhaseSpace,
+                svFitLikelihoodElecMuPairMEt
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecMuPairKinematicsPhaseSpace,
+                svFitLikelihoodElecMuPairMEt,
+                svFitLikelihoodElecMuPairPtBalance
+            ),
+            estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(1000)
+                numSamplings = cms.int32(-1)
+            )
+        )
+    ),                                      
     scaleFuncImprovedCollinearApprox = cms.string('1'),                            
     verbosity = cms.untracked.int32(0)
 )
