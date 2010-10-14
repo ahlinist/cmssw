@@ -54,7 +54,7 @@ def applyJobOptions(options):
 
   # end of testMC options <-------------------------------------
 
-  elif options.jobType == "testJetRealData":
+  elif options.jobType == "testRealData":
     jobOptions.maxEvents = -1
     jobOptions.inputFiles = [
       "/store/data/Run2010A/Mu/RECO/v4/000/" +
@@ -85,9 +85,11 @@ def applyJobOptions(options):
     jobOptions.wantSummary = False
 #     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9, 11]]
     jobOptions.hltPaths = ["HLT_Mu9"]
+    jobOptions.skimType = "MuonPhoton"
+    
   # end of testRealData options <-----------------------------------
 
-  elif options.jobType == "testRealData":
+  elif options.jobType == "testJetRealData":
     jobOptions.maxEvents = -1
     jobOptions.inputFiles = [
       "/store/data/Run2010B/Jet/RECO/PromptReco-v2/000/" +
@@ -114,6 +116,8 @@ def applyJobOptions(options):
     jobOptions.wantSummary = False
 #     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9, 11]]
     jobOptions.hltPaths = ["HLT_Jet100U","HLT_Jet70U","HLT_Jet50U","HLT_Jet30U","HLT_Jet15U"]
+    jobOptions.skimType = "Jet"
+    jobOptions.hltProcessName = "HLT"
   # end of testRealData options <-----------------------------------
 
   elif options.jobType == "testSummer10":

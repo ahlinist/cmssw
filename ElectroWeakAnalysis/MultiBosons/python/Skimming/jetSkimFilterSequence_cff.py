@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-superClusterMerger =  cms.EDFilter("EgammaSuperClusterMerger",
+superClusterMerger =  cms.EDProducer("EgammaSuperClusterMerger",
     src = cms.VInputTag(
         cms.InputTag('correctedHybridSuperClusters'),
         cms.InputTag('correctedMulti5x5SuperClustersWithPreshower')
@@ -25,17 +25,23 @@ goodJets = cms.EDFilter("CaloJetRefSelector",
     cut = cms.string('(abs(eta) >= 2.6 | emEnergyFraction() > 0.01) & energyFractionHadronic() < 0.98 & n90() > 1')
 )
 
-jetSCCands = cms.EDFilter("CandViewShallowCloneCombiner",
-                          filter = cms.bool(True),
-                          checkCharge = cms.bool(False),
-                          cut = cms.string('deltaR(daughter(0).eta,daughter(0).phi,daughter(1).eta,daughter(1).phi) > 1.0'),
-                          decay = cms.string("goodSuperClusters goodJets")
+jetSCCands = cms.EDProducer("CandViewShallowCloneCombiner",
+                            checkCharge = cms.bool(False),
+                            cut = cms.string('deltaR(daughter(0).eta,daughter(0).phi,daughter(1).eta,daughter(1).phi) > 1.0'),
+                            decay = cms.string("goodSuperClusters goodJets")
                           )
 
+jetSCCandsFilter = cms.EDFilter("CandViewCountFilter",
+                                filter = cms.bool(True),
+                                src = cms.InputTag("jetSCCands"),
+                                minNumber = cms.uint32(1)
+                                )
+                                  
 jetSkimFilterSequence = cms.Sequence(
   superClusterMerger *
   superClusterCands *
   goodSuperClusters *
   goodJets *
-  jetSCCands
+  jetSCCands *
+  jetSCCandsFilter
   )
