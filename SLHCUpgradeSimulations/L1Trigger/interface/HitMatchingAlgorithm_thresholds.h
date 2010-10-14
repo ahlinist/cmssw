@@ -1,3 +1,20 @@
+
+/// ////////////////////////////////////////
+/// Changed by:                          ///
+/// Nicola Pozzobon                      ///
+/// UNIPD                                ///
+/// 2010, May                            ///
+///                                      ///
+/// Added features:                      ///
+/// Possibility to have a flag telling   ///
+/// if the Stub is compatible with a     ///
+/// higher Pt threshold than the default ///
+/// one. HERE IT IS SOME KIND OF DUMMY   ///
+/// VALUE JUST BECAUSE ALL CANDIDATES    ///
+/// ARE ACCEPTED AND ONE WANTS TO KEEP   ///
+/// COMPATIBILITY...                     ///
+/// ////////////////////////////////////////
+
 #ifndef L1TRIGGEROFFLINE_TRIGGERSIMULATION_HITMATCHINGALGORITHM_THRESHOLDS_H
 #define L1TRIGGEROFFLINE_TRIGGERSIMULATION_HITMATCHINGALGORITHM_THRESHOLDS_H
 
@@ -46,69 +63,73 @@ namespace cmsUpgrades {
       {
       }
 
-    bool CheckTwoMemberHitsForCompatibility( const LocalStub<T> & localstub ) const
+    std::pair<bool,bool> CheckTwoMemberHitsForCompatibility( const LocalStub<T> & localstub ) const
       {
-	// const_cast of stub	
-	LocalStub<T>& stub = const_cast< LocalStub<T>& >(localstub);
-	
-	// find hits -> 0 and 1 swapped due to bug in Geometry Builder ???
-	// hit positions -> fix to allow for clusters
-	PixelLocation inner = hitPosition(localstub.hit(1).at(0));
-	PixelLocation outer = hitPosition(localstub.hit(0).at(0));
+  std::pair<bool,bool> a(false,false);
 
-	// pixel geometry
-	const GeomDet* geomdet = theStackedTracker->idToDet(stub.Id(),1);
-	const PixelGeomDetUnit* pixeldet = dynamic_cast<const PixelGeomDetUnit*>(geomdet);
-	const PixelTopology& pixeltopol = pixeldet->specificTopology();
+  // const_cast of stub  
+  LocalStub<T>& stub = const_cast< LocalStub<T>& >(localstub);
+  
+  // find hits -> 0 and 1 swapped due to bug in Geometry Builder ???
+  // hit positions -> fix to allow for clusters
+  PixelLocation inner = hitPosition(localstub.hit(1).at(0));
+  PixelLocation outer = hitPosition(localstub.hit(0).at(0));
 
-	// hit position
-	MeasurementPoint point(outer.y(),outer.x());
-	GlobalPoint pos =  geomdet->surface().toGlobal(pixeltopol.localPosition(point));
-	
-	// layer number
-	unsigned int layer = stub.Id().layer();
-	
-	std::vector<edm::ParameterSet>::const_iterator ipset = vpset_.begin();
-	for (;ipset!=vpset_.end();ipset++) {
-	  
-	  // check layer
-	  if (ipset->getParameter<unsigned int>("Layer")!=layer) continue;
+  // pixel geometry
+  const GeomDet* geomdet = theStackedTracker->idToDet(stub.Id(),1);
+  const PixelGeomDetUnit* pixeldet = dynamic_cast<const PixelGeomDetUnit*>(geomdet);
+  const PixelTopology& pixeltopol = pixeldet->specificTopology();
 
-	  // extract row threshold options
-	  Thresholds rowcuts = ipset->getParameter< Thresholds >("RowCuts");
-	  Thresholds rowoffsets = ipset->getParameter< Thresholds >("RowOffsets");
-	  Thresholds rowwindows = ipset->getParameter< Thresholds >("RowWindows");
+  // hit position
+  MeasurementPoint point(outer.y(),outer.x());
+  GlobalPoint pos =  geomdet->surface().toGlobal(pixeltopol.localPosition(point));
+  
+  // layer number
+  unsigned int layer = stub.Id().layer();
+  
+  std::vector<edm::ParameterSet>::const_iterator ipset = vpset_.begin();
+  for (;ipset!=vpset_.end();ipset++) {
+    
+    // check layer
+    if (ipset->getParameter<unsigned int>("Layer")!=layer) continue;
 
-	  // find row cut
-	  unsigned int i=0;
-	  for (;i<rowcuts.size();i++) {if (outer.y()<rowcuts[i]) break;}
+    // extract row threshold options
+    Thresholds rowcuts = ipset->getParameter< Thresholds >("RowCuts");
+    Thresholds rowoffsets = ipset->getParameter< Thresholds >("RowOffsets");
+    Thresholds rowwindows = ipset->getParameter< Thresholds >("RowWindows");
 
-	  // set row thresholds
-	  unsigned int rowoffset=rowoffsets[i]; 
-	  unsigned int rowwindow=rowwindows[i];
-	  
-	  // set column thresholds
-	  unsigned int columncut = (pos.eta()>0)?outer.x()-inner.x():inner.x()-outer.x();
-	  unsigned int columnmin = ipset->getParameter<unsigned int>("ColumnCutMin");
-	  unsigned int columnmax = ipset->getParameter<unsigned int>("ColumnCutMax");
+    // find row cut
+    unsigned int i=0;
+    for (;i<rowcuts.size();i++) {if (outer.y()<rowcuts[i]) break;}
 
-	  // decision
-	  bool row = (inner.y()-outer.y()-rowoffset>=0)&&(inner.y()-outer.y()-rowoffset<rowwindow);
-	  bool col = (columncut>=columnmin)&&(columncut<=columnmax);
+    // set row thresholds
+    unsigned int rowoffset=rowoffsets[i]; 
+    unsigned int rowwindow=rowwindows[i];
+    
+    // set column thresholds
+    unsigned int columncut = (pos.eta()>0)?outer.x()-inner.x():inner.x()-outer.x();
+    unsigned int columnmin = ipset->getParameter<unsigned int>("ColumnCutMin");
+    unsigned int columnmax = ipset->getParameter<unsigned int>("ColumnCutMax");
 
-	  // return comparison	
-	  return row&&col;
-	}
-	
-	// if layer is not of interest return false
-	return false;
+    // decision
+    bool row = (inner.y()-outer.y()-rowoffset>=0)&&(inner.y()-outer.y()-rowoffset<rowwindow);
+    bool col = (columncut>=columnmin)&&(columncut<=columnmax);
+
+    // return comparison  
+    //return row&&col;
+    a.first = row&&col;
+  }
+  
+  // if layer is not of interest return false
+  //return false;
+  return a;
       }
     
     /// algorithm name
 
     std::string AlgorithmName() const 
       { 
-	return ((info_->FunctionName())+"<"+(info_->TemplateTypes().begin()->second)+">");
+  return ((info_->FunctionName())+"<"+(info_->TemplateTypes().begin()->second)+">");
       }
     
   private:
@@ -157,4 +178,5 @@ template <class T> class  ES_HitMatchingAlgorithm_thresholds : public edm::ESPro
 };
 
 #endif
+
 

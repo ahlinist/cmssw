@@ -1,7 +1,7 @@
 #include "SLHCUpgradeSimulations/L1Trigger/interface/CaloJetCard.h"
+#include <algorithm>
 using namespace l1slhc;
 using namespace std;
-
 
 CaloJetCard::CaloJetCard()
 {
@@ -80,7 +80,7 @@ CaloJetCard::makeJets(const l1slhc::L1CaloClusterCollection& clusters,l1slhc::L1
          }
 
          //OK Now Calculate Cut OFfs
-         if(abs(ETETA/ET-bin_eta)<s.jetCenterDev() && abs(ETPHI/ET-bin_phi)<s.jetCenterDev() && ET>s.minJetET())
+         if((int)fabs(ETETA/ET-bin_eta)<s.jetCenterDev() && (int)fabs(ETPHI/ET-bin_phi)<s.jetCenterDev() && ET>s.minJetET())
            jets.push_back(L1CaloJet(origin.iEta(),origin.iPhi(),ET));
 
        }
@@ -111,7 +111,7 @@ CaloJetCard::filterJets(l1slhc::L1CaloJetCollection& jets)
     bool add=true;
     for(size_t j=1;j<filteredJets.size();++j)
       {
-        if(abs(jets[i].iEta()-filteredJets[j].iEta())<4 && abs(jets[i].iPhi()-filteredJets[j].iPhi())<4)
+        if((int)fabs(jets[i].iEta()-filteredJets[j].iEta())<4 && (int)fabs(jets[i].iPhi()-filteredJets[j].iPhi())<4)
     add =false;
 
       }

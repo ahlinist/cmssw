@@ -42,7 +42,8 @@ class CircleFit {
 		}
 
 
-		Circle perpendicularBisectorFit(){
+		//Circle perpendicularBisectorFit() {
+    std::vector<double> perpendicularBisectorFit() const {
 TRACE
 			Circle circle;
 			circle.x=0.0;
@@ -51,7 +52,15 @@ TRACE
 			circle.n = mData.size();
 			circle.chi2=0.0;
 
-			if (circle.n< 3) return circle;
+			if (circle.n< 3) //return circle;
+      {
+        std::vector<double> out;
+        out.push_back(circle.r);
+        out.push_back(circle.x);
+        out.push_back(circle.y);
+        out.push_back(circle.chi2);
+        return out;
+      }
 TRACE
 
 			//double x[20];
@@ -141,12 +150,18 @@ TRACE
 TRACE
 
 
-			return circle;
+      //return circle;
+      std::vector<double> out;
+      out.push_back(circle.r);
+      out.push_back(circle.x);
+      out.push_back(circle.y);
+      out.push_back(circle.chi2);
+      return out;
 		}
 
 
-
-		Circle modifiedLeastSquaresFit(){
+    //Circle modifiedLeastSquaresFit() {
+		std::vector<double> modifiedLeastSquaresFit() const {
 TRACE
 			//std::cout << __FILE__ << " : " << __LINE__ << std::endl;
 			Circle circle;
@@ -156,8 +171,15 @@ TRACE
 			circle.n = mData.size();
 			circle.chi2=0.0;
 
-			if (circle.n< 3) return circle;
-
+			if (circle.n< 3) //return circle;
+      {
+        std::vector<double> out;
+        out.push_back(circle.r);
+        out.push_back(circle.x);
+        out.push_back(circle.y);
+        out.push_back(circle.chi2);
+        return out;
+      }
 			double sumx = 0.0;
 			double sumx2 = 0.0;
 			double sumx3 = 0.0;
@@ -225,12 +247,18 @@ TRACE
 			}
 TRACE
 
-			return circle;
-
+      //return circle;
+      std::vector<double> out;
+      out.push_back(circle.r);
+      out.push_back(circle.x);
+      out.push_back(circle.y);
+      out.push_back(circle.chi2);
+      return out;
 		}
 
 	private:
 		std::vector< GlobalPoint > mData;
 };
 #endif
+
 

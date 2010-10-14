@@ -43,11 +43,11 @@ from Configuration.StandardSequences.MagneticField_38T_cff import *
 
 #-------------------------------------------------------------------------------
 ### conditions that are needed for digitization and higher levels
-from Configuration.StandardSequences.FakeConditions_cff import *
-SiPixelFakeGainOfflineESSource.file =\
-       'SLHCUpgradeSimulations/Geometry/data/strawmanb/PixelSkimmedGeometry.txt'
-SiPixelFakeLorentzAngleESSource.file =\
-       'SLHCUpgradeSimulations/Geometry/data/strawmanb/PixelSkimmedGeometry.txt'
+#from Configuration.StandardSequences.FakeConditions_cff import *
+#SiPixelFakeGainOfflineESSource.file =\
+#       'SLHCUpgradeSimulations/Geometry/data/longbarrel/PixelSkimmedGeometry.txt'
+#SiPixelFakeLorentzAngleESSource.file =\
+#       'SLHCUpgradeSimulations/Geometry/data/longbarrel/PixelSkimmedGeometry.txt'
 
 #-------------------------------------------------------------------------------
 from SimTracker.Configuration.SimTracker_cff import *
@@ -105,7 +105,7 @@ from SLHCUpgradeSimulations.L1Trigger.Tracklet_cfi import *
 
 #-------------------------------------------------------------------------------
 
-from SLHCUpgradeSimulations.L1Trigger.TrackTriggerHitsFromPixelDigis_cfi import *
+#from SLHCUpgradeSimulations.L1Trigger.TrackTriggerHitsFromPixelDigis_cfi import *
 
 
 stubs_fromSimHits = cms.Sequence(LocalStubsFromSimHits *
@@ -116,7 +116,7 @@ stubs_fromPixelDigis = cms.Sequence(LocalStubsFromPixelDigis *
                                     GlobalStubsFromPixelDigis*
                                     TrackletsFromPixelDigis)
 
-stubs_fromTrackTriggerHits = cms.Sequence(TrackTriggerHitsFromPixelDigis *
-                                          LocalStubsFromTrackTriggerHits *
-                                          GlobalStubsFromTrackTriggerHits*
-                                          TrackletsFromTrackTriggerHits)
+#stubs_fromTrackTriggerHits = cms.Sequence(TrackTriggerHitsFromPixelDigis *
+#                                          LocalStubsFromTrackTriggerHits *
+#                                          GlobalStubsFromTrackTriggerHits*
+#                                          TrackletsFromTrackTriggerHits)

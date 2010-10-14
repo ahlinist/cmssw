@@ -1,13 +1,21 @@
-
-/*********************************/
-/*********************************/
-/**                             **/
-/** Stacked Tracker Simulations **/
-/**    Kristofer Henriksson     **/
-/**             2009            **/
-/**                             **/
-/*********************************/
-/*********************************/
+/// ////////////////////////////////////////
+/// Stacked Tracker Simulations          ///
+/// Written by:                          ///
+/// Kristofer Henriksson                 ///
+/// 2009                                 ///
+///                                      ///
+/// Changed by:                          ///
+/// Nicola Pozzobon                      ///
+/// UNIPD                                ///
+/// 2010, May                            ///
+///                                      ///
+/// Added features:                      ///
+/// Possibility to have a flag telling   ///
+/// if the Stub is compatible with a     ///
+/// higher Pt threshold than the default ///
+/// one. Just performs the cross check   ///
+/// twice.                               ///
+/// ////////////////////////////////////////
 
 #ifndef HIT_MATCHING_ALGORITHM_pixelray_H
 #define HIT_MATCHING_ALGORITHM_pixelray_H
@@ -41,10 +49,11 @@ class HitMatchingAlgorithm_pixelray : public HitMatchingAlgorithm<T>
 {
 public:
     HitMatchingAlgorithm_pixelray(const cmsUpgrades::StackedTrackerGeometry *i,
-                                  double aCompatibilityScalingFactor, double aIPWidth) :
+                                  double aCompatibilityScalingFactor, double aCompatibilityScalingFactorTight, double aIPWidth) :
         cmsUpgrades::HitMatchingAlgorithm<T>(i),
         mClassInfo( new cmsUpgrades::classInfo(__PRETTY_FUNCTION__) ),
         mCompatibilityScalingFactor(aCompatibilityScalingFactor),
+        mCompatibilityScalingFactorTight(aCompatibilityScalingFactorTight),
         mIPWidth(aIPWidth)
     {
     }
@@ -53,32 +62,37 @@ public:
     {
     }
 
-    bool CheckTwoMemberHitsForCompatibility(const cmsUpgrades::LocalStub<T> & aLocalStub) const
+    std::pair<bool,bool> CheckTwoMemberHitsForCompatibility(const cmsUpgrades::LocalStub<T> & aLocalStub) const
     {
-        std::pair<double,double> * rayEndpoints;
+      std::pair<bool,bool> a(false,false);
+
+        std::pair< std::pair<double,double> , bool> * rayEndpoints;
         
         // Just call the helper function to do all the work
-        
         rayEndpoints = getPixelRayEndpoints(aLocalStub,
-            HitMatchingAlgorithm<T>::theStackedTracker, mCompatibilityScalingFactor);
+            HitMatchingAlgorithm<T>::theStackedTracker, mCompatibilityScalingFactor, mCompatibilityScalingFactorTight);
+
             
         if (rayEndpoints) {
             // Establish the valid window
             double positiveZBoundary = mIPWidth/2;
             double negativeZBoundary = -mIPWidth/2;
             
-            if ((rayEndpoints->second > negativeZBoundary) &&
-                (rayEndpoints->first < positiveZBoundary))
+            if (( (rayEndpoints->first).second > negativeZBoundary) &&
+                ( (rayEndpoints->first).first < positiveZBoundary))
             {
+                a.first = true;
+                a.second = rayEndpoints->second;
+
                 delete rayEndpoints;
-                
-                return true;
+                //return true;
             }
         }
         
-        delete rayEndpoints;
+        else delete rayEndpoints;
         
-        return false;
+        //return false;
+        return a;
     }
     
     std::string AlgorithmName() const
@@ -89,8 +103,8 @@ public:
     
 private:
     const cmsUpgrades::classInfo *mClassInfo;
-    
-    double mCompatibilityScalingFactor;
+    double mCompatibilityScalingFactor;  
+    double mCompatibilityScalingFactorTight;
     double mIPWidth;
 
 };
@@ -105,6 +119,7 @@ class  ES_HitMatchingAlgorithm_pixelray : public edm::ESProducer
 public:
     ES_HitMatchingAlgorithm_pixelray(const edm::ParameterSet & p) :
         mPtThreshold(p.getParameter<double>("minPtThreshold")),
+        mPtThresholdTight(p.getParameter<double>("minPtThresholdTight")),
         mIPWidth(p.getParameter<double>("ipWidth"))
     {
         setWhatProduced(this);
@@ -124,13 +139,18 @@ public:
             (cmsUpgrades::KGMS_C * mMagneticFieldStrength);
         // Invert so we use multiplication instead of division in the comparison
         mCompatibilityScalingFactor = 1.0 / mCompatibilityScalingFactor;
+
+        double mCompatibilityScalingFactorTight = (100.0 * 2.0e+9 * mPtThresholdTight) /
+            (cmsUpgrades::KGMS_C * mMagneticFieldStrength);
+        // Invert so we use multiplication instead of division in the comparison
+        mCompatibilityScalingFactorTight = 1.0 / mCompatibilityScalingFactorTight;
         
         edm::ESHandle<cmsUpgrades::StackedTrackerGeometry> StackedTrackerGeomHandle;
         record.getRecord<cmsUpgrades::StackedTrackerGeometryRecord>().get(StackedTrackerGeomHandle);
   
         cmsUpgrades::HitMatchingAlgorithm<T>* HitMatchingAlgo =
             new cmsUpgrades::HitMatchingAlgorithm_pixelray<T>(&(*StackedTrackerGeomHandle),
-                                                              mCompatibilityScalingFactor,
+                                                              mCompatibilityScalingFactor,mCompatibilityScalingFactorTight,
                                                               mIPWidth);
 
         _theAlgo = boost::shared_ptr< cmsUpgrades::HitMatchingAlgorithm<T> >(HitMatchingAlgo);
@@ -141,8 +161,10 @@ public:
 private:
     boost::shared_ptr< cmsUpgrades::HitMatchingAlgorithm<T> > _theAlgo;
     double mPtThreshold;
+    double mPtThresholdTight;
     double mIPWidth;
 };
 
 #endif
+
 

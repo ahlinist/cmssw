@@ -8,8 +8,8 @@ GlobalStubsFromPixelDigis = cms.EDFilter("GlobalStubBuilder_PixelDigi_",
     LocalStubs = cms.InputTag("LocalStubsFromPixelDigis")
 )
 
-GlobalStubsFromTrackTriggerHits = cms.EDFilter("GlobalStubBuilder_TTHit_",
-    LocalStubs = cms.InputTag("LocalStubsFromTrackTriggerHits")
-)
+#GlobalStubsFromTrackTriggerHits = cms.EDFilter("GlobalStubBuilder_TTHit_",
+#    LocalStubs = cms.InputTag("LocalStubsFromTrackTriggerHits")
+#)
 
 

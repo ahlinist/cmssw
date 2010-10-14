@@ -1,3 +1,18 @@
+
+/// ////////////////////////////////////////
+/// Changed by:                          ///
+/// Nicola Pozzobon                      ///
+/// UNIPD                                ///
+/// 2010, May                            ///
+///                                      ///
+/// Added features:                      ///
+/// Possibility to have a flag telling   ///
+/// if the Stub is compatible with a     ///
+/// higher Pt threshold than the default ///
+/// one. Just performs the cross check   ///
+/// twice.                               ///
+/// ////////////////////////////////////////
+
 #ifndef HIT_MATCHING_ALGORITHM_pixelray_helper_H
 #define HIT_MATCHING_ALGORITHM_pixelray_helper_H
 
@@ -27,13 +42,15 @@ MeasurementPoint getMpAverage(std::vector<T> hits)
 }
 
 template<typename T>
-std::pair<double,double> *
+std::pair< std::pair<double,double> , bool> *
 getPixelRayEndpoints(const LocalStub<T> & aLocalStub,
                      const StackedTrackerGeometry * stackedTracker,
-                     double scalingFactor)
+                     double scalingFactor, double scalingFactorTight)
 {
     // Get the coordinates of the boundaries of the inner and outer pixels.
     // Code adapted from LocalStub::averagePosition
+
+    bool isTight = false;
 
     const GeomDetUnit* innerDet = stackedTracker->idToDetUnit(aLocalStub.Id(), 0);
     const GeomDetUnit* outerDet = stackedTracker->idToDetUnit(aLocalStub.Id(), 1);
@@ -86,6 +103,9 @@ getPixelRayEndpoints(const LocalStub<T> & aLocalStub,
     
     if (deltaPhi > KGMS_PI) deltaPhi = 2 * KGMS_PI - deltaPhi;
 
+    double deltaPhiThresholdTight = (outerPointRadius - innerPointRadius) *
+        scalingFactorTight;
+
     if (deltaPhi < deltaPhiThreshold)
     {
         double outerPixLeftZ  = outerPixLeft.z();
@@ -104,8 +124,14 @@ getPixelRayEndpoints(const LocalStub<T> & aLocalStub,
         double leftPixelRayZ = outerPixRightZ +
             (innerPixLeftZ - outerPixRightZ) * projectFactor;
         
-        std::pair<double,double> * rayPair =
-            new std::pair<double,double>(leftPixelRayZ, rightPixelRayZ);
+        //std::pair<double,double> * rayPair =
+        //    new std::pair<double,double>(leftPixelRayZ, rightPixelRayZ);
+
+        if (deltaPhi < deltaPhiThresholdTight) isTight = true;
+
+        std::pair<double,double>rayPair0 = std::pair<double,double>(leftPixelRayZ, rightPixelRayZ);
+        std::pair< std::pair<double,double>, bool > * rayPair = new std::pair< std::pair<double,double>, bool >(rayPair0, isTight);
+
 
         return rayPair;
     }
@@ -116,4 +142,5 @@ getPixelRayEndpoints(const LocalStub<T> & aLocalStub,
 }
 
 #endif
+
 

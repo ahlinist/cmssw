@@ -13,10 +13,10 @@
 //
 // Original Author:  Jim Brooke
 //         Created:  Thu Sep 27 16:42:09 CEST 2007
-// $Id: TrackTriggerHitsFromMC.cc,v 1.1 2009/05/18 16:21:39 arose Exp $
+// $Id: TrackTriggerHitsFromMC.cc,v 1.2 2010/02/03 09:46:37 arose Exp $
 //
 //
-
+/// changed by Emmanuele
 
 // system include files
 #include <memory>
@@ -51,7 +51,9 @@
 #include "SimDataFormats/CrossingFrame/interface/CrossingFrame.h"
 #include "SimDataFormats/CrossingFrame/interface/MixCollection.h"
 
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+// Emmanuele
+//#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "HepMC/GenParticle.h"
 #include "HepMC/SimpleVector.h"
 
