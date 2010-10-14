@@ -53,6 +53,7 @@ else:
 ## Global tag
 process.GlobalTag.globaltag = options.globalTag
 
+
 ## Remove MC matching and apply cleaning if we run on data
 ## (No need to remove pfMET and tcMET explicitly if this is done first
 if options.isRealData:
@@ -175,8 +176,36 @@ elif options.skimType == "Dimuon":
     process.load(basePath + "dimuonSkimFilterSequence_cff")
     process.skimFilterSequence += process.dimuonSkimFilterSequence
 elif options.skimType == "Jet":
+  process.load('Configuration.StandardSequences.Services_cff')
+  process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+  process.load('Configuration.StandardSequences.Geometry_cff')
+  process.load('Configuration.StandardSequences.Reconstruction_cff')
+  #process.load("RecoEgamma.Configuration.RecoEgamma_cff")
+  process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+  process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+
+  process.photonReReco = cms.Sequence(process.conversionSequence*
+                                      process.trackerOnlyConversionSequence*
+                                      process.photonSequence*
+                                      process.photonIDSequence)
+
+  process.hltFilter.HLTPaths += ["HLT_Jet100U","HLT_Jet70U","HLT_Jet50U","HLT_Jet30U","HLT_Jet15U"]
   process.load(basePath + "jetSkimFilterSequence_cff")
-  process.skimFilterSequence += process.dimuonSkimFilterSequence
+  process.skimFilterSequence += process.jetSkimFilterSequence
+  # now change the photon reco to much looser settings
+  process.photonCore.minSCEt = 1.0
+  process.photons.minSCEtBarrel = 1.0
+  process.photons.minSCEtEndcap = 1.0
+  process.photons.maxHoverEBarrel = 10.0
+  process.photons.maxHoverEEndcap = 10.0
+  #edit the pat sequence to do the rereco
+  process.patDefaultSequence.replace(process.patPhotons,                                     
+                                     process.photonReReco*
+                                     process.patPhotons
+                                     )
+
+  
+  
 else:
     raise RuntimeError, "Illegal skimType option: %s" % options.skimType
 
@@ -244,6 +273,12 @@ process.out.outputCommands += vgEventContent.extraSkimEventContent
 
 if not options.isRealData:
   process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
+
+if options.skimType == "Jet":
+  process.out.outputCommands += ["drop *_photonCore_*_RECO",
+                                 "drop *_conversions_*_RECO",
+                                 "drop *_trackerOnlyConversions_*_RECO",
+                                 "drop *_ckf*TracksFromConversions_*_RECO"]
 
 process.out.SelectEvents.SelectEvents = ["skimFilterPath"]
 process.out.fileName = options.outputFile
