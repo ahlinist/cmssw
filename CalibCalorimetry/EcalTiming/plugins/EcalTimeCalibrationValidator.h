@@ -11,7 +11,7 @@
 
 #include "CondFormats/EcalObjects/interface/EcalTimeCalibConstants.h"
 
-#include "CalibCalorimetry/EcalTiming/interface/EcalTimePi0TreeContent.h"
+#include "CalibCalorimetry/EcalTiming/interface/EcalTimeTreeContent.h"
 
 #include "TTree.h"
 #include "TFile.h"
@@ -39,7 +39,7 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
                 int maxEntries_;
                 int startingEntry_;
                 edm::ESHandle<EcalTimeCalibConstants> itime_;
-                EcalTimePi0TreeContent ttreeMembersInput_;
+                EcalTimeTreeContent ttreeMembersInput_;
 
 };
 #endif
