@@ -7,8 +7,8 @@ from optparse import OptionParser
 import MonitorElementsToCheck as DQMME
 
 
-def MainProgram(filelist={},outputdir="DQMOutput",debug=False):
-    ''' This generates the history histograms, using all the run files in filelist, and all the histograms defined in DQMME.dqmMEs.'''
+def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False):
+    ''' This generates the history histograms, using all the run files in runlistdict, and all the histograms defined in DQMME.dqmMEs.'''
     if not os.path.isdir(outputdir):
         os.mkdir(outputdir)
     
@@ -17,12 +17,12 @@ def MainProgram(filelist={},outputdir="DQMOutput",debug=False):
     x_arrays = []
     ex_arrays =[]
 
-    for i in filelist.keys():
-      print ("Processing %s"%(filelist[i]))
+    for i in runlistdict.keys():
+      print ("Processing %s"%(runlistdict[i]))
       y_tr = []
       ey_tr = []
       try:
-        inputFile = TFile(filelist[i])
+        inputFile = TFile(runlistdict[i])
         hist = TH1F()
         for j in range(len(DQMME.dqmMEs)):
           histoName = ("DQMData/Run %i/JetMET/Run summary/"%(i)) + DQMME.dqmMEs[j].ME
@@ -36,10 +36,10 @@ def MainProgram(filelist={},outputdir="DQMOutput",debug=False):
               y_tr.append(hist.GetRMS())
               ey_tr.append(hist.GetRMSError())
           except:
-            print ("Could not find " + histoName + " in " + filelist[i])
+            print ("Could not find " + histoName + " in " + runlistdict[i])
             continue
       except:
-        print ("Could not open " + filelist[i])
+        print ("Could not open " + runlistdict[i])
         continue
     
       if(len(y_tr)!=len(DQMME.dqmMEs) or len(ey_tr)!=len(DQMME.dqmMEs)):
@@ -51,7 +51,7 @@ def MainProgram(filelist={},outputdir="DQMOutput",debug=False):
       y_arrays_transposed.append(y_tr)
       ey_arrays_transposed.append(ey_tr)
 
-    if(len(y_arrays_transposed)!=len(filelist.keys()) or len(ey_arrays_transposed)!=len(filelist.keys())):
+    if(len(y_arrays_transposed)!=len(runlistdict.keys()) or len(ey_arrays_transposed)!=len(runlistdict.keys())):
       print ("Could not open some DQM root files. These files might be corrupted")
       print ("Aborting")
       sys.exit()
@@ -66,7 +66,7 @@ def MainProgram(filelist={},outputdir="DQMOutput",debug=False):
     gStyle.SetPadTickY(1)
     gStyle.SetPalette(1)
 
-    keys=filelist.keys()
+    keys=runlistdict.keys()
     for i in range(len(DQMME.dqmMEs)):
       y = []
       ey=[]
@@ -268,7 +268,7 @@ if __name__=="__main__":
     runs.sort()
 
     # Now let's check files
-    x = {}
+    runlistdict = {}
 
     print ("Found a total of %i runs"%len(runs))
     allfiles={}
@@ -287,31 +287,31 @@ if __name__=="__main__":
         if (options.runRangeMode==True):
             # Check if run is in ran
             if (run in runs):
-                if(run in x.keys()):
+                if(run in runlistdict.keys()):
                     print ("Multiple DQM files found for run %i"%(run))
                     print ("Aborting")
                     sys.exit()
-                x[run]=allfiles[run]
+                runlistdict[run]=allfiles[run]
         else:
             for j in options.run:
                 if(run==j):
-                    if(run in x.keys()):
+                    if(run in runlistdict.keys()):
                         print ("Multiple DQM files found for run %i"%(run))
                         print ("Aborting")
                         sys.exit()
-                    x[run]=allfiles[run]
+                    runlistdict[run]=allfiles[run]
 
-    if (len(x)==0):
+    if (len(runlistdict)==0):
         print ("No DQM files corresponding to the requested run numbers found in '%s'"%options.fileLocations)
         sys.exit()
 
     print ("Importing root.  This takes a few seconds...")
     from ROOT import *
     print("Done importing root.  Beginning check of runs...")
-    sortedkeys=x.keys()
+    sortedkeys=runlistdict.keys()
     sortedkeys.sort()
     print("Program will check %i runs"%len(sortedkeys))
     print(sortedkeys)
-    MainProgram(filelist=x,
+    MainProgram(runlistdict=runlistdict,
                 outputdir=outputdir,
                 debug=options.verbose)
