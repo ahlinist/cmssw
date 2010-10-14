@@ -4,7 +4,7 @@
 #include <boost/tokenizer.hpp>
 #include "TTree.h"
 
-#include "CalibCalorimetry/EcalTiming/interface/EcalTimePi0TreeContent.h"
+#include "CalibCalorimetry/EcalTiming/interface/EcalTimeTreeContent.h"
 
 // ****************************************************************
 class TimingEvent

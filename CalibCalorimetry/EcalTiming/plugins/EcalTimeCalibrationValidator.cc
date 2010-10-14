@@ -19,10 +19,10 @@ EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterS
 {
   myInputTree_ = 0;
   inputTreeFile_ = TFile::Open(inputTreeFileName_.c_str());
-  myInputTree_ = (TTree*)inputTreeFile_->Get("EcalTimePi0Analysis");
+  myInputTree_ = (TTree*)inputTreeFile_->Get("EcalTimeAnalysis");
   if(!myInputTree_)
   {
-    edm::LogError("EcalTimeCalibrationValidator") << "Couldn't find tree EcalTimePi0Analysis";
+    edm::LogError("EcalTimeCalibrationValidator") << "Couldn't find tree EcalTimeAnalysis";
     produce_ = false;
     return;
   }
@@ -30,7 +30,7 @@ EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterS
   myOutputTree_ = 0;
   outputTreeFile_ = TFile::Open(outputTreeFileName_.c_str(),"recreate");
   outputTreeFile_->cd();
-  myOutputTree_ = new TTree("EcalTimePi0Analysis_Validator","EcalTimePi0Analysis_Validator");
+  myOutputTree_ = new TTree("EcalTimeAnalysis_Validator","EcalTimeAnalysis_Validator");
   //myOutputTree_->SetDirectory(0);
   if(!myOutputTree_)
   {
@@ -53,7 +53,7 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
     return;
 
   // prepare output
-  EcalTimePi0TreeContent ttreeMembersOutput;
+  EcalTimeTreeContent ttreeMembersOutput;
 
   // Set branch addresses for input tree
   setBranchAddresses(myInputTree_,ttreeMembersInput_);
@@ -123,7 +123,7 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
         }
         // jitter + itimeconst (OLD TREE)
         //ttreeMembersOutput.cryTimesEB_[cry]=25*(ttreeMembersInput_.cryUTimesEB_[cry]-5)+itimeconst;
-        // New Pi0 tree-->applying diffs wrt old timing calibrations
+        // New  tree-->applying diffs wrt old timing calibrations
         //ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC] = itimeconst+ttreeMembersInput_.xtalInBCTime[bCluster][cryInBC];
         ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC]+= itimeconst;
       }
