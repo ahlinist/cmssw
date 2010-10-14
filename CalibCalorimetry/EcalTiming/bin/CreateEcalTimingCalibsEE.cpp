@@ -60,10 +60,10 @@ int main(int argc, char* argv[])
   // init to sensible defaults
   avgTimeMin = -1; // in ns
   avgTimeMax = 1; // in ns
-  minAmpEB = 15; // GeV
-  minAmpEE = 15; // GeV
-  maxHitTimeEE = 5; // ns
-  minHitTimeEE = -5; // ns
+  minAmpEB = 5; // GeV
+  minAmpEE = 5; // GeV
+  maxHitTimeEE = 15; // ns
+  minHitTimeEE = -15; // ns
   maxE1E9 = 0.95; // EB only
   maxSwissCrossNoise = 0.95; // EB only
   inBxs = "-1";
