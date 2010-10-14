@@ -4,6 +4,8 @@
 #include <boost/tokenizer.hpp>
 #include "TTree.h"
 
+#include "CalibCalorimetry/EcalTiming/interface/EcalTimePi0TreeContent.h"
+
 // ****************************************************************
 class TimingEvent
 {
@@ -214,71 +216,6 @@ class CrystalCalibration
 
 
 // ****************************************************************
-// Data members (globals)
-
-struct TTreeMembers {
-  int numEBcrys_;
-  int numEEcrys_;
-  int cryHashesEB_[61200];
-  int cryHashesEE_[14648];
-  float cryTimesEB_[61200];
-  float cryTimesEE_[14648];
-  float cryUTimesEB_[61200];
-  float cryUTimesEE_[14648];
-  float cryTimeErrorsEB_[61200];
-  float cryTimeErrorsEE_[14648];
-  float cryAmpsEB_[61200];
-  float cryAmpsEE_[14648];
-  float cryETEB_[61200];
-  float cryETEE_[14648];
-  float e1Oe9EB_[61200];
-  float kswisskEB_[61200];
-  int numTriggers_;
-  int numTechTriggers_;
-  int triggers_[200];
-  int techtriggers_[200];
-  float absTime_;
-  int lumiSection_;
-  int bx_;
-  int orbit_; 
-  float correctionToSample5EB_;
-  float correctionToSample5EEP_;
-  float correctionToSample5EEM_;
-} TTreeMembers_;
-
-
-void setBranchAddresses(TTree* myTree, TTreeMembers& treeVars)
-{
-  myTree->SetBranchAddress("numberOfEBcrys",&treeVars.numEBcrys_);
-  myTree->SetBranchAddress("numberOfEEcrys",&treeVars.numEEcrys_);
-  myTree->SetBranchAddress("crystalHashedIndicesEB",treeVars.cryHashesEB_);
-  myTree->SetBranchAddress("crystalHashedIndicesEE",treeVars.cryHashesEE_);
-  myTree->SetBranchAddress("crystalTimesEB",treeVars.cryTimesEB_);
-  myTree->SetBranchAddress("crystalTimesEE",treeVars.cryTimesEE_);
-  myTree->SetBranchAddress("crystalUncalibTimesEB",treeVars.cryUTimesEB_);
-  myTree->SetBranchAddress("crystalUncalibTimesEE",treeVars.cryUTimesEE_);
-  myTree->SetBranchAddress("crystalTimeErrorsEB",treeVars.cryTimeErrorsEB_);
-  myTree->SetBranchAddress("crystalTimeErrorsEE",treeVars.cryTimeErrorsEE_);
-  myTree->SetBranchAddress("crystalAmplitudesEB",treeVars.cryAmpsEB_);
-  myTree->SetBranchAddress("crystalAmplitudesEE",treeVars.cryAmpsEE_);
-  myTree->SetBranchAddress("crystalETEB",treeVars.cryETEB_);
-  myTree->SetBranchAddress("crystalETEE",treeVars.cryETEE_);
-  myTree->SetBranchAddress("e1Oe9EB",treeVars.e1Oe9EB_);
-  myTree->SetBranchAddress("kswisskEB",treeVars.kswisskEB_);
-  myTree->SetBranchAddress("numTriggers",&treeVars.numTriggers_);
-  myTree->SetBranchAddress("triggers",&(treeVars.triggers_));
-  myTree->SetBranchAddress("numTechTriggers",&treeVars.numTechTriggers_);
-  myTree->SetBranchAddress("techtriggers",treeVars.techtriggers_);
-  myTree->SetBranchAddress("absTime",&treeVars.absTime_);
-  myTree->SetBranchAddress("lumiSection",&treeVars.lumiSection_);
-  myTree->SetBranchAddress("bx",&treeVars.bx_);
-  myTree->SetBranchAddress("orbit",&treeVars.orbit_);
-  myTree->SetBranchAddress("correctionToSampleEB",&treeVars.correctionToSample5EB_);
-  myTree->SetBranchAddress("correctionToSampleEEM",&treeVars.correctionToSample5EEM_);
-  myTree->SetBranchAddress("correctionToSampleEEP",&treeVars.correctionToSample5EEP_);
-}
-
-
 //
 std::vector<std::string> split(std::string msg, std::string separator)
 {
