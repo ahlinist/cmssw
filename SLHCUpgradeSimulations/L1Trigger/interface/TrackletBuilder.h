@@ -1,13 +1,44 @@
-
-/*********************************/
-/*********************************/
-/**                             **/
-/** Stacked Tracker Simulations **/
-/**        Andrew W. Rose       **/
-/**             2008            **/
-/**                             **/
-/*********************************/
-/*********************************/
+/// ////////////////////////////////////////
+/// Stacked Tracker Simulations          ///
+/// Written by:                          ///
+/// Andrew W. Rose                       ///
+/// 2008                                 ///
+///                                      ///
+/// Changed by:                          ///
+/// Nicola Pozzobon                      ///
+/// UNIPD                                ///
+/// 2010, June, August, October          ///
+///                                      ///
+/// Added features:                      ///
+/// Tracklets must be made of Stubs in   ///
+/// consecutive Stacks with inner one    ///
+/// which is odd in order and outer one  ///
+/// which is even (LB Hermetic Design).  ///
+/// Other options (e.g. 2nd-3rd) are     ///
+/// FORBIDDEN!                           ///
+/// Possibility to have a flag telling   ///
+/// if the Tracklet is ok with the       ///
+/// constraints imposed by hermetic      ///
+/// design. Just work with iPhi()        ///
+/// Possibility to have Fake Tracklet    ///
+/// flag in Simulations 'isFake()' and   ///
+/// Trk ID too 'trackID()'. A Tracklet   ///
+/// is flagged as Fake in two cases:     ///
+/// 1) at least one Stub is Fake         ///
+/// 2) both Stubs are genuine but coming ///
+/// from different SimTracks             ///
+/// Just get Stub fakeness and/or use    ///
+/// the same procedure with the same     ///
+/// CAVEATs.                             ///
+/// Possibility to have a Tracklet VTX   ///
+/// which is different from the default  ///
+/// one (0,0,z). Just try to build 2     ///
+/// Tracklets from each pair of Stubs,   ///
+/// one with (0,0,z), one with the other ///
+/// option which is supposed to be the   ///
+/// "true" one.                          ///
+/// Find Axis and VTX by TRUE helix fit  ///
+/// ////////////////////////////////////////
 
 #ifndef TRACKLET_BUILDER_H
 #define TRACKLET_BUILDER_H
@@ -28,8 +59,9 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerGeometryRecord.h"
-#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerGeometry.h"
+#include "SimDataFormats/TrackerDigiSimLink/interface/PixelDigiSimLink.h"
+#include "DataFormats/Common/interface/DetSetVector.h"
+
 #include "SimDataFormats/SLHC/interface/StackedTrackerTypes.h"
 
 #include "SLHCUpgradeSimulations/Utilities/interface/constants.h"
@@ -43,238 +75,442 @@
 #include "TrackingTools/MaterialEffects/interface/PropagatorWithMaterial.h"
 
 #include "SLHCUpgradeSimulations/Utilities/interface/classInfo.h"
+//
+#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerGeometryRecord.h"
+#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerGeometry.h"
+#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerDetUnit.h"
+#include "SLHCUpgradeSimulations/Utilities/interface/StackedTrackerDetId.h"
+
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
 template< typename T >
 class TrackletBuilder : public edm::EDProducer {
 
-	typedef cmsUpgrades::GlobalStub< T > 							GlobalStubType;
-	typedef std::vector	< GlobalStubType >							GlobalStubCollectionType;
-	//typedef edm::Ref< GlobalStubCollectionType, GlobalStubType >	GlobalStubRefType;
-	typedef edm::Ptr< GlobalStubType >	GlobalStubPtrType;
-	typedef std::vector<  cmsUpgrades::Tracklet< T > > 				TrackletCollectionType;
+  typedef cmsUpgrades::GlobalStub< T >                  GlobalStubType;
+  typedef std::vector  < GlobalStubType >               GlobalStubCollectionType;
+  //typedef edm::Ref< GlobalStubCollectionType, GlobalStubType >  GlobalStubRefType;
+  typedef edm::Ptr< GlobalStubType >  GlobalStubPtrType;
+  typedef std::vector<  cmsUpgrades::Tracklet< T > >    TrackletCollectionType;
+  
+  //just for internal use
+  //typedef std::map< unsigned int, std::vector< GlobalStubRefType > >   GlobalStubMapType;
+  typedef std::map< unsigned int, std::vector< GlobalStubPtrType > >   GlobalStubMapType;
 
-	//just for internal use
-	//typedef std::map< unsigned int, std::vector< GlobalStubRefType > > 	GlobalStubMapType;
-	typedef std::map< unsigned int, std::vector< GlobalStubPtrType > > 	GlobalStubMapType;
+  public:
+    explicit TrackletBuilder(const edm::ParameterSet& iConfig): mClassInfo( new cmsUpgrades::classInfo(__PRETTY_FUNCTION__) )
+    {
+      produces<TrackletCollectionType>("ShortTracklets");
 
-	public:
-		explicit TrackletBuilder(const edm::ParameterSet& iConfig): mClassInfo( new cmsUpgrades::classInfo(__PRETTY_FUNCTION__) )
-		{
-			produces<TrackletCollectionType>("ShortTracklets");
+      mPtThreshold = iConfig.getParameter<double>("minPtThreshold");
+      mIPWidth = iConfig.getParameter<double>("ipWidth");
+      mFastPhiCut = iConfig.getParameter<double>("fastPhiCut");
+      GlobalStubsInputTag  = iConfig.getParameter<edm::InputTag>("GlobalStubs");
+      
+      theBeamSpotLabel = iConfig.getParameter<edm::InputTag>("BeamSpotLabel");
+      customLabel = iConfig.getParameter<edm::InputTag>("customLabel");
+      
+      xbeam = iConfig.getParameter<double>("BeamSpotSetX");
+      ybeam = iConfig.getParameter<double>("BeamSpotSetY");
+      zbeam = iConfig.getParameter<double>("BeamSpotSetZ");
+    }
 
-			mPtThreshold = iConfig.getParameter<double>("minPtThreshold");
-			mIPWidth = iConfig.getParameter<double>("ipWidth");
-			mFastPhiCut = iConfig.getParameter<double>("fastPhiCut");
-			GlobalStubsInputTag  = iConfig.getParameter<edm::InputTag>("GlobalStubs");
-		}
+    ~TrackletBuilder(){}
 
-		~TrackletBuilder(){}
+  private:
 
-	private:
+    edm::InputTag theBeamSpotLabel;
+    edm::InputTag customLabel;
+    double xbeam, ybeam, zbeam;
 
-/*		bool CheckTwoStubsForCompatibility( const cmsUpgrades::Tracklet<T> &aTracklet )
-		{
-			if ( (aTracklet.stub(0).isNull()) || (aTracklet.stub(1).isNull()) ){
-				std::cout	<<"Failure!"<<std::endl;
-				return false;
-			}
+    virtual void beginJob(const edm::EventSetup& iSetup)
+    {
+      iSetup.get<cmsUpgrades::StackedTrackerGeometryRecord>().get(StackedTrackerGeomHandle);
+      theStackedTracker = StackedTrackerGeomHandle.product();
 
-			//std::cout<<"Inner Stub" << (aTracklet.stub(0)->print()) <<std::endl;
-			//std::cout<<"Outer Stub" << (aTracklet.stub(1)->print()) <<std::endl;
+      iSetup.get<IdealMagneticFieldRecord>().get(magnet);
+      magnet_ = magnet.product();
+      mMagneticFieldStrength = magnet_->inTesla(GlobalPoint(0,0,0)).z();
+      // Compute the scaling factor (conversion cm->m, Gev-c factor, magnetic field)
+      mCompatibilityScalingFactor = (100.0 * 2.0e+9 * mPtThreshold) / (cmsUpgrades::KGMS_C * mMagneticFieldStrength);
+      // Invert so we use multiplication instead of division in the comparison
+      mCompatibilityScalingFactor = 1.0 / mCompatibilityScalingFactor;
+    }
 
-			double outerPointRadius = aTracklet.stub(1)->position().perp();
-  			double innerPointRadius = aTracklet.stub(0)->position().perp();
-  			double innerPointZ, outerPointZ;
+    virtual void produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+    {
+      unsigned int max_layer=0;
 
-  			// Check for seed compatibility given a pt cut
-  			// Threshold computed from radial location of hits
-  			double deltaPhiThreshold = (outerPointRadius - innerPointRadius) * mCompatibilityScalingFactor;  
+      edm::Handle< GlobalStubCollectionType > GlobalStubHandle;
+      iEvent.getByLabel( GlobalStubsInputTag , GlobalStubHandle);
 
-  			// Rebase the angles in terms of 0-2PI, should
-  			// really have been written this way in CMSSW...
-//  			if ( innerPointPhi < 0.0 ) innerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
-//  			if ( outerPointPhi < 0.0 ) outerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
+      edm::Handle<edm::DetSetVector<PixelDigiSimLink> >  thePixelDigiSimLink;
+      iEvent.getByLabel("simSiPixelDigis", thePixelDigiSimLink);
+      
+      // The beam spot position
+      edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+      iEvent.getByLabel(theBeamSpotLabel,recoBeamSpotHandle); 
+      math::XYZPoint BSPosition_;
+      if (theBeamSpotLabel==customLabel)  {
+          BSPosition_.SetX(xbeam);
+          BSPosition_.SetY(ybeam);
+          BSPosition_.SetZ(zbeam);
+      }
+      else BSPosition_ = recoBeamSpotHandle->position();
+  
+      GlobalStubMapType GlobalStubs;
+      //GlobalStubMapType::const_iterator GlobalStubsIter;
 
-			// Delta phi computed from hit phi locations
-  			double outerPointPhi = aTracklet.stub(1)->position().phi();
-  			double innerPointPhi = aTracklet.stub(0)->position().phi();
+      for (  unsigned int i = 0; i != GlobalStubHandle->size() ; ++i ) {
+        unsigned int layer = GlobalStubHandle->at(i).Id().layer();
+        //GlobalStubs[ layer ].push_back( GlobalStubRefType( GlobalStubHandle , i ) );
+        GlobalStubs[ layer ].push_back( GlobalStubPtrType( GlobalStubHandle , i ) );
+        if( layer > max_layer ) max_layer = layer;
+      }
 
-  			double deltaPhi = outerPointPhi - innerPointPhi;
-			if (deltaPhi<0) deltaPhi = -deltaPhi;
-			while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
+      ////////////////////////////////////////////////////////////////////////////////////////////
+      //First get the global stubs and form short tracklets...
+      ////////////////////////////////////////////////////////////////////////////////////////////
 
+      std::auto_ptr< TrackletCollectionType > ShortTrackletOutput(new TrackletCollectionType );
 
-			if ( deltaPhi < deltaPhiThreshold ) {
-				//edm::LogInfo("StackedTrackerLocalStubSimBuilder")<<"compatible in phi" << flush;
-  			  	innerPointZ = aTracklet.stub(0)->position().z();
-  			  	outerPointZ = aTracklet.stub(1)->position().z();
-				double positiveZBoundary = (mIPWidth - outerPointZ) * (outerPointRadius - innerPointRadius);
-				double negativeZBoundary = -(mIPWidth + outerPointZ) * (outerPointRadius - innerPointRadius);
-				double multipliedLocation = (innerPointZ - outerPointZ) * outerPointRadius;
+      for  ( unsigned int innerLayerNum = 0 ; innerLayerNum != max_layer ; ++innerLayerNum ){
 
-				if ( ( multipliedLocation < positiveZBoundary ) && 	( multipliedLocation > negativeZBoundary ) ){
-					return true;
-				}else{
-					return false;
-				}
-			}else{
-				return false;
-			}
-			return false;
-		}*/
+        ///*** NEW for 3_3_6
+        ///*** forbid all Tracklets made across different
+        ///*** Double Stacks (eg Outer L6 Inner L7)
+        ///*** If inner Layer is ODD, skip it
+        if ( innerLayerNum % 2 == 1 ) continue;
+        
+        //std::vector< GlobalStubRefType > innerHits, outerHits;
+        //typedef typename std::vector< GlobalStubRefType >::iterator VRT_IT;
+        std::vector< GlobalStubPtrType > innerHits, outerHits;
+        typedef typename std::vector< GlobalStubPtrType >::iterator VRT_IT;
 
+        if ( GlobalStubs.find( innerLayerNum )  !=  GlobalStubs.end() )  innerHits = GlobalStubs.find( innerLayerNum )->second;
+        if ( GlobalStubs.find( innerLayerNum+1 )!=  GlobalStubs.end() )  outerHits = GlobalStubs.find( innerLayerNum+1 )->second;
 
-		virtual void beginJob(const edm::EventSetup& iSetup)
-		{
-			iSetup.get<cmsUpgrades::StackedTrackerGeometryRecord>().get(StackedTrackerGeomHandle);
-			theStackedTracker = StackedTrackerGeomHandle.product();
+        if( innerHits.size() && outerHits.size() ){
+          for( VRT_IT innerHitIter = innerHits.begin() ; innerHitIter != innerHits.end() ; ++innerHitIter ){
+            for( VRT_IT outerHitIter = outerHits.begin() ; outerHitIter != outerHits.end() ; ++outerHitIter ){
 
-			iSetup.get<IdealMagneticFieldRecord>().get(magnet);
-			magnet_ = magnet.product();
-			mMagneticFieldStrength = magnet_->inTesla(GlobalPoint(0,0,0)).z();
-			// Compute the scaling factor (conversion cm->m, Gev-c factor, magnetic field)
-			mCompatibilityScalingFactor = (100.0 * 2.0e+9 * mPtThreshold) / (cmsUpgrades::KGMS_C * mMagneticFieldStrength);
-			// Invert so we use multiplication instead of division in the comparison
-			mCompatibilityScalingFactor = 1.0 / mCompatibilityScalingFactor;
-		}
+              ///*** NEW for 3_3_6
+              ///*** we want both stubs to be in the same phi-sector
+              ///*** (see Hermetic RPhi Section)
+              ///*** and therefore a cross check is needed to
+              ///*** forbid Tracklets across different ladders
+              cmsUpgrades::StackedTrackerDetId IdetID = (**innerHitIter).Id();
+              cmsUpgrades::StackedTrackerDetId OdetID = (**outerHitIter).Id();
 
+              GlobalPoint inner = (**innerHitIter).position();
+              GlobalPoint outer = (**outerHitIter).position();
+              double deltaPhi = inner.phi()-outer.phi();
+              if (deltaPhi<0) deltaPhi = -deltaPhi;
+              if (deltaPhi > cmsUpgrades::KGMS_PI) deltaPhi = 2 * cmsUpgrades::KGMS_PI - deltaPhi;
 
+              GlobalPoint innerBeamSpot(inner.x()-BSPosition_.x(), inner.y()-BSPosition_.y(), inner.z()-BSPosition_.z());
+              GlobalPoint outerBeamSpot(outer.x()-BSPosition_.x(), outer.y()-BSPosition_.y(), outer.z()-BSPosition_.z());
+              double deltaPhiBeamSpot = innerBeamSpot.phi()-outerBeamSpot.phi();
+              if (deltaPhiBeamSpot<0) deltaPhiBeamSpot = -deltaPhiBeamSpot;
+              if (deltaPhiBeamSpot > cmsUpgrades::KGMS_PI) deltaPhiBeamSpot = 2 * cmsUpgrades::KGMS_PI - deltaPhiBeamSpot;
 
-		virtual void produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
-		{
-			unsigned int max_layer=0;
+              ///*** NEW for 3_3_6
+              ///*** fakeness confirmation in MC events
+              std::pair<int,int> zxy;
+              if (iEvent.isRealData() == false) {                
+                zxy = CheckFakeness(*innerHitIter,
+                              *outerHitIter//,
+                              //theStackedTracker,
+                              //thePixelDigiSimLink
+                            );
+              }
 
-			edm::Handle< GlobalStubCollectionType > GlobalStubHandle;
-			iEvent.getByLabel( GlobalStubsInputTag , GlobalStubHandle);
+              if( deltaPhi<mFastPhiCut ){ // rough search in phi!
+                if( (inner.z()>0&&outer.z()>-mIPWidth) || (inner.z()<0&&outer.z()<+mIPWidth)  ){  //rough search by z sector         
 
-			GlobalStubMapType GlobalStubs;
-			//GlobalStubMapType::const_iterator GlobalStubsIter;
+                  double outerPointRadius = outer.perp(); 
+                  double innerPointRadius = inner.perp();
+                  double deltaRadius = outerPointRadius - innerPointRadius;
 
-			for (  unsigned int i = 0; i != GlobalStubHandle->size() ; ++i ) {
-				unsigned int layer = GlobalStubHandle->at(i).Id().layer();
-				//GlobalStubs[ layer ].push_back( GlobalStubRefType( GlobalStubHandle , i ) );
-				GlobalStubs[ layer ].push_back( GlobalStubPtrType( GlobalStubHandle , i ) );
-				if( layer > max_layer ) max_layer = layer;
-			}
+                  double deltaPhiThreshold = deltaRadius * mCompatibilityScalingFactor;  
+                  if ( deltaPhi < deltaPhiThreshold ) { // detailer search in phi!
+                    double positiveZBoundary = (mIPWidth - outer.z()) * deltaRadius;
+                    double negativeZBoundary = -(mIPWidth + outer.z()) * deltaRadius;
+                    double multipliedLocation = (inner.z() - outer.z()) * outerPointRadius;
 
-			////////////////////////////////////////////////////////////////////////////////////////////
-			//First get the global stubs and form short tracklets...
-			////////////////////////////////////////////////////////////////////////////////////////////
+                    if ( ( multipliedLocation < positiveZBoundary ) &&   ( multipliedLocation > negativeZBoundary ) ){ // detailed search in z!
+                      // all agree so make a tracklet!!!
+                      cmsUpgrades::Tracklet<T> tempShortTracklet;
+                      tempShortTracklet.addHit( 0 , *innerHitIter );
+                      tempShortTracklet.addHit( 1 , *outerHitIter );
 
-			std::auto_ptr< TrackletCollectionType > ShortTrackletOutput(new TrackletCollectionType );
+                      /// OLD Fit still available
+                      double xv = 0.0;
+                      double yv = 0.0;
 
-			for	( unsigned int innerLayerNum = 0 ; innerLayerNum != max_layer ; ++innerLayerNum ){
+                      double projected_z22X = outer.z() - ( outerPointRadius * (outer.z()-inner.z()) / deltaRadius );
+                      tempShortTracklet.addVertex22X( GlobalPoint(xv,yv,projected_z22X ));
 
-				//std::vector< GlobalStubRefType > innerHits, outerHits;
-				//typedef typename std::vector< GlobalStubRefType >::iterator VRT_IT;
-				std::vector< GlobalStubPtrType > innerHits, outerHits;
-				typedef typename std::vector< GlobalStubPtrType >::iterator VRT_IT;
+                      /// Here NEW Fit begins
+                      /// Find circumference center using Cramer!
+                      double xo = outer.x();
+                      double yo = outer.y();
+                      double xi = inner.x();
+                      double yi = inner.y();
 
-				if ( GlobalStubs.find( innerLayerNum )	!=  GlobalStubs.end() )	innerHits = GlobalStubs.find( innerLayerNum )->second;
-				if ( GlobalStubs.find( innerLayerNum+1 )!=  GlobalStubs.end() )	outerHits = GlobalStubs.find( innerLayerNum+1 )->second;
+                      double ro2 = outer.perp2();
+                      double ri2 = inner.perp2();
+                      double rv2 = xv*xv+yv*yv;
+                      double D = (xo-xi)*(yi-yv)-(yo-yi)*(xi-xv);
+                      if (D==0) continue;
+                      double Dx = 0.5*(ro2-ri2)*(yi-yv)-0.5*(ri2-rv2)*(yo-yi);
+                      double Dy = 0.5*(ri2-rv2)*(xo-xi)-0.5*(ro2-ri2)*(xi-xv);
+                      double xc = Dx/D;
+                      double yc = Dy/D;
+                      /// Find angles wrt center
+                      double phio = atan2( yo-yc, xo-xc );
+                      double phii = atan2( yi-yc, xi-xc );
+                      double phiv = atan2( yv-yc, xv-xc );
+                      /// Find advancement!
+                      double pigreco = 4.0*atan(1.0);
+                      double phioi = phio - phii;
+                      if ( fabs(phioi) >= pigreco) {
+                        if ( phioi>0 ) phioi = phioi - 2*pigreco;
+                        else phioi = 2*pigreco - fabs(phioi);
+                      }
+                      double phiiv = phii - phiv;
+                      if ( fabs(phiiv) >= pigreco) {
+                        if ( phiiv>0 ) phiiv = phiiv - 2*pigreco;
+                        else phiiv = 2*pigreco - fabs(phiiv);
+                      }
+                      if (phioi==0) continue;
+                      double projected_z = inner.z() - (outer.z()-inner.z())*phiiv/phioi;
 
-				if( innerHits.size() && outerHits.size() ){
-					for( VRT_IT innerHitIter = innerHits.begin() ; innerHitIter != innerHits.end() ; ++innerHitIter ){
-						for( VRT_IT outerHitIter = outerHits.begin() ; outerHitIter != outerHits.end() ; ++outerHitIter ){
-// -----------------------------------------------------------------------------------------------------------------------
-							GlobalPoint inner = (**innerHitIter).position();
-							GlobalPoint outer = (**outerHitIter).position();
+                      /// Set Results of the New Fit
+                      tempShortTracklet.addVertex( GlobalPoint(xv,yv,projected_z ));
+                      tempShortTracklet.addAxis( GlobalPoint(xc,yc,0 ));
 
-			  				double deltaPhi = inner.phi()-outer.phi();
-							if (deltaPhi<0) deltaPhi = -deltaPhi;
-							//while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
-							if (deltaPhi > cmsUpgrades::KGMS_PI) deltaPhi = 2 * cmsUpgrades::KGMS_PI - deltaPhi;
+                      if ( IdetID.iPhi() != OdetID.iPhi() )    tempShortTracklet.setHermetic(false);
+                      else  tempShortTracklet.setHermetic(true);
 
-							if( deltaPhi<mFastPhiCut ){ // rough search in phi!
-								if( (inner.z()>0&&outer.z()>-mIPWidth) || (inner.z()<0&&outer.z()<+mIPWidth)  ){  //rough search by z sector 				
+                      if (iEvent.isRealData() == false) {
+                        tempShortTracklet.setFakeness( zxy.second );
+                        tempShortTracklet.setTrackID( zxy.first );
+                      }
+                      tempShortTracklet.setBeamSpot00(true);
+                      
+                      // add tracket into event
+                      ShortTrackletOutput->push_back( tempShortTracklet );
+                      
+                    } // end if(detailed search in z)
+                  } //end if(detailed search in phi)
 
-									double outerPointRadius = outer.perp(); 
-						  			double innerPointRadius = inner.perp();
-						  			double deltaRadius = outerPointRadius - innerPointRadius;
+                } //end if(rough search by z-sector)
+              } //end if(rough search in phi)
 
-  									double deltaPhiThreshold = deltaRadius * mCompatibilityScalingFactor;  
-									if ( deltaPhi < deltaPhiThreshold ) { // detailer search in phi!
-										double positiveZBoundary = (mIPWidth - outer.z()) * deltaRadius;
-										double negativeZBoundary = -(mIPWidth + outer.z()) * deltaRadius;
-										double multipliedLocation = (inner.z() - outer.z()) * outerPointRadius;
+              /// Check tracklet made with true beam spot
+              /// Use everything in the beamspot reference frame for a while
+              if( deltaPhiBeamSpot<mFastPhiCut ){ // rough search in phi!
+                if( (innerBeamSpot.z()>0&&outerBeamSpot.z()>-mIPWidth) || (innerBeamSpot.z()<0&&outerBeamSpot.z()<+mIPWidth)  ){  //rough search by z sector        
 
-										if ( ( multipliedLocation < positiveZBoundary ) && 	( multipliedLocation > negativeZBoundary ) ){ // detailer search in z!
-											// all agree so make a tracklet!!!
-											cmsUpgrades::Tracklet<T> tempShortTracklet;
-											tempShortTracklet.addHit( 0 , *innerHitIter );
-											tempShortTracklet.addHit( 1 , *outerHitIter );
+                  double outerPointRadius = outerBeamSpot.perp(); 
+                  double innerPointRadius = innerBeamSpot.perp();
+                  double deltaRadius = outerPointRadius - innerPointRadius;
 
-											double projected_z = outer.z() - ( outerPointRadius * (outer.z()-inner.z()) / deltaRadius );
-											tempShortTracklet.addVertex( GlobalPoint(0.0,0.0,projected_z ));
-					
-											// add tracket into event
-											ShortTrackletOutput->push_back( tempShortTracklet );
+                  double deltaPhiThreshold = deltaRadius * mCompatibilityScalingFactor;  
+                  if ( deltaPhiBeamSpot < deltaPhiThreshold ) { // detailer search in phi!
+                    double positiveZBoundary = (mIPWidth - outerBeamSpot.z()) * deltaRadius;
+                    double negativeZBoundary = -(mIPWidth + outerBeamSpot.z()) * deltaRadius;
+                    double multipliedLocation = (innerBeamSpot.z() - outerBeamSpot.z()) * outerPointRadius;
 
-										} // end detailed search in z
-									} //end if(detailed search in phi)
+                    if ( ( multipliedLocation < positiveZBoundary ) &&  ( multipliedLocation > negativeZBoundary ) ){ // detailed search in z!
+                      // all agree so make a tracklet!!!
+                      cmsUpgrades::Tracklet<T> tempShortTracklet;
+                      tempShortTracklet.addHit( 0 , *innerHitIter );
+                      tempShortTracklet.addHit( 1 , *outerHitIter );
 
-								} //end if(rough search by z-sector)
-							} //end if(rough search in phi)
+                      /// OLD Fit still available
+                      double xv = BSPosition_.x();
+                      double yv = BSPosition_.y();
 
-// -----------------------------------------------------------------------------------------------------------------------
+                      double projectedBS_z22X = outerBeamSpot.z() - ( outerPointRadius * (outerBeamSpot.z()-innerBeamSpot.z()) / deltaRadius );
+                      tempShortTracklet.addVertex22X( GlobalPoint(xv,yv,projectedBS_z22X ));
 
-							/*cmsUpgrades::Tracklet<T> tempShortTracklet;
-							tempShortTracklet.addHit( 0 , *innerHitIter );
-							tempShortTracklet.addHit( 1 , *outerHitIter );
+                      /// Here NEW Fit begins
+                      /// Find circumference center using Cramer!
+                      double xo = outer.x();
+                      double yo = outer.y();
+                      double xi = inner.x();
+                      double yi = inner.y();
 
-							if( CheckTwoStubsForCompatibility( tempShortTracklet ) ){
+                      double ro2 = outer.perp2();
+                      double ri2 = inner.perp2();
+                      double rv2 = xv*xv+yv*yv;
+                      double D = (xo-xi)*(yi-yv)-(yo-yi)*(xi-xv);
+                      if (D==0) continue;
+                      double Dx = 0.5*(ro2-ri2)*(yi-yv)-0.5*(ri2-rv2)*(yo-yi);
+                      double Dy = 0.5*(ri2-rv2)*(xo-xi)-0.5*(ro2-ri2)*(xi-xv);
+                      double xc = Dx/D;
+                      double yc = Dy/D;
+                      /// Find angles wrt center
+                      double phio = atan2( yo-yc, xo-xc );
+                      double phii = atan2( yi-yc, xi-xc );
+                      double phiv = atan2( yv-yc, xv-xc );
+                      /// Find advancement!
+                      double pigreco = 4.0*atan(1.0);
+                      double phioi = phio - phii;
+                      if ( fabs(phioi) >= pigreco) {
+                        if ( phioi>0 ) phioi = phioi - 2*pigreco;
+                        else phioi = 2*pigreco - fabs(phioi);
+                      }
+                      double phiiv = phii - phiv;
+                      if ( fabs(phiiv) >= pigreco) {
+                        if ( phiiv>0 ) phiiv = phiiv - 2*pigreco;
+                        else phiiv = 2*pigreco - fabs(phiiv);
+                      }
+                      if (phioi==0) continue;
+                      double projectedBS_z = inner.z() - (outer.z()-inner.z())*phiiv/phioi;
 
-								GlobalPoint inner = tempShortTracklet.stub(0)->position();
-								GlobalPoint outer = tempShortTracklet.stub(1)->position();
-						
-								double deltaR_=outer.perp()-inner.perp();
-								double deltaZ_=outer.z()-inner.z();
+                      /// Set Results of the New Fit
+                      tempShortTracklet.addVertex( GlobalPoint(xv,yv,projectedBS_z ));
+                      tempShortTracklet.addAxis( GlobalPoint(xc,yc,0 ));
 
-								double projected_z = outer.z() - ( outer.perp() * deltaZ_ / deltaR_ );
-								tempShortTracklet.addVertex( GlobalPoint(0.0,0.0,projected_z ));
+                      if ( IdetID.iPhi() != OdetID.iPhi() )    tempShortTracklet.setHermetic(false);
+                      else  tempShortTracklet.setHermetic(true);
 
+                      if (iEvent.isRealData() == false) {
+                        tempShortTracklet.setFakeness( zxy.second );
+                        tempShortTracklet.setTrackID( zxy.first );
+                      }
+                      tempShortTracklet.setBeamSpot00(false);
+                      
+                      // add tracket into event
+                      ShortTrackletOutput->push_back( tempShortTracklet );
 
-								ShortTrackletOutput->push_back( tempShortTracklet );
-							}*/
+                    } // end if(detailed search in z)
+                  } //end if(detailed search in phi)
 
-						}
-					}
-				}
-			}
+                } //end if(rough search by z-sector)
+              } //end if(rough search in phi)
 
-			std::cout	<<"Made " << ShortTrackletOutput->size() << " short (two stub) tracklets of type " << (mClassInfo->TemplateTypes().begin()->second) << "." << std::endl;
-			iEvent.put(ShortTrackletOutput, "ShortTracklets");
-					
-			GlobalStubs.clear();
-		}
+            }
+          }
+        }
+      }
 
+      //std::cout  <<"Made " << ShortTrackletOutput->size() << " short (two stub) tracklets of type " << (mClassInfo->TemplateTypes().begin()->second) << "." << std::endl;
+      iEvent.put(ShortTrackletOutput, "ShortTracklets");
 
-		virtual void endJob(){
-		}
+      GlobalStubs.clear();
+    } //end of produce
+
+    virtual void endJob(){
+    }
       
 
 //
 // The class members
 //
-		edm::ESHandle<cmsUpgrades::StackedTrackerGeometry> StackedTrackerGeomHandle;
-		const cmsUpgrades::StackedTrackerGeometry *theStackedTracker;
-		//cmsUpgrades::StackedTrackerGeometry::StackContainerIterator StackedTrackerIterator;
+    edm::ESHandle<cmsUpgrades::StackedTrackerGeometry> StackedTrackerGeomHandle;
+    const cmsUpgrades::StackedTrackerGeometry *theStackedTracker;
+    //cmsUpgrades::StackedTrackerGeometry::StackContainerIterator StackedTrackerIterator;
 
-        edm::InputTag GlobalStubsInputTag;
+    edm::InputTag GlobalStubsInputTag;
 
-		edm::ESHandle<MagneticField> magnet;
-		const MagneticField *magnet_;
-		double mMagneticFieldStrength;
-		double mCompatibilityScalingFactor;
+    edm::ESHandle<MagneticField> magnet;
+    const MagneticField *magnet_;
+    double mMagneticFieldStrength;
+    double mCompatibilityScalingFactor;
 
-		double mPtThreshold;
-		double mIPWidth;
+    double mPtThreshold;
+    double mIPWidth;
 
-		double mFastPhiCut;
+    double mFastPhiCut;
 
-		const cmsUpgrades::classInfo *mClassInfo;
+    const cmsUpgrades::classInfo *mClassInfo;
 
-};
+    
+    std::pair<int,int> CheckFakeness(       GlobalStubPtrType innerStub,
+                                            GlobalStubPtrType outerStub//,
+                                            //const cmsUpgrades::StackedTrackerGeometry *theStackedTracker,
+                                            //edm::Handle<edm::DetSetVector<PixelDigiSimLink> >  thePixelDigiSimLink 
+                      );
+}; /// End of Class Implementation
+
+
+/// Specify Templates
+/// Pixel Digis
+template<>
+  std::pair<int,int> TrackletBuilder<cmsUpgrades::Ref_PixelDigi_>::CheckFakeness( 
+                                          edm::Ptr< cmsUpgrades::GlobalStub<cmsUpgrades::Ref_PixelDigi_> > innerStub,
+                                          edm::Ptr< cmsUpgrades::GlobalStub<cmsUpgrades::Ref_PixelDigi_> > outerStub//,
+                                          //const cmsUpgrades::StackedTrackerGeometry *theStackedTracker,
+                                          //edm::Handle<edm::DetSetVector<PixelDigiSimLink> >  thePixelDigiSimLink 
+                                        ) 
+  {
+    std::pair<int,int> abc;
+    if ((*innerStub).isFake() || (*outerStub).isFake() ) {
+      abc.second = 1;
+      abc.first = -9999;
+      return abc;
+    }
+    else {
+          int innerSimTrackId = innerStub->trackID(); // = -1;
+          int outerSimTrackId = innerStub->trackID(); // = -1;
+          /*
+          cmsUpgrades::StackedTrackerDetId innerId = (*innerStub).Id();
+          cmsUpgrades::StackedTrackerDetId outerId = (*outerStub).Id();
+          const DetId innerId0 = theStackedTracker->idToDet(innerId,0)->geographicalId();
+          const DetId outerId0 = theStackedTracker->idToDet(outerId,0)->geographicalId();
+          const std::vector<cmsUpgrades::Ref_PixelDigi_> innerHits0 = (*innerStub).localStub()->hit(0);
+          const std::vector<cmsUpgrades::Ref_PixelDigi_> outerHits0 = (*outerStub).localStub()->hit(0);
+          edm::DetSet<PixelDigiSimLink> innerDigiSimLink0 = (*thePixelDigiSimLink)[innerId0.rawId()];
+          edm::DetSet<PixelDigiSimLink> outerDigiSimLink0 = (*thePixelDigiSimLink)[outerId0.rawId()];
+          std::vector<cmsUpgrades::Ref_PixelDigi_>::const_iterator innerIt0 = innerHits0.begin();
+          std::vector<cmsUpgrades::Ref_PixelDigi_>::const_iterator outerIt0 = outerHits0.begin();
+          const cmsUpgrades::Ref_PixelDigi_ &hit_inner0 = *innerIt0;
+          const cmsUpgrades::Ref_PixelDigi_ &hit_outer0 = *outerIt0;
+          edm::DetSet<PixelDigiSimLink>::const_iterator innerIterSimLink;
+          for(innerIterSimLink = innerDigiSimLink0.data.begin(); innerIterSimLink != innerDigiSimLink0.data.end(); innerIterSimLink++){
+            if((unsigned int)innerIterSimLink->channel()==(unsigned int)hit_inner0->channel()){
+              innerSimTrackId = innerIterSimLink->SimTrackId();
+            }
+          }
+          edm::DetSet<PixelDigiSimLink>::const_iterator outerIterSimLink;
+          for(outerIterSimLink = outerDigiSimLink0.data.begin(); outerIterSimLink != outerDigiSimLink0.data.end(); outerIterSimLink++){
+            if((unsigned int)outerIterSimLink->channel()==(unsigned int)hit_outer0->channel()){
+              outerSimTrackId = outerIterSimLink->SimTrackId();
+            }
+          }
+          */
+          if (!(innerSimTrackId!=-1 && innerSimTrackId!=-1 && innerSimTrackId==outerSimTrackId)) {
+            abc.second = 2;
+            abc.first = -9999;
+            return abc;
+          }
+          else {
+            abc.second = 0;
+            abc.first = innerSimTrackId;
+            return abc;
+          }
+    }
+  }
+
+/// Not Pixel Digis
+template<typename T>
+  std::pair<int,int>TrackletBuilder<T>::CheckFakeness( 
+                                          edm::Ptr< cmsUpgrades::GlobalStub<T> > innerStub,
+                                          edm::Ptr< cmsUpgrades::GlobalStub<T> > outerStub//,
+                                          //const cmsUpgrades::StackedTrackerGeometry *theStackedTracker,
+                                          //edm::Handle<edm::DetSetVector<PixelDigiSimLink> >  thePixelDigiSimLink
+                                        ) 
+  {
+    std::pair<int,int> abc;
+    abc.second = 1;
+    abc.first = -9999;
+    return abc;
+  }
+
+
 
 //}
 //
@@ -287,4 +523,5 @@ class TrackletBuilder : public edm::EDProducer {
 //
 
 #endif
+
 

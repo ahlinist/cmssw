@@ -23,11 +23,11 @@ class  TriggerTowerGeometry
   double eta(int iEta)
     {
 	  double eta=0;
-	  for(int i=1;i<=abs(iEta);++i)
+	  for(int i=1;i<=(int)fabs(iEta);++i)
 	    {
 	      eta+=mappingEta_[i];
 	    }
-	  eta-=mappingEta_[abs(iEta)]/2;
+	  eta-=mappingEta_[(int)fabs(iEta)]/2;
 
 	  if(iEta>0) return eta;
 	  else
@@ -41,7 +41,7 @@ class  TriggerTowerGeometry
 
   double towerEtaSize(int iEta)
     {
-      return mappingEta_[abs(iEta)];
+      return mappingEta_[(int)fabs(iEta)];
     }
 
   double towerPhiSize(int iPhi)

@@ -11,9 +11,9 @@ LocalStubsFromPixelDigis = cms.EDFilter("LocalStubBuilder_PixelDigi_",
     storeClusters = cms.bool(False)
 )
 
-LocalStubsFromTrackTriggerHits = cms.EDFilter("LocalStubBuilder_TTHit_",
-    rawHits = cms.VInputTag(cms.InputTag("TrackTriggerHitsFromPixelDigis")),
-    storeClusters = cms.bool(False)
-)
+#LocalStubsFromTrackTriggerHits = cms.EDFilter("LocalStubBuilder_TTHit_",
+#    rawHits = cms.VInputTag(cms.InputTag("TrackTriggerHitsFromPixelDigis")),
+#    storeClusters = cms.bool(False)
+#)
 
 

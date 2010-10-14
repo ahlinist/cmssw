@@ -13,9 +13,9 @@ ClusteringAlgorithm_a_PixelDigi_ = cms.ESProducer(
     "ClusteringAlgorithm_a_PixelDigi_"
     )
 
-ClusteringAlgorithm_a_TTHit_ = cms.ESProducer(
-    "ClusteringAlgorithm_a_TTHit_"
-    )
+#ClusteringAlgorithm_a_TTHit_ = cms.ESProducer(
+#    "ClusteringAlgorithm_a_TTHit_"
+#    )
 
 
 # Broadside clustering algorithm
@@ -31,10 +31,10 @@ ClusteringAlgorithm_broadside_PixelDigi_ = cms.ESProducer(
     WidthCut = cms.int32(3)
     )
 
-ClusteringAlgorithm_broadside_TTHit_ = cms.ESProducer(
-    "ClusteringAlgorithm_broadside_TTHit_",
-    WidthCut = cms.int32(3)
-    )
+#ClusteringAlgorithm_broadside_TTHit_ = cms.ESProducer(
+#    "ClusteringAlgorithm_broadside_TTHit_",
+#    WidthCut = cms.int32(3)
+#    )
 
 
 # 2d clustering algorithm
@@ -49,10 +49,10 @@ ClusteringAlgorithm_2d_PixelDigi_ = cms.ESProducer(
     DoubleCountingTest=cms.bool(True)
     )
 
-ClusteringAlgorithm_2d_TTHit_ = cms.ESProducer(
-    "ClusteringAlgorithm_2d_TTHit_",
-    DoubleCountingTest=cms.bool(True)
-    )
+#ClusteringAlgorithm_2d_TTHit_ = cms.ESProducer(
+#    "ClusteringAlgorithm_2d_TTHit_",
+#    DoubleCountingTest=cms.bool(True)
+#    )
 
 
 # Neighbor clustering algorithm
@@ -61,9 +61,9 @@ ClusteringAlgorithm_neighbor_PixelDigi_ = cms.ESProducer(
     "ClusteringAlgorithm_neighbor_PixelDigi_"
     )
 
-ClusteringAlgorithm_neighbor_TTHit_ = cms.ESProducer(
-    "ClusteringAlgorithm_neighbor_TTHit_"
-    )
+#ClusteringAlgorithm_neighbor_TTHit_ = cms.ESProducer(
+#    "ClusteringAlgorithm_neighbor_TTHit_"
+#    )
 
 
 # Set the preferred hit matching algorithms.
@@ -79,7 +79,7 @@ ClusteringAlgorithm_PixelDigi_ = cms.ESPrefer(
     "ClusteringAlgorithm_a_PixelDigi_"
     )
 
-ClusteringAlgorithm_TTHit_ = cms.ESPrefer(
-    "ClusteringAlgorithm_a_TTHit_"
-    )
+#ClusteringAlgorithm_TTHit_ = cms.ESPrefer(
+#    "ClusteringAlgorithm_a_TTHit_"
+#    )
 

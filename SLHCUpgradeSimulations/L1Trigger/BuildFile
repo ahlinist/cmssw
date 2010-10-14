@@ -24,6 +24,10 @@
 <use name=DataFormats/TrackReco>
 <use name=DataFormats/VertexReco>
 
+<use name=DataFormats/Math>
+<use name=FastSimulation/Particle>
+<use name=FastSimulation/BaseParticlePropagator>
+
 <use name=DataFormats/EcalDigi>
 <use name=DataFormats/EcalDetId>
 <use name=DataFormats/HcalDigi>
@@ -80,6 +84,11 @@
 <export>
  <Flags SEALPLUGIN=1>
   <lib name=SLHCUpgradeSimulationsL1Trigger>
+
+<use name=DataFormats/Math>
+<use name=FastSimulation/Particle>
+<use name=FastSimulation/BaseParticlePropagator>
+
   <use name=SLHCUpgradeSimulations/Utilities>
   <use name=Geometry/CommonDetUnit>
   <use name=Geometry/Records>

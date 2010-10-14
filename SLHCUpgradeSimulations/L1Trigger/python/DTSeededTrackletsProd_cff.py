@@ -14,7 +14,7 @@ from Configuration.StandardSequences.MagneticField_38T_cff import *
 
 #-------------------------------------------------------------------------------
 ### conditions that are needed for digitization and higher levels
-from Configuration.StandardSequences.FakeConditions_cff import *
+#from Configuration.StandardSequences.FakeConditions_cff import *
 
 # muons specific ---------------------------------------------------------------
 #from Geometry.DTGeometry.dtGeometry_cfi import *
