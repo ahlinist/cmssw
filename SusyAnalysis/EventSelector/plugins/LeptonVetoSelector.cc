@@ -80,7 +80,7 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     if (fabs(ie->eta()) > maxEtaEle_)
       continue;
 
-    if (fabs(ie->eta()) > 1.4442 && fabs(ie->eta()) < 1.566)
+    if (fabs(ie->superCluster()->eta()) > 1.4442 && fabs(ie->superCluster()->eta()) < 1.566)
       continue;
 
     if((ie->isEB() &&(( ie->dr03TkSumPt() + std::max(0., ie->dr03EcalRecHitSumEt() - 1.) + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt() > eleIso_)) || ( ! ie->isEB() && ( ie->dr03TkSumPt() + ie->dr03EcalRecHitSumEt() + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt() > eleIso_))   
