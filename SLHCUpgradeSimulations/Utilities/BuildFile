@@ -23,22 +23,24 @@
 <use name=MagneticField/Records>
 
 <export>
+   <use name=FWCore/Utilities>
+   <use name=boost>
+
   <use name=FWCore/Framework>
-  <use name=CondFormats/AlignmentRecord>
+#  <use name=CondFormats/AlignmentRecord>
   <use name=DataFormats/DetId>
   <use name=DataFormats/GeometrySurface>
   <use name=DataFormats/SiPixelDetId>
   <use name=DataFormats/SiStripDetId>
-  <use name=DataFormats/TrajectorySeed>
+#  <use name=DataFormats/TrajectorySeed>
   <use name=Geometry/CommonDetUnit>
-  <use name=Geometry/CommonTopologies>
+#  <use name=Geometry/CommonTopologies>
   <use name=Geometry/TrackerGeometryBuilder>
-  <use name=Geometry/TrackerNumberingBuilder>
-  <use name=TrackingTools/Records>
+#  <use name=Geometry/TrackerNumberingBuilder>
   <use name=Geometry/Records>
-
-  <use name=MagneticField/Engine>
-  <use name=MagneticField/Records>
+#  <use name=TrackingTools/Records>
+#  <use name=MagneticField/Engine>
+#  <use name=MagneticField/Records>
 
   <lib name=SLHCUpgradeSimulationsUtilities>
 </export>
