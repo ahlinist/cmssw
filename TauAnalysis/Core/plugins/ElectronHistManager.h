@@ -85,13 +85,17 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronSuperclEnOverTrackMomEndcap_;
   MonitorElement* hElectronSeedClEnOverTrackMomBarrel_;
   MonitorElement* hElectronSeedClEnOverTrackMomEndcap_;
-  MonitorElement* hElectronHadEnOverEmEn_;
   MonitorElement* hElectronSuperclShapeSigmaEtaEta_;
-  MonitorElement* hElectronSuperclShapeSigmaIetaIeta_;
-  MonitorElement* hElectronDeltaPhiSuperclToExtrapolTrack_;
-  MonitorElement* hElectronDeltaEtaSuperclToExtrapolTrack_;
   MonitorElement* hElectronBremsFraction_;
-  
+  MonitorElement* hElectronHadEnOverEmEnBarrel_;
+  MonitorElement* hElectronSuperclShapeSigmaIetaIetaBarrel_;
+  MonitorElement* hElectronDeltaPhiSuperclToExtrapolTrackBarrel_;
+  MonitorElement* hElectronDeltaEtaSuperclToExtrapolTrackBarrel_;
+  MonitorElement* hElectronHadEnOverEmEnEndcap_;
+  MonitorElement* hElectronSuperclShapeSigmaIetaIetaEndcap_;
+  MonitorElement* hElectronDeltaPhiSuperclToExtrapolTrackEndcap_;
+  MonitorElement* hElectronDeltaEtaSuperclToExtrapolTrackEndcap_;
+
 //--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hElectronTrkIsoPt_;
   MonitorElement* hElectronTrkIsoPtVsElectronPt_;

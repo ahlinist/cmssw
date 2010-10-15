@@ -146,12 +146,16 @@ void ElectronHistManager::bookHistogramsImp()
   hElectronSuperclEnOverTrackMomEndcap_ = book1D("ElectronSuperclEnOverTrackMomEndcap", "Electron (Endcap) #frac{E_{Supercluster}}{P_{Track}}", 50, 0., 5.);
   hElectronSeedClEnOverTrackMomBarrel_ = book1D("ElectronSeedClEnOverTrackMomBarrel", "Electron (Barrel) #frac{E_{Seed-Cluster}}{P_{Track}}", 50, 0., 5.);
   hElectronSeedClEnOverTrackMomEndcap_ = book1D("ElectronSeedClEnOverTrackMomEndcap", "Electron (Endcap) #frac{E_{Seed-Cluster}}{P_{Track}}", 50, 0., 5.);
-  hElectronHadEnOverEmEn_ = book1D("ElectronHadEnOverEmEn", "Electron #frac{E_{had}}{E_{em}}", 102, -0.01, 1.01);
   hElectronSuperclShapeSigmaEtaEta_ = book1D("ElectronSuperclShapeSigmaEtaEta", "Electron #sigma_{#eta#eta}^{Supercluster}", 102, -0.001, 0.101);
-  hElectronSuperclShapeSigmaIetaIeta_ = book1D("ElectronSuperclShapeSigmaIetaIeta", "Electron #sigma_{i#eta i#eta}^{Supercluster}", 102, -0.001, 0.101);
-  hElectronDeltaPhiSuperclToExtrapolTrack_ = book1D("ElectronDeltaPhiSuperclToExtrapolTrack", "Electron #Delta#phi_{in}", 40, 0, 0.05);
-  hElectronDeltaEtaSuperclToExtrapolTrack_ = book1D("ElectronDeltaEtaSuperclToExtrapolTrack", "Electron #Delta#eta_{in}", 40, 0, 0.02);
   hElectronBremsFraction_ = book1D("ElectronBremsFraction", "Electron f_{Brems}", 80, -2., +2.);
+  hElectronHadEnOverEmEnBarrel_ = book1D("ElectronHadEnOverEmEnBarrel", "Electron #frac{E_{had}}{E_{em}} Barrel", 100, 0., 0.15);
+  hElectronSuperclShapeSigmaIetaIetaBarrel_ = book1D("ElectronSuperclShapeSigmaIetaIetaBarrel", "Electron #sigma_{i#eta i#eta}^{Supercluster} Barrel", 100, 0., 0.035);
+  hElectronDeltaPhiSuperclToExtrapolTrackBarrel_ = book1D("ElectronDeltaPhiSuperclToExtrapolTrackBarrel", "Electron #Delta#phi_{in} Barrel", 100, -0.25, 0.25);
+  hElectronDeltaEtaSuperclToExtrapolTrackBarrel_ = book1D("ElectronDeltaEtaSuperclToExtrapolTrackBarrel", "Electron #Delta#eta_{in} Barrel", 100, -0.075, 0.075);
+  hElectronHadEnOverEmEnEndcap_ = book1D("ElectronHadEnOverEmEnEndcap", "Electron #frac{E_{had}}{E_{em}} Endcap", 100, 0., 0.15);
+  hElectronSuperclShapeSigmaIetaIetaEndcap_ = book1D("ElectronSuperclShapeSigmaIetaIetaEndcap", "Electron #sigma_{i#eta i#eta}^{Supercluster} Endcap", 100, 0., 0.035);
+  hElectronDeltaPhiSuperclToExtrapolTrackEndcap_ = book1D("ElectronDeltaPhiSuperclToExtrapolTrackEndcap", "Electron #Delta#phi_{in} Endcap", 100, -0.25, 0.25);
+  hElectronDeltaEtaSuperclToExtrapolTrackEndcap_ = book1D("ElectronDeltaEtaSuperclToExtrapolTrackEndcap", "Electron #Delta#eta_{in} Endcap", 100, -0.075, 0.075);
   
   hElectronTrkIsoPt_ = book1D("ElectronTrkIsoPt", "Electron Track Isolation P_{T}", 100, 0., 10.);    
   hElectronTrkIsoPtVsElectronPt_ = book2D("ElectronTrkIsoPtVsElectronPt", "Electron Track Isolation P_{T} vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);    
@@ -299,16 +303,20 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
     if ( TMath::Abs(patElectron->eta()) < electronEtaMaxBarrel_ ) {
       hElectronSuperclEnOverTrackMomBarrel_->Fill(patElectron->eSuperClusterOverP(), weight);
       hElectronSeedClEnOverTrackMomBarrel_->Fill(patElectron->eSeedClusterOverP(), weight);
+      hElectronHadEnOverEmEnBarrel_->Fill(patElectron->hcalOverEcal(), weight); 
+      hElectronSuperclShapeSigmaIetaIetaBarrel_->Fill(patElectron->sigmaIetaIeta(), weight); 
+      hElectronDeltaPhiSuperclToExtrapolTrackBarrel_->Fill(patElectron->deltaPhiSuperClusterTrackAtVtx(), weight);
+      hElectronDeltaEtaSuperclToExtrapolTrackBarrel_->Fill(patElectron->deltaEtaSuperClusterTrackAtVtx(), weight);    
     }
     if ( TMath::Abs(patElectron->eta()) > electronEtaMinEndcap_ ) {
       hElectronSuperclEnOverTrackMomEndcap_->Fill(patElectron->eSuperClusterOverP(), weight);
       hElectronSeedClEnOverTrackMomEndcap_->Fill(patElectron->eSeedClusterOverP(), weight); 
+      hElectronHadEnOverEmEnEndcap_->Fill(patElectron->hcalOverEcal(), weight); 
+      hElectronSuperclShapeSigmaIetaIetaEndcap_->Fill(patElectron->sigmaIetaIeta(), weight); 
+      hElectronDeltaPhiSuperclToExtrapolTrackEndcap_->Fill(patElectron->deltaPhiSuperClusterTrackAtVtx(), weight);
+      hElectronDeltaEtaSuperclToExtrapolTrackEndcap_->Fill(patElectron->deltaEtaSuperClusterTrackAtVtx(), weight);
     }
-    hElectronHadEnOverEmEn_->Fill(patElectron->hcalOverEcal(), weight); 
     hElectronSuperclShapeSigmaEtaEta_->Fill(patElectron->sigmaEtaEta(), weight); 
-    hElectronSuperclShapeSigmaIetaIeta_->Fill(patElectron->sigmaIetaIeta(), weight); 
-    hElectronDeltaPhiSuperclToExtrapolTrack_->Fill( fabs(patElectron->deltaPhiSuperClusterTrackAtVtx()), weight);
-    hElectronDeltaEtaSuperclToExtrapolTrack_->Fill( fabs(patElectron->deltaEtaSuperClusterTrackAtVtx()), weight);
     if ( isValidRef(patElectron->gsfTrack()) ) {
       double pIn  = patElectron->trackMomentumAtVtx().R(); 
       double pOut = patElectron->trackMomentumOut().R(); 
