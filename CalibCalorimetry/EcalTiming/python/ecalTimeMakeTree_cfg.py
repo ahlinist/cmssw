@@ -72,8 +72,8 @@ process.multi5x5BasicClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.mu
     endcapHitProducer = cms.string('ecalRecHit'),
     endcapHitCollection = cms.string('EcalRecHitsEE'),
     
-    IslandBarrelSeedThr = cms.double(0.150),              # endcapSeedThreshold
-    IslandEndcapSeedThr = cms.double(0.200),             # barrelSeedThreshold
+    IslandBarrelSeedThr = cms.double(1.5),              # endcapSeedThreshold
+    IslandEndcapSeedThr = cms.double(3.0),             # barrelSeedThreshold
 
     barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
     endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters'),
