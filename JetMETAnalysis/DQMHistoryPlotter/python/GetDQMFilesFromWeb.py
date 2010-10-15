@@ -17,7 +17,7 @@ by Jeff Temple (jtemple@fnal.gov)
 v1.0
 15 October 2010
 
-based on original "dqm_get_json" code from Marco Rozere.
+based on original "dqm_get_json" code from Marco Rovere.
 
 Code reads from a web page in cmsweb.cern.ch, and either saves the output of the page or parses the page for more info.
 
