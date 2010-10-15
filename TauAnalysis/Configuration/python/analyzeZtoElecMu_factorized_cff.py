@@ -35,16 +35,10 @@ analyzeZtoElecMuEvents_factorizedWithElectronIsolation.analysisSequence = elecMu
 analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation = copy.copy(analyzeZtoElecMuEvents)
 analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation.name = cms.string('zElecMuAnalyzer_factorizedWithoutElectronIsolation')
 replaceEventSelections(analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation,
-    [ [ evtSelElectronTrkIso, evtSelElectronTrkIsoLooseIsolation ],
-      [ evtSelElectronEcalIso, evtSelElectronEcalIsoLooseIsolation ],
-      [ evtSelElectronTrk, evtSelElectronTrkLooseIsolation ],
-      [ evtSelElectronTrkIP, evtSelElectronTrkIPlooseIsolation ],
-      [ evtSelDiTauCandidateForElecMuAntiOverlapVeto, evtSelDiTauCandidateForElecMuAntiOverlapVetoLooseElectronIsolation ],
+    [ [ evtSelElectronIso, evtSelElectronIsoLooseIsolation ],
       [ evtSelDiTauCandidateForElecMuZeroCharge, evtSelDiTauCandidateForElecMuZeroChargeLooseElectronIsolation ],
-      [ evtSelDiTauCandidateForElecMuAcoplanarity12, evtSelDiTauCandidateForElecMuAcoplanarity12LooseElectronIsolation ],
       [ evtSelDiTauCandidateForElecMuMt1MET, evtSelDiTauCandidateForElecMuMt1METlooseElectronIsolation ],
-      [ evtSelDiTauCandidateForElecMuMt2MET, evtSelDiTauCandidateForElecMuMt2METlooseElectronIsolation ],
-      [ evtSelDiTauCandidateForElecMuPzetaDiff, evtSelDiTauCandidateForElecMuPzetaDiffLooseElectronIsolation] ]
+      [ evtSelDiTauCandidateForElecMuMt2MET, evtSelDiTauCandidateForElecMuMt2METlooseElectronIsolation ] ]
 )                       
 analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation.eventDumps[0] = elecMuEventDump_factorizedWithoutElectronIsolation
 analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation.analysisSequence = elecMuAnalysisSequence_factorizedWithoutElectronIsolation
