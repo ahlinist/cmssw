@@ -9,7 +9,7 @@ process.inputs = cms.PSet (
 #         '/Volumes/MyBook/Data/TTbar/shyft_35x_v3/ljmet_1.root'
 #         'file:zmm_pat.root'
 #         'file:/tmp/veverka/tmp.YPPUW29322/CMSSW_3_6_2/src/PhysicsTools/SelectorUtils/bin/wm_pat.root'
-  "file:VGammaSkim_numEvent10.root"
+  "file:VGammaSkim_testPOWHEG_numEvent100.root"
         )
 )
 
@@ -22,7 +22,7 @@ process.outputs = cms.PSet (
 ## Convert cms.EDAnalyzer to cms.PSet
 from ElectroWeakAnalysis.MultiBosons.Histogramming.photonHistos_cfi import photonHistos
 process.photonHistos = cms.PSet(
-  src = cms.InputTag(photonHistos.src.value() ),
+  src = cms.InputTag("cleanPatPhotonsTriggerMatch"),
   histograms = cms.VPSet() + #photonHistos.histograms.copy() +
     [
       cms.PSet(
@@ -37,8 +37,8 @@ process.photonHistos = cms.PSet(
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(0),
-        max = cms.untracked.double(1),
-        nbins = cms.untracked.int32(100),
+        max = cms.untracked.double(100),
+        nbins = cms.untracked.int32(1000),
         name = cms.untracked.string("seedOutOfTimeChi2"),
         description = cms.untracked.string("Photons:seed out of time #chi^{2}:events / bin"),
         plotquantity = cms.untracked.string('userFloat("photonUserData:seedOutOfTimeChi2")')
@@ -46,8 +46,8 @@ process.photonHistos = cms.PSet(
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(0),
-        max = cms.untracked.double(1),
-        nbins = cms.untracked.int32(100),
+        max = cms.untracked.double(100),
+        nbins = cms.untracked.int32(1000),
         name = cms.untracked.string("seedChi2"),
         description = cms.untracked.string("Photons:seed #chi^{2}:events / bin"),
         plotquantity = cms.untracked.string('userFloat("photonUserData:seedChi2")')
@@ -120,8 +120,8 @@ process.photonHistos = cms.PSet(
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(0),
-        max = cms.untracked.double(1),
-        nbins = cms.untracked.int32(100),
+        max = cms.untracked.double(0.005),
+        nbins = cms.untracked.int32(1000),
         name = cms.untracked.string("covIEtaIEta"),
         description = cms.untracked.string("cov(i#eta,i#eta)"),
         plotquantity = cms.untracked.string('userFloat("photonUserData:covIEtaIEta")')
@@ -132,9 +132,31 @@ process.photonHistos = cms.PSet(
         max = cms.untracked.double(2),
         nbins = cms.untracked.int32(100),
         name = cms.untracked.string("pi0Discriminator"),
-        description = cms.untracked.string("pi_{0} discriminator"),
+        description = cms.untracked.string("#pi_{0} discriminator"),
         plotquantity = cms.untracked.string(
           'userFloat("pi0Discriminator")'
+          )
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(-1000),
+        max = cms.untracked.double(1000),
+        nbins = cms.untracked.int32(2000),
+        name = cms.untracked.string("genMatchMomPid"),
+        description = cms.untracked.string("mom pid"),
+        plotquantity = cms.untracked.string(
+          'userInt("photonGenMatch:motherPdgId")'
+          )
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(-1000),
+        max = cms.untracked.double(1000),
+        nbins = cms.untracked.int32(2000),
+        name = cms.untracked.string("gmomPid"),
+        description = cms.untracked.string("grand mom pid"),
+        plotquantity = cms.untracked.string(
+          'userInt("photonGenMatch:grandMotherPdgId")'
           )
       ),
     ],

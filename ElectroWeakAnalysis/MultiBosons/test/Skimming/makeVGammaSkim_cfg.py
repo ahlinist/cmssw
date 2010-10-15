@@ -31,10 +31,10 @@ options = copy.deepcopy(defaultOptions)
 ## Define default options specific to this configuration file
 
 #options.jobType = "testSummer10"
-#options.jobType = "testPOWHEG"
+options.jobType = "testPOWHEG"
 #options.jobType = "testRealData"
-options.jobType = "testJetRealData"
-# options.jobType = "testMC"
+#options.jobType = "testJetRealData"
+#options.jobType = "testMC"
 
 
 ## Parse (command-line) arguments - this overrides the options given above
@@ -83,6 +83,7 @@ process.selectedPatJets.cut = cms.string("pt > 30")
 process.cleanPatPhotons.checkOverlaps.electrons.requireNoOverlaps = False
 
 ## Add photon user data
+## TODO: rename photon(electron)UserData to photon(electron)ClusterShape
 process.load(basePath + "photonUserData_cfi")
 process.patDefaultSequence.replace(process.patPhotons,
   process.photonUserData * process.patPhotons
@@ -98,15 +99,27 @@ process.load("RecoEcal.EgammaClusterProducers.preshowerClusterShape_cfi")
 process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
 
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0Discriminator_cfi")
+
+process.photonGenMatch = cms.EDProducer("PhotonGenMatchUserDataProducer",
+    src = cms.InputTag("photons")
+    )
+
 process.patDefaultSequence.replace(process.patPhotons,
   process.preshowerClusterShape *
   process.piZeroDiscriminators  *
   process.pi0Discriminator      *
+  process.photonGenMatch        *
   process.patPhotons
   )
 process.patPhotons.userData.userFloats.src.append(
-  cms.InputTag("pi0Discriminator") #, "piZeroDiscriminatorsPhotonPi0DiscriminatorAssociationMap")
+  cms.InputTag("pi0Discriminator")
   )
+process.patPhotons.userData.userInts.src.extend([
+  cms.InputTag("photonGenMatch", "motherPdgId"),
+  cms.InputTag("photonGenMatch", "motherStatus"),
+  cms.InputTag("photonGenMatch", "grandMotherPdgId"),
+  cms.InputTag("photonGenMatch", "grandMotherStatus"),
+  ])
 
 ## Add electron user data
 process.load(basePath + "electronUserData_cfi")

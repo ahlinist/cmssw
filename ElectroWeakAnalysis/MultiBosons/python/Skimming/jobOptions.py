@@ -33,7 +33,7 @@ def applyJobOptions(options):
     jobOptions.wantSummary = False
     jobOptions.hltPaths = ["HLT_Mu9"]
 
-  if options.jobType == "testPOWHEG":
+  elif options.jobType == "testPOWHEG":
     jobOptions.maxEvents = -1
     jobOptions.inputFiles = [
       "file:/scratch/lgray/skimming/CMSSW_3_8_4_patch3/"+
