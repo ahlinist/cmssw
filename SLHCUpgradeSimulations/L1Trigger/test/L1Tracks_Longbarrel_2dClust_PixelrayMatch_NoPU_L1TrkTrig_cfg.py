@@ -69,7 +69,7 @@ process.load("SLHCUpgradeSimulations.Utilities.StackedTrackerGeometry_cfi")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #
 # define some input tags for the analyzer used in this module
-process.PATtemplate = cms.EDAnalyzer("NicolaL1Track",
+process.PATtemplate = cms.EDAnalyzer("TestL1Track",
 #  trackletVTX = cms.string("center"),
   trackletVTX = cms.string("offcenter"),
   seedSuperLayer = cms.int32(0),
