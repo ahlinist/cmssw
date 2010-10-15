@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-process = cms.Process('runZtoElecMu')
+process = cms.Process('runZtoElecMuTest')
 
 # import of standard configurations for RECOnstruction
 # of electrons, muons and tau-jets with non-standard isolation cones
@@ -60,15 +60,17 @@ process.saveZtoElecMuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(1000)    
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
+        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        'rfio:/castor/cern.ch/user/c/cerati/TauAnalysisTest/tauAnalysisElecMu_newskim_Ztautau_4.root' #this is a 35X sample, redo btagging!
+        #'rfio:/castor/cern.ch/user/c/cerati/TauAnalysisTest/tauAnalysisElecMu_newskim_DataMuPrompt_Bp1_1_1.root'
     )
     #skipBadFiles = cms.untracked.bool(True)                        
 )
@@ -112,7 +114,8 @@ process.cleanPatTaus.preselection = cms.string('')
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+#switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+#FIXME! disabled for the moment, until the issue with removeMCMatching is solved
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -128,8 +131,29 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
+from TauAnalysis.Configuration.tools.switchToData import *
+##switchToData(process)#
+
+#--------------------------------------------------------------------------------
+#uncomment this line of running on 35X samples:
+#process.producePrePat.replace(process.ak5PFJets,process.ak5PFJets+process.btagging)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# this information is not needed
+process.patJets.addTagInfos = False
+# we do not need to reproduce these
+process.producePrePat.remove(process.trackExtrapolator)
+process.producePrePat.remove(process.ak5CaloJets)
+process.producePrePat.remove(process.ak5CaloJetsPUCorr)
+process.producePrePat.remove(process.ak5JetID)
+process.producePrePat.remove(process.ak5JTA)
+process.producePrePat.remove(process.ak5PFJets)
+#--------------------------------------------------------------------------------
+
 process.p = cms.Path(
-    process.producePatTupleZtoElecMuSpecific
+    process.producePatTuple
+  + process.producePatTupleZtoElecMuSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
 # + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
   + process.selectZtoElecMuEvents 
