@@ -201,22 +201,11 @@ RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkGray_separate
     },
+    # Using the unskimmed dataset
     'Ztautau' : {
-        'datasetpath' : "/Ztautau/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
-        'events_processed' : 2195255,
-        'skim_eff' : 0.100,
-        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
-        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Ztautau
-    },
-    # Spring 09 Ztautau with MC conditions
-    'Ztautau09' : {
-        'datasetpath' : "/Ztautau/Summer09-MC_31X_V3_7TeV-v1/GEN-SIM-RECO",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'conditions' : 'mc',
-        'events_processed' : 2193025,
-        'skim_eff' : 1.0, # not skimmed
+        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO"
+        'events_processed' : 2057446,
+        'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
