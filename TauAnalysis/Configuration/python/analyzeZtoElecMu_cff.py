@@ -37,39 +37,49 @@ analyzeZtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelPrimaryEventVertexPosition,
         
         # electron candidate selection
-        evtSelElectronAntiOverlapWithMuonsVeto,
-        evtSelTightElectronId,
+        evtSelElectronIdMin,
+        evtSelElectronIdMax,
         evtSelElectronAntiCrack,
-        evtSelElectronEta,
-        evtSelElectronPt,
-        evtSelElectronTrkIso,
-        evtSelElectronEcalIso,
+        evtSelElectronEta, #default 2.1, switch to 2.4
+        evtSelElectronPt, #now 10
+        evtSelElectronIso,
         evtSelElectronTrk,
-        evtSelElectronTrkIP,
-
+        #evtSelElectronTrkIP, #mmm... we used to cut on combined d0 significance!
+        
         # muon candidate selection
-        evtSelGlobalMuon,
-        evtSelMuonEta,
-        evtSelMuonPt,
-        evtSelMuonTrkIso,
-        evtSelMuonEcalIso,
+        evtSelGlobalMuonMin,
+        evtSelGlobalMuonMax,
+        evtSelMuonEta, #default 2.1, switch to 2.4
+        evtSelMuonPt, #now 10
+        evtSelMuonIso,
         evtSelMuonAntiPion,
-        evtSelMuonTrkIP,
+        #evtSelMuonTrkIP, #mmm... we used to cut on combined d0 significance!
         
         # di-tau candidate selection
-        evtSelDiTauCandidateForElecMuAntiOverlapVeto,
+        evtSelDiTauCandidateForElecMuDRmin,
         evtSelDiTauCandidateForElecMuZeroCharge,
-        evtSelDiTauCandidateForElecMuAcoplanarity12,
         evtSelDiTauCandidateForElecMuMt1MET,
         evtSelDiTauCandidateForElecMuMt2MET,
-        evtSelDiTauCandidateForElecMuPzetaDiff
-    ),
-
+        evtSelDiTauCandidateForElecMuDPhi,
+        #evtSelDiTauCandidateForElecMuOneLegPt,
+        
+        # met selection...
+        evtSelMETMax,
+        
+        # jet candidate selection...
+        evtSelJetMin, #default eta<2.1 too tight, need 2.4 for b-tagging
+        evtSelJetMax,    
+        # b-tagging candidate selection...
+        evtSelJetBtagMin,
+        evtSelJetBtagMax
+        ),
+                                        
     analyzers = cms.VPSet(
         genPhaseSpaceEventInfoHistManager,
         eventWeightHistManager,
         electronHistManager,
         muonHistManager,
+        tauHistManager,
         diTauCandidateHistManagerForElecMu,
         diTauCandidateSVfitHistManagerForElecMu,
         diTauCandidateZmumuHypothesisHistManagerForElecMu,

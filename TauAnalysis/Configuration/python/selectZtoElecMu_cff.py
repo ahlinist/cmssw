@@ -11,7 +11,7 @@ cfgTrigger = cms.PSet(
     pluginName = cms.string('Trigger'),
     pluginType = cms.string('TriggerResultEventSelector'),
     src = cms.InputTag('TriggerResults::HLT'),
-    triggerPaths = cms.vstring('HLT_Ele15_SW_EleId_L1R', 'HLT_Ele15_SW_LooseTrackIso_L1R', 'HLT_Mu9')
+    triggerPaths = cms.vstring('HLT_Mu9')
 )
 
 # primary event vertex selection
@@ -35,104 +35,97 @@ cfgPrimaryEventVertexPosition = cms.PSet(
 )
 
 # electron candidate selection
-cfgElectronAntiOverlapWithMuonsVeto = cms.PSet(
-    pluginName = cms.string('electronAntiOverlapWithMuonsVeto'),
+cfgElectronIdMinCut = cms.PSet(
+    pluginName = cms.string('electronIdMinCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuAntiOverlapWithMuonsVetoCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuAntiOverlapWithMuonsVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsIdCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsIdIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgTightElectronIdCut = cms.PSet(
-    pluginName = cms.string('tightElectronIdCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuTightIdCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuTightIdIndividual'),
-    minNumber = cms.uint32(1)
+cfgElectronIdMaxCut = cms.PSet(
+    pluginName = cms.string('electronIdMaxCut'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src_cumulative = cms.InputTag('selectedPatElectronsIdCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsIdIndividual'),
+    maxNumber = cms.uint32(1)
 )
 cfgElectronAntiCrackCut = cms.PSet(
     pluginName = cms.string('electronAntiCrackCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuAntiCrackCutCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuAntiCrackCutIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsAntiCrackCutCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsAntiCrackCutIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronEtaCut = cms.PSet(
     pluginName = cms.string('electronEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuEta21Cumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuEta21Individual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsEtaCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsEtaIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronPtCut = cms.PSet(
     pluginName = cms.string('electronPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuPt15Cumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuPt15Individual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsPtCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsPtIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgElectronTrkIsoCut = cms.PSet(
-    pluginName = cms.string('electronTrkIsoCut'),
+cfgElectronIsoCut = cms.PSet(
+    pluginName = cms.string('electronIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuTrkIsoIndividual'),
-    minNumber = cms.uint32(1)
-)
-cfgElectronEcalIsoCut = cms.PSet(
-    pluginName = cms.string('electronEcalIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuEcalIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronTrkCut = cms.PSet(
     pluginName = cms.string('electronTrkCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuTrkCumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuTrkIndividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsTrkCumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsTrkIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgElectronTrkIPcut = cms.PSet(
-    pluginName = cms.string('electronTrkIPcut'),
+cfgElectronTrkIPCut = cms.PSet(
+    pluginName = cms.string('electronTrkIPCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatElectronsForElecMuTrkIPcumulative'),
-    src_individual = cms.InputTag('selectedPatElectronsForElecMuTrkIPindividual'),
+    src_cumulative = cms.InputTag('selectedPatElectronsTrkIPcumulative'),
+    src_individual = cms.InputTag('selectedPatElectronsTrkIPindividual'),
     minNumber = cms.uint32(1)
 )
 
 # muon candidate selection
-cfgGlobalMuonCut = cms.PSet(
-    pluginName = cms.string('globalMuonCut'),
+cfgGlobalMuonMinCut = cms.PSet(
+    pluginName = cms.string('globalMuonMinCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatMuonsGlobalCumulative'),
     src_individual = cms.InputTag('selectedPatMuonsGlobalIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgGlobalMuonMaxCut = cms.PSet(
+    pluginName = cms.string('globalMuonMaxCut'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src_cumulative = cms.InputTag('selectedPatMuonsGlobalCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsGlobalIndividual'),
+    maxNumber = cms.uint32(1)
+)
 cfgMuonEtaCut = cms.PSet(
     pluginName = cms.string('muonEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsEta21Cumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsEta21Individual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsEtaCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsEtaIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgMuonPtCut = cms.PSet(
     pluginName = cms.string('muonPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsPt10Cumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsPt10Individual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsPtCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsPtIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgMuonTrkIsoCut = cms.PSet(
-    pluginName = cms.string('muonTrkIsoCut'),
+cfgMuonIsoCut = cms.PSet(
+    pluginName = cms.string('muonIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsTrkIsoIndividual'),
-    minNumber = cms.uint32(1)
-)
-cfgMuonEcalIsoCut = cms.PSet(
-    pluginName = cms.string('muonEcalIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsEcalIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgMuonAntiPionCut = cms.PSet(
@@ -142,8 +135,8 @@ cfgMuonAntiPionCut = cms.PSet(
     src_individual = cms.InputTag('selectedPatMuonsPionVetoIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgMuonTrkIPcut = cms.PSet(
-    pluginName = cms.string('muonTrkIPcut'),
+cfgMuonTrkIPCut = cms.PSet(
+    pluginName = cms.string('muonTrkIPCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
     src_individual = cms.InputTag('selectedPatMuonsTrkIPindividual'),
@@ -151,11 +144,11 @@ cfgMuonTrkIPcut = cms.PSet(
 )
 
 # di-tau candidate selection
-cfgDiTauCandidateForElecMuAntiOverlapVeto = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuAntiOverlapVeto'),
+cfgDiTauCandidateForElecMuDRminCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuDRminCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedElecMuPairsAntiOverlapVetoCumulative'),
-    src_individual = cms.InputTag('selectedElecMuPairsAntiOverlapVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedElecMuPairsDRminCumulative'),
+    src_individual = cms.InputTag('selectedElecMuPairsDRminIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgDiTauCandidateForElecMuZeroChargeCut = cms.PSet(
@@ -165,32 +158,66 @@ cfgDiTauCandidateForElecMuZeroChargeCut = cms.PSet(
     src_individual = cms.InputTag('selectedElecMuPairsZeroChargeIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgDiTauCandidateForElecMuAcoplanarity12Cut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuAcoplanarity12Cut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedElecMuPairsAcoplanarity12Cumulative'),
-    src_individual = cms.InputTag('selectedElecMuPairsAcoplanarity12Individual'),
-    minNumber = cms.uint32(1)
-)
-cfgDiTauCandidateForElecMuMt1METcut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuMt1METcut'),
+cfgDiTauCandidateForElecMuMt1METCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuMt1METCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedElecMuPairsMt1METcumulative'),
     src_individual = cms.InputTag('selectedElecMuPairsMt1METindividual'),
     minNumber = cms.uint32(1)
 )
-cfgDiTauCandidateForElecMuMt2METcut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuMt2METcut'),
+cfgDiTauCandidateForElecMuMt2METCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuMt2METCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedElecMuPairsMt2METcumulative'),
     src_individual = cms.InputTag('selectedElecMuPairsMt2METindividual'),
     minNumber = cms.uint32(1)
 )
-cfgDiTauCandidateForElecMuPzetaDiffCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuPzetaDiffCut'),
+cfgDiTauCandidateForElecMuDPhiCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuDPhiCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedElecMuPairsPzetaDiffCumulative'),
-    src_individual = cms.InputTag('selectedElecMuPairsPzetaDiffIndividual'),
+    src_cumulative = cms.InputTag('selectedElecMuPairsDPhiCumulative'),
+    src_individual = cms.InputTag('selectedElecMuPairsDPhiIndividual'),
+    minNumber = cms.uint32(1)
+)
+cfgDiTauCandidateForElecMuOneLegPtCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuOneLegPtCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedElecMuPairsOneLegPtCumulative'),
+    src_individual = cms.InputTag('selectedElecMuPairsOneLegPtIndividual'),
+    minNumber = cms.uint32(1)
+)
+
+# jet candidate selection
+cfgJetMinCut = cms.PSet(
+    pluginName = cms.string('jetMinCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src = cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
+    minNumber = cms.uint32(0)
+)
+cfgJetMaxCut = cms.PSet(
+    pluginName = cms.string('jetMaxCut'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src = cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
+    maxNumber = cms.uint32(2)
+)
+cfgJetBtagMinCut = cms.PSet(
+    pluginName = cms.string('jetBtagMinCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src = cms.InputTag('selectedPatJetsBtagCumulative'),
+    minNumber = cms.uint32(0)
+)
+cfgJetBtagMaxCut = cms.PSet(
+    pluginName = cms.string('jetBtagMaxCut'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src = cms.InputTag('selectedPatJetsBtagCumulative'),
+    maxNumber = cms.uint32(1)
+)
+
+# met selection
+cfgMETMaxCut = cms.PSet(
+    pluginName = cms.string('metMaxCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src = cms.InputTag('selectedMETMaxCumulative'),
     minNumber = cms.uint32(1)
 )
 
@@ -199,30 +226,36 @@ zToElecMuEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,
-      cfgGlobalMuonCut,
-      cfgMuonEtaCut,
-      cfgMuonPtCut,
-      cfgElectronAntiOverlapWithMuonsVeto,
-      cfgTightElectronIdCut,
+      cfgElectronIdMinCut,
+      cfgElectronIdMaxCut,
       cfgElectronAntiCrackCut,
       cfgElectronEtaCut,
       cfgElectronPtCut,
-      cfgMuonTrkIsoCut,
-      cfgMuonEcalIsoCut,
-      cfgMuonAntiPionCut,
-      cfgMuonTrkIPcut,
-      cfgElectronTrkIsoCut,
-      cfgElectronEcalIsoCut,
+      cfgElectronIsoCut,
       cfgElectronTrkCut,
-      cfgElectronTrkIPcut,
-      cfgDiTauCandidateForElecMuAntiOverlapVeto,      
+      #cfgElectronTrkIPCut,
+      cfgGlobalMuonMinCut,
+      cfgGlobalMuonMaxCut,
+      cfgMuonEtaCut,
+      cfgMuonPtCut,
+      cfgMuonIsoCut,
+      cfgMuonAntiPionCut,
+      #cfgMuonTrkIPCut,
+      cfgDiTauCandidateForElecMuDRminCut,
       cfgDiTauCandidateForElecMuZeroChargeCut,
-      cfgDiTauCandidateForElecMuAcoplanarity12Cut,
-      cfgDiTauCandidateForElecMuMt1METcut,
-      cfgDiTauCandidateForElecMuMt2METcut,
-      cfgDiTauCandidateForElecMuPzetaDiffCut ],
+      cfgDiTauCandidateForElecMuMt1METCut,
+      cfgDiTauCandidateForElecMuMt2METCut,
+      cfgDiTauCandidateForElecMuDPhiCut,
+      #cfgDiTauCandidateForElecMuOneLegPtCut,
+      cfgMETMaxCut,
+      cfgJetMinCut,
+      cfgJetMaxCut,
+      cfgJetBtagMinCut,
+      cfgJetBtagMaxCut
+      ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
 
 selectZtoElecMuEvents = zToElecMuEventSelConfigurator.configure()
+
