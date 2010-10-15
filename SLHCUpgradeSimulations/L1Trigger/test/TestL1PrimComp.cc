@@ -709,7 +709,7 @@ std::pair<double,PSimHit> TestL1PrimComp::makeHit( const GeomDetUnit* dU, BasePa
 }
 
 
-
+ 
 
 ///////////////////////////
 // DEFINE THIS AS A PLUG-IN
