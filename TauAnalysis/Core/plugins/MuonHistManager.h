@@ -113,9 +113,12 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonEcalIsoPtRel_;
   MonitorElement* hMuonHcalIsoPt_;
   MonitorElement* hMuonHcalIsoPtRel_;
-  MonitorElement* hMuonIsoSumPt_;
-  MonitorElement* hMuonIsoSumPtVsMuonPt_;
-  MonitorElement* hMuonIsoSumPtRel_;
+  MonitorElement* hMuonTrackEcalIsoSumPt_;
+  MonitorElement* hMuonTrackEcalIsoSumPtVsMuonPt_;
+  MonitorElement* hMuonTrackEcalIsoSumPtRel_;
+  MonitorElement* hMuonTrackEcalHcalIsoSumPt_;
+  MonitorElement* hMuonTrackEcalHcalIsoSumPtVsMuonPt_;
+  MonitorElement* hMuonTrackEcalHcalIsoSumPtRel_;
 
   MonitorElement* hMuonDeltaRnearestJet_;
 
