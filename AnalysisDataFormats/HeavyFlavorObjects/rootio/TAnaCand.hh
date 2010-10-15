@@ -25,16 +25,22 @@ public:
   int         fIndex; 
   double      fMass;
 
-  double      fVar1;
-  double      fVar2;
-  double      fVar3;
-
   TAnaVertex  fVtx;
 
+  TVector3    fPlab;
+
+  // -- point of closest approach and related quantities
   double      fMinDoca, fMaxDoca; 
   TVector3    fPoca;
 
-  TVector3    fPlab;
+  // -- information on the associated primary vertex
+  int         fPvIdx; 
+  double      fPvLip, fPvLipE, fPvTip, fPvTipE; 
+
+  // -- reserve
+  double      fVar1;
+  double      fVar2;
+  double      fVar3;
 
 private:
   ClassDef(TAnaCand,1)

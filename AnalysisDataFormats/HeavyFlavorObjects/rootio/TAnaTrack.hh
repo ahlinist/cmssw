@@ -42,11 +42,14 @@ public:
   double         fDeDx, fDeDx2; 
   int            fDeDxNmeas, fDeDxNsat; 
 
+  int            fPvIdx; 
+
+
   // -- reserve
   int            fInt1,    fInt2,    fInt3; 
   double         fDouble1, fDouble2, fDouble3;
 
-
+  int            fTag;
 
 private:
 
