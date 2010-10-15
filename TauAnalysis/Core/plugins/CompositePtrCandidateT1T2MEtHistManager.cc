@@ -144,6 +144,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   
   hLeg1PtVsLeg2Pt_ = book2D("Leg1PtVsLeg2Pt", "leg_{1} P_{T} vs. leg_{2} P_{T}", 20, 0., 100., 20, 0., 100.);
   hLeg1EtaVsLeg2Eta_ = book2D("Leg1EtaVsLeg2Eta", "leg_{1} #eta vs. leg_{2} #eta", 20, -2.5, 2.5, 20, -2.5, 2.5);
+  hLeg1IsoVsLeg2Iso_ = book2D("Leg1IsoVsLeg2Iso", "leg_{1} Iso vs. leg_{2} Iso", 20, 0., 2., 20, 0., 2.);
   
   bookWeightHistograms(*dqmStore_, "DiTauCandidateWeight", "Composite Weight", 
 		       hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_, 
@@ -478,6 +479,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
     hLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->leg1()->eta(), diTauCandidate->leg2()->eta(), weight);
+    double isoLeg1 = (diTauCandidate->leg1().get()->userIsolation(pat::TrackIso)+diTauCandidate->leg1().get()->userIsolation(pat::EcalIso)+
+		      diTauCandidate->leg1().get()->userIsolation(pat::HcalIso))/diTauCandidate->leg1()->pt();
+    double isoLeg2 = (diTauCandidate->leg2().get()->userIsolation(pat::TrackIso)+diTauCandidate->leg2().get()->userIsolation(pat::EcalIso)+
+		      diTauCandidate->leg2().get()->userIsolation(pat::HcalIso))/diTauCandidate->leg2()->pt();
+    hLeg1IsoVsLeg2Iso_->Fill(isoLeg1, isoLeg2, weight);
 
     fillWeightHistograms(hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_, 
 			 hDiTauCandidateWeightLinear_, diTauCandidateWeight);
@@ -561,14 +567,14 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
-typedef CompositePtrCandidateT1T2MEtHistManager<reco::Candidate, reco::Candidate> DiCandidatePairHistManager;
+// typedef CompositePtrCandidateT1T2MEtHistManager<reco::Candidate, reco::Candidate> DiCandidatePairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Electron, pat::Tau> PATElecTauPairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Muon, pat::Tau> PATMuTauPairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Tau, pat::Tau> PATDiTauPairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Electron, pat::Muon> PATElecMuPairHistManager;
 
-DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
-DEFINE_EDM_PLUGIN(HistManagerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
+// DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
+// DEFINE_EDM_PLUGIN(HistManagerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
 DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PATElecTauPairHistManager, "PATElecTauPairHistManager");
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PATElecTauPairHistManager, "PATElecTauPairHistManager");
 DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PATMuTauPairHistManager, "PATMuTauPairHistManager");
@@ -580,13 +586,13 @@ DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PATElecMuPairHistManager, "PATElecMu
   
 #include "TauAnalysis/Core/interface/HistManagerAdapter.h"
 
-typedef HistManagerAdapter<DiCandidatePairHistManager> DiCandidatePairAnalyzer;
+// typedef HistManagerAdapter<DiCandidatePairHistManager> DiCandidatePairAnalyzer;
 typedef HistManagerAdapter<PATElecTauPairHistManager> PATElecTauPairAnalyzer;
 typedef HistManagerAdapter<PATMuTauPairHistManager> PATMuTauPairAnalyzer;
 typedef HistManagerAdapter<PATDiTauPairHistManager> PATDiTauPairAnalyzer;
 typedef HistManagerAdapter<PATElecMuPairHistManager> PATElecMuPairAnalyzer;
 
-DEFINE_FWK_MODULE(DiCandidatePairAnalyzer);
+// DEFINE_FWK_MODULE(DiCandidatePairAnalyzer);
 DEFINE_FWK_MODULE(PATElecTauPairAnalyzer);
 DEFINE_FWK_MODULE(PATMuTauPairAnalyzer);
 DEFINE_FWK_MODULE(PATDiTauPairAnalyzer);
