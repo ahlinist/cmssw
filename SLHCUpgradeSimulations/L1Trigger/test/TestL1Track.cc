@@ -826,7 +826,6 @@ void TestL1Track::analyze(const edm::Event& e, const edm::EventSetup& es)
           //if (iterL1Track->trkCharge() > 0 ) continue;
           
           if ( iterL1Track->simTrkId() == iterSimTracks->trackId() ) {
-if(iterSimTracks->charge()==-1) continue;
             hL1Trk_e_ST_e->Fill( iterSimTracks->momentum().eta(), iterL1Track->fitEta() );
             hL1Trk_p_ST_p->Fill( iterSimTracks->momentum().phi(), iterL1Track->fitPhi() );
             hL1Trk_Pt_ST_Pt->Fill( iterSimTracks->momentum().pt(), iterL1Track->Pt() );
