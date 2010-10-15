@@ -10,7 +10,29 @@ def fit(LLHOUT):
     bea = beautify() # helper to make histos pretty
     initCMSStyle()   # initialise cmsStyle
     dRan = dRange()  # allows to build list for range with float step 
-    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma"
+    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/"
+    lumi = "6.7"
+    if not LLHOUT == "all.out":
+        if "ZZg" in LLHOUT:
+            if "3" in LLHOUT:
+                plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/ZZg/3pb"
+                lumi = "2.7"
+            elif "6.7" in LLHOUT:
+                plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/ZZg/6.7pb"
+                lumi = "6.7"
+        elif "Zgg" in LLHOUT:
+            if "3" in LLHOUT:
+                plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/Zgg/3pb"
+                lumi = "2.7"
+            elif "6.7" in LLHOUT:
+                plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/Zgg/6.7pb"
+                lumi = "6.7"
+            
+
+    #coupType = "Z"
+    coupType = "#gamma"
+    if "ZZg" in LLHOUT: coupType = "Z"
+
     ROOT.gStyle.SetPalette(1)
     
     # read likelyhoods
@@ -37,8 +59,8 @@ def fit(LLHOUT):
         
     # initialise histo with likelyhoods and make it pretty
     LLH = ROOT.TH2F("LLH","",nbinsX, xmin, xmax, nbinsY, ymin, ymax)
-    bea.SetTitles(LLH,"","","H3","H4","-log(L)")
-    bea.SetTitleOffsets(LLH,1.3,1.6,1.3)
+    bea.SetTitles(LLH,"","","H3_{%s}"%coupType,"H4_{%s}"%coupType,"-log(L)")
+    bea.SetTitleOffsets(LLH,1.3,1.3,1.3)
     #bea.SetNdivisions(LLH,405)
 
     LLH_x = ROOT.TH1F("LLH_x","",nbinsX, xmin, xmax)
@@ -86,7 +108,10 @@ def fit(LLHOUT):
     axisLimits = axis_limits(par)
     print axisLimits
     cn1=ROOT.TCanvas("cn1","",0,0,600,600)
-    LLH_2.SetMinimum(-1)
+    cn2=ROOT.TCanvas("cn2","",606,0,600,600)
+    cn1.cd()
+    LLH_2.SetMinimum(8)
+    LLH_2.SetMaximum(20)
     #LLH_2.Draw("surfz")
     #LLH_2.Draw("colz")
     f=ROOT.TFile.Open("LLH_test.root","RECREATE")
@@ -97,10 +122,21 @@ def fit(LLHOUT):
     #LLH_2.Draw("surf3")
     #LLH_2.Draw("CONTZ")
     LLH_2.Draw("lego1")
-    #LLH_2.Draw("colz")
     #fitFcn.Draw("surfsame")
     #cn1.SetLogz(1)
-    cn1.SaveAs("%s/LLH.png"%plotDir)
+    textBin = ROOT.TLatex()
+    textBin.SetNDC()
+    textBin.SetTextSize(0.06)
+    textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
+    cn1.SaveAs("%s/LLH_lego.png"%plotDir)
+
+    ROOT.gStyle.SetPadRightMargin(0.1)
+    cn3=ROOT.TCanvas("cn3","",606,0,700,600)
+    cn3.cd()
+    LLH_2.Draw("colz")
+    textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
+    cn3.SaveAs("%s/LLH_colz.png"%plotDir)
+
 
     print "<------------- \n Chi2 | NDF \t %s \t %s"%(fitFcn.GetChisquare(),fitFcn.GetNDF())
     
@@ -121,16 +157,19 @@ def fit(LLHOUT):
     print "<-------------- \n Minimum is at %s %s with LLH = %3.1f"%(min_coup1, min_coup2, minValue )
     print "<--------------"
 
-    cn2=ROOT.TCanvas("cn2","",606,0,600,600)
-    newFcn = ROOT.TF2("newFcn",QuadFcn2(),xmin/4,xmax/4,ymin/4,ymax/4,6)
+    cn2.cd()
+    #newFcn = ROOT.TF2("newFcn",QuadFcn2(),xmin/4,xmax/4,ymin/4,ymax/4,6)
+    newFcn = ROOT.TF2("newFcn",QuadFcn2(),-.4,0.4,-0.1,0.1,6)
     newFcn.SetNpy(500)
     for i in range (0,8):
         newFcn.SetParameter(i,par[i])
-        
-    bea.SetTitles(newFcn,"","","H3_{#gamma}","H4_{#gamma}","")
+
+
+    bea.SetTitles(newFcn,"","","H3_{%s}"%coupType,"H4_{%s}"%coupType,"")
+
     bea.SetTitleOffsets(newFcn,"",1.15,"")
     #bea.SetNdivisions(newFcn,405)
-    bea.SetRange(newFcn,-0.1,0.1,-0.004,0.004,"","")
+    bea.SetRange(newFcn,-0.4,0.4,-0.006,0.006,"","")
     
     acpar = array.array('d',[par[0]+3])
     print "acpar[0]: ",acpar[0]
@@ -149,15 +188,19 @@ def fit(LLHOUT):
     cent.DrawMarker(min_coup1, min_coup2)
     l1.Draw("SAME")
     l2.Draw("SAME")
+    textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
     cn2.SaveAs("%s/contour.png"%plotDir)
     
-    cn3=ROOT.TCanvas("cn3","",500,0,600,600)
-    LLH_x.Draw()
-    cn4=ROOT.TCanvas("cn4","",500,500,600,600)
-    LLH_y.Draw()
+    #cn3=ROOT.TCanvas("cn3","",500,0,600,600)
+    #LLH_x.Draw()
+    #cn4=ROOT.TCanvas("cn4","",500,500,600,600)
+    #LLH_y.Draw()
 
-    raw_input("")
+    #raw_input("")
 
 fit("all.out")
-#fit("eeg.out")
-#fit("mmg.out")
+#fit("all.out_ZZg_3pb")
+#fit("all.out_ZZg_6.7pb")
+#fit("all.out_Zgg_3pb")
+#fit("all.out_Zgg_6.7pb")
+
