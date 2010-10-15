@@ -11,7 +11,7 @@ bea = beautify()
 curDir = commands.getoutput("pwd")
 
 
-def plotDist(channel):
+def plotDist(channel,cType):
 
     # CONFIGURE SCRIPT HERE
     #plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/ZZg/3pb/"
@@ -39,13 +39,14 @@ def plotDist(channel):
         # filter out files including both ee and uu
         if ".root" in file and channel in file:
             if "h3" in file:
-                print "adding file %s to TGC points"%file
-                f=ROOT.TFile.Open(file,"READ")
-                ROOT.gROOT.cd()
-                h = ROOT.TH1F()
-                h= f.Get("signal_Et")
-                tgcPoints.append(h.Clone())
-                f.Close()
+                if cType in file:
+                    print "adding file %s to TGC points"%file
+                    f=ROOT.TFile.Open(file,"READ")
+                    ROOT.gROOT.cd()
+                    h = ROOT.TH1F()
+                    h= f.Get("signal_Et")
+                    tgcPoints.append(h.Clone())
+                    f.Close()
             elif "DATA" in file:
                 print "adding file %s to data"%file
                 f=ROOT.TFile.Open(file,"READ")
@@ -99,7 +100,7 @@ def plotDist(channel):
             SM=tgcP
         if "h3_0_h4_0.004" in tgcP.GetTitle():
             stTGC.Add(tgcP)
-            TGC=tgcP
+            TGC=tgcP.Clone()
 
     print "SM" ,SM
     print "TGC",TGC
@@ -144,6 +145,13 @@ def plotDist(channel):
     cn.RedrawAxis()
     cn.SaveAs("%s/data%s.png"%(plotDir,channel[:-1]))
     
+    
+    print Data.GetBinContent(3)
+    print TGC.GetBinContent(3)
+    print SM.GetBinContent(3)
+    print bk.GetBinContent(3)
+
+
     Data.SetName("data%sg"%channel[:-1])
     bk.SetName("background%sg"%channel[:-1])
     ch=""
@@ -155,5 +163,7 @@ def plotDist(channel):
     file.Close()
     
 
-plotDist("_mm_")
-plotDist("_ee_")
+coupType = "ZZg"
+#coupType = "Zgg"
+plotDist("_ee_",coupType)
+plotDist("_mm_",coupType)
