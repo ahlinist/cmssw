@@ -193,19 +193,14 @@ elif options.skimType == "Jet":
   process.load(basePath + "jetSkimFilterSequence_cff")
   process.skimFilterSequence += process.jetSkimFilterSequence
   # now change the photon reco to much looser settings
-  process.photonCore.minSCEt = 1.0
-  process.photons.minSCEtBarrel = 1.0
-  process.photons.minSCEtEndcap = 1.0
+  process.photonCore.minSCEt = 10.0
+  process.photons.minSCEtBarrel = 10.0
+  process.photons.minSCEtEndcap = 10.0
   process.photons.maxHoverEBarrel = 10.0
   process.photons.maxHoverEEndcap = 10.0
   #edit the pat sequence to do the rereco
-  process.patDefaultSequence.replace(process.patPhotons,                                     
-                                     process.photonReReco*
-                                     process.patPhotons
-                                     )
+  process.patDefaultSequence = cms.Sequence(process.photonReReco+process.patDefaultSequence)
 
-  
-  
 else:
     raise RuntimeError, "Illegal skimType option: %s" % options.skimType
 
