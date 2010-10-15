@@ -110,7 +110,7 @@ process.multi5x5SuperClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.mu
 
 # this is the ntuple producer
 process.load("CalibCalorimetry.EcalTiming.ecalTimeTree_cfi")
-process.ecalTimeTree.fileName = 'EcalTimePi0Tree'
+process.ecalTimeTree.fileName = 'EcalTimeTree'
 process.ecalTimeTree.muonCollection = cms.InputTag("muons")
 process.ecalTimeTree.runNum = 108645
 # gfworks: replathese names
@@ -142,7 +142,7 @@ process.MessageLogger = cms.Service("MessageLogger",
     cout = cms.untracked.PSet(
         threshold = cms.untracked.string('DEBUG')
     ),
-    categories = cms.untracked.vstring('ecalTimePi0Tree'),
+    categories = cms.untracked.vstring('ecalTimeTree'),
     destinations = cms.untracked.vstring('cout')
 )
 
