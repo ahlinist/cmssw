@@ -822,7 +822,7 @@ void TestL1Track::analyze(const edm::Event& e, const edm::EventSetup& es)
         for ( iterSimTracks = theSimTracks->begin();  iterSimTracks != theSimTracks->end();  ++iterSimTracks ) {
           int vertexIndex = iterSimTracks->vertIndex();
           const SimVertex& theSimVertex = (*theSimVtx)[vertexIndex];
-          
+  std::cerr<<iterL1Track->trkCharge()<<std::endl;       
           //if (iterL1Track->trkCharge() > 0 ) continue;
           
           if ( iterL1Track->simTrkId() == iterSimTracks->trackId() ) {
