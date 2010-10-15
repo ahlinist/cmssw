@@ -22,6 +22,45 @@
   <use name=SLHCUpgradeSimulations/Utilities>
   <use name=root>
 
+
+  <use name=FastSimulation/Particle>                 
+  <use name=FastSimulation/BaseParticlePropagator>   
+  <use name=heppdt>                                   
+  <use name=SimTracker/TrackerHitAssociation>         
+  #<use name=SLHCUpgradeSimulations/Geometry>         
+  <use name=DataFormats/Common>                       
+  <use name=DataFormats/TrackerRecHit2D>              
+  <use name=SimDataFormats/Track>                     
+  <use name=SimDataFormats/Vertex>                    
+  <use name=SimDataFormats/TrackingHit>               
+  <use name=SimDataFormats/CrossingFrame>             
+  <use name=RecoLocalTracker/SiPixelRecHits>          
+  <use name=PhysicsTools/UtilAlgos>                   
+  <use name=FWCore/ServiceRegistry>                   
+  <use name=clhep>                                    
+  <use name=DataFormats/EcalDigi>                     
+  <use name=DataFormats/EcalDetId>                    
+  <use name=DataFormats/HcalDigi>                     
+  <use name=DataFormats/HcalDetId>                    
+  <use name=TrackingTools/TrackAssociator>            
+  <use name=TrackingTools/TrajectoryState>            
+  <use name=PhysicsTools/CandUtils>
+  <use name=FWCore/MessageLogger>
+  <use name=DataFormats/L1Trigger>
+  <use name=DataFormats/HepMCCandidate>
+  <use name=CondFormats/L1TObjects>
+  <use name=CondFormats/DataRecord>
+  <use name=RecoTauTag/TauTagTools>
+  <use name=RecoTracker/TkSeedGenerator>
+
+
+
+
+
+
+
+
+
   <flags CXXFLAGS="-g -O0"> 
  </library>
 </environment>
