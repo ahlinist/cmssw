@@ -71,17 +71,17 @@ namespace {
     std::map<std::string, SVfitDiTauSolution> dummySVfitDiTauSolutionMap;
     std::map<std::string, std::map<std::string, SVfitDiTauSolution> > dummySVfitDiTauSolutionMapMap;
 
-    /// create dictionaries for PATElecPair objects
-    PATElecPair dummyPATElecPair;
-    edm::Wrapper<PATElecPair> dummyPATElecPairWrapper;
-    PATElecPairCollection dummyPATElecPairCollection;
-    edm::Wrapper<PATElecPairCollection> dummyPATElecPairCollectionWrapper;
+    /// create dictionaries for PATDiElecPair objects
+    PATDiElecPair dummyPATDiElecPair;
+    edm::Wrapper<PATDiElecPair> dummyPATDiElecPairWrapper;
+    PATDiElecPairCollection dummyPATDiElecPairCollection;
+    edm::Wrapper<PATDiElecPairCollection> dummyPATDiElecPairCollectionWrapper;
 
-    /// create dictionaries for PATMuPair objects
-    PATMuPair dummyPATMuPair;
-    edm::Wrapper<PATMuPair> dummyPATMuPairWrapper;
-    PATMuPairCollection dummyPATMuPairCollection;
-    edm::Wrapper<PATMuPairCollection> dummyPATMuPairCollectionWrapper;
+    /// create dictionaries for PATDiMuPair objects
+    PATDiMuPair dummyPATDiMuPair;
+    edm::Wrapper<PATDiMuPair> dummyPATDiMuPairWrapper;
+    PATDiMuPairCollection dummyPATDiMuPairCollection;
+    edm::Wrapper<PATDiMuPairCollection> dummyPATDiMuPairCollectionWrapper;
 
     /// create dictionaries for PATElecTauPair objects
     PATElecTauPair dummyPATElecTauPair;
