@@ -567,14 +567,16 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
-// typedef CompositePtrCandidateT1T2MEtHistManager<reco::Candidate, reco::Candidate> DiCandidatePairHistManager;
+//typedef CompositePtrCandidateT1T2MEtHistManager<reco::Candidate, reco::Candidate> DiCandidatePairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Electron, pat::Tau> PATElecTauPairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Muon, pat::Tau> PATMuTauPairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Tau, pat::Tau> PATDiTauPairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Electron, pat::Muon> PATElecMuPairHistManager;
+typedef CompositePtrCandidateT1T2MEtHistManager<pat::Electron, pat::Electron> PATDiElecPairHistManager;
+typedef CompositePtrCandidateT1T2MEtHistManager<pat::Muon, pat::Muon> PATDiMuPairHistManager;
 
-// DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
-// DEFINE_EDM_PLUGIN(HistManagerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
+//DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
+//DEFINE_EDM_PLUGIN(HistManagerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
 DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PATElecTauPairHistManager, "PATElecTauPairHistManager");
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PATElecTauPairHistManager, "PATElecTauPairHistManager");
 DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PATMuTauPairHistManager, "PATMuTauPairHistManager");
@@ -583,18 +585,26 @@ DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PATDiTauPairHistManager, "PATDiTauPairH
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PATDiTauPairHistManager, "PATDiTauPairHistManager");
 DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PATElecMuPairHistManager, "PATElecMuPairHistManager");
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PATElecMuPairHistManager, "PATElecMuPairHistManager");
+DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PATDiElecPairHistManager, "PATDiElecPairHistManager");
+DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PATDiElecPairHistManager, "PATDiElecPairHistManager");
+DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PATDiMuPairHistManager, "PATDiMuPairHistManager");
+DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PATDiMuPairHistManager, "PATDiMuPairHistManager");
   
 #include "TauAnalysis/Core/interface/HistManagerAdapter.h"
 
-// typedef HistManagerAdapter<DiCandidatePairHistManager> DiCandidatePairAnalyzer;
+//typedef HistManagerAdapter<DiCandidatePairHistManager> DiCandidatePairAnalyzer;
 typedef HistManagerAdapter<PATElecTauPairHistManager> PATElecTauPairAnalyzer;
 typedef HistManagerAdapter<PATMuTauPairHistManager> PATMuTauPairAnalyzer;
 typedef HistManagerAdapter<PATDiTauPairHistManager> PATDiTauPairAnalyzer;
 typedef HistManagerAdapter<PATElecMuPairHistManager> PATElecMuPairAnalyzer;
+typedef HistManagerAdapter<PATDiElecPairHistManager> PATDiElecPairAnalyzer;
+typedef HistManagerAdapter<PATDiMuPairHistManager> PATDiMuPairAnalyzer;
 
-// DEFINE_FWK_MODULE(DiCandidatePairAnalyzer);
+//DEFINE_FWK_MODULE(DiCandidatePairAnalyzer);
 DEFINE_FWK_MODULE(PATElecTauPairAnalyzer);
 DEFINE_FWK_MODULE(PATMuTauPairAnalyzer);
 DEFINE_FWK_MODULE(PATDiTauPairAnalyzer);
 DEFINE_FWK_MODULE(PATElecMuPairAnalyzer);
+DEFINE_FWK_MODULE(PATDiElecPairAnalyzer);
+DEFINE_FWK_MODULE(PATDiMuPairAnalyzer);
 
