@@ -7,39 +7,39 @@ options = VarParsing("analysis")
 options.setDefault("outputFile", "VGammaSkim.root")
 
 options.register("globalTag",
-  "GR10_P_V7::All", # default value is latest prompt reco (August 2010)
-  VarParsing.multiplicity.singleton, # singleton or list
-  VarParsing.varType.string,         # bool, string, int, or float
-  "Global tag to be used."
-  )
+    "GR10_P_V7::All", # default value is latest prompt reco (August 2010)
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.string,         # bool, string, int, or float
+    "Global tag to be used."
+    )
 
 options.register("reportEvery",
-  100, # default value
-  VarParsing.multiplicity.singleton, # singleton or list
-  VarParsing.varType.int,            # bool, string, int, or float
-  "Frequency of ouput."
-  )
+    100, # default value
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.int,            # bool, string, int, or float
+    "Frequency of ouput."
+    )
 
 options.register("isRealData",
-  False, # default value
-  VarParsing.multiplicity.singleton, # singleton or list
-  VarParsing.varType.bool,           # bool, string, int, or float
-  "Is this real data?"
-  )
+    False, # default value
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.bool,           # bool, string, int, or float
+    "Is this real data?"
+    )
 
 options.register("use35XInput",
-  False,
-  VarParsing.multiplicity.singleton, # singleton or list
-  VarParsing.varType.bool,           # bool, string, int, or float
-  "Is this 35X data?"
-  )
+    False,
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.bool,           # bool, string, int, or float
+    "Is this 35X data?"
+    )
 
-options.register("isMaxEventsOutput",
-  False,
-  VarParsing.multiplicity.singleton, # singleton or list
-  VarParsing.varType.bool,           # bool, string, int, or float
-  "Does maxEvents refer to the output?"
-  )
+options.register("outputEvents",
+    -1,
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.int,            # bool, string, int, or float
+    "What is the maximum number of output events?"
+    )
 
 options.register("wantSummary",
   True,
@@ -55,15 +55,8 @@ options.register("hltProcessName",
   "Name of the Process that produced the HLT information."
   )
 
-options.register("hltPaths",
-  "",                                # default value
-  VarParsing.multiplicity.list,      # singleton or list
-  VarParsing.varType.string,         # bool, string, int, or float
-  "List of HLT paths whose OR is required for selected events."
-  )
-
 options.register("skimType",
-  "MuonPhoton", # default value
+  "Muon", # default value
   VarParsing.multiplicity.singleton, # singleton or list
   VarParsing.varType.string,         # bool, string, int, or float
   "What is the type of this skim, e.g. MuonPhoton?"
