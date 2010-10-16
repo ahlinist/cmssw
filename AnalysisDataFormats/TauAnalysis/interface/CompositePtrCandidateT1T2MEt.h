@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.19 $
+ * \version $Revision: 1.20 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.19 2010/09/21 08:45:15 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.20 2010/10/13 16:18:51 veelken Exp $
  *
  */
 
@@ -354,8 +354,8 @@ typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> PATElecTauPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> PATMuTauPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> PATDiTauPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> PATElecMuPair;
-typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> PATElecPair;
-typedef CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> PATMuPair;
+typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> PATDiElecPair;
+typedef CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> PATDiMuPair;
 
 
 #endif
