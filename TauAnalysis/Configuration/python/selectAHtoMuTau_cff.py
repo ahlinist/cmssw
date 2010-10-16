@@ -37,6 +37,7 @@ cfgCentralJetEt20bTagVeto = cms.PSet(
     pluginType = cms.string('PATCandViewMaxEventSelector'),
     src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauBtagCumulative'),
     src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauBtagIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
     maxNumber = cms.uint32(0)
 )
 cfgCentralJetEt20Cut = cms.PSet(
@@ -44,6 +45,7 @@ cfgCentralJetEt20Cut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'),
     src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 cfgCentralJetEt20bTagCut = cms.PSet(
@@ -51,6 +53,7 @@ cfgCentralJetEt20bTagCut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatJetsForAHtoMuTauBtagCumulative'),
     src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauBtagIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -94,34 +97,34 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
 
 selectAHtoMuTauEvents = ahToMuTauEventSelConfigurator.configure()
 
-##isRecAHtoMuTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
-##    pluginName = cms.string('isRecAHtoMuTau'),
-##    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
-##    flags = cms.VInputTag(
-##        cms.InputTag('Trigger'),
-##        cms.InputTag('primaryEventVertexPosition'),
-##        cms.InputTag('muonTrkIPcut', 'cumulative'),
-##        cms.InputTag('tauMuonVeto', 'cumulative'),
-##        cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
-##        cms.InputTag('diMuPairZmumuHypothesisVeto'),
-##        cms.InputTag('centralJetEt20bTagVeto', 'cumulative')
-##    )
-##)
+isRecAHtoMuTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoMuTauCentralJetVeto'),
+    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
+    flags = cms.VInputTag(
+        cms.InputTag('Trigger'),
+        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('muonTrkIPcut', 'cumulative'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
+        cms.InputTag('diMuPairZmumuHypothesisVeto'),
+        cms.InputTag('centralJetEt20bTagVeto', 'cumulative')
+    )
+)
 
-##selectAHtoMuTauEvents._seq = selectAHtoMuTauEvents._seq * isRecAHtoMuTauCentralJetVeto
+selectAHtoMuTauEvents._seq = selectAHtoMuTauEvents._seq * isRecAHtoMuTauCentralJetVeto
 
-##isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
-##    pluginName = cms.string('isRecAHtoMuTau'),
-##    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
-##    flags = cms.VInputTag(
-##        cms.InputTag('Trigger'),
-##        cms.InputTag('primaryEventVertexPosition'),
-##        cms.InputTag('muonTrkIPcut', 'cumulative'),
-##        cms.InputTag('tauMuonVeto', 'cumulative'),
-##        cms.InputTag('diTauCandidateForMuTauValidCollinearApproxCut', 'cumulative'),
-##        cms.InputTag('diMuPairZmumuHypothesisVeto'),
-##        cms.InputTag('centralJetEt20bTagCut', 'cumulative')
-##    )
-##)
+isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoMuTauCentralJetBtag'),
+    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
+    flags = cms.VInputTag(
+        cms.InputTag('Trigger'),
+        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('muonTrkIPcut', 'cumulative'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
+        cms.InputTag('diMuPairZmumuHypothesisVeto'),
+        cms.InputTag('centralJetEt20bTagCut', 'cumulative')
+    )
+)
 
-##selectAHtoMuTauEvents._seq = selectAHtoMuTauEvents._seq * isRecAHtoMuTauCentralJetBtag
+selectAHtoMuTauEvents._seq = selectAHtoMuTauEvents._seq * isRecAHtoMuTauCentralJetBtag
