@@ -38,13 +38,6 @@ allDiTauPairs = cms.EDProducer("PATDiTauPairProducer",
     srcGenParticles = cms.InputTag('genParticles'),                  
     recoMode = cms.string(""),
     doSVreco = cms.bool(False),                          
-    SVOptions = cms.PSet(
-        usePtBalanceInFit = cms.bool(True),
-        useMEtInFit = cms.bool(True),
-        useLeg1TrackingInFit = cms.bool(False),
-        useLeg2TrackingInFit = cms.bool(False),
-        correctPrimaryVertexInFit = cms.bool(False)
-    ),                           
     scaleFuncImprovedCollinearApprox = cms.string('1'),                           
     verbosity = cms.untracked.int32(0)
 )
