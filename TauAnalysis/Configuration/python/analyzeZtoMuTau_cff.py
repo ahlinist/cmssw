@@ -18,7 +18,7 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
     sources = cms.PSet(
         isRecZtoMuTau = cms.vstring(
             "sysMuon*", "",
-            "sysTau*", "",
+            "sysTau*", ""
         )        
     )
 )
@@ -106,7 +106,8 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
     ),
 
     analyzers_systematic = cms.VPSet(
-        sysUncertaintyBinnerForMuTau
+        sysUncertaintyBinnerForMuTauAcc,
+	sysUncertaintyBinnerForMuTauEff
     ),
 
     eventDumps = cms.VPSet(

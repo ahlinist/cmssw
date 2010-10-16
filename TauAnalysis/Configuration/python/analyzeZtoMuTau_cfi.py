@@ -60,7 +60,7 @@ diTauCandidateZmumuHypothesisHistManagerForMuTau.dqmDirectory_store = cms.string
 # import config for Zmumu veto histogram manager
 muPairHistManager = copy.deepcopy(diTauCandidateHistManager)
 muPairHistManager.pluginName = cms.string('muPairHistManager')
-muPairHistManager.pluginType = cms.string('DiCandidatePairHistManager')
+muPairHistManager.pluginType = cms.string('PATDiMuPairHistManager')
 muPairHistManager.diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypotheses')
 muPairHistManager.dqmDirectory_store = cms.string('DiMuZmumuHypothesisQuantities')
 
@@ -135,13 +135,6 @@ modelBinnerForMuTauWrtGenTauLeptonPairAcc.dqmDirectory_store = cms.string('model
 # used to estimate systematic uncertainties
 from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
-sysUncertaintyBinnerForMuTau = copy.deepcopy(sysUncertaintyBinner)
-sysUncertaintyBinnerForMuTau.pluginName = cms.string('sysUncertaintyBinnerForMuTau')
-sysUncertaintyBinnerForMuTau.binnerPlugins = cms.VPSet(
-    dataBinner,
-    modelBinnerForMuTauGenTauLeptonPairAcc,
-    modelBinnerForMuTauWrtGenTauLeptonPairAcc
-)
 sysUncertaintyNames = [ "CENTRAL_VALUE", ]
 sysUncertaintyNames.extend(
     getSysUncertaintyNames(
@@ -149,8 +142,22 @@ sysUncertaintyNames.extend(
           tauSystematics,
           theorySystematics ]
     )
-)    
-sysUncertaintyBinnerForMuTau.systematics = cms.vstring(sysUncertaintyNames)
+)  
+sysUncertaintyBinnerForMuTauAcc = sysUncertaintyBinner.clone(
+    pluginName = cms.string('sysUncertaintyBinnerForMuTauAcc'),
+    binnerPlugins = cms.VPSet(
+        modelBinnerForMuTauGenTauLeptonPairAcc,
+        modelBinnerForMuTauWrtGenTauLeptonPairAcc
+    ),
+    systematics = cms.vstring(sysUncertaintyNames)
+)
+sysUncertaintyBinnerForMuTauEff = sysUncertaintyBinner.clone(
+    pluginName = cms.string('sysUncertaintyBinnerForMuTauEff'),
+    binnerPlugins = cms.VPSet(
+        dataBinner
+    ),
+    systematics = cms.vstring(sysUncertaintyNames)
+)
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -509,7 +516,7 @@ muTauAnalysisSequence = cms.VPSet(
             'triggerHistManagerForMuTau',
             'modelBinnerForMuTauGenTauLeptonPairAcc',
             'modelBinnerForMuTauWrtGenTauLeptonPairAcc',
-            'sysUncertaintyBinnerForMuTau'
+            'sysUncertaintyBinnerForMuTauAcc'
         )
     ),
 
@@ -1039,7 +1046,8 @@ muTauAnalysisSequence = cms.VPSet(
             'particleMultiplicityHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
-            'dataBinner'
+            'dataBinner',
+	    'sysUncertaintyBinnerForMuTauEff'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
