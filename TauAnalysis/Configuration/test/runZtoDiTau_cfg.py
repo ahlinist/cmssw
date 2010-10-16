@@ -64,24 +64,9 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
-        'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part01.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part02.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part03.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part04.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part05.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part06.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part07.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part08.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part09.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part10.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part11.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part12.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part13.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part14.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part15.root',
-        ##'file:/data1/veelken/CMSSW_3_1_2/skims/selEvents_ZtoMuTau_Ztautau_7TeV_part16.root'        
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
+        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
     )    
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -125,7 +110,10 @@ process.cleanPatTaus.preselection = cms.string('')
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+##switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+##runBTagging(process, jetCollection = cms.InputTag("ak5CaloJets"), 'AOD')
+process.patJets.addDiscriminators = False
+process.patJets.addTagInfos = False
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
