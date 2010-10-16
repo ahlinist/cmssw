@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 process.source = cms.Source("PoolSource",
-   fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/s/stupputi/Beams/Data/Express/PromptReco/stupputi/MuMonitor/RPCSkim_Collisions10_PromptReco_RECO/de32951a8bd98c6e98fd59b2f6c2a3d7/rpcSkimExp_135808-136082_9_1.root')
+   fileNames = cms.untracked.vstring('/store/data/Run2010B/RPCMonitor/RAW/v1/000/146/804/DAAD617B-ADCA-DF11-B8A9-001D09F2960F.root')
 )
 
 process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
@@ -38,11 +38,11 @@ process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
   MaxD = cms.untracked.double(80.0),
   MaxDrb4 = cms.untracked.double(150.0),
   ExtrapolatedRegion = cms.untracked.double(0.6), #in stripl/2 in Y and stripw*nstrips/2 in X
-
-##  cscSegments = cms.untracked.string('hltCscSegments'),
-##  dt4DSegments = cms.untracked.string('hltDt4DSegments'),
-  cscSegments = cms.untracked.InputTag('cscSegments'),
-  dt4DSegments = cms.untracked.InputTag('dt4DSegments'),
+  
+  cscSegments = cms.InputTag('hltCscSegments'),
+  dt4DSegments = cms.InputTag('hltDt4DSegments'),
+##  cscSegments = cms.InputTag('cscSegments'),
+##  dt4DSegments = cms.InputTag('dt4DSegments'),
   tracks = cms.InputTag("standAloneMuons"),
   TrackTransformer = cms.PSet(
       DoPredictionsOnly = cms.bool(False),
@@ -56,7 +56,7 @@ process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
   )
 )
 
-process.museg = cms.EDFilter("MuonSegmentEff",
+process.museg = cms.EDAnalyzer("MuonSegmentEff",
 
     incldt = cms.untracked.bool(True),
     incldtMB4 = cms.untracked.bool(True),
@@ -72,23 +72,31 @@ process.museg = cms.EDFilter("MuonSegmentEff",
 	
     rangestrips = cms.untracked.double(4.),
 
-##  cscSegments = cms.untracked.string('hltCscSegments'),
-##  dt4DSegments = cms.untracked.string('hltDt4DSegments'),
-    cscSegments = cms.untracked.InputTag('cscSegments'),
-    dt4DSegments = cms.untracked.InputTag('dt4DSegments'),
+    cscSegments = cms.untracked.InputTag('hltCscSegments'),
+    dt4DSegments = cms.untracked.InputTag('hltDt4DSegments'),
+    rpcRecHits = cms.InputTag("hltRpcRecHits"),
 
+##  cscSegments = cms.untracked.InputTag('cscSegments'),
+##  dt4DSegments = cms.untracked.InputTag('dt4DSegments'),
+##  rpcRecHits = cms.InputTag("rpcRecHits"),
 
-## is missing the hltrpcRecHits
-    rpcRecHits = cms.InputTag("rpcRecHits"),
     rpcDTPoints = cms.InputTag("rpcPointProducer","RPCDTExtrapolatedPoints"),
     rpcCSCPoints = cms.InputTag("rpcPointProducer","RPCCSCExtrapolatedPoints"),
 
     EffSaveRootFile = cms.untracked.bool(True),
-    EffRootFileName = cms.untracked.string('PromptReco.rpcSkimExp_135808-136082_9_1.root'),
+    EffRootFileName = cms.untracked.string('/tmp/carrillo/output.root'),
     EffSaveRootFileEventsInterval = cms.untracked.int32(100)
 )
 
-process.p = cms.Path(process.rpcPointProducer*process.museg)
+process.normfilter = cms.EDFilter("HLTHighLevel",
+    TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+    HLTPaths = cms.vstring("AlCa_RPCMuonNormalisation"),
+    eventSetupPathsKey = cms.string(''),
+    andOr = cms.bool(True),
+    throw = cms.bool(True)
+)
+
+process.p = cms.Path(process.normfilter*process.rpcPointProducer*process.museg)
 
 process.DQM.collectorHost = ''
 process.DQM.collectorPort = 9090
