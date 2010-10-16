@@ -36,6 +36,11 @@ muTauPairSystematics = {
     "sysTauJetPhiDown"      : "allMuTauPairsSysTauJetPhiDown"
 }
 
+jetSystematics = {   
+    "sysJetEnUp"            : "smearedJetsEnScaleUp",
+    "sysJetEnDown"          : "smearedJetsEnScaleDown"
+}
+
 theorySystematics = {
     "sysPdfWeights(41)"     : "pdfWeights:cteq65",
     "sysIsrWeight"          : "isrWeight",
