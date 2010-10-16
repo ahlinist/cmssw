@@ -109,7 +109,7 @@ void MuTauEventDump::printDiMuZmumuHypothesisInfo(const edm::Event& iEvent) cons
 {
   if ( diMuZmumuHypothesisSource_.label() == "" ) return;
 
-  typedef std::vector<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate> > ZmumuHypothesisCollection;
+  typedef std::vector<PATDiMuPair> ZmumuHypothesisCollection;
   edm::Handle<ZmumuHypothesisCollection> ZmumuHypotheses;
   iEvent.getByLabel(diMuZmumuHypothesisSource_, ZmumuHypotheses);
 
