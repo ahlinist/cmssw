@@ -1,12 +1,24 @@
 import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.RecoTools.tools.sysProdConfigurator import *
+from TauAnalysis.RecoTools.randomNumberGenerator_cfi import *
 
-RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-    saveFileName = cms.untracked.string('')
+sysConfiguratorElectrons = sysProdConfigurator(pyModuleName = __name__, pyNameSpace = locals())
+prodSmearedElectrons = sysConfiguratorElectrons.createSequence(
+    randomNumberService = RandomNumberGeneratorService,
+    modulePrefix        = 'smearedElectrons',
+    moduleType          = 'SmearedElectronProducer',
+    src                 = 'patElectrons',
+    energyScaleMean     = 1.0,
+    energyScaleShift    = 0.025,
+    energyScaleSmearing = 0.025,
+    ptShift             = 1.0,
+    ptSmearing          = 0.5,
+    etaShift            = 0.025,
+    etaSmearing         = 0.01,
+    phiShift            = 0.025,
+    phiSmearing         = 0.025
 )
-
-randomEngineStateProducer = cms.EDProducer("RandomEngineStateProducer")
 
 sysConfiguratorMuons = sysProdConfigurator(pyModuleName = __name__, pyNameSpace = locals())
 prodSmearedMuons = sysConfiguratorMuons.createSequence(
