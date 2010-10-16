@@ -8,9 +8,9 @@
  * 
  * \authors Christian Veelken
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: LeptonPFIsolationHistManager.h,v 1.3 2010/02/20 20:58:54 wmtan Exp $
+ * $Id: LeptonPFIsolationHistManager.h,v 1.1 2010/10/12 16:10:13 veelken Exp $
  *
  */
 
@@ -75,7 +75,8 @@ class LeptonPFIsolationHistManager : public HistManagerBase
     pfIsoHistogramEntryType(double);
     ~pfIsoHistogramEntryType();
 
-    void bookHistograms(DQMStore&, const std::string&, double);
+    void bookHistograms(DQMStore&, const std::string&, double, const std::string&);
+    void bookHistograms(DQMStore&, const std::string&, double, double, const std::string&);
     void fillHistograms(const reco::Particle::LorentzVector&, const std::vector<const reco::PFCandidate*>&, double);
 
     double dRisoCone_;
@@ -101,6 +102,9 @@ class LeptonPFIsolationHistManager : public HistManagerBase
   pfIsoHistogramEntryType* pfIsoHistogramsPtThreshold3_0GeVmatched_;
   pfIsoHistogramEntryType* pfIsoHistogramsPtThreshold3_0GeVunmatched_;
 
+  pfIsoHistogramEntryType* pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_;
+  pfIsoHistogramEntryType* pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVunmatched_;
+  
   MonitorElement* hLeptonWeightPosLog_;
   MonitorElement* hLeptonWeightNegLog_;
   MonitorElement* hLeptonWeightZero_;
