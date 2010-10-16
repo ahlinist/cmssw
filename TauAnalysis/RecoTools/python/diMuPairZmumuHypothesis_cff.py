@@ -14,7 +14,7 @@ selectedPatMuonsForZmumuHypotheses = cms.EDFilter("PATMuonSelector",
     filter = cms.bool(False)
 )
 
-allDiMuPairZmumuHypotheses = cms.EDProducer("DiCandidatePairProducer",
+allDiMuPairZmumuHypotheses = cms.EDProducer("PATDiMuPairProducer",
     useLeadingTausOnly = cms.bool(False),
     srcLeg1 = cms.InputTag('selectedPatMuonsForZmumuHypotheses'),
     srcLeg2 = cms.InputTag('selectedPatMuonsForZmumuHypotheses'),
@@ -25,10 +25,12 @@ allDiMuPairZmumuHypotheses = cms.EDProducer("DiCandidatePairProducer",
     verbosity = cms.untracked.int32(0)
 )
 
-selectedDiMuPairZmumuHypotheses = cms.EDFilter("DiCandidatePairSelector",
+selectedDiMuPairZmumuHypotheses = cms.EDFilter("PATDiMuPairSelector",
     src = cms.InputTag("allDiMuPairZmumuHypotheses"),                                   
     cut = cms.string('p4Vis.mass > 80. & p4Vis.mass < 100.'),
     filter = cms.bool(False)
 )
 
-produceDiMuPairs = cms.Sequence( selectedPatMuonsForZmumuHypotheses * allDiMuPairZmumuHypotheses * selectedDiMuPairZmumuHypotheses )
+produceDiMuPairs = cms.Sequence(
+    selectedPatMuonsForZmumuHypotheses * allDiMuPairZmumuHypotheses * selectedDiMuPairZmumuHypotheses
+)
