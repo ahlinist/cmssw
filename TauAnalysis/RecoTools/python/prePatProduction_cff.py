@@ -25,22 +25,9 @@ from RecoTauTag.Configuration.RecoPFTauTag_cff import *
 # produce tau id. efficiencies & fake-rates
 from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
 
-# produce anti-kt jet collections not present in Summer'09 samples yet
-# disabled by default since Spring10 production
-from RecoJets.JetAssociationProducers.trackExtrapolator_cfi import *
-from RecoJets.Configuration.RecoJets_cff import *
-from RecoJets.Configuration.RecoPFJets_cff import *
+# produce anti-kt collections of generator level jets
 from RecoJets.Configuration.GenJetParticles_cff import *
 from RecoJets.Configuration.RecoGenJets_cff import *
-from RecoJets.Configuration.RecoJetAssociations_cff import *
-from RecoJets.Configuration.JetIDProducers_cff import *
-from RecoBTag.Configuration.RecoBTag_cff import *
-redoAk5Jets = cms.Sequence(
-    trackExtrapolator
-   + ak5CaloJets + ak5CaloJetsPUCorr + ak5JetID + ak5JTA
-   + ak5PFJets
-   #+ btagging
-)
 
 # produce MET significance values
 from RecoMET.METProducers.CaloMETSignif_cfi import *
@@ -55,12 +42,11 @@ producePrePat = cms.Sequence(
    + pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
    + recoElectronIsolation
    + recoMuonIsolation
-   + redoAk5Jets
    + PFTau
    #+ shrinkingConePFTauTancCVTransform
    #+ associateTauFakeRates
    + ewkTauId
-   + genParticlesForJets + ak5GenJets
+   + genParticlesForJets + ak5GenJets 
    + metsignificance
    + produceEventShapeVars
 )
