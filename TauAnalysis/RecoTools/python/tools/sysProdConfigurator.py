@@ -15,7 +15,7 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                        ptShift, ptSmearing, etaShift, etaSmearing, phiShift, phiSmearing):
             module = cms.EDProducer(moduleType)
             module.src = cms.InputTag(src)
-            #THE FileInPath shooudl not be empty!!!! Put a file that exists even if
+            #THE FileInPath should not be empty!!! Put a file that exists even if
             #it has no meaning... There is no trivial way to avoid that :-(
             module.fileName = cms.FileInPath('DataFormats/Candidate/interface/Candidate.h')
             module.smearMCParticle = cms.bool(False)
