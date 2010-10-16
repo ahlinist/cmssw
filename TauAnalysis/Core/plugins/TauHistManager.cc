@@ -510,9 +510,15 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauMatchingFinalStateGenParticlePdgId_->Fill(abs(matchingFinalStateGenParticlePdgId), weight);
     }
 
+    std::string genTauDecayMode = "";
     if ( patTau->genJet() != 0 ) {
-      hTauMatchingGenTauDecayMode_->getTH1()->Fill(JetMCTagUtils::genTauDecayMode(*patTau->genJet()).data(), weight);
+      genTauDecayMode = JetMCTagUtils::genTauDecayMode(*patTau->genJet());
+    } else if ( matchingGenParticlePdgId == 15 ) { // special handling of tau --> electron/muon decays
+      if      ( TMath::Abs(matchingFinalStateGenParticlePdgId) == 11 ) genTauDecayMode = "electron";
+      else if ( TMath::Abs(matchingFinalStateGenParticlePdgId) == 13 ) genTauDecayMode = "muon";
     }
+
+    if ( genTauDecayMode != "" ) hTauMatchingGenTauDecayMode_->getTH1()->Fill(genTauDecayMode.data(), weight);
 
     hTauNumTracksSignalCone_->Fill(patTau->signalPFChargedHadrCands().size(), weight);
     hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size(), weight);
@@ -555,13 +561,13 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 
     hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"), weight);
   
-    int tauDecayMode = patTau->decayMode();
-    hTauRecDecayMode_->Fill(tauDecayMode, weight);
-    if ( patTau->genJet() != 0 ) {
+    int recTauDecayMode = patTau->decayMode();
+    hTauRecDecayMode_->Fill(recTauDecayMode, weight);
+    if ( genTauDecayMode != "" ) {
       TH2* tauRecVsGenDecayMode_th2 = dynamic_cast<TH2*>(hTauRecVsGenDecayMode_->getTH1());
-      tauRecVsGenDecayMode_th2->Fill(JetMCTagUtils::genTauDecayMode(*patTau->genJet()).data(), tauDecayMode, weight);
+      tauRecVsGenDecayMode_th2->Fill(genTauDecayMode.data(), recTauDecayMode, weight);
     }
-
+    
     static std::map<std::string, bool> discrAvailability_hasBeenChecked;
     fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrOnePercent_, *patTau, "byTaNCfrOnePercent", 
 				  discrAvailability_hasBeenChecked, weight);
@@ -573,15 +579,15 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 				  discrAvailability_hasBeenChecked, weight);
 
     MonitorElement* hTauTaNCoutput = 0;
-    if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero ) {
+    if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero ) {
       hTauTaNCoutput = hTauTaNCoutputOneProngNoPi0s_;
-    } else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero ) {
+    } else if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero ) {
       hTauTaNCoutput = hTauTaNCoutputOneProngOnePi0_;
-    } else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero ) {
+    } else if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero ) {
       hTauTaNCoutput = hTauTaNCoutputOneProngTwoPi0s_;
-    } else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero ) {
+    } else if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero ) {
       hTauTaNCoutput = hTauTaNCoutputThreeProngNoPi0s_;
-    } else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero ) {
+    } else if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero ) {
       hTauTaNCoutput = hTauTaNCoutputThreeProngOnePi0_;
     } 
     if ( hTauTaNCoutput ) {
@@ -626,19 +632,19 @@ void TauHistManager::bookTauIsoConeSizeDepHistograms()
     std::string hTauParticleFlowIsoPtConeSizeDepName_i 
       = std::string("TauParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
     hTauParticleFlowIsoPtConeSizeDep_.push_back(book1D(hTauParticleFlowIsoPtConeSizeDepName_i, 
-								hTauParticleFlowIsoPtConeSizeDepName_i, 40, 0., 10.));
+						       hTauParticleFlowIsoPtConeSizeDepName_i, 40, 0., 10.));
     std::string hTauPFChargedHadronIsoPtConeSizeDepName_i 
       = std::string("TauChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
     hTauPFChargedHadronIsoPtConeSizeDep_.push_back(book1D(hTauPFChargedHadronIsoPtConeSizeDepName_i, 
-								   hTauPFChargedHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
+							  hTauPFChargedHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
     std::string hTauPFNeutralHadronIsoPtConeSizeDepName_i 
       = std::string("TauPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
     hTauPFNeutralHadronIsoPtConeSizeDep_.push_back(book1D(hTauPFNeutralHadronIsoPtConeSizeDepName_i, 
-								   hTauPFNeutralHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
+							  hTauPFNeutralHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
     std::string hTauPFGammaIsoPtConeSizeDepName_i 
       = std::string("TauPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
     hTauPFGammaIsoPtConeSizeDep_.push_back(book1D(hTauPFGammaIsoPtConeSizeDepName_i, 
-							   hTauPFGammaIsoPtConeSizeDepName_i, 40, 0., 10.));
+						  hTauPFGammaIsoPtConeSizeDepName_i, 40, 0., 10.));
   }
 }
 
