@@ -8,9 +8,9 @@
  * 
  * \authors Christian Veelken
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATLeptonGenMatcher.h,v 1.3 2010/02/20 20:58:54 wmtan Exp $
+ * $Id: PATLeptonGenMatcher.h,v 1.1 2010/10/12 16:10:14 veelken Exp $
  *
  */
 
@@ -57,8 +57,11 @@ class PATLeptonGenMatcher<pat::Tau>
       tauDecayModes_(cfg.getParameter<vstring>("tauDecayModes"))
   {}
 
-  bool operator()(const edm::Event& evt, const pat::Tau& tau) const
+  bool operator()(const edm::Event& evt, const pat::Tau& tauJet) const
   {
+    //std::cout << "<PATElectronGenMatcher::operator()>" << std::endl;
+    //std::cout << " tauJet: Pt = " << tauJet.pt() << ", eta = " << tauJet.eta() << ", phi = " << tauJet.phi() << std::endl;
+
     edm::Handle<reco::GenParticleCollection> genParticles;
     evt.getByLabel(genParticleSrc_, genParticles);
 
@@ -71,27 +74,31 @@ class PATLeptonGenMatcher<pat::Tau>
       if ( genParticle->status() == 3 ) continue;
       
       if ( TMath::Abs(genParticle->pdgId()) == 15 ) {
-	double dR = deltaR(tau.p4(), genParticle->p4());
+	double dR = deltaR(tauJet.p4(), genParticle->p4());
 	if ( dR < dRmatch_ ) genTauLeptonMatch = true;
       }
     }
 
-     bool genTauDecayModeMatch = false;
-     if ( genTauLeptonMatch ) {
-       for ( reco::GenJetCollection::const_iterator genTauJet = genTauJets->begin();
-	     genTauJet != genTauJets->end(); ++genTauJet ) {
-	 double dR = deltaR(tau.p4(), genTauJet->p4());
-	 if ( dR < dRmatch_ ) {
-	   std::string genTauDecayMode = JetMCTagUtils::genTauDecayMode(*genTauJet);
-	   for ( vstring::const_iterator tauDecayMode = tauDecayModes_.begin();
-		 tauDecayMode != tauDecayModes_.end(); ++tauDecayMode ) {
-	     if ( genTauDecayMode == (*tauDecayMode) ) genTauDecayModeMatch = true;
-	   }
-	 }
-       }
-     }
+    //std::cout << "--> genTauLeptonMatch = " << genTauLeptonMatch << std::endl;
 
-     return genTauDecayModeMatch;
+    bool genTauDecayModeMatch = false;
+    if ( genTauLeptonMatch ) {
+      for ( reco::GenJetCollection::const_iterator genTauJet = genTauJets->begin();
+	    genTauJet != genTauJets->end(); ++genTauJet ) {
+	double dR = deltaR(tauJet.p4(), genTauJet->p4());
+	if ( dR < dRmatch_ ) {
+	  std::string genTauDecayMode = JetMCTagUtils::genTauDecayMode(*genTauJet);
+	  for ( vstring::const_iterator tauDecayMode = tauDecayModes_.begin();
+		tauDecayMode != tauDecayModes_.end(); ++tauDecayMode ) {
+	    if ( genTauDecayMode == (*tauDecayMode) ) genTauDecayModeMatch = true;
+	  }
+	}
+      }
+    }
+    
+    //std::cout << "--> genTauDecayModeMatch = " << genTauDecayModeMatch << std::endl;
+    
+    return genTauDecayModeMatch;
   }
 
  private:
@@ -110,8 +117,11 @@ class PATLeptonGenMatcher<pat::Muon>
       dRmatch_(cfg.getParameter<double>("dRmatch"))
   {}
 
-    bool operator()(const edm::Event& evt, const pat::Muon& muon) const
+  bool operator()(const edm::Event& evt, const pat::Muon& muon) const
   {
+    //std::cout << "<PATElectronGenMatcher::operator()>" << std::endl;
+    //std::cout << " muon: Pt = " << muon.pt() << ", eta = " << muon.eta() << ", phi = " << muon.phi() << std::endl;
+
     edm::Handle<reco::GenParticleCollection> genParticles;
     evt.getByLabel(genParticleSrc_, genParticles);
 
@@ -125,6 +135,8 @@ class PATLeptonGenMatcher<pat::Muon>
 	if ( dR < dRmatch_ ) genMuonMatch = true;
       }
     }
+
+    //std::cout << "--> genMuonMatch = " << genMuonMatch << std::endl;
 
     return genMuonMatch;
   }
@@ -143,8 +155,11 @@ class PATLeptonGenMatcher<pat::Electron>
       dRmatch_(cfg.getParameter<double>("dRmatch"))
   {}
 
-    bool operator()(const edm::Event& evt, const pat::Electron& electron) const
+  bool operator()(const edm::Event& evt, const pat::Electron& electron) const
   {
+    //std::cout << "<PATElectronGenMatcher::operator()>" << std::endl;
+    //std::cout << " electron: Pt = " << electron.pt() << ", eta = " << electron.eta() << ", phi = " << electron.phi() << std::endl;
+
     edm::Handle<reco::GenParticleCollection> genParticles;
     evt.getByLabel(genParticleSrc_, genParticles);
 
@@ -158,6 +173,8 @@ class PATLeptonGenMatcher<pat::Electron>
 	if ( dR < dRmatch_ ) genElectronMatch = true;
       }
     }
+
+    //std::cout << "--> genElectronMatch = " << genElectronMatch << std::endl;
 
     return genElectronMatch;
   }
