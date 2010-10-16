@@ -120,7 +120,9 @@ RECO_SAMPLES = {
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+        #'enableSysUncertainties' : False
     },
     'bbA120' : {
         'datasetpath' : "/bbAtautau_M120/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
@@ -134,7 +136,9 @@ RECO_SAMPLES = {
         ),
         'legendEntry' : 'bbA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+        #'enableSysUncertainties' : False
     },
     'A130' : {
         # Not skimmed
@@ -151,7 +155,9 @@ RECO_SAMPLES = {
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_green_separate
+        'drawOption' : styles.drawOption_green_separate,
+        'enableSysUncertainties' : True
+        #'enableSysUncertainties' : False
     },
     'bbA130' : {
         # Not skimmed
@@ -167,7 +173,9 @@ RECO_SAMPLES = {
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_green_separate
+        'drawOption' : styles.drawOption_green_separate,
+        'enableSysUncertainties' : True
+        #'enableSysUncertainties' : False
     },
     'A200' : {
         # Not skimmed
@@ -183,7 +191,9 @@ RECO_SAMPLES = {
         ),
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkGray_separate
+        'drawOption' : styles.drawOption_darkGray_separate,
+        'enableSysUncertainties' : True
+        #'enableSysUncertainties' : False
     },
     'bbA200' : {
         # Not skimmed
@@ -199,7 +209,9 @@ RECO_SAMPLES = {
         ), 
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkGray_separate
+        'drawOption' : styles.drawOption_darkGray_separate,
+        'enableSysUncertainties' : True
+        #'enableSysUncertainties' : False
     },
     # Using the unskimmed dataset
     'Ztautau' : {

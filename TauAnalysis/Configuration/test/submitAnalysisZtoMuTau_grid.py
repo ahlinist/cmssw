@@ -14,6 +14,7 @@ PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
     # modify in case you want to submit crab jobs for some samples only...
+    'data_Mu_132440-145761_Sep17ReReco',
 ]
 
 ENABLE_SYSTEMATICS = False
@@ -23,6 +24,7 @@ JOB_OPTIONS_DEFAULTS = [
     ('inputFileType', 'RECO/AOD'),
     ('isBatchMode', True),
     ('plotsOutputFileName', PLOT_FILES_PREFIX),
+    ('enableSysUncertainties', False)
 ]
 
 def get_conditions(globalTag):
@@ -77,8 +79,8 @@ for sample in samples.SAMPLES_TO_ANALYZE:
     jobOptions.append(('globalTag', get_conditions(sample_info['conditions'])))
 
     # This must be done after the factorization step ?
-    jobOptions.append(('enableSysUncertainties', ENABLE_SYSTEMATICS))
-
+    jobOptions.append(('enableSysUncertainties', ENABLE_SYSTEMATICS and sample_info['enableSysUncertainties']))
+    
     # Build crab options
     crabOptions = {
         'number_of_jobs' : number_of_jobs(sample_info),
