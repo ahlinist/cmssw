@@ -1,5 +1,6 @@
 #include "TauAnalysis/BgEstimationTools/plugins/NumObjExtractor.h"
 
+#include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/View.h"
 
 template<typename T>
