@@ -18,11 +18,13 @@
 #include <iostream>
 #include <iomanip>
 
+const unsigned precision_dRiso = 2;
+const unsigned precision_ptThreshold = 2;
+
 template<typename T>
 LeptonPFIsolationHistManager<T>::pfIsoHistogramEntryType::pfIsoHistogramEntryType(double dRisoCone)
-{
-  dRisoCone_ = dRisoCone_;
-}
+  : dRisoCone_(dRisoCone)
+{}
 
 template<typename T>
 LeptonPFIsolationHistManager<T>::pfIsoHistogramEntryType::~pfIsoHistogramEntryType()
@@ -41,16 +43,21 @@ std::string getStringEncodedValue(double value, unsigned precision)
   return value_string;
 }
 
-MonitorElement* bookIsoHistogram(DQMStore& dqmStore, const std::string& type, double dRsig, double ptThreshold)
+MonitorElement* bookIsoHistogram(
+		  DQMStore& dqmStore, const std::string& pfIsoType, double dRsig, 
+		  const std::string& ptThresholdLabel_name, const std::string& ptThresholdLabel_title, 
+		  const std::string& matchType)
 {
-  std::string dRsig_string = getStringEncodedValue(dRsig, 2);
-  std::string ptThreshold_string = getStringEncodedValue(ptThreshold, 1);
+  std::string dRsig_string = getStringEncodedValue(dRsig, precision_dRiso);
 
-  std::string isoHistogramName = std::string(type).append(dRsig_string).append("dRsig").append(ptThreshold_string).append("GeV");
+  std::string isoHistogramName = std::string(pfIsoType).append(dRsig_string).append("dRsig").append(ptThresholdLabel_name).append("GeV");
+  if ( matchType != "" ) isoHistogramName.append("_").append(matchType);
   std::ostringstream isoHistogramTitle;
-  isoHistogramTitle << type << " ("
-		    << "dR_{sig} = " << std::fixed << std::setprecision(2) << dRsig
-		    << ", P_{T} > " << std::fixed << std::setprecision(1) << ptThreshold << " GeV)";  
+  isoHistogramTitle << pfIsoType << " ("
+		    << "dR_{sig} = " << std::fixed << std::setprecision(precision_dRiso) << dRsig << ","
+		    << " " << ptThresholdLabel_title;
+  if ( matchType != "" ) isoHistogramTitle << ", " << matchType;
+  isoHistogramTitle << ")";  
   MonitorElement* isoHistogram = dqmStore.book1D(isoHistogramName.data(), isoHistogramTitle.str().data(), 100, -0.01, 25.);
   
   return isoHistogram;
@@ -58,22 +65,58 @@ MonitorElement* bookIsoHistogram(DQMStore& dqmStore, const std::string& type, do
 
 template<typename T>
 void LeptonPFIsolationHistManager<T>::pfIsoHistogramEntryType::bookHistograms(
-       DQMStore& dqmStore, const std::string& dqmDirectory, double ptThreshold)
+       DQMStore& dqmStore, const std::string& dqmDirectory, double ptThreshold, 
+       const std::string& type)
 {
   dqmStore.setCurrentFolder(dqmDirectory);
 
-  hPFCandIso0_05dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.05, ptThreshold);
-  hPFCandIso0_10dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.10, ptThreshold);
-  hPFCandIso0_15dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.15, ptThreshold);
-  hPFCandIso0_20dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.20, ptThreshold);
-  hPFCandIso0_25dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.25, ptThreshold);
-  hPFCandIso0_30dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.30, ptThreshold);
+  std::string ptThresholdLabel_name = getStringEncodedValue(ptThreshold, precision_ptThreshold);
+
+  std::ostringstream ptThresholdLabel_title;
+  ptThresholdLabel_title << "P_{T} > " << std::fixed << std::setprecision(precision_ptThreshold) << ptThreshold << " GeV"; 
+
+  hPFCandIso0_05dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.05, ptThresholdLabel_name, ptThresholdLabel_title.str(), type);
+  hPFCandIso0_10dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.10, ptThresholdLabel_name, ptThresholdLabel_title.str(), type);
+  hPFCandIso0_15dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.15, ptThresholdLabel_name, ptThresholdLabel_title.str(), type);
+  hPFCandIso0_20dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.20, ptThresholdLabel_name, ptThresholdLabel_title.str(), type);
+  hPFCandIso0_25dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.25, ptThresholdLabel_name, ptThresholdLabel_title.str(), type);
+  hPFCandIso0_30dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.30, ptThresholdLabel_name, ptThresholdLabel_title.str(), type);
+}
+
+template<typename T>
+void LeptonPFIsolationHistManager<T>::pfIsoHistogramEntryType::bookHistograms(
+       DQMStore& dqmStore, const std::string& dqmDirectory, 
+       double ptThresholdChargedHadron, double ptThresholdPhoton, 
+       const std::string& type)
+{
+  dqmStore.setCurrentFolder(dqmDirectory);
+
+  std::ostringstream ptThresholdLabel_name;
+  ptThresholdLabel_name << getStringEncodedValue(ptThresholdChargedHadron, precision_ptThreshold)
+			<< "_"
+			<< getStringEncodedValue(ptThresholdPhoton, precision_ptThreshold);
+
+  std::ostringstream ptThresholdLabel_title;
+  ptThresholdLabel_title << "P_{T}^{h} > " << std::fixed << std::setprecision(precision_ptThreshold) << ptThresholdChargedHadron << ","
+			 << " P_{T}^{gamma} > " << std::fixed << std::setprecision(precision_ptThreshold) << ptThresholdPhoton << " GeV"; 
+  
+  hPFCandIso0_05dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.05, ptThresholdLabel_name.str(), ptThresholdLabel_title.str(), type);
+  hPFCandIso0_10dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.10, ptThresholdLabel_name.str(), ptThresholdLabel_title.str(), type);
+  hPFCandIso0_15dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.15, ptThresholdLabel_name.str(), ptThresholdLabel_title.str(), type);
+  hPFCandIso0_20dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.20, ptThresholdLabel_name.str(), ptThresholdLabel_title.str(), type);
+  hPFCandIso0_25dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.25, ptThresholdLabel_name.str(), ptThresholdLabel_title.str(), type);
+  hPFCandIso0_30dRsigCone_ = bookIsoHistogram(dqmStore, "PFCandIso", 0.30, ptThresholdLabel_name.str(), ptThresholdLabel_title.str(), type);
 }
 
 void fillIsoHistogram(
        MonitorElement* h, const reco::Particle::LorentzVector& particleP4, 
        std::vector<const reco::PFCandidate*> pfCandidates, double dRsigCone, double dRisoCone, double weight)
 {
+  //std::cout << "<LeptonPFIsolationHistManager::fillIsoHistogram>:" << std::endl;
+  //std::cout << " particle: Pt = " << particleP4.pt() << ", eta = " << particleP4.eta() << ", phi = " << particleP4.phi() << std::endl;
+  //std::cout << " dRsigCone = " << dRsigCone << std::endl;
+  //std::cout << " dRisoCone = " << dRisoCone << std::endl;
+  
   double isoPtSum = 0.;
 
   for ( std::vector<const reco::PFCandidate*>::const_iterator pfCandidate = pfCandidates.begin();
@@ -81,6 +124,8 @@ void fillIsoHistogram(
     double dR = deltaR(particleP4, (*pfCandidate)->p4());
     if ( dR > dRsigCone && dR < dRisoCone ) isoPtSum += (*pfCandidate)->pt();
   }
+
+  //std::cout << "--> isoPtSum = " << isoPtSum << " (weight = " << weight << ")" << std::endl;
 
   h->Fill(isoPtSum, weight);
 }
@@ -105,6 +150,8 @@ template<typename T>
 LeptonPFIsolationHistManager<T>::LeptonPFIsolationHistManager(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
 {
+  //std::cout << "<LeptonPFIsolationHistManager>:" << std::endl;
+
   if ( !edm::Service<DQMStore>().isAvailable() ) {
     edm::LogError ("LeptonPFIsolationHistManager") 
       << " Failed to access dqmStore --> histograms will NEITHER be booked NOR filled !!";
@@ -120,6 +167,11 @@ LeptonPFIsolationHistManager<T>::LeptonPFIsolationHistManager(const edm::Paramet
   leptonEtaMin_ = cfg.getParameter<double>("etaMin");
   leptonEtaMax_ = cfg.getParameter<double>("etaMax");
 
+  //std::cout << " leptonPtMin = " << leptonPtMin_ << std::endl;
+  //std::cout << " leptonPtMax = " << leptonPtMax_ << std::endl;
+  //std::cout << " leptonEtaMin = " << leptonEtaMin_ << std::endl;
+  //std::cout << " leptonEtaMax = " << leptonEtaMax_ << std::endl;
+  
   dRisoCone_ = cfg.getParameter<double>("dRisoCone");
 
   pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
@@ -144,6 +196,9 @@ LeptonPFIsolationHistManager<T>::LeptonPFIsolationHistManager(const edm::Paramet
   pfIsoHistogramsPtThreshold2_5GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPtThreshold3_0GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPtThreshold3_0GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+
+  pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
+  pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
 }
 
 template<typename T>
@@ -166,23 +221,29 @@ LeptonPFIsolationHistManager<T>::~LeptonPFIsolationHistManager()
   delete pfIsoHistogramsPtThreshold2_5GeVunmatched_;
   delete pfIsoHistogramsPtThreshold3_0GeVmatched_;
   delete pfIsoHistogramsPtThreshold3_0GeVunmatched_;
+
+  delete pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_;
+  delete pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVunmatched_;
 }
 
 template<typename T>
 void LeptonPFIsolationHistManager<T>::bookHistogramsImp()
 {
-  pfIsoHistogramsPtThreshold0_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 0.5);
-  pfIsoHistogramsPtThreshold0_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 0.5);
-  pfIsoHistogramsPtThreshold1_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.0);
-  pfIsoHistogramsPtThreshold1_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.0);
-  pfIsoHistogramsPtThreshold1_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.5);
-  pfIsoHistogramsPtThreshold1_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.5);
-  pfIsoHistogramsPtThreshold2_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.0);
-  pfIsoHistogramsPtThreshold2_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.0);
-  pfIsoHistogramsPtThreshold2_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.5);
-  pfIsoHistogramsPtThreshold2_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.5);
-  pfIsoHistogramsPtThreshold3_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 3.5);
-  pfIsoHistogramsPtThreshold3_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 3.5);
+  pfIsoHistogramsPtThreshold0_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 0.5, "matched");
+  pfIsoHistogramsPtThreshold0_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 0.5, "unmatched");
+  pfIsoHistogramsPtThreshold1_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.0, "matched");
+  pfIsoHistogramsPtThreshold1_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.0, "unmatched");
+  pfIsoHistogramsPtThreshold1_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.5, "matched");
+  pfIsoHistogramsPtThreshold1_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.5, "unmatched");
+  pfIsoHistogramsPtThreshold2_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.0, "matched");
+  pfIsoHistogramsPtThreshold2_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.0, "unmatched");
+  pfIsoHistogramsPtThreshold2_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.5, "matched");
+  pfIsoHistogramsPtThreshold2_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.5, "unmatched");
+  pfIsoHistogramsPtThreshold3_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 3.0, "matched");
+  pfIsoHistogramsPtThreshold3_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 3.0, "unmatched");
+
+  pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.00, 1.50, "matched");
+  pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.00, 1.50, "unmatched");
 
   bookWeightHistograms(*dqmStore_, "LeptonWeight", "Lepton Weight", 
 		       hLeptonWeightPosLog_, hLeptonWeightNegLog_, hLeptonWeightZero_,
@@ -207,9 +268,23 @@ std::vector<const reco::PFCandidate*> filterPFCandidates(const reco::PFCandidate
   return filteredPFCandidates;
 }
 
+void filterSelPFCandidateType(
+       const reco::PFCandidateCollection& pfCandidates, reco::PFCandidate::ParticleType pfParticleType, double ptThreshold, 
+       std::vector<const reco::PFCandidate*>& filteredPFCandidates)
+{
+  for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+	pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+    if ( pfCandidate->particleId() == pfParticleType && pfCandidate->pt() > ptThreshold ) 
+      filteredPFCandidates.push_back(&(*pfCandidate));
+  }
+}
+
 template<typename T>
 void LeptonPFIsolationHistManager<T>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {
+  //std::cout << "<LeptonPFIsolationHistManager::fillHistogramsImp>:" << std::endl;
+  //std::cout << " leptonSrc = " << leptonSrc_.label() << std::endl;
+
   typedef std::vector<T> leptonCollection;
   edm::Handle<leptonCollection> leptons;
   evt.getByLabel(leptonSrc_, leptons);
@@ -226,6 +301,8 @@ void LeptonPFIsolationHistManager<T>::fillHistogramsImp(const edm::Event& evt, c
   for ( typename leptonCollection::const_iterator lepton = leptons->begin();
 	lepton != leptons->end(); ++lepton ) {
     
+    //std::cout << " lepton: Pt = " << lepton->pt() << ", eta = " << lepton->eta() << ", phi = " << lepton->phi() << std::endl;
+
     double leptonWeight = getLeptonWeight(*lepton);
     double weight = getWeight(evtWeight, leptonWeight, leptonWeightSum);
 
@@ -237,6 +314,7 @@ void LeptonPFIsolationHistManager<T>::fillHistogramsImp(const edm::Event& evt, c
     if ( leptonP4.pt()  > leptonPtMin_  && leptonP4.pt()  < leptonPtMax_ &&
 	 leptonP4.eta() > leptonEtaMin_ && leptonP4.eta() < leptonEtaMax_ ) {
       bool isGenMatched = (*genLeptonMatch_)(evt, *lepton);
+      //std::cout << " isGenMatched = " << isGenMatched << std::endl;
 
       std::vector<const reco::PFCandidate*> pfCandidates0_5GeV = filterPFCandidates(*pfCandidates, 0.5);
       if ( isGenMatched ) pfIsoHistogramsPtThreshold0_5GeVmatched_->fillHistograms(leptonP4, pfCandidates0_5GeV, weight);
@@ -261,10 +339,15 @@ void LeptonPFIsolationHistManager<T>::fillHistogramsImp(const edm::Event& evt, c
       std::vector<const reco::PFCandidate*> pfCandidates3_0GeV = filterPFCandidates(*pfCandidates, 3.0);
       if ( isGenMatched ) pfIsoHistogramsPtThreshold3_0GeVmatched_->fillHistograms(leptonP4, pfCandidates3_0GeV, weight);
       else                pfIsoHistogramsPtThreshold3_0GeVunmatched_->fillHistograms(leptonP4, pfCandidates3_0GeV, weight);
-    }
 
-    fillWeightHistograms(hLeptonWeightPosLog_, hLeptonWeightNegLog_, hLeptonWeightZero_, 
-			 hLeptonWeightLinear_, leptonWeight);
+      std::vector<const reco::PFCandidate*> selPFChargedHadronsPt1_0PFGammasPt1_5GeV;
+      filterSelPFCandidateType(*pfCandidates, reco::PFCandidate::h, 1.0, selPFChargedHadronsPt1_0PFGammasPt1_5GeV);
+      filterSelPFCandidateType(*pfCandidates, reco::PFCandidate::gamma, 1.5, selPFChargedHadronsPt1_0PFGammasPt1_5GeV);
+      if ( isGenMatched ) pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_->fillHistograms(
+                            leptonP4, selPFChargedHadronsPt1_0PFGammasPt1_5GeV, weight);
+      else                pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVunmatched_->fillHistograms(
+                            leptonP4, selPFChargedHadronsPt1_0PFGammasPt1_5GeV, weight);
+    }
   }
 }
 
