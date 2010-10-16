@@ -32,7 +32,9 @@ tauPFIsolationHistManager = cms.PSet(
             "threeProngOther",
             "rare"
         )
-    )
+    ),
+
+    normalization = cms.string("leptons")   
 )
 
 muonPFIsolationHistManager = tauPFIsolationHistManager.clone(
@@ -42,11 +44,14 @@ muonPFIsolationHistManager = tauPFIsolationHistManager.clone(
     dqmDirectory_store = cms.string('MuonPFIsolationQuantities'),
 
     leptonSource = cms.InputTag("patMuons"),
+    ptMin = cms.double(15.),
 
     genLeptonMatch = cms.PSet(
         genParticleSource = cms.InputTag("genParticles"),
         dRmatch = cms.double(0.5)
-    )
+    ),
+
+    normalization = cms.string("leptons")   
 )
 
 electronPFIsolationHistManager = tauPFIsolationHistManager.clone(
@@ -56,11 +61,14 @@ electronPFIsolationHistManager = tauPFIsolationHistManager.clone(
     dqmDirectory_store = cms.string('ElectronPFIsolationQuantities'),
 
     leptonSource = cms.InputTag("patElectrons"),
+    ptMin = cms.double(15.),
 
     genLeptonMatch = cms.PSet(
         genParticleSource = cms.InputTag("genParticles"),
         dRmatch = cms.double(0.5)
-    )
+    ),
+
+    normalization = cms.string("leptons")   
 )
 
 
