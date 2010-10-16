@@ -43,7 +43,7 @@ diTauCandidateZmumuHypothesisHistManagerForMuTau.dqmDirectory_store = cms.string
 # import config for Zmumu veto histogram manager
 muPairHistManager = copy.deepcopy(diTauCandidateHistManager)
 muPairHistManager.pluginName = cms.string('muPairHistManager')
-muPairHistManager.pluginType = cms.string('DiCandidatePairHistManager')
+muPairHistManager.pluginType = cms.string('PATDiMuPairHistManager')
 muPairHistManager.diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypotheses')
 muPairHistManager.dqmDirectory_store = cms.string('DiMuZmumuHypothesisQuantities')
 
@@ -86,26 +86,83 @@ triggerHistManagerForMuTau.hltPaths = cms.vstring(
 # import config for event weight histogram manager
 from TauAnalysis.Core.eventWeightHistManager_cfi import *
 
-# import config for analyzer modules used for debugging purposes
-from TauAnalysis.Core.svFitLikelihoodAnalyzer_cfi import *
-from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
-svFitLikelihoodAnalyzerForMuTau = svFitLikelihoodAnalyzer.clone(
-    pluginName = cms.string('svFitLikelihoodAnalyzerForMuTau'),
-    pluginType = cms.string('SVfitLikelihoodMuTauPairAnalyzer'),
-      
-    diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
-
-    svFitLikelihoodFunctions = cms.VPSet(
-        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
-        svFitLikelihoodMuTauPairKinematicsPolarized,
-        svFitLikelihoodMuTauPairMEt,
-        svFitLikelihoodMuTauPairPtBalance
-    )
-)
-
 # import config for binning results
 # used for keeping track of number of events passing all selection criteria
 from TauAnalysis.Core.dataBinner_cfi import *
+
+# import config for binning results
+# used to estimate acceptance of event selection
+from TauAnalysis.Core.modelBinner_cfi import *
+modelBinnerForMuTauGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
+modelBinnerForMuTauGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc')
+modelBinnerForMuTauGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenAHtoMuTau")
+modelBinnerForMuTauGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance")
+modelBinnerForMuTauGenTauLeptonPairAcc.dqmDirectory_store = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc')
+modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
+modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc')
+modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance")
+modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isRecAHtoMuTauCentralJetVeto")
+modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc.dqmDirectory_store = \
+  cms.string('modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc')
+modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
+modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc')
+modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance")
+modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isRecAHtoMuTauCentralJetBtag")
+modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc.dqmDirectory_store = \
+  cms.string('modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc')
+
+# import config for binning results
+# used to estimate systematic uncertainties
+from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
+sysUncertaintyNames = [ "CENTRAL_VALUE", ]
+sysUncertaintyNames.extend(
+    getSysUncertaintyNames(
+        [ muonSystematics,
+          tauSystematics,
+          jetSystematics,
+          theorySystematics ]
+    )
+)
+sysUncertaintyBinnerForMuTauAccCentralJetVeto = sysUncertaintyBinner.clone(
+    pluginName = cms.string('sysUncertaintyBinnerForMuTauAccCentralJetVeto'),
+    binnerPlugins = cms.VPSet(
+        modelBinnerForMuTauGenTauLeptonPairAcc,
+        modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc
+    ),
+    systematics = cms.vstring(sysUncertaintyNames)
+)
+sysUncertaintyBinnerForMuTauAccCentralJetBtag = sysUncertaintyBinner.clone(
+    pluginName = cms.string('sysUncertaintyBinnerForMuTauAccCentralJetBtag'),
+    binnerPlugins = cms.VPSet(
+        modelBinnerForMuTauGenTauLeptonPairAcc,
+        modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc
+    ),
+    systematics = cms.vstring(sysUncertaintyNames)
+)
+sysUncertaintyBinnerForMuTauEff = sysUncertaintyBinner.clone(
+    pluginName = cms.string('sysUncertaintyBinnerForMuTauEff'),
+    binnerPlugins = cms.VPSet(
+        dataBinner
+    ),
+    systematics = cms.vstring(sysUncertaintyNames)
+)
+
+sysUncertaintyHistManagerForMuTau = cms.PSet(
+    pluginName = cms.string('sysUncertaintyHistManagerForMuTau'),
+    pluginType = cms.string('SysUncertaintyHistManager'),
+    histManagers = cms.VPSet(
+        cms.PSet(
+            config = diTauCandidateSVfitHistManagerForMuTau,
+            systematics = cms.PSet(
+                diTauCandidateSource = getSysUncertaintyParameterSets(
+                    [ muTauPairSystematics, ]
+                )
+            )
+        )
+    ),
+    dqmDirectory_store = cms.string('sysUncertaintyHistManagerResults')
+)
 
 diTauLeg1ChargeBinGridHistManager = cms.PSet(
     pluginName = cms.string('diTauLeg1ChargeBinGridHistManager'),
@@ -168,19 +225,22 @@ evtSelNonCentralJetEt20bTag = cms.PSet(
     pluginName = cms.string('evtSelNonCentralJetEt20bTag'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('centralJetEt20bTagVeto', 'cumulative'),
-    src_individual = cms.InputTag('centralJetEt20bTagVeto', 'individual')
+    src_individual = cms.InputTag('centralJetEt20bTagVeto', 'individual'),
+    systematics = cms.vstring(jetSystematics.keys())
 )
 evtSelCentralJetEt20 = cms.PSet(
     pluginName = cms.string('evtSelCentralJetEt20'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('centralJetEt20Cut', 'cumulative'),
-    src_individual = cms.InputTag('centralJetEt20Cut', 'individual')
+    src_individual = cms.InputTag('centralJetEt20Cut', 'individual'),
+    systematics = cms.vstring(jetSystematics.keys())
 )
 evtSelCentralJetEt20bTag = cms.PSet(
     pluginName = cms.string('evtSelCentralJetEt20bTag'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('centralJetEt20bTagCut', 'cumulative'),
-    src_individual = cms.InputTag('centralJetEt20bTagCut', 'individual')
+    src_individual = cms.InputTag('centralJetEt20bTagCut', 'individual'),
+    systematics = cms.vstring(jetSystematics.keys())
 )
 
 #--------------------------------------------------------------------------------
@@ -281,7 +341,10 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForMuTau'
+            'triggerHistManagerForMuTau',
+            'modelBinnerForMuTauGenTauLeptonPairAcc',
+            'modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc',
+            'sysUncertaintyBinnerForMuTauAccCentralJetVeto'
         )
     ),
     
@@ -797,7 +860,9 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'particleMultiplicityHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
-            'dataBinner'
+	    'sysUncertaintyHistManagerForMuTau',
+            'dataBinner',
+            'sysUncertaintyBinnerForMuTauEff'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
@@ -849,7 +914,10 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForMuTau'
+            'triggerHistManagerForMuTau',
+            'modelBinnerForMuTauGenTauLeptonPairAcc',
+            'modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc',
+            'sysUncertaintyBinnerForMuTauAccCentralJetBtag'
         )
     ),
     
@@ -1379,8 +1447,9 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'particleMultiplicityHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
-            'svFitLikelihoodAnalyzerForMuTau',
-            'dataBinner'
+	    'sysUncertaintyHistManagerForMuTau',
+            'dataBinner',
+            'sysUncertaintyBinnerForMuTauEff'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',

@@ -3,6 +3,32 @@ import FWCore.ParameterSet.Config as cms
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeAHtoMuTau_cfi import *
 
+# define auxiliary service
+# for handling of systematic uncertainties
+#
+# NOTE: only systematic uncertainties handled via weights
+#      (not the ones handled via shifting/smearing pat::Objects and reapplying cuts)
+#       must be passed to SysUncertaintyService !!
+#
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
+SysUncertaintyService = cms.Service("SysUncertaintyService",
+    weights = getSysUncertaintyParameterSets(
+        [ theorySystematics ]
+    ),
+    sources = cms.PSet(
+        isRecAHtoMuTauCentralJetVeto = cms.vstring(
+            "sysMuon*", "",
+            "sysTau*", "",
+            "sysJet*", ""                               
+        ),
+        isRecAHtoMuTauCentralJetBtag = cms.vstring(
+            "sysMuon*", "",
+            "sysTau*", "",
+            "sysJet*", ""                               
+        )                                
+    )
+)
+
 analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
   
     name = cms.string('ahMuTauAnalyzer_woBtag'), 
@@ -76,9 +102,18 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         particleMultiplicityHistManager,
         vertexHistManager,
         triggerHistManagerForMuTau,
-        svFitLikelihoodAnalyzerForMuTau,
-        dataBinner
+        dataBinner,
+        modelBinnerForMuTauGenTauLeptonPairAcc,
+        modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc,
+        modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc                                           
     ),
+
+    analyzers_systematic = cms.VPSet(
+	sysUncertaintyBinnerForMuTauAccCentralJetVeto,
+	sysUncertaintyBinnerForMuTauAccCentralJetBtag,
+	sysUncertaintyBinnerForMuTauEff,
+        sysUncertaintyHistManagerForMuTau                                           
+    ),                                           
 
     eventDumps = cms.VPSet(
         muTauEventDump.clone(
@@ -88,7 +123,18 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         )
     ),
    
-    analysisSequence = muTauAnalysisSequence_woBtag
+    analysisSequence = muTauAnalysisSequence_woBtag,
+
+    #estimateSysUncertainties = cms.bool(True),                                       
+    estimateSysUncertainties = cms.bool(False), 
+    systematics = cms.vstring(
+        getSysUncertaintyNames(
+            [ muonSystematics,
+              tauSystematics,
+              jetSystematics,
+              theorySystematics ]
+        )
+    )                                                 
 )
 
 analyzeAHtoMuTauEvents_wBtag = analyzeAHtoMuTauEvents_woBtag.clone(

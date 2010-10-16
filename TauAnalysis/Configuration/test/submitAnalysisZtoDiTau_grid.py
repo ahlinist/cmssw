@@ -14,7 +14,6 @@ PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
     # modify in case you want to submit crab jobs for some samples only...
-    'qcdDiJet'
 ]
 
 ENABLE_SYSTEMATICS = False
