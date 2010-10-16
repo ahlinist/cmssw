@@ -5,8 +5,9 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 # import sequence for selection of generated particles
-# produced in Z decays to electrons, muons and tau leptons
+# produced in Z, A/H decays to electrons, muons and tau leptons
 from TauAnalysis.GenSimTools.gen_decaysFromZs_cfi import *
+from TauAnalysis.GenSimTools.gen_decaysFromAHs_cfi import *
 
 # import sequence for production of generator level information about phase-space simulated in Monte Carlo
 # (needed to avoid overlap in phase-space simulated in different QCD background Monte Carlo samples)
@@ -23,18 +24,20 @@ from TauAnalysis.RecoTools.eventVertexSelector_cfi import *
 # with respect to direction of missing Et vector
 from TauAnalysis.CandidateTools.metTopology_cfi import *
 
-# import sequence for selection of generated Z --> tau+ tau- --> ... decay modes
+# import sequence for selection of generated Z --> tau+ tau- --> ...,
+# generated A/H --> tau+ tau- --> ... decay modes
 from TauAnalysis.RecoTools.selectGenZtautauDecayModes_cfi import *
+from TauAnalysis.RecoTools.selectGenAHtautauDecayModes_cfi import *
 
 # import sequence for production of PDF/ISR/FSR (re)weights
 # for estimating systematic (theory) uncertainties
 from TauAnalysis.GenSimTools.sysErrGenEventReweights_cfi import *
 
 produceGenObjects = cms.Sequence(
-    produceGenDecayProductsFromZs
+    produceGenDecayProductsFromZs + produceGenDecayProductsFromAHs 
    + produceGenPhaseSpaceEventInfo
    + produceTauGenJets
-   + selectGenZtautauDecayModes
+   + selectGenZtautauDecayModes + selectGenAHtautauDecayModes 
    + produceSysErrGenEventReweights
 )
 
