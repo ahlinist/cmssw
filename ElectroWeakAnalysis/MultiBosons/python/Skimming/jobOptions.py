@@ -15,7 +15,7 @@ def applyJobOptions(options):
   jobOptions = copy.deepcopy(defaultOptions)
 
   if options.jobType == "testMC":
-    jobOptions.maxEvents = 100
+    jobOptions.outputEvents = 100
     jobOptions.inputFiles = [
       "/store/relval/CMSSW_3_5_7/" +
       "RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012/" +
@@ -29,9 +29,8 @@ def applyJobOptions(options):
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
-    jobOptions.isMaxEventsOutput = True
     jobOptions.wantSummary = False
-    jobOptions.hltPaths = ["HLT_Mu9"]
+    jobOptions.skimType = "Muon"
 
   elif options.jobType == "testPOWHEG":
     jobOptions.maxEvents = -1
@@ -47,10 +46,8 @@ def applyJobOptions(options):
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
     jobOptions.use35XInput = False
-    jobOptions.isMaxEventsOutput = True
     jobOptions.wantSummary = False
     jobOptions.hltProcessName = "REDIGI36X"
-    jobOptions.hltPaths = ["HLT_Mu9"]
 
   # end of testMC options <-------------------------------------
 
@@ -81,11 +78,8 @@ def applyJobOptions(options):
     jobOptions.reportEvery = 1
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
-    jobOptions.isMaxEventsOutput = True
     jobOptions.wantSummary = False
-#     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9, 11]]
-    jobOptions.hltPaths = ["HLT_Mu9"]
-    jobOptions.skimType = "MuonPhoton"
+    jobOptions.skimType = "Muon"
     
   # end of testRealData options <-----------------------------------
 
@@ -112,10 +106,7 @@ def applyJobOptions(options):
     jobOptions.reportEvery = 1
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
-    jobOptions.isMaxEventsOutput = False
     jobOptions.wantSummary = False
-#     jobOptions.hltPaths = ["HLT_Mu%d" % i for i in [0, 3, 5, 7, 9, 11]]
-    jobOptions.hltPaths = ["HLT_Jet100U","HLT_Jet70U","HLT_Jet50U","HLT_Jet30U","HLT_Jet15U"]
     jobOptions.skimType = "Jet"
     jobOptions.hltProcessName = "HLT"
   # end of testRealData options <-----------------------------------
@@ -124,23 +115,20 @@ def applyJobOptions(options):
     jobOptions.inputFiles = [
         "rfio:/castor/cern.ch/user/z/zkliu/TestRECO/36x_ZJet_Madgraph_tauola_TestRECO.root"
         ]
-    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.skimType = "Electron"
     jobOptions.globalTag = "START38_V10::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
     jobOptions.use35XInput = False
-    jobOptions.isMaxEventsOutput = True
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI36X"
-    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
 
   elif options.jobType == "MUPHPromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
-    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.skimType = "Muon"
     jobOptions.wantSummary = True
 
   elif options.jobType == "EPHPromptReco36X":
@@ -148,8 +136,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "ElectronPhoton"
-    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.skimType = "Electron"
     jobOptions.wantSummary = True
 
   elif options.jobType == "JETPromptReco36X":
@@ -173,8 +160,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
-    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.skimType = "Muon"
     jobOptions.wantSummary = True
 
   elif options.jobType == "EPHPromptReco38X":
@@ -182,8 +168,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "ElectronPhoton"
-    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.skimType = "Electron"
     jobOptions.wantSummary = True
 
   elif options.jobType == "JETPromptReco38X":
@@ -207,8 +192,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
-    jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
+    jobOptions.skimType = "Muon"
     jobOptions.wantSummary = True
 
   elif options.jobType == "EPHReReco36X":
@@ -216,8 +200,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "ElectronPhoton"
-    jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
+    jobOptions.skimType = "Electron"
     jobOptions.wantSummary = True
 
   elif options.jobType == "JETReReco36X":
@@ -241,7 +224,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
+    jobOptions.skimType = "Muon"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
 
@@ -250,7 +233,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.skimType = "Electron"
     jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
     jobOptions.wantSummary = True
 
@@ -275,7 +258,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
+    jobOptions.skimType = "Muon"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI"
@@ -285,7 +268,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
+    jobOptions.skimType = "Muon"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI"
@@ -295,7 +278,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
+    jobOptions.skimType = "Muon"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI36X"
@@ -305,7 +288,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
+    jobOptions.skimType = "Muon"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI36X"
@@ -315,7 +298,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.skimType = "Electron"
     jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI"
@@ -325,7 +308,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.skimType = "Electron"
     jobOptions.hltPaths = ["HLT_Ele15_LW_L1R", "HLT_Ele15_SW_L1R"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI36X"
@@ -335,7 +318,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
+    jobOptions.skimType = "Muon"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI"
@@ -345,7 +328,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
     jobOptions.maxEvents = -1
-    jobOptions.skimType = "MuonPhoton"
+    jobOptions.skimType = "Muon"
     jobOptions.hltPaths = ["HLT_Mu9","HLT_Mu11"]
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI"
