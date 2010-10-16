@@ -121,14 +121,6 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
       *outputStream_ << " dR(leg1, nu1) = " << compDeltaRlegNu(diTauCandidate->leg1()->p4(), *genParticles) << std::endl;
       *outputStream_ << " dR(leg2, nu2) = " << compDeltaRlegNu(diTauCandidate->leg2()->p4(), *genParticles) << std::endl;
     }
-    const std::vector<SVmassRecoSolution>& svFitSolutions = diTauCandidate->svFitSolutions();
-    for ( std::vector<SVmassRecoSolution>::const_iterator svFitSolution = svFitSolutions.begin();
-	  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
-      if ( svFitSolution->isValidSolution() && svFitSolution == svFitSolutions.begin() ) {
-	*outputStream_ << (*svFitSolution);
-	//if ( svFitSolution == svFitSolutions.begin() ) *outputStream_ << " M(SV method) = " << svFitSolution->p4().mass() << std::endl;
-      }
-    }
     for ( typename std::vector<svFitAlgorithmType>::const_iterator svFitAlgorithm = svFitAlgorithms_.begin();
 	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
       for ( vstring::const_iterator polarizationHypothesis = svFitAlgorithm->polarizationHypotheses_.begin();
