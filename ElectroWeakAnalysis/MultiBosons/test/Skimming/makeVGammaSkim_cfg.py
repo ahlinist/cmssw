@@ -101,7 +101,8 @@ process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0Discriminator_cfi")
 
 process.photonGenMatch = cms.EDProducer("PhotonGenMatchUserDataProducer",
-    src = cms.InputTag("photons")
+    src = cms.InputTag("photons"),
+    match = cms.InputTag("photonMatch")
     )
 
 process.patDefaultSequence.replace(process.patPhotons,
