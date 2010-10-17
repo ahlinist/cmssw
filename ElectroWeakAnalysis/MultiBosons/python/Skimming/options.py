@@ -51,6 +51,35 @@ options.register("crabOptions",
     VarParsing.multiplicity.singleton, # singleton or list
     VarParsing.varType.string,         # bool, string, int, or float
     "Pass several options in one string delimited by a `,'?")
+
+options.register("isPOWHEG",
+                 False, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 "Is this MC sample POWHEG?") 
+
+options.register("vetoISR",
+                 False, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 "Do you want to veto pythia ISR?")
+options.register("vetoFSR",
+                 False, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 "Do you want to veto pythia FSR?")
+options.register("skimISR",
+                 False, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 "Do you want to skim for pythia ISR?")
+options.register("skimFSR",
+                 False, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 "Do you want to skim for pythia FSR?")
+
+
 options.setupTags(tag = "outEvent%d",
                   ifCond = "outEvents > 0",
                   tagArg = "outEvents")

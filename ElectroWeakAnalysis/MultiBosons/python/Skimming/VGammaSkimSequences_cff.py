@@ -48,7 +48,22 @@ pythiaPartonShowerFsrSequence = cms.Sequence(
   pythiaPartonShowerFsrFilter
   )
 
+pythiaPartonShowerIsrSequenceVeto = cms.Sequence(
+    leadingPhoton *
+    ~pythiaPartonShowerIsrFilter
+    )
+
+pythiaPartonShowerFsrSequenceVeto = cms.Sequence(
+    leadingPhoton *
+    ~pythiaPartonShowerFsrFilter
+    )
+
 powhegPartonShowerFsrSequence = cms.Sequence(
   leadingPhoton *
   powhegPartonShowerFsrFilter
   )
+
+powhegPartonShowerFsrSequenceVeto = cms.Sequence(
+    leadingPhoton *
+    ~powhegPartonShowerFsrFilter
+    )
