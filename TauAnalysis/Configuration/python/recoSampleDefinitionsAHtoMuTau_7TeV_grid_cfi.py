@@ -9,7 +9,7 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_132440-135802_Sep17ReReco',
     'data_Mu_135808_144114_Sep17ReReco',
     'data_Mu_144461_145761_Sep17ReReco',
-    'data_Mu_145762_147116_Prompt',
+    'data_Mu_145762_147454_Prompt',
     'A120', 'bbA120', 
     'A130', 'bbA130', 
     'A200', 'bbA200', 
@@ -64,7 +64,7 @@ RECO_SAMPLES = {
     'data_Mu_132440-135802_Sep17ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
         'runselection' : "132440 - 135802",
         'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
@@ -77,7 +77,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'runselection' : '135808 - 144114',
         'conditions' : 'GR_R_38X_V13A::All',
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -86,7 +86,7 @@ RECO_SAMPLES = {
     'data_Mu_144461_145761_Sep17ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
         'runselection' : "144461 - 145761",
         'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
@@ -94,12 +94,12 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data
     },
-    'data_Mu_145762_147116_Prompt' : {
+    'data_Mu_145762_147454_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'runselection' : '145762 - 147116',
+        'runselection' : '145762 - 147454',
         'conditions' : 'GR_R_38X_V13::All',
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -296,7 +296,7 @@ MERGE_SAMPLES = {
             'data_Mu_132440-135802_Sep17ReReco',
             'data_Mu_135808_144114_Sep17ReReco',
             'data_Mu_144461_145761_Sep17ReReco',
-            'data_Mu_145762_147116_Prompt'
+            'data_Mu_145762_147454_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
