@@ -358,8 +358,19 @@ def applyJobOptions(options):
     if name in options._lists.keys(): options.clearList(name)
     setattr(options, name, value)
 
-#   return jobOptions
-
+  ## Remove duplicated input files (from e.g. using the command line
+  ##+ option inputFiles_load=list.txt
+  duplicates = []
+  for index in range(len(options.inputFiles)):
+    file = options.inputFiles[index]
+    if file in options.inputFiles[index+1:]:
+      ## Found a duplicated file, store its index
+      duplicates.append(options.inputFiles.index(file, index+1))
+  ## Now remove the duplicates in the reverse order to keep the original index
+  ##+ association
+  duplicates.reverse()
+  for index in duplicates: del options.inputFiles[index]
+  
 # applyMultiOptionTag(options) <----------------------------------------------
 
 
