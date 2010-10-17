@@ -15,7 +15,7 @@ def applyJobOptions(options):
   jobOptions = copy.deepcopy(defaultOptions)
 
   if options.jobType == "testMC":
-    jobOptions.outputEvents = 100
+    jobOptions.outEvents = 100
     jobOptions.inputFiles = [
       "/store/relval/CMSSW_3_5_7/" +
       "RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012/" +

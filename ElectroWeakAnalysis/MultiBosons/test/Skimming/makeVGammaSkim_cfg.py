@@ -37,8 +37,8 @@ applyJobOptions(options)
 ## Input
 process.source.fileNames = options.inputFiles
 
-if options.outputEvents >= 0:
-    process.maxEvents.output = cms.untracked.int32(options.outputEvents)
+if options.outEvents >= 0:
+    process.maxEvents.output = cms.untracked.int32(options.outEvents)
 else:
     process.maxEvents.input = options.maxEvents
 
