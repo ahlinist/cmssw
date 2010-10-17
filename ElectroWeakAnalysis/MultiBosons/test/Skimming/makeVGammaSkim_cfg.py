@@ -26,7 +26,7 @@ options = copy.deepcopy(defaultOptions)
 
 ## Define default options specific to this configuration file
 #options.jobType = "testSummer10"
-options.jobType = "testPOWHEG"
+#options.jobType = "testPOWHEG"
 #options.jobType = "testRealData"
 #options.jobType = "testJetRealData"
 #options.jobType = "testMC"
@@ -171,7 +171,7 @@ process.hltFilter.TriggerResultsTag = \
 process.skimFilterSequence = cms.Sequence(process.hltFilter) # Extend below
 process.skimFilterPath = cms.Path(process.skimFilterSequence)
 
-if options.skimType == "Muon":
+if options.skimType == "MuonPhoton":
     process.hltFilter.HLTPaths += ["HLT_Mu9",
                                    "HLT_Mu11",
                                    "HLT_Mu15",
@@ -179,7 +179,7 @@ if options.skimType == "Muon":
     process.load(basePath + "muonPhotonSkimFilterSequence_cff")
     process.skimFilterSequence += process.muonPhotonSkimFilterSequence
 
-elif options.skimType == "Electron":
+elif options.skimType == "ElectronPhoton":
     process.hltFilter.HLTPaths += ["HLT_Ele15_LW_L1R",
                                    "HLT_Ele15_SW_L1R",
                                    "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2",
