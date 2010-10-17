@@ -103,13 +103,16 @@ def disableSysUncertainties_runZtoMuTau(process):
         removeModules(process, "selectZtoMuTauEventsLooseMuonIsolation", moduleNamePattern, pyNameSpace)
 
     if hasattr(process, "analyzeZtoMuTauEvents"):
-        removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, "sysUncertaintyBinnerForMuTauAcc")
+        removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, "sysUncertaintyBinnerForMuTauEff")
         process.analyzeZtoMuTauEvents.estimateSysUncertainties = cms.bool(False)
     if hasattr(process, "analyzeZtoMuTauEvents_factorizedWithMuonIsolation"):
-        removeAnalyzer(process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTauAcc")
+        removeAnalyzer(process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTauEff")
         process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(False)
     if hasattr(process, "analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation"):
-        removeAnalyzer(process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTauAcc")
+        removeAnalyzer(process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTauEff")
         process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(False)    
 
 def enableSysUncertainties_runZtoMuTau(process):
@@ -258,22 +261,52 @@ def disableSysUncertainties_runAHtoMuTau(process):
         removeModules(process, "selectAHtoMuTauEventsLooseMuonIsolation", moduleNamePattern, pyNameSpace)
 
     if hasattr(process, "analyzeAHtoMuTauEvents_woBtag"):
-        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauAccCentralJetVeto")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauEff")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag.analysisSequence,
+                       "sysUncertaintyHistManagerForMuTau")
         process.analyzeAHtoMuTauEvents_woBtag.estimateSysUncertainties = cms.bool(False)
     if hasattr(process, "analyzeAHtoMuTauEvents_wBtag"):
-        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauAccCentralJetBtag")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauEff")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag.analysisSequence,
+                       "sysUncertaintyHistManagerForMuTau")
         process.analyzeAHtoMuTauEvents_wBtag.estimateSysUncertainties = cms.bool(False)
     if hasattr(process, "analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation"):
-        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauAccCentralJetVeto")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauEff")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.analysisSequence,
+                       "sysUncertaintyHistManagerForMuTau")                
         process.analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(False)
     if hasattr(process, "analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation"):
-        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauAccCentralJetBtag")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauEff")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.analysisSequence,
+                       "sysUncertaintyHistManagerForMuTau")                              
         process.analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(False)    
     if hasattr(process, "analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation"):
-        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauAccCentralJetVeto")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauEff")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.analysisSequence,
+                       "sysUncertaintyHistManagerForMuTau")                
         process.analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(False)
     if hasattr(process, "analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation"):
-        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.analysisSequence, "sysUncertaintyBinnerForMuTau")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauAccCentralJetBtag")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.analysisSequence,
+                       "sysUncertaintyBinnerForMuTauEff")
+        removeAnalyzer(process.analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.analysisSequence,
+                       "sysUncertaintyHistManagerForMuTau")               
         process.analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(False)    
 
 def enableSysUncertainties_runAHtoMuTau(process):
