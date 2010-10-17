@@ -47,3 +47,8 @@ pythiaPartonShowerFsrSequence = cms.Sequence(
   leadingPhoton *
   pythiaPartonShowerFsrFilter
   )
+
+powhegPartonShowerFsrSequence = cms.Sequence(
+  leadingPhoton *
+  powhegPartonShowerFsrFilter
+  )

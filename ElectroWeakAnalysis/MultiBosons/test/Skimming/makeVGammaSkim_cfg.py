@@ -244,6 +244,8 @@ else:
         process.patDefaultSequence
     )
     ## Add parton shower related filters (prevent ISR/FSR double-counting)
+    ##+ "POWHEG parton shower" means actually Pythia parton shower in Pythia
+    ##+ hadronization run on top of POWHEG.
     process.isLeadingPhotonPythiaPartonShowerIsr = cms.Path(
         process.defaultSequence *
         process.pythiaPartonShowerIsrSequence
@@ -251,6 +253,10 @@ else:
     process.isLeadingPhotonPythiaPartonShowerFsr = cms.Path(
         process.defaultSequence *
         process.pythiaPartonShowerFsrSequence
+    )
+    process.isLeadingPhotonPowhegPartonShowerFsr = cms.Path(
+        process.defaultSequence *
+        process.powhegPartonShowerFsrSequence
     )
     process.hasPhotonCandidateNotPythiaPartonShower = cms.Path(
         process.defaultSequence *
