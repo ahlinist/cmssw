@@ -21,10 +21,11 @@ noScraping = cms.EDFilter("FilterOutScraping",
 
 ## Good vertex selection
 ## https://twiki.cern.ch/twiki/bin/view/CMS/Collisions2010Recipes#Good_Vertex_selection
+## https://hypernews.cern.ch/HyperNews/CMS/get/gaugeCoupling/349/1.html
 primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
   vertexCollection = cms.InputTag('offlinePrimaryVertices'),
   minimumNDOF = cms.uint32(4),
-  maxAbsZ = cms.double(15),
+  maxAbsZ = cms.double(18),
   maxd0 = cms.double(2)
 )
 
