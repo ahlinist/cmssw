@@ -51,7 +51,7 @@ _microbarns = 1.0e6
 # Integrated luminosity to normalize
 ##TARGET_LUMI = (200.0)/_picobarns
 TARGET_LUMI = (
-     0. # data_Mu_132440_145761_Sep17ReReco
+     2.90 # data_Mu_132440_145761_Sep17ReReco
    + 3.88 # data_Mu_145762_147116_Prompt
 )/_picobarns
 
