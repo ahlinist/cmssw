@@ -298,7 +298,7 @@ else:
         if options.isPOWHEG:
             process.partonShowerFilterPath.replace(process.defaultSequence,
                                                    process.defaultSequence*
-                                                   process.powhegPartonShowerFsrSequence)
+                                                   process.powhegPartonShowerFsrSequenceVeto)
         else:
             process.partonShowerFilterPath.replace(process.defaultSequence,
                                                    process.defaultSequence*
