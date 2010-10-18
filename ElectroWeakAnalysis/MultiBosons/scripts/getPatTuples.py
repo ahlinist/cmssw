@@ -38,7 +38,7 @@ for listfile in [x for x in os.listdir(source_dir) if x.endswith('.txt')]:
     print samplename
     sampletype = samplename[samplename.rfind('-') + 1:]
     sample_destination_dir = os.path.join(destination_dir, sourcename,
-                                          sampletype)
+                                          samplename)
     if not os.path.exists(sample_destination_dir):
         os.makedirs(sample_destination_dir)
     for line in open('%s/%s' % (source_dir, listfile), 'r').readlines():
