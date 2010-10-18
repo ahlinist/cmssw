@@ -4,7 +4,7 @@
 
 void print_Event(){
   //Input file name without .root
-  print_Event("Test_eID8_pID6_dR07");
+  print_Event("Test_eID11_pID8_dR07");
 }
 
 void print_Event(TString LoadFileName){
@@ -13,12 +13,8 @@ void print_Event(TString LoadFileName){
 
   Double_t EventYield[7][6];
   Double_t PhotonType[7][6];
-  //Set K-factor and luminosity(/pb)
-  bool    SetMCNLO=false;
-  Double_t McLumi=100;
-  //kFactor: 0-7: ZJet, WJet, Zgamma, Wgamma, WW, WZ, ZZ, TTbar, others are QCD and photon+Jet samples
-  Double_t kFactor[22]={1.3705,1.2481,1.8,1.8,1.5371,1.7333,1.3721,1.6578,1.,1.,1.,1.,1.,1.,
-                        1.,1.,1.,1.,1.,1.,1.,1.};
+  //Set luminosity(/pb)
+  Double_t McLumi=10.94;
 
   for (Int_t ii=0; ii<7;ii++) {
      for (Int_t jj=0; jj<6; jj++) {
@@ -39,10 +35,8 @@ void print_Event(TString LoadFileName){
   for (Int_t iSample=0;iSample<nfile;iSample++){
      sprintf(name,"Sample_%d/hNEvt",iSample);
      hT0 = (TH1D*)f1->Get(name);
-//     hT0 -> Scale(kFactor[iSample]);
      cout<<iSample<<endl;
      ProcessID = int( hT0->GetBinContent(14) );
-     if (SetMCNLO==true) hT0 -> Scale(kFactor[iSample]);
      for (Int_t ii=0;ii<6;ii++) {
        EventYield[ProcessID][ii] += hT0->GetBinContent(ii+1);
      }
