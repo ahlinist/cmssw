@@ -70,7 +70,7 @@ def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False):
     for i in range(len(DQMME.dqmMEs)):
       y = []
       ey=[]
-      for j in range(len(x)):
+      for j in range(len(runlistdict.keys())):
         y.append(y_arrays_transposed[j][i])
         ey.append(ey_arrays_transposed[j][i])
       c = TCanvas("c");
@@ -224,7 +224,7 @@ if __name__=="__main__":
                     else:
                         reference.append(abs(thisrun))
                 except:
-                    print("Error:  Cannot parse line '%s' in file %s"%(i,options.runlist))
+                    print "Error:  Cannot parse line '%s' in file %s"%(i,options.runlistfile)
 
 
     # No runs specified
@@ -255,7 +255,10 @@ if __name__=="__main__":
             options.fileLocations=["/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/data/OfflineData/Run2010/StreamExpress"]
         else:
             options.fileLocations=["/home/hatake/DQM_ROOT_files"]
-
+            
+    if not os.path.isdir(outputdir):
+        os.mkdir(outputdir)
+        print "Made directory %s"%outputdir
     RunFile=open(os.path.join(outputdir,"RunsToBeCertified.txt"),'w')
     for r in runs:
         RunFile.write("%s\n"%r)
