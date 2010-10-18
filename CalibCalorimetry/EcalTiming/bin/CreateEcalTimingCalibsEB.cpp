@@ -98,13 +98,12 @@ int main(int argc, char* argv[])
     if (argv[i] == std::string("-ebhittimemax") && argc>i+1) maxHitTimeEB = atof(argv[i+1]);
     if (argv[i] == std::string("-ebhittimemin") && argc>i+1) minHitTimeEB = atof(argv[i+1]);
     // handle here the case of multiple arguments for input files
-    if (argv[i] == std::string("--i") && argc>i+1)
+    if (argv[i] == std::string("--i"))// && argc>i+1)
     {
       for (int u=i+1; u<argc; u++)
       {
         if ( 0==std::string(argv[u]).find( stringGenericOption ) )
         {
-          std::cout << "string find==0" << std::endl;
           if ( 0==listOfFiles_.size())  {std::cout << "no input files listed" << std::cout;}
           else  {std::cout << "no more files listed, found: " << argv[u] << std::cout;}
           break;
@@ -112,7 +111,7 @@ int main(int argc, char* argv[])
         else
         {
           listOfFiles_.push_back(argv[u]);
-          u++;
+          i++;
         }
       }// loop on arguments following --i
       continue;
