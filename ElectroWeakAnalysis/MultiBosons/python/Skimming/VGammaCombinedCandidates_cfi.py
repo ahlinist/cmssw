@@ -9,14 +9,14 @@ dimuons = cms.EDProducer("CandViewShallowClonePtrCombiner",
 
 ## Define all the other combined candidates
 dielectrons      = dimuons.clone(decay = "cleanPatElectronsTriggerMatch@+ cleanPatElectronsTriggerMatch@-")
-electronPlusMETs = dimuons.clone(decay = "cleanPatElectronsTriggerMatch patMETsPF")
-muonPlusMETs     = dimuons.clone(decay = "cleanPatMuonsTriggerMatch patMETsPF")
+electronPlusMETs = dimuons.clone(decay = "cleanPatElectronsTriggerMatch patMETsPFTriggerMatch")
+muonPlusMETs     = dimuons.clone(decay = "cleanPatMuonsTriggerMatch patMETsPFTriggerMatch")
 
-WENuGammaCands  = dimuons.clone(decay = "electronPlusMETs cleanPatPhotons")
-WMuNuGammaCands = dimuons.clone(decay = "muonPlusMETs cleanPatPhotons")
-ZEEGammaCands   = dimuons.clone(decay = "dielectrons cleanPatPhotons")
-ZMuMuGammaCands = dimuons.clone(decay = "dimuons cleanPatPhotons")
-ZInvisibleGammaCands = dimuons.clone(decay = "patMETsPF cleanPatPhotons")
+WENuGammaCands  = dimuons.clone(decay = "electronPlusMETs cleanPatPhotonsTriggerMatch")
+WMuNuGammaCands = dimuons.clone(decay = "muonPlusMETs cleanPatPhotonsTriggerMatch")
+ZEEGammaCands   = dimuons.clone(decay = "dielectrons cleanPatPhotonsTriggerMatch")
+ZMuMuGammaCands = dimuons.clone(decay = "dimuons cleanPatPhotonsTriggerMatch")
+ZInvisibleGammaCands = dimuons.clone(decay = "patMETsPFTriggerMatch cleanPatPhotonsTriggerMatch")
 
 ## Specify the dauther roles
 electronPlusMETs.roles = ["lepton", "MET"]
