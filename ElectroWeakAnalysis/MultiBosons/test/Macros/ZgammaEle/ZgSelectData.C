@@ -12,43 +12,56 @@
 
 void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, Float_t ZMassCutL, Float_t ZMassCutU, TString OutputRootFile)
 {
-   Double_t PhoIDCutEB[8][5]={{50 ,50 ,3.9,0.5 ,0.012},{2.6,50 ,2.5,0.04,0.012},
+   //photonID table:
+   Double_t PhoIDCutEB[9][5]={{50 ,50 ,3.9,0.5 ,0.012},{2.6,50 ,2.5,0.04,0.012},
                               {2.6,50 ,1.6,0.04,0.012},{2.6,1.2,1.3,0.04,0.011},
                               {2.6,1.2,0.9,0.04,0.011},{1.6,1.2,0.7,0.01,0.011},
-                              {4.2,2.2,2.0,0.05,0.5  },{4.2,2.2,2.0,0.05,0.01}};
+                              {4.2,2.2,3.5,0.05,0.5  },{4.2,2.2,2.0,0.05,0.013},  {4.2,2.2,2.0,0.05,0.5}};
 
-   Double_t PhoIDCutEE[8][5]={{50 ,50 ,2.6,0.045,0.1  },{50 ,50 ,1.5,0.045,0.038},
+   Double_t PhoIDCutEE[9][5]={{50 ,50 ,2.6,0.045,0.1  },{50 ,50 ,1.5,0.045,0.038},
                               {50 ,1.4,1.2,0.045,0.038},{1.4,0.8,1.0,0.045,0.038},
                               {1.4,0.8,0.8,0.045,0.035},{1.4,0.6,0.8,0.025,0.03 },
-                              {4.2,2.2,2.0,0.05 ,0.5  },{4.2,2.2,2.0,0.05 ,0.03 }};
+                              {4.2,2.2,3.5,0.05 ,0.5  },{4.2,2.2,2.0,0.05 ,0.03 },{4.2,2.2,2.0,0.05,0.5}};
 
-   TString phoID_String[8]={"Poter's95","Poter's90","Poter's85","Poter's80","Poter's70","Poter's60","EG Loose","EG Tight"};
+   Double_t PhoIDScale[9][3]={{0.004,0.001 ,0.001},{0.004,0.001 ,0.001},{0.004,0.001,0.001},
+                              {0.004,0.001 ,0.001},{0.004,0.001 ,0.001},{0.004,0.001,0.001},
+                              {0.006,0.0025,0.001},{0.006,0.0025,0.001},{0.003,0.001,0.001}};
+ 
+   TString phoID_String[9]={"Poter's95","Poter's90","Poter's85","Poter's80","Poter's70","Poter's60","EG Loose","EG Tight","QCD photon"};
    TString eleID_String[12]={"ComIso60","ComIso70","ComIso80","ComIso685","ComIso90","ComIso95","RelIso60","RelIso70","RelIso80","RelIso85","RelIso90","RelIso95"};
 
-   float ElePtCut(20),  PhoPtCut(10);
+   //Some Cuts
+   Float_t  ElePtCut=20,PhoPtCut=10;
+   //Upper and Lower cuts for anti-selection(use for bgk)
+   Float_t  AntiUEB=999;
+   Float_t  AntiUEE=999;
+   Float_t  AntiLEB=3;
+   Float_t  AntiLEE=3;
+   Float_t  PhoHoverPreCut=0.5;
 
-   Int_t     nWrite=0, passPhoID=0;   
-   Int_t     InEE_EB=0, PhoInEE=0, Ele1InEE=0, Ele2InEE=0;
-   Int_t     EleN_num=0,EleP_num=0;
-   Int_t     PassEIDN[65], PassEIDP[65];
-   Int_t     PassTagN[65], PassTagP[65];
+   //Some Variables
+   Int_t     nWrite=0;   
+   Int_t     PhoInEE=0, Ele1InEE=0, Ele2InEE=0;
+   Int_t     Ele_num=0;
+   Int_t     PassEID[100];
    Int_t     ele1_index=0, ele2_index=0, pho_index=0;
 
+   Float_t   Leading1=0, Leading2=0;
    Float_t   ThisValue=0;
-   Float_t   MZee=0,dMZee=0;
+   Float_t   MZee=0;
    Float_t   MC_dPhi=0, MC_dEta=0, DelR1=0, DelR2=0;
 
    Double_t  EvtWeight=1;
-   Long64_t  nZgCandidates=0;
 
    TLorentzVector ele1,ele2,gamma,Zee,Mllg;
 
+   //Histograms..
    TH1D *h1Et[3], *h2Pt[3];
    TH1D *heEta[3],*hpEta[3];
    TH1D *hpVar[3][6][2], *heVar[3][8][2];
    TH1D *hdR[3];              
    TH1D *hMee[3], *hMeeg[3];
-
+   
    TH2D *hMeeMeeg = new TH2D("hMeeMeeg","M_{ee} vs. M_{ee#gamma}",40,0,200,40,0,200);  
  
    TString TName_Var[8]={"EIso","HIso","TIso","CIso","SIE","HoE","dEtaIn","dPhiIn"};
@@ -92,13 +105,19 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
      }
    }
 
+   TH1D *hIso[4];
+
+   hIso[0]= new TH1D("NonIsoPho_Loose_EB", "", 500, 0, 500);
+   hIso[1]= new TH1D("NonIsoPho_Loose_EE", "", 500, 0, 500);
+   hIso[2]= new TH1D("IsoPho_Loose_EB", "", 500, 0, 500);
+   hIso[3]= new TH1D("IsoPho_Loose_EE", "", 500, 0, 500);
+
    if (fChain == 0) return;
 
    Long64_t nentries = fChain->GetEntriesFast();
 
-   Long64_t ThisRunN=0;
-
    Long64_t nbytes = 0, nb = 0;
+   Int_t CheckHLTRun=0;
 
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
@@ -106,45 +125,27 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
 
-      if (nVtx ==0 ) continue;
       if (IsVtxGood ==0 ) continue;
       if (IsTracksGood ==0 ) continue;
 
-      //----Skim: 1 phoEt>10 && 1 lepton pt>15
-      EleN_num=0;
-      for (Int_t iPho=0;iPho<nPho;iPho++){
-        if (phoEt[iPho] < 10) continue;
-        if (phoOverlap[iPho] == 1) continue;
-        EleN_num++;
-      }  
-      if (EleN_num==0) continue;
-
-      EleN_num=0,EleP_num=0;
-      for (Int_t iEle=0;iEle<nEle;iEle++){
-        if (elePt[iEle] < 15) continue;
-        EleN_num++;
+      if (run<=140401) {
+        if (HLT[HLTIndex[8]] !=1) continue;
+      } else if (140401<run && run<=143962) {
+        if (HLT[HLTIndex[10]] !=1) continue;
+      } else if (143962<run && run<=144114) {
+        if (HLT[HLTIndex[12]] !=1) continue;
+      } else if (run>144114 && run<=147196) {
+        if (HLT[HLTIndex[16]] !=1) continue;
+      } else if (run>147196) {
+        if (HLT[HLTIndex[17]] !=1) continue;
       }
-      for (Int_t iMu=0;iMu<nMu;iMu++){
-        if (muPt[iMu] < 15) continue;
-        EleP_num++;
-      }
-      if (EleN_num==0 && EleP_num==0) continue;
-      //----
 
-      //HLT, HLT_Ele15_SW_L1R:HLTIndex[9] HLT_Ele15_LW_L1R:HLTIndex[7] HLT_Ele15_EleId_L1R:HLTIndex[14] 
-      if (HLT[HLTIndex[14]]!=1 && HLT[HLTIndex[7]] !=1 && HLT[HLTIndex[9]] !=1) continue;
-
-      for (Int_t ii=0;ii<65;ii++) {
-        PassEIDN[ii]=-1;
-        PassEIDP[ii]=-1;
-            
-        PassTagN[ii]=-1;
-        PassTagP[ii]=-1;
+      for (Int_t ii=0;ii<100;ii++) {
+        PassEID[ii]=-1;
       } 
 
-      EleN_num=0,EleP_num=0;//1
+      Ele_num=0;
       Ele1InEE=-1, Ele2InEE=-1, PhoInEE=-1;
-
 
       for (Int_t iEle=0;iEle<nEle;iEle++){
          if (elePt[iEle]<ElePtCut) continue;
@@ -158,7 +159,7 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
          }
 
          if ( fabs(eleSCEta[iEle]) < 1.4442 ) Ele1InEE = 0;
-         else if (fabs(eleSCEta[iEle])<2.56 && fabs(eleSCEta[iEle])>1.566) Ele1InEE = 1;
+         else if (fabs(eleSCEta[iEle])<2.5 && fabs(eleSCEta[iEle])>1.566) Ele1InEE = 1;
 
          heEta[0]->Fill(eleEta[iEle],EvtWeight);
          h2Pt[0]->Fill(elePt[iEle],EvtWeight);
@@ -173,44 +174,42 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
          heVar[0][7][Ele1InEE] -> Fill(fabs(eledPhiAtVtx[iEle]),EvtWeight);
 
          if (eleID[iEle][eleID_index]!=7) continue;
-         if (eleCharge[iEle]==1){
-            PassEIDP[EleP_num]=iEle;
-            EleP_num++;
-         } else if (eleCharge[iEle]==-1){
-            PassEIDN[EleN_num]=iEle;
-            EleN_num++;
-         }
+
+         PassEID[Ele_num]=iEle;
+         Ele_num++;
       }
 
       MZee=0;
       Ele1InEE=-1, Ele2InEE=-1, PhoInEE=-1;
-      if (EleN_num>=1 && EleP_num>=1) {
-        //(3) pass the Z mass cut, no cut for now... 
-        dMZee=999.0;
-        ThisValue=0,MZee=0;
+      if (Ele_num>=2) {
+        // pass the Z mass cut, no cut for now... 
+        Leading1=-1,Leading2=-1;
+        ele2_index=0,ele1_index=0;
+        for (Int_t i1=0; i1<Ele_num; i1++){
+          if (elePt[PassEID[i1]]>Leading1 && elePt[PassEID[i1]]>Leading2) {
+            Leading2=Leading1;
+            ele2_index=ele1_index;
 
-        for (Int_t i1=0;i1<EleP_num;i1++){
-          for (Int_t i2=0;i2<EleN_num;i2++){
-            ele1.SetPtEtaPhiE(elePt[PassEIDP[i1]],eleEta[PassEIDP[i1]],elePhi[PassEIDP[i1]],eleEn[PassEIDP[i1]]);
-            ele2.SetPtEtaPhiE(elePt[PassEIDN[i2]],eleEta[PassEIDN[i2]],elePhi[PassEIDN[i2]],eleEn[PassEIDN[i2]]);
-            Zee=ele1+ele2;
-            ThisValue=Zee.M();
-
-            if (fabs(ThisValue-91.18)<dMZee){
-              dMZee=fabs(ThisValue-91.18);
-              ele1_index=PassEIDP[i1], ele2_index=PassEIDN[i2];
-              MZee=ThisValue;
-            }
-        } }
+            Leading1=elePt[PassEID[i1]];
+            ele1_index=PassEID[i1];           
+          } else if (elePt[PassEID[i1]]<Leading1 && elePt[PassEID[i1]]>Leading2) {
+            Leading2=elePt[PassEID[i1]];
+            ele2_index=PassEID[i1];
+          }
+        } 
+        ele1.SetPtEtaPhiE(elePt[ele1_index],eleEta[ele1_index],elePhi[ele1_index],eleEn[ele1_index]);
+        ele2.SetPtEtaPhiE(elePt[ele2_index],eleEta[ele2_index],elePhi[ele2_index],eleEn[ele2_index]);
+        Zee=ele1+ele2;
+        MZee=Zee.M();
       }
 
       if (MZee > ZMassCutL && MZee < ZMassCutU) {
 
         if ( fabs(eleSCEta[ele1_index]) < 1.4442 ) Ele1InEE = 0;
-        else if (fabs(eleSCEta[ele1_index])<2.56 && fabs(eleSCEta[ele1_index])>1.566) Ele1InEE = 1;
+        else if (fabs(eleSCEta[ele1_index])<2.5 && fabs(eleSCEta[ele1_index])>1.566) Ele1InEE = 1;
          
         if ( fabs(eleSCEta[ele2_index]) < 1.4442 ) Ele2InEE = 0;
-        else if (fabs(eleSCEta[ele2_index])<2.56 && fabs(eleSCEta[ele2_index])>1.566) Ele2InEE = 1;
+        else if (fabs(eleSCEta[ele2_index])<2.5 && fabs(eleSCEta[ele2_index])>1.566) Ele2InEE = 1;
 
         h2Pt[1]->Fill(elePt[ele1_index],EvtWeight);
         h2Pt[1]->Fill(elePt[ele2_index],EvtWeight);
@@ -237,6 +236,8 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
 
         hMee[0]->Fill(MZee,EvtWeight);
 
+        //Select iso-photons
+
         pho_index=-1;
         ThisValue=0;
 
@@ -246,7 +247,7 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
            if (fabs(phoSCEta[iPho]) > 1.4442 && fabs(phoSCEta[iPho]) < 1.566 ) continue;
            if (phoOverlap[iPho] == 1) continue;
            if (phohasPixelSeed[iPho] == 1) continue;
-           if (phoHoverE[iPho] > 0.5) continue;
+           if (phoHoverE[iPho] > PhoHoverPreCut) continue;
 
            if (fabs(phoSCEta[iPho]) < 1.4442) {
              if (phoRecoFlag[iPho]==2) continue;
@@ -258,7 +259,7 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
            hpEta[0]-> Fill(phoEta[iPho],EvtWeight);
 
            if ( fabs(phoSCEta[iPho]) < 1.4442 ) PhoInEE = 0;
-           else if (fabs(phoSCEta[iPho])<2.56 && fabs(phoSCEta[iPho])>1.566) PhoInEE = 1;
+           else if (fabs(phoSCEta[iPho])<2.5 && fabs(phoSCEta[iPho])>1.566) PhoInEE = 1;
 
            hpVar[0][0][PhoInEE] -> Fill(phoEcalIsoDR04[iPho],EvtWeight);
            hpVar[0][1][PhoInEE] -> Fill(phoHcalIsoDR04[iPho],EvtWeight);
@@ -269,15 +270,15 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
 
 
            if ( fabs(phoSCEta[iPho]) < 1.4442 ) {
-               if ((phoEcalIsoDR04[iPho]-0.004*phoEt[iPho]) > PhoIDCutEB[phoID_index][0]) continue;
-               if ((phoHcalIsoDR04[iPho]-0.001*phoEt[iPho]) > PhoIDCutEB[phoID_index][1]) continue;
-               if ((phoTrkIsoHollowDR04[iPho]-0.001*phoEt[iPho]) > PhoIDCutEB[phoID_index][2]) continue;
+               if ((phoEcalIsoDR04[iPho]-PhoIDScale[phoID_index][0]*phoEt[iPho]) > PhoIDCutEB[phoID_index][0]) continue;
+               if ((phoHcalIsoDR04[iPho]-PhoIDScale[phoID_index][1]*phoEt[iPho]) > PhoIDCutEB[phoID_index][1]) continue;
+               if ((phoTrkIsoHollowDR04[iPho]-PhoIDScale[phoID_index][2]*phoEt[iPho]) > PhoIDCutEB[phoID_index][2]) continue;
                if (phoHoverE[iPho] > PhoIDCutEB[phoID_index][3]) continue;
                if (phoSigmaIEtaIEta[iPho]> PhoIDCutEB[phoID_index][4]) continue;
-           } else if (fabs(phoSCEta[iPho])<2.56 && fabs(phoSCEta[iPho])>1.566) { 
-               if ((phoEcalIsoDR04[iPho]-0.004*phoEt[iPho]) > PhoIDCutEE[phoID_index][0]) continue;
-               if ((phoHcalIsoDR04[iPho]-0.001*phoEt[iPho]) > PhoIDCutEE[phoID_index][1]) continue;
-               if ((phoTrkIsoHollowDR04[iPho]-0.001*phoEt[iPho]) > PhoIDCutEE[phoID_index][2]) continue;
+           } else if (fabs(phoSCEta[iPho])<2.5 && fabs(phoSCEta[iPho])>1.566) { 
+               if ((phoEcalIsoDR04[iPho]-PhoIDScale[phoID_index][0]*phoEt[iPho]) > PhoIDCutEE[phoID_index][0]) continue;
+               if ((phoHcalIsoDR04[iPho]-PhoIDScale[phoID_index][1]*phoEt[iPho]) > PhoIDCutEE[phoID_index][1]) continue;
+               if ((phoTrkIsoHollowDR04[iPho]-PhoIDScale[phoID_index][2]*phoEt[iPho]) > PhoIDCutEE[phoID_index][2]) continue;
                if (phoHoverE[iPho] > PhoIDCutEE[phoID_index][3]) continue;
                if (phoSigmaIEtaIEta[iPho]> PhoIDCutEE[phoID_index][4]) continue;
            } else{
@@ -292,7 +293,7 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
 
         if (pho_index!=-1) {
             if ( fabs(phoSCEta[pho_index]) < 1.4442 ) PhoInEE = 0;
-            else if (fabs(phoSCEta[pho_index]) < 2.56 && fabs(phoSCEta[pho_index]) > 1.566) PhoInEE = 1;
+            else if (fabs(phoSCEta[pho_index]) < 2.5 && fabs(phoSCEta[pho_index]) > 1.566) PhoInEE = 1;
 
             ele1.SetPtEtaPhiE(elePt[ele1_index],eleEta[ele1_index],elePhi[ele1_index],eleEn[ele1_index]);
             ele2.SetPtEtaPhiE(elePt[ele2_index],eleEta[ele2_index],elePhi[ele2_index],eleEn[ele2_index]);
@@ -300,7 +301,7 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
 
             Zee=ele1+ele2;
             Mllg=ele1+ele2+gamma;
-            //Fill Pho2 & Meeg1
+
             h1Et[1]  -> Fill(phoEt[pho_index],EvtWeight);
             hpEta[1] -> Fill(phoEta[pho_index],EvtWeight);
 
@@ -349,6 +350,11 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
                h1Et[2] -> Fill(phoEt[pho_index],EvtWeight);
                hpEta[2]-> Fill(phoEta[pho_index],EvtWeight);
 
+               if (fabs(phoSCEta[pho_index]) < 1.4442 )
+                 hIso[2]->Fill(phoEt[pho_index],EvtWeight);
+               else
+                 hIso[3]->Fill(phoEt[pho_index],EvtWeight);
+
                hpVar[2][0][PhoInEE] -> Fill(phoEcalIsoDR04[pho_index],EvtWeight);
                hpVar[2][1][PhoInEE] -> Fill(phoHcalIsoDR04[pho_index],EvtWeight);
                hpVar[2][2][PhoInEE] -> Fill(phoTrkIsoHollowDR04[pho_index],EvtWeight);
@@ -377,74 +383,82 @@ void ZgSelectData::Loop(Int_t eleID_index, Int_t phoID_index, Float_t DelRCut, F
                nWrite++;
 cout<<"#Zgamma:"<<setw(3)<<nWrite<<setw(8)<<"run:"<<setw(7)<<run<<setw(10)<<"event:"<<setw(12)<<event<<setw(12)<<"lumis:"<<setw(5)<<lumis<<endl;
             }
+        }
 
-            //Check Zgamma candidates with dR>0.3
-            if (DelR1> 0.3 && DelR2>0.3){
-              cout<<"-----------------------------"<<endl;
-              cout<<"Find Zee+gamma Candidate!!..."<<nZgCandidates<<endl;
-              cout<<"run:"<<run<<setw(10)<<"     event:"<<event<<setw(12)<<"     lumis:"<<lumis<<endl;
-              cout<<""<<endl;
-              cout<<"Z(ee) mass:"<<MZee<<setw(6)<<"     Z(eegamma)mass:"<<Mllg.M()<<setw(6)<<endl;
+        //Select Non-Iso photons (for Bkg estimation)
+        pho_index=-1;
+        ThisValue=0;
 
-              if ( (fabs(eleSCEta[ele1_index]) < 1.4442 ) || 
-                   (fabs(eleSCEta[ele1_index]) < 2.5 && fabs(eleSCEta[ele1_index]) > 1.56)) InEE_EB=1; else InEE_EB=0;
-              cout<<"Electron2:"<<endl;
-              cout<<"Pt    :"<<setw(7)<<elePt[ele1_index]<<setw(7)<<"   Eta   :"<<setw(7)<<eleEta[ele1_index]<<setw(7)<<"   Phi      :"<<setw(7)<<elePhi[ele1_index]<<setw(7)<<"   SCEta :"<<setw(7)<<eleSCEta[ele1_index]<<setw(7)<<"   InECAL?:"<<InEE_EB<<endl;
-              cout<<"EIso  :"<<setw(7)<<eleIsoEcalDR04[ele1_index]<<setw(7)<<"   HcalIso:"<<setw(7)<<eleIsoHcalDR04[ele1_index]<<setw(7)<<"   TrkIso   :"<<setw(7)<<eleIsoTrkDR04[ele1_index]<<endl;
-              cout<<"dEatIn:"<<setw(7)<<eledEtaAtVtx[ele1_index]<<setw(7)<<  "   dPhiIn :"<<setw(7)<<eledPhiAtVtx[ele1_index]<<setw(7)<<  "   SigmaIEta:"<<setw(7)<<eleSigmaIEtaIEta[ele1_index]<<setw(7)<<"   HoverE:"<<setw(7)<<eleHoverE[ele1_index]<<endl;
-              //eleID
-              for (Int_t id1=11;id1>5;id1--){
-                if (eleID[ele1_index][id1]==7) cout<<"PassID:"<<eleID_String[id1]<<"   ";
-              }
-              cout<<endl;
+        for (Int_t iPho=0;iPho<nPho;iPho++){
+           if (phoEt[iPho] < PhoPtCut) continue;
+           if (fabs(phoSCEta[iPho]) > 2.5) continue;
+           if (fabs(phoSCEta[iPho]) > 1.4442 && fabs(phoSCEta[iPho]) < 1.566 ) continue;
+           if (phoOverlap[iPho] == 1) continue;
+           if (phohasPixelSeed[iPho] == 1) continue;
 
+           if (fabs(phoSCEta[iPho]) < 1.4442) {
+             if (phoRecoFlag[iPho]==2) continue;
+             if (phoSeverity[iPho]==3) continue;
+             if (phoSeverity[iPho]==4) continue;
+           }
 
-              if ( (fabs(eleSCEta[ele2_index]) < 1.4442 ) || 
-                   (fabs(eleSCEta[ele2_index]) < 2.5 && fabs(eleSCEta[ele2_index]) > 1.56)) InEE_EB=1; else InEE_EB=0;
-              cout<<"Electron2:"<<endl;
-              cout<<"Pt    :"<<setw(7)<<elePt[ele2_index]<<setw(7)<<"   Eta   :"<<setw(7)<<eleEta[ele2_index]<<setw(7)<<"   Phi      :"<<setw(7)<<elePhi[ele2_index]<<setw(7)<<"   SCEta :"<<setw(7)<<eleSCEta[ele2_index]<<setw(7)<<"   InECAL?:"<<InEE_EB<<endl;
-              cout<<"EIso  :"<<setw(7)<<eleIsoEcalDR04[ele2_index]<<setw(7)<<"   HcalIso:"<<setw(7)<<eleIsoHcalDR04[ele2_index]<<setw(7)<<"   TrkIso   :"<<setw(7)<<eleIsoTrkDR04[ele2_index]<<endl;
-              cout<<"dEatIn:"<<setw(7)<<eledEtaAtVtx[ele2_index]<<setw(7)<<  "   dPhiIn :"<<setw(7)<<eledPhiAtVtx[ele2_index]<<setw(7)<<  "   SigmaIEta:"<<setw(7)<<eleSigmaIEtaIEta[ele2_index]<<setw(7)<<"   HoverE:"<<setw(7)<<eleHoverE[ele2_index]<<endl;
-              //eleID
-              for (Int_t id1=11;id1>5;id1--){
-                if (eleID[ele2_index][id1]==7) cout<<"PassID:"<<eleID_String[id1]<<"   ";
-              }
-              cout<<endl;
+           //Anti-selection
 
+           if (fabs(phoSCEta[iPho]) < 1.4442) {
+              if (phoTrkIsoHollowDR04[iPho]-0.001*phoEt[iPho] < AntiLEB) continue;
+              if (phoTrkIsoHollowDR04[iPho]-0.001*phoEt[iPho] > AntiUEB) continue;
+           } else if (fabs(phoSCEta[iPho]) > 1.566 ) {
+              if (phoTrkIsoHollowDR04[iPho]-0.001*phoEt[iPho] < AntiLEE) continue;
+              if (phoTrkIsoHollowDR04[iPho]-0.001*phoEt[iPho] > AntiUEE) continue;
+           } else {
+              continue;
+           }
 
-              if ( (fabs(phoSCEta[pho_index]) < 1.4442 ) || 
-                   (fabs(phoSCEta[pho_index]) < 2.5 && fabs(phoSCEta[pho_index]) > 1.56)) InEE_EB=1; else InEE_EB=0;
-              cout<<"photon:"<<endl;
-              cout<<"Pt:"<<phoEt[pho_index]<<setw(6)<< "   Eta:"<<phoEta[pho_index]<<setw(7)<<"   Phi:"<<phoPhi[pho_index]<<setw(7)<<"   SCEta:"<<phoSCEta[pho_index]<<setw(6)<<"   InECAL?:"<<InEE_EB<<setw(6)<<"   dR1:"<<DelR1<<setw(6)<<"   dR2:"<<DelR2<<endl;
-              cout<<"EIso:"<<phoEcalIsoDR04[pho_index]<<setw(8)<<"   HcalIso:"<<phoHcalIsoDR04[pho_index]<<setw(8)<<"   TrkIso:"<<phoTrkIsoHollowDR04[pho_index]<<endl;
-              cout<<"SigmaIEtaIEta:"<<phoSigmaIEtaIEta[pho_index]<<setw(8)<<"   HoverE:"<<phoHoverE[pho_index]<<setw(8)<<"   R9:"<<phoR9[pho_index]<<endl;
-              //check phoID
-              for (Int_t id1=0;id1<6;id1++){
-                passPhoID=1;
-                if ( fabs(phoSCEta[pho_index]) < 1.4442 ) {
-                   if ((phoEcalIsoDR04[pho_index]-0.004*phoEt[pho_index]) > PhoIDCutEB[id1][0]) passPhoID=0;
-                   if ((phoHcalIsoDR04[pho_index]-0.001*phoEt[pho_index]) > PhoIDCutEB[id1][1]) passPhoID=0;
-                   if ((phoTrkIsoHollowDR04[pho_index]-0.001*phoEt[pho_index]) > PhoIDCutEB[id1][2]) passPhoID=0;
-                   if (phoHoverE[pho_index] > PhoIDCutEB[id1][3]) passPhoID=0;
-                   if (phoSigmaIEtaIEta[pho_index]> PhoIDCutEB[id1][4]) passPhoID=0;
-                } else if (fabs(phoSCEta[pho_index])<2.56 && fabs(phoSCEta[pho_index])>1.56) {
-                   if ((phoEcalIsoDR04[pho_index]-0.004*phoEt[pho_index]) > PhoIDCutEE[id1][0]) passPhoID=0;
-                   if ((phoHcalIsoDR04[pho_index]-0.001*phoEt[pho_index]) > PhoIDCutEE[id1][1]) passPhoID=0;
-                   if ((phoTrkIsoHollowDR04[pho_index]-0.001*phoEt[pho_index]) > PhoIDCutEE[id1][2]) passPhoID=0;
-                   if (phoHoverE[pho_index] > PhoIDCutEE[id1][3]) passPhoID=0;
-                   if (phoSigmaIEtaIEta[pho_index]> PhoIDCutEE[id1][4]) passPhoID=0;
-                } else {
-                   passPhoID=0;
-                }
-                if (passPhoID==1) cout<<"Pho passID: "<<phoID_String[id1]<<"   ";
-              }
-              cout<<endl;
-              nZgCandidates++;
+           if (ThisValue < phoEt[iPho]){
+              ThisValue = phoEt[iPho];
+              pho_index = iPho;
+           }
+        }
+
+        if (pho_index!=-1) {
+            MC_dPhi=0.0;
+            MC_dEta=0.0;
+            DelR1=0.0;
+
+            MC_dPhi = phoPhi[pho_index] - elePhi[ele1_index];
+            if (MC_dPhi >  3.1415927) MC_dPhi -= 2*3.1415927;
+            if (MC_dPhi < -3.1415927) MC_dPhi += 2*3.1415927;
+            MC_dEta = phoEta[pho_index] - eleEta[ele1_index];
+            DelR1=sqrt(MC_dEta*MC_dEta + MC_dPhi*MC_dPhi);
+
+            MC_dPhi=0.0;
+            MC_dEta=0.0;
+            DelR2=0.0;
+
+            MC_dPhi = phoPhi[pho_index] - elePhi[ele2_index];
+            if (MC_dPhi >  3.1415927) MC_dPhi -= 2*3.1415927;
+            if (MC_dPhi < -3.1415927) MC_dPhi += 2*3.1415927;
+            MC_dEta = phoEta[pho_index] - eleEta[ele2_index];
+            DelR2=sqrt(MC_dEta*MC_dEta + MC_dPhi*MC_dPhi);
+
+            if (DelR1> DelRCut && DelR2>DelRCut){
+               if (fabs(phoSCEta[pho_index]) < 1.4442 )
+                  hIso[0]->Fill(phoEt[pho_index],EvtWeight);
+               else
+                  hIso[1]->Fill(phoEt[pho_index],EvtWeight);
             }
         }
       }
    }
 
+   cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<endl;
+   cout<<"Selection information:"<<endl;
+   cout<<"elePt         : Pt > "<< ElePtCut  <<"  ,eleID:" << eleID_String[eleID_index] << endl;
+   cout<<"phoPt         : Pt > "<< PhoPtCut  <<"  ,phoID:" << phoID_String[phoID_index] << endl;
+   cout<<"Z mass window : "     << ZMassCutL <<" < MZee < "<< ZMassCutU << endl;
+   cout<<"deltaR        : dR > "<< DelRCut   <<endl;
+   cout<<"Found Zee+gamma candidades:"<<nWrite<<endl;
+   cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<endl;
    TFile *f1 = new TFile(OutputRootFile+".root","RECREATE");
 
    f1->cd();
@@ -462,6 +476,8 @@ cout<<"#Zgamma:"<<setw(3)<<nWrite<<setw(8)<<"run:"<<setw(7)<<run<<setw(10)<<"eve
        }
      }
      hMeeMeeg -> Write();
+
+     for (Int_t ii=0;ii<4;ii++) hIso[ii]->Write();
+     
    f1->Close();
-   cout<<nWrite<<endl;
 }
