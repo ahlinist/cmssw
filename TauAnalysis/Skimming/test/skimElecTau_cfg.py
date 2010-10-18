@@ -169,8 +169,9 @@ process.elecTauSkimOutputModule = cms.OutputModule("PoolOutputModule",
 )
 
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True),
-	fileMode = cms.untracked.string('NOMERGE')
+    wantSummary = cms.untracked.bool(True)
+	#fileMode = cms.untracked.string('NOMERGE')
 )
 
 process.o = cms.EndPath(process.elecTauSkimOutputModule)
+print process.dumpPython()
