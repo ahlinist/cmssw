@@ -1,7 +1,17 @@
 How to use:
-(A)Run on MC:
+(A)Run on MC (Event Yield):
    (1) Modify Input_table_Sig, the format is:
-   ProcessTag   input_file_name  cross-section_@1/pb(LO)  #total_unskimmed_event
+   ProcessTag   input_file_name  cross-section_@1/pb(NLO)  #total_unskimmed_event
+
+   ps. ProcessTag:
+     Zg    Zgamma sample
+     ZJet  Z+Jets sample
+     WJet  W+Jets sample
+     DiB   WW,WZ,ZZ samples
+     TTb   TTbar samples
+     PJet  photon+Jet samples
+     QCD   QCD samples
+     ! pthat overlap removal for QCD/photon+Jets is not included in this macro.
 
    ps. the event wieght is calculated: cross-section / #total_unskimmed_event
 
@@ -16,10 +26,10 @@ How to use:
        It will create a .txt file record the event yield information
        The input file is created by Run_ZgSelectorMC.C
        (You may need to modify the input file name)
-       You can change luminosity and set NLO cross-section in this file.
-       ex. McLumi=100., SetMCNLO=true, and set kFactor for each samples
+       You can change luminosity in this file.
+       ex. McLumi=100.
 
-(B)Run on Data
+(B)Run on Data (Event Yield)
    (1) Modify the input dataset in ZgSelectData.h
    (2) run: root -b Run_ZgSelectData.C
        It will create a root file which save some information, and show all the Zgamma->eegamma candidates.
@@ -29,6 +39,20 @@ How to use:
 (C)Make plots for MC/Data comparison
    run: root -b CombineHistogram.C
    You need the output file from Run_ZgSelectData.C and Run_ZgSelectorMC.C
-   You also need to set the MC luminosity and set k_factor in CombineHistogram.C
+   You also need to set the MC luminosity in CombineHistogram.C
    It will create a root file which save all comparison plot after each steps
- 
+
+(D)Index for eleID and photon ID:
+   eleID:0-11:SimpleEidComIso60~95,SimpleEidrelIso60~95 (8:relIso80, 11:relIso95)
+   phoID:0-8 :poter's95, 90, 85, 80, 75, 65, EG_Loose, EG_Tight, QCD photon
+
+==============================================================================
+For background estimation: (still beta version)
+(A) root -b Run_ZgSelectData.C (Run on 38x EG data)
+(B) root -b Run_ZgSelectorMC.C (need Zgamma/Z+Jets samples)
+(C) Go to RatioMethod direstory
+(D) root -b RunGetRatio_Data.C 
+    (Modified input files in GetRatio_Data.h, input are 38x JetMet data set)
+(E) Modified input file name in plot_Ratio.C
+    (Search for Load File Name, modified "MCEvtYield, DataRatio, DataEvtYield")
+(F) root plot_Ratio.C
