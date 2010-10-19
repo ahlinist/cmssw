@@ -150,8 +150,48 @@ int getNumBins(TH1* histogram, const std::string& axis)
   return (getLastBin(histogram, axis) - getFirstBin(histogram, axis)) + 1;
 }
 
+double getSumBinContents(TH1* histogram, int firstBinX, int lastBinX, int firstBinY, int lastBinY, int firstBinZ, int lastBinZ)
+{
+  double sumBinContents = 0.;
+  for ( int iBinX = firstBinX; iBinX <= lastBinX; ++iBinX ) {
+    for ( int iBinY = firstBinY; iBinY <= lastBinY; ++iBinY ) {
+      for ( int iBinZ = firstBinZ; iBinZ <= lastBinZ; ++iBinZ ) {
+	double binContent = 0.;
+	if      ( histogram->GetDimension() == 1 ) binContent = histogram->GetBinContent(iBinX);
+	else if ( histogram->GetDimension() == 2 ) binContent = histogram->GetBinContent(iBinX, iBinY);
+	else if ( histogram->GetDimension() == 3 ) binContent = histogram->GetBinContent(iBinX, iBinY, iBinZ);
+	else assert(0);
+	
+	sumBinContents += binContent;
+      }
+    }
+  }
+
+  return sumBinContents;
+}
+
+double getSumBinErrors2(TH1* histogram, int firstBinX, int lastBinX, int firstBinY, int lastBinY, int firstBinZ, int lastBinZ)
+{
+  double sumBinErrors2 = 0.;
+  for ( int iBinX = firstBinX; iBinX <= lastBinX; ++iBinX ) {
+    for ( int iBinY = firstBinY; iBinY <= lastBinY; ++iBinY ) {
+      for ( int iBinZ = firstBinZ; iBinZ <= lastBinZ; ++iBinZ ) {
+	double binError = 0.;
+	if      ( histogram->GetDimension() == 1 ) binError = histogram->GetBinError(iBinX);
+	else if ( histogram->GetDimension() == 2 ) binError = histogram->GetBinError(iBinX, iBinY);
+	else if ( histogram->GetDimension() == 3 ) binError = histogram->GetBinError(iBinX, iBinY, iBinZ);
+	else assert(0);
+	
+	sumBinErrors2 += (binError*binError);
+      }
+    }
+  }
+
+  return sumBinErrors2;
+}
+
 void exportAnalysisResults(
-       DQMStore& dqmStore, const std::string& meName, double numEvents, unsigned numChannels, unsigned channelIndex,
+       DQMStore& dqmStore, const std::string& meName, double numEventsTotal, unsigned numChannels, unsigned channelIndex,
        const std::string& outputFileName, bool failSilent = false)
 {
   std::cout << "<exportAnalysisResults>:" << std::endl;
@@ -196,10 +236,18 @@ void exportAnalysisResults(
   int binIndex = 0;
   int binOffset = channelIndex*numBins;
 
-  double integral = histogram->Integral();
-  //std::cout << " integral = " << integral << std::endl;
-  int numEntries = histogram->GetEntries();
-  //std::cout << " numEntries = " << numEntries << std::endl;
+  double sumBinContents = getSumBinContents(histogram, firstBinX, lastBinX, firstBinY, lastBinY, firstBinZ, lastBinZ);
+  std::cout << " sumBinContents = " << sumBinContents << std::endl;
+
+  double sumBinErrors2 = getSumBinErrors2(histogram, firstBinX, lastBinX, firstBinY, lastBinY, firstBinZ, lastBinZ);
+  std::cout << " sumBinErrors2 = " << sumBinErrors2 << std::endl;
+
+//--- scale (weighted) number of events expected for luminosity of analyzed dataset
+//    to "effective" number of events Neff for which 
+//      sumBinContents/sqrt(sumBinErrors2) = sqrt(Neff)
+//    corresponding to number of events needed to reach same level of statistical precision
+//    in case all events would have unit weight
+  double scaleFactor = sumBinContents/sumBinErrors2;
 
   for ( int iBinX = firstBinX; iBinX <= lastBinX; ++iBinX ) {
     for ( int iBinY = firstBinY; iBinY <= lastBinY; ++iBinY ) {
@@ -210,7 +258,7 @@ void exportAnalysisResults(
 	else if ( histogram->GetDimension() == 3 ) binContent = histogram->GetBinContent(iBinX, iBinY, iBinZ);
 	else assert(0);
 
-	if ( integral != 0. ) binContent *= (numEntries/integral);
+	binContent *= scaleFactor;
 	
 	binContents[binIndex + binOffset] = TMath::Nint(binContent);
 	++binIndex;
@@ -218,7 +266,7 @@ void exportAnalysisResults(
     }
   }
 
-  if ( integral != 0. ) numEvents *= (numEntries/integral);
+  numEventsTotal *= scaleFactor;
 
   int errorFlag = 0;
   createSubDirectories(outputFileName, errorFlag);
@@ -236,8 +284,8 @@ void exportAnalysisResults(
 
   (*outputFile) << std::setw(width) << std::setfill(' ') << numChannels;
   (*outputFile) << std::setw(width) << std::setfill(' ') << numBins;
-  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(numEvents);
-  (*outputFile) << std::setw(width) << std::setfill(' ') << numEntries;
+  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsTotal);
+  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(sumBinContents*scaleFactor);
   (*outputFile) << std::endl;
 
   for ( unsigned iBin = 0; iBin < (numChannels*numBins); ++iBin ) {
