@@ -75,6 +75,7 @@ elecMuEventSelection = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 #Dummy filter (always false) necessary to get correct efficiency report.
 #--------------------------------------------------------------------------------
+
 process.dummyFilter = cms.EDFilter("HLTHighLevel",
      TriggerResultsTag = cms.InputTag("TriggerResults","",process.name_()),
      HLTPaths = cms.vstring(''),# provide list of HLT paths (or patterns) you want
