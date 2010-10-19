@@ -49,7 +49,7 @@ enableFactorization_makeZtoMuTauPlots_grid(
 )
 
 process.plotZtoMuTau.labels.mcNormScale.text = cms.vstring(
-    '2.9pb^{-1}',
+    '%0.1fpb^{-1}' % samples.TARGET_LUMI,
     '#sqrt{s}=7TeV'
 )
 
