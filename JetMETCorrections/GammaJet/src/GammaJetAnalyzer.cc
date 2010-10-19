@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.36 2010/07/13 23:53:26 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.37 2010/09/25 11:42:47 pandolf Exp $
 //
 //
 
@@ -174,9 +174,9 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   HBhitsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("hbhits");
   recoCollection_    = iConfig.getParameter<std::string>("recoCollection");
   recoProducer_      = iConfig.getParameter<std::string>("recoProducer");
-  JetCorrector_akt5_ = iConfig.getParameter<std::string>("JetCorrectionService_akt5");
-  JetCorrector_pfakt5_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt5");
-  JetCorrector_pfakt7_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt7");
+//JetCorrector_akt5_ = iConfig.getParameter<std::string>("JetCorrectionService_akt5");
+//JetCorrector_pfakt5_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt5");
+//JetCorrector_pfakt7_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt7");
   genjetptthr_ = iConfig.getParameter<double>("genjetptthr");
   calojetptthr_ = iConfig.getParameter<double>("calojetptthr");
   pfjetptthr_ = iConfig.getParameter<double>("pfjetptthr");
@@ -315,9 +315,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 //   iEvent.getByLabel(JetPFsrcsis7_, pfjetssis7);
 
    //get jet correctors
-   const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
-   const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
-   const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
+// const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
+// const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
+// const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
  
    // get gen jet collection
    Handle<GenJetCollection> jetsgenite;
@@ -1616,11 +1616,11 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        
        ptJet_akt5[nJet_akt5] = it->pt();	 
 
-       // Jet Energy Scale Corrections on-the-fly     
-       CaloJet  correctedJet = *it;
-       double scale = corrector_akt5->correction(it->p4());
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
+//     // Jet Energy Scale Corrections on-the-fly     
+//     CaloJet  correctedJet = *it;
+//     double scale = corrector_akt5->correction(it->p4());
+//     correctedJet.scaleEnergy(scale);
+//     ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
 
        eJet_akt5[nJet_akt5] = it->energy();	 
        etaJet_akt5[nJet_akt5] = it->eta();	 
@@ -1737,11 +1737,11 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      etaJet_pfakt5[nJet_pfakt5] = it->eta();	 
      phiJet_pfakt5[nJet_pfakt5] = it->phi();	      
      
-     // Jet Energy Scale Corrections on-the-fly     
-     PFJet  correctedJet = *it;
-     double scale = corrector_pfakt5->correction(it->p4());
-     correctedJet.scaleEnergy(scale);
-     ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
+//   // Jet Energy Scale Corrections on-the-fly     
+//   PFJet  correctedJet = *it;
+//   double scale = corrector_pfakt5->correction(it->p4());
+//   correctedJet.scaleEnergy(scale);
+//   ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
 
      // Extra variables for PFlow studies
      Int_t nChargedHadrons = 0;
@@ -1895,11 +1895,11 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        etaJet_pfakt7[nJet_pfakt7] = it->eta();	 
        phiJet_pfakt7[nJet_pfakt7] = it->phi();	      
      
-       // Jet Energy Scale Corrections on-the-fly     
-       PFJet  correctedJet = *it;
-       double scale = corrector_pfakt7->correction(it->p4());
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
+//     // Jet Energy Scale Corrections on-the-fly     
+//     PFJet  correctedJet = *it;
+//     double scale = corrector_pfakt7->correction(it->p4());
+//     correctedJet.scaleEnergy(scale);
+//     ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
 
        // Extra variables for PFlow studies
        Int_t nChargedHadrons = 0;

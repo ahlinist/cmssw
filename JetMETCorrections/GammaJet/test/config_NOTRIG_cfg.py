@@ -53,33 +53,6 @@ process.monster = cms.EDFilter(
 )
 
 
-###########  EB SPIKE CLEANING BEGIN #####################
-
-process.load('Configuration/StandardSequences/Services_cff')
-process.load('Configuration/StandardSequences/GeometryExtended_cff')
-process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
-#process.load('Configuration/StandardSequences/RawToDigi_Data_cff')
-#process.load('Configuration/StandardSequences/Reconstruction_cff')
-#process.load('Configuration/StandardSequences/EndOfProcess_cff')
-process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-#process.load('Configuration/EventContent/EventContent_cff')
-#process.load('TrackingTools/Configuration/TrackingTools_cff')
-
-process.GlobalTag.globaltag = cms.string('GR_R_36X_V12::All')
-#process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
-#process.GlobalTag.globaltag = cms.string('START36_V10::All')
-
-
-#process.load('EGamma/EGammaSkims/promptRecoTrackCorrections_cff')
-process.load('EGamma/EGammaSkims/cleanReRecoSequence_cff')
-
-process.ecalCleanClustering = cms.Sequence(process.cleanedEcalClusters*process.cleanedEgammaSkimReco)
-
-###########  EB SPIKE CLEANING END   #####################
-
-## produce JPT jets
-process.load('RecoJets.Configuration.RecoJPTJets_cff')
-
 
 
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
@@ -129,5 +102,3 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 
 
 process.p = cms.Path(process.monster*process.myanalysis)
-#process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
-#process.p = cms.Path(process.myanalysis)
