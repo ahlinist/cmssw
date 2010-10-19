@@ -14,7 +14,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
+process.GlobalTag.globaltag = cms.string('START38_V12::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(20)
@@ -33,7 +33,7 @@ dummyEventSelection = cms.untracked.PSet(
 )
 
 process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",                                              
-    fileName = cms.untracked.string('muTauSkim.root')
+    fileName = cms.untracked.string('AH120tautau.root')
 )
 
 process.options = cms.untracked.PSet(
