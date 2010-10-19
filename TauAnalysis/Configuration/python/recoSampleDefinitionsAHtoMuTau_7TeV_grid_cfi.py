@@ -6,9 +6,7 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    'data_Mu_132440-135802_Sep17ReReco',
-    'data_Mu_135808_144114_Sep17ReReco',
-    'data_Mu_144461_145761_Sep17ReReco',
+    'data_Mu_132440-145761_Sep17ReReco',
     'data_Mu_145762_147454_Prompt',
     'A120', 'bbA120', 
     'A130', 'bbA130', 
@@ -61,33 +59,11 @@ _microbarns = 1.0e6
 TARGET_LUMI = (4203+58971+89050+1048863)/_microbarns
 
 RECO_SAMPLES = {
-    'data_Mu_132440-135802_Sep17ReReco' : {
+    'data_Mu_132440-145761_Sep17ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'runselection' : "132440 - 135802",
-        'conditions' : 'GR_R_38X_V13A::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
-    },
-    'data_Mu_135808_144114_Sep17ReReco' : {
-        'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'runselection' : '135808 - 144114',
-        'conditions' : 'GR_R_38X_V13A::All',
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
-    },
-    'data_Mu_144461_145761_Sep17ReReco' : {
-        'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'runselection' : "144461 - 145761",
+        'runselection' : "132440 - 145761",
         'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
@@ -97,9 +73,9 @@ RECO_SAMPLES = {
     'data_Mu_145762_147454_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'runselection' : '145762 - 147454',
-        'conditions' : 'GR_R_38X_V13::All',
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : '145762 - 147454',
+        'conditions' : 'GR_R_38X_V13::All',        
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -115,7 +91,7 @@ RECO_SAMPLES = {
         'x_sec' : (
             51947.8*_femtobarns*0.122789 + # (gg -> A0)*(A0->tautau)
             39445.6*_femtobarns*0.123462 + # (gg -> h0)*(h0->tautau)
-            20753.1*_femtobarns*0.125908   # (gg -> HH)*(HH->tautau)
+            20753.1*_femtobarns*0.125908   # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
@@ -132,7 +108,7 @@ RECO_SAMPLES = {
         'x_sec' : (
             64468.1*_femtobarns*0.122789 + # (bb -> A0)*(A0->tautau)
             60252.8*_femtobarns*0.123462 + # (bb -> h0)*(h0->tautau)
-            5133.30*_femtobarns*0.125908   # (bb -> HH)*(HH->tautau)
+            5133.30*_femtobarns*0.125908   # (bb -> H0)*(H0->tautau)
         ),
         'legendEntry' : 'bbA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
@@ -150,7 +126,7 @@ RECO_SAMPLES = {
         'x_sec' : (
             35094.3*_femtobarns*0.124340 + # (gg -> A0)*(A0->tautau)
             12089.4*_femtobarns*0.124263 + # (gg -> h0)*(h0->tautau)
-            30851.8*_femtobarns*0.125984   # (gg -> HH)*(HH->tautau)
+            30851.8*_femtobarns*0.125984   # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
@@ -168,7 +144,7 @@ RECO_SAMPLES = {
         'x_sec' : (
             104316*_femtobarns*0.124340 + # (bb -> A0)*(A0->tautau)
             65638.3*_femtobarns*0.124263 + # (bb -> h0)*(h0->tautau)
-            39203.8*_femtobarns*0.125984   # (bb -> HH)*(HH->tautau)
+            39203.8*_femtobarns*0.125984   # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(130) #rightarrow #tau^{+} #tau^{-}',
@@ -187,7 +163,7 @@ RECO_SAMPLES = {
         'x_sec' : (
             3482.30*_femtobarns*0.131356 + # (gg -> A0)*(A0->tautau)
             #12232.9*_femtobarns*9.501279E-02 + # (gg -> h0)*(h0->tautau)
-            3902.27*_femtobarns*0.132576   # (gg -> HH)*(HH->tautau)
+            3902.27*_femtobarns*0.132576   # (gg -> H0)*(H0->tautau)
         ),
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
@@ -215,7 +191,11 @@ RECO_SAMPLES = {
     },
     # Using the unskimmed dataset
     'Ztautau' : {
+        ##'datasetpath' : "/Ztautau/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
+        ##'events_processed' : 2195255,
+        ##'skim_eff' : 0.100,
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2057446,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
@@ -293,9 +273,7 @@ RECO_SAMPLES = {
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-            'data_Mu_132440-135802_Sep17ReReco',
-            'data_Mu_135808_144114_Sep17ReReco',
-            'data_Mu_144461_145761_Sep17ReReco',
+            'data_Mu_132440-145761_Sep17ReReco',
             'data_Mu_145762_147454_Prompt'
         ],
         'legendEntry' : 'DATA',
