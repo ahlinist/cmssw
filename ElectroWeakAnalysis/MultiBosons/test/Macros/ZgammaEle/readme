@@ -27,7 +27,7 @@ How to use:
        The input file is created by Run_ZgSelectorMC.C
        (You may need to modify the input file name)
        You can change luminosity in this file.
-       ex. McLumi=100.
+       ex. McLumi=30.
 
 (B)Run on Data (Event Yield)
    (1) Modify the input dataset in ZgSelectData.h
@@ -56,3 +56,8 @@ For background estimation: (still beta version)
 (E) Modified input file name in plot_Ratio.C
     (Search for Load File Name, modified "MCEvtYield, DataRatio, DataEvtYield")
 (F) root plot_Ratio.C
+ps. please make sure the anti-selection for non-isolated photon are the same in those 3 macro:
+    AntiUEB(anti-selection upper cut in EB),AntiUEE, AntiLEB(anti-selection lower cut in EB),AntiLEE
+    in RunGetRatio_Data.C, Zg_SelectorMC and ZgSelectData.C
+    The selection is AntiLEB < TrkIsoHollowDR04 - 0.001*pT < AntiUEB
+    default is 3 < TrkIsoHollowDR04 - 0.001*pT < 999
