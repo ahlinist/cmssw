@@ -7,6 +7,8 @@ import TauAnalysis.Configuration.tools.factorizationTools as factorizationTools
 import TauAnalysis.Configuration.tools.sysUncertaintyTools as sysUncertaintyTools
 import TauAnalysis.Configuration.tools.switchToData as switchToData
 
+import PhysicsTools.PatAlgos.tools.helpers as patutils
+
 def _requires(args=[], inputs=[]):
     def decorator(func):
         " Decorator to enforce required arguments and allowed input types "
@@ -111,6 +113,18 @@ def _setIsData(process, type, **kwargs):
     if type.lower().find('mc') == -1:
         switchToData.switchToData(process)
 
+@_requires(args=['channel']) 
+def _setTriggerProcess(process, triggerTag, **kwargs):
+    # Set the input tag for the HLT
+    channel = kwargs['channel']
+    sequences_to_modify = [ seq % channel for seq in [ 
+        'producePatTuple%sSpecific', 'select%sEvents', 'analyze%sEvents'] ]
+    for sequence_name in sequences_to_modify:
+        print "o Resetting HLT input tag for sequence:", sequence_name
+        sequence = getattr(process, sequence_name)
+        patutils.massSearchReplaceAnyInputTag(
+            sequence, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
+
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
     'globalTag' : _setGlobalTag,
@@ -123,6 +137,7 @@ _METHOD_MAP = {
     'enableSysUncertainties' : _setEnableSystematics,
     'inputFileType' : _setInputFileType,
     'type' : _setIsData,
+    'hlt' : _setTriggerProcess,
 }
 
 def applyProcessOptions(process, jobInfo, options):

@@ -202,7 +202,8 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X"),
         #'enableSysUncertainties' : False
     },
     # Using the unskimmed dataset
