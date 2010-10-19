@@ -121,5 +121,5 @@ for sample in samples.SAMPLES_TO_ANALYZE:
         'runselection' : sample_info['runselection'],
     }
 
-    submitToGrid(CONFIG_FILE, jobInfo, jobOptions, crabOptions, submit=False)
+    submitToGrid(CONFIG_FILE, jobInfo, jobOptions, crabOptions, submit=True)
 
