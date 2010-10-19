@@ -75,6 +75,7 @@ process.source = cms.Source(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
         'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        #'file:/data1/veelken/CMSSW_3_6_x/skims/pseudoData_Ztautau.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -135,6 +136,15 @@ addPFMet(process, correct = False)
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for changing cut values
+from TauAnalysis.Configuration.tools.changeCut import changeCut
+
+# disable b-tagging for now
+# (--> all events will pass CentralJetVeto/fail CentralJetBtag selection)
+changeCut(process, "selectedPatJetsForAHtoMuTauBtag", "bDiscriminator('trackCountingHighEffBJetTags') < -1000.")
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
