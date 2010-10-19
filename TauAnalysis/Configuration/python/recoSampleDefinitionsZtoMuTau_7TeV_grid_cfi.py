@@ -70,9 +70,9 @@ RECO_SAMPLES = {
     'data_Mu_145762_147116_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'runselection' : '145762 - 147116',
-        'conditions' : 'GR_R_38X_V13::All',
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : '145762 - 147116',
+        'conditions' : 'GR_R_38X_V13::All',        
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
