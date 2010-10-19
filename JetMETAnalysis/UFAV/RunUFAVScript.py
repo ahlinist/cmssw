@@ -53,7 +53,7 @@ def SearchDir(dir=None,dict={},subdircount=0,maxrecursion=2,debug=False):
 
 
 if __name__=="__main__":
-
+    
     parser=OptionParser()
     parser.add_option("-r","--run",
 		      dest="run",
@@ -92,7 +92,7 @@ if __name__=="__main__":
 		      help="alternate help action")
     
     parser.add_option("-b","--basedir",
-		      dest=basedir,
+		      dest="basedir",
 		      default="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/data/OfflineData/Run2010/StreamExpress",
 		      help="Set base directory where files can be found.  Default is /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/data/OfflineData/Run2010/StreamExpress")
     
@@ -113,31 +113,33 @@ if __name__=="__main__":
     if options.runlistfile<>None:
         if not os.path.isfile(options.runlistfile):
             print "ERROR!  Run list file '%s' does not exist!"%options.runlistfile
-    else:
-        myfile=open(options.runlistfile)
-        for i in myfile.readlines:
-            try:
-                run=string.strip(i)
-                run=string.atoi(i)
-                if (run>0):
-                    if run not in rundict.keys():
-                        rundict[run]=None
-                    else:
-                        print "Warning!  Run %i has already been included!"%run
-                elif run<0:
-                    if ref<>None:
-                        print "ERROR!  Trying to specify reference run '%i' when another reference run '%i' has already been chosen!"%(run,ref)
-                        print "Exiting..."
-                        sys.exit()
-                    else:
-                        ref=run
-
+            
+        else:
+            myfile=open(options.runlistfile)
+            for i in myfile.readlines:
+                try:
+                    run=string.strip(i)
+                    run=string.atoi(i)
+                    if (run>0):
+                        if run not in rundict.keys():
+                            rundict[run]=None
+                        else:
+                            print "Warning!  Run %i has already been included!"%run
+                    elif run<0:
+                        if ref<>None:
+                            print "ERROR!  Trying to specify reference run '%i' when another reference run '%i' has already been chosen!"%(run,ref)
+                            print "Exiting..."
+                            sys.exit()
+                        else:
+                            ref=run
+                except:
+                    print "Could not parse line '%s'"%i
+                
     
-
-    # Get directory names
+                        
+    #Get directory names
     rundict=SearchDir(dir=options.basedir,
                       dict=rundict,
                       debug=options.verbose)
     for i in rundict.keys():
         print i, rundict[i]
-        
