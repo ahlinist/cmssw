@@ -1,6 +1,19 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+#--------------------------------------------------------------------------------
+# import configuration parameters of Z --> muon + tau-jet channel
+#
+# WARNING: definitions from analyzeZtoMuTau_cfi.py need to be imported before any
+#          A/H --> muon + tau-jet channel specific configuration parameters are defined;
+#          otherwise the import of analyzeZtoMuTau_cfi.py will **overwrite**
+#          A/H --> muon + tau-jet channel specific definitions
+#         (due to the fact that e.g. histogram managers of 'ZtoMuTau' channel
+#          and 'AHtoMuTau' channel have the same name '...ForMuTau')
+#
+from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
+#--------------------------------------------------------------------------------
+
 # import config for histogram manager filling information about phase-space simulated in Monte Carlo sample
 from TauAnalysis.Core.genPhaseSpaceEventInfoHistManager_cfi import *
 
@@ -37,7 +50,7 @@ from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForMuTau = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForMuTau')
 diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginType = cms.string('ZllHypothesisMuTauHistManager')
-diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = cms.InputTag('')
+diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses')
 diTauCandidateZmumuHypothesisHistManagerForMuTau.dqmDirectory_store = cms.string('DiTauCandidateZmumuHypothesisQuantities')
 
 # import config for Zmumu veto histogram manager
@@ -93,23 +106,24 @@ from TauAnalysis.Core.dataBinner_cfi import *
 # import config for binning results
 # used to estimate acceptance of event selection
 from TauAnalysis.Core.modelBinner_cfi import *
-modelBinnerForMuTauGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
-modelBinnerForMuTauGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc')
-modelBinnerForMuTauGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenAHtoMuTau")
-modelBinnerForMuTauGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance")
-modelBinnerForMuTauGenTauLeptonPairAcc.dqmDirectory_store = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc')
-modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
-modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc')
-modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance")
-modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isRecAHtoMuTauCentralJetVeto")
-modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc.dqmDirectory_store = \
-  cms.string('modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc')
-modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
-modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc')
-modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance")
-modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isRecAHtoMuTauCentralJetBtag")
-modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc.dqmDirectory_store = \
-  cms.string('modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc')
+modelBinnerForMuTauGenTauLeptonPairAcc = modelBinner.clone(
+    pluginName = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc'),
+    srcGenFlag = cms.InputTag("isGenAHtoMuTau"),
+    srcRecFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance"),
+    dqmDirectory_store = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc')
+)
+modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc = modelBinner.clone(
+    pluginName = cms.string('modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc'),
+    srcGenFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance"),
+    srcRecFlag = cms.InputTag("isRecAHtoMuTauCentralJetVeto"),
+    dqmDirectory_store = cms.string('modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc')
+)    
+modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc = modelBinner.clone(
+    pluginName = cms.string('modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc'),
+    srcGenFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance"),
+    srcRecFlag = cms.InputTag("isRecAHtoMuTauCentralJetBtag"),
+    dqmDirectory_store = cms.string('modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc')
+)    
 
 # import config for binning results
 # used to estimate systematic uncertainties
@@ -195,8 +209,6 @@ diTauLeg1ChargeBinGridHistManager = cms.PSet(
 #--------------------------------------------------------------------------------
 # define event selection criteria
 #--------------------------------------------------------------------------------
-
-from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
 # di-tau candidate selection
 evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto = evtSelDiTauCandidateForMuTauAntiOverlapVeto.clone(
@@ -287,7 +299,7 @@ muTauEventDump = cms.PSet(
         ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
         )
     ),
-    muTauZmumuHypothesisSource = cms.InputTag(''),
+    muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypotheses'),
     jetSource = cms.InputTag('selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'),
     caloMEtSource = cms.InputTag('patMETs'),
