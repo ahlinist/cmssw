@@ -124,6 +124,9 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
         sequence = getattr(process, sequence_name)
         patutils.massSearchReplaceAnyInputTag(
             sequence, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
+    process.patTrigger.processName = triggerTag.getProcessName()
+    process.patTriggerEvent.processName = triggerTag.getProcessName()
+
 
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
