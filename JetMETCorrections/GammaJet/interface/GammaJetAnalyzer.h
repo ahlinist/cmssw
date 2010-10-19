@@ -5,7 +5,8 @@
 #include <vector>
 
 // user include files
-#include "FWCore/ParameterSet/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
