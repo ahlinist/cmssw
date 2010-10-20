@@ -90,11 +90,11 @@ if __name__=="__main__":
 		      action="store_true",
 		      default=False,
 		      help="alternate help action")
-    parser.add_options("-t","--tar",
-                       dest="tar",
-                       action="store_true",
-                       default=False,
-                       help="created tarball from output")
+    parser.add_option("-t","--tar",
+                      dest="tar",
+                      action="store_true",
+                      default=False,
+                      help="created tarball from output")
     
     parser.add_option("-b","--basedir",
 		      dest="basedir",
