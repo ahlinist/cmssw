@@ -226,7 +226,7 @@ if __name__=="__main__":
                       dest="histmode",
                       default=False,
                       action="store_true",
-                      help="If set active, will display history plots as TH1 histograms.  (If not active, plots will be generated as TGraphs.)"
+                      help="If set active, will display history plots as TH1 histograms.  (If not active, plots will be generated as TGraphs.)")
     parser.add_option("-H","--Help",
                       dest="Help",
                       action="store_true",
