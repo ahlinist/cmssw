@@ -31,8 +31,8 @@ DQMSimpleFileSaver::DQMSimpleFileSaver(const edm::ParameterSet& cfg)
     typedef std::vector<std::string> vstring;
     vstring outputCommands = cfg.getParameter<vstring>("outputCommands");
 
-    TPRegexp validOutputCommandPattern_line("keep|drop\\s+[a-zA-Z0-9\\*/]+");
-    TPRegexp validOutputCommandPattern_dqmDirectory("(keep|drop)\\s+([a-zA-Z0-9\\*/]+)");
+    TPRegexp validOutputCommandPattern_line("keep|drop\\s+[a-zA-Z0-9_\\*/]+");
+    TPRegexp validOutputCommandPattern_dqmDirectory("(keep|drop)\\s+([a-zA-Z0-9_\\*/]+)");
 
     for ( vstring::const_iterator outputCommand = outputCommands.begin();
 	  outputCommand != outputCommands.end(); ++outputCommand ) {
@@ -56,9 +56,9 @@ DQMSimpleFileSaver::DQMSimpleFileSaver(const edm::ParameterSet& cfg)
 	
 	std::string dqmDirectory = ((TObjString*)subStrings->At(2))->GetString().Data();
 	int errorFlag = 0;
-	std::string dqmDirectory_regexp = replace_string(dqmDirectory, "*", "[a-zA-Z0-9/]*", 0, 1000, errorFlag);
+	std::string dqmDirectory_regexp = replace_string(dqmDirectory, "*", "[a-zA-Z0-9_/]*", 0, 1000, errorFlag);
 //--- match the names of all DQM subdirectories also
-	dqmDirectory_regexp += "[a-zA-Z0-9/]*";
+	dqmDirectory_regexp += "[a-zA-Z0-9_/]*";
 	//std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp << std::endl;
 
 	if ( !outputCommands_ ) outputCommands_ = new std::vector<outputCommandEntry>();
@@ -113,7 +113,9 @@ void DQMSimpleFileSaver::endJob()
 //    and save MonitorElements contained in temporary directory into ROOT file only;
 //    else save all MonitorElements into ROOT file
   if ( outputCommands_ ) {
+    //std::cout << "--> moving MonitorElements to temporary directory" << std::endl;
     dqmCopyRecursively(dqmStore, dqmRootDirectory, dqmDirectory_temp, 1.0, 0., 1, true);
+    //std::cout << "--> saving MonitorElements in temporary directory" << std::endl;
     dqmCopyRecursively(dqmStore, dqmDirectory_temp, dqmRootDirectory, 1.0, 0., 1, false, outputCommands_);
 
     dqmStore.setCurrentFolder(dqmRootDirectory);
