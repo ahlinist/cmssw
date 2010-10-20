@@ -163,9 +163,8 @@ topElectronsAntiIso = topElectrons.clone(src = cms.InputTag("cleanPatElectrons")
 preselectedMuonsAntiIso = topMuons.clone()
 preselectedElectronsAntiIso = topElectrons.clone()
 
-topJetsAntiIso = topJets.clone(muSrc = cms.InputTag("topMuonsAntiIso"),eleSrc= cms.InputTag("topElectronsAntiIso"))
+topJetsAntiIso = topJets.clone()
 
 bJetsAntiIso = bJets.clone(src=cms.InputTag('topJetsAntiIso'))
 antiBJetsAntiIso = antiBJets.clone(src=cms.InputTag('topJetsAntiIso'))
 forwardJetsAntiIso = forwardJets.clone(src=cms.InputTag('topJetsAntiIso'))
-
