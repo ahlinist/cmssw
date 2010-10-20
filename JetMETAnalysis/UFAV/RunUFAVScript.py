@@ -146,7 +146,32 @@ if __name__=="__main__":
     refdict=SearchDir(dir=options.basedir,
                       dict=refdict,
                       debug=options.verbose)
+    print "The following runs have been found:"
     for i in rundict.keys():
         print i, rundict[i]
+    print "The following reference will be used:"
     for r in refdict.keys():
         print r, refdict[r]
+
+    refrun=refdict.keys()[0]
+
+    runs=rundict.keys()
+    runs.sort()
+
+    for r in runs:
+        if runs[r]==None:
+            print "ERROR!  No file found for run #%i!"%r
+            continue
+        stream=string.split(runs[r],"/")
+        if len(string.split)>2:
+            stream=stream[-3]
+        else:
+            stream="UnknownStream"
+        cmd = "./bin/ExecuteDQM %s %s %i %i Run%i_vs_Run%i_%s"%(runs[r],
+                                                                refdict[refrun],
+                                                                r,
+                                                                refrun,
+                                                                r,
+                                                                refrun,
+                                                                stream)
+        print cmd
