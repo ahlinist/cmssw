@@ -90,6 +90,11 @@ if __name__=="__main__":
 		      action="store_true",
 		      default=False,
 		      help="alternate help action")
+    parser.add_options("-t","--tar",
+                       dest="tar",
+                       action="store_true",
+                       default=False,
+                       help="created tarball from output")
     
     parser.add_option("-b","--basedir",
 		      dest="basedir",
@@ -158,6 +163,7 @@ if __name__=="__main__":
     runs=rundict.keys()
     runs.sort()
 
+    created_dirs=[]
     for r in runs:
         if rundict[r]==None:
             print "ERROR!  No file found for run #%i!"%r
@@ -176,3 +182,13 @@ if __name__=="__main__":
                                                                 stream)
         print cmd
         os.system(cmd)
+        if os.path.isdir("Run%i_vs_Run%i_%s"%(r,refrun,stream)):
+            created_dirs.append("Run%i_vs_Run%i_%s"%(r,refrun,stream))
+
+    if options.tar:
+        cmd="tar cvzf  RunOutput.tar.gz"
+        for i in created_dirs:
+            cmd=cmd+" %s"%i
+        os.system(cmd)
+
+        # Next, copy tarball?
