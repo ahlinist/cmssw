@@ -101,7 +101,9 @@ if __name__=="__main__":
         parser.print_help()
         sys.exit()
 
-    ref=options.ref
+    refdict={}
+    if options.ref<>None:
+        refdict[options.ref]=None
     runs=options.run
     rundict={}
     for r in runs:
@@ -126,12 +128,12 @@ if __name__=="__main__":
                         else:
                             print "Warning!  Run %i has already been included!"%run
                     elif run<0:
-                        if ref<>None:
-                            print "ERROR!  Trying to specify reference run '%i' when another reference run '%i' has already been chosen!"%(run,ref)
+                        if len(refdict.keys())>0:
+                            print "ERROR!  Trying to specify reference run '%i' when another reference  '%s' has already been chosen!"%(run,refdict)
                             print "Exiting..."
                             sys.exit()
                         else:
-                            ref=run
+                            refdict[abs(run)]=None
                 except:
                     print "Could not parse line '%s'"%i
                 
@@ -141,5 +143,10 @@ if __name__=="__main__":
     rundict=SearchDir(dir=options.basedir,
                       dict=rundict,
                       debug=options.verbose)
+    refdict=SearchDir(dir=options.basedir,
+                      dict=refdict,
+                      debug=options.verbose)
     for i in rundict.keys():
         print i, rundict[i]
+    for r in refdict.keys():
+        print r, refdict[r]
