@@ -40,7 +40,6 @@ void dqmDumpMonitorElement(DQMStore&, const std::string&, const std::string&, co
 
 const std::string dqmSeparator = "/";
 const std::string dqmSeparator2 = std::string(dqmSeparator).append(dqmSeparator);
-//const std::string dqmRootDirectory = std::string(dqmSeparator).append("DQMData").append(dqmSeparator);
 const std::string dqmRootDirectory = "";
 
 const std::string meOptionsSeparator = "#";
