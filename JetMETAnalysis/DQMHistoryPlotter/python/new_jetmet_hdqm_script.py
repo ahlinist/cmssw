@@ -7,7 +7,25 @@ from optparse import OptionParser
 import MonitorElementsToCheck as DQMME
 
 
-def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False):
+class RunValue:
+
+    def __init__(self,run=0,value=0,error=0):
+        self.run=run
+        self.value=value
+        self.error=error
+
+
+def SortRuns(a,b):
+    if (a.run>b.run):
+        return 1
+    elif (a.run<b.run):
+        return -1
+    else:
+        return 0
+
+
+def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False,
+                histmode=False):
     ''' This generates the history histograms, using all the run files in runlistdict, and all the histograms defined in DQMME.dqmMEs.'''
     if not os.path.isdir(outputdir):
         os.mkdir(outputdir)
@@ -73,14 +91,28 @@ def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False):
       for j in range(len(runlistdict.keys())):
         y.append(y_arrays_transposed[j][i])
         ey.append(ey_arrays_transposed[j][i])
-      c = TCanvas("c");
-      c.cd();
+      c = TCanvas("c")
+      c.cd()
 
-      graph = TGraphErrors(len(x_arrays),array('d',x_arrays),array('d',y),array('d',ex_arrays),array('d',ey))
-      graph.SetTitle(DQMME.dqmMEs[i].title)
-      graph.GetXaxis().SetTitle("Run Number")
-      #graph.GetXaxis().LabelsOption("v")
-            
+      if histMode==False:
+          graph = TGraphErrors(len(x_arrays),array('d',x_arrays),array('d',y),array('d',ex_arrays),array('d',ey))
+          graph.SetTitle(DQMME.dqmMEs[i].title)
+          graph.GetXaxis().SetTitle("Run Number")
+          #graph.GetXaxis().LabelsOption("v")
+
+      else:
+          runs=[]
+          for i in range(len(x_arrays)):
+              runs.append(RunValue(run=x_arrays[i],value=y[i],error=ey[i]))
+          runs.sort(SortRuns)
+          graph=TH1F(len(runs),runs[0].run-0.5,runs[-1].run+0.5)
+          graph.GetXaxis().SetTitle("Run Number")
+          graph.GetXaxis().LabelsOption("v")
+          graph.GetXaxis().SetBinLabel(i,"%i"%runs[i].run)
+          for i in range(len(runs)):
+              graph.SetBinContent(i+1, runs[i].value)
+              graph.SetBinError(i+1, runs[i].error)
+          
       graph.GetYaxis().SetTitle(DQMME.dqmMEs[i].ytitle)
       graph.SetMarkerStyle(20)
       graph.SetMarkerColor(kRed)
@@ -190,6 +222,11 @@ if __name__=="__main__":
                       default=False,
                       action="store_true",
                       help="Turn on debugging info")
+    parser.add_option("-s","--histmode",
+                      dest="histmode",
+                      default=False,
+                      action="store_true",
+                      help="If set active, will display history plots as TH1 histograms.  (If not active, plots will be generated as TGraphs.)"
     parser.add_option("-H","--Help",
                       dest="Help",
                       action="store_true",
@@ -317,4 +354,5 @@ if __name__=="__main__":
     print(sortedkeys)
     MainProgram(runlistdict=runlistdict,
                 outputdir=outputdir,
+                histmode=options.histmode,
                 debug=options.verbose)
