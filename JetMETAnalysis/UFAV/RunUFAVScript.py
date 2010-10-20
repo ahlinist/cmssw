@@ -175,3 +175,4 @@ if __name__=="__main__":
                                                                 refrun,
                                                                 stream)
         print cmd
+        os.system(cmd)
