@@ -159,15 +159,15 @@ if __name__=="__main__":
     runs.sort()
 
     for r in runs:
-        if runs[r]==None:
+        if rundict[r]==None:
             print "ERROR!  No file found for run #%i!"%r
             continue
-        stream=string.split(runs[r],"/")
+        stream=string.split(rundict[r],"/")
         if len(string.split)>2:
             stream=stream[-3]
         else:
             stream="UnknownStream"
-        cmd = "./bin/ExecuteDQM %s %s %i %i Run%i_vs_Run%i_%s"%(runs[r],
+        cmd = "./bin/ExecuteDQM %s %s %i %i Run%i_vs_Run%i_%s"%(rundict[r],
                                                                 refdict[refrun],
                                                                 r,
                                                                 refrun,
