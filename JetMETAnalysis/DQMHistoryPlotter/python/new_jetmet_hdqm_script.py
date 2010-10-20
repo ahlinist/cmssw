@@ -105,7 +105,11 @@ def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False,
           for i in range(len(x_arrays)):
               runs.append(RunValue(run=x_arrays[i],value=y[i],error=ey[i]))
           runs.sort(SortRuns)
-          graph=TH1F(len(runs),runs[0].run-0.5,runs[-1].run+0.5)
+          graph=TH1F(DQMME.dqmMEs[i].title,
+                     "%s_%i_to_%i"%(DQMME.dqmMEs[i].title,
+                                    runs[0].run,
+                                    runs[-1].run),
+                     len(runs),runs[0].run-0.5,runs[-1].run+0.5)
           graph.GetXaxis().SetTitle("Run Number")
           graph.GetXaxis().LabelsOption("v")
           graph.GetXaxis().SetBinLabel(i,"%i"%runs[i].run)
