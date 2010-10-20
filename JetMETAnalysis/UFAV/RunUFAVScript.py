@@ -163,7 +163,7 @@ if __name__=="__main__":
             print "ERROR!  No file found for run #%i!"%r
             continue
         stream=string.split(rundict[r],"/")
-        if len(string.split)>2:
+        if len(stream)>2:
             stream=stream[-3]
         else:
             stream="UnknownStream"
