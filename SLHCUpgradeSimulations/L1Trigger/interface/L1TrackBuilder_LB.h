@@ -369,11 +369,16 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
   }
   else if (whichOne < 0) {
     whichOne = 0;
-    scaleFactor = 0;
+    //scaleFactor = 0;
+    scaleFactor = (ptSeed - aPtRef.at(whichOne)) / (aPtRef.at(whichOne+1) - aPtRef.at(whichOne));
+    /// Here we keep linear interpolation also below 3 GeV/c Pt, using the same slope as
+    /// in the first interval between 3 and 5 GeV/c
   }
   else {
     scaleFactor = (ptSeed - aPtRef.at(whichOne)) / (aPtRef.at(whichOne+1) - aPtRef.at(whichOne));
   }
+  
+  //std::cerr<< "open window\t" << ptSeed << "\t" << whichOne << "\t" << scaleFactor << std::endl;
   
   /// Build names.
   std::ostringstream phiBiasName;
@@ -402,7 +407,7 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
 
   std::vector<double> aBiasPhiRef;
   std::vector<double> aWinPhiRef;
-  double aWinZRef;
+  std::vector<double> aWinZRef;
 
   /// Get the charge of the Particle
   /// NOTE the minus sign is after 22nd May debugging
@@ -411,6 +416,7 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
   /// Load Tables with constraints
   for (int v=0; v<10; v++) {
     for (int m=0; m<5; m++) {
+      /// Reject bad Seed SL/Target L combinations and keep default
       if (m==0 && v<2) continue;
       if (m==1 && (v==2 || v==3)) continue;
       if (m>1 && v>3) continue;
@@ -424,57 +430,13 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
 
       aBiasPhiRef = aConfig.getParameter< std::vector<double> >(phiBiasName1.str().c_str());
       aWinPhiRef = aConfig.getParameter< std::vector<double> >(phiWinName1.str().c_str());
-      aWinZRef = aConfig.getParameter< double >(zWinName1.str().c_str());
+      aWinZRef = aConfig.getParameter< std::vector<double> >(zWinName1.str().c_str());
       
       biasPhi[m][v] = trkQ*aBiasPhiRef.at(whichOne)+scaleFactor*(aBiasPhiRef.at(whichOne+1)-aBiasPhiRef.at(whichOne));
       windowsPhi[m][v] = aWinPhiRef.at(whichOne)+scaleFactor*(aWinPhiRef.at(whichOne+1)-aWinPhiRef.at(whichOne));
-      windowsZ[m][v] = aWinZRef;
+      windowsZ[m][v] = aWinZRef.at(whichOne)+scaleFactor*(aWinZRef.at(whichOne+1)-aWinZRef.at(whichOne));
     }
   }
-
-  /*
-  /// Load tables with constraints
-  windowsPhi[0][2] = 0.45e-3;       windowsZ[0][2] = 0.35;
-  windowsPhi[0][3] = 0.50e-3;       windowsZ[0][3] = 0.45;
-  windowsPhi[0][4] = 0.56e-3;       windowsZ[0][4] = 0.45;
-  windowsPhi[0][5] = 0.65e-3;       windowsZ[0][5] = 0.45;
-  windowsPhi[0][6] = 0.70e-3;       windowsZ[0][6] = 0.45;
-  windowsPhi[0][7] = 0.85e-3;       windowsZ[0][7] = 0.55;
-  windowsPhi[0][8] = 0.36e-3;       windowsZ[0][8] = 1.15;
-  windowsPhi[0][9] = 0.39e-3;       windowsZ[0][9] = 1.25;
-    windowsPhi[1][0] = 0.50e-3;       windowsZ[1][0] = 0.45;
-    windowsPhi[1][1] = 0.45e-3;       windowsZ[1][1] = 0.35;
-    windowsPhi[1][4] = 0.40e-3;       windowsZ[1][4] = 0.25;
-    windowsPhi[1][5] = 0.45e-3;       windowsZ[1][5] = 0.25;
-    windowsPhi[1][6] = 0.85e-3;       windowsZ[1][6] = 0.35;
-    windowsPhi[1][7] = 1.00e-3;       windowsZ[1][7] = 0.35;
-    windowsPhi[1][8] = 1.10e-3;       windowsZ[1][8] = 1.05;
-    windowsPhi[1][9] = 1.30e-3;       windowsZ[1][9] = 1.05;
-  windowsPhi[2][0] = 0.50e-3;       windowsZ[2][0] = 0.35;
-  windowsPhi[2][1] = 0.46e-3;       windowsZ[2][1] = 0.30;
-  windowsPhi[2][2] = 0.36e-3;       windowsZ[2][2] = 0.22;
-  windowsPhi[2][3] = 0.34e-3;       windowsZ[2][3] = 0.17;
-  //windowsPhi[2][6] = 0.36e-3;       windowsZ[2][6] = 0.25; /// INCOMPATIBILE GEOMETRY
-  //windowsPhi[2][7] = 0.39e-3;       windowsZ[2][7] = 0.25;
-  //windowsPhi[2][8] = 0.36e-3;       windowsZ[2][8] = 0.25;
-  //windowsPhi[2][9] = 0.39e-3;       windowsZ[2][9] = 0.25;  
-    windowsPhi[3][0] = 0.60e-3;       windowsZ[3][0] = 0.35;
-    windowsPhi[3][1] = 0.58e-3;       windowsZ[3][1] = 0.30;
-    windowsPhi[3][2] = 0.35e-3;       windowsZ[3][2] = 0.22;
-    windowsPhi[3][3] = 0.32e-3;       windowsZ[3][3] = 0.18;
-    //windowsPhi[3][4] = 0.36e-3;       windowsZ[3][4] = 0.25; /// INCOMPATIBILE GEOMETRY
-    //windowsPhi[3][5] = 0.39e-3;       windowsZ[3][5] = 0.25;
-    //windowsPhi[3][8] = 0.36e-3;       windowsZ[3][8] = 0.25;
-    //windowsPhi[3][9] = 0.39e-3;       windowsZ[3][9] = 0.25;
-  windowsPhi[4][0] = 0.80e-3;       windowsZ[4][0] = 1.25;
-  windowsPhi[4][1] = 0.75e-3;       windowsZ[4][1] = 1.15;
-  windowsPhi[4][2] = 0.55e-3;       windowsZ[4][2] = 1.05;
-  windowsPhi[4][3] = 0.50e-3;       windowsZ[4][3] = 1.05;
-  //windowsPhi[4][4] = 0.36e-3;       windowsZ[4][4] = 0.25; /// INCOMPATIBILE GEOMETRY FOR BACKPROP TO SL 2 and 3
-  //windowsPhi[4][5] = 0.39e-3;       windowsZ[4][5] = 0.25;
-  //windowsPhi[4][6] = 0.36e-3;       windowsZ[4][6] = 0.25;
-  //windowsPhi[4][7] = 0.39e-3;       windowsZ[4][7] = 0.25;
-  */
 
   /// Get Seed properties
   /// Stubs of this Tracklet, and Local ones
@@ -686,8 +648,8 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
         /// NOTE: DO NOT CHECK Z consistency of seed and brick tracklets
         /// information not available for Stubs
         /// CHECK MATCH
-        if ( dZ < windowsZ[dSidx][k] &&
-             fabs(dPhi - biasPhi[dSidx][k]) < windowsPhi[dSidx][k] ) isMatched = true;
+        if ( dZ <= windowsZ[dSidx][k] &&
+             fabs(dPhi - biasPhi[dSidx][k]) <= windowsPhi[dSidx][k] ) isMatched = true;
 
         /// SAVE THE PAIR LATER ON, IF BOTH STUBS ARE WITHIN LIMITS
       } /// End of makeHit acceptance

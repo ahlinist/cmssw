@@ -455,7 +455,7 @@ template<>
     }
     else {
           int innerSimTrackId = innerStub->trackID(); // = -1;
-          int outerSimTrackId = innerStub->trackID(); // = -1;
+          int outerSimTrackId = outerStub->trackID(); // = -1;
           /*
           cmsUpgrades::StackedTrackerDetId innerId = (*innerStub).Id();
           cmsUpgrades::StackedTrackerDetId outerId = (*outerStub).Id();
@@ -482,6 +482,7 @@ template<>
             }
           }
           */
+
           if (!(innerSimTrackId!=-1 && innerSimTrackId!=-1 && innerSimTrackId==outerSimTrackId)) {
             abc.second = 2;
             abc.first = -9999;
