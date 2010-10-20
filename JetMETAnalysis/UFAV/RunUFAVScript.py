@@ -123,7 +123,7 @@ if __name__=="__main__":
             
         else:
             myfile=open(options.runlistfile)
-            for i in myfile.readlines:
+            for i in myfile.readlines():
                 try:
                     run=string.strip(i)
                     run=string.atoi(i)
