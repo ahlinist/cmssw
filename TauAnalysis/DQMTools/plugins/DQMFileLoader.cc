@@ -203,7 +203,6 @@ void DQMFileLoader::endJob()
     return;
   }
 
-
 //--- check that inputFiles exist;
 //    store list of directories existing in inputFile,
 //    in order to separate histogram directories existing in the inputFile from directories existing in DQMStore
