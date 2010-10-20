@@ -94,7 +94,7 @@ def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False,
       c = TCanvas("c")
       c.cd()
 
-      if histMode==False:
+      if histmode==False:
           graph = TGraphErrors(len(x_arrays),array('d',x_arrays),array('d',y),array('d',ex_arrays),array('d',ey))
           graph.SetTitle(DQMME.dqmMEs[i].title)
           graph.GetXaxis().SetTitle("Run Number")
