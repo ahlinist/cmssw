@@ -386,7 +386,7 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 //--- check if current inputDirectory is to be kept or dropped
   bool copyMonitorElements = true;
   if ( outputCommands ) {
-    TString inputDirectory_tstring = inputDirectory.data();
+    TString outputDirectory_tstring = outputDirectory.data();
 
     for ( std::vector<outputCommandEntry>::iterator outputCommand = outputCommands->begin();
 	  outputCommand != outputCommands->end(); ++outputCommand ) {
@@ -396,10 +396,10 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
       TPRegexp& dqmDirectory_regexp = outputCommand->second;
       //std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp.GetPattern() << std::endl;
 
-      //std::cout << "--> dqmDirectory_regexp.Match(inputDirectory_tstring) = " 
-      //          << dqmDirectory_regexp.Match(inputDirectory_tstring) << std::endl;
+      //std::cout << "--> dqmDirectory_regexp.Match(outputDirectory_tstring) = " 
+      //          << dqmDirectory_regexp.Match(outputDirectory_tstring) << std::endl;
 
-      if ( dqmDirectory_regexp.Match(inputDirectory_tstring) == 1 ) {
+      if ( dqmDirectory_regexp.Match(outputDirectory_tstring) == 1 ) {
 	if ( statement == kKeep ) copyMonitorElements = true;
 	if ( statement == kDrop ) copyMonitorElements = false;
       }
@@ -408,8 +408,10 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 
 //--- copy all monitor elements in current inputDirectory to the outputDirectory
   bool meInput_copied = false;
-  if ( copyMonitorElements ) {
+  if ( copyMonitorElements ) {    
+    dqmStore.setCurrentFolder(inputDirectory);
     std::vector<std::string> meNames = dqmStore.getMEs();
+    //std::cout << " #meNames = " << meNames.size() << std::endl;
     for ( std::vector<std::string>::const_iterator meName = meNames.begin();
 	  meName != meNames.end(); ++meName ) {
       dqmCopyMonitorElement(dqmStore, inputDirectory, *meName, outputDirectory, *meName, scaleFactor, scaleFactorErr, mode);
