@@ -8,27 +8,29 @@ import FWCore.ParameterSet.Config as cms
 ### HLT filter ###
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 hltFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-hltFilter.HLTPaths = ['HLT_Mu9','HLT_Ele15_LW_L1R']
+hltFilter.HLTPaths = ['HLT_Mu9']#,'HLT_Ele15_LW_L1R']
 
-import HLTrigger.HLTfilters.hltHighLevelDev_cfi
-hltFilterDev = HLTrigger.HLTfilters.hltHighLevelDev_cfi.hltHighLevelDev.clone()
-hltFilterDev.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-hltFilterDev.andOr = True
-hltFilterDev.HLTPaths = ('HLT_Mu9','HLT_Mu9')
-hltFilterDev.HLTPathsPrescales = cms.vuint32(1,1)
+#import HLTrigger.HLTfilters.hltHighLevelDev_cfi
+#hltFilterDev = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#= HLTrigger.HLTfilters.hltHighLevelDev_cfi.hltHighLevelDev.clone()
+#hltFilterDev.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+#hltFilterDev.andOr = True
+#hltFilterDev.HLTPaths = ('HLT_Mu9','HLT_Mu9')
+#hltFilterDev.HLTPathsPrescales = cms.vuint32(1,1)
 
-hltFilterPhoton20 = cms.EDFilter("HLTSummaryFilter",
+hltFilterEle = cms.EDFilter("HLTSummaryFilter",
                                  summary = cms.InputTag("hltTriggerSummaryAOD","","HLT"),
                                  member = cms.InputTag("hltL1NonIsoHLTNonIsoSinglePhotonEt10HcalIsolFilter","","HLT"),
                                  cut = cms.string("pt> 20"),
-                                 minN = cms.int32(1),
+                                 minN = cms.int32(0),
+                                 filter = cms.untracked.bool(False)
                                  )
 
 #####Primary vertex filter
 PVFilter = cms.EDFilter(
     'VertexSelector',
     src = cms.InputTag("offlinePrimaryVertices"),
-    cut = cms.string('!isFake & position().Rho() < 2.0 & abs(z) < 15 & ndof < 4.')
+    cut = cms.string('!isFake & position().Rho() < 2.0 & abs(z) < 24 & ndof < 4.')
     )
 
 
