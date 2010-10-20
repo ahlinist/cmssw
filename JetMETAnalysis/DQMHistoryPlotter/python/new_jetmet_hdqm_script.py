@@ -102,20 +102,29 @@ def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False,
 
       else:
           runs=[]
-          for i in range(len(x_arrays)):
-              runs.append(RunValue(run=x_arrays[i],value=y[i],error=ey[i]))
-          runs.sort(SortRuns)
+          for z in range(len(x_arrays)):
+              runs.append(RunValue(run=x_arrays[z],value=y[z],error=ey[z]))
+          #runs.sort(SortRuns)
+          c.SetBottomMargin(0.3)
+          
           graph=TH1F(DQMME.dqmMEs[i].title,
                      "%s_%i_to_%i"%(DQMME.dqmMEs[i].title,
                                     runs[0].run,
                                     runs[-1].run),
                      len(runs),runs[0].run-0.5,runs[-1].run+0.5)
           graph.GetXaxis().SetTitle("Run Number")
+          graph.GetXaxis().SetTitleSize(0.03)
+          graph.GetYaxis().SetTitleSize(0.03)
+          graph.GetYaxis().SetLabelSize(0.03)
+          graph.GetXaxis().SetTitleOffset(2.5)
+          graph.GetYaxis().SetTitleOffset(2.)
+          
+          for z in range(len(runs)):
+              graph.SetBinContent(z+1, runs[z].value)
+              graph.SetBinError(z+1, runs[z].error)
+              label="%i"%runs[z].run
+              graph.GetXaxis().SetBinLabel(z+1,label)
           graph.GetXaxis().LabelsOption("v")
-          graph.GetXaxis().SetBinLabel(i,"%i"%runs[i].run)
-          for i in range(len(runs)):
-              graph.SetBinContent(i+1, runs[i].value)
-              graph.SetBinError(i+1, runs[i].error)
           
       graph.GetYaxis().SetTitle(DQMME.dqmMEs[i].ytitle)
       graph.SetMarkerStyle(20)
@@ -124,8 +133,10 @@ def MainProgram(runlistdict={},outputdir="DQMOutput",debug=False,
           graph.SetMinimum(DQMME.dqmMEs[i].ymin)
       if DQMME.dqmMEs[i].ymax<>None:
           graph.SetMaximum(DQMME.dqmMEs[i].ymax)
-      graph.Draw("ap")
-
+      if histmode==False:
+          graph.Draw("ap")
+      else:
+          graph.Draw()
       c.SaveAs("%s.%s"%(os.path.join(outputdir,DQMME.dqmMEs[i].title), DQMME.dqmMEs[i].format))
 
       del c
