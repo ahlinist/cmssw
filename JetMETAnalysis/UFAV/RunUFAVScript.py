@@ -174,6 +174,13 @@ if __name__=="__main__":
                 except:
                     print "Could not parse line '%s'"%i
                 
+
+     if options.runRangeMode==True:
+         myruns=rundict.keys()
+         myruns.sort()
+         for i in range(myruns[0],myruns[-1]+1):
+             if i not in myruns:
+                 rundict[i]=None
     
                         
     #Get directory names
