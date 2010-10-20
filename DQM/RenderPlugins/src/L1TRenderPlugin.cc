@@ -454,14 +454,42 @@ private:
 	      obj->GetXaxis()->SetTitle("Time (sec)");
 	    }
 	}
-      //  if( o.name.find( "dttf_p_q_" )  != std::string::npos) {
-      //     //dqm::utils::reportSummaryMapPalette(obj);
-      //     //obj->SetOption("colz");
-      //     //obj->SetTitle("L1T Report Summary Map");
 
-      //     obj->GetXaxis()->SetNdivisions(1);
-      //     return;
-      //   }
+      /// DTTF section
+      if ( o.name.find("dttf_") != std::string::npos ) {
+
+	obj->GetYaxis()->SetRangeUser(0,
+				      obj->GetBinContent(obj->GetMaximumBin() ) * 1.1 );
+
+	if ( o.name.find("bx") != std::string::npos ) {
+
+	  obj->GetXaxis()->SetNdivisions(3);
+	  return;
+
+	} else if ( o.name.find("_q_") != std::string::npos ) {
+
+	  obj->GetXaxis()->SetNdivisions(2);
+	  return;
+
+
+	} else if ( ( o.name.find("nTracks_wh" ) != std::string::npos ) ||
+		    ( o.name.find("eta" ) != std::string::npos ) ) {
+	  obj->GetXaxis()->SetNdivisions(12, true);
+	  obj->GetXaxis()->CenterLabels();
+	  return;
+	}
+
+	//  if( o.name.find( "dttf_p_q_" )  != std::string::npos) {
+	//     //dqm::utils::reportSummaryMapPalette(obj);
+	//     //obj->SetOption("colz");
+	//     //obj->SetTitle("L1T Report Summary Map");
+
+	//     obj->GetXaxis()->SetNdivisions(1);
+	//     return;
+	//   }
+      }
+
+
       // Code used in SiStripRenderPlugin -- do we want similar defaults?
 
       /*
@@ -617,86 +645,85 @@ private:
         return;      
       }
 
-
-      if(o.name.find("Summary") != std::string::npos)
-      {
-        obj->GetXaxis()->CenterLabels();
-        obj->GetYaxis()->CenterLabels();
-
-        obj->GetXaxis()->SetTitle("wheel");
-        obj->GetXaxis()->SetBinLabel(1,"N2");
-        obj->GetXaxis()->SetBinLabel(2,"N1");
-        obj->GetXaxis()->SetBinLabel(3,"N0");
-        obj->GetXaxis()->SetBinLabel(4,"P0");
-        obj->GetXaxis()->SetBinLabel(5,"P1");
-        obj->GetXaxis()->SetBinLabel(6,"P2");
+      /// DTTF section
+      if ( o.name.find("dttf") != std::string::npos ) {
 
         gPad->SetGrid(1,1);
-        gPad->SetBottomMargin(0.1);
-        gPad->SetLeftMargin(0.12);
-        gPad->SetRightMargin(0.12);
-        //obj->SetMinimum(-0.00000001);
-        gStyle->SetOptStat(0);
+	gStyle->SetOptStat(0);
+
+ 	if ( o.name.find("bx" ) != std::string::npos ) {
+
+ 	  obj->GetYaxis()->CenterLabels();
+	  obj->GetYaxis()->SetNdivisions(3, true);
+
+	  if ( o.name.find("wh") != std::string::npos ) {
+	    obj->GetXaxis()->SetNdivisions(12, true);
+	    obj->GetXaxis()->CenterLabels();
+	  }
+
+	  return;
+
+	} else if ( o.name.find("gmt") != std::string::npos ) {
+
+	  gStyle->SetOptStat(110010);
+	  if (  o.name.find("missing") != std::string::npos ) {
+	    obj->GetYaxis()->SetNdivisions(12);
+	    obj->GetYaxis()->CenterLabels();
+	  }
+
+	  return;
+
+	} else if ( o.name.find("phi_eta") != std::string::npos ) {
+
+	  obj->GetYaxis()->SetNdivisions(12, false);
+
+	  if ( o.name.find("wh") != std::string::npos ) {
+	    gStyle->SetOptStat(110010);
+	    return;
+	  }
+
+	  //obj->GetXaxis()->SetNdivisions(8, false);
+
+	} else if ( o.name.find("highQual" ) != std::string::npos ) {
+
+	  obj->GetYaxis()->SetNdivisions(12, true);
+ 	  obj->GetZaxis()->SetRangeUser(0, 1);
+	  obj->GetYaxis()->CenterLabels();
+
+	} else if ( o.name.find("tracks_distr_s" ) != std::string::npos ) {
+
+	  obj->GetYaxis()->SetNdivisions(12, true);
+	  obj->GetYaxis()->CenterLabels();
+	  obj->GetZaxis()->SetRangeUser(0, 0.03);
+
+	} else if  ( o.name.find("quality" ) != std::string::npos ) {
+  	  obj->GetYaxis()->SetNdivisions(8, true);
+ 	  obj->GetXaxis()->SetNdivisions(12, false);
+ 	  obj->GetXaxis()->CenterLabels();
+	  obj->GetYaxis()->CenterLabels();
+	}
+
+	//  } else if  ( o.name.find("Summary" ) != std::string::npos ) {
+        //  gPad->SetGrid(1,1);
+        //       obj->GetXaxis()->SetLabelSize(0.07);
+        //       obj->GetYaxis()->SetLabelSize(0.07);
+        //  obj->GetXaxis()->LabelsOption("h");
+	    
+        //  obj->SetMaximum(5.0);
+	    
+        //  int colorError1[5];
+        //  colorError1[0] = 416;// kGreen
+        //  colorError1[1] = 400;// kYellow
+        //  colorError1[2] = 800;// kOrange
+        //  colorError1[3] = 625;
+        //  colorError1[4] = 632;// kRed
+        //  gStyle->SetPalette(5, colorError1);
+	    
+        //  gStyle->SetPalette(6, cpal);
+	//  }
+	return;
       }
 
-      if(o.name.find("BX Summary") != std::string::npos)
-      {
-        obj->GetYaxis()->SetTitle("bx");
-        obj->GetXaxis()->SetNdivisions(6,true);
-        obj->GetYaxis()->SetNdivisions(4,true);
-        //gPad->SetGrid(1,1);
-        return;
-      }
-
-      if(o.name.find("Occupancy Summary") != std::string::npos)
-      {
-        obj->GetYaxis()->SetTitle("sector");
-        obj->GetXaxis()->SetNdivisions(6,true);
-        obj->GetYaxis()->SetNdivisions(13,true);
-
-	obj->SetTitle("DTTF Occupancy Summary");
-
-        //gPad->SetGrid(1,1);
-        //     obj->GetXaxis()->SetLabelSize(0.07);
-        //     obj->GetYaxis()->SetLabelSize(0.07);
-        //obj->GetXaxis()->LabelsOption("h");
-
-        //obj->SetMaximum(5.0);
-
-        //int colorError1[5];
-        //colorError1[0] = 416;// kGreen
-        //colorError1[1] = 400;// kYellow
-        //colorError1[2] = 800;// kOrange
-        //colorError1[3] = 625;
-        //colorError1[4] = 632;// kRed
-        //gStyle->SetPalette(5, colorError1);
-
-        //gStyle->SetPalette(6, cpal);
-        return;
-      }
-
-      else if(o.name.find("Fractional High Quality Summary") != std::string::npos)
-      {
-        obj->GetYaxis()->SetTitle("sector");
-        obj->GetXaxis()->SetNdivisions(6,true);
-        obj->GetYaxis()->SetNdivisions(13,true);
-        return;
-      }
-
-      else if(o.name.find("2nd Track Summary") != std::string::npos)
-      {
-        obj->GetYaxis()->SetTitle("sector");
-        obj->GetXaxis()->SetNdivisions(6,true);
-        obj->GetYaxis()->SetNdivisions(13,true);
-        return;
-      }
-
-      else if(o.name.find("Phi vs Eta") != std::string::npos)
-      {
-        obj->GetXaxis()->SetTitle("eta");
-        obj->GetYaxis()->SetTitle("phi");
-        return;
-      }
 
       else if(REMATCH("BX_Correlation_*", o.name)) {
         TAxis* yBX = obj->GetYaxis();
