@@ -7,6 +7,38 @@ import string
 from optparse import OptionParser
 
 
+def CopyToBaylor(directory,debug=False):
+
+    if directory.startswith("DQMOutput_"):
+        directory=string.split(directory,"DQMOutput_")[1]
+        directory="RunCertification_%s"%directory
+    if not os.path.isdir(directory):
+        print("Error!  Directory '%s' does not exist!"%directory)
+        return
+
+    baylor=False
+    myfile=os.path.join(os.getenv("HOME"),".ssh","config")
+    if not os.path.isfile(myfile):
+        print("No file %s found -- skipping attempt to .ssh"%myfile)
+        return
+    myfile=open(myfile,'r').readlines()
+    for i in myfile:
+        if i.find("hep06.baylor.edu")>-1:
+            baylor=True
+            break
+    if baylor==False:
+        print("Cannot find hep06.baylor.edu listed in %s"%myfile)
+        print("Skipping attempt to .ssh")
+        return
+
+    cmd="scp -r %s hep06-cmsjmet:/www/htdocs/cmsjmet/JetMETDQM/Commissioning10/%s"%(directory,directory)
+    print("Copying directory '%s' to baylor..."%directory)
+    print(cmd)
+    os.system(cmd)
+
+    return
+
+
 def SearchDir(dir=None,dict={},subdircount=0,maxrecursion=2,debug=False):
     ''' This will search a directory and all its subdirectories (up to a maximum recursion level of "maxrecursion") for files of the type "*_R*.root". Any time in which multiple files are found for one run, an error message will be thrown, and the program will exit.'''
 
@@ -148,18 +180,33 @@ if __name__=="__main__":
     rundict=SearchDir(dir=options.basedir,
                       dict=rundict,
                       debug=options.verbose)
+
+    if len (rundict.keys())==0:
+        print "ERROR:  No runs have been found!"
+        sys.exit()
+    
     refdict=SearchDir(dir=options.basedir,
                       dict=refdict,
                       debug=options.verbose)
+    
+
+    if len (refdict.keys())==0:
+        print "ERROR:  No reference runs have been found!"
+        sys.exit()
+
     print "The following runs have been found:"
+
+
     for i in rundict.keys():
         print i, rundict[i]
+
     print "The following reference will be used:"
     for r in refdict.keys():
         print r, refdict[r]
 
     refrun=refdict.keys()[0]
-
+    
+        
     runs=rundict.keys()
     runs.sort()
 
@@ -190,5 +237,10 @@ if __name__=="__main__":
         for i in created_dirs:
             cmd=cmd+" %s"%i
         os.system(cmd)
+        if options.copy:
+            CopyToBaylor("RunOutput.tar.gz",
+                         debug=options.verbose)
+
+        
 
         # Next, copy tarball?
