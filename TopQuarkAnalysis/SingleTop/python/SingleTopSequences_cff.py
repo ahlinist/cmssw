@@ -35,7 +35,8 @@ flavorHistorySequence = cms.Sequence(
 
 ##Muons Sequences
 baseMuonSequencePF = cms.Sequence(
-    hltFilterDev *
+ #   hltFilterDev *
+    hltFilter *
     PVFilter *
     countLeptons *
     topElectrons *
@@ -47,7 +48,8 @@ baseMuonSequencePF = cms.Sequence(
 
 
 baseMuonSequence = cms.Sequence(
-    hltFilterDev *
+#    hltFilterDev *
+    hltFilter *
     PVFilter *
     HBHENoiseFilter *
     countLeptons *
@@ -60,7 +62,7 @@ baseMuonSequence = cms.Sequence(
     )
 
 baseMuonSequencePF = cms.Sequence(
-    hltFilterDev *
+    hltFilter *
     PVFilter *
     HBHENoiseFilter *
     countLeptons *
@@ -73,7 +75,7 @@ baseMuonSequencePF = cms.Sequence(
     )
 
 baseMuonAntiIsoSequence = cms.Sequence(
-    hltFilterDev *
+    hltFilter *
     PVFilter *
     vetoLeptonsIso *
     topMuonsAntiIso *
@@ -83,10 +85,11 @@ baseMuonAntiIsoSequence = cms.Sequence(
     )
 ##
 
+hltFilterEleSequence  = cms.Sequence(hltFilterEle)
 
 ##Electron sequences
 baseElectronSequence = cms.Sequence(
-    hltFilterPhoton20 *
+#    hltFilterEle *
     PVFilter *
     HBHENoiseFilter *
     #    countLeptons *
@@ -101,7 +104,7 @@ baseElectronSequence = cms.Sequence(
     )
 
 baseElectronSequencePF = cms.Sequence(
-    hltFilterPhoton20 *
+#    hltFilterEle *
     PVFilter *
     HBHENoiseFilter *
     #    countLeptons *
@@ -118,7 +121,7 @@ baseElectronSequencePF = cms.Sequence(
 
 
 baseElectronAntiIsoSequence = cms.Sequence(
-    hltFilterDev *
+#    hltFilter *
     PVFilter *
     vetoLeptonsIso *
     topElectronsAntiIso *
