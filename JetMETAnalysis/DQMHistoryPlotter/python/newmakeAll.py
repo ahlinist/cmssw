@@ -1,6 +1,7 @@
 #!/usr/bin/python
-# usage: python makeAll.py <resultdir>
-# ex: python makeAll.py Certification_2010_04_12
+# usage: python newmakeAll.py <resultdir>
+# ex: python newmakeAll.py RunCert_XXXXXX_YYYYYY
+# Use "python newmakeAll.py -H to get list of options"
 
 import sys
 import os
