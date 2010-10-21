@@ -54,10 +54,7 @@ process.ak7calo = cms.EDAnalyzer('InclusiveJetTreeProducer',
     L1GTObjectMapRcdSource = cms.InputTag('hltL1GtObjectMap','','HLT')
 )
 
-process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
-process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('0 AND NOT (36 OR 37 OR 38 OR 39)')
-
-process.p = cms.Path(process.hltLevel1GTSeed * process.primaryVertexFilter * process.trackExtrapolator *  process.ak7JTA * process.ak7calo)
+process.p = cms.Path(process.primaryVertexFilter * process.trackExtrapolator *  process.ak7JTA * process.ak7calo)
 #############   Format MessageLogger #################
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
