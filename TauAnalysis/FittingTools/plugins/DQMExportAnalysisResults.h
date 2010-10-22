@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: DQMExportAnalysisResults.h,v 1.2 2010/09/28 11:23:34 jkolb Exp $
+ * $Id: DQMExportAnalysisResults.h,v 1.1 2010/10/17 14:01:02 veelken Exp $
  *
  */
 
@@ -47,7 +47,7 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
 	dqmDirectory_(cfg.getParameter<std::string>("dqmDirectory")),
         outputFilePath_(cfg.getParameter<std::string>("outputFilePath")),
 	outputFileName_(cfg.getParameter<std::string>("outputFileName")),
-        numEvents_(cfg.getParameter<unsigned>("numEvents")),
+        numEvents_(cfg.getParameter<double>("numEvents")),
 	hasSysUncertainties_(cfg.getParameter<bool>("hasSysUncertainties"))
     {}
     ~processEntryType() {}
