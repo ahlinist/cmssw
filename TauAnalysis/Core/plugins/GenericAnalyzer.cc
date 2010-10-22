@@ -262,7 +262,7 @@ void GenericAnalyzer::analysisSequenceEntry_analyzer::endJob()
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void GenericAnalyzer::addFilter(const std::string& filterName, const vstring& saveRunEventNumbers)
+void GenericAnalyzer::addFilter(const std::string& filterName, const vstring& saveRunLumiSectionEventNumbers)
 {
   std::map<std::string, edm::ParameterSet>::const_iterator it = cfgFilters_.find(filterName);
   if ( it != cfgFilters_.end() ) {
@@ -486,10 +486,10 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     if ( cfgAnalysisSequenceEntry->exists("filter") ) {
       std::string filterName = cfgAnalysisSequenceEntry->getParameter<std::string>("filter");
 
-      vstring saveRunEventNumbers = cfgAnalysisSequenceEntry->exists("saveRunEventNumbers") ? 
-	cfgAnalysisSequenceEntry->getParameter<vstring>("saveRunEventNumbers") : vstring();
+      vstring saveRunLumiSectionEventNumbers = cfgAnalysisSequenceEntry->exists("saveRunLumiSectionEventNumbers") ? 
+	cfgAnalysisSequenceEntry->getParameter<vstring>("saveRunLumiSectionEventNumbers") : vstring();
       
-      addFilter(filterName, saveRunEventNumbers);
+      addFilter(filterName, saveRunLumiSectionEventNumbers);
       
       lastFilterName = filterName;
     }
@@ -546,26 +546,26 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   filterStatisticsTable_ = filterStatisticsService_->createFilterStatisticsTable(cfgFilterStatisticsTable);
  
 //--- configure run & event number service
-  edm::ParameterSet cfgRunEventNumberService;
-  cfgRunEventNumberService.addParameter<std::string>("name", std::string(name_).append("-").append("RunEventNumberService"));
-  cfgRunEventNumberService.addParameter<std::string>("dqmDirectory_store", dqmDirectoryName(name_).append("FilterStatistics"));
-  vParameterSet runEventNumberService_config;
+  edm::ParameterSet cfgRunLumiSectionEventNumberService;
+  cfgRunLumiSectionEventNumberService.addParameter<std::string>("name", std::string(name_).append("-").append("RunLumiSectionEventNumberService"));
+  cfgRunLumiSectionEventNumberService.addParameter<std::string>("dqmDirectory_store", dqmDirectoryName(name_).append("FilterStatistics"));
+  vParameterSet runLumiSectionEventNumberService_config;
   for ( vParameterSet::const_iterator cfgAnalysisSequenceEntry = cfgAnalysisSequenceEntries.begin();
 	cfgAnalysisSequenceEntry != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry ) {
     if ( cfgAnalysisSequenceEntry->exists("filter") ) {
       std::string filterName = cfgAnalysisSequenceEntry->getParameter<std::string>("filter");
-      vstring saveRunEventNumbers = cfgAnalysisSequenceEntry->exists("saveRunEventNumbers") ? 
-	cfgAnalysisSequenceEntry->getParameter<vstring>("saveRunEventNumbers") : vstring();
+      vstring saveRunLumiSectionEventNumbers = cfgAnalysisSequenceEntry->exists("saveRunLumiSectionEventNumbers") ? 
+	cfgAnalysisSequenceEntry->getParameter<vstring>("saveRunLumiSectionEventNumbers") : vstring();
       
       edm::ParameterSet config;
       config.addParameter<std::string>("filterName", filterName);
-      config.addParameter<vstring>("saveRunEventNumbers", saveRunEventNumbers);
+      config.addParameter<vstring>("saveRunLumiSectionEventNumbers", saveRunLumiSectionEventNumbers);
       
-      runEventNumberService_config.push_back(config);
+      runLumiSectionEventNumberService_config.push_back(config);
     }
   }
-  cfgRunEventNumberService.addParameter<vParameterSet>("config", runEventNumberService_config);
-  runEventNumberService_ = new RunEventNumberService(cfgRunEventNumberService);
+  cfgRunLumiSectionEventNumberService.addParameter<vParameterSet>("config", runLumiSectionEventNumberService_config);
+  runLumiSectionEventNumberService_ = new RunLumiSectionEventNumberService(cfgRunLumiSectionEventNumberService);
 
 //--- configure eventDumps
   if ( cfg.exists("eventDumps") ) {
@@ -591,7 +591,7 @@ GenericAnalyzer::~GenericAnalyzer()
 
   delete filterStatisticsService_;
   delete filterStatisticsTable_;
-  delete runEventNumberService_;
+  delete runLumiSectionEventNumberService_;
 }
 
 void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
@@ -688,8 +688,8 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
       filterStatisticsTable_->update(filterResults_cumulative, filterResults_individual, eventWeight);
 
 //--- save run & event numbers
-      runEventNumberService_->update(evt.id().run(), evt.id().event(), evt.luminosityBlock(),
-				     filterResults_cumulative, filterResults_individual, eventWeight);
+      runLumiSectionEventNumberService_->update(evt.id().run(), evt.luminosityBlock(), evt.id().event(), 
+						filterResults_cumulative, filterResults_individual, eventWeight);
 
 //--- if requested, dump event information 
       for ( std::list<EventDumpBase*>::const_iterator it = eventDumps_.begin();
