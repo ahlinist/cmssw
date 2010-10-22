@@ -17,7 +17,12 @@ def switchToData(process):
 	# remove MC matching from standard PAT sequences
 	removeMCMatching(process, ["All"])
 
-	if hasattr(process,"patPFMETs") :
+	# add data-quality cuts which work on "real" data only
+	if hasattr(process, "dataQualityFilters"):
+		process.dataQualityFilters._seq = process.dataQualityFilters._seq * process.hltPhysicsDeclared
+		process.dataQualityFilters._seq = process.dataQualityFilters._seq * process.dcsstatus
+
+	if hasattr(process, "patPFMETs"):
 		process.patPFMETs.addGenMET = cms.bool(False)
 
 	# remove modules from pre-PAT production running on genParticles
@@ -27,19 +32,19 @@ def switchToData(process):
 	# remove modules from post-PAT production running on genParticles
 	process.producePostPat.remove(produceGenObjects)
 
-	if hasattr(process,'allDiTauPairs'): 
+	if hasattr(process, "allDiTauPairs"): 
 		process.allDiTauPairs.srcGenParticles = cms.InputTag('')
-	if hasattr(process,"allElecTauPairs"):
+	if hasattr(process, "allElecTauPairs"):
 		process.allElecTauPairs.srcGenParticles = cms.InputTag('')
-	if hasattr(process,"allElecTauPairsLooseElectronIsolation"):
+	if hasattr(process, "allElecTauPairsLooseElectronIsolation"):
 		process.allElecTauPairsLooseElectronIsolation.srcGenParticles = cms.InputTag('')
-	if hasattr(process,"allElecMuPairs"):
+	if hasattr(process, "allElecMuPairs"):
 		process.allElecMuPairs.srcGenParticles = cms.InputTag('')
-	if hasattr(process,"allElecMuPairsLooseElectronIsolation"): 
+	if hasattr(process, "allElecMuPairsLooseElectronIsolation"): 
 		process.allElecMuPairsLooseElectronIsolation.srcGenParticles = cms.InputTag('')
-	if hasattr(process,"allMuTauPairs"):
+	if hasattr(process, "allMuTauPairs"):
 		process.allMuTauPairs.srcGenParticles = cms.InputTag('')
-	if hasattr(process,"allMuTauPairsLooseMuonIsolation"): 
+	if hasattr(process, "allMuTauPairsLooseMuonIsolation"): 
 		process.allMuTauPairsLooseMuonIsolation.srcGenParticles = cms.InputTag('')
 	diTauPairCollectionNames = [
 			"allDiTauPairs",
@@ -82,7 +87,7 @@ def switchToData(process):
 		process.patPFMETs.addGenMET = cms.bool(False)
 
 	# for modules in producePatTupleZtoElecTauSpecific sequence, remove references to genParticles 
-	if hasattr(process,"producePatTupleZtoElecTauSpecific"):
+	if hasattr(process, "producePatTupleZtoElecTauSpecific"):
 		process.producePatTupleZtoElecTauSpecific.remove(process.produceElecTauPairsLooseElectronIsolation)
 		process.producePatTupleZtoElecTauSpecific.remove(process.selectElecTauPairsLooseElectronIsolation)
 		process.produceElecTauPairZeeHypotheses.remove(process.elecTauPairZeeHypothesesLooseElectronIsolation)
@@ -104,7 +109,7 @@ def switchToData(process):
 		process.elecTauPairsAfterTauEcalCrackVeto.srcGenParticles = cms.InputTag('')
 
 	# remove modules from the Z->e+tau-jet analysis sequence which run on GEN collections
-	if hasattr(process,"analyzeZtoElecTauEvents"):
+	if hasattr(process, "analyzeZtoElecTauEvents"):
 		process.analyzeZtoElecTauEvents.analyzers.remove(process.genPhaseSpaceEventInfoHistManager)
 		removeAnalyzer(process.analyzeZtoElecTauEvents.analysisSequence, "genPhaseSpaceEventInfoHistManager")
 		process.analyzeZtoElecTauEvents.eventDumps[0].doGenInfo = cms.bool(False)
@@ -129,14 +134,15 @@ def switchToData(process):
 		process.analyzeZtoMuTauEvents.eventDumps[0].genParticleSource = cms.InputTag('')
 		process.muonHistManager.genParticleSource = cms.InputTag('')
 		process.tauHistManager.genParticleSource = cms.InputTag('')
+		process.jetHistManager.genParticleSource = cms.InputTag('')
 		process.diTauCandidateHistManagerForMuTau.genParticleSource = cms.InputTag('')
 		process.diTauCandidateCollinearApproxHistManagerForMuTau.genParticleSource = cms.InputTag('')
 		removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, "diTauCandidateCollinearApproxHistManagerBinnedForMuTau")
 		process.diTauCandidateSVfitHistManagerForMuTau.genParticleSource = cms.InputTag('')
 		process.diTauCandidateEventActivityHistManagerForMuTau.genParticleSource = cms.InputTag('')
 		process.diTauCandidateZmumuHypothesisHistManagerForMuTau.genParticleSource = cms.InputTag('')
-		process.muPairHistManager.genParticleSource = cms.InputTag('')
-		process.jetHistManager.genParticleSource = cms.InputTag('')
+		process.muPairHistManagerByMass.genParticleSource = cms.InputTag('')
+		process.muPairHistManagerByLooseIsolationAndCharge.genParticleSource = cms.InputTag('')
 		process.muTauPairZmumuHypotheses.genLeptonsFromZsSource = cms.InputTag('')
 		process.muTauPairZmumuHypothesesLooseMuonIsolation.genLeptonsFromZsSource = cms.InputTag('')
 
@@ -169,7 +175,7 @@ def switchToData(process):
 		process.jetHistManager.genParticleSource = cms.InputTag('')    
 
 	# remove modules from the A/H --> mu + tau-jet analysis sequence which run on GEN collections
-	for module_name in ['analyzeAHtoMuTauEvents_woBtag', 'analyzeAHtoMuTauEvents_wBtag']:
+	for module_name in [ 'analyzeAHtoMuTauEvents_woBtag', 'analyzeAHtoMuTauEvents_wBtag' ]:
 		if hasattr(process, module_name):
 			module = getattr(process, module_name)
 
@@ -191,7 +197,6 @@ def switchToData(process):
 			module.eventDumps[0].doGenInfo = cms.bool(False)
 			module.eventDumps[0].genParticleSource = cms.InputTag('')
 
-
 			if process.modelBinnerForMuTauGenTauLeptonPairAcc in module.analyzers:
 				module.analyzers.remove(process.modelBinnerForMuTauGenTauLeptonPairAcc)
 			removeAnalyzer(module.analysisSequence, "modelBinnerForMuTauGenTauLeptonPairAcc")
@@ -206,13 +211,21 @@ def switchToData(process):
 			process.tauHistManager.genParticleSource = cms.InputTag('')
 			process.jetHistManager.genParticleSource = cms.InputTag('')
 
+			process.diTauCandidateHistManagerForMuTau.genParticleSource = cms.InputTag('')
+			process.diTauCandidateCollinearApproxHistManagerForMuTau.genParticleSource = cms.InputTag('')
+			process.diTauCandidateSVfitHistManagerForMuTau.genParticleSource = cms.InputTag('')
+			process.diTauCandidateZmumuHypothesisHistManagerForMuTau.genParticleSource = cms.InputTag('')
+
+			process.muPairHistManagerByMass.genParticleSource = cms.InputTag('')
+			process.muPairHistManagerByLooseIsolationAndCharge.genParticleSource = cms.InputTag('')
+
 			process.muTauPairZmumuHypothesesForAHtoMuTau.genLeptonsFromZsSource = cms.InputTag('')
 			process.muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation.genLeptonsFromZsSource = cms.InputTag('')
 			process.muTauPairZmumuHypotheses.genLeptonsFromZsSource = cms.InputTag('')
 			process.muTauPairZmumuHypothesesLooseMuonIsolation.genLeptonsFromZsSource = cms.InputTag('')    
       
 	# remove modules from the Z --> e + mu analysis sequence which run on GEN collections
-	if hasattr(process,"analyzeZtoElecMuEvents"):
+	if hasattr(process, "analyzeZtoElecMuEvents"):
                 process.analyzeZtoElecMuEvents.analyzers.remove(process.genPhaseSpaceEventInfoHistManager)
                 removeAnalyzer(process.analyzeZtoElecMuEvents.analysisSequence,"genPhaseSpaceEventInfoHistManager")
                 process.analyzeZtoElecMuEvents.eventDumps[0].doGenInfo = cms.bool(False)
