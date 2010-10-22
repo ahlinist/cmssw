@@ -14,17 +14,8 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 
-muonsBgEstZmumuEnrichedTrkIso = copy.deepcopy(selectedPatMuonsTrkIso)
-muonsBgEstZmumuEnrichedTrkIso.sumPtMax = cms.double(0.10)
-muonsBgEstZmumuEnrichedTrkIso.sumPtMethod = cms.string("relative")
-
-muonsBgEstZmumuEnrichedEcalIso = copy.deepcopy(selectedPatMuonsEcalIso)
-muonsBgEstZmumuEnrichedEcalIso.sumPtMax = cms.double(0.10)
-muonsBgEstZmumuEnrichedEcalIso.sumPtMethod = cms.string("relative")
-
-muonsBgEstZmumuEnrichedCombIso = copy.deepcopy(selectedPatMuonsCombIso)
-muonsBgEstZmumuEnrichedCombIso.sumPtMax = cms.double(0.10)
-muonsBgEstZmumuEnrichedCombIso.sumPtMethod = cms.string("relative")
+muonsBgEstZmumuEnrichedPFRelIso = copy.deepcopy(selectedPatMuonsPFRelIso)
+muonsBgEstZmumuEnrichedPFRelIso.sumPtMax = cms.double(0.10)
 
 muonsBgEstZmumuEnrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
 
@@ -33,9 +24,7 @@ muonsBgEstZmumuEnrichedTrk = copy.deepcopy(selectedPatMuonsTrk)
 muonsBgEstZmumuEnrichedTrkIP = copy.deepcopy(selectedPatMuonsTrkIP)
 
 muonSelConfiguratorBgEstZmumuEnriched = objSelConfigurator(
-    [ muonsBgEstZmumuEnrichedTrkIso,
-      muonsBgEstZmumuEnrichedEcalIso,
-      muonsBgEstZmumuEnrichedCombIso,
+    [ muonsBgEstZmumuEnrichedPFRelIso,
       muonsBgEstZmumuEnrichedPionVeto,
       muonsBgEstZmumuEnrichedTrk,
       muonsBgEstZmumuEnrichedTrkIP ],
@@ -353,9 +342,7 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelGlobalMuon,
         evtSelMuonEta,
         evtSelMuonPt,
-        evtSelMuonTrkIso,
-        evtSelMuonEcalIso,
-        evtSelMuonCombIso,
+        evtSelMuonPFRelIso,
         evtSelMuonAntiPion,
         evtSelTauAntiOverlapWithMuonsVeto,
         evtSelTauEta,
@@ -454,16 +441,8 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Pt(Tau) > 20 GeV')
         ),
         cms.PSet(
-            filter = cms.string('evtSelMuonTrkIso'),
-            title = cms.string('Muon Track iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelMuonEcalIso'),
-            title = cms.string('Muon ECAL iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelMuonCombIso'),
-            title = cms.string('Muon Combined iso.')
+            filter = cms.string('evtSelMuonPFRelIso'),
+            title = cms.string('Muon iso.')
         ),
         cms.PSet(
             filter = cms.string('evtSelMuonAntiPion'),
@@ -560,9 +539,7 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelGlobalMuon,
         evtSelMuonEta,
         evtSelMuonPt,
-        evtSelMuonTrkIso,
-        evtSelMuonEcalIso,
-        evtSelMuonCombIso,
+        evtSelMuonPFRelIso,
         evtSelMuonAntiPion,
         cms.PSet(
             pluginName = cms.string('tauEtaBgEstZmumuMuonMisIdEnriched'),
@@ -689,16 +666,8 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Pt(Tau) > 20 GeV')
         ),
         cms.PSet(
-            filter = cms.string('evtSelMuonTrkIso'),
-            title = cms.string('Muon Track iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelMuonEcalIso'),
-            title = cms.string('Muon ECAL iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelMuonCombIso'),
-            title = cms.string('Muon Combined iso.')
+            filter = cms.string('evtSelMuonPFRelIso'),
+            title = cms.string('Muon iso.')
         ),
         cms.PSet(
             filter = cms.string('evtSelMuonAntiPion'),
