@@ -212,7 +212,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertex'),
         title = cms.string('Vertex'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers
@@ -220,7 +220,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexQuality'),
         title = cms.string('p(chi2Vertex) > 0.01'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers
@@ -228,7 +228,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
         title = cms.string('-50 < Vertex < +50 cm'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers
@@ -238,7 +238,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauEta'),
         title = cms.string('-2.1 < eta(Tau) < +2.1'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -247,7 +247,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauPt'),
         title = cms.string('25< Pt(Tau) < 60 GeV'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -256,7 +256,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPFMetPt'),
         title = cms.string('PF-MET > 30 GeV'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -265,7 +265,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelMetPt'),
         title = cms.string('MET > 15 GeV'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -274,7 +274,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrk'),
         title = cms.string('with leadtrk'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -283,7 +283,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
         title = cms.string('leadtrk pt > 20 GeV'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -292,7 +292,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauIso'),
         title = cms.string('TaNC disctiminator'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -301,7 +301,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauTaNC'),
         title = cms.string('discrimination by isolation'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -310,7 +310,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauProng'),
         title = cms.string('Tau 1||3-Prong'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -319,7 +319,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauCharge'),
         title = cms.string('Charge(Tau) = +/-1'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -328,7 +328,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauMuonVeto'),
         title = cms.string('Muon veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -337,7 +337,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Electron veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -347,7 +347,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauEcalCrackVeto'),
         title = cms.string('Ecal Crack veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
         ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -362,7 +362,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelCentralJetVeto'),
 	title = cms.string('central jet veto'),
-	saveRunEventNumbers = cms.vstring('')
+	saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -376,7 +376,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
 	filter = cms.string('evtSelRecoilEnergyFromCaloTowers'),
 	title = cms.string('recoil energy (calotowers) < 5'),
-	saveRunEventNumbers = cms.vstring('passed_cumulative')
+	saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -390,7 +390,7 @@ wTauNuAnalysisSequence = cms.VPSet(
  cms.PSet(
         filter = cms.string('evtSelMetTopology'),
         title = cms.string('MET-topology < 0.25'),
-        saveRunEventNumbers = cms.vstring('passed_cumulative')
+        saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
         ),
     cms.PSet(
         analyzers = wTauNuHistManagers,

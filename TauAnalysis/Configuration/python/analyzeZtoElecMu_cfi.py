@@ -360,7 +360,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('genPhaseSpaceCut'),
         title = cms.string('gen. Phase-Space'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers
@@ -372,12 +372,12 @@ elecMuAnalysisSequence = cms.VPSet(
     #cms.PSet(
     #    filter = cms.string('genElectronCut'),
     #    title = cms.string('gen. Electron'),
-    #    saveRunEventNumbers = cms.vstring('')
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
     #),
     #cms.PSet(
     #    filter = cms.string('genMuonCut'),
     #    title = cms.string('gen. Muon'),
-    #    saveRunEventNumbers = cms.vstring('')
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
     #),
     #cms.PSet(
     #    analyzers = cms.vstring(
@@ -395,7 +395,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
         title = cms.string('Trigger'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers
@@ -405,7 +405,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertex'),
         title = cms.string('Vertex'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers
@@ -413,7 +413,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexQuality'),
         title = cms.string('Vertex quality'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers
@@ -421,7 +421,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
         title = cms.string('Vertex position'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers
@@ -431,7 +431,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelElectronIdMin'),
         title = cms.string('electron Id. Min'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -440,7 +440,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelElectronIdMax'),
         title = cms.string('electron Id. Max'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -449,7 +449,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelGlobalMuonMin'),
         title = cms.string('global Muon min'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -459,7 +459,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelGlobalMuonMax'),
         title = cms.string('global Muon max'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -471,7 +471,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuDRmin'),
         title = cms.string('DeltaR(Elec,Muon) > 0.5'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -482,7 +482,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuZeroCharge'),
         title = cms.string('Charge(Elec+Muon) = 0'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -495,7 +495,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelElectronAntiCrack'),
         title = cms.string('crack-Veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -506,7 +506,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelElectronEta'),
         title = cms.string('-2.4 < eta(Elec) < +2.4'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -517,7 +517,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelMuonEta'),
         title = cms.string('-2.1 < eta(Muon) < +2.1'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -528,7 +528,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelElectronPt'),
         title = cms.string('Pt(Electron) Cut'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -539,7 +539,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelMuonPt'),
         title = cms.string('Pt(Muon) Cut'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -552,7 +552,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelElectronIso'),
         title = cms.string('Electron iso.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -563,7 +563,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelElectronTrk'),
         title = cms.string('Electron Track find.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -576,7 +576,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelMuonIso'),
         title = cms.string('Muon iso.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -587,7 +587,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelMuonAntiPion'),
         title = cms.string('Muon pi-Veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -600,7 +600,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuMt1MET'),
         title = cms.string('MT(Elec+MET) Cut'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -611,7 +611,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuMt2MET'),
         title = cms.string('MT(Mu+MET) Cut'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -623,7 +623,7 @@ elecMuAnalysisSequence = cms.VPSet(
        filter = cms.string('evtSelDiTauCandidateForElecMuDPhi'),
        #title = cms.string('DPhi(Elec,Muon) < 3.07'),
        title = cms.string('DPhi(Elec,Muon) > 2.'),
-       saveRunEventNumbers = cms.vstring('')
+       saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
        analyzers = elecMuHistManagers,
@@ -634,7 +634,7 @@ elecMuAnalysisSequence = cms.VPSet(
 ##     cms.PSet(
 ##        filter = cms.string('evtSelDiTauCandidateForElecMuOneLegPt'),
 ##        title = cms.string('leg1.pt > 20 | leg2.pt > 20'),
-##        saveRunEventNumbers = cms.vstring('')
+##        saveRunLumiSectionEventNumbers = cms.vstring('')
 ##     ),
 ##     cms.PSet(
 ##        analyzers = elecMuHistManagers,
@@ -647,7 +647,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelMETMax'),
         title = cms.string('met < 60 GeV'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -662,7 +662,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelJetMin'),
         title = cms.string('Jet min'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -674,7 +674,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelJetMax'),
         title = cms.string('Jet max'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -686,7 +686,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelJetBtagMin'),
         title = cms.string('b-tagging min cut'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
@@ -699,7 +699,7 @@ elecMuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelJetBtagMax'),
         title = cms.string('b-tagging max cut'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = elecMuHistManagers,
