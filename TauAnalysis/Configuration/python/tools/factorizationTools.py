@@ -239,6 +239,7 @@ def enableFactorization_makeZtoMuTauPlots_grid(
     evtSelZtoMuTau_factorizedTight = [
         process.genPhaseSpaceCut,
         process.evtSelTrigger,
+        process.evtSelDataQuality,
         process.evtSelPrimaryEventVertex,
         process.evtSelPrimaryEventVertexQuality,
         process.evtSelPrimaryEventVertexPosition,
@@ -249,9 +250,7 @@ def enableFactorization_makeZtoMuTauPlots_grid(
         process.evtSelTauEta,
         process.evtSelTauPt,
         process.evtSelMuonVbTfId,
-        process.evtSelMuonTrkIso,
-        process.evtSelMuonEcalIso,
-        process.evtSelMuonCombIso
+        process.evtSelMuonPFRelIso
     ]
 
     # define list of event selection criteria on "loose" muon isolation branch
@@ -274,13 +273,14 @@ def enableFactorization_makeZtoMuTauPlots_grid(
         process.evtSelDiTauCandidateForMuTauAcoplanarity12,
         process.evtSelDiTauCandidateForMuTauMt1MET,
         process.evtSelDiTauCandidateForMuTauPzetaDiff,
-        process.evtSelDiMuPairZmumuHypothesisVeto
+        process.evtSelDiMuPairZmumuHypothesisVetoByMass,
+        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge
     ]
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameZtoMuTau_numerator = "evtSelMuonCombIso/passed_cumulative_numWeighted"
-    meNameZtoMuTau_denominator = "evtSelMuonTrkIso/processed_cumulative_numWeighted"
+    meNameZtoMuTau_numerator = "evtSelMuonPFRelIso/passed_cumulative_numWeighted"
+    meNameZtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
     
     # Loop over the samples and create sequences
     # for each of the factorization jobs and add them to the factorization
@@ -384,8 +384,7 @@ def enableFactorization_makeZtoElecMuPlots(process,
     evtSelZtoElecMu_factorizedLoose = [
         process.evtSelElectronTrk,
         process.evtSelElectronTrkIP,
-        process.evtSelMuonTrkIso,
-        process.evtSelMuonEcalIso,
+        process.evtSelMuonPFRelIso,
         process.evtSelMuonAntiPion,
         process.evtSelMuonTrkIP,
         process.evtSelDiTauCandidateForElecMuAntiOverlapVeto,
@@ -781,6 +780,7 @@ def enableFactorization_makeZtoDiTauPlots_grid(
     evtSelZtoDiTau_factorizedTight = [
         process.genPhaseSpaceCut,
         #process.evtSelTrigger,
+        process.evtSelDataQuality,
         process.evtSelPrimaryEventVertex,
         process.evtSelPrimaryEventVertexQuality,
         process.evtSelPrimaryEventVertexPosition,
@@ -1004,6 +1004,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     evtSelAHtoMuTau_factorizedTight = [
         process.genPhaseSpaceCut,
         process.evtSelTrigger,
+        process.evtSelDataQuality,
         process.evtSelPrimaryEventVertex,
         process.evtSelPrimaryEventVertexQuality,
         process.evtSelPrimaryEventVertexPosition,
@@ -1014,9 +1015,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
         process.evtSelTauEta,
         process.evtSelTauPt,
         process.evtSelMuonVbTfId,
-        process.evtSelMuonTrkIso,
-        process.evtSelMuonEcalIso,
-        process.evtSelMuonCombIso
+        process.evtSelMuonPFRelIso
     ]
 
     # define list of event selection criteria on "loose" muon isolation branch
@@ -1038,7 +1037,8 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
         process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
         process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        process.evtSelDiMuPairZmumuHypothesisVeto
+        process.evtSelDiMuPairZmumuHypothesisVetoByMass,
+        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge
     ]
 
     # Make specialized cases for the w/ w/o btag cases
@@ -1055,8 +1055,8 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameAHtoMuTau_numerator = "evtSelMuonCombIso/passed_cumulative_numWeighted"
-    meNameAHtoMuTau_denominator = "evtSelMuonTrkIso/processed_cumulative_numWeighted"
+    meNameAHtoMuTau_numerator = "evtSelMuonPFRelIso/passed_cumulative_numWeighted"
+    meNameAHtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
 
     # Loop over the samples and btag options and create sequences
     # for each of the factorization jobs and add them to the factorization
