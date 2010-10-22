@@ -16,11 +16,11 @@ def _requires(args=[], inputs=[]):
             for arg in args:
                 if arg not in kwargs:
                     raise ValueError(
-                        "Function %s has required argument %s" % 
+                        "Function %s has required argument %s" %
                         (func.__name__, arg))
             if inputs and value not in inputs:
                 raise ValueError(
-                    "Bad input %s to %s, allowed inputs: %s" % 
+                    "Bad input %s to %s, allowed inputs: %s" %
                     (func.__name__, value, inputs))
             return func(process, value, **kwargs)
         return func_with_reqs
@@ -63,7 +63,7 @@ def _setSourceFiles(process, fileNames, **kwargs):
 
 @_requires(args=['channel', 'sample', 'id'])
 def _setPlotsOutputFileName(process, filename, **kwargs):
-    ''' Set output file name for plots 
+    ''' Set output file name for plots
 
     Plots will be suffixed with _channel_sample_id.root
     '''
@@ -100,7 +100,7 @@ def _setEnableSystematics(process, enable, **kwargs):
         disabler = getattr(sysUncertaintyTools, "disableSysUncertainties_run%s" % channel)
         disabler(process)
 
-@_requires(args=['channel'], inputs=['RECO/AOD', 'PATTuple']) 
+@_requires(args=['channel'], inputs=['RECO/AOD', 'PATTuple'])
 def _setInputFileType(process, filetype, **kwargs):
     # when running over RECO samples, produce PAT-tuple
     if filetype == 'RECO/AOD':
@@ -108,16 +108,16 @@ def _setInputFileType(process, filetype, **kwargs):
             process, "producePatTuple%sSpecific" % kwargs['channel'])
         process.p.replace(patTupleProducerSpecific, process.producePatTupleAll)
 
-@_requires(inputs=['Data', 'smMC', 'smSumMC', 'bsmMC',]) 
+@_requires(inputs=['Data', 'smMC', 'smSumMC', 'bsmMC',])
 def _setIsData(process, type, **kwargs):
     if type.lower().find('mc') == -1:
         switchToData.switchToData(process)
 
-@_requires(args=['channel']) 
+@_requires(args=['channel'])
 def _setTriggerProcess(process, triggerTag, **kwargs):
     # Set the input tag for the HLT
     channel = kwargs['channel']
-    sequences_to_modify = [ seq % channel for seq in [ 
+    sequences_to_modify = [ seq % channel for seq in [
         'producePatTuple%sSpecific', 'select%sEvents', 'analyze%sEvents'] ]
     for sequence_name in sequences_to_modify:
         print "o Resetting HLT input tag for sequence:", sequence_name
@@ -127,6 +127,11 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
     process.patTrigger.processName = triggerTag.getProcessName()
     process.patTriggerEvent.processName = triggerTag.getProcessName()
 
+def _setTriggerBits(process, triggerSelect, **kwargs):
+    old_select = process.Trigger.selectors[0].triggerPaths
+    process.Trigger.selectors[0].triggerPaths = cms.vstring(
+        triggerSelect)
+    print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect)
 
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
@@ -141,6 +146,7 @@ _METHOD_MAP = {
     'inputFileType' : _setInputFileType,
     'type' : _setIsData,
     'hlt' : _setTriggerProcess,
+    'hlt_paths' : _setTriggerBits,
 }
 
 def applyProcessOptions(process, jobInfo, options):
@@ -149,11 +155,11 @@ def applyProcessOptions(process, jobInfo, options):
     Options should be specified as a list of tuples mapping
     options to their desired values.  The list of options
     is enumerated in the _METHOD_MAP dictionary.  The jobInfo parameter
-    specifies information about the current channel and sample in a dict format. 
+    specifies information about the current channel and sample in a dict format.
 
     Example of specifiying 1000 events, and a special name for the output plots:
 
-        applyProcessOptions(process, 
+        applyProcessOptions(process,
             {'channel' : 'ZtoMuTau', 'sample' : 'WplusJets'},
             [ ('maxEvents', 1000), ('plotsOutputFileName', 'myPlots') ])
 
@@ -171,7 +177,7 @@ def applyProcessOptions(process, jobInfo, options):
 
         if option not in _METHOD_MAP:
             raise ValueError(
-                "Option: %s unrecognized! Available options: %s" % 
+                "Option: %s unrecognized! Available options: %s" %
                 (option, _METHOD_MAP.keys()))
         # Call method
         optionsForMethod = copy.copy(jobInfo)
@@ -216,10 +222,10 @@ if __name__=="__main__":
 
 
 
-    
 
 
 
-    
+
+
 
 

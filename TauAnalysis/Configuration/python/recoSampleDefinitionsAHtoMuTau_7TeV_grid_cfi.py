@@ -7,27 +7,30 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
     'data_Mu_132440-145761_Sep17ReReco',
-    'data_Mu_145762_147454_Prompt',
-    'A120', 'bbA120', 
-    'A130', 'bbA130', 
-    'A200', 'bbA200', 
-    'Ztautau', 
+    #'data_Mu_145762_147454_Prompt',
+    'data_Mu_147222_147454_Prompt',
+    'data_Mu_145762_147219_Prompt',
+    'A120', 'bbA120',
+    'A130', 'bbA130',
+    'A200', 'bbA200',
+    'Ztautau',
     'Zmumu',
-    'InclusivePPmuX', 
-    'PPmuXptGt20Mu10', 
-    'PPmuXptGt20Mu15', 
+    'InclusivePPmuX',
+    'PPmuXptGt20Mu10',
+    'PPmuXptGt20Mu15',
     'WplusJets',
     'TTplusJets'
-] 
+]
 
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    'data', 
-    'A120Sum', 
-    'A130Sum', 
-    'A200Sum', 
-    'qcdSum',
+    'data',
+    'A120Sum',
+    'A130Sum',
+    'A200Sum',
+    #'qcdSum',
+    'PPmuXptGt20Mu15',
     'WplusJets',
     'TTplusJets',
     'Zmumu',
@@ -35,7 +38,7 @@ SAMPLES_TO_PLOT = [
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-SAMPLES_TO_PRINT.append('smBgSum')
+#SAMPLES_TO_PRINT.append('smBgSum')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -43,7 +46,8 @@ SAMPLE_DEFAULTS = {
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'lumi_mask' : '',
-    'runselection' : ''
+    'runselection' : '',
+    'hlt_paths' : ['HLT_Mu9'],
 }
 
 # Conversions to pico barns
@@ -54,10 +58,17 @@ _nanobarns = 1000.0
 _microbarns = 1.0e6
 _millibarns = 1.0e3
 
-# Integrated luminosity to normalize 
+# Integrated luminosity to normalize
 #TARGET_LUMI = (4924.3 + 61275 + 115786 + 808979)/_microbarns
 #TARGET_LUMI = (4652+60315.532+107818+630241.996)/_microbarns
-TARGET_LUMI = (4203+58971+89050+1048863)/_microbarns
+#TARGET_LUMI = (4203+58971+89050+1048863)/_microbarns
+
+#Finding lumi for crab/crabdir_runAHtoMuTau_AHtoMuTau_data_Mu_132440-145761_Sep17ReReco_Run10
+#Dir: crab/crabdir_runAHtoMuTau_AHtoMuTau_data_Mu_132440-145761_Sep17ReReco_Run10    LUMI:  2939136.41826
+#Finding lumi for crab/crabdir_runAHtoMuTau_AHtoMuTau_data_Mu_145762_147454_Prompt_Run10
+#Dir: crab/crabdir_runAHtoMuTau_AHtoMuTau_data_Mu_145762_147454_Prompt_Run10    LUMI:  4692057.60607
+#TOTAL INTEGRATED LUMINOSITY:  7631194.02434  MICROBARNS
+TARGET_LUMI = (7631194.02434)/_microbarns
 
 #--------------------------------------------------------------------------------
 # NOTE:
@@ -96,16 +107,28 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data
     },
-    'data_Mu_145762_147454_Prompt' : {
+    'data_Mu_145762_147219_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'runselection' : '145762 - 147454',
-        'conditions' : 'GR_R_38X_V13::All',        
+        'runselection' : '145762 - 147219',
+        'conditions' : 'GR_R_38X_V13::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
+        'drawOption' : styles.drawOption_Data,
+    },
+    'data_Mu_147222_147454_Prompt' : {
+        'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : '147222 - 147454',
+        'conditions' : 'GR_R_38X_V13::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : ['HLT_Mu11','HLT_IsoMu9'],
     },
     'A120' : {
         # Not skimmed
@@ -208,7 +231,7 @@ RECO_SAMPLES = {
               # CV, EK: (bb -> h0)*(h0->tautau) cross-section not included, as h0 mass is very different from mA
               21202.*_femtobarns*0.131356 # (bb -> A0)*(A0->tautau)
            +  21128.*_femtobarns*0.132576 # (bb -> HH)*(H0->tautau)
-        ), 
+        ),
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkGray_separate,
@@ -256,7 +279,7 @@ RECO_SAMPLES = {
     # Using the unskimmed dataset
     'PPmuXptGt20Mu10' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt10_7TeV-pythia6/Spring10-START3X_V26-v1/GEN-SIM-RECO",
-        'events_processed' : 6342864, 
+        'events_processed' : 6342864,
         'skim_eff' : 1.0,
         'x_sec' : 296500000*_picobarns*0.00116, # xsec (pb) * gen filter efficiency
         'genPhaseSpaceCut' : 'leadingGenMuon.pt < 15.',
@@ -275,7 +298,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
         'factorize' : True
-    },    
+    },
     'WplusJets' : {
         'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
         'events_processed' : 9008895,
@@ -301,7 +324,8 @@ MERGE_SAMPLES = {
     'data' : {
         'samples' : [
             'data_Mu_132440-145761_Sep17ReReco',
-            'data_Mu_145762_147454_Prompt'
+            'data_Mu_147222_147454_Prompt',
+            'data_Mu_145762_147219_Prompt',
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
@@ -309,12 +333,13 @@ MERGE_SAMPLES = {
     },
     'qcdSum' : {
         'samples' : [
+            #NB to change the smBGSum if you edit this!
             'InclusivePPmuX',
             'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
         ],
         'legendEntry' : 'QCD',
-        'type' : 'smMC', 
+        'type' : 'smMC',
         'drawOption' : styles.drawOption_QCD,
     },
     'A120Sum' : {
@@ -335,18 +360,21 @@ MERGE_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A200']['drawOption'],
     },
-    'smBgSum' : {
-        'samples' : [
-            'Ztautau',
-            'Zmumu',
-            'qcdSum',
-            'WplusJets', 
-            'TTplusJets'
-        ],
-        'legendEntry' : 'SM',
-        'type' : 'smSumMC',
-        'drawOption' : styles.drawOption_QCD,
-    }
+    #'smBgSum' : {
+        #'samples' : [
+            #'Ztautau',
+            #'Zmumu',
+            ##'qcdSum',
+            #'InclusivePPmuX',
+            #'PPmuXptGt20Mu10',
+            #'PPmuXptGt20Mu15',
+            #'WplusJets',
+            #'TTplusJets'
+        #],
+        #'legendEntry' : 'SM',
+        #'type' : 'smSumMC',
+        #'drawOption' : styles.drawOption_QCD,
+    #}
 }
 
 # List of all subsamples used in any plot job.  i.e. if qcdSum is included in
@@ -367,7 +395,7 @@ for sample in RECO_SAMPLES.keys():
     defaults.update(RECO_SAMPLES[sample])
     RECO_SAMPLES[sample] = defaults
     # Combine MERGE and RECO samples in ALL samples
-    # for simple access 
+    # for simple access
     ALL_SAMPLES.update(MERGE_SAMPLES)
     ALL_SAMPLES.update(RECO_SAMPLES)
 
