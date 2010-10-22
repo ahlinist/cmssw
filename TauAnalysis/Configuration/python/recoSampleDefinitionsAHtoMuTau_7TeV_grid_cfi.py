@@ -7,9 +7,8 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
     'data_Mu_132440-145761_Sep17ReReco',
-    #'data_Mu_145762_147454_Prompt',
-    'data_Mu_147222_148058_Prompt',
-    'data_Mu_145762_147219_Prompt',
+    'data_Mu_145762_147116_Prompt',
+    'data_Mu_147117_148058_Prompt',
     'A120', 'bbA120',
     'A130', 'bbA130',
     'A200', 'bbA200',
@@ -45,9 +44,10 @@ SAMPLE_DEFAULTS = {
     'conditions' : 'startup',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
+    'enableSysUncertainties' : False,
     'lumi_mask' : '',
     'runselection' : '',
-    'hlt_paths' : ['HLT_Mu9'],
+    'hlt_paths' : [ 'HLT_Mu9' ]
 }
 
 # Conversions to pico barns
@@ -99,7 +99,7 @@ RECO_SAMPLES = {
     'data_Mu_132440-145761_Sep17ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
         'runselection' : "132440 - 145761",
         'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
@@ -107,28 +107,28 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data
     },
-    'data_Mu_145762_147219_Prompt' : {
+    'data_Mu_145762_147116_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'runselection' : '145762 - 147219',
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : '145762 - 147116',
         'conditions' : 'GR_R_38X_V13::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
     },
-    'data_Mu_147222_148058_Prompt' : {
+    'data_Mu_147117_148058_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'runselection' : '147222 - 148058',
+        'runselection' : '147117 - 148058',
         'conditions' : 'GR_R_38X_V13::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : ['HLT_Mu11','HLT_IsoMu9'],
+        'hlt_paths' : [ 'HLT_Mu11', 'HLT_IsoMu9' ],
     },
     'A120' : {
         # Not skimmed
@@ -324,8 +324,8 @@ MERGE_SAMPLES = {
     'data' : {
         'samples' : [
             'data_Mu_132440-145761_Sep17ReReco',
-            'data_Mu_147222_148058_Prompt',
-            'data_Mu_145762_147219_Prompt',
+            'data_Mu_145762_147116_Prompt',
+            'data_Mu_147117_148058_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
@@ -333,7 +333,7 @@ MERGE_SAMPLES = {
     },
     'qcdSum' : {
         'samples' : [
-            #NB to change the smBGSum if you edit this!
+            #EK: need to change the list of samples entering smBgSum if you edit this!
             'InclusivePPmuX',
             'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
@@ -360,21 +360,21 @@ MERGE_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A200']['drawOption'],
     },
-    #'smBgSum' : {
-        #'samples' : [
-            #'Ztautau',
-            #'Zmumu',
-            ##'qcdSum',
+    'smBgSum' : {
+        'samples' : [
+            'Ztautau',
+            'Zmumu',
+            'qcdSum',
             #'InclusivePPmuX',
             #'PPmuXptGt20Mu10',
             #'PPmuXptGt20Mu15',
-            #'WplusJets',
-            #'TTplusJets'
-        #],
-        #'legendEntry' : 'SM',
-        #'type' : 'smSumMC',
-        #'drawOption' : styles.drawOption_QCD,
-    #}
+            'WplusJets',
+            'TTplusJets'
+        ],
+        'legendEntry' : 'SM',
+        'type' : 'smSumMC',
+        'drawOption' : styles.drawOption_QCD,
+    }
 }
 
 # List of all subsamples used in any plot job.  i.e. if qcdSum is included in
