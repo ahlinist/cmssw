@@ -29,6 +29,8 @@ PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
     # modify in case you want to submit crab jobs for some samples only...
+    'data_Mu_147222_147454_Prompt',
+    'data_Mu_145762_147219_Prompt',
 ]
 
 ENABLE_SYSTEMATICS = True
@@ -43,7 +45,7 @@ JOB_OPTIONS_DEFAULTS = [
 ]
 
 def get_conditions(globalTag):
-    """ Retrieve appropriate conditions 
+    """ Retrieve appropriate conditions
 
     Conditions can be automatically retrieved using the autoCond
     utility if the input is in [mc, startup, com10, craft09, etc]
@@ -70,7 +72,7 @@ def number_of_jobs(sample_info, preferred=10000, max_jobs=300):
 for sample in samples.SAMPLES_TO_ANALYZE:
     # If the override list is defined list, only take those
     if SAMPLE_LIST_OVERRIDE:
-        if sample not in SAMPLE_LIST_OVERRIDE: 
+        if sample not in SAMPLE_LIST_OVERRIDE:
             print "Skipping", sample
             continue
     print "Submitting ", sample
@@ -86,14 +88,17 @@ for sample in samples.SAMPLES_TO_ANALYZE:
     # Get the type and genPhase space cut
     jobOptions.append(('type', sample_info['type']))
     # For the genphase space cut, we need to do it for the two different
-    jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut'], 
+    jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut'],
         {'suffix': 'woBtag'}))
-    jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut'], 
+    jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut'],
         {'suffix': 'wBtag'}))
 
     # Check if we need to change the HLT tag
     if 'hlt' in sample_info:
         jobOptions.append(('hlt', sample_info['hlt']))
+
+    # Update our HLT selection
+    jobOptions.append(('hlt_paths', sample_info['hlt_paths']))
 
     # Enable factorization if necessary
     jobOptions.append(('enableFactorization', sample_info['factorize']))
@@ -102,8 +107,8 @@ for sample in samples.SAMPLES_TO_ANALYZE:
     jobOptions.append(('globalTag', get_conditions(sample_info['conditions'])))
 
     # This must be done after the factorization step ?
-    jobOptions.append(('enableSysUncertainties', 
-                       ENABLE_SYSTEMATICS and 
+    jobOptions.append(('enableSysUncertainties',
+                       ENABLE_SYSTEMATICS and
                        sample_info['enableSysUncertainties']))
 
     # Build crab options
