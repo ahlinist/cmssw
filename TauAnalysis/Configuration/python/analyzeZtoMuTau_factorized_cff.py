@@ -38,9 +38,7 @@ analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation = analyzeZtoMuTauEvents.clo
 )
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation, 
-    [ [ evtSelMuonTrkIso, evtSelMuonTrkIsoLooseIsolation ],
-      [ evtSelMuonEcalIso, evtSelMuonEcalIsoLooseIsolation ],
-      [ evtSelMuonCombIso, evtSelMuonCombIsoLooseIsolation ],
+    [ [ evtSelMuonPFRelIso, evtSelMuonPFRelIsoLooseIsolation ],
       [ evtSelMuonAntiPion, evtSelMuonAntiPionLooseIsolation ],
       [ evtSelMuonTrkIP, evtSelMuonTrkIPlooseIsolation ],
       [ evtSelDiTauCandidateForMuTauAntiOverlapVeto, evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation ],

@@ -15,17 +15,9 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 #--------------------------------------------------------------------------------
 
 # muon candidate selection with "loose" muon isolation criteria applied
-evtSelMuonTrkIsoLooseIsolation = evtSelMuonTrkIso.clone(
-    src_cumulative = cms.InputTag('muonTrkIsoCutLooseIsolation', 'cumulative'),
-    src_individual = cms.InputTag('muonTrkIsoCutLooseIsolation', 'individual')
-)    
-evtSelMuonEcalIsoLooseIsolation = evtSelMuonEcalIso.clone(
-    src_cumulative = cms.InputTag('muonEcalIsoCutLooseIsolation', 'cumulative'),
-    src_individual = cms.InputTag('muonEcalIsoCutLooseIsolation', 'individual')
-)
-evtSelMuonCombIsoLooseIsolation = evtSelMuonCombIso.clone(
-    src_cumulative = cms.InputTag('muonCombIsoCutLooseIsolation', 'cumulative'),
-    src_individual = cms.InputTag('muonCombIsoCutLooseIsolation', 'individual')
+evtSelMuonPFRelIsoLooseIsolation = evtSelMuonPFRelIso.clone(
+    src_cumulative = cms.InputTag('muonPFRelIsoCutLooseIsolation', 'cumulative'),
+    src_individual = cms.InputTag('muonPFRelIsoCutLooseIsolation', 'individual')
 )
 evtSelMuonAntiPionLooseIsolation = evtSelMuonAntiPion.clone(
     src_cumulative = cms.InputTag('muonAntiPionCutLooseIsolation', 'cumulative'),
@@ -81,9 +73,7 @@ muTauEventDump_factorizedWithMuonIsolation = muTauEventDump.clone(
 
 muTauAnalysisSequence_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
 replaceAnalyzerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation,
-    [ [ "selectedPatMuonsTrkIsoCumulative", "selectedPatMuonsTrkIsoLooseIsolationCumulative" ],
-      [ "selectedPatMuonsEcalIsoCumulative", "selectedPatMuonsEcalIsoLooseIsolationCumulative" ],
-      [ "selectedPatMuonsCombIsoCumulative", "selectedPatMuonsCombIsoLooseIsolationCumulative" ],
+    [ [ "selectedPatMuonsPFRelIsoCumulative", "selectedPatMuonsPFRelIsoLooseIsolationCumulative" ],
       [ "selectedPatMuonsPionVetoCumulative", "selectedPatMuonsPionVetoLooseIsolationCumulative" ],
       [ "selectedPatMuonsTrkIPcumulative", "selectedPatMuonsTrkIPlooseIsolationCumulative" ],
       [ "selectedMuTauPairsAntiOverlapVetoCumulative", "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative" ],
