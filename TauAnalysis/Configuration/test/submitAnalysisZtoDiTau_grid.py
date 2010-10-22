@@ -70,6 +70,10 @@ for sample in samples.SAMPLES_TO_ANALYZE:
     # For the genphase space cut, we need to do it for the two different
     jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut']))
 
+    # Check if we need to change the HLT tag
+    if 'hlt' in sample_info:
+        jobOptions.append(('hlt', sample_info['hlt']))
+
     # Enable factorization if necessary
     jobOptions.append(('enableFactorization', sample_info['factorize']))
 
