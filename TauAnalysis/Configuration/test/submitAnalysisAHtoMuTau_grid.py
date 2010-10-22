@@ -28,11 +28,11 @@ JOB_ID = USER_CONFIG['JOB_ID']
 PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
-    'Ztautau'
     # modify in case you want to submit crab jobs for some samples only...
 ]
 
-ENABLE_SYSTEMATICS = False
+ENABLE_SYSTEMATICS = True
+#ENABLE_SYSTEMATICS = False
 
 JOB_OPTIONS_DEFAULTS = [
     ('maxEvents', -1),
