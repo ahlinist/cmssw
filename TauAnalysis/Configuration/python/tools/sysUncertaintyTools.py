@@ -12,6 +12,7 @@ from TauAnalysis.RecoTools.patLeptonSystematics_cff import *
 from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
 from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 from TauAnalysis.CandidateTools.muTauPairSelectionForAHtoMuTau_cff import *
+from TauAnalysis.RecoTools.patJetSelection_cff import *
 from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 from TauAnalysis.GenSimTools.sysErrGenEventReweights_cfi import *
@@ -88,7 +89,8 @@ def disableSysUncertainties_patTupleProduction(process):
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runZtoMuTau(process):
-    #print("<disableSysUncertainties_runZtoMuTau>:")
+    print("<disableSysUncertainties_runZtoMuTau>:")
+    print("--> **disabling** estimation of systematic uncertainties...")
     
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
@@ -116,7 +118,8 @@ def disableSysUncertainties_runZtoMuTau(process):
         process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(False)    
 
 def enableSysUncertainties_runZtoMuTau(process):
-    #print("<enableSysUncertainties_runZtoMuTau>:")
+    print("<enableSysUncertainties_runZtoMuTau>:")
+    print("--> **enabling** estimation of systematic uncertainties...")
     
     pyNameSpace = None
 
@@ -132,27 +135,144 @@ def enableSysUncertainties_runZtoMuTau(process):
     setattr(patTauSelConfiguratorForMuTau, "systematics", tauSystematics)
     process.selectPatTausForMuTau = patTauSelConfiguratorForMuTau.configure(process = process)
 
+    setattr(patJetSelConfigurator, "systematics", jetSystematics)
+    process.selectPatJets = patJetSelConfigurator.configure(process = process)
+
+    process.smearedMET = cms.EDProducer("SmearedMETProducer",
+        src = cms.InputTag('patMETs'),
+        smearedParticles = cms.PSet()
+    )
+    smearedMETconfigurator = objProdConfigurator(
+        process.smearedMET,
+        pyModuleName = __name__,
+        systematics = {
+            "sysMuonPtUp" : {        
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPcumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtUpCumulative')
+            },
+            "sysMuonPtDown" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPcumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtDownCumulative')
+            },
+            "sysTauJetEnUp" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative')
+            },
+            "sysTauJetEnDown" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative')
+            }, 
+            "sysTauJetThetaUp" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative')
+            }, 
+            "sysTauJetThetaDown" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative')
+            }, 
+            "sysTauJetPhiUp" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative')
+            }, 
+            "sysTauJetPhiDown" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative')
+            },
+            "sysJetEnUp" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnUpCumulative')
+            },
+            "sysJetEnDown" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnDownCumulative')
+            }
+        }
+    )
+    process.prodSmearedMET = smearedMETconfigurator.configure(process = process)
+
     setattr(muTauPairProdConfigurator, "systematics", {
-        "sysMuonPtUp"           : { "srcLeg1" : "selectedPatMuonsTrkIPsysMuonPtUpCumulative" },
-        "sysMuonPtDown"         : { "srcLeg1" : "selectedPatMuonsTrkIPsysMuonPtDownCumulative" },
-        "sysTauJetEnUp"         : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative" },
-        "sysTauJetEnDown"       : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative" }, 
-        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative" }, 
-        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative" }, 
-        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative" }, 
-        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative" }
+        "sysMuonPtUp" : {
+            "srcLeg1" : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysMuonPtUp')
+        },
+        "sysMuonPtDown" : {
+            "srcLeg1" : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysMuonPtDown')           
+        },
+        "sysTauJetEnUp" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetEnUp')
+        },
+        "sysTauJetEnDown" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
+        }, 
+        "sysTauJetThetaUp" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaUp')
+        }, 
+        "sysTauJetThetaDown" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaDown')
+        }, 
+        "sysTauJetPhiUp" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiUp')
+        }, 
+        "sysTauJetPhiDown" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')                        
+        },
+        "sysJetEnUp" : {
+            "srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
+        },
+        "sysJetEnDown" : {
+            "srcMET"  : cms.InputTag('smearedMETsysJetEnDown')
+        }
     })
     process.produceMuTauPairs = muTauPairProdConfigurator.configure(process = process)
+    process.produceMuTauPairs._seq = process.prodSmearedMET * process.produceMuTauPairs._seq
 
     setattr(muTauPairProdConfiguratorLooseMuonIsolation, "systematics", {
-        "sysMuonPtUp"           : { "srcLeg1" : "selectedPatMuonsTrkIPlooseIsolationSysMuonPtUpCumulative" },
-        "sysMuonPtDown"         : { "srcLeg1" : "selectedPatMuonsTrkIPlooseIsolationSysMuonPtDownCumulative" },
-        "sysTauJetEnUp"         : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative" },
-        "sysTauJetEnDown"       : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative" }, 
-        "sysTauJetThetaUp"      : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative" }, 
-        "sysTauJetThetaDown"    : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative" }, 
-        "sysTauJetPhiUp"        : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative" }, 
-        "sysTauJetPhiDown"      : { "srcLeg2" : "selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative" }
+        "sysMuonPtUp" : {
+            "srcLeg1" : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationSysMuonPtUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysMuonPtUp')
+        },
+        "sysMuonPtDown" : {
+            "srcLeg1" : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationSysMuonPtDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysMuonPtDown')           
+        },
+        "sysTauJetEnUp" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetEnUp')
+        },
+        "sysTauJetEnDown" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
+        }, 
+        "sysTauJetThetaUp" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaUp')
+        }, 
+        "sysTauJetThetaDown" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaDown')
+        }, 
+        "sysTauJetPhiUp" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiUp')
+        }, 
+        "sysTauJetPhiDown" : {
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')            
+            
+        },
+        "sysJetEnUp" : {
+            "srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
+        },
+        "sysJetEnDown" : {
+            "srcMET"  : cms.InputTag('smearedMETsysJetEnDown')
+        }
     })
     process.produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(process = process)
 
@@ -165,7 +285,8 @@ def enableSysUncertainties_runZtoMuTau(process):
     if hasattr(process, "isRecZtoMuTau"):        
         expSysUncertainties = getSysUncertaintyNames(
             [ muonSystematics,
-              tauSystematics ]
+              tauSystematics,
+              jetSystematics ]
         )
         addBoolEventSelFlagProducer(process, "isRecZtoMuTau", expSysUncertainties, "selectZtoMuTauEvents")
 
@@ -248,7 +369,8 @@ def disableSysUncertainties_runWtoTauNu(process):
 #--------------------------------------------------------------------------------
 
 def disableSysUncertainties_runAHtoMuTau(process):
-    #print("<disableSysUncertainties_runAHtoMuTau>:")
+    print("<disableSysUncertainties_runAHtoMuTau>:")
+    print("--> **disabling** estimation of systematic uncertainties...")
 
     disableSysUncertainties_runZtoMuTau(process)
     
@@ -310,7 +432,8 @@ def disableSysUncertainties_runAHtoMuTau(process):
         process.analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(False)    
 
 def enableSysUncertainties_runAHtoMuTau(process):
-    #print("<enableSysUncertainties_runAHtoMuTau>:")
+    print("<enableSysUncertainties_runAHtoMuTau>:")
+    print("--> **enabling** estimation of systematic uncertainties...")
 
     enableSysUncertainties_runZtoMuTau(process)
 
