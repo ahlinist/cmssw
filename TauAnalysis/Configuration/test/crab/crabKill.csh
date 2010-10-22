@@ -23,3 +23,5 @@ foreach crabDirectory (${crabDirectories})
     echo "rm -r ${crabDirectory}"
     rm -r ${crabDirectory}
 end
+echo "rm *$1*"
+rm *{$1}*
