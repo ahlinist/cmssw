@@ -29,6 +29,9 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         # trigger selection
         #evtSelTrigger,
 
+        # data-quality selection
+        evtSelDataQuality,
+
         # primary event vertex selection
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
