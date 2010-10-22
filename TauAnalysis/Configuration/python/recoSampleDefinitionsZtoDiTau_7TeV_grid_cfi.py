@@ -52,13 +52,11 @@ _microbarns = 1.0e6
 
 # Integrated luminosity to normalize 
 ##TARGET_LUMI = (200.0)/_picobarns
-##TARGET_LUMI = (
-##     0.0 # data_JetMETTau_135821_141887_Sep17ReReco
-##   + 0.0 # data_BTau_141950_144114_Sep17ReReco
-##   + 0.0 # data_BTau_145762_147454_Prompt
-##)/_picobarns
-
-TARGET_LUMI = (2.9)/_picobarns
+TARGET_LUMI = (
+     0.17 # data_JetMETTau_135821_141887_Sep17ReReco
+   + 2.81 # data_BTau_141950_144114_Sep17ReReco
+   + 7.55 # data_BTau_145762_147454_Prompt
+)/_picobarns
 
 RECO_SAMPLES = {
     'data_JetMETTau_135821_141887_Sep17ReReco' : {
