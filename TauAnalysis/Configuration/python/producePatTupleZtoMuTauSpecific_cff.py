@@ -17,6 +17,11 @@ from TauAnalysis.RecoTools.patLeptonSystematics_cff import *
 #
 from TauAnalysis.RecoTools.patLeptonSelection_cff import *
 #
+# produce collections of pat::Jets shifted and smeared to better describe the data
+# and for estimating systematic uncertainties
+#
+from TauAnalysis.RecoTools.patJetSystematics_cff import *
+#
 # produce collection of pat::Jets passing Et threshold and
 # Eta acceptance cuts and not overlapping with any object
 # passing selection criteria for pat::Electron, pat::Muon or pat::(PF)Tau
@@ -52,9 +57,10 @@ producePatTupleZtoMuTauSpecific = cms.Sequence(
    + selectPatMuons + selectPatMuonsLooseIsolation
    + selectPatElectrons
    + selectPatTaus + selectPatTausForMuTau
+   + prodSmearedJets 
+   + selectPatJets 
    + produceMuTauPairs + produceMuTauPairsLooseMuonIsolation
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
    + produceMuTauPairZmumuHypotheses
    + produceDiMuPairs
-   + selectPatJets
 )
