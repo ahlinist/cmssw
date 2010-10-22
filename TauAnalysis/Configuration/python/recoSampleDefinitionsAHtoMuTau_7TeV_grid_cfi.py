@@ -8,7 +8,7 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 SAMPLES_TO_ANALYZE = [
     'data_Mu_132440-145761_Sep17ReReco',
     #'data_Mu_145762_147454_Prompt',
-    'data_Mu_147222_147454_Prompt',
+    'data_Mu_147222_148058_Prompt',
     'data_Mu_145762_147219_Prompt',
     'A120', 'bbA120',
     'A130', 'bbA130',
@@ -118,11 +118,11 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
     },
-    'data_Mu_147222_147454_Prompt' : {
+    'data_Mu_147222_148058_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'runselection' : '147222 - 147454',
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : '147222 - 148058',
         'conditions' : 'GR_R_38X_V13::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
@@ -324,7 +324,7 @@ MERGE_SAMPLES = {
     'data' : {
         'samples' : [
             'data_Mu_132440-145761_Sep17ReReco',
-            'data_Mu_147222_147454_Prompt',
+            'data_Mu_147222_148058_Prompt',
             'data_Mu_145762_147219_Prompt',
         ],
         'legendEntry' : 'DATA',
