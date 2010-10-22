@@ -485,7 +485,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   if (nTrk_ > 10) {
     if (((float)nGoodTrk_/(float)nTrk_) > 0.25) IsTracksGood_ = 1;
   } else {
-    IsTracksGood_ = 0;
+    IsTracksGood_ = 1;
   }
 
   // PDF information
