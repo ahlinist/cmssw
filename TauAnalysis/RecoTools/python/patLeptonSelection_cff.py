@@ -191,18 +191,17 @@ selectedPatMuonsGlobal.cut = cms.string('isGlobalMuon()')
 selectedPatMuonsEta21.cut = cms.string('abs(eta) < 2.1')
 selectedPatMuonsPt10.cut = cms.string('pt > 10.')
 selectedPatMuonsVbTfId.beamSpotSource = cms.InputTag("offlineBeamSpot")
-selectedPatMuonsTrkIso.vetos = vetos = cms.vstring("0.01")
-selectedPatMuonsTrkIso.dRisoCone = cms.double(0.4)
-selectedPatMuonsTrkIso.sumPtMax = cms.double(0.10)
-selectedPatMuonsTrkIso.sumPtMethod = cms.string("relative")
-selectedPatMuonsEcalIso.vetos = vetos = cms.vstring("0.01")
-selectedPatMuonsEcalIso.dRisoCone = cms.double(0.4)
-selectedPatMuonsEcalIso.sumPtMax = cms.double(0.10)
-selectedPatMuonsEcalIso.sumPtMethod = cms.string("relative")
-selectedPatMuonsCombIso.vetos = vetos = cms.vstring("0.01")
-selectedPatMuonsCombIso.dRisoCone = cms.double(0.4)
-selectedPatMuonsCombIso.sumPtMax = cms.double(0.10)
-selectedPatMuonsCombIso.sumPtMethod = cms.string("relative")
+selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = cms.double(-1.)
+selectedPatMuonsPFRelIso.chargedHadronIso.dRvetoCone = cms.double(-1.)
+selectedPatMuonsPFRelIso.chargedHadronIso.dRisoCone = cms.double(0.4)
+selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = cms.double(0.5)
+selectedPatMuonsPFRelIso.neutralHadronIso.dRvetoCone = cms.double(0.08)
+selectedPatMuonsPFRelIso.neutralHadronIso.dRisoCone = cms.double(0.4)
+selectedPatMuonsPFRelIso.photonIso.ptMin = cms.double(0.5)
+selectedPatMuonsPFRelIso.photonIso.dRvetoCone = cms.double(-1.)
+selectedPatMuonsPFRelIso.photonIso.dRisoCone = cms.double(0.4)
+selectedPatMuonsPFRelIso.sumPtMax = cms.double(0.10)
+selectedPatMuonsPFRelIso.sumPtMethod = cms.string("relative")
 selectedPatMuonsPionVeto.CaloCompCoefficient = cms.double(0.8)
 selectedPatMuonsPionVeto.SegmCompCoefficient = cms.double(1.2)
 selectedPatMuonsPionVeto.AntiPionCut = cms.double(1.0)
@@ -215,9 +214,7 @@ patMuonSelConfigurator = objSelConfigurator(
       selectedPatMuonsEta21,
       selectedPatMuonsPt10,
       selectedPatMuonsVbTfId,
-      selectedPatMuonsTrkIso,
-      selectedPatMuonsEcalIso,
-      selectedPatMuonsCombIso,
+      selectedPatMuonsPFRelIso,
       selectedPatMuonsPionVeto,
       selectedPatMuonsTrk,
       selectedPatMuonsTrkIP ],
@@ -228,12 +225,8 @@ patMuonSelConfigurator = objSelConfigurator(
 
 selectPatMuons = patMuonSelConfigurator.configure(pyNameSpace = locals())
 
-selectedPatMuonsTrkIsoLooseIsolation.sumPtMax = cms.double(0.25)
-selectedPatMuonsTrkIsoLooseIsolation.sumPtMethod = cms.string("relative")
-selectedPatMuonsEcalIsoLooseIsolation.sumPtMax = cms.double(0.25)
-selectedPatMuonsEcalIsoLooseIsolation.sumPtMethod = cms.string("relative")
-selectedPatMuonsCombIsoLooseIsolation.sumPtMax = cms.double(0.25)
-selectedPatMuonsCombIsoLooseIsolation.sumPtMethod = cms.string("relative")
+selectedPatMuonsPFRelIsoLooseIsolation.sumPtMax = cms.double(0.25)
+selectedPatMuonsPFRelIsoLooseIsolation.sumPtMethod = cms.string("relative")
 selectedPatMuonsPionVetoLooseIsolation.CaloCompCoefficient = selectedPatMuonsPionVeto.CaloCompCoefficient
 selectedPatMuonsPionVetoLooseIsolation.SegmCompCoefficient = selectedPatMuonsPionVeto.SegmCompCoefficient
 selectedPatMuonsPionVetoLooseIsolation.AntiPionCut = selectedPatMuonsPionVeto.AntiPionCut
@@ -246,9 +239,7 @@ patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
       selectedPatMuonsEta21,
       selectedPatMuonsPt10,
       selectedPatMuonsVbTfId,
-      selectedPatMuonsTrkIsoLooseIsolation,
-      selectedPatMuonsEcalIsoLooseIsolation,
-      selectedPatMuonsCombIsoLooseIsolation,
+      selectedPatMuonsPFRelIsoLooseIsolation,
       selectedPatMuonsPionVetoLooseIsolation,
       selectedPatMuonsTrkLooseIsolation,
       selectedPatMuonsTrkIPlooseIsolation ],
