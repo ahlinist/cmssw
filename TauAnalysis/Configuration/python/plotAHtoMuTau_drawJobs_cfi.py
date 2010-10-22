@@ -209,63 +209,61 @@ drawJobConfigurator_AHtoMuTau.add(
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelMuonVbTfId,
-    beforeCut = evtSelMuonTrkIso,
-    plots = [
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/MuonPFChargedHadronIsoPt',
-            title = "Muon Track iso. (after Muon VBTF id. Cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_muonAbsTrkIso_afterMuonVbTfId"
-        ),
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/MuonPFChargedHadronIsoPtRel',
-            title = "Muon Track rel. iso. (after Muon VBTF id. Cut)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_muonRelTrkIso_afterMuonVbTfId"
-        )
-    ]
-)
-
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelMuonTrkIso,
-    beforeCut = evtSelMuonEcalIso,
-    plots = [
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/MuonPFGammaIsoPt',
-            title = "Muon ECAL iso. (after Muon Track iso. Cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_muonAbsEcalIso_afterMuonTrkIso"
-        ),
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/MuonPFGammaIsoPtRel',
-            title = "Muon ECAL rel. iso. (after Muon Track iso. Cut)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_muonRelEcalIso_afterMuonTrkIso"
-        )
-    ]
-)
-
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelMuonEcalIso,
-    beforeCut = evtSelMuonCombIso,
+    beforeCut = evtSelMuonPFRelIso,
     plots = [
         drawJobConfigEntry(
             meName = 'MuonQuantities/MuonParticleFlowIsoPt',
-            title = "Muon Combined iso. (after Muon Track iso. Cut)",
+            title = "Muon PFCandidate iso. (after Muon VBTF id. Cut)",
             xAxis = 'Pt',
-            name = "cutFlowControlPlots_muonAbsCombIso_afterMuonEcalIso"
+            name = "cutFlowControlPlots_muonPFCandidateAbsIso_afterMuonVbTfId"
         ),
         drawJobConfigEntry(
             meName = 'MuonQuantities/MuonParticleFlowIsoPtRel',
-            title = "Muon Combined rel. iso. (after Muon Track iso. Cut)",
+            title = "Muon PFCandidate rel. iso. (after Muon VBTF id. Cut)",
             xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_muonRelCombIso_afterMuonEcalIso"
+            name = "cutFlowControlPlots_muonPFCandidateRelIso_afterMuonVbTfId"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFChargedHadronIsoPt',
+            title = "Muon PFChargedHadron iso. (after Muon VBTF id. Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_muonPFChargedHadronAbsIso_afterMuonVbTfId"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFChargedHadronIsoPtRel',
+            title = "Muon PFChargedHadron rel. iso. (after Muon VBTF id. Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_muonPFChargedHadronRelIso_afterMuonVbTfId"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFNeutralHadronIsoPt',
+            title = "Muon PFNeutralHadron iso. (after Muon VBTF id. Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_muonPFNeutralHadronAbsIso_afterMuonVbTfId"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFNeutralHadronIsoPtRel',
+            title = "Muon PFNeutralHadron rel. iso. (after Muon VBTF id. Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_muonPFNeutralHadronRelIso_afterMuonVbTfId"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFGammaIsoPt',
+            title = "Muon PFGamma iso. (after Muon VBTF id. Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_muonPFGammaAbsIso_afterMuonVbTfId"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonPFGammaIsoPtRel',
+            title = "Muon PFGamma rel. iso. (after Muon VBTF id. Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_muonPFGammaRelIso_afterMuonVbTfId"
         )
     ]
 )
 
 drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelMuonCombIso,
+    afterCut = evtSelMuonPFRelIso,
     beforeCut = evtSelMuonAntiPion,
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/Muon#PAR#Compatibility',
@@ -469,12 +467,23 @@ drawJobConfigurator_AHtoMuTau.add(
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
     plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+	meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
         title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
         xAxis = 'Mass',
         name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+    )
+)
+
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
+    plot = drawJobConfigEntry(
+	meName = 'DiMuZmumuHypothesisByLooseIsolationAndChargeQuantities/DiTauCandidateCharge',
+        title = "Charge(iso. Muon + iso. Muon) (after 80 < M(Muon-Muon) < 100 GeV Veto)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diMuonCharge_afterZmumuHypothesisVetoByMass"
     )
 )
 
@@ -486,7 +495,7 @@ drawJobConfigurator_AHtoMuTau_woBtag = copy.deepcopy(drawJobConfigurator_AHtoMuT
 drawJobConfigurator_AHtoMuTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_woBtag/')
 
 drawJobConfigurator_AHtoMuTau_woBtag.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVeto,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
     beforeCut = evtSelNonCentralJetEt20bTag,
     plot = drawJobConfigEntry(
 	meName = 'JetQuantities/Jet#PAR#',
@@ -505,7 +514,7 @@ drawJobConfigurator_AHtoMuTau_wBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTa
 drawJobConfigurator_AHtoMuTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_wBtag/')
 
 drawJobConfigurator_AHtoMuTau_wBtag.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVeto,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
     beforeCut = evtSelCentralJetEt20,
     plot = drawJobConfigEntry(
 	meName = 'JetQuantities/Jet#PAR#',
