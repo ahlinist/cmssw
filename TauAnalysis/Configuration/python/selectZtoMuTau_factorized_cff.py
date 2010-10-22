@@ -14,23 +14,11 @@ from TauAnalysis.Configuration.selectZtoMuTau_cff import *
 #--------------------------------------------------------------------------------
 
 # muon candidate selection with "loose" muon isolation criteria applied
-cfgMuonTrkIsoCutLooseIsolation = cfgMuonTrkIsoCut.clone(
-    pluginName = cms.string('muonTrkIsoCutLooseIsolation'),
-    src_cumulative = cms.InputTag('selectedPatMuonsTrkIsoLooseIsolationCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsTrkIsoLooseIsolationIndividual')
+cfgMuonPFRelIsoCutLooseIsolation = cfgMuonPFRelIsoCut.clone(
+    pluginName = cms.string('muonPFRelIsoCutLooseIsolation'),
+    src_cumulative = cms.InputTag('selectedPatMuonsPFRelIsoLooseIsolationCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsPFRelIsoLooseIsolationIndividual')
 )    
-
-cfgMuonEcalIsoCutLooseIsolation = cfgMuonEcalIsoCut.clone(
-    pluginName = cms.string('muonEcalIsoCutLooseIsolation'),
-    src_cumulative = cms.InputTag('selectedPatMuonsEcalIsoLooseIsolationCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsEcalIsoLooseIsolationIndividual')
-)
-
-cfgMuonCombIsoCutLooseIsolation = cfgMuonCombIsoCut.clone(
-    pluginName = cms.string('muonCombIsoCutLooseIsolation'),
-    src_cumulative = cms.InputTag('selectedPatMuonsCombIsoLooseIsolationCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsCombIsoLooseIsolationIndividual')
-)
 
 cfgMuonAntiPionCutLooseIsolation = cfgMuonAntiPionCut.clone(
     pluginName = cms.string('muonAntiPionCutLooseIsolation'),
@@ -76,9 +64,7 @@ cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation = cfgDiTauCandidateForMu
 )    
 
 zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
-    [ cfgMuonTrkIsoCutLooseIsolation,
-      cfgMuonEcalIsoCutLooseIsolation,
-      cfgMuonCombIsoCutLooseIsolation,
+    [ cfgMuonPFRelIsoCutLooseIsolation,
       cfgMuonAntiPionCutLooseIsolation,
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
