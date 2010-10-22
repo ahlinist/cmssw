@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
+
 #--------------------------------------------------------------------------------  
 # produce collections of pat::Muons passing selection criteria
 #
@@ -40,36 +42,9 @@ selectedPatMuonsVbTfId = cms.EDFilter("PATMuonVbTfSelector",
 )                                      
 
 # require muon candidate to be isolated
-# with respect to tracks/charged hadrons
-selectedPatMuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
-    type = cms.string('pfChargedHadrons'),
-    vetos = cms.vstring("0.01"),                          
-    dRisoCone = cms.double(0.4),
-    sumPtMax = cms.double(0.10),
-    sumPtMethod = cms.string("relative"),                                 
-    filter = cms.bool(False)
-)
-
-# require muon candidate to be isolated
-# with respect to ECAL energy deposits/photons
-selectedPatMuonsEcalIso = cms.EDFilter("PATMuonIsoDepositSelector",
-    type = cms.string('pfPhotons'),
-    vetos = cms.vstring("0.01"),                          
-    dRisoCone = cms.double(0.4),
-    sumPtMax = cms.double(0.10),
-    sumPtMethod = cms.string("relative"),                                 
-    filter = cms.bool(False)
-)
-
-# require muon candidate to be isolated
-# with respect to sum of tracks + ECAL and HCAL energy deposits/
-# charged and neutral hadrons + photons
-selectedPatMuonsCombIso = cms.EDFilter("PATMuonIsoDepositSelector",
-    type = cms.string('pfAllParticles'),
-    vetos = cms.vstring("0.01"),                          
-    dRisoCone = cms.double(0.4),
-    sumPtMax = cms.double(0.10),
-    sumPtMethod = cms.string("relative"),                                 
+# with respect to particle-flow candidates
+selectedPatMuonsPFRelIso = cms.EDFilter("PATMuonPFIsolationSelector",
+    patMuonPFIsolationSelector,
     filter = cms.bool(False)
 )
 
@@ -107,14 +82,9 @@ selectedPatMuonsTrkIP = cms.EDFilter("PATMuonIpSelector",
 #        in order to avoid problems with limited Monte Carlo statistics)
 #--------------------------------------------------------------------------------
 
-selectedPatMuonsTrkIsoLooseIsolation = selectedPatMuonsTrkIso.clone()
-selectedPatMuonsTrkIsoLooseIsolation.sumPtMax = cms.double(0.25)
-
-selectedPatMuonsEcalIsoLooseIsolation = selectedPatMuonsEcalIso.clone()
-selectedPatMuonsEcalIsoLooseIsolation.sumPtMax = cms.double(0.25)
-
-selectedPatMuonsCombIsoLooseIsolation = selectedPatMuonsCombIso.clone()
-selectedPatMuonsCombIsoLooseIsolation.sumPtMax = cms.double(0.25)
+selectedPatMuonsPFRelIsoLooseIsolation = selectedPatMuonsPFRelIso.clone(
+    sumPtMax = cms.double(0.25)
+)    
 
 selectedPatMuonsPionVetoLooseIsolation = selectedPatMuonsPionVeto.clone()
 
