@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-INPUT_FILES_DIR = '/data1/friis'
-sample_mapper = lambda sample : "harvested_AHtoMuTau_%s_Run7.root" % sample
+INPUT_FILES_DIR = '/data1/friis/Run10_v2'
+sample_mapper = lambda sample : "harvested_AHtoMuTau_%s_Run10.root" % sample
 
 process = cms.Process('makeAHtoMuTauPlots')
 
