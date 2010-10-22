@@ -28,6 +28,7 @@ process.load("TauAnalysis.Configuration.producePatTupleZtoMuTauSpecific_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
+process.load("TauAnalysis.RecoTools.filterDataQuality_cfi")
 
 # import sequence for filling of histograms, cut-flow table
 # and of run + event number pairs for events passing event selection
@@ -74,7 +75,6 @@ process.source = cms.Source("PoolSource",
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
         'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
-        #'file:/data1/veelken/CMSSW_3_6_x/skims/pseudoData_Ztautau.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -147,6 +147,10 @@ process.p = cms.Path(
   + process.saveZtoMuTauPlots
 )
 
+process.q = cms.Path(process.dataQualityFilters)
+
+process.schedule = cms.Schedule(process.q, process.p)
+
 #--------------------------------------------------------------------------------
 # import utility function for switching HLT InputTags when processing
 # RECO/AOD files produced by MCEmbeddingTool
@@ -211,4 +215,4 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
