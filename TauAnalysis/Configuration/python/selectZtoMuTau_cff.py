@@ -12,7 +12,11 @@ cfgTrigger = cms.PSet(
     pluginName = cms.string('Trigger'),
     pluginType = cms.string('TriggerResultEventSelector'),
     src = cms.InputTag('TriggerResults::HLT'),
-    triggerPaths = cms.vstring('HLT_Mu9')
+    triggerPaths = cms.vstring(
+      'HLT_Mu9',
+      'HLT_Mu11',
+      'HLT_IsoMu9'
+    )
 )
 
 # primary event vertex selection
@@ -68,27 +72,11 @@ cfgMuonVbTfIdCut = cms.PSet(
     systematics = cms.vstring(muonSystematics.keys()),
     minNumber = cms.uint32(1)
 )
-cfgMuonTrkIsoCut = cms.PSet(
-    pluginName = cms.string('muonTrkIsoCut'),
+cfgMuonPFRelIsoCut = cms.PSet(
+    pluginName = cms.string('muonPFRelIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsTrkIsoIndividual'),
-    systematics = cms.vstring(muonSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
-cfgMuonEcalIsoCut = cms.PSet(
-    pluginName = cms.string('muonEcalIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsEcalIsoIndividual'),
-    systematics = cms.vstring(muonSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
-cfgMuonCombIsoCut = cms.PSet(
-    pluginName = cms.string('muonCombIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsCombIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsCombIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsPFRelIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsPFRelIsoIndividual'),
     systematics = cms.vstring(muonSystematics.keys()),
     minNumber = cms.uint32(1)
 )
@@ -250,11 +238,19 @@ cfgDiTauCandidateForMuTauPzetaDiffCut = cms.PSet(
 )
 
 # veto events compatible with Z --> mu+ mu- hypothesis
-# (based on reconstructed (visible) invariant mass of muon + muon pairs)
-cfgDiMuPairZmumuHypothesisVeto = cms.PSet(
-    pluginName = cms.string('diMuPairZmumuHypothesisVeto'),
+# (based on either reconstructed (visible) invariant mass of muon + muon pairs
+#  or presence of two (loosely) isolated muons of Pt > 10 GeV and opposite charge)
+cfgDiMuPairZmumuHypothesisVetoByMass = cms.PSet(
+    pluginName = cms.string('diMuPairZmumuHypothesisVetoByMass'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedDiMuPairZmumuHypotheses'),
+    src = cms.InputTag('selectedDiMuPairZmumuHypothesesByMass'),
+    #systematics = cms.vstring(muonSystematics.keys()),
+    maxNumber = cms.uint32(0)
+)
+cfgDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge = cms.PSet(
+    pluginName = cms.string('diMuPairZmumuHypothesisVetoByLooseIsolationAndCharge'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src = cms.InputTag('selectedDiMuPairZmumuHypothesesByLooseIsolationAndCharge'),
     #systematics = cms.vstring(muonSystematics.keys()),
     maxNumber = cms.uint32(0)
 )
@@ -267,13 +263,11 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgGlobalMuonCut,
       cfgMuonEtaCut,
       cfgMuonPtCut,
-      cfgMuonVbTfIdCut,
       cfgTauAntiOverlapWithMuonsVeto,
       cfgTauEtaCut,
       cfgTauPtCut,
-      cfgMuonTrkIsoCut,
-      cfgMuonEcalIsoCut,
-      cfgMuonCombIsoCut,
+      cfgMuonVbTfIdCut,
+      cfgMuonPFRelIsoCut,
       cfgMuonAntiPionCut,
       cfgMuonTrkIPcut,
       cfgTauLeadTrkCut,
@@ -290,7 +284,8 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForMuTauAcoplanarity12Cut,
       cfgDiTauCandidateForMuTauMt1METcut,
       cfgDiTauCandidateForMuTauPzetaDiffCut,
-      cfgDiMuPairZmumuHypothesisVeto ],
+      cfgDiMuPairZmumuHypothesisVetoByMass,
+      cfgDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
@@ -306,7 +301,8 @@ isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
-        cms.InputTag('diMuPairZmumuHypothesisVeto')      
+        cms.InputTag('diMuPairZmumuHypothesisVetoByMass'), 
+        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolationAndCharge')      
     )
 )
 
