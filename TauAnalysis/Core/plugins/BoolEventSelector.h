@@ -10,9 +10,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: BoolEventSelector.h,v 1.2 2010/04/28 14:44:07 jkolb Exp $
+ * $Id: BoolEventSelector.h,v 1.3 2010/09/28 11:23:29 jkolb Exp $
  *
  */
 
@@ -33,6 +33,9 @@ class BoolEventSelector : public EventSelectorBase
  private:
   // source collection label
   edm::InputTag src_;
+
+  // internal flag: set to true/false to disable/enable error message printed in case boolean flag is not found in the event
+  bool failSilent_; 
 };
 
 #endif
