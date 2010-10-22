@@ -103,22 +103,19 @@ genPhaseSpaceCut = cms.PSet(
     cut = cms.string('')
 )
 
-# generator level selection of pure hadronic Z --> tau-jet + tau-jet events
-# passing basic acceptance and kinematic cuts
-# (NOTE: to be used for efficiency studies only !!)
-#genDiTauCut = cms.PSet(
-#    pluginName = cms.string('genTauCut'),
-#    pluginType = cms.string('PATCandViewMinEventSelector'),
-#    src = cms.InputTag('selectedGenTauDecaysToHadronsPt20Cumulative'),
-#    minNumber = cms.uint32(2)
-#)
-
 # trigger selection
 #evtSelTrigger = cms.PSet(
 #    pluginName = cms.string('evtSelTrigger'),
 #    pluginType = cms.string('BoolEventSelector'),
 #    src = cms.InputTag('Trigger')
 #)
+
+# data-quality selection
+evtSelDataQuality = cms.PSet(
+    pluginName = cms.string('evtSelDataQuality'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('dataQualityCutsPassed')
+)
 
 # primary event vertex selection
 evtSelPrimaryEventVertex = cms.PSet(
@@ -394,7 +391,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('genPhaseSpaceCut'),
         title = cms.string('gen. Phase-Space'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -407,35 +404,12 @@ diTauAnalysisSequence = cms.VPSet(
             'triggerHistManagerForDiTau'
         )
     ),
-
-    # generator level phase-space selection
-    # (NOTE: (1) to be used in case of Monte Carlo samples
-    #            overlapping in simulated phase-space only !!
-    #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
-    #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
-    #            to the CERN batch system will not work !!)
-    #cms.PSet(
-    #    filter = cms.string('genDiTauCut'),
-    #    title = cms.string('gen. Tau Pair'),
-    #    saveRunEventNumbers = cms.vstring('')
-    #),
-    #cms.PSet(
-    #    analyzers = cms.vstring(
-    #        'genPhaseSpaceEventInfoHistManager',
-    #        'tauHistManager1',
-    #        'tauHistManager2',
-    #        'caloMEtHistManager',
-    #        'pfMEtHistManager',
-    #        'vertexHistManager',
-    #        'triggerHistManagerForDiTau'
-    #    )
-    #),
     
     # trigger selection
     #cms.PSet(
     #    filter = cms.string('evtSelTrigger'),
     #    title = cms.string('Trigger'),
-    #    saveRunEventNumbers = cms.vstring('')
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
     #),
     #cms.PSet(
     #    analyzers = cms.vstring(
@@ -449,11 +423,28 @@ diTauAnalysisSequence = cms.VPSet(
     #    )
     #),
 
+    # data-quality selection
+    cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'tauHistManager1',
+            'tauHistManager2',
+            'caloMEtHistManager',
+            'pfMEtHistManager',
+            'vertexHistManager',
+            'triggerHistManagerForDiTau'
+        )
+    ),
+
     # primary event vertex selection
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertex'),
         title = cms.string('Vertex'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -467,7 +458,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexQuality'),
         title = cms.string('p(chi2Vertex) > 0.01'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -481,7 +472,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
         title = cms.string('-25 < zVertex < +25 cm'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -497,7 +488,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauEta'),
         title = cms.string('-2.1 < eta(1.Tau) < +2.1'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -514,7 +505,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauPt'),
         title = cms.string('Pt(1.Tau) > 20 GeV'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -533,7 +524,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauEta'),
         title = cms.string('-2.1 < eta(2.Tau) < +2.1'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -551,7 +542,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauPt'),
         title = cms.string('Pt(2.Tau) > 20 GeV'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -571,7 +562,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauLeadTrk'),
         title = cms.string('1.Tau lead. Track find.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -584,7 +575,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauLeadTrkPt'),
         title = cms.string('1.Tau lead. Track Pt'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -597,7 +588,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauTaNCdiscr'),
         title = cms.string('1.Tau TaNC discr.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -610,7 +601,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauTrkIso'),
         title = cms.string('1.Tau Track iso.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -623,7 +614,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauEcalIso'),
         title = cms.string('1.Tau ECAL iso.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -636,7 +627,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauProng'),
         title = cms.string('1.Tau 1||3-Prong'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -649,7 +640,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauCharge'),
         title = cms.string('Charge(1.Tau) = +/-1'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -662,7 +653,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauMuonVeto'),
         title = cms.string('1.Tau mu-Veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -675,7 +666,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelFirstTauElectronVeto'),
         title = cms.string('1.Tau e-Veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -695,7 +686,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauLeadTrk'),
         title = cms.string('2.Tau lead. Track find.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -710,7 +701,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauLeadTrkPt'),
         title = cms.string('2.Tau lead. Track Pt'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -725,7 +716,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauTaNCdiscr'),
         title = cms.string('2.Tau TaNC discr.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -740,7 +731,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauTrkIso'),
         title = cms.string('2.Tau Track iso.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -755,7 +746,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauEcalIso'),
         title = cms.string('2.Tau ECAL iso.'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -770,7 +761,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauProng'),
         title = cms.string('2.Tau 1||3-Prong'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -785,7 +776,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauCharge'),
         title = cms.string('Charge(2.Tau) = +/-1'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -800,7 +791,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauMuonVeto'),
         title = cms.string('2.Tau mu-Veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -815,7 +806,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelSecondTauElectronVeto'),
         title = cms.string('2.Tau e-Veto'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -836,7 +827,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForDiTauAntiOverlapVeto'),
         title = cms.string('dR(1.Tau-2.Tau) > 0.7'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -857,7 +848,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForDiTauZeroCharge'),
         title = cms.string('Charge(1.Tau+2.Tau) = 0'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),    
     cms.PSet(
         analyzers = cms.vstring(
@@ -878,7 +869,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForDiTauAcoplanarity'),
         title = cms.string('dPhi(1.Tau-MET) < 3.2 || dPhi(2.Tau-MET) < 3.2'), # cut disabled for now...
-        saveRunEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -899,7 +890,7 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForDiTauPzetaDiff'),
         title = cms.string('P_{#zeta} - 1.5*P_{#zeta}^{vis} > -20 GeV'),
-        saveRunEventNumbers = cms.vstring('passed_cumulative')
+        saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -930,7 +921,7 @@ diTauAnalysisSequence = cms.VPSet(
     #cms.PSet(
     #    filter = cms.string('evtSelCentralJetVeto'),
     #    title = cms.string('central Jet Veto'),
-    #    saveRunEventNumbers = cms.vstring('passed_cumulative')
+    #    saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
     #),
     #cms.PSet(
     #    analyzers = cms.vstring(
