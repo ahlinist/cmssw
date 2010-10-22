@@ -18,12 +18,6 @@ from TauAnalysis.CandidateTools.muTauPairSelectionForAHtoMuTau_cff import *
 #
 from TauAnalysis.RecoTools.muTauPairZmumuHypothesisForAHtoMuTau_cff import *
 #
-# produce collections of pat::Jets
-# shifted and smeared to better describe the data
-# and for estimating systematic uncertainties
-#
-from TauAnalysis.RecoTools.patJetSystematics_cff import *
-#
 # produce collections of central jets
 # passing b-tagging discriminator
 #
@@ -33,6 +27,5 @@ producePatTupleAHtoMuTauSpecific = cms.Sequence(
     producePatTupleZtoMuTauSpecific
    + selectMuTauPairsForAHtoMuTau + selectMuTauPairsForAHtoMuTauLooseMuonIsolation
    + produceMuTauPairZmumuHypothesesForAHtoMuTau + produceMuTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation
-   + prodSmearedJets 
    + selectPatJetsForAHtoMuTau + selectPatJetsForAHtoMuTauLooseMuonIsolation
 )
