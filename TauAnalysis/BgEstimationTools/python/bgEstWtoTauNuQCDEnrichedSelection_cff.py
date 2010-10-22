@@ -297,82 +297,82 @@ analyzeEventsBgEstWtoTauNuqcdEnriched = cms.EDAnalyzer("GenericAnalyzer",
     cms.PSet(
     filter = cms.string('evtSelPrimaryEventVertex'),
     title = cms.string('Vertex'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('evtSelPrimaryEventVertexQuality'),
     title = cms.string('p(chi2Vertex) > 0.01'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('evtSelPrimaryEventVertexPosition'),
     title = cms.string('-50 < Vertex < +50 cm'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('evtSelTauEta'),
     title = cms.string('-2.1 < eta(Tau) < +2.1'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('evtSelTauPt'),
     title = cms.string('25< Pt(Tau) < 60 GeV'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('evtSelPFMetPt'),
     title = cms.string('PF-MET > 30 GeV'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('evtSelTauLeadTrk'),
     title = cms.string('with leadtrk'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('tauLeadTrkPtCutBgEstqcdEnriched'),
     title = cms.string('15 < leadtrk pt < 20 GeV'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('tauEcalIsoCutBgEstqcdEnriched'),
     title = cms.string('inverse isolation'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('tauTrkIsoCutBgEstqcdEnriched'),
     title = cms.string('none'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('tauProngCutBgEstqcdEnriched'),
     title = cms.string('none'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('tauChargeCutBgEstqcdEnriched'),
     title = cms.string('none'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('tauMuonVetoCutBgEstqcdEnriched'),
     title = cms.string('Muon veto'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('tauElectronVetoCutBgEstqcdEnriched'),
     title = cms.string('Electron veto'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('tauEcalCrackVetoCutBgEstqcdEnriched'),
     title = cms.string('Ecal Crack veto'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     filter = cms.string('centralJetVetoBgEstqcdEnriched'),
     title = cms.string('central jet veto'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     analyzers = cms.vstring(
@@ -391,7 +391,7 @@ analyzeEventsBgEstWtoTauNuqcdEnriched = cms.EDAnalyzer("GenericAnalyzer",
     cms.PSet(
     filter = cms.string('recoilEnergyCutBgEstqcdEnriched'),
     title = cms.string('recoil energy (calotowers) < 10'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     analyzers = cms.vstring(
@@ -410,7 +410,7 @@ analyzeEventsBgEstWtoTauNuqcdEnriched = cms.EDAnalyzer("GenericAnalyzer",
     cms.PSet(
     filter = cms.string('metTopologyCutBgEstqcdEnriched'),
     title = cms.string('MET-topology < 0.4'),
-    saveRunEventNumbers = cms.vstring('')
+    saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
     analyzers = cms.vstring(

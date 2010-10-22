@@ -14,21 +14,14 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 
-muonsBgEstQCDenrichedTrkIso = copy.deepcopy(selectedPatMuonsTrkIso)
-muonsBgEstQCDenrichedTrkIso.sumPtMin = cms.double(0.10)
-muonsBgEstQCDenrichedTrkIso.sumPtMax = cms.double(0.25)
-muonsBgEstQCDenrichedTrkIso.sumPtMethod = cms.string("relative")
-
-muonsBgEstQCDenrichedEcalIso = copy.deepcopy(selectedPatMuonsEcalIso)
-muonsBgEstQCDenrichedEcalIso.sumPtMin = cms.double(0.10)
-muonsBgEstQCDenrichedEcalIso.sumPtMax = cms.double(0.25)
-muonsBgEstQCDenrichedEcalIso.sumPtMethod = cms.string("relative")
+muonsBgEstQCDenrichedPFRelIso = copy.deepcopy(selectedPatMuonsPFRelIso)
+muonsBgEstQCDenrichedPFRelIso.sumPtMin = cms.double(0.10)
+muonsBgEstQCDenrichedPFRelIso.sumPtMax = cms.double(0.25)
 
 muonsBgEstQCDenrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
 
 muonSelConfiguratorBgEstQCDenriched = objSelConfigurator(
-    [ muonsBgEstQCDenrichedTrkIso,
-      muonsBgEstQCDenrichedEcalIso,
+    [ muonsBgEstQCDenrichedPFRelIso,
       muonsBgEstQCDenrichedPionVeto ],
     src = "selectedPatMuonsPt10Cumulative",
     pyModuleName = __name__,
@@ -95,15 +88,10 @@ selectMuTauPairsBgEstQCDenriched = cms.Sequence(muTauPairsBgEstQCDenriched)
 
 from TauAnalysis.Configuration.selectZtoMuTau_cff import *
 
-cfgMuonTrkIsoCutBgEstQCDenriched = copy.deepcopy(cfgMuonTrkIsoCut)
-cfgMuonTrkIsoCutBgEstQCDenriched.pluginName = cms.string('muonTrkIsoCutBgEstQCDenriched')
-cfgMuonTrkIsoCutBgEstQCDenriched.src_cumulative = cms.InputTag('muonsBgEstQCDenrichedTrkIsoCumulative')
-cfgMuonTrkIsoCutBgEstQCDenriched.systematics = cms.vstring()
-
-cfgMuonEcalIsoCutBgEstQCDenriched = copy.deepcopy(cfgMuonEcalIsoCut)
-cfgMuonEcalIsoCutBgEstQCDenriched.pluginName = cms.string('muonEcalIsoCutBgEstQCDenriched')
-cfgMuonEcalIsoCutBgEstQCDenriched.src_cumulative = cms.InputTag('muonsBgEstQCDenrichedEcalIsoCumulative')
-cfgMuonEcalIsoCutBgEstQCDenriched.systematics = cms.vstring()
+cfgMuonPFRelIsoCutBgEstQCDenriched = copy.deepcopy(cfgMuonPFRelIsoCut)
+cfgMuonPFRelIsoCutBgEstQCDenriched.pluginName = cms.string('muonPFRelIsoCutBgEstQCDenriched')
+cfgMuonPFRelIsoCutBgEstQCDenriched.src_cumulative = cms.InputTag('muonsBgEstQCDenrichedPFRelIsoCumulative')
+cfgMuonPFRelIsoCutBgEstQCDenriched.systematics = cms.vstring()
 
 cfgTauTrkIsoCutBgEstQCDenriched = copy.deepcopy(cfgTauTrkIsoCut)
 cfgTauTrkIsoCutBgEstQCDenriched.pluginName = cms.string('tauTrkIsoCutBgEstQCDenriched')
@@ -135,8 +123,7 @@ cfgDiMuonVetoBgEstQCDenriched = cms.PSet(
 )
 
 evtSelConfiguratorBgEstQCDenriched = eventSelFlagProdConfigurator(
-    [ cfgMuonTrkIsoCutBgEstQCDenriched,
-      cfgMuonEcalIsoCutBgEstQCDenriched,
+    [ cfgMuonPFRelIsoCutBgEstQCDenriched,
       cfgTauTrkIsoCutBgEstQCDenriched,
       cfgTauEcalIsoCutBgEstQCDenriched,
       cfgTauMuonVetoBgEstQCDenriched,
@@ -192,14 +179,9 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelMuonEta,
         evtSelMuonPt,
         cms.PSet(
-            pluginName = cms.string('muonTrkIsoCutBgEstQCDenriched'),
+            pluginName = cms.string('muonPFRelIsoCutBgEstQCDenriched'),
             pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('muonTrkIsoCutBgEstQCDenriched', 'cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('muonEcalIsoCutBgEstQCDenriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('muonEcalIsoCutBgEstQCDenriched', 'cumulative')
+            src = cms.InputTag('muonPFRelIsoCutBgEstQCDenriched', 'cumulative')
         ),
         evtSelTauAntiOverlapWithMuonsVeto,
         evtSelTauEta,
@@ -296,12 +278,8 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Pt(Tau) > 20 GeV'),
         ),
         cms.PSet(
-            filter = cms.string('muonTrkIsoCutBgEstQCDenriched'),
-            title = cms.string('Muon Track iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('muonEcalIsoCutBgEstQCDenriched'),
-            title = cms.string('Muon ECAL iso.')
+            filter = cms.string('muonPFRelIsoCutBgEstQCDenriched'),
+            title = cms.string('Muon iso.')
         ),
         cms.PSet(
             filter = cms.string('evtSelTauLeadTrk'),
