@@ -18,37 +18,38 @@ TriggerResultEventSelector::TriggerResultEventSelector(const edm::ParameterSet& 
 
 bool TriggerResultEventSelector::operator()(edm::Event& evt, const edm::EventSetup&)
 {
-	edm::Handle<edm::TriggerResults> triggerResults;
-	evt.getByLabel(src_, triggerResults);
+  edm::Handle<edm::TriggerResults> triggerResults;
+  evt.getByLabel(src_, triggerResults);
 
-	const edm::TriggerNames& triggerNames = evt.triggerNames(*triggerResults);
+  const edm::TriggerNames& triggerNames = evt.triggerNames(*triggerResults);
 
-	bool foundATrigger = 0;
-	for ( vstring::const_iterator triggerPath = triggerPaths_.begin();
-			triggerPath != triggerPaths_.end(); ++triggerPath ) {
-		unsigned int index = triggerNames.triggerIndex(*triggerPath);
-		if ( index < triggerNames.size() ) {
-			foundATrigger = 1;
-			//--- event triggered by triggerPath
-			if ( triggerResults->accept(index) ) return true;
-		} 
-	}
+  bool foundATrigger = 0;
+  for ( vstring::const_iterator triggerPath = triggerPaths_.begin();
+	triggerPath != triggerPaths_.end(); ++triggerPath ) {
+    unsigned int index = triggerNames.triggerIndex(*triggerPath);
+    if ( index < triggerNames.size() ) {
+      foundATrigger = 1;
+//--- event triggered by triggerPath
+      if ( triggerResults->accept(index) ) return true;
+    } 
+  }
 
-	if( ! foundATrigger) { 	// none of the specified trigger paths was found in the event!
+  if( ! foundATrigger) { // none of the specified trigger paths was found in the event!
+    
+    edm::LogError ("TriggerResultEventSelector::operator()") << " Found none of requested trigger paths!!";
+    std::cout << "Available trigger Paths:" << std::endl;
+    for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
+	  triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
+      unsigned int index = triggerNames.triggerIndex(*triggerName);
+      if ( index < triggerNames.size() ) {
+	std::string triggerDecision = ( triggerResults->accept(index) ) ? "passed" : "failed";
+	std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
+      }
+    }
+  }
 
-		edm::LogError ("TriggerResultEventSelector::operator()") << " Found none of requested trigger paths!!";
-		std::cout << "Available trigger Paths:" << std::endl;
-		for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
-				triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
-			unsigned int index = triggerNames.triggerIndex(*triggerName);
-			if ( index < triggerNames.size() ) {
-				std::string triggerDecision = ( triggerResults->accept(index) ) ? "passed" : "failed";
-				std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
-			}
-		}
-	}
-	//--- none of the triggers specified in the triggerPaths list triggered the event
-	return false;
+//--- none of the triggers specified in the triggerPaths list triggered the event
+  return false;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
