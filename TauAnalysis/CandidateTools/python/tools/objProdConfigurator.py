@@ -21,7 +21,19 @@ class objProdConfigurator(cms._ParameterTypeBase):
         self.systematics = systematics
         self.pyModuleName = pyModuleName,
 
-    def _addModule(self, objProdItem, sysName, sysInputTags, pyNameSpace = None, process = None):        
+    @staticmethod   
+    def _recursiveSetAttr(obj, attrName, attrValue):
+        if isinstance(attrName, cms._ParameterTypeBase):
+            attrName = attrName.value()
+        if attrName.find(".") != -1:
+            objAttrName = attrName[:attrName.find(".")]
+            attrName_new = attrName[attrName.find(".") + 1:]
+            obj_new = getattr(obj, objAttrName)
+            objProdConfigurator._recursiveSetAttr(obj_new, attrName_new, attrValue)
+        else:
+            setattr(obj, attrName, attrValue)
+
+    def _addModule(self, objProdItem, sysName, sysAttributes, pyNameSpace = None, process = None):
         # create module
         moduleType = objProdItem.type_()
         module = cms.EDProducer(moduleType)
@@ -30,13 +42,19 @@ class objProdConfigurator(cms._ParameterTypeBase):
         # to default values
         for objProdAttrName in dir(objProdItem):
             objProdAttr = getattr(objProdItem, objProdAttrName)
-            if isinstance(objProdAttr, cms._ParameterTypeBase) and not objProdAttrName in ["pluginName", "pluginType"]:
-                setattr(module, objProdAttrName, objProdAttr)
+            if isinstance(objProdAttr, cms._ParameterTypeBase) and not objProdAttrName in [ "pluginName", "pluginType" ]:
+                if isinstance(objProdAttr, cms.PSet):
+                    # CV: need to clone configuration parameters of type cms.PSet,...
+                    #     in order to avoid that recursiveSetAttr function
+                    #     overwrites objProd "template" object passed to objProdConfigurator constructor !!
+                    setattr(module, objProdAttrName, objProdAttr.clone())
+                else:
+                    setattr(module, objProdAttrName, objProdAttr)
 
         # set names of source collections
         # to objects shifted in energy/transverse momentum, theta, phi...
-        for sysInputTagAttrName, sysInputTagValue in sysInputTags.items():
-            setattr(module, sysInputTagAttrName, cms.InputTag(sysInputTagValue))
+        for sysAttrName, sysAttrValue in sysAttributes.items():
+            self._recursiveSetAttr(module, sysAttrName, sysAttrValue)
                 
         moduleName = composeModuleName(getInstanceName(objProdItem, pyNameSpace, process), sysName)
         module.setLabel(moduleName)
@@ -66,8 +84,8 @@ class objProdConfigurator(cms._ParameterTypeBase):
         self.sequence = self.objProd
 
         if self.systematics is not None:
-            for sysName, sysInputTags in self.systematics.items():
-                self._addModule(self.objProd, sysName = sysName, sysInputTags = sysInputTags,
+            for sysName, sysAttributes in self.systematics.items():
+                self._addModule(self.objProd, sysName = sysName, sysAttributes = sysAttributes,
                                 pyNameSpace = pyNameSpace, process = process)
 
         return cms.Sequence(self.sequence)
