@@ -20,10 +20,8 @@ process.source = cms.Source("EmptySource")
 process.loadAnalysisResults = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
-            #'/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/export/plotsAHtoMuTau.root'
             '/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/plotsAHtoMuTau_all.root'
         ),
-        #dqmDirectory_store = cms.string('harvested/AH120')
         dqmDirectory_store = cms.string('')
     )
 )
@@ -36,57 +34,57 @@ process.exportAnalysisResults_woBtag = cms.EDAnalyzer("DQMExportAnalysisResults"
     outputFilePath = cms.string("/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/export"),                 
 
     processes = cms.PSet(
-	AH120 = cms.PSet(
-            dqmDirectory = cms.string('AH120'),
+	A120 = cms.PSet(
+            dqmDirectory = cms.string('A120'),
 	    outputFilePath = cms.string("m120"),
 	    outputFileName = cms.string("ggA_#CHANNEL_OUTPUTFILENAME#.hst"),
 	    numEvents = cms.double(
-                TARGET_LUMI*RECO_SAMPLES['AH120']['x_sec']
+                TARGET_LUMI*RECO_SAMPLES['A120']['x_sec']
             ),
             hasSysUncertainties = cms.bool(True)
         ),
-        bbAH120 = cms.PSet(
-            dqmDirectory = cms.string('bbAH120'),
+        bbA120 = cms.PSet(
+            dqmDirectory = cms.string('bbA120'),
 	    outputFilePath = cms.string("m120"),
 	    outputFileName = cms.string("bbA_#CHANNEL_OUTPUTFILENAME#.hst"),
 	    numEvents = cms.double(
-                TARGET_LUMI*RECO_SAMPLES['bbAH120']['x_sec']
+                TARGET_LUMI*RECO_SAMPLES['bbA120']['x_sec']
             ),
             hasSysUncertainties = cms.bool(True)
         ),
-        AH130 = cms.PSet(
-            dqmDirectory = cms.string('AH130'),
+        A130 = cms.PSet(
+            dqmDirectory = cms.string('A130'),
 	    outputFilePath = cms.string("m130"),
 	    outputFileName = cms.string("ggA_#CHANNEL_OUTPUTFILENAME#.hst"),
 	    numEvents = cms.double(
-                TARGET_LUMI*RECO_SAMPLES['AH130']['x_sec']
+                TARGET_LUMI*RECO_SAMPLES['A130']['x_sec']
             ),
             hasSysUncertainties = cms.bool(True)
         ),
-        bbAH130 = cms.PSet(
-            dqmDirectory = cms.string('bbAH130'),
+        bbA130 = cms.PSet(
+            dqmDirectory = cms.string('bbA130'),
 	    outputFilePath = cms.string("m130"),
 	    outputFileName = cms.string("bbA_#CHANNEL_OUTPUTFILENAME#.hst"),
 	    numEvents = cms.double(
-                TARGET_LUMI*RECO_SAMPLES['bbAH130']['x_sec']
+                TARGET_LUMI*RECO_SAMPLES['bbA130']['x_sec']
             ),
             hasSysUncertainties = cms.bool(True)
         ),
-        AH200 = cms.PSet(
-            dqmDirectory = cms.string('AH200'),
+        A200 = cms.PSet(
+            dqmDirectory = cms.string('A200'),
 	    outputFilePath = cms.string("m200"),
 	    outputFileName = cms.string("ggA_#CHANNEL_OUTPUTFILENAME#.hst"),
 	    numEvents = cms.double(
-                TARGET_LUMI*RECO_SAMPLES['AH200']['x_sec']
+                TARGET_LUMI*RECO_SAMPLES['A200']['x_sec']
             ),
             hasSysUncertainties = cms.bool(True)
         ),
-        bbAH200 = cms.PSet(
-            dqmDirectory = cms.string('bbAH200'),
+        bbA200 = cms.PSet(
+            dqmDirectory = cms.string('bbA200'),
 	    outputFilePath = cms.string("m200"),
 	    outputFileName = cms.string("bbA_#CHANNEL_OUTPUTFILENAME#.hst"),
 	    numEvents = cms.double(
-                TARGET_LUMI*RECO_SAMPLES['bbAH200']['x_sec']
+                TARGET_LUMI*RECO_SAMPLES['bbA200']['x_sec']
             ),
             hasSysUncertainties = cms.bool(True)
         ),
@@ -142,7 +140,7 @@ process.exportAnalysisResults_woBtag = cms.EDAnalyzer("DQMExportAnalysisResults"
 	    outputFilePath = cms.string(""),
 	    outputFileName = cms.string("data_#CHANNEL_OUTPUTFILENAME#.hst"),
 	    numEvents = cms.double(
-                TARGET_LUMI*100._millibarns # rough estimate of total pp cross-section at 7 TeV center-of-mass energy
+                10000000. # dummy number
             ),
             hasSysUncertainties = cms.bool(False)
         ),
