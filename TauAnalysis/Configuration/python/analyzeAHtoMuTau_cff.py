@@ -40,6 +40,9 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         # trigger selection
         evtSelTrigger,
 
+        # data-quality selection
+        evtSelDataQuality,
+
         # primary event vertex selection
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -50,9 +53,7 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelMuonEta,
         evtSelMuonPt,
         evtSelMuonVbTfId,
-        evtSelMuonTrkIso,
-        evtSelMuonEcalIso,
-        evtSelMuonCombIso,
+        evtSelMuonPFRelIso,
         evtSelMuonAntiPion,
         evtSelMuonTrkIP,
 
@@ -77,7 +78,8 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
 
         # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
-        evtSelDiMuPairZmumuHypothesisVeto,
+        evtSelDiMuPairZmumuHypothesisVetoByMass,
+        evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
 
         # central jet veto/b-jet candidate selection
         evtSelNonCentralJetEt20bTag,
@@ -95,7 +97,8 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateSVfitHistManagerForMuTau,
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
         diTauLeg1ChargeBinGridHistManager,
-        muPairHistManager,
+        muPairHistManagerByMass,
+        muPairHistManagerByLooseIsolationAndCharge,
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,
@@ -116,11 +119,7 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
     ),                                           
 
     eventDumps = cms.VPSet(
-        muTauEventDump.clone(
-            diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
-            muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTau'),
-            triggerConditions = cms.vstring("evtSelNonCentralJetEt20bTag: passed_cumulative")
-        )
+        muTauEventDump_woBtag
     ),
    
     analysisSequence = muTauAnalysisSequence_woBtag,
@@ -142,11 +141,7 @@ analyzeAHtoMuTauEvents_wBtag = analyzeAHtoMuTauEvents_woBtag.clone(
     name = cms.string('ahMuTauAnalyzer_wBtag'), 
 
     eventDumps = cms.VPSet(
-        muTauEventDump.clone(
-            diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
-            muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTau'),
-            triggerConditions = cms.vstring("evtSelCentralJetEt20bTag: passed_cumulative")
-        )
+        muTauEventDump_wBtag
     ),
    
     analysisSequence = muTauAnalysisSequence_wBtag

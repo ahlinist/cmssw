@@ -18,7 +18,8 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
     sources = cms.PSet(
         isRecZtoMuTau = cms.vstring(
             "sysMuon*", "",
-            "sysTau*", ""
+            "sysTau*", "",
+            "sysJet*", ""
         )        
     )
 )
@@ -40,6 +41,9 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         # trigger selection
         evtSelTrigger,
 
+        # data-quality selection
+        evtSelDataQuality,
+
         # primary event vertex selection
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -50,9 +54,7 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelMuonEta,
         evtSelMuonPt,
         evtSelMuonVbTfId,
-        evtSelMuonTrkIso,
-        evtSelMuonEcalIso,
-        evtSelMuonCombIso,
+        evtSelMuonPFRelIso,
         evtSelMuonAntiPion,
         evtSelMuonTrkIP,
 
@@ -78,7 +80,8 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForMuTauPzetaDiff,
 
         # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
-        evtSelDiMuPairZmumuHypothesisVeto
+        evtSelDiMuPairZmumuHypothesisVetoByMass,
+        evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
     ),
   
     analyzers = cms.VPSet(
@@ -93,7 +96,8 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateSVfitHistManagerForMuTau,
         diTauCandidateEventActivityHistManagerForMuTau,
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
-        muPairHistManager,
+        muPairHistManagerByMass,
+        muPairHistManagerByLooseIsolationAndCharge,
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,
@@ -122,6 +126,7 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         getSysUncertaintyNames(
             [ muonSystematics,
               tauSystematics,
+              jetSystematics,
               theorySystematics ]
         )
     )                                   

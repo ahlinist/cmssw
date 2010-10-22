@@ -76,9 +76,7 @@ muTauEventDump_factorizedWithMuonIsolation = muTauEventDump.clone(
 #--------------------------------------------------------------------------------
 
 inputTagReplacements = \
-  [ [ "selectedPatMuonsTrkIsoCumulative", "selectedPatMuonsTrkIsoLooseIsolationCumulative" ],
-    [ "selectedPatMuonsEcalIsoCumulative", "selectedPatMuonsEcalIsoLooseIsolationCumulative" ],
-    [ "selectedPatMuonsCombIsoCumulative", "selectedPatMuonsCombIsoLooseIsolationCumulative" ],
+  [ [ "selectedPatMuonsPFRelIsoCumulative", "selectedPatMuonsPFRelIsoLooseIsolationCumulative" ],
     [ "selectedPatMuonsPionVetoCumulative", "selectedPatMuonsPionVetoLooseIsolationCumulative" ],
     [ "selectedPatMuonsTrkIPcumulative", "selectedPatMuonsTrkIPlooseIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauAntiOverlapVetoCumulative",

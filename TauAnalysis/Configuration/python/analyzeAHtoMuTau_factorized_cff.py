@@ -52,9 +52,7 @@ analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(
 #--------------------------------------------------------------------------------
 
 eventSelectionReplacements = \
-  [ [ evtSelMuonTrkIso, evtSelMuonTrkIsoLooseIsolation ],
-    [ evtSelMuonEcalIso, evtSelMuonEcalIsoLooseIsolation ],
-    [ evtSelMuonCombIso, evtSelMuonCombIsoLooseIsolation ],
+  [ [ evtSelMuonPFRelIso, evtSelMuonPFRelIsoLooseIsolation ],
     [ evtSelMuonAntiPion, evtSelMuonAntiPionLooseIsolation ],
     [ evtSelMuonTrkIP, evtSelMuonTrkIPlooseIsolation ],
     [ evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto, evtSelDiTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation ],
