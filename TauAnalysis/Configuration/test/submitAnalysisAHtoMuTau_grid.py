@@ -29,8 +29,6 @@ PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
     # modify in case you want to submit crab jobs for some samples only...
-    'data_Mu_147222_147454_Prompt',
-    'data_Mu_145762_147219_Prompt',
 ]
 
 ENABLE_SYSTEMATICS = True
@@ -40,8 +38,7 @@ JOB_OPTIONS_DEFAULTS = [
     ('maxEvents', -1),
     ('inputFileType', 'RECO/AOD'),
     ('isBatchMode', True),
-    ('plotsOutputFileName', PLOT_FILES_PREFIX),
-    ('enableSysUncertainties', False)
+    ('plotsOutputFileName', PLOT_FILES_PREFIX)
 ]
 
 def get_conditions(globalTag):

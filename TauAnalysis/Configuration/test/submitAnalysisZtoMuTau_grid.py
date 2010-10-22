@@ -23,8 +23,7 @@ JOB_OPTIONS_DEFAULTS = [
     ('maxEvents', -1),
     ('inputFileType', 'RECO/AOD'),
     ('isBatchMode', True),
-    ('plotsOutputFileName', PLOT_FILES_PREFIX),
-    ('enableSysUncertainties', False)
+    ('plotsOutputFileName', PLOT_FILES_PREFIX)
 ]
 
 def get_conditions(globalTag):
@@ -71,6 +70,13 @@ for sample in samples.SAMPLES_TO_ANALYZE:
     jobOptions.append(('type', sample_info['type']))
     # For the genphase space cut, we need to do it for the two different
     jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut']))
+
+    # Check if we need to change the HLT tag
+    if 'hlt' in sample_info:
+        jobOptions.append(('hlt', sample_info['hlt']))
+
+    # Update our HLT selection
+    jobOptions.append(('hlt_paths', sample_info['hlt_paths']))
 
     # Enable factorization if necessary
     jobOptions.append(('enableFactorization', sample_info['factorize']))

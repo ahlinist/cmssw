@@ -8,6 +8,7 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 SAMPLES_TO_ANALYZE = [
     'data_Mu_132440-145761_Sep17ReReco',
     'data_Mu_145762_147116_Prompt',
+    'data_Mu_147117_148058_Prompt',
     'Ztautau', 
     'Zmumu',
     'InclusivePPmuX', 
@@ -37,8 +38,10 @@ SAMPLE_DEFAULTS = {
     'conditions' : 'startup',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
+    'enableSysUncertainties' : False,
     'lumi_mask' : '',
-    'runselection' : ''
+    'runselection' : '',
+    'hlt_paths' : [ 'HLT_Mu9' ]
 }
 
 # Conversions to pico barns
@@ -59,7 +62,7 @@ RECO_SAMPLES = {
     'data_Mu_132440-145761_Sep17ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
         'runselection' : "132440 - 145761",
         'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
@@ -70,13 +73,25 @@ RECO_SAMPLES = {
     'data_Mu_145762_147116_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
         'runselection' : '145762 - 147116',
-        'conditions' : 'GR_R_38X_V13::All',        
+        'conditions' : 'GR_R_38X_V13::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
+        'drawOption' : styles.drawOption_Data,
+    },
+    'data_Mu_147117_148058_Prompt' : {
+        'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : '147117 - 148058',
+        'conditions' : 'GR_R_38X_V13::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : [ 'HLT_Mu11', 'HLT_IsoMu9' ],
     },
     'Ztautau' : {
         'datasetpath' : "/Ztautau/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
@@ -156,7 +171,8 @@ MERGE_SAMPLES = {
     'data' : {
         'samples' : [
             'data_Mu_132440-145761_Sep17ReReco',
-            'data_Mu_145762_147116_Prompt'
+            'data_Mu_145762_147116_Prompt',
+            'data_Mu_147117_148058_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
