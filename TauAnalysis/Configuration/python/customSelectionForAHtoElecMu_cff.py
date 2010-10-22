@@ -169,14 +169,6 @@ selectedPatMuonsIso = cms.EDFilter("PATMuonSelector",
      cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.15'),
      filter = cms.bool(False)
 )
-selectedPatMuonsTrkIso.vetos = cms.vstring("0.01", "Threshold(0.9)")                          
-selectedPatMuonsTrkIso.dRisoCone = cms.double(0.3)
-selectedPatMuonsTrkIso.sumPtMax = cms.double(1.)
-selectedPatMuonsEcalIso.cut= cms.string('ecalIso < 1.')
-selectedPatMuonsHcalIso = cms.EDFilter("PATMuonSelector",
-    cut = cms.string('hcalIso < 1.'),
-    filter = cms.bool(False)
-)
 ##cut optimization
 selectedPatMuonsPt10 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 10.'))
 selectedPatMuonsPt11 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 11.'))
@@ -221,9 +213,6 @@ patMuonSelConfigurator = objSelConfigurator(
       selectedPatMuonsEta,
       selectedPatMuonsPt,
       selectedPatMuonsIso,
-      #selectedPatMuonsTrkIso,
-      #selectedPatMuonsEcalIso,
-      #selectedPatMuonsHcalIso,
       selectedPatMuonsPionVeto,
       selectedPatMuonsTrk,
       selectedPatMuonsTrkIP ],
@@ -245,15 +234,6 @@ selectLayer1Muons = patMuonSelConfigurator.configure(pyNameSpace = locals())
 #    tauAnalysisSelMuonIso = cms.PSet(
 #      src = cms.InputTag('selectedPatMuonsIsoIndividual')
 #    ),
-#    #tauAnalysisSelMuonTrkIso = cms.PSet(
-#    #  src = cms.InputTag('selectedPatMuonsTrkIsoIndividual')
-#    #),
-#    #tauAnalysisSelMuonEcalIso = cms.PSet(
-#    #  src = cms.InputTag('selectedPatMuonsEcalIsoIndividual')
-#    #),
-#    #tauAnalysisSelMuonHcalIso = cms.PSet(
-#    #  src = cms.InputTag('selectedPatMuonsHcalIsoIndividual')
-#    #),
 #    tauAnalysisSelMuonPionVeto = cms.PSet(
 #      src = cms.InputTag('selectedPatMuonsPionVetoIndividual')
 #    ),
